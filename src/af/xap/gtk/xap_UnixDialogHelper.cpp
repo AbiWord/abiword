@@ -817,9 +817,10 @@ GdkWindow * getRootWindow(GtkWidget * widget)
 }
 
 
-static void activate_button( GtkEntry *entry, gpointer user_data )
+static void activate_button( GtkEntry * /*entry*/, gpointer user_data )
 {
 //    UT_DEBUGMSG(("activate_button() ud:%x\n", user_data ));
+
     GtkWidget* w = GTK_WIDGET(user_data);
     gtk_widget_activate(w);
 }

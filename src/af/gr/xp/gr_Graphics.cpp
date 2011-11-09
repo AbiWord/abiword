@@ -235,6 +235,8 @@ GR_Graphics::GR_Graphics()
 	  m_pRect(NULL),
 	  m_bHave3DColors(false),
 	  m_paintCount(0),
+	  m_bDoubleBufferingActive(false),
+	  m_bDrawingSuspended(false),
 	  m_pCaret(NULL),
 	  m_bIsPortrait(true),
 	  m_bSpawnedRedraw(false),
@@ -246,9 +248,7 @@ GR_Graphics::GR_Graphics()
 	  m_iPrevXOffset(0),
 	  m_hashFontCache(19),
 	  m_AllCarets(this,&m_pCaret,&m_vecCarets),
-	  m_bAntiAliasAlways(false),
-	  m_bDrawingSuspended(false),
-	  m_bDoubleBufferingActive(false)
+	  m_bAntiAliasAlways(false)
 {
 }
 

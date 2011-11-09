@@ -56,7 +56,7 @@ void XAP_UnixDialog_Image::s_HeightEntry_changed(GtkWidget * widget, XAP_UnixDia
 	dlg->doHeightEntry();
 }
 
-gboolean XAP_UnixDialog_Image::s_HeightEntry_FocusOut(GtkWidget * widget, GdkEvent  *event, XAP_UnixDialog_Image *dlg)
+gboolean XAP_UnixDialog_Image::s_HeightEntry_FocusOut(GtkWidget * widget, GdkEvent  * /*event*/, XAP_UnixDialog_Image *dlg)
 {
   if(!(widget && dlg))
     {
@@ -67,7 +67,7 @@ gboolean XAP_UnixDialog_Image::s_HeightEntry_FocusOut(GtkWidget * widget, GdkEve
   return(FALSE);
 }
 
-gboolean XAP_UnixDialog_Image::s_WidthEntry_FocusOut(GtkWidget * widget, GdkEvent  *event, XAP_UnixDialog_Image *dlg)
+gboolean XAP_UnixDialog_Image::s_WidthEntry_FocusOut(GtkWidget * widget, GdkEvent  * /*event*/, XAP_UnixDialog_Image *dlg)
 {
   if(!(widget && dlg))
     {

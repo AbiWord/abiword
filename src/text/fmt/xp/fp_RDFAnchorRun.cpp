@@ -293,7 +293,7 @@ bool fp_RDFAnchorRun::_canContainPoint(void) const
 
 bool fp_RDFAnchorRun::_setValue(void)
 {
-  UT_uint32 pos = getBlock()->getDocLayout()->getAnnotationVal(getPID()) + 1;
+  //  UT_uint32 pos = getBlock()->getDocLayout()->getAnnotationVal(getPID()) + 1;
 
   const PP_AttrProp * pAP = NULL;
   getSpanAP(pAP);
@@ -303,7 +303,7 @@ bool fp_RDFAnchorRun::_setValue(void)
 //  if(getBlock()->getDocLayout()->displayRDFAnchors())
 //      UT_String_sprintf( tmp, "x%s (%d)", a.getID().c_str(), pos );
 //  else
-  UT_String_sprintf( tmp, "" );
+//  UT_String_sprintf( tmp, "" );
   m_sValue = tmp.c_str();
   return true;
 }

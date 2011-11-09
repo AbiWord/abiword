@@ -266,17 +266,18 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 					{
 					case _PS_Block:
 						{
-						unsigned int s = 0, t = 0;
+						unsigned int i = 0, j = 0;
 						UT_UCS4Char *pbuf = (UT_UCS4Char*) buf.ucs4_str();
-						int newlen = buf.size();
-						while (s < newlen) {
-							if (pbuf[s]!=10 && pbuf[s]!=13) {
-								if (s > t) pbuf[t] = pbuf[s];
-								t++;
+						unsigned int newlen = buf.size();
+						while (i < newlen) {
+							if (pbuf[i]!=10 && pbuf[i]!=13) {
+								if (i > j) 
+									pbuf[j] = pbuf[i];
+								j++;
 							}
-							s++;
+							i++;
 						}
-						newlen = t;
+						newlen = j;
 
 						if (!m_bWhiteSignificant && m_bStripLeading && (pbuf[0] == UCS_SPACE))
 						{

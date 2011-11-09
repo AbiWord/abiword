@@ -238,7 +238,6 @@ void fp_Container::drawLine(const PP_PropertyMap::Line & style,
 		default: // do nothing; shouldn't happen
 			break;
 	}
-	UT_sint32 dth = style.m_thickness/2;
 	pGr->setLineWidth (static_cast<UT_sint32>(style.m_thickness));
 	if (style.m_t_linestyle == PP_PropertyMap::linestyle_none)
 	{
@@ -323,7 +322,7 @@ void fp_Container::setContainer(fp_Container * pCO)
 	m_pContainer = pCO;
 	if(pCO != NULL)
 	{
-		m_FillType.setParent(pCO->getFillType());
+		m_FillType.setParent(&pCO->getFillType());
 	}
 	else
 	{
@@ -561,9 +560,14 @@ bool fp_Container::isOnScreen() const
 /*!
  * Need to be able to fiddle with the fillType so don't do a const return;
  */
-fg_FillType * fp_Container::getFillType(void)
+fg_FillType & fp_Container::getFillType(void)
 {
-	return & m_FillType;
+	return m_FillType;
+}
+
+const fg_FillType & fp_Container::getFillType(void) const
+{
+	return m_FillType;
 }
 
 /*!

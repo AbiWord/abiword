@@ -71,11 +71,11 @@ void fp_FootnoteContainer::setPage(fp_Page * pPage)
 	m_pPage = pPage;
 	if(pPage)
 	{
-		getFillType()->setParent(pPage->getFillType());
+		getFillType().setParent(&pPage->getFillType());
 	}
 	else
 	{
-		getFillType()->setParent(NULL);
+		getFillType().setParent(NULL);
 	}
 }
 
@@ -99,7 +99,7 @@ void fp_FootnoteContainer::clearScreen(void)
 	if(pos == 0)
 	{
 		fl_DocSectionLayout * pDSL = getPage()->getOwningSection();
-		const UT_RGBColor * pBGColor = getFillType()->getColor();
+		const UT_RGBColor * pBGColor = getFillType().getColor();
 		UT_sint32 iLeftMargin = pDSL->getLeftMargin();
 		UT_sint32 iRightMargin = pDSL->getRightMargin();
 //		UT_sint32 diff = getPage()->getWidth()/10;
@@ -118,7 +118,7 @@ void fp_FootnoteContainer::clearScreen(void)
 		xxx_UT_DEBUGMSG(("fp_TableContainer: clearScreen (%d,%d) to (%d,%d) \n",xoffStart,yline,xoffEnd,yline));
 		UT_sint32 srcX = getX() + diff -1;
 		UT_sint32 srcY = getY() - iLineThick -4;
-		getFillType()->Fill(getGraphics(),srcX,srcY,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
+		getFillType().Fill(getGraphics(),srcX,srcY,xoffStart-1, yline, xoffEnd-xoffStart +2, iLineThick+1);
 	}
 
 	fp_Container * pCon = NULL;
@@ -365,11 +365,11 @@ void fp_AnnotationContainer::setPage(fp_Page * pPage)
 	m_pPage = pPage;
 	if(pPage)
 	{
-		getFillType()->setParent(pPage->getFillType());
+		getFillType().setParent(&pPage->getFillType());
 	}
 	else
 	{
-		getFillType()->setParent(NULL);
+		getFillType().setParent(NULL);
 	}
 }
 
@@ -412,7 +412,7 @@ void fp_AnnotationContainer::clearScreen(void)
 		getScreenOffsets(pCon,xoff,yoff);
 		UT_sint32 srcX = getX();
 		UT_sint32 srcY = getY();
-		getFillType()->Fill(getGraphics(),srcX,srcY,xoff-m_iLabelWidth,yoff,iWidth,getHeight());
+		getFillType().Fill(getGraphics(),srcX,srcY,xoff-m_iLabelWidth,yoff,iWidth,getHeight());
 	}
 	UT_sint32 i = 0;
 	for(i=0; i< countCons(); i++)
@@ -702,7 +702,7 @@ void fp_EndnoteContainer::clearScreen(void)
 		static_cast<fp_Column *>(getColumn())->getScreenOffsets(this,xoff,yoff);
 		UT_sint32 srcX = getX();
 		UT_sint32 srcY = getY();
-		getFillType()->Fill(getGraphics(),srcX,srcY,xoff,yoff,iWidth,getHeight());
+		getFillType().Fill(getGraphics(),srcX,srcY,xoff,yoff,iWidth,getHeight());
 	}
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;

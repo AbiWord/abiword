@@ -930,7 +930,7 @@ bool UT_UCS4_isSentenceSeparator(UT_UCS4Char c)
 bool UT_UCS4_isdigit(UT_UCS4Char c)
 {
 	if (c < 0x700) {
-		for (int i=0; i < G_N_ELEMENTS(digits_table); i++) {
+		for (unsigned int i=0; i < G_N_ELEMENTS(digits_table); i++) {
 			if (c < digits_table[i].low) break;
 			if (c <= digits_table[i].high)
 				return true;

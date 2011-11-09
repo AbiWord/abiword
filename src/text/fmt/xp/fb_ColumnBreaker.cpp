@@ -418,11 +418,9 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 			}
 		}
 		bool bBreakOnColumnBreak = false;
-		bool bBreakOnPageBreak = false;
 		// plam: this var is redundant if the #if 0 remains dead.
 		//bool bDoTableBreak = false;
 		UT_sint32 iTotalContainerSpace = 0;
-		fp_Container * pPrevWorking = pCurContainer;
 		while (pCurContainer)
 		{
 		  //		        pCurContainer->setMyBrokenContainer(NULL);
@@ -587,7 +585,6 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 									iMaxColHeight, iWorkingColHeight, 
 									iContainerMarginAfter))
 					{
-						pPrevWorking = pCurContainer;
 						pCurContainer = pOffendingContainer;
 					}
 					else if(pOffendingContainer && pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
@@ -874,7 +871,6 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 						pLastContainerToKeep = pCurContainer;
 						xxx_UT_DEBUGMSG(("SEVIOR: Set lasttokeep 10 %x \n",pLastContainerToKeep));
 						bBreakOnColumnBreak = (pL->containsForcedColumnBreak()) ;
-						bBreakOnPageBreak = pL->containsForcedPageBreak();
 						if(iWorkingColHeight >= iMaxColHeight)
 							bBreakOnColumnBreak = false;
 						break;
@@ -1038,7 +1034,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 						if(pAC != NULL)
 						{
 							fp_Page * myPage = pAC->getPage();
-							UT_DEBUGMSG(("Annotation %x is on Page %x \n",pAC,myPage));
+							UT_DEBUGMSG(("Annotation %p is on Page %p \n",pAC,myPage));
 							if(myPage != pCurPage)
 							{
 								if(myPage == NULL)

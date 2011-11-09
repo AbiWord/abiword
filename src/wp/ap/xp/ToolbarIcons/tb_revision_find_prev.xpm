@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_revision_find_prev_xpm[] = {
+static const char * tb_revision_find_prev_xpm[] = {
 "24 24 7 1",
 " 	c None",
 ".	c #FFFFFF",

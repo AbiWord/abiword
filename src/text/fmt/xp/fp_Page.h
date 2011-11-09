@@ -113,7 +113,7 @@ public:
 	fp_ShadowContainer* getHdrFtrP(HdrFtrType hfType) const;
 	fp_ShadowContainer*	getHdrFtrContainer(fl_HdrFtrSectionLayout*);
 	fp_ShadowContainer*	buildHdrFtrContainer(fl_HdrFtrSectionLayout*, 
-											 HdrFtrType hfType);
+						     HdrFtrType hfType);
 
 	// Footnote functions.
 	void 				footnoteHeightChanged(void);
@@ -155,14 +155,15 @@ public:
 	bool                overlapsWrappedFrame(fp_Line * pLine);
 	bool                overlapsWrappedFrame(UT_Rect & rec);
 	void                setPageNumberInFrames(void);
-	UT_sint32           getPageNumber(void);
+	UT_sint32           getPageNumber(void); // TODO make const
 	bool                TopBotMarginChanged(void);
 	void                setLastMappedTOC(fl_TOCLayout * pTOCL)
 		{ m_pLastMappedTOC = pTOCL;}
-	fl_TOCLayout *      getLastMappedTOC(void)
+	fl_TOCLayout *      getLastMappedTOC(void) const
 		{ return m_pLastMappedTOC;}
-	fg_FillType *       getFillType(void);
-	void                getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts);
+	fg_FillType &       getFillType(void);
+	const fg_FillType & getFillType(void) const;
+	void                getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts) const;
 
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;

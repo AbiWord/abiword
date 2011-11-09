@@ -2075,7 +2075,7 @@ void fl_CellLayout::setCellContainerProperties(fp_CellContainer * pCell)
 			pImage->scaleImageTo(pG,rec);
 			m_pImageImage = pImage;
 		}
-		pCell->getFillType()->setImagePointer(&m_pGraphicImage,&m_pImageImage);
+		pCell->getFillType().setImagePointer(&m_pGraphicImage,&m_pImageImage);
 	}
 }
 

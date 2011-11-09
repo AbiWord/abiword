@@ -565,7 +565,7 @@ void FV_VisualInlineImage::getImageFromSelection(UT_sint32 x, UT_sint32 y,PP_Att
 	}
 }
 
-const char * FV_VisualInlineImage::getPNGImage(const UT_ByteBuf ** pBuf)
+const char * FV_VisualInlineImage::getPNGImage(const UT_ByteBuf ** pBuf) const
 {
         m_pView->getDocument()->getDataItemDataByName(m_sDataId.utf8_str(),pBuf,NULL,NULL);
 	return m_sDataId.utf8_str();
@@ -963,7 +963,7 @@ void FV_VisualInlineImage::mouseCopy(UT_sint32 x, UT_sint32 y)
 	m_pView->_resetSelection();
 }
 
-PT_DocPosition FV_VisualInlineImage::getPosFromXY(UT_sint32 x, UT_sint32 y)
+PT_DocPosition FV_VisualInlineImage::getPosFromXY(UT_sint32 x, UT_sint32 y) const
 {
 //
 // Convert this to a document position and paste!

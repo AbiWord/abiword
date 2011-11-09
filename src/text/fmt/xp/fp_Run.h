@@ -274,27 +274,27 @@ public:
 	bool			    isTopline(void) const ;
 	bool			    isBottomline(void) const ;
 	void			    setLinethickness(UT_sint32 max_linethickness);
-    UT_sint32		    getLinethickness(void) ;
+    UT_sint32		    getLinethickness(void) const;
 	void			    setUnderlineXoff(UT_sint32 xoff);
-	UT_sint32		    getUnderlineXoff(void);
+	UT_sint32		    getUnderlineXoff(void) const;
 	void			    setOverlineXoff(UT_sint32 xoff) ;
-	UT_sint32		    getOverlineXoff(void) ;
+	UT_sint32		    getOverlineXoff(void) const;
 	void			    setMaxUnderline(UT_sint32 xoff) ;
-	UT_sint32		    getMaxUnderline(void) ;
+	UT_sint32		    getMaxUnderline(void) const;
 	void			    setMinOverline(UT_sint32 xoff) ;
-	UT_sint32		    getMinOverline(void) ;
-	UT_sint32           getToplineThickness(void);
+	UT_sint32		    getMinOverline(void) const;
+	UT_sint32           getToplineThickness(void) const;
 
 	virtual UT_BidiCharType	getDirection() const { return m_iDirection; };
-	UT_BidiCharType		getVisDirection();
+	UT_BidiCharType		getVisDirection() const;
 	virtual void        setDirection(UT_BidiCharType iDirection = UT_BIDI_WS);
 	void				setVisDirection(UT_BidiCharType iDir);
-	UT_uint32           getVisPosition(UT_uint32 ilogPos);
-	UT_uint32           getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen);
-	UT_uint32           getOffsetFirstVis();
-	UT_uint32           getOffsetLog(UT_uint32 iVisOff);
-	fp_Run *			getNextVisual();
-	fp_Run *			getPrevVisual();
+	UT_uint32           getVisPosition(UT_uint32 ilogPos) const;
+	UT_uint32           getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen) const;
+	UT_uint32           getOffsetFirstVis() const;
+	UT_uint32           getOffsetLog(UT_uint32 iVisOff) const;
+	fp_Run *			getNextVisual(); // FIXME make const
+	fp_Run *			getPrevVisual(); // FIXME make const
 	UT_sint32           getAuthorNum(void) const
 	{ return m_iAuthorColor;};
 	void                setAuthorNum(UT_sint32 i)
@@ -306,7 +306,7 @@ public:
 	virtual void        adjustDeletePosition(UT_uint32 & /*pos1*/, 
 											 UT_uint32 & /*count*/) {}
 
-	bool                containsRevisions(){return (m_pRevisions != NULL);}
+	bool                containsRevisions() const {return (m_pRevisions != NULL);}
 	// would prefer to make the return value const, but the
 	// getLastRevision() and related functions use internal cache so
 	// they could not be called
@@ -317,7 +317,8 @@ public:
 	void                Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y,
 							 UT_sint32 width, UT_sint32 height);
 	
-	fg_FillType *       getFillType(void);            
+	fg_FillType &       getFillType(void);
+	const fg_FillType & getFillType(void) const;
 	fp_Line *           getTmpLine(void) const
 	{ return m_pTmpLine;}
 	void                setTmpLine(fp_Line * pLine)
@@ -343,8 +344,8 @@ public:
 	// the users backs.
 	bool        deleteFollowingIfAtInsPoint() const;
 
-	bool        displayAnnotations(void);
-    bool        displayRDFAnchors(void);
+	bool        displayAnnotations(void) const;
+    bool        displayRDFAnchors(void) const;
 	// Methods for selection drawing
 	void                 setSelectionMode(PT_DocPosition posLow, PT_DocPosition posHigh);
     void                 clearSelectionMode(void);

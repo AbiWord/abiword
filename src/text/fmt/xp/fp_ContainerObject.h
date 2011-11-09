@@ -296,8 +296,9 @@ public:
 	void                decBrokenCount(void) { if (m_cBrokenContainers > 0) { 
 			m_cBrokenContainers -= 1; }}
 
-        fg_FillType *       getFillType(void);
-	void                drawLine(const PP_PropertyMap::Line & style,
+        fg_FillType &       getFillType(void);
+	const fg_FillType & getFillType(void) const;
+  	void                drawLine(const PP_PropertyMap::Line & style,
 				     UT_sint32 left, UT_sint32 top, 
 				     UT_sint32 right, UT_sint32 bot,
 				     GR_Graphics * pGr);

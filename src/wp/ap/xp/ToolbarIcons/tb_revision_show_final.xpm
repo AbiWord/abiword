@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_revision_show_final_xpm[] = {
+static const char * tb_revision_show_final_xpm[] = {
 "24 24 5 1",
 " 	c None",
 ".	c #FFFFFF",

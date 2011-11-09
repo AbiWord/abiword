@@ -25,7 +25,7 @@ class ABI_EXPORT IE_TOCHelper
   int getNumTOCEntries() const;
   
   UT_UTF8String getNthTOCEntry(int nth, int * out_level = NULL) const;
-  bool getNthTOCEntryPos(int nth, PT_DocPosition &pos);
+  bool getNthTOCEntryPos(int nth, PT_DocPosition &pos) const;
 
  private:
 

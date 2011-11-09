@@ -583,7 +583,6 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 	*/
 
 	fp_Run *pCurrentRun = m_pFirstRunToKeep;
-	fp_Run *pPrevRun = pCurrentRun;
 	UT_sint32 width = 0;
 	while (pCurrentRun)
 	{
@@ -602,7 +601,6 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		}
 		else
 		{
-			pPrevRun = pCurrentRun;
 			pCurrentRun = pCurrentRun->getNextRun();
 		}
 	}

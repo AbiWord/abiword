@@ -1,5 +1,5 @@
 /* XPM */
-static char * tb_revision_select_xpm[] = {
+static const char * tb_revision_select_xpm[] = {
 "24 24 179 2",
 "  	c None",
 ". 	c #000000",

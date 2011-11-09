@@ -2675,7 +2675,6 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			//
 			// The frame container may not yet be created.
 			// 
-			bool bPageSet = false;
 			fp_Page * pPage = NULL;
 			if(pFrameCon)
 			{
@@ -2708,7 +2707,6 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-2) && (iPrefPage < iGuessedPage+3))
 					{
 						pPage = getDocLayout()->getNthPage(iPrefPage);
-						bPageSet = true;
 					}
 				}
 				pFrameCon->setX(pFrame->getFrameXPagepos());
@@ -2883,10 +2881,8 @@ void fl_BlockLayout::formatWrappedFromHere(fp_Line * pLine, fp_Page * pPage)
 	UT_sint32 iMaxW = m_pVertContainer->getWidth();
 	iMaxW -=  getLeftMargin();
 	iMaxW -= getRightMargin();
-	bool bFirst2 = false;
 	if(pLine == static_cast<fp_Line *>(getFirstContainer()))
 	{
-		bFirst2 = true;
 		UT_BidiCharType iBlockDir = getDominantDirection();
 		if(iBlockDir == UT_BIDI_LTR)
 		{
@@ -6598,7 +6594,6 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void) const
 	
 	fp_Run* pRun = m_pFirstRun;
 	UT_uint32 iOffset = 0;
-	bool bPastFirst = false;
 	if(m_pFirstRun)
 	{
 		//
@@ -6662,7 +6657,6 @@ fl_BlockLayout::_assertRunListIntegrityImpl(void) const
 		UT_ASSERT( pRun->getNextRun()
 				   || (FPRUN_ENDOFPARAGRAPH == pRun->getType()) );
 		pRun = pRun->getNextRun();
-		bPastFirst = true;
 	}
 }
 #endif /* !NDEBUG */

@@ -185,7 +185,7 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon)
 {
 	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
-	fp_CellContainer * pTopCell = this;
+	const fp_CellContainer * pTopCell = this;
 	bool bNest = false;
 	if(pMaster == NULL)
 	{
@@ -821,7 +821,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	UT_RGBColor pageCol(255,255,255);
 	if(pPage)
 	{
-		pageCol = *pPage->getFillType()->getColor();
+		pageCol = *pPage->getFillType().getColor();
 	}
 	markAsDirty();
 	if (pPage != NULL)
@@ -864,17 +864,17 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		//			UT_ASSERT((bRec.left + bRec.width) < getPage()->getWidth());
 		UT_sint32 srcX = 0;
 		UT_sint32 srcY = 0;
-		getFillType()->setWidthHeight(getGraphics(),bRec.width,bRec.height);
+		getFillType().setWidthHeight(getGraphics(),bRec.width,bRec.height);
 		getLeftTopOffsets(srcX,srcY);
-		if(getFillType()->getParent())
+		if(getFillType().getParent())
 		{
 			srcX += getX();
 			srcY += getY();
-			getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
+			getFillType().getParent()->Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 		else
 		{
-			getFillType()->Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
+			getFillType().Fill(getGraphics(),srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		}
 		if(getPage())
 		{
@@ -1067,10 +1067,10 @@ PP_PropertyMap::Line fp_CellContainer::getTopStyle (const fl_TableLayout * table
 	return line;
 }
 
-bool fp_CellContainer::isInNestedTable(void)
+bool fp_CellContainer::isInNestedTable(void) const
 {
 	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
-	fp_CellContainer * pTopCell = static_cast<fp_CellContainer *>(this);
+	const fp_CellContainer * pTopCell = static_cast<const fp_CellContainer *>(this);
 	UT_sint32 icount = 0;
 	while(pMaster && pMaster->getContainer() && !pMaster->getContainer()->isColumnType())
 	{
@@ -1091,7 +1091,7 @@ void fp_CellContainer::setBackground (const PP_PropertyMap::Background & style)
 	PP_PropertyMap::Background background = getBackground ();
 	if(background.m_t_background == PP_PropertyMap::background_solid)
 	{
-		getFillType()->setColor(background.m_color);
+		getFillType().setColor(background.m_color);
 	}
 }
 
@@ -1258,14 +1258,9 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 	xxx_UT_DEBUGMSG(("Doing drawlines for cell %x \n",this));
 	UT_return_if_fail(getPage());
 
-	bool bNested = false;
 	if(pBroke == NULL)
 	{
 		pBroke = static_cast<fp_TableContainer *>(getContainer());
-	}
-	if(isInNestedTable())
-	{ 
-		bNested = true;
 	}
 	if(pBroke && pBroke->getPage())
 	{
@@ -1393,7 +1388,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 		PP_PropertyMap::Line clineTop    = getTopStyle    (pTableLayout);
 		
 		UT_RGBColor white(255,255,255);
-		white = *pPage->getFillType()->getColor();
+		white = *pPage->getFillType().getColor();
 
 		//
 		// Might needs these later
@@ -2315,7 +2310,7 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * /*pLine*/)
  * This method returns true if the cell overlaps the supplied broken
  * table.
  */
-bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke)
+bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke) const
 {
 	UT_sint32 nextRow = m_iBottomAttach;
 	UT_sint32 yCellBot = 0;
@@ -2390,14 +2385,14 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		xxx_UT_DEBUGMSG(("brokenRect off page - bailing out \n"));
 		return;
 	}
-	if(getFillType()->getFillType() == FG_FILL_IMAGE && (getContainer() != NULL))
+	if(getFillType().getFillType() == FG_FILL_IMAGE && (getContainer() != NULL))
 	{
 		fl_DocSectionLayout * pDSL = getSectionLayout()->getDocSectionLayout();
 		if(pDSL && (bRec.height < pDSL->getActualColumnHeight()) && (bRec.height > pG->tlu(3)))
 		{
 			getSectionLayout()->setImageHeight(bRec.height);
 			getSectionLayout()->setImageWidth(bRec.width);
-			getFillType()->setWidthHeight(pG,bRec.width,bRec.height,true);
+			getFillType().setWidthHeight(pG,bRec.width,bRec.height,true);
 		}
 	}
 
@@ -2427,9 +2422,9 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	{
 		UT_sint32 srcX = 0;
 		UT_sint32 srcY = 0;
-		getFillType()->setWidthHeight(pG,bRec.width,bRec.height);
+		getFillType().setWidthHeight(pG,bRec.width,bRec.height);
 		getLeftTopOffsets(srcX,srcY);
-		getFillType()->Fill(pG,srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
+		getFillType().Fill(pG,srcX,srcY,bRec.left,bRec.top,bRec.width,bRec.height);
 		if(getPage())
 		{
 			getPage()->expandDamageRect(bRec.left,bRec.top,bRec.width,bRec.height);
@@ -5577,7 +5572,7 @@ bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCo
  * Return true if the supplied Cell and it's container are within this
  * broken container.
  */
-bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container * pCon)
+bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Container * pCon) const
 {
 //
 // OK A container in a cell is allowed in this broken table if it's
@@ -5595,7 +5590,7 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
     //
 	xxx_UT_DEBUGMSG(("isInBrokenTable %p pcell %p line %p\n",this,pCell,pCon));
 #if 1
- 	if(pCon->getMyBrokenContainer() == static_cast<fp_Container *>(this))
+ 	if(pCon->getMyBrokenContainer() == static_cast<const fp_Container *>(this))
  	{
 		xxx_UT_DEBUGMSG(("Already set to this %p\n",this));
  		return true;
@@ -5615,7 +5610,7 @@ bool fp_TableContainer::isInBrokenTable(fp_CellContainer * pCell, fp_Container *
 	}
 	if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 	{
-		fp_TableContainer * ppTab = static_cast<fp_TableContainer *>(pCon);
+		const fp_TableContainer * ppTab = static_cast<const fp_TableContainer *>(pCon);
 		xxx_UT_DEBUGMSG(("Nested table Y %d height %d yBottom %d contained in broken table height %d \n",ppTab->getY(),ppTab->getHeight(),ppTab->getYBottom(),getHeight()));
 		ppTab = static_cast<fp_TableContainer *>(ppTab->getNext());
 		if(ppTab)

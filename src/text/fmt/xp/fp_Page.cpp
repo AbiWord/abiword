@@ -119,9 +119,17 @@ fp_Page::~fp_Page()
 /*!
  * FillType class for the page.
  */
-fg_FillType * fp_Page::getFillType(void)
+const fg_FillType & fp_Page::getFillType(void) const
 {
-	return &m_FillType;
+	return m_FillType;
+}
+
+/*!
+ * FillType class for the page.
+ */
+fg_FillType & fp_Page::getFillType(void)
+{
+	return m_FillType;
 }
 
 bool fp_Page::isEmpty(void) const
@@ -156,7 +164,8 @@ void fp_Page::setPageNumberInFrames(void)
 /*!
  * Fill a vector with all the layouts referenced from this page.
  */
-void fp_Page::getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts){
+void fp_Page::getAllLayouts(UT_GenericVector<fl_ContainerLayout *> & AllLayouts) const
+{
 	fp_Column * pCol = NULL;
 	UT_sint32 i = 0;
 	fl_ContainerLayout * pPrevCL = NULL;
@@ -275,7 +284,6 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 	UT_sint32 nWrapped = 0;
 	fp_Container * pFirst2 = NULL;
 	fl_BlockLayout * pFirstBL = NULL;
-	bool bEmptySpace = false;
 	for(i=0; i < static_cast<UT_sint32>(countColumnLeaders()); i++)
 	{
 		fp_Column * pCol = getNthColumnLeader(i);
@@ -1144,7 +1152,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 		UT_sint32 width = getWidth();
 		UT_sint32 srcX = 0;
 		UT_sint32 srcY = 0;
-		getFillType()->Fill(pDA->pG,srcX,srcY,xmin,ymin,width,height);
+		getFillType().Fill(pDA->pG,srcX,srcY,xmin,ymin,width,height);
 	}
 
     _drawCropMarks(pDA);

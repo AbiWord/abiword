@@ -143,8 +143,8 @@ void fp_TOCContainer::clearScreen(void)
 		getPage()->getScreenOffsets(pCol,x,y);
 		x += srcX;
 		y += srcY;
-		getFillType()->setWidthHeight(getGraphics(),iWidth,iHeight);
-		getFillType()->Fill(getGraphics(),srcX,srcY,x,y,iWidth,iHeight);
+		getFillType().setWidthHeight(getGraphics(),iWidth,iHeight);
+		getFillType().Fill(getGraphics(),srcX,srcY,x,y,iWidth,iHeight);
 		xxx_UT_DEBUGMSG(("x %d y %d width %d height %d \n",x,y,iWidth,iHeight));
 		return;
 	}
@@ -837,13 +837,11 @@ void fp_TOCContainer::deleteBrokenTOCs(bool bClearFirst)
 	}
 	fp_TOCContainer * pBroke = NULL;
 	fp_TOCContainer * pNext = NULL;
-	fp_TOCContainer * pLast = NULL;
 	pBroke = getFirstBrokenTOC();
 	bool bFirst = true;
 	while(pBroke )
 	{
 		pNext = static_cast<fp_TOCContainer *>(pBroke->getNext());
-		pLast = pBroke;
 		if(!bFirst)
 		{
 		        fp_Container * pConBroke =  pBroke->getContainer();

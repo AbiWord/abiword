@@ -247,7 +247,7 @@ void XAP_Draw_Symbol::draw(const UT_Rect *clip)
 {
 	UT_UNUSED(clip);
 	UT_ASSERT(m_gc);
-	UT_uint32 wwidth, wheight, yoff, xoff, x, y;
+	UT_uint32 wwidth, wheight, /*yoff, xoff,*/ x, y;
 	UT_sint32 i;
 
 	GR_Painter painter(m_gc);
@@ -256,8 +256,8 @@ void XAP_Draw_Symbol::draw(const UT_Rect *clip)
 	wheight = m_drawHeight;
 	UT_uint32 tmpw = wwidth / 32;
 	UT_uint32 tmph = wheight / 7;
-	yoff = wheight / (2 * 7);
-	xoff = wwidth / (2 * 32);
+	//	yoff = wheight / (2 * 7);
+	//	xoff = wwidth / (2 * 32);
 	painter.clearArea(0, 0, wwidth, wheight);
 	int pos = 0;
 
@@ -378,8 +378,8 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	//
 {
 	UT_ASSERT(m_areagc);
-	UT_uint32 wwidth,wheight,x,y,cx,cy,px,py,swidth,sheight;
-	UT_uint32 cx1,cy1,px1,py1;
+	UT_uint32 wwidth,wheight,x,y,cx,cy,px,py /*,swidth,sheight*/;
+	UT_uint32 /*cx1,cy1,*/px1,py1;
 
 	GR_Painter areaPainter(m_areagc);
 	GR_Painter painter(m_gc);
@@ -406,8 +406,8 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	//
 	// Calculate the cordinates of the current and previous symbol
 	// along with the widths of the appropriate boxes.
-	swidth = m_drawWidth;
-	sheight = m_drawHeight;
+	//	swidth = m_drawWidth;
+	//	sheight = m_drawHeight;
 	UT_uint32 tmpw = m_drawWidth / 32;
 	UT_uint32 tmph = m_drawHeight / 7;
 
@@ -417,8 +417,8 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	cx *= tmpw;
 	cy *= tmph;
 	
-	cx1 = cx + tmpw;
-	cy1 = cy + tmph;
+	//	cx1 = cx + tmpw;
+	//	cy1 = cy + tmph;
 
 	calculatePosition(p, px, py);
 	UT_sint32 wp = m_gc->measureUnRemappedChar(p);

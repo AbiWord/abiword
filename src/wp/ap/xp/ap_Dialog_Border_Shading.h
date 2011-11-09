@@ -119,11 +119,12 @@ public:
 															 UT_uint32 width,
 															 UT_uint32 height);
 	UT_PropVector &						getPropVector() { return m_vecProps; }
+	const UT_PropVector &						getPropVector() const { return m_vecProps; }
 
-	bool								getTopToggled();
-	bool								getBottomToggled();
-	bool								getRightToggled();
-	bool								getLeftToggled();
+	bool								getTopToggled() const;
+	bool								getBottomToggled() const;
+	bool								getRightToggled() const;
+	bool								getLeftToggled() const;
 
 protected:
 	guint                               _findClosestThickness(const char *) const;
@@ -143,7 +144,7 @@ protected:
 	double      						m_dShadingOffset[BORDER_SHADING_NUMOFFSETS];
 		
 private:
-	bool								_getToggleButtonStatus(const char * lineStyle);
+	bool								_getToggleButtonStatus(const char * lineStyle) const;
 
 	bool								m_bSettingsChanged;
 	PT_DocPosition                      m_iOldPos;

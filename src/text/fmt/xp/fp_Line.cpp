@@ -302,7 +302,7 @@ void fp_Line::drawBorders(GR_Graphics * pG)
 /*!
  * The left most esge of the paragraph relative to it's container.
  */
-UT_sint32 fp_Line::getLeftEdge(void)
+UT_sint32 fp_Line::getLeftEdge(void) const
 {
         if(!getBlock())
 	     return 0;
@@ -318,7 +318,7 @@ UT_sint32 fp_Line::getLeftEdge(void)
 /*!
  * The left most esge of the paragraph relative to it's container.
  */
-UT_sint32 fp_Line::getRightEdge(void)
+UT_sint32 fp_Line::getRightEdge(void) const
 {
 	fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(getContainer());
 	if(!pVCon)
@@ -443,7 +443,7 @@ UT_sint32 fp_Line::calcRightBorderThick(void)
   return m_iRightThick;
 }
 
-bool fp_Line::hasBordersOrShading(void)
+bool fp_Line::hasBordersOrShading(void) const
 {
   if(getBlock() && (getBlock()->hasBorders() || (getBlock()->getPattern() > 0)))
   {
@@ -482,7 +482,7 @@ UT_sint32 fp_Line::calcBotBorderThick(void)
 
 void fp_Line::calcBorderThickness(void)
 {
-  UT_sint32 iOldHeight = getHeight();
+  //  UT_sint32 iOldHeight = getHeight();
   calcLeftBorderThick();
   calcRightBorderThick();
   calcTopBorderThick();
@@ -925,11 +925,11 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	}
 	if(pContainer != NULL)
 	{
-		getFillType()->setParent(pContainer->getFillType());
+		getFillType().setParent(&pContainer->getFillType());
 	}
 	else
 	{
-		getFillType()->setParent(NULL);
+		getFillType().setParent(NULL);
 	}
 
 	fp_Container::setContainer(pContainer);
@@ -1323,7 +1323,7 @@ void fp_Line::setBlock(fl_BlockLayout * pBlock)
     if(m_pBlock && (m_pBlock->getPattern() > 0))
     {
         UT_RGBColor c = m_pBlock->getShadingingForeColor();
-        getFillType()->setColor(c);
+        getFillType().setColor(c);
     }
 }
 
@@ -1565,7 +1565,7 @@ void fp_Line::clearScreen(void)
 	{
 		return;
 	}
-	getFillType()->setIgnoreLineLevel(true);
+	getFillType().setIgnoreLineLevel(true);
 	if(count)
 	{
 		fp_Run* pRun;
@@ -1620,7 +1620,7 @@ void fp_Line::clearScreen(void)
 			// revision underlines
 			if(getPage() == NULL)
 			{
-			        getFillType()->setIgnoreLineLevel(false);
+			        getFillType().setIgnoreLineLevel(false);
 				return;
 			}
 //			UT_sint32 iExtra = getGraphics()->getFontAscent()/2;
@@ -1658,7 +1658,7 @@ void fp_Line::clearScreen(void)
 			}
 		}
 	}
-	getFillType()->setIgnoreLineLevel(false);
+	getFillType().setIgnoreLineLevel(false);
 }
 
 /*!
@@ -1675,7 +1675,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 	if(count > 0 && !pRun->getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 		return;
 
-	getFillType()->setIgnoreLineLevel(true);
+	getFillType().setIgnoreLineLevel(true);
 
 	// not sure what the reason for this is (Tomas, Oct 25, 2003)
 	fp_Run * pLeftVisualRun = pRun;
@@ -1797,7 +1797,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		
 		UT_sint32 xoffLine, yoffLine;
 #if DEBUG
-		UT_sint32 oldheight = getHeight();
+		//UT_sint32 oldheight = getHeight();
 #endif
 		recalcHeight();
 #if DEBUG
@@ -1830,7 +1830,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		if(getPage() == NULL)
 		{
 			xxx_UT_DEBUGMSG(("pl_Line _doClear no Page \n"));
-			getFillType()->setIgnoreLineLevel(false);
+			getFillType().setIgnoreLineLevel(false);
 			return;
 		}
 
@@ -1944,7 +1944,7 @@ void fp_Line::_doClearScreenFromRunToEnd(UT_sint32 runIndex)
 		getBlock()->setNeedsRedraw();
 		setNeedsRedraw();
 	}
-	getFillType()->setIgnoreLineLevel(false);
+	getFillType().setIgnoreLineLevel(false);
 }
 
 /*!
@@ -2070,7 +2070,7 @@ void fp_Line::draw(GR_Graphics* pG)
 	    UT_sint32 xs = pVRec->left + getLeftEdge();
 	    UT_sint32 width = getRightEdge() - getLeftEdge(); 
 	    UT_sint32 ys = my_yoff;
-	    getFillType()->Fill(pG,xs,ys,xs,ys,width,getHeight());
+	    getFillType().Fill(pG,xs,ys,xs,ys,width,getHeight());
 	    xxx_UT_DEBUGMSG(("pG Fill at y %d and to width %d \n",ys,getMaxWidth()));
 	}
 	for (int i=0; i < count; i++)
@@ -2153,7 +2153,7 @@ void fp_Line::draw(dg_DrawArgs* pDA)
 	      UT_sint32 width = getRightEdge() - getLeftEdge();
 	      if(!pDA->bDirtyRunsOnly)
 	      {
-		    getFillType()->Fill(pDA->pG,x,y,x,y,width,getHeight());
+		    getFillType().Fill(pDA->pG,x,y,x,y,width,getHeight());
 		    xxx_UT_DEBUGMSG(("Fill at y %d and to width %d \n",y,getMaxWidth()));
 	      }
 	}
@@ -3462,7 +3462,6 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 	}
         calcLeftBorderThick();
 	UT_sint32 iX = m_pBlock->getLeftMargin();
-	UT_sint32 iX_orig = iX;
 	UT_sint32 iMaxWidth = getContainer()->getWidth();
 
 	UT_BidiCharType iBlockDir = m_pBlock->getDominantDirection();

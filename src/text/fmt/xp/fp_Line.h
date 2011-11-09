@@ -104,8 +104,8 @@ public:
 	virtual void				setContainer(fp_Container*);
 	void		        setBlock(fl_BlockLayout * pBlock);
 
-	fp_Container *              getColumn(void);
-	fp_Page *                   getPage(void);
+	fp_Container *              getColumn(void); // FIXME see if we can make it const
+	fp_Page *                   getPage(void);  // FIXME see if we can make it const
 
 	virtual void        setWidth(UT_sint32 ){}
 	virtual void        setHeight(UT_sint32 i);
@@ -230,10 +230,10 @@ public:
 	bool        canDrawTopBorder(void) const;
 	bool        canDrawBotBorder(void) const;
 	void        drawBorders(GR_Graphics * pG);
-	UT_sint32              getLeftEdge(void);
-	UT_sint32              getRightEdge(void);
-	bool        getAbsLeftRight(UT_sint32& left ,UT_sint32& right);
-	bool        hasBordersOrShading(void);
+	UT_sint32              getLeftEdge(void) const;
+	UT_sint32              getRightEdge(void) const;
+	bool        getAbsLeftRight(UT_sint32& left ,UT_sint32& right); // FIXME try to make it const
+	bool        hasBordersOrShading(void) const;
 #ifdef FMT_TEST
 	void		__dump(FILE * fp) const;
 #endif

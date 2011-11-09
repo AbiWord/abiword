@@ -86,7 +86,7 @@ void fp_VerticalContainer::setWidth(UT_sint32 iWidth)
 	if(getContainerType() != FP_CONTAINER_COLUMN)
 	{
 	    getSectionLayout()->setImageWidth(iWidth);
-	    getFillType()->setWidth(getGraphics(),iWidth);
+	    getFillType().setWidth(getGraphics(),iWidth);
 	}
 
 	// TODO we really need to force a re-line-break operation on every block herein
@@ -144,7 +144,7 @@ void fp_VerticalContainer::setHeight(UT_sint32 iHeight)
 	  {
 	      getSectionLayout()->setImageHeight(getMaxHeight()); // was iHeight
 	  }
-	  getFillType()->setHeight(getGraphics(),iHeight);
+	  getFillType().setHeight(getGraphics(),iHeight);
 	}
 }
 
@@ -1834,11 +1834,11 @@ void fp_Column::setPage(fp_Page * pPage)
 {
 	if(pPage == NULL)
 	{
-		getFillType()->setParent(NULL);
+		getFillType().setParent(NULL);
 	}
 	else
 	{
-		getFillType()->setParent(pPage->getFillType());
+		getFillType().setParent(&pPage->getFillType());
 	}
 	m_pPage = pPage;
 }
@@ -1925,7 +1925,6 @@ void fp_Column::layout(void)
 	clearWrappedLines();
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY2 = 0;
-	UT_sint32 iOldY  =-1;
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	fp_Line * pLastLine = NULL;
 	fp_Container *pContainer = NULL;
@@ -2004,10 +2003,8 @@ void fp_Column::layout(void)
 //
 // fxime comeback and re-evaluate this
 //		UT_ASSERT(iY>=0);
-//		UT_ASSERT(iOldY < iY);
 		pContainer->setY(iY);
 //		UT_ASSERT(iY == pContainer->getY());
-		iOldY = iY;
 		//UT_ASSERT(pContainer->getY() == iY);
 //
 // This is to speedup redraws.
@@ -2341,7 +2338,7 @@ void fp_ShadowContainer::setPage(fp_Page *pPage)
 	m_pPage = pPage;
 	if(pPage)
 	{
-		getFillType()->setParent(pPage->getFillType());
+		getFillType().setParent(&pPage->getFillType());
 	}
 }
 
@@ -2479,7 +2476,7 @@ void fp_ShadowContainer::clearHdrFtrBoundaries(void)
 {
 	if(!m_bHdrFtrBoxDrawn)
 		return;
-	const UT_RGBColor * pClr = getPage()->getFillType()->getColor();
+	const UT_RGBColor * pClr = getPage()->getFillType().getColor();
 	getGraphics()->setLineWidth(getGraphics()->tlu(1));
 	getGraphics()->setColor(*pClr);
 //

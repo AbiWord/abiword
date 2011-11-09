@@ -48,8 +48,8 @@ public:
     IE_Exp_HTML_NavigationHelper(PD_Document *pDocument, 
             const UT_UTF8String &baseName);
     
-    UT_UTF8String getBookmarkFilename(const UT_UTF8String &id);
-    UT_UTF8String getFilenameByPosition(PT_DocPosition position);
+    UT_UTF8String getBookmarkFilename(const UT_UTF8String &id) const;
+    UT_UTF8String getFilenameByPosition(PT_DocPosition position) const;
     inline int getMinTOCLevel() const { return m_minTOCLevel; }
     inline int getMinTOCIndex() const { return m_minTOCIndex; }
     inline std::map<UT_UTF8String, UT_UTF8String> & getBookmarks() 

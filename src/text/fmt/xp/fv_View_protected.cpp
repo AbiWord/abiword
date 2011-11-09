@@ -4414,10 +4414,10 @@ void FV_View::_fixInsertionPointCoords(fv_CaretProps * pCP) const
 							pCP->m_yPoint, pCP->m_xPoint2, pCP->m_yPoint2, 
 							pCP->m_iPointHeight, pCP->m_bPointDirection, 
 							&pBlock, &pRun);
-		fp_Page * pPage = getCurrentPage();
+		const fp_Page * pPage = getCurrentPage();
 		const UT_RGBColor * pClr = NULL;
 		if (pPage)
-			pClr = pPage->getFillType()->getColor();
+			pClr = pPage->getFillType().getColor();
 		UT_sint32 yoff = 0;
 		if(pCP->m_yPoint < 0)
 		{
@@ -4490,7 +4490,7 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 		pPage = getCurrentPage();
 		const UT_RGBColor * pClr = NULL;
 		if (pPage)
-			pClr = pPage->getFillType()->getColor();
+			pClr = pPage->getFillType().getColor();
 		m_pG->allCarets()->getBaseCaret()->setCoords(m_xPoint, m_yPoint, m_iPointHeight,
 									m_xPoint2, m_yPoint2, m_iPointHeight, 
 									m_bPointDirection, pClr);
@@ -4501,7 +4501,7 @@ void FV_View::_fixInsertionPointCoords(bool bIgnoreAll)
 		pPage = getCurrentPage();
 		const UT_RGBColor * pClr = NULL;
 		if (pPage)
-			pClr = pPage->getFillType()->getColor();
+			pClr = pPage->getFillType().getColor();
 		UT_sint32 yoff = 0;
 		if(m_yPoint < 0)
 		{
@@ -4621,7 +4621,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	// who would attempt to change those assumptions: they are very deeply
 	// embedded throughout AbiWord.
 	
-	UT_sint32 iPageWidth, iPageHeight;
+	UT_sint32 iPageWidth = 0, iPageHeight = 0;
 	UT_sint32 iFirstVisiblePageNumber = -1;
 	fl_DocSectionLayout *pDSL = NULL;
 
@@ -4662,10 +4662,10 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	while(pPage)
 	{
-		UT_sint32 adjustedTop; // Top line of the page that defines the page's top margin,
+		UT_sint32 adjustedTop = 0; // Top line of the page that defines the page's top margin,
 				       // relative to the top of the screen and in layout units
 		UT_sint32 adjustedBottom;
-		UT_sint32 adjustedLeft;
+		UT_sint32 adjustedLeft = 0;
 		UT_sint32 adjustedRight;
 
 		UT_sint32 iPageXOffset;
@@ -4717,7 +4717,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		// Redraw the page background, if necessary
 		if(!bDirtyRunsOnly || (pPage->needsRedraw() && (getViewMode() == VIEW_PRINT)))
 		{
-			const UT_RGBColor * pClr = pPage->getFillType()->getColor();
+			const UT_RGBColor * pClr = pPage->getFillType().getColor();
 			if(getViewMode() == VIEW_NORMAL || getViewMode() == VIEW_WEB) // Normal/web view pages take up the whole window
 				painter.fillRect(*pClr, adjustedRight, adjustedTop, getWindowWidth() - adjustedRight + m_pG->tlu(1), iPageHeight);
 			else

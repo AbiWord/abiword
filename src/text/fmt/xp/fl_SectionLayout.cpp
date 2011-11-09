@@ -363,7 +363,6 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 {
     fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
 	bool bres = true;
-	FV_View * pView = NULL;
 	UT_ASSERT(m_pDoc->getAllowChangeInsPoint());
 	if(pHFSL)
 	{
@@ -373,7 +372,6 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 		}
 		else
 		{
-			pView = m_pLayout->getView();
 			// Insert the block at the beginning of the section
 			fl_BlockLayout*	pNewBL = static_cast<fl_BlockLayout *>(insert(sdh, NULL, pcrx->getIndexAP(),FL_CONTAINER_BLOCK));
 			if (!pNewBL)
@@ -2832,7 +2830,7 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 	if(m_pFirstOwnedPage == NULL)
 		m_pFirstOwnedPage = pPage;
 	fp_Page * pPrev = m_pFirstOwnedPage;
-	pPage->getFillType()->setDocLayout(getDocLayout());
+	pPage->getFillType().setDocLayout(getDocLayout());
 	setImageWidth(pPage->getWidth());
 	setImageHeight(pPage->getHeight());
 	if(m_pGraphicImage)
@@ -2847,16 +2845,16 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 			pImage->scaleImageTo(getDocLayout()->getGraphics(),rec);
 			m_pImageImage = pImage;
 		}
-		pPage->getFillType()->setImagePointer(&m_pGraphicImage,&m_pImageImage);
+		pPage->getFillType().setImagePointer(&m_pGraphicImage,&m_pImageImage);
 	}
 	else if(m_sPaperColor.size() > 0)
 	{
-		pPage->getFillType()->setColor(m_sPaperColor.c_str());
+		pPage->getFillType().setColor(m_sPaperColor.c_str());
 	}
 	else if(m_sScreenColor.size() > 0)
 	{
-		pPage->getFillType()->setTransColor(m_sScreenColor.c_str());
-		pPage->getFillType()->markTransparentForPrint();
+		pPage->getFillType().setTransColor(m_sScreenColor.c_str());
+		pPage->getFillType().markTransparentForPrint();
 	}		
 
 //

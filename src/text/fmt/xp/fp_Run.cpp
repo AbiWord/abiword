@@ -218,9 +218,14 @@ UT_sint32 fp_Run::getDrawingWidth() const
 }
 
 
-fg_FillType * fp_Run::getFillType(void)
+fg_FillType & fp_Run::getFillType(void)
 {
-	return &m_FillType;
+	return m_FillType;
+}
+
+const fg_FillType & fp_Run::getFillType(void) const
+{
+	return m_FillType;
 }
 
 bool fp_Run::isInSelectedTOC(void)
@@ -539,7 +544,7 @@ fp_Run::_findPrevPropertyRun(void) const
 	return pRun;
 }
 
-bool fp_Run::displayAnnotations(void)
+bool fp_Run::displayAnnotations(void) const
 {
 	if(!getBlock())
 		return false;
@@ -548,7 +553,7 @@ bool fp_Run::displayAnnotations(void)
 	return getBlock()->getDocLayout()->displayAnnotations();
 }
 
-bool fp_Run::displayRDFAnchors(void)
+bool fp_Run::displayRDFAnchors(void) const
 {
 	if(!getBlock())
 		return false;
@@ -807,7 +812,7 @@ void fp_Run::setLine(fp_Line* pLine)
 	m_pLine = pLine;
 	if(pLine != NULL)
 	{
-		m_FillType.setParent(pLine->getFillType());
+		m_FillType.setParent(&pLine->getFillType());
 	}
 	else
 	{
@@ -1039,7 +1044,7 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 		return;
 	}
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing Run_ClearScreen in run %x \n",this));
-	getLine()->getFillType()->setIgnoreLineLevel(true);
+	getLine()->getFillType().setIgnoreLineLevel(true);
 	if(getLine()->getContainer() != NULL)
 	{
 		if(getLine()->getContainer()->getPage() != 0)
@@ -1113,7 +1118,7 @@ void fp_Run::Run_ClearScreen(bool bFullLineHeightRect)
 	if(pLine)
     {
 		pLine->setNeedsRedraw();
-		pLine->getFillType()->setIgnoreLineLevel(false);
+		pLine->getFillType().setIgnoreLineLevel(false);
 	}
 
 	xxx_UT_DEBUGMSG(("fp_Run: clearscreen applied \n"));
@@ -1918,7 +1923,7 @@ void fp_Run::setUnderlineXoff(UT_sint32 xoff)
 	m_iUnderlineXoff = xoff;
 }
 
-UT_sint32 fp_Run::getUnderlineXoff(void)
+UT_sint32 fp_Run::getUnderlineXoff(void) const
 {
 	return m_iUnderlineXoff;
 }
@@ -1928,7 +1933,7 @@ void fp_Run::setOverlineXoff(UT_sint32 xoff)
 	m_iOverlineXoff = xoff;
 }
 
-UT_sint32 fp_Run::getOverlineXoff(void)
+UT_sint32 fp_Run::getOverlineXoff(void) const
 {
 	return m_iOverlineXoff;
 }
@@ -1938,7 +1943,7 @@ void fp_Run::setMaxUnderline(UT_sint32 maxh)
 	m_imaxUnderline = maxh;
 }
 
-UT_sint32 fp_Run::getMaxUnderline(void)
+UT_sint32 fp_Run::getMaxUnderline(void) const
 {
 	return m_imaxUnderline;
 }
@@ -1948,17 +1953,17 @@ void fp_Run::setMinOverline(UT_sint32 minh)
 	m_iminOverline = minh;
 }
 
-UT_sint32 fp_Run::getMinOverline(void)
+UT_sint32 fp_Run::getMinOverline(void) const
 {
 	return m_iminOverline;
 }
 
-UT_sint32 fp_Run::getLinethickness( void)
+UT_sint32 fp_Run::getLinethickness( void) const
 {
 	return m_iLinethickness;
 }
 
-UT_sint32 fp_Run::getToplineThickness(void)
+UT_sint32 fp_Run::getToplineThickness(void) const
 {
 	return UT_convertToLogicalUnits("0.8pt");
 }
@@ -5840,7 +5845,7 @@ void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
 
 // translates logical position in a run into visual position
 // (will also translate correctly visual -> logical)
-UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos)
+UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos) const
 {
     if(getVisDirection() == UT_BIDI_RTL) //rtl needs translation
     {
@@ -5851,7 +5856,7 @@ UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos)
 
 //translates a visual position in a span of length iLen to logical pos
 //or vice versa
-UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen)
+UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen) const
 {
     if(getVisDirection() == UT_BIDI_RTL) //rtl needs translation
     {
@@ -5861,7 +5866,7 @@ UT_uint32 fp_Run::getVisPosition(UT_uint32 iLogPos, UT_uint32 iLen)
 }
 
 //returns the logical offset of the first visual character
-UT_uint32 fp_Run::getOffsetFirstVis()
+UT_uint32 fp_Run::getOffsetFirstVis() const
 {
     if(getVisDirection() == UT_BIDI_RTL) //rtl, requires translation
     {
@@ -5872,7 +5877,7 @@ UT_uint32 fp_Run::getOffsetFirstVis()
 
 //translates visual offset to logical one, can be also used for translation
 //in the other direction
-UT_uint32 fp_Run::getOffsetLog(UT_uint32 iVisOff)
+UT_uint32 fp_Run::getOffsetLog(UT_uint32 iVisOff) const
 {
     if(getVisDirection() == UT_BIDI_RTL) //rtl needs translation
     {
@@ -5928,7 +5933,7 @@ void fp_Run::setDirection(UT_BidiCharType iDir)
 }
 
 // returns the direction with which the run is displayed,
-UT_BidiCharType fp_Run::getVisDirection()
+UT_BidiCharType fp_Run::getVisDirection() const
 {
 #ifndef NO_BIDI_SUPPORT
  	FV_View * pView = _getView();

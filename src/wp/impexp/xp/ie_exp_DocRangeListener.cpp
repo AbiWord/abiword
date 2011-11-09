@@ -201,9 +201,6 @@ bool  IE_Exp_DocRangeListener::populate(PL_StruxFmtHandle /* sfh */,
 	}
 	const char ** allAtts= NULL;
 	assembleAtts(atts, props, allAtts);
-	UT_sint32 i = 0;
-	const char * szKey = NULL;
-	const char * szVal = NULL;
 	bool bAppendFmt = (m_iLastAP != indexAP);
 	m_iLastAP = indexAP;
     

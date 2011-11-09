@@ -430,7 +430,7 @@ UT_Error IE_Exp_HTML::_writeDocument()
     return UT_OK;
 }
 
-UT_Error IE_Exp_HTML::_writeDocument(bool bClipBoard, bool bTemplateBody)
+UT_Error IE_Exp_HTML::_writeDocument(bool /*bClipBoard*/, bool /*bTemplateBody*/)
 {
     if (m_exp_opt.bSplitDocument && m_pNavigationHelper->hasTOC()
         && !m_exp_opt.bMultipart)

@@ -953,12 +953,12 @@ void FL_DocLayout::setRebuiltBlock(fl_BlockLayout *pBlock)
   m_pRebuiltBlockLayout = pBlock; 
 }
 
-fl_BlockLayout * FL_DocLayout::getRebuiltBlock(void)
+fl_BlockLayout * FL_DocLayout::getRebuiltBlock(void) const
 {
   return m_pRebuiltBlockLayout;
 }
 
-fp_Container * FL_DocLayout::getSavedContainerPointer(void)
+fp_Container * FL_DocLayout::getSavedContainerPointer(void) const
 {
   return m_pSavedContainer;
 }
@@ -1153,7 +1153,7 @@ void FL_DocLayout::setView(FV_View* pView)
  * of the decimal footnote value based on the FootnoteType passed as a 
  * parameter
  */
-void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType)
+void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType) const
 {
         fl_AutoNum autoCalc(0,0,NUMBERED_LIST,0,NULL,NULL,getDocument(),getView());
 	switch (iFootType)
@@ -1249,7 +1249,7 @@ void FL_DocLayout::getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, Fo
 /*!
  * This simply returns the number of footnotes in the document.
  */
-UT_uint32 FL_DocLayout::countFootnotes(void)
+UT_uint32 FL_DocLayout::countFootnotes(void) const
 {
 	return m_vecFootnotes.getItemCount();
 }
@@ -1264,7 +1264,7 @@ void FL_DocLayout::addFootnote(fl_FootnoteLayout * pFL)
 /*!
  * get a pointer to the Nth footnote layout in the vector remembering them.
  */
-fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i)
+fl_FootnoteLayout * FL_DocLayout::getNthFootnote(UT_sint32 i) const
 {
 	UT_ASSERT(i>=0);
 	if(i >= m_vecFootnotes.getItemCount())
@@ -1293,7 +1293,7 @@ void FL_DocLayout::removeFootnote(fl_FootnoteLayout * pFL)
 /*!
  * This method returns the footnote layout associated with the input PID
  */
-fl_FootnoteLayout * FL_DocLayout::findFootnoteLayout(UT_uint32 footpid)
+fl_FootnoteLayout * FL_DocLayout::findFootnoteLayout(UT_uint32 footpid) const
 {
 	UT_sint32 i = 0;
 	fl_FootnoteLayout * pTarget = NULL;
@@ -1314,7 +1314,7 @@ fl_FootnoteLayout * FL_DocLayout::findFootnoteLayout(UT_uint32 footpid)
  * for calculating the footnote's value and positioning it in a footnote 
  * section
  */
-UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid)
+UT_sint32 FL_DocLayout::getFootnoteVal(UT_uint32 footpid) const
 {
 	UT_sint32 i =0;
 	UT_sint32 pos = m_iFootnoteVal;
@@ -1381,7 +1381,7 @@ static UT_sint32 compareLayouts(const void * ppCL1, const void * ppCL2)
 /*!
  * This simply returns the number of annotations in the document.
  */
-UT_uint32 FL_DocLayout::countAnnotations(void)
+UT_uint32 FL_DocLayout::countAnnotations(void) const
 {
 	return m_vecAnnotations.getItemCount();
 }
@@ -1437,7 +1437,7 @@ void FL_DocLayout::addAnnotation(fl_AnnotationLayout * pFL)
 /*!
  * get a pointer to the Nth annotation layout in the vector remembering them.
  */
-fl_AnnotationLayout * FL_DocLayout::getNthAnnotation(UT_sint32 i)
+fl_AnnotationLayout * FL_DocLayout::getNthAnnotation(UT_sint32 i) const
 {
 	UT_ASSERT(i>=0);
 	if(i >= m_vecAnnotations.getItemCount())
@@ -1478,7 +1478,7 @@ void FL_DocLayout::removeAnnotation(fl_AnnotationLayout * pFL)
 /*!
  * This method returns the annotation layout associated with the input PID
  */
-fl_AnnotationLayout * FL_DocLayout::findAnnotationLayout(UT_uint32 annpid)
+fl_AnnotationLayout * FL_DocLayout::findAnnotationLayout(UT_uint32 annpid) const
 {
 	UT_sint32 i = 0;
 	fl_AnnotationLayout * pTarget = NULL;
@@ -1499,7 +1499,7 @@ fl_AnnotationLayout * FL_DocLayout::findAnnotationLayout(UT_uint32 annpid)
  * for calculating the annotionation positioning it in a annotation 
  * section
  */
-UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid)
+UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid) const
 {
 	UT_sint32 i =0;
 	UT_sint32 pos = 0;
@@ -1523,7 +1523,7 @@ UT_sint32 FL_DocLayout::getAnnotationVal(UT_uint32 annpid)
  * The method returns the doc section layout before which the endnotes are 
  * inserted.
  */
-fl_DocSectionLayout * FL_DocLayout::getDocSecForEndnote(fp_EndnoteContainer * pECon)
+fl_DocSectionLayout * FL_DocLayout::getDocSecForEndnote(fp_EndnoteContainer * pECon) const
 {
 	fl_DocSectionLayout *pDSL = NULL;
 	if(getPlaceEndAtSecEnd())
@@ -1674,7 +1674,7 @@ void FL_DocLayout::insertEndnoteContainer(fp_EndnoteContainer * pECon)
 /*!
  * This simply returns the number of footnotes in the document.
  */
-UT_uint32 FL_DocLayout::countEndnotes(void)
+UT_uint32 FL_DocLayout::countEndnotes(void) const
 {
 	return m_vecEndnotes.getItemCount();
 }
@@ -1689,7 +1689,7 @@ void FL_DocLayout::addEndnote(fl_EndnoteLayout * pFL)
 /*!
  * get a pointer to the Nth footnote layout in the vector remembering them.
  */
-fl_EndnoteLayout * FL_DocLayout::getNthEndnote(UT_sint32 i)
+fl_EndnoteLayout * FL_DocLayout::getNthEndnote(UT_sint32 i) const
 {
 	UT_ASSERT(i>=0);
 	if(i >= m_vecEndnotes.getItemCount())
@@ -1718,7 +1718,7 @@ void FL_DocLayout::removeEndnote(fl_EndnoteLayout * pFL)
 /*!
  * This method returns the footnote layout associated with the input PID
  */
-fl_EndnoteLayout * FL_DocLayout::findEndnoteLayout(UT_uint32 footpid)
+fl_EndnoteLayout * FL_DocLayout::findEndnoteLayout(UT_uint32 footpid) const
 {
 	UT_sint32 i = 0;
 	fl_EndnoteLayout * pTarget = NULL;
@@ -1739,7 +1739,7 @@ fl_EndnoteLayout * FL_DocLayout::findEndnoteLayout(UT_uint32 footpid)
  * for calculating the Endnote's value and positioning it in a footnote 
  * section
  */
-UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid)
+UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid) const
 {
 	UT_sint32 i =0;
 	UT_sint32 pos = m_iEndnoteVal;
@@ -1751,12 +1751,6 @@ UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid)
 	}
 	PT_DocPosition posTarget = pTarget->getDocPosition();
 	fl_DocSectionLayout * pDocSecTarget = pTarget->getDocSectionLayout();
-	fp_Container * pCon = pTarget->getFirstContainer();
-	fp_Page * pPageTarget = NULL;
-	if(pCon)
-	{
-		pPageTarget = pCon->getPage();
-	}
 	for(i=0; i<m_vecEndnotes.getItemCount(); i++)
 	{
 		pFL = getNthEndnote(i);
@@ -1785,18 +1779,18 @@ UT_sint32 FL_DocLayout::getEndnoteVal(UT_uint32 footpid)
 //--------------------------------------------------------------------
 //
 
-UT_sint32 FL_DocLayout::getNumTOCs(void)
+UT_sint32 FL_DocLayout::getNumTOCs(void) const
 {
 	return m_vecTOC.getItemCount();
 }
 
-fl_TOCLayout * FL_DocLayout::getNthTOC(UT_sint32 i)
+fl_TOCLayout * FL_DocLayout::getNthTOC(UT_sint32 i) const
 {
 	if( i >= getNumTOCs())
 	{
 		return NULL;
 	}
-	return static_cast<fl_TOCLayout *>(m_vecTOC.getNthItem(i));
+	return m_vecTOC.getNthItem(i);
 }
 
 void FL_DocLayout::recalculateTOCFields(void)
@@ -1890,7 +1884,7 @@ bool FL_DocLayout::removeBlockFromTOC(fl_BlockLayout *pBlock)
 /*!
  * returns true if the block is in at least one TOC.
  */
-bool FL_DocLayout::isBlockInTOC(fl_BlockLayout * pBlock)
+bool FL_DocLayout::isBlockInTOC(fl_BlockLayout * pBlock) const
 {
 	UT_sint32 count = getNumTOCs();
 	if(count == 0)
@@ -1915,7 +1909,7 @@ bool FL_DocLayout::isBlockInTOC(fl_BlockLayout * pBlock)
  * Return false if no matching block were found.
  * true otherwise
  */
-bool FL_DocLayout::getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock, UT_GenericVector<fl_BlockLayout*>* pVecBlocks)
+bool FL_DocLayout::getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock, UT_GenericVector<fl_BlockLayout*>* pVecBlocks) const
 {
 	UT_sint32 count = getNumTOCs();
 	if(count == 0)
@@ -2096,7 +2090,7 @@ bool FL_DocLayout::updateTOCsOnBookmarkChange(const gchar * pBookmark)
  * Calculates the total height of the layout. Includes the 
  * vertical page margins when not printing.
  */
-UT_sint32 FL_DocLayout::getHeight()
+UT_sint32 FL_DocLayout::getHeight() const
 {
 	UT_sint32 iHeight = 0;
 	FV_View * pView = getView(); // add page view dimensions
@@ -2138,7 +2132,7 @@ UT_sint32 FL_DocLayout::getHeight()
  * Calculates the maximum width a page has in the layout. Includes the 
  * left page margin when not printing.
  */
-UT_sint32 FL_DocLayout::getWidth()
+UT_sint32 FL_DocLayout::getWidth() const
 {
 	UT_sint32 iWidth = 0;
 	int count = m_vecPages.getItemCount();
@@ -2148,7 +2142,7 @@ UT_sint32 FL_DocLayout::getWidth()
 		fp_Page* p = m_vecPages.getNthItem(i);
 
 		// we layout pages vertically, so this is max, not sum
-		if (static_cast<UT_sint32>(iWidth) < p->getWidth())
+		if (iWidth < p->getWidth())
 			iWidth = p->getWidth();
 	}
 
@@ -2167,7 +2161,7 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 									  const PP_AttrProp * pBlockAP,
 				      const PP_AttrProp * pSectionAP,
 				      GR_Graphics * pG,
-				      bool isField)
+				      bool isField) const
 {
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, true);
@@ -2254,7 +2248,7 @@ bool FL_DocLayout::setDocViewPageSize(const PP_AttrProp * pAP)
 const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
 									  const PP_AttrProp * pBlockAP,
 				      const PP_AttrProp * pSectionAP,
-				      bool isField)
+				      bool isField) const
 {
 	const char* pszFamily	= PP_evalProperty("font-family",pSpanAP,pBlockAP,pSectionAP, m_pDoc, true);
 	const char* pszField	= PP_evalProperty("field-font",NULL,pBlockAP,NULL, m_pDoc, true);
@@ -2311,12 +2305,12 @@ void FL_DocLayout::changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, f
 }
 
 
-UT_sint32 FL_DocLayout::countPages()
+UT_sint32 FL_DocLayout::countPages() const
 {
 	return m_vecPages.getItemCount();
 }
 
-UT_sint32 FL_DocLayout::findPage(fp_Page * pPage)
+UT_sint32 FL_DocLayout::findPage(fp_Page * pPage) const
 {
 	UT_sint32 count = m_vecPages.getItemCount();
 	if(count < 1)
@@ -2326,7 +2320,7 @@ UT_sint32 FL_DocLayout::findPage(fp_Page * pPage)
 	return m_vecPages.findItem(pPage);
 }
 
-fp_Page* FL_DocLayout::getNthPage(int n)
+fp_Page* FL_DocLayout::getNthPage(int n) const
 {
 	UT_ASSERT(m_vecPages.getItemCount() > 0);
 	if(n >= m_vecPages.getItemCount())
@@ -2334,7 +2328,7 @@ fp_Page* FL_DocLayout::getNthPage(int n)
 	return m_vecPages.getNthItem(n);
 }
 
-fp_Page* FL_DocLayout::getFirstPage()
+fp_Page* FL_DocLayout::getFirstPage() const
 {
 	if (m_vecPages.getItemCount() == 0)
 	{
@@ -2344,7 +2338,7 @@ fp_Page* FL_DocLayout::getFirstPage()
 	return m_vecPages.getNthItem(0);
 }
 
-fp_Page* FL_DocLayout::getLastPage()
+fp_Page* FL_DocLayout::getLastPage() const
 {
 	if (m_vecPages.getItemCount() == 0)
 	{
@@ -2604,7 +2598,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 	return pBL;
 }
 
-fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos)
+fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos) const
 {
 	fl_BlockLayout* pBL = NULL;
 	PL_StruxFmtHandle sfh = 0;
@@ -2930,8 +2924,8 @@ void FL_DocLayout::updateColor()
 	for(i=0; i<m_vecPages.getItemCount(); i++)
 	{
 		pPage = m_vecPages.getNthItem(i);
-		pPage->getFillType()->setTransColor(m_szCurrentTransparentColor);
-		pPage->getFillType()->markTransparentForPrint();
+		pPage->getFillType().setTransColor(m_szCurrentTransparentColor);
+		pPage->getFillType().markTransparentForPrint();
 	}
 
 //
@@ -3100,12 +3094,12 @@ void FL_DocLayout::setDisplayAnnotations(bool bDisplayAnnotations)
   m_bDisplayAnnotations = bDisplayAnnotations;
 }
 
-bool FL_DocLayout::displayAnnotations(void)
+bool FL_DocLayout::displayAnnotations(void) const
 {
   return m_bDisplayAnnotations;
 }
 
-bool FL_DocLayout::displayRDFAnchors(void)
+bool FL_DocLayout::displayRDFAnchors(void) const
 {
     return m_bDisplayRDFAnchors;
 }

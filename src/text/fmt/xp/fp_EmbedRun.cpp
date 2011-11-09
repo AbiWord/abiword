@@ -58,7 +58,7 @@ fp_EmbedRun::~fp_EmbedRun(void)
   getEmbedManager()->releaseEmbedView(m_iEmbedUID);
 }
 
-GR_EmbedManager * fp_EmbedRun::getEmbedManager(void)
+GR_EmbedManager * fp_EmbedRun::getEmbedManager(void) const
 {
   return m_pEmbedManager;
 }
@@ -488,7 +488,7 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
  * The properties are "height","width","ascent","decent".
  * If the propeties are not defined return -1
  */
-UT_sint32  fp_EmbedRun::_getLayoutPropFromObject(const char * szProp)
+UT_sint32  fp_EmbedRun::_getLayoutPropFromObject(const char * szProp) const
 {
   PT_AttrPropIndex api = getBlock()->getDocument()->getAPIFromSOH(m_OH);
   const PP_AttrProp * pAP = NULL;

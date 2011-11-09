@@ -98,15 +98,15 @@ XAP_App::XAP_App(const char * szAppName)
 	  m_bDebugBool(false),
 	  m_bBonoboRunning(false),
 	  m_bEnableSmoothScrolling(true),
+      m_bDisableDoubleBuffering(false),
+      m_bNoGUI(false),
 	  m_pKbdLang(NULL), // must not be deleted by destructor !!!
  	  m_pUUIDGenerator(NULL),
 	  m_pGraphicsFactory(NULL),
 	  m_iDefaultGraphicsId(0),
 	  m_pInputModes(NULL),
 	  m_pImpl(NULL),
-	  m_pScriptLibrary(NULL),
-      m_bDisableDoubleBuffering(false),
-      m_bNoGUI(false)
+	  m_pScriptLibrary(NULL)
 {
 #ifdef DEBUG
 	_fundamentalAsserts(); // see the comments in the function itself

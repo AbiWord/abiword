@@ -65,7 +65,7 @@ void UT_PropVector::addOrReplaceProp(const gchar * pszProp, const gchar * pszVal
 
 
 void UT_PropVector::getProp(const gchar * pszProp,
-									   const gchar * &pszVal)
+									   const gchar * &pszVal) const
 {
 	UT_sint32 iCount = getItemCount();
 	const char * pszV = NULL;

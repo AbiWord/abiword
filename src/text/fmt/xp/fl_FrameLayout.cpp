@@ -210,7 +210,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 			}
 			m_pImageImage = pImage;
 		}
-		pFrame->getFillType()->setImagePointer(&m_pGraphicImage,&m_pImageImage);
+		pFrame->getFillType().setImagePointer(&m_pGraphicImage,&m_pImageImage);
 	}
 	if(m_iFrameWrapMode >= FL_FRAME_WRAPPED_TO_RIGHT)
 	{ 
@@ -649,7 +649,7 @@ void fl_FrameLayout::miniFormat(void)
 	}
 	fp_FrameContainer * pFrame = static_cast<fp_FrameContainer *>(getFirstContainer());
 	pFrame->layout();
-	pFrame->getFillType()->setWidthHeight(getDocLayout()->getGraphics(),pFrame->getFullWidth(),pFrame->getFullHeight(),false);
+	pFrame->getFillType().setWidthHeight(getDocLayout()->getGraphics(),pFrame->getFullWidth(),pFrame->getFullHeight(),false);
 	m_bNeedsFormat = false;
 	m_bNeedsReformat = false;
 }

@@ -146,7 +146,7 @@ AP_Dialog_RDFEditor::prefixedToURI( const std::string& prefixed )
 
 
 
-void AP_Dialog_RDFEditor::setStatus( const std::string& msg )
+void AP_Dialog_RDFEditor::setStatus( const std::string& /*msg*/ )
 {
 }
 
@@ -285,7 +285,7 @@ AP_Dialog_RDFEditor::setRestrictedXMLID( const std::string& xmlid )
 
 
 void
-AP_Dialog_RDFEditor::removeStatement( const PD_RDFStatement& st )
+AP_Dialog_RDFEditor::removeStatement( const PD_RDFStatement& /*st*/ )
 {
 }
 
@@ -297,7 +297,7 @@ AP_Dialog_RDFEditor::getSelection()
 }
 
 void
-AP_Dialog_RDFEditor::setSelection( const std::list< PD_RDFStatement >& l )
+AP_Dialog_RDFEditor::setSelection( const std::list< PD_RDFStatement >& /*l*/ )
 {
 }
 

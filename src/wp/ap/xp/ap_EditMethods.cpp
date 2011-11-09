@@ -1666,7 +1666,6 @@ static void s_LoadingCursorCallback(UT_Worker * pTimer )
 		s_bFirstDrawDone = false;
 		return;
 	}
-	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	pFrame->setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	if(pView)
@@ -7758,7 +7757,7 @@ UT_return_val_if_fail(pDialog, false);
 // Set the background color for the preview
 //
 		gchar  background[8];
-		const UT_RGBColor * bgCol = pView->getCurrentPage()->getFillType()->getColor();
+		const UT_RGBColor * bgCol = pView->getCurrentPage()->getFillType().getColor();
 		sprintf(background, "%02x%02x%02x",bgCol->m_red,
 				bgCol->m_grn,bgCol->m_blu);
 		pDialog->setBackGroundColor( static_cast<const gchar *>(background));

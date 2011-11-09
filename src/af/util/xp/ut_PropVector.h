@@ -29,7 +29,7 @@ public:
 	UT_PropVector()
 		: UT_GenericVector<gchar*>() {};
 	void addOrReplaceProp(const gchar * pszProp, const gchar * pszVal);
-	void getProp(const gchar * pszProp, const gchar * &pszVal);
+	void getProp(const gchar * pszProp, const gchar * &pszVal) const;
 	void removeProp(const gchar * pszProp);
 };
 

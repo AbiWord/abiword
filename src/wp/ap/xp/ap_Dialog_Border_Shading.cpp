@@ -27,6 +27,7 @@
 
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_debugmsg.h"
 
 #include "xap_App.h"
@@ -55,16 +56,16 @@
 
 AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogbordershading"),
-	  m_borderColor(0,0,0),
-	  m_lineStyle(LS_NORMAL),
-	  m_bgFillStyle(NULL),	
 	  m_answer(a_OK),
 	  m_pBorderShadingPreview(NULL),
+	  m_borderColor(0,0,0),
+	  m_lineStyle(LS_NORMAL),
+	  m_bgFillStyle(NULL),
 	  m_bSettingsChanged(false),
+	  m_iOldPos(0),
 	  m_pAutoUpdaterMC(NULL),
 	  m_bDestroy_says_stopupdating(false),
-	  m_bAutoUpdate_happening_now(false),
-	  m_iOldPos(0)
+	  m_bAutoUpdate_happening_now(false)
 // 	  m_sImagePath(""),
 // 	  m_iGraphicType(0),
 // 	  m_pImage(NULL),
@@ -197,8 +198,6 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 		 * update the border colors
 		 */
 		
-		gchar * color = NULL;
-
 		fl_BlockLayout* current_block = pView->getCurrentBlock();
 
 		const char* style_left	= current_block->getProperty("left-style");
@@ -481,7 +480,7 @@ void AP_Dialog_Border_Shading::setShadingColor(UT_RGBColor clr)
 	UT_DEBUGMSG(("Maleesh ======================= setShadingColor\n"));
 }
 
-void AP_Dialog_Border_Shading::setShadingOffset(UT_UTF8String & sOffset)
+void AP_Dialog_Border_Shading::setShadingOffset(UT_UTF8String & /*sOffset*/)
 {
 	// 7/7/2010 Maleesh  - TODO 
 }
@@ -499,10 +498,10 @@ void AP_Dialog_Border_Shading::_createPreviewFromGC(GR_Graphics * gc,
 	m_pBorderShadingPreview->setWindowSize(width, height);
 }
 
-bool AP_Dialog_Border_Shading::_getToggleButtonStatus(const char * lineStyle)
+bool AP_Dialog_Border_Shading::_getToggleButtonStatus(const char * lineStyle) const
 {
 	const gchar * pszStyle = NULL;
-	UT_String lsOff = UT_String_sprintf("%d", LS_OFF);	
+	std::string lsOff = UT_std_string_sprintf("%d", LS_OFF);	
 
 	m_vecProps.getProp(lineStyle, pszStyle);
 
@@ -513,22 +512,22 @@ bool AP_Dialog_Border_Shading::_getToggleButtonStatus(const char * lineStyle)
 		return false;
 }
 
-bool AP_Dialog_Border_Shading::getTopToggled()
+bool AP_Dialog_Border_Shading::getTopToggled() const
 {
 	return _getToggleButtonStatus("top-style");
 }
 
-bool AP_Dialog_Border_Shading::getBottomToggled()
+bool AP_Dialog_Border_Shading::getBottomToggled() const
 {
 	return _getToggleButtonStatus("bot-style");
 }
 
-bool AP_Dialog_Border_Shading::getRightToggled()
+bool AP_Dialog_Border_Shading::getRightToggled() const
 {
 	return _getToggleButtonStatus("right-style");
 }
 
-bool AP_Dialog_Border_Shading::getLeftToggled()
+bool AP_Dialog_Border_Shading::getLeftToggled() const
 {
 	return _getToggleButtonStatus("left-style");
 }

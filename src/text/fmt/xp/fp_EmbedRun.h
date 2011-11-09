@@ -46,7 +46,7 @@ public:
 
 	virtual void            updateVerticalMetric();
 
-	GR_EmbedManager *       getEmbedManager(void);
+	GR_EmbedManager *       getEmbedManager(void) const;
 	bool                    isEdittable(void);
 	bool                    isResizeable(void);
 	const char *            getDataID(void) const;
@@ -67,7 +67,7 @@ protected:
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_letPointPass(void) const;
 	void                    _drawResizeBox(UT_Rect box);
-	UT_sint32               _getLayoutPropFromObject(const char * szProp);
+	UT_sint32               _getLayoutPropFromObject(const char * szProp) const;
     bool                    _updatePropValuesIfNeeded(void);
 	virtual	bool		    _recalcWidth(void);
 	

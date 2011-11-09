@@ -132,7 +132,7 @@ UT_UTF8String s_string_to_url (const UT_UTF8String & str)
 	return s_string_to_url(s);
 }
 
-extern const char * s_prop_list[] = {
+const char * s_prop_list[] = {
 	"background-color",	"transparent",
 	"color",			"",
 	"font-family",		"",
@@ -155,7 +155,7 @@ extern const char * s_prop_list[] = {
 	"width",			"auto",
 	0, 0
 };
-extern const UT_uint32 s_PropListLen = G_N_ELEMENTS(s_prop_list) - 2; /* don't include the zeros */
+const UT_uint32 s_PropListLen = G_N_ELEMENTS(s_prop_list) - 2; /* don't include the zeros */
 
 /*!	This function returns true if the given property is a valid CSS
   property.  It is based on the list in pp_Property.cpp, and, as such,

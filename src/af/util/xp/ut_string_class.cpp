@@ -1386,7 +1386,7 @@ UT_UCS4String UT_UCS4String::substr( const UT_UCS4Char* iter ) const
 {
 	const size_t nSize = pimpl->size();
     const UT_UCS4Char* b = ucs4_str();
-    int i = 0;
+    size_t i = 0;
     for( ; i<nSize && b != iter ; )
     {
         ++b;

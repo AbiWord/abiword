@@ -142,7 +142,7 @@ std::string replace_all( const std::string& s,
     int olds_length = olds.length();
     int news_length = news.length();
             
-    int start = ret.find( olds );
+    std::string::size_type start = ret.find( olds );
     while( start != std::string::npos )
     {
         ret.replace( start, olds_length, news );

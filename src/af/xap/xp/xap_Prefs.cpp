@@ -942,7 +942,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 		// undefined -- we remember the last one that the XML parser
 		// give us.
 
-		bool bIsNamed = false;
+			//		bool bIsNamed = false;
 		
 		pNewScheme = new XAP_PrefsScheme(this, NULL);
 		if (!pNewScheme)
@@ -955,7 +955,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 
 			if (strcmp(static_cast<const char*>(a[0]), "name") == 0)
 			{
-				bIsNamed = true;
+				//				bIsNamed = true;
 				
 				const gchar * szBuiltinSchemeName = getBuiltinSchemeName();
 
@@ -995,7 +995,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 		// Almost the same as TT_SCHEME, except is denoted by <Plugin ... /> 
 		// instead of <Scheme ... /> and has no builtin to deal with
 
-		bool bIsNamed = false;
+			//		bool bIsNamed = false;
 		
 		pNewScheme = new XAP_PrefsScheme(this, NULL);
 		if (!pNewScheme)
@@ -1008,7 +1008,7 @@ void XAP_Prefs::startElement(const gchar *name, const gchar **atts)
 
 			if (strcmp(static_cast<const char*>(a[0]), "name") == 0)
 			{
-				bIsNamed = true;
+				//				bIsNamed = true;
 				
 				if (getPluginScheme(a[1]))
 				{

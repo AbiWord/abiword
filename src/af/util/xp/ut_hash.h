@@ -463,14 +463,14 @@ bool UT_GenericStringMap<T>::contains(const char* k, T v) const
 template <class T>
 bool UT_GenericStringMap<T>::contains(const UT_String& k, T v) const
 {
-	hash_slot<T> * sl = 0;
+	//	hash_slot<T> * sl;
 	bool key_found = false;
 	bool v_found   = false;
 	size_t slot    = 0;
 	size_t hashval = 0;
 
 	// DOM: TODO: make this call work
-	sl = find_slot (k, SM_LOOKUP, slot, key_found,
+	/*sl =*/ find_slot (k, SM_LOOKUP, slot, key_found,
 			hashval, v, &v_found, 0, 0);
 	return v_found;
 }

@@ -502,7 +502,7 @@ void AP_Dialog_Styles::ModifyFont(void)
 // Set the background color for the preview
 //
 	static gchar  background[8];
-	const UT_RGBColor * bgCol = getView()->getCurrentPage()->getFillType()->getColor();
+	const UT_RGBColor * bgCol = getView()->getCurrentPage()->getFillType().getColor();
 	sprintf(background, "%02x%02x%02x",bgCol->m_red,
 			bgCol->m_grn,bgCol->m_blu);
 	pDialog->setBackGroundColor( (const gchar *) background);
@@ -1231,7 +1231,7 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 // Set the Background color for the preview.
 //
 	static gchar  background[8];
-	const UT_RGBColor * bgCol = getView()->getCurrentPage()->getFillType()->getColor();
+	const UT_RGBColor * bgCol = getView()->getCurrentPage()->getFillType().getColor();
 	sprintf(background, "%02x%02x%02x",bgCol->m_red,bgCol->m_grn,bgCol->m_blu);
 
 	m_pCharPreview = new XAP_Preview_FontPreview(gc,background);
@@ -1366,13 +1366,13 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 				FGColor.m_grn, FGColor.m_blu);
 	if(pszBGColor == NULL)
 	{
-		pageCol = getLView()->getCurrentPage()->getFillType()->getColor();
+		pageCol = getLView()->getCurrentPage()->getFillType().getColor();
 		sprintf(Grey, "%02x%02x%02x",(pageCol->m_red+FGColor.m_red)/2,
 				(pageCol->m_grn+FGColor.m_grn)/2, (pageCol->m_blu+FGColor.m_blu)/2);
 	}
 	else if(strcmp(pszBGColor,"transparent")==0)
 	{
-		pageCol = getLView()->getCurrentPage()->getFillType()->getColor();
+		pageCol = getLView()->getCurrentPage()->getFillType().getColor();
 		sprintf(Grey, "%02x%02x%02x",(pageCol->m_red+FGColor.m_red)/2,
 				(pageCol->m_grn+FGColor.m_grn)/2, (pageCol->m_blu+FGColor.m_blu)/2);
 	}

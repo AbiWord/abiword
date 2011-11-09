@@ -100,11 +100,11 @@ void fp_FrameContainer::setPage(fp_Page * pPage)
 	m_pPage = pPage;
 	if(pPage)
 	{
-		getFillType()->setParent(pPage->getFillType());
+		getFillType().setParent(&pPage->getFillType());
 	}
 	else
 	{
-		getFillType()->setParent(NULL);
+		getFillType().setParent(NULL);
 	}
 }
 
@@ -305,7 +305,7 @@ void fp_FrameContainer::clearScreen(void)
 
 	xoff += getFullX() - leftThick;
 	yoff += getFullY() - topThick;
-	getFillType()->getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth()+leftThick+rightThick,getFullHeight()+topThick+botThick+getGraphics()->tlu(1) +1);
+	getFillType().getParent()->Fill(getGraphics(),srcX,srcY,xoff,yoff,getFullWidth()+leftThick+rightThick,getFullHeight()+topThick+botThick+getGraphics()->tlu(1) +1);
 	fp_Container * pCon = NULL;
 	UT_sint32 i = 0;
 	for(i=0; i< countCons(); i++)
@@ -665,7 +665,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 		{
 		        iFullHeight = iFullHeight - (iBot-iMaxHeight);
 		}
-		getFillType()->Fill(pG,srcX,srcY,x,y,getFullWidth(),iFullHeight);
+		getFillType().Fill(pG,srcX,srcY,x,y,getFullWidth(),iFullHeight);
 		m_bNeverDrawn = false;
 	}
 	UT_uint32 count = countCons();
@@ -735,7 +735,7 @@ void fp_FrameContainer::setBackground (const PP_PropertyMap::Background & style)
 	PP_PropertyMap::Background background = m_background;
 	if(background.m_t_background == PP_PropertyMap::background_solid)
 	{
-		getFillType()->setColor(background.m_color);
+		getFillType().setColor(background.m_color);
 	}
 }
 

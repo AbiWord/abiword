@@ -85,12 +85,12 @@ bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/,
 }
 
 IE_Exp_HTML_NavigationHelper::IE_Exp_HTML_NavigationHelper(
-    PD_Document* pDocument, const UT_UTF8String &baseName) :
-IE_TOCHelper(pDocument),
-m_minTOCLevel(0),
-m_minTOCIndex(0),
-m_baseName(UT_go_basename_from_uri(baseName.utf8_str())),
-m_suffix("")
+    PD_Document* pDocument, const UT_UTF8String &baseName)
+: IE_TOCHelper(pDocument),
+  m_suffix(""),
+  m_minTOCLevel(0),
+  m_minTOCIndex(0),
+  m_baseName(UT_go_basename_from_uri(baseName.utf8_str()))
 {
     m_suffix = strchr(m_baseName.utf8_str(), '.');
     m_minTOCLevel = 10;
@@ -112,13 +112,13 @@ m_suffix("")
 }
 
 UT_UTF8String IE_Exp_HTML_NavigationHelper::getBookmarkFilename(
-    const UT_UTF8String& id)
+    const UT_UTF8String& id) const
 {
-    std::map<UT_UTF8String, UT_UTF8String>::iterator bookmarkIter = m_bookmarks.find(id);
+    std::map<UT_UTF8String, UT_UTF8String>::const_iterator bookmarkIter = m_bookmarks.find(id);
 	if (bookmarkIter != m_bookmarks.end())
 	{
-		UT_DEBUGMSG(("Found bookmark %s at file %s", id.utf8_str(), m_bookmarks[id].utf8_str()));
-		return m_bookmarks[id];
+		UT_DEBUGMSG(("Found bookmark %s at file %s", id.utf8_str(), bookmarkIter->second.utf8_str()));
+		return bookmarkIter->second;
 	} else
 	{
 		return UT_UTF8String();
@@ -126,7 +126,7 @@ UT_UTF8String IE_Exp_HTML_NavigationHelper::getBookmarkFilename(
 }
 
 UT_UTF8String IE_Exp_HTML_NavigationHelper::getFilenameByPosition(
-    PT_DocPosition position)
+    PT_DocPosition position) const
 {
     PT_DocPosition posCurrent;
     UT_UTF8String chapterFile = UT_go_basename_from_uri(m_baseName.utf8_str());

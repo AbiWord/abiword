@@ -111,7 +111,7 @@ public:
 	{ m_bIsSelected = false; 
 	  m_bLinesDrawn = true;
 	}
-	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke);
+	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke) const;
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
 	void		        clearScreen(bool bNoRecursive);
@@ -119,8 +119,8 @@ public:
 	void                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG,bool bDoClear);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
-	fp_TableContainer * getBrokenTable(fp_Container * pCon);
-	fp_VerticalContainer * getColumn(fp_Container *pCon);
+	fp_TableContainer * getBrokenTable(fp_Container * pCon); // FIXME: see if we can make it const
+	fp_VerticalContainer * getColumn(fp_Container *pCon); // FIXME: see if we can make it const
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
@@ -244,7 +244,7 @@ public:
 	bool                isDirty(void) const
 	    {  return m_bDirty;}
 	bool                doesIntersectClip(fp_TableContainer * pBroke, const UT_Rect * rClip);
-	bool                isInNestedTable(void);
+	bool                isInNestedTable(void) const;
 	bool                containsNestedTables(void);
 	bool                isRepeated(void) const;
 	void                setVertAlign(UT_sint32 i) { m_iVertAlign = i; }
@@ -423,8 +423,8 @@ fp_Column *         getBrokenColumn(void);
 	bool                isThisBroken(void) const;
 	void                setYBreakHere(UT_sint32 iBreakHere);
 	void                setYBottom(UT_sint32 iBotContainer);
-	bool                isInBrokenTable(fp_CellContainer * pCell, 
-										fp_Container * pCon);
+	bool                isInBrokenTable(const fp_CellContainer * pCell, 
+										fp_Container * pCon) const;
 
 //
 // This is the smallest Y value of the Table allowed in this 

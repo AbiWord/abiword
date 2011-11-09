@@ -144,41 +144,41 @@ public:
 	void            setSkipUpdates(UT_uint32 numSkips) {m_iSkipUpdates = numSkips;}
 	UT_uint32       getSkipUpdates(void) { return m_iSkipUpdates;}
 	void            setNeedsRedraw(void);
-	UT_sint32		getHeight();
-	UT_sint32       getWidth();
+	UT_sint32		getHeight() const;
+	UT_sint32       getWidth() const;
 	void            refreshRunProperties(void);
 	const GR_Font*	findFont(const PP_AttrProp * pSpanAP,
 							 const PP_AttrProp * pBlockAP,
 							 const PP_AttrProp * pSectionAP,
 							 bool isField = false
-		);
+		) const;
 
 	const GR_Font*	findFont(const PP_AttrProp * pSpanAP,
 				 const PP_AttrProp * pBlockAP,
 				 const PP_AttrProp * pSectionAP,
 				 GR_Graphics * pG,
 				 bool isField = false
-		);
+		) const;
 
 	void        changeDocSections(const PX_ChangeRecord_StruxChange * pcrx, fl_DocSectionLayout * pDSL);
 	fp_Page*	addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate=false);
-	fp_Page*	getFirstPage();
-	fp_Page*	getLastPage();
-	fp_Page*	getNthPage(int n);
-	UT_sint32	countPages();
-	UT_sint32   findPage(fp_Page * pPage);
+	fp_Page*	getFirstPage() const;
+	fp_Page*	getLastPage() const;
+	fp_Page*	getNthPage(int n) const;
+	UT_sint32	countPages() const;
+	UT_sint32   findPage(fp_Page * pPage) const; // FIXME figure out how to pass a const fp_Page *
 	void            setFramePageNumbers(UT_sint32 iStartPage);
 	void            relocateFrame(fl_FrameLayout * pFrame);
 	void            clearAllCountWraps(void);
 
-	UT_sint32   getPercentFilled(void)
+	UT_sint32   getPercentFilled(void) const
 		{ return m_iFilled;}
 	void         setPercentFilled(UT_sint32 iFill)
 		{ m_iFilled = iFill;}
 	void        setLayoutIsFilling(bool bisFill) { m_bisLayoutFilling = bisFill;}
 	bool        isLayoutFilling(void) const { return m_bisLayoutFilling;}
 	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos) const;
-    fl_BlockLayout*	findBlockAtPositionReverse(PT_DocPosition pos);
+    fl_BlockLayout*	findBlockAtPositionReverse(PT_DocPosition pos) const;
 	void		deletePage(fp_Page* pPage, bool bDontNotify);
 
 	void		formatAll();
@@ -234,14 +234,14 @@ public:
 // fl_DocLAyout stores this Vector of footnotes to speed things up and
 // to provide convience routines for other classes and methods
 //
-	UT_uint32           countFootnotes(void);
+	UT_uint32           countFootnotes(void) const;
 	void                addFootnote(fl_FootnoteLayout *);
 	void                removeFootnote(fl_FootnoteLayout *);
-	fl_FootnoteLayout * getNthFootnote(UT_sint32 i);
-	UT_sint32           getFootnoteVal(UT_uint32 footpid);
-	fl_FootnoteLayout * findFootnoteLayout(UT_uint32 footpid);
+	fl_FootnoteLayout * getNthFootnote(UT_sint32 i) const;
+	UT_sint32           getFootnoteVal(UT_uint32 footpid) const;
+	fl_FootnoteLayout * findFootnoteLayout(UT_uint32 footpid) const;
 	FootnoteType        getFootnoteType(void) const;
-	void                getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType);
+	void                getStringFromFootnoteVal(UT_String & sVal, UT_sint32 iVal, FootnoteType iFootType) const;
 
 	UT_sint32           getInitialFootVal(void) const
 		{ return m_iFootnoteVal;}
@@ -253,13 +253,13 @@ public:
 // EndNotes
 	void                insertEndnoteContainer(fp_EndnoteContainer * pECon);
 	void                removeEndnoteContainer(fp_EndnoteContainer * pECon);
-	fl_DocSectionLayout * getDocSecForEndnote(fp_EndnoteContainer * pECon  );
-	UT_uint32           countEndnotes(void);
+	fl_DocSectionLayout * getDocSecForEndnote(fp_EndnoteContainer * pECon  ) const;
+	UT_uint32           countEndnotes(void) const;
 	void                addEndnote(fl_EndnoteLayout *);
 	void                removeEndnote(fl_EndnoteLayout *);
-	fl_EndnoteLayout *  getNthEndnote(UT_sint32 i);
-	UT_sint32           getEndnoteVal(UT_uint32 endpid);
-	fl_EndnoteLayout * findEndnoteLayout(UT_uint32 endpid);
+	fl_EndnoteLayout *  getNthEndnote(UT_sint32 i) const;
+	UT_sint32           getEndnoteVal(UT_uint32 endpid) const;
+	fl_EndnoteLayout * findEndnoteLayout(UT_uint32 endpid) const;
 
 	FootnoteType        getEndnoteType(void) const
 		{ return m_EndnoteType; }
@@ -276,30 +276,30 @@ public:
 // fl_DocLAyout stores this Vector of Anntations to speed things up and
 // to provide convience routines for other classes and methods
 //
-	UT_uint32           countAnnotations(void);
+	UT_uint32           countAnnotations(void) const;
 	void                addAnnotation(fl_AnnotationLayout * pAL);
 	void                removeAnnotation(fl_AnnotationLayout * pAL);
-	fl_AnnotationLayout * getNthAnnotation(UT_sint32 i);
-	UT_sint32           getAnnotationVal(UT_uint32 footpid);
-	fl_AnnotationLayout * findAnnotationLayout(UT_uint32 footpid);
-	bool                displayAnnotations(void);
+	fl_AnnotationLayout * getNthAnnotation(UT_sint32 i) const;
+	UT_sint32           getAnnotationVal(UT_uint32 footpid) const;
+	fl_AnnotationLayout * findAnnotationLayout(UT_uint32 footpid) const;
+	bool                displayAnnotations(void) const;
 	void                setDisplayAnnotations(bool bDisplayAnnotations);
 	bool                collapseAnnotations(void);
 
 // --------------------------------------------------------------------
 // RDF Anchor Methods
-	bool                displayRDFAnchors(void);
+	bool                displayRDFAnchors(void) const;
 	void                setDisplayRDFAnchors(bool v);
     
 // ---------------------------------------------------
 // Table of contents
 //----------------------------------------------------
-	UT_sint32           getNumTOCs(void);
-	fl_TOCLayout *      getNthTOC(UT_sint32 i);
+	UT_sint32           getNumTOCs(void) const;
+	fl_TOCLayout *      getNthTOC(UT_sint32 i) const;
 	bool                addOrRemoveBlockFromTOC(fl_BlockLayout * pBlock);
 	bool                removeBlockFromTOC(fl_BlockLayout * pBlock);
-	bool                isBlockInTOC(fl_BlockLayout * pBlock);
-	bool                getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock,  UT_GenericVector<fl_BlockLayout*>* pVecBlock);
+	bool                isBlockInTOC(fl_BlockLayout * pBlock) const;
+	bool                getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock,  UT_GenericVector<fl_BlockLayout*>* pVecBlock) const;
 	bool                addTOC(fl_TOCLayout * pTOC);
 	bool                removeTOC(fl_TOCLayout * pTOC);
 	bool                fillTOC(fl_TOCLayout * pTOC);
@@ -324,7 +324,7 @@ public:
 	inline UT_uint32	getBackgroundCheckReasons() const {return (m_uDocBackgroundCheckReasons);}
 
 #ifdef ENABLE_SPELL
-	fl_BlockLayout *        getPendingBlockForGrammar(void)
+	fl_BlockLayout *        getPendingBlockForGrammar(void) const
 	  {
 	    return m_PendingBlockForGrammar;
 	  }
@@ -349,12 +349,12 @@ public:
 	inline UT_uint32	getListsCount(void) const; // { return m_vecLists.getItemCount(); }
 	inline void		addList(fl_AutoNum * pAutoNum);
 	bool            isLayoutDeleting(void) const {return m_bDeletingLayout;}
-	UT_uint32       getRedrawCount() {return m_iRedrawCount;}
+	UT_uint32       getRedrawCount() const {return m_iRedrawCount;}
 
 
 	void            updatePropsNoRebuild(void);
 	void            updatePropsRebuild(void);
-	PT_DocPosition  getDocSize(void) 
+	PT_DocPosition  getDocSize(void) const
 		{ return m_iDocSize;}
 	UT_uint32       getLID(void) const
 		{ return m_lid;}
@@ -368,8 +368,8 @@ public:
 	bool            setDocViewPageSize(const PP_AttrProp * pAP);
         void            setSaveContainerPointer( fp_Container * pContainer);
 	void            setRebuiltBlock(fl_BlockLayout *pBlock);
-	fl_BlockLayout* getRebuiltBlock(void);
-	fp_Container *  getSavedContainerPointer(void);
+	fl_BlockLayout* getRebuiltBlock(void) const;
+	fp_Container *  getSavedContainerPointer(void) const;
 
 #ifdef FMT_TEST
 	//! Pointer to last instatiated FL_DocLayout. Used for debugging.
