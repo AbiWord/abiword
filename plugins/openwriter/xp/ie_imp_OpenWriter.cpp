@@ -1782,7 +1782,7 @@ private:
 	const gchar * p = (const gchar *)m_vecInlineFmt.getNthItem(k-1);
 	m_vecInlineFmt.deleteNthItem(k-1);
 	if (p)
-	  free((void *)p);
+	  g_free((void *)p);
       }
   }
   
