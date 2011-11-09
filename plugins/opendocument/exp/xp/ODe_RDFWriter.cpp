@@ -60,8 +60,6 @@ bool ODe_RDFWriter::writeRDF(PD_Document* pDoc, GsfOutfile* pODT)
     UT_DEBUGMSG(("writeRDF() \n"));
     GsfOutput* oss = gsf_outfile_new_child(GSF_OUTFILE(pODT), "manifest.rdf", FALSE);
 
-    RDFArguments args;
-    librdf_model* model = args.model;
 
     //
     // Convert the native RDF model into a redland one
@@ -72,6 +70,9 @@ bool ODe_RDFWriter::writeRDF(PD_Document* pDoc, GsfOutfile* pODT)
     ODe_gsf_output_close(oss);
     
 #if 0    
+    RDFArguments args;
+    librdf_model* model = args.model;
+
     UT_DEBUGMSG(("writeRDF() creating a native redland model for document RDF\n"));
     PD_URIList subjects = rdf->getAllSubjects();
     PD_URIList::iterator subjend = subjects.end();

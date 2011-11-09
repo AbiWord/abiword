@@ -66,7 +66,7 @@ void ODe_Frame_Listener::openFrame(const PP_AttrProp* pAP,
     
     ok = pAP->getProperty("frame-type", pValue);
     
-    if (pValue && !strcmp(pValue, "textbox")) {
+    if (ok && pValue && !strcmp(pValue, "textbox")) {
         _openODTextbox(*pAP, rAction);
     }
 }

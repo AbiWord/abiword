@@ -89,7 +89,7 @@ IE_Imp_OpenDocument::~IE_Imp_OpenDocument ()
 bool IE_Imp_OpenDocument::pasteFromBuffer(PD_DocumentRange * pDocRange,
 				    const unsigned char * pData, 
 				    UT_uint32 lenData, 
-				    const char * szEncoding)
+					  const char * /*szEncoding*/)
 {
     UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
     UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);

@@ -47,7 +47,7 @@
  * directories for path. If such an element already has been written (according to
  * pathsAlreadyWritten) then it will not be done again.
  */
-void ODe_ManifestWriter::ensureDirectoryManifest( PD_Document* pDoc,
+void ODe_ManifestWriter::ensureDirectoryManifest( PD_Document* /*pDoc*/,
                                                   GsfOutput* manifest,
                                                   const std::string& path,
                                                   std::set< std::string >& pathsAlreadyWritten )

@@ -78,8 +78,6 @@ void ODi_Style_List::startElement (const gchar* pName, const gchar** ppAtts,
         rAction.pushState(pLevelStyle, false);
     } 
     else if (!strcmp("text:list-level-style-number", pName)) {
-        ODi_ListLevelStyle* pLevelStyle = NULL;
-        
         pLevelStyle = new ODi_Numbered_ListLevelStyle(m_rElementStack);
         m_levelStyles.push_back(pLevelStyle);
         
@@ -87,7 +85,6 @@ void ODi_Style_List::startElement (const gchar* pName, const gchar** ppAtts,
     }
     else if(!strcmp("text:outline-level-style", pName))
     {
-        ODi_ListLevelStyle* pLevelStyle = NULL;
 	xxx_UT_DEBUGMSG(("Found outline-level-style \n"));
         pVal = UT_getAttribute ("style:num-format", ppAtts);
 	if(pVal)
@@ -128,7 +125,7 @@ void ODi_Style_List::endElement (const gchar* pName,
  * back a level we have to redefine the ID's of the child levels
  * This method gets called when this happens
  */
-void ODi_Style_List::redefine(PD_Document* pDocument, UT_sint32 iLevel)
+void ODi_Style_List::redefine(PD_Document* pDocument, UT_uint32 iLevel)
 {
     UT_uint32 level=0;
     bool foundParent;

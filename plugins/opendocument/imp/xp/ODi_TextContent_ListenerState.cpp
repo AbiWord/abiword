@@ -1102,6 +1102,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
     m_elementParsingLevel--;
 }
 
+#if 0 // not used yet. Suppress the warning.
 /**
  * 6.1.2 of the ODF spec "What space Characters" lists these as
  * characters to normalize to a SPACE char in certain cases.
@@ -1118,6 +1119,7 @@ static bool ODi_UCS4_whitespace( UT_UCS4Char c )
 {
     return c == 0x000A || UT_UCS4_isspace(c);
 }
+#endif
 
 /**
  * It seems from "6.1.2 White Space Characters" of the spec [2], in

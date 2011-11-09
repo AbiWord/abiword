@@ -163,7 +163,7 @@ void ODe_Bullet_ListLevelStyle::fetchAttributesFromAbiBlock(
     
     ok = rAP.getProperty("list-style", pValue);
     
-    if (!pValue || !strcmp(pValue, "Bullet List")) {
+    if (!ok || !pValue || !strcmp(pValue, "Bullet List")) {
         ucs4Char = 8226; // U+2022 BULLET
     } else if (!strcmp(pValue, "Dashed List")) {
         ucs4Char = 8211; // U+2013 EN DASH

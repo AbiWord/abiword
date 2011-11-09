@@ -68,8 +68,10 @@ void ODi_ListLevelStyle::startElement (const gchar* pName,
         pVal = UT_getAttribute ("text:level", ppAtts);
         if (pVal) {
             result = sscanf(pVal, "%u", &m_levelNumber);
-            // TODO: check result?
-            m_level = pVal;
+	    if (result != 1) {
+	      m_levelNumber = 1;
+	    }
+	    m_level = pVal;
         } else {
             UT_DEBUGMSG(("ODi_ListLevelStyle::startElement: missing text:level attribute\n"));
         }
