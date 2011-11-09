@@ -258,7 +258,9 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 // Now Parent ID.
 //
 	UT_uint32 iParentID = 0;
-	if(m_localLevel> 0 && !m_bStartNewList)
+	// http://bugzilla.abisource.com/show_bug.cgi?id=12880
+	// Check that m_pMSWord97_list is not NULL or kaboom. Assume this restart the list.
+	if(m_localLevel> 0 && !m_bStartNewList && m_pMSWord97_list)
 	{
 		iParentID = m_pMSWord97_list->m_RTF_level[m_localLevel-1]->m_AbiLevelID;
 	}
