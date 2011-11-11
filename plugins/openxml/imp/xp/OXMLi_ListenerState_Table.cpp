@@ -177,7 +177,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			cols += "pt/";
 			ret = table->setProperty("table-column-props", cols);
 			if(ret != UT_OK)
-				UT_DEBUGMSG(("FRT:OpenXML importer can't set table-column-props:%s\n", cols.c_str()));				
+			{	
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set table-column-props:%s\n", cols.c_str()));
+			}
 		}
 		rqst->handled = true;
 	}
@@ -204,7 +206,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			rowHeights += "pt/";
 			ret = table->setProperty("table-row-heights", rowHeights);
 			if(ret != UT_OK)
-				UT_DEBUGMSG(("FRT:OpenXML importer can't set table-row-heights:%s\n", rowHeights.c_str()));				
+			{
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set table-row-heights:%s\n", rowHeights.c_str()));
+			}
 		}
 		rqst->handled = true;
 	}
@@ -254,7 +258,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			ret = element->setProperty(borderColor, color);
 			if(ret != UT_OK)
-				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:%s\n", borderColor.c_str(), color));	
+			{
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:%s\n", borderColor.c_str(), color));
+			}
 		}
 		if(sz) 
 		{
@@ -262,7 +268,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 			szVal += "pt";
 			ret = element->setProperty(borderThickness, szVal);
 			if(ret != UT_OK)
-				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:%s\n", borderThickness.c_str(), color));	
+			{
+				UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:%s\n", borderThickness.c_str(), color));
+			}
 		}
 
 		std::string styleValue = "1"; //single line border by default
@@ -274,8 +282,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 
 		ret = element->setProperty(borderStyle, styleValue);
 		if(ret != UT_OK)
+		{
 			UT_DEBUGMSG(("FRT:OpenXML importer can't set %s:0\n", borderStyle.c_str()));
-
+		}
 	}
 	else if(nameMatches(rqst->pName, NS_W_KEY, "shd"))
 	{
@@ -307,7 +316,9 @@ void OXMLi_ListenerState_Table::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			ret = element->setProperty("background-color", fill);
 			if(ret != UT_OK)
+			{
 				UT_DEBUGMSG(("FRT:OpenXML importer can't set background-color:%s\n", fill));	
+			}
 		}
 		rqst->handled = true;
 	}
