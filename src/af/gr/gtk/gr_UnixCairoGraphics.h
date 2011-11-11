@@ -112,6 +112,8 @@ private:
 	bool m_double_buffered;
 	bool m_CairoCreated;
 	bool m_Painting;
+	gulong m_Signal;
+	GtkWidget *m_Widget;
 };
 
 
