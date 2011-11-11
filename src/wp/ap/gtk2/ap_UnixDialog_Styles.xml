@@ -9,7 +9,7 @@
     <property name="resizable">True</property>
     <property name="destroy_with_parent">False</property>
     <child>
-      <placeholder/>
+      <placeholder></property>
     </child>
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_Styles">
@@ -90,13 +90,13 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">0</property>
                     <property name="bottom_attach">1</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label3">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes"/>
+                    <property name="label" translatable="yes"></property>
                     <property name="use_underline">False</property>
                     <property name="use_markup">True</property>
                     <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -114,7 +114,7 @@
                     <property name="bottom_attach">2</property>
                     <property name="x_padding">6</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
@@ -164,7 +164,7 @@
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
@@ -184,7 +184,7 @@
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
@@ -205,7 +205,7 @@
                     <property name="top_attach">4</property>
                     <property name="bottom_attach">5</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
@@ -226,7 +226,7 @@
                     <property name="top_attach">5</property>
                     <property name="bottom_attach">6</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
               </object>
@@ -263,7 +263,7 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">0</property>
                     <property name="bottom_attach">1</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
@@ -283,7 +283,7 @@
                             <property name="label_yalign">0</property>
                             <property name="shadow_type">GTK_SHADOW_NONE</property>
                             <child>
-                              <placeholder/>
+                              <placeholder></property>
                             </child>
                           </object>
                           <packing>
@@ -320,7 +320,7 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <placeholder></property>
                     </child>
                   </object>
                   <packing>
@@ -348,7 +348,7 @@
                             <property name="label_yalign">0</property>
                             <property name="shadow_type">GTK_SHADOW_NONE</property>
                             <child>
-                              <placeholder/>
+                              <placeholder></property>
                             </child>
                           </object>
                           <packing>
@@ -385,7 +385,7 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder/>
+                      <placeholder></property>
                     </child>
                   </object>
                   <packing>
@@ -510,13 +510,13 @@
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label15">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes"/>
+                    <property name="label" translatable="yes"></property>
                     <property name="use_underline">False</property>
                     <property name="use_markup">False</property>
                     <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -534,14 +534,14 @@
                     <property name="bottom_attach">8</property>
                     <property name="x_padding">6</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbAttributes">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="label" translatable="yes"/>
+                    <property name="label" translatable="yes"></property>
                     <property name="use_underline">False</property>
                     <property name="use_markup">False</property>
                     <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -579,13 +579,13 @@
                     <property name="top_attach">6</property>
                     <property name="bottom_attach">7</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="label16">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes"/>
+                    <property name="label" translatable="yes"></property>
                     <property name="use_underline">False</property>
                     <property name="use_markup">False</property>
                     <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -602,7 +602,7 @@
                     <property name="top_attach">5</property>
                     <property name="bottom_attach">6</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
               </object>

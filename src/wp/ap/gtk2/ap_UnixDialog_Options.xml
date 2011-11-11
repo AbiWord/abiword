@@ -172,7 +172,7 @@
                           </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <placeholder></property>
                         </child>
                       </object>
                     </child>
@@ -368,7 +368,7 @@
                           </packing>
                         </child>
                         <child>
-                          <placeholder/>
+                          <placeholder></property>
                         </child>
                       </object>
                       <packing>
@@ -839,13 +839,13 @@
                   </packing>
                 </child>
                 <child>
-                  <placeholder/>
+                  <placeholder></property>
                 </child>
                 <child>
-                  <placeholder/>
+                  <placeholder></property>
                 </child>
                 <child>
-                  <placeholder/>
+                  <placeholder></property>
                 </child>
               </object>
               <packing>

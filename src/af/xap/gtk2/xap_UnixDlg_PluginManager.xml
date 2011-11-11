@@ -78,14 +78,14 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">0</property>
                     <property name="bottom_attach">1</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbSpacerActivePlugins">
                     <property name="width_request">18</property>
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes"/>
+                    <property name="label" translatable="yes"></property>
                     <property name="use_underline">False</property>
                     <property name="use_markup">False</property>
                     <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -202,14 +202,14 @@
                     <property name="top_attach">0</property>
                     <property name="bottom_attach">1</property>
                     <property name="x_options">fill</property>
-                    <property name="y_options"/>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbSpacerPluginDetails">
                     <property name="width_request">18</property>
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes"/>
+                    <property name="label" translatable="yes"></property>
                     <property name="use_underline">False</property>
                     <property name="use_markup">False</property>
                     <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -257,7 +257,7 @@
                         <property name="top_attach">0</property>
                         <property name="bottom_attach">1</property>
                         <property name="x_options">fill</property>
-                        <property name="y_options"/>
+                        <property name="y_options"></property>
                       </packing>
                     </child>
                     <child>
@@ -280,7 +280,7 @@
                         <property name="top_attach">2</property>
                         <property name="bottom_attach">3</property>
                         <property name="x_options">fill</property>
-                        <property name="y_options"/>
+                        <property name="y_options"></property>
                       </packing>
                     </child>
                     <child>
@@ -303,7 +303,7 @@
                         <property name="top_attach">3</property>
                         <property name="bottom_attach">4</property>
                         <property name="x_options">fill</property>
-                        <property name="y_options"/>
+                        <property name="y_options"></property>
                       </packing>
                     </child>
                     <child>
@@ -349,7 +349,7 @@
                         <property name="top_attach">2</property>
                         <property name="bottom_attach">3</property>
                         <property name="x_options">expand|shrink|fill</property>
-                        <property name="y_options"/>
+                        <property name="y_options"></property>
                       </packing>
                     </child>
                     <child>
@@ -372,7 +372,7 @@
                         <property name="top_attach">3</property>
                         <property name="bottom_attach">4</property>
                         <property name="x_options">expand|shrink|fill</property>
-                        <property name="y_options"/>
+                        <property name="y_options"></property>
                       </packing>
                     </child>
                     <child>
@@ -395,7 +395,7 @@
                         <property name="top_attach">0</property>
                         <property name="bottom_attach">1</property>
                         <property name="x_options">expand|shrink|fill</property>
-                        <property name="y_options"/>
+                        <property name="y_options"></property>
                       </packing>
                     </child>
                     <child>
@@ -413,7 +413,7 @@
                             <child>
                               <object class="GtkLabel" id="lbPluginDescription">
                                 <property name="visible">True</property>
-                                <property name="label" translatable="yes"/>
+                                <property name="label" translatable="yes"></property>
                                 <property name="use_underline">False</property>
                                 <property name="use_markup">False</property>
                                 <property name="justify">GTK_JUSTIFY_LEFT</property>
@@ -434,7 +434,7 @@
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
                         <property name="x_options">expand|shrink|fill</property>
-                        <property name="y_options"/>
+                        <property name="y_options"></property>
                       </packing>
                     </child>
                   </object>

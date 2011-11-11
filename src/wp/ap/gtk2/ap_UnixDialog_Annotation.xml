@@ -161,7 +161,7 @@
                 <property name="top_attach">0</property>
                 <property name="bottom_attach">1</property>
                 <property name="x_options">fill</property>
-                <property name="y_options"/>
+                <property name="y_options"></property>
               </packing>
             </child>
             <child>
@@ -172,7 +172,7 @@
                 <property name="editable">True</property>
                 <property name="visibility">True</property>
                 <property name="max_length">0</property>
-                <property name="text" translatable="yes"/>
+                <property name="text" translatable="yes"></property>
                 <property name="has_frame">True</property>
                 <property name="invisible_char">*</property>
                 <property name="activates_default">False</property>
@@ -182,7 +182,7 @@
                 <property name="right_attach">2</property>
                 <property name="top_attach">0</property>
                 <property name="bottom_attach">1</property>
-                <property name="y_options"/>
+                <property name="y_options"></property>
               </packing>
             </child>
             <child>
@@ -209,7 +209,7 @@
                 <property name="top_attach">1</property>
                 <property name="bottom_attach">2</property>
                 <property name="x_options">fill</property>
-                <property name="y_options"/>
+                <property name="y_options"></property>
               </packing>
             </child>
             <child>
@@ -219,7 +219,7 @@
                 <property name="editable">True</property>
                 <property name="visibility">True</property>
                 <property name="max_length">0</property>
-                <property name="text" translatable="yes"/>
+                <property name="text" translatable="yes"></property>
                 <property name="has_frame">True</property>
                 <property name="invisible_char">*</property>
                 <property name="activates_default">False</property>
@@ -229,7 +229,7 @@
                 <property name="right_attach">2</property>
                 <property name="top_attach">1</property>
                 <property name="bottom_attach">2</property>
-                <property name="y_options"/>
+                <property name="y_options"></property>
               </packing>
             </child>
             <child>
