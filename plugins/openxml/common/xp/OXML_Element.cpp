@@ -129,7 +129,7 @@ UT_Error OXML_Element::addToPT(PD_Document * pDocument)
 	if (pDocument == NULL)
 		return UT_ERROR;
 
-	const gchar ** atts = getAttributesWithProps();
+	//	const gchar ** atts = getAttributesWithProps();
 
 	switch (m_tag) {
 	case PG_BREAK:

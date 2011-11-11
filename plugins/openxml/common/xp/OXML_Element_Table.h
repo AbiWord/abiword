@@ -43,14 +43,14 @@ public:
 	virtual UT_Error serialize(IE_Exp_OpenXML* exporter);
 	virtual UT_Error serializeChildren(IE_Exp_OpenXML* exporter);
 	virtual UT_Error addToPT(PD_Document * pDocument);
-	virtual std::string getColumnWidth(int colIndex);
-	virtual std::string getRowHeight(int rowIndex);
+	virtual std::string getColumnWidth(int colIndex) const;
+	virtual std::string getRowHeight(int rowIndex) const;
 	UT_Error addChildrenToPT(PD_Document * pDocument);
 
 	void addRow(OXML_Element_Row* row);
 	
-	int getCurrentRowNumber();
-	int getCurrentColNumber();
+	int getCurrentRowNumber() const;
+	int getCurrentColNumber() const;
 
 	void setCurrentRowNumber(int row);
 	void setCurrentColNumber(int col);
@@ -70,11 +70,11 @@ public:
 	//return true if successful
 	bool incrementRightHorizontalMergeStart(OXML_Element_Cell* cell);
 
-	void addMissingCell(int rowNumber, OXML_Element_Cell* cell);
+	void addMissingCell(unsigned int rowNumber, OXML_Element_Cell* cell);
 
 	void applyStyle(OXML_SharedStyle style);
 
-	int getNumberOfRows()
+	int getNumberOfRows() const
 		{
 			return m_rows.size();
 		}

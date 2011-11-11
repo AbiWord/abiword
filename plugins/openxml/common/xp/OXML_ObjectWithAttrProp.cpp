@@ -121,13 +121,13 @@ const gchar ** OXML_ObjectWithAttrProp::getProperties() const
 	return m_pAttributes->getProperties();
 }
 
-const gchar ** OXML_ObjectWithAttrProp::getAttributesWithProps()
+const gchar ** OXML_ObjectWithAttrProp::getAttributesWithProps() const
 {
 	std::string propstring = _generatePropsString();
 	if (!propstring.compare("")) 
         return getAttributes();
 // WTF is that?
-	UT_return_val_if_fail(UT_OK == setAttribute("fakeprops", propstring.c_str()), NULL);
+//	UT_return_val_if_fail(UT_OK == setAttribute("fakeprops", propstring.c_str()), NULL);
 	const gchar ** atts = getAttributes();
 	for (UT_uint32 i = 0; atts && (atts[i] != NULL); i += 2) {
 		if (!strcmp(atts[i], "fakeprops"))

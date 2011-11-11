@@ -326,12 +326,12 @@ UT_Error OXML_Element_Table::addToPT(PD_Document * pDocument)
 	return ret;
 }
 
-int OXML_Element_Table::getCurrentRowNumber()
+int OXML_Element_Table::getCurrentRowNumber() const
 {
 	return m_currentRowNumber;
 }
 
-int OXML_Element_Table::getCurrentColNumber()
+int OXML_Element_Table::getCurrentColNumber() const
 {
 	return m_currentColNumber;
 }
@@ -362,14 +362,14 @@ void OXML_Element_Table::addRow(OXML_Element_Row* row)
 	row->inheritProperties(this);
 }
 
-std::string OXML_Element_Table::getColumnWidth(int colIndex)
+std::string OXML_Element_Table::getColumnWidth(int colIndex) const
 {
 	if((colIndex < 0) || (colIndex >= (int)columnWidth.size()))
 		return "0in"; 
 	return columnWidth.at(colIndex);
 }
 
-std::string OXML_Element_Table::getRowHeight(int rowIndex)
+std::string OXML_Element_Table::getRowHeight(int rowIndex) const
 {
 	if((rowIndex < 0) || (rowIndex >= (int)rowHeight.size()))
 		return "0in"; 
@@ -401,9 +401,9 @@ bool OXML_Element_Table::incrementRightHorizontalMergeStart(OXML_Element_Cell* c
 	return false;	
 }
 
-void OXML_Element_Table::addMissingCell(int rowNumber, OXML_Element_Cell* cell)
+void OXML_Element_Table::addMissingCell(unsigned int rowNumber, OXML_Element_Cell* cell)
 {
-	std::vector<OXML_Element*>::size_type i;
+	OXML_ElementVector::size_type i;
 	OXML_ElementVector children = getChildren();
 	for (i = 0; i < children.size(); i++)
 	{
