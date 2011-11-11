@@ -368,9 +368,9 @@ bool XAP_App::initialize(const char * szKeyBindingsKey, const char * szKeyBindin
 	bool bResult;
 	bResult = m_pInputModes->createInputMode(szBindings,pBindingMap);
 	UT_ASSERT(bResult);
-	bool bResult2;
-	bResult2 = m_pInputModes->setCurrentMap(szBindings);
-	UT_ASSERT(bResult2);
+	bResult = m_pInputModes->setCurrentMap(szBindings);
+	UT_ASSERT(bResult);
+	UT_UNUSED(bResult); // TODO deal with the error
 
 	// check if the prefs are set to use specific graphics class
 	const char * pszGraphics = NULL;

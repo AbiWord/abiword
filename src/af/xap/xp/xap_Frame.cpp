@@ -687,6 +687,7 @@ void XAP_FrameImpl::_createToolbars(void)
 		
 		m_vecToolbars.addItem(pToolbar);
 	}
+	UT_UNUSED(bResult); // TODO deal with the result
 }
 
 UT_sint32 XAP_Frame::findToolbarNr(EV_Toolbar * pTB)

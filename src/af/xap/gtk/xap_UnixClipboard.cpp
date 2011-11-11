@@ -282,6 +282,7 @@ bool XAP_UnixClipboard::_getDataFromFakeClipboard(T_AllowGet tFrom, const char**
 }
 
 
+#if DEBUG
 static void allTargets(GtkClipboard * /*clipboard*/,
                                                          GdkAtom *atoms,
                                                          gint n_atoms,
@@ -295,6 +296,7 @@ static void allTargets(GtkClipboard * /*clipboard*/,
       UT_DEBUGMSG((" Found Atom %s on clipboard \n", gdk_atom_name(Atom)));
   }
 }
+#endif
 
 bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** formatList,
 										   void ** ppData, UT_uint32 * pLen,
@@ -305,7 +307,11 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 	  return false;
 
 	GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
+#if DEBUG
 	gtk_clipboard_request_targets(clipboard,( GtkClipboardTargetsReceivedFunc) allTargets, this);
+#else
+	gtk_clipboard_request_targets(clipboard, NULL, NULL);
+#endif
 	UT_GenericVector<GdkAtom> atoms ;
 	for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
 		atoms.addItem(gdk_atom_intern(formatList[atomCounter],FALSE));

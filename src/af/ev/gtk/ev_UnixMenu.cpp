@@ -660,9 +660,9 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 #else
 
 	// make sure our last item on the stack is the one we started with
-	GtkWidget * wDbg = NULL;
-	wDbg = stack.top();
+	GtkWidget * wDbg = stack.top();
 	stack.pop();
+	UT_UNUSED(wDbg);
 	UT_ASSERT(wDbg == wMenuRoot);
 
 	// we also have to bind the top level window to our

@@ -76,6 +76,7 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 	  m_szTmpFile(NULL)
 {
 	int fc_inited = FcInit();
+	UT_UNUSED(fc_inited); // TODO actually deal with the error here
 	UT_ASSERT(fc_inited);
 
 	_setAbiSuiteLibDir();
