@@ -108,19 +108,19 @@ public:
 	void						removeItem(PL_StruxDocHandle pItem);
 	PL_StruxDocHandle			getParentItem() const;
 	void						setParentItem(PL_StruxDocHandle pItem);
-	bool                                 isContainedByList(PL_StruxDocHandle pItem);
-	PL_StruxDocHandle			getNthBlock(UT_sint32 i);
-	PL_StruxDocHandle			getPrevInList(PL_StruxDocHandle pItem);
+	bool                                 isContainedByList(PL_StruxDocHandle pItem) const;
+	PL_StruxDocHandle			getNthBlock(UT_sint32 i) const;
+	PL_StruxDocHandle			getPrevInList(PL_StruxDocHandle pItem) const;
 
 	bool					isItem(PL_StruxDocHandle pItem) const;
-	bool						doesItemHaveLabel(fl_BlockLayout * pItem);
-	bool					isEmpty(void);
+	bool						doesItemHaveLabel(fl_BlockLayout * pItem) const;
+	bool					isEmpty(void) const;
 	PL_StruxDocHandle			getFirstItem(void) const;
-	PL_StruxDocHandle			getLastItem(void);
-	bool						isLastOnLevel(PL_StruxDocHandle pItem);
+	PL_StruxDocHandle			getLastItem(void) const;
+	bool						isLastOnLevel(PL_StruxDocHandle pItem) const;
 
 	fl_AutoNum *				getParent(void) const { return m_pParent; }
-	fl_AutoNum *				getActiveParent(void);
+	fl_AutoNum *				getActiveParent(void) const;
 	fl_AutoNum *				getAutoNumFromSdh(PL_StruxDocHandle sdh);
 	const fl_AutoNum *			getAutoNumFromSdh(PL_StruxDocHandle sdh) const;
 	void						fixListOrder(void);
@@ -129,18 +129,18 @@ public:
 	void						setAsciiOffset(UT_uint32 new_asciioffset);
 
 	void						update(UT_uint32 start);
-	bool						isUpdating(void) { return m_bUpdatingItems; }
+	bool						isUpdating(void) const { return m_bUpdatingItems; }
 	UT_uint32					getID() const { return m_iID; }
 	UT_uint32					getParentID() const { return m_iParentID; }
-	bool                        isIDSomeWhere(UT_uint32 ID);
+	bool                        isIDSomeWhere(UT_uint32 ID) const;
 	static char *				dec2roman(UT_sint32 value, bool lower);
 	static char *				dec2ascii(UT_sint32 value, UT_uint32 offset);
 	static void					dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint32 value);
 	void                        getAttributes(std::vector<UT_UTF8String>&v,
-											  bool bEscapeXML);
-	PD_Document *               getDoc(void)
+											  bool bEscapeXML) const;
+	PD_Document *               getDoc(void) const
 	{return m_pDoc;}
-	PL_StruxDocHandle           getLastItemInHeiracy(void);
+	PL_StruxDocHandle           getLastItemInHeiracy(void) const;
 protected:
 	void                        _setParent(fl_AutoNum * pParent);
 	void                        _setParentID(UT_uint32 iParentID);
@@ -150,7 +150,7 @@ protected:
 												UT_uint32 depth,
 												PL_StruxDocHandle pLayout) const;
 	bool						_updateItems(UT_sint32 start, PL_StruxDocHandle notMe );
-	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum);
+	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum) const;
 
 	fl_AutoNum *				m_pParent;
 

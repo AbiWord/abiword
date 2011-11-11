@@ -954,9 +954,9 @@ const fl_AutoNum* fl_AutoNum::getAutoNumFromSdh(PL_StruxDocHandle sdh) const
 	return pAuto;
 }
 
-PL_StruxDocHandle fl_AutoNum::getLastItemInHeiracy(void)
+PL_StruxDocHandle fl_AutoNum::getLastItemInHeiracy(void) const
 {
-       fl_AutoNum * pAuto = this;
+       const fl_AutoNum * pAuto = this;
        PL_StruxDocHandle  pLastItem = NULL;
        bool bLoop = true;
        fl_AutoNum * pNext = NULL;
@@ -990,7 +990,7 @@ bool fl_AutoNum::isItem(PL_StruxDocHandle pItem) const
 		return true;
 }
 
-bool fl_AutoNum::isEmpty()
+bool fl_AutoNum::isEmpty() const
 {
 	if (m_pItems.getItemCount() > 0)
 		return false;
@@ -1005,7 +1005,7 @@ PL_StruxDocHandle fl_AutoNum::getFirstItem() const
 }
 
 
-PL_StruxDocHandle fl_AutoNum::getLastItem()
+PL_StruxDocHandle fl_AutoNum::getLastItem() const
 {
 	UT_uint32 i = m_pItems.getItemCount();
 	if(i == 0 )
@@ -1016,7 +1016,7 @@ PL_StruxDocHandle fl_AutoNum::getLastItem()
 	}
 }
 
-bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
+bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem) const
 {
 	fp_Run * pRun = pItem->getFirstRun();
 	bool bStop = false;
@@ -1042,7 +1042,7 @@ bool fl_AutoNum::doesItemHaveLabel( fl_BlockLayout * pItem)
 }
 
 
-bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem)
+bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem) const
 {
 	UT_sint32 itemloc = m_pItems.findItem(const_cast<void *>(pItem));
 	if (itemloc == -1)
@@ -1053,7 +1053,7 @@ bool fl_AutoNum::isLastOnLevel(PL_StruxDocHandle pItem)
 		return false;
 }
 
-fl_AutoNum * fl_AutoNum::getActiveParent(void)
+fl_AutoNum * fl_AutoNum::getActiveParent(void) const
 {
 	fl_AutoNum * pAutoNum = m_pParent;
 
@@ -1067,9 +1067,9 @@ fl_AutoNum * fl_AutoNum::getActiveParent(void)
  * This method returns true if the requested ID is somewhere in this
  * List heiracy.
  */
-bool fl_AutoNum::isIDSomeWhere(UT_uint32 ID)
+bool fl_AutoNum::isIDSomeWhere(UT_uint32 ID) const
 {
-	fl_AutoNum * pAuto = this;
+	const fl_AutoNum * pAuto = this;
 	while(pAuto != NULL)
 	{
 		if(pAuto->getID() == ID)
@@ -1189,7 +1189,7 @@ bool fl_AutoNum::_updateItems(UT_sint32 start, PL_StruxDocHandle notMe)
 ///
 /// Returns true if item is contained or immediately adjacent to the list
 ///
-bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem)
+bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem) const
 {
 	PL_StruxDocHandle sdh, sdh_prev,sdh_next;
 	PT_DocPosition pos_prev,pos_next,pos;
@@ -1214,7 +1214,7 @@ bool fl_AutoNum::isContainedByList(PL_StruxDocHandle pItem)
 }
 
 
-PL_StruxDocHandle fl_AutoNum::getNthBlock( UT_sint32 list_num)
+PL_StruxDocHandle fl_AutoNum::getNthBlock( UT_sint32 list_num) const
 {
 	if(list_num >= m_pItems.getItemCount())
 		return static_cast<PL_StruxDocHandle>(NULL);
@@ -1222,7 +1222,7 @@ PL_StruxDocHandle fl_AutoNum::getNthBlock( UT_sint32 list_num)
 		return static_cast<PL_StruxDocHandle>(m_pItems.getNthItem(list_num));
 }
 
-PL_StruxDocHandle fl_AutoNum::getPrevInList( PL_StruxDocHandle pItem)
+PL_StruxDocHandle fl_AutoNum::getPrevInList( PL_StruxDocHandle pItem) const
 {
 	UT_sint32 itemloc = m_pItems.findItem(const_cast<void *>(pItem));
 	if (itemloc == -1 || itemloc == 0)
@@ -1230,10 +1230,10 @@ PL_StruxDocHandle fl_AutoNum::getPrevInList( PL_StruxDocHandle pItem)
 	return static_cast<PL_StruxDocHandle>(m_pItems.getNthItem( static_cast<UT_uint32>(itemloc) - 1));
 }
 
-inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum)
+inline UT_uint32 fl_AutoNum::_getLevelValue(fl_AutoNum * pAutoNum) const
 {
 	PL_StruxDocHandle pBlock = const_cast<PL_StruxDocHandle>(getFirstItem());
-	fl_AutoNum * pCurr = this;
+	const fl_AutoNum * pCurr = this;
 
 	while (1)
 	{
@@ -1427,7 +1427,7 @@ void fl_AutoNum::dec2hebrew(UT_UCSChar labelStr[], UT_uint32 * insPoint, UT_sint
  *          to mess with that class at this very moment.
  */
 void fl_AutoNum::getAttributes (std::vector<UT_UTF8String> & v,
-								bool bEscapeXML)
+								bool bEscapeXML) const
 {
 	char szID[15], szPid[15], szType[5], szStart[5];
 
