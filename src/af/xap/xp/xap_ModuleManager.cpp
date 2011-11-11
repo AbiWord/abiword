@@ -166,8 +166,9 @@ bool XAP_ModuleManager::loadModule (const char * szFilename)
 		char * errorMsg = 0;
 		if (pModule->getErrorMsg (&errorMsg))
 		{	
-			UT_DEBUGMSG (("Reason: %s\n", errorMsg));
-			XAP_MODULE_MANAGER_LOAD_LOG("error msg", errorMsg)
+			UT_DEBUGMSG (("Reason: %s\n", errorMsg?errorMsg:"unknown"));
+			XAP_MODULE_MANAGER_LOAD_LOG("error msg",
+errorMsg?errorMsg:"Unknown")
 			FREEP (errorMsg);
 		}
 		pModule->unload ();
