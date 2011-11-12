@@ -91,12 +91,12 @@ void FV_ViewDoubleBuffering::endDoubleBuffering()
 	if(m_bSuspendDirectDrawing)
 		m_pPainter->resumeDrawing();
 
-	if(m_bCallDrawOnlyAtTheEnd)
-		this->callUnifiedDraw();
-
 	m_pPainter->endDoubleBuffering();
 
 	delete m_pPainter;
+
+	if(m_bCallDrawOnlyAtTheEnd)
+		this->callUnifiedDraw();
 }
 
 void FV_ViewDoubleBuffering::recordViewDrawCall(
@@ -120,8 +120,7 @@ void FV_ViewDoubleBuffering::callUnifiedDraw()
 	if(noRecordedDrawCalls()) return;
 
 	m_pView->getGraphics()->setClipRect(&mostExtArgs.clipRect);
-	// JEAN: calling m_pView::_draw at this point will finish the cairo surface target -> crash
-	recordViewDrawCall(
+	m_pView->_draw(
 		mostExtArgs.fullRect.left, mostExtArgs.fullRect.top,
 		mostExtArgs.fullRect.width, mostExtArgs.fullRect.height,
 		mostExtArgs.bDirtyRunsOnly, false);
