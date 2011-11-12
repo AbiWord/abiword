@@ -78,7 +78,8 @@ GR_UnixCairoGraphics::GR_UnixCairoGraphics(GdkWindow * win, bool double_buffered
 	  m_CairoCreated(false),
 	  m_Painting(false),
 	  m_Signal(0),
-      m_Widget(NULL)
+ 	  m_DestroySignal(0),
+     m_Widget(NULL)
 {
 	m_cr = NULL;
 	if (_getWindow())
@@ -104,8 +105,10 @@ GR_UnixCairoGraphics::~GR_UnixCairoGraphics()
 			g_object_unref (G_OBJECT (pix));
 		}
 	}
-	if (m_Widget)
+	if (m_Widget) {
 		g_signal_handler_disconnect (m_Widget, m_Signal);
+		g_signal_handler_disconnect (m_Widget, m_DestroySignal);
+	}
 }
 
 
@@ -135,11 +138,20 @@ void GR_UnixCairoGraphics::widget_size_allocate(GtkWidget* /*widget*/, GtkAlloca
 	me->m_clipRectDirty = TRUE;
 }
 
+void GR_UnixCairoGraphics::widget_destroy(GtkWidget* widget, GR_UnixCairoGraphics* me)
+{
+	UT_return_if_fail(me && me->m_Widget == widget);
+	me->m_Widget = NULL;
+	me->m_Signal = 0;
+	me->m_DestroySignal = 0;
+}
+
 void GR_UnixCairoGraphics::initWidget(GtkWidget* widget)
 {
 	UT_return_if_fail(widget && m_Widget == NULL);
 	m_Widget = widget;
 	m_Signal = g_signal_connect_after(G_OBJECT(widget), "size_allocate", G_CALLBACK(widget_size_allocate), this);
+	m_DestroySignal = g_signal_connect(G_OBJECT(widget), "destroy", G_CALLBACK(widget_destroy), this);
 }
 
 void GR_UnixCairoGraphics::init3dColors(GtkStyleContext * pCtxt)

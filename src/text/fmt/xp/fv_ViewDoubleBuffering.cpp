@@ -120,7 +120,8 @@ void FV_ViewDoubleBuffering::callUnifiedDraw()
 	if(noRecordedDrawCalls()) return;
 
 	m_pView->getGraphics()->setClipRect(&mostExtArgs.clipRect);
-	m_pView->_draw(
+	// JEAN: calling m_pView::_draw at this point will finish the cairo surface target -> crash
+	recordViewDrawCall(
 		mostExtArgs.fullRect.left, mostExtArgs.fullRect.top,
 		mostExtArgs.fullRect.width, mostExtArgs.fullRect.height,
 		mostExtArgs.bDirtyRunsOnly, false);

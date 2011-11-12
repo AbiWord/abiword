@@ -4552,9 +4552,11 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 					 "\t\twith [yScrollOffset %ld][windowHeight %ld][bDirtyRunsOnly %d]\n",
 					 x,y,width,height,bClip,
 					 m_yScrollOffset,getWindowHeight(),bDirtyRunsOnly));
-	
+
 	if(m_pViewDoubleBufferingObject != NULL && m_pViewDoubleBufferingObject->getCallDrawOnlyAtTheEnd())
 	{
+		// JEAN: is this useful? Shouldn't we just return?
+#if 0
 		// record this call's arguments and return
 		if(bClip)
 		{
@@ -4563,6 +4565,7 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 		}
 		m_pViewDoubleBufferingObject->recordViewDrawCall(x, y, width, height, bDirtyRunsOnly, bClip);
 		m_pG->setClipRect(NULL);
+#endif
 		return;
 	}
 

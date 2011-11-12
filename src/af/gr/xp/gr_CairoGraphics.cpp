@@ -3332,7 +3332,7 @@ void GR_CairoGraphics::_DeviceContext_SuspendDrawing()
 
 void GR_CairoGraphics::_DeviceContext_ResumeDrawing()
 {
-	cairo_pop_group(m_cr);
+	cairo_pattern_destroy (cairo_pop_group(m_cr));
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

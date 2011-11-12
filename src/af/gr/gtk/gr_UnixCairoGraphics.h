@@ -97,6 +97,8 @@ protected:
 	static void		widget_size_allocate (GtkWidget        *widget,
 									  GtkAllocation    *allocation,
 									  GR_UnixCairoGraphics *me);
+	static void		widget_destroy (GtkWidget        *widget,
+									  GR_UnixCairoGraphics *me);
 	GR_UnixCairoGraphics(GdkWindow * win = NULL, bool double_buffered=false);
 	virtual GdkWindow * _getWindow(void)
 	{  return m_pWin;}
@@ -112,7 +114,7 @@ private:
 	bool m_double_buffered;
 	bool m_CairoCreated;
 	bool m_Painting;
-	gulong m_Signal;
+	gulong m_Signal, m_DestroySignal;
 	GtkWidget *m_Widget;
 };
 
