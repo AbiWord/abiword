@@ -38,8 +38,14 @@ public:
 	static BOOL CALLBACK s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
 	BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
+
+	static void									setInstance(HINSTANCE hModule)
+		{ m_hModule = hModule; }
+	static HINSTANCE							getInstance()
+		{ return m_hModule; }
 private:
-	HINSTANCE m_hInstance;
+	static HINSTANCE m_hModule;
+
 	HWND m_hDlg;
 	void setvalues();
 	void gathervalues();

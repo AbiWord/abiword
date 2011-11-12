@@ -21,6 +21,9 @@
 #include <gsf/gsf-utils.h>
 #include "xap_Module.h"
 #include "ie_impexp_EPUB.h"
+#ifdef WIN32
+#include "ap_Win32Dialog_EpubExportOptions.h"
+#endif
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_epub_register
@@ -49,6 +52,10 @@ int abi_plugin_register(XAP_ModuleInfo * mi)
     if (!m_exp_sniffer)
         m_exp_sniffer = new IE_Exp_EPUB_Sniffer();
     IE_Exp::registerExporter(m_exp_sniffer);
+
+#ifdef WIN32
+	AP_Win32Dialog_EpubExportOptions::setInstance((HINSTANCE)s_hModule);
+#endif
 
     mi->name = "EPUB Filter";
     mi->desc = "Import/Export EPUB documents";

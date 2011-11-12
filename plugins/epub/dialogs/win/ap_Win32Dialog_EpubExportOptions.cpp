@@ -23,6 +23,8 @@
 #include "ap_Win32Dialog_EpubExportOptions.h"
 #include "ap_Win32Res_EpubExportOptions.rc2"
 
+HINSTANCE AP_Win32Dialog_EpubExportOptions::m_hModule = NULL;
+
 pt2Constructor ap_Dialog_EpubExportOptions_Constructor =
 	AP_Win32Dialog_EpubExportOptions::static_constructor;
 
@@ -32,13 +34,10 @@ XAP_Dialog * AP_Win32Dialog_EpubExportOptions::static_constructor(
 	return new AP_Win32Dialog_EpubExportOptions(pDF,id);
 }
 
-extern HINSTANCE g_hInstance;
-
 AP_Win32Dialog_EpubExportOptions::AP_Win32Dialog_EpubExportOptions(
     XAP_DialogFactory* pDlgFactory, XAP_Dialog_Id id)
     : AP_Dialog_EpubExportOptions(pDlgFactory,id)
 {
-	m_hInstance = g_hInstance;
 }
 
 
@@ -52,7 +51,7 @@ void AP_Win32Dialog_EpubExportOptions::runModal (XAP_Frame * pFrame)
 
 	HWND hParent = ((XAP_Win32FrameImpl*)pFrame->getFrameImpl())->getTopLevelWindow();
 
-	DialogBoxParamW(m_hInstance,MAKEINTRESOURCEW(AP_RID_DIALOG_EPUB_EXP_OPTIONS),hParent,
+	DialogBoxParamW(m_hModule,MAKEINTRESOURCEW(AP_RID_DIALOG_EPUB_EXP_OPTIONS),hParent,
 		s_dlgProc,(LPARAM)this);
 	
 	m_bShouldSave = true;
