@@ -114,6 +114,7 @@ libwin_la_SOURCES = \
 	ap_Win32TopRuler.h
 
 rc2files = \
+	ap_Win32Res_Border_Shading.rc2 \
 	ap_Win32Res_DlgAnnotation.rc2 \
 	ap_Win32Res_DlgBreak.rc2 \
 	ap_Win32Res_DlgColumns.rc2 \
