@@ -163,14 +163,33 @@ void GR_UnixCairoGraphics::init3dColors(GtkStyleContext * pCtxt)
 	m_3dColors[CLR3D_Highlight]  = _convertGdkRGBA(rgba);
 	gtk_style_context_get_background_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba);
 	m_3dColors[CLR3D_Background] = _convertGdkRGBA(rgba);
-	rgba_.red = rgba.red / 2. + .5; // light color at midway between background and white
-	rgba_.green =rgba.green / 2. + .5;
-	rgba_.blue = rgba.blue / 2. + .5;
 	rgba_.alpha = 1.;   // we don't really care, abiword does not use transparency
+	rgba_.red = rgba.red + .1;
+	double f, rf = 1. + .1 / rgba.red;
+	if (rf > 1. / rgba.red)
+		rf = 1. / rgba.red;
+	f = 1. + .1 / rgba.green;
+	if (f < rf)
+		rf = f;
+	f = 1. + .1 / rgba.blue;
+	if (f < rf)
+		rf = f;
+	rgba_.red = rgba.red * rf;
+	rgba_.green = rgba.green* rf;
+	rgba_.blue = rgba.blue * rf;
 	m_3dColors[CLR3D_BevelUp]    = _convertGdkRGBA(rgba_);
-	rgba_.red = rgba.red / 2.; // dark color at midway between background and black
-	rgba_.green = rgba.green / 2.;
-	rgba_.blue = rgba.blue / 2.;
+	rf = 1. - .1 / rgba.red;
+	f = 1. - .1 / rgba.green;
+	if (f > rf)
+		rf = f;
+	f = 1. - .1 / rgba.blue;
+	if (f > rf)
+		rf = f;
+	if (rf < .5)
+		rf = .5;
+	rgba_.red = rgba.red * rf;
+	rgba_.green = rgba.green* rf;
+	rgba_.blue = rgba.blue * rf;
 	m_3dColors[CLR3D_BevelDown]  = _convertGdkRGBA(rgba_);
 	m_bHave3DColors = true;
 }
