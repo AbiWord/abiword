@@ -981,6 +981,12 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	// we did our calculations at notional 100%
 	RI->m_iZoom = 100;
 
+	// Make sure that s_pOwnerUTF8 and s_pOwnerLogAttrs are not referencing RI
+	if (RI->s_pOwnerLogAttrs == RI)
+		RI->s_pOwnerLogAttrs = NULL;
+	if (RI->s_pOwnerUTF8 == RI)
+		RI->s_pOwnerUTF8 = NULL;
+
 	return true;
 }
 
