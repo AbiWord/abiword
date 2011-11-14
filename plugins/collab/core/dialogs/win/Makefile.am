@@ -33,6 +33,7 @@ EXTRA_DIST = \
 	ap_Win32Res_DlgCollaborationAccounts.rc2 \
 	ap_Win32Res_DlgCollaborationAddAccount.rc2 \
 	ap_Win32Res_DlgCollaborationAddBuddy.rc2 \
+	ap_Win32Res_DlgCollaborationEditAccount.rc2 \
 	ap_Win32Res_DlgCollaborationJoin.rc2 \
 	ap_Win32Res_DlgCollaborationShare.rc2
 
