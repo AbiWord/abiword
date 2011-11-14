@@ -13,4 +13,5 @@ ap_Win32Res_EpubExportOptions.lo: ap_Win32Res_EpubExportOptions.rc $(libwin_la_O
 	CPPFLAGS="$(COLLAB_RCFLAGS)" $(top_srcdir)/lt-compile-resource $< $@
 
 EXTRA_DIST = \
-	ap_Win32Res_EpubExportOptions.rc
+	ap_Win32Res_EpubExportOptions.rc \
+	ap_Win32Res_EpubExportOptions.rc2
