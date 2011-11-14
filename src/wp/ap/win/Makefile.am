@@ -166,6 +166,10 @@ iconfiles = \
 	ToolbarIcons/align_justify.bmp \
 	ToolbarIcons/align_left.bmp \
 	ToolbarIcons/align_right.bmp \
+	ToolbarIcons/border_dashed.bmp \
+	ToolbarIcons/border_dotted.bmp \
+	ToolbarIcons/border_none.bmp \
+	ToolbarIcons/border_solid.bmp \
 	ToolbarIcons/color_back.bmp \
 	ToolbarIcons/color_fore.bmp \
 	ToolbarIcons/delete_column.bmp \
