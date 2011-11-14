@@ -23,6 +23,7 @@
 #define __XAP_UNIXWIDGET_H__
 
 #include "xap_Widget.h"
+#include <string>
 #include <gtk/gtk.h>
 
 class XAP_UnixWidget
