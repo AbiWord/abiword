@@ -11290,6 +11290,7 @@ FV_View::countWords(void)
 			pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
 		if (pLine)
 			pRun = pLine->getFirstRun();
+		iCount++;    // Extra character at the end of block
 	}
 
 	//wCount.words_no_hdrftr = wCount.word - wCount.words_no_hdrftr;
