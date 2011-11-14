@@ -147,6 +147,7 @@ libxp_la_SOURCES = \
 	ap_Dialog_Spell.h \
 	ap_Dialog_SplitCells.cpp \
 	ap_Dialog_SplitCells.h \
+	ap_Dialog_Stub.h \
 	ap_Dialog_Styles.cpp \
 	ap_Dialog_Styles.h \
 	ap_Dialog_Stylist.cpp \
