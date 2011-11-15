@@ -789,12 +789,12 @@ if test "$TOOLKIT" = "gtk"  &&
    test "$enable_shared" = "yes"; then
 	# link plugins to work around gcc visibility issue with 
 	# derived classes in dlopened modules
-	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
+	PLUGIN_LIBS='${top_builddir}/src/libabiword-'"$ABIWORD_SERIES"'.la'" $PLUGIN_LIBS"
 elif test "$TOOLKIT" = "win"; then
 	PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'-D_WIN32_IE=0x0501 -D_WIN32_WINNT=0x0500'
-	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
+	PLUGIN_LIBS='${top_builddir}/src/libabiword-'"$ABIWORD_SERIES"'.la'" $PLUGIN_LIBS"
 elif test "$TOOLKIT" = "cocoa" ; then 
-	PLUGIN_LIBS="$PLUGIN_LIBS "'-L${top_builddir}/src'" -labiword-$ABIWORD_SERIES"
+	PLUGIN_LIBS='${top_builddir}/src/libabiword-'"$ABIWORD_SERIES"'.la'" $PLUGIN_LIBS"
 fi
 AC_SUBST([PLUGIN_CFLAGS])
 AC_SUBST([PLUGIN_LIBS])
