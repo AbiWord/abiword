@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = clarisworks.la
 endif
 
 clarisworks_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(CLARISWORKS_LIBS)
 
 clarisworks_la_LDFLAGS = \
-	$(CLARISWORKS_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

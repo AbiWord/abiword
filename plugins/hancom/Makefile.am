@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = hancom.la
 endif
 
 hancom_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(HANCOM_LIBS)
 
 hancom_la_LDFLAGS = \
-	$(HANCOM_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

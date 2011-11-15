@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = wikipedia.la
 endif
 
 wikipedia_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(WIKIPEDIA_LIBS)
 
 wikipedia_la_LDFLAGS = \
-	$(WIKIPEDIA_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

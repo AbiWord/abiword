@@ -16,10 +16,10 @@ plugin_LTLIBRARIES = latex.la
 endif
 
 latex_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(LATEX_LIBS)
 
 latex_la_LDFLAGS = \
-	$(LATEX_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

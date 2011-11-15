@@ -5,10 +5,10 @@ plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = goffice.la
 
 goffice_la_LIBADD = \
-	unix/libunix.la
+	unix/libunix.la \
+	$(GOFFICE_LIBS)
 
 goffice_la_LDFLAGS = \
-	$(GOFFICE_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

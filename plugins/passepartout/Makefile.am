@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = passepartout.la
 endif
 
 passepartout_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(PASSEPARTOUT_LIBS)
 
 passepartout_la_LDFLAGS = \
-	$(PASSEPARTOUT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = pdb.la
 endif
 
 pdb_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(PDB_LIBS)
 
 pdb_la_LDFLAGS = \
-	$(PDB_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = pdf.la
 endif # PDF_BUILTIN
 
 pdf_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(PDF_LIBS)
 
 pdf_la_LDFLAGS = \
-	$(PDF_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

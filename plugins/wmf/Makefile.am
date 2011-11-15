@@ -5,10 +5,10 @@ plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = wmf.la
 
 wmf_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(WMF_LIBS)
 
 wmf_la_LDFLAGS = \
-	$(WMF_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

@@ -6,10 +6,10 @@ plugin_LTLIBRARIES = grammar.la
 
 grammar_la_LIBADD = \
 	linkgrammarwrap/liblinkgrammarwrap.la \
-	xp/libxp.la
+	xp/libxp.la \
+	$(GRAMMAR_LIBS)
 
 grammar_la_LDFLAGS = \
-	$(GRAMMAR_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

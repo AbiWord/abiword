@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = mif.la
 endif
 
 mif_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(MIF_LIBS)
 
 mif_la_LDFLAGS = \
-	$(MIF_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

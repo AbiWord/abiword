@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = hrtext.la
 endif
 
 hrtext_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(HRTEXT_LIBS)
 
 hrtext_la_LDFLAGS = \
-	$(HRTEXT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

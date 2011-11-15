@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = sdw.la
 endif
 
 sdw_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(SDW_LIBS)
 
 sdw_la_LDFLAGS = \
-	$(SDW_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

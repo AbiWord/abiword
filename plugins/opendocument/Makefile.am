@@ -14,11 +14,11 @@ endif # OPENDOCUMENT_BUILTIN
 opendocument_la_LIBADD = \
 	common/libcommon.la \
 	exp/libexp.la \
-	imp/libimp.la
+	imp/libimp.la \
+	$(OPENDOCUMENT_LIBS) \
+	$(LIBGCRYPT_LIBS)
 
 opendocument_la_LDFLAGS = \
-	$(OPENDOCUMENT_LIBS) \
-	$(LIBGCRYPT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

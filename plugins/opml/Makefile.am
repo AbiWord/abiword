@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = opml.la
 endif
 
 opml_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(OPML_LIBS)
 
 opml_la_LDFLAGS = \
-	$(OPML_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = kword.la
 endif
 
 kword_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(KWORD_LIBS)
 
 kword_la_LDFLAGS = \
-	$(KWORD_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

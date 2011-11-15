@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = xslfo.la
 endif
 
 xslfo_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(XSLFO_LIBS)
 
 xslfo_la_LDFLAGS = \
-	$(XSLFO_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

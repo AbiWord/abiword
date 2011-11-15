@@ -15,11 +15,11 @@ plugin_LTLIBRARIES = collab.la
 
 collab_la_LIBADD = \
 	backends/libbackends.la \
-	core/libcore.la
+	core/libcore.la \
+	$(COLLAB_LIBS) \
+	$(SYSTEM_LIBS)
 
 collab_la_LDFLAGS = \
-	$(COLLAB_LIBS) \
-	$(SYSTEM_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

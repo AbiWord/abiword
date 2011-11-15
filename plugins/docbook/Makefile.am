@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = docbook.la
 endif
 
 docbook_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(DOCBOOK_LIBS)
 
 docbook_la_LDFLAGS = \
-	$(DOCBOOK_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = wml.la
 endif
 
 wml_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(WML_LIBS)
 
 wml_la_LDFLAGS = \
-	$(WML_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

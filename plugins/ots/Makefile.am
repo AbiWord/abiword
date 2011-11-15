@@ -5,10 +5,10 @@ plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = ots.la
 
 ots_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(OTS_LIBS)
 
 ots_la_LDFLAGS = \
-	$(OTS_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

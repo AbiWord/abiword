@@ -23,9 +23,9 @@ epub_la_LIBADD = \
 if !TOOLKIT_COCOA
 epub_la_LIBADD += dialogs/libdialogs.la
 endif
+epub_la_LIBADD += $(EPUB_LIBS)
 
 epub_la_LDFLAGS = \
-	$(EPUB_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

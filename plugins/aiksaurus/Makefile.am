@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = aiksaurus.la
 
 aiksaurus_la_LIBADD = \
 	$(platform_lib) \
-	xp/libxp.la
+	xp/libxp.la \
+	$(AIKSAURUS_LIBS)
 
 aiksaurus_la_LDFLAGS = \
-	$(AIKSAURUS_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

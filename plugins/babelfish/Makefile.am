@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = babelfish.la
 endif
 
 babelfish_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(BABELFISH_LIBS)
 
 babelfish_la_LDFLAGS = \
-	$(BABELFISH_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

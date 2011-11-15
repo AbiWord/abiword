@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = mswrite.la
 endif
 
 mswrite_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(MSWRITE_LIBS)
 
 mswrite_la_LDFLAGS = \
-	$(MSWRITE_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

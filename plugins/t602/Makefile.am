@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = t602.la
 endif
 
 t602_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(T602_LIBS)
 
 t602_la_LDFLAGS = \
-	$(T602_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

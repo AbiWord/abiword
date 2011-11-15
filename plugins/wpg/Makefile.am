@@ -5,10 +5,10 @@ plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = wpg.la
 
 wpg_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(WPG_LIBS) 
 
 wpg_la_LDFLAGS = \
-	$(WPG_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

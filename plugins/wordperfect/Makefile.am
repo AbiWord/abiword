@@ -5,10 +5,10 @@ plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = wordperfect.la
 
 wordperfect_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(WORDPERFECT_LIBS)
 
 wordperfect_la_LDFLAGS = \
-	$(WORDPERFECT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

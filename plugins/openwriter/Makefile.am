@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = openwriter.la
 endif
 
 openwriter_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(OPENWRITER_LIBS)
 
 openwriter_la_LDFLAGS = \
-	$(OPENWRITER_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = google.la
 endif
 
 google_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(GOOGLE_LIBS)
 
 google_la_LDFLAGS = \
-	$(GOOGLE_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

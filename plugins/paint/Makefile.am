@@ -14,10 +14,10 @@ endif
 
 paint_la_LIBADD = \
 	@PLATFORM@/lib@PLATFORM@.la \
-	xp/libxp.la
+	xp/libxp.la \
+	$(PAINT_LIBS)
 
 paint_la_LDFLAGS = \
-	$(PAINT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

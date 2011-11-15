@@ -5,10 +5,10 @@ plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = psion.la
 
 psion_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(PSION_LIBS)
 
 psion_la_LDFLAGS = \
-	$(PSION_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

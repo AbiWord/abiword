@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = gdict.la
 endif
 
 gdict_la_LIBADD = \
-	unix/libunix.la
+	unix/libunix.la \
+	$(GDICT_LIBS)
 
 gdict_la_LDFLAGS = \
-	$(GDICT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

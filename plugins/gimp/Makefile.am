@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = gimp.la
 endif
 
 gimp_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(GIMP_LIBS)
 
 gimp_la_LDFLAGS = \
-	$(GIMP_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

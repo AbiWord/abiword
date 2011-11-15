@@ -5,10 +5,10 @@ plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = mht.la
 
 mht_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(MHT_LIBS)
 
 mht_la_LDFLAGS = \
-	$(MHT_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

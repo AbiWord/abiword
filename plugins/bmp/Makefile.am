@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = bmp.la
 endif
 
 bmp_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(BMP_LIBS)
 
 bmp_la_LDFLAGS = \
-	$(BMP_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

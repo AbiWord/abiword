@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = iscii.la
 endif
 
 iscii_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(ISCII_LIBS)
 
 iscii_la_LDFLAGS = \
-	$(ISCII_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

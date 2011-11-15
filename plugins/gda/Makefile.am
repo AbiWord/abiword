@@ -5,10 +5,10 @@ plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = gda.la
 
 gda_la_LIBADD = \
-	unix/libunix.la
+	unix/libunix.la \
+	$(GDA_LIBS)
 
 gda_la_LDFLAGS = \
-	$(GDA_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

@@ -14,10 +14,10 @@ endif
 openxml_la_LIBADD = \
 	common/libcommon.la \
 	imp/libimp.la \
-	exp/libexp.la
+	exp/libexp.la \
+	$(OPENXML_LIBS)
 
 openxml_la_LDFLAGS = \
-	$(OPENXML_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = s5.la
 endif
 
 s5_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(S5_LIBS)
 
 s5_la_LDFLAGS = \
-	$(S5_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

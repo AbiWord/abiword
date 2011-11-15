@@ -11,7 +11,6 @@ garble_la_LIBADD = \
 	$(GARBLE_LIBS) $(PNG_LIBS) -ljpeg
 
 garble_la_LDFLAGS = \
-	$(GARBLE_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

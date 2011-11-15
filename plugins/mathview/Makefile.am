@@ -6,10 +6,10 @@ plugin_LTLIBRARIES = mathview.la
 
 mathview_la_LIBADD = \
 	itex2mml/libitex2mml.la \
-	xp/libxp.la
+	xp/libxp.la \
+	$(MATHVIEW_LIBS)
 
 mathview_la_LDFLAGS = \
-	$(MATHVIEW_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

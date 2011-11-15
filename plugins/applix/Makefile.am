@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = applix.la
 endif # APPLIX_BUILTIN
 
 applix_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(APPLIX_LIBS)
 
 applix_la_LDFLAGS = \
-	$(APPLIX_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = eml.la
 endif
 
 eml_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(EML_LIBS)
 
 eml_la_LDFLAGS = \
-	$(EML_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

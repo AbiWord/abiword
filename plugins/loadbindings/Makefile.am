@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = loadbindings.la
 endif
 
 loadbindings_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(LOADBINDINGS_LIBS)
 
 loadbindings_la_LDFLAGS = \
-	$(LOADBINDINGS_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined

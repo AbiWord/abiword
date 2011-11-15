@@ -12,10 +12,10 @@ plugin_LTLIBRARIES = freetranslation.la
 endif
 
 freetranslation_la_LIBADD = \
-	xp/libxp.la
+	xp/libxp.la \
+	$(FREETRANSLATION_LIBS)
 
 freetranslation_la_LDFLAGS = \
-	$(FREETRANSLATION_LIBS) \
 	-avoid-version \
 	-module \
 	-no-undefined
