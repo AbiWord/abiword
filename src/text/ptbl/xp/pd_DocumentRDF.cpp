@@ -31,6 +31,8 @@
 #include <sstream>
 #include <set>
 
+#include <iterator>
+
 #include <iostream>
 using std::cerr;
 using std::endl;
