@@ -52,6 +52,14 @@ using std::endl;
 
 #define BUTTON_INSERT 1
 #include <gdk/gdkkeysyms.h>
+
+#if !GTK_CHECK_VERSION(2,21,8)
+#define GDK_KEY_Delete GDK_Delete
+#define GDK_KEY_BackSpace GDK_BackSpace
+#define GDK_KEY_Left GDK_Left
+#define GDK_KEY_Right GDK_Right
+#endif
+
 static gboolean __onKeyPressed( GtkWidget*   widget,
                                 GdkEventKey* event,
                                 gpointer     user_data )
