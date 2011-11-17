@@ -1312,8 +1312,10 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					_wd * wd = m_vecToolbarWidgets.getNthItem(k);
 					UT_ASSERT(wd && wd->m_widget);
 					gtk_widget_set_sensitive(wd->m_widget, !bGrayed);     					
-					if (EV_TIS_ShouldBeHidden(tis)) gtk_widget_hide(wd->m_widget);
-					else gtk_widget_show(wd->m_widget);
+					if (EV_TIS_ShouldBeHidden(tis)) 
+						gtk_widget_hide(wd->m_widget);
+					else 
+						gtk_widget_show(wd->m_widget);
 				}
 				break;
 			
