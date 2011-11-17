@@ -153,5 +153,6 @@ void DEBUG_WRI_STRUCT (wri_struct *w, int spaces)
 	}
 #else
 	UT_UNUSED(w);
+	UT_UNUSED(spaces);
 #endif
 }
