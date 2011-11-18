@@ -506,7 +506,6 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
   const char * pszDataID = NULL;
   pSpanAP->getAttribute("dataid", pszDataID);
   UT_ByteBuf *pBuf;
-/* FIXME: don't enable this code until svg snapshot are supported
   if ((pBuf = pGOChartView->exportToSVG ()))
     {
       UT_UTF8String sID = "snapshot-svg-";
@@ -523,7 +522,7 @@ void GR_GOChartManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
         }
       delete pBuf;
     }
-  else */
+  else
   if ((pBuf = pGOChartView->exportToPNG ()))
     {
       UT_UTF8String sID = "snapshot-png-";
@@ -764,14 +763,14 @@ UT_ByteBuf *GOChartView::exportToPNG ()
 UT_ByteBuf *GOChartView::exportToSVG ()
 {
 	UT_return_val_if_fail (m_Graph, NULL);
-	UT_ByteBuf *pBuf = NULL; /*new UT_ByteBuf ();
+	UT_ByteBuf *pBuf = new UT_ByteBuf ();
 	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (
 										reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
 										pBuf, width, height);
 	cairo_t *cr = cairo_create (surface);
 	cairo_surface_destroy (surface);
 	gog_renderer_render_to_cairo (m_Renderer, cr, width, height);
-	cairo_destroy (cr);*/
+	cairo_destroy (cr);
 	return pBuf;
 }
 
