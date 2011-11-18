@@ -677,7 +677,7 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 	unsigned char page[0x80];
 	UT_String properties, tmp, lastprops;
 
-	if (process == All) { UT_DEBUGMSG(("PAP:\n")) };
+	if (process == All) { UT_DEBUGMSG(("PAP:\n")); }
 
 	fcMac = wri_struct_value(wri_file_header, "fcMac");
 	pnPara = wri_struct_value(wri_file_header, "pnPara");
@@ -708,7 +708,7 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 			int rhcPage, rHeaderFooter, rhcFirst;
 			int tabs, dxaTab[14], jcTab[14];
 
-			if (process == All) { UT_DEBUGMSG(("  PAP-FOD #%02d:\n", fod + 1)) };
+			if (process == All) { UT_DEBUGMSG(("  PAP-FOD #%02d:\n", fod + 1)); }
 
 			// read a FOD (format descriptor)
 			fcLim = READ_DWORD(page + 4 + fod * 6);
@@ -731,7 +731,7 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 			// if the PAP FPROPs (formatting properties) differ from the defaults, get them
 			if (bfprop != 0xffff && bfprop + (cch = page[bfprop + 4]) < 0x80)
 			{
-				if (process == All) { UT_DEBUGMSG(("    cch = %d\n", cch)) };
+				if (process == All) { UT_DEBUGMSG(("    cch = %d\n", cch)); }
 
 				if (cch >= 2) jc = page[bfprop + 6] & 3;
 				if (cch >= 6) dxaRight = READ_WORD(page + bfprop + 9);
