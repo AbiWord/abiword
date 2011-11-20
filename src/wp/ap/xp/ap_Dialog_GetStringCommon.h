@@ -49,13 +49,13 @@ class ABI_EXPORT AP_Dialog_GetStringCommon : public XAP_Dialog_NonPersistent
 
 	tAnswer     getAnswer() const;
 	void        setAnswer(tAnswer a);
-    std::string getString() const;
+	const std::string & getString() const;
 	void        setString( const std::string& s );
 	void        setDoc(FV_View * pView);
 
 private:
 	PD_Document* m_pDoc;
-    std::string  m_string;
+	std::string  m_string;
 	AP_Dialog_GetStringCommon::tAnswer	m_answer;
 };
 

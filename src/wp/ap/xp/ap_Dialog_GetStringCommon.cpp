@@ -26,8 +26,8 @@ AP_Dialog_GetStringCommon::AP_Dialog_GetStringCommon( XAP_DialogFactory * pDlgFa
                                                       XAP_Dialog_Id id,
                                                       const char* dialogfile )
   : XAP_Dialog_NonPersistent(pDlgFactory,id, dialogfile)
-  , m_answer(a_CANCEL)
   , m_string("")
+  , m_answer(a_CANCEL)
 {
 }
 
@@ -47,7 +47,7 @@ AP_Dialog_GetStringCommon::getAnswer() const
     return m_answer;
 }
 
-std::string
+const std::string &
 AP_Dialog_GetStringCommon::getString() const
 {
   return m_string;
