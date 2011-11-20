@@ -76,6 +76,20 @@
 
 class fl_AutoNum;
 
+
+/** Ensure on input from RTF the list level is 0-8 */
+inline UT_sint32 _sanitizeListLevel(UT_sint32 level)
+{
+	if(level > 8) {
+		level = 8;
+	}
+	else if(level < 0) {
+		level = 0;
+	}
+	return level;
+}
+
+
 /*!
   This macros allow the use of an iconv fallback name if needed.
  */
@@ -5076,7 +5090,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		// TODO Ignore document info for the moment
 		return HandleInfoMetaData();
 	case RTF_KW_ilvl:
-		m_currentRTFState.m_paraProps.m_iOverrideLevel = static_cast<UT_uint32>(param);
+		m_currentRTFState.m_paraProps.m_iOverrideLevel = static_cast<UT_uint32>(_sanitizeListLevel(param));
 		return true;
 	case RTF_KW_intbl:
 		UT_DEBUGMSG(("done intbl \n"));
@@ -9884,7 +9898,7 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "ilvl") == 0)
 			{
 				UT_DEBUGMSG(("FOUND ilvl in stream - levelnumber %d\n",parameter));
-				rtfTable.iWord97Level = static_cast<UT_uint32>(parameter);
+				rtfTable.iWord97Level = static_cast<UT_uint32>(_sanitizeListLevel(parameter));
 				// Word 97 list level
 			}
 			else if (strcmp(reinterpret_cast<char*>(&keyword[0]), "pnrnot") == 0)
