@@ -1565,9 +1565,11 @@ void ODi_TextContent_ListenerState::_openAbiSection(
     
     atts[i] = 0; // No more attributes.
 
-    if(m_inAbiSection && !m_bOpenedBlock) {
-        _insureInBlock(NULL); //see Bug 10627 - hang on empty <section>
-    }
+// Bug 12716 - this cause an stack overflow
+// Reverting it seems to no cause bug 10627 to fail anymore
+//    if(m_inAbiSection && !m_bOpenedBlock) {
+//        _insureInBlock(NULL); //see Bug 10627 - hang on empty <section>
+//    }
    
     m_pAbiDocument->appendStrux(PTX_Section, (const gchar**)atts);    
 	m_bPendingSection = false;
