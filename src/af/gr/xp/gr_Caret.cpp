@@ -32,7 +32,7 @@
 #include "ut_debugmsg.h"
 static const UT_uint32 CURSOR_DELAY_TIME = 10; // milliseconds
 
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 #include <gtk/gtk.h>
 #elif defined(TOOLKIT_WIN)
 #include <windows.h>
@@ -177,7 +177,7 @@ void GR_Caret::s_blink_timeout(UT_Worker * _w)
 
 UT_uint32 GR_Caret::_getCursorBlinkTime() const
 {
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 	UT_uint32 blink;
 	GtkSettings * settings = gtk_settings_get_default ();
 
@@ -193,7 +193,7 @@ UT_uint32 GR_Caret::_getCursorBlinkTime() const
 
 UT_uint32 GR_Caret::_getCursorBlinkTimeout() const
 {
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 	UT_uint32 timeout = 0;
 	GtkSettings * settings = gtk_settings_get_default ();
 
@@ -304,7 +304,7 @@ void GR_Caret::disable(bool bNoMulti)
  * If not, then _blink() won't actually clear the caret; it'll only draw. */
 void GR_Caret::setBlink(bool bBlink)
 {
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 	gboolean can;
 	GtkSettings * settings = gtk_settings_get_default ();
 

@@ -3728,7 +3728,7 @@ s_closeWindow (AV_View * pAV_View, EV_EditMethodCallData * pCallData,
 Defun(closeWindow)
 {
 	CHECK_FRAME;
-#if !defined(TOOLKIT_GTK)
+#if !defined(TOOLKIT_GTK_ALL)
 	UT_return_val_if_fail (pAV_View, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pAV_View->getParentData());
 	UT_return_val_if_fail(pFrame, false);
@@ -9793,7 +9793,7 @@ Defun1(dlgSpellPrefs)
     return s_doOptionsDlg(pView, 4); // spelling tab
 #endif
 
-#if !defined (TOOLKIT_WIN) && !defined (TOOLKIT_GTK)
+#if !defined (TOOLKIT_WIN) && !defined (TOOLKIT_GTK_ALL)
     return s_doOptionsDlg(pView, 1); // spelling tab
 #else
     // spelling tab in Windows in the tab num 2

@@ -193,7 +193,7 @@ ap_bs_Mouse MouseTable[] =
 //	Button-2, Text-context
 //  { context	{ click				doubleclick		drag,		dbldrag,		release,	doublerelease	}},
 
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 // special key binding for X11-style middle mouse selection (not to be confused with the clipboard)
 	{_CT _B2,	{ "pasteSelection",	"",				"",			"",				"",			""				}},
 	{_CH _B2,	{ "pasteSelection",	"",				"",			"",				"",			""				}},

@@ -55,7 +55,7 @@ BeginLayout(Main,0)
 #ifdef ENABLE_PRINT
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
-#if defined(TOOLKIT_GTK) || defined (TOOLKIT_WIN)
+#if defined(TOOLKIT_GTK_ALL) || defined (TOOLKIT_WIN)
 		MenuItem(AP_MENU_ID_FILE_PRINT_PREVIEW)
 #endif
 		MenuItem(AP_MENU_ID_FILE_PRINT)
@@ -64,7 +64,7 @@ BeginLayout(Main,0)
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PROPERTIES)
 		Separator()
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 		// GNOME HIG style recent files 
 		MenuItem(AP_MENU_ID_FILE_RECENT_1)
 		MenuItem(AP_MENU_ID_FILE_RECENT_2)
@@ -190,7 +190,7 @@ BeginLayout(Main,0)
 
 		MenuItem(AP_MENU_ID_INSERT_FILE)
 
-#if defined(TOOLKIT_GTK) && !XAP_SIMPLE_MENU
+#if defined(TOOLKIT_GTK_ALL) && !XAP_SIMPLE_MENU
 		MenuItem(AP_MENU_ID_INSERT_CLIPART)
 #endif
 		MenuItem(AP_MENU_ID_INSERT_GRAPHIC)
@@ -445,10 +445,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_HELP_CHECKVER)
 		MenuItem(AP_MENU_ID_HELP_REPORT_BUG)
 		Separator()
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 		MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
 #endif
-#ifndef TOOLKIT_GTK
+#ifndef TOOLKIT_GTK_ALL
 		MenuItem(AP_MENU_ID_HELP_CREDITS)
 #endif
 		MenuItem(AP_MENU_ID_HELP_ABOUT)

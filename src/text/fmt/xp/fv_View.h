@@ -43,7 +43,7 @@
 #include "fv_Selection.h"
 #include "fv_InlineImage.h"
 
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 #include "fv_UnixVisualDrag.h"
 #include "fv_UnixFrameEdit.h"
 #include "fv_UnixInlineImage.h"
@@ -1114,12 +1114,12 @@ private:
 	mutable fv_PropCache        m_BlockProps;
 	mutable fv_PropCache        m_SecProps;
 	AV_ListenerId       m_CaretListID;
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 	FV_UnixFrameEdit    m_FrameEdit;
 #else
 	FV_FrameEdit        m_FrameEdit;
 #endif
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 	FV_UnixVisualDrag   m_VisualDragText;
 #else
 	FV_VisualDragText   m_VisualDragText;
@@ -1132,7 +1132,7 @@ private:
 	bool                m_bDontNotifyListeners;
 	UT_ByteBuf *        m_pLocalBuf;
 	UT_sint32           m_iGrabCell;
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 	FV_UnixVisualInlineImage  m_InlineImage;
 #else
 	FV_VisualInlineImage  m_InlineImage;

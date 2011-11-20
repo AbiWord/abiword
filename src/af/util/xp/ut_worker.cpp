@@ -129,7 +129,7 @@ UT_Worker * UT_WorkerFactory::static_constructor ( UT_WorkerCallback cb,
   
   // give preference to CAN_USE_IDLE
 
-#if defined(SUPPORTS_UT_IDLE) || defined(TOOLKIT_GTK)
+#if defined(SUPPORTS_UT_IDLE) || defined(TOOLKIT_GTK_ALL)
   if ( mode & IDLE )
   {
       tmp = UT_Idle::static_constructor ( cb, data );

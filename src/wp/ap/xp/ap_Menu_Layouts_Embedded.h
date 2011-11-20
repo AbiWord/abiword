@@ -384,10 +384,10 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_HELP_CHECKVER)
 		MenuItem(AP_MENU_ID_HELP_REPORT_BUG)
 		Separator()
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 		MenuItem(AP_MENU_ID_HELP_ABOUT_GNOMEOFFICE)
 #endif
-#ifndef TOOLKIT_GTK
+#ifndef TOOLKIT_GTK_ALL
 		MenuItem(AP_MENU_ID_HELP_CREDITS)
 #endif
 #endif

@@ -85,7 +85,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FILE_PROPERTIES, 0,1,0,0, "dlgMetaData", NULL, NULL);
 	_s(AP_MENU_ID_FILE_CLOSE,		0,0,0,0,	"closeWindow",		NULL,					NULL);
 	_s(AP_MENU_ID_FILE_PAGESETUP,	0,1,0,0,	"pageSetup",		NULL,					NULL);
-#if TOOLKIT_GTK
+#if TOOLKIT_GTK_ALL
 	_s(AP_MENU_ID_FILE_PRINT,  0,1,0,0,	"cairoPrint",NULL,NULL);
 	_s(AP_MENU_ID_FILE_PRINT_PREVIEW, 0,1,0,0, "cairoPrintPreview", NULL, NULL);
 	_s(AP_MENU_ID_FILE_PRINT_DIRECTLY, 0,1,0,0, "cairoPrintDirectly", NULL, NULL);
