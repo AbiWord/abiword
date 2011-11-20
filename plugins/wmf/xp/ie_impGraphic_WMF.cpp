@@ -112,7 +112,7 @@ UT_Error IE_ImpGraphic_WMF::importGraphic(UT_ByteBuf* pBBwmf,
 
 	bool importAsPNG = true;
 
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 	importAsPNG = false;
 #endif
 
