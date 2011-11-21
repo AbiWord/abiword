@@ -592,7 +592,7 @@ AC_CHECK_HEADER([zlib.h], [],
 	AC_MSG_ERROR([`zlib.h' not found, install zlib or specify CPPFLAGS to include custom locations])
 ])
 
-AX_BOOST_BASE([1.40.0])
+AX_BOOST_BASE([1.40.0],,[AC_MSG_ERROR([`boost' not found.])])
 
 deps_pkgs="$xp_pkgs $opt_pkgs"
 SYSTEM_LIBS=
