@@ -45,7 +45,7 @@
 
 // External includes
 #include <stdlib.h>
-
+#include <libxml/uri.h>
 
 /**
  * Constructor
@@ -763,19 +763,21 @@ void ODe_Text_Listener::closeBookmark(UT_UTF8String &sBookmarkName) {
 void ODe_Text_Listener::openHyperlink(const PP_AttrProp* pAP) {
     UT_return_if_fail(pAP);
 
-    UT_UTF8String output = "<text:a ", escape;
     const gchar* pValue = NULL;
 
     if(pAP->getAttribute("xlink:href",pValue) && pValue) {
-        escape = pValue;
-        escape.escapeURL();
+        xmlChar * uri = xmlURIEscape(BAD_CAST pValue);
 
-        if(escape.length()) {
+        if(uri && *uri) {
+	    UT_UTF8String output = "<text:a ";
             output+="xlink:href=\"";
-            output+= escape;
+            output+= (const char*)uri;
             output+="\">";
             ODe_writeUTF8String(m_pParagraphContent, output);
         }
+	if(uri) {
+	    xmlFree(uri);
+	}
     }
 }
 
