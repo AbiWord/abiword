@@ -82,35 +82,36 @@ const IE_MimeConfidence * IE_Imp_OpenDocument_Sniffer::getMimeConfidence ()
 UT_Confidence_t IE_Imp_OpenDocument_Sniffer::recognizeContents (GsfInput * input)
 {
     UT_Confidence_t confidence = UT_CONFIDENCE_ZILCH;
+	
+	GsfInfile * zip  = gsf_infile_zip_new (input, NULL);
+	if (zip != NULL) {
+		GsfInput* pInput = gsf_infile_child_by_name(zip, "mimetype");
+		
+		if (pInput) {
+			std::string mimetype;
+			
+			if (gsf_input_size (pInput) > 0) {
+				mimetype = (const char *)gsf_input_read(pInput, gsf_input_size (pInput), NULL);
+			}
 
-	GsfInfile * zip;
-
-	zip = gsf_infile_zip_new (input, NULL);
-	if (zip != NULL)
-		{
-			GsfInput* pInput = gsf_infile_child_by_name(zip, "mimetype");
-
-			if (pInput) 
-				{
-					UT_UTF8String mimetype;
-    
-					if (gsf_input_size (pInput) > 0) {
-						mimetype.append(
-										(const char *)gsf_input_read(pInput, gsf_input_size (pInput), NULL),
-										gsf_input_size (pInput));
-					}
-
-					if ((strcmp("application/vnd.oasis.opendocument.text", mimetype.utf8_str()) == 0) ||
-						(strcmp("application/vnd.oasis.opendocument.text-template", mimetype.utf8_str()) == 0) ||
-						(strcmp("application/vnd.oasis.opendocument.text-web", mimetype.utf8_str()) == 0))
-						confidence = UT_CONFIDENCE_PERFECT;
-
-					g_object_unref (G_OBJECT (pInput));
-				}
-
-			g_object_unref (G_OBJECT (zip));
+			if ((mimetype == "application/vnd.oasis.opendocument.text") ||
+				(mimetype == "application/vnd.oasis.opendocument.text-template") ||
+				(mimetype == "application/vnd.oasis.opendocument.text-web")) {
+				confidence = UT_CONFIDENCE_PERFECT;
+			}
+			
+			g_object_unref (G_OBJECT (pInput));
 		}
-
+		else {
+			// we need to figure out what to do without mimetype file.
+			pInput = gsf_infile_child_by_name(zip, "content.xml");
+			if(pInput) {
+				// we need to identify further to get a better confidence.
+				confidence = UT_CONFIDENCE_SOSO;
+			}
+		}
+		g_object_unref (G_OBJECT (zip));
+	}
 
 	return confidence;
 }
