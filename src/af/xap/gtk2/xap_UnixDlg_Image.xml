@@ -204,10 +204,10 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                   </object>
                   <packing>
@@ -328,7 +328,7 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                   </object>
                   <packing>
@@ -474,16 +474,16 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                   </object>
                   <packing>
@@ -576,10 +576,10 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                   </object>
                   <packing>
@@ -654,7 +654,7 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                   </object>
                   <packing>

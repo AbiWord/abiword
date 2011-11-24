@@ -3,7 +3,7 @@
   <object class="GtkListStore" id="model1">
     <columns>
       <!-- column-name gchararray -->
-      <column type="gchararray"></property>
+      <column type="gchararray"></column>
     </columns>
     <data>
       <row>
@@ -14,7 +14,7 @@
   <object class="GtkListStore" id="model2">
     <columns>
       <!-- column-name gchararray -->
-      <column type="gchararray"></property>
+      <column type="gchararray"></column>
     </columns>
     <data>
       <row>
@@ -206,7 +206,7 @@
                 <property name="visible">True</property>
                 <property name="model">model1</property>
                 <child>
-                  <object class="GtkCellRendererText" id="renderer1"></property>
+                  <object class="GtkCellRendererText" id="renderer1"></object>
                   <attributes>
                     <attribute name="text">0</attribute>
                   </attributes>
@@ -223,7 +223,7 @@
                 <property name="visible">True</property>
                 <property name="model">model2</property>
                 <child>
-                  <object class="GtkCellRendererText" id="renderer2"></property>
+                  <object class="GtkCellRendererText" id="renderer2"></object>
                   <attributes>
                     <attribute name="text">0</attribute>
                   </attributes>
@@ -238,10 +238,10 @@
               </packing>
             </child>
             <child>
-              <placeholder></property>
+              <placeholder></placeholder>
             </child>
             <child>
-              <placeholder></property>
+              <placeholder></placeholder>
             </child>
           </object>
           <packing>

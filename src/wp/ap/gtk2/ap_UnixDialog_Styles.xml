@@ -9,7 +9,7 @@
     <property name="resizable">True</property>
     <property name="destroy_with_parent">False</property>
     <child>
-      <placeholder></property>
+      <placeholder></placeholder>
     </child>
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_Styles">
@@ -283,7 +283,7 @@
                             <property name="label_yalign">0</property>
                             <property name="shadow_type">GTK_SHADOW_NONE</property>
                             <child>
-                              <placeholder></property>
+                              <placeholder></placeholder>
                             </child>
                           </object>
                           <packing>
@@ -320,7 +320,7 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                   </object>
                   <packing>
@@ -348,7 +348,7 @@
                             <property name="label_yalign">0</property>
                             <property name="shadow_type">GTK_SHADOW_NONE</property>
                             <child>
-                              <placeholder></property>
+                              <placeholder></placeholder>
                             </child>
                           </object>
                           <packing>
@@ -385,7 +385,7 @@
                       </packing>
                     </child>
                     <child>
-                      <placeholder></property>
+                      <placeholder></placeholder>
                     </child>
                   </object>
                   <packing>

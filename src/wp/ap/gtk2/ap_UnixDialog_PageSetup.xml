@@ -213,7 +213,7 @@
                                     <property name="visible">True</property>
                                     <property name="model">model1</property>
                                     <child>
-                                      <object class="GtkCellRendererText" id="renderer1"></property>
+                                      <object class="GtkCellRendererText" id="renderer1"></object>
                                       <attributes>
                                         <attribute name="text">0</attribute>
                                       </attributes>
