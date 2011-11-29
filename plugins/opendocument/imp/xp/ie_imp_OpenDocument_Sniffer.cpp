@@ -90,8 +90,12 @@ UT_Confidence_t IE_Imp_OpenDocument_Sniffer::recognizeContents (GsfInput * input
 		if (pInput) {
 			std::string mimetype;
 			
-			if (gsf_input_size (pInput) > 0) {
-				mimetype = (const char *)gsf_input_read(pInput, gsf_input_size (pInput), NULL);
+			gsf_off_t size = gsf_input_size (pInput);
+			if (size > 0) {
+				const char * p = (const char *)gsf_input_read(pInput, size, NULL);
+				if(p) {
+					mimetype.assign(p, size);
+				}
 			}
 
 			if ((mimetype == "application/vnd.oasis.opendocument.text") ||
@@ -109,6 +113,7 @@ UT_Confidence_t IE_Imp_OpenDocument_Sniffer::recognizeContents (GsfInput * input
 				// we need to identify further to get a better confidence.
 				confidence = UT_CONFIDENCE_SOSO;
 			}
+			g_object_unref (G_OBJECT (pInput));
 		}
 		g_object_unref (G_OBJECT (zip));
 	}
