@@ -745,7 +745,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	virtual void   setAutoRevisioning(bool autorev);
 
-	virtual UT_uint32 getXID();
+	virtual UT_uint32 getXID() const;
 	virtual UT_uint32 getTopXID() const;
 	void              fixMissingXIDs();
 	UT_uint32         getFragXIDforVersion(const pf_Frag * pf, UT_uint32 iVersion) const;

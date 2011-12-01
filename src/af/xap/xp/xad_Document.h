@@ -282,7 +282,7 @@ public:
 	bool                isOrigUUID(void) const;
 	void                setFilename(char * name)
 	{_setFilename(name);}
-	virtual UT_uint32   getXID() = 0;
+	virtual UT_uint32   getXID() const = 0;
 	virtual UT_uint32   getTopXID() const = 0;
 	
  protected:	

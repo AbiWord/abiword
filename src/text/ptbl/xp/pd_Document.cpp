@@ -8217,7 +8217,7 @@ void PD_Document::tellPTDoNotTweakPosition(bool b)
 	m_pPieceTable->setDoNotTweakPosition(b);
 }
 
-UT_uint32 PD_Document::getXID()
+UT_uint32 PD_Document::getXID() const
 {
 	return m_pPieceTable->getXID();
 }
