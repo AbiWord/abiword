@@ -1,13 +1,12 @@
 # This file is distributed under the same license as the Abiword package.
 # Copyright (C) 2011
 # Francisco Javier F. Serrador <fserrador@gmail.com>, 2003, 2004, 2005, 2011
-
 msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-07-20 05:15+0200\n"
-"PO-Revision-Date: 2011-10-05 14:55+0100\n"
+"POT-Creation-Date: 2011-11-27 05:16+0100\n"
+"PO-Revision-Date: 2011-11-27 18:53+0100\n"
 "Last-Translator: Francisco Javier F. Serrador <fserrador@gmail.com>\n"
 "Language-Team: GNOME-HISPANO <es@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -876,48 +875,53 @@ msgstr "&Seleccionar revisión"
 msgid "&Show History"
 msgstr "&Mostrar histórico"
 
-#. MENU_LABEL_VIEW_STATUSBAR
+#. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
 #: po/tmp/ap_String_Id.h.h:367
+msgid "&Show RDF"
+msgstr "Mo&strar RDF"
+
+#. MENU_LABEL_VIEW_STATUSBAR
+#: po/tmp/ap_String_Id.h.h:369
 msgid "&Show Status Bar"
 msgstr "Mostrar barra de e&stado"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
-#: po/tmp/ap_String_Id.h.h:369
+#: po/tmp/ap_String_Id.h.h:371
 msgid "&Show annotations"
 msgstr "&Mostrar anotaciones"
 
 #. DLG_Para_LabelSpecial
-#: po/tmp/ap_String_Id.h.h:371
+#: po/tmp/ap_String_Id.h.h:373
 msgid "&Special:"
 msgstr "E&special:"
 
 #. MENU_LABEL_TOOLS_SPELLING
-#: po/tmp/ap_String_Id.h.h:373
+#: po/tmp/ap_String_Id.h.h:375
 msgid "&Spelling"
 msgstr "&Ortografía"
 
 #. DLG_FormatTOC_StartAt
-#: po/tmp/ap_String_Id.h.h:375
+#: po/tmp/ap_String_Id.h.h:377
 msgid "&Start at:"
 msgstr "&Empezar en:"
 
 #. DLG_Options_Label_ViewStatusBar
-#: po/tmp/ap_String_Id.h.h:377
+#: po/tmp/ap_String_Id.h.h:379
 msgid "&Status bar"
 msgstr "Barra de e&stado"
 
 #. MENU_LABEL_FMT_SUBSCRIPT
-#: po/tmp/ap_String_Id.h.h:379
+#: po/tmp/ap_String_Id.h.h:381
 msgid "&Subscript"
 msgstr "&Subíndice"
 
 #. DLG_Para_PushSuppressLineNumbers
-#: po/tmp/ap_String_Id.h.h:381
+#: po/tmp/ap_String_Id.h.h:383
 msgid "&Suppress line numbers"
 msgstr "&Suprimir números de línea"
 
 #. DLG_FormatTOC_TabLeader
-#: po/tmp/ap_String_Id.h.h:383
+#: po/tmp/ap_String_Id.h.h:385
 msgid "&Tab leader:"
 msgstr "&Tabulación maestra:"
 
@@ -925,168 +929,168 @@ msgstr "&Tabulación maestra:"
 #. MENU_LABEL_TABLE_INSERT_TABLE
 #. MENU_LABEL_TABLE_DELETE_TABLE
 #. MENU_LABEL_TABLE_SELECT_TABLE
-#: po/tmp/ap_String_Id.h.h:388
+#: po/tmp/ap_String_Id.h.h:390
 msgid "&Table"
 msgstr "&Tabla"
 
 #. MENU_LABEL_FMT_TABS
-#: po/tmp/ap_String_Id.h.h:390
+#: po/tmp/ap_String_Id.h.h:392
 msgid "&Tabs"
 msgstr "Ta&buladores"
 
 #. DLG_Para_ButtonTabs
-#: po/tmp/ap_String_Id.h.h:392
+#: po/tmp/ap_String_Id.h.h:394
 msgid "&Tabs..."
 msgstr "&Tabuladores..."
 
 #. MENU_LABEL_VIEW_TOOLBARS
-#: po/tmp/ap_String_Id.h.h:394
+#: po/tmp/ap_String_Id.h.h:396
 msgid "&Toolbars"
 msgstr "&Barras de herramientas"
 
 #. MENU_LABEL_TOOLS
-#: po/tmp/ap_String_Id.h.h:396
+#: po/tmp/ap_String_Id.h.h:398
 msgid "&Tools"
 msgstr "&Herramientas"
 
 #. DLG_PageSetup_Top
-#: po/tmp/ap_String_Id.h.h:398
+#: po/tmp/ap_String_Id.h.h:400
 msgid "&Top:"
 msgstr "&Superior:"
 
 #. DLG_Field_Types_No_Colon
-#: po/tmp/ap_String_Id.h.h:400
+#: po/tmp/ap_String_Id.h.h:402
 msgid "&Types"
 msgstr "&Tipos"
 
 #. DLG_Field_Types
-#: po/tmp/ap_String_Id.h.h:402
+#: po/tmp/ap_String_Id.h.h:404
 msgid "&Types:"
 msgstr "&Tipos:"
 
 #. MENU_LABEL_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:404
+#: po/tmp/ap_String_Id.h.h:406
 msgid "&Underline"
 msgstr "&Subrayado"
 
 #. MENU_LABEL_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:406
+#: po/tmp/ap_String_Id.h.h:408
 msgid "&Undo"
 msgstr "&Deshacer"
 
 #. DLG_Options_Label_ViewUnits
 #. DLG_PageSetup_Units
-#: po/tmp/ap_String_Id.h.h:409
+#: po/tmp/ap_String_Id.h.h:411
 msgid "&Units:"
 msgstr "&Unidades:"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
-#: po/tmp/ap_String_Id.h.h:411
+#: po/tmp/ap_String_Id.h.h:413
 #: po/tmp/xap_String_Id.h.h:27
 msgid "&View"
 msgstr "&Ver"
 
 #. MENU_LABEL_VIEW_WEB
-#: po/tmp/ap_String_Id.h.h:413
+#: po/tmp/ap_String_Id.h.h:415
 msgid "&Web Layout"
 msgstr "Diseño &web"
 
 #. MENU_LABEL_VIEW_ZOOM_WHOLE
-#: po/tmp/ap_String_Id.h.h:415
+#: po/tmp/ap_String_Id.h.h:417
 msgid "&Whole Page"
 msgstr "Página &completa"
 
 #. DLG_FR_WholeWord
-#: po/tmp/ap_String_Id.h.h:417
+#: po/tmp/ap_String_Id.h.h:419
 msgid "&Whole word"
 msgstr "Palabra &completa"
 
 #. DLG_Para_PushWidowOrphanControl
-#: po/tmp/ap_String_Id.h.h:419
+#: po/tmp/ap_String_Id.h.h:421
 msgid "&Widow/Orphan control"
 msgstr "Control de líneas &viudas/huérfanas"
 
 #. DLG_PageSetup_Width
-#: po/tmp/ap_String_Id.h.h:421
+#: po/tmp/ap_String_Id.h.h:423
 msgid "&Width:"
 msgstr "&Anchura:"
 
 #. MENU_LABEL_TOOLS_WORDCOUNT
-#: po/tmp/ap_String_Id.h.h:423
+#: po/tmp/ap_String_Id.h.h:425
 msgid "&Word Count"
 msgstr "Co&ntar palabras"
 
 #. MENU_LABEL_VIEW_ZOOM_MENU
 #. MENU_LABEL_VIEW_ZOOM
-#: po/tmp/ap_String_Id.h.h:426
+#: po/tmp/ap_String_Id.h.h:428
 msgid "&Zoom"
 msgstr "&Ampliación"
 
 #. DLG_ListRevisions_LevelZero
-#: po/tmp/ap_String_Id.h.h:428
+#: po/tmp/ap_String_Id.h.h:430
 msgid "(All revisions visible)"
 msgstr "(Todas las revisiones visibles)"
 
 #. DLG_Spell_NoSuggestions
-#: po/tmp/ap_String_Id.h.h:430
+#: po/tmp/ap_String_Id.h.h:432
 msgid "(no spelling suggestions)"
 msgstr "(no hay sugerencias)"
 
 #. DLG_Para_SpecialNone
-#: po/tmp/ap_String_Id.h.h:432
+#: po/tmp/ap_String_Id.h.h:434
 msgid "(none)"
 msgstr "(ninguno)"
 
 #. TOOLBAR_LABEL_1COLUMN
 #. TOOLBAR_STATUSLINE_1COLUMN
 #. TOOLBAR_TOOLTIP_1COLUMN
-#: po/tmp/ap_String_Id.h.h:436
+#: po/tmp/ap_String_Id.h.h:438
 msgid "1 Column"
 msgstr "1 columna"
 
 #. TOOLBAR_LABEL_MIDDLE_SPACE
-#: po/tmp/ap_String_Id.h.h:438
+#: po/tmp/ap_String_Id.h.h:440
 msgid "1.5 Spacing"
 msgstr "Espaciado al 1,5"
 
 #. DLG_Para_SpacingHalf
-#: po/tmp/ap_String_Id.h.h:440
+#: po/tmp/ap_String_Id.h.h:442
 msgid "1.5 lines"
 msgstr "1,5 líneas"
 
 #. TOOLBAR_STATUSLINE_MIDDLE_SPACE
 #. TOOLBAR_TOOLTIP_MIDDLE_SPACE
-#: po/tmp/ap_String_Id.h.h:443
+#: po/tmp/ap_String_Id.h.h:445
 msgid "1.5 spacing"
 msgstr "espaciado al 1,5"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
-#: po/tmp/ap_String_Id.h.h:445
+#: po/tmp/ap_String_Id.h.h:447
 msgid "12 pt before"
 msgstr "12 pt antes"
 
 #. TOOLBAR_LABEL_2COLUMN
 #. TOOLBAR_STATUSLINE_2COLUMN
 #. TOOLBAR_TOOLTIP_2COLUMN
-#: po/tmp/ap_String_Id.h.h:449
+#: po/tmp/ap_String_Id.h.h:451
 msgid "2 Columns"
 msgstr "2 columnas"
 
 #. TOOLBAR_LABEL_3COLUMN
 #. TOOLBAR_STATUSLINE_3COLUMN
 #. TOOLBAR_TOOLTIP_3COLUMN
-#: po/tmp/ap_String_Id.h.h:453
+#: po/tmp/ap_String_Id.h.h:455
 msgid "3 Columns"
 msgstr "3 columnas"
 
 #. DLG_Goto_Btn_Prev
-#: po/tmp/ap_String_Id.h.h:455
+#: po/tmp/ap_String_Id.h.h:457
 msgid "<< Prev"
 msgstr "<< Anterior"
 
 #. MSG_Exception
-#: po/tmp/ap_String_Id.h.h:457
+#: po/tmp/ap_String_Id.h.h:459
 msgid ""
 "A fatal error has just occurred. AbiWord is going to shutdown.\n"
 "The current document has been saved to disc with a \".saved\" extension."
@@ -1095,39 +1099,39 @@ msgstr ""
 "El documento actual ha sido guardado al disco con una extensión «.saved»."
 
 #. DLG_Options_Label_SpellSuggest
-#: po/tmp/ap_String_Id.h.h:459
+#: po/tmp/ap_String_Id.h.h:461
 msgid "A&lways suggest corrections"
 msgstr "Siempre sugerir &correcciones"
 
 #. FIELD_DateTime_AMPM
-#: po/tmp/ap_String_Id.h.h:461
+#: po/tmp/ap_String_Id.h.h:463
 msgid "AM/PM"
-msgstr "AM/PM"
+msgstr "am/pm"
 
 #. MSG_IE_BogusDocument
-#: po/tmp/ap_String_Id.h.h:463
+#: po/tmp/ap_String_Id.h.h:465
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "AbiWord no puede abrir %s. Parece que es un documento inválido"
 
 #. MSG_SpellSelectionDone
-#: po/tmp/ap_String_Id.h.h:465
+#: po/tmp/ap_String_Id.h.h:467
 msgid "AbiWord finished checking the selection."
 msgstr "AbiWord terminó de Revisar la selección."
 
 #. DLG_FR_FinishedReplace
-#: po/tmp/ap_String_Id.h.h:467
+#: po/tmp/ap_String_Id.h.h:469
 #, c-format
 msgid "AbiWord has finished its search of the document and has made %d replacements."
 msgstr "AbiWord ha terminado su búsqueda en el documento y ha efectuado %d reemplazos."
 
 #. DLG_FR_FinishedFind
-#: po/tmp/ap_String_Id.h.h:469
+#: po/tmp/ap_String_Id.h.h:471
 msgid "AbiWord has finished searching the document."
 msgstr "AbiWord ha terminado de buscar en el documento."
 
 #. WINDOWS_COMCTL_WARNING
-#: po/tmp/ap_String_Id.h.h:471
+#: po/tmp/ap_String_Id.h.h:473
 msgid ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
@@ -1146,7 +1150,7 @@ msgstr ""
 "Puede usar el programa, pero la barra de herramientas podría no aparecer."
 
 #. WINDOWS_NEED_UNICOWS
-#: po/tmp/ap_String_Id.h.h:473
+#: po/tmp/ap_String_Id.h.h:475
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
@@ -1156,290 +1160,291 @@ msgstr ""
 "Por favor, descárguelo e instálelo desde http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h.h:475
+#: po/tmp/ap_String_Id.h.h:477
 msgid "About G&NOME Office"
 msgstr "Acerca de G&NOME Office"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
-#: po/tmp/ap_String_Id.h.h:477
+#: po/tmp/ap_String_Id.h.h:479
 msgid "About the GNOME Office project"
 msgstr "Acerca del proyecto GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
-#: po/tmp/ap_String_Id.h.h:479
+#: po/tmp/ap_String_Id.h.h:481
 msgid "Accept the suggested change"
 msgstr "Aceptar el cambio sugerido"
 
 #. TOOLBAR_STATUSLINE_ADD_COLUMN
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
-#: po/tmp/ap_String_Id.h.h:482
+#: po/tmp/ap_String_Id.h.h:484
 msgid "Add a column to this table after the current column"
 msgstr "Añadir una columna a esta tabla después de la columna actual"
 
 #. TOOLBAR_STATUSLINE_ADD_ROW
 #. TOOLBAR_TOOLTIP_ADD_ROW
-#: po/tmp/ap_String_Id.h.h:485
+#: po/tmp/ap_String_Id.h.h:487
 msgid "Add a row to this table after the current row"
 msgstr "Añadir una fila a esta tabla después de la fila actual"
 
 #. MENU_STATUSLINE_FMT_BORDERS
-#: po/tmp/ap_String_Id.h.h:487
+#: po/tmp/ap_String_Id.h.h:489
 msgid "Add borders and shading to the selection"
 msgstr "Añadir bordes y sombreado a la selección"
 
 #. TOOLBAR_LABEL_ADD_COLUMN
-#: po/tmp/ap_String_Id.h.h:489
+#: po/tmp/ap_String_Id.h.h:491
 msgid "Add column after"
 msgstr "Añadir columna después"
 
 #. MENU_STATUSLINE_FMT_BULLETS
-#: po/tmp/ap_String_Id.h.h:491
+#: po/tmp/ap_String_Id.h.h:493
 msgid "Add or modify bullets and numbering for selected paragraphs"
 msgstr "Añadir o modificar puntos y numeración para los parágrafos seleccionados"
 
 #. TOOLBAR_LABEL_ADD_ROW
-#: po/tmp/ap_String_Id.h.h:493
+#: po/tmp/ap_String_Id.h.h:495
 msgid "Add row after"
 msgstr "Añadir fila después"
 
 #. MENU_STATUSLINE_SPELL_ADD
-#: po/tmp/ap_String_Id.h.h:495
+#: po/tmp/ap_String_Id.h.h:497
 msgid "Add this word to the custom dictionary"
 msgstr "Añadir esta palabra al diccionario personal"
 
 #. DLG_Styles_ModifyTemplate
-#: po/tmp/ap_String_Id.h.h:497
+#: po/tmp/ap_String_Id.h.h:499
 msgid "Add to template"
 msgstr "Añadir a la plantilla"
 
+# Corrección de error v
 #. MENU_LABEL_RDF_ADV
-#: po/tmp/ap_String_Id.h.h:499
+#: po/tmp/ap_String_Id.h.h:501
 msgid "Advanced"
-msgstr "Abanzado"
+msgstr "Avanzado"
 
 #. MENU_STATUSLINE_RDF_ADV
-#: po/tmp/ap_String_Id.h.h:501
+#: po/tmp/ap_String_Id.h.h:503
 msgid "Advanced RDF"
 msgstr "RDF avanzado"
 
 #. DLG_Para_LabelAfter
-#: po/tmp/ap_String_Id.h.h:503
+#: po/tmp/ap_String_Id.h.h:505
 msgid "Aft&er:"
 msgstr "Post&erior:"
 
 #. DLG_Para_LabelAlignment
-#: po/tmp/ap_String_Id.h.h:505
+#: po/tmp/ap_String_Id.h.h:507
 msgid "Ali&gnment:"
 msgstr "Alinea&ción:"
 
 #. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
-#: po/tmp/ap_String_Id.h.h:508
+#: po/tmp/ap_String_Id.h.h:510
 msgid "Alignment"
 msgstr "Alineación"
 
 #. DLG_PageNumbers_Alignment
-#: po/tmp/ap_String_Id.h.h:510
+#: po/tmp/ap_String_Id.h.h:512
 msgid "Alignment:"
 msgstr "Alineación:"
 
 #. DLG_Styles_LBL_All
 #. DLG_UP_All
-#: po/tmp/ap_String_Id.h.h:512
+#: po/tmp/ap_String_Id.h.h:514
 #: po/tmp/xap_String_Id.h.h:61
 msgid "All"
 msgstr "Todo"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
-#: po/tmp/ap_String_Id.h.h:514
+#: po/tmp/ap_String_Id.h.h:516
 msgid "Allow formatting using styles only"
 msgstr "Permitir formatear usando estilos únicamente"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
-#: po/tmp/ap_String_Id.h.h:516
+#: po/tmp/ap_String_Id.h.h:518
 msgid "Allow screen colors other than white"
 msgstr "Permitir colores de pantalla distintos del blanco"
 
 #. FIELD_Application
-#: po/tmp/ap_String_Id.h.h:518
+#: po/tmp/ap_String_Id.h.h:520
 msgid "Application"
 msgstr "Aplicación"
 
 #. DLG_Options_Label_AppStartup
-#: po/tmp/ap_String_Id.h.h:520
+#: po/tmp/ap_String_Id.h.h:522
 msgid "Application Startup"
 msgstr "Inicio de la aplicación"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
-#: po/tmp/ap_String_Id.h.h:522
+#: po/tmp/ap_String_Id.h.h:524
 #: po/tmp/xap_String_Id.h.h:73
 msgid "Apply"
 msgstr "Aplicar"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
-#: po/tmp/ap_String_Id.h.h:525
+#: po/tmp/ap_String_Id.h.h:527
 msgid "Apply the previously copied paragraph formatting onto the selected text"
 msgstr "Aplica el formato del parágrafo copiado en el texto seleccionado"
 
 #. DLG_Lists_Apply_Current
-#: po/tmp/ap_String_Id.h.h:527
+#: po/tmp/ap_String_Id.h.h:529
 msgid "Apply to Current List"
 msgstr "Aplicar a la lista actual"
 
 #. DLG_FormatTable_Apply_To
-#: po/tmp/ap_String_Id.h.h:529
+#: po/tmp/ap_String_Id.h.h:531
 msgid "Apply to:"
 msgstr "Aplicar a:"
 
 #. DLG_Lists_Arabic_List
-#: po/tmp/ap_String_Id.h.h:531
+#: po/tmp/ap_String_Id.h.h:533
 msgid "Arabic List"
 msgstr "Lista de números árabes"
 
 #. MSG_AutoRevisionOffWarning
-#: po/tmp/ap_String_Id.h.h:533
+#: po/tmp/ap_String_Id.h.h:535
 msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
 msgstr "¿Está seguro de que no quiere mantener un registro histórico completo? Si continúa, no será capaz de restaurar versiones más antiguas de este documento."
 
 #. DLG_Para_SpacingAtLeast
-#: po/tmp/ap_String_Id.h.h:535
+#: po/tmp/ap_String_Id.h.h:537
 msgid "At least"
 msgstr "Al menos"
 
 #. DLG_Lists_Resume
-#: po/tmp/ap_String_Id.h.h:537
+#: po/tmp/ap_String_Id.h.h:539
 msgid "Attach to Previous List"
 msgstr "Adjuntar a la lista anterior"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
 #. DLG_PLUGIN_MANAGER_AUTHOR
-#: po/tmp/ap_String_Id.h.h:540
+#: po/tmp/ap_String_Id.h.h:542
 #: po/tmp/xap_String_Id.h.h:95
 msgid "Author:"
 msgstr "Autor:"
 
 #. DLG_Options_Label_AutoSaveUnderline
-#: po/tmp/ap_String_Id.h.h:542
+#: po/tmp/ap_String_Id.h.h:544
 msgid "Auto &Save"
 msgstr "&Auto-guardar"
 
 #. DLG_Options_Label_AutoSaveCurrent
-#: po/tmp/ap_String_Id.h.h:544
+#: po/tmp/ap_String_Id.h.h:546
 msgid "Auto &save current file every"
 msgstr "&Auto-guardar el archivo actual cada"
 
 #. DLG_Options_Label_AutoSave
-#: po/tmp/ap_String_Id.h.h:546
+#: po/tmp/ap_String_Id.h.h:548
 msgid "Auto Save"
 msgstr "Auto-guardar"
 
 #. DLG_Options_Label_SpellAutoReplace
-#: po/tmp/ap_String_Id.h.h:548
+#: po/tmp/ap_String_Id.h.h:550
 msgid "Auto replace misspelled words"
 msgstr "Auto-reemplazar palabras mal escritas"
 
 #. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h.h:550
+#: po/tmp/ap_String_Id.h.h:552
 msgid "AutoFit Behavior"
 msgstr "Comportamiento del auto-ajuste"
 
 #. DLG_InsertTable_AutoFit
-#: po/tmp/ap_String_Id.h.h:552
+#: po/tmp/ap_String_Id.h.h:554
 msgid "AutoFit behavior"
 msgstr "Comportamiento del auto-ajuste"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
-#: po/tmp/ap_String_Id.h.h:554
+#: po/tmp/ap_String_Id.h.h:556
 msgid "Autofit Table"
 msgstr "Auto-ajustar tabla"
 
 #. DLG_Options_Label_Grammar
-#: po/tmp/ap_String_Id.h.h:556
+#: po/tmp/ap_String_Id.h.h:558
 msgid "Automatic Grammar Checking"
 msgstr "Comprobación automática de gramática"
 
 #. DLG_InsertTable_AutoColSize
-#: po/tmp/ap_String_Id.h.h:558
+#: po/tmp/ap_String_Id.h.h:560
 msgid "Automatic column size"
 msgstr "Tamaño de columna automático"
 
 #. DLG_Options_Label_CheckAutoLoadPlugins
-#: po/tmp/ap_String_Id.h.h:560
+#: po/tmp/ap_String_Id.h.h:562
 msgid "Automatically load all plugins found"
 msgstr "Cargar todos los complementos automáticamente"
 
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
-#: po/tmp/ap_String_Id.h.h:562
+#: po/tmp/ap_String_Id.h.h:564
 msgid "Automatically spell-check the document"
 msgstr "Verificación ortográfica automática"
 
 #. DLG_Styles_ModifyAutomatic
-#: po/tmp/ap_String_Id.h.h:564
+#: po/tmp/ap_String_Id.h.h:566
 msgid "Automatically update"
 msgstr "Actualizar automáticamente"
 
 #. MSG_AutoMerge
-#: po/tmp/ap_String_Id.h.h:566
+#: po/tmp/ap_String_Id.h.h:568
 msgid "Automerge"
 msgstr "Autocombinar"
 
 #. DLG_MailMerge_AvailableFields
-#: po/tmp/ap_String_Id.h.h:568
+#: po/tmp/ap_String_Id.h.h:570
 msgid "Available Fields"
 msgstr "Campos disponibles"
 
 #. DLG_DateTime_AvailableFormats_Capital
-#: po/tmp/ap_String_Id.h.h:570
+#: po/tmp/ap_String_Id.h.h:572
 msgid "Available Formats"
 msgstr "Formatos disponibles"
 
 #. DLG_Styles_Available
-#: po/tmp/ap_String_Id.h.h:572
+#: po/tmp/ap_String_Id.h.h:574
 msgid "Available Styles"
 msgstr "Estilos disponibles"
 
 #. DLG_Para_LabelBy
-#: po/tmp/ap_String_Id.h.h:574
+#: po/tmp/ap_String_Id.h.h:576
 msgid "B&y:"
 msgstr "&Por:"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
-#: po/tmp/ap_String_Id.h.h:577
+#: po/tmp/ap_String_Id.h.h:579
 msgid "Background"
 msgstr "Fondo"
 
 #. DLG_FormatFrame_Background_Color
 #. DLG_FormatTable_Background_Color
-#: po/tmp/ap_String_Id.h.h:580
+#: po/tmp/ap_String_Id.h.h:582
 msgid "Background color:"
 msgstr "Color de fondo:"
 
 #. DLG_Tab_Radio_Bar
-#: po/tmp/ap_String_Id.h.h:582
+#: po/tmp/ap_String_Id.h.h:584
 msgid "Bar"
 msgstr "Barra"
 
 #. TabToggleBarTab
-#: po/tmp/ap_String_Id.h.h:584
+#: po/tmp/ap_String_Id.h.h:586
 msgid "Bar Tab"
 msgstr "Tabulador de barra"
 
 #. DLG_Styles_ModifyBasedOn
-#: po/tmp/ap_String_Id.h.h:586
+#: po/tmp/ap_String_Id.h.h:588
 msgid "Based On:"
 msgstr "Basado en:"
 
 #. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h.h:588
+#: po/tmp/ap_String_Id.h.h:590
 msgid "Bi-Directional Options"
 msgstr "Opciones bidireccionales"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
-#: po/tmp/ap_String_Id.h.h:590
+#: po/tmp/ap_String_Id.h.h:592
 msgid "Bo&ttomline"
 msgstr "Línea &inferior"
 
@@ -1447,23 +1452,23 @@ msgstr "Línea &inferior"
 #. TOOLBAR_STATUSLINE_FMT_BOLD
 #. TOOLBAR_TOOLTIP_FMT_BOLD
 #. DLG_UFS_StyleBold
-#: po/tmp/ap_String_Id.h.h:594
+#: po/tmp/ap_String_Id.h.h:596
 #: po/tmp/xap_String_Id.h.h:129
 msgid "Bold"
 msgstr "Negrita"
 
 #. MENU_LABEL_INSERT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:596
+#: po/tmp/ap_String_Id.h.h:598
 msgid "Boo&kmark"
 msgstr "&Marcador"
 
 #. DLG_Goto_Target_Bookmark
-#: po/tmp/ap_String_Id.h.h:598
+#: po/tmp/ap_String_Id.h.h:600
 msgid "Bookmark"
 msgstr "Marcador"
 
 #. MSG_BookmarkNotFound
-#: po/tmp/ap_String_Id.h.h:600
+#: po/tmp/ap_String_Id.h.h:602
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
 msgstr "El marcador «%s» no se ha encontrado en el documento."
@@ -1471,29 +1476,29 @@ msgstr "El marcador «%s» no se ha encontrado en el documento."
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
 #. DLG_BorderShading_Border_Color
-#: po/tmp/ap_String_Id.h.h:604
+#: po/tmp/ap_String_Id.h.h:606
 msgid "Border color:"
 msgstr "Color del borde:"
 
 #. DLG_FormatFrame_Borders
 #. DLG_FormatTable_Borders
 #. DLG_BorderShading_Borders
-#: po/tmp/ap_String_Id.h.h:608
+#: po/tmp/ap_String_Id.h.h:610
 msgid "Borders"
 msgstr "Bordes"
 
 #. DLG_BorderShading_Title
-#: po/tmp/ap_String_Id.h.h:610
+#: po/tmp/ap_String_Id.h.h:612
 msgid "Borders and Shading"
 msgstr "Bordes y sombreado"
 
 #. DLG_PageNumbers_Footer
-#: po/tmp/ap_String_Id.h.h:612
+#: po/tmp/ap_String_Id.h.h:614
 msgid "Bottom"
 msgstr "Inferior"
 
 #. BottomMarginStatus
-#: po/tmp/ap_String_Id.h.h:614
+#: po/tmp/ap_String_Id.h.h:616
 #, c-format
 msgid "Bottom Margin [%s]"
 msgstr "Margen inferior [%s]"
@@ -1502,41 +1507,41 @@ msgstr "Margen inferior [%s]"
 #. TOOLBAR_STATUSLINE_FMT_BOTTOMLINE
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
 #. DLG_UFS_BottomlineCheck
-#: po/tmp/ap_String_Id.h.h:618
+#: po/tmp/ap_String_Id.h.h:620
 #: po/tmp/xap_String_Id.h.h:133
 msgid "Bottomline"
 msgstr "Línea inferior"
 
 #. DLG_Lists_Box_List
 #. STYLE_BOXLIST
-#: po/tmp/ap_String_Id.h.h:620
+#: po/tmp/ap_String_Id.h.h:622
 #: po/tmp/xap_String_Id.h.h:135
 msgid "Box List"
 msgstr "Lista de cajas"
 
 #. FIELD_Application_BuildId
-#: po/tmp/ap_String_Id.h.h:622
+#: po/tmp/ap_String_Id.h.h:624
 msgid "Build Id."
 msgstr "Id. de compilación."
 
 #. FIELD_Application_Options
-#: po/tmp/ap_String_Id.h.h:624
+#: po/tmp/ap_String_Id.h.h:626
 msgid "Build Options"
 msgstr "Opciones de compilación"
 
 #. FIELD_Application_Target
-#: po/tmp/ap_String_Id.h.h:626
+#: po/tmp/ap_String_Id.h.h:628
 msgid "Build Target"
 msgstr "Objetivo de compilación"
 
 #. DLG_Lists_Type_bullet
-#: po/tmp/ap_String_Id.h.h:628
+#: po/tmp/ap_String_Id.h.h:630
 msgid "Bullet"
 msgstr "Punto"
 
 #. DLG_Lists_Bullet_List
 #. STYLE_BULLETLIST
-#: po/tmp/ap_String_Id.h.h:630
+#: po/tmp/ap_String_Id.h.h:632
 #: po/tmp/xap_String_Id.h.h:145
 msgid "Bullet List"
 msgstr "Lista de puntos"
@@ -1544,115 +1549,115 @@ msgstr "Lista de puntos"
 #. TOOLBAR_LABEL_LISTS_BULLETS
 #. TOOLBAR_STATUSLINE_LISTS_BULLETS
 #. TOOLBAR_TOOLTIP_LISTS_BULLETS
-#: po/tmp/ap_String_Id.h.h:634
+#: po/tmp/ap_String_Id.h.h:636
 msgid "Bullets"
 msgstr "Puntos"
 
 #. MENU_LABEL_FMT_BULLETS
-#: po/tmp/ap_String_Id.h.h:636
+#: po/tmp/ap_String_Id.h.h:638
 msgid "Bullets and &Numbering"
 msgstr "Puntos y &numeración"
 
 #. DLG_Options_Label_Look
-#: po/tmp/ap_String_Id.h.h:638
+#: po/tmp/ap_String_Id.h.h:640
 msgid "Button Style"
 msgstr "Estilo del botón"
 
 #. MENU_LABEL_FMT_TOGGLECASE
-#: po/tmp/ap_String_Id.h.h:640
+#: po/tmp/ap_String_Id.h.h:642
 msgid "C&hange Case"
 msgstr "Ca&mbiar capitalización"
 
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
-#: po/tmp/ap_String_Id.h.h:642
+#: po/tmp/ap_String_Id.h.h:644
 msgid "C&opy hyperlink location"
 msgstr "C&opiar la dirección del hiperenlace"
 
 #. MENU_LABEL_HELP_CREDITS
-#: po/tmp/ap_String_Id.h.h:644
+#: po/tmp/ap_String_Id.h.h:646
 msgid "C&redits"
 msgstr "C&réditos"
 
 #. MSG_NoBreakInsideTable
-#: po/tmp/ap_String_Id.h.h:646
+#: po/tmp/ap_String_Id.h.h:648
 msgid "Can not insert a Break inside a table"
 msgstr "No se puede introducir un salto dentro de una tabla"
 
 #. MSG_NoBreakInsideFrame
-#: po/tmp/ap_String_Id.h.h:648
+#: po/tmp/ap_String_Id.h.h:650
 msgid "Can not insert a Break inside a text box"
 msgstr "No se puede introducir un salto dentro de una caja de texto"
 
 #. DLG_Styles_ErrStyleCantDelete
-#: po/tmp/ap_String_Id.h.h:650
+#: po/tmp/ap_String_Id.h.h:652
 msgid "Cannot delete this style"
 msgstr "No se puede suprimir este estilo"
 
 #. DLG_Styles_ErrStyleBuiltin
-#: po/tmp/ap_String_Id.h.h:652
+#: po/tmp/ap_String_Id.h.h:654
 msgid "Cannot modify a builtin style"
 msgstr "No se puede modificar un estilo incorporado"
 
 #. PRINT_CANNOTSTARTPRINTJOB
-#: po/tmp/ap_String_Id.h.h:654
+#: po/tmp/ap_String_Id.h.h:656
 msgid "Cannot start print job"
 msgstr "No se puede iniciar el trabajo de impresión"
 
 #. DLG_MetaData_Category_LBL
-#: po/tmp/ap_String_Id.h.h:656
+#: po/tmp/ap_String_Id.h.h:658
 msgid "Category:"
 msgstr "Categoría:"
 
 #. DLG_Tab_Radio_Center
 #. DLG_PageNumbers_Center
 #. TOOLBAR_LABEL_ALIGN_CENTER
-#: po/tmp/ap_String_Id.h.h:660
+#: po/tmp/ap_String_Id.h.h:662
 msgid "Center"
 msgstr "Central"
 
 #. TabToggleCenterTab
-#: po/tmp/ap_String_Id.h.h:662
+#: po/tmp/ap_String_Id.h.h:664
 msgid "Center Tab"
 msgstr "Tabulación central"
 
 #. TOOLBAR_STATUSLINE_ALIGN_CENTER
 #. TOOLBAR_TOOLTIP_ALIGN_CENTER
-#: po/tmp/ap_String_Id.h.h:665
+#: po/tmp/ap_String_Id.h.h:667
 msgid "Center alignment"
 msgstr "Alineación centrada"
 
 #. MENU_STATUSLINE_ALIGN_CENTER
-#: po/tmp/ap_String_Id.h.h:667
+#: po/tmp/ap_String_Id.h.h:669
 msgid "Center-align the paragraph"
 msgstr "Alinea centralmente el parágrafo"
 
 #. DLG_Para_AlignCentered
-#: po/tmp/ap_String_Id.h.h:669
+#: po/tmp/ap_String_Id.h.h:671
 msgid "Centered"
 msgstr "Centrado"
 
 #. DLG_Spell_ChangeTo
-#: po/tmp/ap_String_Id.h.h:671
+#: po/tmp/ap_String_Id.h.h:673
 msgid "Change &to:"
 msgstr "Cambiar &a:"
 
 #. DLG_Spell_ChangeAll
-#: po/tmp/ap_String_Id.h.h:673
+#: po/tmp/ap_String_Id.h.h:675
 msgid "Change A&ll"
 msgstr "Cambiar &todos"
 
 #. DLG_Background_Title
-#: po/tmp/ap_String_Id.h.h:675
+#: po/tmp/ap_String_Id.h.h:677
 msgid "Change Background Color"
 msgstr "Cambia el color del fondo"
 
 #. DLG_ToggleCase_Title
-#: po/tmp/ap_String_Id.h.h:677
+#: po/tmp/ap_String_Id.h.h:679
 msgid "Change Case"
 msgstr "Cambia la capitalización"
 
 #. DLG_Lists_Cur_Change_Start
-#: po/tmp/ap_String_Id.h.h:679
+#: po/tmp/ap_String_Id.h.h:681
 msgid ""
 "Change Current \n"
 "List"
@@ -1661,64 +1666,64 @@ msgstr ""
 "actual"
 
 #. DLG_Background_TitleHighlight
-#: po/tmp/ap_String_Id.h.h:681
+#: po/tmp/ap_String_Id.h.h:683
 msgid "Change Highlight Color"
 msgstr "Cambia el color del resaltado"
 
 #. DLG_FormatTOC_ChangeStyle
-#: po/tmp/ap_String_Id.h.h:683
+#: po/tmp/ap_String_Id.h.h:685
 msgid "Change Style"
 msgstr "Cambiar estilo"
 
 #. DLG_Background_TitleFore
-#: po/tmp/ap_String_Id.h.h:685
+#: po/tmp/ap_String_Id.h.h:687
 msgid "Change Text Color"
 msgstr "Cambia el color del texto"
 
 #. MENU_STATUSLINE_FMT_DIRECTION
-#: po/tmp/ap_String_Id.h.h:687
+#: po/tmp/ap_String_Id.h.h:689
 msgid "Change directional properties of text"
 msgstr "Cambiar las propiedades direccionales del texto"
 
 #. TOOLBAR_STATUSLINE_FMT_DOM_DIRECTION
 #. TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION
-#: po/tmp/ap_String_Id.h.h:690
+#: po/tmp/ap_String_Id.h.h:692
 msgid "Change dominant direction of paragraph"
 msgstr "Cambia la dirección dominante del parágrafo"
 
 #. MENU_STATUSLINE_FMT_TOGGLECASE
-#: po/tmp/ap_String_Id.h.h:692
+#: po/tmp/ap_String_Id.h.h:694
 msgid "Change the case of the selected text"
 msgstr "Cambiar la capitalización del texto seleccionado"
 
 #. MENU_STATUSLINE_FMT_FONT
-#: po/tmp/ap_String_Id.h.h:694
+#: po/tmp/ap_String_Id.h.h:696
 msgid "Change the font of the selected text"
 msgstr "Cambiar la tipografía del texto seleccionado"
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
-#: po/tmp/ap_String_Id.h.h:696
+#: po/tmp/ap_String_Id.h.h:698
 msgid "Change the format of the selected paragraph"
 msgstr "Cambiar el formato del parágrafo seleccionado"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
-#: po/tmp/ap_String_Id.h.h:699
+#: po/tmp/ap_String_Id.h.h:701
 msgid "Change the language of the selected text"
 msgstr "Cambiar el idioma del texto seleccionado"
 
 #. MENU_STATUSLINE_FMT_COLUMNS
-#: po/tmp/ap_String_Id.h.h:701
+#: po/tmp/ap_String_Id.h.h:703
 msgid "Change the number of columns"
 msgstr "Cambiar el número de columnas"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
-#: po/tmp/ap_String_Id.h.h:703
+#: po/tmp/ap_String_Id.h.h:705
 msgid "Change the printing options"
 msgstr "Cambiar las opciones de impresión"
 
 #. MENU_STATUSLINE_FMT_FRAME
-#: po/tmp/ap_String_Id.h.h:705
+#: po/tmp/ap_String_Id.h.h:707
 msgid "Change the properties of the Text Box"
 msgstr "Cambiar las propiedades de la caja de texto"
 
@@ -1731,102 +1736,107 @@ msgstr "Cambiar las propiedades de la caja de texto"
 #. MENU_STATUSLINE_SPELL_SUGGEST_7
 #. MENU_STATUSLINE_SPELL_SUGGEST_8
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
-#: po/tmp/ap_String_Id.h.h:715
+#: po/tmp/ap_String_Id.h.h:717
 msgid "Change to this suggested spelling"
 msgstr "Cambiar a esta ortografía sugerida"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
-#: po/tmp/ap_String_Id.h.h:717
+#: po/tmp/ap_String_Id.h.h:719
 msgid "Change your document's page background"
 msgstr "Cambia su color del fondo de la página del documento"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR
-#: po/tmp/ap_String_Id.h.h:719
+#: po/tmp/ap_String_Id.h.h:721
 msgid "Change your document's page color"
 msgstr "Cambia su color de la página del documento"
 
 #. DLG_Styles_ModifyCharacter
-#: po/tmp/ap_String_Id.h.h:721
+#: po/tmp/ap_String_Id.h.h:723
 msgid "Character"
 msgstr "Carácter"
 
 #. FIELD_Numbers_CharCount
-#: po/tmp/ap_String_Id.h.h:723
+#: po/tmp/ap_String_Id.h.h:725
 msgid "Character Count"
 msgstr "Conteo de caracteres"
 
 #. FIELD_Numbers_NbspCount
-#: po/tmp/ap_String_Id.h.h:725
+#: po/tmp/ap_String_Id.h.h:727
 msgid "Character Count (w/o spaces)"
 msgstr "conteo de caracteres (con/sin espacios)"
 
 #. DLG_Styles_CharPrev
-#: po/tmp/ap_String_Id.h.h:727
+#: po/tmp/ap_String_Id.h.h:729
 msgid "Character Preview"
 msgstr "Vista previa del carácter"
 
 #. DLG_WordCount_Characters_No
-#: po/tmp/ap_String_Id.h.h:729
+#: po/tmp/ap_String_Id.h.h:731
 msgid "Characters (no spaces):"
 msgstr "Caracteres (sin espacios):"
 
 #. DLG_WordCount_Characters_Sp
-#: po/tmp/ap_String_Id.h.h:731
+#: po/tmp/ap_String_Id.h.h:733
 msgid "Characters (with spaces):"
 msgstr "Caracteres (con espacios):"
 
 #. MENU_LABEL_TOOLS_SPELL
-#: po/tmp/ap_String_Id.h.h:733
+#: po/tmp/ap_String_Id.h.h:735
 msgid "Check &Spelling"
 msgstr "Revisar &ortografía"
 
 #. DLG_Options_Label_GrammarCheck
-#: po/tmp/ap_String_Id.h.h:735
+#: po/tmp/ap_String_Id.h.h:737
 msgid "Check &grammar as you type"
 msgstr "Revisar &gramática al escribir"
 
 #. MENU_LABEL_HELP_CHECKVER
-#: po/tmp/ap_String_Id.h.h:737
+#: po/tmp/ap_String_Id.h.h:739
 msgid "Check for &Updates"
 msgstr "Revisar &actualizaciones"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
-#: po/tmp/ap_String_Id.h.h:739
+#: po/tmp/ap_String_Id.h.h:741
 msgid "Check online for newer versions of AbiWord"
 msgstr "Revise si hay actualizaciones nuevas de AbiWord"
 
 #. DLG_Options_Label_SpellCheckAsType
-#: po/tmp/ap_String_Id.h.h:741
+#: po/tmp/ap_String_Id.h.h:743
 msgid "Check s&pelling as you type"
 msgstr "Revisar &ortografía al escribir"
 
 #. MENU_STATUSLINE_TOOLS_SPELL
-#: po/tmp/ap_String_Id.h.h:743
+#: po/tmp/ap_String_Id.h.h:745
 msgid "Check the document for incorrect spelling"
 msgstr "Revisar la ortografía del documento"
 
 #. DLG_NEW_Choose
-#: po/tmp/ap_String_Id.h.h:745
+#: po/tmp/ap_String_Id.h.h:747
 msgid "Choose"
 msgstr "Escoger"
 
 #. DLG_Options_Label_ChooseForTransparent
-#: po/tmp/ap_String_Id.h.h:747
+#: po/tmp/ap_String_Id.h.h:749
 msgid "Choose Screen Color"
 msgstr "Escoja el color de pantalla"
 
 #. DLG_Options_Label_ColorChooserLabel
-#: po/tmp/ap_String_Id.h.h:749
+#: po/tmp/ap_String_Id.h.h:751
 msgid "Choose screen color for AbiWord"
 msgstr "Escoja un color de pantalla para AbiWord"
 
+#. TOOLBAR_TOOLTIP_REVISIONS_SELECT
+#: po/tmp/ap_String_Id.h.h:753
+msgid "Choose which revision of the document to see and edit"
+msgstr "Escoja cual revisión del documento para verlo y editarlo"
+
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
-#: po/tmp/ap_String_Id.h.h:751
+#: po/tmp/ap_String_Id.h.h:755
 msgid "Choose which revision you wish to view"
 msgstr "Escoja cual revisión quiere ver"
 
 #. DLG_Goto_Label_Help
-#: po/tmp/ap_String_Id.h.h:753
+#: po/tmp/ap_String_Id.h.h:757
 msgid ""
 "Choose your target in the left side.\n"
 "If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
@@ -1836,47 +1846,47 @@ msgstr ""
 "Si quiere usar el botón «Ir a», tan sólo rellene la entrada del «Número» con el número deseado. Puede usar + y - para hacer movimientos relativos. Ej: si escribe «+2» y selecciona «Línea», «Ir a» se desplazará 2 líneas por debajo de su posición actual."
 
 #. MENU_LABEL_EDIT_CLEAR
-#: po/tmp/ap_String_Id.h.h:755
+#: po/tmp/ap_String_Id.h.h:759
 msgid "Cle&ar"
 msgstr "Borr&ar"
 
 #. DLG_Tab_Button_Clear
-#: po/tmp/ap_String_Id.h.h:757
+#: po/tmp/ap_String_Id.h.h:761
 msgid "Clear"
 msgstr "Borrar"
 
 #. DLG_Tab_Button_ClearAll
-#: po/tmp/ap_String_Id.h.h:759
+#: po/tmp/ap_String_Id.h.h:763
 msgid "Clear &All"
 msgstr "Borrar &todo"
 
 #. DLG_Background_ClearClr
-#: po/tmp/ap_String_Id.h.h:761
+#: po/tmp/ap_String_Id.h.h:765
 msgid "Clear Background Color"
 msgstr "Quitar el color de fondo"
 
 #. DLG_Background_ClearHighlight
-#: po/tmp/ap_String_Id.h.h:763
+#: po/tmp/ap_String_Id.h.h:767
 msgid "Clear Highlight Color"
 msgstr "Quitar el color de resaltado"
 
 #. MSG_QueryExit
-#: po/tmp/ap_String_Id.h.h:765
+#: po/tmp/ap_String_Id.h.h:769
 msgid "Close all windows and exit?"
 msgstr "¿Quiere cerrar todas las ventanas y salir?"
 
 #. MENU_STATUSLINE_FILE_EXIT
-#: po/tmp/ap_String_Id.h.h:767
+#: po/tmp/ap_String_Id.h.h:771
 msgid "Close all windows in the application and exit"
 msgstr "Cierra todas las ventanas de la aplicación y sale"
 
 #. MENU_STATUSLINE_FILE_CLOSE
-#: po/tmp/ap_String_Id.h.h:769
+#: po/tmp/ap_String_Id.h.h:773
 msgid "Close the document"
 msgstr "Cerrar el documento"
 
 #. MENU_LABEL_TABLE_SELECT_COLUMN
-#: po/tmp/ap_String_Id.h.h:771
+#: po/tmp/ap_String_Id.h.h:775
 msgid "Co&lumn"
 msgstr "Co&lumna"
 
@@ -1884,532 +1894,537 @@ msgstr "Co&lumna"
 #. DLG_FormatTable_Color
 #. DLG_BorderShading_Color
 #. DLG_UFS_ColorLabel
-#: po/tmp/ap_String_Id.h.h:775
+#: po/tmp/ap_String_Id.h.h:779
 #: po/tmp/xap_String_Id.h.h:203
 msgid "Color:"
 msgstr "Color:"
 
 #. DLG_FormatTable_Apply_To_Column
-#: po/tmp/ap_String_Id.h.h:777
+#: po/tmp/ap_String_Id.h.h:781
 msgid "Column"
 msgstr "Columna"
 
 #. ColumnGapStatus
-#: po/tmp/ap_String_Id.h.h:779
+#: po/tmp/ap_String_Id.h.h:783
 #, c-format
 msgid "Column Gap [%s]"
 msgstr "Hueco de columna [%s]"
 
 #. ColumnStatus
-#: po/tmp/ap_String_Id.h.h:781
+#: po/tmp/ap_String_Id.h.h:785
 #, c-format
 msgid "Column [%d]"
 msgstr "Columna [%d]"
 
 #. DLG_Column_ColumnTitle
-#: po/tmp/ap_String_Id.h.h:783
+#: po/tmp/ap_String_Id.h.h:787
 msgid "Columns"
 msgstr "Columnas"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE
-#: po/tmp/ap_String_Id.h.h:785
+#: po/tmp/ap_String_Id.h.h:789
 msgid "Columns &Left"
 msgstr "Columnas a la i&zquierda"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER
-#: po/tmp/ap_String_Id.h.h:787
+#: po/tmp/ap_String_Id.h.h:791
 msgid "Columns &Right"
 msgstr "Columnas a la de&recha"
 
 #. DLG_ListRevisions_Column3Label
-#: po/tmp/ap_String_Id.h.h:789
+#: po/tmp/ap_String_Id.h.h:793
 msgid "Comment"
 msgstr "Comentario"
 
 #. DLG_MarkRevisions_Comment2Label
-#: po/tmp/ap_String_Id.h.h:791
+#: po/tmp/ap_String_Id.h.h:795
 msgid "Comment to be associated with the revision:"
 msgstr "Comentario a ser asociado con la revisión:"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_COMPARE_DOCUMENTS
-#: po/tmp/ap_String_Id.h.h:793
+#: po/tmp/ap_String_Id.h.h:797
 msgid "Compare active document to another document"
 msgstr "Compara el documento activo con otro documento"
 
 #. FIELD_Application_CompileDate
-#: po/tmp/ap_String_Id.h.h:795
+#: po/tmp/ap_String_Id.h.h:799
 msgid "Compile Date"
 msgstr "Fecha de compilación"
 
 #. FIELD_Application_CompileTime
-#: po/tmp/ap_String_Id.h.h:797
+#: po/tmp/ap_String_Id.h.h:801
 msgid "Compile Time"
 msgstr "Hora de compilación"
 
 #. DLG_Break_Continuous
-#: po/tmp/ap_String_Id.h.h:799
+#: po/tmp/ap_String_Id.h.h:803
 msgid "Con&tinuous"
 msgstr "Con&tinuo"
 
 #. TOC_TocHeading
-#: po/tmp/ap_String_Id.h.h:801
+#: po/tmp/ap_String_Id.h.h:805
 msgid "Contents"
 msgstr "Índica"
 
 #. DLG_MarkRevisions_Check1Label
-#: po/tmp/ap_String_Id.h.h:803
+#: po/tmp/ap_String_Id.h.h:807
 #, c-format
 msgid "Continue previous revision (number %d)"
 msgstr "Continuar la revisión anterior (número %d)"
 
 #. FIELD_Document_Contributor
-#: po/tmp/ap_String_Id.h.h:805
+#: po/tmp/ap_String_Id.h.h:809
 msgid "Contributor"
 msgstr "Colaborador"
 
 #. DLG_MetaData_CoAuthor_LBL
-#: po/tmp/ap_String_Id.h.h:807
+#: po/tmp/ap_String_Id.h.h:811
 msgid "Contributor(s):"
 msgstr "Colaborador(es):"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
-#: po/tmp/ap_String_Id.h.h:809
+#: po/tmp/ap_String_Id.h.h:813
 msgid "Convert Selected Text to a Table"
 msgstr "Convertir el texto seleccionado en una tabla"
 
 #. MENU_LABEL_TABLE_TABLETOTEXT
-#: po/tmp/ap_String_Id.h.h:811
+#: po/tmp/ap_String_Id.h.h:815
 msgid "Convert Table to Text"
 msgstr "Convertir tabla a texto"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE
-#: po/tmp/ap_String_Id.h.h:813
+#: po/tmp/ap_String_Id.h.h:817
 msgid "Convert Text to Table"
 msgstr "Convertir texto a tabla"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXT
-#: po/tmp/ap_String_Id.h.h:815
+#: po/tmp/ap_String_Id.h.h:819
 msgid "Convert from a Table to Text"
 msgstr "Convierte desde una tabla a un texto"
 
 #. TOOLBAR_LABEL_EDIT_COPY
 #. TOOLBAR_STATUSLINE_EDIT_COPY
 #. TOOLBAR_TOOLTIP_EDIT_COPY
-#: po/tmp/ap_String_Id.h.h:819
+#: po/tmp/ap_String_Id.h.h:823
 msgid "Copy"
 msgstr "Copiar"
 
 #. MENU_STATUSLINE_EDIT_COPYEMBED
-#: po/tmp/ap_String_Id.h.h:821
+#: po/tmp/ap_String_Id.h.h:825
 msgid "Copy Embedded Object"
 msgstr "Copiar objeto incrustado"
 
 #. MENU_LABEL_EDIT_COPYIMAGE
-#: po/tmp/ap_String_Id.h.h:823
+#: po/tmp/ap_String_Id.h.h:827
 msgid "Copy Image"
 msgstr "Copiar imagen"
 
 #. MENU_LABEL_EDIT_COPYEMBED
-#: po/tmp/ap_String_Id.h.h:825
+#: po/tmp/ap_String_Id.h.h:829
 msgid "Copy Object"
 msgstr "Copiar objeto"
 
 #. MENU_LABEL_EDIT_COPY_FRAME
-#: po/tmp/ap_String_Id.h.h:827
+#: po/tmp/ap_String_Id.h.h:831
 msgid "Copy Text Box"
 msgstr "Copiar caja de texto"
 
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
-#: po/tmp/ap_String_Id.h.h:829
+#: po/tmp/ap_String_Id.h.h:833
 msgid "Copy hyperlink location"
 msgstr "Copia la dirección del hiperenlace"
 
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
-#: po/tmp/ap_String_Id.h.h:831
+#: po/tmp/ap_String_Id.h.h:835
 msgid "Copy the Text Box to the clipboard"
 msgstr "Copia la caja de texto al portapapeles"
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
-#: po/tmp/ap_String_Id.h.h:833
+#: po/tmp/ap_String_Id.h.h:837
 msgid "Copy the Text Box to the clipboard then remove it"
 msgstr "Copie la caja de texto al portapapeles y entonces elimínela"
 
 #. MENU_STATUSLINE_EDIT_COPY
-#: po/tmp/ap_String_Id.h.h:835
+#: po/tmp/ap_String_Id.h.h:839
 msgid "Copy the selection and put it on the Clipboard"
 msgstr "Copie la selección al portapapeles"
 
 #. MSG_IE_CouldNotOpen
-#: po/tmp/ap_String_Id.h.h:837
+#: po/tmp/ap_String_Id.h.h:841
 #, c-format
 msgid "Could not open file %s for writing"
 msgstr "No se pudo abrir el archivo %s para escritura"
 
 #. MSG_OpenFailed
-#: po/tmp/ap_String_Id.h.h:839
+#: po/tmp/ap_String_Id.h.h:843
 #, c-format
 msgid "Could not open file %s."
 msgstr "No se pudo abrir el archivo %s."
 
 #. MSG_IE_CouldNotWrite
-#: po/tmp/ap_String_Id.h.h:841
+#: po/tmp/ap_String_Id.h.h:845
 #, c-format
 msgid "Could not write to file %s"
 msgstr "No se pudo escribir en el archivo %s"
 
 #. MSG_SaveFailed
-#: po/tmp/ap_String_Id.h.h:843
+#: po/tmp/ap_String_Id.h.h:847
 #, c-format
 msgid "Could not write to the file %s."
 msgstr "No se pudo escribir en el archivo %s."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
-#: po/tmp/ap_String_Id.h.h:845
+#: po/tmp/ap_String_Id.h.h:849
 msgid "Count the number of words in the document"
 msgstr "Cuenta el número de palabras en el documento"
 
 #. FIELD_Document_Coverage
-#: po/tmp/ap_String_Id.h.h:847
+#: po/tmp/ap_String_Id.h.h:851
 msgid "Coverage"
 msgstr "Cobertura"
 
 #. DLG_MetaData_Coverage_LBL
-#: po/tmp/ap_String_Id.h.h:849
+#: po/tmp/ap_String_Id.h.h:853
 msgid "Coverage:"
 msgstr "Cobertura:"
 
 #. DLG_NEW_Tab1_FAX1
-#: po/tmp/ap_String_Id.h.h:851
+#: po/tmp/ap_String_Id.h.h:855
 msgid "Create a fax"
 msgstr "Crear un fax"
 
+#. TOOLBAR_TOOLTIP_REVISIONS_NEW
+#: po/tmp/ap_String_Id.h.h:857
+msgid "Create a new Revision"
+msgstr "Crear una revisión nueva"
+
 #. DLG_NEW_Tab1_WP1
-#: po/tmp/ap_String_Id.h.h:853
+#: po/tmp/ap_String_Id.h.h:859
 msgid "Create a new blank document"
 msgstr "Crea un documento nuevo en blanco"
 
 #. MENU_STATUSLINE_FILE_NEW
 #. TOOLBAR_STATUSLINE_FILE_NEW
 #. TOOLBAR_TOOLTIP_FILE_NEW
-#: po/tmp/ap_String_Id.h.h:857
+#: po/tmp/ap_String_Id.h.h:863
 msgid "Create a new document"
 msgstr "Crea un documento nuevo"
 
 #. DLG_NEW_Create
-#: po/tmp/ap_String_Id.h.h:859
+#: po/tmp/ap_String_Id.h.h:865
 msgid "Create a new document from a template"
 msgstr "Crea un documento nuevo usando una plantilla"
 
 #. MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:861
+#: po/tmp/ap_String_Id.h.h:867
 msgid "Create a new document using a template"
 msgstr "Crea un documento nuevo usando una plantilla"
 
 #. DLG_NEW_StartEmpty
-#: po/tmp/ap_String_Id.h.h:863
+#: po/tmp/ap_String_Id.h.h:869
 msgid "Create an empty document"
 msgstr "Crea un documento vacío"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
-#: po/tmp/ap_String_Id.h.h:865
+#: po/tmp/ap_String_Id.h.h:871
 msgid "Create from &selection"
 msgstr "Crear desde la &selección"
 
 #. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h.h:867
+#: po/tmp/ap_String_Id.h.h:873
 msgid "Creator"
 msgstr "Creador"
 
 #. MENU_LABEL_EDIT_CUT
-#: po/tmp/ap_String_Id.h.h:869
+#: po/tmp/ap_String_Id.h.h:875
 msgid "Cu&t"
 msgstr "Cor&tar"
 
 #. FIELD_Datetime_CurrentDate
-#: po/tmp/ap_String_Id.h.h:871
+#: po/tmp/ap_String_Id.h.h:877
 msgid "Current Date"
 msgstr "Fecha actual"
 
 #. DLG_Lists_Current_Font
-#: po/tmp/ap_String_Id.h.h:873
+#: po/tmp/ap_String_Id.h.h:879
 msgid "Current Font"
 msgstr "Tipografía actual"
 
 #. DLG_Lists_Current_List_Label
-#: po/tmp/ap_String_Id.h.h:875
+#: po/tmp/ap_String_Id.h.h:881
 msgid "Current List Label"
 msgstr "Lista de etiquetas actuales"
 
 #. DLG_Lists_Current_List_Type
-#: po/tmp/ap_String_Id.h.h:877
+#: po/tmp/ap_String_Id.h.h:883
 msgid "Current List Type"
 msgstr "Lista de tipos actuales"
 
 #. MSG_EmptySelection
-#: po/tmp/ap_String_Id.h.h:879
+#: po/tmp/ap_String_Id.h.h:885
 msgid "Current Selection is Empty"
 msgstr "La selección actual está vacía"
 
 #. DLG_Styles_DefCurrent
-#: po/tmp/ap_String_Id.h.h:881
+#: po/tmp/ap_String_Id.h.h:887
 msgid "Current Settings"
 msgstr "Configuración actual"
 
 #. FIELD_Datetime_CurrentTime
-#: po/tmp/ap_String_Id.h.h:883
+#: po/tmp/ap_String_Id.h.h:889
 msgid "Current Time"
 msgstr "Hora actual"
 
 #. DLG_Options_Label_ViewCursorBlink
-#: po/tmp/ap_String_Id.h.h:885
+#: po/tmp/ap_String_Id.h.h:891
 msgid "Cursor &blink"
 msgstr "&Parpadeo del cursor"
 
 #. DLG_Options_Label_SpellCustomDict
-#: po/tmp/ap_String_Id.h.h:887
+#: po/tmp/ap_String_Id.h.h:893
 msgid "Custom Dictionary:"
 msgstr "Diccionario personal:"
 
 #. FIELD_DateTime_Custom
-#: po/tmp/ap_String_Id.h.h:889
+#: po/tmp/ap_String_Id.h.h:895
 msgid "Customizable date/time"
 msgstr "Fecha/Hora personalizable"
 
 #. DLG_Lists_Customize
-#: po/tmp/ap_String_Id.h.h:891
+#: po/tmp/ap_String_Id.h.h:897
 msgid "Customized List"
 msgstr "Lista personalizada"
 
 #. TOOLBAR_LABEL_EDIT_CUT
 #. TOOLBAR_STATUSLINE_EDIT_CUT
 #. TOOLBAR_TOOLTIP_EDIT_CUT
-#: po/tmp/ap_String_Id.h.h:895
+#: po/tmp/ap_String_Id.h.h:901
 msgid "Cut"
 msgstr "Cortar"
 
 #. MENU_STATUSLINE_EDIT_CUTEMBED
-#: po/tmp/ap_String_Id.h.h:897
+#: po/tmp/ap_String_Id.h.h:903
 msgid "Cut Embedded Object"
 msgstr "Cortar objeto incrustado"
 
 #. MENU_LABEL_EDIT_CUTIMAGE
-#: po/tmp/ap_String_Id.h.h:899
+#: po/tmp/ap_String_Id.h.h:905
 msgid "Cut Image"
 msgstr "Cortar imagen"
 
 #. MENU_LABEL_EDIT_CUTEMBED
-#: po/tmp/ap_String_Id.h.h:901
+#: po/tmp/ap_String_Id.h.h:907
 msgid "Cut Object"
 msgstr "Cortar objeto"
 
 #. MENU_LABEL_EDIT_CUT_FRAME
-#: po/tmp/ap_String_Id.h.h:903
+#: po/tmp/ap_String_Id.h.h:909
 msgid "Cut Text Box"
 msgstr "Corta caja de texto"
 
 #. MENU_STATUSLINE_EDIT_CUT
-#: po/tmp/ap_String_Id.h.h:905
+#: po/tmp/ap_String_Id.h.h:911
 msgid "Cut the selection and put it on the Clipboard"
 msgstr "Corta la selección y ponerla en el portapapeles"
 
 #. MENU_LABEL_FMT_DIRECTION
-#: po/tmp/ap_String_Id.h.h:907
+#: po/tmp/ap_String_Id.h.h:913
 msgid "D&irectional"
 msgstr "&Direccional"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
-#: po/tmp/ap_String_Id.h.h:909
+#: po/tmp/ap_String_Id.h.h:915
 #: po/tmp/xap_String_Id.h.h:253
 msgid "Dashed List"
 msgstr "Lista con guiones"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
-#: po/tmp/ap_String_Id.h.h:912
+#: po/tmp/ap_String_Id.h.h:918
 msgid "Date"
 msgstr "Fecha"
 
 #. MENU_LABEL_INSERT_DATETIME
-#: po/tmp/ap_String_Id.h.h:914
+#: po/tmp/ap_String_Id.h.h:920
 msgid "Date and &Time"
 msgstr "&Fecha y hora"
 
 #. FIELD_Type_Datetime
-#: po/tmp/ap_String_Id.h.h:916
+#: po/tmp/ap_String_Id.h.h:922
 msgid "Date and Time"
 msgstr "Fecha y hora"
 
 #. FIELD_DateTime_DOY
-#: po/tmp/ap_String_Id.h.h:918
+#: po/tmp/ap_String_Id.h.h:924
 msgid "Day # in the year"
 msgstr "Día # en el año"
 
 #. DLG_Options_Btn_Default
-#: po/tmp/ap_String_Id.h.h:920
+#: po/tmp/ap_String_Id.h.h:926
 msgid "De&faults"
 msgstr "&Predeterminados"
 
 #. DLG_Tab_Radio_Decimal
-#: po/tmp/ap_String_Id.h.h:922
+#: po/tmp/ap_String_Id.h.h:928
 msgid "Decimal"
 msgstr "Decimal"
 
 #. TabToggleDecimalTab
-#: po/tmp/ap_String_Id.h.h:924
+#: po/tmp/ap_String_Id.h.h:930
 msgid "Decimal Tab"
 msgstr "Tabulación decimal"
 
 #. TOOLBAR_LABEL_UNINDENT
 #. TOOLBAR_STATUSLINE_UNINDENT
 #. TOOLBAR_TOOLTIP_UNINDENT
-#: po/tmp/ap_String_Id.h.h:928
+#: po/tmp/ap_String_Id.h.h:934
 msgid "Decrease indent"
 msgstr "Disminuir sangría"
 
 #. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h.h:930
+#: po/tmp/ap_String_Id.h.h:936
 msgid "Default date (w/o time)"
 msgstr "Fecha predeterminada (con/sin hora)"
 
 #. FIELD_DateTime_DefaultDate
-#: po/tmp/ap_String_Id.h.h:932
+#: po/tmp/ap_String_Id.h.h:938
 msgid "Default date representation"
 msgstr "Representación predeterminada de la fecha"
 
 #. DLG_Options_Label_DefaultPageSize
-#: po/tmp/ap_String_Id.h.h:934
+#: po/tmp/ap_String_Id.h.h:940
 msgid "Default page size"
 msgstr "Tamaño de página predeterminado"
 
 #. DLG_Tab_Label_DefaultTS
-#: po/tmp/ap_String_Id.h.h:936
+#: po/tmp/ap_String_Id.h.h:942
 msgid "Default tab stops:"
 msgstr "Tabulaciones predeterminadas:"
 
 #. DLG_Options_Label_DirectionRtl
-#: po/tmp/ap_String_Id.h.h:938
+#: po/tmp/ap_String_Id.h.h:944
 msgid "Default to right-to-left direction of text"
 msgstr "Establecer dirección de texto derecha-izquierda como predeterminada"
 
 #. DLG_FormatTOC_LevelDefs
-#: po/tmp/ap_String_Id.h.h:940
+#: po/tmp/ap_String_Id.h.h:946
 msgid "Define Main Properties"
 msgstr "Definir propiedades principales"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
-#: po/tmp/ap_String_Id.h.h:943
+#: po/tmp/ap_String_Id.h.h:949
 msgid "Define or apply style for the selection"
 msgstr "Definir o aplicar el estilo para la selección"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
 #. DLG_Delete
-#: po/tmp/ap_String_Id.h.h:946
+#: po/tmp/ap_String_Id.h.h:952
 #: po/tmp/xap_String_Id.h.h:267
 msgid "Delete"
 msgstr "Suprimir"
 
 #. MENU_STATUSLINE_TABLE_DELETE_CELLS
-#: po/tmp/ap_String_Id.h.h:948
+#: po/tmp/ap_String_Id.h.h:954
 msgid "Delete Cells"
 msgstr "Suprimir celdas"
 
 #. MENU_LABEL_TABLE_DELETECOLUMN
-#: po/tmp/ap_String_Id.h.h:950
+#: po/tmp/ap_String_Id.h.h:956
 msgid "Delete Co&lumn"
 msgstr "Suprimir co&lumna"
 
 #. MENU_STATUSLINE_TABLE_DELETE_COLUMNS
 #. MENU_STATUSLINE_TABLE_DELETECOLUMN
-#: po/tmp/ap_String_Id.h.h:953
+#: po/tmp/ap_String_Id.h.h:959
 msgid "Delete Column"
 msgstr "Suprimir columna"
 
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
-#: po/tmp/ap_String_Id.h.h:955
+#: po/tmp/ap_String_Id.h.h:961
 msgid "Delete Embedded Object"
 msgstr "Suprimir objeto incrustado"
 
 #. MENU_LABEL_EDIT_DELETEIMAGE
-#: po/tmp/ap_String_Id.h.h:957
+#: po/tmp/ap_String_Id.h.h:963
 msgid "Delete Image"
 msgstr "Suprimir imagen"
 
 #. MENU_LABEL_EDIT_DELETEEMBED
-#: po/tmp/ap_String_Id.h.h:959
+#: po/tmp/ap_String_Id.h.h:965
 msgid "Delete Object"
 msgstr "Suprimir objeto"
 
 #. MENU_LABEL_TABLE_DELETEROW
-#: po/tmp/ap_String_Id.h.h:961
+#: po/tmp/ap_String_Id.h.h:967
 msgid "Delete Ro&w"
 msgstr "Suprimir fi&la"
 
 #. MENU_STATUSLINE_TABLE_DELETE_ROWS
 #. MENU_STATUSLINE_TABLE_DELETEROW
-#: po/tmp/ap_String_Id.h.h:964
+#: po/tmp/ap_String_Id.h.h:970
 msgid "Delete Row"
 msgstr "Suprimir fila"
 
 #. MENU_LABEL_TABLE_DELETETABLE
-#: po/tmp/ap_String_Id.h.h:966
+#: po/tmp/ap_String_Id.h.h:972
 msgid "Delete Tabl&e"
 msgstr "Suprimir tabl&a"
 
 #. MENU_STATUSLINE_TABLE_DELETE_TABLE
 #. MENU_STATUSLINE_TABLE_DELETETABLE
-#: po/tmp/ap_String_Id.h.h:969
+#: po/tmp/ap_String_Id.h.h:975
 msgid "Delete Table"
 msgstr "Suprimir tabla"
 
 #. MENU_LABEL_EDIT_DELETEFRAME
-#: po/tmp/ap_String_Id.h.h:971
+#: po/tmp/ap_String_Id.h.h:977
 msgid "Delete Text Box"
 msgstr "Suprimir caja de texto"
 
 #. MENU_STATUSLINE_DELETE_ANNOTATION
-#: po/tmp/ap_String_Id.h.h:973
+#: po/tmp/ap_String_Id.h.h:979
 msgid "Delete annotation"
 msgstr "Suprimir anotación"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
-#: po/tmp/ap_String_Id.h.h:975
+#: po/tmp/ap_String_Id.h.h:981
 msgid "Delete column"
 msgstr "Suprimir columna"
 
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:977
+#: po/tmp/ap_String_Id.h.h:983
 msgid "Delete hyperlink"
 msgstr "Suprimir hiperenlace"
 
 #. TOOLBAR_LABEL_DELETE_ROW
-#: po/tmp/ap_String_Id.h.h:979
+#: po/tmp/ap_String_Id.h.h:985
 msgid "Delete row"
 msgstr "Suprimir fila"
 
 #. MENU_STATUSLINE_EDIT_CLEAR
-#: po/tmp/ap_String_Id.h.h:981
+#: po/tmp/ap_String_Id.h.h:987
 msgid "Delete the selection"
 msgstr "Suprime la selección"
 
 #. TOOLBAR_STATUSLINE_DELETE_COLUMN
 #. TOOLBAR_TOOLTIP_DELETE_COLUMN
-#: po/tmp/ap_String_Id.h.h:984
+#: po/tmp/ap_String_Id.h.h:990
 msgid "Delete this column from its table"
 msgstr "Suprime esta columna de su tabla"
 
 #. TOOLBAR_STATUSLINE_DELETE_ROW
 #. TOOLBAR_TOOLTIP_DELETE_ROW
-#: po/tmp/ap_String_Id.h.h:987
+#: po/tmp/ap_String_Id.h.h:993
 msgid "Delete this row from its table"
 msgstr "Suprime esta fila de su tabla"
 
 #. DLG_Styles_Description
 #. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
-#: po/tmp/ap_String_Id.h.h:991
+#: po/tmp/ap_String_Id.h.h:997
 msgid "Description"
 msgstr "Descripción"
 
@@ -2417,161 +2432,166 @@ msgstr "Descripción"
 #. DLG_Annotation_Description_LBL
 #. DLG_PLUGIN_MANAGER_DESC
 #. DLG_Image_LblDescription
-#: po/tmp/ap_String_Id.h.h:994
+#: po/tmp/ap_String_Id.h.h:1000
 #: po/tmp/xap_String_Id.h.h:270
 msgid "Description:"
 msgstr "Descripción:"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
-#: po/tmp/ap_String_Id.h.h:996
+#: po/tmp/ap_String_Id.h.h:1002
 #: po/tmp/xap_String_Id.h.h:272
 msgid "Diamond List"
 msgstr "Lista de diamantes"
 
 #. DLG_Options_Label_SpellDictionaries
-#: po/tmp/ap_String_Id.h.h:998
+#: po/tmp/ap_String_Id.h.h:1004
 msgid "Dictionaries"
 msgstr "Diccionarios"
 
 #. DLG_HdrFtr_FooterEven
-#: po/tmp/ap_String_Id.h.h:1000
+#: po/tmp/ap_String_Id.h.h:1006
 msgid "Different footer on facing pages"
 msgstr "Pie de página diferente en las páginas opuestas"
 
 #. DLG_HdrFtr_FooterFirst
-#: po/tmp/ap_String_Id.h.h:1002
+#: po/tmp/ap_String_Id.h.h:1008
 msgid "Different footer on first page"
 msgstr "Pie de página diferente en la primera página"
 
 #. DLG_HdrFtr_FooterLast
-#: po/tmp/ap_String_Id.h.h:1004
+#: po/tmp/ap_String_Id.h.h:1010
 msgid "Different footer on last page"
 msgstr "Pie de página diferente en la última página"
 
 #. DLG_HdrFtr_HeaderEven
-#: po/tmp/ap_String_Id.h.h:1006
+#: po/tmp/ap_String_Id.h.h:1012
 msgid "Different header on facing pages"
 msgstr "Cabecera diferente en las páginas opuestas"
 
 #. DLG_HdrFtr_HeaderFirst
-#: po/tmp/ap_String_Id.h.h:1008
+#: po/tmp/ap_String_Id.h.h:1014
 msgid "Different header on first page"
 msgstr "Cabecera diferente en la primera página"
 
 #. DLG_HdrFtr_HeaderLast
-#: po/tmp/ap_String_Id.h.h:1010
+#: po/tmp/ap_String_Id.h.h:1016
 msgid "Different header on last page"
 msgstr "Cabecera diferente en la última página"
 
+#. MENU_STATUSLINE_RDF_EDITOR
+#: po/tmp/ap_String_Id.h.h:1018
+msgid "Directly edit the RDF for the entire document..."
+msgstr "Editar directamente el RDF para el documento completo..."
+
 #. DLG_Styles_StylesLocked
-#: po/tmp/ap_String_Id.h.h:1012
+#: po/tmp/ap_String_Id.h.h:1020
 msgid "Disable all formatting commands, except styles"
 msgstr "Deshabilitar todos los comandos de formato, excepto los estilos"
 
 #. MENU_STATUSLINE_HELP_CREDITS
-#: po/tmp/ap_String_Id.h.h:1014
+#: po/tmp/ap_String_Id.h.h:1022
 msgid "Display Credits"
 msgstr "Visualizar créditos"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
-#: po/tmp/ap_String_Id.h.h:1016
+#: po/tmp/ap_String_Id.h.h:1024
 msgid "Display Help Contents"
 msgstr "Visualizar contenidos de la ayuda"
 
 #. MENU_STATUSLINE_HELP_INTRO
-#: po/tmp/ap_String_Id.h.h:1018
+#: po/tmp/ap_String_Id.h.h:1026
 msgid "Display Help Introduction"
 msgstr "Visualizar introducción a la ayuda"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:1020
+#: po/tmp/ap_String_Id.h.h:1028
 msgid "Display non-printing characters"
 msgstr "Visualizar caracteres no imprimibles"
 
 #. MENU_STATUSLINE_HELP_ABOUT
-#: po/tmp/ap_String_Id.h.h:1022
+#: po/tmp/ap_String_Id.h.h:1030
 msgid "Display program information, version number, and copyright"
 msgstr "Visualizar información del programa, número de versión y copyright"
 
 #. DLG_FormatTOC_DispStyle
-#: po/tmp/ap_String_Id.h.h:1024
+#: po/tmp/ap_String_Id.h.h:1032
 msgid "Display style:"
 msgstr "Estilo de visualización:"
 
 #. DLG_Options_Prompt_IgnoreResetAll
-#: po/tmp/ap_String_Id.h.h:1026
+#: po/tmp/ap_String_Id.h.h:1034
 msgid "Do you want to reset ignored words in all the documents?"
 msgstr "¿Quiere reiniciar las palabras ignoradas en todos los documentos?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
-#: po/tmp/ap_String_Id.h.h:1028
+#: po/tmp/ap_String_Id.h.h:1036
 msgid "Do you want to reset ignored words in the current document?"
 msgstr "¿Quiere reiniciar las palabras ignoradas en el documento actual?"
 
 #. FIELD_Type_Document
-#: po/tmp/ap_String_Id.h.h:1030
+#: po/tmp/ap_String_Id.h.h:1038
 msgid "Document"
 msgstr "Documento"
 
 #. DLG_MetaData_Title
-#: po/tmp/ap_String_Id.h.h:1032
+#: po/tmp/ap_String_Id.h.h:1040
 msgid "Document Properties"
 msgstr "Propiedades del documento"
 
 #. DLG_Options_Label_Documents
-#: po/tmp/ap_String_Id.h.h:1034
+#: po/tmp/ap_String_Id.h.h:1042
 msgid "Documents"
 msgstr "Documentos"
 
 #. DLG_FormatFootnotes_FootRestartNone
-#: po/tmp/ap_String_Id.h.h:1036
+#: po/tmp/ap_String_Id.h.h:1044
 msgid "Don't restart"
 msgstr "No reiniciar"
 
 #. DLG_Para_SpacingDouble
-#: po/tmp/ap_String_Id.h.h:1038
+#: po/tmp/ap_String_Id.h.h:1046
 msgid "Double"
 msgstr "Doble"
 
 #. TOOLBAR_LABEL_DOUBLE_SPACE
-#: po/tmp/ap_String_Id.h.h:1040
+#: po/tmp/ap_String_Id.h.h:1048
 msgid "Double Spacing"
 msgstr "Espaciado doble"
 
 #. TOOLBAR_STATUSLINE_DOUBLE_SPACE
 #. TOOLBAR_TOOLTIP_DOUBLE_SPACE
-#: po/tmp/ap_String_Id.h.h:1043
+#: po/tmp/ap_String_Id.h.h:1051
 msgid "Double spacing"
 msgstr "Espaciado doble"
 
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
-#: po/tmp/ap_String_Id.h.h:1045
+#: po/tmp/ap_String_Id.h.h:1053
 msgid "Dump RDF Objects"
 msgstr "Volcar objetos RDF"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
-#: po/tmp/ap_String_Id.h.h:1047
+#: po/tmp/ap_String_Id.h.h:1055
 msgid "Dump RDF related to Cursor Position"
 msgstr "Volcar los RDF relacionados con la Posición del Cursor"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
-#: po/tmp/ap_String_Id.h.h:1049
+#: po/tmp/ap_String_Id.h.h:1057
 msgid "Dump out information about RDF Objects"
 msgstr "Volcar información sobre los Objetos RDF"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
-#: po/tmp/ap_String_Id.h.h:1051
+#: po/tmp/ap_String_Id.h.h:1059
 msgid "Dump the raw RDF associated with the cursor position"
 msgstr "Volcar el RDF crudo asociado con la posición del cursor"
 
 #. DLG_Annotation_Title
-#: po/tmp/ap_String_Id.h.h:1053
+#: po/tmp/ap_String_Id.h.h:1061
 msgid "Edit Annotation"
 msgstr "Editar anotación"
 
 #. MENU_LABEL_EDIT_LATEXEQUATION
-#: po/tmp/ap_String_Id.h.h:1055
+#: po/tmp/ap_String_Id.h.h:1063
 msgid "Edit Equation"
 msgstr "Editar Ecuación"
 
@@ -2579,7 +2599,7 @@ msgstr "Editar Ecuación"
 #. TOOLBAR_LABEL_EDIT_FOOTER
 #. TOOLBAR_STATUSLINE_EDIT_FOOTER
 #. TOOLBAR_TOOLTIP_EDIT_FOOTER
-#: po/tmp/ap_String_Id.h.h:1060
+#: po/tmp/ap_String_Id.h.h:1068
 msgid "Edit Footer"
 msgstr "Editar pie de página"
 
@@ -2587,297 +2607,322 @@ msgstr "Editar pie de página"
 #. TOOLBAR_LABEL_EDIT_HEADER
 #. TOOLBAR_STATUSLINE_EDIT_HEADER
 #. TOOLBAR_TOOLTIP_EDIT_HEADER
-#: po/tmp/ap_String_Id.h.h:1065
+#: po/tmp/ap_String_Id.h.h:1073
 msgid "Edit Header"
 msgstr "Editar cabecera"
 
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
-#: po/tmp/ap_String_Id.h.h:1067
+#: po/tmp/ap_String_Id.h.h:1075
 msgid "Edit LaTeX Equation"
 msgstr "Editar ecuación LaTeX"
 
+#. MENU_LABEL_RDF_EDITOR
+#: po/tmp/ap_String_Id.h.h:1077
+msgid "Edit RDF Triples..."
+msgstr "Editar RDF triples..."
+
 #. MENU_STATUSLINE_EDIT_ANNOTATION
-#: po/tmp/ap_String_Id.h.h:1069
+#: po/tmp/ap_String_Id.h.h:1079
 msgid "Edit annotation"
 msgstr "Editar anotación"
 
+#. DLG_RDF_Editor_Title
+#: po/tmp/ap_String_Id.h.h:1081
+msgid "Edit document RDF..."
+msgstr "Editar documento RDF..."
+
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1071
+#: po/tmp/ap_String_Id.h.h:1083
 msgid "Edit hyperlink"
 msgstr "Edita un hiperenlace"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
-#: po/tmp/ap_String_Id.h.h:1073
+#: po/tmp/ap_String_Id.h.h:1085
 msgid "Edit text at the top or bottom of every page"
 msgstr "Editar texto en la parte superior o inferior de cada página"
 
 #. MENU_STATUSLINE_EDIT_EDITFOOTER
-#: po/tmp/ap_String_Id.h.h:1075
+#: po/tmp/ap_String_Id.h.h:1087
 msgid "Edit the Footer on the current page"
 msgstr "Editar el pie de página en la página actual"
 
 #. MENU_STATUSLINE_EDIT_EDITHEADER
-#: po/tmp/ap_String_Id.h.h:1077
+#: po/tmp/ap_String_Id.h.h:1089
 msgid "Edit the Header on the current page"
 msgstr "Editar la cabecera en la página actual"
 
 #. TB_Embedded
-#: po/tmp/ap_String_Id.h.h:1079
+#: po/tmp/ap_String_Id.h.h:1091
 msgid "Embedded"
 msgstr "Integrados"
 
 #. MENU_LABEL_VIEW_LOCKSTYLES
-#: po/tmp/ap_String_Id.h.h:1081
+#: po/tmp/ap_String_Id.h.h:1093
 msgid "Enable F&ormatting Tools"
 msgstr "Activar &herramientas de formato"
 
 #. DLG_Options_Label_CheckEnableSmoothScrolling
-#: po/tmp/ap_String_Id.h.h:1083
+#: po/tmp/ap_String_Id.h.h:1095
 msgid "Enable Smooth Scrolling"
 msgstr "Activar desplazamiento suave"
 
 #. DLG_BorderShading_Use_Shading
-#: po/tmp/ap_String_Id.h.h:1085
+#: po/tmp/ap_String_Id.h.h:1097
 msgid "Enable shading"
 msgstr "Activar sombreado"
 
 #. DLG_Options_Label_SmartQuotes
-#: po/tmp/ap_String_Id.h.h:1087
+#: po/tmp/ap_String_Id.h.h:1099
 msgid "Enable smart (curly) quotes"
 msgstr "Activar comillas inteligentes (rizado)"
 
 #. FIELD_Numbers_EndnoteAnchor
-#: po/tmp/ap_String_Id.h.h:1089
+#: po/tmp/ap_String_Id.h.h:1101
 msgid "Endnote anchor"
 msgstr "Ancla de nota final"
 
 #. FIELD_Numbers_EndnoteReference
-#: po/tmp/ap_String_Id.h.h:1091
+#: po/tmp/ap_String_Id.h.h:1103
 msgid "Endnote reference"
 msgstr "Referencia de nota final"
 
 #. DLG_FormatFootnotes_EndStyle
-#: po/tmp/ap_String_Id.h.h:1093
+#: po/tmp/ap_String_Id.h.h:1105
 msgid "Endnote style"
 msgstr "Estilo de nota final"
 
 #. MENU_LABEL_INSERT_EQUATION
-#: po/tmp/ap_String_Id.h.h:1095
+#: po/tmp/ap_String_Id.h.h:1107
 msgid "Equation"
 msgstr "Ecuación:"
 
 #. FIELD_Error
-#: po/tmp/ap_String_Id.h.h:1097
+#: po/tmp/ap_String_Id.h.h:1109
 msgid "Error calculating value!"
 msgstr "Error calculando valor."
 
 #. SCRIPT_CANTRUN
-#: po/tmp/ap_String_Id.h.h:1099
+#: po/tmp/ap_String_Id.h.h:1111
 #, c-format
 msgid "Error executing script %s"
 msgstr "Error ejecutando script %s"
 
 #. MSG_ImportError
-#: po/tmp/ap_String_Id.h.h:1101
+#: po/tmp/ap_String_Id.h.h:1113
 #, c-format
 msgid "Error importing file %s."
 msgstr "Error importando el archivo %s."
 
 #. MSG_SaveFailedExport
-#: po/tmp/ap_String_Id.h.h:1103
+#: po/tmp/ap_String_Id.h.h:1115
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
 msgstr "Error al intentar guardar %s: no se pudo construir el exportador"
 
 #. MSG_SaveFailedName
-#: po/tmp/ap_String_Id.h.h:1105
+#: po/tmp/ap_String_Id.h.h:1117
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Error al intentar guardar %s: nombre inválido"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
-#: po/tmp/ap_String_Id.h.h:1107
+#: po/tmp/ap_String_Id.h.h:1119
 msgid "Ex. script"
 msgstr "Ejecutar script"
 
 #. DLG_Para_SpacingExactly
-#: po/tmp/ap_String_Id.h.h:1109
+#: po/tmp/ap_String_Id.h.h:1121
 msgid "Exactly"
 msgstr "Exactamente"
 
 #. DLG_Latex_Example
-#: po/tmp/ap_String_Id.h.h:1111
+#: po/tmp/ap_String_Id.h.h:1123
 msgid "Example:"
 msgstr "Ejemplo:"
 
+#. MENU_STATUSLINE_RDFANCHOR_SPARQL
+#: po/tmp/ap_String_Id.h.h:1125
+msgid "Execute SPARQL Query for location"
+msgstr "Ejecute una pregunta SPARQL para localicación"
+
+#. DLG_RDF_Query_Title
+#: po/tmp/ap_String_Id.h.h:1127
+msgid "Execute SPARQL on document RDF..."
+msgstr "Realice un SPARQL en un documento RDF..."
+
+#. MENU_STATUSLINE_RDF_QUERY
+#: po/tmp/ap_String_Id.h.h:1129
+msgid "Execute a SPARQL Query on all document RDF..."
+msgstr "Realice una pregunta SPARQL en todos los documentos RDF..."
+
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
-#: po/tmp/ap_String_Id.h.h:1113
+#: po/tmp/ap_String_Id.h.h:1131
 msgid "Execute helper scripts"
 msgstr "Ejecutar scripts auxiliares"
 
 #. TOOLBAR_STATUSLINE_SCRIPT_PLAY
 #. TOOLBAR_TOOLTIP_SCRIPT_PLAY
-#: po/tmp/ap_String_Id.h.h:1116
+#: po/tmp/ap_String_Id.h.h:1134
 msgid "Execute script"
 msgstr "Ejecutar script"
 
 #. DLG_ListRevisions_Label1
-#: po/tmp/ap_String_Id.h.h:1118
+#: po/tmp/ap_String_Id.h.h:1136
 msgid "Existing revisions:"
 msgstr "Revisiones existentes:"
 
 #. TB_Extra
-#: po/tmp/ap_String_Id.h.h:1120
+#: po/tmp/ap_String_Id.h.h:1138
 msgid "Extra"
 msgstr "Adicional"
 
 #. DLG_Field_Parameters_Capital
-#: po/tmp/ap_String_Id.h.h:1122
+#: po/tmp/ap_String_Id.h.h:1140
 msgid "Extra Parameters"
 msgstr "Parámetros adicionales"
 
 #. DLG_Options_Label_ViewExtraTB
-#: po/tmp/ap_String_Id.h.h:1124
+#: po/tmp/ap_String_Id.h.h:1142
 msgid "Extra Toolbar"
 msgstr "Barra de herramientas adicional"
 
 #. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h.h:1126
+#: po/tmp/ap_String_Id.h.h:1144
 msgid "Extra parameters:"
 msgstr "Parámetros adicionales:"
 
 #. MENU_LABEL_INSERT_FILE
-#: po/tmp/ap_String_Id.h.h:1128
+#: po/tmp/ap_String_Id.h.h:1146
 msgid "F&ile"
 msgstr "&Archivo"
 
 #. MENU_LABEL_FORMAT
-#: po/tmp/ap_String_Id.h.h:1130
+#: po/tmp/ap_String_Id.h.h:1148
 msgid "F&ormat"
 msgstr "&Formato"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
-#: po/tmp/ap_String_Id.h.h:1132
+#: po/tmp/ap_String_Id.h.h:1150
 msgid "F&ull Screen"
 msgstr "&Pantalla completa"
 
 #. DLG_FR_FindLabel
-#: po/tmp/ap_String_Id.h.h:1134
+#: po/tmp/ap_String_Id.h.h:1152
 msgid "Fi&nd what:"
 msgstr "&Buscar:"
 
 #. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h.h:1136
+#: po/tmp/ap_String_Id.h.h:1154
 msgid "Field Name"
 msgstr "Nombre del campo"
 
 #. DLG_MailMerge_Insert
-#: po/tmp/ap_String_Id.h.h:1138
+#: po/tmp/ap_String_Id.h.h:1156
 msgid "Field Name:"
 msgstr "Nombre del campo:"
 
 #. MSG_IE_UnsupportedType
-#: po/tmp/ap_String_Id.h.h:1140
+#: po/tmp/ap_String_Id.h.h:1158
 #, c-format
 msgid "File %s is not of a currently supported file type"
 msgstr "El archivo %s no es un tipo de archivo actualmente soportado"
 
 #. MSG_IE_FakeType
-#: po/tmp/ap_String_Id.h.h:1142
+#: po/tmp/ap_String_Id.h.h:1160
 #, c-format
 msgid "File %s is not of the type it claims to be"
 msgstr "El archivo %s no es del tipo que dice ser"
 
 #. MSG_IE_UnknownType
-#: po/tmp/ap_String_Id.h.h:1144
+#: po/tmp/ap_String_Id.h.h:1162
 #, c-format
 msgid "File %s is of unknown type"
 msgstr "El archivo %s es de tipo desconocido"
 
 #. MSG_IE_FileNotFound
-#: po/tmp/ap_String_Id.h.h:1146
+#: po/tmp/ap_String_Id.h.h:1164
 #, c-format
 msgid "File %s not found"
 msgstr "El archivo %s no se ha encontrado"
 
 #. FIELD_Application_Filename
-#: po/tmp/ap_String_Id.h.h:1148
+#: po/tmp/ap_String_Id.h.h:1166
 msgid "File Name"
 msgstr "Nombre del archivo"
 
 #. DLG_FormatTOC_FillStyle
-#: po/tmp/ap_String_Id.h.h:1150
+#: po/tmp/ap_String_Id.h.h:1168
 msgid "Fill style:"
 msgstr "Estilo de relleno:"
 
 #. DLG_FR_FindTitle
-#: po/tmp/ap_String_Id.h.h:1152
+#: po/tmp/ap_String_Id.h.h:1170
 msgid "Find"
 msgstr "Buscar"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_NEXT
-#: po/tmp/ap_String_Id.h.h:1154
+#: po/tmp/ap_String_Id.h.h:1172
 msgid "Find &next revision"
 msgstr "Buscar siguie&nte revisión"
 
 #. MENU_LABEL_TOOLS_REVISIONS_FIND_PREV
-#: po/tmp/ap_String_Id.h.h:1156
+#: po/tmp/ap_String_Id.h.h:1174
 msgid "Find &previous revision"
 msgstr "Buscar revisión anterior"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
-#: po/tmp/ap_String_Id.h.h:1158
+#: po/tmp/ap_String_Id.h.h:1176
 msgid "Find next visible revision in the document"
 msgstr "Busca la siguiente revisión visible del documento"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
-#: po/tmp/ap_String_Id.h.h:1160
+#: po/tmp/ap_String_Id.h.h:1178
 msgid "Find previous visible revision in the document"
 msgstr "Busca la anterior revisión visible del documento"
 
 #. MENU_STATUSLINE_EDIT_FIND
-#: po/tmp/ap_String_Id.h.h:1162
+#: po/tmp/ap_String_Id.h.h:1180
 msgid "Find the specified text"
 msgstr "Buscar el texto especificado"
 
 #. FirstLineIndentStatus
-#: po/tmp/ap_String_Id.h.h:1164
+#: po/tmp/ap_String_Id.h.h:1182
 #, c-format
 msgid "First Line Indent [%s]"
 msgstr "Sangría de primera línea [%s]"
 
 #. DLG_Para_SpecialFirstLine
-#: po/tmp/ap_String_Id.h.h:1166
+#: po/tmp/ap_String_Id.h.h:1184
 msgid "First line"
 msgstr "Primera línea"
 
 #. DLG_InsertTable_FixedColSize
-#: po/tmp/ap_String_Id.h.h:1168
+#: po/tmp/ap_String_Id.h.h:1186
 msgid "Fixed column size:"
 msgstr "Tamaño fijo de columna:"
 
 #. DLG_Lists_FoldingLevel1
-#: po/tmp/ap_String_Id.h.h:1170
+#: po/tmp/ap_String_Id.h.h:1188
 msgid "Fold below level 1"
 msgstr "Plegar por debajo del nivel 1"
 
 #. DLG_Lists_FoldingLevel2
-#: po/tmp/ap_String_Id.h.h:1172
+#: po/tmp/ap_String_Id.h.h:1190
 msgid "Fold below level 2"
 msgstr "Plegar por debajo del nivel 2"
 
 #. DLG_Lists_FoldingLevel3
-#: po/tmp/ap_String_Id.h.h:1174
+#: po/tmp/ap_String_Id.h.h:1192
 msgid "Fold below level 3"
 msgstr "Plegar por debajo del nivel 3"
 
 #. DLG_Lists_FoldingLevel4
-#: po/tmp/ap_String_Id.h.h:1176
+#: po/tmp/ap_String_Id.h.h:1194
 msgid "Fold below level 4"
 msgstr "Plegar por debajo del nivel 4"
 
 #. DLG_Para_PreviewFollowParagraph
-#: po/tmp/ap_String_Id.h.h:1178
+#: po/tmp/ap_String_Id.h.h:1196
 msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
 msgstr "Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguiente"
 
@@ -2887,278 +2932,278 @@ msgstr "Párrafo siguiente Párrafo siguiente Párrafo siguiente Párrafo siguie
 #. TOOLBAR_TOOLTIP_FMT_FONT
 #. DLG_UFS_FontTitle
 #. DLG_UFS_FontTab
-#: po/tmp/ap_String_Id.h.h:1183
+#: po/tmp/ap_String_Id.h.h:1201
 #: po/tmp/xap_String_Id.h.h:349
 msgid "Font"
 msgstr "Tipografía"
 
 #. TOOLBAR_STATUSLINE_FMT_CHOOSE
-#: po/tmp/ap_String_Id.h.h:1185
+#: po/tmp/ap_String_Id.h.h:1203
 msgid "Font Choose"
 msgstr "Elegir tipografía"
 
 #. TOOLBAR_LABEL_FMT_SIZE
 #. TOOLBAR_STATUSLINE_FMT_SIZE
 #. TOOLBAR_TOOLTIP_FMT_SIZE
-#: po/tmp/ap_String_Id.h.h:1189
+#: po/tmp/ap_String_Id.h.h:1207
 msgid "Font Size"
 msgstr "Tamaño de tipografía"
 
 #. TOOLBAR_LABEL_FMT_CHOOSE
-#: po/tmp/ap_String_Id.h.h:1191
+#: po/tmp/ap_String_Id.h.h:1209
 msgid "Font choose"
 msgstr "Elegir tipografía"
 
 #. TOOLBAR_LABEL_COLOR_FORE
 #. TOOLBAR_STATUSLINE_COLOR_FORE
 #. TOOLBAR_TOOLTIP_COLOR_FORE
-#: po/tmp/ap_String_Id.h.h:1195
+#: po/tmp/ap_String_Id.h.h:1213
 msgid "Font color"
 msgstr "Color de tipografía"
 
 #. DLG_Lists_ButtonFont
-#: po/tmp/ap_String_Id.h.h:1197
+#: po/tmp/ap_String_Id.h.h:1215
 msgid "Font..."
 msgstr "Tipografía..."
 
 #. DLG_Lists_Font
 #. DLG_UFS_FontLabel
-#: po/tmp/ap_String_Id.h.h:1199
+#: po/tmp/ap_String_Id.h.h:1217
 #: po/tmp/xap_String_Id.h.h:351
 msgid "Font:"
 msgstr "Tipografía:"
 
 #. MENU_LABEL_INSERT_FOOTNOTE
-#: po/tmp/ap_String_Id.h.h:1201
+#: po/tmp/ap_String_Id.h.h:1219
 msgid "Foot&note"
 msgstr "&Nota a pie de página"
 
 #. MENU_LABEL_INSERT_FOOTER
-#: po/tmp/ap_String_Id.h.h:1203
+#: po/tmp/ap_String_Id.h.h:1221
 msgid "Footer"
 msgstr "Pie de página"
 
 #. DLG_HdrFtr_FooterFrame
-#: po/tmp/ap_String_Id.h.h:1205
+#: po/tmp/ap_String_Id.h.h:1223
 msgid "Footer Properties"
 msgstr "Propiedades del pie de página"
 
 #. FooterStatus
-#: po/tmp/ap_String_Id.h.h:1207
+#: po/tmp/ap_String_Id.h.h:1225
 #, c-format
 msgid "Footer [%s]"
 msgstr "Pie de página [%s]"
 
 #. FIELD_Numbers_FootnoteAnchor
-#: po/tmp/ap_String_Id.h.h:1209
+#: po/tmp/ap_String_Id.h.h:1227
 msgid "Footnote anchor"
 msgstr "Ancla de pie de página"
 
 #. FIELD_Numbers_FootnoteReference
-#: po/tmp/ap_String_Id.h.h:1211
+#: po/tmp/ap_String_Id.h.h:1229
 msgid "Footnote reference"
 msgstr "Referencia de pie de página"
 
 #. DLG_FormatFootnotes_FootStyle
-#: po/tmp/ap_String_Id.h.h:1213
+#: po/tmp/ap_String_Id.h.h:1231
 msgid "Footnote style"
 msgstr "Estilo de nota a pie de página"
 
 #. MENU_LABEL_FMT_FOOTNOTES
-#: po/tmp/ap_String_Id.h.h:1215
+#: po/tmp/ap_String_Id.h.h:1233
 msgid "Footnotes and &Endnotes"
 msgstr "Notas a pie y notas &finales"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
-#: po/tmp/ap_String_Id.h.h:1218
+#: po/tmp/ap_String_Id.h.h:1236
 msgid "Force LTR direction of text"
 msgstr "Forzar dirección I-->D del texto"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_RTL
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL
-#: po/tmp/ap_String_Id.h.h:1221
+#: po/tmp/ap_String_Id.h.h:1239
 msgid "Force RTL direction of text"
 msgstr "Forzar dirección D-I del texto"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_LTR
-#: po/tmp/ap_String_Id.h.h:1223
+#: po/tmp/ap_String_Id.h.h:1241
 msgid "Force left-to-right direction of text"
 msgstr "Forzar dirección izquierda-derecha del texto"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_RTL
-#: po/tmp/ap_String_Id.h.h:1225
+#: po/tmp/ap_String_Id.h.h:1243
 msgid "Force right-to-left direction of text"
 msgstr "Forzar dirección derecha-izquierda del texto"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR
-#: po/tmp/ap_String_Id.h.h:1227
+#: po/tmp/ap_String_Id.h.h:1245
 msgid "Force text LTR"
 msgstr "Forzar texto I-->D"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_RTL
-#: po/tmp/ap_String_Id.h.h:1229
+#: po/tmp/ap_String_Id.h.h:1247
 msgid "Force text RTL"
 msgstr "Forzar texto D-I"
 
 #. DLG_Styles_ModifyFormat
 #. TB_Format
-#: po/tmp/ap_String_Id.h.h:1232
+#: po/tmp/ap_String_Id.h.h:1250
 msgid "Format"
 msgstr "Formato"
 
 #. MENU_STATUSLINE_FMT_EMBED
-#: po/tmp/ap_String_Id.h.h:1234
+#: po/tmp/ap_String_Id.h.h:1252
 msgid "Format Embedded Object"
 msgstr "Formato del objeto incrustado"
 
 #. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h.h:1236
+#: po/tmp/ap_String_Id.h.h:1254
 msgid "Format Endnotes"
 msgstr "Formato de notas finales"
 
 #. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h.h:1238
+#: po/tmp/ap_String_Id.h.h:1256
 msgid "Format Footnotes"
 msgstr "Formato de nota a pie de página"
 
 #. DLG_FormatFootnotes_Title
-#: po/tmp/ap_String_Id.h.h:1240
+#: po/tmp/ap_String_Id.h.h:1258
 msgid "Format Footnotes and Endnotes"
 msgstr "Formato de notas a pie de página y notas finales"
 
 #. DLG_HdrFtr_Title
-#: po/tmp/ap_String_Id.h.h:1242
+#: po/tmp/ap_String_Id.h.h:1260
 msgid "Format Header/Footers"
 msgstr "Formato cabecera/pie de página"
 
 #. MENU_LABEL_FMT_EMBED
-#: po/tmp/ap_String_Id.h.h:1244
+#: po/tmp/ap_String_Id.h.h:1262
 msgid "Format Ob&ject"
 msgstr "Formato del ob&jeto"
 
 #. TOOLBAR_LABEL_FMTPAINTER
-#: po/tmp/ap_String_Id.h.h:1246
+#: po/tmp/ap_String_Id.h.h:1264
 msgid "Format Painter"
 msgstr "Formato de brocha"
 
 #. DLG_FormatTableTitle
 #. MENU_STATUSLINE_TABLE_FORMAT
-#: po/tmp/ap_String_Id.h.h:1249
+#: po/tmp/ap_String_Id.h.h:1267
 msgid "Format Table"
 msgstr "Formato de tabla"
 
 #. DLG_FormatTOC_Title
-#: po/tmp/ap_String_Id.h.h:1251
+#: po/tmp/ap_String_Id.h.h:1269
 msgid "Format Table of Contents"
 msgstr "Formato del índice"
 
 #. DLG_FormatFrameTitle
-#: po/tmp/ap_String_Id.h.h:1253
+#: po/tmp/ap_String_Id.h.h:1271
 msgid "Format Text Box"
 msgstr "Formato de la caja de texto"
 
 #. DLG_Options_Label_ViewFormatTB
-#: po/tmp/ap_String_Id.h.h:1255
+#: po/tmp/ap_String_Id.h.h:1273
 msgid "Format Toolbar"
 msgstr "Formato de barra de herramientas"
 
 #. MENU_STATUSLINE_FMT_POSIMAGE
-#: po/tmp/ap_String_Id.h.h:1257
+#: po/tmp/ap_String_Id.h.h:1275
 msgid "Format this image"
 msgstr "Dar formato a esta imagen"
 
 #. MENU_STATUSLINE_FMT_STYLIST
-#: po/tmp/ap_String_Id.h.h:1259
+#: po/tmp/ap_String_Id.h.h:1277
 msgid "Format your document using styles"
 msgstr "Formatear el documento usando estilos"
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
-#: po/tmp/ap_String_Id.h.h:1261
+#: po/tmp/ap_String_Id.h.h:1279
 #: po/tmp/xap_String_Id.h.h:361
 msgid "Format:"
 msgstr "Formato:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
-#: po/tmp/ap_String_Id.h.h:1263
+#: po/tmp/ap_String_Id.h.h:1281
 msgid "From File"
 msgstr "Desde el archivo"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
-#: po/tmp/ap_String_Id.h.h:1265
+#: po/tmp/ap_String_Id.h.h:1283
 msgid "From LaTeX"
 msgstr "Desde LaTeX"
 
 #. TOOLBAR_LABEL_VIEW_FULL_SCREEN
 #. TOOLBAR_STATUSLINE_VIEW_FULL_SCREEN
 #. TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN
-#: po/tmp/ap_String_Id.h.h:1269
+#: po/tmp/ap_String_Id.h.h:1287
 msgid "Full Screen"
 msgstr "Pantalla completa"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h.h:1273
+#: po/tmp/ap_String_Id.h.h:1291
 msgid "General"
 msgstr "General"
 
 #. DLG_Goto_Btn_Goto
-#: po/tmp/ap_String_Id.h.h:1275
+#: po/tmp/ap_String_Id.h.h:1293
 msgid "Go To"
 msgstr "Ir a"
 
 #. DLG_Goto_Label_What
-#: po/tmp/ap_String_Id.h.h:1277
+#: po/tmp/ap_String_Id.h.h:1295
 msgid "Go To &What:"
 msgstr "&Ir a qué:"
 
 #. DLG_Goto_Title
-#: po/tmp/ap_String_Id.h.h:1279
+#: po/tmp/ap_String_Id.h.h:1297
 msgid "Go to..."
 msgstr "Ir a..."
 
 #. DLG_FormatTOC_HasLabel
-#: po/tmp/ap_String_Id.h.h:1281
+#: po/tmp/ap_String_Id.h.h:1299
 msgid "H&as label"
 msgstr "&Tiene etiqueta"
 
 #. DLG_FormatTOC_HeadingText
-#: po/tmp/ap_String_Id.h.h:1283
+#: po/tmp/ap_String_Id.h.h:1301
 msgid "H&eading text:"
 msgstr "Texto de &cabecera:"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
-#: po/tmp/ap_String_Id.h.h:1285
+#: po/tmp/ap_String_Id.h.h:1303
 #: po/tmp/xap_String_Id.h.h:403
 msgid "Hand List"
 msgstr "Lista de manos"
 
 #. DLG_Para_SpecialHanging
-#: po/tmp/ap_String_Id.h.h:1287
+#: po/tmp/ap_String_Id.h.h:1305
 msgid "Hanging"
 msgstr "Colgando"
 
 #. MENU_LABEL_INSERT_HEADER
-#: po/tmp/ap_String_Id.h.h:1289
+#: po/tmp/ap_String_Id.h.h:1307
 msgid "Header"
 msgstr "Cabecera"
 
 #. DLG_HdrFtr_HeaderFrame
-#: po/tmp/ap_String_Id.h.h:1291
+#: po/tmp/ap_String_Id.h.h:1309
 msgid "Header Properties"
 msgstr "Propiedades de cabecera"
 
 #. HeaderStatus
-#: po/tmp/ap_String_Id.h.h:1293
+#: po/tmp/ap_String_Id.h.h:1311
 #, c-format
 msgid "Header [%s]"
 msgstr "Cabecera [%s]"
 
 #. MSG_CHECK_PRINT_MODE
-#: po/tmp/ap_String_Id.h.h:1295
+#: po/tmp/ap_String_Id.h.h:1313
 msgid ""
 "Headers and Footers can only be created and edited while in Print View Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
@@ -3169,164 +3214,174 @@ msgstr ""
 "¿quiere entrar en el modo Diseño de impresión ahora?"
 
 #. DLG_Stylist_HeadingStyles
-#: po/tmp/ap_String_Id.h.h:1297
+#: po/tmp/ap_String_Id.h.h:1315
 msgid "Heading Styles"
 msgstr "Estilos de cabeceras"
 
 #. DLG_FormatTOC_HeadingStyle
-#: po/tmp/ap_String_Id.h.h:1299
+#: po/tmp/ap_String_Id.h.h:1317
 msgid "Heading style:"
 msgstr "Estilo de cabecera:"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
-#: po/tmp/ap_String_Id.h.h:1301
+#: po/tmp/ap_String_Id.h.h:1319
 #: po/tmp/xap_String_Id.h.h:419
 msgid "Heart List"
 msgstr "Lista de corazones"
 
 #. DLG_Lists_Hebrew_List
-#: po/tmp/ap_String_Id.h.h:1303
+#: po/tmp/ap_String_Id.h.h:1321
 msgid "Hebrew List"
 msgstr "Lista hebrea"
 
 #. TOOLBAR_LABEL_HELP
 #. TOOLBAR_STATUSLINE_HELP
 #. TOOLBAR_TOOLTIP_HELP
-#: po/tmp/ap_String_Id.h.h:1307
+#: po/tmp/ap_String_Id.h.h:1325
 msgid "Help"
 msgstr "Ayuda"
 
 #. MENU_LABEL_HELP_CONTENTS
-#: po/tmp/ap_String_Id.h.h:1309
+#: po/tmp/ap_String_Id.h.h:1327
 msgid "Help &Contents"
 msgstr "&Contenido de la ayuda"
 
 #. MENU_LABEL_HELP_INTRO
-#: po/tmp/ap_String_Id.h.h:1311
+#: po/tmp/ap_String_Id.h.h:1329
 msgid "Help &Introduction"
 msgstr "&Introducción a la ayuda"
 
 #. DLG_Options_Label_Hide
-#: po/tmp/ap_String_Id.h.h:1313
+#: po/tmp/ap_String_Id.h.h:1331
 msgid "Hide"
 msgstr "Ocultar"
 
 #. DLG_Options_Label_SpellHideErrors
-#: po/tmp/ap_String_Id.h.h:1315
+#: po/tmp/ap_String_Id.h.h:1333
 msgid "Hide &spelling errors in the document"
 msgstr "Ocultar errores &ortográficos en el documento"
 
 #. DLG_Lists_FoldingLevelexp
-#: po/tmp/ap_String_Id.h.h:1317
+#: po/tmp/ap_String_Id.h.h:1335
 msgid "Hide text below List Levels"
 msgstr "Ocultar texto bajo los niveles de listas"
 
 #. TOOLBAR_LABEL_COLOR_BACK
 #. TOOLBAR_STATUSLINE_COLOR_BACK
 #. TOOLBAR_TOOLTIP_COLOR_BACK
-#: po/tmp/ap_String_Id.h.h:1321
+#: po/tmp/ap_String_Id.h.h:1339
 msgid "Highlight"
 msgstr "Resaltar"
 
+#. MENU_LABEL_RDF_HIGHLIGHT
+#: po/tmp/ap_String_Id.h.h:1341
+msgid "Highlight RDF"
+msgstr "Resaltar RDF"
+
+#. MENU_STATUSLINE_RDF_HIGHLIGHT
+#: po/tmp/ap_String_Id.h.h:1343
+msgid "Highlight areas of the document with RDF associated"
+msgstr "Destacar áreas del documento con asociaciones de RDF"
+
 #. DLG_Spell_IgnoreAll
-#: po/tmp/ap_String_Id.h.h:1323
+#: po/tmp/ap_String_Id.h.h:1345
 msgid "I&gnore All"
 msgstr "I&gnorar todo"
 
 #. DLG_FormatTOC_Indent
-#: po/tmp/ap_String_Id.h.h:1325
+#: po/tmp/ap_String_Id.h.h:1347
 msgid "I&ndent:"
 msgstr "&Sangría:"
 
 #. DLG_Options_Label_Icons
-#: po/tmp/ap_String_Id.h.h:1327
+#: po/tmp/ap_String_Id.h.h:1349
 msgid "Icons"
 msgstr "Iconos"
 
 #. DLG_Options_Label_Ignore
-#: po/tmp/ap_String_Id.h.h:1329
+#: po/tmp/ap_String_Id.h.h:1351
 msgid "Ignore"
 msgstr "Ignorar"
 
 #. DLG_Options_Label_SpellIgnoreWords
-#: po/tmp/ap_String_Id.h.h:1331
+#: po/tmp/ap_String_Id.h.h:1353
 msgid "Ignore Words"
 msgstr "Palabras ignoradas"
 
 #. MENU_STATUSLINE_SPELL_IGNOREALL
-#: po/tmp/ap_String_Id.h.h:1333
+#: po/tmp/ap_String_Id.h.h:1355
 msgid "Ignore all occurrences of this word in the document"
 msgstr "Ignorar todas las apariciones de esta palabra en el documento"
 
 #. DLG_Options_Label_SpellIgnoredWord
-#: po/tmp/ap_String_Id.h.h:1335
+#: po/tmp/ap_String_Id.h.h:1357
 msgid "Ignored words:"
 msgstr "Palabras ignoradas:"
 
 #. DLG_FormatFrame_SetImageBackground
 #. DLG_FormatTable_SetImageBackground
-#: po/tmp/ap_String_Id.h.h:1338
+#: po/tmp/ap_String_Id.h.h:1360
 msgid "Image For Background"
 msgstr "Imagen para el fondo"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
-#: po/tmp/ap_String_Id.h.h:1340
+#: po/tmp/ap_String_Id.h.h:1362
 #: po/tmp/xap_String_Id.h.h:453
 msgid "Implies List"
 msgstr "Lista de implicaciones"
 
 #. MENU_STATUSLINE_FILE_IMPORTSTYLES
-#: po/tmp/ap_String_Id.h.h:1342
+#: po/tmp/ap_String_Id.h.h:1364
 msgid "Import style definitions from a document"
 msgstr "Importar definiciones de estilo de un documento"
 
 #. DLG_Styles_LBL_InUse
-#: po/tmp/ap_String_Id.h.h:1344
+#: po/tmp/ap_String_Id.h.h:1366
 msgid "In Use"
 msgstr "En uso"
 
 #. WORD_PassInvalid
-#: po/tmp/ap_String_Id.h.h:1346
+#: po/tmp/ap_String_Id.h.h:1368
 msgid "Incorrect Password"
 msgstr "Contraseña incorrecta"
 
 #. TOOLBAR_LABEL_INDENT
 #. TOOLBAR_STATUSLINE_INDENT
 #. TOOLBAR_TOOLTIP_INDENT
-#: po/tmp/ap_String_Id.h.h:1350
+#: po/tmp/ap_String_Id.h.h:1372
 msgid "Increase indent"
 msgstr "Aumentar sangría"
 
 #. DLG_Para_LabelIndentation
-#: po/tmp/ap_String_Id.h.h:1352
+#: po/tmp/ap_String_Id.h.h:1374
 msgid "Indentation"
 msgstr "Sangría"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
-#: po/tmp/ap_String_Id.h.h:1354
+#: po/tmp/ap_String_Id.h.h:1376
 msgid "Indents and Spacing"
 msgstr "Sangría y espaciado"
 
 # Se dejan ambas en mayúscula
 #. DLG_ToggleCase_FirstUpperCase
-#: po/tmp/ap_String_Id.h.h:1356
+#: po/tmp/ap_String_Id.h.h:1378
 msgid "Initial Caps"
 msgstr "Mayúsculas Iniciales"
 
 #. DLG_FormatFootnotes_EndInitialVal
-#: po/tmp/ap_String_Id.h.h:1358
+#: po/tmp/ap_String_Id.h.h:1380
 msgid "Initial Endnote value"
 msgstr "Valor inicial de la nota final"
 
 #. DLG_FormatFootnotes_FootInitialVal
-#: po/tmp/ap_String_Id.h.h:1360
+#: po/tmp/ap_String_Id.h.h:1382
 msgid "Initial Footnote value"
 msgstr "Valor inicial de la nota a pie de página"
 
 #. DLG_Options_Label_InnerQuoteStyle
-#: po/tmp/ap_String_Id.h.h:1362
+#: po/tmp/ap_String_Id.h.h:1384
 msgid "Inner (single) quote style"
 msgstr "Estilo de cita interna (simple)"
 
@@ -3334,294 +3389,304 @@ msgstr "Estilo de cita interna (simple)"
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
 #. DLG_IP_Button_Label
-#: po/tmp/ap_String_Id.h.h:1366
+#: po/tmp/ap_String_Id.h.h:1388
 #: po/tmp/xap_String_Id.h.h:465
 msgid "Insert"
 msgstr "Insertar"
 
 #. MENU_LABEL_TABLE_INSERTCOLUMN
-#: po/tmp/ap_String_Id.h.h:1368
+#: po/tmp/ap_String_Id.h.h:1390
 msgid "Insert &Columns"
 msgstr "Insertar &columnas"
 
 #. MENU_LABEL_TABLE_INSERTROW
-#: po/tmp/ap_String_Id.h.h:1370
+#: po/tmp/ap_String_Id.h.h:1392
 msgid "Insert &Rows"
 msgstr "Insertar &filas"
 
 #. MENU_LABEL_TABLE_INSERTTABLE
-#: po/tmp/ap_String_Id.h.h:1372
+#: po/tmp/ap_String_Id.h.h:1394
 msgid "Insert &Table"
 msgstr "Insertar &tabla"
 
 #. DLG_InsertBookmark_Title
 #. TOOLBAR_LABEL_FMT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:1375
+#: po/tmp/ap_String_Id.h.h:1397
 msgid "Insert Bookmark"
 msgstr "Insertar marcador"
 
 #. DLG_Break_BreakTitle_Capital
-#: po/tmp/ap_String_Id.h.h:1377
+#: po/tmp/ap_String_Id.h.h:1399
 msgid "Insert Break"
 msgstr "Insertar salto"
 
 #. MENU_STATUSLINE_TABLE_INSERT_CELLS
-#: po/tmp/ap_String_Id.h.h:1379
+#: po/tmp/ap_String_Id.h.h:1401
 msgid "Insert Cells"
 msgstr "Insertar celdas"
 
 #. MENU_STATUSLINE_EDIT_PASTE
-#: po/tmp/ap_String_Id.h.h:1381
+#: po/tmp/ap_String_Id.h.h:1403
 msgid "Insert Clipboard contents"
 msgstr "Inserta el contenido del portapapeles"
 
 #. DLG_DateTime_DateTimeTitle
-#: po/tmp/ap_String_Id.h.h:1383
+#: po/tmp/ap_String_Id.h.h:1405
 msgid "Insert Date and Time"
 msgstr "Insertar fecha y hora"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION
-#: po/tmp/ap_String_Id.h.h:1385
+#: po/tmp/ap_String_Id.h.h:1407
 msgid "Insert Equation"
 msgstr "Insertar ecuación"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX
-#: po/tmp/ap_String_Id.h.h:1387
+#: po/tmp/ap_String_Id.h.h:1409
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Inserta una ecuación desde una expresión LaTeX"
 
 #. DLG_Field_FieldTitle_Capital
-#: po/tmp/ap_String_Id.h.h:1389
+#: po/tmp/ap_String_Id.h.h:1411
 msgid "Insert Field"
 msgstr "Insertar campo"
 
 #. DLG_InsertHyperlink_Title
 #. TOOLBAR_LABEL_FMT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1392
+#: po/tmp/ap_String_Id.h.h:1414
 msgid "Insert Hyperlink"
 msgstr "Insertar hiperenlace"
 
 #. TOOLBAR_LABEL_IMG
-#: po/tmp/ap_String_Id.h.h:1394
+#: po/tmp/ap_String_Id.h.h:1416
 msgid "Insert Image"
 msgstr "Insertar imagen"
 
 #. DLG_MailMerge_MailMergeTitle
-#: po/tmp/ap_String_Id.h.h:1396
+#: po/tmp/ap_String_Id.h.h:1418
 msgid "Insert Mail Merge Field"
 msgstr "Insertar campo de combinación de correo"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE
-#: po/tmp/ap_String_Id.h.h:1398
+#: po/tmp/ap_String_Id.h.h:1420
 msgid "Insert MathML from a file"
 msgstr "Insertar MathML desde un archivo"
+
+#. DLG_InsertXMLID_Title
+#: po/tmp/ap_String_Id.h.h:1422
+msgid "Insert RDF Link"
+msgstr "Insertar enlace RDF"
+
+#. MENU_STATUSLINE_INSERT_XMLID
+#: po/tmp/ap_String_Id.h.h:1424
+msgid "Insert RDF link..."
+msgstr "Insertar enlace RDF..."
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
 #. MENU_STATUSLINE_TABLE_INSERTTABLE
-#: po/tmp/ap_String_Id.h.h:1402
+#: po/tmp/ap_String_Id.h.h:1428
 msgid "Insert Table"
 msgstr "Insertar tabla"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER
-#: po/tmp/ap_String_Id.h.h:1404
+#: po/tmp/ap_String_Id.h.h:1430
 msgid "Insert Unicode direction marker into the document"
 msgstr "Inserta un marcador de dirección Unicode en el documento"
 
 #. MENU_STATUSLINE_INSERT_FOOTER
-#: po/tmp/ap_String_Id.h.h:1406
+#: po/tmp/ap_String_Id.h.h:1432
 msgid "Insert a Footer"
 msgstr "Inserta un pie de página"
 
 #. MENU_STATUSLINE_INSERT_HEADER
-#: po/tmp/ap_String_Id.h.h:1408
+#: po/tmp/ap_String_Id.h.h:1434
 msgid "Insert a Header"
 msgstr "Inserta una cabecera"
 
 #. MENU_STATUSLINE_INSERT_TABLEOFCONTENTS
-#: po/tmp/ap_String_Id.h.h:1410
+#: po/tmp/ap_String_Id.h.h:1436
 msgid "Insert a Table of Contents based on Headings"
 msgstr "Insertar un índice basado en las cabeceras"
 
 #. MENU_STATUSLINE_INSERT_TEXTBOX
-#: po/tmp/ap_String_Id.h.h:1412
+#: po/tmp/ap_String_Id.h.h:1438
 msgid "Insert a Text Box"
 msgstr "Inserta una caja de texto"
 
 #. TOOLBAR_STATUSLINE_FMT_BOOKMARK
 #. TOOLBAR_TOOLTIP_FMT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:1415
+#: po/tmp/ap_String_Id.h.h:1441
 msgid "Insert a bookmark into the document"
 msgstr "Inserta un marcador en el documento"
 
 #. MENU_STATUSLINE_INSERT_FIELD
-#: po/tmp/ap_String_Id.h.h:1417
+#: po/tmp/ap_String_Id.h.h:1443
 msgid "Insert a calculated field"
 msgstr "Inserta un campo calculado"
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_BEFORE
-#: po/tmp/ap_String_Id.h.h:1419
+#: po/tmp/ap_String_Id.h.h:1445
 msgid "Insert a column to the left"
 msgstr "Inserta una columna a la izquierda"
 
 #. MENU_STATUSLINE_TABLE_INSERT_COLUMNS_AFTER
 #. MENU_STATUSLINE_TABLE_INSERTCOLUMN
-#: po/tmp/ap_String_Id.h.h:1422
+#: po/tmp/ap_String_Id.h.h:1448
 msgid "Insert a column to the right"
 msgstr "Inserta una columna a la derecha"
 
 #. MENU_STATUSLINE_INSERT_FOOTNOTE
-#: po/tmp/ap_String_Id.h.h:1424
+#: po/tmp/ap_String_Id.h.h:1450
 msgid "Insert a footnote"
 msgstr "Inserta una nota a pie de página"
 
 #. TOOLBAR_STATUSLINE_FMT_HYPERLINK
 #. TOOLBAR_TOOLTIP_FMT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1427
+#: po/tmp/ap_String_Id.h.h:1453
 msgid "Insert a hyperlink into the document"
 msgstr "Inserta un hiperenlace en el documento"
 
 #. MENU_STATUSLINE_INSERT_MAILMERGE
-#: po/tmp/ap_String_Id.h.h:1429
+#: po/tmp/ap_String_Id.h.h:1455
 msgid "Insert a mail merge field"
 msgstr "Inserta un campo de combinación de correo"
 
 #. TOOLBAR_STATUSLINE_INSERT_TABLE
 #. TOOLBAR_TOOLTIP_INSERT_TABLE
-#: po/tmp/ap_String_Id.h.h:1432
+#: po/tmp/ap_String_Id.h.h:1458
 msgid "Insert a new table into your document"
 msgstr "Inserta una tabla nueva en su documento"
 
 #. MENU_STATUSLINE_INSERT_BREAK
-#: po/tmp/ap_String_Id.h.h:1434
+#: po/tmp/ap_String_Id.h.h:1460
 msgid "Insert a page, column, or section break"
 msgstr "Inserta un salto de página, columna o sección"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE
-#: po/tmp/ap_String_Id.h.h:1436
+#: po/tmp/ap_String_Id.h.h:1462
 msgid "Insert a row above"
 msgstr "Inserta una fila encima"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_AFTER
 #. MENU_STATUSLINE_TABLE_INSERTROW
-#: po/tmp/ap_String_Id.h.h:1439
+#: po/tmp/ap_String_Id.h.h:1465
 msgid "Insert a row below"
 msgstr "Inserta una fila debajo"
 
 #. MENU_STATUSLINE_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:1441
+#: po/tmp/ap_String_Id.h.h:1467
 msgid "Insert a symbol or other special character"
 msgstr "Inserta un símbolo o un carácter especial"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT
-#: po/tmp/ap_String_Id.h.h:1443
+#: po/tmp/ap_String_Id.h.h:1469
 msgid "Insert an annotation"
 msgstr "Inserta una anotación"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
-#: po/tmp/ap_String_Id.h.h:1445
+#: po/tmp/ap_String_Id.h.h:1471
 msgid "Insert an automatically-updated page number"
 msgstr "Inserta un número de página auto-actualizado"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
-#: po/tmp/ap_String_Id.h.h:1447
+#: po/tmp/ap_String_Id.h.h:1473
 msgid "Insert an endnote"
 msgstr "Inserta una nota final"
 
 #. MENU_STATUSLINE_INSERT_GRAPHIC
-#: po/tmp/ap_String_Id.h.h:1449
+#: po/tmp/ap_String_Id.h.h:1475
 msgid "Insert an existing picture from another file"
 msgstr "Inserta una imagen existente desde otro archivo"
 
 #. TOOLBAR_STATUSLINE_IMG
 #. TOOLBAR_TOOLTIP_IMG
-#: po/tmp/ap_String_Id.h.h:1452
+#: po/tmp/ap_String_Id.h.h:1478
 msgid "Insert an image into the document"
 msgstr "Inserta una imagen en el documento"
 
 #. MENU_STATUSLINE_INSERT_BOOKMARK
-#: po/tmp/ap_String_Id.h.h:1454
+#: po/tmp/ap_String_Id.h.h:1480
 msgid "Insert bookmark"
 msgstr "Inserta un marcador"
 
 #. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h.h:1456
+#: po/tmp/ap_String_Id.h.h:1482
 msgid "Insert break"
 msgstr "Inserta un salto"
 
 #. MENU_STATUSLINE_INSERT_CLIPART
-#: po/tmp/ap_String_Id.h.h:1458
+#: po/tmp/ap_String_Id.h.h:1484
 msgid "Insert clipart"
 msgstr "Inserta un clipart"
 
 #. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h.h:1460
+#: po/tmp/ap_String_Id.h.h:1486
 msgid "Insert field"
 msgstr "Inserta un campo"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1462
+#: po/tmp/ap_String_Id.h.h:1488
 msgid "Insert hyperlink"
 msgstr "Inserta un hiperenlace"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
-#: po/tmp/ap_String_Id.h.h:1464
+#: po/tmp/ap_String_Id.h.h:1490
 msgid "Insert left-to-right direction marker (LRM)"
 msgstr "Inserta un marcador de dirección izquierda-a-derecha (I-->D)"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM
-#: po/tmp/ap_String_Id.h.h:1466
+#: po/tmp/ap_String_Id.h.h:1492
 msgid "Insert right-to-left direction marker (RLM)"
 msgstr "Inserta un marcador de dirección derecha-a-izquierda (D-->I)"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT_FROMSEL
-#: po/tmp/ap_String_Id.h.h:1468
+#: po/tmp/ap_String_Id.h.h:1494
 msgid "Insert selected text into a new annotation"
 msgstr "Insertar texto seleccionado en una anotación nueva"
 
 #. TOOLBAR_STATUSLINE_INSERT_SYMBOL
 #. TOOLBAR_TOOLTIP_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:1471
+#: po/tmp/ap_String_Id.h.h:1497
 msgid "Insert symbol"
 msgstr "Inserta un símbolo"
 
 #. TOOLBAR_LABEL_INSERT_TABLE
-#: po/tmp/ap_String_Id.h.h:1473
+#: po/tmp/ap_String_Id.h.h:1499
 msgid "Insert table"
 msgstr "Inserta una tabla"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMROWS
-#: po/tmp/ap_String_Id.h.h:1475
+#: po/tmp/ap_String_Id.h.h:1501
 msgid "Insert the Sum of a Table Column"
 msgstr "Insertar la suma de una columna"
 
 #. MENU_STATUSLINE_TABLE_INSERT_SUMCOLS
-#: po/tmp/ap_String_Id.h.h:1477
+#: po/tmp/ap_String_Id.h.h:1503
 msgid "Insert the Sum of a Table Row"
 msgstr "Insertar la suma de una fila"
 
 #. MENU_STATUSLINE_INSERT_FILE
-#: po/tmp/ap_String_Id.h.h:1479
+#: po/tmp/ap_String_Id.h.h:1505
 msgid "Insert the contents of another file"
 msgstr "Inserta el contenido de otro archivo"
 
 #. MENU_STATUSLINE_INSERT_DATETIME
-#: po/tmp/ap_String_Id.h.h:1481
+#: po/tmp/ap_String_Id.h.h:1507
 msgid "Insert the date and/or time"
 msgstr "Inserta la fecha y/o la hora"
 
 #. MENU_STATUSLINE_EDIT_PASTE_SPECIAL
-#: po/tmp/ap_String_Id.h.h:1483
+#: po/tmp/ap_String_Id.h.h:1509
 msgid "Insert unformatted clipboard contents"
 msgstr "Inserta los contenidos del portapapeles sin formato"
 
 #. MENU_STATUSLINE_RDF
-#: po/tmp/ap_String_Id.h.h:1485
+#: po/tmp/ap_String_Id.h.h:1511
 msgid "Interact with RDF"
 msgstr "Interactuar con RDF"
 
 #. DLG_Options_Label_ViewUnprintable
-#: po/tmp/ap_String_Id.h.h:1487
+#: po/tmp/ap_String_Id.h.h:1513
 msgid "Invisible &Layout Marks"
 msgstr "Marcas de &diseño invisibles"
 
@@ -3629,107 +3694,107 @@ msgstr "Marcas de &diseño invisibles"
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #. DLG_UFS_StyleItalic
-#: po/tmp/ap_String_Id.h.h:1491
+#: po/tmp/ap_String_Id.h.h:1517
 #: po/tmp/xap_String_Id.h.h:495
 msgid "Italic"
 msgstr "Cursiva"
 
 #. MENU_STATUSLINE_GOTO_ANNOTATION
-#: po/tmp/ap_String_Id.h.h:1493
+#: po/tmp/ap_String_Id.h.h:1519
 msgid "Jump to annotation"
 msgstr "saltar "
 
 #. MENU_STATUSLINE_INSERT_GOTO_HYPERLINK
-#: po/tmp/ap_String_Id.h.h:1495
+#: po/tmp/ap_String_Id.h.h:1521
 msgid "Jump to hyperlink"
 msgstr "Saltar a un hiperenlace"
 
 #. DLG_Para_AlignJustified
-#: po/tmp/ap_String_Id.h.h:1497
+#: po/tmp/ap_String_Id.h.h:1523
 msgid "Justified"
 msgstr "Justificado"
 
 #. TOOLBAR_LABEL_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:1499
+#: po/tmp/ap_String_Id.h.h:1525
 msgid "Justify"
 msgstr "Justificada"
 
 #. TOOLBAR_STATUSLINE_ALIGN_JUSTIFY
 #. TOOLBAR_TOOLTIP_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:1502
+#: po/tmp/ap_String_Id.h.h:1528
 msgid "Justify paragraph"
 msgstr "Justificar parágrafo"
 
 #. MENU_STATUSLINE_ALIGN_JUSTIFY
-#: po/tmp/ap_String_Id.h.h:1504
+#: po/tmp/ap_String_Id.h.h:1530
 msgid "Justify the paragraph"
 msgstr "Justifica el parágrafo"
 
 #. DLG_Para_PushKeepWithNext
-#: po/tmp/ap_String_Id.h.h:1506
+#: po/tmp/ap_String_Id.h.h:1532
 msgid "Keep with ne&xt"
 msgstr "Mantener con el &siguiente"
 
 #. FIELD_PieceTable_Test
-#: po/tmp/ap_String_Id.h.h:1508
+#: po/tmp/ap_String_Id.h.h:1534
 msgid "Kevins Test"
 msgstr "Test de Kevin"
 
 #. FIELD_Document_Keywords
-#: po/tmp/ap_String_Id.h.h:1510
+#: po/tmp/ap_String_Id.h.h:1536
 msgid "Keywords"
 msgstr "Palabras clave"
 
 #. DLG_MetaData_Keywords_LBL
-#: po/tmp/ap_String_Id.h.h:1512
+#: po/tmp/ap_String_Id.h.h:1538
 msgid "Keywords:"
 msgstr "Palabras clave:"
 
 #. DLG_Latex_LatexTitle
 #. DLG_Latex_LatexEquation
-#: po/tmp/ap_String_Id.h.h:1515
+#: po/tmp/ap_String_Id.h.h:1541
 msgid "LaTeX Equation"
 msgstr "Ecuación LaTeX"
 
 #. DLG_Lists_Indent
-#: po/tmp/ap_String_Id.h.h:1517
+#: po/tmp/ap_String_Id.h.h:1543
 msgid "Label Align:"
 msgstr "Alineación de etiqueta:"
 
 #. DLG_FormatTOC_DetailsTop
-#: po/tmp/ap_String_Id.h.h:1519
+#: po/tmp/ap_String_Id.h.h:1545
 msgid "Label Definitions"
 msgstr "Definiciones de etiquetas"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
 #. FIELD_Document_Language
-#: po/tmp/ap_String_Id.h.h:1523
+#: po/tmp/ap_String_Id.h.h:1549
 msgid "Language"
 msgstr "Idioma"
 
 #. DLG_Options_Label_LangSettings
-#: po/tmp/ap_String_Id.h.h:1525
+#: po/tmp/ap_String_Id.h.h:1551
 msgid "Language settings"
 msgstr "Configuración del idioma"
 
 #. DLG_MetaData_Languages_LBL
-#: po/tmp/ap_String_Id.h.h:1527
+#: po/tmp/ap_String_Id.h.h:1553
 msgid "Language(s):"
 msgstr "Idioma(s):"
 
 #. DLG_Options_Label_Layout
-#: po/tmp/ap_String_Id.h.h:1529
+#: po/tmp/ap_String_Id.h.h:1555
 msgid "Layout"
 msgstr "Distribución"
 
 #. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h.h:1531
+#: po/tmp/ap_String_Id.h.h:1557
 msgid "Layout Details"
 msgstr "Detalles del disposición"
 
 #. DLG_Tab_Label_Leader
-#: po/tmp/ap_String_Id.h.h:1533
+#: po/tmp/ap_String_Id.h.h:1559
 msgid "Leader"
 msgstr "Relleno"
 
@@ -3737,376 +3802,376 @@ msgstr "Relleno"
 #. DLG_Tab_Radio_Left
 #. DLG_PageNumbers_Left
 #. TOOLBAR_LABEL_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:1538
+#: po/tmp/ap_String_Id.h.h:1564
 msgid "Left"
 msgstr "Izquierda"
 
 #. LeftIndentStatus
-#: po/tmp/ap_String_Id.h.h:1540
+#: po/tmp/ap_String_Id.h.h:1566
 #, c-format
 msgid "Left Indent [%s]"
 msgstr "Sangría a la izquierda [%s]"
 
 #. LeftIndentTextIndentStatus
-#: po/tmp/ap_String_Id.h.h:1542
+#: po/tmp/ap_String_Id.h.h:1568
 #, c-format
 msgid "Left Indent [%s] First Line Indent [%s]"
 msgstr "Sangría a la izquierda [%s] Sangría de primera línea [%s]"
 
 #. LeftMarginStatus
-#: po/tmp/ap_String_Id.h.h:1544
+#: po/tmp/ap_String_Id.h.h:1570
 #, c-format
 msgid "Left Margin [%s]"
 msgstr "Margen izquierdo [%s]"
 
 #. TabToggleLeftTab
-#: po/tmp/ap_String_Id.h.h:1546
+#: po/tmp/ap_String_Id.h.h:1572
 msgid "Left Tab"
 msgstr "Tabulador izquierdo"
 
 #. TOOLBAR_STATUSLINE_ALIGN_LEFT
 #. TOOLBAR_TOOLTIP_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:1549
+#: po/tmp/ap_String_Id.h.h:1575
 msgid "Left alignment"
 msgstr "Alineación a la izquierda"
 
 #. MENU_STATUSLINE_ALIGN_LEFT
-#: po/tmp/ap_String_Id.h.h:1551
+#: po/tmp/ap_String_Id.h.h:1577
 msgid "Left-align the paragraph"
 msgstr "Alinear el parágrafo a la izquierda"
 
 #. DLG_FormatTOC_Level1
-#: po/tmp/ap_String_Id.h.h:1553
+#: po/tmp/ap_String_Id.h.h:1579
 msgid "Level 1"
 msgstr "Nivel 1"
 
 #. DLG_FormatTOC_Level2
-#: po/tmp/ap_String_Id.h.h:1555
+#: po/tmp/ap_String_Id.h.h:1581
 msgid "Level 2"
 msgstr "Nivel 2"
 
 #. DLG_FormatTOC_Level3
-#: po/tmp/ap_String_Id.h.h:1557
+#: po/tmp/ap_String_Id.h.h:1583
 msgid "Level 3"
 msgstr "Nivel 3"
 
 #. DLG_FormatTOC_Level4
-#: po/tmp/ap_String_Id.h.h:1559
+#: po/tmp/ap_String_Id.h.h:1585
 msgid "Level 4"
 msgstr "Nivel 4"
 
 #. DLG_Lists_DelimiterString
-#: po/tmp/ap_String_Id.h.h:1561
+#: po/tmp/ap_String_Id.h.h:1587
 msgid "Level Delimiter:"
 msgstr "Delimitador de nivel:"
 
 #. DLG_Lists_Level
-#: po/tmp/ap_String_Id.h.h:1563
+#: po/tmp/ap_String_Id.h.h:1589
 msgid "Level:"
 msgstr "Nivel:"
 
 #. DLG_Para_LabelLineSpacing
-#: po/tmp/ap_String_Id.h.h:1565
+#: po/tmp/ap_String_Id.h.h:1591
 msgid "Li&ne spacing:"
 msgstr "Interli&neado:"
 
 #. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h.h:1567
+#: po/tmp/ap_String_Id.h.h:1593
 msgid "Line"
 msgstr "Línea"
 
 #. FIELD_Numbers_LineCount
-#: po/tmp/ap_String_Id.h.h:1569
+#: po/tmp/ap_String_Id.h.h:1595
 msgid "Line Count"
 msgstr "Contador de líneas"
 
 #. MENU_STATUSLINE_FMT_TOPLINE
-#: po/tmp/ap_String_Id.h.h:1571
+#: po/tmp/ap_String_Id.h.h:1597
 msgid "Line above the selection (toggle)"
 msgstr "Línea sobre la selección (cambiar)"
 
 #. DLG_Para_TabLabelLineAndPageBreaks
-#: po/tmp/ap_String_Id.h.h:1573
+#: po/tmp/ap_String_Id.h.h:1599
 msgid "Line and Page Breaks"
 msgstr "Saltos de línea y de página"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
-#: po/tmp/ap_String_Id.h.h:1575
+#: po/tmp/ap_String_Id.h.h:1601
 msgid "Line below the selection (toggle)"
 msgstr "Línea bajo la selección (cambiar)"
 
 #. DLG_Column_Line_Between
-#: po/tmp/ap_String_Id.h.h:1577
+#: po/tmp/ap_String_Id.h.h:1603
 msgid "Line between"
 msgstr "Línea entre columnas"
 
 #. DLG_WordCount_Lines
-#: po/tmp/ap_String_Id.h.h:1579
+#: po/tmp/ap_String_Id.h.h:1605
 msgid "Lines:"
 msgstr "Líneas:"
 
 #. DLG_Styles_List
-#: po/tmp/ap_String_Id.h.h:1581
+#: po/tmp/ap_String_Id.h.h:1607
 msgid "List"
 msgstr "Lista"
 
 #. FIELD_Numbers_ListLabel
-#: po/tmp/ap_String_Id.h.h:1583
+#: po/tmp/ap_String_Id.h.h:1609
 msgid "List Label"
 msgstr "Etiqueta de lista"
 
 #. DLG_Lists_PageProperties
-#: po/tmp/ap_String_Id.h.h:1585
+#: po/tmp/ap_String_Id.h.h:1611
 msgid "List Properties"
 msgstr "P&ropiedades de listas"
 
 #. DLG_Stylist_ListStyles
-#: po/tmp/ap_String_Id.h.h:1587
+#: po/tmp/ap_String_Id.h.h:1613
 msgid "List Styles"
 msgstr "Estilos de listas"
 
 #. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h.h:1589
+#: po/tmp/ap_String_Id.h.h:1615
 msgid "Lists for "
 msgstr "Listas para "
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
-#: po/tmp/ap_String_Id.h.h:1591
+#: po/tmp/ap_String_Id.h.h:1617
 msgid "Lock the layout of the current toolbars"
 msgstr "Bloquea la distribución de las barras de herramientas actuales"
 
 #. DLG_Lists_Lower_Case_List
 #. STYLE_LOWERCASELIST
-#: po/tmp/ap_String_Id.h.h:1593
+#: po/tmp/ap_String_Id.h.h:1619
 #: po/tmp/xap_String_Id.h.h:536
 msgid "Lower Case List"
 msgstr "Lista en minúsculas"
 
 #. DLG_Lists_Lower_Roman_List
 #. STYLE_LOWERROMANLIST
-#: po/tmp/ap_String_Id.h.h:1595
+#: po/tmp/ap_String_Id.h.h:1621
 #: po/tmp/xap_String_Id.h.h:538
 msgid "Lower Roman List"
 msgstr "Lista romana en minúscula"
 
 #. FIELD_Application_MailMerge
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
-#: po/tmp/ap_String_Id.h.h:1598
+#: po/tmp/ap_String_Id.h.h:1624
 msgid "Mail Merge"
 msgstr "Combina las direcciones de correo"
 
 #. MENU_STATUSLINE_FMT_BOLD
-#: po/tmp/ap_String_Id.h.h:1600
+#: po/tmp/ap_String_Id.h.h:1626
 msgid "Make the selection bold (toggle)"
 msgstr "Hacer la selección en negrita (cambiar)"
 
 #. MENU_STATUSLINE_FMT_ITALIC
-#: po/tmp/ap_String_Id.h.h:1602
+#: po/tmp/ap_String_Id.h.h:1628
 msgid "Make the selection italic (toggle)"
 msgstr "Hacer la selección cursiva (cambiar)"
 
 #. MENU_STATUSLINE_FMT_SUBSCRIPT
-#: po/tmp/ap_String_Id.h.h:1604
+#: po/tmp/ap_String_Id.h.h:1630
 msgid "Make the selection subscript (toggle)"
 msgstr "Hacer la selección subíndice (cambiar)"
 
 #. MENU_STATUSLINE_FMT_SUPERSCRIPT
-#: po/tmp/ap_String_Id.h.h:1606
+#: po/tmp/ap_String_Id.h.h:1632
 msgid "Make the selection superscript (toggle)"
 msgstr "Hacer la selección superíndice (cambiar)"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS
-#: po/tmp/ap_String_Id.h.h:1608
+#: po/tmp/ap_String_Id.h.h:1634
 msgid "Manage annotations in document"
 msgstr "Administrar anotaciones en el documento"
 
 #. MENU_STATUSLINE_TOOLS_PLUGINS
-#: po/tmp/ap_String_Id.h.h:1610
+#: po/tmp/ap_String_Id.h.h:1636
 msgid "Manage plugins"
 msgstr "Administrar complementos"
 
 #. DLG_PageSetup_Margin
-#: po/tmp/ap_String_Id.h.h:1612
+#: po/tmp/ap_String_Id.h.h:1638
 msgid "Margin"
 msgstr "Margen"
 
 #. DLG_MarkRevisions_Title
-#: po/tmp/ap_String_Id.h.h:1614
+#: po/tmp/ap_String_Id.h.h:1640
 msgid "Mark Revisions"
 msgstr "Marcar revisiones"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MARK
-#: po/tmp/ap_String_Id.h.h:1616
+#: po/tmp/ap_String_Id.h.h:1642
 msgid "Mark changes as you type"
 msgstr "Marcar cambios mientras se escribe"
 
 #. FIELD_PieceTable_MartinTest
-#: po/tmp/ap_String_Id.h.h:1618
+#: po/tmp/ap_String_Id.h.h:1644
 msgid "Martins Test"
 msgstr "Prueba de Martin"
 
 #. DLG_Column_Size
-#: po/tmp/ap_String_Id.h.h:1620
+#: po/tmp/ap_String_Id.h.h:1646
 msgid "Max Column size"
 msgstr "Tamaño máx. de columna"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
 #. TOOLBAR_TOOLTIP_MENU
-#: po/tmp/ap_String_Id.h.h:1624
+#: po/tmp/ap_String_Id.h.h:1650
 msgid "Menu"
 msgstr "Menú"
 
 #. DLG_MergeCells_Above
-#: po/tmp/ap_String_Id.h.h:1626
+#: po/tmp/ap_String_Id.h.h:1652
 msgid "Merge Above"
 msgstr "Combinar encima"
 
 #. DLG_MergeCells_Below
-#: po/tmp/ap_String_Id.h.h:1628
+#: po/tmp/ap_String_Id.h.h:1654
 msgid "Merge Below"
 msgstr "Combinar debajo"
 
 #. DLG_MergeCellsTitle
 #. DLG_MergeCells_Frame
 #. MENU_STATUSLINE_TABLE_MERGE_CELLS
-#: po/tmp/ap_String_Id.h.h:1632
+#: po/tmp/ap_String_Id.h.h:1658
 msgid "Merge Cells"
 msgstr "Combinar las celdas"
 
 #. DLG_MergeCells_Left
-#: po/tmp/ap_String_Id.h.h:1634
+#: po/tmp/ap_String_Id.h.h:1660
 msgid "Merge Left"
 msgstr "Combinar a la izquierda"
 
 #. DLG_MergeCells_Right
-#: po/tmp/ap_String_Id.h.h:1636
+#: po/tmp/ap_String_Id.h.h:1662
 msgid "Merge Right"
 msgstr "Combinar a la derecha"
 
 #. TOOLBAR_LABEL_MERGEABOVE
-#: po/tmp/ap_String_Id.h.h:1638
+#: po/tmp/ap_String_Id.h.h:1664
 msgid "Merge above"
 msgstr "Combinar encima"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
-#: po/tmp/ap_String_Id.h.h:1640
+#: po/tmp/ap_String_Id.h.h:1666
 msgid "Merge another document into the active document using revision marks"
 msgstr "Combina otro documento dentro del documento activo usando marcas de revisión"
 
 #. TOOLBAR_LABEL_MERGEBELOW
-#: po/tmp/ap_String_Id.h.h:1642
+#: po/tmp/ap_String_Id.h.h:1668
 msgid "Merge below"
 msgstr "Combinar debajo"
 
 #. TOOLBAR_LABEL_MERGE_CELLS
 #. TOOLBAR_STATUSLINE_MERGE_CELLS
 #. TOOLBAR_TOOLTIP_MERGE_CELLS
-#: po/tmp/ap_String_Id.h.h:1646
+#: po/tmp/ap_String_Id.h.h:1672
 msgid "Merge cells"
 msgstr "Combinar celdas"
 
 #. TOOLBAR_LABEL_MERGELEFT
-#: po/tmp/ap_String_Id.h.h:1648
+#: po/tmp/ap_String_Id.h.h:1674
 msgid "Merge left"
 msgstr "Combina con la izquierda"
 
 #. TOOLBAR_LABEL_MERGERIGHT
-#: po/tmp/ap_String_Id.h.h:1650
+#: po/tmp/ap_String_Id.h.h:1676
 msgid "Merge right"
 msgstr "Combina con la derecha"
 
 #. TOOLBAR_STATUSLINE_MERGEABOVE
 #. TOOLBAR_TOOLTIP_MERGEABOVE
-#: po/tmp/ap_String_Id.h.h:1653
+#: po/tmp/ap_String_Id.h.h:1679
 msgid "Merge with cell above"
 msgstr "Combinar con la celda de arriba"
 
 #. TOOLBAR_STATUSLINE_MERGEBELOW
 #. TOOLBAR_TOOLTIP_MERGEBELOW
-#: po/tmp/ap_String_Id.h.h:1656
+#: po/tmp/ap_String_Id.h.h:1682
 msgid "Merge with cell below"
 msgstr "Combinar con la celda de abajo"
 
 #. TOOLBAR_STATUSLINE_MERGELEFT
 #. TOOLBAR_TOOLTIP_MERGELEFT
-#: po/tmp/ap_String_Id.h.h:1659
+#: po/tmp/ap_String_Id.h.h:1685
 msgid "Merge with left cell"
 msgstr "Combinar con la celda de la izquierda"
 
 #. TOOLBAR_STATUSLINE_MERGERIGHT
 #. TOOLBAR_TOOLTIP_MERGERIGHT
-#: po/tmp/ap_String_Id.h.h:1662
+#: po/tmp/ap_String_Id.h.h:1688
 msgid "Merge with right cell"
 msgstr "Combinar con la celda de la derecha"
 
 #. FIELD_DateTime_MilTime
-#: po/tmp/ap_String_Id.h.h:1664
+#: po/tmp/ap_String_Id.h.h:1690
 msgid "Military Time"
 msgstr "Hora militar"
 
 #. DLG_Options_TabLabel_Misc
-#: po/tmp/ap_String_Id.h.h:1666
+#: po/tmp/ap_String_Id.h.h:1692
 msgid "Misc."
 msgstr "Varios"
 
 #. DLG_Stylist_MiscStyles
-#: po/tmp/ap_String_Id.h.h:1668
+#: po/tmp/ap_String_Id.h.h:1694
 msgid "Miscellaneous Styles"
 msgstr "Estilos misceláneos"
 
 #. DLG_Styles_ModifyTitle
-#: po/tmp/ap_String_Id.h.h:1670
+#: po/tmp/ap_String_Id.h.h:1696
 msgid "Modify Styles"
 msgstr "Modificar estilos"
 
 #. DLG_Styles_Modify
-#: po/tmp/ap_String_Id.h.h:1672
+#: po/tmp/ap_String_Id.h.h:1698
 msgid "Modify..."
 msgstr "Modificar..."
 
 #. FIELD_DateTime_MonthDayYear
-#: po/tmp/ap_String_Id.h.h:1674
+#: po/tmp/ap_String_Id.h.h:1700
 msgid "Month Day, Year"
 msgstr "Mes Dia, Año"
 
 #. MENU_STATUSLINE_EDIT_GOTO
-#: po/tmp/ap_String_Id.h.h:1676
+#: po/tmp/ap_String_Id.h.h:1702
 msgid "Move the insertion point to a specific location"
 msgstr "Mover el punto de inserción a una posición específica"
 
 #. FIELD_DateTime_MthDayYear
-#: po/tmp/ap_String_Id.h.h:1678
+#: po/tmp/ap_String_Id.h.h:1704
 msgid "Mth. Day, Year"
 msgstr "Mes (abrev.) Día, Año"
 
 #. DLG_Para_SpacingMultiple
-#: po/tmp/ap_String_Id.h.h:1680
+#: po/tmp/ap_String_Id.h.h:1706
 msgid "Multiple"
 msgstr "Múltiple"
 
 #. TOOLBAR_LABEL_FILE_NEW
-#: po/tmp/ap_String_Id.h.h:1682
+#: po/tmp/ap_String_Id.h.h:1708
 msgid "New"
 msgstr "Nuevo"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT
-#: po/tmp/ap_String_Id.h.h:1684
+#: po/tmp/ap_String_Id.h.h:1710
 msgid "New &annotation"
 msgstr "Nueva &anotación"
 
 #. DLG_NEW_Title
-#: po/tmp/ap_String_Id.h.h:1686
+#: po/tmp/ap_String_Id.h.h:1712
 msgid "New Document"
 msgstr "Documento nuevo"
 
 #. DLG_Lists_New_List_Label
-#: po/tmp/ap_String_Id.h.h:1688
+#: po/tmp/ap_String_Id.h.h:1714
 msgid "New List Label"
 msgstr "Etiqueta de lista nueva"
 
 #. DLG_Lists_New_List_Type
-#: po/tmp/ap_String_Id.h.h:1690
+#: po/tmp/ap_String_Id.h.h:1716
 msgid ""
 "New List \n"
 "Type"
@@ -4114,8 +4179,13 @@ msgstr ""
 "Nuevo tipo \n"
 "de lista"
 
+#. TOOLBAR_LABEL_REVISIONS_NEW
+#: po/tmp/ap_String_Id.h.h:1718
+msgid "New Revision"
+msgstr "Revisión nueva"
+
 #. DLG_Lists_Starting_Value
-#: po/tmp/ap_String_Id.h.h:1692
+#: po/tmp/ap_String_Id.h.h:1720
 msgid ""
 "New Starting \n"
 "Value"
@@ -4124,32 +4194,32 @@ msgstr ""
 "nuevo"
 
 #. DLG_Styles_NewTitle
-#: po/tmp/ap_String_Id.h.h:1694
+#: po/tmp/ap_String_Id.h.h:1722
 msgid "New Style"
 msgstr "Estilo nuevo"
 
 #. DLG_Styles_New
-#: po/tmp/ap_String_Id.h.h:1696
+#: po/tmp/ap_String_Id.h.h:1724
 msgid "New..."
 msgstr "Nuevo..."
 
 #. DLG_Goto_Btn_Next
-#: po/tmp/ap_String_Id.h.h:1698
+#: po/tmp/ap_String_Id.h.h:1726
 msgid "Next >>"
 msgstr "Siguiente >>"
 
 #. DLG_NEW_NoFile
-#: po/tmp/ap_String_Id.h.h:1700
+#: po/tmp/ap_String_Id.h.h:1728
 msgid "No File"
 msgstr "No hay archivo"
 
 #. DLG_Lists_FoldingLevel0
-#: po/tmp/ap_String_Id.h.h:1702
+#: po/tmp/ap_String_Id.h.h:1730
 msgid "No Folding"
 msgstr "Sin plegado"
 
 #. DLG_Styles_ErrNoStyle
-#: po/tmp/ap_String_Id.h.h:1704
+#: po/tmp/ap_String_Id.h.h:1732
 msgid ""
 "No Style selected \n"
 " so it cannot be modified"
@@ -4158,7 +4228,7 @@ msgstr ""
 " así que no puede modificarse"
 
 #. SCRIPT_NOSCRIPTS
-#: po/tmp/ap_String_Id.h.h:1706
+#: po/tmp/ap_String_Id.h.h:1734
 msgid "No scripts found"
 msgstr "No se encontraron scripts"
 
@@ -4166,63 +4236,63 @@ msgstr "No se encontraron scripts"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_Lists_Type_none
-#: po/tmp/ap_String_Id.h.h:1711
+#: po/tmp/ap_String_Id.h.h:1739
 msgid "None"
 msgstr "Ninguno"
 
 #. TOOLBAR_LABEL_PARA_0BEFORE
-#: po/tmp/ap_String_Id.h.h:1713
+#: po/tmp/ap_String_Id.h.h:1741
 msgid "None before"
 msgstr "Ninguno antes"
 
 #. MENU_STATUSLINE_VIEW_NORMAL
-#: po/tmp/ap_String_Id.h.h:1715
+#: po/tmp/ap_String_Id.h.h:1743
 msgid "Normal View"
 msgstr "Vista normal"
 
 #. DLG_Spell_UnknownWord
-#: po/tmp/ap_String_Id.h.h:1717
+#: po/tmp/ap_String_Id.h.h:1745
 msgid "Not in dictionary&:"
 msgstr "No está en el &diccionario:"
 
 #. DLG_Stylist_FootnoteStyles
-#: po/tmp/ap_String_Id.h.h:1719
+#: po/tmp/ap_String_Id.h.h:1747
 msgid "Note Styles"
 msgstr "Estilo de anotaciones"
 
 #. DLG_Column_Number_Cols
-#: po/tmp/ap_String_Id.h.h:1721
+#: po/tmp/ap_String_Id.h.h:1749
 msgid "Number of Columns"
 msgstr "Número de columnas"
 
 #. FIELD_Numbers_PagesCount
-#: po/tmp/ap_String_Id.h.h:1723
+#: po/tmp/ap_String_Id.h.h:1751
 msgid "Number of Pages"
 msgstr "Número de páginas"
 
 #. DLG_Column_Number
-#: po/tmp/ap_String_Id.h.h:1725
+#: po/tmp/ap_String_Id.h.h:1753
 msgid "Number of columns"
 msgstr "Número de columnas"
 
 #. DLG_InsertTable_NumCols
-#: po/tmp/ap_String_Id.h.h:1727
+#: po/tmp/ap_String_Id.h.h:1755
 msgid "Number of columns:"
 msgstr "Número de columnas:"
 
 #. DLG_InsertTable_NumRows
-#: po/tmp/ap_String_Id.h.h:1729
+#: po/tmp/ap_String_Id.h.h:1757
 msgid "Number of rows:"
 msgstr "Número de filas:"
 
 #. DLG_Lists_Type_numbered
-#: po/tmp/ap_String_Id.h.h:1731
+#: po/tmp/ap_String_Id.h.h:1759
 msgid "Numbered"
 msgstr "Numerados"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
-#: po/tmp/ap_String_Id.h.h:1733
+#: po/tmp/ap_String_Id.h.h:1761
 #: po/tmp/xap_String_Id.h.h:586
 msgid "Numbered List"
 msgstr "Lista numerada"
@@ -4232,47 +4302,47 @@ msgstr "Lista numerada"
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
-#: po/tmp/ap_String_Id.h.h:1739
+#: po/tmp/ap_String_Id.h.h:1767
 msgid "Numbering"
 msgstr "Numeración"
 
 #. FIELD_Type_Numbers
-#: po/tmp/ap_String_Id.h.h:1741
+#: po/tmp/ap_String_Id.h.h:1769
 msgid "Numbers"
 msgstr "Números"
 
 #. DLG_BorderShading_Offset
-#: po/tmp/ap_String_Id.h.h:1743
+#: po/tmp/ap_String_Id.h.h:1771
 msgid "Offset:"
 msgstr "Compensar:"
 
 #. DLG_Column_One
-#: po/tmp/ap_String_Id.h.h:1745
+#: po/tmp/ap_String_Id.h.h:1773
 msgid "One"
 msgstr "Una"
 
 #. MENU_LABEL_FILE_IMPORT
-#: po/tmp/ap_String_Id.h.h:1747
+#: po/tmp/ap_String_Id.h.h:1775
 msgid "Op&en Copy"
 msgstr "A&brir copia"
 
 #. TOOLBAR_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h.h:1749
+#: po/tmp/ap_String_Id.h.h:1777
 msgid "Open"
 msgstr "Abrir"
 
 #. MENU_LABEL_OPEN_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:1751
+#: po/tmp/ap_String_Id.h.h:1779
 msgid "Open Template"
 msgstr "Abrir plantilla"
 
 #. MENU_STATUSLINE_FILE_IMPORT
-#: po/tmp/ap_String_Id.h.h:1753
+#: po/tmp/ap_String_Id.h.h:1781
 msgid "Open a document by making a copy"
 msgstr "Abre un documento haciendo una copia"
 
 #. MENU_STATUSLINE_FILE_RECENT
-#: po/tmp/ap_String_Id.h.h:1755
+#: po/tmp/ap_String_Id.h.h:1783
 msgid "Open a recently used document"
 msgstr "Abre un documento recientemente usado"
 
@@ -4280,12 +4350,12 @@ msgstr "Abre un documento recientemente usado"
 #. MENU_STATUSLINE_FILE_OPEN
 #. TOOLBAR_STATUSLINE_FILE_OPEN
 #. TOOLBAR_TOOLTIP_FILE_OPEN
-#: po/tmp/ap_String_Id.h.h:1760
+#: po/tmp/ap_String_Id.h.h:1788
 msgid "Open an existing document"
 msgstr "Abre un documento existente"
 
 #. MENU_STATUSLINE_WINDOW_NEW
-#: po/tmp/ap_String_Id.h.h:1762
+#: po/tmp/ap_String_Id.h.h:1790
 msgid "Open another window for the document"
 msgstr "Abre otra ventana para el documento"
 
@@ -4298,28 +4368,28 @@ msgstr "Abre otra ventana para el documento"
 #. MENU_STATUSLINE_FILE_RECENT_7
 #. MENU_STATUSLINE_FILE_RECENT_8
 #. MENU_STATUSLINE_FILE_RECENT_9
-#: po/tmp/ap_String_Id.h.h:1772
+#: po/tmp/ap_String_Id.h.h:1800
 msgid "Open this document"
 msgstr "Abre este documento"
 
 #. DLG_PageSetup_Orient
-#: po/tmp/ap_String_Id.h.h:1774
+#: po/tmp/ap_String_Id.h.h:1802
 msgid "Orientation..."
 msgstr "Orientación..."
 
 #. DLG_Options_TabLabel_Other
-#: po/tmp/ap_String_Id.h.h:1776
+#: po/tmp/ap_String_Id.h.h:1804
 msgid "Other"
 msgstr "Otro"
 
 #. MSG_IE_NoMemory
-#: po/tmp/ap_String_Id.h.h:1778
+#: po/tmp/ap_String_Id.h.h:1806
 #, c-format
 msgid "Out of memory attempting to open %s"
 msgstr "Se agotó la memoria al intentar abrir %s"
 
 #. DLG_Options_Label_OuterQuoteStyle
-#: po/tmp/ap_String_Id.h.h:1780
+#: po/tmp/ap_String_Id.h.h:1808
 msgid "Outer (double) quote style"
 msgstr "Estilo exterior (doble) de comillas"
 
@@ -4327,236 +4397,241 @@ msgstr "Estilo exterior (doble) de comillas"
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
-#: po/tmp/ap_String_Id.h.h:1784
+#: po/tmp/ap_String_Id.h.h:1812
 #: po/tmp/xap_String_Id.h.h:600
 msgid "Overline"
 msgstr "Sobrelinear"
 
 #. MENU_STATUSLINE_FMT_OVERLINE
-#: po/tmp/ap_String_Id.h.h:1786
+#: po/tmp/ap_String_Id.h.h:1814
 msgid "Overline the selection (toggle)"
 msgstr "Sobrelinear la selección (cambiar)"
 
 #. InsertModeFieldOVR
-#: po/tmp/ap_String_Id.h.h:1788
+#: po/tmp/ap_String_Id.h.h:1816
 msgid "Overwrite"
 msgstr "Sobrescritura"
 
 #. MENU_LABEL_FILE_PROPERTIES
-#: po/tmp/ap_String_Id.h.h:1790
+#: po/tmp/ap_String_Id.h.h:1818
 msgid "P&roperties"
 msgstr "&Propiedades"
 
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
-#: po/tmp/ap_String_Id.h.h:1792
+#: po/tmp/ap_String_Id.h.h:1820
 msgid "P&urge revisions"
 msgstr "P&urgar revisiones"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
-#: po/tmp/ap_String_Id.h.h:1794
+#: po/tmp/ap_String_Id.h.h:1822
 msgid "Pa&ste Unformatted"
 msgstr "Pegar sin &formato"
 
 #. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
-#: po/tmp/ap_String_Id.h.h:1797
+#: po/tmp/ap_String_Id.h.h:1825
 msgid "Page"
 msgstr "Página"
 
 #. DLG_Para_PushPageBreakBefore
-#: po/tmp/ap_String_Id.h.h:1799
+#: po/tmp/ap_String_Id.h.h:1827
 msgid "Page &break before"
 msgstr "&Salto de página antes"
 
 #. MENU_LABEL_FMT_BACKGROUND
-#: po/tmp/ap_String_Id.h.h:1801
+#: po/tmp/ap_String_Id.h.h:1829
 msgid "Page Background"
 msgstr "Fondo de página"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
-#: po/tmp/ap_String_Id.h.h:1803
+#: po/tmp/ap_String_Id.h.h:1831
 msgid "Page C&olor"
 msgstr "Color de la página"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_IMAGE
-#: po/tmp/ap_String_Id.h.h:1805
+#: po/tmp/ap_String_Id.h.h:1833
 msgid "Page Image"
 msgstr "Imagen de página"
 
 #. MENU_LABEL_INSERT_PAGENO
-#: po/tmp/ap_String_Id.h.h:1807
+#: po/tmp/ap_String_Id.h.h:1835
 msgid "Page N&umbers"
 msgstr "Núme&ros de página"
 
 #. FIELD_Numbers_PageNumber
-#: po/tmp/ap_String_Id.h.h:1809
+#: po/tmp/ap_String_Id.h.h:1837
 msgid "Page Number"
 msgstr "Número de página"
 
 #. DLG_HdrFtr_PageNumberProperties
-#: po/tmp/ap_String_Id.h.h:1811
+#: po/tmp/ap_String_Id.h.h:1839
 msgid "Page Number Properties"
 msgstr "Propiedades del número de página"
 
 #. DLG_PageNumbers_Title
-#: po/tmp/ap_String_Id.h.h:1813
+#: po/tmp/ap_String_Id.h.h:1841
 msgid "Page Numbers"
 msgstr "Números de página"
 
 #. FIELD_Numbers_PageReference
-#: po/tmp/ap_String_Id.h.h:1815
+#: po/tmp/ap_String_Id.h.h:1843
 msgid "Page Reference"
 msgstr "Referencia de página"
 
 #. MENU_LABEL_FILE_PAGESETUP
-#: po/tmp/ap_String_Id.h.h:1817
+#: po/tmp/ap_String_Id.h.h:1845
 msgid "Page Set&up"
 msgstr "C&onfigurar página"
 
 #. DLG_PageSetup_Title
-#: po/tmp/ap_String_Id.h.h:1819
+#: po/tmp/ap_String_Id.h.h:1847
 msgid "Page Setup"
 msgstr "Configurar página"
 
 #. PageInfoField
-#: po/tmp/ap_String_Id.h.h:1821
+#: po/tmp/ap_String_Id.h.h:1849
 #, c-format
 msgid "Page: %d/%d"
 msgstr "Página: %d/%d"
 
 #. DLG_WordCount_Pages
-#: po/tmp/ap_String_Id.h.h:1823
+#: po/tmp/ap_String_Id.h.h:1851
 msgid "Pages:"
 msgstr "Páginas:"
 
 #. DLG_Para_LabelPagination
-#: po/tmp/ap_String_Id.h.h:1825
+#: po/tmp/ap_String_Id.h.h:1853
 msgid "Pagination"
 msgstr "Paginación"
 
 # Cambio de letra
 #. DLG_PageSetup_Paper_Size
-#: po/tmp/ap_String_Id.h.h:1827
+#: po/tmp/ap_String_Id.h.h:1855
 msgid "Paper Si&ze:"
 msgstr "&Tamaño del papel:"
 
 #. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h.h:1829
+#: po/tmp/ap_String_Id.h.h:1857
 msgid "Paper..."
 msgstr "Papel..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
-#: po/tmp/ap_String_Id.h.h:1832
+#: po/tmp/ap_String_Id.h.h:1860
 msgid "Paragraph"
 msgstr "Parágrafo"
 
 #. FIELD_Numbers_ParaCount
-#: po/tmp/ap_String_Id.h.h:1834
+#: po/tmp/ap_String_Id.h.h:1862
 msgid "Paragraph Count"
 msgstr "Contador de parágrafos"
 
 #. TOOLBAR_LABEL_FMT_DOM_DIRECTION
-#: po/tmp/ap_String_Id.h.h:1836
+#: po/tmp/ap_String_Id.h.h:1864
 msgid "Paragraph Direction"
 msgstr "Sentido de los parágrafos"
 
 #. DLG_Styles_ParaPrev
-#: po/tmp/ap_String_Id.h.h:1838
+#: po/tmp/ap_String_Id.h.h:1866
 msgid "Paragraph Preview"
 msgstr "Vista previa de parágrafos"
 
 #. DLG_WordCount_Paragraphs
-#: po/tmp/ap_String_Id.h.h:1840
+#: po/tmp/ap_String_Id.h.h:1868
 msgid "Paragraphs:"
 msgstr "Parágrafos:"
 
 #. WORD_PassRequired
-#: po/tmp/ap_String_Id.h.h:1842
+#: po/tmp/ap_String_Id.h.h:1870
 msgid "Password required, this is an encrypted document"
 msgstr "Se requiere contraseña, esto es un documento cifrado"
 
 #. TOOLBAR_LABEL_EDIT_PASTE
 #. TOOLBAR_STATUSLINE_EDIT_PASTE
 #. TOOLBAR_TOOLTIP_EDIT_PASTE
-#: po/tmp/ap_String_Id.h.h:1846
+#: po/tmp/ap_String_Id.h.h:1874
 msgid "Paste"
 msgstr "Pega"
 
 #. DLG_MetaData_TAB_Permission
-#: po/tmp/ap_String_Id.h.h:1848
+#: po/tmp/ap_String_Id.h.h:1876
 msgid "Permissions"
 msgstr "Permisos"
 
 #. DLG_Goto_Target_Picture
-#: po/tmp/ap_String_Id.h.h:1850
+#: po/tmp/ap_String_Id.h.h:1878
 msgid "Picture"
 msgstr "Imagen"
 
 #. FIELD_Type_PieceTable
-#: po/tmp/ap_String_Id.h.h:1852
+#: po/tmp/ap_String_Id.h.h:1880
 msgid "Piece Table"
 msgstr "Tabla de piezas"
 
 #. DLG_FormatFootnotes_EndPlaceEndDoc
-#: po/tmp/ap_String_Id.h.h:1854
+#: po/tmp/ap_String_Id.h.h:1882
 msgid "Place at end of document"
 msgstr "Colocar al final del documento"
 
 #. DLG_FormatFootnotes_EndPlaceEndSec
-#: po/tmp/ap_String_Id.h.h:1856
+#: po/tmp/ap_String_Id.h.h:1884
 msgid "Place at end of section"
 msgstr "Colocar al final de la sección"
 
 #. DLG_FormatFootnotes_EndPlacement
-#: po/tmp/ap_String_Id.h.h:1858
+#: po/tmp/ap_String_Id.h.h:1886
 msgid "Placement"
 msgstr "Colocación"
 
+#. MENU_LABEL_RDF_ADV_PLAY
+#: po/tmp/ap_String_Id.h.h:1888
+msgid "Playing with RDF during development"
+msgstr "Juegue con el RDF durante el desarrollo"
+
 #. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
-#: po/tmp/ap_String_Id.h.h:1861
+#: po/tmp/ap_String_Id.h.h:1891
 msgid "Position"
 msgstr "Posición"
 
 #. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h.h:1863
+#: po/tmp/ap_String_Id.h.h:1893
 msgid "Position Text Box"
 msgstr "Posición de la caja de texto"
 
 #. DLG_FormatFrame_SetToColumn
-#: po/tmp/ap_String_Id.h.h:1865
+#: po/tmp/ap_String_Id.h.h:1895
 msgid "Position to Column"
 msgstr "Posición a la columna"
 
 #. DLG_FormatFrame_SetToPage
-#: po/tmp/ap_String_Id.h.h:1867
+#: po/tmp/ap_String_Id.h.h:1897
 msgid "Position to Page"
 msgstr "Posición a la página"
 
 #. DLG_FormatFrame_SetToParagraph
-#: po/tmp/ap_String_Id.h.h:1869
+#: po/tmp/ap_String_Id.h.h:1899
 msgid "Position to Paragraph"
 msgstr "Posición al parágrafo"
 
 #. DLG_PageNumbers_Position
-#: po/tmp/ap_String_Id.h.h:1871
+#: po/tmp/ap_String_Id.h.h:1901
 msgid "Position:"
 msgstr "Posición:"
 
 #. MENU_LABEL_TOOLS_OPTIONS
-#: po/tmp/ap_String_Id.h.h:1873
+#: po/tmp/ap_String_Id.h.h:1903
 msgid "Pr&eferences"
 msgstr "&Preferencias"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
-#: po/tmp/ap_String_Id.h.h:1876
+#: po/tmp/ap_String_Id.h.h:1906
 msgid "Preference Schemes"
 msgstr "Esquemas de preferencias"
 
 #. DLG_Options_OptionsTitle
-#: po/tmp/ap_String_Id.h.h:1878
+#: po/tmp/ap_String_Id.h.h:1908
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -4569,168 +4644,173 @@ msgstr "Preferencias"
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
-#: po/tmp/ap_String_Id.h.h:1887
+#: po/tmp/ap_String_Id.h.h:1917
 #: po/tmp/xap_String_Id.h.h:632
 msgid "Preview"
 msgstr "Vista previa"
 
 #. MENU_STATUSLINE_WEB_WEBPREVIEW
 #. MENU_STATUSLINE_WEB_SAVEASWEB
-#: po/tmp/ap_String_Id.h.h:1890
+#: po/tmp/ap_String_Id.h.h:1920
 msgid "Preview the document as a web page"
 msgstr "Vista previa del documento como página web"
 
 #. MENU_STATUSLINE_FILE_PRINT_PREVIEW
 #. TOOLBAR_STATUSLINE_FILE_PRINT_PREVIEW
 #. TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW
-#: po/tmp/ap_String_Id.h.h:1894
+#: po/tmp/ap_String_Id.h.h:1924
 msgid "Preview the document before printing"
 msgstr "Vista previa del documento antes de imprimir"
 
 #. DLG_Para_PreviewPrevParagraph
-#: po/tmp/ap_String_Id.h.h:1896
+#: po/tmp/ap_String_Id.h.h:1926
 msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr "Parrágrafo anterior Parágrafo anterior Parágrafo anterior Parágrafo anterior Parágrafo anterior Parágrafo anterior Parágrafo anterior Parágrafo anterior"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
-#: po/tmp/ap_String_Id.h.h:1898
+#: po/tmp/ap_String_Id.h.h:1928
 #: po/tmp/xap_String_Id.h.h:637
 msgid "Print"
 msgstr "Imprimir"
 
 #. MENU_LABEL_FILE_PRINT_DIRECTLY
-#: po/tmp/ap_String_Id.h.h:1900
+#: po/tmp/ap_String_Id.h.h:1930
 msgid "Print &directly"
 msgstr "Imprimir &directamente"
 
 #. MENU_STATUSLINE_VIEW_PRINT
-#: po/tmp/ap_String_Id.h.h:1902
+#: po/tmp/ap_String_Id.h.h:1932
 msgid "Print Layout"
 msgstr "Diseño de impresión"
 
 #. MENU_LABEL_FILE_PRINT_PREVIEW
-#: po/tmp/ap_String_Id.h.h:1904
+#: po/tmp/ap_String_Id.h.h:1934
 msgid "Print P&review"
 msgstr "Vista p&revia de impresión"
 
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
-#: po/tmp/ap_String_Id.h.h:1906
+#: po/tmp/ap_String_Id.h.h:1936
 msgid "Print Preview"
 msgstr "Vista previa de impresión"
 
 #. MENU_STATUSLINE_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:1908
+#: po/tmp/ap_String_Id.h.h:1938
 msgid "Print all or part of the document"
 msgstr "Imprimir todo o parte del documento"
 
 #. TOOLBAR_STATUSLINE_FILE_PRINT
 #. TOOLBAR_TOOLTIP_FILE_PRINT
-#: po/tmp/ap_String_Id.h.h:1911
+#: po/tmp/ap_String_Id.h.h:1941
 msgid "Print the document"
 msgstr "Imprimir el documento"
 
 #. MENU_STATUSLINE_FILE_PRINT_DIRECTLY
-#: po/tmp/ap_String_Id.h.h:1913
+#: po/tmp/ap_String_Id.h.h:1943
 msgid "Print using the internal PS driver"
 msgstr "Imprimir usando el controlador PS interno"
 
 #. MSG_PrintingDoc
-#: po/tmp/ap_String_Id.h.h:1915
+#: po/tmp/ap_String_Id.h.h:1945
 msgid "Printing Document..."
 msgstr "Imprimiendo el documento..."
 
 #. MSG_PrintStatus
-#: po/tmp/ap_String_Id.h.h:1917
+#: po/tmp/ap_String_Id.h.h:1947
 #, c-format
 msgid "Printing page %d of %d"
 msgstr "Imprimiendo página %d de %d"
 
 #. FIELD_Document_Publisher
-#: po/tmp/ap_String_Id.h.h:1919
+#: po/tmp/ap_String_Id.h.h:1949
 msgid "Publisher"
 msgstr "Editor"
 
 #. DLG_MetaData_Publisher_LBL
-#: po/tmp/ap_String_Id.h.h:1921
+#: po/tmp/ap_String_Id.h.h:1951
 msgid "Publisher:"
 msgstr "Editor:"
 
 #. MENU_LABEL_EDIT_REPLACE
-#: po/tmp/ap_String_Id.h.h:1923
+#: po/tmp/ap_String_Id.h.h:1953
 msgid "R&eplace"
 msgstr "R&eemplazar"
 
 #. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h.h:1925
+#: po/tmp/ap_String_Id.h.h:1955
 msgid "RDF"
 msgstr "RDF"
 
+#. MENU_LABEL_INSERT_XMLID
+#: po/tmp/ap_String_Id.h.h:1957
+msgid "RDF Link"
+msgstr "Enlace RDF"
+
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
-#: po/tmp/ap_String_Id.h.h:1927
+#: po/tmp/ap_String_Id.h.h:1959
 msgid "RTL &Document"
 msgstr "&Documento D-I"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
-#: po/tmp/ap_String_Id.h.h:1929
+#: po/tmp/ap_String_Id.h.h:1961
 msgid "RTL &Paragraph"
 msgstr "&Párrafo D-I"
 
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
-#: po/tmp/ap_String_Id.h.h:1931
+#: po/tmp/ap_String_Id.h.h:1963
 msgid "RTL &Section"
 msgstr "&Sección D-I"
 
 #. DLG_FR_ReplaceWithLabel
-#: po/tmp/ap_String_Id.h.h:1933
+#: po/tmp/ap_String_Id.h.h:1965
 msgid "Re&place with:"
 msgstr "Reem&plazar con:"
 
 #. DLG_FR_ReverseFind
-#: po/tmp/ap_String_Id.h.h:1935
+#: po/tmp/ap_String_Id.h.h:1967
 msgid "Re&verse find"
 msgstr "Búsqueda in&versa"
 
 #. MENU_LABEL_FILE_REVERT
-#: po/tmp/ap_String_Id.h.h:1937
+#: po/tmp/ap_String_Id.h.h:1969
 msgid "Re&vert"
 msgstr "Re&vertir"
 
 #. MENU_LABEL_FILE_RECENT
-#: po/tmp/ap_String_Id.h.h:1939
+#: po/tmp/ap_String_Id.h.h:1971
 msgid "Recent &Files"
 msgstr "A&rchivos recientes"
 
 #. TOOLBAR_LABEL_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:1941
+#: po/tmp/ap_String_Id.h.h:1973
 msgid "Redo"
 msgstr "Rehacer"
 
 #. TOOLBAR_STATUSLINE_EDIT_REDO
 #. TOOLBAR_TOOLTIP_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:1944
+#: po/tmp/ap_String_Id.h.h:1976
 msgid "Redo editing"
 msgstr "Rehacer edición"
 
 #. MENU_STATUSLINE_EDIT_REDO
-#: po/tmp/ap_String_Id.h.h:1946
+#: po/tmp/ap_String_Id.h.h:1978
 msgid "Redo previously undone editing"
 msgstr "Rehace la edición previamente deshecha"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_MENU
 #. MENU_STATUSLINE_VIEW_ZOOM
-#: po/tmp/ap_String_Id.h.h:1949
+#: po/tmp/ap_String_Id.h.h:1981
 msgid "Reduce or enlarge the document display"
 msgstr "Reduce o aumenta la pantalla del documento"
 
 #. DLG_MetaData_Relation_LBL
-#: po/tmp/ap_String_Id.h.h:1951
+#: po/tmp/ap_String_Id.h.h:1983
 msgid "Relation:"
 msgstr "Relación:"
 
 #. DLG_Styles_RemoveButton
-#: po/tmp/ap_String_Id.h.h:1953
+#: po/tmp/ap_String_Id.h.h:1985
 msgid "Remove"
 msgstr "Eliminar"
 
@@ -4738,7 +4818,7 @@ msgstr "Eliminar"
 #. TOOLBAR_LABEL_EDIT_REMOVEFOOTER
 #. TOOLBAR_STATUSLINE_EDIT_REMOVEFOOTER
 #. TOOLBAR_TOOLTIP_EDIT_REMOVEFOOTER
-#: po/tmp/ap_String_Id.h.h:1958
+#: po/tmp/ap_String_Id.h.h:1990
 msgid "Remove Footer"
 msgstr "Eliminar pie de página"
 
@@ -4746,993 +4826,1071 @@ msgstr "Eliminar pie de página"
 #. TOOLBAR_LABEL_EDIT_REMOVEHEADER
 #. TOOLBAR_STATUSLINE_EDIT_REMOVEHEADER
 #. TOOLBAR_TOOLTIP_EDIT_REMOVEHEADER
-#: po/tmp/ap_String_Id.h.h:1963
+#: po/tmp/ap_String_Id.h.h:1995
 msgid "Remove Header"
 msgstr "Eliminar cabecera"
 
 #. DLG_Styles_RemoveLab
-#: po/tmp/ap_String_Id.h.h:1965
+#: po/tmp/ap_String_Id.h.h:1997
 msgid "Remove Property from Style"
 msgstr "Eliminar propiedad del estilo"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
-#: po/tmp/ap_String_Id.h.h:1967
+#: po/tmp/ap_String_Id.h.h:1999
 msgid "Remove Row as Heading"
 msgstr "Quitar fila como cabecera"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE
-#: po/tmp/ap_String_Id.h.h:1969
+#: po/tmp/ap_String_Id.h.h:2001
 msgid "Remove Row as the page Heading"
 msgstr "Quitar fila como la cabecera de la página"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_PURGE
-#: po/tmp/ap_String_Id.h.h:1971
+#: po/tmp/ap_String_Id.h.h:2003
 msgid "Remove all revision information from the document"
 msgstr "Quita toda la información de revisión del documento"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
-#: po/tmp/ap_String_Id.h.h:1973
+#: po/tmp/ap_String_Id.h.h:2005
 msgid "Remove full document history from the document"
 msgstr "Quita todo el histórico del documento"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
-#: po/tmp/ap_String_Id.h.h:1975
+#: po/tmp/ap_String_Id.h.h:2007
 msgid "Remove the Footer on this page from the Document"
 msgstr "Eliminar el pie de página de esta página del documento"
 
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
-#: po/tmp/ap_String_Id.h.h:1977
+#: po/tmp/ap_String_Id.h.h:2009
 msgid "Remove the Header on this page from the Document"
 msgstr "Eliminar la cabecera de esta página del documento"
 
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
-#: po/tmp/ap_String_Id.h.h:1979
+#: po/tmp/ap_String_Id.h.h:2011
 msgid "Remove the Image and save a copy on the clipboard"
 msgstr "Eliminar la imagen y guardar una copia en el portapapeles"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
-#: po/tmp/ap_String_Id.h.h:1981
+#: po/tmp/ap_String_Id.h.h:2013
 msgid "Remove the Image from the Document"
 msgstr "Eliminar la imagen del documento"
 
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
-#: po/tmp/ap_String_Id.h.h:1983
+#: po/tmp/ap_String_Id.h.h:2015
 msgid "Remove the Text Box from the Document"
 msgstr "Eliminar la caja de texto del documento"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
-#: po/tmp/ap_String_Id.h.h:1985
+#: po/tmp/ap_String_Id.h.h:2017
 msgid "Remove the suggested change"
 msgstr "Eliminar el cambio sugerido"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
-#: po/tmp/ap_String_Id.h.h:1987
+#: po/tmp/ap_String_Id.h.h:2019
 msgid "Repeat Row as Heading"
 msgstr "Repetir fila como encabezado"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
-#: po/tmp/ap_String_Id.h.h:1989
+#: po/tmp/ap_String_Id.h.h:2021
 msgid "Repeat Row as Heading on each new page"
 msgstr "Repetir fila como cabecera en cada nueva página"
 
 #. DLG_FR_ReplaceTitle
 #. DLG_Annotation_Replace_LBL
-#: po/tmp/ap_String_Id.h.h:1992
+#: po/tmp/ap_String_Id.h.h:2024
 msgid "Replace"
 msgstr "Reemplazar"
 
 #. DLG_FR_ReplaceAllButton
-#: po/tmp/ap_String_Id.h.h:1994
+#: po/tmp/ap_String_Id.h.h:2026
 msgid "Replace &All"
 msgstr "Reemplazar &todo"
 
 #. DLG_Annotation_Replace_tooltip
-#: po/tmp/ap_String_Id.h.h:1996
+#: po/tmp/ap_String_Id.h.h:2028
 msgid "Replace the annotated text with the annotation content"
 msgstr "Remplazar el texto anotado con el contenido de la anotación"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
-#: po/tmp/ap_String_Id.h.h:1998
+#: po/tmp/ap_String_Id.h.h:2030
 msgid "Replace the specified text with different text"
 msgstr "Reemplazar el texto especificado con otro texto"
 
 #. MENU_LABEL_HELP_REPORT_BUG
-#: po/tmp/ap_String_Id.h.h:2000
+#: po/tmp/ap_String_Id.h.h:2032
 msgid "Report a &Bug"
 msgstr "Informar de un &fallo"
 
 #. MENU_STATUSLINE_HELP_REPORT_BUG
-#: po/tmp/ap_String_Id.h.h:2002
+#: po/tmp/ap_String_Id.h.h:2034
 msgid "Report a bug and help AbiWord become a better product"
 msgstr "Informa de un fallo y ayuda a AbiWord a convertirse en un producto mejor"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
-#: po/tmp/ap_String_Id.h.h:2004
+#: po/tmp/ap_String_Id.h.h:2036
 msgid "Reset the current toolbar layout to its defaults"
 msgstr "Restablece la disposición de la barra a sus valores predeterminados"
 
 #. MENU_STATUSLINE_FMT_IMAGE
-#: po/tmp/ap_String_Id.h.h:2006
+#: po/tmp/ap_String_Id.h.h:2038
 msgid "Resize this image"
 msgstr "Redimensiona esta imagen"
 
 #. DLG_HdrFtr_RestartNumbers
-#: po/tmp/ap_String_Id.h.h:2008
+#: po/tmp/ap_String_Id.h.h:2040
 msgid "Restart numbering at:"
 msgstr "Reiniciar numeración en:"
 
 #. DLG_FormatFootnotes_FootRestartPage
-#: po/tmp/ap_String_Id.h.h:2010
+#: po/tmp/ap_String_Id.h.h:2042
 msgid "Restart on each page"
 msgstr "Reiniciar en cada página"
 
 #. DLG_FormatFootnotes_FootRestartSec
 #. DLG_FormatFootnotes_EndRestartSec
-#: po/tmp/ap_String_Id.h.h:2013
+#: po/tmp/ap_String_Id.h.h:2045
 msgid "Restart on each section"
 msgstr "Reiniciar en cada sección"
 
 #. DLG_HdrFtr_RestartCheck
-#: po/tmp/ap_String_Id.h.h:2015
+#: po/tmp/ap_String_Id.h.h:2047
 msgid "Restart page numbers on new sections"
 msgstr "Reiniciar números de página en secciones nuevas"
 
 #. DLG_Lists_Resume_Previous_List
-#: po/tmp/ap_String_Id.h.h:2017
+#: po/tmp/ap_String_Id.h.h:2049
 msgid "Resume Previous List"
 msgstr "Continuar lista anterior"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_AUTO
-#: po/tmp/ap_String_Id.h.h:2019
+#: po/tmp/ap_String_Id.h.h:2051
 msgid "Retain all document changes"
 msgstr "Retener todos los cambios del documento"
 
 #. MSG_RevertFile
-#: po/tmp/ap_String_Id.h.h:2021
+#: po/tmp/ap_String_Id.h.h:2053
 msgid "Revert file to last saved state?"
 msgstr "¿Revertir el archivo al último estado guardado?"
 
 #. MENU_STATUSLINE_FILE_REVERT
-#: po/tmp/ap_String_Id.h.h:2023
+#: po/tmp/ap_String_Id.h.h:2055
 msgid "Revert the document to the last saved state"
 msgstr "Revierte el documento al último estado guardado"
 
 #. MSG_RevertBuffer
-#: po/tmp/ap_String_Id.h.h:2025
+#: po/tmp/ap_String_Id.h.h:2057
 #, c-format
 msgid "Revert to saved copy of %s?"
 msgstr "¿Revertir a la copia guardada de %s?"
 
 #. DLG_ListRevisions_Column1Label
-#: po/tmp/ap_String_Id.h.h:2027
+#: po/tmp/ap_String_Id.h.h:2059
 msgid "Revision ID"
 msgstr "ID Revisión"
+
+#. TOOLBAR_STATUSLINE_REVISIONS_NEW
+#: po/tmp/ap_String_Id.h.h:2061
+msgid "Revisions new..."
+msgstr "Revisiones nuevas..."
+
+#. TOOLBAR_STATUSLINE_REVISIONS_SELECT
+#: po/tmp/ap_String_Id.h.h:2063
+msgid "Revisions select..."
+msgstr "Revisiones seleccionadas..."
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
 #. DLG_PageNumbers_Right
 #. TOOLBAR_LABEL_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:2032
+#: po/tmp/ap_String_Id.h.h:2068
 msgid "Right"
 msgstr "Derecha"
 
 #. RightIndentStatus
-#: po/tmp/ap_String_Id.h.h:2034
+#: po/tmp/ap_String_Id.h.h:2070
 #, c-format
 msgid "Right Indent [%s]"
 msgstr "Sangría derecha [%s]"
 
 #. RightMarginStatus
-#: po/tmp/ap_String_Id.h.h:2036
+#: po/tmp/ap_String_Id.h.h:2072
 #, c-format
 msgid "Right Margin [%s]"
 msgstr "Margen derecho [%s]"
 
 #. TabToggleRightTab
-#: po/tmp/ap_String_Id.h.h:2038
+#: po/tmp/ap_String_Id.h.h:2074
 msgid "Right Tab"
 msgstr "Tabulación derecha"
 
 #. TOOLBAR_STATUSLINE_ALIGN_RIGHT
 #. TOOLBAR_TOOLTIP_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:2041
+#: po/tmp/ap_String_Id.h.h:2077
 msgid "Right alignment"
 msgstr "Alineación derecha"
 
 #. MENU_STATUSLINE_ALIGN_RIGHT
-#: po/tmp/ap_String_Id.h.h:2043
+#: po/tmp/ap_String_Id.h.h:2079
 msgid "Right-align the paragraph"
 msgstr "Alinear el parágrafo a la derecha"
 
 #. DLG_Para_DomDirection
-#: po/tmp/ap_String_Id.h.h:2045
+#: po/tmp/ap_String_Id.h.h:2081
 msgid "Right-to-left &dominant"
 msgstr "&Dominante derecha-izquierda"
 
 #. FIELD_Document_Rights
-#: po/tmp/ap_String_Id.h.h:2047
+#: po/tmp/ap_String_Id.h.h:2083
 msgid "Rights"
 msgstr "Derechos"
 
 #. DLG_MetaData_Rights_LBL
-#: po/tmp/ap_String_Id.h.h:2049
+#: po/tmp/ap_String_Id.h.h:2085
 msgid "Rights:"
 msgstr "Derechos:"
 
 #. DLG_FormatTable_Apply_To_Row
-#: po/tmp/ap_String_Id.h.h:2051
+#: po/tmp/ap_String_Id.h.h:2087
 msgid "Row"
 msgstr "Fila"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_BEFORE
-#: po/tmp/ap_String_Id.h.h:2053
+#: po/tmp/ap_String_Id.h.h:2089
 msgid "Rows &Above"
 msgstr "Filas por &arriba"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_AFTER
-#: po/tmp/ap_String_Id.h.h:2055
+#: po/tmp/ap_String_Id.h.h:2091
 msgid "Rows &Below"
 msgstr "Filas por a&bajo"
 
 #. MENU_STATUSLINE_RDF_ADV_TEST
-#: po/tmp/ap_String_Id.h.h:2057
+#: po/tmp/ap_String_Id.h.h:2093
 msgid "Run some RDF tests and show results on console"
 msgstr "Ejecuta algunos test de RDF y muestra el resultado en la consola"
 
+#. MENU_STATUSLINE_RDF_ADV_PLAY
+#: po/tmp/ap_String_Id.h.h:2095
+msgid "Run some RDF tests that change during development"
+msgstr "Ejecutar algunas pruebas de RDF que cambien durante el desarrollo"
+
 #. MENU_LABEL_TOOLS_SCRIPTS
-#: po/tmp/ap_String_Id.h.h:2059
+#: po/tmp/ap_String_Id.h.h:2097
 msgid "S&cripts"
 msgstr "&Scripts"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
-#: po/tmp/ap_String_Id.h.h:2061
+#: po/tmp/ap_String_Id.h.h:2099
 msgid "S&how revisions"
 msgstr "Mostrar &revisiones"
 
 #. MENU_LABEL_TABLE_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2063
+#: po/tmp/ap_String_Id.h.h:2101
 msgid "S&plit Cells"
 msgstr "&Dividir celdas"
 
+#. MENU_LABEL_RDFANCHOR_SPARQL
+#: po/tmp/ap_String_Id.h.h:2103
+msgid "SPARQL &Query"
+msgstr "&Pregunta SPARQL"
+
+#. MENU_LABEL_RDF_QUERY
+#: po/tmp/ap_String_Id.h.h:2105
+msgid "SPARQL Query..."
+msgstr "Pregunta SPARQL..."
+
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h.h:2065
+#: po/tmp/ap_String_Id.h.h:2107
 msgid "Sa&ve"
 msgstr "&Guardar"
 
 #. MENU_LABEL_FILE_EXPORT
-#: po/tmp/ap_String_Id.h.h:2067
+#: po/tmp/ap_String_Id.h.h:2109
 msgid "Sav&e Copy"
 msgstr "Guar&dar copia"
 
 #. TOOLBAR_LABEL_FILE_SAVE
-#: po/tmp/ap_String_Id.h.h:2069
+#: po/tmp/ap_String_Id.h.h:2111
 msgid "Save"
 msgstr "Guardar"
 
 #. MENU_LABEL_FILE_SAVEAS
-#: po/tmp/ap_String_Id.h.h:2071
+#: po/tmp/ap_String_Id.h.h:2113
 msgid "Save &As"
 msgstr "Guardar &como"
 
 #. MENU_LABEL_FILE_SAVE_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:2073
+#: po/tmp/ap_String_Id.h.h:2115
 msgid "Save &Template"
 msgstr "Guardar plan&tilla"
 
 #. TOOLBAR_LABEL_FILE_SAVEAS
-#: po/tmp/ap_String_Id.h.h:2075
+#: po/tmp/ap_String_Id.h.h:2117
 msgid "Save As"
 msgstr "Guardar como"
 
 #. MENU_STATUSLINE_EDIT_COPYIMAGE
-#: po/tmp/ap_String_Id.h.h:2077
+#: po/tmp/ap_String_Id.h.h:2119
 msgid "Save a copy of the image on the clipboard"
 msgstr "Guardar una copia de la imagen en el portapapeles"
 
 #. MSG_ConfirmSave
-#: po/tmp/ap_String_Id.h.h:2079
+#: po/tmp/ap_String_Id.h.h:2121
 #, c-format
 msgid "Save changes to document %s before closing?"
 msgstr "¿Desea guardar los cambios al documento %s antes de cerrar?"
 
 #. MENU_STATUSLINE_FILE_SAVEEMBED
-#: po/tmp/ap_String_Id.h.h:2081
+#: po/tmp/ap_String_Id.h.h:2123
 msgid "Save the Embedded Object"
 msgstr "Guardar el objeto incrustado"
 
 #. MENU_STATUSLINE_FILE_SAVE
 #. TOOLBAR_STATUSLINE_FILE_SAVE
 #. TOOLBAR_TOOLTIP_FILE_SAVE
-#: po/tmp/ap_String_Id.h.h:2085
+#: po/tmp/ap_String_Id.h.h:2127
 msgid "Save the document"
 msgstr "Guardar el documento"
 
 #. MENU_STATUSLINE_FILE_SAVE_TEMPLATE
-#: po/tmp/ap_String_Id.h.h:2087
+#: po/tmp/ap_String_Id.h.h:2129
 msgid "Save the document as a template"
 msgstr "Guardar el documento como una plantilla"
 
 #. MENU_STATUSLINE_FILE_SAVEAS
 #. TOOLBAR_STATUSLINE_FILE_SAVEAS
 #. TOOLBAR_TOOLTIP_FILE_SAVEAS
-#: po/tmp/ap_String_Id.h.h:2091
+#: po/tmp/ap_String_Id.h.h:2133
 msgid "Save the document under a different name"
 msgstr "Guardar el documento con un nombre distinto"
 
 #. MENU_STATUSLINE_FILE_EXPORT
-#: po/tmp/ap_String_Id.h.h:2093
+#: po/tmp/ap_String_Id.h.h:2135
 msgid "Save the document without changing the current name"
 msgstr "Guardar el documento sin cambiar el nombre actual"
 
 #. MENU_STATUSLINE_FILE_SAVEIMAGE
-#: po/tmp/ap_String_Id.h.h:2095
+#: po/tmp/ap_String_Id.h.h:2137
 msgid "Save the selected image to a file"
 msgstr "Guardar la imagen seleccionada a un archivo"
 
 #. MENU_LABEL_FILE_SAVEEMBED
-#: po/tmp/ap_String_Id.h.h:2097
+#: po/tmp/ap_String_Id.h.h:2139
 msgid "Save to file"
 msgstr "Guardar en un archivo"
 
 #. DLG_PageSetup_Scale
-#: po/tmp/ap_String_Id.h.h:2099
+#: po/tmp/ap_String_Id.h.h:2141
 msgid "Scale..."
 msgstr "Escala..."
 
 #. MENU_STATUSLINE_HELP_SEARCH
-#: po/tmp/ap_String_Id.h.h:2101
+#: po/tmp/ap_String_Id.h.h:2143
 msgid "Search for help about..."
 msgstr "Buscar ayuda acerca de..."
 
 #. DLG_WordCount_Update_Rate
-#: po/tmp/ap_String_Id.h.h:2103
+#: po/tmp/ap_String_Id.h.h:2145
 msgid "Seconds between updates"
 msgstr "Segundos entre actualizaciones"
 
 #. FIELD_DateTime_Epoch
-#: po/tmp/ap_String_Id.h.h:2105
+#: po/tmp/ap_String_Id.h.h:2147
 msgid "Seconds since the epoch"
 msgstr "Segundos desde la época"
 
 #. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h.h:2107
+#: po/tmp/ap_String_Id.h.h:2149
 msgid "Section Breaks"
 msgstr "Saltos de sección"
 
 #. DLG_Break_SectionBreaks
-#: po/tmp/ap_String_Id.h.h:2109
+#: po/tmp/ap_String_Id.h.h:2151
 msgid "Section breaks"
 msgstr "Saltos de sección"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
-#: po/tmp/ap_String_Id.h.h:2111
+#: po/tmp/ap_String_Id.h.h:2153
 msgid "See history of the current document"
 msgstr "Ver histórico del documento actual"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
-#: po/tmp/ap_String_Id.h.h:2113
+#: po/tmp/ap_String_Id.h.h:2155
 #: po/tmp/xap_String_Id.h.h:701
 msgid "Select"
 msgstr "Seleccionar"
 
 #. MENU_LABEL_EDIT_SELECTALL
-#: po/tmp/ap_String_Id.h.h:2115
+#: po/tmp/ap_String_Id.h.h:2157
 msgid "Select A&ll"
 msgstr "Seleccionar &todo"
 
 #. MENU_STATUSLINE_TABLE_SELECT_CELL
-#: po/tmp/ap_String_Id.h.h:2117
+#: po/tmp/ap_String_Id.h.h:2159
 msgid "Select Cell"
 msgstr "Seleccionar celda"
 
 #. MENU_STATUSLINE_TABLE_SELECT_COLUMN
-#: po/tmp/ap_String_Id.h.h:2119
+#: po/tmp/ap_String_Id.h.h:2161
 msgid "Select Column"
 msgstr "Seleccionar columna"
 
 #. TOOLBAR_TOOLTIP_FMT_CHOOSE
-#: po/tmp/ap_String_Id.h.h:2121
+#: po/tmp/ap_String_Id.h.h:2163
 msgid "Select Font"
 msgstr "Seleccionar tipografía"
 
 #. DLG_ListRevisions_Title
-#: po/tmp/ap_String_Id.h.h:2123
+#. TOOLBAR_LABEL_REVISIONS_SELECT
+#: po/tmp/ap_String_Id.h.h:2166
 msgid "Select Revision"
 msgstr "Seleccionar revisión"
 
 #. MENU_STATUSLINE_TABLE_SELECT_ROW
-#: po/tmp/ap_String_Id.h.h:2125
+#: po/tmp/ap_String_Id.h.h:2168
 msgid "Select Row"
 msgstr "Seleccionar fila"
 
 #. MENU_STATUSLINE_TABLE_SELECT_TABLE
-#: po/tmp/ap_String_Id.h.h:2127
+#: po/tmp/ap_String_Id.h.h:2170
 msgid "Select Table"
 msgstr "Seleccionar tabla"
 
 #. MENU_LABEL_EDIT_SELECT_FRAME
-#: po/tmp/ap_String_Id.h.h:2129
+#: po/tmp/ap_String_Id.h.h:2172
 msgid "Select Text Box"
 msgstr "Seleccionar caja de texto"
 
 #. DLG_InsertHyperlink_Msg
-#: po/tmp/ap_String_Id.h.h:2131
+#: po/tmp/ap_String_Id.h.h:2174
 msgid "Select a target bookmark from the list."
 msgstr "Seleccione un marcador de la lista."
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
-#: po/tmp/ap_String_Id.h.h:2134
+#: po/tmp/ap_String_Id.h.h:2177
 msgid "Select image from File"
 msgstr "Seleccione la imagen del archivo"
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
-#: po/tmp/ap_String_Id.h.h:2136
+#: po/tmp/ap_String_Id.h.h:2179
 msgid "Select the Text Box"
 msgstr "Selecciona la caja de texto"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
-#: po/tmp/ap_String_Id.h.h:2138
+#: po/tmp/ap_String_Id.h.h:2181
 msgid "Select the entire document"
 msgstr "Selecciona el documento completo"
 
+#. TOOLBAR_STATUSLINE_REVISIONS_FIND_NEXT
+#: po/tmp/ap_String_Id.h.h:2183
+msgid "Select the parts of the document belonging to the next version..."
+msgstr "Seleccionar las partes del documento pertenecente a la versión siguiente..."
+
+#. TOOLBAR_STATUSLINE_REVISIONS_FIND_PREV
+#: po/tmp/ap_String_Id.h.h:2185
+msgid "Select the parts of the document belonging to the previous version..."
+msgstr "Seleccionar las partes del documento pertenecente a la versión anterior..."
+
+#. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
+#. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
+#: po/tmp/ap_String_Id.h.h:2188
+msgid "Select the parts of the document contained in the next revision..."
+msgstr "Seleccione las partes del documento contenido en la revisión siguiente..."
+
+#. TOOLBAR_LABEL_REVISIONS_FIND_PREV
+#. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
+#: po/tmp/ap_String_Id.h.h:2191
+msgid "Select the parts of the document contained in the previous revision..."
+msgstr "Seleccione las partes del documento contenido en la revisión anterior..."
+
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
-#: po/tmp/ap_String_Id.h.h:2140
+#: po/tmp/ap_String_Id.h.h:2193
 #: po/tmp/xap_String_Id.h.h:709
 msgid "Selection"
 msgstr "Selección"
 
 #. DLG_ToggleCase_SentenceCase
-#: po/tmp/ap_String_Id.h.h:2142
+#: po/tmp/ap_String_Id.h.h:2195
 msgid "Sentence case"
 msgstr "Capitalización de frase"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
-#: po/tmp/ap_String_Id.h.h:2144
+#: po/tmp/ap_String_Id.h.h:2197
 msgid "Separate table items with commas"
 msgstr "Separar los elementos de la tabla con comas"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMASTABS
-#: po/tmp/ap_String_Id.h.h:2146
+#: po/tmp/ap_String_Id.h.h:2199
 msgid "Separate table items with commas and tabs"
 msgstr "Separar los elementos de la tabla con comas y tabuladores"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTTABS
-#: po/tmp/ap_String_Id.h.h:2148
+#: po/tmp/ap_String_Id.h.h:2201
 msgid "Separate table items with tabs"
 msgstr "Separar los elementos de la tabla con tabuladores"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMAS
-#: po/tmp/ap_String_Id.h.h:2150
+#: po/tmp/ap_String_Id.h.h:2203
 msgid "Separate with commas"
 msgstr "Separar con comas"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTCOMMASTABS
-#: po/tmp/ap_String_Id.h.h:2152
+#: po/tmp/ap_String_Id.h.h:2205
 msgid "Separate with commas and tabs"
 msgstr "Separar con comas y tabuladores"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTTABS
-#: po/tmp/ap_String_Id.h.h:2154
+#: po/tmp/ap_String_Id.h.h:2207
 msgid "Separate with tabs"
 msgstr "Separar con tabuladores"
 
 #. DLG_Tab_Button_Set
-#: po/tmp/ap_String_Id.h.h:2156
+#: po/tmp/ap_String_Id.h.h:2209
 msgid "Set"
 msgstr "Establecer"
 
 #. MENU_LABEL_FMT_LANGUAGE
-#: po/tmp/ap_String_Id.h.h:2158
+#: po/tmp/ap_String_Id.h.h:2211
 msgid "Set &Language"
 msgstr "Establecer i&dioma"
 
 #. DLG_Lists_SetDefault
-#: po/tmp/ap_String_Id.h.h:2160
+#: po/tmp/ap_String_Id.h.h:2213
 msgid "Set Default Values"
 msgstr "Establecer valores predeterminados"
 
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
-#: po/tmp/ap_String_Id.h.h:2163
+#: po/tmp/ap_String_Id.h.h:2216
 msgid "Set Image"
 msgstr "Establecer imagen"
 
 #. MENU_LABEL_FMT_SETPOSIMAGE
-#: po/tmp/ap_String_Id.h.h:2165
+#: po/tmp/ap_String_Id.h.h:2218
 msgid "Set Positioned Image"
 msgstr "Establecer imagen en posición"
 
 #. DLG_FormatFrame_SetTextWrapping
-#: po/tmp/ap_String_Id.h.h:2167
+#: po/tmp/ap_String_Id.h.h:2220
 msgid "Set Text Wrapping"
 msgstr "Establecer ajuste de texto"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_IMAGE
-#: po/tmp/ap_String_Id.h.h:2169
+#: po/tmp/ap_String_Id.h.h:2222
 msgid "Set an image as a background for your page"
 msgstr "Establecer una imagen como fondo de página"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
-#: po/tmp/ap_String_Id.h.h:2171
+#: po/tmp/ap_String_Id.h.h:2224
 msgid "Set dominant direction of document to RTL"
 msgstr "Establece la dirección dominante del documento a D-I"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
-#: po/tmp/ap_String_Id.h.h:2173
+#: po/tmp/ap_String_Id.h.h:2226
 msgid "Set dominant direction of paragraph to RTL"
 msgstr "Establece la dirección dominante del parágrafo a D-I"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
-#: po/tmp/ap_String_Id.h.h:2175
+#: po/tmp/ap_String_Id.h.h:2228
 msgid "Set dominant direction of section to RTL"
 msgstr "Establece la dirección dominante de la sección a D-I"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
-#: po/tmp/ap_String_Id.h.h:2177
+#: po/tmp/ap_String_Id.h.h:2230
 msgid "Set meta-data properties"
 msgstr "Establecer propiedades de meta-datos"
 
 #. DLG_Tab_Label_New
-#: po/tmp/ap_String_Id.h.h:2179
+#: po/tmp/ap_String_Id.h.h:2232
 msgid "Set new Tab"
 msgstr "Establecer nueva tabulación"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
-#: po/tmp/ap_String_Id.h.h:2182
+#: po/tmp/ap_String_Id.h.h:2235
 msgid "Set no image"
 msgstr "No establecer ninguna imagen"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
-#: po/tmp/ap_String_Id.h.h:2184
+#: po/tmp/ap_String_Id.h.h:2237
 msgid "Set preferences"
 msgstr "Establecer preferencias"
 
 #. MENU_STATUSLINE_FMT_TABS
-#: po/tmp/ap_String_Id.h.h:2186
+#: po/tmp/ap_String_Id.h.h:2239
 msgid "Set tab stops"
 msgstr "Establecer tabuladores"
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
-#: po/tmp/ap_String_Id.h.h:2188
+#: po/tmp/ap_String_Id.h.h:2241
 msgid "Set the type and styles of the Table of Contents"
 msgstr "Establecer el tipo y estilos del índice"
 
 #. MENU_STATUSLINE_FMT_FOOTNOTES
-#: po/tmp/ap_String_Id.h.h:2190
+#: po/tmp/ap_String_Id.h.h:2243
 msgid "Set the types of Footnotes and Endnotes"
 msgstr "Establecer los tipos de notas de pie y de final"
 
 #. MENU_STATUSLINE_FMT_HDRFTR
-#: po/tmp/ap_String_Id.h.h:2192
+#: po/tmp/ap_String_Id.h.h:2245
 msgid "Set the types of Headers and Footers"
 msgstr "Establecer los tipos de cabecera y pie"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
-#: po/tmp/ap_String_Id.h.h:2194
+#: po/tmp/ap_String_Id.h.h:2247
 msgid "Set this Row as Heading"
 msgstr "Establecer esta fila como cabecera"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_THIS
-#: po/tmp/ap_String_Id.h.h:2196
+#: po/tmp/ap_String_Id.h.h:2249
 msgid "Set this Row as the Heading on each page"
 msgstr "Establecer esta fila como la cabecera de cada página"
 
 #. MENU_STATUSLINE_FMT_SETPOSIMAGE
-#: po/tmp/ap_String_Id.h.h:2198
+#: po/tmp/ap_String_Id.h.h:2251
 msgid "Set this image to be positioned"
 msgstr "Establece esta imagen para ser posicionada"
 
 #. MENU_STATUSLINE_TOOLS_SPELLPREFS
-#: po/tmp/ap_String_Id.h.h:2200
+#: po/tmp/ap_String_Id.h.h:2253
 msgid "Set your spelling preferences"
 msgstr "Establecer las preferencias de ortografía"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
-#: po/tmp/ap_String_Id.h.h:2202
+#: po/tmp/ap_String_Id.h.h:2255
 msgid "Setup your document's page properties such as page size and margins"
 msgstr "Configurar las propiedades de página del documento como tamaño y márgenes"
 
 #. DLG_BorderShading_Shading
-#: po/tmp/ap_String_Id.h.h:2204
+#: po/tmp/ap_String_Id.h.h:2257
 msgid "Shading"
 msgstr "Sombreado"
 
 #. DLG_BorderShading_Shading_Color
-#: po/tmp/ap_String_Id.h.h:2206
+#: po/tmp/ap_String_Id.h.h:2259
 msgid "Shading color:"
 msgstr "Color de sombra:"
 
 #. DLG_Styles_ModifyShortCut
-#: po/tmp/ap_String_Id.h.h:2208
+#: po/tmp/ap_String_Id.h.h:2261
 msgid "Shortcut Key"
 msgstr "Combinación de teclas"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
-#: po/tmp/ap_String_Id.h.h:2210
+#: po/tmp/ap_String_Id.h.h:2263
 #: po/tmp/xap_String_Id.h.h:723
 msgid "Show"
-msgstr "Mostrar"
+msgstr "Visualizar"
 
 #. MENU_LABEL_VIEW_RULER
-#: po/tmp/ap_String_Id.h.h:2212
+#: po/tmp/ap_String_Id.h.h:2265
 msgid "Show &Ruler"
-msgstr "Mostrar &regla"
+msgstr "Visualizar &regla"
 
 #. TOOLBAR_LABEL_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:2214
+#: po/tmp/ap_String_Id.h.h:2267
 msgid "Show All"
-msgstr "Mostrar todo"
+msgstr "Visualizar todo"
 
 #. MENU_LABEL_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:2216
+#: po/tmp/ap_String_Id.h.h:2269
 msgid "Show For&matting Marks"
-msgstr "Mostrar marcas de &formato"
+msgstr "Visualizar marcas de &formato"
+
+#. MENU_STATUSLINE_RDFANCHOR_SHOW_TRIPLES
+#: po/tmp/ap_String_Id.h.h:2271
+msgid "Show RDF Triples associated with location"
+msgstr "Visualizar los Triples RDF asociados con la localización"
+
+#. MENU_LABEL_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h.h:2273
+msgid "Show RDF for cursor position..."
+msgstr "Visualizar RDF para la posición del cursor..."
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
-#: po/tmp/ap_String_Id.h.h:2218
+#: po/tmp/ap_String_Id.h.h:2275
 msgid "Show document &before revisions"
-msgstr "Muestra el documento &antes de las revisiones"
+msgstr "Visualiza el documento &antes de las revisiones"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER
-#: po/tmp/ap_String_Id.h.h:2220
+#: po/tmp/ap_String_Id.h.h:2277
 msgid "Show document a&fter revisions"
-msgstr "Muestra el documento &después de las revisiones"
+msgstr "Visualiza el documento &después de las revisiones"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV
-#: po/tmp/ap_String_Id.h.h:2222
+#: po/tmp/ap_String_Id.h.h:2279
 msgid "Show document after &previous revisions"
-msgstr "Muestra el documento antes de las revisiones &previas"
+msgstr "Visualiza el documento antes de las revisiones &previas"
+
+#. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
+#: po/tmp/ap_String_Id.h.h:2281
+msgid "Show document at final version without revision highlighting"
+msgstr "Visualizar documentos en la versión final sin destacar la revisión"
+
+#. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
+#: po/tmp/ap_String_Id.h.h:2283
+msgid "Show final document"
+msgstr "Visualiza el documento final"
+
+#. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
+#: po/tmp/ap_String_Id.h.h:2285
+msgid "Show final document..."
+msgstr "Visualizar documento final..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
-#: po/tmp/ap_String_Id.h.h:2224
+#: po/tmp/ap_String_Id.h.h:2287
 msgid "Show full list of documents"
-msgstr "Mostrar lista completa de documentos"
+msgstr "Visualizar lista completa de documentos"
 
 #. MENU_STATUSLINE_VIEW_RULER
-#: po/tmp/ap_String_Id.h.h:2226
+#: po/tmp/ap_String_Id.h.h:2289
 msgid "Show or hide the rulers"
-msgstr "Mostrar u ocultar las reglas"
+msgstr "Visualiza u ocultar las reglas"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
-#: po/tmp/ap_String_Id.h.h:2228
+#: po/tmp/ap_String_Id.h.h:2291
 msgid "Show or hide the status bar"
-msgstr "Mostrar u ocultar la barra de estado"
+msgstr "Visualiza u ocultar la barra de estado"
 
 #. MENU_STATUSLINE_VIEW_TB_1
 #. MENU_STATUSLINE_VIEW_TB_2
 #. MENU_STATUSLINE_VIEW_TB_3
 #. MENU_STATUSLINE_VIEW_TB_4
-#: po/tmp/ap_String_Id.h.h:2233
+#: po/tmp/ap_String_Id.h.h:2296
 msgid "Show or hide the toolbar"
-msgstr "Mostrar u ocultar la barra de herramientas"
+msgstr "Visualiza u oculta la barra de herramientas"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW
-#: po/tmp/ap_String_Id.h.h:2235
+#: po/tmp/ap_String_Id.h.h:2298
 msgid "Show revisions that are present in document"
-msgstr "Muestra las revisiones que están presentes en el documento"
+msgstr "Visualiza las revisiones que están presentes en el documento"
+
+#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h.h:2300
+msgid "Show the RDF associated with the cursor position..."
+msgstr "Visualiza el RDF asociado con la posición del cursor..."
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
-#: po/tmp/ap_String_Id.h.h:2237
+#: po/tmp/ap_String_Id.h.h:2302
 msgid "Show what the document looks like after previous revisions"
-msgstr "Muestra la apariencia del documento después de las revisiones anteriores"
+msgstr "Visualiza la apariencia del documento después de las revisiones anteriores"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER
-#: po/tmp/ap_String_Id.h.h:2239
+#: po/tmp/ap_String_Id.h.h:2304
 msgid "Show what the document looks like after revisions"
-msgstr "Muestra la apariencia del documento después de las revisiones"
+msgstr "Visualiza la apariencia del documento después de las revisiones"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
-#: po/tmp/ap_String_Id.h.h:2241
+#: po/tmp/ap_String_Id.h.h:2306
 msgid "Show what the document looks like before revisions"
-msgstr "Muestra la apariencia del documento antes de las revisiones"
+msgstr "Visualiza la apariencia del documento antes de las revisiones"
 
 #. DLG_Options_Label_ViewShowHide
-#: po/tmp/ap_String_Id.h.h:2243
+#: po/tmp/ap_String_Id.h.h:2308
 msgid "Show..."
-msgstr "Mostrar..."
+msgstr "Visualizar..."
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
-#: po/tmp/ap_String_Id.h.h:2245
+#: po/tmp/ap_String_Id.h.h:2310
 msgid "Show/hide annotations"
-msgstr "Muestra/Oculta las anotaciones"
+msgstr "Visualiza/Oculta las anotaciones"
 
 #. TOOLBAR_STATUSLINE_VIEW_SHOWPARA
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
-#: po/tmp/ap_String_Id.h.h:2248
+#: po/tmp/ap_String_Id.h.h:2313
 msgid "Show/hide formatting marks"
-msgstr "Muestra/Oculta las marcas de formato"
+msgstr "Visualiza/Oculta las marcas de formato"
 
 #. TB_Simple
-#: po/tmp/ap_String_Id.h.h:2250
+#: po/tmp/ap_String_Id.h.h:2315
 msgid "Simple"
 msgstr "Simple"
 
 #. DLG_Options_Label_ViewSimpleTB
-#: po/tmp/ap_String_Id.h.h:2252
+#: po/tmp/ap_String_Id.h.h:2317
 msgid "Simple Toolbar"
 msgstr "Barra de herramientas simple"
 
 #. DLG_Para_SpacingSingle
-#: po/tmp/ap_String_Id.h.h:2254
+#: po/tmp/ap_String_Id.h.h:2319
 msgid "Single"
 msgstr "Sencillo"
 
 #. TOOLBAR_LABEL_SINGLE_SPACE
-#: po/tmp/ap_String_Id.h.h:2256
+#: po/tmp/ap_String_Id.h.h:2321
 msgid "Single Spacing"
-msgstr "Espaciado sencillo"
+msgstr "Espaciado simple"
 
 #. TOOLBAR_STATUSLINE_SINGLE_SPACE
 #. TOOLBAR_TOOLTIP_SINGLE_SPACE
-#: po/tmp/ap_String_Id.h.h:2259
+#: po/tmp/ap_String_Id.h.h:2324
 msgid "Single spacing"
-msgstr "Espaciado sencillo"
+msgstr "Espaciado simple"
 
 #. DLG_Options_TabLabel_SmartQuotes
-#: po/tmp/ap_String_Id.h.h:2261
+#: po/tmp/ap_String_Id.h.h:2326
 msgid "Smart Quotes"
-msgstr "Comillas inteligentes"
+msgstr "Comillas elegantes"
 
 #. MENU_LABEL_TABLE_SORT
-#: po/tmp/ap_String_Id.h.h:2263
+#: po/tmp/ap_String_Id.h.h:2328
 msgid "So&rt Table"
 msgstr "O&rdenar tabla"
 
 #. MSG_OpenRecovered
-#: po/tmp/ap_String_Id.h.h:2265
+#: po/tmp/ap_String_Id.h.h:2330
 msgid "Some errors were encountered during the import."
 msgstr "Se encontraron algunos errores durante la importación."
 
 #. MENU_LABEL_TABLE_SORTCOLSASCEND
-#: po/tmp/ap_String_Id.h.h:2267
+#: po/tmp/ap_String_Id.h.h:2332
 msgid "Sort Columns in Ascending Order"
 msgstr "Ordenar columnas en orden ascendente"
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSASCEND
-#: po/tmp/ap_String_Id.h.h:2269
+#: po/tmp/ap_String_Id.h.h:2334
 msgid "Sort Columns in Ascending Order based on Selected Row"
 msgstr "Ordena las columnas en orden ascendente basándose en la fila seleccionada"
 
 #. MENU_LABEL_TABLE_SORTCOLSDESCEND
-#: po/tmp/ap_String_Id.h.h:2271
+#: po/tmp/ap_String_Id.h.h:2336
 msgid "Sort Columns in Descending Order"
 msgstr "Ordenar columnas en orden descendente"
 
 #. MENU_STATUSLINE_TABLE_SORTCOLSDESCEND
-#: po/tmp/ap_String_Id.h.h:2273
+#: po/tmp/ap_String_Id.h.h:2338
 msgid "Sort Columns in Descending Order based on Selected Row"
 msgstr "Ordena las columnas en orden descendente basándose en la fila seleccionada"
 
 #. MENU_LABEL_TABLE_SORTROWSASCEND
-#: po/tmp/ap_String_Id.h.h:2275
+#: po/tmp/ap_String_Id.h.h:2340
 msgid "Sort Rows in Ascending Order"
 msgstr "Ordenar filas en orden ascendente"
 
 #. MENU_STATUSLINE_TABLE_SORTROWSASCEND
-#: po/tmp/ap_String_Id.h.h:2277
+#: po/tmp/ap_String_Id.h.h:2342
 msgid "Sort Rows in Ascending Order based on selected Column"
 msgstr "Ordena las filas en orden ascendente basándose en la columna seleccionada"
 
 #. MENU_LABEL_TABLE_SORTROWSDESCEND
-#: po/tmp/ap_String_Id.h.h:2279
+#: po/tmp/ap_String_Id.h.h:2344
 msgid "Sort Rows in Descending Order"
 msgstr "Ordenar filas en orden descendente"
 
 #. MENU_STATUSLINE_TABLE_SORTROWSDESCEND
-#: po/tmp/ap_String_Id.h.h:2281
+#: po/tmp/ap_String_Id.h.h:2346
 msgid "Sort Rows in Descending Order based on Selected Column"
 msgstr "Ordena las filas en orden descendente basándose en la columna seleccionada"
 
 #. MENU_STATUSLINE_TABLE_SORT
-#: po/tmp/ap_String_Id.h.h:2283
+#: po/tmp/ap_String_Id.h.h:2348
 msgid "Sort Table"
 msgstr "Ordenar tabla"
 
 #. DLG_MetaData_Source_LBL
-#: po/tmp/ap_String_Id.h.h:2285
+#: po/tmp/ap_String_Id.h.h:2350
 msgid "Source:"
 msgstr "Fuente:"
 
 #. DLG_Column_Space_After
-#: po/tmp/ap_String_Id.h.h:2287
+#: po/tmp/ap_String_Id.h.h:2352
 msgid "Space after Column"
 msgstr "Espacio después de columna"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
-#: po/tmp/ap_String_Id.h.h:2290
+#: po/tmp/ap_String_Id.h.h:2355
 msgid "Space before: 12 pt"
 msgstr "Espacio antes: 12 pt"
 
 #. TOOLBAR_STATUSLINE_PARA_0BEFORE
 #. TOOLBAR_TOOLTIP_PARA_0BEFORE
-#: po/tmp/ap_String_Id.h.h:2293
+#: po/tmp/ap_String_Id.h.h:2358
 msgid "Space before: None"
 msgstr "Espacio antes: nada"
 
 #. DLG_Para_LabelSpacing
-#: po/tmp/ap_String_Id.h.h:2295
+#: po/tmp/ap_String_Id.h.h:2360
 msgid "Spacing"
 msgstr "Espaciado"
 
 #. DLG_Options_SpellCheckingTitle
-#: po/tmp/ap_String_Id.h.h:2297
+#: po/tmp/ap_String_Id.h.h:2362
 msgid "Spell Checking"
 msgstr "Revisión ortográfica"
 
 #. TOOLBAR_LABEL_SPELLCHECK
-#: po/tmp/ap_String_Id.h.h:2299
+#: po/tmp/ap_String_Id.h.h:2364
 msgid "Spellcheck"
 msgstr "Revisión ortográfica"
 
 #. TOOLBAR_STATUSLINE_SPELLCHECK
 #. TOOLBAR_TOOLTIP_SPELLCHECK
-#: po/tmp/ap_String_Id.h.h:2302
+#: po/tmp/ap_String_Id.h.h:2367
 msgid "Spellcheck the document"
 msgstr "Revisar la ortografía del documento"
 
 #. DLG_Spell_SpellTitle
 #. DLG_Options_TabLabel_Spelling
-#: po/tmp/ap_String_Id.h.h:2305
+#: po/tmp/ap_String_Id.h.h:2370
 msgid "Spelling"
 msgstr "Ortografía"
 
 #. MENU_LABEL_TOOLS_SPELLPREFS
-#: po/tmp/ap_String_Id.h.h:2307
+#: po/tmp/ap_String_Id.h.h:2372
 msgid "Spelling &Options"
 msgstr "&Opciones de ortografía"
 
 #. MENU_LABEL_TABLE_SPLIT_TABLE
-#: po/tmp/ap_String_Id.h.h:2309
+#: po/tmp/ap_String_Id.h.h:2374
 msgid "Spli&t Table"
 msgstr "&Dividir tabla"
 
 #. DLG_SplitCellsTitle
 #. DLG_SplitCells_Frame
 #. MENU_STATUSLINE_TABLE_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2313
+#: po/tmp/ap_String_Id.h.h:2378
 msgid "Split Cells"
 msgstr "Dividir celdas"
 
 #. MENU_STATUSLINE_TABLE_SPLIT_TABLE
-#: po/tmp/ap_String_Id.h.h:2315
+#: po/tmp/ap_String_Id.h.h:2380
 msgid "Split Table"
 msgstr "Dividir tabla"
 
 #. TOOLBAR_LABEL_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2317
+#: po/tmp/ap_String_Id.h.h:2382
 msgid "Split cells"
 msgstr "Dividir celdas"
 
 #. DLG_SplitCells_HoriMid
 #. DLG_SplitCells_VertMid
-#: po/tmp/ap_String_Id.h.h:2320
+#: po/tmp/ap_String_Id.h.h:2385
 msgid "Split in Middle"
 msgstr "Dividir por la mitad"
 
 #. DLG_SplitCells_Below
-#: po/tmp/ap_String_Id.h.h:2322
+#: po/tmp/ap_String_Id.h.h:2387
 msgid "Split on Bottom Side"
 msgstr "Dividir por la parte de abajo"
 
 #. DLG_SplitCells_Left
-#: po/tmp/ap_String_Id.h.h:2324
+#: po/tmp/ap_String_Id.h.h:2389
 msgid "Split on Left Side"
 msgstr "Dividir por la izquierda"
 
 #. DLG_SplitCells_Right
-#: po/tmp/ap_String_Id.h.h:2326
+#: po/tmp/ap_String_Id.h.h:2391
 msgid "Split on Right Side"
 msgstr "Dividir por la derecha"
 
 #. DLG_SplitCells_Above
-#: po/tmp/ap_String_Id.h.h:2328
+#: po/tmp/ap_String_Id.h.h:2393
 msgid "Split on Top Side"
 msgstr "Dividir por la parte de arriba"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h.h:2330
+#: po/tmp/ap_String_Id.h.h:2395
 msgid "Split on all delimiters except spaces"
 msgstr "Dividir en todos los delimitadores excepto los espacios"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
-#: po/tmp/ap_String_Id.h.h:2332
+#: po/tmp/ap_String_Id.h.h:2397
 msgid "Split on all word delimiters including spaces"
 msgstr "Dividir en todos los delimitadores de palabra incluyendo los espacios"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h.h:2334
+#: po/tmp/ap_String_Id.h.h:2399
 msgid "Split text at commas or tabs"
 msgstr "Dividir el texto en las comas o tabuladores"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
-#: po/tmp/ap_String_Id.h.h:2336
+#: po/tmp/ap_String_Id.h.h:2401
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Dividir el texto en los espacios, comas o tabuladores"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
-#: po/tmp/ap_String_Id.h.h:2339
+#: po/tmp/ap_String_Id.h.h:2404
 msgid "Split this cell"
 msgstr "Dividir esta celda"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
-#: po/tmp/ap_String_Id.h.h:2341
+#: po/tmp/ap_String_Id.h.h:2406
 #: po/tmp/xap_String_Id.h.h:739
 msgid "Square List"
 msgstr "Lista de cuadrados"
 
 #. MENU_LABEL_FMT_STYLE
-#: po/tmp/ap_String_Id.h.h:2343
+#: po/tmp/ap_String_Id.h.h:2408
 msgid "St&yle"
 msgstr "Est&ilo"
 
 #. TB_Standard
-#: po/tmp/ap_String_Id.h.h:2345
+#: po/tmp/ap_String_Id.h.h:2410
 msgid "Standard"
 msgstr "Estándar"
 
 #. DLG_Options_Label_ViewStandardTB
-#: po/tmp/ap_String_Id.h.h:2347
+#: po/tmp/ap_String_Id.h.h:2412
 msgid "Standard Toolbar"
 msgstr "Barra estándar"
 
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
-#: po/tmp/ap_String_Id.h.h:2349
+#: po/tmp/ap_String_Id.h.h:2414
 #: po/tmp/xap_String_Id.h.h:743
 msgid "Star List"
 msgstr "Lista de estrellas"
 
 #. DLG_Lists_Start
-#: po/tmp/ap_String_Id.h.h:2351
+#: po/tmp/ap_String_Id.h.h:2416
 msgid "Start At:"
 msgstr "Empezar en:"
 
 #. DLG_Lists_Start_New_List
 #. DLG_Lists_Start_New
-#: po/tmp/ap_String_Id.h.h:2354
+#: po/tmp/ap_String_Id.h.h:2419
 msgid "Start New List"
 msgstr "Empezar una lista nueva"
 
 #. DLG_Lists_Start_Sub
-#: po/tmp/ap_String_Id.h.h:2356
+#: po/tmp/ap_String_Id.h.h:2421
 msgid "Start Sublist"
 msgstr "Empezar sublista"
 
 #. DLG_MarkRevisions_Check2Label
-#: po/tmp/ap_String_Id.h.h:2358
+#: po/tmp/ap_String_Id.h.h:2423
 msgid "Start a new revision"
 msgstr "Empezar una revisión nueva"
 
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
-#: po/tmp/ap_String_Id.h.h:2360
+#: po/tmp/ap_String_Id.h.h:2425
 msgid "Start ne&w revision"
 msgstr "Empezar una revisión &nueva"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION
-#: po/tmp/ap_String_Id.h.h:2362
+#: po/tmp/ap_String_Id.h.h:2427
 msgid "Start revision distinct from the current one"
 msgstr "Empieza una revisión distinta de la actual"
 
 #. DLG_WordCount_Statistics
-#: po/tmp/ap_String_Id.h.h:2364
+#: po/tmp/ap_String_Id.h.h:2429
 msgid "Statistics:"
 msgstr "Estadísticas:"
 
 #. DLG_Lists_Stop_Current_List
-#: po/tmp/ap_String_Id.h.h:2366
+#: po/tmp/ap_String_Id.h.h:2431
 msgid "Stop Current List"
 msgstr "Detener la lista actual"
 
 #. MENU_LABEL_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:2368
+#: po/tmp/ap_String_Id.h.h:2433
 msgid "Stri&ke"
 msgstr "&Tachado"
 
@@ -5740,79 +5898,79 @@ msgstr "&Tachado"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/ap_String_Id.h.h:2372
+#: po/tmp/ap_String_Id.h.h:2437
 #: po/tmp/xap_String_Id.h.h:745
 msgid "Strike"
 msgstr "Tachar"
 
 #. MENU_STATUSLINE_FMT_STRIKE
-#: po/tmp/ap_String_Id.h.h:2374
+#: po/tmp/ap_String_Id.h.h:2439
 msgid "Strikeout the selection (toggle)"
-msgstr "Tachar la selección (cambiar)"
+msgstr "Tachar la selección (alternar)"
 
 #. MENU_LABEL_FMT_STYLIST
-#: po/tmp/ap_String_Id.h.h:2376
+#: po/tmp/ap_String_Id.h.h:2441
 msgid "Sty&list"
 msgstr "Lista de estilos"
 
 #. TOOLBAR_LABEL_FMT_STYLE
 #. TOOLBAR_STATUSLINE_FMT_STYLE
 #. TOOLBAR_TOOLTIP_FMT_STYLE
-#: po/tmp/ap_String_Id.h.h:2380
+#: po/tmp/ap_String_Id.h.h:2445
 msgid "Style"
 msgstr "Estilo"
 
 #. DLG_Styles_ErrNotTitle1
-#: po/tmp/ap_String_Id.h.h:2382
+#: po/tmp/ap_String_Id.h.h:2447
 msgid "Style Name - "
 msgstr "Nombre del estilo - "
 
 #. DLG_Styles_ModifyName
-#: po/tmp/ap_String_Id.h.h:2384
+#: po/tmp/ap_String_Id.h.h:2449
 msgid "Style Name:"
 msgstr "Nombre del estilo:"
 
 #. DLG_Styles_ModifyType
-#: po/tmp/ap_String_Id.h.h:2386
+#: po/tmp/ap_String_Id.h.h:2451
 msgid "Style Type"
 msgstr "Tipo del estilo"
 
 #. DLG_Styles_ModifyFollowing
-#: po/tmp/ap_String_Id.h.h:2388
+#: po/tmp/ap_String_Id.h.h:2453
 msgid "Style for following paragraph"
 msgstr "Estilo para el siguiente parágrafo"
 
 #. DLG_Styles_ErrBlankName
-#: po/tmp/ap_String_Id.h.h:2390
+#: po/tmp/ap_String_Id.h.h:2455
 msgid "Style name cannot be left blank"
 msgstr "El nombre del estilo no puede dejarse en blanco"
 
 #. DLG_BorderShading_Border_Style
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
-#: po/tmp/ap_String_Id.h.h:2393
+#: po/tmp/ap_String_Id.h.h:2458
 #: po/tmp/xap_String_Id.h.h:747
 msgid "Style:"
 msgstr "Estilo:"
 
 #. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
-#: po/tmp/ap_String_Id.h.h:2396
+#: po/tmp/ap_String_Id.h.h:2461
 msgid "Styles"
 msgstr "Estilos"
 
 #. DLG_Stylist_Title
-#: po/tmp/ap_String_Id.h.h:2398
+#: po/tmp/ap_String_Id.h.h:2463
 msgid "Stylist"
 msgstr "Lista de estilos"
 
 #. FIELD_Document_Subject
-#: po/tmp/ap_String_Id.h.h:2400
+#: po/tmp/ap_String_Id.h.h:2465
 msgid "Subject"
 msgstr "Asunto"
 
 #. DLG_MetaData_Subject_LBL
-#: po/tmp/ap_String_Id.h.h:2402
+#: po/tmp/ap_String_Id.h.h:2467
 msgid "Subject:"
 msgstr "Asunto:"
 
@@ -5820,48 +5978,48 @@ msgstr "Asunto:"
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
-#: po/tmp/ap_String_Id.h.h:2406
+#: po/tmp/ap_String_Id.h.h:2471
 #: po/tmp/xap_String_Id.h.h:751
 msgid "Subscript"
 msgstr "Subíndice"
 
 #. DLG_Spell_Suggestions
-#: po/tmp/ap_String_Id.h.h:2408
+#: po/tmp/ap_String_Id.h.h:2473
 msgid "Sugg&estions:"
 msgstr "Sug&erencias:"
 
 #. DLG_Options_Label_SpellMainOnly
-#: po/tmp/ap_String_Id.h.h:2410
+#: po/tmp/ap_String_Id.h.h:2475
 msgid "Suggest from &main dictionary only"
 msgstr "Sugerir del diccionario &principal únicamente"
 
 #. MENU_LABEL_TABLE_INSERT_SUMROWS
-#: po/tmp/ap_String_Id.h.h:2412
+#: po/tmp/ap_String_Id.h.h:2477
 msgid "Sum a Column"
 msgstr "Suma de una columna"
 
 #. MENU_LABEL_TABLE_INSERT_SUMCOLS
-#: po/tmp/ap_String_Id.h.h:2414
+#: po/tmp/ap_String_Id.h.h:2479
 msgid "Sum a Row"
 msgstr "Suma de una fila"
 
 #. FIELD_Numbers_TableSumRows
-#: po/tmp/ap_String_Id.h.h:2416
+#: po/tmp/ap_String_Id.h.h:2481
 msgid "Sum a Table Column"
 msgstr "Suma una columna de la tabla"
 
 #. FIELD_Numbers_TableSumCols
-#: po/tmp/ap_String_Id.h.h:2418
+#: po/tmp/ap_String_Id.h.h:2483
 msgid "Sum a Table Row"
 msgstr "Suma una fila de la tabla"
 
 #. DLG_MetaData_TAB_Summary
-#: po/tmp/ap_String_Id.h.h:2420
+#: po/tmp/ap_String_Id.h.h:2485
 msgid "Summary"
 msgstr "Resumen"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
-#: po/tmp/ap_String_Id.h.h:2422
+#: po/tmp/ap_String_Id.h.h:2487
 msgid "Supe&rscript"
 msgstr "Supe&ríndice"
 
@@ -5869,201 +6027,206 @@ msgstr "Supe&ríndice"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
-#: po/tmp/ap_String_Id.h.h:2426
+#: po/tmp/ap_String_Id.h.h:2491
 #: po/tmp/xap_String_Id.h.h:753
 msgid "Superscript"
 msgstr "Superíndice"
 
 #. MENU_LABEL_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:2428
+#: po/tmp/ap_String_Id.h.h:2493
 msgid "Sy&mbol"
 msgstr "Sí&mbolo"
 
 #. TOOLBAR_LABEL_INSERT_SYMBOL
-#: po/tmp/ap_String_Id.h.h:2430
+#: po/tmp/ap_String_Id.h.h:2495
 msgid "Symbol"
 msgstr "Símbolo"
 
 #. MENU_LABEL_TABLE
-#: po/tmp/ap_String_Id.h.h:2432
+#: po/tmp/ap_String_Id.h.h:2497
 msgid "T&able"
 msgstr "&Tabla"
 
 #. TabStopStatus
-#: po/tmp/ap_String_Id.h.h:2434
+#: po/tmp/ap_String_Id.h.h:2499
 #, c-format
 msgid "Tab Stop [%s]"
 msgstr "Posición de tabulación [%s]"
 
 #. DLG_Tab_Label_TabPosition
-#: po/tmp/ap_String_Id.h.h:2436
+#: po/tmp/ap_String_Id.h.h:2501
 msgid "Tab stop position:"
 msgstr "Posición de tabulación:"
 
 #. DLG_Tab_Label_TabToClear
-#: po/tmp/ap_String_Id.h.h:2438
+#: po/tmp/ap_String_Id.h.h:2503
 msgid "Tab stops to be cleared:"
 msgstr "Tabuladores a borrar:"
 
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
-#: po/tmp/ap_String_Id.h.h:2442
+#: po/tmp/ap_String_Id.h.h:2507
 #: po/tmp/xap_String_Id.h.h:763
 msgid "Table"
 msgstr "Tabla"
 
 #. DLG_InsertTable_TableSize_Capital
-#: po/tmp/ap_String_Id.h.h:2444
+#: po/tmp/ap_String_Id.h.h:2509
 msgid "Table Size"
 msgstr "Tamaño de la tabla"
 
 #. DLG_Options_Label_ViewTableTB
-#: po/tmp/ap_String_Id.h.h:2446
+#: po/tmp/ap_String_Id.h.h:2511
 msgid "Table Toolbar"
 msgstr "Barra de herramientas de la tabla"
 
 #. MENU_LABEL_INSERT_TABLEOFCONTENTS
 #. MENU_LABEL_FMT_TABLEOFCONTENTS
-#: po/tmp/ap_String_Id.h.h:2449
+#: po/tmp/ap_String_Id.h.h:2514
 msgid "Table of Contents"
 msgstr "Índice"
 
 #. FIELD_Numbers_TOCListLabel
-#: po/tmp/ap_String_Id.h.h:2451
+#: po/tmp/ap_String_Id.h.h:2516
 msgid "Table of Contents List Label"
 msgstr "Lista de etiquetas del índice"
 
 #. FIELD_Numbers_TOCPageNumber
-#: po/tmp/ap_String_Id.h.h:2453
+#: po/tmp/ap_String_Id.h.h:2518
 msgid "Table of Contents Page"
 msgstr "Página del índice"
 
 #. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h.h:2455
+#: po/tmp/ap_String_Id.h.h:2520
 msgid "Table size"
 msgstr "Tamaño de la tabla"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
-#: po/tmp/ap_String_Id.h.h:2458
+#: po/tmp/ap_String_Id.h.h:2523
 msgid "Tabs"
 msgstr "Tabulaciones"
 
 #. DLG_FormatTOC_DetailsTabPage
-#: po/tmp/ap_String_Id.h.h:2460
+#: po/tmp/ap_String_Id.h.h:2525
 msgid "Tabs and Page Numbering"
 msgstr "Tabulaciones y numeración de páginas"
 
 #. MENU_LABEL_FMT
-#: po/tmp/ap_String_Id.h.h:2462
+#: po/tmp/ap_String_Id.h.h:2527
 msgid "Te&xt Formatting"
 msgstr "Formato de te&xto"
 
 #. MENU_LABEL_RDF_ADV_TEST
-#: po/tmp/ap_String_Id.h.h:2464
+#: po/tmp/ap_String_Id.h.h:2529
 msgid "Test RDF subsystem"
 msgstr "Test RDF de subsistema"
 
 #. DLG_Options_Label_Text
-#: po/tmp/ap_String_Id.h.h:2466
+#: po/tmp/ap_String_Id.h.h:2531
 msgid "Text"
 msgstr "Texto"
 
 #. DLG_FormatTOC_TextAfter
-#: po/tmp/ap_String_Id.h.h:2468
+#: po/tmp/ap_String_Id.h.h:2533
 msgid "Text &after:"
 msgstr "Texto &después:"
 
 #. DLG_FormatTOC_TextBefore
-#: po/tmp/ap_String_Id.h.h:2470
+#: po/tmp/ap_String_Id.h.h:2535
 msgid "Text &before:"
 msgstr "Texto &antes:"
 
 #. DLG_Lists_Align
-#: po/tmp/ap_String_Id.h.h:2472
+#: po/tmp/ap_String_Id.h.h:2537
 msgid "Text Align:"
 msgstr "Alineación del texto:"
 
 #. MENU_LABEL_INSERT_TEXTBOX
 #. MENU_LABEL_FMT_FRAME
-#: po/tmp/ap_String_Id.h.h:2475
+#: po/tmp/ap_String_Id.h.h:2540
 msgid "Text Box"
 msgstr "Caja de texto"
 
 #. DLG_Lists_PageFolding
-#: po/tmp/ap_String_Id.h.h:2477
+#: po/tmp/ap_String_Id.h.h:2542
 msgid "Text Folding"
 msgstr "Plegado del texto"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h.h:2479
+#: po/tmp/ap_String_Id.h.h:2544
 msgid "Text Wrapping"
 msgstr "Ajuste de texto"
 
 #. DLG_Options_Label_Both
-#: po/tmp/ap_String_Id.h.h:2481
+#: po/tmp/ap_String_Id.h.h:2546
 msgid "Text and Icon"
 msgstr "Texto e iconos"
 
 #. COMMAND_LINE_PRINTING_DEPRECATED
-#: po/tmp/ap_String_Id.h.h:2483
+#: po/tmp/ap_String_Id.h.h:2548
 msgid "The '--print' option has been removed as of AbiWord 2.8. You can achieve the desired behavior using AbiWord's command-line conversion tools and then piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
 msgstr "La opción '--print' se ha quitado de la versión Abiword 2.8. Puede obtener el comportamiento deseado utilizando las herramientas de conversión por línea de comandos y obtener el resultado a una impresora. Ej: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
-#: po/tmp/ap_String_Id.h.h:2485
+#: po/tmp/ap_String_Id.h.h:2550
 msgid "The margins selected are too large to fit on the page."
 msgstr "Los márgenes seleccionados son demasiado grandes para que quepan en la página."
 
 #. DLG_Options_Prompt_YouMustRestart
-#: po/tmp/ap_String_Id.h.h:2487
+#: po/tmp/ap_String_Id.h.h:2552
 msgid "The new user interface language will take effect the next time that you start the application"
 msgstr "El idioma nuevo del interfaz de usuario tendrá efecto la próxima vez que inicie la aplicación."
 
 #. MSG_SpellDone
-#: po/tmp/ap_String_Id.h.h:2489
+#: po/tmp/ap_String_Id.h.h:2554
 msgid "The spelling check is complete."
 msgstr "La revisión ortográfica ha terminado."
 
 #. MSG_HyperlinkCrossesBoundaries
-#: po/tmp/ap_String_Id.h.h:2491
+#: po/tmp/ap_String_Id.h.h:2556
 msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
 msgstr "El texto al que el hiperenlace está vinculado debe estar dentro de un único parágrafo."
 
 #. FIELD_DateTime_Wkday
-#: po/tmp/ap_String_Id.h.h:2493
+#: po/tmp/ap_String_Id.h.h:2558
 msgid "The weekday"
 msgstr "El día de la semana"
 
 #. DLG_FormatTable_Thickness
 #. DLG_BorderShading_Thickness
-#: po/tmp/ap_String_Id.h.h:2496
+#: po/tmp/ap_String_Id.h.h:2561
 msgid "Thickness:"
 msgstr "Grosor:"
 
+#. MSG_XMLIDAlreadyExists
+#: po/tmp/ap_String_Id.h.h:2563
+msgid "This RDF link already exists. Would you like to replace the existing RDF link with this new one?"
+msgstr "Este enlace RDF ya existe. ¿Quiere reemplazar el enlace RDF con este otro nuevo?"
+
 #. MSG_BookmarkAlreadyExists
-#: po/tmp/ap_String_Id.h.h:2498
+#: po/tmp/ap_String_Id.h.h:2565
 msgid "This bookmark already exists. Would you like to replace the existing bookmark with this new one?"
 msgstr "Este marcador ya existe. ¿Quiere reemplazar el marcador con este otro nuevo?"
 
 #. MSG_AfterRestartNew
-#: po/tmp/ap_String_Id.h.h:2500
+#: po/tmp/ap_String_Id.h.h:2567
 msgid "This change will only take effect when you restart AbiWord or create a new document."
 msgstr "Este cambio sólo tendrá efecto cuando reinicie AbiWord o cree un documento nuevo."
 
 #. MSG_HiddenRevisions
-#: po/tmp/ap_String_Id.h.h:2502
+#: po/tmp/ap_String_Id.h.h:2569
 msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
 msgstr "Este documento contiene revisiones que están ocultas de la vista. Vea la documentación de AbiWord para la información acerca del trabajo con revisiones."
 
 #. DLG_Para_PreviewSampleFallback
-#: po/tmp/ap_String_Id.h.h:2504
+#: po/tmp/ap_String_Id.h.h:2571
 msgid "This paragraph represents words as they might appear in your document.  To see the text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
 msgstr "Este parágrafo representa palabras tal como aparecerían en su documento. Para ver texto de otros documentos usados en esta previsualización, ponga su cursor sobre un parágrafo del documento con algo de texto en él y abra este diálogo."
 
 #. DLG_Styles_ErrStyleNot
-#: po/tmp/ap_String_Id.h.h:2506
+#: po/tmp/ap_String_Id.h.h:2573
 msgid ""
 "This style does not exist \n"
 " so it cannot be modified"
@@ -6072,30 +6235,30 @@ msgstr ""
 "así que no puede modificarse"
 
 #. DLG_Column_Three
-#: po/tmp/ap_String_Id.h.h:2508
+#: po/tmp/ap_String_Id.h.h:2575
 msgid "Three"
 msgstr "Tres"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2510
+#: po/tmp/ap_String_Id.h.h:2577
 #: po/tmp/xap_String_Id.h.h:797
 msgid "Tick List"
 msgstr "Lista de verificación"
 
 #. FIELD_DateTime_TimeZone
-#: po/tmp/ap_String_Id.h.h:2512
+#: po/tmp/ap_String_Id.h.h:2579
 msgid "Time Zone"
 msgstr "Zona horaria"
 
 #. FIELD_Document_Title
-#: po/tmp/ap_String_Id.h.h:2514
+#: po/tmp/ap_String_Id.h.h:2581
 msgid "Title"
 msgstr "Título"
 
 #. DLG_ToggleCase_TitleCase
 #. DLG_UFS_Effects_TitleCase
-#: po/tmp/ap_String_Id.h.h:2516
+#: po/tmp/ap_String_Id.h.h:2583
 #: po/tmp/xap_String_Id.h.h:801
 msgid "Title Case"
 msgstr "Capitales De Título"
@@ -6103,28 +6266,28 @@ msgstr "Capitales De Título"
 #. DLG_MetaData_Title_LBL
 #. DLG_Annotation_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2519
+#: po/tmp/ap_String_Id.h.h:2586
 #: po/tmp/xap_String_Id.h.h:803
 msgid "Title:"
 msgstr "Título:"
 
 #. MENU_LABEL_FMT_TOPLINE
-#: po/tmp/ap_String_Id.h.h:2521
+#: po/tmp/ap_String_Id.h.h:2588
 msgid "To&pline"
 msgstr "Línea su&perior"
 
 #. DLG_Options_Label_Toolbars
-#: po/tmp/ap_String_Id.h.h:2523
+#: po/tmp/ap_String_Id.h.h:2590
 msgid "Toolbars"
 msgstr "Barras de herramientas"
 
 #. DLG_PageNumbers_Header
-#: po/tmp/ap_String_Id.h.h:2525
+#: po/tmp/ap_String_Id.h.h:2592
 msgid "Top"
 msgstr "Superior"
 
 #. TopMarginStatus
-#: po/tmp/ap_String_Id.h.h:2527
+#: po/tmp/ap_String_Id.h.h:2594
 #, c-format
 msgid "Top Margin [%s]"
 msgstr "Margen superior [%s]"
@@ -6133,40 +6296,45 @@ msgstr "Margen superior [%s]"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2531
+#: po/tmp/ap_String_Id.h.h:2598
 #: po/tmp/xap_String_Id.h.h:809
 msgid "Topline"
 msgstr "Línea superior"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2533
+#: po/tmp/ap_String_Id.h.h:2600
 #: po/tmp/xap_String_Id.h.h:811
 msgid "Triangle List"
 msgstr "Lista de triángulos"
 
 #. DLG_Column_Two
-#: po/tmp/ap_String_Id.h.h:2535
+#: po/tmp/ap_String_Id.h.h:2602
 msgid "Two"
 msgstr "Dos"
 
 #. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h.h:2537
+#: po/tmp/ap_String_Id.h.h:2604
 msgid "Type"
 msgstr "Tipo"
 
+#. DLG_InsertXMLID_Msg
+#: po/tmp/ap_String_Id.h.h:2606
+msgid "Type a name for the RDF link"
+msgstr "Escriba un nombre para el enlace de RDF"
+
 #. DLG_InsertBookmark_Msg
-#: po/tmp/ap_String_Id.h.h:2539
+#: po/tmp/ap_String_Id.h.h:2608
 msgid "Type a name for the bookmark, or select an existing from the list."
 msgstr "Escriba un nombre para el marcador, o seleccione uno de la lista."
 
 #. DLG_Lists_Type
-#: po/tmp/ap_String_Id.h.h:2541
+#: po/tmp/ap_String_Id.h.h:2610
 msgid "Type:"
 msgstr "Tipo:"
 
 #. DLG_ToggleCase_UpperCase
-#: po/tmp/ap_String_Id.h.h:2543
+#: po/tmp/ap_String_Id.h.h:2612
 msgid "UPPERCASE"
 msgstr "MAYÚSCULAS"
 
@@ -6174,107 +6342,107 @@ msgstr "MAYÚSCULAS"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2547
+#: po/tmp/ap_String_Id.h.h:2616
 #: po/tmp/xap_String_Id.h.h:831
 msgid "Underline"
 msgstr "Subrayar"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
-#: po/tmp/ap_String_Id.h.h:2549
+#: po/tmp/ap_String_Id.h.h:2618
 msgid "Underline the selection (toggle)"
 msgstr "Subrayar la selección (cambiar)"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:2551
+#: po/tmp/ap_String_Id.h.h:2620
 msgid "Undo"
 msgstr "Deshacer"
 
 #. MENU_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_STATUSLINE_EDIT_UNDO
 #. TOOLBAR_TOOLTIP_EDIT_UNDO
-#: po/tmp/ap_String_Id.h.h:2555
+#: po/tmp/ap_String_Id.h.h:2624
 msgid "Undo editing"
 msgstr "Deshace la edición"
 
 #. DLG_Annotation_OK_tooltip
-#: po/tmp/ap_String_Id.h.h:2557
+#: po/tmp/ap_String_Id.h.h:2626
 msgid "Update the annotation"
 msgstr "Actualiza la anotación"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2559
+#: po/tmp/ap_String_Id.h.h:2628
 #: po/tmp/xap_String_Id.h.h:865
 msgid "Upper Case List"
 msgstr "Lista en mayúsculas"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2561
+#: po/tmp/ap_String_Id.h.h:2630
 #: po/tmp/xap_String_Id.h.h:867
 msgid "Upper Roman List"
 msgstr "Lista romana en mayúsculas"
 
-# RTL
+# RTL=Right To Left
 #. DLG_Column_RtlOrder
-#: po/tmp/ap_String_Id.h.h:2563
+#: po/tmp/ap_String_Id.h.h:2632
 msgid "Use RTL Order"
 msgstr "Usar orden D-I"
 
 #. DLG_Options_Label_CustomSmartQuotes
-#: po/tmp/ap_String_Id.h.h:2565
+#: po/tmp/ap_String_Id.h.h:2634
 msgid "Use custom smart quote style"
-msgstr "Utilizar estilo comilla inteligente personalizado"
+msgstr "Utilizar el estilo de cita personalizado"
 
 #. DLG_Options_Label_HebrewContextGlyphs
-#: po/tmp/ap_String_Id.h.h:2567
+#: po/tmp/ap_String_Id.h.h:2636
 msgid "Use glyph shaping for Hebrew"
 msgstr "Usar forma de glifo para hebreo"
 
 #. DLG_Options_Label_UI
-#: po/tmp/ap_String_Id.h.h:2569
+#: po/tmp/ap_String_Id.h.h:2638
 msgid "User Interface"
 msgstr "Interfaz de usuario"
 
 #. DLG_Options_Label_UILang
-#: po/tmp/ap_String_Id.h.h:2571
+#: po/tmp/ap_String_Id.h.h:2640
 msgid "User Interface Language"
 msgstr "Idioma del interfaz de usuario"
 
 #. DLG_Stylist_UserStyles
-#: po/tmp/ap_String_Id.h.h:2573
+#: po/tmp/ap_String_Id.h.h:2642
 msgid "User defined Styles"
 msgstr "Estilos definidos por el usuario"
 
 #. DLG_Tab_Label_Existing
-#: po/tmp/ap_String_Id.h.h:2575
+#: po/tmp/ap_String_Id.h.h:2644
 msgid "User-defined Tabs"
 msgstr "Tabulaciones dedinidas por el usuario"
 
 #. DLG_Styles_LBL_UserDefined
-#: po/tmp/ap_String_Id.h.h:2577
+#: po/tmp/ap_String_Id.h.h:2646
 msgid "User-defined styles"
 msgstr "Estilos definidos por el usuario"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2579
+#: po/tmp/ap_String_Id.h.h:2648
 #: po/tmp/xap_String_Id.h.h:877
 msgid "Version"
 msgstr "Versión"
 
 #. DLG_Options_TabLabel_View
-#: po/tmp/ap_String_Id.h.h:2581
+#: po/tmp/ap_String_Id.h.h:2650
 msgid "View"
 msgstr "Ver"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
-#: po/tmp/ap_String_Id.h.h:2583
+#: po/tmp/ap_String_Id.h.h:2652
 msgid "View document history"
 msgstr "Ver histórico del documento"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
-#: po/tmp/ap_String_Id.h.h:2585
+#: po/tmp/ap_String_Id.h.h:2654
 msgid "View the document in full screen mode"
 msgstr "Ver el documento en modo a pantalla completa"
 
@@ -6287,105 +6455,105 @@ msgstr "Ver el documento en modo a pantalla completa"
 #. MENU_STATUSLINE_WINDOW_7
 #. MENU_STATUSLINE_WINDOW_8
 #. MENU_STATUSLINE_WINDOW_9
-#: po/tmp/ap_String_Id.h.h:2595
+#: po/tmp/ap_String_Id.h.h:2664
 msgid "View this document"
 msgstr "Ver este documento"
 
 #. DLG_Options_Label_ViewTooltips
-#: po/tmp/ap_String_Id.h.h:2597
+#: po/tmp/ap_String_Id.h.h:2666
 msgid "View tooltips"
 msgstr "Ver consejos"
 
 #. DLG_Options_Label_ViewViewFrame
-#: po/tmp/ap_String_Id.h.h:2599
+#: po/tmp/ap_String_Id.h.h:2668
 msgid "View..."
 msgstr "Ver..."
 
 #. DLG_Options_Label_Visible
-#: po/tmp/ap_String_Id.h.h:2601
+#: po/tmp/ap_String_Id.h.h:2670
 msgid "Visible"
 msgstr "Visibilidad"
 
 #. MSG_HyperlinkNoBookmark
-#: po/tmp/ap_String_Id.h.h:2603
+#: po/tmp/ap_String_Id.h.h:2672
 #, c-format
 msgid "Warning: the bookmark you provided [%s] does not exist."
 msgstr "Atención: el marcador que proporcionó [%s] no existe."
 
 #. MENU_STATUSLINE_VIEW_WEB
-#: po/tmp/ap_String_Id.h.h:2605
+#: po/tmp/ap_String_Id.h.h:2674
 msgid "Web Layout"
 msgstr "Diseño web"
 
 #. DLG_Styles_LBL_TxtMsg
-#: po/tmp/ap_String_Id.h.h:2607
+#: po/tmp/ap_String_Id.h.h:2676
 msgid "What Hath God Wrought"
 msgstr "Lorem ipsum dolor"
 
 #. DLG_Options_Label_WithExtension
-#: po/tmp/ap_String_Id.h.h:2609
+#: po/tmp/ap_String_Id.h.h:2678
 msgid "With extension:"
 msgstr "Con extensión:"
 
 #. DLG_WordCount_WordCountTitle
 #. FIELD_Numbers_WordCount
-#: po/tmp/ap_String_Id.h.h:2612
+#: po/tmp/ap_String_Id.h.h:2681
 msgid "Word Count"
 msgstr "Contador de palabras"
 
 #. DLG_NEW_Tab1
-#: po/tmp/ap_String_Id.h.h:2614
+#: po/tmp/ap_String_Id.h.h:2683
 msgid "Wordprocessing"
 msgstr "Procesando palabras"
 
 #. DLG_WordCount_Words_No_Notes
-#: po/tmp/ap_String_Id.h.h:2616
+#: po/tmp/ap_String_Id.h.h:2685
 msgid "Words (no footnotes/endnotes):"
 msgstr "Palabras (Sin notas al pie/finales):"
 
 #. DLG_Options_Label_SpellUppercase
-#: po/tmp/ap_String_Id.h.h:2618
+#: po/tmp/ap_String_Id.h.h:2687
 msgid "Words in &UPPERCASE"
 msgstr "Palabras en &MAYÚSCULAS"
 
 #. DLG_Options_Label_SpellNumbers
-#: po/tmp/ap_String_Id.h.h:2620
+#: po/tmp/ap_String_Id.h.h:2689
 msgid "Words with num&bers"
 msgstr "Palabras con núme&ros"
 
 #. DLG_WordCount_Words
-#: po/tmp/ap_String_Id.h.h:2622
+#: po/tmp/ap_String_Id.h.h:2691
 msgid "Words:"
 msgstr "Palabras:"
 
 #. MSG_SaveFailedWrite
-#: po/tmp/ap_String_Id.h.h:2624
+#: po/tmp/ap_String_Id.h.h:2693
 #, c-format
 msgid "Writing error when attempting to save %s"
 msgstr "Error de escritura al intentar guardar %s"
 
 #. MSG_DefaultDirectionChg
-#: po/tmp/ap_String_Id.h.h:2626
+#: po/tmp/ap_String_Id.h.h:2695
 msgid "You have changed the default direction."
 msgstr "Ha cambiado la dirección predeterminada."
 
 #. MSG_DirectionModeChg
-#: po/tmp/ap_String_Id.h.h:2628
+#: po/tmp/ap_String_Id.h.h:2697
 msgid "You have changed the direction mode."
 msgstr "Ha cambiado el modo de dirección."
 
 #. MSG_HyperlinkNoSelection
-#: po/tmp/ap_String_Id.h.h:2630
+#: po/tmp/ap_String_Id.h.h:2699
 msgid "You must select a portion of the document before inserting a hyperlink."
 msgstr "Debe seleccionar una porción del documento antes de insertar un hiperenlace."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
-#: po/tmp/ap_String_Id.h.h:2632
+#: po/tmp/ap_String_Id.h.h:2701
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
 msgstr "Debe elegir un rango de 1 a 120 para el intervalo de auto-guardado"
 
 #. MSG_ConfirmSaveSecondary
-#: po/tmp/ap_String_Id.h.h:2634
+#: po/tmp/ap_String_Id.h.h:2703
 msgid "Your changes will be lost if you don't save them."
 msgstr "Sus cambios se perderán si no los guarda."
 
@@ -6393,88 +6561,88 @@ msgstr "Sus cambios se perderán si no los guarda."
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2638
+#: po/tmp/ap_String_Id.h.h:2707
 #: po/tmp/xap_String_Id.h.h:928
 msgid "Zoom"
 msgstr "Ampliación"
 
 #. MENU_LABEL_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:2640
+#: po/tmp/ap_String_Id.h.h:2709
 msgid "Zoom to &100%"
 msgstr "Ampliar al &100%"
 
 #. MENU_LABEL_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:2642
+#: po/tmp/ap_String_Id.h.h:2711
 msgid "Zoom to &200%"
 msgstr "Ampliar al &200%"
 
 #. MENU_LABEL_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:2644
+#: po/tmp/ap_String_Id.h.h:2713
 msgid "Zoom to &50%"
 msgstr "Ampliar al &50%"
 
 #. MENU_LABEL_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:2646
+#: po/tmp/ap_String_Id.h.h:2715
 msgid "Zoom to &75%"
 msgstr "Ampliar al &75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
-#: po/tmp/ap_String_Id.h.h:2648
+#: po/tmp/ap_String_Id.h.h:2717
 msgid "Zoom to 100%"
 msgstr "Ampliar al 100%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
-#: po/tmp/ap_String_Id.h.h:2650
+#: po/tmp/ap_String_Id.h.h:2719
 msgid "Zoom to 200%"
 msgstr "Ampliar al 200%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
-#: po/tmp/ap_String_Id.h.h:2652
+#: po/tmp/ap_String_Id.h.h:2721
 msgid "Zoom to 50%"
 msgstr "Ampliar al 50%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
-#: po/tmp/ap_String_Id.h.h:2654
+#: po/tmp/ap_String_Id.h.h:2723
 msgid "Zoom to 75%"
 msgstr "Ampliar al 75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WIDTH
-#: po/tmp/ap_String_Id.h.h:2656
+#: po/tmp/ap_String_Id.h.h:2725
 msgid "Zoom to page width"
 msgstr "Ampliar al ancho de página"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_WHOLE
-#: po/tmp/ap_String_Id.h.h:2658
+#: po/tmp/ap_String_Id.h.h:2727
 msgid "Zoom to whole page"
 msgstr "Ampliar a página completa"
 
 #. DLG_Options_Label_CustomDict
-#: po/tmp/ap_String_Id.h.h:2660
+#: po/tmp/ap_String_Id.h.h:2729
 msgid "custom.dic"
 msgstr "personal.dic"
 
 #. FIELD_DateTime_DDMMYY
-#: po/tmp/ap_String_Id.h.h:2662
+#: po/tmp/ap_String_Id.h.h:2731
 msgid "dd/mm/yy"
 msgstr "dd/mm/aa"
 
 #. DLG_ToggleCase_LowerCase
-#: po/tmp/ap_String_Id.h.h:2664
+#: po/tmp/ap_String_Id.h.h:2733
 msgid "lowercase"
 msgstr "minúscula"
 
 #. DLG_Options_Label_Minutes
-#: po/tmp/ap_String_Id.h.h:2666
+#: po/tmp/ap_String_Id.h.h:2735
 msgid "minutes"
 msgstr "minutos"
 
 #. FIELD_DateTime_MMDDYY
-#: po/tmp/ap_String_Id.h.h:2668
+#: po/tmp/ap_String_Id.h.h:2737
 msgid "mm/dd/yy"
 msgstr "mm/dd/aa"
 
 #. DLG_ToggleCase_ToggleCase
-#: po/tmp/ap_String_Id.h.h:2670
+#: po/tmp/ap_String_Id.h.h:2739
 msgid "tOGGLE cASE"
 msgstr "cAMBIAR cAPITALIZACIÓN"
 
