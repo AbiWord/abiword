@@ -40,7 +40,7 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
                  const std::string& mimetype,
 				 UT_sint32 iDisplayWidth, 
 				 UT_sint32 iDisplayHeight);	
-  virtual void cairoSetSource(cairo_t *cr, double x, double y);
+  virtual void cairoSetSource(cairo_t *cr);
   virtual void scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
 
   virtual bool            hasAlpha(void) const;

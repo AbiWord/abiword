@@ -51,7 +51,7 @@ public:
 
 	static NSImage * imageFromPNG (NSData * data, UT_uint32 & image_width, UT_uint32 & image_height);
 
-	virtual void cairoSetSource(cairo_t *, double x, double y);
+	virtual void cairoSetSource(cairo_t *);
 
 	// WILL retain the surface passed. You shall destroy it.
 	void setSurface(cairo_surface_t *);

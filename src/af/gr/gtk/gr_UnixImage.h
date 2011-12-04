@@ -47,7 +47,7 @@ public:
     virtual void        scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
     virtual bool isTransparentAt(UT_sint32 x, UT_sint32 y);
     void scale (UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight);
-	virtual void cairoSetSource(cairo_t *, double x, double y);
+	virtual void cairoSetSource(cairo_t *);
 protected:
 	virtual GR_UnixImage *makeSubimage(const std::string & n,
 											  UT_sint32 x, UT_sint32 y,

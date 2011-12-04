@@ -74,7 +74,7 @@ class GR_CairoVectorImage
 	: public GR_VectorImage
 {
 public:
-	virtual void cairoSetSource(cairo_t *, double x, double y) = 0;
+	virtual void cairoSetSource(cairo_t *) = 0;
 };
 
 /** An abstract Cairo image */
@@ -83,7 +83,7 @@ class GR_CairoRasterImage
 {
 public:
 	virtual GR_Image * createImageSegment(GR_Graphics * pG,const UT_Rect & rec);
-	virtual void cairoSetSource(cairo_t *, double x, double y) = 0;
+	virtual void cairoSetSource(cairo_t *) = 0;
 protected:
 	// called by createImageSegment()
 	virtual GR_CairoRasterImage *makeSubimage(const std::string & n,
