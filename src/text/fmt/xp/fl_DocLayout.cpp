@@ -74,6 +74,8 @@
 
 #include "xap_EncodingManager.h"
 
+#include <set>
+
 #define REDRAW_UPDATE_MSECS	500
 
 const FootnoteTypeDesc s_FootnoteTypeDesc[] = {
@@ -226,8 +228,22 @@ FL_DocLayout::~FL_DocLayout()
 		delete m_pFirstSection;
 		m_pFirstSection = pNext;
 	}
-	UT_VECTOR_PURGEALL(GR_EmbedManager *,m_vecEmbedManager);
-	UT_VECTOR_PURGEALL(GR_EmbedManager *,m_vecQuickPrintEmbedManager);
+	std::set<GR_EmbedManager *> garbage;
+	std::map<std::string, GR_EmbedManager *>::iterator i, iend;
+	iend = m_mapEmbedManager.end();
+	for (i = m_mapEmbedManager.begin(); i != iend; i++)
+		if ((*i).first == (*i).second->getObjectType())
+			garbage.insert((*i).second);
+	m_mapEmbedManager.clear();
+	iend = m_mapQuickPrintEmbedManager.end();
+	for (i = m_mapQuickPrintEmbedManager.begin(); i != iend; i++)
+		if ((*i).first == (*i).second->getObjectType())
+			garbage.insert((*i).second);
+	m_mapQuickPrintEmbedManager.clear();
+	std::set<GR_EmbedManager *>::iterator j, jend = garbage.end();
+	for (j = garbage.begin(); j != jend; j++)
+		delete *j;
+	garbage.clear();
 }
 
 /*!
@@ -235,8 +251,17 @@ FL_DocLayout::~FL_DocLayout()
  */
 void  FL_DocLayout::setQuickPrint(GR_Graphics * pGraphics)
 {
-	UT_VECTOR_PURGEALL(GR_EmbedManager *,m_vecQuickPrintEmbedManager);
-	m_vecQuickPrintEmbedManager.clear();
+	std::set<GR_EmbedManager *> garbage;
+	std::map<std::string, GR_EmbedManager *>::iterator i, iend;
+	iend = m_mapQuickPrintEmbedManager.end();
+	for (i = m_mapQuickPrintEmbedManager.begin(); i != iend; i++)
+		if ((*i).first == (*i).second->getObjectType())
+			garbage.insert((*i).second);
+	m_mapQuickPrintEmbedManager.clear();
+	std::set<GR_EmbedManager *>::iterator j, jend = garbage.end();
+	for (j = garbage.begin(); j != jend; j++)
+		delete *j;
+	garbage.clear();
 	if(pGraphics != NULL)
 	{
 	    m_bIsQuickPrint = true;
@@ -273,29 +298,29 @@ GR_Graphics * FL_DocLayout::getQuickPrintGraphics(void) const
 GR_EmbedManager * FL_DocLayout::getQuickPrintEmbedManager(const char * szEmbedType)
 {
   // Look in the current collection first.
-  UT_sint32 i = 0;
-  GR_EmbedManager * pDefault = NULL;
-  GR_EmbedManager * pEmbed = NULL;
-  for(i=0; i< m_vecQuickPrintEmbedManager.getItemCount(); i++)
-    {
-      pEmbed = m_vecQuickPrintEmbedManager.getNthItem(i);
-      if(strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
-	{
-	  return pEmbed;
-	}
-      if(strcmp(pEmbed->getObjectType(),"default") == 0)
-	{
-	  pDefault = pEmbed;
-	}
-    }
+   GR_EmbedManager * pEmbed = NULL;
+  std::map<std::string, GR_EmbedManager *>::iterator i;
+  if ((i = m_mapQuickPrintEmbedManager.find(szEmbedType)) != m_mapQuickPrintEmbedManager.end())
+    return (*i).second;
   pEmbed = XAP_App::getApp()->getEmbeddableManager(m_pQuickPrintGraphics,szEmbedType);
-  if((strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
+  if((strcmp(pEmbed->getObjectType(),"default") == 0) &&
+     ((i = m_mapQuickPrintEmbedManager.find("default")) != m_mapQuickPrintEmbedManager.end()))
     {
       delete pEmbed;
-      return pDefault;
+      return (*i).second;
     }
-  UT_DEBUGMSG(("Got mamanger of type %s \n",pEmbed->getObjectType()));
-  m_vecQuickPrintEmbedManager.addItem(pEmbed);
+  UT_DEBUGMSG(("Got manager of type %s \n",pEmbed->getObjectType()));
+  if (strcmp(pEmbed->getObjectType(), szEmbedType) != 0)
+	{
+      if ((i = m_mapQuickPrintEmbedManager.find(pEmbed->getObjectType())) != m_mapQuickPrintEmbedManager.end())
+        {
+          m_mapQuickPrintEmbedManager[szEmbedType] = (*i).second;
+          delete pEmbed;
+          return (*i).second;
+	    }
+      m_mapQuickPrintEmbedManager[pEmbed->getObjectType()] = pEmbed;
+    }
+  m_mapQuickPrintEmbedManager[szEmbedType] = pEmbed;
   pEmbed->initialize();
   
   return pEmbed;
@@ -307,29 +332,29 @@ GR_EmbedManager * FL_DocLayout::getQuickPrintEmbedManager(const char * szEmbedTy
 GR_EmbedManager * FL_DocLayout::getEmbedManager(const char * szEmbedType)
 {
   // Look in the current collection first.
-  UT_sint32 i = 0;
-  GR_EmbedManager * pDefault = NULL;
   GR_EmbedManager * pEmbed = NULL;
-  for(i=0; i< m_vecEmbedManager.getItemCount(); i++)
-    {
-      pEmbed = m_vecEmbedManager.getNthItem(i);
-      if(strcmp(pEmbed->getObjectType(),szEmbedType) == 0)
-	{
-	  return pEmbed;
-	}
-      if(strcmp(pEmbed->getObjectType(),"default") == 0)
-	{
-	  pDefault = pEmbed;
-	}
-    }
+  std::map<std::string, GR_EmbedManager *>::iterator i;
+  if ((i = m_mapEmbedManager.find(szEmbedType)) != m_mapEmbedManager.end())
+    return (*i).second;
   pEmbed = XAP_App::getApp()->getEmbeddableManager(m_pG,szEmbedType);
-  if((strcmp(pEmbed->getObjectType(),"default") == 0) && pDefault != NULL)
+  if((strcmp(pEmbed->getObjectType(),"default") == 0) &&
+     ((i = m_mapEmbedManager.find("default")) != m_mapEmbedManager.end()))
     {
       delete pEmbed;
-      return pDefault;
+      return (*i).second;
     }
-  UT_DEBUGMSG(("Got mamanger of type %s \n",pEmbed->getObjectType()));
-  m_vecEmbedManager.addItem(pEmbed);
+  UT_DEBUGMSG(("Got manager of type %s \n",pEmbed->getObjectType()));
+  if (strcmp(pEmbed->getObjectType(), szEmbedType) != 0)
+	{
+      if ((i = m_mapEmbedManager.find(pEmbed->getObjectType())) != m_mapEmbedManager.end())
+        {
+          m_mapEmbedManager[szEmbedType] = (*i).second;
+          delete pEmbed;
+          return (*i).second;
+	    }
+      m_mapEmbedManager[pEmbed->getObjectType()] = pEmbed;
+    }
+  m_mapEmbedManager[szEmbedType] = pEmbed;
   pEmbed->initialize();
   
   return pEmbed;

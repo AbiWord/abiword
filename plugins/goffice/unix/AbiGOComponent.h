@@ -44,13 +44,10 @@ class GR_AbiGOComponentItems
 class GR_GOComponentManager : public GR_EmbedManager 
 {
 public:
-    GR_GOComponentManager(GR_Graphics * pG, char const *mime_type);
+    GR_GOComponentManager(GR_Graphics * pG);
     virtual ~GR_GOComponentManager();
     virtual GR_EmbedManager *  create(GR_Graphics * pG);
     virtual const char *   getObjectType(void) const;
-    virtual const char *   getMimeType(void) const;
-    virtual const char *   getMimeTypeDescription(void) const;
-    virtual const char *   getMimeTypeSuffix(void) const;
     virtual void           initialize(void);
     virtual UT_sint32      makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID) ;
     virtual void           setColor(UT_sint32 uid, UT_RGBColor c);
@@ -78,8 +75,6 @@ private:
     UT_GenericVector<GOComponentView *>        m_vecGOComponentView;
     UT_GenericVector<GR_AbiGOComponentItems *>    m_vecItems;
     PD_Document *                          m_pDoc;
-	char const *m_MimeType;
-	UT_String m_ObjectType;
 };
 
 // FIXME wrapper for libGNOMEOFFICEComponent object

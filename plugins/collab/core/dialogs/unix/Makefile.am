@@ -24,13 +24,22 @@ libunix_la_SOURCES = \
 	ap_UnixDialog_CollaborationShare.h
 
 uidir=$(ABIWORD_UIDIR)
+
+if TOOLKIT_GTK2
 ui_DATA = \
-	ap_UnixDialog_CollaborationAccounts.xml \
+	ap_UnixDialog_CollaborationAccounts_gtk2.xml
+else
+ui_DATA = \
+	ap_UnixDialog_CollaborationAccounts.xml
+endif
+
+ui_DATA += \
 	ap_UnixDialog_CollaborationAddAccount.xml \
 	ap_UnixDialog_CollaborationAddBuddy.xml \
 	ap_UnixDialog_CollaborationEditAccount.xml \
 	ap_UnixDialog_CollaborationJoin.xml \
 	ap_UnixDialog_CollaborationShare.xml
+
 
 EXTRA_DIST = \
         $(ui_DATA)

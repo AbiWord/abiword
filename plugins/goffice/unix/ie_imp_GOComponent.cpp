@@ -225,7 +225,7 @@ UT_Error IE_Imp_Component::_parseStream(ImportStream * pStream)
 				(gint (*)(const void*, const void*))strcmp) == NULL) {
 		return UT_IE_UNSUPTYPE;
 	}
-	UT_String Props=UT_String("embed-type: GOComponent//") + m_MimeType;
+	UT_String Props=UT_String("embed-type: GOComponent");
 	PT_DocPosition pos = pView->getPoint();
 	pView->cmdInsertEmbed(m_pByteBuf,pos,m_MimeType.c_str(),Props.c_str());
 	pView->cmdSelect(pos,pos+1);

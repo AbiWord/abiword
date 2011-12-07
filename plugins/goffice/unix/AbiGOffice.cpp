@@ -41,6 +41,8 @@
 
 #include <goffice/component/go-component-factory.h>
 #include <gsf/gsf-impl-utils.h>
+#include <list>
+#include <string>
 
 //
 // GOCmdContext interface implementation for AbiGOffice
@@ -372,28 +374,8 @@ AbiGOffice_removeFromMenus ()
 	}
 }
 
-static UT_uint32 GOChartManagerUID = 0; 
 static GR_GOChartManager  *pGOChartManager = NULL;
-
-UT_Stack ComponentManagers;
-
-typedef struct
-{
-	UT_uint32 UID;
-	GR_GOComponentManager  *Manager;
-} ManagerStruct;
-
-static void
-create_manager_cb (char const *mime_type, XAP_App * pApp)
-{
-	ManagerStruct *s = new ManagerStruct;
-	s->Manager = new GR_GOComponentManager(NULL, mime_type);
-    s->UID = pApp->registerEmbeddable(s->Manager);
-	ComponentManagers.push (s);
-	if (go_components_support_clipboard (mime_type))
-		pApp->addClipboardFmt (mime_type);
-    UT_DEBUGMSG(("Class %x created for %s!\n", s->UID, go_mime_type_get_description (mime_type)));
-}
+static GR_GOComponentManager  *pGOComponentManager = NULL;
 
 static IE_Imp_Object_Sniffer  * m_impSniffer = 0;
 static IE_Imp_Component_Sniffer  * m_impCSniffer = 0;
@@ -405,7 +387,28 @@ abi_goffice_get_cmd_context (void)
 	return cc;
 }
 
-ABI_PLUGIN_DECLARE(AbiGOChart)
+
+// -----------------------------------------------------------------------
+//
+//      Register the component manager for each mime type to stay compatible
+//		Should be inactive by default in the future, and using an environment
+//		variable to activate (ABIGOCOMPONENT_COMPATIBLE or so).
+//
+// -----------------------------------------------------------------------
+
+std::list<std::string> uids;
+
+static void
+register_mime_cb (char const *mime_type, XAP_App * pApp)
+{
+	std::string uid = std::string("GOComponent//") + mime_type;
+	uids.push_front (uid);
+	pApp->registerEmbeddable(pGOComponentManager, uid.c_str());
+	if (go_components_support_clipboard (mime_type))
+		pApp->addClipboardFmt (mime_type);
+}
+
+ABI_PLUGIN_DECLARE(GOffice)
 
 // -----------------------------------------------------------------------
 //
@@ -432,8 +435,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
     XAP_App * pApp = XAP_App::getApp();	
     pGOChartManager = new GR_GOChartManager(NULL);
 	pGOChartManager->buildContextualMenu ();
-    GOChartManagerUID = pApp->registerEmbeddable(pGOChartManager);
-    UT_DEBUGMSG(("Class %x created for charts!\n", GOChartManagerUID));
+    pApp->registerEmbeddable(pGOChartManager);
  	/* Initialize libgoffice */
 	libgoffice_init ();
 	cc = GO_CMD_CONTEXT (g_object_new (ABI_CMD_CONTEXT_TYPE, NULL));
@@ -448,7 +450,12 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
  	GO_TYPE_DATA_MATRIX_VAL;
    // Add to AbiWord's menus.
 	mime_types = go_components_get_mime_types ();
-	g_slist_foreach (mime_types, (GFunc) create_manager_cb, pApp);
+	if (mime_types && mime_types->data)
+	{
+		pGOComponentManager = new GR_GOComponentManager(NULL);
+ 	    pApp->registerEmbeddable(pGOComponentManager);
+	}
+	g_slist_foreach (mime_types, (GFunc) register_mime_cb, pApp);
     AbiGOffice_addToMenus();
 	return 1;
 }
@@ -473,7 +480,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 
     pGOChartManager->removeContextualMenu ();
     XAP_App * pApp = XAP_App::getApp();
-    pApp->unRegisterEmbeddable(GOChartManagerUID);
+    pApp->unRegisterEmbeddable(pGOChartManager->getObjectType());
     DELETEP(pGOChartManager);
 	GSList *l = mime_types;
 	while (l)
@@ -482,13 +489,12 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 			pApp->deleteClipboardFmt((const char*)l->data);
 		l = l->next;
 	}
-	ManagerStruct *s;
-	while (ComponentManagers.getDepth () > 0) {
-		ComponentManagers.pop ((void**)&s);
-		pApp->unRegisterEmbeddable(s->UID);
-		DELETEP(s->Manager);
-		DELETEP(s);
-	}
+	std::list<std::string>::iterator i, end = uids.end();
+	for (i = uids.begin(); i != end; i++)
+		pApp->unRegisterEmbeddable((*i).c_str());
+	uids.clear();
+    pApp->unRegisterEmbeddable(pGOComponentManager->getObjectType());
+    DELETEP(pGOComponentManager);
     AbiGOffice_removeFromMenus();
 	go_component_set_command_context (NULL);
 	g_object_unref (cc);

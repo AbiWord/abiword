@@ -141,7 +141,6 @@ XAP_App::~XAP_App()
 	// run thru and destroy all frames on our window list.
 	UT_VECTOR_PURGEALL(XAP_Frame *, m_vecFrames);
 	// when can have NULL pointers....
-	UT_VECTOR_SPARSEPURGEALL(GR_EmbedManager  *, m_vecEmbedManagers);
 
 	FREEP(m_szAbiSuiteLibDir);
 	DELETEP(m_pEMC);
@@ -247,27 +246,18 @@ XAP_Module * XAP_App::getPlugin(const char * szPluginName)
 /*!
  * Register an embeddable plugin with XAP_App
  */
-UT_sint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
+bool XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed, const char *uid)
 {
-	 UT_return_val_if_fail( pEmbed, -1 );
+	 UT_return_val_if_fail( pEmbed, false );
 	 
-     UT_sint32 i=0;
-     bool bFound = false;
-     GR_EmbedManager * pCur = NULL;
-     for(i=0; !bFound && (i< m_vecEmbedManagers.getItemCount()); i++)
+	 if (uid == NULL)
+		uid = pEmbed->getObjectType();
+	 if (uid && *uid && m_mapEmbedManagers.find(uid) == m_mapEmbedManagers.end())
      {
-		 pCur =  m_vecEmbedManagers.getNthItem(i);
-		 if(pCur && (strcmp(pCur->getObjectType(),pEmbed->getObjectType()) == 0))
-		 {
-			 bFound = true;
-		 }
+		 m_mapEmbedManagers[uid] = pEmbed;
+		 return true;
      }
-     if(!bFound)
-     {
-		 m_vecEmbedManagers.addItem(pEmbed);
-		 return  m_vecEmbedManagers.getItemCount() - 1;
-     }
-     return -1;
+	return false;
 }
 
 
@@ -275,11 +265,14 @@ UT_sint32 XAP_App::registerEmbeddable(GR_EmbedManager * pEmbed)
  * UnRegister an embeddable plugin with XAP_App. The plugin itself is 
  * responsible for actually deleting the object.
  */
-bool XAP_App::unRegisterEmbeddable(UT_sint32 uid)
+bool XAP_App::unRegisterEmbeddable(const char *uid)
 {
-  if(uid < m_vecEmbedManagers.getItemCount())
+  if (uid == NULL || *uid == 0)
+    return false;
+  std::map<std::string, GR_EmbedManager *>::iterator i = m_mapEmbedManagers.find(uid);
+  if(i != m_mapEmbedManagers.end())
     {
-      m_vecEmbedManagers.setNthItem(uid,NULL,NULL);
+      m_mapEmbedManagers.erase(i);
       return true;
     }
   return false;
@@ -291,20 +284,10 @@ bool XAP_App::unRegisterEmbeddable(UT_sint32 uid)
  */
 GR_EmbedManager * XAP_App:: getEmbeddableManager(GR_Graphics * pG, const char * szObjectType)
 {
-     UT_sint32 i=0;
-     bool bFound = false;
      GR_EmbedManager * pCur = NULL;
-     for(i=0; !bFound && (i< m_vecEmbedManagers.getItemCount()); i++)
-     {
-       pCur =  m_vecEmbedManagers.getNthItem(i);
-       UT_DEBUGMSG(("Look at Manager for Object type %s requested %s strcmp %d strcmp %d \n",pCur->getObjectType(),szObjectType,strcmp(pCur->getObjectType(),szObjectType),strcmp(pCur->getObjectType(),szObjectType) ));
-
-       if(pCur && (strcmp(pCur->getObjectType(),szObjectType) == 0))
-       {
-	 bFound = true;
-       }
-     }
-     if(bFound)
+	 if (szObjectType && szObjectType != 0)
+       pCur =  m_mapEmbedManagers[szObjectType];
+     if(pCur != NULL)
      {
        UT_DEBUGMSG(("Found a plugin of type %s \n",pCur->getObjectType()));
        return pCur->create(pG);

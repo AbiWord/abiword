@@ -447,13 +447,13 @@ private:
 	PT_DocPosition      m_iDocSize;
 	UT_sint32           m_iFilled;
 	bool                m_bSpellCheckInProgress;
-	UT_GenericVector<GR_EmbedManager *> m_vecEmbedManager;
+	std::map<std::string, GR_EmbedManager *> m_mapEmbedManager;
 	bool                m_bAutoGrammarCheck;
 	fl_BlockLayout  *   m_PendingBlockForGrammar;
 	UT_sint32           m_iGrammarCount;
 	bool                m_bFinishedInitialCheck;
 	PT_DocPosition      m_iPrevPos;
-	UT_GenericVector<GR_EmbedManager *> m_vecQuickPrintEmbedManager;
+	std::map<std::string, GR_EmbedManager *> m_mapQuickPrintEmbedManager;
 	GR_Graphics *       m_pQuickPrintGraphics;
 	bool                m_bIsQuickPrint;
 	bool                m_bDisplayAnnotations;

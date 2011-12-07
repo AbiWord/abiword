@@ -37,6 +37,8 @@
 #include "ut_string_class.h"
 #include "xap_AppImpl.h"
 #include "xav_Listener.h"
+#include <map>
+#include <string>
 
 #define NUM_MODELESSID 39
 
@@ -253,8 +255,8 @@ public:
 	bool						removeListener(AV_ListenerId listenerId);
 	virtual bool					notifyListeners(AV_View * pView, const AV_ChangeMask hint,void * pPrivateData = NULL);
 
-	UT_sint32					registerEmbeddable(GR_EmbedManager * pEmbed);
-	bool						unRegisterEmbeddable(UT_sint32 uid);
+	bool					registerEmbeddable(GR_EmbedManager * pEmbed, const char *uid = NULL);
+	bool						unRegisterEmbeddable(const char *uid);
 	GR_EmbedManager *				getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
 	XAP_Module *				getPlugin(const char * szPluginName);
 	
@@ -321,7 +323,7 @@ private:
 	UT_uint32					m_iDefaultGraphicsId;
 	
 	XAP_InputModes *				m_pInputModes;
-	UT_GenericVector <GR_EmbedManager *>		m_vecEmbedManagers;	
+	std::map<std::string, GR_EmbedManager *> m_mapEmbedManagers;	
 	XAP_App(const XAP_App&);			// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);
 #ifdef DEBUG

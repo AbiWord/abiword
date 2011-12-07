@@ -138,7 +138,12 @@ GtkWidget * AP_UnixDialog_CollaborationAccounts::_constructWindow(void)
 	//const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
 	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_CollaborationAccounts.xml";
+	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir()
+#ifdef TOOLKIT_GTK2
+		+ "/ap_UnixDialog_CollaborationAccounts_gtk2.xml";
+#else
+		+ "/ap_UnixDialog_CollaborationAccounts.xml";
+#endif
 	// load the dialog from the UI file
 	GtkBuilder* builder = gtk_builder_new();
 	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);

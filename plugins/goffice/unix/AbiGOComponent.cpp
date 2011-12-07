@@ -42,6 +42,9 @@
 #include <goffice/component/go-component-factory.h>
 #include <goffice/goffice.h>
 #include <gsf/gsf-libxml.h>
+#ifndef G_VALUE_INIT
+#define G_VALUE_INIT { 0, { { 0 } } }
+#endif
 
 static void changed_cb (GOComponent*, gpointer);
 
@@ -297,15 +300,13 @@ GR_AbiGOComponentItems::~GR_AbiGOComponentItems(void)
 }
 
 
-GR_GOComponentManager::GR_GOComponentManager(GR_Graphics* pG, char const *mime_type)
+GR_GOComponentManager::GR_GOComponentManager(GR_Graphics* pG)
   : GR_EmbedManager(pG), 
     m_CurrentUID(-1),
-    m_pDoc(NULL),
-	m_MimeType(mime_type)
+    m_pDoc(NULL)
 {
   m_vecGOComponentView.clear();
   m_vecItems.clear();
-	m_ObjectType = UT_String ("GOComponent//") + mime_type;
 }
 
 GR_GOComponentManager::~GR_GOComponentManager()
@@ -316,27 +317,12 @@ GR_GOComponentManager::~GR_GOComponentManager()
 
 GR_EmbedManager * GR_GOComponentManager::create(GR_Graphics * pG)
 {
-  return static_cast<GR_EmbedManager *>(new GR_GOComponentManager(pG, m_MimeType));
+  return static_cast<GR_EmbedManager *>(new GR_GOComponentManager(pG));
 }
 
 const char * GR_GOComponentManager::getObjectType(void) const
 {
-  return m_ObjectType.c_str ();
-}
-
-const char * GR_GOComponentManager::getMimeType(void) const
-{
-	return m_MimeType;
-}
-
-const char * GR_GOComponentManager::getMimeTypeDescription(void) const
-{
-	return go_mime_type_get_description (m_MimeType);
-}
-
-const char * GR_GOComponentManager::getMimeTypeSuffix(void) const
-{
-	return go_components_get_mime_suffix (m_MimeType);
+  return "GOComponent";
 }
 
 void GR_GOComponentManager::initialize(void)
@@ -599,10 +585,10 @@ changed_cb (GOComponent *component, gpointer data)
 			if (buf && length) {
 				UT_ByteBuf myByteBuf;
 				myByteBuf.append (buf, length);
-				UT_String Props=UT_String ("embed-type: GOComponent//") + component->mime_type;
+				UT_String Props="embed-type: GOComponent";
 				guint i, nbprops;
 				GType    prop_type;
-				GValue	 value = {0, {{0}, {0}}};
+				GValue	 value = G_VALUE_INIT;
 				char *prop = NULL;
 				GParamSpec **specs = g_object_class_list_properties (
 							G_OBJECT_GET_CLASS (component), &nbprops);
@@ -679,7 +665,7 @@ void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, const char 
 			PP_AttrProp const *Props = m_pRun->getSpanAP ();
 			GParamSpec *prop_spec;
 			int i = 0;
-			GValue res = {0,{{0},{0}}};
+			GValue res = G_VALUE_INIT;
 			gchar const *szName, *szValue;
 			while (Props->getNthProperty (i++, szName, szValue)) {
 				prop_spec = g_object_class_find_property (
@@ -729,10 +715,11 @@ void GOComponentView::update ()
 		if (buf && length) {
 		UT_ByteBuf myByteBuf;
 		myByteBuf.append (buf, length);
-		UT_String Props=UT_String ("embed-type: GOComponent//") + mime_type;
+		mime_type = component->mime_type;
+		UT_String Props="embed-type: GOComponent";
 		guint i, nbprops;
 		GType    prop_type;
-		GValue	 value = {0, {{0}, {0}}};
+		GValue	 value = G_VALUE_INIT;
 		char *prop = NULL;
 		GParamSpec **specs = g_object_class_list_properties (
 					G_OBJECT_GET_CLASS (component), &nbprops);
@@ -752,7 +739,7 @@ void GOComponentView::update ()
 					case G_TYPE_ULONG:
 					case G_TYPE_FLOAT:
 					case G_TYPE_DOUBLE: {
-						GValue str;
+						GValue str = G_VALUE_INIT;
 						g_value_init (&str, G_TYPE_STRING);
 						g_value_transform (&value, &str);
 						prop = g_strdup (g_value_get_string (&str));
@@ -777,7 +764,7 @@ void GOComponentView::update ()
 				}
 			}
 		}
-		pView->cmdUpdateEmbed(m_pRun, &myByteBuf,mime_type.c_str(),Props.c_str());
+		pView->cmdUpdateEmbed(m_pRun, &myByteBuf,mime_type.c_str(), Props.c_str());
 		} else
 			pView->cmdDeleteEmbed(m_pRun);
 		if (clearfunc)

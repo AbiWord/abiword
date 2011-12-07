@@ -963,7 +963,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
 	// Add to AbiWord's plugin listeners
 	XAP_App * pApp = XAP_App::getApp();	
 	pMathManager = new GR_MathManager(NULL);
-	MathManagerUID = pApp->registerEmbeddable(pMathManager);
+	pApp->registerEmbeddable(pMathManager);
 
 	// Add to AbiWord's menus
 	AbiMathView_addToMenus();
@@ -981,7 +981,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	mi->usage = 0;
 
 	XAP_App * pApp = XAP_App::getApp();
-	pApp->unRegisterEmbeddable(MathManagerUID);
+	pApp->unRegisterEmbeddable(pMathManager->getObjectType());
 	DELETEP(pMathManager);
 	AbiMathView_removeFromMenus();
 
