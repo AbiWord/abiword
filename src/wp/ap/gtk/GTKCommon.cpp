@@ -179,14 +179,14 @@ std::string tostr( GtkComboBox* combo )
 
 
 static
-void collect_cb_fe( GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
+void collect_cb_fe( GtkTreeModel * /*model*/, GtkTreePath * /*path*/, GtkTreeIter * iter, gpointer udata)
 {
     list_gtktreeiter_t* x = (list_gtktreeiter_t*)udata;
     x->push_back( *iter );
 }
 
 static
-gboolean collectall_cb_fe( GtkTreeModel *model, GtkTreePath *path, GtkTreeIter *iter, gpointer udata)
+gboolean collectall_cb_fe( GtkTreeModel * /*model*/, GtkTreePath * /*path*/, GtkTreeIter *iter, gpointer udata)
 {
     list_gtktreeiter_t* x = (list_gtktreeiter_t*)udata;
     x->push_back( *iter );
@@ -198,8 +198,6 @@ list_gtktreeiter_t getIterList( GtkWidget* w_treeview, bool useSelection )
     GtkTreeModel* w_treemodel = gtk_tree_view_get_model( GTK_TREE_VIEW(w_treeview) );
     list_gtktreeiter_t giters;
     GtkTreeView*  tv = GTK_TREE_VIEW(w_treeview);
-    GtkTreeModel* tm = GTK_TREE_MODEL(w_treemodel);
-    GtkTreeStore* ts = GTK_TREE_STORE(w_treemodel);
     GtkTreeSelection *selection;
 
     if( useSelection )
@@ -219,7 +217,6 @@ list_gtktreeiter_t getIterList( GtkWidget* w_treeview, bool useSelection )
 
 void clearSelection( GtkTreeView* tv )
 {
-    GtkTreeModel* w_treemodel = gtk_tree_view_get_model( GTK_TREE_VIEW(tv) );
     GtkTreeSelection *selection = gtk_tree_view_get_selection ( tv );
     gtk_tree_selection_unselect_all( selection );
 }
@@ -369,7 +366,7 @@ public:
 
 
 std::string
-UT_runDialog_AskForPathname::appendDefaultSuffixFunctor( std::string dialogFilename, UT_sint32 n )
+UT_runDialog_AskForPathname::appendDefaultSuffixFunctor( std::string dialogFilename, UT_sint32 /*n*/ )
 {
     std::stringstream ss;
     ss << dialogFilename << ".zzz";

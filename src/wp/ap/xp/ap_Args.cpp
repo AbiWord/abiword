@@ -144,7 +144,7 @@ void AP_Args::parseOptions()
 
 	err = NULL;
 	ret = g_option_context_parse (m_context, &XArgs->m_argc, &XArgs->m_argv, &err);
-	if (err) {
+	if (!ret || err) {
 		fprintf (stderr, "%s\n", err->message);
 		g_error_free (err); err = NULL;
 		return;

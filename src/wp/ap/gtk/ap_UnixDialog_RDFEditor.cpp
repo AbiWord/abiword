@@ -302,7 +302,7 @@ AP_UnixDialog_RDFEditor::hideRestrictionXMLID( bool v )
         PD_RDFModelHandle model;
         std::list< std::string > xmlids;
         getRDF()->addRelevantIDsForPosition( xmlids, getView()->getPoint() );
-        UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, have restricted xmlids size:%d\n", xmlids.size() ));
+        UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, have restricted xmlids size:%lu\n", xmlids.size() ));
         
 		/// FIXME...
 		setRestrictedModel( model );
@@ -374,7 +374,7 @@ AP_UnixDialog_RDFEditor::onDelClicked()
 
 
 void
-AP_UnixDialog_RDFEditor::onCellEdited( GtkCellRendererText *cell,
+AP_UnixDialog_RDFEditor::onCellEdited( GtkCellRendererText * /*cell*/,
                                        gchar *path_string,
                                        gchar *new_text,
                                        int cidx )
@@ -529,8 +529,8 @@ AP_UnixDialog_RDFEditor::constuctWindow (XAP_Frame * /*pFrame*/)
 
     colid = C_SUBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    g_object_set(ren, "editable", 1, 0 );
-    g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM,  GINT_TO_POINTER(colid) );
+    g_object_set(ren, "editable", 1, 0, NULL);
+    g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM,  GINT_TO_POINTER(colid));
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
                            (gpointer)this, 0, GConnectFlags(0));
@@ -541,7 +541,7 @@ AP_UnixDialog_RDFEditor::constuctWindow (XAP_Frame * /*pFrame*/)
     
     colid = C_PRED_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    g_object_set(ren, "editable", 1, 0 );
+    g_object_set(ren, "editable", 1, 0, NULL );
     g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM, GINT_TO_POINTER(colid) );
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
@@ -553,7 +553,7 @@ AP_UnixDialog_RDFEditor::constuctWindow (XAP_Frame * /*pFrame*/)
 
     colid = C_OBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    g_object_set(ren, "editable", 1, 0 );
+    g_object_set(ren, "editable", 1, 0, NULL );
     g_object_set_data( G_OBJECT(ren), GOBJ_COL_NUM, GINT_TO_POINTER(colid) );
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
@@ -709,7 +709,6 @@ AP_UnixDialog_RDFEditor::getSelection()
 {
     std::list< PD_RDFStatement > ret;
     GtkTreeModel* model = GTK_TREE_MODEL(m_resultsModel);
-    GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_resultsView));
     list_gtktreeiter_t l = getIterList( GTK_WIDGET(m_resultsView), true );
     for( list_gtktreeiter_t::iterator iter = l.begin(); iter != l.end(); ++iter )
     {

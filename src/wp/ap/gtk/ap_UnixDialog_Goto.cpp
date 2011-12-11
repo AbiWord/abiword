@@ -610,7 +610,7 @@ AP_UnixDialog_Goto::updateXMLIDList( GtkWidget* w )
         GtkTreeIter iter;
         std::set< std::string > xmlids;
         rdf->getAllIDs( xmlids );
-        UT_DEBUGMSG (("MIQ: xmlids.sz:%d\n", xmlids.size() ));
+        UT_DEBUGMSG (("MIQ: xmlids.sz:%lu\n", xmlids.size() ));
 
         for( std::set< std::string >::iterator xiter = xmlids.begin();
              xiter != xmlids.end(); ++xiter )
