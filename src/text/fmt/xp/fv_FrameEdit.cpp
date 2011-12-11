@@ -851,7 +851,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		bool bEOL=false;
 		bool bDir=false;
 		m_pView->_findPositionCoords(posAtXY,bEOL,x1,y1,x2,y2,height,bDir,&pBL,&pRun);
-		UT_DEBUGMSG((" Requested y %d frameEdit y1= %d y2= %d \n",y,y1,y2));
+		xxx_UT_DEBUGMSG((" Requested y %d frameEdit y1= %d y2= %d \n",y,y1,y2));
 		fp_Run * pRunOrig = pRun;
 		if((pBL == NULL) || (pRun == NULL))
 		{
@@ -975,14 +975,14 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		fp_Line * pFirstL = static_cast<fp_Line *>(pBL->getFirstContainer());
 		UT_sint32 xFirst,yFirst;
 		pFirstL->getScreenOffsets(pFirstL->getFirstRun(),xFirst,yFirst);
-		UT_DEBUGMSG(("First line x  %d y %d \n",xFirst,yFirst));
-		UT_DEBUGMSG(("xBlockOffset %d yBlockOffset %d \n",xBlockOff,yBlockOff));
+		xxx_UT_DEBUGMSG(("First line x  %d y %d \n",xFirst,yFirst));
+		xxx_UT_DEBUGMSG(("xBlockOffset %d yBlockOffset %d \n",xBlockOff,yBlockOff));
 		UT_sint32 xLineOff = 0;
 		UT_sint32 yLineOff = 0;
 		fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(pLine->getContainer());
 		pVCon->getOffsets(pLine,xLineOff,yLineOff);
 		xLineOff -= pLine->getX();
-		UT_DEBUGMSG(("Closest Line yLineoff %d \n",yLineOff));
+		xxx_UT_DEBUGMSG(("Closest Line yLineoff %d \n",yLineOff));
 
 // OK correct for page offsets
 		pPage = pVCon->getPage();
@@ -1489,7 +1489,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sPrefPage("");
 		fl_BlockLayout * pCloseBL = NULL;
 		fp_Page * pPage = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,&pCloseBL,&pPage);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,
+				sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,&pCloseBL,&pPage);
+		posAtXY = pCloseBL->getPosition();
 
 		sProp = "xpos";
 		sVal = sXpos;
@@ -1604,13 +1606,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		// Rebuild the page
 		//
 		pDSL->format();
-		//
-		// Frame has gone, now find out where to put it.
-		//
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,&pCloseBL,&pPage);
-
 		m_pFrameLayout = NULL;
-		posAtXY = pCloseBL->getPosition();
+
 // Insert the new frame struxes
 //
 // This should place the the frame strux immediately after the block containing

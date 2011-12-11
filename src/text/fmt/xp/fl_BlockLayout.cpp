@@ -2458,15 +2458,20 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			}
 			if(pCon->getNext() != NULL)
 			{
-				while(pCon && (pCon != pLastLine) && yoff < yFpos )
+				while(pCon != pLastLine)
 				{
-					yoff += pCon->getHeight();
-					yoff += pCon->getMarginBefore();
-					yoff += pCon->getMarginAfter();
-					pCon = static_cast<fp_Line *>(pCon->getNext());
+					if (!pCon->isSameYAsPrevious())
+					{
+						yoff += pCon->getHeight();
+						yoff += pCon->getMarginAfter();
+					}
+					if ((yoff < yFpos) && (pCon->getNext() != NULL))
+						pCon = static_cast<fp_Line *>(pCon->getNext());
+					else
+						break;
 				}
 			}
-			if(pCon && (pCon == pLastLine) && (pCon != static_cast<fp_Line *>(getLastContainer())) && (yoff < yFpos))
+			if((pCon == pLastLine) && (pCon != static_cast<fp_Line *>(getLastContainer())) && (yoff < yFpos))
 			{
 				// Frame is not within the container so far filled.
 				// try later
@@ -2478,18 +2483,9 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// 
 			if(pCon && pCon != pLastLine && yoff >= yFpos)
 			{
-				if(pCon->getPrev())
-				{
-					pCon = static_cast<fp_Line *>(pCon->getPrev());
-					yoff -= pCon->getHeight();
-					yoff -= pCon->getMarginBefore();
-					yoff -= pCon->getMarginAfter();
-					UT_DEBUGMSG(("Final yoff %d \n",yoff));
-				}
-			}
-			if(!pCon)
-			{
-				pCon = pFirstLine;
+				yoff -= pCon->getHeight();
+				yoff -= pCon->getMarginAfter();
+				xxx_UT_DEBUGMSG(("Final yoff %d \n",yoff));
 			}
 			//
 			// OK at this point pCon is the first line above our frame.
@@ -2497,45 +2493,22 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			//
 			fp_Page * pPage = pCon->getPage();
 			UT_sint32 Xref = pCon->getX();
-			if(pPage == NULL || pCon->getY() <= -9999999)
+			UT_sint32 Yref = pCon->getY();
+			if(pPage == NULL || Yref <= -9999999)
 			{
 				return false;
 			}
 			//
 			// OK now calculate the offset from the first line to this page.
 			//
-			fp_Page * pFirstPage = pFirstLine->getPage();
-			UT_sint32 iFirstPageNo = getDocLayout()->findPage(pFirstPage);
-			UT_sint32 iThisPageNo = getDocLayout()->findPage(pPage);
-			UT_sint32 pageHeight = 0;
 			UT_sint32 yLineOff,xLineOff;
 			fp_VerticalContainer * pVCon = NULL;
-			if(iThisPageNo > iFirstPageNo)
-			{
-				//
-				// Calculate the distance from the position from the top
-				// of the first line to the bottom of the page.
-				//
-				pVCon = (static_cast<fp_VerticalContainer *>(pFirstLine->getContainer()));
-				pVCon->getOffsets(pFirstLine, xLineOff, yLineOff);
-				//
-				// this is the offset relative to the page. now subtract it
-				// from the height of the page
-				fl_DocSectionLayout * pDSL = getDocSectionLayout();
-				pageHeight = pFirstPage->getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
-				yoff = pageHeight - yLineOff;
-				yoff = pageHeight * (iThisPageNo- iFirstPageNo -1);
-			}
-			//
-			// OK subtract this off from yFpos
-			//
-			yFpos -= yoff;
 			pVCon = (static_cast<fp_VerticalContainer *>(pCon->getContainer()));
 			pVCon->getOffsets(pCon, xLineOff, yLineOff);
 			UT_DEBUGMSG(("xLineOff %d yLineOff %d in block \n",xLineOff,yLineOff));
 			xFpos += xLineOff - Xref; // Never use the x-position 
                                               // of the Line!!!
-			yFpos += yLineOff;
+			yFpos += yLineOff - yoff;
 
 			// OK, we have the X and Y positions of the frame relative to
 			// the page.
@@ -2549,26 +2522,12 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				pFrameCon->setX(xFpos);
 				pFrameCon->setY(yFpos);
 				UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
-				UT_sint32 iThisPage = getDocLayout()->findPage(pPage);
 				UT_return_val_if_fail(pPage,false);
 				if(pPage->findFrameContainer(pFrameCon) < 0)
 				{
-					if((iPrefPage >= 0) && abs(iPrefPage - iThisPage) < 2)
-					{
-							fp_Page * pPrefPage = getDocLayout()->getNthPage(iPrefPage);
-							if(pPrefPage && (pPrefPage->findFrameContainer(pFrameCon) < 0))
-							{
-									pPrefPage->insertFrameContainer(pFrameCon);
-									iPrefPage = getDocLayout()->findPage(pPrefPage);
-									pFrameCon->setPreferedPageNo(iPrefPage);
-							}
-					}
-					else
-					{
-							pPage->insertFrameContainer(pFrameCon);
-							iPrefPage = getDocLayout()->findPage(pPage);
-							pFrameCon->setPreferedPageNo(iPrefPage);
-					}
+					pPage->insertFrameContainer(pFrameCon);
+					iPrefPage = getDocLayout()->findPage(pPage);
+					pFrameCon->setPreferedPageNo(iPrefPage);
 				}
 			}
 		}
@@ -2742,9 +2701,11 @@ bool fl_BlockLayout::getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Li
 	fp_Line * pCon = static_cast<fp_Line *>(getFirstContainer());
 	while(pCon && (pCon != pLine))
 	{
-		yoff += pCon->getHeight();
-		yoff += pCon->getMarginBefore();
-		yoff += pCon->getMarginAfter();
+		if (!pCon->isSameYAsPrevious())
+		{
+			yoff += pCon->getHeight();
+			yoff += pCon->getMarginAfter();
+		}
 		pCon = static_cast<fp_Line *>(pCon->getNext());
 	}
 	if(pCon != pLine)
