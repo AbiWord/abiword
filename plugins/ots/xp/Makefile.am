@@ -10,8 +10,13 @@ libxp_la_SOURCES = \
 	AbiOts.cpp
 
 uidir=$(ABIWORD_UIDIR)
+if TOOLKIT_GTK2
+ui_DATA = \
+	ots_gtk2.xml	
+else
 ui_DATA = \
 	ots.xml
+endif
 
 EXTRA_DIST = \
 	$(ui_DATA)

@@ -47,7 +47,7 @@
 
 #include <ots/libots.h>
 
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 #include <gtk/gtk.h>
 #include "xap_UnixApp.h"
 #include "xap_UnixDialogHelper.h"
@@ -55,12 +55,16 @@
 
 static const char* Ots_MenuLabel = "&Summarize";
 static const char* Ots_MenuTooltip = "Summarize your document or selected text";
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 
 static int getSummaryPercent(void)
 {
-  std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ots.xml";
-  
+  std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() 
+#if defined(TOOLKIT_GTK)
+      + "/ots.xml";
+#elif defined(TOOLKIT_GTK2)
+      + "/ots_gtk2.xml";
+#endif
   // load the dialog from the UI file
   GtkBuilder* builder = gtk_builder_new();
   gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
@@ -197,7 +201,7 @@ Ots_addToMenus()
   
   EV_Menu_Action* myAction = new EV_Menu_Action(newID,                     // id that the layout said we could use
 						0,                      // no, we don't have a sub menu.
-#ifdef TOOLKIT_GTK
+#ifdef TOOLKIT_GTK_ALL
 						1,                      // yes, we raise a dialog.
 #else
 						0,                      // no dialog

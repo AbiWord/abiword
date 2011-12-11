@@ -1,5 +1,5 @@
 
-if TOOLKIT_GTK
+if TOOLKIT_GTK_ALL
 
 SUBDIRS = unix
 

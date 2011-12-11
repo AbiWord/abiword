@@ -154,7 +154,11 @@ GDict_dlg_create (const char * search)
   close = GTK_WIDGET (g_list_last (GNOME_DIALOG (gdict_dlg)->buttons)->data);  
   vbox = GNOME_DIALOG(gdict_dlg)->vbox;
   
+#if GTK_CHECK_VERSION(2,15,0)
   hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, GNOME_PAD_SMALL);	
+#else
+  hbox = gtk_hbox_new (FALSE, GNOME_PAD_SMALL);
+#endif
   gtk_container_set_border_width (GTK_CONTAINER (hbox), GNOME_PAD_SMALL);
   gtk_box_pack_start (GTK_BOX (vbox), hbox, FALSE, FALSE, 0);
   
