@@ -96,6 +96,15 @@ TFTEST_MAIN("UT_UTF8String")
 	TFPASS(s4 == "application/vnd.oasis.opendocument.text");
 	g_free(string);
 
+	// see http://bugzilla.abisource.com/show_bug.cgi?id=13176
+	UT_UTF8String s5;
+	s5 = "http://www.abisource.com/";
+	s5.escapeURL();
+	TFPASS(s5 == "http://www.abisource.com/");
+
+	s5 = "http://www.abisource.com";
+	s5.escapeURL();
+	TFPASS(s5 == "http://www.abisource.com");
 }
 
 TFTEST_MAIN("UT_UCS4String")

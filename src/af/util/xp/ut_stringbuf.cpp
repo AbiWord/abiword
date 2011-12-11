@@ -25,6 +25,7 @@
 #include <stdio.h>
 #include <algorithm>
 
+#include <libxml/uri.h>
 
 #include <glib.h>
 
@@ -563,195 +564,18 @@ void UT_UTF8Stringbuf::escapeXML ()
 /*
    this function escapes the string to provide for conformity with
    http://www.w3.org/TR/xlink/#link-locators, section 5.4
+
+   Just use libxml and hope for the best.
 */
 void UT_UTF8Stringbuf::escapeURL ()
 {
 	if(!m_psz || !*m_psz)
 		return;
-	
-	// now work out how many exra characters we will need
-	// need to do this first of all, since growing the string will invalidate all pointers
-	UTF8Iterator I(this);
-	UT_UCS4Char c;
-	UT_uint32 iIncrease = 0;
 
-	for(c = charCode(I.current()); c != 0; c = charCode(I.advance()))
-	{
-		UT_sint32 iByteLen = UT_Unicode::UTF8_ByteLength(c);
-
-		if(iByteLen > 1)
-			iIncrease += iByteLen;
-		else if(c <= 0x20 || c > 0x7e || (!isalnum(c) && !strchr("$-_.+!*'(),", c)))
-			iIncrease += 2;
-	}
-
-	grow(iIncrease);
-	
-	UT_uint32 iScheme = 0;
-	if(!g_ascii_strncasecmp(m_psz, "ftp://", 6))            iScheme = 1;
-	else if(!g_ascii_strncasecmp(m_psz, "http://", 7))      iScheme = 2;
-	else if(!g_ascii_strncasecmp(m_psz, "gopher://", 9))    iScheme = 3;
-	else if(!g_ascii_strncasecmp(m_psz, "mailto:", 7))      iScheme = 4;
-	else if(!g_ascii_strncasecmp(m_psz, "news:", 5))      iScheme = 5;
-	else if(!g_ascii_strncasecmp(m_psz, "nntp://", 7))      iScheme = 6;
-	else if(!g_ascii_strncasecmp(m_psz, "telnet://", 9))    iScheme = 7;
-	else if(!g_ascii_strncasecmp(m_psz, "wais://", 7))      iScheme = 8;
-	else if(!g_ascii_strncasecmp(m_psz, "file://", 7))      iScheme = 9;
-	else if(!g_ascii_strncasecmp(m_psz, "prospero://", 11)) iScheme = 10;
-
-	// now we parse the string into its constituent parts
-	char * p = strstr(m_psz, "://");
-	char * schm = NULL;
-	char * user = NULL;
-	char * pswd = NULL;
-	char * host = NULL;
-	char * port = NULL;
-	char * last_quest = NULL;
-	char * last_hash = NULL;
-	char * last_slash = NULL;
-	
-	if(p)
-	{
-		user = p + 3;
-		schm = user;
-		p = strchr(p+3, '/');
-	}
-	else if(iScheme == 4)
-	{
-		p = m_psz + 7;
-	}
-	else if(iScheme == 5)
-	{
-		p = m_psz + 5;
-	}
-	
-	char * urlpath = p ? p : m_psz;
-
-	if(urlpath != m_psz && iScheme != 4 && iScheme != 5)
-	{
-		*urlpath = 0;
-		char * at = strrchr(user, '@');
-
-		if(!at)
-		{
-			user = NULL;
-		}
-		else
-		{
-			host = at + 1;
-			port = strchr(host, ':');
-			if(port) port++;
-
-			*at = 0;
-
-			pswd = strchr(user, ':');
-			if(pswd) pswd++;
-
-			*at = '@';
-		}
-
-		*urlpath = '/';
-	}
-
-	// find out the last /, ? and # -- we need these to work out if ?#& should be escaped
-	// in http or not
-	last_slash = strrchr(urlpath, '/');
-	last_quest = strrchr(urlpath, '?');
-	last_hash = strrchr(urlpath, '#');
-
-	if(last_quest < last_slash) last_quest = NULL; // this is not a query questionmark
-	if(last_hash < last_slash)  last_hash  = NULL;
-	char buff[30];
-	UTF8Iterator J(this);
-	
-	for(c = charCode(J.current()); c != 0; c = charCode(J.advance()))
-	{
-		p = (char*) J.current();
-		UT_sint32 iByteLen = UT_Unicode::UTF8_ByteLength(c);
-		
-		if (iByteLen > 1) // mutlibyte in utf-8; each byte is to be encoded
-		{
-			char bytes[20]; bytes[0] = 0;
-			UT_sint32 j;
-			for(j = 0; j < iByteLen; ++j)
-			{
-				UT_uint32 v = (unsigned char)p[j];
-				snprintf(buff, 30, "%%%02x", v);
-				strcat(bytes,buff);
-			}
-
-			char * b = bytes;
-			for(j = 0; j < iByteLen; ++j)
-			{
-				*p++ = *b++;
-			}
-			
-			insert(p, b, strlen(b));
-
-			for(j = 0; j < iByteLen; ++j)
-			{
-				J.advance();
-				J.advance();
-				J.advance();
-			}
-
-			J.retreat();
-		}
-		else if(// all single byte chars that always have to be encoded
-		   (c <= 0x20 || c > 0x7e || (!isalnum(c) && !strchr("$-_.+!*'(),;/?:@=&#", c)))
-		   
-		   // between the path element and the scheme marker all reserved chars other than @ and : also need to
-		   // be encode
-		   || (p < urlpath && p >= schm && strchr(";/?=&#",c))
-		
-		   // in user name and pswd, colons and @ have to be encoded
-		   || ((user && host && p >= user && p < host - 1) && ((c == ':' && (!pswd || p != pswd - 1)) || c == '@'))
-
-		   // in the host part we also encode @
-		   || (c == '@' && p >= host && p < urlpath)
-
-		   // in url paths, the requirements are scheme-specific
-		   // http scheme: "/?;" are reserved; encode all # other than the fragment marker,
-		   // all = before the parameter ? as well as all :, @, &
-		   || (p > urlpath &&
-			   ((iScheme == 0 || iScheme == 2) && 
-				((c=='?' && p!=last_quest) || (c=='#' && p!=last_hash) || (c=='=' && p<last_quest)
-				 || strchr(":@&", c))))
-
-		   // in mailto are no reserved characters
-		   || (p > urlpath &&
-			   (iScheme == 4 && strchr(";?:@=&#/",c)))
-
-		   // news, only @ is reserved
-		   || (p > urlpath &&
-			   (iScheme == 5 && strchr(";?:=&#/",c)))
-		   
-		   // in all other schemes we escape the reserved characters except /
-		   || (p > urlpath &&
-			   (iScheme != 0 && iScheme != 2 && iScheme != 4 && iScheme != 5) && strchr(";?:@=&#", c)))
-		{
-			UT_return_if_fail( p );
-
-			// we have to adjust any pointers we keep in line with the insertion
-			if(last_quest >= p) last_quest += 2;
-			if(last_hash >=  p) last_hash  += 2;
-			if(last_slash >= p) last_slash += 2;
-			if(host >= p) host += 2;
-			if(pswd >= p) pswd += 2;
-			if(user >= p) user += 2;
-			if(port >= p) port += 2;
-
-			UT_uint32 v = *p;
-			
-			snprintf(buff, 30, "%02x", v);
-			*p++ = '%';
-			insert(p, buff, strlen(buff));
-
-			// move past the two new chars
-			J.advance();
-			J.advance();
-
-		}
+	xmlChar * uri = xmlURIEscape(BAD_CAST m_psz);
+	if(uri) {
+		assign((gchar*)uri);
+		xmlFree(uri);
 	}
 }
 
