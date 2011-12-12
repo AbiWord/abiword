@@ -60,10 +60,11 @@ void fb_Alignment_left::eraseLineFromRun(fp_Line *pLine, UT_uint32 runIndex)
 void fb_Alignment_center::initialize(fp_Line *pLine)
 {
 	UT_sint32 iWidth = pLine->calculateWidthOfLine();
-
 	UT_sint32 m_iExtraWidth = pLine->getAvailableWidth() - iWidth;
-
-	m_startPosition = m_iExtraWidth / 2;
+	if (m_iExtraWidth > 0)
+	    m_startPosition = m_iExtraWidth / 2;
+	else
+	    m_startPosition = 0;
 }
 
 UT_sint32 fb_Alignment_center::getStartPosition()
