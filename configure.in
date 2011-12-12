@@ -674,9 +674,17 @@ AF_TEST_CPPFLAGS=
 for f in $(echo $AF_TEST_CPPFLAGS_); do AF_TEST_CPPFLAGS="$AF_TEST_CPPFLAGS $f"; done
 AC_SUBST([AF_TEST_CPPFLAGS])
 
+TEXT_FMT_TOOLKIT=
+AC_SUBST([TEXT_FMT_TOOLKIT])
+if test "x$abi_cv_gtk2" = "xyes"; then
+  TEXT_FMT_TOOLKIT=gtk
+else
+  TEXT_FMT_TOOLKIT=${TOOLKIT}
+fi
+
 TEXT_CPPFLAGS_='
   ${AF_CPPFLAGS} 
-  -I${top_srcdir}/src/text/fmt/${TOOLKIT} 
+  -I${top_srcdir}/src/text/fmt/${TEXT_FMT_TOOLKIT}
   -I${top_srcdir}/src/text/fmt/xp 
   -I${top_srcdir}/src/text/ptbl/xp'
 TEXT_CPPFLAGS=
