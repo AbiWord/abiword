@@ -692,7 +692,7 @@ void fl_FrameLayout::format(void)
 	}
 	static_cast<fp_FrameContainer *>(getFirstContainer())->layout();
 	bool bPlacedOnPage = false;
-	if(!m_bIsOnPage)
+	if(!m_bIsOnPage && !(getDocLayout()->isLayoutFilling()))
 	{
 //
 // Place it on the correct page.

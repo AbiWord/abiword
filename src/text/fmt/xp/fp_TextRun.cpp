@@ -2026,6 +2026,10 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 	if(getLine())
 	{
 		UT_Rect * pLRec = getLine()->getScreenRect();
+		if(!pLRec)
+			return;
+		if(getLine()->getContainer() && (getLine()->getContainer()->getContainerType() == FP_CONTAINER_CELL))
+			return;
 		if((pRect->left + pRect->width) > (pLRec->left + pLRec->width))
 		{
 			pRect->width -= (pRect->left + pRect->width) - (pLRec->left + pLRec->width);
@@ -2362,8 +2366,8 @@ void fp_TextRun::_drawSquiggle(UT_sint32 top, UT_sint32 left, UT_sint32 right, F
 	  // Do _|-|_|-|
 	  nPoints = getGraphics()->tdu((right - left + getGraphics()->tlu(3)));
 	}  
-	UT_return_if_fail(nPoints >= 1); //can be 1 for overstriking chars
-
+	if(nPoints < 1)
+		return;
 	/*
 		NB: This array gets recopied inside the polyLine implementation
 			to move the coordinates into a platform-specific point
