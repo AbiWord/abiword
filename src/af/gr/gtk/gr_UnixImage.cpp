@@ -284,7 +284,6 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 
 	UT_ASSERT(!m_image);
 
-	bool forceScale = (iDisplayWidth != -1 && iDisplayHeight != -1);
 	
 	GError * err = 0;
 	GdkPixbufLoader * ldr = gdk_pixbuf_loader_new ();	
@@ -295,11 +294,13 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		UT_ASSERT (ldr);
 		return false;
 	}
-	
-	if (forceScale) {
-		setDisplaySize(iDisplayWidth, iDisplayHeight);
-		gdk_pixbuf_loader_set_size(ldr, iDisplayWidth, iDisplayHeight);
-	}
+
+	// We explicitely do not scale the image on load, since cairo can do
+	// that during rendering. Scaling during loading will result in lost
+	// image information, which in turns results in bugs like
+	// in bugs like #12183.
+	// So simply remember the display size for drawing later.
+	setDisplaySize(iDisplayWidth, iDisplayHeight);
 	
 	if ( !gdk_pixbuf_loader_write (ldr, static_cast<const guchar *>(pBB->getPointer (0)),static_cast<gsize>(pBB->getLength ()), &err) )
 	{
@@ -359,18 +360,18 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		g_object_unref(G_OBJECT(m_image));
 	}
 	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
-	
-	// if gdk_pixbuf_loader_set_size was not able to scale the image, then do it manually
-	if (forceScale && (iDisplayWidth != gdk_pixbuf_get_width (m_image) || iDisplayHeight != gdk_pixbuf_get_height(m_image)))
-		scale (iDisplayWidth, iDisplayHeight);
+
 	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 	
 	return true;
 }
 
 
-void GR_UnixImage::cairoSetSource(cairo_t * cr, double x, double y)
+void GR_UnixImage::cairoSetSource(cairo_t * cr)
 {
 	UT_return_if_fail(m_image);
-	gdk_cairo_set_source_pixbuf(cr, m_image, x, y);
+	double scaleX = (double)getDisplayWidth() / (double)gdk_pixbuf_get_width (m_image);
+	double scaleY = (double)getDisplayHeight() / (double)gdk_pixbuf_get_height(m_image);
+	cairo_scale(cr, scaleX, scaleY);
+	gdk_cairo_set_source_pixbuf(cr, m_image, 0, 0);
 }

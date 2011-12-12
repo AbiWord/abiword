@@ -108,7 +108,7 @@ bool GR_RSVGVectorImage::convertFromBuffer(const UT_ByteBuf* pBB,
 	return true;
 }
 
-void GR_RSVGVectorImage::cairoSetSource(cairo_t *cr, double x, double y) 
+void GR_RSVGVectorImage::cairoSetSource(cairo_t *cr)
 {
 	createSurface(cr);
 	if (m_surface == NULL) 
@@ -116,8 +116,7 @@ void GR_RSVGVectorImage::cairoSetSource(cairo_t *cr, double x, double y)
 		return;
 	}
 	
-	cairo_set_source_surface(cr, m_surface, x, y);
-	cairo_paint(cr);
+	cairo_set_source_surface(cr, m_surface, 0, 0);
 }
 
 void GR_RSVGVectorImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)

@@ -54,9 +54,13 @@ GR_CocoaImage::~GR_CocoaImage()
 
 
 
-void GR_CocoaImage::cairoSetSource(cairo_t *cr, double x, double y)
+void GR_CocoaImage::cairoSetSource(cairo_t *cr)
 {
-	cairo_set_source_surface(cr, m_surface, x, y);
+	UT_return_if_fail(m_surface);
+	double scaleX = (double)getDisplayWidth() / (double)cairo_image_surface_get_width(m_surface);
+	double scaleY = (double)getDisplayHeight() / (double)cairo_image_surface_get_height(m_surface);
+	cairo_scale(cr, scaleX, scaleY);
+	cairo_set_source_surface(cr, m_surface, 0, 0);
 }
 
 
@@ -158,35 +162,19 @@ cairo_status_t _UT_ByteBuf_PNG_read(void *closure, unsigned char *data,  unsigne
 }
 
 
-cairo_surface_t * _rescaleTo(cairo_surface_t * surf, double width, double height)
-{
-	cairo_surface_t * dest;
-#if 0
-	dest = cairo_surface_create_similar(surf, 
-	                                       CAIRO_CONTENT_COLOR_ALPHA, 
-	                                       width, height);
-	UT_ASSERT(CAIRO_SURFACE_TYPE_IMAGE == cairo_surface_get_type(surf));
-	double ow = cairo_image_surface_get_width(surf);
-	double oh = cairo_image_surface_get_height(surf);
-	cairo_t *cr = cairo_create(dest);
-	cairo_set_source_surface(cr, dest, 0, 0);
-	cairo_scale(cr, width/ow, height/oh);
-	cairo_paint(cr);
-	cairo_destroy(cr);
-#else
-// NO-OP as this do not work.
-	cairo_surface_reference(surf);
-	dest = surf;
-#endif
-	return dest;
-}
-
 bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, const std::string & mimetype, 
                                          UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight)
 {
 	const char *buffer = (const char *) pBB->getPointer(0);
 	UT_uint32 buflen = pBB->getLength();
 
+
+	// We explicitely do not scale the image on load, since cairo can do
+	// that during rendering. Scaling during loading will result in lost
+	// image information, which in turns results in bugs like
+	// in bugs like #12183.
+	// So simply remember the display size for drawing later.
+	setDisplaySize(iDisplayWidth, iDisplayHeight);
 
 	if(mimetype == "image/png") {
 
@@ -206,25 +194,10 @@ bool	GR_CocoaImage::convertFromBuffer(const UT_ByteBuf* pBB, const std::string &
 			
 			_PNG_read_state closure(pBB);
 			m_surface = cairo_image_surface_create_from_png_stream (&_UT_ByteBuf_PNG_read, &closure);
-			if(CAIRO_SURFACE_TYPE_IMAGE == cairo_surface_get_type(m_surface)) 
-			{
-				if((cairo_image_surface_get_width(m_surface) != iDisplayWidth) ||
-					(cairo_image_surface_get_height(m_surface) != iDisplayHeight)) {
-					// needs resize.
-					
-					cairo_surface_t *rescaled = _rescaleTo(m_surface, iDisplayWidth, iDisplayHeight);
-					cairo_surface_destroy(m_surface);
-					m_surface = rescaled;
-				}
-			}
-			setDisplaySize(iDisplayWidth, iDisplayHeight);
-			return true;
 		}
+	} else {
+		m_grtype = GRT_Vector;
 	}
-	// Otherwise, assume SVG. Do scaling when drawing; save size for then:
-	m_grtype = GRT_Vector;
-
-	setDisplaySize(iDisplayWidth, iDisplayHeight);
 
 	return true;
 }

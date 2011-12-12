@@ -2423,20 +2423,18 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 	_setProps();
 	UT_ASSERT(pImg);
 
-   	UT_sint32 iImageWidth = pImg->getDisplayWidth();
-   	UT_sint32 iImageHeight = pImg->getDisplayHeight();
-
-	xxx_UT_DEBUGMSG(("Drawing image %d x %d\n", iImageWidth, iImageHeight));
 	double idx = _tdudX(xDest);
 	double idy = _tdudY(yDest);
 
 	cairo_save(m_cr);
 	_resetClip();
 
+	cairo_translate(m_cr, idx, idy);
+
 	if (pImg->getType() == GR_Image::GRT_Raster) {
-		static_cast<GR_CairoRasterImage*>(pImg)->cairoSetSource(m_cr, idx, idy);
+		static_cast<GR_CairoRasterImage*>(pImg)->cairoSetSource(m_cr);
 	} else if (pImg->getType() == GR_Image::GRT_Vector) {
-		static_cast<GR_CairoVectorImage*>(pImg)->cairoSetSource(m_cr, idx, idy);
+		static_cast<GR_CairoVectorImage*>(pImg)->cairoSetSource(m_cr);
 	}
 	cairo_antialias_t prevAntiAlias = cairo_get_antialias(m_cr);
 	if(!getAntiAliasAlways() && queryProperties(GR_Graphics::DGP_PAPER ))
@@ -2444,8 +2442,7 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 
 	cairo_pattern_t *pattern = cairo_get_source(m_cr);
 	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_NONE);
-	cairo_rectangle(m_cr, idx, idy, iImageWidth, iImageHeight);
-	cairo_fill(m_cr);
+	cairo_paint(m_cr);
 
 	cairo_set_antialias(m_cr,prevAntiAlias);
 	cairo_restore(m_cr);
