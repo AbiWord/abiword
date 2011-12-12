@@ -405,6 +405,7 @@ public:
 	bool                   hasBorders(void) const;
 	bool                   canMergeBordersWithPrev(void) const;
 	bool                   canMergeBordersWithNext(void) const;
+	void                   setLineHeightBlockWithBorders(int whichLine = 0);
 
 #ifdef ENABLE_SPELL
 	/** put in queue for spellchecking after prev. If prev == NULL is put at the head */

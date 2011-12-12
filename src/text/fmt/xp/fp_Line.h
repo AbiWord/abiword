@@ -212,6 +212,14 @@ public:
 	void        setSameYAsPrevious(bool bSameAsPrevious);
 	bool        isSameYAsPrevious(void) const
 		{ return m_bIsSameYAsPrevious;}
+	void        setAlongTopBorder(bool bAlongTopBorder)
+		{ m_bIsAlongTopBorder = bAlongTopBorder;}
+	void        setAlongBotBorder(bool bAlongBotBorder)
+		{ m_bIsAlongBotBorder = bAlongBotBorder;}
+	bool        isAlongTopBorder(void) const
+		{ return m_bIsAlongTopBorder;}
+	bool        isAlongBotBorder(void) const
+		{ return m_bIsAlongBotBorder;}
 	void        genOverlapRects(UT_Rect & recLeft, UT_Rect & recRight);
 
 	bool        canContainPoint() const;
@@ -311,6 +319,8 @@ private:
 	UT_sint32       m_iBreakTick;
 	bool            m_bIsWrapped;
 	bool            m_bIsSameYAsPrevious;
+	bool            m_bIsAlongTopBorder;
+	bool            m_bIsAlongBotBorder;
         UT_sint32       m_iAdditionalMarginAfter;
 	UT_sint32       m_iLeftThick;
 	UT_sint32       m_iRightThick;

@@ -90,6 +90,8 @@ fp_Line::fp_Line(fl_SectionLayout * pSectionLayout) :
 	m_bContainsFootnoteRef(false),
 	m_bIsWrapped(false),
 	m_bIsSameYAsPrevious(false),
+	m_bIsAlongTopBorder(false),
+	m_bIsAlongBotBorder(false),
 	m_iAdditionalMarginAfter(0),
 	m_iLeftThick(0),
 	m_iRightThick(0),
@@ -180,18 +182,33 @@ fp_Line::~fp_Line()
 // 2. The line is placed in a different container
 // 3. When the next or previous line is placed in a different container.
 
-// The Ascent of the line is the  max ascent of all the runs plus the top border
-// thickness
+// The Ascent of the line is the  max ascent of all the runs (plus the top 
+// border thickness for first line of a block)
 UT_sint32 fp_Line::getAscent(void) const
 {
-  return m_iAscent + getTopThick();
+    if (getBlock() && getBlock()->hasBorders() && isAlongTopBorder())
+    {
+	return m_iAscent + getTopThick();
+    }
+    else
+    {
+	return m_iAscent;
+    }
 }
 
 //
-// The Descent is the max descent of all the runs plus the bot border thickness
+// The Descent is the max descent of all the runs (plus the bottom 
+// border thickness for last line of a block)
 UT_sint32 fp_Line::getDescent(void) const
 {
-  return m_iDescent + getBotThick();
+    if (getBlock() && getBlock()->hasBorders() && isAlongBotBorder())
+    {
+	return m_iDescent + getBotThick();
+    }
+    else
+    {
+	return m_iDescent;
+    }
 }
 
 //
@@ -482,13 +499,79 @@ UT_sint32 fp_Line::calcBotBorderThick(void)
 
 void fp_Line::calcBorderThickness(void)
 {
-  //  UT_sint32 iOldHeight = getHeight();
-  calcLeftBorderThick();
-  calcRightBorderThick();
-  calcTopBorderThick();
-  calcBotBorderThick();
-  setHeight(getAscent()+getDescent());
-  xxx_UT_DEBUGMSG(("CalcBorder %p OldHeight %d newheight %d \n",this,iOldHeight,getHeight()));
+    calcLeftBorderThick();
+    calcRightBorderThick();
+    calcTopBorderThick();
+    calcBotBorderThick();
+
+// set the boolean flags m_bIsAlongTopBorder and m_bIsAlongBotBorder
+    if (canDrawTopBorder())
+    {
+	if (isFirstLineInBlock())
+	{
+	    m_bIsAlongTopBorder = true;
+	}
+	if (isSameYAsPrevious())
+	{
+	    fp_Line * ppLine = static_cast<fp_Line *> (getPrev());
+	    while(ppLine && ppLine->isSameYAsPrevious())
+	    {
+		ppLine = static_cast<fp_Line *>(ppLine->getPrev());
+	    }
+	    if (ppLine->isFirstLineInBlock())
+	    { 
+		m_bIsAlongTopBorder = true;
+	    }
+	}
+    }
+    if(canDrawBotBorder())
+    {
+	if (isLastLineInBlock())
+	{
+	    m_bIsAlongBotBorder = true;
+	}
+	if (isWrapped())
+	{
+	    fp_Line * npLine = static_cast<fp_Line *>(getNext());;
+	    if (npLine && isSameYAsPrevious())
+	    {
+		do
+		{
+		    if (npLine->isLastLineInBlock())
+		    {
+			m_bIsAlongBotBorder = true;
+			break;
+		    }
+		    npLine = static_cast<fp_Line *>(npLine->getNext());
+		}
+		while(npLine && npLine->isSameYAsPrevious());
+	    }
+	}
+	if (m_bIsAlongBotBorder)
+	{
+	    fp_Line * ppLine =this;
+	    while(ppLine && ppLine->isSameYAsPrevious())
+	    {
+		ppLine = static_cast<fp_Line *>(ppLine->getPrev());
+	    }
+	    ppLine = static_cast<fp_Line *> (ppLine->getPrev());
+	    while (ppLine && ppLine->isAlongBotBorder())
+	    {
+		ppLine->setAlongBotBorder(false);
+		ppLine->recalcHeight();
+	    }
+	}
+    }
+
+    if (isFirstLineInBlock() && !canDrawTopBorder())
+    {
+	fl_BlockLayout *pBl = static_cast < fl_BlockLayout * > (getBlock()->getPrev());
+	fp_Line *pLine = static_cast < fp_Line * > (pBl->getLastContainer());
+	if(pLine && pLine->isAlongBotBorder())
+	{
+	    pBl->setLineHeightBlockWithBorders(-1);
+	}
+    }
 }
 
 const fp_Line * fp_Line::getFirstInContainer(void) const
@@ -946,12 +1029,11 @@ void fp_Line::setContainer(fp_Container* pContainer)
 	{
 		setMaxWidth(pContainer->getWidth());
 	}
-	calcBorderThickness();
-	fp_Container * pNext = getNextContainerInSection();
-	if(pNext != NULL && pNext->getContainerType() == FP_CONTAINER_LINE)
+	if (getBlock() && getBlock()->hasBorders())
 	{
-	        static_cast<fp_Line *>(pNext)->calcBorderThickness();
+	    calcBorderThickness();
 	}
+	recalcHeight();
 }
 
 UT_sint32 fp_Line::getWidthToRun(fp_Run * pLastRun)
@@ -1477,6 +1559,17 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 		else
 		{
 			iNewHeight = UT_MAX(iMaxAscent+static_cast<UT_sint32>(iMaxDescent*dLineSpace + 0.5), static_cast<UT_sint32>(dLineSpace));
+		}
+	}
+	if(getBlock() && getBlock()->hasBorders())
+	{
+		if (isAlongTopBorder())
+		{
+			iNewHeight += m_iTopThick;
+		}
+		if (isAlongBotBorder())
+		{
+			iNewHeight += m_iBotThick;
 		}
 	}
 	if(isSameYAsPrevious() && pPrev)

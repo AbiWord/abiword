@@ -301,6 +301,17 @@ fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
 #endif
 	setUpdatableField(false);
 	updateEnclosingBlockIfNeeded();
+	if (hasBorders())
+	{
+		if (pPrev && pPrev->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			fl_BlockLayout* pBPrev = static_cast<fl_BlockLayout *>(pPrev);
+			if (pBPrev->hasBorders())
+			{
+				pBPrev->setLineHeightBlockWithBorders(-1);
+			}
+		}
+	}
 }
 
 fl_TabStop::fl_TabStop()
@@ -1281,6 +1292,73 @@ bool fl_BlockLayout::hasBorders(void) const
 	return m_bHasBorders;
 }
 
+// Recalculate the line heights of a block with borders.
+// If whichLine=1, recalculate only the height of the first line.
+// If whichLine=-1, recalculate only the height of the last line.
+// For other values of whichLine, recalculate the height for all the lines
+void fl_BlockLayout::setLineHeightBlockWithBorders(int whichLine)
+{
+	fp_Line * pLine = NULL;
+	switch(whichLine)
+	{
+	case 1:
+		pLine = static_cast<fp_Line *>(getFirstContainer());
+		if(pLine)
+		{
+			pLine->setAlongTopBorder(false);
+			pLine->setAlongBotBorder(false);
+			pLine->calcBorderThickness();
+			pLine->recalcHeight();
+			if(pLine->isWrapped())
+			{
+				pLine = static_cast<fp_Line *>(pLine->getNext());
+				while(pLine && pLine->isSameYAsPrevious())
+				{
+					pLine->setAlongTopBorder(false);
+					pLine->setAlongBotBorder(false);
+					pLine->calcBorderThickness();
+					pLine->recalcHeight();
+				}
+			}
+		}
+		break;
+	case -1:
+		pLine = static_cast<fp_Line *>(getLastContainer());
+		if(pLine)
+		{
+			pLine->setAlongTopBorder(false);
+			pLine->setAlongBotBorder(false);
+			pLine->calcBorderThickness();
+			pLine->recalcHeight();
+			if(pLine->isSameYAsPrevious())
+			{
+				do
+				{
+					pLine = static_cast<fp_Line *>(pLine->getPrev());
+					if(pLine)
+					{
+						pLine->setAlongTopBorder(false);
+						pLine->setAlongBotBorder(false);
+						pLine->calcBorderThickness();
+						pLine->recalcHeight();
+					}
+				}
+				while(pLine && pLine->isSameYAsPrevious());
+			}
+		}
+		break;
+	default:
+		pLine = static_cast<fp_Line *>(getFirstContainer());
+		while(pLine)
+		{
+			pLine->setAlongTopBorder(false);
+			pLine->setAlongBotBorder(false);
+			pLine->calcBorderThickness();
+			pLine->recalcHeight();
+			pLine = static_cast<fp_Line *>(pLine->getNext());
+		}	
+	}
+}
 
 fl_BlockLayout::~fl_BlockLayout()
 {
@@ -2083,6 +2161,12 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool
 		UT_ASSERT(getFirstContainer()->getPrev() == NULL);
 	}
 #endif
+
+// if the block has borders we may need to change the last line height
+	if (hasBorders())
+	{
+		setLineHeightBlockWithBorders(-1);
+	}
 }
 
 void fl_BlockLayout::_purgeLine(fp_Line* pLine)
@@ -7490,9 +7574,19 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 
 bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc)
 {
+	
 	_assertRunListIntegrity();
 
 	UT_ASSERT(pcrxc->getType()==PX_ChangeRecord::PXT_ChangeStrux);
+
+	// Check if the block has borders. If this changes we might have to update other blocks  
+	
+	bool b_bordersMergedWithPrev = false, b_bordersMergedWithNext = false;
+	if (hasBorders())
+	{
+		b_bordersMergedWithNext = canMergeBordersWithNext();
+		b_bordersMergedWithPrev = canMergeBordersWithPrev();
+	}
 
 	// erase the old version
 	if(!isHdrFtr())
@@ -7583,6 +7677,32 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	getDocSectionLayout()->setNeedsSectionBreak(true,pPrevP);
 
 	_assertRunListIntegrity();
+
+	if (hasBorders() || b_bordersMergedWithPrev || b_bordersMergedWithNext)
+	{
+		bool b_bordersMergedWithNextUpdate=canMergeBordersWithNext();
+		bool b_bordersMergedWithPrevUpdate=canMergeBordersWithPrev(); 
+		if ((b_bordersMergedWithPrev && !b_bordersMergedWithPrevUpdate) ||
+			(!b_bordersMergedWithPrev && b_bordersMergedWithPrevUpdate))
+		{
+			fl_BlockLayout * pPrev = static_cast<fl_BlockLayout *>(getPrev());
+			if (pPrev)
+			{
+				pPrev->setLineHeightBlockWithBorders(-1);
+			}
+		}
+		if ((b_bordersMergedWithNext && !b_bordersMergedWithNextUpdate) ||
+			(!b_bordersMergedWithNext && b_bordersMergedWithNextUpdate))
+		{
+			fl_BlockLayout * pNext = static_cast<fl_BlockLayout *>(getNext());
+			if (pNext)
+			{
+				pNext->setLineHeightBlockWithBorders(1);
+			}
+		}
+	}
+
+
 
 	return true;
 }

@@ -815,8 +815,8 @@ fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_Contai
 		else if ((pPrev!= NULL) && (pPrev->getContainerType() == FL_CONTAINER_RDFANCHOR))
 		{
 			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh,pPrev, static_cast<fl_SectionLayout *>(this), indexAP));
-        }
-        else
+		}
+		else
 		{
 			pL = static_cast<fl_ContainerLayout *>(new fl_BlockLayout(sdh, static_cast<fl_BlockLayout *>(pPrev), static_cast<fl_SectionLayout *>(this), indexAP));
 		}
@@ -1018,6 +1018,22 @@ void fl_ContainerLayout::remove(fl_ContainerLayout * pL)
 		{
 			UT_ASSERT(getContainerType() != FL_CONTAINER_BLOCK);
 			static_cast<fl_BlockLayout *>(pL)->transferListFlags();
+		}
+		if (pL->getNext()->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			fl_BlockLayout* pBNext = static_cast<fl_BlockLayout *>(pL->getNext());
+			if (pBNext->hasBorders())
+			{
+				pBNext->setLineHeightBlockWithBorders(1);
+			}
+		}
+		if (pL->getPrev()->getContainerType() == FL_CONTAINER_BLOCK)
+		{
+			fl_BlockLayout* pBPrev = static_cast<fl_BlockLayout *>(pL->getPrev());
+			if (pBPrev->hasBorders())
+			{
+				pBPrev->setLineHeightBlockWithBorders(-1);
+			}
 		}
 	}
 
