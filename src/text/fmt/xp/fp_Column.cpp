@@ -1925,6 +1925,7 @@ void fp_Column::layout(void)
 	clearWrappedLines();
 	_setMaxContainerHeight(0);
 	UT_sint32 iY = 0, iPrevY2 = 0;
+	UT_sint32 iContainerMarginAfter = 0;
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
 	fp_Line * pLastLine = NULL;
 	fp_Container *pContainer = NULL;
@@ -2044,7 +2045,7 @@ void fp_Column::layout(void)
 		{
 			iContainerHeight = pTOC->getHeight();
 		}
-		UT_sint32 iContainerMarginAfter = pContainer->getMarginAfter();
+		iContainerMarginAfter = pContainer->getMarginAfter();
 		xxx_UT_DEBUGMSG(("Layout: container %d Height %d Margin %d setY %d \n",i,iContainerHeight,iContainerMarginAfter,iY));
 		//	UT_ASSERT(iContainerHeight > 0);
 		// Update height of previous line now we know the gap between
@@ -2081,6 +2082,7 @@ void fp_Column::layout(void)
 	if (pPrevContainer)
 	{
 		UT_ASSERT((iY - iPrevY2 + getGraphics()->tlu(1)) > 0);
+		iY -= iContainerMarginAfter;
 		if(pPrevContainer->getContainerType() == FP_CONTAINER_LINE)
 		{
 			fp_Line * pLine = static_cast<fp_Line *>(pPrevContainer);
@@ -2127,49 +2129,6 @@ void fp_Column::layout(void)
 		pDSL->setNeedsSectionBreak(true,NULL);
 		pDSL = pDSL->getNextDocSection();
 	}
-}
-
-bool fp_Column::hasEmptySpaceAtBottom(void)
-{
-        if(countCons() == 0)
-	    return false;
-        UT_sint32 iDiff = getMaxHeight() - getHeight();
-	fp_Container * pLast = static_cast<fp_Container *>(getNthCon(countCons()-1));
-	if(pLast->getContainerType() != FP_CONTAINER_LINE)
-	    return false;
-	fp_Line * pLLast = static_cast<fp_Line *>(pLast);
-	if(pLLast->getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
-	    return false;
-	if(pLLast->containsForcedColumnBreak() || pLLast->containsForcedPageBreak())
-	    return false;
-	fp_Container * pNext = pLast->getNextContainerInSection();
-	if(pNext == NULL)
-	  return false;
-	if(pNext->getContainerType() != FP_CONTAINER_LINE)
-	  return false;
-	if(pNext->getContainerType() == FP_CONTAINER_ENDNOTE)
-	    return false;
-	if(pNext->getContainer() == NULL)
-	    return false;
-	if(pNext->getContainer()->getContainerType() == FP_CONTAINER_ENDNOTE)
-	    return false;
-	fp_Line * pNLine = static_cast<fp_Line *>(pNext);
-	if(pNLine->containsFootnoteReference())
-	{
-	  //
-	  // Just bail out for now. Later we can add up the height of the 
-	  // footnotes
-	  //
-	  return false;
-	}
-
-	UT_sint32 iHeight = pNLine->getHeight();
-	if(1.3*static_cast<float>(iHeight) < static_cast<float>(iDiff))
-	{
-	  UT_DEBUGMSG((" height %d iDiff %d pNLine %p \n",iHeight,iDiff,pNLine));
-	     return true;
-	}
-	return false;
 }
 
 UT_sint32 fp_Column::getMaxHeight(void) const

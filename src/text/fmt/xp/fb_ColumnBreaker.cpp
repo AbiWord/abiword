@@ -561,6 +561,26 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 			xxx_UT_DEBUGMSG(("iTotalContainerSpace = %d MarginAfter %d \n",iTotalContainerSpace,iContainerMarginAfter));
 			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight)
 			{
+			    if (iWorkingColHeight + iTotalContainerSpace - iContainerMarginAfter <= iMaxColHeight)
+			    {
+				pLastContainerToKeep = pCurContainer;
+				iTotalContainerSpace -= iContainerMarginAfter;
+				while(pCurContainer)
+				{
+				    pCurContainer = _getNext(pCurContainer);
+				    if (pCurContainer && pCurContainer->getContainerType() == FP_CONTAINER_LINE)
+				    {
+					fp_Line* pCurLine = static_cast<fp_Line *>(pCurContainer);
+					if(pCurLine->isSameYAsPrevious())
+					    pLastContainerToKeep = pCurContainer;
+					else
+					    break;
+				    }
+				    else
+					break;
+				}
+				break;
+			    }
 				pOffendingContainer = pCurContainer;
 				/*
 				  We have found the offending container (the first one

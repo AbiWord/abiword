@@ -297,17 +297,6 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 		}
 		while(pCol)
 		{
-			if(pCol->hasEmptySpaceAtBottom())
-			{
-				//
-				// We have can have a problem laying out lines with
-				// borders defined. This should fix that.
-				//
-				if(pCol->countCons() > 0)
-				{
-					return static_cast<fp_Container *>(pCol->getNthCon(pCol->countCons()-1));
-				}
-			}
 			if(m_iCountWrapPasses > 10)
 			{
 				nWrapped += pCol->countWrapped();

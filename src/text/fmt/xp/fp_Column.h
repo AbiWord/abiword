@@ -214,7 +214,6 @@ public:
 	~fp_Column();
 
 	fl_DocSectionLayout*	getDocSectionLayout(void) const;
-	bool                    hasEmptySpaceAtBottom(void);
 	void			setLeader(fp_Column* p) { m_pLeader = p; }
 	void			setFollower(fp_Column* p) { m_pFollower = p; }
 	fp_Column*	getLeader(void) const  { return m_pLeader; }
