@@ -2540,71 +2540,123 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			if(pFrameCon)
 			{
 				UT_sint32 iPrefPage = pFrameCon-> getPreferedPageNo();
+				FL_DocLayout *pDL = getDocLayout();
 				//
 				// Handle case of block spanning two pages
 				//
 				fp_Page * pPage = NULL;
 				fp_Line * pLine = NULL;
-				fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
-				UT_return_val_if_fail(pLLast,false);
-				fp_Page * pPageLast = pLLast->getPage();
-				UT_return_val_if_fail(pPageLast,false);
+				fp_Container * pCol = NULL;
 				fp_Line * pLFirst = static_cast<fp_Line *>(getFirstContainer());
 				UT_return_val_if_fail(pLFirst,false);
 				fp_Page * pPageFirst = pLFirst->getPage();
 				UT_return_val_if_fail(pPageFirst,false);
-				UT_sint32 iPageFirst = getDocLayout()->findPage(pPageFirst);
-				UT_sint32 iPageLast = getDocLayout()->findPage(pPageLast);
-				pPage = pPageLast;
-				pLine = pLLast;
-				if(pPageFirst != pPageLast)
+				fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
+				UT_return_val_if_fail(pLLast,false);
+				fp_Page * pPageLast = pLLast->getPage();
+				if (pDL->isLayoutFilling())
 				{
-					if(iPrefPage == iPageFirst)
+					if (!pPageLast && (pDL->findPage(pDL->getLastPage()) < iPrefPage))
 					{
-						pPage = pPageFirst;
-						pLine = pLFirst;
+						// The last line has not yet been drawn
+						continue;
 					}
-					else if(iPrefPage == iPageLast)
+					else
 					{
-						pPage = pPageLast;
-						pLine = pLLast;
-					}
-					else if((iPrefPage>= iPageFirst) && (iPrefPage <= iPageLast))
-					{
-						pPage = getDocLayout()->getNthPage(iPrefPage);
-						if(iPageFirst ==  iPrefPage)
+						if (pDL->findPage(pPageFirst) > iPrefPage)
 						{
+							printf("Page first; first page: %d; last page: %d\n",
+								   pDL->findPage(pPageFirst)+1,pDL->findPage(pDL->getLastPage())+1);
+							pPage = pPageFirst;
 							pLine = pLFirst;
 						}
-						else if (iPageLast == iPrefPage)
+						else if (pPageLast && pDL->findPage(pPageLast) < iPrefPage)
 						{
+							printf("Page last\n");
+							pPage = pPageLast;
 							pLine = pLLast;
 						}
 						else
 						{
+							printf("Page iPref; first page: %d; last page: %d\n",
+								   pDL->findPage(pPageFirst)+1,pDL->findPage(pDL->getLastPage())+1);
+							pPage = pDL->getNthPage(iPrefPage);
+							if(pPageFirst ==  pPage)
+							{
+								pLine = pLFirst;
+							}
+							else if (pPageLast && (pPageLast == pPage))
+							{
+								pLine = pLLast;
+							}
+							else
+							{
+								pLine = pLFirst;
+								while(pLine && pLine->getPage() != pPage)
+								{
+									pLine = static_cast<fp_Line *>(pLine->getNext());
+								}
+								UT_return_val_if_fail(pLine,false);
+							}
+
+						}
+					}
+					pCol = pLine->getColumn();
+				}
+				else
+				{
+					UT_return_val_if_fail(pPageLast,false);
+					UT_sint32 iPageFirst = getDocLayout()->findPage(pPageFirst);
+					UT_sint32 iPageLast = getDocLayout()->findPage(pPageLast);
+					pPage = pPageLast;
+					pLine = pLLast;
+					if(pPageFirst != pPageLast)
+					{
+						if(iPrefPage == iPageFirst)
+						{
+							pPage = pPageFirst;
 							pLine = pLFirst;
+						}
+						else if(iPrefPage == iPageLast)
+						{
+							pPage = pPageLast;
+							pLine = pLLast;
+						}
+						else if((iPrefPage>= iPageFirst) && (iPrefPage <= iPageLast))
+						{
+							pPage = pDL->getNthPage(iPrefPage);
+							if(iPageFirst ==  iPrefPage)
+							{
+								pLine = pLFirst;
+							}
+							else if (iPageLast == iPrefPage)
+							{
+								pLine = pLLast;
+							}
+							else
+							{
+								pLine = pLFirst;
 							while(pLine && pLine->getPage() != pPage)
 							{
 								pLine = static_cast<fp_Line *>(pLine->getNext());
 							}
 							UT_return_val_if_fail(pLine,false);
+							}
 						}
-					}
-					else
-					{
-						UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
-						UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
-						if(idFirst < idLast)
+						else
 						{
-							pPage = pPageFirst;
-							pLine = pLFirst;
+							UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
+							UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
+							if(idFirst < idLast)
+							{
+								pPage = pPageFirst;
+								pLine = pLFirst;
+							}
 						}
 					}
-				}
-				UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
-				fp_Container * pCol = pLine->getColumn();
-				if(!getDocLayout()->isLayoutFilling())
-				{
+					UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
+					pCol = pLine->getColumn();
+
 					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-2) && (iPrefPage < iGuessedPage+3))
 					{
 						fp_Page *pPrefPage = getDocLayout()->getNthPage(iPrefPage);
@@ -2623,8 +2675,9 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				if(pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					pPage->insertFrameContainer(pFrameCon);
-					iPrefPage = getDocLayout()->findPage(pPage);
+					iPrefPage = pDL->findPage(pPage);
 					pFrameCon->setPreferedPageNo(iPrefPage);
+					printf("Inserting frame on page %d\n",iPrefPage+1);
 				}
 			}
 		}
@@ -2640,28 +2693,50 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				//
 				// Handle case of block spanning two pages
 				//
-
-				fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
-				UT_return_val_if_fail(pLLast,false);
-				fp_Page * pPageLast = pLLast->getPage();
-				UT_return_val_if_fail(pPageLast,false);
+				UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
+				FL_DocLayout *pDL = getDocLayout();
 				fp_Line * pLFirst = static_cast<fp_Line *>(getFirstContainer());
 				UT_return_val_if_fail(pLFirst,false);
+				fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
+				UT_return_val_if_fail(pLLast,false);
 				fp_Page * pPageFirst = pLFirst->getPage();
 				UT_return_val_if_fail(pPageFirst,false);
-				pPage = pPageLast;
-				if(pPageFirst != pPageLast)
+				fp_Page * pPageLast = pLLast->getPage();
+				if (pDL->isLayoutFilling()) 
 				{
-					UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
-					UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
-					if(idFirst < idLast)
+					if (!pPageLast && (pDL->findPage(pDL->getLastPage()) < iPrefPage))
 					{
-						pPage = pPageFirst;
+						// The last line has not yet been drawn
+						continue;
+					}
+					else
+					{
+						if (pDL->findPage(pPageFirst) > iPrefPage)
+						{
+							pPage = pPageFirst;
+						}
+						else if (pPageLast && pDL->findPage(pPageLast) < iPrefPage)
+						{
+							pPage = pPageLast;
+						}
+						else
+						{
+							pPage = pDL->getNthPage(iPrefPage);
+						}
 					}
 				}
-				if(!getDocLayout()->isLayoutFilling())
+				else
 				{
-					UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
+					UT_return_val_if_fail(pPageLast,false);
+					if(pPageFirst != pPageLast)
+					{
+						UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
+						UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
+						if(idFirst < idLast)
+						{
+							pPage = pPageFirst;
+						}
+					}
 					UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
 					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-2) && (iPrefPage < iGuessedPage+3))
 					{
@@ -2670,8 +2745,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				}
 				pFrameCon->setX(pFrame->getFrameXPagepos());
 				pFrameCon->setY(pFrame->getFrameYPagepos());
-				UT_return_val_if_fail(pPage,false);
-				if(pPage->findFrameContainer(pFrameCon) < 0)
+				if(pPage && pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					pPage->insertFrameContainer(pFrameCon);
 				}
