@@ -537,7 +537,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 		ffn[fflen] = 0;
 		wri_fonts[fonts_count].name = ffn;
 
-		UT_DEBUGMSG(("  #%02d: %s (%s)\n", fonts_count + 1, wri_fonts[fonts_count].name, wri_fonts[fonts_count].codepage));
+		UT_DEBUGMSG(("  %2d: %s (%s)\n", fonts_count, wri_fonts[fonts_count].name, wri_fonts[fonts_count].codepage));
 		fonts_count++;
 	}
 
