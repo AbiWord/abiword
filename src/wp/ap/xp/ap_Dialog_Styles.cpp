@@ -1205,14 +1205,10 @@ void AP_Dialog_Styles::_createParaPreviewFromGC(GR_Graphics * gc,
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_return_if_fail (pSS);
 	
-	UT_UCSChar * str;
+	UT_UCS4String str(pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
 
-	UT_UCS4_cloneString_char (&str, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
-
-	m_pParaPreview = new AP_Preview_Paragraph(gc, str, static_cast<XAP_Dialog*>(this));
+	m_pParaPreview = new AP_Preview_Paragraph(gc, str.ucs4_str(), static_cast<XAP_Dialog*>(this));
 	UT_return_if_fail (m_pParaPreview);
-
-	FREEP(str);
 
 	m_pParaPreview->setWindowSize(width, height);
 }
@@ -1242,7 +1238,7 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 // Text for the Preview
 //
 	static UT_UCSChar szString[60];
-	UT_UCS4_strcpy_char( (UT_UCSChar *) szString, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
+	UT_UCS4_strcpy_utf8_char( (UT_UCSChar *) szString, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
 	m_pCharPreview->setDrawString((const UT_UCSChar *) szString);
 //
 // set our Vector of Character Properties into the preview class.
@@ -1309,7 +1305,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	static UT_UCSChar sz3[4];
 	static UT_UCSChar szSpace[4];
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_UCS4_strcpy_char( (UT_UCSChar *) szString, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
+	UT_UCS4_strcpy_utf8_char( (UT_UCSChar *) szString, pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
 	UT_UCS4_strcpy_char( (UT_UCSChar *) sz1, " 1");
 	UT_UCS4_strcpy_char( (UT_UCSChar *) sz2, " 2");
 	UT_UCS4_strcpy_char( (UT_UCSChar *) sz3, " 3");
