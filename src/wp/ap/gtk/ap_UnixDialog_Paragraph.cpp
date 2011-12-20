@@ -36,6 +36,7 @@
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 #include "xap_GtkComboBoxHelpers.h"
+#include "xap_Gtk2Compat.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -115,12 +116,34 @@ static void s_check_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 }
 
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
+
+#if !GTK_CHECK_VERSION(3,0,0)
+static gboolean do_update(gpointer p)
+{
+//
+// FIXME!!! Could get nasty crash if the dlg is destroyed while 
+// a redraw is pending....
+//
+	AP_UnixDialog_Paragraph * dlg = (AP_UnixDialog_Paragraph *) p;
+	dlg->event_PreviewAreaExposed();
+	return FALSE;
+}
+#endif
+
 static gint s_preview_draw(GtkWidget * /* widget */,
-							  cairo_t * /* cr */,
-							  AP_UnixDialog_Paragraph * dlg)
+#if GTK_CHECK_VERSION(3,0,0)
+			   cairo_t * /* cr */,
+#else
+			   GdkEventExpose * /* pExposeEvent */,
+#endif
+			   AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(dlg);
+#if GTK_CHECK_VERSION(3,0,0)
 	dlg->event_PreviewAreaExposed();
+#else
+	g_idle_add((GSourceFunc) do_update,(gpointer) dlg);
+#endif
 	return TRUE;
 }
 #endif
@@ -970,9 +993,13 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	// the expose event off the preview
 	g_signal_connect(G_OBJECT(m_drawingareaPreview),
-					   "draw",
-					   G_CALLBACK(s_preview_draw),
-					   (gpointer) this);
+#if GTK_CHECK_VERSION(3,0,0)
+			 "draw",
+#else
+			 "expose_event",
+#endif
+			 G_CALLBACK(s_preview_draw),
+			 (gpointer) this);
 #endif
 }
 

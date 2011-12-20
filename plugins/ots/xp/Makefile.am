@@ -12,7 +12,7 @@ libxp_la_SOURCES = \
 uidir=$(ABIWORD_UIDIR)
 if TOOLKIT_GTK2
 ui_DATA = \
-	ots_gtk2.xml	
+	ots-2.xml	
 else
 ui_DATA = \
 	ots.xml

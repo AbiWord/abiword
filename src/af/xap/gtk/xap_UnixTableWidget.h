@@ -53,6 +53,10 @@ typedef struct _AbiTable
 	GtkLabel* window_label;
 	GSList* handlers;
 	
+#if !GTK_CHECK_VERSION(3,0,0)
+	GdkGC* selected_gc;
+#endif
+
 	guint selected_rows;
 	guint selected_cols;
 

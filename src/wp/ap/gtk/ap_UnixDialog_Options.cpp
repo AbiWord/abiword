@@ -204,7 +204,11 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
+#if GTK_CHECK_VERSION(3,0,0)
     GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel.xml");
+#else
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel-2.xml");
+#endif
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
     pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
@@ -513,7 +517,11 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
     dialogFileName = "ap_UnixHildonDialog_Options.xml";
 #else
+#if GTK_CHECK_VERSION(3,0,0)
     dialogFileName = "ap_UnixDialog_Options.xml";
+#else
+    dialogFileName = "ap_UnixDialog_Options-2.xml";	
+#endif
 #endif
 
     GtkBuilder * builder = newDialogBuilder(dialogFileName);

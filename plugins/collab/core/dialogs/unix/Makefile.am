@@ -27,7 +27,7 @@ uidir=$(ABIWORD_UIDIR)
 
 if TOOLKIT_GTK2
 ui_DATA = \
-	ap_UnixDialog_CollaborationAccounts_gtk2.xml
+	ap_UnixDialog_CollaborationAccounts-2.xml
 else
 ui_DATA = \
 	ap_UnixDialog_CollaborationAccounts.xml

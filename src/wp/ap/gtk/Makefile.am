@@ -10,22 +10,48 @@ AM_CPPFLAGS = 						\
 	-DDATADIR="\"$(datadir)\""
 
 
+# source and ui files for Hildon
+hildon_src = hildon/ap_UnixHildonFrameImpl.cpp \
+       hildon/ap_UnixHildonFrameImpl.h
+hildon_ui = hildon/ap_UnixHildonDialog_HdrFtr.xml \
+       hildon/ap_UnixHildonDialog_Options.xml
+
+spell_src = ap_UnixDialog_Spell.cpp
+
 # these are alternate file for a plain Gtk build.
+if TOOLKIT_GTK2
+spell_ui = ap_UnixDialog_Spell-2.xml
+altgtk_ui = ap_UnixDialog_Options-2.xml \
+	ap_UnixDialog_HdrFtr-2.xml \
+	ap_UnixDialog_Options_ColorSel-2.xml \
+	$(NULL)
+else
+spell_ui = ap_UnixDialog_Spell.xml
 altgtk_ui = ap_UnixDialog_Options.xml \
 	ap_UnixDialog_HdrFtr.xml \
 	ap_UnixDialog_Options_ColorSel.xml \
 	$(NULL)
-
-spell_src = ap_UnixDialog_Spell.cpp
-spell_ui = ap_UnixDialog_Spell.xml
+endif
 
 statusbar_src = ap_UnixStatusBar.cpp
+
+if TOOLKIT_GTK2
+abiwidget_src =	abiwidget-gtk2.cpp \
+	abiwidget-gtk2.h \
+	$(NULL)
+else
+abiwidget_src = abiwidget.cpp \
+	abiwidget.h \
+	$(NULL)
+endif
 
 
 # list all conditional source files here so they end up in the dist tarball
 conditional_src = \
+	$(hildon_src) \
 	$(spell_src) \
 	$(statusbar_src) \
+	$(abiwidget_src) \
 	$(NULL)
 
 
@@ -38,8 +64,7 @@ conditional_ui = \
 libgtk_la_SOURCES = \
 	GTKCommon.h \
 	GTKCommon.cpp \
-	abiwidget.cpp \
-	abiwidget.h \
+	$(abiwidget_src) \
 	ap_DocView.cpp \
 	ap_DocView.h \
 	ap_UnixApp.cpp \
@@ -158,6 +183,35 @@ libgtk_la_SOURCES = \
 
 
 uidir=$(ABIWORD_UIDIR)
+if TOOLKIT_GTK2
+ui_DATA = \
+	ap_UnixDialog_Annotation-2.xml \
+	ap_UnixDialog_Border_Shading-2.xml \
+	ap_UnixDialog_Break-2.xml \
+	ap_UnixDialog_Field-2.xml \
+	ap_UnixDialog_FormatTOC-2.xml \
+	ap_UnixDialog_FormatFootnotes-2.xml \
+	ap_UnixDialog_FormatTable-2.xml \
+	ap_UnixDialog_FormatFrame-2.xml \
+	ap_UnixDialog_Goto-2.xml \
+	ap_UnixDialog_InsertTable-2.xml \
+	ap_UnixDialog_Insert_DateTime-2.xml \
+	ap_UnixDialog_MailMerge-2.xml \
+	ap_UnixDialog_MetaData-2.xml \
+	ap_UnixDialog_PageNumbers-2.xml	\
+	ap_UnixDialog_PageSetup-2.xml \
+	ap_UnixDialog_Replace-2.xml \
+	ap_UnixDialog_New-2.xml \
+	ap_UnixDialog_Styles-2.xml \
+	ap_UnixDialog_Stylist-2.xml \
+	ap_UnixDialog_Stylist_modal-2.xml \
+	ap_UnixDialog_Tab-2.xml	\
+	ap_UnixDialog_WordCount-2.xml \
+	ap_UnixDialog_Latex-2.xml \
+	ap_UnixDialog_RDFQuery-2.xml \
+	ap_UnixDialog_RDFEditor-2.xml \
+	$(NULL)
+else
 ui_DATA = \
 	ap_UnixDialog_Annotation.xml \
 	ap_UnixDialog_Border_Shading.xml \
@@ -185,6 +239,7 @@ ui_DATA = \
 	ap_UnixDialog_RDFQuery.xml \
 	ap_UnixDialog_RDFEditor.xml \
 	$(NULL)
+endif
 
 
 if ENABLE_SPELL
@@ -196,13 +251,32 @@ if ENABLE_STATUSBAR
 libgtk_la_SOURCES += $(statusbar_src)
 endif
 
+if EMBEDDED_HILDON
+
+libgtk_la_SOURCES += $(hildon_src)
+ui_DATA += $(hildon_ui)
+
+hildondesktopdir = @datadir@/applications/hildon
+hildondesktop_DATA = hildon/abiword.desktop
+
+hildondbusdir = @datadir@/dbus-1/services
+hildondbus_DATA = hildon/com.abisource.abiword.service
+
+hildonicondir = @datadir@/pixmaps
+hildonicon_DATA = hildon/qgn_list_abiword.png
+
+else 
 
 ui_DATA += $(altgtk_ui)
 
+endif
 
 EXTRA_DIST = \
 	$(conditional_src) \
 	$(conditional_ui) \
 	$(ui_DATA) \
+	hildon/qgn_list_abiword.png \
+	hildon/com.abisource.abiword.service.in \
+	hildon/abiword.desktop.in \
 	$(NULL)
 

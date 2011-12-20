@@ -134,6 +134,7 @@ m4_ifdef([LT_INIT], [], [AC_PROG_LIBTOOL])
 DOLT
 AC_PROG_LN_S
 
+TOOLKIT_IS_GTK2="no"
 AC_MSG_CHECKING([for platform and toolkit])
 case ${host_os} in
   *darwin*)
@@ -147,10 +148,9 @@ case ${host_os} in
   *)
     PLATFORM="unix"
     if test "x$abi_cv_gtk2" = "xyes"; then
-      TOOLKIT="gtk2"
-    else
-      TOOLKIT="gtk"
+      TOOLKIT_IS_GTK2="yes"
     fi
+    TOOLKIT="gtk"
     ;;
 esac
 AC_MSG_RESULT([$PLATFORM / $TOOLKIT])
@@ -340,7 +340,7 @@ AC_ARG_WITH([gnomevfs],
 	        abi_cv_gnomevfs="$withval" 	 
 	],[ 	 
 	        # use gnomevfs if detected 	 
-	        if test "$TOOLKIT" = "gtk2"; then 	 
+	        if test "$TOOLKIT_IS_GTK2" = "yes"; then 	 
 	                PKG_CHECK_EXISTS([ $gnomevfs_req ], 	 
 	                [ 	 
 	                        abi_cv_gnomevfs="yes" 	 
@@ -393,7 +393,7 @@ AC_ARG_WITH([goffice],
 
 GOFFICE_BUILTIN_CPPFLAGS=
 GOFFICE_BUILTIN_LIBS=
-if test "$TOOLKIT" = "gtk2"; then
+if test "$TOOLKIT_IS_GTK2" = "yes"; then
 	GOFFICE_BUILTIN_CPPFLAGS='-I${top_srcdir}/goffice-bits2'
 	GOFFICE_BUILTIN_LIBS='${top_builddir}/goffice-bits2/libgoffice.la'
 	AC_SUBST(GOFFICE_BUILTIN_CPPFLAGS)
@@ -613,7 +613,7 @@ fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
 dnl specific gtk214 test. 	 
-	if test "$TOOLKIT" = "gtk2"; then 	 
+	if test "$TOOLKIT_IS_GTK2" = "yes"; then 	 
 	        PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 	 
 	                 [abi_cv_gtk214=no]) 	 
 	        if test "$abi_cv_gtk214" = "yes" ; then 	 
@@ -622,7 +622,7 @@ dnl specific gtk214 test.
 	fi 	 
 
 dnl make that for all.
-if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "gtk2" -o "$TOOLKIT" = "cocoa"; then
+if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa"; then
 	dnl move away
 	AC_DEFINE([WITH_CAIRO], [1], [Using Cairo])
 	WITH_CAIRO=1
@@ -674,17 +674,9 @@ AF_TEST_CPPFLAGS=
 for f in $(echo $AF_TEST_CPPFLAGS_); do AF_TEST_CPPFLAGS="$AF_TEST_CPPFLAGS $f"; done
 AC_SUBST([AF_TEST_CPPFLAGS])
 
-TEXT_FMT_TOOLKIT=
-AC_SUBST([TEXT_FMT_TOOLKIT])
-if test "x$abi_cv_gtk2" = "xyes"; then
-  TEXT_FMT_TOOLKIT=gtk
-else
-  TEXT_FMT_TOOLKIT=${TOOLKIT}
-fi
-
 TEXT_CPPFLAGS_='
   ${AF_CPPFLAGS} 
-  -I${top_srcdir}/src/text/fmt/${TEXT_FMT_TOOLKIT}
+  -I${top_srcdir}/src/text/fmt/${TOOLKIT}
   -I${top_srcdir}/src/text/fmt/xp 
   -I${top_srcdir}/src/text/ptbl/xp'
 TEXT_CPPFLAGS=
@@ -748,7 +740,7 @@ fi
 # also for embedded, e.g. hildon would set TOOLKIT_GTK and TOOLKIT_HILDON
 AM_CONDITIONAL([TOOLKIT_COCOA], test "$TOOLKIT" = "cocoa")
 AM_CONDITIONAL([TOOLKIT_GTK], test "$TOOLKIT" = "gtk")
-AM_CONDITIONAL([TOOLKIT_GTK2], test "$TOOLKIT" = "gtk2")
+AM_CONDITIONAL([TOOLKIT_GTK2], test "$TOOLKIT_IS_GTK2" = "yes")
 AM_CONDITIONAL([TOOLKIT_WIN], test "$TOOLKIT" = "win")
 
 if test "$enable_shared" = ""; then
@@ -775,10 +767,11 @@ elif test "$TOOLKIT" = "cocoa"; then
 	# override static/shared, on cocoa. shared only
 	enable_shared="yes"
 	enable_static="no"
-elif test "$TOOLKIT" = "gtk2"; then
+elif test "$TOOLKIT" = "gtk"; then
+     if test "$TOOLKIT_IS_GTK2" = "yes"; then
 	AC_DEFINE([TOOLKIT_GTK2], [1], [Build gtk+ user interface])
 	AC_DEFINE([TOOLKIT_GTK_ALL], [1], [Build gtk+ user interface])
-else
+     else
 	AC_DEFINE([TOOLKIT_GTK], [1], [Build gtk+ user interface])
 	AC_DEFINE([TOOLKIT_GTK_ALL], [1], [Build gtk+ user interface])
 dnl We have no reason to mess with that.
@@ -788,6 +781,7 @@ dnl	   test "$enable_static" = "no"; then
 dnl		enable_shared="no"
 dnl		enable_static="yes"
 dnl	fi
+     fi
 fi
 AM_CONDITIONAL([ENABLE_DYNAMIC], test "$enable_shared" = "yes")
 AM_CONDITIONAL([ENABLE_STATIC], test "$enable_static" = "yes")
@@ -883,7 +877,7 @@ fi
 if test "$abi_cv_goffice" = "yes"; then
 	AC_DEFINE([WITH_GOFFICE], [1], [Define if using goffice])
 fi
-AM_CONDITIONAL([TOOLKIT_GTK_ALL], test "$TOOLKIT" = "gtk" || test "$TOOLKIT" = "gtk2")
+AM_CONDITIONAL([TOOLKIT_GTK_ALL], test "$TOOLKIT" = "gtk")
 AM_CONDITIONAL([WITH_GOFFICE_BUILTIN], (test "$TOOLKIT" = "gtk" || test "$TOOLKIT" = "gtk2") && test "$abi_cv_goffice" != "yes")
 AC_SUBST([GOFFICE_BUILTIN_LIBS])
 
@@ -966,14 +960,12 @@ AC_OUTPUT(
   src/af/ev/Makefile
   src/af/ev/cocoa/Makefile
   src/af/ev/gtk/Makefile
-  src/af/ev/gtk2/Makefile
   src/af/ev/win/bmp/Makefile
   src/af/ev/win/Makefile
   src/af/ev/xp/Makefile
   src/af/gr/Makefile
   src/af/gr/cocoa/Makefile
   src/af/gr/gtk/Makefile
-  src/af/gr/gtk2/Makefile
   src/af/gr/win/Makefile
   src/af/gr/xp/Makefile
   src/af/tf/Makefile
@@ -987,8 +979,6 @@ AC_OUTPUT(
   src/af/xap/cocoa/Makefile
   src/af/xap/gtk/Makefile
   src/af/xap/gtk/t/Makefile
-  src/af/xap/gtk2/Makefile
-  src/af/xap/gtk2/t/Makefile
   src/af/xap/win/Makefile
   src/af/xap/xp/Makefile
   src/plugins/Makefile
@@ -1004,9 +994,8 @@ AC_OUTPUT(
   src/wp/ap/Makefile
   src/wp/ap/cocoa/Makefile
   src/wp/ap/gtk/Makefile
-  src/wp/ap/gtk2/Makefile
-  src/wp/ap/gtk2/hildon/abiword.desktop
-  src/wp/ap/gtk2/hildon/com.abisource.abiword.service
+  src/wp/ap/gtk/hildon/abiword.desktop
+  src/wp/ap/gtk/hildon/com.abisource.abiword.service
   src/wp/ap/win/Makefile
   src/wp/ap/xp/Makefile
   src/wp/ap/xp/ToolbarIcons/Makefile

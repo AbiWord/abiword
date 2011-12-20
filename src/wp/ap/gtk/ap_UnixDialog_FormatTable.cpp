@@ -276,7 +276,11 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
+#if GTK_CHECK_VERSION(3,0,0)
 	m_pPreviewWidget->init3dColors(gtk_widget_get_style_context(m_wPreviewArea));
+#else
+	m_pPreviewWidget->init3dColors(m_wPreviewArea->style);
+#endif
 
 	// let the widget materialize
 
@@ -408,12 +412,12 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_FormatTable.xml";
-	
 	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_FormatTable.xml");
+#else
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_FormatTable-2.xml");	
+#endif
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
@@ -591,9 +595,13 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 							reinterpret_cast<gpointer>(this));
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
-							"draw",
-							G_CALLBACK(s_preview_draw),
-							reinterpret_cast<gpointer>(this));
+#if GTK_CHECK_VERSION(3,0,0)
+			 "draw",
+#else
+			 "expose_event",
+#endif
+			 G_CALLBACK(s_preview_draw),
+			 reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wApplyToMenu),
 							"changed",

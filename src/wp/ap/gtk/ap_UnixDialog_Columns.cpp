@@ -34,6 +34,7 @@
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
 #include "xap_GtkSignalBlocker.h"
+#include "xap_Gtk2Compat.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -216,7 +217,11 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
+#if !GTK_CHECK_VERSION(3,0,0)
+	m_pPreviewWidget->init3dColors(m_wpreviewArea->style);
+#else
 	m_pPreviewWidget->init3dColors(gtk_widget_get_style_context(m_wpreviewArea));
+#endif
 
 	// let the widget materialize
 
@@ -637,7 +642,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 3);
 	gtk_misc_set_alignment (GTK_MISC (SpinLabelAfter), 0, 0.5);
 	
-	GtkAdjustment * SpinAfterAdj = gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
+	GtkAdjustment * SpinAfterAdj = (GtkAdjustment*)gtk_adjustment_new( 1, -1000, 1000, 1, 1, 10);
 	GtkWidget * SpinAfter = gtk_entry_new();
 	gtk_widget_show (SpinAfter);
 	gtk_table_attach (GTK_TABLE (table), SpinAfter, 1, 2, 4, 5,
@@ -659,7 +664,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 6, 7);
 	gtk_misc_set_alignment (GTK_MISC (SpinLabelColumnSize), 0, 0.5);
 	
-	GtkAdjustment * SpinSizeAdj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+	GtkAdjustment * SpinSizeAdj = (GtkAdjustment*)gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
 	GtkWidget * SpinSize = gtk_entry_new();
 	gtk_widget_show (SpinSize);
 	gtk_table_attach (GTK_TABLE (table), SpinSize, 1, 2, 5, 6,
@@ -753,16 +758,24 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 	// the expose event of the preview
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
-	             g_signal_connect(G_OBJECT(m_wpreviewArea),
-					   "draw",
-					   G_CALLBACK(s_preview_draw),
-					   reinterpret_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_wpreviewArea),
+#if GTK_CHECK_VERSION(3,0,0)
+			 "draw",
+#else
+			 "expose_event",
 #endif
-
-		     g_signal_connect_after(G_OBJECT(m_windowMain),
-		     					 "draw",
-		     				 G_CALLBACK(s_window_draw),
-		    					 reinterpret_cast<gpointer>(this));
+			 G_CALLBACK(s_preview_draw),
+			 reinterpret_cast<gpointer>(this));
+#endif
+	
+	g_signal_connect_after(G_OBJECT(m_windowMain),
+#if GTK_CHECK_VERSION(3,0,0)
+			       "draw",
+#else
+			       "expose_event",
+#endif
+			       G_CALLBACK(s_window_draw),
+			       reinterpret_cast<gpointer>(this));
 }
 
 void AP_UnixDialog_Columns::_populateWindowData(void)

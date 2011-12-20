@@ -59,6 +59,9 @@
 #include <glib/gstdio.h>
 #include <gsf/gsf-utils.h>
 #include <goffice/goffice.h>
+#if !GTK_CHECK_VERSION(3,0,0)
+#include "gr_UnixPangoPixmapGraphics.h"
+#endif
 
 #ifdef WITH_GNOMEVFS
   #include <libgnomevfs/gnome-vfs.h>
@@ -109,6 +112,18 @@ XAP_UnixApp::XAP_UnixApp(const char * szAppName)
 									  CairoNull_Graphics::s_getClassId());
 		UT_ASSERT( bSuccess );
 
+#if !GTK_CHECK_VERSION(3,0,0)
+		bSuccess = pGF->registerClass(GR_UnixPangoPixmapGraphics::graphicsAllocator,
+									  GR_UnixPangoPixmapGraphics::graphicsDescriptor,
+									  GR_UnixPangoPixmapGraphics::s_getClassId());
+
+		if(bSuccess)
+		{
+			pGF->registerAsDefault(GR_UnixPangoPixmapGraphics::s_getClassId(), false);
+		}
+
+		UT_ASSERT( bSuccess );
+#endif
 		/* We need to link CairoNull_Graphics because the AbiCommand
 		 * plugin uses it.
 		 *

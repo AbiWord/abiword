@@ -45,6 +45,7 @@
 #include "ut_files.h"
 #include "ut_misc.h"
 #include "ut_sleep.h"
+#include "xap_Gtk2Compat.h"
 #include "xap_ViewListener.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrameImpl.h"
@@ -1200,11 +1201,17 @@ gint XAP_UnixFrameImpl::_fe::delete_event(GtkWidget * w, GdkEvent * /*event*/, g
 	return TRUE;
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
 gint XAP_UnixFrameImpl::_fe::draw(GtkWidget * w, cairo_t * cr)
+#else
+gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
+#endif
 {
 	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(g_object_get_data(G_OBJECT(w), "user_data"));
 	FV_View * pView = static_cast<FV_View *>(pUnixFrameImpl->getFrame()->getCurrentView());
+#if GTK_CHECK_VERSION(3,0,0)
 	GdkEventExpose *pExposeEvent = reinterpret_cast<GdkEventExpose *>(gtk_get_current_event());
+#endif
 /* Jean: commenting out next lines since the zoom update code does draw only
  * part of what needs to be updated. */
 //	if((pUnixFrameImpl->m_bDoZoomUpdate) || (pUnixFrameImpl->m_iZoomUpdateID != 0))
@@ -1220,7 +1227,9 @@ gint XAP_UnixFrameImpl::_fe::draw(GtkWidget * w, cairo_t * cr)
 		rClip.top = pGr->tlu(pExposeEvent->area.y);
 		rClip.width = pGr->tlu(pExposeEvent->area.width)+1;
 		rClip.height = pGr->tlu(pExposeEvent->area.height)+1;
+#if GTK_CHECK_VERSION(3,0,0)
 		static_cast<GR_CairoGraphics *>(pGr)->setCairo(cr);
+#endif
 		pView->draw(&rClip);
 	}
 	return FALSE;

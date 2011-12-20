@@ -51,6 +51,7 @@
 #include <gtk/gtk.h>
 #include "xap_UnixApp.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_Gtk2Compat.h"
 #endif
 
 static const char* Ots_MenuLabel = "&Summarize";
@@ -59,15 +60,12 @@ static const char* Ots_MenuTooltip = "Summarize your document or selected text";
 
 static int getSummaryPercent(void)
 {
-  std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() 
-#if defined(TOOLKIT_GTK)
-      + "/ots.xml";
-#elif defined(TOOLKIT_GTK2)
-      + "/ots_gtk2.xml";
-#endif
   // load the dialog from the UI file
-  GtkBuilder* builder = gtk_builder_new();
-  gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+#if GTK_CHECK_VERSION(3,0,0)
+      GtkBuilder* builder = newDialogBuilder("ots.xml");
+#else
+      GtkBuilder* builder = newDialogBuilder("ots-2.xml");
+#endif
   
   GtkWidget * window = GTK_WIDGET(gtk_builder_get_object(builder, "otsDlg"));
   GtkWidget * spin = GTK_WIDGET(gtk_builder_get_object(builder, "summarySpin"));

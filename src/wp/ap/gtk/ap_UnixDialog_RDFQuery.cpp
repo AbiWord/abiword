@@ -289,12 +289,12 @@ AP_UnixDialog_RDFQuery::constuctWindow (XAP_Frame * /*pFrame*/)
 {
 	UT_DEBUGMSG (("ROB: constuctWindow ()\n"));		
 
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_RDFQuery.xml";
-
 	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFQuery.xml");
+#else
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFQuery-2.xml");
+#endif
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_RDFQuery"));
 	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));

@@ -19,6 +19,8 @@
 #include "boost/lexical_cast.hpp"
 #include "TCPUnixAccountHandler.h"
 
+#include "xap_Gtk2Compat.h"
+
 AccountHandlerConstructor TCPAccountHandlerConstructor = &TCPUnixAccountHandler::static_constructor;
 
 AccountHandler * TCPUnixAccountHandler::static_constructor()

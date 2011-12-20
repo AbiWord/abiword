@@ -317,14 +317,22 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wParaPreviewArea),
-					   "draw",
-					   G_CALLBACK(s_paraPreview_draw),
-					   reinterpret_cast<gpointer>(this));
+#if GTK_CHECK_VERSION(3,0,0)
+			 "draw",
+#else
+			 "expose_event",
+#endif
+			 G_CALLBACK(s_paraPreview_draw),
+			 reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wCharPreviewArea),
-					   "draw",
-					   G_CALLBACK(s_charPreview_draw),
-					   reinterpret_cast<gpointer>(this));
+#if GTK_CHECK_VERSION(3,0,0)
+			 "draw",
+#else
+			 "expose_event",
+#endif
+			 G_CALLBACK(s_charPreview_draw),
+			 reinterpret_cast<gpointer>(this));
 	
 	// connect the select_row signal to the clist
 	g_signal_connect (G_OBJECT (gtk_tree_view_get_selection(GTK_TREE_VIEW(m_tvStyles))), "changed",
@@ -476,12 +484,12 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Styles.xml";
-	
 	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Styles.xml");
+#else
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Styles-2.xml");
+#endif
 
 	GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Styles"));
 	UT_UTF8String s;
@@ -1013,9 +1021,13 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wModifyDrawingArea),
-					   "draw",
-					   G_CALLBACK(s_modifyPreview_draw),
-					   reinterpret_cast<gpointer>(this));
+#if GTK_CHECK_VERSION(3,0,0)
+			 "draw",
+#else
+			 "expose_event",
+#endif
+			 G_CALLBACK(s_modifyPreview_draw),
+			 reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wDeletePropButton),
 					   "clicked",

@@ -181,7 +181,11 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 	uiFileName = "ap_UnixHildonDialog_HdrFtr.xml";
 #else
+#if GTK_CHECK_VERSION(3,0,0)
 	uiFileName = "ap_UnixDialog_HdrFtr.xml";
+#else
+	uiFileName = "ap_UnixDialog_HdrFtr-2.xml";
+#endif
 #endif
 
     GtkBuilder * builder = newDialogBuilder(uiFileName);

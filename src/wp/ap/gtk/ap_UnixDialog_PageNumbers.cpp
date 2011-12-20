@@ -45,8 +45,12 @@
 /*****************************************************************/
 
 static gint s_preview_draw(GtkWidget * /*w*/,
-			      cairo_t * /*cr*/,
-			      AP_UnixDialog_PageNumbers * dlg)
+#if GTK_CHECK_VERSION(3,0,0)
+			   cairo_t * /*cr*/,
+#else
+			   GdkEventExpose*,
+#endif
+			   AP_UnixDialog_PageNumbers * dlg)
 {
 	UT_ASSERT(dlg);
 	dlg->event_PreviewExposed();
@@ -135,7 +139,11 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
+#if GTK_CHECK_VERSION(3,0,0)
 	m_unixGraphics->init3dColors(gtk_widget_get_style_context(m_previewArea));
+#else
+	m_unixGraphics->init3dColors(m_previewArea->style);
+#endif
 
 	// hack in a quick draw here
 	_updatePreview(m_recentAlign, m_recentControl);
@@ -164,7 +172,11 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	GtkWidget * window;	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers.xml");
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers.xml");
+#else
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers-2.xml");
+#endif
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
@@ -223,7 +235,13 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	g_signal_connect(G_OBJECT(radioRight),  "clicked", G_CALLBACK(s_alignment_changed), static_cast<gpointer>(this));
 
 	// the expose event off the preview
-	g_signal_connect(G_OBJECT(m_previewArea), "draw", G_CALLBACK(s_preview_draw), static_cast<gpointer>(this));	
+#if GTK_CHECK_VERSION(3,0,0)
+	g_signal_connect(G_OBJECT(m_previewArea), "draw", G_CALLBACK(s_preview_draw), 
+			 static_cast<gpointer>(this));
+#else
+	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_draw), 
+			 static_cast<gpointer>(this));
+#endif
 
 	g_object_unref(G_OBJECT(builder));
 

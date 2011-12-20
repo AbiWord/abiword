@@ -286,7 +286,11 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
+#if GTK_CHECK_VERSION(3,0,0)
 	m_pPreviewWidget->init3dColors(gtk_widget_get_style_context(m_wPreviewArea));
+#else
+	m_pPreviewWidget->init3dColors(m_wPreviewArea->style);
+#endif
 
 	// let the widget materialize
 
@@ -501,13 +505,12 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Border_Shading.xml";
-	
 	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	UT_DEBUGMSG(("Loading dialog from ap_UnixDialog_Border_Shading.xml \n"));
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Border_Shading.xml");
+#else
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Border_Shading-2.xml");
+#endif
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
@@ -520,7 +523,17 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	m_wLineLeft 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderLeft"));
 	m_wLineRight 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderRight"));
 	m_wLineBottom 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderBottom"));
-	
+
+#if !GTK_CHECK_VERSION (3,0,0)
+	// the toggle buttons created by GtkBuilder already contain a label, remove that, 
+	// so we can add a pixmap as a child
+	// Fixed in the Gtk3 version
+	gtk_container_remove(GTK_CONTAINER(m_wLineTop), gtk_bin_get_child(GTK_BIN(m_wLineTop)));
+	gtk_container_remove(GTK_CONTAINER(m_wLineLeft), gtk_bin_get_child(GTK_BIN(m_wLineLeft)));
+	gtk_container_remove(GTK_CONTAINER(m_wLineRight), gtk_bin_get_child(GTK_BIN(m_wLineRight)));
+	gtk_container_remove(GTK_CONTAINER(m_wLineBottom), gtk_bin_get_child(GTK_BIN(m_wLineBottom)));
+#endif
+
 	// place some nice pixmaps on our border toggle buttons
 	label_button_with_abi_pixmap(m_wLineTop, "tb_LineTop_xpm");
 	label_button_with_abi_pixmap(m_wLineLeft, "tb_LineLeft_xpm");
@@ -671,7 +684,11 @@ void AP_UnixDialog_Border_Shading::_connectSignals(void)
 							reinterpret_cast<gpointer>(this));
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
+#if GTK_CHECK_VERSION(3,0,0)
 							"draw",
+#else
+							"expose_event",
+#endif
 							G_CALLBACK(s_preview_draw),
 							reinterpret_cast<gpointer>(this));
 

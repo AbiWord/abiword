@@ -350,7 +350,11 @@ GtkWidget * AP_UnixDialog_FormatTOC::_getWidget(const char * szNameBase, UT_sint
 
 GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 {
+#if GTK_CHECK_VERSION(3,0,0)
     m_pBuilder = newDialogBuilder("ap_UnixDialog_FormatTOC.xml");
+#else
+    m_pBuilder = newDialogBuilder("ap_UnixDialog_FormatTOC-2.xml");
+#endif
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 

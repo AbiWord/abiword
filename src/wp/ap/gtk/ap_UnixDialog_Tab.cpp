@@ -233,12 +233,12 @@ void AP_UnixDialog_Tab::runModal (XAP_Frame *pFrame)
 GtkWidget * 
 AP_UnixDialog_Tab::_constructWindow ()
 {
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Tab.xml";
-
 	// load the dialog from the UI file
-	m_pBuilder = gtk_builder_new();
-	gtk_builder_add_from_file(m_pBuilder, ui_path.c_str(), NULL);
+#if GTK_CHECK_VERSION(3,0,0)
+	m_pBuilder = newDialogBuilder("ap_UnixDialog_Tab.xml");
+#else
+	m_pBuilder = newDialogBuilder("ap_UnixDialog_Tab-2.xml");
+#endif
 	GtkWidget *wDialog = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "ap_UnixDialog_Tab"));
 	m_exUserTabs = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "exUserTabs"));
 

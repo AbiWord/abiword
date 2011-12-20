@@ -365,12 +365,16 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_FormatFootnotes.xml");
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_FormatFootnotes.xml");
+#else
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_FormatFootnotes-2.xml");
+#endif
 
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_FormatFootnotes"));
 	// set the dialog title
-    std::string s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Title,s);
 	abiDialogSetTitle(window, s.c_str());
 	

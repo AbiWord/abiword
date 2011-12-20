@@ -243,19 +243,29 @@ void AP_UnixDialog_Stylist::runModal(XAP_Frame * pFrame)
 GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 {
 	// get the path where our UI file is located
-	std::string ui_path;
+	const char* ui_path;
+#if GTK_CHECK_VERSION(3,0,0)
 	if(m_bIsModal)
 	{
-		ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Stylist_modal.xml";
+		ui_path = "ap_UnixDialog_Stylist_modal.xml";
 	}
 	else
 	{
-		ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_Stylist.xml";
+		ui_path = "ap_UnixDialog_Stylist.xml";
 	}
+#else
+	if(m_bIsModal)
+	{
+		ui_path = "ap_UnixDialog_Stylist_modal-2.xml";
+	}
+	else
+	{
+		ui_path = "ap_UnixDialog_Stylist-2.xml";
+	}
+#endif
 
 	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
+	GtkBuilder* builder = newDialogBuilder(ui_path);
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 

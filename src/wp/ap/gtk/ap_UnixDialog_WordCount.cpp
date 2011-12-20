@@ -219,7 +219,11 @@ XAP_Widget *AP_UnixDialog_WordCount::getWidget(xap_widget_id wid)
 
 void AP_UnixDialog_WordCount::constructDialog(void)
 {	
+#if GTK_CHECK_VERSION(3,0,0)
     GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_WordCount.xml");
+#else
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_WordCount-2.xml");
+#endif
 
 	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_WordCount"));
 	m_labelWCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbWordsVal"));

@@ -99,7 +99,11 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 
+#if GTK_CHECK_VERSION(3,0,0)
     GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Break.xml");
+#else
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Break-2.xml");
+#endif
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

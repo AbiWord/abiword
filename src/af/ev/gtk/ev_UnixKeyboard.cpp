@@ -23,6 +23,7 @@
 #include <gtk/gtk.h>
 #include <gdk/gdkx.h>
 
+#include "xap_Gtk2Compat.h"
 #include "ut_types.h"
 #include "ut_assert.h"
 #include "ev_EditBinding.h"

@@ -1,5 +1,3 @@
-#error "This file is obsolete, don't use, use gr_UnixCairoGraphics.h instead"
-
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 2004-6 Tomas Frydrych <dr.tomas@yahoo.co.uk>

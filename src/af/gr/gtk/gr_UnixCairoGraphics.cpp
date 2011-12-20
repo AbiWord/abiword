@@ -123,6 +123,16 @@ GR_Graphics *   GR_UnixCairoGraphics::graphicsAllocator(GR_AllocInfo& info)
 	return new GR_UnixCairoGraphics(AI.m_win, AI.m_double_buffered);
 }
 
+inline UT_RGBColor _convertGdkColor(const GdkColor &c)
+{
+	UT_RGBColor color;
+	color.m_red = c.red >> 8;
+	color.m_grn = c.green >> 8;
+	color.m_blu = c.blue >> 8;
+	return color;
+}
+
+#if GTK_CHECK_VERSION(3,0,0)
 inline UT_RGBColor _convertGdkRGBA(const GdkRGBA &c)
 {
 	UT_RGBColor color;
@@ -131,6 +141,7 @@ inline UT_RGBColor _convertGdkRGBA(const GdkRGBA &c)
 	color.m_blu = c.blue * 255;
 	return color;
 }
+#endif
 
 void GR_UnixCairoGraphics::widget_size_allocate(GtkWidget* /*widget*/, GtkAllocation* /*allocation*/, GR_UnixCairoGraphics* me)
 {
@@ -154,6 +165,7 @@ void GR_UnixCairoGraphics::initWidget(GtkWidget* widget)
 	m_DestroySignal = g_signal_connect(G_OBJECT(widget), "destroy", G_CALLBACK(widget_destroy), this);
 }
 
+#if GTK_CHECK_VERSION(3,0,0)
 void GR_UnixCairoGraphics::init3dColors(GtkStyleContext * pCtxt)
 {
 	GdkRGBA rgba, rgba_;
@@ -193,18 +205,35 @@ void GR_UnixCairoGraphics::init3dColors(GtkStyleContext * pCtxt)
 	m_3dColors[CLR3D_BevelDown]  = _convertGdkRGBA(rgba_);
 	m_bHave3DColors = true;
 }
+#else
+void GR_UnixCairoGraphics::init3dColors(GtkStyle * pStyle)
+{
+	m_3dColors[CLR3D_Foreground] = _convertGdkColor(pStyle->text[GTK_STATE_NORMAL]);
+	m_3dColors[CLR3D_Background] = _convertGdkColor(pStyle->bg[GTK_STATE_NORMAL]);
+	m_3dColors[CLR3D_BevelUp]    = _convertGdkColor(pStyle->light[GTK_STATE_NORMAL]);
+	m_3dColors[CLR3D_BevelDown]  = _convertGdkColor(pStyle->dark[GTK_STATE_NORMAL]);
+	m_3dColors[CLR3D_Highlight]  = _convertGdkColor(pStyle->bg[GTK_STATE_PRELIGHT]);
+
+ 	m_bHave3DColors = true;
+}
+#endif
 
 GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
 {
 	if (!m_pPFontGUI)
 	{
 		// get the font resource
+#if GTK_CHECK_VERSION(3,0,0)
 		GtkStyleContext *tempCtxt = gtk_style_context_new();
 		GtkWidgetPath *path = gtk_widget_path_new();
 		gtk_widget_path_append_type (path, GTK_TYPE_WINDOW);
 		gtk_style_context_set_path(tempCtxt, path);
 		gtk_widget_path_free(path);
 		const char *guiFontName = pango_font_description_get_family(gtk_style_context_get_font(tempCtxt, GTK_STATE_FLAG_NORMAL));
+#else
+		GtkStyle *tempStyle = gtk_style_new();
+		const char *guiFontName = pango_font_description_get_family(tempStyle->font_desc);
+#endif
 		if (!guiFontName)
 			guiFontName = "'Times New Roman'";
 
@@ -221,7 +250,11 @@ GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
 		
 		m_pPFontGUI = new GR_PangoFont(guiFontName, 11.0, this, s.utf8_str(), true);
 
+#if GTK_CHECK_VERSION(3,0,0)
 		g_object_unref(G_OBJECT(tempCtxt));
+#else
+		g_object_unref(G_OBJECT(tempStyle));
+#endif
 		
 		UT_ASSERT(m_pPFontGUI);
 	}
@@ -405,8 +438,30 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						  UT_sint32 x_src, UT_sint32 y_src,
 						  G_GNUC_UNUSED UT_sint32 width, G_GNUC_UNUSED UT_sint32 height)
 {
+#if !GTK_CHECK_VERSION(3,0,0)
+	GdkGC *gc;
+
+	disableAllCarets();
+	gc = gdk_gc_new(_getWindow());
+   	gdk_draw_drawable(_getWindow(), gc, _getWindow(), tdu(x_src), tdu(y_src),
+					  tdu(x_dest), tdu(y_dest), tdu(width), tdu(height));
+	g_object_unref(G_OBJECT(gc)), gc = NULL;
+	enableAllCarets();
+#else
 	scroll(x_src - x_dest, y_src - y_dest);
+#endif
 }
+
+#if !GTK_CHECK_VERSION(3,0,0)
+void GR_UnixCairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
+										   GdkBitmap * mask)
+{
+	source
+		= gdk_pixmap_colormap_create_from_xpm_d(_getWindow(),NULL,
+							&mask, NULL,
+							pXPM);
+}
+#endif
 
 void GR_UnixCairoGraphics::_resetClip(void)
 {
@@ -432,9 +487,17 @@ void GR_UnixCairoGraphics::saveRectangle(UT_Rect & r, UT_uint32 iIndx)
 	UT_sint32 idh = _tduR(r.height);
 	cairo_surface_flush ( cairo_get_target(m_cr));
 
+#if GTK_CHECK_VERSION(3,0,0)
 	GdkPixbuf * pix = gdk_pixbuf_get_from_window(_getWindow(),
 	                                             idx, idy,
 	                                             idw, idh);
+#else
+	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
+												   _getWindow(),
+												   NULL,
+												   idx, idy, 0, 0,
+												   idw, idh);
+#endif
 	m_vSaveRectBuf.setNthItem(iIndx, pix, &oldC);
 
 	if(oldC)
@@ -474,10 +537,18 @@ GR_Image * GR_UnixCairoGraphics::genImageFromRectangle(const UT_Rect &rec)
 	UT_sint32 idh = _tduR(rec.height);
 	UT_return_val_if_fail (idw > 0 && idh > 0 && idx >= 0, NULL);
 	cairo_surface_flush ( cairo_get_target(m_cr));
+#if !GTK_CHECK_VERSION(3,0,0)
+	GdkColormap* cmp = gdk_colormap_get_system();
+	GdkPixbuf * pix = gdk_pixbuf_get_from_drawable(NULL,
+												   _getWindow(),
+												   cmp,
+												   idx, idy, 0, 0,
+												   idw, idh);
+#else
 	GdkPixbuf * pix = gdk_pixbuf_get_from_window(getWindow(),
 	                                             idx, idy,
 	                                             idw, idh);
-
+#endif
 	UT_return_val_if_fail(pix, NULL);
 
 	GR_UnixImage * pImg = new GR_UnixImage("ScreenShot");

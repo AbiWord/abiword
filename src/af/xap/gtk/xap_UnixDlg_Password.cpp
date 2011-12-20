@@ -92,13 +92,13 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/xap_UnixDlg_Password.xml";
-	
 	// load the dialog from the UI file
-	GtkBuilder* builder = gtk_builder_new();
-	gtk_builder_add_from_file(builder, ui_path.c_str(), NULL);
-	
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_Password.xml");
+#else
+	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_Password-2.xml");
+#endif
+
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Password"));

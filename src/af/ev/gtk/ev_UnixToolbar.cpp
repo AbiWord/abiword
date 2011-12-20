@@ -45,6 +45,7 @@
 #include "ut_string.h"
 #include "ev_UnixToolbar.h"
 #include "xap_Types.h"
+#include "xap_Gtk2Compat.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrameImpl.h"
 #include "ev_Toolbar_Actions.h"
@@ -76,6 +77,12 @@
 
 #define PROP_HANDLER_ID "handler-id"
 
+#ifndef UINT_RGBA_R
+#	define UINT_RGBA_R GO_COLOR_UINT_R
+#	define UINT_RGBA_G GO_COLOR_UINT_G
+#	define UINT_RGBA_B GO_COLOR_UINT_B
+#endif
+
 class _wd;
 
 static void s_proxy_activated(GtkAction * action, _wd * wd);
@@ -104,14 +111,18 @@ toolbar_append_item (GtkToolbar *toolbar,
 
 	if (GTK_IS_TOOL_ITEM (widget)) {
 		tool_item = GTK_TOOL_ITEM (widget);
+#if GTK_CHECK_VERSION(2,12,0)
 		gtk_tool_item_set_tooltip_text(tool_item, text);
+#endif
 	}
 	else {
 		tool_item = gtk_tool_item_new ();
 		GtkWidget *box = gtk_event_box_new ();
 		gtk_container_add (GTK_CONTAINER (tool_item), box);
 		gtk_container_add (GTK_CONTAINER (box), widget);
+#if GTK_CHECK_VERSION(2,12,0)
 		gtk_tool_item_set_tooltip_text(tool_item, text);
+#endif
 		if (action_name && data) {
 			GtkAction	*proxy_action;
 			GtkWidget 	*menu_item;
@@ -555,7 +566,11 @@ public:									// we create...
 			GtkTreeModel *store = gtk_tree_model_sort_get_model (GTK_TREE_MODEL_SORT (model));
 			gtk_tree_model_get (store, &iter, 0, &buffer, -1);
 		} else {
+#if GTK_CHECK_VERSION(2,24,0)
 			buffer = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo));
+#else
+			buffer = gtk_combo_box_get_active_text(combo);
+#endif
 		}
 
 		if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
@@ -598,9 +613,9 @@ s_fore_color_changed (GOComboColor 	* /*cc*/,
 	UT_return_if_fail (wd);
 
 	str = UT_UTF8String_sprintf ("%02x%02x%02x", 
-								 GO_COLOR_UINT_R (color),
-								 GO_COLOR_UINT_G (color),
-								 GO_COLOR_UINT_B (color));
+								 UINT_RGBA_R (color),
+								 UINT_RGBA_G (color),
+								 UINT_RGBA_B (color));
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
 
@@ -620,9 +635,9 @@ s_back_color_changed (GOComboColor 	* /*cc*/,
 		str = "transparent";
 	} else {
 		str = UT_UTF8String_sprintf ("%02x%02x%02x", 
-								 GO_COLOR_UINT_R (color),
-								 GO_COLOR_UINT_G (color),
-								 GO_COLOR_UINT_B (color));
+								 UINT_RGBA_R (color),
+								 UINT_RGBA_G (color),
+								 UINT_RGBA_B (color));
 	}
 
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());

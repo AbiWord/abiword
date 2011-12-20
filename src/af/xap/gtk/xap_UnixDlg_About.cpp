@@ -83,8 +83,12 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	parent = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
 
 	dlg = gtk_about_dialog_new();
+#if !GTK_CHECK_VERSION(2,24,0)
+	gtk_about_dialog_set_url_hook(onAboutDialogActivate, NULL, NULL);
+#else
 	//JEAN: do we really need the "activate-link" signal?
 	g_signal_connect(dlg, "activate-link", G_CALLBACK(onAboutDialogActivate), NULL);
+#endif
 	gtk_show_about_dialog(GTK_WINDOW (parent), 
 						  "authors", authors, 
 						  "documenters", documenters, 

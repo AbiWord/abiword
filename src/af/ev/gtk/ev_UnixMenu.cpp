@@ -40,6 +40,7 @@
 #include "ut_string_class.h"
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
+#include "xap_Gtk2Compat.h"
 #include "ev_UnixMenu.h"
 #include "ev_UnixMenuBar.h"
 #include "ev_UnixMenuPopup.h"
@@ -420,7 +421,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 	std::stack<GtkWidget*> stack;
 	stack.push(wMenuRoot);
 
-	GSList *group = NULL; // for radio button groups
+	GSList *group = NULL; // for radio button groups.
 
 	for (UT_uint32 k = 0; (k < nrLabelItemsInLayout); k++)
 	{
@@ -456,7 +457,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 					gtk_radio_menu_item_set_group(GTK_RADIO_MENU_ITEM(w), group);
 					group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(w));
 				} else
-						group = NULL; // radio buton items should be consecutive
+					group = NULL; // radio buton items should be consecutive
 
 				// find parent menu item
 				GtkWidget * wParent = stack.top();

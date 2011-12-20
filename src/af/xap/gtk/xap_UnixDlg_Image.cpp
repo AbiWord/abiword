@@ -502,7 +502,11 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
     ui_file = "xap_UnixHildonDlg_Image.xml";
 #else
+#if GTK_CHECK_VERSION(3,0,0)
     ui_file = "xap_UnixDlg_Image.xml";
+#else
+    ui_file = "xap_UnixDlg_Image-2.xml";
+#endif
 #endif
 
     GtkBuilder * builder = newDialogBuilder(ui_file);
@@ -520,11 +524,11 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_bAspect = getPreserveAspect();
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), m_bAspect);
 	
-	m_oHeightSpin_adj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+	m_oHeightSpin_adj = (GtkAdjustment*)gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
    	gtk_widget_set_size_request(m_wHeightSpin,13,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wHeightSpin), GTK_ADJUSTMENT(m_oHeightSpin_adj));
 	
-	m_oWidthSpin_adj = gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
+	m_oWidthSpin_adj = (GtkAdjustment*)gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
 	gtk_widget_set_size_request(m_wWidthSpin,13,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wWidthSpin), GTK_ADJUSTMENT(m_oWidthSpin_adj));
 	

@@ -37,6 +37,9 @@
 
 static void
 ruler_style_context_changed (GtkWidget 			* /*w*/, 
+#if !GTK_CHECK_VERSION(3,0,0)
+					 GtkStyle 			* /*previous_style*/,
+#endif
 					 AP_UnixLeftRuler 	*ruler)
 {
 	ruler->_ruler_style_context_changed();
@@ -52,7 +55,11 @@ AP_UnixLeftRuler::AP_UnixLeftRuler(XAP_Frame * pFrame)
     // change ruler color on theme change
 	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
 	m_iBackgroundRedrawID = g_signal_connect_after (G_OBJECT(toplevel),
-							  "style-updated",
+#if GTK_CHECK_VERSION(3,0,0)
+													"style-updated",
+#else
+													"style-set",
+#endif
 							  G_CALLBACK(ruler_style_context_changed),
 							  static_cast<gpointer>(this));
 }
@@ -94,9 +101,13 @@ GtkWidget * AP_UnixLeftRuler::createWidget(void)
 	g_signal_connect_swapped(G_OBJECT(m_wLeftRuler), "unrealize",
 					   G_CALLBACK(_fe::unrealize), this);
 
+#if GTK_CHECK_VERSION(3,0,0)
 	g_signal_connect_swapped(G_OBJECT(m_wLeftRuler), "draw",
 					   G_CALLBACK(XAP_UnixCustomWidget::_fe::draw), static_cast<XAP_UnixCustomWidget *>(this));
-
+#else
+	g_signal_connect_swapped(G_OBJECT(m_wLeftRuler), "expose_event",
+					   G_CALLBACK(XAP_UnixCustomWidget::_fe::expose), static_cast<XAP_UnixCustomWidget *>(this));
+#endif
 	g_signal_connect(G_OBJECT(m_wLeftRuler), "button_press_event",
 					   G_CALLBACK(_fe::button_press_event), NULL);
 
@@ -120,9 +131,14 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
 
+#if GTK_CHECK_VERSION(3,0,0)
 	GtkWidget * w = gtk_label_new("");
 	((GR_UnixCairoGraphics*)m_pG)->init3dColors(gtk_widget_get_style_context(w));
 	gtk_widget_destroy(w);
+#else
+	GtkWidget * ruler = gtk_vruler_new ();
+	((GR_UnixCairoGraphics*)m_pG)->init3dColors(get_ensured_style (ruler));
+#endif
 }
 
 void AP_UnixLeftRuler::getWidgetPosition(gint * x, gint * y)

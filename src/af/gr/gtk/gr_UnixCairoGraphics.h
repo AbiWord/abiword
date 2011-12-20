@@ -24,6 +24,7 @@
 #define __GR_UNIXCAIROGRAPHICS_H__
 
 #include <gdk/gdk.h>
+#include "xap_Gtk2Compat.h"
 #include "gr_CairoGraphics.h"
 
 class ABI_EXPORT GR_UnixCairoAllocInfo : public GR_CairoAllocInfo
@@ -80,6 +81,10 @@ public:
 	virtual GR_Font * getGUIFont(void);
 	
 	virtual void		setCursor(GR_Graphics::Cursor c);
+#if !GTK_CHECK_VERSION(3,0,0)
+	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,
+											GdkBitmap * mask);
+#endif
 	virtual void		scroll(UT_sint32, UT_sint32);
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						   UT_sint32 x_src, UT_sint32 y_src,
@@ -88,7 +93,11 @@ public:
 	virtual void	    restoreRectangle(UT_uint32 iIndx);
 	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
+#if GTK_CHECK_VERSION(3,0,0)
 	void				init3dColors(GtkStyleContext * pCtxt);
+#else
+	void                init3dColors(GtkStyle * pStyle);
+#endif
 	void				initWidget(GtkWidget *widget);
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 

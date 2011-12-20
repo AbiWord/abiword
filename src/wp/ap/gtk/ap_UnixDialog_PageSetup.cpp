@@ -535,12 +535,12 @@ void Markup(GtkWidget * widget, const XAP_StringSet * /*pSS*/, char *string)
 
 GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 {  
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_PageSetup.xml";
-
 	// load the dialog from the UI file
-	m_pBuilder = gtk_builder_new();
-	gtk_builder_add_from_file(m_pBuilder, ui_path.c_str(), NULL);
+#if GTK_CHECK_VERSION(3,0,0)
+	m_pBuilder = newDialogBuilder("ap_UnixDialog_PageSetup.xml");
+#else
+	m_pBuilder = newDialogBuilder("ap_UnixDialog_PageSetup-2.xml");
+#endif
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	GList *glist;

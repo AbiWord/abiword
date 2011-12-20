@@ -27,6 +27,7 @@
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_GtkSignalBlocker.h"
+#include "xap_Gtk2Compat.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixApp.h"
@@ -925,14 +926,14 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_entry_set_text (GTK_ENTRY (format_en), "");
 
-	start_sb_adj = gtk_adjustment_new (1, 0, G_MAXINT32, 1, 10, 10);
+	start_sb_adj = (GtkAdjustment*)gtk_adjustment_new (1, 0, G_MAXINT32, 1, 10, 10);
 	start_sb = gtk_spin_button_new (GTK_ADJUSTMENT (start_sb_adj), 1, 0);
 	gtk_widget_show (start_sb);
 	gtk_table_attach (GTK_TABLE (table2), start_sb, 1, 2, 3, 4,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 
-	text_align_sb_adj = gtk_adjustment_new (0.25, 0, 10, 0.01, 0.2, 1);
+	text_align_sb_adj = (GtkAdjustment*)gtk_adjustment_new (0.25, 0, 10, 0.01, 0.2, 1);
 	text_align_sb = gtk_spin_button_new (GTK_ADJUSTMENT (text_align_sb_adj), 0.05, 2);
 	gtk_widget_show (text_align_sb);
 	gtk_table_attach (GTK_TABLE (table2), text_align_sb, 1, 2, 4, 5,
@@ -941,7 +942,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_spin_button_set_snap_to_ticks (GTK_SPIN_BUTTON (text_align_sb), TRUE);
 	gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (text_align_sb), TRUE);
 
-	label_align_sb_adj = gtk_adjustment_new (0, 0, 10, 0.01, 0.2, 1);
+	label_align_sb_adj = (GtkAdjustment*)gtk_adjustment_new (0, 0, 10, 0.01, 0.2, 1);
 	label_align_sb = gtk_spin_button_new (GTK_ADJUSTMENT (label_align_sb_adj), 0.05, 2);
 	gtk_widget_show (label_align_sb);
 	gtk_table_attach (GTK_TABLE (table2), label_align_sb, 1, 2, 5, 6,
