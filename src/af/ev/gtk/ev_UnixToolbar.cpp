@@ -111,18 +111,14 @@ toolbar_append_item (GtkToolbar *toolbar,
 
 	if (GTK_IS_TOOL_ITEM (widget)) {
 		tool_item = GTK_TOOL_ITEM (widget);
-#if GTK_CHECK_VERSION(2,12,0)
 		gtk_tool_item_set_tooltip_text(tool_item, text);
-#endif
 	}
 	else {
 		tool_item = gtk_tool_item_new ();
 		GtkWidget *box = gtk_event_box_new ();
 		gtk_container_add (GTK_CONTAINER (tool_item), box);
 		gtk_container_add (GTK_CONTAINER (box), widget);
-#if GTK_CHECK_VERSION(2,12,0)
 		gtk_tool_item_set_tooltip_text(tool_item, text);
-#endif
 		if (action_name && data) {
 			GtkAction	*proxy_action;
 			GtkWidget 	*menu_item;
@@ -566,11 +562,7 @@ public:									// we create...
 			GtkTreeModel *store = gtk_tree_model_sort_get_model (GTK_TREE_MODEL_SORT (model));
 			gtk_tree_model_get (store, &iter, 0, &buffer, -1);
 		} else {
-#if GTK_CHECK_VERSION(2,24,0)
 			buffer = gtk_combo_box_text_get_active_text (GTK_COMBO_BOX_TEXT(combo));
-#else
-			buffer = gtk_combo_box_get_active_text(combo);
-#endif
 		}
 
 		if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
