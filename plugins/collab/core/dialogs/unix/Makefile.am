@@ -27,19 +27,21 @@ uidir=$(ABIWORD_UIDIR)
 
 if TOOLKIT_GTK2
 ui_DATA = \
-	ap_UnixDialog_CollaborationAccounts-2.xml
+	ap_UnixDialog_CollaborationAccounts-2.xml \
+	ap_UnixDialog_CollaborationAddAccount-2.xml \
+	ap_UnixDialog_CollaborationAddBuddy-2.xml \
+	ap_UnixDialog_CollaborationEditAccount-2.xml \
+	ap_UnixDialog_CollaborationJoin-2.xml \
+	ap_UnixDialog_CollaborationShare-2.xml
 else
 ui_DATA = \
-	ap_UnixDialog_CollaborationAccounts.xml
-endif
-
-ui_DATA += \
+	ap_UnixDialog_CollaborationAccounts.xml \
 	ap_UnixDialog_CollaborationAddAccount.xml \
 	ap_UnixDialog_CollaborationAddBuddy.xml \
 	ap_UnixDialog_CollaborationEditAccount.xml \
 	ap_UnixDialog_CollaborationJoin.xml \
 	ap_UnixDialog_CollaborationShare.xml
-
+endif
 
 EXTRA_DIST = \
         $(ui_DATA)
