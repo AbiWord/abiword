@@ -33,9 +33,6 @@
 
 #include <iterator>
 
-#include <iostream>
-using std::cerr;
-using std::endl;
 using std::make_pair;
 using std::string;
 
@@ -820,7 +817,7 @@ public:
     }
     virtual const PP_AttrProp* getAP(void)
     {
-        cerr << "ERROR: getAP() is not valid for a start-end position rdf model" << endl;
+        UT_DEBUGMSG(("ERROR: getAP() is not valid for a start-end position rdf model\n"));
         return 0;
     }
     virtual UT_Error setAP( PP_AttrProp* newAP )
@@ -1121,7 +1118,7 @@ PD_RDFModelIterator::PD_RDFModelIterator()
 
 PD_RDFModelIterator::~PD_RDFModelIterator()
 {
-    cerr << "~PD_RDFModelIterator() model:" << m_model << endl;
+    xxx_UT_DEBUGMSG(("~PD_RDFModelIterator() model: %p\n", m_model.get()));
 }
 
 PD_RDFModelIterator::PD_RDFModelIterator( PD_RDFModelHandle model, const PP_AttrProp* AP )
@@ -1130,7 +1127,7 @@ PD_RDFModelIterator::PD_RDFModelIterator( PD_RDFModelHandle model, const PP_Attr
     , m_end( false )
     , m_apPropertyNumber( 0 )
 {
-    cerr << "PD_RDFModelIterator() model:" << model << endl;
+    xxx_UT_DEBUGMSG(("PD_RDFModelIterator() model: %p\n", model.get()));
     operator++();
 }
 
@@ -1219,7 +1216,8 @@ PD_RDFModelIterator::operator=( const PD_RDFModelIterator& r )
 {
     if( this != &r )
     {
-        cerr << "PD_RDFModelIterator op=() model:" << m_model << " r.model:" << r.m_model << endl;
+        xxx_UT_DEBUGMSG(("PD_RDFModelIterator op=() model: %p r.model: %p\n", m_model.get(),
+						 r.m_model.get()));
         m_model = r.m_model;
         m_AP = r.m_AP;
         m_end = r.m_end;

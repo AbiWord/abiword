@@ -44,9 +44,6 @@
 #include "xap_GtkComboBoxHelpers.h"
 
 #include <sstream>
-#include <iostream>
-using std::cerr;
-using std::endl;
 
 const char* GOBJ_COL_NUM = "GOBJ_COL_NUM";
 
@@ -96,7 +93,7 @@ AP_UnixDialog_RDFEditor__onActionDelete( GtkAction*, gpointer data )
 void
 AP_UnixDialog_RDFEditor__onActionImportRDFXML( GtkAction*, gpointer data )
 {
-    cerr << "_onActionImportRDFXML()" << endl;
+    xxx_UT_DEBUGMSG(("_onActionImportRDFXML()\n"))
 	AP_UnixDialog_RDFEditor *dlg = static_cast <AP_UnixDialog_RDFEditor*>(data);
     dlg->onImportRDFXML();
 }
@@ -359,7 +356,7 @@ AP_UnixDialog_RDFEditor::onDelClicked()
     for( std::list< PD_RDFStatement >::iterator iter = l.begin(); iter != l.end(); ++iter )
     {
         const PD_RDFStatement& st = *iter;
-        cerr << "onDelClicked() removing statement:" << st.toString() << endl;
+        xxx_UT_DEBUGMSG(("onDelClicked() removing statement: %s\n", st.toString().utf8_str()));
         m->remove( st );
         removeStatement( st );
         m_count--;
@@ -384,7 +381,7 @@ AP_UnixDialog_RDFEditor::onCellEdited( GtkCellRendererText * /*cell*/,
                                        gchar *new_text,
                                        int cidx )
 {
-    cerr << "onCellEdited() nt:" << new_text << endl;
+    xxx_UT_DEBUGMSG(("onCellEdited() nt: %s\n", new_text));
 
     GtkTreeIter giter;
     GtkTreeModel* model = GTK_TREE_MODEL( m_resultsModel );
@@ -434,26 +431,26 @@ static std::string tostr( GsfInput* gsf )
 void
 AP_UnixDialog_RDFEditor::onImportRDFXML()
 {
-    cerr << "onImportRDFXML()" << endl;
+    xxx_UT_DEBUGMSG(("onImportRDFXML()\n"));
 
     UT_runDialog_AskForPathname afp( XAP_DIALOG_ID_FILE_IMPORT );
     afp.appendFiletype( "RDF/XML Triple File", "rdf" );
 
     if( afp.run( getActiveFrame() ) )
     {
-        cerr << "onImportRDFXML() path:" << afp.getPath() << endl;
+        xxx_UT_DEBUGMSG(("onImportRDFXML() path: %s", afp.getPath().utf8_str()));
         GError* err = 0;
         GsfInput* gsf = UT_go_file_open( afp.getPath().c_str(), &err );
         std::string rdfxml = tostr( gsf );
         g_object_unref (G_OBJECT (gsf));
 
-        cerr << "rdfxml:" << rdfxml << endl;
+        xxx_UT_DEBUGMSG(("rdfxml: %s\n", rdfxml.c_str()));
         PD_DocumentRDFMutationHandle m = getModel()->createMutation();
 		// FIXME check the error code
         /* UT_Error e =*/ loadRDFXML( m, rdfxml );
         m->commit();
 
-        cerr << "count of triples:" << getModel()->size() << endl;
+        xxx_UT_DEBUGMSG(("count of triples: %ld\n", getModel()->size()));
         showAllRDF();
     }
     gtk_window_present( GTK_WINDOW( m_wDialog ));
@@ -462,7 +459,7 @@ AP_UnixDialog_RDFEditor::onImportRDFXML()
 void
 AP_UnixDialog_RDFEditor::onExportRDFXML()
 {
-    cerr << "onExportRDFXML()" << endl;
+    xxx_UT_DEBUGMSG(("onExportRDFXML()\n"));
 
     UT_runDialog_AskForPathname afp( XAP_DIALOG_ID_FILE_EXPORT );
     afp.appendFiletype( "RDF/XML Triple File", "rdf" );
@@ -470,7 +467,7 @@ AP_UnixDialog_RDFEditor::onExportRDFXML()
 
     if( afp.run( getActiveFrame() ) )
     {
-        cerr << "onExportRDFXML() path:" << afp.getPath() << endl;
+        xxx_UT_DEBUGMSG(("onExportRDFXML() path: %s\n", afp.getPath().utf8_str()));
         std::string rdfxml = toRDFXML( getModel() );
         GError* err = 0;
         GsfOutput* gsf = UT_go_file_create( afp.getPath().c_str(), &err );
@@ -732,7 +729,7 @@ AP_UnixDialog_RDFEditor::getSelection()
 
         PD_RDFStatement st( getModel(), PD_URI(s), PD_URI(p), PD_Object(o) );
         ret.push_back( st );
-        cerr << "getSelection() st:" << st.toString() << endl;
+        xxx_UT_DEBUGMSG(("getSelection() st: %s\n", st.toString().utf8_str()));
     }
     
     return ret;
@@ -741,7 +738,7 @@ AP_UnixDialog_RDFEditor::getSelection()
 void
 AP_UnixDialog_RDFEditor::onCursorChanged()
 {
-    cerr << "onCursorChanged()" << endl;
+    xxx_UT_DEBUGMSG(("onCursorChanged()\n"));
     PD_URI pkg_idref("http://docs.oasis-open.org/opendocument/meta/package/common#idref");
     PD_DocumentRDFHandle rdf = getRDF();
     PD_RDFModelHandle  model = getModel();
@@ -752,15 +749,15 @@ AP_UnixDialog_RDFEditor::onCursorChanged()
         for( std::list< PD_RDFStatement >::iterator siter = sl.begin();
              siter != sl.end(); ++siter )
         {
-            cerr << " subj:" << siter->getSubject().toString() << endl;
+            xxx_UT_DEBUGMSG((" subj: %s\n", siter->getSubject().toString().utf8_string()));
             PD_ObjectList ul = model->getObjects( siter->getSubject(), pkg_idref );
             for( PD_ObjectList::iterator uiter = ul.begin(); uiter != ul.end(); ++uiter )
             {
                 std::string xmlid = uiter->toString();
                 
-                cerr << " xmlid:" << xmlid << endl;
+                xxx_UT_DEBUGMSG((" xmlid: %s\n", xmlid.c_str()));
                 std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
-                cerr << " start:" << range.first << " end:" << range.second << endl;
+                xxx_UT_DEBUGMSG((" start: %d end: %d\n", range.first, range.second));
                 getView()->cmdSelect( range );
                 
             }

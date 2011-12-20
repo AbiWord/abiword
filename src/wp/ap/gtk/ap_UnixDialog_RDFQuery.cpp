@@ -40,11 +40,6 @@
 #include "ap_Dialog_RDFQuery.h"
 #include "ap_UnixDialog_RDFQuery.h"
 
-#include <iostream>
-using std::cerr;
-using std::endl;
-
-
 void
 AP_UnixDialog_RDFQuery__onExecuteClicked ( GtkButton * /*button*/,
                                            gpointer   data )
@@ -225,7 +220,7 @@ AP_UnixDialog_RDFQuery::setupBindingsView( std::map< std::string, std::string >&
 void
 AP_UnixDialog_RDFQuery::addBinding( std::map< std::string, std::string >& b )
 {
-    cerr << "addBinding() b.size():" << b.size() << endl;
+    xxx_UT_DEBUGMSG(("addBinding() b.size(): %u\n", b.size()));
     if( b.size() >= C_COLUMN_ARRAY_SIZE )
     {
         return;
@@ -240,7 +235,7 @@ AP_UnixDialog_RDFQuery::addBinding( std::map< std::string, std::string >& b )
     std::map< std::string, std::string >::iterator  end = b.end();
     for( int i=0; iter != end; ++iter, ++i )
     {
-        cerr << "addBinding() iter->second:" << iter->second << endl;
+        xxx_UT_DEBUGMSG(("addBinding() iter->second: %d\n", iter->second.c_str()));
         gtk_tree_store_set( m, &giter, i, uriToPrefixed(iter->second).c_str(), -1 );
     }
     

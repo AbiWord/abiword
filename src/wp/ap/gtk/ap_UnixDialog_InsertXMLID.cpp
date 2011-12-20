@@ -44,10 +44,6 @@
 #include "ap_UnixDialog_InsertXMLID.h"
 #include "GTKCommon.h"
 
-#include <iostream>
-using std::cerr;
-using std::endl;
-
 
 /*****************************************************************/
 
@@ -58,7 +54,7 @@ static gboolean __onKeyPressed(G_GNUC_UNUSED GtkWidget* widget,
                                G_GNUC_UNUSED gpointer user_data )
 {
     guint32 uc = gdk_keyval_to_unicode(event->keyval);
-    cerr << "__onKeyPressed() uc:" << uc << endl;
+    xxx_UT_DEBUGMSG(("__onKeyPressed() uc: %u\n", uc));
     
     if( uc >= 'A' && uc <= 'Z' )
     {
