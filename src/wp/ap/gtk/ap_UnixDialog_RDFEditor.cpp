@@ -290,7 +290,12 @@ void
 AP_UnixDialog_RDFEditor::hideRestrictionXMLID( bool v )
 {
     AP_Dialog_RDFEditor::hideRestrictionXMLID( v );
-    
+
+	// check that the UI is actually loaded.
+	if(!m_wDialog) {
+		return;
+	}
+
     if( v )
     {
         UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, no restriction HIDING! w:%p\n", m_restrictxmlidhidew ));
@@ -444,7 +449,8 @@ AP_UnixDialog_RDFEditor::onImportRDFXML()
 
         cerr << "rdfxml:" << rdfxml << endl;
         PD_DocumentRDFMutationHandle m = getModel()->createMutation();
-        UT_Error e = loadRDFXML( m, rdfxml );
+		// FIXME check the error code
+        /* UT_Error e =*/ loadRDFXML( m, rdfxml );
         m->commit();
 
         cerr << "count of triples:" << getModel()->size() << endl;
@@ -507,11 +513,11 @@ AP_UnixDialog_RDFEditor::constuctWindow (XAP_Frame * /*pFrame*/)
 	m_resultsView   = GTK_TREE_VIEW(gtk_builder_get_object(builder, "resultsView"));
 //	m_resultsModel  = GTK_LIST_STORE(gtk_builder_get_object(builder, "resultsModel"));
     m_status        = GTK_WIDGET(gtk_builder_get_object(builder, "status"));
-    m_anewtriple    = GTK_WIDGET(gtk_builder_get_object(builder, "anewtriple"));
-    m_acopytriple   = GTK_WIDGET(gtk_builder_get_object(builder, "acopytriple"));
-    m_adeletetriple = GTK_WIDGET(gtk_builder_get_object(builder, "adeletetriple"));
-    m_aimportrdfxml = GTK_WIDGET(gtk_builder_get_object(builder, "aimportrdfxml"));
-    m_aexportrdfxml = GTK_WIDGET(gtk_builder_get_object(builder, "aexportrdfxml"));
+    m_anewtriple    = GTK_ACTION(gtk_builder_get_object(builder, "anewtriple"));
+    m_acopytriple   = GTK_ACTION(gtk_builder_get_object(builder, "acopytriple"));
+    m_adeletetriple = GTK_ACTION(gtk_builder_get_object(builder, "adeletetriple"));
+    m_aimportrdfxml = GTK_ACTION(gtk_builder_get_object(builder, "aimportrdfxml"));
+    m_aexportrdfxml = GTK_ACTION(gtk_builder_get_object(builder, "aexportrdfxml"));
     m_selectedxmlid = GTK_COMBO_BOX(gtk_builder_get_object(builder, "selectedxmlid"));
     m_restrictxmlidhidew = GTK_WIDGET(gtk_builder_get_object(builder, "restrictxmlidhidew"));
 
@@ -626,15 +632,15 @@ AP_UnixDialog_RDFEditor::constuctWindow (XAP_Frame * /*pFrame*/)
     ///
 	g_signal_connect (GTK_BUTTON (m_btShowAll), "clicked", 
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onShowAllClicked), static_cast <gpointer>(this));
-	g_signal_connect (GTK_BUTTON (m_anewtriple), "activate", 
+	g_signal_connect (m_anewtriple, "activate", 
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onActionNew), static_cast <gpointer>(this));
-	g_signal_connect (GTK_BUTTON (m_acopytriple), "activate", 
+	g_signal_connect (m_acopytriple, "activate", 
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onActionCopy), static_cast <gpointer>(this));
-	g_signal_connect (GTK_BUTTON (m_adeletetriple), "activate", 
+	g_signal_connect (m_adeletetriple, "activate", 
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onActionDelete), static_cast <gpointer>(this));
-	g_signal_connect (GTK_BUTTON (m_aimportrdfxml), "activate", 
+	g_signal_connect (m_aimportrdfxml, "activate", 
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onActionImportRDFXML), static_cast <gpointer>(this));
-	g_signal_connect (GTK_BUTTON (m_aexportrdfxml), "activate", 
+	g_signal_connect (m_aexportrdfxml, "activate", 
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onActionExportRDFXML), static_cast <gpointer>(this));
     g_signal_connect (GTK_DIALOG (m_wDialog), "response",
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onDialogResponse), static_cast <gpointer>(this));
