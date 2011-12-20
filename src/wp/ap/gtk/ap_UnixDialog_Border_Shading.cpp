@@ -503,18 +503,18 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Border_Shading.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Border_Shading.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Border_Shading-2.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Border_Shading-2.ui");
 #endif
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Border_Shading"));
-	xxx_UT_DEBUGMSG(("Got top level dialog from ap_UnixDialog_Border_Shading.xml %p \n",window));
+	xxx_UT_DEBUGMSG(("Got top level dialog from ap_UnixDialog_Border_Shading.ui %p \n",window));
 
 	m_wLineTop 		= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderTop"));
-	xxx_UT_DEBUGMSG(("Got LineTop from ap_UnixDialog_Border_Shading.xml %p \n",m_wLineTop));
+	xxx_UT_DEBUGMSG(("Got LineTop from ap_UnixDialog_Border_Shading.ui %p \n",m_wLineTop));
 
 	m_wLineLeft 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderLeft"));
 	m_wLineRight 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderRight"));

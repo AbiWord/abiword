@@ -62,9 +62,9 @@ static int getSummaryPercent(void)
 {
   // load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-      GtkBuilder* builder = newDialogBuilder("ots.xml");
+      GtkBuilder* builder = newDialogBuilder("ots.ui");
 #else
-      GtkBuilder* builder = newDialogBuilder("ots-2.xml");
+      GtkBuilder* builder = newDialogBuilder("ots-2.ui");
 #endif
   
   GtkWidget * window = GTK_WIDGET(gtk_builder_get_object(builder, "otsDlg"));

@@ -76,9 +76,9 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
 	
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_DocComparison.xml");
+	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_DocComparison.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_DocComparison-2.xml");
+	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_DocComparison-2.ui");
 #endif
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

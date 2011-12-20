@@ -486,9 +486,9 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Styles.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Styles.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Styles-2.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Styles-2.ui");
 #endif
 
 	GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Styles"));

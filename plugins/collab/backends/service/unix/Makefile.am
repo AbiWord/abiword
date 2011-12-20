@@ -23,8 +23,8 @@ ui_DATA = \
 	ap_UnixDialog_GenericProgress-2.ui
 else
 ui_DATA = \
-	ap_UnixDialog_GenericInput.xml \
-	ap_UnixDialog_GenericProgress.xml
+	ap_UnixDialog_GenericInput.ui \
+	ap_UnixDialog_GenericProgress.ui
 endif
 
 EXTRA_DIST = \

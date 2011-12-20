@@ -179,12 +179,12 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 
     const char * uiFileName;
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	uiFileName = "ap_UnixHildonDialog_HdrFtr.xml";
+	uiFileName = "ap_UnixHildonDialog_HdrFtr.ui";
 #else
 #if GTK_CHECK_VERSION(3,0,0)
-	uiFileName = "ap_UnixDialog_HdrFtr.xml";
+	uiFileName = "ap_UnixDialog_HdrFtr.ui";
 #else
-	uiFileName = "ap_UnixDialog_HdrFtr-2.xml";
+	uiFileName = "ap_UnixDialog_HdrFtr-2.ui";
 #endif
 #endif
 

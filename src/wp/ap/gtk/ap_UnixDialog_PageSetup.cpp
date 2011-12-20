@@ -537,9 +537,9 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 {  
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	m_pBuilder = newDialogBuilder("ap_UnixDialog_PageSetup.xml");
+	m_pBuilder = newDialogBuilder("ap_UnixDialog_PageSetup.ui");
 #else
-	m_pBuilder = newDialogBuilder("ap_UnixDialog_PageSetup-2.xml");
+	m_pBuilder = newDialogBuilder("ap_UnixDialog_PageSetup-2.ui");
 #endif
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();

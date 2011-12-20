@@ -247,20 +247,20 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 #if GTK_CHECK_VERSION(3,0,0)
 	if(m_bIsModal)
 	{
-		ui_path = "ap_UnixDialog_Stylist_modal.xml";
+		ui_path = "ap_UnixDialog_Stylist_modal.ui";
 	}
 	else
 	{
-		ui_path = "ap_UnixDialog_Stylist.xml";
+		ui_path = "ap_UnixDialog_Stylist.ui";
 	}
 #else
 	if(m_bIsModal)
 	{
-		ui_path = "ap_UnixDialog_Stylist_modal-2.xml";
+		ui_path = "ap_UnixDialog_Stylist_modal-2.ui";
 	}
 	else
 	{
-		ui_path = "ap_UnixDialog_Stylist-2.xml";
+		ui_path = "ap_UnixDialog_Stylist-2.ui";
 	}
 #endif
 

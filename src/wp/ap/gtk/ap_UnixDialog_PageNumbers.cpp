@@ -169,9 +169,9 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers.xml");
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers.ui");
 #else
-	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers-2.xml");
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers-2.ui");
 #endif
 
 	// Update our member variables with the important widgets that 

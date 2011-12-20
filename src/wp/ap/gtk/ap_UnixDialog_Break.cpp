@@ -100,9 +100,9 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	
 
 #if GTK_CHECK_VERSION(3,0,0)
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Break.xml");
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Break.ui");
 #else
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Break-2.xml");
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Break-2.ui");
 #endif
 	
 	// Update our member variables with the important widgets that 

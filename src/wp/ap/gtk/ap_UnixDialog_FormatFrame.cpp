@@ -456,9 +456,9 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_FormatFrame.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_FormatFrame.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_FormatFrame-2.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_FormatFrame-2.ui");
 #endif
 	
 	// Update our member variables with the important widgets that 

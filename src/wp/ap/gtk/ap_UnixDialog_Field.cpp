@@ -282,9 +282,9 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	GtkTreeViewColumn *column;
 
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Field.xml");
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Field.ui");
 #else
-	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Field-2.xml");
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Field-2.ui");
 #endif
 	
 	// Update our member variables with the important widgets that 

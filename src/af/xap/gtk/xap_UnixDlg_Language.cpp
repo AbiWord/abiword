@@ -104,9 +104,9 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	GtkTreeViewColumn *column;
 	
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder * builder = newDialogBuilder("xap_UnixDlg_Language.xml");
+	GtkBuilder * builder = newDialogBuilder("xap_UnixDlg_Language.ui");
 #else
-	GtkBuilder * builder = newDialogBuilder("xap_UnixDlg_Language-2.xml");
+	GtkBuilder * builder = newDialogBuilder("xap_UnixDlg_Language-2.ui");
 #endif
 
 	// Update our member variables with the important widgets that 

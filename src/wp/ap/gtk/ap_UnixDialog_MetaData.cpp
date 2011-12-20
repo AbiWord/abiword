@@ -130,9 +130,9 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 	
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MetaData.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MetaData.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MetaData-2.xml");	
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MetaData-2.ui");
 #endif
 
 	// Update our member variables with the important widgets that 

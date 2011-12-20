@@ -205,9 +205,9 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 #if GTK_CHECK_VERSION(3,0,0)
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel.xml");
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel.ui");
 #else
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel-2.xml");
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel-2.ui");
 #endif
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
@@ -515,12 +515,12 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 
     // get the path where our UI file is located
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    dialogFileName = "ap_UnixHildonDialog_Options.xml";
+    dialogFileName = "ap_UnixHildonDialog_Options.ui";
 #else
 #if GTK_CHECK_VERSION(3,0,0)
-    dialogFileName = "ap_UnixDialog_Options.xml";
+    dialogFileName = "ap_UnixDialog_Options.ui";
 #else
-    dialogFileName = "ap_UnixDialog_Options-2.xml";	
+    dialogFileName = "ap_UnixDialog_Options-2.ui";	
 #endif
 #endif
 

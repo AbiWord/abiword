@@ -13,23 +13,23 @@ AM_CPPFLAGS = 						\
 # source and ui files for Hildon
 hildon_src = hildon/ap_UnixHildonFrameImpl.cpp \
        hildon/ap_UnixHildonFrameImpl.h
-hildon_ui = hildon/ap_UnixHildonDialog_HdrFtr.xml \
-       hildon/ap_UnixHildonDialog_Options.xml
+hildon_ui = hildon/ap_UnixHildonDialog_HdrFtr.ui \
+       hildon/ap_UnixHildonDialog_Options.ui
 
 spell_src = ap_UnixDialog_Spell.cpp
 
 # these are alternate file for a plain Gtk build.
 if TOOLKIT_GTK2
-spell_ui = ap_UnixDialog_Spell-2.xml
-altgtk_ui = ap_UnixDialog_Options-2.xml \
-	ap_UnixDialog_HdrFtr-2.xml \
-	ap_UnixDialog_Options_ColorSel-2.xml \
+spell_ui = ap_UnixDialog_Spell-2.ui
+altgtk_ui = ap_UnixDialog_Options-2.ui \
+	ap_UnixDialog_HdrFtr-2.ui \
+	ap_UnixDialog_Options_ColorSel-2.ui \
 	$(NULL)
 else
-spell_ui = ap_UnixDialog_Spell.xml
-altgtk_ui = ap_UnixDialog_Options.xml \
-	ap_UnixDialog_HdrFtr.xml \
-	ap_UnixDialog_Options_ColorSel.xml \
+spell_ui = ap_UnixDialog_Spell.ui
+altgtk_ui = ap_UnixDialog_Options.ui \
+	ap_UnixDialog_HdrFtr.ui \
+	ap_UnixDialog_Options_ColorSel.ui \
 	$(NULL)
 endif
 
@@ -185,59 +185,59 @@ libgtk_la_SOURCES = \
 uidir=$(ABIWORD_UIDIR)
 if TOOLKIT_GTK2
 ui_DATA = \
-	ap_UnixDialog_Annotation-2.xml \
-	ap_UnixDialog_Border_Shading-2.xml \
-	ap_UnixDialog_Break-2.xml \
-	ap_UnixDialog_Field-2.xml \
-	ap_UnixDialog_FormatTOC-2.xml \
-	ap_UnixDialog_FormatFootnotes-2.xml \
-	ap_UnixDialog_FormatTable-2.xml \
-	ap_UnixDialog_FormatFrame-2.xml \
-	ap_UnixDialog_Goto-2.xml \
-	ap_UnixDialog_InsertTable-2.xml \
-	ap_UnixDialog_Insert_DateTime-2.xml \
-	ap_UnixDialog_MailMerge-2.xml \
-	ap_UnixDialog_MetaData-2.xml \
-	ap_UnixDialog_PageNumbers-2.xml	\
-	ap_UnixDialog_PageSetup-2.xml \
-	ap_UnixDialog_Replace-2.xml \
-	ap_UnixDialog_New-2.xml \
-	ap_UnixDialog_Styles-2.xml \
-	ap_UnixDialog_Stylist-2.xml \
-	ap_UnixDialog_Stylist_modal-2.xml \
-	ap_UnixDialog_Tab-2.xml	\
-	ap_UnixDialog_WordCount-2.xml \
-	ap_UnixDialog_Latex-2.xml \
-	ap_UnixDialog_RDFQuery-2.xml \
-	ap_UnixDialog_RDFEditor-2.xml \
+	ap_UnixDialog_Annotation-2.ui \
+	ap_UnixDialog_Border_Shading-2.ui \
+	ap_UnixDialog_Break-2.ui \
+	ap_UnixDialog_Field-2.ui \
+	ap_UnixDialog_FormatTOC-2.ui \
+	ap_UnixDialog_FormatFootnotes-2.ui \
+	ap_UnixDialog_FormatTable-2.ui \
+	ap_UnixDialog_FormatFrame-2.ui \
+	ap_UnixDialog_Goto-2.ui \
+	ap_UnixDialog_InsertTable-2.ui \
+	ap_UnixDialog_Insert_DateTime-2.ui \
+	ap_UnixDialog_MailMerge-2.ui \
+	ap_UnixDialog_MetaData-2.ui \
+	ap_UnixDialog_PageNumbers-2.ui	\
+	ap_UnixDialog_PageSetup-2.ui \
+	ap_UnixDialog_Replace-2.ui \
+	ap_UnixDialog_New-2.ui \
+	ap_UnixDialog_Styles-2.ui \
+	ap_UnixDialog_Stylist-2.ui \
+	ap_UnixDialog_Stylist_modal-2.ui \
+	ap_UnixDialog_Tab-2.ui	\
+	ap_UnixDialog_WordCount-2.ui \
+	ap_UnixDialog_Latex-2.ui \
+	ap_UnixDialog_RDFQuery-2.ui \
+	ap_UnixDialog_RDFEditor-2.ui \
 	$(NULL)
 else
 ui_DATA = \
-	ap_UnixDialog_Annotation.xml \
-	ap_UnixDialog_Border_Shading.xml \
-	ap_UnixDialog_Break.xml \
-	ap_UnixDialog_Field.xml \
-	ap_UnixDialog_FormatTOC.xml \
-	ap_UnixDialog_FormatFootnotes.xml \
-	ap_UnixDialog_FormatTable.xml \
-	ap_UnixDialog_FormatFrame.xml \
-	ap_UnixDialog_Goto.xml \
-	ap_UnixDialog_InsertTable.xml \
-	ap_UnixDialog_Insert_DateTime.xml \
-	ap_UnixDialog_MailMerge.xml \
-	ap_UnixDialog_MetaData.xml \
-	ap_UnixDialog_PageNumbers.xml	\
-	ap_UnixDialog_PageSetup.xml \
-	ap_UnixDialog_Replace.xml \
-	ap_UnixDialog_New.xml \
-	ap_UnixDialog_Styles.xml \
-	ap_UnixDialog_Stylist.xml \
-	ap_UnixDialog_Stylist_modal.xml \
-	ap_UnixDialog_Tab.xml	\
-	ap_UnixDialog_WordCount.xml \
-	ap_UnixDialog_Latex.xml \
-	ap_UnixDialog_RDFQuery.xml \
-	ap_UnixDialog_RDFEditor.xml \
+	ap_UnixDialog_Annotation.ui \
+	ap_UnixDialog_Border_Shading.ui \
+	ap_UnixDialog_Break.ui \
+	ap_UnixDialog_Field.ui \
+	ap_UnixDialog_FormatTOC.ui \
+	ap_UnixDialog_FormatFootnotes.ui \
+	ap_UnixDialog_FormatTable.ui \
+	ap_UnixDialog_FormatFrame.ui \
+	ap_UnixDialog_Goto.ui \
+	ap_UnixDialog_InsertTable.ui \
+	ap_UnixDialog_Insert_DateTime.ui \
+	ap_UnixDialog_MailMerge.ui \
+	ap_UnixDialog_MetaData.ui \
+	ap_UnixDialog_PageNumbers.ui	\
+	ap_UnixDialog_PageSetup.ui \
+	ap_UnixDialog_Replace.ui \
+	ap_UnixDialog_New.ui \
+	ap_UnixDialog_Styles.ui \
+	ap_UnixDialog_Stylist.ui \
+	ap_UnixDialog_Stylist_modal.ui \
+	ap_UnixDialog_Tab.ui	\
+	ap_UnixDialog_WordCount.ui \
+	ap_UnixDialog_Latex.ui \
+	ap_UnixDialog_RDFQuery.ui \
+	ap_UnixDialog_RDFEditor.ui \
 	$(NULL)
 endif
 

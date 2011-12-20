@@ -347,9 +347,9 @@ GtkWidget * XAP_UnixDialog_PluginManager::_constructWindow ()
 	
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_PluginManager.xml");
+	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_PluginManager.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_PluginManager-2.xml");
+	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_PluginManager-2.ui");
 #endif	
 	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_PluginManager"));
 	m_list = GTK_WIDGET(gtk_builder_get_object(builder, "tvPlugins"));

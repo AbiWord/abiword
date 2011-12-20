@@ -286,9 +286,9 @@ AP_UnixDialog_RDFQuery::constuctWindow (XAP_Frame * /*pFrame*/)
 
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFQuery.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFQuery.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFQuery-2.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFQuery-2.ui");
 #endif
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_RDFQuery"));

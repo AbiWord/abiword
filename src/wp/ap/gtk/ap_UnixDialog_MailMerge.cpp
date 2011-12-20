@@ -154,14 +154,11 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-	// get the path where our UI file is located
-	std::string ui_path = static_cast<XAP_UnixApp*>(XAP_App::getApp())->getAbiSuiteAppUIDir() + "/ap_UnixDialog_MailMerge.xml";
-	
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MailMerge.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MailMerge.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MailMerge-2.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MailMerge-2.ui");
 #endif
 	
 	// Update our member variables with the important widgets that 

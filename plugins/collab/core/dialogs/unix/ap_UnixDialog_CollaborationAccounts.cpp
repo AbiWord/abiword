@@ -139,9 +139,9 @@ GtkWidget * AP_UnixDialog_CollaborationAccounts::_constructWindow(void)
 	
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_CollaborationAccounts.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_CollaborationAccounts.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_CollaborationAccounts-2.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_CollaborationAccounts-2.ui");
 #endif
 	
 	// Update our member variables with the important widgets that 

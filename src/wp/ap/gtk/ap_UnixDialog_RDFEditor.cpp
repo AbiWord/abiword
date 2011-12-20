@@ -497,9 +497,9 @@ AP_UnixDialog_RDFEditor::constuctWindow (XAP_Frame * /*pFrame*/)
 
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFEditor.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFEditor.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFEditor-2.xml");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFEditor-2.ui");
 #endif
 
 
