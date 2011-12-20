@@ -133,11 +133,11 @@ void AP_UnixLeftRuler::setView(AV_View * pView)
 
 #if GTK_CHECK_VERSION(3,0,0)
 	GtkWidget * w = gtk_label_new("");
-	((GR_UnixCairoGraphics*)m_pG)->init3dColors(gtk_widget_get_style_context(w));
+	((GR_UnixCairoGraphics*)m_pG)->init3dColors(w);
 	gtk_widget_destroy(w);
 #else
 	GtkWidget * ruler = gtk_vruler_new ();
-	((GR_UnixCairoGraphics*)m_pG)->init3dColors(get_ensured_style (ruler));
+	((GR_UnixCairoGraphics*)m_pG)->init3dColors(get_ensured_style(ruler));
 #endif
 }
 

@@ -166,8 +166,9 @@ void GR_UnixCairoGraphics::initWidget(GtkWidget* widget)
 }
 
 #if GTK_CHECK_VERSION(3,0,0)
-void GR_UnixCairoGraphics::init3dColors(GtkStyleContext * pCtxt)
+void GR_UnixCairoGraphics::init3dColors(GtkWidget* w)
 {
+	GtkStyleContext* pCtxt = gtk_widget_get_style_context(w);
 	GdkRGBA rgba, rgba_;
 	gtk_style_context_get_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba);
 	m_3dColors[CLR3D_Foreground] = _convertGdkRGBA(rgba);
@@ -206,7 +207,11 @@ void GR_UnixCairoGraphics::init3dColors(GtkStyleContext * pCtxt)
 	m_bHave3DColors = true;
 }
 #else
-void GR_UnixCairoGraphics::init3dColors(GtkStyle * pStyle)
+void GR_UnixCairoGraphics::init3dColors(GtkWidget* w)
+{
+	init3dColors(w->style);
+}
+void GR_UnixCairoGraphics::init3dColors(GtkStyle* pStyle)
 {
 	m_3dColors[CLR3D_Foreground] = _convertGdkColor(pStyle->text[GTK_STATE_NORMAL]);
 	m_3dColors[CLR3D_Background] = _convertGdkColor(pStyle->bg[GTK_STATE_NORMAL]);

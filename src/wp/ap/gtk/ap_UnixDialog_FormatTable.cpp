@@ -276,11 +276,7 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
-#if GTK_CHECK_VERSION(3,0,0)
-	m_pPreviewWidget->init3dColors(gtk_widget_get_style_context(m_wPreviewArea));
-#else
-	m_pPreviewWidget->init3dColors(m_wPreviewArea->style);
-#endif
+	m_pPreviewWidget->init3dColors(m_wPreviewArea);
 
 	// let the widget materialize
 

@@ -139,11 +139,7 @@ void AP_UnixDialog_PageNumbers::runModal(XAP_Frame * pFrame)
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
-#if GTK_CHECK_VERSION(3,0,0)
-	m_unixGraphics->init3dColors(gtk_widget_get_style_context(m_previewArea));
-#else
-	m_unixGraphics->init3dColors(m_previewArea->style);
-#endif
+	m_unixGraphics->init3dColors(m_previewArea);
 
 	// hack in a quick draw here
 	_updatePreview(m_recentAlign, m_recentControl);
