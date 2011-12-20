@@ -101,20 +101,20 @@ static std::string tostr( librdf_statement* statement )
 
 struct abiwordContext
 {
-    librdf_storage*   storage;
+    librdf_storage*   m_storage;
     PD_RDFModelHandle m_model;
-    int x;
+    int               m_x;
     
     abiwordContext( librdf_storage* storage,
-                    const char *name,
+                    const char * /*name*/,
                     librdf_hash* options )
-        : storage(storage)
-        , x(0)
+        : m_storage(storage)
+        , m_x(0)
     {
         librdf_storage_set_instance( storage, this );
 
         if(librdf_hash_get_as_boolean(options, "x")>0)
-            x = 1;
+            m_x = 1;
     }
 
     static abiwordContext* get( librdf_storage* storage )
@@ -143,30 +143,30 @@ struct abiwordContext
 
 struct abiwordFindStreamContext
 {
-    librdf_storage*     storage;
-    abiwordContext*     context;
-    librdf_statement*   query;
-    librdf_statement*   statement;
-    librdf_node*        context_node;
+    librdf_storage*     m_storage;
+    abiwordContext*     m_context;
+    librdf_statement*   m_query;
+    librdf_statement*   m_statement;
+    librdf_node*        m_context_node;
     PD_RDFModelIterator m_iter;
-    bool done;
+    bool                m_done;
     
     abiwordFindStreamContext( librdf_storage* storage,
                               abiwordContext* c,
                               librdf_statement* statement,
                               librdf_node* context_node )
-        : storage( storage )
-        , context(c)
-        , done(false)
-        , query(0)
-        , statement(0)
-        , context_node(0)
+        : m_storage( storage )
+        , m_context(c)
+        , m_query(0)
+        , m_statement(0)
+        , m_context_node(0)
+        , m_done(false)
     {
-        librdf_storage_add_reference(this->storage);
+        librdf_storage_add_reference(m_storage);
         if( statement )
-            this->query = librdf_new_statement_from_statement( statement );
+            m_query = librdf_new_statement_from_statement( statement );
         if( context_node )
-            this->context_node = librdf_new_node_from_node( context_node );
+            m_context_node = librdf_new_node_from_node( context_node );
 
         xxx_UT_DEBUGMSG(("abiwordFindStreamContext() query...\n"));
         xxx_UT_DEBUGMSG(("  subj: %s\n", tostr(librdf_statement_get_subject( statement )).c_str()));
@@ -177,17 +177,17 @@ struct abiwordFindStreamContext
 
     ~abiwordFindStreamContext()
     {
-        if(storage)
-            librdf_storage_remove_reference(storage);
+        if(m_storage)
+            librdf_storage_remove_reference(m_storage);
 
-        if(query)
-            librdf_free_statement(query);
+        if(m_query)
+            librdf_free_statement(m_query);
 
-        if(statement)
-            librdf_free_statement(statement);
+        if(m_statement)
+            librdf_free_statement(m_statement);
 
-        if(context_node)
-            librdf_free_node(context_node);
+        if(m_context_node)
+            librdf_free_node(m_context_node);
     }
     
 
@@ -200,17 +200,17 @@ struct abiwordFindStreamContext
     int getNext()
     {
         xxx_UT_DEBUGMSG(("getNext() top...\n"));
-        if(statement)
+        if(m_statement)
         {
-            librdf_free_statement(statement);
-            statement = 0;
+            librdf_free_statement(m_statement);
+            m_statement = 0;
         }
 
-        PD_RDFModelIterator e = context->m_model->end();
+        PD_RDFModelIterator e = m_context->m_model->end();
         if( m_iter == e )
         {
             xxx_UT_DEBUGMSG(("getNext() hit end()\n"));
-            done = 1;
+            m_done = 1;
             return -1;
         }
 
@@ -221,11 +221,11 @@ struct abiwordFindStreamContext
             xxx_UT_DEBUGMSG(("getNext() testing statement...st: %s\n", st.toString().c_str()));
 
             librdf_statement* stred = toRedland( st );
-            if( !query || librdf_statement_match( stred, query ) )
+            if( !m_query || librdf_statement_match( stred, m_query ) )
             {
                 xxx_UT_DEBUGMSG(("getNext() statement matches...\n"));
                 xxx_UT_DEBUGMSG((" st: %s\n", st.toString().c_str()));
-                statement = stred;
+                m_statement = stred;
                 break;
             }
             librdf_free_statement( stred );
@@ -235,7 +235,7 @@ struct abiwordFindStreamContext
     }
     
 
-    void setup( librdf_world* world )
+    void setup( librdf_world* /*world*/ )
     {
         xxx_UT_DEBUGMSG(("setup() top\n"));
 
@@ -276,8 +276,8 @@ struct abiwordFindStreamContext
         // cerr << "setup() D............" << endl;
         
 
-        m_iter = context->m_model->begin();
-        PD_RDFModelIterator e = context->m_model->end();
+        m_iter = m_context->m_model->begin();
+        PD_RDFModelIterator e = m_context->m_model->end();
         xxx_UT_DEBUGMSG(("setup()...iter!=end: %d\n", (m_iter != e)));
         PD_RDFStatement st = *m_iter;
         xxx_UT_DEBUGMSG(("setup()...st1: %s\n", st.toString().c_str()));
@@ -313,7 +313,7 @@ abiword_storage_terminate(librdf_storage* storage)
 }
 
 static int
-abiword_storage_open(librdf_storage* storage, librdf_model* model)
+abiword_storage_open(librdf_storage* storage, librdf_model* /*model*/)
 {
     abiwordContext* c = abiwordContext::get( storage );
     return 0;
@@ -340,24 +340,25 @@ static int
 abiword_storage_find_statements_end_of_stream( void* context )
 {
     abiwordFindStreamContext* sc = abiwordFindStreamContext::get( context );
-    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_end_of_stream() ctx: %p done: %d\n", sc, sc->done));
+    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_end_of_stream() ctx: %p done: %d\n", sc, 
+					 sc->m_done));
     
-    if( sc->done )
+    if( sc->m_done )
         return 1;
   
-    if( !sc->statement )
+    if( !sc->m_statement )
         sc->getNext();
     
-    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_end_of_stream(2) done: %d\n", sc->done));
-    return sc->done;
+    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_end_of_stream(2) done: %d\n", sc->m_done));
+    return sc->m_done;
 }
 
 static int
 abiword_storage_find_statements_next_statement( void* context )
 {
     abiwordFindStreamContext* sc = abiwordFindStreamContext::get( context );
-    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_next_statement() done: %d\n", sc->done));
-    if( sc->done )
+    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_next_statement() done: %d\n", sc->m_done));
+    if( sc->m_done )
         return 1;
     return sc->getNext();
 }
@@ -367,13 +368,13 @@ abiword_storage_find_statements_get_statement(void* context, int flags)
 {
     abiwordFindStreamContext* sc = abiwordFindStreamContext::get( context );
     xxx_UT_DEBUGMSG(("abiword_storage_find_statements_get_statement() done: %d flags: %d\n", 
-					 sc->done, flags));
+					 sc->m_done, flags));
 
     switch(flags)
     {
         case LIBRDF_ITERATOR_GET_METHOD_GET_OBJECT:
-            xxx_UT_DEBUGMSG(("get_statement() result.... %s\n", tostr(sc->statement).c_str()));
-            return sc->statement;
+            xxx_UT_DEBUGMSG(("get_statement() result.... %s\n", tostr(sc->m_statement).c_str()));
+            return sc->m_statement;
             
         default:
             UT_DEBUGMSG(("ERROR: Unknown iterator method flag: %d\n", flags));
@@ -459,8 +460,8 @@ abiword_storage_contains_statement( librdf_storage* storage,
 
 static int
 abiword_storage_context_add_statement( librdf_storage* storage,
-                                       librdf_node* context_node,
-                                       librdf_statement* statement )
+                                       librdf_node* /*context_node*/,
+                                       librdf_statement* /*statement*/ )
 {
     // storage models are read-only and used for queries only.
     abiwordContext* c = abiwordContext::get( storage );
@@ -551,7 +552,7 @@ ensureStorageIsRegistered()
     {
         v = false;
     
-        int rc = librdf_storage_register_factory( getWorld(),
+        /*int rc = */librdf_storage_register_factory( getWorld(),
                                                   "abiword", "abiword",
                                                   abiword_storage_factory );
     }
@@ -579,7 +580,7 @@ static librdf_model* getRedlandModel( PD_RDFModelHandle abimodel )
     xxx_UT_DEBUGMSG(("getRedlandModel(2) storage: %p abimodel: %p\n", storage, abimodel.get()));
     
     librdf_model* model = 0;
-    int rc = librdf_storage_open( storage, model );
+    /*int rc = */librdf_storage_open( storage, model );
     model = librdf_new_model( getWorld(), storage, NULL );
     
     xxx_UT_DEBUGMSG(("getRedlandModel(3) storage: %p model: %p\n", storage, model));
