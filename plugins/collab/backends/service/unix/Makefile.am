@@ -17,9 +17,15 @@ libunix_la_SOURCES = \
 	ServiceUnixAccountHandler.h
 
 uidir=$(ABIWORD_UIDIR)
+if TOOLKIT_GTK2
+ui_DATA = \
+	ap_UnixDialog_GenericInput-2.ui \
+	ap_UnixDialog_GenericProgress-2.ui
+else
 ui_DATA = \
 	ap_UnixDialog_GenericInput.xml \
 	ap_UnixDialog_GenericProgress.xml
+endif
 
 EXTRA_DIST = \
 	$(ui_DATA)
