@@ -48,9 +48,16 @@ class ABI_EXPORT PP_PropertyMap
 {
 public:
 
+	/**
+	 * For debugging and test purpose: get the properties array.
+	 */
 	static const char** _properties(int & num);
 
-	enum AbiPropertyIndex // list of all properties used internally by AbiWord
+	/**
+	 * List of all properties used internally by AbiWord
+	 * Keep these sorted.
+	 */
+	enum AbiPropertyIndex
 	{		
 		abi_annotation_author= 0,
 		abi_annotation_date,

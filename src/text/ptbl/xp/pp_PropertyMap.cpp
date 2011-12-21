@@ -25,6 +25,10 @@
 
 #include "pp_PropertyMap.h"
 
+/**
+ * The property names.
+ * Keep these sorted and watch the commas.
+ */
 static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"annotation-author",
 	"annotation-date",
