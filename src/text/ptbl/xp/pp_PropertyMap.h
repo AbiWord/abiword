@@ -43,9 +43,13 @@
 #include "ut_string_class.h"
 #include "ut_color.h"
 
+
 class ABI_EXPORT PP_PropertyMap
 {
 public:
+
+	static const char** _properties(int & num);
+
 	enum AbiPropertyIndex // list of all properties used internally by AbiWord
 	{		
 		abi_annotation_author= 0,
@@ -59,10 +63,10 @@ public:
 		abi_bot_attach,
 		abi_bot_color,
 		abi_bot_style,
-		abi_bot_thickness,
 		abi_bot_shadow,
 		abi_bot_shadow_color,
 		abi_bot_space,
+		abi_bot_thickness,
 		abi_bounding_space,
 		abi_cell_margin_bottom,
 		abi_cell_margin_left,
@@ -147,11 +151,11 @@ public:
 		abi_relocate,
 		abi_right_attach,
 		abi_right_color,
-		abi_right_style,
-		abi_right_thickness,
 		abi_right_shadow,
 		abi_right_shadow_color,
 		abi_right_space,
+		abi_right_style,
+		abi_right_thickness,
 		abi_section_footnote_line_thickness,
 		abi_section_footnote_yoff,
 		abi_section_max_column_height,

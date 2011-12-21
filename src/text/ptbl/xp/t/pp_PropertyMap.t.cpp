@@ -20,7 +20,9 @@
  */
 
 
+#include <stdio.h>
 
+#include <vector>
 
 #include "tf_test.h"
 #include "pp_PropertyMap.h"
@@ -32,8 +34,25 @@ TFTEST_MAIN("pp_PropertyMap")
 	PP_PropertyMap map;
 	
 	TFPASS(strcmp(PP_PropertyMap::abi_property_name(PP_PropertyMap::abi_field_color), "field-color") == 0);
+
+	int num;
+	const char** props = PP_PropertyMap::_properties(num);
+
+	std::vector<std::string> v1(props, props + num);
+	std::vector<std::string> v2 = v1;
+	sort(v1.begin(), v1.end());
+	// verify there are sorted
+	TFPASS(v1 == v2);
+ 
 	PP_PropertyMap::AbiPropertyIndex idx;
+
+	TFPASS(PP_PropertyMap::abi_property_lookup("border-merge", idx));
+	TFPASS(idx == PP_PropertyMap::abi_border_merge);
+
 	TFPASS(PP_PropertyMap::abi_property_lookup("tight-wrap", idx));
 	TFPASS(idx == PP_PropertyMap::abi_tight_wrap);
+
+	TFPASS(PP_PropertyMap::abi_property_lookup("lang", idx));
+	TFPASS(idx == PP_PropertyMap::abi_lang);
 }
 

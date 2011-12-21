@@ -32,13 +32,13 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"background-color",
 	"background-image",
 	"bgcolor",
-	"border-shadow-merge",
 	"border-merge",
+	"border-shadow-merge",
 	"bot-attach",
 	"bot-color",
 	"bot-shadow",
-	"bot-shadow-color"
-	"bot-space"
+	"bot-shadow-color",
+	"bot-space",
 	"bot-style",
 	"bot-thickness",
 	"bounding-space",
@@ -224,6 +224,13 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"width",
 	"wrap-mode"
 };
+
+
+const char** PP_PropertyMap::_properties(int & num)
+{
+	num = abi__count;
+	return &AbiPropertyName[0];
+}
 
 extern "C" {
 	static int s_str_compare (const void * a, const void * b)
