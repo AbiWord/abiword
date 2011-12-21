@@ -81,10 +81,6 @@ public:
 	virtual GR_Font * getGUIFont(void);
 	
 	virtual void		setCursor(GR_Graphics::Cursor c);
-#if !GTK_CHECK_VERSION(3,0,0)
-	void                createPixmapFromXPM(char ** pXPM,GdkPixmap *source,
-											GdkBitmap * mask);
-#endif
 	virtual void		scroll(UT_sint32, UT_sint32);
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						   UT_sint32 x_src, UT_sint32 y_src,

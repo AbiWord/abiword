@@ -457,17 +457,6 @@ void GR_UnixCairoGraphics::scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 #endif
 }
 
-#if !GTK_CHECK_VERSION(3,0,0)
-void GR_UnixCairoGraphics::createPixmapFromXPM( char ** pXPM,GdkPixmap *source,
-										   GdkBitmap * mask)
-{
-	source
-		= gdk_pixmap_colormap_create_from_xpm_d(_getWindow(),NULL,
-							&mask, NULL,
-							pXPM);
-}
-#endif
-
 void GR_UnixCairoGraphics::_resetClip(void)
 {
 	
