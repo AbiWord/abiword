@@ -24,6 +24,7 @@
 #include <string>
 #include <list>
 #include <gtk/gtk.h>
+#include "xap_Gtk2Compat.h"
 
 std::string tostr( long v );
 std::string tostr( GtkTextView* tv );

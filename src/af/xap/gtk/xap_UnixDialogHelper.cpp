@@ -50,6 +50,7 @@
 #include "xap_App.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_Dialog.h"
+#include "xap_Gtk2Compat.h"
 
 /*****************************************************************/
 /*****************************************************************/
