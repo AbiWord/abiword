@@ -119,9 +119,9 @@ UT_Error IE_Imp_RDF_VCard_Sniffer::constructImporter( PD_Document * pDocument,
 	return UT_OK;
 }
 
-bool IE_Imp_RDF_VCard_Sniffer::getDlgLabels( const char ** pszDesc,
-                                             const char ** pszSuffixList,
-                                             IEFileType * ft )
+bool IE_Imp_RDF_VCard_Sniffer::getDlgLabels( const char ** /*pszDesc*/,
+                                             const char ** /*pszSuffixList*/,
+                                             IEFileType * /*ft*/ )
 {
     return false;
 	// *pszDesc = "VCard (.vcf, .vcard)";
@@ -173,9 +173,9 @@ UT_Error IE_Imp_RDF_Calendar_Sniffer::constructImporter( PD_Document * pDocument
 	return UT_OK;
 }
 
-bool IE_Imp_RDF_Calendar_Sniffer::getDlgLabels( const char ** pszDesc,
-                                             const char ** pszSuffixList,
-                                             IEFileType * ft )
+bool IE_Imp_RDF_Calendar_Sniffer::getDlgLabels( const char ** /*pszDesc*/,
+												const char ** /*pszSuffixList*/,
+												IEFileType * /*ft*/ )
 {
     return false;
 	// *pszDesc = "Calendar (.ical, .ics)";
@@ -237,9 +237,9 @@ IE_Imp_RDF::pasteFromBuffer( PD_DocumentRange * pDocRange,
 }
 
 bool
-IE_Imp_RDF::pasteFromBufferSS( PD_DocumentRange * pDocRange,
-                               const std::stringstream& ss,
-                               const char * szEncoding )
+IE_Imp_RDF::pasteFromBufferSS( PD_DocumentRange * /*pDocRange*/,
+                               const std::stringstream& /*ss*/,
+                               const char * /*szEncoding*/ )
 {
     UT_DEBUGMSG(("IE_Imp_RDF::pasteFromBufferSS() doing nothing...\n"));
     return true;
@@ -256,7 +256,8 @@ IE_Imp_RDF::insertTextWithXMLID( const std::string& textconst,
 {
     std::string text = " " + textconst + " ";
     PT_DocPosition startpos = getDocPos();
-    bool bRes = appendSpan( text );
+	// FIXME
+    /*bool bRes =*/ appendSpan( text );
     PT_DocPosition endpos = getDocPos();
     startpos++;
     endpos--;
@@ -332,6 +333,9 @@ IE_Imp_RDF_VCard::pasteFromBufferSS( PD_DocumentRange * pDocRange,
                                      const char * szEncoding )
 {
 #ifndef WITH_EVOLUTION_DATA_SERVER
+	UT_UNUSED(pDocRange);
+	UT_UNUSED(inputss);
+	UT_UNUSED(szEncoding);
     UT_DEBUGMSG(("can not parse vcards!\n"));
     return true;
 #else
@@ -484,6 +488,9 @@ IE_Imp_RDF_Calendar::pasteFromBufferSS( PD_DocumentRange * pDocRange,
                                      const char * szEncoding )
 {
 #ifndef WITH_LIBICAL
+	UT_UNUSED(pDocRange);
+	UT_UNUSED(inputss);
+	UT_UNUSED(szEncoding);
     UT_DEBUGMSG(("can not parse calendars!\n"));
     return true;
 #else
