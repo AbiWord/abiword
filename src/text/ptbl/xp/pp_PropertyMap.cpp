@@ -232,7 +232,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 
 const char** PP_PropertyMap::_properties(int & num)
 {
-	num = abi__count;
+	num = sizeof(AbiPropertyName) / sizeof(*AbiPropertyName);
 	return &AbiPropertyName[0];
 }
 

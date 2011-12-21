@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
- * Copyright (C) 2007 Hubert Figuiere
+ * Copyright (C) 2007,2011 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -38,12 +38,17 @@ TFTEST_MAIN("pp_PropertyMap")
 	int num;
 	const char** props = PP_PropertyMap::_properties(num);
 
+	// check for the mismatch number of properties.
+	// if this test fails, we might have a crash.
+	TFPASS(num == PP_PropertyMap::abi__count);
+
 	std::vector<std::string> v1(props, props + num);
 	std::vector<std::string> v2 = v1;
 	sort(v1.begin(), v1.end());
-	// verify there are sorted
+	// verify they are sorted
 	TFPASS(v1 == v2);
  
+	// test a few random properties for sanity.
 	PP_PropertyMap::AbiPropertyIndex idx;
 
 	TFPASS(PP_PropertyMap::abi_property_lookup("border-merge", idx));
