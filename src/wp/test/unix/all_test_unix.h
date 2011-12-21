@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2005 Hubert Figuiere
+ * Copyright (C) 2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,21 +18,6 @@
  */
 
 
-#include "../xp/main.cpp"
 
-#include "all_test_unix.h"
+#include "src/af/xap/gtk/t/xap_UnixWidget.t.cpp"
 
-#include <gtk/gtk.h>
-
-
-void init_platform(void)
-{
-	gtk_init(NULL, NULL);
-}
-
-
-
-void terminate_platform(void)
-{
-
-}

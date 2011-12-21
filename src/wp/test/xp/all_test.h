@@ -1,5 +1,5 @@
 /* AbiSource Application Framework
- * Copyright (C) 2005 Hubert Figuiere
+ * Copyright (C) 2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,22 +17,11 @@
  * 02111-1307, USA.
  */
 
-
-#include "../xp/main.cpp"
-
-#include "all_test_unix.h"
-
-#include <gtk/gtk.h>
-
-
-void init_platform(void)
-{
-	gtk_init(NULL, NULL);
-}
-
-
-
-void terminate_platform(void)
-{
-
-}
+#include "src/af/util/xp/t/ut_bytebuf.t.cpp"
+#include "src/af/util/xp/t/ut_types.t.cpp"
+#include "src/af/util/xp/t/ut_locale.t.cpp"
+#include "src/af/util/xp/t/ut_vector.t.cpp"
+#include "src/af/util/xp/t/ut_string.t.cpp"
+#include "src/af/util/xp/t/ut_string_class.t.cpp"
+#include "src/text/ptbl/xp/t/pt_PieceTable.t.cpp"
+#include "src/text/ptbl/xp/t/pp_PropertyMap.t.cpp"

@@ -947,6 +947,23 @@ for dep in `echo $deps_pkgs`; do
 done
 AC_SUBST(ABIWORD_REQUIRED_PKGS)
 
+dnl Check for valgrind for the UniTest
+AC_CHECK_PROG(VALGRIND, valgrind, valgrind)
+AC_CHECK_HEADERS(valgrind/memcheck.h)
+if test "$VALGRIND" = ""; then
+        AC_MSG_WARN([Valgrind is missing. UnitTesting will run without])
+fi
+if test "$VALGRIND" != ""; then
+dnl due to stupid m4 I had to double the [ and ] in the regexp
+        vg_ver=`valgrind --version | sed -e  's/.*-\([[0-9]]\)\.[[0-9]].*/\1/'`
+        VALGRIND="$VALGRIND --tool=memcheck --leak-check=yes --num-callers=10"
+        if test "$vg_ver" != "3" ; then
+           VALGRIND="$VALGRIND --logfile-fd=-1"
+        fi
+fi
+AC_SUBST(VALGRIND)
+
+
 SHAVE_INIT
 AC_OUTPUT(
   shave
@@ -1004,10 +1021,15 @@ AC_OUTPUT(
   src/wp/impexp/gtk/Makefile
   src/wp/impexp/win/Makefile
   src/wp/impexp/xp/Makefile
+  src/wp/test/Makefile
+  src/wp/test/unix/Makefile
+  src/wp/test/xp/Makefile
   src/wp/main/Makefile
   src/wp/main/cocoa/Makefile
   src/wp/main/cocoa/bundle/Info.plist
   src/wp/main/win/Makefile
+  src/wp/test/unix/testwrap.sh
+  src/wp/test/win/testwrap.sh
   user/Makefile
   user/wp/Makefile
   user/wp/clipart/Makefile

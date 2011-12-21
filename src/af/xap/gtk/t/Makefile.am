@@ -1,9 +1,4 @@
 
-check_LTLIBRARIES = libt.la
-
-AM_CPPFLAGS = \
-	$(AF_TEST_CPPFLAGS)
-
-libt_la_SOURCES = \
+EXTRA_DIST = \
 	xap_UnixWidget.t.cpp
 

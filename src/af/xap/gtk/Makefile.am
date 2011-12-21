@@ -1,5 +1,5 @@
 
-SUBDIRS = t
+DIST_SUBDIRS = t
 
 noinst_LTLIBRARIES = libgtk.la
 

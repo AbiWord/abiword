@@ -1,10 +1,5 @@
 
-check_LTLIBRARIES = libt.la
-
-AM_CPPFLAGS = \
-	$(AF_TEST_CPPFLAGS)
-
-libt_la_SOURCES = \
+EXTRA_DIST = \
 	ut_bytebuf.t.cpp \
 	ut_locale.t.cpp \
 	ut_string.t.cpp \

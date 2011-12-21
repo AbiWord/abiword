@@ -21,6 +21,8 @@
 #include "tf_test.h"
 #include "xap_App.h"
 
+#include "all_test.h"
+
 
 #ifndef ABI_BUILD_ID
 #define ABI_BUILD_ID            "unknown"
@@ -37,13 +39,6 @@
 #ifndef ABI_BUILD_TARGET
 #define ABI_BUILD_TARGET                ""
 #endif /* ABI_BUILD_TARGET */
-
-
-// work around a linker bug. see bugzilla 8286
-extern unsigned char g_pngSidebar[];
-
-unsigned char *foo1 = g_pngSidebar;
-
 
 
 const char* XAP_App::s_szBuild_ID = "TEST";

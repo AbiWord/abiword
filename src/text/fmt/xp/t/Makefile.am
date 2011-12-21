@@ -1,10 +1,5 @@
 
-check_LTLIBRARIES = libt.la
-
-AM_CPPFLAGS = \
-	$(TEXT_TEST_CPPFLAGS)
-
-libt_la_SOURCES = 
+EXTRA_DIST = 
 
 # unused
 #	fl_BlockLayout.t.cpp
