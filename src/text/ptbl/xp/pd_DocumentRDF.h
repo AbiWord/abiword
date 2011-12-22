@@ -60,6 +60,7 @@ class ABI_EXPORT PD_URI
     
   public:
     PD_URI( const std::string& v = "" );
+    virtual ~PD_URI() {}
     virtual std::string toString() const;
     int  length() const;
     bool isValid() const;
@@ -266,7 +267,8 @@ class ABI_EXPORT PD_RDFModel
     PD_RDFModel();
     void incremenetVersion();
     
-  public:    
+  public:
+    virtual ~PD_RDFModel() {}
     virtual PD_ObjectList getObjects( const PD_URI& s, const PD_URI& p );
     virtual PD_Object     getObject( const PD_URI& s, const PD_URI& p );
     virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o );
