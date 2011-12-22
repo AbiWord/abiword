@@ -187,7 +187,8 @@ static void addCol(NSTableView *table, XAP_CocoaDialog_History* xap, int idx)
     row:(int)rowIndex
 {
 	UT_UNUSED(aTableView);
-	int col = [[aTableColumn identifier] longValue];
+	id i = [aTableColumn identifier];
+	int col = [ i longValue];
 	NSString *s = [NSString stringWithUTF8String:_xap->getListValue(rowIndex, col)];
 
 	return s;
