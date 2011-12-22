@@ -57,7 +57,7 @@ bool IE_Exp_HTML_Sniffer::getDlgLabels(const gchar ** pszDesc,
                                    IEFileType * ft)
 {
     *pszDesc = "HTML/XHTML/PHTML/MHT (.html, .xhtml, .phtml, .mht)";
-    *pszSuffixList = "*.html;*.xhtml;*.phtml;*.mht";
+    *pszSuffixList = "*.html; *.xhtml; *.phtml; *.mht";
     *ft = getFileType();
     return true;
 }
