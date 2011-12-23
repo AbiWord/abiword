@@ -105,7 +105,7 @@ struct TextAttr {
 	UT_uint16 end;
 
 	UT_uint8* data; // possible additional data. NULL if no data existant.
-	UT_uint32 dataLen;
+	gsf_off_t dataLen;
 
 	UT_String attrName;
 	UT_String attrVal;
