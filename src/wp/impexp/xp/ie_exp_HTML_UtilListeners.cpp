@@ -95,8 +95,8 @@ bool IE_Exp_HTML_HeaderFooterListener::populateStrux(PL_StruxDocHandle sdh,
 
         PT_DocPosition m_iHdrFtrStartPos = m_pDocument->getStruxPosition(sdh) + 1;
         PT_DocPosition m_iHdrFtrStopPos = 0;
-        PL_StruxDocHandle * nextSDH = NULL;
-        bool bHaveNextSection = m_pDocument->getNextStruxOfType(sdh, PTX_Section, nextSDH);
+        PL_StruxDocHandle nextSDH = NULL;
+        bool bHaveNextSection = m_pDocument->getNextStruxOfType(sdh, PTX_Section, &nextSDH);
         if (bHaveNextSection)
         {
             m_iHdrFtrStopPos = m_pDocument->getStruxPosition(nextSDH);
