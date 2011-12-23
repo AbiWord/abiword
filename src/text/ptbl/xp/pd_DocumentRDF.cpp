@@ -2014,7 +2014,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
     // xml:id attached to containing paragraph/header
     // <text:p> / <text:h>
     //
-    PL_StruxFmtHandle psfh;
+    PL_StruxDocHandle psfh;
     if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psfh ) && psfh )
     {
         UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() block pos:%d\n", pos ));
@@ -2357,7 +2357,7 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
     {
         pf_Frag* pf = 0;
         PT_BlockOffset boffset;
-        PL_StruxFmtHandle psfh;
+        PL_StruxDocHandle psfh;
 
         if( pt->getStruxOfTypeFromPosition( curr, PTX_Block, &psfh ) && psfh )
         {
