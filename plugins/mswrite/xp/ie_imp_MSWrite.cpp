@@ -280,6 +280,8 @@ static const wri_struct WRI_OLE_HEADER[] =
 /**********************************************************************
  * MSWrite Importer                                                   *
  **********************************************************************/
+static char s_cpbuffer[30];
+
 
 IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 	: IE_Imp(pDocument),
@@ -294,7 +296,10 @@ IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 	setProps(AP_Args::m_impProps);
 	const std::string propCP = getProperty("mswrite-codepage");
 
-	if (!propCP.empty()) default_codepage = propCP.c_str();
+	if (!propCP.empty()) {
+		strncpy(s_cpbuffer,propCP.c_str(),30);
+		default_codepage = s_cpbuffer;
+	}
 
 	UT_DEBUGMSG(("Codepage: %s\n", default_codepage));
 
