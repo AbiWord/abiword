@@ -80,6 +80,7 @@ private:
 	int wri_fonts_count;
 	unsigned int pic_nr;
 	bool lf;
+	bool free_defcp;
 
 	UT_Error parse_file();
 	bool read_ffntb();

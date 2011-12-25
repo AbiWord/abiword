@@ -291,10 +291,14 @@ IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 	  pic_nr(0),
 	  lf(false)
 {
+	free_defcp = false;
 	setProps(AP_Args::m_impProps);
 	const std::string propCP = getProperty("mswrite-codepage");
 
-	if (!propCP.empty()) default_codepage = propCP.c_str();
+	if (!propCP.empty()) {
+		default_codepage = (const char*) g_strdup(propCP.c_str());
+		free_defcp = true;
+	}
 
 	UT_DEBUGMSG(("Codepage: %s\n", default_codepage));
 
@@ -314,6 +318,9 @@ IE_Imp_MSWrite::~IE_Imp_MSWrite()
 	free(wri_file_header);
 	free(wri_picture_header);
 	free(wri_ole_header);
+
+	if (free_defcp)
+		g_free((void*)default_codepage);
 }
 
 /**********************************************************************
