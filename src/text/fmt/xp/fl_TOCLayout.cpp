@@ -213,7 +213,7 @@ UT_uint32 fl_TOCLayout::getLength(void)
 	PT_DocPosition startPos = getDocPosition();
 	PL_StruxDocHandle sdhEnd = NULL;
 	PL_StruxDocHandle sdhStart = getStruxDocHandle();
-	bool bres;
+	UT_DebugOnly<bool> bres;
 	bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndTOC,&sdhEnd);
 	UT_ASSERT(bres && sdhEnd);
 	PT_DocPosition endPos = m_pLayout->getDocument()->getStruxPosition(sdhEnd);

@@ -2473,7 +2473,7 @@ inline void fp_Line::_calculateWidthOfRun(	UT_sint32 &iX,
 				UT_sint32	iPos = 0;
 				eTabType	iTabType =FL_TAB_LEFT ;
 				eTabLeader	iTabLeader = FL_LEADER_NONE;
-				bool bRes = false;
+				UT_DebugOnly<bool> bRes = false;
 				if(pTabRun->isTOCTab())
 				{
 					iTabLeader = getBlock()->getTOCTabLeader(10);
@@ -3501,7 +3501,10 @@ bool	fp_Line::findNextTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	bool bRes = m_pBlock->findNextTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
+	UT_DebugOnly<bool> bRes = m_pBlock->findNextTabStop(iStartX + getX(), 
+							    getX() + getMaxWidth(), 
+							    iTabStopPosition, iTabStopType, 
+							    iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getX();
@@ -3530,7 +3533,10 @@ bool	fp_Line::findPrevTabStop(UT_sint32 iStartX, UT_sint32& iPosition, eTabType 
 	eTabType	iTabStopType = FL_TAB_NONE;
 	eTabLeader	iTabStopLeader = FL_LEADER_NONE;
 
-	bool bRes = m_pBlock->findPrevTabStop(iStartX + getX(), getX() + getMaxWidth(), iTabStopPosition, iTabStopType, iTabStopLeader);
+	UT_DebugOnly<bool> bRes = m_pBlock->findPrevTabStop(iStartX + getX(), 
+							    getX() + getMaxWidth(), 
+							    iTabStopPosition, 
+							    iTabStopType, iTabStopLeader);
 	UT_ASSERT(bRes);
 
 	iTabStopPosition -= getX();

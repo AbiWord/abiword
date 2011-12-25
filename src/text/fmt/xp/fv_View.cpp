@@ -915,10 +915,10 @@ UT_RGBColor	FV_View::getColorRDFAnchor(const fp_Run * pRun) const
 		return pRun->_getColorFG();
 
 	fp_HyperlinkRun * pHRun = pRun->getHyperlink();
-	fp_RDFAnchorRun * pARun = NULL;
+//	fp_RDFAnchorRun * pARun = NULL;
 	if(pHRun && pHRun->getHyperlinkType() == HYPERLINK_RDFANCHOR)
 	{
-		pARun = static_cast<fp_RDFAnchorRun*>(pHRun);
+//		pARun = static_cast<fp_RDFAnchorRun*>(pHRun);
 	}
 	else
 	{
@@ -1390,7 +1390,6 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG, 
 							 const std::string & sDataID)
 {
-	bool bRet;
 	setCursorWait();
 	//
 	// Signal PieceTable Change
@@ -1424,12 +1423,14 @@ void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG,
 	{
 		const gchar * attributes[3] = {
 			PT_STRUX_IMAGE_DATAID,NULL,NULL};
-		bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,attributes,NULL,PTX_SectionFrame);	
-						
+		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,
+														 posStart,attributes,NULL,PTX_SectionFrame);	
+		UT_ASSERT(bRet);
 	}
 
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionFrame);
-
+	UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
+													 properties,PTX_SectionFrame);
+	UT_ASSERT(bRet);
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
@@ -1443,7 +1444,6 @@ void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG,
 
 void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[])
 {
-	bool bRet;
 	setCursorWait();
 	//
 	// Signal PieceTable Change
@@ -1463,8 +1463,9 @@ void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[]
 	PT_DocPosition posStart = pFrame->getPosition(true)+1;
 	PT_DocPosition posEnd = posStart;
 
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,attribs,properties,PTX_SectionFrame);
-
+	UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,
+													 attribs,properties,PTX_SectionFrame);
+	UT_ASSERT(bRet);
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
@@ -3466,7 +3467,9 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 //
 // Remove all the list related properties
 //
-		bool bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, posBlock, posBlock, pListAttrs, pListProps, PTX_Block);
+		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, posBlock, 
+														 posBlock, pListAttrs, pListProps, PTX_Block);
+		UT_ASSERT(bRet);
 		fp_Run * pRun = pBlock->getFirstRun();
 		while(pRun->getNextRun())
 		{
@@ -3474,6 +3477,7 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 		}
 		PT_DocPosition lastPos = posBlock + pRun->getBlockOffset();
 		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, posBlock, lastPos, pListAttrs, pListProps);
+		UT_ASSERT(bRet);
 	}
 //
 // Have to start lists in order so undo works!
@@ -3738,7 +3742,6 @@ void FV_View::insertParagraphBreak(void)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	bool bDidGlob = false;
 	bool bBefore = false;
 	bool bStopList = false;
 
@@ -3751,7 +3754,6 @@ void FV_View::insertParagraphBreak(void)
 
 	if (!isSelectionEmpty() && !m_FrameEdit.isActive())
 	{
-		bDidGlob = true;
 		//	m_pDoc->beginUserAtomicGlob();
 		_deleteSelection();
 	}
@@ -3945,7 +3947,6 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 
 	// Turn off list updates
 	m_pDoc->disableListUpdates();
-	bool bHaveSelect = false;
 //
 // FIXME Handle table columns here
 //
@@ -3963,7 +3964,6 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 		{
 			posStart = 2;
 		}
-		bHaveSelect = true;
 	}
 
 	// lookup the current style
@@ -4392,7 +4392,6 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 fl_BlockLayout * FV_View::getBlockFromSDH(PL_StruxDocHandle sdh)
 {
 	PL_StruxFmtHandle sfh = NULL;
-	bool bFound = false;
 	fl_BlockLayout * pBlock = NULL;
 //
 // Cast it into a fl_BlockLayout and we're done!
@@ -4401,15 +4400,10 @@ fl_BlockLayout * FV_View::getBlockFromSDH(PL_StruxDocHandle sdh)
 	if(sfh != NULL)
 	{
 		pBlock = const_cast<fl_BlockLayout *>(static_cast<const fl_BlockLayout *>(sfh));
-		if(pBlock->getDocLayout() == m_pLayout)
-		{
-			bFound = true;
-		}
-		else
+		if(pBlock->getDocLayout() != m_pLayout)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			pBlock = NULL;
-			bFound = true;
 		}
 	}
 	return pBlock;
@@ -5059,14 +5053,11 @@ bool FV_View::getAllAttrProp(const PP_AttrProp *& pSpanAP, const PP_AttrProp *& 
 	}
 
 	PT_DocPosition posStart = getPoint();
-	PT_DocPosition posEnd   = posStart;
 
 	if (!isSelectionEmpty())
 	{
 		if (m_Selection.getSelectionAnchor() < posStart)
 			posStart = m_Selection.getSelectionAnchor();
-		else
-			posEnd   = m_Selection.getSelectionAnchor();
 	}
 	if (posStart < 2)
 		posStart = 2;
@@ -5996,7 +5987,6 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 								float Align,
 								float Indent)
 {
-	bool bRet;
 	UT_sint32 i=0;
 	gchar pszStart[80],pszAlign[20],pszIndent[20];
 	UT_GenericVector<const gchar*> va,vp;
@@ -6098,8 +6088,10 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	while(sdh2 != NULL)
 	{
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh2)+fl_BLOCK_STRUX_OFFSET;
+		UT_DebugOnly<bool> bRet;
 //		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
+		UT_ASSERT(bRet);
 		i++;
 		sdh2 = static_cast<PL_StruxDocHandle>(pAuto->getNthBlock(i));
 		_generalUpdate();
@@ -6273,6 +6265,7 @@ bool FV_View::getSectionFormat(const gchar ***pProps) const
 	*pProps = props;
 	m_SecProps.fillProps(numProps,props);
 	b = m_SecProps.isValid();
+	UT_ASSERT(b);
 
 	return true;
 }
@@ -6656,12 +6649,12 @@ bool FV_View::isTabListBehindPoint(UT_sint32 & iNumToDelete) const
 	PT_DocPosition cpos = getPoint();
 	PT_DocPosition ppos = cpos - 1;
 	PT_DocPosition posBOD;
-	bool bRes;
 	bool bEOL = false;
 	UT_uint32 iPointHeight;
 	UT_sint32 xPoint, yPoint, xPoint2, yPoint2;
 	bool   bDirection;
 	iNumToDelete = 0;
+	UT_DebugOnly<bool> bRes;
 	bRes = getEditableBounds(false, posBOD);
 	UT_ASSERT(bRes);
 	if (cpos <= posBOD - 1)
@@ -13068,12 +13061,9 @@ bool FV_View::insertFootnote(bool bFootnote)
 	PT_DocPosition FrefEnd = FrefStart + 1;
 	PT_DocPosition FanchStart;
 	PT_DocPosition FanchEnd;
-	PT_DocPosition FbodyEnd;
 
 	const gchar *cur_style;  // TODO variable cur_style not used? delete it?
 	getStyle(&cur_style);
-
-	bool bCreatedFootnoteSL = false;
 
 	PT_DocPosition dpFT = 0;
 	const gchar * dumProps[3] = {"list-tag","123",NULL};
@@ -13089,10 +13079,9 @@ bool FV_View::insertFootnote(bool bFootnote)
 		return false;
 	}
 	dpFT = getPoint(); // Points right at the EndFootnote strux
-	bCreatedFootnoteSL = true;
 	_setPoint(dpBody);
 	FrefStart = dpBody;
-	bool bRet = false;
+	UT_DebugOnly<bool> bRet = false;
 	if(bFootnote)
 	{
 		if (_insertField("footnote_ref", attrs)==false)
@@ -13107,6 +13096,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 // Put the character format back to it previous value
 //
 		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
+		UT_ASSERT(bRet);
 		setCharFormat(props_in);
 	}
 	else
@@ -13122,6 +13112,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 // Put the character format back to it previous value
 //
 		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
+		UT_ASSERT(bRet);
 	}
 	g_free(props_in);
 	fl_BlockLayout * pBL;
@@ -13186,7 +13177,6 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	_setPoint(FanchEnd+1);
 	_resetSelection(); // needed because of the setStyle calls ...
-	FbodyEnd = getPoint();
 	
 	/*	some magic to make the endnote reference and anchor recalculate
 		its widths
@@ -13200,7 +13190,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	UT_ASSERT(pBL != 0);
 	UT_ASSERT(pRun != 0);
 
-	bool bWidthChange = pRun->recalcWidth();
+	UT_DebugOnly<bool> bWidthChange = pRun->recalcWidth();
 	xxx_UT_DEBUGMSG(("run type %d, width change %d\n", pRun->getType(),bWidthChange));
 	pBL->setNeedsReformat(pBL);
 

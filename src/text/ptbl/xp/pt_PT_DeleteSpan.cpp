@@ -123,8 +123,9 @@ bool pt_PieceTable::dumpDoc(
             }
         }
 
-        if( pf->getType() == pf_Frag::PFT_Strux && tryDownCastStrux( pf, PTX_Block ) )
+        if( pf->getType() == pf_Frag::PFT_Strux && tryDownCastStrux( pf, PTX_Block ) ) {
             UT_DEBUGMSG(("dumpDoc()\n"));
+	}
         
         UT_DEBUGMSG(("dumpDoc() %s pos:%d frag:%p len:%d frag type:%d extra:%s\n",
                      fragTypeStr.c_str(), pos, pf, pf->getLength(), pf->getType(), extra.c_str() ));
@@ -755,7 +756,9 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 							   bool bDeleteTableStruxes,
 							   bool bDontGlob)
 {
+#ifdef BUILD_ODT_GCT
     PT_DocPosition startOfRange = dpos1;
+#endif
     
   //        getFragments().verifyDoc();
 	if(m_pDocument->isMarkRevisions())
@@ -2030,7 +2033,7 @@ bool pt_PieceTable::_StruxIsNotTable(pf_Frag_Strux * pfs)
 bool
 pt_PieceTable::_deleteComplexSpanHAR( pf_Frag_Object *pO,
                                       PT_DocPosition dpos1,
-                                      PT_DocPosition dpos2,
+                                      PT_DocPosition /*dpos2*/,
                                       UT_uint32& length,
                                       PT_BlockOffset& fragOffset_First,
                                       UT_uint32& lengthThisStep,
@@ -2044,7 +2047,7 @@ pt_PieceTable::_deleteComplexSpanHAR( pf_Frag_Object *pO,
     PTObjectType objType = pO->getObjectType();
     bool bFoundStrux2;
     bool bResult = false;
-    bool bResult2;
+    UT_DebugOnly<bool> bResult2;
     PT_DocPosition posComrade;
     pf_Frag_Strux * pfsContainer2 = NULL;
     pf_Frag * pF;
@@ -2089,6 +2092,7 @@ pt_PieceTable::_deleteComplexSpanHAR( pf_Frag_Object *pO,
                     bResult2 =
                         _deleteObjectWithNotify(posComrade,pOb,0,1,
                                                 pfsContainer2,0,0);
+		    UT_ASSERT(bResult2);
 
                     // now adjusting the positional variables
                     if(posComrade <= dpos1)
@@ -2147,12 +2151,14 @@ pt_PieceTable::_deleteComplexSpanHAR( pf_Frag_Object *pO,
                         bResult2 =
                             _deleteObjectWithNotify(posComrade,pOb,0,1,
                                                     pfsContainer2,0,0);
+			UT_ASSERT(bResult2);
                     }
                     else
                     {
                         bResult2 =
                             _deleteObjectWithNotify(posComrade,pOb,0,1,
                                                     pfsContainer2,&pfNewEnd,&fragOffsetNewEnd);
+			UT_ASSERT(bResult2);
                     }
 
                     if( objType == PTO_Annotation )
@@ -2357,30 +2363,9 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 			}
 			else
 			{
-				if(pfs->getStruxType() == PTX_SectionCell )
-				{
-					bPrevWasCell = true;
-				}
-				else
-				{
-					bPrevWasCell = false;
-				}
-				if(pfs->getStruxType() == PTX_SectionFrame )
-				{
-					bPrevWasFrame = true;
-				}
-				else
-				{
-					bPrevWasFrame = false;
-				}
-				if(pfs->getStruxType() == PTX_EndTable)
-				{
-					bPrevWasEndTable = true;
-				}
-				else
-				{
-					bPrevWasEndTable = false;
-				}
+			  bPrevWasCell = (pfs->getStruxType() == PTX_SectionCell );
+			  bPrevWasFrame = (pfs->getStruxType() == PTX_SectionFrame );
+			  bPrevWasEndTable = (pfs->getStruxType() == PTX_EndTable);
 				if(pfs->getStruxType() == PTX_SectionTable)
 				{
 					iTable++;
@@ -2588,7 +2573,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 				_getStruxFromFragSkip(static_cast<pf_Frag *>(pfsContainer),&pfsContainer);
 			}
 			bool bResult = false;
-			bool bResult2;
+			UT_DebugOnly<bool> bResult2;
 			pf_Frag_Object *pO = static_cast<pf_Frag_Object *>(pf_First);
 			switch(pO->getObjectType())
 			{
@@ -2627,6 +2612,7 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 									bResult2 =
 											_deleteObjectWithNotify(posComrade,pOb,0,1,
 										  							pfsContainer2,0,0);
+									UT_ASSERT(bResult2);
 
 									// now adjusting the positional variables
 									if(posComrade <= dpos1)

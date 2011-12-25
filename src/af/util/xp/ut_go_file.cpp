@@ -1653,7 +1653,7 @@ UT_go_file_get_date_changed (char const *uri)
 
 /* ------------------------------------------------------------------------- */
 
-#ifndef WITH_GNOMEVFS
+#if !defined(WITH_GNOMEVFS) && !defined(HAVE_GTK214)
 static char *
 check_program (char const *prog)
 {

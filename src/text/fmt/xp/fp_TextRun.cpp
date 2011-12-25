@@ -2068,14 +2068,11 @@ bool fp_TextRun::_refreshDrawBuffer()
 	GRShapingResult eRefresh = _getRefreshDrawBuffer();
 
 	bool bRefresh = true;
-	bool bSimple  = false;
 	
 	if(m_pRenderInfo)
 	{
 		bRefresh = ((UT_uint32)eRefresh & (UT_uint32)m_pRenderInfo->m_eShapingResult) != 0;
-		bSimple = (	m_pRenderInfo->m_eShapingResult == GRSR_None);
 	}
-	
 
 	if(iLen && bRefresh)
 	{

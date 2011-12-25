@@ -2491,7 +2491,6 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 #endif
 
 		UT_sint32 oldDraggingCenter = m_draggingCenter;
-		UT_Rect oldDraggingRect = m_draggingRect;
 
 		if(bRTL)
 			m_draggingCenter = xAbsRight1 - xgrid;

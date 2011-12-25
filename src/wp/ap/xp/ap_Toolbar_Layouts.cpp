@@ -331,7 +331,7 @@ EV_Toolbar_Layout * XAP_Toolbar_Factory::CreateToolbarLayout(const char * szName
 			for (k=0; k < pVec->getNrEntries(); k++)
 			{
 				XAP_Toolbar_Factory_lt * plt = pVec->getNth_lt(k);
-				bool bResult = pLayout->setLayoutItem(k, plt->m_id, plt->m_flags);
+				UT_DebugOnly<bool> bResult = pLayout->setLayoutItem(k, plt->m_id, plt->m_flags);
 				UT_ASSERT_HARMLESS(bResult);
 			}
 			break;

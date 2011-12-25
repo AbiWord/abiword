@@ -2765,7 +2765,7 @@ void FL_DocLayout::updateOnViewModeChange()
 	// force margin properties lookup
 	fl_SectionLayout* pSL = m_pFirstSection;
 	m_docViewPageSize = getDocument()->m_docPageSize;
-	UT_Dimension orig_ut = DIM_IN;
+	UT_DebugOnly<UT_Dimension> orig_ut = DIM_IN;
 	orig_ut = m_docViewPageSize.getDims();
 	UT_DEBUGMSG(("updateOnViewModeChange - docViewPageSize width %f \n",m_docViewPageSize.Width(orig_ut)));
   	while (pSL)

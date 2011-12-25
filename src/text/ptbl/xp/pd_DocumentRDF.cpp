@@ -33,9 +33,6 @@
 
 #include <iterator>
 
-using std::make_pair;
-using std::string;
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -158,7 +155,7 @@ PD_RDFModel::getArcsOut( const PD_URI& s )
         const PD_RDFStatement& st = *iter;
         if( st.getSubject() == s )
         {
-            ret.insert( make_pair( st.getPredicate(), st.getObject() ));
+            ret.insert( std::make_pair( st.getPredicate(), st.getObject() ));
         }
     }
     return ret;
@@ -282,8 +279,8 @@ PD_RDFModel::uriToPrefixed( const std::string& uri )
 std::string
 PD_RDFModel::prefixedToURI( const std::string& prefixedstr )
 {
-    int colonLocation = prefixedstr.find(":");
-    if( colonLocation != string::npos )
+	std::string::size_type colonLocation = prefixedstr.find(":");
+    if( colonLocation != std::string::npos )
     {
         std::string prefix = prefixedstr.substr( 0, colonLocation );
         std::string rest   = prefixedstr.substr( colonLocation+1 );
@@ -339,8 +336,9 @@ static std::string readLengthPrefixedString( std::istream& iss )
 
     if( DEBUG_LOWLEVEL_IO )
     {
-        int loc = iss.tellg();
-        UT_DEBUGMSG(("PD_DocumentRDF::readLengthPrefixedString() len:%d loc:%d\n", len,loc));
+        UT_DebugOnly<std::istream::pos_type> loc = iss.tellg();
+        UT_DEBUGMSG(("PD_DocumentRDF::readLengthPrefixedString() len:%d loc:%d\n", len,
+					 (std::istream::pos_type)loc));
     }
     
     char* p = new char[len+2];
@@ -362,10 +360,6 @@ static std::string createLengthPrefixedString( const std::string& s )
     std::stringstream ss;
     ss << s.length() << " " << s;
     return ss.str();
-}
-static std::string createLengthPrefixedString( const PD_URI& u )
-{
-    return createLengthPrefixedString(u.toString());
 }
 
 /**
@@ -1271,7 +1265,7 @@ std::string
 PD_DocumentRDF::makeLegalXMLID( const std::string& s )
 {
     std::string ret;
-    for( string::const_iterator iter = s.begin(); iter != s.end(); ++iter )
+    for( std::string::const_iterator iter = s.begin(); iter != s.end(); ++iter )
     {
         char ch = *iter;
         if( ch >= 'a' && ch <= 'z' )
@@ -1826,7 +1820,7 @@ PD_DocumentRDF::getAllIDs( std::set< std::string >& ret )
 std::pair< PT_DocPosition, PT_DocPosition >
 PD_DocumentRDF::getIDRange( const std::string& xmlid )
 {
-    std::pair< PT_DocPosition, PT_DocPosition > ret = make_pair( 0, 0 );
+    std::pair< PT_DocPosition, PT_DocPosition > ret( 0, 0 );
     PD_Document*    doc = getDocument();
     pf_Frag *	   iter = doc->getFragFromPosition(0);
 
@@ -1867,7 +1861,7 @@ PD_DocumentRDF::getIDRange( const std::string& xmlid )
                 }
                 
             }
-            return make_pair( pf->getPos(), epos );
+            return std::make_pair( pf->getPos(), epos );
         }
     }
     
@@ -1879,7 +1873,7 @@ std::list< std::string >&
 PD_DocumentRDF::addRelevantIDsForRange( std::list< std::string >& ret,
                                         PD_DocumentRange* range )
 {
-    addRelevantIDsForRange( ret, make_pair( range->m_pos1, range->m_pos2 ));
+    addRelevantIDsForRange( ret, std::make_pair( range->m_pos1, range->m_pos2 ));
     return ret;
 }
 
@@ -2049,8 +2043,9 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
                 UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() xmlid:%s \n",v));
                 ret.push_back(v);
 
-                if(AP->getAttribute("props", v))
+                if(AP->getAttribute("props", v)) {
                     UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() props:%s \n",v));
+				}
 
             }
         }
@@ -2280,8 +2275,8 @@ static void dump( const std::string& msg, PD_RDFModelIterator iter, PD_RDFModelI
     UT_DEBUGMSG(("dump(top) msg::%s\n", msg.c_str() ));
     for( ; iter != e; ++iter )
     {
-        const PD_RDFStatement& st = *iter;
-        UT_DEBUGMSG((" st:%s\n", st.toString().c_str() ));
+        UT_DebugOnly<const PD_RDFStatement&> st(*iter);
+        UT_DEBUGMSG((" st:%s\n", ((const PD_RDFStatement&)st).toString().c_str() ));
         ++count;
     }
     UT_DEBUGMSG(("dump(end) count:%d msg::%s\n", count, msg.c_str() ));
@@ -2291,11 +2286,11 @@ void PD_DocumentRDF::runPlay()
 {
     UT_DEBUGMSG(("PD_DocumentRDF::runPlay() o:%s\n", "foo" ));
 
-    int count = 0;
+    UT_DebugOnly<int> count = 0;
     typedef PD_RDFModelIterator iterator;
     dump( "whole model", begin(), end() );
     
-    UT_DEBUGMSG(("runPlay() triple count:%d\n", count ));
+    UT_DEBUGMSG(("runPlay() triple count:%d\n", (int)count ));
     UT_DEBUGMSG(("runPlay()\n\n"));
 
     PD_RDFModelHandle m = getRDFForID( "wingb" );
@@ -2402,9 +2397,9 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
                     {
                         UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() xml:id:%s\n",v));
                     }
-                    if(pAP->getAttribute("this-is-an-rdf-anchor", v) && v)
+                    if(pAP->getAttribute("this-is-an-rdf-anchor", v) && v) {
                         UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() is-rdf-a:%s\n",v));
-                    
+					}
                 }
             }
             

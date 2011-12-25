@@ -550,7 +550,8 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 	posCell = m_pDoc->getStruxPosition(cellSDH)+1;
 	UT_DEBUGMSG(("New Cells props for old cell:\n  %s \n",sCellProps.c_str()));
 	atts[1] = sCellProps.c_str();
-	bool bres = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
+	UT_DebugOnly<bool> bres = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
+	UT_ASSERT(bres);
 	m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&prevCellSDH2);		if(bDoSplitSolidHori)
 	{
 //
@@ -606,8 +607,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 					m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
 				}
 			}
-			bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
-			if(!bRes)
+			if(!m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH))
 			{
 				bStop = true;
 				break;
@@ -673,8 +673,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 					m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,atts,NULL,PTX_SectionCell);
 				}
 			}
-			bRes = m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH);
-			if(!bRes)
+			if(!m_pDoc->getNextStruxOfType(cellSDH,PTX_SectionCell,&cellSDH))
 			{
 				bStop = true;
 				break;
@@ -744,7 +743,7 @@ void  FV_View::cmdSelectTOC(UT_sint32 x, UT_sint32 y)
 bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 {
 	PL_StruxDocHandle cellSDH,tableSDH;
-	PT_DocPosition posTable,posCell;
+	PT_DocPosition posTable;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	UT_sint32 Left,Right,Top,Bot;
 	bool bEOL = false; // added this stop compiler warning. Tomas
@@ -763,7 +762,6 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 	UT_return_val_if_fail(bRes, false);
 
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
-	posCell = m_pDoc->getStruxPosition(cellSDH);
 
 //
 // Now find the number of rows and columns inthis table. 
@@ -1540,7 +1538,6 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 // insert a block to terminate the text before this.
 //
 	PT_DocPosition pointBreak = getPoint();
-	PT_DocPosition pointTable = 0;
 	e = m_pDoc->insertStrux(getPoint(),PTX_Block);
 //
 // Insert the table strux at the same spot. This will make the table link correctly in the
@@ -1549,13 +1546,12 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 // Handle special case of not putting a table immediately after a section break
 //
 	PL_StruxDocHandle secSDH = NULL;
-	bool bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
-#if DEBUG
-	PT_DocPosition secPos2 = m_pDoc->getStruxPosition(secSDH);
-	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos2,pointBreak));
-#endif
+	UT_DebugOnly<bool> bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
+	UT_ASSERT(bres);
+	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",m_pDoc->getStruxPosition(secSDH),pointBreak));
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
+	UT_ASSERT(bres);
 #if DEBUG
 	if(secSDH != NULL)
 	{
@@ -1599,10 +1595,6 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 			if(getPoint() == pointBreak)
 			{
 				setPoint(pointBreak+1);
-			}
-			if(i == 0 && j==0)
-			{
-				pointTable = getPoint();
 			}
 			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_EndCell));
 		}
@@ -1680,8 +1672,8 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 
 	setPoint(posTableStart);
 	PT_DocPosition posEOD;
-	bool bRes;
-	bRes = getEditableBounds(true, posEOD);
+	UT_DebugOnly<bool> bRes = getEditableBounds(true, posEOD);
+	UT_ASSERT(bRes);
 	while(!isPointLegal() && getPoint() < posEOD)
 	{
 	  setPoint(getPoint()+1);
@@ -3299,13 +3291,12 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 // Handle special case of not putting a table immediately after a section break
 //
 	PL_StruxDocHandle secSDH = NULL;
-	bool bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
-#if DEBUG
-	PT_DocPosition secPos2 = m_pDoc->getStruxPosition(secSDH);
-	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos2,pointBreak));
-#endif
+	UT_DebugOnly<bool> bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
+	UT_ASSERT(bres);
+	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",m_pDoc->getStruxPosition(secSDH),pointBreak));
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
+	UT_ASSERT(bres);
 #if DEBUG
 	if(secSDH != NULL)
 	{
@@ -3730,11 +3721,9 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 			UT_return_if_fail( pRun );
 
-			fp_Run * pPrevRun = NULL;
 			UT_uint32 iLength = 0;
 			while(pRun && (pRun->deleteFollowingIfAtInsPoint() && (getPoint() == curBlock->getPosition() + pRun->getBlockOffset())))
 			{
-				pPrevRun = pRun;
 				iLength += pRun->getLength();
 				pRun = pRun->getNextRun();
 			}
@@ -3753,11 +3742,9 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			// back one further
 			pRun = pRun->getPrevRun();
 
-			fp_Run * pPrevRun = NULL;
 			UT_uint32 iLength = 0;
 			while(pRun && (pRun->deleteFollowingIfAtInsPoint() && (getPoint() == curBlock->getPosition() + pRun->getBlockOffset())) )
 			{
-				pPrevRun = pRun;
 				iLength += pRun->getLength();
 				pRun = pRun->getPrevRun();
 			}
@@ -3818,7 +3805,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		else
 		{
 			PT_DocPosition posEOD;
-			bool bRes;
+			UT_DebugOnly<bool> bRes;
 
 			bRes = getEditableBounds(true, posEOD);
 			UT_ASSERT(bRes);
@@ -3984,11 +3971,8 @@ void FV_View::cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos)
 #define HACK_LINE_HEIGHT				20 // TODO Fix this!!
 
 	UT_sint32 lineHeight = iPos;
-	UT_sint32 docHeight = 0;
 	bool bVertical = false;
 	bool bHorizontal = false;
-
-	docHeight = m_pLayout->getHeight();
 
 	if (lineHeight == 0)
 		lineHeight = m_pG->tlu(HACK_LINE_HEIGHT);
@@ -5809,7 +5793,8 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
  */
 bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
 {
-  UT_DEBUGMSG(("Insert Math Object at %d name %s \n",pos,szUID));
+	UT_DebugOnly<PT_DocPosition> posDebug = pos;
+	UT_DEBUGMSG(("Insert Math Object at %d name %s \n",(PT_DocPosition)posDebug,szUID));
 	const gchar * atts[5]={"dataid",NULL,NULL,NULL,NULL};
 	atts[1] = szUID;
 	const gchar *cur_style = NULL;

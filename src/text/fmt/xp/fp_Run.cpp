@@ -1010,7 +1010,7 @@ void fp_Run::clearPrint(void)
 
 void fp_Run::setBlockOffset(UT_uint32 offset)
 {
-	UT_sint32 iOff = static_cast<UT_sint32>(offset);
+	UT_DebugOnly<UT_sint32> iOff = static_cast<UT_sint32>(offset);
 	UT_ASSERT(iOff >=0);
 	m_iOffsetFirst = offset;
 }
@@ -3007,24 +3007,7 @@ void fp_BookmarkRun::_draw(dg_DrawArgs* pDA)
     	return;
     }
 
-
-	UT_uint32 iRunBase = getBlock()->getPosition() + getBlockOffset();
-
-	UT_uint32 iSelAnchor = pView->getSelectionAnchor();
-	UT_uint32 iPoint = pView->getPoint();
-
-	UT_uint32 iSel1 = UT_MIN(iSelAnchor, iPoint);
-	UT_uint32 iSel2 = UT_MAX(iSelAnchor, iPoint);
-
-	UT_ASSERT(iSel1 <= iSel2);
-
-	bool bIsSelected = false;
-	if (/* pView->getFocus()!=AV_FOCUS_NONE && */isInSelectedTOC() ||	
-		((iSel1 <= iRunBase) && (iSel2 > iRunBase)))
-		bIsSelected = true;
-
 	pG->setColor(_getView()->getColorShowPara());
-
 
 	#define NPOINTS 4
 
@@ -3540,11 +3523,9 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	_setField(fd);
 	const gchar * szWidth = NULL;
 	pSpanAP->getProperty("width", szWidth);
-	bool bNoSize = false;
 	if(szWidth == NULL)
 	{
 		szWidth = "0in";
-		bNoSize = true;
 	}
 	const gchar * szHeight = NULL;
 	pSpanAP->getProperty("height", szHeight);
@@ -3555,21 +3536,11 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if(szHeight == NULL)
 	{
 		szHeight = "0in";
-		bNoSize = true;
 	}
 	UT_DEBUGMSG(("Orig szHeight = %s \n",szHeight));
 	// Also get max width, height ready for generateImage.
 
 	fl_DocSectionLayout * pDSL = getBlock()->getDocSectionLayout();
-	fp_Page * p = NULL;
-	if(pDSL->getFirstContainer())
-	{
-		p = pDSL->getFirstContainer()->getPage();
-	}
-	else
-	{
-		p = pDSL->getDocLayout()->getNthPage(0);
-	}
 	UT_sint32 maxW = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnWidth()));
 	UT_sint32 maxH = static_cast<UT_sint32>(static_cast<double>(pDSL->getActualColumnHeight()));
 	fl_ContainerLayout * pCL = getBlock()->myContainingLayout();

@@ -584,12 +584,9 @@ static EV_Menu_ItemState HyperLinkOK(FV_View * pView)
 	    s = EV_MIS_Gray ;
 	    return s;
 	}
-	PT_DocPosition posTemp =0;
 	if(posStart > posEnd)
 	{
-	  posTemp = posStart;
-	  posStart = posEnd;
-	  posEnd = posStart;
+		std::swap(posStart, posEnd);
 	}
 	if(posStart < pBL1->getPosition(true))
 	{

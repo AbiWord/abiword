@@ -508,7 +508,7 @@ virtual	fl_HdrFtrSectionLayout*	getHdrFtrSectionLayout(void) const { return m_pH
 	virtual void				format(void);
 	virtual void				updateLayout(bool bDoFull);
 	virtual void				redrawUpdate(void);
-	fp_Page *                       getPage(void) { return m_pPage;}
+	fp_Page *                       getPage(void) const { return m_pPage;}
 	virtual fp_Container*		getNewContainer(fp_Container *pFirstContainer = NULL);
 	virtual fp_Container*		getFirstContainer() const;
 	virtual fp_Container*		getLastContainer() const;

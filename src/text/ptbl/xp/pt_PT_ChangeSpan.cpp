@@ -350,7 +350,7 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
-	bool bMerged;
+	UT_DebugOnly<bool> bMerged;
 	if(attributes && properties && (attributes[0] == NULL) && (properties[0] == NULL))
 	{
 	    //
@@ -484,9 +484,6 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 	}
 
 	UT_return_val_if_fail (dpos1 < dpos2,false);
-	bool bHaveAttributes, bHaveProperties;
-	bHaveAttributes = (attributes && *attributes);
-	bHaveProperties = (lProps && *lProps);
 
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;

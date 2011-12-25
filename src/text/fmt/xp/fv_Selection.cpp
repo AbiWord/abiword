@@ -392,8 +392,7 @@ void FV_Selection::addCellToSelection(fl_CellLayout * pCell)
 	PL_StruxDocHandle sdhStart = pCell->getStruxDocHandle();
 	PT_DocPosition posLow = getDoc()->getStruxPosition(sdhStart) +1; // First block
 
-	bool bres;
-	bres = getDoc()->getNextStruxOfType(sdhStart,PTX_EndCell,&sdhEnd);
+	UT_DebugOnly<bool> bres = getDoc()->getNextStruxOfType(sdhStart,PTX_EndCell,&sdhEnd);
 	PT_DocPosition posHigh = getDoc()->getStruxPosition(sdhEnd) -1;
 	UT_ASSERT(bres && sdhEnd);
 	PD_DocumentRange * pDocRange = new PD_DocumentRange(getDoc(),posLow,posHigh);

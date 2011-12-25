@@ -1313,11 +1313,6 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	UT_uint32 len =UT_UCS4_strlen(szString);
 	UT_uint32 len1 =UT_UCS4_strlen(sz1);
 	UT_uint32 lenSpace =UT_UCS4_strlen(szSpace);
-	const char * szStyle = NULL;
-	if(!isNew)
-	{
-		szStyle = getCurrentStyle();
-	}
 //
 // Set all the margins to 0
 //

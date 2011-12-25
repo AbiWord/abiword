@@ -557,8 +557,7 @@ void fb_LineBreaker::_splitRunAt(fp_Run *pCurrentRun, fp_RunSplitInfo &splitInfo
 	UT_ASSERT(pRunToSplit->getNextRun());
 	UT_ASSERT(pRunToSplit->getNextRun()->getType() == FPRUN_TEXT);
 
-	fp_TextRun *pOtherHalfOfSplitRun;
-	pOtherHalfOfSplitRun = static_cast<fp_TextRun*>(pRunToSplit->getNextRun());
+	UT_DebugOnly<fp_TextRun*> pOtherHalfOfSplitRun = static_cast<fp_TextRun*>(pRunToSplit->getNextRun());
 
 	// This assert fires sometimes with the Pango graphics; I believe it is due to
 	// rounding errors (the split info calculated by adding up the width of individual

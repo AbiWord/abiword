@@ -654,7 +654,6 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		}
 		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
 		UT_return_if_fail(pCL->getContainerType() == FL_CONTAINER_CELL);
-		fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pCL);
 		fp_CellContainer * pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
 		UT_return_if_fail(pCCon);
 		UT_Rect * pRect = pCCon->getScreenRect();
@@ -676,7 +675,6 @@ void FV_VisualDragText::getImageFromSelection(UT_sint32 x, UT_sint32 y)
 		}
 		pCL = pBlock->myContainingLayout();
 		UT_return_if_fail(pCL->getContainerType() == FL_CONTAINER_CELL);
-		pCell = static_cast<fl_CellLayout *>(pCL);
 		pCCon = static_cast<fp_CellContainer *>(pCL->getFirstContainer());
 		UT_return_if_fail(pCCon);
 		pRect = pCCon->getScreenRect();

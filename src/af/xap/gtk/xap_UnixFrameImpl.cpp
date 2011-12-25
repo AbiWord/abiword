@@ -1494,8 +1494,6 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 {
 	// create a top-level window for us.
 
-	bool bResult;
-
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
 		m_wTopLevelWindow = _createInternalWindow ();
@@ -1587,6 +1585,7 @@ void XAP_UnixFrameImpl::_createTopLevelWindow(void)
 		m_pUnixMenu = new EV_UnixMenuBar(static_cast<XAP_UnixApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
 										 m_szMenuLabelSetName);
 		UT_return_if_fail(m_pUnixMenu);
+		UT_DebugOnly<bool> bResult;
 		bResult = m_pUnixMenu->synthesizeMenuBar();
 		UT_ASSERT(bResult);
 	}
@@ -1954,8 +1953,7 @@ void XAP_UnixFrameImpl::_rebuildMenus(void)
 					 m_szMenuLayoutName,
 					 m_szMenuLabelSetName);
 	UT_return_if_fail(m_pUnixMenu);
-	bool bResult = m_pUnixMenu->rebuildMenuBar();
-	UT_UNUSED(bResult);
+	UT_DebugOnly<bool> bResult = m_pUnixMenu->rebuildMenuBar();
 	UT_ASSERT_HARMLESS(bResult);
 }
 

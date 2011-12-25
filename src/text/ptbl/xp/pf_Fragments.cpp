@@ -606,7 +606,6 @@ pf_Fragments::fixSize(Iterator it)
 {
 	UT_ASSERT(it.is_valid());
 	Node* pn = it.getNode();
-	pf_Frag* item = NULL;
 	int delta = 0;
    
 	if (pn == m_pRoot)
@@ -643,8 +642,6 @@ pf_Fragments::fixSize(Iterator it)
 	/* if the m_lengthLeft of that head changed, propagate the change to our parents */
 	while (pn != m_pRoot && delta != 0)
 	{
-		item = pn->item;
-	
 		if (pn->parent->left == pn)
 			pn->parent->item->accLeftTreeLength(delta);
 

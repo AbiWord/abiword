@@ -258,20 +258,20 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 #include <boost/function.hpp>
 typedef boost::function< bool (PT_DocPosition, PT_DocPosition, PT_DocPosition, PL_Listener*)> f_WalkRangeFinished_t;
 
-static bool finishedFunctorEndOfRage( PT_DocPosition rangeStartPos,
+static bool finishedFunctorEndOfRage( PT_DocPosition /*rangeStartPos*/,
                                       PT_DocPosition rangeEndPos,
                                       PT_DocPosition curPos,
-                                      PL_Listener* pListener )
+                                      PL_Listener* /*pListener*/ )
 {
     if( curPos >= rangeEndPos )
         return true;
     return false;
 }
 
-static bool finishedFunctorFinishingListener( PT_DocPosition rangeStartPos,
-                                              PT_DocPosition rangeEndPos,
-                                              PT_DocPosition curPos,
-                                              PL_Listener* pListener,
+static bool finishedFunctorFinishingListener( PT_DocPosition /*rangeStartPos*/,
+                                              PT_DocPosition /*rangeEndPos*/,
+                                              PT_DocPosition /*curPos*/,
+                                              PL_Listener* /*pListener*/,
                                               PL_FinishingListener* fl )
 {
     if( fl->isFinished() )
@@ -305,7 +305,7 @@ static m_fragtypecol_t& _getTellListenerSubsetWalkRangeVisitAllFragments()
 static PT_DocPosition _tellListenerSubsetWalkRange(
     pt_PieceTable* pt,
     PL_Listener* pListener,
-    PD_DocumentRange* pDocRange,
+    PD_DocumentRange*  /*pDocRange*/,
     PT_DocPosition rangeStartPos,
     PT_DocPosition rangeEndPos,
     f_WalkRangeFinished_t finishedFunctor = finishedFunctorEndOfRage,
@@ -349,8 +349,9 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                     else
                         endOffset = pf->getLength();
                     bool bStatus1 = pft->createSpecialChangeRecord(&pcr,sum,blockOffset,fragOffset1,endOffset);
-                    if(!bStatus1)
+                    if(!bStatus1) {
                         UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) a\n" ));
+		    }
                     UT_return_val_if_fail (bStatus1,false);
                     bool bStatus2 = pListener->populate(sfh,pcr);
                     if (pcr)
@@ -369,8 +370,9 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                     sfh = 0;
                     PX_ChangeRecord * pcr = NULL;
                     bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
-                    if(!bStatus1)
+                    if(!bStatus1) {
                         UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) b\n" ));
+		    }
                     UT_return_val_if_fail (bStatus1,false);
                     bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
                     if (pcr)
@@ -386,8 +388,9 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                     pf_Frag_Object * pfo = static_cast<pf_Frag_Object *> (pf);
                     PX_ChangeRecord * pcr = NULL;
                     bool bStatus1 = pfo->createSpecialChangeRecord(&pcr,sum,blockOffset);
-                    if(!bStatus1)
+                    if(!bStatus1) {
                         UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) c\n" ));
+		    }
                     UT_return_val_if_fail (bStatus1,false);
                     bool bStatus2 = pListener->populate(sfh,pcr);
                     if (pcr)
@@ -403,8 +406,9 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                     pf_Frag_FmtMark * pffm = static_cast<pf_Frag_FmtMark *> (pf);
                     PX_ChangeRecord * pcr = NULL;
                     bool bStatus1 = pffm->createSpecialChangeRecord(&pcr,sum,blockOffset);
-                    if(!bStatus1)
+                    if(!bStatus1) {
                         UT_DEBUGMSG(("_tellListenerSubsetWalkRange(st1) d\n" ));
+		    }
                     UT_return_val_if_fail (bStatus1,false);
                     bool bStatus2 = pListener->populate(sfh,pcr);
                     DELETEP(pcr);

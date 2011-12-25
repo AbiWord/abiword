@@ -1161,7 +1161,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	{
 		UT_GrowBuf pgb(1024);
 
-		bool bRes = pBlock->getBlockBuf(&pgb);
+		UT_DebugOnly<bool> bRes = pBlock->getBlockBuf(&pgb);
 		UT_ASSERT(bRes);
 
 		const UT_UCSChar* pSpan = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(0));
@@ -1229,7 +1229,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	{
 		UT_GrowBuf pgb(1024);
 
-		bool bRes = pBlock->getBlockBuf(&pgb);
+		UT_DebugOnly<bool> bRes = pBlock->getBlockBuf(&pgb);
 		UT_ASSERT(bRes);
 
 		const UT_UCSChar* pSpan = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(0));
@@ -1320,7 +1320,7 @@ PT_DocPosition FV_View::_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp,
 	{
 		UT_GrowBuf pgb(1024);
 
-		bool bRes = pBlock->getBlockBuf(&pgb);
+		UT_DebugOnly<bool> bRes = pBlock->getBlockBuf(&pgb);
 		UT_ASSERT(bRes);
 
 		const UT_UCSChar* pSpan = reinterpret_cast<UT_UCSChar*>(pgb.getPointer(0));
@@ -1702,7 +1702,6 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 	fl_SectionLayout* pOldSL = pOldBlock->getSectionLayout();
 	fp_Line* pOldLine = pOldRun->getLine();
 	fp_VerticalContainer* pOldContainer = static_cast<fp_VerticalContainer *>(pOldLine->getContainer());
-	fp_Column * pOldColumn = NULL;
 	fp_Column * pOldLeader = NULL;
 	fp_Page* pOldPage = pOldLine->getPage();
 	bool bDocSection = pOldSL->getType() == FL_SECTION_DOC;
@@ -1714,7 +1713,6 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 
 	if(bDocSection || bEndNoteSection || bFootnoteSection || (bCellSection && !isHdrFtrEdit()))
 	{
-		pOldColumn = static_cast<fp_Column *>(pOldLine->getColumn());
 		pOldLeader = (static_cast<fp_Column*>(pOldLine->getColumn()))->getLeader();
 	}
 
@@ -5524,8 +5522,9 @@ UT_Error FV_View::_deleteBookmark(const char* szName, bool bSignal, PT_DocPositi
 			_generalUpdate();
 		}
 	}
-	else
+	else {
 		UT_DEBUGMSG(("fv_View::cmdDeleteBookmark: bookmark \"%s\" does not exist\n",szName));
+	}
 	return true;
 }
 
@@ -5644,7 +5643,6 @@ UT_Error FV_View::_deleteXMLID( const std::string& xmlid, bool bSignal, PT_DocPo
 	UT_DEBUGMSG(("_deleteXMLID() xmlid:%s type:%d\n", xmlid.c_str(), r->getHyperlinkType() ));
 	if( r->getHyperlinkType() ==  HYPERLINK_RDFANCHOR )
 	{
-		fp_RDFAnchorRun* prr = static_cast<fp_RDFAnchorRun *>(r);
 		UT_DEBUGMSG(("_deleteXMLID() xmlid:%s len:%d\n", xmlid.c_str(), r->getLength() ));
 	}
 
@@ -6144,7 +6142,7 @@ void FV_View::_fixInsertionPointAfterRevision()
 {
 	if(!m_pDoc->isMarkRevisions() && isSelectionEmpty())
 	{
-		bool bRet;
+		UT_DebugOnly<bool> bRet;
 
 		// Signal PieceTable Change
 		_saveAndNotifyPieceTableChange();
@@ -6157,6 +6155,7 @@ void FV_View::_fixInsertionPointAfterRevision()
 		const gchar * attr[3] = {rev,val,NULL};
 
 		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt,posStart,posEnd,attr,NULL);
+		UT_ASSERT(bRet);
 
 		// Signal piceTable is stable again
 		_restorePieceTableState();

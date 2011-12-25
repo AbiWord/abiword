@@ -4084,9 +4084,7 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 
 	fp_TableContainer * pBroke = NULL;
 	fp_TableContainer * pNext = NULL;
-	fp_TableContainer * pLast = NULL;
 	pBroke = getFirstBrokenTable();
-	bool bFirst = true;
 	bool bDontRemove = false;
 	fl_ContainerLayout * pMyConL = getSectionLayout()->myContainingLayout();
 	if(pMyConL && pMyConL->getContainerType() == FL_CONTAINER_CELL)
@@ -4112,7 +4110,6 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 		{
 			pBroke->getNext()->setPrev(pBroke->getPrev());
 		}
-		pLast = pBroke;
 		if(pBroke->getContainer() && !bDontRemove)
 		{
 			UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
@@ -4158,7 +4155,6 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 				}
 			}
 		}
-		bFirst = false;
 		xxx_UT_DEBUGMSG(("SEVIOR: table %x  Deleting broken table %x \n",this,pBroke));
 		delete pBroke;
 		if(pBroke == getLastBrokenTable())
@@ -4315,12 +4311,6 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 */
 	fp_Container * pCon = getContainer();
 	UT_return_val_if_fail(pCon, NULL);
-	bool bIsNested = false;
-	if(pCon->getContainerType() == FP_CONTAINER_CELL)
-	{
-		bIsNested = true;
-		xxx_UT_DEBUGMSG(("ypos of nested table being broken %d \n",getY()));
-	}
 //
 // Do the case of creating the first broken table from the master table.
 // 
@@ -5657,7 +5647,6 @@ bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Conta
 void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
 	bool bIsNested = false;
-	UT_sint32 iMyY = 0;
 	fp_TableContainer *pMaster = getMasterTable();
 	UT_sint32 iCount = 0;
 	fp_TableContainer * pPrev = this;
@@ -5674,11 +5663,6 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 	{
 		xxx_UT_DEBUGMSG(("Draw broken nested Table - 0 %x yBreak %d \n",this,getYBreak()));
-		bIsNested = true;
-		if(getYBreak() > 0)
-		{
-			iMyY = getY();
-		}
 	}
 	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getMasterTable()->getNthCon(0));
 	xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table %x getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));

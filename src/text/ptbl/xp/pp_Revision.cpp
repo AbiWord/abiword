@@ -1147,23 +1147,24 @@ void PP_RevisionAttr::mergeAll( const PP_RevisionAttr& ra )
     /*
      * This is a heavy debug block for testing.
      */
+#warning this whole block is only for debug. WTF?
     if( DEBUG_MERGEALL )
     {
         UT_DEBUGMSG(("ODTCT ra::merge() ===================\n" ));
         UT_DEBUGMSG(("ODTCT ra::merge() old:%s\n", us.getXMLstring() ));
         UT_DEBUGMSG(("ODTCT ra::merge() new:%s\n", ra.getXMLstring() ));
         UT_DEBUGMSG(("ODTCT ra::merge() ret:%s\n", tmp.c_str()  ));
-        for( int i=0; i < us.getRevisionsCount(); ++i )
+        for( UT_uint32 i=0; i < us.getRevisionsCount(); ++i )
         {
-            const PP_Revision* r = us.getNthRevision( i );
-            UT_DEBUGMSG(("ODTCT ra::merge() old r:%d id:%d t:%d attr:%s\n", i, r->getId(), r->getType(), r->getAttrsString() ));
-            UT_DEBUGMSG(("ODTCT ra::merge() old r:%d id:%d t:%d prop:%s\n", i, r->getId(), r->getType(), r->getPropsString() ));
+	  UT_DebugOnly<const PP_Revision*> r(us.getNthRevision( i ));
+            UT_DEBUGMSG(("ODTCT ra::merge() old r:%u id:%d t:%d attr:%s\n", i, r->getId(), r->getType(), r->getAttrsString() ));
+            UT_DEBUGMSG(("ODTCT ra::merge() old r:%u id:%d t:%d prop:%s\n", i, r->getId(), r->getType(), r->getPropsString() ));
         }
-        for( int i=0; i < ra.getRevisionsCount(); ++i )
+        for( UT_uint32 i=0; i < ra.getRevisionsCount(); ++i )
         {
-            const PP_Revision* r = ra.getNthRevision( i );
-            UT_DEBUGMSG(("ODTCT ra::merge() new r:%d id:%d t:%d attr:%s\n", i, r->getId(), r->getType(), r->getAttrsString() ));
-            UT_DEBUGMSG(("ODTCT ra::merge() new r:%d id:%d t:%d prop:%s\n", i, r->getId(), r->getType(), r->getPropsString() ));
+	  UT_DebugOnly<const PP_Revision*> r(ra.getNthRevision( i ));
+            UT_DEBUGMSG(("ODTCT ra::merge() new r:%u id:%d t:%d attr:%s\n", i, r->getId(), r->getType(), r->getAttrsString() ));
+            UT_DEBUGMSG(("ODTCT ra::merge() new r:%u id:%d t:%d prop:%s\n", i, r->getId(), r->getType(), r->getPropsString() ));
         }
     }
     
@@ -1381,7 +1382,7 @@ void PP_RevisionAttr::removeAllHigherOrEqualIds(UT_uint32 iId)
  */
 void PP_RevisionAttr::_refreshString() const
 {
-	char buf[30];
+  //	char buf[30];
 	m_sXMLstring.clear();
 	UT_uint32 iCount = m_vRev.getItemCount();
 
@@ -1565,7 +1566,7 @@ UT_uint32 PP_RevisionAttr::getHighestRevisionNumberWithAttribute( const gchar * 
 {
     const PP_Revision* r = 0;
 
-    for( int raIdx = 0;
+    for( UT_uint32 raIdx = 0;
          raIdx < getRevisionsCount() && (r = getNthRevision( raIdx ));
          raIdx++ )
     {

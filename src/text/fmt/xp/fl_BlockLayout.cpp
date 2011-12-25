@@ -1079,7 +1079,7 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	const gchar * szLid=NULL;
 	const gchar * szPid=NULL;
 	const gchar * szLevel=NULL;
-	UT_uint32 id,parent_id,level;
+	UT_uint32 id,parent_id;
 
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LISTID_ATTRIBUTE_NAME, szLid))
 		szLid = NULL;
@@ -1101,10 +1101,6 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 
 	if (!pBlockAP || !pBlockAP->getAttribute(PT_LEVEL_ATTRIBUTE_NAME, szLevel))
 		szLevel = NULL;
-	if (szLevel)
-		level = atoi(szLevel);
-	else
-		level = 0;
 
 	fl_BlockLayout * prevBlockInList = NULL;
 	fl_BlockLayout * nextBlockInList = NULL;
@@ -5548,7 +5544,7 @@ bool	fl_BlockLayout::_doInsertBookmarkRun(PT_BlockOffset blockOffset)
 
 }
 
-void    fl_BlockLayout::_finishInsertHyperlinkedNewRun( PT_BlockOffset blockOffset,
+void    fl_BlockLayout::_finishInsertHyperlinkedNewRun( PT_BlockOffset /*blockOffset*/,
 														fp_HyperlinkRun* pNewRun )
 {
 	// if this is the start of the hyperlink, we need to mark all the runs
@@ -8598,16 +8594,6 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord
 	{
 		pfnBindHandles(sdh,lid,sfhNew);
 	}
-	fl_ContainerLayout * pPrevCL = getPrev();
-	fp_Page * pPrevP = NULL;
-	if(pPrevCL)
-	{
-		fp_Container * pPrevCon = pPrevCL->getFirstContainer();
-		if(pPrevCon)
-		{
-			pPrevP = pPrevCon->getPage();
-		}
-	}
 
 	// Create a Physical Container for this frame
 
@@ -9935,7 +9921,7 @@ void fl_BlockLayout::remItemFromList(void)
 {
 	gchar lid[15], buf[5];
 	UT_uint32 id;
-	bool bRet;
+	UT_DebugOnly<bool> bRet;
 	UT_GenericVector<const gchar*> vp;
 	if( m_bListLabelCreated == true)
 	{
@@ -10016,7 +10002,7 @@ void fl_BlockLayout::remItemFromList(void)
 										"level", buf, NULL, NULL };
 
 			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
-
+			UT_ASSERT(bRet);
 
 			m_bListItem = false;
 		}
@@ -10026,7 +10012,7 @@ void fl_BlockLayout::remItemFromList(void)
 											"level", buf,NULL,NULL };
 
 			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
-
+			UT_ASSERT(bRet);
 
 			m_pDoc->listUpdate(getStruxDocHandle());
 		}
@@ -10297,7 +10283,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	//
 	gchar lid[15], pszAlign[20], pszIndent[20],buf[20],pid[20],pszStart[20];
 	gchar * style = getListStyleString(lType);
-	bool bRet;
+	UT_DebugOnly<bool> bRet;
 	UT_uint32 id=0;
 	UT_GenericVector<const gchar*> vp,va;
 
@@ -10391,7 +10377,7 @@ void	fl_BlockLayout::StartList( FL_ListType lType, UT_uint32 start,const gchar *
 	setStarting( false);
 
 	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), attribs, props, PTX_Block);
-
+	UT_ASSERT(bRet);
 
 	m_pDoc->listUpdate(getStruxDocHandle());
 	FREEP(attribs);
@@ -10405,7 +10391,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 	// Stops the list in the current block
 	//
 	static gchar lid[15],pszlevel[5];
-	bool bRet;
+	UT_DebugOnly<bool> bRet;
 	UT_uint32 id, level;
 	UT_GenericVector<const gchar*> vp;
 	FV_View* pView = getView();
@@ -10615,6 +10601,8 @@ void	fl_BlockLayout::StopListInBlock(void)
 //
 
 		bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, getPosition(), getPosition(), pListAttrs, pListProps, PTX_Block);
+		UT_ASSERT(bRet);
+
 		fp_Run * pRun = getFirstRun();
 		while(pRun->getNextRun())
 		{
@@ -10622,11 +10610,12 @@ void	fl_BlockLayout::StopListInBlock(void)
 		}
 		PT_DocPosition lastPos = getPosition(false) + pRun->getBlockOffset();
 		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, getPosition(false), lastPos, pListAttrs, pListProps);
+		UT_ASSERT(bRet);
 //
 // Set the indents to match.
 //
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, getPosition(), getPosition(), NULL, props, PTX_Block);
-
+		UT_ASSERT(bRet);
 
 		m_bListItem = false;
 	}
@@ -10637,7 +10626,7 @@ void	fl_BlockLayout::StopListInBlock(void)
 		attribs [3] = pszlevel;
 
 		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,getPosition(), getPosition(), attribs, props, PTX_Block);
-
+		UT_ASSERT(bRet);
 
 		m_pDoc->listUpdate(getStruxDocHandle());
 	}
@@ -11039,7 +11028,8 @@ void fl_BlockLayout::_createListLabel(void)
 		"type","list_label",
 		NULL, NULL
 	};
-	bool bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, NULL);
+	UT_DebugOnly<bool> bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, NULL);
+	UT_ASSERT(bResult);
 	PT_DocPosition diff = 1;
 	if(m_pDoc->isDoingPaste() == false)
 	{

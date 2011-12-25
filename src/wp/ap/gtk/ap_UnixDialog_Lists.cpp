@@ -195,9 +195,6 @@ void AP_UnixDialog_Lists::runModal( XAP_Frame * pFrame)
 	savedListType = getNewListType();
 
 	// *** this is how we add the gc for Lists Preview ***
-	// attach a new graphics context to the drawing area
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_ASSERT(unixapp);
 
 	// Now Display the dialog, so m_wPreviewArea->window exists
 	gtk_widget_show(m_wMainWindow);	
@@ -248,9 +245,6 @@ void AP_UnixDialog_Lists::runModeless (XAP_Frame * pFrame)
 	gtk_widget_show(m_wMainWindow);
 
 	// *** this is how we add the gc for Lists Preview ***
-	// attach a new graphics context to the drawing area
-	XAP_UnixApp * unixapp = static_cast<XAP_UnixApp *> (m_pApp);
-	UT_ASSERT(unixapp);
 
 	UT_ASSERT(m_wPreviewArea && gtk_widget_get_window(m_wPreviewArea));
 

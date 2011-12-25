@@ -113,18 +113,21 @@ UT_uint32 fl_EmbedLayout::getLength(void)
 	PT_DocPosition startPos = getDocPosition();
 	PL_StruxDocHandle sdhEnd = NULL;
 	PL_StruxDocHandle sdhStart = getStruxDocHandle();
-	bool bres;
+	UT_DebugOnly<bool> bres;
 	if(getContainerType() == FL_CONTAINER_FOOTNOTE)
 	{
 		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote,&sdhEnd);
+		UT_ASSERT(bres);
 	}
 	else if(getContainerType() == FL_CONTAINER_ENDNOTE)
 	{
 		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndEndnote,&sdhEnd);
+		UT_ASSERT(bres);
 	}
 	else if(getContainerType() == FL_CONTAINER_ANNOTATION)
 	{
 		bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndAnnotation,&sdhEnd);
+		UT_ASSERT(bres);
 	}
 	else
 	{

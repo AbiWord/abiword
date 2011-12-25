@@ -3611,10 +3611,12 @@ void fl_HdrFtrSectionLayout::addPage(fp_Page* pPage)
 	//
 	fl_ShadowListener* pShadowListener = new fl_ShadowListener(this, pPair->getShadow());
 	UT_return_if_fail( pShadowListener );
-	if(m_iHFType < FL_HDRFTR_FOOTER)
+	if(m_iHFType < FL_HDRFTR_FOOTER) {
 	  UT_DEBUGMSG(("shadow listener %p created For Header \n",pShadowListener));
-	else
+	}
+	else {
 	  UT_DEBUGMSG(("shadow listener %p created For Footer \n",pShadowListener));
+	}
 
 //
 // Populate with just this section so find the start and end of it

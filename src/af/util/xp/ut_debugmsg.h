@@ -32,6 +32,73 @@
 #include "ut_types.h"
 #endif
 
+template<class T>
+class UT_DebugOnly
+{
+public:
+
+#if DEBUG
+  T value;
+  UT_DebugOnly() 
+  {
+  }
+  UT_DebugOnly(const T& other) 
+   : value(other) 
+  {
+  }
+  UT_DebugOnly& operator=(const T& rhs) 
+  {
+      value = rhs;
+      return *this;
+  }
+  void operator++(int) 
+  {
+    value++;
+  }
+  void operator--(int) 
+  {
+    value--;
+  }
+
+  operator T&() 
+  { 
+    return value; 
+  }
+  operator const T&() const 
+  { 
+    return value; 
+  }
+  
+  T& operator->() 
+  { 
+    return value; 
+  }
+
+#else
+  UT_DebugOnly() 
+  {
+  }
+  UT_DebugOnly(const T&) 
+  {
+  }
+  UT_DebugOnly& operator=(const T&) 
+  { 
+    return *this; 
+  }
+  void operator++(int)
+  {
+  }
+  void operator--(int)
+  {
+  }
+#endif
+
+  ~UT_DebugOnly()
+  {
+  }
+};
+
+
 ABI_EXPORT void _UT_OutputMessage(const char *s, ...) ABI_PRINTF_FORMAT(1,2);
 
 #ifdef DEBUG

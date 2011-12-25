@@ -23,6 +23,7 @@
 #include "gr_DrawArgs.h"
 #include "gr_Graphics.h"
 #include "ut_units.h"
+#include "ut_debugmsg.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
@@ -970,8 +971,9 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 //
 		UT_sint32 xBlockOff =0;
 		UT_sint32 yBlockOff = 0;
-		bool bValid = false;
+		UT_DebugOnly<bool> bValid = false;
 		bValid = pBL->getXYOffsetToLine(xBlockOff,yBlockOff,pLine);
+		UT_ASSERT(bValid);
 		fp_Line * pFirstL = static_cast<fp_Line *>(pBL->getFirstContainer());
 		UT_sint32 xFirst,yFirst;
 		pFirstL->getScreenOffsets(pFirstL->getFirstRun(),xFirst,yFirst);
@@ -1544,10 +1546,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 		fl_DocSectionLayout * pDSL = getFrameLayout()->getDocSectionLayout();
 
+#if 0
 		PT_DocPosition oldPoint = m_pView->getPoint();
 		PT_DocPosition oldFramePoint = m_pFrameLayout->getPosition(true);
 		UT_uint32 oldFrameLen = m_pFrameLayout->getLength();
-
+#endif
 		// Signal PieceTable Change
 		m_pView->_saveAndNotifyPieceTableChange();
 
@@ -1698,6 +1701,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 // Set the point back to the same position on the screen
 
+#if 0
 		PT_DocPosition newFramePoint = m_pFrameLayout->getPosition(true);
 		UT_sint32 newFrameLen = m_pFrameLayout->getLength();
 		PT_DocPosition newPoint = 0;
@@ -1717,7 +1721,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		{
 			newPoint = oldPoint - oldFrameLen;
 		}
-//		m_pView->setPoint(newPoint);
+		m_pView->setPoint(newPoint);
+#endif
 		m_pView->setPoint(posFrame+1);
 		bool bOK = true;
 		while(!m_pView->isPointLegal() && bOK)

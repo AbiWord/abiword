@@ -758,8 +758,6 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	bool holdsSelection = false, hadView = true;
 	PD_DocumentRange range;
 	PT_DocPosition inspt = 0;
-	FV_View * pOldView = NULL;
-	FL_DocLayout * pOldDocLayout  = NULL;
 
 	// we want to remember point/selection when that is appropriate, which is when the new view is a
 	// view of the same doc as the old view, or if this frame is being cloned from an existing frame
@@ -776,7 +774,6 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	} else if (m_pView)
 	{
 		inspt = static_cast<FV_View*>(m_pView)->getInsPoint ();
-		pOldView = static_cast<FV_View *>(m_pView);
 	}
 	else if(static_cast<AP_FrameData*>(m_pData)->m_pRootView)
 	{
@@ -805,7 +802,6 @@ void AP_Frame::_replaceView(GR_Graphics * pG, FL_DocLayout *pDocLayout,
 	if (static_cast<AP_FrameData*>(m_pData)->m_pDocLayout)
 	{
 		pOldDoc = (static_cast<AP_FrameData*>(m_pData)->m_pDocLayout->getDocument());
-		pOldDocLayout = static_cast<AP_FrameData*>(m_pData)->m_pDocLayout;
 	}
 
 	REPLACEP(static_cast<AP_FrameData*>(m_pData)->m_pG, pG);

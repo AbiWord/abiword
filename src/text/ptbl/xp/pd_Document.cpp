@@ -2020,7 +2020,6 @@ bool PD_Document::_matchSection(pf_Frag_Strux * pfs, UT_GenericVector<pf_Frag_St
 	const char * pszHFID = NULL;
 	const char * pszID = NULL;
 	UT_sint32 i = 0;
-	bool bFound = false;
 	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,"type",&pszHdrFtr);
 	if(!pszHdrFtr)
 		return false;
@@ -2039,7 +2038,6 @@ bool PD_Document::_matchSection(pf_Frag_Strux * pfs, UT_GenericVector<pf_Frag_St
 		{
 			if(strcmp(pszID,pszHFID) == 0)
 			{
-				bFound = true;
 				return true;
 			}
 		}
@@ -3270,10 +3268,12 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, bool bShow
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
 				cellSDH = static_cast<PL_StruxDocHandle>(pfSec);
-				bool bres = getPropertyFromSDH(cellSDH,bShowRevisions, iRevisionLevel,"right-attach",&szRight);
+				UT_DebugOnly<bool> bres = getPropertyFromSDH(cellSDH,bShowRevisions, iRevisionLevel,"right-attach",&szRight);
+				UT_ASSERT(bres);
 				if(szRight && *szRight)
 					iRight = atoi(szRight);
 				bres = getPropertyFromSDH(cellSDH,bShowRevisions, iRevisionLevel,"bot-attach",&szBot);
+				UT_ASSERT(bres);
 				if(szBot && *szBot)
 					iBot = atoi(szBot);
 
@@ -3448,16 +3448,20 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 				Top = -1;
 				Right = -1;
 				Bot = -1;
-				bool bres = getPropertyFromSDH(cellSDH,bShowRevisions,iRevisionLevel,"left-attach",&szLeft);
+				UT_DebugOnly<bool> bres = getPropertyFromSDH(cellSDH,bShowRevisions,iRevisionLevel,"left-attach",&szLeft);
+				UT_ASSERT(bres);
 				if(szLeft && *szLeft)
 					Left = atoi(szLeft);
 				bres = getPropertyFromSDH(cellSDH,bShowRevisions,iRevisionLevel,"top-attach",&szTop);
+				UT_ASSERT(bres);
 				if(szTop && *szTop)
 					Top = atoi(szTop);
 				bres = getPropertyFromSDH(cellSDH,bShowRevisions,iRevisionLevel,"right-attach",&szRight);
+				UT_ASSERT(bres);
 				if(szRight && *szRight)
 					Right = atoi(szRight);
 				bres = getPropertyFromSDH(cellSDH,bShowRevisions,iRevisionLevel,"bot-attach",&szBot);
+				UT_ASSERT(bres);
 				if(szBot && *szBot)
 					Bot = atoi(szBot);
 				if( (Top <= row) && (row < Bot) && (Left <= col) && (Right > col))
@@ -3601,7 +3605,6 @@ bool PD_Document::removeStyle(const gchar * pszName)
 	UT_GenericVector<prevStuff *> vFrag;
 
 	PT_DocPosition pos = 0;
-	PT_DocPosition posLastStrux = 0;
 	pf_Frag_Strux * pfs = NULL;
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	UT_return_val_if_fail (currentFrag,false);
@@ -3620,7 +3623,6 @@ bool PD_Document::removeStyle(const gchar * pszName)
 		{
 			pfs = static_cast<pf_Frag_Strux *>(currentFrag);
 			indexAP = static_cast<pf_Frag_Strux *>(currentFrag)->getIndexAP();
-			posLastStrux = pos;
 		}
 		else if(currentFrag->getType()  == pf_Frag::PFT_Text)
 		{
@@ -8331,7 +8333,6 @@ PD_XMLIDCreator::rebuildCache()
         pt_PieceTable* m_pPieceTable = m_doc->getPieceTable();
         
         pf_Frag * pf = NULL;
-        pf_Frag_Strux * pfs = NULL;
         pf = m_pPieceTable->getFragments().getFirst();
         while(pf)
         {

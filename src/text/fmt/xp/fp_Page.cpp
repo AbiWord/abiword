@@ -1674,7 +1674,6 @@ void fp_Page::updateColumnX()
 	if (count == 0)
 		return;
 
-	fp_Column * pLastCol = NULL;
 	UT_ASSERT(m_pOwner == getNthColumnLeader(0)->getDocSectionLayout());
 
 
@@ -1732,7 +1731,6 @@ void fp_Page::updateColumnX()
 				iX += (iColWidth + iColumnGap);
 			}
 
-			pLastCol = pTmpCol;
 			pTmpCol = pTmpCol->getFollower();
 		}
 	}

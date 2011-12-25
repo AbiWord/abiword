@@ -70,7 +70,7 @@ bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
 	PTStruxType pts = pfs->getStruxType();
 
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
-	bool bMerged;
+	UT_DebugOnly<bool> bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
@@ -223,7 +223,7 @@ bool pt_PieceTable::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux * p
 {
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
-	bool bMerged;
+	UT_DebugOnly<bool> bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
@@ -255,7 +255,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	PTStruxType pts = pfs->getStruxType();
 
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
-	bool bMerged;
+	UT_DebugOnly<bool> bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
@@ -302,7 +302,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 	PTStruxType pts = pfs->getStruxType();
    
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
-	bool bMerged;
+	UT_DebugOnly<bool> bMerged;
 	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
@@ -353,7 +353,7 @@ bool pt_PieceTable::_realChangeStruxForLists(PL_StruxDocHandle sdh,
 
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
-	bool bMerged;
+	UT_DebugOnly<bool> bMerged;
 	bMerged = m_varset.mergeAP( PTC_AddFmt ,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
@@ -398,7 +398,7 @@ bool pt_PieceTable::_realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
 
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
-	bool bMerged;
+	UT_DebugOnly<bool> bMerged;
 	bMerged = m_varset.mergeAP( PTC_AddFmt ,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));

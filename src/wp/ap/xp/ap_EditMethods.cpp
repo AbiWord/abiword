@@ -4929,7 +4929,6 @@ Defun(contextEmbedLayout)
 	  }
 	PT_DocPosition pos = pView->getDocPositionFromXY(pCallData->m_xPos, pCallData->m_yPos);
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
-	bool bDoEmbed = false;
 	if(pBlock)
 	{
 		UT_sint32 x1,x2,y1,y2,iHeight;
@@ -4940,18 +4939,6 @@ Defun(contextEmbedLayout)
 		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
 		{
 			pRun = pRun->getNextRun();
-		}
-		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
-		{
-			// Set the cursor context to image selected.
-			if(pRun->getType() == FPRUN_EMBED)
-			{
-			      bDoEmbed = true;
-			}
-		}
-		else
-		{
-			// do nothing...
 		}
 	}
 	// get the menu from pRun
@@ -5477,7 +5464,6 @@ Defun1(editEmbed)
 	     pView->cmdSelect(posL,posH);
 	}
 	fl_BlockLayout * pBlock = pView->getBlockAtPosition(posL);
-	bool bDoEmbed = false;
 	if(pBlock)
 	{
 		UT_sint32 x1,x2,y1,y2,iHeight;
@@ -5497,7 +5483,6 @@ Defun1(editEmbed)
 		  UT_DEBUGMSG(("Found and embedded Object \n"));
 			if(pRun->getType() == FPRUN_EMBED)
 			{
-			      bDoEmbed = true;
 			      fp_EmbedRun * pEmbedRun = static_cast<fp_EmbedRun *>(pRun);
 			      UT_DEBUGMSG(("About to edit the object \n"));
 			      GR_EmbedManager * pEmbed = pEmbedRun->getEmbedManager();
@@ -5529,7 +5514,7 @@ Defun1(selectRow)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);
-	PT_DocPosition posTable,posStartRow,posEndRow;
+	PT_DocPosition posStartRow,posEndRow;
 	PL_StruxDocHandle rowSDH,endRowSDH,tableSDH;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 
@@ -5541,7 +5526,6 @@ Defun1(selectRow)
 	{
 		return false;
 	}
-	posTable = pDoc->getStruxPosition(tableSDH) + 1;
   
 	//
 	// Now find the number of rows and columns inthis table.
@@ -8804,7 +8788,6 @@ UT_return_val_if_fail(pDialog, false);
 		font list, we can remove the 4 lines below. - MARCM
 		*/
 		//
-		bool bDoingQuickPrint = false;
 		FL_DocLayout * pDocLayout = NULL;
 		FV_View * pPrintView = NULL;
 		if(!pGraphics->canQuickPrint())
@@ -8825,7 +8808,6 @@ UT_return_val_if_fail(pDialog, false);
 					pPrintView->setShowPara(false);
 					bHideFmtMarks = true;
 				}
-				bDoingQuickPrint = true;
 		}
 
 		UT_sint32 nFromPage, nToPage;
@@ -11038,18 +11020,7 @@ Defun1(dlgBorders)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	//	Maleesh 6/10/2010 - 
 	s_doBorderShadingDlg(pView);
-
-	const gchar * zShading[] = { "shading-pattern", "1", "shading-foreground-color", "#FF0000", 0};
-
-	const char * szBorders[] = {
-	"left-style","1","left-thickness","2.0mm","left-space","3.0mm",
-	"right-style","1","right-thickness","2.0mm","right-space","3.0mm",
-	"top-style","1","top-thickness","2.0mm","top-space","3.0mm",
-	"bot-style","1","bot-thockness","2.0mm","bot-space","3.0mm",NULL };
-
-//		pView->setBlockFormat(szBorders);
 
 	return true;
 }
@@ -11660,8 +11631,9 @@ Defun(dlgFmtImage)
 // Now calculate the Y offset to the paragraph
 //
 				  UT_sint32 xBlockOff,yBlockOff = 0;
-				  bool bValid = false;
+				  UT_DebugOnly<bool> bValid = false;
 				  bValid = pBlock->getXYOffsetToLine(xBlockOff,yBlockOff,pLine);
+				  UT_ASSERT(bValid);
 				  ypos = static_cast<double>(yBlockOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 				  sProp = "ypos";
 				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
@@ -14150,13 +14122,14 @@ Defun(hyperlinkStatusBar)
 	{
 		UT_DEBUGMSG(("hyperlinkStatusBar() have annotation...\n" ));
 		pid = pAnn->getPID();
-		bool b = pView->getAnnotationText( pid, sText );
+		UT_DebugOnly<bool> b = pView->getAnnotationText( pid, sText );
+		UT_ASSERT(b);
 	}
-	else if( fp_RDFAnchorRun * pAnn = dynamic_cast<fp_RDFAnchorRun *>(pHRun) )
+	else if( fp_RDFAnchorRun * pAnchorRun = dynamic_cast<fp_RDFAnchorRun *>(pHRun) )
 	{
 		UT_DEBUGMSG(("hyperlinkStatusBar() have RDF anchor!\n" ));
-		pid = pAnn->getPID();
-		std::string xmlid = pAnn->getXMLID();
+		pid = pAnchorRun->getPID();
+		std::string xmlid = pAnchorRun->getXMLID();
 		std::stringstream ss;
 		ss << "xmlid:" << xmlid;
 		if( PD_Document * pDoc = pView->getDocument() )
