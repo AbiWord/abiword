@@ -93,6 +93,7 @@ private:
 
 	void free_ffntb();
 	const char *get_codepage(const char *facename, int *facelen) const;
+	bool fixup_fe_font(wri_font *fnt);
 	void set_codepage(const char *charset);
 	void translate_char(const UT_Byte ch, UT_UCS4String &buf);
 };
