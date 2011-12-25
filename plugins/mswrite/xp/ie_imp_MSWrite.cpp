@@ -288,7 +288,7 @@ static const char *dbcs_encodings[] = {
 
 IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 	: IE_Imp(pDocument),
-	  default_codepage("CP1252"),
+	  mDefaultCodepage("CP1252"),
 	  hasHeader(false),
 	  hasFooter(false),
 	  isDBCS(false),
@@ -297,22 +297,21 @@ IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 	  pic_nr(0),
 	  lf(false)
 {
-	free_defcp = false;
 	setProps(AP_Args::m_impProps);
-	const std::string propCP = getProperty("mswrite-codepage");
+	const std::string & propCP = getProperty("mswrite-codepage");
 
 	if (!propCP.empty()) {
-		default_codepage = (const char*) g_strdup(propCP.c_str());
-		free_defcp = true;
+	  mDefaultCodepage = propCP;
 	}
 
-	for (const char **p=dbcs_encodings; *p; p++)
-		if (g_ascii_strcasecmp(*p, default_codepage) == 0) {
-			isDBCS = true;
-			break;
-		};
+	for (const char **p=dbcs_encodings; *p; p++) {
+	  if (g_ascii_strcasecmp(*p, mDefaultCodepage.c_str()) == 0) {
+	    isDBCS = true;
+	    break;
+	  }
+	}
 
-	UT_DEBUGMSG(("Codepage: %s\n", default_codepage));
+	UT_DEBUGMSG(("Codepage: %s\n", mDefaultCodepage.c_str()));
 
 	wri_file_header = static_cast<wri_struct*>(malloc(sizeof(WRI_FILE_HEADER)));
 	memcpy(wri_file_header, WRI_FILE_HEADER, sizeof(WRI_FILE_HEADER));
@@ -330,9 +329,6 @@ IE_Imp_MSWrite::~IE_Imp_MSWrite()
 	free(wri_file_header);
 	free(wri_picture_header);
 	free(wri_ole_header);
-
-	if (free_defcp)
-		g_free((void*)default_codepage);
 }
 
 /**********************************************************************
@@ -1092,7 +1088,7 @@ const ffn_suff_cp_tbl[] =
 	{NULL, NULL}
 };
 
-inline const char *IE_Imp_MSWrite::get_codepage (const char *facename, int *facelen)
+const char *IE_Imp_MSWrite::get_codepage (const char *facename, int *facelen) const
 {
 	const struct ffn_suff_cp *f = ffn_suff_cp_tbl;
 	int l = strlen(facename);
@@ -1112,15 +1108,15 @@ inline const char *IE_Imp_MSWrite::get_codepage (const char *facename, int *face
 	}
 
 	*facelen = l;
-	return default_codepage;
+	return mDefaultCodepage.c_str();
 }
 
-inline void IE_Imp_MSWrite::set_codepage (const char *charset)
+void IE_Imp_MSWrite::set_codepage (const char *charset)
 {
 	charconv.setInCharset(charset);
 }
 
-inline void IE_Imp_MSWrite::translate_char (const UT_Byte ch, UT_UCS4String &buf)
+void IE_Imp_MSWrite::translate_char (const UT_Byte ch, UT_UCS4String &buf)
 {
 	UT_UCS4Char uch = ch;
 

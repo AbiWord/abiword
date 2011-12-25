@@ -73,7 +73,7 @@ private:
 
 	UT_UCS4_mbtowc charconv;   // Windows codepage to unicode conversion
 
-	const char *default_codepage;
+	std::string mDefaultCodepage;
 	int xaLeft, xaRight;
 	bool hasHeader, hasFooter, page1Header, page1Footer;
 	bool isDBCS;
@@ -81,7 +81,6 @@ private:
 	int wri_fonts_count;
 	unsigned int pic_nr;
 	bool lf;
-	bool free_defcp;
 	int errcnt;
 
 	UT_Error parse_file();
@@ -93,7 +92,7 @@ private:
 	void _append_hdrftr(hdrftr_t which);
 
 	void free_ffntb();
-	const char *get_codepage(const char *facename, int *facelen);
+	const char *get_codepage(const char *facename, int *facelen) const;
 	void set_codepage(const char *charset);
 	void translate_char(const UT_Byte ch, UT_UCS4String &buf);
 };
