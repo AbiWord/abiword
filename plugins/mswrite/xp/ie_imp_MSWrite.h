@@ -22,6 +22,8 @@
 #ifndef IE_IMP_MSWRITE_H
 #define IE_IMP_MSWRITE_H
 
+#include <string>
+
 #include "ie_impexp_MSWrite.h"
 #include "ie_imp.h"
 #include "ut_bytebuf.h"
@@ -76,12 +78,10 @@ private:
 	std::string mDefaultCodepage;
 	int xaLeft, xaRight;
 	bool hasHeader, hasFooter, page1Header, page1Footer;
-	bool isDBCS;
 	wri_font *wri_fonts;
 	int wri_fonts_count;
 	unsigned int pic_nr;
 	bool lf;
-	int errcnt;
 
 	UT_Error parse_file();
 	bool read_ffntb();
@@ -93,7 +93,6 @@ private:
 
 	void free_ffntb();
 	const char *get_codepage(const char *facename, int *facelen) const;
-	bool fixup_fe_font(wri_font *fnt);
 	void set_codepage(const char *charset);
 	void translate_char(const UT_Byte ch, UT_UCS4String &buf);
 };
