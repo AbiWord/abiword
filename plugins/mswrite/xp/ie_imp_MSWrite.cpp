@@ -23,7 +23,6 @@
  *
  */
 
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -281,11 +280,18 @@ static const wri_struct WRI_OLE_HEADER[] =
  * MSWrite Importer                                                   *
  **********************************************************************/
 
+static const char *dbcs_encodings[] = {
+	/* TODO: add other aliases here */
+	"CP932", "CP936", "CP949", "CP950",
+	NULL
+};
+
 IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 	: IE_Imp(pDocument),
 	  default_codepage("CP1252"),
 	  hasHeader(false),
 	  hasFooter(false),
+	  isDBCS(false),
 	  wri_fonts(0),
 	  wri_fonts_count(0),
 	  pic_nr(0),
@@ -299,6 +305,12 @@ IE_Imp_MSWrite::IE_Imp_MSWrite (PD_Document *pDocument)
 		default_codepage = (const char*) g_strdup(propCP.c_str());
 		free_defcp = true;
 	}
+
+	for (const char **p=dbcs_encodings; *p; p++)
+		if (g_ascii_strcasecmp(*p, default_codepage) == 0) {
+			isDBCS = true;
+			break;
+		};
 
 	UT_DEBUGMSG(("Codepage: %s\n", default_codepage));
 
@@ -360,13 +372,13 @@ UT_Error IE_Imp_MSWrite::parse_file ()
 	}
 	else if (id != 0137061)
 	{
-		fprintf(stderr, "parse_file: Not a write file!\n");
+		UT_DEBUGMSG(("parse_file: Not a write file!\n"));
 		return UT_ERROR;
 	}
 
 	if (wri_struct_value(wri_file_header, "wTool") != 0125400)
 	{
-		fprintf(stderr, "parse_file: Not a write file!\n");
+		UT_DEBUGMSG(("parse_file: Not a write file!\n"));
 		return UT_ERROR;
 	}
 
@@ -375,13 +387,13 @@ UT_Error IE_Imp_MSWrite::parse_file ()
 
 	if (!thetext)
 	{
-		fprintf(stderr, "parse_file: Out of memory!\n");
+		UT_DEBUGMSG(("parse_file: Out of memory!\n"));
 		return UT_ERROR;
 	}
 
 	if (gsf_input_seek(mFile, 0x80, G_SEEK_SET))
 	{
-		perror("parse_file: Can't seek data!");
+		UT_DEBUGMSG(("parse_file: Can't seek data!"));
 		return UT_ERROR;
 	}
 
@@ -452,14 +464,14 @@ bool IE_Imp_MSWrite::read_ffntb ()
 
 	if (gsf_input_seek(mFile, pnFfntb++ * 0x80, G_SEEK_SET))
 	{
-		perror("read_ffntb: Can't seek FFNTB!");
+		UT_DEBUGMSG(("read_ffntb: Can't seek FFNTB!"));
 		return false;
 	}
 
 	// the first two bytes are the number of fonts
 	if (!gsf_input_read(mFile, 2, buf))
 	{
-		perror("read_ffntb: Can't read FFNTB!");
+		UT_DEBUGMSG(("read_ffntb: Can't read FFNTB!"));
 		return false;
 	}
 
@@ -498,7 +510,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 
 		if (!fonts)
 		{
-			fprintf(stderr, "read_ffntb: Out of memory!\n");
+			UT_DEBUGMSG(("read_ffntb: Out of memory!\n"));
 			wri_fonts_count = fonts_count;
 			free_ffntb();
 			return false;
@@ -511,13 +523,11 @@ bool IE_Imp_MSWrite::read_ffntb ()
 		// are defined in <windows.h>, but I don't know what to do with them.
 		if (!gsf_input_read(mFile, 1, &ffid))
 		{
-			perror("read_ffntb: Can't read ffid!");
+			UT_DEBUGMSG(("read_ffntb: Can't read ffid!"));
 			wri_fonts_count = fonts_count;
 			free_ffntb();
 			return false;
 		}
-
-		wri_fonts[fonts_count].ffid = ffid;
 
 		cbFfn--;   // we've already read ffid
 
@@ -525,7 +535,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 
 		if (!ffn)
 		{
-			fprintf(stderr, "read_ffntb: Out of memory!\n");
+			UT_DEBUGMSG(("read_ffntb: Out of memory!\n"));
 			wri_fonts_count = fonts_count;
 			free_ffntb();
 			return false;
@@ -533,7 +543,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 
 		if (!gsf_input_read(mFile, cbFfn, (guint8 *) ffn))
 		{
-			perror("read_ffntb: Can't read szFfn!");
+			UT_DEBUGMSG(("read_ffntb: Can't read szFfn!"));
 			wri_fonts_count = fonts_count + 1;
 			free_ffntb();
 			return false;
@@ -551,7 +561,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 	if (fonts_count != wri_fonts_count)
 	{
 		wri_fonts_count = fonts_count;
-		fprintf(stderr, "read_ffntb: Wrong number of fonts.\n");
+		UT_DEBUGMSG(("read_ffntb: Wrong number of fonts.\n"));
 	}
 
 	return true;
@@ -705,7 +715,7 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 			UT_DEBUGMSG((" cfod    = %d\n", cfod));
 		}
 
-		if (fc != fcFirst) fprintf(stderr, "read_pap: fcFirst wrong.\n");
+		if (fc != fcFirst) UT_DEBUGMSG(("read_pap: fcFirst wrong.\n"));
 
 		// read all FODs (format descriptors)
 		for (int fod = 0; fod < cfod; fod++)
@@ -896,6 +906,8 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 	UT_String properties, tmp;
 	int dataLen = static_cast<UT_sint32>(mData.getLength());
 
+	currcp = "INVALID";
+
 	UT_DEBUGMSG(("    TXT:\n"));
 	UT_DEBUGMSG(("     from = %d\n", from));
 	UT_DEBUGMSG(("     to   = %d\n", to));
@@ -916,7 +928,7 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 		UT_DEBUGMSG(("      fcFirst = %d\n", fc));
 		UT_DEBUGMSG(("      cfod    = %d\n", cfod));
 
-		if (fc != fcFirst) fprintf(stderr, "read_txt: fcFirst wrong.\n");
+		if (fc != fcFirst) UT_DEBUGMSG(("read_txt: fcFirst wrong.\n"));
 
 		// read all FODs (format descriptors)
 		for (int fod = 0; fod < cfod; fod++)
@@ -960,7 +972,7 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 
 			if (ftc >= wri_fonts_count)
 			{
-				fprintf(stderr, "read_txt: Wrong font code.\n");
+				UT_DEBUGMSG(("read_txt: Wrong font code.\n"));
 				ftc = wri_fonts_count - 1;
 			}
 
@@ -1001,6 +1013,7 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 				mText.clear();
 				UT_DEBUGMSG(("         Text: "));
 
+				errcnt = 0;
 				while (fcFirst <= from && from < fcLim && from <= to && from - 0x80 < dataLen)
 					translate_char(*mData.getPointer(from++ - 0x80), mText);
 
@@ -1131,8 +1144,21 @@ inline void IE_Imp_MSWrite::translate_char (const UT_Byte ch, UT_UCS4String &buf
 			break;
 
 		default:
-			if (ch & 0x80) charconv.mbtowc(uch, ch);
-			buf += uch;
+			if (!isDBCS) {
+				if (ch & 0x80) 
+					if (!charconv.mbtowc(uch, ch)) uch=0xFFFD;
+				buf += uch;
+			} else {
+				if (!charconv.mbtowc(uch, ch)) errcnt++;
+				else {
+					buf += uch;
+					errcnt = 0;
+				}
+				if (errcnt > 1) {
+					buf += (UT_UCS4Char)0xFFFD;
+					errcnt = 1;
+				}
+			}
 			break;
 	}
 
@@ -1450,7 +1476,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 	if (size < PIC_OR_OLE_HEADER_SIZE + OLE_ClassNameString)
 	{
-		fprintf(stderr, "read_pic: Size error, type 1!\n");
+		UT_DEBUGMSG(("read_pic: Size error, type 1!\n"));
 		return false;
 	}
 
@@ -1740,7 +1766,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 	if (write_pic) free_wri_struct(write_pic);
 
-	if (msg) fprintf(stderr, msg);
+	if (msg) UT_DEBUGMSG((msg));
 
 	return (msg ? false : true);
 }

@@ -76,11 +76,13 @@ private:
 	const char *default_codepage;
 	int xaLeft, xaRight;
 	bool hasHeader, hasFooter, page1Header, page1Footer;
+	bool isDBCS;
 	wri_font *wri_fonts;
 	int wri_fonts_count;
 	unsigned int pic_nr;
 	bool lf;
 	bool free_defcp;
+	int errcnt;
 
 	UT_Error parse_file();
 	bool read_ffntb();
