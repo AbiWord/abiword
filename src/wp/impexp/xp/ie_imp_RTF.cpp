@@ -2411,10 +2411,10 @@ void IE_Imp_RTF::HandleAnnotation(void)
 {
 	UT_return_if_fail(m_pAnnotation);
 	if(m_bInAnnotation)
-		{
-			UT_DEBUGMSG(("Recursive call to HandleAnnotion \n"));
-			return;
-		}
+	{
+		UT_DEBUGMSG(("Recursive call to HandleAnnotion \n"));
+		return;
+	}
 	m_bInAnnotation = true;
 	std::string sAnnNum = UT_std_string_sprintf("%d",m_pAnnotation->m_iAnnNumber);
 	const char * ann_attrs[5] = {NULL,NULL,NULL,NULL,NULL};
@@ -2454,7 +2454,7 @@ void IE_Imp_RTF::HandleAnnotation(void)
 		UT_DEBUGMSG(("Delayed Frag set to %p \n",m_pDelayedFrag));
 		ann_attrs[2] = PT_PROPS_ATTRIBUTE_NAME;
 		UT_sint32 k = 0;
-		UT_UTF8String sProperties;
+		std::string sProperties;
 		for(k=0; k<i;k++)
 		{
 			sProperties += pszAnn[k];
@@ -2465,8 +2465,8 @@ void IE_Imp_RTF::HandleAnnotation(void)
 			if(k < i)
 				sProperties += ";";
 		}
-		ann_attrs[3] = sProperties.utf8_str();
-		UT_DEBUGMSG(("Appending annotation strux, props are %s \n", sProperties.utf8_str()));
+		ann_attrs[3] = sProperties.c_str();
+		UT_DEBUGMSG(("Appending annotation strux, props are %s \n", sProperties.c_str()));
 		FlushStoredChars();
 		if(!m_pDelayedFrag)
 			m_pDelayedFrag = doc->getLastFrag();
@@ -9834,7 +9834,7 @@ bool IE_Imp_RTF::HandleLists(_rtfListTable & rtfTable )
 /////////////////////////////////////////////////////////////////////////
 bool IE_Imp_RTF::HandleAbiMathml(void)
 {
-	UT_UTF8String sProps;
+	std::string sProps;
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -9849,27 +9849,27 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
-	UT_UTF8String sPropName;
-	UT_UTF8String sInputAbiProps;
+	std::string sPropName;
+	std::string sInputAbiProps;
 	const gchar * attrs[7] = {"dataid",NULL,NULL,NULL,NULL,NULL,NULL};
 	sPropName = "dataid";
-	UT_UTF8String sDataIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
-	attrs[1] = sDataIDVal.utf8_str();
-	UT_UTF8String_removeProperty(sProps,sPropName);
+	std::string sDataIDVal = UT_std_string_getPropVal(sProps,sPropName);
+	attrs[1] = sDataIDVal.c_str();
+	UT_std_string_removeProperty(sProps,sPropName);
 	sPropName ="latexid";
-	UT_UTF8String sLatexIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
+	std::string sLatexIDVal = UT_std_string_getPropVal(sProps,sPropName);
 	if(sLatexIDVal.size() > 0)
 	{
-		UT_UTF8String_removeProperty(sProps,sPropName);
+		UT_std_string_removeProperty(sProps,sPropName);
 		attrs[2] = "latexid";
-		attrs[3] =  sLatexIDVal.utf8_str();
+		attrs[3] =  sLatexIDVal.c_str();
 		attrs[4]= "props";
-		attrs[5] = sProps.utf8_str();
+		attrs[5] = sProps.c_str();
 	}
 	else
 	{
 		attrs[2] = "props";
-		attrs[3] = sProps.utf8_str();
+		attrs[3] = sProps.c_str();
 	}
 	getDoc()->getUID(UT_UniqueId::Image); // Increment the image uid counter
 	//
