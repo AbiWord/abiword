@@ -73,6 +73,7 @@ libxp_la_SOURCES = \
 	ut_std_map.h \
 	ut_std_string.h \
 	ut_std_string.cpp \
+	ut_std_vector.h \
 	ut_stringbuf.cpp \
 	ut_stringbuf.h \
 	ut_string_class.cpp \

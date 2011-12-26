@@ -31,6 +31,7 @@
 #include <string>
 
 #include "ut_locale.h"
+#include "ut_std_string.h"
 
 #include "ie_imp_RTF.h"
 #include "ie_imp_RTFParse.h"
@@ -185,7 +186,7 @@ bool IE_Imp_RTF::LoadPictData(PictFormat format, const char * image_name,
 bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 							  const struct RTFProps_ImageProps & imgProps)
 {
-	UT_String propBuffer;
+	std::string propBuffer;
 	double wInch = 0.0f;
 	double hInch = 0.0f;
     double cropt = 0.0f;
@@ -236,7 +237,7 @@ bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 		{
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			UT_DEBUGMSG (("resizing...\n"));
-			UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
+			propBuffer = UT_std_string_sprintf("width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
 							  wInch, hInch, cropt, cropb, cropl, cropr);
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
@@ -295,7 +296,7 @@ bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 
 		// Get a unique name for image.
 		UT_ASSERT_HARMLESS(image_name);
-		UT_String szName;
+		std::string szName;
 #if 0
 		if( !image_name)
 		{
@@ -304,7 +305,7 @@ bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 		UT_uint32 ndx = 0;
 		for (;;)
 		{
-			UT_String_sprintf(szName, "%s_%d", image_name, ndx);
+			szName = UT_std_string_sprintf("%s_%d", image_name, ndx);
 			if (!getDoc()->getDataItemDataByName(szName.c_str(), NULL, NULL, NULL))
 			{
 				break;
@@ -313,7 +314,7 @@ bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 		}
 #else
 		UT_uint32 iid = getDoc()->getUID(UT_UniqueId::Image);
-		UT_String_sprintf(szName, "%d", iid);
+		szName = UT_std_string_sprintf("%d", iid);
 #endif
 //
 // Code from fg_GraphicsRaster.cpp
@@ -360,7 +361,7 @@ bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 		{
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
 			UT_DEBUGMSG (("resizing...\n"));
-			UT_String_sprintf(propBuffer, "width:%fin; height:%fin",
+			propBuffer = UT_std_string_sprintf("width:%fin; height:%fin",
 							  wInch, hInch);
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}

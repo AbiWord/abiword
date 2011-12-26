@@ -26,9 +26,9 @@
 
 #include <stdio.h>
 #include <string>
+#include <vector>
 #include "ie_imp.h"
 #include "ut_growbuf.h"
-#include "ut_vector.h"
 #include "ut_stack.h"
 #include "pt_Types.h"
 #include "pd_Document.h"
@@ -219,9 +219,9 @@ struct ABI_EXPORT RTFProps_ParaProps
     UT_sint32	m_indentFirst;	// first line indent in twips
 	double	m_lineSpaceVal;		// line spaceing value
 	bool	m_lineSpaceExact;	// TRUE if m_lineSpaceVal is an exact value, FALSE if multiple
-	UT_NumberVector m_tabStops;
-	UT_NumberVector m_tabTypes;
-	UT_NumberVector m_tabLeader;
+	std::vector<UT_sint32> m_tabStops;
+	std::vector<eTabType> m_tabTypes;
+	std::vector<eTabLeader> m_tabLeader;
 	bool         m_isList;       // TRUE if para is an element of a list
 	UT_sint32       m_level;        // Level of list in para
 	char            m_pszStyle[30]; // Type of List
@@ -381,9 +381,9 @@ public:
 	RTFProps_bCharProps * m_pbCharProps;
 	bool setList(void);
 	bool isTab(UT_uint32 iLevel);
-	UT_NumberVector * getTabStopVect(UT_uint32 iLevel);
-	UT_NumberVector * getTabTypeVect(UT_uint32 iLevel);
-	UT_NumberVector * getTabLeaderVect(UT_uint32 iLevel);
+	std::vector<UT_sint32>* getTabStopVect(UT_uint32 iLevel);
+	std::vector<eTabType>* getTabTypeVect(UT_uint32 iLevel);
+	std::vector<eTabLeader>* getTabLeaderVect(UT_uint32 iLevel);
 	bool isDeletedChanged(UT_uint32 iLevel);
 	bool getDeleted(UT_uint32 iLevel);
 	bool isBoldChanged(UT_uint32 iLevel);
@@ -597,17 +597,17 @@ public:
 	IE_Imp_RTF(PD_Document * pDocument);
 	~IE_Imp_RTF();
 
-	virtual bool supportsLoadStylesOnly() {return true;}
+	virtual bool supportsLoadStylesOnly() const {return true;}
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
 										const unsigned char * pData, 
                                         UT_uint32 lenData, 
                                         const char * szEncoding = 0);
-	UT_sint32 get_vecWord97ListsCount(void) 
-        { return m_vecWord97Lists.getItemCount();}
-	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) 
-        { return m_vecWord97Lists.getNthItem(i);}
+	UT_sint32 get_vecWord97ListsCount(void) const
+        { return m_vecWord97Lists.size();}
+	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) const
+        { return m_vecWord97Lists.at(i);}
     bool  isWord97Lists(void) const 
-        { return (m_vecWord97Lists.getItemCount() > 0);}
+		{ return !m_vecWord97Lists.empty();}
 
 	enum PictFormat {
 		picNone,
@@ -859,7 +859,7 @@ private:
 	UT_Error _isBidiDocument();
 	bool     _appendSpan();
 	bool     _insertSpan();
-	void     _formRevisionAttr(std::string & s,std::string & props, const gchar * style);
+	void     _formRevisionAttr(std::string & s, const std::string & props, const std::string & style);
 	
 
 private:
@@ -900,10 +900,10 @@ private:
 	UT_Stack m_stateStack;
 	RTFStateStore m_currentRTFState;
 
-	UT_GenericVector<RTFFontTableItem*> m_fontTable;
-	UT_NumberVector m_colourTable;
-	UT_Vector m_hdrFtrTable;
-	UT_GenericVector<gchar *> m_styleTable;
+	std::vector<RTFFontTableItem*> m_fontTable;
+	std::vector<UT_sint32> m_colourTable;
+	std::vector<RTFHdrFtr*> m_hdrFtrTable;
+	std::vector<std::string> m_styleTable;
 
 	struct _rtfAbiListTable
 	{
@@ -915,9 +915,9 @@ private:
 		UT_uint32 mapped_id;
 		UT_uint32 mapped_parentid;
 	};
-	UT_GenericVector<_rtfAbiListTable *> m_vecAbiListTable;
-	_rtfAbiListTable * getAbiList( UT_uint32 i) 
-        {return m_vecAbiListTable.getNthItem(i);}
+	std::vector<_rtfAbiListTable *> m_vecAbiListTable;
+	_rtfAbiListTable * getAbiList( UT_uint32 i) const
+        { return m_vecAbiListTable.at(i); }
 
 	RTF_msword97_listOverride* _getTableListOverride(UT_uint32 id);
 
@@ -939,8 +939,8 @@ private:
 	bool                m_parsingHdrFtr;
 	UT_uint32           m_icurOverride;
 	UT_uint32           m_icurOverrideLevel;
-	UT_GenericVector<RTF_msword97_list *> m_vecWord97Lists;
-	UT_GenericVector<RTF_msword97_listOverride*> m_vecWord97ListOverride;
+	std::vector<RTF_msword97_list *> m_vecWord97Lists;
+	std::vector<RTF_msword97_listOverride*> m_vecWord97ListOverride;
 	void _appendHdrFtr ();
 	bool _appendField (const gchar *xmlField, 
                        const gchar ** pszAttribs=NULL);
