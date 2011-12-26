@@ -22,10 +22,12 @@
 
 #import <ApplicationServices/ApplicationServices.h>
 
+// TODO remove XAP_CGFloat
 #if CGFLOAT_DEFINED
 typedef CGFloat XAP_CGFloat;
 #else
 typedef float XAP_CGFloat;
+typedef float CGFloat;
 #endif
 
 #endif

@@ -31,6 +31,7 @@
 #import "ev_CocoaMouse.h"
 
 #import "xav_View.h"
+#import "xap_CocoaCompat.h"
 #import "xap_CocoaApp.h"
 #import "xap_CocoaTextView.h"
 #import "xap_CocoaToolbarWindow.h"
@@ -48,7 +49,7 @@
 @interface XAP_NSScroller : NSScroller
 {
 }
--(id)initWithFrame:(NSRect)frame andController:(NSController*)controller vertical:(BOOL)vertical;
+-(id)initWithFrame:(NSRect)frame andController:(NSWindowController*)controller vertical:(BOOL)vertical;
 
 @end
 
@@ -684,7 +685,7 @@ void AP_CocoaFrameImpl::giveFocus()
 
 @implementation XAP_NSScroller
 
--(id)initWithFrame:(NSRect)frame andController:(NSController*)controller vertical:(BOOL)vertical
+-(id)initWithFrame:(NSRect)frame andController:(NSWindowController*)controller vertical:(BOOL)vertical
 {
 	if(![super initWithFrame:frame]) {
 		return nil;
