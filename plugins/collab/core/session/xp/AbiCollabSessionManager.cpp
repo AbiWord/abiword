@@ -359,7 +359,9 @@ void AbiCollabSessionManager::loadProfile()
 						// TODO: check if this node is really an AccountHandler node
 
 						// find the account handler belonging to this type
-						UT_UTF8String handlerType = reinterpret_cast<char *>(xmlGetProp(accountNode, reinterpret_cast<const xmlChar*>("type"))); 
+						xmlChar* prop = xmlGetProp(accountNode, BAD_CAST "type");
+						UT_UTF8String handlerType = static_cast<char *>(prop); 
+						xmlFree(prop);
 						std::map<UT_UTF8String, AccountHandlerConstructor>::iterator handler_iter = m_regAccountHandlers.find(handlerType);
 						if (handler_iter == m_regAccountHandlers.end())
 						    continue; // could happen for example when the sugar backend is found in the profile, which does not have a registered account handler belowing to it for now
