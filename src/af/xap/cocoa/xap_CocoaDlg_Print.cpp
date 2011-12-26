@@ -37,6 +37,7 @@
 #include "xap_CocoaFrame.h"
 #import "xap_PrintingNSView.h"
 #include "fv_View.h"
+#include "fl_DocLayout.h"
 #include "ap_Strings.h"
 #include "ap_CocoaFrame.h"
 #include "ap_PrintingDelegate.h"
