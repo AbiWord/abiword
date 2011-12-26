@@ -25,6 +25,7 @@
 #define IE_IMP_RTF_H
 
 #include <stdio.h>
+#include <string>
 #include "ie_imp.h"
 #include "ut_growbuf.h"
 #include "ut_vector.h"
@@ -186,7 +187,7 @@ struct ABI_EXPORT RTFProps_CellProps
 	bool      m_bVerticalMergedFirst;
 	bool      m_bHorizontalMerged;
 	bool      m_bHorizontalMergedFirst;
-	UT_String m_sCellProps;
+	std::string m_sCellProps;
 	rtfCellBorder  m_iCurBorder;
 	bool      m_bLeftBorder;
 	bool      m_bRightBorder;
@@ -325,12 +326,12 @@ public:
 								 const char ** szAlign,
 								 const char ** szIndent,
 								 const char ** szListStyle);
-	bool ParseLevelText(const UT_String & szLevelText,const UT_String & szLevelNumbers, UT_uint32 iLevel);
+	bool ParseLevelText(const std::string & szLevelText,const std::string & szLevelNumbers, UT_uint32 iLevel);
 	UT_sint32 m_levelStartAt;
 	UT_uint32 m_AbiLevelID;
 	static UT_uint32 m_sPreviousLevel;
 	UT_uint32 m_RTFListType;
-	UT_String m_listDelim;
+	std::string m_listDelim;
 	char      m_cLevelFollow;
 	bool m_bStartNewList;
 	bool m_bRestart;
@@ -729,7 +730,7 @@ private:
 	bool ReadListOverrideTable(void);
 	bool HandleTableListOverride(void);
 
-	bool buildAllProps( UT_String & s,  RTFProps_ParaProps * pParas,
+	bool buildAllProps( std::string & s,  RTFProps_ParaProps * pParas,
 					   RTFProps_CharProps * pChars,
 					   RTFProps_bParaProps * pbParas,
 					   RTFProps_bCharProps * pbChars);
@@ -737,7 +738,7 @@ private:
 	
 	// Character property handlers
 	bool ResetCharacterAttributes();
-	bool buildCharacterProps(UT_String & propBuffer);
+	bool buildCharacterProps(std::string & propBuffer);
 	bool ApplyCharacterAttributes();
 	bool HandleBoolCharacterProp(bool state, bool* pProp);
 	bool HandleDeleted(bool state);
@@ -837,7 +838,7 @@ private:
 // Meta data
 	bool           HandleInfoMetaData(void);
 // Little convience wrapper
-	void           _setStringProperty(UT_String & sPropString, 
+	void           _setStringProperty(std::string & sPropString, 
                                       const char * szProp, const char * szVal);
 
 	// Section property handlers
@@ -858,7 +859,7 @@ private:
 	UT_Error _isBidiDocument();
 	bool     _appendSpan();
 	bool     _insertSpan();
-	void     _formRevisionAttr(UT_String & s,UT_String & props, const gchar * style);
+	void     _formRevisionAttr(std::string & s,std::string & props, const gchar * style);
 	
 
 private:
@@ -957,7 +958,7 @@ private:
 	UT_sint32             m_iDepthAtFootnote;
 	UT_uint32             m_iLastFootnoteId;
 	UT_uint32             m_iLastEndnoteId;
-	UT_String             m_hyperlinkBase;
+	std::string             m_hyperlinkBase;
 	UT_uint32             m_iHyperlinkOpen;
 	UT_uint32             m_iRDFAnchorOpen;
 	bool                  m_bBidiMode;

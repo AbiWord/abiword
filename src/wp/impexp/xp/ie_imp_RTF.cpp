@@ -4,7 +4,7 @@
  * Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  * Copyright (C) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
- * Copyright (C) 2001, 2004, 2009 Hubert Figuiere <hub@figuiere.net>
+ * Copyright (C) 2001, 2004, 2009, 2011 Hubert Figuiere <hub@figuiere.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -203,6 +203,11 @@ bool	IE_Imp_RTF_Sniffer::getDlgLabels(const char ** pszDesc,
 // List class definitions
 //////////////////////////////////////////////////////////////////
 RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uint32 level)
+	: m_pParaProps(NULL)
+	, m_pCharProps(NULL)
+	, m_pbParaProps(NULL)
+	, m_pbCharProps(NULL)
+
 {
 	m_levelStartAt = 1;
 #if 0
@@ -214,10 +219,6 @@ RTF_msword97_level::RTF_msword97_level(RTF_msword97_list * pmsword97List, UT_uin
 	UT_return_if_fail(pmsword97List);
 	m_AbiLevelID = pmsword97List->m_pie_rtf->getDoc()->getUID(UT_UniqueId::List);
 #endif
-	m_pParaProps = NULL;
-	m_pCharProps = NULL;
-	m_pbParaProps = NULL;
-	m_pbCharProps = NULL;
 	m_pMSWord97_list = pmsword97List;
 	m_localLevel = level;
 	m_bStartNewList = false;
@@ -250,8 +251,8 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 								 const char ** szIndent,
 								 const char ** szListStyle)
 {
-	static UT_String buf;
-	static UT_String ListID, ParentID, Level, StartAt, FieldFont, ListDelim, ListDecimal,Align,Indent;
+	static std::string buf;
+	static std::string ListID, ParentID, Level, StartAt, FieldFont, ListDelim, ListDecimal,Align,Indent;
 //
 // Start with List ID.
 //
@@ -274,10 +275,8 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 		m_AbiLevelID = m_pMSWord97_list->m_pie_rtf->getDoc()->getUID(UT_UniqueId::List);
 	}
 	m_sPreviousLevel = m_localLevel;
-	UT_String_sprintf(buf,"%d",m_AbiLevelID);
-	ListID = buf;
+	ListID = UT_std_string_sprintf("%d",m_AbiLevelID);
 	*szListID = ListID.c_str();
-	buf[0] = 0;
 //
 // Now Parent ID.
 //
@@ -288,24 +287,18 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 	{
 		iParentID = m_pMSWord97_list->m_RTF_level[m_localLevel-1]->m_AbiLevelID;
 	}
-	UT_String_sprintf(buf,"%d", iParentID);
-	ParentID = buf;
+	ParentID = 	UT_std_string_sprintf("%d", iParentID);
     *szParentID = ParentID.c_str();
-	buf[0] = 0;
 //
 // level
 //
-	UT_String_sprintf(buf,"%d",m_localLevel);
-    Level = buf;
+    Level = UT_std_string_sprintf("%d",m_localLevel);
     *szLevel = Level.c_str();
-    buf[0] = 0;
 //
 // Start At.
 //
-	UT_String_sprintf(buf,"%d",m_levelStartAt);
-    StartAt = buf;
+    StartAt = UT_std_string_sprintf("%d",m_levelStartAt);
     *szStartat = StartAt.c_str();
-    buf[0] = 0;
 //
 // List Style
 //
@@ -421,7 +414,7 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 
   \todo look up the parent label and be more precise about what is added by this label.
  */
-bool RTF_msword97_level::ParseLevelText(const UT_String & szLevelText,const UT_String & /*szLevelNumbers*/, UT_uint32 iLevel)
+bool RTF_msword97_level::ParseLevelText(const std::string & szLevelText,const std::string & /*szLevelNumbers*/, UT_uint32 iLevel)
 {
 	//read the text string into a int array, set the place holders to
 	//values less than zero.
@@ -1831,25 +1824,25 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 // Now fill out any remaining cells needed to finish the row of the table
 //
 				UT_sint32 i = pPaste->m_iCurRightCell;
-				UT_String sTop =  UT_String_sprintf("%d",pPaste->m_iCurTopCell);
-				UT_String sBot =  UT_String_sprintf("%d",pPaste->m_iCurTopCell+1);
-				UT_String sCellProps;
-				UT_String sVal;
-				UT_String sDum;
+				std::string sTop =  UT_std_string_sprintf("%d",pPaste->m_iCurTopCell);
+				std::string sBot =  UT_std_string_sprintf("%d",pPaste->m_iCurTopCell+1);
+				std::string sCellProps;
+				std::string sVal;
+				std::string sDum;
 				const gchar * attrs[3] = {"props",NULL,NULL};
 				for(i = pPaste->m_iCurRightCell; i<pPaste->m_iMaxRightCell; i++)
 				{
 					sCellProps.clear();
-					sVal = UT_String_sprintf("%d",i);
+					sVal = UT_std_string_sprintf("%d",i);
 					sDum = "left-attach";
-					UT_String_setProperty(sCellProps,sDum,sVal);
-					sVal = UT_String_sprintf("%d",i+1);
+					UT_std_string_setProperty(sCellProps,sDum,sVal);
+					sVal = UT_std_string_sprintf("%d",i+1);
 					sDum = "right-attach";
-					UT_String_setProperty(sCellProps,sDum,sVal);
+					UT_std_string_setProperty(sCellProps,sDum,sVal);
 					sDum = "top-attach";
-					UT_String_setProperty(sCellProps,sDum,sTop);
+					UT_std_string_setProperty(sCellProps,sDum,sTop);
 					sDum = "bot-attach";
-					UT_String_setProperty(sCellProps,sDum,sBot);
+					UT_std_string_setProperty(sCellProps,sDum,sBot);
 					
 					attrs[1] = sCellProps.c_str();
 					insertStrux(PTX_SectionCell,attrs,NULL);
@@ -1883,8 +1876,8 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 				PT_DocPosition posEndTable = getDoc()->getStruxPosition(sdhEndTable);
 				b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste-1,PTX_SectionCell,&sdhCell);
 				b = getDoc()->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhCell);
-				UT_String sTop;
-				UT_String sBot;
+				std::string sTop;
+				std::string sBot;
 				const char * szVal = NULL;
 				const gchar * sProps[5] = {NULL,NULL,NULL,NULL};
 				PT_DocPosition posCell = 0;
@@ -1901,7 +1894,7 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 					UT_ASSERT(szVal);
 					UT_sint32 iTop = atoi(szVal);
 					iTop += numRows;
-					UT_String_sprintf(sTop,"%d",iTop);
+					sTop = UT_std_string_sprintf("%d",iTop);
 					getDoc()->getPropertyFromSDH(sdhCell,
 												 true,
 												 PD_MAX_REVISION,
@@ -1909,7 +1902,7 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 					UT_ASSERT(szVal);
 					UT_sint32 iBot = atoi(szVal);
 					iBot += numRows;
-					UT_String_sprintf(sBot,"%d",iBot);
+					sBot = UT_std_string_sprintf("%d",iBot);
 					UT_DEBUGMSG(("Change cell top to %d bot to %d \n",iTop,iBot));
 					sProps[0] = "top-attach";
 					sProps[1] = sTop.c_str();
@@ -1926,8 +1919,7 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 // Now a change strux on the table to make it rebuild.
 //
 				sProps[0] = "list-tag";
-				UT_String sVal;
-				UT_String_sprintf(sVal,"%d",getDoc()->getUID(UT_UniqueId::List));
+				std::string sVal = UT_std_string_sprintf("%d",getDoc()->getUID(UT_UniqueId::List));
 				sProps[1] = sVal.c_str();
 				sProps[2] = NULL;
 				sProps[3] = NULL;
@@ -2133,31 +2125,31 @@ void IE_Imp_RTF::FlushCellProps(void)
 	getCell()->setFirstVerticalMerge( m_currentRTFState.m_cellProps.m_bVerticalMergedFirst );
 	getCell()->setFirstHorizontalMerge( m_currentRTFState.m_cellProps.m_bHorizontalMergedFirst );
 	getCell()->setMergeLeft( m_currentRTFState.m_cellProps.m_bHorizontalMerged );
-	UT_String sProp;
-	UT_String sVal;
+	std::string sProp;
+	std::string sVal;
 	if(!m_currentRTFState.m_cellProps.m_bBotBorder)
 	{
 		sProp = "bot-style";
 		sVal = "none";
-		UT_String_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
+		UT_std_string_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
 	}
 	if(!m_currentRTFState.m_cellProps.m_bTopBorder)
 	{
 		sProp = "top-style";
 		sVal = "none";
-		UT_String_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
+		UT_std_string_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
 	}
 	if(!m_currentRTFState.m_cellProps.m_bLeftBorder)
 	{
 		sProp = "left-style";
 		sVal = "none";
-		UT_String_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
+		UT_std_string_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
 	}
 	if(!m_currentRTFState.m_cellProps.m_bRightBorder)
 	{
 		sProp = "right-style";
 		sVal = "none";
-		UT_String_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
+		UT_std_string_setProperty(m_currentRTFState.m_cellProps.m_sCellProps,sProp,sVal);
 	}
 	getCell()->addPropString( m_currentRTFState.m_cellProps.m_sCellProps );
 	
@@ -2167,12 +2159,12 @@ void IE_Imp_RTF::FlushCellProps(void)
  * Set a property, value pair in the supplied string. This is just a convience
  * wrapper function to use const char * strings
  */
-void IE_Imp_RTF::_setStringProperty(UT_String & sPropsString, 
+void IE_Imp_RTF::_setStringProperty(std::string & sPropsString, 
                                     const char * szProp, const char * szVal)
 {
-	UT_String sProp(szProp);
-	UT_String sVal(szVal);
-	UT_String_setProperty(sPropsString,sProp,sVal);
+	std::string sProp(szProp);
+	std::string sVal(szVal);
+	UT_std_string_setProperty(sPropsString,sProp,sVal);
 }
 
 
@@ -2280,16 +2272,16 @@ void IE_Imp_RTF::HandleNoteReference(void)
 	{
 		attribs[0] = "endnote-id";
 	}
-	UT_String footpid;
+	std::string footpid;
 	if(m_bInFootnote && !m_bFtnReferencePending)
 	{
 		if(m_bNoteIsFNote)
 		{
-			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+			footpid = UT_std_string_sprintf("%i",m_iLastFootnoteId);
 		}
 		else
 		{
-			UT_String_sprintf(footpid,"%i",m_iLastEndnoteId);
+			footpid = UT_std_string_sprintf("%i",m_iLastEndnoteId);
 		}
 		attribs[1] = footpid.c_str();
 		UT_DEBUGMSG(("Note anchor %s \n",footpid.c_str()));
@@ -2316,12 +2308,12 @@ void IE_Imp_RTF::HandleNoteReference(void)
 		if(m_bNoteIsFNote)
 		{
 			m_iLastFootnoteId = getDoc()->getUID(UT_UniqueId::Footnote);
-			UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+			footpid = UT_std_string_sprintf("%i",m_iLastFootnoteId);
 		}
 		else
 		{
 			m_iLastEndnoteId = getDoc()->getUID(UT_UniqueId::Endnote);
-			UT_String_sprintf(footpid,"%i",m_iLastEndnoteId);
+			footpid = UT_std_string_sprintf("%i",m_iLastEndnoteId);
 		}
 		attribs[1] = footpid.c_str();
 		UT_DEBUGMSG(("Note reference %s \n",footpid.c_str()));
@@ -2378,14 +2370,14 @@ void IE_Imp_RTF::HandleNote(void)
 		attribs[0] = "endnote-id";
 	}
 	
-	UT_String footpid;
+	std::string footpid;
 	if(m_bNoteIsFNote)
 	{
-	    UT_String_sprintf(footpid,"%i",m_iLastFootnoteId);
+	    footpid = UT_std_string_sprintf("%i",m_iLastFootnoteId);
 	}
 	else
 	{
-	    UT_String_sprintf(footpid,"%i",m_iLastEndnoteId);
+	    footpid = UT_std_string_sprintf("%i",m_iLastEndnoteId);
 	}
 	attribs[1] = footpid.c_str();
 	UT_DEBUGMSG(("Note Strux ID = %s \n", footpid.c_str()));
@@ -2424,8 +2416,7 @@ void IE_Imp_RTF::HandleAnnotation(void)
 			return;
 		}
 	m_bInAnnotation = true;
-	UT_String sAnnNum;
-	UT_String_sprintf(sAnnNum,"%d",m_pAnnotation->m_iAnnNumber);
+	std::string sAnnNum = UT_std_string_sprintf("%d",m_pAnnotation->m_iAnnNumber);
 	const char * ann_attrs[5] = {NULL,NULL,NULL,NULL,NULL};
 	ann_attrs[0] = "annotation-id";
 	ann_attrs[1] = sAnnNum.c_str();
@@ -2792,11 +2783,11 @@ bool IE_Imp_RTF::HandleParKeyword()
 		m_newParaFlagged = false;
 		m_bSectionHasPara = true;
 	}
-	UT_String sProps;
+	std::string sProps;
 	int attrsIdx = 0;
 	const gchar * attrs[7] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL};
 	const gchar * props = NULL;
-	UT_String rev;
+	std::string rev;
 
 	UT_return_val_if_fail( buildCharacterProps(sProps), false);
 	props = sProps.c_str();
@@ -3779,7 +3770,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 
 	char *instr;
 	char *newBuf;
-	UT_String Instr;
+	std::string Instr;
 	UT_uint32  len;
 	isXML = false;
 
@@ -3861,7 +3852,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 			const gchar *new_atts[3];
 
 			new_atts[0] = "xlink:href";
-			UT_String href;
+			std::string href;
 			if ( !strcmp(instr, "l") )
 			{
 				instr = strtok (NULL, " \\{}");
@@ -3882,7 +3873,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 
 			href += instr;
 
-			UT_String full_href;
+			std::string full_href;
 
 			const char * s = href.c_str();
 
@@ -4385,8 +4376,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		{
 			const gchar * props[] = {"document-endnote-initial", NULL,
 										NULL};
-			UT_String i;
-			UT_String_sprintf(i,"%d",param);
+			std::string i = UT_std_string_sprintf("%d",param);
 			props[1] = i.c_str();
 			getDoc()->setProperties(&props[0]);
 		}
@@ -4600,10 +4590,10 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	case RTF_KW_brdrw:
 	{
 		double dWidth = static_cast<double>(param)/1440; // convert to inches
-		UT_String sWidth;
+		std::string sWidth;
 		{
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
-			UT_String_sprintf(sWidth,"%fin",dWidth);
+			sWidth = UT_std_string_sprintf("%fin",dWidth);
 		}
 		if(m_bCellActive)
 		{
@@ -4647,10 +4637,9 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	}
 	case RTF_KW_brdrcf:
 	{
-		UT_String sColor;
 		UT_sint32 iCol = static_cast<UT_sint32>(param);
 		UT_uint32 colour = GetNthTableColour(iCol);
-		UT_String_sprintf(sColor, "%06x", colour);
+		std::string sColor = UT_std_string_sprintf("%06x", colour);
 		if(m_bCellActive)
 		{
 			if (m_currentRTFState.m_cellProps.m_iCurBorder == rtfCellBorderTop)
@@ -4845,10 +4834,9 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		return true;
 	case RTF_KW_clcbpat:
 	{
-		UT_String sColor;
 		UT_sint32 iCol = static_cast<UT_sint32>(param);
 		UT_uint32 colour = GetNthTableColour(iCol);
-		UT_String_sprintf(sColor, "%06x", colour);
+		std::string sColor = UT_std_string_sprintf("%06x", colour);
 		xxx_UT_DEBUGMSG(("Writing background color %s to properties \n",sColor.c_str()));
 		_setStringProperty(m_currentRTFState.m_cellProps.m_sCellProps,"background-color",sColor.c_str());
 	}
@@ -4995,8 +4983,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		{
 			const gchar * props[] = {"document-footnote-initial", NULL,
 										NULL};
-			UT_String i;
-			UT_String_sprintf(i,"%d",param);
+			std::string i = UT_std_string_sprintf("%d",param);
 			props[1] = i.c_str();
 			getDoc()->setProperties(&props[0]);
 		}
@@ -5523,7 +5510,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		if(getTable())
 		{
 			double dLeftPos = static_cast<double>(param)/1440.0;
-			UT_String sLeftPos = UT_formatDimensionString(DIM_IN,dLeftPos,NULL);
+			std::string sLeftPos = UT_formatDimensionString(DIM_IN,dLeftPos,NULL);
 			getTable()->setProp("table-column-leftpos",sLeftPos);
 		}
 		return true;
@@ -6204,7 +6191,7 @@ void IE_Imp_RTF::EndAnnotation()
 	}
 }
 
-void IE_Imp_RTF::_formRevisionAttr(UT_String & attr, UT_String & props, const gchar * style)
+void IE_Imp_RTF::_formRevisionAttr(std::string & attr, std::string & props, const gchar * style)
 {
 	attr.clear();
 	
@@ -6213,7 +6200,6 @@ void IE_Imp_RTF::_formRevisionAttr(UT_String & attr, UT_String & props, const gc
 		return;
 	}
 	
-	UT_String temp;
 	
 	switch(m_currentRTFState.m_charProps.m_eRevision)
 	{
@@ -6225,9 +6211,8 @@ void IE_Imp_RTF::_formRevisionAttr(UT_String & attr, UT_String & props, const gc
 		default:; // nothing
 	}
 
-	UT_String_sprintf(temp, "%d", m_currentRTFState.m_charProps.m_iCurrentRevisionId);
+	attr += UT_std_string_sprintf("%d", m_currentRTFState.m_charProps.m_iCurrentRevisionId);
 
-	attr += temp;
 
 	if(m_currentRTFState.m_charProps.m_eRevision == PP_REVISION_DELETION)
 	{
@@ -6251,9 +6236,9 @@ void IE_Imp_RTF::_formRevisionAttr(UT_String & attr, UT_String & props, const gc
 
 
 
-bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
+bool IE_Imp_RTF::buildCharacterProps(std::string & propBuffer)
 {
-	UT_String tempBuffer;
+	std::string tempBuffer;
 	// bold
 	propBuffer += "font-weight:";
 	propBuffer += m_currentRTFState.m_charProps.m_bold ? "bold" : "normal";
@@ -6270,7 +6255,7 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 
 	// underline & overline & strike-out
 	propBuffer += "; text-decoration:";
-	static UT_String decors;
+	static std::string decors;
 	decors.clear();
 	if (m_currentRTFState.m_charProps.m_underline)
 	{
@@ -6328,8 +6313,7 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 	// If Font is too big inside a table can trigger an infinite too during layout
 	//
 	//	UT_ASSERT(m_currentRTFState.m_charProps.m_fontSize < 120);
-	UT_String_sprintf(tempBuffer, "; font-size:%spt", std_size_string(static_cast<float>(m_currentRTFState.m_charProps.m_fontSize)));
-	propBuffer += tempBuffer;
+	propBuffer += UT_std_string_sprintf("; font-size:%spt", std_size_string(static_cast<float>(m_currentRTFState.m_charProps.m_fontSize)));
 	// typeface
 	RTFFontTableItem* pFont = GetNthTableFont(m_currentRTFState.m_charProps.m_fontNumber);
 	if (pFont != NULL)
@@ -6350,8 +6334,7 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 	{
 		// colour, only if one has been set. See bug 1324
 		UT_uint32 colour = GetNthTableColour(m_currentRTFState.m_charProps.m_colourNumber);
-		UT_String_sprintf(tempBuffer, "; color:%06x", colour);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("; color:%06x", colour);
 	}
 
 	if (m_currentRTFState.m_charProps.m_hasBgColour)
@@ -6361,16 +6344,14 @@ bool IE_Imp_RTF::buildCharacterProps(UT_String & propBuffer)
 
 		if (bgColour != -1) // invalid and should be white
 		{
-			UT_String_sprintf(tempBuffer, "; bgcolor:%06x", bgColour);
-			propBuffer += tempBuffer;
+			propBuffer += UT_std_string_sprintf("; bgcolor:%06x", bgColour);
 		}
 	}
 
 	if(m_currentRTFState.m_charProps.m_listTag != 0)
 	{
 // List Tag to hang lists off
-		UT_String_sprintf(tempBuffer, "; list-tag:%d",m_currentRTFState.m_charProps.m_listTag);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("; list-tag:%d",m_currentRTFState.m_charProps.m_listTag);
 	}
 
 	if(m_currentRTFState.m_charProps.m_szLang != 0)
@@ -6414,12 +6395,12 @@ bool IE_Imp_RTF::_appendSpan()
 
 	const gchar* propsArray[5] = {NULL, NULL, NULL, NULL, NULL};
 
-	UT_String prop_basic;
-	UT_String revision;
+	std::string prop_basic;
+	std::string revision;
 	buildCharacterProps(prop_basic);
 
-	UT_String prop_ltr;
-	UT_String prop_rtl;
+	std::string prop_ltr;
+	std::string prop_rtl;
 
 	UT_uint32 iPropOffset = 0;
 
@@ -6649,12 +6630,12 @@ bool IE_Imp_RTF::_insertSpan()
 
 	const gchar* propsArray[5] = {NULL, NULL, NULL, NULL, NULL};
 
-	UT_String prop_basic;
-	UT_String revision;
+	std::string prop_basic;
+	std::string revision;
 	buildCharacterProps(prop_basic);
 
-	UT_String prop_ltr;
-	UT_String prop_rtl;
+	std::string prop_ltr;
+	std::string prop_rtl;
 
 	UT_uint32 iPropOffset = 0;
 	
@@ -6883,7 +6864,7 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 	{
 		const gchar* pProps = "props";
 		const gchar* pStyle = PT_STYLE_ATTRIBUTE_NAME;
-		UT_String propBuffer;
+		std::string propBuffer;
 		buildCharacterProps(propBuffer);
 
 		const gchar* propsArray[7];
@@ -7149,8 +7130,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		}
 	}
 
-	UT_String propBuffer;
-	UT_String tempBuffer;
+	std::string propBuffer;
+	std::string tempBuffer;
 	bool bWord97List = m_currentRTFState.m_paraProps.m_isList && isWord97Lists();
 	bool bAbiList = m_currentRTFState.m_paraProps.m_isList && ( 0 != m_currentRTFState.m_paraProps.m_rawID);
 	bWord97List = bWord97List && !bAbiList;
@@ -7225,8 +7206,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 				UT_ASSERT_NOT_REACHED();
 			}
 			char cLeader = '0' + static_cast<char>(tabLeader);
-			UT_String_sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader);
-			propBuffer += tempBuffer;
+			propBuffer += UT_std_string_sprintf("%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader);
 		}
 
 		propBuffer += "; ";
@@ -7255,10 +7235,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	propBuffer += "; ";
 
 	// indents - first, left and right, top and bottom
-	UT_String_sprintf(tempBuffer, "margin-top:%s; ",		UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_spaceBefore)/1440));
-	propBuffer += tempBuffer;
-	UT_String_sprintf(tempBuffer, "margin-bottom:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_spaceAfter)/1440));
-	propBuffer += tempBuffer;
+	propBuffer += UT_std_string_sprintf("margin-top:%s; ",		UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_spaceBefore)/1440));
+
+	propBuffer += UT_std_string_sprintf("margin-bottom:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_spaceAfter)/1440));
 
 	propBuffer += "dom-dir:";
 	if(m_currentRTFState.m_paraProps.m_dir == UT_BIDI_RTL)
@@ -7271,43 +7250,37 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	//
 	if(!bWord97List || bAbiList)
 	{
-		UT_String_sprintf(tempBuffer, "margin-left:%s; ", UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_indentLeft)/1440));
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("margin-left:%s; ", UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_indentLeft)/1440));
 	}
-	UT_String_sprintf(tempBuffer, "margin-right:%s; ", UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_indentRight)/1440));
-	propBuffer += tempBuffer;
+	propBuffer += UT_std_string_sprintf("margin-right:%s; ", UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_indentRight)/1440));
 //
 // Filled from List definition
 //
 	if(!bWord97List || bAbiList)
 	{
-		UT_String_sprintf(tempBuffer, "text-indent:%s; ", UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_indentFirst)/1440));
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("text-indent:%s; ", UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_currentRTFState.m_paraProps.m_indentFirst)/1440));
 	}
 // line spacing
 	if (m_currentRTFState.m_paraProps.m_lineSpaceExact)
 	{
         if (m_currentRTFState.m_paraProps.m_lineSpaceVal < 0) {  // exact spacing
-			UT_String_sprintf(tempBuffer, "line-height:%spt;",    UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/20.0)));
+			propBuffer += UT_std_string_sprintf("line-height:%spt;",    UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/20.0)));
 		}
 		else                                                         // "at least" spacing
 		{
-			UT_String_sprintf(tempBuffer, "line-height:%spt+;",    UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/20.0)));
+			propBuffer += UT_std_string_sprintf("line-height:%spt+;",    UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/20.0)));
 		}
 	}
 	else                 // multiple line spacing
 	{
-		UT_String_sprintf(tempBuffer, "line-height:%s;",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
+		propBuffer += UT_std_string_sprintf("line-height:%s;",	UT_convertToDimensionlessString(fabs(m_currentRTFState.m_paraProps.m_lineSpaceVal/240)));
 	}
 
-	propBuffer += tempBuffer;
-
-
 	// Lists. If the paragraph has a list element handle it.
-	UT_String szLevel1;
-	UT_String szStyle;
-	UT_String szListID1;
-	UT_String szParentID1;
+	std::string szLevel1;
+	std::string szStyle;
+	std::string szListID1;
+	std::string szParentID1;
 	UT_uint32 id = 0,pid = 0,startValue = 0;
 //
 // This is for our own extensions to RTF.
@@ -7331,12 +7304,12 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	  // First off assemble the list attributes
 	  //
 		id = mapID(m_currentRTFState.m_paraProps.m_rawID);
-		UT_String_sprintf(szListID1,"%d",id);
+		szListID1 = UT_std_string_sprintf("%d",id);
 		pid = mapParentID(m_currentRTFState.m_paraProps.m_rawParentID);
-		UT_String_sprintf(szParentID1,"%d",pid);
+		szParentID1 = UT_std_string_sprintf("%d",pid);
 		if(pid == 0)
 			m_currentRTFState.m_paraProps.m_level = 1;
-		UT_String_sprintf(szLevel1,"%d",m_currentRTFState.m_paraProps.m_level);
+		szLevel1 = UT_std_string_sprintf("%d",m_currentRTFState.m_paraProps.m_level);
 
 		attribs1[attribsCount++] = PT_LISTID_ATTRIBUTE_NAME;
 		UT_return_val_if_fail( attribsCount < PT_MAX_ATTRIBUTES * 2,false );
@@ -7378,7 +7351,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 //
 // fix up indents.
 //
-		UT_String val;
+		std::string val;
 		double firstLine = UT_convertToInches(szAlign);
 		double leftIndent = -firstLine + 0.01;
 		if(szIndent && *szIndent)
@@ -7434,7 +7407,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		if(pOver->isUnderlineChanged(iLevel) || pOver->isStrikeoutChanged(iLevel))
 		{
 			propBuffer += "; text-decoration:";
-			static UT_String decors;
+			static std::string decors;
 			decors.clear();
 			if (pOver->getUnderline(iLevel))
 			{
@@ -7481,8 +7454,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		// font size
 		if(pOver->isFontSizeChanged(iLevel))
 		{
-			UT_String_sprintf(tempBuffer, " font-size:%spt;", std_size_string(static_cast<float>(pOver->getFontSize(iLevel))));
-			propBuffer += tempBuffer;
+			propBuffer +=  UT_std_string_sprintf(" font-size:%spt;", std_size_string(static_cast<float>(pOver->getFontSize(iLevel))));
 			UT_DEBUGMSG(("RTF: IMPORT!!!!! font sized changed in override %f \n",pOver->getFontSize(iLevel)));
 		}
 		// typeface
@@ -7503,8 +7475,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			{
 				// colour, only if one has been set. See bug 1324
 				UT_uint32 colour = GetNthTableColour(pOver->getColourNumber(iLevel));
-				UT_String_sprintf(tempBuffer, " color:%06x;", colour);
-				propBuffer += tempBuffer;
+				propBuffer += UT_std_string_sprintf(" color:%06x;", colour);
 			}
 		}
 		// BackGround Colour
@@ -7516,8 +7487,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 				UT_sint32 bgColour = GetNthTableBgColour(pOver->getBgColourNumber(iLevel));
 				if (bgColour != -1) // invalid and should be white
 				{
-					UT_String_sprintf(tempBuffer, " bgcolor:%06x;", bgColour);
-					propBuffer += tempBuffer;
+					propBuffer += UT_std_string_sprintf(" bgcolor:%06x;", bgColour);
 				}
 			}
 		}
@@ -7525,20 +7495,13 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		// Now handle the List properties
 		//
 
-		UT_String_sprintf(tempBuffer,"list-style:%s;",szListStyle);
-		propBuffer += tempBuffer;
-		UT_String_sprintf(tempBuffer, "list-decimal:%s; ",szListDecimal);
-		propBuffer += tempBuffer;
-		UT_String_sprintf(tempBuffer, "list-delim:%s; ",szListDelim);
-		propBuffer += tempBuffer;
-		UT_String_sprintf(tempBuffer, "field-font:%s; ",szFieldFont);
-		propBuffer += tempBuffer;
-		UT_String_sprintf(tempBuffer, "start-value:%s; ",szStartat);
-		propBuffer += tempBuffer;
-		UT_String_sprintf(tempBuffer, "margin-left:%s; ",szAlign);
-		propBuffer += tempBuffer;
-		UT_String_sprintf(tempBuffer, "text-indent:%s;", szIndent); // Note last entry has no ;
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("list-style:%s;",szListStyle);
+		propBuffer += UT_std_string_sprintf("list-decimal:%s; ",szListDecimal);
+		propBuffer += UT_std_string_sprintf("list-delim:%s; ",szListDelim);
+		propBuffer += UT_std_string_sprintf("field-font:%s; ",szFieldFont);
+		propBuffer += UT_std_string_sprintf("start-value:%s; ",szStartat);
+		propBuffer += UT_std_string_sprintf("margin-left:%s; ",szAlign);
+		propBuffer += UT_std_string_sprintf("text-indent:%s;", szIndent); // Note last entry has no ;
 	}
 
 
@@ -7547,18 +7510,13 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		//
 		// Now handle the Abi List properties
 		//
-		UT_String_sprintf(tempBuffer,"list-style:%s;",m_currentRTFState.m_paraProps.m_pszStyle);
-		UT_String_sprintf(szStyle,"%s",m_currentRTFState.m_paraProps.m_pszStyle);
-		propBuffer += tempBuffer;
-		UT_String_sprintf(tempBuffer, "list-decimal:%s; ",m_currentRTFState.m_paraProps.m_pszListDecimal);
-		propBuffer += tempBuffer;
-		UT_String_sprintf(tempBuffer, "list-delim:%s; ",m_currentRTFState.m_paraProps.m_pszListDelim);
-		propBuffer += tempBuffer;
-		UT_String_sprintf(tempBuffer, "field-font:%s; ",m_currentRTFState.m_paraProps.m_pszFieldFont);
-		propBuffer += tempBuffer;
+		szStyle = UT_std_string_sprintf("%s",m_currentRTFState.m_paraProps.m_pszStyle);
+		propBuffer += UT_std_string_sprintf("list-style:%s;",m_currentRTFState.m_paraProps.m_pszStyle);
+		propBuffer += UT_std_string_sprintf("list-decimal:%s; ",m_currentRTFState.m_paraProps.m_pszListDecimal);
+		propBuffer += UT_std_string_sprintf("list-delim:%s; ",m_currentRTFState.m_paraProps.m_pszListDelim);
+		propBuffer += UT_std_string_sprintf("field-font:%s; ",m_currentRTFState.m_paraProps.m_pszFieldFont);
 		startValue = m_currentRTFState.m_paraProps.m_startValue;
-		UT_String_sprintf(tempBuffer, "start-value:%d",startValue);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("start-value:%d",startValue);
 	}
 	// Style name
 	if( m_currentRTFState.m_paraProps.m_styleNumber < m_styleTable.size() &&(m_currentRTFState.m_paraProps.m_styleNumber >= 0) )
@@ -7575,86 +7533,66 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	UT_sint32 iCol = 0;
 	if(m_currentRTFState.m_paraProps.m_bMergeBordersShading)
 	{
-		UT_String_sprintf(tempBuffer, "border-merge:1; ");
-		propBuffer += tempBuffer;	
+		propBuffer += "border-merge:1; ";
 	}
 	if( m_currentRTFState.m_paraProps.m_bBotBorder)
 	{
-		UT_String_sprintf(tempBuffer, "bot-style:%d; ",m_currentRTFState.m_paraProps.m_iBotBorderStyle);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("bot-style:%d; ",m_currentRTFState.m_paraProps.m_iBotBorderStyle);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iBotBorderWidth)/1440.;
-		UT_String_sprintf(tempBuffer, "bot-thickness:%fin; ",w);
-		propBuffer += tempBuffer;
+#warning we might have issues with locale and floats here
+		propBuffer += UT_std_string_sprintf("bot-thickness:%fin; ",w);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iBotBorderSpacing)/1440.;
-		UT_String_sprintf(tempBuffer, "bot-space:%fin; ",w);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("bot-space:%fin; ",w);
 		iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iBotBorderCol);
-		UT_String_sprintf(tempBuffer, "bot-color:%06x; ",iCol);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("bot-color:%06x; ",iCol);
 	}
 	if( m_currentRTFState.m_paraProps.m_bLeftBorder)
 	{
-		UT_String_sprintf(tempBuffer, "left-style:%d; ",m_currentRTFState.m_paraProps.m_iLeftBorderStyle);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("left-style:%d; ",m_currentRTFState.m_paraProps.m_iLeftBorderStyle);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iLeftBorderWidth)/1440.;
-		UT_String_sprintf(tempBuffer, "left-thickness:%fin; ",w);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("left-thickness:%fin; ",w);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iLeftBorderSpacing)/1440.;
-		UT_String_sprintf(tempBuffer, "left-space:%fin; ",w);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("left-space:%fin; ",w);
 		iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iLeftBorderCol);
-		UT_String_sprintf(tempBuffer, "left-color:%06x; ",iCol);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("left-color:%06x; ",iCol);
 	}
 	if( m_currentRTFState.m_paraProps.m_bRightBorder)
 	{
-		UT_String_sprintf(tempBuffer, "right-style:%d; ",m_currentRTFState.m_paraProps.m_iRightBorderStyle);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("right-style:%d; ",m_currentRTFState.m_paraProps.m_iRightBorderStyle);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iRightBorderWidth)/1440.;
-		UT_String_sprintf(tempBuffer, "right-thickness:%fin; ",w);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("right-thickness:%fin; ",w);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iRightBorderSpacing)/1440.;
-		UT_String_sprintf(tempBuffer, "right-space:%fin; ",w);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("right-space:%fin; ",w);
 		iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iRightBorderCol);
-		UT_String_sprintf(tempBuffer, "right-color:%06x; ",iCol);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("right-color:%06x; ",iCol);
 	}
 	if( m_currentRTFState.m_paraProps.m_bTopBorder)
 	{
-		UT_String_sprintf(tempBuffer, "top-style:%d; ",m_currentRTFState.m_paraProps.m_iTopBorderStyle);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("top-style:%d; ",m_currentRTFState.m_paraProps.m_iTopBorderStyle);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iTopBorderWidth)/1440.;
-		UT_String_sprintf(tempBuffer, "top-thickness:%fin; ",w);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("top-thickness:%fin; ",w);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iTopBorderSpacing)/1440.;
-		UT_String_sprintf(tempBuffer, "top-space:%fin; ",w);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("top-space:%fin; ",w);
 		iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iTopBorderCol);
-		UT_String_sprintf(tempBuffer, "top-color:%06x; ",iCol);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("top-color:%06x; ",iCol);
 	}
 	if(m_currentRTFState.m_paraProps.m_iShadingPattern)
 	{
-		UT_String_sprintf(tempBuffer, "shading-pattern:%d; ",m_currentRTFState.m_paraProps.m_iShadingPattern);
-		propBuffer += tempBuffer;
+		propBuffer += UT_std_string_sprintf("shading-pattern:%d; ",m_currentRTFState.m_paraProps.m_iShadingPattern);
 
 		if(m_currentRTFState.m_paraProps.m_iShadingForeCol > -1)
 		{
 			iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iShadingForeCol);
-			UT_String_sprintf(tempBuffer, "shading-foreground-color:%06x; ",iCol);
-			propBuffer += tempBuffer;
+			propBuffer += UT_std_string_sprintf("shading-foreground-color:%06x; ",iCol);
 		}
 
 		if(m_currentRTFState.m_paraProps.m_iShadingBackCol > -1)
 		{
 			iCol = GetNthTableBgColour(m_currentRTFState.m_paraProps.m_iShadingBackCol);
-			UT_String_sprintf(tempBuffer, "shading-background-color:%06x; ",iCol);
-			propBuffer += tempBuffer;
+			propBuffer += UT_std_string_sprintf("shading-background-color:%06x; ",iCol);
 			if(m_currentRTFState.m_paraProps.m_iShadingPattern == 1)
 			{
-				UT_String_sprintf(tempBuffer, "shading-foreground-color:%06x; ",iCol);
-				propBuffer += tempBuffer;
+				propBuffer += UT_std_string_sprintf("shading-foreground-color:%06x; ",iCol);
 			}
 		}
 	}
@@ -7929,23 +7867,22 @@ bool IE_Imp_RTF::ResetSectionAttributes()
 bool IE_Imp_RTF::ApplySectionAttributes()
 {
 	const gchar* pProps = "props";
-	UT_String propBuffer;
-	UT_String tempBuffer;
-	UT_String szHdrID;
-	UT_String szFtrID;
-	UT_String szHdrEvenID;
-	UT_String szFtrEvenID;
-	UT_String szHdrFirstID;
-	UT_String szFtrFirstID;
-	UT_String szHdrLastID;
-	UT_String szFtrLastID;
+	std::string propBuffer;
+	std::string tempBuffer;
+	std::string szHdrID;
+	std::string szFtrID;
+	std::string szHdrEvenID;
+	std::string szFtrEvenID;
+	std::string szHdrFirstID;
+	std::string szFtrFirstID;
+	std::string szHdrLastID;
+	std::string szFtrLastID;
 	short paramIndex = 0;
 
 	UT_DEBUGMSG (("Applying SectionAttributes\n"));
 
 	// columns
-	UT_String_sprintf(tempBuffer, "columns:%d", m_currentRTFState.m_sectionProps.m_numCols);
-	propBuffer += tempBuffer;
+	propBuffer += UT_std_string_sprintf("columns:%d", m_currentRTFState.m_sectionProps.m_numCols);
 
 	if (m_currentRTFState.m_sectionProps.m_bColumnLine)
 	{
@@ -7972,43 +7909,28 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 	if(true /*m_currentRTFState.m_sectionProps.m_leftMargTwips != 0*/)
 	{
-		propBuffer += "; page-margin-left:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_leftMargTwips)/1440.;
-		UT_String sinch;
-		UT_String_sprintf(sinch,"%fin",inch);
-		propBuffer += sinch;
+		propBuffer += UT_std_string_sprintf("; page-margin-left:%fin",inch);
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_rightMargTwips != 0*/)
 	{
-		propBuffer += "; page-margin-right:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_rightMargTwips)/1440.;
-		UT_String sinch;
-		UT_String_sprintf(sinch,"%fin",inch);
-		propBuffer += sinch;
+		propBuffer += UT_std_string_sprintf("; page-margin-right:%fin",inch);
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_topMargTwips != 0*/)
 	{
-		propBuffer += "; page-margin-top:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_topMargTwips)/1440.;
-		UT_String sinch;
-		UT_String_sprintf(sinch,"%fin",inch);
-		propBuffer += sinch;
+		propBuffer += UT_std_string_sprintf("; page-margin-top:%fin",inch);
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_bottomMargTwips != 0*/)
 	{
-		propBuffer += "; page-margin-bottom:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_bottomMargTwips)/1440.;
-		UT_String sinch;
-		UT_String_sprintf(sinch,"%fin",inch);
-		propBuffer += sinch;
+		propBuffer += UT_std_string_sprintf("; page-margin-bottom:%fin",inch);
 	}
 	if(true /*m_currentRTFState.m_sectionProps.m_colSpaceTwips != 0*/)
 	{
-		propBuffer += "; column-gap:";
 		double inch = static_cast<double>(m_currentRTFState.m_sectionProps.m_colSpaceTwips)/1440.;
-		UT_String sinch;
-		UT_String_sprintf(sinch,"%fin",inch);
-		propBuffer += sinch;
+		propBuffer += UT_std_string_sprintf("; column-gap:%fin",inch);
 	}
 	if(m_currentRTFState.m_sectionProps.m_headerYTwips != 0)
 	{
@@ -8027,31 +7949,21 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 				sheader = 0;
 			}
 		}
-		propBuffer += "; page-margin-header:";
 		double inch = static_cast<double>(sheader)/1440.;
-		UT_String sinch;
-
-		UT_String_sprintf(sinch,"%fin",inch);
-		propBuffer += sinch;
+		propBuffer += UT_std_string_sprintf("; page-margin-header:%fin",inch);
 	}
 #if 0
 	if(m_currentRTFState.m_sectionProps.m_gutterTwips != 0)
 	{
-		propBuffer += "; page-margin-footer:";
 		double inch = static_cast<double>( m_currentRTFState.m_sectionProps.m_gutterTwips)/1440.;
-		UT_String sinch;
-		UT_String_sprintf(sinch,"%fin",inch);
-		propBuffer += sinch;
+		propBuffer += UT_std_string_sprintf("; page-margin-footer:%fin",inch);
 	}
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 #endif
 	if(m_currentRTFState.m_sectionProps.m_footerYTwips != 0)
 	{
-		propBuffer += "; page-margin-footer:";
 		double inch = static_cast<double>( m_currentRTFState.m_sectionProps.m_footerYTwips)/1440.;
-		UT_String sinch;
-		UT_String_sprintf(sinch,"%fin",inch);
-		propBuffer += sinch;
+		propBuffer += UT_std_string_sprintf("; page-margin-footer:%fin",inch);
 	}
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 	if(m_currentRTFState.m_sectionProps.m_dir != UT_BIDI_UNSET)
@@ -8072,12 +7984,11 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 			a = al;
 		}
 
-		UT_String_sprintf(tempBuffer, "; dom-dir:%s; text-align:%s",d,a);
-        propBuffer += tempBuffer;
-        UT_DEBUGMSG(("Apply sect prop: [%s]\n", tempBuffer.c_str()));
+        propBuffer += UT_std_string_sprintf("; dom-dir:%s; text-align:%s",d,a);
+        xxx_UT_DEBUGMSG(("Apply sect prop: [%s]\n", tempBuffer.c_str()));
 	}
 
-	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
+	xxx_UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
 
 	const gchar* propsArray[15];
 	propsArray[0] = pProps;
@@ -8088,7 +7999,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying header\n"));
 		propsArray [paramIndex] = "header";
 		paramIndex++;
-		UT_String_sprintf (szHdrID, "%u", m_currentHdrID);
+		szHdrID = UT_std_string_sprintf ("%u", m_currentHdrID);
 		propsArray [paramIndex] = szHdrID.c_str();
 		paramIndex++;
 	}
@@ -8097,7 +8008,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying header even\n"));
 		propsArray [paramIndex] = "header-even";
 		paramIndex++;
-		UT_String_sprintf (szHdrEvenID, "%u", m_currentHdrEvenID);
+		szHdrEvenID = UT_std_string_sprintf ("%u", m_currentHdrEvenID);
 		propsArray [paramIndex] = szHdrEvenID.c_str();
 		paramIndex++;
 	}
@@ -8106,7 +8017,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying header first\n"));
 		propsArray [paramIndex] = "header-first";
 		paramIndex++;
-		UT_String_sprintf (szHdrFirstID, "%u", m_currentHdrFirstID);
+		szHdrFirstID = UT_std_string_sprintf ("%u", m_currentHdrFirstID);
 		propsArray [paramIndex] = szHdrFirstID.c_str();
 		paramIndex++;
 	}
@@ -8115,7 +8026,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying header last\n"));
 		propsArray [paramIndex] = "header-last";
 		paramIndex++;
-		UT_String_sprintf (szHdrLastID, "%u", m_currentHdrLastID);
+		szHdrLastID = UT_std_string_sprintf ("%u", m_currentHdrLastID);
 		propsArray [paramIndex] = szHdrLastID.c_str();
 		paramIndex++;
 	}
@@ -8124,7 +8035,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying footer\n"));
 		propsArray [paramIndex] = "footer";
 		paramIndex++;
-		UT_String_sprintf (szFtrID, "%u", m_currentFtrID);
+		szFtrID = UT_std_string_sprintf("%u", m_currentFtrID);
 		propsArray [paramIndex] = szFtrID.c_str();
 		paramIndex++;
 	}
@@ -8133,7 +8044,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying footer even\n"));
 		propsArray [paramIndex] = "footer-even";
 		paramIndex++;
-		UT_String_sprintf (szFtrEvenID, "%u", m_currentFtrEvenID);
+		szFtrEvenID = UT_std_string_sprintf("%u", m_currentFtrEvenID);
 		propsArray [paramIndex] = szFtrEvenID.c_str();
 		paramIndex++;
 	}
@@ -8142,7 +8053,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying footer first\n"));
 		propsArray [paramIndex] = "footer-first";
 		paramIndex++;
-		UT_String_sprintf (szFtrFirstID, "%u", m_currentFtrFirstID);
+		szFtrFirstID = UT_std_string_sprintf ("%u", m_currentFtrFirstID);
 		propsArray [paramIndex] = szFtrFirstID.c_str();
 		paramIndex++;
 	}
@@ -8151,7 +8062,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		UT_DEBUGMSG (("Applying footer last\n"));
 		propsArray [paramIndex] = "footer-last";
 		paramIndex++;
-		UT_String_sprintf (szFtrLastID, "%u", m_currentFtrLastID);
+		szFtrLastID = UT_std_string_sprintf ("%u", m_currentFtrLastID);
 		propsArray [paramIndex] = szFtrLastID.c_str();
 		paramIndex++;
 	}
@@ -8423,8 +8334,8 @@ bool IE_Imp_RTF::HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount
 	UT_sint32 parameter = 0;
 	bool paramUsed = false;
 	UT_uint32 nesting = 1;
-	UT_String szLevelNumbers;
-	UT_String szLevelText;
+	std::string szLevelNumbers;
+	std::string szLevelText;
 //
 // OK define this in the data structure.
 //
@@ -10214,7 +10125,7 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 
 bool IE_Imp_RTF::HandleAbiTable(void)
 {
-	UT_String sProps;
+	std::string sProps;
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -10259,11 +10170,10 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 			PT_DocPosition posEndTable = getDoc()->getStruxPosition(sdhEndTable);
 			if(posEndTable > m_dposPaste)
 			{
-				UT_String sPasteTableSDH;
-				UT_String sProp = "table-sdh";
-				sPasteTableSDH = UT_String_getPropVal(sProps,sProp);
-				UT_String sThisTableSDH;
-				UT_String_sprintf(sThisTableSDH,"%x",sdhTable);
+				std::string sPasteTableSDH;
+				std::string sProp = "table-sdh";
+				sPasteTableSDH = UT_std_string_getPropVal(sProps,sProp);
+				std::string sThisTableSDH = UT_std_string_sprintf("%x",sdhTable);
 				UT_DEBUGMSG(("sThisTableSDH %s sPasteTableSDH %s \n",sThisTableSDH.c_str(),sPasteTableSDH.c_str()));
 				bool isRow = (pView->getSelectionMode() == FV_SelectionMode_TableRow);
 				if(!isRow && pView->getSelectionMode() == FV_SelectionMode_NONE)
@@ -10331,8 +10241,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 //
 					const char * sDumProp[3] = {NULL,NULL,NULL};
 					sDumProp[0] = "list-tag";
-					UT_String sVal;
-					UT_String_sprintf(sVal,"%d",getDoc()->getUID(UT_UniqueId::List));
+					std::string sVal = UT_std_string_sprintf("%d",getDoc()->getUID(UT_UniqueId::List));
 					sDumProp[1] = sVal.c_str();
 					sDumProp[2] = NULL;
 					getDoc()->changeStruxFmt(PTC_AddFmt,posTable+1,posTable+1,NULL,sDumProp,PTX_SectionTable);
@@ -10345,8 +10254,8 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 //
 // Remove the table-sdh property
 //
-	UT_String sProp = "table-sdh";	
-	UT_String_removeProperty(sProps,sProp);
+	std::string sProp = "table-sdh";	
+	UT_std_string_removeProperty(sProps,sProp);
 	const gchar * attrs[3] = {"props",NULL,NULL};
 	if(! bIsPasteIntoSame)
 	{
@@ -10397,8 +10306,8 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 		PT_DocPosition posEndTable = getDoc()->getStruxPosition(sdhEndTable);
 		b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionCell,&sdhCell);
 		b = getDoc()->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhCell);
-		UT_String sTop;
-		UT_String sBot;
+		std::string sTop;
+		std::string sBot;
 		const char * szVal = NULL;
 		const gchar * sProps[5] = {NULL,NULL,NULL,NULL};
 		PT_DocPosition posCell = getDoc()->getStruxPosition(sdhCell);
@@ -10411,7 +10320,7 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 			UT_return_val_if_fail(szVal,false);
 			UT_sint32 iTop = atoi(szVal);
 			iTop += numRows;
-			UT_String_sprintf(sTop,"%d",iTop);
+			sTop = UT_std_string_sprintf("%d",iTop);
 			getDoc()->getPropertyFromSDH(sdhCell,
 										 true,
 										 PD_MAX_REVISION,
@@ -10419,7 +10328,7 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 			UT_return_val_if_fail(szVal,false);
 			UT_sint32 iBot = atoi(szVal);
 			iBot += numRows;
-			UT_String_sprintf(sTop,"%d",iBot);
+			sTop = UT_std_string_sprintf("%d",iBot);
 			sProps[0] = "top-attach";
 			sProps[1] = sTop.c_str();
 			sProps[2] = "bot-attach";
@@ -10504,7 +10413,7 @@ bool IE_Imp_RTF::HandleAbiEndCell(void)
 
 bool IE_Imp_RTF::HandleAbiCell(void)
 {
-	UT_String sProps;
+	std::string sProps;
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -10525,8 +10434,8 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	{
 		return false;
 	}
-	UT_String sDum = "top-attach";
-	UT_String sTop = UT_String_getPropVal(sProps,sDum);
+	std::string sDum = "top-attach";
+	std::string sTop = UT_std_string_getPropVal(sProps,sDum);
 	pPaste->m_iCurTopCell = atoi(sTop.c_str());
 	UT_sint32 iAdditional = 0;
 	//
@@ -10537,7 +10446,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	pPaste->m_iRowNumberAtPaste += iAdditional;
 	pPaste->m_iNumRows += iAdditional;
 	sDum = "right-attach";
-	UT_String sRight = UT_String_getPropVal(sProps,sDum);
+	std::string sRight = UT_std_string_getPropVal(sProps,sDum);
 	pPaste->m_iCurRightCell = atoi(sRight.c_str());
 	if(pPaste->m_iCurRightCell > pPaste->m_iMaxRightCell)
 	{
@@ -10547,19 +10456,19 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 	pPaste->m_bHasPastedBlockStrux = false;
 	UT_sint32 iMyTop = pPaste->m_iCurTopCell;
 	sDum = "bot-attach";
-	UT_String sBot =  UT_String_getPropVal(sProps,sDum);
+	std::string sBot =  UT_std_string_getPropVal(sProps,sDum);
 	UT_sint32 iMyBot = atoi(sBot.c_str());
 	if(pPaste->m_bPasteAfterRow)
 	{
 		UT_sint32 idiff = pPaste->m_iRowNumberAtPaste - iMyTop +1;
 		iMyTop += idiff;
-		sTop = UT_String_sprintf("%d",iMyTop);
+		sTop = UT_std_string_sprintf("%d",iMyTop);
 		iMyBot += idiff;
-		sBot = UT_String_sprintf("%d",iMyBot);
-		UT_String sTopProp = "top-attach";
-		UT_String sBotProp = "bot-attach";
-		UT_String_setProperty(sProps,sTopProp,sTop);
-		UT_String_setProperty(sProps,sBotProp,sBot);
+		sBot = UT_std_string_sprintf("%d",iMyBot);
+		std::string sTopProp = "top-attach";
+		std::string sBotProp = "bot-attach";
+		UT_std_string_setProperty(sProps,sTopProp,sTop);
+		UT_std_string_setProperty(sProps,sBotProp,sBot);
 		pPaste->m_iCurTopCell = iMyTop;
 	}
 	UT_DEBUGMSG(("RTF_Import: Pos %d Paste: Cell props are: %s \n",m_dposPaste,sProps.c_str()));
@@ -11447,7 +11356,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 	UT_uint32 i;
 	UT_uint32 numHdrFtr;
 	const RTFHdrFtr * header;
-	UT_String tempBuffer;
+	std::string tempBuffer;
 	const gchar* szType = NULL;
 
 	UT_return_if_fail(m_pImportFile);
@@ -11463,39 +11372,39 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		m_pCurrentCharInPasteBuffer = m_pPasteBuffer;
 		m_dposPaste = FV_DOCPOS_EOD;
 		const gchar* propsArray[9];
-		UT_String hdrftrID;
+		std::string hdrftrID;
 		switch (header->m_type)
 		{
 		case RTFHdrFtr::hftHeader:
-			UT_String_sprintf (tempBuffer, "%u", header->m_id);
+			tempBuffer = UT_std_string_sprintf ("%u", header->m_id);
 			szType = "header";
 			break;
 		case RTFHdrFtr::hftHeaderEven:
-			UT_String_sprintf (tempBuffer, "%u", header->m_id);
+			tempBuffer = UT_std_string_sprintf ("%u", header->m_id);
 			szType = "header-even";
 			break;
 		case RTFHdrFtr::hftHeaderFirst:
-			UT_String_sprintf (tempBuffer, "%u", header->m_id);
+			tempBuffer = UT_std_string_sprintf ("%u", header->m_id);
 			szType = "header-first";
 			break;
 		case RTFHdrFtr::hftHeaderLast:
-			UT_String_sprintf (tempBuffer, "%u", header->m_id);
+			tempBuffer = UT_std_string_sprintf ("%u", header->m_id);
 			szType = "header-last";
 			break;
 		case RTFHdrFtr::hftFooter:
-			UT_String_sprintf (tempBuffer, "%u", header->m_id);
+			tempBuffer = UT_std_string_sprintf ("%u", header->m_id);
 			szType = "footer";
 			break;
 		case RTFHdrFtr::hftFooterEven:
-			UT_String_sprintf (tempBuffer, "%u", header->m_id);
+			tempBuffer = UT_std_string_sprintf ("%u", header->m_id);
 			szType = "footer-even";
 			break;
 		case RTFHdrFtr::hftFooterFirst:
-			UT_String_sprintf (tempBuffer, "%u", header->m_id);
+			tempBuffer = UT_std_string_sprintf ("%u", header->m_id);
 			szType = "footer-first";
 			break;
 		case RTFHdrFtr::hftFooterLast:
-			UT_String_sprintf (tempBuffer, "%u", header->m_id);
+			tempBuffer = UT_std_string_sprintf ("%u", header->m_id);
 			szType = "footer-last";
 			break;
 		default:
@@ -11543,7 +11452,7 @@ bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 {
 	bool ok;
 	const gchar** propsArray = NULL;
-	UT_String propBuffer;
+	std::string propBuffer;
 	buildCharacterProps(propBuffer);
 
 	const gchar * pStyle = NULL;
@@ -11777,12 +11686,12 @@ bool IE_Imp_RTF::pasteFromBuffer(PD_DocumentRange * pDocRange,
 		{
 			if(lenData - i < 50)
 			{
-				UT_String s(p);
+				std::string s(p);
 				UT_DEBUGMSG(("%s\n", s.c_str()));
 			}
 			else
 			{
-				UT_String s(p, 50);
+				std::string s(p, 50);
 				UT_DEBUGMSG(("%s\n", s.c_str()));
 				p += 50;
 			}
@@ -11878,7 +11787,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	RTFProps_bParaProps * pbParas =  new RTFProps_bParaProps();
 	RTFProps_bCharProps *  pbChars = new	RTFProps_bCharProps();
 
-	static UT_String propBuffer;
+	static std::string propBuffer;
 
 	const gchar* attribs[PT_MAX_ATTRIBUTES*2 + 1];
 	UT_uint32 attribsCount=0;
@@ -12231,7 +12140,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
  * This method builds the property list from Paragraph and character classes pParas
  * and pChars
  */
-bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
+bool IE_Imp_RTF::buildAllProps(std::string &s,  RTFProps_ParaProps * pParas,
 							   RTFProps_CharProps * pChars,
 							   RTFProps_bParaProps * pbParas,
 							   RTFProps_bCharProps * pbChars)
@@ -12239,7 +12148,7 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 //
 // Tab stops.
 //
-	UT_String tempBuffer;
+	std::string tempBuffer;
 	UT_sint32 count =pParas->m_tabStops.getItemCount();
 	if(count > 0)
 		s += "tabstops:";
@@ -12277,8 +12186,7 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
 		char cLeader = '0' + static_cast<char>(tabLeader);
-		UT_String_sprintf(tempBuffer, "%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader);
-		s += tempBuffer;
+		s += UT_std_string_sprintf("%s/%c%c", UT_convertInchesToDimensionString(DIM_IN,tabIn,"04"),cType,cLeader);
 	}
 	if( count > 0)
 		s += "; ";
@@ -12287,26 +12195,22 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 //
 	if(pbParas->bm_spaceBefore)
 	{
-		UT_String_sprintf(tempBuffer, "margin-top:%s; ",		UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_spaceBefore)/1440));
-		s += tempBuffer;
+		s += UT_std_string_sprintf("margin-top:%s; ",		UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_spaceBefore)/1440));
 	}
 	if(pbParas->bm_spaceAfter)
 	{
-		UT_String_sprintf(tempBuffer, "margin-bottom:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_spaceAfter)/1440));
-		s += tempBuffer;
+		s += UT_std_string_sprintf("margin-bottom:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_spaceAfter)/1440));
 	}
 //
 // Left and right margins
 //
 	if(pbParas->bm_indentLeft)
 	{
-		UT_String_sprintf(tempBuffer, "margin-left:%s; ",		UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentLeft)/1440));
-		s += tempBuffer;
+		s += UT_std_string_sprintf("margin-left:%s; ",		UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentLeft)/1440));
 	}
 	if(pbParas->bm_indentRight)
 	{
-		UT_String_sprintf(tempBuffer, "margin-right:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentRight)/1440));
-		s += tempBuffer;
+		s += UT_std_string_sprintf("margin-right:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentRight)/1440));
 	}
 //
 // First line indent
@@ -12314,8 +12218,7 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 
 	if(pbParas->bm_indentFirst)
 	{
-		UT_String_sprintf(tempBuffer, "text-indent:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentFirst)/1440));
-		s += tempBuffer;
+		s += UT_std_string_sprintf("text-indent:%s; ",	UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(pParas->m_indentFirst)/1440));
 	}
 
 //
@@ -12326,18 +12229,17 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 		if (pParas->m_lineSpaceExact)
 		{
 			if (pParas->m_lineSpaceVal < 0) {  // exact spacing
-				UT_String_sprintf(tempBuffer, "line-height:%spt; ",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
+				s += UT_std_string_sprintf("line-height:%spt; ",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
 			}
 			else                                                         // "at least" spacing
 			{
-				UT_String_sprintf(tempBuffer, "line-height:%spt+; ",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
+				s += UT_std_string_sprintf("line-height:%spt+; ",    UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/20.0)));
 			}
 		}
 		else   // multiple spacing
 		{
-			UT_String_sprintf(tempBuffer, "line-height:%s; ",	UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/240)));
+			s += UT_std_string_sprintf("line-height:%s; ",	UT_convertToDimensionlessString(fabs(pParas->m_lineSpaceVal/240)));
 		}
-		s += tempBuffer;
 	}
 
 //
@@ -12388,7 +12290,7 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 	   || pbChars->bm_topline || pbChars->bm_botline )
 	{
 		s += "; text-decoration:";
-		static UT_String decors;
+		static std::string decors;
 		decors.clear();
 		if (pChars->m_underline)
 		{
@@ -12450,8 +12352,7 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 	// font size
 	if(pbChars->bm_fontSize)
 	{
-		UT_String_sprintf(tempBuffer, " font-size:%spt;", std_size_string(static_cast<float>(pChars->m_fontSize)));
-		s += tempBuffer;
+		s += UT_std_string_sprintf(" font-size:%spt;", std_size_string(static_cast<float>(pChars->m_fontSize)));
 	}
 	// typeface
 	if(pbChars->bm_fontNumber)
@@ -12471,8 +12372,7 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 		{
 			// colour, only if one has been set. See bug 1324
 			UT_uint32 colour = GetNthTableColour(pChars->m_colourNumber);
-			UT_String_sprintf(tempBuffer, " color:%06x;", colour);
-			s += tempBuffer;
+			s += UT_std_string_sprintf(" color:%06x;", colour);
 		}
 	}
 	// BackGround Colour
@@ -12484,8 +12384,7 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 			UT_sint32 bgColour = GetNthTableBgColour(pChars->m_bgcolourNumber);
 			if (bgColour != -1) // invalid and should be white
 			{
-				UT_String_sprintf(tempBuffer, " bgcolor:%06x;", bgColour);
-				s += tempBuffer;
+				s += UT_std_string_sprintf(" bgcolor:%06x;", bgColour);
 			}
 		}
 	}
@@ -12499,8 +12398,7 @@ bool IE_Imp_RTF::buildAllProps(UT_String &s,  RTFProps_ParaProps * pParas,
 // List Tag to hang lists off
 	if(pbChars->bm_listTag)
 	{
-		UT_String_sprintf(tempBuffer, " list-tag:%d; ",pChars->m_listTag);
-		s += tempBuffer;
+		s += UT_std_string_sprintf(" list-tag:%d; ",pChars->m_listTag);
 	}
 //
 // Now remove any trailing ";"'s

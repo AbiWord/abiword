@@ -57,6 +57,14 @@ ABI_EXPORT std::string UT_XML_cloneNoAmpersands( const std::string& szSource );
 
 
 
+/*!
+ * Some functions to add/subtract and extract std::string properties from a std::string of properties.
+ */
+ABI_EXPORT std::string UT_std_string_getPropVal(const std::string & sPropertyString, const std::string & sProp);
+ABI_EXPORT void UT_std_string_removeProperty(std::string & sPropertyString, const std::string & sProp);
+ABI_EXPORT void UT_std_string_setProperty(std::string & sPropertyString, const std::string &sProp, const std::string & sVal);
+
+
 
 #endif
 
