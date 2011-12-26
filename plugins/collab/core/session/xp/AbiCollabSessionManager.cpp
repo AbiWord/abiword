@@ -360,7 +360,7 @@ void AbiCollabSessionManager::loadProfile()
 
 						// find the account handler belonging to this type
 						xmlChar* prop = xmlGetProp(accountNode, BAD_CAST "type");
-						UT_UTF8String handlerType = static_cast<char *>(prop); 
+						UT_UTF8String handlerType = reinterpret_cast<char *>(prop); 
 						xmlFree(prop);
 						std::map<UT_UTF8String, AccountHandlerConstructor>::iterator handler_iter = m_regAccountHandlers.find(handlerType);
 						if (handler_iter == m_regAccountHandlers.end())
