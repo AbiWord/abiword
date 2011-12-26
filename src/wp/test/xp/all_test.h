@@ -22,6 +22,7 @@
 #include "src/af/util/xp/t/ut_locale.t.cpp"
 #include "src/af/util/xp/t/ut_vector.t.cpp"
 #include "src/af/util/xp/t/ut_string.t.cpp"
+#include "src/af/util/xp/t/ut_std_string.t.cpp"
 #include "src/af/util/xp/t/ut_string_class.t.cpp"
 #include "src/text/ptbl/xp/t/pt_PieceTable.t.cpp"
 #include "src/text/ptbl/xp/t/pp_PropertyMap.t.cpp"
