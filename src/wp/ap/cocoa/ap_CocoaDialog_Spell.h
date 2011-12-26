@@ -21,6 +21,8 @@
 #ifndef AP_COCOADIALOG_SPELL_H
 #define AP_COCOADIALOG_SPELL_H
 
+#ifdef ENABLE_SPELL
+
 #include "ap_Dialog_Spell.h"
 
 #import "xap_Cocoa_NSTableUtils.h"
@@ -93,5 +95,7 @@ private:
 - (void)setSuggestionList:(id)list;
 - (NSString*)replace;
 @end
+
+#endif
 
 #endif /* AP_COCOADIALOG_SPELL_H */

@@ -134,7 +134,9 @@
 	DeclareDialog(AP_DIALOG_ID_BACKGROUND,      AP_CocoaDialog_Background)
 	DeclareDialog(AP_DIALOG_ID_GOTO,			AP_CocoaDialog_Goto)
 	DeclareDialog(AP_DIALOG_ID_BREAK,			AP_CocoaDialog_Break)
+#ifdef ENABLE_SPELL
 	DeclareDialog(AP_DIALOG_ID_SPELL,			AP_CocoaDialog_Spell)
+#endif
 	DeclareDialog(AP_DIALOG_ID_STYLES,			AP_CocoaDialog_Styles)
 	DeclareDialog(AP_DIALOG_ID_PAGE_NUMBERS,    AP_CocoaDialog_PageNumbers)
 	DeclareDialog(AP_DIALOG_ID_PARAGRAPH,		AP_CocoaDialog_Paragraph)

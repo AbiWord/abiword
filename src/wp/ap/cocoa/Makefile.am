@@ -68,6 +68,10 @@ nobase_resources_DATA = \
 	ap_CocoaFrame.nib/*.nib\
 	$(NULL)
 
+spell_src = ap_CocaDialog_Spell.cpp \
+	ap_CocaDialog_Spell.h \
+	$(NULL)
+
 libcocoa_la_SOURCES = \
 	ap_CocoaApp.h \
 	ap_CocoaAppImpl.h \
@@ -133,8 +137,6 @@ libcocoa_la_SOURCES = \
 	ap_CocoaDialog_Paragraph.cpp \
 	ap_CocoaDialog_Replace.h \
 	ap_CocoaDialog_Replace.cpp \
-	ap_CocoaDialog_Spell.h \
-	ap_CocoaDialog_Spell.cpp \
 	ap_CocoaDialog_SplitCells.h \
 	ap_CocoaDialog_SplitCells.cpp \
 	ap_CocoaDialog_Styles.h \
@@ -181,6 +183,11 @@ libcocoa_la_SOURCES = \
 	ap_CocoaViewListener.cpp \
 	ap_PrintingDelegate.h \
 	ap_PrintingDelegate.cpp
+
+if ENABLE_SPELL
+libcocoa_la_SOURCES += $(spell_src)
+endif
+
 
 EXTRA_DIST = \
 	ap_CocoaDialog_Annotation.nib \
