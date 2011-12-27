@@ -46,6 +46,7 @@ public:
 	void onLineChanged 		  (void);
 	void onBookmarkDblClicked (void);
 	void onXMLIDDblClicked (void);
+	void onAnnoDblClicked (void);
 	void onJumpClicked 		  (void);
 	void onPrevClicked 		  (void);
 	void onNextClicked 		  (void);
@@ -68,11 +69,19 @@ private:
 		COLUMN_NUMBER,  */
 		NUM_COLUMNS
 	};
-
+	enum {
+        COLUMN_ANNO_ID = 0,
+        COLUMN_ANNO_TITLE,
+        COLUMN_ANNO_AUTHOR,
+		NUM_ANNO_COLUMNS
+    };
+    
+        
 	void  _selectPrevBookmark 		 (void);
 	void  _selectNextBookmark 		 (void);
     std::string _getSelectedBookmarkLabel();	
 	std::string _getSelectedXMLIDLabel();	
+	std::string _getSelectedAnnotationLabel();	
 	
 	GtkWidget *m_wDialog;
 	GtkWidget *m_lbPage;
@@ -85,6 +94,7 @@ private:
 	GtkWidget *m_btPrev;
 	GtkWidget *m_btNext;
     GtkWidget *m_lvXMLIDs;
+    GtkWidget *m_lvAnno;
 	GtkWidget *m_btClose;
     
 	AP_JumpTarget m_JumpTarget;
@@ -92,6 +102,8 @@ private:
 
     void setupXMLIDList( GtkWidget* w );
     void updateXMLIDList( GtkWidget* w );
+    void setupAnnotationList( GtkWidget* w );
+    void updateAnnotationList( GtkWidget* w );
 };
 
 #endif /* AP_UNIXDIALOG_GOTO_H */

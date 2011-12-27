@@ -2041,11 +2041,11 @@ PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string 
     // xml:id attached to containing paragraph/header
     // <text:p> / <text:h>
     //
-    PL_StruxFmtHandle psfh;
-    if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psfh ) && psfh )
+    PL_StruxDocHandle psdh;
+    if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psdh ) && psdh )
     {
         UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
-        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+        PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
         const PP_AttrProp * AP = NULL;
         doc->getAttrProp(api,&AP);
         if( AP )
@@ -2062,10 +2062,10 @@ PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string 
     //
     // xml:id attached to containing table:table-cell
     //
-    if( pt->getStruxOfTypeFromPosition( pos, PTX_SectionCell, &psfh ) && psfh )
+    if( pt->getStruxOfTypeFromPosition( pos, PTX_SectionCell, &psdh ) && psdh )
     {
         UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() cell pos:%d\n", pos ));
-        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+        PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
         const PP_AttrProp * AP = NULL;
         doc->getAttrProp(api,&AP);
         if( AP )
@@ -2256,11 +2256,11 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::set< std::string >& ret,
     // xml:id attached to containing paragraph/header
     // <text:p> / <text:h>
     //
-    PL_StruxDocHandle psfh;
-    if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psfh ) && psfh )
+    PL_StruxDocHandle psdh;
+    if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psdh ) && psdh )
     {
         UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
-        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+        PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
         const PP_AttrProp * AP = NULL;
         doc->getAttrProp(api,&AP);
         if( AP )
@@ -2277,10 +2277,10 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::set< std::string >& ret,
     //
     // xml:id attached to containing table:table-cell
     //
-    if( pt->getStruxOfTypeFromPosition( pos, PTX_SectionCell, &psfh ) && psfh )
+    if( pt->getStruxOfTypeFromPosition( pos, PTX_SectionCell, &psdh ) && psdh )
     {
         UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() cell pos:%d\n", pos ));
-        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+        PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
         const PP_AttrProp * AP = NULL;
         doc->getAttrProp(api,&AP);
         if( AP )
@@ -2344,10 +2344,10 @@ PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
     return ret;
     
     
-    // if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psfh ) && psfh )
+    // if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psdh ) && psdh )
     // {
     //     UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() pos:%d\n", pos ));
-    //     PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+    //     PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
     //     const PP_AttrProp * AP = NULL;
     //     doc->getAttrProp(api,&AP);
     //     if( AP )
@@ -2614,13 +2614,13 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
     {
         pf_Frag* pf = 0;
         PT_BlockOffset boffset;
-        PL_StruxDocHandle psfh;
+        PL_StruxDocHandle psdh;
 
-        if( pt->getStruxOfTypeFromPosition( curr, PTX_Block, &psfh ) && psfh )
+        if( pt->getStruxOfTypeFromPosition( curr, PTX_Block, &psdh ) && psdh )
         {
             UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() current:%d end:%d have PTX_BLOCK \n",
                          curr, eod ));
-	        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+	        PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
             const PP_AttrProp * AP = NULL;
             doc->getAttrProp(api,&AP);
             if( AP )

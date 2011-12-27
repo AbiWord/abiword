@@ -7579,6 +7579,13 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 		}
 		break;
 	}
+    case AP_JUMPTARGET_ANNOTATION:
+	{
+		UT_uint32 iAnnotation = number;
+		fl_AnnotationLayout* l = getAnnotationLayout( iAnnotation );
+		selectAnnotation( l );
+		break;
+	}
 	case AP_JUMPTARGET_BOOKMARK:
 		{
 			fl_SectionLayout * pSL = m_pLayout->getFirstSection();
@@ -10033,7 +10040,21 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 		UT_uint32 blockOffset = pos - pBlock->getPosition();
 		pRun = pBlock->findRunAtOffset(blockOffset);
 	}
+	UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) block:%p run:%p\n", pBlock, pRun ));
+	if( pRun )
+	{
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.t:%d\n", pRun->getType() ));
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.w:%d\n", pRun->getWidth() ));
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.hl:%p\n", pRun->getHyperlink() ));
+	}
 
+	// Make sure we found the starting pRun for an annotation which is
+	// a single point in the document.
+	if( pRun && pRun->getType() == FPRUN_HYPERLINK && pRun->getWidth() == 0 )
+	{
+		pRun = pRun->getPrevRun();
+	}
+	
 	// 
 	// If we didn't find the hyperlink run, then we might be dealing
 	// with an annotation that is a single point rather than a range.
@@ -10042,25 +10063,46 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 	// 
 	if( pRun && pRun->getType() != FPRUN_HYPERLINK )
 	{
-		pRun = pRun->getPrevRun();
-		if( pRun && pRun->getType() == FPRUN_HYPERLINK && pRun->getWidth() == 0 )
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.x:%d\n", pRun->getX() ));
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.w:%d\n", pRun->getWidth() ));
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.t:%d\n", pRun->getType() ));
+		if( pRun->getPrevRun() && pRun->getPrevRun()->getType() == FPRUN_HYPERLINK )
+		{
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(prev) run.x:%d\n", pRun->getX() ));
 			pRun = pRun->getPrevRun();
-
+			if( pRun->getWidth() == 0 )
+				pRun = pRun->getPrevRun();
+		}
+		else if( pRun->getNextRun() && pRun->getNextRun()->getType() == FPRUN_HYPERLINK )
+		{
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(next) run.x:%d\n", pRun->getX() ));
+			pRun = pRun->getNextRun();
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(next) run.type:%d\n", pRun->getType() ));
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(next) run.  hl:%p\n", pRun->getHyperlink() ));
+		}
+		
 		if( pRun )
 		{
-			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.x:%d\n", pRun->getX() ));
-			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.w:%d\n", pRun->getWidth() ));
-			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.t:%d\n", pRun->getType() ));
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.x:%d\n", pRun->getX() ));
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.w:%d\n", pRun->getWidth() ));
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.t:%d\n", pRun->getType() ));
 		}
 		
 		if( pRun && pRun->getType() != FPRUN_HYPERLINK )
+		{
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(3 reset) run.x:%d\n", pRun->getX() ));
 			pRun = 0;
+		}
+		
 	}
 	
 	if(pRun && pRun->getHyperlink() != NULL)
 	{
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(ret) run.hl:%p\n", pRun->getHyperlink() ));
 		return pRun->getHyperlink();
 	}
+	
+	UT_DEBUGMSG(("FV_View::getHyperLinkRun(end fail)\n" ));
 	return NULL;
 }
 
@@ -10095,8 +10137,6 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	return emc;
 }
 
-#undef xxx_UT_DEBUGMSG
-#define xxx_UT_DEBUGMSG(x) UT_DEBUGMSG(x)
 
 EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
@@ -10675,8 +10715,6 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	return EV_EMC_UNKNOWN;
 }
 
-#undef xxx_UT_DEBUGMSG
-#define xxx_UT_DEBUGMSG(M)
 
 /*!
  * Returns true if the (x,y) location on the screen is over a selected
@@ -12598,6 +12636,24 @@ fl_AnnotationLayout * FV_View::getAnnotationLayout(UT_uint32 iAnnotation) const
 	fl_AnnotationLayout * pAnn = 	m_pLayout->findAnnotationLayout(iAnnotation);
 	return pAnn;
 }
+
+
+UT_uint32 FV_View::countAnnotations(void) const
+{
+	return m_pLayout->countAnnotations();
+}
+
+
+std::string FV_View::getAnnotationText(UT_uint32 iAnnotation) const
+{
+	std::string ret;
+	if(!getAnnotationText( iAnnotation, ret ))
+		ret = "";
+	return ret;
+}
+
+
+
 /*!
  * Return the plain text content of the annotation specified by iAnnotaion
  * Content is returned in UT_UTF8String sText.
@@ -12653,6 +12709,7 @@ bool FV_View::selectAnnotation(fl_AnnotationLayout * pAL)
 		PT_DocPosition posStart = getDocument()->getStruxPosition(sdhEnd); 
 		posStart++;
 		fp_Run * pRun = getHyperLinkRun(posStart);
+		UT_DEBUGMSG(("FV_View::selectAnnotation() pRun:%p\n", pRun ));
 		UT_return_val_if_fail(pRun, false);
 		pRun = pRun->getNextRun();
 		while(pRun && (pRun->getType() != FPRUN_HYPERLINK))
@@ -12779,6 +12836,15 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText
 
 }
 
+std::string FV_View::getAnnotationTitle(UT_uint32 iAnnotation) const
+{
+	std::string ret;
+	if( !getAnnotationTitle( iAnnotation, ret ))
+		ret = "";
+	return ret;
+}
+
+
 // TODO getters and setters to implement/change/add as judged necessary
 bool FV_View::getAnnotationTitle(UT_uint32 iAnnotation, std::string & sTitle) const
 {
@@ -12801,6 +12867,14 @@ bool FV_View::setAnnotationTitle(UT_uint32 iAnnotation, const std::string & sTit
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posAnn,posAnn,NULL,pszAnn,PTX_SectionAnnotation);
 	return true;
 }
+std::string FV_View::getAnnotationAuthor(UT_uint32 iAnnotation) const
+{
+	std::string ret;
+	if(!getAnnotationAuthor(iAnnotation,ret))
+		ret = "";
+	return ret;
+}
+
 bool FV_View::getAnnotationAuthor(UT_uint32 iAnnotation, std::string & sAuthor) const
 {
 	fl_AnnotationLayout * pAL = getAnnotationLayout(iAnnotation);

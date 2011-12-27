@@ -25,11 +25,13 @@
 #include <list>
 #include <gtk/gtk.h>
 #include "xap_Gtk2Compat.h"
+#include "ut_types.h"
 
 std::string tostr( long v );
 std::string tostr( GtkTextView* tv );
 std::string tostr( GtkEntry* e );
 std::string getSelectedText( GtkTreeView* tv, int colnum = 0 );
+UT_uint32   getSelectedUInt( GtkTreeView* tv, int colnum = 0 );
 void selectNext( GtkTreeView* tv );
 void selectPrev( GtkTreeView* tv );
 void append( GtkComboBoxText* combo, const std::list< std::string >& data );

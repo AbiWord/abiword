@@ -116,7 +116,8 @@ typedef enum _AP_JumpTarget
 	AP_JUMPTARGET_LINE,
 	AP_JUMPTARGET_BOOKMARK,
 	AP_JUMPTARGET_PICTURE, // TODO
-    AP_JUMPTARGET_XMLID
+    AP_JUMPTARGET_XMLID,
+    AP_JUMPTARGET_ANNOTATION
 } AP_JumpTarget;
 
 struct fv_ChangeState
@@ -617,6 +618,7 @@ public:
 										 const std::string & sTitle,
 										 bool bReplace);
 	bool                getAnnotationText(UT_uint32 iAnnotation, std::string & sText) const;
+    std::string         getAnnotationText(UT_uint32 iAnnotation) const;
 	bool                setAnnotationText(UT_uint32 iAnnotation, const std::string & sText);
 	bool                setAnnotationText(UT_uint32 iAnnotation, const std::string & sText,
                                           const std::string & sAuthor, const std::string & sTitle);
@@ -624,8 +626,10 @@ public:
     bool                setAnnotationRichText(UT_uint32 iAnnotation, const std::string & sRTF);
 	// TODO getters and setters to implement/change/add as judged necessary
 	bool                getAnnotationTitle(UT_uint32 iAnnotation, std::string & sTitle) const;
+    std::string         getAnnotationTitle(UT_uint32 iAnnotation) const;
 	bool                setAnnotationTitle(UT_uint32 iAnnotation, const std::string & sTitle);
 	bool                getAnnotationAuthor(UT_uint32 iAnnotation, std::string & sAuthor) const;
+    std::string         getAnnotationAuthor(UT_uint32 iAnnotation) const;
 	bool                setAnnotationAuthor(UT_uint32 iAnnotation, const std::string & sAuthor);
 
 	bool                isAnnotationPreviewActive(void) const { return m_bAnnotationPreviewActive;}
@@ -636,6 +640,7 @@ public:
 	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
 	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation) const;
 	bool                selectAnnotation(fl_AnnotationLayout * pAL);
+	UT_uint32           countAnnotations(void) const;
 
     FV_View_BubbleBlocker getBubbleBlocker();
     bool                  bubblesAreBlocked() const;

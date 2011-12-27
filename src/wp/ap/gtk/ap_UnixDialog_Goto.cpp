@@ -106,6 +106,20 @@ AP_UnixDialog_Goto__onFocusXMLIDs (GtkWidget 	   * /*widget*/,
 	/* propagate further */
 	return FALSE;
 }
+gboolean 
+AP_UnixDialog_Goto__onFocusAnno (GtkWidget 	   * /*widget*/,
+                                 GdkEventFocus    *event,
+                                 gpointer 		   data) 
+{
+	UT_DEBUGMSG (("MIQ: _onFocusAnno () '%d', '%d'\n", event->type, event->in));
+	if (event->type == GDK_FOCUS_CHANGE && event->in)
+    {
+		AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+		dlg->updateCache (AP_JUMPTARGET_ANNOTATION);
+	}
+	/* propagate further */
+	return FALSE;
+}
 
 /*!
 * Event dispatcher for spinbutton "page".
@@ -149,6 +163,15 @@ AP_UnixDialog_Goto__onXMLIDDblClicked (GtkTreeView       * /*tree*/,
 {
 	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
 	dlg->onXMLIDDblClicked ();
+}
+void
+AP_UnixDialog_Goto__onAnnoDblClicked (GtkTreeView       * /*tree*/,
+                                      GtkTreePath       * /*path*/,
+                                      GtkTreeViewColumn * /*col*/,
+                                      gpointer		    data)
+{
+	AP_UnixDialog_Goto *dlg = static_cast <AP_UnixDialog_Goto *>(data);
+	dlg->onAnnoDblClicked ();
 }
 
 /*!
@@ -243,6 +266,7 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
 	  m_btPrev		   (NULL),
 	  m_btNext		   (NULL),
       m_lvXMLIDs       (0),
+      m_lvAnno         (0),
 	  m_btClose 	   (NULL), 
 	  m_JumpTarget	   (AP_JUMPTARGET_BOOKMARK)
 {
@@ -303,6 +327,12 @@ AP_UnixDialog_Goto::onXMLIDDblClicked ()
 	m_JumpTarget = AP_JUMPTARGET_XMLID;
 	onJumpClicked();
 }
+void
+AP_UnixDialog_Goto::onAnnoDblClicked ()
+{
+	m_JumpTarget = AP_JUMPTARGET_ANNOTATION;
+	onJumpClicked();
+}
 
 /*!
 * Event handler for button "jump".
@@ -324,6 +354,9 @@ AP_UnixDialog_Goto::onJumpClicked ()
 			break;
 		case AP_JUMPTARGET_XMLID:
 			text = _getSelectedXMLIDLabel();
+			break;
+		case AP_JUMPTARGET_ANNOTATION:
+			text = _getSelectedAnnotationLabel();
 			break;
 		default:
 			UT_DEBUGMSG (("AP_UnixDialog_Goto::onJumpClicked () no jump target\n"));
@@ -369,6 +402,9 @@ AP_UnixDialog_Goto::onPrevClicked ()
 		case AP_JUMPTARGET_XMLID:
             selectPrev(GTK_TREE_VIEW (m_lvXMLIDs));
 			break;
+		case AP_JUMPTARGET_ANNOTATION:
+            selectPrev(GTK_TREE_VIEW (m_lvAnno));
+			break;
 		default:
 			UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::onPrevClicked () no jump target\n"));
 			return;
@@ -403,6 +439,9 @@ AP_UnixDialog_Goto::onNextClicked ()
 			break;
 		case AP_JUMPTARGET_XMLID:
             selectNext(GTK_TREE_VIEW (m_lvXMLIDs));
+			break;
+		case AP_JUMPTARGET_ANNOTATION:
+            selectNext(GTK_TREE_VIEW (m_lvAnno));
 			break;
 		default:
 			UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::onNextClicked () no jump target\n"));
@@ -459,6 +498,52 @@ AP_UnixDialog_Goto::setupXMLIDList( GtkWidget* w )
 }
 
 
+void
+AP_UnixDialog_Goto::setupAnnotationList( GtkWidget* w )
+{
+	GtkTreeViewColumn *column = NULL;
+	GtkCellRenderer *renderer = NULL;
+	// Liststore and -view
+	GtkListStore *store = gtk_list_store_new ( NUM_ANNO_COLUMNS,
+                                               G_TYPE_INT,
+                                               G_TYPE_STRING, G_TYPE_STRING );
+	gtk_tree_view_set_model (GTK_TREE_VIEW (w), GTK_TREE_MODEL (store));
+	g_object_unref (G_OBJECT (store));
+
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
+												-1, "ID", renderer,
+												"text", COLUMN_ANNO_ID,
+												NULL);
+	column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), COLUMN_ANNO_ID );
+	gtk_tree_view_column_set_sort_column_id (column, COLUMN_ANNO_ID );
+
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
+												-1, "Title", renderer,
+												"text", COLUMN_ANNO_TITLE,
+												NULL);
+	column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), COLUMN_ANNO_TITLE );
+	gtk_tree_view_column_set_sort_column_id (column, COLUMN_ANNO_TITLE );
+
+
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
+												-1, "Author", renderer,
+												"text", COLUMN_ANNO_AUTHOR,
+												NULL);
+	column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), COLUMN_ANNO_AUTHOR );
+	gtk_tree_view_column_set_sort_column_id (column, COLUMN_ANNO_AUTHOR );
+    
+
+    
+	g_signal_connect (GTK_TREE_VIEW (w), "focus-in-event", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onFocusAnno), static_cast <gpointer>(this)); 
+	g_signal_connect (GTK_TREE_VIEW (w), "row-activated", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onAnnoDblClicked), static_cast <gpointer>(this));
+}
+
+
 /*!
 * Build dialog.
 */
@@ -486,6 +571,7 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 	m_btPrev = GTK_WIDGET(gtk_builder_get_object(builder, "btPrev"));
 	m_btNext = GTK_WIDGET(gtk_builder_get_object(builder, "btNext"));
 	m_lvXMLIDs = GTK_WIDGET(gtk_builder_get_object(builder, "lvXMLIDs"));
+	m_lvAnno   = GTK_WIDGET(gtk_builder_get_object(builder, "lvAnno"));
 	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 
 
@@ -503,6 +589,7 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 
 
     setupXMLIDList( m_lvXMLIDs );
+    setupAnnotationList( m_lvAnno );
     
 	// Liststore and -view
 	GtkListStore *store = gtk_list_store_new (NUM_COLUMNS, G_TYPE_STRING);
@@ -592,6 +679,7 @@ AP_UnixDialog_Goto::updateWindow ()
 	g_object_unref (G_OBJECT (model));
 
     updateXMLIDList( m_lvXMLIDs );
+    updateAnnotationList( m_lvAnno );
 	updateDocCount ();
 }
 
@@ -621,6 +709,39 @@ AP_UnixDialog_Goto::updateXMLIDList( GtkWidget* w )
             gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
                                 COLUMN_NAME, name.c_str(), -1);
         }
+    }
+    
+	gtk_tree_view_set_model (GTK_TREE_VIEW (w), model);
+	g_object_unref (G_OBJECT (model));
+    
+}
+
+
+void
+AP_UnixDialog_Goto::updateAnnotationList( GtkWidget* w )
+{
+	// detaching model for faster updates
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (w));
+	g_object_ref (G_OBJECT (model));
+	gtk_tree_view_set_model (GTK_TREE_VIEW (w), NULL);
+	gtk_list_store_clear (GTK_LIST_STORE (model));
+
+    GtkTreeIter iter;
+    FV_View* pView = getView();
+	UT_uint32 max = pView->countAnnotations();
+    for( UT_uint32 i=0; i<max; ++i )
+    {
+        gtk_list_store_append (GTK_LIST_STORE (model), &iter);
+        std::string name   = tostr(i);
+        std::string title  = pView->getAnnotationTitle(i);
+        std::string author = pView->getAnnotationAuthor(i);
+        
+        UT_DEBUGMSG (("    MIQ: '%s'\n", name.c_str()));
+        gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
+                            COLUMN_ANNO_ID,     i,
+                            COLUMN_ANNO_TITLE,  title.c_str(),
+                            COLUMN_ANNO_AUTHOR, author.c_str(),
+                            -1);
     }
     
 	gtk_tree_view_set_model (GTK_TREE_VIEW (w), model);
@@ -714,6 +835,14 @@ AP_UnixDialog_Goto::_getSelectedXMLIDLabel()
 {
 	UT_DEBUGMSG (("MIQ: AP_UnixDialog_Goto::_getSelectedXMLIDLabel ()\n"));
     std::string ret = getSelectedText( GTK_TREE_VIEW (m_lvXMLIDs), COLUMN_NAME );
+	return ret;
+}
+
+std::string
+AP_UnixDialog_Goto::_getSelectedAnnotationLabel()
+{
+	UT_DEBUGMSG (("MIQ: AP_UnixDialog_Goto::_getSelectedAnnotationLabel ()\n"));
+    std::string ret = tostr(getSelectedUInt( GTK_TREE_VIEW (m_lvAnno), COLUMN_ANNO_ID ));
 	return ret;
 }
 

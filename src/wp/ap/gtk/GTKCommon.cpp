@@ -81,6 +81,23 @@ getSelectedText( GtkTreeView* tv, int colnum )
 	return ret;
 }
 
+UT_uint32
+getSelectedUInt( GtkTreeView* tv, int colnum )
+{
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
+	UT_return_val_if_fail (model != NULL, 0);
+
+	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tv));
+	GtkTreeIter iter;
+	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
+	if (!haveSelected)
+		return 0;
+
+    UT_uint32 v = 0;
+	gtk_tree_model_get (model, &iter, colnum, &v, -1);
+	return v;
+}
+
 void selectNext( GtkTreeView* tv )
 {
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
