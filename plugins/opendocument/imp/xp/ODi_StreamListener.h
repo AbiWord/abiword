@@ -78,6 +78,8 @@ public:
     void clearFontFaceDecls() {m_fontFaceDecls.clear();}
 
     ODi_ElementStack* getElementStack() {return m_pElementStack;}
+    ODi_ListenerState* getCurrentState() { return m_pCurrentState; }
+    
 
 private:
 

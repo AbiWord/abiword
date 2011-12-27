@@ -14,6 +14,8 @@ libxp_la_SOURCES = \
 	ODi_Abi_Data.h \
 	ODi_ContentStream_ListenerState.cpp \
 	ODi_ContentStream_ListenerState.h \
+	ODi_ContentStreamAnnotationMatcher_ListenerState.cpp \
+	ODi_ContentStreamAnnotationMatcher_ListenerState.h \
 	ODi_ElementStack.cpp \
 	ODi_ElementStack.h \
 	ODi_FontFaceDecls.cpp \

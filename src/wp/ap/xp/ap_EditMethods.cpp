@@ -10912,9 +10912,9 @@ Defun1(rdfQueryXMLIDs)
 		{
 			if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
 			{
-				std::list< std::string > xmlids;
+				std::set< std::string > xmlids;
 				rdf->addRelevantIDsForPosition( xmlids, point );
-				UT_DEBUGMSG(("xmlids.sz:%d\n", xmlids.size() ));
+				UT_DEBUGMSG(("xmlids.sz:%ld\n", xmlids.size() ));
 
 				sparql = PD_DocumentRDF::getSPARQL_LimitedToXMLIDList( xmlids );
 			}

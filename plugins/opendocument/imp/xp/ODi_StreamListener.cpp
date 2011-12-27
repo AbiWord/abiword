@@ -25,6 +25,7 @@
 // Internal includes
 #include "ODi_ListenerState.h"
 #include "ODi_ContentStream_ListenerState.h"
+#include "ODi_ContentStreamAnnotationMatcher_ListenerState.h"
 #include "ODi_Frame_ListenerState.h"
 #include "ODi_MetaStream_ListenerState.h"
 #include "ODi_Postpone_ListenerState.h"
@@ -462,6 +463,14 @@ ODi_ListenerState* ODi_StreamListener::_createState(const char* pStateName) {
 						     *m_pElementStack,
 						     m_rAbiData);
 
+    } else if (!strcmp("ContentStreamAnnotationMatcher", pStateName)) {
+        
+        pState = new ODi_ContentStreamAnnotationMatcher_ListenerState(m_pAbiDocument, m_pGsfInfile,
+                                                                      m_pStyles,
+                                                                      m_fontFaceDecls,
+                                                                      *m_pElementStack,
+                                                                      m_rAbiData);
+        
     } else if (!strcmp("TextContent", pStateName)) {
         
         pState = new ODi_TextContent_ListenerState(m_pAbiDocument, m_pStyles,

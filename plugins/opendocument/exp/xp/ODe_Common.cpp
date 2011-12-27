@@ -39,6 +39,7 @@
 // Standard includes
 #include <string.h>
 
+#include <sstream>
 
 /**
  * 
@@ -92,6 +93,15 @@ void ODe_writeUTF8String (GsfOutput * output, const UT_UTF8String & str)
 {
     ODe_gsf_output_write (output, str.byteLength(), reinterpret_cast<const guint8*>(str.utf8_str()));
 }
+
+
+void ODe_write (GsfOutput* output, std::stringstream& ss )
+{
+    ODe_gsf_output_write (output,
+                          ss.str().length(),
+                          reinterpret_cast<const guint8*>(ss.str().c_str()));
+}
+
 
 
 /**

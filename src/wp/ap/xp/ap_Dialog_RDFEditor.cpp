@@ -261,22 +261,24 @@ AP_Dialog_RDFEditor::setRestrictedXMLID( const std::string& xmlid )
     
     
     std::string writeID;
-    std::list< std::string > xmlids;
+    std::set< std::string > xmlids;
     if( std::string::npos == xmlid.find(','))
     {
         writeID = xmlid;
-        xmlids.push_back(xmlid);
+        xmlids.insert(xmlid);
     }
     else
     {
+        writeID = "";
         std::string s;
         std::stringstream ss;
         ss << xmlid;
         while( getline( ss, s, ',' ) )
         {
-            xmlids.push_back(s);
+            xmlids.insert(s);
         }
-        writeID = xmlids.front();
+        if( !xmlids.empty() )
+            writeID = *(xmlids.begin());
     }
     
     PD_RDFModelHandle model = getRDF()->createRestrictedModelForXMLIDs( writeID, xmlids );

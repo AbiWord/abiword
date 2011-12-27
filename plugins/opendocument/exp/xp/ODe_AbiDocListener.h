@@ -101,8 +101,9 @@ private:
     void _openEndnote(PT_AttrPropIndex api);
     void _closeEndnote();
 
-    void _openAnnotation(PT_AttrPropIndex api);
+    void _openAnnotation(PT_AttrPropIndex api, const std::string& defaultName );
     void _closeAnnotation();
+    void _endAnnotation(PT_AttrPropIndex api);
     
     void _openFrame(PT_AttrPropIndex api);
     void _closeFrame();
@@ -148,6 +149,8 @@ private:
     bool m_bInHyperlink;
     bool m_bInSection;
     bool m_bInAnnotation;
+    bool m_bPendingAnnotationEnd;
+    std::string m_currentAnnotationName;
     
     UT_sint32 m_iInTable;
     UT_sint32 m_iInCell;

@@ -23,6 +23,7 @@
 #define _ODI_ABI_DATA_H_
 
 #include <map>
+#include <set>
 #include <string>
 
 // External includes
@@ -66,6 +67,10 @@ private:
     // Used to avoid adding multiple data items for the same picture.
 	typedef std::map<std::string, std::string> href_id_map_t;
     href_id_map_t m_href_to_id;
+
+  public:
+    std::set< std::string > m_openAnnotationNames;
+    std::set< std::string > m_rangedAnnotationNames;
 };
 
 #endif //_ODI_ABI_DATA_H_

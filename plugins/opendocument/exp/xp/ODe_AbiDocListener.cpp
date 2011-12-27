@@ -40,6 +40,8 @@
 #include <ut_mbtowc.h>
 #include <ut_locale.h>
 
+#include <sstream>
+
 /**
  * Constructor
  * 
@@ -58,6 +60,8 @@ ODe_AbiDocListener::ODe_AbiDocListener (PD_Document* pDocument,
       m_bInHyperlink(false),
       m_bInSection(false),
       m_bInAnnotation(false),
+      m_bPendingAnnotationEnd(false),
+      m_currentAnnotationName(""),
       m_iInTable(0),
       m_iInCell(0),
       m_pDocument(pDocument),
@@ -189,6 +193,7 @@ bool ODe_AbiDocListener::populate(PL_StruxFmtHandle /*sfh*/,
                 {
                     _closeSpan();
                     _closeField();
+                    _endAnnotation(api);
                     return true;
                 }
 
@@ -344,11 +349,27 @@ bool ODe_AbiDocListener::populateStrux(PL_StruxDocHandle /*sdh*/,
 
     case PTX_SectionAnnotation:
         {
+//            UT_DEBUGMSG(("pos:%d\n", pcr->getPosition()));
             _closeSpan();
             _closeField();
             _closeBookmark(m_bookmarkName);
             _closeHyperlink();
-            _openAnnotation(api);
+            std::stringstream ss;
+            {
+                const PP_AttrProp* pAP;
+                bool ok;
+                ok = m_pDocument->getAttrProp (api, &pAP);
+                if (ok)
+                {
+                    const gchar* pValue = NULL;
+                    if(pAP->getAttribute(PT_ANNOTATION_NUMBER,pValue) && pValue)
+                        ss << pValue;
+                }
+            }
+            if( ss.str().empty() )
+                ss << "defd" << pcr->getPosition();
+            
+            _openAnnotation( api, ss.str() );
         }
         break;
 
@@ -842,7 +863,8 @@ void ODe_AbiDocListener::_closeEndnote() {
 /**
  * 
  */
-void ODe_AbiDocListener::_openAnnotation(PT_AttrPropIndex api) {
+void ODe_AbiDocListener::_openAnnotation(PT_AttrPropIndex api, const std::string& defaultName)
+{
 
     if (m_bInAnnotation) {
         return;
@@ -856,8 +878,20 @@ void ODe_AbiDocListener::_openAnnotation(PT_AttrPropIndex api) {
         pAP = NULL;
     }
 
-    m_pCurrentImpl->openAnnotation(pAP);
+    std::string name = defaultName;
+    {
+        const gchar* pValue = NULL;
+        if(pAP->getAttribute("name",pValue) && pValue)
+        {
+            name = pValue;
+        }
+        UT_DEBUGMSG(("_openAnnotation() api:%d name:%s\n", api, name.c_str() ));
+    }
+    
+    m_pCurrentImpl->openAnnotation( pAP, name, m_pDocument );
     m_bInAnnotation = true;
+    m_bPendingAnnotationEnd = true;
+    m_currentAnnotationName = name;
     m_bInBlock = false;
 }
 
@@ -865,16 +899,44 @@ void ODe_AbiDocListener::_openAnnotation(PT_AttrPropIndex api) {
 /**
  * 
  */
-void ODe_AbiDocListener::_closeAnnotation() {
-
+void ODe_AbiDocListener::_closeAnnotation()
+{
     if (!m_bInAnnotation) {
         return;
     }
 
-    m_pCurrentImpl->closeAnnotation();
+    m_pCurrentImpl->closeAnnotation( m_currentAnnotationName );
     m_bInAnnotation = false;
     m_bInBlock = true;
 }
+
+void ODe_AbiDocListener::_endAnnotation( PT_AttrPropIndex api ) 
+{
+    std::string name = m_currentAnnotationName;
+
+    if(!m_bPendingAnnotationEnd)
+        return;
+    
+    m_bPendingAnnotationEnd = false;
+    m_currentAnnotationName = "";
+    const PP_AttrProp* pAP = NULL;
+    bool ok = false;
+
+    ok = m_pDocument->getAttrProp (api, &pAP);
+    if (!ok) {
+        pAP = NULL;
+    }
+    const gchar* pValue = NULL;
+    if(pAP->getAttribute("name",pValue) && pValue)
+    {
+        name = pValue;
+    }
+    
+    UT_DEBUGMSG(("_endAnnotation() api:%d name:%s\n", api, name.c_str() ));
+    m_pCurrentImpl->endAnnotation( name );
+}
+
+
 
 
 /**

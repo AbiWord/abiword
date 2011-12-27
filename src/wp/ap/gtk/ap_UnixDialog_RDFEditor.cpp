@@ -302,7 +302,7 @@ AP_UnixDialog_RDFEditor::hideRestrictionXMLID( bool v )
     else
     {
         PD_RDFModelHandle model;
-        std::list< std::string > xmlids;
+        std::set< std::string > xmlids;
         getRDF()->addRelevantIDsForPosition( xmlids, getView()->getPoint() );
         UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, have restricted xmlids size:%lu\n", xmlids.size() ));
         
@@ -586,11 +586,11 @@ AP_UnixDialog_RDFEditor::constuctWindow (XAP_Frame * /*pFrame*/)
         PT_DocPosition point = getView()->getPoint();
         if( PD_DocumentRDFHandle rdf = getRDF() )
         {
-            std::list< std::string > xmlids;
+            std::set< std::string > xmlids;
             rdf->addRelevantIDsForPosition( xmlids, point );
 
             std::stringstream combinedxmlidss;
-            for( std::list< std::string >::const_iterator iter = xmlids.begin();
+            for( std::set< std::string >::const_iterator iter = xmlids.begin();
                  iter != xmlids.end(); ++iter )
             {
                 if( iter != xmlids.begin() )
@@ -601,7 +601,7 @@ AP_UnixDialog_RDFEditor::constuctWindow (XAP_Frame * /*pFrame*/)
             setRestrictedXMLID( combinedxmlidss.str() );
             
             int idx = 1;
-            for( std::list< std::string >::const_iterator iter = xmlids.begin();
+            for( std::set< std::string >::const_iterator iter = xmlids.begin();
                  iter != xmlids.end(); ++iter, ++idx )
             {
                 XAP_appendComboBoxTextAndInt( m_selectedxmlid, iter->c_str(), idx );

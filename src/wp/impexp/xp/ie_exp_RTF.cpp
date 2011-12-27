@@ -1102,7 +1102,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
         if( getDocRange() )
         {
             PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
-            std::list< std::string > xmlids;
+            std::set< std::string > xmlids;
             rdf->addRelevantIDsForRange( xmlids, getDocRange() );
             PD_RDFModelHandle subm = rdf->createRestrictedModelForXMLIDs( xmlids );
             std::string rdfxml = toRDFXML( subm );

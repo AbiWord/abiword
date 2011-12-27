@@ -859,7 +859,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
         if( pToks->getItemCount () > 1)
         {
             std::string xmlid = pToks->getNthItem (1)->utf8_str();
-            std::list< std::string > xmlids;
+            std::set< std::string > xmlids;
 
             if( pToks->getItemCount () > 2 )
             {
@@ -869,7 +869,7 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
                 ss << readlist;
                 while( getline( ss, s, ',' ) )
                 {
-                    xmlids.push_back(s);
+                    xmlids.insert(s);
                 }
             }
 

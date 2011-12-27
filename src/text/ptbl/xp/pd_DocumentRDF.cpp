@@ -20,6 +20,7 @@
  * 02111-1307, USA.
  */
 
+
 #include "pd_DocumentRDF.h"
 #include "pd_Document.h"
 #include "pt_PieceTable.h"
@@ -1301,8 +1302,8 @@ PD_DocumentRDF::relinkRDFToNewXMLID( const std::string& oldxmlid,
     PD_DocumentRDFMutationHandle m = createMutation();
     PD_URI idref("http://docs.oasis-open.org/opendocument/meta/package/common#idref");
     
-    std::list< std::string > oldlist;
-    oldlist.push_back( oldxmlid );
+    std::set< std::string > oldlist;
+    oldlist.insert( oldxmlid );
     std::string sparql = getSPARQL_LimitedToXMLIDList( oldlist );
     UT_DEBUGMSG(("relinkRDFToNewXMLID sparql:%s\n", sparql.c_str() ));
 
@@ -1330,7 +1331,7 @@ PD_DocumentRDF::relinkRDFToNewXMLID( const std::string& oldxmlid,
 
 
 std::string
-PD_DocumentRDF::getSPARQL_LimitedToXMLIDList( const std::list< std::string >& xmlids,
+PD_DocumentRDF::getSPARQL_LimitedToXMLIDList( const std::set< std::string >& xmlids,
                                               const std::string& extraPreds )
 {
     if( xmlids.empty() )
@@ -1349,7 +1350,7 @@ PD_DocumentRDF::getSPARQL_LimitedToXMLIDList( const std::list< std::string >& xm
        << "   filter( ";
 
     std::string joiner = "";
-    for( std::list< std::string >::const_iterator iter = xmlids.begin();
+    for( std::set< std::string >::const_iterator iter = xmlids.begin();
          iter != xmlids.end(); ++iter )
     {
         ss << joiner << " str(?rdflink) = \"" << *iter << "\" ";
@@ -1871,16 +1872,223 @@ PD_DocumentRDF::getIDRange( const std::string& xmlid )
 }
 
 
-std::list< std::string >&
-PD_DocumentRDF::addRelevantIDsForRange( std::list< std::string >& ret,
+std::set< std::string >&
+PD_DocumentRDF::addRelevantIDsForRange( std::set< std::string >& ret,
                                         PD_DocumentRange* range )
 {
     addRelevantIDsForRange( ret, std::make_pair( range->m_pos1, range->m_pos2 ));
     return ret;
 }
 
-std::list< std::string >&
-PD_DocumentRDF::addRelevantIDsForRange( std::list< std::string >& ret,
+std::list< pf_Frag_Object* >
+PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objectTypes,
+                                                  std::pair< PT_DocPosition, PT_DocPosition > range )
+{
+    std::list< pf_Frag_Object* > ret;
+    PD_Document*    doc  = getDocument();
+    pt_PieceTable*   pt  = getPieceTable();
+    PT_DocPosition start = range.first;
+    PT_DocPosition curr  = range.second;
+    PT_DocPosition searchBackThisFar = 0;
+    if( !curr )
+        curr = start;
+    
+    //
+    // Allow recursion of text:meta where an outside tag might encase the point but
+    // another text:meta might completely be before point. Consider:
+    // 
+    // <text:meta xml:id="outside"> ....
+    //   ... <text:meta xml:id="nested">boo</text:meta>
+    //   ... POINT ...
+    // </text:meta>
+    //
+    // In this case, we want to ignore the xml:id == nested anchors but find the
+    // xml:id == outside one
+    //
+    std::set< std::string > m_ignoreIDSet;
+    
+    //
+    // FIXME: Some form of index would be nice, rather than walking back the entire
+    // document to find the RDF Anchors.
+    //
+    for( ; curr > searchBackThisFar; )
+    {
+        pf_Frag* pf = 0;
+        PT_BlockOffset boffset;
+
+        if( pt->getFragFromPosition( curr, &pf, &boffset ) )
+        {
+            UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() current:%d frag type:%d len:%d \n",
+                         curr, pf->getType(), pf->getLength() ));
+
+            // skip backwards fast if possible.
+            if(pf->getType() != pf_Frag::PFT_Object)
+            {
+                UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() SKIPPING BACK!\n" ));
+                curr = pf->getPos() - 1;
+                continue;
+            }
+            // otherwise keep moving backwards slowly anyway
+            --curr;
+
+            
+            // check what RDF is attached to this object.
+            if(pf->getType() == pf_Frag::PFT_Object)
+            {
+                pf_Frag_Object* pOb = static_cast<pf_Frag_Object*>(pf);
+                const PP_AttrProp * pAP = NULL;
+
+                UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() po type:%d\n",
+                             pOb->getObjectType() ));
+
+                if( pOb->getObjectType() == PTO_Bookmark
+                    && objectTypes.count(pOb->getObjectType()))
+                {
+                    pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
+                    const char* v = 0;
+                    if( pAP->getAttribute(PT_XMLID, v) && v)
+                    {
+                        std::string xmlid = v;
+                        bool isEnd = pAP->getAttribute("type", v) && v && !strcmp(v,"end");
+                        
+                        UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() isEnd:%d id:%s\n",
+                                     isEnd, xmlid.c_str() ));
+                        
+                        if( isEnd && curr < start )
+                        {
+                            m_ignoreIDSet.insert( xmlid );
+                        }
+                        else
+                        {
+                            if( !m_ignoreIDSet.count( xmlid ))
+                                ret.push_back( pOb );
+                        }
+                    }
+                }
+                
+                if( pOb->getObjectType() == PTO_RDFAnchor
+                    && objectTypes.count(pOb->getObjectType()))
+                {
+                    pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
+
+                    RDFAnchor a(pAP);
+                    UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() isEnd:%d id:%s\n",
+                                 a.isEnd(), a.getID().c_str() ));
+                    
+                    if( a.isEnd() && curr < start )
+                    {
+                        m_ignoreIDSet.insert( a.getID() );
+                    }
+                    else
+                    {
+                        if( !m_ignoreIDSet.count( a.getID() ))
+                            ret.push_back( pOb );
+                    }
+                }
+            }
+        }
+    }
+    
+    return ret;
+}
+
+
+std::set< std::string >&
+PD_DocumentRDF::addXMLIDsForObjects( std::set< std::string >& ret, std::list< pf_Frag_Object* > objectList )
+{
+    PD_Document*    doc = getDocument();
+    pt_PieceTable*   pt = getPieceTable();
+    const PP_AttrProp * pAP = NULL;
+
+    for( std::list< pf_Frag_Object* >::iterator iter = objectList.begin();
+         iter != objectList.end(); ++iter )
+    {
+        pf_Frag_Object* pOb = *iter;
+
+        if( pOb->getObjectType() == PTO_Bookmark )
+        {
+            pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
+            const char* v = 0;
+            if( pAP->getAttribute(PT_XMLID, v) && v)
+            {
+                std::string xmlid = v;
+                ret.insert( xmlid );
+            }
+        }
+        
+        if( pOb->getObjectType() == PTO_RDFAnchor )
+        {
+            pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
+            RDFAnchor a(pAP);
+            ret.insert( a.getID() );
+            UT_DEBUGMSG(("addXMLIDsForObjects() xmlid:%s\n", a.getID().c_str() ));
+        }
+    }
+    return ret;
+}
+
+PT_DocPosition
+PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string >& col, PT_DocPosition pos )
+{
+    PT_DocPosition  ret = pos;
+    PD_Document*    doc = getDocument();
+    pt_PieceTable*   pt = getPieceTable();
+
+    pf_Frag* frag = doc->getFragFromPosition( pos );
+    ret = frag->getPos() - 1;
+    
+    //
+    // xml:id attached to containing paragraph/header
+    // <text:p> / <text:h>
+    //
+    PL_StruxFmtHandle psfh;
+    if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psfh ) && psfh )
+    {
+        UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
+        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+        const PP_AttrProp * AP = NULL;
+        doc->getAttrProp(api,&AP);
+        if( AP )
+        {
+            const char * v = NULL;
+            if(AP->getAttribute("xml:id", v))
+            {
+                UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
+                col.insert(v);
+            }
+        }
+    }
+
+    //
+    // xml:id attached to containing table:table-cell
+    //
+    if( pt->getStruxOfTypeFromPosition( pos, PTX_SectionCell, &psfh ) && psfh )
+    {
+        UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() cell pos:%d\n", pos ));
+        PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
+        const PP_AttrProp * AP = NULL;
+        doc->getAttrProp(api,&AP);
+        if( AP )
+        {
+            const char * v = NULL;
+            if(AP->getAttribute("xml:id", v))
+            {
+                UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
+                col.insert(v);
+
+                if(AP->getAttribute("props", v))
+                    UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() props:%s \n",v));
+
+            }
+        }
+    }
+    
+    return ret;
+}
+
+
+std::set< std::string >&
+PD_DocumentRDF::addRelevantIDsForRange( std::set< std::string >& ret,
                                         std::pair< PT_DocPosition, PT_DocPosition > range )
 {
     //
@@ -1893,28 +2101,53 @@ PD_DocumentRDF::addRelevantIDsForRange( std::list< std::string >& ret,
     // backward search.
     //
     PT_DocPosition pos = range.first;
-    priv_addRelevantIDsForPosition( ret, pos, 0 );
 
+    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy begin:%d end:%d\n", range.first, range.second ));
+    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy looking back to find bookmark and rdf anchor openings...\n" ));
+    std::set< PTObjectType > objectTypes;
+    objectTypes.insert( PTO_Bookmark  );
+    objectTypes.insert( PTO_RDFAnchor );
+    std::list< pf_Frag_Object* > objectList = getObjectsInScopeOfTypesForRange( objectTypes, range );
+    addXMLIDsForObjects( ret, objectList );
+    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy objectList.sz:%d\n", objectList.size() ));
+    addXMLIDsForBlockAndTableCellForPosition( ret, pos );
+
+    
+    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy inspecting range...\n" ));
     PT_DocPosition searchBackThisFar = pos;
     ++pos;
-    
-    for( ; pos <= range.second; ++pos )
+
+    PT_DocPosition end = range.second;
+    if( !end )
+        end = range.first+1;
+
+    for( PT_DocPosition curr = end; curr >= range.first; )
     {
-        priv_addRelevantIDsForPosition( ret, pos, searchBackThisFar );
+        UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy looping curr:%d\n", curr ));
+        curr = addXMLIDsForBlockAndTableCellForPosition( ret, curr );
     }
+    
+
+    
+//    priv_addRelevantIDsForPosition( ret, end, searchBackThisFar );
+    
+    // for( ; pos <= range.second; ++pos )
+    // {
+    //     priv_addRelevantIDsForPosition( ret, pos, searchBackThisFar );
+    // }
     return ret;
 }
 
-std::list< std::string >&
-PD_DocumentRDF::addRelevantIDsForPosition( std::list< std::string >& ret,
+std::set< std::string >&
+PD_DocumentRDF::addRelevantIDsForPosition( std::set< std::string >& ret,
                                            PT_DocPosition pos )
 {
-    priv_addRelevantIDsForPosition( ret, pos );
+    addRelevantIDsForRange( ret, std::make_pair( pos, (PT_DocPosition)0 ) );
     return ret;
 }
 
-std::list< std::string >&
-PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
+std::set< std::string >&
+PD_DocumentRDF::priv_addRelevantIDsForPosition( std::set< std::string >& ret,
                                                 PT_DocPosition pos,
                                                 PT_DocPosition searchBackThisFar )
 {
@@ -1922,7 +2155,8 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
     pt_PieceTable*   pt = getPieceTable();
     PT_DocPosition curr = pos;
     
-    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() current:%d \n", curr ));
+    UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() current:%d searchBackLimit:%d\n",
+                 curr, searchBackThisFar ));
 
     //
     // Allow recursion of text:meta where an outside tag might encase the point but
@@ -1942,22 +2176,33 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
     // FIXME: Some form of index would be nice, rather than walking back the entire
     // document to find the RDF Anchors.
     //
-    for( ; curr > searchBackThisFar; --curr )
+    for( ; curr > searchBackThisFar; )
     {
         pf_Frag* pf = 0;
         PT_BlockOffset boffset;
 
         if( pt->getFragFromPosition( curr, &pf, &boffset ) )
         {
-            UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() current:%d frag type:%d len:%d \n",
+            UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() current:%d frag type:%d len:%d \n",
                          curr, pf->getType(), pf->getLength() ));
 
+            // skip backwards fast if possible.
+            if(pf->getType() != pf_Frag::PFT_Object)
+            {
+                curr = pf->getPos() - 1;
+                continue;
+            }
+            // otherwise keep moving backwards slowly anyway
+            --curr;
+
+            
+            // check what RDF is attached to this object.
             if(pf->getType() == pf_Frag::PFT_Object)
             {
                 pf_Frag_Object* pOb = static_cast<pf_Frag_Object*>(pf);
                 const PP_AttrProp * pAP = NULL;
 
-                UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() po type:%d\n",
+                UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() po type:%d\n",
                              pOb->getObjectType() ));
 
                 if(pOb->getObjectType() == PTO_Bookmark)
@@ -1969,7 +2214,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
                         std::string xmlid = v;
                         bool isEnd = pAP->getAttribute("type", v) && v && !strcmp(v,"end");
                         
-                        UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() isEnd:%d id:%s\n",
+                        UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() isEnd:%d id:%s\n",
                                      isEnd, xmlid.c_str() ));
                         
                         if( isEnd )
@@ -1979,7 +2224,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
                         else
                         {
                             if( !m_ignoreIDSet.count( xmlid ))
-                                ret.push_back( xmlid );
+                                ret.insert( xmlid );
                         }
                     }
                 }
@@ -1989,7 +2234,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
                     pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
 
                     RDFAnchor a(pAP);
-                    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForPosition() isEnd:%d id:%s\n",
+                    UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() isEnd:%d id:%s\n",
                                  a.isEnd(), a.getID().c_str() ));
                     
                     if( a.isEnd() )
@@ -1999,13 +2244,14 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
                     else
                     {
                         if( !m_ignoreIDSet.count( a.getID() ))
-                            ret.push_back( a.getID() );
+                            ret.insert( a.getID() );
                     }
                 }
             }
         }
     }
 
+    
     //
     // xml:id attached to containing paragraph/header
     // <text:p> / <text:h>
@@ -2013,7 +2259,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
     PL_StruxDocHandle psfh;
     if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psfh ) && psfh )
     {
-        UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() block pos:%d\n", pos ));
+        UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
         PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
         const PP_AttrProp * AP = NULL;
         doc->getAttrProp(api,&AP);
@@ -2022,8 +2268,8 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
             const char * v = NULL;
             if(AP->getAttribute("xml:id", v))
             {
-                UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() xmlid:%s \n",v));
-                ret.push_back(v);
+                UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
+                ret.insert(v);
             }
         }
     }
@@ -2033,7 +2279,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
     //
     if( pt->getStruxOfTypeFromPosition( pos, PTX_SectionCell, &psfh ) && psfh )
     {
-        UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() cell pos:%d\n", pos ));
+        UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() cell pos:%d\n", pos ));
         PT_AttrPropIndex api = doc->getAPIFromSDH( psfh );
         const PP_AttrProp * AP = NULL;
         doc->getAttrProp(api,&AP);
@@ -2042,11 +2288,11 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
             const char * v = NULL;
             if(AP->getAttribute("xml:id", v))
             {
-                UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() xmlid:%s \n",v));
-                ret.push_back(v);
+                UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
+                ret.insert(v);
 
                 if(AP->getAttribute("props", v)) {
-                    UT_DEBUGMSG(("PD_DocumentRDF::getRDFAtPosition() props:%s \n",v));
+                    UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() props:%s \n",v));
 				}
 
             }
@@ -2058,13 +2304,23 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::list< std::string >& ret,
 
 
 
+PD_RDFModelHandle
+PD_DocumentRDF::createScratchModel()
+{
+    PD_Document* doc = getDocument();
+    PP_AttrProp*  AP = new PP_AttrProp();
+    PD_RDFModelFromAP* retModel = new PD_RDFModelFromAP( doc, AP );
+    PD_RDFModelHandle ret( retModel );
+    return ret;
+}
+
 
 
 PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
 {
     PD_Document*    doc = getDocument();
 
-    std::list< std::string > IDList;
+    std::set< std::string > IDList;
     addRelevantIDsForPosition( IDList, pos );
 
     PP_AttrProp* AP = new PP_AttrProp();
@@ -2074,7 +2330,7 @@ PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
     if( !IDList.empty() )
     {
         PD_DocumentRDFMutationHandle m = retModel->createMutation();
-        for( std::list< std::string >::iterator iter = IDList.begin();
+        for( std::set< std::string >::iterator iter = IDList.begin();
              iter != IDList.end(); ++iter )
         {
             std::string xmlid = *iter;
@@ -2344,6 +2600,8 @@ void PD_DocumentRDF::runMilestone2Test2()
 void PD_DocumentRDF::dumpObjectMarkersFromDocument()
 {
     UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() doc:%p\n", m_doc));
+    m_doc->dumpDoc("dumpObjectMarkersFromDocument", 0, 0);
+
     PD_Document*    doc = getDocument();
     pt_PieceTable*   pt = getPieceTable();
     PT_DocPosition curr = 0;
@@ -2413,8 +2671,8 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
 
     //////////////
 
-    curr = 420;
-    PD_RDFModelHandle h = getRDFAtPosition( curr );
+//    curr = 420;
+//    PD_RDFModelHandle h = getRDFAtPosition( curr );
     
     
 }
@@ -2621,14 +2879,14 @@ class RDFModel_XMLIDLimited
     public RDFModel_SPARQLLimited
 {
     std::string m_writeID;
-    std::list< std::string > m_readIDList;
+    std::set< std::string > m_readIDList;
     
 public:
     
     RDFModel_XMLIDLimited( PD_DocumentRDFHandle rdf,
                            PD_RDFModelHandle delegate,
                            const std::string& writeID,
-                           const std::list< std::string >& readIDList )
+                           const std::set< std::string >& readIDList )
         : RDFModel_SPARQLLimited( rdf, delegate )
         , m_writeID( writeID )
         , m_readIDList( readIDList )
@@ -2648,9 +2906,9 @@ public:
 std::string
 RDFModel_XMLIDLimited::getSparql()
 {
-    std::list< std::string > xmlids;
-    xmlids.push_back( m_writeID );
-    copy( m_readIDList.begin(), m_readIDList.end(), back_inserter( xmlids ) );
+    std::set< std::string > xmlids;
+    xmlids.insert( m_writeID );
+    copy( m_readIDList.begin(), m_readIDList.end(), inserter( xmlids, xmlids.end() ) );
     std::string sparql = PD_DocumentRDF::getSPARQL_LimitedToXMLIDList( xmlids );
     return sparql;
 }
@@ -2729,7 +2987,7 @@ class ABI_EXPORT PD_RDFMutation_XMLIDLimited
             
             std::stringstream sparql;
             sparql << "prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
-                   << "prefix fqoaf: <http://xmlns.com/foaf/0.1/>  \n"
+                   << "prefix foaf:  <http://xmlns.com/foaf/0.1/>  \n"
                    << "prefix pkg:   <http://docs.oasis-open.org/opendocument/meta/package/common#>  \n"
                    << "prefix geo84: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n"
                    << " \n"
@@ -2800,7 +3058,7 @@ RDFModel_XMLIDLimited::createMutation()
     
 PD_RDFModelHandle
 PD_DocumentRDF::createRestrictedModelForXMLIDs( const std::string& writeID,
-                                                const std::list< std::string >& xmlids )
+                                                const std::set< std::string >& xmlids )
 {
     UT_DEBUGMSG(("createRestrictedModelForXMLIDs() writeID:%s xmlids.sz:%d\n",
                  writeID.c_str(), (int)xmlids.size() ));
@@ -2813,11 +3071,11 @@ PD_DocumentRDF::createRestrictedModelForXMLIDs( const std::string& writeID,
 }
 
 PD_RDFModelHandle
-PD_DocumentRDF::createRestrictedModelForXMLIDs( const std::list< std::string >& xmlids )
+PD_DocumentRDF::createRestrictedModelForXMLIDs( const std::set< std::string >& xmlids )
 {
     std::string writeID = "";
     if( !xmlids.empty() )
-        writeID = xmlids.front();
+        writeID = *(xmlids.begin());
     return createRestrictedModelForXMLIDs( writeID, xmlids );
 }
 
@@ -2969,6 +3227,15 @@ bool
 PD_DocumentRDFMutation::add( const PD_RDFStatement& st )
 {
     return add( st.getSubject(), st.getPredicate(), st.getObject() );
+}
+
+PD_URI
+PD_DocumentRDFMutation::createBNode()
+{
+    PD_Document* doc = m_rdf->getDocument();
+    std::stringstream ss;
+    ss << "uri:bnode" << doc->getUID( UT_UniqueId::Annotation );
+    return PD_URI( ss.str() );
 }
 
 void

@@ -296,14 +296,22 @@ std::string toString( librdf_node *node )
 
 
 std::string
-toRDFXML( PD_RDFModelHandle m )
+toRDFXML( const std::list< PD_RDFModelHandle >& ml )
 {
 #ifdef WITH_REDLAND
 
     RDFArguments args;
     librdf_world* world = args.world;
     librdf_model* model = args.model;
-    convertNativeToRedlandModel( m, world, model );
+    for( std::list< PD_RDFModelHandle >::const_iterator mi = ml.begin(); mi != ml.end(); ++mi )
+    {
+        PD_RDFModelHandle m = *mi;
+        if( m )
+        {
+            convertNativeToRedlandModel( m, world, model );
+        }
+    }
+    
 
     UT_DEBUGMSG(("toRDFXML() native redland model size:%d\n",
                  librdf_model_size(model)));
@@ -338,6 +346,56 @@ toRDFXML( PD_RDFModelHandle m )
     
 #endif
     return "";
+}
+
+
+std::string
+toRDFXML( PD_RDFModelHandle m )
+{
+    std::list< PD_RDFModelHandle > ml;
+    ml.push_back(m);
+    return toRDFXML(ml);
+    
+// #ifdef WITH_REDLAND
+
+//     RDFArguments args;
+//     librdf_world* world = args.world;
+//     librdf_model* model = args.model;
+//     convertNativeToRedlandModel( m, world, model );
+
+//     UT_DEBUGMSG(("toRDFXML() native redland model size:%d\n",
+//                  librdf_model_size(model)));
+
+//     //
+//     // Convert redland model to RDF/XML
+//     //
+//     librdf_serializer* serializer = librdf_new_serializer(
+//         args.world, "rdfxml", 0, 0 );
+//     librdf_uri* base_uri = 0;
+//     size_t data_sz = 0;
+//     // It seems from reading the redland source that "data" is allocated using
+//     // malloc() and handed back to us to take care of.
+//     unsigned char* data = librdf_serializer_serialize_model_to_counted_string
+//         ( serializer, base_uri, model, &data_sz  );
+//     UT_DEBUGMSG(("writeRDF() serializer:%p data_sz:%d\n", serializer, data_sz ));
+    
+//     if( !data )
+//     {
+//         // failed
+//         UT_DEBUGMSG(("writeRDF() failed to serialize model using serializer:%p\n", serializer ));
+//         librdf_free_serializer(serializer);
+//         return "";
+//     }
+
+//     std::stringstream ss;
+//     ss.write( (const char*)data, data_sz );
+//     free(data);
+//     librdf_free_serializer(serializer);
+
+//     return ss.str();
+    
+// #endif
+//     return "";
 }
 
 UT_Error

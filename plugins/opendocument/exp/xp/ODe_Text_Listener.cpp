@@ -42,10 +42,13 @@
 #include <ut_units.h>
 #include <fl_TOCLayout.h>
 #include <pd_DocumentRDF.h>
+#include <pd_Document.h>
 
 // External includes
 #include <stdlib.h>
 #include <libxml/uri.h>
+
+#include <sstream>
 
 /**
  * Constructor
@@ -444,12 +447,60 @@ void ODe_Text_Listener::closeEndnote(ODe_ListenerAction& rAction) {
 /**
  * 
  */
-void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP) {
-
-    UT_UTF8String output = "<office:annotation>", escape;
-
+void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP, const std::string& name, PD_Document* doc )
+{
+    UT_UTF8String output = "<office:annotation";
+    UT_UTF8String escape;
     const gchar* pValue = NULL;
 
+    UT_UTF8String generatedID;
+    const gchar* xmlid = 0;
+    if(pAP && pAP->getProperty(PT_XMLID,pValue) && pValue && *pValue)
+    {
+        xmlid = pValue;
+    }
+    else if( doc )
+    {
+        generatedID = UT_UTF8String_sprintf("anno%d", doc->getUID( UT_UniqueId::Annotation ));
+        xmlid = generatedID.utf8_str();
+        UT_DEBUGMSG(("openAnno xmlid:%s\n", xmlid ));
+    }
+    if( xmlid )
+    {
+        appendAttribute( output, "xml:id", xmlid );
+
+        //
+        // MIQ: Lets put the annotation-title into the document RDF ;)
+        //
+        if(pAP && pAP->getProperty("annotation-title",pValue) && pValue && *pValue)
+        {
+            std::string title = pValue;
+            UT_DEBUGMSG(("openAnno title:%s\n", title.c_str() ));
+
+            PD_RDFModelHandle rdf = m_rAuxiliaryData.m_additionalRDF;
+//            PD_DocumentRDFHandle rdf = doc->getDocumentRDF();
+            PD_DocumentRDFMutationHandle m = rdf->createMutation();
+
+            PD_URI subj = m->createBNode();
+            PD_URI pkg_idref("http://docs.oasis-open.org/opendocument/meta/package/common#idref");
+            PD_URI dc_title("http://dublincore.org/documents/dces/title");
+            //  ?s pkg:idref ?xmlid . 
+            //  ?s ?p ?o . 
+            m->add( subj, pkg_idref, PD_Literal( xmlid ) );
+            m->add( subj, dc_title,  PD_Literal( title ) );
+            m->commit();
+        }
+    }
+    
+
+    if( !name.empty() )
+    {
+        output += " office:name=\"";
+        output += name.c_str();
+        output += "\"";
+    }
+    output += ">";
+    
     if(pAP && pAP->getProperty("annotation-author",pValue) && pValue && *pValue) {
         escape = pValue;
         escape.escapeXML();
@@ -469,7 +520,6 @@ void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP) {
         output += "</dc:date>";
     }
 
-    // TODO: export annotation-title somehow?
 
     ODe_writeUTF8String(m_pParagraphContent, output);
 }
@@ -477,11 +527,18 @@ void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP) {
 /**
  * 
  */
-void ODe_Text_Listener::closeAnnotation() {
+void ODe_Text_Listener::closeAnnotation( const std::string& name )
+{
     UT_UTF8String output = "</office:annotation>";
     ODe_writeUTF8String(m_pParagraphContent, output);
 }
 
+void ODe_Text_Listener::endAnnotation( const std::string& name )
+{
+    std::stringstream ss;
+    ss << "<office:annotation-end  office:name=\"" << name << "\"/>";
+    ODe_write( m_pParagraphContent, ss );
+}
 
 
 /**

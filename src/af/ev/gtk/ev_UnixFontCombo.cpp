@@ -481,6 +481,8 @@ abi_font_combo_set_fonts (AbiFontCombo 	 *self,
 	g_object_unref (G_OBJECT (self->sort)); self->sort = NULL;
 	gtk_list_store_clear (GTK_LIST_STORE (self->model));
 
+    g_object_unref (G_OBJECT (self->model));
+	self->model = (GtkTreeModel *) gtk_list_store_new (NUM_COLS, G_TYPE_STRING);
 	font_iter = fonts;
 	while (font_iter && *font_iter) {
 		gtk_list_store_append (GTK_LIST_STORE (self->model), &iter);

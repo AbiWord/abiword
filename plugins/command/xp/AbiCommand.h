@@ -71,7 +71,7 @@ private:
 
     PD_RDFModelHandle        m_rdf_context_model;
     PD_DocumentRDFMutationHandle m_rdf_mutation;
-    std::list< std::string > m_rdf_xmlids;
+    std::set< std::string >  m_rdf_xmlids;
 
     PD_RDFModelHandle        getRDFModel() const;
     PD_DocumentRDFHandle     getRDF() const;

@@ -130,6 +130,24 @@ bool pt_PieceTable::dumpDoc(
         UT_DEBUGMSG(("dumpDoc() %s pos:%d frag:%p len:%d frag type:%d extra:%s\n",
                      fragTypeStr.c_str(), pos, pf, pf->getLength(), pf->getType(), extra.c_str() ));
             
+        if( pf->getType() == pf_Frag::PFT_Object )
+        {
+			pf_Frag_Object * po = (pf_Frag_Object*) pf;
+            std::string typeStr = "";
+            switch( po->getObjectType() )
+            {
+                case PTO_Image: typeStr = "PTO_Image    "; break;
+                case PTO_Field: typeStr = "PTO_Field    "; break;
+                case PTO_Bookmark: typeStr = "PTO_Bookmark    "; break;
+                case PTO_Hyperlink: typeStr = "PTO_Hyperlink    "; break;
+                case PTO_Math: typeStr = "PTO_Math    "; break;
+                case PTO_Embed: typeStr = "PTO_Embed    "; break;
+                case PTO_Annotation: typeStr = "PTO_Annotation    "; break;
+                case PTO_RDFAnchor: typeStr = "PTO_RDFAnchor    "; break;
+            }
+            UT_DEBUGMSG(("          %s objectType:%d\n", typeStr.c_str(), po->getObjectType() ));
+        }
+        
         if( pf->getType() == pf_Frag::PFT_Strux )
         {
             PTStruxType eStruxType = static_cast<pf_Frag_Strux*>(pf)->getStruxType();

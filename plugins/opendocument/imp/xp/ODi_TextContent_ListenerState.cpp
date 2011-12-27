@@ -4,6 +4,7 @@
  * Copyright (C) 2004 Robert Staudinger <robsta@stereolyzer.net>
  * Copyright (C) 2005 Daniel d'Andrada T. de Carvalho
  * <daniel.carvalho@indt.org.br>
+ * Copyright (C) 2011-2012 Ben Martin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -47,7 +48,13 @@
 #include <pf_Frag_Strux.h>
 
 #include <list>
+#include <sstream>
 
+
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+#include "pd_RDFQuery.h"
 
 
 
@@ -838,23 +845,83 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
         m_pendingNoteAnchorInsertion = true;
 
-    } else if (!strcmp(pName, "office:annotation")) {
+    }
+    else if (!strcmp(pName, "office:annotation-end"))
+    {
+
+        UT_DEBUGMSG(("found annotation-end... m_bAcceptingText:%d m_bPendingAnnotation:%d\n",
+                     m_bAcceptingText, m_bPendingAnnotation ));
+        
+        const gchar* name = UT_getAttribute("office:name", ppAtts);
+        if( name && m_openAnnotationNames.count(name) )
+        {
+            m_openAnnotationNames.erase(name);
+            
+            if (m_bPendingAnnotation) {
+                // Don't crash on empty annotations
+                _insertAnnotation();
+                m_bPendingAnnotation = false;
+            }
+            
+            _flush ();
+            _popInlineFmt();
+            m_pAbiDocument->appendFmt(&m_vecInlineFmt);
+            
+            const gchar* pa[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
+            pa[0] = "name";
+            pa[1] = name;
+            m_pAbiDocument->appendObject( PTO_Annotation, pa );
+            m_bAcceptingText = true;
+
+            UT_DEBUGMSG(("found annotation-end... name:%s m_bAcceptingText:%d m_bPendingAnnotation:%d\n",
+                         name, m_bAcceptingText, m_bPendingAnnotation ));
+            
+        }
+    }
+    else if (!strcmp(pName, "office:annotation"))
+    {
 
         _flush();
+        UT_DEBUGMSG(("open annotation... \n"));
+        
 
-        if (!m_bPendingAnnotation) {
-
+        if (!m_bPendingAnnotation)
+        {
             UT_UTF8String id;
             m_sAnnotationAuthor.clear();
             m_sAnnotationDate.clear();
-
-            m_iAnnotation = m_pAbiDocument->getUID(UT_UniqueId::Annotation);
+            m_sAnnotationName.clear();
+            m_sAnnotationXMLID.clear();
+            if( const gchar* s = UT_getAttribute("office:name", ppAtts))
+            {
+                m_sAnnotationName = s;
+                m_openAnnotationNames.insert(s);
+            }
+            m_iAnnotation = m_pAbiDocument->getUID( UT_UniqueId::Annotation );
             id = UT_UTF8String_sprintf("%d", m_iAnnotation);
-
-            const gchar* ppAtts2[3] = { NULL, NULL, NULL };
+            UT_UTF8String generatedID;
+            const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
+            if( !xmlid )
+            {
+                generatedID = UT_UTF8String_sprintf("anno%s", id.utf8_str() );
+                xmlid = generatedID.utf8_str();
+            }
+            m_sAnnotationXMLID = xmlid;
+            
+            const gchar* ppAtts2[9] = { NULL, NULL, NULL, NULL, 
+                                        NULL, NULL, NULL, NULL, NULL };
             ppAtts2[0] = PT_ANNOTATION_NUMBER;
             ppAtts2[1] = id.utf8_str();
+            ppAtts2[2] = PT_XMLID;
+            ppAtts2[3] = xmlid;
+            if( !m_sAnnotationName.empty() )
+            {
+                ppAtts2[4] = PT_NAME_ATTRIBUTE_NAME;
+                ppAtts2[5] = m_sAnnotationName.c_str();
+            }
             
+            UT_DEBUGMSG(("open annotation... anno-id:%s xmlid:%s \n", id.utf8_str(), xmlid ));
+
             m_pAbiDocument->appendObject(PTO_Annotation, ppAtts2);
             m_bPendingAnnotation = true;
         }
@@ -930,7 +997,6 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         ppAtts[5] = "yes";
         
         m_pAbiDocument->appendObject( PTO_RDFAnchor, ppAtts );
-        
         
     } else if (!strcmp(pName, "text:a")) {
         
@@ -1032,19 +1098,54 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         m_currentNoteId.clear();
 
         // Back to paragraph text.
-        m_bAcceptingText = true;        
-    } else if (!strcmp(pName, "office:annotation")) {
+        m_bAcceptingText = true;
 
+    }
+    else if (!strcmp(pName, "office:annotation"))
+    {
+
+        UT_DEBUGMSG(("close annotation... name:%s m_bAcceptingText:%d m_bPendingAnnotation:%d\n",
+                     m_sAnnotationName.c_str(),
+                     m_bAcceptingText,
+                     m_bPendingAnnotation ));
+        
         if (m_bPendingAnnotation) {
             // Don't crash on empty annotations
             _insertAnnotation();
             m_bPendingAnnotation = false;
         }
 
-        m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL);
-        m_pAbiDocument->appendObject(PTO_Annotation, NULL);
+        const gchar* pPropsArray[5] = { NULL, NULL, NULL, NULL, NULL };
+        UT_UTF8String id = UT_UTF8String_sprintf("%d", m_iAnnotation);
+        UT_DEBUGMSG(("closing tag for id:%s\n", id.utf8_str() ));
+        pPropsArray[0] = "annotation-id";
+        pPropsArray[1] = id.utf8_str();
+        
+        m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL );
+        //
+        // MIQ: If there is no annotation name or there is no matching annotation-end
+        // XML element then we assume it is a single point in document range.
+        //
+        if( m_sAnnotationName.empty()
+            || !m_rAbiData.m_rangedAnnotationNames.count(m_sAnnotationName) )
+        {
+//            m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL);
+            m_pAbiDocument->appendObject(PTO_Annotation, NULL);
+        }
+        else
+        {
+            bool ok = false;
+//            _pushInlineFmt(ppStyAttr);
+            ok = m_pAbiDocument->appendFmt(&m_vecInlineFmt);
+            UT_ASSERT(ok);
+        }
         m_bAcceptingText = true;
 
+
+        // m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL);
+        // m_pAbiDocument->appendObject(PTO_Annotation, NULL);
+        // m_bAcceptingText = true;
+        
     } else if (!strcmp(pName, "dc:creator")) {
 
         if (m_bPendingAnnotationAuthor) {
@@ -1997,6 +2098,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
     UT_UTF8String id = UT_UTF8String_sprintf("%d", m_iAnnotation);
     UT_UTF8String props;
 
+    UT_DEBUGMSG(("_insertAnnotation() id:%s\n", id.utf8_str() ));
     pPropsArray[0] = "annotation-id";
     pPropsArray[1] = id.utf8_str();
     pPropsArray[2] = PT_PROPS_ATTRIBUTE_NAME;
@@ -2016,8 +2118,52 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
         m_sAnnotationDate.clear();
     }
 
-    // TODO: annotation-title property?
+    //
+    // MIQ: The annotation-title might have been saved into RDF by
+    // abiword or others. We thus try to find it again using SPARQL
+    // and the annotation's xml:id attribute.
+    //
+    if( !m_sAnnotationXMLID.empty() )
+    {
+        std::string xmlid = m_sAnnotationXMLID;
+        std::stringstream sparql;
+        sparql << "prefix rdf:   <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
+               << "prefix foaf:  <http://xmlns.com/foaf/0.1/>  \n"
+               << "prefix pkg:   <http://docs.oasis-open.org/opendocument/meta/package/common#>  \n"
+               << "prefix geo84: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n"
+               << "prefix dc:    <http://dublincore.org/documents/dces/> \n"
+               << " \n"
+               << "select ?s ?title ?rdflink  \n"
+               << "where {  \n"
+               << " ?s dc:title  ?title .  \n"
+               << " ?s pkg:idref ?rdflink .  \n"
+               << "   filter( str(?rdflink) = \"" << xmlid << "\" ) \n"
+               << "} \n";
+        PD_Document* doc = m_pAbiDocument;
+        PD_DocumentRDFHandle rdf = doc->getDocumentRDF();
+        PD_RDFQuery q( rdf, rdf );
+        PD_ResultBindings_t bindings = q.executeQuery(sparql.str());
+        UT_DEBUGMSG(("bindings.sz:%d\n", bindings.size() ));
+        for( PD_ResultBindings_t::iterator iter = bindings.begin(); iter != bindings.end(); ++iter )
+        {
+            std::map< std::string, std::string > d = *iter;
+            std::string title = d["title"];
+            if (!props.empty()) {
+                props += "; ";
+            }
+            props += "annotation-title: ";
+            props += title.c_str();
 
+            // DEBUG
+            UT_DEBUGMSG(("title:%s\n", title.c_str() ));
+            for( std::map< std::string, std::string >::iterator x = d.begin(); x != d.end(); ++x )
+            {
+                UT_DEBUGMSG(("first:%s sec:%s\n", x->first.c_str(), x->second.c_str() ));
+            }
+        }
+        
+    }
+    
     pPropsArray[3] = props.utf8_str();
 
     m_pAbiDocument->appendStrux(PTX_SectionAnnotation, pPropsArray);

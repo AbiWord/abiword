@@ -27,6 +27,8 @@
 #include <ut_string_class.h>
 #include <gsf/gsf-output-memory.h>
 
+#include "pd_DocumentRDF.h"
+
 
 /**
  * All paragraph styles used to define the chapter levels of a document are
@@ -87,6 +89,10 @@ public:
     
     // The number of notes (footnotes and endnotes) already added to the document.
     UT_uint32 m_noteCount;
+
+    // Any RDF that is generated during the save that should be stored into the
+    // ODT file and then thrown away.
+    PD_RDFModelHandle m_additionalRDF;
 };
 
 #endif /*ODE_AUXILIARYDATA_H_*/

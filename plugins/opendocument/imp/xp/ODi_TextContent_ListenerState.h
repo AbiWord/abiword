@@ -4,6 +4,7 @@
  * Copyright (C) 2004 Robert Staudinger <robsta@stereolyzer.net>
  * Copyright (C) 2005 Daniel d'Andrada T. de Carvalho
  * <daniel.carvalho@indt.org.br>
+ * Copyright (C) 2011-2012 Ben Martin
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -26,6 +27,7 @@
 
 #include <string>
 #include <map>
+#include <set>
 
 // Internal includes
 #include "ODi_ListenerState.h"
@@ -188,7 +190,10 @@ private:
     UT_uint32 m_iAnnotation;
     std::string m_sAnnotationAuthor;
     std::string m_sAnnotationDate;
-
+    std::string m_sAnnotationName;
+    std::string m_sAnnotationXMLID;
+    std::set< std::string > m_openAnnotationNames;
+    
     // RDF
     std::list< std::string > xmlidStackForTextMeta;
     std::map< std::string, std::string > xmlidMapForBookmarks;

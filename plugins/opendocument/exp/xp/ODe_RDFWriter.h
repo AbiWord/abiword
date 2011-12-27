@@ -25,6 +25,8 @@
 // External includes
 #include <gsf/gsf.h>
 
+#include <pd_DocumentRDF.h>
+
 // Abiword classes
 class PD_Document;
 
@@ -36,7 +38,7 @@ class ODe_RDFWriter
 {
 public:
 
-    static bool writeRDF(PD_Document* pDoc, GsfOutfile* pODT);
+    static bool writeRDF(PD_Document* pDoc, GsfOutfile* pODT, PD_RDFModelHandle additionalRDF );
 
 private:
     ODe_RDFWriter ();

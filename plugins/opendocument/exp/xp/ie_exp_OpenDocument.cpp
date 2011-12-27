@@ -132,9 +132,10 @@ UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteB
     if( PD_DocumentRDFHandle outrdf = outDoc->getDocumentRDF() )
     {
 
-        std::list< std::string > xmlids;
+        std::set< std::string > xmlids;
         PD_DocumentRDFHandle inrdf = pDocRange->m_pDoc->getDocumentRDF();
         inrdf->addRelevantIDsForRange( xmlids, pDocRange );
+
         if( !xmlids.empty() )
         {
             PD_RDFModelHandle subm = inrdf->createRestrictedModelForXMLIDs( xmlids );
@@ -209,6 +210,9 @@ UT_Error IE_Exp_OpenDocument::_writeDocument(void)
     
 	UT_return_val_if_fail (getFp(), UT_ERROR);
 
+    PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+    auxData.m_additionalRDF = rdf->createScratchModel();
+    
 	const std::string & prop = getProperty ("uncompressed");
 	
 	if (!prop.empty() && UT_parseBool (prop.c_str (), false))
@@ -265,11 +269,6 @@ UT_Error IE_Exp_OpenDocument::_writeDocument(void)
 		return UT_ERROR;
 	}
 
-    if (!ODe_RDFWriter::writeRDF(getDoc(), m_odt))
-	{
-		ODe_gsf_output_close(GSF_OUTPUT(m_odt));
-		return UT_ERROR;
-	}
 
 	if (!ODe_ManifestWriter::writeManifest(getDoc(), m_odt))
 	{
@@ -343,6 +342,13 @@ UT_Error IE_Exp_OpenDocument::_writeDocument(void)
 	DELETEP(pAbiDocListenerImpl);
     
 	if (!docData.doPostListeningWork())
+	{
+		ODe_gsf_output_close(GSF_OUTPUT(m_odt));
+		return UT_ERROR;
+	}
+
+    // Write RDF.
+    if (!ODe_RDFWriter::writeRDF(getDoc(), m_odt, auxData.m_additionalRDF ))
 	{
 		ODe_gsf_output_close(GSF_OUTPUT(m_odt));
 		return UT_ERROR;

@@ -10033,6 +10033,30 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 		UT_uint32 blockOffset = pos - pBlock->getPosition();
 		pRun = pBlock->findRunAtOffset(blockOffset);
 	}
+
+	UT_DEBUGMSG(("FV_View::getHyperLinkRun() run:%p\n", pRun ));
+	if( pRun )
+	{
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.x:%d\n", pRun->getX() ));
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.w:%d\n", pRun->getWidth() ));
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.t:%d\n", pRun->getType() ));
+	}
+	
+	if( pRun && pRun->getType() != FPRUN_HYPERLINK )
+	{
+		pRun = pRun->getPrevRun();
+		if( pRun && pRun->getType() == FPRUN_HYPERLINK && pRun->getWidth() == 0 )
+			pRun = pRun->getPrevRun();
+		if( pRun )
+		{
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.x:%d\n", pRun->getX() ));
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.w:%d\n", pRun->getWidth() ));
+			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.t:%d\n", pRun->getType() ));
+		}
+		
+		if( pRun && pRun->getType() != FPRUN_HYPERLINK )
+			pRun = 0;
+	}
 	
 	if(pRun && pRun->getHyperlink() != NULL)
 	{
@@ -10072,6 +10096,8 @@ EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	return emc;
 }
 
+#undef xxx_UT_DEBUGMSG
+#define xxx_UT_DEBUGMSG(x) UT_DEBUGMSG(x)
 
 EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
@@ -10351,26 +10377,150 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		m_prevMouseContext = EV_EMC_UNKNOWN;
 		return EV_EMC_UNKNOWN;
 	}
-	
-	if(pRun->getHyperlink() != NULL)
+
+#ifdef DEBUG	
+	xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () Run.type:%d\n", pRun->getType() ));
+	if( fp_Run* t = pRun->getNextRun() )
 	{
-		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pRun->getType()));
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () next.type:%d\n", t->getType() ));
+	}
+	if( fp_Run* t = pRun->getPrevRun() )
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () prev.type:%d\n", t->getType() ));
+	}
+#endif
+
+	if( pRun )
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () pRun.x  %ld\n", pRun->getX() ));
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () pRun.r  %ld\n", pRun->getX() + pRun->getWidth() ));
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () pRun.t  %ld\n", pRun->getType() ));
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () pRun.hl %p\n",  pRun->getHyperlink() ));
+	}
+
+	
+	fp_Run* pHyperRun = pRun;
+	if(pHyperRun && pHyperRun->getHyperlink())
+	{
+		//
+		// The hyperlink has actual text content which was clicked.
+		//
+	}
+	else
+	{
+		//
+		// Sniff around for a (1) style marker before and after the click point
+		// which has no contained content and can not contain the point.
+		//
+		pHyperRun = pRun->getNextRun();
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (a) pHyperRun %p\n", pHyperRun ));
+		if(pHyperRun)
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (a)      type %ld\n", pHyperRun->getType() ));
+		if( !pHyperRun || pHyperRun->getType() != FPRUN_HYPERLINK )
+		{
+			pHyperRun = pRun->getPrevRun();
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (b) pHyperRun %p\n", pHyperRun ));
+			if(pHyperRun)
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (b)      type %ld\n", pHyperRun->getType() ));
+
+			if( pHyperRun && pHyperRun->getType() == FPRUN_HYPERLINK )
+			{
+				if( pHyperRun->getWidth() == 0 )
+				{
+					pHyperRun = pHyperRun->getPrevRun();
+					if( pHyperRun && pHyperRun->getType() != FPRUN_HYPERLINK )
+						pHyperRun = 0;
+				}
+			}
+			else
+			{
+				pHyperRun = 0;
+			}
+		}
+
+		if( pHyperRun )
+		{
+			if( fp_Line * pLine = pHyperRun->getLine() )
+			{
+				std::auto_ptr<UT_Rect> pRec( pLine->getScreenRect() );
+				UT_sint32 xPosAdj = xPos - pRec->left;
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (x), xPosAdj %ld\n", xPosAdj ));
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (x), yPos    %ld\n", yPos ));
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (x), top     %ld\n", pRec->top ));
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (x), bot     %ld\n", pRec->top+pRec->height ));
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (x), run.x   %ld\n", pHyperRun->getX() ));
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (x), run.r   %ld\n", pHyperRun->getX()+pHyperRun->getWidth() ));
+
+				if( pHyperRun->getX() < xPosAdj && xPosAdj < (pHyperRun->getX() + pHyperRun->getWidth()))
+				{
+				}
+				else
+				{
+					pHyperRun = 0;
+				}
+			}
+		}
+	}
+
+	// DEBUG...
+	if( fp_Run* t = pHyperRun )
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () next.hl.x %d y %d w %d\n",
+						 t->getX(), t->getY(), t->getWidth() ));
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () left %ld xpoint %ld xpos %ld\n", 0, xPoint, xPos ));
+
+		// UT_sint32 xPage,yPage;
+		// getPageScreenOffsets(pPage,xPage,yPage);
+		// xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () xpos.adj %ld\n", (xPos - xPage) ));
+			
+		fp_Line * pLine = t->getLine();
+		if(pLine)
+		{
+			std::auto_ptr<UT_Rect> pRec( pLine->getScreenRect() );
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () prec left %ld w %ld\n", pRec->left, pRec->width ));
+
+			UT_sint32 xPosAdj = xPos - pRec->left;
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () xPosAdj   %ld\n", xPosAdj ));
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () run.x     %ld\n", t->getX() ));
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () run.right %ld\n", t->getX() + t->getWidth() ));
+			if( t->getX() < xPosAdj
+				&& xPosAdj < (t->getX() + t->getWidth()))
+				{
+					xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () CONTAINED!\n" ));
+				}
+		}
+	}
+	
+		
+	if(pHyperRun && pHyperRun->getHyperlink() != NULL)
+	{
+		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pHyperRun->getType()));
 		
 		if(m_prevMouseContext != EV_EMC_HYPERLINK)
 		{
 			UT_DEBUGMSG(("Mouse context is changed to hyperlink \n"));
 		}
-		fp_Line * pLine=  pRun->getLine();
+		fp_Line * pLine=  pHyperRun->getLine();
 		if(pLine)
 		{
-			UT_Rect * pRec = pLine->getScreenRect();
-			if((pRec->top <= yPos) && ((pRec->top + pRec->height) >= yPos))
+			std::auto_ptr<UT_Rect> pRec( pLine->getScreenRect() );
+			UT_sint32 xPosAdj = xPos - pRec->left;
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), xPosAdj %ld\n", xPosAdj ));
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), yPos    %ld\n", yPos ));
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), top     %ld\n", pRec->top ));
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), bot     %ld\n", pRec->top+pRec->height ));
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run.x   %ld\n", pHyperRun->getX() ));
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run.r   %ld\n", pHyperRun->getX()+pHyperRun->getWidth() ));
+
+//			if( pHyperRun->getX() < xPosAdj && xPosAdj < (pHyperRun->getX() + pHyperRun->getWidth()))
 			{
-				delete pRec;
-				m_prevMouseContext = EV_EMC_HYPERLINK;
-				return EV_EMC_HYPERLINK;
+				if((pRec->top <= yPos) && ((pRec->top + pRec->height) >= yPos))
+				{
+					xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), HYPERLINK!\n" ));
+					m_prevMouseContext = EV_EMC_HYPERLINK;
+					return EV_EMC_HYPERLINK;
+				}
 			}
-			delete pRec;
 		}
 	}
 	
@@ -10539,6 +10689,9 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	m_prevMouseContext = EV_EMC_UNKNOWN;
 	return EV_EMC_UNKNOWN;
 }
+
+#undef xxx_UT_DEBUGMSG
+#define xxx_UT_DEBUGMSG(M)
 
 /*!
  * Returns true if the (x,y) location on the screen is over a selected

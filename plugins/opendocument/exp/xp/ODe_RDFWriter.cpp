@@ -52,7 +52,7 @@
  * store that in manifest.rdf updating the pDoc so that a manifest
  * entry is created in META_INF by the manifest writing code.
  */
-bool ODe_RDFWriter::writeRDF(PD_Document* pDoc, GsfOutfile* pODT)
+bool ODe_RDFWriter::writeRDF( PD_Document* pDoc, GsfOutfile* pODT, PD_RDFModelHandle additionalRDF )
 {
 #ifndef WITH_REDLAND
     return true;
@@ -65,114 +65,12 @@ bool ODe_RDFWriter::writeRDF(PD_Document* pDoc, GsfOutfile* pODT)
     // Convert the native RDF model into a redland one
     //
     PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-    std::string rdfxml = toRDFXML( rdf );
+    std::list< PD_RDFModelHandle > ml;
+    ml.push_back( rdf );
+    ml.push_back( additionalRDF );
+    std::string rdfxml = toRDFXML( ml );
     ODe_gsf_output_write (oss, rdfxml.size(), (const guint8*)rdfxml.data() );
     ODe_gsf_output_close(oss);
-    
-#if 0    
-    RDFArguments args;
-    librdf_model* model = args.model;
-
-    UT_DEBUGMSG(("writeRDF() creating a native redland model for document RDF\n"));
-    PD_URIList subjects = rdf->getAllSubjects();
-    PD_URIList::iterator subjend = subjects.end();
-    for( PD_URIList::iterator subjiter = subjects.begin();
-         subjiter != subjend; ++subjiter )
-    {
-        PD_URI subject = *subjiter;
-        POCol polist = rdf->getArcsOut( subject );
-        POCol::iterator poend = polist.end();
-        for( POCol::iterator poiter = polist.begin();
-             poiter != poend; ++poiter )
-        {
-            // subject, predicate and object are the AbiWord native versions
-            // the ones with "r" prefix are redland native.
-            PD_URI    predicate = poiter->first;
-            PD_Object object = poiter->second;
-            
-            librdf_node* rsubject =  librdf_new_node_from_uri_string(
-                args.world, (unsigned char *)subject.toString().c_str() );
-            librdf_node* rpredicate = librdf_new_node_from_uri_string(
-                args.world, (unsigned char *)predicate.toString().c_str() );
-            librdf_node* robject = 0;
-            if( object.isLiteral() )
-            {
-                librdf_uri* datatype_uri = 0;
-                if( object.hasXSDType() )
-                {
-                    datatype_uri = librdf_new_uri(
-                        args.world,
-                        (const unsigned char*)object.getXSDType().c_str() );
-                }
-                
-                const char *xml_language = 0;
-                robject =  librdf_new_node_from_typed_literal(
-                    args.world,
-                    (unsigned char *)object.toString().c_str(),
-                    xml_language, datatype_uri );
-
-                if(datatype_uri)
-                    librdf_free_uri(datatype_uri);
-            }
-            else
-            {
-                robject = librdf_new_node_from_uri_string(
-                    args.world, (unsigned char *)object.toString().c_str() );
-            }
-
-            UT_DEBUGMSG(("writeRDF() st:%d pt:%d ot:%d s:%s p:%s o:%s\n",
-                         librdf_node_get_type(rsubject),
-                         librdf_node_get_type(rpredicate),
-                         librdf_node_get_type(robject),
-                         subject.toString().c_str(),
-                         predicate.toString().c_str(),
-                         object.toString().c_str()
-                            ));
-            
-            int rc = librdf_model_add( model, rsubject, rpredicate, robject );
-            if( rc != 0 )
-            {
-                // failed
-                librdf_free_node( rsubject );
-                librdf_free_node( rpredicate );
-                librdf_free_node( robject );
-                UT_DEBUGMSG(("writeRDF() failed to add triple to redland model\n"));
-                ODe_gsf_output_close(oss);
-                return false;
-            }
-            dumpModelToTest( args );
-        }
-    }
-    UT_DEBUGMSG(("writeRDF() native redland model size:%d\n",
-                 librdf_model_size(model)));
-
-    //
-    // Convert redland model to RDF/XML
-    //
-    librdf_serializer* serializer = librdf_new_serializer(
-        args.world, "rdfxml", 0, 0 );
-    librdf_uri* base_uri = 0;
-    size_t data_sz = 0;
-    // It seems from reading the redland source that "data" is allocated using
-    // malloc() and handed back to us to take care of.
-    unsigned char* data = librdf_serializer_serialize_model_to_counted_string
-        ( serializer, base_uri, model, &data_sz  );
-    UT_DEBUGMSG(("writeRDF() serializer:%p data_sz:%d\n",
-                 serializer, data_sz ));
-    
-    if( !data )
-    {
-        // failed
-        UT_DEBUGMSG(("writeRDF() failed to serialize model using serializer:%p\n", serializer ));
-        librdf_free_serializer(serializer);
-        return false;
-    }
-    
-    ODe_gsf_output_write (oss, data_sz, data );
-    free(data);
-    librdf_free_serializer(serializer);
-    ODe_gsf_output_close(oss);
-#endif
     
     //
     // add an entry that the manifest writing code will pick up

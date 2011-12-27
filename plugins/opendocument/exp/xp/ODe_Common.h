@@ -33,6 +33,8 @@
 #include <gsf/gsf-output.h>
 #include <stdio.h>
 
+#include <iosfwd>
+
 // Abiword classes
 class UT_UTF8String;
 
@@ -45,6 +47,7 @@ void ODe_writeToStream (GsfOutput* stream, const char* const message [],
     size_t nElements);
 
 void ODe_writeUTF8String (GsfOutput* output, const UT_UTF8String& str);
+void ODe_write (GsfOutput* output, std::stringstream& ss );
 
 void ODe_writeAttribute(UT_UTF8String& rOutput,
                         const gchar* pName,

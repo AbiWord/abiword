@@ -27,6 +27,7 @@
 
 // Internal includes
 #include "ODi_StreamListener.h"
+#include "ODi_ContentStreamAnnotationMatcher_ListenerState.h"
 #include "ODi_ManifestStream_ListenerState.h"
 
 // AbiWord includes
@@ -177,14 +178,6 @@ UT_Error IE_Imp_OpenDocument::_loadFile (GsfInput * oo_src)
     else if ( UT_OK != err ) {
         return err;
     }
-    
-    err = _handleContentStream ();
-    if ( UT_IE_TRY_RECOVER == err ) {
-        try_recover = true;        
-    }
-    else if ( UT_OK != err ) {
-        return err;
-    }
 
     UT_DEBUGMSG(("IE_Imp_OpenDocument::_loadFile()\n"));
     err = _handleRDFStreams ();
@@ -194,6 +187,15 @@ UT_Error IE_Imp_OpenDocument::_loadFile (GsfInput * oo_src)
     else if ( UT_OK != err ) {
         return err;
     }
+    
+    err = _handleContentStream ();
+    if ( UT_IE_TRY_RECOVER == err ) {
+        try_recover = true;        
+    }
+    else if ( UT_OK != err ) {
+        return err;
+    }
+
     
     if((err == UT_OK) && try_recover) {
         err = UT_IE_TRY_RECOVER;
@@ -388,7 +390,42 @@ UT_Error IE_Imp_OpenDocument::_handleStylesStream ()
 UT_Error IE_Imp_OpenDocument::_handleContentStream ()
 {
     UT_Error error;
+
+    //
+    // MIQ: We need to prepass the ODT file to see which annotations
+    // have a valid annotation-end tag. This is because if there is no
+    // valid tag then we need to emit an PTO_Annotation object into the
+    // document at the time that the annotation tag closes.
+    //
+    // ODi_Abi_Data* m_pAbiData = new ODi_Abi_Data(getDoc(), m_pGsfInfile);    
+    // ODi_ContentStreamAnnotationMatcher_ListenerState* matcher =
+    //     new ODi_ContentStreamAnnotationMatcher_ListenerState( getDoc(),
+    //                                                           m_pGsfInfile,
+    //                                                           m_pStyles,
+    //                                                           m_fontFaceDecls,
+    //                                                           *m_pElementStack,
+    //                                                           *m_pAbiData );
+
     
+    error = m_pStreamListener->setState("ContentStreamAnnotationMatcher");
+    if (error != UT_OK) {
+        return error;
+    }
+    
+//    ODi_ListenerState* ls = m_pStreamListener->getCurrentState();
+    _handleStream (m_pGsfInfile, "content.xml", *m_pStreamListener);
+
+    UT_DEBUGMSG(("rangedAnnotations.sz:%ld\n", m_pAbiData->m_rangedAnnotationNames.size() ));
+    
+    // if( ODi_ContentStreamAnnotationMatcher_ListenerState* matcher =
+    //     dynamic_cast<ODi_ContentStreamAnnotationMatcher_ListenerState*>(ls))
+    // {
+    //     const std::set< std::string >& rangedAnnotations = matcher->getRangedAnnotationNames();
+    //     UT_DEBUGMSG(("rangedAnnotations.sz:%ld\n", rangedAnnotations.size() ));
+    // }
+    UT_DEBUGMSG(("rangedAnnotations xxx\n" ));
+    
+
     error = m_pStreamListener->setState("ContentStream");
     if (error != UT_OK) {
         return error;

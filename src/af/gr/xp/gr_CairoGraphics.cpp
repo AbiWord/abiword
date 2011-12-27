@@ -2849,7 +2849,8 @@ const std::vector<std::string> & GR_CairoGraphics::getAllFontNames(void)
 		PangoFontFamily **font_families;
 		int n_families;
 		pango_font_map_list_families(fontmap, &font_families, &n_families);
-			
+
+		UT_DEBUGMSG(("@@@@ ===== Loading system fonts n_families:%ld=====\n", n_families));
 		for(UT_sint32 i = 0; i < n_families; ++i)
 		{
 			const char *family = pango_font_family_get_name(font_families[i]);
@@ -2864,6 +2865,7 @@ const std::vector<std::string> & GR_CairoGraphics::getAllFontNames(void)
 					continue;
 				}
 			}
+
 			PangoFontFace ** faces;
 			int n_faces;
 			bool is_scalable = true;

@@ -36,7 +36,7 @@ class pt_PieceTable;
 class PP_AttrProp;
 class RDFModel_SPARQLLimited;
 class pf_Frag;
-
+class pf_Frag_Object;
 
 class   PD_DocumentRDFMutation;
 typedef boost::shared_ptr<PD_DocumentRDFMutation> PD_DocumentRDFMutationHandle;
@@ -344,12 +344,19 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     PD_RDFModelHandle getRDFAtPosition( PT_DocPosition pos );
     PD_RDFModelHandle getRDFForID( const std::string& xmlid );
 
+    std::list< pf_Frag_Object* > getObjectsInScopeOfTypesForRange(
+        std::set< PTObjectType > objectTypes,
+        std::pair< PT_DocPosition, PT_DocPosition > range );
+    std::set< std::string >& addXMLIDsForObjects( std::set< std::string >& ret, std::list< pf_Frag_Object* > objectList );
+    PT_DocPosition addXMLIDsForBlockAndTableCellForPosition( std::set< std::string >& col, PT_DocPosition pos );
+
+    
     void addRDFForID( const std::string& xmlid, PD_DocumentRDFMutationHandle& m );
-    std::list< std::string >& addRelevantIDsForPosition( std::list< std::string >& ret,
-                                                         PT_DocPosition pos );
-    std::list< std::string >& addRelevantIDsForRange( std::list< std::string >& ret,
+    std::set< std::string >& addRelevantIDsForPosition( std::set< std::string >& ret,
+                                                        PT_DocPosition pos );
+    std::set< std::string >& addRelevantIDsForRange( std::set< std::string >& ret,
                                                       PD_DocumentRange* range );
-    std::list< std::string >& addRelevantIDsForRange( std::list< std::string >& ret,
+    std::set< std::string >& addRelevantIDsForRange( std::set< std::string >& ret,
                                                       std::pair< PT_DocPosition, PT_DocPosition > range );
     
     std::set< std::string >& getAllIDs( std::set< std::string >& ret );
@@ -357,8 +364,8 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 
 
     PD_RDFModelHandle createRestrictedModelForXMLIDs( const std::string& writeID,
-                                                      const std::list< std::string >& xmlids );
-    PD_RDFModelHandle createRestrictedModelForXMLIDs( const std::list< std::string >& xmlids );
+                                                      const std::set< std::string >& xmlids );
+    PD_RDFModelHandle createRestrictedModelForXMLIDs( const std::set< std::string >& xmlids );
 
     virtual void maybeSetDocumentDirty();
     
@@ -368,12 +375,14 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     void dumpObjectMarkersFromDocument();
     void runPlay();
 
-    static std::string getSPARQL_LimitedToXMLIDList( const std::list< std::string >& xmlids,
+    static std::string getSPARQL_LimitedToXMLIDList( const std::set< std::string >& xmlids,
                                                      const std::string& extraPreds = "" );
 
     std::string makeLegalXMLID( const std::string& s );
     void relinkRDFToNewXMLID( const std::string& oldxmlid, const std::string& newxmlid, bool deepCopyRDF = false );
 
+    PD_RDFModelHandle createScratchModel();
+    
   protected:
     PD_Document* m_doc;
   private:
@@ -387,9 +396,9 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     virtual UT_Error setAP( PP_AttrProp* newAP );
     virtual bool isStandAlone() const;
 
-    std::list< std::string >& priv_addRelevantIDsForPosition( std::list< std::string >& ret,
-                                                              PT_DocPosition pos,
-                                                              PT_DocPosition searchBackThisFar = 0 );
+    std::set< std::string >& priv_addRelevantIDsForPosition( std::set< std::string >& ret,
+                                                             PT_DocPosition pos,
+                                                             PT_DocPosition searchBackThisFar = 0 );
     
   protected:
     PD_ObjectList& apGetObjects(     const PP_AttrProp* AP, PD_ObjectList& ret, const PD_URI& s, const PD_URI& p );
@@ -479,7 +488,9 @@ class ABI_EXPORT PD_DocumentRDFMutation
     bool add( const PD_RDFStatement& st );
     void remove( const PD_RDFStatement& st );
     int add( PD_RDFModelHandle model );
-        
+
+    PD_URI createBNode();
+    
     virtual UT_Error commit();
     virtual void rollback();
 };
