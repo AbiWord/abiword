@@ -334,12 +334,14 @@ static std::string readLengthPrefixedString( std::istream& iss )
     int len = 0;
     iss >> len >> std::noskipws >> ch;
 
+#if DEBUG
     if( DEBUG_LOWLEVEL_IO )
     {
-        UT_DebugOnly<std::istream::pos_type> loc = iss.tellg();
-        UT_DEBUGMSG(("PD_DocumentRDF::readLengthPrefixedString() len:%d loc:%d\n", len,
-					 (std::istream::pos_type)loc));
+        off_t loc = iss.tellg();
+        UT_DEBUGMSG(("PD_DocumentRDF::readLengthPrefixedString() len:%d loc:%ld\n", 
+					 len, (long)loc));
     }
+#endif
     
     char* p = new char[len+2];
     memset( p, 0, len+2 );
@@ -2275,8 +2277,10 @@ static void dump( const std::string& msg, PD_RDFModelIterator iter, PD_RDFModelI
     UT_DEBUGMSG(("dump(top) msg::%s\n", msg.c_str() ));
     for( ; iter != e; ++iter )
     {
-        UT_DebugOnly<const PD_RDFStatement&> st(*iter);
-        UT_DEBUGMSG((" st:%s\n", ((const PD_RDFStatement&)st).toString().c_str() ));
+#if DEBUG
+        const PD_RDFStatement& st(*iter);
+        UT_DEBUGMSG((" st:%s\n", st.toString().c_str() ));
+#endif
         ++count;
     }
     UT_DEBUGMSG(("dump(end) count:%d msg::%s\n", count, msg.c_str() ));
@@ -2759,9 +2763,9 @@ class ABI_EXPORT PD_RDFMutation_XMLIDLimited
 
                 PD_ObjectList ul = rdf->getObjects( subj, idref );
                 PD_DocumentRDFMutationHandle m = rdf->createMutation();
-                for( PD_ObjectList::iterator iter = ul.begin(); iter != ul.end(); ++iter )
+                for( PD_ObjectList::iterator iter2 = ul.begin(); iter2 != ul.end(); ++iter2 )
                 {
-                    m->remove( s, idref, *iter );
+                    m->remove( s, idref, *iter2 );
                 }
                 m->commit();
             }
@@ -3021,11 +3025,11 @@ PD_DocumentRDFMutation::handleCollabEvent( gchar** szAtts, gchar** szProps )
  * piecetable/documentRDF is updated to use the new RDF APIndex.
  */
 UT_Error
-PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add, PP_AttrProp* remove )
+PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remove_ )
 {
     UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove (general) rdf:%p\n", m_rdf));
-    m_rdf->apDumpModel( remove, "remove from model" );
-    m_rdf->apDumpModel( add, "add to model" );
+    m_rdf->apDumpModel( remove_, "remove from model" );
+    m_rdf->apDumpModel( add_, "add to model" );
 
 
     /*
@@ -3047,7 +3051,7 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add, PP_AttrProp* remov
         }
 
         const gchar* szPropertiesToRemove = 0;
-        if( remove->getProperty( szExistingName, szPropertiesToRemove ))
+        if( remove_->getProperty( szExistingName, szPropertiesToRemove ))
         {
             POCol existingProps = decodePOCol(szExistingValue);
             POCol removeProps   = decodePOCol(szPropertiesToRemove);
@@ -3087,13 +3091,13 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add, PP_AttrProp* remov
     }
     
     // add all the new triples
-	propCount = add->getPropertyCount();
+	propCount = add_->getPropertyCount();
     for( size_t i = 0; i<propCount; ++i )
     {
         const gchar * szName = 0;
         const gchar * szValue = 0;
         
-        if( !add->getNthProperty( i, szName, szValue))
+        if( !add_->getNthProperty( i, szName, szValue))
         {
             // FIXME: failed to get old prop
             continue;
