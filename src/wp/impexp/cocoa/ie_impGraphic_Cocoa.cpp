@@ -38,7 +38,8 @@ const IE_SuffixConfidence *IE_ImpGraphicCocoa_Sniffer::getSuffixConfidence()
 
     suffixConfidence = new IE_SuffixConfidence[[fileTypes count] + 1];
 
-    for (NSString *aType in [fileTypes copy])
+	NSEnumerator* e = [fileTypes objectEnumerator];
+    while(NSString *aType = [e nextObject])
     {
         suffixConfidence[idx].suffix = [aType UTF8String];
         suffixConfidence[idx].confidence = UT_CONFIDENCE_PERFECT;

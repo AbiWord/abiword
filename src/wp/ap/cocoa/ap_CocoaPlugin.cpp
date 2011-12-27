@@ -412,7 +412,8 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
     bool first = true;
 
-    for (NSString *key in [options copy])
+	NSEnumerator* keyEnumerator = [options keyEnumerator];
+    while(NSString *key = [keyEnumerator nextObject])
     {
         NSString *value = (NSString *) [options objectForKey:key];
         if (value)

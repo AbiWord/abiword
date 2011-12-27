@@ -190,8 +190,12 @@ void AP_CocoaFrameImpl::_setHScrollbarValues()
 	}
 	else {
 		[m_hScrollbar setEnabled:YES];
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
 		[m_hScrollbar setKnobProportion:knob];
 		[m_hScrollbar setDoubleValue:value];
+#else
+		[m_hScrollbar setFloatValue:value knobProportion:knob];
+#endif
 	}
 	[m_hScrollbar setNeedsDisplay:YES];
 	[[(AP_CocoaFrameController*)_getController() getHRuler] setNeedsDisplay:YES];
@@ -221,8 +225,12 @@ void AP_CocoaFrameImpl::_setVScrollbarValues()
 	}
 	else {
 		[m_vScrollbar setEnabled:YES];
-		[m_vScrollbar setKnobProportion:knob];
-		[m_vScrollbar setDoubleValue:value];
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 1050
+		[m_hScrollbar setKnobProportion:knob];
+		[m_hScrollbar setDoubleValue:value];
+#else
+		[m_hScrollbar setFloatValue:value knobProportion:knob];
+#endif
 	}
 	[m_vScrollbar setNeedsDisplay:YES];
 	// [[(_getController()) getVRuler] setNeedsDisplay:YES]; // ??
@@ -420,16 +428,16 @@ void AP_CocoaFrameImpl::_createDocView(GR_Graphics* &pG)
 {
 	XAP_Frame*	pFrame = getFrame();
 	NSView*		docArea = [_getController() getMainView];
-	NSArray*	docAreaSubviews;
 
-    docAreaSubviews = [docArea subviews];
+    NSArray* docAreaSubviews = [[docArea subviews] copy];
     if ([docAreaSubviews count] > 0) {
-        for (NSView *aSubview in [docAreaSubviews copy])
-            [aSubview removeFromSuperviewWithoutNeedingDisplay];
+		[docAreaSubviews makeObjectsPerformSelector:@selector(removeFromSuperviewWithoutNeedingDisplay)];
         m_hScrollbar = NULL;
         m_vScrollbar = NULL;
         m_docAreaGRView = NULL;
     }
+	[docAreaSubviews release];
+
 	NSRect frame = [docArea bounds];
 	NSRect controlFrame;
 	

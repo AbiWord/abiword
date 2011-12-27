@@ -220,16 +220,15 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 	[templateDirs addObject:[NSString stringWithFormat:@"%s/templates/", XAP_App::getApp()->getAbiSuiteLibDir()]];
 	[templateDirs addObject:[NSString stringWithFormat:@"%s/templates/", [[[NSBundle mainBundle] resourcePath] UTF8String]]];
 
-    for (NSString *obj in [templateDirs copy])
+	NSEnumerator* e = [templateDirs objectEnumerator];
+    while(NSString *dirPath = [e nextObject])
     {
-        NSArray* files = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:obj error:NULL];
-        for (NSString *obj2 in [files copy])
+        NSDirectoryEnumerator* dirEnumerator = [[NSFileManager defaultManager] enumeratorAtPath:dirPath];
+        while(NSString *file = [dirEnumerator nextObject])
         {
-            NSRange range = [obj2 rangeOfString:@".awt" options:NSLiteralSearch];
-            if (range.location != NSNotFound)
-            {
-                [_dataSource addString:obj2];
-                [m_templates addObject:[NSString stringWithFormat:@"%@%@", obj, obj2]];
+			if([[file pathExtension] isEqualToString:@"awt"]) {
+                [_dataSource addString:file];
+                [m_templates addObject:[dirPath stringByAppendingPathComponent:file]];
             }
         }
     }

@@ -356,7 +356,8 @@ XAP_Frame * XAP_CocoaApp::_getFrontFrame(void)
     XAP_Frame* myFrame = NULL;
     NSArray* array = [NSApp orderedWindows];
 
-    for (NSWindow *win in [array copy])
+	NSEnumerator* e = [array objectEnumerator];
+    while(NSWindow *win = [e nextObject])
     {
         id ctrl = [win delegate];
         if ([ctrl isKindOfClass:[XAP_CocoaFrameController class]])

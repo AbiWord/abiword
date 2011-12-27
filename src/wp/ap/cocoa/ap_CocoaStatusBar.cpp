@@ -197,7 +197,8 @@ void AP_CocoaStatusBar::_repositionFields(NSArray *fields)
 	float freeWidth = maxWidth - m_requestedWidth;
 	float prevX = 0;
 
-    for (NSTextField *obj in [fields copy])
+    NSEnumerator* e = [fields objectEnumerator];
+    while(NSTextField *obj = [e nextObject])
     {
         int tag = [obj tag];
         NSRect frame = [obj frame];

@@ -75,7 +75,8 @@ bool AP_CocoaToolbar_FontCombo::populate(void)
 
     m_vecContents.clear();
 
-    for (NSString *item in [list copy])
+    NSEnumerator* e = [list objectEnumerator];
+    while(NSString *item = [e nextObject])
     {
         const char *fName = g_strdup([item UTF8String]);
         UT_ASSERT (fName);
