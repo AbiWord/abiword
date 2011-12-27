@@ -124,7 +124,7 @@ const gchar ** OXML_ObjectWithAttrProp::getProperties() const
 const gchar ** OXML_ObjectWithAttrProp::getAttributesWithProps() const
 {
 	std::string propstring = _generatePropsString();
-	if (!propstring.compare("")) 
+	if (!propstring.empty()) 
         return getAttributes();
 // WTF is that?
 //	UT_return_val_if_fail(UT_OK == setAttribute("fakeprops", propstring.c_str()), NULL);
