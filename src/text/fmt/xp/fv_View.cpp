@@ -10034,24 +10034,23 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 		pRun = pBlock->findRunAtOffset(blockOffset);
 	}
 
-	UT_DEBUGMSG(("FV_View::getHyperLinkRun() run:%p\n", pRun ));
-	if( pRun )
-	{
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.x:%d\n", pRun->getX() ));
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.w:%d\n", pRun->getWidth() ));
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.t:%d\n", pRun->getType() ));
-	}
-	
+	// 
+	// If we didn't find the hyperlink run, then we might be dealing
+	// with an annotation that is a single point rather than a range.
+	// As such, grab the previous run and check if it is a hyperlink,
+	// if so then make sure we return the run for the start of the hyperlink
+	// 
 	if( pRun && pRun->getType() != FPRUN_HYPERLINK )
 	{
 		pRun = pRun->getPrevRun();
 		if( pRun && pRun->getType() == FPRUN_HYPERLINK && pRun->getWidth() == 0 )
 			pRun = pRun->getPrevRun();
+
 		if( pRun )
 		{
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.x:%d\n", pRun->getX() ));
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.w:%d\n", pRun->getWidth() ));
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.t:%d\n", pRun->getType() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.x:%d\n", pRun->getX() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.w:%d\n", pRun->getWidth() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.t:%d\n", pRun->getType() ));
 		}
 		
 		if( pRun && pRun->getType() != FPRUN_HYPERLINK )
@@ -10398,24 +10397,34 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () pRun.hl %p\n",  pRun->getHyperlink() ));
 	}
 
-	
+	//
+	// Try to find the hyperlink for this mouse position. If the user
+	// has clicked directly on a hyperlink or annotation then pRun
+	// will already be able to produce the hyperlink. For annotations
+	// that are on a single point in the document like the "(1)"
+	// marker in "foo (1) bar" then we have to poke around a bit to
+	// set pHyperRun properly.
+	//
 	fp_Run* pHyperRun = pRun;
 	if(pHyperRun && pHyperRun->getHyperlink())
 	{
 		//
-		// The hyperlink has actual text content which was clicked.
+		// The hyperlink has actual text content which was clicked,
+		// nothing to do.
 		//
 	}
 	else
 	{
 		//
-		// Sniff around for a (1) style marker before and after the click point
-		// which has no contained content and can not contain the point.
+		// Sniff around for a (1) style marker before and after the
+		// click point which has no contained content and can not
+		// contain the point.
 		//
 		pHyperRun = pRun->getNextRun();
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (a) pHyperRun %p\n", pHyperRun ));
 		if(pHyperRun)
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (a)      type %ld\n", pHyperRun->getType() ));
+		
 		if( !pHyperRun || pHyperRun->getType() != FPRUN_HYPERLINK )
 		{
 			pHyperRun = pRun->getPrevRun();
@@ -10438,6 +10447,10 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			}
 		}
 
+		//
+		// As we searched around for the pHyperRun then we should check that
+		// the mouse is actually over the pHyperRun we have found.
+		//
 		if( pHyperRun )
 		{
 			if( fp_Line * pLine = pHyperRun->getLine() )
@@ -10453,45 +10466,20 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 
 				if( pHyperRun->getX() < xPosAdj && xPosAdj < (pHyperRun->getX() + pHyperRun->getWidth()))
 				{
+					// Everything is fine, pHyperRun is under the mouse.
 				}
 				else
 				{
+					// We found a run that is not under the mouse
 					pHyperRun = 0;
 				}
 			}
 		}
 	}
 
-	// DEBUG...
-	if( fp_Run* t = pHyperRun )
-	{
-		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () next.hl.x %d y %d w %d\n",
-						 t->getX(), t->getY(), t->getWidth() ));
-		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () left %ld xpoint %ld xpos %ld\n", 0, xPoint, xPos ));
-
-		// UT_sint32 xPage,yPage;
-		// getPageScreenOffsets(pPage,xPage,yPage);
-		// xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () xpos.adj %ld\n", (xPos - xPage) ));
-			
-		fp_Line * pLine = t->getLine();
-		if(pLine)
-		{
-			std::auto_ptr<UT_Rect> pRec( pLine->getScreenRect() );
-			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () prec left %ld w %ld\n", pRec->left, pRec->width ));
-
-			UT_sint32 xPosAdj = xPos - pRec->left;
-			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () xPosAdj   %ld\n", xPosAdj ));
-			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () run.x     %ld\n", t->getX() ));
-			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () run.right %ld\n", t->getX() + t->getWidth() ));
-			if( t->getX() < xPosAdj
-				&& xPosAdj < (t->getX() + t->getWidth()))
-				{
-					xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () CONTAINED!\n" ));
-				}
-		}
-	}
-	
-		
+	//
+	// If we are over a hyperlink then return that context
+	//
 	if(pHyperRun && pHyperRun->getHyperlink() != NULL)
 	{
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run type %d\n", pHyperRun->getType()));
@@ -10512,14 +10500,11 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run.x   %ld\n", pHyperRun->getX() ));
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), run.r   %ld\n", pHyperRun->getX()+pHyperRun->getWidth() ));
 
-//			if( pHyperRun->getX() < xPosAdj && xPosAdj < (pHyperRun->getX() + pHyperRun->getWidth()))
+			if((pRec->top <= yPos) && ((pRec->top + pRec->height) >= yPos))
 			{
-				if((pRec->top <= yPos) && ((pRec->top + pRec->height) >= yPos))
-				{
-					xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), HYPERLINK!\n" ));
-					m_prevMouseContext = EV_EMC_HYPERLINK;
-					return EV_EMC_HYPERLINK;
-				}
+				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), HYPERLINK!\n" ));
+				m_prevMouseContext = EV_EMC_HYPERLINK;
+				return EV_EMC_HYPERLINK;
 			}
 		}
 	}
