@@ -81,6 +81,7 @@ private:
 - (void)selectStyleNode:(StyleNode *)childNode childOf:(StyleNode *)parentNode;
 - (IBAction)applyAction:(id)sender;
 - (IBAction)outlineAction:(id)sender;
+- (IBAction)outlineDoubleAction:(id)sender;
 - (void)setSensitivity:(bool)bSens;
 @end
 
