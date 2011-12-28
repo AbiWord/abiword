@@ -10047,7 +10047,6 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 		UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.w:%d\n", pRun->getWidth() ));
 		UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.hl:%p\n", pRun->getHyperlink() ));
 	}
-
 	// Make sure we found the starting pRun for an annotation which is
 	// a single point in the document.
 	if( pRun && pRun->getType() == FPRUN_HYPERLINK && pRun->getWidth() == 0 )
@@ -10061,11 +10060,12 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 	// As such, grab the previous run and check if it is a hyperlink,
 	// if so then make sure we return the run for the start of the hyperlink
 	// 
-	if( pRun && pRun->getType() != FPRUN_HYPERLINK )
+	if( pRun && pRun->getType() != FPRUN_HYPERLINK && !pRun->getHyperlink() )
 	{
 		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.x:%d\n", pRun->getX() ));
 		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.w:%d\n", pRun->getWidth() ));
 		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.t:%d\n", pRun->getType() ));
+		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.nl:%p\n", pRun->getHyperlink() ));
 		if( pRun->getPrevRun() && pRun->getPrevRun()->getType() == FPRUN_HYPERLINK )
 		{
 			UT_DEBUGMSG(("FV_View::getHyperLinkRun(prev) run.x:%d\n", pRun->getX() ));
@@ -10093,9 +10093,7 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 			UT_DEBUGMSG(("FV_View::getHyperLinkRun(3 reset) run.x:%d\n", pRun->getX() ));
 			pRun = 0;
 		}
-		
 	}
-	
 	if(pRun && pRun->getHyperlink() != NULL)
 	{
 		UT_DEBUGMSG(("FV_View::getHyperLinkRun(ret) run.hl:%p\n", pRun->getHyperlink() ));
@@ -10117,6 +10115,8 @@ void  FV_View::getMousePos(UT_sint32 *x, UT_sint32 * y)
 	*y = m_iMouseY;
 }
 
+// #undef   xxx_UT_DEBUGMSG
+// #define  xxx_UT_DEBUGMSG(x) UT_DEBUGMSG(x)
 
 EV_EditMouseContext FV_View::getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 {
@@ -10715,6 +10715,10 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 	m_prevMouseContext = EV_EMC_UNKNOWN;
 	return EV_EMC_UNKNOWN;
 }
+
+
+// #undef   xxx_UT_DEBUGMSG
+// #define  xxx_UT_DEBUGMSG(x) 
 
 
 /*!
