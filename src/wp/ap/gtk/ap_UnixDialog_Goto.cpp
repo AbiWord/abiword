@@ -562,7 +562,6 @@ AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/)
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Goto"));
 	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));
 	m_lbLine = GTK_WIDGET(gtk_builder_get_object(builder, "lbLine"));
-	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));
 	m_lbBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lbBookmarks"));
 	m_sbPage = GTK_WIDGET(gtk_builder_get_object(builder, "sbPage"));
 	m_sbLine = GTK_WIDGET(gtk_builder_get_object(builder, "sbLine"));
