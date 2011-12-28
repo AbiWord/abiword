@@ -19,11 +19,7 @@
 
 #include <stdio.h>
 
-#include <MathView/ShapingContext.hh>
-#include <MathView/ShaperManager.hh>
-#include <MathView/MathGraphicDevice.hh>
-#include <MathView/MathMLElement.hh>
-#include <MathView/MathVariantMap.hh>
+#include "mathview_proxy.h"
 
 #include "gr_Abi_AreaFactory.h"
 #include "gr_Abi_StandardSymbolsShaper.h"

@@ -20,7 +20,7 @@
 #ifndef __gr_Abi_StandardSymbolsShaper_h__
 #define __gr_Abi_StandardSymbolsShaper_h__
 
-#include <MathView/StandardSymbolsShaper.hh>
+#include "mathview_proxy.h"
 
 #include "ut_types.h" // for UT_UCS4Char
 #include "gr_Graphics.h"

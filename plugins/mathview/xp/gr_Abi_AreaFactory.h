@@ -20,7 +20,7 @@
 #ifndef __gr_Abi_AreaFactory_h__
 #define __gr_Abi_AreaFactory_h__
 
-#include <MathView/AreaFactory.hh>
+#include "mathview_proxy.h"
 
 #include "gr_Abi_ColorArea.h"
 //#include "gr_Abi_BackgroundArea.h"

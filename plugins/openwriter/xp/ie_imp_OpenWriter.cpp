@@ -712,10 +712,12 @@ UT_Error IE_Imp_OpenWriter::_loadFile (GsfInput * oo_src)
 
   if ( UT_OK != (err = _handleMimetype ()))
     return err; // we require a mimetype
-  if ( UT_OK != _handleMetaStream ())
+  if ( UT_OK != _handleMetaStream ()) {
     UT_DEBUGMSG(("IE_Imp_OpenWriter::_loadFile(): missing meta stream\n"));
-  if ( UT_OK != _handleStylesStream ())
+  }
+  if ( UT_OK != _handleStylesStream ()) {
     UT_DEBUGMSG(("IE_Imp_OpenWriter::_loadFile(): missing styles stream\n"));
+  }
   if ( UT_OK != (err = _handleContentStream ()))
     return err; // abort because content.xml stream is compulsory
     

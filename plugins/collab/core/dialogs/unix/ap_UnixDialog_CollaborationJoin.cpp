@@ -176,16 +176,12 @@ void AP_UnixDialog_CollaborationJoin::_populateWindowData()
 	//gtk_tree_selection_set_select_function (sel, tree_select_filter, NULL, NULL);
 	
 	
-	gint col_offset;
-	GtkTreeViewColumn* column;
-	GtkCellRenderer *renderer;
-	renderer = gtk_cell_renderer_text_new ();
-	col_offset = gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wBuddyTree), 
-												-1,	"Buddy", 
-												renderer, 
-												"text", DESCRIPTION_COLUMN,
-												(void*)NULL);
-	column = gtk_tree_view_get_column (GTK_TREE_VIEW (m_wBuddyTree), col_offset - 1);	
+	GtkCellRenderer *renderer = gtk_cell_renderer_text_new ();
+	/*gint col_offset =*/ gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wBuddyTree), 
+									   -1,	"Buddy", 
+									   renderer, 
+									   "text", DESCRIPTION_COLUMN,
+									   (void*)NULL);
 	
 	gtk_widget_show_all(m_wBuddyTree);
 }

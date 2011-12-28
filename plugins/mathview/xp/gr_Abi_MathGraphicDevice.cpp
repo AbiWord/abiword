@@ -65,7 +65,7 @@ GR_Abi_MathGraphicDevice::GR_Abi_MathGraphicDevice(const SmartPtr<AbstractLogger
 GR_Abi_MathGraphicDevice::~GR_Abi_MathGraphicDevice()
 { }
 
-scaled GR_Abi_MathGraphicDevice::defaultLineThickness(const class FormattingContext& FC) const
+scaled GR_Abi_MathGraphicDevice::defaultLineThickness(const class FormattingContext& /*FC*/) const
 {
   return scaled(0.25);
 }

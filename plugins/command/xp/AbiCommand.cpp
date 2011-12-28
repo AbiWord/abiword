@@ -290,7 +290,7 @@ AbiCommand::doCommands (void)
                 std::stringstream ss;
                 ss << s << endl;
                 char *p = 0;
-                while( p = readline ("AbiWord:> ") )
+                while( (p = readline ("AbiWord:> ")) )
                 {
                     s = p;
                     ss << s << endl;
@@ -684,10 +684,8 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		}
         return -1;
     }
-	else if (strcmp (pCom0->utf8_str (), "run") == 0)
-	{
-        int runForSeconds = 0;
-        
+    else if (strcmp (pCom0->utf8_str (), "run") == 0)
+    {
         if( pToks->getItemCount () > 1 )
         {
             int runForSeconds = toType<int>( pToks->getNthItem (1)->utf8_str());
@@ -707,8 +705,8 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
         
         return 0;
     }
-	else if (strcmp (pCom0->utf8_str (), "paste") == 0)
-	{
+    else if (strcmp (pCom0->utf8_str (), "paste") == 0)
+    {
         bool bHonorFormatting = true;
         
         if( pToks->getItemCount () > 1 )
@@ -810,16 +808,16 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 	else if (cmd == "rdf-dump")
     {
 //        model->dumpModel( "rdf-dump" );
-        int count = 0;
+        int rdfCount = 0;
         PD_RDFModelIterator iter = model->begin();
         PD_RDFModelIterator    e = model->end();
         for( ; iter != e; ++iter )
         {
             const PD_RDFStatement& st = *iter;
             cout << "st:" << st.toString().c_str() << endl;
-            ++count;
+            ++rdfCount;
         }
-        cout << "size:" << count << endl;
+        cout << "size:" << rdfCount << endl;
         
         return 0;
     }
@@ -1131,7 +1129,6 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
             PD_ResultBindings_t bindings = q->executeQuery( sparql );
             cout << bindings.size() << endl;
             cout << "#-----------------" << endl;
-            PD_ResultBindings_t::iterator end = bindings.end();
             for( PD_ResultBindings_t::iterator iter = bindings.begin();
                  iter != bindings.end(); ++iter )
             {
@@ -1695,11 +1692,11 @@ AbiCommand::insertText (const UT_GenericVector<const UT_UTF8String*> * pToks)
             if( i < pToks->getItemCount() )
             {
                 const UT_UTF8String text(" ");
-                const UT_UTF8String* pText = &text;
-                UT_UCS4Char *pUCSText =
-                    static_cast < UT_UCS4Char * >(UT_calloc (pText->size () + 1, sizeof (UT_UCS4Char)));
-                UT_UCS4_strcpy_char (pUCSText, pText->utf8_str ());
-                static_cast < FV_View * >(m_pCurView)->cmdCharInsert (pUCSText, pText->size ());
+                const UT_UTF8String* pText2 = &text;
+                pUCSText =
+                    static_cast < UT_UCS4Char * >(UT_calloc (pText2->size () + 1, sizeof (UT_UCS4Char)));
+                UT_UCS4_strcpy_char (pUCSText, pText2->utf8_str ());
+                static_cast < FV_View * >(m_pCurView)->cmdCharInsert (pUCSText, pText2->size ());
                 FREEP (pUCSText);
             }
         }

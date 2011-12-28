@@ -484,7 +484,7 @@ void s_KWord_1_Listener::_writeMarginSize(PT_AttrPropIndex api, const char * nam
 	UT_String buf;
 	const gchar * szValue;
 	const PP_AttrProp * pAP = NULL;
-	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
+	UT_DebugOnly<bool> bHaveProp = m_pDocument->getAttrProp(api,&pAP);
 	UT_ASSERT((bHaveProp));
 
 	UT_String_sprintf(buf, "page-margin-%s", name);

@@ -641,8 +641,9 @@ void OO_Listener::_openSpan(PT_AttrPropIndex api)
       UT_UTF8String sa, pa, f;
       OO_StylesWriter::map(pAP, sa, pa, f);
 
-      if (sa.size())
+      if (sa.size()) {
         UT_DEBUGMSG(("OO_Listener::_openSpan(): style atts in span"));
+      }
 
       propAtts += pa.utf8_str();
       font += f.utf8_str();	

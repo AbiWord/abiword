@@ -20,7 +20,7 @@
 #ifndef __gr_Abi_ComputerModernShaper_h__
 #define __gr_Abi_ComputerModernShaper_h__
 
-#include <MathView/ComputerModernShaper.hh>
+#include "mathview_proxy.h"
 
 class GR_Abi_ComputerModernShaper : public ComputerModernShaper
 {

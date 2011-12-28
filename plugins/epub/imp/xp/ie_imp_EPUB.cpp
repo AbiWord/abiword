@@ -32,7 +32,7 @@ IE_Imp_EPUB::~IE_Imp_EPUB()
 }
 
 bool IE_Imp_EPUB::pasteFromBuffer(PD_DocumentRange* pDocRange,
-        const unsigned char* pData, UT_uint32 lenData, const char* szEncoding)
+				  const unsigned char* pData, UT_uint32 lenData, const char* /*szEncoding*/)
 {
     UT_return_val_if_fail(getDoc() == pDocRange->m_pDoc,false);
     UT_return_val_if_fail(pDocRange->m_pos1 == pDocRange->m_pos2,false);
@@ -361,11 +361,11 @@ void ContainerListener::startElement(const gchar* name, const gchar** atts)
     }
 }
 
-void ContainerListener::endElement(const gchar* name)
+void ContainerListener::endElement(const gchar* /*name*/)
 {
 }
 
-void ContainerListener::charData(const gchar* buffer, int length)
+void ContainerListener::charData(const gchar* /*buffer*/, int /*length*/)
 {
 
 }
@@ -420,12 +420,12 @@ void OpfListener::startElement(const gchar* name, const gchar** atts)
 
 }
 
-void OpfListener::endElement(const gchar* name)
+void OpfListener::endElement(const gchar* /*name*/)
 {
 
 }
 
-void OpfListener::charData(const gchar* buffer, int length)
+void OpfListener::charData(const gchar* /*buffer*/, int /*length*/)
 {
 
 }
@@ -434,17 +434,17 @@ void OpfListener::charData(const gchar* buffer, int length)
  
  */
 
-void NavigationListener::startElement(const gchar* name, const gchar** atts)
+void NavigationListener::startElement(const gchar* /*name*/, const gchar** /*atts*/)
 {
 
 }
 
-void NavigationListener::endElement(const gchar* name)
+void NavigationListener::endElement(const gchar* /*name*/)
 {
 
 }
 
-void NavigationListener::charData(const gchar* buffer, int length)
+void NavigationListener::charData(const gchar* /*buffer*/, int /*length*/)
 {
 
 }

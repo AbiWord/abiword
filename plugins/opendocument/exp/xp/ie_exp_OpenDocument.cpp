@@ -184,9 +184,9 @@ UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteB
     //
 
     GsfInput *  fData = gsf_input_stdio_new(szTempFileName,&err);
-    UT_sint32 siz = gsf_input_size(fData);
+    UT_DebugOnly<UT_sint32> siz = gsf_input_size(fData);
     const UT_Byte * pData = gsf_input_read(fData,gsf_input_size(fData),NULL);
-     UT_DEBUGMSG(("Writing %d bytes to clipboard \n",siz));
+    UT_DEBUGMSG(("Writing %d bytes to clipboard \n", (UT_sint32)siz));
     bufODT->append( pData, gsf_input_size(fData));
     
     delete pNewExp;

@@ -318,7 +318,6 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             if (pStyle) {
             
                 const gchar* ppStyAttr[3];
-                bool ok;
                 UT_UTF8String props;
                 
                 if (pStyle->isAutomatic()) {
@@ -335,6 +334,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
                 }
                 
                 _pushInlineFmt(ppStyAttr);
+                UT_DebugOnly<bool> ok;
                 ok = m_pAbiDocument->appendFmt(&m_vecInlineFmt);
                 UT_ASSERT(ok);
                 
@@ -768,7 +768,6 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp(pName, "text:note-body")) {
 
         const gchar* ppAtts2[10];
-        bool ok;
         UT_uint32 id;
         const ODi_NotesConfiguration* pNotesConfig;
         const ODi_Style_Style* pStyle = NULL;
@@ -825,6 +824,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         ppAtts2[i++] = "text-position:superscript";
         ppAtts2[i] = 0;
         
+        UT_DebugOnly<bool> ok;
         ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts2);
         UT_ASSERT(ok);
         
@@ -1074,7 +1074,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         rAction.popState();
         
     } else if (!strcmp(pName, "text:note-body")) {
-        bool ok = false;
+        UT_DebugOnly<bool> ok = false;
         const gchar* pNoteClass;
         
         pNoteClass = m_rElementStack.getStartTag(1)->getAttributeValue("text:note-class");
@@ -1136,7 +1136,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         }
         else
         {
-            bool ok = false;
+	    UT_DebugOnly<bool> ok = false;
 //            _pushInlineFmt(ppStyAttr);
             ok = m_pAbiDocument->appendFmt(&m_vecInlineFmt);
             UT_ASSERT(ok);
@@ -1721,7 +1721,6 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         const gchar *ppAtts[50];
         UT_uint8 i;
         gchar listLevel[10];
-        bool ok;
         UT_UTF8String props;
         const ODi_Style_Style* pStyle;
         m_bContentWritten = false;
@@ -1797,6 +1796,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
 
         }
         
+	UT_DebugOnly<bool> ok;
         i = 0;
         if (bIsListParagraph && !m_alreadyDefinedAbiParagraphForList) {
             ODi_ListLevelStyle* pListLevelStyle = NULL;
@@ -2028,7 +2028,6 @@ void ODi_TextContent_ListenerState::_defineAbiTOCHeadingStyles() {
     UT_UTF8String str;
     UT_UTF8String props;
     std::string styleName;
-    bool ok;
     
     count = m_tablesOfContent.getItemCount();
     for (i=0; i<count; i++) {
@@ -2050,6 +2049,7 @@ void ODi_TextContent_ListenerState::_defineAbiTOCHeadingStyles() {
             }
         }
         
+	UT_DebugOnly<bool> ok;
         ok = m_pAbiDocument->changeStruxAttsNoUpdate(
                             (PL_StruxDocHandle) pTOCStrux, "props",
                             props.utf8_str());

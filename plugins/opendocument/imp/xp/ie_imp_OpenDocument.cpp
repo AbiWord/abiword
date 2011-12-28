@@ -744,7 +744,6 @@ UT_Error IE_Imp_OpenDocument::_parseStream (GsfInput* pInput, UT_XML & parser)
 void IE_Imp_OpenDocument::_setDocumentProperties() {
 
     const gchar* ppProps[5];
-    bool ok;
 
     // OpenDocument endnotes are, by definition, placed at the end of the document.    
     ppProps[0] = "document-endnote-place-enddoc";
@@ -754,6 +753,6 @@ void IE_Imp_OpenDocument::_setDocumentProperties() {
     
     ppProps[4] = 0;
 
-    ok = getDoc()->setProperties(ppProps);
+    UT_DebugOnly<bool> ok = getDoc()->setProperties(ppProps);
     UT_ASSERT_HARMLESS(ok);
 }

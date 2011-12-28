@@ -238,7 +238,6 @@ UT_Error IE_Imp_ClarisWorks::_parseFile(GsfInput * fp)
     unsigned char buf [128];   // general purpose buffer (128 bytes, no more)
     UT_uint32 offset;
     UT_GrowBuf gbBlock(1024);
-    bool bEatLF = false;
     bool bEmptyFile = true;
     unsigned char c;
     
@@ -299,7 +298,6 @@ UT_Error IE_Imp_ClarisWorks::_parseFile(GsfInput * fp)
            break;
            
        default:
-           bEatLF = false;
            
            // deal with plain character.
            // this cast is OK.  we have US-ASCII (actually Latin-1) character

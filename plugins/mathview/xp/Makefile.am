@@ -3,10 +3,12 @@ noinst_LTLIBRARIES = libxp.la
 
 AM_CPPFLAGS = \
 	$(MATHVIEW_CFLAGS) \
+	-Wno-deprecated \
 	-I$(srcdir)/../itex2mml \
 	-DABI_BUILD_VERSION=\"$(VERSION)\"
 
 libxp_la_SOURCES = \
+	mathview_proxy.h \
 	AbiMathView.cpp \
 	AbiMathView.h \
 	gr_Abi_AreaFactory.h \

@@ -20,7 +20,7 @@
 #ifndef __gr_Abi_CharArea_h__
 #define __gr_Abi_CharArea_h__
 
-#include <MathView/GlyphArea.hh>
+#include "mathview_proxy.h"
 
 #include "ut_types.h" // for UT_UCS4Char
 

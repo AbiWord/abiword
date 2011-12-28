@@ -55,11 +55,11 @@ void IE_Exp_EPUB_EPUB3Writer::insertDTD()
     m_pOutputWriter->write("<?xml version=\"1.0\"?>\n");	
 }
 
-void IE_Exp_EPUB_EPUB3Writer::insertTOC(const gchar *title, 
-	const std::vector<UT_UTF8String> &items,
-	const std::vector<UT_UTF8String> &itemUriList)
+void IE_Exp_EPUB_EPUB3Writer::insertTOC(const gchar * /*title*/,
+					const std::vector<UT_UTF8String> & /*items*/,
+					const std::vector<UT_UTF8String> & /*itemUriList*/)
 {
-	
+
 }
 
 void IE_Exp_EPUB_EPUB3Writer::insertEndnotes(

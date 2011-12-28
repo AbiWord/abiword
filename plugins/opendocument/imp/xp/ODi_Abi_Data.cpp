@@ -86,11 +86,11 @@ bool ODi_Abi_Data::addImageDataItem(UT_String& rDataId, const gchar** ppAtts) {
     UT_String_sprintf(rDataId, "%d", imageID);
     
     // Add this id to the list
-	href_id_map_t::iterator iter = m_href_to_id
+    UT_DebugOnly<href_id_map_t::iterator> iter = m_href_to_id
 		.insert(m_href_to_id.begin(),
-				href_id_map_t::value_type(pHRef, 
-										  rDataId.c_str()));
-    UT_ASSERT(iter != m_href_to_id.end());
+			href_id_map_t::value_type(pHRef, 
+						  rDataId.c_str()));
+    UT_ASSERT((href_id_map_t::iterator)iter != m_href_to_id.end());
 
     _splitDirectoryAndFileName(pHRef, dirName, fileName);
 
@@ -183,11 +183,11 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     UT_String_sprintf(rDataId, "MathLatex%d", objectID);
     
     // Add this id to the list
-	href_id_map_t::iterator iter = m_href_to_id
+    UT_DebugOnly<href_id_map_t::iterator> iter = m_href_to_id
 		.insert(m_href_to_id.begin(),
-				href_id_map_t::value_type(pHRef, 
-										  rDataId.c_str()));
-    UT_ASSERT(iter != m_href_to_id.end());
+			href_id_map_t::value_type(pHRef, 
+						  rDataId.c_str()));
+    UT_ASSERT((href_id_map_t::iterator)iter != m_href_to_id.end());
 
     _splitDirectoryAndFileName(pHRef, dirName, fileName);
 

@@ -81,6 +81,7 @@ static bool LoadBindingsFromMemory_invoke (AV_View * v, EV_EditMethodCallData * 
 static bool DumpEditMethods_invoke (AV_View * v, EV_EditMethodCallData * d);
 static bool SaveBindings_invoke(AV_View * v, EV_EditMethodCallData* d);
 
+#if defined(DEBUG)
 static XAP_Menu_Id loadBindingID;
 static XAP_Menu_Id dumpEditMethodsID;
 static XAP_Menu_Id saveBindingID;
@@ -90,6 +91,7 @@ static const char * szDumpEditMethods = "Dump edit methods";
 static const char * szDumpEditMethodsStatus = "Dump edit methods to your console";
 static const char * szSaveBinding = "Save keybindings";
 static const char * szSaveBindingStatus = "Save keybindings to your profile directory";
+#endif
 
 static void LoadBindings_registerMethod () 
 {
@@ -97,7 +99,6 @@ static void LoadBindings_registerMethod ()
 	XAP_App *pApp = XAP_App::getApp ();
 	EV_EditMethodContainer *pEMC = pApp->getEditMethodContainer ();
 	EV_EditMethod *myEditMethod;
-	XAP_Menu_Factory* pFact = pApp->getMenuFactory();
 
 	// add edit methods
 	myEditMethod = new EV_EditMethod ("com.abisource.abiword.loadbindings.loadBindingsDlg", LoadBindingsDlg_invoke, 0, "" );
@@ -116,6 +117,8 @@ static void LoadBindings_registerMethod ()
 	pEMC->addEditMethod (myEditMethod);
 	
 #if defined(DEBUG)
+	XAP_Menu_Factory* pFact = pApp->getMenuFactory();
+
 	// add menu item
 	loadBindingID = pFact->addNewMenuAfter("Main",NULL,AP_MENU_ID_FMT_STYLIST,EV_MLF_Normal);	// named _FMT_, but actually in tools menu
 	pFact->addNewLabel(NULL,loadBindingID,szLoadBinding,szLoadBindingStatus);
@@ -169,7 +172,6 @@ static void LoadBindings_RemoveFromMethods ()
 	XAP_App *pApp = XAP_App::getApp ();
 	EV_EditMethodContainer *pEMC = pApp->getEditMethodContainer ();
 	EV_EditMethod *pEM;
-	XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 	
 	// remove edit methods
 	pEM = ev_EditMethod_lookup ("com.abisource.abiword.loadbindings.dumpEditMethods");
@@ -193,6 +195,7 @@ static void LoadBindings_RemoveFromMethods ()
 	DELETEP (pEM);
 	
 #if defined(DEBUG)
+	XAP_Menu_Factory * pFact = pApp->getMenuFactory();
 	// remove menu items
 	pFact->removeMenuItem("Main",NULL,loadBindingID);
 	pFact->removeMenuItem("Main",NULL,dumpEditMethodsID);

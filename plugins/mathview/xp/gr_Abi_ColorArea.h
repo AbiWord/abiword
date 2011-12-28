@@ -20,7 +20,7 @@
 #ifndef __gr_Abi_ColorArea_h__
 #define __gr_Abi_ColorArea_h__
 
-#include <MathView/ColorArea.hh>
+#include "mathview_proxy.h"
 
 class GR_Abi_ColorArea : public ColorArea
 {

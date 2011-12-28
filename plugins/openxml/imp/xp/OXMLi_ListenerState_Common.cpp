@@ -108,8 +108,9 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			UT_Error err = UT_OK;
 			err = elem->setProperty("bgcolor", fill);
-			if(err != UT_OK)
+			if(err != UT_OK) {
 				UT_DEBUGMSG(("FRT:OpenXML importer can't set background-color:%s\n", fill));	
+			}
 		}
 		rqst->handled = true;
 

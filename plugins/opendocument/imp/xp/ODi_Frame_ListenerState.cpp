@@ -248,7 +248,6 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
                                           ODi_ListenerStateAction& rAction)
 {
     const gchar* pChar;
-    const ODi_Style_Style* pGraphicStyle;
     UT_String dataId; // id of the data item that contains the image.
  
 	UT_return_if_fail(!m_bInlineImagePending && !m_bPositionedImagePending);
@@ -260,7 +259,7 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
     pChar = m_rElementStack.getStartTag(0)->getAttributeValue("draw:style-name");
     UT_ASSERT(pChar);
     
-    pGraphicStyle = m_pStyles->getGraphicStyle(pChar, m_bOnContentStream);
+    UT_DebugOnly<const ODi_Style_Style*> pGraphicStyle = m_pStyles->getGraphicStyle(pChar, m_bOnContentStream);
     UT_ASSERT(pGraphicStyle);
     
     pChar = m_rElementStack.getStartTag(0)->getAttributeValue("text:anchor-type");
@@ -355,7 +354,6 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
 					   ODi_ListenerStateAction& rAction)
 {
     const gchar* pChar = NULL;
-    const ODi_Style_Style* pGraphicStyle;
     UT_String dataId; // id of the data item that contains the object.
     
     
@@ -366,6 +364,7 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
     pChar = m_rElementStack.getStartTag(0)->getAttributeValue("draw:style-name");
     UT_ASSERT(pChar);
     
+    UT_DebugOnly<const ODi_Style_Style*> pGraphicStyle;
     pGraphicStyle = m_pStyles->getGraphicStyle(pChar, m_bOnContentStream);
     UT_ASSERT(pGraphicStyle);
     

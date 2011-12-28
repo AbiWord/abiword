@@ -28,19 +28,7 @@
 #include "config.h"
 #endif
 
-#include <MathView/Init.hh>
-#include <MathView/MathMLElement.hh>
-#include <MathView/ShaperManager.hh>
-#include <MathView/SpaceShaper.hh>
-#include <MathView/libxml2_MathView.hh>
-#include <MathView/MathMLElement.hh>
-#include <MathView/Logger.hh>
-#include <MathView/AbstractLogger.hh>
-#include <MathView/BoundingBox.hh>
-#include <MathView/MathMLNamespaceContext.hh>
-#include <MathView/NamespaceContext.hh>
-#include <MathView/MathMLElement.hh>
-#include <MathView/MathMLOperatorDictionary.hh>
+#include "mathview_proxy.h"
 #include "gr_Abi_MathGraphicDevice.h"
 #include "gr_Abi_RenderingContext.h"
 
@@ -703,7 +691,7 @@ void GR_MathManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const char * pszDataID = NULL;
-	bool bFoundDataID = false;
+	UT_DebugOnly<bool> bFoundDataID = false;
 
 	if (!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -716,7 +704,7 @@ void GR_MathManager::makeSnapShot(UT_sint32 uid, UT_Rect & rec)
 	m_pDoc->getAttrProp(api, &pSpanAP);
 
 	bFoundDataID = pSpanAP->getAttribute("dataid", pszDataID);
-	UT_ASSERT((bFoundDataID));
+	UT_ASSERT(bFoundDataID);
 
 	if (pItem->m_bHasSnapshot)
 	{
@@ -941,7 +929,7 @@ bool GR_MathManager::convert(UT_uint32 iConType, UT_ByteBuf & From, UT_ByteBuf &
 	return EntityTable().convert(sMathML.utf8_str(), sMathML.size(), To);
 }
 
-static UT_uint32 MathManagerUID = 0; 
+//static UT_uint32 MathManagerUID = 0; 
 
 ABI_PLUGIN_DECLARE(AbiMathView)
 

@@ -41,7 +41,7 @@
  */
 void ODe_ListLevelStyle::fetchAttributesFromAbiBlock(const PP_AttrProp& rAP) {
     const gchar* pValue;
-    bool ok;
+    UT_DebugOnly<bool> ok;
     
     ok = rAP.getAttribute("listid", pValue);
     UT_ASSERT(ok && pValue != NULL);

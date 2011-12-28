@@ -22,7 +22,7 @@
 #define __gr_AbiMathManager_h__
 #include "ut_string_class.h"
 #include "gr_EmbedManager.h"
-#include <MathView/libxml2_MathView.hh>
+#include "mathview_proxy.h"
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ie_imp_MathML.h"
