@@ -2133,7 +2133,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
                << "prefix foaf:  <http://xmlns.com/foaf/0.1/>  \n"
                << "prefix pkg:   <http://docs.oasis-open.org/opendocument/meta/package/common#>  \n"
                << "prefix geo84: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n"
-               << "prefix dc:    <http://dublincore.org/documents/dces/> \n"
+               << "prefix dc:    <http://purl.org/dc/elements/1.1/> \n"
                << " \n"
                << "select ?s ?title ?rdflink  \n"
                << "where {  \n"

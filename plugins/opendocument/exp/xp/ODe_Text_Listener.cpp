@@ -483,7 +483,7 @@ void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP, const std::string
 
             PD_URI subj = m->createBNode();
             PD_URI pkg_idref("http://docs.oasis-open.org/opendocument/meta/package/common#idref");
-            PD_URI dc_title("http://dublincore.org/documents/dces/title");
+            PD_URI dc_title("http://purl.org/dc/elements/1.1/title");
             //  ?s pkg:idref ?xmlid . 
             //  ?s ?p ?o . 
             m->add( subj, pkg_idref, PD_Literal( xmlid ) );
