@@ -63,7 +63,7 @@ ODi_ContentStreamAnnotationMatcher_ListenerState::~ODi_ContentStreamAnnotationMa
 void
 ODi_ContentStreamAnnotationMatcher_ListenerState::startElement ( const gchar* pName,
                                                                  const gchar** ppAtts,
-                                                                 ODi_ListenerStateAction& rAction )
+                                                                 ODi_ListenerStateAction& /*rAction*/ )
 {
     if (!strcmp(pName, "office:annotation"))
     {

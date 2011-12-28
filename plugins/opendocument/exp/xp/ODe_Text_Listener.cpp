@@ -527,7 +527,7 @@ void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP, const std::string
 /**
  * 
  */
-void ODe_Text_Listener::closeAnnotation( const std::string& name )
+void ODe_Text_Listener::closeAnnotation( const std::string& /*name*/ )
 {
     UT_UTF8String output = "</office:annotation>";
     ODe_writeUTF8String(m_pParagraphContent, output);

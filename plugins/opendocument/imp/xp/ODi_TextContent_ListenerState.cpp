@@ -1115,11 +1115,13 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
             m_bPendingAnnotation = false;
         }
 
+#if 0
         const gchar* pPropsArray[5] = { NULL, NULL, NULL, NULL, NULL };
-        UT_UTF8String id = UT_UTF8String_sprintf("%d", m_iAnnotation);
-        UT_DEBUGMSG(("closing tag for id:%s\n", id.utf8_str() ));
+	std::string id = UT_std_string_sprintf("%d", m_iAnnotation);
+        UT_DEBUGMSG(("closing tag for id:%s\n", id.c_str() ));
         pPropsArray[0] = "annotation-id";
-        pPropsArray[1] = id.utf8_str();
+        pPropsArray[1] = id.c_str();
+#endif
         
         m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL );
         //
@@ -2143,7 +2145,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
         PD_DocumentRDFHandle rdf = doc->getDocumentRDF();
         PD_RDFQuery q( rdf, rdf );
         PD_ResultBindings_t bindings = q.executeQuery(sparql.str());
-        UT_DEBUGMSG(("bindings.sz:%d\n", bindings.size() ));
+        UT_DEBUGMSG(("bindings.sz:%lu\n", bindings.size() ));
         for( PD_ResultBindings_t::iterator iter = bindings.begin(); iter != bindings.end(); ++iter )
         {
             std::map< std::string, std::string > d = *iter;

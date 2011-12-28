@@ -10462,15 +10462,16 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		//
 		pHyperRun = pRun->getNextRun();
 		xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (a) pHyperRun %p\n", pHyperRun ));
-		if(pHyperRun)
+		if(pHyperRun) {
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (a)      type %ld\n", pHyperRun->getType() ));
-		
+		}
 		if( !pHyperRun || pHyperRun->getType() != FPRUN_HYPERLINK )
 		{
 			pHyperRun = pRun->getPrevRun();
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (b) pHyperRun %p\n", pHyperRun ));
-			if(pHyperRun)
+			if(pHyperRun) {
 				xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (b)      type %ld\n", pHyperRun->getType() ));
+			}
 
 			if( pHyperRun && pHyperRun->getType() == FPRUN_HYPERLINK )
 			{
@@ -10532,8 +10533,8 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		if(pLine)
 		{
 			std::auto_ptr<UT_Rect> pRec( pLine->getScreenRect() );
-			UT_sint32 xPosAdj = xPos - pRec->left;
-			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), xPosAdj %ld\n", xPosAdj ));
+			UT_DebugOnly<UT_sint32> xPosAdj = xPos - pRec->left;
+			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), xPosAdj %ld\n", (UT_sint32)xPosAdj ));
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), yPos    %ld\n", yPos ));
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), top     %ld\n", pRec->top ));
 			xxx_UT_DEBUGMSG(("fv_View::getMouseContext: (7), bot     %ld\n", pRec->top+pRec->height ));
