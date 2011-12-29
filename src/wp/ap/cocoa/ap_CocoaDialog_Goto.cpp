@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003, 2009 Hubert Figuiere
+ * Copyright (C) 2003, 2009, 2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -105,11 +105,10 @@ void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 
 - (id)initFromNib
 {
-	if(![super initWithWindowNibName:@"ap_CocoaDialog_Goto"]) {
-		return nil;
+	if((self = [super initWithWindowNibName:@"ap_CocoaDialog_Goto"])) {
+		_xap = NULL;
+		m_jumpTarget = AP_JUMPTARGET_PAGE;
 	}
-	_xap = NULL;
-	m_jumpTarget = AP_JUMPTARGET_PAGE;
 	return self;
 }
 
@@ -164,7 +163,7 @@ void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 		[_bookmarkName setHasVerticalScroller:YES];
 	}
 	for(UT_sint32 i = 0; i < count; i++) {
-		[_bookmarkName addItemWithObjectValue:[NSString stringWithUTF8String:_xap->getNthExistingBookmark(i)]];
+		[_bookmarkName addItemWithObjectValue:[NSString stringWithUTF8String:_xap->getNthExistingBookmark(i).c_str()]];
 	}
 	if(count) {
 		[_bookmarkName selectItemAtIndex:0];

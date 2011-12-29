@@ -1,6 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003,2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -104,8 +105,8 @@ void AP_CocoaDialog_InsertBookmark::event_Cancel(void)
 
 - (id)initFromNib
 {
-	if(![super initWithWindowNibName:@"ap_CocoaDialog_InsertBookmark"]) {
-		return nil;
+	if((self = [super initWithWindowNibName:@"ap_CocoaDialog_InsertBookmark"])) {
+
 	}
 	return self;
 }
@@ -134,7 +135,7 @@ void AP_CocoaDialog_InsertBookmark::event_Cancel(void)
 		LocalizeControl(_cancelBtn, pSS, XAP_STRING_ID_DLG_Cancel);
 		LocalizeControl(_bookmarkLabel, pSS, AP_STRING_ID_DLG_InsertBookmark_Msg);
 		for(UT_sint32 i = 0; i < _xap->getExistingBookmarksCount(); i++) {
-			[_bookmarkCombo addItemWithObjectValue:[NSString stringWithUTF8String:_xap->getNthExistingBookmark(i)]];
+		    [_bookmarkCombo addItemWithObjectValue:[NSString stringWithUTF8String:_xap->getNthExistingBookmark(i).c_str()]];
 		}
 		[_bookmarkCombo selectItemWithObjectValue:[NSString stringWithUTF8String:_xap->getBookmark()]];
 	}

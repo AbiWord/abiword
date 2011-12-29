@@ -1,6 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * Copyright (C) 2003, 2009 Hubert Figuiere
+ * Copyright (C) 2003, 2009, 2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,7 +38,8 @@
 #include "ap_CocoaDialog_InsertHyperlink.h"
 
 
-@interface AP_CocoaDialog_InsertHyperlinkController : NSWindowController <XAP_CocoaDialogProtocol>
+@interface AP_CocoaDialog_InsertHyperlinkController 
+: NSWindowController <XAP_CocoaDialogProtocol>
 {
     IBOutlet NSButton *_addBtn;
     IBOutlet NSTextField *_hyperlinkValue;
@@ -91,7 +93,7 @@ void AP_CocoaDialog_InsertHyperlink::runModal(XAP_Frame * /*pFrame*/)
 	UT_ASSERT(window);
 	m_pBookmarks = [[XAP_StringListDataSource alloc] init];
   	for (int i = 0; i < (int)getExistingBookmarksCount(); i++) {
-		[m_pBookmarks addString:[NSString stringWithUTF8String:getNthExistingBookmark(i)]];
+	  [m_pBookmarks addString:[NSString stringWithUTF8String:getNthExistingBookmark(i).c_str()]];
 	}
 	[m_dlg setDataSource:m_pBookmarks];
 	[NSApp runModalForWindow:window];
@@ -128,7 +130,10 @@ void AP_CocoaDialog_InsertHyperlink::event_Cancel(void)
 
 - (id)initFromNib
 {
-	return [super initWithWindowNibName:@"ap_CocoaDialog_InsertHyperlink"];
+  if((self = [super initWithWindowNibName:@"ap_CocoaDialog_InsertHyperlink"])) {
+
+  }
+  return self;
 }
 
 -(void)discardXAP
