@@ -49,9 +49,9 @@ UT_sint32 AP_Dialog_InsertBookmark::getExistingBookmarksCount() const
 	return m_pDoc->getBookmarkCount();
 }
 
-const gchar * AP_Dialog_InsertBookmark::getNthExistingBookmark(UT_uint32 n) const
+const std::string & AP_Dialog_InsertBookmark::getNthExistingBookmark(UT_uint32 n) const
 {
-	UT_return_val_if_fail (m_pDoc, NULL);
+	UT_ASSERT(m_pDoc);
 	return m_pDoc->getNthBookmark(n);
 }
 

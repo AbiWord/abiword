@@ -43,7 +43,7 @@ public:
 	tAnswer 			getAnswer(void) const;
 	void				setAnswer(tAnswer a);
 	UT_sint32			getExistingBookmarksCount() const;
-	const gchar *	getNthExistingBookmark(UT_uint32 n) const;
+	const std::string &	getNthExistingBookmark(UT_uint32 n) const;
 	const gchar *	getBookmark() const;
 	void				setBookmark(const gchar * mark);
 	void				setDoc(FV_View * pView);

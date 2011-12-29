@@ -26,6 +26,7 @@
 
 #include <stdio.h>
 #include <string>
+#include <vector>
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -611,8 +612,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	fp_PageSize             m_docPageSize; // Move this to private later
 	bool					isBookmarkUnique(const gchar * pName) const;
 	bool					isBookmarkRelativeLink(const gchar * pName) const;
-	UT_sint32				getBookmarkCount()const {return m_vBookmarkNames.getItemCount();}
-	const gchar *		getNthBookmark(UT_sint32 n)const{return reinterpret_cast<const gchar *>(m_vBookmarkNames.getNthItem(n));}
+	UT_sint32				getBookmarkCount() const {return m_vBookmarkNames.size();}
+	const std::string & 	getNthBookmark(UT_sint32 n) const {return m_vBookmarkNames.at(n);}
 	void					addBookmark(const gchar * pName);
 	void					removeBookmark(const gchar * pName);
 
@@ -845,7 +846,7 @@ private:
 	bool					m_bAllowInsertPointChange;
 	bool                    m_bRedrawHappenning;
 	bool                    m_bLoading;
-	UT_Vector				m_vBookmarkNames;
+	std::vector<std::string> m_vBookmarkNames;
 	bool                    m_bLockedStyles;
 	std::map<std::string, std::string> m_metaDataMap;
 	PT_AttrPropIndex        m_indexAP;

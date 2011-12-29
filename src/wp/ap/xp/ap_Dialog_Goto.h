@@ -54,7 +54,7 @@ public:
 	PD_DocumentRDFHandle        getRDF();
 
 	UT_sint32					getExistingBookmarksCount() const;
-	const gchar *			getNthExistingBookmark(UT_sint32 n) const;
+	const std::string &			getNthExistingBookmark(UT_sint32 n) const;
 	/** Perform the Goto with a page #, line # or bookmark name
 	 * @param target the target
 	 * @param value the target value

@@ -6126,17 +6126,17 @@ bool PD_Document:: setPageSizeFromFile(const gchar ** attributes)
 
 void PD_Document::addBookmark(const gchar * pName)
 {
-	m_vBookmarkNames.addItem(const_cast<void*>(static_cast<const void*>(pName)));
+	m_vBookmarkNames.push_back(pName);
 }
 
 void PD_Document::removeBookmark(const gchar * pName)
 {
-	for(UT_sint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
+	std::vector<std::string>::iterator iter = m_vBookmarkNames.begin();
+	for( ; iter != m_vBookmarkNames.end() ; ++iter)
 	{
-		const gchar * pBM =  reinterpret_cast<const gchar *>(m_vBookmarkNames.getNthItem(i));
-		if(!strcmp(pName, pBM))
+		if(*iter == pName)
 		{
-			m_vBookmarkNames.deleteNthItem(i);
+			m_vBookmarkNames.erase(iter);
 			break;
 		}
 	}
@@ -6146,12 +6146,15 @@ void PD_Document::removeBookmark(const gchar * pName)
  *  currently existing bookmark. */
 bool PD_Document::isBookmarkUnique(const gchar * pName) const
 {
-	for(UT_sint32 i = 0; i < m_vBookmarkNames.getItemCount(); i++)
+	std::vector<std::string>::const_iterator iter = m_vBookmarkNames.begin();
+	for( ; iter != m_vBookmarkNames.end() ; ++iter)
 	{
-		const gchar * pBM =  reinterpret_cast<const gchar *>(m_vBookmarkNames.getNthItem(i));
-		if(!strcmp(pName, pBM))
+		if(*iter == pName)
+		{
 			return false;
+		}
 	}
+
 	return true;
 }
 

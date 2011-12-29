@@ -55,14 +55,12 @@ AP_UnixDialog_InsertHyperlink::AP_UnixDialog_InsertHyperlink(XAP_DialogFactory *
 	m_windowMain = 0;
 	//m_comboEntry = 0;
 	m_clist = 0;
-	m_pBookmarks = 0;
 	m_iRow = -1;
 	m_entry = 0;
 }
 
 AP_UnixDialog_InsertHyperlink::~AP_UnixDialog_InsertHyperlink(void)
 {
-  DELETEPV(m_pBookmarks);
 }
 
 /*****************************************************************/
@@ -78,7 +76,7 @@ static void s_blist_clicked(GtkTreeSelection * select,
 		if(rows) {
 			me->setRow(*rows);
 			gtk_entry_set_text(GTK_ENTRY(me->m_entry), 
-							   me->m_pBookmarks[*rows]);
+					   me->m_pBookmarks[*rows].c_str());
 		}
 	}
 }
@@ -180,21 +178,18 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   gtk_tree_view_append_column(GTK_TREE_VIEW(treeview), col);
   //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
 
-  DELETEPV(m_pBookmarks);
-  m_pBookmarks = new const gchar *[getExistingBookmarksCount()];
+  m_pBookmarks.clear();
 	
-  for (int i = 0; i < static_cast<int>(getExistingBookmarksCount()); i++)
-  	  m_pBookmarks[i] = getNthExistingBookmark(i);
+  for (int i = 0; i < static_cast<int>(getExistingBookmarksCount()); i++) {
+    m_pBookmarks.push_back(getNthExistingBookmark(i));
+  }
 
-  int (*my_cmp)(const void *, const void *) =
-  	  (int (*)(const void*, const void*)) strcmp;
-    	
-  qsort(m_pBookmarks, getExistingBookmarksCount(),sizeof(gchar*),my_cmp);
+  std::sort(m_pBookmarks.begin(), m_pBookmarks.end());
 
   for (int i = 0; i < static_cast<int>(getExistingBookmarksCount()); i++) {
 		  GtkTreeIter iter;
 		  gtk_list_store_append(store, &iter);
-		  gtk_list_store_set(store, &iter, 0, m_pBookmarks[i], -1);
+		  gtk_list_store_set(store, &iter, 0, m_pBookmarks[i].c_str(), -1);
   }
 
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);

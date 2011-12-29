@@ -42,7 +42,7 @@ public:
 	tAnswer				getAnswer(void) const;
 	void            	setAnswer(tAnswer a);
 	UT_uint32			getExistingBookmarksCount() const;
-	const gchar *	getNthExistingBookmark(UT_uint32 n) const;
+	const std::string & getNthExistingBookmark(UT_uint32 n) const;
 	const gchar *	getHyperlink() const;
 	void				setHyperlink(const gchar * link);
 	void				setDoc(FV_View * pView);

@@ -666,10 +666,10 @@ AP_UnixDialog_Goto::updateWindow ()
 	for (UT_uint32 i = 0; i < numBookmarks; i++) {
 
 		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
-		const gchar *name = getNthExistingBookmark(i);
-		UT_DEBUGMSG (("    ROB: '%s'\n", name));
+		const std::string & name = getNthExistingBookmark(i);
+		UT_DEBUGMSG (("    ROB: '%s'\n", name.c_str()));
 		gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
-							COLUMN_NAME, name, /* 
+							COLUMN_NAME, name.c_str(), /* 
 							COLUMN_PAGE, "0", 
 							COLUMN_NUMBER, 0, */
 							-1);

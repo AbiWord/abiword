@@ -20,6 +20,9 @@
 #ifndef AP_UNIXDIALOG_INSERTHYPERLINK_H
 #define AP_UNIXDIALOG_INSERTHYPERLINK_H
 
+#include <vector>
+#include <string>
+
 #include "ap_Dialog_InsertHyperlink.h"
 
 class XAP_UnixFrame;
@@ -41,7 +44,7 @@ public:
 	void setRow(gint row) {m_iRow = row;}
 
 	GtkWidget * m_entry;
-	const gchar ** m_pBookmarks;
+	std::vector<std::string> m_pBookmarks;
 	
  protected:
 	virtual GtkWidget *		_constructWindow(void);
