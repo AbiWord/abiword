@@ -26,6 +26,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#import "xap_CocoaCompat.h"
+
 @class XAP_CocoaPlugin;
 
 @protocol XAP_CocoaPlugin_Tool;
@@ -297,12 +299,12 @@
 /**
  * \param anInt An integer which can be used to identify this particular object.
  */
-- (void)setTag:(int)anInt;
+- (void)setTag:(NSInteger)anInt;
 
 /**
  * \return The integer used to identify this particular object.
  */
-- (int)tag;
+- (NSInteger)tag;
 
 /**
  * \param state To have a check (tick) beside the menu item, set the state to NSOnState, otherwise

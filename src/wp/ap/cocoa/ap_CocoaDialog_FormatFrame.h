@@ -25,12 +25,12 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "ap_Dialog_FormatFrame.h"
+#import "xap_CocoaToolbar_Icons.h"
+#import "ap_Dialog_FormatFrame.h"
 
 
 class XAP_CocoaFrame;
 class GR_CocoaCairoGraphics;
-@protocol XAP_CocoaButtonController;
 @class AP_CocoaDialog_FormatFrameController;
 
 /*****************************************************************/

@@ -87,7 +87,7 @@ XAP_CocoaApp::XAP_CocoaApp(const char * szAppName)
 
 	if(pGF)
 	{
-		bool bSuccess = pGF->registerClass(GR_CocoaCairoGraphics::graphicsAllocator,
+		UT_DebugOnly<bool> bSuccess = pGF->registerClass(GR_CocoaCairoGraphics::graphicsAllocator,
 										   GR_CocoaCairoGraphics::graphicsDescriptor,
 										   GR_CocoaCairoGraphics::s_getClassId());
 

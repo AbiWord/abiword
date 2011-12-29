@@ -18,6 +18,7 @@
  */
 
 #include "ut_types.h"
+#import "xap_CocoaCompat.h"
 #import "xap_Cocoa_NSTableUtils.h"
 
 
@@ -76,7 +77,7 @@
 - (int)rowWithCString:(const char *)cString
 {
 	NSString *string = [[NSString alloc] initWithUTF8String:cString];
-	unsigned int idx = [_array indexOfObject:string];
+	NSUInteger idx = [_array indexOfObject:string];
 	[string release];
 	if (idx == NSNotFound) { 
 		return -1;

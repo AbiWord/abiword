@@ -935,7 +935,7 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 						}
 					}
 					if (value) {
-						int idx = [item indexOfItemWithObjectValue:value];
+						NSInteger idx = [item indexOfItemWithObjectValue:value];
 						if (idx == NSNotFound) {
 							[item setStringValue:value];
 						}

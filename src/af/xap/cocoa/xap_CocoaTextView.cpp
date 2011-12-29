@@ -30,6 +30,7 @@
 #include "ev_NamedVirtualKey.h"
 
 #include "xap_App.h"
+#import "xap_CocoaCompat.h"
 #include "xap_CocoaTextView.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_Frame.h"
@@ -335,11 +336,11 @@
 }
 
 
-- (unsigned int)characterIndexForPoint:(NSPoint)thePoint
+- (NSUInteger)characterIndexForPoint:(NSPoint)thePoint
 {
 	UT_UNUSED(thePoint);
 	UT_ASSERT_NOT_REACHED();
-	return 0xffffffff;
+	return NSNotFound;
 }
 
 

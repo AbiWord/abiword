@@ -21,6 +21,7 @@
 #include "ut_debugmsg.h"
 
 #include "xap_PrintingDelegate.h"
+#import "xap_CocoaCompat.h"
 #import "xap_PrintingNSView.h"
 
 
@@ -49,7 +50,7 @@
 	return YES;
 }
 
-- (NSRect)rectForPage:(int)page
+- (NSRect)rectForPage:(NSInteger)page
 {
 	UT_UNUSED(page);
 	return [self bounds];

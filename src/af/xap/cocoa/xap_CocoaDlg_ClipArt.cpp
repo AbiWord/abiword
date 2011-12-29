@@ -56,10 +56,8 @@ XAP_CocoaDialog_ClipArt::~XAP_CocoaDialog_ClipArt(void)
 {
 }
 
-void XAP_CocoaDialog_ClipArt::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_ClipArt::runModal(XAP_Frame * /*pFrame*/)
 {
-	UT_ASSERT(pFrame);
-
 /*
 	NOTE: This template can be used to create a working stub for a 
 	new dialog on this platform.  To do so:

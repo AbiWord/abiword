@@ -50,10 +50,8 @@ XAP_CocoaDialog_MessageBox::~XAP_CocoaDialog_MessageBox(void)
 
 /*****************************************************************/
 
-void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * pFrame)
+void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * /*pFrame*/)
 {
-	UT_ASSERT(pFrame);
-
 	XAP_App * pApp = XAP_App::getApp();
 
 	const XAP_StringSet * pSS = pApp->getStringSet();

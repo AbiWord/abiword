@@ -102,6 +102,7 @@ static struct EV_CocoaKeyEquiv KeyEquiv[] = {
 
 - (void)showHelp:(id)sender
 {
+	UT_UNUSED(sender);
 	UT_UCS4String ucs4_empty; // Can we use this to override help-contents location? e.g., to bundle help files? [TODO]
 	ev_EditMethod_invoke("helpContents", ucs4_empty); // [TODO: this needs to be redireced to firstResponder]	
 }

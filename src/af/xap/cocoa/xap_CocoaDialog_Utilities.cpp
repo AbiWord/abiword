@@ -126,7 +126,7 @@ void _convertLabelToMac (char * buf, size_t bufSize, const char * label)
 	UT_ASSERT(buf);
 	UT_ASSERT(strlen(label) < bufSize);
 
-	strcpy (buf, label);
+	strncpy (buf, label, bufSize);
 
 	char * src, *dst;
 	src = dst = buf;

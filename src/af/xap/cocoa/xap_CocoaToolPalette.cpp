@@ -1914,7 +1914,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 			{
 				NSString * selection = [NSString stringWithUTF8String:szState];
 
-				int index = [oFontSize indexOfItemWithObjectValue:selection];
+				NSInteger index = [oFontSize indexOfItemWithObjectValue:selection];
 
 				if (index == NSNotFound)
 				{
@@ -1958,7 +1958,7 @@ static XAP_CocoaToolPalette * s_instance = nil;
 			{
 				NSString * selection = [NSString stringWithUTF8String:szState];
 
-				int index = [oZoom indexOfItemWithObjectValue:selection];
+				NSInteger index = [oZoom indexOfItemWithObjectValue:selection];
 
 				if (index == NSNotFound)
 				{

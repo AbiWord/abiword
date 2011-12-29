@@ -312,9 +312,11 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 
 void AP_CocoaFrameImpl::_showTopRulerNSView(void)
 {
-	AP_CocoaFrameController* ctrl = _getController();
-	XAP_CocoaNSView* ruler = [ctrl getHRuler];
-	XAP_CocoaNSView* vRuler = [ctrl getVRuler];
+	XAP_CocoaFrameController* ctrl = _getController();
+	UT_ASSERT([ctrl isKindOfClass:[XAP_CocoaFrameController class]]);
+	AP_CocoaFrameController* apCtrl = (AP_CocoaFrameController*)ctrl;
+	XAP_CocoaNSView* ruler = [apCtrl getHRuler];
+	XAP_CocoaNSView* vRuler = [apCtrl getVRuler];
 	NSView* mainView = [ctrl getMainView];
 	
 	UT_ASSERT([ruler superview] == nil);
@@ -344,9 +346,11 @@ void AP_CocoaFrameImpl::_showTopRulerNSView(void)
 
 void AP_CocoaFrameImpl::_hideTopRulerNSView(void)
 {
-	AP_CocoaFrameController* ctrl = _getController();
-	XAP_CocoaNSView* ruler = [ctrl getHRuler];
-	XAP_CocoaNSView* vRuler = [ctrl getVRuler];
+	XAP_CocoaFrameController* ctrl = _getController();
+	UT_ASSERT([ctrl isKindOfClass:[XAP_CocoaFrameController class]]);
+	AP_CocoaFrameController* apCtrl = (AP_CocoaFrameController*)ctrl;
+	XAP_CocoaNSView* ruler = [apCtrl getHRuler];
+	XAP_CocoaNSView* vRuler = [apCtrl getVRuler];
 	NSView* mainView = [ctrl getMainView];
 	
 	UT_ASSERT([ruler superview]);
@@ -375,8 +379,10 @@ void AP_CocoaFrameImpl::_hideTopRulerNSView(void)
 
 void AP_CocoaFrameImpl::_showLeftRulerNSView(void)
 {
-	AP_CocoaFrameController* ctrl = _getController();
-	XAP_CocoaNSView* ruler = [ctrl getVRuler];
+	XAP_CocoaFrameController* ctrl = _getController();
+	UT_ASSERT([ctrl isKindOfClass:[XAP_CocoaFrameController class]]);
+	AP_CocoaFrameController* apCtrl = (AP_CocoaFrameController*)ctrl;
+	XAP_CocoaNSView* ruler = [apCtrl getVRuler];
 	NSView* mainView = [ctrl getMainView];
 	
 	UT_ASSERT([ruler superview] == nil);
@@ -403,8 +409,10 @@ void AP_CocoaFrameImpl::_showLeftRulerNSView(void)
 
 void AP_CocoaFrameImpl::_hideLeftRulerNSView(void)
 {
-	AP_CocoaFrameController* ctrl = _getController();
-	XAP_CocoaNSView* ruler = [ctrl getVRuler];
+	XAP_CocoaFrameController* ctrl = _getController();
+	UT_ASSERT([ctrl isKindOfClass:[XAP_CocoaFrameController class]]);
+	AP_CocoaFrameController* apCtrl = (AP_CocoaFrameController*)ctrl;
+	XAP_CocoaNSView* ruler = [apCtrl getVRuler];
 	NSView* mainView = [ctrl getMainView];
 	
 	UT_ASSERT([ruler superview]);

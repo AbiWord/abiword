@@ -30,4 +30,11 @@ typedef float XAP_CGFloat;
 typedef float CGFloat;
 #endif
 
+
+#if NSINTEGER_DEFINED
+#else
+typedef int NSInteger;
+typedef unsigned int NSUInteger;
+#endif
+
 #endif

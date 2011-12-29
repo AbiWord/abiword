@@ -34,6 +34,7 @@
 #include "xap_CocoaApp.h"
 #include "xap_CocoaFrame.h"
 #include "xap_CocoaFrameImpl.h"
+#import "xap_CocoaCompat.h"
 #include "xap_CocoaDialog_Utilities.h"
 #include "xap_CocoaToolPalette.h"
 #include "xap_Types.h"
