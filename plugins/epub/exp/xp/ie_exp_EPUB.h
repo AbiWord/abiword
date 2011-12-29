@@ -39,7 +39,6 @@
 #include <ie_exp_HTML.h>
 #include <pd_Document.h>
 #include <ut_go_file.h>
-#include <ut_vector.h>
 #include <ut_path.h>
 #include <ie_TOC.h>
 
@@ -77,26 +76,25 @@ private:
     UT_Error EPUB3_writeNavigation();
     
     
-    UT_UTF8String getAuthor() const;
-    UT_UTF8String getTitle() const;
-    UT_UTF8String getLanguage() const;
+    std::string getAuthor() const;
+    std::string getTitle() const;
+    std::string getLanguage() const;
     
     UT_Error doOptions();
     void registerDialogs();
 
-    static std::vector<UT_UTF8String> getFileList(
-            const UT_UTF8String &directory);
+    static std::vector<std::string> getFileList(const std::string &directory);
     static void closeNTags(GsfXMLOut* xml, int n);
-    static UT_UTF8String escapeForId(const UT_UTF8String & src);
-    static UT_UTF8String getMimeType(const UT_UTF8String &uri);
+    static std::string escapeForId(const UT_UTF8String & src);
+    static std::string getMimeType(const std::string &uri);
 
-    UT_UTF8String m_baseTempDir;
-    UT_UTF8String m_oebpsDir;
+    std::string m_baseTempDir;
+    std::string m_oebpsDir;
     GsfOutfile* m_root;
     GsfOutput* m_oebps;
     IE_Exp_HTML *m_pie;
     // Array with file id`s in linear reading order
-    std::vector<UT_UTF8String> m_opsId;
+    std::vector<std::string> m_opsId;
     
     XAP_Dialog_Id m_iDialogExport;
     XAP_Exp_EpubExportOptions m_exp_opt;

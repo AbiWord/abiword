@@ -278,6 +278,20 @@ bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outPro
   return found;
 }
 
+bool PD_Document::getMetaDataProp (const std::string & key, std::string & outProp) const
+{
+  bool found = false;
+  outProp = "";
+
+  const UT_UTF8String * val = m_metaDataMap.pick (key);
+  found = (val != NULL);
+
+  if (val && val->size ()) 
+	  outProp = val->utf8_str();
+
+  return found;
+}
+
 // RIVERA TODO not working and may not be needed
 void PD_Document::setAnnotationProp ( const UT_String & /*key*/,
 									  const UT_UTF8String & /*value*/ )

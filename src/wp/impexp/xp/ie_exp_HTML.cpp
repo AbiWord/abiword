@@ -675,6 +675,19 @@ bool IE_Exp_HTML::hasMathML(const UT_UTF8String& file)
     }
 }
 
+bool IE_Exp_HTML::hasMathML(const std::string& file)
+{
+	UT_UTF8String f(file);
+    if (m_mathmlFlags.find(f) != m_mathmlFlags.end())
+    {
+        return m_mathmlFlags[f];
+    } 
+	else
+    {
+        return false;
+    }
+}
+
 void IE_Exp_HTML::printStyleTree(PD_Document* pDocument, UT_ByteBuf& sink)
 {
     IE_Exp_HTML html(pDocument);

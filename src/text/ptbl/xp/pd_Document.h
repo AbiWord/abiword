@@ -659,6 +659,8 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 
 	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value);
 	virtual bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const;
+	// TODO: when we move to a std::map<> the above will go away
+	virtual bool getMetaDataProp (const std::string & key, std::string & outProp) const;
 
 	// RIVERA TODO not working and may not be needed
 	virtual void setAnnotationProp (const UT_String & key, const UT_UTF8String & value);

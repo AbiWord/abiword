@@ -18,6 +18,7 @@
  * 02111-1307, USA.
  */
 
+#include "ut_std_string.h"
 #include "ie_exp_EPUB.h"
 
 /*****************************************************************************/
@@ -81,8 +82,8 @@ UT_Error IE_Exp_EPUB::_writeDocument()
     m_baseTempDir += getDoc()->getDocUUIDString();
     // We should delete any previous temporary data for this document to prevent
     // odd files appearing in the container
-    UT_go_file_remove(m_baseTempDir.utf8_str(), NULL);
-    UT_go_directory_create(m_baseTempDir.utf8_str(), 0644, NULL);
+    UT_go_file_remove(m_baseTempDir.c_str(), NULL);
+    UT_go_directory_create(m_baseTempDir.c_str(), 0644, NULL);
 
     if (writeContainer() != UT_OK)
     {
@@ -109,7 +110,7 @@ UT_Error IE_Exp_EPUB::_writeDocument()
     gsf_output_close(GSF_OUTPUT(m_root));
     
     // After doing all job we should delete temporary files
-    UT_go_file_remove(m_baseTempDir.utf8_str(), NULL);
+    UT_go_file_remove(m_baseTempDir.c_str(), NULL);
     return UT_OK;
 }
 
@@ -187,14 +188,14 @@ UT_Error IE_Exp_EPUB::EPUB2_writeStructure()
     m_oebpsDir = m_baseTempDir + G_DIR_SEPARATOR_S;
     m_oebpsDir += "OEBPS";
 
-    UT_go_directory_create(m_oebpsDir.utf8_str(), 0644, NULL);
+    UT_go_directory_create(m_oebpsDir.c_str(), 0644, NULL);
 
-    UT_UTF8String indexPath = m_oebpsDir + G_DIR_SEPARATOR_S;
+    std::string indexPath = m_oebpsDir + G_DIR_SEPARATOR_S;
     indexPath += "index.xhtml";
 
     // Exporting document to XHTML using HTML export plugin 
-    char *szIndexPath = (char*) g_malloc(strlen(indexPath.utf8_str()) + 1);
-    strcpy(szIndexPath, indexPath.utf8_str());
+    char *szIndexPath = (char*) g_malloc(strlen(indexPath.c_str()) + 1);
+    strcpy(szIndexPath, indexPath.c_str());
     m_pie = new IE_Exp_HTML(getDoc());
     m_pie->suppressDialog(true);
     m_pie->setProps(
@@ -260,7 +261,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
     // <docTitle>
     gsf_xml_out_start_element(ncxXml, "docTitle");
     gsf_xml_out_start_element(ncxXml, "text");
-    gsf_xml_out_add_cstr(ncxXml, NULL, getTitle().utf8_str());
+    gsf_xml_out_add_cstr(ncxXml, NULL, getTitle().c_str());
     gsf_xml_out_end_element(ncxXml);
     // </docTitle>
     gsf_xml_out_end_element(ncxXml);
@@ -268,7 +269,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
     // <docAuthor>
     gsf_xml_out_start_element(ncxXml, "docAuthor");
     gsf_xml_out_start_element(ncxXml, "text");
-    gsf_xml_out_add_cstr(ncxXml, NULL, getAuthor().utf8_str());
+    gsf_xml_out_add_cstr(ncxXml, NULL, getAuthor().c_str());
     gsf_xml_out_end_element(ncxXml);
     // </docAuthor>
     gsf_xml_out_end_element(ncxXml);
@@ -287,17 +288,18 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
             currentItem++)
         {
             lastItemLevel = curItemLevel;
-            UT_UTF8String itemStr = m_pie->getNavigationHelper()
+	    UT_UTF8String itemStr = m_pie->getNavigationHelper()
                 ->getNthTOCEntry(currentItem, &curItemLevel);
             PT_DocPosition itemPos;
             m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
-            UT_UTF8String itemFilename = m_pie->getNavigationHelper()
+	    UT_UTF8String itemFilename = m_pie->getNavigationHelper()
                 ->getFilenameByPosition(itemPos);
             
             if ((itemFilename == ".xhtml") || itemFilename.length() == 0)
             {
                 itemFilename = "index.xhtml";
-            } else
+            }
+	    else
             {
                 itemFilename +=   + ".xhtml";
             }
@@ -323,22 +325,21 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
 
             }
 
-            UT_UTF8String navClass = UT_UTF8String_sprintf("h%d", curItemLevel);
-            UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d",
-                    tocNum);
-            UT_UTF8String navSrc = itemFilename + "#" + navId;
+	    std::string navClass = UT_std_string_sprintf("h%d", curItemLevel);
+	    std::string navId = UT_std_string_sprintf("AbiTOC%d", tocNum);
+	    std::string navSrc = std::string(itemFilename.utf8_str()) + "#" + navId;
             gsf_xml_out_start_element(ncxXml, "navPoint");
             gsf_xml_out_add_cstr(ncxXml, "playOrder",
-                    UT_UTF8String_sprintf("%d", currentItem + 1).utf8_str());
-            gsf_xml_out_add_cstr(ncxXml, "class", navClass.utf8_str());
-            gsf_xml_out_add_cstr(ncxXml, "id", navId.utf8_str());
+                    UT_std_string_sprintf("%d", currentItem + 1).c_str());
+            gsf_xml_out_add_cstr(ncxXml, "class", navClass.c_str());
+            gsf_xml_out_add_cstr(ncxXml, "id", navId.c_str());
             gsf_xml_out_start_element(ncxXml, "navLabel");
             gsf_xml_out_start_element(ncxXml, "text");
             gsf_xml_out_add_cstr(ncxXml, NULL, itemStr.utf8_str());
             gsf_xml_out_end_element(ncxXml);
             gsf_xml_out_end_element(ncxXml);
             gsf_xml_out_start_element(ncxXml, "content");
-            gsf_xml_out_add_cstr(ncxXml, "src", navSrc.utf8_str());
+            gsf_xml_out_add_cstr(ncxXml, "src", navSrc.c_str());
             gsf_xml_out_end_element(ncxXml);
 
             tagLevels.push_back(curItemLevel);
@@ -358,7 +359,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
 
         gsf_xml_out_start_element(ncxXml, "navLabel");
         gsf_xml_out_start_element(ncxXml, "text");
-        gsf_xml_out_add_cstr(ncxXml, NULL, getTitle().utf8_str());
+        gsf_xml_out_add_cstr(ncxXml, NULL, getTitle().c_str());
         gsf_xml_out_end_element(ncxXml);
         gsf_xml_out_end_element(ncxXml);
 
@@ -423,11 +424,11 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
             currentItem++)
         {
             lastItemLevel = curItemLevel;
-            UT_UTF8String itemStr = m_pie->getNavigationHelper()
+	    UT_UTF8String itemStr = m_pie->getNavigationHelper()
                 ->getNthTOCEntry(currentItem, &curItemLevel);
             PT_DocPosition itemPos;
             m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
-            UT_UTF8String itemFilename = m_pie->getNavigationHelper()
+	    UT_UTF8String itemFilename = m_pie->getNavigationHelper()
                 ->getFilenameByPosition(itemPos);
             
             if ((itemFilename == "") || itemFilename.length() == 0)
@@ -471,15 +472,15 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
 
             }
 
-            UT_UTF8String navClass = UT_UTF8String_sprintf("h%d", curItemLevel);
-            UT_UTF8String navId = UT_UTF8String_sprintf("AbiTOC%d",
+	    std::string navClass = UT_std_string_sprintf("h%d", curItemLevel);
+	    std::string navId = UT_std_string_sprintf("AbiTOC%d",
                     tocNum);
-            UT_UTF8String navSrc = itemFilename + "#" + navId;
+	    std::string navSrc = std::string(itemFilename.utf8_str()) + "#" + navId;
             gsf_xml_out_start_element(navXHTML, "li");
-            gsf_xml_out_add_cstr(navXHTML, "class", navClass.utf8_str());
-            gsf_xml_out_add_cstr(navXHTML, "id", navId.utf8_str());
+            gsf_xml_out_add_cstr(navXHTML, "class", navClass.c_str());
+            gsf_xml_out_add_cstr(navXHTML, "id", navId.c_str());
             gsf_xml_out_start_element(navXHTML, "a");
-            gsf_xml_out_add_cstr(navXHTML, "href", navSrc.utf8_str());
+            gsf_xml_out_add_cstr(navXHTML, "href", navSrc.c_str());
             gsf_xml_out_add_cstr(navXHTML, NULL, itemStr.utf8_str());
             gsf_xml_out_end_element(navXHTML);
             // gsf_xml_out_end_element(navXHTML);
@@ -499,7 +500,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
         gsf_xml_out_add_cstr(navXHTML, "id", "index");
         gsf_xml_out_start_element(navXHTML, "a");
         gsf_xml_out_add_cstr(navXHTML, "href", "index.xhtml");
-        gsf_xml_out_add_cstr(navXHTML, NULL, getTitle().utf8_str());
+        gsf_xml_out_add_cstr(navXHTML, NULL, getTitle().c_str());
         gsf_xml_out_end_element(navXHTML);
         gsf_xml_out_end_element(navXHTML); 
         gsf_xml_out_end_element(navXHTML); 
@@ -521,14 +522,14 @@ UT_Error IE_Exp_EPUB::EPUB3_writeStructure()
     m_oebpsDir = m_baseTempDir + G_DIR_SEPARATOR_S;
     m_oebpsDir += "OEBPS";
 
-    UT_go_directory_create(m_oebpsDir.utf8_str(), 0644, NULL);
+    UT_go_directory_create(m_oebpsDir.c_str(), 0644, NULL);
 
-    UT_UTF8String indexPath = m_oebpsDir + G_DIR_SEPARATOR_S;
+    std::string indexPath = m_oebpsDir + G_DIR_SEPARATOR_S;
     indexPath += "index.xhtml";
 
     // Exporting document to XHTML using HTML export plugin 
-    char *szIndexPath = (char*) g_malloc(strlen(indexPath.utf8_str()) + 1);
-    strcpy(szIndexPath, indexPath.utf8_str());
+    char *szIndexPath = (char*) g_malloc(strlen(indexPath.c_str()) + 1);
+    strcpy(szIndexPath, indexPath.c_str());
     IE_Exp_HTML_WriterFactory *pWriterFactory = new IE_Exp_EPUB_EPUB3WriterFactory();
     m_pie = new IE_Exp_HTML(getDoc());
     m_pie->setWriterFactory(pWriterFactory);
@@ -569,7 +570,7 @@ UT_Error IE_Exp_EPUB::package()
     if (!m_exp_opt.bEpub2)
     {
        gsf_xml_out_add_cstr(opfXml, "profile", EPUB3_PACKAGE_PROFILE);
-       gsf_xml_out_add_cstr(opfXml, "xml:lang", getLanguage().utf8_str());
+       gsf_xml_out_add_cstr(opfXml, "xml:lang", getLanguage().c_str());
     }
 
     // <metadata>
@@ -578,44 +579,44 @@ UT_Error IE_Exp_EPUB::package()
     gsf_xml_out_add_cstr(opfXml, "xmlns:opf", OPF201_NAMESPACE);
     // Generation of required Dublin Core metadata
     gsf_xml_out_start_element(opfXml, "dc:title");
-    gsf_xml_out_add_cstr(opfXml, NULL, getTitle().utf8_str());
+    gsf_xml_out_add_cstr(opfXml, NULL, getTitle().c_str());
     gsf_xml_out_end_element(opfXml);
     gsf_xml_out_start_element(opfXml, "dc:identifier");
     gsf_xml_out_add_cstr(opfXml, "id", "BookId");
     gsf_xml_out_add_cstr(opfXml, NULL, getDoc()->getDocUUIDString());
     gsf_xml_out_end_element(opfXml);
     gsf_xml_out_start_element(opfXml, "dc:language");
-    gsf_xml_out_add_cstr(opfXml, NULL, getLanguage().utf8_str());
+    gsf_xml_out_add_cstr(opfXml, NULL, getLanguage().c_str());
     gsf_xml_out_end_element(opfXml);
     gsf_xml_out_start_element(opfXml, "dc:creator");
     gsf_xml_out_add_cstr(opfXml, "opf:role", "aut");
-    gsf_xml_out_add_cstr(opfXml, NULL, getAuthor().utf8_str());
+    gsf_xml_out_add_cstr(opfXml, NULL, getAuthor().c_str());
     gsf_xml_out_end_element(opfXml);
     // </metadata> 
     gsf_xml_out_end_element(opfXml);
 
     // <manifest>
     gsf_xml_out_start_element(opfXml, "manifest");
-	gchar *basedir = g_filename_from_uri(m_oebpsDir.utf8_str(),NULL,NULL);
+	gchar *basedir = g_filename_from_uri(m_oebpsDir.c_str(),NULL,NULL);
 	UT_ASSERT(basedir);
-	UT_UTF8String _baseDir = basedir;
-    std::vector<UT_UTF8String> listing = getFileList(_baseDir);
+	std::string _baseDir = basedir;
+	std::vector<std::string> listing = getFileList(_baseDir);
 	FREEP(basedir);
 
-    for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i
+	for (std::vector<std::string>::iterator i = listing.begin(); i
             != listing.end(); i++)
     {
-        UT_UTF8String idStr = escapeForId(*i);
-        UT_UTF8String fullItemPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
+      std::string idStr = escapeForId(UT_UTF8String(i->c_str()));
+      std::string fullItemPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
         gsf_xml_out_start_element(opfXml, "item");
         if (m_pie->hasMathML((*i)))
         {
             gsf_xml_out_add_cstr(opfXml, "mathml", "true");
         }
-        gsf_xml_out_add_cstr(opfXml, "id", idStr.utf8_str());
-        gsf_xml_out_add_cstr(opfXml, "href", (*i).utf8_str());
+        gsf_xml_out_add_cstr(opfXml, "id", idStr.c_str());
+        gsf_xml_out_add_cstr(opfXml, "href", (*i).c_str());
         gsf_xml_out_add_cstr(opfXml, "media-type",
-                getMimeType(fullItemPath).utf8_str());
+                getMimeType(fullItemPath).c_str());
         gsf_xml_out_end_element(opfXml);
     }
 
@@ -648,10 +649,10 @@ UT_Error IE_Exp_EPUB::package()
         gsf_xml_out_end_element(opfXml);
     }
     
-    for(std::vector<UT_UTF8String>::iterator i = m_opsId.begin(); i != m_opsId.end(); i++)
+    for(std::vector<std::string>::iterator i = m_opsId.begin(); i != m_opsId.end(); i++)
     {
         gsf_xml_out_start_element(opfXml, "itemref");
-        gsf_xml_out_add_cstr(opfXml, "idref", (*i).utf8_str());
+        gsf_xml_out_add_cstr(opfXml, "idref", (*i).c_str());
         gsf_xml_out_end_element(opfXml);
     }
 
@@ -666,19 +667,19 @@ UT_Error IE_Exp_EPUB::package()
     return compress();
 }
 
-std::vector<UT_UTF8String> IE_Exp_EPUB::getFileList(
-        const UT_UTF8String &directory)
+std::vector<std::string> IE_Exp_EPUB::getFileList(
+						  const std::string &directory)
 {
-	std::vector<UT_UTF8String> result;
-    std::vector<UT_UTF8String> dirs;
+  std::vector<std::string> result;
+  std::vector<std::string> dirs;
 
     dirs.push_back(directory);
 
     while (dirs.size() > 0)
     {
-        UT_UTF8String currentDir = dirs.back();
+      std::string currentDir = dirs.back();
         dirs.pop_back();
-        GDir* baseDir = g_dir_open(currentDir.utf8_str(), 0, NULL);
+        GDir* baseDir = g_dir_open(currentDir.c_str(), 0, NULL);
 
         gchar const *entryName = NULL;
         while ((entryName = g_dir_read_name(baseDir)) != NULL)
@@ -689,10 +690,10 @@ std::vector<UT_UTF8String> IE_Exp_EPUB::getFileList(
                 // created by gsf
                 continue;
             }
-            UT_UTF8String entryFullPath = currentDir + G_DIR_SEPARATOR_S;
+	    std::string entryFullPath = currentDir + G_DIR_SEPARATOR_S;
             entryFullPath += entryName;
 
-            if (g_file_test(entryFullPath.utf8_str(), G_FILE_TEST_IS_DIR))
+            if (g_file_test(entryFullPath.c_str(), G_FILE_TEST_IS_DIR))
             {
                 dirs.push_back(entryFullPath);
             }
@@ -715,7 +716,7 @@ UT_Error IE_Exp_EPUB::compress()
 {
 
     GsfInfile* oebpsDir = gsf_infile_stdio_new(
-            UT_go_filename_from_uri(m_oebpsDir.utf8_str()), NULL);
+            UT_go_filename_from_uri(m_oebpsDir.c_str()), NULL);
 
     if (oebpsDir == NULL)
     {
@@ -723,15 +724,15 @@ UT_Error IE_Exp_EPUB::compress()
         return UT_ERROR;
     }
 
-    std::vector<UT_UTF8String> listing = getFileList(
-            UT_go_filename_from_uri(m_oebpsDir.utf8_str()));
-    for (std::vector<UT_UTF8String>::iterator i = listing.begin(); i
+    std::vector<std::string> listing = getFileList(
+            UT_go_filename_from_uri(m_oebpsDir.c_str()));
+    for (std::vector<std::string>::iterator i = listing.begin(); i
             != listing.end(); i++)
     {
         GsfOutput* item = gsf_outfile_new_child(GSF_OUTFILE(m_oebps),
-                (*i).utf8_str(), FALSE);
-        UT_UTF8String fullPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
-        GsfInput* file = UT_go_file_open(fullPath.utf8_str(), NULL);
+                (*i).c_str(), FALSE);
+	std::string fullPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
+        GsfInput* file = UT_go_file_open(fullPath.c_str(), NULL);
 
         if (file == NULL)
         {
@@ -744,11 +745,11 @@ UT_Error IE_Exp_EPUB::compress()
         gsf_input_copy(file, item);
         gsf_output_close(item);
         // Time to delete temporary file
-        UT_go_file_remove(fullPath.utf8_str(), NULL);
+        UT_go_file_remove(fullPath.c_str(), NULL);
     }
 
-    UT_go_file_remove((m_oebpsDir + G_DIR_SEPARATOR_S + "index.xhtml_files").utf8_str(), NULL);
-    UT_go_file_remove(m_oebpsDir.utf8_str(), NULL);
+    UT_go_file_remove((m_oebpsDir + G_DIR_SEPARATOR_S + "index.xhtml_files").c_str(), NULL);
+    UT_go_file_remove(m_oebpsDir.c_str(), NULL);
 	return UT_OK;
 }
 
@@ -761,10 +762,10 @@ void IE_Exp_EPUB::closeNTags(GsfXMLOut* xml, int n)
 
 }
 
-UT_UTF8String IE_Exp_EPUB::escapeForId(const UT_UTF8String& src)
+std::string IE_Exp_EPUB::escapeForId(const UT_UTF8String& src)
 {
 
-    UT_UTF8String result = "";
+    std::string result = "";
 
     UT_UTF8Stringbuf::UTF8Iterator i = src.getIterator();
     i = i.start();
@@ -791,13 +792,13 @@ UT_UTF8String IE_Exp_EPUB::escapeForId(const UT_UTF8String& src)
     return result;
 }
 
-UT_UTF8String IE_Exp_EPUB::getMimeType(const UT_UTF8String &uri)
+std::string IE_Exp_EPUB::getMimeType(const std::string &uri)
 {
-    const gchar *extension = strchr(uri.utf8_str(), '.');
+    const gchar *extension = strchr(uri.c_str(), '.');
 
     if (extension == NULL)
     {
-        return UT_go_get_mime_type(uri.utf8_str());
+        return UT_go_get_mime_type(uri.c_str());
     }
     else
     {
@@ -807,54 +808,45 @@ UT_UTF8String IE_Exp_EPUB::getMimeType(const UT_UTF8String &uri)
         }
         else
         {
-            return UT_go_get_mime_type(uri.utf8_str());
+            return UT_go_get_mime_type(uri.c_str());
         }
     }
 }
 
-UT_UTF8String IE_Exp_EPUB::getAuthor() const
+std::string IE_Exp_EPUB::getAuthor() const
 {
-    UT_UTF8String property("");
+    std::string property("");
 
     if (getDoc()->getMetaDataProp(PD_META_KEY_CREATOR, property)
             && property.size())
     {
         return property;
     }
-    else
-    {
-        return "Converted by AbiWord(http://www.abisource.com/)";
-    }
+    return "Converted by AbiWord(http://www.abisource.com/)";
 }
 
-UT_UTF8String IE_Exp_EPUB::getTitle() const
+std::string IE_Exp_EPUB::getTitle() const
 {
-    UT_UTF8String property("");
+    std::string property("");
 
     if (getDoc()->getMetaDataProp(PD_META_KEY_TITLE, property)
             && property.size())
     {
         return property;
     }
-    else
-    {
-        return "Untitled";
-    }
+    return "Untitled";
 }
 
-UT_UTF8String IE_Exp_EPUB::getLanguage() const
+std::string IE_Exp_EPUB::getLanguage() const
 {
-    UT_UTF8String property("");
+    std::string property("");
 
     if (getDoc()->getMetaDataProp(PD_META_KEY_LANGUAGE, property)
             && property.size())
     {
         return property;
     }
-    else
-    {
-        return "en_US";
-    }
+    return "en_US";
 }
 
 UT_Error IE_Exp_EPUB::doOptions()

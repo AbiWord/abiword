@@ -29,6 +29,7 @@
 #include <stdexcept>
 #include <vector>
 #include <map>
+#include <string>
 
 // AbiWord includes
 #include <ie_imp.h>
@@ -42,7 +43,7 @@
 
 #define EPUB_MIMETYPE "application/epub+zip"
 
-typedef std::pair<UT_UTF8String, UT_UTF8String> string_pair;
+typedef std::pair<std::string, std::string> string_pair;
 /**
  * Class used to import EPUB files
  */
@@ -59,11 +60,11 @@ protected:
 
 private:
     GsfInfile* m_epub;
-    UT_UTF8String m_rootfilePath;
-    UT_UTF8String m_tmpDir;
-    UT_UTF8String m_opsDir;
-    std::vector<UT_UTF8String> m_spine;
-    std::map<UT_UTF8String, UT_UTF8String> m_manifestItems;
+    std::string m_rootfilePath;
+    std::string m_tmpDir;
+    std::string m_opsDir;
+    std::vector<std::string> m_spine;
+    std::map<std::string, std::string> m_manifestItems;
 
     UT_Error readMetadata();
     UT_Error readPackage();
@@ -82,10 +83,10 @@ public:
     void endElement(const gchar * name);
     void charData(const gchar * buffer, int length);
 
-    UT_UTF8String getRootFilePath() const;
+    const std::string & getRootFilePath() const;
 
 private:
-    UT_UTF8String m_rootFilePath;
+    std::string m_rootFilePath;
 };
 
 /*
@@ -98,11 +99,11 @@ public:
     void endElement(const gchar * name);
     void charData(const gchar * buffer, int length);
 
-    std::map<UT_UTF8String, UT_UTF8String> getManifestItems() const
+    const std::map<std::string, std::string> & getManifestItems() const
     {
         return m_manifestItems;
     }
-    std::vector<UT_UTF8String> getSpine() const
+    const std::vector<std::string> & getSpine() const
     {
         return m_spine;
     }
@@ -113,10 +114,10 @@ private:
     /* Vector with list of OPS files needed to be imported. Sorted in the linear
      * reading order
      */
-    std::vector<UT_UTF8String> m_spine;
+    std::vector<std::string> m_spine;
     /* Map with all files that will be used for import
      */
-    std::map<UT_UTF8String, UT_UTF8String> m_manifestItems;
+    std::map<std::string, std::string> m_manifestItems;
 
     bool m_inManifest;
     bool m_inSpine;

@@ -130,7 +130,7 @@ UT_Error IE_Imp_EPUB::readMetadata()
 
     gchar* metaXml = (gchar*) gsf_input_read(meta, metaSize, NULL);
 
-    UT_UTF8String rootfilePath;
+    std::string rootfilePath;
     UT_XML metaParser;
     ContainerListener containerListener;
     metaParser.setListener(&containerListener);
@@ -156,14 +156,14 @@ UT_Error IE_Imp_EPUB::readMetadata()
 
 UT_Error IE_Imp_EPUB::readPackage()
 {
-    gchar **aname = g_strsplit(m_rootfilePath.utf8_str(), G_DIR_SEPARATOR_S, 0);
+    gchar **aname = g_strsplit(m_rootfilePath.c_str(), G_DIR_SEPARATOR_S, 0);
     GsfInput* opf = gsf_infile_child_by_aname(m_epub, (const char**) aname);
 
     UT_DEBUGMSG(("Getting parent\n"));
     GsfInfile* opfParent = gsf_input_container(opf);
-    m_opsDir = UT_UTF8String(gsf_input_name(GSF_INPUT(opfParent)));
+    m_opsDir = std::string(gsf_input_name(GSF_INPUT(opfParent)));
 
-    UT_DEBUGMSG(("OPS dir: %s\n", m_opsDir.utf8_str()));
+    UT_DEBUGMSG(("OPS dir: %s\n", m_opsDir.c_str()));
 
     if (opf == NULL)
     {
@@ -204,13 +204,13 @@ UT_Error IE_Imp_EPUB::uncompress()
     m_tmpDir += G_DIR_SEPARATOR_S;
     m_tmpDir += getDoc()->getDocUUIDString();
 
-    if (!UT_go_directory_create(m_tmpDir.utf8_str(), 0644, NULL))
+    if (!UT_go_directory_create(m_tmpDir.c_str(), 0644, NULL))
     {
         UT_DEBUGMSG(("Can`t create temporary directory\n"));
         return UT_ERROR;
     }
     GsfInput *opsDirInput = gsf_infile_child_by_name(m_epub,
-            m_opsDir.utf8_str());
+            m_opsDir.c_str());
     UT_DEBUGMSG(("Child count : %d", gsf_infile_num_children(m_epub)));
     if (opsDirInput == NULL)
     {
@@ -218,13 +218,13 @@ UT_Error IE_Imp_EPUB::uncompress()
         return UT_ERROR;
     }
 
-    for (std::map<UT_UTF8String, UT_UTF8String>::iterator i =
+    for (std::map<std::string, std::string>::iterator i =
             m_manifestItems.begin(); i != m_manifestItems.end(); i++)
     {
         gchar *itemFileName = UT_go_filename_from_uri(
-                (m_tmpDir + G_DIR_SEPARATOR_S + (*i).second).utf8_str());
+                (m_tmpDir + G_DIR_SEPARATOR_S + (*i).second).c_str());
         gchar** aname =
-                g_strsplit((*i).second.utf8_str(), G_DIR_SEPARATOR_S, 0);
+                g_strsplit((*i).second.c_str(), G_DIR_SEPARATOR_S, 0);
 
         GsfInput* itemInput = gsf_infile_child_by_aname(
                 GSF_INFILE(opsDirInput), (const char**) aname);
@@ -247,18 +247,18 @@ UT_Error IE_Imp_EPUB::readStructure()
     getDoc()->createRawDocument();
     getDoc()->finishRawCreation();
 
-    for (std::vector<UT_UTF8String>::iterator i = m_spine.begin(); i
+    for (std::vector<std::string>::iterator i = m_spine.begin(); i
             != m_spine.end(); i++)
     {
-        std::map<UT_UTF8String, UT_UTF8String>::iterator iter =
+        std::map<std::string, std::string>::iterator iter =
                 m_manifestItems.find(*i);
 
         if (iter == m_manifestItems.end())
         {
-            UT_DEBUGMSG(("Manifest item with id %s not found\n", (*i).utf8_str()));
+            UT_DEBUGMSG(("Manifest item with id %s not found\n", (*i).c_str()));
             return UT_ERROR;
         }
-        UT_UTF8String itemPath = m_tmpDir + G_DIR_SEPARATOR_S + (iter->second);
+	std::string itemPath = m_tmpDir + G_DIR_SEPARATOR_S + (iter->second);
         PT_DocPosition posEnd = 0;
         getDoc()->getBounds(true, posEnd);
         
@@ -269,7 +269,7 @@ UT_Error IE_Imp_EPUB::readStructure()
             posEnd+=2;
         }
 
-        GsfInput* itemInput = UT_go_file_open(itemPath.utf8_str(), NULL);
+        GsfInput* itemInput = UT_go_file_open(itemPath.c_str(), NULL);
         if (itemInput == NULL)
         {
             UT_DEBUGMSG(("Can`t open item for reading\n"));
@@ -280,12 +280,12 @@ UT_Error IE_Imp_EPUB::readStructure()
 
         PD_Document *currentDoc = new PD_Document();
         currentDoc->createRawDocument();
-        const char *suffix = strchr(itemPath.utf8_str(), '.');
+        const char *suffix = strchr(itemPath.c_str(), '.');
         XAP_App::getApp()->getPrefs()->setIgnoreNextRecent();
-        if (currentDoc->importFile(itemPath.utf8_str(),
+        if (currentDoc->importFile(itemPath.c_str(),
                 IE_Imp::fileTypeForSuffix(suffix), true, false, NULL) != UT_OK)
         {
-            UT_DEBUGMSG(("Failed to import file %s\n", itemPath.utf8_str()));
+            UT_DEBUGMSG(("Failed to import file %s\n", itemPath.c_str()));
             return UT_ERROR;
         }
         
@@ -316,7 +316,7 @@ UT_Error IE_Imp_EPUB::readStructure()
 GsfOutput* IE_Imp_EPUB::createFileByPath(const char* path)
 {
     gchar** components = g_strsplit(path, G_DIR_SEPARATOR_S, 0);
-    UT_UTF8String curPath = "";
+    std::string curPath = "";
 
     int current = 0;
     GsfOutput* output = NULL;
@@ -325,7 +325,7 @@ GsfOutput* IE_Imp_EPUB::createFileByPath(const char* path)
         curPath += components[current];
         current++;
 
-        char *uri = UT_go_filename_to_uri(curPath.utf8_str());
+        char *uri = UT_go_filename_to_uri(curPath.c_str());
         bool fileExists = UT_go_file_exists(uri);
         if (!fileExists && (components[current] != NULL))
         {
@@ -356,8 +356,8 @@ void ContainerListener::startElement(const gchar* name, const gchar** atts)
 {
     if (!UT_go_utf8_collate_casefold(name, "rootfile"))
     {
-        m_rootFilePath = UT_UTF8String(UT_getAttribute("full-path", atts));
-        UT_DEBUGMSG(("Found rootfile%s\n", m_rootFilePath.utf8_str()));
+        m_rootFilePath = std::string(UT_getAttribute("full-path", atts));
+        UT_DEBUGMSG(("Found rootfile%s\n", m_rootFilePath.c_str()));
     }
 }
 
@@ -370,7 +370,7 @@ void ContainerListener::charData(const gchar* /*buffer*/, int /*length*/)
 
 }
 
-UT_UTF8String ContainerListener::getRootFilePath() const
+const std::string & ContainerListener::getRootFilePath() const
 {
     return m_rootFilePath;
 }
@@ -402,8 +402,8 @@ void OpfListener::startElement(const gchar* name, const gchar** atts)
         if (!UT_go_utf8_collate_casefold(name, "item"))
         {
             m_manifestItems.insert(
-                    string_pair(UT_UTF8String(UT_getAttribute("id", atts)),
-                            UT_UTF8String(UT_getAttribute("href", atts))));
+				   make_pair(std::string(UT_getAttribute("id", atts)),
+					     std::string(UT_getAttribute("href", atts))));
             UT_DEBUGMSG(("Found manifest item: %s\n", UT_getAttribute("href", atts)));
         }
     }
@@ -413,7 +413,7 @@ void OpfListener::startElement(const gchar* name, const gchar** atts)
         if (!UT_go_utf8_collate_casefold(name, "itemref"))
         {
             // We can ignore "linear" attribute as it said in specification
-            m_spine.push_back(UT_UTF8String(UT_getAttribute("idref", atts)));
+	    m_spine.push_back(std::string(UT_getAttribute("idref", atts)));
             UT_DEBUGMSG(("Found spine itemref: %s\n", UT_getAttribute("idref", atts)));
         }
     }

@@ -118,6 +118,7 @@ protected:
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
         bool hasMathML(const UT_UTF8String &file);
+        bool hasMathML(const std::string &file);
 		static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& sink);
 private:
     // Returns document writer depending on settings
