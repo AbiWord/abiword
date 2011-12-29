@@ -275,13 +275,15 @@ bool PD_Document::getMetaDataProp (const std::string & key, std::string & outPro
 }
 
 // RIVERA TODO not working and may not be needed
-void PD_Document::setAnnotationProp ( const UT_String & /*key*/,
-									  const UT_UTF8String & /*value*/ )
+void PD_Document::setAnnotationProp ( const std::string & /*key*/,
+									  const std::string & /*value*/ )
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
 	return; // TODO something!
 }
-bool PD_Document::getAnnotationProp (const UT_String & /*key*/, UT_UTF8String & outProp) const
+bool PD_Document::getAnnotationProp (const std::string & /*key*/, std::string & outProp) const
 {
+	UT_ASSERT(UT_NOT_IMPLEMENTED);
 	bool found = true;//false;
 	outProp = "Dummy value";
 	

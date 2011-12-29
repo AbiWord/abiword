@@ -193,8 +193,8 @@ public:
 	virtual bool getMetaDataProp (const std::string & key, std::string & outProp) const = 0;
 
 	// RIVERA TODO not working and may not be needed
-	virtual void setAnnotationProp (const UT_String & key, const UT_UTF8String & value) = 0;
-	virtual bool getAnnotationProp (const UT_String & key, UT_UTF8String & outProp) const = 0;
+	virtual void setAnnotationProp (const std::string & key, const std::string & value) = 0;
+	virtual bool getAnnotationProp (const std::string & key, std::string & outProp) const = 0;
 	
 	// history tracking
 	void            addRecordToHistory(const AD_VersionData & v);
