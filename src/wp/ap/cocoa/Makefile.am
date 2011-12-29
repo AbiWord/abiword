@@ -68,8 +68,8 @@ nobase_resources_DATA = \
 	ap_CocoaFrame.nib/*.nib\
 	$(NULL)
 
-spell_src = ap_CocaDialog_Spell.cpp \
-	ap_CocaDialog_Spell.h \
+spell_src = ap_CocoaDialog_Spell.cpp \
+	ap_CocoaDialog_Spell.h \
 	$(NULL)
 
 libcocoa_la_SOURCES = \
