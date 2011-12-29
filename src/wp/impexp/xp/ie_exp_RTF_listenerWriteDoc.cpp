@@ -4787,7 +4787,7 @@ void s_RTF_ListenerWriteDoc::_rtf_info(void)
 	                         "doccomm", "category", NULL};
 
 	if (!m_pie->isCopying ()) {
-		UT_UTF8String propVal ;
+		std::string propVal ;
 		
 		m_pie->_rtf_open_brace () ;
 		m_pie->_rtf_keyword("info");

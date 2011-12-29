@@ -32,6 +32,7 @@
 // Abiword includes
 #include <ut_types.h>
 #include <ut_string_class.h>
+#include "ut_std_string.h"
 #include <pd_Document.h>
  
 // External includes
@@ -65,12 +66,12 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
 
     ODe_writeUTF8String(meta, preamble);
 
-    UT_UTF8String meta_val, val;
+    std::string meta_val, val;
     
 #define WRITE_METADATA_ELEMENT(abiwordKey, odElementName) if (pDoc->getMetaDataProp(abiwordKey, meta_val) && meta_val.size()) { \
-                                                               meta_val.escapeXML(); \
-                                                               val = UT_UTF8String_sprintf("<%s>%s</%s>\n", odElementName, meta_val.utf8_str(), odElementName); \
-                                                               ODe_writeUTF8String (meta, val); \
+                                                               meta_val = UT_escapeXML(meta_val); \
+                                                               val = UT_std_string_sprintf("<%s>%s</%s>\n", odElementName, meta_val.c_str(), odElementName); \
+                                                               ODe_writeUTF8StdString (meta, val); \
                                                           }
     
     WRITE_METADATA_ELEMENT(PD_META_KEY_TITLE, "dc:title");
@@ -79,11 +80,11 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
 
     //Each keyword needs to be exported individually:
 
-    UT_UTF8String keywords;
+    std::string keywords;
     if (pDoc->getMetaDataProp (PD_META_KEY_KEYWORDS, keywords) && keywords.size())
     {
         UT_UTF8String buf = "";
-        UT_UCS4String keyword = keywords.utf8_str();
+        UT_UCS4String keyword(keywords);
 
         for(UT_uint32 i = 0;i < keyword.length(); i++)
         {
@@ -97,8 +98,8 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
                     continue;
 
                 buf.escapeXML();
-                val = UT_UTF8String_sprintf("<meta:keyword>%s</meta:keyword>\n", buf.utf8_str());
-                ODe_writeUTF8String(meta, val);
+                val = UT_std_string_sprintf("<meta:keyword>%s</meta:keyword>\n", buf.utf8_str());
+                ODe_writeUTF8StdString(meta, val);
                 buf.clear();
             }
         }
@@ -106,8 +107,8 @@ bool ODe_MetaDataWriter::writeMetaData(PD_Document* pDoc, GsfOutfile* oo) {
         if(buf.length())  //there may only be one keyword (i.e. no spaces encountered)
         {
             buf.escapeXML();
-            val = UT_UTF8String_sprintf("<meta:keyword>%s</meta:keyword>\n", buf.utf8_str());
-            ODe_writeUTF8String(meta, val);
+            val = UT_std_string_sprintf("<meta:keyword>%s</meta:keyword>\n", buf.utf8_str());
+            ODe_writeUTF8StdString(meta, val);
         }
     }
 

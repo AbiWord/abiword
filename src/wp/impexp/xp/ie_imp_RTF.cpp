@@ -12404,7 +12404,7 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 	int nested = 0;
 	bool result;
 	const char * metaDataKey = NULL;
-	UT_UTF8String metaDataProp;
+	std::string metaDataProp;
 	enum {
 		ACT_NONE,
 		ACT_PCDATA,

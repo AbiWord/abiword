@@ -18,67 +18,63 @@
  * 02111-1307, USA.
  */
 
-
 #include <string.h>
 
 #include "ut_assert.h"
 #include "ut_std_string.h"
 #include "ut_string.h"
 
-#if 0
-std::string & UT_escapeXML(std::string &s)
+std::string UT_escapeXML(const std::string &s)
 {
-    gsize incr = 0;
-
-	const char * ptr = s.c_str();
-	while (*ptr) {
-        if ((*ptr == '<') || (*ptr == '>')) {
-            incr += 3;
-        }
-        else if (*ptr == '&') {
-            incr += 4;
-        }
-        else if (*ptr == '"') {
-            incr += 5;
-        }
-        ptr++;
+  gsize incr = 0;
+  
+  const char * ptr = s.c_str();
+  while (*ptr) {
+    if ((*ptr == '<') || (*ptr == '>')) {
+      incr += 3;
     }
-
-    gsize slice_size = s.size() + incr + 1;
-    char * dest = (char *)g_slice_alloc(slice_size);
-    char * current = dest;
-
-	ptr = s.c_str();
-	while (*ptr)
-    {
-        if (*ptr == '<')
-        {
-            memcpy(dest, "&lt;", 4);
-            current += 4;
-        }
-        else if (*ptr == '>')
-        {
-            memcpy(dest, "&gt;", 4);
-            current += 4;
-        }
-        else if (*ptr == '&')
-        {
-            memcpy(dest, "&amp;", 5);
-            current += 5;
-        }
-        else if (*ptr == '"')
-        {
-            memcpy(dest, "&quot;", 6);
-            current += 6;
-        }
-        ptr++;
+    else if (*ptr == '&') {
+      incr += 4;
     }
-    *dest = 0;
-    s = dest;
-    g_slice_free1(slice_size, dest);
-    return s;
+    else if (*ptr == '"') {
+      incr += 5;
+    }
+    ptr++;
+  }
+
+  gsize slice_size = s.size() + incr + 1;
+  char * dest = (char *)g_slice_alloc(slice_size);
+  char * current = dest;
+  
+  ptr = s.c_str();
+  while (*ptr) {
+    if (*ptr == '<') {
+      memcpy(current, "&lt;", 4);
+      current += 4;
+    }
+    else if (*ptr == '>') {
+      memcpy(current, "&gt;", 4);
+      current += 4;
+    }
+    else if (*ptr == '&') {
+      memcpy(current, "&amp;", 5);
+      current += 5;
+    }
+    else if (*ptr == '"') {
+      memcpy(current, "&quot;", 6);
+      current += 6;
+    }
+    else {
+      *current = *ptr;
+      current++;
+    }
+    ptr++;
+  }
+  *current = 0;
+  std::string result = dest;
+  g_slice_free1(slice_size, dest);
+  return result;
 }
-#endif
 
  
 std::string& UT_std_string_vprintf (std::string & inStr, const char *format,

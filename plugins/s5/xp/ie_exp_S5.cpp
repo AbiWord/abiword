@@ -37,6 +37,7 @@
 #include "ut_stack.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_units.h"
@@ -240,7 +241,7 @@ UT_Error IE_Exp_S5::_writeDocument(void)
 
 void IE_Exp_S5::_writeHeader()
 {
-	UT_UTF8String title, author;
+	std::string title, author;
 
 	std::string prop;
 
@@ -248,33 +249,33 @@ void IE_Exp_S5::_writeHeader()
 	if (prop.empty())
 		getDoc()->getMetaDataProp (PD_META_KEY_TITLE, title);
 	else
-		title = prop.c_str();
+		title = prop;
 
-	if (title.byteLength () == 0 && getFileName () != NULL) 
+	if (title.size() == 0 && getFileName () != NULL) 
 		title = UT_basename(getFileName ());
 
 	prop = getProperty("author");
 	if (prop.empty())
 		getDoc()->getMetaDataProp (PD_META_KEY_CREATOR, author);
 	else
-		author = prop.c_str();
+		author = prop;
 
-	if (author.byteLength () == 0)
+	if (author.size() == 0)
 		author = "UNKNOWN";
 
 	// escapes inline
-	title.escapeXML();
-	author.escapeXML();
+	title = UT_escapeXML(title);
+	author = UT_escapeXML(author);
 
 	write("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n");
 	write("\"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">\n");
 	write("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n");
 	write("<head>\n");
-	_write("<title>%s</title>\n", title.utf8_str());
+	_write("<title>%s</title>\n", title.c_str());
 	write("<!-- metadata -->\n");
 	write("<meta name=\"generator\" content=\"AbiWord\" />\n");
 	write("<meta name=\"version\" content=\"S5 1.1\" />\n");
-	_write("<meta name=\"author\" content=\"%s\" />\n", author.utf8_str());
+	_write("<meta name=\"author\" content=\"%s\" />\n", author.c_str());
 	write("<!-- configuration parameters -->\n");
 	write("<meta name=\"defaultView\" content=\"slideshow\" />\n");
 	write("<meta name=\"controlVis\" content=\"hidden\" />\n");
@@ -312,7 +313,7 @@ void IE_Exp_S5::_writeHeader()
 	write("<div id=\"currentSlide\"><!-- DO NOT EDIT --></div>\n");
 	write("<div id=\"header\"></div>\n");
 	write("<div id=\"footer\">\n");
-	_write("<h1>%s</h1>\n", title.utf8_str());
+	_write("<h1>%s</h1>\n", title.c_str());
 	write("</div>\n");
 	write("</div>\n");
 	write("<div class=\"presentation\">\n");

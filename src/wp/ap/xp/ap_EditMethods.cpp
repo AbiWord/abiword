@@ -1920,9 +1920,9 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 		// to the directory containing this document (if it has a
 		// name), but don't put anything in the filename portion.
 		PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
-		UT_UTF8String title;
+		std::string title;
 
-		if (pDoc->getMetaDataProp (PD_META_KEY_TITLE, title) && title.size())
+		if (pDoc->getMetaDataProp (PD_META_KEY_TITLE, title) && !title.empty())
 		{
 #if 0
 			// the metadata is returned to us in utf8; we have to convert it to whatever
@@ -1936,8 +1936,8 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 				if(UT_iconv_isValid(cd));
 				{
-					const char * pTitle = title.utf8_str();
-					int bytes = title.byteLength();
+					const char * pTitle = title.c_str();
+					int bytes = title.size();
 					int left;
 					char out[500];
 					char *out_ptr = out;
@@ -1952,10 +1952,10 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 			}
 
 			if(!bSet)
-				pDialog->setCurrentPathname(title.utf8_str());
+				pDialog->setCurrentPathname(title.c_str());
 #else
 			UT_legalizeFileName(title);
-			pDialog->setCurrentPathname(title.utf8_str());
+			pDialog->setCurrentPathname(title.c_str());
 #endif
 			pDialog->setSuggestFilename(true);
 		} else {
@@ -3361,7 +3361,7 @@ Defun1(dlgMetaData)
 
   PD_Document * pDocument = pView->getDocument();
 
-  UT_UTF8String prop ( "" ) ;
+  std::string prop;
 
   if ( pDocument->getMetaDataProp ( PD_META_KEY_TITLE, prop ) )
     pDialog->setTitle ( prop ) ;

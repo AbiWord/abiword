@@ -179,12 +179,12 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbPermissions_Tab")), pSS, AP_STRING_ID_DLG_MetaData_TAB_Permission);
 	
 	// now set the text in all the fields
-	UT_UTF8String prop ( "" ) ;
+	std::string prop;
 	
 	#define SET_ENTRY_TXT(name) \
-	prop = get##name ().utf8_str() ; \
-	if ( prop.size () > 0 ) { \
-		gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.utf8_str() ) ; \
+	prop = get##name () ; \
+	if ( !prop.empty () ) { \
+		gtk_entry_set_text (GTK_ENTRY(m_entry##name), prop.c_str() ) ; \
 	}
 	
 	SET_ENTRY_TXT(Title)
@@ -202,11 +202,11 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 	
 	#undef SET_ENTRY_TXT
 	
-	prop = getDescription ().utf8_str() ;
-	if ( prop.size () )
+	prop = getDescription ();
+	if ( !prop.empty() )
 	{
 		GtkTextBuffer * buffer = gtk_text_view_get_buffer ( GTK_TEXT_VIEW(m_textDescription) ) ;
-		gtk_text_buffer_set_text ( buffer, prop.utf8_str(), -1 ) ;
+		gtk_text_buffer_set_text ( buffer, prop.c_str(), -1 ) ;
 	}	
 	
 	g_object_unref(G_OBJECT(builder));

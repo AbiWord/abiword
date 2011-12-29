@@ -657,16 +657,17 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	inline bool areStylesLocked () const { return m_bLockedStyles; }    // See also lockStyles
 	void lockStyles(bool b);
 
-	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value);
-	virtual bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const;
-	// TODO: when we move to a std::map<> the above will go away
+	virtual void setMetaDataProp (const std::string & key, const std::string & value);
 	virtual bool getMetaDataProp (const std::string & key, std::string & outProp) const;
 
 	// RIVERA TODO not working and may not be needed
 	virtual void setAnnotationProp (const UT_String & key, const UT_UTF8String & value);
 	virtual bool getAnnotationProp (const UT_String & key, UT_UTF8String & outProp) const;
 
-	UT_GenericStringMap<UT_UTF8String*> & getMetaData () { return m_metaDataMap ; }
+	const std::map<std::string,std::string> & getMetaData () const 
+	{ 
+		return m_metaDataMap ; 
+	}
 
 	// document-level property handling functions
 	const PP_AttrProp *     getAttrProp() const;
@@ -846,7 +847,7 @@ private:
 	bool                    m_bLoading;
 	UT_Vector				m_vBookmarkNames;
 	bool                    m_bLockedStyles;
-	UT_GenericStringMap<UT_UTF8String*> m_metaDataMap;
+	std::map<std::string, std::string> m_metaDataMap;
 	PT_AttrPropIndex        m_indexAP;
 	bool                    m_bDontImmediatelyLayout;
 

@@ -25,6 +25,7 @@
 #ifndef _ODE_COMMON_H_
 #define _ODE_COMMON_H_
 
+#include <string>
 
 // AbiWord includes
 #include <ut_types.h>
@@ -47,6 +48,8 @@ void ODe_writeToStream (GsfOutput* stream, const char* const message [],
     size_t nElements);
 
 void ODe_writeUTF8String (GsfOutput* output, const UT_UTF8String& str);
+void ODe_writeUTF8StdString (GsfOutput* output, const std::string& str);
+
 void ODe_write (GsfOutput* output, std::stringstream& ss );
 
 void ODe_writeAttribute(UT_UTF8String& rOutput,

@@ -41,8 +41,7 @@ ODi_MetaStream_ListenerState::ODi_MetaStream_ListenerState(
         : ODi_ListenerState("MetaStream", rElementStack),
           m_pDocument(pDocument)
 {
-    pDocument->setMetaDataProp(PD_META_KEY_FORMAT,
-        UT_UTF8String ("OpenDocument::ODT"));
+  pDocument->setMetaDataProp(PD_META_KEY_FORMAT, "OpenDocument::ODT");
 }
 
 /** 

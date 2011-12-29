@@ -855,10 +855,10 @@ public:
       m_bOpenDocument ( bOpenDocument )
   {
     if (m_bOpenDocument) {  
-      getDocument()->setMetaDataProp(PD_META_KEY_FORMAT, UT_UTF8String ("OpenWriter::ODT"));
+      getDocument()->setMetaDataProp(PD_META_KEY_FORMAT, "OpenWriter::ODT");
     }
 	else {
-      getDocument()->setMetaDataProp(PD_META_KEY_FORMAT, UT_UTF8String ("OpenWriter::SXW"));
+      getDocument()->setMetaDataProp(PD_META_KEY_FORMAT, "OpenWriter::SXW");
     }
   }
   
@@ -888,7 +888,7 @@ public:
 	getDocument()->setMetaDataProp (PD_META_KEY_DATE, mCharData);
       else if (!strcmp (name, "meta:user-defined"))
 	if (mAttrib.size())
-	  getDocument()->setMetaDataProp (mAttrib.utf8_str(), mCharData);
+	  getDocument()->setMetaDataProp (mAttrib, mCharData);
     }
     mCharData.clear ();
     mAttrib.clear ();
@@ -897,13 +897,13 @@ public:
   virtual void charData (const gchar * buffer, int length)
   {
     if (buffer && length)      
-      mCharData += UT_String (buffer, length).c_str();
+		mCharData += std::string (buffer, length);
   }
   
 private:
 
-  UT_UTF8String mCharData;
-  UT_UTF8String mAttrib;
+	std::string mCharData;
+	std::string mAttrib;
   const bool m_bOpenDocument;
 };
 

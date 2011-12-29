@@ -78,7 +78,7 @@ class TimeStamp {
 		UT_UCS4String mString;
 
 		/** Converts this timestamp to a human-readable string */
-		UT_UTF8String ToString() const;
+		std::string ToString() const;
 	private:
 		UT_iconv_t mConverter;
 		enum {
@@ -92,7 +92,7 @@ void TimeStamp::load(GsfInput* aStream) {
 	streamRead(aStream, mTime);
 }
 
-UT_UTF8String TimeStamp::ToString() const {
+std::string TimeStamp::ToString() const {
 	struct tm theDate;
 	theDate.tm_sec = (mTime / 100) % 100;
 	theDate.tm_min = (mTime / 10000) % 100;
@@ -106,12 +106,12 @@ UT_UTF8String TimeStamp::ToString() const {
 	char buf[64];
 	strftime(buf, sizeof(buf), "%x %X", &theDate);
 	UT_DEBUGMSG(("SDW: (TimeStamp is %s)\n", buf));
-	return UT_UTF8String(buf);
+	return buf;
 }
 
 // set an UCS-4 Metadata by converting it to UTF-8 and treating it as ASCII
-static inline void do_SetMetadata(PD_Document* aDoc, const UT_String& aKey, UT_UCS4String aData) {
-	UT_UTF8String str(aData);
+static inline void do_SetMetadata(PD_Document* aDoc, const std::string & aKey, UT_UCS4String aData) {
+	std::string str(aData.utf8_str());
 	aDoc->setMetaDataProp(aKey, str);
 }
 
@@ -123,7 +123,7 @@ void SDWDocInfo::load(GsfInfile* aDoc, PD_Document* aPDDoc)
 	try {
 		UT_DEBUGMSG(("SDW: Loading Docinfo...\n"));
 		// firstly, set StarOffice as generator
-		aPDDoc->setMetaDataProp(PD_META_KEY_GENERATOR, UT_UTF8String("StarOffice"));
+		aPDDoc->setMetaDataProp(PD_META_KEY_GENERATOR, "StarOffice");
 		AutoGsfInput docInfo =  gsf_infile_child_by_name(aDoc, "SfxDocumentInfo");
 		if (!(GsfInput*)docInfo)
 			throw UT_IE_BOGUSDOCUMENT;
@@ -171,7 +171,7 @@ void SDWDocInfo::load(GsfInfile* aDoc, PD_Document* aPDDoc)
 			UT_UCS4String key, value;
 			readPaddedByteString(docInfo, key, converter, 19);
 			readPaddedByteString(docInfo, value, converter, 19);
-			UT_String prefixedKey = CUSTOM_META_PREFIX + UT_String(UT_UTF8String(key).utf8_str());
+			std::string prefixedKey = std::string(CUSTOM_META_PREFIX) + key.utf8_str();
 			do_SetMetadata(aPDDoc, prefixedKey, value);
 		}
 

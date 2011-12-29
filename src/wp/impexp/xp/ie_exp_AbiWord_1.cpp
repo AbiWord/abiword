@@ -232,6 +232,10 @@ protected:
 								 bool bIgnoreProperties = false);
 	void				_outputData(const UT_UCSChar * p, UT_uint32 length);
 	void				_outputXMLChar(const gchar * data, UT_uint32 length);
+	void                _outputXMLChar(const std::string & s)
+	{
+		_outputXMLChar(s.c_str(), s.size());
+	}
 	void				_outputXMLAttribute(const gchar * key, const gchar * value, UT_uint32 length);
 	void				_outputXMLAttribute(const gchar * key, const std::string& value );
 	void				_handleStyles(void);
@@ -1546,8 +1550,8 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 
   // set all of the important meta-data props
 
-  m_pDocument->setMetaDataProp ( PD_META_KEY_GENERATOR, UT_UTF8String("AbiWord") ) ;
-  m_pDocument->setMetaDataProp ( PD_META_KEY_FORMAT,    UT_UTF8String(IE_MIMETYPE_AbiWord) ) ;
+  m_pDocument->setMetaDataProp ( PD_META_KEY_GENERATOR, "AbiWord" ) ;
+  m_pDocument->setMetaDataProp ( PD_META_KEY_FORMAT,    IE_MIMETYPE_AbiWord ) ;
 
 #if 0
   // get the saved time, remove trailing newline
@@ -1559,33 +1563,26 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 
   // TODO: set dc.date and abiword.date_created if document is new (i.e. first save)
 
-  UT_GenericStringMap<UT_UTF8String*> & ref = m_pDocument->getMetaData() ;
+  const std::map<std::string, std::string> & ref = m_pDocument->getMetaData() ;
 
   // don't print out a thing
-  if ( ref.size () == 0 )
+  if ( ref.empty() ) {
     return ;
+  }
 
   m_pie->write("<metadata>\n");
 
-  UT_GenericStringMap<UT_UTF8String*>::UT_Cursor cursor ( &ref ) ;
-
   const UT_UTF8String * val = NULL ;
-  for ( val = cursor.first(); cursor.is_valid(); val = cursor.next () )
-    {
-      if ( val )
-	{
-	  const UT_UTF8String *stringval = val;
-	  if( stringval->size () > 0 )
-	    {
+  std::map<std::string, std::string>::const_iterator iter = ref.begin();
+  for ( ; iter != ref.end(); ++iter ) {
+	  if( !iter->second.empty() ) {
 	      m_pie->write( "<m key=\"" ) ;
-	      _outputXMLChar ( cursor.key().c_str(), cursor.key().size() ) ;
+	      _outputXMLChar ( iter->first ) ;
 	      m_pie->write ( "\">" ) ;
-		  UT_UTF8String esc = *stringval;
-	      _outputXMLChar ( esc.utf8_str(), esc.byteLength() ) ;
+	      _outputXMLChar ( iter->second ) ;
 	      m_pie->write ( "</m>\n" ) ;
-	    }
-	}
-    }
+	  }
+  }
 
   m_pie->write("</metadata>\n");
 }

@@ -22,6 +22,7 @@
 #include <string.h>
 
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_locale.h"
@@ -734,13 +735,13 @@ bool s_WML_Listener::signal(UT_uint32 /* iSignal */)
 
 void s_WML_Listener::_handleMetaData()
 {
-	UT_UTF8String metaProp("");
+	std::string metaProp;
 	m_pie->write("<head>\n");
 
 	#define WRITEMETA(name)\
-		metaProp.escapeXML();\
+		metaProp = UT_escapeXML(metaProp);\
 		if(metaProp.length())\
-			m_pie->write(UT_UTF8String_sprintf("<meta name=\"%s\" content=\"%s\"/>\n", name, metaProp.utf8_str()).utf8_str());\
+		  m_pie->write(UT_std_string_sprintf("<meta name=\"%s\" content=\"%s\"/>\n", name, metaProp.c_str()).c_str()); \
 
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, metaProp) && metaProp.size())
 	{

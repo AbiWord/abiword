@@ -709,15 +709,15 @@ public:
 
     writeToStream(meta, preamble, G_N_ELEMENTS(preamble));
 
-    UT_UTF8String meta_val, val;
+    std::string meta_val, val;
 
     if (pDoc->getMetaDataProp(PD_META_KEY_DATE, meta_val) && meta_val.size()) {
-      val = UT_UTF8String_sprintf("<dc:date>%s</dc:date>\n", meta_val.utf8_str());
-      oo_gsf_output_write(meta, val.size(), reinterpret_cast<const guint8*>(val.utf8_str()));
+      val = UT_std_string_sprintf("<dc:date>%s</dc:date>\n", meta_val.c_str());
+      oo_gsf_output_write(meta, val.size(), reinterpret_cast<const guint8*>(val.c_str()));
     }
     if (pDoc->getMetaDataProp(PD_META_KEY_LANGUAGE, meta_val) && meta_val.size()) {
-      val = UT_UTF8String_sprintf("<dc:language>%s</dc:language>\n", meta_val.escapeXML().utf8_str());
-      oo_gsf_output_write(meta, val.size(), reinterpret_cast<const guint8*>(val.utf8_str()));
+      val = UT_std_string_sprintf("<dc:language>%s</dc:language>\n", UT_escapeXML(meta_val).c_str());
+      oo_gsf_output_write(meta, val.size(), reinterpret_cast<const guint8*>(val.c_str()));
     }
 
     writeToStream(meta, postamble, G_N_ELEMENTS(postamble));

@@ -21,12 +21,9 @@
 #ifndef IE_EXP_HTML_LISTENER_H
 #define	IE_EXP_HTML_LISTENER_H
 
-#include "ie_exp_HTML_util.h"
-#include "ie_exp_HTML_NavigationHelper.h"
-#include "ie_exp_HTML_StyleTree.h"
-
 // External includes
 #include <vector>
+#include <string>
 
 // ABiword includes
 #include <pd_Document.h>
@@ -40,6 +37,11 @@
 #include <ie_Table.h>
 #include <ie_TOC.h>
 #include <ut_mbtowc.h>
+
+#include "ie_exp_HTML_util.h"
+#include "ie_exp_HTML_NavigationHelper.h"
+#include "ie_exp_HTML_StyleTree.h"
+
 
 /**
  * Listener for the {X,P}HTML and MHT document generators. Contains all methods
@@ -109,8 +111,8 @@ public:
     virtual void insertDTD() {}
     virtual void insertLink(const UT_UTF8String &/*rel*/, 
         const UT_UTF8String &/*type*/, const UT_UTF8String &/*uri*/) {}
-    virtual void insertMeta(const UT_UTF8String &/*name*/, 
-        const UT_UTF8String &/*content*/) {}
+    virtual void insertMeta(const std::string &/*name*/, 
+							const std::string &/*content*/) {}
     virtual void insertMath(const UT_UTF8String &/*mathml*/,
         const UT_UTF8String &/*width*/, const UT_UTF8String &/*height*/){}
 
@@ -132,7 +134,7 @@ public:
     
     virtual void insertStyle(const UT_UTF8String &/*style*/) {}
     virtual void insertJavaScript(const gchar * /*src*/, const gchar* /*script*/) {}
-    virtual void insertTitle(const UT_UTF8String &/*title*/) {};
+    virtual void insertTitle(const std::string &/*title*/) {};
     virtual ~IE_Exp_HTML_ListenerImpl() {}
 };
 

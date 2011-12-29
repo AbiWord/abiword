@@ -114,7 +114,9 @@ bool XAP_FrameImpl::_updateTitle()
 		perm = UT_go_get_file_permissions(szURI);
 
 	/* first try to use the metadata title as our title */
-	if (m_pFrame->m_pDoc->getMetaDataProp ("dc.title", m_pFrame->m_sTitle) && m_pFrame->m_sTitle.size()) {
+	std::string title;
+	if (m_pFrame->m_pDoc->getMetaDataProp ("dc.title", title) && m_pFrame->m_sTitle.size()) {
+		m_pFrame->m_sTitle = title;
 		m_pFrame->m_sNonDecoratedTitle = m_pFrame->m_sTitle;
 
 		if (m_pFrame->m_pDoc->isDirty())
@@ -128,6 +130,9 @@ bool XAP_FrameImpl::_updateTitle()
 
 		FREEP(perm);
 		return true;
+	}
+	else {
+		m_pFrame->m_sTitle = "";
 	}
 	
 	/* that failed. let's use the filename instead */

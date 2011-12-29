@@ -108,11 +108,11 @@ time_t UT_mTime(const char* path)
 	\param filename [in/out] the suggested file name
     \return false if filename is left unchanged, true otherwise
  */
-bool UT_legalizeFileName(UT_UTF8String &filename)
+bool UT_legalizeFileName(std::string &filename)
 {
 	bool bRet = false;
 
-	char *tmp = g_strdup(filename.utf8_str());
+	char *tmp = g_strdup(filename.c_str());
 	char *ptr = tmp;
 
 	while (*ptr) {

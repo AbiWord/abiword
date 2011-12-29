@@ -149,6 +149,7 @@ protected:
 	void				_rtf_chardata(const char * pbuf, UT_uint32 buflen);
 	void				_rtf_chardata(const std::string& buf);
 	void				_rtf_pcdata(UT_UTF8String &sPCData, bool bSupplyUC=false, UT_uint32 iAltChars=1);
+	void				_rtf_pcdata(const std::string & szPCData, bool bSupplyUC=false, UT_uint32 iAltChars=1);
 	void				_rtf_pcdata(const char * szPCData, bool bSupplyUC=false, UT_uint32 iAltChars=1);
 	void				_rtf_nl(void);
 	const gchar *    _getStyleProp(s_RTF_AttrPropAdapter_Style * pADStyle,

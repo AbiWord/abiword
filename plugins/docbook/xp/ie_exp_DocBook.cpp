@@ -23,6 +23,7 @@
 #include <string.h>
 
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
 #include "ut_locale.h"
@@ -1231,7 +1232,7 @@ void s_DocBook_Listener::_handleDocument(void)
 
 void s_DocBook_Listener::_handleMetaData(void)
 {
-	UT_UTF8String metaProp(""), escaped("");
+	std::string metaProp, escaped;
 
 	_tagOpen(TT_BOOKINFO,"bookinfo");
 	_tagOpen(TT_BIBLIOMISC,"bibliomisc",false,true,false);
@@ -1242,99 +1243,99 @@ void s_DocBook_Listener::_handleMetaData(void)
 
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_TITLE, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_TITLE,"title",false,true,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_TITLE,"title",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_CREATOR, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_AUTHOR,"author",false,true,false);
 		_tagOpen(TT_OTHERNAME,"othername role=\"full\"",false,false,false);
-		m_pie->write(metaProp.utf8_str());
+		m_pie->write(metaProp.c_str());
 		_tagClose(TT_OTHERNAME,"othername",false,false,false);
 		_tagClose(TT_AUTHOR,"author",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_SUBJECT, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_SUBJECTSET,"subjectset",false,true,false);
 		_tagOpen(TT_SUBJECT,"subject",false,false,false);
 		_tagOpen(TT_SUBJECTTERM,"subjectterm",false,false,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_SUBJECTTERM,"subjectterm",false,false,false);
 		_tagClose(TT_SUBJECT,"subject",false,false,false);
 		_tagClose(TT_SUBJECTSET,"subjectset",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_DESCRIPTION, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_ABSTRACT,"abstract",false,true,false);
 		_tagOpen(TT_BLOCK,"para",false,false,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_BLOCK,"para",false,false,false);
 		_tagClose(TT_ABSTRACT,"abstract",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_PUBLISHER, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_PUBLISHER,"publisher",false,true,false);
 		_tagOpen(TT_PUBLISHERNAME,"publishername",false,false,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_PUBLISHERNAME,"publishername",false,false,false);
 		_tagClose(TT_PUBLISHER,"publisher",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_CONTRIBUTOR, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_COLLAB,"collab",false,true,false);
 		_tagOpen(TT_COLLABNAME,"collabname",false,false,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_COLLABNAME,"collabname",false,false,false);
 		_tagClose(TT_COLLAB,"collab",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_DATE, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_DATE,"date",false,true,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_DATE,"date",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_SOURCE, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_BIBLIOSOURCE,"bibliosource",false,true,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_BIBLIOSOURCE,"bibliosource",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_RELATION, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_BIBLIORELATION,"bibliorelation",false,true,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_BIBLIORELATION,"bibliorelation",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_COVERAGE, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_BIBLIOCOVERAGE,"bibliocoverage",false,true,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_BIBLIOCOVERAGE,"bibliocoverage",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_RIGHTS, metaProp) && metaProp.size())
 	{
-		escaped = metaProp.escapeXML();
+		escaped = UT_escapeXML(metaProp);
 		_tagOpen(TT_LEGALNOTICE,"legalnotice",false,true,false);
 		_tagOpen(TT_BLOCK,"para",false,false,false);
-		m_pie->write(escaped.utf8_str());
+		m_pie->write(escaped.c_str());
 		_tagClose(TT_BLOCK,"para",false,false,false);
 		_tagClose(TT_LEGALNOTICE,"legalnotice",true,false,false);
 	}
 	if (m_pDocument->getMetaDataProp (PD_META_KEY_KEYWORDS, metaProp) && metaProp.size())
 	{
 		UT_UTF8String buf = "";
-		UT_UCS4String keyword = metaProp.utf8_str();
+		UT_UCS4String keyword(metaProp);
 
 		for(UT_uint32 i = 0;i < keyword.length(); i++)
 		{

@@ -5517,14 +5517,14 @@ bool fp_FieldMetaRun::calculateValue(void)
 	PD_Document * pDoc = getBlock()->getDocument();
 	UT_ASSERT(pDoc);
 
-	UT_UTF8String value ;
-	if (!pDoc->getMetaDataProp(m_which, value) || !value.size())
+	std::string value ;
+	if (!pDoc->getMetaDataProp(m_which, value) || value.empty())
 	  value = " ";
 
 	if (getField())
-		getField()->setValue(static_cast<const gchar*>(value.utf8_str()));
+		getField()->setValue(value.c_str());
 
-	return _setValue(value.ucs4_str().ucs4_str());
+	return _setValue(UT_UCS4String(value).ucs4_str());
 }
 
 fp_FieldMetaTitleRun::fp_FieldMetaTitleRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_TITLE)

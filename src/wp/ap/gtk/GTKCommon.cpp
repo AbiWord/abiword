@@ -432,12 +432,12 @@ UT_runDialog_AskForPathname::run( XAP_Frame * pFrame )
         // to the directory containing this document (if it has a
         // name), but don't put anything in the filename portion.
         PD_Document * pDoc = static_cast<PD_Document*>(pFrame->getCurrentDoc());
-        UT_UTF8String title;
+	std::string title;
 
-        if (pDoc->getMetaDataProp (PD_META_KEY_TITLE, title) && title.size())
+        if (pDoc->getMetaDataProp (PD_META_KEY_TITLE, title) && !title.empty())
         {
             UT_legalizeFileName(title);
-            pDialog->setCurrentPathname(title.utf8_str());
+            pDialog->setCurrentPathname(title.c_str());
             pDialog->setSuggestFilename(true);
         } else {
             pDialog->setCurrentPathname(pFrame->getFilename());

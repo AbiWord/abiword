@@ -1,5 +1,22 @@
 
+#include "ut_string_class.h"
 #include "ut_std_string.h"
+
+
+TFTEST_MAIN("xml_string")
+{
+  std::string s = "<foobar = & \">";
+  
+  std::string s2 = UT_escapeXML(s);
+  TFPASS(!s2.empty());
+  printf("%s\n", s2.c_str());
+  TFPASS(s2 == "&lt;foobar = &amp; &quot;&gt;");
+
+  UT_UTF8String utf8(s);
+  TFPASS(utf8 == s);
+  TFPASS(s2 == utf8.escapeXML());
+}
+
 
 TFTEST_MAIN("PropVal")
 {

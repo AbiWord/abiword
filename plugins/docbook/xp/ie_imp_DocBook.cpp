@@ -2486,7 +2486,7 @@ void IE_Imp_DocBook::charData(const gchar *s, int len)
 	}
 	else if((m_parseState == _PS_Meta) && (len > 0))
 	{
-		UT_UTF8String metaProp, updatedProp = "";
+		std::string metaProp, updatedProp = "";
 
 		switch(tagTop())
 		{
@@ -2543,7 +2543,7 @@ void IE_Imp_DocBook::charData(const gchar *s, int len)
 					updatedProp += " "; //space the keywords
 				}
 				updatedProp += s;
-				getDoc()->setMetaDataProp("abiword.keywords",(gchar*)updatedProp.utf8_str());
+				getDoc()->setMetaDataProp("abiword.keywords",updatedProp);
 				break;
 			}
 

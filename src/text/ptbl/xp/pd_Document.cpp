@@ -225,9 +225,6 @@ PD_Document::~PD_Document()
 	_destroyDataItemData();
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
-	// remove the meta data
-	m_metaDataMap.purgeData();
-	//UT_HASH_PURGEDATA(UT_UTF8String*, &m_metaDataMap, delete) ;
 	m_mailMergeMap.purgeData();
 	//UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
@@ -244,18 +241,15 @@ PD_Document::~PD_Document()
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-void PD_Document::setMetaDataProp ( const UT_String & key,
-									const UT_UTF8String & value )
+void PD_Document::setMetaDataProp ( const std::string & key,
+									const std::string & value )
 {
-	UT_UTF8String * old = m_metaDataMap.pick ( key );
-	DELETEP(old);
-	
-	UT_UTF8String * ptrvalue = new UT_UTF8String(value);
-	m_metaDataMap.set (key, ptrvalue);
+	m_metaDataMap[key] = value;
+
 	const gchar * atts[3] = { PT_DOCPROP_ATTRIBUTE_NAME,"metadata",NULL};
 	const gchar * props[3] = {NULL,NULL,NULL};
 	props[0] = key.c_str();
-	props[1] = value.utf8_str();
+	props[1] = value.c_str();
 	createAndSendDocPropCR(atts,props);
 }
 
@@ -265,29 +259,17 @@ UT_sint32  PD_Document::getNextCRNumber(void)
 	return m_iCRCounter;
 }
 
-bool PD_Document::getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const
-{
-  bool found = false;
-  outProp = "";
-
-  const UT_UTF8String * val = m_metaDataMap.pick (key);
-  found = (val != NULL);
-
-  if (val && val->size ()) outProp = *val;
-
-  return found;
-}
-
 bool PD_Document::getMetaDataProp (const std::string & key, std::string & outProp) const
 {
-  bool found = false;
-  outProp = "";
+  std::map<std::string,std::string>::const_iterator iter = m_metaDataMap.find(key);
+  bool found = (iter != m_metaDataMap.end());
 
-  const UT_UTF8String * val = m_metaDataMap.pick (key);
-  found = (val != NULL);
-
-  if (val && val->size ()) 
-	  outProp = val->utf8_str();
+  if (found && !iter->second.empty()) {
+	  outProp = iter->second;
+  }
+  else {
+	  outProp = "";
+  }
 
   return found;
 }
@@ -2414,8 +2396,8 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
 		{
 			szValue = pProps[i+1];
 			UT_DEBUGMSG(("property %s value %s \n",szName,szValue));
-			const UT_String sName = szName;
-			const UT_UTF8String sValue = szValue;
+			const std::string sName = szName;
+			const std::string sValue = szValue;
 			setMetaDataProp(sName,sValue);
 			i += 2;
 			szName = pProps[i];

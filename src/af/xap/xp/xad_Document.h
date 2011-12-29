@@ -189,8 +189,8 @@ public:
 
 	bool			isPieceTableChanging(void) const;
 
-	virtual void setMetaDataProp (const UT_String & key, const UT_UTF8String & value) = 0;
-	virtual bool getMetaDataProp (const UT_String & key, UT_UTF8String & outProp) const = 0;
+	virtual void setMetaDataProp (const std::string & key, const std::string & value) = 0;
+	virtual bool getMetaDataProp (const std::string & key, std::string & outProp) const = 0;
 
 	// RIVERA TODO not working and may not be needed
 	virtual void setAnnotationProp (const UT_String & key, const UT_UTF8String & value) = 0;

@@ -24,6 +24,8 @@
 #ifndef _ODI_METASTREAM_LISTENERSTATE_H_
 #define _ODI_METASTREAM_LISTENERSTATE_H_
 
+#include <string>
+
 // Internal includes
 #include "ODi_ListenerState.h"
 
@@ -57,7 +59,7 @@ private:
     /**
      * Holds the character data of the element being parsed. 
      */
-    UT_UTF8String m_charData;
+    std::string m_charData;
 
     PD_Document* m_pDocument;
     
@@ -68,7 +70,7 @@ private:
      * meta:keyword element and AbiWord holds all the keywords on a single
      * abiword:keywords element.
      */
-    UT_UTF8String m_keywords;
+    std::string m_keywords;
 };
 
 #endif //_ODI_METASTREAM_LISTENERSTATE_H_

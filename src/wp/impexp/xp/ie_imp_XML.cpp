@@ -299,7 +299,7 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 						return;
 					case _PS_Meta:
 						{
-							UT_UTF8String data(s,len);
+							std::string data(s,len);
 							getDoc()->setMetaDataProp(m_currentMetaDataName, data);
 							return;
 						}

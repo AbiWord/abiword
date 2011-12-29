@@ -68,5 +68,5 @@ ABI_EXPORT size_t UT_fileSize(const char * filename);
 
 ABI_EXPORT time_t UT_mTime(const char* path);
 
-ABI_EXPORT bool UT_legalizeFileName(UT_UTF8String &filename);
+ABI_EXPORT bool UT_legalizeFileName(std::string &filename);
 #endif /* UT_PATH_H */

@@ -2417,10 +2417,10 @@ void IE_Exp_HTML_Listener::_insertLinks()
 
 void IE_Exp_HTML_Listener::_insertTitle()
 {
-	UT_UTF8String metaProp;
+	std::string metaProp;
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_TITLE, metaProp) 
-									 && metaProp.size())
+									 && !metaProp.empty())
 	{
         m_pCurrentImpl->insertTitle(metaProp);
 	} else
@@ -2431,7 +2431,7 @@ void IE_Exp_HTML_Listener::_insertTitle()
 
 void IE_Exp_HTML_Listener::_insertMeta()
 {
-    UT_UTF8String metaProp;
+	std::string metaProp;
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_TITLE, metaProp) 
 									 && metaProp.size())

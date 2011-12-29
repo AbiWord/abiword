@@ -665,6 +665,15 @@ void IE_Exp_RTF::_rtf_pcdata(UT_UTF8String &sPCData, bool bSupplyUC, UT_uint32 i
 /*
  * Access functions for above
  */
+void IE_Exp_RTF::_rtf_pcdata(const std::string & szPCData, bool bSupplyUC, UT_uint32 iAltChars)
+{
+	UT_UTF8String str(szPCData);
+	_rtf_pcdata(str, bSupplyUC, iAltChars);
+}
+
+/*
+ * Access functions for above
+ */
 void IE_Exp_RTF::_rtf_pcdata(const char * szPCData, bool bSupplyUC, UT_uint32 iAltChars)
 {
 	UT_UTF8String str(szPCData);

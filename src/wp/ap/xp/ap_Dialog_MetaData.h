@@ -28,9 +28,9 @@ class XAP_Frame;
 
 #define DCL_PROP(name) \
 public: \
-void set##name(const UT_UTF8String & val) { m_##name = val ; } \
-UT_UTF8String get##name() const { return m_##name ; } \
-private: UT_UTF8String m_##name ;
+ void set##name(const std::string & val) { m_##name = val ; }	\
+ const std::string & get##name() const { return m_##name ; }		\
+private: std::string m_##name ;
 
 class ABI_EXPORT AP_Dialog_MetaData : public XAP_Dialog_NonPersistent
 {

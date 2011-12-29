@@ -1522,7 +1522,7 @@ class ABI_EXPORT fp_FieldMetaRun : public fp_FieldRun
   virtual UT_uint32		needsFrequentUpdates(){ return FIELD_UPDATE_META;}
 
  private:
-  UT_String m_which;
+  std::string m_which;
 };
 
 class ABI_EXPORT fp_FieldMetaTitleRun : public fp_FieldMetaRun
