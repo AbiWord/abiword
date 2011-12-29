@@ -2,7 +2,7 @@
 
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003, 2009 Hubert Figuiere
+ * Copyright (C) 2001-2003, 2009, 2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -43,6 +43,7 @@
 #include "ap_CocoaFrame.h"
 #include "xap_CocoaFrameImpl.h"
 #include "gr_CocoaCairoGraphics.h"
+#include "pd_Style.h"
 
 #import <Cocoa/Cocoa.h>
 #import "xap_CocoaToolbarWindow.h"
@@ -864,14 +865,18 @@ bool EV_CocoaToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 
 							if (PD_Document * pDoc = static_cast<PD_Document *>(m_pCocoaFrame->getCurrentDoc()))
 							{
-								const char * szName = 0;
-								const PD_Style * pStyle = 0;
 
-								for (UT_uint32 k = 0; (pDoc->enumStyles(k, &szName, &pStyle)); k++) {
-									if (szName) {
-										[styles addObject:[NSString stringWithUTF8String:szName]];
+								UT_GenericVector<PD_Style*>* pStyles = NULL;
+								pDoc->enumStyles(pStyles);
+								UT_uint32 nStyles = pStyles->getItemCount();
+								for (UT_uint32 k = 0; k < nStyles; k++) {
+									PD_Style *pStyle = pStyles->getNthItem(k);
+									const char * name;
+									if (pStyle && (name = pStyle->getName())) {
+										[styles addObject:[NSString stringWithUTF8String:name]];
 									}
 								}
+								DELETEP(pStyles);
 								// TODO: Make style names reflect properties such as: font, size, alignment ??
 							}
 							[styles sortUsingSelector:@selector(compare:)];

@@ -1,6 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001 Hubert Figuiere
+ * Copyright (C) 2001,2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -79,13 +80,20 @@ bool AP_CocoaToolbar_StyleCombo::populate(void)
 	// TODO: need a view/doc pointer to get this right
 	// ALSO: will need to repopulate as new styles added
 	// HYP:  only call this method from shared code? 
-	const char * szName;
-	const PD_Style * pStyle;
 
-	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	UT_GenericVector<const PD_Styles*> pStyles = NULL;
+	pDoc->enumStyles(pStyles);
+	UT_uint32 nStyles = pStyles->getItemCount();
+
+	for (UT_uint32 k = 0; k < nStyles; k++)
 	{
-		m_vecContents.addItem(szName);
+		const PD_Style * pStyle;
+		pStyle = pStyles->getNthItem(k);
+		if(pStyle) {
+			m_vecContents.addItem(pStyle->getName());
+		}
 	}
+	DELETEP(pStyles);
 #endif 
 
 	return true;
@@ -107,13 +115,21 @@ bool AP_CocoaToolbar_StyleCombo::repopulate(void)
 	m_vecContents.clear();
 
 	m_pDocument = static_cast<PD_Document *>(pAD_Doc);
-	const char * szName;
-	const PD_Style * pStyle;
 
-	for (UT_uint32 k=0; (m_pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	UT_GenericVector<PD_Style*>* pStyles = NULL;
+	m_pDocument->enumStyles(pStyles);
+	UT_uint32 nStyles = pStyles->getItemCount();
+
+	for (UT_uint32 k = 0; k < nStyles; k++)
 	{
-		m_vecContents.addItem(szName);
+		const PD_Style * pStyle;
+		pStyle = pStyles->getNthItem(k);
+		if(pStyle) {
+			m_vecContents.addItem(pStyle->getName());
+		}
 	}
+	DELETEP(pStyles);
+
 	return true;
 }
 

@@ -1,6 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003, 2005, 2009 Hubert Figuiere
+ * Copyright (C) 2003, 2005, 2009, 2011 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -294,8 +295,6 @@ void AP_CocoaDialog_Styles::event_ListFilterClicked(const StyleType which)
 /*****************************************************************/
 void AP_CocoaDialog_Styles::_populateCList(void)
 {
-	const PD_Style * pStyle;
-	const char * name = NULL;
 	XAP_StringListDataSource* dataSource;
 
 	size_t nStyles = getDoc()->getStyleCount();
@@ -305,13 +304,17 @@ void AP_CocoaDialog_Styles::_populateCList(void)
 	[dataSource removeAllStrings];
 	m_whichRow = -1;	// make sure it is no longer selected
 
+	UT_GenericVector<PD_Style*>* pStyles = NULL;
+	getDoc()->enumStyles(pStyles);
 	for (UT_uint32 i = 0; i < nStyles; i++)
 	{
-	    getDoc()->enumStyles(i, &name, &pStyle);
+		const PD_Style * pStyle = pStyles->getNthItem(i);
 
 		// style has been deleted probably
 		if (!pStyle)
 			continue;
+
+		const char * name = pStyle->getName();
 
 	    // all of this is safe to do... append should take a const char **
 
@@ -322,6 +325,7 @@ void AP_CocoaDialog_Styles::_populateCList(void)
 			[dataSource addString:[NSString stringWithUTF8String:name]];
 		}
 	}
+	DELETEP(pStyles);
 	[m_dlg->_availStylesList reloadData];
 }
 
@@ -648,17 +652,21 @@ bool  AP_CocoaDialog_Styles::_populateModify(void)
 // Next make a glists of all styles and attach them to the BasedOn and FollowedBy
 //
 	size_t nStyles = getDoc()->getStyleCount();
-	const char * name = NULL;
-	const PD_Style * pcStyle = NULL;
 	
 	[m_modifyDlg->_basedOnCombo removeAllItems];
 	[m_modifyDlg->_followStyleCombo removeAllItems];
 	[m_modifyDlg->_styleTypeCombo removeAllItems];
 
+	UT_GenericVector<PD_Style*>* pStyles = NULL;
+	getDoc()->enumStyles(pStyles);
 	for (UT_uint32 i = 0; i < nStyles; i++)
 	{
-	    getDoc()->enumStyles(i, &name, &pcStyle);
+		const char * name = NULL;
+		const PD_Style * pcStyle = pStyles->getNthItem(i);
 
+		if(pcStyle) {
+			name = pcStyle->getName();
+		}
 		if(pBasedOnStyle && pcStyle == pBasedOnStyle)
 		{
 			szBasedOn = name;
@@ -673,6 +681,8 @@ bool  AP_CocoaDialog_Styles::_populateModify(void)
 		}
 		[m_modifyDlg->_followStyleCombo addItemWithObjectValue:[NSString stringWithUTF8String:name]];
 	}
+	DELETEP(pStyles);
+
 	[m_modifyDlg->_followStyleCombo addItemWithObjectValue:LocalizedString(pSS, AP_STRING_ID_DLG_Styles_DefCurrent)];
 	[m_modifyDlg->_basedOnCombo addItemWithObjectValue:LocalizedString(pSS, AP_STRING_ID_DLG_Styles_DefNone)];
 	[m_modifyDlg->_styleTypeCombo addItemWithObjectValue:LocalizedString(pSS, AP_STRING_ID_DLG_Styles_ModifyParagraph)];
