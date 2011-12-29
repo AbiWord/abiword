@@ -45,7 +45,7 @@
 #define HIDE_MAIN_DIALOG 0
 
 XAP_Dialog * AP_UnixDialog_Styles::static_constructor(XAP_DialogFactory * pFactory,
-													   XAP_Dialog_Id id)
+						      XAP_Dialog_Id id)
 {
 	AP_UnixDialog_Styles * p = new AP_UnixDialog_Styles(pFactory,id);
 	return p;
@@ -628,27 +628,32 @@ void AP_UnixDialog_Styles::_populateCList(void)
 
 	GtkTreeIter iter;
 	GtkTreeIter *pHighlightIter = NULL;
+	UT_GenericVector<PD_Style*> *pStyles = NULL;
+	getDoc()->enumStyles(pStyles);
 	for (UT_uint32 i = 0; i < nStyles; i++)
 	{
-		getDoc()->enumStyles(static_cast<UT_uint32>(i), &name, &pStyle);
+		pStyle = pStyles->getNthItem(i);
 
 		// style has been deleted probably
 		if (!pStyle)
 			continue;
 
+		name = pStyle->getName();
+
 		if ((m_whichType == ALL_STYLES) || 
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()) ||
-			(!strcmp(m_sNewStyleName.utf8_str(), pStyle->getName()))) /* show newly created style anyways */
+			(!strcmp(m_sNewStyleName.utf8_str(), name))) /* show newly created style anyways */
 		{
 			gtk_list_store_append(m_listStyles, &iter);
 			gtk_list_store_set(m_listStyles, &iter, 0, name, -1);
 			
-			if (!strcmp(m_sNewStyleName.utf8_str(), pStyle->getName())) {
+			if (!strcmp(m_sNewStyleName.utf8_str(), name)) {
 				pHighlightIter = gtk_tree_iter_copy(&iter);
 			}
 		}
 	}
+	DELETEP(pStyles);
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_tvStyles));
 	if (pHighlightIter) {
@@ -1425,13 +1430,13 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 // Next make a glists of all styles and attach them to the BasedOn and FollowedBy
 //
-	size_t nStyles = getDoc()->getStyleCount();
-	const char * name = NULL;
-	const PD_Style * pcStyle = NULL;
-	for (UT_uint32 i = 0; i < nStyles; i++)
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	getDoc()->enumStyles(pStyles);
+	UT_sint32 nStyles = pStyles->getItemCount();
+	for (UT_sint32 i = 0; i < nStyles; i++)
 	{
-	    getDoc()->enumStyles(i, &name, &pcStyle);
-
+		const PD_Style * pcStyle = pStyles->getNthItem(i);
+		const char * name = pcStyle->getName();
 		if(pBasedOnStyle && pcStyle == pBasedOnStyle)
 		{
 			szBasedOn = name;
@@ -1445,6 +1450,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 
 		m_gfollowedByStyles.push_back(name);
 	}
+	DELETEP(pStyles);
 
 	m_gfollowedByStyles.sort();
 	m_gfollowedByStyles.push_back(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent));

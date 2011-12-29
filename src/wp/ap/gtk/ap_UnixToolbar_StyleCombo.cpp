@@ -97,15 +97,18 @@ bool AP_UnixToolbar_StyleCombo::populate(void)
 	// TODO: need a view/doc pointer to get this right
 	// ALSO: will need to repopulate as new styles added
 	// HYP:  only call this method from shared code? 
-	const char * szName;
 	const PD_Style * pStyle;
 
-	for (UT_uint32 k=0; (pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	UT_GenericVector<PD_Style*> * pStyles = NULL;
+	pDocument->enumStyles(pStyles);
+	for (UT_uint32 k=0; k < pStyles->getItemCount(); k++)
 	{
+		pStyle = pStyles->getNthItem(k);
 		if (pStyle && pStyle->isDisplayed()) {
-			m_vecContents.addItem(szName);
+			m_vecContents.addItem(pStyle->getName());
 		}
 	}
+	DELETEP(pStyles);
 #endif 
 
 	return true;
@@ -144,22 +147,24 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 		pango_font_description_set_size (m_pDefaultDesc, 12 * PANGO_SCALE);
 	}
 
-	const char * szName;
 	const PD_Style * pStyle;
 	GSList *list = NULL;
 
-	for (UT_uint32 k=0; (pDocument->enumStyles(k,&szName,&pStyle)); k++)
+	UT_GenericVector<PD_Style*> *pStyles = NULL;
+	pDocument->enumStyles(pStyles);
+	for (UT_sint32 k=0; k < pStyles->getItemCount(); k++)
 	{
-		if (!pStyle) {
-			UT_DEBUGMSG(("no style instance for '%s'\n", szName));
-		}
+		pStyle = pStyles->getNthItem(k);
 
+		if(!pStyle) {
+			continue;
+		}
 		if (!pStyle->isDisplayed() && 
 		    !(dynamic_cast<const PD_BuiltinStyle *>(pStyle) && pStyle->isList() && pStyle->isUsed())) {
 			continue;
 		}
 
-		list = g_slist_prepend (list, (char *)szName);
+		list = g_slist_prepend (list, (gpointer)pStyle->getName());
 
 		/* wysiwyg styles are disabled for now 
 		PangoFontDescription *desc = pango_font_description_copy (m_pDefaultDesc);
@@ -167,6 +172,7 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 		m_mapStyles.insert(szName, desc);
 		*/
 	}
+	DELETEP(pStyles);
 
 	// Ok, it's a bit hackish to put them in a list for sorting first
 	// but somehow the vector's qsort totally failed for me

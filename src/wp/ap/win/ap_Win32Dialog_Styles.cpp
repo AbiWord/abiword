@@ -821,7 +821,6 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 	{
 	    const char * data[1];
 
-	    getDoc()->enumStyles((UT_uint32)i, &name, &pStyle);
 		pStyle = pStyles->getNthItem(i);
 		
 		// style has been deleted probably
