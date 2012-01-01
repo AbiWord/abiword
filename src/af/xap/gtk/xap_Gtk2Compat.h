@@ -133,9 +133,24 @@ inline gboolean gtk_widget_get_double_buffered(GtkWidget* widget)
   return GTK_WIDGET_DOUBLE_BUFFERED(widget);
 }
 
+inline void gtk_widget_set_can_default(GtkWidget* w, gboolean can_default)
+{
+  GTK_WIDGET_SET_FLAGS(w, GTK_CAN_DEFAULT);
+}
+
 inline void gtk_widget_set_can_focus(GtkWidget* w, gboolean can_focus)
 {
   GTK_WIDGET_SET_FLAGS(w, GTK_CAN_FOCUS);
+}
+
+inline gboolean gtk_widget_get_sensitive(GtkWidget *widget)
+{
+  return GTK_WIDGET_SENSITIVE(widget);
+}
+
+inline gboolean gtk_widget_get_visible(GtkWidget *widget)
+{
+  return GTK_WIDGET_VISIBLE(widget);
 }
 
 inline void gtk_widget_set_visible(GtkWidget *widget, gboolean visible)
@@ -145,6 +160,11 @@ inline void gtk_widget_set_visible(GtkWidget *widget, gboolean visible)
 #endif
 
 #if !GTK_CHECK_VERSION(2,20,0)
+inline void gtk_widget_get_requisition(GtkWidget* widget, GtkRequisition* requisition)
+{
+  *requisition = widget->requisition;
+}
+
 inline gboolean gtk_widget_get_mapped(GtkWidget* w)
 {
   return GTK_WIDGET_MAPPED(w);
