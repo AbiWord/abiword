@@ -198,7 +198,7 @@ void pf_Fragments::insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew)
 void pf_Fragments::unlinkFrag(pf_Frag * pf)
 {
 	// NOTE:  it is the caller's responsibility to delete pf if appropriate.
-        UT_DEBUGMSG(("Unlinking frag %p \n",pf));
+        xxx_UT_DEBUGMSG(("Unlinking frag %p \n",pf));
 	UT_return_if_fail (pf->getType() != pf_Frag::PFT_EndOfDoc);
 	// verifyDoc();
 	Iterator it(this,pf->_getNode());
