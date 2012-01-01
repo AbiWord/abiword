@@ -287,6 +287,13 @@ static char * s_stripDangerousChars(const char *s)
 
 static char * s_convert_to_utf8 (const wvParseStruct *ps, const char *s)
 {
+	// strangely wv seems to return an UTF-8 string despite a specified codepage
+	// so we must ensure it is UTF-8. This is time consuming. :-(
+	// If it is UTF-8 we just g_strdup() it.
+	// See bug 13229.
+	if(g_utf8_validate(s, -1, NULL)) {
+		return g_strdup(s);
+	}
 	const char * encoding = NULL;
 	char fallback = '?';
 	encoding = wvLIDToCodePageConverter(ps->fib.lid);
