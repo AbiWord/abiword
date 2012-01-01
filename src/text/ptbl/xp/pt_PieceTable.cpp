@@ -916,7 +916,7 @@ bool pt_PieceTable::getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition d
 
 bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 											PT_DocPosition docPos,
-											PL_StruxFmtHandle * psfh) const
+											fl_ContainerLayout* * psfh) const
 {
 	// return the SFH of the last strux immediately prior to
 	// the given absolute document position.
@@ -932,7 +932,7 @@ bool pt_PieceTable::getStruxFromPosition(PL_ListenerId listenerId,
 bool pt_PieceTable::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 												  PT_DocPosition docPos,
 												  PTStruxType pts,
-												  PL_StruxFmtHandle * psfh) const
+												  fl_ContainerLayout* * psfh) const
 {
 	// return the SFH of the last strux of the given type
 	// immediately prior to the given absolute document position.

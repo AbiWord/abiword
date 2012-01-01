@@ -129,7 +129,7 @@ s_RTF_ListenerGetProps::~s_RTF_ListenerGetProps()
 	_closeSection();
 }
 
-bool s_RTF_ListenerGetProps::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerGetProps::populate(fl_ContainerLayout* /*sfh*/,
 										 const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -182,7 +182,7 @@ bool s_RTF_ListenerGetProps::populate(PL_StruxFmtHandle /*sfh*/,
 
 bool s_RTF_ListenerGetProps::populateStrux(pf_Frag_Strux* /*sdh*/,
 											  const PX_ChangeRecord * pcr,
-											  PL_StruxFmtHandle * psfh)
+											  fl_ContainerLayout* * psfh)
 {
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -360,20 +360,20 @@ bool s_RTF_ListenerGetProps::populateStrux(pf_Frag_Strux* /*sdh*/,
 	}
 }
 
-bool s_RTF_ListenerGetProps::change(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerGetProps::change(fl_ContainerLayout* /*sfh*/,
 									   const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT_NOT_REACHED();	// this function is not used.
 	return false;
 }
 
-bool s_RTF_ListenerGetProps::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerGetProps::insertStrux(fl_ContainerLayout* /*sfh*/,
 										  const PX_ChangeRecord * /*pcr*/,
 										  pf_Frag_Strux* /*sdh*/,
 										  PL_ListenerId /* lid */,
 										  void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
 																	  PL_ListenerId /* lid */,
-																	  PL_StruxFmtHandle /* sfhNew */))
+																	  fl_ContainerLayout* /* sfhNew */))
 {
 	UT_ASSERT_NOT_REACHED();	// this function is not used.
 	return false;

@@ -139,7 +139,7 @@ public:
 											PL_ListenerId lid,
 											void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	PL_ListenerId lid,
-																	PL_StruxFmtHandle sfhNew));
+																	fl_ContainerLayout* sfhNew));
 	virtual bool bl_doclistener_insertSection(fl_ContainerLayout*,
 											  SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
@@ -147,7 +147,7 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 	virtual fl_SectionLayout * bl_doclistener_insertTable(fl_ContainerLayout*,
 											  SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
@@ -155,14 +155,14 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 	virtual fl_SectionLayout * bl_doclistener_insertTable(SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 	virtual fl_SectionLayout * bl_doclistener_insertFrame(fl_ContainerLayout*,
 											  SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
@@ -170,7 +170,7 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 
 	virtual bool bl_doclistener_insertObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_deleteObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
@@ -269,7 +269,7 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 
 
 	virtual bool        bl_doclistener_insertAnnotation(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx, 
@@ -277,7 +277,7 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 
 	void				setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL);
 
@@ -453,27 +453,27 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 	virtual fl_SectionLayout * bl_doclistener_insertTable(SectionType iType,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 	bool         bl_doclistener_insertFirstBlock(fl_ContainerLayout* pCL, const PX_ChangeRecord_Strux * pcrx,pf_Frag_Strux* sdh,PL_ListenerId lid);
 	virtual bool bl_doclistener_insertBlock(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
 											pf_Frag_Strux* sdh,
 											PL_ListenerId lid,
 											void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	PL_ListenerId lid,
-																	PL_StruxFmtHandle sfhNew));
+																	fl_ContainerLayout* sfhNew));
 	virtual bool bl_doclistener_insertSection(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 	virtual bool bl_doclistener_insertObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_deleteObject(fl_ContainerLayout*, const PX_ChangeRecord_Object * pcro);
 	virtual bool bl_doclistener_changeObject(fl_ContainerLayout*, const PX_ChangeRecord_ObjectChange * pcroc);
@@ -538,23 +538,23 @@ public:
 	fl_ShadowListener(fl_HdrFtrSectionLayout* pHFSL, fl_HdrFtrShadow* pShadow);
 	virtual ~fl_ShadowListener();
 
-	virtual bool				populate(PL_StruxFmtHandle sfh,
+	virtual bool				populate(fl_ContainerLayout* sfh,
 										 const PX_ChangeRecord * pcr);
 
 	virtual bool				populateStrux(pf_Frag_Strux* sdh,
 											  const PX_ChangeRecord * pcr,
-											  PL_StruxFmtHandle * psfh);
+											  fl_ContainerLayout* * psfh);
 
-	virtual bool				change(PL_StruxFmtHandle sfh,
+	virtual bool				change(fl_ContainerLayout* sfh,
 									   const PX_ChangeRecord * pcr);
 
-	virtual bool				insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool				insertStrux(fl_ContainerLayout* sfh,
 											const PX_ChangeRecord * pcr,
 											pf_Frag_Strux* sdh,
 											PL_ListenerId lid,
 											void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	PL_ListenerId lid,
-																	PL_StruxFmtHandle sfhNew));
+																	fl_ContainerLayout* sfhNew));
 
 	virtual bool				signal(UT_uint32 iSignal);
 

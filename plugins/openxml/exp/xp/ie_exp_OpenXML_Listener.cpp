@@ -73,7 +73,7 @@ IE_Exp_OpenXML_Listener::~IE_Exp_OpenXML_Listener()
 	document = NULL;
 }
 
-bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* pcr)
+bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_ChangeRecord* pcr)
 {	
 	switch (pcr->getType())
 	{
@@ -402,7 +402,7 @@ bool IE_Exp_OpenXML_Listener::populate(PL_StruxFmtHandle /* sfh */, const PX_Cha
 	return true;
 }
 
-bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeRecord* pcr , PL_StruxFmtHandle* /* psfh */)
+bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeRecord* pcr , fl_ContainerLayout** /* psfh */)
 {
 	if(pcr->getType() != PX_ChangeRecord::PXT_InsertStrux)
 		return false;
@@ -883,13 +883,13 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 	return true;
 }
 
-bool IE_Exp_OpenXML_Listener::change(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* /* pcr */)
+bool IE_Exp_OpenXML_Listener::change(fl_ContainerLayout* /* sfh */, const PX_ChangeRecord* /* pcr */)
 {
 	return false; //this function not used
 }
 
-bool IE_Exp_OpenXML_Listener::insertStrux(PL_StruxFmtHandle /* sfh */, const PX_ChangeRecord* /* pcr */, pf_Frag_Strux* /* sdhNew */, PL_ListenerId /* lid */,
-				 						  void (* /* pfnBindHandles */)(pf_Frag_Strux* /* sdhNew */, PL_ListenerId /* lid */, PL_StruxFmtHandle /* sfhNew */))
+bool IE_Exp_OpenXML_Listener::insertStrux(fl_ContainerLayout* /* sfh */, const PX_ChangeRecord* /* pcr */, pf_Frag_Strux* /* sdhNew */, PL_ListenerId /* lid */,
+				 						  void (* /* pfnBindHandles */)(pf_Frag_Strux* /* sdhNew */, PL_ListenerId /* lid */, fl_ContainerLayout* /* sfhNew */))
 {
 	return false; //this function not used
 }

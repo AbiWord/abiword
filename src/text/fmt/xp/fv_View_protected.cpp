@@ -3074,9 +3074,9 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 				if(sdhEnd)
 				{
 					PT_DocPosition posStart = getDocument()->getStruxPosition(sdhStart);
-					PL_StruxFmtHandle  psfh = NULL;
+					fl_ContainerLayout*  psfh = NULL;
 					getDocument()->getStruxOfTypeFromPosition((*pBlock)->getDocLayout()->getLID(),posStart,PTX_Block, &psfh);
-					newBlock = reinterpret_cast<fl_BlockLayout *>(const_cast<void *>(psfh));
+					newBlock = static_cast<fl_BlockLayout *>(psfh);
 
 					PT_DocPosition iPos = _BlockOffsetToPos(*pBlock, *pOffset);
 					PT_DocPosition iEncBlockPos = newBlock->getPosition(false);

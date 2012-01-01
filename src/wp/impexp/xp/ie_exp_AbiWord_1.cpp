@@ -187,23 +187,23 @@ public:
 						IE_Exp_AbiWord_1 * pie, bool isTemplate);
 	virtual ~s_AbiWord_1_Listener();
 
-	virtual bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(fl_ContainerLayout* sfh,
 								 const PX_ChangeRecord * pcr);
 
 	virtual bool		populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh);
+									  fl_ContainerLayout* * psfh);
 
-	virtual bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(fl_ContainerLayout* sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(fl_ContainerLayout* sfh,
 									const PX_ChangeRecord * pcr,
 									pf_Frag_Strux* sdh,
 									PL_ListenerId lid,
 									void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew));
+															fl_ContainerLayout* sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
 
@@ -889,7 +889,7 @@ s_AbiWord_1_Listener::getObjectKey(const PT_AttrPropIndex& api, const gchar* key
 }
 
 
-bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
 									  const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -1103,7 +1103,7 @@ bool s_AbiWord_1_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 bool s_AbiWord_1_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 										   const PX_ChangeRecord * pcr,
-										   PL_StruxFmtHandle * psfh)
+										   fl_ContainerLayout* * psfh)
 {
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -1315,20 +1315,20 @@ bool s_AbiWord_1_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 	}
 }
 
-bool s_AbiWord_1_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_AbiWord_1_Listener::change(fl_ContainerLayout* /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
   UT_ASSERT_NOT_REACHED();
 	return false;
 }
 
-bool s_AbiWord_1_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_AbiWord_1_Listener::insertStrux(fl_ContainerLayout* /*sfh*/,
 										  const PX_ChangeRecord * /*pcr*/,
 										  pf_Frag_Strux* /*sdh*/,
 										  PL_ListenerId /* lid */,
 										  void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
 																	  PL_ListenerId /* lid */,
-																	  PL_StruxFmtHandle /* sfhNew */))
+																	  fl_ContainerLayout* /* sfhNew */))
 {
 	UT_ASSERT_NOT_REACHED();						// this function is not used.
 	return false;

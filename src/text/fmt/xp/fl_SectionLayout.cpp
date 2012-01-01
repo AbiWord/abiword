@@ -359,7 +359,7 @@ bool fl_SectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const
 												  PL_ListenerId lid,
 												  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																		  PL_ListenerId lid,
-																		  PL_StruxFmtHandle sfhNew))
+																		  fl_ContainerLayout* sfhNew))
 {
     fl_HdrFtrSectionLayout * pHFSL = getHdrFtrLayout();
 	bool bres = true;
@@ -423,7 +423,7 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 													PL_ListenerId lid,
 													void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																			PL_ListenerId lid,
-																			PL_StruxFmtHandle sfhNew))
+																			fl_ContainerLayout* sfhNew))
 {
 	if(pPrevL->getContainerType() == FL_CONTAINER_BLOCK)
 	{
@@ -440,7 +440,7 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 		// to call down into the document (like all of the view
 		// listeners).
 
-		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+		fl_ContainerLayout* sfhNew = pSL;
 		//
 		// Don't bind to shadows
 		//
@@ -542,7 +542,7 @@ bool fl_SectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pPrevL,
 	// to call down into the document (like all of the view
 	// listeners).
 
-		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+		fl_ContainerLayout* sfhNew = pSL;
 		//
 		// Don't bind to shadows
 		//
@@ -637,7 +637,7 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(fl_ContainerLayo
 													PL_ListenerId lid,
 													void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																			PL_ListenerId lid,
-																			PL_StruxFmtHandle sfhNew))
+																			fl_ContainerLayout* sfhNew))
 {
 	fl_SectionLayout * pSL = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertTable(pcrx, iType, sdh, lid, pfnBindHandles);
 	checkAndAdjustCellSize();
@@ -652,7 +652,7 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(SectionType iTyp
 													PL_ListenerId lid,
 													void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																			PL_ListenerId lid,
-																			PL_StruxFmtHandle sfhNew))
+																			fl_ContainerLayout* sfhNew))
 {
 	UT_UNUSED(iType);
 	UT_ASSERT(iType == FL_SECTION_TABLE);
@@ -682,7 +682,7 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertTable(SectionType iTyp
 	{
 	  pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(this)->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
 	}
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+	fl_ContainerLayout* sfhNew = pSL;
 	//
 	// Don't bind to shadows
 	//
@@ -733,7 +733,7 @@ fl_SectionLayout * fl_SectionLayout::bl_doclistener_insertFrame(fl_ContainerLayo
 													PL_ListenerId lid,
 													void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																			PL_ListenerId lid,
-																			PL_StruxFmtHandle sfhNew))
+																			fl_ContainerLayout* sfhNew))
 {
 	fl_SectionLayout * pSL = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertFrame(pcrx, iType, sdh, lid, pfnBindHandles);
 	return pSL;
@@ -4516,7 +4516,7 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(fl_Contain
 													PL_ListenerId lid,
 													void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																			PL_ListenerId lid,
-																			PL_StruxFmtHandle sfhNew))
+																			fl_ContainerLayout* sfhNew))
 {
 	fl_SectionLayout * pSL = static_cast<fl_BlockLayout *>(pBL)->doclistener_insertTable(pcrx, iType, sdh, lid, pfnBindHandles);
 //	UT_ASSERT(0);
@@ -4569,12 +4569,12 @@ fl_SectionLayout * fl_HdrFtrSectionLayout::bl_doclistener_insertTable(SectionTyp
 													PL_ListenerId lid,
 													void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																			PL_ListenerId lid,
-																			PL_StruxFmtHandle sfhNew))
+																			fl_ContainerLayout* sfhNew))
 {
 
 	fl_SectionLayout * pSL = static_cast<fl_SectionLayout *>(static_cast<fl_ContainerLayout *>(this)->insert(sdh,this,pcrx->getIndexAP(), FL_CONTAINER_TABLE));
 
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+	fl_ContainerLayout* sfhNew = pSL;
 	//
 	// Don't bind to shadows
 	//
@@ -4651,7 +4651,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertFirstBlock(fl_ContainerLayout*
 
 }
 
-bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx,pf_Frag_Strux* sdh,PL_ListenerId lid,void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,	PL_ListenerId lid, PL_StruxFmtHandle sfhNew))
+bool fl_HdrFtrSectionLayout::bl_doclistener_insertBlock(fl_ContainerLayout* pBL, const PX_ChangeRecord_Strux * pcrx,pf_Frag_Strux* sdh,PL_ListenerId lid,void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,	PL_ListenerId lid, fl_ContainerLayout* sfhNew))
 {
 	bool bResult = true;
 //
@@ -4735,7 +4735,7 @@ bool fl_HdrFtrSectionLayout::bl_doclistener_insertSection(fl_ContainerLayout* pB
 														  PL_ListenerId lid,
 														  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																				  PL_ListenerId lid,
-																				  PL_StruxFmtHandle sfhNew))
+																				  fl_ContainerLayout* sfhNew))
 {
 	// TODO this should NEVER happen, right?
 	UT_DEBUGMSG(("Insert Section is header/footer!!! \n"));
@@ -4941,7 +4941,7 @@ bool fl_DocSectionLayout::bl_doclistener_insertFootnote(fl_ContainerLayout* pFoo
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 	fl_ContainerLayout * pNewCL = NULL;
 	fl_DocSectionLayout * pCol = static_cast<fl_DocSectionLayout *>(myContainingLayout());
@@ -4952,7 +4952,7 @@ bool fl_DocSectionLayout::bl_doclistener_insertFootnote(fl_ContainerLayout* pFoo
 		// to call down into the document (like all of the view
 		// listeners).
 		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+	fl_ContainerLayout* sfhNew = pNewCL;
 	pfnBindHandles(sdh,lid,sfhNew);
 
 
@@ -4980,7 +4980,7 @@ bool fl_DocSectionLayout::bl_doclistener_insertAnnotation(fl_ContainerLayout* pF
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 	fl_ContainerLayout * pNewCL = NULL;
 	fl_DocSectionLayout * pCol = static_cast<fl_DocSectionLayout *>(myContainingLayout());
@@ -4991,7 +4991,7 @@ bool fl_DocSectionLayout::bl_doclistener_insertAnnotation(fl_ContainerLayout* pF
 		// to call down into the document (like all of the view
 		// listeners).
 		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+	fl_ContainerLayout* sfhNew = pNewCL;
 	pfnBindHandles(sdh,lid,sfhNew);
 
 
@@ -5356,7 +5356,7 @@ fl_ShadowListener::~fl_ShadowListener()
 {
 }
 
-bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
+bool fl_ShadowListener::populate(fl_ContainerLayout* sfh,
 								 const PX_ChangeRecord * pcr)
 {
 	if (!m_bListening)
@@ -5456,7 +5456,7 @@ bool fl_ShadowListener::populate(PL_StruxFmtHandle sfh,
 
 bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh)
+									  fl_ContainerLayout* * psfh)
 {
 	UT_ASSERT(m_pShadow);
 	xxx_UT_DEBUGMSG(("fl_ShadowListener::populateStrux\n"));
@@ -5648,7 +5648,7 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 				return false;
 			}
 			m_pCurrentBL = pBL;
-			*psfh = static_cast<PL_StruxFmtHandle>(pBL);
+			*psfh = pBL;
 		}
 
 	}
@@ -5663,7 +5663,7 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 			fl_ContainerLayout*	pTL = m_pShadow->append(sdh, pcr->getIndexAP(),FL_CONTAINER_TABLE);
 			UT_DEBUGMSG(("New Shadow Table %p created and set as current \n",pTL));
 			m_pCurrentTL = static_cast<fl_TableLayout *>(pTL);
-			*psfh = static_cast<PL_StruxFmtHandle>(pTL);
+			*psfh = pTL;
 		}
 
 	}
@@ -5679,7 +5679,7 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 			fl_ContainerLayout*	pCell = m_pCurrentTL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_CELL);
 			UT_DEBUGMSG(("New Shadow Cell %p created and set as current \n",pCell));
 			m_pCurrentCell = static_cast<fl_CellLayout *>(pCell);
-			*psfh = static_cast<PL_StruxFmtHandle>(m_pCurrentCell);
+			*psfh = m_pCurrentCell;
 		}
 
 	}
@@ -5699,7 +5699,7 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
-		*psfh = (PL_StruxFmtHandle)m_pCurrentTL;
+		*psfh = m_pCurrentTL;
 		UT_DEBUGMSG(("SEVIOR: End table in  shadow listener \n"));
 		m_pCurrentTL->setDirty();
 		m_pCurrentTL->setEndTableIn();
@@ -5710,7 +5710,7 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 	{
 		UT_ASSERT(m_pCurrentCell);
 		UT_DEBUGMSG(("!!!! Append End Cell in Shadow Listener\n"));
-		*psfh = (PL_StruxFmtHandle) m_pCurrentCell;
+		*psfh = m_pCurrentCell;
 		m_pCurrentCell = NULL;
 	}
 	break;
@@ -5725,7 +5725,7 @@ bool fl_ShadowListener::populateStrux(pf_Frag_Strux* sdh,
 	return true;
 }
 
-bool fl_ShadowListener::change(PL_StruxFmtHandle /*sfh*/,
+bool fl_ShadowListener::change(fl_ContainerLayout* /*sfh*/,
 							   const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -5733,13 +5733,13 @@ bool fl_ShadowListener::change(PL_StruxFmtHandle /*sfh*/,
 	return false;
 }
 
-bool fl_ShadowListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool fl_ShadowListener::insertStrux(fl_ContainerLayout* /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/,
 									pf_Frag_Strux* /*sdh*/,
 									PL_ListenerId /*lid*/,
 									void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
 																PL_ListenerId lid,
-																PL_StruxFmtHandle sfhNew))
+																fl_ContainerLayout* sfhNew))
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 

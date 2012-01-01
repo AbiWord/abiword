@@ -52,7 +52,7 @@ IE_Imp_PasteListener::IE_Imp_PasteListener(PD_Document * pDocToPaste, PT_DocPosi
 	m_pSourceDoc(pSourceDoc)
 {
 }	
-bool  IE_Imp_PasteListener::populate(PL_StruxFmtHandle /* sfh */,
+bool  IE_Imp_PasteListener::populate(fl_ContainerLayout* /* sfh */,
 					 const PX_ChangeRecord * pcr)
 {
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -107,7 +107,7 @@ bool  IE_Imp_PasteListener::populate(PL_StruxFmtHandle /* sfh */,
 
 bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 									  const PX_ChangeRecord * pcr,
-										  PL_StruxFmtHandle * /* psfh */)
+										  fl_ContainerLayout* * /* psfh */)
 {
 //
 // TODO graphics in struxes

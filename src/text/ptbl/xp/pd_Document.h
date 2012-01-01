@@ -451,11 +451,11 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 	PT_DocPosition			getStruxPosition(pf_Frag_Strux* sdh) const;
 	bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,
-												 PL_StruxFmtHandle * psfh) const;
+												 fl_ContainerLayout* * psfh) const;
 	bool					getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 													   PT_DocPosition docPos,
 													   PTStruxType pts,
-													   PL_StruxFmtHandle * psfh) const;
+													   fl_ContainerLayout* * psfh) const;
 	bool					getStruxOfTypeFromPosition(PT_DocPosition, PTStruxType pts, pf_Frag_Strux* * sdh) const;
     pf_Frag_Strux*       getBlockFromPosition( PT_DocPosition pos ) const;
 
@@ -509,7 +509,7 @@ PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);
 											   const char * szProperty, const char ** pszValue) const;
 	// styles
 	void                    getAllUsedStyles(UT_GenericVector<PD_Style*> * pVecStyles);
-	PL_StruxFmtHandle       getNthFmtHandle(pf_Frag_Strux* sdh, UT_uint32 n);
+	fl_ContainerLayout*       getNthFmtHandle(pf_Frag_Strux* sdh, UT_uint32 n);
     const char *            getDefaultStyle() const;
 	bool					getStyle(const char * szName, PD_Style ** ppStyle) const;
 	PD_Style *				getStyleFromSDH(pf_Frag_Strux* sdh);

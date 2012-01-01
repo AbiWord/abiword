@@ -26,6 +26,7 @@
 
 class PX_ChangeRecord;
 class pf_Frag_Strux;
+class fl_ContainerLayout;
 
 #ifdef __sgi
 // <sys/signal.h> may #define signal, leaving PL_Listener::signal() pure
@@ -80,27 +81,27 @@ public:
 
 	virtual ~PL_Listener(){};
 	
-	virtual bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(fl_ContainerLayout* sfh,
 								 const PX_ChangeRecord * pcr) = 0;
 
 	virtual bool		populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh) = 0;
+									  fl_ContainerLayout* * psfh) = 0;
 
-	virtual bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(fl_ContainerLayout* sfh,
 							   const PX_ChangeRecord * pcr) = 0;
 
 	virtual void		deferNotifications(void)  { }
 
 	virtual void		processDeferredNotifications(void) { }
 
-	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(fl_ContainerLayout* sfh,
 									const PX_ChangeRecord * pcr,
 									pf_Frag_Strux* sdhNew,
 									PL_ListenerId lid,
 									void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew)) = 0;
+															fl_ContainerLayout* sfhNew)) = 0;
 
 	virtual bool		signal(UT_uint32 iSignal) = 0;
 	virtual PLListenerType getType() const

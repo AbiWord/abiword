@@ -60,7 +60,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 	// walk document and for each fragment, send a notification
 	// to each layout.
   
-	PL_StruxFmtHandle sfh = 0;
+	fl_ContainerLayout* sfh = 0;
 	PT_DocPosition sum = 0;
 	UT_uint32 blockOffset = 0;
 	pf_Frag_Strux * pfs2 = NULL;
@@ -314,7 +314,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
 {
     UT_DEBUGMSG(("_tellListenerSubsetWalkRange(top) listener %p startpos %d endpos %d\n",
                  pListener, rangeStartPos, rangeEndPos ));
-	PL_StruxFmtHandle sfh = 0;
+	fl_ContainerLayout* sfh = 0;
 	UT_uint32 blockOffset = 0;
 
 	pf_Frag * pf1 = NULL;
@@ -549,7 +549,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
     // move to using the above walker to allow mulitpass processing....
 #if 0    
     
-	PL_StruxFmtHandle sfh = 0;
+	fl_ContainerLayout* sfh = 0;
 	UT_uint32 blockOffset = 0;
 
 	pf_Frag * pf1 = NULL;

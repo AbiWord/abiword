@@ -145,7 +145,7 @@ PL_ListenerCoupleCloser::reset()
 bool
 PL_ListenerCoupleCloser::populateStrux( pf_Frag_Strux* /*sdh*/,
                                         const PX_ChangeRecord * pcr,
-                                        PL_StruxFmtHandle * /* psfh */ )
+                                        fl_ContainerLayout* * /* psfh */ )
 {
     return true;
 }
@@ -179,7 +179,7 @@ PL_ListenerCoupleCloser::trackOpenClose( const std::string& id,
 
 
 bool
-PL_ListenerCoupleCloser::populate(PL_StruxFmtHandle /* sfh */,
+PL_ListenerCoupleCloser::populate(fl_ContainerLayout* /* sfh */,
                                   const PX_ChangeRecord * pcr)
 {
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -262,7 +262,7 @@ PL_ListenerCoupleCloser::populate(PL_StruxFmtHandle /* sfh */,
 bool
 PL_ListenerCoupleCloser::populateStruxAfter( pf_Frag_Strux* /*sdh*/,
                                              const PX_ChangeRecord * pcr,
-                                             PL_StruxFmtHandle * /* psfh */ )
+                                             fl_ContainerLayout* * /* psfh */ )
 {
     PT_AttrPropIndex indexAP = pcr->getIndexAP();
 	UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateStruxAfter() indexAP %d pcr.type:%d \n",
@@ -274,7 +274,7 @@ PL_ListenerCoupleCloser::populateStruxAfter( pf_Frag_Strux* /*sdh*/,
 
 
 bool
-PL_ListenerCoupleCloser::populateAfter( PL_StruxFmtHandle sfh,
+PL_ListenerCoupleCloser::populateAfter( fl_ContainerLayout* sfh,
                                         const PX_ChangeRecord * pcr )
 {
     PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -328,7 +328,7 @@ PL_ListenerCoupleCloser::populateAfter( PL_StruxFmtHandle sfh,
     return true;
 }
 
-bool PL_ListenerCoupleCloser::AfterContentListener::populate( PL_StruxFmtHandle sfh,
+bool PL_ListenerCoupleCloser::AfterContentListener::populate( fl_ContainerLayout* sfh,
                                                               const PX_ChangeRecord * pcr )
 {
     return m_self->populateAfter( sfh, pcr );
@@ -337,7 +337,7 @@ bool PL_ListenerCoupleCloser::AfterContentListener::populate( PL_StruxFmtHandle 
 bool
 PL_ListenerCoupleCloser::AfterContentListener::populateStrux( pf_Frag_Strux* sdh,
                                                               const PX_ChangeRecord * pcr,
-                                                              PL_StruxFmtHandle * psfh )
+                                                              fl_ContainerLayout* * psfh )
 {
     return m_self->populateStruxAfter( sdh, pcr, psfh );
 }
@@ -355,7 +355,7 @@ bool PL_ListenerCoupleCloser::AfterContentListener::isFinished()
 bool
 PL_ListenerCoupleCloser::populateStruxBefore( pf_Frag_Strux* /*sdh*/,
                                              const PX_ChangeRecord * pcr,
-                                             PL_StruxFmtHandle * /* psfh */ )
+                                             fl_ContainerLayout* * /* psfh */ )
 {
     PT_AttrPropIndex indexAP = pcr->getIndexAP();
 	UT_DEBUGMSG(("MIQ: PL_ListenerCoupleCloser::PopulateStruxBefore() indexAP %d pcr.type:%d \n",
@@ -380,7 +380,7 @@ PL_ListenerCoupleCloser::shouldOpen( const std::string& id,
 }
 
 bool
-PL_ListenerCoupleCloser::populateBefore( PL_StruxFmtHandle sfh,
+PL_ListenerCoupleCloser::populateBefore( fl_ContainerLayout* sfh,
                                         const PX_ChangeRecord * pcr )
 {
     PT_AttrPropIndex indexAP = pcr->getIndexAP();
@@ -440,7 +440,7 @@ PL_ListenerCoupleCloser::populateBefore( PL_StruxFmtHandle sfh,
 }
 
 
-bool PL_ListenerCoupleCloser::BeforeContentListener::populate( PL_StruxFmtHandle sfh,
+bool PL_ListenerCoupleCloser::BeforeContentListener::populate( fl_ContainerLayout* sfh,
                                                               const PX_ChangeRecord * pcr )
 {
     return m_self->populateBefore( sfh, pcr );
@@ -449,7 +449,7 @@ bool PL_ListenerCoupleCloser::BeforeContentListener::populate( PL_StruxFmtHandle
 bool
 PL_ListenerCoupleCloser::BeforeContentListener::populateStrux( pf_Frag_Strux* sdh,
                                                               const PX_ChangeRecord * pcr,
-                                                              PL_StruxFmtHandle * psfh )
+                                                              fl_ContainerLayout* * psfh )
 {
     return m_self->populateStruxBefore( sdh, pcr, psfh );
 }

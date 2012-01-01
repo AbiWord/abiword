@@ -38,7 +38,7 @@ AbiCollabService_Export::~AbiCollabService_Export()
 {
 }
 
-bool AbiCollabService_Export::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
+bool AbiCollabService_Export::populate(fl_ContainerLayout* /*sfh*/, const PX_ChangeRecord * /*pcr*/)
 {
 	return true;
 }
@@ -51,7 +51,7 @@ bool AbiCollabService_Export::populate(PL_StruxFmtHandle /*sfh*/, const PX_Chang
  */
 bool AbiCollabService_Export::populateStrux(pf_Frag_Strux* /*sdh*/,
                                             const PX_ChangeRecord * /*pcr*/,
-                                            PL_StruxFmtHandle * /*psfh*/)
+                                            fl_ContainerLayout* * /*psfh*/)
 {
 	return true;
 }
@@ -62,7 +62,7 @@ bool AbiCollabService_Export::populateStrux(pf_Frag_Strux* /*sdh*/,
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool AbiCollabService_Export::change(PL_StruxFmtHandle /*sfh*/,
+bool AbiCollabService_Export::change(fl_ContainerLayout* /*sfh*/,
                                      const PX_ChangeRecord * /*pcr*/)
 {
 	return true;
@@ -75,13 +75,13 @@ bool AbiCollabService_Export::change(PL_StruxFmtHandle /*sfh*/,
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool AbiCollabService_Export::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool AbiCollabService_Export::insertStrux(fl_ContainerLayout* /*sfh*/,
                                           const PX_ChangeRecord * /*pcr*/,
                                           pf_Frag_Strux* /*sdh*/,
                                           PL_ListenerId /*lid*/,
                                           void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
 															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew))
+															fl_ContainerLayout* sfhNew))
 {
 	return true;
 }

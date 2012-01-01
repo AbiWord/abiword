@@ -44,27 +44,27 @@ public:
 	fl_DocListener(PD_Document* doc, FL_DocLayout *pLayout);
 	virtual ~fl_DocListener();
 
-	virtual bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(fl_ContainerLayout* sfh,
 								 const PX_ChangeRecord * pcr);
 
 	virtual bool		populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh);
+									  fl_ContainerLayout* * psfh);
 
-	virtual bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(fl_ContainerLayout* sfh,
 							   const PX_ChangeRecord * pcr);
 
 
 	virtual void		deferNotifications(void);
 	virtual void		processDeferredNotifications(void);
 
-	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(fl_ContainerLayout* sfh,
 									const PX_ChangeRecord * pcr,
 									pf_Frag_Strux* sdh,
 									PL_ListenerId lid,
 									void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew));
+															fl_ContainerLayout* sfhNew));
 	void                setHoldTableLayout(bool bHold) {m_bHoldTableLayout = bHold;}
 	bool                holdTableLayout(void) { return m_bHoldTableLayout;}
 	virtual bool		signal(UT_uint32 iSignal);

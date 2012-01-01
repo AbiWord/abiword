@@ -224,8 +224,8 @@ bool fp_FieldTableSumRows::calculateValue(void)
 	{
 		pf_Frag_Strux* sdhCell = pDoc->getCellSDHFromRowCol(tableSDH,true,99999,row,col);
 		UT_sint32 i = getBlock()->getDocLayout()->getLID();
-		PL_StruxFmtHandle fmtCell = pDoc->getNthFmtHandle(sdhCell,i);
-		pCell = reinterpret_cast<fl_CellLayout *>(const_cast<void *>(fmtCell));
+		fl_ContainerLayout* fmtCell = pDoc->getNthFmtHandle(sdhCell,i);
+		pCell = static_cast<fl_CellLayout *>(fmtCell);
 		if(pCell->getTopAttach() == lastRow)
 		{
 			continue;
@@ -343,8 +343,8 @@ bool fp_FieldTableSumCols::calculateValue(void)
 	{
 		pf_Frag_Strux* sdhCell = pDoc->getCellSDHFromRowCol(tableSDH,true,99999,row,col);
 		UT_sint32 i = getBlock()->getDocLayout()->getLID();
-		PL_StruxFmtHandle fmtCell = pDoc->getNthFmtHandle(sdhCell,i);
-		pCell = reinterpret_cast<fl_CellLayout *>(const_cast<void *>(fmtCell));
+		fl_ContainerLayout* fmtCell = pDoc->getNthFmtHandle(sdhCell,i);
+		pCell = static_cast<fl_CellLayout *>(fmtCell);
 		if(pCell->getLeftAttach() == lastCol)
 		{
 			continue;

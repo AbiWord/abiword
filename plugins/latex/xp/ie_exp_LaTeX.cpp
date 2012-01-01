@@ -215,7 +215,7 @@ public:
 	    DELETEP(m_pTableHelper);
 	}
 
-	virtual bool		populate(PL_StruxFmtHandle /*sfh*/,
+	virtual bool		populate(fl_ContainerLayout* /*sfh*/,
 					    const PX_ChangeRecord * /*pcr*/)
 	{
 		return true;	
@@ -223,7 +223,7 @@ public:
 
 	virtual bool		populateStrux(pf_Frag_Strux* sdh,
 						const PX_ChangeRecord * pcr,
-						PL_StruxFmtHandle * psfh)
+						fl_ContainerLayout* * psfh)
 	{
 		UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 		const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -261,20 +261,20 @@ public:
 		return true;
 	}
 
-	virtual bool		change(PL_StruxFmtHandle /*sfh*/,
+	virtual bool		change(fl_ContainerLayout* /*sfh*/,
 					const PX_ChangeRecord * /*pcr*/)
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
 	}
 
-	virtual bool		insertStrux(PL_StruxFmtHandle /*sfh*/,
+	virtual bool		insertStrux(fl_ContainerLayout* /*sfh*/,
 					    const PX_ChangeRecord * /*pcr*/,
 					    pf_Frag_Strux* /*sdh*/,
 					    PL_ListenerId /*lid*/,
 					    void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
 									PL_ListenerId lid,
-									PL_StruxFmtHandle sfhNew))
+									fl_ContainerLayout* sfhNew))
 	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		return false;
@@ -295,23 +295,23 @@ public:
 			    const LaTeX_Analysis_Listener& analysis);
 	virtual ~s_LaTeX_Listener();
 
-	virtual bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(fl_ContainerLayout* sfh,
 					const PX_ChangeRecord * pcr);
 
 	virtual bool		populateStrux(pf_Frag_Strux* sdh,
 						const PX_ChangeRecord * pcr,
-						PL_StruxFmtHandle * psfh);
+						fl_ContainerLayout* * psfh);
 
-	virtual bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(fl_ContainerLayout* sfh,
 					const PX_ChangeRecord * pcr);
 
-	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(fl_ContainerLayout* sfh,
 						const PX_ChangeRecord * pcr,
 						pf_Frag_Strux* sdh,
 						PL_ListenerId lid,
 						void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 							PL_ListenerId lid,
-							PL_StruxFmtHandle sfhNew));
+							fl_ContainerLayout* sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
 #ifdef HAVE_LIBXSLT	
@@ -1640,7 +1640,7 @@ bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
 }
 #endif
 
-bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_LaTeX_Listener::populate(fl_ContainerLayout* /*sfh*/,
 								   const PX_ChangeRecord * pcr)
 {
 	
@@ -1802,7 +1802,7 @@ bool s_LaTeX_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 bool s_LaTeX_Listener::populateStrux(pf_Frag_Strux* sdh,
 										   const PX_ChangeRecord * pcr,
-										   PL_StruxFmtHandle * psfh)
+										   fl_ContainerLayout* * psfh)
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -1955,20 +1955,20 @@ bool s_LaTeX_Listener::populateStrux(pf_Frag_Strux* sdh,
 	}
 }
 
-bool s_LaTeX_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_LaTeX_Listener::change(fl_ContainerLayout* /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
 	return false;
 }
 
-bool s_LaTeX_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_LaTeX_Listener::insertStrux(fl_ContainerLayout* /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
 									 pf_Frag_Strux* /*sdh*/,
 									 PL_ListenerId /* lid */,
 									 void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
 																 PL_ListenerId /* lid */,
-																 PL_StruxFmtHandle /* sfhNew */))
+																 fl_ContainerLayout* /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
 	return false;

@@ -131,9 +131,6 @@ typedef enum _PLListenerType
 //! ID of a listener - this is its location in m_vecListeners
 typedef UT_uint32 PL_ListenerId;
 
-//! opaque layout data
-typedef const void * PL_StruxFmtHandle;
-
 #define PT_PROPS_ATTRIBUTE_NAME			(static_cast<const gchar *>("props"))
 #define PT_STYLE_ATTRIBUTE_NAME			(static_cast<const gchar *>("style"))
 #define PT_LEVEL_ATTRIBUTE_NAME			(static_cast<const gchar *>("level"))

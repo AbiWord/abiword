@@ -91,11 +91,11 @@ public:
 	virtual ~PL_Psion_Listener(void);
 
 	// Overriding methods from the base class
-	virtual bool populate(PL_StruxFmtHandle sfh,
+	virtual bool populate(fl_ContainerLayout* sfh,
 	                      const PX_ChangeRecord * pcr);
 	virtual bool populateStrux(pf_Frag_Strux* sdh,
 	                           const PX_ChangeRecord * pcr,
-	                           PL_StruxFmtHandle * psfh);
+	                           fl_ContainerLayout* * psfh);
 
 	// New public methods 
 	bool startDocument(void);
@@ -136,17 +136,17 @@ private:
 
 public:
 	// The following three base class methods should never be called.
-	virtual bool change(PL_StruxFmtHandle /*sfh*/,
+	virtual bool change(fl_ContainerLayout* /*sfh*/,
 						const PX_ChangeRecord * /*pcr*/)
 	                         { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
-	virtual bool insertStrux(PL_StruxFmtHandle /*sfh*/,
+	virtual bool insertStrux(fl_ContainerLayout* /*sfh*/,
 							 const PX_ChangeRecord * /*pcr*/,
 							 pf_Frag_Strux* /*sdh*/,
 							 PL_ListenerId /*lid*/,
 							 void (* /*pfnBindHandles*/)
 	                                            (pf_Frag_Strux* sdhNew,
 	                                             PL_ListenerId lid,
-	                                             PL_StruxFmtHandle sfhNew))
+	                                             fl_ContainerLayout* sfhNew))
 		                     { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
 	virtual bool signal(UT_uint32 /*iSignal*/) 
 	                         { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }

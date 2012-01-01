@@ -43,6 +43,7 @@ class pf_Frag_Strux_Section;
 class PX_ChangeRecord_Span;
 class PD_Style;
 class PL_ListenerCoupleCloser;
+class fl_ContainerLayout;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -332,7 +333,7 @@ public:
 	bool					getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 													   PT_DocPosition docPos,
 													   PTStruxType pts,
-													   PL_StruxFmtHandle * psfh) const;
+													   fl_ContainerLayout* * psfh) const;
 
     pf_Frag_Strux*       getBlockFromPosition(PT_DocPosition pos) const;
 
@@ -342,7 +343,7 @@ public:
 
 	bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,
-												 PL_StruxFmtHandle * psfh) const;
+												 fl_ContainerLayout* * psfh) const;
 
 	bool					getFragsFromPositions(PT_DocPosition dPos1, PT_DocPosition dPos2,
 												  pf_Frag ** ppf1, PT_BlockOffset * pOffset1,

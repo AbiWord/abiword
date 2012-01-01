@@ -895,7 +895,7 @@ bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* /*pLBlock*/,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
@@ -916,7 +916,7 @@ bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* /*pLBlock*/,
 		// to call down into the document (like all of the view
 		// listeners).
 		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+	fl_ContainerLayout* sfhNew = pNewCL;
 	pfnBindHandles(sdh,lid,sfhNew);
 //
 // increment the insertion point in the view.
@@ -943,7 +943,7 @@ bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * p
 											   PL_ListenerId lid,
 											   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	   PL_ListenerId lid,
-																	   PL_StruxFmtHandle sfhNew))
+																	   fl_ContainerLayout* sfhNew))
 {
 	UT_UNUSED(iType);
 	UT_ASSERT(iType == FL_SECTION_TABLE);
@@ -968,7 +968,7 @@ bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * p
 		// to call down into the document (like all of the view
 		// listeners).
 
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pSL);
+	fl_ContainerLayout* sfhNew = pSL;
 	pfnBindHandles(sdh,lid,sfhNew);
 
 //
@@ -998,7 +998,7 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 	fl_ContainerLayout * pNewCL = NULL;
 	pNewCL = insert(sdh,pCell,pcrx->getIndexAP(), FL_CONTAINER_CELL);
@@ -1013,7 +1013,7 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 		
 	if(pfnBindHandles)
 	{
-		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+		fl_ContainerLayout* sfhNew = pNewCL;
 		pfnBindHandles(sdh,lid,sfhNew);
 	}
 
@@ -1051,14 +1051,14 @@ bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
 												   PL_ListenerId lid,
 												   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 	// The endTable strux actually has a format handle to to the this table layout.
 	// so we bind to this layout.
 
 	if(pfnBindHandles)
 	{	
-		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
+		fl_ContainerLayout* sfhNew = this;
 		pfnBindHandles(sdh,lid,sfhNew);
 	}
 
@@ -2136,7 +2136,7 @@ bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 	fl_ContainerLayout * pNewCL = NULL;
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(myContainingLayout());
@@ -2148,7 +2148,7 @@ bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 		// listeners).
 	if(	pfnBindHandles)
 	{
-		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+		fl_ContainerLayout* sfhNew = pNewCL;
 		pfnBindHandles(sdh,lid,sfhNew);
 	}
 	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(pNewCL);
@@ -2178,13 +2178,13 @@ bool fl_CellLayout::bl_doclistener_insertEndCell(fl_ContainerLayout*,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 	// The endCell strux actually needs a format handle to to this cell layout.
 	// so we bind to this layout.
 
 		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
+	fl_ContainerLayout* sfhNew = this;
 	pfnBindHandles(sdh,lid,sfhNew);
 
 //

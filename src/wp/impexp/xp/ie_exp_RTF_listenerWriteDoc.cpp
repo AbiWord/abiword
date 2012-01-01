@@ -1811,7 +1811,7 @@ s_RTF_ListenerWriteDoc::~s_RTF_ListenerWriteDoc()
 	_closeSection();
 }
 
-bool s_RTF_ListenerWriteDoc::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerWriteDoc::populate(fl_ContainerLayout* /*sfh*/,
 									  const PX_ChangeRecord * pcr)
 {
 	m_posDoc = pcr->getPosition();
@@ -2077,7 +2077,7 @@ const UT_UCSChar * s_RTF_ListenerWriteDoc::_getFieldValue(void)
 	{
 		m_pDocument->getStruxOfTypeFromPosition(m_posDoc,PTX_Block,&m_sdh);
 	}
-	PL_StruxFmtHandle sfh = m_pDocument->getNthFmtHandle(m_sdh,0);
+	fl_ContainerLayout* sfh = m_pDocument->getNthFmtHandle(m_sdh,0);
 	const fl_Layout * pL = reinterpret_cast<const fl_Layout *>(sfh);
 	UT_return_val_if_fail(pL,NULL);
 	if(pL && pL->getType() != PTX_Block)
@@ -4345,7 +4345,7 @@ void s_RTF_ListenerWriteDoc::_close_table(void)
 
 bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 										   const PX_ChangeRecord * pcr,
-										   PL_StruxFmtHandle * psfh)
+										   fl_ContainerLayout* * psfh)
 {
 	UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -4722,20 +4722,20 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 	}
 }
 
-bool s_RTF_ListenerWriteDoc::change(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerWriteDoc::change(fl_ContainerLayout* /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT_NOT_REACHED();	// this function is not used.
 	return false;
 }
 
-bool s_RTF_ListenerWriteDoc::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_RTF_ListenerWriteDoc::insertStrux(fl_ContainerLayout* /*sfh*/,
 										  const PX_ChangeRecord * /*pcr*/,
 										  pf_Frag_Strux* /*sdh*/,
 										  PL_ListenerId /* lid */,
 										  void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
 																	  PL_ListenerId /* lid */,
-																	  PL_StruxFmtHandle /* sfhNew */))
+																	  fl_ContainerLayout* /* sfhNew */))
 {
 	UT_ASSERT_NOT_REACHED();	// this function is not used.
 	return false;

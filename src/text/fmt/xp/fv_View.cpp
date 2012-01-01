@@ -1591,20 +1591,20 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
 {
 	if(m_pDoc->isFrameAtPos(pos))
 	{
-		PL_StruxFmtHandle psfh = NULL;
+		fl_ContainerLayout* psfh = NULL;
 		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),pos+1,
 										   PTX_SectionFrame, &psfh);
-		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(psfh);
 		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
 		return pFL;
 	}
 	if(m_pDoc->isFrameAtPos(pos-1))
 	{
-		PL_StruxFmtHandle psfh = NULL;
+		fl_ContainerLayout* psfh = NULL;
 		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),
 											 pos,
 											 PTX_SectionFrame, &psfh);
-		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+		fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(psfh);
 		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
 		return pFL;
 	}
@@ -4391,7 +4391,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
  */
 fl_BlockLayout * FV_View::getBlockFromSDH(pf_Frag_Strux* sdh)
 {
-	PL_StruxFmtHandle sfh = NULL;
+	fl_ContainerLayout* sfh = NULL;
 	fl_BlockLayout * pBlock = NULL;
 //
 // Cast it into a fl_BlockLayout and we're done!
@@ -10214,10 +10214,10 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		xxx_UT_DEBUGMSG(("In Frame \n"));
 		if(m_pDoc->isFrameAtPos(pos))
 		{
-			PL_StruxFmtHandle psfh = NULL;
+			fl_ContainerLayout* psfh = NULL;
 			m_pDoc->getStruxOfTypeFromPosition(m_pLayout->getLID(),pos+1,
 											   PTX_SectionFrame, &psfh);
-			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+			fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(psfh);
 			UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
 			if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
 			{
@@ -13958,7 +13958,7 @@ PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT
 	{
 		return 0;
 	}
-	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(const_cast<void *>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID())));
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID()));
 	fp_TableContainer * pTC = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
 //
 // This is MUCH faster than linearly searching through the Piecetable.

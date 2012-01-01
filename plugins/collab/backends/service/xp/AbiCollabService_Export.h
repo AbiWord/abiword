@@ -43,27 +43,27 @@ public:
   AbiCollabService_Export(PD_Document* pDoc, ServiceAccountHandler* pService );
 	virtual ~AbiCollabService_Export(void);
 
-	virtual bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(fl_ContainerLayout* sfh,
 								 const PX_ChangeRecord* pcr);
 
 	virtual bool		populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord* pcr,
-									  PL_StruxFmtHandle* psfh);
+									  fl_ContainerLayout** psfh);
 
-	virtual bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(fl_ContainerLayout* sfh,
 							   const PX_ChangeRecord* pcr);
 
 
 	virtual void		deferNotifications(void);
 	virtual void		processDeferredNotifications(void);
 
-	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(fl_ContainerLayout* sfh,
 									const PX_ChangeRecord* pcr,
 									pf_Frag_Strux* sdh,
 									PL_ListenerId lid,
 									void (*pfnBindHandles)(pf_Frag_Strux* sdhNew,
 															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew));
+															fl_ContainerLayout* sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
 

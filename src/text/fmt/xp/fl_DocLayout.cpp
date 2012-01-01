@@ -2456,7 +2456,7 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 {
 	fl_BlockLayout* pBL = NULL;
-	PL_StruxFmtHandle sfh = 0;
+	fl_ContainerLayout* sfh = 0;
 
 	PT_DocPosition posEOD;
 	bool bRes;
@@ -2490,7 +2490,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 
 	if (bRes)
 	{
-		fl_Layout * pL = static_cast<fl_Layout *>(const_cast<void *>(sfh));
+		fl_Layout * pL = static_cast<fl_Layout *>(sfh);
 		if(!pL)
 			return NULL;
 
@@ -2626,7 +2626,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 fl_BlockLayout* FL_DocLayout::findBlockAtPositionReverse(PT_DocPosition pos) const
 {
 	fl_BlockLayout* pBL = NULL;
-	PL_StruxFmtHandle sfh = 0;
+	fl_ContainerLayout* sfh = 0;
 
 	PT_DocPosition posBOD;
 	bool bRes;

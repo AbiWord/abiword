@@ -467,7 +467,7 @@ OO_Listener::OO_Listener (PD_Document * pDocument, IE_Exp_OpenWriter * pie, OO_L
 {
 }
 
-bool OO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool OO_Listener::populate(fl_ContainerLayout* /*sfh*/,
 			   const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -521,7 +521,7 @@ bool OO_Listener::populate(PL_StruxFmtHandle /*sfh*/,
    
 bool OO_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 				const PX_ChangeRecord * pcr,
-				PL_StruxFmtHandle * psfh)
+				fl_ContainerLayout* * psfh)
 {
    const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
    *psfh = 0;							// we don't need it.
@@ -541,20 +541,20 @@ bool OO_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
    return true;
 }
 
-bool OO_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool OO_Listener::change(fl_ContainerLayout* /*sfh*/,
 			 const PX_ChangeRecord * /*pcr*/)
 {
    UT_ASSERT_NOT_REACHED();
    return true;
 }
    
-bool OO_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool OO_Listener::insertStrux(fl_ContainerLayout* /*sfh*/,
 			      const PX_ChangeRecord * /*pcr*/,
 			      pf_Frag_Strux* /*sdh*/,
 			      PL_ListenerId /*lid*/,
 			      void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
 						      PL_ListenerId lid,
-						      PL_StruxFmtHandle sfhNew))
+						      fl_ContainerLayout* sfhNew))
 {
    UT_ASSERT_NOT_REACHED();
    return true;

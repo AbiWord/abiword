@@ -269,7 +269,7 @@ bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* /*pLBlock*/,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_InsertStrux);
@@ -290,7 +290,7 @@ bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* /*pLBlock*/,
 		// to call down into the document (like all of the view
 		// listeners).
 		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(pNewCL);
+	fl_ContainerLayout* sfhNew = pNewCL;
 	pfnBindHandles(sdh,lid,sfhNew);
 //
 // increment the insertion point in the view.
@@ -315,13 +315,13 @@ bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 	// The endFrame strux actually needs a format handle to to this Frame layout.
 	// so we bind to this layout.
 
 	
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
+	fl_ContainerLayout* sfhNew = this;
 	pfnBindHandles(sdh,lid,sfhNew);
 
 //

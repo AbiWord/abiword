@@ -67,32 +67,32 @@ class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener
 public:
 IE_Exp_HTML_BookmarkListener(PD_Document* pDoc,
         IE_Exp_HTML_NavigationHelper *pNavigationHelper);
-bool populate(PL_StruxFmtHandle sfh,
+bool populate(fl_ContainerLayout* sfh,
               const PX_ChangeRecord * pcr);
 // Not used
 
 bool populateStrux(pf_Frag_Strux* /*sdh*/,
                    const PX_ChangeRecord * /*pcr*/,
-                   PL_StruxFmtHandle * /*psfh*/)
+                   fl_ContainerLayout* * /*psfh*/)
 {
     return true;
 }
 // Not used
 
-bool change(PL_StruxFmtHandle /*sfh*/,
+bool change(fl_ContainerLayout* /*sfh*/,
             const PX_ChangeRecord * /*pcr*/)
 {
     return true;
 }
 // Not used
 
-bool insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool insertStrux(fl_ContainerLayout* /*sfh*/,
                  const PX_ChangeRecord * /*pcr*/,
                  pf_Frag_Strux* /*sdh*/,
                  PL_ListenerId /*lid*/,
                  void (* /*pfnBindHandles*/) (pf_Frag_Strux* sdhNew,
                  PL_ListenerId lid,
-                 PL_StruxFmtHandle sfhNew))
+                 fl_ContainerLayout* sfhNew))
 {
     return true;
 }

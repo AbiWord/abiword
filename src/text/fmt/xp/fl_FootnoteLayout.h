@@ -69,7 +69,7 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 
 	virtual void		     format(void) = 0;
 	virtual void		     updateLayout(void);

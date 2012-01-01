@@ -736,7 +736,7 @@ bool PL_Psion_Listener::finishDocument(void)
  * This method is called when a span, object or format mark is found in the
  * document while traversing it.
  */
-bool PL_Psion_Listener::populate(PL_StruxFmtHandle,
+bool PL_Psion_Listener::populate(fl_ContainerLayout*,
                                 const PX_ChangeRecord * pcr)
 {
 	PT_BufIndex bi;
@@ -804,7 +804,7 @@ bool PL_Psion_Listener::populate(PL_StruxFmtHandle,
  */
 bool PL_Psion_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
                                       const PX_ChangeRecord * pcr,
-                                      PL_StruxFmtHandle * /*psfh*/)
+                                      fl_ContainerLayout* * /*psfh*/)
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = 

@@ -43,23 +43,23 @@ public:
 		       IE_Exp_MIF * pie);
 	virtual ~s_MIF_Listener();
 
-	virtual bool		populate(PL_StruxFmtHandle sfh,
+	virtual bool		populate(fl_ContainerLayout* sfh,
 								 const PX_ChangeRecord * pcr);
 
 	virtual bool		populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh);
+									  fl_ContainerLayout* * psfh);
 
-	virtual bool		change(PL_StruxFmtHandle sfh,
+	virtual bool		change(fl_ContainerLayout* sfh,
 							   const PX_ChangeRecord * pcr);
 
-	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool		insertStrux(fl_ContainerLayout* sfh,
 									const PX_ChangeRecord * pcr,
 									pf_Frag_Strux* sdh,
 									PL_ListenerId lid,
 									void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew));
+															fl_ContainerLayout* sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
 
@@ -170,7 +170,7 @@ s_MIF_Listener::~s_MIF_Listener()
 	_closeBlock();
 }
 
-bool s_MIF_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_MIF_Listener::populate(fl_ContainerLayout* /*sfh*/,
 								  const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -225,7 +225,7 @@ bool s_MIF_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 bool s_MIF_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 									   const PX_ChangeRecord * pcr,
-									   PL_StruxFmtHandle * psfh)
+									   fl_ContainerLayout* * psfh)
 {
 	UT_ASSERT(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -252,20 +252,20 @@ bool s_MIF_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 	}
 }
 
-bool s_MIF_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_MIF_Listener::change(fl_ContainerLayout* /*sfh*/,
 								const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(0);						// this function is not used.
 	return false;
 }
 
-bool s_MIF_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_MIF_Listener::insertStrux(fl_ContainerLayout* /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
 									 pf_Frag_Strux* /*sdh*/,
 									 PL_ListenerId /* lid */,
 									 void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
 																 PL_ListenerId /* lid */,
-																 PL_StruxFmtHandle /* sfhNew */))
+																 fl_ContainerLayout* /* sfhNew */))
 {
 	UT_ASSERT(0);						// this function is not used.
 	return false;

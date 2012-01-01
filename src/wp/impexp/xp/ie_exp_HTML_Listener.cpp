@@ -78,7 +78,7 @@ m_bHasMathMl(false)
 
 }
 
-bool IE_Exp_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord* pcr)
+bool IE_Exp_HTML_Listener::populate(fl_ContainerLayout* /*sfh*/, const PX_ChangeRecord* pcr)
 {
     if (m_bSkipSection)
         return true;
@@ -261,7 +261,7 @@ bool IE_Exp_HTML_Listener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRe
 }
 
 bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh, 
-	const PX_ChangeRecord* pcr, PL_StruxFmtHandle* psfh)
+	const PX_ChangeRecord* pcr, fl_ContainerLayout** psfh)
 {
     
     UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, 
@@ -645,19 +645,19 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
     return returnVal;
 }
 
-bool IE_Exp_HTML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool IE_Exp_HTML_Listener::insertStrux(fl_ContainerLayout* /*sfh*/,
                                        const PX_ChangeRecord * /*pcr*/,
                                        pf_Frag_Strux* /*sdh*/,
                                        PL_ListenerId /*lid*/,
                                        void (* /*pfnBindHandles*/) 
 									   (pf_Frag_Strux* sdhNew,
                                        PL_ListenerId lid,
-                                       PL_StruxFmtHandle sfhNew))
+                                       fl_ContainerLayout* sfhNew))
 {
     return true;
 }
 
-bool IE_Exp_HTML_Listener::change(PL_StruxFmtHandle /*sfh*/, 
+bool IE_Exp_HTML_Listener::change(fl_ContainerLayout* /*sfh*/, 
 								  const PX_ChangeRecord* /*pcr*/)
 {
     return true;

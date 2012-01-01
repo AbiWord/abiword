@@ -3246,7 +3246,7 @@ bool fp_Line::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*> * pv
 				xxx_UT_DEBUGMSG(("Pos of footnote %d start of run %d end of run %d \n",pFL->getDocPosition(),posStart,posEnd));
 				if(pFL && pFL->getDocPosition()>= posStart && pFL->getDocPosition() <= posEnd)
 				{
-					pFC = reinterpret_cast<fp_FootnoteContainer *>(pFL->getFirstContainer());
+					pFC = static_cast<fp_FootnoteContainer *>(pFL->getFirstContainer());
 					bFound = true;
 					pvecFoots->addItem(pFC);
 				}
@@ -3311,7 +3311,7 @@ bool fp_Line::getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*> 
 				      xxx_UT_DEBUGMSG(("Pos of Annotation %d start of run %d end of run %d \n",pAL->getDocPosition(),posStart,posEnd));
 				      if(pAL && pAL->getDocPosition()>= posStart && pAL->getDocPosition() <= posEnd)
 				      {
-					   pAC = reinterpret_cast<fp_AnnotationContainer *>(pAL->getFirstContainer());
+					   pAC = static_cast<fp_AnnotationContainer *>(pAL->getFirstContainer());
 					   bFound = true;
 					   pvecAnns->addItem(pAC);
 				      }

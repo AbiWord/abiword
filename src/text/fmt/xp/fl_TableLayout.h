@@ -125,14 +125,14 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 	virtual bool                bl_doclistener_insertBlock(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 
 	virtual bool                bl_doclistener_insertEndTable(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
@@ -140,7 +140,7 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 
 	virtual bool               bl_doclistener_insertTable( const PX_ChangeRecord_Strux * pcrx,
 											   SectionType iType,
@@ -148,7 +148,7 @@ public:
 											   PL_ListenerId lid,
 											   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	   PL_ListenerId lid,
-																	   PL_StruxFmtHandle sfhNew));
+																	   fl_ContainerLayout* sfhNew));
 
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
@@ -287,14 +287,14 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 	virtual bool    bl_doclistener_insertEndCell(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 
 	void                     setCellContainerProperties(fp_CellContainer * pCell);
 	void                     createCellContainer(void);

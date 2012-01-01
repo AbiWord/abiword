@@ -436,7 +436,7 @@ bool ABI_Collab_Export::_isGlobEnd(UT_Byte istart, UT_Byte istop)
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool ABI_Collab_Export::change(PL_StruxFmtHandle /*sfh*/,
+bool ABI_Collab_Export::change(fl_ContainerLayout* /*sfh*/,
 				const PX_ChangeRecord * pcr)
 {
 	// build new packet
@@ -517,17 +517,18 @@ void ABI_Collab_Export::_handleNewPacket(ChangeRecordSessionPacket* pPacket, con
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool ABI_Collab_Export::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool ABI_Collab_Export::insertStrux(fl_ContainerLayout* sfh,
 									const PX_ChangeRecord * pcr,
 									pf_Frag_Strux* sdh,
 									PL_ListenerId lid,
 									void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 															PL_ListenerId lid,
-															PL_StruxFmtHandle sfhNew))
+															fl_ContainerLayout* sfhNew))
 {
 	if(pfnBindHandles)
 	{
-		PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
+#warning not sure
+		fl_ContainerLayout* sfhNew = sfh; // WAS static_cast<fl_ContainerLayout*>(this);
 		pfnBindHandles(sdh,lid,sfhNew);
 	}
 

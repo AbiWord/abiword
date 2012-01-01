@@ -147,13 +147,13 @@ bool fl_EmbedLayout::bl_doclistener_insertEndEmbed(fl_ContainerLayout*,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 	// The endFootnote strux actually needs a format handle to to this Footnote layout.
 	// so we bind to this layout.
 
 		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
+	fl_ContainerLayout* sfhNew = this;
 	pfnBindHandles(sdh,lid,sfhNew);
 
 //

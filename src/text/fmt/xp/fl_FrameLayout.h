@@ -86,14 +86,14 @@ public:
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
    bool                     insertBlockAfter(fl_ContainerLayout* pCL,
 											  const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew));
+																	  fl_ContainerLayout* sfhNew));
 
 	void                     miniFormat(void);
 	virtual void		     format(void);

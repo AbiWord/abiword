@@ -73,7 +73,7 @@ void IE_Exp_HTML_HeaderFooterListener::doHdrFtr(bool bHeader)
 
 bool IE_Exp_HTML_HeaderFooterListener::populateStrux(pf_Frag_Strux* sdh,
                                                      const PX_ChangeRecord * pcr,
-                                                     PL_StruxFmtHandle * psfh)
+                                                     fl_ContainerLayout* * psfh)
 {
     /* Housekeeping and prep */
     UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
@@ -123,25 +123,25 @@ bool IE_Exp_HTML_HeaderFooterListener::populateStrux(pf_Frag_Strux* sdh,
     }
 }
 
-bool IE_Exp_HTML_HeaderFooterListener::populate(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
+bool IE_Exp_HTML_HeaderFooterListener::populate(fl_ContainerLayout* /*sfh*/, const PX_ChangeRecord * /*pcr*/)
 {
     return true;
 }
 
-bool IE_Exp_HTML_HeaderFooterListener::change(PL_StruxFmtHandle /*sfh*/,
+bool IE_Exp_HTML_HeaderFooterListener::change(fl_ContainerLayout* /*sfh*/,
                                               const PX_ChangeRecord * /*pcr*/)
 {
     UT_ASSERT_HARMLESS(0); // this function is not used.
     return false;
 }
 
-bool IE_Exp_HTML_HeaderFooterListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool IE_Exp_HTML_HeaderFooterListener::insertStrux(fl_ContainerLayout* /*sfh*/,
                                                    const PX_ChangeRecord * /*pcr*/,
                                                    pf_Frag_Strux* /*sdh*/,
                                                    PL_ListenerId /* lid */,
                                                    void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
                                                    PL_ListenerId /* lid */,
-                                                   PL_StruxFmtHandle /* sfhNew */))
+                                                   fl_ContainerLayout* /* sfhNew */))
 {
     UT_ASSERT_HARMLESS(0); // this function is not used.
     return false;

@@ -26,6 +26,8 @@
 #include "pt_Types.h"
 #include "pd_Document.h"
 
+class fl_ContainerLayout;
+
 /*!
  pf_Frag_Strux represents structure information (such as a
  paragraph or section) in the document.
@@ -47,8 +49,8 @@ public:
 	virtual ~pf_Frag_Strux();
 
 	PTStruxType				getStruxType(void) const;
-	PL_StruxFmtHandle		getFmtHandle(PL_ListenerId lid) const;
-	bool					setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh);
+	fl_ContainerLayout*		getFmtHandle(PL_ListenerId lid) const;
+	bool					setFmtHandle(PL_ListenerId lid, fl_ContainerLayout* sfh);
 	void                    clearAllFmtHandles() {m_vecFmtHandle.clear();}
 	
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
@@ -66,7 +68,7 @@ protected:
 
 	virtual bool            _isContentEqual(const pf_Frag &f2) const;
 	PTStruxType				m_struxType;
-	UT_Vector				m_vecFmtHandle;
+	UT_GenericVector<fl_ContainerLayout*>	m_vecFmtHandle;
 };
 
 #endif /* PF_FRAG_STRUX_H */

@@ -306,20 +306,20 @@ public:
 									  PL_ListenerId lid,
 									  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 															  PL_ListenerId lid,
-															  PL_StruxFmtHandle sfhNew));
+															  fl_ContainerLayout* sfhNew));
 	bool doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 								 pf_Frag_Strux* sdh,
 								 PL_ListenerId lid,
 								 void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														 PL_ListenerId lid,
-														 PL_StruxFmtHandle sfhNew));
+														 fl_ContainerLayout* sfhNew));
 	bool doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
 								   SectionType iType,
 								   pf_Frag_Strux* sdh,
 								   PL_ListenerId lid,
 								   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														   PL_ListenerId lid,
-														   PL_StruxFmtHandle sfhNew));
+														   fl_ContainerLayout* sfhNew));
 
 	fl_SectionLayout *  doclistener_insertTable(const PX_ChangeRecord_Strux * pcrx,
 								   SectionType iType,
@@ -327,14 +327,14 @@ public:
 								   PL_ListenerId lid,
 								   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														   PL_ListenerId lid,
-														   PL_StruxFmtHandle sfhNew));
+														   fl_ContainerLayout* sfhNew));
 	fl_SectionLayout *  doclistener_insertFrame(const PX_ChangeRecord_Strux * pcrx,
 								   SectionType iType,
 								   pf_Frag_Strux* sdh,
 								   PL_ListenerId lid,
 								   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														   PL_ListenerId lid,
-														   PL_StruxFmtHandle sfhNew));
+														   fl_ContainerLayout* sfhNew));
 
 	bool doclistener_insertObject(const PX_ChangeRecord_Object * pcro);
 	bool doclistener_deleteObject(const PX_ChangeRecord_Object * pcro);

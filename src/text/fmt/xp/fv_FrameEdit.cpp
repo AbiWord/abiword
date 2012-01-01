@@ -470,10 +470,10 @@ void FV_FrameEdit::setDragType(UT_sint32 x, UT_sint32 y, bool bDrawFrame)
   	fl_BlockLayout * pBL = NULL;
 	if(getDoc()->isFrameAtPos(posAtXY))
 	{
-		PL_StruxFmtHandle psfh = NULL;
+		fl_ContainerLayout* psfh = NULL;
 		getDoc()->getStruxOfTypeFromPosition(m_pView->getLayout()->getLID(),posAtXY+1,
 										   PTX_SectionFrame, &psfh);
-		pFL = static_cast<fl_FrameLayout *>(const_cast<void *>(psfh));
+		pFL = static_cast<fl_FrameLayout *>(psfh);
 		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
 		pFCon = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
 		UT_ASSERT(pFCon->getContainerType() == FP_CONTAINER_FRAME);

@@ -172,7 +172,7 @@ void  IE_Exp_DocRangeListener::freeAtts(const char *** allAtts)
   delete [] sAtts;
 }
 
-bool  IE_Exp_DocRangeListener::populate(PL_StruxFmtHandle /* sfh */,
+bool  IE_Exp_DocRangeListener::populate(fl_ContainerLayout* /* sfh */,
 					 const PX_ChangeRecord * pcr)
 {
 	if(!m_bFirstSection)
@@ -248,7 +248,7 @@ bool  IE_Exp_DocRangeListener::populate(PL_StruxFmtHandle /* sfh */,
 
 bool  IE_Exp_DocRangeListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 					     const PX_ChangeRecord * pcr,
-					     PL_StruxFmtHandle * /* psfh */)
+					     fl_ContainerLayout* * /* psfh */)
 {
 //
 // TODO graphics in struxes

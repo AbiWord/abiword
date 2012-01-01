@@ -228,13 +228,13 @@ bool fl_TOCLayout::bl_doclistener_insertEndTOC(fl_ContainerLayout*,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
-																	  PL_StruxFmtHandle sfhNew))
+																	  fl_ContainerLayout* sfhNew))
 {
 	// The endFootnote strux actually needs a format handle to to this Footnote layout.
 	// so we bind to this layout.
 
 		
-	PL_StruxFmtHandle sfhNew = static_cast<PL_StruxFmtHandle>(this);
+	fl_ContainerLayout* sfhNew = this;
 	pfnBindHandles(sdh,lid,sfhNew);
 
 //
@@ -2316,7 +2316,7 @@ fl_TOCListener::~fl_TOCListener()
 {
 }
 
-bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
+bool fl_TOCListener::populate(fl_ContainerLayout* sfh,
 								 const PX_ChangeRecord * pcr)
 {
 	if (!m_bListening)
@@ -2374,7 +2374,7 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 
 bool fl_TOCListener::populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord * pcr,
-									  PL_StruxFmtHandle * psfh)
+									  fl_ContainerLayout* * psfh)
 {
 	UT_ASSERT(m_pTOCL);
 
@@ -2401,7 +2401,7 @@ bool fl_TOCListener::populateStrux(pf_Frag_Strux* sdh,
 				return false;
 			}
 			m_pCurrentBL = pBL;
-			*psfh = static_cast<PL_StruxFmtHandle>(pBL);
+			*psfh = pBL;
 		}
 
 	}
@@ -2417,7 +2417,7 @@ bool fl_TOCListener::populateStrux(pf_Frag_Strux* sdh,
 	return true;
 }
 
-bool fl_TOCListener::change(PL_StruxFmtHandle /*sfh*/,
+bool fl_TOCListener::change(fl_ContainerLayout* /*sfh*/,
 							   const PX_ChangeRecord * /*pcr*/)
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -2425,13 +2425,13 @@ bool fl_TOCListener::change(PL_StruxFmtHandle /*sfh*/,
 	return false;
 }
 
-bool fl_TOCListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool fl_TOCListener::insertStrux(fl_ContainerLayout* /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/,
 									pf_Frag_Strux* /*sdh*/,
 									PL_ListenerId /*lid*/,
 									void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
 																PL_ListenerId lid,
-																PL_StruxFmtHandle sfhNew))
+																fl_ContainerLayout* sfhNew))
 {
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 

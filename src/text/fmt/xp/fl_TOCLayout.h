@@ -107,7 +107,7 @@ public:
 												PL_ListenerId lid,
 												void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																		PL_ListenerId lid,
-																		PL_StruxFmtHandle sfhNew));
+																		fl_ContainerLayout* sfhNew));
 
 	virtual void		     format(void);
 	virtual void		     updateLayout(bool bDoFull);
@@ -235,23 +235,23 @@ public:
 	fl_TOCListener(fl_TOCLayout* pTOCL, fl_BlockLayout * pPrevBL, PD_Style * pStyle);
 	virtual ~fl_TOCListener();
 
-	virtual bool				populate(PL_StruxFmtHandle sfh,
+	virtual bool				populate(fl_ContainerLayout* sfh,
 										 const PX_ChangeRecord * pcr);
 
 	virtual bool				populateStrux(pf_Frag_Strux* sdh,
 											  const PX_ChangeRecord * pcr,
-											  PL_StruxFmtHandle * psfh);
+											  fl_ContainerLayout* * psfh);
 
-	virtual bool				change(PL_StruxFmtHandle sfh,
+	virtual bool				change(fl_ContainerLayout* sfh,
 									   const PX_ChangeRecord * pcr);
 
-	virtual bool				insertStrux(PL_StruxFmtHandle sfh,
+	virtual bool				insertStrux(fl_ContainerLayout* sfh,
 											const PX_ChangeRecord * pcr,
 											pf_Frag_Strux* sdh,
 											PL_ListenerId lid,
 											void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	PL_ListenerId lid,
-																	PL_StruxFmtHandle sfhNew));
+																	fl_ContainerLayout* sfhNew));
 
 	virtual bool				signal(UT_uint32 iSignal);
 

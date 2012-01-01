@@ -119,7 +119,7 @@ fl_DocListener::~fl_DocListener()
 
 /*!
  */
-bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
+bool fl_DocListener::populate(fl_ContainerLayout* sfh,
 							  const PX_ChangeRecord * pcr)
 {
 	UT_ASSERT(m_pLayout);
@@ -264,7 +264,7 @@ static UT_uint32 countStrux = 0;
  */
 bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 								   const PX_ChangeRecord * pcr,
-								   PL_StruxFmtHandle * psfh)
+								   fl_ContainerLayout* * psfh)
 {
 	UT_ASSERT(m_pLayout);
 
@@ -384,7 +384,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 				
 				m_pLayout->addSection(pSL);
 				
-				*psfh = (PL_StruxFmtHandle)pSL;
+				*psfh = (fl_ContainerLayout*)pSL;
 				
 				m_pCurrentSL = pSL;
 			}
@@ -412,7 +412,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 					//
 					m_pLayout->addHdrFtrSection(pSL);
 					pDocSL->setHdrFtr(hfType, pSL);
-					*psfh = (PL_StruxFmtHandle)pSL;
+					*psfh = (fl_ContainerLayout*)pSL;
 					
 					m_pCurrentSL = pSL;
 				}
@@ -461,7 +461,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 		    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		  }
 
-		*psfh = (PL_StruxFmtHandle)pSL;
+		*psfh = (fl_ContainerLayout*)pSL;
 		m_pCurrentSL = (fl_SectionLayout*)pSL;
 		break;
 	}
@@ -495,7 +495,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_ANNOTATION);
 		}
 #endif
-		*psfh = (PL_StruxFmtHandle) pCL;
+		*psfh = (fl_ContainerLayout*) pCL;
 		m_pCurrentSL = (fl_SectionLayout *) static_cast<fl_EmbedLayout *>(m_pCurrentSL)->getDocSectionLayout();
 		fl_BlockLayout * pBL = NULL;
 		if(isFoot)
@@ -531,7 +531,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 	    fl_SectionLayout * pSL = NULL;
 		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'SectionTOC'\n"));
 		pSL = (fl_SectionLayout *) m_pCurrentSL->append(sdh, pcr->getIndexAP(),FL_CONTAINER_TOC);
-		*psfh = (PL_StruxFmtHandle)pSL;
+		*psfh = (fl_ContainerLayout*)pSL;
 		m_pCurrentSL = (fl_SectionLayout*)pSL;
 		break;
 	}
@@ -547,7 +547,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 		UT_DEBUGMSG(("fl_DocListener::populateStrux for 'EndTOC'\n"));
 		UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_TOC);
 #endif
-		*psfh = (PL_StruxFmtHandle) pCL;
+		*psfh = (fl_ContainerLayout*) pCL;
 		static_cast<fl_TOCLayout *>(pCL)->setTOCEndIn();
 		m_pCurrentSL = (fl_SectionLayout *) static_cast<fl_TOCLayout *>(m_pCurrentSL)->getDocSectionLayout();
 		break;
@@ -598,7 +598,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 					//
 					m_pLayout->addHdrFtrSection(pSL);
 					pDocSL->setHdrFtr(hfType, pSL);
-					*psfh = (PL_StruxFmtHandle)pSL;
+					*psfh = (fl_ContainerLayout*)pSL;
 					UT_DEBUGMSG(("Sevior: HeaderFooter created %p \n",pSL));
 					
 					m_pCurrentSL = pSL;
@@ -690,7 +690,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 #endif
 		}
 
-		*psfh = (PL_StruxFmtHandle)pCL;
+		*psfh = (fl_ContainerLayout*)pCL;
 		if(pCL->getLastContainer()==NULL)
 		{
 			if(pCL->getSectionLayout()->getType() != FL_SECTION_HDRFTR && pCL->getPrev() != NULL)
@@ -730,7 +730,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			pCL = pCell->append(sdh,pcr->getIndexAP(),FL_CONTAINER_TABLE);
 		}
 		pushContainerLayout(pCL);
-		*psfh = (PL_StruxFmtHandle)pCL;
+		*psfh = (fl_ContainerLayout*)pCL;
 //
 // Don't layout until a endTable strux
 //
@@ -752,7 +752,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			{
 				fl_ContainerLayout * pCL = pCon->append(sdh,pcr->getIndexAP(),FL_CONTAINER_FRAME);
 				m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL);
-				*psfh = (PL_StruxFmtHandle)pCL;
+				*psfh = (fl_ContainerLayout*)pCL;
 				break;
 			}
 #ifdef DEBUG
@@ -772,7 +772,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			return false;
 		}
 		m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL2);
-		*psfh = (PL_StruxFmtHandle)pCL2;
+		*psfh = (fl_ContainerLayout*)pCL2;
 	}
 	break;
 	case PTX_EndFrame:
@@ -784,7 +784,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 		fl_ContainerLayout*	pCL = NULL;
 		UT_DEBUGMSG(("!!!!Appending EndFrame \n"));
 		pCL = m_pCurrentSL;
-		*psfh = (PL_StruxFmtHandle)pCL;
+		*psfh = (fl_ContainerLayout*)pCL;
 		m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL->myContainingLayout());
 		if(m_pCurrentSL->getContainerType() == FL_CONTAINER_CELL)
 		{
@@ -824,7 +824,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			return false;
 		}
 		pushContainerLayout(pCL);
-		*psfh = (PL_StruxFmtHandle)pCL;
+		*psfh = (fl_ContainerLayout*)pCL;
 	}
 	break;
 	case PTX_EndTable:
@@ -840,7 +840,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
-		*psfh = (PL_StruxFmtHandle)pCon;
+		*psfh = (fl_ContainerLayout*)pCon;
 		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCon);
 		UT_DEBUGMSG(("SEVIOR: End table in doclistener \n"));
 		pTL->setDirty();
@@ -881,7 +881,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return false;
 		}
-		*psfh = (PL_StruxFmtHandle) pCon;
+		*psfh = (fl_ContainerLayout*) pCon;
 	}
 	break;
 			
@@ -931,7 +931,7 @@ fl_ContainerLayout * fl_DocListener::popContainerLayout(void)
 /*!
  * Change a strux or span.
  */
-bool fl_DocListener::change(PL_StruxFmtHandle sfh,
+bool fl_DocListener::change(fl_ContainerLayout* sfh,
 							const PX_ChangeRecord * pcr)
 {
 	UT_return_val_if_fail( sfh, false );
@@ -1789,13 +1789,13 @@ void fl_DocListener::processDeferredNotifications(void)
 
 /*!
  */
-bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
+bool fl_DocListener::insertStrux(fl_ContainerLayout* sfh,
 								 const PX_ChangeRecord * pcr,
 								 pf_Frag_Strux* sdh,
 								 PL_ListenerId lid,
 								 void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														 PL_ListenerId lid,
-														 PL_StruxFmtHandle sfhNew))
+														 fl_ContainerLayout* sfhNew))
 {
 	UT_DEBUGMSG(("fl_DocListener::insertStrux at pos %d \n",pcr->getPosition()));
 	UT_return_val_if_fail( sdh && pcr, false );

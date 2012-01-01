@@ -503,7 +503,7 @@ void s_WML_Listener::_emitTOC (PT_AttrPropIndex api) {
 /*****************************************************************/
 /*****************************************************************/
 
-bool s_WML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
+bool s_WML_Listener::populate(fl_ContainerLayout* /*sfh*/,
 				 const PX_ChangeRecord * pcr)
 {
 	switch (pcr->getType())
@@ -591,7 +591,7 @@ bool s_WML_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 
 bool s_WML_Listener::populateStrux(pf_Frag_Strux* sdh,
 				      const PX_ChangeRecord * pcr,
-				      PL_StruxFmtHandle * psfh)
+				      fl_ContainerLayout* * psfh)
 {
 	UT_ASSERT_HARMLESS(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux);
 	const PX_ChangeRecord_Strux * pcrx = static_cast<const PX_ChangeRecord_Strux *> (pcr);
@@ -705,20 +705,20 @@ bool s_WML_Listener::populateStrux(pf_Frag_Strux* sdh,
 	}
 }
 
-bool s_WML_Listener::change(PL_StruxFmtHandle /*sfh*/,
+bool s_WML_Listener::change(fl_ContainerLayout* /*sfh*/,
 			       const PX_ChangeRecord * /*pcr*/)
 {
   UT_ASSERT_NOT_REACHED();	    // this function is not used.
   return false;
 }
 
-bool s_WML_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool s_WML_Listener::insertStrux(fl_ContainerLayout* /*sfh*/,
 				     const PX_ChangeRecord * /*pcr*/,
 				     pf_Frag_Strux* /*sdh*/,
 				     PL_ListenerId /* lid */,
 				     void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
 								 PL_ListenerId /* lid */,
-																 PL_StruxFmtHandle /* sfhNew */))
+																 fl_ContainerLayout* /* sfhNew */))
 {
   UT_ASSERT_NOT_REACHED();	    // this function is not used.
   return false;

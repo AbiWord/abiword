@@ -53,15 +53,15 @@ PTStruxType pf_Frag_Strux::getStruxType(void) const
 	return m_struxType;
 }
 
-PL_StruxFmtHandle pf_Frag_Strux::getFmtHandle(PL_ListenerId lid) const
+fl_ContainerLayout* pf_Frag_Strux::getFmtHandle(PL_ListenerId lid) const
 {
 	if (m_vecFmtHandle.size() == 0) return 0;
-	return (PL_StruxFmtHandle)m_vecFmtHandle.getNthItem(lid);
+	return m_vecFmtHandle.getNthItem(lid);
 }
 
-bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, PL_StruxFmtHandle sfh)
+bool pf_Frag_Strux::setFmtHandle(PL_ListenerId lid, fl_ContainerLayout* sfh)
 {
-	return (m_vecFmtHandle.setNthItem(lid,(void *)sfh,NULL) == 0);
+	return (m_vecFmtHandle.setNthItem(lid,sfh,NULL) == 0);
 }
 
 bool pf_Frag_Strux::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,

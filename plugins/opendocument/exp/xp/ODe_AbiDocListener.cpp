@@ -86,7 +86,7 @@ ODe_AbiDocListener::~ODe_AbiDocListener() {
 /**
  * 
  */
-bool ODe_AbiDocListener::populate(PL_StruxFmtHandle /*sfh*/,
+bool ODe_AbiDocListener::populate(fl_ContainerLayout* /*sfh*/,
                                  const PX_ChangeRecord * pcr)
 {
     switch (pcr->getType()) {
@@ -244,7 +244,7 @@ bool ODe_AbiDocListener::populate(PL_StruxFmtHandle /*sfh*/,
  */
 bool ODe_AbiDocListener::populateStrux(pf_Frag_Strux* /*sdh*/,
                                        const PX_ChangeRecord* pcr,
-                                       PL_StruxFmtHandle* psfh)
+                                       fl_ContainerLayout** psfh)
 {
     UT_return_val_if_fail(pcr->getType() == PX_ChangeRecord::PXT_InsertStrux, false);
     bool returnVal = true;
@@ -516,7 +516,7 @@ bool ODe_AbiDocListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 /**
  * 
  */
-bool ODe_AbiDocListener::change(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord * /*pcr*/)
+bool ODe_AbiDocListener::change(fl_ContainerLayout* /*sfh*/, const PX_ChangeRecord * /*pcr*/)
 {
     UT_ASSERT_NOT_REACHED();
     return true;
@@ -526,13 +526,13 @@ bool ODe_AbiDocListener::change(PL_StruxFmtHandle /*sfh*/, const PX_ChangeRecord
 /**
  * 
  */
-bool ODe_AbiDocListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
+bool ODe_AbiDocListener::insertStrux(fl_ContainerLayout* /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
 									 pf_Frag_Strux* /*sdh*/,
 									 PL_ListenerId /*lid*/,
 									 void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
 																 PL_ListenerId lid,
-																 PL_StruxFmtHandle sfhNew))
+																 fl_ContainerLayout* sfhNew))
 {
     UT_ASSERT_NOT_REACHED();
     return true;

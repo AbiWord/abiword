@@ -4109,7 +4109,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs, const PX_ChangeReco
 		PL_Listener * pListener = static_cast<PL_Listener *>(m_vecListeners.getNthItem(lid));
 		if (pListener)
 		{
-			PL_StruxFmtHandle sfh = 0;
+			fl_ContainerLayout* sfh = 0;
 			if (pfs && (pListener->getType() < PTL_CollabExport))
 				sfh = pfs->getFmtHandle(lid);
 
@@ -4249,20 +4249,20 @@ void PD_Document::processDeferredNotifications(void)
 
 
 
-PL_StruxFmtHandle PD_Document::getNthFmtHandle(pf_Frag_Strux* sdh, UT_uint32 n)
+fl_ContainerLayout* PD_Document::getNthFmtHandle(pf_Frag_Strux* sdh, UT_uint32 n)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	UT_uint32 nListen = m_vecListeners.getItemCount();
 	if(n >= nListen)
 		return NULL;
 	PL_ListenerId lid = static_cast<PL_ListenerId>(n);
-	PL_StruxFmtHandle sfh = pfs->getFmtHandle(lid);
+	fl_ContainerLayout* sfh = pfs->getFmtHandle(lid);
 	return sfh;
 }
 
 static void s_BindHandles(pf_Frag_Strux* sdhNew,
 						  PL_ListenerId lid,
-						  PL_StruxFmtHandle sfhNew)
+						  fl_ContainerLayout* sfhNew)
 {
 	UT_return_if_fail (sdhNew);
 	UT_return_if_fail (sfhNew);
@@ -4307,7 +4307,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 		if (pListener)
 		{
 			pf_Frag_Strux* sdhNew = static_cast<pf_Frag_Strux*>(pfsNew);
-			PL_StruxFmtHandle sfh = NULL;
+			fl_ContainerLayout* sfh = NULL;
 			if(pListener->getType() < PTL_CollabExport)
 				sfh = pfs->getFmtHandle(lid);
 			if (pListener->insertStrux(sfh,pcr,sdhNew,lid,s_BindHandles))
@@ -4788,7 +4788,7 @@ bool PD_Document::getField(pf_Frag_Strux* sdh, UT_uint32 offset,
 
 bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
 										  PT_DocPosition docPos,
-										  PL_StruxFmtHandle * psfh) const
+										  fl_ContainerLayout* * psfh) const
 {
 	return m_pPieceTable->getStruxFromPosition(listenerId,docPos,psfh);
 }
@@ -4796,7 +4796,7 @@ bool PD_Document::getStruxFromPosition(PL_ListenerId listenerId,
 bool PD_Document::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 												PT_DocPosition docPos,
 												PTStruxType pts,
-												PL_StruxFmtHandle * psfh) const
+												fl_ContainerLayout* * psfh) const
 {
 	return m_pPieceTable->getStruxOfTypeFromPosition(listenerId,docPos,pts,psfh);
 }

@@ -31,7 +31,7 @@ m_pNavigationHelper(pNavigationHelper)
 
 }
 
-bool IE_Exp_HTML_BookmarkListener::populate(PL_StruxFmtHandle /*sfh*/, 
+bool IE_Exp_HTML_BookmarkListener::populate(fl_ContainerLayout* /*sfh*/, 
                                             const PX_ChangeRecord * pcr)
 {
     switch (pcr->getType())
