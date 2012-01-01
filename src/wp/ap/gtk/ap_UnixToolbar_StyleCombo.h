@@ -22,6 +22,9 @@
 #ifndef AP_UNIXTOOLBAR_STYLECOMBO_H
 #define AP_UNIXTOOLBAR_STYLECOMBO_H
 
+#include <map>
+#include <string>
+
 #include <gtk/gtk.h>
 #include "ut_hash.h"
 #include "xap_Types.h"
@@ -53,7 +56,7 @@ private:
 					   PangoFontDescription *desc);
 	void freeStyles	  (void);
 
-	UT_GenericStringMap<PangoFontDescription*> 	m_mapStyles;
+	std::map<std::string, PangoFontDescription*> 	m_mapStyles;
 	PangoFontDescription *m_pDefaultDesc;
 };
 

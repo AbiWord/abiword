@@ -167,9 +167,10 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 		list = g_slist_prepend (list, (gpointer)pStyle->getName());
 
 		/* wysiwyg styles are disabled for now 
+		   // also test before enabling
 		PangoFontDescription *desc = pango_font_description_copy (m_pDefaultDesc);
 		getPangoAttrs(pStyle, desc);
-		m_mapStyles.insert(szName, desc);
+		m_mapStyles.insert(std::make_pair(szName, desc));
 		*/
 	}
 	DELETEP(pStyles);
@@ -191,14 +192,17 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 }
 
 const PangoFontDescription* 
-AP_UnixToolbar_StyleCombo::getStyle (const gchar *name) {
-
-	const PangoFontDescription *desc = m_mapStyles.pick(name);
-	if (desc == NULL) {
+AP_UnixToolbar_StyleCombo::getStyle (const gchar *name)
+{
+	std::map<std::string, PangoFontDescription*>::const_iterator iter = m_mapStyles.find(name);
+	if(iter == m_mapStyles.end()) {
 		repopulate();
-		desc = m_mapStyles.pick(name);
+		iter = m_mapStyles.find(name);
 	}
-	return desc;
+	if(iter != m_mapStyles.end()) {
+		return iter->second;
+	}
+	return NULL;
 }
 
 /*!
@@ -237,11 +241,10 @@ AP_UnixToolbar_StyleCombo::getPangoAttrs (PD_Style *pStyle,
 }
 
 void 
-AP_UnixToolbar_StyleCombo::freeStyles() {
-
-	UT_GenericVector<PangoFontDescription*> *pVec = m_mapStyles.enumerate();
-	for (UT_sint32 i = 0; i < pVec->size(); i++) {
-		pango_font_description_free(pVec->getNthItem(i));
+AP_UnixToolbar_StyleCombo::freeStyles()
+{
+	std::map<std::string, PangoFontDescription*>::iterator iter = m_mapStyles.begin();
+	for( ; iter != m_mapStyles.end(); ++iter) {
+		pango_font_description_free(iter->second);
 	}
-	delete pVec;
 }
