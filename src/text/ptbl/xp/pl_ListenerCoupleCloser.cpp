@@ -143,7 +143,7 @@ PL_ListenerCoupleCloser::reset()
 /****************************************/
 
 bool
-PL_ListenerCoupleCloser::populateStrux( PL_StruxDocHandle /*sdh*/,
+PL_ListenerCoupleCloser::populateStrux( pf_Frag_Strux* /*sdh*/,
                                         const PX_ChangeRecord * pcr,
                                         PL_StruxFmtHandle * /* psfh */ )
 {
@@ -260,7 +260,7 @@ PL_ListenerCoupleCloser::populate(PL_StruxFmtHandle /* sfh */,
 /****************************************/
 
 bool
-PL_ListenerCoupleCloser::populateStruxAfter( PL_StruxDocHandle /*sdh*/,
+PL_ListenerCoupleCloser::populateStruxAfter( pf_Frag_Strux* /*sdh*/,
                                              const PX_ChangeRecord * pcr,
                                              PL_StruxFmtHandle * /* psfh */ )
 {
@@ -335,7 +335,7 @@ bool PL_ListenerCoupleCloser::AfterContentListener::populate( PL_StruxFmtHandle 
 }
 
 bool
-PL_ListenerCoupleCloser::AfterContentListener::populateStrux( PL_StruxDocHandle sdh,
+PL_ListenerCoupleCloser::AfterContentListener::populateStrux( pf_Frag_Strux* sdh,
                                                               const PX_ChangeRecord * pcr,
                                                               PL_StruxFmtHandle * psfh )
 {
@@ -353,7 +353,7 @@ bool PL_ListenerCoupleCloser::AfterContentListener::isFinished()
 /****************************************/
 
 bool
-PL_ListenerCoupleCloser::populateStruxBefore( PL_StruxDocHandle /*sdh*/,
+PL_ListenerCoupleCloser::populateStruxBefore( pf_Frag_Strux* /*sdh*/,
                                              const PX_ChangeRecord * pcr,
                                              PL_StruxFmtHandle * /* psfh */ )
 {
@@ -447,7 +447,7 @@ bool PL_ListenerCoupleCloser::BeforeContentListener::populate( PL_StruxFmtHandle
 }
 
 bool
-PL_ListenerCoupleCloser::BeforeContentListener::populateStrux( PL_StruxDocHandle sdh,
+PL_ListenerCoupleCloser::BeforeContentListener::populateStrux( pf_Frag_Strux* sdh,
                                                               const PX_ChangeRecord * pcr,
                                                               PL_StruxFmtHandle * psfh )
 {

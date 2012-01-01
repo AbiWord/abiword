@@ -178,7 +178,7 @@ fl_BlockLayout::_spellCheckWord(const UT_UCSChar * word,
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-fl_BlockLayout::fl_BlockLayout(PL_StruxDocHandle sdh,
+fl_BlockLayout::fl_BlockLayout(pf_Frag_Strux* sdh,
 							   fl_ContainerLayout* pPrev,
 							   fl_SectionLayout* pSectionLayout,
 							   PT_AttrPropIndex indexAP, bool bIsHdrFtr)
@@ -1185,15 +1185,15 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 				prevBlockInList = getParentItem();
 			else
 				prevBlockInList = NULL;
-			PL_StruxDocHandle pItem = getStruxDocHandle();
-			PL_StruxDocHandle ppItem;
+			pf_Frag_Strux* pItem = getStruxDocHandle();
+			pf_Frag_Strux* ppItem;
 			if(prevBlockInList != NULL )
 			{
 				ppItem = prevBlockInList->getStruxDocHandle();
 			}
 			else
 			{
-				ppItem = static_cast<PL_StruxDocHandle>(NULL);
+				ppItem = NULL;
 			}
 			m_pAutoNum->insertFirstItem(pItem,ppItem,0);
 			m_bStartList = true;
@@ -1464,7 +1464,7 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
 {
 	UT_sint32 iEmbed = -1;
 	PT_DocPosition posOff = static_cast<PT_DocPosition>(offset);
-	PL_StruxDocHandle sdhEmbed;
+	pf_Frag_Strux* sdhEmbed;
 	pEmbedCL = NULL;
 	iEmbed = m_pDoc->getEmbeddedOffset(getStruxDocHandle(), posOff, sdhEmbed);
 	if( iEmbed < 0)
@@ -1709,8 +1709,8 @@ void fl_BlockLayout::updateEnclosingBlockIfNeeded(void)
 	{
 		return;
 	}
-	PL_StruxDocHandle sdhStart = pCL->getStruxDocHandle();
-	PL_StruxDocHandle sdhEnd = NULL;
+	pf_Frag_Strux* sdhStart = pCL->getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = NULL;
 	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
 	{
 		getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
@@ -1758,8 +1758,8 @@ fl_BlockLayout * fl_BlockLayout::getEnclosingBlock(void) const
 	{
 		return NULL;
 	}
-	PL_StruxDocHandle sdhStart = pCL->getStruxDocHandle();
-	PL_StruxDocHandle sdhEnd = NULL;
+	pf_Frag_Strux* sdhStart = pCL->getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = NULL;
 	if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
 	{
 		getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
@@ -4305,7 +4305,7 @@ const char* fl_BlockLayout::getProperty(const gchar * pszName, bool bExpandStyle
 UT_sint32 fl_BlockLayout::getLength() const
 {
 	PT_DocPosition posThis = getPosition(true);
-	PL_StruxDocHandle nextSDH =NULL;
+	pf_Frag_Strux* nextSDH =NULL;
 	m_pDoc->getNextStrux(getStruxDocHandle(),&nextSDH);
 	if(nextSDH == NULL)
 	{
@@ -7704,9 +7704,9 @@ bool fl_BlockLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 }
 
 bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * pcrx,
-												  PL_StruxDocHandle sdh,
+												  pf_Frag_Strux* sdh,
 												  PL_ListenerId lid,
-												  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+												  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																		  PL_ListenerId lid,
 																		  PL_StruxFmtHandle sfhNew))
 {
@@ -7735,9 +7735,9 @@ bool fl_BlockLayout::doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * 
 	return true;
 }
 bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
-											 PL_StruxDocHandle sdh,
+											 pf_Frag_Strux* sdh,
 											 PL_ListenerId lid,
-											 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											 void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	 PL_ListenerId lid,
 																	 PL_StruxFmtHandle sfhNew))
 {
@@ -8039,8 +8039,8 @@ void fl_BlockLayout::shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 
 		//
 		// Now add in the length of the container
 		//
-		PL_StruxDocHandle sdhStart = pEmbedCL->getStruxDocHandle();
-		PL_StruxDocHandle sdhEnd = NULL;
+		pf_Frag_Strux* sdhStart = pEmbedCL->getStruxDocHandle();
+		pf_Frag_Strux* sdhEnd = NULL;
 		if(pEmbedCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
 		{
 			getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
@@ -8069,9 +8069,9 @@ void fl_BlockLayout::shuffleEmbeddedIfNeeded(fl_BlockLayout * pBlock, UT_uint32 
 
 bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
 											   SectionType iType,
-											   PL_StruxDocHandle sdh,
+											   pf_Frag_Strux* sdh,
 											   PL_ListenerId lid,
-											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	   PL_ListenerId lid,
 																	   PL_StruxFmtHandle sfhNew))
 {
@@ -8474,9 +8474,9 @@ bool fl_BlockLayout::doclistener_insertSection(const PX_ChangeRecord_Strux * pcr
  */
 fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord_Strux * pcrx,
 														   SectionType iType,
-											   PL_StruxDocHandle sdh,
+											   pf_Frag_Strux* sdh,
 											   PL_ListenerId lid,
-											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	   PL_ListenerId lid,
 																	   PL_StruxFmtHandle sfhNew))
 {
@@ -8548,9 +8548,9 @@ fl_SectionLayout * fl_BlockLayout::doclistener_insertTable(const PX_ChangeRecord
  */
 fl_SectionLayout * fl_BlockLayout::doclistener_insertFrame(const PX_ChangeRecord_Strux * pcrx,
 														   SectionType iType,
-											   PL_StruxDocHandle sdh,
+											   pf_Frag_Strux* sdh,
 											   PL_ListenerId lid,
-											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	   PL_ListenerId lid,
 																	   PL_StruxFmtHandle sfhNew))
 {
@@ -10028,7 +10028,7 @@ void fl_BlockLayout::remItemFromList(void)
  * Start a list with the paragraph definition container in the style defined by "style"
 \param const XML_CHar * style the name of the paragraph style for this block.
 */
-void	fl_BlockLayout::StartList( const gchar * style, PL_StruxDocHandle prevSDH)
+void	fl_BlockLayout::StartList( const gchar * style, pf_Frag_Strux* prevSDH)
 {
 	//
 	// Starts a new list at the current block with list style style all other
@@ -10973,7 +10973,7 @@ bool  fl_BlockLayout::isListLabelInBlock( void) const
 
 bool fl_BlockLayout::isFirstInList(void) const
 {
-	PL_StruxDocHandle sdh = fl_Layout::getStruxDocHandle();
+	pf_Frag_Strux* sdh = fl_Layout::getStruxDocHandle();
 	if (!m_pAutoNum)
 		return false;
 	else

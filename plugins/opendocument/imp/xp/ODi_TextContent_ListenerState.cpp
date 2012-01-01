@@ -2051,7 +2051,7 @@ void ODi_TextContent_ListenerState::_defineAbiTOCHeadingStyles() {
         
 	UT_DebugOnly<bool> ok;
         ok = m_pAbiDocument->changeStruxAttsNoUpdate(
-                            (PL_StruxDocHandle) pTOCStrux, "props",
+                            pTOCStrux, "props",
                             props.utf8_str());
         UT_ASSERT(ok);
     }

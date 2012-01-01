@@ -49,7 +49,7 @@ bool AbiCollabService_Export::populate(PL_StruxFmtHandle /*sfh*/, const PX_Chang
  * of it. Eventually these can either be stored in a file or sent over the
  * internet to a remote AbiWord where it can be translated back.
  */
-bool AbiCollabService_Export::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool AbiCollabService_Export::populateStrux(pf_Frag_Strux* /*sdh*/,
                                             const PX_ChangeRecord * /*pcr*/,
                                             PL_StruxFmtHandle * /*psfh*/)
 {
@@ -77,9 +77,9 @@ bool AbiCollabService_Export::change(PL_StruxFmtHandle /*sfh*/,
  */
 bool AbiCollabService_Export::insertStrux(PL_StruxFmtHandle /*sfh*/,
                                           const PX_ChangeRecord * /*pcr*/,
-                                          PL_StruxDocHandle /*sdh*/,
+                                          pf_Frag_Strux* /*sdh*/,
                                           PL_ListenerId /*lid*/,
-                                          void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+                                          void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew))
 {

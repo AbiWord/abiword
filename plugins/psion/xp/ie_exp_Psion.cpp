@@ -802,7 +802,7 @@ bool PL_Psion_Listener::populate(PL_StruxFmtHandle,
  * This method is called whenever a block (paragraph) or section is found in
  * the document while traversing it.
  */
-bool PL_Psion_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool PL_Psion_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
                                       const PX_ChangeRecord * pcr,
                                       PL_StruxFmtHandle * /*psfh*/)
 {

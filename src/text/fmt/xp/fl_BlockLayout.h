@@ -73,6 +73,7 @@ class PX_ChangeRecord_Span;
 class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
+class pf_Frag_Strux;
 class fl_AutoNum;
 class fp_VerticalContainer;
 class fp_HyperlinkRun;
@@ -124,7 +125,7 @@ class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 #endif
 	
 public:
-	fl_BlockLayout(PL_StruxDocHandle sdh,
+	fl_BlockLayout(pf_Frag_Strux* sdh,
 				   fl_ContainerLayout* pPrev, fl_SectionLayout*,
 				   PT_AttrPropIndex indexAP, bool bIsHdrFtr = false);
 	~fl_BlockLayout();
@@ -203,7 +204,7 @@ public:
 	FL_ListType getListTypeFromStyle( const gchar * style) const;
 	fl_BlockLayout * getNextList(UT_uint32 id) const;
 	bool isListLabelInBlock(void) const;
-	void StartList( const gchar * style, PL_StruxDocHandle prevSDH = NULL);
+	void StartList( const gchar * style, pf_Frag_Strux* prevSDH = NULL);
 
 	void StartList( FL_ListType lType, UT_uint32 start,
 					const gchar * lDelim, const gchar * lDecimal, 
@@ -301,37 +302,37 @@ public:
 	bool doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	bool doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	bool doclistener_insertFirstBlock(const PX_ChangeRecord_Strux * pcrx,
-									  PL_StruxDocHandle sdh,
+									  pf_Frag_Strux* sdh,
 									  PL_ListenerId lid,
-									  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+									  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 															  PL_ListenerId lid,
 															  PL_StruxFmtHandle sfhNew));
 	bool doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
-								 PL_StruxDocHandle sdh,
+								 pf_Frag_Strux* sdh,
 								 PL_ListenerId lid,
-								 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+								 void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														 PL_ListenerId lid,
 														 PL_StruxFmtHandle sfhNew));
 	bool doclistener_insertSection(const PX_ChangeRecord_Strux * pcrx,
 								   SectionType iType,
-								   PL_StruxDocHandle sdh,
+								   pf_Frag_Strux* sdh,
 								   PL_ListenerId lid,
-								   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+								   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														   PL_ListenerId lid,
 														   PL_StruxFmtHandle sfhNew));
 
 	fl_SectionLayout *  doclistener_insertTable(const PX_ChangeRecord_Strux * pcrx,
 								   SectionType iType,
-								   PL_StruxDocHandle sdh,
+								   pf_Frag_Strux* sdh,
 								   PL_ListenerId lid,
-								   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+								   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														   PL_ListenerId lid,
 														   PL_StruxFmtHandle sfhNew));
 	fl_SectionLayout *  doclistener_insertFrame(const PX_ChangeRecord_Strux * pcrx,
 								   SectionType iType,
-								   PL_StruxDocHandle sdh,
+								   pf_Frag_Strux* sdh,
 								   PL_ListenerId lid,
-								   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+								   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														   PL_ListenerId lid,
 														   PL_StruxFmtHandle sfhNew));
 

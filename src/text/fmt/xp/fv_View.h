@@ -73,6 +73,7 @@ class fp_CellContainer;
 
 class FG_Graphic;
 
+class pf_Frag_Strux;
 class PD_Document;
 class PP_AttrProp;
 class PP_RevisionAttr;
@@ -430,7 +431,7 @@ public:
 	bool	resetCharFormat(bool bAll);
 	bool	getCharFormat(const gchar *** properties,bool bExpandStyles=true) const;
 	bool	getCharFormat(const gchar *** properties,bool bExpandStyles, PT_DocPosition posStart) const;
-	fl_BlockLayout * getBlockFromSDH(PL_StruxDocHandle sdh);
+	fl_BlockLayout * getBlockFromSDH(pf_Frag_Strux* sdh);
 	bool	setStyle(const gchar * style, bool bDontGeneralUpdate=false);
 	bool	setStyleAtPos(const gchar * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
 	bool    isNumberedHeadingHere(fl_BlockLayout * pBlock) const;
@@ -784,7 +785,7 @@ public:
 	PT_DocPosition      findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col);
 	bool                _deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
 	bool                _restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineWidth);
-	UT_sint32           _changeCellParams(PT_DocPosition posTable,PL_StruxDocHandle tableSDH );
+	UT_sint32           _changeCellParams(PT_DocPosition posTable,pf_Frag_Strux* tableSDH );
 	bool                deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
 	bool                cmdDeleteCell(PT_DocPosition pos);
 	bool                cmdDeleteCol(PT_DocPosition pos);

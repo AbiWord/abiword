@@ -34,6 +34,7 @@
 class PD_Document;
 class pt_PieceTable;
 class pf_Frag;
+class pf_Frag_Strux;
 
 /******************************************************************
  *
@@ -110,7 +111,7 @@ class ABI_EXPORT PD_DocIterator : public UT_TextIterator
 class ABI_EXPORT PD_StruxIterator : public UT_TextIterator
 {
   public:
-	PD_StruxIterator(PL_StruxDocHandle sdh,
+	PD_StruxIterator(pf_Frag_Strux* sdh,
 					 UT_uint32 offset = 0, UT_uint32 maxoffset = 0xffffffff);
 
 	virtual UT_UCS4Char getChar(); // return character at present position
@@ -145,7 +146,7 @@ class ABI_EXPORT PD_StruxIterator : public UT_TextIterator
 	pt_PieceTable *   m_pPT;
 	UT_uint32         m_offset;
 	UT_uint32         m_frag_offset;
-	PL_StruxDocHandle m_sdh;
+	pf_Frag_Strux* m_sdh;
 	
 	const pf_Frag * m_frag;
 

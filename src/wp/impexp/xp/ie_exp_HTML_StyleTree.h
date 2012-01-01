@@ -129,7 +129,7 @@ public:
     bool populate(PL_StruxFmtHandle sfh,
             const PX_ChangeRecord * pcr);
 
-    bool populateStrux(PL_StruxDocHandle sdh,
+    bool populateStrux(pf_Frag_Strux* sdh,
             const PX_ChangeRecord * pcr,
             PL_StruxFmtHandle * psfh);
 
@@ -138,9 +138,9 @@ public:
 
     bool insertStrux(PL_StruxFmtHandle sfh,
             const PX_ChangeRecord * pcr,
-            PL_StruxDocHandle sdh,
+            pf_Frag_Strux* sdh,
             PL_ListenerId lid,
-            void (*pfnBindHandles) (PL_StruxDocHandle sdhNew,
+            void (*pfnBindHandles) (pf_Frag_Strux* sdhNew,
             PL_ListenerId lid,
             PL_StruxFmtHandle sfhNew));
 

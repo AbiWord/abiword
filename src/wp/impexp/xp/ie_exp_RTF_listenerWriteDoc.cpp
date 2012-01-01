@@ -3625,7 +3625,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
  */
 UT_sint32  s_RTF_ListenerWriteDoc::getRightOfCell(UT_sint32 row,UT_sint32 col)
 {
-	PL_StruxDocHandle sdhCell = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,row,col);
+	pf_Frag_Strux* sdhCell = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,row,col);
 	if(sdhCell == NULL)
 	{
 		return -1;
@@ -3772,7 +3772,7 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 		xxx_UT_DEBUGMSG(("SEVIOR: set to row %d i %d left %d right %d \n",row,i,m_Table.getLeft(),m_Table.getRight()));
 		if(m_Table.getRight() <= i)
 		{
-			PL_StruxDocHandle cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,
+			pf_Frag_Strux* cellSDH = m_pDocument->getCellSDHFromRowCol(m_Table.getTableSDH(),true,PD_MAX_REVISION,
 																		  row,i);
 			UT_ASSERT_HARMLESS(cellSDH);
 			if(cellSDH)
@@ -4236,7 +4236,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 
 void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api,bool bIsCell)
 {
-	PL_StruxDocHandle sdhTable = NULL;
+	pf_Frag_Strux* sdhTable = NULL;
 	if(bIsCell)
 	{
 		PT_DocPosition posCell = m_pDocument->getStruxPosition(m_sdh);
@@ -4343,7 +4343,7 @@ void s_RTF_ListenerWriteDoc::_close_table(void)
 }
 
 
-bool s_RTF_ListenerWriteDoc::populateStrux(PL_StruxDocHandle sdh,
+bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -4731,9 +4731,9 @@ bool s_RTF_ListenerWriteDoc::change(PL_StruxFmtHandle /*sfh*/,
 
 bool s_RTF_ListenerWriteDoc::insertStrux(PL_StruxFmtHandle /*sfh*/,
 										  const PX_ChangeRecord * /*pcr*/,
-										  PL_StruxDocHandle /*sdh*/,
+										  pf_Frag_Strux* /*sdh*/,
 										  PL_ListenerId /* lid */,
-										  void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
+										  void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
 																	  PL_ListenerId /* lid */,
 																	  PL_StruxFmtHandle /* sfhNew */))
 {

@@ -75,12 +75,13 @@ class UT_GrowBuf;
 class fl_FrameLayout;
 class fp_FrameContainer;
 class fl_BlockLayout;
+class pf_Frag_Strux;
 
 class ABI_EXPORT fl_ContainerLayout : public fl_Layout
 {
 	friend class fl_BlockLayout;
 public:
-	fl_ContainerLayout(fl_ContainerLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, PTStruxType iStrux,fl_ContainerType iType);
+	fl_ContainerLayout(fl_ContainerLayout* pLayout, pf_Frag_Strux* sdh, PT_AttrPropIndex ap, PTStruxType iStrux,fl_ContainerType iType);
 	virtual ~fl_ContainerLayout();
 
 	fl_ContainerType    getContainerType(void) const { return m_iConType; }
@@ -121,9 +122,9 @@ public:
 	fl_ContainerLayout * getLastLayout(void) const;
 	void                 setLastLayout(fl_ContainerLayout *pL);
 	void                 setFirstLayout(fl_ContainerLayout *pL);
-	fl_ContainerLayout * append(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP,fl_ContainerType iType);
+	fl_ContainerLayout * append(pf_Frag_Strux* sdh, PT_AttrPropIndex indexAP,fl_ContainerType iType);
     void                 add(fl_ContainerLayout* pL);
-	fl_ContainerLayout * insert(PL_StruxDocHandle sdh, fl_ContainerLayout * pPrev, PT_AttrPropIndex indexAP,fl_ContainerType iType);
+	fl_ContainerLayout * insert(pf_Frag_Strux* sdh, fl_ContainerLayout * pPrev, PT_AttrPropIndex indexAP,fl_ContainerType iType);
 	void                 remove(fl_ContainerLayout * pL);
 	virtual fp_Run *        getFirstRun(void) const;
 	virtual PT_DocPosition  getPosition(bool bActualBlockPosition = false) const;

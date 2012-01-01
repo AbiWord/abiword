@@ -22,6 +22,7 @@
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
 #include "pf_Frag_Text.h"
+#include "pf_Frag_Strux.h"
 #include "pf_Fragments.h"
 #include "pd_Document.h"
 
@@ -409,7 +410,7 @@ UT_uint32 PD_DocIterator::find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward
     \param offset - offset relative to strux we want to start from
     \param maxOffset - the upper limit of offset
 */
-PD_StruxIterator::PD_StruxIterator(PL_StruxDocHandle sdh,UT_uint32 offset,
+PD_StruxIterator::PD_StruxIterator(pf_Frag_Strux* sdh,UT_uint32 offset,
 								   UT_uint32 maxOffset)
 	: m_pPT(NULL), m_offset(offset),
 	  m_frag_offset(0),  m_sdh(sdh),

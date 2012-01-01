@@ -93,7 +93,7 @@ public:
 	// Overriding methods from the base class
 	virtual bool populate(PL_StruxFmtHandle sfh,
 	                      const PX_ChangeRecord * pcr);
-	virtual bool populateStrux(PL_StruxDocHandle sdh,
+	virtual bool populateStrux(pf_Frag_Strux* sdh,
 	                           const PX_ChangeRecord * pcr,
 	                           PL_StruxFmtHandle * psfh);
 
@@ -141,10 +141,10 @@ public:
 	                         { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
 	virtual bool insertStrux(PL_StruxFmtHandle /*sfh*/,
 							 const PX_ChangeRecord * /*pcr*/,
-							 PL_StruxDocHandle /*sdh*/,
+							 pf_Frag_Strux* /*sdh*/,
 							 PL_ListenerId /*lid*/,
 							 void (* /*pfnBindHandles*/)
-	                                            (PL_StruxDocHandle sdhNew,
+	                                            (pf_Frag_Strux* sdhNew,
 	                                             PL_ListenerId lid,
 	                                             PL_StruxFmtHandle sfhNew))
 		                     { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }

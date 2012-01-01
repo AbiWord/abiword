@@ -229,7 +229,7 @@ private:
 	AP_Lists_preview*		m_pListsPreview;
 
 	fl_Layout*				m_pFakeLayout[4];
-	PL_StruxDocHandle		m_pFakeSdh[4];
+	pf_Frag_Strux*		m_pFakeSdh[4];
 	fl_AutoNum*				m_pFakeAuto;
 	PD_Document *			m_pFakeDoc;
 	bool					m_bDirty;

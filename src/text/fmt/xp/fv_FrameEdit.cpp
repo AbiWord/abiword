@@ -1581,8 +1581,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		}
 // Delete the frame
 
-		PL_StruxDocHandle sdhStart =  m_pFrameLayout->getStruxDocHandle();
-		PL_StruxDocHandle sdhEnd = NULL;
+		pf_Frag_Strux* sdhStart =  m_pFrameLayout->getStruxDocHandle();
+		pf_Frag_Strux* sdhEnd = NULL;
 		posStart = getDoc()->getStruxPosition(sdhStart);
 		getDoc()->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
 		if(sdhEnd == NULL)
@@ -1811,8 +1811,8 @@ void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 
 // Delete the frame
 
-	PL_StruxDocHandle sdhStart =  m_pFrameLayout->getStruxDocHandle();
-	PL_StruxDocHandle sdhEnd = NULL;
+	pf_Frag_Strux* sdhStart =  m_pFrameLayout->getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = NULL;
 	PT_DocPosition posStart = getDoc()->getStruxPosition(sdhStart);
 	getDoc()->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
 	PT_DocPosition posEnd = getDoc()->getStruxPosition(sdhEnd)+1;	

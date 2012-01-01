@@ -43,9 +43,9 @@ struct ABI_EXPORT PL_FinishingListener : public PL_Listener
     {return true;}
     virtual bool		insertStrux(PL_StruxFmtHandle /*sfh*/,
                                     const PX_ChangeRecord * /*pcr*/,
-                                    PL_StruxDocHandle /*sdhNew*/,
+                                    pf_Frag_Strux* /*sdhNew*/,
                                     PL_ListenerId /*lid*/,
-                                    void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+                                    void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
                                                                 PL_ListenerId lid,
                                                                 PL_StruxFmtHandle sfhNew))
     { return true;}
@@ -146,7 +146,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
         virtual bool isFinished();
         virtual bool populate( PL_StruxFmtHandle sfh,
                                const PX_ChangeRecord * pcr );
-        virtual bool populateStrux( PL_StruxDocHandle sdh,
+        virtual bool populateStrux( pf_Frag_Strux* sdh,
                                     const PX_ChangeRecord * pcr,
                                     PL_StruxFmtHandle * psfh);
     };
@@ -162,7 +162,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
         virtual bool isFinished();
         virtual bool populate( PL_StruxFmtHandle sfh,
                                const PX_ChangeRecord * pcr );
-        virtual bool populateStrux( PL_StruxDocHandle sdh,
+        virtual bool populateStrux( pf_Frag_Strux* sdh,
                                     const PX_ChangeRecord * pcr,
                                     PL_StruxFmtHandle * psfh);
     };
@@ -184,7 +184,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
         {
             return false;
         }
-        virtual bool populateStrux( PL_StruxDocHandle,
+        virtual bool populateStrux( pf_Frag_Strux*,
                                     const PX_ChangeRecord*,
                                     PL_StruxFmtHandle*)
         {
@@ -204,7 +204,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
 
     virtual bool populate( PL_StruxFmtHandle sfh,
                            const PX_ChangeRecord * pcr );
-    virtual bool populateStrux( PL_StruxDocHandle sdh,
+    virtual bool populateStrux( pf_Frag_Strux* sdh,
                                 const PX_ChangeRecord * pcr,
                                 PL_StruxFmtHandle * psfh);
 
@@ -219,9 +219,9 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
     
     virtual bool		insertStrux(PL_StruxFmtHandle /*sfh*/,
                                     const PX_ChangeRecord * /*pcr*/,
-                                    PL_StruxDocHandle /*sdhNew*/,
+                                    pf_Frag_Strux* /*sdhNew*/,
                                     PL_ListenerId /*lid*/,
-                                    void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+                                    void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
                                                                 PL_ListenerId lid,
                                                                 PL_StruxFmtHandle sfhNew))
     { return true;}
@@ -233,14 +233,14 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
 
     virtual bool populateAfter( PL_StruxFmtHandle sfh,
                                 const PX_ChangeRecord * pcr );
-    virtual bool populateStruxAfter( PL_StruxDocHandle sdh,
+    virtual bool populateStruxAfter( pf_Frag_Strux* sdh,
                                      const PX_ChangeRecord * pcr,
                                      PL_StruxFmtHandle * psfh);
 
 
     virtual bool populateBefore( PL_StruxFmtHandle sfh,
                                  const PX_ChangeRecord * pcr );
-    virtual bool populateStruxBefore( PL_StruxDocHandle sdh,
+    virtual bool populateStruxBefore( pf_Frag_Strux* sdh,
                                       const PX_ChangeRecord * pcr,
                                       PL_StruxFmtHandle * psfh);
     

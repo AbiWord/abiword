@@ -4858,7 +4858,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct * /*ps*/, const PAP *ap
   // apply properties 
   PT_DocPosition posEnd =0;
   getDoc()->getBounds(true,posEnd); // clean frags!
- PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
+  pf_Frag_Strux* sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
   getDoc()->changeStruxAttsNoUpdate(sdh,"props",props.c_str());
 
   // end-of-table

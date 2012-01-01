@@ -131,8 +131,6 @@ typedef enum _PLListenerType
 //! ID of a listener - this is its location in m_vecListeners
 typedef UT_uint32 PL_ListenerId;
 
-//! opaque document data
-typedef const void * PL_StruxDocHandle;
 //! opaque layout data
 typedef const void * PL_StruxFmtHandle;
 

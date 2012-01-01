@@ -141,7 +141,7 @@ protected:
 												PTStruxType pts,
 												bool bRevisionDelete);
 
-	bool                    _realChangeStruxForLists(PL_StruxDocHandle sdh,
+	bool                    _realChangeStruxForLists(pf_Frag_Strux* sdh,
 													 const char * pszParentID,
 													 bool bRevisionDelete);
 	
@@ -240,13 +240,13 @@ public:
 
 	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Object * pfo,const gchar ** attributes,const gchar ** properties);
 
-	bool                    changeStruxForLists(PL_StruxDocHandle sdh,
+	bool                    changeStruxForLists(pf_Frag_Strux* sdh,
 												const char * pszParentID);
     bool                    changeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
-	bool                    deleteStruxNoUpdate(PL_StruxDocHandle sdh);
+	bool                    deleteStruxNoUpdate(pf_Frag_Strux* sdh);
 	bool                    deleteFragNoUpdate(pf_Frag * pf);
-	bool                    deleteStruxWithNotify(PL_StruxDocHandle sdh);
-	bool                    insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const gchar ** attributes );
+	bool                    deleteStruxWithNotify(pf_Frag_Strux* sdh);
+	bool                    insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pts,const gchar ** attributes );
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 													 const gchar ** attrs, const gchar ** props,
 													 bool bSkipEmbededSections);
@@ -304,7 +304,7 @@ public:
 
 	bool					getAttrProp(PT_AttrPropIndex indexAP,
 										const PP_AttrProp ** ppAP) const;
-	bool					getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
+	bool					getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLeftSide,
 											const PP_AttrProp ** ppAP) const;
 
 	inline const UT_UCSChar *getPointer(PT_BufIndex bi) const
@@ -316,11 +316,11 @@ public:
 			return m_varset.getPointer(bi);
 		}
 
-	bool					getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const;
+	bool					getBlockBuf(pf_Frag_Strux* sdh, UT_GrowBuf * pgb) const;
 
     PT_DocPosition          getPosEnd();
 	bool					getBounds(bool bEnd, PT_DocPosition & docPos) const;
-	PT_DocPosition			getStruxPosition(PL_StruxDocHandle sdh) const;
+	PT_DocPosition			getStruxPosition(pf_Frag_Strux* sdh) const;
 	PT_DocPosition			getFragPosition(const pf_Frag * pfToFind) const;
 
     bool dumpDoc( const char* msg, PT_DocPosition currentpos, PT_DocPosition endpos );
@@ -334,11 +334,11 @@ public:
 													   PTStruxType pts,
 													   PL_StruxFmtHandle * psfh) const;
 
-    PL_StruxDocHandle       getBlockFromPosition(PT_DocPosition pos) const;
+    pf_Frag_Strux*       getBlockFromPosition(PT_DocPosition pos) const;
 
 	bool					getStruxOfTypeFromPosition(PT_DocPosition docPos,
 													   PTStruxType pts,
-													   PL_StruxDocHandle * sdh) const;
+													   pf_Frag_Strux* * sdh) const;
 
 	bool					getStruxFromPosition(PL_ListenerId listenerId,
 												 PT_DocPosition docPos,

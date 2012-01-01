@@ -42,7 +42,7 @@
 
 /****************************************************************/
 /****************************************************************/
-bool pt_PieceTable::changeStruxForLists(PL_StruxDocHandle sdh,
+bool pt_PieceTable::changeStruxForLists(pf_Frag_Strux* sdh,
 										const char * pszParentID)
 {
 	return _realChangeStruxForLists(sdh, pszParentID, false);
@@ -342,7 +342,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 /*!
  * This Method implements the change strux we need to reparent lists.
  */
-bool pt_PieceTable::_realChangeStruxForLists(PL_StruxDocHandle sdh,
+bool pt_PieceTable::_realChangeStruxForLists(pf_Frag_Strux* sdh,
 											 const char * pszParentID,
 											 bool bRevisionDelete)
 {

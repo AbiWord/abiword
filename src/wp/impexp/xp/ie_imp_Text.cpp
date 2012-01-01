@@ -223,10 +223,10 @@ bool IE_Imp_Text::_insertBlock()
 	}
 	else
 	{
-		PL_StruxDocHandle sdh = NULL;
+		pf_Frag_Strux* sdh = NULL;
 		if(getDoc()->getStruxOfTypeFromPosition(getDocPos(), PTX_Block,&sdh))
 		{
-			m_pBlock = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
+			m_pBlock = sdh;
 		}
 		else
 		{
@@ -279,10 +279,10 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 				// we need to modify the existing formatting ...
 				if(m_pBlock == NULL)
 				{
-					PL_StruxDocHandle sdh = NULL;
+					pf_Frag_Strux* sdh = NULL;
 					if(getDoc()->getStruxOfTypeFromPosition(getDocPos(), PTX_Block,&sdh))
 					{
-						m_pBlock = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
+						m_pBlock = sdh;
 					}
 				}
 				appendStruxFmt(m_pBlock, static_cast<const gchar **>(&propsArray[0]));

@@ -386,7 +386,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			const gchar * pszType = static_cast<const gchar*>(_getXMLPropValue("type", atts));
 			if(pszType)
 			{
-				PL_StruxDocHandle sdh = getDoc()->getLastSectionSDH();
+				pf_Frag_Strux* sdh = getDoc()->getLastSectionMutableSDH();
 				getDoc()->changeStruxAttsNoUpdate(sdh,pszType,pszId);
 				m_parseState = _PS_Sec;
 				m_bWroteSection = true;

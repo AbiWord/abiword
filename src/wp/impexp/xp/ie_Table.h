@@ -40,7 +40,7 @@ class ABI_EXPORT ie_PartTable
 	ie_PartTable(PD_Document * pDoc);
 	virtual ~ie_PartTable(void);
 	void             setDoc(PD_Document * pDoc);
-	void             setTableApi(PL_StruxDocHandle sdh,PT_AttrPropIndex iApi);
+	void             setTableApi(pf_Frag_Strux* sdh,PT_AttrPropIndex iApi);
 	void             setCellApi(PT_AttrPropIndex iApi);
 	UT_sint32        getLeft(void);
 	UT_sint32        getRight(void);
@@ -55,7 +55,7 @@ class ABI_EXPORT ie_PartTable
 	UT_sint32        getNumCols(void);
 	UT_sint32        getCurRow(void) const { return m_iCurRow;}
 	void             incCurRow(void) { m_iCurRow++;}
-	PL_StruxDocHandle getTableSDH(void)
+	pf_Frag_Strux* getTableSDH(void)
 		{ return m_TableSDH;}
 	void             setCellJustOpenned(bool b);
 	bool             isCellJustOpenned(void);
@@ -78,7 +78,7 @@ class ABI_EXPORT ie_PartTable
 	UT_sint32             m_iPrevRight;
 	UT_sint32             m_iPrevTop;
 	UT_sint32             m_iPrevBot;
-	PL_StruxDocHandle     m_TableSDH;
+	pf_Frag_Strux*     m_TableSDH;
 	bool                  m_bIsCellJustOpenned;
 	UT_sint32             m_iCurRow;         
 };			
@@ -91,7 +91,7 @@ class ABI_EXPORT ie_Table
 	ie_Table(void);
 	virtual ~ie_Table(void);
 	void             setDoc(PD_Document * pDoc);
-	void             OpenTable(PL_StruxDocHandle tableSDH, PT_AttrPropIndex iApi);
+	void             OpenTable(pf_Frag_Strux* tableSDH, PT_AttrPropIndex iApi);
 	void             OpenCell(PT_AttrPropIndex iApi);
 	void             CloseTable(void);
 	void             CloseCell(void);
@@ -106,7 +106,7 @@ class ABI_EXPORT ie_Table
 	const char *     getCellProp(const char * pPropName);
 	UT_sint32        getNestDepth(void);
 	void             setCellRowCol(UT_sint32 row, UT_sint32 col);
-	PL_StruxDocHandle getTableSDH(void);
+	pf_Frag_Strux* getTableSDH(void);
 	void             setCellJustOpenned(bool b);
 	bool             isCellJustOpenned(void);
 	PT_AttrPropIndex getTableAPI(void);
@@ -118,7 +118,7 @@ class ABI_EXPORT ie_Table
 	PD_Document *     m_pDoc;
 	std::stack<ie_PartTable*> m_sLastTable;
 	bool              m_bNewRow;
-	PL_StruxDocHandle  m_sdhLastCell;
+	pf_Frag_Strux*  m_sdhLastCell;
 };			
 
 
@@ -139,8 +139,8 @@ class ABI_EXPORT ie_imp_cell
 	UT_sint32        getTop(void);
 	void             setBot(UT_sint32 iBot);
 	UT_sint32        getBot(void);
-	PL_StruxDocHandle getCellSDH(void);
-	void             setCellSDH(PL_StruxDocHandle cellSDH);
+	pf_Frag_Strux* getCellSDH(void);
+	void             setCellSDH(pf_Frag_Strux* cellSDH);
 	bool             writeCellPropsInDoc(void);
 	ie_imp_cell *    getCellAbove(void);
 	ie_imp_cell *    getCellBelow(void);
@@ -172,7 +172,7 @@ class ABI_EXPORT ie_imp_cell
 	UT_sint32             m_iRight;
 	UT_sint32             m_iTop;
 	UT_sint32             m_iBot;
-	PL_StruxDocHandle     m_cellSDH;
+	pf_Frag_Strux*     m_cellSDH;
 	ie_imp_table   *      m_pImpTable;
     ie_imp_cell *         m_pCellLeft;
 	UT_sint32             m_iRow;
@@ -195,8 +195,8 @@ class ABI_EXPORT ie_imp_table
 	void                setCellRowNthCell(UT_sint32 row, UT_sint32 col);
 	ie_imp_cell *       getNthCellOnRow(UT_sint32 iCell);
 	void                setCellX(UT_sint32 cellx);
-	PL_StruxDocHandle   getTableSDH(void);
-	void                setTableSDH(PL_StruxDocHandle cellSDH);
+	pf_Frag_Strux*   getTableSDH(void);
+	void                setTableSDH(pf_Frag_Strux* cellSDH);
 	void                writeTablePropsInDoc(void);
 	void                writeAllCellPropsInDoc(void);
 	void                setProp(const UT_String & psProp, const UT_String & psVal);
@@ -236,7 +236,7 @@ class ABI_EXPORT ie_imp_table
 	void                _buildCellXVector(void);
 	void                _removeAllStruxes(void);
 	PD_Document *       m_pDoc;
-	PL_StruxDocHandle   m_tableSDH;
+	pf_Frag_Strux*   m_tableSDH;
 	ie_imp_cell *       m_pCurImpCell;
 	UT_sint32           m_iRowCounter;
 	UT_String           m_sTableProps;
@@ -316,8 +316,6 @@ public:
 	bool	           tableStart ();
 
 	bool	           tableEnd ();
-	PL_StruxDocHandle  ToSDH(pf_Frag_Strux * pfs);
-	pf_Frag_Strux *    ToPFS(PL_StruxDocHandle sdh);
 	bool	           theadStart (const char * style);
 	bool	           tfootStart (const char * style);
 	bool	           tbodyStart (const char * style = 0);

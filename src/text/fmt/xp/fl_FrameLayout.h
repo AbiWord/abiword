@@ -30,6 +30,8 @@
 #include "ut_debugmsg.h"
 #include "pp_PropertyMap.h"
 
+class pf_Frag_Strux;
+
 enum FL_FrameFormatMode
 {
 	FL_FRAME_POSITIONED_TO_BLOCK,
@@ -70,7 +72,7 @@ class ABI_EXPORT fl_FrameLayout : public fl_SectionLayout
 
 public:
 	fl_FrameLayout(FL_DocLayout* pLayout,
-				   PL_StruxDocHandle sdh, 
+				   pf_Frag_Strux* sdh, 
 				   PT_AttrPropIndex ap, 
 				   fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_FrameLayout();
@@ -80,16 +82,16 @@ public:
 	virtual bool    doclistener_deleteEndFrame(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
    bool                     insertBlockAfter(fl_ContainerLayout* pCL,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
 

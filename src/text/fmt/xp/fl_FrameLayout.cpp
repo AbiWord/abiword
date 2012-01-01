@@ -70,7 +70,7 @@ static void s_background_properties (const gchar * pszBgStyle, const gchar * psz
 
 
 fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout, 
-							   PL_StruxDocHandle sdh, 
+							   pf_Frag_Strux* sdh, 
 							   PT_AttrPropIndex indexAP, 
 							   fl_ContainerLayout * pMyContainerLayout)
  	: fl_SectionLayout(pLayout, 
@@ -232,7 +232,7 @@ UT_sint32 fl_FrameLayout::getBoundingSpace(void) const
 */
 PT_DocPosition fl_FrameLayout::getDocPosition(void) 
 {
-	PL_StruxDocHandle sdh = getStruxDocHandle();
+	pf_Frag_Strux* sdh = getStruxDocHandle();
     return 	m_pLayout->getDocument()->getStruxPosition(sdh);
 }
 
@@ -244,8 +244,8 @@ PT_DocPosition fl_FrameLayout::getDocPosition(void)
 UT_uint32 fl_FrameLayout::getLength(void)
 {
 	PT_DocPosition startPos = getDocPosition();
-	PL_StruxDocHandle sdhEnd = NULL;
-	PL_StruxDocHandle sdhStart = getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = NULL;
+	pf_Frag_Strux* sdhStart = getStruxDocHandle();
 	UT_DebugOnly<bool> bres;
 	bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndFrame,&sdhEnd);
 	UT_ASSERT(bres && sdhEnd);
@@ -265,9 +265,9 @@ UT_uint32 fl_FrameLayout::getLength(void)
  */
 bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* /*pLBlock*/,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
@@ -311,9 +311,9 @@ bool fl_FrameLayout::insertBlockAfter(fl_ContainerLayout* /*pLBlock*/,
 
 bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {

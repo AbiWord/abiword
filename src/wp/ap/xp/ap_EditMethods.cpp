@@ -5385,7 +5385,7 @@ Defun1(selectTable)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);
 	PT_DocPosition posStartTab,posEndTab;
-	PL_StruxDocHandle tableSDH,endTableSDH;
+	pf_Frag_Strux* tableSDH,*endTableSDH;
 	PD_Document * pDoc = pView->getDocument();
 	bool bRes = pDoc->getStruxOfTypeFromPosition(pView->getPoint(),PTX_SectionTable,&tableSDH);
 	if(!bRes)
@@ -5515,7 +5515,7 @@ Defun1(selectRow)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);
 	PT_DocPosition posStartRow,posEndRow;
-	PL_StruxDocHandle rowSDH,endRowSDH,tableSDH;
+	pf_Frag_Strux* rowSDH,*endRowSDH,*tableSDH;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 
 	PD_Document * pDoc = pView->getDocument();
@@ -5558,7 +5558,7 @@ Defun1(selectCell)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, false);
 	PT_DocPosition posStartCell,posEndCell;
-	PL_StruxDocHandle cellSDH,endCellSDH;
+	pf_Frag_Strux* cellSDH,*endCellSDH;
 	PD_Document * pDoc = pView->getDocument();
 	bool bRes = pDoc->getStruxOfTypeFromPosition(pView->getPoint(),PTX_SectionCell,&cellSDH);
 	if(!bRes)

@@ -262,7 +262,7 @@ bool fl_DocListener::populate(PL_StruxFmtHandle sfh,
 static UT_uint32 countStrux = 0;
 /*!
  */
-bool fl_DocListener::populateStrux(PL_StruxDocHandle sdh,
+bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 								   const PX_ChangeRecord * pcr,
 								   PL_StruxFmtHandle * psfh)
 {
@@ -1272,7 +1272,7 @@ bool fl_DocListener::change(PL_StruxFmtHandle sfh,
 				UT_WARNINGMSG(("getAttrProp() failed in %s:%d",
 							   __FILE__, __LINE__));
 			}
-			PL_StruxDocHandle sdh = pL2->getStruxDocHandle();
+			pf_Frag_Strux* sdh = pL2->getStruxDocHandle();
 	
 			const gchar* pszSectionType = NULL;
 			pAP->getAttribute("type", pszSectionType);
@@ -1791,9 +1791,9 @@ void fl_DocListener::processDeferredNotifications(void)
  */
 bool fl_DocListener::insertStrux(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr,
-								 PL_StruxDocHandle sdh,
+								 pf_Frag_Strux* sdh,
 								 PL_ListenerId lid,
-								 void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+								 void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 														 PL_ListenerId lid,
 														 PL_StruxFmtHandle sfhNew))
 {

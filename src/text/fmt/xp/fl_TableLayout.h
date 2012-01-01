@@ -81,6 +81,7 @@ class PX_ChangeRecord_Span;
 class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
+class pf_Frag_Strux;
 
 class ABI_EXPORT fl_ColProps
 {
@@ -110,7 +111,7 @@ class ABI_EXPORT fl_TableLayout : public fl_SectionLayout
 	friend class fl_DocListener;
 
 public:
-	fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
+	fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_TableLayout();
 
 	SectionType     	        getType(void) const { return m_iType; }
@@ -120,32 +121,32 @@ public:
 	virtual bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool                bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
 	virtual bool                bl_doclistener_insertBlock(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
 
 	virtual bool                bl_doclistener_insertEndTable(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
 
 	virtual bool               bl_doclistener_insertTable( const PX_ChangeRecord_Strux * pcrx,
 											   SectionType iType,
-											   PL_StruxDocHandle sdh,
+											   pf_Frag_Strux* sdh,
 											   PL_ListenerId lid,
-											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	   PL_ListenerId lid,
 																	   PL_StruxFmtHandle sfhNew));
 
@@ -273,7 +274,7 @@ class ABI_EXPORT fl_CellLayout : public fl_SectionLayout
 	friend class fp_TableContainer;
 	friend class fp_CellContainer;
 public:
-	fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
+	fl_CellLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_CellLayout();
 
 	bool            isCellSelected(void);
@@ -282,16 +283,16 @@ public:
 	virtual bool    doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
 	virtual bool    bl_doclistener_insertEndCell(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
 

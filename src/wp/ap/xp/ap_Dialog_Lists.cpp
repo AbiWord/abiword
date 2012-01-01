@@ -271,8 +271,8 @@ void AP_Dialog_Lists::Apply(void)
 		PT_DocPosition posHigh = 0;
 		if(getView()->isSelectionEmpty() && pAuto)
 		{
-		      PL_StruxDocHandle sdhLow = pAuto->getFirstItem();
-		      PL_StruxDocHandle sdhHigh = pAuto->getLastItemInHeiracy();
+		      pf_Frag_Strux* sdhLow = pAuto->getFirstItem();
+		      pf_Frag_Strux* sdhHigh = pAuto->getLastItemInHeiracy();
 		      posLow = getView()->getDocument()->getStruxPosition(sdhLow)+1;
 		      posHigh = getView()->getDocument()->getStruxPosition(sdhHigh)+1;
 		}
@@ -715,15 +715,15 @@ void  AP_Dialog_Lists::generateFakeLabels(void)
 {
 	UT_uint32 i;
 	//
-	// Start by generating 4 fake (PL_StruxDocHandle and fl_Layout pointers
+	// Start by generating 4 fake (pf_Frag_Strux* and fl_Layout pointers
 	//
 	// Jeeze gotta generate a fake void * pointer!! Try this hack.
 	//
 	for(i=0; i<4; i++)
 	{
 		DELETEP(m_pFakeLayout[i]);
-		m_pFakeSdh[i] = static_cast<PL_StruxDocHandle>(new pf_Frag_Strux_Block(NULL,0));
-		m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , (PL_StruxDocHandle) m_pFakeSdh[i] );
+		m_pFakeSdh[i] = new pf_Frag_Strux_Block(NULL,0);
+		m_pFakeLayout[i] = new fl_Layout((PTStruxType) 0 , m_pFakeSdh[i] );
 	}
 	//
 	// Now generate the AutoNum

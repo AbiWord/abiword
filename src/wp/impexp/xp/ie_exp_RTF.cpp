@@ -294,7 +294,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 #endif
 	m_pListenerWriteDoc->_setTabEaten(false);
 
-	PL_StruxDocHandle hdrSDH = getDoc()->findHdrFtrStrux((const gchar *) pszHdrFtr,(const gchar * ) pszHdrFtrID);
+	pf_Frag_Strux* hdrSDH = getDoc()->findHdrFtrStrux((const gchar *) pszHdrFtr,(const gchar * ) pszHdrFtrID);
 
 	if(hdrSDH == NULL)
 	{
@@ -303,7 +303,7 @@ void IE_Exp_RTF::exportHdrFtr(const char * pszHdrFtr , const char * pszHdrFtrID,
 	}
 	PT_DocPosition posStart = getDoc()->getStruxPosition(hdrSDH);
 	PT_DocPosition posEnd = 0;
-	PL_StruxDocHandle nextSDH = NULL;
+	pf_Frag_Strux* nextSDH = NULL;
 	bool found = getDoc()->getNextStruxOfType(hdrSDH,PTX_SectionHdrFtr ,&nextSDH);
 
 	if(!found || (nextSDH == NULL ))
@@ -1020,7 +1020,7 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 // Write out the facingp and titlepg keywords so that we can export our fancy
 // header-footers to RTF
 //
-	PL_StruxDocHandle sdh = NULL;
+	pf_Frag_Strux* sdh = NULL;
 	getDoc()->getStruxOfTypeFromPosition(2,PTX_Section,&sdh);
 	if(sdh != NULL)
 	{
@@ -1337,7 +1337,7 @@ const gchar * IE_Exp_RTF::_getStyleProp(
  * does not print opening and closing braces.
  */
 void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp * pBlockAP, const PP_AttrProp * pSectionAP,
-								bool & bStartedList, PL_StruxDocHandle sdh, UT_uint32 & iCurrID, bool &bIsListBlock,
+								bool & bStartedList, pf_Frag_Strux* sdh, UT_uint32 & iCurrID, bool &bIsListBlock,
 								UT_sint32 iNestLevel)
 {
 	const gchar * szTextAlign = PP_evalProperty("text-align",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
@@ -2078,7 +2078,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 }
 
 void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
-								  PL_StruxDocHandle sdh, UT_sint32 iNestLevel,
+								  pf_Frag_Strux* sdh, UT_sint32 iNestLevel,
 								  bool & bStartedList,  bool &bIsListBlock, UT_uint32 &iCurrID)
 {
 	const gchar *szRevisions = apa.getAttribute("revision");
@@ -3100,7 +3100,7 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 //
 	else
 	{
-		PL_StruxDocHandle sdh = pAuto->getFirstItem();
+		pf_Frag_Strux* sdh = pAuto->getFirstItem();
 		const char * szIndent = NULL;
 		const char * szAlign = NULL;
 		// TODO -- we have a problem here; props and attrs are, due to revisions, view dependent and

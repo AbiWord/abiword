@@ -92,7 +92,7 @@ class ABI_EXPORT fl_TOCLayout : public fl_SectionLayout
 public:
 	fl_TOCLayout(FL_DocLayout* pLayout,
 				 fl_DocSectionLayout * pDocSL, 
-				 PL_StruxDocHandle sdh, 
+				 pf_Frag_Strux* sdh, 
 				 PT_AttrPropIndex ap, 
 				 fl_ContainerLayout * pMyContainerLayout);
 
@@ -103,9 +103,9 @@ public:
 	virtual bool    doclistener_deleteEndTOC(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    bl_doclistener_insertEndTOC(fl_ContainerLayout*,
 												const PX_ChangeRecord_Strux * pcrx,
-												PL_StruxDocHandle sdh,
+												pf_Frag_Strux* sdh,
 												PL_ListenerId lid,
-												void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+												void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																		PL_ListenerId lid,
 																		PL_StruxFmtHandle sfhNew));
 
@@ -238,7 +238,7 @@ public:
 	virtual bool				populate(PL_StruxFmtHandle sfh,
 										 const PX_ChangeRecord * pcr);
 
-	virtual bool				populateStrux(PL_StruxDocHandle sdh,
+	virtual bool				populateStrux(pf_Frag_Strux* sdh,
 											  const PX_ChangeRecord * pcr,
 											  PL_StruxFmtHandle * psfh);
 
@@ -247,9 +247,9 @@ public:
 
 	virtual bool				insertStrux(PL_StruxFmtHandle sfh,
 											const PX_ChangeRecord * pcr,
-											PL_StruxDocHandle sdh,
+											pf_Frag_Strux* sdh,
 											PL_ListenerId lid,
-											void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	PL_ListenerId lid,
 																	PL_StruxFmtHandle sfhNew));
 

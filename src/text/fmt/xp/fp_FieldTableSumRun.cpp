@@ -177,12 +177,12 @@ static void sFormatDouble(UT_UTF8String & sVal, double d)
 bool fp_FieldTableSumRows::calculateValue(void)
 {
 	FV_View * pView = _getView();
-	PL_StruxDocHandle tableSDH= NULL;
+	pf_Frag_Strux* tableSDH= NULL;
 	UT_sint32 numRows =0;
 	UT_sint32 numCols = 0;
 	bUseCurrency = false;
 	cCurrency = '$';
-	PL_StruxDocHandle sdh = getBlock()->getStruxDocHandle();
+	pf_Frag_Strux* sdh = getBlock()->getStruxDocHandle();
 	PD_Document * pDoc = getBlock()->getDocument();
 	if(pDoc->isPieceTableChanging())
 	{
@@ -222,7 +222,7 @@ bool fp_FieldTableSumRows::calculateValue(void)
 	double dSum = 0.0;
 	for(row = 0; row < numRows; row++)
 	{
-		PL_StruxDocHandle sdhCell = pDoc->getCellSDHFromRowCol(tableSDH,true,99999,row,col);
+		pf_Frag_Strux* sdhCell = pDoc->getCellSDHFromRowCol(tableSDH,true,99999,row,col);
 		UT_sint32 i = getBlock()->getDocLayout()->getLID();
 		PL_StruxFmtHandle fmtCell = pDoc->getNthFmtHandle(sdhCell,i);
 		pCell = reinterpret_cast<fl_CellLayout *>(const_cast<void *>(fmtCell));
@@ -294,12 +294,12 @@ bool fp_FieldTableSumRows::calculateValue(void)
 bool fp_FieldTableSumCols::calculateValue(void)
 {
 	FV_View * pView = _getView();
-	PL_StruxDocHandle tableSDH= NULL;
+	pf_Frag_Strux* tableSDH= NULL;
 	UT_sint32 numRows =0;
 	UT_sint32 numCols = 0;
 	bUseCurrency = false;
 	cCurrency = '$';
-	PL_StruxDocHandle sdh = getBlock()->getStruxDocHandle();
+	pf_Frag_Strux* sdh = getBlock()->getStruxDocHandle();
 	PD_Document * pDoc = getBlock()->getDocument();
 	if(pDoc->isPieceTableChanging())
 	{
@@ -341,7 +341,7 @@ bool fp_FieldTableSumCols::calculateValue(void)
 	double dSum = 0.0;
 	for(col = 0; col < numCols; col++)
 	{
-		PL_StruxDocHandle sdhCell = pDoc->getCellSDHFromRowCol(tableSDH,true,99999,row,col);
+		pf_Frag_Strux* sdhCell = pDoc->getCellSDHFromRowCol(tableSDH,true,99999,row,col);
 		UT_sint32 i = getBlock()->getDocLayout()->getLID();
 		PL_StruxFmtHandle fmtCell = pDoc->getNthFmtHandle(sdhCell,i);
 		pCell = reinterpret_cast<fl_CellLayout *>(const_cast<void *>(fmtCell));

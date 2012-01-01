@@ -105,7 +105,7 @@ bool  IE_Imp_PasteListener::populate(PL_StruxFmtHandle /* sfh */,
 	return true;
 }
 
-bool  IE_Imp_PasteListener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 									  const PX_ChangeRecord * pcr,
 										  PL_StruxFmtHandle * /* psfh */)
 {

@@ -81,13 +81,13 @@ public:
    OO_Listener(PD_Document * pDocument, IE_Exp_OpenWriter * pie, OO_ListenerImpl *pListenerImpl);
 
    virtual bool populate(PL_StruxFmtHandle sfh, const PX_ChangeRecord * pcr);
-   virtual bool populateStrux(PL_StruxDocHandle sdh, const PX_ChangeRecord * pcr, PL_StruxFmtHandle * psfh);
+   virtual bool populateStrux(pf_Frag_Strux* sdh, const PX_ChangeRecord * pcr, PL_StruxFmtHandle * psfh);
    virtual bool change(PL_StruxFmtHandle sfh, const PX_ChangeRecord * pcr);
    virtual bool insertStrux(PL_StruxFmtHandle sfh,
 			    const PX_ChangeRecord * pcr,
-			    PL_StruxDocHandle sdh,
+			    pf_Frag_Strux* sdh,
 			    PL_ListenerId lid,
-			    void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+			    void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 						    PL_ListenerId lid,
 						    PL_StruxFmtHandle sfhNew));
    virtual bool signal(UT_uint32 iSignal);

@@ -776,7 +776,7 @@ bool Text_Listener::populate(PL_StruxFmtHandle /*sfh*/,
 	}
 }
 
-bool Text_Listener::populateStrux(PL_StruxDocHandle /*sdh*/,
+bool Text_Listener::populateStrux(pf_Frag_Strux* /*sdh*/,
 									   const PX_ChangeRecord * pcr,
 									   PL_StruxFmtHandle * psfh)
 {
@@ -917,9 +917,9 @@ bool Text_Listener::change(PL_StruxFmtHandle /*sfh*/,
 
 bool Text_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
-									 PL_StruxDocHandle /*sdh*/,
+									 pf_Frag_Strux* /*sdh*/,
 									 PL_ListenerId /* lid */,
-									 void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
+									 void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
 																 PL_ListenerId /* lid */,
 																 PL_StruxFmtHandle /* sfhNew */))
 {

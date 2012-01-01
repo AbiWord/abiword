@@ -198,11 +198,11 @@ void  fd_Field::_throwChangeRec(  PT_DocPosition docPos)
   // Notify listeners in the views to update the blocks containing pieceTable
   // Fields
   //
-       PL_StruxDocHandle sdh = NULL;
+       pf_Frag_Strux* sdh = NULL;
        bool bret = m_pPieceTable->getStruxOfTypeFromPosition(docPos,PTX_Block, &sdh);
        if(bret == true)
        {    
-             pf_Frag_Strux * pfs = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
+             pf_Frag_Strux * pfs = sdh;
 	     PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	     const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_UpdateField,docPos,pAppIndex,
 														   pfs->getXID());

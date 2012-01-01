@@ -71,7 +71,7 @@ void IE_Exp_HTML_HeaderFooterListener::doHdrFtr(bool bHeader)
         DELETEP(m_pFtrDocRange);
 }
 
-bool IE_Exp_HTML_HeaderFooterListener::populateStrux(PL_StruxDocHandle sdh,
+bool IE_Exp_HTML_HeaderFooterListener::populateStrux(pf_Frag_Strux* sdh,
                                                      const PX_ChangeRecord * pcr,
                                                      PL_StruxFmtHandle * psfh)
 {
@@ -95,7 +95,7 @@ bool IE_Exp_HTML_HeaderFooterListener::populateStrux(PL_StruxDocHandle sdh,
 
         PT_DocPosition m_iHdrFtrStartPos = m_pDocument->getStruxPosition(sdh) + 1;
         PT_DocPosition m_iHdrFtrStopPos = 0;
-        PL_StruxDocHandle nextSDH = NULL;
+        pf_Frag_Strux* nextSDH = NULL;
         bool bHaveNextSection = m_pDocument->getNextStruxOfType(sdh, PTX_Section, &nextSDH);
         if (bHaveNextSection)
         {
@@ -137,9 +137,9 @@ bool IE_Exp_HTML_HeaderFooterListener::change(PL_StruxFmtHandle /*sfh*/,
 
 bool IE_Exp_HTML_HeaderFooterListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
                                                    const PX_ChangeRecord * /*pcr*/,
-                                                   PL_StruxDocHandle /*sdh*/,
+                                                   pf_Frag_Strux* /*sdh*/,
                                                    PL_ListenerId /* lid */,
-                                                   void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
+                                                   void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
                                                    PL_ListenerId /* lid */,
                                                    PL_StruxFmtHandle /* sfhNew */))
 {

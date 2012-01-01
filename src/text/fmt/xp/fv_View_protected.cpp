@@ -537,7 +537,7 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
 	}
 	else if(pBL->getPosition() == iLow)
 	{
-		PL_StruxDocHandle sdh = getCurrentBlock()->getStruxDocHandle();
+		pf_Frag_Strux* sdh = getCurrentBlock()->getStruxDocHandle();
 		while(pBL->isListItem())
 		{
 			m_pDoc->StopList(sdh);
@@ -624,7 +624,7 @@ bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSourc
 	fBot = UT_MAX(sBot,dBot);
 
 	PD_DocumentRange dr_source;
-	PL_StruxDocHandle sourceSDH,endSourceSDH,destinationSDH,endDestSDH;
+	pf_Frag_Strux* sourceSDH,*endSourceSDH,*destinationSDH,*endDestSDH;
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(posSource,PTX_SectionCell,&sourceSDH);
 	if(!bres)
 	{
@@ -722,7 +722,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
  *  Change the parameters of the table.
  * Return the line type of the table. We'll restore this later.
  */
- UT_sint32 FV_View::_changeCellParams(PT_DocPosition posTable, PL_StruxDocHandle tableSDH)
+ UT_sint32 FV_View::_changeCellParams(PT_DocPosition posTable, pf_Frag_Strux* tableSDH)
 {
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -765,7 +765,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
  */
 bool FV_View::_deleteCellAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col)
 {
-	PL_StruxDocHandle cellSDH,endCellSDH;
+	pf_Frag_Strux* cellSDH,*endCellSDH;
 	PT_DocPosition posCell = findCellPosAt(posTable,row,col);
 	if(posCell == 0)
 	{
@@ -922,7 +922,7 @@ bool FV_View::_insertCellBefore(PT_DocPosition posTable, UT_sint32 rowold, UT_si
 bool FV_View::_insertCellAfter(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
 						  UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
 {
-	PL_StruxDocHandle cellSDH,endCellSDH;
+	pf_Frag_Strux* cellSDH,*endCellSDH;
 	PT_DocPosition posCell = findCellPosAt(posTable,rowold,colold);
 	if(posCell == 0)
 	{
@@ -3060,8 +3060,8 @@ FV_View::_findGetNextBlockBuffer(fl_BlockLayout** pBlock,
 			fl_EmbedLayout * pFL = static_cast<fl_EmbedLayout *>(pCL);
 			if(pFL->isEndFootnoteIn())
 			{
-				PL_StruxDocHandle sdhStart = pCL->getStruxDocHandle();
-				PL_StruxDocHandle sdhEnd = NULL;
+				pf_Frag_Strux* sdhStart = pCL->getStruxDocHandle();
+				pf_Frag_Strux* sdhEnd = NULL;
 				if(pCL->getContainerType() == FL_CONTAINER_FOOTNOTE)
 				{
 					getDocument()->getNextStruxOfType(sdhStart,PTX_EndFootnote, &sdhEnd);
@@ -6062,7 +6062,7 @@ void FV_View::_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr)
 //
 	const gchar * pszHdrFtrType = NULL;
 	UT_ASSERT(pHdrFtr->getContainerType() == FL_CONTAINER_HDRFTR);
-	PL_StruxDocHandle sdhHdrFtr = pHdrFtr->getStruxDocHandle();
+	pf_Frag_Strux* sdhHdrFtr = pHdrFtr->getStruxDocHandle();
 	m_pDoc->getAttributeFromSDH(sdhHdrFtr,isShowRevisions(),getRevisionLevel(),PT_TYPE_ATTRIBUTE_NAME, &pszHdrFtrType);
 //
 // Remove the header/footer strux

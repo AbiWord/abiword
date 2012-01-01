@@ -51,7 +51,7 @@
 #include "fl_AutoNum.h"
 
 
-fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, PTStruxType iStrux, fl_ContainerType iType)
+fl_ContainerLayout::fl_ContainerLayout(fl_ContainerLayout* pMyLayout, pf_Frag_Strux* sdh, PT_AttrPropIndex indexAP, PTStruxType iStrux, fl_ContainerType iType)
 	: fl_Layout(iStrux, sdh),
 	  m_iConType(iType),
 	  m_pMyLayout(pMyLayout),
@@ -503,7 +503,7 @@ void fl_ContainerLayout::setContainingLayout(fl_ContainerLayout * pL)
 	m_pMyLayout = pL;
 }
 
-fl_ContainerLayout * fl_ContainerLayout::append(PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP,fl_ContainerType iType)
+fl_ContainerLayout * fl_ContainerLayout::append(pf_Frag_Strux* sdh, PT_AttrPropIndex indexAP,fl_ContainerType iType)
 {
 	return insert(sdh, m_pLastL, indexAP,iType);
 }
@@ -787,7 +787,7 @@ fl_ContainerLayout * fl_ContainerLayout::getLastLayout(void) const
  * layouts held by this class.
  * Returns a pointer to the generated ContainerLayout class.
  */
-fl_ContainerLayout * fl_ContainerLayout::insert(PL_StruxDocHandle sdh, fl_ContainerLayout * pPrev, PT_AttrPropIndex indexAP,fl_ContainerType iType)
+fl_ContainerLayout * fl_ContainerLayout::insert(pf_Frag_Strux* sdh, fl_ContainerLayout * pPrev, PT_AttrPropIndex indexAP,fl_ContainerType iType)
 {
 	fl_ContainerLayout* pL=NULL;
 	switch (iType)

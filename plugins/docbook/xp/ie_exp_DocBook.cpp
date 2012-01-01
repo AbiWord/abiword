@@ -2014,7 +2014,7 @@ bool s_DocBook_Listener::_inSectionStrux(void)
 	return ((m_bInTable) || (m_bInFrame) || (m_bInHdrFtr) || (m_bInNote));
 }
 
-bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle sdh,
+bool s_DocBook_Listener::populateStrux(pf_Frag_Strux* sdh,
 										   const PX_ChangeRecord * pcr,
 										   PL_StruxFmtHandle * psfh)
 {
@@ -2078,7 +2078,7 @@ bool s_DocBook_Listener::populateStrux(PL_StruxDocHandle sdh,
 			if((m_iNestedTable == 2) && (m_iTableDepth == 1)) //the last cell had a nested table; reset the value
 				m_iNestedTable = -1;
 
-			PL_StruxDocHandle nextTable = NULL, nextCell = NULL;
+			pf_Frag_Strux* nextTable = NULL, *nextCell = NULL;
 			bool bNextTable = m_pDocument->getNextStruxOfType(sdh, PTX_SectionTable, &nextTable);
 			bool bEndCell = m_pDocument->getNextStruxOfType(sdh, PTX_EndCell, &nextCell);
 
@@ -2195,9 +2195,9 @@ bool s_DocBook_Listener::change(PL_StruxFmtHandle /*sfh*/,
 
 bool s_DocBook_Listener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									 const PX_ChangeRecord * /*pcr*/,
-									 PL_StruxDocHandle /*sdh*/,
+									 pf_Frag_Strux* /*sdh*/,
 									 PL_ListenerId /* lid */,
-									 void (* /*pfnBindHandles*/)(PL_StruxDocHandle /* sdhNew */,
+									 void (* /*pfnBindHandles*/)(pf_Frag_Strux* /* sdhNew */,
 																 PL_ListenerId /* lid */,
 																 PL_StruxFmtHandle /* sfhNew */))
 {

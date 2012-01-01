@@ -31,6 +31,7 @@ class PD_Document;
 class fd_Field;
 class po_Bookmark;
 class fl_AutoNum;
+class pf_Frag_Strux;
 
 /*!
 	fl_Layout is the base class for all layout objects which correspond to 
@@ -43,10 +44,10 @@ class fl_AutoNum;
 class ABI_EXPORT fl_Layout
 {
 public:
-	fl_Layout(PTStruxType type, PL_StruxDocHandle sdh);
+	fl_Layout(PTStruxType type, pf_Frag_Strux* sdh);
 	virtual ~fl_Layout();
 
-	PL_StruxDocHandle               getStruxDocHandle(void) const;
+	pf_Frag_Strux*               getStruxDocHandle(void) const;
 	PTStruxType			getType(void) const;
 	void                setType(PTStruxType type);
 	PT_AttrPropIndex 	getAttrPropIndex(void) const;
@@ -76,7 +77,7 @@ protected:
 	
 	PD_Document *			m_pDoc;		// set by child
 private:
-	PL_StruxDocHandle		m_sdh;
+	pf_Frag_Strux*		m_sdh;
 };
 
 #endif /* FL_LAYOUT_H */

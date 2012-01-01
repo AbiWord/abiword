@@ -2041,7 +2041,7 @@ PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string 
     // xml:id attached to containing paragraph/header
     // <text:p> / <text:h>
     //
-    PL_StruxDocHandle psdh;
+    pf_Frag_Strux* psdh;
     if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psdh ) && psdh )
     {
         UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
@@ -2256,7 +2256,7 @@ PD_DocumentRDF::priv_addRelevantIDsForPosition( std::set< std::string >& ret,
     // xml:id attached to containing paragraph/header
     // <text:p> / <text:h>
     //
-    PL_StruxDocHandle psdh;
+    pf_Frag_Strux* psdh;
     if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psdh ) && psdh )
     {
         UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
@@ -2614,8 +2614,7 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
     {
         pf_Frag* pf = 0;
         PT_BlockOffset boffset;
-        PL_StruxDocHandle psdh;
-
+        pf_Frag_Strux* psdh;
         if( pt->getStruxOfTypeFromPosition( curr, PTX_Block, &psdh ) && psdh )
         {
             UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() current:%d end:%d have PTX_BLOCK \n",

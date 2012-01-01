@@ -88,7 +88,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				{
 					PT_DocPosition pos = pf->getPos();
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
-					PL_StruxDocHandle sdh = NULL;
+					pf_Frag_Strux* sdh = NULL;
 					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
 					pfs2 = (pf_Frag_Strux *) sdh;
 					blockOffset = pos - pfs2->getPos() -1;
@@ -117,7 +117,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 		case pf_Frag::PFT_Strux:
 			{
 				pfs2 = static_cast<pf_Frag_Strux *> (pf);
-				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
+				pf_Frag_Strux* sdh = pfs2;
 				sfh = 0;
 			        if(bListensOnly)
 				{
@@ -169,7 +169,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				{
 					PT_DocPosition pos = pf->getPos();
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
-					PL_StruxDocHandle sdh = NULL;
+					pf_Frag_Strux* sdh = NULL;
 					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
 					pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
 					blockOffset = pos - pfs->getPos() -1;
@@ -216,7 +216,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				{
 					PT_DocPosition pos = pf->getPos();
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
-					PL_StruxDocHandle sdh = NULL;
+					pf_Frag_Strux* sdh = NULL;
 					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
 					pfs2 = (pf_Frag_Strux *) sdh;
 					blockOffset = pos - pfs2->getPos() -1;
@@ -366,7 +366,7 @@ static PT_DocPosition _tellListenerSubsetWalkRange(
                 case pf_Frag::PFT_Strux:
                 {
                     pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
-                    PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
+                    pf_Frag_Strux* sdh = pfs;
                     sfh = 0;
                     PX_ChangeRecord * pcr = NULL;
                     bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
@@ -589,7 +589,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
 		case pf_Frag::PFT_Strux:
 			{
 				pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
-				PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
+				pf_Frag_Strux* sdh = pf;
 				sfh = 0;
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);
@@ -668,7 +668,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
                 case pf_Frag::PFT_Strux:
                 {
                     pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *> (pf);
-                    PL_StruxDocHandle sdh = (PL_StruxDocHandle)pf;
+                    pf_Frag_Strux* sdh = pf;
                     sfh = 0;
                     PX_ChangeRecord * pcr = NULL;
                     bool bStatus1 = pfs->createSpecialChangeRecord(&pcr,sum);

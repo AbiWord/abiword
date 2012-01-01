@@ -50,7 +50,7 @@ public:
 	virtual bool		populate(PL_StruxFmtHandle sfh,
 								 const PX_ChangeRecord * pcr);
 
-	virtual bool		populateStrux(PL_StruxDocHandle sdh,
+	virtual bool		populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh);
 
@@ -59,9 +59,9 @@ public:
 
 	virtual bool		insertStrux(PL_StruxFmtHandle sfh,
 									const PX_ChangeRecord * pcr,
-									PL_StruxDocHandle sdh,
+									pf_Frag_Strux* sdh,
 									PL_ListenerId lid,
-									void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+									void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 															PL_ListenerId lid,
 															PL_StruxFmtHandle sfhNew));
 
@@ -132,7 +132,7 @@ protected:
 	bool                m_bInFrame;
 	bool                m_bJustOpennedFrame;
 	UT_Wctomb		    m_wctomb;
-	PL_StruxDocHandle   m_sdh;
+	pf_Frag_Strux*   m_sdh;
 	UT_uint32           m_currID;
 	PT_DocPosition      m_posDoc;
 	bool                m_bBlankLine;
@@ -145,7 +145,7 @@ protected:
 	UT_sint32           m_iTop;
 	UT_sint32           m_iBot;
 	PT_AttrPropIndex	m_apiSavedBlock;
-	PL_StruxDocHandle   m_sdhSavedBlock;
+	pf_Frag_Strux*   m_sdhSavedBlock;
 	bool                m_bOpennedFootnote;
 	PP_PropertyMap::TypeLineStyle    m_LastLinestyle;
 	UT_String           m_sLastColor;

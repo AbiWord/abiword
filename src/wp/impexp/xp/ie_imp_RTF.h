@@ -949,7 +949,7 @@ private:
 	bool                m_bAppendAnyway;
 	RTFProps_SectionProps m_sectdProps ;
 	ie_imp_table_control  m_TableControl;
-	PL_StruxDocHandle     m_lastCellSDH;
+	pf_Frag_Strux*     m_lastCellSDH;
 	bool                  m_bNestTableProps;
 	bool                  m_bParaWrittenForSection;
 	bool                  m_bCellBlank;

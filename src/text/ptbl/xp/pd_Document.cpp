@@ -1493,9 +1493,9 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 /*!
  * This method deletes the HdrFtr strux pointed to by sdh
  */
-void PD_Document::deleteHdrFtrStrux(PL_StruxDocHandle sdh)
+void PD_Document::deleteHdrFtrStrux(pf_Frag_Strux* sdh)
 {
-	pf_Frag_Strux * pfs_hdrftr = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
+	pf_Frag_Strux * pfs_hdrftr = sdh;
 	UT_return_if_fail (pfs_hdrftr->getType()  == pf_Frag::PFT_Strux);
 	m_pPieceTable->deleteHdrFtrStrux(pfs_hdrftr);
 }
@@ -1516,11 +1516,11 @@ bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
 
 
 bool PD_Document::changeStruxFmtNoUndo(PTChangeFmt ptc,
-								 PL_StruxDocHandle sdh,
+								 pf_Frag_Strux* sdh,
 								 const gchar ** attributes,
 								 const gchar ** properties)
 {
-	pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(const_cast<void *>(sdh));
+	pf_Frag_Strux * pfs = sdh;
 	UT_return_val_if_fail (pfs->getType() == pf_Frag::PFT_Strux,false);
 	return m_pPieceTable->changeStruxFmtNoUndo(ptc,pfs,attributes,properties);
 }
@@ -1546,7 +1546,7 @@ bool PD_Document::changeStruxFmt(PTChangeFmt ptc,
  * This Method is used to change just the parentID of each strux in a list
  * without updating the fl_Layouts.
  */
-bool PD_Document::changeStruxForLists(PL_StruxDocHandle sdh, const char * pszParentID)
+bool PD_Document::changeStruxForLists(pf_Frag_Strux* sdh, const char * pszParentID)
 {
 	return m_pPieceTable->changeStruxForLists(sdh, pszParentID);
 }
@@ -1857,15 +1857,15 @@ bool PD_Document::_removeRepeatedHdrFtr(pf_Frag_Strux * pfs ,UT_GenericVector<pf
 	const char * pszThisHdrFtr = NULL;
 	UT_sint32 i=0;
 	pf_Frag_Strux * pfsS = NULL;
-	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,"type",&pszMyHdrFtr);
-	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,"id",&pszMyID);
+	getAttributeFromSDH(pfs,false,0,"type",&pszMyHdrFtr);
+	getAttributeFromSDH(pfs,false,0,"id",&pszMyID);
 	if(pszMyHdrFtr && *pszMyHdrFtr && pszMyID && *pszMyID)
 	{
 		for(i = iStart; i<vecHdrFtrs->getItemCount(); i++)
 		{
 			pfsS = vecHdrFtrs->getNthItem(i);
-			getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,"type",&pszThisHdrFtr);
-			getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,"id",&pszThisID);
+			getAttributeFromSDH(pfsS,false,0,"type",&pszThisHdrFtr);
+			getAttributeFromSDH(pfsS,false,0,"id",&pszThisID);
 			if(pszThisHdrFtr && *pszThisHdrFtr && pszThisID && *pszThisID)
 			{
 				if((strcmp(pszMyHdrFtr,pszThisHdrFtr) == 0) &&
@@ -1946,7 +1946,7 @@ bool PD_Document::_pruneSectionAPI(pf_Frag_Strux * pfs,const char * szHType, UT_
 	const char * pszHFID = NULL;
 	const char * pszID = NULL;
 	UT_sint32 i = 0;
-	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,szHType,&pszID);
+	getAttributeFromSDH(pfs,false,0,szHType,&pszID);
 	if(!pszID)
 		return false;
 	if(!(*pszID))
@@ -1954,12 +1954,12 @@ bool PD_Document::_pruneSectionAPI(pf_Frag_Strux * pfs,const char * szHType, UT_
 	for(i= 0; i< vecHdrFtrs->getItemCount(); i++)
 	{
 		pf_Frag_Strux * pfsS = vecHdrFtrs->getNthItem(i);
-		getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,"type",&pszHdrFtr);
+		getAttributeFromSDH(pfsS,false,0,"type",&pszHdrFtr);
 		if(pszHdrFtr && *pszHdrFtr)
 		{
 			if(strcmp(szHType,pszHdrFtr) == 0)
 			{
-				getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,"id",&pszHFID);
+				getAttributeFromSDH(pfsS,false,0,"id",&pszHFID);
 				if(pszHFID && *pszHFID)
 				{
 					if(strcmp(pszHFID,pszID) == 0)
@@ -2018,12 +2018,12 @@ bool PD_Document::_matchSection(pf_Frag_Strux * pfs, UT_GenericVector<pf_Frag_St
 	const char * pszHFID = NULL;
 	const char * pszID = NULL;
 	UT_sint32 i = 0;
-	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,"type",&pszHdrFtr);
+	getAttributeFromSDH(pfs,false,0,"type",&pszHdrFtr);
 	if(!pszHdrFtr)
 		return false;
 	if(!(*pszHdrFtr))
 		return false;
-	getAttributeFromSDH((PL_StruxDocHandle) pfs,false,0,"id",&pszHFID);
+	getAttributeFromSDH(pfs,false,0,"id",&pszHFID);
 	if(!pszHFID)
 		return false;
 	if(!(*pszHFID))
@@ -2031,7 +2031,7 @@ bool PD_Document::_matchSection(pf_Frag_Strux * pfs, UT_GenericVector<pf_Frag_St
 	for(i= 0; i< vecSections->getItemCount(); i++)
 	{
 		pf_Frag_Strux * pfsS = vecSections->getNthItem(i);
-		getAttributeFromSDH((PL_StruxDocHandle) pfsS,false,0,pszHdrFtr,&pszID);
+		getAttributeFromSDH(pfsS,false,0,pszHdrFtr,&pszID);
 		if(pszID && *pszID)
 		{
 			if(strcmp(pszID,pszHFID) == 0)
@@ -2205,7 +2205,7 @@ bool PD_Document::appendFmtMark(void)
  * at picetable strux given by sdh.
  * NB: attributes and props are view-specific because of revision attributes
  * 
- \param  PL_StruxDocHandle sdh (pf_Frag_Strux) where we want to find the value
+ \param  pf_Frag_Strux* sdh (pf_Frag_Strux) where we want to find the value
  \param  bool bShowRevisions -- revisions setting for the view (FV_View::isShowRevisions())
  \param  UT_uint32 iRevisionLevel -- the revision level of the view (FV_View::getRevisionLevel())
  \param const char * szAttribute the attribute we're looking for.
@@ -2214,7 +2214,7 @@ bool PD_Document::appendFmtMark(void)
 
  Don't FREEP *pszRetValue!!!
 */
-bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
+bool PD_Document::getAttributeFromSDH(pf_Frag_Strux* sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
 									  const char * szAttribute, const char ** pszRetValue)
 {
 	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
@@ -2243,9 +2243,9 @@ bool PD_Document::getAttributeFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions
  *     the AP at the index using the explodeRevisions() methods or you can retrieve specific props
  *     and attrs using getPropertyFromSDH() and getAttributeFromSDH().
  */
-PT_AttrPropIndex PD_Document::getAPIFromSDH( PL_StruxDocHandle sdh)
+PT_AttrPropIndex PD_Document::getAPIFromSDH( pf_Frag_Strux* sdh)
 {
-	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
+	const pf_Frag_Strux * pfStrux = sdh;
 	return pfStrux->getIndexAP();
 }
 
@@ -2254,7 +2254,7 @@ PT_AttrPropIndex PD_Document::getAPIFromSDH( PL_StruxDocHandle sdh)
  * at picetable strux given by sdh.
  * NB: attributes and props are view-specific because of revision attributes
  * 
- \param  PL_StruxDocHandle sdh (pf_Frag_Strux) where we want to find the value
+ \param  pf_Frag_Strux* sdh (pf_Frag_Strux) where we want to find the value
  \param  bool bShowRevisions -- revisions setting for the view (FV_View::isShowRevisions())
  \param  UT_uint32 iRevisionLevel -- the revision level of the view (FV_View::getRevisionLevel())
  \param const char * szProperty the Property we're looking for.
@@ -2263,8 +2263,8 @@ PT_AttrPropIndex PD_Document::getAPIFromSDH( PL_StruxDocHandle sdh)
 
  Don't FREEP *pszRetValue!!!
 */
-bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
-									 const char * szProperty, const char ** pszRetValue)
+bool PD_Document::getPropertyFromSDH(const pf_Frag_Strux* sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
+									 const char * szProperty, const char ** pszRetValue) const
 {
 	const pf_Frag_Strux * pfStrux = static_cast<const pf_Frag_Strux *>(sdh);
 	PT_AttrPropIndex indexAP = pfStrux->getIndexAP();
@@ -2291,9 +2291,9 @@ bool PD_Document::getPropertyFromSDH(PL_StruxDocHandle sdh, bool bShowRevisions,
  * This medthod modifies the attributes of a section strux without
  * generating a change record. Use with extreme care!!
  */
-bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * attr, const char * attvalue)
+bool  PD_Document::changeStruxAttsNoUpdate(pf_Frag_Strux* sdh, const char * attr, const char * attvalue)
 {
-	pf_Frag_Strux * pfStrux = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
+	pf_Frag_Strux * pfStrux = sdh;
 	UT_return_val_if_fail (pfStrux, false);
 	return m_pPieceTable->changeSectionAttsNoUpdate(pfStrux, attr, attvalue);
 }
@@ -2305,10 +2305,10 @@ bool  PD_Document::changeStruxAttsNoUpdate(PL_StruxDocHandle sdh, const char * a
  * a change record and should only be used under exceptional circumstances to 
  * repair the piecetable during loading. It was necessary to import RTF tables.
  */
-bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType pts,const gchar ** attributes )
+bool PD_Document::insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pts,const gchar ** attributes )
 {
 #if 0
-	pf_Frag_Strux * pfStrux = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
+	pf_Frag_Strux * pfStrux = sdh;
 	T_ASSERT(pfStrux->getStruxType() != PTX_Section);
 #endif
 	return m_pPieceTable->insertStruxNoUpdateBefore(sdh, pts, attributes );
@@ -2318,7 +2318,7 @@ bool PD_Document::insertStruxNoUpdateBefore(PL_StruxDocHandle sdh, PTStruxType p
  * This method examines the frag immediately before the given sdh and decides
  * if it matches the strux type given.
  */
-bool PD_Document::isStruxBeforeThis(PL_StruxDocHandle sdh,  PTStruxType pts)
+bool PD_Document::isStruxBeforeThis(pf_Frag_Strux* sdh,  PTStruxType pts)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	pf_Frag * pfb = pfs->getPrev();
@@ -2483,11 +2483,11 @@ bool PD_Document::deleteStrux(PT_DocPosition dpos,
 		pf = pf->getPrev();
 	if(pf == NULL)
 		return false;
-	PL_StruxDocHandle sdh = NULL;
+	pf_Frag_Strux* sdh = NULL;
 	if(pf->getType() == pf_Frag::PFT_Strux)
 	{
 		pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
-		sdh = static_cast<PL_StruxDocHandle>(pfs);
+		sdh = static_cast<pf_Frag_Strux*>(pfs);
 	}
 	else
 	{
@@ -2507,7 +2507,7 @@ bool PD_Document::deleteStrux(PT_DocPosition dpos,
  * sdh is the StruxDocHandle that gets deleted..
  * Use with extreme care. Should only be used for document import.
  */
-bool PD_Document::deleteStruxNoUpdate(PL_StruxDocHandle sdh)
+bool PD_Document::deleteStruxNoUpdate(pf_Frag_Strux* sdh)
 {
 	return m_pPieceTable->deleteStruxNoUpdate(sdh);
 }
@@ -2585,9 +2585,9 @@ bool   PD_Document::isInsertHyperLinkValid(PT_DocPosition pos) const
 	return false;
 }
 /*!
- * This method returns the last pf_Frag_Strux as a PL_StruxDocHandle before the end of the piecetable.
+ * This method returns the last pf_Frag_Strux as a pf_Frag_Strux* before the end of the piecetable.
  */
-PL_StruxDocHandle  PD_Document::getLastSectionSDH(void)
+const pf_Frag_Strux*  PD_Document::getLastSectionSDH(void) const
 {
 	const pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
 	const pf_Frag_Strux * pfSecLast = NULL;
@@ -2604,15 +2604,38 @@ PL_StruxDocHandle  PD_Document::getLastSectionSDH(void)
 		}
 		currentFrag = currentFrag->getNext();
 	}
-	return reinterpret_cast<PL_StruxDocHandle>(pfSecLast);
+	return pfSecLast;
+}
+
+/*!
+ * This method returns the last pf_Frag_Strux as a pf_Frag_Strux* before the end of the piecetable.
+ */
+pf_Frag_Strux*  PD_Document::getLastSectionMutableSDH(void)
+{
+	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
+	pf_Frag_Strux * pfSecLast = NULL;
+	while (currentFrag!=m_pPieceTable->getFragments().getLast())
+	{
+		UT_return_val_if_fail (currentFrag,0);
+		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
+		{
+		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
+		     if(pfSec->getStruxType() == PTX_Section)
+		     {
+				 pfSecLast = pfSec;
+			 }
+		}
+		currentFrag = currentFrag->getNext();
+	}
+	return pfSecLast;
 }
 
 
 /*!
- * This method returns the last pf_Frag_Strux as a PL_StruxDocHandle 
+ * This method returns the last pf_Frag_Strux as a pf_Frag_Strux* 
  * before the end of the piecetable.
  */
-PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
+pf_Frag_Strux*  PD_Document::getLastStruxOfType(PTStruxType pts )
 {
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getLast();
 	pf_Frag_Strux * pfSecLast = NULL;
@@ -2648,7 +2671,7 @@ PL_StruxDocHandle  PD_Document::getLastStruxOfType(PTStruxType pts )
 		}
 		currentFrag = currentFrag->getPrev();
 	}
-	return reinterpret_cast<PL_StruxDocHandle *>(pfSecLast);
+	return pfSecLast;
 }
 
 
@@ -2757,9 +2780,9 @@ bool PD_Document::verifySectionID(const gchar * pszId)
 \param const char * pszHdrFtr The particular attribute that identifies the
                                strux as "header" "footer" "header-even" etc.
 \param const char * pszHdrFtrID the unique string to match with Docsection.
-\returns a PL_StruxDocHandle of the matching frag or NULL if none found.
+\returns a pf_Frag_Strux* of the matching frag or NULL if none found.
  */
-PL_StruxDocHandle PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
+pf_Frag_Strux* PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
 											const gchar * pszHdrFtrID)
 {
 	pf_Frag * currentFrag = m_pPieceTable->getFragments().getFirst();
@@ -2781,7 +2804,7 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
 				 (pAP)->getAttribute(PT_TYPE_ATTRIBUTE_NAME, pszHeaderName);
 				 (pAP)->getAttribute(PT_ID_ATTRIBUTE_NAME, pszIDName);
 				 if(pszIDName && pszHeaderName && (strcmp(pszIDName,pszHdrFtrID) == 0) && (strcmp(pszHeaderName,pszHdrFtr) == 0))
-					 return static_cast<PL_StruxDocHandle>(pfSec) ;
+					 return static_cast<pf_Frag_Strux*>(pfSec) ;
 			 }
 		}
 //
@@ -2798,11 +2821,11 @@ PL_StruxDocHandle PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
  * And a pointer to the embedded strux found.
  * If no emebedded strux is found in the block we return -1 ans NULL
  */ 
-UT_sint32 PD_Document::getEmbeddedOffset(PL_StruxDocHandle sdh, PT_DocPosition posoff, PL_StruxDocHandle & sdhEmbedded)
+UT_sint32 PD_Document::getEmbeddedOffset(pf_Frag_Strux* sdh, PT_DocPosition posoff, pf_Frag_Strux* & sdhEmbedded)
 {
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	pf_Frag_Strux * pfs = sdh;
 	UT_return_val_if_fail (pfs->getStruxType() == PTX_Block,-1);
-	const pf_Frag * pf = static_cast<const pf_Frag *>(pfs);
+	pf_Frag * pf = pfs;
 	pf = pf->getNext();
 	PT_DocPosition pos = m_pPieceTable->getStruxPosition(sdh) + posoff;
 	while(pf && m_pPieceTable->getFragPosition(pf) + pf->getLength() <= pos)
@@ -2823,15 +2846,15 @@ UT_sint32 PD_Document::getEmbeddedOffset(PL_StruxDocHandle sdh, PT_DocPosition p
 		sdhEmbedded = NULL;
 		return -1;
 	}
-	if(!m_pPieceTable->isFootnote(const_cast<pf_Frag *>(pf)))
+	if(!m_pPieceTable->isFootnote(pf))
     {
 		sdhEmbedded = NULL;
 		return -1;
 	}
-	const pf_Frag_Strux * pfsNew = static_cast<const pf_Frag_Strux *>(pf);
+	pf_Frag_Strux * pfsNew = static_cast<pf_Frag_Strux *>(pf);
 	pos  = m_pPieceTable->getFragPosition(pf);
-	UT_sint32 diff = static_cast<UT_sint32>(pos) - static_cast<UT_sint32>(m_pPieceTable->getFragPosition(static_cast<pf_Frag *>(const_cast<pf_Frag_Strux *>(pfs))));
-	sdhEmbedded = static_cast<PL_StruxDocHandle>(pfsNew);
+	UT_sint32 diff = static_cast<UT_sint32>(pos) - static_cast<UT_sint32>(m_pPieceTable->getFragPosition(pfs));
+	sdhEmbedded = pfsNew;
 	return diff;
 }
 
@@ -3134,26 +3157,24 @@ bool PD_Document::isCellAtPos(PT_DocPosition pos)
  * This method returns the end table strux associated with the table strux tableSDH
  * Returns NULL on failure to find it.
  */
-PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle tableSDH)
+pf_Frag_Strux* PD_Document::getEndTableStruxFromTableSDH(pf_Frag_Strux* tableSDH)
 {
-	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(tableSDH);
+	pf_Frag * currentFrag = tableSDH;
 	currentFrag = currentFrag->getNext();
-	PL_StruxDocHandle EndTableSDH = NULL;
 	UT_sint32 depth =0;
 	while (currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
-			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
+			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
 			if(pfSec->getStruxType() == PTX_SectionTable)
 				depth++;
 			else if(pfSec->getStruxType() == PTX_EndTable)
 			{
 				if(depth == 0)
 				{
-					EndTableSDH = static_cast<PL_StruxDocHandle>(pfSec);
-					return EndTableSDH;
+					return pfSec;
 				}
 				else
 					depth--;
@@ -3170,26 +3191,24 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTableSDH(PL_StruxDocHandle ta
  * This method returns the end cell strux associated with the cell strux cellSDH
  * Returns NULL on failure to find it.
  */
-PL_StruxDocHandle PD_Document::getEndCellStruxFromCellSDH(PL_StruxDocHandle cellSDH)
+pf_Frag_Strux* PD_Document::getEndCellStruxFromCellSDH(pf_Frag_Strux* cellSDH)
 {
-	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(cellSDH);
+	pf_Frag * currentFrag = cellSDH;
 	currentFrag = currentFrag->getNext();
-	PL_StruxDocHandle EndCellSDH = NULL;
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
-			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
+			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux*>(currentFrag);
 			if(pfSec->getStruxType() == PTX_SectionTable)
 			{
-				PL_StruxDocHandle endTab = getEndTableStruxFromTableSDH(static_cast<PL_StruxDocHandle >(pfSec));
-				currentFrag = static_cast<const pf_Frag *>(endTab);
+				pf_Frag_Strux* endTab = getEndTableStruxFromTableSDH(pfSec);
+				currentFrag = endTab;
 			}
 			else if(pfSec->getStruxType() == PTX_EndCell )
 			{
-				EndCellSDH = static_cast<PL_StruxDocHandle>(pfSec);
-				return EndCellSDH;
+				return pfSec;
 			}
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
@@ -3215,10 +3234,10 @@ PL_StruxDocHandle PD_Document::getEndCellStruxFromCellSDH(PL_StruxDocHandle cell
  * This method returns the end table strux associated with the table strux tableSDH
  * Returns NULL on failure to find it.
  */
-PL_StruxDocHandle PD_Document::getEndTableStruxFromTablePos(PT_DocPosition tablePos)
+pf_Frag_Strux* PD_Document::getEndTableStruxFromTablePos(PT_DocPosition tablePos)
 {
-	PL_StruxDocHandle tableSDH = NULL;
-	PL_StruxDocHandle EndTableSDH = NULL;
+	pf_Frag_Strux* tableSDH = NULL;
+	pf_Frag_Strux* EndTableSDH = NULL;
 	bool bRes =	getStruxOfTypeFromPosition(tablePos, PTX_SectionTable, &tableSDH);
 	if(!bRes)
 		return NULL;
@@ -3228,44 +3247,44 @@ PL_StruxDocHandle PD_Document::getEndTableStruxFromTablePos(PT_DocPosition table
 
 /*!
  * The method returns the number of rows and columns in table pointed to by tableSDH
-\param PL_StruxDocHandle tableSDH SDH of the table in question
+\param pf_Frag_Strux* tableSDH SDH of the table in question
 \param UT_sint32 * numRows pointer to the number of rows returned
 \param UT_sint32 * numCols pointer to the number of cols returned
 */
-bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, bool bShowRevisions, UT_uint32 iRevisionLevel,
+bool PD_Document::getRowsColsFromTableSDH(pf_Frag_Strux* tableSDH, bool bShowRevisions, UT_uint32 iRevisionLevel,
 										  UT_sint32 * numRows, UT_sint32 * numCols)
 {
 	UT_sint32 iRight = 0;
     UT_sint32 iBot = 0;
 	const char * szRight = NULL;
 	const char * szBot = NULL;
-	PL_StruxDocHandle cellSDH;
+	pf_Frag_Strux* cellSDH;
 	*numRows = 0;
 	*numCols = 0;
 //
 // Do the scan
 //
-	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(tableSDH);
+	pf_Frag * currentFrag = tableSDH;
 	currentFrag = currentFrag->getNext();
 	while (currentFrag && currentFrag!=m_pPieceTable->getFragments().getLast())
 	{
 		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType()  == pf_Frag::PFT_Strux)
 		{
-			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
+			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
 			if(pfSec->getStruxType() == PTX_SectionTable)
 			{
 //
 // skip to the end of this nested table
 //
-				PL_StruxDocHandle endSDH = getEndTableStruxFromTableSDH(static_cast<PL_StruxDocHandle>(pfSec) );
-				pfSec = static_cast<const pf_Frag_Strux *>(endSDH);
+				pf_Frag_Strux* endSDH = getEndTableStruxFromTableSDH(pfSec);
+				pfSec = endSDH;
 			}
 			else if(pfSec->getStruxType() == PTX_EndTable)
 				return true;
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
-				cellSDH = static_cast<PL_StruxDocHandle>(pfSec);
+				cellSDH = pfSec;
 				UT_DebugOnly<bool> bres = getPropertyFromSDH(cellSDH,bShowRevisions, iRevisionLevel,"right-attach",&szRight);
 				UT_ASSERT(bres);
 				if(szRight && *szRight)
@@ -3280,7 +3299,7 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, bool bShow
 				if(*numRows < iBot)
 					*numRows = iBot;
 			}
-			currentFrag = static_cast<const pf_Frag *>(pfSec);
+			currentFrag = pfSec;
 		}
 		if(currentFrag)
 			currentFrag = currentFrag->getNext();
@@ -3288,12 +3307,12 @@ bool PD_Document::getRowsColsFromTableSDH(PL_StruxDocHandle tableSDH, bool bShow
 	return false;
 }
 
-void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
+void  PD_Document::miniDump(pf_Frag_Strux* sdh, UT_sint32 nstruxes)
 {
 #ifdef DEBUG
 	UT_sint32 i=0;
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
-	const pf_Frag * pf = static_cast<const pf_Frag *>(pfs);
+	const pf_Frag_Strux * pfs = sdh;
+	const pf_Frag * pf = pfs;
 	for(i=0; pfs && (i< nstruxes); i++)
 	{
 		pf = pf->getPrev();
@@ -3307,13 +3326,12 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		while(pf && (pf->getType() != pf_Frag::PFT_Strux))
 			pf = pf->getNext();
 		if(pf)
-			pfs = static_cast<const pf_Frag_Strux *>(pfs);
+			pfs = static_cast<const pf_Frag_Strux *>(pf);
 	}
 	for(i=0; pfs && (i< 2*nstruxes); i++)
 	{
-		pf = static_cast<const pf_Frag *>(pfs);
+		pf = pfs;
 		pfs = static_cast<const pf_Frag_Strux *>(pf);
-		PL_StruxDocHandle sdhTemp = static_cast<PL_StruxDocHandle>(pfs);
 		const char * szStrux = NULL;
 		if(pfs->getStruxType() == PTX_Block)
 			szStrux = "Block";
@@ -3361,10 +3379,10 @@ void  PD_Document::miniDump(PL_StruxDocHandle sdh, UT_sint32 nstruxes)
 		const char * szRight=NULL;
 		const char * szTop=NULL;
 		const char * szBot = NULL;
-		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"left-attach",&szLeft);
-		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"right-attach",&szRight);
-		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"top-attach",&szTop);
-		getPropertyFromSDH(sdhTemp,true, PD_MAX_REVISION,"bot-attach",&szBot);
+		getPropertyFromSDH(pfs,true, PD_MAX_REVISION,"left-attach",&szLeft);
+		getPropertyFromSDH(pfs,true, PD_MAX_REVISION,"right-attach",&szRight);
+		getPropertyFromSDH(pfs,true, PD_MAX_REVISION,"top-attach",&szTop);
+		getPropertyFromSDH(pfs,true, PD_MAX_REVISION,"bot-attach",&szBot);
 		if(szLeft != NULL)
 		{
 			UT_DEBUGMSG(("left-attach %s right-attach %s top-attach %s bot-attach %s \n",szLeft,szRight,szTop,szBot));
@@ -3394,12 +3412,12 @@ PD_Document::dumpDoc( const char* msg, PT_DocPosition currentpos, PT_DocPosition
  * The method returns the SDH of the cell at the location given by (rows,columns) in table 
  * pointed to by tableSDH. Returns NULL if the requested location is not contained in the
  * cell.
-\param PL_StruxDocHandle tableSDH SDH of the table in question
+\param pf_Frag_Strux* tableSDH SDH of the table in question
 \param UT_sint32 row row location.
 \param UT_sint32 col column location
 */
 
-PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
+pf_Frag_Strux* PD_Document::getCellSDHFromRowCol(pf_Frag_Strux* tableSDH,
 													bool bShowRevisions, UT_uint32 iRevisionLevel,
 													UT_sint32 row, 
 													UT_sint32 col)
@@ -3409,11 +3427,11 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 	const char * szTop = NULL;
 	const char * szRight = NULL;
 	const char * szBot = NULL;
-	PL_StruxDocHandle cellSDH;
+	pf_Frag_Strux* cellSDH;
 //
 // Do the scan
 //
-	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(tableSDH);
+	pf_Frag * currentFrag = tableSDH;
 
 	UT_return_val_if_fail(currentFrag != NULL, NULL);
 
@@ -3423,14 +3441,13 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 		UT_return_val_if_fail (currentFrag,0);
 		if(currentFrag->getType() == pf_Frag::PFT_Strux)
 		{
-			const pf_Frag_Strux * pfSec = static_cast<const pf_Frag_Strux *>(currentFrag);
+			pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
 			if(pfSec->getStruxType() == PTX_SectionTable)
 			{
 //
 // skip to the end of this nested table
 //
-				PL_StruxDocHandle endSDH = getEndTableStruxFromTableSDH(static_cast<PL_StruxDocHandle>(pfSec) );
-				pfSec = static_cast<const pf_Frag_Strux *>(endSDH);
+				pfSec = getEndTableStruxFromTableSDH(pfSec);
 			}
 			else if(pfSec->getStruxType() == PTX_EndTable)
 			{
@@ -3441,7 +3458,7 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 			}
 			else if(pfSec->getStruxType() == PTX_SectionCell)
 			{
-				cellSDH = static_cast<PL_StruxDocHandle>(pfSec);
+				cellSDH = pfSec;
 				Left = -1;
 				Top = -1;
 				Right = -1;
@@ -3464,10 +3481,10 @@ PL_StruxDocHandle PD_Document::getCellSDHFromRowCol(PL_StruxDocHandle tableSDH,
 					Bot = atoi(szBot);
 				if( (Top <= row) && (row < Bot) && (Left <= col) && (Right > col))
 				{
-					return static_cast<PL_StruxDocHandle>(pfSec);
+					return pfSec;
 				}
 			}
-			currentFrag = static_cast<const pf_Frag *>(pfSec);
+			currentFrag = pfSec;
 		}
 		if(currentFrag)
 			currentFrag = currentFrag->getNext();
@@ -4232,7 +4249,7 @@ void PD_Document::processDeferredNotifications(void)
 
 
 
-PL_StruxFmtHandle PD_Document::getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 n)
+PL_StruxFmtHandle PD_Document::getNthFmtHandle(pf_Frag_Strux* sdh, UT_uint32 n)
 {
 	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
 	UT_uint32 nListen = m_vecListeners.getItemCount();
@@ -4243,14 +4260,14 @@ PL_StruxFmtHandle PD_Document::getNthFmtHandle(PL_StruxDocHandle sdh, UT_uint32 
 	return sfh;
 }
 
-static void s_BindHandles(PL_StruxDocHandle sdhNew,
+static void s_BindHandles(pf_Frag_Strux* sdhNew,
 						  PL_ListenerId lid,
 						  PL_StruxFmtHandle sfhNew)
 {
 	UT_return_if_fail (sdhNew);
 	UT_return_if_fail (sfhNew);
 
-	pf_Frag_Strux * pfsNew = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdhNew));
+	pf_Frag_Strux * pfsNew = sdhNew;
 	UT_DEBUGMSG(("Set Format handle number %d of strux %p to format %p \n",lid,pfsNew,sfhNew));
 	pfsNew->setFmtHandle(lid,sfhNew);
 }
@@ -4289,7 +4306,7 @@ bool PD_Document::notifyListeners(const pf_Frag_Strux * pfs,
 		PL_Listener * pListener = m_vecListeners.getNthItem(lid);
 		if (pListener)
 		{
-			PL_StruxDocHandle sdhNew = static_cast<PL_StruxDocHandle>(pfsNew);
+			pf_Frag_Strux* sdhNew = static_cast<pf_Frag_Strux*>(pfsNew);
 			PL_StruxFmtHandle sfh = NULL;
 			if(pListener->getType() < PTL_CollabExport)
 				sfh = pfs->getFmtHandle(lid);
@@ -4612,7 +4629,7 @@ const UT_UCSChar * PD_Document::getPointer(PT_BufIndex bi) const
 	return m_pPieceTable->getPointer(bi);
 }
 
-bool PD_Document::getBlockBuf(PL_StruxDocHandle sdh, UT_GrowBuf * pgb) const
+bool PD_Document::getBlockBuf(pf_Frag_Strux* sdh, UT_GrowBuf * pgb) const
 {
 	return m_pPieceTable->getBlockBuf(sdh,pgb);
 }
@@ -4622,12 +4639,12 @@ bool PD_Document::getBounds(bool bEnd, PT_DocPosition & docPos) const
 	return m_pPieceTable->getBounds(bEnd,docPos);
 }
 
-PT_DocPosition PD_Document::getStruxPosition(PL_StruxDocHandle sdh) const
+PT_DocPosition PD_Document::getStruxPosition(pf_Frag_Strux* sdh) const
 {
 	return m_pPieceTable->getStruxPosition(sdh);
 }
 
-bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
+bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLeftSide,
 									 const PP_AttrProp ** ppAP) const
 {
 	return m_pPieceTable->getSpanAttrProp(sdh,offset,bLeftSide,ppAP);
@@ -4636,7 +4653,7 @@ bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool 
 /*!
  * Return strux type of the StruxDocHandle
  */
-PTStruxType PD_Document::getStruxType(PL_StruxDocHandle sdh) const
+PTStruxType PD_Document::getStruxType(pf_Frag_Strux* sdh) const
 {
 	UT_return_val_if_fail( sdh,(PTStruxType)0 );
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
@@ -4707,7 +4724,7 @@ pf_Frag * PD_Document::findBookmark(const char * pName, bool bEnd, pf_Frag * pfS
 }
 
 
-po_Bookmark * PD_Document::getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset)
+po_Bookmark * PD_Document::getBookmark(pf_Frag_Strux* sdh, UT_uint32 offset)
 {
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
 	UT_return_val_if_fail (pf->getType() == pf_Frag::PFT_Strux, NULL);
@@ -4735,7 +4752,7 @@ po_Bookmark * PD_Document::getBookmark(PL_StruxDocHandle sdh, UT_uint32 offset)
 	return NULL;
 }
 
-bool PD_Document::getField(PL_StruxDocHandle sdh, UT_uint32 offset,
+bool PD_Document::getField(pf_Frag_Strux* sdh, UT_uint32 offset,
                                fd_Field * & pField)
 {
 
@@ -4784,7 +4801,7 @@ bool PD_Document::getStruxOfTypeFromPosition(PL_ListenerId listenerId,
 	return m_pPieceTable->getStruxOfTypeFromPosition(listenerId,docPos,pts,psfh);
 }
 
-PL_StruxDocHandle PD_Document::getBlockFromPosition( PT_DocPosition pos ) const
+pf_Frag_Strux* PD_Document::getBlockFromPosition( PT_DocPosition pos ) const
 {
     return m_pPieceTable->getBlockFromPosition( pos );
 }
@@ -4797,7 +4814,7 @@ PL_StruxDocHandle PD_Document::getBlockFromPosition( PT_DocPosition pos ) const
 ///
 bool PD_Document::getStruxOfTypeFromPosition(PT_DocPosition docPos,
 												PTStruxType pts,
-												PL_StruxDocHandle * sdh) const
+												pf_Frag_Strux* * sdh) const
 {
 	return m_pPieceTable->getStruxOfTypeFromPosition(docPos,pts, sdh);
 }
@@ -4805,16 +4822,16 @@ bool PD_Document::getStruxOfTypeFromPosition(PT_DocPosition docPos,
 ///
 /// Return the sdh of type pts immediately prior to sdh
 ///
-bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
-					PL_StruxDocHandle * prevsdh)
+bool PD_Document::getPrevStruxOfType(pf_Frag_Strux* sdh,PTStruxType pts,
+					pf_Frag_Strux* * prevsdh)
 {
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	pf_Frag* pfs = sdh;
 	UT_return_val_if_fail (pfs, false);
-	pfs = static_cast<const pf_Frag_Strux *>(pfs->getPrev());
-	for (const pf_Frag * pf=pfs; (pf); pf=pf->getPrev())
+	pfs = pfs->getPrev();
+	for (pf_Frag * pf=pfs; (pf); pf=pf->getPrev())
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
-			const pf_Frag_Strux * pfsTemp = static_cast<const pf_Frag_Strux *>(pf);
+			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
 			if (pfsTemp->getStruxType() == pts)	// did we find it
 			{
 				*prevsdh = pfsTemp;
@@ -4831,18 +4848,18 @@ bool PD_Document::getPrevStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
 ///
 ///get the next strux after the strux given. Skip embedded strux's
 ///
-bool PD_Document::getNextStrux(PL_StruxDocHandle sdh,
-							   PL_StruxDocHandle * nextsdh)
+bool PD_Document::getNextStrux(pf_Frag_Strux* sdh,
+							   pf_Frag_Strux* * nextsdh)
 {
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	pf_Frag_Strux * pfs = sdh;
 	UT_return_val_if_fail (pfs, false);
 	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
 	UT_sint32 iEmbedDepth = 0;
-	for (pf_Frag * pf=static_cast<pf_Frag *>(const_cast<pf_Frag_Strux *>(pfs)); (pf); pf=pf->getNext())
+	for (pf_Frag * pf=pfs; (pf); pf=pf->getNext())
 	{
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
-			const pf_Frag_Strux * pfsTemp = static_cast<const pf_Frag_Strux *>(pf);
+			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
 			if(iEmbedDepth <= 0 && !m_pPieceTable->isFootnote(pf) &&
 									 !m_pPieceTable->isEndFootnote(pf))
 			{
@@ -4874,17 +4891,17 @@ pf_Frag * PD_Document::getFragFromPosition(PT_DocPosition docPos) const
 ///
 /// Return the sdh of type pts immediately after sdh
 ///
-bool PD_Document::getNextStruxOfType(PL_StruxDocHandle sdh,PTStruxType pts,
-					PL_StruxDocHandle * nextsdh)
+bool PD_Document::getNextStruxOfType(pf_Frag_Strux* sdh,PTStruxType pts,
+					pf_Frag_Strux* * nextsdh)
 {
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	pf_Frag_Strux * pfs = sdh;
 	UT_return_val_if_fail (pfs, false);
 	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
 	UT_sint32 iNest = 0;
-	for (const pf_Frag * pf=pfs; (pf); pf=pf->getNext())
+	for (pf_Frag * pf=pfs; (pf); pf=pf->getNext())
 		if (pf->getType() == pf_Frag::PFT_Strux)
 		{
-			const pf_Frag_Strux * pfsTemp = static_cast<const pf_Frag_Strux *>(pf);
+			pf_Frag_Strux * pfsTemp = static_cast<pf_Frag_Strux *>(pf);
 			if((pfsTemp->getStruxType() == PTX_SectionTable) && (pts != PTX_SectionTable))
 			{
 				iNest++;
@@ -5369,9 +5386,9 @@ bool	PD_Document::addStyleAttributes(const gchar * szStyleName, const gchar ** p
  * The method returns the style defined in a sdh. If there is no style it returns
  * NULL
  */
-PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
+PD_Style * PD_Document::getStyleFromSDH( pf_Frag_Strux* sdh)
 {
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	const pf_Frag_Strux * pfs = sdh;
 	PT_AttrPropIndex indexAP = pfs->getIndexAP();
 	const PP_AttrProp * pAP = NULL;
 	m_pPieceTable->getAttrProp(indexAP,&pAP);
@@ -5395,20 +5412,20 @@ PD_Style * PD_Document::getStyleFromSDH( PL_StruxDocHandle sdh)
 \param sdh The StruxDocHandle of the fragment where we start to look from.
 \returns PD_Style of the first Numbered Heading, otherwise NULL
 */
-PL_StruxDocHandle PD_Document::getPrevNumberedHeadingStyle(PL_StruxDocHandle sdh)
+pf_Frag_Strux* PD_Document::getPrevNumberedHeadingStyle(pf_Frag_Strux* sdh)
 {
-	const pf_Frag * pf = static_cast<const pf_Frag_Strux *>(sdh);
+	pf_Frag * pf = sdh;
 	bool bFound = false;
 	pf = pf->getPrev();
 	PD_Style * pStyle = NULL;
-	PL_StruxDocHandle foundSDH = NULL;
+	pf_Frag_Strux* foundSDH = NULL;
 	PD_Style * pBasedOn = NULL;
 	const char * szStyleName = NULL;
 	while(pf && !bFound)
 	{
 		if(pf->getType() == pf_Frag::PFT_Strux)
 		{
-			foundSDH = static_cast<PL_StruxDocHandle>(pf);
+			foundSDH = static_cast<pf_Frag_Strux*>(pf);
 			pStyle = getStyleFromSDH(foundSDH);
 			if(pStyle != NULL)
 			{
@@ -5488,12 +5505,12 @@ bool	PD_Document::setAllStyleAttributes(const gchar * szStyleName, const gchar *
 \param pos the document position to start from.
 \return the sdh of the strux found.
 */
-PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_DocPosition pos)
+pf_Frag_Strux* PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_DocPosition pos)
 {
-	PL_StruxDocHandle sdh = NULL;
+	pf_Frag_Strux* sdh = NULL;
 	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
-	const pf_Frag_Strux * pfs = NULL;
-	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(sdh);
+	pf_Frag_Strux * pfs = NULL;
+	pf_Frag * currentFrag = sdh;
 	bool bFound = false;
     while (currentFrag && currentFrag != m_pPieceTable->getFragments().getFirst() && !bFound)
 	{
@@ -5502,7 +5519,7 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_
 //
 // All this code is used to find if this strux has our style in it
 //
-			pfs = static_cast<const pf_Frag_Strux *> (currentFrag);
+			pfs = static_cast<pf_Frag_Strux *> (currentFrag);
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
@@ -5521,7 +5538,7 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_
 	}
 	if(bFound)
 	{
-		sdh = static_cast<PL_StruxDocHandle>(currentFrag);
+		sdh = static_cast<pf_Frag_Strux*>(currentFrag);
 	}
 	else
 	{
@@ -5537,12 +5554,12 @@ PL_StruxDocHandle PD_Document::findPreviousStyleStrux(const gchar * szStyle, PT_
 \param pos the document position to start from.
 \return the sdh of the strux found.
 */
-PL_StruxDocHandle PD_Document::findForwardStyleStrux(const gchar * szStyle, PT_DocPosition pos)
+pf_Frag_Strux* PD_Document::findForwardStyleStrux(const gchar * szStyle, PT_DocPosition pos)
 {
-	PL_StruxDocHandle sdh = NULL;
+	pf_Frag_Strux* sdh = NULL;
 	getStruxOfTypeFromPosition(pos,PTX_Block, &sdh);
-	const pf_Frag_Strux * pfs = NULL;
-	const pf_Frag * currentFrag = static_cast<const pf_Frag *>(sdh);
+	pf_Frag_Strux * pfs = NULL;
+	pf_Frag * currentFrag = sdh;
 	bool bFound = false;
     while (currentFrag != m_pPieceTable->getFragments().getLast() && !bFound)
 	{
@@ -5551,7 +5568,7 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const gchar * szStyle, PT_D
 //
 // All this code is used to find if this strux has our style in it
 //
-			pfs = static_cast<const pf_Frag_Strux *> (currentFrag);
+			pfs = static_cast<pf_Frag_Strux *> (currentFrag);
 			PT_AttrPropIndex indexAP = pfs->getIndexAP();
 			const PP_AttrProp * pAP = NULL;
 			m_pPieceTable->getAttrProp(indexAP,&pAP);
@@ -5570,7 +5587,7 @@ PL_StruxDocHandle PD_Document::findForwardStyleStrux(const gchar * szStyle, PT_D
 	}
 	if(bFound)
 	{
-		sdh = static_cast<PL_StruxDocHandle>(currentFrag);
+		sdh = static_cast<pf_Frag_Strux*>(currentFrag);
 	}
 	else
 	{
@@ -5714,9 +5731,9 @@ bool   PD_Document::updateDocForStyleChange(const gchar * szStyle,
 /*!
  * This method updates all the layouts associated with the document.
 */
-void  PD_Document::updateAllLayoutsInDoc( PL_StruxDocHandle sdh)
+void  PD_Document::updateAllLayoutsInDoc( pf_Frag_Strux* sdh)
 {
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	const pf_Frag_Strux * pfs = sdh;
 	PT_AttrPropIndex indexAP = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 	PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,
@@ -5887,13 +5904,13 @@ void PD_Document::addList(fl_AutoNum * pAutoNum)
 		m_vecLists.addItem(pAutoNum);
 }
 
-void PD_Document::listUpdate(PL_StruxDocHandle sdh )
+void PD_Document::listUpdate(pf_Frag_Strux* sdh )
 {
 	//
 	// Notify all views of a listupdate
 	//
 	UT_return_if_fail (sdh);
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	const pf_Frag_Strux * pfs = sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ListUpdate,pos,pAppIndex,pfs->getXID());
@@ -5902,13 +5919,13 @@ void PD_Document::listUpdate(PL_StruxDocHandle sdh )
 }
 
 
-void PD_Document::StopList(PL_StruxDocHandle sdh )
+void PD_Document::StopList(pf_Frag_Strux* sdh )
 {
 	//
 	// Notify all views of a stoplist
 	//
 	setHasListStopped(false);
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	const pf_Frag_Strux * pfs = sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_StopList,pos,pAppIndex,pfs->getXID());
@@ -6049,7 +6066,7 @@ bool PD_Document::fixListHierarchy(void)
 	}
 }
 
-void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
+void PD_Document::removeList(fl_AutoNum * pAutoNum, pf_Frag_Strux* sdh )
 {
 	UT_return_if_fail (pAutoNum);
 	UT_sint32 ndx = m_vecLists.findItem(pAutoNum);
@@ -6057,7 +6074,7 @@ void PD_Document::removeList(fl_AutoNum * pAutoNum, PL_StruxDocHandle sdh )
 	//
 	// Notify all views of a remove List
 	//
-	const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux *>(sdh);
+	const pf_Frag_Strux * pfs = sdh;
 	PT_AttrPropIndex pAppIndex = pfs->getIndexAP();
 	PT_DocPosition pos = getStruxPosition(sdh);
 	const PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_RemoveList,pos,pAppIndex,pfs->getXID());
@@ -6085,7 +6102,7 @@ bool  PD_Document::isDoingPaste(void)
 bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String & sInches)
 {
 	double width = m_docPageSize.Width(DIM_IN);
-	PL_StruxDocHandle sdhSec = getLastSectionSDH();
+	const pf_Frag_Strux* sdhSec = getLastSectionSDH();
 	const char * szLeftMargin = NULL;
 	const char * szRightMargin = NULL;
 
@@ -6750,10 +6767,9 @@ bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF)
 	return m_pPieceTable->insertFmtMarkBeforeFrag(pF);
 }
 
-bool PD_Document::changeStruxFormatNoUpdate(PTChangeFmt ptc ,PL_StruxDocHandle sdh,const gchar ** attributes)
+bool PD_Document::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux* sdh,const gchar ** attributes)
 {
-	pf_Frag_Strux * pfs = const_cast<pf_Frag_Strux *>(static_cast<const pf_Frag_Strux *>(sdh));
-	return m_pPieceTable->changeStruxFormatNoUpdate(ptc ,pfs,attributes);
+	return m_pPieceTable->changeStruxFormatNoUpdate(ptc ,sdh,attributes);
 }
 
 
@@ -8138,7 +8154,7 @@ bool PD_Document::getAttrProp(PT_AttrPropIndex apIndx, const PP_AttrProp ** ppAP
     pRevisions : [out] the representation of the rev. attribute associated with the AP; if
     the caller does not need this, the pointer can be set to null
 */
-bool PD_Document::getSpanAttrProp(PL_StruxDocHandle sdh, UT_uint32 offset, bool bLeftSide,
+bool PD_Document::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool bLeftSide,
 								  const PP_AttrProp ** ppAP,
 								  PP_RevisionAttr ** pRevisions,
 								  bool bShowRevisions, UT_uint32 iRevisionId,

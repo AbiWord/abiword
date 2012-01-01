@@ -671,7 +671,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 							//
 							// Get style of containing block
 							//
-							PL_StruxDocHandle sdh = NULL;
+							pf_Frag_Strux* sdh = NULL;
 							m_pDoc->getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
 							if(!sdh)
 							{

@@ -42,7 +42,7 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 //
 // First Find page number.
 //
-	PL_StruxDocHandle sdh = getBlock()->getStruxDocHandle();
+	pf_Frag_Strux* sdh = getBlock()->getStruxDocHandle();
 	PD_Document * pDoc = getBlock()->getDocument();
 	PT_DocPosition pos = pDoc->getStruxPosition(sdh)+1;
 	FL_DocLayout * pLayout = getBlock()->getDocLayout();

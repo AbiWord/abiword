@@ -40,6 +40,7 @@
 // fwd. decl.
 class fl_BlockLayout;
 class fl_Layout;
+class pf_Frag_Strux;
 class PD_Document;
 class FV_View;
 class UT_UTF8String;
@@ -49,7 +50,7 @@ class ABI_EXPORT fl_AutoNum
 public:
 	fl_AutoNum(	UT_uint32 id,
 				UT_uint32 start,
-				PL_StruxDocHandle pItem,
+				pf_Frag_Strux* pItem,
 				fl_AutoNum * pParent,
 				const gchar * lDelim,
 				const gchar * lDecimal,
@@ -70,16 +71,16 @@ public:
 
 	void						fixHierarchy(void);
 
-	const UT_UCSChar *			getLabel(PL_StruxDocHandle) const;
-	void						addItem(PL_StruxDocHandle pItem);
+	const UT_UCSChar *			getLabel(pf_Frag_Strux*) const;
+	void						addItem(pf_Frag_Strux* pItem);
 	FL_ListType					getType() const;
-	UT_uint32					getValue(PL_StruxDocHandle) const;
+	UT_uint32					getValue(pf_Frag_Strux*) const;
 	UT_uint32					getLevel() const { return m_iLevel; }
 	UT_uint32					getNumLabels() const;
 	bool                        checkReference(fl_AutoNum * pAuto);
 
 	void						setLevel(UT_uint32 level) { m_iLevel = level; }
-	UT_sint32					getPositionInList( PL_StruxDocHandle pItem, UT_uint32 depth) const;
+	UT_sint32					getPositionInList( pf_Frag_Strux* pItem, UT_uint32 depth) const;
 	void						setListType(FL_ListType lType);
 	void						setDelim(const gchar * pszDelim);
 	void						setDelim(const std::string & delim)
@@ -99,30 +100,30 @@ public:
 	UT_uint32					getStartValue32() const;
 	void						setStartValue(UT_uint32 start);
 
-	void						insertFirstItem(PL_StruxDocHandle pItem,
-												PL_StruxDocHandle pLast,
+	void						insertFirstItem(pf_Frag_Strux* pItem,
+												pf_Frag_Strux* pLast,
 												UT_uint32 depth,
 												bool bDoFix=true);
-	void						insertItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pBefore, bool bDoFix = true);
-	void						prependItem(PL_StruxDocHandle pItem, PL_StruxDocHandle pAfter, bool bDoFix = true);
-	void						removeItem(PL_StruxDocHandle pItem);
-	PL_StruxDocHandle			getParentItem() const;
-	void						setParentItem(PL_StruxDocHandle pItem);
-	bool                                 isContainedByList(PL_StruxDocHandle pItem) const;
-	PL_StruxDocHandle			getNthBlock(UT_sint32 i) const;
-	PL_StruxDocHandle			getPrevInList(PL_StruxDocHandle pItem) const;
+	void						insertItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pBefore, bool bDoFix = true);
+	void						prependItem(pf_Frag_Strux* pItem, pf_Frag_Strux* pAfter, bool bDoFix = true);
+	void						removeItem(pf_Frag_Strux* pItem);
+	pf_Frag_Strux*			getParentItem() const;
+	void						setParentItem(pf_Frag_Strux* pItem);
+	bool                                 isContainedByList(pf_Frag_Strux* pItem) const;
+	pf_Frag_Strux*			getNthBlock(UT_sint32 i) const;
+	pf_Frag_Strux*			getPrevInList(pf_Frag_Strux* pItem) const;
 
-	bool					isItem(PL_StruxDocHandle pItem) const;
+	bool					isItem(pf_Frag_Strux* pItem) const;
 	bool						doesItemHaveLabel(fl_BlockLayout * pItem) const;
 	bool					isEmpty(void) const;
-	PL_StruxDocHandle			getFirstItem(void) const;
-	PL_StruxDocHandle			getLastItem(void) const;
-	bool						isLastOnLevel(PL_StruxDocHandle pItem) const;
+	pf_Frag_Strux*			getFirstItem(void) const;
+	pf_Frag_Strux*			getLastItem(void) const;
+	bool						isLastOnLevel(pf_Frag_Strux* pItem) const;
 
 	fl_AutoNum *				getParent(void) const { return m_pParent; }
 	fl_AutoNum *				getActiveParent(void) const;
-	fl_AutoNum *				getAutoNumFromSdh(PL_StruxDocHandle sdh);
-	const fl_AutoNum *			getAutoNumFromSdh(PL_StruxDocHandle sdh) const;
+	fl_AutoNum *				getAutoNumFromSdh(pf_Frag_Strux* sdh);
+	const fl_AutoNum *			getAutoNumFromSdh(pf_Frag_Strux* sdh) const;
 	void						fixListOrder(void);
 	void						markAsDirty(void);
 	void						findAndSetParentItem(void);
@@ -140,7 +141,7 @@ public:
 											  bool bEscapeXML) const;
 	PD_Document *               getDoc(void) const
 	{return m_pDoc;}
-	PL_StruxDocHandle           getLastItemInHeiracy(void) const;
+	pf_Frag_Strux*           getLastItemInHeiracy(void) const;
 protected:
 	void                        _setParent(fl_AutoNum * pParent);
 	void                        _setParentID(UT_uint32 iParentID);
@@ -148,13 +149,13 @@ protected:
 	void						_getLabelstr(	UT_UCSChar labelStr[],
 												UT_uint32 * insPoint,
 												UT_uint32 depth,
-												PL_StruxDocHandle pLayout) const;
-	bool						_updateItems(UT_sint32 start, PL_StruxDocHandle notMe );
+												pf_Frag_Strux* pLayout) const;
+	bool						_updateItems(UT_sint32 start, pf_Frag_Strux* notMe );
 	UT_uint32					_getLevelValue(fl_AutoNum * pAutoNum) const;
 
 	fl_AutoNum *				m_pParent;
 
-	UT_Vector					m_pItems;
+	UT_GenericVector<pf_Frag_Strux*> m_pItems;
 	PD_Document *               m_pDoc;
 	FV_View *				    m_pView;
 	FL_ListType					m_List_Type;
@@ -170,7 +171,7 @@ protected:
 	gchar					m_pszDelim[80];
 	gchar					m_pszIndent[80];
 	bool						m_bWordMultiStyle;
-	PL_StruxDocHandle			m_pParentItem;
+	pf_Frag_Strux*			m_pParentItem;
 };
 
 #endif

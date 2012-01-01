@@ -204,8 +204,8 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	PL_StruxDocHandle cellSDH,tableSDH,curSDH,endTableSDH;
-	PL_StruxDocHandle prevCellSDH1,prevCellSDH2;
+	pf_Frag_Strux* cellSDH,*tableSDH,*curSDH,*endTableSDH;
+	pf_Frag_Strux* prevCellSDH1,*prevCellSDH2;
 	PT_DocPosition posTable,posCell,posFirstInsert,posEndTable;
 	posFirstInsert = 0;
 	UT_sint32 iLeft,iRight,iTop,iBot;
@@ -742,7 +742,7 @@ void  FV_View::cmdSelectTOC(UT_sint32 x, UT_sint32 y)
  */
 bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
 {
-	PL_StruxDocHandle cellSDH,tableSDH;
+	pf_Frag_Strux* cellSDH,*tableSDH;
 	PT_DocPosition posTable;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	UT_sint32 Left,Right,Top,Bot;
@@ -835,7 +835,7 @@ bool FV_View::cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType)
 	{
 	    return false;
 	}
-  	PL_StruxDocHandle tableSDH;
+  	pf_Frag_Strux* tableSDH;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posSource,PTX_SectionTable,&tableSDH);
 	UT_return_val_if_fail(bRes, false);
 	PT_DocPosition posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
@@ -937,7 +937,7 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 	getCellParams(posDestination,&dLeft,&dRight,&dTop,&dBot);
 
 	PT_DocPosition posTable,posWork;
-	PL_StruxDocHandle tableSDH;
+	pf_Frag_Strux* tableSDH;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posSource,PTX_SectionTable,&tableSDH);
 	UT_return_val_if_fail(bRes, false);
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
@@ -1276,9 +1276,9 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 // top and Bottom attach
 //
 			UT_sint32 diff = dBot - dTop -1;
-			PL_StruxDocHandle sdhCell = NULL;
-			PL_StruxDocHandle sdhNextCell = NULL;
-			PL_StruxDocHandle sdhEndTable = NULL;
+			pf_Frag_Strux* sdhCell = NULL;
+			pf_Frag_Strux* sdhNextCell = NULL;
+			pf_Frag_Strux* sdhEndTable = NULL;
 			PT_DocPosition posEndTable = 0;
 			PT_DocPosition posCell = 0;
 			bRes = m_pDoc->getStruxOfTypeFromPosition(posDestination,PTX_SectionCell,&sdhCell);
@@ -1345,9 +1345,9 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 			UT_sint32 diff = dRight - dLeft -1;
 			UT_sint32 origLeft = dLeft;
 			UT_sint32 origRight = dRight;
-			PL_StruxDocHandle sdhCell = NULL;
+			pf_Frag_Strux* sdhCell = NULL;
 			PT_DocPosition posCell = 0;
-			UT_GenericVector<PL_StruxDocHandle> vecCells;
+			UT_GenericVector<pf_Frag_Strux*> vecCells;
 			posCell = findCellPosAt(posTable, dTop, dLeft)+1;
 			m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&sdhCell);
 			vecCells.addItem(sdhCell);
@@ -1410,10 +1410,10 @@ bool FV_View::cmdAdvanceNextPrevCell(bool bGoNext)
 	{
 		return false;
 	}
-	PL_StruxDocHandle sdhCell = NULL;
-	PL_StruxDocHandle sdhNextPrevCell = NULL;
-	PL_StruxDocHandle sdhTable = NULL;
-	PL_StruxDocHandle sdhEndTable = NULL;
+	pf_Frag_Strux* sdhCell = NULL;
+	pf_Frag_Strux* sdhNextPrevCell = NULL;
+	pf_Frag_Strux* sdhTable = NULL;
+	pf_Frag_Strux* sdhEndTable = NULL;
 	PT_DocPosition posTable = 0;
 	PT_DocPosition posEndTable = 0;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionTable,&sdhTable);
@@ -1545,10 +1545,12 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 //
 // Handle special case of not putting a table immediately after a section break
 //
-	PL_StruxDocHandle secSDH = NULL;
+	pf_Frag_Strux* secSDH = NULL;
 	UT_DebugOnly<bool> bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
-	UT_ASSERT(bres);
-	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",m_pDoc->getStruxPosition(secSDH),pointBreak));
+#if DEBUG
+	PT_DocPosition secPos2 = m_pDoc->getStruxPosition(secSDH);
+	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos2,pointBreak));
+#endif
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
 	UT_ASSERT(bres);
@@ -1604,8 +1606,8 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 // Done! Now fill it.
 //
 	posTableStart +=3;
-	PL_StruxDocHandle sdhTable = NULL;
-	PL_StruxDocHandle sdhCell = NULL;
+	pf_Frag_Strux* sdhTable = NULL;
+	pf_Frag_Strux* sdhCell = NULL;
 	bool b =m_pDoc->getStruxOfTypeFromPosition(posTableStart,PTX_SectionTable,&sdhTable);
 	UT_return_val_if_fail(b,false);
 	PT_DocPosition posCell = posTableStart;
@@ -1831,7 +1833,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH,prevCellSDH;
+	pf_Frag_Strux* cellSDH,*tableSDH,*endTableSDH,*endCellSDH,*prevCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell,posPrevCell,posFirstInsert;
 	UT_sint32 numColsForInsertion = getNumColumnsInSelection();
 	if(numColsForInsertion == 0)
@@ -2293,7 +2295,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
+	pf_Frag_Strux* cellSDH,*tableSDH,*endTableSDH,*endCellSDH;
 	PT_DocPosition posTable,posCell,posEndCell;
 	UT_sint32 numRowsForInsertion = getNumRowsInSelection();
 	if(numRowsForInsertion == 0)
@@ -2590,7 +2592,7 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
+	pf_Frag_Strux* cellSDH,*tableSDH,*endTableSDH,*endCellSDH;
 	PT_DocPosition posTable,posCell2;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posCol, &iLeft, &iRight,&iTop,&iBot);
@@ -2803,7 +2805,7 @@ bool FV_View::cmdDeleteTable(PT_DocPosition posTable, bool bDontNotify)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	PL_StruxDocHandle tableSDH,endTableSDH;
+	pf_Frag_Strux* tableSDH,*endTableSDH;
 	PT_DocPosition posStartTable,posEndTable;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posTable,PTX_SectionTable,&tableSDH);
 	if(!bRes)
@@ -2871,7 +2873,7 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	PL_StruxDocHandle cellSDH,tableSDH,endTableSDH,endCellSDH;
+	pf_Frag_Strux* cellSDH,*tableSDH,*endTableSDH,*endCellSDH;
 	PT_DocPosition posTable,posCell2;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
@@ -3091,7 +3093,7 @@ bool FV_View::cmdDeleteCell(PT_DocPosition /*cellPos*/ )
   UT_ASSERT(UT_NOT_IMPLEMENTED);
   return true ;
 #else
-	PL_StruxDocHandle cellSDH;
+	pf_Frag_Strux* cellSDH;
 	const char * pszLeftAttach =NULL;
 	const char * pszTopAttach = NULL;
 	UT_sint32 iLeft =-999;
@@ -3290,10 +3292,13 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 //
 // Handle special case of not putting a table immediately after a section break
 //
-	PL_StruxDocHandle secSDH = NULL;
+	pf_Frag_Strux* secSDH = NULL;
 	UT_DebugOnly<bool> bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
+#if DEBUG
 	UT_ASSERT(bres);
-	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",m_pDoc->getStruxPosition(secSDH),pointBreak));
+	PT_DocPosition secPos2 = m_pDoc->getStruxPosition(secSDH);
+	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos2,pointBreak));
+#endif
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
 	UT_ASSERT(bres);
@@ -3301,7 +3306,8 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 	if(secSDH != NULL)
 	{
 		PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
-		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));	}
+		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));	
+	}
 #endif
 //
 // Handle special case of not putting a table immediately after an end text box 
@@ -3876,7 +3882,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			fl_AutoNum * pAuto2 = nBlock->getAutoNum();
 			if(pAuto2 != NULL )
 			{
-				PL_StruxDocHandle sdh = nBlock->getStruxDocHandle();
+				pf_Frag_Strux* sdh = nBlock->getStruxDocHandle();
 				if((bisList == true) && (pAuto2->getFirstItem() == sdh || pAuto2->getLastItem() == sdh))
 				{
 					m_pDoc->StopList(sdh);
@@ -4820,8 +4826,8 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 		pAL = getAnnotationLayout(aID);
 		if(!pAL)
 		  return false;
-		PL_StruxDocHandle sdhAnn = pAL->getStruxDocHandle();
-		PL_StruxDocHandle sdhEnd = NULL;
+		pf_Frag_Strux* sdhAnn = pAL->getStruxDocHandle();
+		pf_Frag_Strux* sdhEnd = NULL;
 		getDocument()->getNextStruxOfType(sdhAnn,PTX_EndAnnotation, &sdhEnd);
 		
 		UT_return_val_if_fail(sdhEnd != NULL, false);

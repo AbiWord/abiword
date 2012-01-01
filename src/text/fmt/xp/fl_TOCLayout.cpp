@@ -121,7 +121,7 @@ UT_UTF8String  TOCEntry::getFullLabel(void)
 	return sFull;
 }
 
-fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout) 
+fl_TOCLayout::fl_TOCLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, pf_Frag_Strux* sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout) 
  	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_TOC,FL_CONTAINER_TOC,PTX_SectionTOC,pMyContainerLayout),
 	  m_bNeedsRebuild(false),
 	  m_bNeedsFormat(true),
@@ -177,7 +177,7 @@ fl_TOCLayout::~fl_TOCLayout()
 */
 PT_DocPosition fl_TOCLayout::getDocPosition(void) 
 {
-	PL_StruxDocHandle sdh = getStruxDocHandle();
+	pf_Frag_Strux* sdh = getStruxDocHandle();
     return 	m_pLayout->getDocument()->getStruxPosition(sdh);
 }
 
@@ -211,8 +211,8 @@ void fl_TOCLayout::setSelected(bool bIsSelected)
 UT_uint32 fl_TOCLayout::getLength(void)
 {
 	PT_DocPosition startPos = getDocPosition();
-	PL_StruxDocHandle sdhEnd = NULL;
-	PL_StruxDocHandle sdhStart = getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = NULL;
+	pf_Frag_Strux* sdhStart = getStruxDocHandle();
 	UT_DebugOnly<bool> bres;
 	bres = m_pLayout->getDocument()->getNextStruxOfType(sdhStart,PTX_EndTOC,&sdhEnd);
 	UT_ASSERT(bres && sdhEnd);
@@ -224,9 +224,9 @@ UT_uint32 fl_TOCLayout::getLength(void)
 
 bool fl_TOCLayout::bl_doclistener_insertEndTOC(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
@@ -1151,7 +1151,7 @@ bool fl_TOCLayout::_isStyleInTOC(UT_UTF8String & sStyle, UT_UTF8String & sTOCSty
 bool fl_TOCLayout::isBlockInTOC(fl_BlockLayout * pBlock)
 {
 	TOCEntry * pEntry = NULL;
-	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
+	pf_Frag_Strux* sdh = pBlock->getStruxDocHandle();
 	UT_sint32 i = 0;
 	for(i=0; i< m_vecEntries.getItemCount(); i++)
 	{
@@ -1172,7 +1172,7 @@ UT_UTF8String & fl_TOCLayout::getTOCListLabel(fl_BlockLayout * pBlock)
 	static UT_UTF8String str;
 	str.clear();
 	TOCEntry * pEntry = NULL;
-	PL_StruxDocHandle sdh = pBlock->getStruxDocHandle();
+	pf_Frag_Strux* sdh = pBlock->getStruxDocHandle();
 	UT_sint32 i = 0;
 	bool bFound = false;
 	for(i=0; i< m_vecEntries.getItemCount(); i++)
@@ -2372,7 +2372,7 @@ bool fl_TOCListener::populate(PL_StruxFmtHandle sfh,
 	return bResult;
 }
 
-bool fl_TOCListener::populateStrux(PL_StruxDocHandle sdh,
+bool fl_TOCListener::populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord * pcr,
 									  PL_StruxFmtHandle * psfh)
 {
@@ -2427,9 +2427,9 @@ bool fl_TOCListener::change(PL_StruxFmtHandle /*sfh*/,
 
 bool fl_TOCListener::insertStrux(PL_StruxFmtHandle /*sfh*/,
 									const PX_ChangeRecord * /*pcr*/,
-									PL_StruxDocHandle /*sdh*/,
+									pf_Frag_Strux* /*sdh*/,
 									PL_ListenerId /*lid*/,
-									void (* /*pfnBindHandles*/)(PL_StruxDocHandle sdhNew,
+									void (* /*pfnBindHandles*/)(pf_Frag_Strux* sdhNew,
 																PL_ListenerId lid,
 																PL_StruxFmtHandle sfhNew))
 {

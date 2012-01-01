@@ -72,7 +72,7 @@ static void s_background_properties (const char * pszBgStyle, const char * pszBg
 									 const char * pszBackgroundColor,
 									 PP_PropertyMap::Background & background);
 
-fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, 
+fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh, 
 			       PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_TABLE,FL_CONTAINER_TABLE,PTX_SectionTable, pMyContainerLayout),
 	  m_bNeedsRebuild(false),
@@ -891,9 +891,9 @@ void fl_TableLayout::updateTable(void)
 
 bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* /*pLBlock*/,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
@@ -939,9 +939,9 @@ bool fl_TableLayout::bl_doclistener_insertBlock(fl_ContainerLayout* /*pLBlock*/,
 
 bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * pcrx,
 											   SectionType iType,
-											   PL_StruxDocHandle sdh,
+											   pf_Frag_Strux* sdh,
 											   PL_ListenerId lid,
-											   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	   PL_ListenerId lid,
 																	   PL_StruxFmtHandle sfhNew))
 {
@@ -994,9 +994,9 @@ bool fl_TableLayout::bl_doclistener_insertTable( const PX_ChangeRecord_Strux * p
 
 bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
@@ -1047,9 +1047,9 @@ bool fl_TableLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 
 bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
 												   const PX_ChangeRecord_Strux * pcrx,
-												   PL_StruxDocHandle sdh,
+												   pf_Frag_Strux* sdh,
 												   PL_ListenerId lid,
-												   void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+												   void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
@@ -1838,8 +1838,8 @@ PT_DocPosition fl_TableLayout::getPosition(bool bActualBlockPosition /* = false 
  */
 UT_uint32 fl_TableLayout::getLength(void)
 {
-	PL_StruxDocHandle sdhTab = getStruxDocHandle();
-	PL_StruxDocHandle sdhEnd = m_pDoc-> getEndTableStruxFromTableSDH(sdhTab);
+	pf_Frag_Strux* sdhTab = getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = m_pDoc-> getEndTableStruxFromTableSDH(sdhTab);
 	PT_DocPosition posEnd = 0;
 	PT_DocPosition posStart = 0;
 	UT_uint32 len = 0;
@@ -1911,7 +1911,7 @@ void fl_TableLayout::_purgeLayout(void)
 
 //------------------------------------------------------------------
 
-fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
+fl_CellLayout::fl_CellLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout)
 	: fl_SectionLayout(pLayout, sdh, indexAP, FL_SECTION_CELL,FL_CONTAINER_CELL,PTX_SectionCell,pMyContainerLayout),
 	  m_bNeedsRebuild(false),
 	  m_iLeftOffset(0),
@@ -2087,7 +2087,7 @@ bool fl_CellLayout::isCellSelected(void)
 	FV_View* pView = m_pLayout->getView();
 	PT_DocPosition posStartCell = 0;
 	PT_DocPosition posEndCell =0;
-	PL_StruxDocHandle sdhEnd,sdhStart;
+	pf_Frag_Strux* sdhEnd, *sdhStart;
 
 	sdhStart = getStruxDocHandle();
 	posStartCell = m_pDoc->getStruxPosition(sdhStart) +1;
@@ -2132,9 +2132,9 @@ void fl_CellLayout::checkAndAdjustCellSize(void)
 	
 bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
@@ -2174,9 +2174,9 @@ bool fl_CellLayout::bl_doclistener_insertCell(fl_ContainerLayout* pCell,
 	
 bool fl_CellLayout::bl_doclistener_insertEndCell(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
@@ -2800,8 +2800,8 @@ void fl_CellLayout::_localCollapse(void)
  */
 UT_uint32 fl_CellLayout::getLength(void)
 {
-	PL_StruxDocHandle sdhCell = getStruxDocHandle();
-	PL_StruxDocHandle sdhEnd = m_pDoc->getEndCellStruxFromCellSDH(sdhCell);
+	pf_Frag_Strux* sdhCell = getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = m_pDoc->getEndCellStruxFromCellSDH(sdhCell);
 	PT_DocPosition posEnd = 0;
 	PT_DocPosition posStart = 0;
 	UT_uint32 len = 0;

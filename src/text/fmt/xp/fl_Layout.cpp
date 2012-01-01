@@ -29,7 +29,9 @@
 #include "po_Bookmark.h"
 #include "pp_AttrProp.h"
 #include "pf_Frag.h"
-fl_Layout::fl_Layout(PTStruxType type, PL_StruxDocHandle sdh) :
+#include "pf_Frag_Strux.h"
+
+fl_Layout::fl_Layout(PTStruxType type, pf_Frag_Strux* sdh) :
 	m_type(type),
 	m_apIndex(0),
 	m_pAutoNum(NULL),
@@ -48,7 +50,7 @@ fl_Layout::~fl_Layout()
 {
 }
 
-PL_StruxDocHandle fl_Layout::getStruxDocHandle(void) const
+pf_Frag_Strux* fl_Layout::getStruxDocHandle(void) const
 {
 	return m_sdh;
 }

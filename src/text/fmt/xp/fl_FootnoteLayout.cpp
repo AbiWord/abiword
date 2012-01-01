@@ -56,7 +56,7 @@
 #include "fp_TableContainer.h"
 #include "fv_View.h"
 
-fl_EmbedLayout::fl_EmbedLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout, SectionType iSecType,fl_ContainerType myType,PTStruxType myStruxType)
+fl_EmbedLayout::fl_EmbedLayout(FL_DocLayout* pLayout, fl_DocSectionLayout* pDocSL, pf_Frag_Strux* sdh, PT_AttrPropIndex indexAP, fl_ContainerLayout * pMyContainerLayout, SectionType iSecType,fl_ContainerType myType,PTStruxType myStruxType)
  	: fl_SectionLayout(pLayout, sdh, indexAP, iSecType,myType,myStruxType,pMyContainerLayout),
 	  m_bNeedsRebuild(false),
 	  m_bNeedsFormat(true),
@@ -79,7 +79,7 @@ fl_EmbedLayout::~fl_EmbedLayout()
 */
 PT_DocPosition fl_EmbedLayout::getDocPosition(void) 
 {
-	PL_StruxDocHandle sdh = getStruxDocHandle();
+	pf_Frag_Strux* sdh = getStruxDocHandle();
 	UT_return_val_if_fail( m_pLayout, 0 );
     return 	m_pLayout->getDocument()->getStruxPosition(sdh);
 }
@@ -111,8 +111,8 @@ UT_uint32 fl_EmbedLayout::getLength(void)
 {
 	UT_return_val_if_fail( m_pLayout, 0 );
 	PT_DocPosition startPos = getDocPosition();
-	PL_StruxDocHandle sdhEnd = NULL;
-	PL_StruxDocHandle sdhStart = getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = NULL;
+	pf_Frag_Strux* sdhStart = getStruxDocHandle();
 	UT_DebugOnly<bool> bres;
 	if(getContainerType() == FL_CONTAINER_FOOTNOTE)
 	{
@@ -143,9 +143,9 @@ UT_uint32 fl_EmbedLayout::getLength(void)
 
 bool fl_EmbedLayout::bl_doclistener_insertEndEmbed(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew))
 {
@@ -334,7 +334,7 @@ void fl_EmbedLayout::_purgeLayout(void)
 
 fl_FootnoteLayout::fl_FootnoteLayout(FL_DocLayout* pLayout, 
 									 fl_DocSectionLayout* pDocSL, 
-									 PL_StruxDocHandle sdh, 
+									 pf_Frag_Strux* sdh, 
 									 PT_AttrPropIndex indexAP, 
 									 fl_ContainerLayout * pMyContainerLayout)
  	: fl_EmbedLayout(pLayout, 
@@ -587,7 +587,7 @@ void fl_FootnoteLayout::collapse(void)
 
 fl_AnnotationLayout::fl_AnnotationLayout(FL_DocLayout* pLayout, 
 									 fl_DocSectionLayout* pDocSL, 
-									 PL_StruxDocHandle sdh, 
+									 pf_Frag_Strux* sdh, 
 									 PT_AttrPropIndex indexAP, 
 									 fl_ContainerLayout * pMyContainerLayout)
  	: fl_EmbedLayout(pLayout, 
@@ -910,7 +910,7 @@ void fl_AnnotationLayout::collapse(void)
 
 fl_EndnoteLayout::fl_EndnoteLayout(FL_DocLayout* pLayout, 
 								   fl_DocSectionLayout* pDocSL, 
-								   PL_StruxDocHandle sdh, 
+								   pf_Frag_Strux* sdh, 
 								   PT_AttrPropIndex indexAP, 
 								   fl_ContainerLayout * pMyContainerLayout)
  	: fl_EmbedLayout(pLayout, 

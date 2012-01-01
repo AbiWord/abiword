@@ -30,6 +30,7 @@
 #include "pl_Listener.h"
 #include "ut_debugmsg.h"
 
+class pf_Frag_Strux;
 class fl_BlockLayout;
 
 // We have one fl_FootnoteLayout for each footnote.  They all
@@ -49,7 +50,7 @@ class ABI_EXPORT fl_EmbedLayout : public fl_SectionLayout
 public:
 	fl_EmbedLayout(FL_DocLayout* pLayout,
 				   fl_DocSectionLayout * pDocSL, 
-				   PL_StruxDocHandle sdh, 
+				   pf_Frag_Strux* sdh, 
 				   PT_AttrPropIndex ap, 
 				   fl_ContainerLayout * pMyContainerLayout,
 				   SectionType iSecType,
@@ -64,9 +65,9 @@ public:
 	virtual bool    doclistener_deleteEndEmbed(const PX_ChangeRecord_Strux * pcrx);
 	virtual bool    bl_doclistener_insertEndEmbed(fl_ContainerLayout*,
 											  const PX_ChangeRecord_Strux * pcrx,
-											  PL_StruxDocHandle sdh,
+											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
-											  void (* pfnBindHandles)(PL_StruxDocHandle sdhNew,
+											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
 																	  PL_ListenerId lid,
 																	  PL_StruxFmtHandle sfhNew));
 
@@ -112,7 +113,7 @@ class ABI_EXPORT fl_FootnoteLayout : public fl_EmbedLayout
 public:
 	fl_FootnoteLayout(FL_DocLayout* pLayout, 
 					  fl_DocSectionLayout * pDocSL, 
-					  PL_StruxDocHandle sdh, 
+					  pf_Frag_Strux* sdh, 
 					  PT_AttrPropIndex ap, 
 					  fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_FootnoteLayout();
@@ -138,7 +139,7 @@ class ABI_EXPORT fl_EndnoteLayout : public fl_EmbedLayout
 	friend class fp_EndnoteContainer;
 
 public:
-	fl_EndnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout * pDocSL, PL_StruxDocHandle sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
+	fl_EndnoteLayout(FL_DocLayout* pLayout, fl_DocSectionLayout * pDocSL, pf_Frag_Strux* sdh, PT_AttrPropIndex ap, fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_EndnoteLayout();
 
 	virtual void		     format(void);
@@ -165,7 +166,7 @@ class ABI_EXPORT fl_AnnotationLayout : public fl_EmbedLayout
 public:
 	fl_AnnotationLayout(FL_DocLayout* pLayout, 
 					  fl_DocSectionLayout * pDocSL, 
-					  PL_StruxDocHandle sdh, 
+					  pf_Frag_Strux* sdh, 
 					  PT_AttrPropIndex ap, 
 					  fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_AnnotationLayout();

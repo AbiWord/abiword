@@ -1740,7 +1740,7 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 	UT_ASSERT( m_TableControl.getNestDepth() < 2);
 	PT_DocPosition posEnd=0;
 	getDoc()->getBounds(true,posEnd); // clean frags!
-	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
+	pf_Frag_Strux* sdh = getDoc()->getLastStruxOfType(PTX_SectionTable);
 	UT_DEBUGMSG(("SEVIOR: Table strux sdh is %p \n",sdh));
 	getTable()->setTableSDH(sdh);
 	getTable()->OpenCell();
@@ -1847,9 +1847,9 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 // below
 //
 				UT_sint32 numRows = pPaste->m_iNumRows;
-				PL_StruxDocHandle sdhCell = NULL;
-				PL_StruxDocHandle sdhTable = NULL;
-				PL_StruxDocHandle sdhEndTable = NULL;
+				pf_Frag_Strux* sdhCell = NULL;
+				pf_Frag_Strux* sdhTable = NULL;
+				pf_Frag_Strux* sdhEndTable = NULL;
 				bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
 				PT_DocPosition posTable = getDoc()->getStruxPosition(sdhTable);
 				UT_ASSERT(b);
@@ -1934,7 +1934,7 @@ void IE_Imp_RTF::CloseTable(bool bForce /* = false */)
 // Need this one for dp_Instructions. Sevior
 //
 			getDoc()->insertStruxNoUpdateBefore(m_lastCellSDH,PTX_Block,NULL);
-			PL_StruxDocHandle cellSDH = m_lastCellSDH;
+			pf_Frag_Strux* cellSDH = m_lastCellSDH;
 			getDoc()->deleteStruxNoUpdate(cellSDH);
 			m_bEndTableOpen = true;
 		}
@@ -1950,7 +1950,7 @@ void IE_Imp_RTF::CloseTable(bool bForce /* = false */)
 	{
 		if(m_lastCellSDH != NULL )
 		{
-			PL_StruxDocHandle cellSDH = m_lastCellSDH;
+			pf_Frag_Strux* cellSDH = m_lastCellSDH;
 			getDoc()->deleteStruxNoUpdate(cellSDH);
 			m_lastCellSDH = NULL;
 		}
@@ -1962,7 +1962,7 @@ void IE_Imp_RTF::CloseTable(bool bForce /* = false */)
 	{
 		if(m_lastCellSDH != NULL )
 		{
-			PL_StruxDocHandle cellSDH = m_lastCellSDH;
+			pf_Frag_Strux* cellSDH = m_lastCellSDH;
 			getDoc()->deleteStruxNoUpdate(cellSDH);
 			m_lastCellSDH = NULL;
 		}
@@ -2035,7 +2035,7 @@ void IE_Imp_RTF::HandleCell(void)
 	{
 		OpenTable();
 	}
-	PL_StruxDocHandle sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
+	pf_Frag_Strux* sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
 	ie_imp_cell * pCell = getTable()->getNthCellOnRow(getTable()->getPosOnRow());
 	UT_return_if_fail(sdh);
 	if(!pCell)
@@ -2070,7 +2070,7 @@ void IE_Imp_RTF::HandleCell(void)
 // Look to see if this is just has a cell/endCell with no content. If so
 // repair it.
 //
-		PL_StruxDocHandle sdhEndCell = reinterpret_cast<PL_StruxDocHandle>(getDoc()->getLastStruxOfType(PTX_EndCell));
+		pf_Frag_Strux* sdhEndCell = getDoc()->getLastStruxOfType(PTX_EndCell);
 		if(getDoc()->isStruxBeforeThis(sdhEndCell,PTX_SectionCell))
 		{
 			UT_DEBUGMSG(("Insert Block before frag 1 \n"));
@@ -6955,7 +6955,7 @@ UT_uint32 IE_Imp_RTF::mapID(UT_uint32 id)
 				fl_AutoNum * pMapAuto = NULL;
 				UT_uint32 nLists = getDoc()->getListsCount();
 				UT_uint32 highestLevel = 0;
-				PL_StruxDocHandle sdh;
+				pf_Frag_Strux* sdh;
 //
 // Get the List Type
 //
@@ -7697,7 +7697,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			m_dposPaste++;
 			if(m_posSavedDocPosition > 0)
 				m_posSavedDocPosition++;
-			PL_StruxDocHandle sdh_cur;
+			pf_Frag_Strux* sdh_cur;
 			UT_uint32 j;
 			fl_AutoNum * pAuto = getDoc()->getListByID(id);
 			if(pAuto == NULL)
@@ -7764,7 +7764,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			//
 			// Now check if this strux has associated list element. If so stop the list!
 			//
-			PL_StruxDocHandle sdh = NULL;
+			pf_Frag_Strux* sdh = NULL;
 			getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh);
 			UT_uint32 nLists = getDoc()->getListsCount();
 			bool bisListItem = false;
@@ -10127,8 +10127,8 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 	
 	UT_DEBUGMSG(("RTF_Import: Paste: Tables props are: %s \n",sProps.c_str()));
 	bool bIsPasteIntoSame = false;
-	PL_StruxDocHandle sdhTable = NULL;
-	PL_StruxDocHandle sdhEndTable = NULL;
+	pf_Frag_Strux* sdhTable = NULL;
+	pf_Frag_Strux* sdhEndTable = NULL;
 	bool bFound = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
 	PT_DocPosition posTable = 0;
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -10165,7 +10165,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 					UT_DEBUGMSG(("Paste Whole Row into same Table!!!!! \n"));
 					bIsPasteIntoSame = true;
 					pPaste->m_bPasteAfterRow = true;
-					PL_StruxDocHandle sdhCell = NULL;
+					pf_Frag_Strux* sdhCell = NULL;
 					bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionCell,&sdhCell);
 					UT_return_val_if_fail(b,false);
 					const char * szTop = NULL;
@@ -10276,9 +10276,9 @@ bool IE_Imp_RTF:: HandleAbiEndTable(void)
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		UT_sint32 numRows = pPaste->m_iCurTopCell -pPaste->m_iRowNumberAtPaste;
-		PL_StruxDocHandle sdhCell = NULL;
-		PL_StruxDocHandle sdhTable = NULL;
-		PL_StruxDocHandle sdhEndTable = NULL;
+		pf_Frag_Strux* sdhCell = NULL;
+		pf_Frag_Strux* sdhTable = NULL;
+		pf_Frag_Strux* sdhEndTable = NULL;
 		bool b = getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_SectionTable,&sdhTable);
 		UT_return_val_if_fail(b,false);
 		sdhEndTable = getDoc()->getEndTableStruxFromTableSDH(sdhTable);
@@ -11320,7 +11320,7 @@ bool IE_Imp_RTF::HandleDeltaMoveID()
 	if( !moveid.empty() )
 	{
 //		m_ctMoveID = moveid;
-		PL_StruxDocHandle sdh;
+		pf_Frag_Strux* sdh;
 		bool rc = getDoc()->getStruxOfTypeFromPosition( m_dposPaste, PTX_Block, &sdh);
 		if( rc )
 		{
@@ -11404,7 +11404,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 
 		if(!getDoc()->verifySectionID(hdrftrID.c_str()))
 		{
-			PL_StruxDocHandle sdh = getDoc()->getLastSectionSDH();
+			pf_Frag_Strux* sdh = getDoc()->getLastSectionMutableSDH();
 			getDoc()->changeStruxAttsNoUpdate(sdh,szType,hdrftrID.c_str());
 		}
 		getDoc()->appendStrux (PTX_SectionHdrFtr, propsArray);
