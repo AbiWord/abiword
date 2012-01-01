@@ -114,7 +114,7 @@ BOOL AP_Win32Dialog_Columns::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM 
 	int iHeight = rect.bottom - rect.top;
 
 	HBITMAP hBitmap;
-	AP_Win32Toolbar_Icons Icons;
+	XAP_Win32Toolbar_Icons Icons;
 	COLORREF ColorRef = GetSysColor(COLOR_BTNFACE);
 	UT_RGBColor Color(GetRValue(ColorRef), GetGValue(ColorRef), GetBValue(ColorRef));
 

@@ -35,7 +35,7 @@ typedef double NSTimeInterval;
 #include "xap_Cocoa_TB_CFactory.h"
 
 class XAP_Args;
-class AP_CocoaToolbar_Icons;
+class XAP_CocoaToolbar_Icons;
 class AV_View;
 class EV_CocoaMenuBar;
 
@@ -101,7 +101,7 @@ public:
     virtual BidiSupportType         theOSHasBidiSupport() const;
 	EV_CocoaMenuBar*				getCocoaMenuBar(void) const { return m_pCocoaMenu; };
 	XAP_Frame * 					_getFrontFrame(void);
-	AP_CocoaToolbar_Icons *			getToolbarIcons () const { return m_pCocoaToolbarIcons; }
+	XAP_CocoaToolbar_Icons *		getToolbarIcons () const { return m_pCocoaToolbarIcons; }
 protected:
 	virtual const char*          _findNearestFont(const char* pszFontFamily,
 												const char* pszFontStyle,
@@ -113,7 +113,7 @@ protected:
 	bool							_loadFonts();
 	void							_setAbiSuiteLibDir();
 private:
-	AP_CocoaToolbar_Icons *			m_pCocoaToolbarIcons;
+	XAP_CocoaToolbar_Icons *		m_pCocoaToolbarIcons;
 	AP_CocoaDialogFactory			m_dialogFactory;
 	AP_CocoaToolbar_ControlFactory	m_controlFactory;
 

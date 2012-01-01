@@ -48,11 +48,11 @@
 - (void)drawRect:(NSRect)aRect;
 @end
 
-class AP_CocoaToolbar_Icons : public AP_Toolbar_Icons
+class XAP_CocoaToolbar_Icons : public XAP_Toolbar_Icons
 {
 public:
-	AP_CocoaToolbar_Icons(void);
-	~AP_CocoaToolbar_Icons(void);
+	XAP_CocoaToolbar_Icons(void);
+	~XAP_CocoaToolbar_Icons(void);
 
 	NSImage *			getPixmapForIcon(const char * szIconID);  // the ID is an internal AbiWord identifier
 

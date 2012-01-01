@@ -189,8 +189,8 @@ BOOL XAP_Win32Dialog_Language::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARA
 	
 	/* create image lists, fill, attach to Treeviews */
 	m_hNormIml = ImageList_Create(20, 20,  ILC_COLORDDB, 2, 2);    		              	       	
-   	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "SPELLCHECK",  &hBitmap);       		       	
-   	AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "TRANSPARENTLANG",  &hBitmapTrans);       		
+   	XAP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "SPELLCHECK",  &hBitmap);       		       	
+   	XAP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, 20,20, &Color, "TRANSPARENTLANG",  &hBitmapTrans);       		
 	
 	/* Setup tree images */
 	ImageList_Add(m_hNormIml,hBitmapTrans, NULL);		

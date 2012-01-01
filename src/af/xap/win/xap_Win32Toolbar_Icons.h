@@ -28,11 +28,11 @@
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_Win32Toolbar_Icons : public AP_Toolbar_Icons
+class ABI_EXPORT XAP_Win32Toolbar_Icons : public XAP_Toolbar_Icons
 {
 public:
-	AP_Win32Toolbar_Icons(void);
-	~AP_Win32Toolbar_Icons(void);
+	XAP_Win32Toolbar_Icons(void);
+	~XAP_Win32Toolbar_Icons(void);
 
 #if defined (EXPORT_XPM_TO_BMP)
 	static bool getBitmapForIconFromXPM(HWND hwnd,

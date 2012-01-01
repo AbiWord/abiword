@@ -33,7 +33,7 @@
 #import <Cocoa/Cocoa.h>
 
 class AP_CocoaFrame;
-class AP_CocoaToolbar_Icons;
+class XAP_CocoaToolbar_Icons;
 class EV_CocoaToolbar_ViewListener;
 class EV_Toolbar_Label;
 
@@ -80,7 +80,7 @@ protected:
 
 	NSView *						m_wToolbar;
 	NSView *						m_superView;
-	AP_CocoaToolbar_Icons *			m_pCocoaToolbarIcons;
+	XAP_CocoaToolbar_Icons *		m_pCocoaToolbarIcons;
 private:
 	NSButton * _makeToolbarButton (int type, EV_Toolbar_Label * pLabel, 
 												XAP_Toolbar_Id tlbrid, NSView *parent,

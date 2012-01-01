@@ -122,22 +122,22 @@ static NSPoint s_ButtonMenuPoint[3] = {
 
 @end
 
-AP_CocoaToolbar_Icons::AP_CocoaToolbar_Icons(void)
+XAP_CocoaToolbar_Icons::XAP_CocoaToolbar_Icons(void)
 {
 }
 
-AP_CocoaToolbar_Icons::~AP_CocoaToolbar_Icons(void)
+XAP_CocoaToolbar_Icons::~XAP_CocoaToolbar_Icons(void)
 {
 	// TODO do we need to keep some kind of list
 	// TODO of the things we have created and
 	// TODO handed out, so that we can delete them ??
 }
 
-NSString * AP_CocoaToolbar_Icons::getPNGNameForIcon(const char * szIconID)
+NSString * XAP_CocoaToolbar_Icons::getPNGNameForIcon(const char * szIconID)
 {
 	const char * szIconName = NULL;
 
-	if (AP_Toolbar_Icons::_findIconNameForID(szIconID, &szIconName))
+	if (XAP_Toolbar_Icons::_findIconNameForID(szIconID, &szIconName))
 	{
 		UT_UTF8String name(szIconName);
 
@@ -154,7 +154,7 @@ NSString * AP_CocoaToolbar_Icons::getPNGNameForIcon(const char * szIconID)
 	return nil;
 }
 
-NSString * AP_CocoaToolbar_Icons::getFilenameForIcon(NSString * iconName)
+NSString * XAP_CocoaToolbar_Icons::getFilenameForIcon(NSString * iconName)
 {
 	NSString * filename = iconName;
 
@@ -183,13 +183,13 @@ NSString * AP_CocoaToolbar_Icons::getFilenameForIcon(NSString * iconName)
 	\param szIconName the name of the icon
 	\return the newly allocated NSImage [autoreleased]
  */
-NSImage * AP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconID)
+NSImage * XAP_CocoaToolbar_Icons::getPixmapForIcon(const char * szIconID)
 {
 	UT_ASSERT(szIconID && *szIconID);
 
 	NSImage * pixmap = nil;
 
-	NSString * path = AP_CocoaToolbar_Icons::getFilenameForIcon(AP_CocoaToolbar_Icons::getPNGNameForIcon(szIconID));
+	NSString * path = XAP_CocoaToolbar_Icons::getFilenameForIcon(XAP_CocoaToolbar_Icons::getPNGNameForIcon(szIconID));
 
 	if (path)
 	{

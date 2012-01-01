@@ -191,10 +191,10 @@ static struct _map_name_id s_nametoIdTable[] =
 
 
 #ifdef DEBUG
-AP_Win32Toolbar_Icons iconswin32debug;
+XAP_Win32Toolbar_Icons iconswin32debug;
 #endif
 
-AP_Win32Toolbar_Icons::AP_Win32Toolbar_Icons(void)
+XAP_Win32Toolbar_Icons::XAP_Win32Toolbar_Icons(void)
 {
 	#if defined(DEBUG)
 	// Check that the lists are in alphabetically order
@@ -209,7 +209,7 @@ AP_Win32Toolbar_Icons::AP_Win32Toolbar_Icons(void)
 #endif
 }
 
-AP_Win32Toolbar_Icons::~AP_Win32Toolbar_Icons(void)
+XAP_Win32Toolbar_Icons::~XAP_Win32Toolbar_Icons(void)
 {
 	// TODO do we need to keep some kind of list
 	// TODO of the things we have created and
@@ -219,13 +219,13 @@ AP_Win32Toolbar_Icons::~AP_Win32Toolbar_Icons(void)
 #if defined(EXPORT_XPM_TO_BMP)
 #include <stdio.h>
 
-bool AP_Win32Toolbar_Icons::saveBitmap (const char *szFilename)
+bool XAP_Win32Toolbar_Icons::saveBitmap (const char *szFilename)
 {
 	HBITMAP hBitmap;
 	UT_RGBColor color (TRANSPARENT_R, TRANSPARENT_G, TRANSPARENT_B);
 	char szName [1024];
 
-	if (!AP_Win32Toolbar_Icons::getBitmapForIconFromXPM (GetDesktopWindow(),
+	if (!XAP_Win32Toolbar_Icons::getBitmapForIconFromXPM (GetDesktopWindow(),
 		255, 255, &color, szFilename, &hBitmap))
 		return false;
 
@@ -286,7 +286,7 @@ bool AP_Win32Toolbar_Icons::saveBitmap (const char *szFilename)
 #endif
 
 
-bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
+bool XAP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 												UT_uint32 maxWidth,
 												UT_uint32 maxHeight,
 												UT_RGBColor * pColor,
@@ -401,7 +401,7 @@ bool AP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 
 // Returns PARGB32 DIB bitmap for use in Vista+ menus
 
-bool AP_Win32Toolbar_Icons::getAlphaBitmapForIcon(HWND /*hwnd*/,
+bool XAP_Win32Toolbar_Icons::getAlphaBitmapForIcon(HWND /*hwnd*/,
 												UT_uint32 maxWidth,
 												UT_uint32 maxHeight,
 												const char * szIconName,
@@ -517,7 +517,7 @@ bool AP_Win32Toolbar_Icons::getAlphaBitmapForIcon(HWND /*hwnd*/,
 
 #if defined(EXPORT_XPM_TO_BMP)
 
-bool AP_Win32Toolbar_Icons::getBitmapForIconFromXPM(HWND hwnd,
+bool XAP_Win32Toolbar_Icons::getBitmapForIconFromXPM(HWND hwnd,
 												UT_uint32 maxWidth,
 												UT_uint32 maxHeight,
 												UT_RGBColor * pColor,

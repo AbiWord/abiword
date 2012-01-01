@@ -168,7 +168,7 @@ HBITMAP AP_Win32Dialog_Border_Shading::_loadBitmap(HWND hWnd, UINT nId, char* pN
 {
 	HBITMAP hBitmap = NULL;
 	
-    AP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width,height, &color,	pName,	&hBitmap);
+    XAP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width,height, &color,	pName,	&hBitmap);
 	SendDlgItemMessageW(hWnd,  nId,  BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);	
 	return hBitmap; 
 }

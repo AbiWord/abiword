@@ -32,7 +32,7 @@
 #define MAX_CONVBUFFER 256
 
 class XAP_Win32Slurp;
-class AP_Win32Toolbar_Icons;
+class XAP_Win32Toolbar_Icons;
 
 /*****************************************************************
 ******************************************************************
@@ -93,7 +93,7 @@ protected:
 	
 	HINSTANCE								m_hInstance;
 	AP_Win32DialogFactory					m_dialogFactory;
-	AP_Win32Toolbar_ControlFactory			m_controlFactory;
+	XAP_Win32Toolbar_ControlFactory			m_controlFactory;
 
 	XAP_Win32Slurp *						m_pSlurp;
 	static char m_buffer[MAX_CONVBUFFER*6];

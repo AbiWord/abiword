@@ -86,7 +86,7 @@ static NSImage * s_findImage (NSString * filename)
 {
 	NSImage * image = nil;
 
-	NSString * path = AP_CocoaToolbar_Icons::getFilenameForIcon(filename);
+	NSString * path = XAP_CocoaToolbar_Icons::getFilenameForIcon(filename);
 
 	image = [[NSImage alloc] initWithContentsOfFile:path];
 	if (image)
@@ -203,7 +203,7 @@ static NSImage * s_findImage (NSString * filename)
 
 	m_toolbarID = tlbrid;
 
-	m_defaultImage = AP_CocoaToolbar_Icons::getPNGNameForIcon([[m_tool iconName] UTF8String]);
+	m_defaultImage = XAP_CocoaToolbar_Icons::getPNGNameForIcon([[m_tool iconName] UTF8String]);
 	m_defaultAltImage = m_defaultImage;
 
 	[m_defaultImage    retain];

@@ -28,11 +28,11 @@
 #include "ut_types.h"
 #endif
 
-class ABI_EXPORT AP_Toolbar_Icons
+class ABI_EXPORT XAP_Toolbar_Icons
 {
 public:
-	AP_Toolbar_Icons(void);
-	virtual ~AP_Toolbar_Icons(void);
+	XAP_Toolbar_Icons(void);
+	virtual ~XAP_Toolbar_Icons(void);
 	
 protected:
 	static bool _findIconDataByName(const char * szName,

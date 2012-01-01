@@ -135,7 +135,7 @@ bool XAP_CocoaApp::initialize(const char * szKeyBindingsKey, const char * szKeyB
   
 	// load only one copy of the platform-specific icons.
 	
-	m_pCocoaToolbarIcons = new AP_CocoaToolbar_Icons();
+	m_pCocoaToolbarIcons = new XAP_CocoaToolbar_Icons();
 	
 	// do any thing we need here...
 

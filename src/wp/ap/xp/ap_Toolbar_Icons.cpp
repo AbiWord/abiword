@@ -97,7 +97,7 @@ static struct _im s_imTable[] =
 *****************************************************************/
 
 #ifdef DEBUG
-AP_Toolbar_Icons iconsdebug;
+XAP_Toolbar_Icons iconsdebug;
 
 #if defined (TOOLKIT_WIN)
 #include "xap_Win32Toolbar_Icons.h"
@@ -105,7 +105,7 @@ AP_Toolbar_Icons iconsdebug;
 
 #endif
 
-AP_Toolbar_Icons::AP_Toolbar_Icons(void)
+XAP_Toolbar_Icons::XAP_Toolbar_Icons(void)
 {
 #if defined(DEBUG) && !XAP_DONT_INLINE_XPM
 	// Check that the lists are in alphabetically order
@@ -147,7 +147,7 @@ AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 		strcpy (szIDlow, s_imTable[i].m_id);
 		strlwr (szIDlow);
 		
-		if (AP_Win32Toolbar_Icons::saveBitmap (s_imTable[i].m_id)) {
+		if (XAP_Win32Toolbar_Icons::saveBitmap (s_imTable[i].m_id)) {
 			UT_DEBUGMSG(("AP_RID_TI_%s BITMAP DISCARDABLE \"../../../wp/ap/win/ToolbarIcons/%s.bmp\"\n",
 				szID, szIDlow));
 		}		
@@ -165,12 +165,12 @@ AP_Toolbar_Icons::AP_Toolbar_Icons(void)
 
 }
 
-AP_Toolbar_Icons::~AP_Toolbar_Icons(void)
+XAP_Toolbar_Icons::~XAP_Toolbar_Icons(void)
 {
 }
 
 
-bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName)
+bool XAP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName)
 {
 	bool bIDFound = false;
 
@@ -237,7 +237,7 @@ bool AP_Toolbar_Icons::_findIconNameForID(const char * szID, const char ** pName
 
 #if XAP_DONT_INLINE_XPM
 #else
-bool AP_Toolbar_Icons::_findIconDataByName(const char * szID,
+bool XAP_Toolbar_Icons::_findIconDataByName(const char * szID,
 											  const char *** pIconData,
 											  UT_uint32 * pSizeofData)
 {

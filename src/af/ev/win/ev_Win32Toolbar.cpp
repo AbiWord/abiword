@@ -808,7 +808,7 @@ bool EV_Win32Toolbar::synthesize(void)
 					{
 						HBITMAP hBitmap;
 						const bool bFoundIcon =
-							AP_Win32Toolbar_Icons::getBitmapForIcon(m_hwnd,
+							XAP_Win32Toolbar_Icons::getBitmapForIcon(m_hwnd,
 																	MY_MAXIMUM_BITMAP_X,
 																	MY_MAXIMUM_BITMAP_Y,
 																	&backgroundColor,
