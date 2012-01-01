@@ -276,8 +276,4 @@ ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 
 #define PD_MAX_REVISION 0x0fffffff
 
-// Used to pass a pointer to a pf_Frag_Object
-
-typedef const void * PL_ObjectHandle;
-
 #endif /* UT_TYPES_H */

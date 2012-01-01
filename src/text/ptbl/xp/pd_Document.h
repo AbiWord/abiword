@@ -52,6 +52,7 @@ class PP_AttrProp;
 class PP_Revision;
 class PP_RevisionAttr;
 class pf_Frag_Strux;
+class pf_Frag_Object;
 class PX_ChangeRecord;
 class PD_Style;
 class PD_DocIterator;
@@ -302,8 +303,8 @@ public:
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
 	bool                    isMarginChangeOnly(void) const;
-	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const gchar ** attributes,const gchar ** properties );	
-PT_AttrPropIndex            getAPIFromSOH(PL_ObjectHandle odh);	
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object* odh,const gchar ** attributes,const gchar ** properties );	
+PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);	
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const gchar ** attributes,

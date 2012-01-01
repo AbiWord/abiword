@@ -43,7 +43,7 @@ public:
 	PTObjectType			getObjectType(void) const;
 	virtual bool			createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
 													  PT_DocPosition dpos,
-													  PT_BlockOffset blockOffset) const;
+													  PT_BlockOffset blockOffset);
 
 	po_Bookmark *			getBookmark() const;
 

@@ -224,7 +224,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
 									 dpos,indexAP, pfo->getXID(), pto,blockOffset,
-                                     pfo->getField(),reinterpret_cast<PL_ObjectHandle>(pfo));
+                                     pfo->getField(),pfo);
 	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);
@@ -312,7 +312,7 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
 									 dpos,indexAP,pfo->getXID(),pto,blockOffset,
-                                     pfo->getField(),reinterpret_cast<PL_ObjectHandle>(pfo));
+                                     pfo->getField(),pfo);
 	UT_return_val_if_fail (pcr,false);
 
 	m_history.addChangeRecord(pcr);

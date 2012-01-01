@@ -5791,7 +5791,7 @@ UT_sint32	fl_BlockLayout::getTextIndent(void) const
 	return m_iTextIndent;
 }
 
-bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
+bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, pf_Frag_Object* oh)
 {
 	if(isContainedByTOC())
 	{
@@ -5808,7 +5808,7 @@ bool	fl_BlockLayout::_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropInde
 }
 
 
-bool	fl_BlockLayout::_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, PL_ObjectHandle oh)
+bool	fl_BlockLayout::_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP, pf_Frag_Object* oh)
 {
 	if(isContainedByTOC())
 	{
@@ -5852,7 +5852,7 @@ bool	fl_BlockLayout::_doInsertTOCListTabRun(PT_BlockOffset blockOffset)
 	return true;
 }
 
-bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG, PL_ObjectHandle oh)
+bool	fl_BlockLayout::_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG, pf_Frag_Object* oh)
 {
 	if(isContainedByTOC())
 	{

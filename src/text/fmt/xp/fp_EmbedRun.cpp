@@ -35,7 +35,7 @@
 #include "gr_EmbedManager.h"
 
 fp_EmbedRun::fp_EmbedRun(fl_BlockLayout* pBL, 
-					   UT_uint32 iOffsetFirst,PT_AttrPropIndex indexAP,PL_ObjectHandle oh)	: 
+					   UT_uint32 iOffsetFirst,PT_AttrPropIndex indexAP,pf_Frag_Object* oh)	: 
 	fp_Run(pBL,  iOffsetFirst,1, FPRUN_EMBED ),
 	m_iPointHeight(0),
 	m_pSpanAP(NULL),

@@ -457,7 +457,7 @@ PTObjectType pf_Frag_Object::getObjectType(void) const
 
 bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
                                                   PT_DocPosition dpos,
-                                                  PT_BlockOffset blockOffset) const
+                                                  PT_BlockOffset blockOffset)
 {
     UT_return_val_if_fail (ppcr,false);
 	
@@ -465,7 +465,7 @@ bool pf_Frag_Object::createSpecialChangeRecord(PX_ChangeRecord ** ppcr,
     	 = new PX_ChangeRecord_Object(PX_ChangeRecord::PXT_InsertObject,
                                      dpos, m_indexAP, getXID(), m_objectType,
                                      blockOffset, m_pField,
-				      reinterpret_cast<PL_ObjectHandle>(this));
+				      this);
 
     if (!pcr)
         return false;

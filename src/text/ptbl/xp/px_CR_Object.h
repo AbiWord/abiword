@@ -50,18 +50,18 @@ public:
 						   PTObjectType ObjectType,
 						   PT_BlockOffset blockOffset,
                            fd_Field * field,
-			   PL_ObjectHandle pOH);
+			   pf_Frag_Object* pOH);
 	~PX_ChangeRecord_Object();
 
-	virtual PX_ChangeRecord * reverse(void) const;
+	virtual PX_ChangeRecord * reverse(void);
 	
 	PTObjectType			getObjectType(void) const;
 	PT_BlockOffset			getBlockOffset(void) const;
-    fd_Field *              getField(void) const {return m_field;}; 
-    PL_ObjectHandle                     getObjectHandle(void) const
+    fd_Field *              getField(void) const {return m_field;}
+    pf_Frag_Object*                     getObjectHandle(void) const
       { return  m_OH;}
     void                    setObjectHandle(pf_Frag_Object * pfo) const
-    { m_OH = static_cast<PL_ObjectHandle>(pfo);}
+    { m_OH = pfo;}
     void                      AdjustBlockOffset(PT_BlockOffset iBlk) const
 	{ m_blockOffset = iBlk;}
 
@@ -71,7 +71,7 @@ mutable	PT_BlockOffset			m_blockOffset; /* offset of span from beginning of para
     // this only serves as a unique identifier of a field
     // it should not be thought of as a valid pointer
     fd_Field *              m_field; 
-    mutable PL_ObjectHandle         m_OH;
+    mutable pf_Frag_Object*         m_OH;
 };
 
 #endif /* PX_CHANGERECORD_OBJECT_H */

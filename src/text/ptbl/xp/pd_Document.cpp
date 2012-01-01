@@ -6777,9 +6777,9 @@ bool PD_Document::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux* sdh,
  * Change the attributes of an object without generating a Change Record.
  * Use with extreme care.
  */
-bool PD_Document::changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle odh,const gchar ** attributes,const gchar ** properties )
+bool PD_Document::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object* odh,const gchar ** attributes,const gchar ** properties )
 {
-	pf_Frag_Object * pfo = const_cast<pf_Frag_Object *>(static_cast<const pf_Frag_Object *>(odh));
+	pf_Frag_Object * pfo = odh;
 	return m_pPieceTable->changeObjectFormatNoUpdate(ptc ,pfo,attributes,properties);
 }
 
@@ -6787,9 +6787,9 @@ bool PD_Document::changeObjectFormatNoUpdate(PTChangeFmt ptc ,PL_ObjectHandle od
  * Return Attribute Property Index associated with the pf_Frag_Object pointed
  * to by odh
  */
-PT_AttrPropIndex  PD_Document::getAPIFromSOH(PL_ObjectHandle odh)
+PT_AttrPropIndex  PD_Document::getAPIFromSOH(pf_Frag_Object* odh)
 {
-	pf_Frag_Object * pfo = const_cast<pf_Frag_Object *>(static_cast<const pf_Frag_Object *>(odh));
+	pf_Frag_Object * pfo = odh;
 	return pfo->getIndexAP();
 }	
 

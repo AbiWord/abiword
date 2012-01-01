@@ -860,7 +860,7 @@ public:
 class ABI_EXPORT fp_ImageRun : public fp_Run
 {
 public:
-	fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pGraphic,  PL_ObjectHandle oh);
+	fp_ImageRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, FG_Graphic * pGraphic,  pf_Frag_Object* oh);
 	virtual ~fp_ImageRun();
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC);
@@ -894,7 +894,7 @@ private:
 	const PP_AttrProp *     m_pSpanAP;
 	UT_uint32               m_iGraphicTick;
 	bool                    m_bImageForPrinter;
-	PL_ObjectHandle         m_OH;
+	pf_Frag_Object*         m_OH;
 };
 
 #define FPFIELD_MAX_LENGTH	127

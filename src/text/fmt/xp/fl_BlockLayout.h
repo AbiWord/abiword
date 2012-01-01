@@ -74,6 +74,7 @@ class PX_ChangeRecord_SpanChange;
 class PX_ChangeRecord_Strux;
 class PX_ChangeRecord_StruxChange;
 class pf_Frag_Strux;
+class pf_Frag_Object;
 class fl_AutoNum;
 class fp_VerticalContainer;
 class fp_HyperlinkRun;
@@ -471,8 +472,8 @@ protected:
 	bool					_doInsertAnnotationRun(PT_BlockOffset blockOffset);
 	bool					_doInsertRDFAnchorRun(PT_BlockOffset blockOffset);
     void                    _finishInsertHyperlinkedNewRun( PT_BlockOffset blockOffset, fp_HyperlinkRun* pNewRun );
-	bool					_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP,PL_ObjectHandle oh);
-	bool					_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP,PL_ObjectHandle oh);
+	bool					_doInsertMathRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP,pf_Frag_Object* oh);
+	bool					_doInsertEmbedRun(PT_BlockOffset blockOffset,PT_AttrPropIndex indexAP,pf_Frag_Object* oh);
 //	bool					_deleteBookmarkRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedColumnBreakRun(PT_BlockOffset blockOffset);
 	bool					_doInsertForcedPageBreakRun(PT_BlockOffset blockOffset);
@@ -481,7 +482,7 @@ protected:
 	bool					_doInsertTOCListLabelRun(PT_BlockOffset blockOffset);
 	bool					_doInsertTOCHeadingRun(PT_BlockOffset blockOffset);
 	bool                    _doInsertTOCListTabRun(PT_BlockOffset blockOffset);
-	bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG, PL_ObjectHandle oh);
+	bool					_doInsertImageRun(PT_BlockOffset blockOffset, FG_Graphic* pFG, pf_Frag_Object* oh);
 	bool					_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_ChangeRecord_Object * pcro);
 	bool					_doInsertFieldTOCRun(PT_BlockOffset blockOffset);
 	bool                    _doInsertDirectionMarkerRun(PT_BlockOffset blockOffset, UT_UCS4Char iM);

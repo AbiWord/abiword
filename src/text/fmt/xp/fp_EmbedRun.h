@@ -33,7 +33,7 @@ class FL_DocLayout;
 class ABI_EXPORT fp_EmbedRun : public fp_Run
 {
 public:
-	fp_EmbedRun(fl_BlockLayout* pBL, PT_BlockOffset iOffsetFirst,PT_AttrPropIndex indexAP,PL_ObjectHandle oh);
+	fp_EmbedRun(fl_BlockLayout* pBL, PT_BlockOffset iOffsetFirst,PT_AttrPropIndex indexAP,pf_Frag_Object* oh);
     virtual	~ fp_EmbedRun(void);
 
 	virtual void			mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos, PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool &isTOC);
@@ -81,7 +81,7 @@ protected:
 	PT_AttrPropIndex        m_iIndexAP;
 	FL_DocLayout *          m_pDocLayout;
 	bool                    m_bNeedsSnapshot;
-	PL_ObjectHandle         m_OH;
+	pf_Frag_Object*         m_OH;
 };
 
 #endif /* FP_EMBEDRUN_H */

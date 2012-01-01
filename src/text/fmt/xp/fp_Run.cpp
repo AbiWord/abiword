@@ -3477,7 +3477,7 @@ void fp_EndOfParagraphRun::_draw(dg_DrawArgs* pDA)
 fp_ImageRun::fp_ImageRun(fl_BlockLayout* pBL,
 						 UT_uint32 iOffsetFirst,
 						 UT_uint32 iLen, FG_Graphic * pFG,
-						 PL_ObjectHandle oh) :
+						 pf_Frag_Object* oh) :
 	fp_Run(pBL, iOffsetFirst, iLen, FPRUN_IMAGE),
 	m_pFGraphic(pFG),
 	m_iPointHeight(0),
