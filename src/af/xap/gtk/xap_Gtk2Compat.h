@@ -135,12 +135,22 @@ inline gboolean gtk_widget_get_double_buffered(GtkWidget* widget)
 
 inline void gtk_widget_set_can_default(GtkWidget* w, gboolean can_default)
 {
-  GTK_WIDGET_SET_FLAGS(w, GTK_CAN_DEFAULT);
+  if (can_default) {
+    GTK_WIDGET_SET_FLAGS(w, GTK_CAN_DEFAULT);
+  }
+  else {
+    GTK_WIDGET_UNSET_FLAGS(w, GTK_CAN_DEFAULT);
+  }
 }
 
 inline void gtk_widget_set_can_focus(GtkWidget* w, gboolean can_focus)
 {
-  GTK_WIDGET_SET_FLAGS(w, GTK_CAN_FOCUS);
+  if (can_focus) {
+    GTK_WIDGET_SET_FLAGS(w, GTK_CAN_FOCUS);
+  }
+  else {
+    GTK_WIDGET_UNSET_FLAGS(w, GTK_CAN_FOCUS);
+  }
 }
 
 inline gboolean gtk_widget_get_sensitive(GtkWidget *widget)
