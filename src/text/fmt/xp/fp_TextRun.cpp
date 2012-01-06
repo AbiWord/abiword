@@ -1557,6 +1557,8 @@ void fp_TextRun::_draw(dg_DrawArgs* pDA)
 // to the correct edge.
 //
 	UT_Rect * pLRec = getLine()->getScreenRect();
+	if (pLRec == NULL)
+		return;
 	if((pDA->xoff + iWidth) > (pLRec->left + pLRec->width))
 	{
 		iWidth -=  (pDA->xoff + iWidth) - (pLRec->left + pLRec->width);
