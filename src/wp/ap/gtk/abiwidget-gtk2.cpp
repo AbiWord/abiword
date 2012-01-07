@@ -2140,7 +2140,6 @@ abi_widget_destroy_gtk (GtkObject *object)
 
 	// order of deletion is important here
 	XAP_App *pApp = XAP_App::getApp();
-	bool bKillApp = false;
 
 	if (abi->priv) 
 	{
@@ -2151,10 +2150,6 @@ abi_widget_destroy_gtk (GtkObject *object)
 #ifdef LOGFILE
 			fprintf(getlogfile(),"frame count before forgetting = %d \n",pApp->getFrameCount());
 #endif
-			if(pApp->getFrameCount() <= 1)
-			{
-				bKillApp = true;
-			}
 			pApp->forgetFrame(abi->priv->m_pFrame);
 			abi->priv->m_pFrame->close();
 			delete abi->priv->m_pFrame;

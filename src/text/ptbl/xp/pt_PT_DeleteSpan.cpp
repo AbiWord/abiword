@@ -188,6 +188,7 @@ bool pt_PieceTable::dumpDoc(
 
 
 
+#ifdef BUILD_ODT_GCT
 /**
  * Given a pointer to the start of a block, find the last PFT_Text
  * contained in that block or null.
@@ -223,7 +224,7 @@ static pf_Frag_Text* findLastTextFragOfBlock( pf_Frag_Strux* pfblock )
     // we might have a ret!=0 if we started in the last block...
     return ret;
 }
-
+#endif
 
 /**
  * Return the strux PTX_Block if both startpos and endpos are

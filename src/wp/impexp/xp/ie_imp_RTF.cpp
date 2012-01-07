@@ -1701,7 +1701,7 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 	}
 	if(m_bInFootnote)
 	{
-		bool ok =true;
+		UT_DebugOnly<bool> ok =true;
 		if(!bUseInsertNotAppend())
 		{
 			if(m_bNoteIsFNote)  
@@ -1716,6 +1716,7 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 				ok = insertStrux(PTX_EndFootnote);
 			else
 				ok = insertStrux(PTX_EndEndnote);
+			UT_ASSERT(ok);
 			if(	m_bMovedPos)
 			{
 				m_bMovedPos = false;
@@ -2776,15 +2777,15 @@ bool IE_Imp_RTF::HandleParKeyword()
 
 	if(m_currentRTFState.m_charProps.m_eRevision != PP_REVISION_NONE)
 	{
-		std::string style;
+		std::string aStyle;
 		
 		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
 		   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
 		{
-			style = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber];
+			aStyle = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber];
 		}
 
-		_formRevisionAttr(rev, sProps, style);
+		_formRevisionAttr(rev, sProps, aStyle);
 		attrs[attrsIdx++] = "revision";
 		attrs[attrsIdx++] = rev.c_str();
 		props = NULL;
@@ -3592,7 +3593,7 @@ bool IE_Imp_RTF::HandleField()
 		bUseResult = (xmlField == NULL) && (!isXML);
 		if (!bUseResult)
 		{
-			bool ok;
+			UT_DebugOnly<bool> ok;
 			xxx_UT_DEBUGMSG(("Append field type %s \n",xmlField));
 			ok = _appendField (xmlField);
 			UT_ASSERT_HARMLESS (ok);
@@ -4305,7 +4306,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 		
 // swallow "\" first
 		ok = ReadCharFromFileWithCRLF(&c);
-		if (ReadKeyword(kwrd, &par, &parUsed, MAX_KEYWORD_LEN))
+		if (ok && ReadKeyword(kwrd, &par, &parUsed, MAX_KEYWORD_LEN))
 		{
 			if(!(0 == strncmp((const char*)&kwrd[0],"rtlch",MAX_KEYWORD_LEN) ||
 				 0 == strncmp((const char*)&kwrd[0],"ltrch",MAX_KEYWORD_LEN)))
@@ -4314,6 +4315,7 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 							 " or \\rtlch expected\n", kwrd));
 			}
 		}
+		UT_ASSERT(ok);
 		xxx_UT_DEBUGMSG(("abinoveride found - swallowed keyword %s \n",kwrd));
 		return true;
 	}
@@ -4752,8 +4754,8 @@ bool IE_Imp_RTF::TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 	}
 	case RTF_KW_chdpa:
 	{
-		const gchar * attribs[3] ={"param",NULL,NULL};
-		attribs[1] = "%a, %b %d, %Y";
+//		const gchar * attribs[3] ={"param",NULL,NULL};
+//		attribs[1] = "%a, %b %d, %Y";
 		return _appendField ("datetime_custom");
 	}
 	case RTF_KW_chpgn:
