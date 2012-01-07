@@ -649,9 +649,29 @@ void abi_table_set_icon(AbiTable* abi_table,GtkWidget * gtkImageIcon)
 /* ------------------- and now the GObject part ---------------------- */
 
 static void
+abi_table_dispose (GObject *instance)
+{
+	AbiTable* self = ABITABLE_WIDGET(instance);
+
+// For some reason I get an alert	
+//	g_object_unref(self->label);
+
+	if(self->szTable) {
+		g_free(self->szTable);
+	}
+	if(self->szCancel) {
+		g_free(self->szCancel);
+	}
+
+	G_OBJECT_CLASS (abi_table_parent_class)->dispose (instance);	
+}
+
+static void
 abi_table_class_init (AbiTableClass *klass)
 {
 	GtkWidgetClass *object_class = reinterpret_cast<GtkWidgetClass*>(klass);
+
+	G_OBJECT_CLASS(object_class)->dispose = abi_table_dispose;
 
 	abi_table_parent_class = static_cast<GtkWidgetClass *>(g_type_class_peek (GTK_TYPE_BUTTON));
 	abi_table_signals [SELECTED] =
@@ -706,6 +726,7 @@ abi_table_init (AbiTable* table)
 		table->icon = gtk_image_new_from_stock ("abi-table-widget", GTK_ICON_SIZE_LARGE_TOOLBAR);
 		gtk_widget_show(table->icon);
 		gtk_widget_show(table->label);
+		g_object_ref_sink(table->label);
 		//
 		// We actually never want this label in toolbar
 		//		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
@@ -718,6 +739,7 @@ abi_table_init (AbiTable* table)
 		UT_DEBUGMSG(("abi-table icon did not load !\n"));
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		table->label = gtk_label_new_with_mnemonic("_Table");
+		g_object_ref_sink(table->label);
 		//		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
 	}
 

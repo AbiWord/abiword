@@ -459,8 +459,12 @@ GR_CairoGraphics::~GR_CairoGraphics()
 
 	_destroyFonts();
 	delete m_pPFontGUI;
-	if(m_pLayoutContext)
+	if(m_pLayoutContext) {
 		g_object_unref(m_pLayoutContext);
+	}
+	if(m_pFontMap) {
+		g_object_unref(m_pFontMap);
+	}
 
 	// MES After much reading and playing I discovered that the
 	// FontMap gets unreferenced after every font that uses it is 

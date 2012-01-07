@@ -180,12 +180,13 @@ bool AP_UnixToolbar_StyleCombo::repopulate(void)
 	if (list) 
 	{
 		list = g_slist_sort(list, (GCompareFunc)sort_cb);		
+		GSList * real_list = list;
 		do 
 		{
 			m_vecContents.addItem((const char *)list->data);
 
 		} while (NULL != (list = g_slist_next(list)));
-		g_slist_free(list);
+		g_slist_free(real_list);
 	}		
 
 	return true;

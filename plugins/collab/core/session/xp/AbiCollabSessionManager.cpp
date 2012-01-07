@@ -308,6 +308,7 @@ void AbiCollabSessionManager::unregisterSniffers(void)
 		IE_ImpSniffer* pSniffer = m_vImpSniffers[i];
 		UT_continue_if_fail(pSniffer);
 		IE_Imp::unregisterImporter(pSniffer);
+		delete pSniffer;
 	}
 	m_vImpSniffers.clear();
 }

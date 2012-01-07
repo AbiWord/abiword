@@ -867,7 +867,6 @@ bool EV_UnixToolbar::synthesize(void)
 
 	//m_wHSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_HORIZONTAL);
 	m_wVSizeGroup = gtk_size_group_new(GTK_SIZE_GROUP_VERTICAL);
-	g_object_ref(m_wVSizeGroup);
 
 	for (UT_uint32 k=0; (k < nrLabelItemsInLayout); k++)
 	{
