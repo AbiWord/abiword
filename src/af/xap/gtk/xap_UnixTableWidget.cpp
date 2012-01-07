@@ -653,14 +653,19 @@ abi_table_dispose (GObject *instance)
 {
 	AbiTable* self = ABITABLE_WIDGET(instance);
 
-// For some reason I get an alert	
-//	g_object_unref(self->label);
+// For some reason I get an alert
+	if(self->label) {
+		g_object_unref(self->label);
+		self->label = NULL;
+	}
 
 	if(self->szTable) {
 		g_free(self->szTable);
+		self->szTable = NULL;
 	}
 	if(self->szCancel) {
 		g_free(self->szCancel);
+		self->szCancel = NULL;
 	}
 
 	G_OBJECT_CLASS (abi_table_parent_class)->dispose (instance);	
