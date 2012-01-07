@@ -2472,7 +2472,9 @@ void GR_CairoGraphics::setFont(const GR_Font * pFont)
 	_setIsSymbol(false);
 	_setIsDingbat(false);
 
-	char * szLCFontName = g_utf8_strdown (m_pPFont->getFamily(), -1);
+	const char* familyName = m_pPFont->getFamily();
+
+	char * szLCFontName = familyName ? g_utf8_strdown (familyName, -1) : NULL;
 
 	if (szLCFontName)
 	{
@@ -2491,8 +2493,8 @@ void GR_CairoGraphics::setFont(const GR_Font * pFont)
 		
 		if(strstr(szLCFontName,"dingbat"))
 			_setIsDingbat(true);
+		FREEP(szLCFontName);
 	}
-	FREEP(szLCFontName);
 		
 	if(!m_pPFont->isGuiFont() && m_pPFont->getZoom() != getZoomPercentage())
 	{

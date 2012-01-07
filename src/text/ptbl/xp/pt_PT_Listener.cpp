@@ -88,9 +88,8 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				{
 					PT_DocPosition pos = pf->getPos();
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
-					pf_Frag_Strux* sdh = NULL;
-					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
-					pfs2 = (pf_Frag_Strux *) sdh;
+
+					getStruxOfTypeFromPosition(pos,PTX_Block,&pfs2);
 					blockOffset = pos - pfs2->getPos() -1;
 					bStatus1 = pft->createSpecialChangeRecord(&pcr,pos,blockOffset);
 					UT_return_val_if_fail (bStatus1,false);
@@ -117,7 +116,6 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 		case pf_Frag::PFT_Strux:
 			{
 				pfs2 = static_cast<pf_Frag_Strux *> (pf);
-				pf_Frag_Strux* sdh = pfs2;
 				sfh = 0;
 			        if(bListensOnly)
 				{
@@ -127,7 +125,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				PX_ChangeRecord * pcr = NULL;
 				bool bStatus1 = pfs2->createSpecialChangeRecord(&pcr,sum);
 				UT_return_val_if_fail (bStatus1, false);
-				bool bStatus2 = pListener->populateStrux(sdh,pcr,&sfh);
+				bool bStatus2 = pListener->populateStrux(pfs2,pcr,&sfh);
 
 				// This can happen legally, for example when inserting a hdr/ftr strux
 				// which was marked deleted in revisions mode -- such strux has no
@@ -169,9 +167,10 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				{
 					PT_DocPosition pos = pf->getPos();
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
-					pf_Frag_Strux* sdh = NULL;
-					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
-					pf_Frag_Strux * pfs = (pf_Frag_Strux *) sdh;
+					pf_Frag_Strux* pfs = NULL;
+					getStruxOfTypeFromPosition(pos,PTX_Block,&pfs);
+					if(!pfs)
+					  return false;
 					blockOffset = pos - pfs->getPos() -1;
 					bStatus1 = pfo->createSpecialChangeRecord(&pcr,pos,blockOffset);
 					UT_return_val_if_fail (bStatus1, false);
@@ -216,9 +215,7 @@ bool pt_PieceTable::_tellAndMaybeAddListener(PL_Listener * pListener,
 				{
 					PT_DocPosition pos = pf->getPos();
 					getStruxOfTypeFromPosition(listenerId,pos,PTX_Block,&sfh);
-					pf_Frag_Strux* sdh = NULL;
-					getStruxOfTypeFromPosition(pos,PTX_Block,&sdh);
-					pfs2 = (pf_Frag_Strux *) sdh;
+					getStruxOfTypeFromPosition(pos,PTX_Block,&pfs2);
 					blockOffset = pos - pfs2->getPos() -1;
 					bStatus1 = pffm->createSpecialChangeRecord(&pcr,pos,blockOffset);
 					UT_return_val_if_fail (bStatus1, false);

@@ -518,7 +518,7 @@ void fp_Line::calcBorderThickness(void)
 	    {
 		ppLine = static_cast<fp_Line *>(ppLine->getPrev());
 	    }
-	    if (ppLine->isFirstLineInBlock())
+	    if (ppLine && ppLine->isFirstLineInBlock())
 	    { 
 		m_bIsAlongTopBorder = true;
 	    }
@@ -554,7 +554,8 @@ void fp_Line::calcBorderThickness(void)
 	    {
 		ppLine = static_cast<fp_Line *>(ppLine->getPrev());
 	    }
-	    ppLine = static_cast<fp_Line *> (ppLine->getPrev());
+	    if(ppLine)
+	      ppLine = static_cast<fp_Line *> (ppLine->getPrev());
 	    while (ppLine && ppLine->isAlongBotBorder())
 	    {
 		ppLine->setAlongBotBorder(false);
