@@ -327,13 +327,16 @@ UT_UTF8String getStyleSizeString(const gchar * szWidth, double widthPercentage,
 
 IE_Exp_HTML_DataExporter::IE_Exp_HTML_DataExporter(PD_Document* pDocument,
             const UT_UTF8String &baseName):
-    m_pDocument(pDocument),
-    m_fileDirectory(UT_go_basename_from_uri(baseName.utf8_str()) 
-        + UT_UTF8String(FILES_DIR_NAME)),
-    m_baseDirectory(UT_go_dirname_from_uri(baseName.utf8_str(), false))
-    
+    m_pDocument(pDocument)
 {
-    
+	char* s = UT_go_basename_from_uri(baseName.utf8_str());
+    m_fileDirectory = s;
+    m_fileDirectory += FILES_DIR_NAME;
+	g_free(s);
+
+	s = UT_go_dirname_from_uri(baseName.utf8_str(), false);
+    m_baseDirectory = s;
+	g_free(s);
 }
 
 IE_Exp_HTML_FileExporter::IE_Exp_HTML_FileExporter(PD_Document* pDocument, 
@@ -437,7 +440,7 @@ UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const gchar *szDataId,
     
     UT_UTF8String contents;
     encodeDataBase64(szDataId, contents, false);
-    UT_DEBUGMSG(("%d", contents.length()));
+    UT_DEBUGMSG(("%lu", contents.length()));
     m_buffer += contents;
     m_buffer += MYEOL;
     m_buffer += MYEOL;

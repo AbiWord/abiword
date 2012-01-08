@@ -1037,8 +1037,14 @@ UT_go_dirname_from_uri (const char *uri, gboolean brief)
 #else
 	char *uri_dirname = g_path_get_dirname (uri);
 	dirname = uri_dirname ? UT_go_filename_from_uri (uri_dirname) : NULL;
-	dirname = dirname ? g_strconcat ("file://", dirname, NULL) : NULL;
-	g_free (uri_dirname);
+	if(uri_dirname) {
+		g_free (uri_dirname);
+	}
+	uri_dirname = dirname ? g_strconcat ("file://", dirname, NULL) : NULL;
+	if(dirname) {
+		g_free (dirname);
+	}
+	dirname = uri_dirname;
 #endif
 
 	if (brief && dirname &&

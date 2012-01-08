@@ -113,8 +113,10 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 
 IE_Exp_HTML::~IE_Exp_HTML()
 {
-    DELETEP(m_style_tree);
-	DELETEP(m_pWriterFactory);
+	delete m_pWriterFactory;
+	delete m_pNavigationHelper;
+	delete m_styleListener;
+    delete m_style_tree;
 }
 
 void IE_Exp_HTML::_buildStyleTree()
@@ -528,11 +530,16 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
     if (isIndex)
     {
         output = getFp();
-        filename = UT_go_basename_from_uri(getFileName());
-    } else
+		char* s = UT_go_basename_from_uri(getFileName());
+        filename = s;
+		g_free(s);
+    } 
+	else
     {
         filename = ConvertToClean(title) + m_suffix;
-        UT_UTF8String outputUri = UT_go_dirname_from_uri(getFileName(), false);
+		char* s = UT_go_dirname_from_uri(getFileName(), false);
+		UT_UTF8String outputUri = s;
+		g_free(s);
         outputUri += G_DIR_SEPARATOR_S + filename;
         output = UT_go_file_create(outputUri.utf8_str(), NULL);
     }

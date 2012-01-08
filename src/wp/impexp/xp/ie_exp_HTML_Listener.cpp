@@ -3088,7 +3088,7 @@ void IE_Exp_HTML_Listener::_setCellWidthInches()
 		// probably covering up some sort of issue
 		// but we assert above, so we'll notice it again
 		if (i < (UT_sint32) m_vecDWidths.size())
-			tot += *(m_vecDWidths.getNthItem(i));
+			tot += m_vecDWidths.getNthItem(i);
 	}
 	m_dCellWidthInches = tot;
 
@@ -3106,7 +3106,6 @@ void IE_Exp_HTML_Listener::_fillColWidthsVector()
 	UT_DEBUGMSG(("Number columns in table %d \n",m_tableHelper.getNumCols ()));
 	if(m_vecDWidths.getItemCount() > 0)
 	{
-		UT_VECTOR_PURGEALL(double *,m_vecDWidths);
 		m_vecDWidths.clear();
 	}
 	if(pszColumnProps && *pszColumnProps)
@@ -3145,9 +3144,7 @@ void IE_Exp_HTML_Listener::_fillColWidthsVector()
 			{
 				UT_String sSub = sProps.substr(i,(j-i));
 				i = j + 1;
-				double * pDWidth = new double;
-				*pDWidth = UT_convertToInches(sSub.c_str());
-				m_vecDWidths.addItem(pDWidth);
+				m_vecDWidths.addItem(UT_convertToInches(sSub.c_str()));
 			}
 		}
 	}
@@ -3163,9 +3160,7 @@ void IE_Exp_HTML_Listener::_fillColWidthsVector()
 		UT_sint32 i = 0;
 		for(i =0; i< nCols; i++)
 		{
-			double * pDWidth = new double;
-			*pDWidth = colWidth;
-			m_vecDWidths.addItem(pDWidth);
+			m_vecDWidths.addItem(colWidth);
 		}
 	}
 }

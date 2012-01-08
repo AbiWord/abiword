@@ -47,6 +47,7 @@ class ABI_EXPORT IE_Exp_HTML_NavigationHelper : public IE_TOCHelper {
 public:
     IE_Exp_HTML_NavigationHelper(PD_Document *pDocument, 
             const UT_UTF8String &baseName);
+    virtual ~IE_Exp_HTML_NavigationHelper();
     
     UT_UTF8String getBookmarkFilename(const UT_UTF8String &id) const;
     UT_UTF8String getFilenameByPosition(PT_DocPosition position) const;
@@ -59,7 +60,7 @@ private:
     int m_minTOCLevel;
     int m_minTOCIndex;
     std::map<UT_UTF8String, UT_UTF8String> m_bookmarks;
-    UT_UTF8String m_baseName;
+    char* m_baseName;
 };
 
 class ABI_EXPORT IE_Exp_HTML_BookmarkListener : public PL_Listener

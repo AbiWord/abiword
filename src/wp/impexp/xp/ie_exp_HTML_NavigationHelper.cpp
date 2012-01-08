@@ -92,7 +92,7 @@ IE_Exp_HTML_NavigationHelper::IE_Exp_HTML_NavigationHelper(
   m_minTOCIndex(0),
   m_baseName(UT_go_basename_from_uri(baseName.utf8_str()))
 {
-    m_suffix = strchr(m_baseName.utf8_str(), '.');
+    m_suffix = strchr(m_baseName, '.');
     m_minTOCLevel = 10;
     for (int i = 0; i < getNumTOCEntries(); i++)
     {
@@ -109,6 +109,11 @@ IE_Exp_HTML_NavigationHelper::IE_Exp_HTML_NavigationHelper(
         new IE_Exp_HTML_BookmarkListener(pDocument, this);
     pDocument->tellListener(bookmarkListener);
     DELETEP(bookmarkListener);
+}
+
+IE_Exp_HTML_NavigationHelper::~IE_Exp_HTML_NavigationHelper()
+{
+	g_free(m_baseName);
 }
 
 UT_UTF8String IE_Exp_HTML_NavigationHelper::getBookmarkFilename(
@@ -129,7 +134,9 @@ UT_UTF8String IE_Exp_HTML_NavigationHelper::getFilenameByPosition(
     PT_DocPosition position) const
 {
     PT_DocPosition posCurrent;
-    UT_UTF8String chapterFile = UT_go_basename_from_uri(m_baseName.utf8_str());
+	char * s = UT_go_basename_from_uri(m_baseName);
+    UT_UTF8String chapterFile = s;
+	g_free(s);
 
     if (hasTOC())
     {
@@ -155,5 +162,5 @@ UT_UTF8String IE_Exp_HTML_NavigationHelper::getFilenameByPosition(
     }
 
     UT_DEBUGMSG(("Got filename by position: %s\n", chapterFile.utf8_str()));
-    return (chapterFile);
+    return chapterFile;
 }

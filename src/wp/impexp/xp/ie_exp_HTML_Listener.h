@@ -328,7 +328,7 @@ private:
     double m_dSecTopMarginInches;
     double m_dSecBottomMarginInches;
     double m_dCellWidthInches;
-    UT_GenericVector<double*> m_vecDWidths;
+    UT_GenericVector<double> m_vecDWidths;
     bool m_bHasMathMl;
 };
 
