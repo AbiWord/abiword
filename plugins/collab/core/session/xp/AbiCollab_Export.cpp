@@ -316,7 +316,7 @@ ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecor
 			}
 			const UT_ByteBuf* pBuf=NULL;
             std::string mime_type;
-			void* pHandle = NULL;
+			PD_DataItemHandle pHandle = NULL;
 			m_pDoc->getDataItemDataByName(pszDataName,&pBuf,&mime_type,&pHandle);
 			// put into our vector
 			size_t length = pBuf->getLength();

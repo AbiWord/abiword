@@ -54,7 +54,7 @@ IE_Exp_DocRangeListener::IE_Exp_DocRangeListener(PD_DocumentRange * pDocRange, P
   //
   // Start by exporting the data items to the document
   //
-     void *pHandle = NULL;
+     PD_DataItemHandle pHandle = NULL;
      std::string mimeType;
      const char * szName= NULL;
      const UT_ByteBuf * pBuf = NULL;

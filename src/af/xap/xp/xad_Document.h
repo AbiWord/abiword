@@ -120,6 +120,8 @@ enum AD_DOCUMENT_TYPE
 	ADDOCUMENT_ABIWORD
 };
 
+struct _dataItemPair;
+typedef _dataItemPair* PD_DataItemHandle;
 
 class ABI_EXPORT AD_Document
 {
@@ -157,13 +159,13 @@ public:
 										   bool bBase64, 
 										   const UT_ByteBuf * pByteBuf,
 										   const std::string & mime_type, 
-										   void ** ppHandle) = 0;
+										   PD_DataItemHandle* ppHandle) = 0;
 	virtual bool            replaceDataItem(const char * szName, 
 											const UT_ByteBuf * pByteBuf) = 0;
 	virtual bool			getDataItemDataByName(const char * szName,
 												  const UT_ByteBuf ** ppByteBuf,
 												  std::string * mime_type, 
-												  void ** ppHandle) const = 0;		
+												  PD_DataItemHandle* ppHandle) const = 0;		
 public:
 	
 	/**

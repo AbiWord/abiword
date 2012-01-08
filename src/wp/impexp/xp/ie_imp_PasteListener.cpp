@@ -141,8 +141,8 @@ bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 //
 // Now these can be found via the properties of the spans and strux's
 //
-            void *pHandle = NULL;
-            std::string mimeType;
+			PD_DataItemHandle pHandle = NULL;
+			std::string mimeType;
 			const char * szName= NULL;
 			const UT_ByteBuf * pBuf = NULL;
 			UT_sint32 k = 0;

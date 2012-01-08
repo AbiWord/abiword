@@ -71,7 +71,7 @@ bool GR_EmbedView::getSnapShots(void)
   UT_UTF8String sName = "snapshot-png-";
   sName += m_sDataID;
   bool bFound = false;
-  void * pHandle = NULL;
+  PD_DataItemHandle pHandle = NULL;
   const UT_ByteBuf * pPNG = NULL;
   const UT_ByteBuf * pSVG = NULL;
   bFound = m_pDoc->getDataItemDataByName(sName.utf8_str(),&pPNG,NULL,&pHandle);

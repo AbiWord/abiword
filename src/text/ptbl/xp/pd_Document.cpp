@@ -174,7 +174,6 @@ PD_Document::PD_Document()
 	  m_ballowListUpdates(false),
 	  m_pPieceTable(0),
       m_hDocumentRDF( new PD_DocumentRDF( this )),
-	  m_hashDataItems(11),
 	  m_lastOpenedType(IEFT_Bogus), // used to be: IE_Imp::fileTypeForSuffix(".abw"))
 	  m_lastSavedAsType(IEFT_Bogus), // used to be: IE_Exp::fileTypeForSuffix(".abw")
 	  m_bDoingPaste(false),
@@ -4988,9 +4987,9 @@ bool  PD_Document::isDoingTheDo(void) const
 bool PD_Document::createDataItem(const char * szName, bool bBase64, 
                                  const UT_ByteBuf * pByteBuf,
                                  const std::string & mime_type,
-                                 void ** ppHandle)
+                                 PD_DataItemHandle* ppHandle)
 {
-	struct _dataItemPair* pPair = NULL;
+	PD_DataItemHandle pPair = NULL;
     UT_ByteBuf * pNew = NULL;
 
 	UT_return_val_if_fail (pByteBuf, false);
@@ -5030,15 +5029,15 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
 
 	pPair->pBuf = pNew;
 	pPair->pToken = g_strdup(mime_type.c_str());
-	m_hashDataItems.insert(szName, pPair);
+	m_hashDataItems.insert(std::make_pair(szName, pPair));
 
 	// give them back a handle if they want one
 
 	if (ppHandle)
 	{
-		const struct _dataItemPair* pHashEntry = m_hashDataItems.pick(szName);
-		UT_return_val_if_fail (pHashEntry,false);
-		*ppHandle = const_cast<struct _dataItemPair *>(pHashEntry);
+		hash_data_items_t::iterator iter = m_hashDataItems.find(szName);
+		UT_return_val_if_fail (iter == m_hashDataItems.end(), false);
+		*ppHandle = iter->second;
 	}
 	{
 		const gchar * szAttributes[3] = {PT_DATAITEM_ATTRIBUTE_NAME,szName,NULL};
@@ -5068,11 +5067,12 @@ bool PD_Document::replaceDataItem(const char * szName, const UT_ByteBuf * pByteB
 {
 	// verify data item exists
 
-	const void *pHashEntry = m_hashDataItems.pick(szName);
-	if (!pHashEntry)
+	hash_data_items_t::iterator iter = m_hashDataItems.find(szName);
+	if (iter == m_hashDataItems.end()) {
 		return false;
+	}
 
-	struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(pHashEntry));
+	_dataItemPair* pPair = iter->second;
 	UT_return_val_if_fail (pPair, false);
 
 	UT_return_val_if_fail (pByteBuf, false);
@@ -5088,16 +5088,18 @@ bool PD_Document::replaceDataItem(const char * szName, const UT_ByteBuf * pByteB
 bool PD_Document::getDataItemDataByName(const char * szName,
 										   const UT_ByteBuf ** ppByteBuf,
                                         std::string * pMimeType,
-										   void ** ppHandle) const
+										   PD_DataItemHandle* ppHandle) const
 {
 	UT_DEBUGMSG(("Look for %s \n",szName));
 	UT_return_val_if_fail (szName && *szName, false);
 
-	const void *pHashEntry = m_hashDataItems.pick(szName);
-	if (!pHashEntry)
+	
+	hash_data_items_t::const_iterator iter = m_hashDataItems.find(szName);
+	if (iter == m_hashDataItems.end()) {
 		return false;
-	struct _dataItemPair* pPair = const_cast<struct _dataItemPair*>(static_cast<const struct _dataItemPair*>(pHashEntry));
-	UT_return_val_if_fail (pPair, false);
+	}
+
+	_dataItemPair* pPair = iter->second;
 	UT_DEBUGMSG(("Found data item name %s buf %p \n",szName,pPair->pBuf));
 
 	if (ppByteBuf)
@@ -5112,7 +5114,7 @@ bool PD_Document::getDataItemDataByName(const char * szName,
 
 	if (ppHandle)
 	{
-		*ppHandle = const_cast<void *>(pHashEntry);
+		*ppHandle = pPair;
 	}
 
 	return true;
@@ -5165,12 +5167,12 @@ bool PD_Document::getDataItemFileExtension(const char *szDataID, std::string &sE
 }
 
 
-bool PD_Document::setDataItemToken(void * pHandle,
-									  void* pToken)
+bool PD_Document::setDataItemToken(PD_DataItemHandle pHandle,
+									  void* pToken) const
 {
 	UT_return_val_if_fail (pHandle, false);
 
-	struct _dataItemPair* pPair = static_cast<struct _dataItemPair*>(pHandle);
+	_dataItemPair* pPair = pHandle;
 	UT_return_val_if_fail (pPair, false);
 
 	pPair->pToken = pToken;
@@ -5178,15 +5180,14 @@ bool PD_Document::setDataItemToken(void * pHandle,
 	return true;
 }
 
-bool PD_Document::getDataItemData(void * pHandle,
+bool PD_Document::getDataItemData(PD_DataItemHandle pHandle,
 									 const char ** pszName,
 									 const UT_ByteBuf ** ppByteBuf,
 									 const void** ppToken) const
 {
 	UT_return_val_if_fail (pHandle,false);
 
-	struct _dataItemPair* pPair = static_cast<struct _dataItemPair*>(pHandle);
-	UT_return_val_if_fail (pPair, false);
+	_dataItemPair* pPair = pHandle;
 
 	if (ppByteBuf)
 	{
@@ -5209,7 +5210,8 @@ bool PD_Document::getDataItemData(void * pHandle,
 }
 
 bool PD_Document::enumDataItems(UT_uint32 k,
-                                void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, std::string * pMimeType) const
+                                PD_DataItemHandle* ppHandle, const char ** pszName, 
+								const UT_ByteBuf ** ppByteBuf, std::string * pMimeType) const
 {
 	// return the kth data item.
 
@@ -5217,20 +5219,19 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 
-	UT_GenericStringMap<struct _dataItemPair*>::UT_Cursor c(&m_hashDataItems);
-	const struct _dataItemPair* pHashEntry = NULL;
 	UT_uint32 i;
+	hash_data_items_t::const_iterator iter;
+	for (iter = m_hashDataItems.begin();
+		 iter != m_hashDataItems.end() && i < k; ++i, ++iter) {
 
-	for (i = 0, pHashEntry = c.first();
-	     c.is_valid() && i < k; i++, pHashEntry = c.next())
-	  {
-	    // noop
-	  }
+		// noop
+	}
 
-	if (ppHandle && c.is_valid())
-		*ppHandle = const_cast<struct _dataItemPair*>(pHashEntry);
+	if (ppHandle && iter != m_hashDataItems.end()) {
+		*ppHandle = iter->second;
+	}
 
-	const struct _dataItemPair* pPair = pHashEntry;
+	const struct _dataItemPair* pPair = iter->second;
 	UT_return_val_if_fail (pPair, false);
 
 	if (ppByteBuf)
@@ -5245,7 +5246,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 
 	if (pszName)
 	{
-		*pszName = c.key().c_str();
+		*pszName = iter->first.c_str();
 	}
 
 	return true;
@@ -5253,23 +5254,20 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 
 void PD_Document::_destroyDataItemData(void)
 {
-	if (m_hashDataItems.size() == 0)
+	if (m_hashDataItems.empty())
 		return;
 
-	UT_GenericStringMap<struct _dataItemPair*>::UT_Cursor c(&m_hashDataItems);
-	struct _dataItemPair *val = NULL;
+	hash_data_items_t::iterator iter;
 
-	for (val = c.first(); c.is_valid(); val = c.next())
-	  {
+	for (iter = m_hashDataItems.begin(); iter != m_hashDataItems.end(); ++iter) {
 		xxx_UT_DEBUGMSG(("DOM: destroying data item\n"));
-		struct _dataItemPair* pPair = val;
+		_dataItemPair* pPair = iter->second;
 		UT_return_if_fail (pPair);
-		UT_String key = c.key();
-		m_hashDataItems.remove (key, NULL);
 		delete pPair->pBuf;
 		FREEP(pPair->pToken);
 		delete pPair;
 	}
+	m_hashDataItems.clear();
 }
 
 /*!

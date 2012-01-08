@@ -27,6 +27,7 @@
 #include <stdio.h>
 #include <string>
 #include <vector>
+#include <map>
 
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -222,7 +223,6 @@ class ABI_EXPORT PD_XMLIDCreator
     std::string createUniqueXMLID( const std::string& desiredID, bool deepCopyRDF = false );
 };
 typedef boost::shared_ptr<PD_XMLIDCreator> PD_XMLIDCreatorHandle;
-
 
 
 /*!
@@ -473,18 +473,20 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	virtual bool			createDataItem(const char * szName, bool bBase64, 
                                            const UT_ByteBuf * pByteBuf,
 										   const std::string & mime_type, 
-                                           void ** ppHandle);
+                                           PD_DataItemHandle* ppHandle);
 	virtual bool            replaceDataItem(const char * szName, const UT_ByteBuf * pByteBuf);
 	virtual bool			getDataItemDataByName(const char * szName,
 												  const UT_ByteBuf ** ppByteBuf,
                                                   std::string* pMimeType,
-                                                  void ** ppHandle) const;
-	bool					setDataItemToken(void* pHandle, void* pToken);
-	bool					getDataItemData(void * pHandle,
-											const char ** pszName, const UT_ByteBuf ** ppByteBuf, const void** ppToken) const;
+                                                  PD_DataItemHandle* ppHandle) const;
+	bool					setDataItemToken(PD_DataItemHandle pHandle, void* pToken) const;
+	bool					getDataItemData(PD_DataItemHandle pHandle,
+											const char ** pszName, const UT_ByteBuf ** ppByteBuf, 
+											const void** ppToken) const;
 	bool					getDataItemFileExtension(const char *szDataID, std::string &sExt, bool bDot = true) const;
 	bool					enumDataItems(UT_uint32 k,
-										  void ** ppHandle, const char ** pszName, const UT_ByteBuf ** ppByteBuf, std::string * pMimeType) const;
+										  PD_DataItemHandle* ppHandle, const char ** pszName, 
+										  const UT_ByteBuf ** ppByteBuf, std::string * pMimeType) const;
 
     pf_Frag_Strux*       findHdrFtrStrux(const gchar * pszHdtFtr,
 											const gchar * pszHdrFtrID);
@@ -838,7 +840,8 @@ private:
 	UT_GenericVector<fl_AutoNum *> m_vecLists;
 	bool                    m_bHasListStopped;
 
-	UT_GenericStringMap<struct _dataItemPair*> m_hashDataItems;
+	typedef std::map<std::string, PD_DataItemHandle> hash_data_items_t;
+	hash_data_items_t m_hashDataItems;
 public:
 	IE_FileInfo				m_fileImpExpInfo;
 private:

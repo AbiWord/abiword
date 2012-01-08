@@ -78,7 +78,7 @@ bool ODe_RDFWriter::writeRDF( PD_Document* pDoc, GsfOutfile* pODT, PD_RDFModelHa
     {
         UT_ByteBuf pByteBuf;
         std::string mime_type = "application/rdf+xml";
-        void** ppHandle = 0;
+        PD_DataItemHandle* ppHandle = NULL;
         
         if( !pDoc->createDataItem( "manifest.rdf", 0, &pByteBuf, 
                                    mime_type, ppHandle )) 
