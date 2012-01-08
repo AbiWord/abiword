@@ -48,6 +48,8 @@ public:
 	void					insertFrag(pf_Frag * pfPlace, pf_Frag * pfNew);
 	void					insertFragBefore(pf_Frag * pfPlace, pf_Frag * pfNew);
 	void					unlinkFrag(pf_Frag * pf);
+	// Call this to purge ALL the fragments. Likely before the destructor.
+	void                                    purgeFrags();
 	pf_Frag *               findFirstFragBeforePos(PT_DocPosition pos) const;
 
 	pf_Frag *				getFirst() const;
@@ -61,7 +63,7 @@ public:
 	{
 	public:
 	  enum Color { red, black };
-	  Node(void);
+	  Node();
 	  Node(Color c);
 	  Node(Color c, pf_Frag * pf, Node * l, Node * r, Node * p);
 	  ~Node(void);
@@ -74,6 +76,10 @@ public:
 #ifdef DEBUG
 	  void         print(void);
 #endif
+	private:
+	  // prevent copy
+	  Node(const Node&);
+	  Node& operator=(const Node&);
 	};
 
 	
@@ -135,13 +141,6 @@ public:
 
 
 private:
-	inline pf_Frag*			getCache() const { return m_pCache; }
-	inline void				setCache(pf_Frag* pf) const { m_pCache = pf; }
-
-	pf_Frag *				m_pFirst;
-	pf_Frag *				m_pLast;
-	mutable pf_Frag*		m_pCache;
-
 	Iterator insertRoot(pf_Frag* new_piece); // throws std::bad_alloc (strong)
 	Iterator insertLeft(pf_Frag* new_piece, Iterator it); // throws std::bad_alloc (strong)
 	Iterator insertRight(pf_Frag* new_piece, Iterator it); // throws std::bad_alloc (strong)
@@ -173,6 +172,9 @@ private:
 	int _countBlackNodes(const Iterator it) const;
 #endif
 
+	/** will delete the tree AND delete the fragments */
+	void delete_and_purge_tree(Node* node);
+	/** same as above BUT keep the fragments (as we don't own them */
 	void delete_tree(Node* node);
 
 	const Node* _next(const Node* pn) const;

@@ -83,10 +83,7 @@ pf_Fragments::Node::~Node(void)
 //////////////////////////////////////////////
 
 pf_Fragments::pf_Fragments()
-	: m_pFirst(0),
-	  m_pLast(0),
-	  m_pCache(0),
-	  m_pLeaf(new Node(Node::black)),
+	: m_pLeaf(new Node(Node::black)),
 	  m_pRoot(m_pLeaf),
 	  m_nSize(0),
 	  m_nDocumentSize(0)
@@ -101,16 +98,14 @@ pf_Fragments::~pf_Fragments()
 		delete_tree(m_pRoot);
 
 	delete m_pLeaf;
+}
 
-	//Comment this out later.
-	while (m_pFirst)
-	{
-		pf_Frag* pNext = m_pFirst->getNext();
-		delete m_pFirst;
-		m_pFirst = pNext;
+void pf_Fragments::purgeFrags()
+{
+	if (m_pRoot != m_pLeaf) {
+		delete_and_purge_tree(m_pRoot);
 	}
-	
-	m_pLast = NULL;
+	m_pRoot = m_pLeaf;
 }
 
 void pf_Fragments::appendFrag(pf_Frag * pf)
@@ -1100,6 +1095,21 @@ pf_Fragments::_calculateSize(Node* x) const
 		return 0;
 	
 	return x->item->getLeftTreeLength() + x->item->getLength() + _calculateSize(x->right);
+}
+
+void
+pf_Fragments::delete_and_purge_tree(Node* node)
+{
+	if (node->left != m_pLeaf) {
+		delete_and_purge_tree(node->left);
+	}
+	if (node->right != m_pLeaf) {
+		delete_and_purge_tree(node->right);
+	}
+	if(node->item) {
+		delete node->item;
+	}
+	delete node;
 }
 
 void

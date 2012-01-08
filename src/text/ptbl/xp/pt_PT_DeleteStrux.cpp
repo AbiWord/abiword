@@ -159,6 +159,8 @@ bool pt_PieceTable::_unlinkStrux_Block(pf_Frag_Strux * pfs,
 	if(pfsPrev == NULL)
 	{
 		_unlinkFrag(pfs,ppfEnd,pfragOffsetEnd);
+		UT_DEBUGMSG(("shoudln't happen."));
+		UT_ASSERT(0);
 		return false;
 	}
 

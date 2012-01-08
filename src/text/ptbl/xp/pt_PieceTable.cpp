@@ -65,6 +65,7 @@ pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
 
 pt_PieceTable::~pt_PieceTable()
 {
+	m_fragments.purgeFrags();
 	m_hashStyles.purgeData();
 }
 
