@@ -853,6 +853,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 				UT_DEBUGMSG(("@@@@ ===== Font for u%04x does not match "
 							 "earlier font\n", c));
 				pFontSubst = font;
+				g_object_unref (G_OBJECT (pFontSubst));
 			}
 			else if (pFontSubst == font)
 			{
@@ -891,7 +892,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		if (pItem->m_pi->analysis.font)
 			g_object_unref (G_OBJECT (pItem->m_pi->analysis.font));
 		
-		pItem->m_pi->analysis.font = (PangoFont*)g_object_ref((GObject*)pFontSubst);
+		pItem->m_pi->analysis.font = (PangoFont*)pFontSubst;
 	}
 	
 	RI->m_iCharCount = si.m_iLength;
@@ -961,6 +962,8 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 				&(pItem->m_pi->analysis), RI->m_pScaledGlyphs);
 
 	pItem->m_pi->analysis.font = pPangoFontOrig;
+
+	g_object_unref(pf);
 		
 	if(RI->m_pLogOffsets)
 	{
