@@ -306,7 +306,8 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		{
 		    fp_Column * pPrevCol = static_cast<fp_Column *>(pCurColumn->getPrev());
 		    fp_Page * pPrevPrevPage = pPrevCol->getPage();
-		    if((pPrevCol->getHeight() == 0) && !pPrevCol->containsPageBreak())
+		    if((pPrevCol->getHeight() == 0) && !pPrevCol->containsPageBreak() &&
+		       pOuterContainer)
 		    {
 		        bool bPageBreak = false;
 		        fp_Column * pCol2 = static_cast<fp_Column *>(pPrevCol->getPrev());
