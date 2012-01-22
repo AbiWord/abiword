@@ -292,16 +292,24 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
                 ->getNthTOCEntry(currentItem, &curItemLevel);
             PT_DocPosition itemPos;
             m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
-	    UT_UTF8String itemFilename = m_pie->getNavigationHelper()
-                ->getFilenameByPosition(itemPos);
             
-            if ((itemFilename == ".xhtml") || itemFilename.length() == 0)
+            UT_UTF8String itemFilename;
+            if (m_exp_opt.bSplitDocument)
+            {
+                itemFilename = m_pie->getNavigationHelper()
+                    ->getFilenameByPosition(itemPos);
+
+                if ((itemFilename == ".xhtml") || itemFilename.length() == 0)
+                {
+                    itemFilename = "index.xhtml";
+                }
+                else
+                {
+                    itemFilename +=   + ".xhtml";
+                }
+            } else
             {
                 itemFilename = "index.xhtml";
-            }
-	    else
-            {
-                itemFilename +=   + ".xhtml";
             }
 
             if (std::find(m_opsId.begin(), m_opsId.end(), 
@@ -428,15 +436,24 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
                 ->getNthTOCEntry(currentItem, &curItemLevel);
             PT_DocPosition itemPos;
             m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
-	    UT_UTF8String itemFilename = m_pie->getNavigationHelper()
-                ->getFilenameByPosition(itemPos);
+	    
+            UT_UTF8String itemFilename;
             
-            if ((itemFilename == "") || itemFilename.length() == 0)
+            if (m_exp_opt.bSplitDocument)
             {
-                itemFilename = "index.xhtml";
+                itemFilename = m_pie->getNavigationHelper()
+                    ->getFilenameByPosition(itemPos);
+
+                if ((itemFilename == "") || itemFilename.length() == 0)
+                {
+                    itemFilename = "index.xhtml";
+                } else
+                {
+                    itemFilename +=  ".xhtml";
+                }
             } else
             {
-                itemFilename +=  ".xhtml";
+                itemFilename = "index.xhtml";
             }
 
             if (std::find(m_opsId.begin(), m_opsId.end(), 
