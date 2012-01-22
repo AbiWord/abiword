@@ -53,7 +53,7 @@ void IE_Exp_HTML_DocumentWriter::closeSpan()
 }
 
 void IE_Exp_HTML_DocumentWriter::openBlock(const gchar* szStyleName,
-	const UT_UTF8String& style, const PP_AttrProp *pAP)
+										   const UT_UTF8String& style, const PP_AttrProp * /*pAP*/)
 {
     m_pTagWriter->openTag("p");
     _handleStyleAndId(szStyleName, NULL, style.utf8_str());
@@ -65,8 +65,8 @@ void IE_Exp_HTML_DocumentWriter::closeBlock()
 }
 
 void IE_Exp_HTML_DocumentWriter::openHeading(size_t level, 
-    const gchar* szStyleName, const gchar *szId,
-    const PP_AttrProp *pAP)
+											 const gchar* szStyleName, const gchar *szId,
+											 const PP_AttrProp * /*pAP*/)
 {
     switch (level)
     {
@@ -174,7 +174,7 @@ void IE_Exp_HTML_DocumentWriter::closeBookmark()
 }
 
 void IE_Exp_HTML_DocumentWriter::openList(bool ordered, const gchar *szStyleName,
-    const PP_AttrProp *pAP)
+										  const PP_AttrProp * /*pAP*/)
 {
     if (ordered)
     {
@@ -357,7 +357,7 @@ void IE_Exp_HTML_DocumentWriter::insertImage(const UT_UTF8String& url,
 
 }
 
-void IE_Exp_HTML_DocumentWriter::insertTOC(const gchar* title, 
+void IE_Exp_HTML_DocumentWriter::insertTOC(const gchar* /*title*/,
     const std::vector<UT_UTF8String>& items, 
     const std::vector<UT_UTF8String>& itemUriList)
 {
@@ -506,7 +506,7 @@ void IE_Exp_HTML_DocumentWriter::insertLink(const UT_UTF8String &rel,
 }
 
 void IE_Exp_HTML_DocumentWriter::insertMath(const UT_UTF8String& mathml, 
-    const UT_UTF8String& width, const UT_UTF8String& height)
+											const UT_UTF8String& /*width*/, const UT_UTF8String& /*height*/)
 {
     m_pTagWriter->writeData(mathml.utf8_str());    
 }

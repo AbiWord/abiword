@@ -3336,7 +3336,7 @@ bool IE_Exp_RTF::s_escapeString( std::string& outStr, const std::string& inStr,
 std::string IE_Exp_RTF::s_escapeString( const std::string& inStr, UT_uint32 iAltChars )
 {
     UT_UTF8String sOutStr;
-    bool ret = s_escapeString( sOutStr, inStr.c_str(), inStr.length(), iAltChars );
+    /*bool ret =*/ s_escapeString( sOutStr, inStr.c_str(), inStr.length(), iAltChars );
     return (std::string)sOutStr.utf8_str();
 }
 

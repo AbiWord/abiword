@@ -1572,7 +1572,6 @@ void s_AbiWord_1_Listener::_handleMetaData(void)
 
   m_pie->write("<metadata>\n");
 
-  const UT_UTF8String * val = NULL ;
   std::map<std::string, std::string>::const_iterator iter = ref.begin();
   for ( ; iter != ref.end(); ++iter ) {
 	  if( !iter->second.empty() ) {

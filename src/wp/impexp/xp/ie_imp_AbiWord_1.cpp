@@ -411,11 +411,12 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		// Need to set the min Unique id now.
 
 		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("footnote-id", atts));
-		bool bOK = true;
+		UT_DebugOnly<bool> bOK = true;
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
 			bOK = getDoc()->setMinUID(UT_UniqueId::Footnote, id+1);
+			UT_ASSERT(bOK);
 		}
 
 		X_CheckError(appendStrux(PTX_SectionFootnote,atts));
@@ -434,11 +435,12 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 		// Do we Need to set the min Unique id now???
 		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("annotation-id", atts));
-		bool bOK = true;
+		UT_DebugOnly<bool> bOK = true;
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
 			bOK = getDoc()->setMinUID(UT_UniqueId::Annotation, id+1);
+			UT_ASSERT(bOK);
 		}
 		X_CheckError(appendStrux(PTX_SectionAnnotation,atts));
 		UT_DEBUGMSG(("FInished Append Annotation strux \n"));
@@ -454,11 +456,12 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		// Need to set the min Unique id now.
 
 		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("endnote-id", atts));
-		bool bOK = true;
+		UT_DebugOnly<bool> bOK = true;
 		if(pszId)
 		{
 			UT_uint32 id = atoi(pszId);
 			bOK = getDoc()->setMinUID(UT_UniqueId::Endnote, id+1);
+			UT_ASSERT(bOK);
 		}
 
 		// Don't check for id of the endnote strux. It should match the
@@ -587,11 +590,11 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
         if( type && !strcmp(type,"end"))
         {
             std::string  xmlid = "";
-            const gchar* name  = UT_getAttribute("name", atts);
-            if( name )
+            const gchar* nameAttr  = UT_getAttribute("name", atts);
+            if( nameAttr )
             {
-                xmlid = xmlidMapForBookmarks[name];
-                xmlidMapForBookmarks.erase(name);
+                xmlid = xmlidMapForBookmarks[nameAttr];
+                xmlidMapForBookmarks.erase(nameAttr);
             }
             int idx = 0;
             const gchar* pp[60];
@@ -608,11 +611,11 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
         else
         {
             X_CheckError(appendObject(PTO_Bookmark,atts));
-            const gchar* name  = UT_getAttribute("name", atts);
+            const gchar* nameAttr  = UT_getAttribute("name", atts);
             const gchar* xmlid = UT_getAttribute("xml:id", atts);
             if( name && xmlid )
             {
-                xmlidMapForBookmarks[name] = ( xmlid ? xmlid : "" );
+                xmlidMapForBookmarks[nameAttr] = ( xmlid ? xmlid : "" );
             }
         }
         

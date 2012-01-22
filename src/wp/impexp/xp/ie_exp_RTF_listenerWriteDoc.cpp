@@ -3794,11 +3794,9 @@ void s_RTF_ListenerWriteDoc::_newRow(void)
 //
 // Look if we have a vertically merged cell at this (row,i)
 //
-		bool vMerge = false;
 		if(m_Table.getTop() < row)
 		{
 			m_pie->_rtf_keyword("clvmrg");
-			vMerge = true;
 		}
 //
 // Look to see if this is the first cell of a set of vertically merged cells
@@ -4381,9 +4379,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 			const gchar* pszFooterFirstID = NULL;
 			bool bFooterFirst = false;
 			const gchar* pszHeaderLastID = NULL;
-			bool bHeaderLast = false;
 			const gchar* pszFooterLastID = NULL;
-			bool bFooterLast = false;
 			
 // header,headerl (odd) ,headerr(even) ,headerf(first) ,footer,footerl,footerr,footerf
 
@@ -4419,6 +4415,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 			{
 				bFooterFirst = true;
 			}
+#if 0
 			pAP->getAttribute("header-last", pszHeaderLastID);
 			if(pszHeaderLastID != NULL)
 			{
@@ -4430,6 +4427,7 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 			{
 				bFooterLast = true;
 			}
+#endif
 			if(bHeader && !bHeaderEven)
 			{
 			        m_bInBlock = false;

@@ -30,7 +30,7 @@ std::string eraseAP( const std::string& retvalue, const std::string& name )
     std::string ret = retvalue;
     UT_DEBUGMSG(("eraseAP() TOP:%s\n", ret.c_str() ));
     
-    int start = ret.find( name );
+    std::string::size_type start = ret.find( name );
     if( start == std::string::npos )
     {
         UT_DEBUGMSG(("eraseAP() NOT FOUND:%s\n", ret.c_str() ));
