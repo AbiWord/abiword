@@ -273,15 +273,16 @@ void XAP_UnixApp::_setAbiSuiteLibDir()
 {
 	// FIXME: this code sucks hard
 
-	char buf[PATH_MAX];
+	char * buf = NULL;
 	
 	// see if ABIWORD_DATADIR was set in the environment
 	const char * sz = getenv("ABIWORD_DATADIR");
 	if (sz && *sz)
 	{
+		int len = strlen(sz);
+		buf = (gchar *)g_malloc(len+1);
 		strcpy(buf,sz);
 		char * p = buf;
-		int len = strlen(p);
 		if ( (p[0]=='"') && (p[len-1]=='"') )
 		{
 			// trim leading and trailing DQUOTES
@@ -292,6 +293,7 @@ void XAP_UnixApp::_setAbiSuiteLibDir()
 		if (p[len-1]=='/')				// trim trailing slash
 			p[len-1] = 0;
 		XAP_App::_setAbiSuiteLibDir(p);
+		g_free(buf);
 		return;
 	}
 
