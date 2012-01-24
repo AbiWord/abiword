@@ -10040,12 +10040,12 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 		UT_uint32 blockOffset = pos - pBlock->getPosition();
 		pRun = pBlock->findRunAtOffset(blockOffset);
 	}
-	UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) block:%p run:%p\n", pBlock, pRun ));
+	xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) block:%p run:%p\n", pBlock, pRun ));
 	if( pRun )
 	{
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.t:%d\n", pRun->getType() ));
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.w:%d\n", pRun->getWidth() ));
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.hl:%p\n", pRun->getHyperlink() ));
+		xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.t:%d\n", pRun->getType() ));
+		xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.w:%d\n", pRun->getWidth() ));
+		xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(top) run.hl:%p\n", pRun->getHyperlink() ));
 	}
 	// Make sure we found the starting pRun for an annotation which is
 	// a single point in the document.
@@ -10062,45 +10062,45 @@ fp_Run * FV_View::getHyperLinkRun(PT_DocPosition pos)
 	// 
 	if( pRun && pRun->getType() != FPRUN_HYPERLINK && !pRun->getHyperlink() )
 	{
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.x:%d\n", pRun->getX() ));
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.w:%d\n", pRun->getWidth() ));
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.t:%d\n", pRun->getType() ));
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.nl:%p\n", pRun->getHyperlink() ));
+		xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.x:%d\n", pRun->getX() ));
+		xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.w:%d\n", pRun->getWidth() ));
+		xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.t:%d\n", pRun->getType() ));
+		xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(1) run.nl:%p\n", pRun->getHyperlink() ));
 		if( pRun->getPrevRun() && pRun->getPrevRun()->getType() == FPRUN_HYPERLINK )
 		{
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(prev) run.x:%d\n", pRun->getX() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(prev) run.x:%d\n", pRun->getX() ));
 			pRun = pRun->getPrevRun();
 			if( pRun->getWidth() == 0 )
 				pRun = pRun->getPrevRun();
 		}
 		else if( pRun->getNextRun() && pRun->getNextRun()->getType() == FPRUN_HYPERLINK )
 		{
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(next) run.x:%d\n", pRun->getX() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(next) run.x:%d\n", pRun->getX() ));
 			pRun = pRun->getNextRun();
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(next) run.type:%d\n", pRun->getType() ));
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(next) run.  hl:%p\n", pRun->getHyperlink() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(next) run.type:%d\n", pRun->getType() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(next) run.  hl:%p\n", pRun->getHyperlink() ));
 		}
 		
 		if( pRun )
 		{
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.x:%d\n", pRun->getX() ));
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.w:%d\n", pRun->getWidth() ));
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.t:%d\n", pRun->getType() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.x:%d\n", pRun->getX() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.w:%d\n", pRun->getWidth() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(2) run.t:%d\n", pRun->getType() ));
 		}
 		
 		if( pRun && pRun->getType() != FPRUN_HYPERLINK )
 		{
-			UT_DEBUGMSG(("FV_View::getHyperLinkRun(3 reset) run.x:%d\n", pRun->getX() ));
+			xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(3 reset) run.x:%d\n", pRun->getX() ));
 			pRun = 0;
 		}
 	}
 	if(pRun && pRun->getHyperlink() != NULL)
 	{
-		UT_DEBUGMSG(("FV_View::getHyperLinkRun(ret) run.hl:%p\n", pRun->getHyperlink() ));
+		xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(ret) run.hl:%p\n", pRun->getHyperlink() ));
 		return pRun->getHyperlink();
 	}
 	
-	UT_DEBUGMSG(("FV_View::getHyperLinkRun(end fail)\n" ));
+	xxx_UT_DEBUGMSG(("FV_View::getHyperLinkRun(end fail)\n" ));
 	return NULL;
 }
 
