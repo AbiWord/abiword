@@ -1402,6 +1402,37 @@ fp_Column* fp_Page::getNthColumnLeader(UT_sint32 n) const
 	return m_vecColumnLeaders.getNthItem(n);
 }
 
+
+fp_Container* fp_Page::getNthColumn(UT_uint32 n,fl_DocSectionLayout *pSection) const
+{
+	fp_Column *pCol = NULL;
+	UT_sint32 j = 0;
+	bool b_sectionFound = false;
+	
+	if ((!pSection) || (n > pSection->getNumColumns()))
+	{ return NULL;}
+	for (j = 0;j < countColumnLeaders();j++)
+	{
+		pCol = getNthColumnLeader(j);
+		if (pCol && (pCol->getDocSectionLayout() == pSection))
+		{
+			b_sectionFound = true;
+			break;
+		}
+	}
+	if (!b_sectionFound)
+	{ return NULL;}
+
+	UT_uint32 k = 0;
+	while(pCol && k < n)
+	{
+		pCol = static_cast <fp_Column *>(pCol->getNext());
+		k++;
+	}
+	return pCol;
+
+}
+ 
 /*!
  * This method is called following a notification of an increase in 
  * HdrFtr size

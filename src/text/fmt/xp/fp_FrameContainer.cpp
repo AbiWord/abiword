@@ -59,7 +59,8 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
 	  m_bIsTopBot(false),
 	  m_bIsLeftWrapped(false),
 	  m_bIsRightWrapped(false),
-	  m_iPreferedPageNo(-1)
+	  m_iPreferedPageNo(-1),
+	  m_iPreferedColumnNo(0)
 {
 }
 
@@ -207,11 +208,31 @@ void fp_FrameContainer::setPreferedPageNo(UT_sint32 i)
      UT_UTF8String sVal;
      UT_UTF8String_sprintf(sVal,"%d",i);
      const char * attr = PT_PROPS_ATTRIBUTE_NAME;
-     UT_UTF8String sAttVal = "pref-page:";
+     UT_UTF8String sAttVal = "frame-pref-page:";
      sAttVal += sVal.utf8_str();
      
      pDoc->changeStruxAttsNoUpdate(pFL->getStruxDocHandle(),attr,sAttVal.utf8_str());
 }
+
+void fp_FrameContainer::setPreferedColumnNo(UT_sint32 i)
+{
+     if(m_iPreferedColumnNo == i)
+       return;
+     m_iPreferedColumnNo =  i;
+     fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
+     FL_DocLayout * pDL = pFL->getDocLayout();
+     if(pDL->isLayoutFilling())
+       return;
+     PD_Document * pDoc = pDL->getDocument();
+     UT_UTF8String sVal;
+     UT_UTF8String_sprintf(sVal,"%d",i);
+     const char * attr = PT_PROPS_ATTRIBUTE_NAME;
+     UT_UTF8String sAttVal = "frame-pref-column:";
+     sAttVal += sVal.utf8_str();
+     
+     pDoc->changeStruxAttsNoUpdate(pFL->getStruxDocHandle(),attr,sAttVal.utf8_str());
+}
+
 /*!
  * This method returns the padding to be applied between a line approaching
  * wrapped frame or image from the left. 

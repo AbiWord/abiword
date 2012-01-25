@@ -177,7 +177,7 @@ public:
 	bool            getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Line * pLine) const;
 	bool            setFramesOnPage(fp_Line * pLastLine);
 	UT_sint32       getMinWrapWidth(void) const;
-	UT_sint32       getHeightOfBlock(void);
+	UT_sint32       getHeightOfBlock(bool b_withMargins = true);
 	fp_Line *       findLineWithFootnotePID(UT_uint32 pid) const;
 	UT_sint32 getMaxNonBreakableRun(void) const;
 	fp_Line* findPrevLineInDocument(fp_Line*) const;

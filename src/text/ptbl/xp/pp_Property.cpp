@@ -118,14 +118,17 @@ static PP_Property _props[] =
 
 	{"frame-col-xpos",         "0.0in",           false, NULL, PP_LEVEL_FRAME},
 	{"frame-col-ypos",         "0.0in",           false, NULL, PP_LEVEL_FRAME},
+	{"frame-expand-height",    "0.0in",           false, NULL, PP_LEVEL_FRAME},
 	{"frame-height",           "0.0in",           false, NULL, PP_LEVEL_FRAME},
+	{"frame-horiz-align",      "left",            false, NULL, PP_LEVEL_FRAME},
+	{"frame-min-height",       "0.0in",           false, NULL, PP_LEVEL_FRAME},
 	{"frame-page-xpos",        "0.0in",           false, NULL, PP_LEVEL_FRAME},
 	{"frame-page-ypos",        "0.0in",           false, NULL, PP_LEVEL_FRAME},
-	{"frame-position-to",      "block-above-text",false, NULL, PP_LEVEL_FRAME},
+	{"frame-pref-column",      "0",               false, NULL, PP_LEVEL_FRAME}, 
+	{"frame-pref-page",        "0",               false, NULL, PP_LEVEL_FRAME},
+	{"frame-rel-width",        "0.5",             false, NULL, PP_LEVEL_FRAME},
 	{"frame-type",             "textbox",         false, NULL, PP_LEVEL_FRAME},
 	{"frame-width",            "0.0in",           false, NULL, PP_LEVEL_FRAME},
-	{"frame-xpos",             "0.0in",           false, NULL, PP_LEVEL_FRAME},
-	{"frame-ypos",             "0.0in",           false, NULL, PP_LEVEL_FRAME},
 
 	{ "header",                "",                false, NULL, PP_LEVEL_SECT},
 	{ "header-even",           "",                false, NULL, PP_LEVEL_SECT},
@@ -165,8 +168,8 @@ static PP_Property _props[] =
 	{ "page-margin-left",	   "1in",             false, NULL, PP_LEVEL_SECT},
 	{ "page-margin-right",     "1in",             false, NULL, PP_LEVEL_SECT},
 	{ "page-margin-top",       "1in",             false, NULL, PP_LEVEL_SECT},
-
-	{ "right-attach",         "",               false,  NULL, PP_LEVEL_TABLE},
+	{ "position-to",           "block-above-text",false, NULL, PP_LEVEL_FRAME}, 
+	{ "right-attach",          "",                false, NULL, PP_LEVEL_TABLE},
 	{ "right-color",           "000000",          false, NULL, PP_LEVEL_TABLE},
 	{ "right-shadow",          "0",               false, NULL, PP_LEVEL_BLOCK},
 	{ "right-shadow-color",    "grey",            false, NULL, PP_LEVEL_BLOCK},
@@ -268,7 +271,11 @@ static PP_Property _props[] =
 
 	{ "widows",                "2",               false, NULL, PP_LEVEL_BLOCK},
 	{ "width",                 "0in",             false, NULL, PP_LEVEL_CHAR}, 
-	{ "wrap-mode",             "above-text",      false, NULL, PP_LEVEL_FRAME} 
+	{ "wrap-mode",             "above-text",      false, NULL, PP_LEVEL_FRAME},
+	{ "xpad",                  "0.03in",          false, NULL, PP_LEVEL_FRAME},
+	{ "xpos",                  "0.0in",           false, NULL, PP_LEVEL_FRAME},
+	{ "ypad",                  "0.03in",          false, NULL, PP_LEVEL_FRAME}, 
+	{ "ypos",                  "0.0in",           false, NULL, PP_LEVEL_FRAME} 
 };
 
 static int s_compare (const void * a, const void * b)

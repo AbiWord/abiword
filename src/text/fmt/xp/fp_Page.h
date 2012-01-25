@@ -105,6 +105,7 @@ public:
 	fp_Column*			getNthColumnLeader(UT_sint32 n) const;
 	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
+	fp_Container*                   getNthColumn(UT_uint32 n,fl_DocSectionLayout *pSection) const; 
 	bool				isEmpty(void) const;
 	bool                            containsPageBreak(void) const;
 	fp_Container *      updatePageForWrapping(fp_Column *& pNextCol);

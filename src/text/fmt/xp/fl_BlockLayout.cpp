@@ -2601,12 +2601,11 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			{
 				pFrameCon->setX(xFpos);
 				pFrameCon->setY(yFpos);
-				UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
 				UT_return_val_if_fail(pPage,false);
 				if(pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					pPage->insertFrameContainer(pFrameCon);
-					iPrefPage = getDocLayout()->findPage(pPage);
+					UT_sint32 iPrefPage = getDocLayout()->findPage(pPage);
 					pFrameCon->setPreferedPageNo(iPrefPage);
 				}
 			}
@@ -2619,13 +2618,21 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// 
 			if(pFrameCon)
 			{
-				UT_sint32 iPrefPage = pFrameCon-> getPreferedPageNo();
+				UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
+				UT_sint32 iPrefColumn = pFrameCon->getPreferedColumnNo();
+				bool b_PrefColumnChanged = false;
+				if (iPrefColumn < 0)
+				{ 
+					iPrefColumn = 0;
+					b_PrefColumnChanged = true;
+				}
 				FL_DocLayout *pDL = getDocLayout();
+				fl_DocSectionLayout *pSection = getDocSectionLayout();
+				UT_sint32 numColumns = getDocSectionLayout()->getNumColumns();
 				//
 				// Handle case of block spanning two pages
 				//
 				fp_Page * pPage = NULL;
-				fp_Line * pLine = NULL;
 				fp_Container * pCol = NULL;
 				fp_Line * pLFirst = static_cast<fp_Line *>(getFirstContainer());
 				UT_return_val_if_fail(pLFirst,false);
@@ -2636,106 +2643,142 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				fp_Page * pPageLast = pLLast->getPage();
 				if (pDL->isLayoutFilling())
 				{
-					if (!pPageLast && (pDL->findPage(pDL->getLastPage()) < iPrefPage))
+					fp_Page * pPageFinal = pDL->getLastPage();
+					if (!pPageLast && (pDL->findPage(pPageFinal) <= iPrefPage)) 
 					{
-						// The last line has not yet been drawn
-						continue;
+						if (pDL->findPage(pPageFinal) == iPrefPage)
+						{
+							UT_sint32 j=0;
+							UT_sint32 k=0;
+							bool b_sectionFound = false;
+							for(j=0;j<pPageFinal->countColumnLeaders() || b_sectionFound;j++)
+							{
+								if (pPageFinal->getNthColumnLeader(j)->getDocSectionLayout()==pSection)
+								{
+									b_sectionFound = true;
+									fp_Container * pCol2 = pPageFinal->getNthColumnLeader(j);
+									while(k < iPrefColumn && pCol2)
+									{
+										pCol2 = static_cast <fp_Container *> (pCol2->getNext());
+										k++;
+									}
+								}
+							}
+							if (k < iPrefColumn)
+							{
+							// The good column has not yet been drawn
+								continue;
+							}
+						}
+						else
+						{
+							// The good column has not yet been drawn
+							continue;
+						}
 					}
 					else
 					{
 						if (pDL->findPage(pPageFirst) > iPrefPage)
 						{
-							printf("Page first; first page: %d; last page: %d\n",
-								   pDL->findPage(pPageFirst)+1,pDL->findPage(pDL->getLastPage())+1);
 							pPage = pPageFirst;
-							pLine = pLFirst;
 						}
 						else if (pPageLast && pDL->findPage(pPageLast) < iPrefPage)
 						{
-							printf("Page last\n");
 							pPage = pPageLast;
-							pLine = pLLast;
 						}
 						else
 						{
-							printf("Page iPref; first page: %d; last page: %d\n",
-								   pDL->findPage(pPageFirst)+1,pDL->findPage(pDL->getLastPage())+1);
 							pPage = pDL->getNthPage(iPrefPage);
-							if(pPageFirst ==  pPage)
-							{
-								pLine = pLFirst;
-							}
-							else if (pPageLast && (pPageLast == pPage))
-							{
-								pLine = pLLast;
-							}
-							else
-							{
-								pLine = pLFirst;
-								while(pLine && pLine->getPage() != pPage)
-								{
-									pLine = static_cast<fp_Line *>(pLine->getNext());
-								}
-								UT_return_val_if_fail(pLine,false);
-							}
-
 						}
 					}
-					pCol = pLine->getColumn();
+					if (numColumns > iPrefColumn)
+					{
+						pCol = pPage->getNthColumn(iPrefColumn,pSection);
+					}
+					else
+					{
+						pCol = pPage->getNthColumn(numColumns-1,pSection);
+						b_PrefColumnChanged = true;
+					}
 				}
 				else
 				{
 					UT_return_val_if_fail(pPageLast,false);
 					UT_sint32 iPageFirst = getDocLayout()->findPage(pPageFirst);
 					UT_sint32 iPageLast = getDocLayout()->findPage(pPageLast);
-					pPage = pPageLast;
-					pLine = pLLast;
 					if(pPageFirst != pPageLast)
 					{
 						if(iPrefPage == iPageFirst)
 						{
 							pPage = pPageFirst;
-							pLine = pLFirst;
+							fp_Column * firstColumn = static_cast <fp_Column *> (pLFirst->getColumn());
+							if ((firstColumn->getColumnIndex() <= iPrefColumn) &&
+								(numColumns > iPrefColumn))
+							{
+								pCol = pPage->getNthColumn(iPrefColumn,pSection);
+							}
+							else
+ 							{
+								pCol = pLFirst->getColumn();
+								b_PrefColumnChanged = true;
+							}
 						}
 						else if(iPrefPage == iPageLast)
 						{
 							pPage = pPageLast;
-							pLine = pLLast;
-						}
-						else if((iPrefPage>= iPageFirst) && (iPrefPage <= iPageLast))
-						{
-							pPage = pDL->getNthPage(iPrefPage);
-							if(iPageFirst ==  iPrefPage)
+							fp_Column * lastColumn = static_cast <fp_Column *> (pLLast->getColumn());
+							if (lastColumn->getColumnIndex() >= iPrefColumn)
 							{
-								pLine = pLFirst;
-							}
-							else if (iPageLast == iPrefPage)
-							{
-								pLine = pLLast;
+								pCol = pPage->getNthColumn(iPrefColumn,pSection);
 							}
 							else
 							{
-								pLine = pLFirst;
-							while(pLine && pLine->getPage() != pPage)
-							{
-								pLine = static_cast<fp_Line *>(pLine->getNext());
+								pCol = pLLast->getColumn();
+								b_PrefColumnChanged = true;
 							}
-							UT_return_val_if_fail(pLine,false);
+
+						}
+						else if((iPrefPage >= iPageFirst) && (iPrefPage <= iPageLast))
+						{
+							pPage = pDL->getNthPage(iPrefPage);
+							if (numColumns > iPrefColumn)
+							{
+								pCol = pPage->getNthColumn(iPrefColumn,pSection);
+							}
+							else
+							{
+								pCol = pPage->getNthColumn(numColumns-1,pSection);
+								b_PrefColumnChanged = true;
 							}
 						}
 						else
 						{
-							UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
-							UT_sint32 idFirst =  abs(pLFirst->getY() - pFrame->getFrameYColpos());
-							if(idFirst < idLast)
-							{
-								pPage = pPageFirst;
-								pLine = pLFirst;
-							}
+							pPage = pPageFirst;
+							pCol = pLFirst->getColumn();
 						}
 					}
+					else
+					{
+						pPage = pPageFirst;
+						fp_Column * firstColumn = static_cast <fp_Column *> (pLFirst->getColumn());
+						fp_Column * lastColumn = static_cast <fp_Column *> (pLLast->getColumn());
+						if (iPrefColumn < firstColumn->getColumnIndex())
+						{
+							pCol = pLFirst->getColumn();
+							b_PrefColumnChanged = true;
+						}
+						else if (iPrefColumn > lastColumn->getColumnIndex())
+						{
+							pCol = pLLast->getColumn();
+							b_PrefColumnChanged = true;
+						}
+						else
+						{
+							pCol = pPage->getNthColumn(iPrefColumn,pSection);
+						}
+					}
+
 					UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
-					pCol = pLine->getColumn();
 
 					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-2) && (iPrefPage < iGuessedPage+3))
 					{
@@ -2743,7 +2786,16 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 						if(pPrefPage && (pPage != pPrefPage))
 						{
 							pPage = pPrefPage;
-							pCol = pPage->getNthColumnLeader(0);
+						}
+						if (numColumns > iPrefColumn)
+						{
+							pCol = pPage->getNthColumn(iPrefColumn,pSection);
+							b_PrefColumnChanged = false;
+						}
+						else
+						{
+							pCol = pPage->getNthColumn(numColumns-1,pSection);
+							b_PrefColumnChanged = true;
 						}
 					}
 				}
@@ -2752,12 +2804,16 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				pFrameCon->setX(pFrame->getFrameXColpos()+pCol->getX());
 				pFrameCon->setY(pFrame->getFrameYColpos()+pCol->getY());
 				UT_return_val_if_fail(pPage,false);
-				if(pPage->findFrameContainer(pFrameCon) < 0)
+				if(pPage && pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					pPage->insertFrameContainer(pFrameCon);
 					iPrefPage = pDL->findPage(pPage);
 					pFrameCon->setPreferedPageNo(iPrefPage);
-					printf("Inserting frame on page %d\n",iPrefPage+1);
+				}
+				if (b_PrefColumnChanged)
+				{
+					fp_Column * pColumn = static_cast <fp_Column *> (pCol);
+					pFrameCon->setPreferedColumnNo(pColumn->getColumnIndex());
 				}
 			}
 		}
@@ -2786,7 +2842,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				{
 					if (!pPageLast && (pDL->findPage(pDL->getLastPage()) < iPrefPage))
 					{
-						// The last line has not yet been drawn
+						// The good page has not yet been drawn
 						continue;
 					}
 					else
@@ -2808,6 +2864,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				else
 				{
 					UT_return_val_if_fail(pPageLast,false);
+					pPage = pPageLast;
 					if(pPageFirst != pPageLast)
 					{
 						UT_sint32 idLast = abs(pLLast->getY() - pFrame->getFrameYColpos());
@@ -2817,6 +2874,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 							pPage = pPageFirst;
 						}
 					}
+
 					UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
 					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-2) && (iPrefPage < iGuessedPage+3))
 					{
@@ -2870,17 +2928,9 @@ bool fl_BlockLayout::getXYOffsetToLine(UT_sint32 & xoff, UT_sint32 & yoff, fp_Li
 }
 /*!
  * Calculate the height of the all the text contained by this block
- * Lines can force a sectionbreak by setting the m_bForceSectionBreak. 
- * If a line height
- * changes or an ascent/descent changes we must do a section break.
  */
-UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
+UT_sint32 fl_BlockLayout::getHeightOfBlock(bool b_withMargins)
 {
-	if(m_bForceSectionBreak)
-	{
-		m_bForceSectionBreak = false;
-		return 0;
-	}
 	UT_sint32 iHeight = 0;
 	fp_Line * pCon = static_cast<fp_Line *>(getFirstContainer());
 	while(pCon)
@@ -2888,8 +2938,11 @@ UT_sint32 fl_BlockLayout::getHeightOfBlock(void)
 		if(!pCon->isSameYAsPrevious())
 		{
 			iHeight += pCon->getHeight();
-			iHeight += pCon->getMarginBefore();
-			iHeight += pCon->getMarginAfter();
+			if (b_withMargins)
+			{
+				iHeight += pCon->getMarginBefore();
+				iHeight += pCon->getMarginAfter();
+			}
 		}
 		pCon = static_cast<fp_Line *>(pCon->getNext());
 	}
@@ -3959,8 +4012,9 @@ void fl_BlockLayout::format()
 	//
 	UT_sint32 iNewHeight = getHeightOfBlock();
 	xxx_UT_DEBUGMSG(("New height of block %d \n",iNewHeight));
-	if((iNewHeight == 0) || (iOldHeight != iNewHeight))
+	if((m_bForceSectionBreak) || (iOldHeight != iNewHeight))
 	{
+		m_bForceSectionBreak = false;
 		if(getSectionLayout()->getContainerType() != FL_CONTAINER_DOCSECTION)
 		{
 			getSectionLayout()->setNeedsReformat(this);

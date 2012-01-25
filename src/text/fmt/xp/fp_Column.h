@@ -227,6 +227,8 @@ public:
 	void				setPage(fp_Page* pPage);
 	virtual fp_Page*	getPage(void) const
 		{ return m_pPage; }
+
+	UT_sint32               getColumnIndex(void);
 	/*!
 	  Get container's max height
 	  \return Max height

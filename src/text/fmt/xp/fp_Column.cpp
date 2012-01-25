@@ -1843,7 +1843,33 @@ void fp_Column::setPage(fp_Page * pPage)
 	m_pPage = pPage;
 }
 
-
+/* Return the index of the column on its page*/
+UT_sint32 fp_Column::getColumnIndex(void)
+{
+    fp_Page * pPage = getPage();
+    fl_DocSectionLayout * pSection = getDocSectionLayout();
+    fp_Column * pCol = NULL;
+    if (!pPage || !pSection)
+    {return 0;}
+    UT_sint32 kmax = static_cast<UT_sint32>(pSection->getNumColumns());
+    UT_sint32 j;
+    for(j=0;j<pPage->countColumnLeaders();j++)
+    {
+	pCol = pPage->getNthColumnLeader(j); 
+	if (pCol && (pCol->getDocSectionLayout() == pSection))
+	{
+	    UT_sint32 k = 0;
+	    while(pCol && k<kmax)
+	    {
+		if (pCol == this)
+		{return k;}
+		pCol = static_cast<fp_Column *> (pCol->getNext());
+		k++;
+	    }
+	}
+    }
+    return 0;
+}
 /*!
  Draw column outline
  \param pDA Draw arguments

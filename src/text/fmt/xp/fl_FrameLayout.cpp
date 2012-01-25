@@ -100,6 +100,7 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iFrameWrapMode(FL_FRAME_ABOVE_TEXT),
 	  m_bIsTightWrap(false),
 	  m_iPrefPage(-1),
+	  m_iPrefColumn(0),
 	  m_bRelocate(false),
 	  m_bExpandHeight(false),
 	  m_iMinHeight(0)
@@ -220,6 +221,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 		pFrame->setWrapping(true);
 	}
 	pFrame->setPreferedPageNo(m_iPrefPage);
+	pFrame->setPreferedColumnNo(m_iPrefColumn);
 }
 
 UT_sint32 fl_FrameLayout::getBoundingSpace(void) const
@@ -815,6 +817,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const gchar * pszBoundingSpace = NULL;
 	const gchar * pszTightWrapped = NULL;
 	const gchar * pszPrefPage = NULL;
+	const gchar * pszPrefColumn = NULL;
 
 	const gchar * pszExpandHeight = NULL;
 	const gchar * pszPercentWidth = NULL;
@@ -1131,7 +1134,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	//
 	// Preferred Page
 	//
-	if(!pSectionAP || !pSectionAP->getProperty("pref-page",pszPrefPage))
+	if(!pSectionAP || !pSectionAP->getProperty("frame-pref-page",pszPrefPage))
 	{
 		m_iPrefPage = -1;
 	}
@@ -1142,7 +1145,20 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		else
 			m_iPrefPage = -1;
 	}
-
+	//
+	// Preferred column
+	//
+	if(!pSectionAP || !pSectionAP->getProperty("frame-pref-column",pszPrefColumn))
+	{
+		m_iPrefColumn = 0;
+	}
+	else
+	{
+		if(pszPrefColumn && *pszPrefColumn != 0)
+			m_iPrefColumn = atoi(pszPrefColumn);
+		else
+			m_iPrefColumn = -1;
+	}
 	// 
 	// Percent Width
 	//

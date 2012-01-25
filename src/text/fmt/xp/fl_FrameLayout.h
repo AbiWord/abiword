@@ -187,6 +187,7 @@ private:
         FL_FrameWrapMode        m_iFrameWrapMode;
 	bool                    m_bIsTightWrap;
 	UT_sint32               m_iPrefPage;
+	UT_sint32               m_iPrefColumn;
 	bool                    m_bRelocate;
 	bool                    m_bExpandHeight;
 	UT_sint32               m_iMinHeight;

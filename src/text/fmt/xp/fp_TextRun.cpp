@@ -2030,7 +2030,8 @@ void fp_TextRun::_getPartRect(UT_Rect* pRect,
 		UT_Rect * pLRec = getLine()->getScreenRect();
 		if(!pLRec)
 			return;
-		if(getLine()->getContainer() && (getLine()->getContainer()->getContainerType() == FP_CONTAINER_CELL))
+		if(getLine()->getContainer() && ((getLine()->getContainer()->getContainerType() == FP_CONTAINER_CELL) ||
+										 (getLine()->getContainer()->getContainerType() == FP_CONTAINER_FRAME)))
 			return;
 		if((pRect->left + pRect->width) > (pLRec->left + pLRec->width))
 		{

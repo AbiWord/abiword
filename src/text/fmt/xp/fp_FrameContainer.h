@@ -84,6 +84,9 @@ public:
 	void                setPreferedPageNo(UT_sint32 i);
 	UT_sint32           getPreferedPageNo(void)
 	{     return m_iPreferedPageNo;}
+	void                setPreferedColumnNo(UT_sint32 i);
+	UT_sint32           getPreferedColumnNo(void)
+	{     return m_iPreferedColumnNo;}
 
 	void setBackground (const PP_PropertyMap::Background & style);
 
@@ -145,6 +148,7 @@ private:
 	bool                   m_bIsLeftWrapped;
 	bool                   m_bIsRightWrapped;
 	UT_sint32              m_iPreferedPageNo;
+	UT_sint32              m_iPreferedColumnNo;
 };
 
 

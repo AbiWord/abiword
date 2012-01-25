@@ -11105,7 +11105,7 @@ Defun1(setPosImage)
 	double ypos= 0.0;
  
 	sProp = "position-to";
-	sVal = "column-above-text";
+	sVal = "page-above-text";
 	UT_String_setProperty(sFrameProps,sProp,sVal);
 	if(pView->isHdrFtrEdit() || pView->isInHdrFtr(pos))
 	{
@@ -11117,19 +11117,18 @@ Defun1(setPosImage)
 //
 // Now calculate the Y offset to the Column
 //
-	UT_sint32 yLine = pLine->getY();
+	UT_sint32 yLine = pLine->getY() + pLine->getColumn()->getY();
 	ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-	sProp = "frame-col-ypos";
+	sProp = "frame-page-ypos";
 	sVal = UT_formatDimensionedValue(ypos,"in", NULL);
 	UT_String_setProperty(sFrameProps,sProp,sVal);
-	sProp = "wrap-mode";
-	sVal = "wrapped-both";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
-	UT_sint32 ix = pRun->getX();
-	ix += pLine->getX();
+	UT_sint32 ix = pRun->getX() + pLine->getColumn()->getX() + pLine->getX();
 	xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-	sProp = "frame-col-xpos";
+	sProp = "frame-page-xpos";
 	sVal = UT_formatDimensionedValue(xpos,"in", NULL);
+	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_String_sprintf(sVal,"%d",pLine->getPage()->getPageNumber());
+	sProp = "frame-pref-page";
 	UT_String_setProperty(sFrameProps,sProp,sVal);
 //
 // Wrapped Mode
