@@ -22,7 +22,7 @@
 #ifndef GOFFICE_APP_H
 #define GOFFICE_APP_H
 
-#include <glib/gmacros.h>
+#include <glib.h>
 
 G_BEGIN_DECLS
 
