@@ -1144,30 +1144,6 @@ void PP_RevisionAttr::mergeAll( const PP_RevisionAttr& ra )
     _clear();
     std::string tmp = (std::string)us.getXMLstring() + "," + ra.getXMLstring();
 
-    /*
-     * This is a heavy debug block for testing.
-     */
-#warning this whole block is only for debug. WTF?
-    if( DEBUG_MERGEALL )
-    {
-        UT_DEBUGMSG(("ODTCT ra::merge() ===================\n" ));
-        UT_DEBUGMSG(("ODTCT ra::merge() old:%s\n", us.getXMLstring() ));
-        UT_DEBUGMSG(("ODTCT ra::merge() new:%s\n", ra.getXMLstring() ));
-        UT_DEBUGMSG(("ODTCT ra::merge() ret:%s\n", tmp.c_str()  ));
-        for( UT_uint32 i=0; i < us.getRevisionsCount(); ++i )
-        {
-	  UT_DebugOnly<const PP_Revision*> r(us.getNthRevision( i ));
-            UT_DEBUGMSG(("ODTCT ra::merge() old r:%u id:%d t:%d attr:%s\n", i, r->getId(), r->getType(), r->getAttrsString() ));
-            UT_DEBUGMSG(("ODTCT ra::merge() old r:%u id:%d t:%d prop:%s\n", i, r->getId(), r->getType(), r->getPropsString() ));
-        }
-        for( UT_uint32 i=0; i < ra.getRevisionsCount(); ++i )
-        {
-	  UT_DebugOnly<const PP_Revision*> r(ra.getNthRevision( i ));
-            UT_DEBUGMSG(("ODTCT ra::merge() new r:%u id:%d t:%d attr:%s\n", i, r->getId(), r->getType(), r->getAttrsString() ));
-            UT_DEBUGMSG(("ODTCT ra::merge() new r:%u id:%d t:%d prop:%s\n", i, r->getId(), r->getType(), r->getPropsString() ));
-        }
-    }
-    
     revidx_t oldidx = toIndex( us );
     revidx_t newidx = toIndex( ra );
 
