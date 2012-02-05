@@ -688,7 +688,30 @@ public:
 	static EV_EditMethod_Fn hyperlinkStatusBar;
 	static EV_EditMethod_Fn rdfAnchorShowTriples;
 	static EV_EditMethod_Fn rdfAnchorSPARQL;
-
+	static EV_EditMethod_Fn rdfAnchorEditSemanticItem;
+	static EV_EditMethod_Fn rdfAnchorExportSemanticItem;
+	static EV_EditMethod_Fn rdfAnchorSelectThisReferenceToSemanticItem;
+	static EV_EditMethod_Fn rdfAnchorSelectNextReferenceToSemanticItem;
+	static EV_EditMethod_Fn rdfAnchorSelectPrevReferenceToSemanticItem;
+	static EV_EditMethod_Fn rdfApplyStylesheet;
+	static EV_EditMethod_Fn rdfApplyStylesheetContactName;
+	static EV_EditMethod_Fn rdfApplyStylesheetContactNick;
+	static EV_EditMethod_Fn rdfApplyStylesheetContactNamePhone;
+	static EV_EditMethod_Fn rdfApplyStylesheetContactNickPhone;
+	static EV_EditMethod_Fn rdfApplyStylesheetContactNameHomepagePhone;
+	static EV_EditMethod_Fn rdfApplyStylesheetEventName;
+	static EV_EditMethod_Fn rdfApplyStylesheetEventSummary;
+	static EV_EditMethod_Fn rdfApplyStylesheetEventSummaryLocation;
+	static EV_EditMethod_Fn rdfApplyStylesheetEventSummaryLocationTimes;
+	static EV_EditMethod_Fn rdfApplyStylesheetEventSummaryTimes;
+	static EV_EditMethod_Fn rdfApplyStylesheetLocationName;
+	static EV_EditMethod_Fn rdfApplyStylesheetLocationLatLong;
+	static EV_EditMethod_Fn rdfApplyCurrentStyleSheet;
+	static EV_EditMethod_Fn rdfStylesheetSettings;
+	static EV_EditMethod_Fn rdfDisassocateCurrentStyleSheet;
+	static EV_EditMethod_Fn rdfSemitemSetAsSource;
+	static EV_EditMethod_Fn rdfSemitemRelatedToSourceFoafKnows;
+	static EV_EditMethod_Fn rdfSemitemFindRelatedFoafKnows;
 	static EV_EditMethod_Fn textToTable;
 	static EV_EditMethod_Fn textToTableNoSpaces;
 	static EV_EditMethod_Fn toggleMarkRevisions;
@@ -727,7 +750,10 @@ public:
 	static EV_EditMethod_Fn rdfQuery;
 	static EV_EditMethod_Fn rdfEditor;
 	static EV_EditMethod_Fn rdfQueryXMLIDs;
-
+ 	static EV_EditMethod_Fn rdfInsertRef;
+	static EV_EditMethod_Fn rdfInsertNewContact;
+	static EV_EditMethod_Fn rdfInsertNewContactFromFile;
+	
 	static EV_EditMethod_Fn noop;
 
 	// Test routines
@@ -1084,12 +1110,39 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(querySaveAndExit), 	_A_,	""),
 
 	// r
+	EV_EditMethod(NF(rdfAnchorEditSemanticItem) , 0,  ""),
+	EV_EditMethod(NF(rdfAnchorExportSemanticItem) , 0,  ""),
 	EV_EditMethod(NF(rdfAnchorSPARQL) ,     0,  ""),
+	EV_EditMethod(NF(rdfAnchorSelectNextReferenceToSemanticItem) , 0,  ""),
+	EV_EditMethod(NF(rdfAnchorSelectPrevReferenceToSemanticItem) , 0,  ""),
+	EV_EditMethod(NF(rdfAnchorSelectThisReferenceToSemanticItem) , 0,  ""),
 	EV_EditMethod(NF(rdfAnchorShowTriples), 0,  ""),
+	EV_EditMethod(NF(rdfApplyCurrentStyleSheet),  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheet) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetContactName) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetContactNameHomepagePhone) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetContactNamePhone) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetContactNick) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetContactNickPhone) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetEventName) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetEventSummary) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetEventSummaryLocation) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetEventSummaryLocationTimes) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetEventSummaryTimes) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetLocationLatLong) ,  0,  ""),
+	EV_EditMethod(NF(rdfApplyStylesheetLocationName) ,  0,  ""),
+	EV_EditMethod(NF(rdfDisassocateCurrentStyleSheet),  0,  ""),
 	EV_EditMethod(NF(rdfEditor),            0,	""),
+	EV_EditMethod(NF(rdfInsertNewContact),  0,	""),
+	EV_EditMethod(NF(rdfInsertNewContactFromFile),  0,	""),
+	EV_EditMethod(NF(rdfInsertRef),         0,	""),
 	EV_EditMethod(NF(rdfPlay), 				0,	""),
 	EV_EditMethod(NF(rdfQuery),             0,	""),
 	EV_EditMethod(NF(rdfQueryXMLIDs),       0,	""),
+	EV_EditMethod(NF(rdfSemitemFindRelatedFoafKnows),  0,  ""),
+	EV_EditMethod(NF(rdfSemitemRelatedToSourceFoafKnows),  0,  ""),
+	EV_EditMethod(NF(rdfSemitemSetAsSource),  0,  ""),
+	EV_EditMethod(NF(rdfStylesheetSettings),  0,  ""),
 	EV_EditMethod(NF(rdfTest), 				0,	""),
 	EV_EditMethod(NF(redo), 				0,	""),
 	EV_EditMethod(NF(releaseFrame), 		0,	""),
@@ -10894,6 +10947,57 @@ Defun1(rdfEditor)
 	return s_doRDFEditorDlg( pView, id, dialog, false );
 }
 
+Defun1(rdfInsertNewContact)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	if( PD_Document * pDoc = pView->getDocument() )
+	{
+		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+		{
+			PD_RDFSemanticItemHandle obj = PD_RDFSemanticItem::createSemanticItem( rdf, "Contact" );
+			obj->setName( "New Contact..." );
+			std::pair< PT_DocPosition, PT_DocPosition > range = obj->insert( pView );
+			obj->showEditorWindow( obj );
+		}
+	}
+	return 0;
+}
+
+Defun1(rdfInsertNewContactFromFile)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+
+	if( PD_Document * pDoc = pView->getDocument() )
+	{
+		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+		{
+			PD_RDFSemanticItemHandle obj = PD_RDFSemanticItem::createSemanticItem( rdf, "Contact" );
+			obj->setName( "New Contact..." );
+			obj->importFromFile();
+		}
+	}
+	return 0;
+}
+
+Defun1(rdfInsertRef)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	if( PD_Document * pDoc = pView->getDocument() )
+	{
+		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+		{
+			runInsertReferenceDialog( pView );
+		}
+	}
+	return 0;
+}
+
+
+
 Defun1(rdfQueryXMLIDs)
 {
 	CHECK_FRAME;
@@ -14073,6 +14177,699 @@ Defun1(rdfAnchorSPARQL)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
 	return rdfQueryXMLIDs( pView, 0 );
+}
+
+Defun1(rdfAnchorEditSemanticItem)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	if( PD_Document * pDoc = pView->getDocument() )
+	{
+		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+		{
+			std::set< std::string > xmlids;
+			rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+
+			PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
+			PD_RDFSemanticItem::showEditorWindow( sl );
+			
+			
+			// PD_RDFContacts contacts = rdf->getContacts();
+			// for( PD_RDFContacts::iterator ci = contacts.begin();
+			// 	 ci != contacts.end(); ++ci )
+			// {
+			// 	PD_RDFContactHandle c = *ci;
+			// 	std::set< std::string > clist = c->getXMLIDs();
+			// 	std::set< std::string > tmp;
+			// 	std::set_intersection( xmlids.begin(), xmlids.end(),
+			// 						   clist.begin(), clist.end(),
+			// 						   inserter( tmp, tmp.end() ));
+			// 	if( !tmp.empty() )
+			// 		c->showEditorWindow(c);
+			// }
+
+			// PD_RDFEvents events = rdf->getEvents();
+			// for( PD_RDFEvents::iterator ci = events.begin();
+			// 	 ci != events.end(); ++ci )
+			// {
+			// 	PD_RDFEventHandle c = *ci;
+			// 	std::set< std::string > clist = c->getXMLIDs();
+			// 	std::set< std::string > tmp;
+			// 	std::set_intersection( xmlids.begin(), xmlids.end(),
+			// 						   clist.begin(), clist.end(),
+			// 						   inserter( tmp, tmp.end() ));
+			// 	if( !tmp.empty() )
+			// 		c->showEditorWindow(c);
+			// }
+
+
+			// PD_RDFLocations locations = rdf->getLocations();
+			// for( PD_RDFLocations::iterator ci = locations.begin();
+			// 	 ci != locations.end(); ++ci )
+			// {
+			// 	PD_RDFLocationHandle c = *ci;
+			// 	std::set< std::string > clist = c->getXMLIDs();
+			// 	std::set< std::string > tmp;
+			// 	std::set_intersection( xmlids.begin(), xmlids.end(),
+			// 						   clist.begin(), clist.end(),
+			// 						   inserter( tmp, tmp.end() ));
+			// 	UT_DEBUGMSG(("location name:%s linksubj:%s c->xmlids.sz:%d tmp.sz:%d\n", c->name().c_str(), c->linkingSubject().toString().c_str(), c->getXMLIDs().size(), tmp.size() ));
+			// 	if( !tmp.empty() )
+			// 	{
+			// 		c->showEditorWindow(c);
+			// 	}
+			// }
+		}
+	}
+	return 0;
+}
+
+Defun1(rdfAnchorExportSemanticItem)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	if( PD_Document * pDoc = pView->getDocument() )
+	{
+		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+		{
+			std::set< std::string > xmlids;
+			rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+
+			if( xmlids.empty() )
+				return 0;
+
+			std::string filename = "";
+			PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
+			for( PD_RDFSemanticItems::iterator ci = sl.begin();
+				 ci != sl.end(); ++ci )
+			{
+				PD_RDFSemanticItemHandle h = *ci;
+				std::set< std::string > clist = h->getXMLIDs();
+				std::set< std::string > tmp;
+				std::set_intersection( xmlids.begin(), xmlids.end(),
+									   clist.begin(), clist.end(),
+									   inserter( tmp, tmp.end() ));
+				if( !tmp.empty() )
+				{
+					h->exportToFile();
+				}
+				
+			}
+			
+			
+			// rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+			// PD_RDFContacts contacts = rdf->getContacts();
+			// for( PD_RDFContacts::iterator ci = contacts.begin();
+			// 	 ci != contacts.end(); ++ci )
+			// {
+			// 	PD_RDFContactHandle c = *ci;
+			// 	std::set< std::string > clist = c->getXMLIDs();
+			// 	std::set< std::string > tmp;
+			// 	std::set_intersection( xmlids.begin(), xmlids.end(),
+			// 						   clist.begin(), clist.end(),
+			// 						   inserter( tmp, tmp.end() ));
+			// 	if( !tmp.empty() )
+			// 		c->exportToFile();
+			// }
+			// PD_RDFEvents events = rdf->getEvents();
+			// for( PD_RDFEvents::iterator ci = events.begin();
+			// 	 ci != events.end(); ++ci )
+			// {
+			// 	PD_RDFEventHandle c = *ci;
+			// 	std::set< std::string > clist = c->getXMLIDs();
+			// 	std::set< std::string > tmp;
+			// 	std::set_intersection( xmlids.begin(), xmlids.end(),
+			// 						   clist.begin(), clist.end(),
+			// 						   inserter( tmp, tmp.end() ));
+			// 	if( !tmp.empty() )
+			// 		c->exportToFile();
+			// }
+			// PD_RDFLocations locations = rdf->getLocations();
+			// for( PD_RDFLocations::iterator ci = locations.begin();
+			// 	 ci != locations.end(); ++ci )
+			// {
+			// 	PD_RDFLocationHandle c = *ci;
+			// 	std::set< std::string > clist = c->getXMLIDs();
+			// 	std::set< std::string > tmp;
+			// 	std::set_intersection( xmlids.begin(), xmlids.end(),
+			// 						   clist.begin(), clist.end(),
+			// 						   inserter( tmp, tmp.end() ));
+			// 	if( !tmp.empty() )
+			// 		c->exportToFile();
+			// }
+		}
+	}
+	return 0;
+}
+
+
+
+    struct selectReferenceToSemanticItemRing
+	{
+		PD_RDFSemanticItemHandle h;
+		std::set< std::string > xmlids;
+		std::set< std::string >::iterator iter;
+	};
+
+	static selectReferenceToSemanticItemRing& getSelectReferenceToSemanticItemRing()
+	{
+		static selectReferenceToSemanticItemRing ring;
+		return ring;
+	}
+
+static void setSemanticItemRing( PD_DocumentRDFHandle rdf,
+								 PD_RDFSemanticItemHandle h,
+								 const std::set< std::string >& xmlids,
+								 const std::string& xmlid )
+{
+	selectReferenceToSemanticItemRing& ring = getSelectReferenceToSemanticItemRing();
+
+	ring.h = h;
+	ring.xmlids = xmlids;
+	for( std::set< std::string >::iterator ri = ring.xmlids.begin();
+		 ri != ring.xmlids.end(); )
+	{
+		std::set< std::string >::iterator t = ri;
+		++ri;
+		std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( *t );
+		if( !range.first || range.second <= range.first )
+			ring.xmlids.erase( t );
+	}
+	ring.iter   = ring.xmlids.find( xmlid );	
+}
+
+
+static void rdfAnchorSelectPos( FV_View* pView,
+								PD_DocumentRDFHandle rdf,
+								PT_DocPosition pos,
+								bool selectit = true )
+{
+	UT_DEBUGMSG(("rdfAnchorSelectPos() pos:%ld\n", pos ));
+	selectReferenceToSemanticItemRing& ring = getSelectReferenceToSemanticItemRing();
+	ring.h.reset();
+	ring.xmlids.clear();
+	ring.iter = ring.xmlids.end();
+
+	std::set< std::string > xmlids;
+	rdf->addRelevantIDsForPosition( xmlids, pos );
+	PD_RDFSemanticItems semitems = rdf->getSemanticObjects( xmlids );
+	for( PD_RDFSemanticItems::iterator si = semitems.begin(); si != semitems.end(); ++si )
+	{
+		PD_RDFSemanticItemHandle c = *si;
+		std::set< std::string > clist = c->getXMLIDs();
+		for( std::set< std::string >::iterator clistiter = clist.begin();
+			 clistiter != clist.end(); ++clistiter )
+		{
+			std::string xmlid = *clistiter;
+			UT_DEBUGMSG(("rdfAnchorSelectPos() xmlid:%s\n", xmlid.c_str() ));
+						
+			std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
+			if( range.first && range.second > range.first )
+			{
+				UT_DEBUGMSG(("rdfAnchorSelectPos() has range...\n" ));
+				if( range.first <= pos && pos <= range.second )
+				{
+					UT_DEBUGMSG(("rdfAnchorSelectPos() contains point...\n" ));
+					setSemanticItemRing( rdf, c, clist, xmlid );
+					
+					// ring.h = c;
+					// ring.xmlids = clist;
+					// for( std::set< std::string >::iterator ri = ring.xmlids.begin();
+					// 	 ri != ring.xmlids.end(); )
+					// {
+					// 	std::set< std::string >::iterator t = ri;
+					// 	++ri;
+					// 	std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( *t );
+					// 	if( !range.first || range.second <= range.first )
+					// 		ring.xmlids.erase( t );
+					// }
+					// ring.iter   = ring.xmlids.find( xmlid );
+
+					if( selectit )
+						pView->selectRange( range );
+					return;
+				}
+			}
+		}
+	}
+	UT_DEBUGMSG(("rdfAnchorSelectPos() FAILED...\n" ));
+}
+
+//
+// If they have started at another sem item, adapt to their choice
+// Note that this can alter the ring.iter
+//
+static bool rdfAnchorContainsPoint( FV_View* pView,
+									PD_DocumentRDFHandle rdf,
+									PT_DocPosition pos )
+{
+	selectReferenceToSemanticItemRing& ring = getSelectReferenceToSemanticItemRing();
+
+	std::set< std::string > xmlids;
+	rdf->addRelevantIDsForPosition( xmlids, pos );
+	std::set< std::string > tmp;
+	std::set_intersection( xmlids.begin(), xmlids.end(),
+						   ring.xmlids.begin(), ring.xmlids.end(),
+						   inserter( tmp, tmp.end() ));
+	UT_DEBUGMSG(("rdfAnchorContainsPoint() pos:%ld xmlids.sz:%d tmp.sz:%d\n",
+				 pos, xmlids.size(), tmp.size() ));
+	if( tmp.empty() )
+	{
+		//
+		// nothing for the cursor position is in the cached ring state!
+		//
+		UT_DEBUGMSG(("rdfAnchorContainsPoint() resyncing\n"));
+		rdfAnchorSelectPos( pView, rdf, pos, false );
+		return false;
+	}
+	return true;
+}
+
+	
+Defun1(rdfAnchorSelectThisReferenceToSemanticItem)
+{
+	selectReferenceToSemanticItemRing& ring = getSelectReferenceToSemanticItemRing();
+	ring.h.reset();
+	ring.xmlids.clear();
+	ring.iter = ring.xmlids.end();
+	
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	if( PD_Document * pDoc = pView->getDocument() )
+	{
+		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+		{
+			rdfAnchorSelectPos( pView, rdf, pView->getPoint(), true );
+		}
+	}
+	return 0;
+}
+
+Defun1(rdfAnchorSelectNextReferenceToSemanticItem)
+{
+	selectReferenceToSemanticItemRing& ring = getSelectReferenceToSemanticItemRing();
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	if( PD_Document * pDoc = pView->getDocument() )
+	{
+		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+		{
+			// If they have started at another sem item, adapt to their choice
+			bool wasContained = rdfAnchorContainsPoint( pView, rdf, pView->getPoint()-1 );
+
+			if( ring.iter == ring.xmlids.end() )
+			{
+				UT_DEBUGMSG((" selectNext(1) iter == end\n" ));
+				return 0;
+			}
+			ring.iter++;
+
+			UT_DEBUGMSG((" selectNext(2) iter == end:%d wasc:%d\n", ring.iter == ring.xmlids.end(), wasContained));
+			// the iter was resyned and there is no next.
+			if( ring.iter == ring.xmlids.end() && !wasContained )
+				ring.iter--;
+
+			if( ring.iter != ring.xmlids.end() )
+			{
+				std::string xmlid = *ring.iter;
+				UT_DEBUGMSG((" selectNext() xmlid:%s\n", xmlid.c_str() ));
+				std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
+				if( range.first && range.second > range.first )
+					pView->selectRange( range );
+			}
+		}
+	}
+	
+	return 0;
+}
+
+Defun1(rdfAnchorSelectPrevReferenceToSemanticItem)
+{
+	selectReferenceToSemanticItemRing& ring = getSelectReferenceToSemanticItemRing();
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	if( PD_Document * pDoc = pView->getDocument() )
+	{
+		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
+		{
+			bool wasContained = rdfAnchorContainsPoint( pView, rdf, pView->getPoint()-1 );
+	
+			if( ring.iter == ring.xmlids.begin() )
+			{
+				UT_DEBUGMSG((" selectPrev() resetting iter to end()\n" ));
+				ring.iter = ring.xmlids.end();
+			}
+			if( ring.iter == ring.xmlids.end() )
+			{
+				UT_DEBUGMSG((" selectPrev() iter IS end()\n" ));
+				if( wasContained )
+					return 0;
+				
+				// if we resynced, and there is no prev, then select the first one.
+				UT_DEBUGMSG((" selectPrev() set iter to the first item due to resync...\n" ));
+				ring.iter = ring.xmlids.begin();
+				ring.iter++;
+			}
+	
+			ring.iter--;
+	
+			std::string xmlid = *ring.iter;
+			UT_DEBUGMSG((" selectPrev() xmlid:%s\n", xmlid.c_str() ));
+			
+			std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
+			if( range.first && range.second > range.first )
+				pView->selectRange( range );
+		}
+	}
+	
+	return 0;
+}
+
+
+static PD_RDFSemanticItemHandle& getrdfSemitemSource()
+{
+	static PD_RDFSemanticItemHandle ret;
+	return ret;
+}
+
+Defun1(rdfSemitemSetAsSource)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+	std::set< std::string > xmlids;
+	rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+    PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
+	if( sl.empty() )
+		return false;
+	
+	PD_RDFSemanticItemHandle si = *(sl.begin());
+	getrdfSemitemSource() = si;
+	return true;
+}
+
+Defun1(rdfSemitemFindRelatedFoafKnows)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+
+	std::set< std::string > xmlids;
+	rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+	UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows(a) point->xmlids.sz:%d\n", xmlids.size() ));
+	if( xmlids.empty() )
+		rdf->addRelevantIDsForPosition( xmlids, pView->getPoint()-1 );
+		
+    PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
+	if( sl.empty() )
+		return false;
+	PD_RDFSemanticItemHandle src = *(sl.begin());
+	UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows(b) point->xmlids.sz:%d\n", xmlids.size() ));
+	UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows() point->sl.sz:%d\n",     sl.size() ));
+	for( PD_RDFSemanticItems::iterator iter = sl.begin(); iter != sl.end(); ++iter )
+	{
+		PD_RDFSemanticItemHandle si = *iter;
+		UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows() point->si:%s\n", si->name().c_str() ));
+	}
+	
+	PD_RDFSemanticItems related = src->relationFind( PD_RDFSemanticItem::RELATION_FOAF_KNOWS );
+	for( PD_RDFSemanticItems::iterator iter = related.begin(); iter != related.end(); ++iter )
+	{
+		PD_RDFSemanticItemHandle si = *iter;
+		xmlids = si->getXMLIDs();
+		for( std::set< std::string >::iterator xi = xmlids.begin(); xi != xmlids.end(); ++xi )
+		{
+			std::string xmlid = *xi;
+			std::pair< PT_DocPosition, PT_DocPosition > p = rdf->getIDRange( xmlid );
+			if( p.first && p.first != p.second )
+			{
+				setSemanticItemRing( rdf, si, xmlids, xmlid );
+				PD_RDFSemanticItemViewSite vs( si, xmlid );
+				vs.select( pView );
+				return true;
+			}
+		}
+	}
+	
+	return true;
+}
+
+Defun1(rdfSemitemRelatedToSourceFoafKnows)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+	PD_RDFSemanticItemHandle src = getrdfSemitemSource();
+	std::set< std::string > xmlids;
+	rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+    PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
+	if( sl.empty() )
+		return false;
+
+	for( PD_RDFSemanticItems::iterator iter = sl.begin(); iter != sl.end(); ++iter )
+	{
+		PD_RDFSemanticItemHandle si = *iter;
+		src->relationAdd( si, PD_RDFSemanticItem::RELATION_FOAF_KNOWS );
+	}
+	
+	return true;
+}
+
+Defun1(rdfApplyCurrentStyleSheet)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+
+	std::set< std::string > xmlids;
+	rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+    PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
+	for( PD_RDFSemanticItems::iterator iter = sl.begin(); iter != sl.end(); ++iter )
+	{
+		PD_RDFSemanticItemHandle si = *iter;
+		PD_RDFSemanticItemViewSite vs( si, pView->getPoint() );
+		vs.reflowUsingCurrentStylesheet( pView );
+	}	
+	return true;
+}
+
+Defun1(rdfStylesheetSettings)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+
+	runSemanticStylesheetsDialog( pView );
+	
+	return true;
+}
+
+Defun1(rdfDisassocateCurrentStyleSheet)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	PD_Document * pDoc = pView->getDocument();
+	PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+
+	std::set< std::string > xmlids;
+	rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+    PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
+	for( PD_RDFSemanticItems::iterator iter = sl.begin(); iter != sl.end(); ++iter )
+	{
+		PD_RDFSemanticItemHandle si = *iter;
+		PD_RDFSemanticItemViewSite vs( si, pView->getPoint() );
+		vs.disassociateStylesheet();
+	}	
+	return true;
+}
+
+static void _rdfApplyStylesheet( FV_View* pView, std::string stylesheetName, PT_DocPosition pos )
+{
+	PD_Document * pDoc = pView->getDocument();
+	PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+
+	std::set< std::string > xmlids;
+	rdf->addRelevantIDsForPosition( xmlids, pos );
+    PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
+	if( sl.empty() )
+		return;
+
+	for( PD_RDFSemanticItems::iterator iter = sl.begin(); iter != sl.end(); ++iter )
+	{
+		PD_RDFSemanticItemHandle si = *iter;
+		PD_RDFSemanticStylesheetHandle ss =
+			si->findStylesheetByName( PD_RDFSemanticStylesheet::stylesheetTypeSystem(),
+									  stylesheetName );
+		if( !ss )
+			continue;
+		
+		PD_RDFSemanticItemViewSite vs( si, pos );
+		vs.applyStylesheet( pView, ss );
+		return;
+	}	
+}
+
+
+Defun1(rdfApplyStylesheetContactName)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "name", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetContactNameHomepagePhone)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "name, (homepage), phone", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetContactNamePhone)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "name, phone", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetContactNick)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "nick", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetContactNickPhone)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "nick, phone", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetEventName)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "name", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetEventSummary)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "summary", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetEventSummaryLocation)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "summary, location", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetEventSummaryLocationTimes)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "summary, location, start date/time", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetEventSummaryTimes)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "summary, start date/time", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetLocationLatLong)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "name, digital latitude, digital longitude", pView->getPoint() );
+	return true;
+}
+
+Defun1(rdfApplyStylesheetLocationName)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+	_rdfApplyStylesheet( pView, "name", pView->getPoint() );
+	return true;
+}
+
+
+Defun1(rdfApplyStylesheet)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView, false);
+
+	_rdfApplyStylesheet( pView, "name", pView->getPoint() );
+	
+	// PD_Document * pDoc = pView->getDocument();
+	// UT_return_val_if_fail(pDoc, false);
+	// PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+
+	// std::set< std::string > xmlids;
+	// rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+    // PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
+	// if( sl.empty() )
+	// 	return false;
+	
+	// PD_RDFSemanticItemHandle si = *(sl.begin());
+	// PD_RDFSemanticItemViewSite vs( si, pView->getPoint() );
+
+	// // std::set< std::string > sixml = si->getXMLIDs();
+	// // if( sixml.empty() )
+	// // 	return false;
+	
+	// // std::string xmlid = *(sixml.begin());
+	// // PD_RDFSemanticItemViewSite vs( si, xmlid );
+
+	// std::string stylesheetName = "name, phone";
+	// PD_RDFSemanticStylesheetHandle ss = si->findStylesheetByName( PD_RDFSemanticStylesheet::stylesheetTypeSystem(),
+	// 															  stylesheetName );
+    // vs.applyStylesheet( pView, ss );
+	
+
+	return true;
 }
 
 Defun1(deleteHyperlink)

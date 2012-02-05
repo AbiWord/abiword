@@ -36,6 +36,8 @@
 #include "ut_vector.h"
 #include <time.h>
 
+#include <string>
+
 class UT_UTF8String;
 
 
@@ -104,7 +106,8 @@ class ABI_EXPORT UT_UUID
 	/* translate internal state into string representation; do not change
 	   internal state */
 	bool            toString(UT_UTF8String & to) const;
-
+    std::string&    toString( std::string& to ) const;
+    
 	/* get the binary representation of the uuid */
 	bool            toBinary(struct uuid &u) const;
 

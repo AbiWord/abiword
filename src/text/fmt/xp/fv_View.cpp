@@ -887,7 +887,7 @@ UT_RGBColor	FV_View::getColorAnnotation(const fp_Run * pRun) const
 			return pRun->_getColorFG();
 	}
 	fp_Page * pPage = pARun->getLine()->getPage();
-	UT_DEBUGMSG(("getColorAnnotation() page:%p\n", pPage ));
+	xxx_UT_DEBUGMSG(("getColorAnnotation() page:%p\n", pPage ));
 	if(!pPage)
 			return pRun->_getColorFG();
 	UT_uint32 pos = pPage->getAnnotationPos(pARun->getPID());
@@ -910,7 +910,7 @@ UT_RGBColor	FV_View::getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const
 UT_RGBColor	FV_View::getColorRDFAnchor(const fp_Run * pRun) const
 {
 	fp_Page* pPage = pRun->getLine()->getPage();
-	UT_DEBUGMSG(("getColorRDFAnchor() page:%p\n", pPage ));
+	xxx_UT_DEBUGMSG(("getColorRDFAnchor() page:%p\n", pPage ));
 	if(!pPage)
 		return pRun->_getColorFG();
 
@@ -14680,9 +14680,16 @@ bool FV_View::rtlPages() const
 void
 FV_View::selectRange( PT_DocPosition start, PT_DocPosition end )
 {
+	_clearSelection();
 	_setPoint(start);
 	_setSelectionAnchor();
 	setPoint(end);
 	_drawSelection();
+}
+
+void
+FV_View::selectRange( const std::pair< PT_DocPosition, PT_DocPosition >& range )
+{
+	selectRange( range.first, range.second );
 }
 

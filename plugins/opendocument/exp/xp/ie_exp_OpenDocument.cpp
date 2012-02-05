@@ -138,6 +138,7 @@ UT_Error IE_Exp_OpenDocument::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteB
 
         if( !xmlids.empty() )
         {
+            UT_DEBUGMSG(("MIQ: ODF export creating restricted RDF model xmlids.sz:%d \n",xmlids.size()));
             PD_RDFModelHandle subm = inrdf->createRestrictedModelForXMLIDs( xmlids );
             PD_DocumentRDFMutationHandle m = outrdf->createMutation();
             m->add( subm );

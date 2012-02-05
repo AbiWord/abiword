@@ -189,7 +189,11 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_REVISIONS_FIND_PREV,  EV_TBIT_PushButton,		"revisionFindPrev", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
 	_s(AP_TOOLBAR_ID_REVISIONS_FIND_NEXT,  EV_TBIT_PushButton,		"revisionFindNext", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
     
-    
+	_s(AP_TOOLBAR_ID_SEMITEM_THIS,        EV_TBIT_PushButton,		"rdfAnchorSelectThisReferenceToSemanticItem", AV_CHG_NONE, NULL );
+	_s(AP_TOOLBAR_ID_SEMITEM_NEXT,         EV_TBIT_PushButton,		"rdfAnchorSelectNextReferenceToSemanticItem",  AV_CHG_ALL, ap_ToolbarGetState_CursorInSemItem );
+	_s(AP_TOOLBAR_ID_SEMITEM_PREV,         EV_TBIT_PushButton,		"rdfAnchorSelectPrevReferenceToSemanticItem",  AV_CHG_ALL, ap_ToolbarGetState_CursorInSemItem );
+	_s(AP_TOOLBAR_ID_SEMITEM_EDIT,         EV_TBIT_PushButton,		"rdfAnchorEditSemanticItem",  AV_CHG_ALL, ap_ToolbarGetState_CursorInSemItem );
+	_s(AP_TOOLBAR_ID_SEMITEM_STYLESHEET_REFLOW, EV_TBIT_PushButton, "rdfApplyCurrentStyleSheet",  AV_CHG_ALL, ap_ToolbarGetState_CursorInSemItem );
 
 #ifdef ENABLE_MENUBUTTON
 	_s(AP_TOOLBAR_ID_MENU, EV_TBIT_MenuButton, NULL, AV_CHG_NONE, NULL);

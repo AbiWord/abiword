@@ -1310,6 +1310,15 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 	return b;
 }
 
+bool PD_Document::insertSpan( PT_DocPosition dpos,
+                              const std::string& s,
+                              PP_AttrProp *p_AttrProp )
+{
+	UT_UCS4String t( s );
+    return insertSpan( dpos, t.ucs4_str(), t.length(), p_AttrProp );
+}
+
+
 /*!
  * Note that the text will be set to exactly the properties of given by
  *  p_AttrProp.
@@ -4044,6 +4053,17 @@ void PD_Document::changeConnectedDocument(PD_Document * pDoc)
 		}
 	}
 }
+
+std::list<AV_View*> PD_Document::getAllViews() const
+{
+    UT_GenericVector<AV_View *> t;
+    getAllViews( &t );
+    std::list<AV_View*> ret;
+    for( int i=0; i < t.size(); ++i )
+        ret.push_back( (AV_View*)t[i] );
+    return ret;
+}
+
 
 /*!
  * return a vector of all the views attached to this document.

@@ -28,9 +28,12 @@
 #include "pf_Frag_Object.h"
 #include "pf_Frag_Strux.h"
 #include "ut_std_string.h"
+#include "ut_conversion.h"
+#include "xap_App.h"
 
 #include <sstream>
 #include <set>
+#include <fstream>
 
 #include <iterator>
 
@@ -43,9 +46,43 @@
 #define DEBUG_LOWLEVEL_IO    0
 
 typedef std::map< std::string, std::string > stringmap_t;
+static const gchar * G_OBJECT_SEMITEM = "G_OBJECT_SEMITEM";
+static const gchar * G_OBJECT_SEMITEM_LIST = "G_OBJECT_SEMITEM_LIST";
+static const gchar * G_OBJECT_WINDOW  = "G_OBJECT_WINDOW";
+static const gchar * G_OBJECT_TREEVIEW = "G_OBJECT_TREEVIEW";
 
 
 static void dump( const std::string& msg, PD_RDFModelIterator begin, PD_RDFModelIterator end );
+
+static const std::string StreamToString( std::istream& iss )
+{
+    std::stringstream ss;
+    iss.clear();
+    std::copy( std::istreambuf_iterator<char>(iss),
+               std::istreambuf_iterator<char>(),
+               std::ostreambuf_iterator<char>(ss));
+    return ss.str();
+}
+static std::string toTimeString( time_t TT )
+{
+    const int bufmaxlen = 1025;
+    char buf[bufmaxlen];
+    struct tm* TM = 0;
+    std::string format = "%y %b %e %H:%M";
+
+//    TM = gmtime( &TT );
+    TM = localtime( &TT );
+            
+    if( TM && strftime( buf, bufmaxlen, format.c_str(), TM) )
+    {
+        std::string s = buf;
+        return s;
+    }
+    // FIXME
+    return "";
+}
+
+
 
 
 PD_RDFModel::PD_RDFModel()
@@ -553,6 +590,14 @@ PD_Object::PD_Object( const std::string& v )
 {
 }
 
+PD_Object::PD_Object( const PD_URI& u )
+    : PD_URI(u.toString())
+    , m_objectType( OBJECT_TYPE_URI )
+{
+}
+
+
+
 PD_Object::PD_Object( const std::string& v, int objectType, const std::string& type )
     : PD_URI(v)
     , m_xsdType(type)
@@ -914,6 +959,7 @@ public:
         }
         void setup_pocol()
         {
+            UT_DEBUGMSG(("SI... statement iter++/setup_pocol(top)\n" ));            
             const gchar * szName  = 0;
             const gchar * szValue = 0;
             const PP_AttrProp* AP = *m_apiter;
@@ -1131,12 +1177,13 @@ PD_RDFModelIterator::PD_RDFModelIterator( PD_RDFModelHandle model, const PP_Attr
 void
 PD_RDFModelIterator::setup_pocol()
 {
+    xxx_UT_DEBUGMSG(("MI statement iter++/setup_pocol(top) apn:%d\n", m_apPropertyNumber ));
     const gchar * szName  = 0;
     const gchar * szValue = 0;
     if( m_AP->getNthProperty( m_apPropertyNumber, szName, szValue) )
     {
-//        UT_DEBUGMSG(("statement iter++/setup_pocol szName :%s\n", szName ));
-//        UT_DEBUGMSG(("statement iter++/setup_pocol szValue:%s\n", szValue ));
+        xxx_UT_DEBUGMSG(("MI statement iter++/setup_pocol szName :%s\n", szName ));
+        xxx_UT_DEBUGMSG(("MI statement iter++/setup_pocol szValue:%s\n", szValue ));
         m_subject   = szName;
         m_pocol     = decodePOCol( szValue );
         if( m_pocol.empty() )
@@ -1149,7 +1196,49 @@ PD_RDFModelIterator::setup_pocol()
         m_current = PD_RDFStatement( m_subject, pred, obj );
     }
 }
-    
+
+bool
+PD_RDFModelIterator::moveToNextSubjectHavePOCol()
+{
+    return !m_pocol.empty();
+}
+
+void
+PD_RDFModelIterator::moveToNextSubjectReadPO()
+{
+    setup_pocol();
+    std::string pred = m_pocoliter->first.toString();
+    PD_Object   obj  = m_pocoliter->second;
+    m_current = PD_RDFStatement( m_subject, pred, obj );
+    ++m_pocoliter;
+    if( m_pocoliter == m_pocol.end() )
+    {
+        m_pocol.clear();
+    }
+}
+
+
+PD_RDFModelIterator::self_reference
+PD_RDFModelIterator::moveToNextSubject()
+{
+    if( m_end )
+        return *this;
+    ++m_apPropertyNumber;
+    if( m_apPropertyNumber == m_AP->getPropertyCount() )
+    {
+        m_end = true;
+        return *this;
+    }
+    const gchar * szName  = 0;
+    const gchar * szValue = 0;
+    m_AP->getNthProperty( m_apPropertyNumber, szName, szValue );
+    m_subject = szName;
+    m_current = PD_RDFStatement( m_subject, PD_URI(), PD_Object() );
+    m_pocol.clear();
+    return *this;
+}
+
+
 PD_RDFModelIterator::self_reference
 PD_RDFModelIterator::operator++()
 {
@@ -1251,6 +1340,1571 @@ PD_RDFModelIterator::operator=( const PD_RDFModelIterator& r )
 /****************************************/
 
 
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+
+
+PD_RDFSemanticItem::PD_RDFSemanticItem( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it )
+    : m_rdf(rdf)
+    , m_context( PD_DocumentRDF::getManifestURI() )
+{
+    m_name = bindingAsString( it, "name" );
+}
+
+PD_RDFSemanticItem::~PD_RDFSemanticItem()
+{
+}
+
+std::string
+PD_RDFSemanticItem::name() const
+{
+    return m_name;
+}
+
+void
+PD_RDFSemanticItem::setName( const std::string& n )
+{
+    m_name = n;
+}
+
+std::string
+PD_RDFSemanticItem::getDisplayLabel() const
+{
+    return "Semantic Item";
+}
+
+
+
+
+std::list< std::pair< std::string, std::string> >
+PD_RDFSemanticItem::getImportTypes() const
+{
+    std::list< std::pair< std::string, std::string> > ret;
+    return ret;
+}
+
+
+
+std::list< std::pair< std::string, std::string> >
+PD_RDFSemanticItem::getExportTypes() const
+{
+    std::list< std::pair< std::string, std::string> > ret;
+    return ret;
+}
+
+std::string
+PD_RDFSemanticItem::getDefaultExtension() const
+{
+    return ".unknown";
+}
+
+
+
+PD_DocumentRDFHandle
+PD_RDFSemanticItem::getRDF() const
+{
+    return m_rdf;
+}
+
+PD_DocumentRDFMutationHandle
+PD_RDFSemanticItem::createMutation()
+{
+    return m_rdf->createMutation();
+}
+
+std::string
+PD_RDFSemanticItem::requestExportFileNameByDialog()
+{
+    std::string ret = getExportToFileName( "", getDefaultExtension(), getExportTypes() );
+    return ret;
+}
+
+
+
+PD_URI
+PD_RDFSemanticItem::linkingSubject() const
+{
+    return m_linkingSubject;
+}
+
+
+PD_URI
+PD_RDFSemanticItem::context() const
+{
+    return m_context;
+}
+
+std::set< std::string >
+PD_RDFSemanticItem::getXMLIDs() const
+{
+    std::set< std::string > ret;
+
+    PD_URI linksubj = linkingSubject();
+    PD_ObjectList ol = m_rdf->getObjects( linksubj,
+                                          PD_URI("http://docs.oasis-open.org/opendocument/meta/package/common#idref"));
+    for( PD_ObjectList::iterator it = ol.begin(); it != ol.end(); ++it )
+    {
+        std::string xmlid = it->toString();
+        ret.insert(xmlid);
+    }
+
+    return ret;
+}
+
+
+
+void
+PD_RDFSemanticItem::updateFromEditorData()
+{
+    PD_DocumentRDFMutationHandle m = m_rdf->createMutation();
+    updateFromEditorData( m );
+    m->commit();
+}
+
+
+
+
+#include "xap_Frame.h"
+#include "fv_View.h"
+
+std::pair< PT_DocPosition, PT_DocPosition >
+PD_RDFSemanticItem::insertTextWithXMLID( const std::string& textconst,
+                                         const std::string& xmlid )
+{
+    PT_DocPosition startpos = 0, endpos = 0;
+    XAP_Frame* lff = XAP_App::getApp()->getLastFocussedFrame();
+    if(lff) 
+    {
+        FV_View * pView = static_cast<FV_View*>( lff->getCurrentView() );
+    
+        std::string text = " " + textconst + " ";
+        startpos = pView->getPoint();
+        m_rdf->getDocument()->insertSpan( startpos, text );
+        endpos = pView->getPoint();
+        startpos++;
+        endpos--;
+    
+        pView->selectRange( startpos, endpos );
+        pView->cmdInsertXMLID( xmlid );
+    }
+
+    return std::make_pair( startpos, endpos );    
+}
+
+
+
+
+std::string
+PD_RDFSemanticItem::bindingAsString( PD_ResultBindings_t::iterator& it, const std::string k )
+{
+    return (*it)[k];
+}
+
+std::string
+PD_RDFSemanticItem::optionalBindingAsString( PD_ResultBindings_t::iterator& it, const std::string k )
+{
+    std::map< std::string, std::string >& m = *it;
+    if( m.end() == m.find(k) || m[k] == "NULL" )
+        return "";
+    return m[k];
+}
+
+
+PD_URI&
+PD_RDFSemanticItem::handleSubjectDefaultArgument( PD_URI& subj )
+{
+    if( subj.toString().empty() )
+    {
+        subj = linkingSubject();
+    }
+    return subj;
+}
+
+
+void
+PD_RDFSemanticItem::setRDFType(PD_DocumentRDFMutationHandle m, const std::string& type, PD_URI subj )
+{
+    handleSubjectDefaultArgument( subj );
+
+    std::string t = type;
+    updateTriple( m, t, type, PD_URI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type") );  
+    
+//    PD_URI pred("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+//    m->add( subj, pred, PD_Object(type), context() );
+}
+
+void
+PD_RDFSemanticItem::setRDFType(const std::string& type, PD_URI subj )
+{
+    PD_DocumentRDFMutationHandle m = createMutation();
+    setRDFType( m, type, subj );
+    m->commit();
+}
+
+void
+PD_RDFSemanticItem::updateTriple( PD_DocumentRDFMutationHandle m, std::string& toModify, const std::string& newValue, const PD_URI& predString )
+{
+    m->remove( linkingSubject(), PD_URI( predString ) );
+    updateTriple_remove( m, toModify, predString, linkingSubject() );
+    toModify = newValue;
+    updateTriple_add( m, toModify, predString, linkingSubject() );
+}
+
+void
+PD_RDFSemanticItem::updateTriple( PD_DocumentRDFMutationHandle m, time_t& toModify, time_t newValue, const PD_URI& predString )
+{
+    m->remove( linkingSubject(), PD_URI( predString ) );
+    updateTriple_remove( m, PD_URI(tostr(toModify)), predString, linkingSubject() );
+    toModify = newValue;
+    updateTriple_add( m, PD_URI(toTimeString(toModify)), predString, linkingSubject() );
+}
+
+void
+PD_RDFSemanticItem::updateTriple( PD_DocumentRDFMutationHandle m, double& toModify, double newValue, const PD_URI& predString )
+{
+    m->remove( linkingSubject(), PD_URI( predString ) );
+    //
+    // I abstracted the below code to an ::remove() method in mutation
+    // {
+    //     PD_URI pred( predString );
+    //     PD_ObjectList objects = m_rdf->getObjects( linkingSubject(), pred );
+    //     std::list< PD_RDFStatement > removeList;
+    //     for( PD_ObjectList::iterator it = objects.begin(); it != objects.end(); ++it )
+    //     {
+    //         PD_Object obj = *it;
+    //         PD_RDFStatement s( linkingSubject(), pred, obj );
+        
+    //         removeList.push_back( s );
+    //     }
+    //     m->remove( removeList );    
+    // }
+    updateTriple_remove( m, PD_URI(tostr(toModify)), predString, linkingSubject() );
+    toModify = newValue;
+    updateTriple_add( m, PD_URI(tostr(toModify)), predString, linkingSubject() );
+}
+
+void
+PD_RDFSemanticItem::updateTriple( PD_DocumentRDFMutationHandle m,
+                                  double& toModify, double newValue,
+                                  const PD_URI& predString,
+                                  PD_URI linkingSubj )
+{
+    updateTriple_remove( m, PD_URI(tostr(toModify)), predString, linkingSubj );
+    toModify = newValue;
+    updateTriple_add( m, PD_URI(tostr(toModify)), predString, linkingSubj );
+}
+
+void
+PD_RDFSemanticItem::updateTriple( std::string& toModify, const std::string& newValue, const PD_URI& predString )
+{
+    PD_DocumentRDFMutationHandle m = createMutation();
+    updateTriple( m, toModify, newValue, predString );
+    m->commit();
+}
+
+void
+PD_RDFSemanticItem::updateTriple( time_t&      toModify, time_t newValue, const PD_URI& predString )
+{
+    PD_DocumentRDFMutationHandle m = createMutation();
+    updateTriple( m, toModify, newValue, predString );
+    m->commit();
+}
+
+void
+PD_RDFSemanticItem::updateTriple( double&      toModify, double newValue, const PD_URI& predString )
+{
+    PD_DocumentRDFMutationHandle m = createMutation();
+    updateTriple( m, toModify, newValue, predString );
+    m->commit();
+}
+
+void PD_RDFSemanticItem::updateTriple_remove( PD_DocumentRDFMutationHandle m,
+                                              const PD_URI& toModify,
+                                              const PD_URI& predString,
+                                              const PD_URI& explicitLinkingSubject )
+{
+    PD_URI pred( predString );
+    m->remove( explicitLinkingSubject, pred, PD_Literal(toModify.toString()) );
+
+    //
+    // Typeless remove, I found that if a object literal did not
+    // stipulate its type in the input RDF, just using
+    // remove() above might not pick it up. So the below code
+    // looks through all statements with subj+pred and checks typeless
+    // string identity of the object() and removes it if strings match.
+    //
+    PD_ObjectList objects = m_rdf->getObjects( explicitLinkingSubject, pred );
+    std::list< PD_RDFStatement > removeList;
+    for( PD_ObjectList::iterator it = objects.begin(); it != objects.end(); ++it )
+    {
+        PD_Object obj = *it;
+        PD_RDFStatement s( explicitLinkingSubject, pred, obj );
+        
+        if( obj.toString() == toModify.toString())
+        {
+            removeList.push_back( s );
+        }
+
+        // //
+        // // Sometimes the object value is serialized as 51.47026 or
+        // // 5.1470260000e+01. There are also slight rounding errors
+        // // which are introduced that complicate comparisons.
+        // //
+        // if (toModify.isDouble())
+        // {
+        //     removeList.push_back( s );
+        // }
+    }
+    
+    m->remove( removeList );    
+}
+
+
+void PD_RDFSemanticItem::updateTriple_add( PD_DocumentRDFMutationHandle m,
+                                           const PD_URI& toModify,
+                                           const PD_URI& predString,
+                                           const PD_URI& explicitLinkingSubject )
+{
+    if( toModify.empty() )
+        return;
+    PD_URI pred( predString );
+    m->add( explicitLinkingSubject, pred, PD_Literal(toModify.toString()), context() ); 
+}
+
+
+
+PD_URI
+PD_RDFSemanticItem::createUUIDNode()
+{
+    std::string uuid = XAP_App::getApp()->createUUIDString();
+    return PD_URI( uuid );
+    
+}
+
+void
+PD_RDFSemanticItem::importFromFile( const std::string& filename_const )
+{
+    std::string filename = getImportFromFileName( filename_const, getImportTypes() );
+    std::ifstream iss( filename.c_str() );
+    importFromData( iss, m_rdf );
+}
+
+
+
+/***********/
+/***********/
+/***********/
+
+PD_RDFContact::PD_RDFContact( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it )
+    : PD_RDFSemanticItem( rdf, it )
+{
+    m_linkingSubject = PD_URI( bindingAsString( it, "person") );
+    m_nick     = optionalBindingAsString( it, "nick");
+    m_email    = optionalBindingAsString( it, "email");
+    m_homePage = optionalBindingAsString( it, "homepage");
+    m_imageUrl = optionalBindingAsString( it, "img");
+    m_phone    = optionalBindingAsString( it, "phone");
+    m_jabberID = optionalBindingAsString( it, "jabberid");
+}
+
+
+PD_RDFContact::~PD_RDFContact()
+{
+}
+
+
+std::string
+PD_RDFContact::getDisplayLabel() const
+{
+    return "Contact";
+}
+
+void
+PD_RDFContact::setupStylesheetReplacementMapping( std::map< std::string, std::string >& m )
+{
+    m["%NICK%"]     = m_nick;
+    m["%HOMEPAGE%"] = m_homePage;
+    m["%PHONE%"]    = m_phone;
+    m["%EMAIL%"]    = m_email;
+}
+
+
+PD_RDFSemanticStylesheets
+PD_RDFContact::stylesheets() const
+{
+    PD_RDFSemanticStylesheets ret;
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("143c1ba3-d7bb-440b-8528-7f07d2eff5f2", "name", "%NAME%")));
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("2fad34d1-42a0-4b10-b17e-a87db5208f6d", "nick", "%NICK%")));
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("0dd5878d-95c5-47e5-a777-63ec36da3b9a", "name, phone", "%NAME%, %PHONE%")));
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("9cbeb4a6-34c5-49b2-b3ef-b94277db0c59", "nick, phone", "%NICK%, %PHONE%")));
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("47025a4a-5da5-4a32-8d89-14c03658631d", "name, (homepage), phone", "%NAME%, (%HOMEPAGE%), %PHONE%")));
+    return ret;
+}
+
+std::string
+PD_RDFContact::className() const
+{
+    return "Contact";
+}
+
+
+
+
+#ifdef WITH_EVOLUTION_DATA_SERVER
+extern "C" {
+  #include <libebook/e-book.h>
+};
+
+static std::string get( EVCard* c, const char* v )
+{
+    EVCardAttribute* a = e_vcard_get_attribute( c, v );
+    UT_DEBUGMSG((" cvard.group:%s v:%s\n", e_vcard_attribute_get_group( a ), v ));
+
+    if( a && e_vcard_attribute_is_single_valued(a) )
+    {
+        return e_vcard_attribute_get_value(a);
+    }
+    return "";
+}
+
+static void set( EVCard* c, const char* k, const std::string& v )
+{
+    EVCardAttribute* a = e_vcard_get_attribute( c, k );
+    if( !a )
+    {
+        a = e_vcard_attribute_new( 0, k );
+        e_vcard_append_attribute( c, a );
+    }
+    
+    if( a )
+    {
+        e_vcard_attribute_add_value( a, v.c_str() );
+    }
+}
+#endif
+
+std::list< std::pair< std::string, std::string> >
+PD_RDFContact::getImportTypes() const
+{
+    std::list< std::pair< std::string, std::string> > types;
+    types.push_back( std::make_pair( "VCard File", "vcf" ));
+    return types;
+}
+
+void
+PD_RDFContact::importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange )
+{
+#ifdef WITH_EVOLUTION_DATA_SERVER
+
+    std::string vcard = StreamToString( iss );
+    UT_DEBUGMSG(("trying to get card for data:%s\n", vcard.c_str() ));
+    if( EVCard* c = e_vcard_new_from_string( vcard.c_str() ) )
+    {
+        std::string textrep = "";
+        typedef std::list< const char* > charplist_t;
+        charplist_t textreplist;
+        textreplist.push_back( EVC_EMAIL );
+        textreplist.push_back( EVC_FN );
+        textreplist.push_back( EVC_NICKNAME );
+        textreplist.push_back( EVC_UID );
+        for( charplist_t::iterator iter = textreplist.begin();
+             iter != textreplist.end(); ++iter )
+        {
+            textrep = get( c, *iter );
+            if( !textrep.empty() )
+                break;
+        }
+        UT_DEBUGMSG(("have card!\n"));
+
+        std::string fn    = get( c, EVC_FN );
+        std::string uid   = get( c, EVC_UID );
+        std::string xmlid = rdf->makeLegalXMLID( fn + "_" + uid );
+        std::string email = get( c, EVC_EMAIL );
+        UT_DEBUGMSG(("uid:%s xmlid:%s\n", uid.c_str(), xmlid.c_str() ));
+
+        m_name  = fn;
+        m_nick  = get( c, EVC_NICKNAME );
+        m_email = email;
+        m_phone = get( c, EVC_TEL );
+        m_jabberID = get( c, EVC_X_JABBER );
+        
+        // std::pair< PT_DocPosition, PT_DocPosition > se = insertTextWithXMLID( textrep, xmlid );
+        // PT_DocPosition startpos = se.first;
+        // PT_DocPosition   endpos = se.second;
+
+        std::string uuid = "http://abicollab.net/rdf/foaf#" + uid;
+        m_linkingSubject = PD_URI( uuid );
+        XAP_Frame* lff = XAP_App::getApp()->getLastFocussedFrame();
+        if(lff) 
+        {
+            FV_View * pView = static_cast<FV_View*>( lff->getCurrentView() );
+            std::pair< PT_DocPosition, PT_DocPosition > se = insert( pView );
+            PT_DocPosition startpos = se.first;
+            PT_DocPosition   endpos = se.second;
+        }
+        
+        // PD_DocumentRDFMutationHandle m = rdf->createMutation();
+        // m->add( PD_URI(uuid),
+        //         PD_URI("http://docs.oasis-open.org/opendocument/meta/package/common#idref"),
+        //         PD_Literal( xmlid ) );
+        // // m->add( PD_URI(uuid),
+        // //         PD_URI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+        // //         PD_Object("http://xmlns.com/foaf/0.1/Person") );
+        // // addFoafProp( m, c, EVC_TEL,      uuidnode, "phone" );
+        // // addFoafProp( m, c, EVC_NICKNAME, uuidnode, "nick" );
+        // // addFoafProp( m, c, EVC_FN,       uuidnode, "name" );
+        // // addFoafProp( m, c, EVC_N,        uuidnode, "givenName" );
+        // // addFoafProp( m, c, EVC_X_JABBER, uuidnode, "jabberID" );
+            
+        PD_DocumentRDFMutationHandle m = rdf->createMutation();
+        importFromDataComplete( iss, rdf, m, pDocRange );
+        m->commit();
+    }
+
+#endif
+}
+
+
+
+std::list< std::pair< std::string, std::string> >
+PD_RDFContact::getExportTypes() const
+{
+    std::list< std::pair< std::string, std::string> > ret;
+    ret.push_back( std::make_pair( "VCard File", "vcf" ));
+    return ret;
+}
+
+std::string
+PD_RDFContact::getDefaultExtension() const
+{
+    return ".vcf";
+}
+
+
+void
+PD_RDFContact::exportToFile( const std::string& filename_const ) const
+{
+    std::string filename = getExportToFileName( filename_const,
+                                                ".vcf",
+                                                getExportTypes() );
+
+    UT_DEBUGMSG(( "saving vcard to file:%s\n", filename.c_str() ));
+
+#ifdef WITH_EVOLUTION_DATA_SERVER
+
+    if( EVCard* c = e_vcard_new() )
+    {
+        set( c, EVC_FN,    m_name );
+        set( c, EVC_UID,   m_linkingSubject.toString() );
+        set( c, EVC_EMAIL, m_email );
+        set( c, EVC_NICKNAME, m_nick );
+        set( c, EVC_TEL,      m_phone );
+        set( c, EVC_X_JABBER, m_jabberID );
+
+        gchar* data =  e_vcard_to_string( c, EVC_FORMAT_VCARD_30 );
+        UT_DEBUGMSG(( "saving vcard to file:%s vcard.len:%ld\n", filename.c_str(), strlen(data) ));
+        std::ofstream oss( filename.c_str() );
+        oss.write( data, strlen(data) );
+        oss.flush();
+        oss.close();
+        g_free(data);
+    }
+    
+#endif    
+}
+
+/******************************/
+/******************************/
+/******************************/
+
+
+#ifdef WITH_LIBICAL
+extern "C" {
+  #include <libical/ical.h>
+};
+
+
+// static std::string tostr( time_t v )
+// {
+//     std::stringstream ss;
+//     ss << v;
+//     return ss.str();
+// }
+
+
+static void addCalProp( PD_DocumentRDFMutationHandle m,
+                        const PD_URI& uuidnode,
+                        const std::string& predend,
+                        const std::string& value )
+{
+    std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
+    m->add( uuidnode,
+            PD_URI(predBase + predend),
+            PD_Literal( value ) );
+}
+static void addCalPropSZ( PD_DocumentRDFMutationHandle m,
+                          const PD_URI& uuidnode,
+                          const std::string& predend,
+                          const char* value )
+{
+    std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
+    if( value )
+    {
+        addCalProp( m, uuidnode, predend, (std::string)value );
+    }
+}
+
+#endif
+
+time_t toTime( struct tm *tm )
+{
+    return mktime( tm );
+}
+
+time_t parseTimeString( const std::string& stddatestr )
+{
+    const char* datestr = stddatestr.c_str();
+    const char* eos     = datestr + strlen( datestr );
+
+    typedef std::list<std::string> formats_t;
+    formats_t formats;
+    
+    formats.push_back( "%Y-%m-%dT%H:%M:%S" );
+    formats.push_back( "%y %b %d %H:%M:%S" );
+    formats.push_back( "%y %b %d %H:%M" );
+
+    for( formats_t::iterator iter = formats.begin(); iter != formats.end(); ++iter )
+    {
+        std::string format = *iter;
+        struct tm tm;
+        memset( &tm, 0, sizeof(struct tm));
+        const char* rc = strptime( datestr, format.c_str(), &tm );
+        if( rc == eos )
+        {
+            UT_DEBUGMSG(("parseTimeString(OK) input:%s format:%s ret:%ld\n",
+                         datestr, format.c_str(), toTime(&tm) ));
+            return toTime(&tm);
+        }
+    }
+
+    UT_DEBUGMSG(("parseTimeString(f) input:%s\n", datestr ));
+    return 0;
+}
+
+PD_RDFEvent::PD_RDFEvent( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it )
+    : PD_RDFSemanticItem( rdf, it )
+{
+    m_linkingSubject = PD_URI( bindingAsString( it, "ev") );
+    m_summary  = optionalBindingAsString( it, "summary");
+    m_location = optionalBindingAsString( it, "location");
+    m_uid      = optionalBindingAsString( it, "uid");
+    m_desc     = optionalBindingAsString( it, "description");
+    m_dtstart  = parseTimeString(optionalBindingAsString( it, "dtstart"));
+    m_dtend    = parseTimeString(optionalBindingAsString( it, "dtend"));
+    if( m_name.empty() )
+        m_name = m_uid;
+}
+ 
+PD_RDFEvent::~PD_RDFEvent()
+{
+}
+
+void
+PD_RDFEvent::setupStylesheetReplacementMapping( std::map< std::string, std::string >& m )
+{
+    m["%UID%"]      = m_uid;
+    m["%DESCRIPTION%"] = m_desc;
+    m["%DESC%"]     = m_desc;
+    m["%SUMMARY%"]  = m_summary;
+    m["%LOCATION%"] = m_location;
+    m["%START%"]    = toTimeString(m_dtstart);
+    m["%END%"]      = toTimeString(m_dtend);
+}
+
+PD_RDFSemanticStylesheets
+PD_RDFEvent::stylesheets() const
+{
+    PD_RDFSemanticStylesheets ret;
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("92f5d6c5-2c3a-4988-9646-2f29f3731f89",
+                                         "name", "%NAME%")));
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("b4817ce4-d2c3-4ed3-bc5a-601010b33363",
+                                         "summary", "%SUMMARY%")));
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("853242eb-031c-4a36-abb2-7ef1881c777e",
+                                         "summary, location", "%SUMMARY%, %LOCATION%")));
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("2d6b87a8-23be-4b61-a881-876177812ad4",
+                                         "summary, location, start date/time", "%SUMMARY%, %LOCATION%, %START%")));
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("115e3ceb-6bc8-445c-a932-baee09686895",
+                                         "summary, start date/time", "%SUMMARY%, %START%")));
+    return ret;
+}
+
+std::string
+PD_RDFEvent::className() const
+{
+    return "Event";
+}
+
+std::list< std::pair< std::string, std::string> >
+PD_RDFEvent::getImportTypes() const
+{
+    std::list< std::pair< std::string, std::string> > types;
+    types.push_back( std::make_pair( "ICalendar files", "ics" ));
+    return types;
+}
+
+std::list< std::pair< std::string, std::string> >
+PD_RDFEvent::getExportTypes() const
+{
+    std::list< std::pair< std::string, std::string> > types;
+    types.push_back( std::make_pair( "ICalendar files", "ics" ));
+    return types;
+}
+
+std::string
+PD_RDFEvent::getDisplayLabel() const
+{
+    return "Event";
+}
+
+static void setFromString( std::string& s, const char* input )
+{
+    if( input )
+        s = input;
+    else
+        s = "";
+}
+
+
+
+void
+PD_RDFEvent::importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange )
+{
+#ifdef WITH_LIBICAL
+
+    std::string data = StreamToString(iss);
+    UT_DEBUGMSG(("trying to get calendar for data:%s\n", data.c_str() ));
+
+    if( icalcomponent* c = icalcomponent_new_from_string( data.c_str() ) )
+    {
+        const char* zdesc = icalcomponent_get_description( c );
+        const char* zloc  = icalcomponent_get_location( c );
+        const char* zsummary = icalcomponent_get_summary( c );
+        const char* zuid  = icalcomponent_get_uid( c );
+        struct icaltimetype zdtstart = icalcomponent_get_dtstart( c );
+        struct icaltimetype zdtend   = icalcomponent_get_dtend( c );
+
+        std::string xmlid;
+        if( zsummary )
+            xmlid += (std::string)"" + zsummary + "_";
+        if( zuid )
+            xmlid += zuid;
+
+        xmlid = rdf->makeLegalXMLID( xmlid );
+
+        setFromString( m_desc, zdesc );
+        setFromString( m_location, zloc );
+        setFromString( m_summary, zsummary );
+        setFromString( m_uid, zuid );
+        m_name    = m_uid;
+        m_dtstart = icaltime_as_timet( zdtstart );
+        m_dtend   = icaltime_as_timet( zdtend );
+        
+        
+        std::string uuid = "http://abicollab.net/rdf/cal#" + xmlid;
+        m_linkingSubject = PD_URI( uuid );
+        XAP_Frame* lff = XAP_App::getApp()->getLastFocussedFrame();
+        if(lff) 
+        {
+            FV_View * pView = static_cast<FV_View*>( lff->getCurrentView() );
+            std::pair< PT_DocPosition, PT_DocPosition > se = insert( pView );
+            PT_DocPosition startpos = se.first;
+            PT_DocPosition   endpos = se.second;
+        }
+
+        PD_DocumentRDFMutationHandle m = rdf->createMutation();
+        importFromDataComplete( iss, rdf, m, pDocRange );
+        m->commit();
+    }
+#endif 
+}
+
+std::string
+PD_RDFEvent::getDefaultExtension() const
+{
+    return ".ical";
+}
+
+void
+PD_RDFEvent::exportToFile( const std::string& filename_const ) const
+{
+    std::string filename = getExportToFileName( filename_const,
+                                                ".ical",
+                                                getExportTypes() );
+
+    UT_DEBUGMSG(( "saving ical to file:%s\n", filename.c_str() ));
+
+#ifdef WITH_LIBICAL
+
+    if( icalcomponent* c = icalcomponent_new( ICAL_VEVENT_COMPONENT ) )
+    {
+        icalcomponent_set_uid( c,         m_uid.c_str() );
+        icalcomponent_set_location( c,    m_location.c_str() );
+        icalcomponent_set_description( c, m_desc.c_str() );
+        icalcomponent_set_dtstart( c,     icaltime_from_timet( m_dtstart, 0 ) );
+        icalcomponent_set_dtend( c,       icaltime_from_timet( m_dtend, 0 ) );
+
+        char* data = icalcomponent_as_ical_string( c );
+        std::ofstream oss( filename.c_str() );
+        oss.write( data, strlen(data) );
+        oss.flush();
+        oss.close();
+    }
+#endif 
+    
+}
+
+
+/******************************/
+/******************************/
+/******************************/
+
+
+
+
+
+std::list< std::pair< std::string, std::string> >
+PD_RDFLocation::getImportTypes() const
+{
+    std::list< std::pair< std::string, std::string> > types;
+    types.push_back( std::make_pair( "KML files", "kml" ));
+    return types;
+}
+
+std::list< std::pair< std::string, std::string> >
+PD_RDFLocation::getExportTypes() const
+{
+    std::list< std::pair< std::string, std::string> > types;
+    types.push_back( std::make_pair( "KML files", "kml" ));
+    return types;
+}
+
+PD_RDFLocation::PD_RDFLocation( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it, bool isGeo84 )
+    : PD_RDFSemanticItem( rdf, it )
+    , m_isGeo84( isGeo84 )
+{
+    m_linkingSubject = PD_URI( bindingAsString( it, "geo") );
+
+    m_name     = optionalBindingAsString( it, "name");
+    m_uid      = optionalBindingAsString( it, "uid");
+    m_desc     = optionalBindingAsString( it, "desc");
+    m_dlat     = toType<double>(optionalBindingAsString( it, "lat"));
+    m_dlong    = toType<double>(optionalBindingAsString( it, "long"));
+    m_joiner = PD_Object(optionalBindingAsString( it, "joiner"));
+    if( m_name.empty() )
+        m_name = m_uid;
+    if( m_name.empty() )
+    {
+        m_name = tostr(m_dlat) + "_" + tostr(m_dlong);
+        if( m_uid.empty() )
+            m_uid = m_name;
+    }
+    
+    UT_DEBUGMSG(("PD_RDFLocation() name:%s long:%f lat:%f geo84:%d\n", m_name.c_str(), m_dlat, m_dlong, isGeo84 ));
+}
+
+PD_RDFLocation::~PD_RDFLocation()
+{
+}
+
+void
+PD_RDFLocation::setupStylesheetReplacementMapping( std::map< std::string, std::string >& m )
+{
+    m["%UID%"]       = m_uid;
+    m["%DESCRIPTION%"] = m_desc;
+    m["%DESC%"]      = m_desc;
+    m["%LAT%"]       = tostr(m_dlat);
+    m["%LONG%"]      = tostr(m_dlong);
+    m["%DLAT%"]      = tostr(m_dlat);
+    m["%DLONG%"]     = tostr(m_dlong);
+}
+
+PD_RDFSemanticStylesheets
+PD_RDFLocation::stylesheets() const
+{
+    PD_RDFSemanticStylesheets ret;
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("33314909-7439-4aa1-9a55-116bb67365f0", "name", "%NAME%")));
+    ret.push_back(
+        PD_RDFSemanticStylesheetHandle(
+            new PD_RDFSemanticStylesheet("34584133-52b0-449f-8b7b-7f1ef5097b9a",
+                                         "name, digital latitude, digital longitude",
+                                         "%NAME%, %DLAT%, %DLONG%")));
+    return ret;
+}
+
+std::string
+PD_RDFLocation::className() const
+{
+    return "Location";
+}
+
+
+std::string
+PD_RDFLocation::getDisplayLabel() const
+{
+    return "Location";
+}
+
+void
+PD_RDFLocation::importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange )
+{
+    UT_DEBUGMSG(( "FIXME: importFromData()\n" ));
+}
+
+std::string
+PD_RDFLocation::getDefaultExtension() const
+{
+    return ".kml";
+}
+
+void
+PD_RDFLocation::exportToFile( const std::string& filename_const ) const
+{
+    std::string filename = getExportToFileName( filename_const, ".kml", getExportTypes() );
+    UT_DEBUGMSG(( "Saving KML to file:%s\n", filename.c_str() ));
+
+
+    std::ofstream xmlss( filename.c_str() );
+    xmlss << "<?xml version=\"1.0\" encoding=\"UTF-8\"?> \n"
+        << "<kml xmlns=\"http://www.opengis.net/kml/2.2\" > \n"
+        << " \n"
+        << "<Placemark> \n"
+        << "  <name>" << name() << "</name> \n"
+        << "  <LookAt> \n"
+        << "    <longitude>" << m_dlong << "</longitude> \n"
+        << "    <latitude>" << m_dlat << "</latitude> \n"
+        << "  </LookAt> \n"
+        << "</Placemark> \n"
+        << "</kml>\n";
+    xmlss.flush();
+    xmlss.close();
+}
+
+std::set< std::string >
+PD_RDFLocation::getXMLIDs() const
+{
+    std::set< std::string > ret;
+    
+    std::stringstream ss;
+    ss << "prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  " << std::endl
+       << "prefix foaf: <http://xmlns.com/foaf/0.1/> " << std::endl
+       << "prefix pkg:  <http://docs.oasis-open.org/opendocument/meta/package/common#> " << std::endl
+       << "prefix geo84: <http://www.w3.org/2003/01/geo/wgs84_pos#>" << std::endl
+       << "" << std::endl
+       << "select distinct ?s ?p ?o ?xmlid" << std::endl
+       << "where { " << std::endl
+       << " ?s pkg:idref ?xmlid ." << std::endl
+       << " ?s ?p ?o " << std::endl
+       << " . filter( str(?o) = \"" << m_linkingSubject.toString() << "\" )" << std::endl
+       << "}" << std::endl;
+    std::set<std::string> uniqfilter;
+    PD_RDFQuery q( getRDF(), getRDF() );
+    PD_ResultBindings_t bindings = q.executeQuery( ss.str() );
+    for( PD_ResultBindings_t::iterator iter = bindings.begin(); iter != bindings.end(); ++iter )
+    {
+        std::map< std::string, std::string > d = *iter;
+        std::string xmlid = d["xmlid"];
+        if (uniqfilter.count(xmlid))
+            continue;
+        uniqfilter.insert(xmlid);
+        
+        if( !xmlid.empty() )
+            ret.insert( xmlid );
+        UT_DEBUGMSG(("PD_RDFLocation::getXMLIDs() xmlid:%s\n", xmlid.c_str() ));
+    }
+    
+    return ret;
+}
+
+
+
+/************************************************************/
+/************************************************************/
+/************************************************************/
+
+
+
+
+/************************************************************/
+/************************************************************/
+/************************************************************/
+
+
+std::pair< PT_DocPosition, PT_DocPosition >
+PD_RDFSemanticItem::insert( PD_DocumentRDFMutationHandle m, FV_View* pView )
+{
+    std::string xmlid = m_rdf->makeLegalXMLID( name() );
+    std::pair< PT_DocPosition, PT_DocPosition > se = insertTextWithXMLID( name(), xmlid );
+    if (m_linkingSubject.toString().empty())
+    {
+        std::string uuid = XAP_App::getApp()->createUUIDString();
+        m_linkingSubject = uuid;
+    }
+    m->add( m_linkingSubject,
+            PD_URI("http://docs.oasis-open.org/opendocument/meta/package/common#idref"),
+            PD_Literal( xmlid ) );
+    return se;
+}
+
+
+
+std::pair< PT_DocPosition, PT_DocPosition >
+PD_RDFSemanticItem::insert( FV_View* pView )
+{
+    PD_DocumentRDFMutationHandle m = m_rdf->createMutation();
+    std::pair< PT_DocPosition, PT_DocPosition > ret = insert( m, pView );
+    m->commit();
+    return ret;
+}
+
+
+
+
+std::list< std::string >
+PD_RDFSemanticItem::getClassNames()
+{
+    std::list< std::string > ret;
+    ret.push_back( "Contact" );
+    ret.push_back( "Event" );
+    ret.push_back( "Location" );
+    return ret;
+}
+
+void
+PD_RDFSemanticItem::setupStylesheetReplacementMapping( std::map< std::string, std::string >& m )
+{
+}
+
+
+PD_RDFSemanticStylesheetHandle
+PD_RDFSemanticItem::findStylesheetByUuid(const std::string &uuid) const
+{
+    PD_RDFSemanticStylesheetHandle ret;
+    if( uuid.empty() )
+        return ret;
+
+    PD_RDFSemanticStylesheets ssl = stylesheets();
+    for( PD_RDFSemanticStylesheets::iterator iter = ssl.begin(); iter != ssl.end(); ++iter )
+    {
+        PD_RDFSemanticStylesheetHandle ss = *iter;
+        if ( ss->uuid() == uuid )
+        {
+            return ss;
+        }
+    }
+    return ret;
+}
+
+
+PD_RDFSemanticStylesheetHandle
+PD_RDFSemanticItem::findStylesheetByName(const std::string &sheetType, const std::string &n) const
+{
+    return findStylesheetByName( stylesheets(), n );
+}
+
+
+PD_RDFSemanticStylesheetHandle
+PD_RDFSemanticItem::findStylesheetByName(const PD_RDFSemanticStylesheets& ssl, const std::string &n) const
+{
+    PD_RDFSemanticStylesheetHandle ret;
+    if( n.empty() )
+        return ret;
+    for( PD_RDFSemanticStylesheets::const_iterator iter = ssl.begin(); iter != ssl.end(); ++iter )
+    {
+        PD_RDFSemanticStylesheetHandle ss = *iter;
+        if ( ss->name() == n )
+        {
+            return ss;
+        }
+    }
+    return ret;
+    
+}
+
+std::string
+PD_RDFSemanticItem::getProperty( std::string subj, std::string pred, std::string defVal ) const
+{
+    PD_Object o = m_rdf->getObject( subj, pred );
+    if( o.empty() )
+        return defVal;
+    return o.toString();
+    
+}
+
+
+PD_RDFSemanticStylesheetHandle
+PD_RDFSemanticItem::defaultStylesheet() const
+{
+    std::string semanticClass = className();
+    std::string name = getProperty( "http://calligra-suite.org/rdf/document/" + semanticClass,
+                                    "http://calligra-suite.org/rdf/stylesheet",
+                                    "name" );
+    std::string type = getProperty( "http://calligra-suite.org/rdf/document/" + semanticClass,
+                                    "http://calligra-suite.org/rdf/stylesheet-type",
+                                    PD_RDFSemanticStylesheet::stylesheetTypeSystem() );
+    std::string uuid = getProperty( "http://calligra-suite.org/rdf/document/" + semanticClass,
+                                    "http://calligra-suite.org/rdf/stylesheet-uuid",
+                                    "" );
+    
+    PD_RDFSemanticStylesheetHandle ret = findStylesheetByUuid( uuid );
+    if (!ret)
+    {
+        ret = findStylesheetByName( type, name );
+    }
+    if (!ret)
+    {
+        // The "name" stylesheet should always exist
+        ret = findStylesheetByName( PD_RDFSemanticStylesheet::stylesheetTypeSystem(), "name" );
+    }
+    return ret;
+    
+}
+
+void
+PD_RDFSemanticItem::relationAdd( PD_RDFSemanticItemHandle dst, RelationType rt )
+{
+    std::string predBase("http://xmlns.com/foaf/0.1/" );
+    PD_URI pred( predBase + "knows");
+
+    PD_DocumentRDFMutationHandle m = m_rdf->createMutation();
+    switch( rt )
+    {
+        case RELATION_FOAF_KNOWS:
+            // symetric relation
+            m->add( linkingSubject(),      pred, PD_Object(dst->linkingSubject()) );
+            m->add( dst->linkingSubject(), pred, PD_Object(linkingSubject()) );
+            break;
+    }
+    m->commit();
+}
+
+PD_RDFSemanticItems
+PD_RDFSemanticItem::relationFind( RelationType rt )
+{
+    std::string predBase("http://xmlns.com/foaf/0.1/" );
+    PD_URI pred( predBase + "knows");
+
+    switch( rt )
+    {
+        case RELATION_FOAF_KNOWS:
+            pred = PD_URI( predBase + "knows");
+            break;
+    }
+    UT_DEBUGMSG(("relationFind() this->linkingSubj:%s\n", linkingSubject().c_str() ));
+
+    std::set< std::string > xmlids;
+    PD_ObjectList ol = m_rdf->getObjects( linkingSubject(), pred );
+    for( PD_ObjectList::iterator iter = ol.begin(); iter != ol.end(); ++iter )
+    {
+        PD_URI linkingSubj = *iter;
+        UT_DEBUGMSG(("relationFind() linkingSubj:%s\n", linkingSubj.c_str() ));
+
+        std::set< std::string > t = getXMLIDsForLinkingSubject( m_rdf, linkingSubj.toString() );
+        UT_DEBUGMSG(("relationFind() t.sz:%d\n", t.size() ));
+        xmlids.insert( t.begin(), t.end() );
+    }
+
+    UT_DEBUGMSG(("relationFind() xmlids.sz:%d\n", xmlids.size() ));
+    PD_RDFSemanticItems ret = m_rdf->getSemanticObjects( xmlids );
+    return ret;
+}
+
+std::set< std::string >
+PD_RDFSemanticItem::getXMLIDsForLinkingSubject( PD_DocumentRDFHandle rdf, const std::string& linkingSubj )
+{
+    std::set< std::string > ret;
+    
+    std::stringstream ss;
+    ss << "prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  " << std::endl
+       << "prefix foaf: <http://xmlns.com/foaf/0.1/> " << std::endl
+       << "prefix pkg:  <http://docs.oasis-open.org/opendocument/meta/package/common#> " << std::endl
+       << "prefix geo84: <http://www.w3.org/2003/01/geo/wgs84_pos#>" << std::endl
+       << "" << std::endl
+       << "select distinct ?s ?xmlid" << std::endl
+       << "where { " << std::endl
+       << " ?s pkg:idref ?xmlid " << std::endl
+       << " . filter( str(?s) = \"" << linkingSubj << "\" )" << std::endl
+       << "}" << std::endl;
+    std::set<std::string> uniqfilter;
+    PD_RDFQuery q( rdf, rdf );
+    UT_DEBUGMSG(("getXMLIDsForLinkingSubject() sparql:%s\n", ss.str().c_str() ));
+    PD_ResultBindings_t bindings = q.executeQuery( ss.str() );
+    for( PD_ResultBindings_t::iterator iter = bindings.begin(); iter != bindings.end(); ++iter )
+    {
+        std::map< std::string, std::string > d = *iter;
+        std::string xmlid = d["xmlid"];
+        if (uniqfilter.count(xmlid))
+            continue;
+        uniqfilter.insert(xmlid);
+        if( !xmlid.empty() )
+            ret.insert( xmlid );
+    }
+    return ret;
+}
+
+
+/************************************************************/
+/************************************************************/
+/************************************************************/
+
+PD_RDFSemanticStylesheet::PD_RDFSemanticStylesheet(
+    const std::string &_uuid,
+    const std::string &_name,
+    const std::string &_templateString,
+    const std::string &_type,
+    bool _isMutable
+    )
+    : m_uuid(_uuid)
+    , m_name(_name)
+    , m_templateString(_templateString)
+    , m_type(_type)
+    , m_isMutable(_isMutable)
+{
+}
+
+
+void
+PD_RDFSemanticStylesheet::format( PD_RDFSemanticItemHandle obj, FV_View* pView, const std::string& xmlid_const )
+{
+    PD_Document* pDoc = pView->getDocument();
+    PD_DocumentRDFHandle rdf = obj->getRDF();
+    std::string xmlid = xmlid_const;
+    if( xmlid.empty() )
+    {
+        std::set< std::string > tmp;
+        rdf->addRelevantIDsForPosition( tmp, pView->getPoint() );
+        if( tmp.empty() )
+        {
+            UT_DEBUGMSG(("ss:format(no xmlid!) obj->name:%s\n", obj->name().c_str() ));
+            return;
+        }
+        xmlid = *(tmp.begin());
+    }
+    
+    UT_DEBUGMSG(("ss:format() obj->name:%s\n", obj->name().c_str() ));
+    UT_DEBUGMSG(("xmlid:%s pView:%p sheetname:%s\n", xmlid.c_str(), pView, name().c_str() ));
+
+    std::pair< PT_DocPosition, PT_DocPosition > p = rdf->getIDRange( xmlid );
+    PT_DocPosition startpos = p.first + 1;
+    PT_DocPosition endpos   = p.second;
+    if (!endpos)
+    {
+        UT_DEBUGMSG(("ss:format(invalid range!) obj->name:%s\n", obj->name().c_str() ));
+        return;
+    }
+    UT_DEBUGMSG(("formating start:%d end:%d\n", startpos, endpos ));
+
+    // Grab the text that was there and remove it.
+    pView->selectRange( startpos, endpos );
+    pView->cmdCut();
+    pView->setPoint( startpos );
+
+    std::string data = templateString();
+    std::map< std::string, std::string > m;
+    m["%NAME%"] = obj->name();
+    obj->setupStylesheetReplacementMapping( m );
+
+    for( std::map< std::string, std::string >::iterator mi = m.begin(); mi != m.end(); ++mi)
+    {
+        std::string k = mi->first;
+        std::string v = mi->second;
+        data = replace_all( data, k, v );
+    }
+
+    // make sure there is something in the replacement other than commas and spaces
+    std::string tmpstring = data;
+    tmpstring = replace_all( tmpstring, " ", "" );
+    tmpstring = replace_all( tmpstring, ",", "" );
+    if (tmpstring.empty()) {
+        UT_DEBUGMSG(("stylesheet results in empty data, using name() instead\n"));
+        data = name();
+    }
+
+    UT_DEBUGMSG(("Updating with new formatting:%s\n", data.c_str() ));
+    pDoc->insertSpan( startpos, data );
+    pView->setPoint( startpos );
+}
+
+
+PD_RDFSemanticStylesheet::~PD_RDFSemanticStylesheet()
+{
+}
+
+std::string
+PD_RDFSemanticStylesheet::stylesheetTypeSystem()
+{
+    return "System";
+}
+
+std::string
+PD_RDFSemanticStylesheet::stylesheetTypeUser()
+{
+    return "User";
+}
+
+
+std::string
+PD_RDFSemanticStylesheet::uuid() const
+{
+    return m_uuid;
+}
+
+std::string
+PD_RDFSemanticStylesheet::name() const
+{
+    return m_name;
+}
+
+std::string
+PD_RDFSemanticStylesheet::templateString() const
+{
+    return m_templateString;
+}
+
+std::string
+PD_RDFSemanticStylesheet::type() const
+{
+    return m_type;
+}
+
+bool
+PD_RDFSemanticStylesheet::isMutable() const
+{
+    return m_isMutable;
+}
+
+
+/************************************************************/
+/************************************************************/
+/************************************************************/
+
+PD_RDFSemanticItemViewSite::PD_RDFSemanticItemViewSite( PD_RDFSemanticItemHandle _si, const std::string& _xmlid )
+    : m_xmlid(_xmlid)
+    , m_semItem(_si)
+{
+}
+
+PD_RDFSemanticItemViewSite::PD_RDFSemanticItemViewSite( PD_RDFSemanticItemHandle _si, PT_DocPosition pos )
+    : m_semItem(_si)
+{
+	std::set< std::string > posxml;
+	m_semItem->getRDF()->addRelevantIDsForPosition( posxml, pos );
+	std::set< std::string > sixml = m_semItem->getXMLIDs();
+    std::set< std::string > tmp;
+    std::set_intersection( posxml.begin(), posxml.end(),
+                           sixml.begin(),  sixml.end(),
+                           inserter( tmp, tmp.end() ));
+    if( tmp.empty() )
+    {
+        // error
+    }
+    else
+    {
+        m_xmlid = *(tmp.begin());
+    }
+}
+
+
+
+PD_RDFSemanticItemViewSite::~PD_RDFSemanticItemViewSite()
+{
+}
+
+PD_RDFSemanticStylesheetHandle
+PD_RDFSemanticItemViewSite::stylesheet() const
+{
+    std::string name = getProperty("stylesheet", "name");
+    std::string type = getProperty("stylesheet-type", PD_RDFSemanticStylesheet::stylesheetTypeSystem());
+    std::string uuid = getProperty("stylesheet-uuid", "");
+
+    UT_DEBUGMSG(("stylesheet at site, format(), xmlid:%s\n", m_xmlid.c_str() ));
+    UT_DEBUGMSG((" sheet:%s type:%s\n", name.c_str(), type.c_str() ));
+
+    PD_RDFSemanticStylesheetHandle ret;
+    if (!uuid.empty())
+    {
+        ret = m_semItem->findStylesheetByUuid( uuid );
+    }
+    if (!ret)
+    {
+        ret = m_semItem->findStylesheetByName( type, name );
+    }
+    if (!ret)
+    {
+        // safety first, there will always be a default stylesheet
+        ret = m_semItem->defaultStylesheet();
+    }
+    return ret;
+}
+
+
+void
+PD_RDFSemanticItemViewSite::disassociateStylesheet()
+{
+    UT_DEBUGMSG(("stylesheet at site. xmlid:%s\n", m_xmlid.c_str() ));
+    setProperty("stylesheet", "");
+    setProperty("stylesheet-type", "");
+    setProperty("stylesheet-uuid", "");
+}
+
+void
+PD_RDFSemanticItemViewSite::applyStylesheet( FV_View* pView,
+                                             PD_RDFSemanticStylesheetHandle ss )
+{
+    if( !ss )
+    {
+        UT_DEBUGMSG(("apply stylesheet at site. format(), xmlid:%s NO SHEET\n", m_xmlid.c_str()));
+        return;
+    }
+    
+    
+    UT_DEBUGMSG(("apply stylesheet at site. format(), xmlid:%s sheet:%s\n",
+                 m_xmlid.c_str(), ss->name().c_str() ));
+    setStylesheetWithoutReflow( ss );
+    reflowUsingCurrentStylesheet( pView );
+}
+
+void
+PD_RDFSemanticItemViewSite::setStylesheetWithoutReflow( PD_RDFSemanticStylesheetHandle ss )
+{
+    // Save the stylesheet property
+    UT_DEBUGMSG(("apply stylesheet at site. format(), xmlid:%s sheet:%s\n",
+                 m_xmlid.c_str(), ss->name().c_str() ));
+    setProperty("stylesheet", ss->name());
+    setProperty("stylesheet-type", ss->type());
+    setProperty("stylesheet-uuid", ss->uuid());
+}
+
+void
+PD_RDFSemanticItemViewSite::reflowUsingCurrentStylesheet( FV_View* pView )
+{
+    PD_RDFSemanticStylesheetHandle ss = stylesheet();
+    ss->format( m_semItem, pView, m_xmlid );
+}
+
+void
+PD_RDFSemanticItemViewSite::select( FV_View* pView )
+{
+    std::set< std::string > xmlids;
+    xmlids.insert( m_xmlid );
+    m_semItem->getRDF()->selectXMLIDs( xmlids, pView );
+}
+
+PD_URI
+PD_RDFSemanticItemViewSite::linkingSubject() const
+{
+    PD_DocumentRDFHandle rdf = m_semItem->getRDF();
+    PD_URI     pred("http://calligra-suite.org/rdf/site/package/common#idref");
+    PD_Literal obj(m_xmlid);
+    
+    // try to find it if it already exists
+    PD_URIList ul = rdf->getSubjects( pred, obj );
+    for( PD_URIList::iterator iter = ul.begin(); iter != ul.end(); ++iter )
+    {
+        return *iter;
+    }
+
+    PD_DocumentRDFMutationHandle m = rdf->createMutation();
+    PD_URI ret = m->createBNode();
+    m->add( ret, pred, obj );
+    m->commit();
+    return ret;
+}
+
+std::string
+PD_RDFSemanticItemViewSite::getProperty(const std::string &prop, const std::string &defval) const
+{
+    PD_DocumentRDFHandle rdf = m_semItem->getRDF();
+    PD_URI          ls = linkingSubject();
+    std::string fqprop = "http://calligra-suite.org/rdf/site#" + prop;
+
+    PD_ObjectList ol = rdf->getObjects( ls, PD_URI(fqprop) );
+    for( PD_ObjectList::iterator iter = ol.begin(); iter != ol.end(); ++iter )
+    {
+        return iter->toString();
+    }
+    return defval;
+}
+
+void
+PD_RDFSemanticItemViewSite::setProperty(const std::string &prop, const std::string &v)
+{
+    PD_DocumentRDFHandle rdf = m_semItem->getRDF();
+    std::string fqprop = "http://calligra-suite.org/rdf/site#" + prop;
+
+    PD_URI   ls = linkingSubject();
+    PD_URI pred(fqprop);
+    
+    PD_DocumentRDFMutationHandle m = rdf->createMutation();
+    m->remove( ls, pred );
+    if( !v.empty() )
+        m->add( ls, pred, PD_Literal(v) );
+    m->commit();    
+}
+
+void
+PD_RDFSemanticItemViewSite::selectRange( FV_View* pView, std::pair< PT_DocPosition, PT_DocPosition > range )
+{
+    pView->selectRange( range );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+    
+    
+
 PD_DocumentRDF::PD_DocumentRDF( PD_Document* doc )
     :
     m_doc( doc ),
@@ -1292,11 +2946,11 @@ PD_DocumentRDF::relinkRDFToNewXMLID( const std::string& oldxmlid,
     if( deepCopyRDF )
     {
         // FIXME: todo
-        UT_DEBUGMSG(("relinkRDFToNewXMLID DEEP COPY FIXME oldid:%s newid:%s subj:%s\n",
+        UT_DEBUGMSG(("relinkRDFToNewXMLID DEEP COPY FIXME oldid:%s newid:%s\n",
                      oldxmlid.c_str(), newxmlid.c_str() ));
     }
     
-    UT_DEBUGMSG(("relinkRDFToNewXMLID oldid:%s newid:%s subj:%s\n",
+    UT_DEBUGMSG(("relinkRDFToNewXMLID oldid:%s newid:%s\n",
                  oldxmlid.c_str(), newxmlid.c_str() ));
     
     PD_DocumentRDFMutationHandle m = createMutation();
@@ -1657,7 +3311,7 @@ PD_DocumentRDF::contains( const PD_RDFStatement& st )
 /**
  * Get the total number of triples in the model. This can be
  * relatively expensive to calculate. So definately don't keep
- * dpindoing it in a loop.
+ * on doing it in a loop.
  */
 long
 PD_DocumentRDF::getTripleCount()
@@ -1687,7 +3341,7 @@ PD_DocumentRDF::getTripleCount()
 PD_RDFModelIterator
 PD_DocumentRDF::begin()
 {
-    UT_DEBUGMSG(("docrdf::begin() ap:%p\n", getAP() ));
+//    UT_DEBUGMSG(("docrdf::begin() ap:%p\n", getAP() ));
 
     PD_RDFModelHandle model = getDocument()->getDocumentRDF();
     PD_RDFModelIterator iter( model, getAP() );
@@ -1821,13 +3475,13 @@ PD_DocumentRDF::getAllIDs( std::set< std::string >& ret )
 
 
 std::pair< PT_DocPosition, PT_DocPosition >
-PD_DocumentRDF::getIDRange( const std::string& xmlid )
+PD_DocumentRDF::getIDRange( const std::string& xmlid ) const
 {
     std::pair< PT_DocPosition, PT_DocPosition > ret( 0, 0 );
     PD_Document*    doc = getDocument();
     pf_Frag *	   iter = doc->getFragFromPosition(0);
 
-    UT_DEBUGMSG(( "getIDRange() iter starting at:%p\n", iter ));
+//    UT_DEBUGMSG(( "getIDRange() iter starting at:%p\n", iter ));
     
     for( ; iter; iter = iter->getNext() )
     {
@@ -1918,13 +3572,13 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
 
         if( pt->getFragFromPosition( curr, &pf, &boffset ) )
         {
-            UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() current:%d frag type:%d len:%d \n",
+            xxx_UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() current:%d frag type:%d len:%d \n",
                          curr, pf->getType(), pf->getLength() ));
 
             // skip backwards fast if possible.
             if(pf->getType() != pf_Frag::PFT_Object)
             {
-                UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() SKIPPING BACK!\n" ));
+                xxx_UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() SKIPPING BACK!\n" ));
                 curr = pf->getPos() - 1;
                 continue;
             }
@@ -1938,7 +3592,7 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
                 pf_Frag_Object* pOb = static_cast<pf_Frag_Object*>(pf);
                 const PP_AttrProp * pAP = NULL;
 
-                UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() po type:%d\n",
+                xxx_UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() po type:%d\n",
                              pOb->getObjectType() ));
 
                 if( pOb->getObjectType() == PTO_Bookmark
@@ -1951,7 +3605,7 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
                         std::string xmlid = v;
                         bool isEnd = pAP->getAttribute("type", v) && v && !strcmp(v,"end");
                         
-                        UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() isEnd:%d id:%s\n",
+                        xxx_UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() isEnd:%d id:%s\n",
                                      isEnd, xmlid.c_str() ));
                         
                         if( isEnd && curr < start )
@@ -1972,7 +3626,7 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
                     pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
 
                     RDFAnchor a(pAP);
-                    UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() isEnd:%d id:%s\n",
+                    xxx_UT_DEBUGMSG(("PD_DocumentRDF::getObjectsInScope() isEnd:%d id:%s\n",
                                  a.isEnd(), a.getID().c_str() ));
                     
                     if( a.isEnd() && curr < start )
@@ -2021,7 +3675,7 @@ PD_DocumentRDF::addXMLIDsForObjects( std::set< std::string >& ret, std::list< pf
             pOb->getPieceTable()->getAttrProp(pOb->getIndexAP(),&pAP);
             RDFAnchor a(pAP);
             ret.insert( a.getID() );
-            UT_DEBUGMSG(("addXMLIDsForObjects() xmlid:%s\n", a.getID().c_str() ));
+            xxx_UT_DEBUGMSG(("addXMLIDsForObjects() xmlid:%s\n", a.getID().c_str() ));
         }
     }
     return ret;
@@ -2044,7 +3698,7 @@ PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string 
     pf_Frag_Strux* psdh;
     if( pt->getStruxOfTypeFromPosition( pos, PTX_Block, &psdh ) && psdh )
     {
-        UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
+        xxx_UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() block pos:%d\n", pos ));
         PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
         const PP_AttrProp * AP = NULL;
         doc->getAttrProp(api,&AP);
@@ -2053,7 +3707,7 @@ PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string 
             const char * v = NULL;
             if(AP->getAttribute("xml:id", v))
             {
-                UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
+                xxx_UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
                 col.insert(v);
             }
         }
@@ -2064,7 +3718,7 @@ PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string 
     //
     if( pt->getStruxOfTypeFromPosition( pos, PTX_SectionCell, &psdh ) && psdh )
     {
-        UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() cell pos:%d\n", pos ));
+        xxx_UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() cell pos:%d\n", pos ));
         PT_AttrPropIndex api = doc->getAPIFromSDH( psdh );
         const PP_AttrProp * AP = NULL;
         doc->getAttrProp(api,&AP);
@@ -2073,11 +3727,11 @@ PD_DocumentRDF::addXMLIDsForBlockAndTableCellForPosition( std::set< std::string 
             const char * v = NULL;
             if(AP->getAttribute("xml:id", v))
             {
-                UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
+                xxx_UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() xmlid:%s \n",v));
                 col.insert(v);
 
                 if(AP->getAttribute("props", v))
-                    UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() props:%s \n",v));
+                    xxx_UT_DEBUGMSG(("PD_DocumentRDF::priv_addRelevantIDsForPosition() props:%s \n",v));
 
             }
         }
@@ -2102,18 +3756,18 @@ PD_DocumentRDF::addRelevantIDsForRange( std::set< std::string >& ret,
     //
     PT_DocPosition pos = range.first;
 
-    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy begin:%d end:%d\n", range.first, range.second ));
-    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy looking back to find bookmark and rdf anchor openings...\n" ));
+    xxx_UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy begin:%d end:%d\n", range.first, range.second ));
+    xxx_UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy looking back to find bookmark and rdf anchor openings...\n" ));
     std::set< PTObjectType > objectTypes;
     objectTypes.insert( PTO_Bookmark  );
     objectTypes.insert( PTO_RDFAnchor );
     std::list< pf_Frag_Object* > objectList = getObjectsInScopeOfTypesForRange( objectTypes, range );
     addXMLIDsForObjects( ret, objectList );
-    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy objectList.sz:%d\n", objectList.size() ));
+    xxx_UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy objectList.sz:%ld\n", objectList.size() ));
     addXMLIDsForBlockAndTableCellForPosition( ret, pos );
 
     
-    UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy inspecting range...\n" ));
+    xxx_UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy inspecting range...\n" ));
     PT_DocPosition searchBackThisFar = pos;
     ++pos;
 
@@ -2123,7 +3777,7 @@ PD_DocumentRDF::addRelevantIDsForRange( std::set< std::string >& ret,
 
     for( PT_DocPosition curr = end; curr >= range.first; )
     {
-        UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy looping curr:%d\n", curr ));
+        xxx_UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() xxxyyy looping curr:%d\n", curr ));
         curr = addXMLIDsForBlockAndTableCellForPosition( ret, curr );
     }
     
@@ -2135,6 +3789,7 @@ PD_DocumentRDF::addRelevantIDsForRange( std::set< std::string >& ret,
     // {
     //     priv_addRelevantIDsForPosition( ret, pos, searchBackThisFar );
     // }
+    xxx_UT_DEBUGMSG(("PD_DocumentRDF::addRelevantIDsForRange() ret begin:%d end:%d\n", range.first, range.second ));
     return ret;
 }
 
@@ -2314,6 +3969,12 @@ PD_DocumentRDF::createScratchModel()
     return ret;
 }
 
+PD_URI
+PD_DocumentRDF::getManifestURI()
+{
+    return PD_URI("http://abiword.org/manifest.rdf");
+}
+
 
 
 PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
@@ -2340,7 +4001,7 @@ PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
     }
     
 
-    retModel->dumpModel("RDF result for xmlid");
+//    retModel->dumpModel("RDF result for xmlid");
     return ret;
     
     
@@ -2444,7 +4105,7 @@ PD_RDFModelHandle PD_DocumentRDF::getRDFForID( const std::string& xmlid )
     addRDFForID( xmlid, m );
     m->commit();
 
-    retModel->dumpModel("RDF result for xmlid");
+//    retModel->dumpModel("RDF result for xmlid");
     return ret;
 }
 
@@ -2542,10 +4203,58 @@ static void dump( const std::string& msg, PD_RDFModelIterator iter, PD_RDFModelI
     UT_DEBUGMSG(("dump(end) count:%d msg::%s\n", count, msg.c_str() ));
 }
 
+
+
+
 void PD_DocumentRDF::runPlay()
 {
+    UT_DEBUGMSG(("================================================================================\n" ));
     UT_DEBUGMSG(("PD_DocumentRDF::runPlay() o:%s\n", "foo" ));
 
+    PD_RDFContacts cl = getContacts();
+    UT_DEBUGMSG(("PD_DocumentRDF::runPlay() contacts.sz:%ld\n", cl.size() ));
+
+    for( PD_RDFContacts::iterator ci = cl.begin(); ci != cl.end(); ++ci )
+    {
+        PD_RDFContactHandle c = *ci;
+
+        UT_DEBUGMSG((" subj:%s\n", c->linkingSubject().toString().c_str() ));
+        UT_DEBUGMSG((" name:%s\n", c->name().c_str() ));
+        std::set< std::string > xmlids = c->getXMLIDs();
+        for( std::set< std::string >::iterator iter = xmlids.begin(); iter != xmlids.end(); ++iter )
+        {
+            std::string xmlid = *iter;
+            UT_DEBUGMSG(("   x2mlid:%s ", xmlid.c_str() ));
+            std::pair< PT_DocPosition, PT_DocPosition > range = getIDRange( xmlid );
+            UT_DEBUGMSG(("   start:%d end:%d ", range.first, range.second ));
+            UT_DEBUGMSG((" \n" ));
+        }
+
+
+        // if( c->name() == "James Smith" )
+        // {
+        //     c->showEditorWindow( c );
+        // }
+        
+    }
+
+    PD_RDFEvents el = getEvents();
+    UT_DEBUGMSG((" events.sz:%ld\n", el.size() ));
+    for( PD_RDFEvents::iterator ei = el.begin(); ei != el.end(); ++ei )
+    {
+        PD_RDFEventHandle e = *ei;
+        UT_DEBUGMSG((" events.name:%s\n", e->name().c_str() ));
+
+        if( e->name() == "uri:campingtime" )
+        {
+            e->showEditorWindow( e );
+        }
+    }
+    
+        
+    return;
+    
+    
     UT_DebugOnly<int> count = 0;
     typedef PD_RDFModelIterator iterator;
     dump( "whole model", begin(), end() );
@@ -2769,7 +4478,7 @@ protected:
     std::string          m_sparql;
     
 protected:
-    void update();
+    virtual void update();
     
 public:
 
@@ -2814,8 +4523,8 @@ void
 RDFModel_SPARQLLimited::update()
 {
     UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() TOP\n" ));
-    UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() our   version:%d\n", getVersion() ));
-    UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() their version:%d\n", m_delegate->getVersion() ));
+    UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() our   version:%ld\n", getVersion() ));
+    UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() their version:%ld\n", m_delegate->getVersion() ));
 
     if( getVersion() >= m_delegate->getVersion() )
     {
@@ -2824,8 +4533,12 @@ RDFModel_SPARQLLimited::update()
     }
     
     PP_AttrProp* AP = new PP_AttrProp();
+    UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() 1\n" ));
+    UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() sparql:%s\n", getSparql().c_str() ));
+    
     PD_RDFQuery q( m_rdf, m_delegate );
     PD_ResultBindings_t bindings = q.executeQuery( getSparql() );
+    UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() 2\n" ));
 
     for( PD_ResultBindings_t::iterator iter = bindings.begin(); iter != bindings.end(); ++iter )
     {
@@ -2879,6 +4592,8 @@ class RDFModel_XMLIDLimited
 {
     std::string m_writeID;
     std::set< std::string > m_readIDList;
+protected:
+    virtual void update();
     
 public:
     
@@ -2901,10 +4616,43 @@ public:
     virtual PD_DocumentRDFMutationHandle createMutation();
 };
 
+void
+RDFModel_XMLIDLimited::update()
+{
+    if( getVersion() >= m_delegate->getVersion() )
+    {
+        UT_DEBUGMSG(("RDFModel_XMLIDLimited::update() nothing to be done...\n" ));
+        return;
+    }
+
+    std::set< std::string > xmlids;
+    xmlids.insert( m_writeID );
+    copy( m_readIDList.begin(), m_readIDList.end(), inserter( xmlids, xmlids.end() ) );
+
+    if( xmlids.size() == 1 )
+    {
+        std::string xmlid = *(xmlids.begin());
+        PP_AttrProp* AP = new PP_AttrProp();
+
+        PD_URI     idref(  "http://docs.oasis-open.org/opendocument/meta/package/common#pkg:idref" );
+        PD_Literal rdflink( xmlid );
+        PD_URI s = m_delegate->getSubject( idref, rdflink );
+        POCol polist = m_delegate->getArcsOut( s );
+
+        const gchar* szName = s.toString().c_str();
+        std::string po = encodePOCol( polist );
+        AP->setProperty( szName, po.c_str() );    
+        return;
+    }
+    
+    RDFModel_SPARQLLimited::update();
+}
+
 
 std::string
 RDFModel_XMLIDLimited::getSparql()
 {
+    UT_DEBUGMSG(("RDFModel_XMLIDLimited::getSparql()\n"));
     std::set< std::string > xmlids;
     xmlids.insert( m_writeID );
     copy( m_readIDList.begin(), m_readIDList.end(), inserter( xmlids, xmlids.end() ) );
@@ -3078,6 +4826,112 @@ PD_DocumentRDF::createRestrictedModelForXMLIDs( const std::set< std::string >& x
     return createRestrictedModelForXMLIDs( writeID, xmlids );
 }
 
+PD_RDFSemanticItems
+PD_DocumentRDF::getAllSemanticObjects( const std::string& classRestriction )
+{
+    PD_RDFSemanticItems ret;
+    if( classRestriction.empty() || classRestriction == "Contact" )
+    {
+        PD_RDFContacts contacts = getContacts();
+        copy( contacts.begin(), contacts.end(), back_inserter(ret));
+    }
+    
+    if( classRestriction.empty() || classRestriction == "Event" )
+    {
+        PD_RDFEvents events = getEvents();
+        copy( events.begin(), events.end(), back_inserter(ret));
+    }
+    
+    if( classRestriction.empty() || classRestriction == "Location" )
+    {
+        PD_RDFLocations locations = getLocations();
+        copy( locations.begin(), locations.end(), back_inserter(ret));
+    }
+    
+    return ret;
+}
+
+
+
+PD_RDFSemanticItems
+PD_DocumentRDF::getSemanticObjects( const std::set< std::string >& xmlids )
+{
+    PD_RDFSemanticItems ret;
+    
+    PD_RDFContacts contacts = getContacts();
+    for( PD_RDFContacts::iterator ci = contacts.begin();
+         ci != contacts.end(); ++ci )
+    {
+        PD_RDFContactHandle c = *ci;
+        std::set< std::string > clist = c->getXMLIDs();
+        std::set< std::string > tmp;
+        std::set_intersection( xmlids.begin(), xmlids.end(),
+                               clist.begin(), clist.end(),
+                               inserter( tmp, tmp.end() ));
+        if( !tmp.empty() )
+        {
+            ret.push_back( c );
+        }
+    }
+
+    PD_RDFEvents events = getEvents();
+    for( PD_RDFEvents::iterator ci = events.begin();
+         ci != events.end(); ++ci )
+    {
+        PD_RDFEventHandle c = *ci;
+        std::set< std::string > clist = c->getXMLIDs();
+        std::set< std::string > tmp;
+        std::set_intersection( xmlids.begin(), xmlids.end(),
+                               clist.begin(), clist.end(),
+                               inserter( tmp, tmp.end() ));
+        if( !tmp.empty() )
+        {
+            ret.push_back( c );
+        }
+    }
+
+    PD_RDFLocations locations = getLocations();
+    for( PD_RDFLocations::iterator ci = locations.begin();
+         ci != locations.end(); ++ci )
+    {
+        PD_RDFLocationHandle c = *ci;
+        std::set< std::string > clist = c->getXMLIDs();
+        std::set< std::string > tmp;
+        std::set_intersection( xmlids.begin(), xmlids.end(),
+                               clist.begin(), clist.end(),
+                               inserter( tmp, tmp.end() ));
+        if( !tmp.empty() )
+        {
+            ret.push_back( c );
+        }
+    }
+    
+    return ret;
+}
+
+
+
+
+
+void
+PD_DocumentRDF::selectXMLIDs( const std::set< std::string >& xmlids, FV_View* pView ) const
+{
+    XAP_Frame* lff = XAP_App::getApp()->getLastFocussedFrame();
+    if( !pView && lff )
+        pView = static_cast<FV_View*>( lff->getCurrentView() );
+    if( !pView )
+        return;
+
+    for( std::set< std::string >::iterator iter = xmlids.begin(); iter != xmlids.end(); ++iter )
+    {
+        std::string xmlid = *iter;
+        std::pair< PT_DocPosition, PT_DocPosition > range = getIDRange( xmlid );
+        UT_DEBUGMSG(("selectXMLIDs() id:%s begin:%d end:%d\n",
+                     xmlid.c_str(), range.first, range.second ));
+        if( range.first && range.second > range.first )
+            pView->selectRange( range );
+    }
+}
 
 
 
@@ -3098,6 +4952,8 @@ PD_DocumentRDFMutation::PD_DocumentRDFMutation( PD_DocumentRDF* rdf )
     m_pAP = m_rdf->getAP()->cloneWithReplacements( 0, 0, false );
     m_crRemoveAP = new PP_AttrProp();
     m_crAddAP    = new PP_AttrProp();
+    
+    UT_DEBUGMSG(("PD_DocumentRDF::ctor() this:%p rdf:%p\n", this, m_rdf));
 }
 
 PD_DocumentRDFMutation::~PD_DocumentRDFMutation()
@@ -3122,6 +4978,12 @@ bool PD_DocumentRDFMutation::apAdd( PP_AttrProp* AP, const PD_URI& s, const PD_U
     {
         l = decodePOCol(szValue);
     }
+
+    // don't do this... it doesn't allow a (s,p) to have multiple objects at a global scale.
+    // for( POCol::iterator iter = l.find( p ); iter != l.end(); iter = l.find( p ) )
+    // {
+    //     l.erase( iter );
+    // }
     l.insert( std::make_pair( p, o ));
     std::string po = encodePOCol(l);
     return AP->setProperty( szName, po.c_str() );    
@@ -3185,7 +5047,8 @@ void PD_DocumentRDFMutation::apRemove( PP_AttrProp*& AP, const PD_URI& s, const 
 }
 
 
-bool PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& o )
+bool
+PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& o )
 {
     UT_DEBUGMSG(("PD_DocumentRDFMutation::add(1) s:%s o:%s ot:%d\n",
                  s.toString().c_str(), o.toString().c_str(), o.getObjectType() ));
@@ -3203,13 +5066,22 @@ bool PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Obj
     
     apAdd( m_pAP, s, p, o );
     apAdd( m_crAddAP, s, p, o );
-    apRemove( m_crRemoveAP, s, p, o );
     return true;
 }
+
+bool
+PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& o, const PD_URI& context )
+{
+    return add( s, p, o );
+}
+
 
 void
 PD_DocumentRDFMutation::remove( const PD_URI& s, const PD_URI& p, const PD_Object& o )
 {
+    UT_DEBUGMSG(("PD_DocumentRDFMutation::remove(1) s:%s p:%s o:%s ot:%d\n",
+                 s.toString().c_str(), p.c_str(), o.toString().c_str(), o.getObjectType() ));
+    
     apRemove( m_pAP, s, p, o );
     apRemove( m_crAddAP, s, p, o );
     apAdd( m_crRemoveAP, s, p, o );    
@@ -3239,9 +5111,33 @@ PD_DocumentRDFMutation::createBNode()
 
 void
 PD_DocumentRDFMutation::remove( const PD_RDFStatement& st )
-{
+{   
     remove( st.getSubject(), st.getPredicate(), st.getObject() );
 }
+
+void
+PD_DocumentRDFMutation::remove( const std::list< PD_RDFStatement >& sl )
+{
+    for( std::list< PD_RDFStatement >::const_iterator si = sl.begin(); si!=sl.end(); ++si )
+    {
+        remove( *si );
+    }
+}
+
+void
+PD_DocumentRDFMutation::remove( const PD_URI& s, const PD_URI& p )
+{
+    PD_ObjectList objects = m_rdf->getObjects( s, p );
+    std::list< PD_RDFStatement > removeList;
+    for( PD_ObjectList::iterator it = objects.begin(); it != objects.end(); ++it )
+    {
+        PD_Object obj = *it;
+        PD_RDFStatement st( s, p, obj );
+        removeList.push_back( st );
+    }
+    remove( removeList );
+}
+
 
 int
 PD_DocumentRDFMutation::add( PD_RDFModelHandle model )
@@ -3293,9 +5189,9 @@ PD_DocumentRDFMutation::handleCollabEvent( gchar** szAtts, gchar** szProps )
 UT_Error
 PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remove_ )
 {
-    UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove (general) rdf:%p\n", m_rdf));
-    m_rdf->apDumpModel( remove_, "remove from model" );
-    m_rdf->apDumpModel( add_, "add to model" );
+//    UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove (general) rdf:%p\n", m_rdf));
+//    m_rdf->apDumpModel( remove_, "remove from model" );
+//    m_rdf->apDumpModel( add_, "add to model" );
 
 
     /*
@@ -3312,6 +5208,7 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
         
         if( !existingAP->getNthProperty( i, szExistingName, szExistingValue))
         {
+            UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove() failed to get prop:%d\n", i ));
             // failed to get old prop
             continue;
         }
@@ -3321,8 +5218,11 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
         {
             POCol existingProps = decodePOCol(szExistingValue);
             POCol removeProps   = decodePOCol(szPropertiesToRemove);
+//            UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove(1) n:%s exist.sz:%d rem.sz:%d\n",
+//                         szExistingName, existingProps.size(), removeProps.size() ));
             for( POCol::iterator iter = removeProps.begin(); iter != removeProps.end(); ++iter )
             {
+//                UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove(rem) %s\n", iter->first.c_str() ));
                 std::pair< POCol::iterator, POCol::iterator > range
                     = std::equal_range( existingProps.begin(), existingProps.end(), iter->first );
                 for( POCol::iterator t = range.first; t!=range.second; )
@@ -3342,19 +5242,25 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
             // will disappear from the AP if it's list is empty
             if(existingProps.empty())
                 po = "";
+//            UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove(2) n:%s exist.sz:%d rem.sz:%d\n",
+//                         szExistingName, existingProps.size(), removeProps.size() ));
             if( !newAP->setProperty( szExistingName, po.c_str() ))
             {
+                UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove() failed to set prop:%d\n", i ));
                 // FIXME: failed to copy prop
             }            
         }
         else
         {
+            UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove() copy prop:%s\n", szExistingName ));
             if( !newAP->setProperty( szExistingName, szExistingValue ))
             {
                 // FIXME: failed to copy prop
             }
         }
     }
+
+//    m_rdf->apDumpModel( newAP, "model after remove..." );
     
     // add all the new triples
 	propCount = add_->getPropertyCount();
@@ -3376,6 +5282,7 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
         }
     }
 
+//    m_rdf->apDumpModel( newAP, "updated RDF model..." );
     UT_Error e = m_rdf->setAP( newAP );
     if( e != UT_OK )
     {
@@ -3384,7 +5291,7 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
         return e;
     }
     
-    m_rdf->apDumpModel( m_rdf->getAP(), "updated RDF model..." );
+//    m_rdf->apDumpModel( m_rdf->getAP(), "updated RDF model..." );
     return UT_OK;
 }
 
@@ -3408,16 +5315,16 @@ UT_Error PD_DocumentRDFMutation::commit()
 {
     bool success = false;
     
-    UT_DEBUGMSG(("PD_DocumentRDF::commit(top1) rdf:%p\n", m_rdf));
-    UT_DEBUGMSG(("PD_DocumentRDF::commit(top2) m_rolledback:%d\n", m_rolledback));
-    UT_DEBUGMSG(("PD_DocumentRDF::commit(top3) rm.hasP:%d add.hasP:%d\n",
-                 m_crRemoveAP->hasProperties(), m_crAddAP->hasProperties()));
-    if( m_crAddAP->hasProperties() )
-    {
-        UT_DEBUGMSG(("PD_DocumentRDF::commit(top3) add count:%d\n",
-                     (int)m_crAddAP->getPropertyCount()));
-    }
-    m_rdf->apDumpModel( m_crAddAP, "xx add to model" );
+    UT_DEBUGMSG(("PD_DocumentRDF::commit(top1) this:%p rdf:%p\n", this, m_rdf));
+    // UT_DEBUGMSG(("PD_DocumentRDF::commit(top2) m_rolledback:%d\n", m_rolledback));
+    // UT_DEBUGMSG(("PD_DocumentRDF::commit(top3) rm.hasP:%d add.hasP:%d\n",
+    //              m_crRemoveAP->hasProperties(), m_crAddAP->hasProperties()));
+    // if( m_crAddAP->hasProperties() )
+    // {
+    //     UT_DEBUGMSG(("PD_DocumentRDF::commit(top3) add count:%d\n",
+    //                  (int)m_crAddAP->getPropertyCount()));
+    // }
+    // m_rdf->apDumpModel( m_crAddAP, "xx add to model" );
     
     
     if(m_rolledback)
@@ -3437,7 +5344,7 @@ UT_Error PD_DocumentRDFMutation::commit()
     pt_VarSet& m_varset = pt->getVarSet();
 
     handleAddAndRemove( m_crAddAP, m_crRemoveAP );    
-    UT_DEBUGMSG(("PD_DocumentRDF::commit(sending CR) rdf:%p\n", m_rdf));
+//    UT_DEBUGMSG(("PD_DocumentRDF::commit(sending CR) rdf:%p\n", m_rdf));
 
     if( !m_rdf->isStandAlone() )
     {
@@ -3468,7 +5375,7 @@ UT_Error PD_DocumentRDFMutation::commit()
                                                     pos, crAPI, iXID );
         doc->notifyListeners( 0, pcr );
         delete pcr;
-        UT_DEBUGMSG(("PD_DocumentRDF::commit(done) rdf:%p\n", m_rdf));
+//        UT_DEBUGMSG(("PD_DocumentRDF::commit(done) rdf:%p\n", m_rdf));
     }
 
     m_committed = true;
@@ -3489,3 +5396,1245 @@ void PD_DocumentRDFMutation::rollback()
 
 
 
+/////////////////////////////
+/////////////////////////////
+
+#ifdef TOOLKIT_GTK
+
+
+#include "xap_UnixDialogHelper.h"
+#include "GTKCommon.h"
+
+static void setEntry( GtkWidget* w, const std::string& v )
+{
+    if( v.empty() )
+        gtk_entry_set_text(GTK_ENTRY(w), "" );
+    else 
+        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
+}
+static void setEntry( GtkEntry* w, const std::string& v )
+{
+    if( v.empty() )
+        gtk_entry_set_text(GTK_ENTRY(w), "" );
+    else 
+        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
+}
+
+
+class ABI_EXPORT PD_RDFContactGTK : public PD_RDFContact
+{
+    GtkWidget* m_mainWidget;
+    GtkEntry* w_name;
+    GtkEntry* w_nick;
+    GtkEntry* w_email;
+    GtkEntry* w_homePage;
+    GtkEntry* w_imageUrl;
+    GtkEntry* w_phone;
+    GtkEntry* w_jabberID;
+    
+  public:
+    PD_RDFContactGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it )
+        : PD_RDFContact( rdf, it )
+        , w_jabberID(0)
+    {
+    }
+    
+    virtual ~PD_RDFContactGTK()
+    {
+        UT_DEBUGMSG(("~PD_RDFContactGTK() name:%s\n", m_name.c_str()));
+    }
+    
+    virtual void* createEditor();
+    virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
+    
+};
+
+
+void*
+PD_RDFContactGTK::createEditor()
+{
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder* builder = newDialogBuilder("pd_RDFContact.ui");
+#else
+	GtkBuilder* builder = newDialogBuilder("pd_RDFContact-2.ui");
+#endif
+    UT_DEBUGMSG(("createEditor()\n"));
+    
+	m_mainWidget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWidget"));
+	w_name     = GTK_ENTRY(gtk_builder_get_object(builder, "name"));
+	w_nick     = GTK_ENTRY(gtk_builder_get_object(builder, "nick"));
+	w_email    = GTK_ENTRY(gtk_builder_get_object(builder, "email"));
+	w_homePage = GTK_ENTRY(gtk_builder_get_object(builder, "homePage"));
+	w_imageUrl = GTK_ENTRY(gtk_builder_get_object(builder, "imageUrl"));
+	w_phone    = GTK_ENTRY(gtk_builder_get_object(builder, "phone"));
+
+    setEntry( w_name, m_name );
+    setEntry( w_nick, m_nick );
+    setEntry( w_email, m_email );
+    setEntry( w_homePage, m_homePage );
+    setEntry( w_imageUrl, m_imageUrl );
+    setEntry( w_phone, m_phone );
+    setEntry( w_jabberID, m_jabberID );
+
+    g_object_unref((GObject*)builder);
+    
+    return m_mainWidget;
+}
+
+
+
+void
+PD_RDFContactGTK::updateFromEditorData( PD_DocumentRDFMutationHandle m )
+{
+    if (m_linkingSubject.toString().empty())
+    {
+        std::string uuid = XAP_App::getApp()->createUUIDString();
+        m_linkingSubject = uuid;
+        UT_DEBUGMSG(("updateFromEditorData() linking subject was empty!\n" ));
+    }
+
+    UT_DEBUGMSG(("updateFromEditorData() name:%s new-name:%s ls:%s m_phone:%s w_phone:%s\n",
+                 m_name.c_str(), tostr(GTK_ENTRY(w_name)).c_str(),
+                 linkingSubject().c_str(),
+                 m_phone.c_str(),
+                 tostr(w_phone).c_str()
+                    ));
+    std::string predBase = "http://xmlns.com/foaf/0.1/";
+    setRDFType(   m, predBase + "Person" );
+    updateTriple( m, m_name,     tostr(GTK_ENTRY(w_name)), predBase + "name");
+    updateTriple( m, m_nick,     tostr(GTK_ENTRY(w_nick)), predBase + "nick");
+    updateTriple( m, m_email,    tostr(GTK_ENTRY(w_email)), predBase + "mbox");
+    updateTriple( m, m_homePage, tostr(GTK_ENTRY(w_homePage)), predBase + "homepage");
+    updateTriple( m, m_imageUrl, tostr(GTK_ENTRY(w_imageUrl)), predBase + "image");
+    updateTriple( m, m_phone,    tostr(GTK_ENTRY(w_phone)), predBase + "phone");
+    updateTriple( m, m_jabberID, tostr(GTK_ENTRY(w_jabberID)), predBase + "jabberid");
+    
+    if (getRDF())
+    {
+//        getRDF()->emitSemanticObjectUpdated(this);
+    }
+    
+}
+
+
+/******************************/
+/******************************/
+/******************************/
+
+
+class ABI_EXPORT PD_RDFEventGTK : public PD_RDFEvent
+{
+    GtkWidget* m_mainWidget;
+    GtkEntry* w_name;
+    GtkEntry* w_summary;
+    GtkEntry* w_location;
+    GtkEntry* w_desc;
+    GtkEntry* w_dtstart;
+    GtkEntry* w_dtend;
+    GtkEntry* w_uid;
+    
+  public:
+    PD_RDFEventGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it )
+        : PD_RDFEvent( rdf, it )
+    {}
+    
+    virtual ~PD_RDFEventGTK()
+    {}
+    
+    virtual void* createEditor();
+    virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
+};
+
+
+static void setEntry( GtkEntry* w, time_t v )
+{
+    UT_DEBUGMSG(("setEntry(time) v:%ld str:%s\n", v, toTimeString(v).c_str()));
+    gtk_entry_set_text(GTK_ENTRY(w), toTimeString(v).c_str());
+}
+
+void*
+PD_RDFEventGTK::createEditor()
+{
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder* builder = newDialogBuilder("pd_RDFEvent.ui");
+#else
+	GtkBuilder* builder = newDialogBuilder("pd_RDFEvent-2.ui");
+#endif
+    UT_DEBUGMSG(("createEditor()\n"));
+    
+	m_mainWidget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWidget"));
+//	w_name       = GTK_ENTRY(gtk_builder_get_object(builder, "name"));
+	w_summary    = GTK_ENTRY(gtk_builder_get_object(builder, "summary"));
+	w_location   = GTK_ENTRY(gtk_builder_get_object(builder, "location"));
+	w_desc       = GTK_ENTRY(gtk_builder_get_object(builder, "desc"));
+	w_dtstart    = GTK_ENTRY(gtk_builder_get_object(builder, "dtstart"));
+	w_dtend      = GTK_ENTRY(gtk_builder_get_object(builder, "dtend"));
+
+//    setEntry( w_name,     m_name );
+    setEntry( w_summary,  m_summary );
+    setEntry( w_location, m_location );
+    setEntry( w_desc,     m_desc );
+    setEntry( w_dtstart,  m_dtstart );
+    setEntry( w_dtend,    m_dtend );
+
+    g_object_unref((GObject*)builder);
+    
+    return m_mainWidget;
+}
+
+
+
+void
+PD_RDFEventGTK::updateFromEditorData( PD_DocumentRDFMutationHandle m )
+{
+    if (m_linkingSubject.toString().empty())
+    {
+        std::string uuid = XAP_App::getApp()->createUUIDString();
+        m_linkingSubject = uuid;
+    }
+
+    // UT_DEBUGMSG(("updateFromEditorData() name:%s new-name:%s\n",
+    //              m_name.c_str(), tostr(GTK_ENTRY(w_name)).c_str() ));
+    
+    std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
+    setRDFType(   m, predBase + "Vevent" );
+    updateTriple( m, m_uid,      m_uid, predBase + "uid");
+//    updateTriple( m, m_name,       tostr(GTK_ENTRY(w_name)),    predBase + "name");
+    updateTriple( m, m_summary,    tostr(GTK_ENTRY(w_summary)), predBase + "summary");
+    updateTriple( m, m_location,   tostr(GTK_ENTRY(w_location)),predBase + "location");
+    updateTriple( m, m_desc,       tostr(GTK_ENTRY(w_desc)),    predBase + "description");
+//    updateTriple( m, m_uid,        tostr(GTK_ENTRY(w_uid)),     predBase + "uid");
+    updateTriple( m, m_dtstart,    parseTimeString(tostr(GTK_ENTRY(w_dtstart))), predBase + "dtstart");
+    updateTriple( m, m_dtend,      parseTimeString(tostr(GTK_ENTRY(w_dtend))),   predBase + "dtend");
+    
+    if (getRDF())
+    {
+//        getRDF()->emitSemanticObjectUpdated(this);
+    }
+    
+}
+
+/******************************/
+/******************************/
+/******************************/
+
+#ifdef WITH_CHAMPLAIN
+#include <champlain/champlain.h>
+#include <champlain-gtk/champlain-gtk.h>
+#include <clutter-gtk/clutter-gtk.h>
+#endif
+
+
+class ABI_EXPORT PD_RDFLocationGTK : public PD_RDFLocation
+{
+    GtkWidget* m_mainWidget;
+    GtkEntry* w_name;
+    GtkEntry* w_desc;
+    GtkEntry* w_dlat;
+    GtkEntry* w_dlong;
+    GtkWidget* w_map;
+    
+  public:
+    PD_RDFLocationGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it, bool isGeo84 = false )
+        : PD_RDFLocation( rdf, it, isGeo84 )
+    {
+    }
+    
+    virtual ~PD_RDFLocationGTK()
+    {}
+    
+    virtual void* createEditor();
+    virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
+
+    
+    void OnMouseClick( ClutterActor *actor, ClutterButtonEvent *event );
+    
+};
+
+static void setEntry( GtkEntry* w, double v )
+{
+    UT_DEBUGMSG(("setEntry(double) v:%f str:%s\n", v, tostr(v).c_str()));
+    gtk_entry_set_text(GTK_ENTRY(w), tostr(v).c_str());
+}
+
+
+static gboolean
+PD_RDFLocationGTK_OnMouseClick_cb( ClutterActor *actor, ClutterButtonEvent *event, PD_RDFLocationGTK* obj )
+{
+    obj->OnMouseClick( actor, event );
+}
+static void
+PD_RDFLocationGTK_AnimationCompleted_cb( ChamplainView * view, PD_RDFLocationGTK* obj ) 
+{
+    obj->OnMouseClick( 0, 0 );
+}
+
+static void
+PD_RDFLocationGTK_LatLon_cb( ChamplainView *view, GParamSpec *gobject, PD_RDFLocationGTK* obj ) 
+{
+    obj->OnMouseClick( 0, 0 );
+}
+
+                                         
+void
+PD_RDFLocationGTK::OnMouseClick( ClutterActor *actor, ClutterButtonEvent *event )
+{
+    gdouble lat, lon;
+
+    ChamplainView* view = gtk_champlain_embed_get_view ( GTK_CHAMPLAIN_EMBED(w_map) );
+    
+    lat = champlain_view_get_center_latitude( view );
+    lon = champlain_view_get_center_longitude( view );
+
+    UT_DEBUGMSG(("OnMouseClick() lat:%f lon:%f\n", lat, lon ));
+    
+    setEntry( w_dlat,  lat );
+    setEntry( w_dlong, lon );
+}
+
+void*
+PD_RDFLocationGTK::createEditor()
+{
+    UT_DEBUGMSG(("PD_RDFLocationGTK::createEditor()\n" ));
+    
+#if GTK_CHECK_VERSION(3,0,0)
+	GtkBuilder* builder = newDialogBuilder("pd_RDFLocation.ui");
+#else
+	GtkBuilder* builder = newDialogBuilder("pd_RDFLocation-2.ui");
+#endif
+    UT_DEBUGMSG(("createEditor(loc)\n"));
+
+#ifdef WITH_CHAMPLAIN
+
+    GtkWidget* map = gtk_champlain_embed_new ();
+    gtk_widget_set_size_request (map, 640, 480);
+    w_map = map;
+    
+    ChamplainView* champ = gtk_champlain_embed_get_view ( GTK_CHAMPLAIN_EMBED(map) );
+    champlain_view_go_to( champ, m_dlat, m_dlong );
+    champlain_view_set_zoom_level ( champ, 8 );
+    clutter_actor_set_reactive (CLUTTER_ACTOR (champ), TRUE);
+    g_signal_connect (champ, "button-release-event", G_CALLBACK (PD_RDFLocationGTK_OnMouseClick_cb), this );
+//    g_signal_connect (champ, "animation-completed",  G_CALLBACK (PD_RDFLocationGTK_AnimationCompleted_cb), this );
+    g_signal_connect (champ, "notify::latitude",     G_CALLBACK (PD_RDFLocationGTK_LatLon_cb), this );
+    g_signal_connect (champ, "notify::longitude",    G_CALLBACK (PD_RDFLocationGTK_LatLon_cb), this );
+
+    gtk_box_pack_start (
+                GTK_BOX(gtk_builder_get_object(builder, "mapbox")),
+                GTK_WIDGET(map), TRUE, TRUE, 0);
+    
+#endif
+    
+	m_mainWidget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWidget"));
+	w_name       = GTK_ENTRY(gtk_builder_get_object(builder, "name"));
+	w_desc       = GTK_ENTRY(gtk_builder_get_object(builder, "desc"));
+	w_dlat       = GTK_ENTRY(gtk_builder_get_object(builder, "lat"));
+	w_dlong      = GTK_ENTRY(gtk_builder_get_object(builder, "long"));
+
+    setEntry( w_name,     m_name );
+    setEntry( w_desc,     m_desc );
+    setEntry( w_dlat,     m_dlat );
+    setEntry( w_dlong,    m_dlong );
+
+    g_object_unref((GObject*)builder);
+    
+    return m_mainWidget;
+}
+
+
+
+void
+PD_RDFLocationGTK::updateFromEditorData( PD_DocumentRDFMutationHandle m )
+{
+    std::string dcBase   = "http://purl.org/dc/elements/1.1/";
+    std::string rdfBase  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    std::string predBase = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    
+    if (m_linkingSubject.toString().empty())
+    {
+        std::string uuid = XAP_App::getApp()->createUUIDString();
+        m_linkingSubject = uuid;
+    }
+    if (!m_isGeo84)
+    {
+        if (m_joiner.empty())
+        {
+            std::string tmp = "";
+            m_joiner = PD_Object( XAP_App::getApp()->createUUIDString() );
+            m->add( linkingSubject(), PD_URI(rdfBase + "rest"), m_joiner );
+        }
+    }
+
+//    updateTriple( m, m_name, tostr(GTK_ENTRY(w_name)),    dcBase + "name");
+    updateTriple( m, m_desc, tostr(GTK_ENTRY(w_desc)),    dcBase + "title");
+
+    double newLat  = toType<double>(tostr(GTK_ENTRY(w_dlat)));
+    double newLong = toType<double>(tostr(GTK_ENTRY(w_dlong)));
+    if (m_isGeo84)
+    {
+        std::string wgs84Base = "http://www.w3.org/2003/01/geo/wgs84_pos#";
+//        setRDFType( m, "uri:geo84");
+        updateTriple( m, m_dlat,     newLat,  wgs84Base + "lat");
+        updateTriple( m, m_dlong,    newLong, wgs84Base + "long");
+        
+    }
+    else
+    {
+//        setRDFType( m, "uri:rdfcal-geolocation");
+        updateTriple( m, m_dlat,     newLat,  rdfBase + "first", linkingSubject());
+        updateTriple( m, m_dlong,    newLong, rdfBase + "first", m_joiner);
+        
+    }
+    
+    if (getRDF())
+    {
+//        getRDF()->emitSemanticObjectUpdated(this);
+    }
+}
+
+
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+
+enum {
+    COLUMN_REFDLG_NAME = 0,
+    NUM_REFDLG_COLUMNS
+};
+
+static void
+OnInsertReferenceBase( GtkWidget* dialog,
+                   GtkTreeView* tree,
+                   FV_View* pView )
+{
+    PD_Document* pDoc = pView->getDocument();
+    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+
+    std::string n = getSelectedText( GTK_TREE_VIEW (tree), COLUMN_REFDLG_NAME );
+    UT_DEBUGMSG(("clicked on: %s\n", n.c_str() ));
+
+    bool found = false;
+    PD_RDFContacts clist = rdf->getContacts();
+    for( PD_RDFContacts::iterator ci = clist.begin(); ci != clist.end(); ++ci )
+    {
+        PD_RDFContactHandle obj = *ci;
+        if( obj->name() == n )
+        {
+            obj->insert( pView );
+            found = true;
+            break;
+        }
+    }
+    if( found )
+        gtk_widget_destroy(dialog);
+
+}
+
+static void OnInsertReference( GtkDialog* d, gint response_id, gpointer user_data)
+{
+    UT_DEBUGMSG(("OnInsertReference()\n"));
+    FV_View* pView = (FV_View*)user_data;
+
+    GtkTreeView* tv = GTK_TREE_VIEW( g_object_get_data( G_OBJECT(d), G_OBJECT_TREEVIEW ));
+    OnInsertReferenceBase( GTK_WIDGET(d), tv, pView );
+}
+
+static void
+OnInsertReferenceDblClicked( GtkTreeView       * tree,
+                             GtkTreePath       * path,
+                             GtkTreeViewColumn * col,
+                             gpointer		    user_data )
+{
+    FV_View* pView = (FV_View*)user_data;
+
+    GtkWidget* d = GTK_WIDGET(g_object_get_data( G_OBJECT(tree), G_OBJECT_WINDOW ));
+    OnInsertReferenceBase( d, tree, pView );
+}
+
+
+std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
+{
+	GtkBuilder* builder = newDialogBuilder("pd_RDFInsertReference.ui");
+	GtkWidget*  window  = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+	GtkWidget*  tv      = GTK_WIDGET(gtk_builder_get_object(builder, "tv"));
+
+    PD_Document* pDoc = pView->getDocument();
+    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+
+    {
+        GtkTreeStore *store = gtk_tree_store_new ( NUM_REFDLG_COLUMNS, G_TYPE_STRING );
+        gtk_tree_view_set_model (GTK_TREE_VIEW (tv), GTK_TREE_MODEL (store));
+        g_object_unref (G_OBJECT (store));
+    }
+    
+	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
+
+	GtkTreeViewColumn *column = NULL;
+	GtkCellRenderer *renderer = NULL;
+	renderer = gtk_cell_renderer_text_new ();
+	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tv),
+                                                 -1, "Name", renderer,
+                                                 "text", COLUMN_REFDLG_NAME,
+												NULL);
+	column = gtk_tree_view_get_column (GTK_TREE_VIEW (tv), COLUMN_REFDLG_NAME );
+	gtk_tree_view_column_set_sort_column_id (column, COLUMN_REFDLG_NAME );
+    
+    PD_RDFContacts l = rdf->getContacts();
+    GtkTreeIter giter;
+    GtkTreeIter parentiter;
+    gtk_tree_store_append (GTK_TREE_STORE (model), &parentiter, 0);
+    gtk_tree_store_set (GTK_TREE_STORE (model), &parentiter, 
+                        COLUMN_REFDLG_NAME, "(Contacts)",
+                        -1);
+    
+    for( PD_RDFContacts::iterator iter = l.begin(); iter != l.end(); ++iter )
+    {
+        PD_RDFContactHandle c = *iter;
+        gtk_tree_store_append (GTK_TREE_STORE (model), &giter, &parentiter );
+        gtk_tree_store_set (GTK_TREE_STORE (model), &giter, 
+                            COLUMN_REFDLG_NAME, c->name().c_str(),
+                            -1);
+
+    }
+    gtk_tree_view_expand_all(GTK_TREE_VIEW(tv));
+    g_object_set_data( G_OBJECT(tv),     G_OBJECT_WINDOW,   window );
+    g_object_set_data( G_OBJECT(window), G_OBJECT_TREEVIEW, tv );
+    
+	g_signal_connect (GTK_TREE_VIEW (tv), "row-activated", 
+					  G_CALLBACK (OnInsertReferenceDblClicked), static_cast <gpointer>(pView));
+    g_signal_connect (G_OBJECT(window), "response",  G_CALLBACK(OnInsertReference), pView );
+    gtk_widget_show_all (window);
+
+    std::pair< PT_DocPosition, PT_DocPosition > ret;
+    return ret;
+}
+
+
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+
+static void
+OnSemanticStylesheetsDialogResponse( GtkWidget* dialog,
+                                     GtkTreeView* tree,
+                                     FV_View* pView )
+{
+    PD_Document* pDoc = pView->getDocument();
+    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+    gtk_widget_destroy(dialog);
+}
+
+
+static void
+ApplySemanticStylesheets( const std::string& semItemClassRestriction,
+                          const std::string& ssName )
+{
+    // set the RDF linking to the stylesheets
+    std::list< AD_Document* > dl = XAP_App::getApp()->getDocuments();
+    for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
+    {
+        PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
+        pDoc->beginUserAtomicGlob();
+        
+        PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+        PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects( semItemClassRestriction );
+
+        for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
+        {
+            PD_RDFSemanticItemHandle si = *siter;
+            PD_RDFSemanticStylesheetHandle ss = si->findStylesheetByName(
+                PD_RDFSemanticStylesheet::stylesheetTypeSystem(), ssName );
+
+            std::set< std::string > xmlids = si->getXMLIDs();
+            for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
+            {
+                std::string xmlid = *xiter;
+                PD_RDFSemanticItemViewSite vs( si, xmlid );
+                vs.setStylesheetWithoutReflow( ss );
+            }
+        }
+        pDoc->endUserAtomicGlob();
+    }
+
+    UT_DEBUGMSG(("ApplySemanticStylesheets(reflowing)\n" ));
+
+    // reflow all the viewsites
+    for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
+    {
+        PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
+        pDoc->beginUserAtomicGlob();
+        pDoc->notifyPieceTableChangeStart();
+        pDoc->setDontImmediatelyLayout(true);
+        
+        PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+        PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects( semItemClassRestriction );
+
+        std::list<AV_View*> vl = pDoc->getAllViews();
+        for( std::list<AV_View*>::iterator viter = vl.begin(); viter != vl.end(); ++viter )
+        {
+            FV_View* pView = dynamic_cast<FV_View*>(*viter);
+
+            for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
+            {
+                PD_RDFSemanticItemHandle si = *siter;
+                std::set< std::string > xmlids = si->getXMLIDs();
+                for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
+                {
+                    std::string xmlid = *xiter;
+                    PD_RDFSemanticItemViewSite vs( si, xmlid );
+                    vs.reflowUsingCurrentStylesheet( pView );
+                }
+            }
+            break;
+        }
+        
+        pDoc->setDontImmediatelyLayout(false);
+        pDoc->notifyPieceTableChangeEnd();
+        pDoc->endUserAtomicGlob();
+    }
+
+    UT_DEBUGMSG(("ApplySemanticStylesheets(done)\n" ));
+}
+
+
+static gboolean
+OnSemanticStylesheetsSetContacts_cb( ClutterActor *actor, ClutterButtonEvent *event, GtkComboBoxText *combo_box )
+{
+    const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
+    std::string ssName = t ? t : "name";
+
+    UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() ssName:%s\n", ssName.c_str() ));
+    UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() combo:%p\n", combo_box ));
+    UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() t:%s\n", t ));
+
+    ApplySemanticStylesheets( "Contact", ssName );
+    
+    // // set the RDF linking to the stylesheets
+    // std::list< AD_Document* > dl = XAP_App::getApp()->getDocuments();
+    // for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
+    // {
+    //     PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
+    //     PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+    //     PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects("Contact");
+
+    //     for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
+    //     {
+    //         PD_RDFSemanticItemHandle si = *siter;
+    //         PD_RDFSemanticStylesheetHandle ss = si->findStylesheetByName(
+    //             PD_RDFSemanticStylesheet::stylesheetTypeSystem(), ssName );
+
+    //         std::set< std::string > xmlids = si->getXMLIDs();
+    //         for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
+    //         {
+    //             std::string xmlid = *xiter;
+    //             PD_RDFSemanticItemViewSite vs( si, xmlid );
+    //             vs.setStylesheetWithoutReflow( ss );
+    //         }
+    //     }
+    // }
+
+    // // reflow all the viewsites
+    // for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
+    // {
+    //     PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
+    //     PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+    //     PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects("Contact");
+
+    //     std::list<AV_View*> vl = pDoc->getAllViews();
+    //     for( std::list<AV_View*>::iterator viter = vl.begin(); viter != vl.end(); ++viter )
+    //     {
+    //         FV_View* pView = dynamic_cast<FV_View*>(*viter);
+
+    //         for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
+    //         {
+    //             PD_RDFSemanticItemHandle si = *siter;
+    //             std::set< std::string > xmlids = si->getXMLIDs();
+    //             for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
+    //             {
+    //                 std::string xmlid = *xiter;
+    //                 PD_RDFSemanticItemViewSite vs( si, xmlid );
+    //                 vs.reflowUsingCurrentStylesheet( pView );
+    //             }
+    //         }
+    //         break;
+    //     }
+        
+    // }
+    
+    
+    return false;
+}
+
+
+static gboolean
+OnSemanticStylesheetsSetEvents_cb( ClutterActor *actor, ClutterButtonEvent *event, GtkComboBoxText *combo_box )
+{
+    const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
+    std::string ssName = t ? t : "name";
+
+    UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() ssName:%s\n", ssName.c_str() ));
+    UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() combo:%p\n", combo_box ));
+    UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() t:%s\n", t ));
+
+    ApplySemanticStylesheets( "Event", ssName );
+    return false;
+}
+
+static gboolean
+OnSemanticStylesheetsSetLocations_cb( ClutterActor *actor, ClutterButtonEvent *event, GtkComboBoxText *combo_box )
+{
+    const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
+    std::string ssName = t ? t : "name";
+
+    UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() ssName:%s\n", ssName.c_str() ));
+    UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() combo:%p\n", combo_box ));
+    UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() t:%s\n", t ));
+
+    ApplySemanticStylesheets( "Location", ssName );
+    return false;
+}
+
+void runSemanticStylesheetsDialog( FV_View* pView )
+{
+	GtkBuilder* builder   = newDialogBuilder("ap_UnixDialog_SemanticStylesheets.ui");
+	GtkWidget*  window    = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+	GtkWidget*  contacts  = GTK_WIDGET(gtk_builder_get_object(builder, "contacts"));
+	GtkWidget*  events    = GTK_WIDGET(gtk_builder_get_object(builder, "events"));
+	GtkWidget*  locations = GTK_WIDGET(gtk_builder_get_object(builder, "locations"));
+	GtkWidget*  setContacts  = GTK_WIDGET(gtk_builder_get_object(builder, "setContacts"));
+	GtkWidget*  setEvents    = GTK_WIDGET(gtk_builder_get_object(builder, "setEvents"));
+	GtkWidget*  setLocations = GTK_WIDGET(gtk_builder_get_object(builder, "setLocations"));
+	GtkWidget*  setAll       = GTK_WIDGET(gtk_builder_get_object(builder, "setAll"));
+
+    PD_Document* pDoc = pView->getDocument();
+    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+
+    UT_DEBUGMSG(("runSemanticStylesheetsDialog_cb() combo:%p\n", contacts ));
+    g_signal_connect (setContacts,  "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  contacts );
+    g_signal_connect (setEvents,    "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    events );
+    g_signal_connect (setLocations, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), locations );
+
+    g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  contacts );
+    g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    events );
+    g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), locations );
+    
+    
+    
+    g_signal_connect (G_OBJECT(window), "response",  G_CALLBACK(OnSemanticStylesheetsDialogResponse), pView );
+    gtk_widget_show_all (window);
+    
+}
+
+
+/********************************************************************************/
+/********************************************************************************/
+/********************************************************************************/
+
+
+PD_RDFSemanticItemHandle
+PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf, const std::string& semanticClass )
+{
+    PD_ResultBindings_t b;
+    b.push_back( std::map< std::string, std::string >() );
+    PD_ResultBindings_t::iterator it = b.begin();
+    return createSemanticItem( rdf, it, semanticClass );
+}
+
+PD_RDFSemanticItemHandle
+PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf,
+                                        PD_ResultBindings_t::iterator it,
+                                        const std::string& semanticClass )
+{
+    if (semanticClass == "Contact")
+    {
+        return PD_RDFSemanticItemHandle( new PD_RDFContactGTK( rdf, it ));
+    }
+    if (semanticClass == "Event")
+    {
+        return PD_RDFSemanticItemHandle( new PD_RDFEventGTK( rdf, it ));
+    }
+    if (semanticClass == "Location")
+    {
+        return PD_RDFSemanticItemHandle( new PD_RDFLocationGTK( rdf, it ));
+    }
+    return PD_RDFSemanticItemHandle();
+}
+
+PD_RDFContacts
+PD_DocumentRDF::getContacts( PD_RDFModelHandle alternateModel )
+{
+    PD_RDFModelHandle m = alternateModel;
+    if( !m )
+        m = getDocument()->getDocumentRDF();
+
+    PD_RDFContacts ret;
+    std::stringstream sparqlQuery;
+    sparqlQuery << "prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
+                << "prefix foaf: <http://xmlns.com/foaf/0.1/> \n"
+                << "prefix pkg: <http://docs.oasis-open.org/opendocument/meta/package/common#> \n"
+                << "select distinct ?person ?name ?nick ?email ?homepage ?img ?phone \n"
+                << "where { \n"
+                << "    ?person rdf:type foaf:Person . \n"
+                << "    ?person foaf:name ?name \n"
+                << "    OPTIONAL { ?person foaf:phone ?phone } \n"
+                << "    OPTIONAL { ?person foaf:mbox  ?email } \n"
+                << "    OPTIONAL { ?person foaf:nick ?nick } \n"
+                << "    OPTIONAL { ?person foaf:homepage ?homepage } \n"
+                << "    OPTIONAL { ?person foaf:img ?img } \n"
+                << "}\n";
+    UT_DEBUGMSG(("getContacts() sparql:\n%s\n\n", sparqlQuery.str().c_str() ));
+
+    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
+    PD_RDFQuery q( rdf, m );
+    PD_ResultBindings_t bindings = q.executeQuery( sparqlQuery.str() );
+    UT_DEBUGMSG(("getContacts() bindings.sz:%ld\n", bindings.size() ));
+    
+    // uniqfilter is needed because redland might not honour the
+    // DISTINCT sparql keyword
+    std::set<std::string> uniqfilter;
+    for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
+    {
+        std::string n = (*it)["name"];
+        if (uniqfilter.count(n))
+            continue;
+        uniqfilter.insert(n);
+
+        PD_RDFContact* newItem = new PD_RDFContactGTK( rdf, it );
+        PD_RDFContactHandle h( newItem );
+        ret.push_back( h );
+    }
+    
+    return ret;
+}
+
+
+PD_RDFEvents
+PD_DocumentRDF::getEvents( PD_RDFModelHandle alternateModel )
+{
+    PD_RDFModelHandle m = alternateModel;
+    if( !m )
+        m = getDocument()->getDocumentRDF();
+
+    PD_RDFEvents ret;
+    std::stringstream sparqlQuery;
+    sparqlQuery << " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
+                << " prefix foaf: <http://xmlns.com/foaf/0.1/>  \n"
+                << " prefix cal:  <http://www.w3.org/2002/12/cal/icaltzd#>  \n"
+                << " select distinct ?ev ?uid ?dtstart ?dtend ?summary ?location ?description ?geo ?long ?lat \n"
+                << " where {  \n"
+                << "    ?ev rdf:type cal:Vevent . \n"
+                << "    ?ev cal:uid      ?uid . \n"
+                << "    ?ev cal:dtstart  ?dtstart . \n"
+                << "    ?ev cal:dtend    ?dtend \n"
+                << "    OPTIONAL { ?ev cal:summary  ?summary  } \n"
+                << "    OPTIONAL { ?ev cal:location ?location } \n"
+                << "    OPTIONAL { ?ev cal:description ?description } \n"
+                << "    OPTIONAL {  \n"
+                << "               ?ev cal:geo ?geo . \n"
+                << "               ?geo rdf:first ?lat . \n"
+                << "               ?geo rdf:rest ?joiner . \n"
+                << "               ?joiner rdf:first ?long \n"
+                << "              } \n"
+                << "  } \n";
+    
+    UT_DEBUGMSG(("getEvents() sparql:\n%s\n\n", sparqlQuery.str().c_str() ));
+
+    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
+    PD_RDFQuery q( rdf, m );
+    PD_ResultBindings_t bindings = q.executeQuery( sparqlQuery.str() );
+    UT_DEBUGMSG(("getEvents() bindings.sz:%ld\n", bindings.size() ));
+    
+    // uniqfilter is needed because redland might not honour the
+    // DISTINCT sparql keyword
+    std::set<std::string> uniqfilter;
+    for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
+    {
+        std::string n = (*it)["uid"];
+        if (uniqfilter.count(n))
+            continue;
+        uniqfilter.insert(n);
+
+        PD_RDFEvent* newItem = new PD_RDFEventGTK( rdf, it );
+        PD_RDFEventHandle h( newItem );
+        ret.push_back( h );
+    }
+    
+    return ret;
+}
+
+
+PD_RDFLocations&
+PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
+                              bool isGeo84,
+                              const std::string sparql,
+                              PD_RDFModelHandle alternateModel )
+{
+    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
+    PD_RDFQuery q( rdf, rdf );
+    PD_ResultBindings_t bindings = q.executeQuery( sparql );
+    UT_DEBUGMSG(("addLocations() bindings.sz:%ld sparql\n%s\n", bindings.size(), sparql.c_str() ));
+    std::set<std::string> uniqfilter;
+    for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
+    {
+        std::string n = (*it)["lat"];
+        if (uniqfilter.count(n))
+            continue;
+        uniqfilter.insert(n);
+        UT_DEBUGMSG(("addLocations() n:%s\n", n.c_str() ));
+
+        PD_RDFLocation* newItem = new PD_RDFLocationGTK( rdf, it, isGeo84 );
+        PD_RDFLocationHandle h( newItem );
+        ret.push_back( h );
+    }
+    return ret;
+}
+
+
+PD_RDFLocations
+PD_DocumentRDF::getLocations( PD_RDFModelHandle alternateModel )
+{
+    PD_RDFLocations ret;
+    addLocations( ret, false,
+                  " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \n"
+                  " prefix foaf: <http://xmlns.com/foaf/0.1/>  \n"
+                  " prefix dc:   <http://purl.org/dc/elements/1.1/> \n"
+                  " prefix cal:  <http://www.w3.org/2002/12/cal/icaltzd#>  \n"
+                  " select distinct ?geo ?long ?lat ?joiner ?desc \n"
+                  " where {  \n"
+                  "               ?ev cal:geo ?geo . \n"
+                  "               ?geo rdf:first ?lat . \n"
+                  "               ?geo rdf:rest ?joiner . \n"
+                  "               ?joiner rdf:first ?long \n"
+                  "               OPTIONAL { ?geo dc:title ?desc } \n"
+                  "  } \n", alternateModel );
+    UT_DEBUGMSG(( "getLocations(1) ret.size:%ld\n", ret.size() ));
+    
+    addLocations( ret, true,
+                  " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
+                  " prefix dc:   <http://purl.org/dc/elements/1.1/> \n"
+                  " prefix foaf: <http://xmlns.com/foaf/0.1/>  \n"
+                  " prefix geo84: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n"
+                  "  \n"
+                  " select distinct ?geo ?long ?lat ?type ?desc \n"
+                  " where {  \n"
+                  "  \n"
+                  "        ?geo geo84:lat  ?lat . \n"
+                  "        ?geo geo84:long ?long \n"
+                  "        OPTIONAL { ?geo rdf:type ?type } \n"
+                  "        OPTIONAL { ?geo dc:title ?desc } \n"
+                  "  \n"
+                  " } \n", alternateModel );
+    UT_DEBUGMSG(( "getLocations(2) ret.size:%ld\n", ret.size() ));
+
+    return ret;
+}
+
+
+#include "xap_Dialog_Id.h"
+#include "GTKCommon.h"
+
+std::string
+PD_RDFSemanticItem::getImportFromFileName( const std::string& filename_const,
+                                           std::list< std::pair< std::string, std::string> > types ) const
+{
+    std::string ret = filename_const;
+    
+    UT_runDialog_AskForPathname afp( XAP_DIALOG_ID_FILE_IMPORT );
+    if( !types.empty() )
+    {
+        std::list< std::pair< std::string, std::string> >::iterator iter = types.begin();
+        afp.setDefaultFiletype( iter->first, iter->second );
+    }
+    for( std::list< std::pair< std::string, std::string> >::iterator iter = types.begin();
+         iter != types.end(); ++iter )
+    {
+        afp.appendFiletype(    iter->first, iter->second );
+    }
+    
+    if( afp.run( XAP_App::getApp()->getLastFocussedFrame() ) )
+    {
+        ret = afp.getPath();
+        if( starts_with( ret, "file:" ))
+            ret = ret.substr( strlen("file:") );
+    }
+    return ret;
+}
+
+std::string
+PD_RDFSemanticItem::getExportToFileName( const std::string& filename_const,
+                                         std::string defaultExtension,
+                                         std::list< std::pair< std::string, std::string> > types ) const
+{
+    std::string filename = filename_const;
+    
+    if( filename.empty() )
+    {
+        UT_runDialog_AskForPathname afp( XAP_DIALOG_ID_FILE_EXPORT );
+        if( !types.empty() )
+        {
+            std::list< std::pair< std::string, std::string> >::iterator iter = types.begin();
+            afp.setDefaultFiletype( iter->first, iter->second );
+        }
+        for( std::list< std::pair< std::string, std::string> >::iterator iter = types.begin();
+             iter != types.end(); ++iter )
+        {
+            afp.appendFiletype(    iter->first, iter->second );
+        }
+        
+        if( afp.run( XAP_App::getApp()->getLastFocussedFrame() ) )
+        {
+            filename = afp.getPath();
+            if( starts_with( filename, "file:" ))
+                filename = filename.substr( strlen("file:") );
+            if( !ends_with( filename, defaultExtension ))
+                filename += defaultExtension;
+        }
+    }
+
+    return filename;
+}
+
+/******************************/
+/******************************/
+/******************************/
+
+
+struct G_OBJECT_SEMITEM_LIST
+{
+public:
+    PD_RDFSemanticItems cl;
+    G_OBJECT_SEMITEM_LIST( PD_RDFSemanticItems _cl )
+        : cl(_cl)
+    {
+    }
+};
+void GDestroyNotify_G_OBJECT_SEMITEM_LIST(gpointer data)
+{
+    struct G_OBJECT_SEMITEM_LIST* obj = (struct G_OBJECT_SEMITEM_LIST*)data;
+    delete obj;
+}
+static PD_RDFSemanticItems getSemItemListHandle(GtkDialog* d)
+{
+    struct G_OBJECT_SEMITEM_LIST* data = (struct G_OBJECT_SEMITEM_LIST*)g_object_get_data( G_OBJECT(d), G_OBJECT_SEMITEM_LIST );
+    return data->cl;
+}
+void OnSemItemListEdited ( GtkDialog* d, gint response_id, gpointer user_data)
+{
+    UT_DEBUGMSG(("OnSemItemListEdited() response_id:%d\n", response_id ));
+    if( response_id != GTK_RESPONSE_DELETE_EVENT )
+    {
+        PD_RDFSemanticItems cl = getSemItemListHandle( d );
+        for( PD_RDFSemanticItems::iterator ci = cl.begin(); ci != cl.end(); ++ci )
+        {
+            PD_RDFSemanticItemHandle c = *ci;
+            c->updateFromEditorData();
+        }
+    }
+    gtk_widget_destroy( GTK_WIDGET(d) );
+}
+
+
+struct G_OBJECT_SEMITEM
+{
+public:
+    PD_RDFSemanticItemHandle h;
+    G_OBJECT_SEMITEM( PD_RDFSemanticItemHandle _h )
+        : h(_h)
+    {
+    }
+};
+void GDestroyNotify_G_OBJECT_SEMITEM(gpointer data)
+{
+    struct G_OBJECT_SEMITEM* obj = (struct G_OBJECT_SEMITEM*)data;
+    delete obj;
+}
+static PD_RDFSemanticItemHandle getHandle(GtkDialog* d)
+{
+    struct G_OBJECT_SEMITEM* data = (struct G_OBJECT_SEMITEM*)g_object_get_data( G_OBJECT(d), G_OBJECT_SEMITEM );
+    return data->h;
+}
+void OnSemItemEdited ( GtkDialog* d, gint response_id, gpointer user_data)
+{
+    UT_DEBUGMSG(("OnSemItemEdited()\n"));
+    PD_RDFSemanticItemHandle h = getHandle( d );
+    h->updateFromEditorData();
+    gtk_widget_destroy( GTK_WIDGET(d) );
+}
+
+
+void
+PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItems cl )
+{
+    UT_DEBUGMSG(("showEditorWindow() list... sz:%ld\n", cl.size() ));
+
+    GtkWidget* d = gtk_dialog_new_with_buttons ("Message",
+                                                0,
+                                                GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                GTK_STOCK_OK,
+                                                GTK_RESPONSE_NONE,
+                                                NULL);
+    GtkNotebook* notebook = GTK_NOTEBOOK(gtk_notebook_new());
+    gtk_container_add( GTK_CONTAINER(gtk_dialog_get_content_area( GTK_DIALOG (d))),
+                       GTK_WIDGET(notebook) );
+    for( PD_RDFSemanticItems::iterator ci = cl.begin(); ci != cl.end(); ++ci )
+    {
+        PD_RDFSemanticItemHandle c = *ci;
+        GtkWidget* w = GTK_WIDGET(c->createEditor());
+        g_object_set_data_full( G_OBJECT(w),
+                                G_OBJECT_SEMITEM,
+                                new struct G_OBJECT_SEMITEM( c ),
+                                GDestroyNotify_G_OBJECT_SEMITEM );
+        g_object_set_data_full( G_OBJECT(d),
+                                G_OBJECT_SEMITEM,
+                                new struct G_OBJECT_SEMITEM( c ),
+                                GDestroyNotify_G_OBJECT_SEMITEM );
+
+        std::string label = c->getDisplayLabel();
+        gboolean homogeneous = false;
+        GtkWidget* container = gtk_vbox_new( homogeneous, 0 );
+        gtk_notebook_append_page( notebook, container, gtk_label_new( label.c_str() ));
+        gtk_widget_reparent( w, GTK_WIDGET( container));
+    }
+    g_object_set_data_full( G_OBJECT(d),
+                            G_OBJECT_SEMITEM_LIST,
+                            new struct G_OBJECT_SEMITEM_LIST( cl ),
+                            GDestroyNotify_G_OBJECT_SEMITEM_LIST );
+    g_signal_connect (G_OBJECT(d), "response",  G_CALLBACK(OnSemItemListEdited), 0 );
+    gtk_widget_show_all (d); 
+}
+
+
+void
+PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItemHandle c )
+{
+    UT_DEBUGMSG(("showEditorWindow() name:%s linksubj:%s\n",
+                 c->name().c_str(), c->linkingSubject().toString().c_str() ));
+    GtkWidget* d = gtk_dialog_new_with_buttons ("Message",
+                                                0,
+                                                GTK_DIALOG_DESTROY_WITH_PARENT,
+                                                GTK_STOCK_OK,
+                                                GTK_RESPONSE_NONE,
+                                                NULL);
+    GtkWidget* w = GTK_WIDGET(c->createEditor());
+    g_object_set_data_full( G_OBJECT(w),
+                            G_OBJECT_SEMITEM,
+                            new struct G_OBJECT_SEMITEM( c ),
+                            GDestroyNotify_G_OBJECT_SEMITEM );
+    g_object_set_data_full( G_OBJECT(d),
+                            G_OBJECT_SEMITEM,
+                            new struct G_OBJECT_SEMITEM( c ),
+                            GDestroyNotify_G_OBJECT_SEMITEM );
+    gtk_widget_reparent( w, GTK_WIDGET( gtk_dialog_get_content_area( GTK_DIALOG (d))));
+    
+    g_signal_connect (G_OBJECT(d), "response",  G_CALLBACK(OnSemItemEdited), c.get() );
+    gtk_widget_show_all (d); 
+}
+
+void
+PD_RDFSemanticItem::importFromDataComplete( std::istream& iss,
+                                            PD_DocumentRDFHandle rdf,
+                                            PD_DocumentRDFMutationHandle m,
+                                            PD_DocumentRange * pDocRange )
+{
+    UT_UNUSED( iss );
+    
+    // Create and populate and editor with the current data,
+    // then update the Rdf from that editor.
+    GtkWidget* objectEditor = (GtkWidget*)createEditor();
+    updateFromEditorData( m );
+    gtk_widget_destroy( GTK_WIDGET(objectEditor) );
+
+    if (pDocRange)
+    {
+//        insert(host);
+    }
+
+    if (rdf)
+    {
+//        rdf->emitSemanticObjectAdded(this);
+    }
+    
+}
+
+
+#else
+
+
+PD_RDFSemanticItemHandle
+PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf, const std::string& semanticClass )
+{
+    return PD_RDFSemanticItemHandle();
+}
+PD_RDFSemanticItemHandle
+PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf,
+                                        PD_ResultBindings_t::iterator it,
+                                        const std::string& semanticClass )
+{
+    return PD_RDFSemanticItemHandle();
+}
+
+PD_RDFContacts
+PD_DocumentRDF::getContacts( PD_RDFModelHandle alternateModel )
+{
+    PD_RDFContacts ret;
+    return ret;
+}
+
+PD_RDFEvents
+PD_DocumentRDF::getEvents( PD_RDFModelHandle alternateModel )
+{
+    PD_RDFEvents ret;
+    return ret;
+}
+
+PD_RDFLocations&
+PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
+                              bool isGeo84,
+                              const std::string sparql,
+                              PD_RDFModelHandle alternateModel )
+{
+}
+
+PD_RDFLocations
+PD_DocumentRDF::getLocations( PD_RDFModelHandle alternateModel )
+{
+    PD_RDFLocations ret;
+    return ret;
+}
+
+std::string
+PD_RDFSemanticItem::getImportFromFileName( const std::string& filename_const,
+                                           std::list< std::pair< std::string, std::string> > types ) const
+{
+}
+
+std::string
+PD_RDFSemanticItem::getExportToFileName( const std::string& filename_const,
+                                         std::string defaultExtension,
+                                         std::list< std::pair< std::string, std::string> > types ) const
+{
+}
+
+
+
+void
+PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItems cl )
+{
+}
+
+void
+PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItemHandle c )
+{
+}
+
+void
+PD_RDFSemanticItem::importFromDataComplete( std::istream& iss,
+                                            PD_DocumentRDFHandle rdf,
+                                            PD_DocumentRDFMutationHandle m,
+                                            PD_DocumentRange * pDocRange )
+{
+}
+
+#endif

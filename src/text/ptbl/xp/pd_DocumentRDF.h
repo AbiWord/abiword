@@ -37,6 +37,8 @@ class PP_AttrProp;
 class RDFModel_SPARQLLimited;
 class pf_Frag;
 class pf_Frag_Object;
+class PD_RDFSemanticItem;
+class FV_View;
 
 class   PD_DocumentRDFMutation;
 typedef boost::shared_ptr<PD_DocumentRDFMutation> PD_DocumentRDFMutationHandle;
@@ -71,6 +73,10 @@ class ABI_EXPORT PD_URI
     virtual bool write( std::ostream& ss ) const;
 
     PD_URI prefixedToURI( PD_RDFModelHandle model ) const;
+
+    bool empty() const        { return m_value.empty(); }
+    const char* c_str() const { return m_value.c_str(); }
+    
 };
 
 template <class ostream>
@@ -110,6 +116,7 @@ class ABI_EXPORT PD_Object : public PD_URI
     };
     
     PD_Object( const std::string& v = "" );
+    PD_Object( const PD_URI& u );
     PD_Object( const std::string& v, int objectType, const std::string& xsdtype = "" );
 
     std::string getXSDType() const;
@@ -230,6 +237,10 @@ class ABI_EXPORT PD_RDFModelIterator
     {
         return m_current;
     }
+
+    self_reference moveToNextSubject();
+    void moveToNextSubjectReadPO();
+    bool moveToNextSubjectHavePOCol();
 };
 
 
@@ -301,6 +312,625 @@ class ABI_EXPORT PD_RDFModel
     
 };
 
+class   PD_RDFSemanticItem;
+typedef boost::shared_ptr<PD_RDFSemanticItem> PD_RDFSemanticItemHandle;
+typedef std::list< PD_RDFSemanticItemHandle > PD_RDFSemanticItems;
+class   PD_RDFContact;
+typedef boost::shared_ptr<PD_RDFContact >     PD_RDFContactHandle;
+typedef std::list< PD_RDFContactHandle      > PD_RDFContacts;
+class   PD_RDFEvent;
+typedef boost::shared_ptr<PD_RDFEvent >       PD_RDFEventHandle;
+typedef std::list< PD_RDFEventHandle      >   PD_RDFEvents;
+class   PD_RDFLocation;
+typedef boost::shared_ptr<PD_RDFLocation >       PD_RDFLocationHandle;
+typedef std::list< PD_RDFLocationHandle      >   PD_RDFLocations;
+class   PD_RDFSemanticStylesheet;
+typedef boost::shared_ptr<PD_RDFSemanticStylesheet > PD_RDFSemanticStylesheetHandle;
+typedef std::list< PD_RDFSemanticStylesheetHandle  > PD_RDFSemanticStylesheets;
+class   PD_RDFSemanticItemViewSite;
+typedef boost::shared_ptr<PD_RDFSemanticItemViewSite> PD_RDFSemanticItemViewSiteHandle;
+typedef std::list< PD_RDFSemanticItemViewSiteHandle > PD_RDFSemanticItemViewSites;
+
+
+/**
+ * @short Base class for C++ objects which represent RDF at a higher level.
+ * @author Ben Martin
+ *
+ */
+class ABI_EXPORT PD_RDFSemanticItem
+{
+    PD_DocumentRDFHandle m_rdf;
+    PD_URI               m_context;
+  protected:
+    std::string          m_name;
+    PD_URI               m_linkingSubject;
+    typedef std::list< std::map< std::string, std::string > > PD_ResultBindings_t;
+
+    std::string getImportFromFileName( const std::string& filename_const,
+                                       std::list< std::pair< std::string, std::string> > types ) const;
+    virtual std::list< std::pair< std::string, std::string> > getImportTypes() const;
+
+    std::string getExportToFileName( const std::string& filename_const,
+                                     std::string defaultExtension,
+                                     std::list< std::pair< std::string, std::string> > types ) const;
+    virtual std::list< std::pair< std::string, std::string> > getExportTypes() const;
+    virtual std::string getDefaultExtension() const;
+    std::string getProperty( std::string subj, std::string pred, std::string defVal ) const;
+    
+  public:
+    PD_RDFSemanticItem( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it );
+    virtual ~PD_RDFSemanticItem();
+
+    PD_DocumentRDFHandle getRDF() const;
+    PD_DocumentRDFMutationHandle createMutation();
+
+    std::string requestExportFileNameByDialog();
+    
+
+    /**
+     * For an item like a contact, event, location, if there is a
+     * subject, common#idref xml:id triple that can be used to link
+     * into the document content, return that subject node here for
+     * the common base class methods to use.
+     *
+     * For example, in the FOAF vocabulary the ?person node from the
+     * SPARQL query fragment below will be the linkingSubject()
+     * ?person rdf:type foaf:Person
+     */
+    virtual PD_URI linkingSubject() const;
+
+
+    /**
+     * Given a linking subject, find all the xmlids that are referenced by it
+     * ie, return all ?xmlid from the form:
+     * 
+     * ?linkingSubj pkg:idref ?xmlid
+     *
+     */
+    static std::set< std::string > getXMLIDsForLinkingSubject( PD_DocumentRDFHandle rdf, const std::string& linkingSubj );
+
+    
+    /**
+     * A simple description of the semantic item that can be shown to the user
+     */
+    virtual std::string name() const;
+    virtual void        setName( const std::string& n );
+
+    /**
+     * Something that can be used on a notebook tab to describe this semantic item
+     * eg, Contact, Event etc.
+     */
+    virtual std::string getDisplayLabel() const;
+    
+
+    /**
+     * A Semantic Item can appear multiple times in a document. For
+     * example, the person Frodo can be referenced 20 times in a short
+     * book review. This method gives all the xmlid values where the
+     * semantic item is referenced in the document.
+     *
+     * The list of xmlid values can in turn be used by
+     * PD_DocumentRDF::getIDRange() and PD_DocumentRDF::getRDFForID()
+     * to inspect or perform actions at the various places the
+     * semanitc item appears in the document.
+     */
+    virtual std::set< std::string > getXMLIDs() const;
+    
+    /**
+     * Create a Widget that can edit the SemanticItem. Note that the
+     * widget will show the data and allow editing of it for the
+     * SemanticItem, but to make changes permenant, the
+     * updateFromEditorData() method must be used. A typical senario
+     * is to add the widget from createEditor to a dialog and when the
+     * user affirms the dialog call updateFromEditorData() to update
+     * the document.
+     *
+     * @see updateFromEditorData()
+     */
+     virtual void* createEditor() = 0;
+
+     /**
+      * Create a top level dialog allowing the user to edit this semitem
+      */
+     static void showEditorWindow( PD_RDFSemanticItemHandle c );
+     static void showEditorWindow( PD_RDFSemanticItems cl );
+
+     /**
+      * Update the SemanticItem from the edited dialog that was created using
+      * createEditor.
+      *
+      * @see createEditor()
+      */
+     void updateFromEditorData();
+     virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m ) = 0;
+     
+
+    /**
+     * Import the data in iss to the semnatic item. This is used for
+     * D&D Drop events to create a new semnatic item. Subclasses
+     * should set their internal state based on the data in 'iss' and
+     * then call importFromDataComplete() at the end of the method to
+     * update the RDF and insert the semantic item into the document.
+     *
+     * ??? maybe not ??? importFromDataComplete() calls also insert() which links the
+     * ??? semanticItem with the document object m_rdf.
+     */
+     virtual void importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange = 0 ) = 0;
+
+    /**
+     * Export to a file in whatever format is the most useful for the
+     * semantic item. Prompt for a filename if none is given.
+     */
+     virtual void exportToFile( const std::string& filename = "" ) const = 0;
+
+     /**
+     * Import from a file in whatever format is the most useful for the
+     * semantic item. The default implemenation uses importFromData() to perform this import,
+     * so all a subclass needs to do is override the getImportTypes() method to
+     * let an import dialog know what types are OK.
+     */
+     virtual void importFromFile( const std::string& filename = "" );
+     
+
+    /**
+     * Create a SemanticItem subclass using its name from
+     * getClassNames(). Useful for menus and other places that want to
+     * allow the user to create new SemanticItem Objects.
+     */
+     static PD_RDFSemanticItemHandle createSemanticItem( PD_DocumentRDFHandle rdf, const std::string& semanticClass );
+     static PD_RDFSemanticItemHandle createSemanticItem( PD_DocumentRDFHandle rdf,
+                                                         PD_ResultBindings_t::iterator it,
+                                                         const std::string& semanticClass );
+
+    /**
+     * Gets a list of SemanticItem subclasses that can be created.
+     * Any of the strings in the return value can be created using
+     * createSemanticItem().
+     *
+     * @see createSemanticItem()
+     */
+     static std::list< std::string > getClassNames();
+
+
+     /**
+      * Insert a reference to this semantic item at the cursor location of pView
+      *
+      * This should only be called after creating a new sem item with
+      * createSemanticItem().
+      */
+     std::pair< PT_DocPosition, PT_DocPosition > insert( PD_DocumentRDFMutationHandle m, FV_View* pView );
+     std::pair< PT_DocPosition, PT_DocPosition > insert( FV_View* pView );
+
+
+     virtual void setupStylesheetReplacementMapping( std::map< std::string, std::string >& m );
+
+
+    /**
+     * Unambiguiously find a stylesheet by its UUID. The sheet can
+     * be either user or system as long as it has the uuid you want.
+     */
+     PD_RDFSemanticStylesheetHandle findStylesheetByUuid(const std::string &uuid) const;
+
+    /**
+     * Find a user/system stylesheet by name.
+     * sheetType is one of TYPE_SYSTEM/TYPE_USER.
+     * n is the name of the stylesheet you want.
+     */
+    PD_RDFSemanticStylesheetHandle findStylesheetByName(const std::string &sheetType, const std::string &n) const;
+    /**
+     * Find a user/system stylesheet by name.
+     * ssl is either stylesheets() or userStylesheets()
+     * n is the name of the stylesheet you want.
+     */
+    PD_RDFSemanticStylesheetHandle findStylesheetByName(const PD_RDFSemanticStylesheets& ssl, const std::string &n) const;
+
+    /**
+     * Get the default stylesheet for this subclass of Semantic Item.
+     *
+     * If you want to know which stylesheet is in use by a particular
+     * reference to a semantic item, use KoRdfSemanticItemViewSite::stylesheet()
+     *
+     * @see KoRdfSemanticItemViewSite
+     * @see KoRdfSemanticItemViewSite::stylesheet()
+     */
+    PD_RDFSemanticStylesheetHandle defaultStylesheet() const;
+
+    /**
+     * Get the system semantic stylesheets that are supported for this
+     * particular semantic item subclass.
+     */
+    virtual PD_RDFSemanticStylesheets stylesheets() const = 0;
+    virtual std::string className() const = 0;
+
+    enum RelationType
+    {
+        RELATION_FOAF_KNOWS = 1
+    };
+    void relationAdd( PD_RDFSemanticItemHandle si, RelationType rt );
+    PD_RDFSemanticItems relationFind( RelationType rt );
+    
+  protected:
+
+     std::pair< PT_DocPosition, PT_DocPosition > insertTextWithXMLID( const std::string& textconst,
+                                                                      const std::string& xmlid );
+     
+    /**
+     * The importFromData() method can use this method to finish an
+     * import. Text is also inserted into the document to show the
+     * user the new semantic object. The semanticObjectAdded signal is
+     * emitted so that UI elements have a chance to update themselves to
+     * reflect the newly added SemanticItem in the document.
+     *
+     * This method uses createEditor() followed by
+     * updateFromEditorData() to actually put the RDF triples into the
+     * store. So a subclass does not have to explicitly handle the
+     * import if it can present a GUI to edit itself. The GUI is not
+     * shown to the user.
+     *
+     * Basically a subclass reads the data in importFromData and sets
+     * local member variables from it. Then calls
+     * importFromDataComplete() which makes an editor using the member
+     * variables and commits the editor which in turn updates the RDF
+     * for the document.
+     */
+     virtual void importFromDataComplete( std::istream& iss,
+                                          PD_DocumentRDFHandle rdf,
+                                          PD_DocumentRDFMutationHandle m,
+                                          PD_DocumentRange * pDocRange = 0 );
+     
+     std::string bindingAsString( PD_ResultBindings_t::iterator& it, const std::string k );
+     std::string optionalBindingAsString( PD_ResultBindings_t::iterator& it, const std::string k );
+        
+    PD_URI& handleSubjectDefaultArgument( PD_URI& subj );
+    
+    /**
+     * Return the graph context that contains this SematicItem's Rdf
+     * statements. Used by the updateTriple()s to remove and add
+     * updated information. The default is the manifest.rdf file.
+     */
+    virtual PD_URI context() const;
+
+    /**
+     * Ensure the Rdf Type of the subject or linkingSubject() by
+     * default is what you want After this method, the Rdf will have
+     * the following: linkingSubject() rdf:type type
+     */
+    void setRDFType(PD_DocumentRDFMutationHandle m, const std::string& type, PD_URI subj = PD_URI());
+    void setRDFType(const std::string& type, PD_URI subj = PD_URI());
+
+
+    /**
+     * When a subclass wants to update a triple in the RDF store
+     * to reflect a change, for example, the phone number of a
+     * contact, it should call here to set toModify = newValue.
+     *
+     * This is done both in the C++ objects and the Rdf model.
+     * The RDF will be changed from
+     * linkingSubject() predString toModify
+     * to
+     * linkingSubject() predString newValue
+     *
+     * Note that rounding errors and other serialization issues that
+     * crop up are handled by these methods, so you should try very
+     * hard not to directly update the PD_RDFModelHandle outside these
+     * methods.
+     *
+     * Note that if you do not supply a mutationhandle the method to
+     * create/commit a mutation for you.
+     */
+    void updateTriple( PD_DocumentRDFMutationHandle m, std::string& toModify, const std::string& newValue, const PD_URI& predString );
+    void updateTriple( PD_DocumentRDFMutationHandle m, time_t&      toModify, time_t newValue, const PD_URI& predString );
+    void updateTriple( PD_DocumentRDFMutationHandle m, double&      toModify, double newValue, const PD_URI& predString );
+    void updateTriple( PD_DocumentRDFMutationHandle m, double&      toModify, double newValue, const PD_URI& predString, PD_URI linkingSubject  );
+
+    void updateTriple( std::string& toModify, const std::string& newValue, const PD_URI& predString );
+    void updateTriple( time_t&      toModify, time_t newValue, const PD_URI& predString );
+    void updateTriple( double&      toModify, double newValue, const PD_URI& predString );
+    
+    /**
+     * Create a bnode with a uuid
+     */
+    PD_URI createUUIDNode();
+
+
+protected:
+    /**
+     * The updateTriple() methods all call remove() then add() to
+     * perform their work. These lower level functions accept PD_URI
+     * to remove/add. Note that corner cases like "double" values are
+     * explicitly handled by these methods. For example, at times a
+     * double will undergo some rounding during serialization, so you
+     * can not just call mutation->remove() because you have to take
+     * rounding errors into account for the value you are intending to
+     * remove.
+     */
+    void updateTriple_remove( PD_DocumentRDFMutationHandle m,
+                              const PD_URI& toModify,
+                              const PD_URI& predString,
+                              const PD_URI& explicitLinkingSubject );
+
+    /**
+     * After updateTriple() calls remove() it can set toModify to the
+     * new value and call this method to add the new value to the RDF
+     * store.
+     */
+    void updateTriple_add( PD_DocumentRDFMutationHandle m,
+                           const PD_URI& toModify,
+                           const PD_URI& predString,
+                           const PD_URI& explicitLinkingSubject );
+    
+};
+
+
+
+class ABI_EXPORT PD_RDFContact : public PD_RDFSemanticItem
+{
+  protected:
+    std::string m_nick;
+    std::string m_email;
+    std::string m_homePage;
+    std::string m_imageUrl;
+    std::string m_phone;
+    std::string m_jabberID;
+
+    virtual std::list< std::pair< std::string, std::string> > getImportTypes() const;
+    virtual std::list< std::pair< std::string, std::string> > getExportTypes() const;
+    virtual std::string getDefaultExtension() const;
+
+  public:
+    PD_RDFContact( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it );
+    virtual ~PD_RDFContact();
+
+    virtual void importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange = 0 );
+    virtual void exportToFile( const std::string& filename = "" ) const;
+    virtual std::string getDisplayLabel() const;
+    virtual void setupStylesheetReplacementMapping( std::map< std::string, std::string >& m );
+    virtual PD_RDFSemanticStylesheets stylesheets() const;
+    virtual std::string className() const;
+};
+
+
+class ABI_EXPORT PD_RDFEvent : public PD_RDFSemanticItem
+{
+  protected:
+    std::string m_uid;
+    std::string m_summary;
+    std::string m_location;
+    std::string m_desc;
+    time_t      m_dtstart;
+    time_t      m_dtend;
+
+    virtual std::list< std::pair< std::string, std::string> > getImportTypes() const;
+    virtual std::list< std::pair< std::string, std::string> > getExportTypes() const;
+    virtual std::string getDefaultExtension() const;
+
+  public:
+    PD_RDFEvent( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it );
+    virtual ~PD_RDFEvent();
+
+    virtual void importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange = 0 );
+    virtual void exportToFile( const std::string& filename = "" ) const;
+    virtual std::string getDisplayLabel() const;
+    virtual void setupStylesheetReplacementMapping( std::map< std::string, std::string >& m );
+    virtual PD_RDFSemanticStylesheets stylesheets() const;
+    virtual std::string className() const;
+};
+
+
+class ABI_EXPORT PD_RDFLocation : public PD_RDFSemanticItem
+{
+  protected:
+    std::string m_uid;
+    std::string m_desc;
+    double      m_dlat;
+    double      m_dlong;
+    PD_Object   m_joiner;
+    bool        m_isGeo84;
+    
+    virtual std::list< std::pair< std::string, std::string> > getImportTypes() const;
+    virtual std::list< std::pair< std::string, std::string> > getExportTypes() const;
+    virtual std::string getDefaultExtension() const;
+
+  public:
+    PD_RDFLocation( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it, bool isGeo84 = false );
+    virtual ~PD_RDFLocation();
+
+    virtual void importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange = 0 );
+    virtual void exportToFile( const std::string& filename = "" ) const;
+    virtual std::string getDisplayLabel() const;
+    virtual std::set< std::string > getXMLIDs() const;
+    virtual void setupStylesheetReplacementMapping( std::map< std::string, std::string >& m );
+    virtual PD_RDFSemanticStylesheets stylesheets() const;
+    virtual std::string className() const;
+};
+
+
+/**
+ * @short A stylesheet that knows how to format a given PD_RDFSemanticItem
+ *
+ * If you are looking to apply a stylesheet you should use the PD_RDFSemanticItemViewSite
+ * class. For example:
+ *
+ * PD_RDFSemanticItemViewSite vs( h_semitem, xmlid );
+ * vs.applyStylesheet( pView, h_stylesheet );
+ *
+ * @author Ben Martin
+ * @see PD_DocumentRDF
+ * @see PD_RDFSemanticItem
+ */
+class ABI_EXPORT PD_RDFSemanticStylesheet
+{
+    std::string m_uuid;
+    std::string m_name;
+    std::string m_templateString;
+    std::string m_type;
+    bool        m_isMutable;
+protected:
+
+    // Restrict who can make us
+    friend class PD_RDFSemanticItem;
+    friend class PD_RDFLocation;
+    friend class PD_RDFContact;
+    friend class PD_RDFEvent;
+    friend class PD_RDFSemanticItemViewSite;
+
+    PD_RDFSemanticStylesheet( const std::string &uuid,
+                              const std::string &name,
+                              const std::string &templateString,
+                              const std::string &type = "System",
+                              bool isMutable = false);
+
+    /**
+     * Only called from PD_RDFSemanticItemViewSite, this method
+     * actually applies the stylesheet to a specific reference to a
+     * semantic item in the document.
+     */
+    void format( PD_RDFSemanticItemHandle sob, FV_View* pView, const std::string& xmlid = "" );
+
+public:
+
+    virtual ~PD_RDFSemanticStylesheet();
+    static std::string stylesheetTypeSystem();
+    static std::string stylesheetTypeUser();
+
+    std::string uuid() const;
+    std::string name() const;
+    std::string templateString() const;
+    std::string type() const;
+    bool isMutable() const;
+};
+
+
+/**
+ * @short Handling a specific reference to a semantic item in the document text.
+ * @author Ben Martin
+ *
+ * There can be many references to a single PD_RDFSemanticItem in a
+ * document. One can consider PD_RDFSemanticItem to be the model and
+ * this class the view/controller (delegate).
+ *
+ * For example:
+ * foaf pkg:idref frodo1
+ * foaf pkg:idref frodo2
+ *
+ * the foaf/contact data is the PD_RDFSemanticItem (model) and each
+ * xml:id, the frodo1 and frodo2 above, are PD_RDFSemanticItemViewSite instances.
+ * This class allows different stylesheets to offer different
+ * formatting for each presentation of the same PD_RDFSemanticItem
+ * (model).
+ */
+class ABI_EXPORT PD_RDFSemanticItemViewSite
+{
+    std::string m_xmlid;
+    PD_RDFSemanticItemHandle m_semItem;
+    
+  public:
+    /**
+     * Performing actions on a specific reference to a semantic item in the document.
+     */
+    PD_RDFSemanticItemViewSite( PD_RDFSemanticItemHandle si, const std::string &xmlid );
+    PD_RDFSemanticItemViewSite( PD_RDFSemanticItemHandle si, PT_DocPosition pos );
+    ~PD_RDFSemanticItemViewSite();
+
+    /**
+     * The stylesheet that has been set for this view site
+     */
+    PD_RDFSemanticStylesheetHandle stylesheet() const;
+
+    /**
+     * If there is a stylesheet set for this view site it is forgotten
+     * and the reference can be freely edited by the user
+     */
+    void disassociateStylesheet();
+
+    /**
+     * Apply a stylesheet for the semantic item.
+     * Note that the setting is rememebered for this site too.
+     *
+     * The application can be done separately using the setStylesheetWithoutReflow()
+     * and reflowUsingCurrentStylesheet() methods. Performing the stylesheet
+     * application in two parts is convenient if you are applying a stylesheet to many
+     * semantic items at once, or to all the locations in the document which reference
+     * a single semanti item.
+     *
+     * @see setStylesheetWithoutReflow()
+     * @see reflowUsingCurrentStylesheet()
+     */
+    void applyStylesheet( FV_View* pView, PD_RDFSemanticStylesheetHandle ss );
+    
+    /**
+     * Remember that a specific stylesheet should be applied for this
+     * semantic item. No reflow of the document is performed and thus
+     * no layout or user visible changes occur.
+     *
+     * @see applyStylesheet()
+     */
+    void setStylesheetWithoutReflow( PD_RDFSemanticStylesheetHandle ss );
+
+    /**
+     * Reflow the text that shows the user this semantic item in the
+     * document.
+     *
+     * @see applyStylesheet()
+     */
+    void reflowUsingCurrentStylesheet( FV_View* pView );
+
+    /**
+     * Select this view of the semantic item in the document.
+     */
+    void select( FV_View* pView );
+
+private:
+
+    /**
+     * This is similar to the linkingSubject() used by
+     * PD_RDFSemanticItem in that you have:
+     *
+     * linkingSubject() common#idref xml:id
+     *
+     * but metadata about the site at xml:id is stored as properties
+     * off the PD_RDFSemanticItemViewSite::linkingSubject() subject.
+     *
+     * The difference between this linkingSubject() and
+     * PD_RDFSemanticItem is that this is for RDF describing a single
+     * xml:id site in the document, the
+     * PD_RDFSemanticItem::linkingSubject() is the model for the
+     * semanitc item itself which can be referenced by many xml:id
+     * sites.
+     */
+    PD_URI linkingSubject() const;
+
+    /**
+     * Convenience method to get a specific property from the Rdf
+     * model. There should be either zero or only one value for X in
+     * the triple:
+     *
+     * linkingSubject(), prop, X
+     *
+     * if the property does not exist defval is returned.
+     */
+    std::string getProperty(const std::string &prop, const std::string &defval) const;
+    /**
+     * Set the single value for the Rdf predicate prop.
+     * @see getProperty()
+     */
+    void setProperty(const std::string &prop, const std::string &v);
+
+    /**
+     * Convenience method to select a range in the document view
+     */
+    void selectRange( FV_View* pView, std::pair< PT_DocPosition, PT_DocPosition > range );
+
+};
+
+
+
+/**
+ * Insert a reference to a semenatic item
+ */
+std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView );
+void runSemanticStylesheetsDialog( FV_View* pView );
+
 
 /**
  * The RDF associated with a document.
@@ -318,6 +948,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     friend class PD_DocumentRDFMutation;
     friend class RDFModel_SPARQLLimited;
     friend class PD_RDFMutation_XMLIDLimited;
+    friend class PD_RDFSemanticItem;
     
   public:
     explicit PD_DocumentRDF( PD_Document* doc );
@@ -360,7 +991,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
                                                       std::pair< PT_DocPosition, PT_DocPosition > range );
     
     std::set< std::string >& getAllIDs( std::set< std::string >& ret );
-    std::pair< PT_DocPosition, PT_DocPosition > getIDRange( const std::string& xmlid );
+    std::pair< PT_DocPosition, PT_DocPosition > getIDRange( const std::string& xmlid ) const;
 
 
     PD_RDFModelHandle createRestrictedModelForXMLIDs( const std::string& writeID,
@@ -382,7 +1013,16 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     void relinkRDFToNewXMLID( const std::string& oldxmlid, const std::string& newxmlid, bool deepCopyRDF = false );
 
     PD_RDFModelHandle createScratchModel();
-    
+
+    static PD_URI getManifestURI();
+
+    PD_RDFSemanticItems getAllSemanticObjects( const std::string& classRestriction = "" );
+    PD_RDFSemanticItems getSemanticObjects( const std::set< std::string >& xmlids );
+    PD_RDFContacts  getContacts( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
+    PD_RDFEvents    getEvents( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
+    PD_RDFLocations getLocations( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
+    void selectXMLIDs( const std::set< std::string >& xmlids, FV_View* pView = 0 ) const;
+        
   protected:
     PD_Document* m_doc;
   private:
@@ -407,7 +1047,12 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     POCol&         apGetArcsOut(     const PP_AttrProp* AP, POCol& ret, const PD_URI& s );
     bool           apContains(       const PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
     void           apDumpModel(      const PP_AttrProp* AP, const std::string& headerMsg );
-    
+
+  private:
+    PD_RDFLocations& addLocations( PD_RDFLocations& ret,
+                                   bool isGeo84,
+                                   const std::string sparql,
+                                   PD_RDFModelHandle alternateModel );
 };
 
 
@@ -483,11 +1128,14 @@ class ABI_EXPORT PD_DocumentRDFMutation
      * @return false of the triple could not be added.
      */
     virtual bool add( const PD_URI& s, const PD_URI& p, const PD_Object& o );
+    virtual bool add( const PD_URI& s, const PD_URI& p, const PD_Object& o, const PD_URI& context );
     virtual void remove( const PD_URI& s, const PD_URI& p, const PD_Object& o );
     void remove( const PD_URI& s, const PD_URI& p, const PD_URI& o );
     bool add( const PD_RDFStatement& st );
     void remove( const PD_RDFStatement& st );
     int add( PD_RDFModelHandle model );
+    void remove( const std::list< PD_RDFStatement >& sl );
+    void remove( const PD_URI& s, const PD_URI& p );
 
     PD_URI createBNode();
     

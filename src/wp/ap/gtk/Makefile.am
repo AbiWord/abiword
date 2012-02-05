@@ -7,7 +7,8 @@ AM_CPPFLAGS = 						\
 	-DPREFIX=\""$(prefix)"\" 				\
 	-DSYSCONFDIR=\""$(sysconfdir)"\" 			\
 	-DABIWORD_PLUGINSDIR="\"$(ABIWORD_PLUGINSDIR)"\"	\
-	-DDATADIR="\"$(datadir)\""
+	-DDATADIR="\"$(datadir)\"" \
+        $(CHAMPLAIN_CFLAGS)
 
 
 # source and ui files for Hildon
@@ -238,6 +239,11 @@ ui_DATA = \
 	ap_UnixDialog_Latex.ui \
 	ap_UnixDialog_RDFQuery.ui \
 	ap_UnixDialog_RDFEditor.ui \
+	pd_RDFContact.ui \
+	pd_RDFInsertReference.ui \
+	pd_RDFEvent.ui \
+	pd_RDFLocation.ui \
+	ap_UnixDialog_SemanticStylesheets.ui \
 	$(NULL)
 endif
 

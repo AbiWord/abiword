@@ -5,7 +5,7 @@ noinst_LTLIBRARIES = libxp.la
 
 # WP includes needed because of prefs
 AM_CPPFLAGS = \
-	$(WP_CPPFLAGS)
+	$(WP_CPPFLAGS) $(CHAMPLAIN_CFLAGS)
 
 if HAVE_REDLAND
 REDLANDSOURCES = pd_RDFSupportRed.h

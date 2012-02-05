@@ -122,6 +122,12 @@
 #define ABIWORD_REVISIONS_FIND_PREV  	"abiword-revisions-find-prev"
 #define ABIWORD_REVISIONS_FIND_NEXT  	"abiword-revisions-find-next"
 
+#define ABIWORD_SEMITEM_THIS            "abiword-semitem-this"
+#define ABIWORD_SEMITEM_NEXT            "abiword-semitem-next"
+#define ABIWORD_SEMITEM_PREV            "abiword-semitem-prev"
+#define ABIWORD_SEMITEM_EDIT            "abiword-semitem-edit"
+#define ABIWORD_SEMITEM_STYLESHEET_REFLOW "abiword-semitem-stylesheet-reflow"
+
 void		  abi_stock_init 				(void);
 const gchar * abi_stock_from_menu_id 		(XAP_Menu_Id menu_id);
 gchar * 	  abi_stock_from_toolbar_id 	(const gchar *toolbar_id);

@@ -57,6 +57,8 @@ tostr( GtkTextView* tv )
 std::string
 tostr( GtkEntry* e )
 {
+    if(!e)
+        return "";
     std::string ret;
     ret = gtk_entry_get_text (GTK_ENTRY (e));
     return ret;

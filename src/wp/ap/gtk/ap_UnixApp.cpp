@@ -1275,6 +1275,10 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 	return XAP_App::getApp()->newGraphics(ai);
 }
 
+#ifdef WITH_CHAMPLAIN
+#include <champlain-gtk/champlain-gtk.h>
+#include <clutter-gtk/clutter-gtk.h>
+#endif
 
 /*****************************************************************/
 
@@ -1288,7 +1292,11 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
     // initialize our application.
 	int exit_status = 0;
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(szAppName);
-	
+
+#ifdef WITH_CHAMPLAIN
+    gtk_clutter_init (&argc, &argv);
+#endif
+    
 	/* this brace is here to ensure that our local variables on the stack
 	 * do not outlive the application object by giving them a lower scope
 	 */

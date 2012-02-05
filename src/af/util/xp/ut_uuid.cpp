@@ -170,6 +170,16 @@ bool UT_UUID::toString(UT_UTF8String & s) const
 	return _toString(m_uuid, s);
 }
 
+std::string&
+UT_UUID::toString( std::string& to ) const
+{
+    UT_UTF8String x;
+    toString( x );
+    to = x.utf8_str();
+    return to;
+}
+
+
 bool UT_UUID::toStringFromBinary(char * s, UT_uint32 len, const struct uuid &uu)
 {
 	if(len < 37)

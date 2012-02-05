@@ -48,6 +48,7 @@
 #include "ap_FrameData.h"
 #include "ap_Prefs.h"
 #include "pd_Document.h"
+#include "pd_DocumentRDF.h"
 #include "ut_Script.h"
 
 #ifdef ENABLE_SPELL
@@ -631,6 +632,33 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RDFAnchorOK)
 
 	EV_Menu_ItemState s = EV_MIS_ZERO ;
 	if(false)
+	{
+		return EV_MIS_Gray;
+	}
+	return s;
+}
+
+Defun_EV_GetMenuItemState_Fn(ap_GetState_haveSemItems)
+{
+	UT_UNUSED(id);
+	ABIWORD_VIEW ;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+	PD_Document * pDoc = pView->getDocument();
+	UT_return_val_if_fail( pDoc, EV_MIS_Gray );
+    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+	UT_return_val_if_fail( rdf, EV_MIS_Gray );
+
+    
+	EV_Menu_ItemState s = EV_MIS_ZERO ;
+    return s;
+
+    
+    PD_RDFContacts contacts = rdf->getContacts();
+
+    std::set< std::string > xmlids;
+    rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
+    
+	if( xmlids.size() < 1 )
 	{
 		return EV_MIS_Gray;
 	}

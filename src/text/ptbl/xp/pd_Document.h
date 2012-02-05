@@ -46,6 +46,8 @@
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-output.h>
 
+#include <list>
+
 class UT_ByteBuf;
 class UT_GrowBuf;
 class pt_PieceTable;
@@ -313,10 +315,13 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 										 PTObjectType pto,
 										 const gchar ** attributes,
 										 const gchar ** properties, fd_Field ** pField );
-
+    
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
 									   UT_uint32 length,
+									   PP_AttrProp *p_AttrProp = NULL);
+	bool					insertSpan(PT_DocPosition dpos,
+									   const std::string& s,
 									   PP_AttrProp *p_AttrProp = NULL);
 
 	bool					deleteSpan(PT_DocPosition dpos1,
@@ -778,6 +783,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	UT_sint32               getCRNumber() const { return m_iCRCounter; }
 	void					setCRNumber(UT_sint32 iCRCounter) { m_iCRCounter = iCRCounter; }
 	UT_sint32               getNextCRNumber(void);
+    std::list<AV_View*>     getAllViews() const;
     void                    getAllViews(UT_GenericVector<AV_View *> * vecViews) const;
 	void                    ignoreSignals(void)
 	{ m_bIgnoreSignals = true;}

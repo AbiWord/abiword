@@ -150,6 +150,7 @@ struct abiwordFindStreamContext
     librdf_node*        m_context_node;
     PD_RDFModelIterator m_iter;
     bool                m_done;
+    bool                m_queryIsSubjectOnly;
     
     abiwordFindStreamContext( librdf_storage* storage,
                               abiwordContext* c,
@@ -161,6 +162,7 @@ struct abiwordFindStreamContext
         , m_statement(0)
         , m_context_node(0)
         , m_done(false)
+        , m_queryIsSubjectOnly(false)
     {
         librdf_storage_add_reference(m_storage);
         if( statement )
@@ -172,6 +174,14 @@ struct abiwordFindStreamContext
         xxx_UT_DEBUGMSG(("  subj: %s\n", tostr(librdf_statement_get_subject( statement )).c_str()));
         xxx_UT_DEBUGMSG(("  pred: %s\n", tostr(librdf_statement_get_predicate( statement )).c_str()));
         xxx_UT_DEBUGMSG(("   obj: %s\n", tostr(librdf_statement_get_object( statement )).c_str()));
+
+        if( m_query
+            &&  librdf_statement_get_subject( m_query )
+            && !librdf_statement_get_predicate( m_query )
+            && !librdf_statement_get_object( m_query ) )
+        {
+            m_queryIsSubjectOnly = true;
+        }
         
     }
 
@@ -216,10 +226,44 @@ struct abiwordFindStreamContext
 
         for( ; m_iter != e; )
         {
-            PD_RDFStatement st = *m_iter;
-            ++m_iter;
+            PD_RDFStatement& st = *m_iter;
             xxx_UT_DEBUGMSG(("getNext() testing statement...st: %s\n", st.toString().c_str()));
 
+            //
+            // Short cut evaluation for subj only queries
+            //
+            if( m_queryIsSubjectOnly )
+            {
+                xxx_UT_DEBUGMSG(("getNext(qso) testing statement...st: %s\n", st.toString().c_str()));
+                if( st.getSubject().toString() != tostr(librdf_statement_get_subject( m_query )) )
+                {
+//                    m_iter = e;
+                    m_done = 1;
+                    xxx_UT_DEBUGMSG(("getNext(qso) DIFFERENT SUBJECT...\n" ));
+                    return -1;
+                }
+            }
+            
+            // if( m_queryIsSubjectOnly && !m_iter.moveToNextSubjectHavePOCol() )
+            // {
+            //     UT_DEBUGMSG(("getNext(qso) testing statement...st: %s\n", st.toString().c_str()));
+            //     if( st.getSubject().toString() == tostr(librdf_statement_get_subject( m_query )) )
+            //     {
+            //         if( m_iter.moveToNextSubjectHavePOCol() )
+            //             m_iter.moveToNextSubjectReadPO();
+            //         UT_DEBUGMSG(("getNext() matched statement...st: %s\n", st.toString().c_str()));
+            //         librdf_statement* stred = toRedland( *m_iter );
+            //         m_statement = stred;
+            //         break;
+            //     }
+                
+            //     UT_DEBUGMSG(("getNext() skipping statement...st: %s\n", st.toString().c_str()));
+            //     m_iter.moveToNextSubject();
+            //     continue;
+            // }
+
+            ++m_iter;
+            
             librdf_statement* stred = toRedland( st );
             if( !m_query || librdf_statement_match( stred, m_query ) )
             {
@@ -231,13 +275,15 @@ struct abiwordFindStreamContext
             librdf_free_statement( stred );
         }
         
+        xxx_UT_DEBUGMSG(("getNext() ret 0...\n"));
         return 0;
     }
     
 
     void setup( librdf_world* /*world*/ )
     {
-        xxx_UT_DEBUGMSG(("setup() top\n"));
+        static int counter = 0;
+        xxx_UT_DEBUGMSG(("setup() top c:%d\n", counter++ ));
 
         // {
         //     PD_RDFModelIterator iter = context->m_model->begin();
@@ -278,7 +324,25 @@ struct abiwordFindStreamContext
 
         m_iter = m_context->m_model->begin();
         PD_RDFModelIterator e = m_context->m_model->end();
+//        UT_DEBUGMSG(("setup()...model.sz: %d\n", m_context->m_model->size() ));
         xxx_UT_DEBUGMSG(("setup()...iter!=end: %d\n", (m_iter != e)));
+
+        if( m_queryIsSubjectOnly )
+        {
+            xxx_UT_DEBUGMSG(("setup(qso)...\n"));
+            for( ; m_iter != e ; )
+            {
+                PD_RDFStatement& st = *m_iter;
+                if( st.getSubject().toString() == tostr(librdf_statement_get_subject( m_query )) )
+                {
+                    m_iter.moveToNextSubjectReadPO();
+                    break;
+                }
+                m_iter.moveToNextSubject();
+            }
+        }
+        
+        
         PD_RDFStatement st = *m_iter;
         xxx_UT_DEBUGMSG(("setup()...st1: %s\n", st.toString().c_str()));
     }
@@ -340,8 +404,7 @@ static int
 abiword_storage_find_statements_end_of_stream( void* context )
 {
     abiwordFindStreamContext* sc = abiwordFindStreamContext::get( context );
-    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_end_of_stream() ctx: %p done: %d\n", sc, 
-					 sc->m_done));
+    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_end_of_stream() ctx: %p done: %d\n", sc, sc->m_done));
     
     if( sc->m_done )
         return 1;
@@ -367,8 +430,7 @@ static void*
 abiword_storage_find_statements_get_statement(void* context, int flags)
 {
     abiwordFindStreamContext* sc = abiwordFindStreamContext::get( context );
-    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_get_statement() done: %d flags: %d\n", 
-					 sc->m_done, flags));
+    xxx_UT_DEBUGMSG(("abiword_storage_find_statements_get_statement() done: %d flags: %d\n", sc->m_done, flags));
 
     switch(flags)
     {
@@ -439,8 +501,8 @@ static int
 abiword_storage_contains_statement( librdf_storage* storage, 
                                     librdf_statement* query )
 {
+    xxx_UT_DEBUGMSG(("abiword_storage_contains_statement()\n"));
     abiwordContext* c = abiwordContext::get( storage );
-
     PD_RDFModelIterator iter = c->m_model->begin();
     PD_RDFModelIterator    e = c->m_model->end();
     

@@ -24,6 +24,7 @@
 #include <signal.h>
 #include <string.h>
 #include <time.h>
+#include <memory>
 
 #include <glib.h>
 #include <gsf/gsf-utils.h>
@@ -1209,6 +1210,18 @@ void XAP_App::enumerateFrames(UT_Vector & v)
 	}
 }
 
+std::list< AD_Document* >
+XAP_App::getDocuments( const AD_Document * pExclude )
+{
+    UT_Vector t;
+    enumerateDocuments( t, pExclude );
+    std::list< AD_Document* > ret;
+    for( int i=0; i < t.size(); ++i )
+        ret.push_back( (AD_Document*)t[i] );
+    return ret;
+}
+
+
 /*!
     Enumerates currently open document associated with the
     application, excluding document pointed to by pExclude
@@ -1670,5 +1683,14 @@ XAP_App::setNoGUI( bool v )
 {
     setDisableDoubleBuffering(true);
     m_bNoGUI = v;
+}
+
+std::string
+XAP_App::createUUIDString() const
+{
+    std::auto_ptr<UT_UUID> uuido(getUUIDGenerator()->createUUID());
+    std::string ret;
+	uuido->toString(ret);
+    return ret;
 }
 

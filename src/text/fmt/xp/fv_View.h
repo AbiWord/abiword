@@ -453,6 +453,7 @@ public:
 	// ----------------------
 	bool			isLeftMargin(UT_sint32 xPos, UT_sint32 yPos) const;
     void            selectRange( PT_DocPosition start, PT_DocPosition end );
+    void            selectRange( const std::pair< PT_DocPosition, PT_DocPosition >& range );
 	void			cmdSelect(UT_sint32 xPos, UT_sint32 yPos, FV_DocPos dpBeg, FV_DocPos dpEnd);
 	void			cmdSelectTOC(UT_sint32 xPos, UT_sint32 yPos);
 	bool            isTOCSelected(void) const;

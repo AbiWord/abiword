@@ -48,6 +48,7 @@ libabiword_@ABIWORD_SERIES@_la_CPPFLAGS = \
 
 libabiword_@ABIWORD_SERIES@_la_LDFLAGS = \
 	$(DEPS_LIBS) \
+	$(CHAMPLAIN_LIBS) \
 	-no-undefined \
 	-avoid-version \
 	-export-dynamic

@@ -105,7 +105,7 @@ class ABI_EXPORT IE_Imp_RDF : public IE_Imp
 	virtual UT_Error	_loadFile(GsfInput * fp);
 
     virtual bool pasteFromBufferSS( PD_DocumentRange * pDocRange,
-                                    const std::stringstream& ss,
+                                    std::stringstream& ss,
                                     const char * szEncoding );
 
     std::pair< PT_DocPosition, PT_DocPosition > insertTextWithXMLID( const std::string& text,
@@ -124,7 +124,7 @@ class ABI_EXPORT IE_Imp_RDF_VCard : public IE_Imp_RDF
 	virtual ~IE_Imp_RDF_VCard();
 
     virtual bool pasteFromBufferSS( PD_DocumentRange * pDocRange,
-                                    const std::stringstream& ss,
+                                    std::stringstream& ss,
                                     const char * szEncoding );
     
 };
@@ -138,7 +138,7 @@ class ABI_EXPORT IE_Imp_RDF_Calendar : public IE_Imp_RDF
 	virtual ~IE_Imp_RDF_Calendar();
 
     virtual bool pasteFromBufferSS( PD_DocumentRange * pDocRange,
-                                    const std::stringstream& ss,
+                                    std::stringstream& ss,
                                     const char * szEncoding );
     
 };

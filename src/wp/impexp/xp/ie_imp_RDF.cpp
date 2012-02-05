@@ -238,7 +238,7 @@ IE_Imp_RDF::pasteFromBuffer( PD_DocumentRange * pDocRange,
 
 bool
 IE_Imp_RDF::pasteFromBufferSS( PD_DocumentRange * /*pDocRange*/,
-                               const std::stringstream& /*ss*/,
+                               std::stringstream& /*ss*/,
                                const char * /*szEncoding*/ )
 {
     UT_DEBUGMSG(("IE_Imp_RDF::pasteFromBufferSS() doing nothing...\n"));
@@ -294,42 +294,42 @@ IE_Imp_RDF_VCard::~IE_Imp_RDF_VCard()
 }
 
 
-#ifdef WITH_EVOLUTION_DATA_SERVER
-extern "C" {
-  #include <libebook/e-book.h>
-};
+// #ifdef WITH_EVOLUTION_DATA_SERVER
+// extern "C" {
+//   #include <libebook/e-book.h>
+// };
 
-static std::string get( EVCard* c, const char* v )
-{
-    EVCardAttribute* a = e_vcard_get_attribute( c, v );
+// static std::string get( EVCard* c, const char* v )
+// {
+//     EVCardAttribute* a = e_vcard_get_attribute( c, v );
 
-    if( a && e_vcard_attribute_is_single_valued(a) )
-    {
-        return e_vcard_attribute_get_value(a);
-    }
-    return "";
-}
+//     if( a && e_vcard_attribute_is_single_valued(a) )
+//     {
+//         return e_vcard_attribute_get_value(a);
+//     }
+//     return "";
+// }
 
-static void addFoafProp( PD_DocumentRDFMutationHandle m,
-                         EVCard* c,
-                         const char* vckey,
-                         const PD_URI& uuidnode,
-                         const std::string& predend )
-{
-    PD_URI pred("http://xmlns.com/foaf/0.1/" + predend );
-    std::string objdata = get( c, vckey );
-    if( !objdata.empty() )
-    {
-        m->add( uuidnode, pred, PD_Literal( objdata ));
-    }
-}
+// static void addFoafProp( PD_DocumentRDFMutationHandle m,
+//                          EVCard* c,
+//                          const char* vckey,
+//                          const PD_URI& uuidnode,
+//                          const std::string& predend )
+// {
+//     PD_URI pred("http://xmlns.com/foaf/0.1/" + predend );
+//     std::string objdata = get( c, vckey );
+//     if( !objdata.empty() )
+//     {
+//         m->add( uuidnode, pred, PD_Literal( objdata ));
+//     }
+// }
 
-#endif
+// #endif
 
 
 bool
 IE_Imp_RDF_VCard::pasteFromBufferSS( PD_DocumentRange * pDocRange,
-                                     const std::stringstream& inputss,
+                                     std::stringstream& inputss,
                                      const char * szEncoding )
 {
 #ifndef WITH_EVOLUTION_DATA_SERVER
@@ -341,52 +341,57 @@ IE_Imp_RDF_VCard::pasteFromBufferSS( PD_DocumentRange * pDocRange,
 #else
 
     UT_DEBUGMSG(("trying to get card for data:%s\n",inputss.str().c_str() ));
-    if( EVCard* c = e_vcard_new_from_string( inputss.str().c_str() ) )
-    {
-        std::string textrep = "";
-        typedef std::list< char* > charplist_t;
-        charplist_t textreplist;
-        textreplist.push_back( EVC_EMAIL );
-        textreplist.push_back( EVC_FN );
-        textreplist.push_back( EVC_NICKNAME );
-        textreplist.push_back( EVC_UID );
-        for( charplist_t::iterator iter = textreplist.begin();
-             iter != textreplist.end(); ++iter )
-        {
-            textrep = get( c, *iter );
-            if( !textrep.empty() )
-                break;
-        }
-        UT_DEBUGMSG(("have card!\n"));
 
-        PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
-        
-        std::string fn    = get( c, EVC_FN );
-        std::string uid   = get( c, EVC_UID );
-        std::string xmlid = rdf->makeLegalXMLID( fn + "_" + uid );
-        std::string email = get( c, EVC_EMAIL );
+    PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+    PD_RDFSemanticItemHandle obj = PD_RDFSemanticItem::createSemanticItem( rdf, "Contact" );
+    obj->importFromData( inputss, rdf, pDocRange );
+    
+    // if( EVCard* c = e_vcard_new_from_string( inputss.str().c_str() ) )
+    // {
+    //     std::string textrep = "";
+    //     typedef std::list< char* > charplist_t;
+    //     charplist_t textreplist;
+    //     textreplist.push_back( EVC_EMAIL );
+    //     textreplist.push_back( EVC_FN );
+    //     textreplist.push_back( EVC_NICKNAME );
+    //     textreplist.push_back( EVC_UID );
+    //     for( charplist_t::iterator iter = textreplist.begin();
+    //          iter != textreplist.end(); ++iter )
+    //     {
+    //         textrep = get( c, *iter );
+    //         if( !textrep.empty() )
+    //             break;
+    //     }
+    //     UT_DEBUGMSG(("have card!\n"));
 
-        std::pair< PT_DocPosition, PT_DocPosition > se = insertTextWithXMLID( textrep, xmlid );
-        PT_DocPosition startpos = se.first;
-        PT_DocPosition   endpos = se.second;
+    //     PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
         
-        std::string uuid = "http://abicollab.net/rdf/foaf#" + xmlid;
-        PD_URI uuidnode(uuid);
-        PD_DocumentRDFMutationHandle m = rdf->createMutation();
-        m->add( PD_URI(uuid),
-                PD_URI("http://docs.oasis-open.org/opendocument/meta/package/common#idref"),
-                PD_Literal( xmlid ) );
-        m->add( PD_URI(uuid),
-                PD_URI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                PD_Object("http://xmlns.com/foaf/0.1/Person") );
-        addFoafProp( m, c, EVC_TEL,      uuidnode, "phone" );
-        addFoafProp( m, c, EVC_NICKNAME, uuidnode, "nick" );
-        addFoafProp( m, c, EVC_FN,       uuidnode, "name" );
-        addFoafProp( m, c, EVC_N,        uuidnode, "givenName" );
-        addFoafProp( m, c, EVC_X_JABBER, uuidnode, "jabberID" );
+    //     std::string fn    = get( c, EVC_FN );
+    //     std::string uid   = get( c, EVC_UID );
+    //     std::string xmlid = rdf->makeLegalXMLID( fn + "_" + uid );
+    //     std::string email = get( c, EVC_EMAIL );
+
+    //     std::pair< PT_DocPosition, PT_DocPosition > se = insertTextWithXMLID( textrep, xmlid );
+    //     PT_DocPosition startpos = se.first;
+    //     PT_DocPosition   endpos = se.second;
+        
+    //     std::string uuid = "http://abicollab.net/rdf/foaf#" + xmlid;
+    //     PD_URI uuidnode(uuid);
+    //     PD_DocumentRDFMutationHandle m = rdf->createMutation();
+    //     m->add( PD_URI(uuid),
+    //             PD_URI("http://docs.oasis-open.org/opendocument/meta/package/common#idref"),
+    //             PD_Literal( xmlid ) );
+    //     m->add( PD_URI(uuid),
+    //             PD_URI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+    //             PD_Object("http://xmlns.com/foaf/0.1/Person") );
+    //     addFoafProp( m, c, EVC_TEL,      uuidnode, "phone" );
+    //     addFoafProp( m, c, EVC_NICKNAME, uuidnode, "nick" );
+    //     addFoafProp( m, c, EVC_FN,       uuidnode, "name" );
+    //     addFoafProp( m, c, EVC_N,        uuidnode, "givenName" );
+    //     addFoafProp( m, c, EVC_X_JABBER, uuidnode, "jabberID" );
             
-        m->commit();
-    }
+    //     m->commit();
+    // }
 
     return true;
 
@@ -484,8 +489,8 @@ static void addCalPropSZ( PD_DocumentRDFMutationHandle m,
 
 bool
 IE_Imp_RDF_Calendar::pasteFromBufferSS( PD_DocumentRange * pDocRange,
-                                     const std::stringstream& inputss,
-                                     const char * szEncoding )
+                                        std::stringstream& inputss,
+                                        const char * szEncoding )
 {
 #ifndef WITH_LIBICAL
 	UT_UNUSED(pDocRange);
@@ -495,122 +500,66 @@ IE_Imp_RDF_Calendar::pasteFromBufferSS( PD_DocumentRange * pDocRange,
     return true;
 #else
 
+    
     UT_DEBUGMSG(("trying to get calendar for data:%s\n",inputss.str().c_str() ));
+    PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+    PD_RDFSemanticItemHandle obj = PD_RDFSemanticItem::createSemanticItem( rdf, "Event" );
+    obj->importFromData( inputss, rdf, pDocRange );
 
-    if( icalcomponent* c = icalcomponent_new_from_string( inputss.str().c_str() ) )
-    {
-        const char* desc = icalcomponent_get_description( c );
-        const char* loc  = icalcomponent_get_location( c );
-        const char* summary = icalcomponent_get_summary( c );
-        const char* uid  = icalcomponent_get_uid( c );
-        struct icaltimetype dtstart = icalcomponent_get_dtstart( c );
-        struct icaltimetype dtend   = icalcomponent_get_dtend( c );
-
-        std::string textrep;
-        std::string xmlid;
-        if( summary )
-        {
-            xmlid += (std::string)summary + "_";
-            textrep = summary;
-        }
-        xmlid += uid;
-        PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
-        xmlid = rdf->makeLegalXMLID( xmlid );
-        if( textrep.empty() )
-        {
-            if( desc ) 
-                textrep = desc;
-            else
-                textrep = uid;
-        }
-
-        std::pair< PT_DocPosition, PT_DocPosition > se = insertTextWithXMLID( textrep, xmlid );
-        PT_DocPosition startpos = se.first;
-        PT_DocPosition   endpos = se.second;
-
-        std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
-        std::string uuid = "http://abicollab.net/rdf/cal#" + xmlid;
-        PD_URI uuidnode(uuid);
-        PD_DocumentRDFMutationHandle m = rdf->createMutation();
-        m->add( PD_URI(uuid),
-                PD_URI("http://docs.oasis-open.org/opendocument/meta/package/common#idref"),
-                PD_Literal( xmlid ) );
-        m->add( PD_URI(uuid),
-                PD_URI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                PD_Object(predBase + "Vevent") );
-
-        addCalPropSZ( m, uuidnode, "summary",     summary );
-        addCalPropSZ( m, uuidnode, "location",    loc );
-        addCalPropSZ( m, uuidnode, "uid",         uid );
-        addCalPropSZ( m, uuidnode, "description", desc );
-
-        addCalProp( m, uuidnode, "dtstart", tostr(icaltime_as_timet( dtstart )));
-        addCalProp( m, uuidnode, "dtend",   tostr(icaltime_as_timet( dtend )));
-        
-        m->commit();
-        
-    }
     
-#if 0
-    
-    if( ECalendar* c = e_calendar_new_from_string( inputss.str().c_str() ) )
-    {
-        std::string textrep = "";
-        typedef std::list< char* > charplist_t;
-        charplist_t textreplist;
-        textreplist.push_back( EVC_EMAIL );
-        textreplist.push_back( EVC_FN );
-        textreplist.push_back( EVC_NICKNAME );
-        textreplist.push_back( EVC_UID );
-        for( charplist_t::iterator iter = textreplist.begin();
-             iter != textreplist.end(); ++iter )
-        {
-            textrep = get( c, *iter );
-            if( !textrep.empty() )
-                break;
-        }
-        UT_DEBUGMSG(("have card!\n"));
+    // if( icalcomponent* c = icalcomponent_new_from_string( inputss.str().c_str() ) )
+    // {
+    //     const char* desc = icalcomponent_get_description( c );
+    //     const char* loc  = icalcomponent_get_location( c );
+    //     const char* summary = icalcomponent_get_summary( c );
+    //     const char* uid  = icalcomponent_get_uid( c );
+    //     struct icaltimetype dtstart = icalcomponent_get_dtstart( c );
+    //     struct icaltimetype dtend   = icalcomponent_get_dtend( c );
 
-        PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+    //     std::string textrep;
+    //     std::string xmlid;
+    //     if( summary )
+    //     {
+    //         xmlid += (std::string)summary + "_";
+    //         textrep = summary;
+    //     }
+    //     xmlid += uid;
+    //     PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
+    //     xmlid = rdf->makeLegalXMLID( xmlid );
+    //     if( textrep.empty() )
+    //     {
+    //         if( desc ) 
+    //             textrep = desc;
+    //         else
+    //             textrep = uid;
+    //     }
+
+    //     std::pair< PT_DocPosition, PT_DocPosition > se = insertTextWithXMLID( textrep, xmlid );
+    //     PT_DocPosition startpos = se.first;
+    //     PT_DocPosition   endpos = se.second;
+
+    //     std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
+    //     std::string uuid = "http://abicollab.net/rdf/cal#" + xmlid;
+    //     PD_URI uuidnode(uuid);
+    //     PD_DocumentRDFMutationHandle m = rdf->createMutation();
+    //     m->add( PD_URI(uuid),
+    //             PD_URI("http://docs.oasis-open.org/opendocument/meta/package/common#idref"),
+    //             PD_Literal( xmlid ) );
+    //     m->add( PD_URI(uuid),
+    //             PD_URI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
+    //             PD_Object(predBase + "Vevent") );
+
+    //     addCalPropSZ( m, uuidnode, "summary",     summary );
+    //     addCalPropSZ( m, uuidnode, "location",    loc );
+    //     addCalPropSZ( m, uuidnode, "uid",         uid );
+    //     addCalPropSZ( m, uuidnode, "description", desc );
+
+    //     addCalProp( m, uuidnode, "dtstart", tostr(icaltime_as_timet( dtstart )));
+    //     addCalProp( m, uuidnode, "dtend",   tostr(icaltime_as_timet( dtend )));
         
-        std::string fn    = get( c, EVC_FN );
-        std::string uid   = get( c, EVC_UID );
-        std::string xmlid = rdf->makeLegalXMLID( fn + "_" + uid );
-        std::string email = get( c, EVC_EMAIL );
-
-        textrep = " " + textrep + " ";
-        PT_DocPosition startpos = getDocPos();
-        bool bRes = appendSpan( textrep );
-        PT_DocPosition endpos = getDocPos();
-        startpos++;
-        endpos--;
+    //     m->commit();
         
-        XAP_Frame* lff = XAP_App::getApp()->getLastFocussedFrame();
-        if(lff) 
-        {
-            FV_View * pView = static_cast<FV_View*>( lff->getCurrentView() );
-            pView->selectRange( startpos, endpos );
-            pView->cmdInsertXMLID( xmlid );
-        }
-
-        std::string uuid = "http://abicollab.net/rdf/foaf#" + xmlid;
-        PD_URI uuidnode(uuid);
-        PD_DocumentRDFMutationHandle m = rdf->createMutation();
-        m->add( PD_URI(uuid),
-                PD_URI("http://docs.oasis-open.org/opendocument/meta/package/common#idref"),
-                PD_Literal( xmlid ) );
-        m->add( PD_URI(uuid),
-                PD_URI("http://www.w3.org/1999/02/22-rdf-syntax-ns#type"),
-                PD_Object("http://xmlns.com/foaf/0.1/Person") );
-        addFoafProp( m, c, EVC_TEL,      uuidnode, "phone" );
-        addFoafProp( m, c, EVC_NICKNAME, uuidnode, "nick" );
-        addFoafProp( m, c, EVC_FN,       uuidnode, "name" );
-        addFoafProp( m, c, EVC_N,        uuidnode, "givenName" );
-        addFoafProp( m, c, EVC_X_JABBER, uuidnode, "jabberID" );
-            
-        m->commit();
-    }
-#endif
+    // }
     
     return true;
 

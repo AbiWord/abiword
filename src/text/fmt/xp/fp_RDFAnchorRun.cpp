@@ -89,7 +89,7 @@ fp_RDFAnchorRun::~fp_RDFAnchorRun()
 
 void fp_RDFAnchorRun::_draw(dg_DrawArgs* pDA)
 {
-    UT_DEBUGMSG(("_draw() showan:%d isStart:%d\n", displayAnnotations(), m_bIsStart ));
+//    UT_DEBUGMSG(("_draw() showan:%d isStart:%d\n", displayAnnotations(), m_bIsStart ));
     
     if(!displayAnnotations())
         return;
@@ -139,7 +139,7 @@ void fp_RDFAnchorRun::_draw(dg_DrawArgs* pDA)
 	}
 	pG->setFont(_getFont());
 	pG->setColor(_getView()->getColorAnnotation(this));
-	UT_DEBUGMSG(("Drawing string m_sValue %s \n",m_sValue.utf8_str()));
+//	UT_DEBUGMSG(("Drawing string m_sValue %s \n",m_sValue.utf8_str()));
 	painter.drawChars(m_sValue.ucs4_str().ucs4_str(), 0,m_sValue.ucs4_str().size(), pDA->xoff,iYdraw, NULL);
 //
 // Draw underline/overline/strikethough

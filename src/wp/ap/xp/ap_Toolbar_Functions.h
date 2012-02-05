@@ -53,6 +53,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HyperlinkOK);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_TableMerged);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_AlwaysDisabled);
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HasRevisions);
+Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CursorInSemItem);
 
 #endif /* AP_TOOLBAR_FUNCTIONS_H */
 

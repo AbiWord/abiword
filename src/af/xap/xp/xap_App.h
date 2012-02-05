@@ -39,6 +39,7 @@
 #include "xav_Listener.h"
 #include <map>
 #include <string>
+#include <list>
 
 #define NUM_MODELESSID 39
 
@@ -145,6 +146,7 @@ public:
 	UT_sint32					findFrame(const char * szFilename);
 
 	void						enumerateFrames(UT_Vector & v);
+    std::list< AD_Document* >   getDocuments( const AD_Document * pExclude = 0 );
 	void						enumerateDocuments(UT_Vector & v, const AD_Document * pExclude);
 	const char *					getApplicationTitleForTitleBar() const;
 	const char *					getApplicationName() const;
@@ -233,6 +235,7 @@ public:
 	void						setKbdLanguage(const char * pszLang);
 
 	UT_UUIDGenerator *				getUUIDGenerator() const { return m_pUUIDGenerator; }
+    std::string                     createUUIDString() const;
 
 	bool						openURL(const char * url) { return m_pImpl->openURL(url); }
 	bool						openHelpURL(const char * url) { return m_pImpl->openHelpURL(url); }

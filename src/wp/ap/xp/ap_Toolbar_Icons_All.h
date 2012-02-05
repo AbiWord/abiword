@@ -132,6 +132,10 @@
 #	include "tb_revision_find_prev.xpm"
 #	include "tb_revision_find_next.xpm"
 
+#	include "tb_semitem_select_first.xpm"
+#	include "tb_semitem_select_next.xpm"
+#	include "tb_semitem_select_prev.xpm"
+
 
 	// ... add new icons here (don't forget to add below the #else) ...
 
@@ -304,6 +308,9 @@
 	DefineToolbarIcon(tb_save_as_xpm)
 	DefineToolbarIcon(tb_save_xpm)
 	DefineToolbarIcon(tb_script_play_xpm)
+	DefineToolbarIcon(tb_semitem_select_first_xpm)
+	DefineToolbarIcon(tb_semitem_select_next_xpm)
+	DefineToolbarIcon(tb_semitem_select_prev_xpm)
 	DefineToolbarIcon(tb_smiley)
 	DefineToolbarIcon(tb_spellcheck_xpm)
 	DefineToolbarIcon(tb_split_cells_xpm)
