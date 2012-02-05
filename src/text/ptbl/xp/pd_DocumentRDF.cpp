@@ -1849,10 +1849,10 @@ PD_RDFContact::importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_D
         XAP_Frame* lff = XAP_App::getApp()->getLastFocussedFrame();
         if(lff) 
         {
-            FV_View * pView = static_cast<FV_View*>( lff->getCurrentView() );
-            std::pair< PT_DocPosition, PT_DocPosition > se = insert( pView );
-            PT_DocPosition startpos = se.first;
-            PT_DocPosition   endpos = se.second;
+//            FV_View * pView = static_cast<FV_View*>( lff->getCurrentView() );
+//            std::pair< PT_DocPosition, PT_DocPosition > se = insert( pView );
+//            PT_DocPosition startpos = se.first;
+//            PT_DocPosition   endpos = se.second;
         }
         
         // PD_DocumentRDFMutationHandle m = rdf->createMutation();
@@ -2137,10 +2137,10 @@ PD_RDFEvent::importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_Doc
         XAP_Frame* lff = XAP_App::getApp()->getLastFocussedFrame();
         if(lff) 
         {
-            FV_View * pView = static_cast<FV_View*>( lff->getCurrentView() );
-            std::pair< PT_DocPosition, PT_DocPosition > se = insert( pView );
-            PT_DocPosition startpos = se.first;
-            PT_DocPosition   endpos = se.second;
+//            FV_View * pView = static_cast<FV_View*>( lff->getCurrentView() );
+//            std::pair< PT_DocPosition, PT_DocPosition > se = insert( pView );
+//            PT_DocPosition startpos = se.first;
+//            PT_DocPosition   endpos = se.second;
         }
 
         PD_DocumentRDFMutationHandle m = rdf->createMutation();
@@ -2281,6 +2281,9 @@ PD_RDFLocation::getDisplayLabel() const
 void
 PD_RDFLocation::importFromData( std::istream& iss, PD_DocumentRDFHandle rdf, PD_DocumentRange * pDocRange )
 {
+    UT_UNUSED( iss );
+    UT_UNUSED( rdf );
+    UT_UNUSED( pDocRange );
     UT_DEBUGMSG(( "FIXME: importFromData()\n" ));
 }
 
@@ -2366,6 +2369,7 @@ PD_RDFLocation::getXMLIDs() const
 std::pair< PT_DocPosition, PT_DocPosition >
 PD_RDFSemanticItem::insert( PD_DocumentRDFMutationHandle m, FV_View* pView )
 {
+    UT_UNUSED( pView );
     std::string xmlid = m_rdf->makeLegalXMLID( name() );
     std::pair< PT_DocPosition, PT_DocPosition > se = insertTextWithXMLID( name(), xmlid );
     if (m_linkingSubject.toString().empty())
@@ -2406,6 +2410,7 @@ PD_RDFSemanticItem::getClassNames()
 void
 PD_RDFSemanticItem::setupStylesheetReplacementMapping( std::map< std::string, std::string >& m )
 {
+    UT_UNUSED( m );
 }
 
 
@@ -2432,6 +2437,7 @@ PD_RDFSemanticItem::findStylesheetByUuid(const std::string &uuid) const
 PD_RDFSemanticStylesheetHandle
 PD_RDFSemanticItem::findStylesheetByName(const std::string &sheetType, const std::string &n) const
 {
+    UT_UNUSED( sheetType );
     return findStylesheetByName( stylesheets(), n );
 }
 
@@ -2533,11 +2539,11 @@ PD_RDFSemanticItem::relationFind( RelationType rt )
         UT_DEBUGMSG(("relationFind() linkingSubj:%s\n", linkingSubj.c_str() ));
 
         std::set< std::string > t = getXMLIDsForLinkingSubject( m_rdf, linkingSubj.toString() );
-        UT_DEBUGMSG(("relationFind() t.sz:%d\n", t.size() ));
+        UT_DEBUGMSG(("relationFind() t.sz:%ld\n", t.size() ));
         xmlids.insert( t.begin(), t.end() );
     }
 
-    UT_DEBUGMSG(("relationFind() xmlids.sz:%d\n", xmlids.size() ));
+    UT_DEBUGMSG(("relationFind() xmlids.sz:%ld\n", xmlids.size() ));
     PD_RDFSemanticItems ret = m_rdf->getSemanticObjects( xmlids );
     return ret;
 }
@@ -3539,7 +3545,7 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
                                                   std::pair< PT_DocPosition, PT_DocPosition > range )
 {
     std::list< pf_Frag_Object* > ret;
-    PD_Document*    doc  = getDocument();
+//    PD_Document*    doc  = getDocument();
     pt_PieceTable*   pt  = getPieceTable();
     PT_DocPosition start = range.first;
     PT_DocPosition curr  = range.second;
@@ -3650,8 +3656,6 @@ PD_DocumentRDF::getObjectsInScopeOfTypesForRange( std::set< PTObjectType > objec
 std::set< std::string >&
 PD_DocumentRDF::addXMLIDsForObjects( std::set< std::string >& ret, std::list< pf_Frag_Object* > objectList )
 {
-    PD_Document*    doc = getDocument();
-    pt_PieceTable*   pt = getPieceTable();
     const PP_AttrProp * pAP = NULL;
 
     for( std::list< pf_Frag_Object* >::iterator iter = objectList.begin();
@@ -5072,6 +5076,7 @@ PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& 
 bool
 PD_DocumentRDFMutation::add( const PD_URI& s, const PD_URI& p, const PD_Object& o, const PD_URI& context )
 {
+    UT_UNUSED( context );
     return add( s, p, o );
 }
 
@@ -5208,7 +5213,7 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
         
         if( !existingAP->getNthProperty( i, szExistingName, szExistingValue))
         {
-            UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove() failed to get prop:%d\n", i ));
+            UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove() failed to get prop:%ld\n", i ));
             // failed to get old prop
             continue;
         }
@@ -5246,7 +5251,7 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
 //                         szExistingName, existingProps.size(), removeProps.size() ));
             if( !newAP->setProperty( szExistingName, po.c_str() ))
             {
-                UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove() failed to set prop:%d\n", i ));
+                UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove() failed to set prop:%ld\n", i ));
                 // FIXME: failed to copy prop
             }            
         }
@@ -5622,7 +5627,6 @@ PD_RDFEventGTK::updateFromEditorData( PD_DocumentRDFMutationHandle m )
 #include <champlain/champlain.h>
 #include <champlain-gtk/champlain-gtk.h>
 #include <clutter-gtk/clutter-gtk.h>
-#endif
 
 
 class ABI_EXPORT PD_RDFLocationGTK : public PD_RDFLocation
@@ -5646,9 +5650,7 @@ class ABI_EXPORT PD_RDFLocationGTK : public PD_RDFLocation
     virtual void* createEditor();
     virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
 
-    
     void OnMouseClick( ClutterActor *actor, ClutterButtonEvent *event );
-    
 };
 
 static void setEntry( GtkEntry* w, double v )
@@ -5792,6 +5794,8 @@ PD_RDFLocationGTK::updateFromEditorData( PD_DocumentRDFMutationHandle m )
     }
 }
 
+#endif
+
 
 /********************************************************************************/
 /********************************************************************************/
@@ -5833,6 +5837,7 @@ OnInsertReferenceBase( GtkWidget* dialog,
 
 static void OnInsertReference( GtkDialog* d, gint response_id, gpointer user_data)
 {
+    UT_UNUSED( response_id );
     UT_DEBUGMSG(("OnInsertReference()\n"));
     FV_View* pView = (FV_View*)user_data;
 
@@ -5846,6 +5851,8 @@ OnInsertReferenceDblClicked( GtkTreeView       * tree,
                              GtkTreeViewColumn * col,
                              gpointer		    user_data )
 {
+    UT_UNUSED( path );
+    UT_UNUSED( col );
     FV_View* pView = (FV_View*)user_data;
 
     GtkWidget* d = GTK_WIDGET(g_object_get_data( G_OBJECT(tree), G_OBJECT_WINDOW ));
@@ -5921,6 +5928,7 @@ OnSemanticStylesheetsDialogResponse( GtkWidget* dialog,
                                      GtkTreeView* tree,
                                      FV_View* pView )
 {
+    UT_UNUSED( tree );
     PD_Document* pDoc = pView->getDocument();
     PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
     gtk_widget_destroy(dialog);
@@ -6000,8 +6008,10 @@ ApplySemanticStylesheets( const std::string& semItemClassRestriction,
 
 
 static gboolean
-OnSemanticStylesheetsSetContacts_cb( ClutterActor *actor, ClutterButtonEvent *event, GtkComboBoxText *combo_box )
+OnSemanticStylesheetsSetContacts_cb( GtkWidget* w, GdkEvent* event, GtkComboBoxText *combo_box )
 {
+    UT_UNUSED( w );
+    UT_UNUSED( event );
     const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
     std::string ssName = t ? t : "name";
 
@@ -6069,8 +6079,10 @@ OnSemanticStylesheetsSetContacts_cb( ClutterActor *actor, ClutterButtonEvent *ev
 
 
 static gboolean
-OnSemanticStylesheetsSetEvents_cb( ClutterActor *actor, ClutterButtonEvent *event, GtkComboBoxText *combo_box )
+OnSemanticStylesheetsSetEvents_cb( GtkWidget* w, GdkEvent* event, GtkComboBoxText *combo_box )
 {
+    UT_UNUSED( w );
+    UT_UNUSED( event );
     const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
     std::string ssName = t ? t : "name";
 
@@ -6083,8 +6095,10 @@ OnSemanticStylesheetsSetEvents_cb( ClutterActor *actor, ClutterButtonEvent *even
 }
 
 static gboolean
-OnSemanticStylesheetsSetLocations_cb( ClutterActor *actor, ClutterButtonEvent *event, GtkComboBoxText *combo_box )
+OnSemanticStylesheetsSetLocations_cb( GtkWidget* w, GdkEvent* event, GtkComboBoxText *combo_box )
 {
+    UT_UNUSED( w );
+    UT_UNUSED( event );
     const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
     std::string ssName = t ? t : "name";
 
@@ -6155,10 +6169,12 @@ PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf,
     {
         return PD_RDFSemanticItemHandle( new PD_RDFEventGTK( rdf, it ));
     }
+#ifdef WITH_CHAMPLAIN
     if (semanticClass == "Location")
     {
         return PD_RDFSemanticItemHandle( new PD_RDFLocationGTK( rdf, it ));
     }
+#endif
     return PD_RDFSemanticItemHandle();
 }
 
@@ -6271,6 +6287,9 @@ PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
                               const std::string sparql,
                               PD_RDFModelHandle alternateModel )
 {
+    UT_UNUSED( isGeo84 );
+    UT_UNUSED( alternateModel );
+    
     PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
     PD_RDFQuery q( rdf, rdf );
     PD_ResultBindings_t bindings = q.executeQuery( sparql );
@@ -6284,9 +6303,11 @@ PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
         uniqfilter.insert(n);
         UT_DEBUGMSG(("addLocations() n:%s\n", n.c_str() ));
 
+#ifdef WITH_CHAMPLAIN
         PD_RDFLocation* newItem = new PD_RDFLocationGTK( rdf, it, isGeo84 );
         PD_RDFLocationHandle h( newItem );
         ret.push_back( h );
+#endif
     }
     return ret;
 }
@@ -6422,6 +6443,7 @@ static PD_RDFSemanticItems getSemItemListHandle(GtkDialog* d)
 }
 void OnSemItemListEdited ( GtkDialog* d, gint response_id, gpointer user_data)
 {
+    UT_UNUSED( user_data );
     UT_DEBUGMSG(("OnSemItemListEdited() response_id:%d\n", response_id ));
     if( response_id != GTK_RESPONSE_DELETE_EVENT )
     {
@@ -6457,6 +6479,8 @@ static PD_RDFSemanticItemHandle getHandle(GtkDialog* d)
 }
 void OnSemItemEdited ( GtkDialog* d, gint response_id, gpointer user_data)
 {
+    UT_UNUSED( response_id );
+    UT_UNUSED( user_data );
     UT_DEBUGMSG(("OnSemItemEdited()\n"));
     PD_RDFSemanticItemHandle h = getHandle( d );
     h->updateFromEditorData();
