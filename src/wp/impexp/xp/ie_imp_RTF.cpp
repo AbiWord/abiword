@@ -7520,7 +7520,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	{
 		propBuffer += UT_std_string_sprintf("bot-style:%d; ",m_currentRTFState.m_paraProps.m_iBotBorderStyle);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iBotBorderWidth)/1440.;
-#warning we might have issues with locale and floats here
+// #warning we might have issues with locale and floats here
 		propBuffer += UT_std_string_sprintf("bot-thickness:%fin; ",w);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iBotBorderSpacing)/1440.;
 		propBuffer += UT_std_string_sprintf("bot-space:%fin; ",w);
@@ -9316,7 +9316,7 @@ bool IE_Imp_RTF::RegisterFont(RTFFontTableItem::FontFamilyEnum fontFamily,
 	RTFFontTableItem* pOld = NULL;
 	// some RTF files define the fonts several time. This is INVALID according to the
 	// specifications. So we ignore it.
-#warning maybe not the right behaviour
+// #warning maybe not the right behaviour
 	if (m_fontTable[fontIndex] == NULL)
 	{
 		pOld = m_fontTable[fontIndex];

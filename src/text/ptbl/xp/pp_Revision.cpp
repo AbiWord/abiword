@@ -1147,7 +1147,7 @@ void PP_RevisionAttr::mergeAll( const PP_RevisionAttr& ra )
     /*
      * This is a heavy debug block for testing.
      */
-#warning this whole block is only for debug. WTF?
+// #warning this whole block is only for debug. WTF?
     if( DEBUG_MERGEALL )
     {
         UT_DEBUGMSG(("ODTCT ra::merge() ===================\n" ));

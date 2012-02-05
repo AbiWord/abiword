@@ -93,7 +93,7 @@ protected:
 	
 	HINSTANCE								m_hInstance;
 	AP_Win32DialogFactory					m_dialogFactory;
-	XAP_Win32Toolbar_ControlFactory			m_controlFactory;
+	AP_Win32Toolbar_ControlFactory			m_controlFactory;
 
 	XAP_Win32Slurp *						m_pSlurp;
 	static char m_buffer[MAX_CONVBUFFER*6];
