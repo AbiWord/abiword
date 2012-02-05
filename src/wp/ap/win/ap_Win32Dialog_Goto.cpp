@@ -167,7 +167,7 @@ BOOL AP_Win32Dialog_Goto::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*l
 
 	UT_uint32 count = getExistingBookmarksCount();
 	for( UT_uint32 i = 0; i < count; i++) {
-		str.fromUTF8(getNthExistingBookmark(i));
+		str.fromUTF8(getNthExistingBookmark(i).c_str());
 		SendMessageW( GetDlgItem(hWnd,AP_RID_DIALOG_GOTO_LIST_BOOKMARKS),
 					 LB_ADDSTRING,
 					 0,

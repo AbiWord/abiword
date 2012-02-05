@@ -84,7 +84,7 @@ BOOL AP_Win32Dialog_InsertHyperlink::_onInitDialog(HWND hWnd, WPARAM /*wParam*/,
 	for( UT_uint32 i = 0; i < count; i++)
 	{
 		addItemToList( AP_RID_DIALOG_INSERTHYPERLINK_LBX_LINK,
-                       getNthExistingBookmark( i ) );
+                       getNthExistingBookmark( i ).c_str() );
 	}
 
 	SetFocus(GetDlgItem(hWnd,AP_RID_DIALOG_INSERTHYPERLINK_EBX_LINK));

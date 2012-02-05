@@ -117,8 +117,12 @@ time_t UT_mTime(const char* path)
 	\param filename [in/out] the suggested file name
     \return false if filename is left unchanged, true otherwise
  */
-bool UT_legalizeFileName(UT_UTF8String &sFilename)
+bool UT_legalizeFileName(std::string &std_sFilename)
 {
+	// ASFRENT: I have absolutely no idea whether this is right or wrong.
+	// The revision including this shall not get into trunk
+	UT_UTF8String sFilename(std_sFilename.c_str());
+	
 	UT_UTF8String sTmp;
 	bool bRet = false;
 	
