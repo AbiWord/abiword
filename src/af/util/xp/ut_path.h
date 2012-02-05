@@ -29,7 +29,9 @@
 #include <limits.h>
 #endif
 
+#ifdef HAVE_CONFIG_H
 #include "config.h"
+#endif
 
 /* GTK build supports platforms without PATH_MAX; we leave the warning in for
  * other platforms to avoid headaches
