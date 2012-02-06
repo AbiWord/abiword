@@ -202,11 +202,12 @@ enum GR_GraphicsId
 	/* IDs for extension classes (can be both built-in and plugins) */
 	/* (these classes can be unregistered by explicit call to
 	   unregisterClass()) */
-	GRID_UNIX_PANGO      =  0x201,
-	GRID_WIN32_UNISCRIBE =  0x202,
-	GRID_UNIX_PANGO_PRINT = 0x203,
-	GRID_UNIX_PANGO_PIXMAP = 0x204,
-        GRID_COCOA_PANGO     = 0x205,
+	GRID_UNIX_PANGO          = 0x201,
+	GRID_WIN32_UNISCRIBE     = 0x202,
+	GRID_UNIX_PANGO_PRINT    = 0x203,
+	GRID_UNIX_PANGO_PIXMAP   = 0x204,
+    GRID_COCOA_PANGO         = 0x205,
+	GRID_WIN32_PANGO         = 0x206,
 
 	GRID_LAST_EXTENSION = 0x0000ffff,
 
@@ -584,6 +585,7 @@ class ABI_EXPORT GR_Graphics
 		                   GR_CURSOR_COPYTEXT
 	} Cursor;
 
+	virtual void	  init3dColors() { }
 	virtual void      setCursor(GR_Graphics::Cursor c) = 0;
 	virtual GR_Graphics::Cursor getCursor(void) const = 0;
 
