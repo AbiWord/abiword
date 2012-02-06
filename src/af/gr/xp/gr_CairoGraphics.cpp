@@ -3837,7 +3837,7 @@ UT_uint32 adobeDingbatsToUnicode(UT_uint32 c)
 		return c;
 }
 
-#ifndef WIN32
+#ifdef WITH_CAIRO
 void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,

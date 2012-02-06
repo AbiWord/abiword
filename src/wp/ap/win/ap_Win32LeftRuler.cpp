@@ -25,6 +25,7 @@
 #include "ut_Win32OS.h"
 #include "ap_Win32LeftRuler.h"
 #include "gr_Win32Graphics.h"
+#include "gr_Win32CairoGraphics.h"
 #include "xap_Win32App.h"
 #include "ap_Win32Frame.h"
 #include "ut_Win32LocaleString.h"
@@ -63,8 +64,12 @@ void AP_Win32LeftRuler::setView(AV_View * pView)
 	AP_LeftRuler::setView(pView);
 
 	DELETEP(m_pG);
+#ifdef WITH_CAIRO
+	GR_Win32CairoAllocInfo ai(m_hwndLeftRuler, false);
+#else
 	GR_Win32AllocInfo ai(GetDC(m_hwndLeftRuler), m_hwndLeftRuler);
-	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+#endif
+	GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
 	
 	m_pG = pG;
 	UT_return_if_fail (m_pG);
@@ -107,8 +112,12 @@ HWND AP_Win32LeftRuler::createWindow(HWND hwndContainer,
 	
 	
 	DELETEP(m_pG);
+#ifdef WITH_CAIRO
+	GR_Win32CairoAllocInfo ai(m_hwndLeftRuler, false);
+#else
 	GR_Win32AllocInfo ai(GetDC(m_hwndLeftRuler), m_hwndLeftRuler);
-	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+#endif
+	GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
 	UT_return_val_if_fail (pG, 0);
@@ -145,32 +154,26 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 	if (!pRuler)
 		return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 
-	GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+	GR_Graphics * pG = pRuler->m_pG;
 		
 	switch (iMsg)
 	{
 	case WM_LBUTTONDOWN:
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,pG->tlu(LOWORD(lParam)), pG->tlu(HIWORD(lParam)));
-		{
-			pG->handleSetCursorMessage();
-		}
+		pG->setCursor();
 		return 0;
 		
 	case WM_MBUTTONDOWN:
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
-		{
-			pG->handleSetCursorMessage();
-		}
+		pG->setCursor();
 		return 0;
 		
 	case WM_RBUTTONDOWN:
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
-		{
-			pG->handleSetCursorMessage();
-		}
+		pG->setCursor();
 		return 0;
 		
 	case WM_MOUSEMOVE:
@@ -217,9 +220,7 @@ LRESULT CALLBACK AP_Win32LeftRuler::_LeftRulerWndProc(HWND hwnd, UINT iMsg, WPAR
 		}
 
 	case WM_SETCURSOR:
-		{
-			pG->handleSetCursorMessage();
-		}
+		pG->setCursor();
 		return 0;
 	default:
 		break;

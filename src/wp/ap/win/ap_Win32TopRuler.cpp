@@ -26,6 +26,7 @@
 #include "ut_Win32OS.h"
 #include "ap_Win32TopRuler.h"
 #include "gr_Win32Graphics.h"
+#include "gr_Win32CairoGraphics.h"
 #include "xap_Win32App.h"
 #include "ap_Win32FrameImpl.h"
 #include "ut_Win32LocaleString.h"
@@ -67,8 +68,12 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 	AP_TopRuler::setView(pView);
 
 	DELETEP(m_pG);
+#ifdef WITH_CAIRO
+	GR_Win32CairoAllocInfo ai(m_hwndTopRuler, false);
+#else
 	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler);
-	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+#endif
+	GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
 
 	m_pG = pG;
 	UT_return_if_fail (m_pG);		
@@ -117,8 +122,14 @@ HWND AP_Win32TopRuler::createWindow(HWND hwndContainer,
 
 	
 	DELETEP(m_pG);
+
+#ifdef WITH_CAIRO
+	GR_Win32CairoAllocInfo ai(m_hwndTopRuler, false);
+#else
 	GR_Win32AllocInfo ai(GetDC(m_hwndTopRuler), m_hwndTopRuler);
-	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+#endif
+	GR_Graphics * pG = XAP_App::getApp()->newGraphics(ai);
+
 	m_pG = pG;
 	UT_return_val_if_fail (m_pG, 0);
 	pG->init3dColors();
@@ -154,7 +165,7 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 	if (!pRuler)
 		return UT_DefWindowProc(hwnd, iMsg, wParam, lParam);
 
-	GR_Win32Graphics * pG = static_cast<GR_Win32Graphics *>(pRuler->m_pG);
+	GR_Graphics * pG = pRuler->m_pG;
 		
 	switch (iMsg)
 	{
@@ -162,26 +173,20 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 		SetCapture(hwnd);
 		
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON1,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
-		{				
-			pG->handleSetCursorMessage();
-		}
+		pG->setCursor();
 		return 0;
 		
 	case WM_MBUTTONDOWN:
 		SetCapture(hwnd);		
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON2,pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
-		{				
-			pG->handleSetCursorMessage();
-		}
+		pG->setCursor();
 		return 0;
 		
 	case WM_RBUTTONDOWN:		
 		SetCapture(hwnd);
 		pRuler->mousePress(s_GetEMS(wParam),EV_EMB_BUTTON3,
 			pG->tlu(LOWORD(lParam)),pG->tlu(HIWORD(lParam)));
-		{			
-			pG->handleSetCursorMessage();
-		}
+		pG->setCursor();
 		return 0;
 		
 	case WM_MOUSEMOVE:
@@ -242,7 +247,7 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 
 	case WM_SETCURSOR:
 		{
-			pG->handleSetCursorMessage();
+			pG->setCursor();
 			return 0;
 		}
 

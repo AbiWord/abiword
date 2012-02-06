@@ -602,10 +602,10 @@ void XAP_Win32FrameImpl::_setCursor(GR_Graphics::Cursor /*cursor*/)
 	if(!pView)
 		return;
 	
-	GR_Win32Graphics * pG = (GR_Win32Graphics*)pView->getGraphics();
+	GR_Graphics * pG = pView->getGraphics();
 	UT_return_if_fail( pG );
 
-	pG->handleSetCursorMessage();
+	pG->setCursor();
 }
 
 UT_RGBColor XAP_Win32FrameImpl::getColorSelBackground () const
