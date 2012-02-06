@@ -25,4 +25,8 @@
 
 #define XAP_DONT_INLINE_XPM 1
 
+#ifdef WITH_CAIRO
+#define XAP_HAVE_GR_findNearestFont
+#endif
+
 #endif

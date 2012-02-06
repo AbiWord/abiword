@@ -2626,6 +2626,7 @@ static const FieldMap *find_field(const FieldMap *fma, size_t n, const char *ele
 	return NULL;
 }
 
+#ifdef XAP_HAVE_GR_findNearestFont
 /* Static 'virtual' function declared in gr_Graphics.h */
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -2689,7 +2690,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 
 	return s.utf8_str();
 }
-
+#endif
 
 GR_Font* GR_CairoGraphics::_findFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -3836,6 +3837,7 @@ UT_uint32 adobeDingbatsToUnicode(UT_uint32 c)
 		return c;
 }
 
+#ifndef WIN32
 void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
@@ -3854,3 +3856,4 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
 }
+#endif
