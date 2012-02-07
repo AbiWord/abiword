@@ -85,8 +85,6 @@ public:
 	virtual void		scroll(UT_sint32 x_dest, UT_sint32 y_dest,
 						   UT_sint32 x_src, UT_sint32 y_src,
 						   UT_sint32 width, UT_sint32 height);
-	virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
-	virtual void	    restoreRectangle(UT_uint32 iIndx);
 	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	void				init3dColors(GtkWidget* w);
@@ -106,9 +104,6 @@ protected:
 	GR_UnixCairoGraphics(GdkWindow * win = NULL, bool double_buffered=false);
 	virtual GdkWindow * _getWindow(void)
 	{  return m_pWin;}
-
-	UT_GenericVector<UT_Rect*>     m_vSaveRect;
-	UT_GenericVector<GdkPixbuf *>  m_vSaveRectBuf;
 
 	virtual void _beginPaint();
 	virtual void _endPaint();
