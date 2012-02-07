@@ -320,8 +320,8 @@ public:
 	//						   UT_sint32 x_src, UT_sint32 y_src,
 	//						   UT_sint32 width, UT_sint32 height);
 
-	// virtual void	    saveRectangle(UT_Rect & r, UT_uint32 iIndx);
-	// virtual void	    restoreRectangle(UT_uint32 iIndx);
+	virtual void	    	saveRectangle(UT_Rect & r, UT_uint32 iIndx);
+	virtual void	    	restoreRectangle(UT_uint32 iIndx);
 	// virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	virtual void setLineProperties(double inWidth, 
@@ -414,6 +414,7 @@ public:
 	UT_sint32               m_iPrevY2;
 	UT_uint32               m_iPrevRect;
 	UT_sint32               m_iXORCount;
+	
 	/** init the cairo context once created */
 	void _initCairo();
 
@@ -424,6 +425,10 @@ public:
 	// Suspend / resume drawing
 	void _DeviceContext_SuspendDrawing();
 	void _DeviceContext_ResumeDrawing();
+	
+	// save / restore rectangle vectors
+	std::vector<UT_Rect*> m_vSaveRect;
+	std::vector<cairo_surface_t*> m_vSaveRectBuf;
 
 private:
 	static UT_uint32 s_iInstanceCount;

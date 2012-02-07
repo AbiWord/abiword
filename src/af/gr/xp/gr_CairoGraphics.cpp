@@ -35,9 +35,9 @@
 
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
-#include "ut_vector.h"
 #include "ut_locale.h"
 #include "ut_std_string.h"
+#include "ut_std_vector.h"
 
 // need this to include what Pango considers 'low-level' api
 #define PANGO_ENABLE_ENGINE
@@ -433,6 +433,12 @@ void GR_CairoGraphics::_initPango()
 GR_CairoGraphics::~GR_CairoGraphics()
 {
 	xxx_UT_DEBUGMSG(("Deleting UnixPangoGraphics %x \n",this));
+
+	// free m_vSaveRect & m_vSaveRectBuf elements
+	UT_std_vector_purgeall(m_vSaveRect);
+	for(UT_uint32 i = 0; i < m_vSaveRectBuf.size(); i++)
+		cairo_surface_destroy(m_vSaveRectBuf[i]);
+
 	cairo_destroy(m_cr);
 	m_cr = NULL;
 
@@ -3297,6 +3303,51 @@ void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 	_setSource(m_cr, c);
 	cairo_fill(m_cr);	
 
+	cairo_restore(m_cr);
+}
+
+void GR_CairoGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndex)
+{
+	if(iIndex >= m_vSaveRect.size())
+		m_vSaveRect.resize(iIndex + 1, NULL);
+	if(iIndex >= m_vSaveRectBuf.size())
+		m_vSaveRectBuf.resize(iIndex + 1, NULL);
+
+	delete m_vSaveRect[iIndex];
+	m_vSaveRect[iIndex] = new UT_Rect(r);
+
+	cairo_save(m_cr);
+	cairo_reset_clip(m_cr);
+
+	cairo_rectangle_t cacheRect;
+	cacheRect.x = -static_cast<double>(_tduX(r.left));
+	cacheRect.y = -static_cast<double>(_tduY(r.top ));
+	cacheRect.width  = static_cast<double>(_tduR(r.width ));
+	cacheRect.height = static_cast<double>(_tduR(r.height));
+
+	cairo_surface_flush(cairo_get_target(m_cr));
+	cairo_surface_t* newC = _getCairoSurfaceFromContext(m_cr, cacheRect);
+
+	cairo_surface_destroy(m_vSaveRectBuf[iIndex]);
+	m_vSaveRectBuf[iIndex] = newC;
+
+	cairo_restore(m_cr);
+}
+
+void GR_CairoGraphics::restoreRectangle(UT_uint32 iIndex)
+{
+	cairo_save(m_cr);
+	cairo_reset_clip(m_cr);
+	UT_Rect *r = m_vSaveRect[iIndex];
+	cairo_surface_t *s = m_vSaveRectBuf[iIndex];
+	double idx = static_cast<double>(_tduX(r->left)) - 0.5;
+	double idy = static_cast<double>(_tduY(r->top)) - 0.5;
+	cairo_surface_flush(cairo_get_target(m_cr));
+	if(s && r)
+	{
+		cairo_set_source_surface(m_cr, s, idx, idy);
+		cairo_paint(m_cr);
+	}
 	cairo_restore(m_cr);
 }
 
