@@ -436,8 +436,7 @@ GR_CairoGraphics::~GR_CairoGraphics()
 
 	// free m_vSaveRect & m_vSaveRectBuf elements
 	UT_std_vector_purgeall(m_vSaveRect);
-	for(UT_uint32 i = 0; i < m_vSaveRectBuf.size(); i++)
-		cairo_surface_destroy(m_vSaveRectBuf[i]);
+	UT_std_vector_freeall(m_vSaveRectBuf, cairo_surface_destroy);
 
 	cairo_destroy(m_cr);
 	m_cr = NULL;
