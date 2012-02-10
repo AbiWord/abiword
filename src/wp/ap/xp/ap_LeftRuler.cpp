@@ -1690,6 +1690,7 @@ void AP_LeftRuler::drawLU(const UT_Rect *clip)
 	pView->getLeftRulerInfo(lfi);
 
 	GR_Painter painter(m_pG);
+	painter.beginDoubleBuffering();
 
 	UT_ASSERT(lfi->m_yTopMargin >= 0);
 

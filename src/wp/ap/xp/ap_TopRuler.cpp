@@ -409,6 +409,7 @@ void AP_TopRuler::drawLU(const UT_Rect *clip)
 	// draw the background
 
 	GR_Painter painter(m_pG);
+	painter.beginDoubleBuffering();
 	painter.fillRect(GR_Graphics::CLR3D_Background,0,0,getWidth (),getHeight ());
 
 	// draw the foreground
