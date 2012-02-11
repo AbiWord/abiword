@@ -103,7 +103,7 @@ dnl libosso-gsf-1'
 opt_pkgs=''
 
 # gtk deps
-cairo_req='cairo-pdf cairo-ps pangocairo'
+cairo_req='cairo-pdf cairo-ps pangocairo cairo-fc'
 if test "x$abi_cv_gtk2" = "xyes"; then
 gtk_req="gtk+-2.0 >= $GTK2_VERSION_REQ gtk+-unix-print-2.0 librsvg-2.0 >= 2.16.0"
 else
@@ -635,10 +635,13 @@ elif test "$TOOLKIT" = "cocoa"; then
 	SYSTEM_LIBS="-framework Cocoa"
 	AC_CHECK_PROG([CONVERT], [convert], convert, AC_MSG_ERROR(Cannot find ImageMagick convert))
 else
-	deps_pkgs="$deps_pkgs $gtk_pkgs"
+	SYSTEM_CFLAGS=$PNG_CFLAGS
+	SYSTEM_LIBS=$PNG_LIBS
+	deps_pkgs="$deps_pkgs $gtk_pkgs x11"
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
+DEPS_LIBS=`$PKG_CONFIG --libs-only-L --libs-only-l $deps_pkgs`
 dnl specific gtk214 test. 	 
 	if test "$TOOLKIT_IS_GTK2" = "yes"; then 	 
 	        PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 	 
