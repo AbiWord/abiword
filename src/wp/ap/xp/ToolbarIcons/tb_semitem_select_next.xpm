@@ -1,5 +1,5 @@
 /* XPM */
-static char *tb_semitem_select_next_xpm[] = {
+static const char *tb_semitem_select_next_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "24 24 2 1 ",
 "  c black",
