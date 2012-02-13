@@ -284,7 +284,8 @@ std::string PP_Revision::toString() const
 
 bool PP_Revision::onlyContainsAbiwordChangeTrackingMarkup() const
 {
-    UT_DEBUGMSG(("onlyContainsAbiwordChangeTrackingMarkup(top) ac:%d pc:%d\n", getAttributeCount(), getPropertyCount() ));
+    UT_DEBUGMSG(("onlyContainsAbiwordChangeTrackingMarkup(top) ac:%ld pc:%ld\n",
+		 (long)getAttributeCount(), (long)getPropertyCount() ));
 
     if( !getAttributeCount() )
         return false;

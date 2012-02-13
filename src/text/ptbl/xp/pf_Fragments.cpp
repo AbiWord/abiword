@@ -1171,10 +1171,10 @@ pf_Fragments::checkInvariants() const
 	// These iterators should be ConstIterators
 	// ConstIterator end(end());
 	// ConstIterator it(begin());
-	Iterator end(const_cast<pf_Fragments* const> (this));
+	Iterator end_(const_cast<pf_Fragments* const> (this));
 	Iterator it(const_cast<pf_Fragments* const> (this), const_cast<Node*> (_first()));
 
-	if (it != end)
+	if (it != end_)
 		nb_blacks = _countBlackNodes(it++);
 
 	if (nb_blacks < 0)
@@ -1183,7 +1183,7 @@ pf_Fragments::checkInvariants() const
 	if (!checkSizeInvariant(m_pRoot, NULL))
 		return false;
 	
-	for (; it != end; ++it)
+	for (; it != end_; ++it)
 	{
 		Node *pn = it.getNode();
 		

@@ -10517,7 +10517,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
-#ifdef DEBUG	
+#if 0 //defined(DEBUG)
 	xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () Run.type:%d\n", pRun->getType() ));
 	if( fp_Run* t = pRun->getNextRun() )
 	{

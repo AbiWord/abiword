@@ -282,7 +282,7 @@ struct abiwordFindStreamContext
 
     void setup( librdf_world* /*world*/ )
     {
-        static int counter = 0;
+//        static int counter = 0;
         xxx_UT_DEBUGMSG(("setup() top c:%d\n", counter++ ));
 
         // {
