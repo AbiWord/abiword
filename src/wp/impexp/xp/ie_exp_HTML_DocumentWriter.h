@@ -29,7 +29,7 @@
 #include "ie_exp_HTML_StyleTree.h"
 #include "xap_Dlg_HTMLOptions.h"
 
-#include <pp_AttrProp.h>
+#include "pp_AttrProp.h"
 
 #define XHTML_DTD "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \
 \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n"
@@ -46,13 +46,12 @@ AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\">"
 
 #define XML_DECLARATION "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n"
 
-class IE_Exp_HTML_ListenerImpl;
 class ABI_EXPORT IE_Exp_HTML_DocumentWriter : public IE_Exp_HTML_ListenerImpl
 {
 public:
     IE_Exp_HTML_DocumentWriter(IE_Exp_HTML_OutputWriter* pOutputWriter);
     
-    ~IE_Exp_HTML_DocumentWriter();
+    virtual ~IE_Exp_HTML_DocumentWriter();
 
     void openSpan(const gchar *szStyleNames, const UT_UTF8String& style);
     void closeSpan();
@@ -103,7 +102,7 @@ public:
     void closeListItem();
     
     void openField(const UT_UTF8String &fieldType, const UT_UTF8String &value);
-    void closeField();
+    void closeField(const UT_UTF8String& fieldType);
     
     void openAnnotation();
     void closeAnnotation();
@@ -112,7 +111,7 @@ public:
     void closeTextbox();
     
     void insertDTD();
-    void insertMeta(const UT_UTF8String &name, const UT_UTF8String &content);
+    void insertMeta(const std::string& name, const std::string& content);
     void insertText(const UT_UTF8String &text);
     void insertImage(const UT_UTF8String &url, const UT_UTF8String &width, 
         const UT_UTF8String &align, const UT_UTF8String &style,
@@ -125,7 +124,9 @@ public:
        const std::vector<UT_UTF8String> &authors,
        const std::vector<UT_UTF8String> &annotations);
     void insertStyle(const UT_UTF8String &style);
-    void insertTitle(const UT_UTF8String &title);
+    virtual void insertJavaScript(const gchar * /*src*/,
+								  const gchar* /*script*/) {}
+    void insertTitle(const std::string& title);
     void insertLink(const UT_UTF8String &rel,
             const UT_UTF8String &type, const UT_UTF8String &uri);
     void insertMath(const UT_UTF8String &mathml,

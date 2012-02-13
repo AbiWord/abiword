@@ -230,7 +230,7 @@ void IE_Exp_HTML_DocumentWriter::openField(const UT_UTF8String& fieldType,
     }
 }
 
-void IE_Exp_HTML_DocumentWriter::closeField()
+void IE_Exp_HTML_DocumentWriter::closeField(const UT_UTF8String&)
 {
     m_pTagWriter->closeTag();
 }
@@ -417,12 +417,12 @@ void IE_Exp_HTML_DocumentWriter::insertDTD()
 {
 }
 
-void IE_Exp_HTML_DocumentWriter::insertMeta(const UT_UTF8String& name, 
-                                            const UT_UTF8String& content)
+void IE_Exp_HTML_DocumentWriter::insertMeta(const std::string& name, 
+                                            const std::string& content)
 {
     m_pTagWriter->openTag("meta", false, true);
-    m_pTagWriter->addAttribute("name",name.utf8_str());
-    m_pTagWriter->addAttribute("content",content.utf8_str());
+    m_pTagWriter->addAttribute("name", name);
+    m_pTagWriter->addAttribute("content", content);
     m_pTagWriter->closeTag();
 }
 
@@ -488,10 +488,10 @@ void IE_Exp_HTML_DocumentWriter::insertStyle(const UT_UTF8String &style)
     m_pTagWriter->closeTag();
 }
 
-void IE_Exp_HTML_DocumentWriter::insertTitle(const UT_UTF8String& title)
+void IE_Exp_HTML_DocumentWriter::insertTitle(const std::string& title)
 {
 	m_pTagWriter->openTag("title", false, false);
-	m_pTagWriter->writeData(title.utf8_str());
+	m_pTagWriter->writeData(title);
 	m_pTagWriter->closeTag();
 }
 

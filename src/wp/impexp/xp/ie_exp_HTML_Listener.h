@@ -50,92 +50,102 @@
 class ABI_EXPORT IE_Exp_HTML_ListenerImpl {
 public:
 
-    virtual void openSpan(const gchar * /*szStyleName*/, const UT_UTF8String& /*style*/) {}
-    virtual void closeSpan() {}
+    virtual void openSpan(const gchar * szStyleName,
+						  const UT_UTF8String& style) = 0;
+    virtual void closeSpan() = 0;
     
-    virtual void openHeading(size_t /*level*/, const gchar * /*id*/, 
-        const gchar * /*szStyleName*/, const PP_AttrProp* /*pAP*/) {}
-    virtual void closeHeading() {}
+    virtual void openHeading(size_t level, const gchar * id,
+							 const gchar * szStyleName,
+							 const PP_AttrProp* pAP) = 0;
+    virtual void closeHeading() = 0;
     
-    virtual void openBlock(const gchar * /*szStyleName*/, 
-        const UT_UTF8String & /*style*/, const PP_AttrProp* /*pAP*/) {}
-    virtual void closeBlock() {}
+    virtual void openBlock(const gchar * szStyleName,
+						   const UT_UTF8String & style,
+						   const PP_AttrProp* pAP) = 0;
+    virtual void closeBlock() = 0;
     
-    virtual void openSection(const gchar * /*szStyleName*/) {}
-    virtual void closeSection() {}
+    virtual void openSection(const gchar * szStyleName) = 0;
+    virtual void closeSection() = 0;
     
-    virtual void openField(const UT_UTF8String& /*fieldType*/, 
-        const UT_UTF8String& /*fieldValue*/) {}
-    virtual void closeField(const UT_UTF8String& /*fieldType*/) {}
+    virtual void openField(const UT_UTF8String& fieldType,
+						   const UT_UTF8String& fieldValue) = 0;
+    virtual void closeField(const UT_UTF8String& fieldType) = 0;
     
-    virtual void openTable(const UT_UTF8String &/*style*/,
-    const UT_UTF8String &/*cellPadding*/, const UT_UTF8String &/*border*/) {}
-    virtual void closeTable() {}
+    virtual void openTable(const UT_UTF8String &style,
+						   const UT_UTF8String &cellPadding, 
+						   const UT_UTF8String &border) = 0;
+    virtual void closeTable() = 0;
 
-    virtual void openRow() {}
-    virtual void closeRow() {}
+    virtual void openRow() = 0;
+    virtual void closeRow() = 0;
 
     virtual void openCell(const UT_UTF8String &/*style*/,
-    const UT_UTF8String &/*rowSpan*/, const UT_UTF8String &/*colSpan*/) {}
-    virtual void closeCell() {}
+						  const UT_UTF8String &/*rowSpan*/, 
+						  const UT_UTF8String &/*colSpan*/) = 0;
+    virtual void closeCell() = 0;
 
-    virtual void openAnnotation() {}
-    virtual void closeAnnotation() {}
+    virtual void openAnnotation() = 0;
+    virtual void closeAnnotation() = 0;
 
-    virtual void openTextbox(const UT_UTF8String &/*style*/) {}
-    virtual void closeTextbox() {}
+    virtual void openTextbox(const UT_UTF8String &style) = 0;
+    virtual void closeTextbox() = 0;
 
-    virtual void openBookmark(const gchar * /*szBookmarkName*/) {}
-    virtual void closeBookmark() {}
+    virtual void openBookmark(const gchar * szBookmarkName) = 0;
+    virtual void closeBookmark() = 0;
 
-    virtual void openHyperlink(const gchar * /*szUri*/, 
-        const gchar * /*szStyleName*/, const gchar * /*szId*/) {}
-    virtual void closeHyperlink() {}
+    virtual void openHyperlink(const gchar * szUri,
+							   const gchar * szStyleName,
+							   const gchar * szId) = 0;
+    virtual void closeHyperlink() = 0;
 
-    virtual void openList(bool /*ordered*/, const gchar * /*szStyleName*/,
-        const PP_AttrProp* /*pAP*/) {}
-    virtual void closeList() {}
+    virtual void openList(bool ordered, const gchar * szStyleName,
+						  const PP_AttrProp* pAP) = 0;
+    virtual void closeList() = 0;
 
-    virtual void openListItem() {}
-    virtual void closeListItem() {}
+    virtual void openListItem() = 0;
+    virtual void closeListItem() = 0;
     
-    virtual void openDocument() {}
-    virtual void closeDocument() {}
+    virtual void openDocument() = 0;
+    virtual void closeDocument() = 0;
     
-    virtual void openHead() {}
-    virtual void closeHead() {}
+    virtual void openHead() = 0;
+    virtual void closeHead() = 0;
     
-    virtual void openBody() {}
-    virtual void closeBody() {}
+    virtual void openBody() = 0;
+    virtual void closeBody() = 0;
     
-    virtual void insertDTD() {}
-    virtual void insertLink(const UT_UTF8String &/*rel*/, 
-        const UT_UTF8String &/*type*/, const UT_UTF8String &/*uri*/) {}
-    virtual void insertMeta(const std::string &/*name*/, 
-							const std::string &/*content*/) {}
-    virtual void insertMath(const UT_UTF8String &/*mathml*/,
-        const UT_UTF8String &/*width*/, const UT_UTF8String &/*height*/){}
+    virtual void insertDTD() = 0;
+    virtual void insertLink(const UT_UTF8String &rel,
+							const UT_UTF8String &type,
+							const UT_UTF8String &uri) = 0;
+    virtual void insertMeta(const std::string & name,
+							const std::string & content) = 0;
+    virtual void insertMath(const UT_UTF8String &mathml,
+							const UT_UTF8String &width,
+							const UT_UTF8String &height) = 0;
 
-    virtual void insertImage(const UT_UTF8String &/*url*/, 
-        const UT_UTF8String &/*align*/, const UT_UTF8String& /*style*/,
-        const UT_UTF8String &/*title*/, const UT_UTF8String &/*alt*/) {}
+    virtual void insertImage(const UT_UTF8String &url,
+							 const UT_UTF8String &align,
+							 const UT_UTF8String& style,
+							 const UT_UTF8String &title,
+							 const UT_UTF8String &alt) = 0;
         
-    virtual void insertText(const UT_UTF8String &/*text*/) {}
+    virtual void insertText(const UT_UTF8String &text) = 0;
     
-    virtual void insertTOC(const gchar * /*title*/, 
-        const std::vector<UT_UTF8String> &/*items*/,
-        const std::vector<UT_UTF8String> &/*itemUri*/){}
+    virtual void insertTOC(const gchar * title,
+						   const std::vector<UT_UTF8String> &items,
+						   const std::vector<UT_UTF8String> &itemUri) = 0;
      
-    virtual void insertEndnotes(const std::vector<UT_UTF8String> &/*endnotes*/) {}
-    virtual void insertFootnotes(const std::vector<UT_UTF8String> &/*footnotes*/) {}
-    virtual void insertAnnotations(const std::vector<UT_UTF8String> &/*titles*/,
-        const std::vector<UT_UTF8String> &/*authors*/,
-        const std::vector<UT_UTF8String> &/*annotations*/) {}
+    virtual void insertEndnotes(const std::vector<UT_UTF8String> &endnotes) = 0;
+    virtual void insertFootnotes(const std::vector<UT_UTF8String> &footnotes) = 0;
+    virtual void insertAnnotations(const std::vector<UT_UTF8String> &titles,
+								   const std::vector<UT_UTF8String> &authors,
+								   const std::vector<UT_UTF8String> &annotations) = 0;
     
-    virtual void insertStyle(const UT_UTF8String &/*style*/) {}
-    virtual void insertJavaScript(const gchar * /*src*/, const gchar* /*script*/) {}
-    virtual void insertTitle(const std::string &/*title*/) {};
-    virtual ~IE_Exp_HTML_ListenerImpl() {}
+    virtual void insertStyle(const UT_UTF8String &style) = 0;
+    virtual void insertJavaScript(const gchar* src,
+								  const gchar* script) = 0;
+    virtual void insertTitle(const std::string& title) = 0;
 };
 
 
@@ -181,11 +191,16 @@ public:
 
     virtual bool signal(UT_uint32 iSignal);
     
-    inline void set_EmbedCSS(bool bEmbed = true) { m_bEmbedCss = bEmbed; }
-    inline void set_EmbedImages(bool bEmbed = true) { m_bEmbedImages = bEmbed; }
-    inline void set_SplitDocument(bool bSplit = true) { m_bSplitDocument = bSplit; }
-    inline void set_RenderMathMLToPng (bool bRender = true) { m_bRenderMathToPng = bRender; }
-    inline bool get_HasMathML() const { return m_bHasMathMl; }
+    void set_EmbedCSS(bool bEmbed = true)
+		{ m_bEmbedCss = bEmbed; }
+    void set_EmbedImages(bool bEmbed = true)
+		{ m_bEmbedImages = bEmbed; }
+    void set_SplitDocument(bool bSplit = true)
+		{ m_bSplitDocument = bSplit; }
+    void set_RenderMathMLToPng (bool bRender = true)
+		{ m_bRenderMathToPng = bRender; }
+    bool get_HasMathML() const
+		{ return m_bHasMathMl; }
 private:
     const gchar* _getObjectKey(const PT_AttrPropIndex& api,
             const gchar* key);
@@ -268,7 +283,8 @@ private:
     void _insertStyle();
     void _insertLinkToStyle();
     void _handleAnnotationData(PT_AttrPropIndex api);
-    void _handleImage(PT_AttrPropIndex api, const gchar *szDataId, bool bIsPositioned);
+    void _handleImage(PT_AttrPropIndex api, const gchar *szDataId, 
+					  bool bIsPositioned);
     void _makeStylesheet(PT_AttrPropIndex api);
     void _setCellWidthInches();
     void _fillColWidthsVector();
