@@ -54,34 +54,69 @@ static const gchar * G_OBJECT_TREEVIEW = "G_OBJECT_TREEVIEW";
 
 static void dump( const std::string& msg, PD_RDFModelIterator begin, PD_RDFModelIterator end );
 
-static const std::string StreamToString( std::istream& iss )
-{
-    std::stringstream ss;
-    iss.clear();
-    std::copy( std::istreambuf_iterator<char>(iss),
-               std::istreambuf_iterator<char>(),
-               std::ostreambuf_iterator<char>(ss));
-    return ss.str();
-}
-static std::string toTimeString( time_t TT )
-{
-    const int bufmaxlen = 1025;
-    char buf[bufmaxlen];
-    struct tm* TM = 0;
-    std::string format = "%y %b %e %H:%M";
+/******************************/
+/******************************/
+/******************************/
 
-//    TM = gmtime( &TT );
-    TM = localtime( &TT );
-            
-    if( TM && strftime( buf, bufmaxlen, format.c_str(), TM) )
+class PD_SemanticItemFactoryNull
+    :
+    public PD_SemanticItemFactory
+{
+public:
+    virtual PD_RDFContact*  createContact( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it )
     {
-        std::string s = buf;
-        return s;
+        return 0;
     }
-    // FIXME
-    return "";
+    virtual PD_RDFEvent*    createEvent( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it )
+    {
+        return 0;
+    }
+    virtual PD_RDFLocation* createLocation( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it,
+                                            bool isGeo84 = false )
+    {
+        return 0;
+    }
+};
+static PD_SemanticItemFactory* s_SemanticItemFactory = new PD_SemanticItemFactoryNull;
+void
+PD_DocumentRDF::setSemanticItemFactory( PD_SemanticItemFactory* f )
+{
+    s_SemanticItemFactory = f;
 }
 
+
+class PD_RDFDialogsNull : public PD_RDFDialogs
+{
+  public:
+    virtual void runSemanticStylesheetsDialog( FV_View* pView )
+    {
+    }
+    virtual std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
+    {
+    }
+};
+static PD_RDFDialogs* s_RDFDialogs = new PD_RDFDialogsNull;
+void
+PD_DocumentRDF::setRDFDialogs( PD_RDFDialogs* d )
+{
+    s_RDFDialogs = d;
+}
+
+std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
+{
+    s_RDFDialogs->runInsertReferenceDialog( pView );
+}
+
+void runSemanticStylesheetsDialog( FV_View* pView )
+{
+    s_RDFDialogs->runSemanticStylesheetsDialog( pView );
+}
+
+
+
+/******************************/
+/******************************/
+/******************************/
 
 
 
@@ -273,10 +308,10 @@ PD_RDFModel::contains( const PD_URI& s, const PD_URI& p )
     return u.isValid();
 }
 
-#ifdef DEBUG
 void
 PD_RDFModel::dumpModel( const std::string& headerMsg )
 {
+#ifdef DEBUG    
     PD_RDFModelIterator iter = begin();
     PD_RDFModelIterator    e = end();
 
@@ -292,9 +327,9 @@ PD_RDFModel::dumpModel( const std::string& headerMsg )
         
     }
     UT_DEBUGMSG(("PD_RDFModel::dumpModel() --- done -------------------------\n"));
+#endif
     
 }
-#endif
 
 std::string
 PD_RDFModel::uriToPrefixed( const std::string& uri )
@@ -1692,7 +1727,73 @@ PD_RDFSemanticItem::importFromFile( const std::string& filename_const )
     importFromData( iss, m_rdf );
 }
 
+PD_RDFSemanticItemHandle
+PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf, const std::string& semanticClass )
+{
+    PD_ResultBindings_t b;
+    b.push_back( std::map< std::string, std::string >() );
+    PD_ResultBindings_t::iterator it = b.begin();
+    return createSemanticItem( rdf, it, semanticClass );
+}
 
+PD_RDFSemanticItemHandle
+PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf,
+                                        PD_ResultBindings_t::iterator it,
+                                        const std::string& semanticClass )
+{
+    if (semanticClass == "Contact")
+    {
+        return PD_RDFSemanticItemHandle( s_SemanticItemFactory->createContact( rdf, it ) );
+    }
+    if (semanticClass == "Event")
+    {
+        return PD_RDFSemanticItemHandle( s_SemanticItemFactory->createEvent( rdf, it ));
+    }
+#ifdef WITH_CHAMPLAIN
+    if (semanticClass == "Location")
+    {
+        return PD_RDFSemanticItemHandle( s_SemanticItemFactory->createLocation( rdf, it ));
+    }
+#endif
+    return PD_RDFSemanticItemHandle();
+}
+
+void
+PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItems cl )
+{
+    UT_DEBUGMSG(("showEditorWindow(base) list... sz:%ld\n", cl.size() ));
+}
+
+
+void
+PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItemHandle c )
+{
+    UT_DEBUGMSG(("showEditorWindow(base) name:%s linksubj:%s\n",
+                 c->name().c_str(), c->linkingSubject().toString().c_str() ));
+}
+
+void
+PD_RDFSemanticItem::importFromDataComplete( std::istream& iss,
+                                            PD_DocumentRDFHandle rdf,
+                                            PD_DocumentRDFMutationHandle m,
+                                            PD_DocumentRange * pDocRange )
+{
+    UT_DEBUGMSG(("importFromDataComplete(base)\n"));
+}
+
+std::string
+PD_RDFSemanticItem::getImportFromFileName( const std::string& filename_const,
+                                           std::list< std::pair< std::string, std::string> > types ) const
+{
+    return "";
+}
+std::string
+PD_RDFSemanticItem::getExportToFileName( const std::string& filename_const,
+                                         std::string defaultExtension,
+                                         std::list< std::pair< std::string, std::string> > types ) const
+{
+    return "";
+}
 
 /***********/
 /***********/
@@ -1972,40 +2073,6 @@ static void addCalPropSZ( PD_DocumentRDFMutationHandle m,
 
 #endif
 
-time_t toTime( struct tm *tm )
-{
-    return mktime( tm );
-}
-
-time_t parseTimeString( const std::string& stddatestr )
-{
-    const char* datestr = stddatestr.c_str();
-    const char* eos     = datestr + strlen( datestr );
-
-    typedef std::list<std::string> formats_t;
-    formats_t formats;
-    
-    formats.push_back( "%Y-%m-%dT%H:%M:%S" );
-    formats.push_back( "%y %b %d %H:%M:%S" );
-    formats.push_back( "%y %b %d %H:%M" );
-
-    for( formats_t::iterator iter = formats.begin(); iter != formats.end(); ++iter )
-    {
-        std::string format = *iter;
-        struct tm tm;
-        memset( &tm, 0, sizeof(struct tm));
-        const char* rc = strptime( datestr, format.c_str(), &tm );
-        if( rc == eos )
-        {
-            UT_DEBUGMSG(("parseTimeString(OK) input:%s format:%s ret:%ld\n",
-                         datestr, format.c_str(), toTime(&tm) ));
-            return toTime(&tm);
-        }
-    }
-
-    UT_DEBUGMSG(("parseTimeString(f) input:%s\n", datestr ));
-    return 0;
-}
 
 PD_RDFEvent::PD_RDFEvent( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it )
     : PD_RDFSemanticItem( rdf, it )
@@ -4943,7 +5010,191 @@ PD_DocumentRDF::selectXMLIDs( const std::set< std::string >& xmlids, FV_View* pV
     }
 }
 
+void
+PD_DocumentRDF::showEditorWindow( PD_RDFSemanticItems cl )
+{
+    if( !cl.empty() )
+    {
+        PD_RDFSemanticItems::iterator ci = cl.begin();
+        PD_RDFSemanticItemHandle c = *ci;
+        c->showEditorWindow( cl );
+    }
+}
 
+
+
+PD_RDFContacts
+PD_DocumentRDF::getContacts( PD_RDFModelHandle alternateModel )
+{
+    PD_RDFModelHandle m = alternateModel;
+    if( !m )
+        m = getDocument()->getDocumentRDF();
+
+    PD_RDFContacts ret;
+    std::stringstream sparqlQuery;
+    sparqlQuery << "prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
+                << "prefix foaf: <http://xmlns.com/foaf/0.1/> \n"
+                << "prefix pkg: <http://docs.oasis-open.org/opendocument/meta/package/common#> \n"
+                << "select distinct ?person ?name ?nick ?email ?homepage ?img ?phone \n"
+                << "where { \n"
+                << "    ?person rdf:type foaf:Person . \n"
+                << "    ?person foaf:name ?name \n"
+                << "    OPTIONAL { ?person foaf:phone ?phone } \n"
+                << "    OPTIONAL { ?person foaf:mbox  ?email } \n"
+                << "    OPTIONAL { ?person foaf:nick ?nick } \n"
+                << "    OPTIONAL { ?person foaf:homepage ?homepage } \n"
+                << "    OPTIONAL { ?person foaf:img ?img } \n"
+                << "}\n";
+    UT_DEBUGMSG(("getContacts() sparql:\n%s\n\n", sparqlQuery.str().c_str() ));
+
+    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
+    PD_RDFQuery q( rdf, m );
+    PD_ResultBindings_t bindings = q.executeQuery( sparqlQuery.str() );
+    UT_DEBUGMSG(("getContacts() bindings.sz:%ld\n", bindings.size() ));
+    
+    // uniqfilter is needed because redland might not honour the
+    // DISTINCT sparql keyword
+    std::set<std::string> uniqfilter;
+    for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
+    {
+        std::string n = (*it)["name"];
+        if (uniqfilter.count(n))
+            continue;
+        uniqfilter.insert(n);
+
+        PD_RDFContact* newItem = s_SemanticItemFactory->createContact( rdf, it );
+        PD_RDFContactHandle h( newItem );
+        ret.push_back( h );
+    }
+    
+    return ret;
+}
+
+
+PD_RDFEvents
+PD_DocumentRDF::getEvents( PD_RDFModelHandle alternateModel )
+{
+    PD_RDFModelHandle m = alternateModel;
+    if( !m )
+        m = getDocument()->getDocumentRDF();
+
+    PD_RDFEvents ret;
+    std::stringstream sparqlQuery;
+    sparqlQuery << " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
+                << " prefix foaf: <http://xmlns.com/foaf/0.1/>  \n"
+                << " prefix cal:  <http://www.w3.org/2002/12/cal/icaltzd#>  \n"
+                << " select distinct ?ev ?uid ?dtstart ?dtend ?summary ?location ?description ?geo ?long ?lat \n"
+                << " where {  \n"
+                << "    ?ev rdf:type cal:Vevent . \n"
+                << "    ?ev cal:uid      ?uid . \n"
+                << "    ?ev cal:dtstart  ?dtstart . \n"
+                << "    ?ev cal:dtend    ?dtend \n"
+                << "    OPTIONAL { ?ev cal:summary  ?summary  } \n"
+                << "    OPTIONAL { ?ev cal:location ?location } \n"
+                << "    OPTIONAL { ?ev cal:description ?description } \n"
+                << "    OPTIONAL {  \n"
+                << "               ?ev cal:geo ?geo . \n"
+                << "               ?geo rdf:first ?lat . \n"
+                << "               ?geo rdf:rest ?joiner . \n"
+                << "               ?joiner rdf:first ?long \n"
+                << "              } \n"
+                << "  } \n";
+    
+    UT_DEBUGMSG(("getEvents() sparql:\n%s\n\n", sparqlQuery.str().c_str() ));
+
+    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
+    PD_RDFQuery q( rdf, m );
+    PD_ResultBindings_t bindings = q.executeQuery( sparqlQuery.str() );
+    UT_DEBUGMSG(("getEvents() bindings.sz:%ld\n", bindings.size() ));
+    
+    // uniqfilter is needed because redland might not honour the
+    // DISTINCT sparql keyword
+    std::set<std::string> uniqfilter;
+    for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
+    {
+        std::string n = (*it)["uid"];
+        if (uniqfilter.count(n))
+            continue;
+        uniqfilter.insert(n);
+
+        PD_RDFEvent* newItem = s_SemanticItemFactory->createEvent( rdf, it );
+        PD_RDFEventHandle h( newItem );
+        ret.push_back( h );
+    }
+    
+    return ret;
+}
+
+
+PD_RDFLocations&
+PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
+                              bool isGeo84,
+                              const std::string sparql,
+                              PD_RDFModelHandle /*alternateModel*/ )
+{
+    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
+    PD_RDFQuery q( rdf, rdf );
+    PD_ResultBindings_t bindings = q.executeQuery( sparql );
+    UT_DEBUGMSG(("addLocations() bindings.sz:%ld sparql\n%s\n", bindings.size(), sparql.c_str() ));
+    std::set<std::string> uniqfilter;
+    for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
+    {
+        std::string n = (*it)["lat"];
+        if (uniqfilter.count(n))
+            continue;
+        uniqfilter.insert(n);
+        UT_DEBUGMSG(("addLocations() n:%s\n", n.c_str() ));
+
+#ifdef WITH_CHAMPLAIN
+        PD_RDFLocation* newItem = s_SemanticItemFactory->createLocation( rdf, it, isGeo84 );
+        PD_RDFLocationHandle h( newItem );
+        ret.push_back( h );
+#else
+    UT_UNUSED( isGeo84 );
+#endif
+    }
+    return ret;
+}
+
+
+PD_RDFLocations
+PD_DocumentRDF::getLocations( PD_RDFModelHandle alternateModel )
+{
+    PD_RDFLocations ret;
+    addLocations( ret, false,
+                  " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \n"
+                  " prefix foaf: <http://xmlns.com/foaf/0.1/>  \n"
+                  " prefix dc:   <http://purl.org/dc/elements/1.1/> \n"
+                  " prefix cal:  <http://www.w3.org/2002/12/cal/icaltzd#>  \n"
+                  " select distinct ?geo ?long ?lat ?joiner ?desc \n"
+                  " where {  \n"
+                  "               ?ev cal:geo ?geo . \n"
+                  "               ?geo rdf:first ?lat . \n"
+                  "               ?geo rdf:rest ?joiner . \n"
+                  "               ?joiner rdf:first ?long \n"
+                  "               OPTIONAL { ?geo dc:title ?desc } \n"
+                  "  } \n", alternateModel );
+    UT_DEBUGMSG(( "getLocations(1) ret.size:%ld\n", ret.size() ));
+    
+    addLocations( ret, true,
+                  " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
+                  " prefix dc:   <http://purl.org/dc/elements/1.1/> \n"
+                  " prefix foaf: <http://xmlns.com/foaf/0.1/>  \n"
+                  " prefix geo84: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n"
+                  "  \n"
+                  " select distinct ?geo ?long ?lat ?type ?desc \n"
+                  " where {  \n"
+                  "  \n"
+                  "        ?geo geo84:lat  ?lat . \n"
+                  "        ?geo geo84:long ?long \n"
+                  "        OPTIONAL { ?geo rdf:type ?type } \n"
+                  "        OPTIONAL { ?geo dc:title ?desc } \n"
+                  "  \n"
+                  " } \n", alternateModel );
+    UT_DEBUGMSG(( "getLocations(2) ret.size:%ld\n", ret.size() ));
+
+    return ret;
+}
 
 /****************************************/
 /****************************************/
@@ -5404,1261 +5655,3 @@ void PD_DocumentRDFMutation::rollback()
 }
 
 
-
-
-/////////////////////////////
-/////////////////////////////
-
-#ifdef TOOLKIT_GTK
-
-
-#include "xap_UnixDialogHelper.h"
-#include "GTKCommon.h"
-
-static void setEntry( GtkWidget* w, const std::string& v )
-{
-    if( v.empty() )
-        gtk_entry_set_text(GTK_ENTRY(w), "" );
-    else 
-        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
-}
-static void setEntry( GtkEntry* w, const std::string& v )
-{
-    if( v.empty() )
-        gtk_entry_set_text(GTK_ENTRY(w), "" );
-    else 
-        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
-}
-
-
-class ABI_EXPORT PD_RDFContactGTK : public PD_RDFContact
-{
-    GtkWidget* m_mainWidget;
-    GtkEntry* w_name;
-    GtkEntry* w_nick;
-    GtkEntry* w_email;
-    GtkEntry* w_homePage;
-    GtkEntry* w_imageUrl;
-    GtkEntry* w_phone;
-    GtkEntry* w_jabberID;
-    
-  public:
-    PD_RDFContactGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it )
-        : PD_RDFContact( rdf, it )
-        , w_jabberID(0)
-    {
-    }
-    
-    virtual ~PD_RDFContactGTK()
-    {
-        UT_DEBUGMSG(("~PD_RDFContactGTK() name:%s\n", m_name.c_str()));
-    }
-    
-    virtual void* createEditor();
-    virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
-    
-};
-
-
-void*
-PD_RDFContactGTK::createEditor()
-{
-#if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("pd_RDFContact.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("pd_RDFContact-2.ui");
-#endif
-    UT_DEBUGMSG(("createEditor()\n"));
-    
-	m_mainWidget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWidget"));
-	w_name     = GTK_ENTRY(gtk_builder_get_object(builder, "name"));
-	w_nick     = GTK_ENTRY(gtk_builder_get_object(builder, "nick"));
-	w_email    = GTK_ENTRY(gtk_builder_get_object(builder, "email"));
-	w_homePage = GTK_ENTRY(gtk_builder_get_object(builder, "homePage"));
-	w_imageUrl = GTK_ENTRY(gtk_builder_get_object(builder, "imageUrl"));
-	w_phone    = GTK_ENTRY(gtk_builder_get_object(builder, "phone"));
-
-    setEntry( w_name, m_name );
-    setEntry( w_nick, m_nick );
-    setEntry( w_email, m_email );
-    setEntry( w_homePage, m_homePage );
-    setEntry( w_imageUrl, m_imageUrl );
-    setEntry( w_phone, m_phone );
-    setEntry( w_jabberID, m_jabberID );
-
-    g_object_unref((GObject*)builder);
-    
-    return m_mainWidget;
-}
-
-
-
-void
-PD_RDFContactGTK::updateFromEditorData( PD_DocumentRDFMutationHandle m )
-{
-    if (m_linkingSubject.toString().empty())
-    {
-        std::string uuid = XAP_App::getApp()->createUUIDString();
-        m_linkingSubject = uuid;
-        UT_DEBUGMSG(("updateFromEditorData() linking subject was empty!\n" ));
-    }
-
-    UT_DEBUGMSG(("updateFromEditorData() name:%s new-name:%s ls:%s m_phone:%s w_phone:%s\n",
-                 m_name.c_str(), tostr(GTK_ENTRY(w_name)).c_str(),
-                 linkingSubject().c_str(),
-                 m_phone.c_str(),
-                 tostr(w_phone).c_str()
-                    ));
-    std::string predBase = "http://xmlns.com/foaf/0.1/";
-    setRDFType(   m, predBase + "Person" );
-    updateTriple( m, m_name,     tostr(GTK_ENTRY(w_name)), predBase + "name");
-    updateTriple( m, m_nick,     tostr(GTK_ENTRY(w_nick)), predBase + "nick");
-    updateTriple( m, m_email,    tostr(GTK_ENTRY(w_email)), predBase + "mbox");
-    updateTriple( m, m_homePage, tostr(GTK_ENTRY(w_homePage)), predBase + "homepage");
-    updateTriple( m, m_imageUrl, tostr(GTK_ENTRY(w_imageUrl)), predBase + "image");
-    updateTriple( m, m_phone,    tostr(GTK_ENTRY(w_phone)), predBase + "phone");
-    updateTriple( m, m_jabberID, tostr(GTK_ENTRY(w_jabberID)), predBase + "jabberid");
-    
-    if (getRDF())
-    {
-//        getRDF()->emitSemanticObjectUpdated(this);
-    }
-    
-}
-
-
-/******************************/
-/******************************/
-/******************************/
-
-
-class ABI_EXPORT PD_RDFEventGTK : public PD_RDFEvent
-{
-    GtkWidget* m_mainWidget;
-    GtkEntry* w_name;
-    GtkEntry* w_summary;
-    GtkEntry* w_location;
-    GtkEntry* w_desc;
-    GtkEntry* w_dtstart;
-    GtkEntry* w_dtend;
-    GtkEntry* w_uid;
-    
-  public:
-    PD_RDFEventGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it )
-        : PD_RDFEvent( rdf, it )
-    {}
-    
-    virtual ~PD_RDFEventGTK()
-    {}
-    
-    virtual void* createEditor();
-    virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
-};
-
-
-static void setEntry( GtkEntry* w, time_t v )
-{
-    UT_DEBUGMSG(("setEntry(time) v:%ld str:%s\n", v, toTimeString(v).c_str()));
-    gtk_entry_set_text(GTK_ENTRY(w), toTimeString(v).c_str());
-}
-
-void*
-PD_RDFEventGTK::createEditor()
-{
-#if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("pd_RDFEvent.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("pd_RDFEvent-2.ui");
-#endif
-    UT_DEBUGMSG(("createEditor()\n"));
-    
-	m_mainWidget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWidget"));
-//	w_name       = GTK_ENTRY(gtk_builder_get_object(builder, "name"));
-	w_summary    = GTK_ENTRY(gtk_builder_get_object(builder, "summary"));
-	w_location   = GTK_ENTRY(gtk_builder_get_object(builder, "location"));
-	w_desc       = GTK_ENTRY(gtk_builder_get_object(builder, "desc"));
-	w_dtstart    = GTK_ENTRY(gtk_builder_get_object(builder, "dtstart"));
-	w_dtend      = GTK_ENTRY(gtk_builder_get_object(builder, "dtend"));
-
-//    setEntry( w_name,     m_name );
-    setEntry( w_summary,  m_summary );
-    setEntry( w_location, m_location );
-    setEntry( w_desc,     m_desc );
-    setEntry( w_dtstart,  m_dtstart );
-    setEntry( w_dtend,    m_dtend );
-
-    g_object_unref((GObject*)builder);
-    
-    return m_mainWidget;
-}
-
-
-
-void
-PD_RDFEventGTK::updateFromEditorData( PD_DocumentRDFMutationHandle m )
-{
-    if (m_linkingSubject.toString().empty())
-    {
-        std::string uuid = XAP_App::getApp()->createUUIDString();
-        m_linkingSubject = uuid;
-    }
-
-    // UT_DEBUGMSG(("updateFromEditorData() name:%s new-name:%s\n",
-    //              m_name.c_str(), tostr(GTK_ENTRY(w_name)).c_str() ));
-    
-    std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
-    setRDFType(   m, predBase + "Vevent" );
-    updateTriple( m, m_uid,      m_uid, predBase + "uid");
-//    updateTriple( m, m_name,       tostr(GTK_ENTRY(w_name)),    predBase + "name");
-    updateTriple( m, m_summary,    tostr(GTK_ENTRY(w_summary)), predBase + "summary");
-    updateTriple( m, m_location,   tostr(GTK_ENTRY(w_location)),predBase + "location");
-    updateTriple( m, m_desc,       tostr(GTK_ENTRY(w_desc)),    predBase + "description");
-//    updateTriple( m, m_uid,        tostr(GTK_ENTRY(w_uid)),     predBase + "uid");
-    updateTriple( m, m_dtstart,    parseTimeString(tostr(GTK_ENTRY(w_dtstart))), predBase + "dtstart");
-    updateTriple( m, m_dtend,      parseTimeString(tostr(GTK_ENTRY(w_dtend))),   predBase + "dtend");
-    
-    if (getRDF())
-    {
-//        getRDF()->emitSemanticObjectUpdated(this);
-    }
-    
-}
-
-/******************************/
-/******************************/
-/******************************/
-
-#ifdef WITH_CHAMPLAIN
-#include <champlain/champlain.h>
-#include <champlain-gtk/champlain-gtk.h>
-#include <clutter-gtk/clutter-gtk.h>
-
-
-class ABI_EXPORT PD_RDFLocationGTK : public PD_RDFLocation
-{
-    GtkWidget* m_mainWidget;
-    GtkEntry* w_name;
-    GtkEntry* w_desc;
-    GtkEntry* w_dlat;
-    GtkEntry* w_dlong;
-    GtkWidget* w_map;
-    
-  public:
-    PD_RDFLocationGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it, bool isGeo84 = false )
-        : PD_RDFLocation( rdf, it, isGeo84 )
-    {
-    }
-    
-    virtual ~PD_RDFLocationGTK()
-    {}
-    
-    virtual void* createEditor();
-    virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
-
-    void OnMouseClick( ClutterActor *actor, ClutterButtonEvent *event );
-};
-
-static void setEntry( GtkEntry* w, double v )
-{
-    UT_DEBUGMSG(("setEntry(double) v:%f str:%s\n", v, tostr(v).c_str()));
-    gtk_entry_set_text(GTK_ENTRY(w), tostr(v).c_str());
-}
-
-
-static gboolean
-PD_RDFLocationGTK_OnMouseClick_cb( ClutterActor *actor, ClutterButtonEvent *event, PD_RDFLocationGTK* obj )
-{
-    obj->OnMouseClick( actor, event );
-	return true;
-}
-static void
-PD_RDFLocationGTK_AnimationCompleted_cb( ChamplainView * /*view*/, 
-										 PD_RDFLocationGTK* obj ) 
-{
-    obj->OnMouseClick( 0, 0 );
-}
-
-static void
-PD_RDFLocationGTK_LatLon_cb( ChamplainView * /*view*/, 
-							 GParamSpec * /*gobject*/, PD_RDFLocationGTK* obj ) 
-{
-    obj->OnMouseClick( 0, 0 );
-}
-
-                                         
-void
-PD_RDFLocationGTK::OnMouseClick( ClutterActor * /*actor*/, 
-								 ClutterButtonEvent * /*event*/ )
-{
-    gdouble lat, lon;
-
-    ChamplainView* view = gtk_champlain_embed_get_view ( GTK_CHAMPLAIN_EMBED(w_map) );
-    
-    lat = champlain_view_get_center_latitude( view );
-    lon = champlain_view_get_center_longitude( view );
-
-    UT_DEBUGMSG(("OnMouseClick() lat:%f lon:%f\n", lat, lon ));
-    
-    setEntry( w_dlat,  lat );
-    setEntry( w_dlong, lon );
-}
-
-void*
-PD_RDFLocationGTK::createEditor()
-{
-    UT_DEBUGMSG(("PD_RDFLocationGTK::createEditor()\n" ));
-    
-#if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("pd_RDFLocation.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("pd_RDFLocation-2.ui");
-#endif
-    UT_DEBUGMSG(("createEditor(loc)\n"));
-
-#ifdef WITH_CHAMPLAIN
-
-    GtkWidget* map = gtk_champlain_embed_new ();
-    gtk_widget_set_size_request (map, 640, 480);
-    w_map = map;
-    
-    ChamplainView* champ = gtk_champlain_embed_get_view ( GTK_CHAMPLAIN_EMBED(map) );
-    champlain_view_go_to( champ, m_dlat, m_dlong );
-    champlain_view_set_zoom_level ( champ, 8 );
-    clutter_actor_set_reactive (CLUTTER_ACTOR (champ), TRUE);
-    g_signal_connect (champ, "button-release-event", G_CALLBACK (PD_RDFLocationGTK_OnMouseClick_cb), this );
-//    g_signal_connect (champ, "animation-completed",  G_CALLBACK (PD_RDFLocationGTK_AnimationCompleted_cb), this );
-    g_signal_connect (champ, "notify::latitude",     G_CALLBACK (PD_RDFLocationGTK_LatLon_cb), this );
-    g_signal_connect (champ, "notify::longitude",    G_CALLBACK (PD_RDFLocationGTK_LatLon_cb), this );
-
-    gtk_box_pack_start (
-                GTK_BOX(gtk_builder_get_object(builder, "mapbox")),
-                GTK_WIDGET(map), TRUE, TRUE, 0);
-    
-#endif
-    
-	m_mainWidget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWidget"));
-	w_name       = GTK_ENTRY(gtk_builder_get_object(builder, "name"));
-	w_desc       = GTK_ENTRY(gtk_builder_get_object(builder, "desc"));
-	w_dlat       = GTK_ENTRY(gtk_builder_get_object(builder, "lat"));
-	w_dlong      = GTK_ENTRY(gtk_builder_get_object(builder, "long"));
-
-    setEntry( w_name,     m_name );
-    setEntry( w_desc,     m_desc );
-    setEntry( w_dlat,     m_dlat );
-    setEntry( w_dlong,    m_dlong );
-
-    g_object_unref((GObject*)builder);
-    
-    return m_mainWidget;
-}
-
-
-
-void
-PD_RDFLocationGTK::updateFromEditorData( PD_DocumentRDFMutationHandle m )
-{
-    std::string dcBase   = "http://purl.org/dc/elements/1.1/";
-    std::string rdfBase  = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    std::string predBase = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-    
-    if (m_linkingSubject.toString().empty())
-    {
-        std::string uuid = XAP_App::getApp()->createUUIDString();
-        m_linkingSubject = uuid;
-    }
-    if (!m_isGeo84)
-    {
-        if (m_joiner.empty())
-        {
-            std::string tmp = "";
-            m_joiner = PD_Object( XAP_App::getApp()->createUUIDString() );
-            m->add( linkingSubject(), PD_URI(rdfBase + "rest"), m_joiner );
-        }
-    }
-
-//    updateTriple( m, m_name, tostr(GTK_ENTRY(w_name)),    dcBase + "name");
-    updateTriple( m, m_desc, tostr(GTK_ENTRY(w_desc)),    dcBase + "title");
-
-    double newLat  = toType<double>(tostr(GTK_ENTRY(w_dlat)));
-    double newLong = toType<double>(tostr(GTK_ENTRY(w_dlong)));
-    if (m_isGeo84)
-    {
-        std::string wgs84Base = "http://www.w3.org/2003/01/geo/wgs84_pos#";
-//        setRDFType( m, "uri:geo84");
-        updateTriple( m, m_dlat,     newLat,  wgs84Base + "lat");
-        updateTriple( m, m_dlong,    newLong, wgs84Base + "long");
-        
-    }
-    else
-    {
-//        setRDFType( m, "uri:rdfcal-geolocation");
-        updateTriple( m, m_dlat,     newLat,  rdfBase + "first", linkingSubject());
-        updateTriple( m, m_dlong,    newLong, rdfBase + "first", m_joiner);
-        
-    }
-    
-    if (getRDF())
-    {
-//        getRDF()->emitSemanticObjectUpdated(this);
-    }
-}
-
-#endif
-
-
-/********************************************************************************/
-/********************************************************************************/
-/********************************************************************************/
-/********************************************************************************/
-
-enum {
-    COLUMN_REFDLG_NAME = 0,
-    NUM_REFDLG_COLUMNS
-};
-
-static void
-OnInsertReferenceBase( GtkWidget* dialog,
-                   GtkTreeView* tree,
-                   FV_View* pView )
-{
-    PD_Document* pDoc = pView->getDocument();
-    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-
-    std::string n = getSelectedText( GTK_TREE_VIEW (tree), COLUMN_REFDLG_NAME );
-    UT_DEBUGMSG(("clicked on: %s\n", n.c_str() ));
-
-    bool found = false;
-    PD_RDFContacts clist = rdf->getContacts();
-    for( PD_RDFContacts::iterator ci = clist.begin(); ci != clist.end(); ++ci )
-    {
-        PD_RDFContactHandle obj = *ci;
-        if( obj->name() == n )
-        {
-            obj->insert( pView );
-            found = true;
-            break;
-        }
-    }
-    if( found )
-        gtk_widget_destroy(dialog);
-
-}
-
-static void OnInsertReference( GtkDialog* d, gint /*response_id*/, gpointer user_data)
-{
-    UT_DEBUGMSG(("OnInsertReference()\n"));
-    FV_View* pView = (FV_View*)user_data;
-
-    GtkTreeView* tv = GTK_TREE_VIEW( g_object_get_data( G_OBJECT(d), G_OBJECT_TREEVIEW ));
-    OnInsertReferenceBase( GTK_WIDGET(d), tv, pView );
-}
-
-static void
-OnInsertReferenceDblClicked( GtkTreeView       * tree,
-                             GtkTreePath       * /*path*/,
-                             GtkTreeViewColumn * /*col*/,
-                             gpointer		    user_data )
-{
-    FV_View* pView = (FV_View*)user_data;
-
-    GtkWidget* d = GTK_WIDGET(g_object_get_data( G_OBJECT(tree), G_OBJECT_WINDOW ));
-    OnInsertReferenceBase( d, tree, pView );
-}
-
-
-std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
-{
-	GtkBuilder* builder = newDialogBuilder("pd_RDFInsertReference.ui");
-	GtkWidget*  window  = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
-	GtkWidget*  tv      = GTK_WIDGET(gtk_builder_get_object(builder, "tv"));
-
-    PD_Document* pDoc = pView->getDocument();
-    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-
-    {
-        GtkTreeStore *store = gtk_tree_store_new ( NUM_REFDLG_COLUMNS, G_TYPE_STRING );
-        gtk_tree_view_set_model (GTK_TREE_VIEW (tv), GTK_TREE_MODEL (store));
-        g_object_unref (G_OBJECT (store));
-    }
-    
-	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
-
-	GtkTreeViewColumn *column = NULL;
-	GtkCellRenderer *renderer = NULL;
-	renderer = gtk_cell_renderer_text_new ();
-	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (tv),
-                                                 -1, "Name", renderer,
-                                                 "text", COLUMN_REFDLG_NAME,
-												NULL);
-	column = gtk_tree_view_get_column (GTK_TREE_VIEW (tv), COLUMN_REFDLG_NAME );
-	gtk_tree_view_column_set_sort_column_id (column, COLUMN_REFDLG_NAME );
-    
-    PD_RDFContacts l = rdf->getContacts();
-    GtkTreeIter giter;
-    GtkTreeIter parentiter;
-    gtk_tree_store_append (GTK_TREE_STORE (model), &parentiter, 0);
-    gtk_tree_store_set (GTK_TREE_STORE (model), &parentiter, 
-                        COLUMN_REFDLG_NAME, "(Contacts)",
-                        -1);
-    
-    for( PD_RDFContacts::iterator iter = l.begin(); iter != l.end(); ++iter )
-    {
-        PD_RDFContactHandle c = *iter;
-        gtk_tree_store_append (GTK_TREE_STORE (model), &giter, &parentiter );
-        gtk_tree_store_set (GTK_TREE_STORE (model), &giter, 
-                            COLUMN_REFDLG_NAME, c->name().c_str(),
-                            -1);
-
-    }
-    gtk_tree_view_expand_all(GTK_TREE_VIEW(tv));
-    g_object_set_data( G_OBJECT(tv),     G_OBJECT_WINDOW,   window );
-    g_object_set_data( G_OBJECT(window), G_OBJECT_TREEVIEW, tv );
-    
-	g_signal_connect (GTK_TREE_VIEW (tv), "row-activated", 
-					  G_CALLBACK (OnInsertReferenceDblClicked), static_cast <gpointer>(pView));
-    g_signal_connect (G_OBJECT(window), "response",  G_CALLBACK(OnInsertReference), pView );
-    gtk_widget_show_all (window);
-
-    std::pair< PT_DocPosition, PT_DocPosition > ret;
-    return ret;
-}
-
-
-/********************************************************************************/
-/********************************************************************************/
-/********************************************************************************/
-/********************************************************************************/
-
-static void
-OnSemanticStylesheetsDialogResponse( GtkWidget* dialog,
-                                     GtkTreeView* /*tree*/,
-                                     FV_View* pView )
-{
-    PD_Document* pDoc = pView->getDocument();
-    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-    gtk_widget_destroy(dialog);
-}
-
-
-static void
-ApplySemanticStylesheets( const std::string& semItemClassRestriction,
-                          const std::string& ssName )
-{
-    // set the RDF linking to the stylesheets
-    std::list< AD_Document* > dl = XAP_App::getApp()->getDocuments();
-    for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
-    {
-        PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
-        pDoc->beginUserAtomicGlob();
-        
-        PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-        PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects( semItemClassRestriction );
-
-        for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
-        {
-            PD_RDFSemanticItemHandle si = *siter;
-            PD_RDFSemanticStylesheetHandle ss = si->findStylesheetByName(
-                PD_RDFSemanticStylesheet::stylesheetTypeSystem(), ssName );
-
-            std::set< std::string > xmlids = si->getXMLIDs();
-            for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
-            {
-                std::string xmlid = *xiter;
-                PD_RDFSemanticItemViewSite vs( si, xmlid );
-                vs.setStylesheetWithoutReflow( ss );
-            }
-        }
-        pDoc->endUserAtomicGlob();
-    }
-
-    UT_DEBUGMSG(("ApplySemanticStylesheets(reflowing)\n" ));
-
-    // reflow all the viewsites
-    for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
-    {
-        PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
-        pDoc->beginUserAtomicGlob();
-        pDoc->notifyPieceTableChangeStart();
-        pDoc->setDontImmediatelyLayout(true);
-        
-        PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-        PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects( semItemClassRestriction );
-
-        std::list<AV_View*> vl = pDoc->getAllViews();
-        for( std::list<AV_View*>::iterator viter = vl.begin(); viter != vl.end(); ++viter )
-        {
-            FV_View* pView = dynamic_cast<FV_View*>(*viter);
-
-            for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
-            {
-                PD_RDFSemanticItemHandle si = *siter;
-                std::set< std::string > xmlids = si->getXMLIDs();
-                for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
-                {
-                    std::string xmlid = *xiter;
-                    PD_RDFSemanticItemViewSite vs( si, xmlid );
-                    vs.reflowUsingCurrentStylesheet( pView );
-                }
-            }
-            break;
-        }
-        
-        pDoc->setDontImmediatelyLayout(false);
-        pDoc->notifyPieceTableChangeEnd();
-        pDoc->endUserAtomicGlob();
-    }
-
-    UT_DEBUGMSG(("ApplySemanticStylesheets(done)\n" ));
-}
-
-
-static gboolean
-OnSemanticStylesheetsSetContacts_cb( GtkWidget* /*w*/, GdkEvent* /*event*/, 
-									 GtkComboBoxText *combo_box )
-{
-    const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
-    std::string ssName = t ? t : "name";
-
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() ssName:%s\n", ssName.c_str() ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() combo:%p\n", combo_box ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() t:%s\n", t ));
-
-    ApplySemanticStylesheets( "Contact", ssName );
-    
-    // // set the RDF linking to the stylesheets
-    // std::list< AD_Document* > dl = XAP_App::getApp()->getDocuments();
-    // for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
-    // {
-    //     PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
-    //     PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-    //     PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects("Contact");
-
-    //     for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
-    //     {
-    //         PD_RDFSemanticItemHandle si = *siter;
-    //         PD_RDFSemanticStylesheetHandle ss = si->findStylesheetByName(
-    //             PD_RDFSemanticStylesheet::stylesheetTypeSystem(), ssName );
-
-    //         std::set< std::string > xmlids = si->getXMLIDs();
-    //         for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
-    //         {
-    //             std::string xmlid = *xiter;
-    //             PD_RDFSemanticItemViewSite vs( si, xmlid );
-    //             vs.setStylesheetWithoutReflow( ss );
-    //         }
-    //     }
-    // }
-
-    // // reflow all the viewsites
-    // for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
-    // {
-    //     PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
-    //     PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-    //     PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects("Contact");
-
-    //     std::list<AV_View*> vl = pDoc->getAllViews();
-    //     for( std::list<AV_View*>::iterator viter = vl.begin(); viter != vl.end(); ++viter )
-    //     {
-    //         FV_View* pView = dynamic_cast<FV_View*>(*viter);
-
-    //         for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
-    //         {
-    //             PD_RDFSemanticItemHandle si = *siter;
-    //             std::set< std::string > xmlids = si->getXMLIDs();
-    //             for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
-    //             {
-    //                 std::string xmlid = *xiter;
-    //                 PD_RDFSemanticItemViewSite vs( si, xmlid );
-    //                 vs.reflowUsingCurrentStylesheet( pView );
-    //             }
-    //         }
-    //         break;
-    //     }
-        
-    // }
-    
-    
-    return false;
-}
-
-
-static gboolean
-OnSemanticStylesheetsSetEvents_cb( GtkWidget* /*w*/, GdkEvent* /*event*/, 
-								   GtkComboBoxText *combo_box )
-{
-    const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
-    std::string ssName = t ? t : "name";
-
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() ssName:%s\n", ssName.c_str() ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() combo:%p\n", combo_box ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() t:%s\n", t ));
-
-    ApplySemanticStylesheets( "Event", ssName );
-    return false;
-}
-
-static gboolean
-OnSemanticStylesheetsSetLocations_cb( GtkWidget* /*w*/, GdkEvent* /*event*/, 
-									  GtkComboBoxText *combo_box )
-{
-    const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
-    std::string ssName = t ? t : "name";
-
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() ssName:%s\n", ssName.c_str() ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() combo:%p\n", combo_box ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() t:%s\n", t ));
-
-    ApplySemanticStylesheets( "Location", ssName );
-    return false;
-}
-
-void runSemanticStylesheetsDialog( FV_View* pView )
-{
-	GtkBuilder* builder   = newDialogBuilder("ap_UnixDialog_SemanticStylesheets.ui");
-	GtkWidget*  window    = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
-	GtkWidget*  contacts  = GTK_WIDGET(gtk_builder_get_object(builder, "contacts"));
-	GtkWidget*  events    = GTK_WIDGET(gtk_builder_get_object(builder, "events"));
-	GtkWidget*  locations = GTK_WIDGET(gtk_builder_get_object(builder, "locations"));
-	GtkWidget*  setContacts  = GTK_WIDGET(gtk_builder_get_object(builder, "setContacts"));
-	GtkWidget*  setEvents    = GTK_WIDGET(gtk_builder_get_object(builder, "setEvents"));
-	GtkWidget*  setLocations = GTK_WIDGET(gtk_builder_get_object(builder, "setLocations"));
-	GtkWidget*  setAll       = GTK_WIDGET(gtk_builder_get_object(builder, "setAll"));
-
-    PD_Document* pDoc = pView->getDocument();
-    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-
-    UT_DEBUGMSG(("runSemanticStylesheetsDialog_cb() combo:%p\n", contacts ));
-    g_signal_connect (setContacts,  "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  contacts );
-    g_signal_connect (setEvents,    "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    events );
-    g_signal_connect (setLocations, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), locations );
-
-    g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  contacts );
-    g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    events );
-    g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), locations );
-    
-    
-    
-    g_signal_connect (G_OBJECT(window), "response",  G_CALLBACK(OnSemanticStylesheetsDialogResponse), pView );
-    gtk_widget_show_all (window);
-    
-}
-
-
-/********************************************************************************/
-/********************************************************************************/
-/********************************************************************************/
-
-
-PD_RDFSemanticItemHandle
-PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf, const std::string& semanticClass )
-{
-    PD_ResultBindings_t b;
-    b.push_back( std::map< std::string, std::string >() );
-    PD_ResultBindings_t::iterator it = b.begin();
-    return createSemanticItem( rdf, it, semanticClass );
-}
-
-PD_RDFSemanticItemHandle
-PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf,
-                                        PD_ResultBindings_t::iterator it,
-                                        const std::string& semanticClass )
-{
-    if (semanticClass == "Contact")
-    {
-        return PD_RDFSemanticItemHandle( new PD_RDFContactGTK( rdf, it ));
-    }
-    if (semanticClass == "Event")
-    {
-        return PD_RDFSemanticItemHandle( new PD_RDFEventGTK( rdf, it ));
-    }
-#ifdef WITH_CHAMPLAIN
-    if (semanticClass == "Location")
-    {
-        return PD_RDFSemanticItemHandle( new PD_RDFLocationGTK( rdf, it ));
-    }
-#endif
-    return PD_RDFSemanticItemHandle();
-}
-
-PD_RDFContacts
-PD_DocumentRDF::getContacts( PD_RDFModelHandle alternateModel )
-{
-    PD_RDFModelHandle m = alternateModel;
-    if( !m )
-        m = getDocument()->getDocumentRDF();
-
-    PD_RDFContacts ret;
-    std::stringstream sparqlQuery;
-    sparqlQuery << "prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
-                << "prefix foaf: <http://xmlns.com/foaf/0.1/> \n"
-                << "prefix pkg: <http://docs.oasis-open.org/opendocument/meta/package/common#> \n"
-                << "select distinct ?person ?name ?nick ?email ?homepage ?img ?phone \n"
-                << "where { \n"
-                << "    ?person rdf:type foaf:Person . \n"
-                << "    ?person foaf:name ?name \n"
-                << "    OPTIONAL { ?person foaf:phone ?phone } \n"
-                << "    OPTIONAL { ?person foaf:mbox  ?email } \n"
-                << "    OPTIONAL { ?person foaf:nick ?nick } \n"
-                << "    OPTIONAL { ?person foaf:homepage ?homepage } \n"
-                << "    OPTIONAL { ?person foaf:img ?img } \n"
-                << "}\n";
-    UT_DEBUGMSG(("getContacts() sparql:\n%s\n\n", sparqlQuery.str().c_str() ));
-
-    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
-    PD_RDFQuery q( rdf, m );
-    PD_ResultBindings_t bindings = q.executeQuery( sparqlQuery.str() );
-    UT_DEBUGMSG(("getContacts() bindings.sz:%ld\n", bindings.size() ));
-    
-    // uniqfilter is needed because redland might not honour the
-    // DISTINCT sparql keyword
-    std::set<std::string> uniqfilter;
-    for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
-    {
-        std::string n = (*it)["name"];
-        if (uniqfilter.count(n))
-            continue;
-        uniqfilter.insert(n);
-
-        PD_RDFContact* newItem = new PD_RDFContactGTK( rdf, it );
-        PD_RDFContactHandle h( newItem );
-        ret.push_back( h );
-    }
-    
-    return ret;
-}
-
-
-PD_RDFEvents
-PD_DocumentRDF::getEvents( PD_RDFModelHandle alternateModel )
-{
-    PD_RDFModelHandle m = alternateModel;
-    if( !m )
-        m = getDocument()->getDocumentRDF();
-
-    PD_RDFEvents ret;
-    std::stringstream sparqlQuery;
-    sparqlQuery << " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
-                << " prefix foaf: <http://xmlns.com/foaf/0.1/>  \n"
-                << " prefix cal:  <http://www.w3.org/2002/12/cal/icaltzd#>  \n"
-                << " select distinct ?ev ?uid ?dtstart ?dtend ?summary ?location ?description ?geo ?long ?lat \n"
-                << " where {  \n"
-                << "    ?ev rdf:type cal:Vevent . \n"
-                << "    ?ev cal:uid      ?uid . \n"
-                << "    ?ev cal:dtstart  ?dtstart . \n"
-                << "    ?ev cal:dtend    ?dtend \n"
-                << "    OPTIONAL { ?ev cal:summary  ?summary  } \n"
-                << "    OPTIONAL { ?ev cal:location ?location } \n"
-                << "    OPTIONAL { ?ev cal:description ?description } \n"
-                << "    OPTIONAL {  \n"
-                << "               ?ev cal:geo ?geo . \n"
-                << "               ?geo rdf:first ?lat . \n"
-                << "               ?geo rdf:rest ?joiner . \n"
-                << "               ?joiner rdf:first ?long \n"
-                << "              } \n"
-                << "  } \n";
-    
-    UT_DEBUGMSG(("getEvents() sparql:\n%s\n\n", sparqlQuery.str().c_str() ));
-
-    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
-    PD_RDFQuery q( rdf, m );
-    PD_ResultBindings_t bindings = q.executeQuery( sparqlQuery.str() );
-    UT_DEBUGMSG(("getEvents() bindings.sz:%ld\n", bindings.size() ));
-    
-    // uniqfilter is needed because redland might not honour the
-    // DISTINCT sparql keyword
-    std::set<std::string> uniqfilter;
-    for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
-    {
-        std::string n = (*it)["uid"];
-        if (uniqfilter.count(n))
-            continue;
-        uniqfilter.insert(n);
-
-        PD_RDFEvent* newItem = new PD_RDFEventGTK( rdf, it );
-        PD_RDFEventHandle h( newItem );
-        ret.push_back( h );
-    }
-    
-    return ret;
-}
-
-
-PD_RDFLocations&
-PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
-                              bool isGeo84,
-                              const std::string sparql,
-                              PD_RDFModelHandle /*alternateModel*/ )
-{
-    PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
-    PD_RDFQuery q( rdf, rdf );
-    PD_ResultBindings_t bindings = q.executeQuery( sparql );
-    UT_DEBUGMSG(("addLocations() bindings.sz:%ld sparql\n%s\n", bindings.size(), sparql.c_str() ));
-    std::set<std::string> uniqfilter;
-    for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
-    {
-        std::string n = (*it)["lat"];
-        if (uniqfilter.count(n))
-            continue;
-        uniqfilter.insert(n);
-        UT_DEBUGMSG(("addLocations() n:%s\n", n.c_str() ));
-
-#ifdef WITH_CHAMPLAIN
-        PD_RDFLocation* newItem = new PD_RDFLocationGTK( rdf, it, isGeo84 );
-        PD_RDFLocationHandle h( newItem );
-        ret.push_back( h );
-#else
-    UT_UNUSED( isGeo84 );
-#endif
-    }
-    return ret;
-}
-
-
-PD_RDFLocations
-PD_DocumentRDF::getLocations( PD_RDFModelHandle alternateModel )
-{
-    PD_RDFLocations ret;
-    addLocations( ret, false,
-                  " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#>  \n"
-                  " prefix foaf: <http://xmlns.com/foaf/0.1/>  \n"
-                  " prefix dc:   <http://purl.org/dc/elements/1.1/> \n"
-                  " prefix cal:  <http://www.w3.org/2002/12/cal/icaltzd#>  \n"
-                  " select distinct ?geo ?long ?lat ?joiner ?desc \n"
-                  " where {  \n"
-                  "               ?ev cal:geo ?geo . \n"
-                  "               ?geo rdf:first ?lat . \n"
-                  "               ?geo rdf:rest ?joiner . \n"
-                  "               ?joiner rdf:first ?long \n"
-                  "               OPTIONAL { ?geo dc:title ?desc } \n"
-                  "  } \n", alternateModel );
-    UT_DEBUGMSG(( "getLocations(1) ret.size:%ld\n", ret.size() ));
-    
-    addLocations( ret, true,
-                  " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
-                  " prefix dc:   <http://purl.org/dc/elements/1.1/> \n"
-                  " prefix foaf: <http://xmlns.com/foaf/0.1/>  \n"
-                  " prefix geo84: <http://www.w3.org/2003/01/geo/wgs84_pos#> \n"
-                  "  \n"
-                  " select distinct ?geo ?long ?lat ?type ?desc \n"
-                  " where {  \n"
-                  "  \n"
-                  "        ?geo geo84:lat  ?lat . \n"
-                  "        ?geo geo84:long ?long \n"
-                  "        OPTIONAL { ?geo rdf:type ?type } \n"
-                  "        OPTIONAL { ?geo dc:title ?desc } \n"
-                  "  \n"
-                  " } \n", alternateModel );
-    UT_DEBUGMSG(( "getLocations(2) ret.size:%ld\n", ret.size() ));
-
-    return ret;
-}
-
-
-#include "xap_Dialog_Id.h"
-#include "GTKCommon.h"
-
-std::string
-PD_RDFSemanticItem::getImportFromFileName( const std::string& filename_const,
-                                           std::list< std::pair< std::string, std::string> > types ) const
-{
-    std::string ret = filename_const;
-    
-    UT_runDialog_AskForPathname afp( XAP_DIALOG_ID_FILE_IMPORT );
-    if( !types.empty() )
-    {
-        std::list< std::pair< std::string, std::string> >::iterator iter = types.begin();
-        afp.setDefaultFiletype( iter->first, iter->second );
-    }
-    for( std::list< std::pair< std::string, std::string> >::iterator iter = types.begin();
-         iter != types.end(); ++iter )
-    {
-        afp.appendFiletype(    iter->first, iter->second );
-    }
-    
-    if( afp.run( XAP_App::getApp()->getLastFocussedFrame() ) )
-    {
-        ret = afp.getPath();
-        if( starts_with( ret, "file:" ))
-            ret = ret.substr( strlen("file:") );
-    }
-    return ret;
-}
-
-std::string
-PD_RDFSemanticItem::getExportToFileName( const std::string& filename_const,
-                                         std::string defaultExtension,
-                                         std::list< std::pair< std::string, std::string> > types ) const
-{
-    std::string filename = filename_const;
-    
-    if( filename.empty() )
-    {
-        UT_runDialog_AskForPathname afp( XAP_DIALOG_ID_FILE_EXPORT );
-        if( !types.empty() )
-        {
-            std::list< std::pair< std::string, std::string> >::iterator iter = types.begin();
-            afp.setDefaultFiletype( iter->first, iter->second );
-        }
-        for( std::list< std::pair< std::string, std::string> >::iterator iter = types.begin();
-             iter != types.end(); ++iter )
-        {
-            afp.appendFiletype(    iter->first, iter->second );
-        }
-        
-        if( afp.run( XAP_App::getApp()->getLastFocussedFrame() ) )
-        {
-            filename = afp.getPath();
-            if( starts_with( filename, "file:" ))
-                filename = filename.substr( strlen("file:") );
-            if( !ends_with( filename, defaultExtension ))
-                filename += defaultExtension;
-        }
-    }
-
-    return filename;
-}
-
-/******************************/
-/******************************/
-/******************************/
-
-
-struct G_OBJECT_SEMITEM_LIST
-{
-public:
-    PD_RDFSemanticItems cl;
-    G_OBJECT_SEMITEM_LIST( PD_RDFSemanticItems _cl )
-        : cl(_cl)
-    {
-    }
-};
-void GDestroyNotify_G_OBJECT_SEMITEM_LIST(gpointer data)
-{
-    struct G_OBJECT_SEMITEM_LIST* obj = (struct G_OBJECT_SEMITEM_LIST*)data;
-    delete obj;
-}
-static PD_RDFSemanticItems getSemItemListHandle(GtkDialog* d)
-{
-    struct G_OBJECT_SEMITEM_LIST* data = (struct G_OBJECT_SEMITEM_LIST*)g_object_get_data( G_OBJECT(d), G_OBJECT_SEMITEM_LIST );
-    return data->cl;
-}
-void OnSemItemListEdited ( GtkDialog* d, gint response_id, 
-						   gpointer /*user_data*/)
-{
-    UT_DEBUGMSG(("OnSemItemListEdited() response_id:%d\n", response_id ));
-    if( response_id != GTK_RESPONSE_DELETE_EVENT )
-    {
-        PD_RDFSemanticItems cl = getSemItemListHandle( d );
-        for( PD_RDFSemanticItems::iterator ci = cl.begin(); ci != cl.end(); ++ci )
-        {
-            PD_RDFSemanticItemHandle c = *ci;
-            c->updateFromEditorData();
-        }
-    }
-    gtk_widget_destroy( GTK_WIDGET(d) );
-}
-
-
-struct G_OBJECT_SEMITEM
-{
-public:
-    PD_RDFSemanticItemHandle h;
-    G_OBJECT_SEMITEM( PD_RDFSemanticItemHandle _h )
-        : h(_h)
-    {
-    }
-};
-void GDestroyNotify_G_OBJECT_SEMITEM(gpointer data)
-{
-    struct G_OBJECT_SEMITEM* obj = (struct G_OBJECT_SEMITEM*)data;
-    delete obj;
-}
-static PD_RDFSemanticItemHandle getHandle(GtkDialog* d)
-{
-    struct G_OBJECT_SEMITEM* data = (struct G_OBJECT_SEMITEM*)g_object_get_data( G_OBJECT(d), G_OBJECT_SEMITEM );
-    return data->h;
-}
-void OnSemItemEdited ( GtkDialog* d, gint /*response_id*/, 
-					   gpointer /*user_data*/)
-{
-    UT_DEBUGMSG(("OnSemItemEdited()\n"));
-    PD_RDFSemanticItemHandle h = getHandle( d );
-    h->updateFromEditorData();
-    gtk_widget_destroy( GTK_WIDGET(d) );
-}
-
-
-void
-PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItems cl )
-{
-    UT_DEBUGMSG(("showEditorWindow() list... sz:%ld\n", cl.size() ));
-
-    GtkWidget* d = gtk_dialog_new_with_buttons ("Message",
-                                                0,
-                                                GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                GTK_STOCK_OK,
-                                                GTK_RESPONSE_NONE,
-                                                NULL);
-    GtkNotebook* notebook = GTK_NOTEBOOK(gtk_notebook_new());
-    gtk_container_add( GTK_CONTAINER(gtk_dialog_get_content_area( GTK_DIALOG (d))),
-                       GTK_WIDGET(notebook) );
-    for( PD_RDFSemanticItems::iterator ci = cl.begin(); ci != cl.end(); ++ci )
-    {
-        PD_RDFSemanticItemHandle c = *ci;
-        GtkWidget* w = GTK_WIDGET(c->createEditor());
-        g_object_set_data_full( G_OBJECT(w),
-                                G_OBJECT_SEMITEM,
-                                new struct G_OBJECT_SEMITEM( c ),
-                                GDestroyNotify_G_OBJECT_SEMITEM );
-        g_object_set_data_full( G_OBJECT(d),
-                                G_OBJECT_SEMITEM,
-                                new struct G_OBJECT_SEMITEM( c ),
-                                GDestroyNotify_G_OBJECT_SEMITEM );
-
-        std::string label = c->getDisplayLabel();
-        gboolean homogeneous = false;
-        GtkWidget* container = gtk_vbox_new( homogeneous, 0 );
-        gtk_notebook_append_page( notebook, container, gtk_label_new( label.c_str() ));
-        gtk_widget_reparent( w, GTK_WIDGET( container));
-    }
-    g_object_set_data_full( G_OBJECT(d),
-                            G_OBJECT_SEMITEM_LIST,
-                            new struct G_OBJECT_SEMITEM_LIST( cl ),
-                            GDestroyNotify_G_OBJECT_SEMITEM_LIST );
-    g_signal_connect (G_OBJECT(d), "response",  G_CALLBACK(OnSemItemListEdited), 0 );
-    gtk_widget_show_all (d); 
-}
-
-
-void
-PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItemHandle c )
-{
-    UT_DEBUGMSG(("showEditorWindow() name:%s linksubj:%s\n",
-                 c->name().c_str(), c->linkingSubject().toString().c_str() ));
-    GtkWidget* d = gtk_dialog_new_with_buttons ("Message",
-                                                0,
-                                                GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                GTK_STOCK_OK,
-                                                GTK_RESPONSE_NONE,
-                                                NULL);
-    GtkWidget* w = GTK_WIDGET(c->createEditor());
-    g_object_set_data_full( G_OBJECT(w),
-                            G_OBJECT_SEMITEM,
-                            new struct G_OBJECT_SEMITEM( c ),
-                            GDestroyNotify_G_OBJECT_SEMITEM );
-    g_object_set_data_full( G_OBJECT(d),
-                            G_OBJECT_SEMITEM,
-                            new struct G_OBJECT_SEMITEM( c ),
-                            GDestroyNotify_G_OBJECT_SEMITEM );
-    gtk_widget_reparent( w, GTK_WIDGET( gtk_dialog_get_content_area( GTK_DIALOG (d))));
-    
-    g_signal_connect (G_OBJECT(d), "response",  G_CALLBACK(OnSemItemEdited), c.get() );
-    gtk_widget_show_all (d); 
-}
-
-void
-PD_RDFSemanticItem::importFromDataComplete( std::istream& iss,
-                                            PD_DocumentRDFHandle rdf,
-                                            PD_DocumentRDFMutationHandle m,
-                                            PD_DocumentRange * pDocRange )
-{
-    UT_UNUSED( iss );
-    
-    // Create and populate and editor with the current data,
-    // then update the Rdf from that editor.
-    GtkWidget* objectEditor = (GtkWidget*)createEditor();
-    updateFromEditorData( m );
-    gtk_widget_destroy( GTK_WIDGET(objectEditor) );
-
-    if (pDocRange)
-    {
-//        insert(host);
-    }
-
-    if (rdf)
-    {
-//        rdf->emitSemanticObjectAdded(this);
-    }
-    
-}
-
-
-#else
-
-
-PD_RDFSemanticItemHandle
-PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf, const std::string& semanticClass )
-{
-    return PD_RDFSemanticItemHandle();
-}
-PD_RDFSemanticItemHandle
-PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf,
-                                        PD_ResultBindings_t::iterator it,
-                                        const std::string& semanticClass )
-{
-    return PD_RDFSemanticItemHandle();
-}
-
-PD_RDFContacts
-PD_DocumentRDF::getContacts( PD_RDFModelHandle alternateModel )
-{
-    PD_RDFContacts ret;
-    return ret;
-}
-
-PD_RDFEvents
-PD_DocumentRDF::getEvents( PD_RDFModelHandle alternateModel )
-{
-    PD_RDFEvents ret;
-    return ret;
-}
-
-PD_RDFLocations&
-PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
-                              bool isGeo84,
-                              const std::string sparql,
-                              PD_RDFModelHandle alternateModel )
-{
-}
-
-PD_RDFLocations
-PD_DocumentRDF::getLocations( PD_RDFModelHandle alternateModel )
-{
-    PD_RDFLocations ret;
-    return ret;
-}
-
-std::string
-PD_RDFSemanticItem::getImportFromFileName( const std::string& filename_const,
-                                           std::list< std::pair< std::string, std::string> > types ) const
-{
-}
-
-std::string
-PD_RDFSemanticItem::getExportToFileName( const std::string& filename_const,
-                                         std::string defaultExtension,
-                                         std::list< std::pair< std::string, std::string> > types ) const
-{
-}
-
-
-
-void
-PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItems cl )
-{
-}
-
-void
-PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItemHandle c )
-{
-}
-
-void
-PD_RDFSemanticItem::importFromDataComplete( std::istream& iss,
-                                            PD_DocumentRDFHandle rdf,
-                                            PD_DocumentRDFMutationHandle m,
-                                            PD_DocumentRange * pDocRange )
-{
-}
-
-#endif

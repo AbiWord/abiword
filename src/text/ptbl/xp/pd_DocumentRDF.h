@@ -299,9 +299,7 @@ class ABI_EXPORT PD_RDFModel
     virtual uriToPrefix_t& getUriToPrefix();
 
 
-#ifdef DEBUG    
     virtual void dumpModel( const std::string& headerMsg = "dumpModel()" );
-#endif
 
     virtual PD_DocumentRDFMutationHandle createMutation() = 0;
     virtual std::string uriToPrefixed( const std::string& uri );
@@ -348,13 +346,13 @@ class ABI_EXPORT PD_RDFSemanticItem
     PD_URI               m_linkingSubject;
     typedef std::list< std::map< std::string, std::string > > PD_ResultBindings_t;
 
-    std::string getImportFromFileName( const std::string& filename_const,
-                                       std::list< std::pair< std::string, std::string> > types ) const;
+    virtual std::string getImportFromFileName( const std::string& filename_const,
+                                               std::list< std::pair< std::string, std::string> > types ) const;
     virtual std::list< std::pair< std::string, std::string> > getImportTypes() const;
 
-    std::string getExportToFileName( const std::string& filename_const,
-                                     std::string defaultExtension,
-                                     std::list< std::pair< std::string, std::string> > types ) const;
+    virtual std::string getExportToFileName( const std::string& filename_const,
+                                             std::string defaultExtension,
+                                             std::list< std::pair< std::string, std::string> > types ) const;
     virtual std::list< std::pair< std::string, std::string> > getExportTypes() const;
     virtual std::string getDefaultExtension() const;
     std::string getProperty( std::string subj, std::string pred, std::string defVal ) const;
@@ -434,8 +432,8 @@ class ABI_EXPORT PD_RDFSemanticItem
      /**
       * Create a top level dialog allowing the user to edit this semitem
       */
-     static void showEditorWindow( PD_RDFSemanticItemHandle c );
-     static void showEditorWindow( PD_RDFSemanticItems cl );
+     virtual void showEditorWindow( PD_RDFSemanticItemHandle c );
+     virtual void showEditorWindow( PD_RDFSemanticItems cl );
 
      /**
       * Update the SemanticItem from the edited dialog that was created using
@@ -930,8 +928,27 @@ private:
 /**
  * Insert a reference to a semenatic item
  */
-std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView );
-void runSemanticStylesheetsDialog( FV_View* pView );
+ABI_EXPORT std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView );
+ABI_EXPORT void runSemanticStylesheetsDialog( FV_View* pView );
+
+
+class ABI_EXPORT PD_SemanticItemFactory
+{
+  public:
+    typedef std::list< std::map< std::string, std::string > > PD_ResultBindings_t;
+    virtual PD_RDFContact*  createContact( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it ) = 0;
+    virtual PD_RDFEvent*    createEvent( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it ) = 0;
+    virtual PD_RDFLocation* createLocation( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it,
+                                            bool isGeo84 = false ) = 0;
+};
+
+class ABI_EXPORT PD_RDFDialogs
+{
+  public:
+    virtual void runSemanticStylesheetsDialog( FV_View* pView ) = 0;
+    virtual std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView ) = 0;
+};
+
 
 
 /**
@@ -1024,7 +1041,16 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     PD_RDFEvents    getEvents( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
     PD_RDFLocations getLocations( PD_RDFModelHandle alternateModel = PD_RDFModelHandle((PD_RDFModel*)0) );
     void selectXMLIDs( const std::set< std::string >& xmlids, FV_View* pView = 0 ) const;
-        
+
+
+    void showEditorWindow( PD_RDFSemanticItems cl );
+
+    
+    // GTK, win32, osx, whatever backends can call this method to allow the correct
+    // subclasses to be made for the runtime environment.
+    static void setSemanticItemFactory( PD_SemanticItemFactory* f );
+    static void setRDFDialogs( PD_RDFDialogs* d );
+
   protected:
     PD_Document* m_doc;
   private:
