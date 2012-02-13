@@ -298,8 +298,10 @@ class ABI_EXPORT PD_RDFModel
     typedef stringmap_t uriToPrefix_t;
     virtual uriToPrefix_t& getUriToPrefix();
 
-    
+
+#ifdef DEBUG    
     virtual void dumpModel( const std::string& headerMsg = "dumpModel()" );
+#endif
 
     virtual PD_DocumentRDFMutationHandle createMutation() = 0;
     virtual std::string uriToPrefixed( const std::string& uri );

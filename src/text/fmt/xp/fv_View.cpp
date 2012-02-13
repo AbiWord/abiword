@@ -6231,7 +6231,7 @@ bool FV_View::getSectionFormat(const gchar ***pProps) const
 // Check we have a layout defined first. On start up we don't
 //
 	bool b = m_SecProps.isValid();
-	if((AV_View::getTick() == m_SecProps.getTick()) && m_SecProps.isValid())
+	if((AV_View::getTick() == m_SecProps.getTick()) && b)
 	{
 		xxx_UT_DEBUGMSG(("GOt a valid cache for section props \n"));
 		*pProps = m_SecProps.getCopyOfProps();

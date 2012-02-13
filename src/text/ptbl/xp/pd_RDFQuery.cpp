@@ -134,10 +134,12 @@ struct abiwordContext
         m_model = m;
     }
 
+#ifdef DEBUG
     void dump( const std::string& s )
     {
         m_model->dumpModel( s );
     }
+#endif
 };
 
 

@@ -273,6 +273,7 @@ PD_RDFModel::contains( const PD_URI& s, const PD_URI& p )
     return u.isValid();
 }
 
+#ifdef DEBUG
 void
 PD_RDFModel::dumpModel( const std::string& headerMsg )
 {
@@ -293,7 +294,7 @@ PD_RDFModel::dumpModel( const std::string& headerMsg )
     UT_DEBUGMSG(("PD_RDFModel::dumpModel() --- done -------------------------\n"));
     
 }
-
+#endif
 
 std::string
 PD_RDFModel::uriToPrefixed( const std::string& uri )
