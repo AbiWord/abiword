@@ -182,7 +182,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title,s);
-	abiDialogSetTitle(window, s.utf8_str());
+	abiDialogSetTitle(window, "%s", s.utf8_str());
 
 	// disable double buffering on our preview
 	gtk_widget_set_double_buffered(m_previewArea, FALSE);  

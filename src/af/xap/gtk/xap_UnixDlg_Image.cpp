@@ -534,7 +534,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	
     std::string s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title,s);
-	abiDialogSetTitle(mMainWindow, s.c_str());
+	abiDialogSetTitle(mMainWindow, "%s", s.c_str());
 
     localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescTab")), pSS, XAP_STRING_ID_DLG_Image_DescTabLabel);
     localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbWrapTab")), pSS, XAP_STRING_ID_DLG_Image_WrapTabLabel);

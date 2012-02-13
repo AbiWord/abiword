@@ -541,7 +541,7 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	
 	// set the dialog title
 	ConstructWindowName();
-	abiDialogSetTitle(window, m_WindowName);
+	abiDialogSetTitle(window, "%s", m_WindowName);
 	
 	// disable double buffering on our preview
 	gtk_widget_set_double_buffered(m_wPreviewArea, FALSE); 	

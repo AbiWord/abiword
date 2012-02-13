@@ -165,7 +165,7 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	// set the dialog title
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Annotation_Title,s);
-	abiDialogSetTitle(window, s.c_str());	
+	abiDialogSetTitle(window, "%s", s.c_str());
 	
 	// localize the strings in our dialog, and set some userdata for some widgets
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, AP_STRING_ID_DLG_Annotation_Title_LBL);

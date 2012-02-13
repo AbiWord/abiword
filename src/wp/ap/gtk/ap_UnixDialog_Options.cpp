@@ -212,7 +212,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
     pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
-    abiDialogSetTitle ( dlg, s.utf8_str() );
+    abiDialogSetTitle ( dlg, "%s", s.utf8_str() );
 
     colorsel = WID ( "csColorSel" );
 
@@ -537,7 +537,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
     // set the dialog title
     std::string s;
     pSS->getValueUTF8(AP_STRING_ID_DLG_Options_OptionsTitle, s);
-    abiDialogSetTitle(mainWindow, s.c_str());
+    abiDialogSetTitle(mainWindow, "%s", s.c_str());
 
     // the control buttons
     g_signal_connect ( G_OBJECT ( m_buttonDefaults ),

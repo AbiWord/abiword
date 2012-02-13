@@ -301,7 +301,7 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle_Capital,s);
-	abiDialogSetTitle(window, s.utf8_str());	
+	abiDialogSetTitle(window, "%s", s.utf8_str());
 	
 	// localize the strings in our dialog, and set some userdata for some widg
 

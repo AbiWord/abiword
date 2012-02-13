@@ -376,7 +376,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	// set the dialog title
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Title,s);
-	abiDialogSetTitle(window, s.c_str());
+	abiDialogSetTitle(window, "%s", s.c_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	

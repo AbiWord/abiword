@@ -365,7 +365,7 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Title,s);
-	abiDialogSetTitle(m_windowMain, s.utf8_str());
+	abiDialogSetTitle(m_windowMain, "%s", s.utf8_str());
 
 // localize notebook tabs
 	localizeLabel(_getWidget( "lbGeneral"), pSS, AP_STRING_ID_DLG_FormatTOC_General);

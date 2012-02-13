@@ -833,7 +833,7 @@ void messageBoxOK(const char * message)
 						   GTK_DIALOG_MODAL,
 						   GTK_MESSAGE_INFO,
 						   GTK_BUTTONS_OK,
-						   message ) ;
+						   "%s", message ) ;
 
 	gtk_window_set_title(GTK_WINDOW(msg), "AbiWord");
 	gtk_window_set_role(GTK_WINDOW(msg), "message dialog");

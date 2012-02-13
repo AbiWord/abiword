@@ -99,7 +99,7 @@ GtkWidget * AP_UnixDialog_GenericProgress::_constructWindow(void)
 	m_wProgress = GTK_WIDGET(gtk_builder_get_object(builder, "pbProgress"));
 
 	// set the dialog title
-	abiDialogSetTitle(window, getTitle().utf8_str());
+	abiDialogSetTitle(window, "%s", getTitle().utf8_str());
 	
 	// set the informative label
 	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbInformation"))), getInformation().utf8_str());

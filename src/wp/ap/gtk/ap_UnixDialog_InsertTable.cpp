@@ -131,7 +131,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	// set the dialog title
     std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_InsertTable_TableTitle,s);
-	abiDialogSetTitle(window, s.c_str());
+	abiDialogSetTitle(window, "%s", s.c_str());
 	// Units
 	gtk_label_set_text (GTK_LABEL (GTK_WIDGET(gtk_builder_get_object(builder, "lbInch"))), UT_dimensionName(m_dim));
 	double spinstep = getSpinIncr ();

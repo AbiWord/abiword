@@ -149,7 +149,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle,s);
-	abiDialogSetTitle(window, s.utf8_str());
+	abiDialogSetTitle(window, "%s", s.utf8_str());
 	
 	// localize the strings in our dialog
 	

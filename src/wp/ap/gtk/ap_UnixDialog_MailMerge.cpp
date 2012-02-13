@@ -173,7 +173,7 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MailMerge_MailMergeTitle,s);
-	abiDialogSetTitle(m_windowMain, s.utf8_str());
+	abiDialogSetTitle(m_windowMain, "%s", s.utf8_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	

@@ -225,7 +225,7 @@ GtkWidget * XAP_UnixDialog_Zoom::_constructWindow(void)
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Zoom_ZoomTitle,s);
-	abiDialogSetTitle(window, s.utf8_str());
+	abiDialogSetTitle(window, "%s", s.utf8_str());
 
 	// localize the strings in our dialog, and set tags for some widgets
 	

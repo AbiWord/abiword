@@ -93,7 +93,7 @@ GtkWidget * AP_UnixDialog_GenericInput::_constructWindow(void)
 	m_wInput = GTK_WIDGET(gtk_builder_get_object(builder, "edInput"));
 
 	// set the dialog title
-	abiDialogSetTitle(window, getTitle().utf8_str());
+	abiDialogSetTitle(window, "%s", getTitle().utf8_str());
 	
 	// set the question
 	gtk_label_set_text(GTK_LABEL(GTK_WIDGET(gtk_builder_get_object(builder, "lbQuestion"))), getQuestion().utf8_str());

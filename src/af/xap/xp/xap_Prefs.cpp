@@ -1298,37 +1298,37 @@ bool XAP_Prefs::savePrefsFile(void)
 	if (XAP_App::s_szBuild_ID && XAP_App::s_szBuild_ID[0])
 	{
 		fprintf(fp,"<!--         Build_ID          = ");
-		fprintf(fp,XAP_App::s_szBuild_ID);
+		fprintf(fp,"%s",XAP_App::s_szBuild_ID);
 		fprintf(fp," -->\n");
 	}
 	if (XAP_App::s_szBuild_Version && XAP_App::s_szBuild_Version[0])
 	{
 		fprintf(fp,"<!--         Build_Version     = ");
-		fprintf(fp,XAP_App::s_szBuild_Version);
+		fprintf(fp,"%s",XAP_App::s_szBuild_Version);
 		fprintf(fp," -->\n");
 	}
 	if (XAP_App::s_szBuild_Options && XAP_App::s_szBuild_Options[0])
 	{
 		fprintf(fp,"<!--         Build_Options     = ");
-		fprintf(fp,XAP_App::s_szBuild_Options);
+		fprintf(fp,"%s",XAP_App::s_szBuild_Options);
 		fprintf(fp," -->\n");
 	}
 	if (XAP_App::s_szBuild_Target && XAP_App::s_szBuild_Target[0])
 	{
 		fprintf(fp,"<!--         Build_Target      = ");
-		fprintf(fp,XAP_App::s_szBuild_Target);
+		fprintf(fp,"%s",XAP_App::s_szBuild_Target);
 		fprintf(fp," -->\n");
 	}
 	if (XAP_App::s_szBuild_CompileTime && XAP_App::s_szBuild_CompileTime[0])
 	{
 		fprintf(fp,"<!--         Build_CompileTime = ");
-		fprintf(fp,XAP_App::s_szBuild_CompileTime);
+		fprintf(fp,"%s",XAP_App::s_szBuild_CompileTime);
 		fprintf(fp," -->\n");
 	}
 	if (XAP_App::s_szBuild_CompileDate && XAP_App::s_szBuild_CompileDate[0])
 	{
 		fprintf(fp,"<!--         Build_CompileDate = ");
-		fprintf(fp,XAP_App::s_szBuild_CompileDate);
+		fprintf(fp,"%s",XAP_App::s_szBuild_CompileDate);
 		fprintf(fp," -->\n");
 	}
 #endif

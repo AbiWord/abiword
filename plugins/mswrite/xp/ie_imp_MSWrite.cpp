@@ -1733,7 +1733,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 	if (write_pic) free_wri_struct(write_pic);
 
-	if (msg) fprintf(stderr, msg);
+	if (msg) fprintf(stderr, "%s", msg);
 
 	return (msg ? false : true);
 }

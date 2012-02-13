@@ -207,7 +207,7 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_HdrFtr_Title,s);
-	abiDialogSetTitle(window, s.utf8_str());
+	abiDialogSetTitle(window, "%s", s.utf8_str());
 
 	// localize the strings in our dialog
 	
