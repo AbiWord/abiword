@@ -5239,7 +5239,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 
-	UT_uint32 i;
+	UT_uint32 i = 0;
 	hash_data_items_t::const_iterator iter;
 	for (iter = m_hashDataItems.begin();
 		 iter != m_hashDataItems.end() && i < k; ++i, ++iter) {
