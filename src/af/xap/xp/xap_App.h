@@ -142,12 +142,12 @@ public:
 	virtual void					notifyFrameCountChange (); // default is empty method
 	UT_sint32					getFrameCount() const;
 	XAP_Frame * 					getFrame(UT_sint32 ndx) const;
-	UT_sint32					findFrame(XAP_Frame * pFrame);
-	UT_sint32					findFrame(const char * szFilename);
+	UT_sint32					findFrame(XAP_Frame * pFrame) const;
+	UT_sint32					findFrame(const char * szFilename) const;
 
-	void						enumerateFrames(UT_Vector & v);
-    std::list< AD_Document* >   getDocuments( const AD_Document * pExclude = 0 );
-	void						enumerateDocuments(UT_Vector & v, const AD_Document * pExclude);
+	void						enumerateFrames(UT_Vector & v) const;
+    std::list< AD_Document* >   getDocuments( const AD_Document * pExclude = 0 ) const;
+	void						enumerateDocuments(UT_Vector & v, const AD_Document * pExclude) const;
 	const char *					getApplicationTitleForTitleBar() const;
 	const char *					getApplicationName() const;
 	

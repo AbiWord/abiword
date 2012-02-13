@@ -792,12 +792,12 @@ XAP_Frame * XAP_App::getFrame(UT_sint32 ndx) const
 	return pFrame;
 }
 	
-UT_sint32 XAP_App::findFrame(XAP_Frame * pFrame)
+UT_sint32 XAP_App::findFrame(XAP_Frame * pFrame) const
 {
 	return m_vecFrames.findItem(pFrame);
 }
 	
-UT_sint32 XAP_App::findFrame(const char * szFilename)
+UT_sint32 XAP_App::findFrame(const char * szFilename) const
 {
 	if (!szFilename || !*szFilename)
 		return -1;
@@ -1195,7 +1195,7 @@ void XAP_App::setKbdLanguage(const char * pszLang)
 	}
 }
 
-void XAP_App::enumerateFrames(UT_Vector & v)
+void XAP_App::enumerateFrames(UT_Vector & v) const
 {
 	for(UT_sint32 i = 0; i < getFrameCount(); ++i)
 	{
@@ -1211,7 +1211,7 @@ void XAP_App::enumerateFrames(UT_Vector & v)
 }
 
 std::list< AD_Document* >
-XAP_App::getDocuments( const AD_Document * pExclude )
+XAP_App::getDocuments( const AD_Document * pExclude ) const
 {
     UT_Vector t;
     enumerateDocuments( t, pExclude );
@@ -1233,7 +1233,7 @@ XAP_App::getDocuments( const AD_Document * pExclude )
                     inside a document, it might be desirable to
                     exclude that document)
 */
-void XAP_App::enumerateDocuments(UT_Vector & v, const AD_Document * pExclude)
+void XAP_App::enumerateDocuments(UT_Vector & v, const AD_Document * pExclude) const
 {
 	UT_sint32 iIndx;
 
