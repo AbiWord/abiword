@@ -531,14 +531,58 @@ AC_ARG_WITH([champlain],
 [
 	abi_cv_champlain="$withval"
 ],[
-	# use champlain if detected
-	PKG_CHECK_MODULES(CHAMPLAIN, [ $champlain_req ],
-	[
-		abi_cv_champlain="yes"
-	], [
-		abi_cv_champlain="no"
-	])
+        # use champlain if detected
+        PKG_CHECK_MODULES(CHAMPLAIN, [ $champlain_req ],
+                          [ abi_cv_champlain="yes" ],
+                          [ abi_cv_champlain="no" ])
 ])
+
+if test "$abi_cv_champlain" = "yes"; then
+        AC_LANG_PUSH(C++)
+	CXXFLAGS_cache=$CXXFLAGS
+	CXXFLAGS=" $CHAMPLAIN_CFLAGS "
+	LDFLAGS_cache=$LDFLAGS
+	LDFLAGS=" $CHAMPLAIN_LIBS "
+
+	#
+	# try to make sure that champlain-gtk through pkg-config and
+ 	# the GTK+ version that the user wants abiword to directly
+ 	# link with match on major number.
+	# 
+	# The test is simple, make sure that a little client using the
+	# GTK+ that champlain natively uses is using the GTK+ version
+	# that we want to link with.
+ 	#
+	if test "x$abi_cv_gtk2" = "xyes"; then
+ 	  echo "checking that both use GTK+2..."
+		AC_TRY_COMPILE([#include <champlain-gtk/champlain-gtk.h>], 
+                               [
+ #if GTK_MAJOR_VERSION > 2
+ #error bad
+ #endif
+                               ], gtk_matches=yes, gtk_matches=no, )
+	else
+ 	  echo "checking that both use GTK+3..."
+		AC_TRY_COMPILE([#include <champlain-gtk/champlain-gtk.h>], 
+                               [
+ #if GTK_MAJOR_VERSION < 3
+ #error bad
+ #endif
+                               ], gtk_matches=yes, gtk_matches=no, )
+	fi
+        echo "gtk version matches in champlain and our selected gtk:$gtk_matches"
+
+	LDFLAGS=$LDFLAGS_cache
+	CXXFLAGS=$CXXFLAGS_cache
+        AC_LANG_POP
+
+ 	# Don't do mapping if their libchamplain is not using the right GTK+
+	if test "$gtk_matches" = "no"; then
+	   abi_cv_champlain=no
+           CHAMPLAIN_CFLAGS=
+           CHAMPLAIN_LIBS=
+	fi
+fi
 
 if test "$abi_cv_champlain" = "yes"; then
 dnl	opt_pkgs="$opt_pkgs $champlain_req"
