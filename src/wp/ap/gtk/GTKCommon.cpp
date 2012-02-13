@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_std_string.h"
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -195,6 +196,33 @@ std::string tostr( GtkComboBox* combo )
     }
     return "";
 }
+
+void setEntry( GtkWidget* w, const std::string& v )
+{
+    if( v.empty() )
+        gtk_entry_set_text(GTK_ENTRY(w), "" );
+    else 
+        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
+}
+
+void setEntry( GtkEntry* w, const std::string& v )
+{
+    if( v.empty() )
+        gtk_entry_set_text(GTK_ENTRY(w), "" );
+    else 
+        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
+}
+void setEntry( GtkEntry* w, time_t v )
+{
+    UT_DEBUGMSG(("setEntry(time) v:%ld str:%s\n", v, toTimeString(v).c_str()));
+    gtk_entry_set_text(GTK_ENTRY(w), toTimeString(v).c_str());
+}
+void setEntry( GtkEntry* w, double v )
+{
+    UT_DEBUGMSG(("setEntry(double) v:%f str:%s\n", v, tostr(v).c_str()));
+    gtk_entry_set_text(GTK_ENTRY(w), tostr(v).c_str());
+}
+
 
 
 static

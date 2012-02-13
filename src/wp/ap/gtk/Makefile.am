@@ -179,7 +179,17 @@ libgtk_la_SOURCES = \
 	ap_UnixTopRuler.cpp \
 	ap_UnixTopRuler.h \
 	ap_UnixViewListener.cpp \
-	ap_UnixViewListener.h
+	ap_UnixViewListener.h \
+	ap_RDFContactGTK.h \
+	ap_RDFContactGTK.cpp \
+	ap_RDFEventGTK.h \
+	ap_RDFEventGTK.cpp \
+	ap_RDFLocationGTK.h \
+	ap_RDFLocationGTK.cpp \
+	ap_RDFSemanticItemFactoryGTK.h \
+	ap_RDFSemanticItemFactoryGTK.cpp \
+	ap_RDFSemanticItemGTKInjected.h \
+	ap_RDFSemanticItemGTKInjected.cpp
 
 
 

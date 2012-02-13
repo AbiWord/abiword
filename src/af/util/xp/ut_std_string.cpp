@@ -24,6 +24,10 @@
 #include "ut_std_string.h"
 #include "ut_string.h"
 
+#include <iostream>
+#include <sstream>
+#include <list>
+
 std::string UT_escapeXML(const std::string &s)
 {
   gsize incr = 0;
@@ -331,4 +335,70 @@ void UT_std_string_removeProperty(std::string & sPropertyString, const std::stri
 		sNew += sPropertyString.substr(offset,iLen);
 		sPropertyString = sNew;
 	}
+  
+}
+
+
+
+const std::string StreamToString( std::istream& iss )
+{
+    std::stringstream ss;
+    iss.clear();
+    std::copy( std::istreambuf_iterator<char>(iss),
+               std::istreambuf_iterator<char>(),
+               std::ostreambuf_iterator<char>(ss));
+    return ss.str();
+}
+
+std::string toTimeString( time_t TT )
+{
+    const int bufmaxlen = 1025;
+    char buf[bufmaxlen];
+    struct tm* TM = 0;
+    std::string format = "%y %b %e %H:%M";
+
+//    TM = gmtime( &TT );
+    TM = localtime( &TT );
+            
+    if( TM && strftime( buf, bufmaxlen, format.c_str(), TM) )
+    {
+        std::string s = buf;
+        return s;
+    }
+    // FIXME
+    return "";
+}
+
+time_t toTime( struct tm *tm )
+{
+    return mktime( tm );
+}
+time_t parseTimeString( const std::string& stddatestr )
+{
+    const char* datestr = stddatestr.c_str();
+    const char* eos     = datestr + strlen( datestr );
+
+    typedef std::list<std::string> formats_t;
+    formats_t formats;
+    
+    formats.push_back( "%Y-%m-%dT%H:%M:%S" );
+    formats.push_back( "%y %b %d %H:%M:%S" );
+    formats.push_back( "%y %b %d %H:%M" );
+
+    for( formats_t::iterator iter = formats.begin(); iter != formats.end(); ++iter )
+    {
+        std::string format = *iter;
+        struct tm tm;
+        memset( &tm, 0, sizeof(struct tm));
+        const char* rc = strptime( datestr, format.c_str(), &tm );
+        if( rc == eos )
+        {
+//            UT_DEBUGMSG(("parseTimeString(OK) input:%s format:%s ret:%ld\n",
+//                         datestr, format.c_str(), toTime(&tm) ));
+            return toTime(&tm);
+        }
+    }
+
+//    UT_DEBUGMSG(("parseTimeString(f) input:%s\n", datestr ));
+    return 0;
 }

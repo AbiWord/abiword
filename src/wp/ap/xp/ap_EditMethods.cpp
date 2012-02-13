@@ -14192,7 +14192,7 @@ Defun1(rdfAnchorEditSemanticItem)
 			rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
 
 			PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
-			PD_RDFSemanticItem::showEditorWindow( sl );
+			rdf->showEditorWindow( sl );
 			
 			
 			// PD_RDFContacts contacts = rdf->getContacts();

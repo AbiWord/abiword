@@ -36,7 +36,10 @@ void selectNext( GtkTreeView* tv );
 void selectPrev( GtkTreeView* tv );
 void append( GtkComboBoxText* combo, const std::list< std::string >& data );
 std::string tostr( GtkComboBox* combo );
-
+void setEntry( GtkWidget* w, const std::string& v );
+void setEntry( GtkEntry* w, const std::string& v );
+void setEntry( GtkEntry* w, time_t v );
+void setEntry( GtkEntry* w, double v );
 
 typedef std::list< GtkTreeIter > list_gtktreeiter_t;
 /**

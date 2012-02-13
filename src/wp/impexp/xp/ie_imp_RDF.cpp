@@ -421,24 +421,6 @@ extern "C" {
   #include <libical/ical.h>
 };
 
-static std::string toTimeString( time_t TT )
-{
-    const int bufmaxlen = 1025;
-    char buf[bufmaxlen];
-    struct tm* TM = 0;
-    std::string format = "%y %b %e %H:%M";
-
-    TM = gmtime( &TT );
-            
-    if( TM && strftime( buf, bufmaxlen, format.c_str(), TM) )
-    {
-        std::string s = buf;
-        return s;
-    }
-    // FIXME
-    return "";
-}
-
 static std::string tostr( time_t v )
 {
     std::stringstream ss;

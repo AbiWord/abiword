@@ -255,7 +255,13 @@ libxp_la_SOURCES = \
 	ap_Toolbar_Layouts.cpp \
 	ap_TopRuler.cpp \
 	ap_TopRuler.h \
-	ap_wp_sidebar.cpp
+	ap_wp_sidebar.cpp \
+	ap_RDFContact.h \
+	ap_RDFContact.cpp \
+	ap_RDFEvent.h \
+	ap_RDFEvent.cpp \
+	ap_RDFLocation.h \
+	ap_RDFLocation.cpp
 
 EXTRA_DIST = \
 	$(conditional_src) \

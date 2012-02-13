@@ -63,6 +63,13 @@ ABI_EXPORT void UT_std_string_removeProperty(std::string & sPropertyString, cons
 ABI_EXPORT void UT_std_string_setProperty(std::string & sPropertyString, const std::string &sProp, const std::string & sVal);
 
 
+ABI_EXPORT const std::string StreamToString( std::istream& iss );
+ABI_EXPORT std::string toTimeString( time_t TT );
+ABI_EXPORT time_t toTime( struct tm *tm );
+ABI_EXPORT time_t parseTimeString( const std::string& stddatestr );
+
+
+
 
 #endif
 
