@@ -461,13 +461,10 @@ AC_ARG_WITH([redland],
 if test "$abi_cv_redland" = "yes"; then
 	opt_pkgs="$opt_pkgs $redland_req"
 	AC_DEFINE([WITH_REDLAND], [1], [Using redland])
-	WITH_REDLAND=1
 fi
 
-AC_SUBST([REDLAND_CFLAGS])
-AC_SUBST([REDLAND_LIBS])
-AM_CONDITIONAL([WITH_REDLAND], test "$WITH_REDLAND" = "1")
-AM_CONDITIONAL([HAVE_REDLAND], test "$WITH_REDLAND" = "1")
+AM_CONDITIONAL([WITH_REDLAND], test "$abi_cv_redland" = "yes")
+AM_CONDITIONAL([HAVE_REDLAND], test "$abi_cv_redland" = "yes")
 
 
 evolution_data_server_req='libebook-1.2 libecal-1.2'
@@ -488,13 +485,10 @@ AC_ARG_WITH([evolution_data_server],
 if test "$abi_cv_evolution_data_server" = "yes"; then
 	opt_pkgs="$opt_pkgs $evolution_data_server_req"
 	AC_DEFINE([WITH_EVOLUTION_DATA_SERVER], [1], [Using evolution_data_server])
-	WITH_EVOLUTION_DATA_SERVER=1
 fi
 
-AC_SUBST([EVOLUTION_DATA_SERVER_CFLAGS])
-AC_SUBST([EVOLUTION_DATA_SERVER_LIBS])
-AM_CONDITIONAL([WITH_EVOLUTION_DATA_SERVER], test "$WITH_EVOLUTION_DATA_SERVER" = "1")
-AM_CONDITIONAL([HAVE_EVOLUTION_DATA_SERVER], test "$WITH_EVOLUTION_DATA_SERVER" = "1")
+AM_CONDITIONAL([WITH_EVOLUTION_DATA_SERVER], test "$abi_cv_evolution_data_server" = "yes")
+AM_CONDITIONAL([HAVE_EVOLUTION_DATA_SERVER], test "$abi_cv_evolution_data_server" = "yes")
 
 
 libical_req=' libical >= 0.46 '
@@ -515,13 +509,10 @@ AC_ARG_WITH([libical],
 if test "$abi_cv_libical" = "yes"; then
 	opt_pkgs="$opt_pkgs $libical_req"
 	AC_DEFINE([WITH_LIBICAL], [1], [Using libical])
-	WITH_LIBICAL=1
 fi
 
-AC_SUBST([LIBICAL_CFLAGS])
-AC_SUBST([LIBICAL_LIBS])
-AM_CONDITIONAL([WITH_LIBICAL], test "$WITH_LIBICAL" = "1")
-AM_CONDITIONAL([HAVE_LIBICAL], test "$WITH_LIBICAL" = "1")
+AM_CONDITIONAL([WITH_LIBICAL], test "$abi_cv_libical" = "yes")
+AM_CONDITIONAL([HAVE_LIBICAL], test "$abi_cv_libical" = "yes")
 
 
 champlain_req=' champlain-gtk-0.12 '
@@ -588,13 +579,12 @@ fi
 if test "$abi_cv_champlain" = "yes"; then
 dnl	opt_pkgs="$opt_pkgs $champlain_req"
 	AC_DEFINE([WITH_CHAMPLAIN], [1], [Using champlain])
-	WITH_CHAMPLAIN=1
 fi
 
 AC_SUBST([CHAMPLAIN_CFLAGS])
 AC_SUBST([CHAMPLAIN_LIBS])
-AM_CONDITIONAL([WITH_CHAMPLAIN], test "$WITH_CHAMPLAIN" = "1")
-AM_CONDITIONAL([HAVE_CHAMPLAIN], test "$WITH_CHAMPLAIN" = "1")
+AM_CONDITIONAL([WITH_CHAMPLAIN], test "$abi_cv_champlain" = "yes")
+AM_CONDITIONAL([HAVE_CHAMPLAIN], test "$abi_cv_champlain" = "yes")
 
 
 #
@@ -609,9 +599,9 @@ if test "$GCC" = "yes"; then
 		SAVE_CPPFLAGS="$CPPFLAGS"
 		CPPFLAGS="$CPPFLAGS $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
-		AC_TRY_COMPILE([], [],
+		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])],
 			has_option=yes,
-			has_option=no,)
+			has_option=no)
 		if test $has_option = no; then
 		  CPPFLAGS="$SAVE_CPPFLAGS"
 		fi
