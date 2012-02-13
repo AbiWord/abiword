@@ -45,10 +45,10 @@ PX_ChangeRecord_Object::~PX_ChangeRecord_Object()
 
 PX_ChangeRecord * PX_ChangeRecord_Object::reverse(void)
 {
-#warning this cast is wrong.
 	PX_ChangeRecord_Object * pcr
-		= new PX_ChangeRecord_Object(getRevType(),m_position,m_indexAP,getXID(),m_objectType,m_blockOffset,m_field,reinterpret_cast<pf_Frag_Object*>(this));
-	UT_ASSERT_HARMLESS(pcr);
+		= new PX_ChangeRecord_Object(getRevType(),m_position,
+					     m_indexAP,getXID(),m_objectType,
+					     m_blockOffset,m_field,m_OH);
 	return pcr;
 }
 
