@@ -21,6 +21,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <gtk/gtk.h>
+#include <X11/Xlib.h>
 #include <gdk/gdkx.h>
 
 #include "xap_Gtk2Compat.h"
