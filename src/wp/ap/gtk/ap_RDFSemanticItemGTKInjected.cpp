@@ -31,15 +31,15 @@ const gchar* gtk_combo_box_get_active_id( GtkComboBox* v )
 }
 #endif
 
-void GDestroyNotify_G_OBJECT_SEMITEM(gpointer data)
+void GDestroyNotify_GObjectSemItem(gpointer data)
 {
-    struct G_OBJECT_SEMITEM* obj = (struct G_OBJECT_SEMITEM*)data;
+    ap_GObjectSemItem* obj = (ap_GObjectSemItem*)data;
     delete obj;
 }
 
 PD_RDFSemanticItemHandle getHandle(GtkDialog* d)
 {
-    struct G_OBJECT_SEMITEM* data = (struct G_OBJECT_SEMITEM*)
+    ap_GObjectSemItem* data = (ap_GObjectSemItem*)
         g_object_get_data( G_OBJECT(d), G_OBJECT_SEMITEM );
     return data->h;
 }
@@ -55,14 +55,14 @@ void OnSemItemEdited ( GtkDialog* d, gint /*response_id*/,
 
 
 
-void GDestroyNotify_G_OBJECT_SEMITEM_LIST(gpointer data)
+void GDestroyNotify_GObjectSemItem_List(gpointer data)
 {
-    struct G_OBJECT_SEMITEM_LIST* obj = (struct G_OBJECT_SEMITEM_LIST*)data;
+    ap_GObjectSemItem_List* obj = (ap_GObjectSemItem_List*)data;
     delete obj;
 }
 PD_RDFSemanticItems getSemItemListHandle(GtkDialog* d)
 {
-    struct G_OBJECT_SEMITEM_LIST* data = (struct G_OBJECT_SEMITEM_LIST*)
+    ap_GObjectSemItem_List* data = (ap_GObjectSemItem_List*)
         g_object_get_data( G_OBJECT(d), G_OBJECT_SEMITEM_LIST );
     return data->cl;
 }

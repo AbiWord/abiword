@@ -25,36 +25,37 @@
 #include "xap_Dialog_Id.h"
 #include "xap_App.h"
 
-static const gchar * G_OBJECT_SEMITEM = "G_OBJECT_SEMITEM";
-static const gchar * G_OBJECT_SEMITEM_LIST = "G_OBJECT_SEMITEM_LIST";
-static const gchar * G_OBJECT_WINDOW  = "G_OBJECT_WINDOW";
-static const gchar * G_OBJECT_TREEVIEW = "G_OBJECT_TREEVIEW";
+#define G_OBJECT_SEMITEM "G_OBJECT_SEMITEM"
+#define G_OBJECT_SEMITEM_LIST "G_OBJECT_SEMITEM_LIST"
+#define G_OBJECT_WINDOW  "G_OBJECT_WINDOW"
+#define G_OBJECT_TREEVIEW "G_OBJECT_TREEVIEW"
 
-struct G_OBJECT_SEMITEM
+class ap_GObjectSemItem
 {
 public:
     PD_RDFSemanticItemHandle h;
-    G_OBJECT_SEMITEM( PD_RDFSemanticItemHandle _h )
+    ap_GObjectSemItem( PD_RDFSemanticItemHandle _h )
         : h(_h)
     {
     }
 };
-struct G_OBJECT_SEMITEM_LIST
+
+class ap_GObjectSemItem_List
 {
 public:
     PD_RDFSemanticItems cl;
-    G_OBJECT_SEMITEM_LIST( PD_RDFSemanticItems _cl )
+    ap_GObjectSemItem_List( PD_RDFSemanticItems _cl )
         : cl(_cl)
     {
     }
 };
 
-void GDestroyNotify_G_OBJECT_SEMITEM(gpointer data);
+void GDestroyNotify_GObjectSemItem(gpointer data);
 PD_RDFSemanticItemHandle getHandle(GtkDialog* d);
 void OnSemItemEdited ( GtkDialog* d, gint /*response_id*/, 
 					   gpointer /*user_data*/);
 
-void GDestroyNotify_G_OBJECT_SEMITEM_LIST(gpointer data);
+void GDestroyNotify_GObjectSemItem_List(gpointer data);
 PD_RDFSemanticItems getSemItemListHandle(GtkDialog* d);
 void OnSemItemListEdited ( GtkDialog* d, gint response_id, 
 						   gpointer /*user_data*/);
@@ -89,8 +90,8 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
         GtkWidget* w = GTK_WIDGET(c->createEditor());
         g_object_set_data_full( G_OBJECT(w),
                                 G_OBJECT_SEMITEM,
-                                new struct G_OBJECT_SEMITEM( c ),
-                                GDestroyNotify_G_OBJECT_SEMITEM );
+                                new ap_GObjectSemItem( c ),
+                                GDestroyNotify_GObjectSemItem );
         /* g_object_set_data_full( G_OBJECT(d), */
         /*                         G_OBJECT_SEMITEM, */
         /*                         new struct G_OBJECT_SEMITEM( c ), */
@@ -120,12 +121,12 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
             GtkWidget* w = GTK_WIDGET(c->createEditor());
             g_object_set_data_full( G_OBJECT(w),
                                     G_OBJECT_SEMITEM,
-                                    new struct G_OBJECT_SEMITEM( c ),
-                                    GDestroyNotify_G_OBJECT_SEMITEM );
+                                    new ap_GObjectSemItem( c ),
+                                    GDestroyNotify_GObjectSemItem );
             g_object_set_data_full( G_OBJECT(d),
                                     G_OBJECT_SEMITEM,
-                                    new struct G_OBJECT_SEMITEM( c ),
-                                    GDestroyNotify_G_OBJECT_SEMITEM );
+                                    new ap_GObjectSemItem( c ),
+                                    GDestroyNotify_GObjectSemItem );
 
             std::string label = c->getDisplayLabel();
             gboolean homogeneous = false;
@@ -135,20 +136,17 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
         }
         g_object_set_data_full( G_OBJECT(d),
                                 G_OBJECT_SEMITEM_LIST,
-                                new struct G_OBJECT_SEMITEM_LIST( cl ),
-                                GDestroyNotify_G_OBJECT_SEMITEM_LIST );
+                                new ap_GObjectSemItem_List( cl ),
+                                GDestroyNotify_GObjectSemItem_List );
         g_signal_connect (G_OBJECT(d), "response",  G_CALLBACK(OnSemItemListEdited), 0 );
         gtk_widget_show_all (d); 
     }
  
-    void
-        importFromDataComplete( std::istream& iss,
+    void importFromDataComplete( std::istream& /*iss*/,
                                 PD_DocumentRDFHandle rdf,
                                 PD_DocumentRDFMutationHandle m,
                                 PD_DocumentRange * pDocRange = 0 )
     {
-        UT_UNUSED( iss );
-    
         // Create and populate and editor with the current data,
         // then update the Rdf from that editor.
         GtkWidget* objectEditor = (GtkWidget*)this->createEditor();
