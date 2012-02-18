@@ -122,6 +122,7 @@
 #include "fp_MathRun.h"
 #include "ut_mbtowc.h"
 #include "fp_EmbedRun.h"
+#include "fp_FrameContainer.h"
 #include "ap_Frame.h"
 
 #include "xad_Document.h"
@@ -11433,10 +11434,12 @@ Defun1(dlgFmtPosImage)
 	  POSITION_TO newFormatMode = pDialog->getPositionTo(); 
 	  WRAPPING_TYPE newWrapMode = pDialog->getWrapping();
 	  const gchar * properties[] = {"frame-width", NULL, 
-					   "frame-height", NULL, 
-					   "wrap-mode",NULL,
-					   "position-to",NULL,
-					   "tight-wrap",NULL,NULL};
+									"frame-height", NULL, 
+									"wrap-mode",NULL,
+									"position-to",NULL,
+									"tight-wrap",NULL,
+									NULL,NULL,NULL,NULL,
+									NULL,NULL,NULL};
 
 	  properties[1] = sWidth.c_str();
 	  properties[3] = sHeight.c_str();
@@ -11478,10 +11481,56 @@ Defun1(dlgFmtPosImage)
 	    properties[9] = "0";
 	  }
 
+	  fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(pPosObj->getFirstContainer());
+	  fv_FrameStrings FrameStrings;
+	  fl_BlockLayout * pCloseBL = NULL;
+	  fp_Page * pPage = NULL;
+
+
+	  UT_String sValX;
+	  UT_String sValY;
+
+	  if (pFrameC && (newFormatMode != iPos))
+	  {
+		  UT_sint32 iXposPage = pFrameC->getX();
+		  UT_sint32	iYposPage = pFrameC->getY();
+		  UT_sint32 xp = 0;
+		  UT_sint32 yp = 0;
+		  pPage = pFrameC->getColumn()->getPage();
+		  pView->getPageScreenOffsets(pPage,xp,yp);
+		  pView->getFrameStrings_view(iXposPage+xp,iYposPage+yp,
+									  FrameStrings,&pCloseBL,&pPage);
+
+		  UT_DEBUGMSG(("Position of frame: X %d\t Y %d\n",iXposPage,iYposPage));
+		  if (newFormatMode == POSITION_TO_PARAGRAPH)
+		  {
+			  properties[10] = "xpos";
+			  properties[11] = FrameStrings.sXpos.c_str();
+			  properties[12] = "ypos";
+			  properties[13] = FrameStrings.sYpos.c_str();
+		  }
+		  else if (newFormatMode == POSITION_TO_COLUMN)
+		  {
+			  properties[10] = "frame-col-xpos";
+			  properties[11] = FrameStrings.sColXpos.c_str();
+			  properties[12] = "frame-col-ypos";
+			  properties[13] = FrameStrings.sColYpos.c_str();
+			  properties[14] = "frame-pref-column";
+			  properties[15] = FrameStrings.sPrefColumn.c_str();
+		  }
+		  else if (newFormatMode == POSITION_TO_PAGE)
+		  {
+			  properties[10] = "frame-page-xpos";
+			  properties[11] = FrameStrings.sPageXpos.c_str();
+			  properties[12] = "frame-page-ypos";
+			  properties[13] = FrameStrings.sPageYpos.c_str();
+		  }
+	  }
+
 	  //
 	  // Change the frame!
 	  //
-	  pView->setFrameFormat(attribs,properties);
+	  pView->setFrameFormat(attribs,properties,pCloseBL);
 	}
 	return true;
 }

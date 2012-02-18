@@ -138,7 +138,7 @@ public:
 	fl_FrameLayout *        getNthFrameLayout(UT_sint32 i) const;
 	fp_FrameContainer *     getNthFrameContainer(UT_sint32 i) const;
 	void                    addFrame(fl_FrameLayout * pFrame);
-	void                    removeFrame(fl_FrameLayout * pFrame);
+	bool                    removeFrame(fl_FrameLayout * pFrame);
 	
 // For Folded Text
 

@@ -1045,7 +1045,7 @@ const UT_ByteBuf * FV_View::getLocalBuf(void) const
 void FV_View::copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2)
 {
 	DELETEP(m_pLocalBuf);
-	m_pLocalBuf = new UT_ByteBuf(1024);
+	m_pLocalBuf = new UT_ByteBuf;
 	IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(m_pDoc);
 	PD_DocumentRange docRange(m_pDoc, pos1,pos2);
 
@@ -1441,8 +1441,15 @@ void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG,
 	notifyListeners(AV_CHG_MOTION);
 }
 
+bool FV_View::getFrameStrings_view(UT_sint32 x, UT_sint32 y,fv_FrameStrings & FrameStrings,
+								   fl_BlockLayout ** pCloseBL,fp_Page ** ppPage)
+{
+	return (m_FrameEdit.getFrameStrings(x,y,FrameStrings,pCloseBL,ppPage));
+}
 
-void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[])
+
+
+void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[], fl_BlockLayout *pNewBL)
 {
 	setCursorWait();
 	//
@@ -1460,13 +1467,19 @@ void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[]
 		// should we assert ?
 		return;
 	}
-	PT_DocPosition posStart = pFrame->getPosition(true)+1;
-	PT_DocPosition posEnd = posStart;
 
-	UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,
-													 attribs,properties,PTX_SectionFrame);
-	UT_ASSERT(bRet);
-
+	if(pNewBL && (pFrame->getParentContainer() != pNewBL))
+	{
+		getLayout()->relocateFrame(pFrame,pNewBL,attribs,properties);
+	}
+	else
+	{ 
+		PT_DocPosition posStart = pFrame->getPosition(true)+1;
+		PT_DocPosition posEnd = posStart;
+		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,
+														 attribs,properties,PTX_SectionFrame);
+		UT_ASSERT(bRet);
+	}
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_generalUpdate();
@@ -1653,107 +1666,6 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
 	}
 	return NULL;
 }
-
-void FV_View::changeBlockAssociatedWithFrame(PT_DocPosition pos, fl_BlockLayout * newBlock, bool b_NotifyPT)
-{
-	fl_FrameLayout * pFL = NULL;
-	if(m_pDoc->isFrameAtPos(pos))
-	{
-		fl_ContainerLayout* psfh = NULL;
-		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),pos+1,
-										   PTX_SectionFrame, &psfh);
-		pFL = static_cast<fl_FrameLayout *>(psfh);
-		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
-	}
-	else
-	{
-		return;
-	}
-	const PP_AttrProp* pSectionAP = NULL;
-	pFL->getAP(pSectionAP);
-
-	// Signal PieceTable Change and turn off list updates
-	if (b_NotifyPT)
-	{
-		m_pDoc->beginUserAtomicGlob();
-		_saveAndNotifyPieceTableChange();
-		getDocument()->disableListUpdates();
-		_clearSelection();
-	}
-
-	// Copy the frame content to clipboard
-	bool isTextBox = true;
-	if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
-	{
-		isTextBox = false;
-	}
-	PT_DocPosition posStart = pFL->getPosition(true);
-	PT_DocPosition posEnd = posStart + pFL->getLength();
-	bool bHasContent = false;
-	if(isTextBox)
-	{
-		PD_DocumentRange dr_oldFrame;
-		dr_oldFrame.set(getDocument(),posStart+1,posEnd-1);
-		copyToLocal(posStart+1,posEnd-1);
-		bHasContent = true;
-	}
-
-	// Delete Frame
-	pf_Frag_Strux* sdhStart =  pFL->getStruxDocHandle();
-	pf_Frag_Strux* sdhEnd = NULL;
-	posStart = getDocument()->getStruxPosition(sdhStart);
-	getDocument()->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
-	if(sdhEnd == NULL)
-	{
-		posEnd= posStart+1;
-	}
-	else
-	{
-		posEnd = getDocument()->getStruxPosition(sdhEnd)+1;
-	}
-	UT_uint32 iRealDeleteCount;
-	PP_AttrProp * p_AttrProp_Before = NULL;
-
-	getDocument()->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
-	pFL = NULL;
-
-	// Insert the new frame struxes
-	pf_Frag_Strux * pfFrame = NULL;
-	getDocument()->insertStrux(newBlock->getPosition(),PTX_SectionFrame,
-							   pSectionAP->getAttributes(),pSectionAP->getProperties(),&pfFrame);
-	PT_DocPosition posFrame = pfFrame->getPos();
-	if(isTextBox && !bHasContent)
-	{
-		getDocument()->insertStrux(posFrame+1,PTX_Block);
-		getDocument()->insertStrux(posFrame+2,PTX_EndFrame);
-		insertParaBreakIfNeededAtPos(posFrame+3);
-	}
-	else
-	{
-		getDocument()->insertStrux(posFrame+1,PTX_EndFrame);
-		insertParaBreakIfNeededAtPos(posFrame+2);
-	}
-	
-	// paste in the content of the frame.
-	if(isTextBox)
-	{
-		if(!bHasContent)
-		{
-			_pasteFromLocalTo(posFrame+2);
-		}
-		else
-		{
-			_pasteFromLocalTo(posFrame+1);
-		}
-	}
-	
-	//	Finish up with the usual stuff
-	getDocument()->setDontImmediatelyLayout(false);
-	_generalUpdate();
-	getDocument()->enableListUpdates();
-	getDocument()->updateDirtyLists();
-}
-
 
 /*!
  * Returns true if the supplied Doc Position is inside a frame.

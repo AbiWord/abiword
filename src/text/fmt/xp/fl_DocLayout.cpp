@@ -63,6 +63,7 @@
 #include "ut_misc.h"
 #include "pf_Frag_Strux.h"
 #include "ie_imp_RTF.h"
+#include "ie_exp_RTF.h"
 #include "ap_StatusBar.h"
 #include "ap_FrameData.h"
 
@@ -1111,21 +1112,85 @@ void FL_DocLayout::setFramePageNumbers(UT_sint32 iStartPage)
 }
 
 /*!
- * relocate the frame given to the block on the page requested by the
- * Frame
- *
+ * relocate the frame given to a new block. This involves changing the piece table as the 
+ * frame strux is placed immediately after its parent block strux.
+ * The function returns the pointer to the new frame layout. 
  */
-void FL_DocLayout:: relocateFrame(fl_FrameLayout * /*pFrame*/)
+fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayout * newBlock, 
+											  const gchar** attributes, const gchar **properties)
 {
-  //
-  // Get all the attributes/properties
-  // Copy the content
-  // Get page requested.
-  // get the position coords of the frame on the page
-  // delete the old frame
-  // find the correct block on the page
-  // Insert the frame - make sure "relocate" is 0
-  // paste content
+	if(m_pDoc->isDoingTheDo())
+	{
+		return(pFL);
+	}
+	m_pDoc->beginUserAtomicGlob();
+	const PP_AttrProp* pFrameAP = NULL;
+	PP_AttrProp * pUpdatedFrameAP = NULL;
+	pFL->getAP(pFrameAP);
+	pUpdatedFrameAP = pFrameAP->cloneWithReplacements(attributes,properties,false);
+
+	// Copy the frame content to clipboard
+	bool isTextBox = (pFL->getFrameType() < FL_FRAME_WRAPPER_IMAGE);
+	PT_DocPosition posStart = pFL->getPosition(true);
+	PT_DocPosition posEnd = posStart + pFL->getLength();
+	UT_ByteBuf * pLocalBuf = new UT_ByteBuf;
+	if(isTextBox)
+	{
+		PD_DocumentRange dr_oldFrame;
+		dr_oldFrame.set(m_pDoc,posStart+1,posEnd-1);
+		IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(m_pDoc);
+		PD_DocumentRange docRange(m_pDoc, posStart+1,posEnd-1);
+		pExpRtf->copyToBuffer(&docRange,pLocalBuf);
+		delete pExpRtf;
+	}
+
+	// Delete Frame
+	pf_Frag_Strux* sdhStart =  pFL->getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = NULL;
+	posStart = m_pDoc->getStruxPosition(sdhStart);
+	m_pDoc->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
+	if(sdhEnd == NULL)
+	{
+		posEnd = posStart+1;
+	}
+	else
+	{
+		posEnd = m_pDoc->getStruxPosition(sdhEnd)+1;
+	}
+	UT_uint32 iRealDeleteCount;
+	PP_AttrProp * p_AttrProp_Before = NULL;
+	m_pDoc->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
+	pFL = NULL;
+	// Insert the new frame struxes
+	pf_Frag_Strux * pfFrame = NULL;
+	m_pDoc->insertStrux(newBlock->getPosition(),PTX_SectionFrame,pUpdatedFrameAP->getAttributes(),
+						pUpdatedFrameAP->getProperties(),&pfFrame);
+	PT_DocPosition posFrame = pfFrame->getPos();
+	m_pDoc->insertStrux(posFrame+1,PTX_EndFrame);
+	m_pView->insertParaBreakIfNeededAtPos(posFrame+2);
+	// paste in the content of the frame.
+	if(isTextBox)
+	{
+		PD_DocumentRange docRange(m_pDoc,posFrame+1,posFrame+1);
+		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(m_pDoc);
+		const unsigned char * pData = static_cast<const unsigned char *>(pLocalBuf->getPointer(0));
+		UT_uint32 iLen = pLocalBuf->getLength();		
+		pImpRTF->pasteFromBuffer(&docRange,pData,iLen);
+		delete pImpRTF;
+	}
+	delete pLocalBuf;
+	m_pDoc->endUserAtomicGlob();
+
+	fl_ContainerLayout * pNewFL = pfFrame->getFmtHandle(m_lid);
+	if (pNewFL && (pNewFL->getContainerType() == FL_CONTAINER_FRAME))
+	{
+		return (static_cast <fl_FrameLayout *>(pNewFL));
+	}
+	else
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return NULL;
+	}
 }
 
 void FL_DocLayout::setView(FV_View* pView)

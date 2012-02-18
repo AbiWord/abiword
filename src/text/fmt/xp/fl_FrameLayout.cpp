@@ -101,9 +101,9 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_bIsTightWrap(false),
 	  m_iPrefPage(-1),
 	  m_iPrefColumn(0),
-	  m_bRelocate(false),
 	  m_bExpandHeight(false),
-	  m_iMinHeight(0)
+	  m_iMinHeight(0),
+	  m_pParentContainer(NULL)
 {
 }
 
@@ -499,58 +499,26 @@ bool fl_FrameLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 // Remove all remaining structures
 //
 	collapse();
-//	UT_ASSERT(pcrx->getStruxType()== PTX_SectionFrame);
-//
-	fl_ContainerLayout * pCL = getPrev();
 	myContainingLayout()->remove(this);
 	UT_DEBUGMSG(("Unlinking frame Layout %p \n",this));
 //
 // Remove from the list of frames in the previous block
 //
-	while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+	fl_ContainerLayout * pCL = getParentContainer();
+	fl_BlockLayout * pBL = NULL;
+	if(pCL)
 	{
-		pCL = pCL->getPrev();
-	}
-	if(pCL == NULL)
-	{
-		UT_DEBUGMSG(("No BlockLayout before this frame! \n"));
-		return false;
-	}
-	fl_BlockLayout * pBL = static_cast<fl_BlockLayout *>(pCL);
-	bool bFound = false;
-	for(i=0; i<pBL->getNumFrames() && !bFound;i++)
-	{
-	  fl_FrameLayout * pF = pBL->getNthFrameLayout(i);
-	  if(pF == this)
-	  {
-	    bFound = true;
-	  }
-	}
-	if(bFound)
-	{
-	  pBL->removeFrame(this);
-	}
-	else
-	{
-	  UT_DEBUGMSG(("Whoops! not Frame found. Try ahead \n"));
-	  pCL = this;
-	  while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
-	  {
-	    pCL = pCL->getNext();
-	  }
-	  if(pCL == NULL)
-	  {
-	    UT_DEBUGMSG(("No BlockLayout before this frame! \n"));
-	    return false;
-	  }
-	  pBL = static_cast<fl_BlockLayout *>(pCL);
-	  pBL->removeFrame(this);
+		if(!pCL->removeFrame(this))
+		{
+			UT_DEBUGMSG(("Whoops! Frame not found in container %p\n",pCL));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 	for(i=0; i< vecBlocks.getItemCount();i++)
 	{
 	  pBL = vecBlocks.getNthItem(i);
 	  pBL->format();
-	  xxx_UT_DEBUGMSG(("format block %x \n",pBL));
+	  xxx_UT_DEBUGMSG(("Format block %p\n",pBL));
 	}
 
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
@@ -699,39 +667,17 @@ void fl_FrameLayout::format(void)
 //
 // Place it on the correct page.
 //
-		fl_ContainerLayout * pCL = getPrev();
-		while(pCL && ((pCL->getContainerType() == FL_CONTAINER_ENDNOTE) ||
-					  (pCL->getContainerType() == FL_CONTAINER_FOOTNOTE) ||
-					  (pCL->getContainerType() == FL_CONTAINER_TOC) ||
-					  (pCL->getContainerType() == FL_CONTAINER_FRAME)  ))
+		fl_ContainerLayout * pCL = getParentContainer();
+		if((!pCL) || pCL->getContainerType() != FL_CONTAINER_BLOCK)
 		{
-			pCL = pCL->getPrev();
-		}
-		if(pCL == NULL)
-		{
-			UT_DEBUGMSG(("No BlockLayout before this frame! \n"));
+			UT_DEBUGMSG(("No BlockLayout or wrong layout associated with this frame! \n"));
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return;
 		}
 		fl_BlockLayout * pBL = NULL;
-		if(pCL->getContainerType() != FL_CONTAINER_BLOCK)
-		{
-			pCL = pCL->getPrevBlockInDocument();
-			pBL = static_cast<fl_BlockLayout *>(pCL);
-		}
-		else
-		{
-			pBL = static_cast<fl_BlockLayout *>(pCL);
-		}
-		UT_return_if_fail(pBL);
+		pBL = static_cast<fl_BlockLayout *>(pCL);
 		UT_sint32 count = pBL->getNumFrames();
-		if(count == 0)
-		{
-			UT_DEBUGMSG(("BlockLayout does not contain this frame! \n"));
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			return;
-		}
-		UT_sint32 i =0;
+		UT_sint32 i = 0;
 		for(i=0; i<count; i++)
 		{
 			fl_FrameLayout * pFL = pBL->getNthFrameLayout(i);
@@ -919,21 +865,6 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_bIsTightWrap = false;
-	}
-	//
-	// Should be relocated before final placement
-	//
-	if(!pSectionAP || !pSectionAP->getProperty("relocate",pszTightWrapped))
-	{
-		m_bRelocate = false;
-	}
-	else if(strcmp(pszTightWrapped,"1") == 0)
-	{
-		m_bRelocate = true;
-	}
-	else
-	{
-		m_bRelocate = false;
 	}
 
 // Xpos

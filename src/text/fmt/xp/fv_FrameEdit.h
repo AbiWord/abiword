@@ -35,6 +35,21 @@ typedef enum _FV_FrameEditMode
 	FV_FrameEdit_EXISTING_SELECTED
 } FV_FrameEditMode;
 
+struct fv_FrameStrings
+{
+	UT_String sXpos;
+	UT_String sYpos;
+	UT_String sColXpos;
+	UT_String sColYpos;
+	UT_String sPageXpos;
+	UT_String sPageYpos;
+	UT_String sWidth;
+	UT_String sHeight;
+	UT_String sPrefPage;
+	UT_String sPrefColumn;
+};
+
+
 class ABI_EXPORT FV_FrameEdit : public FV_Base
 {
 	friend class fv_View;
@@ -56,16 +71,7 @@ public:
 	void                  deleteFrame(fl_FrameLayout * pFL = NULL);
 	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawFrame);
 	bool                  getFrameStrings(UT_sint32 x, UT_sint32 y,
-					      UT_String & sXpos,
-					      UT_String & sYpos,
-					      UT_String & sWidth,
-					      UT_String & sHeight,
-					      UT_String & sColXpos,
-					      UT_String & sColYpos,
-					      UT_String & sPageXpos,
-					      UT_String & sPageYpos,
-					      UT_String & sPrefPage,
-					      UT_String & sPrefColumn,
+					      fv_FrameStrings &FS,
 					      fl_BlockLayout ** pCloseBL,
 					      fp_Page ** pPage);
 	fl_FrameLayout *      getFrameLayout(void)
@@ -102,5 +108,6 @@ private:
 	UT_String             m_sMinHeight;
 	UT_String             m_sExpandHeight;
 };
+
 
 #endif /* FV_FRAME_EDIT_H */

@@ -141,12 +141,14 @@ public:
 		{ return m_bHasEndFrame;}
 	bool                isTightWrap(void)
 	  { return m_bIsTightWrap;}
-	bool                isRelocate(void) const
-	{ return m_bRelocate;}
 	bool                expandHeight(void) const
 	{ return m_bExpandHeight;}
 	UT_sint32           minHeight(void) const
 	{ return m_iMinHeight;}
+	fl_ContainerLayout *     getParentContainer(void) const
+	        {return m_pParentContainer;}
+	void                setParentContainer(fl_ContainerLayout * pCon) 
+	        {m_pParentContainer = pCon;}
 private:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void		     _lookupMarginProperties(const PP_AttrProp* pAP);
@@ -188,9 +190,9 @@ private:
 	bool                    m_bIsTightWrap;
 	UT_sint32               m_iPrefPage;
 	UT_sint32               m_iPrefColumn;
-	bool                    m_bRelocate;
 	bool                    m_bExpandHeight;
 	UT_sint32               m_iMinHeight;
+	fl_ContainerLayout *    m_pParentContainer;
 };
 
 #endif /* FRAMELAYOUT_H */

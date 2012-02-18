@@ -155,7 +155,6 @@ public:
 		abi_page_margin_right,
 		abi_page_margin_top,
 		abi_position_to,
-		abi_relocate,
 		abi_right_attach,
 		abi_right_color,
 		abi_right_shadow,

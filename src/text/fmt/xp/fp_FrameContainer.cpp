@@ -115,14 +115,6 @@ bool fp_FrameContainer::isAbove(void)
   return  m_bIsAbove;
 }
 /*!
- * Returns true if the frame should be relocated before placing on a page
- */
-bool fp_FrameContainer::isRelocate(void) const
-{
-     fl_FrameLayout * pFL = static_cast<fl_FrameLayout *>(getSectionLayout());
-     return pFL->isRelocate();
-}
-/*!
  * Returns true if the supplied screen rectangle overlaps with frame
  * container. This method takes account of transparening and tight wrapping.
  */

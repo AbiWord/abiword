@@ -3589,6 +3589,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	else
 	{
 		bool b_editStarted = false;
+		bool b_delBlockWithFrames = false;
 		//
 		// Look to see if there is a tab - list label deal with these together
 		//
@@ -3627,7 +3628,6 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 //
 		fl_BlockLayout * pFirstBlock = NULL;
 		fl_BlockLayout * pSecondBlock = NULL;
-		bool b_delBlockWithFrames = false;
 
 		if((bForward == false) && (count == 1)) 
 		{
@@ -3674,10 +3674,16 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 		if (b_delBlockWithFrames)
 		{
-			UT_sint32 i = 0;
+			_saveAndNotifyPieceTableChange();
+			m_pDoc->beginUserAtomicGlob();
+			m_pDoc->disableListUpdates();
+			b_editStarted = true;
+
 			UT_sint32 extraHeight = 0;
 			bool b_evalHeightOfFirstBlock = false;
-			for(i=0; i < pSecondBlock->getNumFrames();i++)
+			UT_sint32 i = 0;
+			UT_sint32 imax = pSecondBlock->getNumFrames();
+			for(i=0; i < imax;i++)
 			{
 				fl_FrameLayout * pFL = pSecondBlock->getNthFrameLayout(i);
 				if(pFL->isHidden() > FP_VISIBLE)
@@ -3702,41 +3708,26 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 						extraHeight = pFirstBlock->getHeightOfBlock(false);
 						b_evalHeightOfFirstBlock = true;
 					}
-					ypos = UT_convertToInches(pszYPos) + double(extraHeight)/UT_LAYOUT_RESOLUTION;
-					const gchar * frameProperties[] = {"ypos",UT_formatDimensionString(DIM_IN,ypos),NULL};
+					ypos = UT_convertToInches(pszYPos) + double(extraHeight)/double(UT_LAYOUT_RESOLUTION);
+					UT_String sValY = UT_formatDimensionString(DIM_IN,ypos);
+					const gchar * frameProperties[] = {"ypos",sValY.c_str(),NULL};
 					PT_DocPosition posStart = pFL->getPosition(true)+1;
 					PT_DocPosition posEnd = posStart;
-					if (!b_editStarted)
-					{
-						m_pDoc->beginUserAtomicGlob();
-						_saveAndNotifyPieceTableChange();
-						b_editStarted = true;
-					}
 					UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
 																	 frameProperties,PTX_SectionFrame);
 					UT_ASSERT(bRet);
 				}
 			}
-			m_pDoc->enableListUpdates();
-			m_pDoc->updateDirtyLists();
-			m_pDoc->disableListUpdates();
-			UT_sint32 k = pFirstBlock->getNumFrames();
-			while (k > 0)
+			imax = pFirstBlock->getNumFrames();
+			for(i=0; i < imax;i++)
 			{
-				k--;
 				fl_FrameLayout * pFL = pFirstBlock->getNthFrameLayout(0);
 				if(pFL->getContainerType() != FL_CONTAINER_FRAME)
 				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				pf_Frag_Strux* sdhStart =  pFL->getStruxDocHandle();
-				PT_DocPosition pos = m_pDoc->getStruxPosition(sdhStart);
-				changeBlockAssociatedWithFrame(pos,pSecondBlock,!b_editStarted);
-				if (!b_editStarted)
-				{
-					b_editStarted = true;
-				}
+				m_pLayout->relocateFrame(pFL,pSecondBlock);
 			}
 			if (bForward)
 			{
@@ -4003,7 +3994,6 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		// Signal PieceTable Change
 		if (!b_editStarted)
 		{
-			m_pDoc->beginUserAtomicGlob();
 			_saveAndNotifyPieceTableChange();
 			b_editStarted = true;
 		}
@@ -4090,12 +4080,15 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			UT_ASSERT( iRealDeleteCount <= count );
 			_charMotion(bForward,count - iRealDeleteCount);
 		}
+		if (b_delBlockWithFrames)
+		{
+			m_pDoc->endUserAtomicGlob();
+		}
 	}
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_setPoint(getPoint());
-	m_pDoc->endUserAtomicGlob();
 	if(!bSimple)
 		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 	else

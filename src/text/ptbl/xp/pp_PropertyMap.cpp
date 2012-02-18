@@ -126,7 +126,6 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"page-margin-right",
 	"page-margin-top",
 	"position-to",
-	"relocate",
 	"right-attach",
 	"right-color",
 	"right-shadow",

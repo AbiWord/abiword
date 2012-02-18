@@ -536,10 +536,12 @@ public:
 	void            selectFrame(void);
 	fl_FrameLayout * getFrameLayout(PT_DocPosition pos);
 	fl_FrameLayout * getFrameLayout(void);
-	void            changeBlockAssociatedWithFrame(PT_DocPosition pos, fl_BlockLayout * newBlock, bool b_NotifyPT = true);
 	void            setFrameFormat(const gchar ** props);
-	void            setFrameFormat(const gchar ** attribs, const gchar ** props);
+	void            setFrameFormat(const gchar ** attribs, const gchar ** props, 
+								   fl_BlockLayout * pNewBL = NULL);
 	void            setFrameFormat(const gchar ** props,FG_Graphic * pFG, const std::string & dataID);
+	bool            getFrameStrings_view(UT_sint32 x, UT_sint32 y,fv_FrameStrings & FrameStrings,
+										 fl_BlockLayout ** pCloseBL,fp_Page ** ppPage);
 	void            convertInLineToPositioned(PT_DocPosition pos, 
 											const gchar ** attribs);
 

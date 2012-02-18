@@ -823,16 +823,7 @@ bool FV_FrameEdit::isImageWrapper(void) const
 }
 
 bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
-				   UT_String & sXpos,
-				   UT_String & sYpos,
-				   UT_String & sWidth,
-				   UT_String & sHeight,
-				   UT_String & sColXpos,
-				   UT_String & sColYpos,
-				   UT_String & sPageXpos,
-				   UT_String & sPageYpos,
-				   UT_String & sPrefPage,
-				   UT_String & sPrefColumn,
+				   fv_FrameStrings & FrameStrings,
 				   fl_BlockLayout ** pCloseBL,
 				   fp_Page ** ppPage)
 {
@@ -869,9 +860,9 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_SHADOW) ||
 		(pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_HDRFTR)))
 		{
-		  UT_DEBUGMSG(("Skipping Block %p \n",pBL));
-		     pPrevBL = pBL;
-		     pBL = pBL->getPrevBlockInDocument();
+		    UT_DEBUGMSG(("Skipping Block %p \n",pBL));
+		    pPrevBL = pBL;
+		    pBL = pBL->getPrevBlockInDocument();
 		}
 		if(pBL == NULL)
 		{
@@ -931,13 +922,9 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		{
 			x += -finalColx -iColx +xp;
 		}
-		else if(finalColx + iColx + m_recCurFrame.width - xp > pPage->getWidth())
+		else if(pPage && (finalColx + iColx + m_recCurFrame.width - xp > pPage->getWidth()))
 		{
-		  //			x -= finalColx + iColx + m_recCurFrame.width -xp - pPage->getWidth();
-		  if(pPage)
-		  {
-		      x = pPage->getWidth() - m_recCurFrame.width;
-		  }
+		    x = pPage->getWidth() - m_recCurFrame.width;
 		}
 		finalColx = x - iColx;
 
@@ -946,24 +933,23 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 		{
 			y += -iColy - finalColy +yp;
 		}
-		else if (finalColy + iColy - yp+  m_recCurFrame.height  > pPage->getHeight())
+		else if (pPage && (finalColy + iColy - yp+  m_recCurFrame.height  > pPage->getHeight()))
 		{
-		  //			y -= finalColy + iColy -yp + m_recCurFrame.height - pPage->getHeight();
 		        y = pPage->getHeight() - m_recCurFrame.height;
 		}
 		finalColy = y - iColy;
 
 		double xPos = static_cast<double>(finalColx)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		double yPos = static_cast<double>(finalColy)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		sColXpos = UT_formatDimensionedValue(xPos,"in", NULL);
-		sColYpos = UT_formatDimensionedValue(yPos,"in", NULL);
+		FrameStrings.sColXpos = UT_formatDimensionedValue(xPos,"in", NULL);
+		FrameStrings.sColYpos = UT_formatDimensionedValue(yPos,"in", NULL);
 		//
 		// OK calculate relative to page now
 		//
 		xPos += static_cast<double>(pCol->getX())/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		yPos += static_cast<double>(pCol->getY())/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		sPageXpos = UT_formatDimensionedValue(xPos,"in", NULL);
-		sPageYpos = UT_formatDimensionedValue(yPos,"in", NULL);
+		FrameStrings.sPageXpos = UT_formatDimensionedValue(xPos,"in", NULL);
+		FrameStrings.sPageYpos = UT_formatDimensionedValue(yPos,"in", NULL);
 
 //
 // Find the screen coords of pLine, then work out the offset to the (x,y)
@@ -1006,16 +992,16 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 //
 		xPos = static_cast<double>(xLineOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 		yPos = static_cast<double>(yLineOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
-		sXpos = UT_formatDimensionedValue(xPos,"in", NULL);
-		sYpos = UT_formatDimensionedValue(yPos,"in", NULL);
-		sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
-		sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
+		FrameStrings.sXpos = UT_formatDimensionedValue(xPos,"in", NULL);
+		FrameStrings.sYpos = UT_formatDimensionedValue(yPos,"in", NULL);
+		FrameStrings.sWidth = UT_formatDimensionedValue(dWidth,"in", NULL);
+		FrameStrings.sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
 		*ppPage = pPage;
 		UT_sint32 iPage = getView()->getLayout()->findPage(pPage);
-		UT_String_sprintf(sPrefPage,"%d",iPage);
+		UT_String_sprintf(FrameStrings.sPrefPage,"%d",iPage);
 		fp_Column * pColumn = static_cast<fp_Column *>(pCol);
 		UT_sint32 iColumn = pColumn->getColumnIndex();
-		UT_String_sprintf(sPrefColumn,"%d",iColumn);
+		UT_String_sprintf(FrameStrings.sPrefColumn,"%d",iColumn);
 
 		return true;
 }
@@ -1070,20 +1056,10 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		getDoc()->disableListUpdates();
 		_beginGlob();
 
-		UT_String sXpos("");
-		UT_String sYpos("");
-		UT_String sColXpos("");
-		UT_String sColYpos("");
-		UT_String sPageXpos("");
-		UT_String sPageYpos("");
-		UT_String sWidth("");
-		UT_String sHeight("");
-		UT_String sPrefPage("");
-		UT_String sPrefColumn("");
+		fv_FrameStrings FrameStrings;
 		fl_BlockLayout * pCloseBL = NULL;
 		fp_Page * pPage = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,
-				sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,sPrefColumn,&pCloseBL,&pPage);
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,FrameStrings,&pCloseBL,&pPage);
 		pf_Frag_Strux * pfFrame = NULL;
 		// WARNING: Will need to change this to accomodate variable styles without constantly resetting to solid.
 		//				 Recommend to do whatever is done for thickness, which must also have a default set but not
@@ -1092,16 +1068,16 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		const gchar * props[48] = {"frame-type","textbox",
 					      "wrap-mode","wrapped-both",
 					      "position-to","column-above-text",
-					      "xpos",sXpos.c_str(),
-					      "ypos",sYpos.c_str(),
-					      "frame-width",sWidth.c_str(),
-					      "frame-height",sHeight.c_str(),
-					      "frame-col-xpos",sColXpos.c_str(),
-					      "frame-col-ypos",sColYpos.c_str(),
-					      "frame-page-xpos",sPageXpos.c_str(),
-					      "frame-page-ypos",sPageYpos.c_str(),
-					   "frame-pref-page",sPrefPage.c_str(),
-					   "frame-pref-column",sPrefColumn.c_str(),
+					      "xpos",FrameStrings.sXpos.c_str(),
+					      "ypos",FrameStrings.sYpos.c_str(),
+					      "frame-width",FrameStrings.sWidth.c_str(),
+					      "frame-height",FrameStrings.sHeight.c_str(),
+					      "frame-col-xpos",FrameStrings.sColXpos.c_str(),
+					      "frame-col-ypos",FrameStrings.sColYpos.c_str(),
+					      "frame-page-xpos",FrameStrings.sPageXpos.c_str(),
+					      "frame-page-ypos",FrameStrings.sPageYpos.c_str(),
+					   "frame-pref-page",FrameStrings.sPrefPage.c_str(),
+					   "frame-pref-column",FrameStrings.sPrefColumn.c_str(),
 					      "background-color", "ffffff",
 						  "left-style","1",
 						  "right-style","1",
@@ -1133,7 +1109,6 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 // Finish up with the usual stuff
 
-		getDoc()->setDontImmediatelyLayout(false);
 		m_pView->_generalUpdate();
 
 		_endGlob();
@@ -1229,524 +1204,62 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 //  Frame Image
 
-		const gchar * pszDataID = NULL;
-		pSectionAP->getAttribute(PT_STRUX_IMAGE_DATAID, (const gchar *&)pszDataID);
-
-		UT_String sFrameProps;
-		UT_String sProp;
-		UT_String sVal;
-
-		const gchar *pszFrameType = NULL;
-		const gchar *pszPositionTo = NULL;
-		const gchar *pszWrapMode=NULL;
-		const gchar *pszXpad = NULL;
-		const gchar *pszYpad = NULL;
-
-		const gchar * pszColor = NULL;
-		const gchar * pszBorderColor = NULL;
-		const gchar * pszBorderStyle = NULL;
-		const gchar * pszBorderWidth = NULL;
-
-
-// Frame Type
-
-		sProp = "frame-type";
-		if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
-		{
-			sVal = "textbox";
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		else 
-		{
-			sVal = pszFrameType;
-		}
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-		
-
-// Position-to
-
-		sProp = "position-to";
-		if(!pSectionAP || !pSectionAP->getProperty("position-to",pszPositionTo))
-		{
-			sVal = "column-above-text";
-		}
-		else
-		{
-			sVal = pszPositionTo;
-		}
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-
-
-// wrap-mode
-
-		sProp = "wrap-mode";
-		if(!pSectionAP || !pSectionAP->getProperty("wrap-mode",pszWrapMode))
-		{
-			sVal = "above-text";
-		}
-		else
-		{
-			sVal = pszWrapMode;
-		}
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-// tight-wrap
-
-		sProp = "tight-wrap";
-		if(!pSectionAP || !pSectionAP->getProperty("tight-wrap",pszWrapMode))
-		{
-			sVal = "0";
-		}
-		else
-		{
-			sVal = pszWrapMode;
-		}
-		UT_String_setProperty(sFrameProps,sProp,sVal);
-
-// Relocate     
-		sProp = "relocate";
-		sVal = "0";
-		UT_String_setProperty(sFrameProps,sProp,sVal);
-
-
-// Xpadding
-
-		sProp = "xpad";
-		if(!pSectionAP || !pSectionAP->getProperty("xpad",pszXpad))
-		{
-			sVal = "0.03in";
-		}
-		else
-		{
-			sVal= pszXpad;
-		}
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-
-// Ypadding
-
-		sProp = "ypad";
-		if(!pSectionAP || !pSectionAP->getProperty("ypad",pszYpad))
-		{
-			sVal = "0.03in";
-		}
-		else
-		{
-			sVal = pszYpad;
-		}
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-
-
-	/* Frame-border properties:
-	 */
-
-		pSectionAP->getProperty ("color", pszColor);
-		if(pszColor)
-		{
-			sProp = "color";
-			sVal = pszColor;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-
-		pSectionAP->getProperty ("bot-color",pszBorderColor);
-		pSectionAP->getProperty ("bot-style",pszBorderStyle);
-		pSectionAP->getProperty ("bot-thickness",pszBorderWidth);
-		if(pszBorderColor)
-		{
-			sProp = "bot-color";
-			sVal = pszBorderColor;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBorderStyle)
-		{
-			sProp = "bot-style";
-			sVal = pszBorderStyle;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBorderWidth)
-		{
-			sProp = "bot-thickness";
-			sVal = pszBorderWidth;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-
-		pszBorderColor = NULL;
-		pszBorderStyle = NULL;
-		pszBorderWidth = NULL;
-
-		pSectionAP->getProperty ("left-color", pszBorderColor);
-		pSectionAP->getProperty ("left-style", pszBorderStyle);
-		pSectionAP->getProperty ("left-thickness", pszBorderWidth);
-		if(pszBorderColor)
-		{
-			sProp = "left-color";
-			sVal = pszBorderColor;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBorderStyle)
-		{
-			sProp = "left-style";
-			sVal = pszBorderStyle;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBorderWidth)
-		{
-			sProp = "left-thickness";
-			sVal = pszBorderWidth;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-
-		pszBorderColor = NULL;
-		pszBorderStyle = NULL;
-		pszBorderWidth = NULL;
-
-		pSectionAP->getProperty ("right-color",pszBorderColor);
-		pSectionAP->getProperty ("right-style",pszBorderStyle);
-		pSectionAP->getProperty ("right-thickness", pszBorderWidth);
-		if(pszBorderColor)
-		{
-			sProp = "right-color";
-			sVal = pszBorderColor;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBorderStyle)
-		{
-			sProp = "right-style";
-			sVal = pszBorderStyle;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBorderWidth)
-		{
-			sProp = "right-thickness";
-			sVal = pszBorderWidth;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-
-		pszBorderColor = NULL;
-		pszBorderStyle = NULL;
-		pszBorderWidth = NULL;
-
-		pSectionAP->getProperty ("top-color",  pszBorderColor);
-		pSectionAP->getProperty ("top-style",  pszBorderStyle);
-		pSectionAP->getProperty ("top-thickness",pszBorderWidth);
-		if(pszBorderColor)
-		{
-			sProp = "top-color";
-			sVal = pszBorderColor;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBorderStyle)
-		{
-			sProp = "top-style";
-			sVal = pszBorderStyle;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBorderWidth)
-		{
-			sProp = "top-thickness";
-			sVal = pszBorderWidth;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-
-	/* Frame fill
-	 */
-
-		const gchar * pszBgStyle = NULL;
-		const gchar * pszBgColor = NULL;
-		const gchar * pszBackgroundColor = NULL;
-
-		pSectionAP->getProperty ("bg-style",    pszBgStyle);
-		pSectionAP->getProperty ("bgcolor",     pszBgColor);
-		pSectionAP->getProperty ("background-color", pszBackgroundColor);
-		if(pszBgStyle)
-		{
-			sProp = "bg-style";
-			sVal = pszBgStyle;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBgColor)
-		{
-			sProp = "bgcolor";
-			sVal = pszBgColor;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		if(pszBackgroundColor)
-		{
-			sProp = "background-color";
-			sVal = pszBackgroundColor;
-			UT_String_setProperty(sFrameProps,sProp,sVal);		
-		}
-		const char * szTitle = NULL;
-		const char * szDescription = NULL;
-		bool bFound = pSectionAP->getAttribute("title",szTitle);
-		if(!bFound)
-		{
-		    szTitle = "";
-		}
-		bFound = pSectionAP->getAttribute("alt",szDescription);
-		if(!bFound)
-		{
-		    szDescription = "";
-		}
-
-
-		UT_String sXpos("");
-		UT_String sYpos("");
-		UT_String sWidth("");
-		UT_String sHeight("");
-		UT_String sColXpos("");
-		UT_String sColYpos("");
-		UT_String sPageXpos("");
-		UT_String sPageYpos("");
-		UT_String sPrefPage("");
-		UT_String sPrefColumn("");
+		fv_FrameStrings FrameStrings;
 		fl_BlockLayout * pCloseBL = NULL;
 		fp_Page * pPage = NULL;
-		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,
-				sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,sPrefColumn,
+		fl_FrameLayout *pFL = m_pFrameLayout;
+		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,FrameStrings,
 				&pCloseBL,&pPage);
 		posAtXY = pCloseBL->getPosition();
 
-		sProp = "xpos";
-		sVal = sXpos;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-		sProp = "ypos";
-		sVal = sYpos;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-
-		sProp = "frame-col-xpos";
-		sVal = sColXpos;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-		sProp = "frame-col-ypos";
-		sVal = sColYpos;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-
-
-		sProp = "frame-page-xpos";
-		sVal = sPageXpos;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-		sProp = "frame-page-ypos";
-		sVal = sPageYpos;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-
-		sProp = "frame-width";
-		sVal = sWidth;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-		sProp = "frame-height";
-		sVal = sHeight;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
-		sProp = "frame-pref-page";
-		sVal = sPrefPage;
-		UT_String_setProperty(sFrameProps,sProp,sVal);
-		sProp = "frame-pref-column";
-		sVal = sPrefColumn;
-		UT_String_setProperty(sFrameProps,sProp,sVal);
-
-		sProp = "frame-rel-width";
-		sVal = m_sRelWidth;
-		UT_String_setProperty(sFrameProps,sProp,sVal);
-		sProp = "frame-min-height";
-		sVal = m_sMinHeight;
-		UT_String_setProperty(sFrameProps,sProp,sVal);
-		sProp = "frame-expand-height";
-		sVal = m_sExpandHeight;
-		UT_String_setProperty(sFrameProps,sProp,sVal);
-		//
-		// Get all the blocks around the frame
-		//
-		UT_GenericVector<fl_ContainerLayout *> AllLayouts;
-		AllLayouts.clear();
-		UT_sint32 i = 0;
-		m_pFrameContainer->getPage()->getAllLayouts(AllLayouts);
-
-		fl_DocSectionLayout * pDSL = getFrameLayout()->getDocSectionLayout();
-
-#if 0
-		PT_DocPosition oldPoint = m_pView->getPoint();
-		PT_DocPosition oldFramePoint = m_pFrameLayout->getPosition(true);
-		UT_uint32 oldFrameLen = m_pFrameLayout->getLength();
-#endif
+		const gchar * props[] = {"xpos",FrameStrings.sXpos.c_str(),
+					 "ypos",FrameStrings.sYpos.c_str(),
+					 "frame-col-xpos",FrameStrings.sColXpos.c_str(),
+					 "frame-col-ypos",FrameStrings.sColYpos.c_str(),
+					 "frame-page-xpos",FrameStrings.sPageXpos.c_str(),
+					 "frame-page-ypos",FrameStrings.sPageYpos.c_str(),
+					 "frame-pref-page",FrameStrings.sPrefPage.c_str(),
+					 "frame-pref-column",FrameStrings.sPrefColumn.c_str(),
+					  "frame-width",FrameStrings.sWidth.c_str(),
+					 "frame-height",FrameStrings.sHeight.c_str(),
+					 NULL};
 		// Signal PieceTable Change
-		getDoc()->beginUserAtomicGlob();
 		m_pView->_saveAndNotifyPieceTableChange();
-
-	// Turn off list updates
-
 		getDoc()->disableListUpdates();
 		_beginGlob();
 
 		m_pView->_clearSelection();
 
-// Copy the content of the frame to the clipboard
-
-		bool isTextBox = true;
-		if(m_pFrameLayout->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
+		if (pFL->getParentContainer() == pCloseBL)
 		{
-			isTextBox = false;
-		}
-		PT_DocPosition posStart = m_pFrameLayout->getPosition(true);
-		PT_DocPosition posEnd = posStart + m_pFrameLayout->getLength();
-		bool bHasContent = false;
-		if(isTextBox)
-		{
-			PD_DocumentRange dr_oldFrame;
-			dr_oldFrame.set(getDoc(),posStart+1,posEnd-1);
-			UT_DEBUGMSG(("SEVIOR: Copy to local changing frame \n"));
-			m_pView->copyToLocal(posStart+1,posEnd-1);
-			bHasContent = true;
-		}
-// Delete the frame
-
-		pf_Frag_Strux* sdhStart =  m_pFrameLayout->getStruxDocHandle();
-		pf_Frag_Strux* sdhEnd = NULL;
-		posStart = getDoc()->getStruxPosition(sdhStart);
-		getDoc()->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
-		if(sdhEnd == NULL)
-		{
-		    posEnd= posStart+1;
+		    PT_DocPosition posStart = pFL->getPosition(true)+1;
+		    PT_DocPosition posEnd = posStart;
+		    UT_DebugOnly<bool> bRet = getDoc()->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
+								       props,PTX_SectionFrame);
+		    UT_ASSERT(bRet);
 		}
 		else
 		{
-		    posEnd = getDoc()->getStruxPosition(sdhEnd)+1;
+		    pFL = getLayout()->relocateFrame(pFL,pCloseBL,NULL,props);
 		}
-		UT_uint32 iRealDeleteCount;
-		PP_AttrProp * p_AttrProp_Before = NULL;
 
-		getDoc()->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
-		//
-		// Now collapse all the blocks around it.
-		//
-		for(i=0; i< AllLayouts.getItemCount();i++)
-		{
-		     fl_ContainerLayout * pCL = AllLayouts.getNthItem(i);
-		     pCL->collapse();
-		}
-		//
-		// Rebuild the page
-		//
-		pDSL->format();
-		m_pFrameLayout = NULL;
-
-// Insert the new frame struxes
-//
-// This should place the the frame strux immediately after the block containing
-// position posXY.
-// It returns the Frag_Strux of the new frame.
-//
-		const gchar ** atts = NULL;
-		if( pszDataID == NULL)
-		{
-			atts = new const gchar * [3];
-			atts[0] = "props";
-			atts[1] = sFrameProps.c_str();
-			atts[2] =  NULL;
-		}
-		else
-		{
-			atts = new const gchar * [9];
-			atts[0] = PT_STRUX_IMAGE_DATAID;
-			atts[1] = pszDataID;
-			atts[2] = "props";
-			atts[3] = sFrameProps.c_str();
-			atts[4]  = PT_IMAGE_TITLE;
-			atts[5] = szTitle;
-			atts[6] = PT_IMAGE_DESCRIPTION;
-			atts[7] = szDescription;
-			atts[8] =  NULL;
-		}
-		pf_Frag_Strux * pfFrame = NULL;
-		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,atts,NULL,&pfFrame);
-		PT_DocPosition posFrame = pfFrame->getPos();
-		if(isTextBox)
-		{
-			if(!bHasContent)
-			{
-			     getDoc()->insertStrux(posFrame+1,PTX_Block);
-			     getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
-			     m_pView->insertParaBreakIfNeededAtPos(posFrame+3);
-			}
-			else
-			{
-			     getDoc()->insertStrux(posFrame+1,PTX_EndFrame);
-			     m_pView->insertParaBreakIfNeededAtPos(posFrame+2);
-			}
-		}
-		else
-		{
-			getDoc()->insertStrux(posFrame+1,PTX_EndFrame);
-			m_pView->insertParaBreakIfNeededAtPos(posFrame+2);
-		}
-		delete [] atts;
-
-// paste in the contents of the new frame.
-//
-		if(isTextBox)
-		{
-			UT_DEBUGMSG(("SEVIOR: Pasting from clipboard Frame changed \n"));
-			if(!bHasContent)
-			{
-			     m_pView->_pasteFromLocalTo(posFrame+2);
-			}
-			else
-			{
-			     m_pView->_pasteFromLocalTo(posFrame+1);
-			}
-		}
-// Finish up with the usual stuff
-		getDoc()->setDontImmediatelyLayout(false);
+        // Finish up with the usual stuff
 		m_pView->_generalUpdate();
 
 	// restore updates and clean up dirty lists
 		getDoc()->enableListUpdates();
 		getDoc()->updateDirtyLists();
-
-	// Signal PieceTable Changes have finished
 		m_pView->_restorePieceTableState();
-//
-// OK get a pointer to the new frameLayout
-//
-		if(isTextBox)
-		{
-			m_pFrameLayout = m_pView->getFrameLayout(posFrame+2);
-		}
-		else
-		{
-			m_pFrameLayout = m_pView->getFrameLayout(posFrame);
-		}
-		UT_return_if_fail(m_pFrameLayout);
-
-// Set the point back to the same position on the screen
-
-#if 0
-		PT_DocPosition newFramePoint = m_pFrameLayout->getPosition(true);
-		UT_sint32 newFrameLen = m_pFrameLayout->getLength();
-		PT_DocPosition newPoint = 0;
-		if((oldPoint < oldFramePoint) && (newFramePoint < oldPoint))
-		{
-			newPoint = oldPoint + newFrameLen;
-		}
-		else if((oldPoint < oldFramePoint) && (oldPoint <= newFramePoint))
-		{
-			newPoint = oldPoint;
-		}
-		else if((oldPoint >= oldFramePoint) && (oldPoint >= newFramePoint))
-		{
-			newPoint = oldPoint  - oldFrameLen + newFrameLen;
-		}
-		else // oldPoint >= oldFramePoint && (oldPoint < newFramePoint)
-		{
-			newPoint = oldPoint - oldFrameLen;
-		}
-		m_pView->setPoint(newPoint);
-#endif
+		PT_DocPosition posFrame = getDoc()->getStruxPosition(pFL->getStruxDocHandle());
 		m_pView->setPoint(posFrame+1);
 		bool bOK = true;
 		while(!m_pView->isPointLegal() && bOK)
 		{
-			bOK = m_pView->_charMotion(true,1);
+		    bOK = m_pView->_charMotion(true,1);
 		}
 		m_pView->notifyListeners(AV_CHG_HDRFTR);
 		m_pView->_fixInsertionPointCoords();
 		m_pView->_ensureInsertionPointOnScreen();
-		getDoc()->endUserAtomicGlob();
 //
 // If this was a drag following the initial click, wrap it in a 
 // endUserAtomicGlob so it undo's in a single click.
@@ -1758,9 +1271,9 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 //
 // Finish up by putting the editmode back to existing selected.
 //	
-		DELETEP(m_pFrameImage);
 		m_pView->updateScreen(false);
-		m_iFrameEditMode = FV_FrameEdit_EXISTING_SELECTED;
+		m_pFrameLayout = pFL;
+		setMode(FV_FrameEdit_EXISTING_SELECTED);
 		if(getGraphics())
 		{
 		      getGraphics()->allCarets()->disable();
@@ -1822,7 +1335,6 @@ void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 
 	getDoc()->disableListUpdates();
 	_beginGlob();
-	getDoc()->setDontImmediatelyLayout(true);
 
 // Delete the frame
 
@@ -1845,9 +1357,7 @@ void FV_FrameEdit::deleteFrame(fl_FrameLayout * pFL)
 
 // Finish up with the usual stuff
 
-	getDoc()->setDontImmediatelyLayout(false);
 	m_pView->_generalUpdate();
-
 
 	// restore updates and clean up dirty lists
 	getDoc()->enableListUpdates();

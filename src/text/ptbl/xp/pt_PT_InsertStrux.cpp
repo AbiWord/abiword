@@ -646,6 +646,8 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 
 	if (bNeedGlob)
 	{
+		// dpos might have shifted if a frame was moved in between the two blocks
+		dpos = pfsNew->getPos();
 		UT_return_val_if_fail (!pfsNew->getNext() || pfsNew->getNext()->getType()!=pf_Frag::PFT_FmtMark, false);
 		_insertFmtMarkAfterBlockWithNotify(pfsNew,dpos+pfsNew->getLength(),apFmtMark);
 		endMultiStepGlob();

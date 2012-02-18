@@ -1264,6 +1264,10 @@ void fl_ContainerLayout::addFrame(fl_FrameLayout * pFrame)
 		return;
 	}
 	m_vecFrames.addItem(pFrame);
+	if (!pFrame->getParentContainer())
+	{pFrame->setParentContainer(this);}
+	else
+	{UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);}
 }
 
 UT_sint32 fl_ContainerLayout::getNumFrames(void) const
@@ -1292,17 +1296,20 @@ fp_FrameContainer * fl_ContainerLayout::getNthFrameContainer(UT_sint32 i) const
 	return pFC;
 }
 
-void fl_ContainerLayout:: removeFrame(fl_FrameLayout * pFrame)
+bool fl_ContainerLayout::removeFrame(fl_FrameLayout * pFrame)
 {
 	UT_DEBUGMSG(("Remove Frame %p from this container %p \n",pFrame,this));
 	UT_sint32 i = m_vecFrames.findItem(pFrame);
 	if(i >= 0)
 	{
 		m_vecFrames.deleteNthItem(i);
+		if (pFrame->getParentContainer() == this)
+		{pFrame->setParentContainer(NULL);}
+		return true;
 	}
 	else
 	{
 		UT_DEBUGMSG((" Requested Frame not found \n"));
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
 	}
 }

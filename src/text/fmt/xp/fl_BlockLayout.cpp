@@ -2490,6 +2490,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 {
 	FV_View *pView = getView();
 	GR_Graphics * pG = m_pLayout->getGraphics();
+	FL_DocLayout *pDL = getDocLayout();
 	UT_return_val_if_fail( pView && pG, false );
 	
 	if(getNumFrames() == 0)
@@ -2510,17 +2511,6 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			continue;
 		}
-
-		if(pFrame->isRelocate())
-		{
-				//
-				// This frame needs to be relocated elsewhere
-				//
-				removeFrame(pFrame);
-				m_pLayout->relocateFrame(pFrame);
-				i--;
-				continue;
-		}
 		if(pFrame->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK)
 		{
 			UT_sint32 xFpos = pFrame->getFrameXpos();
@@ -2536,7 +2526,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			{
 				return false;
 			}
-			if(pCon->getNext() != NULL)
+			if(pCon->getNext())
 			{
 				while(pCon != pLastLine)
 				{
@@ -2545,7 +2535,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 						yoff += pCon->getHeight();
 						yoff += pCon->getMarginAfter();
 					}
-					if ((yoff < yFpos) && (pCon->getNext() != NULL))
+					if ((yoff < yFpos) && (pCon->getNext()))
 						pCon = static_cast<fp_Line *>(pCon->getNext());
 					else
 						break;
@@ -2626,7 +2616,6 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 					iPrefColumn = 0;
 					b_PrefColumnChanged = true;
 				}
-				FL_DocLayout *pDL = getDocLayout();
 				fl_DocSectionLayout *pSection = getDocSectionLayout();
 				UT_sint32 numColumns = getDocSectionLayout()->getNumColumns();
 				//
@@ -2830,7 +2819,6 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				// Handle case of block spanning two pages
 				//
 				UT_sint32 iPrefPage = pFrameCon->getPreferedPageNo();
-				FL_DocLayout *pDL = getDocLayout();
 				fp_Line * pLFirst = static_cast<fp_Line *>(getFirstContainer());
 				UT_return_val_if_fail(pLFirst,false);
 				fp_Line * pLLast = static_cast<fp_Line *>(getLastContainer());
@@ -2886,6 +2874,8 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 				if(pPage && pPage->findFrameContainer(pFrameCon) < 0)
 				{
 					pPage->insertFrameContainer(pFrameCon);
+					iPrefPage = pDL->findPage(pPage);
+					pFrameCon->setPreferedPageNo(iPrefPage);
 				}
 			}
 		}
@@ -4010,7 +4000,11 @@ void fl_BlockLayout::format()
 	//
 	// Only break section if the height of the block changes.
 	//
-	UT_sint32 iNewHeight = getHeightOfBlock();
+	UT_sint32 iNewHeight = 0;
+	if (!m_bForceSectionBreak)
+	{
+		iNewHeight = getHeightOfBlock();
+	}
 	xxx_UT_DEBUGMSG(("New height of block %d \n",iNewHeight));
 	if((m_bForceSectionBreak) || (iOldHeight != iNewHeight))
 	{
@@ -7531,13 +7525,9 @@ fl_BlockLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux* pcrx)
 			UT_sint32 count = getNumFrames();
 			for(i= 0; i < count; i++)
 		  	{
-				pFrame = getNthFrameLayout(i);
-				pPrevForFrames->addFrame(pFrame);
-			}
-			for( i=count-1; i>=0; i--)
-			{
-				pFrame = getNthFrameLayout(i);
+				pFrame = getNthFrameLayout(0);
 				removeFrame(pFrame);
+				pPrevForFrames->addFrame(pFrame);
 			}
 		}
 	}
@@ -7949,25 +7939,6 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		// TODO char widths data between the two clocks.  see [1].
 		pRun->recalcWidth();
 	}
-	//
-	// Now transfer the frames of this block to the newly created one
-	//
-	if(getNumFrames() > 0)
-	{
-		fl_FrameLayout * pFrame = NULL;
-		UT_sint32 i = 0;
-		UT_sint32 count = getNumFrames();
-		for(i= 0; i < count; i++)
-		{
-			pFrame = getNthFrameLayout(i);
-			pNewBL->addFrame(pFrame);
-		}
-		for( i=0; i<count; i++)
-		{
-			pFrame = pNewBL->getNthFrameLayout(i);
-			removeFrame(pFrame);
-		}
-	}
 
 	// Explicitly truncate rest of this block's layout
 	_truncateLayout(pFirstNewRun);
@@ -8007,6 +7978,100 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 		pNewBL->_insertEndOfParagraphRun();
 	pNewBL->setNeedsReformat(pNewBL);
 	updateEnclosingBlockIfNeeded();
+
+	//
+	// Now transfer the frames of this block to the newly created one
+	//
+	if(getNumFrames() > 0)
+	{
+		FL_DocLayout *pDL = getDocLayout();
+		fp_Line * pLine = pLastRun->getLine();
+		fp_Container * pCon = pLine->getColumn();
+		UT_sint32 pLineX = 0;
+		UT_sint32 pLineY = 0;
+		UT_sint32 pLinePage = 0;
+		if (pLine && pCon)
+		{
+			pLineX = pLine->getX() + pCon->getX() +pCon->getWidth();
+			pLineY = pLine->getY() + pCon->getY();
+			pLinePage = pDL->findPage(pLine->getPage());
+		}
+		fl_FrameLayout * pFL = NULL;
+		fp_FrameContainer * pFrame = NULL;
+		bool b_evalHeightOfFirstBlock = false;
+		UT_sint32 extraHeight = 0;
+		UT_sint32 i = 0;
+		UT_sint32 k = 0;
+		UT_sint32 count = getNumFrames();
+		for(i= 0; i < count; i++)
+		{
+			pFL = getNthFrameLayout(k);
+			pFrame = static_cast <fp_FrameContainer *> (pFL->getFirstContainer());
+			UT_sint32 pFrameX = 0;
+			UT_sint32 pFrameY = 0;
+			UT_sint32 pFramePage = 0;
+			if (pFrame)
+			{
+				pFrameX = pFrame->getX();
+				pFrameY = pFrame->getY();
+				pFramePage = pDL->findPage(pFrame->getPage());
+			}
+			if (!pFrame || (pFramePage > pLinePage) || (pFrameY > pLineY) || (pFrameX > pLineX))
+			{
+				UT_DEBUGMSG(("Frame %p associated to block %p (2nd)\n",pFL,pNewBL));
+				removeFrame(pFL);
+				pNewBL->addFrame(pFL);
+				if((pFL->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK) && 
+				   (!m_pDoc->isDoingTheDo()))
+				{
+					const PP_AttrProp* pAP = NULL;
+					const gchar * pszYPos = NULL;
+					double ypos = 0.;
+					pFL->getAP(pAP);
+					if(!pAP || !pAP->getProperty("ypos",pszYPos))
+					{
+						pszYPos = "0.0in";
+					}
+					if (!b_evalHeightOfFirstBlock)
+					{
+						fp_Line * ppLine = pLine;
+						while(ppLine)
+						{
+							extraHeight += ppLine->getHeight();
+							ppLine = static_cast <fp_Line *> (ppLine->getPrev());
+						}
+						fp_Line * pLastLine = static_cast <fp_Line *> (getLastContainer());
+						if (pLastLine)
+							extraHeight += pLastLine->getMarginAfter();
+						b_evalHeightOfFirstBlock = true;
+					}
+					ypos = UT_convertToInches(pszYPos) - double(extraHeight)/UT_LAYOUT_RESOLUTION;
+					UT_String sValY = UT_formatDimensionString(DIM_IN,ypos);
+					const gchar * frameProperties[] = {"ypos",sValY.c_str(),NULL};
+					PT_DocPosition posStart = pFL->getPosition(true)+1;
+					PT_DocPosition posEnd = posStart;
+					UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
+																	 frameProperties,PTX_SectionFrame);
+					UT_ASSERT(bRet);
+				}
+			}
+			else
+			{
+				UT_DEBUGMSG(("Frame %p associated to block %p (1st)\n",pFL,this));
+				//Frame stays in first block. Need to change the PieceTable
+				if(!m_pDoc->isDoingTheDo())
+				{
+					pDL->relocateFrame(pFL,this);
+				}
+				else
+				{
+					k++;
+					continue;
+				}
+			}
+		}
+	}
+
 
 #ifdef ENABLE_SPELL
 	// Split squiggles between this and the new block

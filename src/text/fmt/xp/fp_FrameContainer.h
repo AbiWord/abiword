@@ -121,7 +121,6 @@ public:
 	bool                isAbove(void);
 	void                setAbove(bool bAbove)
 	        { m_bIsAbove = bAbove;} 
-	bool                isRelocate(void) const;
 private:
 	void                   _drawLine (const PP_PropertyMap::Line & style,
 									  UT_sint32 left, UT_sint32 top, 

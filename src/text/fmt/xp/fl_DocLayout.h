@@ -168,7 +168,8 @@ public:
 	UT_sint32	countPages() const;
 	UT_sint32   findPage(fp_Page * pPage) const; // FIXME figure out how to pass a const fp_Page *
 	void            setFramePageNumbers(UT_sint32 iStartPage);
-	void            relocateFrame(fl_FrameLayout * pFrame);
+	fl_FrameLayout* relocateFrame(fl_FrameLayout * pFL, fl_BlockLayout * newBlock,
+				      const gchar** attributes = NULL, const gchar **properties = NULL);
 	void            clearAllCountWraps(void);
 
 	UT_sint32   getPercentFilled(void) const
