@@ -42,6 +42,7 @@
 #include "fp_Line.h"
 #include "fp_Run.h"
 #include "fp_ContainerObject.h"
+#include "fp_FrameContainer.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 #include "fl_BlockLayout.h"
@@ -707,6 +708,55 @@ void AP_Dialog_FormatFrame::applyChanges()
 	if (!pView)
 		return;
 
+	//Check if the position mode changed. Update xpos and ypos parameters if necessary
+	fl_FrameLayout * pFL = pView->getFrameLayout();
+	fl_BlockLayout * pCloseBL = NULL;
+	UT_String sPropMode = "position-to";
+	const gchar * sMode = NULL;
+	m_vecProps.getProp(sPropMode.c_str(),sMode);
+
+	if (((pFL->getFramePositionTo() == FL_FRAME_POSITIONED_TO_BLOCK) &&
+		 (strcmp(sMode,"block-above-text") != 0)) ||
+		((pFL->getFramePositionTo() == FL_FRAME_POSITIONED_TO_COLUMN) &&
+		 (strcmp(sMode,"column-above-text") != 0)) ||
+		((pFL->getFramePositionTo() == FL_FRAME_POSITIONED_TO_PAGE) &&
+		(strcmp(sMode,"page-above-text") != 0)))
+	{
+		UT_DEBUGMSG(("Executing new code\n"));
+		fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(pFL->getFirstContainer());
+		if (pFrameC)
+		{
+			fv_FrameStrings FrameStrings;
+			fp_Page * pPage = NULL;
+			UT_sint32 iXposPage = pFrameC->getX() - pFrameC->getXPad();
+			UT_sint32 iYposPage = pFrameC->getY() - pFrameC->getYPad();
+			UT_sint32 xp = 0;
+			UT_sint32 yp = 0;
+			pPage = pFrameC->getColumn()->getPage();
+			pView->getPageScreenOffsets(pPage,xp,yp);
+			pView->getFrameStrings_view(iXposPage+xp,iYposPage+yp,
+										FrameStrings,&pCloseBL,&pPage);
+
+			if (strcmp(sMode,"block-above-text") == 0)
+			{
+				m_vecProps.addOrReplaceProp("xpos",FrameStrings.sXpos.c_str());
+				m_vecProps.addOrReplaceProp("ypos",FrameStrings.sYpos.c_str());
+			}
+			else if (strcmp(sMode,"column-above-text") == 0)
+			{
+				m_vecProps.addOrReplaceProp("frame-col-xpos",FrameStrings.sColXpos.c_str());
+				m_vecProps.addOrReplaceProp("frame-col-ypos",FrameStrings.sColYpos.c_str());
+				m_vecProps.addOrReplaceProp("frame-pref-column",FrameStrings.sPrefColumn.c_str());
+			}
+			else if (strcmp(sMode,"page-above-text") == 0)
+			{
+				m_vecProps.addOrReplaceProp("frame-page-xpos",FrameStrings.sPageXpos.c_str());
+				m_vecProps.addOrReplaceProp("frame-page-ypos",FrameStrings.sPageYpos.c_str());
+			}
+			count = m_vecProps.getItemCount();
+		}
+	}
+
 	const gchar ** propsArray  = new const gchar * [count + 2];
 
 	for (UT_sint32 j = 0; j < count; j = j + 2)
@@ -717,7 +767,7 @@ void AP_Dialog_FormatFrame::applyChanges()
 	propsArray[count  ] = 0;
 	propsArray[count+1] = 0;
 
-	pView->setFrameFormat(propsArray, m_pGraphic, m_sImagePath);
+	pView->setFrameFormat(propsArray, m_pGraphic, m_sImagePath,pCloseBL);
 	delete [] propsArray;
 
 	m_bSettingsChanged = false;

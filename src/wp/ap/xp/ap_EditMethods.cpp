@@ -11486,14 +11486,10 @@ Defun1(dlgFmtPosImage)
 	  fl_BlockLayout * pCloseBL = NULL;
 	  fp_Page * pPage = NULL;
 
-
-	  UT_String sValX;
-	  UT_String sValY;
-
 	  if (pFrameC && (newFormatMode != iPos))
 	  {
-		  UT_sint32 iXposPage = pFrameC->getX();
-		  UT_sint32	iYposPage = pFrameC->getY();
+		  UT_sint32 iXposPage = pFrameC->getX() - pFrameC->getXPad();
+		  UT_sint32 iYposPage = pFrameC->getY() - pFrameC->getYPad();
 		  UT_sint32 xp = 0;
 		  UT_sint32 yp = 0;
 		  pPage = pFrameC->getColumn()->getPage();

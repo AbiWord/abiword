@@ -381,13 +381,15 @@ bool fl_FrameLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	if(pFrameC)
 	{
 	    pPage = pFrameC->getPage();
-	    UT_return_val_if_fail(pPage, false);
-	    pPage->getAllLayouts(AllLayouts);
-	    for(i=0; i< AllLayouts.getItemCount();i++)
-	    {
-	         fl_ContainerLayout * pCL = AllLayouts.getNthItem(i);
-		 pCL->collapse();
-	    }
+		if (pPage)
+		{
+			pPage->getAllLayouts(AllLayouts);
+			for(i=0; i< AllLayouts.getItemCount();i++)
+			{
+				fl_ContainerLayout * pCL = AllLayouts.getNthItem(i);
+				pCL->collapse();
+			}
+		}
 	}
 	setAttrPropIndex(pcrxc->getIndexAP());
 	collapse();

@@ -1388,12 +1388,21 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 }
 
 void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG, 
-							 const std::string & sDataID)
+							 const std::string & sDataID, fl_BlockLayout * pNewBL)
 {
 	setCursorWait();
 	//
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
+
+	fl_FrameLayout * pFrame = getFrameLayout();
+	if(pFrame == NULL)
+	{
+		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+
 	if(isHdrFtrEdit())
 	{
 		clearHdrFtrEdit();
@@ -1428,9 +1437,20 @@ void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG,
 		UT_ASSERT(bRet);
 	}
 
-	UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
-													 properties,PTX_SectionFrame);
-	UT_ASSERT(bRet);
+	if(pNewBL && (pFrame->getParentContainer() != pNewBL))
+	{
+		UT_DEBUGMSG(("BEGIN RELOCATION\n"));
+		getLayout()->relocateFrame(pFrame,pNewBL,NULL,properties);
+	}
+	else
+	{ 
+		UT_DEBUGMSG(("BEGIN CHANGE\n"));
+		//posStart = pFrame->getPosition(true)+1;
+		//PT_DocPosition posEnd = posStart;
+		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
+														 properties,PTX_SectionFrame);
+		UT_ASSERT(bRet);
+	}
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
