@@ -73,7 +73,7 @@ libabiword_@ABIWORD_SERIES@_la_LIBADD = \
 	af/util/xp/libxp.la \
 	af/ev/$(TOOLKIT)/lib$(TOOLKIT).la \
 	af/ev/xp/libxp.la \
-	$(opt_libs) $(DEPS_LIBS)
+	$(opt_libs)
 
 if TOOLKIT_GTK_ALL
 libabiword_@ABIWORD_SERIES@_la_LIBADD += \
@@ -121,8 +121,7 @@ AbiWord_LDFLAGS = \
 	-headerpad_max_install_names 
 
 AbiWord_LDADD = \
-	libabiword-@ABIWORD_SERIES@.la \
-	$(DEPS_LIBS)
+	libabiword-@ABIWORD_SERIES@.la
 
 AbiWord_SOURCES = \
 	$(main_cpp)
@@ -141,8 +140,7 @@ abiword_LDFLAGS = \
 
 abiword_LDADD = \
 	libabiword-@ABIWORD_SERIES@.la \
-	$(resources) \
-	$(DEPS_LIBS)
+	$(resources)
 
 abiword_DEPENDENCIES = \
 	libabiword-@ABIWORD_SERIES@.la \

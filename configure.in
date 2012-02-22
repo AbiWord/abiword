@@ -680,7 +680,6 @@ else
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
-DEPS_LIBS=`$PKG_CONFIG --libs-only-L --libs-only-l $deps_pkgs`
 dnl specific gtk214 test. 	 
 	if test "$TOOLKIT_IS_GTK2" = "yes"; then 	 
 	        PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 	 
