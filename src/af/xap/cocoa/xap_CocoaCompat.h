@@ -20,6 +20,7 @@
 #ifndef _XAP_COCOACOMPAT_H_
 #define _XAP_COCOACOMPAT_H_
 
+#import <Foundation/Foundation.h>
 #import <ApplicationServices/ApplicationServices.h>
 
 // TODO remove XAP_CGFloat
