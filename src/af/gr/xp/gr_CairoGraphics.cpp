@@ -478,8 +478,11 @@ GR_CairoGraphics::~GR_CairoGraphics()
 	// documents with lots of Math. This fixes those crashes and checks with
 	// valgrind show no measureable increase in leacked memory.
 	// 
-	m_pLayoutFontMap = NULL;
-
+	// Hub: but we still leak and the doc say to unref.
+	if (m_pLayoutFontMap) {
+		g_object_unref(m_pLayoutFontMap);
+		m_pLayoutFontMap = NULL;
+	}
 }
 
 void GR_CairoGraphics::resetFontMapResolution(void)
