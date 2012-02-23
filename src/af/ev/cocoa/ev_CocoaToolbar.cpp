@@ -749,7 +749,7 @@ bool EV_CocoaToolbar::bindListenerToView(AV_View * pView)
 	m_pViewListener = new EV_CocoaToolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
+	UT_DebugOnly<bool> bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 
 	if (pView->isDocumentPresent()) {

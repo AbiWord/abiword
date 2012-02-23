@@ -66,10 +66,10 @@ AP_CocoaDialog_MetaData::~AP_CocoaDialog_MetaData(void)
 {
 }
 
-void AP_CocoaDialog_MetaData::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_MetaData::runModal(XAP_Frame * /*pFrame*/)
 {
 	NSWindow* window;
-	UT_ASSERT(pFrame);
+	//	UT_ASSERT(pFrame);
 	m_dlg = [[AP_CocoaDialog_MetaDataController alloc] initFromNib];
 	[m_dlg setXAPOwner:this];
 

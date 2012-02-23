@@ -168,10 +168,8 @@ void AP_CocoaDialog_ListRevisions::event_Select(int idx)
 }
 
 
-void AP_CocoaDialog_ListRevisions::runModal(XAP_Frame * pFrame)
+void AP_CocoaDialog_ListRevisions::runModal(XAP_Frame * /*pFrame*/)
 {
-	UT_ASSERT(pFrame);
-
 	/*
 	   see the screenshot posted to the dev-list (25/05/2002);
 	   use the provided functions getTitle(), getLabel1(),

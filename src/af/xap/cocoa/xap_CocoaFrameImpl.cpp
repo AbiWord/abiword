@@ -488,9 +488,6 @@ void XAP_CocoaFrameImpl::setToolbarRect(const NSRect &r)
 	XAP_App * pApp = XAP_App::getApp();
 	UT_ASSERT(pApp);
 
-	const EV_Menu_ActionSet * pMenuActionSet = pApp->getMenuActionSet();
-	UT_ASSERT(pMenuActionSet);
-
 	const EV_EditMethodContainer * pEMC = pApp->getEditMethodContainer();
 	UT_ASSERT(pEMC);
 	

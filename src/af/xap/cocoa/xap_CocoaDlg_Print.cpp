@@ -90,7 +90,7 @@ GR_Graphics * XAP_CocoaDialog_Print::getPrinterGraphicsContext(void)
 void XAP_CocoaDialog_Print::releasePrinterGraphicsContext(GR_Graphics * pGraphics)
 {
 	UT_ASSERT(pGraphics == m_pPrintGraphics);
-	DELETEP(m_pPrintGraphics);
+	DELETEP(pGraphics);
 }
 
 /*****************************************************************/
