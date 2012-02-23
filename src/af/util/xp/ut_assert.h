@@ -130,7 +130,7 @@ extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * 
 
 		// When NDEBUG is defined, assert() does nothing.
 		// So we let the system header files take care of it.
-#       if defined(TOOLKIT_COCOA)
+#       if 0 //defined(TOOLKIT_COCOA)
 // Please keep the "/**/" to stop MSVC dependency generator complaining.
 #			include /**/ "xap_CocoaAssert.h"
 #			define UT_ASSERT(expr)								\
