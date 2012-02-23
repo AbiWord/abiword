@@ -6174,7 +6174,7 @@ void IE_Imp_RTF::EndAnnotation()
 	}
 }
 
-void IE_Imp_RTF::_formRevisionAttr(std::string & attr, const std::string & props, const std::string & style)
+void IE_Imp_RTF::_formRevisionAttr(std::string & attr, const std::string & props, const std::string & styleName)
 {
 	attr.clear();
 	
@@ -6186,12 +6186,17 @@ void IE_Imp_RTF::_formRevisionAttr(std::string & attr, const std::string & props
 	
 	switch(m_currentRTFState.m_charProps.m_eRevision)
 	{
-		case PP_REVISION_DELETION: attr += '-'; break;
-		case PP_REVISION_FMT_CHANGE: attr += '!'; break;
+		case PP_REVISION_DELETION:
+			attr += '-';
+			break;
+		case PP_REVISION_FMT_CHANGE:
+			attr += '!';
+			break;
 			
 		case PP_REVISION_ADDITION:
 		case PP_REVISION_ADDITION_AND_FMT:
-		default:; // nothing
+		default:
+			; // nothing
 	}
 
 	attr += UT_std_string_sprintf("%d", m_currentRTFState.m_charProps.m_iCurrentRevisionId);
@@ -6206,15 +6211,14 @@ void IE_Imp_RTF::_formRevisionAttr(std::string & attr, const std::string & props
 	attr += '{';
 	attr += props;
 	attr += '}';
-	if(!style.empty())
+	if(!styleName.empty())
 	{
 		attr += '{';
 		attr += PT_STYLE_ATTRIBUTE_NAME;
 		attr += ';';
-		attr += style;
+		attr += styleName;
 		attr += '}';
 	}
-	
 }
 
 
@@ -7520,7 +7524,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	{
 		propBuffer += UT_std_string_sprintf("bot-style:%d; ",m_currentRTFState.m_paraProps.m_iBotBorderStyle);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iBotBorderWidth)/1440.;
-#warning we might have issues with locale and floats here
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		propBuffer += UT_std_string_sprintf("bot-thickness:%fin; ",w);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iBotBorderSpacing)/1440.;
 		propBuffer += UT_std_string_sprintf("bot-space:%fin; ",w);
@@ -7530,6 +7534,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	if( m_currentRTFState.m_paraProps.m_bLeftBorder)
 	{
 		propBuffer += UT_std_string_sprintf("left-style:%d; ",m_currentRTFState.m_paraProps.m_iLeftBorderStyle);
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iLeftBorderWidth)/1440.;
 		propBuffer += UT_std_string_sprintf("left-thickness:%fin; ",w);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iLeftBorderSpacing)/1440.;
@@ -7540,6 +7545,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	if( m_currentRTFState.m_paraProps.m_bRightBorder)
 	{
 		propBuffer += UT_std_string_sprintf("right-style:%d; ",m_currentRTFState.m_paraProps.m_iRightBorderStyle);
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iRightBorderWidth)/1440.;
 		propBuffer += UT_std_string_sprintf("right-thickness:%fin; ",w);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iRightBorderSpacing)/1440.;
@@ -7550,6 +7556,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	if( m_currentRTFState.m_paraProps.m_bTopBorder)
 	{
 		propBuffer += UT_std_string_sprintf("top-style:%d; ",m_currentRTFState.m_paraProps.m_iTopBorderStyle);
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iTopBorderWidth)/1440.;
 		propBuffer += UT_std_string_sprintf("top-thickness:%fin; ",w);
 		w = static_cast<double>(m_currentRTFState.m_paraProps.m_iTopBorderSpacing)/1440.;
@@ -11756,8 +11763,8 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 	bool status = true;
 	int nesting = 1;
 	unsigned char ch;
-	const char * styleTypeP = "P";
-	const char * styleTypeC = "C";
+	const char styleTypeP[] = "P";
+	const char styleTypeC[] = "C";
 	const char * styleType = styleTypeP;
 	
 	UT_sint32 BasedOn[2000]; // 2000 styles. I know this should be a Vector.

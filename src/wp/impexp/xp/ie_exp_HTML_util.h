@@ -46,11 +46,11 @@
 
 extern const char * s_prop_list[];
 extern const UT_uint32 s_PropListLen;
-extern const char * s_DTD_XHTML_AWML;
-extern const char * s_DTD_XHTML;
-extern const char * s_DTD_HTML4;
-extern const char * s_Delimiter;
-extern const char * s_HeaderCompact;
+extern const char s_DTD_XHTML_AWML[];
+extern const char s_DTD_XHTML[];
+extern const char s_DTD_HTML4[];
+extern const char s_Delimiter[];
+extern const char s_HeaderCompact[];
 extern bool m_bSecondPass;
 extern bool m_bInAFENote;
 extern bool m_bInAnnotation;

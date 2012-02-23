@@ -1113,7 +1113,8 @@ bool IE_Exp_RTF::_write_rtf_header(void)
             PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
             std::set< std::string > xmlids;
             rdf->addRelevantIDsForRange( xmlids, getDocRange() );
-            UT_DEBUGMSG(("MIQ: RTF export creating restricted RDF model xmlids.sz:%d \n",xmlids.size()));
+            UT_DEBUGMSG(("MIQ: RTF export creating restricted RDF model xmlids.sz:%lu\n", 
+						 (unsigned long)xmlids.size()));
             PD_RDFModelHandle subm = rdf->createRestrictedModelForXMLIDs( xmlids );
             std::string rdfxml = toRDFXML( subm );
             _rtf_chardata( s_escapeXMLString(rdfxml) );
@@ -2198,9 +2199,9 @@ void IE_Exp_RTF::_output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,
 			const char * pADauth = bPara ? "pnrauth" : "revauth";
 			const char * pADdttm = bPara ? "pnrdate" : "revdttm";
 			
-			const char * pDEL     = "deleted";
-			const char * pDELauth = "revauthdel";
-			const char * pDELdttm = "revdttmdel";
+			const char pDEL[]     = "deleted";
+			const char pDELauth[] = "revauthdel";
+			const char pDELdttm[] = "revdttmdel";
 
 			// it seems that block props cannot be changed in rev mode
 			const char * pCHauth = bPara ? NULL : "crauth";
