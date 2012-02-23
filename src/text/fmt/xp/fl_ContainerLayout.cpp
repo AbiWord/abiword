@@ -1265,9 +1265,13 @@ void fl_ContainerLayout::addFrame(fl_FrameLayout * pFrame)
 	}
 	m_vecFrames.addItem(pFrame);
 	if (!pFrame->getParentContainer())
-	{pFrame->setParentContainer(this);}
+	{
+		pFrame->setParentContainer(this);
+	}
 	else
-	{UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);}
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 }
 
 UT_sint32 fl_ContainerLayout::getNumFrames(void) const
@@ -1304,7 +1308,9 @@ bool fl_ContainerLayout::removeFrame(fl_FrameLayout * pFrame)
 	{
 		m_vecFrames.deleteNthItem(i);
 		if (pFrame->getParentContainer() == this)
-		{pFrame->setParentContainer(NULL);}
+		{
+			pFrame->setParentContainer(NULL);
+		}
 		return true;
 	}
 	else

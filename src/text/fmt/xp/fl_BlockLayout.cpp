@@ -8047,7 +8047,11 @@ bool fl_BlockLayout::doclistener_insertBlock(const PX_ChangeRecord_Strux * pcrx,
 					}
 					ypos = UT_convertToInches(pszYPos) - double(extraHeight)/UT_LAYOUT_RESOLUTION;
 					UT_String sValY = UT_formatDimensionString(DIM_IN,ypos);
-					const gchar * frameProperties[] = {"ypos",sValY.c_str(),NULL};
+					const gchar * frameProperties[] = {
+						"ypos",
+						sValY.c_str(),
+						NULL
+					};
 					PT_DocPosition posStart = pFL->getPosition(true)+1;
 					PT_DocPosition posEnd = posStart;
 					UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
