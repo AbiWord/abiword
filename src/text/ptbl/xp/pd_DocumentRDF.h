@@ -936,6 +936,7 @@ class ABI_EXPORT PD_SemanticItemFactory
 {
   public:
     typedef std::list< std::map< std::string, std::string > > PD_ResultBindings_t;
+	virtual ~PD_SemanticItemFactory() {}
     virtual PD_RDFContact*  createContact( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it ) = 0;
     virtual PD_RDFEvent*    createEvent( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it ) = 0;
     virtual PD_RDFLocation* createLocation( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it,
@@ -945,6 +946,7 @@ class ABI_EXPORT PD_SemanticItemFactory
 class ABI_EXPORT PD_RDFDialogs
 {
   public:
+	virtual ~PD_RDFDialogs() {}
     virtual void runSemanticStylesheetsDialog( FV_View* pView ) = 0;
     virtual std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView ) = 0;
 };
