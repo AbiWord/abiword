@@ -440,8 +440,8 @@ AC_ARG_WITH([abisdk],
 	if test "x$withval" != "xno"; then
 		PKG_CONFIG=/opt/abi/bin/pkg-config
 		PKG_CONFIG_PATH=/usr/lib/pkgconfig ; export PKG_CONFIG_PATH
-		CPPFLAGS="$CPPFLAGS -isysroot $withval -I/opt/abi/include"
-		LDFLAGS="$LDFLAGS -isysroot $withval -L/opt/abi/lib"
+		CPPFLAGS="$CPPFLAGS -mmacosx-version-min=10.4 -isysroot $withval -I/opt/abi/include"
+		LDFLAGS="$LDFLAGS -mmacosx-version-min=10.4 -isysroot $withval -L/opt/abi/lib"
 		CC=$CXX
 	fi
 ])
