@@ -1094,12 +1094,14 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 // position posXY.
 // It returns the Frag_Strux of the new frame.
 //
+		const PP_AttrProp* pBlockAP = NULL;
+		pCloseBL->getAP(pBlockAP);
 		posAtXY = pCloseBL->getPosition();
 		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,NULL,props,&pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
 		PT_DocPosition posEOD= 0;
 		m_pView->getEditableBounds(true,posEOD);
-		getDoc()->insertStrux(posFrame+1,PTX_Block);
+		getDoc()->insertStrux(posFrame+1,PTX_Block,NULL,pBlockAP->getProperties());
 		getDoc()->insertStrux(posFrame+2,PTX_EndFrame);
 		m_pView->insertParaBreakIfNeededAtPos(posFrame+3);
 
