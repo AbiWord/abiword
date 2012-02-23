@@ -103,15 +103,15 @@ opt_pkgs=''
 
 # gtk deps
 cairo_req='cairo-pdf cairo-ps pangocairo'
-dnl cairo-fc is needed but only available on cairo > 1.10
-dnl http://bugzilla.abisource.com/show_bug.cgi?id=13265
-PKG_CHECK_EXISTS(cairo >= 1.10, [cairo_req="$cairo_req cairo-fc"],[])
 #
 if test "x$abi_cv_gtk2" = "xyes"; then
 gtk_req="gtk+-2.0 >= $GTK2_VERSION_REQ gtk+-unix-print-2.0 librsvg-2.0 >= 2.16.0"
 else
 gtk_req="gtk+-3.0 >= $GTK_VERSION_REQ gtk+-unix-print-3.0 librsvg-2.0 >= 2.16.0"
 fi
+dnl cairo-fc is needed but only available on cairo > 1.10
+dnl http://bugzilla.abisource.com/show_bug.cgi?id=13265
+PKG_CHECK_EXISTS(cairo >= 1.10, [gtk_req="$gtk_req cairo-fc"],[])
 gtk_pkgs="
   ${cairo_req}
   ${gtk_req}
