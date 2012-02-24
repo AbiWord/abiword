@@ -1,20 +1,20 @@
 /* AbiSource
- * 
+ *
  * Copyright (C) 2011 Volodymyr Rudyj <vladimir.rudoy@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -261,7 +261,7 @@ UT_Error IE_Imp_EPUB::readStructure()
 	std::string itemPath = m_tmpDir + G_DIR_SEPARATOR_S + (iter->second);
         PT_DocPosition posEnd = 0;
         getDoc()->getBounds(true, posEnd);
-        
+
         if (i != m_spine.begin())
         {
             getDoc()->insertStrux(posEnd, PTX_Section, NULL, NULL);
@@ -275,8 +275,6 @@ UT_Error IE_Imp_EPUB::readStructure()
             UT_DEBUGMSG(("Can`t open item for reading\n"));
             return UT_ERROR;
         }
-        size_t inputSize = gsf_input_size(itemInput);
-        gchar* inputData = (gchar*) gsf_input_read(itemInput, inputSize, NULL);
 
         PD_Document *currentDoc = new PD_Document();
         currentDoc->createRawDocument();
@@ -288,22 +286,22 @@ UT_Error IE_Imp_EPUB::readStructure()
             UT_DEBUGMSG(("Failed to import file %s\n", itemPath.c_str()));
             return UT_ERROR;
         }
-        
-        currentDoc->finishRawCreation();
-        const gchar * attributes[3] = {
-            "listid",
-            "0",
-            0
-        };
 
-//        PT_DocPosition pos;
-//        currentDoc->getBounds(true, pos);
-//        currentDoc->insertStrux(pos, PTX_Block, attributes, NULL, NULL);
+        currentDoc->finishRawCreation();
+        // const gchar * attributes[3] = {
+        //     "listid",
+        //     "0",
+        //     0
+        // };
+
+        // PT_DocPosition pos;
+        // currentDoc->getBounds(true, pos);
+        // currentDoc->insertStrux(pos, PTX_Block, attributes, NULL, NULL);
 
         IE_Imp_PasteListener * pPasteListener = new IE_Imp_PasteListener(
                 getDoc(), posEnd, currentDoc);
         currentDoc->tellListener(static_cast<PL_Listener *> (pPasteListener));
-       
+
 
         DELETEP(pPasteListener);
         UNREFP(currentDoc);
@@ -376,7 +374,7 @@ const std::string & ContainerListener::getRootFilePath() const
 }
 
 /*
- 
+
  */
 
 OpfListener::OpfListener() :
@@ -431,7 +429,7 @@ void OpfListener::charData(const gchar* /*buffer*/, int /*length*/)
 }
 
 /*
- 
+
  */
 
 void NavigationListener::startElement(const gchar* /*name*/, const gchar** /*atts*/)
