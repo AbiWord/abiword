@@ -652,7 +652,7 @@ void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 	const std::string &propName = pair->first;
 	const std::string &propValue = pair->second;
 
-	if(!propName.empty())
+	if(propName.empty())
 		return;
 
 	UT_sint32 ival = 0;

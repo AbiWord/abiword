@@ -7316,7 +7316,14 @@ Defun1(cut)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	pView->cmdCut();
+	if (pView->isFrameSelected())
+	{
+		pView->copyFrame(false);
+	}
+	else
+	{
+		pView->cmdCut();
+	}
 
 	return true;
 }
@@ -7326,7 +7333,14 @@ Defun1(copy)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	pView->cmdCopy();
+	if (pView->isFrameSelected())
+	{
+		pView->copyFrame(true);
+	}
+	else
+	{
+		pView->cmdCopy();
+	}
 
 	return true;
 }
@@ -15988,9 +16002,8 @@ Defun1(cutFrame)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	UT_DEBUGMSG(("Cut Frame \n"));
 	UT_return_val_if_fail(pView, false);
-	pView->cutFrame();
+	pView->copyFrame(false);
 	return true;
 }
 
@@ -16001,17 +16014,7 @@ Defun1(copyFrame)
 	ABIWORD_VIEW;
 	UT_DEBUGMSG(("Copy Frame \n"));
 	UT_return_val_if_fail(pView, false);
-	fl_FrameLayout * pFL = pView->getFrameLayout();
-	if(pFL == NULL)
-	{
-		pView->selectFrame(); // this will actually clear the frame context
-		return true;
-	}
-	PT_DocPosition posLow = pFL->getPosition(true);
-	PT_DocPosition posHigh = posLow + pFL->getLength();
-	PD_DocumentRange dr(pView->getDocument(),posLow,posHigh);
-	XAP_App::getApp()->copyToClipboard(&dr, true);
-	pView->notifyListeners(AV_CHG_CLIPBOARD);
+	pView->copyFrame(true);
 	return true;
 }
 

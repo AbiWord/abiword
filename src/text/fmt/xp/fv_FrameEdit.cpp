@@ -694,6 +694,7 @@ void FV_FrameEdit::mouseLeftPress(UT_sint32 x, UT_sint32 y)
 {
 	m_bFirstDragDone = false;
 	UT_DEBUGMSG(("Mouse Left Press \n"));
+	m_pView->_clearSelection();
 	if(!isActive())
 	{
 		setDragType(x,y,true);

@@ -1520,7 +1520,7 @@ void FV_View::releaseFrame(UT_sint32 x, UT_sint32 y)
 	m_FrameEdit.mouseRelease(x,y);
 }
 
-void FV_View::cutFrame(void)
+void FV_View::copyFrame(bool b_keepFrame)
 {
 	if(!m_FrameEdit.isActive())
 	{
@@ -1547,7 +1547,10 @@ void FV_View::cutFrame(void)
 	PT_DocPosition posHigh = posLow + pFL->getLength();
 	PD_DocumentRange dr(m_pDoc,posLow,posHigh);
 	XAP_App::getApp()->copyToClipboard(&dr, true);
-	m_FrameEdit.deleteFrame();	
+	if (!b_keepFrame)
+	{
+		m_FrameEdit.deleteFrame();
+	}
 	notifyListeners(AV_CHG_CLIPBOARD);
 }
 
@@ -1582,6 +1585,11 @@ void FV_View::selectFrame(void)
 	_setSelectionAnchor();
 	setPoint(posHigh);
 	_drawSelection();
+}
+
+bool FV_View::isFrameSelected(void)
+{
+	return(m_FrameEdit.isActive());
 }
 
 void FV_View::deleteFrame(void)

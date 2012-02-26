@@ -532,8 +532,9 @@ public:
 	void            releaseFrame(UT_sint32 x, UT_sint32 y);
 	bool            isInFrame(PT_DocPosition pos);
 	void            deleteFrame(void);
-	void            cutFrame(void);
+	void            copyFrame(bool b_keepFrame = true);
 	void            selectFrame(void);
+	bool            isFrameSelected(void);
 	fl_FrameLayout * getFrameLayout(PT_DocPosition pos);
 	fl_FrameLayout * getFrameLayout(void);
 	void            setFrameFormat(const gchar ** props);

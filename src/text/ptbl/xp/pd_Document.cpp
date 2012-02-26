@@ -5056,7 +5056,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
 	if (ppHandle)
 	{
 		hash_data_items_t::iterator iter = m_hashDataItems.find(szName);
-		UT_return_val_if_fail (iter == m_hashDataItems.end(), false);
+		UT_return_val_if_fail (iter != m_hashDataItems.end(), false);
 		*ppHandle = iter->second;
 	}
 	{
