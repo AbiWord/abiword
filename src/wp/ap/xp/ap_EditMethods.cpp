@@ -14329,7 +14329,7 @@ Defun1(rdfAnchorExportSemanticItem)
 				std::set< std::string > tmp;
 				std::set_intersection( xmlids.begin(), xmlids.end(),
 									   clist.begin(), clist.end(),
-									   inserter( tmp, tmp.end() ));
+									   std::inserter( tmp, tmp.end() ));
 				if( !tmp.empty() )
 				{
 					h->exportToFile();
@@ -14491,7 +14491,7 @@ static bool rdfAnchorContainsPoint( FV_View* pView,
 	std::set< std::string > tmp;
 	std::set_intersection( xmlids.begin(), xmlids.end(),
 						   ring.xmlids.begin(), ring.xmlids.end(),
-						   inserter( tmp, tmp.end() ));
+						   std::inserter( tmp, tmp.end() ));
 	UT_DEBUGMSG(("rdfAnchorContainsPoint() pos:%ld xmlids.sz:%d tmp.sz:%d\n",
 				 pos, xmlids.size(), tmp.size() ));
 	if( tmp.empty() )
