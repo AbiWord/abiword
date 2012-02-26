@@ -83,7 +83,7 @@ BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	for( UT_uint32 i = 0; i < count; i++)
 	{
 		addItemToCombo( AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK,
-						 getNthExistingBookmark( i ) );
+			getNthExistingBookmark( i ).c_str() );
 	}
 
 	UT_UCS4String suggestedBM = getSuggestedBM();
