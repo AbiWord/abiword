@@ -9323,7 +9323,13 @@ bool IE_Imp_RTF::RegisterFont(RTFFontTableItem::FontFamilyEnum fontFamily,
 	RTFFontTableItem* pOld = NULL;
 	// some RTF files define the fonts several time. This is INVALID according to the
 	// specifications. So we ignore it.
-#warning maybe not the right behaviour
+
+	// Ugly hack for MSVC and GCC comlilant warnings
+	#ifdef __GNUC__
+		#warning(maybe not the right behaviour)
+	#else
+		#pragma message("WARNING: maybe not the right behaviour" __FILE__)
+	#endif
 	if (m_fontTable[fontIndex] == NULL)
 	{
 		pOld = m_fontTable[fontIndex];
