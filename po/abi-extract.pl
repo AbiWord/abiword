@@ -90,11 +90,15 @@ foreach my $msg (sort keys %strings) {
 
 close OUT;
 
-print "Adding [$ARG1] lines from strings file";
+print "Adding [$ARG1] lines from strings file...\n";
 system("touch tmpmerge.po");
 system("msgcomm --more-than=0 --omit-header --add-location --output=tmp.po tmpmerge.po $file");
-system("msgmerge tmp.po $ARG1.po -o $ARG1.po");
-system("rm tmp.po");
+
+if (-s "tmp.po") {
+    system("msgmerge tmp.po $ARG1.po -o $ARG1.po");
+    system("rm tmp.po");
+}
+
 system("rm tmpmerge.po");
 system("rm $file");
 }
