@@ -74,7 +74,7 @@ public:
 					      fv_FrameStrings &FS,
 					      fl_BlockLayout ** pCloseBL,
 					      fp_Page ** pPage);
-	fl_FrameLayout *      getFrameLayout(void)
+	fl_FrameLayout *      getFrameLayout(void) const
 		{ return m_pFrameLayout;}
 	const char *          getPNGImage(const UT_ByteBuf ** ppByteBuf);
 	void                  setPointInside(void);

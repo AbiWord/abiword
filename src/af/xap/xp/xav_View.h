@@ -125,16 +125,16 @@ public:
 	void			sendVerticalScrollEvent(UT_sint32 yoff, UT_sint32 ylimit = -1);
 	void			sendHorizontalScrollEvent(UT_sint32 xoff, UT_sint32 xlimit = -1);
 
-	bool                    couldBeActive(void)
+	bool                    couldBeActive(void) const
 	{  return m_bCouldBeActive;}
 	bool			addListener(AV_Listener * pListener, AV_ListenerId * pListenerId);
 	bool			removeListener(AV_ListenerId listenerId);
 
 	//! returns true iff the current view is the active/focused window
-	virtual bool		isActive(void) = 0;
+	virtual bool		isActive(void) const = 0;
         void                    setActivityMask(bool bActive);
 	virtual bool	notifyListeners(const AV_ChangeMask hint, void * pPrivateData = NULL);
-	virtual bool    isDocumentPresent(void) = 0;
+	virtual bool    isDocumentPresent(void) const = 0;
 	virtual bool	canDo(bool bUndo) const = 0;
 	virtual void	cmdUndo(UT_uint32 count) = 0;
 	virtual void	cmdRedo(UT_uint32 count) = 0;

@@ -253,7 +253,7 @@ public:
 	UT_sint32       getFrameMargin(void) const;
 
 	virtual void focusChange(AV_Focus focus);
-	virtual bool    isActive(void);
+	virtual bool    isActive(void) const;
 
 	virtual void	setXScrollOffset(UT_sint32);
 	virtual void	setYScrollOffset(UT_sint32);
@@ -313,7 +313,7 @@ public:
 	virtual void	toggleCase(ToggleCase c);
 	virtual void	setPaperColor(const gchar * clr);
 
-	virtual bool    isDocumentPresent(void);
+	virtual bool    isDocumentPresent(void) const;
 	virtual void	cmdCopy(bool bToClipboard = true);
 	virtual void	cmdCut(void);
 	virtual void	cmdPaste(bool bHonorFormatting = true);
@@ -530,13 +530,13 @@ public:
 	void            btn1Frame(UT_sint32 x, UT_sint32 y);
 	void            dragFrame(UT_sint32 x, UT_sint32 y);
 	void            releaseFrame(UT_sint32 x, UT_sint32 y);
-	bool            isInFrame(PT_DocPosition pos);
+	bool            isInFrame(PT_DocPosition pos) const;
 	void            deleteFrame(void);
 	void            copyFrame(bool b_keepFrame = true);
 	void            selectFrame(void);
-	bool            isFrameSelected(void);
-	fl_FrameLayout * getFrameLayout(PT_DocPosition pos);
-	fl_FrameLayout * getFrameLayout(void);
+	bool            isFrameSelected(void) const;
+	fl_FrameLayout * getFrameLayout(PT_DocPosition pos) const;
+	fl_FrameLayout * getFrameLayout(void) const;
 	void            setFrameFormat(const gchar ** props);
 	void            setFrameFormat(const gchar ** attribs, const gchar ** props, 
 								   fl_BlockLayout * pNewBL = NULL);
@@ -572,16 +572,16 @@ public:
 // ----------------------
 // Stuff for edittable Headers/Footers
 //
-	bool                isInHdrFtr(PT_DocPosition pos);
+	bool                isInHdrFtr(PT_DocPosition pos) const;
 	void				setHdrFtrEdit(fl_HdrFtrShadow * pShadow);
 	void				clearHdrFtrEdit(void);
-	bool				isHdrFtrEdit(void);
-	fl_HdrFtrShadow *	getEditShadow(void);
+	bool				isHdrFtrEdit(void) const;
+	fl_HdrFtrShadow *	getEditShadow(void) const;
 	void				rememberCurrentPosition(void);
-	PT_DocPosition		getSavedPosition(void);
+	PT_DocPosition		getSavedPosition(void) const;
 	void				clearSavedPosition(void);
 	void				markSavedPositionAsNeeded(void);
-	bool				needSavedPosition(void);
+	bool				needSavedPosition(void) const;
 	void				insertHeaderFooter(HdrFtrType hfType);
 	bool				insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL=NULL);
 
@@ -589,8 +589,8 @@ public:
 	void				cmdEditFooter(void);
 
 	void                cmdRemoveHdrFtr(bool isHeader);
-	bool                isFooterOnPage(void);
-	bool                isHeaderOnPage(void);
+	bool                isFooterOnPage(void) const;
+	bool                isHeaderOnPage(void) const;
 
 	void                SetupSavePieceTableState(void);
 	void                RestoreSavedPieceTableState(void);
@@ -605,16 +605,16 @@ public:
 //
 	bool	            insertFootnote(bool bFootnote);
 	bool	            insertFootnoteSection(bool bFootnote,const gchar * enpid);
-	bool                isInFootnote(PT_DocPosition pos);
-	bool                isInFootnote(void);
-	bool                isInEndnote(PT_DocPosition pos);
-	bool                isInEndnote(void);
-	bool                isInAnnotation(PT_DocPosition pos);
-	bool                isInAnnotation(void);
-	fl_FootnoteLayout * getClosestFootnote(PT_DocPosition pos);
-	fl_EndnoteLayout *  getClosestEndnote(PT_DocPosition pos);
-	fl_AnnotationLayout *  getClosestAnnotation(PT_DocPosition pos);
-	UT_sint32           getEmbedDepth(PT_DocPosition pos);
+	bool                isInFootnote(PT_DocPosition pos) const;
+	bool                isInFootnote(void) const;
+	bool                isInEndnote(PT_DocPosition pos) const;
+	bool                isInEndnote(void) const;
+	bool                isInAnnotation(PT_DocPosition pos) const;
+	bool                isInAnnotation(void) const;
+	fl_FootnoteLayout * getClosestFootnote(PT_DocPosition pos) const;
+	fl_EndnoteLayout *  getClosestEndnote(PT_DocPosition pos) const;
+	fl_AnnotationLayout *  getClosestAnnotation(PT_DocPosition pos) const;
+	UT_sint32           getEmbedDepth(PT_DocPosition pos) const;
 	//
 	// ----------------------------------
 	// Stuff for Annotaions
@@ -777,8 +777,8 @@ public:
   public:
   
 	/* Table related functions */
-	bool                isPointLegal(PT_DocPosition pos);
-	bool                isPointLegal(void);
+	bool                isPointLegal(PT_DocPosition pos) const;
+	bool                isPointLegal(void) const;
 	bool				isInTable() const;
 	fl_TableLayout *    getTableAtPos(PT_DocPosition) const;
 	bool				isInTable(PT_DocPosition pos) const;
@@ -788,7 +788,7 @@ public:
 	bool                cmdAutoSizeRows(void);
 	bool                cmdAdvanceNextPrevCell(bool bGoNext);
 	fp_CellContainer *  getCellAtPos(PT_DocPosition pos) const;
-	PT_DocPosition      findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col);
+	PT_DocPosition      findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col) const;
 	bool                _deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
 	bool                _restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineWidth);
 	UT_sint32           _changeCellParams(PT_DocPosition posTable,pf_Frag_Strux* tableSDH );
@@ -910,7 +910,7 @@ protected:
 	void				_moveInsPtNextPrevPage(bool bNext);
 	void				_moveInsPtNextPrevScreen(bool bNext);
 	void				_moveInsPtNextPrevLine(bool bNext);
-	fp_Line *           _getNextLineInDoc(fp_Container * pCon);
+	fp_Line *           _getNextLineInDoc(fp_Container * pCon) const;
 	fp_Page *			_getCurrentPage(void) const;
 	void				_moveInsPtNthPage(UT_sint32 n);
 	void				_moveInsPtToPage(fp_Page *page);

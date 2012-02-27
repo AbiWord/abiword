@@ -685,11 +685,11 @@ FV_View::~FV_View()
 	UT_VECTOR_PURGEALL(fv_CaretProps *,m_vecCarets);
 }
 
-bool FV_View::isActive(void) 
+bool FV_View::isActive(void) const
 {
 	if(!couldBeActive())
 	        return false;
-	AV_View* pActiveView = NULL;
+	const AV_View* pActiveView = NULL;
 	XAP_Frame* lff = getApp()->getLastFocussedFrame();
 	if(lff) 
 	{
@@ -1587,7 +1587,7 @@ void FV_View::selectFrame(void)
 	_drawSelection();
 }
 
-bool FV_View::isFrameSelected(void)
+bool FV_View::isFrameSelected(void) const
 {
 	return(m_FrameEdit.isActive());
 }
@@ -1619,7 +1619,7 @@ void FV_View::deleteFrame(void)
 	setCursorToContext();
 }
 
-fl_FrameLayout * FV_View::getFrameLayout(void)
+fl_FrameLayout * FV_View::getFrameLayout(void) const
 {
         if(m_FrameEdit.isActive())
 	{
@@ -1628,7 +1628,7 @@ fl_FrameLayout * FV_View::getFrameLayout(void)
 	return getFrameLayout(getPoint());
 }
 
-fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
+fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos) const
 {
 	if(m_pDoc->isFrameAtPos(pos))
 	{
@@ -1698,7 +1698,7 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
 /*!
  * Returns true if the supplied Doc Position is inside a frame.
  */
-bool FV_View::isInFrame(PT_DocPosition pos)
+bool FV_View::isInFrame(PT_DocPosition pos) const
 {
 //
 // If at exactly the frame return true
@@ -11236,7 +11236,7 @@ fp_Page* FV_View::getCurrentPage(void) const
 /*!
  * Returns true if there is some Layout classes defined. Not true at startup.
  */
-bool FV_View::isDocumentPresent(void)
+bool FV_View::isDocumentPresent(void) const
 {
 	return (getLayout()->getFirstSection() != NULL);
 }
@@ -11943,11 +11943,12 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
  * This function returns true if there is a header on the current page.
 \returns true if is there a header on the current page.
 */
-bool FV_View::isHeaderOnPage(void)
+bool FV_View::isHeaderOnPage(void) const
 {
-	fp_Page * pPage = getCurrentPage();
+	const fp_Page * pPage = getCurrentPage();
 	//UT_return_val_if_fail(pPage, false);
-	if(!pPage) return false;
+	if(!pPage) 
+		return false;
 	return (pPage->getHdrFtrP(FL_HDRFTR_HEADER) != NULL);
 }
 
@@ -11955,11 +11956,12 @@ bool FV_View::isHeaderOnPage(void)
  * This function returns true if there is a footer on the current page.
 \returns true if is there a footer on the current page.
 */
-bool FV_View::isFooterOnPage(void)
+bool FV_View::isFooterOnPage(void) const
 {
-	fp_Page * pPage = getCurrentPage();
+	const fp_Page * pPage = getCurrentPage();
 	//UT_return_val_if_fail(pPage, false);
-	if(!pPage) return false;
+	if(!pPage) 
+		return false;
 	return (pPage->getHdrFtrP(FL_HDRFTR_FOOTER) != NULL);
 }
 
@@ -11997,7 +11999,7 @@ void FV_View::clearHdrFtrEdit(void)
 /*!
  *	 Returns the pointer to the current shadow.
  */
-fl_HdrFtrShadow *  FV_View::getEditShadow(void)
+fl_HdrFtrShadow *  FV_View::getEditShadow(void) const
 {
 	return m_pEditShadow;
 }
@@ -12005,7 +12007,7 @@ fl_HdrFtrShadow *  FV_View::getEditShadow(void)
 /*!
  *	 Returns true if we're currently editting a HdrFtr section.
  */
-bool FV_View::isHdrFtrEdit(void)
+bool FV_View::isHdrFtrEdit(void) const
 {
 	return m_bEditHdrFtr;
 }
@@ -12027,7 +12029,7 @@ void FV_View::rememberCurrentPosition(void)
  * later.
  */
 
-PT_DocPosition FV_View::getSavedPosition(void)
+PT_DocPosition FV_View::getSavedPosition(void) const
 {
 	return m_iSavedPosition;
 }
@@ -12046,7 +12048,7 @@ void FV_View::clearSavedPosition(void)
  * This method tells us we need the old position after an undo because of
  * header/footer undo's. Might be useful for other stuff later.
  */
-bool FV_View::needSavedPosition(void)
+bool FV_View::needSavedPosition(void) const
 {
 	return m_bNeedSavedPosition;
 }
@@ -12351,7 +12353,7 @@ bool FV_View::insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_Doc
  * point is inside a footnote or endnote return 1, if the  point is inside
  * an endnote inside a footnote return 2 etc.
  */
-UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos)
+UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos) const
 {
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	if(pBL == NULL)
@@ -12376,7 +12378,7 @@ UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos)
  * requested doc position. If the is no footnote before the doc position, NULL
  * is returned.
  */
-fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos)
+fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos) const
 {
 	fl_FootnoteLayout * pFL = NULL;
 	fl_FootnoteLayout * pClosest = NULL;
@@ -12405,7 +12407,7 @@ fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos)
  * requested doc position. If the is no footnote before the doc position, NULL
  * is returned.
  */
-fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
+fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos) const
 {
 	fl_EndnoteLayout * pFL = NULL;
 	fl_EndnoteLayout * pClosest = NULL;
@@ -12435,7 +12437,7 @@ fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
  * requested doc position. If the is no annnotation before the doc position, NULL
  * is returned.
  */
-fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos)
+fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos) const
 {
 	fl_AnnotationLayout * pAL = NULL;
 	fl_AnnotationLayout * pClosest = NULL;
@@ -12458,7 +12460,7 @@ fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos)
 	return pClosest;
 }
 
-bool FV_View::isInHdrFtr(PT_DocPosition pos)
+bool FV_View::isInHdrFtr(PT_DocPosition pos) const
 {
 	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
 	if(pBL == NULL)
@@ -12484,7 +12486,7 @@ bool FV_View::isInHdrFtr(PT_DocPosition pos)
  * Returns true if the point is located with a block so stuff can be typed
  * or inserted.
  */
-bool FV_View::isPointLegal(PT_DocPosition pos)
+bool FV_View::isPointLegal(PT_DocPosition pos) const
 {
 	pf_Frag_Strux* prevSDH = NULL;
 	pf_Frag_Strux* nextSDH = NULL;
@@ -12583,7 +12585,7 @@ bool FV_View::isPointLegal(PT_DocPosition pos)
 	return false;
 }
 
-bool FV_View::isPointLegal(void)
+bool FV_View::isPointLegal(void) const
 {
 	return isPointLegal(getPoint());
 }
@@ -12591,7 +12593,7 @@ bool FV_View::isPointLegal(void)
 /*!
  * Returns true if the current insertion point is inside a footnote.
  */
-bool FV_View::isInFootnote(void)
+bool FV_View::isInFootnote(void) const
 {
 	return isInFootnote(getPoint());
 }
@@ -12599,7 +12601,7 @@ bool FV_View::isInFootnote(void)
 /*!
  * Returns true if the requested position is inside a footnote.
  */
-bool FV_View::isInFootnote(PT_DocPosition pos)
+bool FV_View::isInFootnote(PT_DocPosition pos) const
 {
 	fl_FootnoteLayout * pFL = getClosestFootnote(pos);
 	if(pFL == NULL)
@@ -12620,7 +12622,7 @@ bool FV_View::isInFootnote(PT_DocPosition pos)
 /*!
  * Returns true if the current insertion point is inside a footnote.
  */
-bool FV_View::isInEndnote(void)
+bool FV_View::isInEndnote(void) const
 {
 	return isInEndnote(getPoint());
 }
@@ -12628,7 +12630,7 @@ bool FV_View::isInEndnote(void)
 /*!
  * Returns true if the requested position is inside a endnote.
  */
-bool FV_View::isInEndnote(PT_DocPosition pos)
+bool FV_View::isInEndnote(PT_DocPosition pos) const
 {
 	fl_EndnoteLayout * pFL = getClosestEndnote(pos);
 	if(pFL == NULL)
@@ -12650,7 +12652,7 @@ bool FV_View::isInEndnote(PT_DocPosition pos)
 /*!
  * Returns true if the current insertion point is inside a annotation.
  */
-bool FV_View::isInAnnotation(void)
+bool FV_View::isInAnnotation(void) const
 {
 	return isInAnnotation(getPoint());
 }
@@ -12658,7 +12660,7 @@ bool FV_View::isInAnnotation(void)
 /*!
  * Returns true if the requested position is inside a endnote.
  */
-bool FV_View::isInAnnotation(PT_DocPosition pos)
+bool FV_View::isInAnnotation(PT_DocPosition pos) const
 {
 	fl_AnnotationLayout * pAL = getClosestAnnotation(pos);
 	if(pAL == NULL)
@@ -13990,7 +13992,7 @@ bool FV_View::isInTable( PT_DocPosition pos) const
  * Returns the position of the cell strux of cell specified by (row,col) within the
  * Table surrounding the supplied point.
  */
-PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col)
+PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col) const
 {
 	pf_Frag_Strux* cellSDH,*tableSDH;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posTable,PTX_SectionTable,&tableSDH);

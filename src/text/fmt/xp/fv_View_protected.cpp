@@ -1598,7 +1598,7 @@ void FV_View::_insertSectionBreak(void)
 /*!
  * Return the next line in the document.
  */
-fp_Line * FV_View::_getNextLineInDoc(fp_Container * pCon)
+fp_Line * FV_View::_getNextLineInDoc(fp_Container * pCon) const
 {
 	fp_ContainerObject * pNext = NULL;
 	fl_ContainerLayout * pCL = NULL;

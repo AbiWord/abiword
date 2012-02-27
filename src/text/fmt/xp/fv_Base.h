@@ -52,9 +52,9 @@ public:
 	PD_Document *			getDoc(void) const;
 	FL_DocLayout *			getLayout(void) const;
 	GR_Graphics *			getGraphics(void) const;
-	inline FV_View *		getView(void) 
+	inline FV_View *		getView(void) const 
 		{ return m_pView;}
-	UT_sint32				getGlobCount(void);
+	UT_sint32				getGlobCount(void) const;
 	void          			mouseDrag(UT_sint32 x, UT_sint32 y);	// non virtual calling virtual _mouseDrag
 	FV_DragWhat				getDragWhat(void) const 
 		{ return m_iDraggingWhat; }
