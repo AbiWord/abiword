@@ -59,13 +59,13 @@
 #  include <gsf-gnome/gsf-output-gnomevfs.h>
 #endif
 
-#ifdef HAVE_GTK214
-// needed for gtk_show_uri()
+#ifdef TOOLKIT_GTK_ALL
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-#elif defined(WITH_GNOMEVFS)
+#if defined(WITH_GNOMEVFS)
 // needed for gnome_vfs_url_show()
 #include <libgnomevfs/gnome-vfs-utils.h>
+#endif
 #endif
 
 #if defined G_OS_WIN32
@@ -1659,7 +1659,7 @@ UT_go_file_get_date_changed (char const *uri)
 
 /* ------------------------------------------------------------------------- */
 
-#if !defined(WITH_GNOMEVFS) && !defined(HAVE_GTK214)
+#if !defined(TOOLKIT_GTK_ALL)
 static char *
 check_program (char const *prog)
 {
@@ -1688,7 +1688,7 @@ UT_go_url_show (gchar const *url)
 	return NULL;
 #else
 	GError *err = NULL;
-#ifdef HAVE_GTK214
+#if GTK_CHECK_VERSION(2,14,0)
 	gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &err);
 	return err;
 #elif defined(WITH_GNOMEVFS)

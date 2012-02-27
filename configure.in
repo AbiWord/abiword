@@ -680,14 +680,6 @@ else
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
-dnl specific gtk214 test. 	 
-	if test "$TOOLKIT_IS_GTK2" = "yes"; then 	 
-	        PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 	 
-	                 [abi_cv_gtk214=no]) 	 
-	        if test "$abi_cv_gtk214" = "yes" ; then 	 
-	                AC_DEFINE([HAVE_GTK214], [1], [GTK is at least 2.14]) 	 
-	        fi 	 
-	fi 	 
 
 dnl make that for all.
 if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa"; then
