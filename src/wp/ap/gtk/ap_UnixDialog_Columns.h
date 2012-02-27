@@ -26,18 +26,6 @@
 #include "ut_string.h"
 
 
-/*****************************************************************
-******************************************************************
-** Here we begin a little CPP magic to load all of the icons.
-** It is important that all of the ..._Icon_*.{h,xpm} files
-** allow themselves to be included more than one time.
-******************************************************************
-*****************************************************************/
-// This comes from ap_Toolbar_Icons.cpp
-#include "xap_Toolbar_Icons.h"
-
-#include "ap_Toolbar_Icons_All.h"
-
 class GR_UnixCairoGraphics;
 /*****************************************************************
 ******************************************************************
@@ -46,84 +34,14 @@ class GR_UnixCairoGraphics;
 ******************************************************************
 *****************************************************************/
 
-struct _it
-{
-	const char *				m_name;
-	const char **				m_staticVariable;
-	UT_uint32					m_sizeofVariable;
-};
-
-#define DefineToolbarIcon(name)		{ #name, (const char **) name, sizeof(name)/sizeof(name[0]) },
-
-static struct _it s_itTable[] =
-{
-
-#include "ap_Toolbar_Icons_All.h"
-
-};
-
-#undef DefineToolbarIcon
-
-
 // Some convience functions to make Abi's pixmaps easily available to unix
 // dialogs
 
-static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
+bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData) ;
 
-static bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName);
+bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName);
 
 
-//
-//--------------------------------------------------------------------------
-//
-// Code to make pixmaps for gtk buttons
-//
-// findIconDataByName stolen from ap_Toolbar_Icons.cpp
-//
-static bool findIconDataByName(const char * szName, const char *** pIconData, UT_uint32 * pSizeofData)
-{
-	// This is a static function.
-
-	if (!szName || !*szName || (g_ascii_strcasecmp(szName,"NoIcon")==0))
-		return false;
-
-	UT_uint32 kLimit = G_N_ELEMENTS(s_itTable);
-	UT_uint32 k;
-	UT_DEBUGMSG(("SEVIOR: Looking for %s \n",szName));
-	for (k=0; k < kLimit; k++)
-	{
-		UT_DEBUGMSG(("SEVIOR: examining %s \n",s_itTable[k].m_name));
-		if (g_ascii_strcasecmp(szName,s_itTable[k].m_name) == 0)
-		{
-			*pIconData = s_itTable[k].m_staticVariable;
-			*pSizeofData = s_itTable[k].m_sizeofVariable;
-			return true;
-		}
-	}
-	return false;
-}
-
-static inline bool label_button_with_abi_pixmap( GtkWidget * button, const char * szIconName)
-{
-        const char ** pIconData = NULL;
-	UT_uint32 sizeofIconData = 0;		// number of cells in the array
-	bool bFound = findIconDataByName(szIconName, &pIconData, &sizeofIconData);
-	if (!bFound)
-	{
-		UT_DEBUGMSG(("Could not find icon %s \n",szIconName));
-		return false;
-	}
-	UT_DEBUGMSG(("SEVIOR: found icon name %s \n",szIconName));
-	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(pIconData);
-	GtkWidget * wpixmap = gtk_image_new_from_pixbuf(pixbuf);
-	g_object_unref(pixbuf);
-	if (!wpixmap)
-		return false;
-	gtk_widget_show(wpixmap);
-	UT_DEBUGMSG(("SEVIOR: Adding pixmap to button now \n"));
-	gtk_container_add (GTK_CONTAINER (button), wpixmap);
-	return true;
-}
 //----------------------------------------------------------------
 
 class XAP_UnixFrame;
