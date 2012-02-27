@@ -3536,7 +3536,7 @@ Defun0(helpCredits)
 
 Defun0(helpAboutGnomeOffice)
 {
-	return _openURL("http://www.gnome.org/gnome-office/");
+	return _openURL("http://live.gnome.org/GnomeOffice/");
 }
 
 Defun1(cycleWindows)
