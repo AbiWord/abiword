@@ -43,6 +43,11 @@
 #include <glib/gstdio.h>
 #include <libxml/encoding.h>
 
+#if TOOLKIT_COCOA
+#include <CoreFoundation/CoreFoundation.h>
+#include <ApplicationServices/ApplicationServices.h>
+#endif
+
 #ifdef WITH_GSF_INPUT_HTTP
 #include <gsf/gsf-input-http.h>
 #endif
@@ -1685,6 +1690,16 @@ UT_go_url_show (gchar const *url)
 	UT_Win32LocaleString str;
 	str.fromUTF8 (url);
 	ShellExecuteW (NULL, L"open", str.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	return NULL;
+#elif TOOLKIT_COCOA
+	CFStringRef urlStr = CFStringCreateWithCString(kCFAllocatorDefault, url, kCFStringEncodingUTF8);
+	CFURLRef cfUrl = CFURLCreateWithString(kCFAllocatorDefault, urlStr, NULL);
+	OSStatus err = LSOpenCFURLRef(cfUrl, NULL);
+	CFRelease(cfUrl);
+	CFRelease(urlStr);
+	if (err != noErr) {
+		;
+	}
 	return NULL;
 #else
 	GError *err = NULL;
