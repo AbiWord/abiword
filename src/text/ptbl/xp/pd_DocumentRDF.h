@@ -229,7 +229,7 @@ class ABI_EXPORT PD_RDFModelIterator
         ++( *this );
         return result;
     }
-    bool operator!=( const self_reference other )
+    bool operator!=( self_constref other )
     {
         return !operator==(other);
     }
