@@ -157,7 +157,8 @@ public:
 	bool                overlapsWrappedFrame(UT_Rect & rec);
 	void                setPageNumberInFrames(void);
 	UT_sint32           getPageNumber(void); // TODO make const
-	UT_sint32           getFieldPageNumber(void);
+	UT_sint32           getFieldPageNumber(void) const;
+	void                resetFieldPageNumber(void);
 	bool                TopBotMarginChanged(void);
 	void                setLastMappedTOC(fl_TOCLayout * pTOCL)
 		{ m_pLastMappedTOC = pTOCL;}
@@ -210,6 +211,7 @@ private:
 
 	UT_Rect             m_rDamageRect;
 	UT_sint32           m_iCountWrapPasses;
+	UT_sint32           m_iFieldPageNumber;
 };
 
 #endif /* PAGE_H */

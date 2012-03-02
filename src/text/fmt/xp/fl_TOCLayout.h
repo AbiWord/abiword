@@ -126,7 +126,7 @@ public:
     fl_BlockLayout  *        findMatchingBlock(fl_BlockLayout * pBlock);
 	UT_sint32                isInVector(fl_BlockLayout * pBlock, UT_GenericVector<TOCEntry *>* pVecBlocks);
 	UT_uint32                getTOCPID(void) const { return m_iTOCPID;}
-	bool                     isTOCEmpty() {return (m_vecEntries.getItemCount() == 0);}
+	bool                     isTOCEmpty() const {return (m_vecEntries.getItemCount() == 0);}
 	bool                     isStyleInTOC(UT_UTF8String & sStyle);
 	bool                     isBlockInTOC(fl_BlockLayout * pBlock);
 	bool                     addBlock(fl_BlockLayout * pBlock, bool bVerifyRange = true);

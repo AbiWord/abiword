@@ -60,7 +60,8 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		m_pHeader(0),
 		m_FillType(NULL,NULL,FG_FILL_TRANSPARENT),
 		m_pLastMappedTOC(NULL),
-		m_iCountWrapPasses(0)
+		m_iCountWrapPasses(0),
+		m_iFieldPageNumber(-1)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
@@ -885,30 +886,32 @@ UT_sint32 fp_Page::getPageNumber(void)
  * and "section-restart-value".
  */
 
-UT_sint32 fp_Page::getFieldPageNumber(void)
+UT_sint32 fp_Page::getFieldPageNumber(void) const
+{
+	return m_iFieldPageNumber;
+}
+
+void fp_Page::resetFieldPageNumber(void)
 {
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getOwningSection());
-	UT_sint32 iPageNum = getPageNumber();
-	if (iPageNum < 0)
+	m_iFieldPageNumber = getPageNumber();
+	if (m_iFieldPageNumber >= 0)
 	{
-		return iPageNum;
-	}
-	iPageNum++;
-	while(pDSL && !pDSL->arePageNumbersRestarted())
-	{
-		pDSL =  pDSL->getPrevDocSection();
-	}
-	fp_Page * pFirstPage = NULL;
-	if(pDSL && pDSL->arePageNumbersRestarted())
-	{
-		pFirstPage = pDSL->getFirstOwnedPage();
-		if(pFirstPage)
+		m_iFieldPageNumber++;
+		while(pDSL && !pDSL->arePageNumbersRestarted())
 		{
-			UT_sint32 iFirstPage = pFirstPage->getPageNumber();
-			iPageNum += pDSL->getRestartedPageNumber() - iFirstPage - 1;
+			pDSL =  pDSL->getPrevDocSection();
+		}
+		if(pDSL && pDSL->arePageNumbersRestarted())
+		{
+			fp_Page * pFirstPage = pDSL->getFirstOwnedPage();
+			if(pFirstPage)
+			{
+				UT_sint32 iFirstPage = pFirstPage->getPageNumber();
+				m_iFieldPageNumber += pDSL->getRestartedPageNumber() - iFirstPage - 1;
+			}
 		}
 	}
-	return iPageNum;
 }
 
 /*!

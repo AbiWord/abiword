@@ -297,7 +297,7 @@ public:
 	void                            prependOwnedHeaderPage(fp_Page * p_Page);
 	void                            prependOwnedFooterPage(fp_Page * p_Page);
 	void				deleteOwnedPage(fp_Page*, bool bReallyDeleteIT=true);
-	fp_Page *                       getFirstOwnedPage(void) { return m_pFirstOwnedPage;}
+	fp_Page *                       getFirstOwnedPage(void) const {return m_pFirstOwnedPage;}
 	void                markForRebuild(void) { m_bNeedsRebuild = true;}
 	void                clearRebuild(void) { m_bNeedsRebuild = false;}
 	bool                needsRebuild(void) const { return m_bNeedsRebuild;}

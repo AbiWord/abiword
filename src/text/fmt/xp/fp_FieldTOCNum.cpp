@@ -81,11 +81,16 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 
 	fp_Page * pPage = pLine->getPage();
 	UT_sint32 iPage = pPage->getFieldPageNumber();
-	if( iPage < 0)
+	if(iPage < 0)
 	{
+	    pPage->resetFieldPageNumber();
+	    iPage = pPage->getFieldPageNumber();
+	    if (iPage < 0)
+	    {
 		sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');
 		sz_ucs_FieldValue[1] = 0;
 		return _setValue(sz_ucs_FieldValue);
+	    }
 	}
 	UT_String sVal("");
 	FootnoteType iType = getBlock()->getTOCNumType();
