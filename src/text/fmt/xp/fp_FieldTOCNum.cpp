@@ -54,21 +54,39 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 		return _setValue(sz_ucs_FieldValue);
 	}
 	fp_Line * pLine =  static_cast<fp_Line *>(pBlockInDoc->getFirstContainer());
+	fp_Run * pRun = NULL;
+	UT_sint32 kk = 0;
+	bool b_goodLine = false;
+	while (pLine && !b_goodLine)
+	{
+	    for (kk = 0; kk < pLine->getNumRunsInLine(); kk++)
+	    {
+		if(pLine->getRunFromIndex(kk)->getType() == FPRUN_TEXT)
+		{
+		    b_goodLine = true;
+		    break;
+		}
+	    }
+	    if (!b_goodLine)
+	    {
+		pLine = static_cast<fp_Line *>(pLine->getNext());
+	    }
+	}
 	if(pLine == NULL)
 	{
 		sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');
 		sz_ucs_FieldValue[1] = 0;
 		return _setValue(sz_ucs_FieldValue);
 	}
+
 	fp_Page * pPage = pLine->getPage();
-	UT_sint32 iPage = pLayout->findPage(pPage);
+	UT_sint32 iPage = pPage->getFieldPageNumber();
 	if( iPage < 0)
 	{
 		sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');
 		sz_ucs_FieldValue[1] = 0;
 		return _setValue(sz_ucs_FieldValue);
 	}
-	iPage++; // Start from Page 1.
 	UT_String sVal("");
 	FootnoteType iType = getBlock()->getTOCNumType();
 	pLayout->getStringFromFootnoteVal(sVal,iPage,iType);

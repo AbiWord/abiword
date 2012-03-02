@@ -872,12 +872,45 @@ bool fp_Page::containsPageBreak(void) const
 }
 
 /*!
- * Returns the page number
+ * Returns the physical page number (the numbering starts from 0)
  */
 UT_sint32 fp_Page::getPageNumber(void)
 {
 	return m_pLayout->findPage(this);
 }
+
+/*!
+ * Return the page number as indicated in a page number field run.
+ * This value depends on the section properties "section-restart" 
+ * and "section-restart-value".
+ */
+
+UT_sint32 fp_Page::getFieldPageNumber(void)
+{
+	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getOwningSection());
+	UT_sint32 iPageNum = getPageNumber();
+	if (iPageNum < 0)
+	{
+		return iPageNum;
+	}
+	iPageNum++;
+	while(pDSL && !pDSL->arePageNumbersRestarted())
+	{
+		pDSL =  pDSL->getPrevDocSection();
+	}
+	fp_Page * pFirstPage = NULL;
+	if(pDSL && pDSL->arePageNumbersRestarted())
+	{
+		pFirstPage = pDSL->getFirstOwnedPage();
+		if(pFirstPage)
+		{
+			UT_sint32 iFirstPage = pFirstPage->getPageNumber();
+			iPageNum += pDSL->getRestartedPageNumber() - iFirstPage - 1;
+		}
+	}
+	return iPageNum;
+}
+
 /*!
  * This method returns the height available to the requested column. It 
  * subtracts the height given to previous columns on the page as well as the 

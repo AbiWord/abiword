@@ -875,6 +875,14 @@ bool fl_TOCLayout::removeBlock(fl_BlockLayout * pBlock)
 	return false;
 }
 
+void fl_TOCLayout::removeAllBookmarks(void)
+{
+    while(m_vecEntries.getItemCount() > 0)
+    {
+	_removeBlockInVec(m_vecEntries.getNthItem(0)->getBlock());
+    }
+}
+
 fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
 {
 	TOCEntry * pThisEntry = NULL;

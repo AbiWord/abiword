@@ -691,10 +691,15 @@ void FL_DocLayout::fillLayouts(void)
 			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			continue;
 		}
+		if (pTOC->isTOCEmpty())
+		{
+			fillTOC(pTOC);
+			m_pView->updateLayout();
+		}
 
 		// because the incremental load is sequential, the TOCs are in the order they have in the
 		// document, so we just need to remember the first one.
-		if(pTOC->verifyBookmarkAssumptions() && !pBadTOC)
+		if(!pBadTOC && pTOC->verifyBookmarkAssumptions())
 		{
 			pBadTOC = pTOC;
 		}
@@ -2131,7 +2136,7 @@ bool FL_DocLayout::fillTOC(fl_TOCLayout * pTOC)
 	}
 
 	// clear any existing contents
-	pTOC->purgeLayout();
+	pTOC->removeAllBookmarks();
 
 	while(pBlock)
 	{

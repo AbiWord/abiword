@@ -5269,62 +5269,7 @@ bool fp_FieldPageNumberRun::calculateValue(void)
 	if (getLine() && getLine()->getContainer() && getLine()->getContainer()->getPage())
 	{
 		fp_Page* pPage = getLine()->getContainer()->getPage();
-		FL_DocLayout* pDL = pPage->getDocLayout();
-		fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pPage->getOwningSection());
-		UT_sint32 iPageNum = 0;
-		UT_uint32 iNumPages = pDL->countPages();
-		for (UT_uint32 i=0; i<iNumPages; i++)
-		{
-			fp_Page* pPg = pDL->getNthPage(i);
-
-			if (pPg == pPage)
-			{
-				iPageNum = i + 1;
-				break;
-			}
-		}
-		while(pDSL && !pDSL->arePageNumbersRestarted())
-		{
-			pDSL =  pDSL->getPrevDocSection();
-		}
-		UT_sint32 icnt = 0;
-		fp_Page * pFirstPage = NULL;
-		if(pDSL && pDSL->arePageNumbersRestarted())
-		{
-			fp_Container * pCon = pDSL->getFirstContainer();
-			if(pCon)
-			{
-				bool bFound = false;
-				pFirstPage = pCon->getPage();
-				while(pFirstPage && !bFound)
-				{
-					if(pDSL == static_cast<fl_DocSectionLayout *>(pFirstPage->getOwningSection()))
-					{
-						bFound = true;
-						break;
-					}
-					pFirstPage = pFirstPage->getNext();
-				}
-				if(bFound)
-				{
-					while(pFirstPage && (pFirstPage != pPage))
-					{
-						icnt++;
-						pFirstPage = pFirstPage->getNext();
-					}
-					UT_ASSERT(pFirstPage);
-					iPageNum = pDSL->getRestartedPageNumber() + icnt;
-				}
-			}
-		}
-#if 0
-		// FIXME:jskov Cannot assert here since the field might get
-        // updated while the page is still being populated (and thus not in
-		// the doc's page list).  Surely the field should not get updated
-        // until the page is fully populated?
-		UT_ASSERT(iPageNum > 0);
-#endif
-
+		UT_sint32 iPageNum = pPage->getFieldPageNumber();
 		UT_UTF8String_sprintf(szFieldValue, "%d", iPageNum);
 	}
 
