@@ -176,32 +176,34 @@ UT_Error IE_Exp_HTML::_doOptions()
     }
     /* run the dialog
      */
+	if(!pFrame->getFilename())
+	{
+	    XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
 
-    XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
+	    XAP_DialogFactory * pDialogFactory
+	            = static_cast<XAP_DialogFactory *> (XAP_App::getApp()->getDialogFactory());
 
-    XAP_DialogFactory * pDialogFactory
-            = static_cast<XAP_DialogFactory *> (XAP_App::getApp()->getDialogFactory());
+	    XAP_Dialog_HTMLOptions * pDialog
+	            = static_cast<XAP_Dialog_HTMLOptions *> (pDialogFactory->requestDialog(id));
 
-    XAP_Dialog_HTMLOptions * pDialog
-            = static_cast<XAP_Dialog_HTMLOptions *> (pDialogFactory->requestDialog(id));
+	    UT_return_val_if_fail(pDialog, false);
 
-    UT_return_val_if_fail(pDialog, false);
+	    pDialog->setHTMLOptions(&m_exp_opt, XAP_App::getApp());
 
-    pDialog->setHTMLOptions(&m_exp_opt, XAP_App::getApp());
+	    pDialog->runModal(pFrame);
 
-    pDialog->runModal(pFrame);
+	    /* extract what they did
+	     */
+	    bool bSave = pDialog->shouldSave();
+	
+	    pDialogFactory->releaseDialog(pDialog);
 
-    /* extract what they did
-     */
-    bool bSave = pDialog->shouldSave();
-
-    pDialogFactory->releaseDialog(pDialog);
-
-    if (!bSave)
-    {
-        return UT_SAVE_CANCELLED;
-    }
-    return UT_OK;
+	    if (!bSave)
+	    {
+	        return UT_SAVE_CANCELLED;
+	    }
+	}
+        return UT_OK;
 }
 
 UT_Error IE_Exp_HTML::_writeDocument()
