@@ -54,7 +54,6 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 		return _setValue(sz_ucs_FieldValue);
 	}
 	fp_Line * pLine =  static_cast<fp_Line *>(pBlockInDoc->getFirstContainer());
-	fp_Run * pRun = NULL;
 	UT_sint32 kk = 0;
 	bool b_goodLine = false;
 	while (pLine && !b_goodLine)

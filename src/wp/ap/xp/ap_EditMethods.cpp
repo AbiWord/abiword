@@ -10974,7 +10974,8 @@ Defun1(rdfInsertNewContact)
 		{
 			PD_RDFSemanticItemHandle obj = PD_RDFSemanticItem::createSemanticItem( rdf, "Contact" );
 			obj->setName( "New Contact..." );
-			std::pair< PT_DocPosition, PT_DocPosition > range = obj->insert( pView );
+			/*std::pair< PT_DocPosition, PT_DocPosition > range =*/
+			obj->insert( pView );
 			obj->showEditorWindow( obj );
 		}
 	}
@@ -14426,7 +14427,7 @@ static void rdfAnchorSelectPos( FV_View* pView,
 								PT_DocPosition pos,
 								bool selectit = true )
 {
-	UT_DEBUGMSG(("rdfAnchorSelectPos() pos:%ld\n", pos ));
+	UT_DEBUGMSG(("rdfAnchorSelectPos() pos:%ld\n", (long)pos ));
 	selectReferenceToSemanticItemRing& ring = getSelectReferenceToSemanticItemRing();
 	ring.h.reset();
 	ring.xmlids.clear();
@@ -14493,8 +14494,8 @@ static bool rdfAnchorContainsPoint( FV_View* pView,
 	std::set_intersection( xmlids.begin(), xmlids.end(),
 						   ring.xmlids.begin(), ring.xmlids.end(),
 						   std::inserter( tmp, tmp.end() ));
-	UT_DEBUGMSG(("rdfAnchorContainsPoint() pos:%ld xmlids.sz:%d tmp.sz:%d\n",
-				 pos, xmlids.size(), tmp.size() ));
+	UT_DEBUGMSG(("rdfAnchorContainsPoint() pos:%ld xmlids.sz:%ld tmp.sz:%ld\n",
+				 (long)pos, (long)xmlids.size(), (long)tmp.size() ));
 	if( tmp.empty() )
 	{
 		//
@@ -14645,7 +14646,7 @@ Defun1(rdfSemitemFindRelatedFoafKnows)
 
 	std::set< std::string > xmlids;
 	rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
-	UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows(a) point->xmlids.sz:%d\n", xmlids.size() ));
+	UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows(a) point->xmlids.sz:%ld\n", (long)xmlids.size() ));
 	if( xmlids.empty() )
 		rdf->addRelevantIDsForPosition( xmlids, pView->getPoint()-1 );
 		
@@ -14653,8 +14654,8 @@ Defun1(rdfSemitemFindRelatedFoafKnows)
 	if( sl.empty() )
 		return false;
 	PD_RDFSemanticItemHandle src = *(sl.begin());
-	UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows(b) point->xmlids.sz:%d\n", xmlids.size() ));
-	UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows() point->sl.sz:%d\n",     sl.size() ));
+	UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows(b) point->xmlids.sz:%ld\n", (long)xmlids.size() ));
+	UT_DEBUGMSG(("rdfSemitemFindRelatedFoafKnows() point->sl.sz:%ld\n", (long)sl.size() ));
 	for( PD_RDFSemanticItems::iterator iter = sl.begin(); iter != sl.end(); ++iter )
 	{
 		PD_RDFSemanticItemHandle si = *iter;
@@ -14965,7 +14966,7 @@ Defun(hyperlinkStatusBar)
 	if(!pHRun)
 		return false;
 	UT_DEBUGMSG(("hyperlinkStatusBar() pHRun:%p\n", pHRun ));
-	UT_DEBUGMSG(("hyperlinkStatusBar()  type:%p\n", pHRun->getHyperlinkType() ));
+	UT_DEBUGMSG(("hyperlinkStatusBar()  type:%d\n", (int)pHRun->getHyperlinkType() ));
 	if(pHRun->getHyperlinkType() == HYPERLINK_NORMAL)
 	{
 			pView->cmdHyperlinkStatusBar(xpos, ypos);
@@ -15431,6 +15432,7 @@ Defun1(revisionSetViewLevel)
 
 Defun(revisionNew)
 {
+	UT_UNUSED(pCallData);
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
@@ -15447,6 +15449,7 @@ Defun(revisionNew)
 
 Defun(revisionSelect)
 {
+	UT_UNUSED(pCallData);
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);

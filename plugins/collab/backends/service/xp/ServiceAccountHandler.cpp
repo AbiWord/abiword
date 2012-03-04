@@ -324,7 +324,7 @@ BuddyPtr ServiceAccountHandler::constructBuddy(const std::string& descriptor, Bu
 	std::string descr_domain;
 	UT_return_val_if_fail(_splitDescriptor(descriptor, descr_user_id, descr_conn_id, descr_domain), BuddyPtr());
 	UT_DEBUGMSG(("Constructing realm buddy - user_id: %llu, conn_id: %d, domain: %s\n", 
-					descr_user_id, descr_conn_id, descr_domain.c_str()));
+		     (long long unsigned)descr_user_id, descr_conn_id, descr_domain.c_str()));
 
 	// verify that the uri matches ours
 	UT_return_val_if_fail(descr_domain == _getDomain(), BuddyPtr());
@@ -757,7 +757,7 @@ void ServiceAccountHandler::joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHand
 		return;
 	}
 	UT_return_if_fail(doc_id != 0);
-	UT_DEBUGMSG(("doc_id: %llu\n", doc_id));	
+	UT_DEBUGMSG(("doc_id: %llu\n", (long long unsigned)doc_id));	
 
 	PD_Document* pDoc = NULL;
 	acs::SOAP_ERROR err = openDocument(doc_id, 0, docHandle.getSessionId().utf8_str(), &pDoc, NULL);
@@ -805,7 +805,7 @@ bool ServiceAccountHandler::hasSession(const UT_UTF8String& sSessionId)
 
 acs::SOAP_ERROR ServiceAccountHandler::openDocument(UT_uint64 doc_id, UT_uint64 revision, const std::string& session_id, PD_Document** pDoc, XAP_Frame* pFrame)
 {
-	UT_DEBUGMSG(("ServiceAccountHandler::openDocument() - doc_id: %llu\n", doc_id));
+	UT_DEBUGMSG(("ServiceAccountHandler::openDocument() - doc_id: %llu\n", (long long unsigned)doc_id));
 	
 	const std::string uri = getProperty("uri");
 	const std::string email = getProperty("email");
@@ -904,7 +904,7 @@ ConnectionPtr ServiceAccountHandler::_realmConnect(soa::CollectionPtr rcp,
 	// open the realm connection!
 	UT_DEBUGMSG(("realm_address: %s, realm_port: %lld, realm_tls: %s, cookie: %s\n",
 	    realm_address->value().c_str(), 
-	    realm_port->value(), 
+	    (long long unsigned)realm_port->value(), 
 	    realm_tls ? "yes" : "no",
 	    cookie->value().c_str()));
 	ConnectionPtr connection = 
@@ -916,7 +916,7 @@ ConnectionPtr ServiceAccountHandler::_realmConnect(soa::CollectionPtr rcp,
 	// display a progress bar in that case
 	if (!connection->connect())
 	{
-		UT_DEBUGMSG(("Error connecting to realm %s:%lld\n", realm_address->value().c_str(), realm_port->value()));
+		UT_DEBUGMSG(("Error connecting to realm %s:%lld\n", realm_address->value().c_str(), (long long unsigned)realm_port->value()));
 		return ConnectionPtr();
 	}
 
@@ -1095,7 +1095,7 @@ bool ServiceAccountHandler::_getConnections()
 			for (size_t i = 0; i < friends->size(); i++)
 				if (abicollab::FriendPtr friend_ = friends->operator[](i))
 				{
-					UT_DEBUGMSG(("Got a friend: %s <id: %lld>\n", friend_->name.c_str(), friend_->friend_id));
+					UT_DEBUGMSG(("Got a friend: %s <id: %lld>\n", friend_->name.c_str(), (long long unsigned)friend_->friend_id));
 					if (friend_->name != "")
 					{
 						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, SERVICE_FRIEND, friend_->friend_id, friend_->name, _getDomain()));
@@ -1111,7 +1111,7 @@ bool ServiceAccountHandler::_getConnections()
 			for (size_t i = 0; i < groups->size(); i++)
 				if (abicollab::GroupPtr group_ = groups->operator[](i))
 				{
-					UT_DEBUGMSG(("Got a group: %s <id: %lld>\n", group_->name.c_str(), group_->group_id));
+					UT_DEBUGMSG(("Got a group: %s <id: %lld>\n", group_->name.c_str(), (long long unsigned)group_->group_id));
 					if (group_->name != "")
 					{
 						ServiceBuddyPtr pBuddy = boost::shared_ptr<ServiceBuddy>(new ServiceBuddy(this, SERVICE_GROUP, group_->group_id, group_->name, _getDomain()));
@@ -1160,7 +1160,7 @@ bool ServiceAccountHandler::_getPermissions(uint64_t doc_id, DocumentPermissions
 			("doc_id", static_cast<int64_t>(doc_id));
 
 		try {
-			UT_DEBUGMSG(("Getting permissions for document %llu...\n", doc_id));
+			UT_DEBUGMSG(("Getting permissions for document %llu...\n", (long long unsigned)doc_id));
 			soap_result = soup_soa::invoke(uri, 
 								soa::method_invocation("urn:AbiCollabSOAP", fc),
 								verify_webapp_host?m_ssl_ca_file:"");
@@ -1248,7 +1248,7 @@ bool ServiceAccountHandler::_setPermissions(UT_uint64 doc_id, DocumentPermission
 		fc("group_read_owner", group_read_owner, soa::INT_TYPE);
 
 		try {
-			UT_DEBUGMSG(("Getting permissions for document %llu...\n", doc_id));
+			UT_DEBUGMSG(("Getting permissions for document %llu...\n", (long long unsigned)doc_id));
 			soap_result = soup_soa::invoke(uri, 
 								soa::method_invocation("urn:AbiCollabSOAP", fc),
 								verify_webapp_host?m_ssl_ca_file:"");
@@ -1298,7 +1298,7 @@ soa::function_call_ptr ServiceAccountHandler::constructSaveDocumentCall(PD_Docum
 	UT_return_val_if_fail(connection_ptr, soa::function_call_ptr());
 
 	UT_DEBUGMSG(("Saving document with id %llu, session id %s to webservice!\n",
-	             connection_ptr->doc_id(), connection_ptr->session_id().c_str()));
+	             (long long unsigned)connection_ptr->doc_id(), connection_ptr->session_id().c_str()));
 	
 	const std::string email = getProperty("email");
 	const std::string password = getProperty("password");
@@ -1763,7 +1763,7 @@ void ServiceAccountHandler::_handleMessages(ConnectionPtr connection)
 
 					uint64_t user_id;
 					UT_return_if_fail(ServiceAccountHandler::parseUserInfo(*ujp->getUserInfo(), user_id));
-					UT_DEBUGMSG(("Adding buddy, uid: %llu, cid: %d\n", user_id, ujp->getConnectionId()));
+					UT_DEBUGMSG(("Adding buddy, uid: %llu, cid: %d\n", (long long unsigned)user_id, ujp->getConnectionId()));
 					RealmBuddyPtr buddy(
 								new RealmBuddy(this, user_id, _getDomain(), static_cast<UT_uint8>(ujp->getConnectionId()), ujp->isMaster(), connection));
 					connection->addBuddy(buddy);

@@ -8900,12 +8900,12 @@ bool IE_Imp_RTF::ReadRDFTriples()
 {
 	std::string rdfxml = s_unEscapeXMLString();
 	PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
-	UT_DEBUGMSG(("rdf triples before read of rdf tag size:%d\n", rdf->size() ));
+	UT_DEBUGMSG(("rdf triples before read of rdf tag size:%ld\n", (long)rdf->size() ));
 
 	PD_DocumentRDFMutationHandle m = rdf->createMutation();
-	UT_Error e = loadRDFXML( m, rdfxml );
+	/*UT_Error e = */loadRDFXML( m, rdfxml );
 	m->commit();
-	UT_DEBUGMSG(("rdf triples after read of rdf tag size:%d\n", rdf->size() ));
+	UT_DEBUGMSG(("rdf triples after read of rdf tag size:%ld\n", (long)rdf->size() ));
 	return true;
 }
 

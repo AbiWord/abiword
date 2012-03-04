@@ -374,7 +374,7 @@ void AbiCollab::push(SessionPacket* pPacket)
 		m_pRecorder->storeOutgoing( const_cast<const SessionPacket*>( pPacket ) );
 		
 	// TODO: this could go in the session manager
-	UT_DEBUGMSG(("Pusing packet to %d collaborators\n", m_vCollaborators.size()));
+	UT_DEBUGMSG(("Pusing packet to %lu collaborators\n", (long unsigned)m_vCollaborators.size()));
 	for (std::map<BuddyPtr, std::string>::iterator it = m_vCollaborators.begin(); it != m_vCollaborators.end(); it++)
 	{
 		BuddyPtr pCollaborator = (*it).first;
@@ -493,7 +493,7 @@ void AbiCollab::import(SessionPacket* pPacket, BuddyPtr collaborator)
 	
 	if (isLocallyControlled() && maskedPackets.size() > 0)
 	{
-		UT_DEBUGMSG(("Forwarding message (%u packets) from %s\n", maskedPackets.size(), collaborator->getDescription().utf8_str()));
+		UT_DEBUGMSG(("Forwarding message (%lu packets) from %s\n", (long unsigned)maskedPackets.size(), collaborator->getDescription().utf8_str()));
 		
 		// It seems we are in the center of a collaboration session.
 		// It's our duty to reroute the packets to the other collaborators
@@ -988,7 +988,7 @@ void AbiCollab::_restartAsMaster()
 
 void AbiCollab::_pushOutgoingQueue()
 {
-	UT_DEBUGMSG(("AbiCollab::_pushOutgoingQueue() - %d packets queued\n", m_vOutgoingQueue.size()));
+	UT_DEBUGMSG(("AbiCollab::_pushOutgoingQueue() - %lu packets queued\n", (long unsigned)m_vOutgoingQueue.size()));
 
 	for (std::vector<SessionPacket*>::iterator it = m_vOutgoingQueue.begin(); it != m_vOutgoingQueue.end(); it++)
 		push(*it);

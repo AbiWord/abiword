@@ -46,11 +46,6 @@
 #define DEBUG_LOWLEVEL_IO    0
 
 typedef std::map< std::string, std::string > stringmap_t;
-static const gchar * G_OBJECT_SEMITEM = "G_OBJECT_SEMITEM";
-static const gchar * G_OBJECT_SEMITEM_LIST = "G_OBJECT_SEMITEM_LIST";
-static const gchar * G_OBJECT_WINDOW  = "G_OBJECT_WINDOW";
-static const gchar * G_OBJECT_TREEVIEW = "G_OBJECT_TREEVIEW";
-
 
 static void dump( const std::string& msg, PD_RDFModelIterator begin, PD_RDFModelIterator end );
 
@@ -63,16 +58,19 @@ class PD_SemanticItemFactoryNull
     public PD_SemanticItemFactory
 {
 public:
-    virtual PD_RDFContact*  createContact( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it )
+    virtual PD_RDFContact*  createContact(PD_DocumentRDFHandle /*rdf*/, 
+										  PD_ResultBindings_t::iterator /*it*/)
     {
         return 0;
     }
-    virtual PD_RDFEvent*    createEvent( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it )
+    virtual PD_RDFEvent*    createEvent(PD_DocumentRDFHandle /*rdf*/, 
+										PD_ResultBindings_t::iterator /*it*/)
     {
         return 0;
     }
-    virtual PD_RDFLocation* createLocation( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator it,
-                                            bool isGeo84 = false )
+    virtual PD_RDFLocation* createLocation(PD_DocumentRDFHandle /*rdf*/, 
+										   PD_ResultBindings_t::iterator /*it*/,
+										   bool isGeo84 = false )
     {
         return 0;
     }
@@ -88,11 +86,12 @@ PD_DocumentRDF::setSemanticItemFactory( PD_SemanticItemFactory* f )
 class PD_RDFDialogsNull : public PD_RDFDialogs
 {
   public:
-    virtual void runSemanticStylesheetsDialog( FV_View* pView )
+    virtual void runSemanticStylesheetsDialog(FV_View* /*pView*/)
     {
     }
-    virtual std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
+    virtual std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog(FV_View* /*pView*/)
     {
+		return std::make_pair(0,0);
     }
 };
 static PD_RDFDialogs* s_RDFDialogs = new PD_RDFDialogsNull;
@@ -104,7 +103,7 @@ PD_DocumentRDF::setRDFDialogs( PD_RDFDialogs* d )
 
 std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
 {
-    s_RDFDialogs->runInsertReferenceDialog( pView );
+    return s_RDFDialogs->runInsertReferenceDialog( pView );
 }
 
 void runSemanticStylesheetsDialog( FV_View* pView )
@@ -1773,24 +1772,24 @@ PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItemHandle c )
 }
 
 void
-PD_RDFSemanticItem::importFromDataComplete( std::istream& iss,
-                                            PD_DocumentRDFHandle rdf,
-                                            PD_DocumentRDFMutationHandle m,
-                                            PD_DocumentRange * pDocRange )
+PD_RDFSemanticItem::importFromDataComplete( std::istream& /*iss*/,
+                                            PD_DocumentRDFHandle /*rdf*/,
+                                            PD_DocumentRDFMutationHandle /*m*/,
+                                            PD_DocumentRange* /*pDocRange*/ )
 {
     UT_DEBUGMSG(("importFromDataComplete(base)\n"));
 }
 
 std::string
-PD_RDFSemanticItem::getImportFromFileName( const std::string& filename_const,
-                                           std::list< std::pair< std::string, std::string> > types ) const
+PD_RDFSemanticItem::getImportFromFileName( const std::string& /*filename_const*/,
+                                           std::list< std::pair< std::string, std::string> > /*types*/ ) const
 {
     return "";
 }
 std::string
-PD_RDFSemanticItem::getExportToFileName( const std::string& filename_const,
-                                         std::string defaultExtension,
-                                         std::list< std::pair< std::string, std::string> > types ) const
+PD_RDFSemanticItem::getExportToFileName( const std::string& /*filename_const*/,
+                                         std::string /*defaultExtension*/,
+                                         std::list< std::pair< std::string, std::string> > /*types*/ ) const
 {
     return "";
 }
@@ -2159,6 +2158,8 @@ PD_RDFEvent::getDisplayLabel() const
     return "Event";
 }
 
+
+#ifdef WITH_LIBICAL
 static void setFromString( std::string& s, const char* input )
 {
     if( input )
@@ -2166,7 +2167,7 @@ static void setFromString( std::string& s, const char* input )
     else
         s = "";
 }
-
+#endif
 
 
 void
@@ -4999,9 +5000,9 @@ PD_DocumentRDF::selectXMLIDs( const std::set< std::string >& xmlids, FV_View* pV
     if( !pView )
         return;
 
-    for( std::set< std::string >::iterator iter = xmlids.begin(); iter != xmlids.end(); ++iter )
+    for( std::set< std::string >::const_iterator iter = xmlids.begin(); iter != xmlids.end(); ++iter )
     {
-        std::string xmlid = *iter;
+        const std::string& xmlid = *iter;
         std::pair< PT_DocPosition, PT_DocPosition > range = getIDRange( xmlid );
         UT_DEBUGMSG(("selectXMLIDs() id:%s begin:%d end:%d\n",
                      xmlid.c_str(), range.first, range.second ));

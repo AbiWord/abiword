@@ -868,7 +868,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						PD_DataItemHandle pHandle = NULL;
 						std::string sToken = dp->m_bTokenSet ? dp->m_sToken : "";
 						UT_ByteBuf * pBuf= new UT_ByteBuf();
-						UT_DEBUGMSG(("PXT_CreateDataItem: append image buffer @ 0x%p, %u bytes, sToken %s\n", &dp->m_vecData[0], dp->m_vecData.size(), sToken.c_str()));
+						UT_DEBUGMSG(("PXT_CreateDataItem: append image buffer @ 0x%p, %lu bytes, sToken %s\n", &dp->m_vecData[0], (long unsigned)dp->m_vecData.size(), sToken.c_str()));
 						pBuf->append(reinterpret_cast<const UT_Byte *>( &dp->m_vecData[0] ), dp->m_vecData.size() );
 						bool res = m_pDoc->createDataItem(szNameV,false,pBuf,sToken,&pHandle);
 						delete pBuf;
