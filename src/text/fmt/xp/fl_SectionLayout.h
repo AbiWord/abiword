@@ -281,14 +281,14 @@ public:
 
 	void				setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL);
 
-	fl_HdrFtrSectionLayout*         getHeader(void);
-	fl_HdrFtrSectionLayout*         getFooter(void);
-	fl_HdrFtrSectionLayout*         getHeaderEven(void);
-	fl_HdrFtrSectionLayout*         getFooterEven(void);
-	fl_HdrFtrSectionLayout*         getHeaderFirst(void);
-	fl_HdrFtrSectionLayout*         getFooterFirst(void);
-	fl_HdrFtrSectionLayout*         getHeaderLast(void);
-	fl_HdrFtrSectionLayout*         getFooterLast(void);
+	fl_HdrFtrSectionLayout*         getHeader(void) const;
+	fl_HdrFtrSectionLayout*         getFooter(void) const;
+	fl_HdrFtrSectionLayout*         getHeaderEven(void) const;
+	fl_HdrFtrSectionLayout*         getFooterEven(void) const;
+	fl_HdrFtrSectionLayout*         getHeaderFirst(void) const;
+	fl_HdrFtrSectionLayout*         getFooterFirst(void) const;
+	fl_HdrFtrSectionLayout*         getHeaderLast(void) const;
+	fl_HdrFtrSectionLayout*         getFooterLast(void) const;
 
 	bool                            setHdrFtrHeightChange(bool bDoHdr, UT_sint32 newHeight);
 	static void         _HdrFtrChangeCallback(UT_Worker * pWorker);

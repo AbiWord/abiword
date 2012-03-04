@@ -1451,45 +1451,45 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 	return true;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeader(void)
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeader(void) const
 {
 	return m_pHeaderSL;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooter(void)
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooter(void) const
 {
 	return m_pFooterSL;
 }
 
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderEven(void)
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderEven(void) const
 {
 	return m_pHeaderEvenSL;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterEven(void)
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterEven(void) const
 {
 	return m_pFooterEvenSL;
 }
 
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderFirst(void)
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderFirst(void) const
 {
 	return m_pHeaderFirstSL;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterFirst(void)
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterFirst(void) const
 {
 	return m_pFooterFirstSL;
 }
 
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderLast(void)
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderLast(void) const
 {
 	return m_pHeaderLastSL;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterLast(void)
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterLast(void) const
 {
 	return m_pFooterLastSL;
 }
