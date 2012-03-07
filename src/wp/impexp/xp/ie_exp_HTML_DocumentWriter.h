@@ -186,6 +186,7 @@ public:
 class ABI_EXPORT IE_Exp_HTML_WriterFactory
 {
 public:
+    virtual ~IE_Exp_HTML_WriterFactory() {}
     virtual IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
         IE_Exp_HTML_OutputWriter *pOutputWriter) = 0;
     
@@ -195,6 +196,7 @@ public:
 class ABI_EXPORT IE_Exp_HTML_DefaultWriterFactory : public IE_Exp_HTML_WriterFactory
 {
 public:
+    virtual ~IE_Exp_HTML_DefaultWriterFactory() {}
     IE_Exp_HTML_DefaultWriterFactory(PD_Document *pDocument,
             XAP_Exp_HTMLOptions &exp_opt);
     IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
