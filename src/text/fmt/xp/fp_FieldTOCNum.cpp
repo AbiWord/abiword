@@ -80,10 +80,12 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 
 	fp_Page * pPage = pLine->getPage();
 	UT_sint32 iPage = pPage->getFieldPageNumber();
+	bool b_hasSetFieldPageNumber = false;
 	if(iPage < 0)
 	{
 	    pPage->resetFieldPageNumber();
 	    iPage = pPage->getFieldPageNumber();
+	    b_hasSetFieldPageNumber = true;
 	    if (iPage < 0)
 	    {
 		sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');
@@ -95,6 +97,13 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 	FootnoteType iType = getBlock()->getTOCNumType();
 	pLayout->getStringFromFootnoteVal(sVal,iPage,iType);
 	const char * psz = sVal.c_str();
+
+	if (b_hasSetFieldPageNumber)
+	{
+	    // We need to set the field page number value to -1 so that we 
+	    // recalculate the page number next time we enter this function
+	    pPage->setFieldPageNumber(-1);
+	}
 	bool bStop = false;
 	UT_sint32 i = 0;
 	sz_ucs_FieldValue[0] = static_cast<UT_UCSChar>(' ');

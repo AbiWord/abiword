@@ -131,7 +131,6 @@ public:
 	bool                     isBlockInTOC(fl_BlockLayout * pBlock);
 	bool                     addBlock(fl_BlockLayout * pBlock, bool bVerifyRange = true);
 	bool                     removeBlock(fl_BlockLayout * pBlock);
-	void                     removeAllBookmarks(void);
 	fl_BlockLayout *         getMatchingBlock(fl_BlockLayout * pBlock);
 	UT_UTF8String &          getTOCListLabel(fl_BlockLayout * pBlock);
 	UT_UTF8String &          getTOCHeading(void) { return m_sTOCHeading;}
@@ -144,8 +143,7 @@ public:
 
 	const UT_UTF8String &    getRangeBookmarkName() const {return m_sRangeBookmark;}
 	bool                     verifyBookmarkAssumptions();
-
-	void                     purgeLayout(void) {_purgeLayout();}
+	bool                     fillTOC(void);
 	
 	static UT_UTF8String     getDefaultHeading();
 	static UT_UTF8String     getDefaultSourceStyle(UT_uint32 iLevel);

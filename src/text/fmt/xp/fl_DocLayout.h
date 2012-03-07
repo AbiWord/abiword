@@ -303,7 +303,6 @@ public:
 	bool                getMatchingBlocksFromTOCs(fl_BlockLayout * pBlock,  UT_GenericVector<fl_BlockLayout*>* pVecBlock) const;
 	bool                addTOC(fl_TOCLayout * pTOC);
 	bool                removeTOC(fl_TOCLayout * pTOC);
-	bool                fillTOC(fl_TOCLayout * pTOC);
 	void                recalculateTOCFields(void);
 	bool                updateTOCsOnBookmarkChange(const gchar * pBookmark);
 // --------------------------------------------------------------------

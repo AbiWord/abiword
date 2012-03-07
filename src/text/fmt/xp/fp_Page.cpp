@@ -891,6 +891,11 @@ UT_sint32 fp_Page::getFieldPageNumber(void) const
 	return m_iFieldPageNumber;
 }
 
+void fp_Page::setFieldPageNumber(UT_sint32 iPageNum)
+{
+	m_iFieldPageNumber = iPageNum;
+}
+
 void fp_Page::resetFieldPageNumber(void)
 {
 	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getOwningSection());

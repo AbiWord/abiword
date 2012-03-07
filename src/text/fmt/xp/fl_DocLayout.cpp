@@ -693,7 +693,7 @@ void FL_DocLayout::fillLayouts(void)
 		}
 		if (pTOC->isTOCEmpty())
 		{
-			fillTOC(pTOC);
+			pTOC->fillTOC();
 			m_pView->updateLayout();
 		}
 
@@ -2046,115 +2046,6 @@ bool FL_DocLayout::removeTOC(fl_TOCLayout * pTOC)
 	return true;
 }
 
-bool FL_DocLayout::fillTOC(fl_TOCLayout * pTOC)
-{
-	fl_DocSectionLayout * pDSL = m_pFirstSection;
-	fl_BlockLayout * pBlock = NULL;
-	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pDSL);
-	while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
-	{
-		pCL = pCL->getFirstLayout();
-	}
-	if(pCL == NULL)
-	{
-		return false;
-	}
-	if(pCL->getContainerType() != FL_CONTAINER_BLOCK)
-	{
-		return false;
-	}
-	UT_UTF8String sStyle;
-	pBlock = static_cast<fl_BlockLayout *>(pCL);
-	bool filled = false;
-
-	const gchar * pBookmark = pTOC->getRangeBookmarkName().size() ? pTOC->getRangeBookmarkName().utf8_str() : NULL;
-	
-	if(pBookmark)
-	{
-		if(m_pDoc->isBookmarkUnique(pBookmark))
-		{
-			// bookmark does not exist
-			pBookmark = NULL;
-		}
-	}
-
-	fl_BlockLayout * pBlockLast = NULL;
-	
-	if(pBookmark)
-	{
-		UT_uint32 i = 0;
-		fp_BookmarkRun * pB[2] = {NULL,NULL};
-		fp_Run * pRun;
-		fl_BlockLayout * pBlockStart = pBlock;
-		bool bFound = false;
-		
-		while(pBlock)
-		{
-			pRun = pBlock->getFirstRun();
-
-			while(pRun)
-			{
-				if(pRun->getType()== FPRUN_BOOKMARK)
-				{
-					fp_BookmarkRun * pBR = static_cast<fp_BookmarkRun*>(pRun);
-					if(!strcmp(pBR->getName(),pBookmark))
-					{
-						pB[i] = pBR;
-						i++;
-						if(i>1)
-						{
-							bFound = true;
-							break;
-						}
-					}
-				}
-
-				pRun = pRun->getNextRun();
-			}
-			
-			if(bFound)
-				break;
-			
-			pBlock = pBlock->getNextBlockInDocument();
-		}
-
-		if(pB[0] && pB[1])
-		{
-			pBlockLast = pB[1]->getBlock();
-
-			pBlock = pB[0]->getBlock();
-			PT_DocPosition pos1 = pB[0]->getBookmarkedDocPosition(false);
-
-			if(pBlock->getPosition(true) < pos1)
-				pBlock = pBlock->getNextBlockInDocument();
-		}
-		else
-		{
-			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
-			pBlock = pBlockStart;
-		}
-	}
-
-	// clear any existing contents
-	pTOC->removeAllBookmarks();
-
-	while(pBlock)
-	{
-		pBlock->getStyle(sStyle);
-		if(pTOC->isStyleInTOC(sStyle))
-		{
-			filled = true;
-			pTOC->addBlock(pBlock, false);
-		}
-
-		if(pBlockLast && pBlockLast == pBlock)
-			break;
-		
-		pBlock = pBlock->getNextBlockInDocument();
-	}
-	return filled;
-}
-
 /*
    updates affected TOCs in response to bookmark operation
    returns true if operation resulted in change, false otherwise
@@ -2172,7 +2063,7 @@ bool FL_DocLayout::updateTOCsOnBookmarkChange(const gchar * pBookmark)
 		if(pTOC->getRangeBookmarkName().size() && !strcmp(pTOC->getRangeBookmarkName().utf8_str(), pBookmark))
 		{
 			// this TOC depends on the given bookmark, update ...
-			fillTOC(pTOC);
+			pTOC->fillTOC();
 			bChange = true;
 		}
 	}

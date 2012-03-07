@@ -251,20 +251,7 @@ bool fl_TOCLayout::bl_doclistener_insertEndTOC(fl_ContainerLayout*,
 	}
 	m_bHasEndTOC = true;
 
-	m_pLayout->fillTOC(this);
-	if(m_bTOCHeading)
-	{
-		PD_Style * pStyle = NULL;
-		m_pDoc->getStyle(m_sTOCHeadingStyle.utf8_str(), &pStyle);
-		if(pStyle == NULL)
-		{
-			m_pDoc->getStyle("Heading 1", &pStyle);
-		}
-		PT_AttrPropIndex indexAP = pStyle->getIndexAP();
-		
-		fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,indexAP,FL_CONTAINER_BLOCK));
-		pNewBlock->_doInsertTOCHeadingRun(0);
-	}
+	fillTOC();
 
 	return true;
 }
@@ -397,20 +384,7 @@ bool fl_TOCLayout::verifyBookmarkAssumptions()
 	if(m_bFalseBookmarkEstimate || (m_bMissingBookmark && m_pDoc->isBookmarkUnique(m_sRangeBookmark.utf8_str())))
 	{
 		// this bookmark either does not exist, or it was positioned earlier than we assumed
-		m_pLayout->fillTOC(this);
-	}
-	if(m_bTOCHeading)
-	{
-		PD_Style * pStyle = NULL;
-		m_pDoc->getStyle(m_sTOCHeadingStyle.utf8_str(), &pStyle);
-		if(pStyle == NULL)
-		{
-			m_pDoc->getStyle("Heading 1", &pStyle);
-		}
-		PT_AttrPropIndex indexAP = pStyle->getIndexAP();
-		
-		fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,indexAP,FL_CONTAINER_BLOCK));
-		pNewBlock->_doInsertTOCHeadingRun(0);
+		fillTOC();
 	}
 
 	return true;
@@ -422,7 +396,7 @@ bool fl_TOCLayout::verifyBookmarkAssumptions()
     by associated bookmark. This parameter has default value true, but the caller can specify false
     if the block is known to be inside the TOC range (the range checking is involved, so if this
     function is called from a loop, it is desirable that most of the range verification is taken
-    outside the loop -- see for example fl_DocLayout::fillTOC())
+    outside the loop -- see for example fillTOC())
 */
 bool fl_TOCLayout::addBlock(fl_BlockLayout * pBlock, bool bVerifyRange)
 {
@@ -875,13 +849,6 @@ bool fl_TOCLayout::removeBlock(fl_BlockLayout * pBlock)
 	return false;
 }
 
-void fl_TOCLayout::removeAllBookmarks(void)
-{
-    while(m_vecEntries.getItemCount() > 0)
-    {
-	_removeBlockInVec(m_vecEntries.getNthItem(0)->getBlock());
-    }
-}
 
 fl_BlockLayout * fl_TOCLayout::findMatchingBlock(fl_BlockLayout * pBlock)
 {
@@ -1418,20 +1385,7 @@ void fl_TOCLayout::_createTOCContainer(void)
 	pTOCContainer->setWidth(iWidth);
 	if(m_bHasEndTOC)
 	{
-		m_pLayout->fillTOC(this);
-	}
-	if(m_bTOCHeading)
-	{
-		PD_Style * pStyle = NULL;
-		m_pDoc->getStyle(m_sTOCHeadingStyle.utf8_str(), &pStyle);
-		if(pStyle == NULL)
-		{
-			m_pDoc->getStyle("Heading 1", &pStyle);
-		}
-		PT_AttrPropIndex indexAP = pStyle->getIndexAP();
-		
-		fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,indexAP,FL_CONTAINER_BLOCK));
-		pNewBlock->_doInsertTOCHeadingRun(0);
+	    fillTOC();
 	}
 }
 
@@ -2454,3 +2408,129 @@ bool fl_TOCListener::signal(UT_uint32 /*iSignal*/)
 }
 
 
+bool fl_TOCLayout::fillTOC(void)
+{
+    fl_DocSectionLayout * pDSL = getDocLayout()->getFirstSection();
+    fl_BlockLayout * pBlock = NULL;
+    fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pDSL);
+    while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+    {
+	pCL = pCL->getFirstLayout();
+    }
+    if(pCL == NULL)
+    {
+	return false;
+    }
+    if(pCL->getContainerType() != FL_CONTAINER_BLOCK)
+    {
+	return false;
+    }
+    UT_UTF8String sStyle;
+    pBlock = static_cast<fl_BlockLayout *>(pCL);
+    bool filled = false;
+    
+    const gchar * pBookmark = getRangeBookmarkName().size() ? getRangeBookmarkName().utf8_str() : NULL;
+    
+    if(pBookmark)
+    {
+	if(m_pDoc->isBookmarkUnique(pBookmark))
+	{
+	    // bookmark does not exist
+	    pBookmark = NULL;
+	}
+    }
+    
+    fl_BlockLayout * pBlockLast = NULL;
+    
+    if(pBookmark)
+    {
+	UT_uint32 i = 0;
+	fp_BookmarkRun * pB[2] = {NULL,NULL};
+	fp_Run * pRun;
+	fl_BlockLayout * pBlockStart = pBlock;
+	bool bFound = false;
+	
+	while(pBlock)
+	{
+	    pRun = pBlock->getFirstRun();
+	    while(pRun)
+	    {
+		if(pRun->getType()== FPRUN_BOOKMARK)
+		{
+		    fp_BookmarkRun * pBR = static_cast<fp_BookmarkRun*>(pRun);
+		    if(!strcmp(pBR->getName(),pBookmark))
+		    {
+			pB[i] = pBR;
+			i++;
+			if(i>1)
+			{
+			    bFound = true;
+			    break;
+			}
+		    }
+		}
+		
+		pRun = pRun->getNextRun();
+	    }
+	    
+	    if(bFound)
+	    {
+		break;
+	    }
+	    pBlock = pBlock->getNextBlockInDocument();
+	}
+	
+	if(pB[0] && pB[1])
+	{
+	    pBlockLast = pB[1]->getBlock();
+	    
+	    pBlock = pB[0]->getBlock();
+	    PT_DocPosition pos1 = pB[0]->getBookmarkedDocPosition(false);
+	    
+	    if(pBlock->getPosition(true) < pos1)
+	    {
+		pBlock = pBlock->getNextBlockInDocument();
+	    }
+	}
+	else
+	{
+	    UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+	    pBlock = pBlockStart;
+	}
+    }
+    
+    // clear any existing contents
+    _purgeLayout();
+    
+    while(pBlock)
+    {
+	pBlock->getStyle(sStyle);
+	if(isStyleInTOC(sStyle))
+	{
+	    filled = true;
+	    addBlock(pBlock, false);
+	}
+	if(pBlockLast && pBlockLast == pBlock)
+	{	    
+	    break;
+	}
+	pBlock = pBlock->getNextBlockInDocument();
+    }
+    if(m_bTOCHeading)
+    {
+	PD_Style * pStyle = NULL;
+	m_pDoc->getStyle(m_sTOCHeadingStyle.utf8_str(), &pStyle);
+	if(pStyle == NULL)
+	{
+	    m_pDoc->getStyle("Heading 1", &pStyle);
+	}
+	PT_AttrPropIndex indexAP = pStyle->getIndexAP();
+	
+	fl_BlockLayout * pNewBlock = static_cast<fl_BlockLayout *>(insert(getStruxDocHandle(),NULL,
+									  indexAP,FL_CONTAINER_BLOCK));
+	pNewBlock->_doInsertTOCHeadingRun(0);
+    }
+
+
+    return filled;
+}

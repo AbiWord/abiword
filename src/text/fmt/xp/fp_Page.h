@@ -158,6 +158,7 @@ public:
 	void                setPageNumberInFrames(void);
 	UT_sint32           getPageNumber(void); // TODO make const
 	UT_sint32           getFieldPageNumber(void) const;
+	void                setFieldPageNumber(UT_sint32 iPageNum);
 	void                resetFieldPageNumber(void);
 	bool                TopBotMarginChanged(void);
 	void                setLastMappedTOC(fl_TOCLayout * pTOCL)
