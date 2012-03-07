@@ -49,7 +49,7 @@
  */
 class ABI_EXPORT IE_Exp_HTML_ListenerImpl {
 public:
-
+    virtual ~IE_Exp_HTML_ListenerImpl(){}
     virtual void openSpan(const gchar * szStyleName,
 						  const UT_UTF8String& style) = 0;
     virtual void closeSpan() = 0;
