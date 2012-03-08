@@ -319,7 +319,7 @@ dcl(DLG_LISTDOCS_Heading1,				"Choose document from the list:")
 For insert Table widget
 */
 dcl(TB_InsertNewTable,                   "Insert New Table")
-dcl(TB_Table,                            "Table")
+dcl(TB_Rows_x_Cols_Table,                "Table")
 dcl(TB_ClearBackground,"Clear Background")
 
 /*

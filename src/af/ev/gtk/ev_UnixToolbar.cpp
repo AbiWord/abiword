@@ -910,7 +910,7 @@ bool EV_UnixToolbar::synthesize(void)
 					GtkWidget * abi_table = abi_table_new();
 					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
                     std::string sTable;
-					pSS->getValueUTF8(XAP_STRING_ID_TB_Table,sTable);
+					pSS->getValueUTF8(XAP_STRING_ID_TB_Rows_x_Cols_Table,sTable);
                     std::string sCancel;
 					pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel,sCancel);
 
