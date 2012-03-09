@@ -421,27 +421,29 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 // Footnotes number menu
 //
-	m_wFootnoteNumberingMenu = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "omNumbering"));
+	m_wFootnoteNumberingMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omNumbering"));
 	UT_ASSERT(m_wFootnoteNumberingMenu );
+	XAP_makeGtkComboBoxText(m_wFootnoteNumberingMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone,s);
-	gtk_combo_box_text_append_text(m_wFootnoteNumberingMenu, s.c_str());
+	XAP_appendComboBoxText(m_wFootnoteNumberingMenu, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec,s);
-	gtk_combo_box_text_append_text(m_wFootnoteNumberingMenu, s.c_str());
+	XAP_appendComboBoxText(m_wFootnoteNumberingMenu, s.c_str());
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage,s);
-	gtk_combo_box_text_append_text(m_wFootnoteNumberingMenu, s.c_str());
+	XAP_appendComboBoxText(m_wFootnoteNumberingMenu, s.c_str());
 //	m_wFootnotesRestartOnPage = gtk_menu_item_new_with_label (s.utf8_str());
 
 
 //
 // Endnotes placement menu
 //
-	m_wEndnotesPlaceMenu = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "omEndnotePlacement"));
+	m_wEndnotesPlaceMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnotePlacement"));
 	UT_ASSERT(m_wEndnotesPlaceMenu );
+	XAP_makeGtkComboBoxText(m_wEndnotesPlaceMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
-	gtk_combo_box_text_append_text(m_wEndnotesPlaceMenu, s.c_str());
+	XAP_appendComboBoxText(m_wEndnotesPlaceMenu, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);
-	gtk_combo_box_text_append_text(m_wEndnotesPlaceMenu, s.c_str());
+	XAP_appendComboBoxText(m_wEndnotesPlaceMenu, s.c_str());
 
 //
 // Now grab widgets for the remaining controls.

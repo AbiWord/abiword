@@ -191,7 +191,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBoxText" id="cmbBorderStyle">
+                      <object class="GtkComboBox" id="cmbBorderStyle">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -203,7 +203,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBoxText" id="omBorderThickness">
+                      <object class="GtkComboBox" id="omBorderThickness">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -274,7 +274,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBoxText" id="cmbShadingOffset">
+                      <object class="GtkComboBox" id="cmbShadingOffset">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>

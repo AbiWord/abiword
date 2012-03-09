@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009,2012 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,9 +17,7 @@
  * 02111-1307, USA.
  */
 
-
 #include "xap_GtkComboBoxHelpers.h"
-
 
 void XAP_makeGtkComboBoxText(GtkComboBox * combo, GType secondary)
 {
@@ -63,6 +61,14 @@ void XAP_populateComboBoxWithIndex(GtkComboBox * combo,
 		gtk_list_store_append(store, &iter);
 		gtk_list_store_set(store, &iter, 0, vec[i], 1, i, -1);
 	}
+}
+
+void XAP_appendComboBoxText(GtkComboBox* combo, const char* text)
+{
+	GtkTreeIter iter;
+	GtkListStore *store = GTK_LIST_STORE(gtk_combo_box_get_model(combo));
+	gtk_list_store_append(store, &iter);
+	gtk_list_store_set(store, &iter, 0, text, -1);
 }
 
 void XAP_appendComboBoxTextAndInt(GtkComboBox * combo, const char * text,

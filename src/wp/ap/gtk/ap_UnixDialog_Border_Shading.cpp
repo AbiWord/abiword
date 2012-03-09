@@ -568,41 +568,44 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 // Border Thickness Option menu
 // 
 	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
-	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(m_wBorderThickness);
-	gtk_combo_box_text_append_text(combo, "1/2 pt");
-	gtk_combo_box_text_append_text(combo, "3/4 pt");
-	gtk_combo_box_text_append_text(combo, "1 pt");
-	gtk_combo_box_text_append_text(combo, "1 1/2 pt");
-	gtk_combo_box_text_append_text(combo, "2 1/4 pt");
-	gtk_combo_box_text_append_text(combo, "3 pt");
-	gtk_combo_box_text_append_text(combo, "4 1/2 pt");
-	gtk_combo_box_text_append_text(combo, "6 pt");
+	GtkComboBox* combo = GTK_COMBO_BOX(m_wBorderThickness);
+	XAP_makeGtkComboBoxText(combo, G_TYPE_NONE);
+	XAP_appendComboBoxText(combo, "1/2 pt");
+	XAP_appendComboBoxText(combo, "3/4 pt");
+	XAP_appendComboBoxText(combo, "1 pt");
+	XAP_appendComboBoxText(combo, "1 1/2 pt");
+	XAP_appendComboBoxText(combo, "2 1/4 pt");
+	XAP_appendComboBoxText(combo, "3 pt");
+	XAP_appendComboBoxText(combo, "4 1/2 pt");
+	XAP_appendComboBoxText(combo, "6 pt");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
 //
 // Border Style Option menu
 //
 	m_wBorderStyle = GTK_WIDGET(gtk_builder_get_object(builder, "cmbBorderStyle"));
-	GtkComboBoxText *combo_style = GTK_COMBO_BOX_TEXT(m_wBorderStyle);
-	gtk_combo_box_text_append_text(combo_style, "None");
-	gtk_combo_box_text_append_text(combo_style, "Solid line");
-	gtk_combo_box_text_append_text(combo_style, "Dashed line");
-	gtk_combo_box_text_append_text(combo_style, "Dotted line");
+	GtkComboBox* combo_style = GTK_COMBO_BOX(m_wBorderStyle);
+	XAP_makeGtkComboBoxText(combo_style, G_TYPE_NONE);
+	XAP_appendComboBoxText(combo_style, "None");
+	XAP_appendComboBoxText(combo_style, "Solid line");
+	XAP_appendComboBoxText(combo_style, "Dashed line");
+	XAP_appendComboBoxText(combo_style, "Dotted line");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_style), 0);
 
 //
 // Shading offset Option menu
 //
 	m_wShadingOffset = GTK_WIDGET(gtk_builder_get_object(builder, "cmbShadingOffset"));
-	GtkComboBoxText *combo_offset = GTK_COMBO_BOX_TEXT(m_wShadingOffset);
-	gtk_combo_box_text_append_text(combo_offset, "1/2 pt");
-	gtk_combo_box_text_append_text(combo_offset, "3/4 pt");
-	gtk_combo_box_text_append_text(combo_offset, "1 pt");
-	gtk_combo_box_text_append_text(combo_offset, "1 1/2 pt");
-	gtk_combo_box_text_append_text(combo_offset, "2 1/4 pt");
-	gtk_combo_box_text_append_text(combo_offset, "3 pt");
-	gtk_combo_box_text_append_text(combo_offset, "4 1/2 pt");
-	gtk_combo_box_text_append_text(combo_offset, "6 pt");
+	GtkComboBox* combo_offset = GTK_COMBO_BOX(m_wShadingOffset);
+	XAP_makeGtkComboBoxText(combo_offset, G_TYPE_NONE);
+	XAP_appendComboBoxText(combo_offset, "1/2 pt");
+	XAP_appendComboBoxText(combo_offset, "3/4 pt");
+	XAP_appendComboBoxText(combo_offset, "1 pt");
+	XAP_appendComboBoxText(combo_offset, "1 1/2 pt");
+	XAP_appendComboBoxText(combo_offset, "2 1/4 pt");
+	XAP_appendComboBoxText(combo_offset, "3 pt");
+	XAP_appendComboBoxText(combo_offset, "4 1/2 pt");
+	XAP_appendComboBoxText(combo_offset, "6 pt");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_offset), 0);
 
 	// add the apply and ok buttons to the dialog

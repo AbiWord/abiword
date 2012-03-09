@@ -212,7 +212,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBoxText" id="omNumbering">
+                      <object class="GtkComboBox" id="omNumbering">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -390,7 +390,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBoxText" id="omEndnotePlacement">
+                      <object class="GtkComboBox" id="omEndnotePlacement">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>

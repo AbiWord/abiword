@@ -477,32 +477,34 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 // Now the Border Thickness Option menu
 // 
 	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
-	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(m_wBorderThickness);
-	gtk_combo_box_text_append_text(combo, "1/2 pt");
-	gtk_combo_box_text_append_text(combo, "3/4 pt");
-	gtk_combo_box_text_append_text(combo, "1 pt");
-	gtk_combo_box_text_append_text(combo, "1 1/2 pt");
-	gtk_combo_box_text_append_text(combo, "2 1/4 pt");
-	gtk_combo_box_text_append_text(combo, "3 pt");
-	gtk_combo_box_text_append_text(combo, "4 1/2 pt");
-	gtk_combo_box_text_append_text(combo, "6 pt");
+	GtkComboBox* combo = GTK_COMBO_BOX(m_wBorderThickness);
+	XAP_makeGtkComboBoxText(GTK_COMBO_BOX(combo), G_TYPE_NONE);
+	XAP_appendComboBoxText(combo, "1/2 pt");
+	XAP_appendComboBoxText(combo, "3/4 pt");
+	XAP_appendComboBoxText(combo, "1 pt");
+	XAP_appendComboBoxText(combo, "1 1/2 pt");
+	XAP_appendComboBoxText(combo, "2 1/4 pt");
+	XAP_appendComboBoxText(combo, "3 pt");
+	XAP_appendComboBoxText(combo, "4 1/2 pt");
+	XAP_appendComboBoxText(combo, "6 pt");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
 	// add the options to the "Apply to" menu
 	// NOTE: if you change this order, make sure to adjust event_ApplyToChanged as well!
 	// FIXME: PLEASE ADD A "localizeMenuItem" HELPER FUNCTION OR SOMETHING LIKE THAT
 	m_wApplyToMenu = GTK_WIDGET(gtk_builder_get_object(builder, "omApplyTo"));
-	combo = GTK_COMBO_BOX_TEXT(m_wApplyToMenu);
+	combo = GTK_COMBO_BOX(m_wApplyToMenu);
+	XAP_makeGtkComboBoxText(GTK_COMBO_BOX(combo), G_TYPE_NONE);
 	
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection,s);
-	gtk_combo_box_text_append_text(combo, s.utf8_str());
+	XAP_appendComboBoxText(combo, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row,s);
-	gtk_combo_box_text_append_text(combo, s.utf8_str());
+	XAP_appendComboBoxText(combo, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column,s);
-	gtk_combo_box_text_append_text(combo, s.utf8_str());
+	XAP_appendComboBoxText(combo, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table,s);
-	gtk_combo_box_text_append_text(combo, s.utf8_str());
+	XAP_appendComboBoxText(combo, s.utf8_str());
 
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
