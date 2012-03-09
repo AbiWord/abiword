@@ -64,14 +64,12 @@ private:
 	GtkWidget *   m_wButtonApply;
 	GtkComboBox *   m_wFootnotesStyleMenu;
 	GtkComboBox*   m_wFootnoteNumberingMenu;
-	GtkWidget *   m_wFootnotesInitialValText;
 	GtkWidget *   m_wFootnoteSpin;
 	GtkAdjustment *   m_oFootnoteSpinAdj;
 
 	GtkComboBox *   m_wEndnotesStyleMenu;
 	GtkComboBox*   m_wEndnotesPlaceMenu;
 	GtkWidget *   m_wEndnotesRestartOnSection;
-	GtkWidget *   m_wEndnotesInitialValText;
 	GtkWidget *   m_wEndnoteSpin;
 	GtkAdjustment *   m_oEndnoteSpinAdj;
 

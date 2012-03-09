@@ -57,14 +57,12 @@ AP_UnixDialog_FormatFootnotes::AP_UnixDialog_FormatFootnotes(XAP_DialogFactory *
 
 	m_wFootnotesStyleMenu = NULL;
 	m_wFootnoteNumberingMenu = NULL;
-	m_wFootnotesInitialValText = NULL;
 	m_wFootnoteSpin = NULL;
 	m_oFootnoteSpinAdj = NULL;
 
 	m_wEndnotesStyleMenu = NULL;
 	m_wEndnotesPlaceMenu= NULL;
 	m_wEndnotesRestartOnSection = NULL;
-	m_wEndnotesInitialValText = NULL;
 	m_wEndnoteSpin = NULL;
 	m_oEndnoteSpinAdj = NULL;
 
@@ -292,13 +290,8 @@ void AP_UnixDialog_FormatFootnotes::event_MenuEndnoteChange(GtkWidget * widget)
 */
 void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
 {
-	UT_String sVal;
-	getFootnoteValString(sVal);
-	gtk_label_set_text(GTK_LABEL(m_wFootnotesInitialValText),sVal.c_str());
-
-	getEndnoteValString(sVal);
-	gtk_label_set_text(GTK_LABEL(m_wEndnotesInitialValText),sVal.c_str());
-
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wFootnoteSpin), getFootnoteVal());
+	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wEndnoteSpin), getEndnoteVal());
 
 	XAP_GtkSignalBlocker b1(G_OBJECT(m_wEndnotesRestartOnSection), 
 							m_EndRestartSectionID);
@@ -452,8 +445,6 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	UT_ASSERT(m_wEndnotesRestartOnSection );
 // Endnote Initial Value Control
 
-	m_wEndnotesInitialValText = GTK_WIDGET(gtk_builder_get_object(builder, "endSpinValueText"));
-	UT_ASSERT(m_wEndnotesInitialValText );
 	m_wEndnoteSpin = GTK_WIDGET(gtk_builder_get_object(builder, "endnoteSpin"));
 	m_oEndnoteSpinAdj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wEndnoteSpin));
 
@@ -462,8 +453,6 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	m_wFootnoteSpin = GTK_WIDGET(gtk_builder_get_object(builder, "footnoteSpin"));
 	UT_ASSERT(m_wFootnoteSpin );
 	m_oFootnoteSpinAdj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wFootnoteSpin));
-	m_wFootnotesInitialValText = GTK_WIDGET(gtk_builder_get_object(builder, "footSpinValueText"));
-	UT_ASSERT(m_wFootnotesInitialValText );
 	_connectSignals();
 	refreshVals();
 
