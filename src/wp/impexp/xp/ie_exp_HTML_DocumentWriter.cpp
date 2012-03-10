@@ -418,10 +418,14 @@ void IE_Exp_HTML_DocumentWriter::insertDTD()
 }
 
 void IE_Exp_HTML_DocumentWriter::insertMeta(const std::string& name, 
-                                            const std::string& content)
+                                            const std::string& content,
+                                            const std::string& httpEquiv)
 {
     m_pTagWriter->openTag("meta", false, true);
-    m_pTagWriter->addAttribute("name", name);
+    if (name.size() > 0)
+        m_pTagWriter->addAttribute("name", name);
+    if (httpEquiv.size() > 0)
+        m_pTagWriter->addAttribute("http-equiv", httpEquiv);
     m_pTagWriter->addAttribute("content", content);
     m_pTagWriter->closeTag();
 }
@@ -573,6 +577,13 @@ void IE_Exp_HTML_XHTMLWriter::openBlock(const gchar* szStyleName,
     _handleAwmlStyle(pAP);
 }
 
+void IE_Exp_HTML_XHTMLWriter::openHead()
+{
+    IE_Exp_HTML_DocumentWriter::openHead();
+    insertMeta(std::string(),  "application/xhtml+xml; charset=UTF-8", 
+               "Content-Type");
+}
+
 
 void IE_Exp_HTML_XHTMLWriter::_handleAwmlStyle(const PP_AttrProp *pAP)
 {
@@ -605,6 +616,12 @@ IE_Exp_HTML_OutputWriter* pOutputWriter):
 void IE_Exp_HTML_HTML4Writer::insertDTD()
 {
 	m_pOutputWriter->write(HTML4_DTD);
+}
+
+void IE_Exp_HTML_HTML4Writer::openHead()
+{
+    IE_Exp_HTML_DocumentWriter::openHead();
+    insertMeta(std::string(), "text/html; charset=UTF-8", "Content-Type");
 }
 
 IE_Exp_HTML_DefaultWriterFactory::IE_Exp_HTML_DefaultWriterFactory(

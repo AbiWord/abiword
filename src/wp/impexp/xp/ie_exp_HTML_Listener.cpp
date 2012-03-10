@@ -2432,19 +2432,19 @@ void IE_Exp_HTML_Listener::_insertMeta()
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_TITLE, metaProp) 
 									 && metaProp.size())
-        m_pCurrentImpl->insertMeta("title", metaProp);
+        m_pCurrentImpl->insertMeta("title", metaProp, std::string());
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_CREATOR, metaProp) 
 									 && metaProp.size())
-        m_pCurrentImpl->insertMeta("author", metaProp);
+        m_pCurrentImpl->insertMeta("author", metaProp, std::string());
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_KEYWORDS, metaProp) 
 									 && metaProp.size())
-        m_pCurrentImpl->insertMeta("keywords", metaProp);
+        m_pCurrentImpl->insertMeta("keywords", metaProp, std::string());
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_SUBJECT, metaProp) 
 									 && metaProp.size())
-        m_pCurrentImpl->insertMeta("subject", metaProp);
+        m_pCurrentImpl->insertMeta("subject", metaProp, std::string());
 }
     
 void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)

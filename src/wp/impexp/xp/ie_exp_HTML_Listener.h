@@ -119,7 +119,7 @@ public:
 							const UT_UTF8String &type,
 							const UT_UTF8String &uri) = 0;
     virtual void insertMeta(const std::string & name,
-							const std::string & content) = 0;
+        const std::string & content, const std::string& httpEquiv) = 0;
     virtual void insertMath(const UT_UTF8String &mathml,
 							const UT_UTF8String &width,
 							const UT_UTF8String &height) = 0;

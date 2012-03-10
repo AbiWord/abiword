@@ -111,7 +111,8 @@ public:
     void closeTextbox();
     
     void insertDTD();
-    void insertMeta(const std::string& name, const std::string& content);
+    void insertMeta(const std::string& name, const std::string& content,
+            const std::string& httpEquiv);
     void insertText(const UT_UTF8String &text);
     void insertImage(const UT_UTF8String &url, const UT_UTF8String &width, 
         const UT_UTF8String &align, const UT_UTF8String &style,
@@ -158,6 +159,7 @@ public:
     IE_Exp_HTML_XHTMLWriter(IE_Exp_HTML_OutputWriter* pOutputWriter);
     void insertDTD();
     void openDocument();
+    void openHead();
     void openList(bool ordered, const gchar *szStyleName, const PP_AttrProp *pAP);
     void openHeading(size_t level, const gchar* szStyleName, const gchar *szId,
         const PP_AttrProp *pAP);
@@ -177,6 +179,7 @@ class ABI_EXPORT IE_Exp_HTML_HTML4Writer : public IE_Exp_HTML_DocumentWriter
 public:
     IE_Exp_HTML_HTML4Writer(IE_Exp_HTML_OutputWriter* pOutputWriter);
     void insertDTD();  
+    void openHead();
 };
 
 /*
