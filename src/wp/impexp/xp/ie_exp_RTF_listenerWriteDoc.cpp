@@ -4378,8 +4378,10 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 			bool bHeaderFirst = false;
 			const gchar* pszFooterFirstID = NULL;
 			bool bFooterFirst = false;
+#if 0
 			const gchar* pszHeaderLastID = NULL;
 			const gchar* pszFooterLastID = NULL;
+#endif
 			
 // header,headerl (odd) ,headerr(even) ,headerf(first) ,footer,footerl,footerr,footerf
 

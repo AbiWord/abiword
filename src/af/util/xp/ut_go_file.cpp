@@ -1664,7 +1664,7 @@ UT_go_file_get_date_changed (char const *uri)
 
 /* ------------------------------------------------------------------------- */
 
-#if !defined(TOOLKIT_GTK_ALL)
+#if !defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA)
 static char *
 check_program (char const *prog)
 {

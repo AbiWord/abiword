@@ -343,7 +343,8 @@ toRDFXML( const std::list< PD_RDFModelHandle >& ml )
     librdf_free_serializer(serializer);
 
     return ss.str();
-    
+#else
+	UT_UNUSED(ml);
 #endif
     return "";
 }
@@ -399,7 +400,7 @@ toRDFXML( PD_RDFModelHandle m )
 }
 
 UT_Error
-loadRDFXML( PD_DocumentRDFMutationHandle m, std::string rdfxml, std::string baseuri )
+loadRDFXML( PD_DocumentRDFMutationHandle m, const std::string& rdfxml, const std::string& baseuri )
 {
 #ifdef WITH_REDLAND
     if( baseuri.empty() )
@@ -436,7 +437,10 @@ loadRDFXML( PD_DocumentRDFMutationHandle m, std::string rdfxml, std::string base
     
     UT_Error e = convertRedlandToNativeModel( m, args.world, args.model );
     return e;
-    
+#else
+	UT_UNUSED(m);
+	UT_UNUSED(rdfxml);
+	UT_UNUSED(baseuri);
 #endif
 
     return UT_ERROR;

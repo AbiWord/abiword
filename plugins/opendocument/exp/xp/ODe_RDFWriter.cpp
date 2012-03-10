@@ -55,6 +55,9 @@
 bool ODe_RDFWriter::writeRDF( PD_Document* pDoc, GsfOutfile* pODT, PD_RDFModelHandle additionalRDF )
 {
 #ifndef WITH_REDLAND
+    UT_UNUSED(pDoc);
+    UT_UNUSED(pODT);
+    UT_UNUSED(additionalRDF);
     return true;
 #else
     UT_DEBUGMSG(("writeRDF() \n"));

@@ -35,16 +35,18 @@
 
 
 EV_Toolbar_Control * AP_CocoaToolbar_FontCombo::static_constructor(EV_Toolbar * pToolbar,
-														  XAP_Toolbar_Id tlbrid)
+								   XAP_Toolbar_Id tlbrid)
 {
 	AP_CocoaToolbar_FontCombo * p = new AP_CocoaToolbar_FontCombo(pToolbar,tlbrid);
 	return p;
 }
 
 AP_CocoaToolbar_FontCombo::AP_CocoaToolbar_FontCombo(EV_Toolbar * pToolbar,
-												   XAP_Toolbar_Id tlbrid)
+						     XAP_Toolbar_Id tlbrid)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
+	UT_DEBUG_ONLY_ARG(tlbrid);
+
 	UT_ASSERT(tlbrid == AP_TOOLBAR_ID_FMT_FONT);
 	m_nPixels = 150;
 	m_nLimit = 32;

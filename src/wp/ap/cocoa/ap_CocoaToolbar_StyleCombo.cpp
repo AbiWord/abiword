@@ -42,9 +42,11 @@ EV_Toolbar_Control * AP_CocoaToolbar_StyleCombo::static_constructor(EV_Toolbar *
 }
 
 AP_CocoaToolbar_StyleCombo::AP_CocoaToolbar_StyleCombo(EV_Toolbar * pToolbar,
-													 XAP_Toolbar_Id tlbrid)
+													   XAP_Toolbar_Id tlbrid)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
+	UT_DEBUG_ONLY_ARG(tlbrid);
+
 	UT_ASSERT(tlbrid==AP_TOOLBAR_ID_FMT_STYLE);
 
 	m_nPixels = 120;		// TODO: do a better calculation

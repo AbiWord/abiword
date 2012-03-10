@@ -40,6 +40,8 @@ AP_CocoaToolbar_ZoomCombo::AP_CocoaToolbar_ZoomCombo(EV_Toolbar * pToolbar,
 													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
+	UT_DEBUG_ONLY_ARG(id);
+
 	UT_ASSERT(id==AP_TOOLBAR_ID_ZOOM);
 
 	m_nPixels = 50;		// TODO: do a better calculation

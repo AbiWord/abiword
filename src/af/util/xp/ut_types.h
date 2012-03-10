@@ -71,6 +71,16 @@ typedef long        UT_sintptr;
 /** use to mark variable as unused */
 #define UT_UNUSED(x) (void)(x);
 
+/** use to mark an argument as used in debug only 
+ *  otherwise equivalent to UT_UNUSED.
+ *  If it is a local variable use UT_DebugOnly<> instead.
+ */
+#ifdef DEBUG
+#define UT_DEBUG_ONLY_ARG(x)
+#else
+#define UT_DEBUG_ONLY_ARG(x) (void)(x);
+#endif
+
 /*!
  * Confidence heuristic datatype normalized to the range
  * [0,255] with 0 being least confident and 255 being the most confident

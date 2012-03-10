@@ -156,6 +156,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 {
+	UT_DEBUG_ONLY_ARG(id);
 	// Compute the menu label for the _help_about item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -174,6 +175,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents)
 {
+	UT_DEBUG_ONLY_ARG(id);
 	// Compute the menu label for the _help_contents item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -192,6 +194,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Intro)
 {
+	UT_DEBUG_ONLY_ARG(id);
 	// Compute the menu label for the _help_intro item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -210,6 +213,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Intro)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search)
 {
+	UT_DEBUG_ONLY_ARG(id);
+
 	// Compute the menu label for the _help_search item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -228,6 +233,7 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Checkver)
 {
+	UT_DEBUG_ONLY_ARG(id);
 	// Compute the menu label for the about the check version item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -308,6 +314,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 {
+	UT_DEBUG_ONLY_ARG(id);
+
 	// Compute the menu label for the _window_more ("More Windows...") item.
 
 	XAP_App * pApp = XAP_App::getApp();

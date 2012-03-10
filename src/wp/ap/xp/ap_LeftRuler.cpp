@@ -858,6 +858,8 @@ UT_sint32 AP_LeftRuler::setTableLineDrag(PT_DocPosition pos, UT_sint32 & iFixed,
 
 void AP_LeftRuler::mouseMotion(EV_EditModifierState ems, UT_sint32 x, UT_sint32 y)
 {
+	UT_DEBUG_ONLY_ARG(ems);
+
 	// The X and Y that are passed to this function are x and y on the application, not on the ruler.
 	xxx_UT_DEBUGMSG(("In Left mouseMotion \n"));
 	FV_View * pView1 = static_cast<FV_View *>(m_pView);
@@ -1225,6 +1227,7 @@ static bool s_IsOnDifferentPage(const AP_LeftRulerInfo * p1, const AP_LeftRulerI
 bool AP_LeftRuler::notify(AV_View * pView, const AV_ChangeMask mask)
 {
 	// Handle AV_Listener events on the view.
+	UT_DEBUG_ONLY_ARG(pView);
 
 	UT_ASSERT(pView==m_pView);
 	FV_View * pVView = static_cast<FV_View *>(m_pView);

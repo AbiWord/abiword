@@ -72,6 +72,7 @@ public:
 										   PD_ResultBindings_t::iterator /*it*/,
 										   bool isGeo84 = false )
     {
+		UT_UNUSED(isGeo84);
         return 0;
     }
 };
@@ -310,6 +311,8 @@ PD_RDFModel::contains( const PD_URI& s, const PD_URI& p )
 void
 PD_RDFModel::dumpModel( const std::string& headerMsg )
 {
+	UT_DEBUG_ONLY_ARG(headerMsg);
+
 #ifdef DEBUG    
     PD_RDFModelIterator iter = begin();
     PD_RDFModelIterator    e = end();
@@ -1758,15 +1761,19 @@ PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf,
 }
 
 void
-PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItems cl )
+PD_RDFSemanticItem::showEditorWindow( const PD_RDFSemanticItems& cl )
 {
+	UT_DEBUG_ONLY_ARG(cl);
+
     UT_DEBUGMSG(("showEditorWindow(base) list... sz:%ld\n", cl.size() ));
 }
 
 
 void
-PD_RDFSemanticItem::showEditorWindow( PD_RDFSemanticItemHandle c )
+PD_RDFSemanticItem::showEditorWindow( const PD_RDFSemanticItemHandle& c )
 {
+	UT_DEBUG_ONLY_ARG(c);
+
     UT_DEBUGMSG(("showEditorWindow(base) name:%s linksubj:%s\n",
                  c->name().c_str(), c->linkingSubject().toString().c_str() ));
 }
@@ -4268,6 +4275,8 @@ void PD_DocumentRDF::runMilestone2Test()
 
 static void dump( const std::string& msg, PD_RDFModelIterator iter, PD_RDFModelIterator e )
 {
+	UT_DEBUG_ONLY_ARG(msg);
+
     int count = 0;
     UT_DEBUGMSG(("dump(top) msg::%s\n", msg.c_str() ));
     for( ; iter != e; ++iter )
@@ -4489,6 +4498,8 @@ PD_DocumentRDF::maybeSetDocumentDirty()
 void
 PD_DocumentRDF::apDumpModel( const PP_AttrProp* AP, const std::string& headerMsg )
 {
+	UT_DEBUG_ONLY_ARG(headerMsg);
+
     UT_DEBUGMSG(("PD_DocumentRDF::apDumpModel() ----------------------------------\n"));
     UT_DEBUGMSG(("PD_DocumentRDF::apDumpModel() %s\n", headerMsg.c_str()));
     UT_DEBUGMSG(("PD_DocumentRDF::apDumpModel() triple count:%ld\n", getTripleCount()));
@@ -5012,11 +5023,11 @@ PD_DocumentRDF::selectXMLIDs( const std::set< std::string >& xmlids, FV_View* pV
 }
 
 void
-PD_DocumentRDF::showEditorWindow( PD_RDFSemanticItems cl )
+PD_DocumentRDF::showEditorWindow( const PD_RDFSemanticItems & cl )
 {
     if( !cl.empty() )
     {
-        PD_RDFSemanticItems::iterator ci = cl.begin();
+        PD_RDFSemanticItems::const_iterator ci = cl.begin();
         PD_RDFSemanticItemHandle c = *ci;
         c->showEditorWindow( cl );
     }

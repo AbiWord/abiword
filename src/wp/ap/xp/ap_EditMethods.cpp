@@ -8214,6 +8214,8 @@ static bool s_doOptionsDlg(FV_View * pView, int which = -1)
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 #else
+	UT_UNUSED(pView);
+
 	XAP_Frame * pFrame = 0; // don't necessarily have a frame in Cocoa-FE
 
 	XAP_DialogFactory * pDialogFactory

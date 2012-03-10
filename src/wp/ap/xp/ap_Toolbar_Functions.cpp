@@ -964,6 +964,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_AlwaysDisabled)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HasRevisions)
 {
+	UT_UNUSED(id);
+	UT_UNUSED(pszState);
 	ABIWORD_VIEW;
  	UT_return_val_if_fail (pView, EV_TIS_Gray);
 
@@ -976,6 +978,8 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HasRevisions)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CursorInSemItem)
 {
+	UT_UNUSED(id);
+	UT_UNUSED(pszState);
 	ABIWORD_VIEW;
  	UT_return_val_if_fail (pView, EV_TIS_Gray);
 

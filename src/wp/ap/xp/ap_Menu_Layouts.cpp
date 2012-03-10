@@ -301,7 +301,7 @@ EV_Menu_Layout * XAP_Menu_Factory::CreateMenuLayout(const char * szName)
 			for (UT_uint32 j=0; (j < NrEntries); j++)
 			{
 				_lt * plt = pVectt->getNth_lt(j);
-				bool bResult = pLayout->setLayoutItem(j, plt->m_id, plt->m_flags);
+				UT_DebugOnly<bool> bResult = pLayout->setLayoutItem(j, plt->m_id, plt->m_flags);
 				UT_ASSERT_HARMLESS(bResult);
 			}
 

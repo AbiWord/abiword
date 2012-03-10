@@ -681,7 +681,8 @@ PD_RDFQuery::executeQuery( const std::string& sparql_query_string )
     PD_ResultBindings_t ret;
 
 #ifndef WITH_REDLAND
-        return ret;
+	UT_UNUSED(sparql_query_string);
+	return ret;
 #else
         
     if( m_model->empty() )

@@ -432,8 +432,8 @@ class ABI_EXPORT PD_RDFSemanticItem
      /**
       * Create a top level dialog allowing the user to edit this semitem
       */
-     virtual void showEditorWindow( PD_RDFSemanticItemHandle c );
-     virtual void showEditorWindow( PD_RDFSemanticItems cl );
+     virtual void showEditorWindow( const PD_RDFSemanticItemHandle & c );
+     virtual void showEditorWindow( const PD_RDFSemanticItems & cl );
 
      /**
       * Update the SemanticItem from the edited dialog that was created using
@@ -1045,7 +1045,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     void selectXMLIDs( const std::set< std::string >& xmlids, FV_View* pView = 0 ) const;
 
 
-    void showEditorWindow( PD_RDFSemanticItems cl );
+    void showEditorWindow( const PD_RDFSemanticItems& cl );
 
     
     // GTK, win32, osx, whatever backends can call this method to allow the correct

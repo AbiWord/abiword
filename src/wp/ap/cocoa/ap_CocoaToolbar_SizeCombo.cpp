@@ -26,16 +26,18 @@
 
 /*****************************************************************/
 EV_Toolbar_Control * AP_CocoaToolbar_SizeCombo::static_constructor(EV_Toolbar * pToolbar,
-														  XAP_Toolbar_Id id)
+								   XAP_Toolbar_Id id)
 {
 	AP_CocoaToolbar_SizeCombo * p = new AP_CocoaToolbar_SizeCombo(pToolbar,id);
 	return p;
 }
 
 AP_CocoaToolbar_SizeCombo::AP_CocoaToolbar_SizeCombo(EV_Toolbar * pToolbar,
-													 XAP_Toolbar_Id id)
+						     XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
+	UT_DEBUG_ONLY_ARG(id)
+
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_SIZE);
 	m_nPixels =60;		// TODO: do a better calculation
 	m_nLimit = 10;    
