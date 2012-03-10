@@ -1007,7 +1007,6 @@ void IE_Exp_HTML_Listener::_closeSpan(void)
         return;
 
     m_bInSpan = false;
-    UT_DEBUGMSG(("CLOSED SPAN\n"));
     m_pCurrentImpl->closeSpan();
     return;
 }
@@ -1120,8 +1119,6 @@ void IE_Exp_HTML_Listener::_openHeading(PT_AttrPropIndex api, size_t level,
 {
     const PP_AttrProp* pAP;
     bool ok;
-
-    m_bInBlock = true;
 
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok) 
