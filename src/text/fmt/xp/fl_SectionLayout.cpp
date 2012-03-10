@@ -2593,7 +2593,7 @@ void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_ContainerLayout * pTL)
 	{
 		return;
 	}
-	if(getDocLayout()->isLayoutDeleting())
+	if(!m_pLayout || m_pLayout->isLayoutDeleting())
 	{
 	        return;
 	}
