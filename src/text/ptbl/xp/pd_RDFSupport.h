@@ -27,7 +27,7 @@
 ABI_EXPORT std::string toRDFXML( const std::list< PD_RDFModelHandle >& ml );
 ABI_EXPORT std::string toRDFXML( PD_RDFModelHandle m );
 ABI_EXPORT UT_Error    loadRDFXML( PD_DocumentRDFMutationHandle m,
-                                   std::string rdfxml,
-                                   std::string baseuri = "" );
+                                   const std::string& rdfxml,
+                                   const std::string& baseuri = "" );
 
 #endif
