@@ -321,17 +321,17 @@ void IE_Exp_HTML_DocumentWriter::closeTextbox()
 void IE_Exp_HTML_DocumentWriter::_handleStyleAndId(const gchar* szStyleName, 
     const gchar* szId, const gchar* szStyle)
 {
-    if (szStyleName != NULL)
+    if ((szStyleName != NULL)  && (strlen(szStyle) > 0))
     {
         m_pTagWriter->addAttribute("class", szStyleName);
     }
 
-    if (szId != NULL)
+    if ((szId != NULL) && (strlen(szId) > 0))
     {
         m_pTagWriter->addAttribute("id", szId);
     }
 	
-	if (szStyle != NULL)
+	if ((szStyle != NULL) && (strlen(szStyle) > 0))
 	{
 		m_pTagWriter->addAttribute("style", szStyle);
 	}
