@@ -66,7 +66,7 @@ convertRedlandToNativeModel( PD_DocumentRDFMutationHandle m,
         librdf_statement* current = librdf_stream_get_object( stream );
 
         int objectType = PD_Object::OBJECT_TYPE_URI;
-            
+
         std::string xsdType = "";
         if( librdf_node_is_blank( librdf_statement_get_object( current )))
         {
@@ -93,8 +93,8 @@ convertRedlandToNativeModel( PD_DocumentRDFMutationHandle m,
                          xsdType.c_str()
                             ));
         }
-            
-            
+
+
         m->add( PD_URI( toString( librdf_statement_get_subject( current ))),
                 PD_URI( toString( librdf_statement_get_predicate( current ))),
                 PD_Object( toString( librdf_statement_get_object( current )),
@@ -103,12 +103,12 @@ convertRedlandToNativeModel( PD_DocumentRDFMutationHandle m,
 
         librdf_stream_next(stream);
     }
-        
+
     librdf_free_stream( stream );
     librdf_free_statement( statement );
 	return UT_OK;
 }
-   
+
 
 
 static librdf_model*
@@ -143,8 +143,8 @@ convertNativeToRedlandModel(
                              object.isLiteral()
                                 ));
             }
-            
-            
+
+
             librdf_node* rsubject =  librdf_new_node_from_uri_string(
                 world, (unsigned char *)subject.toString().c_str() );
             librdf_node* rpredicate = librdf_new_node_from_uri_string(
@@ -167,10 +167,10 @@ convertNativeToRedlandModel(
                     world,
                     (unsigned char *)object.toString().c_str(),
                     xml_language, datatype_uri );
-                
+
                 if(datatype_uri)
                     librdf_free_uri(datatype_uri);
-                
+
                 UT_DEBUGMSG(("literal idref to %s of type %d robject.type:%d\n",
                              object.toString().c_str(), object.getObjectType(),
                              librdf_node_get_type(robject) ));
@@ -191,7 +191,7 @@ convertNativeToRedlandModel(
                          predicate.toString().c_str(),
                          object.toString().c_str()
                             ));
-            
+
             int rc = librdf_model_add( model, rsubject, rpredicate, robject );
             if( rc != 0 )
             {
@@ -207,7 +207,7 @@ convertNativeToRedlandModel(
     return model;
 }
 
-    
+
 RDFArguments::RDFArguments()
     : world(0)
     , storage(0)
@@ -215,7 +215,7 @@ RDFArguments::RDFArguments()
     , parser(0)
 {
     world   = getWorld();
-    storage = librdf_new_storage( world, "memory", "/", 0 );    
+    storage = librdf_new_storage( world, "memory", "/", 0 );
     model   = librdf_new_model(   world, storage, 0 );
     parser  = librdf_new_parser(  world, 0, 0, 0 );
 
@@ -236,7 +236,7 @@ void dumpModelToTest( RDFArguments& args )
 {
     librdf_world* world = args.world;
     librdf_model* model = args.model;
-    
+
     // Convert redland model to RDF/XML
     librdf_serializer* serializer = librdf_new_serializer(
         args.world, "rdfxml", 0, 0 );
@@ -248,7 +248,7 @@ void dumpModelToTest( RDFArguments& args )
         ( serializer, base_uri, model, &data_sz  );
     UT_DEBUGMSG(("writeRDF() serializer:%p data_sz:%d\n",
                  serializer, (int)data_sz ));
-    
+
     if( !data )
     {
         // failed
@@ -311,7 +311,7 @@ toRDFXML( const std::list< PD_RDFModelHandle >& ml )
             convertNativeToRedlandModel( m, world, model );
         }
     }
-    
+
 
     UT_DEBUGMSG(("toRDFXML() native redland model size:%d\n",
                  librdf_model_size(model)));
@@ -328,7 +328,7 @@ toRDFXML( const std::list< PD_RDFModelHandle >& ml )
     unsigned char* data = librdf_serializer_serialize_model_to_counted_string
         ( serializer, base_uri, model, &data_sz  );
     UT_DEBUGMSG(("writeRDF() serializer:%p data_sz:%d\n", serializer, data_sz ));
-    
+
     if( !data )
     {
         // failed
@@ -356,7 +356,7 @@ toRDFXML( PD_RDFModelHandle m )
     std::list< PD_RDFModelHandle > ml;
     ml.push_back(m);
     return toRDFXML(ml);
-    
+
 // #ifdef WITH_REDLAND
 
 //     RDFArguments args;
@@ -379,7 +379,7 @@ toRDFXML( PD_RDFModelHandle m )
 //     unsigned char* data = librdf_serializer_serialize_model_to_counted_string
 //         ( serializer, base_uri, model, &data_sz  );
 //     UT_DEBUGMSG(("writeRDF() serializer:%p data_sz:%d\n", serializer, data_sz ));
-    
+
 //     if( !data )
 //     {
 //         // failed
@@ -394,7 +394,7 @@ toRDFXML( PD_RDFModelHandle m )
 //     librdf_free_serializer(serializer);
 
 //     return ss.str();
-    
+
 // #endif
 //     return "";
 }
@@ -403,30 +403,32 @@ UT_Error
 loadRDFXML( PD_DocumentRDFMutationHandle m, const std::string& rdfxml, const std::string& baseuri )
 {
 #ifdef WITH_REDLAND
+    std::string bUri;
     if( baseuri.empty() )
-        baseuri = "manifest.rdf";
-    
+        bUri = "manifest.rdf";
+    else bUri = baseuri;
+
     RDFArguments args;
     librdf_model* model = args.model;
-    
+
     // Note that although the API docs say you can use NULL for base_uri
     // you will likely find it an error to try to call that way.
     librdf_uri* base_uri = librdf_new_uri( args.world,
-                                           (const unsigned char*)baseuri.c_str() );
+                                           (const unsigned char*)bUri.c_str() );
     if( !base_uri )
     {
         UT_DEBUGMSG(("Failed to create a base URI to parse RDF into model. baseuri:%s rdfxml.sz:%d\n",
-                     baseuri.c_str(), rdfxml.size() ));
+                     bUri.c_str(), rdfxml.size() ));
         return UT_ERROR;
     }
 
-    UT_DEBUGMSG(("loadRDFXML() baseuri:%s RDF/XML:::%s:::\n", baseuri.c_str(), rdfxml.c_str() ));
+    UT_DEBUGMSG(("loadRDFXML() baseuri:%s RDF/XML:::%s:::\n", bUri.c_str(), rdfxml.c_str() ));
     if( librdf_parser_parse_string_into_model( args.parser,
                                                (const unsigned char*)rdfxml.c_str(),
                                                base_uri, args.model ))
     {
         UT_DEBUGMSG(("Failed to parse RDF into model. stream:%s rdfxml.sz:%d\n",
-                     baseuri.c_str(), rdfxml.size() ));
+                     bUri.c_str(), rdfxml.size() ));
         librdf_free_uri( base_uri );
         return UT_ERROR;
     }
@@ -434,7 +436,7 @@ loadRDFXML( PD_DocumentRDFMutationHandle m, const std::string& rdfxml, const std
 
     UT_DEBUGMSG(("loadRDFXML() redland count:%d\n",
                  librdf_model_size( model )));
-    
+
     UT_Error e = convertRedlandToNativeModel( m, args.world, args.model );
     return e;
 #else
