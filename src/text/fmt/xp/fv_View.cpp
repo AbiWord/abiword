@@ -11518,7 +11518,8 @@ void FV_View::setShowPara(bool bShowPara)
 	{
 		m_bShowPara = bShowPara;
 		m_pDoc->setDontChangeInsPoint();
-		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
+		// FIXME: test if next line can be safely removed
+		//m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 		m_pDoc->allowChangeInsPoint();
 		if(getPoint() > 0)
 		{
