@@ -1876,7 +1876,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	// FIXME!! Do extensive tests to see if we can remove this line!
 	//
 	bDoFull = true;
-	xxx_UT_DEBUGMSG(("Doing DocSection Update layout \n"));
+	UT_DEBUGMSG(("Doing DocSection Update layout (section %p)\n",this));
 	if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
 	{
 	        UT_sint32 i =0;
@@ -1948,7 +1948,33 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	m_vecFormatLayout.clear();
 	if(needsSectionBreak() && !getDocument()->isDontImmediateLayout() )
 	{
-		m_ColumnBreaker.breakSection();
+	    if (getPrev())
+	    {
+		// Verify that the current section starts after the end of the previous section
+		fp_Container * pFirstCon = getFirstContainer();
+		fp_Container * pPrevLastCon = getPrev()->getLastContainer();
+		fp_Page * pFirstPage = NULL;
+		fp_Page * pPrevLastPage = NULL;
+		if (pFirstCon && pPrevLastCon)
+		{
+		    pFirstPage = pFirstCon->getPage();
+		    pPrevLastPage = pPrevLastCon->getPage();
+		    if (pFirstPage && pPrevLastPage && 
+			(pFirstPage->getPageNumber() < pPrevLastPage->getPageNumber()))
+		    {
+			// The previous section ends on a page farther in the document than the present section
+			// first page. We reformat completely the section
+			// TODO: a better method would be to create one new page and move the present section
+			//       first page columns to that new page. Then insert the page at the correct place 
+			//       in the page list. If the section starts with a page break, there would not be any 
+			//       other changes necessary to the document.
+			collapse();
+			format();
+			return;
+		    }
+		}
+	    }
+	    m_ColumnBreaker.breakSection();
 //		UT_ASSERT(!needsSectionBreak());
 	}
 	if(needsRebuild() && !getDocument()->isDontImmediateLayout() )
