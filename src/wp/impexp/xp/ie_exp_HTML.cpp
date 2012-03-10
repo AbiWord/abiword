@@ -87,6 +87,7 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
         m_style_tree(new IE_Exp_HTML_StyleTree(pDocument)),
         m_styleListener(new IE_Exp_HTML_StyleListener(m_style_tree)),
         m_bSuppressDialog(false),
+        m_bDefaultWriterFactory(true),
         m_suffix(""),
     m_pNavigationHelper(new IE_Exp_HTML_NavigationHelper(getDoc(), getFileName())),
 	m_pWriterFactory( 
@@ -113,7 +114,8 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 
 IE_Exp_HTML::~IE_Exp_HTML()
 {
-	delete m_pWriterFactory;
+    if (m_bDefaultWriterFactory)
+        delete m_pWriterFactory;
 	delete m_pNavigationHelper;
 	delete m_styleListener;
     delete m_style_tree;
@@ -657,9 +659,10 @@ void IE_Exp_HTML::_createMultipart()
 
 void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
 {
-	if (m_pWriterFactory != NULL)
+	if ((m_pWriterFactory != NULL) && (m_bDefaultWriterFactory))
 	{
 		DELETEP(m_pWriterFactory);
+        m_bDefaultWriterFactory = false;
 	}
 	
 	if (pWriterFactory == NULL)
@@ -667,6 +670,7 @@ void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
 		m_pWriterFactory = 
             new IE_Exp_HTML_DefaultWriterFactory(getDoc(),
                                                              this->m_exp_opt);
+        m_bDefaultWriterFactory = true;
 	} else
     {
         m_pWriterFactory = pWriterFactory;

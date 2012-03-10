@@ -125,6 +125,7 @@ private:
 	IE_Exp_HTML_StyleTree *		m_style_tree;
         IE_Exp_HTML_StyleListener *m_styleListener;
 	bool			m_bSuppressDialog;
+        bool m_bDefaultWriterFactory;
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_UTF8String       m_sLinkCSS;
 	UT_UTF8String       m_sTitle;
