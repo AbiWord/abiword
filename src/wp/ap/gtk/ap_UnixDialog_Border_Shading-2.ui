@@ -378,6 +378,7 @@
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
+                        <property name="label" translatable="yes"></property>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -397,6 +398,7 @@
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
+                        <property name="label" translatable="yes"></property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -416,6 +418,7 @@
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
+                        <property name="label" translatable="yes"></property>
                       </object>
                       <packing>
                         <property name="top_attach">1</property>
@@ -433,6 +436,7 @@
                         <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
+                        <property name="label" translatable="yes"></property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
