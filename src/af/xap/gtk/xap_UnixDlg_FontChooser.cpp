@@ -751,13 +751,13 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	checkbuttonSubscript = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonSubscript), 5);
 	gtk_widget_show (checkbuttonSubscript);
-	gtk_box_pack_start (GTK_BOX (hboxAdvDecorations), checkbuttonSubscript, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hboxAdvDecorations), checkbuttonSubscript, FALSE, FALSE, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SuperScript,s);
 	checkbuttonSuperscript = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonSuperscript), 5);
 	gtk_widget_show (checkbuttonSuperscript);
-	gtk_box_pack_start (GTK_BOX (hboxAdvDecorations), checkbuttonSuperscript, TRUE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (hboxAdvDecorations), checkbuttonSuperscript, FALSE, FALSE, 0);
 
 	/* Notebook page for ForeGround Color Selector */
 
