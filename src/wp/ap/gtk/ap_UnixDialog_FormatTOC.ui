@@ -503,7 +503,7 @@
                             </child>
                             <child>
                               <object class="GtkSpinButton" id="wStartSpin">
-                                <property name="width_request">11</property>
+                                <property name="width_request">14</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">adjustment1</property>
@@ -733,7 +733,7 @@
                             </child>
                             <child>
                               <object class="GtkSpinButton" id="wIndentSpin">
-                                <property name="width_request">11</property>
+                                <property name="width_request">14</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">adjustment2</property>

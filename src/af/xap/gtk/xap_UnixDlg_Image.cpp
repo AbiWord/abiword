@@ -525,11 +525,11 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), m_bAspect);
 	
 	m_oHeightSpin_adj = (GtkAdjustment*)gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
-   	gtk_widget_set_size_request(m_wHeightSpin,13,-1);  
+   	gtk_widget_set_size_request(m_wHeightSpin,14,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wHeightSpin), GTK_ADJUSTMENT(m_oHeightSpin_adj));
 	
 	m_oWidthSpin_adj = (GtkAdjustment*)gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
-	gtk_widget_set_size_request(m_wWidthSpin,13,-1);  
+	gtk_widget_set_size_request(m_wWidthSpin,14,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wWidthSpin), GTK_ADJUSTMENT(m_oWidthSpin_adj));
 	
     std::string s;
