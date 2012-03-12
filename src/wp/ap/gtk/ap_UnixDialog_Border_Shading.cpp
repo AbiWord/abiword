@@ -554,6 +554,7 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lblBorderStyle")), pSS, AP_STRING_ID_DLG_BorderShading_Border_Style);
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbShading")), pSS, AP_STRING_ID_DLG_BorderShading_Shading);
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "cbShadingEnable")), pSS, AP_STRING_ID_DLG_BorderShading_Use_Shading);
 	m_wShadingColorLabel = GTK_WIDGET(gtk_builder_get_object(builder, "lbShadingColor"));
 	localizeLabel(m_wShadingColorLabel, pSS, AP_STRING_ID_DLG_BorderShading_Shading_Color);
 	m_wShadingOffsetLabel = GTK_WIDGET(gtk_builder_get_object(builder, "lblShadingOffset"));
@@ -586,10 +587,16 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	m_wBorderStyle = GTK_WIDGET(gtk_builder_get_object(builder, "cmbBorderStyle"));
 	GtkComboBox* combo_style = GTK_COMBO_BOX(m_wBorderStyle);
 	XAP_makeGtkComboBoxText(combo_style, G_TYPE_NONE);
-	XAP_appendComboBoxText(combo_style, "None");
-	XAP_appendComboBoxText(combo_style, "Solid line");
-	XAP_appendComboBoxText(combo_style, "Dashed line");
-	XAP_appendComboBoxText(combo_style, "Dotted line");
+	
+	UT_UTF8String s;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_None, s);
+	XAP_appendComboBoxText(combo_style, s.utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Solid, s);
+	XAP_appendComboBoxText(combo_style, s.utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Dashed, s);
+	XAP_appendComboBoxText(combo_style, s.utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Dotted, s);
+	XAP_appendComboBoxText(combo_style, s.utf8_str());
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_style), 0);
 
 //
