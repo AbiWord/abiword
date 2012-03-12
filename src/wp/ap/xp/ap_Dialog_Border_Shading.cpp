@@ -128,9 +128,8 @@ void AP_Dialog_Border_Shading::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	gchar * tmp = NULL;
-	UT_uint32 title_width = 26;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_BorderShading_Title));
-	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),title_width);
+	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),sizeof(m_WindowName));
 	FREEP(tmp);
 }
 

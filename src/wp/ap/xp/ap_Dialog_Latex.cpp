@@ -86,8 +86,8 @@ void AP_Dialog_Latex::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	gchar * tmp = NULL;
-        UT_uint32 title_width = 60;
-	char wName[200];
+        UT_uint32 title_width = 100;
+	char wName[title_width];
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_Latex_LatexTitle));
         BuildWindowName(wName,static_cast<char*>(tmp),title_width);
 	m_sWindowName = wName;

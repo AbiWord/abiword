@@ -134,7 +134,6 @@ void  AP_Dialog_Replace::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	gchar * tmp = NULL;
-    UT_uint32 title_width = 0;
 	// conditionally set title
 	UT_UTF8String s;
 	
@@ -142,15 +141,13 @@ void  AP_Dialog_Replace::ConstructWindowName(void)
 	{
 		pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindTitle,s);
 		UT_XML_cloneNoAmpersands(tmp, s.utf8_str());
-		title_width = 30;
 	}
 	else
 	{
 		pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceTitle,s);
 		UT_XML_cloneNoAmpersands(tmp, s.utf8_str());	
-		title_width = 60;
 	}
-	BuildWindowName((char *) m_WindowName,(char*)tmp,title_width);
+	BuildWindowName((char *) m_WindowName,(char*)tmp,sizeof(m_WindowName));
 	FREEP(tmp);
 }
 

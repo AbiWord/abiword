@@ -90,13 +90,12 @@ void AP_Dialog_Goto::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	gchar * tmp = NULL;
-	UT_uint32 title_width = 33;
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Title, s);
 	
 	UT_XML_cloneNoAmpersands(tmp, s.c_str());
-	BuildWindowName(m_WindowName, tmp, title_width);
+	BuildWindowName(m_WindowName, tmp, sizeof(m_WindowName));
 	FREEP(tmp);
 }							
 

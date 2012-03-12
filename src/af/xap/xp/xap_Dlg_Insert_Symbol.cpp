@@ -172,7 +172,7 @@ void  XAP_Dialog_Insert_Symbol::ConstructWindowName()
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert_SymbolTitle,sTitle);
 
 	UT_XML_cloneNoAmpersands(tmp, sTitle.utf8_str());
-        BuildWindowName((char *) m_WindowName,(char*)tmp,80);
+        BuildWindowName((char *) m_WindowName,(char*)tmp,sizeof(m_WindowName));
         FREEP(tmp);
 }
 
