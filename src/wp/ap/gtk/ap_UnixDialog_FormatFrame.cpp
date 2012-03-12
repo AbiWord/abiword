@@ -511,6 +511,7 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTextWrapState")), pSS, AP_STRING_ID_DLG_FormatFrame_TextWrapping);
+	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btTextWrapState")), pSS, AP_STRING_ID_DLG_FormatFrame_SetTextWrapping);
 
 //	add the buttons for background image to the dialog.
 
