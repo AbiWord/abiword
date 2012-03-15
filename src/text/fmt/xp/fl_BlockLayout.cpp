@@ -2519,26 +2519,21 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 			// Now scan through the lines until we find a line below
 			// yFpos
 
-			UT_sint32 yoff = 0;
 			fp_Line * pFirstLine = static_cast<fp_Line *>(getFirstContainer());
 			fp_Line * pCon = pFirstLine;
 			if(pCon == NULL)
 			{
 				return false;
 			}
-			if(pCon->getNext())
+
+			UT_sint32 yoff = pCon->getHeight() + pCon->getMarginAfter();
+			while ((pCon != pLastLine) && (yoff < yFpos) && (pCon->getNext()))
 			{
-				while(pCon != pLastLine)
+				pCon = static_cast<fp_Line *>(pCon->getNext());
+				if (!pCon->isSameYAsPrevious())
 				{
-					if (!pCon->isSameYAsPrevious())
-					{
-						yoff += pCon->getHeight();
-						yoff += pCon->getMarginAfter();
-					}
-					if ((yoff < yFpos) && (pCon->getNext()))
-						pCon = static_cast<fp_Line *>(pCon->getNext());
-					else
-						break;
+					yoff += pCon->getHeight();
+					yoff += pCon->getMarginAfter();
 				}
 			}
 			if((pCon == pLastLine) && (pCon != static_cast<fp_Line *>(getLastContainer())) && (yoff < yFpos))
@@ -2669,11 +2664,28 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 					{
 						if (pDL->findPage(pPageFirst) > iPrefPage)
 						{
-							pPage = pPageFirst;
+							if((iPrefPage >= 0) && (iPrefPage > pDL->findPage(pPageFirst) - 3))
+							{
+								pPage = pDL->getNthPage(iPrefPage);
+							}
+							else
+							{
+								pPage = pPageFirst;
+							}
 						}
 						else if (pPageLast && pDL->findPage(pPageLast) < iPrefPage)
 						{
-							pPage = pPageLast;
+							if(iPrefPage < pDL->findPage(pPageLast) + 3)
+							{
+								// The frame will be inserted when iPrefPage is created
+								// Add it to a temporary list for now
+								pDL->addFramesToBeInserted(pFrameCon);
+								pPage = NULL;
+							}
+							else
+							{
+								pPage = pPageLast;
+							}
 						}
 						else
 						{
@@ -2769,7 +2781,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 
 					UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
 
-					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-2) && (iPrefPage < iGuessedPage+3))
+					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-3) && (iPrefPage < iGuessedPage+3))
 					{
 						fp_Page *pPrefPage = getDocLayout()->getNthPage(iPrefPage);
 						if(pPrefPage && (pPage != pPrefPage))
@@ -2837,11 +2849,28 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 					{
 						if (pDL->findPage(pPageFirst) > iPrefPage)
 						{
-							pPage = pPageFirst;
+							if((iPrefPage >= 0) && (iPrefPage > pDL->findPage(pPageFirst) - 3))
+							{
+								pPage = pDL->getNthPage(iPrefPage);
+							}
+							else
+							{
+								pPage = pPageFirst;
+							}
 						}
 						else if (pPageLast && pDL->findPage(pPageLast) < iPrefPage)
 						{
-							pPage = pPageLast;
+							if(iPrefPage < pDL->findPage(pPageLast) + 3)
+							{
+								// The frame will be inserted when iPrefPage is created
+								// Add it to a temporary list for now
+								pDL->addFramesToBeInserted(pFrameCon);
+								pPage = NULL;
+							}
+							else
+							{
+								pPage = pPageLast;
+							}
 						}
 						else
 						{
@@ -2864,7 +2893,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 					}
 
 					UT_sint32 iGuessedPage = getDocLayout()->findPage(pPage);
-					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-2) && (iPrefPage < iGuessedPage+3))
+					if((iPrefPage > -1) && (iPrefPage > iGuessedPage-3) && (iPrefPage < iGuessedPage+3))
 					{
 						pPage = getDocLayout()->getNthPage(iPrefPage);
 					}

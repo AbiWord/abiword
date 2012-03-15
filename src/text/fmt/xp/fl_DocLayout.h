@@ -85,6 +85,7 @@ class fl_EndnoteLayout;
 class fp_EndnoteContainer;
 class GR_EmbedManager;
 class fl_FrameLayout;
+class fp_FrameContainer;
 class fp_Container;
 
 // the following get used by view and layout code, 
@@ -171,6 +172,9 @@ public:
 	fl_FrameLayout* relocateFrame(fl_FrameLayout * pFL, fl_BlockLayout * newBlock,
 				      const gchar** attributes = NULL, const gchar **properties = NULL);
 	void            clearAllCountWraps(void);
+	bool addFramesToBeInserted(fp_FrameContainer * pFrame);
+	bool removeFramesToBeInserted(fp_FrameContainer * pFrame);
+	fp_FrameContainer * findFramesToBeInserted(fp_Page * pPage);
 
 	UT_sint32   getPercentFilled(void) const
 		{ return m_iFilled;}
@@ -460,6 +464,7 @@ private:
 	bool                m_bDisplayRDFAnchors;
         fp_Container *      m_pSavedContainer;
 	fl_BlockLayout *    m_pRebuiltBlockLayout;
+	UT_GenericVector<fp_FrameContainer *> m_vecFramesToBeInserted;
 };
 
 #endif /* DOCLAYOUT_H */

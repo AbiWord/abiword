@@ -1759,6 +1759,21 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 		i++;
 	}
 
+	// Check if a frame needs to be inserted on this page
+	if (m_pLayout->isLayoutFilling())
+	{
+	    fp_FrameContainer * pFrame = m_pLayout->findFramesToBeInserted(pPage);
+	    while(pFrame)
+	    {
+		if (pPage->findFrameContainer(pFrame) < 0)
+		{
+		    pPage->insertFrameContainer(pFrame);
+		}
+		m_pLayout->removeFramesToBeInserted(pFrame);
+		pFrame = m_pLayout->findFramesToBeInserted(pPage);
+	    }
+	}
+
 	return pLeaderColumn;
 }
 

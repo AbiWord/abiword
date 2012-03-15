@@ -45,6 +45,7 @@
 #include "fp_Line.h"
 #include "fp_TextRun.h"
 #include "fp_Run.h"
+#include "fp_FrameContainer.h"
 #include "fv_View.h"
 #include "pd_Document.h"
 #include "pp_Property.h"
@@ -752,6 +753,27 @@ void FL_DocLayout::fillLayouts(void)
 			}
 		}
 	}
+
+	// Frame related tasks
+
+	if (m_vecFramesToBeInserted.getItemCount() > 0)
+	{
+		// There is a mismatch between the new layout and the saved file.
+		// The requested page for some frames does not exists.
+		// Insert all remaining frames on the last page.
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		fp_FrameContainer * pFrame = NULL;
+		UT_sint32 k = 0;
+		UT_sint32 kmax = m_vecFramesToBeInserted.getItemCount();
+		fp_Page * pPage = getLastPage();
+		for (k = 0; k < kmax; k++)
+		{
+			pFrame = m_vecFramesToBeInserted.getNthItem(0);
+			m_vecFramesToBeInserted.deleteNthItem(0);
+			pPage->insertFrameContainer(pFrame);
+		}		
+	}
+
 	setFramePageNumbers(0);
 	loadPendingObjects();
 	//
@@ -1197,6 +1219,62 @@ fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayo
 		return NULL;
 	}
 }
+
+/*! 
+  add a frame to the list of frames that need to be inserted on a page later in the document than its 
+  parent block. A frame can be placed up to 3 pages after its parent block. This list is needed during 
+  the initial layout stage.
+ */
+
+bool FL_DocLayout::addFramesToBeInserted(fp_FrameContainer * pFrame)
+{
+	m_vecFramesToBeInserted.addItem(pFrame);
+	return true;
+}
+
+/*! 
+  remove a frame from the list of frames that need to be inserted on a page later in the document.
+ */
+
+bool FL_DocLayout::removeFramesToBeInserted(fp_FrameContainer * pFrame)
+{
+	UT_sint32 i = m_vecFramesToBeInserted.findItem(pFrame);
+	if(i < 0)
+	{
+		return false;
+	}
+	m_vecFramesToBeInserted.deleteNthItem(i);
+	return true;
+}
+
+/*! 
+  find a frame that needs to be inserted on page pPage. Only frames that are inserted on a page later
+  in the document than their parent block are placed in this list. This list is needed during 
+  the initial layout stage.
+ */
+
+fp_FrameContainer * FL_DocLayout::findFramesToBeInserted(fp_Page * pPage)
+{
+	UT_sint32 count = m_vecFramesToBeInserted.getItemCount();
+	if (count == 0)
+	{
+		return NULL;
+	}
+
+	UT_sint32 iPage = pPage->getPageNumber();
+	UT_sint32 k = 0;
+	fp_FrameContainer * pFrame = NULL;
+	for (k = 0;k < count;k++)
+	{
+		pFrame = m_vecFramesToBeInserted.getNthItem(k);
+		if (pFrame->getPreferedPageNo() == iPage)
+		{
+			return pFrame;
+		}
+	}
+	return NULL;
+}
+
 
 void FL_DocLayout::setView(FV_View* pView)
 {
