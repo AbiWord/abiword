@@ -24,8 +24,8 @@
 #include "xap_UnixDialogHelper.h"
 
 // compile regardless
- #if GTK_MAJOR_VERSION < 3
-const gchar* gtk_combo_box_get_active_id( GtkComboBox* v )
+#if !GTK_CHECK_VERSION(3,0,0)
+const gchar* gtk_combo_box_get_active_id( GtkComboBox* /*v*/ )
 {
     return 0;
 }

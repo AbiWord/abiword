@@ -42,6 +42,7 @@ AP_UnixToolbar_ZoomCombo::AP_UnixToolbar_ZoomCombo(EV_Toolbar * pToolbar,
 													 XAP_Toolbar_Id id)
 	: EV_Toolbar_Control(pToolbar/*,id*/)
 {
+	UT_DEBUG_ONLY_ARG(id);
 	UT_ASSERT(id==AP_TOOLBAR_ID_ZOOM);
 
 	m_nPixels = 80;		// TODO: do a better calculation

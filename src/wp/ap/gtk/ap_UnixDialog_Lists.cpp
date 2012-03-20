@@ -154,6 +154,7 @@ static void s_closeClicked (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 
 static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Lists * me)
 {
+	UT_DEBUG_ONLY_ARG(widget);
 	UT_ASSERT(widget && me);
 	me->previewExposed();
 	return FALSE;

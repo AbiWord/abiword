@@ -24,6 +24,7 @@
 
 #include "ut_locale.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_types.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -1781,16 +1782,15 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 	const UT_GenericVector<AD_Revision*> & vRevisions = m_pDocument->getRevisions();
 
 	UT_sint32 k = 0;
+	std::string s;
 	for (k=0; k < vRevisions.getItemCount(); k++)
 	{
 		pRev = vRevisions.getNthItem(k);
 		UT_continue_if_fail(pRev);
 		
-		UT_String s;
-		
 		if (!bWroteOpenRevisionsSection)
 		{
-			UT_String_sprintf(s, "<revisions show=\"%d\" mark=\"%d\" show-level=\"%d\" auto=\"%d\">\n",
+			s = UT_std_string_sprintf("<revisions show=\"%d\" mark=\"%d\" show-level=\"%d\" auto=\"%d\">\n",
 							  m_pDocument->isShowRevisions(),
 							  m_pDocument->isMarkRevisions(),
 							  m_pDocument->getShowRevisionId(),
@@ -1800,9 +1800,9 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 			bWroteOpenRevisionsSection = true;
 		}
 
-		UT_String_sprintf(s, "<r id=\"%d\" time-started=\"%lld\" version=\"%d\">",
+		s = UT_std_string_sprintf("<r id=\"%d\" time-started=\"%lld\" version=\"%d\">",
 						  pRev->getId(),
-						  (UT_uint64)pRev->getStartTime(),
+						  (long long)pRev->getStartTime(),
 						  pRev->getVersion());
 		
 		m_pie->write(s.c_str());

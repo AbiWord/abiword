@@ -53,6 +53,7 @@ AP_UnixToolbar_StyleCombo::AP_UnixToolbar_StyleCombo(EV_Toolbar * pToolbar,
 	: EV_Toolbar_Control(pToolbar/*,id*/), 
 	  m_pDefaultDesc(NULL)
 {
+	UT_DEBUG_ONLY_ARG(id);
 	UT_ASSERT(id==AP_TOOLBAR_ID_FMT_STYLE);
 
 	m_nPixels = 120;		// TODO: do a better calculation

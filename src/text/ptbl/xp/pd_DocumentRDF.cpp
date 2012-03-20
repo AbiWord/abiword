@@ -4305,6 +4305,7 @@ void PD_DocumentRDF::runPlay()
     {
         PD_RDFContactHandle c = *ci;
 
+#if DEBUG
         UT_DEBUGMSG((" subj:%s\n", c->linkingSubject().toString().c_str() ));
         UT_DEBUGMSG((" name:%s\n", c->name().c_str() ));
         std::set< std::string > xmlids = c->getXMLIDs();
@@ -4316,6 +4317,7 @@ void PD_DocumentRDF::runPlay()
             UT_DEBUGMSG(("   start:%d end:%d ", range.first, range.second ));
             UT_DEBUGMSG((" \n" ));
         }
+#endif
 
 
         // if( c->name() == "James Smith" )

@@ -327,7 +327,7 @@ toRDFXML( const std::list< PD_RDFModelHandle >& ml )
     // malloc() and handed back to us to take care of.
     unsigned char* data = librdf_serializer_serialize_model_to_counted_string
         ( serializer, base_uri, model, &data_sz  );
-    UT_DEBUGMSG(("writeRDF() serializer:%p data_sz:%d\n", serializer, data_sz ));
+    UT_DEBUGMSG(("writeRDF() serializer:%p data_sz:%lu\n", serializer, (long unsigned)data_sz ));
 
     if( !data )
     {
@@ -404,9 +404,12 @@ loadRDFXML( PD_DocumentRDFMutationHandle m, const std::string& rdfxml, const std
 {
 #ifdef WITH_REDLAND
     std::string bUri;
-    if( baseuri.empty() )
+    if( baseuri.empty() ) {
         bUri = "manifest.rdf";
-    else bUri = baseuri;
+    }
+    else {
+        bUri = baseuri;
+    }
 
     RDFArguments args;
     librdf_model* model = args.model;
@@ -417,8 +420,8 @@ loadRDFXML( PD_DocumentRDFMutationHandle m, const std::string& rdfxml, const std
                                            (const unsigned char*)bUri.c_str() );
     if( !base_uri )
     {
-        UT_DEBUGMSG(("Failed to create a base URI to parse RDF into model. baseuri:%s rdfxml.sz:%d\n",
-                     bUri.c_str(), rdfxml.size() ));
+        UT_DEBUGMSG(("Failed to create a base URI to parse RDF into model. baseuri:%s rdfxml.sz:%lu\n",
+                     bUri.c_str(), (long unsigned)rdfxml.size() ));
         return UT_ERROR;
     }
 
@@ -427,8 +430,8 @@ loadRDFXML( PD_DocumentRDFMutationHandle m, const std::string& rdfxml, const std
                                                (const unsigned char*)rdfxml.c_str(),
                                                base_uri, args.model ))
     {
-        UT_DEBUGMSG(("Failed to parse RDF into model. stream:%s rdfxml.sz:%d\n",
-                     bUri.c_str(), rdfxml.size() ));
+        UT_DEBUGMSG(("Failed to parse RDF into model. stream:%s rdfxml.sz:%lu\n",
+                     bUri.c_str(), (long unsigned)rdfxml.size() ));
         librdf_free_uri( base_uri );
         return UT_ERROR;
     }

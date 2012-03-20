@@ -718,7 +718,9 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 
 						switch (type) {
 							case SWG_TEXTNODE: { // sw/source/core/sw3io/sw3nodes.cxx#L788
-								UT_DEBUGMSG(("SDW: Found Textnode! (start at 0x%08llX end at 0x%08llX)\n", gsf_input_tell(mDocStream), eor2));
+								UT_DEBUGMSG(("SDW: Found Textnode! (start at 0x%08llX end at 0x%08llX)\n", 
+											 (long long)gsf_input_tell(mDocStream), 
+											 (long long)eor2));
 								UT_uint8 flags;
 								gsf_off_t newPos;
 								readFlagRec(mDocStream, flags, &newPos);
@@ -746,7 +748,10 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 									if (attVal == SWG_ATTRIBUTE) {
 										TextAttr* a = new TextAttr;
 										streamRead(mDocStream, *a, eoa);
-										UT_DEBUGMSG(("SDW: ...found text-sub-node, which=0x%x, ver=0x%x, start=%u, end=%u - data:%s len:%u data is:", a->which, a->ver, a->start, a->end, a->data?"Yes":"No", a->dataLen));
+										UT_DEBUGMSG(("SDW: ...found text-sub-node, which=0x%x, ver=0x%x, start=%u, end=%u - data:%s len:%llu data is:",
+													 a->which, a->ver, a->start,
+													 a->end, a->data?"Yes":"No",
+													 (long long unsigned)a->dataLen));
 #ifdef DEBUG
 										hexdump(a->data, a->dataLen);
                     putc('\n', stderr);
@@ -770,7 +775,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 		  										else
 			  										UT_String_setProperty(attrs, a.attrName, a.attrVal);
                         }
-												UT_DEBUGMSG(("SDW: ......found paragraph attr, which=0x%x, ver=0x%x, start=%u, end=%u (string now %s) Data:%s Len=%u Data:", a.which, a.ver, (a.startSet?a.start:0), (a.endSet?a.end:0), attrs.c_str(), (a.data ? "Yes" : "No"), a.dataLen));
+						UT_DEBUGMSG(("SDW: ......found paragraph attr, which=0x%x, ver=0x%x, start=%u, end=%u (string now %s) Data:%s Len=%lld Data:", a.which, a.ver, (a.startSet?a.start:0), (a.endSet?a.end:0), attrs.c_str(), (a.data ? "Yes" : "No"), (long long)a.dataLen));
 #ifdef DEBUG
 												hexdump(a.data, a.dataLen);
                         putc('\n', stderr);
@@ -931,7 +936,9 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 								done2 = true;
 								break;
 							default:
-								UT_DEBUGMSG(("SDW: SWG_CONTENT: Skipping %u bytes for record type '%c' (starting at 0x%08llX)\n", size2, type, gsf_input_tell(mDocStream)));
+								UT_DEBUGMSG(("SDW: SWG_CONTENT: Skipping %u bytes for record type '%c' (starting at 0x%08llX)\n",
+											 size2, type,
+											 (long long)gsf_input_tell(mDocStream)));
 						}
 						if (gsf_input_seek(mDocStream, eor2, G_SEEK_SET))
 							return UT_IE_BOGUSDOCUMENT;
@@ -977,7 +984,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 					done = true;
 					break;
 				default:
-					UT_DEBUGMSG(("SDW: Skipping %u bytes for record type '%c' (starting at 0x%08llX)\n", recSize, type, gsf_input_tell(mDocStream)));
+					UT_DEBUGMSG(("SDW: Skipping %u bytes for record type '%c' (starting at 0x%08llX)\n", recSize, type, (long long)gsf_input_tell(mDocStream)));
 			}
 			// Seek to the end of the record, in case it wasn't read completely
 			if (gsf_input_seek(mDocStream, eor, G_SEEK_SET))
