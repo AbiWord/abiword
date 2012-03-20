@@ -568,7 +568,6 @@
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="active">True</property>
                         <property name="inconsistent">True</property>
                       </object>
                       <packing>
@@ -586,7 +585,6 @@
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="active">True</property>
                         <property name="inconsistent">True</property>
                       </object>
                       <packing>
@@ -604,7 +602,6 @@
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="active">True</property>
                         <property name="inconsistent">True</property>
                       </object>
                       <packing>
@@ -620,7 +617,6 @@
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="active">True</property>
                         <property name="inconsistent">True</property>
                       </object>
                       <packing>

@@ -672,7 +672,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="active">True</property>
                         <property name="inconsistent">True</property>
                       </object>
                       <packing>
@@ -691,7 +690,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="active">True</property>
                         <property name="inconsistent">True</property>
                       </object>
                       <packing>
@@ -710,7 +708,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="active">True</property>
                         <property name="inconsistent">True</property>
                       </object>
                       <packing>
@@ -727,7 +724,6 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="active">True</property>
                         <property name="inconsistent">True</property>
                       </object>
                       <packing>

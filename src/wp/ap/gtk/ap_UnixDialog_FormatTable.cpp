@@ -435,6 +435,12 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	label_button_with_abi_pixmap(m_wLineRight, "tb_LineRight_xpm");
 	label_button_with_abi_pixmap(m_wLineBottom, "tb_LineBottom_xpm");
 	
+	// set button states
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineTop), getTopToggled());  
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineLeft), getLeftToggled());  
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineRight), getRightToggled());  
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineBottom), getBottomToggled());  
+	
 	m_wPreviewArea = GTK_WIDGET(gtk_builder_get_object(builder, "daPreview"));
 	
 	// set the dialog title
