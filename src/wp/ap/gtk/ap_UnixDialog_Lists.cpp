@@ -81,12 +81,14 @@ static void s_customChanged (GtkWidget * /*widget*/, AP_UnixDialog_Lists * me)
 
 static void s_FoldCheck_changed(GtkWidget * widget, AP_UnixDialog_Lists * me)
 {
-	UT_DEBUGMSG(("Doing s_FoldCheck_changed \n"));
-	UT_UTF8String sLevel = static_cast<char *> (g_object_get_data(G_OBJECT(widget),"level"));
-	UT_sint32 iLevel = atoi(sLevel.utf8_str());
-	gboolean iVal =  gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget));
-	bool bSet = (iVal == TRUE);
-	me->setFoldLevel(iLevel,bSet);
+	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)))
+	{
+		UT_DEBUGMSG(("Doing s_FoldCheck_changed \n"));
+		UT_UTF8String sLevel = static_cast<char *> 
+			(g_object_get_data(G_OBJECT(widget),"level"));
+		UT_sint32 iLevel = atoi(sLevel.utf8_str());
+		me->setFoldLevel(iLevel, true);
+	}
 }
 
 static void s_styleChanged(GtkWidget * w, AP_UnixDialog_Lists * me)
@@ -342,7 +344,6 @@ void AP_UnixDialog_Lists::setFoldLevelInGUI(void)
  */
 void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 {
-	UT_sint32 i = 0;
 	UT_sint32 count = m_vecFoldCheck.getItemCount();
 	if(iLevel >= count)
 	{
@@ -352,13 +353,6 @@ void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 	UT_uint32 ID =0;
 	if(!bSet)
 	{
-		for(i=0; i< count;i++)
-		{
-			wF = m_vecFoldCheck.getNthItem(i);
-			ID = m_vecFoldID.getNthItem(i);
-			XAP_GtkSignalBlocker b1(G_OBJECT(wF),ID);
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),FALSE);
-		}
 		wF = m_vecFoldCheck.getNthItem(0);
 		ID = m_vecFoldID.getNthItem(0);
 		XAP_GtkSignalBlocker b2(G_OBJECT(wF),ID);
@@ -367,13 +361,6 @@ void AP_UnixDialog_Lists::setFoldLevel(UT_sint32 iLevel, bool bSet)
 	}
 	else
 	{
-		for(i=0; i< count;i++)
-		{
-			wF = m_vecFoldCheck.getNthItem(i);
-			ID = m_vecFoldID.getNthItem(i);
-			XAP_GtkSignalBlocker b2(G_OBJECT(wF),ID);
-			gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(wF),FALSE);
-		}
 		wF = m_vecFoldCheck.getNthItem(iLevel);
 		ID = m_vecFoldID.getNthItem(iLevel);
 		{
@@ -740,9 +727,11 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_vecFoldCheck.clear();
 		m_vecFoldID.clear();
 		UT_uint32 ID =0;
-// CheckButtons
+// RadioButtons
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel0,s);
-		GtkWidget * wF = gtk_check_button_new_with_label(s.utf8_str());
+		
+		GtkWidget * wF = gtk_radio_button_new_with_label(NULL, s.utf8_str());
+		GSList *wG = gtk_radio_button_get_group(GTK_RADIO_BUTTON(wF));
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"0");
 		ID = g_signal_connect(G_OBJECT(wF),
 						  "toggled",
@@ -754,7 +743,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_vecFoldID.addItem(ID);
 
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel1,s);
-		wF = gtk_check_button_new_with_label(s.utf8_str());
+		wF = gtk_radio_button_new_with_label(wG, s.utf8_str());
+		wG = gtk_radio_button_get_group(GTK_RADIO_BUTTON(wF));
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"1");
 		ID = g_signal_connect(G_OBJECT(wF),
 						  "toggled",
@@ -766,7 +756,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_vecFoldID.addItem(ID);
 
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel2,s);
-		wF = gtk_check_button_new_with_label(s.utf8_str());
+		wF = gtk_radio_button_new_with_label(wG, s.utf8_str());
+		wG = gtk_radio_button_get_group(GTK_RADIO_BUTTON(wF));
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"2");
 		ID = g_signal_connect(G_OBJECT(wF),
 						  "toggled",
@@ -778,7 +769,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_vecFoldID.addItem(ID);
 
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel3,s);
-		wF = gtk_check_button_new_with_label(s.utf8_str());
+		wF = gtk_radio_button_new_with_label(wG, s.utf8_str());
+		wG = gtk_radio_button_get_group(GTK_RADIO_BUTTON(wF));
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"3");
 		ID = g_signal_connect(G_OBJECT(wF),
 						  "toggled",
@@ -790,7 +782,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_vecFoldID.addItem(ID);
 
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel4,s);
-		wF = gtk_check_button_new_with_label(s.utf8_str());
+		wF = gtk_radio_button_new_with_label(wG, s.utf8_str());
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"4");
 		ID = g_signal_connect(G_OBJECT(wF),
 						  "toggled",
