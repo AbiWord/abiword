@@ -1286,7 +1286,9 @@ const gchar* ODe_AbiDocListener::_getObjectKey(const PT_AttrPropIndex& api,
  * 
  */
 void ODe_AbiDocListener::_insertInlinedImage(PT_AttrPropIndex api) {
-    const gchar* pImageName;
+    std::string fullName;
+    std::string extension;
+	const gchar* pImageName;
     const PP_AttrProp* pAP;
     bool ok;
 
@@ -1297,8 +1299,10 @@ void ODe_AbiDocListener::_insertInlinedImage(PT_AttrPropIndex api) {
 
     pImageName = 
         _getObjectKey(api, static_cast<const gchar*>("dataid"));
+    m_pDocument->getDataItemFileExtension(pImageName, extension, true);
+    fullName = pImageName + extension;
 
-    m_pCurrentImpl->insertInlinedImage(pImageName, pAP);
+    m_pCurrentImpl->insertInlinedImage(fullName.c_str(), pAP);
 }
 
 

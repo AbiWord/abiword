@@ -41,6 +41,8 @@ bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT)
 {
     const char * szName;
     std::string mimeType;
+	std::string extension;
+	std::string fullName;
     const UT_ByteBuf * pByteBuf;
     GsfOutput* pImg;
     GsfOutput* pPicsDir = NULL;
@@ -52,15 +54,17 @@ bool ODe_PicturesWriter::writePictures(PD_Document* pDoc, GsfOutfile* pODT)
                               &pByteBuf,
                               &mimeType));
          k++) {
-            
-        if (!mimeType.empty()) {
+            		
+        // We must avoid saving RDF data as image
+        if (!mimeType.empty() && (mimeType != "application/rdf+xml")) {
             if (pPicsDir == NULL) {
                 // create Pictures directory
                 pPicsDir = gsf_outfile_new_child(pODT, "Pictures", TRUE);
             }
-        
+			pDoc->getDataItemFileExtension(szName, extension, true);
+			fullName = szName + extension;
             pImg = gsf_outfile_new_child(GSF_OUTFILE(pPicsDir),
-                                         szName, FALSE);    
+                                         fullName.c_str(), FALSE);    
                                                     
             ODe_gsf_output_write(pImg, pByteBuf->getLength(),
                                 pByteBuf->getPointer(0));
