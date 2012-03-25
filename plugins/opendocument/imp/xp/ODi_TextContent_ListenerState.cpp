@@ -480,7 +480,11 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         m_pAbiDocument->appendObject(PTO_Field, (const gchar**)field_fmt);
         m_bAcceptingText = false;
         
-    } else if (!strcmp(pName, "style:header") ||
+    } else if (!strcmp(pName, "text:tracked-changes")){
+		 UT_DEBUGMSG(("Ignoring text:tracked-changes \n"));
+		 rAction.ignoreElement(-1);
+       
+	} else if (!strcmp(pName, "style:header") ||
                !strcmp(pName, "style:footer") ||
                !strcmp(pName, "style:header-left") ||
                !strcmp(pName, "style:footer-left")) {
