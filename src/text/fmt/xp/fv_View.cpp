@@ -9005,33 +9005,53 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	}
 	else if(applyTo == FORMAT_TABLE_TABLE)
 	{
-		UT_DEBUGMSG(("Doing apply FORMAT_TABLE_TABLE \n"));
+        UT_DEBUGMSG(("Doing apply FORMAT_TABLE_TABLE \n"));
 		// Loop through the table cells to adjust their formatting		
 		// get the number of rows and columns in the current table
 
-// First set the table format
-
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,properties,PTX_SectionTable);	
-
-// Now clear these away from the cell's so they'll inherit the table's 
-// properties.
+        // First set the table format
+		fp_CellContainer * cell = getCellAtPos(posStart);
 
 		UT_sint32 numRows;
 		UT_sint32 numCols;
 		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
+
+		UT_sint32 rowStart = 0;
+		UT_sint32 rowEnd;
+		UT_sint32 colStart = 0;
+		UT_sint32 colEnd;
+		
+			colStart = 0;
+			colEnd = numCols-1;
+		
+			rowStart = 0;
+			rowEnd = numRows-1;
+					
+		// Loop through the table cells to adjust their formatting		
 		UT_sint32 i;
 		UT_sint32 j;
-		for (j = 0; j < numRows; j++)
+		for (j = rowStart; j <= rowEnd; j++)
 		{
-			for (i = 0; i < numCols; i++)
+			for (i = colStart; i <= colEnd; i++)
 			{
 				pf_Frag_Strux* cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(),
 																		 j, i);
 				if(cellSDH)
 				{
-					// Remove these properties from the cell
+					// Do the actual change
 					posStart = m_pDoc->getStruxPosition(cellSDH)+1;
-					bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
+					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
+					if(pFG != NULL)
+					{
+						pFG->insertAtStrux(m_pDoc,72,posStart,
+										   PTX_SectionCell,sDataID.c_str());
+					}
+					else
+					{
+						const gchar * attributes[3] = {
+							PT_STRUX_IMAGE_DATAID,NULL,NULL};
+						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, posStart, posStart, attributes, NULL, PTX_SectionCell);	
+					}
 				}
 				else
 				{
