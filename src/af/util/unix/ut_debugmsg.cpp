@@ -32,18 +32,18 @@ void _UT_OutputMessage(const char *s, ...)
 #ifdef DEBUG
 #define DEBUG_MSG "DEBUG: "
 	static bool debug_msg = true;
+#endif
 	va_list marker;
 
 	va_start(marker, s);
 
+#ifdef DEBUG
 	if (debug_msg) fwrite(DEBUG_MSG, 1, strlen(DEBUG_MSG), stderr);
+	debug_msg = (s && *s && s[strlen(s) - 1] == '\n');
+#undef DEBUG_MSG
+#endif
+
 	vfprintf(stderr, s, marker);
 
-	debug_msg = (s && *s && s[strlen(s) - 1] == '\n');
-
 	va_end(marker);
-#undef DEBUG_MSG
-#else
-	UT_UNUSED(s);
-#endif
 }
