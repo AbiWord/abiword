@@ -165,6 +165,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_FONT)
 		MenuItem(AP_MENU_ID_FMT_PARAGRAPH)
 		MenuItem(AP_MENU_ID_FMT_BULLETS)
+		MenuItem(AP_MENU_ID_FMT_TABLE)
 		MenuItem(AP_MENU_ID_FMT_FRAME)
     MenuItem(AP_MENU_ID_FMT_IMAGE)
 // #if 1 // someone code and turn this back on
