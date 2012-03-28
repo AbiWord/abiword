@@ -1474,7 +1474,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 			if (size < cbHeader + cbSize)
 			{
-				msg = "read_pic: Size error, type 2!\n";
+				msg = "Size error, type 2";
 				break;
 			}
 
@@ -1485,7 +1485,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 				if (colorPaletteLen != 8)
 				{
-					msg = "read_pic: Color palette error!\n";
+					msg = "Color palette error";
 					break;
 				}
 
@@ -1556,7 +1556,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 			{
 				if (size < cbHeader + OLE_TopicNameString + ole_offset)
 				{
-					msg = "read_pic: Size error, type 3!\n";
+					msg = "Size error, type 3";
 					break;
 				}
 
@@ -1564,7 +1564,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 				if (size < cbHeader + OLE_ItemNameString + ole_offset)
 				{
-					msg = "read_pic: Size error, type 4!\n";
+					msg = "Size error, type 4";
 					break;
 				}
 
@@ -1585,7 +1585,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 			    cbHeader + OLE_Object + ole_offset > 0x80 ||
 			    size < cbHeader + OLE_Object + ole_offset + objLen)
 			{
-				msg = "read_pic: Size error, type 5!\n";
+				msg = "Size error, type 5";
 				break;
 			}
 
@@ -1665,7 +1665,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 	{
 		// ...whether it's a picture
 		if (IE_ImpGraphic::loadGraphic(pic, iegft, &graphic) != UT_OK || !graphic)
-			msg = "read_pic: Picture load error or no picture!\n";
+			msg = "Picture load error or no picture";
 		else
 		{
 			int dxaOffset, dxaSize, dyaSize, mx, my;
@@ -1733,7 +1733,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 	if (write_pic) free_wri_struct(write_pic);
 
-	if (msg) UT_WARNINGMSG(("%s", msg));
+	if (msg) UT_WARNINGMSG(("read_pic: %s!\n", msg));
 
 	return (msg ? false : true);
 }
