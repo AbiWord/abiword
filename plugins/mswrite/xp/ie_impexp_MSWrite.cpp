@@ -44,13 +44,13 @@ bool read_wri_struct (wri_struct *w, GsfInput *f)
 
 	if (!blob)
 	{
-		fprintf(stderr, "read_wri_struct: Out of memory!\n");
+		UT_WARNINGMSG(("read_wri_struct: Out of memory!\n"));
 		return false;
 	}
 
 	if (!gsf_input_read(f, size, blob))
 	{
-		perror("read_wri_struct: File not big enough!");
+		UT_WARNINGMSG(("read_wri_struct: File not big enough!\n"));
 		return false;
 	}
 
@@ -81,7 +81,7 @@ bool read_wri_struct_mem (wri_struct *w, unsigned char *blob)
 
 				if (!w[i].data)
 				{
-					fprintf(stderr, "read_wri_struct_mem: Out of memory!\n");
+					UT_WARNINGMSG(("read_wri_struct_mem: Out of memory!\n"));
 					return false;
 				}
 
@@ -104,7 +104,7 @@ int wri_struct_value (const wri_struct *w, const char *name)
 		if (strcmp(w[i].name, name) == 0) return w[i].value;
 
 	/* This should never happen! */
-	fprintf(stderr, "Internal error: '%s' not found!\n", name);
+	UT_WARNINGMSG(("wri_struct_value: Internal error, '%s' not found!\n", name));
 	exit(1);
 	return 0;
 }

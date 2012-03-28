@@ -353,13 +353,13 @@ UT_Error IE_Imp_MSWrite::parse_file ()
 	}
 	else if (id != 0137061)
 	{
-		fprintf(stderr, "parse_file: Not a write file!\n");
+		UT_WARNINGMSG(("parse_file: Not a write file!\n"));
 		return UT_ERROR;
 	}
 
 	if (wri_struct_value(wri_file_header, "wTool") != 0125400)
 	{
-		fprintf(stderr, "parse_file: Not a write file!\n");
+		UT_WARNINGMSG(("parse_file: Not a write file!\n"));
 		return UT_ERROR;
 	}
 
@@ -368,13 +368,13 @@ UT_Error IE_Imp_MSWrite::parse_file ()
 
 	if (!thetext)
 	{
-		fprintf(stderr, "parse_file: Out of memory!\n");
+		UT_WARNINGMSG(("parse_file: Out of memory!\n"));
 		return UT_ERROR;
 	}
 
 	if (gsf_input_seek(mFile, 0x80, G_SEEK_SET))
 	{
-		perror("parse_file: Can't seek data!");
+		UT_WARNINGMSG(("parse_file: Can't seek data!\n"));
 		return UT_ERROR;
 	}
 
@@ -445,14 +445,14 @@ bool IE_Imp_MSWrite::read_ffntb ()
 
 	if (gsf_input_seek(mFile, pnFfntb++ * 0x80, G_SEEK_SET))
 	{
-		perror("read_ffntb: Can't seek FFNTB!");
+		UT_WARNINGMSG(("read_ffntb: Can't seek FFNTB!\n"));
 		return false;
 	}
 
 	// the first two bytes are the number of fonts
 	if (!gsf_input_read(mFile, 2, buf))
 	{
-		perror("read_ffntb: Can't read FFNTB!");
+		UT_WARNINGMSG(("read_ffntb: Can't read FFNTB!\n"));
 		return false;
 	}
 
@@ -463,7 +463,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 	{
 		if (!gsf_input_read(mFile, 2, buf))
 		{
-			perror("read_ffntb: Can't read cbFfn!");
+			UT_WARNINGMSG(("read_ffntb: Can't read cbFfn!\n"));
 			wri_fonts_count = fonts_count;
 			free_ffntb();
 			return false;
@@ -477,7 +477,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 		{
 			if (gsf_input_seek(mFile, pnFfntb++ * 0x80, G_SEEK_SET))
 			{
-				perror("read_ffntb: Can't seek next FFNTB!");
+				UT_WARNINGMSG(("read_ffntb: Can't seek next FFNTB!\n"));
 				wri_fonts_count = fonts_count;
 				free_ffntb();
 				return false;
@@ -491,7 +491,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 
 		if (!fonts)
 		{
-			fprintf(stderr, "read_ffntb: Out of memory!\n");
+			UT_WARNINGMSG(("read_ffntb: Out of memory!\n"));
 			wri_fonts_count = fonts_count;
 			free_ffntb();
 			return false;
@@ -504,7 +504,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 		// are defined in <windows.h>, but I don't know what to do with them.
 		if (!gsf_input_read(mFile, 1, &ffid))
 		{
-			perror("read_ffntb: Can't read ffid!");
+			UT_WARNINGMSG(("read_ffntb: Can't read ffid!\n"));
 			wri_fonts_count = fonts_count;
 			free_ffntb();
 			return false;
@@ -518,7 +518,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 
 		if (!ffn)
 		{
-			fprintf(stderr, "read_ffntb: Out of memory!\n");
+			UT_WARNINGMSG(("read_ffntb: Out of memory!\n"));
 			wri_fonts_count = fonts_count;
 			free_ffntb();
 			return false;
@@ -526,7 +526,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 
 		if (!gsf_input_read(mFile, cbFfn, (guint8 *) ffn))
 		{
-			perror("read_ffntb: Can't read szFfn!");
+			UT_WARNINGMSG(("read_ffntb: Can't read szFfn!\n"));
 			wri_fonts_count = fonts_count + 1;
 			free_ffntb();
 			return false;
@@ -544,7 +544,7 @@ bool IE_Imp_MSWrite::read_ffntb ()
 	if (fonts_count != wri_fonts_count)
 	{
 		wri_fonts_count = fonts_count;
-		fprintf(stderr, "read_ffntb: Wrong number of fonts.\n");
+		UT_WARNINGMSG(("read_ffntb: Wrong number of fonts.\n"));
 	}
 
 	return true;
@@ -698,7 +698,7 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 			UT_DEBUGMSG((" cfod    = %d\n", cfod));
 		}
 
-		if (fc != fcFirst) fprintf(stderr, "read_pap: fcFirst wrong.\n");
+		if (fc != fcFirst) UT_WARNINGMSG(("read_pap: fcFirst wrong.\n"));
 
 		// read all FODs (format descriptors)
 		for (int fod = 0; fod < cfod; fod++)
@@ -909,7 +909,7 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 		UT_DEBUGMSG(("      fcFirst = %d\n", fc));
 		UT_DEBUGMSG(("      cfod    = %d\n", cfod));
 
-		if (fc != fcFirst) fprintf(stderr, "read_txt: fcFirst wrong.\n");
+		if (fc != fcFirst) UT_WARNINGMSG(("read_txt: fcFirst wrong.\n"));
 
 		// read all FODs (format descriptors)
 		for (int fod = 0; fod < cfod; fod++)
@@ -953,7 +953,7 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 
 			if (ftc >= wri_fonts_count)
 			{
-				fprintf(stderr, "read_txt: Wrong font code.\n");
+				UT_WARNINGMSG(("read_txt: Wrong font code.\n"));
 				ftc = wri_fonts_count - 1;
 			}
 
@@ -1443,7 +1443,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 	if (size < PIC_OR_OLE_HEADER_SIZE + OLE_ClassNameString)
 	{
-		fprintf(stderr, "read_pic: Size error, type 1!\n");
+		UT_WARNINGMSG(("read_pic: Size error, type 1!\n"));
 		return false;
 	}
 
@@ -1733,7 +1733,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 	if (write_pic) free_wri_struct(write_pic);
 
-	if (msg) fprintf(stderr, "%s", msg);
+	if (msg) UT_WARNINGMSG(("%s", msg));
 
 	return (msg ? false : true);
 }
