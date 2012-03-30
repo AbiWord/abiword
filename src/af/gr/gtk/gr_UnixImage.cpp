@@ -250,8 +250,8 @@ void GR_UnixImage::scale (UT_sint32 iDisplayWidth,
 {
 	UT_return_if_fail(m_image);
 	
-	// don't scale if passed -1 for either
-	if (iDisplayWidth < 0 || iDisplayHeight < 0)
+	// don't scale if passed -1 for either, or either is 0
+	if (iDisplayWidth <= 0 || iDisplayHeight <= 0)
 		return;
 
 	GdkPixbuf * image = 0;
