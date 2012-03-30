@@ -1005,15 +1005,16 @@ void fl_ContainerLayout::remove(fl_ContainerLayout * pL)
 {
 	UT_ASSERT(pL);
 	UT_ASSERT(m_pFirstL);
+	fl_ContainerLayout* prev = pL->getPrev(); // can be NULL
 
-	if (pL->getPrev())
+	if (prev)
 	{
-		pL->getPrev()->setNext(pL->getNext());
+		prev->setNext(pL->getNext());
 	}
 
 	if (pL->getNext())
 	{
-		pL->getNext()->setPrev(pL->getPrev());
+		pL->getNext()->setPrev(prev);
 		if(pL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
 			UT_ASSERT(getContainerType() != FL_CONTAINER_BLOCK);
@@ -1027,9 +1028,9 @@ void fl_ContainerLayout::remove(fl_ContainerLayout * pL)
 				pBNext->setLineHeightBlockWithBorders(1);
 			}
 		}
-		if (pL->getPrev()->getContainerType() == FL_CONTAINER_BLOCK)
+		if (prev && prev->getContainerType() == FL_CONTAINER_BLOCK)
 		{
-			fl_BlockLayout* pBPrev = static_cast<fl_BlockLayout *>(pL->getPrev());
+			fl_BlockLayout* pBPrev = static_cast<fl_BlockLayout *>(prev);
 			if (pBPrev->hasBorders())
 			{
 				pBPrev->setLineHeightBlockWithBorders(-1);
