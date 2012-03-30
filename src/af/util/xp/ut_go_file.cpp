@@ -1663,8 +1663,11 @@ UT_go_file_get_date_changed (char const *uri)
 }
 
 /* ------------------------------------------------------------------------- */
-
-#if !defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_COCOA)
+#ifdef TOOLKIT_GTK_ALL
+// we need this for systems where gtk_show_uri() is broken
+// don't get me started.
+// Note that is gtk_show_uri() fails but return true, then
+// there is nothing that can be done.
 static char *
 check_program (char const *prog)
 {
@@ -1676,6 +1679,74 @@ check_program (char const *prog)
 	} else if (!g_find_program_in_path (prog))
 		return NULL;
 	return g_strdup (prog);
+}
+
+static void 
+fallback_open_uri(const gchar* url, GError** err)
+{
+	gchar *browser = NULL;
+	gchar *clean_url = NULL;
+
+	/* 1) Check BROWSER env var */
+	browser = check_program (getenv ("BROWSER"));
+
+	if (browser == NULL) {
+		static char const * const browsers[] = {
+			"xdg-open",             /* XDG. you shouldn't need anything else */
+			"sensible-browser",	/* debian */
+			"epiphany",		/* primary gnome */
+			"galeon",		/* secondary gnome */
+			"encompass",
+			"firefox",
+			"mozilla-firebird",
+			"mozilla",
+			"netscape",
+			"konqueror",
+			"xterm -e w3m",
+			"xterm -e lynx",
+			"xterm -e links"
+		};
+		unsigned i;
+		for (i = 0 ; i < G_N_ELEMENTS (browsers) ; i++)
+			if (NULL != (browser = check_program (browsers[i])))
+				break;
+  	}
+
+	if (browser != NULL) {
+		gint    argc;
+		gchar **argv = NULL;
+		char   *cmd_line = g_strconcat (browser, " %1", NULL);
+
+		if (g_shell_parse_argv (cmd_line, &argc, &argv, err)) {
+			/* check for '%1' in an argument and substitute the url
+			 * otherwise append it */
+			gint i;
+			char *tmp;
+
+			for (i = 1 ; i < argc ; i++)
+				if (NULL != (tmp = strstr (argv[i], "%1"))) {
+					*tmp = '\0';
+					tmp = g_strconcat (argv[i],
+						(clean_url != NULL) ? (char const *)clean_url : url,
+						tmp+2, NULL);
+					g_free (argv[i]);
+					argv[i] = tmp;
+					break;
+				}
+
+			/* there was actually a %1, drop the one we added */
+			if (i != argc-1) {
+				g_free (argv[argc-1]);
+				argv[argc-1] = NULL;
+			}
+			g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
+				NULL, NULL, NULL, err);
+			g_strfreev (argv);
+		}
+		g_free (cmd_line);
+	}
+	g_free (browser);
+	g_free (clean_url);
 }
 #endif
 
@@ -1704,74 +1775,15 @@ UT_go_url_show (gchar const *url)
 #else
 	GError *err = NULL;
 #if GTK_CHECK_VERSION(2,14,0)
-	gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &err);
+	if(!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &err)) {
+		fallback_open_uri(url, &err);
+	}
 	return err;
 #elif defined(WITH_GNOMEVFS)
 	gnome_vfs_url_show (url);
 	return err;
 #else
-	gchar *browser = NULL;
-	gchar *clean_url = NULL;
-
-	/* 1) Check BROWSER env var */
-	browser = check_program (getenv ("BROWSER"));
-
-	if (browser == NULL) {
-		static char const * const browsers[] = {
-			"sensible-browser",	/* debian */
-			"epiphany",		/* primary gnome */
-			"galeon",		/* secondary gnome */
-			"encompass",
-			"firefox",
-			"mozilla-firebird",
-			"mozilla",
-			"netscape",
-			"konqueror",
-			"xterm -e w3m",
-			"xterm -e lynx",
-			"xterm -e links"
-		};
-		unsigned i;
-		for (i = 0 ; i < G_N_ELEMENTS (browsers) ; i++)
-			if (NULL != (browser = check_program (browsers[i])))
-				break;
-  	}
-
-	if (browser != NULL) {
-		gint    argc;
-		gchar **argv = NULL;
-		char   *cmd_line = g_strconcat (browser, " %1", NULL);
-
-		if (g_shell_parse_argv (cmd_line, &argc, &argv, &err)) {
-			/* check for '%1' in an argument and substitute the url
-			 * otherwise append it */
-			gint i;
-			char *tmp;
-
-			for (i = 1 ; i < argc ; i++)
-				if (NULL != (tmp = strstr (argv[i], "%1"))) {
-					*tmp = '\0';
-					tmp = g_strconcat (argv[i],
-						(clean_url != NULL) ? (char const *)clean_url : url,
-						tmp+2, NULL);
-					g_free (argv[i]);
-					argv[i] = tmp;
-					break;
-				}
-
-			/* there was actually a %1, drop the one we added */
-			if (i != argc-1) {
-				g_free (argv[argc-1]);
-				argv[argc-1] = NULL;
-			}
-			g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
-				NULL, NULL, NULL, &err);
-			g_strfreev (argv);
-		}
-		g_free (cmd_line);
-	}
-	g_free (browser);
-	g_free (clean_url);
+	fallback_open_uri(url, &err);
 	return err;
 #endif
 #endif
