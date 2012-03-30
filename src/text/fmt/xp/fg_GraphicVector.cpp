@@ -86,6 +86,8 @@ FG_Graphic* FG_GraphicVector::createFromStrux(const fl_ContainerLayout *pFL)
 		{
 			bFoundDataItem = pDoc->getDataItemDataByName(static_cast<const char*>(pFG->m_pszDataID), &pFG->m_pbbSVG, NULL, NULL);
 		}
+		pFG->m_iWidth = UT_convertToPoints(pFG->getWidthProp());
+		pFG->m_iHeight = UT_convertToPoints(pFG->getHeightProp());
 	}
 
 	if (!bFoundDataItem)
