@@ -62,6 +62,7 @@ dcl(MSG_Exception, "A fatal error has just occurred. AbiWord is going to shutdow
 
 // Status Bar Messages
 dcl(PageInfoField,				"Page: %d/%d")
+dcl(WordCount,					"Words: %d")
 dcl(LeftMarginStatus,			"Left Margin [%s]")
 dcl(RightMarginStatus,			"Right Margin [%s]")
 dcl(FirstLineIndentStatus,		"First Line Indent [%s]")

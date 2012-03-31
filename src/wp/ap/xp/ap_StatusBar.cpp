@@ -44,6 +44,7 @@
 #define AP_STATUSBAR_STATUSMESSAGE_REPRESENTATIVE_STRING "MMMMMMMMMMMMMMMMMMMMMMMMMMMM"
 #define AP_STATUSBAR_INPUTMODE_REP_STRING "MMMMMMMM"
 #define AP_STATUSBAR_INSERTMODE_REP_STRING "MMMMMMM"
+#define AP_STATUSBAR_WORDCOUNT_REP_STRING "MMMMMMMM"
 
 #define AP_STATUSBAR_MAX_PAGES 9999
 
@@ -190,7 +191,6 @@ ap_sbf_InputMode::ap_sbf_InputMode(AP_StatusBar * pSB)
 {
     UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), XAP_App::getApp()->getDefaultEncoding());
     m_sBuf = sInputMode;
-
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = LEFT;
     m_sRepresentativeString = AP_STATUSBAR_INPUTMODE_REP_STRING;
@@ -202,7 +202,7 @@ void ap_sbf_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
     {
 	UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), XAP_App::getApp()->getDefaultEncoding());
 	m_sBuf = sInputMode;
-
+	
 	if (getListener())
 	    getListener()->notify();
     }
@@ -211,6 +211,49 @@ void ap_sbf_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
+
+class ABI_EXPORT ap_sbf_WordCount : public AP_StatusBarField_TextInfo
+{
+public:
+    ap_sbf_WordCount(AP_StatusBar * pSB);
+	
+    virtual void        notify(AV_View * pView, const AV_ChangeMask mask);
+
+private:
+    UT_uint32 m_wordCount;
+    std::string m_szFormat;
+};
+
+
+ap_sbf_WordCount::ap_sbf_WordCount(AP_StatusBar *pSB)
+    :AP_StatusBarField_TextInfo(pSB)
+{
+    XAP_App::getApp()->getStringSet()->getValueUTF8(AP_STRING_ID_WordCount,m_szFormat);
+    m_wordCount = 0;
+
+    m_fillMethod = REPRESENTATIVE_STRING;
+    m_alignmentMethod = CENTER;
+    m_sRepresentativeString = AP_STATUSBAR_WORDCOUNT_REP_STRING;
+    
+}
+
+void ap_sbf_WordCount::notify(AV_View * pavView, const AV_ChangeMask mask)
+{
+	if(AV_CHG_TYPING)
+	{	
+		FV_View *pview = static_cast<FV_View *>(pavView);
+	        if(!pview->isLayoutFilling())
+	        {
+        		m_wordCount=pview->countWordsStatusBar();
+	        }
+		UT_UTF8String_sprintf(m_sBuf, m_szFormat.c_str(),m_wordCount);
+	}
+	if (getListener())
+	    getListener()->notify();
+    	
+}
+/////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////
 
 class ABI_EXPORT ap_sbf_InsertMode : public AP_StatusBarField_TextInfo
 {
@@ -398,6 +441,7 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
 		m_vecFields.addItem((var));						\
 		
     DclField(ap_sbf_PageInfo, pf1);
+    DclField(ap_sbf_WordCount,pf7);
     DclField(ap_sbf_StatusMessage, pf2);
 
     m_pStatusMessageField = pf2;	// its in the vector, but we remember it explicitly
@@ -409,6 +453,7 @@ AP_StatusBar::AP_StatusBar(XAP_Frame * pFrame)
     DclField(ap_sbf_InputMode, pf5);
 		
     DclField(ap_sbf_Language, pf6);
+
     // TODO add other fields
 
 #undef DclField

@@ -716,6 +716,7 @@ public:
 // ----------------------
 
 	FV_DocCount 		countWords(void);
+	UT_uint32 		countWordsStatusBar(); //When counting words from the status bar, the entire structure is not needed. Only the word count is enough
 
 // -----------------------
 
