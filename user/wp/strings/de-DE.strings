@@ -2093,6 +2093,7 @@ WINDOWS_COMCTL_WARNING="AbiWord ist für eine neuere Version der Systemdatei COM
 WINDOWS_NEED_UNICOWS="AbiWord benötigt die Datei %s.dll&#x000a;Bitte laden und installieren Sie sie von http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 WORD_PassInvalid="Falsches Passwort"
 WORD_PassRequired="Passwort erforderlich, dieses Dokument ist verschlüsselt"
+WordCount="Wörter: %d"
 />
 
 </AbiStrings>
