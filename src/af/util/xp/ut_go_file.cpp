@@ -1664,9 +1664,9 @@ UT_go_file_get_date_changed (char const *uri)
 
 /* ------------------------------------------------------------------------- */
 #ifdef TOOLKIT_GTK_ALL
-// we need this for systems where gtk_show_uri() is broken
-// don't get me started.
-// Note that is gtk_show_uri() fails but return true, then
+// We need this for systems where gtk_show_uri() is broken
+// Don't get me started.
+// Note that if gtk_show_uri() fails but returns true, then
 // there is nothing that can be done.
 static char *
 check_program (char const *prog)
