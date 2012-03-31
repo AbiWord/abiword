@@ -1,6 +1,6 @@
 
-DIST_SUBDIRS = clipart dictionary strings templates
-SUBDIRS = dictionary strings templates
+DIST_SUBDIRS = clipart dictionary templates
+SUBDIRS = dictionary templates
 
 if ENABLE_CLIPART
 SUBDIRS += clipart

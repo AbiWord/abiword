@@ -137,6 +137,12 @@ m4_ifdef([LT_INIT], [], [AC_PROG_LIBTOOL])
 DOLT
 AC_PROG_LN_S
 
+AC_CHECK_PROG(HAVE_PERL, perl, yes, no)
+if test "x$HAVE_PERL" = "xno"; then
+	AC_MSG_ERROR([*** perl program not found])
+fi
+
+
 TOOLKIT_IS_GTK2="no"
 AC_MSG_CHECKING([for platform and toolkit])
 case ${host_os} in
@@ -1032,6 +1038,7 @@ AC_OUTPUT(
   Makefile
   goffice-bits/Makefile
   goffice-bits2/Makefile
+  po/Makefile
   src/Makefile
   src/af/Makefile
   src/af/ev/Makefile
@@ -1094,7 +1101,6 @@ AC_OUTPUT(
   user/wp/Makefile
   user/wp/clipart/Makefile
   user/wp/dictionary/Makefile
-  user/wp/strings/Makefile
   user/wp/templates/Makefile
 )
 

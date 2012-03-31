@@ -1,7 +1,7 @@
 
 ACLOCAL_AMFLAGS = -I .
 
-DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins user
+DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins po user
 
 if WITH_GOFFICE_BUILTIN
 
@@ -14,7 +14,7 @@ endif
 else 
 SUBDIRS =
 endif
-SUBDIRS += src plugins user
+SUBDIRS += src plugins po user
 
 if TOOLKIT_GTK_ALL
 

@@ -39,11 +39,11 @@ my $encoding	= "iso-8859-1";
 
 $lang =~ s/_/-/g;
 
-print "Porting the PO translation back to AbiWord XP format\n";
+print "Converting localization file $lang.po to Abiword .strings format\n";
 
 if (! -s "$lang.po") { print "Error: file $lang.po does not exist!\n"; exit; }
 
-open FILE, ">../user/wp/strings/$lang.strings";
+open FILE, ">$lang.strings";
 
 open (IN, "<$lang.po") || die "can't open $lang.po: $!";
 
@@ -121,4 +121,3 @@ for (my $n = 0; $n < @ap_strings; $n++) {
 
 print FILE "</AbiStrings>\n\n";
 
-print "Wrote ../user/wp/strings/$lang.strings\n";
