@@ -21,14 +21,18 @@
 #
 #  Authors: Kenneth Christiansen <kenneth@gnu.org>
 #
+#  Contributors: Hubert Figuiere <hub@figuiere.net>
+#
 
 use strict;
 
 # Declare global variables
 #-------------------------
-my $VERSION 	= "0.5";
+my $VERSION 	= "0.6";
 
-my $lang 	= "$ARGV[0]";
+my $in          = "$ARGV[0]"; # input file (.po)
+my $out         = "$ARGV[1]"; # output file (.strings)
+my $lang        = `basename $in .po`;
 my $kind 	= "0";
 my @xap_strings;
 my @ap_strings;
@@ -39,13 +43,13 @@ my $encoding	= "iso-8859-1";
 
 $lang =~ s/_/-/g;
 
-print "Converting localization file $lang.po to Abiword .strings format\n";
+print "Converting localization file $in to Abiword .strings format\n";
 
-if (! -s "$lang.po") { print "Error: file $lang.po does not exist!\n"; exit; }
+if (! -s "$in") { print "Error: file $in does not exist!\n"; exit; }
 
-open FILE, ">$lang.strings";
+open FILE, ">$out";
 
-open (IN, "<$lang.po") || die "can't open $lang.po: $!";
+open (IN, "<$in") || die "can't open $in: $!";
 
 while (<IN>) {
     $encoding = $1 if (/\"Content-Type:\s+text\/plain;\s+charset=(.*)\\n\"/);
