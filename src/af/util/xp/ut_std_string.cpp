@@ -390,7 +390,7 @@ time_t parseTimeString( const std::string& stddatestr )
         std::string format = *iter;
         struct tm tm;
         memset( &tm, 0, sizeof(struct tm));
-        const char* rc = strptime( datestr, format.c_str(), &tm );
+        const char* rc = UT_strptime( datestr, format.c_str(), &tm );
         if( rc == eos )
         {
 //            UT_DEBUGMSG(("parseTimeString(OK) input:%s format:%s ret:%ld\n",

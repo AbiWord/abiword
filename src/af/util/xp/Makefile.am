@@ -80,6 +80,7 @@ libxp_la_SOURCES = \
 	ut_string_class.h \
 	ut_string.cpp \
 	ut_string.h \
+	ut_strptime.c \
 	ut_svg.cpp \
 	ut_svg.h \
 	ut_test.cpp \
@@ -106,4 +107,3 @@ libxp_la_SOURCES = \
 	ut_xml.h \
 	ut_xml_libxml2.cpp \
 	ut_conversion.h
-
