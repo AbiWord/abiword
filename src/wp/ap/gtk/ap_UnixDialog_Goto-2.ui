@@ -155,7 +155,7 @@
                   </packing>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel" id="label2">
+                  <object class="GtkLabel" id="lbBookmarks">
                     <property name="visible">True</property>
                     <property name="xpad">4</property>
                     <property name="label" translatable="yes">Bookmark</property>
@@ -192,9 +192,6 @@
                   <object class="GtkTreeView" id="lvAnno">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <child internal-child="selection">
-                      <object class="GtkTreeSelection" id="treeview-selection4"/>
-                    </child>
                   </object>
                   <packing>
                     <property name="position">3</property>
