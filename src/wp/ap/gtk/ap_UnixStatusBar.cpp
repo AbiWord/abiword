@@ -173,7 +173,10 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 		}
 		else if(pf->getFillMethod() == 	PROGRESS_BAR)
 		{
+			GtkRequisition requisition;
 			pStatusBarElement = gtk_frame_new(NULL);
+			gtk_widget_size_request(pStatusBarElement, &requisition);				
+			gtk_widget_set_size_request(pStatusBarElement, -1, requisition.height);
 			gtk_frame_set_shadow_type(GTK_FRAME(pStatusBarElement), GTK_SHADOW_IN);
 
 			gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, TRUE, TRUE, 0);
