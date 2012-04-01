@@ -31,12 +31,6 @@ if ($ARGV[0]=~/^-(.)*/){
 
 sub Extract{
 
-if (! -s "../user/wp/strings/$ARG1.strings") {
-  print "Error: The is no stringfile for $ARG1\n"
-       ."Script cannot proceed!\n";
-  exit;
-}
-
 if  (! -s "$ARG1.po") { system("touch $ARG1.po"); }
 
 foreach 
@@ -51,26 +45,6 @@ my $file ("../src/wp/ap/xp/ap_String_Id.h",
      $strings{$msgid}{"en-US"} = $string;
   }
   close IN;
-}
-
-$file = "../user/wp/strings/$ARG1.strings";
-
-open IN, "<$file" || die "Cannot open $file";
-
-while (<IN>) {
-    next unless /^(.*)=\"(.*)\"/;
-    my ($msgid, $string) = ($1, $2);
-
-    # XML to ASCII
-    $string =~ s/&amp;/&/g;
-    $string =~ s/(&#10;|&#x000a;)/\\n\"\n\"/g;
-    $string =~ s/(&#9;|&#x0009;)/\\t/g;
-    $string =~ s/(&lt;)/</g;
-    $string =~ s/(&gt;)/>/g;    
-
-    if (exists $strings{$msgid}) {
-	$strings{$msgid}{$ARG1} = $string;
-    }
 }
 
 $file = "$ARG1-tmp.po";
@@ -90,7 +64,7 @@ foreach my $msg (sort keys %strings) {
 
 close OUT;
 
-print "Adding [$ARG1] lines from strings file...\n";
+print "Adding strings from string header (.h) files...\n";
 system("touch tmpmerge.po");
 system("msgcomm --more-than=0 --omit-header --add-location --output=tmp.po tmpmerge.po $file");
 
