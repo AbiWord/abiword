@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
