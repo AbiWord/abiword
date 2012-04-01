@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-01 13:21+0200\n"
-"PO-Revision-Date: 2012-04-01 13:21+0200\n"
+"POT-Creation-Date: 2012-04-01 17:00+0200\n"
+"PO-Revision-Date: 2012-04-01 17:00+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de\n"
@@ -2749,8 +2749,8 @@ msgstr "Anmerkung bearbeiten"
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h.h:1128
-msgid "Edit document RDF..."
-msgstr "Dokument-RDF bearbeiten..."
+msgid "Edit document RDF"
+msgstr "Dokument-RDF bearbeiten"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h.h:1130
@@ -2876,8 +2876,8 @@ msgstr "SPARQL-Abfrage zum Standort durchführen"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h.h:1178
-msgid "Execute SPARQL on document RDF..."
-msgstr "SPARQL-Abfrage über Dokument-RDF durchführen..."
+msgid "Execute SPARQL on document RDF"
+msgstr "SPARQL-Abfrage über Dokument-RDF durchführen"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h.h:1180
@@ -3307,8 +3307,8 @@ msgstr "Gehe &wohin:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h.h:1355
-msgid "Go to..."
-msgstr "Gehe zu..."
+msgid "Go to"
+msgstr "Gehe zu"
 
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h.h:1357
