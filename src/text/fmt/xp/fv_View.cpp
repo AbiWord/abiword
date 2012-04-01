@@ -11327,67 +11327,8 @@ static bool s_notChar(UT_UCSChar c)
       return false;
     }
 }
-//A shortened version of the count words function used to quickly count the no of words in the status bar.
-UT_uint32
-FV_View::countWordsStatusBar()
-{
-	UT_uint32 wordCount=0;
-	
-	PT_DocPosition low,high;
-	
-	m_pDoc->getBounds(false, low); 
-	m_pDoc->getBounds(true, high); 
-	
-	UT_sint32 iSelLen = high-low;
-	fl_BlockLayout *pBL = _findBlockAtPosition(low);
-	if(pBL == NULL)
-		return wordCount;
 
- 	UT_sint32 iCount = 0,iStartOffset = 0;		
-	while (NULL != pBL && iCount < iSelLen)
-	{
-		UT_GrowBuf gb(1024);
-		pBL->getBlockBuf(&gb);
-		const UT_UCSChar * pSpan = reinterpret_cast<UT_UCSChar*>(gb.getPointer(0));
-		UT_uint32 len = gb.getLength();
 
-		UT_uint32 i = iStartOffset;
-		iStartOffset = 0;
-		if(low > pBL->getPosition())
-		{
-			iStartOffset = low - pBL->getPosition();
-		}
-		bool newWord = false;
-		bool delim = true;
-		for (; i < len; i++)
-		{
-			if (++iCount > iSelLen) break;
-
-			UT_UCSChar followChar, prevChar;
-			followChar = (i+1 < len) ? pSpan[i+1] : UCS_UNKPUNK;
-			prevChar = i > 0 ? pSpan[i-1] : UCS_UNKPUNK;
-
-			newWord = (delim && !UT_isWordDelimiter(pSpan[i], followChar, prevChar));
-
-			delim = UT_isWordDelimiter(pSpan[i], followChar, prevChar);
-
-			if (delim) {
-				if (pSpan[i]=='-' || pSpan[i]=='_') delim = false;
-			}
-
-			if (newWord ||
-				XAP_EncodingManager::get_instance()->is_cjk_letter(pSpan[i]))
-                        {
-                                wordCount++;
-                        }
-		}	
-		fl_ContainerLayout* pNextBlock = pBL->getNextBlockInDocument();
-		pBL = static_cast<fl_BlockLayout *>(pNextBlock);
-		iCount++;    // Extra character at the end of block
-	}
-	return wordCount;
-
-}
 /*!
  Count words
  \return structure with word counts
