@@ -643,7 +643,7 @@ dcl(FIELD_Document_Rights, "Rights")
 dcl(FIELD_Document_Keywords, "Keywords")
 dcl(FIELD_Document_Description, "Description")
 
-dcl(DLG_Goto_Title, 					"Go to...")
+dcl(DLG_Goto_Title, 					"Go to")
 dcl(DLG_Goto_Label_Help,			"Choose your target in the left side.\nIf you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.	I.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position.")
 dcl(DLG_Goto_Btn_Prev,					"<< Prev")
 dcl(DLG_Goto_Btn_Next,					"Next >>")
@@ -656,8 +656,8 @@ dcl(DLG_Goto_Target_Line,				"Line")
 dcl(DLG_Goto_Target_Picture,			"Picture")
 dcl(DLG_Goto_Target_Bookmark,			"Bookmark")
 
-dcl(DLG_RDF_Query_Title, 					"Execute SPARQL on document RDF...")
-dcl(DLG_RDF_Editor_Title, 					"Edit document RDF...")
+dcl(DLG_RDF_Query_Title, 					"Execute SPARQL on document RDF")
+dcl(DLG_RDF_Editor_Title, 					"Edit document RDF")
 
 
 // Lists Dialog
