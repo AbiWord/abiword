@@ -423,7 +423,6 @@ AC_ARG_WITH([darwinports],
         if test "x$withval" != "xno"; then
             CPPFLAGS="$CPPFLAGS -I/opt/local/include"
             LDFLAGS="$LDFLAGS -headerpad_max_install_names -L/opt/local/lib"
-            CC=$CXX
         fi
 ])
 
@@ -433,7 +432,6 @@ AC_ARG_WITH([fink],
         if test "x$withval" != "xno"; then
                 CPPFLAGS="$CPPFLAGS -I/sw/include"
                 LDFLAGS="$LDFLAGS -L/sw/lib"
-		CC=$CXX
         fi
 ])
 
@@ -448,7 +446,6 @@ AC_ARG_WITH([abisdk],
 		PKG_CONFIG_PATH=/usr/lib/pkgconfig ; export PKG_CONFIG_PATH
 		CPPFLAGS="$CPPFLAGS -mmacosx-version-min=10.4 -isysroot $withval -I/opt/abi/include"
 		LDFLAGS="$LDFLAGS -mmacosx-version-min=10.4 -isysroot $withval -L/opt/abi/lib"
-		CC=$CXX
 	fi
 ])
 
