@@ -1185,7 +1185,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 		if(background.m_t_background != PP_PropertyMap::background_none)
 		{
 			UT_RGBColor color = background.m_color;
-			UT_sint32 iCol = color.m_red+color.m_grn*256+color.m_blu*256*256;
+			UT_sint32 iCol = color.m_red*256*256+color.m_grn*256+color.m_blu;
 			if(iCol != 0)
 			{
 				_writeSPNumProp("fillColor",iCol); // Background color
