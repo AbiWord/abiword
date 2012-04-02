@@ -1362,11 +1362,6 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InsTextBox)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-        if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB))
-	{
-            return EV_MIS_Gray;
-        }
-
         return EV_MIS_ZERO;
 }
 
