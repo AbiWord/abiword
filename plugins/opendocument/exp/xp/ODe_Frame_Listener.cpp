@@ -210,19 +210,29 @@ void ODe_Frame_Listener::_openODTextbox(const PP_AttrProp& rAP,
 	    ODe_Style_PageLayout * pPageL = m_rAutomatiStyles.getPageLayout(stylePName.utf8_str());
 
 	    ok = rAP.getProperty("frame-col-xpos", pValue);
-	    UT_ASSERT(ok && pValue != NULL);
-	    double xCol =  UT_convertToInches(pValue);
-	    const gchar* pSVal= pPageL->getPageMarginLeft();
-	    double xPageL = UT_convertToInches(pSVal);
+	    double xCol = 0.;
+	    if(ok && pValue != NULL)
+	    {
+		xCol =  UT_convertToInches(pValue);
+	    }
+	    ok = rAP.getProperty("frame-col-ypos", pValue);
+	    double yCol = 0.;
+	    if(ok && pValue != NULL)
+	    {
+		yCol =  UT_convertToInches(pValue);
+	    }
+	    double xPageL = 0.;
+	    double yPageL = 0.;
+	    if (pPageL)
+	    {		
+		const gchar* pSVal= pPageL->getPageMarginLeft();
+		xPageL = UT_convertToInches(pSVal);
+		pSVal= pPageL->getPageMarginTop();
+		yPageL = UT_convertToInches(pSVal);	
+	    }
 	    double xTot = xPageL + xCol;
 	    pValue = UT_convertInchesToDimensionString(DIM_IN,xTot,"4");
 	    ODe_writeAttribute(output, "svg:x", pValue);
-        
-	    ok = rAP.getProperty("frame-col-ypos", pValue);
-	    UT_ASSERT(ok && pValue != NULL);
-	    double yCol =  UT_convertToInches(pValue);
-	    pSVal= pPageL->getPageMarginTop();
-	    double yPageL = UT_convertToInches(pSVal);
 	    double yTot = yPageL + yCol;
 	    pValue = UT_convertInchesToDimensionString(DIM_IN,yTot,"4");
 	    ODe_writeAttribute(output, "svg:y", pValue);	  

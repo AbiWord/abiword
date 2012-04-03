@@ -2354,9 +2354,8 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Left border
 
     ok = rAP.getProperty("left-style", pValue);
-    UT_ASSERT (ok && pValue != NULL);
 
-    if (pValue && (*pValue == '0')) {
+    if (!ok || (pValue && (*pValue == '0'))) {
         m_borderLeft = "none";
     } else {
         ok = rAP.getProperty("left-thickness", pValue);
@@ -2378,9 +2377,8 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Right border
 
     ok = rAP.getProperty("right-style", pValue);
-    UT_ASSERT (ok && pValue != NULL);
     
-    if (pValue && (*pValue == '0')) {
+    if (!ok || (pValue && (*pValue == '0'))) {
         m_borderRight = "none";
     } else {
         ok = rAP.getProperty("right-thickness", pValue);
@@ -2402,9 +2400,8 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     // Top border
     
     ok = rAP.getProperty("top-style", pValue);
-    UT_ASSERT (ok && pValue != NULL);
     
-    if (pValue && (*pValue == '0')) {
+    if (!ok || (pValue && (*pValue == '0'))) {
         m_borderTop = "none";
     } else {
         ok = rAP.getProperty("top-thickness", pValue);
@@ -2427,9 +2424,8 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("bot-style", pValue);
-    UT_ASSERT (ok && pValue != NULL);
     
-    if (pValue && (*pValue == '0')) {
+    if (!ok || (pValue && (*pValue == '0'))) {
         m_borderBottom = "none";
     } else {
         ok = rAP.getProperty("bot-thickness", pValue);
@@ -2477,9 +2473,8 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("position-to", pValue);
-    UT_ASSERT (ok && pValue != NULL);
 
-    if (!strcmp(pValue, "block-above-text")) {
+    if (ok && pValue && !strcmp(pValue, "block-above-text")) {
         m_horizontalRel = "paragraph";
         m_verticalRel = "paragraph";
     } else {
