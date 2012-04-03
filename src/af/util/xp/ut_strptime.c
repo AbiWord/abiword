@@ -69,7 +69,7 @@ static int UT_strncasecmp (const char *s1, const char *s2, size_t n)
 # else
 /* Approximate localtime_r as best we can in its absence.  */
 #  define localtime_r my_localtime_r
-static struct tm *localtime_r __P (const time_t *, struct tm *);
+static struct tm *localtime_r (const time_t *, struct tm *);
 static struct tm * localtime_r (const time_t *t, struct tm *tp)
 {
 	struct tm *l = localtime (t);
