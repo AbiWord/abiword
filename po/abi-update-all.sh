@@ -2,8 +2,8 @@
 
 ./update.pl --pot
 
-for I in `ls *.po` ;
+for I in *.po;
 do
     I=`echo "$I" | cut -d . -f1`
-    ./update.pl $I
+    ./update.pl --dist $I
 done
