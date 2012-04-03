@@ -21,6 +21,7 @@
 #
 #  Authors: Kenneth Christiansen <kenneth@gnu.org>
 #
+#  Contributors: Ingo Brueckl <ib@wupperonline.de>
 
 
 
@@ -30,7 +31,7 @@ use Getopt::Long;
 
 #---------------------------
 
-my $VERSION     = "0.9";
+my $VERSION     = "0.9a";
 
 #---------------------------
 
@@ -228,8 +229,9 @@ sub Convert($) {
         ### For generic translatable XP header files ###
         
         if ($FILE =~ /\/xp\/(.*)\.h$/sg){
-        while ($input =~ /\((\w+),(\s*)\"(.*)\"/g) {
+        while ($input =~ /\((\w+),(\s*)\"(.*)\"[)\s]+(\/\/xgettext:.*)*/g) {
                my $tag = $1;
+		if (defined($4)) { $tag .= " */ /* " . substr($4, 2); }
 		if (defined($string{$3})) {
 			push @{$string{$3}}, $tag;
 		} else {
