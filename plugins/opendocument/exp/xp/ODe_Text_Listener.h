@@ -23,6 +23,7 @@
 #define ODE_TEXT_LISTENER_H_
 
 // Internal includes
+#include "../../common/xp/ODc_util.h"
 #include "ODe_AbiDocListenerImpl.h"
 
 // Abiword includes

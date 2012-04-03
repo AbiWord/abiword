@@ -17,7 +17,9 @@ libxp_la_SOURCES = \
 	crypto/sha1.h \
 	ie_impexp_OpenDocument.cpp \
 	ODc_Crypto.cpp \
-	ODc_Crypto.h
+	ODc_Crypto.h \
+	ODc_util.cpp \
+	ODc_util.h
 
 EXTRA_DIST = \
 	crypto/README

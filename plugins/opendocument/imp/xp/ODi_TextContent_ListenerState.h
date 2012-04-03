@@ -30,6 +30,7 @@
 #include <set>
 
 // Internal includes
+#include "../../common/xp/ODc_util.h"
 #include "ODi_ListenerState.h"
 
 // AbiWord includes

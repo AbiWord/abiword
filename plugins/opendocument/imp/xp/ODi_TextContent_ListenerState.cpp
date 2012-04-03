@@ -2111,7 +2111,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
 
     if (!m_sAnnotationAuthor.empty()) {
         props = "annotation-author: ";
-        props += m_sAnnotationAuthor.c_str();
+        props += m_sAnnotationAuthor;
         m_sAnnotationAuthor.clear();
     }
 
@@ -2120,7 +2120,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
             props += "; ";
         }
         props += "annotation-date: ";
-        props += m_sAnnotationDate.c_str();
+        props += ODc_reorderDate(m_sAnnotationDate, true);
         m_sAnnotationDate.clear();
     }
 
@@ -2158,7 +2158,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
                 props += "; ";
             }
             props += "annotation-title: ";
-            props += title.c_str();
+            props += title;
 
             // DEBUG
             UT_DEBUGMSG(("title:%s\n", title.c_str() ));

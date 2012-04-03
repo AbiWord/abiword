@@ -511,7 +511,7 @@ void ODe_Text_Listener::openAnnotation(const PP_AttrProp* pAP, const std::string
     }
 
     if(pAP && pAP->getProperty("annotation-date",pValue) && pValue && *pValue) {
-        escape = pValue;
+        escape = ODc_reorderDate(pValue, false);
         escape.escapeXML();
 
         // TODO: is our property a valid date value?
