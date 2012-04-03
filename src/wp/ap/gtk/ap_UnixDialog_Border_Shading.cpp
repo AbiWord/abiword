@@ -270,7 +270,7 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 
 	// Populate the window's data items
 	_populateWindowData();
-//	_connectSignals(); // last call runs setSensitivity which calls _connectSignals
+	_connectSignals();
 	abiSetupModelessDialog(GTK_DIALOG(m_windowMain), pFrame, this, BUTTON_CLOSE);
 	
 	// *** this is how we add the gc for Column Preview ***
@@ -304,22 +304,16 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 
 void AP_UnixDialog_Border_Shading::setSensitivity(bool /* bSens */)
 {
-//	UT_DEBUGMSG(("========================= Set the sensitivity \n"));
+	UT_DEBUGMSG(("========================= Set the sensitivity \n"));
 
-	if (m_iLineLeftConnect == 0)
-		_connectSignals();// avoids some criticals
-		
-	XAP_GtkSignalBlocker b1(G_OBJECT(m_wLineLeft), m_iLineLeftConnect);
 	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineLeft, getLeftToggled() ? TRUE: FALSE);
-
-	XAP_GtkSignalBlocker b2(G_OBJECT(m_wLineRight), m_iLineRightConnect);
 	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineRight, getRightToggled() ? TRUE: FALSE);
-
-	XAP_GtkSignalBlocker b3(G_OBJECT(m_wLineTop), m_iLineTopConnect);
 	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineTop, getTopToggled() ? TRUE: FALSE);
-
-	XAP_GtkSignalBlocker b4(G_OBJECT(m_wLineBottom), m_iLineBotConnect);
 	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineBottom, getBottomToggled() ? TRUE: FALSE);
+
+	gboolean bEnable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wShadingEnable)); 
+	gtk_widget_set_sensitive(m_wShadingColorButton, bEnable);
+	gtk_widget_set_sensitive(m_wShadingOffset, bEnable);
 }
 
 void AP_UnixDialog_Border_Shading::event_Close(void)
