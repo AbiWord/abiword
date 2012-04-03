@@ -57,8 +57,8 @@ public:
 
 protected:
 
-	void constuctWindow 	  (XAP_Frame *pFrame);
-	void updateWindow		  (void);
+	void _constructWindow 	  (XAP_Frame *pFrame);
+	void _updateWindow		  (void);
 
 private: 
 

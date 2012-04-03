@@ -280,9 +280,9 @@ AP_UnixDialog_RDFQuery::setQueryString( const std::string& sparql )
 * Build dialog.
 */
 void 
-AP_UnixDialog_RDFQuery::constuctWindow (XAP_Frame * /*pFrame*/) 
+AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/) 
 {
-	UT_DEBUGMSG (("ROB: constuctWindow ()\n"));		
+	UT_DEBUGMSG (("ROB: _constructWindow ()\n"));		
 
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
@@ -352,9 +352,9 @@ AP_UnixDialog_RDFQuery::constuctWindow (XAP_Frame * /*pFrame*/)
 * Update dialog's data.
 */
 void 
-AP_UnixDialog_RDFQuery::updateWindow ()
+AP_UnixDialog_RDFQuery::_updateWindow ()
 {
-    UT_DEBUGMSG(("RDFQuery::updateWindow()\n"));
+    UT_DEBUGMSG(("RDFQuery::_updateWindow()\n"));
 	ConstructWindowName ();
 	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName.c_str() );
 }
@@ -363,9 +363,9 @@ void
 AP_UnixDialog_RDFQuery::runModeless (XAP_Frame * pFrame)
 {
 	UT_DEBUGMSG (("MIQ: runModeless ()\n"));
-	constuctWindow (pFrame);
+	_constructWindow (pFrame);
 	UT_ASSERT (m_wDialog);
-	updateWindow ();
+	_updateWindow ();
 	abiSetupModelessDialog (GTK_DIALOG (m_wDialog), pFrame, this, GTK_RESPONSE_CLOSE);
 	gtk_widget_show_all (m_wDialog);
 	gtk_window_present (GTK_WINDOW (m_wDialog));
@@ -376,7 +376,7 @@ AP_UnixDialog_RDFQuery::notifyActiveFrame (XAP_Frame * /*pFrame*/)
 {
 	UT_DEBUGMSG (("MIQ: notifyActiveFrame ()\n"));
 	UT_ASSERT (m_wDialog);
-	updateWindow ();
+	_updateWindow ();
 }
 
 void 
@@ -384,7 +384,7 @@ AP_UnixDialog_RDFQuery::activate (void)
 {
 	UT_ASSERT (m_wDialog);
 	UT_DEBUGMSG (("MIQ: AP_UnixDialog_RDFQuery::activate ()\n"));
-	updateWindow ();
+	_updateWindow ();
 	gtk_window_present (GTK_WINDOW (m_wDialog));
 }
 
