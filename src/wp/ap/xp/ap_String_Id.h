@@ -745,7 +745,7 @@ dcl(DLG_PageSetup_Landscape, "&Landscape")
 dcl(DLG_PageSetup_Portrait, "&Portrait")
 dcl(DLG_PageSetup_Scale, "Scale...")
 dcl(DLG_PageSetup_Adjust, "&Adjust to:")
-dcl(DLG_PageSetup_Percent, "% of normal size")
+dcl(DLG_PageSetup_Percent, "% of normal size")		//xgettext:no-c-format
 dcl(DLG_PageSetup_Page, "Page")
 dcl(DLG_PageSetup_Top, "&Top:")
 dcl(DLG_PageSetup_Header, "&Header:")
