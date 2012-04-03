@@ -63,7 +63,6 @@ static int UT_strncasecmp (const char *s1, const char *s2, size_t n)
 #endif  /* Not __P.  */
 
 
-#if 0
 #if ! HAVE_LOCALTIME_R && ! defined localtime_r
 # ifdef _LIBC
 #  define localtime_r __localtime_r
@@ -81,7 +80,6 @@ static struct tm * localtime_r (const time_t *t, struct tm *tp)
 }
 # endif /* ! _LIBC */
 #endif /* ! HAVE_LOCALTIME_R && ! defined (localtime_r) */
-#endif
 
 #define match_char(ch1, ch2) if (ch1 != ch2) return NULL
 #if defined __GNUC__ && __GNUC__ >= 2
