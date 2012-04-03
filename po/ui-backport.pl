@@ -28,7 +28,7 @@ use strict;
 
 # Declare global variables
 #-------------------------
-my $VERSION 	= "0.6";
+my $VERSION 	= "0.6a";
 
 my $in          = "$ARGV[0]"; # input file (.po)
 my $out         = "$ARGV[1]"; # output file (.strings)
@@ -42,6 +42,7 @@ my $cont 	= "0";
 my $encoding	= "iso-8859-1";
 
 $lang =~ s/_/-/g;
+chop $lang;
 
 print "Converting localization file $in to Abiword .strings format\n";
 
@@ -103,7 +104,7 @@ while (<IN>) {
 @xap_strings = sort (@xap_strings);
 @ap_strings = sort (@ap_strings);
 
-print FILE "<Strings    class=\"XAP\"\n";
+print FILE "<Strings class=\"XAP\"\n";
 for (my $n = 0; $n < @xap_strings; $n++) {
     $xap_strings[$n] =~ s/&/&amp;/mg;
     $xap_strings[$n] =~ s/\\n/&#x000a;/mg;
@@ -113,7 +114,7 @@ for (my $n = 0; $n < @xap_strings; $n++) {
     print FILE "$xap_strings[$n]\n";
 }   print FILE "/>\n\n";
 
-print FILE "<Strings    class=\"AP\"\n";
+print FILE "<Strings class=\"AP\"\n";
 for (my $n = 0; $n < @ap_strings; $n++) {
     $ap_strings[$n] =~ s/&/&amp;/mg;
     $ap_strings[$n] =~ s/\\n/&#x000a;/mg;
@@ -123,5 +124,4 @@ for (my $n = 0; $n < @ap_strings; $n++) {
     print FILE "$ap_strings[$n]\n";
 }   print FILE "/>\n\n";
 
-print FILE "</AbiStrings>\n\n";
-
+print FILE "</AbiStrings>\n";
