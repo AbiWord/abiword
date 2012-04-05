@@ -87,6 +87,8 @@ private:
 	GtkWidget *m_lbPage;
 	GtkWidget *m_lbLine;
 	GtkWidget *m_lbBookmarks;
+	GtkWidget *m_lbXMLids;
+	GtkWidget *m_lbAnnotations;
 	GtkWidget *m_sbPage;
 	GtkWidget *m_sbLine;
 	GtkWidget *m_lvBookmarks;

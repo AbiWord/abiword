@@ -146,7 +146,7 @@
                   </object>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel" id="label1">
+                  <object class="GtkLabel" id="lbPosition">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">4</property>
@@ -222,7 +222,7 @@
                   </packing>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel" id="label3">
+                  <object class="GtkLabel" id="lbXMLids">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xpad">4</property>
@@ -246,7 +246,7 @@
                   </packing>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel" id="label4">
+                  <object class="GtkLabel" id="lbAnnotations">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Annotation</property>

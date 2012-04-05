@@ -259,6 +259,8 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
 	  m_lbPage		   (NULL),
 	  m_lbLine		   (NULL),
 	  m_lbBookmarks    (NULL),
+	  m_lbXMLids	   (NULL),
+	  m_lbAnnotations  (NULL),
 	  m_sbPage		   (NULL),
 	  m_sbLine		   (NULL),
 	  m_lvBookmarks	   (NULL),
@@ -510,9 +512,16 @@ AP_UnixDialog_Goto::setupAnnotationList( GtkWidget* w )
 	gtk_tree_view_set_model (GTK_TREE_VIEW (w), GTK_TREE_MODEL (store));
 	g_object_unref (G_OBJECT (store));
 
+	// localization
+	const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	std::string id, title, author;
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Column_ID, id);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Column_Title, title);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Column_Author, author);
+
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
-												-1, "ID", renderer,
+												-1, id.c_str(), renderer,
 												"text", COLUMN_ANNO_ID,
 												NULL);
 	column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), COLUMN_ANNO_ID );
@@ -520,7 +529,7 @@ AP_UnixDialog_Goto::setupAnnotationList( GtkWidget* w )
 
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
-												-1, "Title", renderer,
+												-1, title.c_str(), renderer,
 												"text", COLUMN_ANNO_TITLE,
 												NULL);
 	column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), COLUMN_ANNO_TITLE );
@@ -529,7 +538,7 @@ AP_UnixDialog_Goto::setupAnnotationList( GtkWidget* w )
 
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
-												-1, "Author", renderer,
+												-1, author.c_str(), renderer,
 												"text", COLUMN_ANNO_AUTHOR,
 												NULL);
 	column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), COLUMN_ANNO_AUTHOR );
@@ -563,6 +572,8 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));
 	m_lbLine = GTK_WIDGET(gtk_builder_get_object(builder, "lbLine"));
 	m_lbBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lbBookmarks"));
+	m_lbXMLids = GTK_WIDGET(gtk_builder_get_object(builder, "lbXMLids"));
+	m_lbAnnotations = GTK_WIDGET(gtk_builder_get_object(builder, "lbAnnotations"));
 	m_sbPage = GTK_WIDGET(gtk_builder_get_object(builder, "sbPage"));
 	m_sbLine = GTK_WIDGET(gtk_builder_get_object(builder, "sbLine"));
 	m_lvBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lvBookmarks"));
@@ -575,7 +586,8 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 
 
 	// localise	
-	// const XAP_StringSet * pSS = m_pApp->getStringSet ();
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbPosition")), pSS, AP_STRING_ID_DLG_Goto_Label_Position);
 	/* FIXME jump targets localised in xp land, make sure they work for non ascii characters */
 	const gchar **targets = getJumpTargets ();
 	const gchar *text = NULL;
@@ -585,6 +597,10 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 		gtk_label_set_text (GTK_LABEL (m_lbLine), text);
 	if ((text = targets[AP_JUMPTARGET_BOOKMARK]) != NULL)
 		gtk_label_set_text (GTK_LABEL (m_lbBookmarks), text);
+	if ((text = targets[AP_JUMPTARGET_XMLID]) != NULL)
+		gtk_label_set_text (GTK_LABEL (m_lbXMLids), text);
+	if ((text = targets[AP_JUMPTARGET_ANNOTATION]) != NULL)
+		gtk_label_set_text (GTK_LABEL (m_lbAnnotations), text);
 
 
     setupXMLIDList( m_lvXMLIDs );

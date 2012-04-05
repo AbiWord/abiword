@@ -7603,9 +7603,9 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 		notifyListeners(AV_CHG_MOTION);
 
 		break;
-	case AP_JUMPTARGET_PICTURE:
+/*	case AP_JUMPTARGET_PICTURE:
 		// TODO
-		break;
+		break; */
     case AP_JUMPTARGET_XMLID:
 	{
 		std::string xmlid = numberString;
