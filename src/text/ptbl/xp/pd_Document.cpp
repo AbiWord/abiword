@@ -1083,7 +1083,9 @@ UT_Error PD_Document::newDocument(void)
         const gchar* name = g_get_real_name();
         if( !strcmp( name, "Unknown" ))
             name = g_get_user_name();
-        setMetaDataProp( PD_META_KEY_CREATOR, name );
+        gchar *utf8name = g_locale_to_utf8(name, -1, NULL, NULL, NULL);
+        setMetaDataProp( PD_META_KEY_CREATOR, utf8name );
+        g_free(utf8name);
     }
     
 	// mark the document as not-dirty
