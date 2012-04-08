@@ -2473,7 +2473,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
     
     
     ok = rAP.getProperty("position-to", pValue);
-
+    UT_ASSERT (ok && pValue != NULL);
     if (ok && pValue && !strcmp(pValue, "block-above-text")) {
         m_horizontalRel = "paragraph";
         m_verticalRel = "paragraph";
