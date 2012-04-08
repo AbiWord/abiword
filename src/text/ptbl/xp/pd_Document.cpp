@@ -1085,8 +1085,8 @@ UT_Error PD_Document::newDocument(void)
 	setEditTime(0);
 	setLastOpenedTime(time(NULL));
 
-    // set document metadata from context
-    setMetaDataProp(PD_META_KEY_CREATOR, m_sUserName);
+	// set document metadata from context
+	setMetaDataProp(PD_META_KEY_CREATOR, m_sUserName);
     
 	// mark the document as not-dirty
 	_setClean();
