@@ -894,6 +894,9 @@ private:
 	UT_GenericVector<ImagePage *> m_pPendingImagePage;
 	UT_GenericVector<TextboxPage *> m_pPendingTextboxPage;
 	UT_sint32               m_iStruxCount;
+	std::string             m_sUserName;
+public:
+	const std::string &getUserName() const { return m_sUserName; }
 };
 
 #endif /* PD_DOCUMENT_H */

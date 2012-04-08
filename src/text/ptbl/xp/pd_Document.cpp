@@ -208,6 +208,13 @@ PD_Document::PD_Document()
 #endif
 	UT_UTF8String sDoc;
 	getOrigDocUUID()->toString(sDoc);
+
+	const gchar *name = g_get_real_name();
+	if(strcmp(name, "Unknown") == 0)
+		name = g_get_user_name();
+	gchar *utf8name = g_locale_to_utf8(name, -1, NULL, NULL, NULL);
+	m_sUserName = utf8name;
+	g_free(utf8name);
 }
 
 PD_Document::~PD_Document()
@@ -1079,14 +1086,7 @@ UT_Error PD_Document::newDocument(void)
 	setLastOpenedTime(time(NULL));
 
     // set document metadata from context
-    {
-        const gchar* name = g_get_real_name();
-        if( !strcmp( name, "Unknown" ))
-            name = g_get_user_name();
-        gchar *utf8name = g_locale_to_utf8(name, -1, NULL, NULL, NULL);
-        setMetaDataProp( PD_META_KEY_CREATOR, utf8name );
-        g_free(utf8name);
-    }
+    setMetaDataProp(PD_META_KEY_CREATOR, m_sUserName);
     
 	// mark the document as not-dirty
 	_setClean();

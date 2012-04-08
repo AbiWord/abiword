@@ -10760,7 +10760,7 @@ void insertAnnotation(FV_View * pView, bool bReplace)
 	
 	// Default values
 	std::string sTitle;
-	std::string sAuthor; 
+	std::string sAuthor = pView->getDocument()->getUserName(); 
 	std::string sDescr; 
 	
 	pView->insertAnnotation(iAnnotation,
