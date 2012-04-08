@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2009 Hubert Figuiere
@@ -266,13 +267,25 @@ void UT_std_string_removeProperty(std::string & sPropertyString, const std::stri
 	const char * szLoc = strstr(szProps,szWork);
 	if(szLoc == NULL)
 	{
-//
-// Not here, do nothing
-		return ;
+	    //Not here, do nothing
+	    return ;
 	}
-//
-// Found it, Get left part.
-//
+	// Check if this is a real match
+	if (szLoc != szProps)
+	{
+		// This is not the first property. It could be a false match
+		// for example, 'frame-col-xpos' and 'xpos'
+		std::string sWorkCheck("; ");
+		sWorkCheck += sWork;
+		const char * szLocCheck = strstr(szProps,sWorkCheck.c_str());
+		if (!szLocCheck)
+		{
+			// False match
+			return;
+		}
+		szLoc = szLocCheck;
+	}	    
+
 	UT_sint32 locLeft = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
 	std::string sLeft;
 	if(locLeft == 0)
@@ -284,19 +297,7 @@ void UT_std_string_removeProperty(std::string & sPropertyString, const std::stri
 		sLeft = sPropertyString.substr(0,locLeft);
 	}
 	locLeft = static_cast<UT_sint32>(sLeft.size());
-	if(locLeft > 0)
-	{
-//
-// If this element is the last item in the properties there is no "; ".
-//
-// Remove trailing ';' and ' '
-//
-		locLeft--;
-		while(locLeft >= 0 && (sLeft[locLeft] == ';' || sLeft[locLeft] == ' '))
-		{
-			locLeft--;
-		}
-	}
+
 	std::string sNew;
 	if(locLeft > 0)
 	{
@@ -306,22 +307,18 @@ void UT_std_string_removeProperty(std::string & sPropertyString, const std::stri
 	{
 		sNew.clear();
 	}
-//
-// Look for ";" to get right part
-//
+
+	// Look for ";" to get right part
+
 	const char * szDelim = strchr(szLoc,';');
 	if(szDelim == NULL)
 	{
-//
-// No properties after this, just assign and return
-//
+		// No properties after this, just assign and return
 		sPropertyString = sNew;
 	}
 	else
 	{
-//
-// Just slice off the properties and tack them onto the pre-existing sNew
-//
+		// Just slice off the properties and tack them onto the pre-existing sNew
 		while(*szDelim == ';' || *szDelim == ' ')
 		{
 			szDelim++;
@@ -334,8 +331,7 @@ void UT_std_string_removeProperty(std::string & sPropertyString, const std::stri
 		}
 		sNew += sPropertyString.substr(offset,iLen);
 		sPropertyString = sNew;
-	}
-  
+	}  
 }
 
 
