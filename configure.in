@@ -10,7 +10,6 @@ AC_CANONICAL_HOST
 AC_CONFIG_HEADERS(config.h)
 
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
-
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 dnl we use AM_MAINTAINER_MODE and enable it to allow to disable it.
@@ -1027,10 +1026,7 @@ fi
 AC_SUBST(VALGRIND)
 
 
-SHAVE_INIT
 AC_OUTPUT(
-  shave
-  shave-libtool
   libabiword.pc
   Makefile
   goffice-bits/Makefile
