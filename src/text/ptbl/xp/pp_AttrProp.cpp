@@ -422,11 +422,15 @@ bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
 			delete p->second;
 		}
 		delete p;
-		m_pProperties->set(szName, new PropertyPair(szValue2, NULL));
+		m_pProperties->set(szName, 
+				   new PropertyPair(szValue2, 
+						    (const PP_PropertyType*)NULL));
 	}
 	else
 	{
-		m_pProperties->insert(szName, new PropertyPair(szValue2, NULL));
+		m_pProperties->insert(szName, 
+				      new PropertyPair(szValue2, 
+						       (const PP_PropertyType*)NULL));
 	}
 
 	// g_free the name duplicate if necessary
