@@ -8937,24 +8937,9 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	if (applyTo == FORMAT_TABLE_SELECTION)
 	{
 		pf_Frag_Strux* cellSDH;
-        bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
-        if(!bRet)
+        bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+2,PTX_SectionCell,&cellSDH);
+        if(bRet)
         {
-//
-// Might have exactly selected the table start and end struxes
-//
-			bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+2,PTX_SectionCell,&cellSDH);
-			if(!bRet)
-			{
-                // Allow table updates
-                m_pDoc->setDontImmediatelyLayout(false);
-                                                                                                                                                                                                         
-                // Signal PieceTable Changes have finished
-                _restorePieceTableState();
-				clearCursorWait();
-                return false;
-			}
-		}
         posStart = m_pDoc->getStruxPosition(cellSDH)+1;
 		
 //
@@ -9002,6 +8987,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 				}
 			}
 		}
+        }
 	}
 	else if(applyTo == FORMAT_TABLE_TABLE)
 	{
