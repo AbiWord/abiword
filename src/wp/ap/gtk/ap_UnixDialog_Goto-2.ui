@@ -219,8 +219,8 @@
                 <property name="visible">True</property>
                 <property name="spacing">12</property>
                 <child>
-                  <object class="GtkButton" id="btJump">
-                    <property name="label">gtk-jump-to</property>
+                  <object class="GtkButton" id="btPrev">
+                    <property name="label">gtk-go-back</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
@@ -234,8 +234,8 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="btPrev">
-                    <property name="label">gtk-go-back</property>
+                  <object class="GtkButton" id="btJump">
+                    <property name="label">gtk-jump-to</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="can_default">True</property>
