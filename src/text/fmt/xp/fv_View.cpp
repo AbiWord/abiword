@@ -8937,57 +8937,55 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	if (applyTo == FORMAT_TABLE_SELECTION)
 	{
 		pf_Frag_Strux* cellSDH;
-        bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+2,PTX_SectionCell,&cellSDH);
-        if(bRet)
-        {
-        posStart = m_pDoc->getStruxPosition(cellSDH)+1;
-		
-//
-// Make sure posEnd is inside the Table.
-//
-		pf_Frag_Strux* endTableSDH = m_pDoc->getEndTableStruxFromTablePos(posTable);
-		UT_ASSERT(endTableSDH);
-		if(endTableSDH == NULL)
+		bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+2,PTX_SectionCell,&cellSDH);
+		if(bRet)
 		{
-			return false;
-		}
-		PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
-		if(posEnd > posEndTable)
-		{
-			posEnd = posEndTable -1;
-		}
-		// Do the actual change
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
-		UT_GenericVector<fl_BlockLayout*> vBlock;
-		getBlocksInSelection(&vBlock);
-		fl_ContainerLayout * pCL = NULL;
-		fl_CellLayout * pCell = NULL;
-		UT_sint32 i =0;
-		for(i=0; i<vBlock.getItemCount();i++)
-		{
-			fl_BlockLayout * pBL = vBlock.getNthItem(i);
-			pCL = pBL->myContainingLayout();
-			if(pCL->getContainerType() == FL_CONTAINER_CELL)
+			posStart = m_pDoc->getStruxPosition(cellSDH)+1;
+			//
+			// Make sure posEnd is inside the Table.
+			//
+			pf_Frag_Strux* endTableSDH = m_pDoc->getEndTableStruxFromTablePos(posTable);
+			UT_ASSERT(endTableSDH);
+			if(endTableSDH == NULL)
 			{
-				if(static_cast<fl_CellLayout *>(pCL) != pCell)
+				return false;
+			}
+			PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+			if(posEnd > posEndTable)
+			{
+				posEnd = posEndTable -1;
+			}
+			// Do the actual change
+			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
+			UT_GenericVector<fl_BlockLayout*> vBlock;
+			getBlocksInSelection(&vBlock);
+			fl_ContainerLayout * pCL = NULL;
+			fl_CellLayout * pCell = NULL;
+			UT_sint32 i =0;
+			for(i=0; i<vBlock.getItemCount();i++)
+			{
+				fl_BlockLayout * pBL = vBlock.getNthItem(i);
+				pCL = pBL->myContainingLayout();
+				if(pCL->getContainerType() == FL_CONTAINER_CELL)
 				{
-					if(pFG != NULL)
+					if(static_cast<fl_CellLayout *>(pCL) != pCell)
 					{
-						pCell = static_cast<fl_CellLayout *>(pCL);
-						pFG->insertAtStrux(m_pDoc,72,pBL->getPosition(),
+						if(pFG != NULL)
+						{
+							pCell = static_cast<fl_CellLayout *>(pCL);
+							pFG->insertAtStrux(m_pDoc,72,pBL->getPosition(),
 										   PTX_SectionCell,sDataID.c_str());
-					}
-					else
-					{
-						const gchar * attributes[3] = {
+						}
+						else
+						{
+							const gchar * attributes[3] = {
 							PT_STRUX_IMAGE_DATAID,NULL,NULL};
-						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pBL->getPosition(),pBL->getPosition(),attributes,NULL,PTX_SectionCell);	
-						
+							bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pBL->getPosition(),pBL->getPosition(),attributes,NULL,PTX_SectionCell);	
+						}
 					}
 				}
 			}
 		}
-        }
 	}
 	else if(applyTo == FORMAT_TABLE_TABLE)
 	{
