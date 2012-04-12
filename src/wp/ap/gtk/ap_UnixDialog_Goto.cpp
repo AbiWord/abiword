@@ -29,6 +29,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
+#include "xap_GtkSignalBlocker.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixApp.h"
@@ -270,6 +271,8 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
       m_lvXMLIDs       (0),
       m_lvAnno         (0),
 	  m_btClose 	   (NULL), 
+	  m_iPageConnect (0),
+	  m_iLineConnect (0),
 	  m_JumpTarget	   (AP_JUMPTARGET_BOOKMARK)
 {
 }
@@ -624,12 +627,12 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 	// Signals
 	g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "focus-in-event", 
 					  G_CALLBACK (AP_UnixDialog_Goto__onFocusPage), static_cast <gpointer>(this)); 
-	g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "value-changed", 
+	m_iPageConnect = g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "value-changed",
 					  G_CALLBACK (AP_UnixDialog_Goto__onPageChanged), static_cast <gpointer>(this)); 
 
 	g_signal_connect (GTK_SPIN_BUTTON (m_sbLine), "focus-in-event", 
 					  G_CALLBACK (AP_UnixDialog_Goto__onFocusLine), static_cast <gpointer>(this)); 
-	g_signal_connect (GTK_SPIN_BUTTON (m_sbLine), "value-changed", 
+	m_iLineConnect = g_signal_connect (GTK_SPIN_BUTTON (m_sbLine), "value-changed",
 					  G_CALLBACK (AP_UnixDialog_Goto__onLineChanged), static_cast <gpointer>(this)); 
 
 	g_signal_connect (GTK_TREE_VIEW (m_lvBookmarks), "focus-in-event", 
@@ -665,10 +668,12 @@ AP_UnixDialog_Goto::_updateWindow ()
 
 	// pages, page increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
 	UT_uint32 currentPage = getView()->getCurrentPageNumForStatusBar ();
+	XAP_GtkSignalBlocker b1(G_OBJECT(m_sbPage), m_iPageConnect);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), currentPage);
 
 	// lines, line increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
 	UT_uint32 currentLine = 1; /* FIXME get current line */
+	XAP_GtkSignalBlocker b2(G_OBJECT(m_sbLine), m_iLineConnect);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), currentLine);
 	
 	// bookmarks, detaching model for faster updates

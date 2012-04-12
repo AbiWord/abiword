@@ -99,6 +99,8 @@ private:
     GtkWidget *m_lvAnno;
 	GtkWidget *m_btClose;
     
+	guint m_iPageConnect;
+	guint m_iLineConnect;
 	AP_JumpTarget m_JumpTarget;
 	FV_DocCount   m_DocCount;
 
