@@ -76,7 +76,12 @@ public:
         return 0;
     }
 };
-static PD_SemanticItemFactory* s_SemanticItemFactory = new PD_SemanticItemFactoryNull;
+PD_SemanticItemFactory *PD_DocumentRDF::s_SemanticItemFactory; 
+PD_SemanticItemFactory *PD_DocumentRDF::getSemanticItemFactory()
+{
+    if (!s_SemanticItemFactory) s_SemanticItemFactory = new PD_SemanticItemFactoryNull;
+    return s_SemanticItemFactory;
+}
 void
 PD_DocumentRDF::setSemanticItemFactory( PD_SemanticItemFactory* f )
 {
@@ -95,7 +100,12 @@ class PD_RDFDialogsNull : public PD_RDFDialogs
 		return std::make_pair(0,0);
     }
 };
-static PD_RDFDialogs* s_RDFDialogs = new PD_RDFDialogsNull;
+PD_RDFDialogs *PD_DocumentRDF::s_RDFDialogs;
+PD_RDFDialogs *PD_DocumentRDF::getRDFDialogs()
+{
+    if (!s_RDFDialogs) s_RDFDialogs = new PD_RDFDialogsNull; 
+    return s_RDFDialogs;
+}
 void
 PD_DocumentRDF::setRDFDialogs( PD_RDFDialogs* d )
 {
@@ -104,12 +114,12 @@ PD_DocumentRDF::setRDFDialogs( PD_RDFDialogs* d )
 
 std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
 {
-    return s_RDFDialogs->runInsertReferenceDialog( pView );
+    return PD_DocumentRDF::getRDFDialogs()->runInsertReferenceDialog( pView );
 }
 
 void runSemanticStylesheetsDialog( FV_View* pView )
 {
-    s_RDFDialogs->runSemanticStylesheetsDialog( pView );
+    PD_DocumentRDF::getRDFDialogs()->runSemanticStylesheetsDialog( pView );
 }
 
 
@@ -1745,16 +1755,16 @@ PD_RDFSemanticItem::createSemanticItem( PD_DocumentRDFHandle rdf,
 {
     if (semanticClass == "Contact")
     {
-        return PD_RDFSemanticItemHandle( s_SemanticItemFactory->createContact( rdf, it ) );
+        return PD_RDFSemanticItemHandle( PD_DocumentRDF::getSemanticItemFactory()->createContact( rdf, it ) );
     }
     if (semanticClass == "Event")
     {
-        return PD_RDFSemanticItemHandle( s_SemanticItemFactory->createEvent( rdf, it ));
+        return PD_RDFSemanticItemHandle( PD_DocumentRDF::getSemanticItemFactory()->createEvent( rdf, it ));
     }
 #ifdef WITH_CHAMPLAIN
     if (semanticClass == "Location")
     {
-        return PD_RDFSemanticItemHandle( s_SemanticItemFactory->createLocation( rdf, it ));
+        return PD_RDFSemanticItemHandle( PD_DocumentRDF::getSemanticItemFactory()->createLocation( rdf, it ));
     }
 #endif
     return PD_RDFSemanticItemHandle();
@@ -5076,7 +5086,7 @@ PD_DocumentRDF::getContacts( PD_RDFModelHandle alternateModel )
             continue;
         uniqfilter.insert(n);
 
-        PD_RDFContact* newItem = s_SemanticItemFactory->createContact( rdf, it );
+        PD_RDFContact* newItem = PD_DocumentRDF::getSemanticItemFactory()->createContact( rdf, it );
         PD_RDFContactHandle h( newItem );
         ret.push_back( h );
     }
@@ -5131,7 +5141,7 @@ PD_DocumentRDF::getEvents( PD_RDFModelHandle alternateModel )
             continue;
         uniqfilter.insert(n);
 
-        PD_RDFEvent* newItem = s_SemanticItemFactory->createEvent( rdf, it );
+        PD_RDFEvent* newItem = PD_DocumentRDF::getSemanticItemFactory()->createEvent( rdf, it );
         PD_RDFEventHandle h( newItem );
         ret.push_back( h );
     }
@@ -5160,7 +5170,7 @@ PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
         UT_DEBUGMSG(("addLocations() n:%s\n", n.c_str() ));
 
 #ifdef WITH_CHAMPLAIN
-        PD_RDFLocation* newItem = s_SemanticItemFactory->createLocation( rdf, it, isGeo84 );
+        PD_RDFLocation* newItem = PD_DocumentRDF::getSemanticItemFactory()->createLocation( rdf, it, isGeo84 );
         PD_RDFLocationHandle h( newItem );
         ret.push_back( h );
 #else

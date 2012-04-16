@@ -1052,10 +1052,15 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     // subclasses to be made for the runtime environment.
     static void setSemanticItemFactory( PD_SemanticItemFactory* f );
     static void setRDFDialogs( PD_RDFDialogs* d );
+    
+    static PD_SemanticItemFactory *getSemanticItemFactory();
+    static PD_RDFDialogs *getRDFDialogs();
 
   protected:
     PD_Document* m_doc;
   private:
+    static PD_SemanticItemFactory *s_SemanticItemFactory;
+    static PD_RDFDialogs *s_RDFDialogs;
 	PT_AttrPropIndex m_indexAP;
 
     PD_Document*   getDocument(void) const;
