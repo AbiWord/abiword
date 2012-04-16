@@ -39,6 +39,15 @@
 
 /*****************************************************************/
 
+static gboolean s_focus_out(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+	UT_UNUSED(event);
+	UT_UNUSED(user_data);
+
+	gtk_editable_select_region(GTK_EDITABLE(widget), 0, 0);
+	return FALSE;
+}
+
 XAP_Dialog * AP_UnixDialog_Annotation::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
@@ -171,6 +180,10 @@ GtkWidget * AP_UnixDialog_Annotation::_constructWindow ()
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, AP_STRING_ID_DLG_Annotation_Title_LBL);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbAuthor")), pSS, AP_STRING_ID_DLG_Annotation_Author_LBL);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescription")), pSS, AP_STRING_ID_DLG_Annotation_Description_LBL);
+	
+	// signals
+	g_signal_connect(G_OBJECT(m_entryTitle), "focus-out-event", G_CALLBACK(s_focus_out), static_cast<gpointer>(this));
+	g_signal_connect(G_OBJECT(m_entryAuthor), "focus-out-event", G_CALLBACK(s_focus_out), static_cast<gpointer>(this));
 	
 	// now set the text in all the fields
 	std::string prop;
