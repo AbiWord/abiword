@@ -290,10 +290,11 @@ public:
     }
     virtual void runSemanticStylesheetsDialog( FV_View* pView )
     {
-#if GTK_MAJOR_VERSION < 3
-        return;
-#endif
+#if GTK_CHECK_VERSION(3,0,0)
         GtkBuilder* builder   = newDialogBuilder("ap_UnixDialog_SemanticStylesheets.ui");
+#else
+        GtkBuilder* builder   = newDialogBuilder("ap_UnixDialog_SemanticStylesheets-2.ui");        
+#endif
         GtkWidget*  window    = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
         GtkWidget*  contacts  = GTK_WIDGET(gtk_builder_get_object(builder, "contacts"));
         GtkWidget*  events    = GTK_WIDGET(gtk_builder_get_object(builder, "events"));
@@ -323,7 +324,11 @@ public:
     }
     std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
     {
+#if GTK_CHECK_VERSION(3,0,0)
         GtkBuilder* builder = newDialogBuilder("pd_RDFInsertReference.ui");
+#else
+        GtkBuilder* builder = newDialogBuilder("pd_RDFInsertReference-2.ui");
+#endif
         GtkWidget*  window  = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
         GtkWidget*  tv      = GTK_WIDGET(gtk_builder_get_object(builder, "tv"));
 

@@ -221,6 +221,11 @@ ui_DATA = \
 	ap_UnixDialog_Latex-2.ui \
 	ap_UnixDialog_RDFQuery-2.ui \
 	ap_UnixDialog_RDFEditor-2.ui \
+	pd_RDFContact-2.ui \
+	pd_RDFInsertReference-2.ui \
+	pd_RDFEvent-2.ui \
+	pd_RDFLocation-2.ui \
+	ap_UnixDialog_SemanticStylesheets-2.ui \
 	$(NULL)
 else
 ui_DATA = \
