@@ -10791,23 +10791,15 @@ void insertAnnotation(FV_View * pView, bool bDescr)
 		UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
 		
 		fl_AnnotationLayout * pAL = NULL;
-		
-		if (bOK)  
-		{	  
+
 			pView->insertAnnotation(iAnnotation,  
 									sText,  
 									sAuthor,  
 									sTitle,  
-									false);  
-		}  
-		else if (bApply)  
+									bApply);  
+
+		if (bApply)  
 		{  
-			pView->insertAnnotation(iAnnotation,  
-									sText,  
-									sAuthor,  
-									sTitle,  
-									true);
-			                    
 			pView->setAnnotationText(iAnnotation, pDialog->getDescription());  
 			pAL = pView->insertAnnotationDescription(iAnnotation, pDialog);
 			UT_return_if_fail(pAL);        
