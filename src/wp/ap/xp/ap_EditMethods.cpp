@@ -10750,27 +10750,101 @@ Defun1(insFootnote)
 
 
 static 
-void insertAnnotation(FV_View * pView, bool bReplace)
+void insertAnnotation(FV_View * pView, bool bDescr)
 {
-	//
-	// First create the annotation => then open an edit dialog
-	//
+	XAP_Frame * pFrame = static_cast<XAP_Frame *> (pView->getParentData());
+	UT_return_if_fail(pFrame);
 	
-	UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
+	pFrame->raise();
 	
-	// Default values
-	std::string sTitle;
-	std::string sAuthor = pView->getDocument()->getUserName(); 
-	std::string sDescr; 
+	XAP_DialogFactory * pDialogFactory
+		= static_cast<XAP_DialogFactory *>(pFrame->getDialogFactory());
 	
-	pView->insertAnnotation(iAnnotation,
-							sDescr,
-							sAuthor,
-							sTitle,
-							bReplace);
+	AP_Dialog_Annotation * pDialog
+		= static_cast<AP_Dialog_Annotation *>(pDialogFactory->requestDialog(AP_DIALOG_ID_ANNOTATION));
+	UT_return_if_fail(pDialog);
 	
-	// Open edit annotation dialog
-	pView->cmdEditAnnotationWithDialog(iAnnotation);
+	pDialog->setAuthor(pView->getDocument()->getUserName());
+	
+	if (bDescr)
+	{
+		UT_UCS4Char* text = NULL;
+		pView->getSelectionText(text);
+		UT_UCS4String sUCS4(static_cast<const UT_UCS4Char *>(text));
+		pDialog->setDescription(sUCS4.utf8_str());
+	}
+	
+	// run the dialog	
+	
+	UT_DEBUGMSG(("insertAnnotation: Drawing annotation dialog...\n"));
+	pDialog->runModal(pFrame);
+	
+	bool bOK = (pDialog->getAnswer() == AP_Dialog_Annotation::a_OK);  
+	bool bApply = (pDialog->getAnswer() == AP_Dialog_Annotation::a_APPLY);	
+	
+	if (bOK || bApply)
+	{
+		const std::string &sTitle = pDialog->getTitle();
+		const std::string &sAuthor = pDialog->getAuthor();
+		const std::string &sText = pDialog->getDescription();
+		
+		UT_sint32 iAnnotation = pView->getDocument()->getUID(UT_UniqueId::Annotation);
+		
+		fl_AnnotationLayout * pAL = NULL;
+		
+		if (bOK)  
+		{	  
+			pView->insertAnnotation(iAnnotation,  
+									sText,  
+									sAuthor,  
+									sTitle,  
+									false);  
+		}  
+		else if (bApply)  
+		{  
+			pView->insertAnnotation(iAnnotation,  
+									sText,  
+									sAuthor,  
+									sTitle,  
+									true);
+			                    
+			pView->setAnnotationText(iAnnotation, pDialog->getDescription());  
+			UT_UCS4String sDescr(pDialog->getDescription());  
+			pAL = pView->getAnnotationLayout(iAnnotation);  
+			if (pAL)  
+			{  
+				pf_Frag_Strux* sdhAnn = pAL->getStruxDocHandle();  
+				pf_Frag_Strux* sdhEnd = NULL;  
+				pView->getDocument()->getNextStruxOfType(sdhAnn, PTX_EndAnnotation, &sdhEnd);  
+			  
+				UT_return_if_fail(sdhEnd != NULL);  
+				//  
+				// Start of the text covered by the annotations  
+				//  
+				PT_DocPosition posStart = pView->getDocument()->getStruxPosition(sdhEnd);   
+				posStart++;  
+				fp_Run * pRun = pView->getHyperLinkRun(posStart);  
+				UT_return_if_fail(pRun);  
+				pRun = pRun->getNextRun();  
+				while (pRun && (pRun->getType() != FPRUN_HYPERLINK))  
+					pRun = pRun->getNextRun();  
+				UT_return_if_fail(pRun);  
+				UT_return_if_fail(pRun->getType() == FPRUN_HYPERLINK);  
+				PT_DocPosition posEnd = pRun->getBlock()->getPosition(false) + pRun->getBlockOffset();  
+				if (posStart > posEnd)  
+					posStart = posEnd;  
+				pView->cmdSelect(posStart, posEnd);  
+				pView->cmdCharInsert(sDescr.ucs4_str(), sDescr.size());  
+			}  
+		}
+		
+		pAL = pView->getAnnotationLayout(iAnnotation);
+		if (pAL) 
+			pView->selectAnnotation(pAL);
+	}      
+	
+	// release the dialog
+	pDialogFactory->releaseDialog(pDialog);
 	
 	// TODO: set the document as dirty when something changed
 }
