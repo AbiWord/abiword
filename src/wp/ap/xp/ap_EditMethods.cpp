@@ -10809,33 +10809,8 @@ void insertAnnotation(FV_View * pView, bool bDescr)
 									true);
 			                    
 			pView->setAnnotationText(iAnnotation, pDialog->getDescription());  
-			UT_UCS4String sDescr(pDialog->getDescription());  
-			pAL = pView->getAnnotationLayout(iAnnotation);  
-			if (pAL)  
-			{  
-				pf_Frag_Strux* sdhAnn = pAL->getStruxDocHandle();  
-				pf_Frag_Strux* sdhEnd = NULL;  
-				pView->getDocument()->getNextStruxOfType(sdhAnn, PTX_EndAnnotation, &sdhEnd);  
-			  
-				UT_return_if_fail(sdhEnd != NULL);  
-				//  
-				// Start of the text covered by the annotations  
-				//  
-				PT_DocPosition posStart = pView->getDocument()->getStruxPosition(sdhEnd);   
-				posStart++;  
-				fp_Run * pRun = pView->getHyperLinkRun(posStart);  
-				UT_return_if_fail(pRun);  
-				pRun = pRun->getNextRun();  
-				while (pRun && (pRun->getType() != FPRUN_HYPERLINK))  
-					pRun = pRun->getNextRun();  
-				UT_return_if_fail(pRun);  
-				UT_return_if_fail(pRun->getType() == FPRUN_HYPERLINK);  
-				PT_DocPosition posEnd = pRun->getBlock()->getPosition(false) + pRun->getBlockOffset();  
-				if (posStart > posEnd)  
-					posStart = posEnd;  
-				pView->cmdSelect(posStart, posEnd);  
-				pView->cmdCharInsert(sDescr.ucs4_str(), sDescr.size());  
-			}  
+			pAL = pView->insertAnnotationDescription(iAnnotation, pDialog);
+			UT_return_if_fail(pAL);        
 		}
 		
 		pAL = pView->getAnnotationLayout(iAnnotation);

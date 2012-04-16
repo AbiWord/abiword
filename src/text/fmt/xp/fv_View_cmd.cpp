@@ -4949,32 +4949,8 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	}
 	else if (bApply)
 	{
-		UT_UCS4String sDescr(pDialog->getDescription());
-		pAL = getAnnotationLayout(aID);
-		if(!pAL)
-		  return false;
-		pf_Frag_Strux* sdhAnn = pAL->getStruxDocHandle();
-		pf_Frag_Strux* sdhEnd = NULL;
-		getDocument()->getNextStruxOfType(sdhAnn,PTX_EndAnnotation, &sdhEnd);
-		
-		UT_return_val_if_fail(sdhEnd != NULL, false);
-		//
-		// Start of the text covered by the annotations
-		//
-		PT_DocPosition posStart = getDocument()->getStruxPosition(sdhEnd); 
-		posStart++;
-		fp_Run * pRun = getHyperLinkRun(posStart);
-		UT_return_val_if_fail(pRun, false);
-		pRun = pRun->getNextRun();
-		while(pRun && (pRun->getType() != FPRUN_HYPERLINK))
-		  pRun = pRun->getNextRun();
-		UT_return_val_if_fail(pRun, false);
-		UT_return_val_if_fail(pRun->getType() == FPRUN_HYPERLINK, false);
-		PT_DocPosition posEnd = pRun->getBlock()->getPosition(false) + pRun->getBlockOffset();
-		if(posStart> posEnd)
-		  posStart = posEnd;
-		cmdSelect(posStart,posEnd);
-		cmdCharInsert(sDescr.ucs4_str(),sDescr.size());
+		pAL = insertAnnotationDescription(aID, pDialog);
+		UT_return_val_if_fail(pAL, false);
 	}
 	// release the dialog
 	pDialogFactory->releaseDialog(pDialog);
@@ -4987,6 +4963,42 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	selectAnnotation(pAL);
 
 	return true;	
+}
+
+fl_AnnotationLayout *FV_View::insertAnnotationDescription(UT_uint32 aID, AP_Dialog_Annotation *pDialog)
+{
+	fl_AnnotationLayout *pAL = getAnnotationLayout(aID);
+	UT_return_val_if_fail(pAL, NULL);
+
+	UT_UCS4String sDescr(pDialog->getDescription());  
+	pf_Frag_Strux *sdhAnn = pAL->getStruxDocHandle();
+	pf_Frag_Strux *sdhEnd = NULL;
+
+	getDocument()->getNextStruxOfType(sdhAnn, PTX_EndAnnotation, &sdhEnd);
+	UT_return_val_if_fail(sdhEnd, NULL);
+
+	// Start of the text covered by the annotations
+	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhEnd); 
+	posStart++;
+
+	fp_Run *pRun = getHyperLinkRun(posStart);
+	UT_return_val_if_fail(pRun, NULL);
+
+	pRun = pRun->getNextRun();
+	while (pRun && (pRun->getType() != FPRUN_HYPERLINK))
+		pRun = pRun->getNextRun();
+	UT_return_val_if_fail(pRun, NULL);
+	UT_return_val_if_fail(pRun->getType() == FPRUN_HYPERLINK, NULL);
+
+	PT_DocPosition posEnd = pRun->getBlock()->getPosition(false) + pRun->getBlockOffset();
+
+	if(posStart > posEnd)
+		posStart = posEnd;
+
+	cmdSelect(posStart, posEnd);
+	cmdCharInsert(sDescr.ucs4_str(), sDescr.size());
+
+	return pAL;
 }
 
 UT_Error FV_View::cmdInsertHyperlink(const char * szName)

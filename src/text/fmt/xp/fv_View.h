@@ -91,6 +91,7 @@ class AP_LeftRulerInfo;
 class AP_TopRuler;
 class AP_LeftRuler;
 
+class AP_Dialog_Annotation;
 class AP_Dialog_SplitCells;
 
 class XAP_App;
@@ -645,6 +646,7 @@ public:
 	void				setActivePreviewAnnotationID(UT_uint32 iID) { m_iAnnPviewID = iID;}
 	void				killAnnotationPreview();
 	bool				cmdEditAnnotationWithDialog(UT_uint32 aID);
+	fl_AnnotationLayout * insertAnnotationDescription(UT_uint32 aID, AP_Dialog_Annotation *pDialog);
 	fl_AnnotationLayout * getAnnotationLayout(UT_uint32 iAnnotation) const;
 	bool                selectAnnotation(fl_AnnotationLayout * pAL);
 	UT_uint32           countAnnotations(void) const;
