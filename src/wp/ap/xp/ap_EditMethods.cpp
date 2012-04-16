@@ -10792,11 +10792,11 @@ void insertAnnotation(FV_View * pView, bool bDescr)
 		
 		fl_AnnotationLayout * pAL = NULL;
 
-			pView->insertAnnotation(iAnnotation,  
-									sText,  
-									sAuthor,  
-									sTitle,  
-									bApply);  
+		pView->insertAnnotation(iAnnotation,  
+								sText,  
+								sAuthor,  
+								sTitle,  
+								bApply);  
 
 		if (bApply)  
 		{  
