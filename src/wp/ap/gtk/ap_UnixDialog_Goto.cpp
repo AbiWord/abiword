@@ -331,6 +331,9 @@ AP_UnixDialog_Goto::onLineChanged ()
 	if (line > m_DocCount.line) {
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), 1);
 	}
+	if (line == 0) {
+		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), m_DocCount.line);
+	}
 	onJumpClicked();
 }
 
@@ -363,13 +366,16 @@ void
 AP_UnixDialog_Goto::onJumpClicked () 
 {
     std::string text = "";
+    XAP_GtkSignalBlocker b(G_OBJECT(m_sbLine), m_iLineConnect);
 
 	switch (m_JumpTarget) {
 		case AP_JUMPTARGET_PAGE:
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_sbLine), 0);
 			text = tostr(GTK_ENTRY (m_sbPage));
 			break;
 		case AP_JUMPTARGET_LINE:
 			text = tostr(GTK_ENTRY (m_sbLine));
+			if (text == "0") return;
 			break;
 		case AP_JUMPTARGET_BOOKMARK:
 			text = _getSelectedBookmarkLabel ();
@@ -503,7 +509,7 @@ void AP_UnixDialog_Goto::updatePosition (void)
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), currentPage);
 
 	// lines, line increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
-	UT_uint32 currentLine = 1; /* FIXME get current line */
+	UT_uint32 currentLine = 0; /* FIXME get current line */
 	XAP_GtkSignalBlocker b2(G_OBJECT(m_sbLine), m_iLineConnect);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), currentLine);
 }
