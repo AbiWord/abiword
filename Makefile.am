@@ -57,9 +57,7 @@ DISTCLEANFILES = \
 	plugin-builtin.m4 \
 	plugin-configure.m4 \
 	plugin-list.m4 \
-	plugin-makefiles.m4 \
-	doltcompile \
-	doltlibtool
+	plugin-makefiles.m4
 
 abiword-$(ABIWORD_SERIES).pc: libabiword.pc
 	cp $< $@
