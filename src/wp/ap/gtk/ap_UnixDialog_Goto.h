@@ -53,6 +53,7 @@ public:
 
 	void updateCache		  (AP_JumpTarget target);
 	void updateDocCount 	  (void);
+	void updatePosition		  (void);  
 
 	const GtkWidget *getWindow (void) { return m_wDialog; }
 
@@ -84,6 +85,7 @@ private:
 	std::string _getSelectedAnnotationLabel();	
 	
 	GtkWidget *m_wDialog;
+	GtkWidget *m_nbNotebook;
 	GtkWidget *m_lbPage;
 	GtkWidget *m_lbLine;
 	GtkWidget *m_lbBookmarks;

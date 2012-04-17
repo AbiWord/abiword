@@ -43,6 +43,22 @@
 #include "GTKCommon.h"
 
 
+static void AP_UnixDialog_Goto__onSwitchPage (GtkNotebook *notebook,
+											  gpointer Page,
+											  guint page,
+											  gpointer data)
+{
+	UT_UNUSED(notebook);
+	UT_UNUSED(Page);
+	UT_DEBUGMSG(("_onSwitchPage() '%d'\n", page));
+
+	if (page == 0)
+	{
+		AP_UnixDialog_Goto *dlg = static_cast<AP_UnixDialog_Goto *>(data);
+		dlg->updatePosition();
+	}
+}
+
 /*!
 * Event dispatcher for spinbutton "page".
 */
@@ -257,6 +273,7 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
 									   XAP_Dialog_Id 	 id)
 	: AP_Dialog_Goto   (pDlgFactory, id), 
 	  m_wDialog 	   (NULL),
+	  m_nbNotebook	   (NULL),
 	  m_lbPage		   (NULL),
 	  m_lbLine		   (NULL),
 	  m_lbBookmarks    (NULL),
@@ -478,6 +495,19 @@ AP_UnixDialog_Goto::updateDocCount ()
 	UT_DEBUGMSG (("ROB: updateCache () page='%d' line='%d'\n", m_DocCount.page, m_DocCount.line));
 }
 
+void AP_UnixDialog_Goto::updatePosition (void)
+{
+	// pages, page increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
+	UT_uint32 currentPage = getView()->getCurrentPageNumForStatusBar ();
+	XAP_GtkSignalBlocker b1(G_OBJECT(m_sbPage), m_iPageConnect);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), currentPage);
+
+	// lines, line increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
+	UT_uint32 currentLine = 1; /* FIXME get current line */
+	XAP_GtkSignalBlocker b2(G_OBJECT(m_sbLine), m_iLineConnect);
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), currentLine);
+}
+
 void
 AP_UnixDialog_Goto::setupXMLIDList( GtkWidget* w )
 {
@@ -572,6 +602,7 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 #endif
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Goto"));
+	m_nbNotebook = GTK_WIDGET(gtk_builder_get_object(builder, "nbNotebook"));
 	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));
 	m_lbLine = GTK_WIDGET(gtk_builder_get_object(builder, "lbLine"));
 	m_lbBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lbBookmarks"));
@@ -625,6 +656,8 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 	gtk_tree_view_column_set_sort_column_id (column, COLUMN_NAME);
 
 	// Signals
+	g_signal_connect (GTK_NOTEBOOK (m_nbNotebook), "switch-page", 
+					  G_CALLBACK (AP_UnixDialog_Goto__onSwitchPage), static_cast <gpointer>(this)); 
 	g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "focus-in-event", 
 					  G_CALLBACK (AP_UnixDialog_Goto__onFocusPage), static_cast <gpointer>(this)); 
 	m_iPageConnect = g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "value-changed",
@@ -666,16 +699,9 @@ AP_UnixDialog_Goto::_updateWindow ()
 	ConstructWindowName ();
 	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName);
 
-	// pages, page increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
-	UT_uint32 currentPage = getView()->getCurrentPageNumForStatusBar ();
-	XAP_GtkSignalBlocker b1(G_OBJECT(m_sbPage), m_iPageConnect);
-	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), currentPage);
+	// position: pages and lines
+	updatePosition();
 
-	// lines, line increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
-	UT_uint32 currentLine = 1; /* FIXME get current line */
-	XAP_GtkSignalBlocker b2(G_OBJECT(m_sbLine), m_iLineConnect);
-	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), currentLine);
-	
 	// bookmarks, detaching model for faster updates
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvBookmarks));
 	g_object_ref (G_OBJECT (model));
