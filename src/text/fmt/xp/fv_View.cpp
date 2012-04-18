@@ -7542,7 +7542,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			_moveInsPtToPage (pPage);
 		}
 
-		notifyListeners(AV_CHG_MOTION);
+		notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 
 		break;
 	}
@@ -7600,7 +7600,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			moveInsPtTo (dp);
 		}
 
-		notifyListeners(AV_CHG_MOTION);
+		notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
 
 		break;
 /*	case AP_JUMPTARGET_PICTURE:
