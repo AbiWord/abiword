@@ -7615,6 +7615,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
 			UT_DEBUGMSG(("jump xmlid:%s gives range:%d to %d\n",
 						 xmlid.c_str(), range.first, range.second ));
+			moveInsPtTo(range.second);
 			selectRange( range.first, range.second );
 		}
 		break;
