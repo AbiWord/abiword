@@ -306,6 +306,11 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
     // localization
     localizeButton(m_btShowAll, pSS, AP_STRING_ID_DLG_RDF_Query_ShowAll); 
     localizeButton(m_btExecute, pSS, AP_STRING_ID_DLG_RDF_Query_Execute); 
+    GtkTextIter iter;
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(m_query));
+    gtk_text_buffer_get_iter_at_line(buffer, &iter, 0);
+    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Comment, ctitle);
+    gtk_text_buffer_insert(buffer, &iter, ctitle.c_str(), -1);     
 
     GObject *selection;
     selection = G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_resultsView)));

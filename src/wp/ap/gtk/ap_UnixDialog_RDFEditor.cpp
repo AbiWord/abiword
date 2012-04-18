@@ -495,6 +495,9 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 {
 	UT_DEBUGMSG (("MIQ: _constructWindow ()\n"));		
 
+	const XAP_StringSet *pSS = m_pApp->getStringSet();
+	std::string text;
+
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFEditor.ui");
@@ -518,6 +521,12 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     m_selectedxmlid = GTK_COMBO_BOX(gtk_builder_get_object(builder, "selectedxmlid"));
     m_restrictxmlidhidew = GTK_WIDGET(gtk_builder_get_object(builder, "restrictxmlidhidew"));
 
+    // localization
+    GtkTextIter itr;
+    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(m_query));
+    gtk_text_buffer_get_iter_at_line(buffer, &itr, 0);
+    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Comment, text);
+    gtk_text_buffer_insert(buffer, &itr, text.c_str(), -1);     
     
     GObject *selection;
     selection = G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_resultsView)));
