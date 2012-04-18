@@ -284,6 +284,9 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
 {
 	UT_DEBUGMSG (("ROB: _constructWindow ()\n"));		
 
+	const XAP_StringSet *pSS = m_pApp->getStringSet();
+	std::string ctitle;
+
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFQuery.ui");
@@ -300,6 +303,10 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
 //	m_resultsModel = GTK_LIST_STORE(gtk_builder_get_object(builder, "resultsModel"));
     m_status    = GTK_WIDGET(gtk_builder_get_object(builder, "status"));
 
+    // localization
+    localizeButton(m_btShowAll, pSS, AP_STRING_ID_DLG_RDF_Query_ShowAll); 
+    localizeButton(m_btExecute, pSS, AP_STRING_ID_DLG_RDF_Query_Execute); 
+
     GObject *selection;
     selection = G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_resultsView)));
     gtk_tree_selection_set_mode (GTK_TREE_SELECTION (selection), GTK_SELECTION_MULTIPLE);
@@ -314,21 +321,24 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
 
     colid = C_SUBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( "Subject", ren, "text", colid, NULL);
+    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Subject, ctitle);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( ctitle.c_str(), ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
     
     colid = C_PRED_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( "Predicate", ren, "text", colid, NULL);
+    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Predicate, ctitle);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( ctitle.c_str(), ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
 
     colid = C_OBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( "Object", ren, "text", colid, NULL);
+    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Object, ctitle);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( ctitle.c_str(), ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
