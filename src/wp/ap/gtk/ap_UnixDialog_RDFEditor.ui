@@ -45,8 +45,8 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Execute SPARQL RDF Query</property>
-    <property name="default_width">1024</property>
-    <property name="default_height">800</property>
+    <property name="default_width">800</property>
+    <property name="default_height">600</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox2">
