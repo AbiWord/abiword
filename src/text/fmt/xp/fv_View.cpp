@@ -7694,6 +7694,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 					moveInsPtTo (dp2);
 				else
 				{
+					moveInsPtTo(dp1);
 					selectRange( dp2, dp1 );
 					
 					//make a selection
