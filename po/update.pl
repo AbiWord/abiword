@@ -32,7 +32,7 @@ use File::Basename;
 
 # Declare global variables
 #-------------------------
-my $VERSION = "1.5beta10";
+my $VERSION = "1.5beta11";
 my $LANG    = $ARGV[0];
 
 # Always print as the first thing
@@ -304,11 +304,25 @@ sub GeneratePot{
     $GETTEXT ="xgettext --default-domain\=$PACKAGE --directory\=\.\."
              ." --add-comments --keyword\=\_ --keyword\=N\_ --keyword\=Q\_:1g"
              ." --files-from\=\.\/POTFILES\.in ";  
-    $GTEST   ="test \! -f $PACKAGE\.po \|\| \( rm -f \.\/$PACKAGE\.pot "
-             ."&& mv $PACKAGE\.po \.\/$PACKAGE\.pot \)";
 
     system($GETTEXT);
-    system($GTEST);
+
+    # Remove file extension trash and line number from .pot file
+    # ----------------------------------------------------------
+    if (-e "$PACKAGE.po") {
+        open INFILE, "<$PACKAGE.po";
+        open OUTFILE, ">$PACKAGE.pot";
+        while (<INFILE>) {
+            if ($_ =~ /^(#:\s(.*)\/x?ap[^\/.]+\.h)(\.h:\d+)$/) {
+                $_ = $1 . "\n";
+            }
+            print OUTFILE $_;
+        }
+        close OUTFILE;
+        close INFILE;
+        unlink "$PACKAGE.po";
+    }
+ 
     print "Wrote $PACKAGE.pot\n";
     system("mv POTFILES.in.old POTFILES.in");
 
