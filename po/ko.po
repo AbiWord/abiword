@@ -4335,7 +4335,7 @@ msgstr "문서의 끝에 위치"
 #. DLG_FormatFootnotes_EndPlaceEndSec
 #: po/tmp/ap_String_Id.h.h:1796
 msgid "Place at end of section"
-msgstr "영역의 끝에 위�"
+msgstr ""
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h.h:1798
