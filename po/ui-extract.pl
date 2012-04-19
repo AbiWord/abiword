@@ -31,7 +31,7 @@ use Getopt::Long;
 
 #---------------------------
 
-my $VERSION     = "0.9a";
+my $VERSION     = "0.10";
 
 #---------------------------
 
@@ -231,15 +231,31 @@ sub Convert($) {
         if ($FILE =~ /\/xp\/(.*)\.h$/sg){
         while ($input =~ /\((\w+),(\s*)\"(.*)\"[)\s]+(\/\/xgettext:.*)*/g) {
                my $tag = $1;
-		if (defined($4)) { $tag .= " */ /* " . substr($4, 2); }
+               my $ctxt = "";     
+		if (defined($4)) {
+			if (substr($4, 11) eq "msgctxt") { 
+				$ctxt = "|$1|"; 
+			} else { 
+				$tag .= " */ /* " . substr($4, 2); 
+			}
+		}
 		if (defined($string{$3})) {
-			push @{$string{$3}}, $tag;
+			push @{$string{$ctxt . $3}}, $tag;
 		} else {
-			$string{$3} = [$tag];
+			$string{$ctxt . $3} = [$tag];
 		}
         }}
 
     }
+
+sub ctxt {
+
+    if ($_[0] =~ /^\|(\w+\|)(.*)/) {
+        "Q_(\"$1$2";
+    } else {
+        "N_(\"$_[0]";
+    }
+}
 
 sub addMessages{
 
@@ -259,8 +275,8 @@ sub addMessages{
         for ($n = 0; $n < @elements; $n++) {
 
            if ($n == 0) {
-	       print OUT "gchar *s = N_"; 
-               print OUT "(\"$elements[$n]\\n\"\n";
+	       print OUT "gchar *s = " . ctxt("$elements[$n]"); 
+               print OUT "\\n\"\n";
            }
 
            elsif ($n == @elements - 1) { 
@@ -279,7 +295,7 @@ sub addMessages{
 	    for my $value (@tag) {
 			if ($value) { print OUT "/* $value */\n"; }		
 	    }
-		print OUT "gchar *s = N_(\"$theMessage\");\n";
+		print OUT "gchar *s = " . ctxt("$theMessage") . "\");\n";
 
 	}
 	    

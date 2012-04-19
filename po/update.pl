@@ -21,6 +21,7 @@
 #
 #  Authors: Kenneth Christiansen <kenneth@gnu.org>
 #
+#  Contributors: Ingo Brueckl <ib@wupperonline.de>
 
 #  NOTICE: Please remember to change the variable $PACKAGE to reflect 
 #  the package this script is used within.
@@ -31,7 +32,7 @@ use File::Basename;
 
 # Declare global variables
 #-------------------------
-my $VERSION = "1.5beta9";
+my $VERSION = "1.5beta10";
 my $LANG    = $ARGV[0];
 
 # Always print as the first thing
@@ -301,7 +302,7 @@ sub GeneratePot{
     close INFILE;
 
     $GETTEXT ="xgettext --default-domain\=$PACKAGE --directory\=\.\."
-             ." --add-comments --keyword\=\_ --keyword\=N\_"
+             ." --add-comments --keyword\=\_ --keyword\=N\_ --keyword\=Q\_:1g"
              ." --files-from\=\.\/POTFILES\.in ";  
     $GTEST   ="test \! -f $PACKAGE\.po \|\| \( rm -f \.\/$PACKAGE\.pot "
              ."&& mv $PACKAGE\.po \.\/$PACKAGE\.pot \)";
