@@ -8995,9 +8995,6 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 		// Loop through the table cells to adjust their formatting		
 		// get the number of rows and columns in the current table
 
-        // First set the table format
-		fp_CellContainer * cell = getCellAtPos(posStart);
-
 		UT_sint32 numRows;
 		UT_sint32 numCols;
 		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
