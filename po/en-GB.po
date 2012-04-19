@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 2.3.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 16:14+0200\n"
+"POT-Creation-Date: 2012-04-19 19:13+0200\n"
 "PO-Revision-Date: 2012-01-08 10:19-0400\n"
 "Last-Translator: Chris Leonard <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
@@ -577,7 +577,7 @@ msgstr "&Inherit label"
 #. MENU_LABEL_INSERT
 #. MENU_LABEL_TABLE_INSERT
 #. DLG_Insert
-#: po/tmp/ap_String_Id.h.h:241 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Insert"
 msgstr "&Insert"
 
@@ -1011,7 +1011,7 @@ msgstr "&Units:"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
-#: po/tmp/ap_String_Id.h.h:418 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&View"
 msgstr "&View"
 
@@ -1279,7 +1279,7 @@ msgstr "Alignment:"
 
 #. DLG_Styles_LBL_All
 #. DLG_UP_All
-#: po/tmp/ap_String_Id.h.h:519 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "All"
 msgstr "All"
 
@@ -1311,7 +1311,7 @@ msgstr "Application Startup"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
-#: po/tmp/ap_String_Id.h.h:531 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Apply"
 msgstr "Apply"
 
@@ -1386,7 +1386,7 @@ msgstr "Author:"
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
 #. DLG_PLUGIN_MANAGER_AUTHOR
-#: po/tmp/ap_String_Id.h.h:560 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Author:"
 msgstr "Author:"
 
@@ -1516,7 +1516,7 @@ msgstr "Bo&ttomline"
 #. TOOLBAR_STATUSLINE_FMT_BOLD
 #. TOOLBAR_TOOLTIP_FMT_BOLD
 #. DLG_UFS_StyleBold
-#: po/tmp/ap_String_Id.h.h:614 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Bold"
 msgstr "Bold"
 
@@ -1578,13 +1578,13 @@ msgstr "Bottom Margin [%s]"
 #. TOOLBAR_STATUSLINE_FMT_BOTTOMLINE
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
 #. DLG_UFS_BottomlineCheck
-#: po/tmp/ap_String_Id.h.h:643 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Bottomline"
 msgstr "Bottomline"
 
 #. DLG_Lists_Box_List
 #. STYLE_BOXLIST
-#: po/tmp/ap_String_Id.h.h:645 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Box List"
 msgstr "Box List"
 
@@ -1610,7 +1610,7 @@ msgstr "Bullet"
 
 #. DLG_Lists_Bullet_List
 #. STYLE_BULLETLIST
-#: po/tmp/ap_String_Id.h.h:655 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Bullet List"
 msgstr "Bullet List"
 
@@ -1974,7 +1974,7 @@ msgstr "Co&lumn"
 #. DLG_FormatTable_Color
 #. DLG_BorderShading_Color
 #. DLG_UFS_ColorLabel
-#: po/tmp/ap_String_Id.h.h:804 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Color:"
 msgstr "Colour:"
 
@@ -2365,7 +2365,7 @@ msgstr "D&irectional"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
-#: po/tmp/ap_String_Id.h.h:959 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Dashed List"
 msgstr "Dashed List"
 
@@ -2457,7 +2457,7 @@ msgstr "Define or apply style for the selection"
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
 #. DLG_Delete
-#: po/tmp/ap_String_Id.h.h:998 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Delete"
 msgstr "Delete"
 
@@ -2567,13 +2567,13 @@ msgstr "Description"
 #. DLG_Annotation_Description_LBL
 #. DLG_PLUGIN_MANAGER_DESC
 #. DLG_Image_LblDescription
-#: po/tmp/ap_String_Id.h.h:1046 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Description:"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
-#: po/tmp/ap_String_Id.h.h:1048 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Diamond List"
 msgstr "Diamond List"
 
@@ -3121,7 +3121,7 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMT_FONT
 #. DLG_UFS_FontTitle
 #. DLG_UFS_FontTab
-#: po/tmp/ap_String_Id.h.h:1267 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Font"
 msgstr "Font"
 
@@ -3156,7 +3156,7 @@ msgstr "Font..."
 
 #. DLG_Lists_Font
 #. DLG_UFS_FontLabel
-#: po/tmp/ap_String_Id.h.h:1283 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Font:"
 msgstr "Font:"
 
@@ -3307,7 +3307,7 @@ msgstr "Format your document using styles"
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
-#: po/tmp/ap_String_Id.h.h:1345 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Format:"
 msgstr "Format:"
 
@@ -3363,7 +3363,7 @@ msgstr "H&eading text:"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
-#: po/tmp/ap_String_Id.h.h:1369 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Hand List"
 msgstr "Hand List"
 
@@ -3413,7 +3413,7 @@ msgstr "Heading style:"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
-#: po/tmp/ap_String_Id.h.h:1385 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Heart List"
 msgstr "Heart List"
 
@@ -3520,7 +3520,7 @@ msgstr "Image For Background"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
-#: po/tmp/ap_String_Id.h.h:1430 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Implies List"
 msgstr "Implies List"
 
@@ -3580,7 +3580,7 @@ msgstr "Inner (single) quote style"
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
 #. DLG_IP_Button_Label
-#: po/tmp/ap_String_Id.h.h:1456 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Insert"
 msgstr "Insert"
 
@@ -3886,7 +3886,7 @@ msgstr "Invisible &Layout Marks"
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #. DLG_UFS_StyleItalic
-#: po/tmp/ap_String_Id.h.h:1585 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Italic"
 msgstr "Italic"
 
@@ -4150,13 +4150,13 @@ msgstr "Lock the layout of the current toolbars"
 
 #. DLG_Lists_Lower_Case_List
 #. STYLE_LOWERCASELIST
-#: po/tmp/ap_String_Id.h.h:1694 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Lower Case List"
 msgstr "Lower Case List"
 
 #. DLG_Lists_Lower_Roman_List
 #. STYLE_LOWERROMANLIST
-#: po/tmp/ap_String_Id.h.h:1696 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Lower Roman List"
 msgstr "Lower Roman List"
 
@@ -4535,7 +4535,7 @@ msgstr "Numbered"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
-#: po/tmp/ap_String_Id.h.h:1856 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Numbered List"
 msgstr "Numbered List"
 
@@ -4645,7 +4645,7 @@ msgstr "Outer (double) quote style"
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
-#: po/tmp/ap_String_Id.h.h:1909 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Overline"
 msgstr "Overline"
 
@@ -4896,7 +4896,7 @@ msgstr "Preferences"
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
-#: po/tmp/ap_String_Id.h.h:2017 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Preview"
 msgstr "Preview"
 
@@ -4925,7 +4925,7 @@ msgstr ""
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
-#: po/tmp/ap_String_Id.h.h:2028 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Print"
 msgstr "Print"
 
@@ -5500,7 +5500,7 @@ msgstr "See history of the current document"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
-#: po/tmp/ap_String_Id.h.h:2269 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Select"
 msgstr "Select"
 
@@ -5649,7 +5649,7 @@ msgstr ""
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
-#: po/tmp/ap_String_Id.h.h:2332 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Selection"
 msgstr "Selection"
 
@@ -5834,7 +5834,7 @@ msgstr "Shortcut Key"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
-#: po/tmp/ap_String_Id.h.h:2408 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Show"
 msgstr "Show"
 
@@ -6189,7 +6189,7 @@ msgstr "Split this cell"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
-#: po/tmp/ap_String_Id.h.h:2555 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Square List"
 msgstr "Square List"
 
@@ -6210,7 +6210,7 @@ msgstr "Standard Toolbar"
 
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
-#: po/tmp/ap_String_Id.h.h:2563 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Star List"
 msgstr "Star List"
 
@@ -6270,7 +6270,7 @@ msgstr "Stri&ke"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/ap_String_Id.h.h:2588 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Strike"
 msgstr "Strike"
 
@@ -6319,7 +6319,7 @@ msgstr "Style name cannot be left blank"
 #. DLG_BorderShading_Border_Style
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
-#: po/tmp/ap_String_Id.h.h:2609 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Style:"
 msgstr "Style:"
 
@@ -6357,7 +6357,7 @@ msgstr "Subject:"
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
-#: po/tmp/ap_String_Id.h.h:2626 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Subscript"
 msgstr "Subscript"
 
@@ -6422,7 +6422,7 @@ msgstr "Supe&rscript"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
-#: po/tmp/ap_String_Id.h.h:2654 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Superscript"
 msgstr "Superscript"
 
@@ -6461,7 +6461,7 @@ msgstr "Tab stops to be cleared:"
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
 #. TB_Rows_x_Cols_Table
-#: po/tmp/ap_String_Id.h.h:2670 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Table"
 msgstr "Table"
 
@@ -6674,7 +6674,7 @@ msgstr "Three"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2740 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Tick List"
 msgstr "Tick List"
 
@@ -6691,14 +6691,14 @@ msgstr "Title"
 
 #. DLG_ToggleCase_TitleCase
 #. DLG_UFS_Effects_TitleCase
-#: po/tmp/ap_String_Id.h.h:2747 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Title Case"
 msgstr "Title Case"
 
 #. DLG_MetaData_Title_LBL
 #. DLG_Annotation_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2750 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Title:"
 msgstr "Title:"
 
@@ -6727,13 +6727,13 @@ msgstr "Top Margin [%s]"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2762 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Topline"
 msgstr "Topline"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2764 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Triangle List"
 msgstr "Triangle List"
 
@@ -6771,7 +6771,7 @@ msgstr "UPPERCASE"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2780 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Underline"
 msgstr "Underline"
 
@@ -6799,13 +6799,13 @@ msgstr "Update the annotation"
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2792 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Upper Case List"
 msgstr "Upper Case List"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2794 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Upper Roman List"
 msgstr "Upper Roman List"
 
@@ -6851,7 +6851,7 @@ msgstr "User-defined styles"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2812 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Version"
 msgstr "Version"
 
@@ -6986,7 +6986,7 @@ msgstr "Your changes will be lost if you don't save them."
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2871 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Zoom"
 msgstr "Zoom"
 

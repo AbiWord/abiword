@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: 1.1\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 16:14+0200\n"
+"POT-Creation-Date: 2012-04-19 19:13+0200\n"
 "PO-Revision-Date: 2002-03-20 13:03:04-0400\n"
 "Last-Translator: Raphael Finkel <raphael@cs.uky.edu>\n"
 "Language-Team: Yiddish <raphael@cs.uky.edu>\n"
@@ -579,7 +579,7 @@ msgstr "באַקום עטיקעט בירושה"
 #. MENU_LABEL_INSERT
 #. MENU_LABEL_TABLE_INSERT
 #. DLG_Insert
-#: po/tmp/ap_String_Id.h.h:241 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Insert"
 msgstr "(&L)לײג אַרײַן"
 
@@ -1015,7 +1015,7 @@ msgstr "(&E)אײנסן"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
-#: po/tmp/ap_String_Id.h.h:418 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&View"
 msgstr "(&Z)זע"
 
@@ -1281,7 +1281,7 @@ msgstr "‫אױסגלײַכונג:"
 
 #. DLG_Styles_LBL_All
 #. DLG_UP_All
-#: po/tmp/ap_String_Id.h.h:519 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "All"
 msgstr "אַלע"
 
@@ -1313,7 +1313,7 @@ msgstr "אַפּליקאַציע אָנהײב"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
-#: po/tmp/ap_String_Id.h.h:531 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Apply"
 msgstr "אַפּליקיר"
 
@@ -1389,7 +1389,7 @@ msgstr "מחבר"
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
 #. DLG_PLUGIN_MANAGER_AUTHOR
-#: po/tmp/ap_String_Id.h.h:560 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Author:"
 msgstr "מחבר"
 
@@ -1520,7 +1520,7 @@ msgstr "אונטערשטע שורה"
 #. TOOLBAR_STATUSLINE_FMT_BOLD
 #. TOOLBAR_TOOLTIP_FMT_BOLD
 #. DLG_UFS_StyleBold
-#: po/tmp/ap_String_Id.h.h:614 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Bold"
 msgstr "פֿעט"
 
@@ -1583,13 +1583,13 @@ msgstr "‫אונטערשטע צאַמרינע [%s]"
 #. TOOLBAR_STATUSLINE_FMT_BOTTOMLINE
 #. TOOLBAR_TOOLTIP_FMT_BOTTOMLINE
 #. DLG_UFS_BottomlineCheck
-#: po/tmp/ap_String_Id.h.h:643 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Bottomline"
 msgstr "אונטערשטע שורה"
 
 #. DLG_Lists_Box_List
 #. STYLE_BOXLIST
-#: po/tmp/ap_String_Id.h.h:645 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Box List"
 msgstr "קעסטל רשימה"
 
@@ -1615,7 +1615,7 @@ msgstr "קלעק"
 
 #. DLG_Lists_Bullet_List
 #. STYLE_BULLETLIST
-#: po/tmp/ap_String_Id.h.h:655 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Bullet List"
 msgstr "קלעק־רשימה"
 
@@ -1980,7 +1980,7 @@ msgstr "(&Z)זײַל"
 #. DLG_FormatTable_Color
 #. DLG_BorderShading_Color
 #. DLG_UFS_ColorLabel
-#: po/tmp/ap_String_Id.h.h:804 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Color:"
 msgstr "‫פֿאַרב:"
 
@@ -2378,7 +2378,7 @@ msgstr "ריכטונגדיק"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
-#: po/tmp/ap_String_Id.h.h:959 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Dashed List"
 msgstr "מקף רשימה"
 
@@ -2470,7 +2470,7 @@ msgstr "דעפֿיניר אָדער אַפּליקיר מוסטער צו דער 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
 #. DLG_Delete
-#: po/tmp/ap_String_Id.h.h:998 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Delete"
 msgstr "מעק אַרױס"
 
@@ -2583,13 +2583,13 @@ msgstr "באַשרײַבונג"
 #. DLG_Annotation_Description_LBL
 #. DLG_PLUGIN_MANAGER_DESC
 #. DLG_Image_LblDescription
-#: po/tmp/ap_String_Id.h.h:1046 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "‫באַשרײַבונג:"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
-#: po/tmp/ap_String_Id.h.h:1048 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Diamond List"
 msgstr "דימענט רשימה"
 
@@ -3147,7 +3147,7 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMT_FONT
 #. DLG_UFS_FontTitle
 #. DLG_UFS_FontTab
-#: po/tmp/ap_String_Id.h.h:1267 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Font"
 msgstr "שריפֿט"
 
@@ -3184,7 +3184,7 @@ msgstr "‫שריפֿט..."
 
 #. DLG_Lists_Font
 #. DLG_UFS_FontLabel
-#: po/tmp/ap_String_Id.h.h:1283 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Font:"
 msgstr "‫שריפֿט:"
 
@@ -3338,7 +3338,7 @@ msgstr "פֿאָרמאַטיר דעם דאָקומענט מיט סטילן"
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
-#: po/tmp/ap_String_Id.h.h:1345 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Format:"
 msgstr "‫פֿאָרמאַטירונג:"
 
@@ -3397,7 +3397,7 @@ msgstr "‫קאָפּװאָרט־טעקסט:"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
-#: po/tmp/ap_String_Id.h.h:1369 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Hand List"
 msgstr "האַנט רשימה"
 
@@ -3446,7 +3446,7 @@ msgstr "‫קאָפּװאָרט־סטיל:"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
-#: po/tmp/ap_String_Id.h.h:1385 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Heart List"
 msgstr "האַרץ רשימה"
 
@@ -3553,7 +3553,7 @@ msgstr "הינטערגרונט־בילד"
 
 #. DLG_Lists_Implies_List
 #. STYLE_IMPLIES_LIST
-#: po/tmp/ap_String_Id.h.h:1430 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Implies List"
 msgstr "דערזאָגט רשימה"
 
@@ -3614,7 +3614,7 @@ msgstr ""
 #. DLG_Break_Insert
 #. MENU_STATUSLINE_TABLE_INSERT
 #. DLG_IP_Button_Label
-#: po/tmp/ap_String_Id.h.h:1456 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Insert"
 msgstr "לײג אַרײַן"
 
@@ -3924,7 +3924,7 @@ msgstr "(&U)אומזעעװדיקע אױסשטעל סימנים"
 #. TOOLBAR_STATUSLINE_FMT_ITALIC
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #. DLG_UFS_StyleItalic
-#: po/tmp/ap_String_Id.h.h:1585 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Italic"
 msgstr "קורסיװ"
 
@@ -4189,13 +4189,13 @@ msgstr "פֿאַרשליס דעם אױסשטעל פֿון די איצטיקע מ
 
 #. DLG_Lists_Lower_Case_List
 #. STYLE_LOWERCASELIST
-#: po/tmp/ap_String_Id.h.h:1694 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Lower Case List"
 msgstr "קלײן־אות רשימה"
 
 #. DLG_Lists_Lower_Roman_List
 #. STYLE_LOWERROMANLIST
-#: po/tmp/ap_String_Id.h.h:1696 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Lower Roman List"
 msgstr "קלײן־אות ראָמאַניש רשימה"
 
@@ -4577,7 +4577,7 @@ msgstr "נומערירט"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
-#: po/tmp/ap_String_Id.h.h:1856 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Numbered List"
 msgstr "נומערירטע רשימה"
 
@@ -4687,7 +4687,7 @@ msgstr ""
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
 #. TOOLBAR_TOOLTIP_FMT_OVERLINE
 #. DLG_UFS_OverlineCheck
-#: po/tmp/ap_String_Id.h.h:1909 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Overline"
 msgstr "איבערשטרײַך"
 
@@ -4940,7 +4940,7 @@ msgstr "פּרעפֿערענצן"
 #. DLG_Lists_Preview
 #. DLG_PageNumbers_Preview
 #. DLG_Zoom_PreviewFrame
-#: po/tmp/ap_String_Id.h.h:2017 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Preview"
 msgstr "פֿאָרױסװײַז"
 
@@ -4969,7 +4969,7 @@ msgstr ""
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
-#: po/tmp/ap_String_Id.h.h:2028 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Print"
 msgstr "דרוק"
 
@@ -5557,7 +5557,7 @@ msgstr "זע די געשיכטע פֿון דעם איצטיקן דאָקומענ
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
-#: po/tmp/ap_String_Id.h.h:2269 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Select"
 msgstr "קלײַב אױס"
 
@@ -5706,7 +5706,7 @@ msgstr ""
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
-#: po/tmp/ap_String_Id.h.h:2332 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Selection"
 msgstr "סעלעקציע"
 
@@ -5898,7 +5898,7 @@ msgstr "קורצװעג קלאַװיש"
 
 #. DLG_Options_Label_Show
 #. DLG_Show
-#: po/tmp/ap_String_Id.h.h:2408 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Show"
 msgstr "װײַז"
 
@@ -6257,7 +6257,7 @@ msgstr "צעשפּאַלט דעם צעל"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
-#: po/tmp/ap_String_Id.h.h:2555 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Square List"
 msgstr "קװאַדראַטישע רשימה"
 
@@ -6278,7 +6278,7 @@ msgstr "סטאַנדאַרדער מכשיר װירע"
 
 #. DLG_Lists_Star_List
 #. STYLE_STARLIST
-#: po/tmp/ap_String_Id.h.h:2563 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Star List"
 msgstr "שטערן רשימה"
 
@@ -6339,7 +6339,7 @@ msgstr "(&S)שטריך אַדורך"
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
-#: po/tmp/ap_String_Id.h.h:2588 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Strike"
 msgstr "שטריך אַדורך"
 
@@ -6388,7 +6388,7 @@ msgstr "סטיל נאָמען קען ניט בלײַבן פּוסט"
 #. DLG_BorderShading_Border_Style
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
-#: po/tmp/ap_String_Id.h.h:2609 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Style:"
 msgstr "‫סטיל:"
 
@@ -6426,7 +6426,7 @@ msgstr "‫ענין:"
 #. TOOLBAR_STATUSLINE_FMT_SUBSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUBSCRIPT
 #. DLG_UFS_SubScript
-#: po/tmp/ap_String_Id.h.h:2626 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Subscript"
 msgstr "אונטערשריפֿט"
 
@@ -6491,7 +6491,7 @@ msgstr "(&I)איבערשריפֿט"
 #. TOOLBAR_STATUSLINE_FMT_SUPERSCRIPT
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
-#: po/tmp/ap_String_Id.h.h:2654 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Superscript"
 msgstr "איבערשריפֿט"
 
@@ -6530,7 +6530,7 @@ msgstr "‫טאַבוליר־גרענעצן מבֿטל צו זײַן:"
 #. MENU_STATUSLINE_TABLE
 #. TB_Table
 #. TB_Rows_x_Cols_Table
-#: po/tmp/ap_String_Id.h.h:2670 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Table"
 msgstr "טאַבעלע"
 
@@ -6729,7 +6729,7 @@ msgstr "דרײַ"
 
 #. DLG_Lists_Tick_List
 #. STYLE_TICKLIST
-#: po/tmp/ap_String_Id.h.h:2740 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Tick List"
 msgstr "אַפּאָסטראָף רשימה"
 
@@ -6746,14 +6746,14 @@ msgstr "טיטל"
 
 #. DLG_ToggleCase_TitleCase
 #. DLG_UFS_Effects_TitleCase
-#: po/tmp/ap_String_Id.h.h:2747 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Title Case"
 msgstr "טיטל אױס־גרײס"
 
 #. DLG_MetaData_Title_LBL
 #. DLG_Annotation_Title_LBL
 #. DLG_Image_LblTitle
-#: po/tmp/ap_String_Id.h.h:2750 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Title:"
 msgstr "‫טיטל:"
 
@@ -6784,13 +6784,13 @@ msgstr "‫קאָפּ־זאַפּאַס [%s]"
 #. TOOLBAR_STATUSLINE_FMT_TOPLINE
 #. TOOLBAR_TOOLTIP_FMT_TOPLINE
 #. DLG_UFS_ToplineCheck
-#: po/tmp/ap_String_Id.h.h:2762 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Topline"
 msgstr "איבער־שורה"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
-#: po/tmp/ap_String_Id.h.h:2764 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Triangle List"
 msgstr "דרײַעק רשימה"
 
@@ -6828,7 +6828,7 @@ msgstr "גרױסע אות־גרײס"
 #. TOOLBAR_STATUSLINE_FMT_UNDERLINE
 #. TOOLBAR_TOOLTIP_FMT_UNDERLINE
 #. DLG_UFS_UnderlineCheck
-#: po/tmp/ap_String_Id.h.h:2780 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Underline"
 msgstr "אונטערשטריך"
 
@@ -6856,13 +6856,13 @@ msgstr ""
 
 #. DLG_Lists_Upper_Case_List
 #. STYLE_UPPERCASTELIST
-#: po/tmp/ap_String_Id.h.h:2792 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Upper Case List"
 msgstr "גרױס־אות רשימה"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
-#: po/tmp/ap_String_Id.h.h:2794 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Upper Roman List"
 msgstr "גרױסהאַנטיקע ראָמאַנער רשימה"
 
@@ -6909,7 +6909,7 @@ msgstr "אײגענע סטילן"
 
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
-#: po/tmp/ap_String_Id.h.h:2812 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Version"
 msgstr "װערסיע"
 
@@ -7046,7 +7046,7 @@ msgstr "אײַערע ענדערונגען װעלן גײן פֿאַרפֿאַלן
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
-#: po/tmp/ap_String_Id.h.h:2871 po/tmp/xap_String_Id.h
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Zoom"
 msgstr "פֿאַרגרעסער/פֿאַרקלענער"
 
