@@ -1128,7 +1128,6 @@ msgstr "AM/PM"
 #, c-format
 #, c-format
 #, c-format
-,
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "AbiWord cannot open %s. It appears to be an invalid document."
 
