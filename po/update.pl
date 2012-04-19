@@ -313,8 +313,11 @@ sub GeneratePot{
         open INFILE, "<$PACKAGE.po";
         open OUTFILE, ">$PACKAGE.pot";
         while (<INFILE>) {
-            if ($_ =~ /^(#:\s(.*)\/x?ap[^\/.]+\.h)(\.h:\d+)$/) {
-                $_ = $1 . "\n";
+            if (substr($_, 0, 3) eq "#: ") {
+                while ($_ =~ /((.*)\/x?ap[^\/.]+\.h)(\.h:\d+)(.*)/) {
+                    $_ = $1 . $4;
+                }
+                $_ .= "\n";
             }
             print OUTFILE $_;
         }
