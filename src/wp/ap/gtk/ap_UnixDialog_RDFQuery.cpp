@@ -300,7 +300,6 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
     m_btShowAll = GTK_WIDGET(gtk_builder_get_object(builder, "btShowAll"));
     m_query     = GTK_WIDGET(gtk_builder_get_object(builder, "query"));
 	m_resultsView  = GTK_TREE_VIEW(gtk_builder_get_object(builder, "resultsView"));
-//	m_resultsModel = GTK_LIST_STORE(gtk_builder_get_object(builder, "resultsModel"));
     m_status    = GTK_WIDGET(gtk_builder_get_object(builder, "status"));
 
     // localization
