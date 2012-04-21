@@ -65,7 +65,6 @@
 #include "../xp/ToolbarIcons/tb_revision_show_final.xpm"
 #include "../xp/ToolbarIcons/tb_revision_find_prev.xpm"
 #include "../xp/ToolbarIcons/tb_revision_find_next.xpm"
-#include "../xp/ToolbarIcons/tb_semitem_select_first.xpm"
 #include "../xp/ToolbarIcons/tb_semitem_this.xpm"
 #include "../xp/ToolbarIcons/tb_semitem_select_next.xpm"
 #include "../xp/ToolbarIcons/tb_semitem_select_prev.xpm"
