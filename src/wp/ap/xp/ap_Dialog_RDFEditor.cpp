@@ -101,12 +101,13 @@ AP_Dialog_RDFEditor::setRestrictedModel( PD_RDFModelHandle model )
 void
 AP_Dialog_RDFEditor::statusIsTripleCount()
 {
-    stringstream ss;
+    UT_String ss;
     const XAP_StringSet *pSS = m_pApp->getStringSet();
-    UT_UTF8String str;
+    std::string str;
     pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Editor_Status, str);
-    ss << str.utf8_str() << m_count;
-    setStatus(ss.str());
+    UT_String_sprintf(ss, str.c_str(), m_count);
+    str = ss.c_str();
+    setStatus(str);
 }
 
 
