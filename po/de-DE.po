@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-21 17:40+0200\n"
-"PO-Revision-Date: 2012-04-21 17:40+0200\n"
+"POT-Creation-Date: 2012-04-21 19:36+0200\n"
+"PO-Revision-Date: 2012-04-21 19:36+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -63,11 +63,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid " Auto Update"
 msgstr " Automatisch aktualisieren"
-
-#. DLG_RDF_Query_Status2
-#: po/tmp/ap_String_Id.h
-msgid " of total: "
-msgstr " von insgesamt: "
 
 #. DLG_RDF_Query_Comment
 #: po/tmp/ap_String_Id.h
@@ -4975,10 +4970,11 @@ msgstr "Herausgeber"
 msgid "Publisher:"
 msgstr "Herausgeber:"
 
-#. DLG_RDF_Query_Status1
+#. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
-msgid "Query RDF: "
-msgstr "Abgefragte RDF: "
+#, c-format
+msgid "Query RDF: %d of total: %ld"
+msgstr "Abgefragte RDF: %d von insgesamt: %ld"
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -6723,8 +6719,9 @@ msgstr "Oberlinie"
 
 #. DLG_RDF_Editor_Status
 #: po/tmp/ap_String_Id.h
-msgid "Total RDF: "
-msgstr "RDF insgesamt: "
+#, c-format
+msgid "Total RDF: %d"
+msgstr "RDF insgesamt: %d"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
