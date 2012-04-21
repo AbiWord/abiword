@@ -109,8 +109,12 @@ AP_Dialog_RDFQuery::executeQuery( const std::string& sparql )
 #endif
     
     stringstream ss;
-    ss << "Query RDF:" << m_count
-       << " of total:" << getRDF()->getTripleCount();
+    const XAP_StringSet *pSS = m_pApp->getStringSet();
+    UT_UTF8String str1, str2;
+    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Status1, str1);
+    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Status2, str2);
+    ss << str1.utf8_str() << m_count
+       << str2.utf8_str() << getRDF()->getTripleCount();
     setStatus(ss.str());
 }
 

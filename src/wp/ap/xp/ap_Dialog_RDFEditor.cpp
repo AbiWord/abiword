@@ -102,7 +102,10 @@ void
 AP_Dialog_RDFEditor::statusIsTripleCount()
 {
     stringstream ss;
-    ss << "Total RDF:" << m_count;
+    const XAP_StringSet *pSS = m_pApp->getStringSet();
+    UT_UTF8String str;
+    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Editor_Status, str);
+    ss << str.utf8_str() << m_count;
     setStatus(ss.str());
 }
 
