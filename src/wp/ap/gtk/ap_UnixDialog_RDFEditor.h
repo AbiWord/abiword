@@ -85,7 +85,6 @@ private:
 	GtkWidget *m_wDialog;
 	GtkWidget *m_btClose;
     GtkWidget *m_btShowAll;
-    GtkWidget *m_query;
 	GtkTreeView*  m_resultsView;
 	GtkTreeStore* m_resultsModel;
     GtkWidget *m_status;

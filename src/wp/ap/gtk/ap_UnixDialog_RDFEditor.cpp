@@ -178,7 +178,6 @@ AP_UnixDialog_RDFEditor::AP_UnixDialog_RDFEditor( XAP_DialogFactory *pDlgFactory
     , m_wDialog 	   (0)
     , m_btClose 	   (0)
     , m_btShowAll      (0)
-    , m_query          (0)
     , m_resultsView    (0)
 	, m_resultsModel   (0)
     , m_status         (0)
@@ -495,9 +494,6 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 {
 	UT_DEBUGMSG (("MIQ: _constructWindow ()\n"));		
 
-	const XAP_StringSet *pSS = m_pApp->getStringSet();
-	std::string text;
-
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_RDFEditor.ui");
@@ -509,9 +505,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_RDFEditor"));
 	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
     m_btShowAll = GTK_WIDGET(gtk_builder_get_object(builder, "btShowAll"));
-    m_query     = GTK_WIDGET(gtk_builder_get_object(builder, "query"));
 	m_resultsView   = GTK_TREE_VIEW(gtk_builder_get_object(builder, "resultsView"));
-//	m_resultsModel  = GTK_LIST_STORE(gtk_builder_get_object(builder, "resultsModel"));
     m_status        = GTK_WIDGET(gtk_builder_get_object(builder, "status"));
     m_anewtriple    = GTK_ACTION(gtk_builder_get_object(builder, "anewtriple"));
     m_acopytriple   = GTK_ACTION(gtk_builder_get_object(builder, "acopytriple"));
@@ -521,13 +515,6 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     m_selectedxmlid = GTK_COMBO_BOX(gtk_builder_get_object(builder, "selectedxmlid"));
     m_restrictxmlidhidew = GTK_WIDGET(gtk_builder_get_object(builder, "restrictxmlidhidew"));
 
-    // localization
-    GtkTextIter itr;
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(m_query));
-    gtk_text_buffer_get_iter_at_line(buffer, &itr, 0);
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Comment, text);
-    gtk_text_buffer_insert(buffer, &itr, text.c_str(), -1);     
-    
     GObject *selection;
     selection = G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_resultsView)));
     gtk_tree_selection_set_mode (GTK_TREE_SELECTION (selection), GTK_SELECTION_MULTIPLE);

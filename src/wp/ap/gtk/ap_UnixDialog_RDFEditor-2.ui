@@ -2,48 +2,6 @@
 <interface>
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy toplevel-contextual -->
-  <object class="GtkAdjustment" id="adjustment1">
-    <property name="value">1</property>
-    <property name="lower">1</property>
-    <property name="upper">100000</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkAdjustment" id="adjustment2">
-    <property name="value">1</property>
-    <property name="lower">1</property>
-    <property name="upper">100000</property>
-    <property name="step_increment">1</property>
-    <property name="page_increment">10</property>
-  </object>
-  <object class="GtkListStore" id="resultsModel">
-    <columns>
-      <!-- column-name Subject -->
-      <column type="gchararray"/>
-      <!-- column-name Predicate -->
-      <column type="gchararray"/>
-      <!-- column-name Object -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">Subj1</col>
-        <col id="1" translatable="yes">Pred1</col>
-        <col id="2" translatable="yes">Obj1</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes"></col>
-        <col id="1" translatable="yes"></col>
-        <col id="2" translatable="yes"></col>
-      </row>
-      <row>
-        <col id="0" translatable="yes"></col>
-        <col id="1" translatable="yes"></col>
-        <col id="2" translatable="yes"></col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkListStore" id="selectedxmlidmodel"/>
   <object class="GtkDialog" id="ap_UnixDialog_RDFEditor">
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Execute SPARQL RDF Query</property>
@@ -75,7 +33,6 @@
                             <property name="label">Import</property>
                             <property name="visible">True</property>
                             <property name="related_action">aimportrdfxml</property>
-                            <property name="image">image1</property>
                             <property name="use_stock">False</property>
                           </object>
                         </child>
@@ -234,7 +191,6 @@
                   <object class="GtkTreeView" id="resultsView">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="model">resultsModel</property>
                     <property name="reorderable">True</property>
                     <property name="rules_hint">True</property>
                     <property name="search_column">0</property>
@@ -333,38 +289,9 @@
       <action-widget response="-7">btClose</action-widget>
     </action-widgets>
   </object>
-  <object class="GtkTextBuffer" id="sparqlq">
-    <property name="text" translatable="yes">
-
-prefix rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; 
-prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; 
-prefix pkg:  &lt;http://docs.oasis-open.org/opendocument/meta/package/common#&gt; 
-prefix geo84: &lt;http://www.w3.org/2003/01/geo/wgs84_pos#&gt;
-
-select ?s ?p ?o 
-where { 
- ?s ?p ?o 
-}</property>
-  </object>
-  <object class="GtkImage" id="execute1">
-    <property name="visible">True</property>
-    <property name="stock">gtk-refresh</property>
-  </object>
   <object class="GtkImage" id="showall">
     <property name="visible">True</property>
     <property name="stock">gtk-info</property>
-  </object>
-  <object class="GtkImage" id="newimg">
-    <property name="visible">True</property>
-    <property name="stock">gtk-new</property>
-  </object>
-  <object class="GtkImage" id="delimg">
-    <property name="visible">True</property>
-    <property name="stock">gtk-delete</property>
-  </object>
-  <object class="GtkImage" id="image1">
-    <property name="visible">True</property>
-    <property name="stock">gtk-open</property>
   </object>
   <object class="GtkAction" id="anewtriple">
     <property name="label">New</property>
