@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 19:13+0200\n"
-"PO-Revision-Date: 2012-04-19 19:13+0200\n"
+"POT-Creation-Date: 2012-04-21 16:34+0200\n"
+"PO-Revision-Date: 2012-04-21 16:34+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -462,6 +462,7 @@ msgstr "&Felder"
 msgid "&Fields:"
 msgstr "&Felder:"
 
+#. DLG_RDF_Editor_Menu_File
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h
 msgid "&File"
@@ -987,6 +988,11 @@ msgstr "E&xtras"
 #: po/tmp/ap_String_Id.h
 msgid "&Top:"
 msgstr "&Oben:"
+
+#. DLG_RDF_Editor_Menu_Tripel
+#: po/tmp/ap_String_Id.h
+msgid "&Tripel"
+msgstr "&Tripel"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -6766,6 +6772,12 @@ msgstr "Rückgängig"
 msgid "Undo editing"
 msgstr "Bearbeitung rückgängig machen"
 
+#. DLG_RDF_Editor_ShowAll
+#. DLG_Update
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Update"
+msgstr "Aktualisieren"
+
 #. DLG_Annotation_OK_tooltip
 #: po/tmp/ap_String_Id.h
 msgid "Update the annotation"
@@ -9015,11 +9027,6 @@ msgstr "Unicode UTF-8"
 #, c-format
 msgid "Untitled%d"
 msgstr "Dokument%d"
-
-#. DLG_Update
-#: po/tmp/xap_String_Id.h
-msgid "Update"
-msgstr "Aktualisieren"
 
 #. DLG_UFS_Effects_UpperCase
 #: po/tmp/xap_String_Id.h
