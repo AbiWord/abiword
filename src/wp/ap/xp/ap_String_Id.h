@@ -670,6 +670,9 @@ dcl(DLG_RDF_Query_Column_Predicate, 		"Predicate")
 dcl(DLG_RDF_Query_Column_Object,    		"Object")
 dcl(DLG_RDF_Query_Comment,					"# Insert your SPARQL query here\n# Results are shown below.")
 dcl(DLG_RDF_Editor_Title, 					"Edit document RDF")
+dcl(DLG_RDF_Editor_Menu_File,				"&File")
+dcl(DLG_RDF_Editor_Menu_Tripel,				"&Tripel")
+dcl(DLG_RDF_Editor_ShowAll,					"Update")
 
 
 // Lists Dialog

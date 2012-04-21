@@ -760,6 +760,19 @@ void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id i
 }
 
 /*!
+ * Localizes the label of a Menu Item widget given the string id
+ */
+void localizeMenuItem(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
+{
+	gchar *unixstr = NULL;
+	UT_UTF8String s;
+	pSS->getValueUTF8(id, s);
+	UT_XML_cloneConvAmpersands(unixstr, s.utf8_str());
+	gtk_menu_item_set_label(GTK_MENU_ITEM(widget), unixstr);
+	FREEP(unixstr);	
+}
+
+/*!
  * Sets the label of "widget" to "str".
  * It formats the label using the current label of the widget as a format string. The
  * current label is assumed to be something like "<span size="larger">%s</span>".
