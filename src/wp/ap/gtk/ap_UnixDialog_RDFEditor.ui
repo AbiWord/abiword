@@ -217,6 +217,8 @@
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="related_action">acopytriple</property>
+                    <property name="use_stock">True</property>
+                    <property name="image_position">bottom</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
