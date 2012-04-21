@@ -2,28 +2,18 @@
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkAction" id="acopytriple">
-    <property name="label">Copy</property>
-    <property name="short_label">Copy</property>
     <property name="stock_id">gtk-copy</property>
   </object>
   <object class="GtkAction" id="adeletetriple">
-    <property name="label">Delete</property>
-    <property name="short_label">Delete</property>
     <property name="stock_id">gtk-delete</property>
   </object>
   <object class="GtkAction" id="aexportrdfxml">
-    <property name="label">Save As...</property>
-    <property name="short_label">Save As</property>
     <property name="stock_id">gtk-save-as</property>
   </object>
   <object class="GtkAction" id="aimportrdfxml">
-    <property name="label">Import...</property>
-    <property name="short_label">Import</property>
     <property name="stock_id">gtk-open</property>
   </object>
   <object class="GtkAction" id="anewtriple">
-    <property name="label">New</property>
-    <property name="short_label">New</property>
     <property name="stock_id">gtk-new</property>
     <property name="is_important">True</property>
   </object>
@@ -115,21 +105,18 @@
                         <property name="can_focus">False</property>
                         <child>
                           <object class="GtkImageMenuItem" id="miopen">
-                            <property name="label">Import</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="related_action">aimportrdfxml</property>
-                            <property name="use_stock">False</property>
+                            <property name="use_underline">True</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="misave">
-                            <property name="label">gtk-save-as</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="related_action">aexportrdfxml</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                       </object>
@@ -149,33 +136,26 @@
                         <property name="can_focus">False</property>
                         <child>
                           <object class="GtkImageMenuItem" id="minew">
-                            <property name="label">gtk-new</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="related_action">anewtriple</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
-                            <property name="always_show_image">True</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="micopy">
-                            <property name="label">gtk-copy</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="related_action">acopytriple</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="midelete">
-                            <property name="label">gtk-delete</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="related_action">adeletetriple</property>
                             <property name="use_underline">True</property>
-                            <property name="use_stock">True</property>
                           </object>
                         </child>
                       </object>
