@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-21 19:36+0200\n"
-"PO-Revision-Date: 2012-04-22 18:32+0200\n"
+"POT-Creation-Date: 2012-04-22 19:03+0200\n"
+"PO-Revision-Date: 2012-04-22 19:03+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -4374,6 +4374,11 @@ msgstr "Neu"
 #: po/tmp/ap_String_Id.h
 msgid "New &annotation"
 msgstr "&Neue Anmerkung"
+
+#. DLG_RDF_Insert_NewContact
+#: po/tmp/ap_String_Id.h
+msgid "New Contact..."
+msgstr "Neuer Kontakt..."
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
