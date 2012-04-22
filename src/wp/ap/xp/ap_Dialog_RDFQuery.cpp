@@ -108,13 +108,10 @@ AP_Dialog_RDFQuery::executeQuery( const std::string& sparql )
             PD_Literal("AABBCC") ));
 #endif
     
-    UT_String ss;
+    std::string stat;
     const XAP_StringSet *pSS = m_pApp->getStringSet();
-    std::string str;
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Status, str);
-    UT_String_sprintf(ss, str.c_str(), m_count, getRDF()->getTripleCount());
-    str = ss.c_str();
-    setStatus(str);
+    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Status, stat);
+    setStatus(UT_std_string_sprintf(stat.c_str(), m_count, getRDF()->getTripleCount()));
 }
 
 void
