@@ -73,7 +73,7 @@ AP_Dialog_RDFEditor::showAllRDF()
 {
     PD_RDFModelHandle model = getModel();
 
-    cerr << "showAllRDF() top" << endl;
+    UT_DEBUGMSG(("showAllRDF() top\n"));
     
     clear();
     PD_RDFModelIterator iter = model->begin();
@@ -82,11 +82,11 @@ AP_Dialog_RDFEditor::showAllRDF()
     {
         const PD_RDFStatement& st = *iter;
         addStatement( st );
-        cerr << "showAllRDF() st:" << st << endl;
+        UT_DEBUGMSG(("showAllRDF() st:%s\n", st.toString().c_str()));        
         
     }
     statusIsTripleCount();
-    cerr << "showAllRDF() done" << endl;
+    UT_DEBUGMSG(("showAllRDF() done\n"));
 }
 
 void
