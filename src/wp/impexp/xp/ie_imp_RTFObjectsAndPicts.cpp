@@ -1180,7 +1180,11 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 		}
 		UT_UTF8String_setProperty(sPropString,sP,sV);
 		sP="bgcolor";
-		UT_UTF8String_sprintf(sV, "%06x",frame.m_iBackgroundColor);
+		// RTF uses BGR encoding for colors while Abiword uses RGB 
+		UT_sint32 iRGBColor = 0x10000 * (frame.m_iBackgroundColor % 0x100) + 
+			0x100 * ((frame.m_iBackgroundColor/0x100) % 0x100) + 
+			((frame.m_iBackgroundColor/0x10000) % 0x100);
+		UT_UTF8String_sprintf(sV, "%06x",iRGBColor);
 		UT_UTF8String_setProperty(sPropString,sP,sV);
 		sP="background-color";
 		UT_UTF8String_setProperty(sPropString,sP,sV);
