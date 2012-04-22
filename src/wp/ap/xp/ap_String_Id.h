@@ -675,6 +675,7 @@ dcl(DLG_RDF_Editor_Menu_File,				"&File")
 dcl(DLG_RDF_Editor_Menu_Tripel,				"&Tripel")
 dcl(DLG_RDF_Editor_ShowAll,					"Update")
 dcl(DLG_RDF_Editor_Status,					"Total RDF: %d")
+dcl(DLG_RDF_Insert_NewContact,				"New Contact...")
 
 
 // Lists Dialog

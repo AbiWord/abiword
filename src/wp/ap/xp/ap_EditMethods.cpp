@@ -11015,8 +11015,11 @@ Defun1(rdfInsertNewContact)
 	{
 		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
 		{
+			std::string objname;
+			const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+			pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Insert_NewContact, objname);
 			PD_RDFSemanticItemHandle obj = PD_RDFSemanticItem::createSemanticItem( rdf, "Contact" );
-			obj->setName( "New Contact..." );
+			obj->setName( objname );
 			/*std::pair< PT_DocPosition, PT_DocPosition > range =*/
 			obj->insert( pView );
 			obj->showEditorWindow( obj );
@@ -11034,8 +11037,11 @@ Defun1(rdfInsertNewContactFromFile)
 	{
 		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
 		{
+			std::string objname;
+			const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+			pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Insert_NewContact, objname);
 			PD_RDFSemanticItemHandle obj = PD_RDFSemanticItem::createSemanticItem( rdf, "Contact" );
-			obj->setName( "New Contact..." );
+			obj->setName( objname );
 			obj->importFromFile();
 		}
 	}
