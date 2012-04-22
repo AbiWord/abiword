@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-21 19:36+0200\n"
-"PO-Revision-Date: 2012-04-21 19:36+0200\n"
+"PO-Revision-Date: 2012-04-22 18:32+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -5026,7 +5026,7 @@ msgstr "&Neu laden"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
 #: po/tmp/ap_String_Id.h
 msgid "Reapply Current"
-msgstr "Aktuellen wieder übernehmen"
+msgstr "Aktuelle wieder übernehmen"
 
 #. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
 #. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
