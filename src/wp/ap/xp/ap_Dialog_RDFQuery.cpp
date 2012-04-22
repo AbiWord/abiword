@@ -98,14 +98,6 @@ AP_Dialog_RDFQuery::executeQuery( const std::string& sparql )
         cerr << "iter.sz:" << iter->size() << endl;
         addBinding( *iter );
     }
-    
-#else
-    
-    addStatement(
-        PD_RDFStatement(
-            PD_URI("http://www.example.com/foo"),
-            PD_URI("http://www.example.com/bar"),
-            PD_Literal("AABBCC") ));
 #endif
     
     std::string stat;

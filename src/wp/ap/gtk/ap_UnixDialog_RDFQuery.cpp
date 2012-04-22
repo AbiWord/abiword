@@ -25,6 +25,10 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "GTKCommon.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -358,6 +362,11 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
 					  G_CALLBACK (AP_UnixDialog_RDFQuery__onDialogResponse), static_cast <gpointer>(this));
 	g_signal_connect (m_wDialog, "delete-event",
 					  G_CALLBACK (AP_UnixDialog_RDFQuery__onDeleteWindow), static_cast <gpointer>(this));
+
+#ifndef WITH_REDLAND
+	gtk_widget_set_sensitive(m_btExecute, FALSE);  
+	gtk_widget_set_sensitive(m_btShowAll, FALSE);  
+#endif
 
 	g_object_unref(G_OBJECT(builder));
 }
