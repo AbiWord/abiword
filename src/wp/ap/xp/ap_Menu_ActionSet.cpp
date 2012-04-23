@@ -337,15 +337,15 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	_s(AP_MENU_ID_RDF,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_RDF_HIGHLIGHT, 0,0,1,0, "toggleRDFAnchorHighlight",	ap_GetState_ToggleRDFAnchorHighlight,		NULL);
-	_s(AP_MENU_ID_RDF_QUERY, 0,0,0,0, "rdfQuery", NULL, NULL);    
-	_s(AP_MENU_ID_RDF_EDITOR, 0,0,0,0, "rdfEditor", NULL, NULL);    
-	_s(AP_MENU_ID_RDF_QUERY_XMLIDS, 0,0,0,0, "rdfQueryXMLIDs", NULL, NULL);    
+	_s(AP_MENU_ID_RDF_QUERY, 0,1,0,0, "rdfQuery", NULL, NULL);    
+	_s(AP_MENU_ID_RDF_EDITOR, 0,1,0,0, "rdfEditor", NULL, NULL);    
+	_s(AP_MENU_ID_RDF_QUERY_XMLIDS, 0,1,0,0, "rdfQueryXMLIDs", NULL, NULL);    
     _s(AP_MENU_ID_RDF_SEMITEM,              1,0,0,0,NULL,NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_CREATE,       1,0,0,0,NULL,NULL,NULL);
-	_s(AP_MENU_ID_RDF_SEMITEM_CREATEREF,    0,0,0,0,"rdfInsertRef",ap_GetState_RDF_Query,NULL);
+	_s(AP_MENU_ID_RDF_SEMITEM_CREATEREF,    0,1,0,0,"rdfInsertRef",ap_GetState_RDF_Query,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_NEW,          1,0,0,0,NULL,NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_NEW_CONTACT,  0,0,0,0,"rdfInsertNewContact",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_NEW_CONTACT_FROM_FILE,  0,0,0,0,"rdfInsertNewContactFromFile",ap_GetState_RDF_Contact,NULL);
+    _s(AP_MENU_ID_RDF_SEMITEM_NEW_CONTACT_FROM_FILE,  0,1,0,0,"rdfInsertNewContactFromFile",ap_GetState_RDF_Contact,NULL);
 	_s(AP_MENU_ID_RDF_ADV,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_DUMP_FOR_POINT,0,0,0,0,"dumpRDFForPoint",NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_DUMP_OBJECTS  ,0,0,0,0,"dumpRDFObjects",NULL,NULL);
