@@ -277,8 +277,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_ANNOTATION,					0,1,0,0,	"editAnnotation",			ap_GetState_HyperlinkOK,			NULL);
 	_s(AP_MENU_ID_DELETE_ANNOTATION,				0,0,0,0,	"deleteHyperlink",			NULL,								NULL);
 
-	_s(AP_MENU_ID_RDFANCHOR_SHOW_TRIPLES,   0,0,0,0, "rdfAnchorShowTriples", ap_GetState_RDFAnchorOK, NULL);
-	_s(AP_MENU_ID_RDFANCHOR_SPARQL,         0,0,0,0, "rdfAnchorSPARQL", ap_GetState_RDFAnchorOK, NULL);
+	_s(AP_MENU_ID_RDFANCHOR_SHOW_TRIPLES,   0,0,0,0, "rdfAnchorShowTriples", NULL, NULL);
+	_s(AP_MENU_ID_RDFANCHOR_SPARQL,         0,0,0,0, "rdfAnchorSPARQL", NULL, NULL);
 	_s(AP_MENU_ID_RDFANCHOR_EDITSEMITEM,      0,0,0,0, "rdfAnchorEditSemanticItem", ap_GetState_haveSemItems, NULL);
 	_s(AP_MENU_ID_RDFANCHOR_EXPORTSEMITEM,    0,0,0,0, "rdfAnchorExportSemanticItem", ap_GetState_haveSemItems, NULL);
 	_s(AP_MENU_ID_RDFANCHOR_SELECTTHISREFTOSEMITEM,    0,0,0,0, "rdfAnchorSelectThisReferenceToSemanticItem", ap_GetState_haveSemItems, NULL);
