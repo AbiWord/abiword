@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-23 12:32+0200\n"
-"PO-Revision-Date: 2012-04-23 12:32+0200\n"
+"POT-Creation-Date: 2012-04-23 13:56+0200\n"
+"PO-Revision-Date: 2012-04-23 13:56+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -1067,11 +1067,6 @@ msgstr "&Zoomen"
 msgid "(All revisions visible)"
 msgstr "(Alle sichtbar)"
 
-#. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#: po/tmp/ap_String_Id.h
-msgid "(Contacts)"
-msgstr "(Kontakte)"
-
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h
 msgid "(no spelling suggestions)"
@@ -2057,6 +2052,11 @@ msgstr "Kontakt"
 #: po/tmp/ap_String_Id.h
 msgid "Contact from File..."
 msgstr "Kontakt aus Datei..."
+
+#. DLG_RDF_SemanticItemInsert_Column_Refdlg
+#: po/tmp/ap_String_Id.h
+msgid "Contacts"
+msgstr "Kontakte"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -9276,24 +9276,3 @@ msgstr "verwandt"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "ohne Bezug"
-
-#~ msgid "Words: %d"
-#~ msgstr "Wörter: %d"
-
-#~ msgid "&Format Table"
-#~ msgstr "Tabelle &formatieren"
-
-#~ msgid "Allow Custom Toolbars"
-#~ msgstr "Symbolleisten wahlfrei"
-
-#~ msgid "Display Help Index"
-#~ msgstr "Hilfeindex anzeigen"
-
-#~ msgid "INS"
-#~ msgstr "EINFG"
-
-#~ msgid "OVR"
-#~ msgstr "ÜBER"
-
-#~ msgid "Show the AbiWord splash screen on application startup"
-#~ msgstr "Das Begrüßungslogo von AbiWord beim Start anzeigen"
