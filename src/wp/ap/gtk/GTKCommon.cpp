@@ -68,18 +68,20 @@ tostr( GtkEntry* e )
 std::string
 getSelectedText( GtkTreeView* tv, int colnum )
 {
+	std::string ret;
+
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
-	UT_return_val_if_fail (model != NULL, NULL);
+	UT_return_val_if_fail (model != NULL, ret);
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tv));
 	GtkTreeIter iter;
 	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
 	if (!haveSelected)
-		return NULL;
+		return ret;
 
 	gchar *label = NULL;
 	gtk_tree_model_get (model, &iter, colnum, &label, -1);
-    std::string ret = label;
+    ret = label;
     g_free(label);
 	return ret;
 }
