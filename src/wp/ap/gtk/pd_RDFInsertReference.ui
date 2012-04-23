@@ -5,7 +5,7 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">abiword: Insert Reference to Semantic Item</property>
-    <property name="default_width">320</property>
+    <property name="default_width">375</property>
     <property name="default_height">260</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">

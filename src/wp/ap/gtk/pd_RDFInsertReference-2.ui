@@ -7,7 +7,7 @@
     <property name="type">GTK_WINDOW_TOPLEVEL</property>
     <property name="window_position">GTK_WIN_POS_NONE</property>
     <property name="modal">False</property>
-    <property name="default_width">320</property>
+    <property name="default_width">375</property>
     <property name="default_height">260</property>
     <property name="resizable">True</property>
     <property name="destroy_with_parent">False</property>
@@ -48,15 +48,15 @@
           <object class="GtkScrolledWindow" id="scrolledwindow1">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">GTK_POLICY_ALWAYS</property>
-            <property name="vscrollbar_policy">GTK_POLICY_ALWAYS</property>
-            <property name="shadow_type">GTK_SHADOW_NONE</property>
+            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>            
+            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+            <property name="shadow_type">GTK_SHADOW_IN</property>
             <property name="window_placement">GTK_CORNER_TOP_LEFT</property>
             <child>
               <object class="GtkTreeView" id="tv">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="headers_visible">True</property>
+                <property name="headers_visible">False</property>
                 <property name="rules_hint">False</property>
                 <property name="reorderable">False</property>
                 <property name="enable_search">True</property>
@@ -68,7 +68,7 @@
           </object>
           <packing>
             <property name="padding">0</property>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
           </packing>
         </child>

@@ -22,6 +22,9 @@
 #include "pd_Document.h"
 #include "fv_View.h"
 #include "xap_UnixDialogHelper.h"
+#include "ap_Strings.h"
+#include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 
 // compile regardless
 #if !GTK_CHECK_VERSION(3,0,0)
@@ -283,6 +286,20 @@ OnInsertReferenceDblClicked( GtkTreeView       * tree,
 
 class PD_RDFDialogsGTK : public PD_RDFDialogs
 {
+private:
+    void _setIcon (GtkWidget *window)
+    {
+        XAP_Frame *lff = XAP_App::getApp()->getLastFocussedFrame();
+        XAP_UnixFrameImpl *pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(lff->getFrameImpl());
+        GtkWidget *top = gtk_widget_get_toplevel(pUnixFrameImpl->getTopLevelWindow());
+        
+        if (gtk_widget_is_toplevel(top))
+        {
+            GdkPixbuf *icon = gtk_window_get_icon(GTK_WINDOW(top));	
+            
+            if (icon) gtk_window_set_icon(GTK_WINDOW(window), icon);
+        }
+    }
 public:
     PD_RDFDialogsGTK()
     {
@@ -324,6 +341,9 @@ public:
     }
     std::pair< PT_DocPosition, PT_DocPosition > runInsertReferenceDialog( FV_View* pView )
     {
+        const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+        std::string text;
+
 #if GTK_CHECK_VERSION(3,0,0)
         GtkBuilder* builder = newDialogBuilder("pd_RDFInsertReference.ui");
 #else
@@ -331,6 +351,14 @@ public:
 #endif
         GtkWidget*  window  = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
         GtkWidget*  tv      = GTK_WIDGET(gtk_builder_get_object(builder, "tv"));
+
+        // localization
+        localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "ok")), pSS, AP_STRING_ID_DLG_RDF_SemanticItemInsert_Ok);
+
+        // window title and icon
+        pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticItemInsert_Title, text);
+        gtk_window_set_title(GTK_WINDOW(window), text.c_str());
+        _setIcon(window);
 
         PD_Document* pDoc = pView->getDocument();
         PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
@@ -356,9 +384,10 @@ public:
         PD_RDFContacts l = rdf->getContacts();
         GtkTreeIter giter;
         GtkTreeIter parentiter;
+        pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticItemInsert_Column_Refdlg, text);
         gtk_tree_store_append (GTK_TREE_STORE (model), &parentiter, 0);
         gtk_tree_store_set (GTK_TREE_STORE (model), &parentiter, 
-                            COLUMN_REFDLG_NAME, "(Contacts)",
+                            COLUMN_REFDLG_NAME, text.c_str(),
                             -1);
     
         for( PD_RDFContacts::iterator iter = l.begin(); iter != l.end(); ++iter )
