@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-22 19:03+0200\n"
-"PO-Revision-Date: 2012-04-22 19:03+0200\n"
+"POT-Creation-Date: 2012-04-23 12:32+0200\n"
+"PO-Revision-Date: 2012-04-23 12:32+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -1066,6 +1066,11 @@ msgstr "&Zoomen"
 #: po/tmp/ap_String_Id.h
 msgid "(All revisions visible)"
 msgstr "(Alle sichtbar)"
+
+#. DLG_RDF_SemanticItemInsert_Column_Refdlg
+#: po/tmp/ap_String_Id.h
+msgid "(Contacts)"
+msgstr "(Kontakte)"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h
@@ -3658,6 +3663,16 @@ msgstr "RDF-Link einfügen"
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF link..."
 msgstr "RDF-Link einfügen..."
+
+#. DLG_RDF_SemanticItemInsert_Ok
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference"
+msgstr "Verweis einfügen"
+
+#. DLG_RDF_SemanticItemInsert_Title
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference to Semantic Item"
+msgstr "Verweis auf semantisches Element einfügen"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
