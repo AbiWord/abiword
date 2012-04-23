@@ -25,6 +25,10 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 #include "GTKCommon.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -660,6 +664,11 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onDeleteWindow), static_cast <gpointer>(this));
 	g_signal_connect (m_resultsView, "cursor-changed",
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onCursorChanged), static_cast <gpointer>(this));
+
+#ifndef WITH_REDLAND
+	gtk_action_set_sensitive(m_aimportrdfxml, FALSE);  
+	gtk_action_set_sensitive(m_aexportrdfxml, FALSE);  
+#endif
 
 	g_object_unref(G_OBJECT(builder));
 }
