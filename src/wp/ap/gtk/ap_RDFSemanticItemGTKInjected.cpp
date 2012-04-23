@@ -384,11 +384,15 @@ public:
         PD_RDFContacts l = rdf->getContacts();
         GtkTreeIter giter;
         GtkTreeIter parentiter;
+
+        if (l.begin() != l.end())
+        {
         pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticItemInsert_Column_Refdlg, text);
         gtk_tree_store_append (GTK_TREE_STORE (model), &parentiter, 0);
         gtk_tree_store_set (GTK_TREE_STORE (model), &parentiter, 
                             COLUMN_REFDLG_NAME, text.c_str(),
                             -1);
+        }
     
         for( PD_RDFContacts::iterator iter = l.begin(); iter != l.end(); ++iter )
         {

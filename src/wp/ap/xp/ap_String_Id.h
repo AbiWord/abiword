@@ -678,7 +678,7 @@ dcl(DLG_RDF_Editor_Status,					"Total RDF: %d")
 dcl(DLG_RDF_Insert_NewContact,				"New Contact...")
 dcl(DLG_RDF_SemanticItemInsert_Title,		"Insert Reference to Semantic Item")
 dcl(DLG_RDF_SemanticItemInsert_Ok,			"Insert Reference")
-dcl(DLG_RDF_SemanticItemInsert_Column_Refdlg,"(Contacts)")
+dcl(DLG_RDF_SemanticItemInsert_Column_Refdlg,"Contacts")
 
 
 // Lists Dialog
