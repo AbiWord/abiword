@@ -47,6 +47,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_ScriptsActive);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_SomethingSelected);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_RDFAnchorOK);
+Defun_EV_GetMenuItemState_Fn(ap_GetState_RDF_Query);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_haveSemItems);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_Spelling);
 Defun_EV_GetMenuItemState_Fn(ap_GetState_ColumnsActive);

@@ -342,7 +342,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_RDF_QUERY_XMLIDS, 0,0,0,0, "rdfQueryXMLIDs", NULL, NULL);    
     _s(AP_MENU_ID_RDF_SEMITEM,              1,0,0,0,NULL,NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_CREATE,       1,0,0,0,NULL,NULL,NULL);
-	_s(AP_MENU_ID_RDF_SEMITEM_CREATEREF,    0,0,0,0,"rdfInsertRef",NULL,NULL);
+	_s(AP_MENU_ID_RDF_SEMITEM_CREATEREF,    0,0,0,0,"rdfInsertRef",ap_GetState_RDF_Query,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_NEW,          1,0,0,0,NULL,NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_NEW_CONTACT,  0,0,0,0,"rdfInsertNewContact",NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_NEW_CONTACT_FROM_FILE,  0,0,0,0,"rdfInsertNewContactFromFile",NULL,NULL);

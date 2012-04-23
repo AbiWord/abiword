@@ -648,6 +648,20 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RDFAnchorOK)
 	return s;
 }
 
+Defun_EV_GetMenuItemState_Fn(ap_GetState_RDF_Query)
+{
+	UT_UNUSED(id);
+	ABIWORD_VIEW ;
+	UT_return_val_if_fail (pView, EV_MIS_Gray);
+
+	return 
+#ifdef WITH_REDLAND
+	       EV_MIS_ZERO; 
+#else
+	       EV_MIS_Gray;
+#endif
+}
+
 Defun_EV_GetMenuItemState_Fn(ap_GetState_haveSemItems)
 {
 	UT_UNUSED(id);
