@@ -365,7 +365,7 @@ AP_UnixDialog_Goto::onAnnoDblClicked ()
 void 
 AP_UnixDialog_Goto::onJumpClicked () 
 {
-    std::string text = "";
+    std::string text;
     XAP_GtkSignalBlocker b(G_OBJECT(m_sbLine), m_iLineConnect);
 
 	switch (m_JumpTarget) {
