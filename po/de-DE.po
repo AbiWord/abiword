@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-23 13:56+0200\n"
-"PO-Revision-Date: 2012-04-23 13:56+0200\n"
+"POT-Creation-Date: 2012-04-23 20:10+0200\n"
+"PO-Revision-Date: 2012-04-23 20:10+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -2050,8 +2050,8 @@ msgstr "Kontakt"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
-msgid "Contact from File..."
-msgstr "Kontakt aus Datei..."
+msgid "Contact from File"
+msgstr "Kontakt aus Datei"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
 #: po/tmp/ap_String_Id.h
@@ -2763,8 +2763,8 @@ msgstr "LaTeX-Gleichung bearbeiten"
 
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-msgid "Edit RDF Triples..."
-msgstr "RDF-Tripel bearbeiten..."
+msgid "Edit RDF Triples"
+msgstr "RDF-Tripel bearbeiten"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
@@ -5388,8 +5388,8 @@ msgstr "SPARQL-Abfrage"
 
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
-msgid "SPARQL Query..."
-msgstr "SPARQL-Abfrage..."
+msgid "SPARQL Query"
+msgstr "SPARQL-Abfrage"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
@@ -5873,8 +5873,8 @@ msgstr "RDF-Tripel zum Standort anzeigen"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position..."
-msgstr "RDF an Cursorposition anzeigen..."
+msgid "Show RDF for cursor position"
+msgstr "RDF an Cursorposition anzeigen"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
