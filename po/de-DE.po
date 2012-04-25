@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-25 10:50+0200\n"
-"PO-Revision-Date: 2012-04-25 10:50+0200\n"
+"PO-Revision-Date: 2012-04-25 16:43+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -5894,17 +5894,17 @@ msgstr "Do&kument nach vorigen Änderungen anzeigen"
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show document at final version without revision highlighting"
-msgstr "Endgültiges Do&kument ohne Hervorhebung der Änderungen anzeigen"
+msgstr "Endgültiges Dokument ohne Hervorhebung der Änderungen anzeigen"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document"
-msgstr "Endgültiges Do&kument anzeigen"
+msgstr "Endgültiges Dokument anzeigen"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document..."
-msgstr "Endgültiges Do&kument anzeigen..."
+msgstr "Endgültiges Dokument anzeigen..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
