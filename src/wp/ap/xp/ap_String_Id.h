@@ -672,7 +672,7 @@ dcl(DLG_RDF_Query_Comment,					"# Insert your SPARQL query here\n# Results are s
 dcl(DLG_RDF_Query_Status,					"Query RDF: %d of total: %ld")
 dcl(DLG_RDF_Editor_Title, 					"Edit document RDF")
 dcl(DLG_RDF_Editor_Menu_File,				"&File")
-dcl(DLG_RDF_Editor_Menu_Tripel,				"&Tripel")
+dcl(DLG_RDF_Editor_Menu_Triple,				"&Triple")
 dcl(DLG_RDF_Editor_ShowAll,					"Update")
 dcl(DLG_RDF_Editor_Status,					"Total RDF: %d")
 dcl(DLG_RDF_Insert_NewContact,				"New Contact...")

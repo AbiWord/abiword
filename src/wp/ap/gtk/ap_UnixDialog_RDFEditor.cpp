@@ -524,7 +524,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 
     // localization
     localizeMenuItem(GTK_WIDGET(gtk_builder_get_object(builder, "filemenuitem")), pSS, AP_STRING_ID_DLG_RDF_Editor_Menu_File);
-    localizeMenuItem(GTK_WIDGET(gtk_builder_get_object(builder, "editmenuitem")), pSS, AP_STRING_ID_DLG_RDF_Editor_Menu_Tripel);
+    localizeMenuItem(GTK_WIDGET(gtk_builder_get_object(builder, "editmenuitem")), pSS, AP_STRING_ID_DLG_RDF_Editor_Menu_Triple);
     localizeButton(m_btShowAll, pSS, AP_STRING_ID_DLG_RDF_Editor_ShowAll);
 
     // add three dots to menu items raising a dialog
