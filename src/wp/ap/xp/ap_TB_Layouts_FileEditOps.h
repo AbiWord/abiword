@@ -68,13 +68,4 @@ BeginLayout(FileEditOps, AP_STRING_ID_TB_Standard, AP_PREF_KEY_StandardBarVisibl
 	ToolbarItem(AP_TOOLBAR_ID_REVISIONS_FIND_NEXT)
 #endif
 
-#ifndef TOOLKIT_WIN
-    ToolbarItem(AP_TOOLBAR_ID_SEMITEM_THIS)
- 	ToolbarItem(AP_TOOLBAR_ID_SEMITEM_NEXT)
- 	ToolbarItem(AP_TOOLBAR_ID_SEMITEM_PREV)
- 	ToolbarItem(AP_TOOLBAR_ID_SEMITEM_EDIT)
- 	ToolbarItem(AP_TOOLBAR_ID_SEMITEM_STYLESHEET_REFLOW)
-
-#endif
-
 EndLayout()
