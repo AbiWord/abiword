@@ -346,11 +346,13 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
     _s(AP_MENU_ID_RDF_SEMITEM_NEW,          1,0,0,0,NULL,NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_NEW_CONTACT,  0,0,0,0,"rdfInsertNewContact",NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_NEW_CONTACT_FROM_FILE,  0,1,0,0,"rdfInsertNewContactFromFile",ap_GetState_RDF_Contact,NULL);
+#ifdef DEBUG
 	_s(AP_MENU_ID_RDF_ADV,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_DUMP_FOR_POINT,0,0,0,0,"dumpRDFForPoint",NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_DUMP_OBJECTS  ,0,0,0,0,"dumpRDFObjects",NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_TEST          ,0,0,0,0,"rdfTest",NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_PLAY          ,0,0,0,0,"rdfPlay",NULL,NULL);
+#endif
     _s(AP_MENU_ID_RDF_SEMITEM_RELATION,          1,0,0,0,NULL,NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_SET_AS_SOURCE,     0,0,0,0,"rdfSemitemSetAsSource",NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_RELATED_TO_SOURCE, 1,0,0,0,NULL,NULL,NULL);

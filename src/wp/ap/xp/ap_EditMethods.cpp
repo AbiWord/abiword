@@ -745,10 +745,12 @@ public:
 	
 	static EV_EditMethod_Fn insertTable;
 
+#ifdef DEBUG
 	static EV_EditMethod_Fn dumpRDFForPoint;
 	static EV_EditMethod_Fn dumpRDFObjects;
 	static EV_EditMethod_Fn rdfTest;
 	static EV_EditMethod_Fn rdfPlay;
+#endif
 	static EV_EditMethod_Fn rdfQuery;
 	static EV_EditMethod_Fn rdfEditor;
 	static EV_EditMethod_Fn rdfQueryXMLIDs;
@@ -922,8 +924,10 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dragToXYword), 		0,	""),
 	EV_EditMethod(NF(dragVisualText),       0, ""),
 	EV_EditMethod(NF(dragVline), 			0,	""),
+#ifdef DEBUG
 	EV_EditMethod(NF(dumpRDFForPoint),		0,	""),
 	EV_EditMethod(NF(dumpRDFObjects),		0,	""),
+#endif
 
 	
 	// e
@@ -1138,14 +1142,18 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(rdfInsertNewContact),  0,	""),
 	EV_EditMethod(NF(rdfInsertNewContactFromFile),  0,	""),
 	EV_EditMethod(NF(rdfInsertRef),         0,	""),
+#ifdef DEBUG
 	EV_EditMethod(NF(rdfPlay), 				0,	""),
+#endif
 	EV_EditMethod(NF(rdfQuery),             0,	""),
 	EV_EditMethod(NF(rdfQueryXMLIDs),       0,	""),
 	EV_EditMethod(NF(rdfSemitemFindRelatedFoafKnows),  0,  ""),
 	EV_EditMethod(NF(rdfSemitemRelatedToSourceFoafKnows),  0,  ""),
 	EV_EditMethod(NF(rdfSemitemSetAsSource),  0,  ""),
 	EV_EditMethod(NF(rdfStylesheetSettings),  0,  ""),
+#ifdef DEBUG
 	EV_EditMethod(NF(rdfTest), 				0,	""),
+#endif
 	EV_EditMethod(NF(redo), 				0,	""),
 	EV_EditMethod(NF(releaseFrame), 		0,	""),
 	EV_EditMethod(NF(releaseInlineImage), 		0,	""),
@@ -16343,6 +16351,7 @@ Defun1(doEscape)
 	return true;
 }
 
+#ifdef DEBUG
 Defun1(dumpRDFForPoint)
 {
 	CHECK_FRAME;
@@ -16401,3 +16410,4 @@ Defun1(rdfPlay)
     pDoc->getDocumentRDF()->runPlay();
     return true;
 }
+#endif

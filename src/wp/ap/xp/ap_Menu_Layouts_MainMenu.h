@@ -456,6 +456,7 @@ BeginLayout(Main,0)
                 MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_SETTINGS)
             EndSubMenu()
 
+#ifdef DEBUG
 			BeginSubMenu(AP_MENU_ID_RDF_ADV)
 
 			         MenuItem(AP_MENU_ID_RDF_ADV_DUMP_FOR_POINT)
@@ -465,6 +466,7 @@ BeginLayout(Main,0)
                      Separator()
 			         MenuItem(AP_MENU_ID_RDF_ADV_PLAY)
             EndSubMenu()
+#endif
 
 	EndSubMenu()
 

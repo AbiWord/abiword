@@ -47,8 +47,6 @@
 
 typedef std::map< std::string, std::string > stringmap_t;
 
-static void dump( const std::string& msg, PD_RDFModelIterator begin, PD_RDFModelIterator end );
-
 /******************************/
 /******************************/
 /******************************/
@@ -1184,9 +1182,13 @@ public:
     
     virtual void dumpModel( const std::string& headerMsg = "dumpModel()" )
     {
+        UT_DEBUG_ONLY_ARG(headerMsg);
+
+#ifdef DEBUG
         UT_DEBUGMSG(("PD_RDFModelFromStartEndPos::dumpModel() doc:%p\n", m_doc));
         for( m_APList_t::iterator iter = apBegin(); iter != apEnd(); ++iter )
             apDumpModel( *iter, headerMsg );
+#endif
     }
     
 
@@ -4074,8 +4076,11 @@ PD_DocumentRDF::getManifestURI()
 
 PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
 {
+    UT_DEBUG_ONLY_ARG(pos);
+
     PD_Document*    doc = getDocument();
 
+#ifdef DEBUG
     std::set< std::string > IDList;
     addRelevantIDsForPosition( IDList, pos );
 
@@ -4118,12 +4123,13 @@ PD_RDFModelHandle PD_DocumentRDF::getRDFAtPosition( PT_DocPosition pos )
     //     }
     // }
 
+#else
     {
         // return an empty model
         PD_RDFModelHandle x( new PD_RDFModelFromAP( doc, new PP_AttrProp() ));
         return x;
     }
-    
+#endif    
 }
 
 void PD_DocumentRDF::addRDFForID( const std::string& xmlid, PD_DocumentRDFMutationHandle& m )
@@ -4213,6 +4219,7 @@ PD_RDFModelHandle PD_DocumentRDF::getRDFForID( const std::string& xmlid )
 
 void PD_DocumentRDF::runMilestone2Test()
 {
+#ifdef DEBUG
     UT_DEBUGMSG(("PD_DocumentRDF::runMilestone2Test() doc:%p\n", m_doc));
 
     {
@@ -4281,30 +4288,30 @@ void PD_DocumentRDF::runMilestone2Test()
     dumpModel();    
 
     runMilestone2Test2();
+#endif
 }
 
+#ifdef DEBUG
 static void dump( const std::string& msg, PD_RDFModelIterator iter, PD_RDFModelIterator e )
 {
-	UT_DEBUG_ONLY_ARG(msg);
-
     int count = 0;
     UT_DEBUGMSG(("dump(top) msg::%s\n", msg.c_str() ));
     for( ; iter != e; ++iter )
     {
-#if DEBUG
         const PD_RDFStatement& st(*iter);
         UT_DEBUGMSG((" st:%s\n", st.toString().c_str() ));
-#endif
         ++count;
     }
     UT_DEBUGMSG(("dump(end) count:%d msg::%s\n", count, msg.c_str() ));
 }
+#endif
 
 
 
 
 void PD_DocumentRDF::runPlay()
 {
+#ifdef DEBUG
     UT_DEBUGMSG(("================================================================================\n" ));
     UT_DEBUGMSG(("PD_DocumentRDF::runPlay() o:%s\n", "foo" ));
 
@@ -4315,7 +4322,6 @@ void PD_DocumentRDF::runPlay()
     {
         PD_RDFContactHandle c = *ci;
 
-#if DEBUG
         UT_DEBUGMSG((" subj:%s\n", c->linkingSubject().toString().c_str() ));
         UT_DEBUGMSG((" name:%s\n", c->name().c_str() ));
         std::set< std::string > xmlids = c->getXMLIDs();
@@ -4327,7 +4333,6 @@ void PD_DocumentRDF::runPlay()
             UT_DEBUGMSG(("   start:%d end:%d ", range.first, range.second ));
             UT_DEBUGMSG((" \n" ));
         }
-#endif
 
 
         // if( c->name() == "James Smith" )
@@ -4363,12 +4368,13 @@ void PD_DocumentRDF::runPlay()
 
     PD_RDFModelHandle m = getRDFForID( "wingb" );
     dump( "wingb", m->begin(), m->end() );
-    
+#endif
 }
 
 
 void PD_DocumentRDF::runMilestone2Test2()
 {
+#ifdef DEBUG
     PD_URI s;
     PD_URI o = getObject( PD_URI("http://www.example.com/emu"),
                           PD_URI("http://www.example.com/lives-in"));
@@ -4401,12 +4407,13 @@ void PD_DocumentRDF::runMilestone2Test2()
     }
     
     
-    
+#endif    
 }
 
 
 void PD_DocumentRDF::dumpObjectMarkersFromDocument()
 {
+#ifdef DEBUG
     UT_DEBUGMSG(("PD_DocumentRDF::dumpObjectMarkersFromDocument() doc:%p\n", m_doc));
     m_doc->dumpDoc("dumpObjectMarkersFromDocument", 0, 0);
 
@@ -4481,7 +4488,7 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
 //    curr = 420;
 //    PD_RDFModelHandle h = getRDFAtPosition( curr );
     
-    
+#endif    
 }
 
 
@@ -4490,8 +4497,12 @@ void PD_DocumentRDF::dumpObjectMarkersFromDocument()
  */
 void PD_DocumentRDF::dumpModel( const std::string& headerMsg )
 {
+    UT_DEBUG_ONLY_ARG(headerMsg);
+  
+#ifdef DEBUG    
     UT_DEBUGMSG(("PD_DocumentRDF::dumpModel() doc:%p\n", m_doc));
     apDumpModel( getAP(), headerMsg );
+#endif
 }
 
 void
@@ -4510,8 +4521,10 @@ PD_DocumentRDF::maybeSetDocumentDirty()
 void
 PD_DocumentRDF::apDumpModel( const PP_AttrProp* AP, const std::string& headerMsg )
 {
+	UT_DEBUG_ONLY_ARG(AP);
 	UT_DEBUG_ONLY_ARG(headerMsg);
 
+#ifdef DEBUG
     UT_DEBUGMSG(("PD_DocumentRDF::apDumpModel() ----------------------------------\n"));
     UT_DEBUGMSG(("PD_DocumentRDF::apDumpModel() %s\n", headerMsg.c_str()));
     UT_DEBUGMSG(("PD_DocumentRDF::apDumpModel() triple count:%ld\n", getTripleCount()));
@@ -4549,6 +4562,7 @@ PD_DocumentRDF::apDumpModel( const PP_AttrProp* AP, const std::string& headerMsg
             }
         }
     }
+#endif
 }
 
 /****************************************/
