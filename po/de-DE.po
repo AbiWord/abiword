@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-23 20:10+0200\n"
-"PO-Revision-Date: 2012-04-23 20:10+0200\n"
+"POT-Creation-Date: 2012-04-25 10:50+0200\n"
+"PO-Revision-Date: 2012-04-25 10:50+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -989,9 +989,9 @@ msgstr "E&xtras"
 msgid "&Top:"
 msgstr "&Oben:"
 
-#. DLG_RDF_Editor_Menu_Tripel
+#. DLG_RDF_Editor_Menu_Triple
 #: po/tmp/ap_String_Id.h
-msgid "&Tripel"
+msgid "&Triple"
 msgstr "&Tripel"
 
 #. DLG_Field_Types_No_Colon
