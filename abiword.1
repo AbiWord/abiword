@@ -48,8 +48,8 @@ Import the given file as if it had extension \fIEXT\fR, overriding automatic
 file type detection.
 .TP
 .BI "\-u " PROFILE "\fR,\fB \-\-userprofile=" PROFILE
-Use \fIPROFILE\fR instead of the default ~/.AbiSuite/AbiWord.Profile to read
-and store settings.
+Use \fIPROFILE\fR to read and store settings instead of the default 
+.BR XDG_CONFIG_HOME /abiword/profile. 
 .TP
 .BI "\-t " DEST "\fR,\fB \-\-to=" DEST
 Convert the given file to another format, writing the result to
@@ -100,6 +100,24 @@ Display a short help message and exit.
 .TP
 .B \-\-version
 Report the version of AbiWord.
+.
+.SH ENVIRONMENT VARIABLES
+.TP
+.B HOME
+Defines the user's home directory.
+.TP
+.B XDG_CONFIG_HOME
+Defines the base directory relative to which user specific configuration 
+files should be stored. (See the 
+.I XDG Base Directory Specification 
+for details.) 
+.
+.SH FILES
+.TP
+.B XDG_CONFIG_HOME/abiword/profile
+The default user profile file. (If \fBXDG_CONFIG_HOME\fR is either not set or 
+empty, a default equal to 
+.BR HOME "/.config will be used.)"  
 .
 .SH EXAMPLES
 To convert the document \fIexample.abw\fR to RTF:

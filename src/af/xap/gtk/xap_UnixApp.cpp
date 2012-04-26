@@ -236,7 +236,7 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
 
     if (buf == NULL)
     {
-        const char * szAbiDir = "AbiSuite";
+		const char * szAbiDir = "abiword";
 		const char * szCfgDir = ".config";
 
 		const char * szXDG = getenv("XDG_CONFIG_HOME");
