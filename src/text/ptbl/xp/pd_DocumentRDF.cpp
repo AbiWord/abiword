@@ -2059,6 +2059,7 @@ extern "C" {
 };
 
 
+#if 0
 // static std::string tostr( time_t v )
 // {
 //     std::stringstream ss;
@@ -2067,28 +2068,29 @@ extern "C" {
 // }
 
 
-// static void addCalProp( PD_DocumentRDFMutationHandle m,
-//                         const PD_URI& uuidnode,
-//                         const std::string& predend,
-//                         const std::string& value )
-// {
-//     std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
-//     m->add( uuidnode,
-//             PD_URI(predBase + predend),
-//             PD_Literal( value ) );
-// }
-// static void addCalPropSZ( PD_DocumentRDFMutationHandle m,
-//                           const PD_URI& uuidnode,
-//                           const std::string& predend,
-//                           const char* value )
-// {
-//     std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
-//     if( value )
-//     {
-//         addCalProp( m, uuidnode, predend, (std::string)value );
-//     }
-// }
-// 
+static void addCalProp( PD_DocumentRDFMutationHandle m,
+                        const PD_URI& uuidnode,
+                        const std::string& predend,
+                        const std::string& value )
+{
+    std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
+    m->add( uuidnode,
+            PD_URI(predBase + predend),
+            PD_Literal( value ) );
+}
+static void addCalPropSZ( PD_DocumentRDFMutationHandle m,
+                          const PD_URI& uuidnode,
+                          const std::string& predend,
+                          const char* value )
+{
+    std::string predBase = "http://www.w3.org/2002/12/cal/icaltzd#";
+    if( value )
+    {
+        addCalProp( m, uuidnode, predend, (std::string)value );
+    }
+}
+
+#endif
 #endif
 
 
