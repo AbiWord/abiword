@@ -636,7 +636,7 @@ void IE_Exp_HTML_TagWriter::openTag(const std::string& tagName, bool isInline, b
     }
     m_buffer += "<" + tagName;
     
-    UT_DEBUGMSG(("Opened tag: %s Depth: %d\n", tagName.c_str(), m_tagStack.size())); 
+    UT_DEBUGMSG(("Opened tag: %s Depth: %ld\n", tagName.c_str(), (long)m_tagStack.size())); 
 }
 
 void IE_Exp_HTML_TagWriter::addAttribute(const std::string& name, const std::string& value)
