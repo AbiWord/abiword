@@ -329,6 +329,16 @@ public:
         GtkWidget*  setLocations = GTK_WIDGET(gtk_builder_get_object(builder, "setLocations"));
         GtkWidget*  setAll       = GTK_WIDGET(gtk_builder_get_object(builder, "setAll"));
 
+        // localization
+        localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbExplanation")), pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Explanation);
+        localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbContacts")), pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Contacts);
+        localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbEvents")), pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Events);
+        localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbLocations")), pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Locations);
+        localizeButton(setContacts, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
+        localizeButton(setEvents, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
+        localizeButton(setLocations, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
+        localizeButton(setAll, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
+
         // window title and icon
         pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticStylesheets_Title, text);
         gtk_window_set_title(GTK_WINDOW(window), text.c_str());

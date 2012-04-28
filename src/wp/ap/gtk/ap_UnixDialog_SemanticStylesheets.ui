@@ -53,10 +53,10 @@
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkLabel" id="label1">
+              <object class="GtkLabel" id="lbExplanation">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label" translatable="yes">Set the default stylesheet for Semantic objects in this document. New RDF objects will use this stylesheet automatically. The buttons allow you to set the stylesheet for all existing semantic objects to the new default stylesheet as well.</property>
+                <property name="label" translatable="yes"></property>
                 <property name="wrap">True</property>
               </object>
               <packing>
@@ -71,7 +71,7 @@
                 <property name="can_focus">False</property>
                 <property name="n_rows">4</property>
                 <child>
-                  <object class="GtkLabel" id="label2">
+                  <object class="GtkLabel" id="lbContacts">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Contacts</property>
@@ -85,7 +85,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label3">
+                  <object class="GtkLabel" id="lbEvents">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Events</property>
@@ -99,7 +99,7 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="label4">
+                  <object class="GtkLabel" id="lbLocations">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Locations</property>

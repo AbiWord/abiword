@@ -680,6 +680,11 @@ dcl(DLG_RDF_SemanticItemInsert_Title,		"Insert Reference to Semantic Item")
 dcl(DLG_RDF_SemanticItemInsert_Ok,			"Insert Reference")
 dcl(DLG_RDF_SemanticItemInsert_Column_Refdlg,"Contacts")
 dcl(DLG_RDF_SemanticStylesheets_Title,		"RDF Stylesheet")
+dcl(DLG_RDF_SemanticStylesheets_Explanation,"Set the default stylesheet for Semantic objects in this document. New RDF objects will use this stylesheet automatically. The buttons allow you to set the stylesheet for all existing semantic objects to the new default stylesheet as well.")
+dcl(DLG_RDF_SemanticStylesheets_Contacts,	"Contacts")
+dcl(DLG_RDF_SemanticStylesheets_Events,		"Events")
+dcl(DLG_RDF_SemanticStylesheets_Locations,	"Locations")
+dcl(DLG_RDF_SemanticStylesheets_Set,		"Set For All Existing")
 
 
 // Lists Dialog
