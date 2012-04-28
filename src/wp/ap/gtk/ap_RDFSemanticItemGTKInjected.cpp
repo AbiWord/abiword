@@ -97,10 +97,8 @@ void OnSemItemListEdited ( GtkDialog* d, gint response_id,
 static void
 OnSemanticStylesheetsDialogResponse( GtkWidget* dialog,
                                      GtkTreeView* /*tree*/,
-                                     FV_View* pView )
+                                     FV_View* /*pView*/)
 {
-    PD_Document* pDoc = pView->getDocument();
-    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
     gtk_widget_destroy(dialog);
 }
 
@@ -327,9 +325,6 @@ public:
         GtkWidget*  setEvents    = GTK_WIDGET(gtk_builder_get_object(builder, "setEvents"));
         GtkWidget*  setLocations = GTK_WIDGET(gtk_builder_get_object(builder, "setLocations"));
         GtkWidget*  setAll       = GTK_WIDGET(gtk_builder_get_object(builder, "setAll"));
-
-        PD_Document* pDoc = pView->getDocument();
-        PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
 
         UT_DEBUGMSG(("runSemanticStylesheetsDialog_cb() combo:%p\n", contacts ));
         g_signal_connect (setContacts,  "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  contacts );
