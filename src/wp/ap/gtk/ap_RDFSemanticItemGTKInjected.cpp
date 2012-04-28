@@ -321,6 +321,7 @@ public:
         GtkBuilder* builder   = newDialogBuilder("ap_UnixDialog_SemanticStylesheets-2.ui");        
 #endif
         GtkWidget*  window    = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+        GtkWidget*  lbExplanation = GTK_WIDGET(gtk_builder_get_object(builder, "lbExplanation"));         
         GtkWidget*  contacts  = GTK_WIDGET(gtk_builder_get_object(builder, "contacts"));
         GtkWidget*  events    = GTK_WIDGET(gtk_builder_get_object(builder, "events"));
         GtkWidget*  locations = GTK_WIDGET(gtk_builder_get_object(builder, "locations"));
@@ -330,7 +331,9 @@ public:
         GtkWidget*  setAll       = GTK_WIDGET(gtk_builder_get_object(builder, "setAll"));
 
         // localization
-        localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbExplanation")), pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Explanation);
+        pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticStylesheets_Explanation, text);
+        text += "\xe2\x80\xa9";     // paragraph separator 
+        gtk_label_set_text(GTK_LABEL(lbExplanation), text.c_str());
         localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbContacts")), pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Contacts);
         localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbEvents")), pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Events);
         localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbLocations")), pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Locations);
@@ -338,6 +341,11 @@ public:
         localizeButton(setEvents, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
         localizeButton(setLocations, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
         localizeButton(setAll, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
+
+        // set max. text width for explanation
+        GtkRequisition requisition;
+        gtk_widget_size_request(gtk_widget_get_parent(lbExplanation), &requisition);
+        gtk_widget_set_size_request(lbExplanation, requisition.width, -1);
 
         // window title and icon
         pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticStylesheets_Title, text);
