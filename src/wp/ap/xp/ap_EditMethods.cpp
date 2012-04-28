@@ -695,7 +695,6 @@ public:
 	static EV_EditMethod_Fn rdfAnchorSelectThisReferenceToSemanticItem;
 	static EV_EditMethod_Fn rdfAnchorSelectNextReferenceToSemanticItem;
 	static EV_EditMethod_Fn rdfAnchorSelectPrevReferenceToSemanticItem;
-	static EV_EditMethod_Fn rdfApplyStylesheet;
 	static EV_EditMethod_Fn rdfApplyStylesheetContactName;
 	static EV_EditMethod_Fn rdfApplyStylesheetContactNick;
 	static EV_EditMethod_Fn rdfApplyStylesheetContactNamePhone;
@@ -1124,7 +1123,6 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(rdfAnchorSelectThisReferenceToSemanticItem) , 0,  ""),
 	EV_EditMethod(NF(rdfAnchorShowTriples), 0,  ""),
 	EV_EditMethod(NF(rdfApplyCurrentStyleSheet),  0,  ""),
-	EV_EditMethod(NF(rdfApplyStylesheet) ,  0,  ""),
 	EV_EditMethod(NF(rdfApplyStylesheetContactName) ,  0,  ""),
 	EV_EditMethod(NF(rdfApplyStylesheetContactNameHomepagePhone) ,  0,  ""),
 	EV_EditMethod(NF(rdfApplyStylesheetContactNamePhone) ,  0,  ""),
@@ -14949,44 +14947,6 @@ Defun1(rdfApplyStylesheetLocationName)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
 	_rdfApplyStylesheet( pView, "name", pView->getPoint() );
-	return true;
-}
-
-
-Defun1(rdfApplyStylesheet)
-{
-	CHECK_FRAME;
-	ABIWORD_VIEW;
-	UT_return_val_if_fail(pView, false);
-
-	_rdfApplyStylesheet( pView, "name", pView->getPoint() );
-	
-	// PD_Document * pDoc = pView->getDocument();
-	// UT_return_val_if_fail(pDoc, false);
-	// PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-
-	// std::set< std::string > xmlids;
-	// rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
-    // PD_RDFSemanticItems sl = rdf->getSemanticObjects( xmlids );
-	// if( sl.empty() )
-	// 	return false;
-	
-	// PD_RDFSemanticItemHandle si = *(sl.begin());
-	// PD_RDFSemanticItemViewSite vs( si, pView->getPoint() );
-
-	// // std::set< std::string > sixml = si->getXMLIDs();
-	// // if( sixml.empty() )
-	// // 	return false;
-	
-	// // std::string xmlid = *(sixml.begin());
-	// // PD_RDFSemanticItemViewSite vs( si, xmlid );
-
-	// std::string stylesheetName = "name, phone";
-	// PD_RDFSemanticStylesheetHandle ss = si->findStylesheetByName( PD_RDFSemanticStylesheet::stylesheetTypeSystem(),
-	// 															  stylesheetName );
-    // vs.applyStylesheet( pView, ss );
-	
-
 	return true;
 }
 
