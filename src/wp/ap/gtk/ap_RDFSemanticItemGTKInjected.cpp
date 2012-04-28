@@ -26,11 +26,14 @@
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
 
-// compile regardless
+static gchar *s_id;
+
 #if !GTK_CHECK_VERSION(3,0,0)
-const gchar* gtk_combo_box_get_active_id( GtkComboBox* /*v*/ )
+const gchar* gtk_combo_box_get_active_id( GtkComboBox* combo_box )
 {
-    return 0;
+    g_free(s_id);
+    s_id = gtk_combo_box_get_active_text(combo_box);
+    return s_id;
 }
 #endif
 
@@ -304,6 +307,10 @@ public:
     PD_RDFDialogsGTK()
     {
         PD_DocumentRDF::setRDFDialogs( this );
+    }
+    ~PD_RDFDialogsGTK()
+    {
+        g_free(s_id);
     }
     virtual void runSemanticStylesheetsDialog( FV_View* pView )
     {
