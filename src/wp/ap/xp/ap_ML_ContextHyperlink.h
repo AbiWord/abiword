@@ -185,7 +185,7 @@ BeginLayout(ContextAnnotationT,EV_EMC_RDFANCHORTEXT)
             EndSubMenu()
 		    BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION)
                 MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_NAME)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG)
+                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG)
             EndSubMenu()
         EndSubMenu()
             
