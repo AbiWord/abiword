@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-25 10:50+0200\n"
-"PO-Revision-Date: 2012-04-25 16:43+0200\n"
+"POT-Creation-Date: 2012-04-28 21:26+0200\n"
+"PO-Revision-Date: 2012-04-28 21:26+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -2054,6 +2054,7 @@ msgid "Contact from File"
 msgstr "Kontakt aus Datei"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
+#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 msgid "Contacts"
 msgstr "Kontakte"
@@ -2882,6 +2883,11 @@ msgstr ""
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Datei \"%s\" konnte nicht gespeichert werden: ungültiger Name"
+
+#. DLG_RDF_SemanticStylesheets_Events
+#: po/tmp/ap_String_Id.h
+msgid "Events"
+msgstr "Ereignisse"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3975,12 +3981,6 @@ msgstr "Spracheinstellungen"
 msgid "Language(s):"
 msgstr "Sprache(n):"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#: po/tmp/ap_String_Id.h
-msgid "Lat & Long"
-msgstr "Breiten- u. Längengrad"
-
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h
 msgid "Layout"
@@ -4133,15 +4133,10 @@ msgstr "Listen"
 msgid "Lists for "
 msgstr "Listen für "
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
+#. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Location"
-msgstr "Standort"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
-#: po/tmp/ap_String_Id.h
-msgid "Location, Start and End Times"
-msgstr "Standort, Start- und Endzeit"
+msgid "Locations"
+msgstr "Standorte"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4371,14 +4366,20 @@ msgstr "Name"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name (homepage) phone"
-msgstr "Name (Homepage) Telefon"
+msgid "Name, (Homepage), Phone"
+msgstr "Name, (Webseite), Telefon"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#: po/tmp/ap_String_Id.h
+msgid "Name, Latitude and Longitude"
+msgstr "Name, Breiten- und Längengrad"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name, Nick"
-msgstr "Name, Spitzname"
+msgid "Name, Phone"
+msgstr "Name, Telefon"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -5011,6 +5012,11 @@ msgstr "RDF"
 #: po/tmp/ap_String_Id.h
 msgid "RDF Link"
 msgstr "RDF-Link"
+
+#. DLG_RDF_SemanticStylesheets_Title
+#: po/tmp/ap_String_Id.h
+msgid "RDF Stylesheet"
+msgstr "RDF-Stilvorlage"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5717,6 +5723,11 @@ msgstr "S&prache"
 msgid "Set Default Values"
 msgstr "Vorgabewerte einsetzen"
 
+#. DLG_RDF_SemanticStylesheets_Set
+#: po/tmp/ap_String_Id.h
+msgid "Set For All Existing"
+msgstr "Alle existierenden umstellen"
+
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
 #: po/tmp/ap_String_Id.h
@@ -5784,6 +5795,20 @@ msgstr "Die Einstellungen festlegen"
 #: po/tmp/ap_String_Id.h
 msgid "Set tab stops"
 msgstr "Tabstopps setzen"
+
+#. DLG_RDF_SemanticStylesheets_Explanation
+#: po/tmp/ap_String_Id.h
+msgid ""
+"Set the default stylesheet for Semantic objects in this document. New RDF "
+"objects will use this stylesheet automatically. The buttons allow you to set "
+"the stylesheet for all existing semantic objects to the new default "
+"stylesheet as well."
+msgstr ""
+"Legen Sie die Standard-Stilvorlage für semantische Objekte in diesem "
+"Dokument fest. Neue RDF-Objekte werden diese Stilvorlage automatisch "
+"verwenden. Die Schaltflächen erlauben Ihnen, die Stilvorlage für alle "
+"existierenden semantischen Objekte ebenfalls auf die neue Standard-"
+"Stilvorlage umzustellen."
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -6237,11 +6262,6 @@ msgstr "Unterliste anlegen"
 msgid "Start a new revision"
 msgstr "Eine neue Änderung beginnen"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
-#: po/tmp/ap_String_Id.h
-msgid "Start and End Times"
-msgstr "Start- und Endzeit"
-
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Start ne&w revision"
@@ -6405,16 +6425,19 @@ msgstr "Tabellenzeile summieren"
 msgid "Summary"
 msgstr "Zusammenfassung"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
 msgstr "Zusammenfassung, Standort"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
 msgstr "Zusammenfassung, Standort, Start- und Endzeit"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
