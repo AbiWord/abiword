@@ -312,6 +312,9 @@ public:
     }
     virtual void runSemanticStylesheetsDialog( FV_View* pView )
     {
+        const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+        std::string text;
+
 #if GTK_CHECK_VERSION(3,0,0)
         GtkBuilder* builder   = newDialogBuilder("ap_UnixDialog_SemanticStylesheets.ui");
 #else
@@ -325,6 +328,11 @@ public:
         GtkWidget*  setEvents    = GTK_WIDGET(gtk_builder_get_object(builder, "setEvents"));
         GtkWidget*  setLocations = GTK_WIDGET(gtk_builder_get_object(builder, "setLocations"));
         GtkWidget*  setAll       = GTK_WIDGET(gtk_builder_get_object(builder, "setAll"));
+
+        // window title and icon
+        pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticStylesheets_Title, text);
+        gtk_window_set_title(GTK_WINDOW(window), text.c_str());
+        _setIcon(window);
 
         UT_DEBUGMSG(("runSemanticStylesheetsDialog_cb() combo:%p\n", contacts ));
         g_signal_connect (setContacts,  "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  contacts );
