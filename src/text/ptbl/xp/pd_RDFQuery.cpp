@@ -82,6 +82,7 @@ librdf_statement* toRedland( const PD_RDFStatement& st )
 }
 
 
+#ifdef DEBUG
 static std::string tostr( librdf_statement* statement )
 {
     std::stringstream ss;
@@ -90,7 +91,7 @@ static std::string tostr( librdf_statement* statement )
     ss << "   obj:" << tostr( librdf_statement_get_object( statement ) ) << std::endl;
     return ss.str();
 }
-
+#endif
 
 
 /********************************************************************************/

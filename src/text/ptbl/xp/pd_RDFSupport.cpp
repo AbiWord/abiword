@@ -413,6 +413,7 @@ loadRDFXML( PD_DocumentRDFMutationHandle m, const std::string& rdfxml, const std
 
     RDFArguments args;
     librdf_model* model = args.model;
+    UT_DEBUG_ONLY_ARG(model);
 
     // Note that although the API docs say you can use NULL for base_uri
     // you will likely find it an error to try to call that way.
