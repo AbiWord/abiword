@@ -229,6 +229,31 @@ void XAP_UnixApp::getWinGeometry(int * x, int * y, UT_uint32 * width,
 	*flags = m_geometry.flags;
 }
 
+// This should be removed at some time.
+void XAP_UnixApp::migrate (const char *oldName, const char *newName, const char *path) const
+{
+	if (path && newName && oldName && (*oldName == '/'))
+	{
+		char *old = new char[strlen(path) - strlen(newName) + strlen(oldName)];
+     
+		if (old)
+		{
+			size_t len = strrchr(path, '/') - path;       
+			strncpy(old, path, len);
+			old[len] = 0;
+			strcat(old, oldName);
+
+			if (g_access(old, F_OK) == 0) 
+			{
+				UT_WARNINGMSG(("Renaming: %s -> %s\n", old, path));
+				g_rename(old, path);
+			}
+                     
+			delete[] old;
+		}         
+	}
+}
+ 
 const char * XAP_UnixApp::getUserPrivateDirectory()
 {
 	/* return a pointer to a static buffer */
@@ -263,6 +288,9 @@ const char * XAP_UnixApp::getUserPrivateDirectory()
         if (strlen(buf) >= PATH_MAX)
             DELETEPV(buf);
 #endif
+
+		// migration / legacy
+		migrate("/AbiSuite", szAbiDir, buf); 
     }
 
 	return buf;

@@ -823,6 +823,14 @@ void XAP_App::_setAbiSuiteLibDir(const char * sz)
 	m_szAbiSuiteLibDir = g_strdup(sz);
 }
 
+// This should be removed at some time.
+void XAP_App::migrate (const char *oldName, const char *newName, const char *path) const
+{
+	UT_UNUSED(oldName);
+	UT_UNUSED(newName);
+	UT_UNUSED(path);
+}
+
 const char * XAP_App::getAbiSuiteLibDir() const
 {
 	return m_szAbiSuiteLibDir;

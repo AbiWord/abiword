@@ -178,6 +178,7 @@ public:
 	virtual XAP_Toolbar_ControlFactory *		getControlFactory() = 0;
 
 	virtual const XAP_StringSet *			getStringSet() const = 0;
+	virtual void						migrate(const char *oldName, const char *newName, const char *path) const;                
 	virtual const char *				getUserPrivateDirectory() = 0;
 	virtual const char *				getAbiSuiteLibDir() const;
 	virtual const char *				getAbiSuiteAppDir() const = 0;

@@ -72,6 +72,7 @@ public:
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool							canPasteFromClipboard() = 0;
+	void									migrate(const char *oldName, const char *newName, const char *path) const;
 	virtual const char *					getUserPrivateDirectory();
 
 	virtual void							setSelectionStatus(AV_View * pView) = 0;

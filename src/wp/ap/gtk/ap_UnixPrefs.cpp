@@ -50,6 +50,9 @@ const char * AP_UnixPrefs::_getPrefsPathname(void) const
 	  buf += "/";
 	buf += szFile;
 
+	// migration / legacy
+	XAP_App::getApp()->migrate("/AbiWord.Profile", szFile, buf.c_str());  
+
 	return buf.c_str();
 }
 
