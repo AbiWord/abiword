@@ -16,7 +16,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-04-28 21:26+0200\n"
-"PO-Revision-Date: 2012-04-28 21:26+0200\n"
+"PO-Revision-Date: 2012-04-29 15:49+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -516,7 +516,7 @@ msgstr "&Kopf- und Fußzeilen"
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
 msgid "&Header/Footers"
-msgstr "&Kopf-/Fußzeilen"
+msgstr "&Kopf- und Fußzeilen"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h
@@ -1629,7 +1629,7 @@ msgstr "Aufzählung"
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h
 msgid "Bullets and &Numbering"
-msgstr "&Nummerierung & Aufzählung"
+msgstr "&Nummerierung und Aufzählung"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
@@ -7424,7 +7424,7 @@ msgstr "Bengalisch"
 #. DLG_UP_BlackWhite
 #: po/tmp/xap_String_Id.h
 msgid "Black & White"
-msgstr "Schwarz/Weiß"
+msgstr "Schwarz-Weiß"
 
 #. STYLE_BLOCKTEXT
 #: po/tmp/xap_String_Id.h
