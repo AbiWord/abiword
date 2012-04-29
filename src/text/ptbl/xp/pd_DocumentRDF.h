@@ -331,6 +331,20 @@ class   PD_RDFSemanticItemViewSite;
 typedef boost::shared_ptr<PD_RDFSemanticItemViewSite> PD_RDFSemanticItemViewSiteHandle;
 typedef std::list< PD_RDFSemanticItemViewSiteHandle > PD_RDFSemanticItemViewSites;
 
+// semantic stylesheets
+#define RDF_SEMANTIC_STYLESHEET_NAME                         "name"
+#define RDF_SEMANTIC_STYLESHEET_CONTACT_NAME                 RDF_SEMANTIC_STYLESHEET_NAME
+#define RDF_SEMANTIC_STYLESHEET_CONTACT_NICK                 "nick"
+#define RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_PHONE           "name, phone"
+#define RDF_SEMANTIC_STYLESHEET_CONTACT_NICK_PHONE           "nick, phone"
+#define RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE  "name, (homepage), phone"
+#define RDF_SEMANTIC_STYLESHEET_EVENT_NAME                   RDF_SEMANTIC_STYLESHEET_NAME
+#define RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY                "summary"
+#define RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION       "summary, location"
+#define RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES "summary, location, start date/time"
+#define RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_TIMES          "summary, start date/time"
+#define RDF_SEMANTIC_STYLESHEET_LOCATION_NAME                RDF_SEMANTIC_STYLESHEET_NAME
+#define RDF_SEMANTIC_STYLESHEET_LOCATION_NAME_LATLONG        "name, digital latitude, digital longitude"
 
 /**
  * @short Base class for C++ objects which represent RDF at a higher level.

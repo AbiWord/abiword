@@ -14847,7 +14847,7 @@ Defun1(rdfApplyStylesheetContactName)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "name", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_CONTACT_NAME, pView->getPoint() );
 	return true;
 }
 
@@ -14856,7 +14856,7 @@ Defun1(rdfApplyStylesheetContactNameHomepagePhone)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "name, (homepage), phone", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE, pView->getPoint() );
 	return true;
 }
 
@@ -14865,7 +14865,7 @@ Defun1(rdfApplyStylesheetContactNamePhone)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "name, phone", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_PHONE, pView->getPoint() );
 	return true;
 }
 
@@ -14874,7 +14874,7 @@ Defun1(rdfApplyStylesheetContactNick)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "nick", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_CONTACT_NICK, pView->getPoint() );
 	return true;
 }
 
@@ -14883,7 +14883,7 @@ Defun1(rdfApplyStylesheetContactNickPhone)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "nick, phone", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_CONTACT_NICK_PHONE, pView->getPoint() );
 	return true;
 }
 
@@ -14892,7 +14892,7 @@ Defun1(rdfApplyStylesheetEventName)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "name", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_EVENT_NAME, pView->getPoint() );
 	return true;
 }
 
@@ -14901,7 +14901,7 @@ Defun1(rdfApplyStylesheetEventSummary)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "summary", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY, pView->getPoint() );
 	return true;
 }
 
@@ -14910,7 +14910,7 @@ Defun1(rdfApplyStylesheetEventSummaryLocation)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "summary, location", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION, pView->getPoint() );
 	return true;
 }
 
@@ -14919,7 +14919,7 @@ Defun1(rdfApplyStylesheetEventSummaryLocationTimes)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "summary, location, start date/time", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES, pView->getPoint() );
 	return true;
 }
 
@@ -14928,7 +14928,7 @@ Defun1(rdfApplyStylesheetEventSummaryTimes)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "summary, start date/time", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_TIMES, pView->getPoint() );
 	return true;
 }
 
@@ -14937,7 +14937,7 @@ Defun1(rdfApplyStylesheetLocationLatLong)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "name, digital latitude, digital longitude", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_LOCATION_NAME_LATLONG, pView->getPoint() );
 	return true;
 }
 
@@ -14946,7 +14946,7 @@ Defun1(rdfApplyStylesheetLocationName)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	_rdfApplyStylesheet( pView, "name", pView->getPoint() );
+	_rdfApplyStylesheet( pView, RDF_SEMANTIC_STYLESHEET_LOCATION_NAME, pView->getPoint() );
 	return true;
 }
 

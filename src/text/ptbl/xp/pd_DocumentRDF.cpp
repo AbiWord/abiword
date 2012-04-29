@@ -1857,19 +1857,19 @@ PD_RDFContact::stylesheets() const
     PD_RDFSemanticStylesheets ret;
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
-            new PD_RDFSemanticStylesheet("143c1ba3-d7bb-440b-8528-7f07d2eff5f2", "name", "%NAME%")));
+            new PD_RDFSemanticStylesheet("143c1ba3-d7bb-440b-8528-7f07d2eff5f2", RDF_SEMANTIC_STYLESHEET_CONTACT_NAME, "%NAME%")));
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
-            new PD_RDFSemanticStylesheet("2fad34d1-42a0-4b10-b17e-a87db5208f6d", "nick", "%NICK%")));
+            new PD_RDFSemanticStylesheet("2fad34d1-42a0-4b10-b17e-a87db5208f6d", RDF_SEMANTIC_STYLESHEET_CONTACT_NICK, "%NICK%")));
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
-            new PD_RDFSemanticStylesheet("0dd5878d-95c5-47e5-a777-63ec36da3b9a", "name, phone", "%NAME%, %PHONE%")));
+            new PD_RDFSemanticStylesheet("0dd5878d-95c5-47e5-a777-63ec36da3b9a", RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_PHONE, "%NAME%, %PHONE%")));
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
-            new PD_RDFSemanticStylesheet("9cbeb4a6-34c5-49b2-b3ef-b94277db0c59", "nick, phone", "%NICK%, %PHONE%")));
+            new PD_RDFSemanticStylesheet("9cbeb4a6-34c5-49b2-b3ef-b94277db0c59", RDF_SEMANTIC_STYLESHEET_CONTACT_NICK_PHONE, "%NICK%, %PHONE%")));
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
-            new PD_RDFSemanticStylesheet("47025a4a-5da5-4a32-8d89-14c03658631d", "name, (homepage), phone", "%NAME%, (%HOMEPAGE%), %PHONE%")));
+            new PD_RDFSemanticStylesheet("47025a4a-5da5-4a32-8d89-14c03658631d", RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE, "%NAME%, (%HOMEPAGE%), %PHONE%")));
     return ret;
 }
 
@@ -2131,23 +2131,23 @@ PD_RDFEvent::stylesheets() const
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
             new PD_RDFSemanticStylesheet("92f5d6c5-2c3a-4988-9646-2f29f3731f89",
-                                         "name", "%NAME%")));
+                                         RDF_SEMANTIC_STYLESHEET_EVENT_NAME, "%NAME%")));
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
             new PD_RDFSemanticStylesheet("b4817ce4-d2c3-4ed3-bc5a-601010b33363",
-                                         "summary", "%SUMMARY%")));
+                                         RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY, "%SUMMARY%")));
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
             new PD_RDFSemanticStylesheet("853242eb-031c-4a36-abb2-7ef1881c777e",
-                                         "summary, location", "%SUMMARY%, %LOCATION%")));
+                                         RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION, "%SUMMARY%, %LOCATION%")));
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
             new PD_RDFSemanticStylesheet("2d6b87a8-23be-4b61-a881-876177812ad4",
-                                         "summary, location, start date/time", "%SUMMARY%, %LOCATION%, %START%")));
+                                         RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES, "%SUMMARY%, %LOCATION%, %START%")));
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
             new PD_RDFSemanticStylesheet("115e3ceb-6bc8-445c-a932-baee09686895",
-                                         "summary, start date/time", "%SUMMARY%, %START%")));
+                                         RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_TIMES, "%SUMMARY%, %START%")));
     return ret;
 }
 
@@ -2353,11 +2353,11 @@ PD_RDFLocation::stylesheets() const
     PD_RDFSemanticStylesheets ret;
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
-            new PD_RDFSemanticStylesheet("33314909-7439-4aa1-9a55-116bb67365f0", "name", "%NAME%")));
+            new PD_RDFSemanticStylesheet("33314909-7439-4aa1-9a55-116bb67365f0", RDF_SEMANTIC_STYLESHEET_LOCATION_NAME, "%NAME%")));
     ret.push_back(
         PD_RDFSemanticStylesheetHandle(
             new PD_RDFSemanticStylesheet("34584133-52b0-449f-8b7b-7f1ef5097b9a",
-                                         "name, digital latitude, digital longitude",
+                                         RDF_SEMANTIC_STYLESHEET_LOCATION_NAME_LATLONG,
                                          "%NAME%, %DLAT%, %DLONG%")));
     return ret;
 }
@@ -2570,7 +2570,7 @@ PD_RDFSemanticItem::defaultStylesheet() const
     std::string semanticClass = className();
     std::string name_ = getProperty( "http://calligra-suite.org/rdf/document/" + semanticClass,
                                     "http://calligra-suite.org/rdf/stylesheet",
-                                    "name" );
+                                    RDF_SEMANTIC_STYLESHEET_NAME );
     std::string type = getProperty( "http://calligra-suite.org/rdf/document/" + semanticClass,
                                     "http://calligra-suite.org/rdf/stylesheet-type",
                                     PD_RDFSemanticStylesheet::stylesheetTypeSystem() );
@@ -2586,7 +2586,7 @@ PD_RDFSemanticItem::defaultStylesheet() const
     if (!ret)
     {
         // The "name" stylesheet should always exist
-        ret = findStylesheetByName( PD_RDFSemanticStylesheet::stylesheetTypeSystem(), "name" );
+        ret = findStylesheetByName( PD_RDFSemanticStylesheet::stylesheetTypeSystem(), RDF_SEMANTIC_STYLESHEET_NAME );
     }
     return ret;
     
@@ -2845,7 +2845,7 @@ PD_RDFSemanticItemViewSite::~PD_RDFSemanticItemViewSite()
 PD_RDFSemanticStylesheetHandle
 PD_RDFSemanticItemViewSite::stylesheet() const
 {
-    std::string name = getProperty("stylesheet", "name");
+    std::string name = getProperty("stylesheet", RDF_SEMANTIC_STYLESHEET_NAME);
     std::string type = getProperty("stylesheet-type", PD_RDFSemanticStylesheet::stylesheetTypeSystem());
     std::string uuid = getProperty("stylesheet-uuid", "");
 
