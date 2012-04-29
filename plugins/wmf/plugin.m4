@@ -42,6 +42,15 @@ if test "$enable_wmf" != ""; then
 	fi
 fi
 
+AC_PATH_PROG(libwmffontmap, libwmf-fontmap)
+if test "$libwmffontmap" != ""; then
+  $libwmffontmap --map=libwmf.fontmap >/dev/null
+  grep -q 'familyname="Standard Symbols L"' libwmf.fontmap
+  if test $? -eq 0; then 
+    AC_DEFINE([WITH_STANDARD_SYMBOLS_L], [1], [Font family 'Standard Symbols L' available])
+  fi
+fi
+
 if test "$enable_wmf" = "yes" || \
    test "$wmf_deps" = "yes"; then
 
