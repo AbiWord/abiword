@@ -1,5 +1,5 @@
 /* XPM */
-static const char *tb_semitem_stylesheet_reflow_xpm[] = {
+static const char *tb_semitem_stylesheet_apply_xpm[] = {
 /* columns rows colors chars-per-pixel */
 "24 24 91 1 ",
 " 	c None",

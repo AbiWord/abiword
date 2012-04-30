@@ -136,7 +136,7 @@
 #	include "tb_semitem_select_next.xpm"
 #	include "tb_semitem_select_prev.xpm"
 #	include "tb_semitem_edit.xpm"
-#	include "tb_semitem_stylesheet_reflow.xpm"
+#	include "tb_semitem_stylesheet_apply.xpm"
 
 
 	// ... add new icons here (don't forget to add below the #else) ...
@@ -313,7 +313,7 @@
 	DefineToolbarIcon(tb_semitem_edit_xpm)
 	DefineToolbarIcon(tb_semitem_select_next_xpm)
 	DefineToolbarIcon(tb_semitem_select_prev_xpm)
-	DefineToolbarIcon(tb_semitem_stylesheet_reflow_xpm)
+	DefineToolbarIcon(tb_semitem_stylesheet_apply_xpm)
 	DefineToolbarIcon(tb_semitem_this_xpm)
 	DefineToolbarIcon(tb_smiley)
 	DefineToolbarIcon(tb_spellcheck_xpm)

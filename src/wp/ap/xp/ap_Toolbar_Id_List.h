@@ -130,5 +130,5 @@ toolbaritem(SEMITEM_THIS)
 toolbaritem(SEMITEM_NEXT)
 toolbaritem(SEMITEM_PREV)
 toolbaritem(SEMITEM_EDIT)
-toolbaritem(SEMITEM_STYLESHEET_REFLOW)
+toolbaritem(SEMITEM_STYLESHEET_APPLY)
 

@@ -69,7 +69,7 @@
 #include "../xp/ToolbarIcons/tb_semitem_select_next.xpm"
 #include "../xp/ToolbarIcons/tb_semitem_select_prev.xpm"
 #include "../xp/ToolbarIcons/tb_semitem_edit.xpm"
-#include "../xp/ToolbarIcons/tb_semitem_stylesheet_reflow.xpm"
+#include "../xp/ToolbarIcons/tb_semitem_stylesheet_apply.xpm"
 
 /*
  * Built-in stock icon definitions.
@@ -188,8 +188,8 @@ static struct AbiStockEntry {
 	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_PREV,	(const gchar **) tb_semitem_select_prev_xpm }, 
   { ABIWORD_SEMITEM_EDIT,						0,
 	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_EDIT,	(const gchar **) tb_semitem_edit_xpm }, 
-  { ABIWORD_SEMITEM_STYLESHEET_REFLOW,			0,
-	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW,	(const gchar **) tb_semitem_stylesheet_reflow_xpm }, 
+  { ABIWORD_SEMITEM_STYLESHEET_APPLY,			0,
+	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY,	(const gchar **) tb_semitem_stylesheet_apply_xpm }, 
   
   { NULL,											0,
 	0, 											NULL }
