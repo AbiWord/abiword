@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-30 20:06+0200\n"
-"PO-Revision-Date: 2012-04-30 20:06+0200\n"
+"POT-Creation-Date: 2012-04-30 21:40+0200\n"
+"PO-Revision-Date: 2012-04-30 21:40+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -1348,6 +1348,13 @@ msgstr "Ereignis umstellen"
 #: po/tmp/ap_String_Id.h
 msgid "Apply Location"
 msgstr "Standort umstellen"
+
+#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+msgid "Apply stylesheet to this Semantic Item"
+msgstr "Dieses semantische Element auf aktuelle Stilvorlage umstellen"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -5073,13 +5080,6 @@ msgstr "&Rückwärts suchen"
 #: po/tmp/ap_String_Id.h
 msgid "Re&vert"
 msgstr "&Neu laden"
-
-#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
-#: po/tmp/ap_String_Id.h
-msgid "Reapply stylesheet this Semantic Item"
-msgstr "Dieses semantische Element auf aktuelle Stilvorlage umstellen"
 
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
