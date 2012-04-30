@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-28 21:26+0200\n"
-"PO-Revision-Date: 2012-04-29 15:49+0200\n"
+"POT-Creation-Date: 2012-04-30 20:06+0200\n"
+"PO-Revision-Date: 2012-04-30 20:06+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -412,10 +412,10 @@ msgstr "&Keine Silbentrennung"
 msgid "&Edit"
 msgstr "&Bearbeiten"
 
-#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-msgid "&Edit Semantic Items"
-msgstr "Semantische Elemente bearbeiten"
+msgid "&Edit RDF"
+msgstr "RDF &bearbeiten"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -804,6 +804,11 @@ msgstr "&Seitenlayout"
 msgid "&Purge History"
 msgstr "&Chronik entfernen"
 
+#. MENU_LABEL_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "&Query RDF"
+msgstr "RDF ab&fragen"
+
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
@@ -905,11 +910,6 @@ msgstr "Änderung aus&wählen"
 #: po/tmp/ap_String_Id.h
 msgid "&Show History"
 msgstr "Chronik &anzeigen"
-
-#. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "&Show RDF"
-msgstr "RDF anzeigen"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
@@ -1329,19 +1329,25 @@ msgstr "Übernehmen"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
 #: po/tmp/ap_String_Id.h
 msgid "Apply Contact"
-msgstr "Kontakt übernehmen"
+msgstr "Kontakt umstellen"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+msgid "Apply Current"
+msgstr "Auf aktuelle umstellen"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
 msgid "Apply Event"
-msgstr "Ereignis übernehmen"
+msgstr "Ereignis umstellen"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Apply Location"
-msgstr "Standort übernehmen"
+msgstr "Standort umstellen"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -2731,6 +2737,11 @@ msgstr "Informationen über RDF-Objekte anzeigen"
 msgid "Dump the raw RDF associated with the cursor position"
 msgstr "RDF-Rohdaten an Cursorposition anzeigen"
 
+#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#: po/tmp/ap_String_Id.h
+msgid "E&dit Semantic Items"
+msgstr "S&emantische Elemente bearbeiten"
+
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
 msgid "Edit Annotation"
@@ -2766,6 +2777,11 @@ msgstr "LaTeX-Gleichung bearbeiten"
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples"
 msgstr "RDF-Tripel bearbeiten"
+
+#. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
+#: po/tmp/ap_String_Id.h
+msgid "Edit RDF Triples associated with location"
+msgstr "RDF-Tripel zum Standort bearbeiten"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
@@ -2908,11 +2924,6 @@ msgstr "Beispiel:"
 #: po/tmp/ap_String_Id.h
 msgid "Execute Query"
 msgstr "Abfrage ausführen"
-
-#. MENU_STATUSLINE_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "Execute SPARQL Query for location"
-msgstr "SPARQL-Abfrage zum Standort durchführen"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
@@ -4991,11 +5002,26 @@ msgstr "Herausgeber"
 msgid "Publisher:"
 msgstr "Herausgeber:"
 
+#. MENU_STATUSLINE_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF associated with location"
+msgstr "RDF zum Standort abfragen"
+
+#. MENU_LABEL_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF for cursor position"
+msgstr "RDF an Cursorposition abfragen"
+
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
 msgstr "Abgefragte RDF: %d von insgesamt: %ld"
+
+#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+msgid "Query the RDF associated with the cursor position..."
+msgstr "RDF an Cursorposition abfragen..."
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5048,18 +5074,12 @@ msgstr "&Rückwärts suchen"
 msgid "Re&vert"
 msgstr "&Neu laden"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_REAPPLY
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
-#: po/tmp/ap_String_Id.h
-msgid "Reapply Current"
-msgstr "Aktuelle wieder übernehmen"
-
 #. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
 #. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
 #. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
 #: po/tmp/ap_String_Id.h
 msgid "Reapply stylesheet this Semantic Item"
-msgstr "Für dieses semantische Element Stilvorlage wieder übernehmen"
+msgstr "Dieses semantische Element auf aktuelle Stilvorlage umstellen"
 
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
@@ -5092,7 +5112,7 @@ msgstr "Die Ansichtsgröße des Dokuments ändern"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr "Bezug zu semantischem Quell-Element"
+msgstr "Beziehung zu semantischem Quell-Element"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
@@ -5386,11 +5406,6 @@ msgstr "Änderungen an&zeigen"
 #: po/tmp/ap_String_Id.h
 msgid "S&plit Cells"
 msgstr "Zelle&n teilen"
-
-#. MENU_LABEL_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "SPARQL &Query"
-msgstr "SPARQL-Abfrage"
 
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
@@ -5845,6 +5860,12 @@ msgstr "Dieses Bild an Position einpassen"
 msgid "Set your spelling preferences"
 msgstr "Die Einstellungen für die Rechtschreibprüfung festlegen"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
+#: po/tmp/ap_String_Id.h
+msgid "Settings"
+msgstr "Einstellungen"
+
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
@@ -5890,16 +5911,6 @@ msgstr "Alle RDF anzeigen"
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
 msgstr "&Formatierungszeichen"
-
-#. MENU_STATUSLINE_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF Triples associated with location"
-msgstr "RDF-Tripel zum Standort anzeigen"
-
-#. MENU_LABEL_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position"
-msgstr "RDF an Cursorposition anzeigen"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5958,11 +5969,6 @@ msgstr "Die Symbolleiste anzeigen oder verbergen"
 #: po/tmp/ap_String_Id.h
 msgid "Show revisions that are present in document"
 msgstr "In diesem Dokument vorhandene Änderungen anzeigen"
-
-#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show the RDF associated with the cursor position..."
-msgstr "RDF an Cursorposition anzeigen..."
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
@@ -6363,12 +6369,6 @@ msgstr "Stilvorlagen"
 #: po/tmp/ap_String_Id.h
 msgid "Stylesheet"
 msgstr "Stilvorlage"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
-#: po/tmp/ap_String_Id.h
-msgid "Stylesheet Settings"
-msgstr "Stilvorlage-Einstellungen"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
