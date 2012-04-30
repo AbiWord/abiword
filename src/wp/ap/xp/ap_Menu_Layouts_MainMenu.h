@@ -431,7 +431,7 @@ BeginLayout(Main,0)
             EndSubMenu()
 
             BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_STYLESHEET)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_REAPPLY)
+                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_APPLY)
                 MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_DISASSOCIATE)
                 Separator()
                 BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT)

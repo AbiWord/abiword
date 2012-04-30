@@ -688,8 +688,8 @@ public:
 	static EV_EditMethod_Fn hyperlinkJump;
 	static EV_EditMethod_Fn hyperlinkJumpPos;
 	static EV_EditMethod_Fn hyperlinkStatusBar;
-	static EV_EditMethod_Fn rdfAnchorShowTriples;
-	static EV_EditMethod_Fn rdfAnchorSPARQL;
+	static EV_EditMethod_Fn rdfAnchorEditTriples;
+	static EV_EditMethod_Fn rdfAnchorQuery;
 	static EV_EditMethod_Fn rdfAnchorEditSemanticItem;
 	static EV_EditMethod_Fn rdfAnchorExportSemanticItem;
 	static EV_EditMethod_Fn rdfAnchorSelectThisReferenceToSemanticItem;
@@ -1116,12 +1116,12 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	// r
 	EV_EditMethod(NF(rdfAnchorEditSemanticItem) , 0,  ""),
+	EV_EditMethod(NF(rdfAnchorEditTriples), 0,  ""),
 	EV_EditMethod(NF(rdfAnchorExportSemanticItem) , 0,  ""),
-	EV_EditMethod(NF(rdfAnchorSPARQL) ,     0,  ""),
+	EV_EditMethod(NF(rdfAnchorQuery) ,     0,  ""),
 	EV_EditMethod(NF(rdfAnchorSelectNextReferenceToSemanticItem) , 0,  ""),
 	EV_EditMethod(NF(rdfAnchorSelectPrevReferenceToSemanticItem) , 0,  ""),
 	EV_EditMethod(NF(rdfAnchorSelectThisReferenceToSemanticItem) , 0,  ""),
-	EV_EditMethod(NF(rdfAnchorShowTriples), 0,  ""),
 	EV_EditMethod(NF(rdfApplyCurrentStyleSheet),  0,  ""),
 	EV_EditMethod(NF(rdfApplyStylesheetContactName) ,  0,  ""),
 	EV_EditMethod(NF(rdfApplyStylesheetContactNameHomepagePhone) ,  0,  ""),
@@ -14279,7 +14279,7 @@ Defun1(hyperlinkJumpPos)
 	return true;
 }
 
-Defun1(rdfAnchorShowTriples)
+Defun1(rdfAnchorEditTriples)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
@@ -14287,7 +14287,7 @@ Defun1(rdfAnchorShowTriples)
 	AP_Dialog_RDFEditor* dialog = 0;
 	return s_doRDFEditorDlg( pView, id, dialog, true );
 }
-Defun1(rdfAnchorSPARQL)
+Defun1(rdfAnchorQuery)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
