@@ -4463,7 +4463,8 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 		}
 		else
 		{
-			Fill(getGraphics(),pDA->xoff, iFillTop, getWidth(), iFillHeight);
+			if (m_iFieldType != FPFIELD_list_label)
+				Fill(getGraphics(),pDA->xoff, iFillTop, getWidth(), iFillHeight);
 			pG->setColor(_getColorFG());
 		}
 	}
