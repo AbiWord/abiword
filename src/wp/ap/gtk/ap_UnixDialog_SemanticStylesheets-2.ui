@@ -4,58 +4,16 @@
     <columns>
       <column type="gchararray"/>
     </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">name</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">name, digital latitude, digital longitude</col>
-      </row>
-    </data>
   </object>
   <object class="GtkListStore" id="model2">
     <columns>
       <column type="gchararray"/>
     </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">name</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">summary</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">summary, location</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">summary, location, start date/time</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">summary. start date/time</col>
-      </row>
-    </data>
   </object>
   <object class="GtkListStore" id="model3">
     <columns>
       <column type="gchararray"/>
     </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">name</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">nick</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">name, phone</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">nick, phone</col>
-      </row>
-      <row>
-        <col id="0" translatable="yes">name, (homepage), phone</col>
-      </row>
-    </data>
   </object>
   <object class="GtkDialog" id="window">
     <property name="can_focus">False</property>

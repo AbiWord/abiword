@@ -203,10 +203,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="id_column">0</property>
-                    <items>
-                      <item translatable="yes">name</item>
-                      <item translatable="yes">name, digital latitude, digital longitude</item>
-                    </items>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -220,13 +216,6 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="id_column">0</property>
-                    <items>
-                      <item translatable="yes">name</item>
-                      <item translatable="yes">summary</item>
-                      <item translatable="yes">summary, location</item>
-                      <item translatable="yes">summary, location, start date/time</item>
-                      <item translatable="yes">summary. start date/time</item>
-                    </items>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -241,13 +230,6 @@
                     <property name="can_focus">False</property>
                     <property name="hexpand">True</property>
                     <property name="id_column">0</property>
-                    <items>
-                      <item translatable="yes">name</item>
-                      <item translatable="yes">nick</item>
-                      <item translatable="yes">name, phone</item>
-                      <item translatable="yes">nick, phone</item>
-                      <item translatable="yes">name, (homepage), phone</item>
-                    </items>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>

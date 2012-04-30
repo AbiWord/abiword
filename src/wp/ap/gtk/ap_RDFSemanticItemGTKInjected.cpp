@@ -25,8 +25,60 @@
 #include "ap_Strings.h"
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
+#include "xap_GtkComboBoxHelpers.h"
 
 static gchar *s_id;
+
+typedef struct
+{
+    const XAP_String_Id translation_id;  
+    const char *stylesheet;  
+} ssList_t;
+
+static const ssList_t ssListContact[] =
+{
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME, RDF_SEMANTIC_STYLESHEET_CONTACT_NAME},
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK, RDF_SEMANTIC_STYLESHEET_CONTACT_NICK},    
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE, RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_PHONE},   
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE, RDF_SEMANTIC_STYLESHEET_CONTACT_NICK_PHONE},   
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE, RDF_SEMANTIC_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE},   
+    {0, NULL}
+};
+
+static const ssList_t ssListEvent[] =
+{
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_NAME, RDF_SEMANTIC_STYLESHEET_EVENT_NAME},
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY},
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION},
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES},
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES, RDF_SEMANTIC_STYLESHEET_EVENT_SUMMARY_TIMES},
+    {0, NULL}
+};
+
+static const ssList_t ssListLocation[] =
+{
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME, RDF_SEMANTIC_STYLESHEET_LOCATION_NAME},
+    {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG, RDF_SEMANTIC_STYLESHEET_LOCATION_NAME_LATLONG},
+    {0, NULL}
+};
+
+static const char *getStylesheetName( const ssList_t *ssList, const gchar *translation )
+{
+    const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+    std::string text;
+    int i;
+
+    for (i = 0; ssList[i].stylesheet; i++)
+    {
+        pSS->getValueUTF8(ssList[i].translation_id, text);
+
+        if (strcmp(translation, text.c_str()) == 0) break;
+    }
+
+    UT_DEBUGMSG(("getStylesheetName: in=\"%s\", out=\"%s\"\n", translation, ssList[i].stylesheet ? ssList[i].stylesheet : "NULL"));
+
+    return ssList[i].stylesheet;
+}
 
 #if !GTK_CHECK_VERSION(3,0,0)
 const gchar* gtk_combo_box_get_active_id( GtkComboBox* combo_box )
@@ -179,7 +231,7 @@ static gboolean
 OnSemanticStylesheetsSetContacts_cb( GtkWidget* /*w*/, GdkEvent* /*event*/, 
 									 GtkComboBoxText *combo_box )
 {
-    const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
+    const gchar * t = getStylesheetName( ssListContact, gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) ) );
     std::string ssName = t ? t : "name";
 
     UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() ssName:%s\n", ssName.c_str() ));
@@ -196,7 +248,7 @@ static gboolean
 OnSemanticStylesheetsSetEvents_cb( GtkWidget* /*w*/, GdkEvent* /*event*/, 
 								   GtkComboBoxText *combo_box )
 {
-    const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
+    const gchar * t = getStylesheetName( ssListEvent, gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) ) );
     std::string ssName = t ? t : "name";
 
     UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() ssName:%s\n", ssName.c_str() ));
@@ -211,7 +263,7 @@ static gboolean
 OnSemanticStylesheetsSetLocations_cb( GtkWidget* /*w*/, GdkEvent* /*event*/, 
 									  GtkComboBoxText *combo_box )
 {
-    const gchar * t = gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) );
+    const gchar * t = getStylesheetName( ssListLocation, gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) ) );
     std::string ssName = t ? t : "name";
 
     UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() ssName:%s\n", ssName.c_str() ));
@@ -331,6 +383,7 @@ public:
         GtkWidget*  setAll       = GTK_WIDGET(gtk_builder_get_object(builder, "setAll"));
 
         // localization
+
         pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticStylesheets_Explanation, text);
         text += "\xe2\x80\xa9";     // paragraph separator 
         gtk_label_set_text(GTK_LABEL(lbExplanation), text.c_str());
@@ -341,6 +394,22 @@ public:
         localizeButton(setEvents, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
         localizeButton(setLocations, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
         localizeButton(setAll, pSS, AP_STRING_ID_DLG_RDF_SemanticStylesheets_Set);        
+        // combo boxes
+        for (int i = 0; ssListContact[i].stylesheet; i++)
+        {
+            pSS->getValueUTF8(ssListContact[i].translation_id, text);
+            XAP_appendComboBoxText(GTK_COMBO_BOX(contacts), text.c_str());
+        }
+        for (int i = 0; ssListEvent[i].stylesheet; i++)
+        {
+            pSS->getValueUTF8(ssListEvent[i].translation_id, text);
+            XAP_appendComboBoxText(GTK_COMBO_BOX(events), text.c_str());
+        }
+        for (int i = 0; ssListLocation[i].stylesheet; i++)
+        {
+            pSS->getValueUTF8(ssListLocation[i].translation_id, text);
+            XAP_appendComboBoxText(GTK_COMBO_BOX(locations), text.c_str());
+        }
 
         // set max. text width for explanation
         GtkRequisition requisition;
