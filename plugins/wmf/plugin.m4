@@ -7,6 +7,15 @@ AC_ARG_WITH([libwmf-config],
 	AC_PATH_PROG(libwmfconfig, libwmf-config)
 ])
 
+AC_ARG_WITH([standard_symbols_l], 
+	[AS_HELP_STRING([--with-standard-symbols-l], [use font family 'Standard Symbols L' for Symbol])],   
+[
+	abi_cv_standard_symbols_l="$withval"
+])
+if test "$abi_cv_standard_symbols_l" = "yes"; then
+	AC_DEFINE([WITH_STANDARD_SYMBOLS_L], [1], [Use font family 'Standard Symbols L' for Symbol])
+fi
+
 # The required libwmf version, as reported by libwmf-config
 libwmf_major_req=0
 libwmf_minor_req=2
@@ -40,15 +49,6 @@ if test "$enable_wmf" != ""; then
 			wmf_deps="yes"
 		fi
 	fi
-fi
-
-AC_PATH_PROG(libwmffontmap, libwmf-fontmap)
-if test "$libwmffontmap" != ""; then
-  $libwmffontmap --map=libwmf.fontmap >/dev/null
-  grep -q 'familyname="Standard Symbols L"' libwmf.fontmap
-  if test $? -eq 0; then 
-    AC_DEFINE([WITH_STANDARD_SYMBOLS_L], [1], [Font family 'Standard Symbols L' available])
-  fi
 fi
 
 if test "$enable_wmf" = "yes" || \
