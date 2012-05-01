@@ -22,13 +22,13 @@
 #  Authors: Kenneth Christiansen <kenneth@gnu.org>
 #
 #  Contributors: Hubert Figuiere <hub@figuiere.net>
-#
+#                Ingo Brueckl <ib@wupperonline.de>
 
 use strict;
 
 # Declare global variables
 #-------------------------
-my $VERSION 	= "0.6a";
+my $VERSION 	= "0.6b";
 
 my $in          = "$ARGV[0]"; # input file (.po)
 my $out         = "$ARGV[1]"; # output file (.strings)
@@ -44,7 +44,7 @@ my $encoding	= "iso-8859-1";
 $lang =~ s/_/-/g;
 chop $lang;
 
-print "Converting localization file $in to Abiword .strings format\n";
+print "Converting localization file $in to Abiword .strings format.\n";
 
 if (! -s "$in") { print "Error: file $in does not exist!\n"; exit; }
 
@@ -96,6 +96,13 @@ while (<IN>) {
         }
 }
     
+}
+
+if ($cont == "1") {
+    for $tag (@tags) {
+        if ($kind == 1) { push @xap_strings, "$tag=\"$str\""; $cont=0; next; }
+        if ($kind == 2) { push @ap_strings,  "$tag=\"$str\""; $cont=0; next; }
+    }
 }
 
 # Add the tags and the strings to the file
