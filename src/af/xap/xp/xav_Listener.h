@@ -107,7 +107,7 @@ public:
 class ABI_EXPORT AV_ListenerExtra : public AV_Listener
 {
 public:
-	virtual bool		notify(AV_View * pView, const AV_ChangeMask mask, void * pPrivateData =NULL) = 0;
+	virtual bool		notifyWithArg(AV_View * pView, const AV_ChangeMask mask, void * pPrivateData =NULL) = 0;
 	virtual AV_ListenerType    getType(void) = 0;
 };
 

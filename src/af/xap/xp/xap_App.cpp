@@ -490,7 +490,7 @@ bool XAP_App::notifyListeners(AV_View * pView, const AV_ChangeMask hint, void * 
 		else
 		{
 		  AV_ListenerExtra * pExtra = static_cast<AV_ListenerExtra *>(pListener);
-		  pExtra->notify(pView,hint,pPrivateData);
+		  pExtra->notifyWithArg(pView,hint,pPrivateData);
 		}
 	}
 
