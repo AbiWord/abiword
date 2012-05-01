@@ -2,7 +2,7 @@
 static const char *tb_revision_select_xpm[] = {
 "24 24 4 1 0 0",
 "  c #000000",
-"! c #FF0000",
+"! c #EF2929",
 "# c #FFFFFF",
 "$ c None",
 "$$$$$$$$$$$$$$$$$$$$$$$$",
