@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 #
-# This program analyzes the strings directory and dumps out a HTML
+# This program analyzes the strings and dumps out a HTML
 # page with information about those strings.
 #
 use CGI qw/-no_debug :standard/;
@@ -14,8 +14,9 @@ sub PrintTime {
     printf("%04d-%02d-%02d %02d:%02d:00", 1900+$year,$mon,$mday,$hour,$minute);
 }
 
-## en-US is in a different file in a different format
 my $lang = 'en-US';
+$missing{$lang} = 0;
+
 foreach my $file (qw(./src/wp/ap/xp/ap_String_Id.h ./src/af/xap/xp/xap_String_Id.h)) {
   open(STRINGS, "< $file" )
     or die "Cannot open $file";
@@ -23,12 +24,10 @@ foreach my $file (qw(./src/wp/ap/xp/ap_String_Id.h ./src/af/xap/xp/xap_String_Id
   while (<STRINGS>) {
     next unless /^\s*dcl\s*\((\w+)\s*,\s*\"(.*)\"/;
     my ($dlg,$string) = ($1,$2);
-    $string =~ s/&amp/&/;
     $dlgs{$dlg}{$lang} = $string;
-    $longest{$dlg} = $lang
   }
+  
   close(STRINGS);
-  $missing{$lang} = 0;
 }
 
 ## Read in each of the other language files 
@@ -43,42 +42,20 @@ if(scalar @ARGV) {
   closedir DIR;
 }
 
-#$stringsdir = "./user/wp/strings";
-#opendir(DIR, $stringsdir) || die "can't opendir $stringsdir: $!";
-#my @lang = grep { s/\.strings//  } readdir(DIR);
-#closedir DIR;
-
- foreach my $lang (@lang) {
+foreach my $lang (@lang) {
   open(STRINGS, "< $stringsdir/$lang.strings") 
     or die "Cannot open $stringsdir/$lang.strings";
 
   $missing{$lang} = 0;
-  $noamp{$lang} = 0;
 
   while (<STRINGS>) {
     next unless /^(\w*)=\"(.*)\"/;
     my ($dlg,$string) = ($1,$2);
-    $string =~ s/&amp;/&/;
     $dlgs{$dlg}{$lang} = $string;
-
-    ## 
-    $noamp{$lang}++ unless ($string =~ /\&amp/);
-    next unless $string;
-    
-    ## Set the longest language for a DLG the actual
-    ## string for the language can be looked up vi $dlgs
-    ## later.
-    if ($longest{$dlg}) {
-      $longest{$dlg} = $lang
-	if length($dlgs{$dlg}{$lang}) > length($dlgs{$dlg}{$longest{$dlg}});
-    }
-    else {
-      $longest{$dlg} = $lang;
-    }
   }
 }
+
 @lang = sort @lang;
-## Add US into the list
 unshift(@lang, 'en-US');
 
 ## Determine global missing counts
@@ -89,7 +66,6 @@ foreach my $dlg (keys %dlgs) {
     if ($dlgs{$dlg}{"en-US"} && not $dlgs{$dlg}{$lang}) {
       print STDERR "$lang: $dlg\n" if $selected_langs =~ $lang;
       $missing{$lang}++; 
-      #print $lang . " - missing " . $dlg . "\n" if $lang =~ "en-US";
     }
   }
 }
@@ -98,8 +74,8 @@ foreach my $dlg (keys %dlgs) {
 my $dlg_count = keys %dlgs;
 foreach my $lang (@lang) {
   warn("$lang: $missing{$lang}\n");
-  my $percent = sprintf("%3d%", 100 - ($missing{$lang} / $dlg_count) * 100, $missing{$lang}, $dlg_count);
-  push ( @td, td( [ b( ($lang =~ "en-US" ? $lang : a({href=>"http://www.abisource.com/dev/strings/".$lang.".po"},$lang))) , $percent ]),"\n");
+  my $percent = sprintf("%3d%", 100 - ($missing{$lang} / $dlg_count) * 100);
+  push ( @td, td( [ b( ($lang =~ "en-US" ? $lang : a({href=>"http://www.abisource.com/dev/strings/".$lang.".po"},$lang))) , $percent == 100 ? b($percent) : $percent ]),"\n");
 }
 print
   table({ border => 1, cellspacing => 0 }, Tr( [ th(['Language', 'Status']), @td ] )),"\n";
@@ -108,4 +84,3 @@ print "<br/>\n";
 print "Last generated at<br/>";
 &PrintTime;
 print "\n";
-
