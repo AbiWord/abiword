@@ -29,15 +29,15 @@ CLEANFILES = \
 
 # visit the plugins we're going to link statically and build them
 all-local:
-	for plugin in $(BUILTIN_PLUGINS); do	\
+	@for plugin in $(BUILTIN_PLUGINS); do	\
 		(cd ../../plugins/$$plugin && $(MAKE) $(AM_MAKEFLAGS) all); \
 	done
 
 $(BUILTIN_STAMP):
-	echo $(BUILTIN_PLUGINS) > $(BUILTIN_STAMP)
+	@echo $(BUILTIN_PLUGINS) > $(BUILTIN_STAMP)
 
 abi-builtin-plugins-calls.inc: Makefile all-local
-	if test ! -e $(BUILTIN_STAMP) -o "$(BUILTIN_PLUGINS)" != "`cat $(BUILTIN_STAMP)`" ; then \
+	@if test ! -e $(BUILTIN_STAMP) -o "$(BUILTIN_PLUGINS)" != "`cat $(BUILTIN_STAMP)`" ; then \
 	echo "" > $@ ; \
 	for plugin in $(BUILTIN_PLUGINS); do \
 		echo "abipgn_"$$plugin"_register(pmi);" >> $@;	\
@@ -45,7 +45,7 @@ abi-builtin-plugins-calls.inc: Makefile all-local
 	fi
 
 abi-builtin-plugins-decls.inc: Makefile all-local
-	if test ! -e $(BUILTIN_STAMP) -o "$(BUILTIN_PLUGINS)" != "`cat $(BUILTIN_STAMP)`" ; then \
+	@if test ! -e $(BUILTIN_STAMP) -o "$(BUILTIN_PLUGINS)" != "`cat $(BUILTIN_STAMP)`" ; then \
 	echo "" > $@ ; \
 	for plugin in $(BUILTIN_PLUGINS); do \
 		echo "extern \"C\" int abipgn_"$$plugin"_register(XAP_ModuleInfo *);" >> $@;	\

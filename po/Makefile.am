@@ -82,4 +82,4 @@ strings_DATA = \
 	zh-TW.strings 
 
 .po.strings:
-	$(UIBACKPORT) $< $@
+	@$(UIBACKPORT) $< $@
