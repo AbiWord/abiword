@@ -15,8 +15,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-30 21:40+0200\n"
-"PO-Revision-Date: 2012-04-30 21:40+0200\n"
+"POT-Creation-Date: 2012-05-01 17:07+0200\n"
+"PO-Revision-Date: 2012-05-01 17:07+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de_DE\n"
@@ -9007,11 +9007,6 @@ msgstr "Ukrainisch,·KOI8-U"
 msgid "Ukrainian, Macintosh"
 msgstr "Ukrainisch, Macintosh"
 
-#. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-2"
-msgstr "Unicode·UCS-2"
-
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
@@ -9021,11 +9016,6 @@ msgstr "Unicode·UCS-2·Big·Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode·UCS-2·Little·Endian"
-
-#. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-4"
-msgstr "Unicode·UCS-4"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
@@ -9037,11 +9027,6 @@ msgstr "Unicode·UCS-4·Big·Endian"
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode·UCS-4·Little·Endian"
 
-#. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-16"
-msgstr "Unicode·UTF-16"
-
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
@@ -9051,11 +9036,6 @@ msgstr "Unicode·UTF-16·Big·Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode·UTF-16·Little·Endian"
-
-#. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-32"
-msgstr "Unicode·UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
