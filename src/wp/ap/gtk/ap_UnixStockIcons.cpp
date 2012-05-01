@@ -66,8 +66,8 @@
 #include "../xp/ToolbarIcons/tb_revision_find_prev.xpm"
 #include "../xp/ToolbarIcons/tb_revision_find_next.xpm"
 #include "../xp/ToolbarIcons/tb_semitem_this.xpm"
-#include "../xp/ToolbarIcons/tb_semitem_select_next.xpm"
-#include "../xp/ToolbarIcons/tb_semitem_select_prev.xpm"
+#include "../xp/ToolbarIcons/tb_semitem_next.xpm"
+#include "../xp/ToolbarIcons/tb_semitem_prev.xpm"
 #include "../xp/ToolbarIcons/tb_semitem_edit.xpm"
 #include "../xp/ToolbarIcons/tb_semitem_stylesheet_apply.xpm"
 
@@ -183,9 +183,9 @@ static struct AbiStockEntry {
   { ABIWORD_SEMITEM_THIS,						0,
 	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_THIS,	(const gchar **) tb_semitem_this_xpm }, 
   { ABIWORD_SEMITEM_NEXT,						0,
-	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_NEXT,	(const gchar **) tb_semitem_select_next_xpm }, 
+	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_NEXT,	(const gchar **) tb_semitem_next_xpm }, 
   { ABIWORD_SEMITEM_PREV,						0,
-	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_PREV,	(const gchar **) tb_semitem_select_prev_xpm }, 
+	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_PREV,	(const gchar **) tb_semitem_prev_xpm }, 
   { ABIWORD_SEMITEM_EDIT,						0,
 	AP_STRING_ID_TOOLBAR_LABEL_SEMITEM_EDIT,	(const gchar **) tb_semitem_edit_xpm }, 
   { ABIWORD_SEMITEM_STYLESHEET_APPLY,			0,

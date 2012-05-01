@@ -133,8 +133,8 @@
 #	include "tb_revision_find_next.xpm"
 
 #	include "tb_semitem_this.xpm"
-#	include "tb_semitem_select_next.xpm"
-#	include "tb_semitem_select_prev.xpm"
+#	include "tb_semitem_next.xpm"
+#	include "tb_semitem_prev.xpm"
 #	include "tb_semitem_edit.xpm"
 #	include "tb_semitem_stylesheet_apply.xpm"
 
@@ -311,8 +311,8 @@
 	DefineToolbarIcon(tb_save_xpm)
 	DefineToolbarIcon(tb_script_play_xpm)
 	DefineToolbarIcon(tb_semitem_edit_xpm)
-	DefineToolbarIcon(tb_semitem_select_next_xpm)
-	DefineToolbarIcon(tb_semitem_select_prev_xpm)
+	DefineToolbarIcon(tb_semitem_next_xpm)
+	DefineToolbarIcon(tb_semitem_prev_xpm)
 	DefineToolbarIcon(tb_semitem_stylesheet_apply_xpm)
 	DefineToolbarIcon(tb_semitem_this_xpm)
 	DefineToolbarIcon(tb_smiley)
