@@ -11,7 +11,7 @@ sub PrintTime {
     ($sec,$minute,$hour,$mday,$mon,$year) = localtime();
     $mon++; # month is 0 based.
     
-    printf("%02d/%02d/%02d %02d:%02d:00", $mon,$mday,1900+$year,$hour,$minute );
+    printf("%04d-%02d-%02d %02d:%02d:00", 1900+$year,$mon,$mday,$hour,$minute);
 }
 
 ## en-US is in a different file in a different format
@@ -21,18 +21,19 @@ foreach my $file (qw(./src/wp/ap/xp/ap_String_Id.h ./src/af/xap/xp/xap_String_Id
     or die "Cannot open $file";
   
   while (<STRINGS>) {
-    next unless /^\s*dcl\((.*)\s*,\s*\"(.*)\"/;
+    next unless /^\s*dcl\s*\((\w+)\s*,\s*\"(.*)\"/;
     my ($dlg,$string) = ($1,$2);
     $string =~ s/&amp/&/;
     $dlgs{$dlg}{$lang} = $string;
     $longest{$dlg} = $lang
   }
   close(STRINGS);
+  $missing{$lang} = 0;
 }
 
 ## Read in each of the other language files 
 ## and process them apropriatly
-$stringsdir = "./user/wp/strings";
+$stringsdir = "./po";
 my @lang;
 if(scalar @ARGV) {
   @lang = @ARGV;
@@ -76,6 +77,7 @@ if(scalar @ARGV) {
     }
   }
 }
+@lang = sort @lang;
 ## Add US into the list
 unshift(@lang, 'en-US');
 
@@ -84,7 +86,7 @@ print STDERR "Missing strings:\n";
 $selected_langs=join ":",@ARGV;
 foreach my $dlg (keys %dlgs) {
   foreach my $lang (@lang) {
-    unless($dlgs{$dlg}{$lang}) {
+    if ($dlgs{$dlg}{"en-US"} && not $dlgs{$dlg}{$lang}) {
       print STDERR "$lang: $dlg\n" if $selected_langs =~ $lang;
       $missing{$lang}++; 
       #print $lang . " - missing " . $dlg . "\n" if $lang =~ "en-US";
