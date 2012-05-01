@@ -31,7 +31,7 @@ use Getopt::Long;
 
 #---------------------------
 
-my $VERSION     = "0.10";
+my $VERSION     = "0.11";
 
 #---------------------------
 
@@ -229,7 +229,7 @@ sub Convert($) {
         ### For generic translatable XP header files ###
         
         if ($FILE =~ /\/xp\/(.*)\.h$/sg){
-        while ($input =~ /\((\w+),(\s*)\"(.*)\"[)\s]+(\/\/xgettext:.*)*/g) {
+        while ($input =~ /^\s*dcl\s*\((\w+)\s*,(\s*)\"(.*)\"[)\s]+(\/\/xgettext:.*)*/mg) {        
                my $tag = $1;
                my $ctxt = "";     
 		if (defined($4)) {
