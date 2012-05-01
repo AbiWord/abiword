@@ -347,6 +347,7 @@ public:
 	bool key_eq(const UT_String &test, size_t h) const
 		{
 #if 1
+			UT_UNUSED(h);
 			return m_key.eq(test);
 #else
 			return m_key.hashval() == h;
@@ -356,7 +357,7 @@ public:
 	bool key_eq(const char  *test, size_t h) const
 		{
 #if 1
-			(void)h;
+			UT_UNUSED(h);
 			return m_key.eq(test);
 #else
 			return m_key.hashval() == h;
