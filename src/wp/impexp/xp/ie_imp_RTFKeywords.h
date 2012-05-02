@@ -15,6 +15,7 @@ _rtf_keyword rtfKeywords[] = {
 	{"abiendcell", false, false, NO_CONTEXT, RTF_KW_abiendcell }, 
 	{"abiendtable", false, false, NO_CONTEXT, RTF_KW_abiendtable }, 
 	{"abifieldD", false, false, NO_CONTEXT, RTF_KW_abifieldD }, 
+	{"abiframeprops", false, false, NO_CONTEXT, RTF_KW_abiframeprops },
 	{"abilatexdata",false,false,NO_CONTEXT,RTF_KW_abilatexdata },
 	{"abilist", false, false, NO_CONTEXT, RTF_KW_abilist }, 
 	{"abiltr", false, false, NO_CONTEXT, RTF_KW_abiltr }, 

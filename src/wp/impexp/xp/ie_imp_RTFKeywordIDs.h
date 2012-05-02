@@ -21,6 +21,7 @@ typedef enum {
 	RTF_KW_abiendcell,
 	RTF_KW_abiendtable,
 	RTF_KW_abifieldD,
+	RTF_KW_abiframeprops,
 	RTF_KW_abilatexdata,
 	RTF_KW_abilist,
 	RTF_KW_abiltr,
