@@ -76,6 +76,8 @@ if(scalar @ARGV) {
     }
   }
 }
+
+@lang = sort @lang;
 ## Add US into the list
 unshift(@lang, 'en-US');
 
