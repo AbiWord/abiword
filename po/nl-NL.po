@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: abiword 2.9.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 19:13+0200\n"
-"PO-Revision-Date: 2012-01-15 19:52-0400\n"
+"POT-Creation-Date: 2012-04-28 16:06-0400\n"
+"PO-Revision-Date: 2012-05-02 01:32-0400\n"
 "Last-Translator: Chris Leonard <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
 "Language: nl\n"
@@ -58,7 +58,7 @@ msgstr ""
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h
 msgid " Auto Update"
-msgstr " Automatisch Bijwerken"
+msgstr " Automatisch bijwerken"
 
 #. DLG_RDF_Query_Comment
 #: po/tmp/ap_String_Id.h
@@ -66,12 +66,14 @@ msgid ""
 "# Insert your SPARQL query here\n"
 "# Results are shown below."
 msgstr ""
+"# Voeg uw SPARQL-zoekopdracht hier in\n"
+"# Resultaten worden hieronder getoond."
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
 #, no-c-format
 msgid "% of normal size"
-msgstr "% van normale grootte"
+msgstr "% ovan normale grootte"
 
 #. MENU_LABEL_SPELL_SUGGEST_1
 #. MENU_LABEL_SPELL_SUGGEST_2
@@ -217,7 +219,7 @@ msgstr "&Toevoegen"
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h
 msgid "&Adjust to:"
-msgstr "&Aanpassen naar:"
+msgstr "&Bijstellen naar:"
 
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h
@@ -252,12 +254,12 @@ msgstr "&Automatische spellingcontrole"
 #. MENU_LABEL_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h
 msgid "&Autofit Table"
-msgstr "Tabel &Automatisch passend maken"
+msgstr "&Tabel automatisch passend maken"
 
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h
 msgid "&Automatically save this Scheme"
-msgstr "Dit schema &automatisch opslaan"
+msgstr "&Dit schema automatisch opslaan"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -339,7 +341,7 @@ msgstr "&Kolommen"
 #. MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h
 msgid "&Compare documents"
-msgstr "Documenten &vergelijken"
+msgstr "&Documenten vergelijken"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h
@@ -394,7 +396,7 @@ msgstr "&Documentgeschiedenis"
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h
 msgid "&Documents"
-msgstr "Docu&menten"
+msgstr "&Documenten"
 
 #. DLG_Para_PushNoHyphenate
 #: po/tmp/ap_String_Id.h
@@ -410,7 +412,7 @@ msgstr "&Bewerken"
 #. MENU_LABEL_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "&Edit Semantic Items"
-msgstr ""
+msgstr "&Semantische onderdelen bewerken"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -457,6 +459,7 @@ msgstr "&Velden"
 msgid "&Fields:"
 msgstr "&Velden:"
 
+#. DLG_RDF_Editor_Menu_File
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h
 msgid "&File"
@@ -489,9 +492,8 @@ msgstr "&Voettekst:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Opmaak"
+msgstr "&Opmaak"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -506,7 +508,7 @@ msgstr "&Heeft koptekst"
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h
 msgid "&Header and Footer"
-msgstr "&Kop- en Voettekst"
+msgstr "&Koptekst en voettekst"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
@@ -568,7 +570,7 @@ msgstr "&Stijlen importeren"
 #. MENU_LABEL_WEB_WEBPREVIEW
 #: po/tmp/ap_String_Id.h
 msgid "&In web browser"
-msgstr "&In webbrowser weergeven"
+msgstr "&In webbrowser"
 
 #. DLG_FormatTOC_InheritLabel
 #: po/tmp/ap_String_Id.h
@@ -662,7 +664,7 @@ msgstr "&Mail-samenvoegveld"
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h
 msgid "&Maintain Full History"
-msgstr "Volledige geschiedenis &bewaren"
+msgstr "&Volledige geschiedenis bewaren"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h
@@ -702,7 +704,7 @@ msgstr "&Nieuw venster"
 #. MENU_LABEL_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h
 msgid "&New using Template"
-msgstr "&Nieuw van sjabloon"
+msgstr "&Nieuw vanuit sjabloon"
 
 #. DLG_Break_NextPage
 #: po/tmp/ap_String_Id.h
@@ -712,7 +714,7 @@ msgstr "&Volgende pagina"
 #. MENU_LABEL_VIEW_NORMAL
 #: po/tmp/ap_String_Id.h
 msgid "&Normal Layout"
-msgstr "&Normale Vormgeving"
+msgstr "&Normale vormgeving"
 
 #. DLG_Goto_Label_Number
 #: po/tmp/ap_String_Id.h
@@ -772,7 +774,7 @@ msgstr "&Plakken"
 #. MENU_LABEL_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h
 msgid "&Picture"
-msgstr "&Afbeelding"
+msgstr "&Foto"
 
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h
@@ -787,7 +789,7 @@ msgstr "&Staand"
 #. MENU_LABEL_FILE_PRINT
 #: po/tmp/ap_String_Id.h
 msgid "&Print"
-msgstr "Af&drukken"
+msgstr "&Afdrukken"
 
 #. MENU_LABEL_VIEW_PRINT
 #: po/tmp/ap_String_Id.h
@@ -797,7 +799,7 @@ msgstr "&Afdrukvormgeving"
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h
 msgid "&Purge History"
-msgstr "&Geschiedenis opschonen"
+msgstr "&Geschiedenis verwijderen"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
@@ -832,7 +834,7 @@ msgstr "&Terugzetten op standaardinstellingen"
 #. MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
 msgid "&Reset to default layout"
-msgstr "&Terugzetten naar de standaardvormgeving"
+msgstr "&Terugzetten naar standaardvormgeving"
 
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h
@@ -879,7 +881,7 @@ msgstr "&Afbeelding opslaan als"
 #. MENU_LABEL_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h
 msgid "&Save web page"
-msgstr "Webpagina op&slaan"
+msgstr "&Webpagina opslaan"
 
 #. MENU_LABEL_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -984,6 +986,11 @@ msgstr "&Gereedschappen"
 msgid "&Top:"
 msgstr "&Boven:"
 
+#. DLG_RDF_Editor_Menu_Triple
+#: po/tmp/ap_String_Id.h
+msgid "&Triple"
+msgstr "&Drievoudig"
+
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "&Types"
@@ -1055,7 +1062,7 @@ msgstr "&Zoomen"
 #. DLG_ListRevisions_LevelZero
 #: po/tmp/ap_String_Id.h
 msgid "(All revisions visible)"
-msgstr "(Alle wijzigingen zichtbaar)"
+msgstr "(Alle revisies zichtbaar)"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h
@@ -1170,8 +1177,8 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"AbiWord is ontworpen voor nieuwere versies van het systeembestand COMCTL32."
-"DLL\n"
+"AbiWord is ontworpen voor nieuwere versies van het systeembestand "
+"COMCTL32.DLL\n"
 "dan de versie die nu op uw systeem staat (COMCTL32.DLL versie 4.72 of "
 "nieuwer).\n"
 "Een oplossing voor dit probleem wordt uitgelegd in de sectie Veelgestelde "
@@ -1301,9 +1308,8 @@ msgstr "Schermkleuren anders dan wit toestaan"
 
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Annotation"
-msgstr "&Notities"
+msgstr "Aantekening"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
@@ -1313,7 +1319,7 @@ msgstr "Toepassing"
 #. DLG_Options_Label_AppStartup
 #: po/tmp/ap_String_Id.h
 msgid "Application Startup"
-msgstr "Toepassing opstart"
+msgstr "Opstart van toepassing"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
@@ -1324,29 +1330,26 @@ msgstr "Toepassen"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Contact"
-msgstr "Toepassen op:"
+msgstr "Contact toepassen"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Event"
-msgstr "Toepassen op:"
+msgstr "Gebeurtenis toepassen"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Location"
-msgstr "Toepassing"
+msgstr "Locatie toepassen"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Pas de eerder gekopieerde alinea-stijl toe op de geselecteerde tekst"
+msgstr "Pas de eerder gekopieerde alineastijl toe op de geselecteerde tekst"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h
@@ -1361,7 +1364,7 @@ msgstr "Toepassen op:"
 #. DLG_Lists_Arabic_List
 #: po/tmp/ap_String_Id.h
 msgid "Arabic List"
-msgstr "Arabische Lijst"
+msgstr "Arabische lijst"
 
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h
@@ -1370,7 +1373,8 @@ msgid ""
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
 "Weet u zeker dat u de volledige opgeslagen geschiedenis niet wilt behouden? "
-"Als u doorgaat, kunt u eerdere versies van dit document niet meer herstellen."
+"Als u doorgaat, kunt u eerdere versies van dit document niet meer "
+"herstellen."
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1384,9 +1388,8 @@ msgstr "Aan voorgaande lijst koppelen"
 
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Auteur:"
+msgstr "Auteur"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
@@ -1539,7 +1542,7 @@ msgstr "Bladwijzer"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Bladwijzer \"%s\" werd niet gevonden in dit document."
+msgstr "Bladwijzer '%s' werd niet gevonden in dit document."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
@@ -1566,7 +1569,7 @@ msgstr "Randen en kleurverloop"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr ""
+msgstr "Beide mensen kennen elkaar"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -1629,7 +1632,7 @@ msgstr "Opsommingtekens"
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h
 msgid "Bullets and &Numbering"
-msgstr "Opsommingtekens en &Nummering"
+msgstr "Opsommingtekens en &nummering"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
@@ -1639,7 +1642,7 @@ msgstr "Knopstijl"
 #. MENU_LABEL_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h
 msgid "C&hange Case"
-msgstr "&Hoofd-/kleine letters omzetten"
+msgstr "&Hoofd-/kleine letters wisselen"
 
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
@@ -1712,7 +1715,7 @@ msgstr "Gecentreerd"
 #. DLG_Spell_ChangeTo
 #: po/tmp/ap_String_Id.h
 msgid "Change &to:"
-msgstr "Veranderen &naar:"
+msgstr "Veranderen &in:"
 
 #. DLG_Spell_ChangeAll
 #: po/tmp/ap_String_Id.h
@@ -1727,7 +1730,7 @@ msgstr "Achtergrondkleur veranderen"
 #. DLG_ToggleCase_Title
 #: po/tmp/ap_String_Id.h
 msgid "Change Case"
-msgstr "Hoofd-/kleine letters veranderen"
+msgstr "Hoofd-/kleine letters wisselen"
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h
@@ -1783,9 +1786,8 @@ msgstr "De opmaak van de geselecteerde alinea veranderen"
 
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Change the format of the table"
-msgstr "De opmaak van de geselecteerde alinea veranderen"
+msgstr "Verander de opmaak van de tabel"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -1864,12 +1866,12 @@ msgstr "Tekens (inclusief spaties):"
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h
 msgid "Check &Spelling"
-msgstr "Controleer &spelling"
+msgstr "&Spelling controleren"
 
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h
 msgid "Check &grammar as you type"
-msgstr "De &grammatica controleren tijdens het typen"
+msgstr "&Grammatica controleren tijdens het typen"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h
@@ -1886,7 +1888,7 @@ msgstr ""
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h
 msgid "Check s&pelling as you type"
-msgstr "De &spelling controleren tijdens het typen"
+msgstr "&Spelling controleren tijdens het typen"
 
 #. MENU_STATUSLINE_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h
@@ -1930,8 +1932,8 @@ msgstr ""
 "Kies uw doel aan de linkerkant.\n"
 "Als u de \"Ga Naar\" knop wilt gebruiken, vul dan het Nummerveld met het "
 "gewenste nummer.  U kunt + en - gebruiken om relatieve beweging uit te "
-"voeren.\tBijvoorbeeld: als u \"+2\" schrijft en \"Lijn\" selecteert, dan zal "
-"\"Ga Naar\" 2 regels verder naar onderen gaan dan uw huidige positie."
+"voeren.  Bijvoorbeeld: als u \"+2\" schrijft en \"Lijn\" selecteert, dan zal \"Ga "
+"Naar\" 2 regels verder naar onderen gaan dan uw huidige positie."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2050,14 +2052,19 @@ msgstr "Ona&fgebroken"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact"
-msgstr "Inhoud"
+msgstr "Contact"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
-msgid "Contact from File..."
-msgstr ""
+msgid "Contact from File"
+msgstr "Contactpersoon vanuit bestand"
+
+#. DLG_RDF_SemanticItemInsert_Column_Refdlg
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts"
+msgstr "Contactpersonen"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2188,85 +2195,81 @@ msgstr "Dekking:"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create New"
-msgstr "Gemaakt"
+msgstr "Maak nieuw"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "Paginaverwijzing"
+msgstr "Verwijzing maken"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
 #: po/tmp/ap_String_Id.h
 msgid "Create Semantic Item"
-msgstr ""
+msgstr "Semantisch onderdeel maken"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h
 msgid "Create a fax"
-msgstr "Een fax aanmaken"
+msgstr "Een fax maken"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create a new Revision"
-msgstr "Een nieuwe revisie aanmaken"
+msgstr "Een nieuwe revisie maken"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h
 msgid "Create a new blank document"
-msgstr "Een nieuw leeg document aanmaken"
+msgstr "Een nieuw leeg document maken"
 
 #. MENU_STATUSLINE_FILE_NEW
 #. TOOLBAR_STATUSLINE_FILE_NEW
 #. TOOLBAR_TOOLTIP_FILE_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create a new document"
-msgstr "Een nieuw document aanmaken"
+msgstr "Een nieuw document maken"
 
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h
 msgid "Create a new document from a template"
-msgstr "Een nieuw document aanmaken vanuit een sjabloon"
+msgstr "Een nieuw document maken vanuit een sjabloon"
 
 #. MENU_STATUSLINE_FILE_NEW_USING_TEMPLATE
 #: po/tmp/ap_String_Id.h
 msgid "Create a new document using a template"
-msgstr "Een nieuw document aanmaken met gebruik van een sjabloon"
+msgstr "Een nieuw document maken met gebruik van een sjabloon"
 
 #. DLG_NEW_StartEmpty
 #: po/tmp/ap_String_Id.h
 msgid "Create an empty document"
-msgstr "Een leeg document aanmaken"
+msgstr "Een leeg document maken"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
-msgstr "Aanmaken uit &selectie"
+msgstr "Aanmaken vanuit &selectie"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Contact Semantic Item"
-msgstr "Een nieuw document aanmaken vanuit een sjabloon"
+msgstr "Nieuw contact-semantisch-onderdeel maken"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr ""
+msgstr "Nieuw contact-semantisch-onderdeel maken door een vcard te importeren"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
 msgid "Create new Reference to existing Semantic Item"
-msgstr ""
+msgstr "Nieuwe verwijzing maken naar bestaand semantisch onderdeel"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Semantic Item"
-msgstr "Een nieuw document aanmaken"
+msgstr "Nieuw semantisch onderdeel maken"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h
@@ -2281,12 +2284,12 @@ msgstr "K&nippen"
 #. FIELD_Datetime_CurrentDate
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
-msgstr "Huidige Datum"
+msgstr "Huidige datum"
 
 #. DLG_Lists_Current_Font
 #: po/tmp/ap_String_Id.h
 msgid "Current Font"
-msgstr "Huidig Lettertype"
+msgstr "Huidig lettertype"
 
 #. DLG_Lists_Current_List_Label
 #: po/tmp/ap_String_Id.h
@@ -2306,12 +2309,12 @@ msgstr "Huidige selectie is leeg"
 #. DLG_Styles_DefCurrent
 #: po/tmp/ap_String_Id.h
 msgid "Current Settings"
-msgstr "Huidige Instellingen"
+msgstr "Huidige instellingen"
 
 #. FIELD_Datetime_CurrentTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Time"
-msgstr "Huidige Tijd"
+msgstr "Huidige tijd"
 
 #. DLG_Options_Label_ViewCursorBlink
 #: po/tmp/ap_String_Id.h
@@ -2331,7 +2334,7 @@ msgstr "Aanpasbare datum/tijd"
 #. DLG_Lists_Customize
 #: po/tmp/ap_String_Id.h
 msgid "Customized List"
-msgstr "Aangepaste Lijst"
+msgstr "Aangepaste lijst"
 
 #. TOOLBAR_LABEL_EDIT_CUT
 #. TOOLBAR_STATUSLINE_EDIT_CUT
@@ -2368,7 +2371,7 @@ msgstr "De selectie knippen en op het Klembord plaatsen"
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
-msgstr "&Richting"
+msgstr "&Richtinggevoelig"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2378,9 +2381,8 @@ msgstr "Lijst met streepjes"
 
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dashed line"
-msgstr "Lijst met streepjes"
+msgstr "Regel met streepjes"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2582,7 +2584,7 @@ msgstr "Omschrijving:"
 #. STYLE_DIAMONLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Diamond List"
-msgstr "Ruiten Lijst"
+msgstr "Ruitenlijst"
 
 #. DLG_Options_Label_SpellDictionaries
 #: po/tmp/ap_String_Id.h
@@ -2633,12 +2635,12 @@ msgstr "Alle opmaakopdrachten uitzetten, behalve stijlen"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
-msgstr ""
+msgstr "Ontkoppelen"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
 msgid "Display Credits"
-msgstr "\"Met dank aan\" weergeven"
+msgstr "'Met dank aan' weergeven"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h
@@ -2668,13 +2670,13 @@ msgstr "Weergavestijl:"
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h
 msgid "Do you want to reset ignored words in all the documents?"
-msgstr "Wilt u de \"genegeerde-woordenlijst\" leegmaken voor alle documenten?"
+msgstr "Wilt u de 'genegeerde-woordenlijst' leegmaken voor alle documenten?"
 
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h
 msgid "Do you want to reset ignored words in the current document?"
 msgstr ""
-"Wilt u de \"genegeerde-woordenlijst\" leegmaken voor het huidige document?"
+"Wilt u de 'genegeerde-woordenlijst' leegmaken voor het huidige document?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h
@@ -2698,9 +2700,8 @@ msgstr "Niet herstarten"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dotted line"
-msgstr "Onderste regel"
+msgstr "Regel met puntjes"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2771,13 +2772,13 @@ msgstr "LaTeX-vergelijking bewerken"
 
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-msgid "Edit RDF Triples..."
-msgstr ""
+msgid "Edit RDF Triples"
+msgstr "RDF Triples bewerken"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr ""
+msgstr "Semantische onderdelen bewerken inzake locatie"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -2786,9 +2787,8 @@ msgstr "Notitie bewerken"
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit document RDF"
-msgstr "RDF van document bewerken..."
+msgstr "RDF van document bewerken"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -2815,7 +2815,7 @@ msgstr "Koptekst op de huidige pagina bewerken"
 #. TOOLBAR_TOOLTIP_SEMITEM_EDIT
 #: po/tmp/ap_String_Id.h
 msgid "Edit this Semantic Item"
-msgstr ""
+msgstr "Dit semantische onderdeel bewerken"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
@@ -2891,6 +2891,11 @@ msgstr "Fout bij opslaan van %s: kan geen exportfunctie maken"
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Fout bij opslaan van %s: ongeldige naam"
 
+#. DLG_RDF_SemanticStylesheets_Events
+#: po/tmp/ap_String_Id.h
+msgid "Events"
+msgstr "Gebeurtenissen"
+
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Ex. script"
@@ -2908,9 +2913,8 @@ msgstr "Voorbeeld:"
 
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute Query"
-msgstr "Script uitvoeren"
+msgstr "Zoekopdracht uitvoeren"
 
 #. MENU_STATUSLINE_RDFANCHOR_SPARQL
 #: po/tmp/ap_String_Id.h
@@ -2919,14 +2923,13 @@ msgstr "Voer een SPARQL-zoekopdracht uit voor locatie"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute SPARQL on document RDF"
-msgstr "Voer SPARQL uit voor de RDF van het document..."
+msgstr "Voer SPARQL uit voor de RDF van het document"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Execute a SPARQL Query on all document RDF..."
-msgstr "Voer een SPARQL-zoekopdracht uit voor de RDF van alle documenten..."
+msgstr "Voer een SPARQL-zoekopdracht uit op de RDF van alle documenten..."
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -2947,12 +2950,12 @@ msgstr "Bestaande revisies:"
 #. MENU_LABEL_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items"
-msgstr ""
+msgstr "Semantische onderdelen uitvoeren"
 
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr ""
+msgstr "Semantische onderdelen uitvoeren inzake locatie"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
@@ -3056,9 +3059,8 @@ msgstr "Vorig&e revisie zoeken"
 #. MENU_LABEL_RDF_SEMITEM_FIND_RELATED
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Find by Relation"
-msgstr "Relatie:"
+msgstr "Zoeken op relatie"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
@@ -3352,9 +3354,8 @@ msgstr "Ga naar &wat:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
-msgstr "Ga naar..."
+msgstr "Ga naar"
 
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h
@@ -3421,12 +3422,12 @@ msgstr "Kopstijl:"
 #. STYLE_HEARTLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Heart List"
-msgstr "Harten Lijst"
+msgstr "Hartenlijst"
 
 #. DLG_Lists_Hebrew_List
 #: po/tmp/ap_String_Id.h
 msgid "Hebrew List"
-msgstr "Hebreeuwse Lijst"
+msgstr "Hebreeuwse lijst"
 
 #. TOOLBAR_LABEL_HELP
 #. TOOLBAR_STATUSLINE_HELP
@@ -3490,7 +3491,7 @@ msgstr "I&nspringen:"
 #. DLG_Goto_Column_ID
 #: po/tmp/ap_String_Id.h
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h
@@ -3527,7 +3528,7 @@ msgstr "Achtergrondafbeelding"
 #. STYLE_IMPLIES_LIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Implies List"
-msgstr "Vooronderstelt Lijst"
+msgstr "Vooronderstelt lijst"
 
 #. MENU_STATUSLINE_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h
@@ -3675,6 +3676,16 @@ msgstr "RDF-koppeling invoegen"
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF link..."
 msgstr "RDF-koppeling invoegen..."
+
+#. DLG_RDF_SemanticItemInsert_Ok
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference"
+msgstr "Verwijzing invoegen"
+
+#. DLG_RDF_SemanticItemInsert_Title
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference to Semantic Item"
+msgstr "Verwijzing invoegen naar semantisch onderdeel"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3977,12 +3988,6 @@ msgstr "Taalinstellingen"
 msgid "Language(s):"
 msgstr "Taal/talen:"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#: po/tmp/ap_String_Id.h
-msgid "Lat & Long"
-msgstr ""
-
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h
 msgid "Layout"
@@ -4063,7 +4068,7 @@ msgstr "Niveau 4"
 #. DLG_Lists_DelimiterString
 #: po/tmp/ap_String_Id.h
 msgid "Level Delimiter:"
-msgstr "Niveaugrens:"
+msgstr "Niveaubegrenzer:"
 
 #. DLG_Lists_Level
 #: po/tmp/ap_String_Id.h
@@ -4135,16 +4140,10 @@ msgstr "Lijst-stijlen"
 msgid "Lists for "
 msgstr "Lijsten voor "
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
+#. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Location"
-msgstr "Toepassing"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
-#: po/tmp/ap_String_Id.h
-msgid "Location, Start and End Times"
-msgstr ""
+msgid "Locations"
+msgstr "Locaties"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4368,21 +4367,26 @@ msgstr "Meerdere"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Naam:"
+msgstr "Naam"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name (homepage) phone"
-msgstr ""
+msgid "Name, (Homepage), Phone"
+msgstr "Naam, (thuispagina), telefoon"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#: po/tmp/ap_String_Id.h
+msgid "Name, Latitude and Longitude"
+msgstr "Naam, breedtegraad en lengtegraad"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name, Nick"
-msgstr ""
+msgid "Name, Phone"
+msgstr "Naam, telefoon"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -4394,15 +4398,20 @@ msgstr "Nieuw"
 msgid "New &annotation"
 msgstr "Nieuwe &notitie"
 
+#. DLG_RDF_Insert_NewContact
+#: po/tmp/ap_String_Id.h
+msgid "New Contact..."
+msgstr "Nieuwe contactpersoon..."
+
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
 msgid "New Document"
-msgstr "Nieuw Document"
+msgstr "Nieuw document"
 
 #. DLG_Lists_New_List_Label
 #: po/tmp/ap_String_Id.h
 msgid "New List Label"
-msgstr "Nieuw Lijstetiket"
+msgstr "Nieuw lijstetiket"
 
 #. DLG_Lists_New_List_Type
 #: po/tmp/ap_String_Id.h
@@ -4430,7 +4439,7 @@ msgstr ""
 #. DLG_Styles_NewTitle
 #: po/tmp/ap_String_Id.h
 msgid "New Style"
-msgstr "Nieuwe Stijl"
+msgstr "Nieuwe stijl"
 
 #. DLG_Styles_New
 #: po/tmp/ap_String_Id.h
@@ -4446,13 +4455,13 @@ msgstr "Volgende >>"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK
 #: po/tmp/ap_String_Id.h
 msgid "Nick"
-msgstr ""
+msgstr "Bijnaam"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Nick, Phone"
-msgstr ""
+msgstr "Bijnaam, Telefoon"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h
@@ -4535,7 +4544,7 @@ msgstr "Aantal rijen:"
 #. DLG_Lists_Type_numbered
 #: po/tmp/ap_String_Id.h
 msgid "Numbered"
-msgstr "Genummerde lijst"
+msgstr "Genummerd"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
@@ -4559,9 +4568,8 @@ msgstr "Nummers"
 
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Object"
-msgstr "Onderwerp"
+msgstr "Object"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
@@ -4811,7 +4819,7 @@ msgstr "Rechten"
 #. DLG_Goto_Target_Picture
 #: po/tmp/ap_String_Id.h
 msgid "Picture"
-msgstr "Afbeelding"
+msgstr "Foto"
 
 #. FIELD_Type_PieceTable
 #: po/tmp/ap_String_Id.h
@@ -4836,7 +4844,7 @@ msgstr "Plaatsing"
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr ""
+msgstr "Aan het spelen met RDF gedurende ontwikkeling"
 
 #. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
@@ -4878,13 +4886,13 @@ msgstr "&Voorkeuren"
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
 msgid "Predicate"
-msgstr ""
+msgstr "Eigenschap"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h
 msgid "Preference Schemes"
-msgstr "Voorkeurschema's"
+msgstr "Voorkeursschema's"
 
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h
@@ -4972,7 +4980,7 @@ msgstr "Afdrukken met het interne PS-stuurprogramma"
 #. MSG_PrintingDoc
 #: po/tmp/ap_String_Id.h
 msgid "Printing Document..."
-msgstr "Bezig met afdrukken van het document..."
+msgstr "Bezig met afdrukken van document..."
 
 #. MSG_PrintStatus
 #: po/tmp/ap_String_Id.h
@@ -4990,6 +4998,12 @@ msgstr "Uitgever"
 msgid "Publisher:"
 msgstr "Uitgever:"
 
+#. DLG_RDF_Query_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Query RDF: %d of total: %ld"
+msgstr "Doorzoek RDF: %d van totaal: %ld"
+
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
@@ -4998,14 +5012,18 @@ msgstr "V&ervangen"
 #. MENU_LABEL_RDF
 #: po/tmp/ap_String_Id.h
 msgid "RDF"
-msgstr ""
+msgstr "RDF"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "RDF Link"
-msgstr "RDF-koppeling invoegen"
+msgstr "RDF-koppeling"
+
+#. DLG_RDF_SemanticStylesheets_Title
+#: po/tmp/ap_String_Id.h
+msgid "RDF Stylesheet"
+msgstr "RDF-stijlvel"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5040,16 +5058,15 @@ msgstr "&Terugdraaien"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_REAPPLY
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Reapply Current"
-msgstr "Op huidige lijst toepassen"
+msgstr "Huidige opnieuw toepassen"
 
 #. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
 #. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
 #. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
 #: po/tmp/ap_String_Id.h
 msgid "Reapply stylesheet this Semantic Item"
-msgstr ""
+msgstr "Stijlvel opnieuw toepassen dit semantisch onderdeel"
 
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
@@ -5082,14 +5099,13 @@ msgstr "Verklein of vergroot de documentweergave"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "Gerelateerd aan bron semantisch onderdeel"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Relatie:"
+msgstr "Relatie"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5125,12 +5141,12 @@ msgstr "Eigenschap van Stijl verwijderen"
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
 msgid "Remove Row as Heading"
-msgstr "Rij verwijderen als Kop"
+msgstr "Rij verwijderen als kop"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
 msgid "Remove Row as the page Heading"
-msgstr "Rij verwijderen als Paginakop"
+msgstr "Rij verwijderen als de paginakop"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h
@@ -5155,17 +5171,17 @@ msgstr "De koptekst op deze pagina uit het document verwijderen"
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h
 msgid "Remove the Image and save a copy on the clipboard"
-msgstr "De Afbeelding weghalen en een exemplaar op het klembord opslaan"
+msgstr "De afbeelding weghalen en een exemplaar op het klembord opslaan"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h
 msgid "Remove the Image from the Document"
-msgstr "De Afbeelding uit het Document verwijderen"
+msgstr "De afbeelding uit het document verwijderen"
 
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h
 msgid "Remove the Text Box from the Document"
-msgstr "Het Tekstkader uit het Document verwijderen"
+msgstr "Het tekstkader uit het document verwijderen"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -5206,18 +5222,17 @@ msgstr "De geselecteerde tekst door een andere tekst vervangen"
 #. MENU_LABEL_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h
 msgid "Report a &Bug"
-msgstr "Een &fout rapporteren"
+msgstr "Een &fout melden"
 
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h
 msgid "Report a bug and help AbiWord become a better product"
-msgstr "Rapporteer een programmafout en help AbiWord beter te maken"
+msgstr "Meld een programmafout en help AbiWord om beter te worden"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
 msgid "Reset the current toolbar layout to its defaults"
-msgstr ""
-"De huidige werkbalk-vormgeving terugzetten naar de standaard-vormgeving"
+msgstr "De huidige werkbalkvormgeving terugzetten naar de standaardvormgeving"
 
 #. MENU_STATUSLINE_FMT_IMAGE
 #: po/tmp/ap_String_Id.h
@@ -5384,8 +5399,8 @@ msgstr "SPARQL-&zoekopdracht"
 
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
-msgid "SPARQL Query..."
-msgstr "SPARQL-zoekopdracht..."
+msgid "SPARQL Query"
+msgstr "SPARQL-zoekopdracht"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
@@ -5420,7 +5435,7 @@ msgstr "Opslaan als"
 #. MENU_STATUSLINE_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h
 msgid "Save a copy of the image on the clipboard"
-msgstr "Een kopie van de afbeeldig op het klembord opslaan"
+msgstr "Een kopie van de afbeelding op het klembord opslaan"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h
@@ -5564,39 +5579,39 @@ msgstr "Afbeelding vanuit bestand kiezen"
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to Semantic Item"
-msgstr ""
+msgstr "Kies volgende verwijzing naar semantisch onderdeel"
 
 #. TOOLBAR_LABEL_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item"
-msgstr ""
+msgstr "Kies volgende verwijzing naar dit semantische onderdeel"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item..."
-msgstr ""
+msgstr "Kies volgende verwijzing naar dit semantische onderdeel..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Select next references to Semantic Item"
-msgstr ""
+msgstr "Kies volgende verwijzingen naar semantisch onderdeel"
 
 #. MENU_LABEL_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to Semantic Item"
-msgstr ""
+msgstr "Kies vorige verwijzing naar semantisch onderdeel"
 
 #. TOOLBAR_LABEL_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item"
-msgstr ""
+msgstr "Kies vorige verwijzing naar dit semantische onderdeel"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item..."
-msgstr ""
+msgstr "Kies vorige verwijzing naar dit semantische onderdeel..."
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -5629,24 +5644,24 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the previous revision..."
-msgstr "Kies de delen van het document die vervat zijn in de vorige versie..."
+msgstr "Kies de delen van het document die vervat zijn in de vorige revisie..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to Semantic Item"
-msgstr ""
+msgstr "Kies deze referentie naar semantisch onderdeel"
 
 #. TOOLBAR_LABEL_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item"
-msgstr ""
+msgstr "Kies deze referentie naar dit semantische onderdeel"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item..."
-msgstr ""
+msgstr "Kies deze referentie naar dit semantische onderdeel..."
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
@@ -5658,7 +5673,7 @@ msgstr "Selectie"
 #. MENU_STATUSLINE_RDF_SEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Semantic Item"
-msgstr ""
+msgstr "Semantisch onderdeel"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
@@ -5710,6 +5725,11 @@ msgstr "&Taal instellen"
 msgid "Set Default Values"
 msgstr "Standaardwaarden instellen"
 
+#. DLG_RDF_SemanticStylesheets_Set
+#: po/tmp/ap_String_Id.h
+msgid "Set For All Existing"
+msgstr "Stel in voor alle bestaande"
+
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
 #: po/tmp/ap_String_Id.h
@@ -5735,7 +5755,7 @@ msgstr "Een afbeelding instellen als achtergrond voor uw pagina"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr ""
+msgstr "Stel in als bron semantisch onderdeel"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5778,6 +5798,19 @@ msgstr "Voorkeuren instellen"
 msgid "Set tab stops"
 msgstr "Tabposities instellen"
 
+#. DLG_RDF_SemanticStylesheets_Explanation
+#: po/tmp/ap_String_Id.h
+msgid ""
+"Set the default stylesheet for Semantic objects in this document. New RDF "
+"objects will use this stylesheet automatically. The buttons allow you to set "
+"the stylesheet for all existing semantic objects to the new default "
+"stylesheet as well."
+msgstr ""
+"Stel het standaardstijlvel in voor semantische objecten in dit document. "
+"Nieuwe RDF-objecten zullen dit stijlvel automatisch gebruiken. De knoppen "
+"stellen u ook in staat om het stijlvel voor alle bestaande semantische "
+"objecten over te zetten op het nieuwe standaardstijlvel."
+
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
 msgid "Set the type and styles of the Table of Contents"
@@ -5817,7 +5850,8 @@ msgstr "Uw spellingvoorkeuren instellen"
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
 msgstr ""
-"Pagina-eigenschappen van uw document aanpassen, zoals paginagrootte en marges"
+"Pagina-eigenschappen van uw document aanpassen, zoals paginagrootte en "
+"marges"
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
@@ -5852,9 +5886,8 @@ msgstr "Alles weergeven"
 
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show All RDF"
-msgstr "Alles weergeven"
+msgstr "Toon alle RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
@@ -5868,8 +5901,8 @@ msgstr "Toon RDF-triples geassocieerd met plek"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position..."
-msgstr "Toon RDF voor cursorpositie..."
+msgid "Show RDF for cursor position"
+msgstr "Toon RDF voor cursorpositie"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -6003,9 +6036,8 @@ msgstr "Tabel so&rteren"
 
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Solid line"
-msgstr "Eerste regel"
+msgstr "Dikke lijn"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6141,27 +6173,27 @@ msgstr "Cellen splitsen"
 #. DLG_SplitCells_VertMid
 #: po/tmp/ap_String_Id.h
 msgid "Split in Middle"
-msgstr "Splitsen in het Midden"
+msgstr "Splitsen in het midden"
 
 #. DLG_SplitCells_Below
 #: po/tmp/ap_String_Id.h
 msgid "Split on Bottom Side"
-msgstr "Aan de Onderkant splitsen"
+msgstr "Aan de onderkant splitsen"
 
 #. DLG_SplitCells_Left
 #: po/tmp/ap_String_Id.h
 msgid "Split on Left Side"
-msgstr "Aan de Linkerkant splitsen"
+msgstr "Aan de linkerkant splitsen"
 
 #. DLG_SplitCells_Right
 #: po/tmp/ap_String_Id.h
 msgid "Split on Right Side"
-msgstr "Aan de Rechterkant splitsen"
+msgstr "Aan de rechterkant splitsen"
 
 #. DLG_SplitCells_Above
 #: po/tmp/ap_String_Id.h
 msgid "Split on Top Side"
-msgstr "Aan de Bovenkant splitsen"
+msgstr "Aan de bovenkant splitsen"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
 #: po/tmp/ap_String_Id.h
@@ -6193,7 +6225,7 @@ msgstr "Deze cel splitsen"
 #. STYLE_SQUARELIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Square List"
-msgstr "Vierkant Lijst"
+msgstr "Vierkantjeslijst"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h
@@ -6214,7 +6246,7 @@ msgstr "Standaardwerkbalk"
 #. STYLE_STARLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Star List"
-msgstr "Ster Lijst"
+msgstr "Sterlijst"
 
 #. DLG_Lists_Start
 #: po/tmp/ap_String_Id.h
@@ -6236,12 +6268,6 @@ msgstr "Sublijst starten"
 #: po/tmp/ap_String_Id.h
 msgid "Start a new revision"
 msgstr "Een nieuwe revisie beginnen"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Start and End Times"
-msgstr "Datum en tijd"
 
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
@@ -6334,16 +6360,14 @@ msgstr "Stijlen"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Stylesheet"
-msgstr "Stijlen"
+msgstr "Stijlvel"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Stylesheet Settings"
-msgstr "Instellingen Opslaan"
+msgstr "Instellingen van stijlvel"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
@@ -6400,20 +6424,23 @@ msgstr "Tabelrij optellen"
 msgid "Summary"
 msgstr "Samenvatting"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
-msgstr ""
+msgstr "Samenvatting, locatie"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr ""
+msgstr "Samenvatting, locatie, begin- en eindtijden"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr ""
+msgstr "Samenvatting, begin- en eindtijden"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6486,7 +6513,7 @@ msgstr "Inhoudsopgave"
 #. FIELD_Numbers_TOCListLabel
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents List Label"
-msgstr "Lijst-etiket van inhoudsopgave"
+msgstr "Etiket van Inhoudsopgavelijst"
 
 #. FIELD_Numbers_TOCPageNumber
 #: po/tmp/ap_String_Id.h
@@ -6558,7 +6585,7 @@ msgstr "Tekstomloop"
 #. DLG_Options_Label_Both
 #: po/tmp/ap_String_Id.h
 msgid "Text and Icon"
-msgstr "Tekst en Pictogram"
+msgstr "Tekst en pictogram"
 
 #. COMMAND_LINE_PRINTING_DEPRECATED
 #: po/tmp/ap_String_Id.h
@@ -6677,7 +6704,7 @@ msgstr "Drie"
 #. STYLE_TICKLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Tick List"
-msgstr "Vink Lijst"
+msgstr "Vinklijst"
 
 #. FIELD_DateTime_TimeZone
 #: po/tmp/ap_String_Id.h
@@ -6732,11 +6759,17 @@ msgstr "Bovenmarge [%s]"
 msgid "Topline"
 msgstr "Bovenste regel"
 
+#. DLG_RDF_Editor_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Total RDF: %d"
+msgstr "Totale RDF: %d"
+
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Triangle List"
-msgstr "Driehoek Lijst"
+msgstr "Driehoekjeslijst"
 
 #. DLG_Column_Two
 #: po/tmp/ap_String_Id.h
@@ -6756,8 +6789,7 @@ msgstr "Tik een naam in voor de RDF-koppeling"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr ""
-"Tik een naam in voor de bladwijzer, of kies een bestaande uit de lijst."
+msgstr "Tik een naam in voor de bladwijzer, of kies een bestaande uit de lijst."
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6794,6 +6826,12 @@ msgstr "Ongedaan maken"
 msgid "Undo editing"
 msgstr "Bewerking ongedaan maken"
 
+#. DLG_RDF_Editor_ShowAll
+#. DLG_Update
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Update"
+msgstr "Verversen"
+
 #. DLG_Annotation_OK_tooltip
 #: po/tmp/ap_String_Id.h
 msgid "Update the annotation"
@@ -6803,18 +6841,18 @@ msgstr "Notitie bijwerken"
 #. STYLE_UPPERCASTELIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Upper Case List"
-msgstr "Hoofdletter Lijst"
+msgstr "Hoofdletterlijst"
 
 #. DLG_Lists_Upper_Roman_List
 #. STYLE_UPPERROMANLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Upper Roman List"
-msgstr "Romeinse cijfer Lijst (groot)"
+msgstr "Romeinse-cijferlijst (groot)"
 
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h
 msgid "Use RTL Order"
-msgstr "\"Rechts naar links\"-volgorde gebruiken"
+msgstr "'Rechts naar links'-volgorde gebruiken"
 
 #. DLG_Options_Label_CustomSmartQuotes
 #: po/tmp/ap_String_Id.h
@@ -6909,7 +6947,7 @@ msgstr "Waarschuwing: de opgegeven bladwijzer [%s] bestaat niet."
 #. MENU_STATUSLINE_VIEW_WEB
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
-msgstr "Web-vormgeving"
+msgstr "Webvormgeving"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7077,14 +7115,12 @@ msgstr "hOOFD- eN kLEINE lETTERS oMWISSELEN"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Onderwerp"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Onderwerp"
@@ -7211,7 +7247,7 @@ msgstr ""
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h
 msgid "AbiWord: Print Preview"
-msgstr "AbiWord: Afdrukvoorbeeld"
+msgstr "AbiWord: afdrukvoorbeeld"
 
 #. DLG_ABOUT_Title
 #: po/tmp/xap_String_Id.h
@@ -7252,7 +7288,7 @@ msgstr "Alle documenten"
 #. DLG_FOSA_ALLIMAGES
 #: po/tmp/xap_String_Id.h
 msgid "All Image Files"
-msgstr "Alle Afbeeldingbestanden"
+msgstr "Alle afbeeldingbestanden"
 
 #. DLG_HTMLOPT_ExpAllowAWML
 #: po/tmp/xap_String_Id.h
@@ -7327,7 +7363,7 @@ msgstr "Auto-revisie"
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h
 msgid "Automatically Detected"
-msgstr "Automatisch Herkend"
+msgstr "Automatisch herkend"
 
 #. MSG_AutoRevision
 #: po/tmp/xap_String_Id.h
@@ -7337,12 +7373,12 @@ msgstr "Automatisch revisies bijhouden"
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
 msgid "Available Documents"
-msgstr "Beschikbare Documenten"
+msgstr "Beschikbare documenten"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
 msgid "Available Languages"
-msgstr "Beschikbare Talen"
+msgstr "Beschikbare talen"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
@@ -7397,7 +7433,7 @@ msgstr "Bloktekst"
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
 msgid "Bold Italic"
-msgstr "Vet Cursief"
+msgstr "Vet cursief"
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
@@ -7408,7 +7444,7 @@ msgstr "Bretons"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "Build options: %s"
-msgstr "Build-opties: %s"
+msgstr "Bouw-opties: %s"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h
@@ -7453,7 +7489,7 @@ msgstr "Centraal-Europees, Windows codepagina 1250"
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
-msgstr "Verander Taal wanneer toetsenbord wordt verwisseld"
+msgstr "Verander taal wanneer toetsenbord wordt verwisseld"
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7538,7 +7574,7 @@ msgstr "Illustraties"
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art could not be loaded"
-msgstr "Inlezen van Illustratie is mislukt"
+msgstr "Inlezen van illustratie is mislukt"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7669,7 +7705,7 @@ msgstr "Cyrillisch, Macintosh"
 #. ENC_CYRL_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr "Cyrillisch, Windows codepagina 1251"
+msgstr "Cyrillisch, Windows-codepagina 1251"
 
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h
@@ -7885,7 +7921,7 @@ msgstr "Bestand om bewerking in op te nemen:"
 #. DLG_FOSA_ReplayFromFileLabel
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
-msgstr "Bestand om bewerking af te spelen:"
+msgstr "Bestand om bewerking vanuit af te spelen:"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8070,7 +8106,7 @@ msgstr "Hebreeuws, Macintosh"
 #. ENC_HEBR_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Hebrew, Windows Code Page 1255"
-msgstr "Hebreeuws, Windows codepagina 1255"
+msgstr "Hebreeuws, Windows-codepagina 1255"
 
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h
@@ -8120,7 +8156,7 @@ msgstr "Kenmerk:"
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
-msgstr "Afbeeldingseigenschappen"
+msgstr "Afbeeldingeigenschappen"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8140,7 +8176,7 @@ msgstr "Bestand invoeren"
 #. MSG_ParagraphsImported
 #: po/tmp/xap_String_Id.h
 msgid "Imported Paragraph"
-msgstr "Geïmporteerde Alinea"
+msgstr "Geïmporteerde alinea"
 
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h
@@ -8190,7 +8226,7 @@ msgstr "Tabel invoegen"
 #. DLG_IP_Title
 #: po/tmp/xap_String_Id.h
 msgid "Insert Picture"
-msgstr "Afbeelding invoegen"
+msgstr "Foto invoegen"
 
 #. DLG_Insert_SymbolTitle
 #: po/tmp/xap_String_Id.h
@@ -8215,7 +8251,7 @@ msgstr "Inuktitut"
 #. DLG_InvalidPathname
 #: po/tmp/xap_String_Id.h
 msgid "Invalid pathname."
-msgstr "Ongeldig pad opgegeven."
+msgstr "Ongeldige padnaam."
 
 #. LANG_GA_IE
 #: po/tmp/xap_String_Id.h
@@ -8250,7 +8286,7 @@ msgstr "Japans, Shift-JIS"
 #. ENC_JAPN_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, Windows Code Page 932"
-msgstr "Japans, Windows codepagina 932"
+msgstr "Japans, Windows-codepagina 932"
 
 #. LANG_KN_IN
 #: po/tmp/xap_String_Id.h
@@ -8286,7 +8322,7 @@ msgstr "Koreaans, KSC_5601"
 #. ENC_KORE_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Korean, Windows Code Page 949"
-msgstr "Koreaans, Windows codepagina 949"
+msgstr "Koreaans, Windows-codepagina 949"
 
 #. LANG_KU
 #: po/tmp/xap_String_Id.h
@@ -8321,7 +8357,7 @@ msgstr "Litouws"
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
 msgid "Loading Clip Art"
-msgstr "Inlezen van Illustraties"
+msgstr "Illustraties aan het laden"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8396,7 +8432,7 @@ msgstr "Nee"
 #. DLG_IP_No_Picture_Label
 #: po/tmp/xap_String_Id.h
 msgid "No Picture"
-msgstr "Geen afbeelding"
+msgstr "Geen foto"
 
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h
@@ -8426,17 +8462,17 @@ msgstr "Niet beschikbaar"
 #. STYLE_NUMHEAD1
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 1"
-msgstr "Genummerde Kop 1"
+msgstr "Genummerde kop 1"
 
 #. STYLE_NUMHEAD2
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 2"
-msgstr "Genummerde Kop 2"
+msgstr "Genummerde kop 2"
 
 #. STYLE_NUMHEAD3
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
-msgstr "Genummerde Kop 3"
+msgstr "Genummerde kop 3"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8501,12 +8537,12 @@ msgstr "Platte tekst (niet-opgemaakt)"
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
 msgid "Plugin Details:"
-msgstr "Plug-in Details:"
+msgstr "Plug-in details:"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
 msgid "Plugin List"
-msgstr "Plug-in Lijst"
+msgstr "Plug-in-lijst"
 
 #. LANG_PL_PL
 #: po/tmp/xap_String_Id.h
@@ -8526,12 +8562,12 @@ msgstr "Portugees (Portugal)"
 #. DLG_Image_PlaceColumn
 #: po/tmp/xap_String_Id.h
 msgid "Position relative to its Column"
-msgstr "Positie ten opzichte van zijn Kolom"
+msgstr "Positie ten opzichte van zijn kolom"
 
 #. DLG_Image_PlacePage
 #: po/tmp/xap_String_Id.h
 msgid "Position relative to its Page"
-msgstr "Positie ten opzichte van zijn Pagina"
+msgstr "Positie ten opzichte van zijn pagina"
 
 #. DLG_Image_PlaceParagraph
 #: po/tmp/xap_String_Id.h
@@ -8546,7 +8582,7 @@ msgstr "Verhoudingen behouden"
 #. DLG_IP_Activate_Label
 #: po/tmp/xap_String_Id.h
 msgid "Preview Picture"
-msgstr "Voorbeeldafbeelding"
+msgstr "Voorbeeldfoto"
 
 #. DLG_FOSA_PrintToFileTitle
 #: po/tmp/xap_String_Id.h
@@ -8611,7 +8647,7 @@ msgstr "Alleen-Lezen"
 #. DLG_FOSA_RecordToFileTitle
 #: po/tmp/xap_String_Id.h
 msgid "Record Editing to File"
-msgstr "Bewerken opnemen naar bestand"
+msgstr "Bewerken opnemen in bestand"
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h
@@ -8685,12 +8721,12 @@ msgstr "Sardijns"
 #. DLG_FOSA_SaveAsTitle
 #: po/tmp/xap_String_Id.h
 msgid "Save File As"
-msgstr "Bestand Opslaan Als"
+msgstr "Bestand opslaan als"
 
 #. DLG_HTMLOPT_ExpSave
 #: po/tmp/xap_String_Id.h
 msgid "Save Settings"
-msgstr "Instellingen Opslaan"
+msgstr "Instellingen opslaan"
 
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h
@@ -8720,7 +8756,7 @@ msgstr "Kies HTML-export-opties:"
 #. DLG_ULANG_LangLabel
 #: po/tmp/xap_String_Id.h
 msgid "Select Language:"
-msgstr "Kies Taal:"
+msgstr "Kies taal:"
 
 #. LANG_SR
 #: po/tmp/xap_String_Id.h
@@ -8750,7 +8786,7 @@ msgstr "Taal instellen"
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h
 msgid "Set no Highlight Color"
-msgstr "Geen Markeerkleur instellen"
+msgstr "Geen markeerkleur instellen"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h
@@ -8770,7 +8806,7 @@ msgstr "Sloveens"
 #. DLG_UFS_Effects_SmallCaps
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
-msgstr "Kleine Hoofdletters"
+msgstr "Kleine hoofdletters"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -8840,7 +8876,7 @@ msgstr "Tekstkleur"
 #. DLG_Image_WrappedBoth
 #: po/tmp/xap_String_Id.h
 msgid "Text wrapped on both sides of the Image"
-msgstr "Tekstomloop aan beide kanten van de Afbeelding"
+msgstr "Tekstomloop aan beide kanten van de afbeelding"
 
 #. DLG_Image_WrappedLeft
 #: po/tmp/xap_String_Id.h
@@ -8870,7 +8906,7 @@ msgstr "Thais, TIS-620"
 #. ENC_THAI_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Thai, Windows Code Page 874"
-msgstr "Thais, Windows codepagina 874"
+msgstr "Thais, Windows-codepagina 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
 #: po/tmp/xap_String_Id.h
@@ -8922,7 +8958,7 @@ msgstr "Kies OK om toch door te gaan."
 #. MSG_HistoryPartRestore4
 #: po/tmp/xap_String_Id.h
 msgid "To quit the restoration attempt, press Cancel."
-msgstr "Kies Annuleren om de herstelpoging te stoppen."
+msgstr "Kies Annuleren om de herstelpoging te staken."
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h
@@ -8942,7 +8978,7 @@ msgstr "Turks, Macintosh"
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Turkish, Windows Code Page 1254"
-msgstr "Turks, Windows codepagina 1254"
+msgstr "Turks, Windows-codepagina 1254"
 
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h
@@ -9045,11 +9081,6 @@ msgstr "Unicode UTF-8"
 msgid "Untitled%d"
 msgstr "Naamloos%d"
 
-#. DLG_Update
-#: po/tmp/xap_String_Id.h
-msgid "Update"
-msgstr "Verversen"
-
 #. DLG_UFS_Effects_UpperCase
 #: po/tmp/xap_String_Id.h
 msgid "Uppercase"
@@ -9105,7 +9136,7 @@ msgstr "Vietnamees, VISCII"
 #. ENC_VIET_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Vietnamese, Windows Code Page 1258"
-msgstr "Vietnamees, Windows codepagina 1258"
+msgstr "Vietnamees, Windows-codepagina 1258"
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h
@@ -9125,12 +9156,12 @@ msgstr "Welsh"
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 437"
-msgstr "West-Europees, Windows codepagina 437"
+msgstr "West-Europees, Windows-codepagina 437"
 
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
-msgstr "West-Europees, Windows codepagina 850"
+msgstr "West-Europees, Windows-codepagina 850"
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h
@@ -9155,7 +9186,7 @@ msgstr "West-Europees, NeXT"
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Western European, Windows Code Page 1252"
-msgstr "West-Europees, Windows codepagina 1252"
+msgstr "West-Europees, Windows-codepagina 1252"
 
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h
@@ -9267,6 +9298,27 @@ msgstr "verwanten"
 msgid "unrelated"
 msgstr "niet-gerelateerd"
 
+#~ msgid "&Tripel"
+#~ msgstr "&Tripel"
+
+#~ msgid "Lat & Long"
+#~ msgstr "Lat & Long"
+
+#~ msgid "Location, Start and End Times"
+#~ msgstr "Locatie, begin- en eindtijden"
+
+#~ msgid "Name, Nick"
+#~ msgstr "Naam, bijnaam"
+
+#~ msgid "Start and End Times"
+#~ msgstr "Begin- en eindtijden"
+
+#~ msgid "Go to..."
+#~ msgstr "Ga naar..."
+
+#~ msgid "SPARQL Query..."
+#~ msgstr "SPARQL-zoekopdracht..."
+
 #~ msgid "&Format Table"
 #~ msgstr "&Tabel opmaken"
 
@@ -9283,4 +9335,4 @@ msgstr "niet-gerelateerd"
 #~ msgstr "OVR"
 
 #~ msgid "Replace selection with annotation"
-#~ msgstr "Geselecteerde tekst vervangen door notitie"
+#~ msgstr "Geselecteerde tekst vervangen door aantekening"
