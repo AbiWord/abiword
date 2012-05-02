@@ -5,15 +5,15 @@
 # Chris Leonard <cjl@laptop.org>, 2011, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: Abiword 1.0.1\n"
+"Project-Id-Version: Abiword 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-28 16:06-0400\n"
+"POT-Creation-Date: 2012-05-02 17:43+0200\n"
 "PO-Revision-Date: 2012-05-01 23:15-0400\n"
 "Last-Translator: Chris Leonard <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
-"Language: am\n"
+"Language: am_ET\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n > 1;\n"
 "X-Generator: Virtaal 0.7.0\n"
@@ -43,7 +43,7 @@ msgstr ""
 #. MENU_STATUSLINE_HELP
 #: po/tmp/ap_String_Id.h
 msgid " "
-msgstr ""
+msgstr " "
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h
@@ -399,10 +399,11 @@ msgstr "በአግድም ሰረዝ ቃላት &አታያይዙ"
 msgid "&Edit"
 msgstr "&አስተካክል"
 
-#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-msgid "&Edit Semantic Items"
-msgstr ""
+#, fuzzy
+msgid "&Edit RDF"
+msgstr "&አስተካክል"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -797,6 +798,11 @@ msgstr "የቀረበውን &አትም"
 msgid "&Purge History"
 msgstr ""
 
+#. MENU_LABEL_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "&Query RDF"
+msgstr ""
+
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
@@ -897,11 +903,6 @@ msgstr "ክለሳ ይምረጡ"
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h
 msgid "&Show History"
-msgstr ""
-
-#. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "&Show RDF"
 msgstr ""
 
 #. MENU_LABEL_VIEW_STATUSBAR
@@ -1314,6 +1315,13 @@ msgstr "ተጠቀም"
 msgid "Apply Contact"
 msgstr ""
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Apply Current"
+msgstr "አሁን ያለውን ዝርዝር ተጠቀም"
+
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
@@ -1324,6 +1332,13 @@ msgstr ""
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Apply Location"
+msgstr ""
+
+#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+msgid "Apply stylesheet to this Semantic Item"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
@@ -2727,6 +2742,11 @@ msgstr "ስለ የነፃው ሶፍትዌር መረጃ አሳይ"
 msgid "Dump the raw RDF associated with the cursor position"
 msgstr "ከክለሳው ጋር የሚገናኝ አስተያየት፦"
 
+#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#: po/tmp/ap_String_Id.h
+msgid "E&dit Semantic Items"
+msgstr ""
+
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -2762,6 +2782,11 @@ msgstr ""
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples"
+msgstr ""
+
+#. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
+#: po/tmp/ap_String_Id.h
+msgid "Edit RDF Triples associated with location"
 msgstr ""
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
@@ -2904,11 +2929,6 @@ msgstr ""
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
 msgid "Execute Query"
-msgstr ""
-
-#. MENU_STATUSLINE_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "Execute SPARQL Query for location"
 msgstr ""
 
 #. DLG_RDF_Query_Title
@@ -4991,11 +5011,29 @@ msgstr "አሳታሚ፦"
 msgid "Publisher:"
 msgstr "አሳታሚ፦:"
 
+#. MENU_STATUSLINE_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query RDF associated with location"
+msgstr "ከክለሳው ጋር የሚገናኝ አስተያየት፦"
+
+#. MENU_LABEL_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query RDF for cursor position"
+msgstr "ከክለሳው ጋር የሚገናኝ አስተያየት፦"
+
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
 msgstr ""
+
+#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query the RDF associated with the cursor position..."
+msgstr "ከክለሳው ጋር የሚገናኝ አስተያየት፦"
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5047,19 +5085,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Re&vert"
 msgstr "&ወደ ነበረበት መልስ"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_REAPPLY
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
-#: po/tmp/ap_String_Id.h
-msgid "Reapply Current"
-msgstr ""
-
-#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
-#: po/tmp/ap_String_Id.h
-msgid "Reapply stylesheet this Semantic Item"
-msgstr ""
 
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
@@ -5388,11 +5413,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "S&plit Cells"
 msgstr "ክፍሎቹን ሰንጥቅ"
-
-#. MENU_LABEL_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "SPARQL &Query"
-msgstr ""
 
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
@@ -5839,6 +5859,13 @@ msgstr ""
 msgid "Set your spelling preferences"
 msgstr "የቃላት አጻጻፍ ምርጫዎችዎን አስገቡ"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Settings"
+msgstr "የአሁኑን ምርጫዎች"
+
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
@@ -5884,16 +5911,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
 msgstr "የማስተካከያ ምልክቶች አሳይ"
-
-#. MENU_STATUSLINE_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF Triples associated with location"
-msgstr ""
-
-#. MENU_LABEL_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position"
-msgstr ""
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5953,12 +5970,6 @@ msgstr "ስታተስባሩን አሳይ ወይም ደብቅ"
 #: po/tmp/ap_String_Id.h
 msgid "Show revisions that are present in document"
 msgstr ""
-
-#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Show the RDF associated with the cursor position..."
-msgstr "ከክለሳው ጋር የሚገናኝ አስተያየት፦"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
@@ -6352,12 +6363,6 @@ msgstr "ዘይቤዎች"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
 msgid "Stylesheet"
-msgstr ""
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
-#: po/tmp/ap_String_Id.h
-msgid "Stylesheet Settings"
 msgstr ""
 
 #. DLG_Stylist_Title
@@ -8976,11 +8981,6 @@ msgstr "ዩክረኒኛ, KOI8-U"
 msgid "Ukrainian, Macintosh"
 msgstr "ዩክረኒኛ, Macintosh"
 
-#. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-2"
-msgstr "ዩኒኮድ UCS-2"
-
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
@@ -8990,11 +8990,6 @@ msgstr "ዩኒኮድ UCS-2 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
 msgstr "ዩኒኮድ UCS-2 Little Endian"
-
-#. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-4"
-msgstr "ዩኒኮድ UCS-4"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
@@ -9006,11 +9001,6 @@ msgstr "ዩኒኮድ UCS-4 Big Endian"
 msgid "Unicode UCS-4 Little Endian"
 msgstr "ዩኒኮድ UCS-4 Little Endian"
 
-#. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-16"
-msgstr "ዩኒኮድ UTF-16"
-
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
@@ -9020,11 +9010,6 @@ msgstr "ዩኒኮድ UTF-16 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
 msgstr "ዩኒኮድ UTF-16 Little Endian"
-
-#. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-32"
-msgstr "ዩኒኮድ UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
@@ -9268,6 +9253,18 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr ""
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "ዩኒኮድ UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "ዩኒኮድ UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "ዩኒኮድ UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "ዩኒኮድ UTF-32"
 
 #~ msgid "Go to..."
 #~ msgstr "ወደ...ሂድ"

@@ -7,13 +7,13 @@
 # Khaled Hosny <khaledhosny@eglug.org>, 2007, 2009, 2011.
 msgid ""
 msgstr ""
-"Project-Id-Version: ar\n"
+"Project-Id-Version: Abiword 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-28 16:06-0400\n"
+"POT-Creation-Date: 2012-05-02 17:43+0200\n"
 "PO-Revision-Date: 2011-10-02 22:18+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
-"Language: \n"
+"Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -45,7 +45,7 @@ msgstr ""
 #. MENU_STATUSLINE_HELP
 #: po/tmp/ap_String_Id.h
 msgid " "
-msgstr ""
+msgstr " "
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h
@@ -407,10 +407,11 @@ msgstr "&لا تقطع النص"
 msgid "&Edit"
 msgstr "&حرِّر"
 
-#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-msgid "&Edit Semantic Items"
-msgstr ""
+#, fuzzy
+msgid "&Edit RDF"
+msgstr "&حرِّر"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -800,6 +801,11 @@ msgstr "&منظور الطباعة"
 msgid "&Purge History"
 msgstr "أ&فرغ التأريخ"
 
+#. MENU_LABEL_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "&Query RDF"
+msgstr ""
+
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
@@ -901,11 +907,6 @@ msgstr "ا&ختر مراجعة"
 #: po/tmp/ap_String_Id.h
 msgid "&Show History"
 msgstr "أ&ظهر التأريخ"
-
-#. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "&Show RDF"
-msgstr ""
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
@@ -1189,8 +1190,8 @@ msgid ""
 "platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "يحتاج آبي‌ورد للملف %s.dll\n"
-"المرجو إنزاله وتثبيته من "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"المرجو إنزاله وتثبيته من http://www.microsoft.com/msdownload/platformsdk/"
+"sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1324,6 +1325,13 @@ msgstr "طبّق"
 msgid "Apply Contact"
 msgstr ""
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Apply Current"
+msgstr "طبّق على القائمة الحالية"
+
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
@@ -1334,6 +1342,13 @@ msgstr ""
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Apply Location"
+msgstr ""
+
+#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+msgid "Apply stylesheet to this Semantic Item"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
@@ -1918,8 +1933,8 @@ msgid ""
 msgstr ""
 "اختر هدفك في الجهة اليسرى.\n"
 "إذا كنت تريد استخدام زر \"اذهب إلى\" فاملأ خانة العدد بالعدد المرغوب. يمكنك "
-"استعمال + و- لأداء نقلة نسبية.\tمثلا، إذا كتبت \"+2\" ثم اخترت \"سطر\"، فسيذهب "
-"\"اذهب إلى\" سطران تحت موقعك الحالي."
+"استعمال + و- لأداء نقلة نسبية.\tمثلا، إذا كتبت \"+2\" ثم اخترت \"سطر\"، "
+"فسيذهب \"اذهب إلى\" سطران تحت موقعك الحالي."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2727,6 +2742,11 @@ msgstr ""
 msgid "Dump the raw RDF associated with the cursor position"
 msgstr ""
 
+#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#: po/tmp/ap_String_Id.h
+msgid "E&dit Semantic Items"
+msgstr ""
+
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
 msgid "Edit Annotation"
@@ -2761,6 +2781,11 @@ msgstr "حرِّر معادلة لاتخ"
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples"
+msgstr ""
+
+#. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
+#: po/tmp/ap_String_Id.h
+msgid "Edit RDF Triples associated with location"
 msgstr ""
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
@@ -2902,11 +2927,6 @@ msgstr "مثال:"
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
 msgid "Execute Query"
-msgstr ""
-
-#. MENU_STATUSLINE_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "Execute SPARQL Query for location"
 msgstr ""
 
 #. DLG_RDF_Query_Title
@@ -4985,11 +5005,27 @@ msgstr "الناشر"
 msgid "Publisher:"
 msgstr "الناشر:"
 
+#. MENU_STATUSLINE_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF associated with location"
+msgstr ""
+
+#. MENU_LABEL_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF for cursor position"
+msgstr ""
+
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
 msgstr ""
+
+#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query the RDF associated with the cursor position..."
+msgstr "تعليق لضمه مع المراجعة:"
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5041,19 +5077,6 @@ msgstr "بحث &عكسي"
 #: po/tmp/ap_String_Id.h
 msgid "Re&vert"
 msgstr "&تراجع"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_REAPPLY
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
-#: po/tmp/ap_String_Id.h
-msgid "Reapply Current"
-msgstr ""
-
-#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
-#: po/tmp/ap_String_Id.h
-msgid "Reapply stylesheet this Semantic Item"
-msgstr ""
 
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
@@ -5379,11 +5402,6 @@ msgstr "أ&ظهر المراجعات"
 #: po/tmp/ap_String_Id.h
 msgid "S&plit Cells"
 msgstr "ق&سم الخلايا"
-
-#. MENU_LABEL_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "SPARQL &Query"
-msgstr ""
 
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
@@ -5829,6 +5847,13 @@ msgstr "اضبط هذه الصورة لتوضع"
 msgid "Set your spelling preferences"
 msgstr "اضبط تفضيلات الإملاء"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Settings"
+msgstr "احفظ الإعدادت"
+
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
@@ -5874,16 +5899,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
 msgstr "أظهر &علامات التنسيق"
-
-#. MENU_STATUSLINE_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF Triples associated with location"
-msgstr ""
-
-#. MENU_LABEL_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position"
-msgstr ""
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5942,11 +5957,6 @@ msgstr "أظهر أو أخفِ شريط أدوات الجدول"
 #: po/tmp/ap_String_Id.h
 msgid "Show revisions that are present in document"
 msgstr "أظهر المراجعات الموجودة في المستند"
-
-#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show the RDF associated with the cursor position..."
-msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
@@ -6338,12 +6348,6 @@ msgstr "الطُرز"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
 msgid "Stylesheet"
-msgstr ""
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
-#: po/tmp/ap_String_Id.h
-msgid "Stylesheet Settings"
 msgstr ""
 
 #. DLG_Stylist_Title
@@ -8964,11 +8968,6 @@ msgstr "أكراني، KOI8-U"
 msgid "Ukrainian, Macintosh"
 msgstr "أكراني، ماكنتوش"
 
-#. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-2"
-msgstr "يونيكود UCS-2"
-
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
@@ -8978,11 +8977,6 @@ msgstr "يونيكود UCS-2 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
 msgstr "يونيكود UCS-2 Little Endian"
-
-#. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-4"
-msgstr "يونيكود UCS-4"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
@@ -8994,11 +8988,6 @@ msgstr "يونيكود UCS-4 Big Endian"
 msgid "Unicode UCS-4 Little Endian"
 msgstr "يونيكود UCS-4 Little Endian"
 
-#. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-16"
-msgstr "يونيكود UTF-16"
-
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
@@ -9008,11 +8997,6 @@ msgstr "يونيكود UTF-16 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
 msgstr "يونيكود UTF-16 Little Endian"
-
-#. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-32"
-msgstr "يونيكود UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
@@ -9254,6 +9238,18 @@ msgstr "أخوات"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "بدون صلة"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "يونيكود UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "يونيكود UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "يونيكود UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "يونيكود UTF-32"
 
 #~ msgid "Go to..."
 #~ msgstr "اذهب إلى..."

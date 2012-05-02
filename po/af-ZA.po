@@ -4,13 +4,13 @@
 # F Wolff <friedel@translate.org.za>, 2010.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Abiword 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-28 16:06-0400\n"
+"POT-Creation-Date: 2012-05-02 17:43+0200\n"
 "PO-Revision-Date: 2011-10-02 22:08+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: translate-discuss-af@lists.sourceforge.net\n"
-"Language: \n"
+"Language: af_ZA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -42,7 +42,7 @@ msgstr ""
 #. MENU_STATUSLINE_HELP
 #: po/tmp/ap_String_Id.h
 msgid " "
-msgstr ""
+msgstr " "
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h
@@ -396,10 +396,11 @@ msgstr "&Moenie afbreek nie"
 msgid "&Edit"
 msgstr "R&edigeer"
 
-#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-msgid "&Edit Semantic Items"
-msgstr ""
+#, fuzzy
+msgid "&Edit RDF"
+msgstr "R&edigeer"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -792,6 +793,11 @@ msgstr "&Drukuitleg"
 msgid "&Purge History"
 msgstr ""
 
+#. MENU_LABEL_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "&Query RDF"
+msgstr ""
+
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
@@ -894,11 +900,6 @@ msgstr "&Kies weergawe"
 #: po/tmp/ap_String_Id.h
 msgid "&Show History"
 msgstr "Wy&s geskiedenis"
-
-#. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "&Show RDF"
-msgstr ""
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
@@ -1311,6 +1312,13 @@ msgstr "Pas toe"
 msgid "Apply Contact"
 msgstr ""
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Apply Current"
+msgstr "Pas toe op huidige lys"
+
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
@@ -1321,6 +1329,13 @@ msgstr ""
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Apply Location"
+msgstr ""
+
+#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+msgid "Apply stylesheet to this Semantic Item"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
@@ -2650,7 +2665,8 @@ msgstr "Wil u die lys van geïgnoreerde woorde leegmaak in alle dokumente?"
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h
 msgid "Do you want to reset ignored words in the current document?"
-msgstr "Wil u die lys van geïgnoreerde woorde leegmaak in die huidige dokument?"
+msgstr ""
+"Wil u die lys van geïgnoreerde woorde leegmaak in die huidige dokument?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h
@@ -2713,6 +2729,11 @@ msgstr ""
 msgid "Dump the raw RDF associated with the cursor position"
 msgstr ""
 
+#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#: po/tmp/ap_String_Id.h
+msgid "E&dit Semantic Items"
+msgstr ""
+
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
 msgid "Edit Annotation"
@@ -2748,6 +2769,11 @@ msgstr "Redigeer Latex-vergelyking"
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples"
+msgstr ""
+
+#. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
+#: po/tmp/ap_String_Id.h
+msgid "Edit RDF Triples associated with location"
 msgstr ""
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
@@ -2890,11 +2916,6 @@ msgstr "Voorbeeld:"
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
 msgid "Execute Query"
-msgstr ""
-
-#. MENU_STATUSLINE_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "Execute SPARQL Query for location"
 msgstr ""
 
 #. DLG_RDF_Query_Title
@@ -4983,11 +5004,27 @@ msgstr "Uitgewer"
 msgid "Publisher:"
 msgstr "Uitgewer:"
 
+#. MENU_STATUSLINE_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF associated with location"
+msgstr ""
+
+#. MENU_LABEL_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF for cursor position"
+msgstr ""
+
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
 msgstr ""
+
+#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query the RDF associated with the cursor position..."
+msgstr "Opmerking om met die weergawe te assosieer:"
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5038,19 +5075,6 @@ msgstr "&Omgekeerde soektog"
 #. MENU_LABEL_FILE_REVERT
 #: po/tmp/ap_String_Id.h
 msgid "Re&vert"
-msgstr ""
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_REAPPLY
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
-#: po/tmp/ap_String_Id.h
-msgid "Reapply Current"
-msgstr ""
-
-#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
-#: po/tmp/ap_String_Id.h
-msgid "Reapply stylesheet this Semantic Item"
 msgstr ""
 
 #. MENU_LABEL_FILE_RECENT
@@ -5305,8 +5329,7 @@ msgstr ""
 
 #. RightMarginStatus
 #: po/tmp/ap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Right Margin [%s]"
 msgstr "Linkerkantlyn [%s]"
 
@@ -5380,11 +5403,6 @@ msgstr "&Wys weergawes"
 #: po/tmp/ap_String_Id.h
 msgid "S&plit Cells"
 msgstr "&Verdeel selle"
-
-#. MENU_LABEL_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "SPARQL &Query"
-msgstr ""
 
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
@@ -5834,10 +5852,18 @@ msgstr ""
 msgid "Set your spelling preferences"
 msgstr "Stel die voorkeure vir spelling"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Settings"
+msgstr "Stoor instellings"
+
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
-msgstr "Stel die dokument se bladsyeienskappe op, bv. bladsygrootte en kantlyne"
+msgstr ""
+"Stel die dokument se bladsyeienskappe op, bv. bladsygrootte en kantlyne"
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
@@ -5879,16 +5905,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
 msgstr "Wys for&materingmerkies"
-
-#. MENU_STATUSLINE_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF Triples associated with location"
-msgstr ""
-
-#. MENU_LABEL_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position"
-msgstr ""
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5947,11 +5963,6 @@ msgstr "Wys of versteek die nutsbalke"
 #: po/tmp/ap_String_Id.h
 msgid "Show revisions that are present in document"
 msgstr "Wys weergawes wat in die dokument voorkom"
-
-#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show the RDF associated with the cursor position..."
-msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
@@ -6346,12 +6357,6 @@ msgstr "Style"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
 msgid "Stylesheet"
-msgstr ""
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
-#: po/tmp/ap_String_Id.h
-msgid "Stylesheet Settings"
 msgstr ""
 
 #. DLG_Stylist_Title
@@ -8987,11 +8992,6 @@ msgstr "Oekraïens, KOI8-U"
 msgid "Ukrainian, Macintosh"
 msgstr "Oekraïens, Macintosh"
 
-#. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-2"
-msgstr "Unicode UCS-2"
-
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
@@ -9001,11 +9001,6 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
 msgstr ""
-
-#. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-4"
-msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
@@ -9017,11 +9012,6 @@ msgstr ""
 msgid "Unicode UCS-4 Little Endian"
 msgstr ""
 
-#. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-16"
-msgstr "Unicode UTF-16"
-
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
@@ -9031,11 +9021,6 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
 msgstr ""
-
-#. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-32"
-msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
@@ -9279,6 +9264,18 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "onverwant"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
 
 #~ msgid "Go to..."
 #~ msgstr "Gaan na..."
