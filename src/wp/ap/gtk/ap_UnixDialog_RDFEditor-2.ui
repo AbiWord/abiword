@@ -147,7 +147,7 @@
               <object class="GtkHBox" id="restrictxmlidhidew">
                 <property name="visible">True</property>
                 <child>
-                  <object class="GtkLabel" id="label1">
+                  <object class="GtkLabel" id="lbRestrict">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">Restrict to RDF Link:</property>
                     <property name="justify">right</property>
