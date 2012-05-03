@@ -609,24 +609,29 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
             std::set< std::string > xmlids;
             rdf->addRelevantIDsForPosition( xmlids, point );
 
+            bool combined = false; 
             std::stringstream combinedxmlidss;
             for( std::set< std::string >::const_iterator iter = xmlids.begin();
                  iter != xmlids.end(); ++iter )
             {
                 if( iter != xmlids.begin() )
+                {
                     combinedxmlidss << ",";
+                    combined = true;
+                }
                 combinedxmlidss << *iter;
             }
             XAP_appendComboBoxTextAndInt( m_selectedxmlid, combinedxmlidss.str().c_str(), 0 );
             setRestrictedXMLID( combinedxmlidss.str() );
             
+            if (combined)
+            {
             int idx = 1;
             for( std::set< std::string >::const_iterator iter = xmlids.begin();
                  iter != xmlids.end(); ++iter, ++idx )
             {
                 XAP_appendComboBoxTextAndInt( m_selectedxmlid, iter->c_str(), idx );
             }
-        }
         gtk_combo_box_set_active( m_selectedxmlid, 0 );
         
         // std::list< std::string > xmlids;
@@ -641,6 +646,9 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
                          "changed",
                          G_CALLBACK(s_OnXMLIDChanged),
                          (gpointer) this);
+            }
+            else gtk_container_remove(GTK_CONTAINER(gtk_builder_get_object(builder, "topvbox")),  m_restrictxmlidhidew);
+        }
     }
     
     
