@@ -19,7 +19,6 @@
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_RDFEditor">
     <property name="can_focus">False</property>
-    <property name="border_width">5</property>
     <property name="title" translatable="yes">Execute SPARQL RDF Query</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
@@ -174,6 +173,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="layout_style">start</property>
+                <property name="border_width">5</property>
                 <child>
                   <object class="GtkButton" id="btnew">
                     <property name="label">gtk-new</property>
@@ -270,6 +270,7 @@
               <object class="GtkScrolledWindow" id="scrolledwindow1">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="border_width">5</property>
                 <child>
                   <object class="GtkTreeView" id="resultsView">
                     <property name="visible">True</property>
@@ -295,6 +296,7 @@
               <object class="GtkBox" id="hbox1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="border_width">5</property>
                 <child>
                   <placeholder/>
                 </child>

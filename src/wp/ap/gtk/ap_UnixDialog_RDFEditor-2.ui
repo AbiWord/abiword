@@ -3,7 +3,6 @@
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkDialog" id="ap_UnixDialog_RDFEditor">
-    <property name="border_width">5</property>
     <property name="title" translatable="yes">Execute SPARQL RDF Query</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
@@ -89,6 +88,7 @@
               <object class="GtkHButtonBox" id="hbuttonbox1">
                 <property name="visible">True</property>
                 <property name="layout_style">start</property>
+                <property name="border_width">5</property>
                 <child>
                   <object class="GtkButton" id="btnew">
                     <property name="label">gtk-new</property>
@@ -180,6 +180,7 @@
                 <property name="can_focus">True</property>
                 <property name="hscrollbar_policy">automatic</property>
                 <property name="vscrollbar_policy">automatic</property>
+                <property name="border_width">5</property>
                 <child>
                   <object class="GtkTreeView" id="resultsView">
                     <property name="visible">True</property>
@@ -199,6 +200,7 @@
             <child>
               <object class="GtkHBox" id="hbox1">
                 <property name="visible">True</property>
+                <property name="border_width">5</property>
                 <child>
                   <placeholder/>
                 </child>
