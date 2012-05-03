@@ -14811,6 +14811,7 @@ Defun1(rdfDisassocateCurrentStyleSheet)
 		PD_RDFSemanticItemHandle si = *iter;
 		PD_RDFSemanticItemViewSite vs( si, pView->getPoint() );
 		vs.disassociateStylesheet();
+		vs.reflowUsingCurrentStylesheet( pView );
 	}	
 	return true;
 }
