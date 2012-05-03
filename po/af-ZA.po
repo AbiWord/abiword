@@ -1,19 +1,19 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
+# Afrikaans translation of AbiWord
+# This file is distributed under the same license as the AbiWord package.
+# Copyright by:
 # F Wolff <friedel@translate.org.za>, 2010.
 msgid ""
 msgstr ""
-"Project-Id-Version: Abiword 2.9\n"
+"Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-02 17:43+0200\n"
+"POT-Creation-Date: 2012-05-02 23:52-0400\n"
 "PO-Revision-Date: 2011-10-02 22:08+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: translate-discuss-af@lists.sourceforge.net\n"
-"Language: af_ZA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: af\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 "X-Project-Style: kde\n"
