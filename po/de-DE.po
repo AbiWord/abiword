@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-01 17:07+0200\n"
-"PO-Revision-Date: 2012-05-01 17:07+0200\n"
+"POT-Creation-Date: 2012-05-03 16:12+0200\n"
+"PO-Revision-Date: 2012-05-03 16:12+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de_DE\n"
@@ -2639,10 +2639,14 @@ msgid "Disable all formatting commands, except styles"
 msgstr "Alle Formatierbefehle sperren, außer Stilvorlagen"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
 msgstr "Trennen"
+
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
+#: po/tmp/ap_String_Id.h
+msgid "Disassociate and apply default stylesheet"
+msgstr "Trennen und auf die Standard-Stilvorlage umstellen"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -5275,6 +5279,11 @@ msgstr "Bei neuen Kapiteln"
 #: po/tmp/ap_String_Id.h
 msgid "Restart page numbers on new sections"
 msgstr "Bei neuen Kapiteln neu durchnummerieren"
+
+#. DLG_RDF_Editor_Restrict
+#: po/tmp/ap_String_Id.h
+msgid "Restrict to RDF Link:"
+msgstr "Auf RDF-Link beschränken:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
