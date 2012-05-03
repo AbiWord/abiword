@@ -265,12 +265,10 @@ AP_Dialog_RDFEditor::setRestrictedXMLID( const std::string& xmlid )
     std::set< std::string > xmlids;
     if( std::string::npos == xmlid.find(','))
     {
-        writeID = xmlid;
         xmlids.insert(xmlid);
     }
     else
     {
-        writeID = "";
         std::string s;
         std::stringstream ss;
         ss << xmlid;
