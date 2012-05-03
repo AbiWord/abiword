@@ -626,26 +626,27 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
             
             if (combined)
             {
-            int idx = 1;
-            for( std::set< std::string >::const_iterator iter = xmlids.begin();
-                 iter != xmlids.end(); ++iter, ++idx )
-            {
-                XAP_appendComboBoxTextAndInt( m_selectedxmlid, iter->c_str(), idx );
-            }
-        gtk_combo_box_set_active( m_selectedxmlid, 0 );
+                int idx = 1;
+                for( std::set< std::string >::const_iterator iter = xmlids.begin();
+                     iter != xmlids.end(); ++iter, ++idx )
+                {
+                    XAP_appendComboBoxTextAndInt( m_selectedxmlid, iter->c_str(), idx );
+                }
+
+                gtk_combo_box_set_active( m_selectedxmlid, 0 );
         
-        // std::list< std::string > xmlids;
-        // getRDF()->addRelevantIDsForPosition( xmlids, getView()->getPoint() );
-        // UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, have restricted xmlids size:%d\n", xmlids.size() ));
-        // if( !xmlids.empty() )
-        // {
-        //     setRestrictedXMLID( xmlids.front() );
-        // }
-        
-        g_signal_connect(G_OBJECT(m_selectedxmlid),
-                         "changed",
-                         G_CALLBACK(s_OnXMLIDChanged),
-                         (gpointer) this);
+                // std::list< std::string > xmlids;
+                // getRDF()->addRelevantIDsForPosition( xmlids, getView()->getPoint() );
+                // UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, have restricted xmlids size:%d\n", xmlids.size() ));
+                // if( !xmlids.empty() )
+                // {
+                //     setRestrictedXMLID( xmlids.front() );
+                // }
+                
+                g_signal_connect(G_OBJECT(m_selectedxmlid),
+                                 "changed",
+                                 G_CALLBACK(s_OnXMLIDChanged),
+                                 (gpointer) this);
             }
             else gtk_container_remove(GTK_CONTAINER(gtk_builder_get_object(builder, "topvbox")),  m_restrictxmlidhidew);
         }
