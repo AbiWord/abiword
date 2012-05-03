@@ -1,24 +1,23 @@
-# Slovenian translation file for Abiword.
-# Copyright (C) 2000 Free Software Foundation, Inc.
-# Andraz Tori <andraz.tori1@guest.arnes.si> 2000
-# Martin Srebotnjak <miles@filmsi.net> 2006
+# Slovenian translation of AbiWord
+# This file is distributed under the same license as the AbiWord package.
+# Copyright by:
+# Andraz Tori <andraz.tori1@guest.arnes.si> 2000.
+# Martin Srebotnjak <miles@filmsi.net> 2006, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.8.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 19:13+0200\n"
-"PO-Revision-Date: 2011-07-23 13:38+0600\n"
-"Last-Translator: Urmas D. <davian818@gmail.com>\n"
-"Language-Team: Martin Srebotnjak <miles@filmsi.net>\n"
-"Language: sl\n"
+"POT-Creation-Date: 2012-05-02 23:52-0400\n"
+"PO-Revision-Date: 2012-05-02 23:26-0400\n"
+"Last-Translator: Chris Leonard <cjl@laptop.org>\n"
+"Language-Team: Sugar Labs\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: sl\n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n"
 "%100==4 ? 2 : 3);\n"
-"X-Generator: Pootle 2.0.1\n"
-"X-Poedit-Country: SLOVENIA\n"
-"X-Poedit-Language: Slovenian\n"
+"X-Generator: Virtaal 0.7.0\n"
 "X-Poedit-SourceCharset: iso-8859-1\n"
 
 #.
@@ -67,6 +66,8 @@ msgid ""
 "# Insert your SPARQL query here\n"
 "# Results are shown below."
 msgstr ""
+"# Svojo poizvedbo SPARQL vnesite tukaj\n"
+"# Rezultati so prikazani spodaj."
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
@@ -407,10 +408,11 @@ msgstr "&Ne deli besed"
 msgid "&Edit"
 msgstr "&Uredi"
 
-#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-msgid "&Edit Semantic Items"
-msgstr ""
+#, fuzzy
+msgid "&Edit RDF"
+msgstr "&Uredi"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -457,6 +459,7 @@ msgstr "&Polja"
 msgid "&Fields:"
 msgstr "&Polja:"
 
+#. DLG_RDF_Editor_Menu_File
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h
 msgid "&File"
@@ -489,9 +492,8 @@ msgstr "&Noga:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Oblika"
+msgstr "O&blika"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -799,6 +801,11 @@ msgstr "Postavitev &tiskanja"
 msgid "&Purge History"
 msgstr "&Počisti zgodovino"
 
+#. MENU_LABEL_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "&Query RDF"
+msgstr ""
+
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
@@ -901,12 +908,6 @@ msgstr "&Izberi revizijo"
 msgid "&Show History"
 msgstr "&Pokaži zgodovino"
 
-#. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "&Show RDF"
-msgstr "Pokaži"
-
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
 msgid "&Show Status Bar"
@@ -984,6 +985,11 @@ msgstr "O&rodja"
 #: po/tmp/ap_String_Id.h
 msgid "&Top:"
 msgstr "&Zgoraj:"
+
+#. DLG_RDF_Editor_Menu_Triple
+#: po/tmp/ap_String_Id.h
+msgid "&Triple"
+msgstr "&Trojica"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -1250,12 +1256,12 @@ msgstr "Dodaj v predlogo"
 #. MENU_LABEL_RDF_ADV
 #: po/tmp/ap_String_Id.h
 msgid "Advanced"
-msgstr ""
+msgstr "Napredno"
 
 #. MENU_STATUSLINE_RDF_ADV
 #: po/tmp/ap_String_Id.h
 msgid "Advanced RDF"
-msgstr ""
+msgstr "Napredni RDF"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h
@@ -1296,9 +1302,8 @@ msgstr "Dovoli druge barve zaslona (poleg bele)"
 
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Annotation"
-msgstr "&Pripombe"
+msgstr "Pripomba"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
@@ -1319,23 +1324,35 @@ msgstr "Uporabi"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Contact"
-msgstr "Uveljavi na:"
+msgstr "Uporabi stik"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Apply Current"
+msgstr "Ponovno uporabi trenutno"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Event"
-msgstr "Uveljavi na:"
+msgstr "Uporabi dogodek"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Location"
-msgstr "Program"
+msgstr "Uporabi mesto"
+
+#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Apply stylesheet to this Semantic Item"
+msgstr "Ponovno uporabi predlogo na semantičnem elementu"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1379,9 +1396,8 @@ msgstr "Pripni na prejšnji seznam"
 
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Avtor:"
+msgstr "Avtor"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
@@ -1561,7 +1577,7 @@ msgstr "Obrobe in senčenje"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr ""
+msgstr "Osebi se poznata"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -1776,9 +1792,8 @@ msgstr "Spremeni oblikovanje izbranega odstavka"
 
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Change the format of the table"
-msgstr "Spremeni oblikovanje izbranega odstavka"
+msgstr "Spremeni oblikovanje tabele"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -1901,9 +1916,8 @@ msgstr "Izberi barvo zaslona za AbiWord"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Choose which revision of the document to see and edit"
-msgstr "Izberite revizijo, ki si jo želite ogledati"
+msgstr "Izberite, katero revizijo dokumenta želite videti in urejati"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h
@@ -1921,9 +1935,9 @@ msgid ""
 msgstr ""
 "Izberite cilj na levi strani.\n"
 "Če želite uporabiti gumb \"Pojdi na\" izpolnite vnos \"Številka\" z izbrano "
-"številko. Lahko uporabite + in - za relativno premikanje.\tNpr.: če napišete "
-"\"+2\" in izberete \"Vrstico\", potem vas bo gumb \"Pojdi na\" postavil dve "
-"vrstici pod trenutnim položajem."
+"številko.  Lahko uporabite + in - za relativno premikanje.\tNpr.: če "
+"napišete \"+2\" in izberete \"Vrstico\", potem vas bo gumb \"Pojdi na\" "
+"postavil dve vrstici pod trenutnim položajem."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2042,14 +2056,19 @@ msgstr "&Zvezen"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact"
-msgstr "Vsebina"
+msgstr "Stik"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
-msgid "Contact from File..."
-msgstr ""
+msgid "Contact from File"
+msgstr "Stik iz datoteke"
+
+#. DLG_RDF_SemanticItemInsert_Column_Refdlg
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts"
+msgstr "Stiki"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2180,21 +2199,19 @@ msgstr "Pokritost:"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create New"
-msgstr "Ustvarjeno"
+msgstr "Ustvari novega"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "Sklic strani"
+msgstr "Ustvari sklic"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
 #: po/tmp/ap_String_Id.h
 msgid "Create Semantic Item"
-msgstr ""
+msgstr "Ustvari semantični element"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h
@@ -2203,9 +2220,8 @@ msgstr "Ustvari faks"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create a new Revision"
-msgstr "Začni novo revizijo"
+msgstr "Ustvari novo revizijo"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h
@@ -2241,25 +2257,23 @@ msgstr "Ustvari iz &izbire"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Contact Semantic Item"
-msgstr "Ustvari nov dokument iz predloge"
+msgstr "Ustvari nov semantični element stika"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr ""
+msgstr "Ustvari nov semantični element stika z uvozom vizitke vCard"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
 msgid "Create new Reference to existing Semantic Item"
-msgstr ""
+msgstr "Ustvari nov sklic na obstoječi semantični element"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Semantic Item"
-msgstr "Ustvari nov dokument"
+msgstr "Ustvari nov semantični element"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h
@@ -2371,9 +2385,8 @@ msgstr "Črtice"
 
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dashed line"
-msgstr "Črtice"
+msgstr "Črtkana črta"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2614,9 +2627,8 @@ msgstr "Drugačna glava na zadnji strani"
 
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Directly edit the RDF for the entire document..."
-msgstr "Izberi celoten dokument"
+msgstr "Neposredno uredi RDF za cel dokument ..."
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
@@ -2627,7 +2639,7 @@ msgstr "Izključi vse oblikovalne ukaze razen slogov"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
-msgstr ""
+msgstr "Razveži"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -2692,9 +2704,8 @@ msgstr "Ne začni znova"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dotted line"
-msgstr "Spodnja črta"
+msgstr "Pikčasta črta"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2714,25 +2725,29 @@ msgstr "Dvojni razmiki"
 
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dump RDF Objects"
-msgstr "Izreži predmet"
+msgstr "Izvrzi predmete RDF"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF related to Cursor Position"
-msgstr ""
+msgstr "Izvrzi RDF glede na položaj kazalke"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump out information about RDF Objects"
-msgstr ""
+msgstr "Izvrzi podatke o predmetih RDF"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dump the raw RDF associated with the cursor position"
-msgstr "Komentar, ki bo povezan z revizijo:"
+msgstr "Izvrzi surovi RDF, povezan s položajem kazalke"
+
+#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "E&dit Semantic Items"
+msgstr "&Uredi semantične elemente"
 
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
@@ -2767,13 +2782,19 @@ msgstr "Uredi enačbo LaTeX"
 
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-msgid "Edit RDF Triples..."
-msgstr ""
+msgid "Edit RDF Triples"
+msgstr "Uredi trojice RDF"
+
+#. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Edit RDF Triples associated with location"
+msgstr "Pokaži trojice RDF, povezane z mestom"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr ""
+msgstr "Uredi semantične elemente za mesto"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -2782,9 +2803,8 @@ msgstr "Uredi pripombo"
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit document RDF"
-msgstr "Tiskanje dokumenta ..."
+msgstr "Uredi RDF dokumenta"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -2811,7 +2831,7 @@ msgstr "Uredi glavo trenutne strani"
 #. TOOLBAR_TOOLTIP_SEMITEM_EDIT
 #: po/tmp/ap_String_Id.h
 msgid "Edit this Semantic Item"
-msgstr ""
+msgstr "Uredi ta semantični element"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
@@ -2887,6 +2907,11 @@ msgstr "Napaka pri poskusu shranjevanja %s: ni mogoče ustvariti izvoznika"
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Napaka pri poskusu stranjevanja %s: neveljavno ime"
 
+#. DLG_RDF_SemanticStylesheets_Events
+#: po/tmp/ap_String_Id.h
+msgid "Events"
+msgstr "Dogodki"
+
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Ex. script"
@@ -2904,25 +2929,18 @@ msgstr "Primer:"
 
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute Query"
-msgstr "Izvedi skript"
-
-#. MENU_STATUSLINE_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "Execute SPARQL Query for location"
-msgstr ""
+msgstr "Izvedi poizvedbo"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute SPARQL on document RDF"
-msgstr "Tiskanje dokumenta ..."
+msgstr "Izvedi SPARQL po RDF dokumenta"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Execute a SPARQL Query on all document RDF..."
-msgstr ""
+msgstr "Izvedi poizvedbo SPARQL po vseh RDF dokumenta ..."
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -2943,12 +2961,12 @@ msgstr "Obstoječe revizije:"
 #. MENU_LABEL_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items"
-msgstr ""
+msgstr "Izvozi semantične elemente"
 
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr ""
+msgstr "Izvozi semantične elemente za mesto"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
@@ -3052,9 +3070,8 @@ msgstr "Najdi &prejšnjo revizijo"
 #. MENU_LABEL_RDF_SEMITEM_FIND_RELATED
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Find by Relation"
-msgstr "Odnos:"
+msgstr "Najdi glede na odnos"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
@@ -3348,9 +3365,8 @@ msgstr "Pojdi na &kaj:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
-msgstr "Pojdi na..."
+msgstr "Pojdi na"
 
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h
@@ -3397,10 +3413,9 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Glave in noge so lahko ustvarjene in urejane le v tiskalniškem načinu "
-"pogleda. \n"
-" Za vstop v ta način kliknite \"Pogled\" in nato \"Tiskalniški pogled\". \n"
-" Želite sedaj vstopiti v tiskalnišk pogled?"
+"Glave in noge je mogoče ustvarjati in urejati le v pogledu tiskanja. \n"
+" Za vstop v ta način kliknite \"Pogled\" in nato \"Postavitev tiskanja\". \n"
+" Želite sedaj vstopiti v pogled postavitve tiskanja?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -3464,14 +3479,13 @@ msgstr "Osvetlitev"
 
 #. MENU_LABEL_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Highlight RDF"
-msgstr "Osvetlitev"
+msgstr "Poudari RDF"
 
 #. MENU_STATUSLINE_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight areas of the document with RDF associated"
-msgstr ""
+msgstr "Poudari območja dokumenta, povezana z RDF"
 
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h
@@ -3486,7 +3500,7 @@ msgstr "&Zamik:"
 #. DLG_Goto_Column_ID
 #: po/tmp/ap_String_Id.h
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h
@@ -3664,15 +3678,23 @@ msgstr "Vstavi MathML iz datoteke"
 
 #. DLG_InsertXMLID_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Insert RDF Link"
-msgstr "Vstavi datoteko"
+msgstr "Vstavi povezavo RDF"
 
 #. MENU_STATUSLINE_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Insert RDF link..."
-msgstr "Vstavi hiperpovezavo"
+msgstr "Vstavi povezavo RDF ..."
+
+#. DLG_RDF_SemanticItemInsert_Ok
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference"
+msgstr "Vstavi sklic"
+
+#. DLG_RDF_SemanticItemInsert_Title
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference to Semantic Item"
+msgstr "Vstavi sklic na semantični element"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3876,7 +3898,7 @@ msgstr "Vstavi neoblikovano vsebino odložišča"
 #. MENU_STATUSLINE_RDF
 #: po/tmp/ap_String_Id.h
 msgid "Interact with RDF"
-msgstr ""
+msgstr "Interakcija z RDF"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h
@@ -3974,12 +3996,6 @@ msgstr "Nastavitve jezika"
 #: po/tmp/ap_String_Id.h
 msgid "Language(s):"
 msgstr "Jezik(i):"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#: po/tmp/ap_String_Id.h
-msgid "Lat & Long"
-msgstr ""
 
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h
@@ -4133,16 +4149,10 @@ msgstr "Slogi seznama"
 msgid "Lists for "
 msgstr "Seznami za "
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
+#. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Location"
-msgstr "Program"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
-#: po/tmp/ap_String_Id.h
-msgid "Location, Start and End Times"
-msgstr ""
+msgid "Locations"
+msgstr "Mesta"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4364,21 +4374,26 @@ msgstr "Večkraten"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Ime:"
+msgstr "Ime"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name (homepage) phone"
-msgstr ""
+msgid "Name, (Homepage), Phone"
+msgstr "Ime, (domača stran), telefon"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#: po/tmp/ap_String_Id.h
+msgid "Name, Latitude and Longitude"
+msgstr "Ime, zemljepisna višina in dolžina"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name, Nick"
-msgstr ""
+msgid "Name, Phone"
+msgstr "Ime, telefon"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -4389,6 +4404,11 @@ msgstr "Nov"
 #: po/tmp/ap_String_Id.h
 msgid "New &annotation"
 msgstr "Nova &pripomba"
+
+#. DLG_RDF_Insert_NewContact
+#: po/tmp/ap_String_Id.h
+msgid "New Contact..."
+msgstr "Nov stik ..."
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4411,9 +4431,8 @@ msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "New Revision"
-msgstr "Izberi revizijo"
+msgstr "Nova revizija"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h
@@ -4443,13 +4462,13 @@ msgstr "Naprej >>"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK
 #: po/tmp/ap_String_Id.h
 msgid "Nick"
-msgstr ""
+msgstr "Vzdevek"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Nick, Phone"
-msgstr ""
+msgstr "Vzdevek, telefon"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h
@@ -4556,9 +4575,8 @@ msgstr "Številke"
 
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Object"
-msgstr "Zadeva"
+msgstr "Predmet"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
@@ -4833,7 +4851,7 @@ msgstr "Postavitev"
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr ""
+msgstr "Igranje z RDF med razvojem"
 
 #. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
@@ -4875,7 +4893,7 @@ msgstr "&Nastavitve"
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
 msgid "Predicate"
-msgstr ""
+msgstr "Predikat"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
@@ -4987,6 +5005,30 @@ msgstr "Izdajatelj"
 msgid "Publisher:"
 msgstr "Izdajatelj:"
 
+#. MENU_STATUSLINE_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query RDF associated with location"
+msgstr "Pokaži trojice RDF, povezane z mestom"
+
+#. MENU_LABEL_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query RDF for cursor position"
+msgstr "Pokaži RDF za položaj kazalke"
+
+#. DLG_RDF_Query_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Query RDF: %d of total: %ld"
+msgstr "Poizvedbeni RDF: %d od skupaj %ld"
+
+#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query the RDF associated with the cursor position..."
+msgstr "Pokaži RDF, povezan s položajem kazalke ..."
+
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
@@ -4995,13 +5037,18 @@ msgstr "&Zamenjaj"
 #. MENU_LABEL_RDF
 #: po/tmp/ap_String_Id.h
 msgid "RDF"
-msgstr ""
+msgstr "RDF"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "RDF Link"
-msgstr ""
+msgstr "Povezava RDF"
+
+#. DLG_RDF_SemanticStylesheets_Title
+#: po/tmp/ap_String_Id.h
+msgid "RDF Stylesheet"
+msgstr "Predloga RDF"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5032,20 +5079,6 @@ msgstr "O&brnjeno iskanje"
 #: po/tmp/ap_String_Id.h
 msgid "Re&vert"
 msgstr "&Povrni"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_REAPPLY
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Reapply Current"
-msgstr "Uporabi na trenutnem seznamu"
-
-#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
-#: po/tmp/ap_String_Id.h
-msgid "Reapply stylesheet this Semantic Item"
-msgstr ""
 
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
@@ -5078,14 +5111,13 @@ msgstr "Zmanjšaj ali povečaj prikaz dokumenta"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "Sorodno z izvornim semantičnim elementom"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Odnos:"
+msgstr "Odnos"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5273,15 +5305,13 @@ msgstr "ID revizije"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Revisions new..."
-msgstr "&Revizije"
+msgstr "Nove revizije ..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Revisions select..."
-msgstr "&Revizije"
+msgstr "Izbrane revizije ..."
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -5352,12 +5382,12 @@ msgstr "Vrstic &pod"
 #. MENU_STATUSLINE_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests and show results on console"
-msgstr ""
+msgstr "Izvedi nekatere preizkuse RDF in pokaži rezultate v konzoli"
 
 #. MENU_STATUSLINE_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests that change during development"
-msgstr ""
+msgstr "Izvedi nekatere preizkuse RDF, ki se spreminjajo z razvojem"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -5374,15 +5404,10 @@ msgstr "&Pokaži revizije"
 msgid "S&plit Cells"
 msgstr "&Razdeli celico"
 
-#. MENU_LABEL_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "SPARQL &Query"
-msgstr ""
-
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
-msgid "SPARQL Query..."
-msgstr ""
+msgid "SPARQL Query"
+msgstr "Poizvedba SPARQL"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
@@ -5561,39 +5586,39 @@ msgstr "Izberi sliko iz datoteke"
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to Semantic Item"
-msgstr ""
+msgstr "Izberi naslednji sklic na semantični element"
 
 #. TOOLBAR_LABEL_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item"
-msgstr ""
+msgstr "Izberi naslednji sklic na ta semantični element"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item..."
-msgstr ""
+msgstr "Izberi naslednji sklic na ta semantični element ..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Select next references to Semantic Item"
-msgstr ""
+msgstr "Izberi naslednje sklice na semantični element"
 
 #. MENU_LABEL_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to Semantic Item"
-msgstr ""
+msgstr "Izberi prejšnji sklic na semantični element"
 
 #. TOOLBAR_LABEL_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item"
-msgstr ""
+msgstr "Izberi prejšnji sklic na ta semantični element"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item..."
-msgstr ""
+msgstr "Izberi prejšnji sklic na ta semantični element ..."
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -5607,45 +5632,42 @@ msgstr "Izberi celoten dokument"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the parts of the document belonging to the next version..."
-msgstr "Pred vstavitvijo hiperpovezave morate izbrati del dokumenta."
+msgstr "Izberi dele dokumenta, ki pripadajo naslednji različici ..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the parts of the document belonging to the previous version..."
-msgstr "Pokaži izgled dokumenta po predhodnih revizijah"
+msgstr "Izberi dele dokumenta, ki pripadajo prejšnji različici ..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the next revision..."
-msgstr ""
+msgstr "Izberi dele dokumenta, ki so vsebovani v naslednji reviziji ..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the parts of the document contained in the previous revision..."
-msgstr "Pokaži izgled dokumenta po predhodnih revizijah"
+msgstr "Izberi dele dokumenta, ki so vsebovani v prejšnji reviziji ..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to Semantic Item"
-msgstr ""
+msgstr "Izberi ta sklic na semantični element"
 
 #. TOOLBAR_LABEL_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item"
-msgstr ""
+msgstr "Izberi ta sklic na ta semantični element"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item..."
-msgstr ""
+msgstr "Izberi ta sklic na ta semantični element ..."
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
@@ -5657,7 +5679,7 @@ msgstr "Izbor"
 #. MENU_STATUSLINE_RDF_SEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Semantic Item"
-msgstr ""
+msgstr "Semantični element"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
@@ -5709,6 +5731,11 @@ msgstr "Nastavi &jezik"
 msgid "Set Default Values"
 msgstr "Nastavi privzete vrednosti"
 
+#. DLG_RDF_SemanticStylesheets_Set
+#: po/tmp/ap_String_Id.h
+msgid "Set For All Existing"
+msgstr "Nastavi za vse obstoječe"
+
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
 #: po/tmp/ap_String_Id.h
@@ -5734,7 +5761,7 @@ msgstr "Nastavite sliko za ozadje svoje strani"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr ""
+msgstr "Nastavi za izvorni semantični element"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5777,6 +5804,19 @@ msgstr "Nastavi možnosti"
 msgid "Set tab stops"
 msgstr "Nastavi tabulatorska mesta"
 
+#. DLG_RDF_SemanticStylesheets_Explanation
+#: po/tmp/ap_String_Id.h
+msgid ""
+"Set the default stylesheet for Semantic objects in this document. New RDF "
+"objects will use this stylesheet automatically. The buttons allow you to set "
+"the stylesheet for all existing semantic objects to the new default "
+"stylesheet as well."
+msgstr ""
+"Določite privzeto slogovno predlogo za semantične predmete tega dokumenta. "
+"Novi predmeti RDF bodo samodejno uporabljali to predlogo. Gumbi omogočajo, "
+"da nastavite tudi predlogo za vse obstoječe semantične predmete na novo "
+"privzeto predlogo."
+
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
 msgid "Set the type and styles of the Table of Contents"
@@ -5811,6 +5851,13 @@ msgstr "Nastavi to sliko na določeno mesto"
 #: po/tmp/ap_String_Id.h
 msgid "Set your spelling preferences"
 msgstr "Nastavi možnosti črkovanja"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Settings"
+msgstr "Shrani nastavitve"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
@@ -5851,24 +5898,13 @@ msgstr "Pokaži vse"
 
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show All RDF"
-msgstr "Pokaži vse"
+msgstr "Pokaži vse RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
 msgstr "Pokaži o&blikovalne oznake"
-
-#. MENU_STATUSLINE_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF Triples associated with location"
-msgstr ""
-
-#. MENU_LABEL_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position..."
-msgstr ""
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5887,21 +5923,18 @@ msgstr "Pokaži dokument po pred&hodnih revizijah"
 
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show document at final version without revision highlighting"
-msgstr "Pokaži dokument po pred&hodnih revizijah"
+msgstr "Pokaži dokument na končni različici brez poudarjanja revizij"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show final document"
-msgstr "Pokaži poln seznam dokumentov"
+msgstr "Pokaži končni dokument"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show final document..."
-msgstr "Pokaži poln seznam dokumentov"
+msgstr "Pokaži končni dokument ..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -5930,12 +5963,6 @@ msgstr "Pokaži ali skrij orodno vrstico"
 #: po/tmp/ap_String_Id.h
 msgid "Show revisions that are present in document"
 msgstr "Pokaži revizije, prisotne v dokumentu"
-
-#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Show the RDF associated with the cursor position..."
-msgstr "Komentar, ki bo povezan z revizijo:"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
@@ -6006,9 +6033,8 @@ msgstr "&Razvrsti tabelo"
 
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Solid line"
-msgstr "Prva vrstica"
+msgstr "Zapolnjena črta"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6236,12 +6262,6 @@ msgstr "Začni podseznam"
 msgid "Start a new revision"
 msgstr "Začni novo revizijo"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Start and End Times"
-msgstr "Datum in čas"
-
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Start ne&w revision"
@@ -6333,16 +6353,8 @@ msgstr "Slogi"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Stylesheet"
-msgstr "Slogi"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Stylesheet Settings"
-msgstr "Shrani nastavitve"
+msgstr "Predloga"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
@@ -6399,20 +6411,23 @@ msgstr "Seštej vrstico tabele"
 msgid "Summary"
 msgstr "Povzetek"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
-msgstr ""
+msgstr "Povzetek, mesto"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr ""
+msgstr "Povzetek, mesto, čas pričetka in zaključka"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr ""
+msgstr "Povzetek, čas pričetka in zaključka"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6516,7 +6531,7 @@ msgstr "&Oblika besedila"
 #. MENU_LABEL_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Test RDF subsystem"
-msgstr ""
+msgstr "Preizkusi podsistem RDF"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h
@@ -6613,12 +6628,11 @@ msgstr "Debelina:"
 
 #. MSG_XMLIDAlreadyExists
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "This RDF link already exists. Would you like to replace the existing RDF "
 "link with this new one?"
 msgstr ""
-"Ta zaznamek že obstaja. Želite zamenjati obstoječi zaznamek s tem novim?"
+"Ta povezava RDF že obstaja. Želite zamenjati obstoječo povezavo RDF z novo?"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
@@ -6653,7 +6667,7 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Ta odstavek predstavlja besede, kot bi se lahko pojavile v vašem dokumentu. "
+"Ta odstavek predstavlja besede, kot bi se lahko pojavile v vašem dokumentu.  "
 "Če želite tu videti besedilo iz svojega dokumenta, postavite kazalko v "
 "besedilo odstavka in odprite to pogovorno okno."
 
@@ -6730,6 +6744,12 @@ msgstr "Zgornji rob [%s]"
 msgid "Topline"
 msgstr "Črta zgoraj"
 
+#. DLG_RDF_Editor_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Total RDF: %d"
+msgstr "Skupaj RDF: %d"
+
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
@@ -6749,7 +6769,7 @@ msgstr "Vrsta"
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link"
-msgstr ""
+msgstr "Vnesite ime za povezavo RDF"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
@@ -6790,6 +6810,12 @@ msgstr "Razveljavi"
 #: po/tmp/ap_String_Id.h
 msgid "Undo editing"
 msgstr "Razveljavi urejanje"
+
+#. DLG_RDF_Editor_ShowAll
+#. DLG_Update
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Update"
+msgstr "Posodobi"
 
 #. DLG_Annotation_OK_tooltip
 #: po/tmp/ap_String_Id.h
@@ -7071,14 +7097,12 @@ msgstr "pREKLOPI vELIKE čRKE"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Zadeva"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Zadeva"
@@ -7869,7 +7893,7 @@ msgstr "Datoteka"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Datoteka že obstaja. Želite prepisati datoteko '%s'?"
+msgstr "Datoteka že obstaja.  Želite prepisati datoteko '%s'?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h
@@ -8961,11 +8985,6 @@ msgstr "ukrajinski, KOI8-U"
 msgid "Ukrainian, Macintosh"
 msgstr "ukrajinski, Macintosh"
 
-#. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-2"
-msgstr "Unicode UCS-2"
-
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
@@ -8975,11 +8994,6 @@ msgstr "Unicode UCS-2 BE"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 LE"
-
-#. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-4"
-msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
@@ -8991,11 +9005,6 @@ msgstr "Unicode UCS-4 BE"
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 LE"
 
-#. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-16"
-msgstr "Unicode UTF-16"
-
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
@@ -9005,11 +9014,6 @@ msgstr "Unicode UFT-16 BE"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 LE"
-
-#. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-32"
-msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
@@ -9036,11 +9040,6 @@ msgstr "Unicode UTF-8"
 #, c-format
 msgid "Untitled%d"
 msgstr "Neimenovano-%d"
-
-#. DLG_Update
-#: po/tmp/xap_String_Id.h
-msgid "Update"
-msgstr "Posodobi"
 
 #. DLG_UFS_Effects_UpperCase
 #: po/tmp/xap_String_Id.h
@@ -9257,6 +9256,46 @@ msgstr "soroden"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "nepovezan"
+
+#~ msgid "&Show RDF"
+#~ msgstr "&Pokaži RDF"
+
+#~ msgid "Execute SPARQL Query for location"
+#~ msgstr "Izvedi poizvedbo SPARQL za mesto"
+
+#~ msgid "SPARQL &Query"
+#~ msgstr "Poizved&ba SPARQL"
+
+#~ msgid "Stylesheet Settings"
+#~ msgstr "Nastavitve predloge"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
+
+#, fuzzy
+#~ msgid "Lat & Long"
+#~ msgstr "Zem. širina in dolžina"
+
+#~ msgid "Location, Start and End Times"
+#~ msgstr "Mesto, čas pričetka in zaključka"
+
+#~ msgid "Start and End Times"
+#~ msgstr "Čas pričetka in zaključka"
+
+#~ msgid "Go to..."
+#~ msgstr "Pojdi na..."
+
+#~ msgid "SPARQL Query..."
+#~ msgstr "Poizvedba SPARQL ..."
 
 #~ msgid "Display Help Index"
 #~ msgstr "Pokaži kazalo pomoči"
