@@ -41,6 +41,7 @@ typedef struct
     const char *defaultStylesheet;
     const ssList_t *ssList;
     GtkWidget *combo_box; 
+    int index; 
 } combo_box_t;
 
 static const ssList_t ssListContact[] =
@@ -72,10 +73,10 @@ static const ssList_t ssListLocation[] =
 
 static combo_box_t combo_box_data[] =
 {
-    {"Contact", RDF_SEMANTIC_STYLESHEET_CONTACT_NAME, ssListContact, NULL},
-    {"Event", RDF_SEMANTIC_STYLESHEET_EVENT_NAME, ssListEvent, NULL},
-    {"Location", RDF_SEMANTIC_STYLESHEET_LOCATION_NAME, ssListLocation, NULL},
-    {NULL, NULL, NULL, NULL}
+    {"Contact", RDF_SEMANTIC_STYLESHEET_CONTACT_NAME, ssListContact, NULL, 0},
+    {"Event", RDF_SEMANTIC_STYLESHEET_EVENT_NAME, ssListEvent, NULL, 0},
+    {"Location", RDF_SEMANTIC_STYLESHEET_LOCATION_NAME, ssListLocation, NULL, 0},
+    {NULL, NULL, NULL, NULL, 0}
 };
 
 static const char *getStylesheetName( const ssList_t *ssList, const gchar *translation )
@@ -305,6 +306,8 @@ OnSemanticStylesheetsOk_cb (GtkWidget *widget, GdkEvent *event, combo_box_t *box
     {
         const char *t;
         std::string ssName;
+
+        box[i].index = gtk_combo_box_get_active(GTK_COMBO_BOX(box[i].combo_box));
         
         t = getStylesheetName(box[i].ssList, gtk_combo_box_get_active_id(GTK_COMBO_BOX(box[i].combo_box)));
         ssName = t ? t : box[i].defaultStylesheet;
@@ -455,6 +458,9 @@ public:
             pSS->getValueUTF8(ssListLocation[i].translation_id, text);
             XAP_appendComboBoxText(GTK_COMBO_BOX(combo_box_data[2].combo_box), text.c_str());
         }
+        gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box_data[0].combo_box), combo_box_data[0].index); 
+        gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box_data[1].combo_box), combo_box_data[1].index); 
+        gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box_data[2].combo_box), combo_box_data[2].index); 
 
         // set max. text width for explanation
         GtkRequisition requisition;
