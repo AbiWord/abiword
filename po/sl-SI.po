@@ -3,20 +3,21 @@
 # Copyright by:
 # Andraz Tori <andraz.tori1@guest.arnes.si> 2000.
 # Martin Srebotnjak <miles@filmsi.net> 2006, 2012.
+# Chris Leonard <cjl@laptop.org>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.8.x\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-05-02 23:52-0400\n"
-"PO-Revision-Date: 2012-05-02 23:26-0400\n"
+"PO-Revision-Date: 2012-05-04 02:18-0400\n"
 "Last-Translator: Chris Leonard <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
+"Language: sl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sl\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || n"
-"%100==4 ? 2 : 3);\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
+"n%100==4 ? 2 : 3);\n"
 "X-Generator: Virtaal 0.7.0\n"
 "X-Poedit-SourceCharset: iso-8859-1\n"
 
@@ -410,9 +411,8 @@ msgstr "&Uredi"
 
 #. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Edit RDF"
-msgstr "&Uredi"
+msgstr "&Uredi RDF"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -804,7 +804,7 @@ msgstr "&Počisti zgodovino"
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "&Query RDF"
-msgstr ""
+msgstr "&Poizveduj po RDF"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
@@ -1193,8 +1193,8 @@ msgid ""
 "platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "AbiWord za svoje delovanje potrebuje datoteko %s.dll\n"
-"Prosimo, prenesite in namestite jo s spletne strani http://www.microsoft.com/"
-"msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"Prosimo, prenesite in namestite jo s spletne strani "
+"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1330,9 +1330,8 @@ msgstr "Uporabi stik"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Current"
-msgstr "Ponovno uporabi trenutno"
+msgstr "Uporabi trenutno"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
@@ -1350,9 +1349,8 @@ msgstr "Uporabi mesto"
 #. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
 #. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply stylesheet to this Semantic Item"
-msgstr "Ponovno uporabi predlogo na semantičnem elementu"
+msgstr "Uporabi predlogo na semantičnem elementu"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1935,9 +1933,9 @@ msgid ""
 msgstr ""
 "Izberite cilj na levi strani.\n"
 "Če želite uporabiti gumb \"Pojdi na\" izpolnite vnos \"Številka\" z izbrano "
-"številko.  Lahko uporabite + in - za relativno premikanje.\tNpr.: če "
-"napišete \"+2\" in izberete \"Vrstico\", potem vas bo gumb \"Pojdi na\" "
-"postavil dve vrstici pod trenutnim položajem."
+"številko.  Lahko uporabite + in - za relativno premikanje.\tNpr.: če napišete "
+"\"+2\" in izberete \"Vrstico\", potem vas bo gumb \"Pojdi na\" postavil dve "
+"vrstici pod trenutnim položajem."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2745,7 +2743,6 @@ msgstr "Izvrzi surovi RDF, povezan s položajem kazalke"
 
 #. MENU_LABEL_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "E&dit Semantic Items"
 msgstr "&Uredi semantične elemente"
 
@@ -2787,7 +2784,6 @@ msgstr "Uredi trojice RDF"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit RDF Triples associated with location"
 msgstr "Pokaži trojice RDF, povezane z mestom"
 
@@ -5007,15 +5003,13 @@ msgstr "Izdajatelj:"
 
 #. MENU_STATUSLINE_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query RDF associated with location"
-msgstr "Pokaži trojice RDF, povezane z mestom"
+msgstr "Poizveduj po RDF, povezanim z mestom"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query RDF for cursor position"
-msgstr "Pokaži RDF za položaj kazalke"
+msgstr "Poizveduj po RDF za položaj kazalke"
 
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
@@ -5025,9 +5019,8 @@ msgstr "Poizvedbeni RDF: %d od skupaj %ld"
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query the RDF associated with the cursor position..."
-msgstr "Pokaži RDF, povezan s položajem kazalke ..."
+msgstr "Poizveduj po RDF, povezanim s položajem kazalke ..."
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5855,9 +5848,8 @@ msgstr "Nastavi možnosti črkovanja"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Settings"
-msgstr "Shrani nastavitve"
+msgstr "Nastavitve"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
@@ -6667,8 +6659,8 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Ta odstavek predstavlja besede, kot bi se lahko pojavile v vašem dokumentu.  "
-"Če želite tu videti besedilo iz svojega dokumenta, postavite kazalko v "
+"Ta odstavek predstavlja besede, kot bi se lahko pojavile v vašem dokumentu. "
+" Če želite tu videti besedilo iz svojega dokumenta, postavite kazalko v "
 "besedilo odstavka in odprite to pogovorno okno."
 
 #. DLG_Styles_ErrStyleNot
@@ -7000,7 +6992,8 @@ msgstr "Pred vstavitvijo hiperpovezave morate izbrati del dokumenta."
 #: po/tmp/ap_String_Id.h
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
 msgstr ""
-"Za pogostost samodejnega shranjevanja bi morali izbrati vrednost med 1 in 120"
+"Za pogostost samodejnega shranjevanja bi morali izbrati vrednost med 1 in "
+"120"
 
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h
@@ -8647,7 +8640,8 @@ msgid ""
 "Render MathML to PNG images (JavaScript will be used if option is not "
 "checked)"
 msgstr ""
-"Upodobi MathML v slike PNG (če možnost ni potrjena, bo uporabljen JavaScript)"
+"Upodobi MathML v slike PNG (če možnost ni potrjena, bo uporabljen "
+"JavaScript)"
 
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h
@@ -8922,8 +8916,7 @@ msgstr "Ukaz za tiskanje ni veljaven."
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr ""
-"Te operacije ni mogoče povrniti. Ste prepričani, da želite nadaljevati?"
+msgstr "Te operacije ni mogoče povrniti. Ste prepričani, da želite nadaljevati?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h
