@@ -68,6 +68,8 @@ static const char *getStylesheetName( const ssList_t *ssList, const gchar *trans
     std::string text;
     int i;
 
+    if (!translation) return NULL;
+
     for (i = 0; ssList[i].stylesheet; i++)
     {
         pSS->getValueUTF8(ssList[i].translation_id, text);
