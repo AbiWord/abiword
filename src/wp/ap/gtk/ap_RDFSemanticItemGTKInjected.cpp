@@ -77,7 +77,7 @@ static const char *getStylesheetName( const ssList_t *ssList, const gchar *trans
         if (strcmp(translation, text.c_str()) == 0) break;
     }
 
-    UT_DEBUGMSG(("getStylesheetName: in=\"%s\", out=\"%s\"\n", translation, ssList[i].stylesheet ? ssList[i].stylesheet : "NULL"));
+    UT_DEBUGMSG(("getStylesheetName: in=\"%s\", out=\"%s\"\n", translation, ssList[i].stylesheet));
 
     return ssList[i].stylesheet;
 }
