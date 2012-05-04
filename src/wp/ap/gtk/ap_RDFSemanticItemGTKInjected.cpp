@@ -190,42 +190,42 @@ ApplySemanticStylesheets( const std::string& semItemClassRestriction,
 
     if (reflow)
     {
-    UT_DEBUGMSG(("ApplySemanticStylesheets(reflowing)\n" ));
+        UT_DEBUGMSG(("ApplySemanticStylesheets(reflowing)\n" ));
 
-    // reflow all the viewsites
-    for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
-    {
-        PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
-        pDoc->beginUserAtomicGlob();
-        pDoc->notifyPieceTableChangeStart();
-        pDoc->setDontImmediatelyLayout(true);
-        
-        PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-        PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects( semItemClassRestriction );
-
-        std::list<AV_View*> vl = pDoc->getAllViews();
-        for( std::list<AV_View*>::iterator viter = vl.begin(); viter != vl.end(); ++viter )
+        // reflow all the viewsites
+        for( std::list< AD_Document* >::iterator diter = dl.begin(); diter != dl.end(); ++diter )
         {
-            FV_View* pView = dynamic_cast<FV_View*>(*viter);
+            PD_Document* pDoc = dynamic_cast<PD_Document*>(*diter);
+            pDoc->beginUserAtomicGlob();
+            pDoc->notifyPieceTableChangeStart();
+            pDoc->setDontImmediatelyLayout(true);
+            
+            PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
+            PD_RDFSemanticItems   sl = rdf->getAllSemanticObjects( semItemClassRestriction );
 
-            for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
+            std::list<AV_View*> vl = pDoc->getAllViews();
+            for( std::list<AV_View*>::iterator viter = vl.begin(); viter != vl.end(); ++viter )
             {
-                PD_RDFSemanticItemHandle si = *siter;
-                std::set< std::string > xmlids = si->getXMLIDs();
-                for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
+                FV_View* pView = dynamic_cast<FV_View*>(*viter);
+
+                for( PD_RDFSemanticItems::iterator siter = sl.begin(); siter != sl.end(); ++siter )
                 {
-                    std::string xmlid = *xiter;
-                    PD_RDFSemanticItemViewSite vs( si, xmlid );
-                    vs.reflowUsingCurrentStylesheet( pView );
+                    PD_RDFSemanticItemHandle si = *siter;
+                    std::set< std::string > xmlids = si->getXMLIDs();
+                    for( std::set< std::string >::iterator xiter = xmlids.begin(); xiter != xmlids.end(); ++xiter )
+                    {
+                        std::string xmlid = *xiter;
+                        PD_RDFSemanticItemViewSite vs( si, xmlid );
+                        vs.reflowUsingCurrentStylesheet( pView );
+                    }
                 }
+                break;
             }
-            break;
+            
+            pDoc->setDontImmediatelyLayout(false);
+            pDoc->notifyPieceTableChangeEnd();
+            pDoc->endUserAtomicGlob();
         }
-        
-        pDoc->setDontImmediatelyLayout(false);
-        pDoc->notifyPieceTableChangeEnd();
-        pDoc->endUserAtomicGlob();
-    }
     }
 
     UT_DEBUGMSG(("ApplySemanticStylesheets(done)\n" ));
