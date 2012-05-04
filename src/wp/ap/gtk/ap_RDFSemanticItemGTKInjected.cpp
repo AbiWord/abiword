@@ -250,49 +250,20 @@ ApplySemanticStylesheets( const std::string& semItemClassRestriction,
 
 
 static gboolean
-OnSemanticStylesheetsSetContacts_cb( GtkWidget* /*w*/, GdkEvent* /*event*/, 
-									 GtkComboBoxText *combo_box )
+OnSemanticStylesheetsSet_cb (GtkWidget *widget, GdkEvent *event, combo_box_t *box)
 {
-    const gchar * t = getStylesheetName( ssListContact, gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) ) );
-    std::string ssName = t ? t : RDF_SEMANTIC_STYLESHEET_CONTACT_NAME;
+    UT_UNUSED(widget);
+    UT_UNUSED(event);
 
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() ssName:%s\n", ssName.c_str() ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() combo:%p\n", combo_box ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() t:%s\n", t ));
+    const char *t = getStylesheetName(box->ssList, gtk_combo_box_get_active_id(GTK_COMBO_BOX(box->combo_box)));
+    std::string ssName = t ? t : box->defaultStylesheet;
 
-    ApplySemanticStylesheets( "Contact", ssName, true );
-    
-    return false;
-}
+    UT_DEBUGMSG(("OnSemanticStylesheetsSet_cb() combo:%p\n", box->combo_box));
+    UT_DEBUGMSG(("OnSemanticStylesheetsSet_cb() t:%s\n", t));
+    UT_DEBUGMSG(("OnSemanticStylesheetsSet_cb() ssName:%s\n", ssName.c_str()));
 
+    ApplySemanticStylesheets(box->itemClass, ssName, true);
 
-static gboolean
-OnSemanticStylesheetsSetEvents_cb( GtkWidget* /*w*/, GdkEvent* /*event*/, 
-								   GtkComboBoxText *combo_box )
-{
-    const gchar * t = getStylesheetName( ssListEvent, gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) ) );
-    std::string ssName = t ? t : RDF_SEMANTIC_STYLESHEET_EVENT_NAME;
-
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() ssName:%s\n", ssName.c_str() ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() combo:%p\n", combo_box ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() t:%s\n", t ));
-
-    ApplySemanticStylesheets( "Event", ssName, true );
-    return false;
-}
-
-static gboolean
-OnSemanticStylesheetsSetLocations_cb( GtkWidget* /*w*/, GdkEvent* /*event*/, 
-									  GtkComboBoxText *combo_box )
-{
-    const gchar * t = getStylesheetName( ssListLocation, gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) ) );
-    std::string ssName = t ? t : RDF_SEMANTIC_STYLESHEET_LOCATION_NAME;
-
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() ssName:%s\n", ssName.c_str() ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() combo:%p\n", combo_box ));
-    UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() t:%s\n", t ));
-
-    ApplySemanticStylesheets( "Location", ssName, true );
     return false;
 }
 
@@ -472,13 +443,13 @@ public:
         gtk_window_set_title(GTK_WINDOW(window), text.c_str());
         _setIcon(window);
 
-        g_signal_connect (setContacts,  "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  combo_box_data[0].combo_box );
-        g_signal_connect (setEvents,    "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    combo_box_data[1].combo_box );
-        g_signal_connect (setLocations, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), combo_box_data[2].combo_box );
+        g_signal_connect (setContacts,  "button-release-event", G_CALLBACK (OnSemanticStylesheetsSet_cb),  &combo_box_data[0] );
+        g_signal_connect (setEvents,    "button-release-event", G_CALLBACK (OnSemanticStylesheetsSet_cb),    &combo_box_data[1] );
+        g_signal_connect (setLocations, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSet_cb), &combo_box_data[2] );
 
-        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  combo_box_data[0].combo_box );
-        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    combo_box_data[1].combo_box );
-        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), combo_box_data[2].combo_box );
+        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSet_cb),  &combo_box_data[0] );
+        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSet_cb),    &combo_box_data[1] );
+        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSet_cb), &combo_box_data[2] );
     
         g_signal_connect(GTK_WIDGET(gtk_builder_get_object(builder, "OK")), "button-release-event", G_CALLBACK(OnSemanticStylesheetsOk_cb), combo_box_data);                
     
