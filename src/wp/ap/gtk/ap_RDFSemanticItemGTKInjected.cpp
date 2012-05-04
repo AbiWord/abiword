@@ -35,6 +35,13 @@ typedef struct
     const char *stylesheet;  
 } ssList_t;
 
+typedef struct
+{
+    const char *itemClass;
+    const ssList_t *ssList;
+    GtkWidget *combo_box; 
+} combo_box_t;
+
 static const ssList_t ssListContact[] =
 {
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME, RDF_SEMANTIC_STYLESHEET_CONTACT_NAME},
@@ -60,6 +67,14 @@ static const ssList_t ssListLocation[] =
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME, RDF_SEMANTIC_STYLESHEET_LOCATION_NAME},
     {AP_STRING_ID_MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG, RDF_SEMANTIC_STYLESHEET_LOCATION_NAME_LATLONG},
     {0, NULL}
+};
+
+static combo_box_t combo_box_data[] =
+{
+    {"Contact", ssListContact, NULL},
+    {"Event", ssListEvent, NULL},
+    {"Location", ssListLocation, NULL},
+    {NULL, NULL, NULL}
 };
 
 static const char *getStylesheetName( const ssList_t *ssList, const gchar *translation )
@@ -279,6 +294,30 @@ OnSemanticStylesheetsSetLocations_cb( GtkWidget* /*w*/, GdkEvent* /*event*/,
     return false;
 }
 
+static gboolean
+OnSemanticStylesheetsOk_cb (GtkWidget *widget, GdkEvent *event, combo_box_t *box)
+{
+    UT_UNUSED(widget);
+    UT_UNUSED(event);
+
+    for (int i = 0; box[i].itemClass; i++)
+    {
+        const char *t;
+        std::string ssName;
+        
+        t = getStylesheetName(box[i].ssList, gtk_combo_box_get_active_id(GTK_COMBO_BOX(box[i].combo_box)));
+        ssName = t ? t : "name";
+
+        UT_DEBUGMSG(("OnSemanticStylesheetsOk_cb() combo:%p\n", box[i].combo_box));
+        UT_DEBUGMSG(("OnSemanticStylesheetsOk_cb() t:%s\n", t));
+        UT_DEBUGMSG(("OnSemanticStylesheetsOk_cb() ssName:%s\n", ssName.c_str()));
+
+        ApplySemanticStylesheets(box[i].itemClass, ssName, false);
+    }
+    
+    return false;
+}
+
 /******************************/
 /******************************/
 /******************************/
@@ -379,9 +418,9 @@ public:
 #endif
         GtkWidget*  window    = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
         GtkWidget*  lbExplanation = GTK_WIDGET(gtk_builder_get_object(builder, "lbExplanation"));         
-        GtkWidget*  contacts  = GTK_WIDGET(gtk_builder_get_object(builder, "contacts"));
-        GtkWidget*  events    = GTK_WIDGET(gtk_builder_get_object(builder, "events"));
-        GtkWidget*  locations = GTK_WIDGET(gtk_builder_get_object(builder, "locations"));
+        combo_box_data[0].combo_box = GTK_WIDGET(gtk_builder_get_object(builder, "contacts"));
+        combo_box_data[1].combo_box = GTK_WIDGET(gtk_builder_get_object(builder, "events"));
+        combo_box_data[2].combo_box = GTK_WIDGET(gtk_builder_get_object(builder, "locations"));
         GtkWidget*  setContacts  = GTK_WIDGET(gtk_builder_get_object(builder, "setContacts"));
         GtkWidget*  setEvents    = GTK_WIDGET(gtk_builder_get_object(builder, "setEvents"));
         GtkWidget*  setLocations = GTK_WIDGET(gtk_builder_get_object(builder, "setLocations"));
@@ -403,17 +442,17 @@ public:
         for (int i = 0; ssListContact[i].stylesheet; i++)
         {
             pSS->getValueUTF8(ssListContact[i].translation_id, text);
-            XAP_appendComboBoxText(GTK_COMBO_BOX(contacts), text.c_str());
+            XAP_appendComboBoxText(GTK_COMBO_BOX(combo_box_data[0].combo_box), text.c_str());
         }
         for (int i = 0; ssListEvent[i].stylesheet; i++)
         {
             pSS->getValueUTF8(ssListEvent[i].translation_id, text);
-            XAP_appendComboBoxText(GTK_COMBO_BOX(events), text.c_str());
+            XAP_appendComboBoxText(GTK_COMBO_BOX(combo_box_data[1].combo_box), text.c_str());
         }
         for (int i = 0; ssListLocation[i].stylesheet; i++)
         {
             pSS->getValueUTF8(ssListLocation[i].translation_id, text);
-            XAP_appendComboBoxText(GTK_COMBO_BOX(locations), text.c_str());
+            XAP_appendComboBoxText(GTK_COMBO_BOX(combo_box_data[2].combo_box), text.c_str());
         }
 
         // set max. text width for explanation
@@ -426,16 +465,15 @@ public:
         gtk_window_set_title(GTK_WINDOW(window), text.c_str());
         _setIcon(window);
 
-        UT_DEBUGMSG(("runSemanticStylesheetsDialog_cb() combo:%p\n", contacts ));
-        g_signal_connect (setContacts,  "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  contacts );
-        g_signal_connect (setEvents,    "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    events );
-        g_signal_connect (setLocations, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), locations );
+        g_signal_connect (setContacts,  "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  combo_box_data[0].combo_box );
+        g_signal_connect (setEvents,    "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    combo_box_data[1].combo_box );
+        g_signal_connect (setLocations, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), combo_box_data[2].combo_box );
 
-        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  contacts );
-        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    events );
-        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), locations );
+        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetContacts_cb),  combo_box_data[0].combo_box );
+        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetEvents_cb),    combo_box_data[1].combo_box );
+        g_signal_connect (setAll, "button-release-event", G_CALLBACK (OnSemanticStylesheetsSetLocations_cb), combo_box_data[2].combo_box );
     
-    
+        g_signal_connect(GTK_WIDGET(gtk_builder_get_object(builder, "OK")), "button-release-event", G_CALLBACK(OnSemanticStylesheetsOk_cb), combo_box_data);                
     
         g_signal_connect (G_OBJECT(window), "response",  G_CALLBACK(OnSemanticStylesheetsDialogResponse), pView );
         gtk_widget_show_all (window);
