@@ -38,6 +38,7 @@ typedef struct
 typedef struct
 {
     const char *itemClass;
+    const char *defaultStylesheet;
     const ssList_t *ssList;
     GtkWidget *combo_box; 
 } combo_box_t;
@@ -71,10 +72,10 @@ static const ssList_t ssListLocation[] =
 
 static combo_box_t combo_box_data[] =
 {
-    {"Contact", ssListContact, NULL},
-    {"Event", ssListEvent, NULL},
-    {"Location", ssListLocation, NULL},
-    {NULL, NULL, NULL}
+    {"Contact", RDF_SEMANTIC_STYLESHEET_CONTACT_NAME, ssListContact, NULL},
+    {"Event", RDF_SEMANTIC_STYLESHEET_EVENT_NAME, ssListEvent, NULL},
+    {"Location", RDF_SEMANTIC_STYLESHEET_LOCATION_NAME, ssListLocation, NULL},
+    {NULL, NULL, NULL, NULL}
 };
 
 static const char *getStylesheetName( const ssList_t *ssList, const gchar *translation )
@@ -252,7 +253,7 @@ OnSemanticStylesheetsSetContacts_cb( GtkWidget* /*w*/, GdkEvent* /*event*/,
 									 GtkComboBoxText *combo_box )
 {
     const gchar * t = getStylesheetName( ssListContact, gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) ) );
-    std::string ssName = t ? t : "name";
+    std::string ssName = t ? t : RDF_SEMANTIC_STYLESHEET_CONTACT_NAME;
 
     UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() ssName:%s\n", ssName.c_str() ));
     UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() combo:%p\n", combo_box ));
@@ -269,7 +270,7 @@ OnSemanticStylesheetsSetEvents_cb( GtkWidget* /*w*/, GdkEvent* /*event*/,
 								   GtkComboBoxText *combo_box )
 {
     const gchar * t = getStylesheetName( ssListEvent, gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) ) );
-    std::string ssName = t ? t : "name";
+    std::string ssName = t ? t : RDF_SEMANTIC_STYLESHEET_EVENT_NAME;
 
     UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() ssName:%s\n", ssName.c_str() ));
     UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() combo:%p\n", combo_box ));
@@ -284,7 +285,7 @@ OnSemanticStylesheetsSetLocations_cb( GtkWidget* /*w*/, GdkEvent* /*event*/,
 									  GtkComboBoxText *combo_box )
 {
     const gchar * t = getStylesheetName( ssListLocation, gtk_combo_box_get_active_id( GTK_COMBO_BOX(combo_box) ) );
-    std::string ssName = t ? t : "name";
+    std::string ssName = t ? t : RDF_SEMANTIC_STYLESHEET_LOCATION_NAME;
 
     UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() ssName:%s\n", ssName.c_str() ));
     UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() combo:%p\n", combo_box ));
@@ -306,7 +307,7 @@ OnSemanticStylesheetsOk_cb (GtkWidget *widget, GdkEvent *event, combo_box_t *box
         std::string ssName;
         
         t = getStylesheetName(box[i].ssList, gtk_combo_box_get_active_id(GTK_COMBO_BOX(box[i].combo_box)));
-        ssName = t ? t : "name";
+        ssName = t ? t : box[i].defaultStylesheet;
 
         UT_DEBUGMSG(("OnSemanticStylesheetsOk_cb() combo:%p\n", box[i].combo_box));
         UT_DEBUGMSG(("OnSemanticStylesheetsOk_cb() t:%s\n", t));
