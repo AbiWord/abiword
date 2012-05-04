@@ -159,7 +159,7 @@ OnSemanticStylesheetsDialogResponse( GtkWidget* dialog,
 
 static void
 ApplySemanticStylesheets( const std::string& semItemClassRestriction,
-                          const std::string& ssName )
+                          const std::string& ssName, bool reflow )
 {
     // set the RDF linking to the stylesheets
     std::list< AD_Document* > dl = XAP_App::getApp()->getDocuments();
@@ -188,6 +188,8 @@ ApplySemanticStylesheets( const std::string& semItemClassRestriction,
         pDoc->endUserAtomicGlob();
     }
 
+    if (reflow)
+    {
     UT_DEBUGMSG(("ApplySemanticStylesheets(reflowing)\n" ));
 
     // reflow all the viewsites
@@ -224,6 +226,7 @@ ApplySemanticStylesheets( const std::string& semItemClassRestriction,
         pDoc->notifyPieceTableChangeEnd();
         pDoc->endUserAtomicGlob();
     }
+    }
 
     UT_DEBUGMSG(("ApplySemanticStylesheets(done)\n" ));
 }
@@ -240,7 +243,7 @@ OnSemanticStylesheetsSetContacts_cb( GtkWidget* /*w*/, GdkEvent* /*event*/,
     UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() combo:%p\n", combo_box ));
     UT_DEBUGMSG(("OnSemanticStylesheetsSetContacts_cb() t:%s\n", t ));
 
-    ApplySemanticStylesheets( "Contact", ssName );
+    ApplySemanticStylesheets( "Contact", ssName, true );
     
     return false;
 }
@@ -257,7 +260,7 @@ OnSemanticStylesheetsSetEvents_cb( GtkWidget* /*w*/, GdkEvent* /*event*/,
     UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() combo:%p\n", combo_box ));
     UT_DEBUGMSG(("OnSemanticStylesheetsSetEvents_cb() t:%s\n", t ));
 
-    ApplySemanticStylesheets( "Event", ssName );
+    ApplySemanticStylesheets( "Event", ssName, true );
     return false;
 }
 
@@ -272,7 +275,7 @@ OnSemanticStylesheetsSetLocations_cb( GtkWidget* /*w*/, GdkEvent* /*event*/,
     UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() combo:%p\n", combo_box ));
     UT_DEBUGMSG(("OnSemanticStylesheetsSetLocations_cb() t:%s\n", t ));
 
-    ApplySemanticStylesheets( "Location", ssName );
+    ApplySemanticStylesheets( "Location", ssName, true );
     return false;
 }
 
