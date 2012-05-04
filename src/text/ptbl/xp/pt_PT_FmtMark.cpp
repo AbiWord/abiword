@@ -93,7 +93,7 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux = false;
 	//
-	// This code is to ensure that FmtMarks get inserted into empty
+	// This code is to ensure that FmtMarks get inserted into
 	// Embeded containers and not the enclosing block
 	//
 	if(pf->getType() == pf_Frag::PFT_Strux)
@@ -101,14 +101,21 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 	    pf_Frag_Strux * pfse = static_cast<pf_Frag_Strux *>(pf);
 	    if(isEndFootnote(pfse))
 	    {
-		if(pf->getPrev() && pf->getPrev()->getType() ==  pf_Frag::PFT_Strux)
+		if(pf->getPrev())
 		{
-		    pfs = static_cast<pf_Frag_Strux *>(pf->getPrev());
-		    if(pfs->getStruxType() == PTX_Block)
+		    if (pf->getPrev()->getType() ==  pf_Frag::PFT_Strux)
 		    {
-			bFoundStrux = true;
+			pfs = static_cast<pf_Frag_Strux *>(pf->getPrev());
+			if(pfs->getStruxType() == PTX_Block)
+			{
+			    bFoundStrux = true;
+			}
 		    }
-		} 
+		    else 
+		    {
+			bFoundStrux = _getStruxFromFragSkip(pf->getPrev(),&pfs);
+		    }
+		}
 	    }
 	}
 	if(!bFoundStrux)

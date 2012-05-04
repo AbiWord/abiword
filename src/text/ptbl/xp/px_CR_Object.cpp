@@ -43,7 +43,7 @@ PX_ChangeRecord_Object::~PX_ChangeRecord_Object()
 {
 }
 
-PX_ChangeRecord * PX_ChangeRecord_Object::reverse(void)
+PX_ChangeRecord * PX_ChangeRecord_Object::reverse(void) const
 {
 	PX_ChangeRecord_Object * pcr
 		= new PX_ChangeRecord_Object(getRevType(),m_position,

@@ -1526,7 +1526,7 @@ void fl_BlockLayout::updateOffsets(PT_DocPosition posEmbedded, UT_uint32 iEmbedd
 	}
 	pRun = getFirstRun();
 #endif
-	while(pRun && ((posAtStartOfBlock + pRun->getBlockOffset() < posEmbedded) || ((pRun->getLength() == 0) && (posAtStartOfBlock + pRun->getBlockOffset() >= posEmbedded))))
+	while(pRun && (posAtStartOfBlock + pRun->getBlockOffset() < posEmbedded))
 	{
 		xxx_UT_DEBUGMSG(("Look at run %p runType %d posindoc %d \n",pRun,pRun->getType(),posAtStartOfBlock+pRun->getBlockOffset()));
 		pPrev = pRun;
