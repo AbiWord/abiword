@@ -9,15 +9,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-02 23:52-0400\n"
-"PO-Revision-Date: 2011-10-02 22:18+0200\n"
+"Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
+"POT-Creation-Date: 2012-05-06 23:15-0400\n"
+"PO-Revision-Date: 2012-05-03 07:32+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Arabic <doc@arabeyes.org>\n"
+"Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: ar\n"
 "Plural-Forms: nplurals=6; plural=n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 "
 "&& n%100<=10 ? 3 : n%100>=11 && n%100<=99 ? 4 : 5;\n"
 "X-Generator: Pootle 2.0.5\n"
@@ -410,9 +410,8 @@ msgstr "&حرِّر"
 
 #. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Edit RDF"
-msgstr "&حرِّر"
+msgstr ""
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -1191,8 +1190,8 @@ msgid ""
 "platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "يحتاج آبي‌ورد للملف %s.dll\n"
-"المرجو إنزاله وتثبيته من http://www.microsoft.com/msdownload/platformsdk/"
-"sdkupdate/psdkredist.htm"
+"المرجو إنزاله وتثبيته من "
+"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1329,9 +1328,8 @@ msgstr ""
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Current"
-msgstr "طبّق على القائمة الحالية"
+msgstr ""
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
@@ -1934,8 +1932,8 @@ msgid ""
 msgstr ""
 "اختر هدفك في الجهة اليسرى.\n"
 "إذا كنت تريد استخدام زر \"اذهب إلى\" فاملأ خانة العدد بالعدد المرغوب. يمكنك "
-"استعمال + و- لأداء نقلة نسبية.\tمثلا، إذا كتبت \"+2\" ثم اخترت \"سطر\"، "
-"فسيذهب \"اذهب إلى\" سطران تحت موقعك الحالي."
+"استعمال + و- لأداء نقلة نسبية.\tمثلا، إذا كتبت \"+2\" ثم اخترت \"سطر\"، فسيذهب "
+"\"اذهب إلى\" سطران تحت موقعك الحالي."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2637,9 +2635,13 @@ msgid "Disable all formatting commands, except styles"
 msgstr "عطّل كل أوامر التنسيق، إلا الطرز"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
+msgstr ""
+
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
+#: po/tmp/ap_String_Id.h
+msgid "Disassociate and apply default stylesheet"
 msgstr ""
 
 #. MENU_STATUSLINE_HELP_CREDITS
@@ -5024,9 +5026,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query the RDF associated with the cursor position..."
-msgstr "تعليق لضمه مع المراجعة:"
+msgstr ""
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5271,6 +5272,11 @@ msgstr "صفّر بعد كل قسم"
 #: po/tmp/ap_String_Id.h
 msgid "Restart page numbers on new sections"
 msgstr "صفّر أرقام الصفحات قبل الأقسام الجديدة"
+
+#. DLG_RDF_Editor_Restrict
+#: po/tmp/ap_String_Id.h
+msgid "Restrict to RDF Link:"
+msgstr ""
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5807,10 +5813,9 @@ msgstr "اضبط ماسك اللسان"
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
 msgid ""
-"Set the default stylesheet for Semantic objects in this document. New RDF "
+"Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
-"the stylesheet for all existing semantic objects to the new default "
-"stylesheet as well."
+"the stylesheet for all existing Semantic Items to the new stylesheet as well."
 msgstr ""
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
@@ -5851,9 +5856,8 @@ msgstr "اضبط تفضيلات الإملاء"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Settings"
-msgstr "احفظ الإعدادت"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
