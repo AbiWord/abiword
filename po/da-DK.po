@@ -1,20 +1,22 @@
-# Danish translation of AbiWord.
-# Copyright (C) 1999-2000 Free Software Foundation, Inc.
+# Danish translation of AbiWord
+# This file is distributed under the same license as the AbiWord package.
+# Copyright by:
 # Kenneth Christiansen <kenneth@gnu.org>, 2000.
+# Aputsiaq Janussen <aj@isit.gl>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: AbiWord\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 19:13+0200\n"
-"PO-Revision-Date: 2011-07-23 13:37+0600\n"
-"Last-Translator: Urmas D. <davian818@gmail.com>\n"
+"Project-Id-Version: AbiWord 2.9\n"
+"Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
+"POT-Creation-Date: 2012-05-06 23:15-0400\n"
+"PO-Revision-Date: 2012-05-07 07:33+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.0.1\n"
+"X-Generator: Pootle 2.0.5\n"
 "X-Poedit-Country: DENMARK\n"
 "X-Poedit-Language: Danish\n"
 
@@ -64,6 +66,8 @@ msgid ""
 "# Insert your SPARQL query here\n"
 "# Results are shown below."
 msgstr ""
+"# Indsæt din SPARQL-forespørgsel her\n"
+"# Resultater vises nedenfor."
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
@@ -408,10 +412,10 @@ msgstr "&Ingen bindestreg"
 msgid "&Edit"
 msgstr "&Redigér"
 
-#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-msgid "&Edit Semantic Items"
-msgstr ""
+msgid "&Edit RDF"
+msgstr "&Redigér RDF"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -458,6 +462,7 @@ msgstr "&Felter"
 msgid "&Fields:"
 msgstr "&Felter:"
 
+#. DLG_RDF_Editor_Menu_File
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h
 msgid "&File"
@@ -490,9 +495,8 @@ msgstr "Side&fod:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Formatér"
+msgstr "&Formattering"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -798,12 +802,17 @@ msgstr "&Udskriv"
 #. MENU_LABEL_VIEW_PRINT
 #: po/tmp/ap_String_Id.h
 msgid "&Print Layout"
-msgstr "&Udseende for udskrift"
+msgstr "&Udskriftslayout"
 
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h
 msgid "&Purge History"
 msgstr "&Ryd historik"
+
+#. MENU_LABEL_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "&Query RDF"
+msgstr "&Forespørg RDF"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
@@ -908,12 +917,6 @@ msgstr "Vælg &revision"
 msgid "&Show History"
 msgstr "&Vis historik"
 
-#. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "&Show RDF"
-msgstr "Vis"
-
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
 msgid "&Show Status Bar"
@@ -993,6 +996,11 @@ msgstr "Vær&ktøjer"
 #: po/tmp/ap_String_Id.h
 msgid "&Top:"
 msgstr "&Top:"
+
+#. DLG_RDF_Editor_Menu_Triple
+#: po/tmp/ap_String_Id.h
+msgid "&Triple"
+msgstr "&Triplet"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -1181,8 +1189,8 @@ msgid ""
 msgstr ""
 "Abiword er bygget til en nyere version af systemfilen COMCTL32.DLL\n"
 "end den, der er i dit system. (COMCTL32.DLL version 4.72 eller nyere)\n"
-"En løsning på dette problem er forklaret blandt de Ofte Stillede Spørgsmål "
-"(OSS/FAQ) på Abisource-hjemmesiden\n"
+"En løsning på dette problem er forklaret blandt de Ofte Stillede "
+"Spørgsmål/FAQ på Abisource-hjemmesiden\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
@@ -1197,8 +1205,8 @@ msgid ""
 "platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "Abiword mangler filen %s.dll\n"
-"Den kan hentes og installeres fra http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Den kan hentes og installeres fra "
+"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1260,12 +1268,12 @@ msgstr "Tilføj til skabelon"
 #. MENU_LABEL_RDF_ADV
 #: po/tmp/ap_String_Id.h
 msgid "Advanced"
-msgstr ""
+msgstr "Avanceret"
 
 #. MENU_STATUSLINE_RDF_ADV
 #: po/tmp/ap_String_Id.h
 msgid "Advanced RDF"
-msgstr ""
+msgstr "Avanceret RDF"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h
@@ -1306,9 +1314,8 @@ msgstr "Tillad andre skærmfarver end hvid"
 
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Annotation"
-msgstr "&Anmærkninger"
+msgstr "Anmærkninger"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
@@ -1329,23 +1336,33 @@ msgstr "Anvend"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Contact"
-msgstr "Anvend på:"
+msgstr "Anvend kontakt"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+msgid "Apply Current"
+msgstr "Anvend nuværende"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Event"
-msgstr "Anvend på:"
+msgstr "Anvend begivenhed"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Location"
-msgstr "Program"
+msgstr "Anvend placering"
+
+#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+msgid "Apply stylesheet to this Semantic Item"
+msgstr "Anvend stilark for dette semantiske element"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1393,9 +1410,8 @@ msgstr "Fortsæt foregående liste"
 # Kun forfatter til plugins? Og hvad hedder det så?
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Forfatter:"
+msgstr "Forfatter"
 
 # Kun forfatter til plugins? Og hvad hedder det så?
 #. DLG_MetaData_Author_LBL
@@ -1576,7 +1592,7 @@ msgstr "&Rammer og skygge"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr ""
+msgstr "Begge personer kender hinanden"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -1791,9 +1807,8 @@ msgstr "Ændr formatet for det markerede afsnit"
 
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Change the format of the table"
-msgstr "Ændr formatet for det markerede afsnit"
+msgstr "Tilpas formatet på tabellen"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -1916,9 +1931,8 @@ msgstr "Vælg skærmfarve for AbiWord"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Choose which revision of the document to see and edit"
-msgstr "Vælg, hvilken revision du ønsker at se"
+msgstr "Vælg hvilken revision af dokumentet som skal vises og redigeres"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h
@@ -1936,7 +1950,7 @@ msgid ""
 msgstr ""
 "Vælg ønsket indstilling på venste side.\n"
 "Dersom du vil bruge \"Gå til\" knappen skal du indtaste ønsket nummer i "
-"\"Nummer\"-feltet. Du kan bruge + og - til at udføre relativ forflytning. "
+"\"Nummer\"-feltet.  Du kan bruge + og - til at udføre relativ forflytning.\t"
 "Hvis du eksempelvis skriver +2 og vælger \"Linje\", vil \"Gå til\" flytte "
 "markøren to linjer nedenfor nuværende position."
 
@@ -2058,14 +2072,19 @@ msgstr "&Kontinuérlig"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact"
-msgstr "Indhold"
+msgstr "Kontakt"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
-msgid "Contact from File..."
-msgstr ""
+msgid "Contact from File"
+msgstr "Kontakt fra fil"
+
+#. DLG_RDF_SemanticItemInsert_Column_Refdlg
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts"
+msgstr "Kontakter"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2196,21 +2215,19 @@ msgstr "Dækning:"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create New"
-msgstr "Oprettet"
+msgstr "Opret ny"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "Sidereference"
+msgstr "Opret reference"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
 #: po/tmp/ap_String_Id.h
 msgid "Create Semantic Item"
-msgstr ""
+msgstr "Opret semantisk element"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h
@@ -2219,9 +2236,8 @@ msgstr "Lav en fax"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create a new Revision"
-msgstr "Påbegynd ny revision"
+msgstr "Opret en ny revision"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h
@@ -2257,25 +2273,23 @@ msgstr "Opret fra det &markerede"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Contact Semantic Item"
-msgstr "Opret et nyt dokument fra en skabelon"
+msgstr "Opret nyt semantisk kontakt-element"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr ""
+msgstr "Opret nyt semantisk kontakt-element ved at importere et vcard"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
 msgid "Create new Reference to existing Semantic Item"
-msgstr ""
+msgstr "Opret ny reference til eksisterende semantisk element"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Semantic Item"
-msgstr "Nyt dokument"
+msgstr "Opret nyt semantisk element"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h
@@ -2387,9 +2401,8 @@ msgstr "Liste med streger"
 
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dashed line"
-msgstr "Liste med streger"
+msgstr "Stiplet linje"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2631,9 +2644,8 @@ msgstr "Særskilt sidehoved på sidste side"
 
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Directly edit the RDF for the entire document..."
-msgstr "Vælg hele dokumentet"
+msgstr "Foretag direkte redigering af RDF for hele dokumentet..."
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
@@ -2641,9 +2653,13 @@ msgid "Disable all formatting commands, except styles"
 msgstr "Deaktivér alle formatteringskommandoer pånær typografier"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
+msgstr "Fjern tilknytning"
+
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
+#: po/tmp/ap_String_Id.h
+msgid "Disassociate and apply default stylesheet"
 msgstr ""
 
 #. MENU_STATUSLINE_HELP_CREDITS
@@ -2708,9 +2724,8 @@ msgstr "Genstart ikke"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dotted line"
-msgstr "Bundlinje"
+msgstr "Prikket linje"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2730,25 +2745,28 @@ msgstr "Dobbel linjeafstand"
 
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dump RDF Objects"
-msgstr "Klip"
+msgstr "Dump RDF-objekter"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF related to Cursor Position"
-msgstr ""
+msgstr "Dump RDF som relaterer sig til markørens position"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump out information about RDF Objects"
-msgstr ""
+msgstr "Dump information ud om RDF-objekter"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dump the raw RDF associated with the cursor position"
-msgstr "Kommentarer knyttet til denne revision:"
+msgstr "Dump den rå RDF som er knyttet til markørens position"
+
+#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#: po/tmp/ap_String_Id.h
+msgid "E&dit Semantic Items"
+msgstr "Re&digér semantiske elementer"
 
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
@@ -2783,13 +2801,18 @@ msgstr "Redigér Latex-formel"
 
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-msgid "Edit RDF Triples..."
-msgstr ""
+msgid "Edit RDF Triples"
+msgstr "Redigér RDF-tripletter"
+
+#. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
+#: po/tmp/ap_String_Id.h
+msgid "Edit RDF Triples associated with location"
+msgstr "Redigér RDF-tripletter knyttet til placering"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr ""
+msgstr "Redigér semantiske elementer for placering"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -2798,9 +2821,8 @@ msgstr "Redigér anmærkning"
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit document RDF"
-msgstr "Udskriver dokument..."
+msgstr "Redigér RDF for dokument"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -2827,7 +2849,7 @@ msgstr "Redigér sidehoved på denne side"
 #. TOOLBAR_TOOLTIP_SEMITEM_EDIT
 #: po/tmp/ap_String_Id.h
 msgid "Edit this Semantic Item"
-msgstr ""
+msgstr "Redigér dette semantiske element"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
@@ -2852,7 +2874,7 @@ msgstr "Slå skærmning til"
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h
 msgid "Enable smart (curly) quotes"
-msgstr "Aktivér &krøllede anførselstegn"
+msgstr "Aktivér smarte (krøllede) anførselstegn"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h
@@ -2903,6 +2925,11 @@ msgstr "Kunne ikke skrive til filen %s: kunne ikke konstruere eksporter"
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Kunne ikke skrive til filen %s: ulovligt filnavn"
 
+#. DLG_RDF_SemanticStylesheets_Events
+#: po/tmp/ap_String_Id.h
+msgid "Events"
+msgstr "Begivenheder"
+
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Ex. script"
@@ -2920,25 +2947,18 @@ msgstr "Eksempel:"
 
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute Query"
-msgstr "Kør script"
-
-#. MENU_STATUSLINE_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "Execute SPARQL Query for location"
-msgstr ""
+msgstr "Kør forespørgsel"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute SPARQL on document RDF"
-msgstr "Udskriver dokument..."
+msgstr "Udfør SPARQL på RDF for dokument"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Execute a SPARQL Query on all document RDF..."
-msgstr ""
+msgstr "Udfør en SPARQL-forespørgsel på al dokument-RDF..."
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -2959,12 +2979,12 @@ msgstr "Eksisterende revisioner:"
 #. MENU_LABEL_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items"
-msgstr ""
+msgstr "Eksportér semantiske elementer"
 
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr ""
+msgstr "Eksportér semantiske elementer for placering"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
@@ -3069,9 +3089,8 @@ msgstr "Find &tidligere revision"
 #. MENU_LABEL_RDF_SEMITEM_FIND_RELATED
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Find by Relation"
-msgstr "Relation:"
+msgstr "Find efter relation"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
@@ -3365,9 +3384,8 @@ msgstr "Gå til &hvad:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
-msgstr "Gå til..."
+msgstr "Gå til"
 
 # Om indholdsfortegnelse og kapitler i denne.
 #. DLG_FormatTOC_HasLabel
@@ -3409,17 +3427,18 @@ msgstr "Sidehoved [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Sidehoveder og -fødder kan kun oprettes og redigeres, hvis du har valgt "
-"\"Vis Udseende for udskrift\" i menuen \"Vis\".\n"
-"For at gå til denne tilstand, så vælg \"Vis\" og dernæst \"Udseende for "
-"udskrift\" fra menuerne. \n"
-"Vil du vælge Udseende for udskrift nu?"
+"Sidehoveder og -fødder kan kun oprettes og redigeres, hvis du er i "
+"tilstanden for udskriftsvisning.\n"
+"For at gå til denne tilstand, så vælg Vis og dernæst Udskriftslayout fra "
+"menuerne. \n"
+"Vil du vælge tilstanden Udskriftslayout nu?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -3483,14 +3502,13 @@ msgstr "Markér"
 
 #. MENU_LABEL_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Highlight RDF"
-msgstr "Markér"
+msgstr "Fremhæv RDF"
 
 #. MENU_STATUSLINE_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight areas of the document with RDF associated"
-msgstr ""
+msgstr "Fremhæv områder af dokumentet som har RDF knyttet til sig"
 
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h
@@ -3505,7 +3523,7 @@ msgstr "I&ndrykning:"
 #. DLG_Goto_Column_ID
 #: po/tmp/ap_String_Id.h
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h
@@ -3683,15 +3701,23 @@ msgstr "Indsæt MATHML fra fil"
 
 #. DLG_InsertXMLID_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Insert RDF Link"
-msgstr "Indsæt fil"
+msgstr "Indsæt RDF-henvisning"
 
 #. MENU_STATUSLINE_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Insert RDF link..."
-msgstr "Indsæt link"
+msgstr "Indsæt RDF-henvisning..."
+
+#. DLG_RDF_SemanticItemInsert_Ok
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference"
+msgstr "Indsæt reference"
+
+#. DLG_RDF_SemanticItemInsert_Title
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference to Semantic Item"
+msgstr "Indsæt referencer til semantisk element"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3845,12 +3871,12 @@ msgstr "Indsæt link"
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h
 msgid "Insert left-to-right direction marker (LRM)"
-msgstr "Indsæt venstre-til-højre-markør"
+msgstr "Indsæt venstre-til-højre-markør (LRM)"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
 msgid "Insert right-to-left direction marker (RLM)"
-msgstr "Indsæt højre-til-venstre-markør"
+msgstr "Indsæt højre-til-venstre-markør (RLM)"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
@@ -3896,7 +3922,7 @@ msgstr "Indsæt rå indhold af udklipsholder"
 #. MENU_STATUSLINE_RDF
 #: po/tmp/ap_String_Id.h
 msgid "Interact with RDF"
-msgstr ""
+msgstr "Interagér med RDF"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h
@@ -3993,13 +4019,7 @@ msgstr "Sprogindstillinger"
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
 msgid "Language(s):"
-msgstr "Sprog:"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#: po/tmp/ap_String_Id.h
-msgid "Lat & Long"
-msgstr ""
+msgstr "Sprog(ene):"
 
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h
@@ -4153,16 +4173,10 @@ msgstr "Listetypografier"
 msgid "Lists for "
 msgstr "Lister for "
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
+#. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Location"
-msgstr "Program"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
-#: po/tmp/ap_String_Id.h
-msgid "Location, Start and End Times"
-msgstr ""
+msgid "Locations"
+msgstr "Placeringer"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4370,7 +4384,7 @@ msgstr "Flyt markøren til en angivet placering"
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h
 msgid "Mth. Day, Year"
-msgstr "Mnd. dag, år"
+msgstr "Mnd. Dag, År"
 
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h
@@ -4384,21 +4398,26 @@ msgstr "Flere"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Navn:"
+msgstr "Navn"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name (homepage) phone"
-msgstr ""
+msgid "Name, (Homepage), Phone"
+msgstr "Navn, (hjemmeside), telefon"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#: po/tmp/ap_String_Id.h
+msgid "Name, Latitude and Longitude"
+msgstr "Navn, breddegrad og længdegrad"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name, Nick"
-msgstr ""
+msgid "Name, Phone"
+msgstr "Navn, telefon"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -4409,6 +4428,11 @@ msgstr "Ny"
 #: po/tmp/ap_String_Id.h
 msgid "New &annotation"
 msgstr "Ny &anmærkning"
+
+#. DLG_RDF_Insert_NewContact
+#: po/tmp/ap_String_Id.h
+msgid "New Contact..."
+msgstr "Ny kontakt..."
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4431,9 +4455,8 @@ msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "New Revision"
-msgstr "Vælg revision"
+msgstr "Ny revision"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h
@@ -4463,13 +4486,13 @@ msgstr "Næste >>"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK
 #: po/tmp/ap_String_Id.h
 msgid "Nick"
-msgstr ""
+msgstr "Kaldenavn"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Nick, Phone"
-msgstr ""
+msgstr "Kaldenavn, telefon"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h
@@ -4576,9 +4599,8 @@ msgstr "Numre"
 
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Object"
-msgstr "Emne"
+msgstr "Objekt"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
@@ -4853,7 +4875,7 @@ msgstr "Placering"
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr ""
+msgstr "Leger med RDF under udvikling"
 
 #. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
@@ -4895,7 +4917,7 @@ msgstr "&Indstillinger"
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
 msgid "Predicate"
-msgstr ""
+msgstr "Prædikat"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
@@ -4925,7 +4947,7 @@ msgstr "Eksempel"
 #. MENU_STATUSLINE_WEB_SAVEASWEB
 #: po/tmp/ap_String_Id.h
 msgid "Preview the document as a web page"
-msgstr "Se hvordan dokumentet ser ud som en netside (.html)"
+msgstr "Se hvordan dokumentet ser ud som en internetside"
 
 #. MENU_STATUSLINE_FILE_PRINT_PREVIEW
 #. TOOLBAR_STATUSLINE_FILE_PRINT_PREVIEW
@@ -4958,17 +4980,17 @@ msgstr "Udskriv &direkte"
 #. MENU_STATUSLINE_VIEW_PRINT
 #: po/tmp/ap_String_Id.h
 msgid "Print Layout"
-msgstr "Udseende for udskrift"
+msgstr "Udskriftslayout"
 
 #. MENU_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h
 msgid "Print P&review"
-msgstr "Vis udskrift"
+msgstr "Forhåndsvis udskrift"
 
 #. TOOLBAR_LABEL_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h
 msgid "Print Preview"
-msgstr "Forhåndsvisning af udskrift"
+msgstr "Forhåndsvis udskrift"
 
 #. MENU_STATUSLINE_FILE_PRINT
 #: po/tmp/ap_String_Id.h
@@ -5007,6 +5029,27 @@ msgstr "Udgiver af dokumentet"
 msgid "Publisher:"
 msgstr "Udgiver af dokumentet:"
 
+#. MENU_STATUSLINE_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF associated with location"
+msgstr "Forespørg RDF knyttet til placering"
+
+#. MENU_LABEL_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF for cursor position"
+msgstr "Forespørg RDF for markørposition"
+
+#. DLG_RDF_Query_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Query RDF: %d of total: %ld"
+msgstr "Forespørg RDF: %d af i alt: %ld"
+
+#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+msgid "Query the RDF associated with the cursor position..."
+msgstr "Forespørg den RDF som er knyttet til markørens position..."
+
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
@@ -5015,13 +5058,18 @@ msgstr "&Erstat"
 #. MENU_LABEL_RDF
 #: po/tmp/ap_String_Id.h
 msgid "RDF"
-msgstr ""
+msgstr "RDF"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "RDF Link"
-msgstr ""
+msgstr "RDF-henvisning"
+
+#. DLG_RDF_SemanticStylesheets_Title
+#: po/tmp/ap_String_Id.h
+msgid "RDF Stylesheet"
+msgstr "RDF-stilark"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5054,20 +5102,6 @@ msgstr "Find bagud"
 msgid "Re&vert"
 msgstr "N&ulstil"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_REAPPLY
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Reapply Current"
-msgstr "Anvend på denne liste"
-
-#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
-#: po/tmp/ap_String_Id.h
-msgid "Reapply stylesheet this Semantic Item"
-msgstr ""
-
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
 msgid "Recent &Files"
@@ -5099,14 +5133,13 @@ msgstr "Formindsk eller forstør dokumentet på skærmen"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "Relateret til kilde for semantiske element"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Relation:"
+msgstr "Relation"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5262,6 +5295,11 @@ msgstr "Start sidenummerering forfra på hver sektion"
 msgid "Restart page numbers on new sections"
 msgstr "Start sidenummerering forfra på nye sektioner"
 
+#. DLG_RDF_Editor_Restrict
+#: po/tmp/ap_String_Id.h
+msgid "Restrict to RDF Link:"
+msgstr ""
+
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
 msgid "Resume Previous List"
@@ -5295,15 +5333,13 @@ msgstr "Revisions-ID"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Revisions new..."
-msgstr "&Revisioner"
+msgstr "Revisioner nye..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Revisions select..."
-msgstr "&Revisioner"
+msgstr "Revisioner vælg..."
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -5375,12 +5411,12 @@ msgstr "Rækker &under"
 #. MENU_STATUSLINE_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests and show results on console"
-msgstr ""
+msgstr "Kør en række RDF-test og vis resultet i konsollen"
 
 #. MENU_STATUSLINE_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests that change during development"
-msgstr ""
+msgstr "Kør en række RDF-test som ændringer sig under udviklingen"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -5397,15 +5433,10 @@ msgstr "V&is revisioner"
 msgid "S&plit Cells"
 msgstr "O&psplit celler"
 
-#. MENU_LABEL_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "SPARQL &Query"
-msgstr ""
-
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
-msgid "SPARQL Query..."
-msgstr ""
+msgid "SPARQL Query"
+msgstr "SPARQL-forespørgsel"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
@@ -5584,39 +5615,39 @@ msgstr "Vælg billede fra fil"
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to Semantic Item"
-msgstr ""
+msgstr "Vælg næste reference til semantisk element"
 
 #. TOOLBAR_LABEL_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item"
-msgstr ""
+msgstr "Vælg næste reference til dette semantiske element"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item..."
-msgstr ""
+msgstr "Vælg næste reference til dette semantiske element..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Select next references to Semantic Item"
-msgstr ""
+msgstr "Vælg næste reference til semantisk element"
 
 #. MENU_LABEL_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to Semantic Item"
-msgstr ""
+msgstr "Vælg forrige reference til semantisk element"
 
 #. TOOLBAR_LABEL_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item"
-msgstr ""
+msgstr "Vælg forrige reference til dette semantisk element"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item..."
-msgstr ""
+msgstr "Vælg forrige reference til dette semantisk element..."
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -5630,45 +5661,42 @@ msgstr "Vælg hele dokumentet"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the parts of the document belonging to the next version..."
-msgstr "Du skal markere et udsnit af dokumentet for at indsætte et link."
+msgstr "Vælg delene af dokumentet som hører til den næste version..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the parts of the document belonging to the previous version..."
-msgstr "Vis, hvordan dokumentet ser ud efter tidligere revisioner"
+msgstr "Vælg delene af dokumentet som hører til den forrige version..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the next revision..."
-msgstr ""
+msgstr "Vælg delene af dokumentet som er indeholdt i den næste revision..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the parts of the document contained in the previous revision..."
-msgstr "Vis, hvordan dokumentet ser ud efter tidligere revisioner"
+msgstr "Vælg delene af dokumentet som er indeholdt i den forrige revision..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to Semantic Item"
-msgstr ""
+msgstr "Vælg denne reference til det semantiske element"
 
 #. TOOLBAR_LABEL_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item"
-msgstr ""
+msgstr "Vælg denne reference til dette semantiske element"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item..."
-msgstr ""
+msgstr "Vælg denne reference til dette semantiske element..."
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
@@ -5680,7 +5708,7 @@ msgstr "Markering"
 #. MENU_STATUSLINE_RDF_SEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Semantic Item"
-msgstr ""
+msgstr "Semantisk element"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
@@ -5733,6 +5761,11 @@ msgstr "&Sprog"
 msgid "Set Default Values"
 msgstr "Vælg standardværdier"
 
+#. DLG_RDF_SemanticStylesheets_Set
+#: po/tmp/ap_String_Id.h
+msgid "Set For All Existing"
+msgstr "Angiv for alle forekomster"
+
 # Uklar.
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
@@ -5760,7 +5793,7 @@ msgstr "Vælg billede som baggrund for din side"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr ""
+msgstr "Angiv som kilde til semantiske element"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5803,6 +5836,19 @@ msgstr "Indstillinger"
 msgid "Set tab stops"
 msgstr "Sæt tabulatorstop"
 
+#. DLG_RDF_SemanticStylesheets_Explanation
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid ""
+"Set the current stylesheet for Semantic Items in this document. New RDF "
+"objects will use this stylesheet automatically. The buttons allow you to set "
+"the stylesheet for all existing Semantic Items to the new stylesheet as well."
+msgstr ""
+"Angiver standard-stilarket for semantiske objekter i dette dokument. Nye "
+"RDF-objekter vil automatisk anvende dette stilark. Knapperne giver dig også "
+"mulighed for at angive det ny stilark for alle forekomster af semantiske "
+"objekter."
+
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
 msgid "Set the type and styles of the Table of Contents"
@@ -5837,6 +5883,12 @@ msgstr "Placér dette billede"
 #: po/tmp/ap_String_Id.h
 msgid "Set your spelling preferences"
 msgstr "Vælg dine stavepræferencer"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
+#: po/tmp/ap_String_Id.h
+msgid "Settings"
+msgstr "Indstillinger"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
@@ -5876,24 +5928,13 @@ msgstr "Vis alle"
 
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show All RDF"
-msgstr "Vis alle"
+msgstr "Vis alle RDF'er"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
 msgstr "Vis for&matteringsmærker"
-
-#. MENU_STATUSLINE_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF Triples associated with location"
-msgstr ""
-
-#. MENU_LABEL_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position..."
-msgstr ""
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5912,21 +5953,18 @@ msgstr "Vis dokument efter &tidligere revisioner"
 
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show document at final version without revision highlighting"
-msgstr "Vis dokument efter &tidligere revisioner"
+msgstr "Vis dokument i endelige version uden fremhævning af revision"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show final document"
-msgstr "Vis fuld dokumentliste"
+msgstr "Vis endelige dokument"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show final document..."
-msgstr "Vis fuld dokumentliste"
+msgstr "Vis endelige dokument..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -5955,12 +5993,6 @@ msgstr "Vis/skjul værktøjslinjen"
 #: po/tmp/ap_String_Id.h
 msgid "Show revisions that are present in document"
 msgstr "Vis revisioner, der findes i dokumentet"
-
-#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Show the RDF associated with the cursor position..."
-msgstr "Kommentarer knyttet til denne revision:"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
@@ -6031,9 +6063,8 @@ msgstr "So&rtér tabel"
 
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Solid line"
-msgstr "Første linje"
+msgstr "Fuldt optrukket linje"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6262,12 +6293,6 @@ msgstr "Påbegynd underliste"
 msgid "Start a new revision"
 msgstr "Påbegynd ny revision"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Start and End Times"
-msgstr "Dato og tid"
-
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Start ne&w revision"
@@ -6359,16 +6384,8 @@ msgstr "Typografier"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Stylesheet"
-msgstr "Typografier"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Stylesheet Settings"
-msgstr "Gem indstillinger"
+msgstr "Stilark"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
@@ -6423,22 +6440,25 @@ msgstr "Opsummér tabelrække"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY
 #: po/tmp/ap_String_Id.h
 msgid "Summary"
-msgstr "Resummé"
+msgstr "Resumé"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
-msgstr ""
+msgstr "Resumé, Placering"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr ""
+msgstr "Resumé, Placering, Start- og sluttidspunkter"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr ""
+msgstr "Resumé, Start- og sluttidspunkter"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6542,7 +6562,7 @@ msgstr "T&ekstformatering"
 #. MENU_LABEL_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Test RDF subsystem"
-msgstr ""
+msgstr "Test RDF-delsystem"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h
@@ -6595,8 +6615,8 @@ msgid ""
 msgstr ""
 "Funktionen '--print' er blevet fjernet i AbiWord 2.8. Du kan få den ønskede "
 "adfærd ved at anvende Abiwords værktøjer til konvertering i kommandolinjen "
-"og dernæst kanalisere uddata til en printkø. F.eks. 'abiword --to=ps --til-"
-"navn=fd://1 minfil.txt | lpr'"
+"og dernæst kanalisere uddata til en printkø. Eksempelvis: 'abiword --to=ps "
+"--til-navn=fd://1 minfil.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6638,13 +6658,12 @@ msgstr "Tykkelse:"
 
 #. MSG_XMLIDAlreadyExists
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "This RDF link already exists. Would you like to replace the existing RDF "
 "link with this new one?"
 msgstr ""
-"Dette bogmærke findes allerede. Ønsker du at erstatte det eksisterende "
-"bogmærke med dette?"
+"Denne RDF-henvisning findes allerede. Ønsker du at erstatte den eksisterende "
+"RDF-henvisning med en ny én?"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
@@ -6680,7 +6699,7 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Dette afsnit repræsenterer ord, som de vil se ud i dit dokument. For at se "
+"Dette afsnit repræsenterer ord, som de vil se ud i dit dokument.  For at se "
 "tekst fra dit dokument i denne forsmag, kan du placere din markør i et "
 "dokumentafsnit med tekst i og åbne denne dialog."
 
@@ -6757,6 +6776,12 @@ msgstr "Topmargen [%s]"
 msgid "Topline"
 msgstr "Toplinje"
 
+#. DLG_RDF_Editor_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Total RDF: %d"
+msgstr "RDF i alt: %d"
+
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
@@ -6776,7 +6801,7 @@ msgstr "Type"
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link"
-msgstr ""
+msgstr "Indtast et navn for RDF-henvisningen"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
@@ -6818,6 +6843,12 @@ msgstr "Fortryd"
 msgid "Undo editing"
 msgstr "Fortryd ændring"
 
+#. DLG_RDF_Editor_ShowAll
+#. DLG_Update
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Update"
+msgstr "Opdatér"
+
 # Noter i teksten?
 #. DLG_Annotation_OK_tooltip
 #: po/tmp/ap_String_Id.h
@@ -6849,7 +6880,7 @@ msgstr "Brug smart quotes-typografi"
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h
 msgid "Use glyph shaping for Hebrew"
-msgstr "Brug \"glyph shaping\" til hebræisk"
+msgstr "Brug glyf-udformning for hebræisk"
 
 #. DLG_Options_Label_UI
 #: po/tmp/ap_String_Id.h
@@ -7101,14 +7132,12 @@ msgstr "sKIFT mELLEM sTORE oG sMÅ bOGSTAVER"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Emne"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Emne"
@@ -7301,7 +7330,7 @@ msgstr "Arabisk (Egypten)"
 #. LANG_AR_SA
 #: po/tmp/xap_String_Id.h
 msgid "Arabic (Saudi Arabia)"
-msgstr "Arabisk (Saudiarabien"
+msgstr "Arabisk (Saudi-Arabien)"
 
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h
@@ -7770,7 +7799,7 @@ msgstr "Dokumenter sammenlignet"
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
 msgid "Dutch (Netherlands)"
-msgstr "Hollandsk"
+msgstr "Hollandsk (Holland)"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7901,7 +7930,7 @@ msgstr "Fil"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Filen eksisterer allerede. Overskriv filen '%s'?"
+msgstr "Filen eksisterer allerede.  Overskriv filen '%s'?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h
@@ -8281,7 +8310,7 @@ msgstr "Japansk, Windows CP-932"
 #. LANG_KN_IN
 #: po/tmp/xap_String_Id.h
 msgid "Kannada"
-msgstr "Kannada (Indien)"
+msgstr "Kannada"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
@@ -8659,6 +8688,8 @@ msgid ""
 "Render MathML to PNG images (JavaScript will be used if option is not "
 "checked)"
 msgstr ""
+"Optegn MathML til PNG-billeder (JavaScript vil blive anvendt, hvis "
+"valgmulighed ikke er afkrydset)"
 
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h
@@ -8813,7 +8844,7 @@ msgstr "Spansk (Spanien)"
 #. DLG_HTMLOPT_ExpSplitDocument
 #: po/tmp/xap_String_Id.h
 msgid "Split document"
-msgstr ""
+msgstr "Opdel dokument"
 
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h
@@ -8998,11 +9029,6 @@ msgstr "Ukrainsk, KOI8-U"
 msgid "Ukrainian, Macintosh"
 msgstr "Ukrainsk, Macintosh"
 
-#. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-2"
-msgstr "Unicode UCS-2"
-
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
@@ -9012,11 +9038,6 @@ msgstr "Unicode UCS-2 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 Little Endian"
-
-#. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-4"
-msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
@@ -9028,11 +9049,6 @@ msgstr "Unicode UCS-4 Big Endian"
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 Little Endian"
 
-#. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-16"
-msgstr "Unicode UTF-16"
-
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
@@ -9042,11 +9058,6 @@ msgstr "Unicode UTF-16 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 Little Endian"
-
-#. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-32"
-msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
@@ -9073,11 +9084,6 @@ msgstr "Unicode UTF-8"
 #, c-format
 msgid "Untitled%d"
 msgstr "Unavngivet%d"
-
-#. DLG_Update
-#: po/tmp/xap_String_Id.h
-msgid "Update"
-msgstr "Opdatér"
 
 #. DLG_UFS_Effects_UpperCase
 #: po/tmp/xap_String_Id.h
@@ -9297,6 +9303,51 @@ msgstr "beslægtede"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "urelateret"
+
+#~ msgid "&Show RDF"
+#~ msgstr "Vi&s RDF"
+
+#~ msgid "Execute SPARQL Query for location"
+#~ msgstr "Udfør SPARQL-forespørgsel for placering"
+
+#~ msgid "SPARQL &Query"
+#~ msgstr "SPAR&QL-forespørgsel"
+
+#~ msgid "Stylesheet Settings"
+#~ msgstr "Indstillinger for stilark"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
+
+#~ msgid "&Tripel"
+#~ msgstr "&Tripel"
+
+#~ msgid "Lat & Long"
+#~ msgstr "Bred. & højd."
+
+#~ msgid "Location, Start and End Times"
+#~ msgstr "Placering, start- og sluttidspunkter"
+
+#~ msgid "Name, Nick"
+#~ msgstr "Navn, kaldenavn"
+
+#~ msgid "Start and End Times"
+#~ msgstr "Start- og sluttidspunkter"
+
+#~ msgid "Go to..."
+#~ msgstr "Gå til..."
+
+#~ msgid "SPARQL Query..."
+#~ msgstr "SPARQL-forespørgsel..."
 
 #~ msgid "&Format Table"
 #~ msgstr "&Formattér tabel"
