@@ -182,6 +182,7 @@
             <child>
               <object class="GtkComboBoxEntry" id="comboFind">
                 <property name="visible">True</property>
+                <property name="text_column">0</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -192,6 +193,7 @@
             <child>
               <object class="GtkComboBoxEntry" id="comboReplace">
                 <property name="visible">True</property>
+                <property name="text_column">0</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>

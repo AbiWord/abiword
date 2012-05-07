@@ -228,6 +228,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="has_entry">True</property>
+                <property name="entry_text_column">0</property>
                 <child internal-child="entry">
                   <object class="GtkEntry" id="combobox-entry">
                     <property name="can_focus">True</property>
@@ -245,6 +246,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="has_entry">True</property>
+                <property name="entry_text_column">0</property>
                 <child internal-child="entry">
                   <object class="GtkEntry" id="combobox-entry1">
                     <property name="can_focus">True</property>
