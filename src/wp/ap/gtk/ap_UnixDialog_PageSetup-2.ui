@@ -50,17 +50,6 @@
     <property name="step_increment">0.1</property>
     <property name="page_increment">10</property>
   </object>
-  <object class="GtkListStore" id="model1">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0">fake</col>
-      </row>
-    </data>
-  </object>
   <object class="GtkDialog" id="ap_UnixDialog_PageSetup">
     <property name="visible">True</property>
     <property name="border_width">5</property>
@@ -211,7 +200,6 @@
                                 <child>
                                   <object class="GtkComboBox" id="comboPageSize">
                                     <property name="visible">True</property>
-                                    <property name="model">model1</property>
                                     <child>
                                       <object class="GtkCellRendererText" id="renderer1"></object>
                                       <attributes>

@@ -225,7 +225,6 @@
                                   <object class="GtkComboBox" id="comboPageSize">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="model">model1</property>
                                     <child>
                                       <object class="GtkCellRendererText" id="renderer1"/>
                                       <attributes>
@@ -747,16 +746,5 @@
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkListStore" id="model1">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"/>
-    </columns>
-    <data>
-      <row>
-        <col id="0">fake</col>
-      </row>
-    </data>
   </object>
 </interface>
