@@ -1,27 +1,5 @@
 <?xml version="1.0"?>
 <interface>
-  <object class="GtkListStore" id="model1">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"></column>
-    </columns>
-    <data>
-      <row>
-        <col id="0">fake</col>
-      </row>
-    </data>
-  </object>
-  <object class="GtkListStore" id="model2">
-    <columns>
-      <!-- column-name gchararray -->
-      <column type="gchararray"></column>
-    </columns>
-    <data>
-      <row>
-        <col id="0">fake</col>
-      </row>
-    </data>
-  </object>
   <object class="GtkDialog" id="ap_UnixDialog_Replace">
     <property name="visible">True</property>
     <property name="title" translatable="yes">Replace</property>
@@ -204,7 +182,6 @@
             <child>
               <object class="GtkComboBoxEntry" id="comboFind">
                 <property name="visible">True</property>
-                <property name="model">model1</property>
                 <child>
                   <object class="GtkCellRendererText" id="renderer1"></object>
                   <attributes>
@@ -221,7 +198,6 @@
             <child>
               <object class="GtkComboBoxEntry" id="comboReplace">
                 <property name="visible">True</property>
-                <property name="model">model2</property>
                 <child>
                   <object class="GtkCellRendererText" id="renderer2"></object>
                   <attributes>
