@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2012-05-07 06:49+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"PO-Revision-Date: 2012-05-07 10:45+0200\n"
+"Last-Translator: Pjotr <notdisclosed@notdisclosed.tk>\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -2649,7 +2649,7 @@ msgstr "Ontkoppelen"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate and apply default stylesheet"
-msgstr ""
+msgstr "Ontkoppel en pas standaardstijlvel toe"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -5283,7 +5283,7 @@ msgstr "Paginanummers herstarten bij nieuwe secties"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr ""
+msgstr "Beperk tot RDF-koppeling:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5820,7 +5820,6 @@ msgstr "Tabposities instellen"
 
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
