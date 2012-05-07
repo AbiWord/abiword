@@ -5,15 +5,15 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-02 23:52-0400\n"
+"Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
+"POT-Creation-Date: 2012-05-06 23:15-0400\n"
 "PO-Revision-Date: 2011-10-02 22:08+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: translate-discuss-af@lists.sourceforge.net\n"
+"Language: af\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: af\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 "X-Project-Style: kde\n"
@@ -398,9 +398,8 @@ msgstr "R&edigeer"
 
 #. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Edit RDF"
-msgstr "R&edigeer"
+msgstr ""
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -1315,9 +1314,8 @@ msgstr ""
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Current"
-msgstr "Pas toe op huidige lys"
+msgstr ""
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
@@ -2622,9 +2620,13 @@ msgid "Disable all formatting commands, except styles"
 msgstr "Deaktiveer alle formateringopdragte, behalwe style"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
+msgstr ""
+
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
+#: po/tmp/ap_String_Id.h
+msgid "Disassociate and apply default stylesheet"
 msgstr ""
 
 #. MENU_STATUSLINE_HELP_CREDITS
@@ -2665,8 +2667,7 @@ msgstr "Wil u die lys van geïgnoreerde woorde leegmaak in alle dokumente?"
 #. DLG_Options_Prompt_IgnoreResetCurrent
 #: po/tmp/ap_String_Id.h
 msgid "Do you want to reset ignored words in the current document?"
-msgstr ""
-"Wil u die lys van geïgnoreerde woorde leegmaak in die huidige dokument?"
+msgstr "Wil u die lys van geïgnoreerde woorde leegmaak in die huidige dokument?"
 
 #. FIELD_Type_Document
 #: po/tmp/ap_String_Id.h
@@ -5022,9 +5023,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query the RDF associated with the cursor position..."
-msgstr "Opmerking om met die weergawe te assosieer:"
+msgstr ""
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5272,6 +5272,11 @@ msgstr "Herbegin by elke afdeling"
 msgid "Restart page numbers on new sections"
 msgstr "Herbegin bladsynommers by nuwe afdelings"
 
+#. DLG_RDF_Editor_Restrict
+#: po/tmp/ap_String_Id.h
+msgid "Restrict to RDF Link:"
+msgstr ""
+
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
 msgid "Resume Previous List"
@@ -5329,7 +5334,8 @@ msgstr ""
 
 #. RightMarginStatus
 #: po/tmp/ap_String_Id.h
-#, fuzzy, c-format
+#, c-format
+#, fuzzy
 msgid "Right Margin [%s]"
 msgstr "Linkerkantlyn [%s]"
 
@@ -5811,10 +5817,9 @@ msgstr "Stel inkeping op"
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
 msgid ""
-"Set the default stylesheet for Semantic objects in this document. New RDF "
+"Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
-"the stylesheet for all existing semantic objects to the new default "
-"stylesheet as well."
+"the stylesheet for all existing Semantic Items to the new stylesheet as well."
 msgstr ""
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
@@ -5855,15 +5860,13 @@ msgstr "Stel die voorkeure vir spelling"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Settings"
-msgstr "Stoor instellings"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
-msgstr ""
-"Stel die dokument se bladsyeienskappe op, bv. bladsygrootte en kantlyne"
+msgstr "Stel die dokument se bladsyeienskappe op, bv. bladsygrootte en kantlyne"
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
