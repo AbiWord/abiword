@@ -182,12 +182,6 @@
             <child>
               <object class="GtkComboBoxEntry" id="comboFind">
                 <property name="visible">True</property>
-                <child>
-                  <object class="GtkCellRendererText" id="renderer1"></object>
-                  <attributes>
-                    <attribute name="text">0</attribute>
-                  </attributes>
-                </child>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -198,12 +192,6 @@
             <child>
               <object class="GtkComboBoxEntry" id="comboReplace">
                 <property name="visible">True</property>
-                <child>
-                  <object class="GtkCellRendererText" id="renderer2"></object>
-                  <attributes>
-                    <attribute name="text">0</attribute>
-                  </attributes>
-                </child>
               </object>
               <packing>
                 <property name="left_attach">1</property>
