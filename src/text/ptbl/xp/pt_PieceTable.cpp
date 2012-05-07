@@ -448,14 +448,14 @@ bool pt_PieceTable::getSpanAttrProp(pf_Frag_Strux* sdh, UT_uint32 offset, bool b
 
 		if (offset == cumEndOffset)		// there's a frag boundary exactly where we want. pfTemp is to our left.
 		{
-			if (!bLeftSide)
-				continue;				// return the next one on the next loop iteration
-
 			// FmtMarks have length zero, so we advance to put it to our left and then decide what to do
-			if (pfTemp->getNext() && (pfTemp->getNext()->getType()==pf_Frag::PFT_FmtMark))
-				continue;				// we'll return this one on the next loop iteration
-
-			// otherwise, we want the thing that we are at the end of (ie that is to the left)
+			if (!bLeftSide || (pfTemp->getNext() && (pfTemp->getNext()->getType()==pf_Frag::PFT_FmtMark)))
+				continue;				// return the next one on the next iteration
+			// If we are just after a footnote or an endnote, we move to the right fragment
+			if (isEndFootnote(pfTemp) && pfTemp->getNext())
+			{
+				pfTemp = pfTemp->getNext();
+			}
 			return _getSpanAttrPropHelper(pfTemp,ppAP);
 		}
 

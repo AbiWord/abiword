@@ -110,6 +110,10 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 			{
 			    bFoundStrux = true;
 			}
+			else
+			{
+			    UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
 		    }
 		    else 
 		    {

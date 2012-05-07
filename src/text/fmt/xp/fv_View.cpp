@@ -13297,8 +13297,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	       m_FrameEdit.setPointInside();
 	}
 	_makePointLegal();
-	const gchar ** props_in = NULL;
-	getCharFormat(&props_in);
+	const PP_AttrProp * pAP_in = getAttrPropForPoint();
 
 	// add field for footnote reference
 	// first, make up an id for this footnote.
@@ -13309,6 +13308,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	
 	const gchar* attrs[] = {
 		"footnote-id", footpid.c_str(),
+		NULL, NULL,
 		NULL, NULL
 	};
 	if(!bFootnote)
@@ -13321,12 +13321,8 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 
 	PT_DocPosition FrefStart = getPoint();
-	PT_DocPosition FrefEnd = FrefStart + 1;
 	PT_DocPosition FanchStart;
 	PT_DocPosition FanchEnd;
-
-	const gchar *cur_style;  // TODO variable cur_style not used? delete it?
-	getStyle(&cur_style);
 
 	PT_DocPosition dpFT = 0;
 	const gchar * dumProps[3] = {"list-tag","123",NULL};
@@ -13347,37 +13343,20 @@ bool FV_View::insertFootnote(bool bFootnote)
 	UT_DebugOnly<bool> bRet = false;
 	if(bFootnote)
 	{
+		attrs[2] = "style";
+		attrs[3] = "Footnote Reference";
 		if (_insertField("footnote_ref", attrs)==false)
 			return false;
-		FrefEnd = FrefStart+1;
-		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
-
-		// setStyleAtPos() creates a selection, clear it before adding an fmt mark
-		_clearSelection();
-
-//
-// Put the character format back to it previous value
-//
-		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
-		UT_ASSERT(bRet);
-		setCharFormat(props_in);
 	}
 	else
 	{
+		attrs[2] = "style";
+		attrs[3] = "Endnote Reference";		
 		if (_insertField("endnote_ref", attrs)==false)
 			return false;
-		FrefEnd = FrefStart+1;
-		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
-
-		// setStyleAtPos() creates a selection, clear it before adding an fmt mark
-		_clearSelection();
-//
-// Put the character format back to it previous value
-//
-		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
-		UT_ASSERT(bRet);
 	}
-	g_free(props_in);
+	attrs[2] = NULL;
+	attrs[3] = NULL;
 	fl_BlockLayout * pBL;
 
 //
@@ -13424,22 +13403,14 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	m_pDoc->insertSpan(FanchEnd, &tab, 1,const_cast<PP_AttrProp *>(pSpanAP));
 
-
-	// apply footnote text style to the body of the footnote and the
-	// reference style to the anchor follows it
-	propListTag[0]="text-position";
-	propListTag[1]="superscript";
-	if(bFootnote)
-	{
-		setStyleAtPos("Footnote", FanchStart-1, FanchEnd, true);
-	}
-	else
-	{
-		setStyleAtPos("Endnote", FanchStart, FanchEnd, true);
-	}
+	//
+	// Put the character format after footnote back to its previous value
+	//
+	PP_AttrProp * pAP_after = pAP_in->createExactly(pAP_in->getAttributes(),pAP_in->getProperties());
+	bRet = m_pDoc->insertFmtMark(PTC_AddFmt,FanchEnd+2,pAP_after);
+	UT_ASSERT(bRet);
 
 	_setPoint(FanchEnd+1);
-	_resetSelection(); // needed because of the setStyle calls ...
 	
 	/*	some magic to make the endnote reference and anchor recalculate
 		its widths
@@ -13497,13 +13468,13 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const gchar * enpid)
 	}
 	const gchar* block_attrs2[] = {
 		"footnote-id", enpid,
-		"style", "Footnote Text", // xxx 'Footnote Body'
+		"style", "Footnote", // xxx 'Footnote Body'
 		NULL, NULL
 	};
 	if(!bFootnote)
 	{
 		block_attrs2[0] = "endnote-id";
-		block_attrs2[3] = "Endnote Text";
+		block_attrs2[3] = "Endnote";
 	}
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 

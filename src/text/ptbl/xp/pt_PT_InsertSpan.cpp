@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -105,21 +106,7 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		        pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,szStyleNameVal);
 			if(!pAP->getAttribute(name, pRevision))
 			{
-				// if we have no revision attribute, then everything
-				// is OK
-				const gchar * ppStyle[3];
-				ppStyle[0] = PT_STYLE_ATTRIBUTE_NAME;
-				ppStyle[1] = NULL;
-				ppStyle[2] = NULL;
-				if(szStyleNameVal != NULL)
-				{
-				     ppStyle[1] = szStyleNameVal;
-				     return _realInsertSpan(dpos, p, length, ppStyle, NULL, pField, bAddChangeRec);
-				}
-				else
-				{
-				     return _realInsertSpan(dpos, p, length,NULL , NULL, pField, bAddChangeRec);
-				}
+			    return _realInsertSpan(dpos, p, length,NULL , NULL, pField, bAddChangeRec);
 			}
 			if(szStyleNameVal != NULL)
 			{
@@ -398,7 +385,6 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	if (!m_varset.appendBuf(p,length,&bi))
 		return false;
 
-	bool bSuccess = false;
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux = _getStruxFromFrag(pf,&pfs);
 	UT_return_val_if_fail (bFoundStrux,false);
@@ -539,15 +525,35 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
 
+	std::string stdStyleName;
+	const gchar * ppStyle[3];
+	if(!attributes)
+	{
+	    // Check if there is a character style associated to pf
+	    const PP_AttrProp * pAPOrigFrag = NULL;
+	    if(_getSpanAttrPropHelper(pf,&pAPOrigFrag))
+	    {
+		const gchar * szStyleNameVal = NULL; 
+		pAPOrigFrag->getAttribute(PT_STYLE_ATTRIBUTE_NAME,szStyleNameVal);
+		if(szStyleNameVal)
+		{
+		    stdStyleName.assign(szStyleNameVal);
+		    ppStyle[0] = PT_STYLE_ATTRIBUTE_NAME;
+		    ppStyle[1] = stdStyleName.c_str();
+		    ppStyle[2] = NULL;
+		    attributes = ppStyle;
+		}
+	    }
+	}
+
 	// PLAM: This is the list of field attrs that should not inherit
 	// PLAM: to the span following a field.
-	const gchar * pFieldAttrs[12];
+	const gchar * pFieldAttrs[10];
 	pFieldAttrs[0] = "type";  pFieldAttrs[1] = NULL;
 	pFieldAttrs[2] = "param"; pFieldAttrs[3] = NULL;
 	pFieldAttrs[4] = "name";  pFieldAttrs[5] = NULL;
-	pFieldAttrs[6] = "style"; pFieldAttrs[7] = NULL;
-	pFieldAttrs[8] = "endnote-id"; pFieldAttrs[9] = NULL;
-	pFieldAttrs[10] = NULL;   pFieldAttrs[11] = NULL;
+	pFieldAttrs[6] = "endnote-id"; pFieldAttrs[7] = NULL;
+	pFieldAttrs[8] = NULL;   pFieldAttrs[9] = NULL;
 
 	const PP_AttrProp * pAP = NULL;
 
@@ -578,43 +584,40 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	}
 	
 	if (!_insertSpan(pf,bi,fragOffset,length,indexAP,pField))
-		goto Finish;
+	{
+		if (bNeedGlob)
+			endMultiStepGlob();
+		return false;
+	}
 
 	// note: because of coalescing, pf should be considered invalid at this point.
-
 	// create a change record, add it to the history, and notify
 	// anyone listening.
 
 	pcr = new PX_ChangeRecord_Span(PX_ChangeRecord::PXT_InsertSpan,
 								   dpos,indexAP,bi,length,
-                                   blockOffset, pField);
+								   blockOffset, pField);
 	UT_return_val_if_fail (pcr, false);
-
+	
+	pcr->setDocument(m_pDocument);
+	bool canCoalesce = _canCoalesceInsertSpan(pcr);
+	if (!bAddChangeRec || (canCoalesce && !m_pDocument->isCoalescingMasked()))
 	{
-	        pcr->setDocument(m_pDocument);
-		bool canCoalesce = _canCoalesceInsertSpan(pcr);
-		if (!bAddChangeRec || (canCoalesce && !m_pDocument->isCoalescingMasked()))
-		{
-			if (canCoalesce)
-				m_history.coalesceHistory(pcr);
-
-			m_pDocument->notifyListeners(pfs,pcr);
-			delete pcr;
-		}
-		else
-		{
-			m_history.addChangeRecord(pcr);
-			m_pDocument->notifyListeners(pfs,pcr);
-		}
+		if (canCoalesce)
+			m_history.coalesceHistory(pcr);
+		
+		m_pDocument->notifyListeners(pfs,pcr);
+		delete pcr;
+	}
+	else
+	{
+		m_history.addChangeRecord(pcr);
+		m_pDocument->notifyListeners(pfs,pcr);
 	}
 
-	bSuccess = true;
-
-Finish:
 	if (bNeedGlob)
-		endMultiStepGlob();
-
-	return bSuccess;
+		endMultiStepGlob();	
+	return true;
 }
 
 bool pt_PieceTable::_canCoalesceInsertSpan(PX_ChangeRecord_Span * pcrSpan) const
@@ -732,7 +735,7 @@ PT_AttrPropIndex pt_PieceTable::_chooseIndexAP(pf_Frag * pf, PT_BlockOffset frag
 			// TODO: determine what we want to do about these guys
 			case PTO_Bookmark:
 			case PTO_Hyperlink:
-            case PTO_RDFAnchor:
+			case PTO_RDFAnchor:
 				return 0;
 
 			default:

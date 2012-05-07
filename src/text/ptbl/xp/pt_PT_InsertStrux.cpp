@@ -580,10 +580,12 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	// and then comes back to this point (the FmtMark may or may
 	// not still be here) new text will either use the FmtMark or
 	// look to the right.
+	// Do not copy FmtMark if this is the first block of a footnote, 
+	// or an endnote
 
 	bool bNeedGlob = false;
 	PT_AttrPropIndex apFmtMark = 0;
-	if (pfsNew->getStruxType() == PTX_Block)
+	if (pfsNew->getStruxType() == PTX_Block && !isFootnote(pfsContainer))
 	{
 		bNeedGlob = _computeFmtMarkForNewBlock(pfsNew,pf,fragOffset,&apFmtMark);
 		if (bNeedGlob)
