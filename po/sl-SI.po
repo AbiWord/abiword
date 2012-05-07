@@ -3,22 +3,21 @@
 # Copyright by:
 # Andraz Tori <andraz.tori1@guest.arnes.si> 2000.
 # Martin Srebotnjak <miles@filmsi.net> 2006, 2012.
-# Chris Leonard <cjl@laptop.org>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: AbiWord 2.8.x\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-02 23:52-0400\n"
-"PO-Revision-Date: 2012-05-04 02:18-0400\n"
-"Last-Translator: Chris Leonard <cjl@laptop.org>\n"
+"Project-Id-Version: AbiWord 2.9\n"
+"Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
+"POT-Creation-Date: 2012-05-06 23:15-0400\n"
+"PO-Revision-Date: 2012-05-07 07:11+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n%100==1 ? 0 : n%100==2 ? 1 : n%100==3 || "
 "n%100==4 ? 2 : 3);\n"
-"X-Generator: Virtaal 0.7.0\n"
+"X-Generator: Pootle 2.0.5\n"
 "X-Poedit-SourceCharset: iso-8859-1\n"
 
 #.
@@ -2634,10 +2633,14 @@ msgid "Disable all formatting commands, except styles"
 msgstr "Izključi vse oblikovalne ukaze razen slogov"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
 msgstr "Razveži"
+
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
+#: po/tmp/ap_String_Id.h
+msgid "Disassociate and apply default stylesheet"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -5265,6 +5268,11 @@ msgstr "Začni znova ob vsakem odseku"
 msgid "Restart page numbers on new sections"
 msgstr "Ob novih odsekih začni šteti strani od začetka"
 
+#. DLG_RDF_Editor_Restrict
+#: po/tmp/ap_String_Id.h
+msgid "Restrict to RDF Link:"
+msgstr ""
+
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
 msgid "Resume Previous List"
@@ -5799,11 +5807,11 @@ msgstr "Nastavi tabulatorska mesta"
 
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid ""
-"Set the default stylesheet for Semantic objects in this document. New RDF "
+"Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
-"the stylesheet for all existing semantic objects to the new default "
-"stylesheet as well."
+"the stylesheet for all existing Semantic Items to the new stylesheet as well."
 msgstr ""
 "Določite privzeto slogovno predlogo za semantične predmete tega dokumenta. "
 "Novi predmeti RDF bodo samodejno uporabljali to predlogo. Gumbi omogočajo, "
