@@ -17,17 +17,14 @@
   <object class="GtkDialog" id="ap_UnixDialog_Tab">
     <property name="visible">True</property>
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">dialog1</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox2">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">18</property>
         <child>
           <object class="GtkVBox" id="vbox11">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <child>
               <object class="GtkTable" id="table1">
@@ -64,7 +61,6 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -83,7 +79,6 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -104,13 +99,11 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
-                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkVBox" id="vbox12">
                                     <property name="visible">True</property>
-                                    <property name="orientation">vertical</property>
                                     <property name="spacing">12</property>
                                     <child>
                                       <object class="GtkScrolledWindow" id="scrolledwindow3">
@@ -127,9 +120,6 @@
                                           </object>
                                         </child>
                                       </object>
-                                      <packing>
-                                        <property name="position">0</property>
-                                      </packing>
                                     </child>
                                     <child>
                                       <object class="GtkHButtonBox" id="hbuttonbox3">
@@ -141,13 +131,11 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="can_default">True</property>
-                                            <property name="receives_default">False</property>
                                             <property name="use_stock">True</property>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
                                             <property name="fill">False</property>
-                                            <property name="position">0</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -156,7 +144,6 @@
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="can_default">True</property>
-                                            <property name="receives_default">False</property>
                                             <property name="use_stock">True</property>
                                           </object>
                                           <packing>
@@ -178,14 +165,8 @@
                                   </packing>
                                 </child>
                               </object>
-                              <packing>
-                                <property name="position">0</property>
-                              </packing>
                             </child>
                           </object>
-                          <packing>
-                            <property name="position">0</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkTable" id="tblNew">
@@ -198,7 +179,6 @@
                               <object class="GtkLabel" id="lbPosition">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">%s</property>
                               </object>
                               <packing>
                                 <property name="x_options">GTK_FILL</property>
@@ -222,7 +202,6 @@
                               <object class="GtkLabel" id="lbAlignment">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">%s</property>
                               </object>
                               <packing>
                                 <property name="top_attach">1</property>
@@ -235,7 +214,6 @@
                               <object class="GtkLabel" id="lbLeader">
                                 <property name="visible">True</property>
                                 <property name="xalign">0</property>
-                                <property name="label" translatable="yes">%s</property>
                               </object>
                               <packing>
                                 <property name="top_attach">2</property>
@@ -302,20 +280,17 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
-                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">0</property>
               </packing>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">end</property>
-            <property name="position">0</property>
           </packing>
         </child>
       </object>
