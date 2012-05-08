@@ -1,27 +1,28 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
+<!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="ap_UnixDialog_Replace">
-    <property name="visible">True</property>
-    <property name="type_hint">dialog</property>
     <property name="has_separator">False</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <child>
           <object class="GtkTable" id="table2">
-            <property name="visible">True</property>
             <property name="border_width">12</property>
-            <property name="n_rows">5</property>
-            <property name="n_columns">3</property>
             <property name="column_spacing">12</property>
+            <property name="n_columns">3</property>
+            <property name="n_rows">5</property>
             <property name="row_spacing">12</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkButton" id="btnFind">
-                <property name="label">gtk-find</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="can_focus">True</property>
+                <property name="label">gtk-find</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
                 <property name="width_request">100</property>
               </object>
               <packing>
@@ -33,11 +34,11 @@
             </child>
             <child>
               <object class="GtkButton" id="btnFindReplace">
-                <property name="label">gtk-find-and-replace</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="can_focus">True</property>
+                <property name="label">gtk-find-and-replace</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -50,10 +51,10 @@
             </child>
             <child>
               <object class="GtkButton" id="btnReplaceAll">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="can_focus">True</property>
                 <property name="image">image1</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkAlignment" id="alignment1">
                     <property name="visible">True</property>
@@ -61,13 +62,12 @@
                     <property name="yscale">0</property>
                     <child>
                       <object class="GtkHBox" id="hbox2">
-                        <property name="visible">True</property>
                         <property name="spacing">2</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkImage" id="image1">
-                            <property name="visible">True</property>
                             <property name="stock">gtk-find-and-replace</property>
-                            <property name="icon-size">4</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -76,9 +76,9 @@
                         </child>
                         <child>
                           <object class="GtkLabel" id="label3">
-                            <property name="visible">True</property>
+                            <property name="justify">GTK_JUSTIFY_FILL</property>
                             <property name="use_underline">True</property>
-                            <property name="justify">fill</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -102,9 +102,9 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="chkMatchCase">
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="use_underline">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="right_attach">2</property>
@@ -116,9 +116,9 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="chkWholeWord">
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="use_underline">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="right_attach">2</property>
@@ -130,9 +130,9 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="chkReverseFind">
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="use_underline">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="right_attach">2</property>
@@ -166,8 +166,8 @@
             </child>
             <child>
               <object class="GtkComboBoxEntry" id="comboFind">
-                <property name="visible">True</property>
                 <property name="text_column">0</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -177,8 +177,8 @@
             </child>
             <child>
               <object class="GtkComboBoxEntry" id="comboReplace">
-                <property name="visible">True</property>
                 <property name="text_column">0</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -188,12 +188,6 @@
                 <property name="y_options"></property>
               </packing>
             </child>
-            <child>
-              <placeholder></placeholder>
-            </child>
-            <child>
-              <placeholder></placeholder>
-            </child>
           </object>
           <packing>
             <property name="position">1</property>
@@ -201,15 +195,15 @@
         </child>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
+            <property name="layout_style">GTK_BUTTONBOX_END</property>
             <property name="visible">True</property>
-            <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="closebutton1">
-                <property name="label">gtk-close</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="can_focus">True</property>
+                <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -219,7 +213,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="pack_type">end</property>
+            <property name="pack_type">GTK_PACK_END</property>
           </packing>
         </child>
       </object>
