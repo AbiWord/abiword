@@ -1,32 +1,32 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="ap_UnixDialog_Stylist">
-    <property name="visible">True</property>
     <property name="has_separator">True</property>
+    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
-            <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkButton" id="btClose">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
                 <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btApply">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
                 <property name="label">gtk-apply</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
           </object>
@@ -37,17 +37,12 @@
         </child>
         <child>
           <object class="GtkScrolledWindow" id="TreeViewContainer">
-            <property name="height_request">236</property>
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
+            <property name="height_request">236</property>
             <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+            <property name="visible">True</property>
             <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-            <child>
-              <placeholder></placeholder>
-            </child>
           </object>
-          <packing>
-          </packing>
         </child>
       </object>
     </child>
