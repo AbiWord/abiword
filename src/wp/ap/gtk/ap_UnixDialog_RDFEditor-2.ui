@@ -3,26 +3,22 @@
   <requires lib="gtk+" version="2.16"/>
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkDialog" id="ap_UnixDialog_RDFEditor">
-    <property name="title" translatable="yes">Execute SPARQL RDF Query</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox2">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <object class="GtkVBox" id="topvbox">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
             <child>
               <object class="GtkMenuBar" id="menubar">
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkMenuItem" id="filemenuitem">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">_File</property>
                     <property name="use_underline">True</property>
                     <child type="submenu">
                       <object class="GtkMenu" id="filemenu">
@@ -48,7 +44,6 @@
                 <child>
                   <object class="GtkMenuItem" id="editmenuitem">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Triple</property>
                     <property name="use_underline">True</property>
                     <child type="submenu">
                       <object class="GtkMenu" id="editmenu">
@@ -81,7 +76,6 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -102,12 +96,10 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkButton" id="btcopy">
-                    <property name="label" translatable="yes">Copy</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -149,13 +141,11 @@
                 <child>
                   <object class="GtkLabel" id="lbRestrict">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes">Restrict to RDF Link:</property>
                     <property name="xalign">0</property>
                     <property name="xpad">5</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
-                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
@@ -188,7 +178,6 @@
                     <property name="reorderable">True</property>
                     <property name="rules_hint">True</property>
                     <property name="search_column">0</property>
-                    <property name="hover_expand">True</property>
                     <property name="enable_grid_lines">both</property>
                   </object>
                 </child>
@@ -243,7 +232,6 @@
             </child>
             <child>
               <object class="GtkButton" id="btShowAll">
-                <property name="label" translatable="yes">Update</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -274,7 +262,6 @@
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">end</property>
-            <property name="position">0</property>
           </packing>
         </child>
       </object>
