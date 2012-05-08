@@ -1,12 +1,12 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="window">
     <property name="border_width">5</property>
-    <property name="default_width">375</property>
     <property name="default_height">260</property>
+    <property name="default_width">375</property>
+    <property name="has_separator">False</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
-    <property name="has_separator">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="spacing">2</property>
@@ -15,9 +15,9 @@
             <property name="layout_style">GTK_BUTTONBOX_END</property>
             <child>
               <object class="GtkButton" id="ok">
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="use_underline">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
           </object>
@@ -28,24 +28,20 @@
         </child>
         <child>
           <object class="GtkScrolledWindow" id="scrolledwindow1">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>            
-            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+            <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
             <property name="shadow_type">GTK_SHADOW_IN</property>
+            <property name="visible">True</property>
+            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
             <child>
               <object class="GtkTreeView" id="tv">
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="headers_visible">False</property>
                 <property name="fixed_height_mode">True</property>
-                <property name="hover_selection">False</property>
-                <property name="hover_expand">False</property>
+                <property name="headers_visible">False</property>
+                <property name="visible">True</property>
               </object>
             </child>
           </object>
-          <packing>
-          </packing>
         </child>
       </object>
     </child>
