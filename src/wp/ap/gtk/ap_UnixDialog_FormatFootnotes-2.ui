@@ -1,47 +1,46 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" ?>
+<!--*- mode: xml -*-->
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
-  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkAdjustment" id="adjustment1">
-    <property name="value">1</property>
     <property name="lower">1</property>
-    <property name="upper">255</property>
-    <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">1</property>
+    <property name="upper">255</property>
+    <property name="value">1</property>
   </object>
   <object class="GtkAdjustment" id="adjustment2">
-    <property name="value">1</property>
     <property name="lower">1</property>
-    <property name="upper">255</property>
-    <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">1</property>
+    <property name="upper">255</property>
+    <property name="value">1</property>
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_FormatFootnotes">
-    <property name="visible">True</property>
     <property name="border_width">5</property>
-    <property name="resizable">False</property>
     <property name="modal">True</property>
+    <property name="resizable">False</property>
+    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbxDialog">
-        <property name="visible">True</property>
         <property name="spacing">2</property>
+        <property name="visible">True</property>
         <child>
           <object class="GtkVBox" id="vbxContent">
-            <property name="visible">True</property>
             <property name="border_width">5</property>
             <property name="spacing">18</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkTable" id="tblFootnote">
-                <property name="visible">True</property>
-                <property name="n_rows">2</property>
                 <property name="n_columns">2</property>
+                <property name="n_rows">2</property>
                 <property name="row_spacing">6</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbFootnote">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="right_attach">2</property>
@@ -50,8 +49,8 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbSpacer_Footnote">
-                    <property name="width_request">18</property>
                     <property name="visible">True</property>
+                    <property name="width_request">18</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -63,11 +62,11 @@
                 </child>
                 <child>
                   <object class="GtkTable" id="tblFootnote_Inner">
-                    <property name="visible">True</property>
-                    <property name="n_rows">3</property>
-                    <property name="n_columns">2</property>
                     <property name="column_spacing">12</property>
+                    <property name="n_columns">2</property>
+                    <property name="n_rows">3</property>
                     <property name="row_spacing">6</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkLabel" id="lbFootnoteStyle">
                         <property name="visible">True</property>
@@ -101,8 +100,8 @@
                     </child>
                     <child>
                       <object class="GtkComboBox" id="omFootnoteStyle">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -111,8 +110,8 @@
                     </child>
                     <child>
                       <object class="GtkComboBox" id="omNumbering">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -123,16 +122,16 @@
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbxFootnoteSpin">
-                        <property name="visible">True</property>
                         <property name="spacing">2</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkSpinButton" id="footnoteSpin">
-                            <property name="editable">False</property>
-                            <property name="width_request">1</property>
-                            <property name="visible">True</property>
                             <property name="adjustment">adjustment1</property>
                             <property name="climb_rate">1</property>
+                            <property name="editable">False</property>
                             <property name="numeric">True</property>
+                            <property name="visible">True</property>
+                            <property name="width_request">1</property>
                           </object>
                         </child>
                       </object>
@@ -161,16 +160,16 @@
             </child>
             <child>
               <object class="GtkTable" id="tblEndnote">
-                <property name="visible">True</property>
-                <property name="n_rows">2</property>
                 <property name="n_columns">2</property>
+                <property name="n_rows">2</property>
                 <property name="row_spacing">6</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbEndnote">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="right_attach">2</property>
@@ -179,8 +178,8 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbSpacer_Endnote">
-                    <property name="width_request">18</property>
                     <property name="visible">True</property>
+                    <property name="width_request">18</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -192,11 +191,11 @@
                 </child>
                 <child>
                   <object class="GtkTable" id="tblEndnote_Inner">
-                    <property name="visible">True</property>
-                    <property name="n_rows">4</property>
-                    <property name="n_columns">2</property>
                     <property name="column_spacing">12</property>
+                    <property name="n_columns">2</property>
+                    <property name="n_rows">4</property>
                     <property name="row_spacing">6</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkLabel" id="lbEndnoteStyle">
                         <property name="visible">True</property>
@@ -231,9 +230,9 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="cbSectionRestart">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="use_underline">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="right_attach">2</property>
@@ -244,8 +243,8 @@
                     </child>
                     <child>
                       <object class="GtkComboBox" id="omEndnoteStyle">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -254,8 +253,8 @@
                     </child>
                     <child>
                       <object class="GtkComboBox" id="omEndnotePlacement">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -266,16 +265,16 @@
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbxEndnoteSpin">
-                        <property name="visible">True</property>
                         <property name="spacing">2</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkSpinButton" id="endnoteSpin">
-                            <property name="editable">False</property>
-                            <property name="width_request">1</property>
-                            <property name="visible">True</property>
                             <property name="adjustment">adjustment2</property>
                             <property name="climb_rate">1</property>
+                            <property name="editable">False</property>
                             <property name="numeric">True</property>
+                            <property name="visible">True</property>
+                            <property name="width_request">1</property>
                           </object>
                         </child>
                       </object>
@@ -312,15 +311,15 @@
         </child>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="aaDialog">
+            <property name="layout_style">GTK_BUTTONBOX_END</property>
             <property name="visible">True</property>
-            <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="btCancel">
-                <property name="label">gtk-cancel</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="can_focus">True</property>
+                <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -329,12 +328,12 @@
             </child>
             <child>
               <object class="GtkButton" id="btOK">
-                <property name="label">gtk-ok</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="can_focus">True</property>
                 <property name="has_default">True</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -345,7 +344,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="pack_type">end</property>
+            <property name="pack_type">GTK_PACK_END</property>
           </packing>
         </child>
       </object>
