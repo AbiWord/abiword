@@ -1,36 +1,36 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="ap_UnixDialog_Options_ColorSel">
     <property name="border_width">5</property>
-    <property name="visible">True</property>
+    <property name="has_separator">False</property>
     <property name="resizable">False</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
-    <property name="has_separator">False</property>
+    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbox1">
-        <property name="visible">True</property>
         <property name="spacing">2</property>
+        <property name="visible">True</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="hbbox1">
-            <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkButton" id="btnDefaults">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
                 <property name="label">gtk-revert-to-saved</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="button1">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
                 <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
           </object>
@@ -42,12 +42,9 @@
         <child>
           <object class="GtkColorSelection" id="csColorSel">
             <property name="border_width">5</property>
-            <property name="visible">True</property>
-            <property name="has_opacity_control">False</property>
             <property name="has_palette">True</property>
+            <property name="visible">True</property>
           </object>
-          <packing>
-          </packing>
         </child>
       </object>
     </child>
