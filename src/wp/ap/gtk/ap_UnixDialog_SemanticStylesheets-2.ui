@@ -16,31 +16,24 @@
     </columns>
   </object>
   <object class="GtkDialog" id="window">
-    <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
-        <property name="can_focus">False</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
-            <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
               <object class="GtkLabel" id="label7">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="OK">
-                <property name="label" translatable="yes">OK</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -48,46 +41,35 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">True</property>
             <property name="pack_type">end</property>
-            <property name="position">0</property>
           </packing>
         </child>
         <child>
           <object class="GtkVBox" id="box1">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
             <child>
               <object class="GtkLabel" id="lbExplanation">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label" translatable="yes"></property>
                 <property name="wrap">True</property>
                 <property name="ypad">2</property>
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
               </packing>
             </child>
             <child>
               <object class="GtkTable" id="grid1">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
                 <property name="n_rows">4</property>
                 <child>
                   <object class="GtkLabel" id="lbContacts">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Contacts</property>
                     <property name="xalign">0</property>
                     <property name="xpad">5</property>
                   </object>
@@ -99,8 +81,6 @@
                 <child>
                   <object class="GtkLabel" id="lbEvents">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Events</property>
                     <property name="xalign">0</property>
                     <property name="xpad">5</property>
                   </object>
@@ -112,8 +92,6 @@
                 <child>
                   <object class="GtkLabel" id="lbLocations">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Locations</property>
                     <property name="xalign">0</property>
                     <property name="xpad">5</property>
                   </object>
@@ -125,7 +103,6 @@
                 <child>
                   <object class="GtkLabel" id="label5">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -135,7 +112,6 @@
                 <child>
                   <object class="GtkLabel" id="label6">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -144,7 +120,6 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="setContacts">
-                    <property name="label" translatable="yes">Set For All Existing</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -158,7 +133,6 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="setEvents">
-                    <property name="label" translatable="yes">Set For All Existing</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -172,7 +146,6 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="setLocations">
-                    <property name="label" translatable="yes">Set For All Existing</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -186,7 +159,6 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="setAll">
-                    <property name="label" translatable="yes">Set For All Existing</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
@@ -201,7 +173,6 @@
                 <child>
                   <object class="GtkComboBox" id="locations">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="model">model1</property>
                     <child>
                       <object class="GtkCellRendererText" id="renderer1"/>
@@ -218,7 +189,6 @@
                 <child>
                   <object class="GtkComboBox" id="events">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="model">model2</property>
                     <child>
                       <object class="GtkCellRendererText" id="renderer2"/>
@@ -235,7 +205,6 @@
                 <child>
                   <object class="GtkComboBox" id="contacts">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
                     <property name="model">model3</property>
                     <child>
                       <object class="GtkCellRendererText" id="renderer3"/>
@@ -252,14 +221,12 @@
               </object>
               <packing>
                 <property name="expand">False</property>
-                <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
         </child>
