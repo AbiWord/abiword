@@ -5,7 +5,6 @@
   <object class="GtkDialog" id="ap_UnixDialog_FormatFrame">
     <property name="visible">True</property>
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">Format Frame</property>
     <property name="type_hint">dialog</property>
     <property name="has_separator">False</property>
     <child internal-child="vbox">
@@ -31,7 +30,6 @@
                       <object class="GtkLabel" id="lbBorderColor">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Color:</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -46,7 +44,6 @@
                       <object class="GtkLabel" id="lbBorderThickness">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Thickness:</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -135,7 +132,6 @@
                       <object class="GtkColorButton" id="cbtBorderColorButton">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                       </object>
                       <packing>
                         <property name="left_attach">3</property>
@@ -147,9 +143,6 @@
                       </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkTable" id="tbBackground">
@@ -177,19 +170,16 @@
                           <object class="GtkLabel" id="lbBackgroundColor">
                             <property name="visible">True</property>
                             <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Color:</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkColorButton" id="cbtBackgroundColorButton">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
                           </object>
                           <packing>
                             <property name="position">1</property>
@@ -245,7 +235,6 @@
                       <object class="GtkButton" id="btSelectImage">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <child>
                           <object class="GtkAlignment" id="alignment2">
                             <property name="visible">True</property>
@@ -263,13 +252,11 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
-                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="lbSelectImage">
                                     <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Select Image from file</property>
                                     <property name="use_underline">True</property>
                                   </object>
                                   <packing>
@@ -295,7 +282,6 @@
                       <object class="GtkButton" id="btSetNoImage">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <child>
                           <object class="GtkAlignment" id="alignment3">
                             <property name="visible">True</property>
@@ -313,13 +299,11 @@
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
-                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="lbSetNoImage">
                                     <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Set No Image</property>
                                     <property name="use_underline">True</property>
                                   </object>
                                   <packing>
@@ -381,12 +365,9 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="btTextWrapState">
-                        <property name="label" translatable="yes">Set Text wrapping</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -437,12 +418,9 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbSetToParagraph">
-                        <property name="label" translatable="yes">Set relative to paragraph</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -455,12 +433,9 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbSetToColumn">
-                        <property name="label" translatable="yes">Set relative to Column</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
                         <property name="group">rbSetToParagraph</property>
                       </object>
                       <packing>
@@ -474,12 +449,9 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbSetToPage">
-                        <property name="label" translatable="yes">Set relative to Page</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
                         <property name="group">rbSetToParagraph</property>
                       </object>
                       <packing>
@@ -511,9 +483,6 @@
                   </packing>
                 </child>
               </object>
-              <packing>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkTable" id="tbPreview">
@@ -544,7 +513,6 @@
                     <child>
                       <object class="GtkFrame" id="frPreview">
                         <property name="visible">True</property>
-                        <property name="label_xalign">0</property>
                         <property name="label_yalign">0</property>
                         <property name="shadow_type">out</property>
                         <child>
@@ -681,13 +649,11 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
-                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -697,7 +663,6 @@
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="has_default">True</property>
-                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -710,7 +675,6 @@
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">end</property>
-            <property name="position">0</property>
           </packing>
         </child>
       </object>
