@@ -19,20 +19,16 @@
   <object class="GtkDialog" id="ap_UnixDialog_FormatFootnotes">
     <property name="visible">True</property>
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">Format Footnotes and Endnotes</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
-    <property name="type_hint">normal</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbxDialog">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <object class="GtkVBox" id="vbxContent">
             <property name="visible">True</property>
             <property name="border_width">5</property>
-            <property name="orientation">vertical</property>
             <property name="spacing">18</property>
             <child>
               <object class="GtkTable" id="tblFootnote">
@@ -76,7 +72,6 @@
                       <object class="GtkLabel" id="lbFootnoteStyle">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Footnote Style:</property>
                       </object>
                       <packing>
                         <property name="x_options">GTK_FILL</property>
@@ -86,7 +81,6 @@
                       <object class="GtkLabel" id="lbFootnoteRestart">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Numbering:</property>
                       </object>
                       <packing>
                         <property name="top_attach">1</property>
@@ -98,7 +92,6 @@
                       <object class="GtkLabel" id="lbFootnoteValue">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Initial Footnote value:</property>
                       </object>
                       <packing>
                         <property name="top_attach">2</property>
@@ -137,16 +130,10 @@
                             <property name="editable">False</property>
                             <property name="width_request">1</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="adjustment">adjustment1</property>
                             <property name="climb_rate">1</property>
                             <property name="numeric">True</property>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -170,7 +157,6 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -215,7 +201,6 @@
                       <object class="GtkLabel" id="lbEndnoteStyle">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Endnote Style:</property>
                       </object>
                       <packing>
                         <property name="x_options">GTK_FILL</property>
@@ -225,7 +210,6 @@
                       <object class="GtkLabel" id="lbEndnotePlacement">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Placement:</property>
                       </object>
                       <packing>
                         <property name="top_attach">1</property>
@@ -237,7 +221,6 @@
                       <object class="GtkLabel" id="lbEndnoteValue">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Initial Endnote value:</property>
                       </object>
                       <packing>
                         <property name="top_attach">2</property>
@@ -248,12 +231,9 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="cbSectionRestart">
-                        <property name="label" translatable="yes">Restart on each Section</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
                       </object>
                       <packing>
                         <property name="right_attach">2</property>
@@ -293,16 +273,10 @@
                             <property name="editable">False</property>
                             <property name="width_request">1</property>
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
                             <property name="adjustment">adjustment2</property>
                             <property name="climb_rate">1</property>
                             <property name="numeric">True</property>
                           </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -346,13 +320,11 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
-                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -362,7 +334,6 @@
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="has_default">True</property>
-                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -375,7 +346,6 @@
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">end</property>
-            <property name="position">0</property>
           </packing>
         </child>
       </object>
