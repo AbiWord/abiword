@@ -62,11 +62,13 @@ strings_DATA = \
 	pt-PT.strings \
 	quh-BO.strings \
 	qul-BO.strings \
+	quz.strings \
 	ro-RO.strings \
 	ru-RU.strings \
 	sc-IT.strings \
 	sk-SK.strings \
 	sl-SI.strings \
+	son.strings \
 	sq-AL.strings \
 	sr@latin.strings \
 	sr.strings \
@@ -79,7 +81,8 @@ strings_DATA = \
 	yi.strings \
 	zh-CN.strings \
 	zh-HK.strings \
-	zh-TW.strings 
+	zh-TW.strings \
+	zu.strings
 
 .po.strings:
 	@$(UIBACKPORT) $< $@
