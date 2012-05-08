@@ -1,35 +1,35 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="ap_UnixDialog_PageNumbers">
     <property name="border_width">5</property>
-    <property name="visible">True</property>
+    <property name="has_separator">False</property>
     <property name="resizable">False</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
-    <property name="has_separator">False</property>
+    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
-        <property name="visible">True</property>
         <property name="spacing">13</property>
+        <property name="visible">True</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
-            <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkButton" id="btCancel">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
                 <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btInsert">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
                 <property name="use_underline">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
           </object>
@@ -53,21 +53,21 @@
             </child>
             <child>
               <object class="GtkHBox" id="hbox2">
-                <property name="visible">True</property>
                 <property name="spacing">24</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkVBox" id="vbox1">
-                    <property name="visible">True</property>
                     <property name="spacing">16</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkVBox" id="vbox2">
-                        <property name="visible">True</property>
                         <property name="spacing">10</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkLabel" id="lbPosition">
-                            <property name="visible">True</property>
                             <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
+                            <property name="visible">True</property>
                             <property name="xalign">0</property>
                             <property name="ypad">2</property>
                           </object>
@@ -91,14 +91,14 @@
                             </child>
                             <child>
                               <object class="GtkVBox" id="vbox4">
-                                <property name="visible">True</property>
                                 <property name="spacing">6</property>
+                                <property name="visible">True</property>
                                 <child>
                                   <object class="GtkRadioButton" id="rbHeader">
-                                    <property name="visible">True</property>
+                                    <property name="active">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="use_underline">True</property>
-                                    <property name="active">True</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -107,10 +107,10 @@
                                 </child>
                                 <child>
                                   <object class="GtkRadioButton" id="rbFooter">
-                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="use_underline">True</property>
                                     <property name="group">rbHeader</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -118,12 +118,8 @@
                                   </packing>
                                 </child>
                               </object>
-                              <packing>
-                              </packing>
                             </child>
                           </object>
-                          <packing>
-                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -133,13 +129,13 @@
                     </child>
                     <child>
                       <object class="GtkVBox" id="vbox3">
-                        <property name="visible">True</property>
                         <property name="spacing">10</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkLabel" id="lbAlignment">
-                            <property name="visible">True</property>
                             <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
+                            <property name="visible">True</property>
                             <property name="xalign">0</property>
                             <property name="ypad">2</property>
                           </object>
@@ -163,14 +159,14 @@
                             </child>
                             <child>
                               <object class="GtkVBox" id="vbox5">
-                                <property name="visible">True</property>
                                 <property name="spacing">6</property>
+                                <property name="visible">True</property>
                                 <child>
                                   <object class="GtkRadioButton" id="rbLeft">
-                                    <property name="visible">True</property>
+                                    <property name="active">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="use_underline">True</property>
-                                    <property name="active">True</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -179,10 +175,10 @@
                                 </child>
                                 <child>
                                   <object class="GtkRadioButton" id="rbCenter">
-                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="use_underline">True</property>
                                     <property name="group">rbLeft</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -191,10 +187,10 @@
                                 </child>
                                 <child>
                                   <object class="GtkRadioButton" id="rbRight">
-                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="use_underline">True</property>
                                     <property name="group">rbLeft</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -202,12 +198,8 @@
                                   </packing>
                                 </child>
                               </object>
-                              <packing>
-                              </packing>
                             </child>
                           </object>
-                          <packing>
-                          </packing>
                         </child>
                       </object>
                       <packing>
@@ -216,18 +208,16 @@
                       </packing>
                     </child>
                   </object>
-                  <packing>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkVBox" id="vbox6">
-                    <property name="visible">True</property>
                     <property name="spacing">10</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkLabel" id="lbPreview">
-                        <property name="visible">True</property>
                         <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
+                        <property name="visible">True</property>
                         <property name="xalign">0</property>
                         <property name="ypad">2</property>
                       </object>
@@ -251,14 +241,14 @@
                         </child>
                         <child>
                           <object class="GtkFrame" id="frame1">
-                            <property name="visible">True</property>
                             <property name="label_yalign">0</property>
                             <property name="shadow_type">GTK_SHADOW_OUT</property>
+                            <property name="visible">True</property>
                             <child>
                               <object class="GtkDrawingArea" id="daPreview">
-                                <property name="width_request">150</property>
                                 <property name="height_request">200</property>
                                 <property name="visible">True</property>
+                                <property name="width_request">150</property>
                               </object>
                             </child>
                           </object>
@@ -268,16 +258,10 @@
                           </packing>
                         </child>
                       </object>
-                      <packing>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                  </packing>
                 </child>
               </object>
-              <packing>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="label2">
@@ -290,8 +274,6 @@
               </packing>
             </child>
           </object>
-          <packing>
-          </packing>
         </child>
       </object>
     </child>
