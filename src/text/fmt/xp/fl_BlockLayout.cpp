@@ -2133,10 +2133,6 @@ void fl_BlockLayout::_removeLine(fp_Line* pLine, bool bRemoveFromContainer, bool
 	if (getLastContainer() == static_cast<fp_Container *>(pLine))
 	{
 		setLastContainer(static_cast<fp_Container *>(getLastContainer()->getPrev()));
-		// we have to call recalcMaxWidth so that the new line has the correct
-		// x offset and width
-		if(!getDocSectionLayout()->isCollapsing() && getLastContainer() && bReCalc)
-			getLastContainer()->recalcMaxWidth();
 	}
 
 	if(pLine->getContainer() && bRemoveFromContainer)

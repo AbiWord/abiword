@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -941,7 +942,6 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, pf_Frag_Strux* s
 	  m_iFootnoteLineThickness(0),
 	  m_iFootnoteYoff(0),
 
-	  m_bForceNewPage(false),
 	  m_pFirstColumn(NULL),
 	  m_pLastColumn(NULL),
 	  m_pFirstOwnedPage(NULL),
@@ -1613,76 +1613,15 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 		fl_DocSectionLayout* pPrevSL = getPrevDocSection();
 		if (pPrevSL)
 		{
-//
-// This should make sure the last column in the previous section  has it's last container
-// on a sane page.
-//
-
-#if 0
-			//
-			// Sevior this code should not be needed!
-			//
-			UT_DEBUGMSG(("code sez: this code should not be needed!\n"));
-			UT_ASSERT(0);
-
-			// says not needed, but clearly still is
-#endif
 			fp_Column * pPrevCol = static_cast<fp_Column *>(pPrevSL->getLastContainer());
 			while(pPrevCol == NULL)
 			{
 				UT_DEBUGMSG(("BUG! BUG! Prev section has no last container! Attempting to fix this \n"));
 				pPrevSL->format();
-			    pPrevCol = static_cast<fp_Column *>(pPrevSL->getLastContainer());
+				pPrevCol = static_cast<fp_Column *>(pPrevSL->getLastContainer());
 			}
-			fp_Page* pTmpPage = pPrevSL->getLastContainer()->getPage();
-			fp_Container * prevContainer = NULL;
-			if(pFirstContainer != NULL)
-			{
-				prevContainer = static_cast<fp_Container *>(pFirstContainer->getPrevContainerInSection());
-			}
-
-			UT_sint32 pageHeight = pTmpPage->getFilledHeight(prevContainer);
-			if(pFirstContainer != NULL)
-			{
-				iNextCtrHeight = pFirstContainer->getHeight();
-			}
-			else if(pPrevCol->getLastContainer())
-			{
-				iNextCtrHeight = pPrevCol->getLastContainer()->getHeight();
-			}
-			else
-			{
-				iNextCtrHeight = 12*14; //average height!
-			}
-			bool bForce = (pageHeight + 2*iNextCtrHeight) >= pTmpPage->getAvailableHeight();
-//
-// Note that the HdrFtr Shadows are created BEFORE the columns are placed
-// on the page.
-//
-
-			if (m_bForceNewPage || bForce)
-			{
-				if (pTmpPage->getNext())
-				{
-					pPage = pTmpPage->getNext();
-				}
-				else
-				{
-					pPage = m_pLayout->addNewPage(this);
-				}
-			}
-			else
-			{
-				pPage = pTmpPage;
-				if(prevContainer == NULL)
-				{
-					pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
-				}
-				else
-				{
-					pAfterColumn = static_cast<fp_Column *>(prevContainer->getContainer())->getLeader();
-				}
-			}
+			pPage = pPrevCol->getPage();
+			pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
 		}
 		else
 		{
@@ -2454,7 +2393,6 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_pGraphicImage = FG_Graphic::createFromStrux(this);
 	}
 	setPaperColor();
-	m_bForceNewPage = false;
 }
 
 UT_sint32 fl_DocSectionLayout::getTopMargin(void) const

@@ -363,8 +363,6 @@ private:
 	UT_sint32           m_iFootnoteLineThickness;
 	UT_sint32           m_iFootnoteYoff;
 	
-	bool				m_bForceNewPage;
-
 	//! First column in the section
 	fp_Column*			m_pFirstColumn;
 	//! Last column in the section
