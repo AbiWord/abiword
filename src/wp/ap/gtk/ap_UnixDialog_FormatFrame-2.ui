@@ -1,31 +1,30 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
+<!--*- mode: xml -*-->
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
-  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkDialog" id="ap_UnixDialog_FormatFrame">
-    <property name="visible">True</property>
     <property name="border_width">5</property>
-    <property name="type_hint">dialog</property>
     <property name="has_separator">False</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbDialog">
-        <property name="visible">True</property>
         <property name="spacing">2</property>
+        <property name="visible">True</property>
         <child>
           <object class="GtkHBox" id="hbContent">
-            <property name="visible">True</property>
             <property name="border_width">5</property>
             <property name="spacing">18</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkVBox" id="vbProperties">
-                <property name="visible">True</property>
                 <property name="spacing">18</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkTable" id="tbBorder">
-                    <property name="visible">True</property>
-                    <property name="n_rows">3</property>
                     <property name="n_columns">4</property>
+                    <property name="n_rows">3</property>
                     <property name="row_spacing">6</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkLabel" id="lbBorderColor">
                         <property name="visible">True</property>
@@ -56,10 +55,10 @@
                     </child>
                     <child>
                       <object class="GtkComboBox" id="omBorderThickness">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
                         <property name="active">0</property>
                         <property name="button_sensitivity">on</property>
+                        <property name="can_focus">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">3</property>
@@ -71,10 +70,10 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="lbBorder">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
                         <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
                       </object>
                       <packing>
                         <property name="right_attach">4</property>
@@ -84,8 +83,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="label23">
-                        <property name="width_request">18</property>
                         <property name="visible">True</property>
+                        <property name="width_request">18</property>
                         <property name="xalign">0</property>
                         <property name="xpad">6</property>
                       </object>
@@ -100,8 +99,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="label24">
-                        <property name="width_request">18</property>
                         <property name="visible">True</property>
+                        <property name="width_request">18</property>
                         <property name="xalign">0</property>
                         <property name="xpad">6</property>
                       </object>
@@ -116,8 +115,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="lbSpacerBorder">
-                        <property name="width_request">18</property>
                         <property name="visible">True</property>
+                        <property name="width_request">18</property>
                         <property name="xalign">0</property>
                         <property name="xpad">6</property>
                       </object>
@@ -130,8 +129,8 @@
                     </child>
                     <child>
                       <object class="GtkColorButton" id="cbtBorderColorButton">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">3</property>
@@ -146,16 +145,16 @@
                 </child>
                 <child>
                   <object class="GtkTable" id="tbBackground">
-                    <property name="visible">True</property>
-                    <property name="n_rows">2</property>
                     <property name="n_columns">2</property>
+                    <property name="n_rows">2</property>
                     <property name="row_spacing">6</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkLabel" id="lbBackground">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
                         <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
                       </object>
                       <packing>
                         <property name="right_attach">2</property>
@@ -164,8 +163,8 @@
                     </child>
                     <child>
                       <object class="GtkHBox" id="hbBackgroundColor">
-                        <property name="visible">True</property>
                         <property name="spacing">12</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkLabel" id="lbBackgroundColor">
                             <property name="visible">True</property>
@@ -178,8 +177,8 @@
                         </child>
                         <child>
                           <object class="GtkColorButton" id="cbtBackgroundColorButton">
-                            <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="position">1</property>
@@ -196,8 +195,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="lbSpacerBackground">
-                        <property name="width_request">12</property>
                         <property name="visible">True</property>
+                        <property name="width_request">12</property>
                         <property name="xalign">0</property>
                       </object>
                       <packing>
@@ -214,16 +213,16 @@
                 </child>
                 <child>
                   <object class="GtkTable" id="table12">
-                    <property name="visible">True</property>
-                    <property name="n_rows">3</property>
                     <property name="n_columns">2</property>
+                    <property name="n_rows">3</property>
                     <property name="row_spacing">6</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkLabel" id="lbSetImageBackground">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
                         <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
                       </object>
                       <packing>
                         <property name="right_attach">2</property>
@@ -233,8 +232,8 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="btSelectImage">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkAlignment" id="alignment2">
                             <property name="visible">True</property>
@@ -242,12 +241,12 @@
                             <property name="yscale">0</property>
                             <child>
                               <object class="GtkHBox" id="hbox2">
-                                <property name="visible">True</property>
                                 <property name="spacing">2</property>
+                                <property name="visible">True</property>
                                 <child>
                                   <object class="GtkImage" id="image2">
-                                    <property name="visible">True</property>
                                     <property name="stock">gtk-open</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -256,8 +255,8 @@
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="lbSelectImage">
-                                    <property name="visible">True</property>
                                     <property name="use_underline">True</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -280,8 +279,8 @@
                     </child>
                     <child>
                       <object class="GtkButton" id="btSetNoImage">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkAlignment" id="alignment3">
                             <property name="visible">True</property>
@@ -289,12 +288,12 @@
                             <property name="yscale">0</property>
                             <child>
                               <object class="GtkHBox" id="hbox3">
-                                <property name="visible">True</property>
                                 <property name="spacing">2</property>
+                                <property name="visible">True</property>
                                 <child>
                                   <object class="GtkImage" id="image3">
-                                    <property name="visible">True</property>
                                     <property name="stock">gtk-clear</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -303,8 +302,8 @@
                                 </child>
                                 <child>
                                   <object class="GtkLabel" id="lbSetNoImage">
-                                    <property name="visible">True</property>
                                     <property name="use_underline">True</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -327,8 +326,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="label20">
-                        <property name="width_request">18</property>
                         <property name="visible">True</property>
+                        <property name="width_request">18</property>
                         <property name="xalign">0</property>
                         <property name="xpad">6</property>
                       </object>
@@ -346,16 +345,16 @@
                 </child>
                 <child>
                   <object class="GtkTable" id="table11">
-                    <property name="visible">True</property>
-                    <property name="n_rows">2</property>
                     <property name="n_columns">2</property>
+                    <property name="n_rows">2</property>
                     <property name="row_spacing">6</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkLabel" id="lbTextWrapState">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
                         <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
                       </object>
                       <packing>
                         <property name="right_attach">2</property>
@@ -365,9 +364,9 @@
                     </child>
                     <child>
                       <object class="GtkCheckButton" id="btTextWrapState">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="use_underline">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -380,8 +379,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="label16">
-                        <property name="width_request">12</property>
                         <property name="visible">True</property>
+                        <property name="width_request">12</property>
                         <property name="xalign">0</property>
                       </object>
                       <packing>
@@ -399,16 +398,16 @@
                 </child>
                 <child>
                   <object class="GtkTable" id="table9">
-                    <property name="visible">True</property>
-                    <property name="n_rows">4</property>
                     <property name="n_columns">2</property>
+                    <property name="n_rows">4</property>
                     <property name="row_spacing">6</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkLabel" id="lbPositionTo">
-                        <property name="visible">True</property>
-                        <property name="xalign">0</property>
                         <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                         <property name="use_markup">True</property>
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
                       </object>
                       <packing>
                         <property name="right_attach">2</property>
@@ -418,9 +417,9 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbSetToParagraph">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="use_underline">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -433,10 +432,10 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbSetToColumn">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="use_underline">True</property>
                         <property name="group">rbSetToParagraph</property>
+                        <property name="use_underline">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -449,10 +448,10 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbSetToPage">
-                        <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="use_underline">True</property>
                         <property name="group">rbSetToParagraph</property>
+                        <property name="use_underline">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -465,8 +464,8 @@
                     </child>
                     <child>
                       <object class="GtkLabel" id="label12">
-                        <property name="width_request">12</property>
                         <property name="visible">True</property>
+                        <property name="width_request">12</property>
                         <property name="xalign">0</property>
                         <property name="xpad">6</property>
                       </object>
@@ -486,16 +485,16 @@
             </child>
             <child>
               <object class="GtkTable" id="tbPreview">
-                <property name="visible">True</property>
-                <property name="n_rows">2</property>
                 <property name="n_columns">2</property>
+                <property name="n_rows">2</property>
                 <property name="row_spacing">6</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbPreview">
-                    <property name="visible">True</property>
-                    <property name="xalign">0</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
+                    <property name="visible">True</property>
+                    <property name="xalign">0</property>
                   </object>
                   <packing>
                     <property name="right_attach">2</property>
@@ -505,21 +504,21 @@
                 </child>
                 <child>
                   <object class="GtkTable" id="tbPreviewContent">
-                    <property name="visible">True</property>
-                    <property name="n_rows">3</property>
-                    <property name="n_columns">3</property>
                     <property name="column_spacing">4</property>
+                    <property name="n_columns">3</property>
+                    <property name="n_rows">3</property>
                     <property name="row_spacing">4</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkFrame" id="frPreview">
-                        <property name="visible">True</property>
                         <property name="label_yalign">0</property>
-                        <property name="shadow_type">out</property>
+                        <property name="shadow_type">GTK_SHADOW_OUT</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkDrawingArea" id="daPreview">
-                            <property name="width_request">146</property>
                             <property name="height_request">146</property>
                             <property name="visible">True</property>
+                            <property name="width_request">146</property>
                           </object>
                         </child>
                       </object>
@@ -532,11 +531,11 @@
                     </child>
                     <child>
                       <object class="GtkToggleButton" id="tbBorderRight">
-                        <property name="width_request">25</property>
-                        <property name="height_request">25</property>
-                        <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="height_request">25</property>
                         <property name="inconsistent">True</property>
+                        <property name="visible">True</property>
+                        <property name="width_request">25</property>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -549,11 +548,11 @@
                     </child>
                     <child>
                       <object class="GtkToggleButton" id="tbBorderBottom">
-                        <property name="width_request">25</property>
-                        <property name="height_request">25</property>
-                        <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="height_request">25</property>
                         <property name="inconsistent">True</property>
+                        <property name="visible">True</property>
+                        <property name="width_request">25</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -566,11 +565,11 @@
                     </child>
                     <child>
                       <object class="GtkToggleButton" id="tbBorderLeft">
-                        <property name="width_request">25</property>
-                        <property name="height_request">25</property>
-                        <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="height_request">25</property>
                         <property name="inconsistent">True</property>
+                        <property name="visible">True</property>
+                        <property name="width_request">25</property>
                       </object>
                       <packing>
                         <property name="top_attach">1</property>
@@ -581,11 +580,11 @@
                     </child>
                     <child>
                       <object class="GtkToggleButton" id="tbBorderTop">
-                        <property name="width_request">25</property>
-                        <property name="height_request">25</property>
-                        <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="height_request">25</property>
                         <property name="inconsistent">True</property>
+                        <property name="visible">True</property>
+                        <property name="width_request">25</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -593,18 +592,6 @@
                         <property name="x_options"></property>
                         <property name="y_options"></property>
                       </packing>
-                    </child>
-                    <child>
-                      <placeholder></placeholder>
-                    </child>
-                    <child>
-                      <placeholder></placeholder>
-                    </child>
-                    <child>
-                      <placeholder></placeholder>
-                    </child>
-                    <child>
-                      <placeholder></placeholder>
                     </child>
                   </object>
                   <packing>
@@ -618,8 +605,8 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbSpacerPreview">
-                    <property name="width_request">18</property>
                     <property name="visible">True</property>
+                    <property name="width_request">18</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -641,15 +628,15 @@
         </child>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="aaDialog">
+            <property name="layout_style">GTK_BUTTONBOX_END</property>
             <property name="visible">True</property>
-            <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="btClose">
-                <property name="label">gtk-close</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="can_focus">True</property>
+                <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -658,12 +645,12 @@
             </child>
             <child>
               <object class="GtkButton" id="btApply">
-                <property name="label">gtk-apply</property>
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="can_focus">True</property>
                 <property name="has_default">True</property>
+                <property name="label">gtk-apply</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -674,7 +661,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="pack_type">end</property>
+            <property name="pack_type">GTK_PACK_END</property>
           </packing>
         </child>
       </object>
