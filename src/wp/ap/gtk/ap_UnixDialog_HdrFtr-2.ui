@@ -11,19 +11,15 @@
   <object class="GtkDialog" id="ap_UnixDialog_HdrFtr">
     <property name="visible">True</property>
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">Format Header/Footers</property>
     <property name="resizable">False</property>
-    <property name="type_hint">normal</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbDialog">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <object class="GtkVBox" id="vbContent">
             <property name="visible">True</property>
             <property name="border_width">5</property>
-            <property name="orientation">vertical</property>
             <property name="spacing">18</property>
             <child>
               <object class="GtkTable" id="tbHeaderProperties">
@@ -58,12 +54,9 @@
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="cbHeaderFacingPages">
-                    <property name="label" translatable="yes">Different header on facing pages</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -75,12 +68,9 @@
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="cbHeaderFirstPage">
-                    <property name="label" translatable="yes">Different header on first page</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -92,12 +82,9 @@
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="cbHeaderLastPage">
-                    <property name="label" translatable="yes">Different header on last page</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -108,9 +95,6 @@
                   </packing>
                 </child>
               </object>
-              <packing>
-                <property name="position">0</property>
-              </packing>
             </child>
             <child>
               <object class="GtkTable" id="tbFooterProperties">
@@ -145,12 +129,9 @@
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="cbFooterFacingPages">
-                    <property name="label" translatable="yes">Different footer on facing pages</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -162,12 +143,9 @@
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="cbFooterFirstPage">
-                    <property name="label" translatable="yes">Different footer on first page</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -179,12 +157,9 @@
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="cbFooterLastPage">
-                    <property name="label" translatable="yes">Different footer on last page</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -234,12 +209,9 @@
                 </child>
                 <child>
                   <object class="GtkCheckButton" id="lbRestartPageNumbers">
-                    <property name="label" translatable="yes">Restart page numbers on new sections</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="receives_default">False</property>
                     <property name="use_underline">True</property>
-                    <property name="draw_indicator">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -257,12 +229,10 @@
                       <object class="GtkLabel" id="lbRestartNumbering">
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Restart numbering at:</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
@@ -308,13 +278,11 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
-                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -323,7 +291,6 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
-                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -336,7 +303,6 @@
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">end</property>
-            <property name="position">0</property>
           </packing>
         </child>
       </object>
