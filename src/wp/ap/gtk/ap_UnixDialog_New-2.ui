@@ -60,7 +60,6 @@
                     <property name="visible">True</property>
                     <child>
                       <object class="GtkRadioButton" id="rdTemplate">
-                        <property name="active">False</property>
                         <property name="can_focus">True</property>
                         <property name="use_underline">True</property>
                         <property name="visible">True</property>
@@ -112,7 +111,6 @@
                     <property name="visible">True</property>
                     <child>
                       <object class="GtkRadioButton" id="rdOpen">
-                        <property name="active">False</property>
                         <property name="can_focus">True</property>
                         <property name="group">rdTemplate</property>
                         <property name="use_underline">True</property>
