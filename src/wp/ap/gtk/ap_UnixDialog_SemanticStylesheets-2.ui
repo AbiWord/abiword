@@ -1,4 +1,5 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
+<!--*- mode: xml -*-->
 <interface>
   <object class="GtkListStore" id="model1">
     <columns>
@@ -17,13 +18,13 @@
   </object>
   <object class="GtkDialog" id="window">
     <property name="border_width">5</property>
-    <property name="type_hint">dialog</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
-            <property name="layout_style">end</property>
+            <property name="layout_style">GTK_BUTTONBOX_END</property>
             <child>
               <object class="GtkLabel" id="label7">
                 <property name="visible">True</property>
@@ -34,10 +35,11 @@
             </child>
             <child>
               <object class="GtkButton" id="OK">
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="label">gtk-ok</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
+                <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -47,7 +49,7 @@
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="pack_type">end</property>
+            <property name="pack_type">GTK_PACK_END</property>
           </packing>
         </child>
         <child>
@@ -65,8 +67,8 @@
             </child>
             <child>
               <object class="GtkTable" id="grid1">
-                <property name="visible">True</property>
                 <property name="n_rows">4</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbContacts">
                     <property name="visible">True</property>
@@ -120,10 +122,9 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="setContacts">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -133,10 +134,9 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="setEvents">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -146,10 +146,9 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="setLocations">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -159,10 +158,9 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="setAll">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
+                    <property name="visible">True</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -172,8 +170,8 @@
                 </child>
                 <child>
                   <object class="GtkComboBox" id="locations">
-                    <property name="visible">True</property>
                     <property name="model">model1</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkCellRendererText" id="renderer1"/>
                       <attributes>
@@ -188,8 +186,8 @@
                 </child>
                 <child>
                   <object class="GtkComboBox" id="events">
-                    <property name="visible">True</property>
                     <property name="model">model2</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkCellRendererText" id="renderer2"/>
                       <attributes>
@@ -204,8 +202,8 @@
                 </child>
                 <child>
                   <object class="GtkComboBox" id="contacts">
-                    <property name="visible">True</property>
                     <property name="model">model3</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkCellRendererText" id="renderer3"/>
                       <attributes>
