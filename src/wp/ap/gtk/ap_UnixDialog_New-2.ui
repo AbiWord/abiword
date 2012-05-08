@@ -1,35 +1,35 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="ap_UnixDialog_New">
     <property name="border_width">5</property>
-    <property name="visible">True</property>
-    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <property name="has_separator">False</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
-        <property name="visible">True</property>
         <property name="spacing">12</property>
+        <property name="visible">True</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
-            <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkButton" id="btCancel">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
                 <property name="label">gtk-cancel</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
             <child>
               <object class="GtkButton" id="btOK">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
                 <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
           </object>
@@ -53,17 +53,17 @@
             </child>
             <child>
               <object class="GtkVBox" id="vbox6">
-                <property name="visible">True</property>
                 <property name="spacing">12</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkVBox" id="vbox7">
                     <property name="visible">True</property>
                     <child>
                       <object class="GtkRadioButton" id="rdTemplate">
-                        <property name="visible">True</property>
+                        <property name="active">False</property>
                         <property name="can_focus">True</property>
                         <property name="use_underline">True</property>
-                        <property name="active">False</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="padding">4</property>
@@ -86,43 +86,37 @@
                         </child>
                         <child>
                           <object class="GtkScrolledWindow" id="swTemplates">
-                            <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                             <property name="shadow_type">GTK_SHADOW_IN</property>
+                            <property name="visible">True</property>
+                            <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                             <child>
                               <object class="GtkTreeView" id="tvTemplates">
-                                <property name="width_request">160</property>
-                                <property name="height_request">160</property>
-                                <property name="visible">True</property>
-                                <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="headers_visible">False</property>
+                                <property name="height_request">160</property>
+                                <property name="sensitive">False</property>
+                                <property name="visible">True</property>
+                                <property name="width_request">160</property>
                               </object>
                             </child>
                           </object>
-                          <packing>
-                          </packing>
                         </child>
                       </object>
-                      <packing>
-                      </packing>
                     </child>
                   </object>
-                  <packing>
-                  </packing>
                 </child>
                 <child>
                   <object class="GtkVBox" id="vbox8">
                     <property name="visible">True</property>
                     <child>
                       <object class="GtkRadioButton" id="rdOpen">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="use_underline">True</property>
                         <property name="active">False</property>
+                        <property name="can_focus">True</property>
                         <property name="group">rdTemplate</property>
+                        <property name="use_underline">True</property>
+                        <property name="visible">True</property>
                       </object>
                       <packing>
                         <property name="padding">4</property>
@@ -145,18 +139,14 @@
                         </child>
                         <child>
                           <object class="GtkButton" id="btFile">
-                            <property name="visible">True</property>
-                            <property name="sensitive">False</property>
                             <property name="can_focus">True</property>
                             <property name="label">gtk-open</property>
+                            <property name="sensitive">False</property>
                             <property name="use_stock">True</property>
+                            <property name="visible">True</property>
                           </object>
-                          <packing>
-                          </packing>
                         </child>
                       </object>
-                      <packing>
-                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -164,8 +154,6 @@
                   </packing>
                 </child>
               </object>
-              <packing>
-              </packing>
             </child>
             <child>
               <object class="GtkLabel" id="label3">
@@ -178,8 +166,6 @@
               </packing>
             </child>
           </object>
-          <packing>
-          </packing>
         </child>
       </object>
     </child>
