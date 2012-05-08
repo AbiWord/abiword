@@ -1,30 +1,30 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="ap_UnixDialog_WordCount">
     <property name="border_width">5</property>
-    <property name="visible">True</property>
-    <property name="default_width">350</property>
     <property name="default_height">225</property>
+    <property name="default_width">350</property>
+    <property name="has_separator">False</property>
     <property name="resizable">False</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
-    <property name="has_separator">False</property>
+    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbDialog">
-        <property name="visible">True</property>
         <property name="spacing">2</property>
+        <property name="visible">True</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="aaDialog">
-            <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkButton" id="btClose">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
-                <property name="has_default">True</property>
                 <property name="can_focus">True</property>
+                <property name="has_default">True</property>
                 <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
           </object>
@@ -36,15 +36,15 @@
         <child>
           <object class="GtkTable" id="tbContent">
             <property name="border_width">5</property>
-            <property name="visible">True</property>
-            <property name="n_rows">2</property>
             <property name="n_columns">2</property>
+            <property name="n_rows">2</property>
             <property name="row_spacing">6</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkLabel" id="lbTitle">
-                <property name="visible">True</property>
                 <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                 <property name="use_markup">True</property>
+                <property name="visible">True</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
@@ -52,17 +52,17 @@
                 <property name="right_attach">2</property>
                 <property name="top_attach">0</property>
                 <property name="bottom_attach">1</property>
-                <property name="x_options">fill</property>
+                <property name="x_options">GTK_FILL</property>
                 <property name="y_options"></property>
               </packing>
             </child>
             <child>
               <object class="GtkTable" id="tbContentContent">
-                <property name="visible">True</property>
-                <property name="n_rows">7</property>
-                <property name="n_columns">2</property>
-                <property name="row_spacing">6</property>
                 <property name="column_spacing">12</property>
+                <property name="n_columns">2</property>
+                <property name="n_rows">7</property>
+                <property name="row_spacing">6</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbWords">
                     <property name="visible">True</property>
@@ -73,15 +73,15 @@
                     <property name="right_attach">1</property>
                     <property name="top_attach">0</property>
                     <property name="bottom_attach">1</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbWordsVal">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="selectable">True</property>
+                    <property name="visible">True</property>
                     <property name="xalign">1</property>
                   </object>
                   <packing>
@@ -89,7 +89,7 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">0</property>
                     <property name="bottom_attach">1</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
@@ -103,15 +103,15 @@
                     <property name="right_attach">1</property>
                     <property name="top_attach">6</property>
                     <property name="bottom_attach">7</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbPagesVal">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="selectable">True</property>
+                    <property name="visible">True</property>
                     <property name="xalign">1</property>
                   </object>
                   <packing>
@@ -119,7 +119,7 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">6</property>
                     <property name="bottom_attach">7</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
@@ -133,15 +133,15 @@
                     <property name="right_attach">1</property>
                     <property name="top_attach">5</property>
                     <property name="bottom_attach">6</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbLinesVal">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="selectable">True</property>
+                    <property name="visible">True</property>
                     <property name="xalign">1</property>
                   </object>
                   <packing>
@@ -149,7 +149,7 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">5</property>
                     <property name="bottom_attach">6</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
@@ -163,15 +163,15 @@
                     <property name="right_attach">1</property>
                     <property name="top_attach">4</property>
                     <property name="bottom_attach">5</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbCharactersNoSpacesVal">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="selectable">True</property>
+                    <property name="visible">True</property>
                     <property name="xalign">1</property>
                   </object>
                   <packing>
@@ -179,7 +179,7 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">4</property>
                     <property name="bottom_attach">5</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
@@ -193,15 +193,15 @@
                     <property name="right_attach">1</property>
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbCharactersSpacesVal">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="selectable">True</property>
+                    <property name="visible">True</property>
                     <property name="xalign">1</property>
                   </object>
                   <packing>
@@ -209,7 +209,7 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
@@ -223,15 +223,15 @@
                     <property name="right_attach">1</property>
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbParagraphsVal">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="selectable">True</property>
+                    <property name="visible">True</property>
                     <property name="xalign">1</property>
                   </object>
                   <packing>
@@ -239,7 +239,7 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
@@ -253,15 +253,15 @@
                     <property name="right_attach">1</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbWordsNoFootnotesVal">
-                    <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="selectable">True</property>
+                    <property name="visible">True</property>
                     <property name="xalign">1</property>
                   </object>
                   <packing>
@@ -269,7 +269,7 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
-                    <property name="x_options">fill</property>
+                    <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
@@ -279,14 +279,14 @@
                 <property name="right_attach">2</property>
                 <property name="top_attach">1</property>
                 <property name="bottom_attach">2</property>
-                <property name="x_options">fill</property>
-                <property name="y_options">fill</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
               </packing>
             </child>
             <child>
               <object class="GtkLabel" id="lbSpacerContent">
-                <property name="width_request">18</property>
                 <property name="visible">True</property>
+                <property name="width_request">18</property>
                 <property name="xalign">0</property>
               </object>
               <packing>
@@ -294,13 +294,11 @@
                 <property name="right_attach">1</property>
                 <property name="top_attach">1</property>
                 <property name="bottom_attach">2</property>
-                <property name="x_options">fill</property>
-                <property name="y_options">fill</property>
+                <property name="x_options">GTK_FILL</property>
+                <property name="y_options">GTK_FILL</property>
               </packing>
             </child>
           </object>
-          <packing>
-          </packing>
         </child>
       </object>
     </child>
