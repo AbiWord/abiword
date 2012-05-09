@@ -280,7 +280,7 @@ IE_Imp_Applix::s_getTagName(const char *str, size_t len)
 	// innocent, just for fast pointer comparison
 	const char * ptr = static_cast<const char *>(str);
 	
-	UT_DEBUGMSG(("DOM: Applix string: %s (%d)\n", str, len));
+	UT_DEBUGMSG(("DOM: Applix string: %s (%lu)\n", str, len));
 	
 	if(*ptr == '<')
 	{
@@ -468,7 +468,7 @@ static char * fgets(char *s, int count, GsfInput * stream)
 			break;
 		}
 	}
-	if ((s == p)) {
+	if (s == p) {
 		return 0;
 	}
 	*p = 0;

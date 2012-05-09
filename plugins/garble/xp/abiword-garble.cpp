@@ -87,9 +87,9 @@ abiword_document::~abiword_document() {
 	if (mDocument)
 		xmlFreeDoc( mDocument );
 	if (mAbiGarble->verbose()) {
-		fprintf( stdout, "garbled %u chars", mCharsGarbled );
+		fprintf( stdout, "garbled %lu chars", mCharsGarbled );
 		if (mAbiGarble->image_garbling())
-			fprintf( stdout, ", %u images\n", mImagesGarbled );
+			fprintf( stdout, ", %lu images\n", mImagesGarbled );
 		else
 			fprintf( stdout, "\n" );
 	}

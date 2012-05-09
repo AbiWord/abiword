@@ -487,7 +487,7 @@ std::string Glob_ChangeRecordSessionPacket::toStr() const
 GlobSessionPacket::GlobSessionPacket( const GlobSessionPacket& Other )
 : AbstractChangeRecordSessionPacket( Other )
 {
-	UT_DEBUGMSG(("GlobSessionPacket::GlobSessionPacket: copying %u sub packets\n", Other.m_pPackets.size()));
+	UT_DEBUGMSG(("GlobSessionPacket::GlobSessionPacket: copying %lu sub packets\n", Other.m_pPackets.size()));
 	m_pPackets.resize( Other.m_pPackets.size() );
 	for (size_t i=0; i<Other.m_pPackets.size(); ++i) {
 		m_pPackets[i] = static_cast<SessionPacket*>( Other.m_pPackets[i]->clone() );

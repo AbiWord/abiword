@@ -1811,7 +1811,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 
 s_RTF_ListenerWriteDoc::~s_RTF_ListenerWriteDoc()
 {
-	UT_DEBUGMSG(("~s_RTF_ListenerWriteDoc() rdfstack.sz:%d \n" , m_rdfAnchorStack.size() ));
+	UT_DEBUGMSG(("~s_RTF_ListenerWriteDoc() rdfstack.sz:%lu\n" , m_rdfAnchorStack.size() ));
 
 	_closeSpan();
 
