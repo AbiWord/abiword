@@ -673,6 +673,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_haveSemItems)
 
 	/* The editors aren't working yet. Remove if they do work. */
 	if (id == AP_MENU_ID_RDFANCHOR_EDITSEMITEM) return EV_MIS_Gray;
+
+#ifndef WITH_EVOLUTION_DATA_SERVER
+	if (id == AP_MENU_ID_RDFANCHOR_EXPORTSEMITEM) 
+		return EV_MIS_Gray;
+#endif
     
 	EV_Menu_ItemState s = EV_MIS_ZERO ;
     return s;
