@@ -1,45 +1,21 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!--*- mode: xml -*-->
+<!-- ***************************************************************
+      Remove all 'property name="label"' and make them translatable
+      through strings by XAP_App::getApp()->getStringSet() instead.
+     *************************************************************** -->
 <interface>
   <object class="GtkWindow" id="window1">
-    <property name="title" translatable="yes"/>
-    <property name="type">GTK_WINDOW_TOPLEVEL</property>
-    <property name="window_position">GTK_WIN_POS_NONE</property>
-    <property name="modal">False</property>
-    <property name="resizable">True</property>
-    <property name="destroy_with_parent">False</property>
-    <property name="decorated">True</property>
-    <property name="skip_taskbar_hint">False</property>
-    <property name="skip_pager_hint">False</property>
-    <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
-    <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
-    <property name="focus_on_map">True</property>
-    <property name="urgency_hint">False</property>
     <child>
       <object class="GtkTable" id="mainWidget">
-        <property name="visible">True</property>
-        <property name="n_rows">6</property>
-        <property name="n_columns">2</property>
-        <property name="homogeneous">False</property>
-        <property name="row_spacing">0</property>
         <property name="column_spacing">4</property>
+        <property name="n_columns">2</property>
+        <property name="n_rows">6</property>
+        <property name="visible">True</property>
         <child>
           <object class="GtkLabel" id="label1">
-            <property name="visible">True</property>
             <property name="label" translatable="yes">Name</property>
-            <property name="use_underline">False</property>
-            <property name="use_markup">False</property>
-            <property name="justify">GTK_JUSTIFY_LEFT</property>
-            <property name="wrap">False</property>
-            <property name="selectable">False</property>
-            <property name="xalign">0.5</property>
-            <property name="yalign">0.5</property>
-            <property name="xpad">0</property>
-            <property name="ypad">0</property>
-            <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-            <property name="width_chars">-1</property>
-            <property name="single_line_mode">False</property>
-            <property name="angle">0</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -50,21 +26,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label2">
-            <property name="visible">True</property>
             <property name="label" translatable="yes">Nick</property>
-            <property name="use_underline">False</property>
-            <property name="use_markup">False</property>
-            <property name="justify">GTK_JUSTIFY_LEFT</property>
-            <property name="wrap">False</property>
-            <property name="selectable">False</property>
-            <property name="xalign">0.5</property>
-            <property name="yalign">0.5</property>
-            <property name="xpad">0</property>
-            <property name="ypad">0</property>
-            <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-            <property name="width_chars">-1</property>
-            <property name="single_line_mode">False</property>
-            <property name="angle">0</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -75,15 +38,8 @@
         </child>
         <child>
           <object class="GtkEntry" id="name">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="editable">True</property>
-            <property name="visibility">True</property>
-            <property name="max_length">0</property>
-            <property name="text" translatable="yes"/>
-            <property name="has_frame">True</property>
-            <property name="invisible_char">&#x25CF;</property>
-            <property name="activates_default">False</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -94,15 +50,8 @@
         </child>
         <child>
           <object class="GtkEntry" id="nick">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="editable">True</property>
-            <property name="visibility">True</property>
-            <property name="max_length">0</property>
-            <property name="text" translatable="yes"/>
-            <property name="has_frame">True</property>
-            <property name="invisible_char">&#x25CF;</property>
-            <property name="activates_default">False</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -113,21 +62,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label5">
-            <property name="visible">True</property>
             <property name="label" translatable="yes">Phone</property>
-            <property name="use_underline">False</property>
-            <property name="use_markup">False</property>
-            <property name="justify">GTK_JUSTIFY_LEFT</property>
-            <property name="wrap">False</property>
-            <property name="selectable">False</property>
-            <property name="xalign">0.5</property>
-            <property name="yalign">0.5</property>
-            <property name="xpad">0</property>
-            <property name="ypad">0</property>
-            <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-            <property name="width_chars">-1</property>
-            <property name="single_line_mode">False</property>
-            <property name="angle">0</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -138,21 +74,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label4">
-            <property name="visible">True</property>
             <property name="label" translatable="yes">Image</property>
-            <property name="use_underline">False</property>
-            <property name="use_markup">False</property>
-            <property name="justify">GTK_JUSTIFY_LEFT</property>
-            <property name="wrap">False</property>
-            <property name="selectable">False</property>
-            <property name="xalign">0.5</property>
-            <property name="yalign">0.5</property>
-            <property name="xpad">0</property>
-            <property name="ypad">0</property>
-            <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-            <property name="width_chars">-1</property>
-            <property name="single_line_mode">False</property>
-            <property name="angle">0</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -163,21 +86,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label3">
-            <property name="visible">True</property>
             <property name="label" translatable="yes">Home Page</property>
-            <property name="use_underline">False</property>
-            <property name="use_markup">False</property>
-            <property name="justify">GTK_JUSTIFY_LEFT</property>
-            <property name="wrap">False</property>
-            <property name="selectable">False</property>
-            <property name="xalign">0.5</property>
-            <property name="yalign">0.5</property>
-            <property name="xpad">0</property>
-            <property name="ypad">0</property>
-            <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-            <property name="width_chars">-1</property>
-            <property name="single_line_mode">False</property>
-            <property name="angle">0</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -188,15 +98,8 @@
         </child>
         <child>
           <object class="GtkEntry" id="phone">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="editable">True</property>
-            <property name="visibility">True</property>
-            <property name="max_length">0</property>
-            <property name="text" translatable="yes"/>
-            <property name="has_frame">True</property>
-            <property name="invisible_char">&#x25CF;</property>
-            <property name="activates_default">False</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -207,15 +110,8 @@
         </child>
         <child>
           <object class="GtkEntry" id="imageUrl">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="editable">True</property>
-            <property name="visibility">True</property>
-            <property name="max_length">0</property>
-            <property name="text" translatable="yes"/>
-            <property name="has_frame">True</property>
-            <property name="invisible_char">&#x25CF;</property>
-            <property name="activates_default">False</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -226,15 +122,8 @@
         </child>
         <child>
           <object class="GtkEntry" id="homePage">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="editable">True</property>
-            <property name="visibility">True</property>
-            <property name="max_length">0</property>
-            <property name="text" translatable="yes"/>
-            <property name="has_frame">True</property>
-            <property name="invisible_char">&#x25CF;</property>
-            <property name="activates_default">False</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
@@ -245,21 +134,8 @@
         </child>
         <child>
           <object class="GtkLabel" id="label6">
-            <property name="visible">True</property>
             <property name="label" translatable="yes">EMail</property>
-            <property name="use_underline">False</property>
-            <property name="use_markup">False</property>
-            <property name="justify">GTK_JUSTIFY_LEFT</property>
-            <property name="wrap">False</property>
-            <property name="selectable">False</property>
-            <property name="xalign">0.5</property>
-            <property name="yalign">0.5</property>
-            <property name="xpad">0</property>
-            <property name="ypad">0</property>
-            <property name="ellipsize">PANGO_ELLIPSIZE_NONE</property>
-            <property name="width_chars">-1</property>
-            <property name="single_line_mode">False</property>
-            <property name="angle">0</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -270,15 +146,8 @@
         </child>
         <child>
           <object class="GtkEntry" id="email">
-            <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="editable">True</property>
-            <property name="visibility">True</property>
-            <property name="max_length">0</property>
-            <property name="text" translatable="yes"/>
-            <property name="has_frame">True</property>
-            <property name="invisible_char">&#x25CF;</property>
-            <property name="activates_default">False</property>
+            <property name="visible">True</property>
           </object>
           <packing>
             <property name="left_attach">1</property>
