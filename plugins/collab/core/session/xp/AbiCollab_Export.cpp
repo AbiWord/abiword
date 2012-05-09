@@ -84,7 +84,7 @@ PLListenerType ABI_Collab_Export::getType() const
  */
 ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecord * pcr )
 {
-	UT_return_val_if_fail(pcr, false);
+	UT_return_val_if_fail(pcr, NULL);
 	
 	UT_sint32 index = static_cast<UT_sint32>(pcr->getIndexAP());
 	switch(pcr->getType()) {

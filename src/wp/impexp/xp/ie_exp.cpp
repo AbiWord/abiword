@@ -221,8 +221,8 @@ GsfOutput* IE_Exp::_openFile(const char *szFilename)
 
 GsfOutput* IE_Exp::openFile(const char * szFilename)
 {
-	UT_return_val_if_fail(!m_fp, false);
-	UT_return_val_if_fail(szFilename, false);
+	UT_return_val_if_fail(!m_fp, NULL);
+	UT_return_val_if_fail(szFilename, NULL);
 
 	g_free(m_szFileName);
 	m_szFileName = g_new(char, strlen(szFilename) + 1);
