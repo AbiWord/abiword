@@ -150,7 +150,7 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 			break;
 			
 		case S_INDQUOTE:
-			if ( (*p=='"') )
+			if ( *p=='"' )
 			{
 				state=S_START;
 				*p++=0;
@@ -161,7 +161,7 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 			break;
 			
 		case S_INSQUOTE:
-			if ( (*p=='\'') )
+			if ( *p=='\'' )
 			{
 				state=S_START;
 				*p++=0;

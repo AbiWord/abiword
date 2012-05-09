@@ -3259,7 +3259,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 	{
 	         PT_DocPosition posEnd = 0;
 		 getEditableBounds(true,posEnd);
-		 if((posEnd == getPoint()))
+		 if(posEnd == getPoint())
 		 {
 		         pointBreak--;
 			 bPointBreak = true;

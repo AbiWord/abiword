@@ -2288,7 +2288,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			UT_sint32 j;
 			for (j = 0; j < m_infoCache.m_iTabStops; j++)
 			{
-				if ((j == iTab))
+				if (j == iTab)
 					continue;
 
 				if (!buf.empty())
