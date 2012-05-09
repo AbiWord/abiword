@@ -978,10 +978,13 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HasRevisions)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CursorInSemItem)
 {
-	UT_UNUSED(id);
 	UT_UNUSED(pszState);
 	ABIWORD_VIEW;
  	UT_return_val_if_fail (pView, EV_TIS_Gray);
+
+	/* The editors aren't working yet. Remove if they do work. */
+	if (id == AP_TOOLBAR_ID_SEMITEM_EDIT) 
+		return EV_TIS_Gray;
 
     xxx_UT_DEBUGMSG((" ap_ToolbarGetState_CursorInSemItem() pDoc:%p\n", pView->getDocument() ));
 	if( PD_Document * pDoc = pView->getDocument() )
