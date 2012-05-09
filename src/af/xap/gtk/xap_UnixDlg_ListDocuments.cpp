@@ -142,6 +142,7 @@ GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
 	w = GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableDocuments"));
 	gtk_label_set_text(GTK_LABEL(w), _getHeading());
 	w = GTK_WIDGET(gtk_builder_get_object(builder, "btView"));
+	gtk_button_set_label(GTK_BUTTON(w), _getOKButtonText());
 
 	// add a column to our TreeViews
 
