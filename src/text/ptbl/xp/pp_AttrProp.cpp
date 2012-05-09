@@ -938,7 +938,7 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const gchar ** attributes,
 		// TODO them from this?  or should we expand it and override
 		// TODO individual properties?
 		// TODO for now, we just barf on it.
-		UT_return_val_if_fail (strcmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0, false); // cannot handle PROPS here
+		UT_return_val_if_fail (strcmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0, NULL); // cannot handle PROPS here
 		if (!papNew->getAttribute(n,vNew))
 			if (!papNew->setAttribute(n,v))
 				goto Failed;
@@ -1066,7 +1066,7 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const gchar ** attributes,
 			const gchar ** p = attributes;
 			while (*p)
 			{
-				UT_return_val_if_fail (strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0, false); // cannot handle PROPS here
+				UT_return_val_if_fail (strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0, NULL); // cannot handle PROPS here
 				if (strcmp(n,p[0])==0)		// found it, so we don't put it in the result.
 					goto DoNotIncludeAttribute;
 				p += 2;								// skip over value

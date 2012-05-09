@@ -2808,7 +2808,7 @@ pf_Frag_Strux* PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
 				 indexAP = pfSec->getIndexAP();
 				 const PP_AttrProp * pAP = NULL;
 				 m_pPieceTable->getAttrProp(indexAP,&pAP);
-				 UT_return_val_if_fail (pAP,false);
+				 UT_return_val_if_fail (pAP, NULL);
 				 const gchar * pszIDName = NULL;
 				 const gchar * pszHeaderName = NULL;
 				 (pAP)->getAttribute(PT_TYPE_ATTRIBUTE_NAME, pszHeaderName);
