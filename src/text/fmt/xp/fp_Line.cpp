@@ -4404,7 +4404,7 @@ void fp_Line::addDirectionUsed(UT_BidiCharType dir, bool bRefreshMap)
 		xxx_UT_DEBUGMSG(("fp_Line::addDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
 	}
 	
-	if(bRefreshMap && (dir != UT_BIDI_UNSET))
+	if(bRefreshMap && (dir != static_cast<UT_BidiCharType>(UT_BIDI_UNSET)))
 	{
 		m_bMapDirty = true;
 		//_createMapOfRuns();
@@ -4424,7 +4424,7 @@ void fp_Line::removeDirectionUsed(UT_BidiCharType dir, bool bRefreshMap)
 		xxx_UT_DEBUGMSG(("fp_Line::removeDirectionUsed: increased LTR run count [%d, this=0x%x, bRefresh=%d]\n", m_iRunsLTRcount, this, bRefreshMap));
 	}
 
-	if(bRefreshMap && (dir != UT_BIDI_UNSET))
+	if(bRefreshMap && (dir != static_cast<UT_BidiCharType>(UT_BIDI_UNSET)))
 	{
 		m_bMapDirty = true;
 		//_createMapOfRuns();
@@ -4459,7 +4459,7 @@ void fp_Line::changeDirectionUsed(UT_BidiCharType oldDir, UT_BidiCharType newDir
 	}
 
 
-	if(bRefreshMap && (newDir != UT_BIDI_UNSET))
+	if(bRefreshMap && (newDir != static_cast<UT_BidiCharType>(UT_BIDI_UNSET)))
 	{
 		m_bMapDirty = true;
 		_createMapOfRuns();
