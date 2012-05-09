@@ -664,7 +664,6 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_RDF_Contact)
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_haveSemItems)
 {
-	UT_UNUSED(id);
 	ABIWORD_VIEW ;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 	PD_Document * pDoc = pView->getDocument();
@@ -672,6 +671,8 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_haveSemItems)
     PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
 	UT_return_val_if_fail( rdf, EV_MIS_Gray );
 
+	/* The editors aren't working yet. Remove if they do work. */
+	if (id == AP_MENU_ID_RDFANCHOR_EDITSEMITEM) return EV_MIS_Gray;
     
 	EV_Menu_ItemState s = EV_MIS_ZERO ;
     return s;
