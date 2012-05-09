@@ -569,6 +569,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	m_PageHbox = _getWidget("hbox16");
 
 	/* required for translations */
+	abiDialogSetTitle(m_window, "%s", _(AP, DLG_PageSetup_Title));
 	gtk_label_set_text (GTK_LABEL (_getWidget("lbPage")), _(AP, DLG_PageSetup_Page));
 	gtk_label_set_text (GTK_LABEL (_getWidget("lbMargin")), _(AP, DLG_PageSetup_Margin));
 	Markup (_getWidget("lbPaper"), pSS, _(AP, DLG_PageSetup_Paper));
