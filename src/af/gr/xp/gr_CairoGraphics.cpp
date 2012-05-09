@@ -3560,7 +3560,7 @@ PangoCoverage * GR_PangoFont::getPangoCoverage() const
     
     NB: it is essential that this function is fast
 */
-bool GR_PangoFont::doesGlyphExist(UT_UCS4Char g)
+bool GR_PangoFont::doesGlyphExist(UT_UCS4Char g) const
 {
 	UT_return_val_if_fail( m_pf, false );
 

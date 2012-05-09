@@ -44,10 +44,11 @@ CairoNull_Graphics::~CairoNull_Graphics()
 }
 
 GR_Image* CairoNull_Graphics::createNewImage(const char* /*pszName*/, 
-											const UT_ByteBuf* /*pBB*/, 
-											UT_sint32 /*iDisplayWidth*/, 
-											UT_sint32 /*iDisplayHeight*/,
-											GR_Image::GRType /*iType*/)
+					     const UT_ByteBuf* /*pBB*/, 
+					     const std::string& /*mimetype*/,
+					     UT_sint32 /*iDisplayWidth*/, 
+					     UT_sint32 /*iDisplayHeight*/,
+					     GR_Image::GRType /*iType*/)
 {
 	return NULL;
 }
@@ -193,9 +194,9 @@ void CairoNull_Graphics::setColor3D(GR_Color3D /*c*/)
 
 }
 
-UT_RGBColor * CairoNull_Graphics::getColor3D(GR_Color3D /*c*/)
+bool CairoNull_Graphics::getColor3D(GR_Color3D /*c*/, UT_RGBColor &)
 {
-	return NULL;
+	return false;
 }
 
 void CairoNull_Graphics::fillRect(GR_Color3D /*c*/, UT_sint32 /*x*/, UT_sint32 /*y*/, UT_sint32 /*w*/, UT_sint32 /*h*/)

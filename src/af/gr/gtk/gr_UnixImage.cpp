@@ -338,7 +338,6 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		return false;
 	}
 
-	G_IS_OBJECT(G_OBJECT(m_image));
 //
 // Have to put a reference on it to prevent it being deleted during the close.
 //

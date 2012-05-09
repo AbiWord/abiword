@@ -81,7 +81,7 @@ public:
 	virtual void drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);	
-	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType);
+	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType  = GR_Image::GRT_Raster);
 	
 	virtual bool queryProperties(GR_Graphics::Properties gp) const;
 	
@@ -97,7 +97,7 @@ public:
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
 	virtual void					setColor3D(GR_Color3D c);
-	virtual UT_RGBColor *			getColor3D(GR_Color3D c);
+	virtual bool getColor3D(GR_Color3D c, UT_RGBColor &color);
 	virtual void fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
 	virtual void fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void setPageSize(char* pageSizeName, UT_uint32 iwidth = 0, UT_uint32 iheight=0);

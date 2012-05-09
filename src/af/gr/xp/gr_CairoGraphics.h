@@ -107,7 +107,7 @@ class ABI_EXPORT GR_PangoFont : public GR_Font
 		That means measuring it for a font size of 120
 	 */
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCS4Char cChar) const;
-	virtual bool      doesGlyphExist(UT_UCS4Char g);
+	virtual bool      doesGlyphExist(UT_UCS4Char g) const;
 	virtual bool      glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
 	PangoFont *       getPangoFont() const {return m_pf;}
 	PangoFont *       getPangoLayoutFont() const {return m_pLayoutF;}
