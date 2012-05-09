@@ -31,7 +31,7 @@
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbAvailableLanguages">
-                    <property name="label" translatable="yes">&lt;b&gt;Select Language&lt;/b&gt;</property>
+                    <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
