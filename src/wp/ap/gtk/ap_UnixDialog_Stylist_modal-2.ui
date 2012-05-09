@@ -2,7 +2,6 @@
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="ap_UnixDialog_Stylist">
-    <property name="has_separator">True</property>
     <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
