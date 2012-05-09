@@ -49,7 +49,7 @@ public:
 	UT_sint32           getValue(void);
 	void				layout(void);
 	void		        forceClearScreen(void);
-	virtual UT_sint32   getHeight(void);
+	virtual UT_sint32   getHeight(void) const;
 	virtual void		clearScreen(void);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*);

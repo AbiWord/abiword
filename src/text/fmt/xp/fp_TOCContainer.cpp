@@ -659,7 +659,7 @@ UT_sint32 fp_TOCContainer::wantVBreakAt(UT_sint32 vpos)
  * Return the height of this Table taking into account the possibility
  * of it being broken.
  */
-UT_sint32 fp_TOCContainer::getHeight(void)
+UT_sint32 fp_TOCContainer::getHeight(void) const
 {
 	UT_sint32 iFullHeight =  fp_VerticalContainer::getHeight();
 	if(!isThisBroken())
