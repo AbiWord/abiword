@@ -140,7 +140,7 @@ GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
 
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), _getTitle());
 	w = GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableDocuments"));
-	gtk_label_set_text(GTK_LABEL(w), _getHeading());
+	setLabelMarkup(w, _getHeading());
 	w = GTK_WIDGET(gtk_builder_get_object(builder, "btView"));
 	gtk_button_set_label(GTK_BUTTON(w), _getOKButtonText());
 
