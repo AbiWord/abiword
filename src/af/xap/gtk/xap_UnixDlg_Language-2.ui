@@ -147,7 +147,7 @@
               <object class="GtkButton" id="btClose">
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
-                <property name="label">gtk-close</property>
+                <property name="label">gtk-ok</property>
                 <property name="use_stock">True</property>
                 <property name="visible">True</property>
               </object>
