@@ -281,7 +281,7 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(UT_ByteBuf * pBB)
 
 	k++;
 	iBase = k;
-	for(k =k; (*(pBC+k) != '"') && (k < length); k++)
+	for(; (*(pBC+k) != '"') && (k < length); k++)
 		;
 	if(k >= length)
 	{
@@ -317,7 +317,9 @@ GdkPixbuf * IE_ImpGraphic_GdkPixbuf::_loadXPM(UT_ByteBuf * pBB)
 			//
 			k++;
 			iBase = k;
-			for(k =k; (*(pBC+k) != '"') && (k < length); k++) {}
+			for(; (*(pBC+k) != '"') && (k < length); k++) 
+			{
+			}
 			if(k >= length)
 			{
 				return NULL;
