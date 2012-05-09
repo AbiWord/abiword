@@ -205,7 +205,7 @@ UT_uint32 XAP_EncodingManager::approximate(char* out,UT_uint32 max_length,UT_UCS
 UT_UCSChar XAP_EncodingManager::nativeToU(UT_UCSChar c) const
 {
     UT_UCSChar ret = try_nativeToU(c);
-    return ret ? ret : fallbackChar(c);	
+    return ret ? ret : (UT_UCSChar)fallbackChar(c);	
 }
 
 UT_UCSChar XAP_EncodingManager::UToNative(UT_UCSChar c)  const
@@ -224,14 +224,14 @@ UT_UCSChar XAP_EncodingManager::UToNative(UT_UCSChar c)  const
 UT_UCSChar XAP_EncodingManager::WindowsToU(UT_UCSChar c) const
 {
     UT_UCSChar ret = try_WindowsToU(c);
-    return ret ? ret : fallbackChar(c);	
+    return ret ? ret : (UT_UCSChar)fallbackChar(c);	
 }
 
 
 UT_UCSChar XAP_EncodingManager::UToWindows(UT_UCSChar c)  const
 {
     UT_UCSChar ret = try_UToWindows(c);
-    return ret && ret<=0xff ? ret : fallbackChar(c);	
+    return ret && ret<=0xff ? ret : (UT_UCSChar)fallbackChar(c);	
 }
 
 
