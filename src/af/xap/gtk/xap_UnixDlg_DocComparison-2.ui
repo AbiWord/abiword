@@ -1,23 +1,23 @@
-<?xml version="1.0"?>
+<?xml version="1.0" ?>
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="xap_UnixDlg_DocComparison">
     <property name="border_width">6</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
-        <property name="visible">True</property>
         <property name="spacing">4</property>
+        <property name="visible">True</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
-            <property name="visible">True</property>
             <property name="layout_style">GTK_BUTTONBOX_END</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkButton" id="closeButton">
-                <property name="visible">True</property>
                 <property name="can_default">True</property>
                 <property name="can_focus">True</property>
                 <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
+                <property name="visible">True</property>
               </object>
             </child>
           </object>
@@ -28,18 +28,18 @@
         </child>
         <child>
           <object class="GtkVBox" id="vbox1">
-            <property name="visible">True</property>
             <property name="spacing">2</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkTable" id="table1">
-                <property name="visible">True</property>
-                <property name="n_rows">3</property>
                 <property name="n_columns">2</property>
+                <property name="n_rows">3</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbDocCompared">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -52,8 +52,8 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbDocument1">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -74,14 +74,14 @@
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">3</property>
                     <property name="x_padding">8</property>
-                    <property name="x_options">shrink</property>
-                    <property name="y_options">shrink</property>
+                    <property name="x_options">GTK_SHRINK</property>
+                    <property name="y_options">GTK_SHRINK</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbDocument2">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -92,19 +92,17 @@
                   </packing>
                 </child>
               </object>
-              <packing>
-              </packing>
             </child>
             <child>
               <object class="GtkTable" id="table2">
-                <property name="visible">True</property>
-                <property name="n_rows">5</property>
                 <property name="n_columns">3</property>
+                <property name="n_rows">5</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbResults">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -112,7 +110,7 @@
                     <property name="right_attach">3</property>
                     <property name="top_attach">0</property>
                     <property name="bottom_attach">1</property>
-                    <property name="y_options">fill</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
@@ -126,14 +124,14 @@
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">5</property>
                     <property name="x_padding">8</property>
-                    <property name="x_options">shrink|fill</property>
-                    <property name="y_options">shrink</property>
+                    <property name="x_options">GTK_SHRINK|GTK_FILL</property>
+                    <property name="y_options">GTK_SHRINK</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbRelationship">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -141,14 +139,14 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
-                    <property name="x_options">shrink|fill</property>
+                    <property name="x_options">GTK_SHRINK|GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbContent">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -156,14 +154,14 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
-                    <property name="x_options">shrink|fill</property>
+                    <property name="x_options">GTK_SHRINK|GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbFormat">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -171,14 +169,14 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
-                    <property name="x_options">shrink|fill</property>
+                    <property name="x_options">GTK_SHRINK|GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbStyles">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -186,14 +184,14 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">4</property>
                     <property name="bottom_attach">5</property>
-                    <property name="x_options">shrink|fill</property>
+                    <property name="x_options">GTK_SHRINK|GTK_FILL</property>
                     <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbRelationshipRes">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -202,13 +200,13 @@
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
                     <property name="x_padding">8</property>
-                    <property name="y_options">fill</property>
+                    <property name="y_options">GTK_FILL</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbContentRes">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -222,8 +220,8 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbFormatRes">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -237,8 +235,8 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbStylesRes">
-                    <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
+                    <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
                   <packing>
@@ -251,12 +249,8 @@
                   </packing>
                 </child>
               </object>
-              <packing>
-              </packing>
             </child>
           </object>
-          <packing>
-          </packing>
         </child>
       </object>
     </child>
