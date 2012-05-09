@@ -4,19 +4,16 @@
   <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkDialog" id="ap_UnixDialog_RDFQuery">
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">Execute SPARQL RDF Query</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox2">
         <property name="visible">True</property>
-        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
             <child>
               <placeholder/>
             </child>
@@ -24,7 +21,6 @@
               <object class="GtkVPaned" id="vpaned1">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="scrolledwindow2">
                     <property name="visible">True</property>
@@ -41,7 +37,6 @@
                   </object>
                   <packing>
                     <property name="resize">True</property>
-                    <property name="shrink">True</property>
                   </packing>
                 </child>
                 <child>
@@ -63,8 +58,6 @@
                     </child>
                   </object>
                   <packing>
-                    <property name="resize">True</property>
-                    <property name="shrink">True</property>
                   </packing>
                 </child>
               </object>
@@ -114,7 +107,6 @@
             </child>
             <child>
               <object class="GtkButton" id="btShowAll">
-                <property name="label" translatable="yes">Show All RDF</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -128,7 +120,6 @@
             </child>
             <child>
               <object class="GtkButton" id="btExecute">
-                <property name="label" translatable="yes">Execute Query</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -159,7 +150,6 @@
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">end</property>
-            <property name="position">0</property>
           </packing>
         </child>
       </object>
