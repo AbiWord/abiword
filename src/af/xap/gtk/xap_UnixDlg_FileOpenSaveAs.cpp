@@ -1046,7 +1046,7 @@ GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
 
 	k++;
 	iBase = k;
-	for(k =k; (*(pBC+k) != '"') && (k < length); k++)
+	for( ; (*(pBC+k) != '"') && (k < length); k++)
 		;
 	if(k >= length)
 	{
@@ -1082,7 +1082,7 @@ GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
 			//
 			k++;
 			iBase = k;
-			for(k =k; (*(pBC+k) != '"') && (k < length); k++) {}
+			for( ; (*(pBC+k) != '"') && (k < length); k++) {}
 			if(k >= length)
 			{
 				return NULL;
