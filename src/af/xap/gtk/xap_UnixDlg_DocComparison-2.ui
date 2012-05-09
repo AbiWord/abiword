@@ -3,17 +3,9 @@
 <interface>
   <object class="GtkDialog" id="xap_UnixDlg_DocComparison">
     <property name="border_width">6</property>
-    <property name="title" translatable="yes">dialog1</property>
-    <property name="type">GTK_WINDOW_TOPLEVEL</property>
-    <property name="window_position">GTK_WIN_POS_NONE</property>
-    <property name="modal">False</property>
-    <property name="resizable">True</property>
-    <property name="destroy_with_parent">False</property>
-    <property name="has_separator">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
-        <property name="homogeneous">False</property>
         <property name="spacing">4</property>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
@@ -26,43 +18,29 @@
                 <property name="can_focus">True</property>
                 <property name="label">gtk-close</property>
                 <property name="use_stock">True</property>
-                <property name="relief">GTK_RELIEF_NORMAL</property>
               </object>
             </child>
           </object>
           <packing>
-            <property name="padding">0</property>
             <property name="expand">False</property>
-            <property name="fill">True</property>
             <property name="pack_type">GTK_PACK_END</property>
           </packing>
         </child>
         <child>
           <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
-            <property name="homogeneous">False</property>
             <property name="spacing">2</property>
             <child>
               <object class="GtkTable" id="table1">
                 <property name="visible">True</property>
                 <property name="n_rows">3</property>
                 <property name="n_columns">2</property>
-                <property name="homogeneous">False</property>
-                <property name="row_spacing">0</property>
-                <property name="column_spacing">0</property>
                 <child>
                   <object class="GtkLabel" id="lbDocCompared">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
-                    <property name="use_underline">False</property>
                     <property name="use_markup">True</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -76,15 +54,7 @@
                   <object class="GtkLabel" id="lbDocument1">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -96,16 +66,7 @@
                 <child>
                   <object class="GtkLabel" id="lbTopSpacer">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes"></property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -121,15 +82,7 @@
                   <object class="GtkLabel" id="lbDocument2">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -140,9 +93,6 @@
                 </child>
               </object>
               <packing>
-                <property name="padding">0</property>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
               </packing>
             </child>
             <child>
@@ -150,22 +100,12 @@
                 <property name="visible">True</property>
                 <property name="n_rows">5</property>
                 <property name="n_columns">3</property>
-                <property name="homogeneous">False</property>
-                <property name="row_spacing">0</property>
-                <property name="column_spacing">0</property>
                 <child>
                   <object class="GtkLabel" id="lbResults">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
-                    <property name="use_underline">False</property>
                     <property name="use_markup">True</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -178,16 +118,7 @@
                 <child>
                   <object class="GtkLabel" id="lbBotSpacer">
                     <property name="visible">True</property>
-                    <property name="label" translatable="yes"></property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -203,15 +134,7 @@
                   <object class="GtkLabel" id="lbRelationship">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -226,15 +149,7 @@
                   <object class="GtkLabel" id="lbContent">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -249,15 +164,7 @@
                   <object class="GtkLabel" id="lbFormat">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -272,15 +179,7 @@
                   <object class="GtkLabel" id="lbStyles">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">1</property>
@@ -295,15 +194,7 @@
                   <object class="GtkLabel" id="lbRelationshipRes">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -318,15 +209,7 @@
                   <object class="GtkLabel" id="lbContentRes">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -341,15 +224,7 @@
                   <object class="GtkLabel" id="lbFormatRes">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -364,15 +239,7 @@
                   <object class="GtkLabel" id="lbStylesRes">
                     <property name="visible">True</property>
                     <property name="label" translatable="yes">%s</property>
-                    <property name="use_underline">False</property>
-                    <property name="use_markup">False</property>
-                    <property name="justify">GTK_JUSTIFY_LEFT</property>
-                    <property name="wrap">False</property>
-                    <property name="selectable">False</property>
                     <property name="xalign">0</property>
-                    <property name="yalign">0.5</property>
-                    <property name="xpad">0</property>
-                    <property name="ypad">0</property>
                   </object>
                   <packing>
                     <property name="left_attach">2</property>
@@ -385,16 +252,10 @@
                 </child>
               </object>
               <packing>
-                <property name="padding">0</property>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="padding">0</property>
-            <property name="expand">True</property>
-            <property name="fill">True</property>
           </packing>
         </child>
       </object>
