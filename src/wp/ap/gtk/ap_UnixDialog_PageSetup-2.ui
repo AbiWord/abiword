@@ -1,84 +1,83 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" ?>
+<!--*- mode: xml -*-->
 <interface>
-  <!-- interface-requires gtk+ 2.12 -->
-  <!-- interface-naming-policy toplevel-contextual -->
   <object class="GtkAdjustment" id="adjustment1">
     <property name="lower">1</property>
-    <property name="upper">5000</property>
     <property name="step_increment">0.1</property>
+    <property name="upper">5000</property>
   </object>
   <object class="GtkAdjustment" id="adjustment2">
     <property name="lower">1</property>
-    <property name="upper">5000</property>
-    <property name="step_increment">0.1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">0.1</property>
+    <property name="upper">5000</property>
   </object>
   <object class="GtkAdjustment" id="adjustment3">
-    <property name="value">100</property>
     <property name="lower">1</property>
-    <property name="upper">100</property>
-    <property name="step_increment">1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">1</property>
+    <property name="upper">100</property>
+    <property name="value">100</property>
   </object>
   <object class="GtkAdjustment" id="adjustment4">
-    <property name="upper">100</property>
-    <property name="step_increment">0.1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">0.1</property>
+    <property name="upper">100</property>
   </object>
   <object class="GtkAdjustment" id="adjustment5">
-    <property name="upper">100</property>
-    <property name="step_increment">0.1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">0.1</property>
+    <property name="upper">100</property>
   </object>
   <object class="GtkAdjustment" id="adjustment6">
-    <property name="upper">100</property>
-    <property name="step_increment">0.1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">0.1</property>
+    <property name="upper">100</property>
   </object>
   <object class="GtkAdjustment" id="adjustment7">
-    <property name="upper">100</property>
-    <property name="step_increment">0.1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">0.1</property>
+    <property name="upper">100</property>
   </object>
   <object class="GtkAdjustment" id="adjustment8">
-    <property name="upper">100</property>
-    <property name="step_increment">0.1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">0.1</property>
+    <property name="upper">100</property>
   </object>
   <object class="GtkAdjustment" id="adjustment9">
-    <property name="upper">100</property>
-    <property name="step_increment">0.1</property>
     <property name="page_increment">10</property>
+    <property name="step_increment">0.1</property>
+    <property name="upper">100</property>
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_PageSetup">
-    <property name="visible">True</property>
     <property name="border_width">5</property>
-    <property name="type_hint">dialog</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <child>
           <object class="GtkNotebook" id="notebook">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
             <property name="border_width">5</property>
+            <property name="can_focus">True</property>
+            <property name="visible">True</property>
             <child>
               <object class="GtkVBox" id="vbox2">
-                <property name="visible">True</property>
                 <property name="border_width">12</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkVBox" id="vbox3">
-                    <property name="visible">True</property>
                     <property name="spacing">6</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkFrame" id="frame1">
+                        <property name="shadow_type">GTK_SHADOW_NONE</property>
                         <property name="visible">True</property>
-                        <property name="shadow_type">none</property>
                         <child>
                           <object class="GtkHBox" id="hbox2">
-                            <property name="visible">True</property>
                             <property name="border_width">6</property>
                             <property name="spacing">6</property>
+                            <property name="visible">True</property>
                             <child>
                               <object class="GtkLabel" id="label6">
                                 <property name="visible">True</property>
@@ -90,11 +89,11 @@
                             </child>
                             <child>
                               <object class="GtkTable" id="tblPaperInner">
-                                <property name="visible">True</property>
-                                <property name="n_rows">4</property>
-                                <property name="n_columns">2</property>
                                 <property name="column_spacing">6</property>
+                                <property name="n_columns">2</property>
+                                <property name="n_rows">4</property>
                                 <property name="row_spacing">6</property>
+                                <property name="visible">True</property>
                                 <child>
                                   <object class="GtkLabel" id="lbPaperSize">
                                     <property name="visible">True</property>
@@ -107,11 +106,11 @@
                                 </child>
                                 <child>
                                   <object class="GtkSpinButton" id="wHeightSpin">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
                                     <property name="adjustment">adjustment1</property>
+                                    <property name="can_focus">True</property>
                                     <property name="climb_rate">0.01</property>
                                     <property name="digits">2</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -123,10 +122,10 @@
                                 </child>
                                 <child>
                                   <object class="GtkSpinButton" id="wWidthSpin">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
                                     <property name="adjustment">adjustment2</property>
+                                    <property name="can_focus">True</property>
                                     <property name="digits">2</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -138,8 +137,8 @@
                                 </child>
                                 <child>
                                   <object class="GtkComboBox" id="optionPageUnits">
-                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -212,21 +211,21 @@
                         </child>
                         <child type="label">
                           <object class="GtkLabel" id="lbPaper">
-                            <property name="visible">True</property>
                             <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
+                            <property name="visible">True</property>
                           </object>
                         </child>
                       </object>
                     </child>
                     <child>
                       <object class="GtkFrame" id="frame2">
+                        <property name="shadow_type">GTK_SHADOW_NONE</property>
                         <property name="visible">True</property>
-                        <property name="shadow_type">none</property>
                         <child>
                           <object class="GtkHBox" id="hbox3">
-                            <property name="visible">True</property>
                             <property name="border_width">6</property>
+                            <property name="visible">True</property>
                             <child>
                               <object class="GtkLabel" id="label15">
                                 <property name="visible">True</property>
@@ -241,14 +240,14 @@
                                 <property name="visible">True</property>
                                 <child>
                                   <object class="GtkVBox" id="vbox5">
-                                    <property name="visible">True</property>
                                     <property name="homogeneous">True</property>
+                                    <property name="visible">True</property>
                                     <child>
                                       <object class="GtkRadioButton" id="rbPortrait">
-                                        <property name="label" translatable="yes"></property>
-                                        <property name="visible">True</property>
                                         <property name="can_focus">True</property>
+                                        <property name="label" translatable="yes"></property>
                                         <property name="use_underline">True</property>
+                                        <property name="visible">True</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -257,11 +256,11 @@
                                     </child>
                                     <child>
                                       <object class="GtkRadioButton" id="rbLandscape">
-                                        <property name="label" translatable="yes"></property>
-                                        <property name="visible">True</property>
                                         <property name="can_focus">True</property>
-                                        <property name="use_underline">True</property>
                                         <property name="group">rbPortrait</property>
+                                        <property name="label" translatable="yes"></property>
+                                        <property name="use_underline">True</property>
+                                        <property name="visible">True</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -280,9 +279,9 @@
                         </child>
                         <child type="label">
                           <object class="GtkLabel" id="lbOrientation">
-                            <property name="visible">True</property>
                             <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
+                            <property name="visible">True</property>
                           </object>
                         </child>
                       </object>
@@ -292,13 +291,13 @@
                     </child>
                     <child>
                       <object class="GtkFrame" id="frame3">
+                        <property name="shadow_type">GTK_SHADOW_NONE</property>
                         <property name="visible">True</property>
-                        <property name="shadow_type">none</property>
                         <child>
                           <object class="GtkHBox" id="hbox4">
-                            <property name="visible">True</property>
                             <property name="border_width">6</property>
                             <property name="spacing">6</property>
+                            <property name="visible">True</property>
                             <child>
                               <object class="GtkLabel" id="label8">
                                 <property name="visible">True</property>
@@ -310,8 +309,8 @@
                             </child>
                             <child>
                               <object class="GtkHBox" id="hbox5">
-                                <property name="visible">True</property>
                                 <property name="spacing">6</property>
+                                <property name="visible">True</property>
                                 <child>
                                   <object class="GtkLabel" id="lbAdjust">
                                     <property name="visible">True</property>
@@ -324,11 +323,11 @@
                                 </child>
                                 <child>
                                   <object class="GtkSpinButton" id="wPageScale">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
                                     <property name="adjustment">adjustment3</property>
+                                    <property name="can_focus">True</property>
                                     <property name="climb_rate">1</property>
                                     <property name="numeric">True</property>
+                                    <property name="visible">True</property>
                                   </object>
                                   <packing>
                                     <property name="position">1</property>
@@ -354,9 +353,9 @@
                         </child>
                         <child type="label">
                           <object class="GtkLabel" id="lbScale">
-                            <property name="visible">True</property>
                             <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                             <property name="use_markup">True</property>
+                            <property name="visible">True</property>
                           </object>
                         </child>
                       </object>
@@ -378,19 +377,19 @@
             </child>
             <child>
               <object class="GtkVBox" id="vbox4">
-                <property name="visible">True</property>
                 <property name="border_width">12</property>
+                <property name="visible">True</property>
                 <child>
                   <object class="GtkHBox" id="hbox15">
-                    <property name="visible">True</property>
                     <property name="spacing">20</property>
+                    <property name="visible">True</property>
                     <child>
                       <object class="GtkTable" id="tblMargin">
-                        <property name="visible">True</property>
-                        <property name="n_rows">9</property>
-                        <property name="n_columns">2</property>
                         <property name="column_spacing">6</property>
+                        <property name="n_columns">2</property>
+                        <property name="n_rows">9</property>
                         <property name="row_spacing">6</property>
+                        <property name="visible">True</property>
                         <child>
                           <object class="GtkLabel" id="lbMarginUnits">
                             <property name="visible">True</property>
@@ -403,8 +402,8 @@
                         </child>
                         <child>
                           <object class="GtkComboBox" id="optionMarginUnits">
-                            <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -415,11 +414,11 @@
                         </child>
                         <child>
                           <object class="GtkSpinButton" id="wTopSpin">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
                             <property name="adjustment">adjustment4</property>
+                            <property name="can_focus">True</property>
                             <property name="climb_rate">1</property>
                             <property name="digits">2</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -431,11 +430,11 @@
                         </child>
                         <child>
                           <object class="GtkSpinButton" id="wRightSpin">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
                             <property name="adjustment">adjustment5</property>
+                            <property name="can_focus">True</property>
                             <property name="climb_rate">1</property>
                             <property name="digits">2</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -447,11 +446,11 @@
                         </child>
                         <child>
                           <object class="GtkSpinButton" id="wLeftSpin">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
                             <property name="adjustment">adjustment6</property>
+                            <property name="can_focus">True</property>
                             <property name="climb_rate">1</property>
                             <property name="digits">2</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -463,11 +462,11 @@
                         </child>
                         <child>
                           <object class="GtkSpinButton" id="wBottomSpin">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
                             <property name="adjustment">adjustment7</property>
+                            <property name="can_focus">True</property>
                             <property name="climb_rate">1</property>
                             <property name="digits">2</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -479,11 +478,11 @@
                         </child>
                         <child>
                           <object class="GtkSpinButton" id="wHeaderSpin">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
                             <property name="adjustment">adjustment8</property>
+                            <property name="can_focus">True</property>
                             <property name="climb_rate">1</property>
                             <property name="digits">2</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -495,11 +494,11 @@
                         </child>
                         <child>
                           <object class="GtkSpinButton" id="wFooterSpin">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
                             <property name="adjustment">adjustment9</property>
+                            <property name="can_focus">True</property>
                             <property name="climb_rate">1</property>
                             <property name="digits">2</property>
+                            <property name="visible">True</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>
@@ -581,18 +580,6 @@
                             <property name="y_options"></property>
                           </packing>
                         </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <placeholder/>
-                        </child>
                       </object>
                     </child>
                   </object>
@@ -618,12 +605,12 @@
         </child>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
+            <property name="layout_style">GTK_BUTTONBOX_END</property>
             <property name="visible">True</property>
-            <property name="layout_style">end</property>
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="pack_type">end</property>
+            <property name="pack_type">GTK_PACK_END</property>
           </packing>
         </child>
       </object>
