@@ -4,10 +4,11 @@
   <object class="GtkDialog" id="xap_UnixDlg_PluginManager">
     <property name="border_width">5</property>
     <property name="has_separator">False</property>
+    <property name="height_request">450</property>
     <property name="modal">True</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <property name="visible">True</property>
-    <property name="width_request">450</property>
+    <property name="width_request">425</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbDialog">
         <property name="visible">True</property>
@@ -102,8 +103,15 @@
                           <object class="GtkButton" id="btInstall">
                             <property name="can_default">True</property>
                             <property name="can_focus">True</property>
+                            <property name="image">image1</property>
                             <property name="use_underline">True</property>
                             <property name="visible">True</property>
+                            <child>
+                              <object class="GtkImage" id="image1">
+                                <property name="stock">gtk-add</property>
+                                <property name="visible">True</property>
+                              </object>
+                            </child>
                           </object>
                         </child>
                       </object>
