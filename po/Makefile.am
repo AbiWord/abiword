@@ -16,6 +16,7 @@ strings_DATA = \
 	bg-BG.strings \
 	br-FR.strings \
 	ca-ES.strings \
+	cgg.strings \
 	cs-CZ.strings \
 	cy-GB.strings \
 	da-DK.strings \
