@@ -581,11 +581,6 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_wrbSquareWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap"));
 	m_wrbTightWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap"));
 
-
-// the check button already contains a label. We have to remove this
-// before we can localize it
-
-	gtk_container_remove(GTK_CONTAINER(m_wAspectCheck), gtk_bin_get_child(GTK_BIN(m_wAspectCheck)));
 	pSS->getValueUTF8 (XAP_STRING_ID_DLG_Image_Aspect,s);
 	gtk_button_set_label(GTK_BUTTON(m_wAspectCheck), s.c_str());
 
