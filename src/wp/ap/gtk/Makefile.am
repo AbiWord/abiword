@@ -215,7 +215,6 @@ ui_DATA = \
 	ap_UnixDialog_New-2.ui \
 	ap_UnixDialog_Styles-2.ui \
 	ap_UnixDialog_Stylist-2.ui \
-	ap_UnixDialog_Stylist_modal-2.ui \
 	ap_UnixDialog_Tab-2.ui	\
 	ap_UnixDialog_WordCount-2.ui \
 	ap_UnixDialog_Latex-2.ui \
@@ -248,7 +247,6 @@ ui_DATA = \
 	ap_UnixDialog_New.ui \
 	ap_UnixDialog_Styles.ui \
 	ap_UnixDialog_Stylist.ui \
-	ap_UnixDialog_Stylist_modal.ui \
 	ap_UnixDialog_Tab.ui	\
 	ap_UnixDialog_WordCount.ui \
 	ap_UnixDialog_Latex.ui \

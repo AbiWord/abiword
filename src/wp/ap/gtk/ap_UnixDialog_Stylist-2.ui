@@ -19,15 +19,6 @@
                 <property name="visible">True</property>
               </object>
             </child>
-            <child>
-              <object class="GtkButton" id="btApply">
-                <property name="can_default">True</property>
-                <property name="can_focus">True</property>
-                <property name="label">gtk-apply</property>
-                <property name="use_stock">True</property>
-                <property name="visible">True</property>
-              </object>
-            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -47,7 +38,6 @@
     </child>
     <action-widgets>
       <action-widget response="-7">btClose</action-widget>
-      <action-widget response="-10">btApply</action-widget>
     </action-widgets>
   </object>
 </interface>
