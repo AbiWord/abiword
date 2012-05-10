@@ -30,6 +30,7 @@
             <property name="can_focus">True</property>
             <property name="height_request">236</property>
             <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+            <property name="shadow_type">GTK_SHADOW_IN</property>
             <property name="visible">True</property>
             <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
           </object>
