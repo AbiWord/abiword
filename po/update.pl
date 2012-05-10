@@ -32,7 +32,7 @@ use File::Basename;
 
 # Declare global variables
 #-------------------------
-my $VERSION = "1.5beta12";
+my $VERSION = "1.5beta13";
 my $LANG    = $ARGV[0];
 
 # Always print as the first thing
@@ -128,15 +128,15 @@ sub Help{
 
     # Print usage information
     #------------------------
-    print "Usage: ./update.pl [OPTIONS] ...LANGCODE\n";
-    print "Updates pot files and merge them with the translations.\n\n";
-    print "  -H, --help                   shows this help page\n";
+    print "Usage: ./update.pl [OPTIONS] LANGCODE\n";
+    print "Update po files by merging them with new strings to translate.\n\n";
+    print "  -H, --help                   show this help page\n";
     print "  -P, --pot                    generate the pot file only\n";
     print "  -M, --maintain               search for missing files in POTFILES.in\n";
-    print "  -V, --version                shows the version\n";
-    print "\nExamples of use:\n";
-    print "update.sh --pot    just creates a new pot file from the source\n";
-    print "update.sh da       created new pot file and updated the da.po file\n\n";
+    print "  -V, --version                show the version\n";
+    print "\nExamples of use:\n----------------\n";
+    print "update.pl --pot    just create a new pot file from the sources\n";
+    print "update.pl xy       create new pot file and update the xy.po file\n\n";
     print "Report bugs to <kenneth\@gnome.org>.\n";
     exit;
 }
