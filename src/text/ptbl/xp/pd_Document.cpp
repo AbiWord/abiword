@@ -1824,6 +1824,43 @@ bool PD_Document::repairDoc(void)
 		}
 	}
 	//
+	// Check that no section is empty. Add block if necessary
+	//
+	for(i = 0; i < vecSections.getItemCount(); i++)
+	{
+		pfs = vecSections.getNthItem(i);
+		pf_Frag * pfsNext = pfs->getNext();
+		if (!pfsNext)
+		{
+			appendStrux(PTX_Block,NULL);
+			bRepaired = true;
+		}
+		else if ((pfsNext->getType() == pf_Frag::PFT_Strux) &&
+				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() == PTX_Section))
+		{
+			insertStruxBeforeFrag(pfsNext, PTX_Block,NULL);
+			bRepaired = true;
+		}
+	}
+
+	for(i = 0; i < vecHdrFtrs.getItemCount(); i++)
+	{
+		pfs = vecHdrFtrs.getNthItem(i);
+		pf_Frag * pfsNext = pfs->getNext();
+		if (!pfsNext)
+		{
+			appendStrux(PTX_Block,NULL);
+			bRepaired = true;
+		}
+		else if ((pfsNext->getType() == pf_Frag::PFT_Strux) &&
+				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() == PTX_Section))
+		{
+			insertStruxBeforeFrag(pfsNext, PTX_Block,NULL);
+			bRepaired = true;
+		}
+	}
+
+	//
 	// Now repair text and objects which aren't enclosed in a paragraph
 	//
 	pf = m_pPieceTable->getFragments().getFirst();
