@@ -11,7 +11,6 @@
   </object>
   <object class="GtkDialog" id="xap_UnixDlg_Zoom">
     <property name="visible">True</property>
-    <property name="title" translatable="yes">dialog1</property>
     <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
     <child internal-child="vbox">
@@ -20,7 +19,6 @@
         <child>
           <object class="GtkVBox" id="vbox1">
             <property name="visible">True</property>
-            <property name="orientation">vertical</property>
             <property name="spacing">10</property>
             <child>
               <object class="GtkLabel" id="lbZoom">
@@ -33,7 +31,6 @@
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">0</property>
               </packing>
             </child>
             <child>
@@ -47,39 +44,30 @@
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">False</property>
-                    <property name="position">0</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkVBox" id="vbox2">
                     <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
                     <property name="spacing">6</property>
                     <child>
                       <object class="GtkRadioButton" id="rbPercent200">
-                        <property name="label" translatable="yes">200%</property>
                         <property name="width_request">146</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">False</property>
-                        <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbPercent100">
-                        <property name="label" translatable="yes">100%</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
                         <property name="group">rbPercent200</property>
                       </object>
                       <packing>
@@ -90,12 +78,9 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbPercent75">
-                        <property name="label" translatable="yes">75%</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
                         <property name="group">rbPercent200</property>
                       </object>
                       <packing>
@@ -106,12 +91,9 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbPageWidth">
-                        <property name="label" translatable="yes">Page width</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
                         <property name="group">rbPercent200</property>
                       </object>
                       <packing>
@@ -122,13 +104,10 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbWholePage">
-                        <property name="label" translatable="yes">Whole page</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
                         <property name="active">True</property>
-                        <property name="draw_indicator">True</property>
                         <property name="group">rbPercent200</property>
                       </object>
                       <packing>
@@ -139,12 +118,9 @@
                     </child>
                     <child>
                       <object class="GtkRadioButton" id="rbPercent">
-                        <property name="label" translatable="yes">Percent:</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="receives_default">False</property>
                         <property name="use_underline">True</property>
-                        <property name="draw_indicator">True</property>
                         <property name="group">rbPercent200</property>
                       </object>
                       <packing>
@@ -164,7 +140,6 @@
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
-                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
@@ -213,20 +188,17 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
-                <property name="receives_default">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
-                <property name="position">0</property>
               </packing>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="pack_type">end</property>
-            <property name="position">0</property>
           </packing>
         </child>
       </object>
