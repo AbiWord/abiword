@@ -52,7 +52,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbDocument1">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -80,7 +79,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbDocument2">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -130,7 +128,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbRelationship">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -145,7 +142,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbContent">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -160,7 +156,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbFormat">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -175,7 +170,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbStyles">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -190,7 +184,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbRelationshipRes">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -205,7 +198,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbContentRes">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -220,7 +212,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbFormatRes">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -235,7 +226,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbStylesRes">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
