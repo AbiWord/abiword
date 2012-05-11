@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2012-05-07 07:51+0200\n"
+"PO-Revision-Date: 2012-05-11 19:46+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Cymraeg\n"
 "Language: cy\n"
@@ -1007,7 +1007,7 @@ msgstr "&Brig:"
 #. DLG_RDF_Editor_Menu_Triple
 #: po/tmp/ap_String_Id.h
 msgid "&Triple"
-msgstr "%Tryphlyg"
+msgstr "&Tryphlyg"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -2674,7 +2674,7 @@ msgstr "Datgysylltu"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate and apply default stylesheet"
-msgstr ""
+msgstr "Datgysylltu a gosod dalen steil rhagosodedig"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -5329,7 +5329,7 @@ msgstr "Ailgychwyn rhifau'r dudalen mewn adrannau newydd"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr ""
+msgstr "Cyfyngu i Ddolen RDF"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5871,7 +5871,6 @@ msgstr "Gosod atalnodau tab"
 
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
@@ -5879,8 +5878,8 @@ msgid ""
 msgstr ""
 "Gosod y ddalen steil rhagosodedig ar gyfer gwrthrychau Semanteg yn y ddogfen "
 "hon. Bydd gwrthrychau RDF yn defnyddio'r ddalen steil hon yn awtomatig. "
-"Mae'r botynau yn caniatau i chi osod y ddalen steil ar gyfer yr holl "
-"gwrthrychau semanteg cyfredol yn y ddalen steil ragosodedi newydd yn "
+"Mae'r botymau yn caniatáu i chi osod y ddalen steil ar gyfer yr holl "
+"wrthrychau semanteg cyfredol yn y ddalen steil ragosodedig newydd yn "
 "ogystal."
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
