@@ -206,18 +206,18 @@ void XAP_UnixDialog_History::_populateWindowData(GtkBuilder* builder)
 {
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocumentDetails")), pSS, XAP_STRING_ID_DLG_History_DocumentDetails);
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocumentName")), getHeaderLabel(0));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbDocNameVal")), getHeaderValue(0));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersion")), getHeaderLabel(1));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionVal")), getHeaderValue(1));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbCreated")), getHeaderLabel(2));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbCreatedVal")), getHeaderValue(2));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbSaved")), getHeaderLabel(3));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbSavedVal")), getHeaderValue(3));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbEditTime")), getHeaderLabel(4));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbEditTimeVal")), getHeaderValue(4));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbIdentifier")), getHeaderLabel(5));
-	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbIdentifierVal")), getHeaderValue(5));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbDocumentName")), getHeaderLabel(0));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbDocNameVal")), getHeaderValue(0));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbVersion")), getHeaderLabel(1));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbVersionVal")), getHeaderValue(1));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbCreated")), getHeaderLabel(2));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbCreatedVal")), getHeaderValue(2));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbSaved")), getHeaderLabel(3));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbSavedVal")), getHeaderValue(3));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbEditTime")), getHeaderLabel(4));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbEditTimeVal")), getHeaderValue(4));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbIdentifier")), getHeaderLabel(5));
+	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbIdentifierVal")), getHeaderValue(5));
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionHistory")), getListTitle());
 
 }

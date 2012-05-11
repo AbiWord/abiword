@@ -69,7 +69,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbDocumentName">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -83,7 +82,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbVersion">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -97,7 +95,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbVersionVal">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -112,7 +109,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbDocNameVal">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -127,7 +123,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbCreated">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -141,7 +136,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbCreatedVal">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -156,7 +150,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbSaved">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -170,7 +163,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbSavedVal">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -200,7 +192,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbEditTime">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -215,7 +206,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbEditTimeVal">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -230,7 +220,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbIdentifier">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
@@ -245,7 +234,6 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="lbIdentifierVal">
-                    <property name="label" translatable="yes">%s</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
                   </object>
