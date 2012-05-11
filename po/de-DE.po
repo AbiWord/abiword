@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-11 13:43+0200\n"
-"PO-Revision-Date: 2012-05-11 13:43+0200\n"
+"POT-Creation-Date: 2012-05-11 16:24+0200\n"
+"PO-Revision-Date: 2012-05-11 16:24+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -2763,7 +2763,7 @@ msgstr "Anmerkung bearbeiten"
 #. MENU_LABEL_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Edit Equation"
-msgstr "Gleichung bearbeiten"
+msgstr "Formel bearbeiten"
 
 #. MENU_LABEL_EDIT_EDITFOOTER
 #. TOOLBAR_LABEL_EDIT_FOOTER
@@ -2784,7 +2784,7 @@ msgstr "Kopfzeile bearbeiten"
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Edit LaTeX Equation"
-msgstr "LaTeX-Gleichung bearbeiten"
+msgstr "LaTeX-Formel bearbeiten"
 
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
@@ -3973,10 +3973,14 @@ msgid "Keywords:"
 msgstr "Stichwörter:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
-msgstr "LaTeX-Gleichung"
+msgstr "LaTeX-Formel"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "LaTeX-Formel:"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
