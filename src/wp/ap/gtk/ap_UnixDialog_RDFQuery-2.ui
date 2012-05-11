@@ -146,7 +146,7 @@
     </action-widgets>
   </object>
   <object class="GtkTextBuffer" id="sparqlq">
-    <property name="text" translatable="yes">
+    <property name="text" translatable="no">
 
 prefix rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt;
 prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt;
