@@ -11,15 +11,14 @@
 # Stefan Ihringer <stefan.ihringer@gmx.net>, 2005
 # Volker Ribbert <volker.nospam@netcologne.de>, 2009, 2010, 2011
 # Ingo Brückl <ib@wupperonline.de>, 2012
-# Chris Leonard <cjl@laptop.org>, 2012
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-10 14:02+0200\n"
-"PO-Revision-Date: 2012-05-10 14:02+0200\n"
-"Last-Translator: Chris Leonard <cjl@laptop.org>\n"
+"POT-Creation-Date: 2012-05-11 13:43+0200\n"
+"PO-Revision-Date: 2012-05-11 13:43+0200\n"
+"Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
@@ -396,7 +395,7 @@ msgstr "&Dokument"
 #. MENU_LABEL_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h
 msgid "&Document History"
-msgstr "&Versionen"
+msgstr "&Versionskontrolle"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h
@@ -669,7 +668,7 @@ msgstr "Feld für Se&rienbrief"
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h
 msgid "&Maintain Full History"
-msgstr "&Vollständige Versionschronik"
+msgstr "&Vollständige Änderungslegende"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h
@@ -804,7 +803,7 @@ msgstr "&Seitenlayout"
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h
 msgid "&Purge History"
-msgstr "&Chronik entfernen"
+msgstr "Änderungen &entfernen"
 
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
@@ -911,7 +910,7 @@ msgstr "Änderung aus&wählen"
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h
 msgid "&Show History"
-msgstr "Chronik &anzeigen"
+msgstr "Änderungen &anzeigen"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
@@ -1067,7 +1066,7 @@ msgstr "&Zoomen"
 #. DLG_ListRevisions_LevelZero
 #: po/tmp/ap_String_Id.h
 msgid "(All revisions visible)"
-msgstr "(Alle sichtbar)"
+msgstr "(Alle Änderungen sichtbar)"
 
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h
@@ -1385,8 +1384,9 @@ msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
-"Sind Sie sicher, dass Sie keine vollständige Chronik führen möchten? Wenn "
-"Sie fortfahren, gehen frühere Versionen dieses Dokuments verloren."
+"Sind Sie sicher, dass Sie keine vollständige Aufzeichnung über Änderungen "
+"führen möchten? Wenn Sie fortfahren, gehen frühere Versionen dieses "
+"Dokuments verloren."
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -4696,7 +4696,7 @@ msgstr "Ei&genschaften"
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h
 msgid "P&urge revisions"
-msgstr "Än&derungen aufheben"
+msgstr "Än&derungen entfernen"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h
@@ -5175,7 +5175,7 @@ msgstr "Alle Änderungsinformationen aus dem Dokument entfernen"
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h
 msgid "Remove full document history from the document"
-msgstr "Vollständige Chronik aus dem Dokument entfernen"
+msgstr "Vollständige Änderungslegende aus dem Dokument entfernen"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h
@@ -5536,7 +5536,7 @@ msgstr "Abschnittswechsel"
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h
 msgid "See history of the current document"
-msgstr "Die Chronik des aktuellen Dokuments einsehen"
+msgstr "Die Änderungslegende des aktuellen Dokuments einsehen"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
@@ -6913,7 +6913,7 @@ msgstr "Anzeigen"
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h
 msgid "View document history"
-msgstr "Die Chronik des Dokuments einsehen"
+msgstr "Die Änderungslegende des Dokuments einsehen"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h
@@ -7368,7 +7368,7 @@ msgstr "Richtungsmarke automatisch einfügen"
 #. DLG_History_Version_AutoRevisioned
 #: po/tmp/xap_String_Id.h
 msgid "Auto-revision"
-msgstr "Automatische Revision"
+msgstr "Automatische Änderung"
 
 #. DLG_FOSA_FileTypeAutoDetect
 #: po/tmp/xap_String_Id.h
@@ -7765,22 +7765,22 @@ msgstr "Möchten Sie dieses Element aus der Symbolleiste entfernen?"
 #. DLG_DocComparison_WindowLabel
 #: po/tmp/xap_String_Id.h
 msgid "Document Comparison"
-msgstr "Dokumentenvergleich"
+msgstr "Dokumentvergleich"
 
 #. DLG_History_DocumentDetails
 #: po/tmp/xap_String_Id.h
 msgid "Document Details"
-msgstr "Dokumenteninformationen"
+msgstr "Informationen zum Dokument"
 
 #. DLG_History_WindowLabel
 #: po/tmp/xap_String_Id.h
 msgid "Document History"
-msgstr "Versionen"
+msgstr "Änderungslegende"
 
 #. DLG_History_Path
 #: po/tmp/xap_String_Id.h
 msgid "Document name:"
-msgstr "Dokumentenname:"
+msgstr "Dokumentname:"
 
 #. DLG_DocComparison_DocsCompared
 #: po/tmp/xap_String_Id.h
@@ -8696,7 +8696,7 @@ msgstr "Einstellungen zurücksetzen"
 #. DLG_DocComparison_Results
 #: po/tmp/xap_String_Id.h
 msgid "Results"
-msgstr "Ergebnisse"
+msgstr "Ergebnis"
 
 #. LANG_RO_RO
 #: po/tmp/xap_String_Id.h
@@ -9095,7 +9095,7 @@ msgstr "Usbekisch"
 #. DLG_History_List_Title
 #: po/tmp/xap_String_Id.h
 msgid "Version history"
-msgstr "Versionschronik"
+msgstr "Versionsverlauf"
 
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
@@ -9246,7 +9246,7 @@ msgstr "unterschiedlich"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "diverging after document position %d"
-msgstr "abweichend nach Dokumentenstelle %d"
+msgstr "abweichend nach Dokumentstelle %d"
 
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h
