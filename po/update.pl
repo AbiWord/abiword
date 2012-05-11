@@ -32,7 +32,7 @@ use File::Basename;
 
 # Declare global variables
 #-------------------------
-my $VERSION = "1.5beta13";
+my $VERSION = "1.5beta14";
 my $LANG    = $ARGV[0];
 
 # Always print as the first thing
@@ -132,7 +132,7 @@ sub Help{
     print "Update po files by merging them with new strings to translate.\n\n";
     print "  -H, --help                   show this help page\n";
     print "  -P, --pot                    generate the pot file only\n";
-    print "  -M, --maintain               search for missing files in POTFILES.in\n";
+    print "  -M, --maintain               search for missing strings\n";
     print "  -V, --version                show the version\n";
     print "\nExamples of use:\n----------------\n";
     print "update.pl --pot    just create a new pot file from the sources\n";
@@ -145,11 +145,11 @@ sub Maintain{
    
     # Search and fine, all translatable files
     # ---------------------------------------
-    $i18nfiles="find ../ -print | egrep '.*\\.(c|y|cc|c++|h|gob)' ";
+    $i18nfiles="find ../ -print | egrep '.*\\.(c|y|cc|c++|cpp|h|gob)\$' ";
 
     open(BUF2, "POTFILES.in") || die "update.pl:  there's no POTFILES.in!!!\n";
     
-    print "Searching for missing _(\" \") entries...\n";
+    print "Searching for _(\" \") entries...\n";
     
     open(BUF1, "$i18nfiles|");
 
@@ -173,7 +173,7 @@ sub Maintain{
     foreach my $file (@buf1_1){
         open FILE, "<$file";
         while (<FILE>) {
-            if ($_=~/_\(\"/o){
+            if ($_=~/[^A-BD-MO-PR-Za-z]_\(\"/o){
                 $file = unpack("x3 A*",$file) . "\n";
                 push @buf2_1, $file;
                 last;
