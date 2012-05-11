@@ -188,7 +188,7 @@ dcl(DLG_FormatTOC_Level4,                 "Level 4")
 
 /* Latex dialog */
 dcl(DLG_Latex_LatexTitle,	"LaTeX Equation")
-dcl(DLG_Latex_LatexEquation,	"LaTeX Equation")
+dcl(DLG_Latex_LatexEquation,	"LaTeX Equation:")
 dcl(DLG_Latex_Example,		"Example:")
 
 /*Equation Menus */
