@@ -327,7 +327,7 @@
                         <child>
                           <object class="GtkEntry" id="enFileExt">
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="yes">.bak~</property>
+                            <property name="text" translatable="no">.bak~</property>
                             <property name="visible">True</property>
                             <property name="width_request">75</property>
                           </object>
