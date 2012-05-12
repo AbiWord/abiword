@@ -21,6 +21,7 @@
 
 #include "ie_imp_PasteListener.h"
 #include "pp_AttrProp.h"
+#include "pf_Frag.h"
 #include "pf_Frag_Strux.h"
 #include "px_CR_FmtMark.h"
 #include "px_CR_FmtMarkChange.h"
@@ -105,7 +106,7 @@ bool  IE_Imp_PasteListener::populate(fl_ContainerLayout* /* sfh */,
 	return true;
 }
 
-bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* /*sdh*/,
+bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* sdh,
 									  const PX_ChangeRecord * pcr,
 										  fl_ContainerLayout* * /* psfh */)
 {
@@ -152,6 +153,13 @@ bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 				k++;
 			}
 			m_bFirstSection = false;
+			if (sdh->getNext() && (sdh->getNext()->getType() == pf_Frag::PFT_Strux) &&
+			    (static_cast<pf_Frag_Strux*>(sdh->getNext())->getStruxType() != PTX_Block))
+			{
+			    // The second frag is not a PXT_Block (it is probably a PTX_SectionTable)
+			    // The first block encountered needs to be inserted in the piece table
+			    m_bFirstBlock = false;
+			}
 			return true;
 		}
 		//
