@@ -1464,7 +1464,7 @@ dcl(MENU_STATUSLINE_FMT_IMAGE, "Resize this image")
 dcl(MENU_STATUSLINE_FMT_POSIMAGE, "Format this image")
 dcl(MENU_STATUSLINE_FMT_SETPOSIMAGE, "Set this image to be positioned")
 
-dcl(MENU_LABEL_RDF,        "RDF")
+dcl(MENU_LABEL_RDF,        "&RDF")
 dcl(MENU_LABEL_RDF_HIGHLIGHT,       "Highlight RDF")
 dcl(MENU_LABEL_RDF_QUERY,           "SPARQL Query")
 dcl(MENU_LABEL_RDF_EDITOR,          "Edit RDF Triples")
