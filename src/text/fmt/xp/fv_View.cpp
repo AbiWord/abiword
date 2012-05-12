@@ -8905,7 +8905,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	
 	// Find the enclosing table. If just look for the first one we can get fooled by nested tables.
 	pf_Frag_Strux* tableSDH;
-	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+1,PTX_SectionTable,&tableSDH);
+	bRet = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionTable,&tableSDH);
 	if(!bRet)
 	{
 		// Allow table updates
@@ -8917,21 +8917,8 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 		return false;
 	}
 	posTable = m_pDoc->getStruxPosition(tableSDH)+1;
-	if(posTable > posStart)
-	{
-		bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tableSDH);
-		if(!bRet)
-			{
-				// Allow table updates
-				m_pDoc->setDontImmediatelyLayout(false);
-				
-				// Signal PieceTable Changes have finished
-				_restorePieceTableState();
-				clearCursorWait();
-				return false;
-			}
-		posTable = m_pDoc->getStruxPosition(tableSDH)+1;
-	}
+	posStart = (posTable > posStart)?posTable:posStart;
+
 	// Need this to trigger a table update!
 	UT_sint32 iLineType = _changeCellParams(posTable, tableSDH);
 	
@@ -9166,21 +9153,8 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
  \param col will be set to the cell to the property value, if the requested property exists
  \return True if succesful (ie. the property value is set), false otherwise
  */
-bool FV_View::getCellProperty(const gchar * szPropName, gchar * &szPropValue) const
+bool FV_View::getCellProperty(PT_DocPosition posCell, const gchar * szPropName, gchar * &szPropValue) const
 {
-	PT_DocPosition posCell = getPoint();
-	if (!isSelectionEmpty())
-	{
-		if (m_Selection.getSelectionAnchor() < posCell)
-		{
-			posCell = m_Selection.getSelectionAnchor();
-		}
-		if(posCell < 2)
-		{
-			posCell = 2;
-		}
-	}	
-	
 	pf_Frag_Strux* cellSDH;
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
 	if(!bres)
@@ -13798,18 +13772,17 @@ void FV_View::updateRevisionMode()
  */
 bool FV_View::isInTable() const
 {
-	PT_DocPosition pos;
+	PT_DocPosition pos = getPoint();
 
 	if (isSelectionEmpty())
 	{
-		pos = getPoint();
+		return isInTable(pos);
 	}
 	else
 	{
   		PT_DocPosition posA = getSelectionAnchor();
-		return (isInTableForSure(posA) && isInTableForSure(getPoint()));
+		return (isInTable(posA) && isInTable(pos));
 	}
-	return isInTableForSure(pos);
 }
 
 fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos) const
@@ -13841,13 +13814,8 @@ fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos) const
 	return NULL;
 }
 
-bool FV_View::isInTableForSure(PT_DocPosition pos) const
-{
-	return (isInTable(pos));
-}
 /*!
- * Returns true if the point supplied is inside a Table. Use isInTableForSure
- * To cover the case if
+ * Returns true if the point supplied is inside a Table. 
  */
 bool FV_View::isInTable( PT_DocPosition pos) const
 {
@@ -13880,7 +13848,7 @@ bool FV_View::isInTable( PT_DocPosition pos) const
 		xxx_UT_DEBUGMSG(("As cell pos in table pos %d \n",pos));
 		return true;
 	}
-	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos,true);
 	xxx_UT_DEBUGMSG((" Got Bokc at pos %d looking at pos %d \n",pBL->getPosition(true),pos));
 	if(!pBL)
 	{
@@ -14608,5 +14576,19 @@ void
 FV_View::selectRange( const std::pair< PT_DocPosition, PT_DocPosition >& range )
 {
 	selectRange( range.first, range.second );
+}
+
+/*!
+  Reverse the direction of the current selection
+  Does so without changing the screen.
+*/
+void FV_View::swapSelectionOrientation(void)
+{
+	UT_ASSERT(!isSelectionEmpty());
+	_fixInsertionPointCoords();
+	PT_DocPosition curPos = getPoint();
+	UT_ASSERT(curPos != m_Selection.getSelectionAnchor());
+	_setPoint(m_Selection.getSelectionAnchor());
+	m_Selection.setSelectionAnchor(curPos);
 }
 

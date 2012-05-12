@@ -2488,11 +2488,12 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 /*!
   Find block at document position
   \param pos Document position
-  \return Block at specified posistion, or the first block to the
-          rigth of that position. May return NULL.
-
+  \return Block at specified position.
+  If bLookOnlyBefore = true, it returns NULL if no block can be found
+  If bLookOnlyBefore = false, it returns the first block to the right of
+  that position (it may still return NULL).
 */
-fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
+fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLookOnlyBefore) const
 {
 	fl_BlockLayout* pBL = NULL;
 	fl_ContainerLayout* sfh = 0;
@@ -2521,7 +2522,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 	bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
 	// If block wasn't found at position, try finding it to the right,
 	// limited only by the EOD.
-	while(!bRes && (pos < posEOD))
+	while(!bRes && !bLookOnlyBefore && (pos < posEOD) )
 	{
 		pos++;
 		bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
@@ -2553,7 +2554,6 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 	}
 	else
 	{
-		UT_ASSERT_HARMLESS(0);
 		return NULL;
 	}
 

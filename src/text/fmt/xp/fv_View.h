@@ -482,6 +482,7 @@ public:
 	void			extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelToXYword(UT_sint32 xPos, UT_sint32 yPos, bool bDrag);
 	void			extSelTo(FV_DocPos dp);
+	void			swapSelectionOrientation(void);
 
 #ifdef ENABLE_SPELL
 	SpellChecker * getDictForSelection () const;
@@ -784,7 +785,6 @@ public:
 	bool				isInTable() const;
 	fl_TableLayout *    getTableAtPos(PT_DocPosition) const;
 	bool				isInTable(PT_DocPosition pos) const;
-	bool				isInTableForSure(PT_DocPosition pos) const;
 	bool                cmdAutoSizeCols(void);
 	bool                cmdTextToTable(bool bIgnoreSpaces);
 	bool                cmdAutoSizeRows(void);
@@ -813,7 +813,7 @@ public:
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot) const;
 	bool				setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
-	bool				getCellProperty(const gchar * szPropName, gchar * &szPropValue) const;
+	bool				getCellProperty(PT_DocPosition pos, const gchar * szPropName, gchar * &szPropValue) const;
 	bool	            setTableFormat(const gchar * properties[]);
 	bool	            setTableFormat(PT_DocPosition pos,const gchar * properties[]);
 	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const;
@@ -956,7 +956,6 @@ protected:
 	void				_fixAllInsertionPointCoords(void) const;
 
 	void				_drawSelection();
-	void				_swapSelectionOrientation(void);
 	void				_extSel(UT_uint32 iOldPoint);
 	void				_extSelToPos(PT_DocPosition pos);
 	UT_Error			_insertGraphic(FG_Graphic*, const char*);

@@ -6613,11 +6613,16 @@ Defun1(splitCells)
 static bool s_doFormatTableDlg(FV_View * pView)
 {
 	UT_return_val_if_fail(pView, false);
+	if(!pView->isInTable(pView->getPoint()))
+	{
+		pView->swapSelectionOrientation();
+		UT_ASSERT(pView->isInTable(pView->getPoint()));
+	}
+
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
 	pFrame->raise();
-
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
@@ -6626,10 +6631,6 @@ static bool s_doFormatTableDlg(FV_View * pView)
 	AP_Dialog_FormatTable * pDialog
 		= static_cast<AP_Dialog_FormatTable *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_TABLE));
 	UT_return_val_if_fail(pDialog, false);
-	if(!pView->isInTable(pView->getPoint()))
-	{
-	  pView->setPoint(pView->getSelectionAnchor());
-	}
 	if(pDialog->isRunning() == true)
 	{
 		pDialog->activate();

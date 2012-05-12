@@ -3301,7 +3301,6 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 #endif
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
-	UT_ASSERT(bres);
 #if DEBUG
 	if(secSDH != NULL)
 	{

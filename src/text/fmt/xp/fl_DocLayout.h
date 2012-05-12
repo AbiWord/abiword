@@ -182,7 +182,7 @@ public:
 		{ m_iFilled = iFill;}
 	void        setLayoutIsFilling(bool bisFill) { m_bisLayoutFilling = bisFill;}
 	bool        isLayoutFilling(void) const { return m_bisLayoutFilling;}
-	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos) const;
+	fl_BlockLayout*	findBlockAtPosition(PT_DocPosition pos, bool bLookOnlyBefore = false) const;
     fl_BlockLayout*	findBlockAtPositionReverse(PT_DocPosition pos) const;
 	void		deletePage(fp_Page* pPage, bool bDontNotify);
 
