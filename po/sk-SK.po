@@ -1,14 +1,14 @@
-# Slovak translation of AbiWord.
-# Copyright (C) 2003 Free Software Foundation, Inc.
+# Slovak translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+# Copyright by:
 # Martin Lacko <lacko@host.sk>, 2001.
 # Jaroslav Ryník <jrynik@szm.sk>, 2008-2010.
 msgid ""
 msgstr ""
-"Project-Id-Version: AbiWord 2.7.x\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 19:13+0200\n"
-"PO-Revision-Date: 2011-10-24 17:23+0200\n"
+"Project-Id-Version: AbiWord 2.9\n"
+"Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
+"POT-Creation-Date: 2012-05-11 14:00-0400\n"
+"PO-Revision-Date: 2012-05-12 02:09+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Slovak\n"
 "Language: sk\n"
@@ -66,6 +66,8 @@ msgid ""
 "# Insert your SPARQL query here\n"
 "# Results are shown below."
 msgstr ""
+"# Sem vložte svoju požiadavku SPARQL\n"
+" # Výsledky sú zobrazené nižšie."
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
@@ -406,9 +408,9 @@ msgstr "&Nerozdeľovať slová"
 msgid "&Edit"
 msgstr "&Upraviť"
 
-#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-msgid "&Edit Semantic Items"
+msgid "&Edit RDF"
 msgstr ""
 
 #. MENU_LABEL_EDIT_ANNOTATION
@@ -456,6 +458,7 @@ msgstr "&Polia"
 msgid "&Fields:"
 msgstr "&Polia:"
 
+#. DLG_RDF_Editor_Menu_File
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h
 msgid "&File"
@@ -488,9 +491,8 @@ msgstr "&Päta:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Formátovať"
+msgstr "&Formátovať"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -798,6 +800,11 @@ msgstr "Zob&razenie ako pri tlači"
 msgid "&Purge History"
 msgstr "&Vymazať históriu"
 
+#. MENU_LABEL_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "&Query RDF"
+msgstr ""
+
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
@@ -836,7 +843,7 @@ msgstr "Nastaviť p&redvolené rozmiestnenie"
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h
 msgid "&Revisions"
-msgstr "Oprav&y (revízie)"
+msgstr "Oprav&y"
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h
@@ -899,11 +906,6 @@ msgstr "Vybrať &opravu"
 #: po/tmp/ap_String_Id.h
 msgid "&Show History"
 msgstr "Zobraziť &históriu"
-
-#. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "&Show RDF"
-msgstr "&Zobraziť RDF"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
@@ -982,6 +984,11 @@ msgstr "&Nástroje"
 #: po/tmp/ap_String_Id.h
 msgid "&Top:"
 msgstr "Z&hora:"
+
+#. DLG_RDF_Editor_Menu_Triple
+#: po/tmp/ap_String_Id.h
+msgid "&Triple"
+msgstr "&Trojnásobný"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -1148,7 +1155,7 @@ msgstr "Abiword dokončil kontrolu v označenej časti textu."
 #, c-format
 msgid ""
 "AbiWord has finished its search of the document and has made %d replacements."
-msgstr "Abiword dokončil prehľadávanie dokumentu a urobil %d úprav (-y/-u)."
+msgstr "Abiword dokončil prehľadávanie dokumentu a urobil %d úprav."
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h
@@ -1168,8 +1175,7 @@ msgid ""
 "You can use the program, but the toolbar may be missing."
 msgstr ""
 "AbiWord je naprogamovaný na novšiu verziu systémového súboru COMCTL32.DLL\n"
-"ako má ten, ktorý máte na počítači (COMCTL32.DLL, verzia 4.72 alebo "
-"novšia).\n"
+"ako má ten, ktorý máte na počítači (COMCTL32.DLL, verzia 4.72 alebo novšia).\n"
 "Ako vyriešiť tento problém, vysvetľuje rubrika FAQ na stránke AbiSource.\n"
 "\n"
 "\thttp://www.abisource.com\n"
@@ -1185,8 +1191,8 @@ msgid ""
 "platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "AbiWord potrebuje súbor %s.dll\n"
-"Prosím, stiahnite a nainštalujte si ho z adresy http://www.microsoft.com/"
-"msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"Prosím, stiahnite a nainštalujte si ho z adresy "
+"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1295,9 +1301,8 @@ msgstr "Dovolí inú farbu obrazovku ako bielu"
 
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Annotation"
-msgstr "&Poznámky"
+msgstr "Poznámka"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
@@ -1318,23 +1323,33 @@ msgstr "Použiť"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Contact"
-msgstr "Použiť na:"
+msgstr "Použiť kontakt"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+msgid "Apply Current"
+msgstr "Použiť aktuálne"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Event"
-msgstr "Použiť na:"
+msgstr "Použiť udalosť"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Location"
-msgstr "Aplikácia"
+msgstr "Použiť umiestnenie"
+
+#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+msgid "Apply stylesheet to this Semantic Item"
+msgstr "Použiť túto sémantickú položku v hárku so štýlmi"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1380,16 +1395,15 @@ msgstr "Pridať do predošlého zoznamu"
 
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Autor (-ka):"
+msgstr "Autor(ka)"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
 #. DLG_PLUGIN_MANAGER_AUTHOR
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Author:"
-msgstr "Autor (-ka):"
+msgstr "Autor(ka):"
 
 #. DLG_Options_Label_AutoSaveUnderline
 #: po/tmp/ap_String_Id.h
@@ -1549,12 +1563,12 @@ msgstr "Farba okraja:"
 #. DLG_BorderShading_Borders
 #: po/tmp/ap_String_Id.h
 msgid "Borders"
-msgstr "Ohie"
+msgstr "Orámovanie"
 
 #. DLG_BorderShading_Title
 #: po/tmp/ap_String_Id.h
 msgid "Borders and Shading"
-msgstr "Okraje a tieňovanie"
+msgstr "Orámovanie a tieňovanie"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATED_TO_SOURCE_FOAFKNOWS
 #. MENU_LABEL_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
@@ -1562,7 +1576,7 @@ msgstr "Okraje a tieňovanie"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr ""
+msgstr "Obaja ľudia sa poznajú"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -1640,7 +1654,7 @@ msgstr "Z&meniť na malé alebo VEĽKÉ písmená"
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "C&opy hyperlink location"
-msgstr "Kopírovať u&miestnenie odkazu"
+msgstr "Kopírovať &adresu odkazu"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -1777,9 +1791,8 @@ msgstr "Môžete zmeniť vlastnosti označeného odseku"
 
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Change the format of the table"
-msgstr "Môžete zmeniť vlastnosti označeného odseku"
+msgstr "Zmeniť formát tabuľky"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -1848,12 +1861,12 @@ msgstr "Ukážka znaku"
 #. DLG_WordCount_Characters_No
 #: po/tmp/ap_String_Id.h
 msgid "Characters (no spaces):"
-msgstr "Znakov bez medzier:"
+msgstr "Znakov (bez medzier):"
 
 #. DLG_WordCount_Characters_Sp
 #: po/tmp/ap_String_Id.h
 msgid "Characters (with spaces):"
-msgstr "Znakov s medzerami:"
+msgstr "Znakov (s medzerami):"
 
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h
@@ -2042,14 +2055,19 @@ msgstr "P&riebežný"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact"
-msgstr "Obsah"
+msgstr "Kontakt"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
-msgid "Contact from File..."
-msgstr ""
+msgid "Contact from File"
+msgstr "Kontakt zo súboru"
+
+#. DLG_RDF_SemanticItemInsert_Column_Refdlg
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts"
+msgstr "Kontakty"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2065,7 +2083,7 @@ msgstr "Pokračovať v predchádzajúcej oprave (číslo %d)"
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
 msgid "Contributor"
-msgstr "Spolupracoval (-a)"
+msgstr "Spolupracoval(a)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2180,21 +2198,19 @@ msgstr "Rozsah ochrany:"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create New"
-msgstr "Vytvorená"
+msgstr "Vytvoriť nový"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "Odkaz na stranu"
+msgstr "Vytvoriť odkaz"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
 #: po/tmp/ap_String_Id.h
 msgid "Create Semantic Item"
-msgstr ""
+msgstr "Vytvoriť sémantickú položku"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h
@@ -2240,25 +2256,23 @@ msgstr "Vytvoriť z výber&u"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Contact Semantic Item"
-msgstr "Vytvoriť nový dokument pomocou šablóny"
+msgstr "Vytvoriť novú sémantickú položku kontaktu"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr ""
+msgstr "Vytvoriť novú sémantickú položku kontaktu nahratím vkarty"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
 msgid "Create new Reference to existing Semantic Item"
-msgstr ""
+msgstr "Vytvoriť k existujúcej sémantickej položke nový odkaz"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Semantic Item"
-msgstr "Vytvoríte nový dokument"
+msgstr "Vytvoriť novú sémantickú položku"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h
@@ -2370,9 +2384,8 @@ msgstr "Odrážky v tvare pomlčky"
 
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dashed line"
-msgstr "Odrážky v tvare pomlčky"
+msgstr "Čiarkovaná čiara"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2415,7 +2428,7 @@ msgstr "Desatinný tabulátor"
 #. TOOLBAR_TOOLTIP_UNINDENT
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
-msgstr "Zmenšíte odsadenie (medzeru od okraja)"
+msgstr "Zmenšíte odsadenie"
 
 #. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
@@ -2622,9 +2635,13 @@ msgid "Disable all formatting commands, except styles"
 msgstr "Vypnúť všetky formátovacie príkazy okrem štýlov"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
+msgstr "Zrušiť prepojenie"
+
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
+#: po/tmp/ap_String_Id.h
+msgid "Disassociate and apply default stylesheet"
 msgstr ""
 
 #. MENU_STATUSLINE_HELP_CREDITS
@@ -2691,9 +2708,8 @@ msgstr "Číslovať nepretržite"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dotted line"
-msgstr "Čiara na spodku"
+msgstr "Bodkovaná čiara"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2731,6 +2747,11 @@ msgstr "Zbaví sa informácií o objektoch RDF"
 msgid "Dump the raw RDF associated with the cursor position"
 msgstr "Zahodíte RDF na pozícii kurzora"
 
+#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#: po/tmp/ap_String_Id.h
+msgid "E&dit Semantic Items"
+msgstr "&Upraviť sémantické položky"
+
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
 msgid "Edit Annotation"
@@ -2764,13 +2785,18 @@ msgstr "Môžete upraviť rovnicu z Latexu"
 
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-msgid "Edit RDF Triples..."
-msgstr "Upraviť trojice RDF..."
+msgid "Edit RDF Triples"
+msgstr "Upraviť trojice RDF"
+
+#. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
+#: po/tmp/ap_String_Id.h
+msgid "Edit RDF Triples associated with location"
+msgstr "Upraviť trojice RDF spojené s umiestnením"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr ""
+msgstr "Upraviť sémantické položky umiestnenia"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -2779,9 +2805,8 @@ msgstr "Môžete upraviť poznámku"
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit document RDF"
-msgstr "Upraviť dokument RDF..."
+msgstr "Upraviť dokument RDF"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -2808,7 +2833,7 @@ msgstr "Upravíte hlavičku na tento strane"
 #. TOOLBAR_TOOLTIP_SEMITEM_EDIT
 #: po/tmp/ap_String_Id.h
 msgid "Edit this Semantic Item"
-msgstr ""
+msgstr "Upraviť túto sémantickú položku"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
@@ -2884,6 +2909,11 @@ msgstr "Pri ukladaní súboru %s došlo k chybe: súbor sa nepodarilo vytvoriť"
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Pri pokuse uložiť súbor %s došlo k chybe: neplatný názov"
 
+#. DLG_RDF_SemanticStylesheets_Events
+#: po/tmp/ap_String_Id.h
+msgid "Events"
+msgstr "Udalosti"
+
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Ex. script"
@@ -2901,20 +2931,13 @@ msgstr "Ukážka:"
 
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute Query"
-msgstr "Spustia sa skripty"
-
-#. MENU_STATUSLINE_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "Execute SPARQL Query for location"
-msgstr "Spustiť SPARQL Query kvôli umiestneniu"
+msgstr "Vykonať požiadavku"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute SPARQL on document RDF"
-msgstr "Spustiť SPARQL vo dokumente RDF..."
+msgstr "Spustiť SPARQL v dokumente RDF"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
@@ -2940,12 +2963,12 @@ msgstr "Zaznamenané opravy:"
 #. MENU_LABEL_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items"
-msgstr ""
+msgstr "Exportovať sémantické položky"
 
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr ""
+msgstr "Exportovať sémantické položky umiestnenia"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
@@ -3049,9 +3072,8 @@ msgstr "Nájsť &predchádzajúcu opravu"
 #. MENU_LABEL_RDF_SEMITEM_FIND_RELATED
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Find by Relation"
-msgstr "Vzťah:"
+msgstr "Nájsť podľa vzťahu"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
@@ -3251,7 +3273,7 @@ msgstr "Formát koncovej poznámky"
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
 msgid "Format Footnotes"
-msgstr "Formát poznámky pod čiarou"
+msgstr "Formát poznámky pod čiarou:"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3346,9 +3368,8 @@ msgstr "&Prejsť na:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
-msgstr "Prejsť na..."
+msgstr "Prejsť na"
 
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h
@@ -3395,8 +3416,8 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Hlavičky a päty možno vytvárať a upravovať len v zobrazeni ako pri tlači. \n"
-"Aby sa vám dokument takto zobrazil, treba v menu Zobraziť kliknúť na "
+"Hlavičky a päty sa dajú vytvárať a upravovať len v zobrazení ako pri tlači. \n"
+"Na to, aby sa vám dokument takto zobrazil, treba v menu Zobraziť kliknúť na "
 "Zobrazenie ako pri tlači. \n"
 "Chcete prejsť do zobrazenia ako pri tlači hneď teraz?"
 
@@ -3483,7 +3504,7 @@ msgstr "O&dsadenie:"
 #. DLG_Goto_Column_ID
 #: po/tmp/ap_String_Id.h
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h
@@ -3530,7 +3551,7 @@ msgstr "Program načíta vlastnosti štýlov z iného dokumentu"
 #. DLG_Styles_LBL_InUse
 #: po/tmp/ap_String_Id.h
 msgid "In Use"
-msgstr "Použité štýly"
+msgstr "Používa sa"
 
 #. WORD_PassInvalid
 #: po/tmp/ap_String_Id.h
@@ -3542,7 +3563,7 @@ msgstr "Nesprávne heslo"
 #. TOOLBAR_TOOLTIP_INDENT
 #: po/tmp/ap_String_Id.h
 msgid "Increase indent"
-msgstr "Zväčšiť odsadenie (medzeru od okraja)"
+msgstr "Zväčšiť odsadenie"
 
 #. DLG_Para_LabelIndentation
 #: po/tmp/ap_String_Id.h
@@ -3562,7 +3583,7 @@ msgstr "Začiatočné písmená VEĽKÉ"
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
 msgid "Initial Endnote value"
-msgstr "Číslovať od"
+msgstr "Začiatočná hodnota koncovej poznámky"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
@@ -3670,6 +3691,16 @@ msgstr "Vložiť odkaz RDF"
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF link..."
 msgstr "Vložíte odkaz RDF."
+
+#. DLG_RDF_SemanticItemInsert_Ok
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference"
+msgstr "Vložiť odkaz"
+
+#. DLG_RDF_SemanticItemInsert_Title
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference to Semantic Item"
+msgstr "Vložiť odkaz na sémantickú položku"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3940,10 +3971,14 @@ msgid "Keywords:"
 msgstr "Kľúčové slová:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
 msgstr "Rovnica z LaTeXu"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "Rovnica z LaTeXu:"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
@@ -3971,12 +4006,6 @@ msgstr "Nastavenie jazyka"
 #: po/tmp/ap_String_Id.h
 msgid "Language(s):"
 msgstr "Jazyk(y):"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#: po/tmp/ap_String_Id.h
-msgid "Lat & Long"
-msgstr ""
 
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h
@@ -4128,18 +4157,12 @@ msgstr "Štýly zoznamov"
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h
 msgid "Lists for "
-msgstr "Zoznamy "
+msgstr "Zoznamy pre "
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
+#. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Location"
-msgstr "Aplikácia"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
-#: po/tmp/ap_String_Id.h
-msgid "Location, Start and End Times"
-msgstr ""
+msgid "Locations"
+msgstr "Miesta"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4323,7 +4346,7 @@ msgstr "Vojenský čas"
 #. DLG_Options_TabLabel_Misc
 #: po/tmp/ap_String_Id.h
 msgid "Misc."
-msgstr "Rôznor."
+msgstr "Rôzne"
 
 #. DLG_Stylist_MiscStyles
 #: po/tmp/ap_String_Id.h
@@ -4367,21 +4390,26 @@ msgstr "Násobky"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Názov:"
+msgstr "Názov"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name (homepage) phone"
-msgstr ""
+msgid "Name, (Homepage), Phone"
+msgstr "Meno, (internetová stránka), telefón"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#: po/tmp/ap_String_Id.h
+msgid "Name, Latitude and Longitude"
+msgstr "Meno, zemepisná šírka a dĺžka"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name, Nick"
-msgstr ""
+msgid "Name, Phone"
+msgstr "Meno, telefón"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -4392,6 +4420,11 @@ msgstr "Nový"
 #: po/tmp/ap_String_Id.h
 msgid "New &annotation"
 msgstr "Nová &poznámka"
+
+#. DLG_RDF_Insert_NewContact
+#: po/tmp/ap_String_Id.h
+msgid "New Contact..."
+msgstr "Nový kontakt..."
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4445,13 +4478,13 @@ msgstr "Dopredu >>"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK
 #: po/tmp/ap_String_Id.h
 msgid "Nick"
-msgstr ""
+msgstr "Prezývka"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Nick, Phone"
-msgstr ""
+msgstr "Prezývka, telefón"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h
@@ -4558,9 +4591,8 @@ msgstr "Čísla"
 
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Object"
-msgstr "Vec"
+msgstr "Objekt"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
@@ -4805,7 +4837,7 @@ msgstr "Vložiť"
 #. DLG_MetaData_TAB_Permission
 #: po/tmp/ap_String_Id.h
 msgid "Permissions"
-msgstr "Práva"
+msgstr "Povolenia"
 
 #. DLG_Goto_Target_Picture
 #: po/tmp/ap_String_Id.h
@@ -4877,13 +4909,13 @@ msgstr "Pr&edvoľby"
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
 msgid "Predicate"
-msgstr ""
+msgstr "Prísudok"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
 #: po/tmp/ap_String_Id.h
 msgid "Preference Schemes"
-msgstr "Nastavenia schém"
+msgstr "Predvoľby schém"
 
 #. DLG_Options_OptionsTitle
 #: po/tmp/ap_String_Id.h
@@ -4989,6 +5021,29 @@ msgstr "Vydavateľ"
 msgid "Publisher:"
 msgstr "Vydavateľ:"
 
+#. MENU_STATUSLINE_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF associated with location"
+msgstr ""
+
+#. MENU_LABEL_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query RDF for cursor position"
+msgstr "Požiadavka RDF kvôli pozícii kurzora"
+
+#. DLG_RDF_Query_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Query RDF: %d of total: %ld"
+msgstr "Požiadavka RDF: %d z celkovo: %ld"
+
+#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query the RDF associated with the cursor position..."
+msgstr "Požiadavka RDF na pozícii kurzora..."
+
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
@@ -5004,6 +5059,11 @@ msgstr "RDF"
 #: po/tmp/ap_String_Id.h
 msgid "RDF Link"
 msgstr "Odkaz RDF"
+
+#. DLG_RDF_SemanticStylesheets_Title
+#: po/tmp/ap_String_Id.h
+msgid "RDF Stylesheet"
+msgstr "Súbor so štýlmi RDF"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5034,20 +5094,6 @@ msgstr "Hľadať &od začiatku dokumentu"
 #: po/tmp/ap_String_Id.h
 msgid "Re&vert"
 msgstr "&Vrátiť zmeny"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_REAPPLY
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Reapply Current"
-msgstr "Použiť na tento zoznam"
-
-#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
-#: po/tmp/ap_String_Id.h
-msgid "Reapply stylesheet this Semantic Item"
-msgstr ""
 
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
@@ -5080,14 +5126,13 @@ msgstr "Program zmenší alebo zväčší veľkosť zobrazenia dokumentu"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "Týka sa zdrojovej sémantickej položky"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Vzťah:"
+msgstr "Vzťah"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5242,6 +5287,11 @@ msgstr "Číslovať odznova v každej kapitole"
 msgid "Restart page numbers on new sections"
 msgstr "Každú kapitolu číslovať osobitne"
 
+#. DLG_RDF_Editor_Restrict
+#: po/tmp/ap_String_Id.h
+msgid "Restrict to RDF Link:"
+msgstr ""
+
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
 msgid "Resume Previous List"
@@ -5374,15 +5424,10 @@ msgstr "Zobraziť &opravy"
 msgid "S&plit Cells"
 msgstr "R&ozdeliť bunky"
 
-#. MENU_LABEL_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "SPARQL &Query"
-msgstr "SPARQL &Query"
-
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
-msgid "SPARQL Query..."
-msgstr "SPARQL Query..."
+msgid "SPARQL Query"
+msgstr "SPARQL Query"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
@@ -5472,12 +5517,12 @@ msgstr "Mierka..."
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
 msgid "Search for help about..."
-msgstr "Možete vyhľadať pomoc zadaním slov..."
+msgstr "Môžete vyhľadať pomoc zadaním slov."
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h
 msgid "Seconds between updates"
-msgstr "Sekúnd medzi aktualizáciami"
+msgstr "Počet sekúnd medzi aktualizáciami"
 
 #. FIELD_DateTime_Epoch
 #: po/tmp/ap_String_Id.h
@@ -5561,39 +5606,39 @@ msgstr "Vybrať obrázok zo súboru"
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to Semantic Item"
-msgstr ""
+msgstr "Vybrať ďalší odkaz na sémantickú položku"
 
 #. TOOLBAR_LABEL_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item"
-msgstr ""
+msgstr "Vybrať ďalší odkaz na túto sémantickú položku"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item..."
-msgstr ""
+msgstr "Vybrať ďalší odkaz na túto sémantickú položku..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Select next references to Semantic Item"
-msgstr ""
+msgstr "Vybrať ďalší odkaz na sémantickú položku"
 
 #. MENU_LABEL_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to Semantic Item"
-msgstr ""
+msgstr "Vybrať predchádzajúci odkaz na sémantickú položku"
 
 #. TOOLBAR_LABEL_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item"
-msgstr ""
+msgstr "Vybrať predchádzajúci odkaz na túto sémantickú položku"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item..."
-msgstr ""
+msgstr "Vybrať predchádzajúci odkaz na túto sémantickú položku..."
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -5632,17 +5677,17 @@ msgstr "Označí časti dokumentu, ktoré sa nachádzajú v predchádzajúcej op
 #. TOOLBAR_TOOLTIP_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to Semantic Item"
-msgstr ""
+msgstr "Vybrať tento odkaz na sémantickú položku"
 
 #. TOOLBAR_LABEL_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item"
-msgstr ""
+msgstr "Vybrať tento odkaz na túto sémantickú položku"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item..."
-msgstr ""
+msgstr "Vybrať tento odkaz na túto sémantickú položku..."
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
@@ -5654,7 +5699,7 @@ msgstr "Výber"
 #. MENU_STATUSLINE_RDF_SEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Semantic Item"
-msgstr ""
+msgstr "Sémantická položka"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
@@ -5706,6 +5751,11 @@ msgstr "Nastaviť &jazyk"
 msgid "Set Default Values"
 msgstr "Nastaviť predvolené hodnoty"
 
+#. DLG_RDF_SemanticStylesheets_Set
+#: po/tmp/ap_String_Id.h
+msgid "Set For All Existing"
+msgstr "Nastaviť pre všetky existujúce"
+
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
 #: po/tmp/ap_String_Id.h
@@ -5731,7 +5781,7 @@ msgstr "Program nastaví obrázok ako pozadie strany"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr ""
+msgstr "Nastaviť ako zdrojovú sémantickú položku"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5774,6 +5824,18 @@ msgstr "Nastavíte vlastnosti programu"
 msgid "Set tab stops"
 msgstr "Nastavenie tabulátorov"
 
+#. DLG_RDF_SemanticStylesheets_Explanation
+#: po/tmp/ap_String_Id.h
+msgid ""
+"Set the current stylesheet for Semantic Items in this document. New RDF "
+"objects will use this stylesheet automatically. The buttons allow you to set "
+"the stylesheet for all existing Semantic Items to the new stylesheet as well."
+msgstr ""
+"Nastaví predvolený súbor so štýlmi pre sémantické objekty v dokumente. Nové "
+"objekty RDF sa budú týmto súborom riadiť automaticky. Tlačidlá vám umožňujú "
+"nastaviť, aby sa týmto súborom riadili aj všetky existujúce sémantické "
+"objekty."
+
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
 msgid "Set the type and styles of the Table of Contents"
@@ -5808,6 +5870,12 @@ msgstr "Nastavte presnú pozíciu pre tento obrázok"
 #: po/tmp/ap_String_Id.h
 msgid "Set your spelling preferences"
 msgstr "Nastavenie vlastností kontroly preklepov"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
+#: po/tmp/ap_String_Id.h
+msgid "Settings"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
@@ -5848,24 +5916,13 @@ msgstr "Zobraziť všetko"
 
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show All RDF"
-msgstr "Zobraziť všetko"
+msgstr "Zobraziť všetky RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
 msgstr "Zobraziť for&mátovacie značky"
-
-#. MENU_STATUSLINE_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF Triples associated with location"
-msgstr "Zobraziť trojice RDF spojené s umiestnením"
-
-#. MENU_LABEL_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position..."
-msgstr "Zobraziť RDF kvôli pozícii kurzora..."
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5924,11 +5981,6 @@ msgstr "Program zobrazí alebo skryje panel s nástrojmi"
 #: po/tmp/ap_String_Id.h
 msgid "Show revisions that are present in document"
 msgstr "Program obrazí opravy v dokumente"
-
-#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show the RDF associated with the cursor position..."
-msgstr "Zobraziť RDF na pozícii kurzora..."
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
@@ -5999,9 +6051,8 @@ msgstr "&Zoradiť tabuľku"
 
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Solid line"
-msgstr "Prvý riadok"
+msgstr "Plná čiara"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6229,12 +6280,6 @@ msgstr "Začať podzoznam"
 msgid "Start a new revision"
 msgstr "Urobiť ďalšiu opravu"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Start and End Times"
-msgstr "Dátum a čas"
-
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Start ne&w revision"
@@ -6326,16 +6371,8 @@ msgstr "Štýly"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Stylesheet"
-msgstr "Štýly"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Stylesheet Settings"
-msgstr "Uložiť nastavenia"
+msgstr "Hárok so štýlmi"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
@@ -6392,20 +6429,23 @@ msgstr "Sčítať riadok tabuľky"
 msgid "Summary"
 msgstr "Resumé"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
-msgstr ""
+msgstr "Resumé, miesto"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr ""
+msgstr "Resumé, miesto, čas začiatku a ukončenia"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr ""
+msgstr "Resumé, čas začiatku a ukončenia"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6565,8 +6605,8 @@ msgstr ""
 "Príkaz „--print“ sa od verzie Abiwordu 2.8 nepoužíva. Na vykonanie rovnakej "
 "operácie môžete namiesto neho použiť nástroje na konverziu v príkazovom "
 "riadku Abiwordu a potom nahrať súbor do spoolera – zariadenia na dočasné "
-"uloženie súborov, ktoré chcete vytlačiť na disk. Napr. „abiword --to=ps --to-"
-"name=fd://1 myfile.txt | lpr“"
+"uloženie súborov, ktoré chcete vytlačiť na disk. Napr. „abiword --to=ps "
+"--to-name=fd://1 myfile.txt | lpr“"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6727,6 +6767,12 @@ msgstr "Horný okraj [%s]"
 msgid "Topline"
 msgstr "Horný riadok"
 
+#. DLG_RDF_Editor_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Total RDF: %d"
+msgstr "Celkom RDF: %d"
+
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
@@ -6787,6 +6833,12 @@ msgstr "Späť"
 #: po/tmp/ap_String_Id.h
 msgid "Undo editing"
 msgstr "Môžete odvolať vykonané úpravy"
+
+#. DLG_RDF_Editor_ShowAll
+#. DLG_Update
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Update"
+msgstr "Aktualizácia"
 
 #. DLG_Annotation_OK_tooltip
 #: po/tmp/ap_String_Id.h
@@ -6950,7 +7002,7 @@ msgstr "Počet slov:"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Writing error when attempting to save %s"
-msgstr "Pri pokuse uložiť súbor %s sa vyskytla chyba zápisu"
+msgstr "Pri pokuse uložiť súbor %s sa vyskytla chyba zápisu."
 
 #. MSG_DefaultDirectionChg
 #: po/tmp/ap_String_Id.h
@@ -7067,14 +7119,12 @@ msgstr "zmeniť na malé/VEĽKÉ"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Vec"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Vec"
@@ -7096,7 +7146,7 @@ msgid ""
 "You are free to redistribute this application."
 msgstr ""
 "%s je aplikácia s verejne prístupným zdrojovým kódom v súlade\n"
-"s podmienkami  licencie GNU GPL Túto aplikáciu môžete voľne rozširovať."
+"s podmienkami licencie GNU GPL Túto aplikáciu môžete voľne rozširovať."
 
 #. DLG_Zoom_100
 #: po/tmp/xap_String_Id.h
@@ -7397,7 +7447,7 @@ msgstr "bretónsky"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "Build options: %s"
-msgstr "Možnosti tvorby: %s"
+msgstr "Možnosti vytvorenia: %s"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h
@@ -8955,11 +9005,6 @@ msgstr "Ukrajinčina, KOI8-U"
 msgid "Ukrainian, Macintosh"
 msgstr "Ukrajinčina, Macintosh"
 
-#. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-2"
-msgstr "Unicode UCS-2"
-
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
@@ -8969,11 +9014,6 @@ msgstr "Unicode UCS-2 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 Little Endian"
-
-#. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-4"
-msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
@@ -8985,11 +9025,6 @@ msgstr "Unicode UCS-4 Big Endian"
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 Little Endian"
 
-#. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-16"
-msgstr "Unicode UTF-16"
-
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
@@ -8999,11 +9034,6 @@ msgstr "Unicode UTF-16 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 Little Endian"
-
-#. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-32"
-msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
@@ -9030,11 +9060,6 @@ msgstr "Unicode UTF-8"
 #, c-format
 msgid "Untitled%d"
 msgstr "Bez názvu %d"
-
-#. DLG_Update
-#: po/tmp/xap_String_Id.h
-msgid "Update"
-msgstr "Aktualizácia"
 
 #. DLG_UFS_Effects_UpperCase
 #: po/tmp/xap_String_Id.h
@@ -9252,6 +9277,48 @@ msgstr "podobné"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "žiadna podobnosť"
+
+#~ msgid "&Show RDF"
+#~ msgstr "&Zobraziť RDF"
+
+#~ msgid "Execute SPARQL Query for location"
+#~ msgstr "Spustiť SPARQL Query kvôli umiestneniu"
+
+#~ msgid "SPARQL &Query"
+#~ msgstr "SPARQL &Query"
+
+#~ msgid "Stylesheet Settings"
+#~ msgstr "Nastavenia hárku so štýlmi"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
+
+#~ msgid "Lat & Long"
+#~ msgstr "Zem. šírka a dĺžka"
+
+#~ msgid "Location, Start and End Times"
+#~ msgstr "Miesto, čas začiatku a ukončenia"
+
+#~ msgid "Name, Nick"
+#~ msgstr "Meno, prezývka"
+
+#~ msgid "Start and End Times"
+#~ msgstr "Čas začiatku a ukončenia"
+
+#~ msgid "Go to..."
+#~ msgstr "Prejsť na..."
+
+#~ msgid "SPARQL Query..."
+#~ msgstr "SPARQL Query..."
 
 #~ msgid "Display Help Index"
 #~ msgstr "Zobrazí sa register pomocníka"
