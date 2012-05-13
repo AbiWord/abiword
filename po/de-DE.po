@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-11 16:24+0200\n"
-"PO-Revision-Date: 2012-05-11 16:24+0200\n"
+"POT-Creation-Date: 2012-05-13 23:09+0200\n"
+"PO-Revision-Date: 2012-05-13 23:09+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -814,6 +814,11 @@ msgstr "RDF ab&fragen"
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "&Beenden"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr "&RDF"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -4655,8 +4660,8 @@ msgstr "Dieses Dokument öffnen"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
-msgstr "Ausrichtung..."
+msgid "Orientation:"
+msgstr "Ausrichtung:"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4791,8 +4796,8 @@ msgstr "&Format:"
 
 #. DLG_PageSetup_Paper
 #: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Papier..."
+msgid "Paper:"
+msgstr "Papier:"
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -5044,11 +5049,6 @@ msgstr "RDF an Cursorposition abfragen..."
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
 msgstr "Erset&zen"
-
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr "RDF"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
@@ -5509,8 +5509,8 @@ msgstr "In Datei speichern"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Skalieren..."
+msgid "Scale:"
+msgstr "Skalierung:"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
