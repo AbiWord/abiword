@@ -32,8 +32,8 @@ pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
 dist_man1_MANS = abiword.1
 endif
 
-icondir= $(datadir)/icons
-icon_DATA = abiword_48.png
+icondir= $(ABIWORD_ICONDIR)
+icon_DATA = abiword.png
 
 EXTRA_DIST = \
 	AUTHORS \
@@ -47,7 +47,7 @@ EXTRA_DIST = \
 	ChangeLog \
 	abiword.desktop \
 	abiword.keys \
-	abiword_48.png \
+	abiword.png \
 	libabiword.pc.in \
 	compile-resource \
 	lt-compile-resource

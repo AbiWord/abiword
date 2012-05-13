@@ -383,7 +383,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 	GtkWidget * window = getTopLevelWindow();
 
 	GtkIconTheme * theme = gtk_icon_theme_get_default();
-	GdkPixbuf * icon = gtk_icon_theme_load_icon(theme, "abiword_48", 48, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
+	GdkPixbuf * icon = gtk_icon_theme_load_icon(theme, "abiword", 48, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
 	if (icon)
 	{
 		gtk_window_set_icon (GTK_WINDOW (window), icon);
@@ -395,7 +395,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 	// are installed in a custom prefix, so let's try to load the icon manually.
 
 	GError* error = NULL;
-	std::string icon_path = std::string(DATADIR) + G_DIR_SEPARATOR_S + "icons" + G_DIR_SEPARATOR_S + "abiword_48.png";
+	std::string icon_path = std::string(ICONDIR) + G_DIR_SEPARATOR_S + "abiword.png";
 	icon = gdk_pixbuf_new_from_file(icon_path.c_str(), &error);
 	if (icon)
 	{

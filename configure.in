@@ -592,6 +592,19 @@ AM_CONDITIONAL([WITH_CHAMPLAIN], test "$abi_cv_champlain" = "yes")
 AM_CONDITIONAL([HAVE_CHAMPLAIN], test "$abi_cv_champlain" = "yes")
 
 
+AC_ARG_WITH([icondir],
+	[AS_HELP_STRING([--with-icondir=DIR], [install icon in DIR instead of PREFIX/share/icons/hicolor/48x48/apps])],
+[
+	abi_cv_icondir="$withval"
+])
+if test "$abi_cv_icondir" = "" -o \
+        "$abi_cv_icondir" = "yes" -o \
+        "$abi_cv_icondir" = "no"; then
+	abi_cv_icondir="${prefix}/share/icons/hicolor/48x48/apps"
+fi
+AC_SUBST(ABIWORD_ICONDIR, "$abi_cv_icondir") 	     
+
+
 #
 # Compiler settings (from gnumeric's configure.in)
 #

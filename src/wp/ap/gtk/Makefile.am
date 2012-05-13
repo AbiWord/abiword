@@ -7,7 +7,7 @@ AM_CPPFLAGS = 						\
 	-DPREFIX=\""$(prefix)"\" 				\
 	-DSYSCONFDIR=\""$(sysconfdir)"\" 			\
 	-DABIWORD_PLUGINSDIR="\"$(ABIWORD_PLUGINSDIR)"\"	\
-	-DDATADIR="\"$(datadir)\"" \
+	-DICONDIR="\"$(ABIWORD_ICONDIR)\"" \
         $(CHAMPLAIN_CFLAGS)
 
 
