@@ -763,15 +763,15 @@ dcl(DLG_PageNumbers_Position_No_Colon,	 "Position")
 
 	 /* page setup dialog */
 dcl(DLG_PageSetup_Title,  "Page Setup")
-dcl(DLG_PageSetup_Paper,  "Paper...")
+dcl(DLG_PageSetup_Paper,  "Paper:")
 dcl(DLG_PageSetup_Width,  "&Width:")
 dcl(DLG_PageSetup_Height, "&Height:")
 dcl(DLG_PageSetup_Paper_Size, "Paper Si&ze:")
 dcl(DLG_PageSetup_Units, "&Units:")
-dcl(DLG_PageSetup_Orient, "Orientation...")
+dcl(DLG_PageSetup_Orient, "Orientation:")
 dcl(DLG_PageSetup_Landscape, "&Landscape")
 dcl(DLG_PageSetup_Portrait, "&Portrait")
-dcl(DLG_PageSetup_Scale, "Scale...")
+dcl(DLG_PageSetup_Scale, "Scale:")
 dcl(DLG_PageSetup_Adjust, "&Adjust to:")
 dcl(DLG_PageSetup_Percent, "% of normal size")		//xgettext:no-c-format
 dcl(DLG_PageSetup_Page, "Page")
