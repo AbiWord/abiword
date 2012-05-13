@@ -321,7 +321,7 @@ void IE_Exp_HTML_DocumentWriter::closeTextbox()
 void IE_Exp_HTML_DocumentWriter::_handleStyleAndId(const gchar* szStyleName, 
     const gchar* szId, const gchar* szStyle)
 {
-    if ((szStyleName != NULL)  && (strlen(szStyle) > 0))
+    if ((szStyleName != NULL)  && (szStyle != NULL) && (strlen(szStyle) > 0))
     {
         m_pTagWriter->addAttribute("class", szStyleName);
     }
