@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-13 23:09+0200\n"
-"PO-Revision-Date: 2012-05-13 23:09+0200\n"
+"POT-Creation-Date: 2012-05-14 21:05+0200\n"
+"PO-Revision-Date: 2012-05-14 21:05+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -265,11 +265,6 @@ msgstr "Tabelle &automatisch einpassen"
 msgid "&Automatically save this Scheme"
 msgstr "Dieses Schema &automatisch speichern"
 
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "&Verfügbare Formate:"
-
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
 msgid "&Before:"
@@ -432,11 +427,6 @@ msgstr "Hyperlink &bearbeiten"
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr "Ü&berschreibemodus wechselbar"
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "Geschweifte Anführungs&zeichen"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -973,12 +963,12 @@ msgstr "&Tabelle"
 #. MENU_LABEL_FMT_TABS
 #: po/tmp/ap_String_Id.h
 msgid "&Tabs"
-msgstr "&Tabulator"
+msgstr "&Tabulatoren"
 
 #. DLG_Para_ButtonTabs
 #: po/tmp/ap_String_Id.h
 msgid "&Tabs..."
-msgstr "&Tabstopps..."
+msgstr "&Tabulatoren..."
 
 #. MENU_LABEL_VIEW_TOOLBARS
 #: po/tmp/ap_String_Id.h
@@ -1323,7 +1313,7 @@ msgstr "Anwendung"
 #. DLG_Options_Label_AppStartup
 #: po/tmp/ap_String_Id.h
 msgid "Application Startup"
-msgstr "Programmstart-Option"
+msgstr "Programmstart"
 
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
@@ -1435,15 +1425,10 @@ msgstr "Automatisch speichern"
 msgid "Auto replace misspelled words"
 msgstr "Schreibfehler automatisch korrigieren"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Automatisch einpassen"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
-msgstr "Automatisch einpassen"
+msgid "AutoFit Behavior"
+msgstr "Spaltenbreite"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h
@@ -1485,7 +1470,7 @@ msgstr "Automatisch verbinden"
 msgid "Available Fields"
 msgstr "Vorhandene Felder"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
 msgid "Available Formats"
 msgstr "Verfügbare Formate"
@@ -1526,11 +1511,6 @@ msgstr "Vertikale Linie"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Basiert auf:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Bidirektionale Option"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -1711,7 +1691,7 @@ msgstr "Zentriert"
 #. TabToggleCenterTab
 #: po/tmp/ap_String_Id.h
 msgid "Center Tab"
-msgstr "Zentrier-Tabstopp"
+msgstr "Zentrierter Tabulator"
 
 #. TOOLBAR_STATUSLINE_ALIGN_CENTER
 #. TOOLBAR_TOOLTIP_ALIGN_CENTER
@@ -2431,7 +2411,7 @@ msgstr "Dezimal"
 #. TabToggleDecimalTab
 #: po/tmp/ap_String_Id.h
 msgid "Decimal Tab"
-msgstr "Dezimal-Tabstopp"
+msgstr "Dezimaler Tabulator"
 
 #. TOOLBAR_LABEL_UNINDENT
 #. TOOLBAR_STATUSLINE_UNINDENT
@@ -2458,7 +2438,7 @@ msgstr "Standard-Seitengröße"
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h
 msgid "Default tab stops:"
-msgstr "Standard-Tabstopps:"
+msgstr "Standard-Tabulatoren:"
 
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h
@@ -2883,6 +2863,11 @@ msgstr "Verweis auf Endnote"
 msgid "Endnote style"
 msgstr "Stil der Endnote"
 
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+msgid "Endnotes"
+msgstr "Endnoten"
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -2984,20 +2969,15 @@ msgstr "Semantische Standort-Elemente exportieren"
 msgid "Extra"
 msgstr "Extras"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
-msgstr "Zusätzliche Parameter"
+msgid "Extra Parameters:"
+msgstr "Zusätzliche Parameter:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Extras-Symbolleiste"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Zusätzliche Parameter:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3018,11 +2998,6 @@ msgstr "&Ganzer Bildschirm"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "&Suchen nach:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Feldname"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3225,6 +3200,11 @@ msgstr "Verweis auf Fußnote"
 msgid "Footnote style"
 msgstr "Stil der Fußnote"
 
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+msgid "Footnotes"
+msgstr "Fußnoten"
+
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
 msgid "Footnotes and &Endnotes"
@@ -3272,16 +3252,6 @@ msgstr "Format"
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "Das eingebettete Objekt formatieren"
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Endnoten formatieren"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Fußnoten formatieren"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3633,7 +3603,7 @@ msgstr "&Tabelle einfügen"
 msgid "Insert Bookmark"
 msgstr "Textmarke einfügen"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Manueller Wechsel"
@@ -3663,7 +3633,7 @@ msgstr "Formel einfügen"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Formel aus einem LaTeX-Ausdruck einfügen"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Feld einfügen"
@@ -3837,20 +3807,10 @@ msgstr "Ein Bild in das Dokument einfügen"
 msgid "Insert bookmark"
 msgstr "Eine Textmarke einfügen"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Wechsel einfügen"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Clipart einfügen"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Feld einfügen"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -4058,7 +4018,7 @@ msgstr "Linker Rand [%s]"
 #. TabToggleLeftTab
 #: po/tmp/ap_String_Id.h
 msgid "Left Tab"
-msgstr "Linker Tabstopp"
+msgstr "Linker Tabulator"
 
 #. TOOLBAR_STATUSLINE_ALIGN_LEFT
 #. TOOLBAR_TOOLTIP_ALIGN_LEFT
@@ -4660,8 +4620,8 @@ msgstr "Dieses Dokument öffnen"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation:"
-msgstr "Ausrichtung:"
+msgid "Orientation"
+msgstr "Ausrichtung"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4789,15 +4749,15 @@ msgstr "Seiten:"
 msgid "Pagination"
 msgstr "Textfluß"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr "Papier"
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "&Format:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper:"
-msgstr "Papier:"
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4878,11 +4838,6 @@ msgstr "Mit RDF während der Entwicklung spielen"
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Position"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Textrahmen positionieren"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -5354,7 +5309,7 @@ msgstr "Rechter Rand [%s]"
 #. TabToggleRightTab
 #: po/tmp/ap_String_Id.h
 msgid "Right Tab"
-msgstr "Rechter Tabstopp"
+msgstr "Rechter Tabulator"
 
 #. TOOLBAR_STATUSLINE_ALIGN_RIGHT
 #. TOOLBAR_TOOLTIP_ALIGN_RIGHT
@@ -5509,8 +5464,8 @@ msgstr "In Datei speichern"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale:"
-msgstr "Skalierung:"
+msgid "Scale"
+msgstr "Skalierung"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5527,14 +5482,9 @@ msgstr "Sekunden zw. Aktualisierungen"
 msgid "Seconds since the epoch"
 msgstr "Sekunden seit 1970 (UNIX-Zeit)"
 
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Abschnittswechsel"
-
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Abschnittswechsel"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -5807,7 +5757,7 @@ msgstr "Metadaten des Dokuments anzeigen und bearbeiten"
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h
 msgid "Set new Tab"
-msgstr "Neuer Tabstopp"
+msgstr "Neuer Tabulator"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
@@ -5823,7 +5773,7 @@ msgstr "Die Einstellungen festlegen"
 #. MENU_STATUSLINE_FMT_TABS
 #: po/tmp/ap_String_Id.h
 msgid "Set tab stops"
-msgstr "Tabstopps setzen"
+msgstr "Tabulatoren einrichten"
 
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
@@ -6043,7 +5993,7 @@ msgstr "Einfacher Zeilenabstand"
 #. DLG_Options_TabLabel_SmartQuotes
 #: po/tmp/ap_String_Id.h
 msgid "Smart Quotes"
-msgstr "Geschweifte Anführungszeichen"
+msgstr "Anführungszeichen"
 
 #. MENU_LABEL_TABLE_SORT
 #: po/tmp/ap_String_Id.h
@@ -6488,17 +6438,17 @@ msgstr "&Tabelle"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Tab Stop [%s]"
-msgstr "Tabstopp [%s]"
+msgstr "Tabulator [%s]"
 
 #. DLG_Tab_Label_TabPosition
 #: po/tmp/ap_String_Id.h
 msgid "Tab stop position:"
-msgstr "Tabstopp-Position:"
+msgstr "Tabulator-Position:"
 
 #. DLG_Tab_Label_TabToClear
 #: po/tmp/ap_String_Id.h
 msgid "Tab stops to be cleared:"
-msgstr "Zu löschende Tabstopps:"
+msgstr "Zu löschende Tabulatoren:"
 
 #. DLG_FormatTable_Apply_To_Table
 #. MENU_STATUSLINE_TABLE
@@ -6508,7 +6458,7 @@ msgstr "Zu löschende Tabstopps:"
 msgid "Table"
 msgstr "Tabelle"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Tabellengröße"
@@ -6534,16 +6484,11 @@ msgstr "Inhaltsverzeichnis (Listenlabel)"
 msgid "Table of Contents Page"
 msgstr "Inhaltsverzeichnis (Seite)"
 
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Tabellengröße"
-
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
 #: po/tmp/ap_String_Id.h
 msgid "Tabs"
-msgstr "Tabulator"
+msgstr "Tabulatoren"
 
 #. DLG_FormatTOC_DetailsTabPage
 #: po/tmp/ap_String_Id.h
@@ -6586,13 +6531,24 @@ msgstr "Text-Abstand:"
 msgid "Text Box"
 msgstr "Textrahmen"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr "Position des Textrahmens"
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr "Schreibrichtung"
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr "Text-Faltung"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Textumlauf"
 
@@ -6896,7 +6852,7 @@ msgstr "Benutzerdefiniert"
 #. DLG_Tab_Label_Existing
 #: po/tmp/ap_String_Id.h
 msgid "User-defined Tabs"
-msgstr "Eigene Tabstopps"
+msgstr "Benutzerdefinierte Tabulatoren"
 
 #. DLG_Styles_LBL_UserDefined
 #: po/tmp/ap_String_Id.h
@@ -7751,16 +7707,6 @@ msgstr "Als XML (Version 1.0) deklarieren"
 msgid "Default language: "
 msgstr "Standardsprache: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Bildposition bestimmen"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Textumlauf bestimmen"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8167,10 +8113,25 @@ msgstr "Isländisch, Macintosh"
 msgid "Identifier:"
 msgstr "Kennung:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr "Bildbezeichnung"
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr "Bildposition"
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Bildeigenschaften"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr "Bildgröße"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8782,16 +8743,6 @@ msgstr "Serbisch"
 msgid "Serbian, latin"
 msgstr "Serbisch, Latein"
 
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Bildbezeichnung wählen"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Bildgröße bestimmen"
-
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
 msgid "Set Language"
@@ -9224,7 +9175,7 @@ msgstr ""
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
-msgstr "Vergrößern auf"
+msgstr "Zoom-Einstellung"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
