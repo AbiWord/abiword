@@ -600,7 +600,9 @@ AC_ARG_WITH([icondir],
 if test "$abi_cv_icondir" = "" -o \
         "$abi_cv_icondir" = "yes" -o \
         "$abi_cv_icondir" = "no"; then
-	abi_cv_icondir="${prefix}/share/icons/hicolor/48x48/apps"
+	abi_cv_prefix="$prefix"
+	test "$abi_cv_prefix" = "NONE" && abi_cv_prefix="$ac_default_prefix"  
+	abi_cv_icondir="${abi_cv_prefix}/share/icons/hicolor/48x48/apps"
 fi
 AC_SUBST(ABIWORD_ICONDIR, "$abi_cv_icondir") 	     
 
