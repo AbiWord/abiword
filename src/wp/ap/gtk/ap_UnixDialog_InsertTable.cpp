@@ -142,11 +142,11 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_pColWidthSpin), m_columnWidth);
 	// localize the strings in our dialog, and set tags for some widgets
 	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableSize")), pSS, AP_STRING_ID_DLG_InsertTable_TableSize_Capital);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableSize")), pSS, AP_STRING_ID_DLG_InsertTable_TableSize);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbNumCols")), pSS, AP_STRING_ID_DLG_InsertTable_NumCols);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbNumRows")), pSS, AP_STRING_ID_DLG_InsertTable_NumRows);
 	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAutoFit")), pSS, AP_STRING_ID_DLG_InsertTable_AutoFit_Capital);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAutoFit")), pSS, AP_STRING_ID_DLG_InsertTable_AutoFit);
 	
 	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbAutoColSize")), pSS, AP_STRING_ID_DLG_InsertTable_AutoColSize);
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbAutoColSize"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_AUTOSIZE));	

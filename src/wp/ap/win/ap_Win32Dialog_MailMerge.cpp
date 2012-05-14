@@ -79,7 +79,7 @@ BOOL AP_Win32Dialog_MailMerge::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	
 	// Localise Controls
 	_DS(STATIC_AVAIL,	DLG_MailMerge_AvailableFields);		
-	_DS(STATIC_FIELD,	DLG_MailMerge_Insert_No_Colon);		
+	_DS(STATIC_FIELD,	DLG_MailMerge_Insert);		
 	_DS(BTN_OPEN,		DLG_MailMerge_OpenFile);		
 	_DS(BTN_INSERT,		DLG_InsertButton);		
 	_DSX(BTN_CLOSE,		DLG_Close);				

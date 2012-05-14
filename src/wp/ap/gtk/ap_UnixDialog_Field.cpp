@@ -300,14 +300,14 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 
 	// set the dialog title
 	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle_Capital,s);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Field_FieldTitle,s);
 	abiDialogSetTitle(window, "%s", s.utf8_str());
 	
 	// localize the strings in our dialog, and set some userdata for some widg
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTypes")), pSS, AP_STRING_ID_DLG_Field_Types_No_Colon);
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFields")), pSS, AP_STRING_ID_DLG_Field_Fields_No_Colon);
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbExtraParameters")), pSS, AP_STRING_ID_DLG_Field_Parameters_Capital);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbExtraParameters")), pSS, AP_STRING_ID_DLG_Field_Parameters);
 	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 
 	// add a column to our TreeViews

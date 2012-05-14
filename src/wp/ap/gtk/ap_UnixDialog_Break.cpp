@@ -112,7 +112,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 
 	// set the dialog title
 	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle_Capital,s);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle,s);
 	abiDialogSetTitle(window, "%s", s.utf8_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
@@ -125,7 +125,7 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbColumnBreak")), pSS, AP_STRING_ID_DLG_Break_ColumnBreak);
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbColumnBreak"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_COLUMN));
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbInsertSectionBreak")), pSS, AP_STRING_ID_DLG_Break_SectionBreaks_Capital);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbInsertSectionBreak")), pSS, AP_STRING_ID_DLG_Break_SectionBreaks);
 	
 	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbNextPage")), pSS, AP_STRING_ID_DLG_Break_NextPage);
 	g_object_set_data (G_OBJECT (GTK_WIDGET(gtk_builder_get_object(builder, "rbNextPage"))), WIDGET_ID_TAG_KEY, GINT_TO_POINTER(b_NEXTPAGE));

@@ -179,7 +179,7 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 	
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFields")), pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFieldName")), pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);	
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFieldName")), pSS, AP_STRING_ID_DLG_MailMerge_Insert);	
 
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbOpenFile")), pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);	
 

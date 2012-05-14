@@ -165,7 +165,7 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 	LocalizeControl([self window],    pSS, AP_STRING_ID_DLG_MailMerge_MailMergeTitle);
 
 	LocalizeControl(oAvailableFields, pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
-	LocalizeControl(oFieldNameCell,   pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);
+	LocalizeControl(oFieldNameCell,   pSS, AP_STRING_ID_DLG_MailMerge_Insert);
 	LocalizeControl(oOpenFile,        pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);
 	LocalizeControl(oClose,           pSS,XAP_STRING_ID_DLG_Close);
 	LocalizeControl(oInsert,          pSS, AP_STRING_ID_DLG_InsertButton);
