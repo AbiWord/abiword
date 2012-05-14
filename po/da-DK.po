@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2012-05-07 07:33+0200\n"
+"POT-Creation-Date: 2012-05-11 14:00-0400\n"
+"PO-Revision-Date: 2012-05-12 01:00+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -1140,7 +1140,7 @@ msgid ""
 "The current document has been saved to disc with a \".saved\" extension."
 msgstr ""
 "Der er opstået en fatal fejl. Abiword vil lukke ned.\n"
-"Det nuværende dokument er blevet gemt med endelsen \".saved\"."
+"Det nuværende dokument er blevet gemt med \".saved\" som filendelse."
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h
@@ -1951,7 +1951,7 @@ msgstr ""
 "Vælg ønsket indstilling på venste side.\n"
 "Dersom du vil bruge \"Gå til\" knappen skal du indtaste ønsket nummer i "
 "\"Nummer\"-feltet.  Du kan bruge + og - til at udføre relativ forflytning.\t"
-"Hvis du eksempelvis skriver +2 og vælger \"Linje\", vil \"Gå til\" flytte "
+"Hvis du eksempelvis skriver \"+2\" og vælger \"Linje\", vil \"Gå til\" flytte "
 "markøren to linjer nedenfor nuværende position."
 
 #. MENU_LABEL_EDIT_CLEAR
@@ -2660,7 +2660,7 @@ msgstr "Fjern tilknytning"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate and apply default stylesheet"
-msgstr ""
+msgstr "Fjern tilknytning og anvend standard-stilark"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -3427,7 +3427,6 @@ msgstr "Sidehoved [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3989,10 +3988,14 @@ msgid "Keywords:"
 msgstr "Nøgleord:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
 msgstr "LaTeX-formel"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "LaTeX-formel:"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
@@ -5298,7 +5301,7 @@ msgstr "Start sidenummerering forfra på nye sektioner"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr ""
+msgstr "Begræns til RDF-henvisning:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5838,13 +5841,12 @@ msgstr "Sæt tabulatorstop"
 
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
 "the stylesheet for all existing Semantic Items to the new stylesheet as well."
 msgstr ""
-"Angiver standard-stilarket for semantiske objekter i dette dokument. Nye "
+"Angiver det nuværende stilark for semantiske objekter i dette dokument. Nye "
 "RDF-objekter vil automatisk anvende dette stilark. Knapperne giver dig også "
 "mulighed for at angive det ny stilark for alle forekomster af semantiske "
 "objekter."
