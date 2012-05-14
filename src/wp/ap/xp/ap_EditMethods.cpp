@@ -9574,7 +9574,7 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		sUnits = UT_dimensionName(final_ut);
 		sWidth = UT_formatDimensionString(final_ut,final_wid);
 		sHeight = UT_formatDimensionString(final_ut,final_ht);
-		UT_UTF8String_sprintf(sScale,"%f",final_scale);
+		sScale = UT_formatDimensionString(DIM_none,final_scale);
 		bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
 		if(p)
 			sOri = "portrait";
@@ -9586,11 +9586,13 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		szAttr[7] = sHeight.utf8_str();
 		szAttr[9] = sUnits.utf8_str();
 		szAttr[11] = sScale.utf8_str();
+#ifdef DEBUG
 		for (const gchar ** a = szAttr; (*a); a++)
 			{
 				UT_DEBUGMSG(("apEditMethods attrib %s value %s \n",a[0],a[1]));
 				a++;
 			}
+#endif
 		pDoc->setPageSizeFromFile(szAttr);
 	}
 
