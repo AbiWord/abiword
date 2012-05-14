@@ -5,7 +5,9 @@ stringsdir = $(ABIWORD_DATADIR)/strings
 UIBACKPORT = $(srcdir)/ui-backport.pl
 
 strings_DATA = \
+	ach.strings \
 	af-ZA.strings \
+	ak.strings \
 	am-ET.strings \
 	ar.strings \
 	ast-ES.strings \
@@ -47,6 +49,7 @@ strings_DATA = \
 	kk-KZ.strings \
 	ko.strings \
 	ku.strings \
+	lg.strings \
 	lt-LT.strings \
 	lv-LV.strings \
 	mg-MG.strings \
@@ -74,7 +77,9 @@ strings_DATA = \
 	sr@latin.strings \
 	sr.strings \
 	sv-SE.strings \
+	sw.strings \
 	ta-IN.strings \
+	th.strings \
 	tr-TR.strings \
 	uk-UA.strings \
 	vi-VN.strings \
