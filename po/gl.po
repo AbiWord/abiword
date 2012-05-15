@@ -7,16 +7,16 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2011-07-19 10:06+0200\n"
-"Last-Translator: Miguel Anxo <mbouzada@gmail.com>\n"
+"POT-Creation-Date: 2012-05-11 14:00-0400\n"
+"PO-Revision-Date: 2012-05-15 20:11+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Galician <proxecto@trasno.net>\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.0.1\n"
+"X-Generator: Pootle 2.0.5\n"
 "X-Poedit-Language: Galician\n"
 
 #.
@@ -65,6 +65,8 @@ msgid ""
 "# Insert your SPARQL query here\n"
 "# Results are shown below."
 msgstr ""
+"# Insira aquí a súa consulta SPARQL\n"
+"# Os resultados móstranse a seguir."
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
@@ -408,7 +410,7 @@ msgstr "&Editar"
 #. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
 msgid "&Edit RDF"
-msgstr ""
+msgstr "&Editar RDF"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -488,9 +490,8 @@ msgstr "&Pé:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Formato"
+msgstr "&Formato"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -801,7 +802,7 @@ msgstr "&Borrar o historial"
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "&Query RDF"
-msgstr ""
+msgstr "&Consulta RDF"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
@@ -986,7 +987,7 @@ msgstr "&Superior:"
 #. DLG_RDF_Editor_Menu_Triple
 #: po/tmp/ap_String_Id.h
 msgid "&Triple"
-msgstr ""
+msgstr "&Tripla"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -1255,12 +1256,12 @@ msgstr "Engadir a modelos"
 #. MENU_LABEL_RDF_ADV
 #: po/tmp/ap_String_Id.h
 msgid "Advanced"
-msgstr ""
+msgstr "Avanzado"
 
 #. MENU_STATUSLINE_RDF_ADV
 #: po/tmp/ap_String_Id.h
 msgid "Advanced RDF"
-msgstr ""
+msgstr "RDF avanzado"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h
@@ -1301,9 +1302,8 @@ msgstr "Permitir cores de pantalla distintos do branco"
 
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Annotation"
-msgstr "&Anotacións"
+msgstr "Anotación"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
@@ -1325,32 +1325,32 @@ msgstr "Aplicar"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
 #: po/tmp/ap_String_Id.h
 msgid "Apply Contact"
-msgstr ""
+msgstr "Aplicar o contacto"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
 msgid "Apply Current"
-msgstr ""
+msgstr "Aplicar o actual"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
 msgid "Apply Event"
-msgstr ""
+msgstr "Aplicar a actividade"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Apply Location"
-msgstr ""
+msgstr "Aplicar a localización"
 
 #. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
 #. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
 #. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
 msgid "Apply stylesheet to this Semantic Item"
-msgstr ""
+msgstr "Aplicar a folla de estilo a este elemento semántico"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1394,9 +1394,8 @@ msgstr "Adxuntar á lista anterior"
 
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Autor:"
+msgstr "Autor"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
@@ -1576,7 +1575,7 @@ msgstr "Bordos e sombreado"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr ""
+msgstr "Ámbalas dúas persoas coñecense"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -1792,7 +1791,7 @@ msgstr "Cambiar o formato do parágrafo seleccionado"
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
 msgid "Change the format of the table"
-msgstr ""
+msgstr "Cambiar o formato da táboa"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -1916,7 +1915,7 @@ msgstr "Escolla unha cor de pantalla para AbiWord"
 #. TOOLBAR_TOOLTIP_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Choose which revision of the document to see and edit"
-msgstr ""
+msgstr "Escolla a revisión do documento para ver e editar"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h
@@ -2055,21 +2054,19 @@ msgstr "Con&tinuo"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact"
-msgstr "Contidos"
+msgstr "Contacto"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Contact from File"
-msgstr ""
+msgstr "Contacto desde ficheiro"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
 #. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contacts"
-msgstr "Contidos"
+msgstr "Contactos"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2201,19 +2198,18 @@ msgstr "Cobertura:"
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create New"
-msgstr ""
+msgstr "Crear novo"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "Referencia da páxina"
+msgstr "Crear unha referencia"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
 #: po/tmp/ap_String_Id.h
 msgid "Create Semantic Item"
-msgstr ""
+msgstr "Crear un elemento semántico"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h
@@ -2223,7 +2219,7 @@ msgstr "Crear un fax"
 #. TOOLBAR_TOOLTIP_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create a new Revision"
-msgstr ""
+msgstr "Crear unha nova revisión"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h
@@ -2260,22 +2256,22 @@ msgstr "Crear desde a &selección"
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item"
-msgstr ""
+msgstr "Crear un novo elemento semántico de contacto"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr ""
+msgstr "Crear un novo elemento semántico de contacto importando unha vCard"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
 msgid "Create new Reference to existing Semantic Item"
-msgstr ""
+msgstr "Crear unha nova referencia para o elemento semántico existente"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create new Semantic Item"
-msgstr ""
+msgstr "Crear un novo elemento semántico"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h
@@ -2388,7 +2384,7 @@ msgstr "Lista con guións"
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
 msgid "Dashed line"
-msgstr ""
+msgstr "Liña de guións"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2610,7 +2606,7 @@ msgstr "Rodapé diferente para a primeira páxina"
 #. DLG_HdrFtr_FooterLast
 #: po/tmp/ap_String_Id.h
 msgid "Different footer on last page"
-msgstr "Rodapé diferente para a derradeira páxina"
+msgstr "Rodapé diferente para a última páxina"
 
 #. DLG_HdrFtr_HeaderEven
 #: po/tmp/ap_String_Id.h
@@ -2630,7 +2626,7 @@ msgstr "Cabeceira diferente para a última páxina"
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Directly edit the RDF for the entire document..."
-msgstr ""
+msgstr "Editar directamente o RDF para todo o documento..."
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
@@ -2640,12 +2636,12 @@ msgstr "Desactivar todas as ordes de formato, excepto os estilos"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
-msgstr ""
+msgstr "Desasociar"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate and apply default stylesheet"
-msgstr ""
+msgstr "Desasociar e aplicar a folla de estilo predeterminada"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -2710,7 +2706,7 @@ msgstr "Non reiniciar"
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
 msgid "Dotted line"
-msgstr ""
+msgstr "Liña de puntos"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2731,27 +2727,27 @@ msgstr "Espazado dobre"
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF Objects"
-msgstr ""
+msgstr "Envorcar os obxectos RDF"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF related to Cursor Position"
-msgstr ""
+msgstr "Envorcar RDF relacionado coa posición do cursor"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump out information about RDF Objects"
-msgstr ""
+msgstr "Envorcar a información de saída sobre os obxectos RDF"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump the raw RDF associated with the cursor position"
-msgstr ""
+msgstr "Envorcar RDF en bruto asociado á posición do cursor"
 
 #. MENU_LABEL_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "E&dit Semantic Items"
-msgstr ""
+msgstr "E&ditar elementos semánticos"
 
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
@@ -2787,17 +2783,17 @@ msgstr "Editar ecuación LaTeX"
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples"
-msgstr ""
+msgstr "Editar RDF triplos"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples associated with location"
-msgstr ""
+msgstr "Editar os RDF triplos asociados coa localización"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr ""
+msgstr "Editar os elementos semánticos para localización"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -2807,7 +2803,7 @@ msgstr "Editar anotación"
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
 msgid "Edit document RDF"
-msgstr ""
+msgstr "Editar documento RDF"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -2834,7 +2830,7 @@ msgstr "Editar a cabeceira na páxina actual"
 #. TOOLBAR_TOOLTIP_SEMITEM_EDIT
 #: po/tmp/ap_String_Id.h
 msgid "Edit this Semantic Item"
-msgstr ""
+msgstr "Editar este elemento semántico"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
@@ -2914,7 +2910,7 @@ msgstr "Produciuse un erro ao tentar gardar %s: o nome é incorrecto"
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
 msgid "Events"
-msgstr ""
+msgstr "Actividades"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -2934,17 +2930,17 @@ msgstr "Exemplo:"
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
 msgid "Execute Query"
-msgstr ""
+msgstr "Executar unha consulta"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
 msgid "Execute SPARQL on document RDF"
-msgstr ""
+msgstr "Executar SPARQL no documento RDF"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Execute a SPARQL Query on all document RDF..."
-msgstr ""
+msgstr "Executar unha consulta SPARQL en todos os documentos RDF..."
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -2965,12 +2961,12 @@ msgstr "Revisións existentes:"
 #. MENU_LABEL_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items"
-msgstr ""
+msgstr "Exportar elementos semánticos"
 
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr ""
+msgstr "Exportar elementos semánticos para localización"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
@@ -3075,7 +3071,7 @@ msgstr "Atopar a revisión &anterior"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED
 #: po/tmp/ap_String_Id.h
 msgid "Find by Relation"
-msgstr ""
+msgstr "Buscar por relación"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
@@ -3369,9 +3365,8 @@ msgstr "Ir a &que:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
-msgstr "Ir a"
+msgstr "ir a"
 
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h
@@ -3412,17 +3407,16 @@ msgstr "Cabeceira [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"As cabeceiras e rodapés só poden crearse e editarse no Modo vista previa de "
-"impresión.\n"
-"Para entrar neste modo, escolla Disposición da impresión do menú.\n"
-"Quere entrar no modo Disposición da impresión agora?"
+"As cabeceiras e rodapés só poden crearse e editarse no modo de Vista previa "
+"de impresión.\n"
+" Para entrar neste modo, escolla Disposición da impresión do menú.\n"
+" Quere entrar no modo Disposición da impresión agora?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -3487,12 +3481,12 @@ msgstr "Realzar"
 #. MENU_LABEL_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight RDF"
-msgstr ""
+msgstr "Realzar RDF"
 
 #. MENU_STATUSLINE_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight areas of the document with RDF associated"
-msgstr ""
+msgstr "Realzar as áreas do documento asociadas con RDF"
 
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h
@@ -3507,7 +3501,7 @@ msgstr "&Sangrado:"
 #. DLG_Goto_Column_ID
 #: po/tmp/ap_String_Id.h
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h
@@ -3686,22 +3680,22 @@ msgstr "Inserir MathML desde un ficheiro"
 #. DLG_InsertXMLID_Title
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF Link"
-msgstr ""
+msgstr "Inserir unha ligazón RDF"
 
 #. MENU_STATUSLINE_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF link..."
-msgstr ""
+msgstr "Inserir unha ligazón RDF..."
 
 #. DLG_RDF_SemanticItemInsert_Ok
 #: po/tmp/ap_String_Id.h
 msgid "Insert Reference"
-msgstr ""
+msgstr "Inserir unha referencia"
 
 #. DLG_RDF_SemanticItemInsert_Title
 #: po/tmp/ap_String_Id.h
 msgid "Insert Reference to Semantic Item"
-msgstr ""
+msgstr "Inserir unha referencia ao elemento semántico"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3905,7 +3899,7 @@ msgstr "Inserir os contidos do portapapeis sen formato"
 #. MENU_STATUSLINE_RDF
 #: po/tmp/ap_String_Id.h
 msgid "Interact with RDF"
-msgstr ""
+msgstr "Interactuar con RDF"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h
@@ -3972,10 +3966,14 @@ msgid "Keywords:"
 msgstr "Palabras chave:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
 msgstr "Ecuación LaTeX"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "Ecuación LaTeX:"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
@@ -4159,7 +4157,7 @@ msgstr "Listas para "
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
 msgid "Locations"
-msgstr ""
+msgstr "Localizacións"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4382,27 +4380,26 @@ msgstr "Múltiple"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Nome:"
+msgstr "Nome"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, (Homepage), Phone"
-msgstr ""
+msgstr "Nome, (páxina web), teléfono"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #: po/tmp/ap_String_Id.h
 msgid "Name, Latitude and Longitude"
-msgstr ""
+msgstr "Nome, latitude e lonxitude"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, Phone"
-msgstr ""
+msgstr "Nome, teléfono"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -4417,7 +4414,7 @@ msgstr "Nova &anotación"
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
 msgid "New Contact..."
-msgstr ""
+msgstr "Novo contacto..."
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4441,7 +4438,7 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "New Revision"
-msgstr ""
+msgstr "Nova revisión"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h
@@ -4471,13 +4468,13 @@ msgstr "Seguinte >>"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK
 #: po/tmp/ap_String_Id.h
 msgid "Nick"
-msgstr ""
+msgstr "Alcume"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Nick, Phone"
-msgstr ""
+msgstr "Alcume, teléfono"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h
@@ -4585,7 +4582,7 @@ msgstr "Números"
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
 msgid "Object"
-msgstr ""
+msgstr "Obxecto"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
@@ -4860,7 +4857,7 @@ msgstr "Colocación"
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr ""
+msgstr "Xogando con RDF durante o desenvolvemento"
 
 #. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
@@ -4902,7 +4899,7 @@ msgstr "Pr&eferencias"
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
 msgid "Predicate"
-msgstr ""
+msgstr "Predicado"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
@@ -5017,23 +5014,23 @@ msgstr "Editor:"
 #. MENU_STATUSLINE_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF associated with location"
-msgstr ""
+msgstr "Consultar os RDF asociados coa localización"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF for cursor position"
-msgstr ""
+msgstr "Consultar os RDF pola posición do cursor"
 
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
-msgstr ""
+msgstr "Consulta RDF: %d dun total de: %ld"
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query the RDF associated with the cursor position..."
-msgstr ""
+msgstr "Consultar os RDF asociados coa posición do cursor..."
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5043,18 +5040,18 @@ msgstr "Substi&uír"
 #. MENU_LABEL_RDF
 #: po/tmp/ap_String_Id.h
 msgid "RDF"
-msgstr ""
+msgstr "RDF"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "RDF Link"
-msgstr ""
+msgstr "Ligazón RDF"
 
 #. DLG_RDF_SemanticStylesheets_Title
 #: po/tmp/ap_String_Id.h
 msgid "RDF Stylesheet"
-msgstr ""
+msgstr "Folla de estilo RDF"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5117,14 +5114,13 @@ msgstr "Reduce ou aumenta a pantalla do documento"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "Relacionado co elemento semántico de orixe"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Relación:"
+msgstr "Relación"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5282,7 +5278,7 @@ msgstr "Reiniciar números de páxina en seccións novas"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr ""
+msgstr "Restrinxir a ligazón RDF:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5318,12 +5314,12 @@ msgstr "ID de revisión"
 #. TOOLBAR_STATUSLINE_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Revisions new..."
-msgstr ""
+msgstr "Revisións, novas..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Revisions select..."
-msgstr ""
+msgstr "Revisións, seleccione..."
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -5394,12 +5390,12 @@ msgstr "Filas em&baixo"
 #. MENU_STATUSLINE_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests and show results on console"
-msgstr ""
+msgstr "Executar algunhas probas RDF e mostrar os resultados na consola"
 
 #. MENU_STATUSLINE_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests that change during development"
-msgstr ""
+msgstr "Executar algunhas probas RDF cos cambios durante o desenvolvemento"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -5419,7 +5415,7 @@ msgstr "Di&vidir celas"
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "SPARQL Query"
-msgstr ""
+msgstr "Consulta SPARQL"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
@@ -5598,39 +5594,39 @@ msgstr "Seleccionar a imaxe do ficheiro"
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to Semantic Item"
-msgstr ""
+msgstr "Seleccione a seguinte referencia ao elemento semántico"
 
 #. TOOLBAR_LABEL_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item"
-msgstr ""
+msgstr "Seleccione a seguinte referencia a este elemento semántico"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item..."
-msgstr ""
+msgstr "Seleccione a seguinte referencia a este elemento semántico..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Select next references to Semantic Item"
-msgstr ""
+msgstr "Seleccione as seguintes referencias ao elemento semántico"
 
 #. MENU_LABEL_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to Semantic Item"
-msgstr ""
+msgstr "Seleccione a referencia anterior ao elemento semántico"
 
 #. TOOLBAR_LABEL_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item"
-msgstr ""
+msgstr "Seleccione a referencia anterior a este elemento semántico"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item..."
-msgstr ""
+msgstr "Seleccione a referencia anterior a este elemento semántico..."
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -5645,41 +5641,41 @@ msgstr "Seleccionar o documento completo"
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the next version..."
-msgstr ""
+msgstr "Seleccione as partes do documento que pertencen á seguinte versión..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the previous version..."
-msgstr ""
+msgstr "Seleccione as partes do documento que pertencen á versión anterior..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the next revision..."
-msgstr ""
+msgstr "Seleccione as partes do documento que figuran na seguinte revisión..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the previous revision..."
-msgstr ""
+msgstr "Seleccione as partes do documento que figuran na revisión anterior..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to Semantic Item"
-msgstr ""
+msgstr "Seleccione esta referencia ao elemento semántico"
 
 #. TOOLBAR_LABEL_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item"
-msgstr ""
+msgstr "Seleccione esta referencia a este elemento semántico"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item..."
-msgstr ""
+msgstr "Seleccione esta referencia a este elemento semántico..."
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
@@ -5691,7 +5687,7 @@ msgstr "Selección"
 #. MENU_STATUSLINE_RDF_SEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Semantic Item"
-msgstr ""
+msgstr "Elemento semántico"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
@@ -5746,7 +5742,7 @@ msgstr "Estabelecer valores predefinidos"
 #. DLG_RDF_SemanticStylesheets_Set
 #: po/tmp/ap_String_Id.h
 msgid "Set For All Existing"
-msgstr ""
+msgstr "Estabelecido para todo o existente"
 
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
@@ -5773,7 +5769,7 @@ msgstr "Estabelecer unha imaxe como fondo de páxina"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr ""
+msgstr "Estabelecer como elemento semántico de orixe"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5823,6 +5819,10 @@ msgid ""
 "objects will use this stylesheet automatically. The buttons allow you to set "
 "the stylesheet for all existing Semantic Items to the new stylesheet as well."
 msgstr ""
+"Estabelecer a folla de estilo actual para elementos semánticos neste "
+"documento. Os novos obxectos RDF utilizarán este estilo de forma automática. "
+"Os botóns permítenlle estabelecer a folla de estilo para todos os elementos "
+"semánticos existentes así como para as novas follas de estilo."
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -5863,7 +5863,7 @@ msgstr "Estabelecer as súas preferencias de ortografía"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
 #: po/tmp/ap_String_Id.h
 msgid "Settings"
-msgstr ""
+msgstr "Axustes"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
@@ -5904,7 +5904,7 @@ msgstr "Mostrar todo"
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
 msgid "Show All RDF"
-msgstr ""
+msgstr "Mostrar todo o RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
@@ -5929,17 +5929,17 @@ msgstr "Mostrar o documento antes das revisións pre&vias"
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show document at final version without revision highlighting"
-msgstr ""
+msgstr "Mostrar documento en versión final, sen realzar a revisión"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document"
-msgstr ""
+msgstr "Mostrar o documento final"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document..."
-msgstr ""
+msgstr "Mostrar o documento final..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -6039,7 +6039,7 @@ msgstr "O&rdenar táboa"
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
 msgid "Solid line"
-msgstr ""
+msgstr "Liña sólida"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6094,7 +6094,7 @@ msgstr "Ordenar táboa"
 #. DLG_MetaData_Source_LBL
 #: po/tmp/ap_String_Id.h
 msgid "Source:"
-msgstr "Fonte:"
+msgstr "Orixe:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
@@ -6359,7 +6359,7 @@ msgstr "Estilos"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
 msgid "Stylesheet"
-msgstr ""
+msgstr "Folla de estilo"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
@@ -6420,19 +6420,19 @@ msgstr "Resumo"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
-msgstr ""
+msgstr "Resumo, localización"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr ""
+msgstr "Resumo, localización, inicio e fin"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr ""
+msgstr "Resumo, inicio e fin"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6536,7 +6536,7 @@ msgstr "Formato de te&xto"
 #. MENU_LABEL_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Test RDF subsystem"
-msgstr ""
+msgstr "Probar o subsistema RDF"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h
@@ -6634,13 +6634,12 @@ msgstr "Grosor:"
 
 #. MSG_XMLIDAlreadyExists
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "This RDF link already exists. Would you like to replace the existing RDF "
 "link with this new one?"
 msgstr ""
-"Este marcador xa existe. Gustaríalle substituír o marcador existente con "
-"este novo?"
+"Esta ligazón RDF xa existe. Quere substituír a ligazón RDF existente con "
+"esta nova?"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
@@ -6648,8 +6647,8 @@ msgid ""
 "This bookmark already exists. Would you like to replace the existing "
 "bookmark with this new one?"
 msgstr ""
-"Este marcador xa existe. Gustaríalle substituír o marcador existente con "
-"este novo?"
+"Este marcador xa existe. Quere substituír o marcador existente con este "
+"novo?"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h
@@ -6757,7 +6756,7 @@ msgstr "Liña superior"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Total RDF: %d"
-msgstr ""
+msgstr "RDF total: %d"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
@@ -6778,7 +6777,7 @@ msgstr "Tipo"
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link"
-msgstr ""
+msgstr "Tipo e nome para a ligazón RDF"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
@@ -7103,18 +7102,16 @@ msgstr "mm/dd/aa"
 #. DLG_ToggleCase_ToggleCase
 #: po/tmp/ap_String_Id.h
 msgid "tOGGLE cASE"
-msgstr "tROCAR mINÚSCULAS E mAIÚSCULAS"
+msgstr "cAMBIAR mINÚSCULAS E mAIÚSCULAS"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Asunto"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Asunto"
@@ -7568,7 +7565,7 @@ msgstr "Imaxe predeseñada"
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art could not be loaded"
-msgstr "Non se puido cargar a imaxe predeseñada"
+msgstr "Non foi posíbel cargar a imaxe predeseñada"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
