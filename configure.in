@@ -531,12 +531,8 @@ if test "x$with_champlain" != "xno"; then
     	AC_MSG_FAILURE([--with-champlain was given, but test for champlain failed])
     fi])
     abi_cv_champlain=yes
-    AC_LANG_PUSH(C++)
-	CXXFLAGS_cache=$CXXFLAGS
-	CXXFLAGS=" $CHAMPLAIN_CFLAGS "
-	LDFLAGS_cache=$LDFLAGS
-	LDFLAGS=" $CHAMPLAIN_LIBS "
 
+	if test "$pkg_failed" = "no"; then
 	#
 	# try to make sure that champlain-gtk through pkg-config and
  	# the GTK+ version that the user wants abiword to directly
@@ -546,8 +542,14 @@ if test "x$with_champlain" != "xno"; then
 	# GTK+ that champlain natively uses is using the GTK+ version
 	# that we want to link with.
  	#
+	AC_LANG_PUSH(C++)
+	CXXFLAGS_cache=$CXXFLAGS
+	CXXFLAGS=" $CHAMPLAIN_CFLAGS "
+	LDFLAGS_cache=$LDFLAGS
+	LDFLAGS=" $CHAMPLAIN_LIBS "
+
 	if test "x$abi_cv_gtk2" = "xyes"; then
- 	  echo "checking that both use GTK+2..."
+ 	  echo -n "checking whether CHAMPLAIN uses GTK+2... "
  	  
 		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <champlain-gtk/champlain-gtk.h>],[
  #if GTK_MAJOR_VERSION > 2
@@ -555,14 +557,14 @@ if test "x$with_champlain" != "xno"; then
  #endif
                                ])], gtk_matches=yes, gtk_matches=no)
 	else
- 	  echo "checking that both use GTK+3..."
+ 	  echo -n "checking whether CHAMPLAIN uses GTK+3... "
 		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <champlain-gtk/champlain-gtk.h>],[
  #if GTK_MAJOR_VERSION < 3
  #error bad
  #endif
                                ])], gtk_matches=yes, gtk_matches=no)
 	fi
-        echo "gtk version matches in champlain and our selected gtk:$gtk_matches"
+        echo "$gtk_matches"        
 
 	LDFLAGS=$LDFLAGS_cache
 	CXXFLAGS=$CXXFLAGS_cache
@@ -576,6 +578,9 @@ if test "x$with_champlain" != "xno"; then
 	   abi_cv_champlain=no
            CHAMPLAIN_CFLAGS=
            CHAMPLAIN_LIBS=
+	fi
+	else
+		abi_cv_champlain=no
 	fi
 else
 	abi_cv_champlain=no
