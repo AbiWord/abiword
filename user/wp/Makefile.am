@@ -63,12 +63,12 @@ wp_DATA = \
 	system.profile-nb-NO \
 	system.profile-nl-NL \
 	system.profile-nn-NO \
-	system.profile-ro \
-	system.profile-ro-RO \
 	system.profile-pl-PL \
 	system.profile-ps \
 	system.profile-pt-BR \
 	system.profile-pt-PT \
+	system.profile-ro \
+	system.profile-ro-RO \
 	system.profile-ru \
 	system.profile-ru-RU \
 	system.profile-sk-SK \
