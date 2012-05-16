@@ -39,6 +39,7 @@ templates_normal = \
 	normal.awt-hu_HU \
 	normal.awt-it_IT \
 	normal.awt-ja_JP \
+	normal.awt-km_KH \
 	normal.awt-lt_LT \
 	normal.awt-nb_NO \
 	normal.awt-nl_NL \

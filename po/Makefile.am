@@ -47,6 +47,7 @@ strings_DATA = \
 	ja-JP.strings \
 	jbo.strings \
 	kk-KZ.strings \
+	km.strings \
 	ko.strings \
 	ku.strings \
 	lg.strings \
