@@ -39,17 +39,18 @@ templates_normal = \
 	normal.awt-hu_HU \
 	normal.awt-it_IT \
 	normal.awt-ja_JP \
+	normal.awt-kk_KZ \
 	normal.awt-km_KH \
 	normal.awt-lt_LT \
 	normal.awt-nb_NO \
 	normal.awt-nl_NL \
 	normal.awt-nn_NO \
 	normal.awt-pl_PL \
-	normal.awt-ro \
-	normal.awt-ro_RO \
 	normal.awt-ps \
 	normal.awt-pt_BR \
 	normal.awt-pt_PT \
+	normal.awt-ro \
+	normal.awt-ro_RO \
 	normal.awt-ru \
 	normal.awt-ru_RU \
 	normal.awt-sk_SK \
