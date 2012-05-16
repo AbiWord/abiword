@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-14 21:05+0200\n"
-"PO-Revision-Date: 2012-05-14 21:05+0200\n"
+"POT-Creation-Date: 2012-05-16 16:07+0200\n"
+"PO-Revision-Date: 2012-05-16 16:07+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -8272,6 +8272,11 @@ msgstr "Kanaresisch"
 #: po/tmp/xap_String_Id.h
 msgid "Kazakh (Kazakhstan)"
 msgstr "Kasachisch (Kasachstan)"
+
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr "Khmer"
 
 #. LANG_KO_KR
 #. LANG_KO
