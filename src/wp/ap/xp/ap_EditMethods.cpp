@@ -16257,10 +16257,10 @@ Defun(btn0VisualText)
 	return true;
 }
 
-Defun0(repeatThisRow)
+Defun(repeatThisRow)
 {
 	CHECK_FRAME;
-//	ABIWORD_VIEW;
+	ABIWORD_VIEW;
 	return true;
 }
 
