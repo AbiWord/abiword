@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2012-05-07 10:45+0200\n"
-"Last-Translator: Pjotr <notdisclosed@notdisclosed.tk>\n"
+"POT-Creation-Date: 2012-05-15 17:51-0400\n"
+"PO-Revision-Date: 2012-05-16 18:32+0200\n"
+"Last-Translator: Pjotr <pjotrvertaalt@gmail.com>\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -259,11 +259,6 @@ msgstr "&Tabel automatisch passend maken"
 msgid "&Automatically save this Scheme"
 msgstr "&Dit schema automatisch opslaan"
 
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "&Beschikbare opmaken:"
-
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
 msgid "&Before:"
@@ -426,11 +421,6 @@ msgstr "&Webkoppeling bewerken"
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr "&Sta schakelen toe van de overschrijfstand"
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "&Slimme aanhalingstekens inschakelen"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -808,6 +798,11 @@ msgstr "&Zoekopdracht RDF"
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "&Afsluiten"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr "&RDF"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1428,14 +1423,9 @@ msgstr "Automatisch opslaan"
 msgid "Auto replace misspelled words"
 msgstr "Automatisch verkeerd gespelde woorden vervangen"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Gedrag voor Automatisch Passend Maken"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "Gedrag voor Automatisch Passend Maken"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1478,7 +1468,7 @@ msgstr "Automatisch samenvoegen"
 msgid "Available Fields"
 msgstr "Beschikbare velden"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
 msgid "Available Formats"
 msgstr "Beschikbare opmaaktypen"
@@ -1519,11 +1509,6 @@ msgstr "Tab voor balk"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Gebaseerd op:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Tweerichtings-opties"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -2880,6 +2865,11 @@ msgstr "Eindnootverwijzing"
 msgid "Endnote style"
 msgstr "Eindnootstijl"
 
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+msgid "Endnotes"
+msgstr "Eindnoten"
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -2980,20 +2970,15 @@ msgstr "Semantische onderdelen uitvoeren inzake locatie"
 msgid "Extra"
 msgstr "Extra"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
-msgstr "Extra parameters"
+msgid "Extra Parameters:"
+msgstr "Extra parameters:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Extra werkbalk"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Extra parameters:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3014,11 +2999,6 @@ msgstr "&Volledig scherm"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "Zoeken &naar:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Veldnaam"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3221,6 +3201,11 @@ msgstr "Voetnootverwijzing"
 msgid "Footnote style"
 msgstr "Voetnootstijl"
 
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+msgid "Footnotes"
+msgstr "Voetnoten"
+
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
 msgid "Footnotes and &Endnotes"
@@ -3268,16 +3253,6 @@ msgstr "Opmaak"
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "Ingebed object opmaken"
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Eindnoten opmaken"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Voetnoten opmaken"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3629,7 +3604,7 @@ msgstr "&Tabel invoegen"
 msgid "Insert Bookmark"
 msgstr "Bladwijzer invoegen"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Eindemarkering invoegen"
@@ -3659,7 +3634,7 @@ msgstr "Vergelijking invoegen"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Een vergelijking invoegen met behulp van een LaTeX-uitdrukking"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Veld invoegen"
@@ -3833,20 +3808,10 @@ msgstr "Een afbeelding in het document voegen"
 msgid "Insert bookmark"
 msgstr "Bladwijzer invoegen"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Eindemarkering invoegen"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Illustratie invoegen"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Veld invoegen"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3974,10 +3939,14 @@ msgid "Keywords:"
 msgstr "Trefwoorden:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
 msgstr "LaTeX-vergelijking"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "LaTeX-vergelijking:"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
@@ -4652,8 +4621,8 @@ msgstr "Dit document openen"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
-msgstr "Oriëntatie..."
+msgid "Orientation"
+msgstr "Oriëntatie"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4781,15 +4750,15 @@ msgstr "Pagina's:"
 msgid "Pagination"
 msgstr "Paginanummering"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr "Papier"
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "Papier&grootte:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Papier..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4870,11 +4839,6 @@ msgstr "Aan het spelen met RDF gedurende ontwikkeling"
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Positie"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Tekstkaderpositie"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -5041,11 +5005,6 @@ msgstr "Doorzoek RDF verbonden aan de cursorpositie..."
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
 msgstr "V&ervangen"
-
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr "RDF"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
@@ -5504,8 +5463,8 @@ msgstr "Opslaan in bestand"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Schalen..."
+msgid "Scale"
+msgstr "Schaal"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5522,14 +5481,9 @@ msgstr "Seconden tussen verversingen"
 msgid "Seconds since the epoch"
 msgstr "Seconden sinds de mijlpaal"
 
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Sectie-einden"
-
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Sectie-einden"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -6498,7 +6452,7 @@ msgstr "Tabposities om te wissen:"
 msgid "Table"
 msgstr "Tabel"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Tabelgrootte"
@@ -6523,11 +6477,6 @@ msgstr "Etiket van inhoudsopgavelijst"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Pagina met inhoudsopgave"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Tabelgrootte"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6576,13 +6525,24 @@ msgstr "Tekstuitlijning:"
 msgid "Text Box"
 msgstr "Tekstvak"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr "Tekstvakpositie"
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr "Tekstrichting"
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr "Tekst opvouwen"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Tekstomloop"
 
@@ -7741,16 +7701,6 @@ msgstr "Aangeven als XML (versie 1.0)"
 msgid "Default language: "
 msgstr "Standaardtaal: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Afbeeldingplaatsing definiëren"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Tekstomloop definiëren"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8157,10 +8107,25 @@ msgstr "IJslands, Macintosh"
 msgid "Identifier:"
 msgstr "Kenmerk:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr "Afbeeldingsnaam"
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr "Afbeeldingsplaatsing"
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Afbeeldingeigenschappen"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr "Afbeeldingsgrootte"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8772,16 +8737,6 @@ msgstr "Servisch"
 msgid "Serbian, latin"
 msgstr "Servisch latijn"
 
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Afbeeldingsnaam instellen"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Afbeeldingsgrootte instellen"
-
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
 msgid "Set Language"
@@ -9281,6 +9236,63 @@ msgstr "verwanten"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "niet-gerelateerd"
+
+#~ msgid "&Available formats:"
+#~ msgstr "&Beschikbare opmaken:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Slimme aanhalingstekens inschakelen"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Gedrag voor Automatisch Passend Maken"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Tweerichtings-opties"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Extra parameters:"
+
+#~ msgid "Field Name"
+#~ msgstr "Veldnaam"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Eindnoten opmaken"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Voetnoten opmaken"
+
+#~ msgid "Insert break"
+#~ msgstr "Eindemarkering invoegen"
+
+#~ msgid "Insert field"
+#~ msgstr "Veld invoegen"
+
+#~ msgid "Paper..."
+#~ msgstr "Papier..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Tekstkaderpositie"
+
+#~ msgid "Scale..."
+#~ msgstr "Schalen..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Sectie-einden"
+
+#~ msgid "Table size"
+#~ msgstr "Tabelgrootte"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Afbeeldingplaatsing definiëren"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Tekstomloop definiëren"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Afbeeldingsnaam instellen"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Afbeeldingsgrootte instellen"
 
 #~ msgid "&Show RDF"
 #~ msgstr "&RDF weergeven"
