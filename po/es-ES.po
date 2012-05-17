@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-11 14:00-0400\n"
-"PO-Revision-Date: 2012-05-12 01:20+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2012-05-15 17:51-0400\n"
+"PO-Revision-Date: 2012-05-16 22:06+0200\n"
+"Last-Translator: AlanJAS <alanjas@hotmail.com>\n"
 "Language-Team: <es@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -260,11 +260,6 @@ msgstr "&Auto-ajustar tabla"
 msgid "&Automatically save this Scheme"
 msgstr "&Autoguarda de este esquema"
 
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "Formatos &disponibles:"
-
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
 msgid "&Before:"
@@ -427,11 +422,6 @@ msgstr "&Editar enlace"
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr "&Activar modo de sobreescritura"
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "&Activar comillas inteligentes"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -809,6 +799,11 @@ msgstr "&Pregunta RDF"
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "&Salir"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr "&RDF"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1427,14 +1422,9 @@ msgstr "Autoguardar"
 msgid "Auto replace misspelled words"
 msgstr "Cambiar automáticamente las palabras erróneas"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Comportamiento del autoajuste"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "Comportamiento del autoajuste"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1477,7 +1467,7 @@ msgstr "Autocombinar"
 msgid "Available Fields"
 msgstr "Campos disponibles"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
 msgid "Available Formats"
 msgstr "Formatos disponibles"
@@ -1518,11 +1508,6 @@ msgstr "Barra de tabuladores"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Basado en:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Opciones bidireccionales"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -2875,6 +2860,11 @@ msgstr "Referencia de nota final"
 msgid "Endnote style"
 msgstr "Estilo de nota final"
 
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+msgid "Endnotes"
+msgstr "Notas final"
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -2975,20 +2965,15 @@ msgstr "Exportar elementos semánticos por localización"
 msgid "Extra"
 msgstr "Adicional"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
-msgstr "Parámetros adicionales"
+msgid "Extra Parameters:"
+msgstr "Parámetros adicionales:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Barra de herramientas adicional"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Parámetros adicionales:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3009,11 +2994,6 @@ msgstr "&Pantalla completa"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "B&uscar:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Nombre del campo"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3216,6 +3196,11 @@ msgstr "Referencia de pie de página"
 msgid "Footnote style"
 msgstr "Estilo de nota a pie de página"
 
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+msgid "Footnotes"
+msgstr "Notas a pie de página"
+
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
 msgid "Footnotes and &Endnotes"
@@ -3263,16 +3248,6 @@ msgstr "Formato"
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "Formato del objeto incrustado"
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Formato de notas finales"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Formato de nota a pie de página"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3624,7 +3599,7 @@ msgstr "Insertar &tabla"
 msgid "Insert Bookmark"
 msgstr "Insertar marcador"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Insertar salto"
@@ -3654,7 +3629,7 @@ msgstr "Insertar ecuación"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Insertar una ecuación desde una expresión LaTeX"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Insertar campo"
@@ -3828,20 +3803,10 @@ msgstr "Insertar una imágen en el documento"
 msgid "Insert bookmark"
 msgstr "Insertar marcador"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Insertar un salto"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Inserta un clipart"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Insertar un campo"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -4651,8 +4616,8 @@ msgstr "Abrir este documento"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
-msgstr "Orientación..."
+msgid "Orientation"
+msgstr "Orientación"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4780,15 +4745,15 @@ msgstr "Páginas:"
 msgid "Pagination"
 msgstr "Paginación"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr "Papel"
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "Tama&ño del papel:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Papel..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4869,11 +4834,6 @@ msgstr "Probando con RDF durante el desarrollo"
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Posición"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Posición de la caja de texto"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -5040,11 +5000,6 @@ msgstr "Pregunta al RDF asociado con la posición del cursor..."
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
 msgstr "R&eemplazar"
-
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr "RDF"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
@@ -5503,8 +5458,8 @@ msgstr "Guardar en un archivo"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Escala..."
+msgid "Scale"
+msgstr "Escala"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5521,15 +5476,10 @@ msgstr "Segundos entre actualizaciones"
 msgid "Seconds since the epoch"
 msgstr "Segundos desde la época"
 
-#. DLG_Break_SectionBreaks_Capital
+#. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
 msgid "Section Breaks"
 msgstr "Saltos de Sección"
-
-#. DLG_Break_SectionBreaks
-#: po/tmp/ap_String_Id.h
-msgid "Section breaks"
-msgstr "Saltos de sección"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h
@@ -6501,7 +6451,7 @@ msgstr "Tabuladores a borrar:"
 msgid "Table"
 msgstr "Tabla"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Tamaño de la tabla"
@@ -6526,11 +6476,6 @@ msgstr "Lista de etiquetas del índice"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Página del índice"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Tamaño de la tabla"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6579,13 +6524,24 @@ msgstr "Alineación del texto:"
 msgid "Text Box"
 msgstr "Caja de texto"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr "Posición de la caja de texto"
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr "Dirección del texto"
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr "Plegado del texto"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Ajuste de texto"
 
@@ -7746,16 +7702,6 @@ msgstr "Declarar como XML (versión 1.0)"
 msgid "Default language: "
 msgstr "Idioma predeterminado: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Definir emplazamiento de la imágen"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Definir ajuste de texto"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8162,10 +8108,25 @@ msgstr "Islandés, Macintosh"
 msgid "Identifier:"
 msgstr "Identificador:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr "Nombre de la imagen"
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr "Ubicación de la imagen"
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
-msgstr "Propiedades de imagen"
+msgstr "Propiedades de la imagen"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr "Tamaño de la imagen"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8777,16 +8738,6 @@ msgstr "Servio"
 msgid "Serbian, latin"
 msgstr "Servio, latino"
 
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Establecer nombre de la imagen"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Establecer tamaño de la imagen"
-
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
 msgid "Set Language"
@@ -9285,6 +9236,63 @@ msgstr "similares"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "no relacionados"
+
+#~ msgid "&Available formats:"
+#~ msgstr "Formatos &disponibles:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Activar comillas inteligentes"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Comportamiento del autoajuste"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Opciones bidireccionales"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Parámetros adicionales:"
+
+#~ msgid "Field Name"
+#~ msgstr "Nombre del campo"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Formato de notas finales"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Formato de nota a pie de página"
+
+#~ msgid "Insert break"
+#~ msgstr "Insertar un salto"
+
+#~ msgid "Insert field"
+#~ msgstr "Insertar un campo"
+
+#~ msgid "Paper..."
+#~ msgstr "Papel..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Posición de la caja de texto"
+
+#~ msgid "Scale..."
+#~ msgstr "Escala..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Saltos de sección"
+
+#~ msgid "Table size"
+#~ msgstr "Tamaño de la tabla"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Definir emplazamiento de la imágen"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Definir ajuste de texto"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Establecer nombre de la imagen"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Establecer tamaño de la imagen"
 
 #~ msgid "&Show RDF"
 #~ msgstr "Mostrar RDF"
