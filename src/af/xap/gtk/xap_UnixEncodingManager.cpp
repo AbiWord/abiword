@@ -473,7 +473,7 @@ void  XAP_UnixEncodingManager::initialize()
 	NativeNonUnicodeEncodingName = NativeEncodingName;
 	NativeUnicodeEncodingName = "UTF-8";
 	LanguageISOName = "en";
-	LanguageISOTerritory = "US";   
+	LanguageISOTerritory = "";   
 
 	if (!*locname || !strcmp(locname,"C"))
 	{ 	/* paranoic case - broken system */
