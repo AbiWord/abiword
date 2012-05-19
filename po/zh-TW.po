@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2011-10-31 23:47+0200\n"
+"POT-Creation-Date: 2012-05-17 14:03-0400\n"
+"PO-Revision-Date: 2012-05-19 13:21+0200\n"
 "Last-Translator: Yuan <yuanchao@gmail.com>\n"
 "Language-Team: Traditional Chinese <zh-l10n@linux.org.tw>\n"
 "Language: zh_TW\n"
@@ -69,6 +69,8 @@ msgid ""
 "# Insert your SPARQL query here\n"
 "# Results are shown below."
 msgstr ""
+"# 請輸入您的 SPARQL 資源查詢語言\n"
+"# 搜尋結果將顯示在下方。"
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
@@ -261,11 +263,6 @@ msgstr "自動調整至適合表格(&A)"
 msgid "&Automatically save this Scheme"
 msgstr "自動儲存這個方案(&A)"
 
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "可用格式(&A):"
-
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
 msgid "&Before:"
@@ -413,7 +410,7 @@ msgstr "編輯(&E)"
 #. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
 msgid "&Edit RDF"
-msgstr ""
+msgstr "編輯 RDF (&E)"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -429,11 +426,6 @@ msgstr "編輯超連結(&E)"
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr "啟用覆寫模式切換(&E)"
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "啟用智能引號(&E)"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -493,9 +485,8 @@ msgstr "頁尾(&F):"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "格式"
+msgstr "格式(&F)"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -807,12 +798,17 @@ msgstr "消除歷史(&P)"
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "&Query RDF"
-msgstr ""
+msgstr "查詢RDF(&Q)"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "離開(&Q)"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr "&RDF"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -992,7 +988,7 @@ msgstr "上(&T):"
 #. DLG_RDF_Editor_Menu_Triple
 #: po/tmp/ap_String_Id.h
 msgid "&Triple"
-msgstr ""
+msgstr "描述句(&Triple)"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -1304,7 +1300,6 @@ msgstr "允許白色以外的螢幕色彩"
 
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Annotation"
 msgstr "註記(&A)"
 
@@ -1328,32 +1323,32 @@ msgstr "套用"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
 #: po/tmp/ap_String_Id.h
 msgid "Apply Contact"
-msgstr ""
+msgstr "套用聯絡人"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
 msgid "Apply Current"
-msgstr ""
+msgstr "套用當前"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
 msgid "Apply Event"
-msgstr ""
+msgstr "套用事件"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Apply Location"
-msgstr ""
+msgstr "套用位置"
 
 #. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
 #. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
 #. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
 msgid "Apply stylesheet to this Semantic Item"
-msgstr ""
+msgstr "套用樣式表到這個語意項目"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1395,9 +1390,8 @@ msgstr "連結至上一個清單"
 
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "作者:"
+msgstr "作者"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
@@ -1426,14 +1420,9 @@ msgstr "自動儲存"
 msgid "Auto replace misspelled words"
 msgstr "自動取代拼錯了的單詞"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "自動調整行為"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "自動調整行為"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1476,7 +1465,7 @@ msgstr "自動合併"
 msgid "Available Fields"
 msgstr "可用的功能變數"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
 msgid "Available Formats"
 msgstr "可用格式"
@@ -1517,11 +1506,6 @@ msgstr "分隔線定位點"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "根據樣式:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "文字左右方向選項"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -1577,7 +1561,7 @@ msgstr "邊框及網底"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr ""
+msgstr "兩人互相認識"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -1791,7 +1775,7 @@ msgstr "變更已選段落的格式"
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
 msgid "Change the format of the table"
-msgstr ""
+msgstr "改變表格格式"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -1916,7 +1900,7 @@ msgstr "選擇 AbiWord 的螢幕色彩"
 #. TOOLBAR_TOOLTIP_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Choose which revision of the document to see and edit"
-msgstr ""
+msgstr "選擇要查看與編輯的修訂版本"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h
@@ -2052,21 +2036,19 @@ msgstr "接續本頁(&T)"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact"
-msgstr "內容"
+msgstr "聯絡人"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Contact from File"
-msgstr ""
+msgstr "從檔案中選取聯絡人"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
 #. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contacts"
-msgstr "內容"
+msgstr "聯絡人"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2198,19 +2180,18 @@ msgstr "涵蓋範圍:"
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create New"
-msgstr ""
+msgstr "新增"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "頁面參照"
+msgstr "新增頁面參照"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
 #: po/tmp/ap_String_Id.h
 msgid "Create Semantic Item"
-msgstr ""
+msgstr "新增語意項目"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h
@@ -2220,7 +2201,7 @@ msgstr "建立傳真"
 #. TOOLBAR_TOOLTIP_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create a new Revision"
-msgstr ""
+msgstr "新增修訂版本"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h
@@ -2257,22 +2238,22 @@ msgstr "以選取範圍建立(&S)"
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item"
-msgstr ""
+msgstr "新增聯絡人語意項目"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr ""
+msgstr "由 vCard 新增聯絡人語意項目"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
 msgid "Create new Reference to existing Semantic Item"
-msgstr ""
+msgstr "由現有語意項目新增參照"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create new Semantic Item"
-msgstr ""
+msgstr "新增語意項目"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h
@@ -2385,7 +2366,7 @@ msgstr "小橫線清單"
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
 msgid "Dashed line"
-msgstr ""
+msgstr "虛線"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2637,12 +2618,12 @@ msgstr "停用除了樣式外所有格式化指令"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
-msgstr ""
+msgstr "解除關聯"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate and apply default stylesheet"
-msgstr ""
+msgstr "解除關聯並套用預設樣式"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -2707,7 +2688,7 @@ msgstr "不要重新開始"
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
 msgid "Dotted line"
-msgstr ""
+msgstr "點線"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2748,7 +2729,7 @@ msgstr "傾印游標位置關聯的原始 RDF"
 #. MENU_LABEL_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "E&dit Semantic Items"
-msgstr ""
+msgstr "編輯語意項目 (&d)"
 
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
@@ -2779,24 +2760,22 @@ msgstr "編輯頁首"
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Edit LaTeX Equation"
-msgstr "編輯 LaTeX 等式"
+msgstr "編輯 LaTeX 數學式"
 
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit RDF Triples"
-msgstr "編輯 RDF Triples..."
+msgstr "編輯 RDF 描述句 (Triple)"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit RDF Triples associated with location"
-msgstr "顯示位置相關 RDF Triples"
+msgstr "編輯 RDF 描述句與位置"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr ""
+msgstr "編輯位置的語意項目"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -2805,9 +2784,8 @@ msgstr "編輯註記"
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit document RDF"
-msgstr "編輯文件 RDF..."
+msgstr "編輯文件 RDF"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -2834,7 +2812,7 @@ msgstr "編輯本頁的頁首"
 #. TOOLBAR_TOOLTIP_SEMITEM_EDIT
 #: po/tmp/ap_String_Id.h
 msgid "Edit this Semantic Item"
-msgstr ""
+msgstr "編輯本語意項目"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
@@ -2876,10 +2854,15 @@ msgstr "章節附註參照"
 msgid "Endnote style"
 msgstr "章節附註樣式"
 
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+msgid "Endnotes"
+msgstr "章節附註"
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
-msgstr "等式"
+msgstr "數學式"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h
@@ -2913,7 +2896,7 @@ msgstr "儲存 %s 時發生錯誤: 檔名無效"
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
 msgid "Events"
-msgstr ""
+msgstr "事件"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -2933,13 +2916,12 @@ msgstr "範例:"
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
 msgid "Execute Query"
-msgstr ""
+msgstr "執行查詢"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute SPARQL on document RDF"
-msgstr "於文件 RDF 執行 SPARQL..."
+msgstr "於文件 RDF 執行 SPARQL 查詢"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
@@ -2965,32 +2947,27 @@ msgstr "現有修訂:"
 #. MENU_LABEL_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items"
-msgstr ""
+msgstr "匯出語意項目"
 
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr ""
+msgstr "匯出位置語意項目"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
 msgid "Extra"
 msgstr "額外"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
+msgid "Extra Parameters:"
 msgstr "額外參數"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "額外工具列"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "額外參數:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3011,11 +2988,6 @@ msgstr "全螢幕(&U)"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "尋找目標(&N):"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "功能變數名稱"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3075,7 +3047,7 @@ msgstr "尋找前一修訂版(&P)"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED
 #: po/tmp/ap_String_Id.h
 msgid "Find by Relation"
-msgstr ""
+msgstr "透過關聯尋找"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
@@ -3218,6 +3190,11 @@ msgstr "註腳參照"
 msgid "Footnote style"
 msgstr "註腳樣式"
 
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+msgid "Footnotes"
+msgstr "註腳"
+
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
 msgid "Footnotes and &Endnotes"
@@ -3265,16 +3242,6 @@ msgstr "格式"
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "設定內嵌物件格式"
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "設定章節附註格式"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "設定註腳格式"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3369,9 +3336,8 @@ msgstr "到(&W):"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
-msgstr "到"
+msgstr "跳到"
 
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h
@@ -3412,7 +3378,6 @@ msgstr "頁首 [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3506,7 +3471,7 @@ msgstr "縮排(&N):"
 #. DLG_Goto_Column_ID
 #: po/tmp/ap_String_Id.h
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h
@@ -3626,7 +3591,7 @@ msgstr "插入表格(&T)"
 msgid "Insert Bookmark"
 msgstr "插入書籤"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "插入分隔符號"
@@ -3656,7 +3621,7 @@ msgstr "插入等式"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "從 LaTeX 表示式插入等式"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "插入功能變數"
@@ -3695,12 +3660,12 @@ msgstr "插入 RDF 連結..."
 #. DLG_RDF_SemanticItemInsert_Ok
 #: po/tmp/ap_String_Id.h
 msgid "Insert Reference"
-msgstr ""
+msgstr "插入參照"
 
 #. DLG_RDF_SemanticItemInsert_Title
 #: po/tmp/ap_String_Id.h
 msgid "Insert Reference to Semantic Item"
-msgstr ""
+msgstr "自語意項目插入參照"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3830,20 +3795,10 @@ msgstr "插入影像至文件中"
 msgid "Insert bookmark"
 msgstr "插入書籤"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "插入分隔符號"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "插入美工圖案"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "插入功能變數"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3971,10 +3926,14 @@ msgid "Keywords:"
 msgstr "關鍵字:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
 msgstr "LaTeX 等式"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "LaTeX 數學式: "
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
@@ -4158,7 +4117,7 @@ msgstr "清單用於: "
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
 msgid "Locations"
-msgstr ""
+msgstr "位置"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4381,27 +4340,26 @@ msgstr "多行"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "名稱:"
+msgstr "名稱"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, (Homepage), Phone"
-msgstr ""
+msgstr "名稱, (網頁), 電話"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #: po/tmp/ap_String_Id.h
 msgid "Name, Latitude and Longitude"
-msgstr ""
+msgstr "名稱, 經度, 緯度"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, Phone"
-msgstr ""
+msgstr "名稱, 電話"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -4416,7 +4374,7 @@ msgstr "新註記(&A)"
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
 msgid "New Contact..."
-msgstr ""
+msgstr "新增聯絡人..."
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4440,7 +4398,7 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "New Revision"
-msgstr ""
+msgstr "新增修訂版本"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h
@@ -4470,13 +4428,13 @@ msgstr "下一位置 >>"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK
 #: po/tmp/ap_String_Id.h
 msgid "Nick"
-msgstr ""
+msgstr "暱稱"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Nick, Phone"
-msgstr ""
+msgstr "暱稱, 電話"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h
@@ -4584,7 +4542,7 @@ msgstr "編號"
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
 msgid "Object"
-msgstr ""
+msgstr "物件"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
@@ -4649,8 +4607,8 @@ msgstr "開啟這份文件"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
-msgstr "列印方向..."
+msgid "Orientation"
+msgstr "文件方向"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4778,15 +4736,15 @@ msgstr "頁數:"
 msgid "Pagination"
 msgstr "分頁"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr "紙張"
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "紙張大小(&Z):"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "紙張..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4859,7 +4817,7 @@ msgstr "置放方式"
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr ""
+msgstr "開發中使用 RDF"
 
 #. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
@@ -4867,11 +4825,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "位置"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "文字框位置"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -4901,7 +4854,7 @@ msgstr "偏好設定(&E)"
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
 msgid "Predicate"
-msgstr ""
+msgstr "述語"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
@@ -5016,23 +4969,21 @@ msgstr "出版者:"
 #. MENU_STATUSLINE_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF associated with location"
-msgstr ""
+msgstr "查詢有位置資訊的 RDF"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query RDF for cursor position"
-msgstr "顯示游標位置之 RDF..."
+msgstr "顯示游標位置之 RDF"
 
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
-msgstr ""
+msgstr "查詢 RDF: %d / %ld"
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query the RDF associated with the cursor position..."
 msgstr "顯示游標位置相關 RDF..."
 
@@ -5040,11 +4991,6 @@ msgstr "顯示游標位置相關 RDF..."
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
 msgstr "取代(&E)"
-
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr ""
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
@@ -5055,7 +5001,7 @@ msgstr "RDF 連結"
 #. DLG_RDF_SemanticStylesheets_Title
 #: po/tmp/ap_String_Id.h
 msgid "RDF Stylesheet"
-msgstr ""
+msgstr "RDF 樣式表"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5118,14 +5064,13 @@ msgstr "縮小或放大文件的顯示比例"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "關聯到原始語意項目"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "關係:"
+msgstr "關係"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5283,7 +5228,7 @@ msgstr "於新節重新開始頁碼"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr ""
+msgstr "限制於 RDF 連結:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5319,12 +5264,12 @@ msgstr "修訂 ID"
 #. TOOLBAR_STATUSLINE_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Revisions new..."
-msgstr ""
+msgstr "新修訂..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Revisions select..."
-msgstr ""
+msgstr "選擇修訂"
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -5419,9 +5364,8 @@ msgstr "分拆儲存格(&P)"
 
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "SPARQL Query"
-msgstr "SPARQL 查詢(&Q)"
+msgstr "SPARQL 查詢"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
@@ -5505,8 +5449,8 @@ msgstr "儲存至檔案"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "比例縮放..."
+msgid "Scale"
+msgstr "比例"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5523,14 +5467,9 @@ msgstr "秒更新一次"
 msgid "Seconds since the epoch"
 msgstr "由 epoch 起至今的秒數"
 
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "分節符號"
-
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "分節符號"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -5600,39 +5539,39 @@ msgstr "從檔案選取影像"
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to Semantic Item"
-msgstr ""
+msgstr "選擇語意項目的下一個參照"
 
 #. TOOLBAR_LABEL_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item"
-msgstr ""
+msgstr "選擇語意項目的下一個參照"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item..."
-msgstr ""
+msgstr "選擇語意項目的下一個參照..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Select next references to Semantic Item"
-msgstr ""
+msgstr "選擇語意項目的下一個參照"
 
 #. MENU_LABEL_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to Semantic Item"
-msgstr ""
+msgstr "選擇語意項目的前一個參照"
 
 #. TOOLBAR_LABEL_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item"
-msgstr ""
+msgstr "選擇語意項目的前一個參照"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item..."
-msgstr ""
+msgstr "選擇語意項目的前一個參照..."
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -5647,41 +5586,41 @@ msgstr "選取整份文件"
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the next version..."
-msgstr ""
+msgstr "選擇文件中屬於下一個修訂的部份..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the previous version..."
-msgstr ""
+msgstr "選擇文件中屬於前一個修訂的部份..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the next revision..."
-msgstr ""
+msgstr "選擇文件中包含下一個修訂的部份..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the previous revision..."
-msgstr ""
+msgstr "選擇文件中包含前一個修訂的部份..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to Semantic Item"
-msgstr ""
+msgstr "選擇本參照給語意項目"
 
 #. TOOLBAR_LABEL_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item"
-msgstr ""
+msgstr "選擇本參照給此語意項目"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item..."
-msgstr ""
+msgstr "選擇本參照給此語意項目..."
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
@@ -5693,7 +5632,7 @@ msgstr "選取範圍"
 #. MENU_STATUSLINE_RDF_SEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Semantic Item"
-msgstr ""
+msgstr "語意項目"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
@@ -5748,7 +5687,7 @@ msgstr "設定預設值"
 #. DLG_RDF_SemanticStylesheets_Set
 #: po/tmp/ap_String_Id.h
 msgid "Set For All Existing"
-msgstr ""
+msgstr "設為所有"
 
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
@@ -5775,7 +5714,7 @@ msgstr "設定影像為您頁面的背景"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr ""
+msgstr "設為來源語意項目"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5824,7 +5763,7 @@ msgid ""
 "Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
 "the stylesheet for all existing Semantic Items to the new stylesheet as well."
-msgstr ""
+msgstr "將目前的式樣表套用到本文件的語意項目。新的 RDF 物件將自動使用本樣式。您也可以使用按鈕設定新的樣式給目前的語意項目。"
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -5865,7 +5804,7 @@ msgstr "設定您的拼字檢查偏好"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
 #: po/tmp/ap_String_Id.h
 msgid "Settings"
-msgstr ""
+msgstr "設定"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
@@ -5906,7 +5845,7 @@ msgstr "全部顯示"
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
 msgid "Show All RDF"
-msgstr ""
+msgstr "顯示所有的 RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
@@ -5931,17 +5870,17 @@ msgstr "顯示前一修訂後的文件(&P)"
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show document at final version without revision highlighting"
-msgstr ""
+msgstr "顯示文件最終版不顯示高亮度修訂"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document"
-msgstr ""
+msgstr "顯示文件最終版"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document..."
-msgstr ""
+msgstr "顯示文件最終版..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -6041,7 +5980,7 @@ msgstr "排列表格(&R)"
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
 msgid "Solid line"
-msgstr ""
+msgstr "實線"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6362,7 +6301,7 @@ msgstr "樣式"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
 msgid "Stylesheet"
-msgstr ""
+msgstr "樣式表"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
@@ -6423,19 +6362,19 @@ msgstr "摘要"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
-msgstr ""
+msgstr "總結, 位置"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr ""
+msgstr "總結, 位置, 開始與結束時間"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr ""
+msgstr "總結, 開始與結束時間"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6489,7 +6428,7 @@ msgstr "清除定位停駐點:"
 msgid "Table"
 msgstr "表格"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "表格大小"
@@ -6514,11 +6453,6 @@ msgstr "目錄清單標籤"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "目錄頁"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "表格大小"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6567,13 +6501,24 @@ msgstr "文字對齊:"
 msgid "Text Box"
 msgstr "文字框"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr "文字框位置"
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr "文字走向"
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr "文字摺疊"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "文字換行"
 
@@ -6740,7 +6685,7 @@ msgstr "行頂線"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Total RDF: %d"
-msgstr ""
+msgstr "所有 RDF: %d 項"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
@@ -7088,17 +7033,15 @@ msgstr "切換大小寫"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
-msgstr "主旨"
+msgstr "主語"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
-msgstr "主旨"
+msgstr "標題"
 
 #.
 #. * Translatable strings file generated by extract-ui.
@@ -7710,16 +7653,6 @@ msgstr "宣告為 XML (版本 1.0)"
 msgid "Default language: "
 msgstr "預設語言: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "定義影像置放方式"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "定義文字換行方式"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8129,10 +8062,25 @@ msgstr "冰島文, Macintosh"
 msgid "Identifier:"
 msgstr "識別碼:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr "圖片名稱"
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr "圖片位置"
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "影像屬性"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr "圖片大小"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8274,6 +8222,11 @@ msgstr "卡納達文"
 #: po/tmp/xap_String_Id.h
 msgid "Kazakh (Kazakhstan)"
 msgstr "哈薩克文 (Kazakhstan)"
+
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr "高棉"
 
 #. LANG_KO_KR
 #. LANG_KO
@@ -8744,16 +8697,6 @@ msgstr "塞爾維亞文"
 #: po/tmp/xap_String_Id.h
 msgid "Serbian, latin"
 msgstr "塞爾維亞文 (拉丁字母)"
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "設定影像名稱"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "設定影像大小"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -9247,6 +9190,63 @@ msgstr "同級元素(siblings)"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "無關"
+
+#~ msgid "&Available formats:"
+#~ msgstr "可用格式(&A):"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "啟用智能引號(&E)"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "自動調整行為"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "文字左右方向選項"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "額外參數:"
+
+#~ msgid "Field Name"
+#~ msgstr "功能變數名稱"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "設定章節附註格式"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "設定註腳格式"
+
+#~ msgid "Insert break"
+#~ msgstr "插入分隔符號"
+
+#~ msgid "Insert field"
+#~ msgstr "插入功能變數"
+
+#~ msgid "Paper..."
+#~ msgstr "紙張..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "文字框位置"
+
+#~ msgid "Scale..."
+#~ msgstr "比例縮放..."
+
+#~ msgid "Section breaks"
+#~ msgstr "分節符號"
+
+#~ msgid "Table size"
+#~ msgstr "表格大小"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "定義影像置放方式"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "定義文字換行方式"
+
+#~ msgid "Set Image Name"
+#~ msgstr "設定影像名稱"
+
+#~ msgid "Set Image Size"
+#~ msgstr "設定影像大小"
 
 #~ msgid "&Show RDF"
 #~ msgstr "顯示 &amp;RDF"
