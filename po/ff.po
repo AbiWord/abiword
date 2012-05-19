@@ -1,13 +1,13 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# Ibrahima SARR <ibrahima.sarr@pulaagu.com>, 2010, 2011.
+# Fulah translation of AbiWord
+# This file is distributed under the same license as the AbiWord package.
+# Copyright by:
+# Ibrahima SARR <ibrahima.sarr@pulaagu.com>, 2010, 2011, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-04-19 19:13+0200\n"
-"PO-Revision-Date: 2012-01-10 02:07+0200\n"
+"Project-Id-Version: AbiWord 2.9\n"
+"Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
+"POT-Creation-Date: 2012-05-06 23:15-0400\n"
+"PO-Revision-Date: 2012-05-19 05:06+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: FULA LOCALIZATION\n"
 "Language: ff\n"
@@ -63,6 +63,8 @@ msgid ""
 "# Insert your SPARQL query here\n"
 "# Results are shown below."
 msgstr ""
+"# Naatnu ɗaɓɓitannde maa SPARQL ɗoo\n"
+"# Njaltudi nana holliraa les ɗoo."
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
@@ -100,6 +102,7 @@ msgstr ""
 "%s annominaaka tawo.\n"
 "\n"
 "So tawii ko a dokkiyaŋke, aɗa rimɗi e ɓeydude dokkol e %s, gorol %d\n"
+"e ɓasɗe imeel to\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
 "\n"
@@ -404,9 +407,9 @@ msgstr "&Hoto waɗ cirfel"
 msgid "&Edit"
 msgstr "&Taƴto"
 
-#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
-msgid "&Edit Semantic Items"
+msgid "&Edit RDF"
 msgstr ""
 
 #. MENU_LABEL_EDIT_ANNOTATION
@@ -454,6 +457,7 @@ msgstr "&Ngallon"
 msgid "&Fields:"
 msgstr "&Ngallon:"
 
+#. DLG_RDF_Editor_Menu_File
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h
 msgid "&File"
@@ -486,9 +490,8 @@ msgstr "&Yaɓɓorde:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Mbaydi"
+msgstr "&Mbaydi"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -798,6 +801,11 @@ msgstr "&Lelngo Winnditagol"
 msgid "&Purge History"
 msgstr "&Momtu Aslol"
 
+#. MENU_LABEL_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "&Query RDF"
+msgstr ""
+
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
@@ -900,12 +908,6 @@ msgstr "&Labo baylital"
 msgid "&Show History"
 msgstr "&Hollir Aslol"
 
-#. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "&Show RDF"
-msgstr "Hollu"
-
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
 msgid "&Show Status Bar"
@@ -983,6 +985,11 @@ msgstr "&Kuutorɗe"
 #: po/tmp/ap_String_Id.h
 msgid "&Top:"
 msgstr "&Dow:"
+
+#. DLG_RDF_Editor_Menu_Triple
+#: po/tmp/ap_String_Id.h
+msgid "&Triple"
+msgstr ""
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -1168,13 +1175,14 @@ msgid ""
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"AbiWord mahiraa ko yamre yuɓɓo piille COMCTL32.DLL ɓurɗe hesɗude e\n"
+"AbiWord mahiraa ko yamre yuɓɓo piille COMCTL32.DLL ɓurɗe hesɗudeq\n"
 "e wonnde e yuɓɓo maa jooni. (COMCTL32.DLL yamre 4.72 walla ɓurɗe hesɗude)\n"
 "Feere jiiɓtol ndee saɗeende ena e FAQ e lowre geese AbiSource\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
-"Aɗa waawi huutoraade topirde ndee kono palal kuutorɗe ngal ena waawi ŋakkude."
+"Aɗa waawi huutoraade topirde ndee kono palal kuutorɗe ngal ena waawi "
+"ŋakkude."
 
 #. WINDOWS_NEED_UNICOWS
 #: po/tmp/ap_String_Id.h
@@ -1185,8 +1193,8 @@ msgid ""
 "platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "AbiWord ena sokli fiilde %s.dll\n"
-"Tiiɗno aawto-nde loowaa-nde iwde e http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Tiiɗno aawto-nde loowaa-nde iwde e "
+"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1248,12 +1256,12 @@ msgstr "Ɓeydu to tugnorol"
 #. MENU_LABEL_RDF_ADV
 #: po/tmp/ap_String_Id.h
 msgid "Advanced"
-msgstr ""
+msgstr "Ceeɓore"
 
 #. MENU_STATUSLINE_RDF_ADV
 #: po/tmp/ap_String_Id.h
 msgid "Advanced RDF"
-msgstr ""
+msgstr "RDF Ceeɓtore"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h
@@ -1294,9 +1302,8 @@ msgstr "Yamir noori yaynirde ɗi ngonaa daneejo"
 
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Annotation"
-msgstr "&Ciiftannɗe"
+msgstr "Siiftannde"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
@@ -1317,23 +1324,35 @@ msgstr "Jammin"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Contact"
-msgstr "Jammin e:"
+msgstr "Jammin Jokkondiral"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Apply Current"
+msgstr "Jammitin Gonaaɗo"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Event"
-msgstr "Jammin e:"
+msgstr "Jammin Joljolal"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Location"
-msgstr "Jaaɓnirgal"
+msgstr "Jammin Nokkuure"
+
+#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_APPLY
+#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Apply stylesheet to this Semantic Item"
+msgstr "Jammitin paanorol ndee Temre Maanaare"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1377,9 +1396,8 @@ msgstr "Ɗisor Doggol Ɓennungol"
 
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Winndi ko:"
+msgstr "Winndi ko"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
@@ -1559,7 +1577,7 @@ msgstr "Ŋori e Mbeeluure"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr ""
+msgstr "Yiɓe ɗiɗo ɓee ena nganndondiri"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -1589,7 +1607,7 @@ msgstr "Doggol Bakane"
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h
 msgid "Build Id."
-msgstr "Mah-nde"
+msgstr "Id Bayyinol."
 
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h
@@ -1774,9 +1792,8 @@ msgstr "Waylu mbaydi lelnannde labaande ndee"
 
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Change the format of the table"
-msgstr "Waylu mbaydi lelnannde labaande ndee"
+msgstr "Waylu mbayka haatumeere ndee"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -1899,9 +1916,8 @@ msgstr "Suɓo goobu yaynirde Abiword"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Choose which revision of the document to see and edit"
-msgstr "Suɓo baylital njiɗ-ɗaa yiyde"
+msgstr "Suɓo baylital fiilannde nde njiɗ-ɗaa yiyde e taƴtaade"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h
@@ -1918,10 +1934,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "Suɓo toɓɓol maa e senngo nano ngoo.\n"
-"So a yiɗii huutoraade ƴiire \"Yah to\", naatnu limoore njiɗ-ɗaa ndee e "
-"Gallel Limoore gnol.   Aɗa waawi huutoraade + e - ngam yahde dow walla "
-"artude les.\tyeru, so a winndii \"+2\" kadi a suɓiima \"Gorol\", \"Yah To\" "
-"oo maa tello gori 2 les ɗo njahrataa ɗoo."
+"So a yiɗii huutoraade ƴiire \"Yah to\", naatnu limoore njiɗ-ɗaa ndee e Gallel "
+"Limoore gnol.   Aɗa waawi huutoraade + e - ngam yahde dow walla artude les.\t"
+"Yeru, so a winndii \"+2\" kadi a suɓiima \"Gorol\", \"Yah To\" oo maa tello gori 2 "
+"les ɗo njahrataa ɗoo."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2040,14 +2056,19 @@ msgstr "Jok&kondiɗum"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact"
-msgstr "Loowdi"
+msgstr "Jokkondiral"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
-msgid "Contact from File..."
-msgstr ""
+msgid "Contact from File"
+msgstr "Jokkondiral iwde e Fiilde"
+
+#. DLG_RDF_SemanticItemInsert_Column_Refdlg
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts"
+msgstr "Jokkondire"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2178,21 +2199,19 @@ msgstr "Kuurol:"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create New"
-msgstr "Sosaama"
+msgstr "Sos Keso"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "Ruttorde Hello"
+msgstr "Sos Ruttorde"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
 #: po/tmp/ap_String_Id.h
 msgid "Create Semantic Item"
-msgstr ""
+msgstr "Sos Temre Mejaare"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h
@@ -2201,7 +2220,6 @@ msgstr "Fuɗɗo faks"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create a new Revision"
 msgstr "Fuɗɗo baylital kesal"
 
@@ -2239,30 +2257,28 @@ msgstr "Fuɗɗo iwde e &labannde"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Contact Semantic Item"
-msgstr "Fuɗɗo winndannde iwde e tugnorol"
+msgstr "Sos temre Jokkondiral Maanaare hesere"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr ""
+msgstr "Sos temre Jokkondiral Maanaare hesere jiggitaande e vcard"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
 msgid "Create new Reference to existing Semantic Item"
-msgstr ""
+msgstr "Sos Jooporde hesere fayde e Temre Maanaare woodnde"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Semantic Item"
-msgstr "Fuɗɗo winndannde hesere"
+msgstr "Sos Temre Maanaare hesere"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h
 msgid "Creator"
-msgstr "Joom"
+msgstr "Cosɗo"
 
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
@@ -2369,9 +2385,8 @@ msgstr "Doggol Cirfangel"
 
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dashed line"
-msgstr "Doggol Cirfangel"
+msgstr "Gorol cirfangol"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2612,9 +2627,8 @@ msgstr "Tiitoore woɗnde e hello adanngo"
 
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Directly edit the RDF for the entire document..."
-msgstr "Labo winndannde ndee e kuuɓal"
+msgstr "Taƴto e codol RDF wonande fiilannde ndee fof..."
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
@@ -2622,9 +2636,13 @@ msgid "Disable all formatting commands, except styles"
 msgstr "Daaƴ gine mbaydingol kala, haa heddo panni"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
+msgstr "Ittu jammondiral"
+
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
+#: po/tmp/ap_String_Id.h
+msgid "Disassociate and apply default stylesheet"
 msgstr ""
 
 #. MENU_STATUSLINE_HELP_CREDITS
@@ -2689,9 +2707,8 @@ msgstr "Hoto hurmitin"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dotted line"
-msgstr "Kaaɗol-les"
+msgstr "Gorol cirfangol"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2711,25 +2728,29 @@ msgstr "Boowinol diɗiwol"
 
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dump RDF Objects"
-msgstr "Dottu Piiyol"
+msgstr "Wiido Piije RDF"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF related to Cursor Position"
-msgstr ""
+msgstr "Wiido RDF toɗɗiiɗo Dartorde Jamngel"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump out information about RDF Objects"
-msgstr ""
+msgstr "Wiido humpito yowitiingol e piije RDF"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dump the raw RDF associated with the cursor position"
-msgstr "Yowre yahdunde e ngal baylital:"
+msgstr "Wiido RDF keccoro toɗɗiiɗo dartorde jamngal"
+
+#. MENU_LABEL_RDFANCHOR_EDITSEMITEM
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "E&dit Semantic Items"
+msgstr "&Taƴto Teme Maanaaje"
 
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
@@ -2764,13 +2785,19 @@ msgstr "Taƴto Hiistannde LaTeX"
 
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-msgid "Edit RDF Triples..."
-msgstr ""
+msgid "Edit RDF Triples"
+msgstr "Taƴto RDF Tatiije"
+
+#. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Edit RDF Triples associated with location"
+msgstr "Hollu Tatooje RDF toɗɗiiɗe nokkuure ndee"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr ""
+msgstr "Taƴto teme Maanaaje ndee nokkuure"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -2779,9 +2806,8 @@ msgstr "Taƴto ciiftannde"
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit document RDF"
-msgstr "Woni ko e Winnditaade Fiilannde..."
+msgstr "Taƴto Fiilannde RDF"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -2808,7 +2834,7 @@ msgstr "Taƴto Tiitoore ndee e hello wonaango ngoo"
 #. TOOLBAR_TOOLTIP_SEMITEM_EDIT
 #: po/tmp/ap_String_Id.h
 msgid "Edit this Semantic Item"
-msgstr ""
+msgstr "Taƴto ndee temre Maanaare"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
@@ -2884,6 +2910,11 @@ msgstr "Juumre e etagol danndude %s: roŋkii mahde jiggitorde"
 msgid "Error while attempting to save %s: invalid name"
 msgstr "Juumre e etagol danndude %s: innde moƴƴaani"
 
+#. DLG_RDF_SemanticStylesheets_Events
+#: po/tmp/ap_String_Id.h
+msgid "Events"
+msgstr ""
+
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Ex. script"
@@ -2901,25 +2932,18 @@ msgstr "Yeru:"
 
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute Query"
-msgstr "Siynu doggorol"
-
-#. MENU_STATUSLINE_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "Execute SPARQL Query for location"
-msgstr ""
+msgstr "Hurmito Ɗaɓɓitannde"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute SPARQL on document RDF"
-msgstr "Woni ko e Winnditaade Fiilannde..."
+msgstr "Hurmito SPARQL e RDF fiilannde"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Execute a SPARQL Query on all document RDF..."
-msgstr ""
+msgstr "Hurmito SPARQL e RDF piilannɗe fof..."
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -2940,12 +2964,12 @@ msgstr "Baylitte goodɗe:"
 #. MENU_LABEL_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items"
-msgstr ""
+msgstr "Jiggito Teme Maanaaje"
 
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr ""
+msgstr "Joggito teme Maanaaje ndee nokkuure"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
@@ -3049,9 +3073,8 @@ msgstr "Yiytu baylital &ɓennungal"
 #. MENU_LABEL_RDF_SEMITEM_FIND_RELATED
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Find by Relation"
-msgstr "Jotondiral:"
+msgstr "Yiytu tungaade e Jotondiral"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
@@ -3345,9 +3368,8 @@ msgstr "Yah to &Holɗum:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
-msgstr "Yah to..."
+msgstr "Yah to"
 
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h
@@ -3388,17 +3410,18 @@ msgstr "Tiitoore [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Ciiftannɗe Yaɓɓorde e Ciiftannɗe Rowirde mbaawi soseede e taƴteede tan ko e "
-"mbayka Jiytol Winnditagol. \n"
-"So a yiɗii naatde e kaan mbayka, suɓo Jiytol, kisa Lelngo Winnditagol e Dosi "
-"ɗii. \n"
-"Aɗa yiɗi naatde e mbayka Lelnde Winnditagol jooni?"
+"Tiitooje e Jaɓɓorɗe mbaawi soseede e taƴteede tan ko e mbayka Jiytol "
+"Winnditagol. \n"
+" So a yiɗii naatde e kaan mbayka, suɓo Jiytol, kisa Lelngo Winnditagol e "
+"Dosi ɗii. \n"
+" Aɗa yiɗi naatde e mbayka Lelnde Winnditagol jooni?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -3462,14 +3485,13 @@ msgstr "Jalbin"
 
 #. MENU_LABEL_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Highlight RDF"
-msgstr "Jalbin"
+msgstr "Jalbin RDF"
 
 #. MENU_STATUSLINE_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight areas of the document with RDF associated"
-msgstr ""
+msgstr "Jalbin boowe fiilannde ndee huutoraade RDF toɗɗaaɗo"
 
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h
@@ -3484,7 +3506,7 @@ msgstr "D&irtin:"
 #. DLG_Goto_Column_ID
 #: po/tmp/ap_String_Id.h
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h
@@ -3664,15 +3686,23 @@ msgstr "Jolnu MathML iwde e fiilde"
 # 100%
 #. DLG_InsertXMLID_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Insert RDF Link"
-msgstr "Lommbu Fiilde"
+msgstr "Lommbu hen jokkol RDF"
 
 #. MENU_STATUSLINE_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Insert RDF link..."
-msgstr "Ɓeydu Jokkorde Geese"
+msgstr "Lommbu hen jokkol RDF..."
+
+#. DLG_RDF_SemanticItemInsert_Ok
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference"
+msgstr "Naatnu Ruttorde"
+
+#. DLG_RDF_SemanticItemInsert_Title
+#: po/tmp/ap_String_Id.h
+msgid "Insert Reference to Semantic Item"
+msgstr "Naatnu Ruttorde e Tempre Maanaare"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -3876,7 +3906,7 @@ msgstr "Jolnu ɗoo loowdi ɗakkitorde ndi mbaydinaaka"
 #. MENU_STATUSLINE_RDF
 #: po/tmp/ap_String_Id.h
 msgid "Interact with RDF"
-msgstr ""
+msgstr "Jaabtondir e RDF"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h
@@ -3974,12 +4004,6 @@ msgstr "Teelte ɗemngal"
 #: po/tmp/ap_String_Id.h
 msgid "Language(s):"
 msgstr "Ɗemngal(ɗe):"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_LATLONG
-#: po/tmp/ap_String_Id.h
-msgid "Lat & Long"
-msgstr ""
 
 #. DLG_Options_Label_Layout
 #: po/tmp/ap_String_Id.h
@@ -4135,16 +4159,11 @@ msgstr "Panni Doggol"
 msgid "Lists for "
 msgstr "Doggol ngam "
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
+#. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
 #, fuzzy
-msgid "Location"
-msgstr "Jaaɓnirgal"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
-#: po/tmp/ap_String_Id.h
-msgid "Location, Start and End Times"
-msgstr ""
+msgid "Locations"
+msgstr "Nokkuure"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4368,20 +4387,26 @@ msgstr "Cowtiiɗo"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Innde:"
+msgstr "Innde"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name (homepage) phone"
+#, fuzzy
+msgid "Name, (Homepage), Phone"
+msgstr "Innde (jaɓɓorgo) noddirde"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
+#: po/tmp/ap_String_Id.h
+msgid "Name, Latitude and Longitude"
 msgstr ""
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
-msgid "Name, Nick"
+msgid "Name, Phone"
 msgstr ""
 
 #. TOOLBAR_LABEL_FILE_NEW
@@ -4393,6 +4418,11 @@ msgstr "Kesum"
 #: po/tmp/ap_String_Id.h
 msgid "New &annotation"
 msgstr "Siiftannde &hesere"
+
+#. DLG_RDF_Insert_NewContact
+#: po/tmp/ap_String_Id.h
+msgid "New Contact..."
+msgstr "Jokkondiral kesal..."
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4415,9 +4445,8 @@ msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "New Revision"
-msgstr "Labo baylital"
+msgstr "Baylital Kesal"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h
@@ -4447,13 +4476,13 @@ msgstr "Payɗo >>"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK
 #: po/tmp/ap_String_Id.h
 msgid "Nick"
-msgstr ""
+msgstr "Waccoore"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Nick, Phone"
-msgstr ""
+msgstr "Waccoore, Noddirde"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h
@@ -4562,9 +4591,8 @@ msgstr "Limooje"
 
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Object"
-msgstr "Toɓere"
+msgstr "Piiyol"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
@@ -4843,7 +4871,7 @@ msgstr "Lombugol"
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr ""
+msgstr "Ena dillida e RDF tuma topagol"
 
 #. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
@@ -4885,7 +4913,7 @@ msgstr "Cuɓ&oraaɗe"
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
 msgid "Predicate"
-msgstr ""
+msgstr "Predikaa"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
@@ -4997,6 +5025,29 @@ msgstr "Bayyinoowo"
 msgid "Publisher:"
 msgstr "Bayyinoowo:"
 
+#. MENU_STATUSLINE_RDFANCHOR_QUERY
+#: po/tmp/ap_String_Id.h
+msgid "Query RDF associated with location"
+msgstr ""
+
+#. MENU_LABEL_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query RDF for cursor position"
+msgstr "Hollu RDF wonande dartorde jamgel"
+
+#. DLG_RDF_Query_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Query RDF: %d of total: %ld"
+msgstr "Ɗaɓɓitannde RDF: %d nder : %ld"
+
+#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Query the RDF associated with the cursor position..."
+msgstr "Hollu RDF toɗɗiiɗo dartorde jamngal..."
+
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
@@ -5005,12 +5056,17 @@ msgstr "&Lomtin"
 #. MENU_LABEL_RDF
 #: po/tmp/ap_String_Id.h
 msgid "RDF"
-msgstr ""
+msgstr "RDF"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "RDF Link"
+msgstr "Jokkol RDF"
+
+#. DLG_RDF_SemanticStylesheets_Title
+#: po/tmp/ap_String_Id.h
+msgid "RDF Stylesheet"
 msgstr ""
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
@@ -5043,20 +5099,6 @@ msgstr "&Yiiltu njiilawu"
 msgid "Re&vert"
 msgstr "Wa&klit"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_REAPPLY
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_REAPPLY
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Reapply Current"
-msgstr "Jammin ngol-ɗoo doggol"
-
-#. TOOLBAR_LABEL_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_STATUSLINE_SEMITEM_STYLESHEET_REFLOW
-#. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_REFLOW
-#: po/tmp/ap_String_Id.h
-msgid "Reapply stylesheet this Semantic Item"
-msgstr ""
-
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
 msgid "Recent &Files"
@@ -5088,14 +5130,13 @@ msgstr "Ustu walla ɓeydu jiytol winndannde ndee"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "Jokkondirɗo e Temre Maana Asliire"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Jotondiral:"
+msgstr "Jotondiral"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5250,6 +5291,11 @@ msgstr "Fuɗɗito e rogere kala"
 msgid "Restart page numbers on new sections"
 msgstr "Fuɗɗito tonngooɗe kelle e doge kese"
 
+#. DLG_RDF_Editor_Restrict
+#: po/tmp/ap_String_Id.h
+msgid "Restrict to RDF Link:"
+msgstr ""
+
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
 msgid "Resume Previous List"
@@ -5283,15 +5329,13 @@ msgstr "ID Baylital"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Revisions new..."
-msgstr "&Baylitte"
+msgstr "Baylitte kesal..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Revisions select..."
-msgstr "&Baylitte"
+msgstr "Baylitte labo..."
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -5368,12 +5412,12 @@ msgstr "Gori &Les"
 #. MENU_STATUSLINE_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests and show results on console"
-msgstr ""
+msgstr "Waɗ ƴeewnde RDF kolla njaltudi e ginorde"
 
 #. MENU_STATUSLINE_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests that change during development"
-msgstr ""
+msgstr "Waɗ ƴeewnde RDF baylotooɗe tuma topagol"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -5390,15 +5434,10 @@ msgstr "H&ollir baylitte"
 msgid "S&plit Cells"
 msgstr "F&eesto Kaaruuji"
 
-#. MENU_LABEL_RDFANCHOR_SPARQL
-#: po/tmp/ap_String_Id.h
-msgid "SPARQL &Query"
-msgstr ""
-
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
-msgid "SPARQL Query..."
-msgstr ""
+msgid "SPARQL Query"
+msgstr "Ɗaɓɓitannde SPARQL"
 
 # 80%
 # 100%
@@ -5579,39 +5618,39 @@ msgstr "Labo natal iwde e fiilde"
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to Semantic Item"
-msgstr ""
+msgstr "Labo ruttorde faynde to Temre Maanaare"
 
 #. TOOLBAR_LABEL_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item"
-msgstr ""
+msgstr "Labo ruttorde faynde to ndee Temre Maanaare"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item..."
-msgstr ""
+msgstr "Labo ruttorde faynde to ndee Temre Maanaare..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Select next references to Semantic Item"
-msgstr ""
+msgstr "Labo duttorɗe paynɗe to Temre Maanaare"
 
 #. MENU_LABEL_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to Semantic Item"
-msgstr ""
+msgstr "Labo ruttorde ɓennunde to Temre Maanaare"
 
 #. TOOLBAR_LABEL_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item"
-msgstr ""
+msgstr "Labo ruttorde ɓennunde to ndee Temre Maanaare"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item..."
-msgstr ""
+msgstr "Labo ruttorde ɓennunde to ndee Temre Maanaare..."
 
 # 78%
 # 100%
@@ -5627,47 +5666,42 @@ msgstr "Labo winndannde ndee e kuuɓal"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the parts of the document belonging to the next version..."
-msgstr ""
-"Alaa e sago labo-ɗaa jubbannde winndannde ndee hade maa ɓeydude jokkorde "
-"geese."
+msgstr "Lano jubbannde winndannde ndee jeyaande e yamre aroore..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the parts of the document belonging to the previous version..."
-msgstr "Hollu no winndannde ndee wayoyta so baylitte njamminaama"
+msgstr "Lano jubbannde winndannde ndee jeyaande e yamre ɓenndudne..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the next revision..."
-msgstr ""
+msgstr "Lano jubbannde winndannde ndee wonnde e nder e yamre aroore..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the parts of the document contained in the previous revision..."
-msgstr "Hollu no winndannde ndee wayoyta so baylitte njamminaama"
+msgstr "Lano jubbannde winndannde ndee wonnde e nder e yamre ɓenndudne..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to Semantic Item"
-msgstr ""
+msgstr "Labo ndee ruttorde to Temre Maanaare"
 
 #. TOOLBAR_LABEL_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item"
-msgstr ""
+msgstr "Labo ndee ruttorde to ndee Temre Maanaare"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item..."
-msgstr ""
+msgstr "Labo ndee ruttorde to ndee Temre Maanaare..."
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
@@ -5679,7 +5713,7 @@ msgstr "Labannde"
 #. MENU_STATUSLINE_RDF_SEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Semantic Item"
-msgstr ""
+msgstr "Temre Maanaare"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
@@ -5731,6 +5765,11 @@ msgstr "Suɓo &Ɗemngal"
 msgid "Set Default Values"
 msgstr "Suɓo kiise Goowaaɗe"
 
+#. DLG_RDF_SemanticStylesheets_Set
+#: po/tmp/ap_String_Id.h
+msgid "Set For All Existing"
+msgstr ""
+
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
 #: po/tmp/ap_String_Id.h
@@ -5756,7 +5795,7 @@ msgstr "Suɓo natal wona cakkitol hello maa"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr ""
+msgstr "Waɗtu Temre Maanare Asliire"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5799,6 +5838,14 @@ msgstr "Suɓo cuɓoraaɗe"
 msgid "Set tab stops"
 msgstr "Suɓo dartagol tabbe"
 
+#. DLG_RDF_SemanticStylesheets_Explanation
+#: po/tmp/ap_String_Id.h
+msgid ""
+"Set the current stylesheet for Semantic Items in this document. New RDF "
+"objects will use this stylesheet automatically. The buttons allow you to set "
+"the stylesheet for all existing Semantic Items to the new stylesheet as well."
+msgstr ""
+
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
 msgid "Set the type and styles of the Table of Contents"
@@ -5833,6 +5880,12 @@ msgstr "Suɓo ngal natal wona dartinangal"
 #: po/tmp/ap_String_Id.h
 msgid "Set your spelling preferences"
 msgstr "Suɓo cuɓoraaɗe mbinndiin maa"
+
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
+#: po/tmp/ap_String_Id.h
+msgid "Settings"
+msgstr ""
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
@@ -5872,24 +5925,13 @@ msgstr "Hollu Fof"
 
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show All RDF"
-msgstr "Hollu Fof"
+msgstr "Hollu RDF Fof"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
 msgstr "Hollu Maa&ntanɗe Mbaydingol"
-
-#. MENU_STATUSLINE_RDFANCHOR_SHOW_TRIPLES
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF Triples associated with location"
-msgstr ""
-
-#. MENU_LABEL_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-msgid "Show RDF for cursor position..."
-msgstr ""
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5908,21 +5950,18 @@ msgstr "Hollu winndannde ɓaawo baylitte &cakkitiiɗe"
 
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show document at final version without revision highlighting"
-msgstr "Hollu winndannde ɓaawo baylitte &cakkitiiɗe"
+msgstr "Hollu winndannde e yamre mum sakkitiinde tawa alaa jalbingol baylitte"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show final document"
-msgstr "Hollu doggol binndanɗe kuuɓngol"
+msgstr "Hollu fiilannde wortaande"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show final document..."
-msgstr "Hollu doggol binndanɗe kuuɓngol"
+msgstr "Hollu fiilannde wortaande..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -5951,12 +5990,6 @@ msgstr "Hollu walla suuɗ palal kuutorɗe ngal"
 #: po/tmp/ap_String_Id.h
 msgid "Show revisions that are present in document"
 msgstr "Hollu baylitte ngonɗe e nder winndannde"
-
-#. MENU_STATUSLINE_RDF_QUERY_XMLIDS
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Show the RDF associated with the cursor position..."
-msgstr "Yowre yahdunde e ngal baylital:"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
@@ -6027,9 +6060,8 @@ msgstr "Le&emto Haatumeere"
 
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Solid line"
-msgstr "Gorol gadanol"
+msgstr "Diidol kiɓɓungol"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6257,12 +6289,6 @@ msgstr "Fuɗɗo Doogol-caltol"
 msgid "Start a new revision"
 msgstr "Fuɗɗo baylital kesal"
 
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Start and End Times"
-msgstr "Ñalngu e Waktu"
-
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Start ne&w revision"
@@ -6354,16 +6380,8 @@ msgstr "Panni"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Stylesheet"
-msgstr "Panni"
-
-#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
-#: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "Stylesheet Settings"
-msgstr "Danndu Teelte"
+msgstr "Pannore"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
@@ -6420,20 +6438,23 @@ msgstr "Hiiso Mooɓre Gorol Haatumeere"
 msgid "Summary"
 msgstr "Tonngol"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
-msgstr ""
+msgstr "Tonngol, Nokkuure"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr ""
+msgstr "Tonngol, Nokkuure Waktuuji Fuɗɗorde e Gasirde"
 
+#. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr ""
+msgstr "Tonngol, Waktuuji Fuɗɗorde e Gasirde"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6539,7 +6560,7 @@ msgstr "Mbaydingol Bi&nndol"
 #. MENU_LABEL_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Test RDF subsystem"
-msgstr ""
+msgstr "Ƴeewndo lesyuɓɓo RDF"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h
@@ -6592,7 +6613,8 @@ msgid ""
 msgstr ""
 "Cuɓol '--print' ittaama e AbiWord 2.8. Aɗa waawi siynude nguun neesu "
 "huutoraade kuutorɗe baklitirɗe dogginol AbiWord kisa ndewnaa jaltol ngol "
-"supuulde winnditol. Yeru: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
+"supuulde winnditol. Yeru: 'abiword --to=sw --to-name=df://1 fiilde.txt | "
+"lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6619,7 +6641,8 @@ msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr ""
-"Binndol ngol jokkorde geese ndee joopii foti wonde ko e nde lelnannde ɓolore."
+"Binndol ngol jokkorde geese ndee joopii foti wonde ko e nde lelnannde "
+"ɓolore."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h
@@ -6634,13 +6657,12 @@ msgstr "Tekkeendi:"
 
 #. MSG_XMLIDAlreadyExists
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "This RDF link already exists. Would you like to replace the existing RDF "
 "link with this new one?"
 msgstr ""
-"Ngol maantorol ena woodi. Aɗa yiɗi lomtinirde maantorol goodngol ngol "
-"mantorol kesol?"
+"Ngol jokkol RDF ena woodi. Aɗa yiɗi lomtinirde maantorol goodngol ngol "
+"jokkol RDF kesol?"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
@@ -6756,6 +6778,12 @@ msgstr "Ŋorɗol Nanol [%s]"
 msgid "Topline"
 msgstr "Diidol dow"
 
+#. DLG_RDF_Editor_Status
+#: po/tmp/ap_String_Id.h
+#, c-format
+msgid "Total RDF: %d"
+msgstr "RDF Hawra: %d"
+
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
@@ -6775,7 +6803,7 @@ msgstr "Fannu"
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link"
-msgstr ""
+msgstr "Tappu innde jokkol RDF ngol"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
@@ -6818,6 +6846,12 @@ msgstr "Firtu"
 #: po/tmp/ap_String_Id.h
 msgid "Undo editing"
 msgstr "Firty taƴtagol"
+
+#. DLG_RDF_Editor_ShowAll
+#. DLG_Update
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Update"
+msgstr "Hesɗitin"
 
 #. DLG_Annotation_OK_tooltip
 #: po/tmp/ap_String_Id.h
@@ -9009,11 +9043,6 @@ msgstr "Ukereneere, KOI8-U"
 msgid "Ukrainian, Macintosh"
 msgstr "Ukereneere, Macintosh"
 
-#. ENC_UNIC_UCS2
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-2"
-msgstr "Unicode UCS-2"
-
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
@@ -9023,11 +9052,6 @@ msgstr "Unicode UCS-2 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
 msgstr "Unicode UCS-2 Little Endian"
-
-#. ENC_UNIC_UCS4
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UCS-4"
-msgstr "Unicode UCS-4"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
@@ -9039,11 +9063,6 @@ msgstr "Unicode UCS-4 Big Endian"
 msgid "Unicode UCS-4 Little Endian"
 msgstr "Unicode UCS-4 Little Endian"
 
-#. ENC_UNIC_UTF_16
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-16"
-msgstr "Unicode UTF-16"
-
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
@@ -9053,11 +9072,6 @@ msgstr "Unicode UTF-16 Big Endian"
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
 msgstr "Unicode UTF-16 Little Endian"
-
-#. ENC_UNIC_UTF_32
-#: po/tmp/xap_String_Id.h
-msgid "Unicode UTF-32"
-msgstr "Unicode UTF-32"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
@@ -9084,11 +9098,6 @@ msgstr "Unicode UTF-8"
 #, c-format
 msgid "Untitled%d"
 msgstr "Alaa-innde%d"
-
-#. DLG_Update
-#: po/tmp/xap_String_Id.h
-msgid "Update"
-msgstr "Hesɗitin"
 
 #. DLG_UFS_Effects_UpperCase
 #: po/tmp/xap_String_Id.h
@@ -9237,8 +9246,7 @@ msgstr "Yiddiire"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr ""
-"Alaa e sago danndaa bayle winndannde %s hade maa jokkude. Danndu jooni?"
+msgstr "Alaa e sago danndaa bayle winndannde %s hade maa jokkude. Danndu jooni?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
@@ -9311,3 +9319,48 @@ msgstr "jiiduɗe"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "jotondiraani"
+
+#~ msgid "&Show RDF"
+#~ msgstr "&Hollu RDF"
+
+#~ msgid "Execute SPARQL Query for location"
+#~ msgstr "Hurmito Ɗaɓɓannde SPARQL ndee nokkuure"
+
+#~ msgid "SPARQL &Query"
+#~ msgstr "&Ɗaɓɓitannde SPARQL"
+
+#~ msgid "Stylesheet Settings"
+#~ msgstr "Teelte Pannore"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
+
+#~ msgid "&Tripel"
+#~ msgstr "&Tripel"
+
+#~ msgid "Lat & Long"
+#~ msgstr "Lattinol & Juttinol"
+
+#~ msgid "Location, Start and End Times"
+#~ msgstr "Nokkuure, Waktuuji Fuɗɗorde e Gasirde"
+
+#~ msgid "Name, Nick"
+#~ msgstr "Innde, Waccoore"
+
+#~ msgid "Start and End Times"
+#~ msgstr "Waktu fuɗɗorde e gasirde"
+
+#~ msgid "Go to..."
+#~ msgstr "Yah to..."
+
+#~ msgid "SPARQL Query..."
+#~ msgstr "Ɗaɓɓitannde SPARQL..."
