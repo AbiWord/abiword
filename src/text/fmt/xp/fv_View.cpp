@@ -4939,15 +4939,12 @@ bool FV_View::resetCharFormat(bool bAll)
 	// first we reset everything ...
 	// we have to do this, because setCharFormat() calls are cumulative (it uses
 	// PTC_AddFmt)
-	const gchar p[] = "props";
-	const gchar v[] = "";
-	const gchar * props_out[3] = {p,v,NULL};
-	
-	bool bRet = setCharFormat(NULL, props_out);
+	const gchar * attrs_out[5] = {"props","","style","",NULL};	
+	bool bRet = setCharFormat(NULL,attrs_out);
 
 	// now if we have something to set, we do so ...
 	if(AP.hasAttributes() || AP.hasProperties())
-		bRet &= setCharFormat(AP.getAttributes(), AP.getProperties());
+		bRet &= setCharFormat(AP.getProperties(), AP.getAttributes());
 	
 	m_pDoc->endUserAtomicGlob();
 	return bRet;

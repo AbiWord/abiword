@@ -508,6 +508,33 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 		else
 		{
 			indexAP = _chooseIndexAP(pf,fragOffset);
+			// PLAM: This is the list of field attrs that should not inherit
+			// PLAM: to the span following a field.
+			const gchar * pFieldAttrs[12];
+			pFieldAttrs[0] = "type";  pFieldAttrs[1] = NULL;
+			pFieldAttrs[2] = "param"; pFieldAttrs[3] = NULL;
+			pFieldAttrs[4] = "name";  pFieldAttrs[5] = NULL;
+			pFieldAttrs[6] = "endnote-id"; pFieldAttrs[7] = NULL;
+			pFieldAttrs[8] = NULL;   pFieldAttrs[9] = NULL;
+			pFieldAttrs[10] = NULL;   pFieldAttrs[11] = NULL;
+			
+			const PP_AttrProp * pAP = NULL;
+			
+			if (!getAttrProp(indexAP, &pAP))
+				return false;
+			
+			if (pAP->areAnyOfTheseNamesPresent(pFieldAttrs, NULL))
+			{
+				// We do not want to inherit a char style from a field.
+				pFieldAttrs[8] = "style";
+				PP_AttrProp * pAPNew = pAP->cloneWithElimination(pFieldAttrs, NULL);
+				if (!pAPNew)
+					return false;
+				pAPNew->markReadOnly();
+				
+				if (!m_varset.addIfUniqueAP(pAPNew, &indexAP))
+					return false;
+			}
 		}
 	}
 	else
@@ -524,52 +551,6 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	}
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
-
-	std::string stdStyleName;
-	const gchar * ppStyle[3];
-	if(!attributes)
-	{
-	    // Check if there is a character style associated to pf
-	    const PP_AttrProp * pAPOrigFrag = NULL;
-	    if(_getSpanAttrPropHelper(pf,&pAPOrigFrag))
-	    {
-		const gchar * szStyleNameVal = NULL; 
-		pAPOrigFrag->getAttribute(PT_STYLE_ATTRIBUTE_NAME,szStyleNameVal);
-		if(szStyleNameVal)
-		{
-		    stdStyleName.assign(szStyleNameVal);
-		    ppStyle[0] = PT_STYLE_ATTRIBUTE_NAME;
-		    ppStyle[1] = stdStyleName.c_str();
-		    ppStyle[2] = NULL;
-		    attributes = ppStyle;
-		}
-	    }
-	}
-
-	// PLAM: This is the list of field attrs that should not inherit
-	// PLAM: to the span following a field.
-	const gchar * pFieldAttrs[10];
-	pFieldAttrs[0] = "type";  pFieldAttrs[1] = NULL;
-	pFieldAttrs[2] = "param"; pFieldAttrs[3] = NULL;
-	pFieldAttrs[4] = "name";  pFieldAttrs[5] = NULL;
-	pFieldAttrs[6] = "endnote-id"; pFieldAttrs[7] = NULL;
-	pFieldAttrs[8] = NULL;   pFieldAttrs[9] = NULL;
-
-	const PP_AttrProp * pAP = NULL;
-
-	if (!getAttrProp(indexAP, &pAP))
-		return false;
-
-	if (pAP->areAnyOfTheseNamesPresent(pFieldAttrs, NULL))
-	{
-		PP_AttrProp * pAPNew = pAP->cloneWithElimination(pFieldAttrs, NULL);
-		if (!pAPNew)
-			return false;
-		pAPNew->markReadOnly();
-
-		if (!m_varset.addIfUniqueAP(pAPNew, &indexAP))
-			return false;
-	}
 
 	if(attributes || properties)
 	{
