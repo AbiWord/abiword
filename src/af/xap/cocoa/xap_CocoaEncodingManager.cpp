@@ -462,7 +462,7 @@ void  XAP_CocoaEncodingManager::initialize()
 	Native8BitEncodingName = "ISO-8859-1";
 	NativeUnicodeEncodingName = "UTF-8";
 	LanguageISOName = "en";
-	LanguageISOTerritory = "";
+	LanguageISOTerritory = "US";
 	
 	if (!*locname || !strcmp(locname,"C"))
 	{ 	/* paranoic case - broken system */

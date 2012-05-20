@@ -68,7 +68,7 @@ void  XAP_Win32EncodingManager::initialize()
 
 	NativeNonUnicodeEncodingName = Native8BitEncodingName = NativeSystemEncodingName = NativeEncodingName = "CP1252";
 	LanguageISOName = "en";
-	LanguageISOTerritory = "";
+	LanguageISOTerritory = NULL;
 
 	XAP_EncodingManager::initialize();
 

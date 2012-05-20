@@ -670,14 +670,7 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 	global_template_base += UT_String_sprintf("/templates/%s", base.c_str());
 #endif
 
-	if (terr.size())
-	{
-		template_list[0] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
-	}
-	else
-	{
-		template_list[0] = "";
-	}
+	template_list[0] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
 	template_list[1] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.utf8_str());
 	template_list[2] = user_template_base;
 
@@ -692,24 +685,14 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[4],xbase.c_str(),"templates"))
 		template_list[4] = UT_String_sprintf ("%s-%s", global_template_base.c_str(), lang.utf8_str());
 
-	if (terr.size())
-	{
-		xbase += "_";
-		xbase += terr.utf8_str();
-		
-		if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[3],xbase.c_str(),"templates"))
-			template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
-	}
-	else
-	{
-		template_list[3] = "";
-	}
-	for(int i = 0; i < 6; i++) 
-	{
-		if (template_list[i].size())
-		{
-			template_list[i] = UT_filenameToUri(template_list[i]);
-		}
+	xbase += "_";
+	xbase += terr.utf8_str();
+
+	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[3],xbase.c_str(),"templates"))
+		template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
+
+	for(int i = 0; i < 6; i++) {
+		template_list[i] = UT_filenameToUri(template_list[i]);
 	}
 }
 
@@ -827,12 +810,8 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 
 		bool success = false;
 		for (UT_uint32 i = 0; i < 6 && !success; i++)
-		{
-			if(template_list[i].size())
-			{
-				success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
-			}
-		}
+			success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
+
 		// don't worry if this fails
 	}
 
@@ -956,12 +935,8 @@ UT_Error PD_Document::createRawDocument(void)
 		bool success = false;
 		int ieft = IEFT_Unknown;
 		for (UT_uint32 i = 0; i < 6 && !success; i++)
-		{
-			if (template_list[i].size())
-			{
-				success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
-			}
-		}
+			success = (importStyles(template_list[i].c_str(), ieft, true) == UT_OK);
+
 		// don't worry if this fails
 	}
 
@@ -1080,13 +1055,9 @@ UT_Error PD_Document::newDocument(void)
 
 	bool success = false;
 
-	for (UT_uint32 i = 0; i < 6 && !success; i++)
-	{
-		if (template_list[i].size())
-		{
-			success = (importFile (template_list[i].c_str(), IEFT_Unknown, true, false) == UT_OK);
-		}
-	}
+	for (UT_uint32 i = 0; i < 6 && !success; i++) 
+		success = (importFile (template_list[i].c_str(), IEFT_Unknown, true, false) == UT_OK);
+
 	if (!success) {
 			m_pPieceTable = new pt_PieceTable(this);
 			if (!m_pPieceTable)
