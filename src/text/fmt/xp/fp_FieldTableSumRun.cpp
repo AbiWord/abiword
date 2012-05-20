@@ -31,25 +31,38 @@
 #include "fp_ContainerObject.h"
 #include <string.h>
 #include <math.h>
+#include <sstream>
 
 static bool bUseCurrency = false;
 static char cCurrency = '$';
 
 static double dGetVal(UT_UTF8String sVal)
 {
-	double d = atof(sVal.utf8_str());
-	if( fabs(d) < 1e-34 && (sVal.size() > 1) )
+	std::istringstream iStream(sVal.utf8_str());
+	double d;
+	iStream >> d;
+
+	// any input succesfully converted?
+	if(!iStream)
 	{
-		UT_UTF8String sRight = sVal.substr(1,sVal.size() -1);
-		UT_UTF8String sLeft = sVal.substr(0,1);
-		d = atof(sRight.utf8_str());
-		if( d > 1e-34)
-		{
-			bUseCurrency = true;
-			cCurrency = *sLeft.utf8_str();
-		}
-		return d;
+		return 0;
 	}
+	// if so, and buffer is not empty yet, check
+	// if all remaining characters are whitespaces
+	if(iStream.rdbuf()->in_avail() != 0)
+	{
+		char c;
+		do
+		{
+			iStream.get(c);
+			if(!isspace(c))
+			{
+				return 0;
+			}
+		}
+		while(iStream.gcount() != 0);
+	}
+
 	return d;
 }
 

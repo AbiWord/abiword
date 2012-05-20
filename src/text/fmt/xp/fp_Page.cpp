@@ -1530,7 +1530,7 @@ bool fp_Page::breakPage(void)
 	{
 		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
 	}
-	iY =+ iFootnoteHeight;
+	iY += iFootnoteHeight;
 
 		
 	// we need the height of the annotations on this page, to deduct.
@@ -1541,7 +1541,7 @@ bool fp_Page::breakPage(void)
 			{
 					iAnnotationHeight += getNthAnnotationContainer(i)->getHeight();
 			}
-			iY =+ iAnnotationHeight;
+			iY += iAnnotationHeight;
 	}
 
 	for (i=0; i<count; i++)
