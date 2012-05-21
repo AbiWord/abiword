@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2012-05-07 07:11+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2012-05-17 14:03-0400\n"
+"PO-Revision-Date: 2012-05-20 11:02+0200\n"
+"Last-Translator: filmsi <miles@filmsi.net>\n"
 "Language-Team: Sugar Labs\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -260,11 +260,6 @@ msgstr "Samodejno &prilagodi tabelo"
 msgid "&Automatically save this Scheme"
 msgstr "&Samodejno shrani to shemo"
 
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "&Oblike na voljo:"
-
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
 msgid "&Before:"
@@ -427,11 +422,6 @@ msgstr "&Uredi hiperpovezavo"
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr "&Omogoči preklop prepisnega načina"
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "&Vključi pametne navedke"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -809,6 +799,11 @@ msgstr "&Poizveduj po RDF"
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "Iz&hod"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr "&RDF"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1423,14 +1418,9 @@ msgstr "Samodejno shranjuj"
 msgid "Auto replace misspelled words"
 msgstr "Samodejno zamenjaj napačno črkovane besede"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Vedenje samodejnega prilagajanja"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "Vedenje samodejnega prilagajanja"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1473,7 +1463,7 @@ msgstr "Samodejno spajanje"
 msgid "Available Fields"
 msgstr "Polja, ki so na voljo"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
 msgid "Available Formats"
 msgstr "Oblike, ki so na voljo"
@@ -1514,11 +1504,6 @@ msgstr "Zaskočni tabulator"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Temelji na:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Dvosmerne možnosti"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -2640,7 +2625,7 @@ msgstr "Razveži"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate and apply default stylesheet"
-msgstr ""
+msgstr "Razveži in uporabi privzeto slogovno predlogo"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -2872,10 +2857,15 @@ msgstr "Navezava na končno opombo"
 msgid "Endnote style"
 msgstr "Slog končne opombe"
 
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+msgid "Endnotes"
+msgstr "Končne opombe"
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
-msgstr "&Enačba"
+msgstr "Enačba"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h
@@ -2972,20 +2962,15 @@ msgstr "Izvozi semantične elemente za mesto"
 msgid "Extra"
 msgstr "Dodatno"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
-msgstr "Dodatni parametri"
+msgid "Extra Parameters:"
+msgstr "Dodatni parametri:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Dodatna orodna vrstica"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Dodatni parametri:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3006,11 +2991,6 @@ msgstr "&Celozaslonski način"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "&Išči besedilo:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Ime polja"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3213,6 +3193,11 @@ msgstr "Sklic na sprotno opombo"
 msgid "Footnote style"
 msgstr "Slog sprotne opombe"
 
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+msgid "Footnotes"
+msgstr "Sprotne opombe"
+
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
 msgid "Footnotes and &Endnotes"
@@ -3260,16 +3245,6 @@ msgstr "Oblika"
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "Oblikuj vdelani predmet"
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Oblikuj končne opombe"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Oblikuj sprotne opombe"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3413,7 +3388,7 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "Glave in noge je mogoče ustvarjati in urejati le v pogledu tiskanja. \n"
-" Za vstop v ta način kliknite \"Pogled\" in nato \"Postavitev tiskanja\". \n"
+" Za vstop v ta način kliknite Pogled in nato Postavitev tiskanja. \n"
 " Želite sedaj vstopiti v pogled postavitve tiskanja?"
 
 #. DLG_Stylist_HeadingStyles
@@ -3619,7 +3594,7 @@ msgstr "Vstavi &tabelo"
 msgid "Insert Bookmark"
 msgstr "Vstavi zaznamek"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Vstavi prelom"
@@ -3649,7 +3624,7 @@ msgstr "Vstavi enačbo"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Vstavi enačbo iz izraza LaTeX"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Vstavi polje"
@@ -3823,20 +3798,10 @@ msgstr "V dokument vstavi sliko"
 msgid "Insert bookmark"
 msgstr "Vstavi zaznamek"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Vstavi prelom"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Vstavi izrezek"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Vstavi polje"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3964,10 +3929,14 @@ msgid "Keywords:"
 msgstr "Ključne besede:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
 msgstr "Enačba LaTeX"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "Enačba LaTeX:"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
@@ -4640,8 +4609,8 @@ msgstr "Odpri ta dokument"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
-msgstr "Postavitev..."
+msgid "Orientation"
+msgstr "Postavitev"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4769,15 +4738,15 @@ msgstr "Strani:"
 msgid "Pagination"
 msgstr "Oštevilčenje strani"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr "Papir"
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "Velikost &papirja:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Papir..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4858,11 +4827,6 @@ msgstr "Igranje z RDF med razvojem"
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Položaj"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Postavi okvir z besedilom"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -5029,11 +4993,6 @@ msgstr "Poizveduj po RDF, povezanim s položajem kazalke ..."
 #: po/tmp/ap_String_Id.h
 msgid "R&eplace"
 msgstr "&Zamenjaj"
-
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr "RDF"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
@@ -5271,7 +5230,7 @@ msgstr "Ob novih odsekih začni šteti strani od začetka"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr ""
+msgstr "Omeji na povezavo RDF:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5492,8 +5451,8 @@ msgstr "Shrani v datoteko"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Povečava..."
+msgid "Scale"
+msgstr "Merilo"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5510,14 +5469,9 @@ msgstr "Sekund med posodobitvami"
 msgid "Seconds since the epoch"
 msgstr "Sekund od epohe"
 
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Prelomi odsekov"
-
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Prelomi odsekov"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -5807,7 +5761,6 @@ msgstr "Nastavi tabulatorska mesta"
 
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
@@ -6481,7 +6434,7 @@ msgstr "Tabulatorska mesta, ki bodo počiščena:"
 msgid "Table"
 msgstr "Tabela"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Velikost tabele"
@@ -6506,11 +6459,6 @@ msgstr "Naziv seznama kazala vsebine"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Stran kazala vsebine"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Velikost tabele"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6557,7 +6505,17 @@ msgstr "Poravnava besedila:"
 #. MENU_LABEL_FMT_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Text Box"
-msgstr "&Okvir z besedilom"
+msgstr "Polje z besedilom"
+
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr "Položaj polja z besedilom"
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr "Usmerjenost besedila"
 
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
@@ -6565,7 +6523,8 @@ msgid "Text Folding"
 msgstr "Prelom besedila"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Oblivanje besedila"
 
@@ -7720,16 +7679,6 @@ msgstr "Deklariraj za XML (različica 1.0)"
 msgid "Default language: "
 msgstr "Privzeti jezik: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Določite postavitev slike"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Določite oblivanje besedila"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8136,10 +8085,25 @@ msgstr "islandski, Macintosh"
 msgid "Identifier:"
 msgstr "Imenovalec:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr "Ime slike"
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr "Postavitev slike"
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Lastnosti slike"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr "Velikost slike"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8280,6 +8244,11 @@ msgstr "kannadski"
 #: po/tmp/xap_String_Id.h
 msgid "Kazakh (Kazakhstan)"
 msgstr "kazaški (Kazahstan)"
+
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr "kmerski"
 
 #. LANG_KO_KR
 #. LANG_KO
@@ -8750,16 +8719,6 @@ msgstr "srbski"
 #: po/tmp/xap_String_Id.h
 msgid "Serbian, latin"
 msgstr "srbski, latinica"
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Določi ime slike"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Določi velikost slike"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -9257,6 +9216,63 @@ msgstr "soroden"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "nepovezan"
+
+#~ msgid "&Available formats:"
+#~ msgstr "&Oblike na voljo:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Vključi pametne navedke"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Vedenje samodejnega prilagajanja"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Dvosmerne možnosti"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Dodatni parametri:"
+
+#~ msgid "Field Name"
+#~ msgstr "Ime polja"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Oblikuj končne opombe"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Oblikuj sprotne opombe"
+
+#~ msgid "Insert break"
+#~ msgstr "Vstavi prelom"
+
+#~ msgid "Insert field"
+#~ msgstr "Vstavi polje"
+
+#~ msgid "Paper..."
+#~ msgstr "Papir..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Postavi okvir z besedilom"
+
+#~ msgid "Scale..."
+#~ msgstr "Povečava..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Prelomi odsekov"
+
+#~ msgid "Table size"
+#~ msgstr "Velikost tabele"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Določite postavitev slike"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Določite oblivanje besedila"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Določi ime slike"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Določi velikost slike"
 
 #~ msgid "&Show RDF"
 #~ msgstr "&Pokaži RDF"
