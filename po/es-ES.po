@@ -3,14 +3,13 @@
 # Copyright by:
 # Francisco Javier F. Serrador <serrador@arrakis.es>, 2003.
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2004, 2005.
-# Chris Leonard <cjl@laptop.org>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-15 17:51-0400\n"
-"PO-Revision-Date: 2012-05-16 22:06+0200\n"
-"Last-Translator: AlanJAS <alanjas@hotmail.com>\n"
+"POT-Creation-Date: 2012-05-17 14:03-0400\n"
+"PO-Revision-Date: 2012-05-22 07:32+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: <es@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -283,7 +282,7 @@ msgstr "&Inferior:"
 #. MENU_LABEL_INSERT_BREAK
 #: po/tmp/ap_String_Id.h
 msgid "&Break"
-msgstr "&Salto"
+msgstr "&Separar"
 
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h
@@ -1083,7 +1082,7 @@ msgstr "Espaciado al 1,5"
 #. DLG_Para_SpacingHalf
 #: po/tmp/ap_String_Id.h
 msgid "1.5 lines"
-msgstr "1,5 líneas"
+msgstr "Líneas 1,5"
 
 #. TOOLBAR_STATUSLINE_MIDDLE_SPACE
 #. TOOLBAR_TOOLTIP_MIDDLE_SPACE
@@ -3359,7 +3358,7 @@ msgstr "Texto de &cabecera:"
 #. STYLE_HANDLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Hand List"
-msgstr "Lista de manos"
+msgstr "Lado de la lista"
 
 #. DLG_Para_SpecialHanging
 #: po/tmp/ap_String_Id.h
@@ -3374,7 +3373,7 @@ msgstr "Cabecera"
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h
 msgid "Header Properties"
-msgstr "Propiedades de Cabecera"
+msgstr "Propiedades de cabecera"
 
 #. HeaderStatus
 #: po/tmp/ap_String_Id.h
@@ -3409,7 +3408,7 @@ msgstr "Estilo de cabecera:"
 #. STYLE_HEARTLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Heart List"
-msgstr "Lista con corazones"
+msgstr "Lista de corazones"
 
 #. DLG_Lists_Hebrew_List
 #: po/tmp/ap_String_Id.h
@@ -5542,7 +5541,7 @@ msgstr "Seleccionar un marcador de la lista."
 #. DLG_FormatTable_SelectImage
 #: po/tmp/ap_String_Id.h
 msgid "Select image from File"
-msgstr "Seleccionar la imágen del archivo"
+msgstr "Seleccionar una imágen desde el archivo"
 
 #. MENU_STATUSLINE_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
@@ -5563,7 +5562,7 @@ msgstr "Seleccionar el siguiente referente a este elemento semántico..."
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Select next references to Semantic Item"
-msgstr "Seleccionar los siguientes referentes al elemento semántico "
+msgstr "Seleccionar los siguientes referentes al elemento semántico"
 
 #. MENU_LABEL_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTPREVREFTOSEMITEM
@@ -8268,6 +8267,11 @@ msgstr "Kannada"
 msgid "Kazakh (Kazakhstan)"
 msgstr "Kazako (Kazajistán)"
 
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr "Khmer"
+
 #. LANG_KO_KR
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
@@ -8417,7 +8421,7 @@ msgstr "Normal"
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h
 msgid "Norwegian Bokmal"
-msgstr "Noruego Bokmaal"
+msgstr "Noruego Bokmal"
 
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h
