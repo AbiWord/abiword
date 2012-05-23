@@ -473,7 +473,7 @@ dcl(ENC_WEST_ASCII, 					"US-ASCII")
 /* Western Europe */
 dcl(ENC_WEST_ISO,						"Western European, ISO-8859-1")
 dcl(ENC_WEST_WIN,						"Western European, Windows Code Page 1252")
-dcl(ENC_US_DOS,						"Western European, DOS/Windows Code Page 437")
+dcl(ENC_US_DOS,						"English, DOS/Windows Code Page 437")
 dcl(ENC_MLNG_DOS,						"Western European, DOS/Windows Code Page 850")
 dcl(ENC_WEST_MAC,						"Western European, Macintosh")
 dcl(ENC_WEST_HP,						"Western European, HP")
@@ -544,7 +544,7 @@ dcl(ENC_JAPN_WIN,						"Japanese, Windows Code Page 932")
 /* Korean */
 dcl(ENC_KORE_KSC,						"Korean, KSC_5601") // ISO
 dcl(ENC_KORE_EUC,						"Korean, EUC-KR")
-dcl(ENC_KORE_JOHAB, 					"Korean, Johab")
+dcl(ENC_KORE_JOHAB, 					"Korean, JOHAB")
 dcl(ENC_KORE_WIN,						"Korean, Windows Code Page 949")
 /* Unicode */
 dcl(ENC_UNIC_UTF_7, 					"Unicode UTF-7")
