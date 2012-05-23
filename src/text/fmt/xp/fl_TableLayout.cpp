@@ -106,9 +106,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
       m_pNewHeightCell(NULL),
 	  m_bDoingDestructor(false),
 	  m_iTableWidth(0),
-	  m_dTableRelWidth(0.0),
-	  m_iHeaderRowNumber(0),
-	  m_bIsHeaderSet(false)
+	  m_dTableRelWidth(0.0)
 {
 	UT_DEBUGMSG(("Created Table Layout %p \n",this));
 	UT_ASSERT(pLayout);
@@ -1632,17 +1630,6 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty ("background-color", pszBackgroundColor);
 	
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
-
-	const char * pszTableHeader = NULL;
-
-	pSectionAP->getProperty("header",(const gchar *&)pszTableHeader);
-
-	if(pszTableHeader != NULL)
-	{
-		m_iHeaderRowNumber = atoi(pszTableHeader);
-		m_bIsHeaderSet = true;
-		UT_DEBUGMSG(("\n\nThe header row is %d",m_iHeaderRowNumber));
-	}
 }
 
 void fl_TableLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
