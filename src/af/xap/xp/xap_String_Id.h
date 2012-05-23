@@ -268,7 +268,7 @@ dcl(DLG_PLUGIN_MANAGER_NONE_SELECTED,	"No plugin selected")
 /* Language Dialog */
 dcl(DLG_ULANG_LangTitle,				"Set Language")
 dcl(DLG_ULANG_LangLabel,				"Select Language:")
-dcl(DLG_ULANG_AvailableLanguages,			"Available Languages")
+dcl(DLG_ULANG_AvailableLanguages,			"Available Languages:")
 dcl(DLG_ULANG_SetLangButton,				"&Set Language")
 dcl(DLG_ULANG_DefaultLangLabel,         "Default language: ")
 dcl(DLG_ULANG_DefaultLangChkbox,        "Make default for document")
