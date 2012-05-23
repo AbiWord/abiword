@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-23 12:21+0200\n"
-"PO-Revision-Date: 2012-05-23 12:21+0200\n"
+"POT-Creation-Date: 2012-05-23 12:53+0200\n"
+"PO-Revision-Date: 2012-05-23 12:53+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -7298,7 +7298,7 @@ msgstr "Arabisch, Macintosh"
 #. ENC_ARAB_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Arabic, Windows Code Page 1256"
-msgstr "Arabisch,·Windows·Code·Page·1256"
+msgstr "Arabisch, Windows Codepage 1256"
 
 #. LANG_HY_AM
 #: po/tmp/xap_String_Id.h
@@ -7308,7 +7308,7 @@ msgstr "Armenisch"
 #. ENC_ARME_ARMSCII
 #: po/tmp/xap_String_Id.h
 msgid "Armenian, ARMSCII-8"
-msgstr "Armenisch,·ARMSCII-8"
+msgstr "Armenisch, ARMSCII-8"
 
 #. LANG_AS_IN
 #: po/tmp/xap_String_Id.h
@@ -7353,7 +7353,7 @@ msgstr "Verfügbare Sprachen"
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
 msgid "Aymara (Central/Northern Bolivia)"
-msgstr "Aymara (zentrales/nördliches Bolivien)"
+msgstr "Aymara (mittleres/nördliches Bolivien)"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
@@ -7373,7 +7373,7 @@ msgstr "Baltisch, ISO-8859-4"
 #. ENC_BALT_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, Windows Code Page 1257"
-msgstr "Baltisch,·Windows·Code·Page·1257"
+msgstr "Baltisch, Windows Codepage 1257"
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7449,17 +7449,17 @@ msgstr "Katalanisch"
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Central European, ISO-8859-2"
-msgstr "Zentral·Europäisch, ISO-8859-2"
+msgstr "Mitteleuropäisch, ISO-8859-2"
 
 #. ENC_CENT_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Central European, Macintosh"
-msgstr "Zentral Europäisch, Macintosh"
+msgstr "Mitteleuropäisch, Macintosh"
 
 #. ENC_CENT_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Central European, Windows Code Page 1250"
-msgstr "Zentral·Europäisch, Windows Code Page 1250"
+msgstr "Mitteleuropäisch, Windows Codepage 1250"
 
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h
@@ -7494,42 +7494,42 @@ msgstr "Chinesisch (Taiwan)"
 #. ENC_CHSI_EUC
 #: po/tmp/xap_String_Id.h
 msgid "Chinese Simplified, EUC-CN (GB2312)"
-msgstr "Chinesisch (Kurzzeichen), EUC-CN (GB2312)"
+msgstr "Chinesisch (vereinfacht), EUC-CN (GB2312)"
 
 #. ENC_CHSI_GB
 #: po/tmp/xap_String_Id.h
 msgid "Chinese Simplified, GB_2312-80"
-msgstr "Chinesisch (Kurzzeichen), GB_2312-80"
+msgstr "Chinesisch (vereinfacht), GB_2312-80"
 
 #. ENC_CHSI_HZ
 #: po/tmp/xap_String_Id.h
 msgid "Chinese Simplified, HZ"
-msgstr "Chinesisch (Kurzzeichen), HZ"
+msgstr "Chinesisch (vereinfacht), HZ"
 
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Chinese Simplified, Windows Code Page 936"
-msgstr "Chinesisch (Kurzzeichen), Windows Code Page 936"
+msgstr "Chinesisch (vereinfacht), Windows Codepage 936"
 
 #. ENC_CHTR_BIG5
 #: po/tmp/xap_String_Id.h
 msgid "Chinese Traditional, BIG5"
-msgstr "Chinesisch (Langzeichen), BIG5"
+msgstr "Chinesisch (traditionell), BIG5"
 
 #. ENC_CHTR_BIG5HKSCS
 #: po/tmp/xap_String_Id.h
 msgid "Chinese Traditional, BIG5-HKSCS"
-msgstr "Chinesisch (Langzeichen), BIG5-HKSCS"
+msgstr "Chinesisch (traditionell), BIG5-HKSCS"
 
 #. ENC_CHTR_EUC
 #: po/tmp/xap_String_Id.h
 msgid "Chinese Traditional, EUC-TW"
-msgstr "Chinesisch (Langzeichen), EUC-TW"
+msgstr "Chinesisch (traditionell), EUC-TW"
 
 #. ENC_CHTR_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Chinese Traditional, Windows Code Page 950"
-msgstr "Chinesisch (Langzeichen), Windows Code Page 950"
+msgstr "Chinesisch (traditionell), Windows Codepage 950"
 
 #. DLG_LISTDOCS_Heading1
 #: po/tmp/xap_String_Id.h
@@ -7670,17 +7670,17 @@ msgstr "Kyrillisch, ISO-8859-5"
 #. ENC_CYRL_KOI
 #: po/tmp/xap_String_Id.h
 msgid "Cyrillic, KOI8-R"
-msgstr "Kyrillisch,·KOI8-R"
+msgstr "Kyrillisch, KOI8-R"
 
 #. ENC_CYRL_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Cyrillic, Macintosh"
-msgstr "Kyrillisch,·Macintosh"
+msgstr "Kyrillisch, Macintosh"
 
 #. ENC_CYRL_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Cyrillic, Windows Code Page 1251"
-msgstr "Kyrillisch,·Windows Code Page 1251"
+msgstr "Kyrillisch, Windows Codepage 1251"
 
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h
@@ -7832,6 +7832,11 @@ msgstr "Englisch (Großbritannien)"
 msgid "English (US)"
 msgstr "Englisch (USA)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr "Englisch, DOS/Windows Codepage 437"
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7966,7 +7971,7 @@ msgstr "Georgisch"
 #. ENC_GEOR_ACADEMY
 #: po/tmp/xap_String_Id.h
 msgid "Georgian, Academy"
-msgstr "Georgisch, Akademie"
+msgstr "Georgisch, Academy"
 
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h
@@ -8011,7 +8016,7 @@ msgstr "Griechisch, Macintosh"
 #. ENC_GREE_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Greek, Windows Code Page 1253"
-msgstr "Griechisch,·Windows·Code·Page·1253"
+msgstr "Griechisch, Windows Codepage 1253"
 
 #. DLG_HTMLOPT_ExpTitle
 #: po/tmp/xap_String_Id.h
@@ -8061,17 +8066,17 @@ msgstr "Hebräisch"
 #. ENC_HEBR_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Hebrew, ISO-8859-8"
-msgstr "Hebräisch,·ISO-8859-8"
+msgstr "Hebräisch, ISO-8859-8"
 
 #. ENC_HEBR_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Hebrew, Macintosh"
-msgstr "Hebräisch,·Macintosh"
+msgstr "Hebräisch, Macintosh"
 
 #. ENC_HEBR_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Hebrew, Windows Code Page 1255"
-msgstr "Hebräisch,·Windows·Code·Page·1255"
+msgstr "Hebräisch, Windows Codepage 1255"
 
 #. DLG_Image_Height
 #: po/tmp/xap_String_Id.h
@@ -8251,22 +8256,22 @@ msgstr "Japanisch"
 #. ENC_JAPN_EUC
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, EUC-JP"
-msgstr "Japanisch,·EUC-JP"
+msgstr "Japanisch, EUC-JP"
 
 #. ENC_JAPN_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, ISO-2022-JP"
-msgstr "Japanisch,·ISO-2022-JP"
+msgstr "Japanisch, ISO-2022-JP"
 
 #. ENC_JAPN_SJIS
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, Shift-JIS"
-msgstr "Japanisch,·Shift-JIS"
+msgstr "Japanisch, Shift-JIS"
 
 #. ENC_JAPN_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, Windows Code Page 932"
-msgstr "Japanisch,·Windows·Code·Page·932"
+msgstr "Japanisch, Windows Codepage 932"
 
 #. LANG_KN_IN
 #: po/tmp/xap_String_Id.h
@@ -8296,22 +8301,22 @@ msgstr "Koreanisch (Südkorea)"
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
 msgid "Korean, EUC-KR"
-msgstr "Koreanisch,·EUC-KR"
+msgstr "Koreanisch, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Koreanisch, Johab"
+msgid "Korean, JOHAB"
+msgstr "Koreanisch, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
 msgid "Korean, KSC_5601"
-msgstr "Koreanisch,·KSC_5601"
+msgstr "Koreanisch, KSC_5601"
 
 #. ENC_KORE_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Korean, Windows Code Page 949"
-msgstr "Koreanisch,·Windows·Code·Page·949"
+msgstr "Koreanisch, Windows Codepage 949"
 
 #. LANG_KU
 #: po/tmp/xap_String_Id.h
@@ -8870,17 +8875,17 @@ msgstr "Thailändisch"
 #. ENC_THAI_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Thai, Macintosh"
-msgstr "Thai, Macintosh"
+msgstr "Thailändisch, Macintosh"
 
 #. ENC_THAI_TIS
 #: po/tmp/xap_String_Id.h
 msgid "Thai, TIS-620"
-msgstr "Thai, TIS-620"
+msgstr "Thailändisch, TIS-620"
 
 #. ENC_THAI_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Thai, Windows Code Page 874"
-msgstr "Thai, Windows Code Page 874"
+msgstr "Thailändisch, Windows Codepage 874"
 
 #. DLG_NoSaveFile_DirNotWriteable
 #: po/tmp/xap_String_Id.h
@@ -8943,17 +8948,17 @@ msgstr "Türkisch"
 #. ENC_TURK_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Turkish, ISO-8859-9"
-msgstr "Türkisch,·ISO-8859-9"
+msgstr "Türkisch, ISO-8859-9"
 
 #. ENC_TURK_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Turkish, Macintosh"
-msgstr "Türkisch,·Macintosh"
+msgstr "Türkisch, Macintosh"
 
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Turkish, Windows Code Page 1254"
-msgstr "Türkisch,·Windows·Code·Page·1254"
+msgstr "Türkisch, Windows Codepage 1254"
 
 #. DLG_Image_WrapType
 #: po/tmp/xap_String_Id.h
@@ -8973,7 +8978,7 @@ msgstr "Ukrainisch"
 #. ENC_UKRA_KOI
 #: po/tmp/xap_String_Id.h
 msgid "Ukrainian, KOI8-U"
-msgstr "Ukrainisch,·KOI8-U"
+msgstr "Ukrainisch, KOI8-U"
 
 #. ENC_UKRA_MAC
 #: po/tmp/xap_String_Id.h
@@ -8983,47 +8988,47 @@ msgstr "Ukrainisch, Macintosh"
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
-msgstr "Unicode·UCS-2·Big·Endian"
+msgstr "Unicode UCS-2, Big Endian"
 
 #. ENC_UNIC_UCS_2LE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
-msgstr "Unicode·UCS-2·Little·Endian"
+msgstr "Unicode UCS-2, Little Endian"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-4 Big Endian"
-msgstr "Unicode·UCS-4·Big·Endian"
+msgstr "Unicode UCS-4, Big Endian"
 
 #. ENC_UNIC_UCS_4LE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-4 Little Endian"
-msgstr "Unicode·UCS-4·Little·Endian"
+msgstr "Unicode UCS-4, Little Endian"
 
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
-msgstr "Unicode·UTF-16·Big·Endian"
+msgstr "Unicode UTF-16, Big Endian"
 
 #. ENC_UNIC_UTF_16LE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
-msgstr "Unicode·UTF-16·Little·Endian"
+msgstr "Unicode UTF-16, Little Endian"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-32 Big Endian"
-msgstr "Unicode·UTF-32·Big·Endian"
+msgstr "Unicode UTF-32, Big Endian"
 
 #. ENC_UNIC_UTF_32LE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-32 Little Endian"
-msgstr "Unicode·UTF-32·Little·Endian"
+msgstr "Unicode UTF-32, Little Endian"
 
 #. ENC_UNIC_UTF_7
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-7"
-msgstr "Unicode·UTF-7"
+msgstr "Unicode UTF-7"
 
 #. ENC_UNIC_UTF_8
 #: po/tmp/xap_String_Id.h
@@ -9091,7 +9096,7 @@ msgstr "Vietnamesisch, VISCII"
 #. ENC_VIET_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Vietnamese, Windows Code Page 1258"
-msgstr "Vietnamesisch, Windows Code Page 1258"
+msgstr "Vietnamesisch, Windows Codepage 1258"
 
 #. DLG_MW_MoreWindows
 #: po/tmp/xap_String_Id.h
@@ -9108,15 +9113,10 @@ msgstr "Ansicht:"
 msgid "Welsh"
 msgstr "Walisisch"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Westeuropäisch, DOS/Windows Code Page 437"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
-msgstr "Westeuropäisch, DOS/Windows Code Page 850"
+msgstr "Westeuropäisch, DOS/Windows Codepage 850"
 
 #. ENC_WEST_HP
 #: po/tmp/xap_String_Id.h
@@ -9141,7 +9141,7 @@ msgstr "Westeuropäisch, NeXT"
 #. ENC_WEST_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Western European, Windows Code Page 1252"
-msgstr "Westeuropäisch, Windows Code Page 1252"
+msgstr "Westeuropäisch, Windows Codepage 1252"
 
 #. TB_Zoom_WholePage
 #: po/tmp/xap_String_Id.h
