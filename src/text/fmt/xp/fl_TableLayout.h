@@ -214,6 +214,10 @@ UT_sint32                    getBottomOffset(void) const;
 	  { return m_bIsEndTableIn;}
 	bool                     isDoingDestructor(void)
 	{ return m_bDoingDestructor;}
+
+//Table Header
+	UT_sint32 getHeaderRowNos() const { return m_iHeaderRowNumber; }
+	bool isHeaderSet() const { return m_bIsHeaderSet; }
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
 	virtual void			    _lookupMarginProperties(const PP_AttrProp* pAP);
@@ -265,6 +269,10 @@ private:
 	bool                   m_bDoingDestructor;
 	UT_sint32              m_iTableWidth;
 	double                 m_dTableRelWidth;
+
+//Table Header
+ 	UT_sint32 	m_iHeaderRowNumber;
+	bool 		m_bIsHeaderSet;
 };
 
 
@@ -333,6 +341,7 @@ UT_sint32                    getBottomOffset(void) const;
 		{ return m_iCellHeight;}
 	UT_sint32                getCellWidth(void) const
 		{ return m_iCellWidth;}
+		
 protected:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void             _purgeLayout(void);
@@ -372,6 +381,7 @@ private:
 
 // Vertical alignment property
 	UT_sint32	m_iVertAlign;
+
 };
 
 ///
