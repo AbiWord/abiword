@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-23 12:53+0200\n"
-"PO-Revision-Date: 2012-05-23 12:53+0200\n"
+"POT-Creation-Date: 2012-05-23 15:11+0200\n"
+"PO-Revision-Date: 2012-05-23 15:11+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -7347,8 +7347,8 @@ msgstr "Verfügbare Dokumente"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
-msgstr "Verfügbare Sprachen"
+msgid "Available Languages:"
+msgstr "Verfügbare Sprachen:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
@@ -8366,7 +8366,7 @@ msgstr "Mazedonisch"
 #. DLG_ULANG_DefaultLangChkbox
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
-msgstr "Als Standard für das Dokument setzen"
+msgstr "Auswahl als Standard für das Dokument festlegen"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8760,7 +8760,7 @@ msgstr "Serbisch, Lateinschrift"
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
 msgid "Set Language"
-msgstr "Sprache bestimmen"
+msgstr "Sprache festlegen"
 
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h
