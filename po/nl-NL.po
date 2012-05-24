@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-17 14:03-0400\n"
-"PO-Revision-Date: 2012-05-18 11:41+0200\n"
+"POT-Creation-Date: 2012-05-24 00:26-0400\n"
+"PO-Revision-Date: 2012-05-24 11:18+0200\n"
 "Last-Translator: Pjotr <pjotrvertaalt@gmail.com>\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
@@ -7261,8 +7261,8 @@ msgstr "Extra opmaak toestaan in AWML-naamruimte"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Amhaars (Ethiopië)"
+msgid "Amharic"
+msgstr "Amhaars"
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7311,8 +7311,8 @@ msgstr "Assamees"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Asturisch (Spanje)"
+msgid "Asturian"
+msgstr "Asturisch"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7341,18 +7341,23 @@ msgstr "Beschikbare documenten"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
-msgstr "Beschikbare talen"
+msgid "Available Languages:"
+msgstr "Beschikbare talen:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
-msgstr "Aymara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
+msgstr "Aymara (centraal- / noord-Bolivia)"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
-msgstr "Aymara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr "Aymara (zuid-Bolivia)"
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
+msgstr "Aymara, centraal"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7394,6 +7399,11 @@ msgstr "Zwart-wit"
 msgid "Block Text"
 msgstr "Bloktekst"
 
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr "Bokmal"
+
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
 msgid "Bold Italic"
@@ -7429,11 +7439,6 @@ msgstr "Annuleren"
 #: po/tmp/xap_String_Id.h
 msgid "Catalan"
 msgstr "Catalaans"
-
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr "Centraal-Aymara"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7733,8 +7738,8 @@ msgstr "Documenten vergeleken"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Nederlands (Nederland)"
+msgid "Dutch"
+msgstr "Nederlands"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7821,6 +7826,11 @@ msgstr "Engels (Verenigd Koninkrijk)"
 msgid "English (US)"
 msgstr "Engels (Verenigde Staten)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr "Engels, DOS/Windows Code Page 437"
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7884,8 +7894,8 @@ msgstr "Fins"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Vlaams (België)"
+msgid "Flemish"
+msgstr "Vlaams"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -7944,8 +7954,8 @@ msgstr "Fulah"
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-msgid "Galician (Galego)"
-msgstr "Galicisch (Galego)"
+msgid "Galician"
+msgstr "Galicisch"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8229,8 +8239,8 @@ msgstr "Iers"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Italiaans (Italië)"
+msgid "Italian"
+msgstr "Italiaans"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8264,19 +8274,23 @@ msgstr "Kannada"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
-msgstr "Kazaks (Kazachstan)"
+msgid "Kazakh"
+msgstr "Kazachs"
 
 #. LANG_KM_KH
 #: po/tmp/xap_String_Id.h
 msgid "Khmer"
 msgstr "Khmer"
 
-#. LANG_KO_KR
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Koreaans"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr "Koreaans (Zuid-Korea)"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8285,8 +8299,8 @@ msgstr "Koreaans, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Koreaans, Johab"
+msgid "Korean, JOHAB"
+msgstr "Koreaans, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8315,8 +8329,8 @@ msgstr "Laatste keer opgeslagen:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Latijn (Renaissance)"
+msgid "Latin"
+msgstr "Latijn"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8355,8 +8369,8 @@ msgstr "Maleis"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
-msgstr "Mandinka (Senegal)"
+msgid "Mandinka"
+msgstr "Mandinka"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8395,8 +8409,8 @@ msgstr "Naam:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr "Nepalees (Nepal)"
+msgid "Nepali"
+msgstr "Nepalees"
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8418,16 +8432,6 @@ msgstr "Geen plug-in geselecteerd"
 msgid "Normal"
 msgstr "Normaal"
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Noors Bokmål"
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Noors Nynorsk"
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8447,6 +8451,11 @@ msgstr "Genummerde kop 2"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Genummerde kop 3"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr "Nynorsk"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8590,28 +8599,28 @@ msgstr "Afdrukopdracht: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Punjabi (Gurmukhi)"
+msgid "Punjabi (India)"
+msgstr "Punjabi (India)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Punjabi (Shahmukhi)"
+msgid "Punjabi (Pakistan)"
+msgstr "Punjabi (Pakistan)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Quechua"
 
-#. LANG_QUH_BO
-#: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
-msgstr "Quechua (3 klinkers)"
-
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
-msgstr "Quechua (5 klinkers)"
+msgid "Quechua (Northern Bolivia)"
+msgstr "Quechua (noordelijk Bolivia)"
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
+msgstr "Quechua (zuidelijk Bolivia)"
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
@@ -8674,12 +8683,12 @@ msgstr "Roemeens, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Russisch (Rusland)"
+msgid "Russian"
+msgstr "Russisch"
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
+msgid "Russian, pre-1918"
 msgstr "Russisch (voor 1918)"
 
 #. DLG_UFS_SampleFrameLabel
@@ -8739,8 +8748,8 @@ msgstr "Servisch"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-msgid "Serbian, latin"
-msgstr "Servisch latijn"
+msgid "Serbian, Latin"
+msgstr "Servisch, Latijns schrift"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -9097,11 +9106,6 @@ msgstr "Beeld:"
 msgid "Welsh"
 msgstr "Welsh"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "West-Europees, Windows-codepagina 437"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9149,8 +9153,8 @@ msgstr "Breedte:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
-msgstr "Wolof (Senegal)"
+msgid "Wolof"
+msgstr "Wolof"
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9241,6 +9245,75 @@ msgstr "verwanten"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "niet-gerelateerd"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhaars (Ethiopië)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturisch (Spanje)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aymara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aymara (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "Centraal-Aymara"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Nederlands (Nederland)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Vlaams (België)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galicisch (Galego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italiaans (Italië)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Kazaks (Kazachstan)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Koreaans, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latijn (Renaissance)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinka (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepalees (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Noors Bokmål"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Noors Nynorsk"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punjabi (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punjabi (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 klinkers)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 klinkers)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Russisch (Rusland)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "West-Europees, Windows-codepagina 437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Senegal)"
 
 #~ msgid "&Available formats:"
 #~ msgstr "&Beschikbare opmaken:"
