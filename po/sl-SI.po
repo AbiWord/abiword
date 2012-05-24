@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-17 14:03-0400\n"
-"PO-Revision-Date: 2012-05-20 11:02+0200\n"
+"POT-Creation-Date: 2012-05-24 00:26-0400\n"
+"PO-Revision-Date: 2012-05-24 21:09+0200\n"
 "Last-Translator: filmsi <miles@filmsi.net>\n"
 "Language-Team: Sugar Labs\n"
 "Language: sl\n"
@@ -7239,8 +7239,8 @@ msgstr "Dovoli dodatne označbe v imenskem prostoru AWML"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "amharski (Etiopija)"
+msgid "Amharic"
+msgstr "amharski"
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7289,8 +7289,8 @@ msgstr "asamski"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "asturijski (Španija)"
+msgid "Asturian"
+msgstr "asturijski"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7319,18 +7319,23 @@ msgstr "Dokumenti, ki so na voljo"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
-msgstr "Jeziki, ki so na voljo"
+msgid "Available Languages:"
+msgstr "Jeziki, ki so na voljo:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
-msgstr "ajmarski (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
+msgstr "ajmarski (osrednja/severna Bolivija)"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
-msgstr "ajmarski (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr "ajmarski (južna Bolivija)"
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
+msgstr "ajmarski, osrednji"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7372,6 +7377,11 @@ msgstr "Črno belo"
 msgid "Block Text"
 msgstr "Bločno besedilo"
 
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr "Bokmal"
+
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
 msgid "Bold Italic"
@@ -7407,11 +7417,6 @@ msgstr "Prekliči"
 #: po/tmp/xap_String_Id.h
 msgid "Catalan"
 msgstr "katalonski"
-
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr "centralni ajmarski"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7711,8 +7716,8 @@ msgstr "Primerjani dokumenti"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "nizozemski (Nizozemska)"
+msgid "Dutch"
+msgstr "nizozemski"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7799,6 +7804,11 @@ msgstr "angleški (Velika Britanija)"
 msgid "English (US)"
 msgstr "angleški (ZDA)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr "angleški, kodna stran 437 DOS/Windows"
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7862,8 +7872,8 @@ msgstr "finski"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "flamski (Belgija)"
+msgid "Flemish"
+msgstr "flamski"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -7922,8 +7932,8 @@ msgstr "fulski"
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-msgid "Galician (Galego)"
-msgstr "galicijski (gallego)"
+msgid "Galician"
+msgstr "galicijski"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8207,8 +8217,8 @@ msgstr "irski"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "italjanski (Italija)"
+msgid "Italian"
+msgstr "italijanski"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8242,19 +8252,23 @@ msgstr "kannadski"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
-msgstr "kazaški (Kazahstan)"
+msgid "Kazakh"
+msgstr "kazaški"
 
 #. LANG_KM_KH
 #: po/tmp/xap_String_Id.h
 msgid "Khmer"
 msgstr "kmerski"
 
-#. LANG_KO_KR
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "korejski"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr "korejski (Južna Koreja)"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8263,8 +8277,8 @@ msgstr "korejski, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "korejski, Johab"
+msgid "Korean, JOHAB"
+msgstr "korejski, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8293,8 +8307,8 @@ msgstr "Nazadnje shranjeno:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "latinski (renesančni)"
+msgid "Latin"
+msgstr "latinski"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8333,8 +8347,8 @@ msgstr "malajski"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
-msgstr "mandinški (Senegal)"
+msgid "Mandinka"
+msgstr "mandinški"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8373,8 +8387,8 @@ msgstr "Ime:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr "nepalski (Nepal)"
+msgid "Nepali"
+msgstr "nepalski"
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8396,16 +8410,6 @@ msgstr "Izbran ni noben vtičnik"
 msgid "Normal"
 msgstr "Navaden"
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "norveški Bokmal"
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "norveški Nynorsk"
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8425,6 +8429,11 @@ msgstr "Oštevilčeni naslov 2"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Oštevilčeni naslov 3"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr "Ninorsk"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8568,28 +8577,28 @@ msgstr "Ukaz za tiskanje: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "pundžabski (Gurmukški)"
+msgid "Punjabi (India)"
+msgstr "pundžabski (Indija)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "pundžabski (Šamukški)"
+msgid "Punjabi (Pakistan)"
+msgstr "pundžabski (Pakistan)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "kečuanski"
 
-#. LANG_QUH_BO
-#: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
-msgstr "kečuanski (3 samoglasniki)"
-
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
-msgstr "kečuanski (5 samoglasnikov)"
+msgid "Quechua (Northern Bolivia)"
+msgstr "kvečvanski (severna Bolivija)"
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
+msgstr "kvečvanski (južna Bolivija)"
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
@@ -8652,12 +8661,12 @@ msgstr "romunski, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "ruski (Rusija)"
+msgid "Russian"
+msgstr "ruski"
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
+msgid "Russian, pre-1918"
 msgstr "ruski (pred letom 1918)"
 
 #. DLG_UFS_SampleFrameLabel
@@ -8717,7 +8726,7 @@ msgstr "srbski"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-msgid "Serbian, latin"
+msgid "Serbian, Latin"
 msgstr "srbski, latinica"
 
 #. DLG_ULANG_LangTitle
@@ -9073,11 +9082,6 @@ msgstr "Pogled:"
 msgid "Welsh"
 msgstr "velški"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "zahodnoevropski, nabor znakov DOS/Windows-437"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9125,8 +9129,8 @@ msgstr "Širina:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
-msgstr "volofski (Senegal)"
+msgid "Wolof"
+msgstr "volofski"
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9216,6 +9220,75 @@ msgstr "soroden"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "nepovezan"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "amharski (Etiopija)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "asturijski (Španija)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "ajmarski (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "ajmarski (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "centralni ajmarski"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "nizozemski (Nizozemska)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "flamski (Belgija)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "galicijski (gallego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "italjanski (Italija)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "kazaški (Kazahstan)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "korejski, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "latinski (renesančni)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "mandinški (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "nepalski (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "norveški Bokmal"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "norveški Nynorsk"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "pundžabski (Gurmukški)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "pundžabski (Šamukški)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "kečuanski (3 samoglasniki)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "kečuanski (5 samoglasnikov)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "ruski (Rusija)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "zahodnoevropski, nabor znakov DOS/Windows-437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "volofski (Senegal)"
 
 #~ msgid "&Available formats:"
 #~ msgstr "&Oblike na voljo:"
