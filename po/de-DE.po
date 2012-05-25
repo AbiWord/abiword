@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-23 15:11+0200\n"
-"PO-Revision-Date: 2012-05-23 15:11+0200\n"
+"POT-Creation-Date: 2012-05-25 14:07+0200\n"
+"PO-Revision-Date: 2012-05-25 14:07+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -1127,7 +1127,7 @@ msgid ""
 "The current document has been saved to disc with a \".saved\" extension."
 msgstr ""
 "Ein schwerer Fehler ist aufgetreten. AbiWord wird jetzt beendet.\n"
-"Das aktuelle Dokument wird mit der Dateiendung \".saved\" gesichert."
+"Das aktuelle Dokument wird mit der Dateiendung ».saved« gesichert."
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h
@@ -1144,7 +1144,7 @@ msgstr "AM/PM"
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr ""
-"AbiWord kann \"%s\" nicht öffnen. Das Dokument scheint fehlerhaft zu sein."
+"AbiWord kann »%s« nicht öffnen. Das Dokument scheint fehlerhaft zu sein."
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h
@@ -1539,7 +1539,7 @@ msgstr "Textmarke"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Die Textmarke \"%s\" kommt in diesem Dokument nicht vor."
+msgstr "Die Textmarke »%s« kommt in diesem Dokument nicht vor."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
@@ -1644,7 +1644,7 @@ msgstr "&Groß-/Kleinschreibung"
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "C&opy hyperlink location"
-msgstr "Hyperlink-Stelle k&opieren"
+msgstr "Hyperlink-Adresse k&opieren"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -1923,10 +1923,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "Wählen Sie auf der linken Seite das gewünschte Ziel.\n"
-"Bei Verwendung der Schaltfläche \"Gehe zu\" tragen Sie die gewünschte Zahl "
-"ein. Über + und - sind relative Sprünge möglich,\td.h. wenn Sie \"+2\" "
-"eingeben und \"Zeile\" auswählen, gelangen Sie zwei Zeilen unter Ihre "
-"aktuelle Position."
+"Bei Verwendung der Schaltfläche »Gehe zu« tragen Sie die gewünschte Zahl "
+"ein. Über + und - sind relative Sprünge möglich,\td.h. wenn Sie »+2« "
+"eingeben und »Zeile« auswählen, gelangen Sie zwei Zeilen unter Ihre aktuelle "
+"Position."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2130,7 +2130,7 @@ msgstr "Textrahmen kopieren"
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Copy hyperlink location"
-msgstr "Eine Hyperlink-Stelle kopieren"
+msgstr "Die Hyperlink-Adresse kopieren"
 
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h
@@ -2151,25 +2151,25 @@ msgstr "Markierte Auswahl in die Zwischenablage kopieren"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Could not open file %s for writing"
-msgstr "Datei \"%s\" konnte nicht zum Schreiben geöffnet werden"
+msgstr "Datei »%s« konnte nicht zum Schreiben geöffnet werden"
 
 #. MSG_OpenFailed
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Could not open file %s."
-msgstr "Datei \"%s\" konnte nicht geöffnet werden."
+msgstr "Datei »%s« konnte nicht geöffnet werden."
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Could not write to file %s"
-msgstr "Datei \"%s\" konnte nicht geschrieben werden"
+msgstr "Datei »%s« konnte nicht geschrieben werden"
 
 #. MSG_SaveFailed
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "Datei \"%s\" konnte nicht geschrieben werden."
+msgstr "Datei »%s« konnte nicht geschrieben werden."
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h
@@ -2247,12 +2247,12 @@ msgstr "Markierte Auswahl &einfügen"
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item"
-msgstr "Neues semantisches Element 'Kontakt' erstellen"
+msgstr "Neues semantisches Element ›Kontakt‹ erstellen"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr "Neues semantisches Element 'Kontakt' aus vCard-Import erstellen"
+msgstr "Neues semantisches Element ›Kontakt‹ aus vCard-Import erstellen"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
@@ -2617,7 +2617,7 @@ msgstr "Andere Kopfzeile auf der letzten Seite"
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Directly edit the RDF for the entire document..."
-msgstr "RDF für das ganze Dokument direkt bearbeiten..."
+msgstr "RDF des ganzen Dokuments direkt bearbeiten..."
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
@@ -2723,7 +2723,7 @@ msgstr "RDF-Objekte anzeigen"
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF related to Cursor Position"
-msgstr "RDF an Cursorposition anzeigen"
+msgstr "RDF anzeigen, die an der Cursorposition zugeordnet sind"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
@@ -2733,7 +2733,7 @@ msgstr "Informationen über RDF-Objekte anzeigen"
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump the raw RDF associated with the cursor position"
-msgstr "RDF-Rohdaten an Cursorposition anzeigen"
+msgstr "RDF-Rohdaten anzeigen, die an der Cursorposition zugeordnet sind"
 
 #. MENU_LABEL_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
@@ -2779,12 +2779,12 @@ msgstr "RDF-Tripel bearbeiten"
 #. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples associated with location"
-msgstr "RDF-Tripel zum Standort bearbeiten"
+msgstr "RDF-Tripel bearbeiten, die an dieser Stelle zugeordnet sind"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr "Semantische Elemente zum Standort bearbeiten"
+msgstr "Semantische Elemente bearbeiten, die an dieser Stelle zugeordnet sind"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -2882,26 +2882,25 @@ msgstr "Fehler bei der Berechnung eines Wertes!"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Error executing script %s"
-msgstr "Fehler beim Ausführen von Skript \"%s\"."
+msgstr "Fehler beim Ausführen von Skript »%s«."
 
 #. MSG_ImportError
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Error importing file %s."
-msgstr "Fehler beim Importieren der Datei \"%s\"."
+msgstr "Fehler beim Importieren der Datei »%s«."
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Error while attempting to save %s: could not construct exporter"
-msgstr ""
-"Fehler beim Speichern von \"%s\": Exporter konnte nicht erstellt werden"
+msgstr "Fehler beim Speichern von »%s«: Exporter konnte nicht erstellt werden"
 
 #. MSG_SaveFailedName
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
-msgstr "Datei \"%s\" konnte nicht gespeichert werden: ungültiger Name"
+msgstr "Datei »%s« konnte nicht gespeichert werden: ungültiger Name"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
@@ -2931,7 +2930,7 @@ msgstr "Abfrage ausführen"
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
 msgid "Execute SPARQL on document RDF"
-msgstr "SPARQL-Abfrage über Dokument-RDF durchführen"
+msgstr "SPARQL-Abfrage über die Dokument-RDF durchführen"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
@@ -2962,7 +2961,7 @@ msgstr "Semantische Elemente exportieren"
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr "Semantische Standort-Elemente exportieren"
+msgstr "Semantische Elemente exportieren, die an dieser Stelle zugeordnet sind"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
@@ -3008,25 +3007,25 @@ msgstr "Feldname:"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "File %s is not of a currently supported file type"
-msgstr "Datei \"%s\" entspricht keinem derzeit unterstützten Dateityp"
+msgstr "Datei »%s« entspricht keinem derzeit unterstützten Dateityp"
 
 #. MSG_IE_FakeType
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "File %s is not of the type it claims to be"
-msgstr "Datei \"%s\" entspricht nicht dem vorgegebenen Typ"
+msgstr "Datei »%s« entspricht nicht dem vorgegebenen Typ"
 
 #. MSG_IE_UnknownType
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "File %s is of unknown type"
-msgstr "Datei \"%s\" ist von unbekanntem Typ"
+msgstr "Datei »%s« ist von unbekanntem Typ"
 
 #. MSG_IE_FileNotFound
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "File %s not found"
-msgstr "Datei \"%s\" nicht gefunden"
+msgstr "Datei »%s« nicht gefunden"
 
 #. FIELD_Application_Filename
 #: po/tmp/ap_String_Id.h
@@ -3468,7 +3467,7 @@ msgstr "RDF hervorheben"
 #. MENU_STATUSLINE_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight areas of the document with RDF associated"
-msgstr "Bereiche des Dokuments hervorheben, die zu RDF gehören"
+msgstr "Bereiche des Dokuments hervorheben, denen RDF zugeordnet sind"
 
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h
@@ -4334,7 +4333,7 @@ msgstr "Monat Tag, Jahr"
 #. MENU_STATUSLINE_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
 msgid "Move the insertion point to a specific location"
-msgstr "Einfügemarke zu einer bestimmten Stelle bewegen"
+msgstr "Cursor zu einer konkreten Stelle bewegen"
 
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h
@@ -4386,8 +4385,8 @@ msgstr "&Neue Anmerkung"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
-msgstr "Neuer Kontakt..."
+msgid "New Contact"
+msgstr "Neuer Kontakt"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4830,7 +4829,7 @@ msgstr "Platzierung"
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr "Mit RDF während der Entwicklung spielen"
+msgstr "Mit RDF während der Entwicklung herumspielen"
 
 #. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
@@ -4982,7 +4981,7 @@ msgstr "Herausgeber:"
 #. MENU_STATUSLINE_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF associated with location"
-msgstr "RDF zum Standort abfragen"
+msgstr "RDF abfragen, die an dieser Stelle zugeordnet sind"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
@@ -4998,7 +4997,7 @@ msgstr "Abgefragte RDF: %d von insgesamt: %ld"
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query the RDF associated with the cursor position..."
-msgstr "RDF an Cursorposition abfragen..."
+msgstr "RDF abfragen, die an der Cursorposition zugeordnet sind..."
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5421,7 +5420,7 @@ msgstr "Das Bild in die Zwischenablage kopieren"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Save changes to document %s before closing?"
-msgstr "Änderungen am Dokument \"%s\" vor dem Schließen speichern?"
+msgstr "Änderungen am Dokument »%s« vor dem Schließen speichern?"
 
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h
@@ -5611,17 +5610,16 @@ msgstr "Die Teile des Dokuments wählen, die zur vorigen Änderung gehören..."
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
+msgid "Select the parts of the document contained in the next revision"
 msgstr ""
-"Die Teile des Dokuments wählen, die in der nächsten Änderung enthalten "
-"sind..."
+"Die Teile des Dokuments wählen, die in der nächsten Änderung enthalten sind"
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
+msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
-"Die Teile des Dokuments wählen, die in der vorigen Änderung enthalten sind..."
+"Die Teile des Dokuments wählen, die in der vorigen Änderung enthalten sind"
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -6565,10 +6563,10 @@ msgid ""
 "piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 "
 "myfile.txt | lpr'"
 msgstr ""
-"Die Option '--print' ist seit Abiword 2.8 nicht mehr verfügbar. Um die "
+"Die Option ›--print‹ ist seit Abiword 2.8 nicht mehr verfügbar. Um die "
 "gewünschte Funktion zu erreichen, können Sie die Befehlszeilen-Tools von "
 "AbiWord verwenden und die Ausgabe in einen Druck-Spooler umleiten. Beispiel: "
-"'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
+"›abiword --to=ps --to-name=fd://1 myfile.txt | lpr‹"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -7881,7 +7879,7 @@ msgstr "Datei"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Bereits vorhandene Datei '%s' überschreiben?"
+msgstr "Bereits vorhandene Datei »%s« überschreiben?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h
@@ -8911,7 +8909,7 @@ msgid ""
 msgstr ""
 "Die nächste Version, die vollständig wiederhergestellt werden kann, ist %d. "
 "Möchten Sie stattdessen zu dieser zurückkehren? Um Version %d teilweise "
-"wiederherzustellen, wählen Sie \"Nein\"."
+"wiederherzustellen, wählen Sie »Nein«."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -8933,12 +8931,12 @@ msgstr "Enger Textumlauf"
 #. MSG_HistoryPartRestore3
 #: po/tmp/xap_String_Id.h
 msgid "To continue anyway, press OK."
-msgstr "Um dennoch fortzufahren, wählen Sie \"OK\"."
+msgstr "Um dennoch fortzufahren, wählen Sie »OK«."
 
 #. MSG_HistoryPartRestore4
 #: po/tmp/xap_String_Id.h
 msgid "To quit the restoration attempt, press Cancel."
-msgstr "Wählen Sie \"Abbrechen\", um den Wiederherstellungsversuch zu beenden."
+msgstr "Wählen Sie »Abbrechen«, um den Wiederherstellungsversuch zu beenden."
 
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h
@@ -9178,7 +9176,7 @@ msgstr "Jiddisch"
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr ""
-"Änderungen am Dokument \"%s\" müssen zunächst gespeichert werden. Jetzt "
+"Änderungen am Dokument »%s« müssen zunächst gespeichert werden. Jetzt "
 "speichern?"
 
 #. DLG_Zoom_RadioFrameCaption
