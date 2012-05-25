@@ -78,6 +78,11 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 	toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());
 #endif	
 
+	int dflFlags = 
+#if !GTK_CHECK_VERSION(3,0,0)
+	                          GTK_DIALOG_NO_SEPARATOR |
+#endif
+	                          GTK_DIALOG_MODAL;
 	
 	int dflResponse = GTK_RESPONSE_OK;
 
@@ -126,7 +131,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			convertMnemonics(tmp_str);
 			message = gtk_dialog_new_with_buttons("",
 							      toplevel, 
-							      GTK_DIALOG_MODAL,
+							      static_cast<GtkDialogFlags>(dflFlags),
 							      tmp_str,
 							      GTK_RESPONSE_NO,
 							      GTK_STOCK_CANCEL, 
@@ -173,7 +178,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 
 #else
 			message = gtk_message_dialog_new (toplevel, 
-							  GTK_DIALOG_MODAL,
+							  static_cast<GtkDialogFlags>(dflFlags),
 							  GTK_MESSAGE_QUESTION,
 							  GTK_BUTTONS_NONE,
 							  "%s",
