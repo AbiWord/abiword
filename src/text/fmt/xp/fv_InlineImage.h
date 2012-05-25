@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (c) 2005 Martin Sevior <msevior@physics.unimelb.edu.au> 
+ * Copyright (c) 2005 Martin Sevior <msevior@physics.unimelb.edu.au>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -52,7 +52,7 @@ public:
 	~FV_VisualInlineImage();
 	bool                  isActive(void) const;
     void                      setMode(FV_InlineDragMode iInlineDragMode);
-	FV_InlineDragMode     getInlineDragMode(void) const 
+	FV_InlineDragMode     getInlineDragMode(void) const
 		{ return m_iInlineDragMode;}
 	void                  setDragType(UT_sint32 x,UT_sint32 y, bool bDrawImage);
 	FV_DragWhat           mouseMotion(UT_sint32 x, UT_sint32 y);

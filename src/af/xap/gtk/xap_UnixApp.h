@@ -2,25 +2,25 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
 /*
- * Port to Maemo Development Platform 
+ * Port to Maemo Development Platform
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
@@ -68,7 +68,7 @@ public:
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory();
 	virtual const XAP_StringSet *			getStringSet() const = 0;
 	virtual const char *					getAbiSuiteAppDir() const = 0;
-	virtual const std::string&					getAbiSuiteAppUIDir() const = 0;	  
+	virtual const std::string&					getAbiSuiteAppUIDir() const = 0;
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool							canPasteFromClipboard() = 0;
@@ -89,14 +89,14 @@ public:
 		GEOMETRY_FLAG_POS = 	1 << 0,
 		GEOMETRY_FLAG_SIZE = 	1 << 1
 	};
-	
+
 	struct windowGeometry
 	{
 		int x, y;
 		UT_uint32 width, height;
 		UT_uint32 flags;
 	};
-	
+
 	virtual	void					setWinGeometry(int x, int y, UT_uint32 width, UT_uint32 height,
 												UT_uint32 flags);
 	virtual	void					getWinGeometry(int * x, int * y, UT_uint32 * width, UT_uint32 * height,
@@ -114,7 +114,7 @@ protected:
 
 	AP_UnixDialogFactory			m_dialogFactory;
 	AP_UnixToolbar_ControlFactory	m_controlFactory;
-	
+
 	windowGeometry			m_geometry;
 	UT_uint32					m_eventTime; // e->time field of a recent X event
 										 // (we use this to sync clipboard

@@ -3,20 +3,20 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001-2002 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -104,7 +104,7 @@ public:
 //	virtual void				setStatusMessage(const char * szMsg) = 0;
 
 	void						setTimeOfLastEvent(NSTimeInterval timestamp);
-	
+
 //	virtual void				toggleRuler(bool bRulerOn) = 0;
 	virtual void				_queue_resize();
 	virtual EV_Menu*			_getMainMenu();
@@ -129,7 +129,7 @@ protected:
 private:
 	AP_CocoaDialogFactory		m_dialogFactory;
 	EV_CocoaMenuPopup *			m_pCocoaPopup; /* only valid while a context popup is up */
-	
+
 	XAP_CocoaFrameController *		m_frameController;
 };
 

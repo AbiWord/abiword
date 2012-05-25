@@ -2,23 +2,23 @@
 
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 #ifndef UT_ASSERT_H
 #define UT_ASSERT_H
 
@@ -74,14 +74,14 @@ extern int ABI_EXPORT UT_Win32ThrowAssert(const char * pCondition, const char * 
      // I assume this will also work for AMD64, but I am not 100% sure
      void __break(int);
      // this forces __break() to be generated as inline code (see MSDN)
-#    pragma intrinsic (__break) 
+#    pragma intrinsic (__break)
 #    define UT_DEBUG_BREAK __break(0x80016);
 #  endif
 
 # ifndef UT_DEBUG_BREAK
 // Some compiler/architecture for which we do not know how to generate inline assembly to pass
 // control to the debugger; we use win32s DebugBreak().
-// 
+//
 // TODO !!! This currently does not work; if someone one day wants to build AW on non-x86
 // win32 architecture, they will need to fix this (including <windows.h> from here, which
 // is what would work, screws up things in MS Word importer, because the wv library

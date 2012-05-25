@@ -2,7 +2,7 @@
 /* Copyright (C) 1999 AbiSource, Inc.
  * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
  * Copyright (C) 2004, 2009 Hubert Figuiere <hub@figuiere.net>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -528,7 +528,7 @@ typedef struct doc_prop
 */
 
 
-// 
+//
 // Little class to be used for tracking pasted table state.
 //
 class ABI_EXPORT ABI_Paste_Table
@@ -599,14 +599,14 @@ public:
 
 	virtual bool supportsLoadStylesOnly() const {return true;}
 	virtual bool		pasteFromBuffer(PD_DocumentRange * pDocRange,
-										const unsigned char * pData, 
-                                        UT_uint32 lenData, 
+										const unsigned char * pData,
+                                        UT_uint32 lenData,
                                         const char * szEncoding = 0);
 	UT_sint32 get_vecWord97ListsCount(void) const
         { return m_vecWord97Lists.size();}
 	RTF_msword97_list *  get_vecWord97NthList(UT_sint32 i) const
         { return m_vecWord97Lists.at(i);}
-    bool  isWord97Lists(void) const 
+    bool  isWord97Lists(void) const
 		{ return !m_vecWord97Lists.empty();}
 
 	enum PictFormat {
@@ -627,7 +627,7 @@ protected:
 	UT_Error			_writeHeader(GsfInput * fp);
 	UT_Error            _parseHdrFtr ();
 	UT_Error            _parseText();
-	
+
 
 // importer helper methods
 private:
@@ -661,13 +661,13 @@ private:
 	std::string s_unEscapeXMLString();
 	UT_UCS4Char ReadHexChar(void);
 	bool SkipBackChar(unsigned char ch);
-	bool ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam, 
+	bool ReadKeyword(unsigned char* pKeyword, UT_sint32* pParam,
                      bool* pParamUsed,
 					 UT_uint32 keywordBuffLen);
-	bool TranslateKeyword(unsigned char* pKeyword, UT_sint32 param, 
+	bool TranslateKeyword(unsigned char* pKeyword, UT_sint32 param,
                           bool fParam);
 public:
-	bool TranslateKeywordID(RTF_KEYWORD_ID keywordID, 
+	bool TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 							UT_sint32 param, bool fParam);
 	bool insertStrux(PTStruxType pts , const gchar ** attrs=NULL, const gchar ** props=NULL);
 
@@ -690,7 +690,7 @@ private:
 	                  UT_UTF8String sFontNames[]);
 	bool PostProcessAndValidatePanose(UT_UTF8String &Panose);
 	bool ReadRevisionTable();
-	void setEncoding();  
+	void setEncoding();
 	bool ReadRDFTriples();
 public:
 	bool HandlePicture();
@@ -721,11 +721,11 @@ private:
 	bool HandleListLevel(RTF_msword97_list * pList, UT_uint32 levelCount  );
 	bool HandleTableList(void);
 	char * getCharsInsideBrace(void);
-	bool ParseCharParaProps(unsigned char * pKeyword, 
-                            UT_sint32 param, bool fParam, 
-                            RTFProps_CharProps * pChars, 
-                            RTFProps_ParaProps * pParas, 
-                            RTFProps_bCharProps * pbChars, 
+	bool ParseCharParaProps(unsigned char * pKeyword,
+                            UT_sint32 param, bool fParam,
+                            RTFProps_CharProps * pChars,
+                            RTFProps_ParaProps * pParas,
+                            RTFProps_bCharProps * pbChars,
                             RTFProps_bParaProps * pbParas);
 	bool ReadListOverrideTable(void);
 	bool HandleTableListOverride(void);
@@ -735,7 +735,7 @@ private:
 					   RTFProps_bParaProps * pbParas,
 					   RTFProps_bCharProps * pbChars);
 
-	
+
 	// Character property handlers
 	bool ResetCharacterAttributes();
 	bool buildCharacterProps(std::string & propBuffer);
@@ -775,7 +775,7 @@ private:
 	bool ApplyParagraphAttributes(bool bDontInsert = false);
 	bool SetParaJustification(RTFProps_ParaProps::ParaJustification just);
 	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, eTabLeader tableader);
-	bool AddTabstop(UT_sint32 stopDist, eTabType tabType, 
+	bool AddTabstop(UT_sint32 stopDist, eTabType tabType,
                     eTabLeader tabLeader,  RTFProps_ParaProps * pParas);
 
 
@@ -838,7 +838,7 @@ private:
 // Meta data
 	bool           HandleInfoMetaData(void);
 // Little convience wrapper
-	void           _setStringProperty(std::string & sPropString, 
+	void           _setStringProperty(std::string & sPropString,
                                       const char * szProp, const char * szVal);
 
 	// Section property handlers
@@ -853,20 +853,20 @@ private:
 	    RTF_TOKEN_ERROR = -1
 	} RTFTokenType;
 	RTFTokenType NextToken (unsigned char *pKeyword, UT_sint32* pParam,
-							bool* pParamUsed, UT_uint32 len, 
+							bool* pParamUsed, UT_uint32 len,
                             bool bIgnoreWhiteSpace = false);
 
 	UT_Error _isBidiDocument();
 	bool     _appendSpan();
 	bool     _insertSpan();
 	void     _formRevisionAttr(std::string & s, const std::string & props, const std::string & style);
-	
+
 
 private:
 	// static helpers to decode
 	static bool digVal(char ch, int& value, int base);
 	static bool hexVal(char c, int& value);
-	
+
 
 // import member vars
 private:
@@ -942,9 +942,9 @@ private:
 	std::vector<RTF_msword97_list *> m_vecWord97Lists;
 	std::vector<RTF_msword97_listOverride*> m_vecWord97ListOverride;
 	void _appendHdrFtr ();
-	bool _appendField (const gchar *xmlField, 
+	bool _appendField (const gchar *xmlField,
                        const gchar ** pszAttribs=NULL);
-	gchar *_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField, 
+	gchar *_parseFldinstBlock (UT_ByteBuf & buf, gchar *xmlField,
                                   bool & isXML);
 	bool                m_bAppendAnyway;
 	RTFProps_SectionProps m_sectdProps ;
@@ -999,10 +999,10 @@ private:
 	bool                  m_bCellActive;
 
 	std::string           m_ctMoveID;
-	
+
 	PD_XMLIDCreatorHandle  m_XMLIDCreatorHandle;
 	std::map< std::string, std::string > m_rdfAnchorCloseXMLIDs;
-	
+
 };
 
 #endif /* IE_IMP_RTF_H */

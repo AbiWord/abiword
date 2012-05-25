@@ -18,9 +18,9 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 /*
- * Port to Maemo Development Platform 
+ * Port to Maemo Development Platform
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
@@ -122,7 +122,7 @@
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixHildonDialog_FontChooser, 	FALSE)
 #else
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser, 		FALSE)
-#endif 
+#endif
 
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixDialog_About, 				FALSE)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,		XAP_UnixDialog_ClipArt,				FALSE)

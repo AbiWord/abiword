@@ -27,7 +27,7 @@ public:
         UT_uint32 GetCRC32(void) const { return m_crc;}
 private:
         void Reset() {m_crc = CRC32_NEGL;}
-        
+
         static const UT_uint32 m_tab[256];
         UT_uint32  m_crc;
 };

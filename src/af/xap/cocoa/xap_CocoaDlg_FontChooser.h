@@ -64,7 +64,7 @@ class XAP_CocoaDialog_FontChooser;
 	IBOutlet XAP_CocoaNSView *	_preview;
 
 	IBOutlet NSBox *			_previewBox;
-	
+
 	XAP_StringListDataSource *	m_fontDataSource;
 	XAP_StringListDataSource *	m_sizeDataSource;
 	XAP_StringListDataSource *	m_stylesDataSource;
@@ -136,11 +136,11 @@ public:
 	/* GUI actions */
 	void _okAction(void);
 	void _cancelAction(void);
-	
+
 	/* GUI creation */
 	void				_createGC(XAP_CocoaNSView* owner);
 	void				_deleteGC(void);
-	
+
 private:
 	bool		m_bSuperScriptInitialValue;
 	bool		m_bSubScriptInitialValue;

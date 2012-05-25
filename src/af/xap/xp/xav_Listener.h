@@ -46,7 +46,7 @@ typedef enum _AV_ListenerType
 	AV_LISTENER_CARET,
     AV_LISTENER_PLUGIN,
     AV_LISTENER_PLUGIN_EXTRA
-    
+
 } AV_ListenerType;
 
 // TODO how did we fill this mask so fast?

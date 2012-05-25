@@ -28,16 +28,16 @@
 #include "ut_types.h"
 
 
-/** replacement for UT_UTF8String::escapeXML 
+/** replacement for UT_UTF8String::escapeXML
  *  escapes '<', '>', '\"' and '&' in the current string
  */
 ABI_EXPORT std::string UT_escapeXML(const std::string &);
 
-ABI_EXPORT std::string& UT_std_string_vprintf (std::string & inStr, 
+ABI_EXPORT std::string& UT_std_string_vprintf (std::string & inStr,
                                                const char *format,
                                                va_list      args1)
     ABI_PRINTF_FORMAT(2,0);
- 
+
 ABI_EXPORT std::string UT_std_string_sprintf(const char * inFormat, ...)
     ABI_PRINTF_FORMAT(1,2);
 

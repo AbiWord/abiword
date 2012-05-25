@@ -65,18 +65,18 @@ enum _AP_Dialog_Id
 	AP_DIALOG_ID_SPLIT_CELLS,
 	AP_DIALOG_ID_FORMAT_TABLE,
 	AP_DIALOG_ID_FORMAT_FRAME,
-	AP_DIALOG_ID_FORMAT_FOOTNOTES,	
-	AP_DIALOG_ID_FORMAT_TOC,	
+	AP_DIALOG_ID_FORMAT_FOOTNOTES,
+	AP_DIALOG_ID_FORMAT_TOC,
 	AP_DIALOG_ID_MAILMERGE,
 	AP_DIALOG_ID_LATEX, /*Insert and modify a latex based equation */
 	AP_DIALOG_ID_ANNOTATION_PREVIEW,
 #if 0
-	AP_DIALOG_ID_DOWNLOAD_FILE,			/* threaded download of a file, with a cancel-button */	
+	AP_DIALOG_ID_DOWNLOAD_FILE,			/* threaded download of a file, with a cancel-button */
 #endif
 	AP_DIALOG_ID_BORDER_SHADING,
 	AP_DIALOG_ID_RDF_QUERY,
 	AP_DIALOG_ID_RDF_EDITOR,
-    
+
 	/* ... add others here ... */
 
 	AP_DIALOG_ID__LAST__				/* must be last */

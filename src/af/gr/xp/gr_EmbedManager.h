@@ -76,7 +76,7 @@ public:
     virtual void           initializeEmbedView(UT_sint32 uid);
     virtual void           makeSnapShot(UT_sint32 uid, UT_Rect & rec);
     virtual bool           isDefault(void);
-    virtual bool           modify(UT_sint32 uid); 
+    virtual bool           modify(UT_sint32 uid);
     virtual bool           changeAPI(UT_sint32 uid, UT_uint32 api);
     virtual bool           convert(UT_uint32 iConvType, UT_ByteBuf & pFrom, UT_ByteBuf & pTo);
     virtual bool           isEdittable(UT_sint32 uid);

@@ -1,20 +1,20 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -72,10 +72,10 @@ class ABI_EXPORT XAP_FontSettings
   public:
 	XAP_FontSettings()
 		:m_bInclude(false){};
-	
+
 	const std::vector<UT_UTF8String> & getFonts() const
 		{return m_vecFonts;}
-	
+
 	void addFont (const char * pFace)
 		{
 			m_vecFonts.push_back (pFace);
@@ -88,7 +88,7 @@ class ABI_EXPORT XAP_FontSettings
 
 	void setIncludeFlag (bool bInclude) {m_bInclude = bInclude;}
 	bool getIncludeFlag () const {return m_bInclude;}
-	
+
   private:
 	std::vector<UT_UTF8String> m_vecFonts;
 	bool m_bInclude;
@@ -111,11 +111,11 @@ public:
 	// the preference scheme has changed.  The tick count bumps up once
 	// every time any preference value in the scheme is changed.
     UT_uint32			getTickCount() {return m_uTick;}
-	
+
 	bool				setValue(const gchar * szKey, const gchar * szValue);
 	bool				setValueBool(const gchar * szKey, bool bValue);
 	bool				setValueInt(const gchar * szKey, const int nValue);
-	
+
 	// the get*Value*() functions return the answer in the last
 	// argument; they return error information as the function
 	// return value.
@@ -124,7 +124,7 @@ public:
 	bool				getValueInt(const gchar * szKey, int& nValue) const;
 	bool				getValueBool(const gchar * szKey, bool * pbValue) const;
 	bool				getNthValue(UT_uint32 k, const gchar ** pszKey, const gchar ** pszValue);
-	
+
 protected:
 	gchar *			m_szName;
 	UT_GenericStringMap<gchar*> m_hash;
@@ -146,7 +146,7 @@ public:
 	bool					loadPrefsFile(void);
 	bool					loadSystemDefaultPrefsFile(const char * szSystemDefaultPrefsPathname);
 	bool					savePrefsFile(void);
-	
+
 	XAP_PrefsScheme *		getNthScheme(UT_uint32 k) const;
 	XAP_PrefsScheme *		getNthPluginScheme(UT_uint32 k) const;
 	XAP_PrefsScheme *		getScheme(const gchar * szSchemeName) const;
@@ -180,7 +180,7 @@ public:
 
 	bool					setGeometry(UT_sint32 posx, UT_sint32 posy, UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
 	bool					getGeometry(UT_sint32 *posx, UT_sint32 *posy, UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
-	
+
 	virtual void			fullInit(void) = 0;
 	virtual bool			loadBuiltinPrefs(void) = 0;
 	virtual const gchar *	getBuiltinSchemeName(void) const = 0;
@@ -194,12 +194,12 @@ public:
 	void                    log(const char * where, const char * what, XAPPrefsLog_Level level = Log);
 
 	XAP_FontSettings &      getFontSettings () {return m_fonts;}
-	
+
 	// a only-to-be-used-by XAP_PrefsScheme::setValue
 	void					_markPrefChange	( const gchar *szKey );
 protected:
 	void					_pruneRecent(void);
-	XAP_PrefsScheme * 		_getNthScheme(UT_uint32 k, 
+	XAP_PrefsScheme * 		_getNthScheme(UT_uint32 k,
 										  const UT_GenericVector<XAP_PrefsScheme *> &vecSchemes) const;
 
 	bool					m_bAutoSavePrefs; /* save on any changes or only when user asks */
@@ -215,7 +215,7 @@ protected:
 	UT_GenericVector<UT_UTF8String *> m_vecLog; /* vector of UT_UTF8String */
 
 	XAP_FontSettings        m_fonts;
-	
+
 	typedef struct					/* used to store the listener/data pairs in the vector  */
 	{
 		PrefsListener	m_pFunc;
@@ -232,9 +232,9 @@ protected:
 		UT_sint32		m_posx, m_posy;		/* Default position */
 		UT_uint32		m_flags;			/* What is valid, what is not */
 	} Pref_Geometry;
-	
+
 	Pref_Geometry		m_geom;
-	
+
 
 	/* Implementation of UT_XML::Listener */
 public:

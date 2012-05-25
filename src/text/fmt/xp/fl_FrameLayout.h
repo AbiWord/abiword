@@ -59,7 +59,7 @@ enum FL_FrameType
 };
 
 // We have one fl_FrameLayout for each Frame.  They all
-// get physically placed on a page. 
+// get physically placed on a page.
 
 
 // The fl_FrameLayout is placed before the Block it is closest to on the page.
@@ -72,8 +72,8 @@ class ABI_EXPORT fl_FrameLayout : public fl_SectionLayout
 
 public:
 	fl_FrameLayout(FL_DocLayout* pLayout,
-				   pf_Frag_Strux* sdh, 
-				   PT_AttrPropIndex ap, 
+				   pf_Frag_Strux* sdh,
+				   PT_AttrPropIndex ap,
 				   fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_FrameLayout();
 
@@ -110,7 +110,7 @@ public:
 	virtual void             setNeedsReformat(fl_ContainerLayout * pCL, UT_uint32 offset = 0);
 	void                     setContainerProperties(void);
 	UT_sint32                getBoundingSpace(void) const;
-	FL_FrameType             getFrameType(void) const 
+	FL_FrameType             getFrameType(void) const
 		{return m_iFrameType;}
 	FL_FrameFormatMode       getFramePositionTo(void) const
 		{ return m_iFramePositionTo;}
@@ -147,7 +147,7 @@ public:
 	{ return m_iMinHeight;}
 	fl_ContainerLayout *     getParentContainer(void) const
 	        {return m_pParentContainer;}
-	void                setParentContainer(fl_ContainerLayout * pCon) 
+	void                setParentContainer(fl_ContainerLayout * pCon)
 	        {m_pParentContainer = pCon;}
 private:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);

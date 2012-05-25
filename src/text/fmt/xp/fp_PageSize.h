@@ -23,7 +23,7 @@
 #include "ut_types.h"
 #include "ut_units.h"
 
-#if _MSC_VER 
+#if _MSC_VER
 #pragma warning(disable: 4522) // multiple assignment operators specified
 #endif
 
@@ -73,7 +73,7 @@ public:
 	double Width(UT_Dimension u) const;
 	double Height(UT_Dimension u) const;
 
-	double getScale(void) const { return m_scale; } 
+	double getScale(void) const { return m_scale; }
 	UT_Dimension getDims(void) const { return m_unit; }
 	inline char * getPredefinedName (void) const { return m_predefined; }
 

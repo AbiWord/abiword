@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -68,7 +68,7 @@ BeginLayout(ContextHyperlinkT,EV_EMC_HYPERLINKTEXT)
 		MenuItem(AP_MENU_ID_TABLE_INSERTTABLE)
 		MenuItem(AP_MENU_ID_TABLE_DELETETABLE)
 		Separator()
-		MenuItem(AP_MENU_ID_TABLE_INSERTROW)		
+		MenuItem(AP_MENU_ID_TABLE_INSERTROW)
 		MenuItem(AP_MENU_ID_TABLE_INSERTCOLUMN)
 		MenuItem(AP_MENU_ID_TABLE_DELETEROW)
 		MenuItem(AP_MENU_ID_TABLE_DELETECOLUMN)
@@ -127,7 +127,7 @@ BeginLayout(ContextRDFAnchorT,EV_EMC_ANNOTATIONTEXT)
 		MenuItem(AP_MENU_ID_TABLE_INSERTTABLE)
 		MenuItem(AP_MENU_ID_TABLE_DELETETABLE)
 		Separator()
-		MenuItem(AP_MENU_ID_TABLE_INSERTROW)		
+		MenuItem(AP_MENU_ID_TABLE_INSERTROW)
 		MenuItem(AP_MENU_ID_TABLE_INSERTCOLUMN)
 		MenuItem(AP_MENU_ID_TABLE_DELETEROW)
 		MenuItem(AP_MENU_ID_TABLE_DELETECOLUMN)
@@ -188,7 +188,7 @@ BeginLayout(ContextAnnotationT,EV_EMC_RDFANCHORTEXT)
                 MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG)
             EndSubMenu()
         EndSubMenu()
-            
+
 
 		Separator()
 		MenuItem(AP_MENU_ID_EDIT_CUT)
@@ -200,7 +200,7 @@ BeginLayout(ContextAnnotationT,EV_EMC_RDFANCHORTEXT)
 		MenuItem(AP_MENU_ID_TABLE_INSERTTABLE)
 		MenuItem(AP_MENU_ID_TABLE_DELETETABLE)
 		Separator()
-		MenuItem(AP_MENU_ID_TABLE_INSERTROW)		
+		MenuItem(AP_MENU_ID_TABLE_INSERTROW)
 		MenuItem(AP_MENU_ID_TABLE_INSERTCOLUMN)
 		MenuItem(AP_MENU_ID_TABLE_DELETEROW)
 		MenuItem(AP_MENU_ID_TABLE_DELETECOLUMN)
@@ -217,4 +217,4 @@ BeginLayout(ContextAnnotationT,EV_EMC_RDFANCHORTEXT)
 
 EndLayout()
 
-    
+

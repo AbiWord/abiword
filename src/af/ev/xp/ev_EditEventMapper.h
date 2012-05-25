@@ -1,22 +1,22 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 
 
 
@@ -57,10 +57,10 @@
 ** builtin methods and a set of dynamically created ones (dare
 ** I say JavaScript macros).  Provision has been made to allow
 ** the implementation of the static methods to be switched based
-** upon user language or some other criteria; this allows us to 
+** upon user language or some other criteria; this allows us to
 ** define multiple sets of the basic primitives, in case we want
 ** to simplify the selection of various WordProcessor emmulations
-** or language quirks.  For example, does NextWord() go to the 
+** or language quirks.  For example, does NextWord() go to the
 ** first whitespace at the end of the current word or go to the
 ** beginning of the next word and for those languages which don't
 ** use whitespace, where does it go or is it even defined.
@@ -72,7 +72,7 @@
 **
 ** The EditEventMapper returns the EditMethod rather than invoking
 ** it directly.  This allows our caller to query the EditMethod
-** for it's properties (such as a short description for the 
+** for it's properties (such as a short description for the
 ** status bar when the menu item is highlighted).
 **
 ** The EditEventMapper has seperate event methods for keystrokes,
@@ -109,7 +109,7 @@
 **   TODO           occurs during a drag, do we:
 **   TODO           (1) end the drag with or without issuing an
 **   TODO           implicit release and then process the new
-**   TODO           event (and ignore the eventual actual 
+**   TODO           event (and ignore the eventual actual
 **   TODO           release), or
 **   TODO           (2) ignore the new event and keep the
 **   TODO           drag active until the actual release, or

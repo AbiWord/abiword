@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001, 2003, 2005 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -62,9 +62,9 @@ class AP_CocoaDialog_Lists;
     IBOutlet NSStepper *_textAlignStepper;
     IBOutlet NSTextField *_typeLabel;
     IBOutlet NSPopUpButton *_typePopup;
-	
+
 	IBOutlet NSTabView	*_mainTab;
-	
+
 	IBOutlet NSBox *_hideTextLabel;
 	IBOutlet NSMatrix *_foldingMatrix;
 	IBOutlet NSCell	*_noFoldingBtn;
@@ -72,10 +72,10 @@ class AP_CocoaDialog_Lists;
 	IBOutlet NSCell	*_foldLevel2Btn;
 	IBOutlet NSCell	*_foldLevel3Btn;
 	IBOutlet NSCell	*_foldLevel4Btn;
-	
+
 	IBOutlet NSMenu*	m_listStyleNone_menu;
 	IBOutlet NSMenu*	m_listStyleNumbered_menu;
-	IBOutlet NSMenu*	m_listStyleBulleted_menu;	
+	IBOutlet NSMenu*	m_listStyleBulleted_menu;
 	AP_CocoaDialog_Lists	*_xap;
 }
 - (id)initFromNib;

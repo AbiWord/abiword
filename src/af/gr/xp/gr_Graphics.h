@@ -57,10 +57,10 @@ class GR_ShapingInfo;
   is platform-specific, so the class contains nothing.  All of its behavior
   and functionality is contained within its subclasses, each of which provides
   the implementation for some specific font technology.
-  
+
   May 16 2003
   The assertion made above is mostly wrong. Font works almost the same
-  on every platform. We have metrics, glyphs, measurement, etc. Sure implementation is utterly 
+  on every platform. We have metrics, glyphs, measurement, etc. Sure implementation is utterly
   platform dependent, but we can provide a mostly XP interface to that.
   That would certainly reduce platform code a increase XP code.
    -- Hub
@@ -110,8 +110,8 @@ class ABI_EXPORT GR_Font
 	virtual const UT_String & hashKey(void) const;
 	UT_sint32 getCharWidthFromCache (UT_UCSChar c) const;
 
-	/*reimplement if you want to instanciate something else */	
-	virtual GR_CharWidths* newFontWidths(void) const; 
+	/*reimplement if you want to instanciate something else */
+	virtual GR_CharWidths* newFontWidths(void) const;
 	/*
 	   implemented using character widths; platforms might want to
 	   provide different implementation
@@ -134,15 +134,15 @@ class ABI_EXPORT GR_Font
 	}
 
 	GrFontType getType()const {return m_eType;}
-	
+
   protected:
 
 	GR_Font();
 
 	GR_CharWidths * _getCharWidths() const {return m_pCharWidths;}
-	/*! 
+	/*!
 	  hash key for font cache. Must be initialized in ctor
-	 otherwise override hashKey() method 
+	 otherwise override hashKey() method
 	*/
 	mutable UT_String		m_hashKey;
 
@@ -194,9 +194,9 @@ enum GR_GraphicsId
 	GRID_UNIX            =  0x105,
 	GRID_UNIX_PS         =  0x106,
 	GRID_CAIRO_NULL      =  0x107,
-	
+
 	/*add new built-in ids here*/
-	
+
 	GRID_LAST_BUILT_IN = 0x200,
 
 	/* IDs for extension classes (can be both built-in and plugins) */
@@ -211,7 +211,7 @@ enum GR_GraphicsId
 	GRID_LAST_EXTENSION = 0x0000ffff,
 
 	/* id's for plugins will be auto-generatoed from between here */
-	
+
 	GRID_UNKNOWN = 0xffffffff
 };
 
@@ -233,7 +233,7 @@ enum GR_Capability
 
     For example, on Unix we have three different classes with the
     following constructors:
-    
+
    	    GR_UnixGraphics(GdkWindow * win, XAP_UnixFontManager * fontManager, XAP_App *app)
 
 		PS_Graphics(const char * szFilename,
@@ -242,7 +242,7 @@ enum GR_Capability
 					XAP_UnixFontManager * fontManager,
 					bool		 bIsFile,
 					XAP_App *pApp);
-					
+
 		UnixNull_Graphics(XAP_UnixFontManager * fontManager,XAP_App *pApp);
 
 	GR_UnixAllocInfo will need to be able to hold parameters for all
@@ -310,12 +310,12 @@ class ABI_EXPORT GR_GraphicsFactory
 	UT_uint32     getDefaultClass(bool bScreen) const {if(bScreen) return m_iDefaultScreen; else return m_iDefaultPrinter;}
 	bool          unregisterClass(UT_uint32 iClassId);
 	bool          isRegistered(UT_uint32 iClassId) const;
-	
+
 	GR_Graphics * newGraphics(UT_uint32 iClassId, GR_AllocInfo &param) const;
 	const char *  getClassDescription(UT_uint32 iClassId) const;
-	
-	
-  private:	
+
+
+  private:
 	UT_GenericVector<GR_Allocator>       m_vAllocators;
 	UT_GenericVector<GR_Descriptor>       m_vDescriptors;
 	UT_NumberVector m_vClassIds;
@@ -360,8 +360,8 @@ class ABI_EXPORT AllCarets
 	void        JustErase(UT_sint32 xPoint,UT_sint32 yPoint);
 	void        setWindowSize(UT_uint32 width, UT_uint32 height);
 	void		setCoords(UT_sint32 x, UT_sint32 y, UT_uint32 h,
-						  UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0, 
-						  bool bPointDirection = false, 
+						  UT_sint32 x2 = 0, UT_sint32 y2 = 0, UT_uint32 h2 = 0,
+						  bool bPointDirection = false,
 						  const UT_RGBColor * pClr = NULL);
 	void		setInsertMode (bool mode);
 	void		forceDraw(void);
@@ -386,11 +386,11 @@ class ABI_EXPORT GR_Graphics
 	// the class from a generic GR_Graphics pointer
 //	static UT_uint32 s_getClassId() {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return GRID_UNKNOWN;}
 	virtual UT_uint32 getClassId() = 0;
-	
+
 	virtual GR_Capability getCapability() {UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 #if 0
 	// the following two static functions have to be implemented by all
-	// derrived classes and registered with GR_GraphicsFactory 
+	// derrived classes and registered with GR_GraphicsFactory
 	static const char *    graphicsDescriptor(void){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return "???";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&){UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED); return NULL;}
 #endif
@@ -398,7 +398,7 @@ class ABI_EXPORT GR_Graphics
 	AllCarets *	allCarets();
 	void		disableAllCarets();
 	void		enableAllCarets();
-	
+
 	UT_sint32	tdu(UT_sint32 layoutUnits) const;
 	UT_sint32	tlu(UT_sint32 deviceUnits) const;
 	double	    tduD(double layoutUnits) const;
@@ -414,7 +414,7 @@ class ABI_EXPORT GR_Graphics
 	 */
 	UT_sint32	ftlu(UT_sint32 fontUnits) const;
 	double		ftluD(double fontUnits) const;
-	
+
 	virtual void      setFont(const GR_Font* pFont) = 0;
     virtual void      clearFont(void) = 0;
 	virtual UT_uint32 getFontAscent() = 0;
@@ -429,7 +429,7 @@ class ABI_EXPORT GR_Graphics
 
 	virtual UT_sint32 measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0) = 0;
 	virtual void getCoverage(UT_NumberVector& coverage) = 0;
-	
+
 	/* GR_Font versions of the above -- TODO: should I add drawChar* methods too? */
 	virtual UT_uint32 getFontAscent(const GR_Font *)  = 0;
 	virtual UT_uint32 getFontDescent(const GR_Font *) = 0;
@@ -472,7 +472,7 @@ class ABI_EXPORT GR_Graphics
 									   const char* /*pszLang*/)
 		{return pszFontFamily;}
 #endif
-	
+
 	const char *      invertDimension(UT_Dimension, double) const;
 
 	bool              scaleDimensions(const char * szLeftIn,
@@ -602,7 +602,7 @@ class ABI_EXPORT GR_Graphics
 #define COUNT_3D_COLORS 5
 
 	virtual void      setColor3D(GR_Color3D c) = 0;
-	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/) 
+	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/)
 	{ return false; }
 
 	const GR_Transform & getTransform() const {return m_Transform;}
@@ -653,7 +653,7 @@ class ABI_EXPORT GR_Graphics
 	// translates GR_ShapingInfo into GR_RenderInfo which then can be
 	// passed to renderChars()
 	virtual bool shape(GR_ShapingInfo & si, GR_RenderInfo *& ri) VIRTUAL_SFX;
-	
+
 	// like drawChars, except uses generic (platform specific) input
 	// the default implementation simply maps to drawChars and needs
 	// to be replaced by platform code
@@ -662,7 +662,7 @@ class ABI_EXPORT GR_Graphics
 
 	virtual void appendRenderedCharsToBuff(GR_RenderInfo & ri, UT_GrowBuf & buf) const VIRTUAL_SFX;
 	virtual void measureRenderedCharWidths(GR_RenderInfo & ri) VIRTUAL_SFX;
-	
+
 	// expects ri.m_iOffset set to the run offset condsidered for break
 	//         ri.m_pText set positioned at start of the run
 	//         represented by ri, its uper limit set appropriately
@@ -675,17 +675,17 @@ class ABI_EXPORT GR_Graphics
 	//          iNext to -1; if it knows that there is no break in this run, it should set
 	//          iNext to -2
 	// bAfter indicates whether we are quering for a break after the character at given offset
-	
+
 	virtual bool canBreak(GR_RenderInfo & ri, UT_sint32 &iNext, bool bAfter) VIRTUAL_SFX;
 
 	// indicates if special caret positioning has to be done for the run of text; this allows us
 	// to speed things up when this is not needed
 	virtual bool needsSpecialCaretPositioning(GR_RenderInfo & /*ri*/) VIRTUAL_SFX {return false;}
-	
+
 	// adjusts caret position if given script restricts where caret can be placed
 	// the caller has to set initial position within the run in ri.m_iOffset, overall length of
 	// the run in ri.m_iLength and provide a text iterator over the text of the run in ri.m_pText
-	// 
+	//
 	// return value is the adjusted offset
 	// the default implementation simply returns the passed value
 	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward) VIRTUAL_SFX;
@@ -695,10 +695,10 @@ class ABI_EXPORT GR_Graphics
 	// deleted in ri.m_iLength and provide a text iterator over the text of the run in ri.m_pText
 	// on return ri.m_iOffset contains the adjusted (run-relative) position and ri.m_iLength the count
 	// the adjusted length of the delete
-	// 
+	//
 	// the default implementation simply returns the passed value
 	virtual void adjustDeletePosition(GR_RenderInfo & ri) VIRTUAL_SFX;
-	
+
 	// the AbiWord line breaking was designed looking for breaks at the right edge of a character,
 	// i.e., the character that can break is included with the left part of the split run.
 	// the Uniscribe library, however, holds breaking info for left edge, and sometimes it is useful
@@ -708,7 +708,7 @@ class ABI_EXPORT GR_Graphics
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent) VIRTUAL_SFX;
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const VIRTUAL_SFX;
 	virtual void justify(GR_RenderInfo & ri) VIRTUAL_SFX;
-	
+
     virtual UT_uint32 XYToPosition(const GR_RenderInfo & ri, UT_sint32 x, UT_sint32 y) const VIRTUAL_SFX;
     virtual void      positionToXY(const GR_RenderInfo & ri,
 								   UT_sint32& x, UT_sint32& y,
@@ -716,7 +716,7 @@ class ABI_EXPORT GR_Graphics
 								   UT_sint32& height, bool& bDirection) const VIRTUAL_SFX;
 
 	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri) VIRTUAL_SFX;
-	
+
 	// should be overriden by any classes implemented as plugins
 	// NB: you must not use s_Version to store the version of derrived
 	// classes, but have your own static variable for the derrived
@@ -795,7 +795,7 @@ class ABI_EXPORT GR_Graphics
 											 UT_sint32 xoff,
 											 UT_sint32 yoff,
 											 int* pCharWidths = NULL);
-	
+
 	virtual GR_Image *	  genImageFromRectangle(const UT_Rect & r) = 0;
 
  private:
@@ -853,7 +853,7 @@ class ABI_EXPORT GR_Graphics
 
 	virtual void _DeviceContext_SuspendDrawing() { };
 	virtual void _DeviceContext_ResumeDrawing() { };
-	
+
 	bool suspendDrawing();
 	void resumeDrawing(bool token);
 

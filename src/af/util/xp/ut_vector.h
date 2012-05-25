@@ -159,7 +159,7 @@ public:
 
 /*!
     sizehint: expected size of the vector
-    
+
     baseincr: the amount by which the internal storage will grow once the sizehint has
               been reached (until then, the size gets doubled)
 
@@ -177,9 +177,9 @@ UT_GenericVector<T>::UT_GenericVector(UT_sint32 sizehint, UT_sint32 baseincr, bo
 
 template <class T>
 UT_GenericVector<T>::UT_GenericVector(const UT_GenericVector<T>& utv)
-  : m_pEntries(NULL), m_iCount(0), m_iSpace(0), 
-  m_iCutoffDouble(utv.m_iCutoffDouble), 
-  m_iPostCutoffIncrement(utv.m_iPostCutoffIncrement) 
+  : m_pEntries(NULL), m_iCount(0), m_iSpace(0),
+  m_iCutoffDouble(utv.m_iCutoffDouble),
+  m_iPostCutoffIncrement(utv.m_iPostCutoffIncrement)
 {
 	copy(&utv);
 }
@@ -203,7 +203,7 @@ void UT_GenericVector<T>::clear()
 	{
 		xxx_UT_DEBUGMSG(("Vector contained %d entries, allocated %d slots\n", m_iCount, m_iSpace));
 	}
-	
+
 	m_iCount = 0;
 	memset(m_pEntries, 0, m_iSpace * sizeof(T));
 }
@@ -216,7 +216,7 @@ UT_GenericVector<T>::~UT_GenericVector()
 	{
 		xxx_UT_DEBUGMSG(("Vector contained %d entries, allocated %d slots\n", m_iCount, m_iSpace));
 	}
-	
+
 	FREEP(m_pEntries);
 }
 

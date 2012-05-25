@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -36,9 +36,9 @@
 
 /* EXPLANATION OF THE OVERSTRIKING (or COMBINING) CHARACTERS MECHANISM
    (Tomas, Jan 26, 2003)
-   
+
    We classify overstriking characters into three categories:
-   
+
    1. Characters to be flushed with the near edge of the previous base
       character, or, from the LTR point of view, right-flushed
    2. Characters to be flushed with the far edge of the previous base
@@ -49,7 +49,7 @@
    type, can be detemined by using the UT_isOverstrikingChar()
    function. The width of the overstriking characters should be reported
    as follows:
-   
+
       Type 1 (right-flushed): width should be set to 0
 
       Type 2 (left-flushed):  the width of the glyph should be or'ed

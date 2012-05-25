@@ -91,7 +91,7 @@ public:
 	virtual UT_sint32	getY(void) const;
 
 	UT_sint32		getMaxWidth(void) const ;
-	UT_sint32		getAscent(void) const; 	
+	UT_sint32		getAscent(void) const;
 	UT_sint32		getDescent(void) const;
 	UT_sint32               getNumRunsInLine(void) const {return m_vecRuns.getItemCount();}
 	UT_sint32			        getColumnGap(void);
@@ -100,7 +100,7 @@ public:
 	void				        setMaxWidth(UT_sint32);
 	virtual void				setX(UT_sint32 i, bool bDontClearIfNeeded = false);
 	virtual void				setY(UT_sint32);
-	
+
 	virtual void				setContainer(fp_Container*);
 	void		        setBlock(fl_BlockLayout * pBlock);
 
@@ -148,7 +148,7 @@ public:
 
 	void		getWorkingDirectionAndTabstops(FL_WORKING_DIRECTION &eWorkingDirection, FL_WHICH_TABSTOP &eUseTabStop) const;
 
-	inline	bool 	isFirstLineInBlock(void) const;	
+	inline	bool 	isFirstLineInBlock(void) const;
 	bool 	isLastLineInBlock(void) const;
 
     virtual UT_Rect *       getScreenRect();
@@ -259,8 +259,8 @@ protected:
 private:
 	void		_splitRunsAtSpaces(void);
 	void        _doClearScreenFromRunToEnd(UT_sint32 runIndex);
-	
-	
+
+
 	void  		setAscent(UT_sint32 i) { m_iAscent = i; }
 	void  		setDescent(UT_sint32 i) { m_iDescent = i; }
 	void        setScreenHeight(UT_sint32 i) {m_iScreenHeight =i;}

@@ -2,20 +2,20 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -24,7 +24,7 @@
 
 // MSVC++ warns about using 'this' in initializer list.
 // and the DialogHelper uses 'this' typically for its contructor
-#ifdef _MSC_VER	
+#ifdef _MSC_VER
 #pragma warning(disable: 4355)
 #endif
 
@@ -51,7 +51,7 @@ public:
 		m_hDlg(0)
 	{
 	}
-	
+
 	// for plugin dialogs  - they have their own runModal and s_dlgProc due to differing hInstance values
 	// (DLL instead of Abi main executable)
 	// Makes more sense to share this code rather than use bare WinAPI in plugins when possible
@@ -68,7 +68,7 @@ public:
 										XAP_Dialog_Id			dialog_id,
 										UT_sint32				resource_id,
 										XAP_Dialog*				p_dialog);
-	
+
 	void				 runModeless(	XAP_Frame*				pFrame,
 										XAP_Dialog_Id			dialog_id,
 										UT_sint32				resource_id,
@@ -110,11 +110,11 @@ public:
 	void				setControlText(UT_sint32 controlId, LPCSTR p_str);
 	void				setControlInt(UT_sint32 controlId, int value);
 	int				getControlInt(UT_sint32 controlId) const;
-	
+
 	void				selectControlText(UT_sint32 controlId,
 										  UT_sint32 start,
 										  UT_sint32 end);
-	
+
 	int				isChecked(UT_sint32 controlId) const;
 	void				getControlText(	UT_sint32	controlId,
 										LPSTR		p_buffer,
@@ -128,7 +128,7 @@ public:
 	void 				centerDialog();
 	static void			s_centerDialog(HWND hWnd);
 	void				setHandle(HWND hWnd){m_hDlg=hWnd;};
-	
+
 private:
 	XAP_Win32Dialog	*			m_pDialog;
 	HWND						m_hDlg;

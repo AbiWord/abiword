@@ -30,9 +30,9 @@ class ABI_EXPORT IE_Exp_PS_Sniffer : public IE_ExpSniffer
 public:
   IE_Exp_PS_Sniffer ();
   virtual ~IE_Exp_PS_Sniffer ();
-  
+
   UT_Confidence_t supportsMIME (const char * szMIME);
-  
+
   virtual bool recognizeSuffix (const char * szSuffix);
   virtual bool getDlgLabels (const char ** szDesc,
 			     const char ** szSuffixList,
@@ -48,9 +48,9 @@ class ABI_EXPORT IE_Exp_SVG_Sniffer : public IE_ExpSniffer
 public:
   IE_Exp_SVG_Sniffer ();
   virtual ~IE_Exp_SVG_Sniffer ();
-  
+
   UT_Confidence_t supportsMIME (const char * szMIME);
-  
+
   virtual bool recognizeSuffix (const char * szSuffix);
   virtual bool getDlgLabels (const char ** szDesc,
 			     const char ** szSuffixList,
@@ -66,9 +66,9 @@ class ABI_EXPORT IE_Exp_PDF_Sniffer : public IE_ExpSniffer
 public:
   IE_Exp_PDF_Sniffer ();
   virtual ~IE_Exp_PDF_Sniffer ();
-  
+
   UT_Confidence_t supportsMIME (const char * szMIME);
-  
+
   virtual bool recognizeSuffix (const char * szSuffix);
   virtual bool getDlgLabels (const char ** szDesc,
 			     const char ** szSuffixList,

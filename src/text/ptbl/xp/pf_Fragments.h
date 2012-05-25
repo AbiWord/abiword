@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -82,12 +82,12 @@ public:
 	  Node& operator=(const Node&);
 	};
 
-	
+
 	class Iterator
 	{
 	public:
 		Iterator() : m_pOwner(NULL), m_pNode(NULL) {}
-		
+
 		Iterator& operator++()
 		{
 			m_pNode = const_cast<Node*>(m_pOwner->_next(m_pNode));
@@ -122,7 +122,7 @@ public:
 
 		const pf_Frag* value() const;
 		pf_Frag* value();
-		
+
 		bool is_valid() const
 		{ return m_pNode != 0; }
 
@@ -151,7 +151,7 @@ private:
 
 	Iterator begin() { return Iterator(this, _first()); }
 	Iterator end() { return Iterator(this); }
-	
+
 	size_t size() const { return m_nSize; }
 	PT_DocPosition sizeDocument() const { return m_nDocumentSize; }
 

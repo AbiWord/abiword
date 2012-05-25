@@ -171,7 +171,7 @@ protected:
 	const XAP_Dialog_FontChooser::PropMap * m_mapProps;
 	UT_RGBColor m_clrBackground;
 	const UT_UCSChar * m_pszChars;
-	
+
 private:
 
 	XAP_Preview_FontPreview();
@@ -179,7 +179,7 @@ private:
 	XAP_Preview_FontPreview& operator=(const XAP_Preview_FontPreview & other);
 
 	GR_Font * m_pFont;
-	
+
 	UT_sint32 m_iAscent;
 	UT_sint32 m_iDescent;
 	UT_sint32 m_iHeight;

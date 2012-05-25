@@ -1,19 +1,19 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -39,51 +39,51 @@ public:
 
 #if DEBUG
   T value;
-  UT_DebugOnly() 
+  UT_DebugOnly()
   {
   }
-  UT_DebugOnly(const T& other) 
-   : value(other) 
+  UT_DebugOnly(const T& other)
+   : value(other)
   {
   }
-  UT_DebugOnly& operator=(const T& rhs) 
+  UT_DebugOnly& operator=(const T& rhs)
   {
       value = rhs;
       return *this;
   }
-  void operator++(int) 
+  void operator++(int)
   {
     value++;
   }
-  void operator--(int) 
+  void operator--(int)
   {
     value--;
   }
 
-  operator T&() 
-  { 
-    return value; 
+  operator T&()
+  {
+    return value;
   }
-  operator const T&() const 
-  { 
-    return value; 
+  operator const T&() const
+  {
+    return value;
   }
-  
-  T& operator->() 
-  { 
-    return value; 
+
+  T& operator->()
+  {
+    return value;
   }
 
 #else
-  UT_DebugOnly() 
+  UT_DebugOnly()
   {
   }
-  UT_DebugOnly(const T&) 
+  UT_DebugOnly(const T&)
   {
   }
-  UT_DebugOnly& operator=(const T&) 
-  { 
-    return *this; 
+  UT_DebugOnly& operator=(const T&)
+  {
+    return *this;
   }
   void operator++(int)
   {

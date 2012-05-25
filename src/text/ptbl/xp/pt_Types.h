@@ -112,10 +112,10 @@ typedef enum _PTObjectType
 //! PieceTable states
 typedef enum _PTState { PTS_Create=0, PTS_Loading=1, PTS_Editing=2 } PTState;
 //! ChangeFormat types
-typedef enum _PTChangeFmt 
-  { PTC_AddFmt=0, 
-    PTC_RemoveFmt=1, 
-    PTC_AddStyle=2, 
+typedef enum _PTChangeFmt
+  { PTC_AddFmt=0,
+    PTC_RemoveFmt=1,
+    PTC_AddStyle=2,
     PTC_SetFmt=3,
     PTC_SetExactly=4} PTChangeFmt;
 

@@ -1,19 +1,19 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -46,7 +46,7 @@ class XAP_Dialog;
                                                     pSS->getValueUTF8(id,_s); \
                                                     UT_XML_cloneNoAmpersands(newstr, _s.c_str()); \
 							} while (0);
-         
+
 // This macro is for use in Unix dialogs where the accelerator characters
 // strings need to be converted to underscores.
 #define	CONVERT_TO_ACC_STRING(str, id, newstr)		do { \
@@ -64,16 +64,16 @@ class XAP_Dialog;
 GtkBuilder * newDialogBuilder(const char * name);
 void connectFocus(GtkWidget *widget,const XAP_Frame *frame);
 void connectFocusModeless(GtkWidget *widget,const XAP_App *pApp);
-void connectFocusModelessOther(GtkWidget *widget, const XAP_App *pApp, 
+void connectFocusModelessOther(GtkWidget *widget, const XAP_App *pApp,
 	std::pointer_to_unary_function<int, gboolean> *other_function);
 bool isTransientWindow(GtkWindow *window,GtkWindow *parent);
-												   
+
 // This is a very thin message box; only use it for startup errors
 // or places where you can't use the message box class (like when
 // you don't have a frame yet).
 void messageBoxOK(const char * message);
 
-// Centers a GTK window inside a parent window 
+// Centers a GTK window inside a parent window
 void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for = true);
 
 #if !GTK_CHECK_VERSION(3,0,0)

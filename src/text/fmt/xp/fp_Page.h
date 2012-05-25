@@ -105,7 +105,7 @@ public:
 	fp_Column*			getNthColumnLeader(UT_sint32 n) const;
 	bool				insertColumnLeader(fp_Column* pLeader, fp_Column* pAfter);
 	void				removeColumnLeader(fp_Column* pLeader);
-	fp_Container*                   getNthColumn(UT_uint32 n,fl_DocSectionLayout *pSection) const; 
+	fp_Container*                   getNthColumn(UT_uint32 n,fl_DocSectionLayout *pSection) const;
 	bool				isEmpty(void) const;
 	bool                            containsPageBreak(void) const;
 	fp_Container *      updatePageForWrapping(fp_Column *& pNextCol);
@@ -113,13 +113,13 @@ public:
 	void                removeHdrFtr(HdrFtrType hfType);
 	fp_ShadowContainer* getHdrFtrP(HdrFtrType hfType) const;
 	fp_ShadowContainer*	getHdrFtrContainer(fl_HdrFtrSectionLayout*);
-	fp_ShadowContainer*	buildHdrFtrContainer(fl_HdrFtrSectionLayout*, 
+	fp_ShadowContainer*	buildHdrFtrContainer(fl_HdrFtrSectionLayout*,
 						     HdrFtrType hfType);
 
 	// Footnote functions.
 	void 				footnoteHeightChanged(void);
 	UT_sint32			countFootnoteContainers(void) const;
-	fp_FootnoteContainer* getNthFootnoteContainer(UT_sint32 n) const; 
+	fp_FootnoteContainer* getNthFootnoteContainer(UT_sint32 n) const;
 	bool				insertFootnoteContainer(fp_FootnoteContainer * pFC);
 	void				removeFootnoteContainer(fp_FootnoteContainer * pFC);
 	UT_sint32           findFootnoteContainer(fp_FootnoteContainer * pFC) const;
@@ -130,7 +130,7 @@ public:
 	// Annotation functions.
 	void 				annotationHeightChanged(void);
 	UT_sint32			countAnnotationContainers(void) const;
-	fp_AnnotationContainer* getNthAnnotationContainer(UT_sint32 n) const; 
+	fp_AnnotationContainer* getNthAnnotationContainer(UT_sint32 n) const;
 	bool				insertAnnotationContainer(fp_AnnotationContainer * pFC);
 	void				removeAnnotationContainer(fp_AnnotationContainer * pFC);
 	UT_sint32           findAnnotationContainer(fp_AnnotationContainer * pFC) const;
@@ -142,14 +142,14 @@ public:
 	void 				frameHeightChanged(void);
 	UT_sint32			countAboveFrameContainers(void) const;
 	UT_sint32			countBelowFrameContainers(void) const;
-	fp_FrameContainer*  getNthAboveFrameContainer(UT_sint32 n) const; 
-	fp_FrameContainer*  getNthBelowFrameContainer(UT_sint32 n) const; 
+	fp_FrameContainer*  getNthAboveFrameContainer(UT_sint32 n) const;
+	fp_FrameContainer*  getNthBelowFrameContainer(UT_sint32 n) const;
 	bool				insertFrameContainer(fp_FrameContainer * pFC);
 	void				removeFrameContainer(fp_FrameContainer * pFC);
 	UT_sint32           findFrameContainer(fp_FrameContainer * pFC) const;
 	void                clearScreenFrames(void);
 	void                markDirtyOverlappingRuns(fp_FrameContainer * pFC);
-    void                expandDamageRect(UT_sint32 x, UT_sint32 y, 
+    void                expandDamageRect(UT_sint32 x, UT_sint32 y,
 										 UT_sint32 width, UT_sint32 height);
         bool                intersectsDamagedRect(fp_ContainerObject * pObj);
 	void                redrawDamagedFrames(dg_DrawArgs* pDA);

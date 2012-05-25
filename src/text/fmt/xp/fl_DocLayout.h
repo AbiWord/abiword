@@ -1,22 +1,22 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 #ifndef DOCLAYOUT_H
 #define DOCLAYOUT_H
 
@@ -88,7 +88,7 @@ class fl_FrameLayout;
 class fp_FrameContainer;
 class fp_Container;
 
-// the following get used by view and layout code, 
+// the following get used by view and layout code,
 // since they're private to the formatter, we stick 'em here
 #define fl_PAGEVIEW_PAGE_SEP	m_pG->tlu(20)		// must be <= MARGIN_Y
 #define fl_PAGEVIEW_MARGIN_X	m_pG->tlu(25)
@@ -118,14 +118,14 @@ public:
 	inline FV_View * getView(void) const { return m_pView; }
 	inline GR_Graphics*	getGraphics(void) const { return m_pG; }
 	void setGraphics(GR_Graphics * pG);
-	UT_uint32           getGraphicTick(void) const { return m_iGraphicTick;} 
+	UT_uint32           getGraphicTick(void) const { return m_iGraphicTick;}
 	void                incrementGraphicTick(void) { m_iGraphicTick++;}
 	inline PD_Document*	getDocument(void) const { return m_pDoc; }
 #ifdef ENABLE_SPELL
 	inline const fl_BlockLayout* getPendingBlockForSpell(void) const { return m_pPendingBlockForSpell; };
 	inline fl_PartOfBlock* getPendingWordForSpell(void) const { return m_pPendingWordForSpell; };
 #endif
-    
+
 	// The smart quote stuff works by listening for insertions (typing
 	// and paste) and motion.  It needs one character of type-ahead
 	// before working the algorithm, so a single quote character going
@@ -194,8 +194,8 @@ public:
 
 #ifdef ENABLE_SPELL
 	bool		isPendingWordForSpell(void) const;
-	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock, 
-										   UT_sint32 iOffset, 
+	bool		touchesPendingWordForSpell(fl_BlockLayout *pBlock,
+										   UT_sint32 iOffset,
 										   UT_sint32 chg) const;
 	void		setPendingWordForSpell(const fl_BlockLayout *pBlock, fl_PartOfBlock* pWord);
 	bool		checkPendingWordForSpell(void);
@@ -295,7 +295,7 @@ public:
 // RDF Anchor Methods
 	bool                displayRDFAnchors(void) const;
 	void                setDisplayRDFAnchors(bool v);
-    
+
 // ---------------------------------------------------
 // Table of contents
 //----------------------------------------------------
@@ -321,7 +321,7 @@ public:
 // --------------------------------------------------------------------
 	bool		getSmartQuotes(void) const { return (hasBackgroundCheckReason(bgcrSmartQuotes)); }
 // --------------------------------------------------------------------
-    
+
 	inline void			addBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons |= reason;}
 	inline void			removeBackgroundCheckReason(UT_uint32 reason) {m_uDocBackgroundCheckReasons &= ~reason;}
 	inline bool		hasBackgroundCheckReason(UT_uint32 reason) const {return ((m_uDocBackgroundCheckReasons & reason) ? true : false);}
@@ -389,8 +389,8 @@ protected:
 	void				_toggleAutoGrammar(bool bGrammar);
 #endif
 	void				_toggleAutoSmartQuotes(bool bSQ);
-	
-	static void			_prefsListener(class XAP_Prefs *, 
+
+	static void			_prefsListener(class XAP_Prefs *,
 									   UT_StringPtrMap *, void *);
 
 
@@ -406,7 +406,7 @@ private:
 
 	UT_GenericVector<fp_Page *> m_vecPages;
 	fl_DocSectionLayout*m_pFirstSection;
-	fl_DocSectionLayout*m_pLastSection;   
+	fl_DocSectionLayout*m_pLastSection;
 
 	// spell check stuff
 	// UT_GenericVector<fl_BlockLayout *> m_vecUncheckedBlocks;
@@ -425,10 +425,10 @@ private:
 	fl_BlockLayout*		m_pPendingBlockForSmartQuote;  // if NULL, ignore m_uOffsetForSmartQuote
 	UT_uint32           m_uOffsetForSmartQuote;
 	char                m_szCurrentTransparentColor[10];
-	UT_Worker*			m_pBackgroundCheckTimer; 
+	UT_Worker*			m_pBackgroundCheckTimer;
 
 	XAP_Prefs *			m_pPrefs;
-	
+
 	UT_Timer*			m_pRedrawUpdateTimer;
 	UT_uint32           m_iSkipUpdates;
 	bool                m_bDeletingLayout;
@@ -442,7 +442,7 @@ private:
 	bool                m_bRestartFootSection;
 	bool                m_bRestartFootPage;
 	UT_sint32           m_iEndnoteVal;
-	FootnoteType        m_EndnoteType; 
+	FootnoteType        m_EndnoteType;
 	bool                m_bRestartEndSection;
 	bool                m_bPlaceAtDocEnd;
 	bool                m_bPlaceAtSecEnd;

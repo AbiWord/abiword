@@ -89,7 +89,7 @@
 #   include "ap_Win32Preview_Annotation.h"
 	// ... add new dialogs here ...
 
-//	Maleesh 6/8/2010 - 
+//	Maleesh 6/8/2010 -
 #	include "ap_Win32Dialog_Border_Shading.h"
 #else
 
@@ -118,12 +118,12 @@
 	DeclareDialog(XAP_DIALOG_ID_PLUGIN_MANAGER, XAP_Win32Dialog_PluginManager)
 	DeclareDialog(XAP_DIALOG_ID_PASSWORD,		XAP_Win32Dialog_Password)
 	DeclareDialog(XAP_DIALOG_ID_IMAGE,			XAP_Win32Dialog_Image)
-	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,    XAP_Win32Dialog_HTMLOptions)		
-	DeclareDialog(XAP_DIALOG_ID_LISTDOCUMENTS,  XAP_Win32Dialog_ListDocuments)		
-	DeclareDialog(XAP_DIALOG_ID_MERGEDOCUMENTS, XAP_Win32Dialog_ListDocuments)		
-	DeclareDialog(XAP_DIALOG_ID_COMPAREDOCUMENTS,XAP_Win32Dialog_ListDocuments)		
-	DeclareDialog(XAP_DIALOG_ID_HISTORY,        XAP_Win32Dialog_History)		
-	DeclareDialog(XAP_DIALOG_ID_DOCCOMPARISON,  XAP_Win32Dialog_DocComparison)		
+	DeclareDialog(XAP_DIALOG_ID_HTMLOPTIONS,    XAP_Win32Dialog_HTMLOptions)
+	DeclareDialog(XAP_DIALOG_ID_LISTDOCUMENTS,  XAP_Win32Dialog_ListDocuments)
+	DeclareDialog(XAP_DIALOG_ID_MERGEDOCUMENTS, XAP_Win32Dialog_ListDocuments)
+	DeclareDialog(XAP_DIALOG_ID_COMPAREDOCUMENTS,XAP_Win32Dialog_ListDocuments)
+	DeclareDialog(XAP_DIALOG_ID_HISTORY,        XAP_Win32Dialog_History)
+	DeclareDialog(XAP_DIALOG_ID_DOCCOMPARISON,  XAP_Win32Dialog_DocComparison)
 
 	DeclareDialog(AP_DIALOG_ID_REPLACE,			AP_Win32Dialog_Replace)
 	DeclareDialog(AP_DIALOG_ID_FIND,			AP_Win32Dialog_Replace)
@@ -152,14 +152,14 @@
 	DeclareDialog(AP_DIALOG_ID_MARK_REVISIONS,	AP_Win32Dialog_MarkRevisions)
 	DeclareDialog(AP_DIALOG_ID_LIST_REVISIONS,	AP_Win32Dialog_ListRevisions)
 	DeclareDialog(AP_DIALOG_ID_INSERT_TABLE,	AP_Win32Dialog_InsertTable)
-	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_Win32Dialog_MetaData)	
+	DeclareDialog(AP_DIALOG_ID_METADATA,		AP_Win32Dialog_MetaData)
 	DeclareDialog(AP_DIALOG_ID_MERGE_CELLS,		AP_Win32Dialog_MergeCells)
 	DeclareDialog(AP_DIALOG_ID_SPLIT_CELLS,		AP_Win32Dialog_SplitCells)
  	DeclareDialog(AP_DIALOG_ID_FORMAT_TABLE,	AP_Win32Dialog_FormatTable)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FRAME,	AP_Win32Dialog_FormatFrame)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_FOOTNOTES,AP_Win32Dialog_FormatFootnotes)
 	DeclareDialog(AP_DIALOG_ID_FORMAT_TOC,      AP_Win32Dialog_FormatTOC)
-	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_Win32Dialog_MailMerge)	
+	DeclareDialog(AP_DIALOG_ID_MAILMERGE,		AP_Win32Dialog_MailMerge)
  	DeclareDialog(AP_DIALOG_ID_ANNOTATION, 		AP_Win32Dialog_Annotation)
 	DeclareDialog(AP_DIALOG_ID_STYLIST,			AP_Win32Dialog_Stylist)
 	DeclareDialog(AP_DIALOG_ID_LATEX,			AP_Win32Dialog_Latex)
@@ -168,7 +168,7 @@
 	// DeclareDialog(AP_DIALOG_ID_RDF_EDITOR,			AP_Win32Dialog_RDFEditor)
  	// ... also add new dialogs here ...
 
-	//	Maleesh 6/8/2010 - 
+	//	Maleesh 6/8/2010 -
 	DeclareDialog(AP_DIALOG_ID_BORDER_SHADING,	AP_Win32Dialog_Border_Shading)
 
 	// Remember to place the dialog box with the higher ID

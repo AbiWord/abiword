@@ -64,14 +64,14 @@ public:
 	*/
 	inline UT_sint32	getMaxHeight(void) const
  		{ return m_iMaxHeight; }
-	
+
 	/*!
 	  Get container's width
 	  \return Width
 	*/
 	virtual UT_sint32	getWidth(void) const
 		{ return m_iWidth; }
-	
+
 	virtual UT_sint32	getX(void) const;
 
 	void        _setX( UT_sint32 iX) { m_iX = iX;}
@@ -86,7 +86,7 @@ public:
 	*/
 	virtual UT_sint32	getHeight(void) const
 		{ return m_iHeight; }
-	
+
 	UT_sint32	getColumnGap(void) const;
 
 	/*!
@@ -142,7 +142,7 @@ public:
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32) {return NULL;}
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
-	void                recalcMaxWidth(bool bDontClearIfNeeded = false) 
+	void                recalcMaxWidth(bool bDontClearIfNeeded = false)
 	{
 		UT_UNUSED(bDontClearIfNeeded);
 	}
@@ -175,7 +175,7 @@ private:
 	  Width of the container
 	*/
 	UT_sint32 				m_iWidth;
-	
+
 	/*!
 	  Height of the container
 	*/
@@ -234,7 +234,7 @@ public:
 	  \return Max height
 	*/
 	UT_sint32	        getMaxHeight(void) const;
- 	
+
 	void				layout(void);
 
 	void                collapseEndnotes(void);

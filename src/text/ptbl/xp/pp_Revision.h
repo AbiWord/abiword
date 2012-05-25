@@ -64,26 +64,26 @@ class ABI_EXPORT PP_Revision: public PP_AttrProp
 				const gchar ** attrs);
 
 	virtual ~PP_Revision(){};
-	
+
 	UT_uint32        getId()    const {return m_iID;}
 	void             setId(UT_uint32 iId) {UT_ASSERT_HARMLESS( iId >= m_iID); m_iID = iId;}
-	
+
 	PP_RevisionType  getType()  const {return m_eType;}
 	void             setType(PP_RevisionType t) {m_eType = t; m_bDirty = true;}
-	
+
 	const gchar * getPropsString() const;
 	const gchar * getAttrsString() const;
 
 	// this is intentionally not virtual (no need for that)
 	bool	setAttributes(const gchar ** attributes);
-	
+
 	bool operator == (const PP_Revision &op2) const;
 
 //    PP_Revision* clone() const;
 
     std::string toString() const;
     bool onlyContainsAbiwordChangeTrackingMarkup() const;
-    
+
   private:
 	void             _refreshString() const;
 	bool             _handleNestedRevAttr();
@@ -138,9 +138,9 @@ class ABI_EXPORT PP_RevisionAttr
 		{};
 	PP_RevisionAttr(const gchar * r);
 
-	
+
 	PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType, const gchar ** pAttrs, const gchar ** pProps);
-	
+
 	~PP_RevisionAttr();
 
 	void                  setRevision(const gchar * r);
@@ -151,9 +151,9 @@ class ABI_EXPORT PP_RevisionAttr
 									  const gchar ** pAttrs,
 									  const gchar ** pProps);
 	void                  addRevision(UT_uint32 iId, PP_RevisionType eType );
-    // No ownership of the given revision is taken. 
+    // No ownership of the given revision is taken.
     void                  addRevision( const PP_Revision* r );
-    
+
 	bool                  changeRevisionType(UT_uint32 iId, PP_RevisionType eType);
 	bool                  changeRevisionId(UT_uint32 iOldId, UT_uint32 iNewId);
 
@@ -166,7 +166,7 @@ class ABI_EXPORT PP_RevisionAttr
 	const PP_Revision *   getGreatestLesserOrEqualRevision(UT_uint32 id,
 														   const PP_Revision ** ppR) const;
 	const PP_Revision *   getLowestGreaterOrEqualRevision(UT_uint32 id) const;
-	
+
 	const PP_Revision *   getLastRevision() const;
 	const PP_Revision *   getRevisionWithId(UT_uint32 iId, UT_uint32 & iMinId) const;
     UT_uint32             getHighestId() const;
@@ -174,9 +174,9 @@ class ABI_EXPORT PP_RevisionAttr
 	UT_uint32             getRevisionsCount() const {return m_vRev.getItemCount();}
     bool                  empty() const { return !getRevisionsCount(); }
 	const PP_Revision *   getNthRevision(UT_uint32 n) const {return (const PP_Revision*)m_vRev.getNthItem(n);}
-	
+
 	void                  pruneForCumulativeResult(PD_Document * pDoc);
-	
+
 	/*! please note that the following are convenience functions; if
 	    you need to make repeated enqueries, it is better to call
 	    getGreatestLesserOrEqualRevision() or getLastRevision() and
@@ -201,15 +201,15 @@ class ABI_EXPORT PP_RevisionAttr
 
     // MIQ: This would be nice, but there are ownership issues I don't know about with M
 //    PP_RevisionAttr& operator=(const PP_RevisionAttr &rhs);
-    
+
     void mergeAll( const PP_RevisionAttr& ra );
     void mergeAttr( UT_uint32 iId, PP_RevisionType t,
                     const gchar* pzName, const gchar* pzValue );
     void mergeAttrIfNotAlreadyThere( UT_uint32 iId, PP_RevisionType t,
                                      const gchar* pzName, const gchar* pzValue );
- 
+
 	const PP_Revision *   getLowestDeletionRevision() const;
-    
+
 
   private:
 	void _init(const gchar *r);

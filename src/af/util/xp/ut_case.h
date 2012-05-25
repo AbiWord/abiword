@@ -34,18 +34,18 @@ struct case_entry
 
 /*  the following structure works this way: low indicates lower boundary, and high
     upper boundary of a range that is to be treated in the same way, depending on type
-    
+
     if type is Lu/Ll, then the character is Upper/Lowecase and the other can be found
     by adding the diff
-    
+
     if type is Lu_even, then all even characters in this range are Upper-, while odd
     characters are Lower-case; a lowecase character is obtained by adding diff while
     uppercase character is obtained by subtracting diff.
-    
+
     if type is Lu_odd, the all odd characters in this range are Upper-, while even
     characters are Lower-case; a lowercase character is obtained by adding the diff,
     while uppercase character is obtained by subtracting diff.
-    
+
 */
 #if 0
 struct case_entry2
@@ -56,7 +56,7 @@ struct case_entry2
     UT_sint32   diff;
 }
 
-case_entry2 case_table2[] = 
+case_entry2 case_table2[] =
 {
  {0x0041, 0x005a, Lu,  0x0020},
  {0x0061, 0x007a, Ll, -0x0020},
@@ -78,7 +78,7 @@ case_entry2 case_table2[] =
  {0x0181, 0x0181, Lu,  0x00d2},
  {0x0182, 0x0188, Lu_even, 0x0001},
  {0x2c80, 0x2ce3, Lu_even, 0x0001},	/* Coptic */
- 
+
 }
 #endif
 

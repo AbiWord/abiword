@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
- * Copyright (c) 2010 GPL. V2+ copyright to AbiSource B.V. 
+ * Copyright (c) 2010 GPL. V2+ copyright to AbiSource B.V.
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -53,13 +53,13 @@ typedef boost::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
  * like object, but explicit support for namespaces and
  * other RDF functionality might be added over time.
  * For example, foaf:name mapping to the foaf URI vocab.
- * 
+ *
  */
 class ABI_EXPORT PD_URI
 {
   protected:
     std::string m_value;
-    
+
   public:
     PD_URI( const std::string& v = "" );
     virtual ~PD_URI() {}
@@ -76,7 +76,7 @@ class ABI_EXPORT PD_URI
 
     bool empty() const        { return m_value.empty(); }
     const char* c_str() const { return m_value.c_str(); }
-    
+
 };
 
 template <class ostream>
@@ -103,7 +103,7 @@ ostream& operator<<( ostream& ss, PD_URI& uri )
  * BNODE will result in "", the object type is still needed to
  * differentiate properly between URI and BNodes and makes this
  * explicit.
- * 
+ *
  */
 class ABI_EXPORT PD_Object : public PD_URI
 {
@@ -114,7 +114,7 @@ class ABI_EXPORT PD_Object : public PD_URI
         OBJECT_TYPE_LITERAL,
         OBJECT_TYPE_BNODE
     };
-    
+
     PD_Object( const std::string& v = "" );
     PD_Object( const PD_URI& u );
     PD_Object( const std::string& v, int objectType, const std::string& xsdtype = "" );
@@ -125,7 +125,7 @@ class ABI_EXPORT PD_Object : public PD_URI
     bool isLiteral() const;
     bool isURI() const;
     bool isBNode() const;
-    
+
     virtual bool read( std::istream& ss );
     virtual bool write( std::ostream& ss ) const;
 
@@ -182,7 +182,7 @@ class ABI_EXPORT PD_RDFStatement
     PD_RDFStatement prefixedToURI( PD_RDFModelHandle model ) const;
 
     bool operator==(const PD_RDFStatement& b) const;
-    
+
 };
 
 template <class ostream>
@@ -209,16 +209,16 @@ class ABI_EXPORT PD_RDFModelIterator
     PD_RDFStatement     m_current;
 
     void setup_pocol();
-    
+
   public:
     typedef const PD_RDFModelIterator& self_constref;
     typedef PD_RDFModelIterator& self_reference;
     typedef PD_RDFModelIterator  self_type;
-    
+
     PD_RDFModelIterator();
     ~PD_RDFModelIterator();
     PD_RDFModelIterator( PD_RDFModelHandle model, const PP_AttrProp* AP );
-    
+
     self_reference operator++();
     bool operator==( self_constref other );
     PD_RDFModelIterator& operator=( const PD_RDFModelIterator& other );
@@ -261,7 +261,7 @@ class ABI_EXPORT PD_RDFModelIterator
  * the linear performance of the default to the contant time
  * performance which might be possible for contains(s,p,o) if the
  * model uses more knowledge.
- * 
+ *
  * The uriToPrefixed() and prefixedToURI() rely on getUriToPrefix()
  * returning a suitable prefix map.
  *
@@ -277,7 +277,7 @@ class ABI_EXPORT PD_RDFModel
     PD_Object front( const PD_ObjectList& l ) const;
     PD_RDFModel();
     void incremenetVersion();
-    
+
   public:
     virtual ~PD_RDFModel() {}
     virtual PD_ObjectList getObjects( const PD_URI& s, const PD_URI& p );
@@ -304,12 +304,12 @@ class ABI_EXPORT PD_RDFModel
     virtual PD_DocumentRDFMutationHandle createMutation() = 0;
     virtual std::string uriToPrefixed( const std::string& uri );
     virtual std::string prefixedToURI( const std::string& prefixed );
-    
+
     inline long size()  { return getTripleCount(); }
     inline bool empty() { return size() == 0; }
-    
+
     long getVersion() const { return m_version; }
-    
+
 };
 
 class   PD_RDFSemanticItem;
@@ -370,7 +370,7 @@ class ABI_EXPORT PD_RDFSemanticItem
     virtual std::list< std::pair< std::string, std::string> > getExportTypes() const;
     virtual std::string getDefaultExtension() const;
     std::string getProperty( std::string subj, std::string pred, std::string defVal ) const;
-    
+
   public:
     PD_RDFSemanticItem( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it );
     virtual ~PD_RDFSemanticItem();
@@ -379,7 +379,7 @@ class ABI_EXPORT PD_RDFSemanticItem
     PD_DocumentRDFMutationHandle createMutation();
 
     std::string requestExportFileNameByDialog();
-    
+
 
     /**
      * For an item like a contact, event, location, if there is a
@@ -397,13 +397,13 @@ class ABI_EXPORT PD_RDFSemanticItem
     /**
      * Given a linking subject, find all the xmlids that are referenced by it
      * ie, return all ?xmlid from the form:
-     * 
+     *
      * ?linkingSubj pkg:idref ?xmlid
      *
      */
     static std::set< std::string > getXMLIDsForLinkingSubject( PD_DocumentRDFHandle rdf, const std::string& linkingSubj );
 
-    
+
     /**
      * A simple description of the semantic item that can be shown to the user
      */
@@ -415,7 +415,7 @@ class ABI_EXPORT PD_RDFSemanticItem
      * eg, Contact, Event etc.
      */
     virtual std::string getDisplayLabel() const;
-    
+
 
     /**
      * A Semantic Item can appear multiple times in a document. For
@@ -429,7 +429,7 @@ class ABI_EXPORT PD_RDFSemanticItem
      * semanitc item appears in the document.
      */
     virtual std::set< std::string > getXMLIDs() const;
-    
+
     /**
      * Create a Widget that can edit the SemanticItem. Note that the
      * widget will show the data and allow editing of it for the
@@ -457,7 +457,7 @@ class ABI_EXPORT PD_RDFSemanticItem
       */
      void updateFromEditorData();
      virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m ) = 0;
-     
+
 
     /**
      * Import the data in iss to the semnatic item. This is used for
@@ -484,7 +484,7 @@ class ABI_EXPORT PD_RDFSemanticItem
      * let an import dialog know what types are OK.
      */
      virtual void importFromFile( const std::string& filename = "" );
-     
+
 
     /**
      * Create a SemanticItem subclass using its name from
@@ -562,12 +562,12 @@ class ABI_EXPORT PD_RDFSemanticItem
     };
     void relationAdd( PD_RDFSemanticItemHandle si, RelationType rt );
     PD_RDFSemanticItems relationFind( RelationType rt );
-    
+
   protected:
 
      std::pair< PT_DocPosition, PT_DocPosition > insertTextWithXMLID( const std::string& textconst,
                                                                       const std::string& xmlid );
-     
+
     /**
      * The importFromData() method can use this method to finish an
      * import. Text is also inserted into the document to show the
@@ -591,12 +591,12 @@ class ABI_EXPORT PD_RDFSemanticItem
                                           PD_DocumentRDFHandle rdf,
                                           PD_DocumentRDFMutationHandle m,
                                           PD_DocumentRange * pDocRange = 0 );
-     
+
      std::string bindingAsString( PD_ResultBindings_t::iterator& it, const std::string k );
      std::string optionalBindingAsString( PD_ResultBindings_t::iterator& it, const std::string k );
-        
+
     PD_URI& handleSubjectDefaultArgument( PD_URI& subj );
-    
+
     /**
      * Return the graph context that contains this SematicItem's Rdf
      * statements. Used by the updateTriple()s to remove and add
@@ -640,7 +640,7 @@ class ABI_EXPORT PD_RDFSemanticItem
     void updateTriple( std::string& toModify, const std::string& newValue, const PD_URI& predString );
     void updateTriple( time_t&      toModify, time_t newValue, const PD_URI& predString );
     void updateTriple( double&      toModify, double newValue, const PD_URI& predString );
-    
+
     /**
      * Create a bnode with a uuid
      */
@@ -672,7 +672,7 @@ protected:
                            const PD_URI& toModify,
                            const PD_URI& predString,
                            const PD_URI& explicitLinkingSubject );
-    
+
 };
 
 
@@ -740,7 +740,7 @@ class ABI_EXPORT PD_RDFLocation : public PD_RDFSemanticItem
     double      m_dlong;
     PD_Object   m_joiner;
     bool        m_isGeo84;
-    
+
     virtual std::list< std::pair< std::string, std::string> > getImportTypes() const;
     virtual std::list< std::pair< std::string, std::string> > getExportTypes() const;
     virtual std::string getDefaultExtension() const;
@@ -837,7 +837,7 @@ class ABI_EXPORT PD_RDFSemanticItemViewSite
 {
     std::string m_xmlid;
     PD_RDFSemanticItemHandle m_semItem;
-    
+
   public:
     /**
      * Performing actions on a specific reference to a semantic item in the document.
@@ -871,7 +871,7 @@ class ABI_EXPORT PD_RDFSemanticItemViewSite
      * @see reflowUsingCurrentStylesheet()
      */
     void applyStylesheet( FV_View* pView, PD_RDFSemanticStylesheetHandle ss );
-    
+
     /**
      * Remember that a specific stylesheet should be applied for this
      * semantic item. No reflow of the document is performed and thus
@@ -976,7 +976,7 @@ class ABI_EXPORT PD_RDFDialogs
  *
  * To find the RDF which is associated with an element use
  * getRDFAtPosition() and getRDFForID() which return a submodel.
- * 
+ *
  */
 class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 {
@@ -984,13 +984,13 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     friend class RDFModel_SPARQLLimited;
     friend class PD_RDFMutation_XMLIDLimited;
     friend class PD_RDFSemanticItem;
-    
+
   public:
     explicit PD_DocumentRDF( PD_Document* doc );
     virtual ~PD_DocumentRDF();
 
     UT_Error setupWithPieceTable();
-    
+
     // PD_RDFModel methods...
     virtual PD_ObjectList getObjects( const PD_URI& s, const PD_URI& p );
     virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o );
@@ -1004,9 +1004,9 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     virtual void dumpModel( const std::string& headerMsg = "dumpModel()" );
     virtual PD_DocumentRDFMutationHandle createMutation();
 
-    
+
     void handleCollabEvent( gchar** szAtts, gchar** szProps );
-         
+
     PD_RDFModelHandle getRDFAtPosition( PT_DocPosition pos );
     PD_RDFModelHandle getRDFForID( const std::string& xmlid );
 
@@ -1016,7 +1016,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     std::set< std::string >& addXMLIDsForObjects( std::set< std::string >& ret, std::list< pf_Frag_Object* > objectList );
     PT_DocPosition addXMLIDsForBlockAndTableCellForPosition( std::set< std::string >& col, PT_DocPosition pos );
 
-    
+
     void addRDFForID( const std::string& xmlid, PD_DocumentRDFMutationHandle& m );
     std::set< std::string >& addRelevantIDsForPosition( std::set< std::string >& ret,
                                                         PT_DocPosition pos );
@@ -1024,7 +1024,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
                                                       PD_DocumentRange* range );
     std::set< std::string >& addRelevantIDsForRange( std::set< std::string >& ret,
                                                       std::pair< PT_DocPosition, PT_DocPosition > range );
-    
+
     std::set< std::string >& getAllIDs( std::set< std::string >& ret );
     std::pair< PT_DocPosition, PT_DocPosition > getIDRange( const std::string& xmlid ) const;
 
@@ -1034,7 +1034,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     PD_RDFModelHandle createRestrictedModelForXMLIDs( const std::set< std::string >& xmlids );
 
     virtual void maybeSetDocumentDirty();
-    
+
     // testing methods...
     void runMilestone2Test();
     void runMilestone2Test2();
@@ -1061,12 +1061,12 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 
     void showEditorWindow( const PD_RDFSemanticItems& cl );
 
-    
+
     // GTK, win32, osx, whatever backends can call this method to allow the correct
     // subclasses to be made for the runtime environment.
     static void setSemanticItemFactory( PD_SemanticItemFactory* f );
     static void setRDFDialogs( PD_RDFDialogs* d );
-    
+
     static PD_SemanticItemFactory *getSemanticItemFactory();
     static PD_RDFDialogs *getRDFDialogs();
 
@@ -1088,7 +1088,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     std::set< std::string >& priv_addRelevantIDsForPosition( std::set< std::string >& ret,
                                                              PT_DocPosition pos,
                                                              PT_DocPosition searchBackThisFar = 0 );
-    
+
   protected:
     PD_ObjectList& apGetObjects(     const PP_AttrProp* AP, PD_ObjectList& ret, const PD_URI& s, const PD_URI& p );
     PD_URIList&    apGetSubjects(    const PP_AttrProp* AP, PD_URIList& ret,    const PD_URI& p, const PD_Object& o );
@@ -1159,7 +1159,7 @@ class ABI_EXPORT PD_DocumentRDFMutation
     PP_AttrProp* m_pAP;        ///< AP that is changed incrementally (deprecated)
     PP_AttrProp* m_crRemoveAP; ///< Triples to remove during commit()
     PP_AttrProp* m_crAddAP;    ///< Triples to add during commit()
-    
+
 
 
     bool apAdd( PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
@@ -1167,7 +1167,7 @@ class ABI_EXPORT PD_DocumentRDFMutation
     UT_Error handleAddAndRemove( PP_AttrProp* add, PP_AttrProp* remove );
 
     PD_DocumentRDFMutation( PD_DocumentRDF* rdf );
-    
+
   public:
 
     virtual ~PD_DocumentRDFMutation();
@@ -1187,7 +1187,7 @@ class ABI_EXPORT PD_DocumentRDFMutation
     void remove( const PD_URI& s, const PD_URI& p );
 
     PD_URI createBNode();
-    
+
     virtual UT_Error commit();
     virtual void rollback();
 };
@@ -1200,7 +1200,7 @@ class ABI_EXPORT RDFAnchor
     std::string m_xmlid;
 
     void setup( const PP_AttrProp* pAP );
-    
+
 public:
     RDFAnchor( const PP_AttrProp* pAP );
     RDFAnchor( PD_Document* pDoc, PT_AttrPropIndex api );

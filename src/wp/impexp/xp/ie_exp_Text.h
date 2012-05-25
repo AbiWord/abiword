@@ -145,8 +145,8 @@ protected:
 		DO_RTL,
 		DO_UNSET
 	};
-	
-	
+
+
 
  	PD_Document *		m_pDocument;
 	IE_Exp_Text *		m_pie;

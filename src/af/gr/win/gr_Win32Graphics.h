@@ -46,7 +46,7 @@ public:
 	void        	setAscent(UT_uint32 n)  { m_tm.tmAscent = n; }
 	void 	    setDescent(UT_uint32 n) { m_tm.tmDescent = n; }
 	void         setHeight(UT_uint32 n)  { m_tm.tmHeight = n; }
-	
+
 	UT_uint32	getAscent(HDC hdc, HDC printHDC);
 	UT_uint32	getDescent(HDC hdc, HDC printHDC);
 	UT_uint32	getHeight(HDC hdc, HDC printHDC);
@@ -65,9 +65,9 @@ public:
 // rec.height = total height of the glyph
 
 	virtual bool glyphBox(UT_UCS4Char g, UT_Rect & rec, GR_Graphics * pG);
-	
+
 	void        selectFontIntoDC(GR_Graphics * pGr, HDC hdc);
-	
+
 	void        markGUIFont() {m_bGUIFont = true;}
 	bool        isFontGUI() const {return m_bGUIFont;}
 
@@ -78,8 +78,8 @@ public:
 	void        setPrimaryHDC(const HDC hdc) {m_hdc = hdc;}
 	void        setXHDC(const HDC hdc) {m_xhdc = hdc;}
 	void        setYHDC(const HDC hdc) {m_yhdc = hdc;}
-	
-	
+
+
 	// NB: the font handle is one which was associated with this font when it was
 	// origianlly created; however, it is not necessarily one that is to be used for
 	// drawing as that has to reflect zoom factor and has to be obtained using
@@ -104,7 +104,7 @@ protected:
 
 	// this function should clear any cached information the font might cary
 	// it is prinicipally intened to be used when we share fonts between screen and
-	// printer 
+	// printer
 	virtual void _clearAnyCachedInfo() {};
 	void         _updateFontYMetrics(HDC hdc, HDC printHDC);
 
@@ -116,7 +116,7 @@ public:
 	void         fetchFont(UT_uint32 pixelsize) const;
 
 	const TEXTMETRICW & getTextMetric() const {return m_tm;}
-   	
+
 private:
 
 	struct allocFont
@@ -134,11 +134,11 @@ private:
 	// we have no control over the lifetime of any of
 	// these dc's -- we only use these to check that the metrics and other font info is
 	// uptodate -- they should NEVER be passed to any win32 API
-	
+
 	HDC				m_hdc;
 	HDC				m_xhdc;
 	HDC				m_yhdc;
-	
+
 	UT_uint32				m_defaultCharWidth;
 	HFONT                   m_layoutFont;
 	TEXTMETRICW				m_tm;
@@ -158,16 +158,16 @@ class ABI_EXPORT GR_Win32AllocInfo : public GR_AllocInfo
   public:
 	GR_Win32AllocInfo():
 		m_hdc(0), m_hwnd(0), m_pDocInfo(NULL), m_hDevMode(NULL) {};
-	
+
 	GR_Win32AllocInfo(HDC hdc, HWND hwnd):
 		m_hdc(hdc), m_hwnd(hwnd), m_pDocInfo(NULL), m_hDevMode(NULL) {};
-	
+
 	GR_Win32AllocInfo(HDC hdc, const DOCINFOW* pDoc, HGLOBAL devmode):
 		m_hdc(hdc), m_hwnd(0), m_pDocInfo(pDoc), m_hDevMode(devmode) {};
 
 	virtual GR_GraphicsId getType() const {return GRID_WIN32;}
 	virtual bool isPrinterGraphics() const {return (m_pDocInfo != 0);}
-	
+
 	HDC               m_hdc;
 	HWND              m_hwnd;
 	const DOCINFOW *   m_pDocInfo;
@@ -184,15 +184,15 @@ public:
 
 	static UT_uint32 s_getClassId() {return GRID_WIN32;}
 	virtual UT_uint32 getClassId() {return s_getClassId();}
-	
+
 	virtual GR_Capability getCapability() {return GRCAP_SCREEN_AND_PRINTER;}
-	
+
 	static const char *    graphicsDescriptor(){return "Win32 Default";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	static  GR_Graphics *   getPrinterGraphics(const wchar_t * pPrinterName,
 											   const wchar_t * pDocName);
-	
+
 	virtual void			drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff);
 	virtual void			drawChars(const UT_UCSChar* pChars,
@@ -275,7 +275,7 @@ public:
 
 	void                  setPrintDCFontAllocNo(UT_uint32 i){m_iPrintDCFontAllocNo = i;}
 	void                  setDCFontAllocNo(UT_uint32 i){m_iDCFontAllocNo = i;}
-	
+
 	double                getXYRatio() const {return m_fXYRatio;}
 	double                getXYRatioPrint() const {return m_fXYRatioPrint;}
 
@@ -283,13 +283,13 @@ public:
 
 	static DOCINFOW *getDocInfo();
 	static HDC createbestmetafilehdc();
-	
+
 protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_Win32Graphics(HDC, HWND);					/* for screen */
 	GR_Win32Graphics(HDC, const DOCINFOW *, HGLOBAL hDevMode = NULL);	/* for printing */
-	
-	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);  
+
+	BITMAPINFO * ConvertDDBToDIB(HBITMAP bitmap, HPALETTE hPal, DWORD dwCompression);
 
 	virtual GR_Font*		_findFont(const char* pszFontFamily,
 									  const char* pszFontStyle,
@@ -310,7 +310,7 @@ protected:
 	void _DeviceContext_SwitchToBuffer();
 	void _DeviceContext_SwitchToScreen();
 	void _DeviceContext_DrawBufferToScreen();
-	
+
 	void _DeviceContext_SuspendDrawing();
 	void _DeviceContext_ResumeDrawing();
 
@@ -326,7 +326,7 @@ protected:
 		_HDCSwitchRecord(HDC h) : oldHdc(h) { }
 	};
 
-	UT_Stack _HDCSwitchStack;  
+	UT_Stack _HDCSwitchStack;
 
 	void _DeviceContext_RestorePrevHDCFromStack();
 
@@ -367,7 +367,7 @@ private:
 	void 					_constructorCommonCode(HDC);
 	UT_uint16*				_remapGlyphs(const UT_UCSChar* pChars, int iCharOffset, int &iLength);
 	virtual bool            _setTransform(const GR_Transform & tr);
-	
+
 	DWORD					m_clrXorPen;
 	HPEN					m_hXorPen;
 
@@ -381,16 +381,16 @@ private:
 	HBRUSH					m_hClearBrush;
 	int						m_nLogPixelsY;
 	HGLOBAL					m_hDevMode;
-	
+
 	typedef struct
 	{
 		HPEN 	hPen;
 		int	 	nStyle;
 		int 	nWidth;
 		DWORD	dwColour;
-	
+
 	} CACHE_PEN;
-	
+
 	CACHE_PEN*				   m_pArPens;
 	int						   m_nArPenPos;
 	bool m_bIsPreview;

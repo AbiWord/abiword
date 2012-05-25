@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -41,7 +41,7 @@ public:
 	virtual void					runModal(XAP_Frame * pFrame) = 0;
 
 	typedef enum { a_OK, a_CANCEL } tAnswer;
-//	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } zoomType;	
+//	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } zoomType;
 
 	XAP_Dialog_Zoom::tAnswer		getAnswer(void) const;
 
@@ -52,7 +52,7 @@ public:
 	// read these back
 	XAP_Frame::tZoomType			getZoomType(void);
 	UT_uint32						getZoomPercent(void);
-	
+
 protected:
 
 	// handle the XP-job of telling m_zoomPreview what to draw
@@ -62,9 +62,9 @@ protected:
 	void							_createPreviewFromGC(GR_Graphics * gc,
 														 UT_uint32 width,
 														 UT_uint32 height);
-	
+
 	XAP_Preview_Zoom * 				m_zoomPreview;
-	
+
 	XAP_Frame::tZoomType			m_zoomType;
 	UT_uint32						m_zoomPercent;
 

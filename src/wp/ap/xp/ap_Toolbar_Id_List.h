@@ -63,8 +63,8 @@ toolbaritem(SPELLCHECK)
 toolbaritem(IMG)
 toolbaritem(FMT_STYLE)
 #if XAP_SIMPLE_TOOLBAR
-toolbaritem(FMT_CHOOSE)	
-toolbaritem(VIEW_FULL_SCREEN)	
+toolbaritem(FMT_CHOOSE)
+toolbaritem(VIEW_FULL_SCREEN)
 #else
 #endif
 toolbaritem(FMT_FONT)

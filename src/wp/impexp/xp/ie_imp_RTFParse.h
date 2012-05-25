@@ -62,7 +62,7 @@ public:
 	/// called when parsing is in error
 	virtual bool tokenError(IE_Imp_RTF * ie);
 	/// called to parse a KeyWord
-	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
+	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
 							  UT_sint32 param, bool paramUsed);
 	/// called when a brace opens. Must be called by override
 	virtual bool tokenOpenBrace(IE_Imp_RTF * ie);
@@ -70,7 +70,7 @@ public:
 	virtual bool tokenCloseBrace(IE_Imp_RTF * ie);
 	/// called to parse PCDATA to an UT_UTF8String
 	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
-	
+
 	/// called at the end of the group parsing to finalize stuff
 	virtual bool finalizeParse(void);
 	/// return the nesting level

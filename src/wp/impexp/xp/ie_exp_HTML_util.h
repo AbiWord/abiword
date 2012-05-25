@@ -2,20 +2,20 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -68,24 +68,24 @@ char * s_removeWhiteSpace (const char * text, UT_UTF8String & utf8str,
 UT_UTF8String ConvertToClean(const UT_UTF8String &str);
 
 // Returns css representation for size params
-UT_UTF8String getStyleSizeString(const gchar * szWidth, double widthPercentage, 
-	UT_Dimension widthDim, const gchar * szHeight, 
+UT_UTF8String getStyleSizeString(const gchar * szWidth, double widthPercentage,
+	UT_Dimension widthDim, const gchar * szHeight,
 	UT_Dimension heightDim, bool bUseScale);
 
-bool getPropertySize(const PP_AttrProp * pAP, const gchar* szWidthProp, 
-	const gchar* szHeightProp, const gchar** szWidth, double& widthPercentage, 
-	const gchar** szHeight, double dPageWidthInches, double dSecLeftMarginInches, 
+bool getPropertySize(const PP_AttrProp * pAP, const gchar* szWidthProp,
+	const gchar* szHeightProp, const gchar** szWidth, double& widthPercentage,
+	const gchar** szHeight, double dPageWidthInches, double dSecLeftMarginInches,
 	double dSecRightMarginInches, double dCellWidthInches,
 	ie_Table &tableHelper);
 
 class IE_Exp_HTML_OutputWriter;
 /*
- * This class allows to control creation of files (like CSS, JS and images) 
- * while exporting to {X,P}HTML 
- */ 
+ * This class allows to control creation of files (like CSS, JS and images)
+ * while exporting to {X,P}HTML
+ */
 class ABI_EXPORT IE_Exp_HTML_DataExporter{
 public:
-    IE_Exp_HTML_DataExporter(PD_Document* pDocument, 
+    IE_Exp_HTML_DataExporter(PD_Document* pDocument,
             const UT_UTF8String &baseName);
     virtual ~IE_Exp_HTML_DataExporter(){}
     /*
@@ -96,24 +96,24 @@ public:
         const gchar *szDataId, const gchar* extension) = 0;
     virtual UT_UTF8String saveData(const UT_UTF8String &name,
     const UT_UTF8String &data) = 0;
-        
+
     /*
      * Encodes data with specified dataid using Base64 and places string
      * containing result in buffer
-     */ 
+     */
     void encodeDataBase64(const gchar *szDataId, UT_UTF8String &result,
         bool bAddInfo = true);
-   
+
 protected:
     PD_Document *m_pDocument;
-    UT_UTF8String m_fileDirectory;  
+    UT_UTF8String m_fileDirectory;
     UT_UTF8String m_baseDirectory;
 };
 
 class IE_Exp_HTML_FileExporter : public IE_Exp_HTML_DataExporter
 {
 public:
-    IE_Exp_HTML_FileExporter(PD_Document* pDocument, 
+    IE_Exp_HTML_FileExporter(PD_Document* pDocument,
             const UT_UTF8String &baseName);
 
     UT_UTF8String saveData(const gchar *szDataId, const gchar* extension);
@@ -138,11 +138,11 @@ public:
     UT_UTF8String saveData(const gchar *szDataId, const gchar* extension);
     UT_UTF8String saveData(const UT_UTF8String &name,
         const UT_UTF8String &data);
-    
+
     UT_UTF8String generateHeader(const UT_UTF8String &index,
         const UT_UTF8String &mimetype);
 private:
-    UT_UTF8String &m_buffer; 
+    UT_UTF8String &m_buffer;
     UT_UTF8String m_title;
 };
 
@@ -187,13 +187,13 @@ public:
     void writeData(const std::string &data);
     void closeTag();
     void flush();
-    
+
     void openComment();
     void closeComment();
-    
+
     void enableXmlMode(bool enable = true);
 private:
-    
+
     inline void _closeAttributes();
     std::vector<std::string> m_tagStack;
     std::vector<bool> m_inlineFlagStack;

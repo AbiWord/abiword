@@ -9,15 +9,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -67,7 +67,7 @@ public:
 	// "find"
 	T pick(const char* key) const;
 	T pick(const UT_String & key) const;
-	
+
 	// contains - if contains(key) val will be the result of the lookup
 	bool contains(const char* key, T val) const;
 	bool contains(const UT_String & key, T val) const;
@@ -80,26 +80,26 @@ public:
 	/* IMPORTANT: list() is for use only with <XML_C/char*> maps
 	 */
 	const gchar ** list ();
-	
+
 	UT_GenericVector<T>* enumerate(bool strip_null_values = true) const;
 	UT_GenericVector<const UT_String*>* keys(bool strip_null_values = true) const;
-	
+
 	// getting the # keys
 	inline size_t size() const { return n_keys; }
 
 	class UT_Cursor
 	{
 		friend class UT_GenericStringMap<T>;
-		
+
 	public:
 		UT_Cursor(const UT_GenericStringMap<T> * owner)
 			:	m_d(owner), m_index(-1)
 			{
 				//m_d._first(this);
 			}
-		
+
 		~UT_Cursor() { }
-		
+
 		// these can't be const since we're passing a non-const this ptr
 		inline const UT_String  &key()
 			{return m_d->_key(*this); }
@@ -113,22 +113,22 @@ public:
 			{ return m_d->_prev(*this); }
 		inline bool	is_valid()
 			{ return (m_index != -1); }
-		
+
 	private:
-		
-		inline void	_set_index(UT_sint32 i)	
+
+		inline void	_set_index(UT_sint32 i)
 			{ m_index = i; }
-		inline UT_sint32 _get_index()		
+		inline UT_sint32 _get_index()
 			{ return m_index; }
-		
+
 		const UT_GenericStringMap<T>*	m_d;
 		UT_sint32				m_index;
 	};
 
 	friend class UT_Cursor;
-	
+
 	/* purge objects by deleting them */
-	void purgeData(void) 
+	void purgeData(void)
 		{
 			UT_Cursor hc1(this);
 			for ( T hval1 = hc1.first(); hc1.is_valid(); hval1 = hc1.next() ) {
@@ -138,9 +138,9 @@ public:
 				}
 			}
 		};
-	
+
     /* purge objects by freeing them */
-	void freeData(void) 
+	void freeData(void)
 		{
 			UT_Cursor hc1(this);
 			for ( T hval1 = hc1.first(); hc1.is_valid(); hval1 = hc1.next() ) {
@@ -155,30 +155,30 @@ private:
 	UT_GenericStringMap(const UT_GenericStringMap<T>&);	// no impl
 	void operator=(const UT_GenericStringMap<T>&);		// no impl
 
-  
+
 	enum SM_search_type
 	{
 		SM_INSERT,
 		SM_LOOKUP,
 		SM_REORG
 	};
-	
+
 	void reorg(size_t slots_to_allocate);
 	void grow();
-	
+
 	void assign_slots(hash_slot<T>* p, size_t old_num_slots);
-	
+
 	static size_t compute_reorg_threshold(size_t nslots);
-	
-	bool too_full() const 
+
+	bool too_full() const
 		{ return (n_keys + n_deleted) >= reorg_threshold; }
-	
+
 	bool too_many_deleted() const
 		{ return n_deleted > (reorg_threshold / 4); }
-	
+
 	bool exceeds_n_delete_threshold() const
 		{ return n_deleted > (reorg_threshold / 2); }
-	
+
 	hash_slot<T>* find_slot(const UT_String&		k,
 					     SM_search_type		search_type,
 					     size_t&			slot,
@@ -188,7 +188,7 @@ private:
 					     bool*				v_found,
 					     void*				vi,
 					     size_t				hashval_in) const;
-	
+
 	hash_slot<T>* find_slot(const char *		k,
 					     SM_search_type		search_type,
 					     size_t&			slot,
@@ -198,17 +198,17 @@ private:
 					     bool*				v_found,
 					     void*				vi,
 					     size_t				hashval_in) const;
-	
+
 	// enumeration of the elements
 	const T _first(UT_Cursor& c) const;
 	const T _next(UT_Cursor& c) const;
 	const T _prev(UT_Cursor& c) const;
 	const UT_String& _key(UT_Cursor& c) const;
 	void _make_deleted(UT_Cursor& c) const;
-	
+
 	// data
 	hash_slot<T>* m_pMapping;
-	
+
 	size_t n_keys;
 	size_t n_deleted;
 	size_t m_nSlots;
@@ -256,12 +256,12 @@ ABI_EXPORT UT_uint32 _Recommended_hash_size(UT_uint32	size);
 class ABI_EXPORT key_wrapper
 {
 public:
-	key_wrapper() 
+	key_wrapper()
 		: m_hashval(0) { }
-	
-	void die() 
+
+	void die()
 		{ m_val.clear(); }
-	
+
 	bool eq(const UT_String &key) const
 	{
 		return (m_val == key);
@@ -271,27 +271,27 @@ public:
 	{
 		return (!strcmp(m_val.c_str(),key));
 	}
-	
-	void operator=(const UT_String &k)	
+
+	void operator=(const UT_String &k)
 		{ m_val = k; }
-	
+
 	UT_uint32 hashval() const
 		{ return m_hashval; }
 	void set_hashval(UT_uint32 h)
 		{ m_hashval = h; }
-	
-	UT_String &value(void) 
+
+	UT_String &value(void)
 		{return m_val;}
 
 	void operator=(const key_wrapper& rhs)
 		{ m_val = rhs.m_val; m_hashval = rhs.m_hashval; }
 
-	static UT_uint32 compute_hash(const UT_String &key) 
+	static UT_uint32 compute_hash(const UT_String &key)
 		{
 			return hashcode(key); // UT_String::hashcode
 		}
 
-	static UT_uint32 compute_hash(const char *key) 
+	static UT_uint32 compute_hash(const char *key)
 		{
 			return hashcode(key);
 		}
@@ -308,7 +308,7 @@ private:
 template <class T> class hash_slot
 {
 public:
-	hash_slot() 
+	hash_slot()
 		: m_value(0) { }
 
 	void make_deleted()
@@ -317,7 +317,7 @@ public:
 			m_value = reinterpret_cast<T>(this);
 			m_key.die();
 		}
-	void make_empty() 
+	void make_empty()
 		{ m_value = 0; }
 
 	const T value() const
@@ -330,13 +330,13 @@ public:
 			m_key.set_hashval(h);
 		}
 
-	void assign(hash_slot<T>* s) 
+	void assign(hash_slot<T>* s)
 		{
 			m_value = s->value();
 			m_key = s->m_key;
 		}
 
-	bool empty() const 
+	bool empty() const
 		{ return (m_value == 0); }
 
 	bool deleted() const
@@ -409,8 +409,8 @@ const gchar ** UT_GenericStringMap<T>::list()
 
 		UT_Cursor c(this);
 
-		for (const gchar * value = (gchar*)(c.first ()); 
-			 c.is_valid (); 
+		for (const gchar * value = (gchar*)(c.first ());
+			 c.is_valid ();
 			 value = (gchar*)(c.next ()))
 		{
 			const char * key = c.key().c_str ();
@@ -438,7 +438,7 @@ T UT_GenericStringMap<T>::pick(const char* k) const
 	bool			key_found = false;
 	size_t			slot;
 	size_t			hashval;
-	
+
 	sl = find_slot(k, SM_LOOKUP, slot, key_found, hashval, 0, 0, 0, 0);
 	return key_found ? sl->value() : 0;
 }
@@ -496,15 +496,15 @@ bool UT_GenericStringMap<T>::insert(const UT_String& key, T value)
 	bool		key_found = false;
 	size_t		hashval = 0;
 
-	hash_slot<T>* sl = find_slot(key, SM_INSERT, slot, key_found, 
+	hash_slot<T>* sl = find_slot(key, SM_INSERT, slot, key_found,
 				  hashval, 0, 0, 0, 0);
 
 	if(key_found)
 		return false;
-	
+
 	sl->insert(value, key, hashval);
 	++n_keys;
-	
+
 	if (too_full())
 	{
 		if (too_many_deleted())
@@ -539,17 +539,17 @@ void UT_GenericStringMap<T>::set(const UT_String& key, T value)
 	size_t		slot = 0;
 	bool		key_found = false;
 	size_t		hashval = 0;
-	
-	hash_slot<T>* sl = find_slot(key, SM_LOOKUP, slot, key_found, 
+
+	hash_slot<T>* sl = find_slot(key, SM_LOOKUP, slot, key_found,
 							  hashval, 0, 0, 0, 0);
-	
+
 	if (!sl || !key_found) // TODO: should we insert or just return?
 	{
 		insert(key, value);
 		return;
-  
+
 	}
-	
+
 	sl->insert(value, key, hashval);
 }
 
@@ -625,7 +625,7 @@ void UT_GenericStringMap<T>::remove(const UT_String& key, T)
 	bool bFound = false;
 	hash_slot<T>* sl = find_slot(key, SM_LOOKUP, slot, bFound,
 							  hashval, 0, 0, 0, 0);
-	
+
 	if (bFound)
 	{
 		sl->make_deleted();
@@ -671,13 +671,13 @@ template <class T>
 void UT_GenericStringMap<T>::assign_slots(hash_slot<T>* p, size_t old_num_slot)
 {
 	size_t target_slot = 0;
-	
+
 	for (size_t slot_num=0; slot_num < old_num_slot; ++slot_num, ++p)
 	{
 		if (!p->empty() && !p->deleted())
 		{
 			bool kf = false;
-			
+
 			size_t hv;
 			hash_slot<T>* sl = find_slot(p->m_key.value(),
 									  SM_REORG,
@@ -736,16 +736,16 @@ UT_GenericStringMap<T>::find_slot(const char *k,
 	xxx_UT_DEBUGMSG(("DOM: hashval for \"%s\" is %d (#%dth slot)\n", k, hashval, nSlot));
 
 	hash_slot<T>* sl = &m_pMapping[nSlot];
-	
+
 	if (sl->empty())
 	{
-		
+
 		xxx_UT_DEBUGMSG(("DOM: empty slot\n"));
-		
+
 		slot = nSlot;
 		key_found = false;
 		return sl;
-	} 
+	}
 	else
 	{
 		if (search_type != SM_REORG &&
@@ -754,7 +754,7 @@ UT_GenericStringMap<T>::find_slot(const char *k,
 	    {
 			slot = nSlot;
 			key_found = true;
-			
+
 			if (v_found)
 			{
 				// so, if v_found is non-null, we should set it.
@@ -764,7 +764,7 @@ UT_GenericStringMap<T>::find_slot(const char *k,
 				{
 					*v_found = (sl->value() == v);
 				} else {
-					*v_found = true; 
+					*v_found = true;
 				}
 			}
 
@@ -773,13 +773,13 @@ UT_GenericStringMap<T>::find_slot(const char *k,
 			return sl;
 	    }
 	}
-	
+
 	int delta = (nSlot ? (m_nSlots - nSlot) : 1);
 	hash_slot<T>* tmp_sl = sl;
 	sl = 0;
 	size_t s = 0;
 	key_found = false;
-	
+
 	while (1)
 	{
 		nSlot -= delta;
@@ -801,7 +801,7 @@ UT_GenericStringMap<T>::find_slot(const char *k,
 				sl = tmp_sl;
 			}
 			break;
-			
+
 		}
 
 		if (tmp_sl->deleted())
@@ -817,20 +817,20 @@ UT_GenericStringMap<T>::find_slot(const char *k,
 			s = nSlot;
 			sl = tmp_sl;
 			key_found = true;
-			
+
 			if (v_found)
 			{
 				if (v)
 				{
 					*v_found = (sl->value() == v);
 				} else {
-					*v_found = true; 
+					*v_found = true;
 				}
 			}
 			break;
 		}
 	}
-	
+
 	slot = s;
 	return sl;
 }
@@ -848,19 +848,19 @@ template <class T>
 void UT_GenericStringMap<T>::reorg(size_t slots_to_allocate)
 {
 	hash_slot<T>* pOld = m_pMapping;
-	
+
 	if (slots_to_allocate < 11)
 	{
 		slots_to_allocate = 11;
 	}
-	
+
 	m_pMapping = new hash_slot<T>[slots_to_allocate];
-	
+
 	const size_t old_num_slot = m_nSlots;
-	
+
 	m_nSlots = slots_to_allocate;
 	reorg_threshold = compute_reorg_threshold(m_nSlots);
-	
+
 	assign_slots(pOld, old_num_slot);
 	DELETEPV(pOld);
 
@@ -885,7 +885,7 @@ UT_GenericStringMap<T>::_first(UT_Cursor& c) const
 		c._set_index(x);	// c = 'UT_Cursor etc'
 		return map[x].value();
 	}
-	
+
 	c._set_index(-1);
 	return 0;
 }
@@ -958,7 +958,7 @@ UT_GenericStringMap<T>::_prev(UT_Cursor& c) const
 		c._set_index(x);
 		return map[x].value();
 	}
-	
+
 	c._set_index(-1);
 	return 0;
 }

@@ -2,20 +2,20 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -45,9 +45,9 @@ class GR_Graphics;
 
 #define PROGRESS_CMD_MASK 0x3		/* 0,1,2,3 Operational values */
 enum _progress_flags {
-    PROGRESS_RESERVED1 	= 0x0,	
+    PROGRESS_RESERVED1 	= 0x0,
     PROGRESS_STARTBAR  	= 0x1,		/* Start using the progress bar */
-    PROGRESS_STOPBAR	= 0x2,		/* Stop using the progress bar */	
+    PROGRESS_STOPBAR	= 0x2,		/* Stop using the progress bar */
     PROGRESS_RESERVED2	= 0x3,
     PROGRESS_SHOW_MSG	= 0x4,		/* Allow message to be displayed */
     PROGRESS_SHOW_RAW	= 0x8,		/* Allow raw value to be displayed */
@@ -87,11 +87,11 @@ public:
 	virtual void        hideProgressBar(void) {}
     virtual void		show(void) {}
     virtual void		hide(void) {}
-	
+
     /* used with AV_Listener */
     virtual bool		    notify(AV_View * pView, const AV_ChangeMask mask);
     virtual AV_ListenerType getType(void) { return AV_LISTENER_STATUSBAR;}
-	
+
 
     UT_GenericVector<AP_StatusBarField*> *             getFields() { return &m_vecFields; }
 protected:
@@ -102,8 +102,8 @@ protected:
     bool			m_bInitFields;
     UT_GenericVector<AP_StatusBarField*> m_vecFields;			/* vector of 'ap_sb_Field *' */
     void *			m_pStatusMessageField;	/* actually 'AP_StatusBarField_StatusMessage *' */
-    AP_StatusBarField_ProgressBar * m_pStatusProgressField;	
-    UT_UTF8String		m_sStatusMessage;	
+    AP_StatusBarField_ProgressBar * m_pStatusProgressField;
+    UT_UTF8String		m_sStatusMessage;
 };
 
 // abstract class which "listens" for changes in the status bar fields in the base classes
@@ -139,7 +139,7 @@ class ABI_EXPORT AP_StatusBarField
 public:
     AP_StatusBarField(AP_StatusBar * pSB);
     virtual ~AP_StatusBarField(void);
-		
+
     virtual void		notify(AV_View * pView, const AV_ChangeMask mask) = 0;
     void setListener(AP_StatusBarFieldListener *pStatusBarFieldListener) { m_pStatusBarFieldListener = pStatusBarFieldListener; }
     AP_StatusBarFieldListener * getListener() { return m_pStatusBarFieldListener; }
@@ -155,11 +155,11 @@ protected:
 class ABI_EXPORT AP_StatusBarField_TextInfo : public AP_StatusBarField
 {
 public:
-    AP_StatusBarField_TextInfo(AP_StatusBar * pSB); 
+    AP_StatusBarField_TextInfo(AP_StatusBar * pSB);
     //virtual ~AP_StatusBarField_TextInfo(void) {}
     const UT_UTF8String & getBuf() { return m_sBuf; }
     // getRepresentativeString: give a "guess" as to how long the string will be. it's not a big deal
-    // if it's wrong; we should resize fixed-length status bar elements in platform specific code 
+    // if it's wrong; we should resize fixed-length status bar elements in platform specific code
     // if they're not big enough to show the string correctly
     const char * getRepresentativeString(void) { return m_sRepresentativeString.utf8_str(); }
     _statusbar_textelement_alignment_method getAlignmentMethod() { return m_alignmentMethod; }

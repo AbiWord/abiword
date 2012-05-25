@@ -39,20 +39,20 @@ enum PSH_PAGES {PG_GENERAL, PG_DOCUMENT, PG_SPELL, PG_SMARTQUOTES};
 */
 class ABI_EXPORT AP_Win32Dialog_Options_Sheet: public XAP_Win32PropertySheet
 {
-	
-public:	
-		AP_Win32Dialog_Options_Sheet();				
+
+public:
+		AP_Win32Dialog_Options_Sheet();
 		void _onInitDialog(HWND hwnd);
-		
+
 		void setParent(AP_Win32Dialog_Options*	pData){m_pParent=pData;};
 		AP_Win32Dialog_Options* getParent(){return m_pParent;};
 		BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		static INT_PTR CALLBACK s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
-		
-private:		
-	
+
+private:
+
 		AP_Win32Dialog_Options*	m_pParent;
-		
+
 };
 
 
@@ -61,23 +61,23 @@ private:
 */
 class ABI_EXPORT AP_Win32Dialog_Options_Spelling: public XAP_Win32PropertyPage
 {
-	
-public:		
+
+public:
 								AP_Win32Dialog_Options_Spelling();
-								~AP_Win32Dialog_Options_Spelling();	
+								~AP_Win32Dialog_Options_Spelling();
 
 	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
 	void						transferData();
 	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
-	
+
 private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
-		
-	AP_Win32Dialog_Options*		m_pParent;		
-	
+
+	AP_Win32Dialog_Options*		m_pParent;
+
 };
 
 
@@ -86,26 +86,26 @@ private:
 */
 class ABI_EXPORT AP_Win32Dialog_Options_General: public XAP_Win32PropertyPage
 {
-	
-public:		
+
+public:
 								AP_Win32Dialog_Options_General();
-								~AP_Win32Dialog_Options_General();	
+								~AP_Win32Dialog_Options_General();
 
 	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
 	void						transferData();
 	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
-	
+
 private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-		
+
 	AP_Win32Dialog_Options*		m_pParent;
 	int							m_nCentered;
 	UT_Vector*					m_pVecUILangs;
-	
+
 };
 
 /*
@@ -113,25 +113,25 @@ private:
 */
 class ABI_EXPORT AP_Win32Dialog_Options_Document: public XAP_Win32PropertyPage
 {
-	
-public:	
+
+public:
 								AP_Win32Dialog_Options_Document();
-								~AP_Win32Dialog_Options_Document();	
+								~AP_Win32Dialog_Options_Document();
 
 	void						setContainer(AP_Win32Dialog_Options*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
 	void						transferData();
 	static INT_PTR CALLBACK		s_pageWndProc(HWND hWnd, UINT msg, WPARAM wParam,   LPARAM lParam);
 	bool						isAutoSaveInRange();
-	
+
 private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-		
-	AP_Win32Dialog_Options*		m_pParent;	
-	
+
+	AP_Win32Dialog_Options*		m_pParent;
+
 };
 
 /*
@@ -139,22 +139,22 @@ private:
 */
 class ABI_EXPORT AP_Win32Dialog_Options_SmartQuotes: public XAP_Win32PropertyPage
 {
-	
-public:	
+
+public:
 								AP_Win32Dialog_Options_SmartQuotes();
-								~AP_Win32Dialog_Options_SmartQuotes();	
+								~AP_Win32Dialog_Options_SmartQuotes();
 
 	void						setContainer(AP_Win32Dialog_Options* pParent){m_pParent=pParent;};
 	AP_Win32Dialog_Options*		getContainer(){return m_pParent;};
-	
+
 private:
 
 	void						_onInitDialog();
 	void						_onKillActive(){};
 	BOOL					_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-		
+
 	AP_Win32Dialog_Options*		m_pParent;
-	
+
 };
 
 
@@ -168,22 +168,22 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog * 	static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
-	HWND					getPage(PSH_PAGES page);	
+
+	HWND					getPage(PSH_PAGES page);
 	XAP_DialogFactory * 	getDialogFactory() {return	m_pDialogFactory;};
 	XAP_Frame *				getFrame() {return	m_pFrame;};
-	void					checkLanguageChange();	
+	void					checkLanguageChange();
 	HFONT					getBoldFontHandle () {return m_hFont;}
-	
+
  protected:
- 	
-	AP_Win32Dialog_Options_General		m_general; 
+
+	AP_Win32Dialog_Options_General		m_general;
 	AP_Win32Dialog_Options_Document		m_document;
- 	AP_Win32Dialog_Options_Spelling		m_spelling; 	 		
+ 	AP_Win32Dialog_Options_Spelling		m_spelling;
  	AP_Win32Dialog_Options_SmartQuotes	m_smartquotes;
 	UT_String							m_curLang;
 	BOOL								m_langchanged;
-	HFONT								m_hFont; 	
+	HFONT								m_hFont;
 
 	virtual void _controlEnable( tControl id, bool value );
 	virtual void _initEnableControlsPlatformSpecific();
@@ -198,7 +198,7 @@ public:
 	SET_GATHER			(SpellMainOnly, 	bool );
 	SET_GATHER			(SpellUppercase,	bool );
 	SET_GATHER			(SpellNumbers,		bool );
-	SET_GATHER			(GrammarCheck,		bool); 
+	SET_GATHER			(GrammarCheck,		bool);
 	SET_GATHER			(ViewRulerUnits,	UT_Dimension);
 	SET_GATHER			(AutoLoadPlugins, bool);
 	SET_GATHER			(OtherDirectionRtl, bool );
@@ -206,7 +206,7 @@ public:
  	SET_GATHER			(SmartQuotes,   		bool);
  	SET_GATHER			(CustomSmartQuotes,		bool);
 	SET_GATHER			(EnableOverwrite,		bool);
-	
+
 	virtual bool _gatherViewShowToolbar(UT_uint32 t) { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return true;}
 	virtual void _setViewShowToolbar(UT_uint32 row, bool b) {}
 
@@ -225,7 +225,7 @@ public:
 	virtual void _gatherAutoSaveFilePeriod(UT_String &stRetVal);
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod);
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal);
-	virtual void _setAutoSaveFileExt(const UT_String &stExt);	
+	virtual void _setAutoSaveFileExt(const UT_String &stExt);
 	virtual void _gatherUILanguage(UT_String &stRetVal);
 	virtual void _setUILanguage(const UT_String &stExt);
 	virtual gint _gatherOuterQuoteStyle();
@@ -245,7 +245,7 @@ public:
 	bool			m_boolViewShowStatusBar;
 	bool			m_boolViewUnprintable;
 	bool			m_boolViewCursorBlink;
-	
+
 #undef SET_GATHER
 
  protected:

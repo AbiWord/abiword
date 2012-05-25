@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -32,7 +32,7 @@
 class ABI_EXPORT AP_Win32Dialog_Styles: public AP_Dialog_Styles, public XAP_Win32DialogBase, XAP_Win32Dialog
 {
 public:
-	typedef enum _StyleType 
+	typedef enum _StyleType
 	  {USED_STYLES, ALL_STYLES, USER_STYLES} StyleType;
 
 	AP_Win32Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
@@ -41,7 +41,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
+
 protected:
 
 	virtual const char * getCurrentStyle (void) const;
@@ -53,7 +53,7 @@ protected:
 	XAP_Win32PreviewWidget	*	m_pAbiPreviewWidget;
 
 	void				_populateWindowData(void);
-	void                _populateCList(void);	
+	void                _populateCList(void);
 	void				rebuildDeleteProps();
 	void				eventBasedOn();
 	void				eventFollowedBy();
@@ -65,9 +65,9 @@ protected:
 	BOOL					_onDeltaPos(NM_UPDOWN * pnmud){return 0;};
 	BOOL					_onDlgMessage(HWND,UINT,WPARAM,LPARAM);
 	//static BOOL CALLBACK 	s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
-	void					_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWND hWnd);	
-	
-	
+	void					_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWND hWnd);
+
+
 
 private:
 	XAP_Win32DialogHelper		_win32Dialog;

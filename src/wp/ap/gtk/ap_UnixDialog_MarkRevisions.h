@@ -44,7 +44,7 @@ class AP_UnixDialog_MarkRevisions: public AP_Dialog_MarkRevisions
 		BUTTON_OK = GTK_RESPONSE_OK,
 		BUTTON_CANCEL = GTK_RESPONSE_CANCEL
 	} ResponseId ;
-	
+
 	virtual GtkWidget * constructWindow () ;
 
 	static void ok_callback ( GtkWidget*, AP_UnixDialog_MarkRevisions * me)
@@ -56,7 +56,7 @@ class AP_UnixDialog_MarkRevisions: public AP_Dialog_MarkRevisions
 	  {
 	    me->event_OK () ;
 	  }
-	
+
 	static void destroy_callback ( GtkWidget*, gpointer /*unused*/, AP_UnixDialog_MarkRevisions * me)
 	  {
 	    me->event_Cancel () ;

@@ -6,15 +6,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -36,7 +36,7 @@ enum apufi_ScrollType { apufi_scrollX, apufi_scrollY }; // can we use namespaces
 class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 {
  public:
-	AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame); 
+	AP_UnixFrameImpl(AP_UnixFrame *pUnixFrame);
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
 
 	virtual UT_RGBColor getColorSelBackground () const;

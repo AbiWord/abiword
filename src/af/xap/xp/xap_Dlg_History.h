@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -41,7 +41,7 @@
              rows) is getListItemCount(). Strings for each cell in the
              list are obtained via getListValue(row, column); the
              title for entire list comes from getListTitle().
-             
+
              getListItemId(n) returns numerical id for a given row; if
              the user closes the dialogue in any other way than
              pressing Cancel, the numerical id for selected row should
@@ -63,7 +63,7 @@ class ABI_EXPORT XAP_Dialog_History : public XAP_Dialog_NonPersistent
 {
   public:
 	XAP_Dialog_History(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	
+
 	virtual ~XAP_Dialog_History(void) {};
 
 	virtual void runModal(XAP_Frame * pFrame) = 0;
@@ -73,7 +73,7 @@ class ABI_EXPORT XAP_Dialog_History : public XAP_Dialog_NonPersistent
 	XAP_Dialog_History::tAnswer		getAnswer(void) const {return m_answer;};
 
 	void         setDocument(AD_Document * pDoc) {m_pDoc = pDoc;}
-	
+
 	UT_uint32    getHeaderItemCount() const {return iHeaderItemCount;}
 	const char * getHeaderLabel(UT_uint32 indx) const;
 	char *       getHeaderValue(UT_uint32 indx) const;
@@ -87,12 +87,12 @@ class ABI_EXPORT XAP_Dialog_History : public XAP_Dialog_NonPersistent
 	UT_uint32    getListItemCount() const;
 	char *       getListValue(UT_uint32 item, UT_uint32 column) const;
 	UT_uint32    getListItemId(UT_uint32 item) const;
-	
+
 	const char * getWindowLabel() const;
-	
+
 	UT_uint32    getSelectionId() const {return m_iId;}
-	void         setSelectionId(UT_uint32 iId) {m_iId = iId;} 
-	
+	void         setSelectionId(UT_uint32 iId) {m_iId = iId;}
+
   protected:
 	XAP_Dialog_History::tAnswer		m_answer;
 

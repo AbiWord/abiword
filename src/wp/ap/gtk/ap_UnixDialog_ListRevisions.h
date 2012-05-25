@@ -44,20 +44,20 @@ class AP_UnixDialog_ListRevisions: public AP_Dialog_ListRevisions
 		BUTTON_OK = GTK_RESPONSE_OK,
 		BUTTON_CANCEL = GTK_RESPONSE_CANCEL
 	} ResponseId ;
-	
+
 	virtual GtkWidget * constructWindow () ;
 
-	static void select_row_cb(GtkTreeSelection * select, 
+	static void select_row_cb(GtkTreeSelection * select,
 							   AP_UnixDialog_ListRevisions * me);
-	static void row_activated_cb(GtkTreeView *, GtkTreePath *, 
-								 GtkTreeViewColumn*, 
+	static void row_activated_cb(GtkTreeView *, GtkTreePath *,
+								 GtkTreeViewColumn*,
 								 AP_UnixDialog_ListRevisions * me);
 
 	void event_OK () ;
 	void event_Cancel () ;
 
  private:
-	
+
 	void constructWindowContents ( GtkWidget * container ) ;
 
 	void select_Row (GtkTreeIter iter) ;
@@ -66,7 +66,7 @@ class AP_UnixDialog_ListRevisions: public AP_Dialog_ListRevisions
 	GtkWidget* m_mainWindow;
     GtkWidget* m_treeModel;
 
-    enum 
+    enum
     {
         COL_REVID = 0,
         COL_DATE_STRING,

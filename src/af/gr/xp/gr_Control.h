@@ -64,7 +64,7 @@ class ABI_EXPORT GR_Control
   /*!
    * Insert data into this control
    */
-  virtual UT_Error _abi_callonce populate ( const UT_Byte * pBytes, 
+  virtual UT_Error _abi_callonce populate ( const UT_Byte * pBytes,
 					    UT_uint32 dataLen ) = 0;
 
   /*!
@@ -166,7 +166,7 @@ class ABI_EXPORT GR_ControlFactory
 					    XAP_Frame * pOwningFrame,
 					    const char * pszExt,
 					    GR_Control ** pCtlOut ) = 0;
-  
+
   /*!
    * Create a new control that can handle objects of this data type
    * NB: does *not* necessarily populate the control with your data
@@ -183,10 +183,10 @@ class ABI_EXPORT GR_ControlFactory
    */
   inline UT_Error newControlForData ( AV_View * pControllingView,
 				      XAP_Frame * pOwningFrame,
-				      const UT_Bytebuf * pData, 
+				      const UT_Bytebuf * pData,
 				      GR_Control ** pCtlOut )
     {
-      return newControlForData ( pControllingView, pOwningFrame, 
+      return newControlForData ( pControllingView, pOwningFrame,
 				 pData->getPointer(0), pData->getLength(),
 				 pCtlOut );
     }
@@ -201,10 +201,10 @@ class ABI_EXPORT GR_ControlFactory
     }
 
  private:
-  
+
   void operator delete ( GR_ControlFactory * ); // no impl
   GR_ControlFactory ( const GR_ControlFactory & ); // no impl
-  GR_ControlFactory & operator=( const GR_ControlFactory & ); // no impl  
+  GR_ControlFactory & operator=( const GR_ControlFactory & ); // no impl
 };
 
 #endif // GR_CONTROL_H

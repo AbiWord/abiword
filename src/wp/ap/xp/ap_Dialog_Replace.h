@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -58,7 +58,7 @@ public:
 	bool						setView(AV_View * view);
 	AV_View * 					getView(void);
 	FV_View * 					getFvView(void);
-	
+
 	void						setFindString(const UT_UCSChar * string);
 	UT_UCSChar *				getFindString(void);
 
@@ -81,7 +81,7 @@ public:
 	bool						findReplaceReverse(void);
 	bool						findReplace(void);
 	bool 						findReplaceAll(void);
-	
+
  protected:
 
 	// These are the "current use" dialog data items,
@@ -90,7 +90,7 @@ public:
 	// these may point to are destroyed when useEnd()
 	// is done storing them away
 	FV_View * 					m_pView;
-	UT_UCSChar *				m_findString; 
+	UT_UCSChar *				m_findString;
 	UT_UCSChar *				m_replaceString;
 
 	// Message boxes for events during search
@@ -99,19 +99,19 @@ public:
 	void						_messageFinishedFind(void);
 	void						_messageFinishedReplace(UT_uint32 numReplaced = 0);
 	void 						_messageBox(const char * message);
-	
+
 	// is this used in a modeless dialog like this?
 	tAnswer						m_answer;
 	char						m_WindowName[100];
-		
+
 	// save a list of find a replace texts
 	UT_GenericVector<UT_UCS4Char*>	m_findList;
 	UT_GenericVector<UT_UCS4Char*>	m_replaceList;
 	virtual void				_updateLists() = 0; // must be implemented in non-xp code
-	
+
  private:
 	// returns true when the internal list was changed
-	bool						_manageList(UT_GenericVector<UT_UCS4Char*>* list, UT_UCSChar* string);	 	
+	bool						_manageList(UT_GenericVector<UT_UCS4Char*>* list, UT_UCSChar* string);
 };
 
 #endif /* AP_DIALOG_REPLACE_H */

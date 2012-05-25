@@ -2,20 +2,20 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -113,7 +113,7 @@ public:
     const UT_UTF8String & class_list() const {
         return m_class_list;
     }
-    
+
     PD_Document* getDocument() const{
         return m_pDocument;
     }
@@ -125,7 +125,7 @@ public:
 class ABI_EXPORT IE_Exp_HTML_StyleListener : public PL_Listener {
 public:
     IE_Exp_HTML_StyleListener(IE_Exp_HTML_StyleTree *styleTree);
-    
+
     bool populate(fl_ContainerLayout* sfh,
             const PX_ChangeRecord * pcr);
 
@@ -147,7 +147,7 @@ public:
     bool signal(UT_uint32 iSignal);
 private:
     void styleCheck(PT_AttrPropIndex api);
-    
+
     IE_Exp_HTML_StyleTree *m_pStyleTree;
 };
 

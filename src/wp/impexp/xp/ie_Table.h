@@ -8,15 +8,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -64,7 +64,7 @@ class ABI_EXPORT ie_PartTable
 	void                  _clearAll(void);
 	void                  _clearAllCell(void);
 	PD_Document *         m_pDoc;
-	PT_AttrPropIndex      m_apiTable;			
+	PT_AttrPropIndex      m_apiTable;
 	PT_AttrPropIndex      m_apiCell;
 	const PP_AttrProp *   m_TableAttProp;
 	const PP_AttrProp *   m_CellAttProp;
@@ -80,8 +80,8 @@ class ABI_EXPORT ie_PartTable
 	UT_sint32             m_iPrevBot;
 	pf_Frag_Strux*     m_TableSDH;
 	bool                  m_bIsCellJustOpenned;
-	UT_sint32             m_iCurRow;         
-};			
+	UT_sint32             m_iCurRow;
+};
 
 
 class ABI_EXPORT ie_Table
@@ -119,13 +119,13 @@ class ABI_EXPORT ie_Table
 	std::stack<ie_PartTable*> m_sLastTable;
 	bool              m_bNewRow;
 	pf_Frag_Strux*  m_sdhLastCell;
-};			
+};
 
 
 class ABI_EXPORT ie_imp_cell
 {
  public:
-	ie_imp_cell(ie_imp_table * pImpTable, PD_Document * pDoc, 
+	ie_imp_cell(ie_imp_table * pImpTable, PD_Document * pDoc,
 				ie_imp_cell * pImpCell, UT_sint32 iRow);
 	virtual          ~ie_imp_cell(void);
 	void             setCellX(UT_sint32 cellx);
@@ -182,7 +182,7 @@ class ABI_EXPORT ie_imp_cell
 	bool                  m_bFirstVertical;
 	bool                  m_bFirstHori;
 	UT_String             m_sCellProps;
-};			
+};
 
 
 class ABI_EXPORT ie_imp_table
@@ -248,7 +248,7 @@ class ABI_EXPORT ie_imp_table
 	UT_GenericVector<ie_imp_cell*> m_vecCells;
 	UT_NumberVector           m_vecCellX;
 	UT_NumberVector           m_vecSavedX;
-};			
+};
 
 class ABI_EXPORT ie_imp_table_control
 {
@@ -290,7 +290,7 @@ public:
 		/* cell frag/strux
 		 */
 	pf_Frag_Strux *		m_pfsCell;
-		
+
 		/* cell-attach points
 		 */
 	UT_sint32			m_bottom;
@@ -349,7 +349,7 @@ private:
 	bool	trEnd ();
 	void	trClean ();
 	bool	tdPending ();
-	
+
 	PD_Document *		m_pDocument;
 
 	UT_UTF8String		m_style_table;

@@ -90,7 +90,7 @@ public:
 	const gchar *			getDelim() const;
 	void						setDecimal(const gchar * pszDecimal);
     void                        setDecimal(const std::string & decimal)
-    { 
+    {
         setDecimal(decimal.c_str());
     }
 	const gchar *			getDecimal() const;

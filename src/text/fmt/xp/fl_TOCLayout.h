@@ -40,12 +40,12 @@ class ABI_EXPORT TOCEntry
 {
 public:
 	TOCEntry(fl_BlockLayout * pBlock,
-			 UT_sint32 iLevel, 
+			 UT_sint32 iLevel,
 			 UT_UTF8String & sDispStyle,
-			 bool bHaveLabel, 
-			 FootnoteType iFType, 
+			 bool bHaveLabel,
+			 FootnoteType iFType,
 			 UT_UTF8String & sBefore,
-			 UT_UTF8String sAfter, 
+			 UT_UTF8String sAfter,
 			 bool bInherit,
 			 UT_sint32 iStartAt);
 
@@ -65,7 +65,7 @@ public:
 	UT_sint32            getPosInList(void)
 		{ return m_iPosInList;}
 	void                 calculateLabel(TOCEntry * pPrevLevel);
-    UT_UTF8String &      getNumLabel(void) 
+    UT_UTF8String &      getNumLabel(void)
 		{ return m_sLabel;}
 	UT_UTF8String       getFullLabel(void);
 private:
@@ -91,9 +91,9 @@ class ABI_EXPORT fl_TOCLayout : public fl_SectionLayout
 
 public:
 	fl_TOCLayout(FL_DocLayout* pLayout,
-				 fl_DocSectionLayout * pDocSL, 
-				 pf_Frag_Strux* sdh, 
-				 PT_AttrPropIndex ap, 
+				 fl_DocSectionLayout * pDocSL,
+				 pf_Frag_Strux* sdh,
+				 PT_AttrPropIndex ap,
 				 fl_ContainerLayout * pMyContainerLayout);
 
 	virtual ~fl_TOCLayout();
@@ -144,7 +144,7 @@ public:
 	const UT_UTF8String &    getRangeBookmarkName() const {return m_sRangeBookmark;}
 	bool                     verifyBookmarkAssumptions();
 	bool                     fillTOC(void);
-	
+
 	static UT_UTF8String     getDefaultHeading();
 	static UT_UTF8String     getDefaultSourceStyle(UT_uint32 iLevel);
 	static UT_UTF8String     getDefaultDestStyle(UT_uint32 iLevel);
@@ -160,7 +160,7 @@ private:
 	void                     _createAndFillTOCEntry(PT_DocPosition posStart, PT_DocPosition posEnd,
 													fl_BlockLayout * pPrevBL, const char * pszStyle,
 													UT_sint32 iAllBlocks);
-	
+
 	void                     _addBlockInVec(fl_BlockLayout * pBlock,UT_UTF8String & sStyle);
 	void                     _removeBlockInVec(fl_BlockLayout * pBlock, bool bDontRecurse = false);
 	void                     _calculateLabels(void);

@@ -72,7 +72,7 @@ public:
 
 	void renderChars(GR_RenderInfo & ri);
 
-	
+
 	GR_Image * genImageFromRectangle(const UT_Rect & r);
 
 	// These just call the functions with the same name in GR_Graphics.

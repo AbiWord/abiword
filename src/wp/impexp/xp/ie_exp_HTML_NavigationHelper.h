@@ -1,22 +1,22 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiSource
- * 
+ *
  * Copyright (C) 2011 Volodymyr Rudyj <vladimir.rudoy@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 #ifndef IE_EXP_HTML_NAVIGATIONHELPER_H
@@ -45,15 +45,15 @@
 
 class ABI_EXPORT IE_Exp_HTML_NavigationHelper : public IE_TOCHelper {
 public:
-    IE_Exp_HTML_NavigationHelper(PD_Document *pDocument, 
+    IE_Exp_HTML_NavigationHelper(PD_Document *pDocument,
             const UT_UTF8String &baseName);
     virtual ~IE_Exp_HTML_NavigationHelper();
-    
+
     UT_UTF8String getBookmarkFilename(const UT_UTF8String &id) const;
     UT_UTF8String getFilenameByPosition(PT_DocPosition position) const;
     inline int getMinTOCLevel() const { return m_minTOCLevel; }
     inline int getMinTOCIndex() const { return m_minTOCIndex; }
-    inline std::map<UT_UTF8String, UT_UTF8String> & getBookmarks() 
+    inline std::map<UT_UTF8String, UT_UTF8String> & getBookmarks()
         { return m_bookmarks; }
 private:
     UT_UTF8String m_suffix;

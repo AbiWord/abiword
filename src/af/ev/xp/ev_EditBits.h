@@ -45,7 +45,7 @@ typedef UT_uint32 EV_EditMouseContext;								/* may not be ORed */
 //			equal to EV_COUNT_EMC. However, the original values were defined
 //			in such a way that it often was bigger dan EV_COUNT_EMC. E.g.
 //			0xe0000000 >> 27 = 28, which is bigger than EV_COUNT_EMC. I therefor
-//			rearranged the values. I just hope noone ever was so stupid to use 
+//			rearranged the values. I just hope noone ever was so stupid to use
 //			hardcoded values...
 #define EV_EMC__MASK__			((EV_EditMouseContext) 0xf8000000)
 #define EV_EMC_UNKNOWN			((EV_EditMouseContext) 0x08000000)

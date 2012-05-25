@@ -1,20 +1,20 @@
-/* 
+/*
  * AbiSource Program Utilities
  * Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -39,7 +39,7 @@
 // platform supports exceptions.
 // '/me crosses his fingers'
 //
-// For starters, this should only initially be used in constructors 
+// For starters, this should only initially be used in constructors
 // where we can't return an error-code (and thus have our code work
 // on both older and newer compilers via a UT_Error code). You can throw
 // from inside of a constructor, so we can potentially catch errors there
@@ -53,7 +53,7 @@
 //
 
 /*
- * Public base-class which all of our own 
+ * Public base-class which all of our own
  * exceptions should inherit from
  */
 class ABI_EXPORT UT_Exception
@@ -73,13 +73,13 @@ class ABI_EXPORT UT_Exception
 // UT_THROWS will declare a C++ method as throwing an exception
 //           usage:
 //           UT_THROWS((MyException1, MyException2))
-// UT_RETHROW will rethrow a caught exception from within the 
+// UT_RETHROW will rethrow a caught exception from within the
 //            exception handler
 //
 
 #ifdef ABI_DOESNT_SUPPORT_EXCEPTIONS
 
-// d'oh! please list platforms/compilers here which have 
+// d'oh! please list platforms/compilers here which have
 // issues with exceptions here for future reference
 
 // MSVC5: has issues with Class::method() throw(ex)

@@ -5,15 +5,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -55,14 +55,14 @@ protected:
 	  BUTTON_APPLY = GTK_RESPONSE_APPLY,
 	  BUTTON_CLOSE = GTK_RESPONSE_CLOSE
 	} ResponseId ;
-		
+
 	virtual GtkWidget *		_constructWindow(void);
 	void					_populateWindowData(void);
 	void					_storeWindowData(void);
 	void                     _connectSignals(void);
-	
-	GR_UnixCairoGraphics	* 		m_pPreviewWidget;	
-	
+
+	GR_UnixCairoGraphics	* 		m_pPreviewWidget;
+
 	// pointers to widgets we need to query/set
 	GtkWidget * m_windowMain;
 	GtkWidget * m_wApplyButton;
@@ -74,7 +74,7 @@ protected:
 	GtkWidget * m_wLineRight;
 	GtkWidget * m_wLineTop;
 	GtkWidget * m_wLineBottom;
-	
+
 	GtkWidget * m_wPreviewArea;
 
 	GtkWidget * m_wSetImageButton;

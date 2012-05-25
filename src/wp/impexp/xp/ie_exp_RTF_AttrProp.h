@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -84,13 +84,13 @@ protected:
     typedef boost::function2< std::string, const gchar *, const std::string& > m_filter_t;
     typedef std::list< m_filter_t > m_filterlist_t;
     m_filterlist_t m_filterlist;
-    
+
 public:
     const gchar* operator()( const gchar * szName, const gchar * szValue ) const
     {
         if( m_filterlist.empty() )
             return szValue;
-        
+
         m_cache = szValue ? szValue : "";
         for( m_filterlist_t::const_iterator fi = m_filterlist.begin();
              fi != m_filterlist.end(); ++fi )
@@ -98,7 +98,7 @@ public:
             const m_filter_t& f = *fi;
             m_cache = f( szName, m_cache );
         }
-        
+
         return m_cache.c_str();
     }
     void append( m_filter_t f )
@@ -132,7 +132,7 @@ struct APFilterNULL
  * are used for exporting both style sheets and document contents.
  * Styles and document elements use different ways of looking
  * up property values, but we don't care about that.
- * 
+ *
  * s_RTF_AttrPropAdapter is an abstract class for accessing properties.
  * The function getProperty takes a property name as argument
  * and returns the value, or NULL if that property isn't defined.

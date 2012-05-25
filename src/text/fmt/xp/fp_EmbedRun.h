@@ -62,7 +62,7 @@ protected:
 											  GR_Graphics * pG = NULL);
 
 	void                    _lookupLocalProperties();
-	
+
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_letPointPass(void) const;
@@ -70,7 +70,7 @@ protected:
 	UT_sint32               _getLayoutPropFromObject(const char * szProp) const;
     bool                    _updatePropValuesIfNeeded(void);
 	virtual	bool		    _recalcWidth(void);
-	
+
 	UT_sint32               m_iPointHeight;
 	const PP_AttrProp *     m_pSpanAP;
 	UT_uint32               m_iGraphicTick;

@@ -9,21 +9,21 @@
 //
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
 // Copyright (C) 2001 Dom Lachowicz <dominicl@seas.upenn.edu>
-// Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net> 
-// 
+// Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
+//
 // This class is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This class is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 // 02111-1307, USA.
 //
 
@@ -131,12 +131,12 @@ ABI_EXPORT size_t UT_String_findRCh(const UT_String &st, char ch);
 /****************************************************************************/
 
 /*!
- * Fill \inStr with the results of evaulating the printf formatted string 
+ * Fill \inStr with the results of evaulating the printf formatted string
  * \inFormat and return the reference to \inStr
  */
 ABI_EXPORT UT_String& UT_String_sprintf(UT_String & inStr, const char * inFormat, ...) ABI_PRINTF_FORMAT(2,3);
 ABI_EXPORT UT_String& UT_String_vprintf (UT_String & inStr, const char *format,
-                                         va_list      args1) 
+                                         va_list      args1)
     ABI_PRINTF_FORMAT(2,0);
 ABI_EXPORT UT_String& UT_String_vprintf (UT_String & inStr, const UT_String & format,
 					 va_list      args1);
@@ -205,12 +205,12 @@ public:
 	UT_UTF8String &	operator+=(const char *          rhs);
 	UT_UTF8String &	operator+=(const std::string &   rhs);
 	UT_UTF8String &	operator+=(const UT_UTF8String & rhs);
-	UT_UTF8String &	operator+=(const UT_UCS4String & rhs);	
+	UT_UTF8String &	operator+=(const UT_UCS4String & rhs);
 
 	// The returned pointer is valid until the next non-const
 	// operation. You will _always_ get a legal pointer back,
 	// even if to an empty (0) string.
-	const char * utf8_str () const;	
+	const char * utf8_str () const;
 	UT_UCS4String ucs4_str ();
 
 	void		assign (const char * sz, size_t n = 0 /* 0 == null-termination */);
@@ -227,17 +227,17 @@ public:
 	const UT_UTF8String & escapeMIME (); // translates the current string to MIME "quoted-printable" format
 	const UT_UTF8String & lowerCase ();  // forces current string to lowercase
 	const UT_UTF8String & escapeURL ();  // make URL confirm to RFC 1738
-	const UT_UTF8String & decodeURL ();  
-	
+	const UT_UTF8String & decodeURL ();
+
 	/* UTF8String - NOTES
-	 * 
+	 *
 	 * TODO:
 	 * 1. Maybe have a search&replace function, something like:
-	 * 
+	 *
 	 * 	int replace (const char * utf_newstr, const char * utf_oldstr);
-	 * 
+	 *
 	 *    which could be used to do substitutions, e.g.:
-	 * 
+	 *
 	 * 	UTF8String xmlstr = "expr: if ((c > 0) && (c < 0x80)) return c;";
 	 * 	xmlstr.replace ("&lt;", "<");
 	 * 	xmlstr.replace ("&gt;", ">");
@@ -245,10 +245,10 @@ public:
 	 *
 	 * 	MIQ: Note that for these replace methods, one might use ut_std_string/replace_all()
 	 *
-	 * 
+	 *
 	 * getIterator:
 	 * returns a home-made iterator associated with the UTF-8 string, e.g.:
-	 * 
+	 *
 	 * 	UTF8String str = "This is a UTF-8 string.";
 	 * 	UT_UTF8Stringbuf::UTF8Iterator & iter = str.getIterator ();
 	 * 	iter = iter.start (); // iter.start() returns 0 if no string, so:
@@ -262,7 +262,7 @@ public:
 	 * 			iter.advance (); // or ++iter;
 	 * 		}
 	 * 	}
-	 * 
+	 *
 	 * The iterator will be well behaved provided the string is not being edited.
 	 */
 	UT_UTF8Stringbuf::UTF8Iterator getIterator () const
@@ -374,7 +374,7 @@ public:
     // The same valid constraints as ucs4_str() applies to begin and end
     const UT_UCS4Char* begin() const;
     const UT_UCS4Char* end()   const;
-    
+
 	const char * utf8_str ();
 
 private:

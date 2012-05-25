@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -32,7 +32,7 @@ class UT_ByteBuf;
 class ABI_EXPORT GR_CairoNullGraphicsAllocInfo : public GR_AllocInfo
 {
 public:
- 	GR_CairoNullGraphicsAllocInfo() 
+ 	GR_CairoNullGraphicsAllocInfo()
 	  {}
 
 	virtual GR_GraphicsId getType() const {return GRID_CAIRO_NULL;}
@@ -50,12 +50,12 @@ public:
 
 	static UT_uint32 s_getClassId() {return GRID_CAIRO_NULL;}
 	virtual UT_uint32 getClassId() {return s_getClassId();}
-	
+
 	virtual GR_Capability getCapability(){UT_ASSERT(UT_NOT_IMPLEMENTED); return GRCAP_UNKNOWN;}
 	static const char *    graphicsDescriptor(void) { return "Cairo Null Graphics";}
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
-	virtual void drawChars(const UT_UCSChar* pChars, 
+	virtual void drawChars(const UT_UCSChar* pChars,
 			       int iCharOffset, int iLength,
 			       UT_sint32 xoff, UT_sint32 yoff,
 			       int * pCharWidths = NULL);
@@ -80,11 +80,11 @@ public:
 	virtual void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawRGBImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void drawGrayImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
-	virtual void drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);	
+	virtual void drawBWImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual GR_Image* createNewImage(const char* pszName, const UT_ByteBuf* pBBPNG, const std::string& mimetype, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, GR_Image::GRType iType  = GR_Image::GRT_Raster);
-	
+
 	virtual bool queryProperties(GR_Graphics::Properties gp) const;
-	
+
 	virtual bool startPrint(void);
 	virtual bool startPage(const char * szPagelabel, UT_uint32 pageNumber,
 							  bool bPortrait, UT_uint32 iWidth, UT_uint32 iHeight);
@@ -92,7 +92,7 @@ public:
 
 	virtual void setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
-	
+
 	virtual void setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
@@ -107,7 +107,7 @@ public:
 	virtual void	  saveRectangle(UT_Rect & /*r*/, UT_uint32 /*iIndx*/) {}
 	virtual void	  restoreRectangle(UT_uint32 /*iIndx*/) {}
 
-	virtual void setLineProperties(double inWidth, 
+	virtual void setLineProperties(double inWidth,
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);

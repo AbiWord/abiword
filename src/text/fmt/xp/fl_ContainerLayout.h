@@ -133,13 +133,13 @@ public:
 	void                    setVisibility(FPVisibility eVis) {m_eHidden = eVis;}
 	bool                    isOnScreen() const;
 
-// Frames stuff	
+// Frames stuff
 	UT_sint32               getNumFrames(void) const;
 	fl_FrameLayout *        getNthFrameLayout(UT_sint32 i) const;
 	fp_FrameContainer *     getNthFrameContainer(UT_sint32 i) const;
 	void                    addFrame(fl_FrameLayout * pFrame);
 	bool                    removeFrame(fl_FrameLayout * pFrame);
-	
+
 // For Folded Text
 
 	UT_sint32               getFoldedLevel(void);
@@ -148,7 +148,7 @@ public:
 
 	void                    lookupProperties(void);
 	void                    lookupMarginProperties(void);
-	
+
 	fl_BlockLayout*         getNextBlockInDocument(void) const;
 	fl_BlockLayout*         getPrevBlockInDocument(void) const;
 
@@ -169,7 +169,7 @@ private:
 	// This function must be overriden by any derrived class that can endup positioned
 	// outside of the normal printable area on page
 	virtual void            _lookupMarginProperties(const PP_AttrProp* /*pAP*/){}
-	
+
 	virtual bool            _canContainPoint() const {return true;}
 	void	                _insertFirst(fl_ContainerLayout * pL);
 

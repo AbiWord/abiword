@@ -6,15 +6,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -32,16 +32,16 @@ class AP_Win32Frame;
 class ABI_EXPORT AP_Win32FrameImpl : public XAP_Win32FrameImpl
 {
  public:
-	AP_Win32FrameImpl(AP_Frame *pFrame); 
+	AP_Win32FrameImpl(AP_Frame *pFrame);
 	~AP_Win32FrameImpl(void);
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
 
 	virtual UT_RGBColor getColorSelBackground () const;
 
 	HWND						getHwndDocument(void)  {  return m_hwndDocument;  }
-	
+
 	GR_Win32Graphics *			createDocWndGraphics(void);
-	
+
  protected:
 	friend class AP_Win32Frame;
 

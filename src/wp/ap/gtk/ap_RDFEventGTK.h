@@ -36,11 +36,11 @@ class ABI_EXPORT AP_RDFEventGTK
     GtkEntry* w_dtstart;
     GtkEntry* w_dtend;
     GtkEntry* w_uid;
-    
+
   public:
     AP_RDFEventGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it );
     virtual ~AP_RDFEventGTK();
-    
+
     virtual void* createEditor();
     virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
 };

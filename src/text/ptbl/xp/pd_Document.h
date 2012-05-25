@@ -86,7 +86,7 @@ enum
 	PD_SIGNAL_REVISION_MODE_CHANGED,
 	PD_SIGNAL_DOCNAME_CHANGED,
 	PD_SIGNAL_DOCDIRTY_CHANGED,
-	PD_SIGNAL_SAVEDOC, 
+	PD_SIGNAL_SAVEDOC,
 	PD_SIGNAL_DOCCLOSED // TODO: remove this
 };
 
@@ -213,14 +213,14 @@ class ABI_EXPORT PD_XMLIDCreator
     friend class PD_Document;
     PD_Document* m_doc;
     PD_XMLIDCreatorPrivate* m_impl;
-    
+
   protected:
 
     PD_XMLIDCreator( PD_Document* doc );
     void rebuildCache();
-    
+
   public:
-    
+
     ~PD_XMLIDCreator();
     std::string createUniqueXMLID( const std::string& desiredID, bool deepCopyRDF = false );
 };
@@ -237,7 +237,7 @@ public:
 	PD_Document();
 
 	virtual AD_DOCUMENT_TYPE getType() const {return ADDOCUMENT_ABIWORD;}
-	
+
 	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * impProps = NULL);
 	virtual UT_Error		importFile(const char * szFilename, int ieft, bool markClean = false, bool bImportStylesFirst = true,
 									   const char * impProps = NULL);
@@ -305,8 +305,8 @@ public:
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
 	bool                    isMarginChangeOnly(void) const;
-	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object* odh,const gchar ** attributes,const gchar ** properties );	
-PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);	
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object* odh,const gchar ** attributes,const gchar ** properties );
+PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const gchar ** attributes,
@@ -315,7 +315,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 										 PTObjectType pto,
 										 const gchar ** attributes,
 										 const gchar ** properties, fd_Field ** pField );
-    
+
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
 									   UT_uint32 length,
@@ -384,11 +384,11 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 													 const gchar ** attrs, const gchar ** props,
 													 bool bSkipEmbededSections);
-	
+
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 													 const gchar ** attrs, const gchar * props,
 													 bool bSkipEmbededSections);
-	
+
 	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 
@@ -404,7 +404,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					appendObject(PTObjectType pto, const gchar ** attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const gchar ** attributes);
-	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux* sdh,const gchar ** attributes);	
+	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux* sdh,const gchar ** attributes);
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 												  const gchar ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
@@ -448,7 +448,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 											PP_RevisionAttr ** pRevisions,
 											bool bShowRevisions, UT_uint32 iRevisionId,
 											bool &bHiddenRevision) const;
-	
+
 	const UT_UCSChar *		getPointer(PT_BufIndex bi) const; /* see warning on this function */
 	bool					getBlockBuf(pf_Frag_Strux* sdh, UT_GrowBuf * pgb) const;
 
@@ -475,9 +475,9 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 
 	// data items
 
-	virtual bool			createDataItem(const char * szName, bool bBase64, 
+	virtual bool			createDataItem(const char * szName, bool bBase64,
                                            const UT_ByteBuf * pByteBuf,
-										   const std::string & mime_type, 
+										   const std::string & mime_type,
                                            PD_DataItemHandle* ppHandle);
 	virtual bool            replaceDataItem(const char * szName, const UT_ByteBuf * pByteBuf);
 	virtual bool			getDataItemDataByName(const char * szName,
@@ -486,11 +486,11 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
                                                   PD_DataItemHandle* ppHandle) const;
 	bool					setDataItemToken(PD_DataItemHandle pHandle, void* pToken) const;
 	bool					getDataItemData(PD_DataItemHandle pHandle,
-											const char ** pszName, const UT_ByteBuf ** ppByteBuf, 
+											const char ** pszName, const UT_ByteBuf ** ppByteBuf,
 											const void** ppToken) const;
 	bool					getDataItemFileExtension(const char *szDataID, std::string &sExt, bool bDot = true) const;
 	bool					enumDataItems(UT_uint32 k,
-										  PD_DataItemHandle* ppHandle, const char ** pszName, 
+										  PD_DataItemHandle* ppHandle, const char ** pszName,
 										  const UT_ByteBuf ** ppByteBuf, std::string * pMimeType) const;
 
     pf_Frag_Strux*       findHdrFtrStrux(const gchar * pszHdtFtr,
@@ -512,7 +512,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	PT_AttrPropIndex        getAPIFromSDH(pf_Frag_Strux* sdh);
     bool                    getAttributeFromSDH(pf_Frag_Strux* sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
 												const char * szAttribute, const char ** pszValue);
-	
+
     bool                    getPropertyFromSDH(const pf_Frag_Strux* sdh, bool bShowRevisions, UT_uint32 iRevisionLevel,
 											   const char * szProperty, const char ** pszValue) const;
 	// styles
@@ -526,7 +526,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					enumStyles(UT_uint32 k,
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 	bool                    enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const;
-	
+
 	bool					addStyleProperty(const gchar * szStyleName, const gchar * szPropertyName, const gchar * szPropertyValue);
 	bool					addStyleProperties(const gchar * szStyleName, const gchar ** pProperties);
 	bool	                setAllStyleAttributes(const gchar * szStyleName, const gchar ** pAttribs);
@@ -580,7 +580,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 													UT_sint32 * numRows, UT_sint32 * numCols);
 	pf_Frag_Strux*       getCellSDHFromRowCol(pf_Frag_Strux* tableSDH,
 												 bool bShowRevisions, UT_uint32 iRevisionLevel,
-												 UT_sint32 row, 
+												 UT_sint32 row,
 												 UT_sint32 col);
 	void                    miniDump(pf_Frag_Strux* sdh, UT_sint32 nstruxes);
     bool                    dumpDoc( const char* msg, PT_DocPosition currentpos, PT_DocPosition endpos );
@@ -616,7 +616,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	// PageSize functions
 	bool                    convertPercentToInches(const char * szPercent, UT_UTF8String & sInches);
 	bool					setPageSizeFromFile(const gchar ** attributes);
-	const	fp_PageSize	*	getPageSize(void) const	
+	const	fp_PageSize	*	getPageSize(void) const
 	{ return & m_docPageSize;}
 	fp_PageSize             m_docPageSize; // Move this to private later
 	bool					isBookmarkUnique(const gchar * pName) const;
@@ -632,7 +632,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	virtual void            setMarkRevisions(bool bMark);
 	// primarly for use by the PieceTable
 	void                    setMarkRevisionsNoNotify(bool bMark) {AD_Document::setMarkRevisions(bMark);}
-	
+
 	virtual bool            acceptRejectRevision(bool bReject,
 												 UT_uint32 iStart,
 												 UT_uint32 iEnd,
@@ -643,7 +643,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 
 	const PP_AttrProp *     explodeRevisions(PP_RevisionAttr *& pRevisions, const PP_AttrProp * pAP,
 											 bool bShow, UT_uint32 iId, bool &bHiddenRevision) const;
-	
+
 	virtual void            purgeRevisionTable(bool bUnconditional = false);
 
 	void					notifyPieceTableChangeStart(void);
@@ -655,7 +655,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 		{ return m_pPieceTable; }
     PD_DocumentRDFHandle    getDocumentRDF(void) const;
     PD_XMLIDCreatorHandle   makeXMLIDCreator();
-    
+
 #ifdef PT_TEST
 	void					__dump(FILE * fp) const;
 	//! Pointer to last instatiated PD_Document. Used for debugging.
@@ -674,9 +674,9 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	virtual void setAnnotationProp (const std::string & key, const std::string & value);
 	virtual bool getAnnotationProp (const std::string & key, std::string & outProp) const;
 
-	const std::map<std::string,std::string> & getMetaData () const 
-	{ 
-		return m_metaDataMap ; 
+	const std::map<std::string,std::string> & getMetaData () const
+	{
+		return m_metaDataMap ;
 	}
 
 	// document-level property handling functions
@@ -693,7 +693,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	/* Okay, as far as I can tell this is a non-persistent document property since it is not
 	 * written to the AbiWord file when the document is saved. In fact, it is only set if a
 	 * mail-merge source/link is given on the command line.
-	 * 
+	 *
 	 * Mail merge fields are, naturally, saved and loaded, but the Insert->Mail Merge Field...
 	 * dialog doesn't reflect the current document's fields but rather some internal set of
 	 * fields, which is confusing if you are trying to work with muliple mail merge sources.
@@ -719,7 +719,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	   The purpose of the following methods is to generate and manage
 	   document-wide unique identifiers; the indetifiers are type
 	   specific, with the types defined in UT_UniqueId class (ut_mics.h).
-	   
+
        UT_uint32 getUID(type):    Generates an id of a given type or
                                   UT_UID_INVALID if unique id cannot
                                   be generated (0 <= uid < UT_UID_INVALID).
@@ -730,7 +730,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
                                   used, the caller should call
                                   setMinUID(id+1) to ensure integrity of
                                   the UID generator.
-                                  
+
        bool setMinUID(type, uid): Allows to set a minimum value for all
                                   future identifiers; it returns true on
                                   success false on failure. The purpose is
@@ -751,7 +751,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 
 	bool      findFirstDifferenceInContent(PT_DocPosition &pos, UT_sint32 &iOffset2,
 										   const PD_Document &d) const;
-	
+
 	bool      findWhereSimilarityResumes(PT_DocPosition &pos, UT_sint32 &iOffset2,
 										 UT_uint32 & iKnownLength,
 										 const PD_Document &d) const;
@@ -803,8 +803,8 @@ protected:
 	virtual UT_Error   		_saveAs(const char * szFilename, int ieft, bool cpy, const char * expProps = NULL);
 	virtual UT_Error        _saveAs(GsfOutput *output, int ieft, bool cpy, const char * expProps);
 	virtual UT_Error		_save(void);
-	
-	
+
+
 	void					_setClean(void);
 	void					_destroyDataItemData(void);
 	bool					_syncFileTypes(bool bReadSaveWriteOpen);
@@ -815,7 +815,7 @@ protected:
 												  bool & bDeleted);
 
 	virtual void            _clearUndo();
-	
+
 	UT_Error _importFile(const char * szFilename, int ieft,
 						 bool markClean, bool bImportStylesFirst,
 						 bool isImportFile, const char* impProps);

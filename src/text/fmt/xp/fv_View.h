@@ -219,7 +219,7 @@ class ABI_EXPORT FV_View_BubbleBlocker
     FV_View_BubbleBlocker( FV_View* pView = 0 );
     ~FV_View_BubbleBlocker();
     FV_View_BubbleBlocker& operator=( const FV_View_BubbleBlocker& r );
-    
+
 };
 
 class ABI_EXPORT FV_View : public AV_View
@@ -263,17 +263,17 @@ public:
 	virtual void	cmdHyperlinkJump(UT_sint32 xPos, UT_sint32 yPos);
 	void	        cmdHyperlinkJump(PT_DocPosition pos);
 	void			cmdHyperlinkCopyLocation(PT_DocPosition pos);
-	
+
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 	virtual void 	drawSelectionBox(UT_Rect & box, bool drawHandles);
-private: 
+private:
 	inline void 	_drawResizeHandle(UT_Rect & box);
     void getCmdInsertRangeVariables( PT_DocPosition& posStart,
                                      PT_DocPosition& posEnd,
                                      fl_BlockLayout*& pBL1,
                                      fl_BlockLayout*& pBL2 );
-    
-    
+
+
 public:
 	const PP_AttrProp * getAttrPropForPoint() const;
 
@@ -293,7 +293,7 @@ public:
 	UT_Error		cmdInsertHyperlink(const char* szName);
 	UT_Error		cmdInsertXMLID(const std::string& name);
 	UT_Error		cmdDeleteXMLID(const std::string& name);
-    
+
 	fp_Run *        getHyperLinkRun(PT_DocPosition pos);
 	UT_Error		cmdDeleteHyperlink();
 	bool                    cmdInsertMathML(const char * szFileName,
@@ -370,7 +370,7 @@ public:
 	fl_BlockLayout* getCurrentBlock(void) const;
 
 	void draw(int page, dg_DrawArgs* da);
-	
+
 
 	// TODO some of these functions should move into protected
 
@@ -540,13 +540,13 @@ public:
 	fl_FrameLayout * getFrameLayout(PT_DocPosition pos) const;
 	fl_FrameLayout * getFrameLayout(void) const;
 	void            setFrameFormat(const gchar ** props);
-	void            setFrameFormat(const gchar ** attribs, const gchar ** props, 
+	void            setFrameFormat(const gchar ** attribs, const gchar ** props,
 								   fl_BlockLayout * pNewBL = NULL);
 	void            setFrameFormat(const gchar ** props,FG_Graphic * pFG, const std::string & dataID,
 								   fl_BlockLayout * pNewBL = NULL);
 	bool            getFrameStrings_view(UT_sint32 x, UT_sint32 y,fv_FrameStrings & FrameStrings,
 										 fl_BlockLayout ** pCloseBL,fp_Page ** ppPage);
-	void            convertInLineToPositioned(PT_DocPosition pos, 
+	void            convertInLineToPositioned(PT_DocPosition pos,
 											const gchar ** attribs);
 
 	bool            convertPositionedToInLine(fl_FrameLayout * pFrame);
@@ -620,7 +620,7 @@ public:
 	//
 	// ----------------------------------
 	// Stuff for Annotaions
-	//	
+	//
 	bool				insertAnnotation(UT_sint32 iAnnotation,
 										 const std::string & sDescr,
 										 const std::string & sAuthor,
@@ -683,7 +683,7 @@ public:
 
 	bool			findNext(bool& bDoneEntireDocument);
 	bool			findNext(const UT_UCSChar* pFind, bool& bDoneEntireDocument);
-	
+
 	UT_uint32*		_computeFindPrefix(const UT_UCSChar* pFind);
 
 	bool			_findNext(UT_uint32* pPrefix,
@@ -728,7 +728,7 @@ public:
     void                removeCaret(const std::string& sCaretID);
 	void                addCaret(PT_DocPosition docPos,UT_sint32 iAuthorId);
 	void                setPointRemote(PT_DocPosition docPos);
-	void                updateCarets(PT_DocPosition docPos, UT_sint32 iLen);   
+	void                updateCarets(PT_DocPosition docPos, UT_sint32 iLen);
 	void		    fixInsertionPointCoords(void);
 
 // -----------------------
@@ -748,7 +748,7 @@ public:
 
 	UT_uint32           getTabToggleAreaWidth() const;
 	UT_sint32           getNormalModeXOffset() const;
-	
+
 	void				setScreenUpdateOnGeneralUpdate( bool bDoit)
 		{m_bDontUpdateScreenOnGeneralUpdate = !bDoit;}
 	bool				shouldScreenUpdateOnGeneralUpdate(void) const
@@ -765,7 +765,7 @@ public:
 	bool                isShowRevisions() const {return m_bShowRevisions;}
 	void                toggleShowRevisions();
 	void                setShowRevisions(bool bShow);
-	
+
 	void                cmdSetRevisionLevel(UT_uint32 i);
 	UT_uint32           getRevisionLevel()const;
 	void                setRevisionLevel(UT_uint32 i);
@@ -778,7 +778,7 @@ public:
 	void                _fixInsertionPointAfterRevision();
 	bool                _makePointLegal(void);
   public:
-  
+
 	/* Table related functions */
 	bool                isPointLegal(PT_DocPosition pos) const;
 	bool                isPointLegal(void) const;
@@ -808,7 +808,7 @@ public:
 	bool                cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType);
 
 	bool                _MergeCells( PT_DocPosition posDestination,PT_DocPosition posSource, bool bBefore);
-	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft, 
+	bool                getCellParams(PT_DocPosition posCol, UT_sint32 *iLeft,
 									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot) const;
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot) const;
@@ -818,22 +818,22 @@ public:
 	bool	            setTableFormat(PT_DocPosition pos,const gchar * properties[]);
 	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const;
 
-	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, 
+	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols,
 									   const gchar * pPropsArray[]);
-	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld, 
+	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld,
 									  UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
 									  UT_sint32 top, UT_sint32 bot);
-	bool                changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld, 
+	bool                changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld,
 									 UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
 		                             UT_sint32 top, UT_sint32 bot);
-	bool                _insertCellAfter(PT_DocPosition posTable, UT_sint32 row, 
+	bool                _insertCellAfter(PT_DocPosition posTable, UT_sint32 row,
 										 UT_sint32 col,UT_sint32 left,UT_sint32 right,
 										 UT_sint32 top, UT_sint32 bot);
-	bool                _insertCellBefore(PT_DocPosition posTable, UT_sint32 row, 
+	bool                _insertCellBefore(PT_DocPosition posTable, UT_sint32 row,
 										  UT_sint32 col, UT_sint32 left, UT_sint32 right,
 										  UT_sint32 top, UT_sint32 bot);
 	void				_generalUpdate(void);
-	
+
 	UT_RGBColor			getColorShowPara(void) const { return m_colorShowPara; }
 #ifdef ENABLE_SPELL
 	UT_RGBColor			getColorSquiggle(FL_SQUIGGLE_TYPE iSquiggleType) const;
@@ -845,16 +845,16 @@ public:
 	UT_RGBColor			getColorImage(void) const { return m_colorImage; }
 	UT_RGBColor			getColorImageResize(void) const { return m_colorImageResize; }
 	UT_RGBColor			getColorHyperLink(void) const { return m_colorHyperLink; }
-	UT_RGBColor			getColorAnnotation(const fp_Run * pRun) const; 
-	UT_RGBColor			getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const; 
-	UT_RGBColor			getColorRDFAnchor(const fp_Run * pRun) const; 
-	UT_RGBColor			getColorRevisions(int rev) const { 
+	UT_RGBColor			getColorAnnotation(const fp_Run * pRun) const;
+	UT_RGBColor			getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const;
+	UT_RGBColor			getColorRDFAnchor(const fp_Run * pRun) const;
+	UT_RGBColor			getColorRevisions(int rev) const {
 		if ((rev < 0) || (rev > 9)) rev = 9;
 		return m_colorRevisions[rev]; }
 	UT_RGBColor			getColorHdrFtr(void) const { return m_colorHdrFtr; }
 	UT_RGBColor			getColorColumnLine(void) const { return m_colorColumnLine; }
 
-	void                getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &vRect, 
+	void                getVisibleDocumentPagesAndRectangles(UT_GenericVector<UT_Rect*> &vRect,
 															 UT_GenericVector<fp_Page*> &vPages) const;
 
 	//
@@ -867,19 +867,19 @@ public:
 //
 // Table resizing
 //
-	void                setDragTableLine(bool bSet) 
+	void                setDragTableLine(bool bSet)
                         { m_bDragTableLine = bSet;}
-	bool                getDragTableLine(void) const 
+	bool                getDragTableLine(void) const
 		                { return m_bDragTableLine;}
-	void                setTopRuler(AP_TopRuler * pRuler) 
+	void                setTopRuler(AP_TopRuler * pRuler)
                         { m_pTopRuler = pRuler;}
-	AP_TopRuler *       getTopRuler(void) const 
+	AP_TopRuler *       getTopRuler(void) const
 		                { return m_pTopRuler;}
-	void                setLeftRuler(AP_LeftRuler * pRuler) 
+	void                setLeftRuler(AP_LeftRuler * pRuler)
                         { m_pLeftRuler = pRuler;}
-	AP_LeftRuler *       getLeftRuler(void) const 
+	AP_LeftRuler *       getLeftRuler(void) const
 		                { return m_pLeftRuler;}
-	
+
 
 	const gchar **   getViewPersistentProps() const;
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
@@ -890,7 +890,7 @@ public:
         bool                isMathLoaded(void) const;
 	bool                isGrammarLoaded(void) const;
 	// --
-	
+
 	UT_uint32			getNumHorizPages(void) const; //////////////////////////////////
 	void				calculateNumHorizPages(void);
 	UT_uint32			getMaxHeight(UT_uint32 iRow) const;
@@ -898,11 +898,11 @@ public:
 	UT_uint32			getWidthPagesInRow(fp_Page *page) const;
 	UT_uint32			getHorizPageSpacing(void) const;
 	bool				rtlPages(void) const;
-	
+
 protected:
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
-	
+
 	void				_draw(UT_sint32, UT_sint32, UT_sint32, UT_sint32, bool bDirtyRunsOnly, bool bClip=false);
 
 	void				_drawBetweenPositions(PT_DocPosition left, PT_DocPosition right);
@@ -938,8 +938,8 @@ protected:
 									  UT_sint32 yPos,
 									  UT_sint32& xClick,
 									  UT_sint32& yClick) const;
-	bool                _insertField(const char* szName, 
-									 const gchar ** extra_attrs = NULL, 
+	bool                _insertField(const char* szName,
+									 const gchar ** extra_attrs = NULL,
 									 const gchar ** extra_props = NULL);
 	void				_moveToSelectionEnd(bool bForward);
 	void				_eraseSelection(void);
@@ -977,14 +977,14 @@ protected:
 #ifdef ENABLE_SPELL
 	void				_checkPendingWordForSpell(void);
 #endif
-	
+
 	bool				_isSpaceBefore(PT_DocPosition pos) const;
 	void				_removeThisHdrFtr(fl_HdrFtrSectionLayout * pHdrFtr);
 	void 				_cmdEditHdrFtr(HdrFtrType hfType);
 
 	UT_Error			_deleteBookmark(const char* szName, bool bSignal, PT_DocPosition * pos1 = NULL, PT_DocPosition * pos2 = NULL);
 	UT_Error			_deleteHyperlink(PT_DocPosition &i, bool bSignal);
-    
+
 	UT_Error			_deleteXMLID( const std::string& xmlid, bool bSignal, PT_DocPosition& posStart, PT_DocPosition& posEnd );
 	UT_Error			_deleteXMLID( const std::string& xmlid, bool bSignal );
 	fp_HyperlinkRun *   _getHyperlinkInRange(PT_DocPosition &posStart,
@@ -996,7 +996,7 @@ protected:
 
     void                incremenetBubbleBlockerCount();
     void                decremenetBubbleBlockerCount();
-    
+
 private:
 
 	UT_uint32			m_iNumHorizPages; /////////////////////////////////////////////////
@@ -1096,7 +1096,7 @@ private:
 	UT_Rect				m_dragImageRect;
 	UT_sint32			m_ixDragOrigin;
 	UT_sint32			m_iyDragOrigin;
-	
+
 	// default color values
 	UT_RGBColor			m_colorShowPara;
 	UT_RGBColor			m_colorSpellSquiggle;

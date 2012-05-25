@@ -2,20 +2,20 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -63,7 +63,7 @@ class UT_Timer;
 
 /*****************************************************************
 ******************************************************************
-** This file defines the base class for the cross-platform 
+** This file defines the base class for the cross-platform
 ** application frame.  This is used to hold all of the
 ** window-specific data.  One of these is created for each
 ** top-level document window.  (If we do splitter windows,
@@ -96,7 +96,7 @@ public:
 										   const char * szMenuLabelSetKey, const char * szMenuLabelSetDefaultValue,
 										   const char * szToolbarLayoutsKey, const char * szToolbarLayoutsDefaultValue,
 										   const char * szToolbarLabelSetKey, const char * szToolbarLabelSetDefaultValue);
-	
+
 	virtual	XAP_Frame *			cloneFrame() = 0;
 	virtual	XAP_Frame *			buildFrame(XAP_Frame * pClone) = 0;
 	virtual UT_Error   			loadDocument(AD_Document* pDoc) = 0;
@@ -113,7 +113,7 @@ public:
 	void setCursor(GR_Graphics::Cursor cursor) { m_pFrameImpl->_setCursor(cursor); }
 	virtual void queue_resize() { m_pFrameImpl->_queue_resize(); }
 	void setFullScreen(bool isFullScreen) { m_pFrameImpl->_setFullScreen(isFullScreen); }
-	void hideMenuScroll(bool bHideMenuScroll) { 
+	void hideMenuScroll(bool bHideMenuScroll) {
 		m_bHideMenuScroll = bHideMenuScroll;
 		m_pFrameImpl->_hideMenuScroll(bHideMenuScroll);}
 	virtual XAP_DialogFactory * getDialogFactory() { return m_pFrameImpl->_getDialogFactory(); }
@@ -131,7 +131,7 @@ public:
 	const UT_UTF8String &		getTitle() const;
 	const char *				getNonDecoratedTitle() const;
 
-	XAP_FrameMode getFrameMode(); 
+	XAP_FrameMode getFrameMode();
 	void setFrameMode(XAP_FrameMode iFrameMode);
 	bool						isDirty() const;
 
@@ -150,7 +150,7 @@ public:
 	typedef enum { z_200, z_100, z_75, z_PAGEWIDTH, z_WHOLEPAGE, z_PERCENT } tZoomType;
 	virtual void				setZoomPercentage(UT_uint32 iZoom);
 	virtual UT_uint32			getZoomPercentage();
-	void						setZoomType(XAP_Frame::tZoomType z_Type){ m_zoomType = z_Type; } 
+	void						setZoomType(XAP_Frame::tZoomType z_Type){ m_zoomType = z_Type; }
 	XAP_Frame::tZoomType		getZoomType() { return m_zoomType; }
 	void						updateZoom();
 	void                        quickZoom(void);
@@ -179,14 +179,14 @@ public:
 
 	void                        rebuildAllToolbars(void);
 	void                        refillToolbarsInFrameData(void) { m_pFrameImpl->_refillToolbarsInFrameData(); }
-	void                        dragBegin(XAP_Toolbar_Id srcId, 
+	void                        dragBegin(XAP_Toolbar_Id srcId,
 										  EV_Toolbar * pTBsrc);
 	void                        dragDropToIcon(XAP_Toolbar_Id srcId,
-											   XAP_Toolbar_Id destId, 
-											   EV_Toolbar * pTBsrc, 
+											   XAP_Toolbar_Id destId,
+											   EV_Toolbar * pTBsrc,
 											   EV_Toolbar * pTBdest);
-	void                        dragDropToTB(XAP_Toolbar_Id srcId, 
-											 EV_Toolbar * pTBsrc, 
+	void                        dragDropToTB(XAP_Toolbar_Id srcId,
+											 EV_Toolbar * pTBsrc,
 											 EV_Toolbar * pTBdest);
 	void                        dragEnd(XAP_Toolbar_Id srcId);
 	bool                        isBackupRunning(void)
@@ -196,7 +196,7 @@ public:
 	void						setAutoSaveFile(bool);
 	void						setAutoSaveFilePeriod(int);
 	void						setAutoSaveFileExt(const UT_String &);
-	
+
 	XAP_Dialog_MessageBox *      createMessageBox(XAP_String_Id id,
 												  XAP_Dialog_MessageBox::tButtons buttons,
 												  XAP_Dialog_MessageBox::tAnswer default_answer,
@@ -205,7 +205,7 @@ public:
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_String_Id id,
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer);
-													   
+
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(const std::string & sz,
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer);
@@ -213,7 +213,7 @@ public:
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(const char * sz,
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer);
-													   
+
 	XAP_Dialog_MessageBox::tAnswer		showMessageBox(XAP_String_Id id,
 													   XAP_Dialog_MessageBox::tButtons buttons,
 													   XAP_Dialog_MessageBox::tAnswer default_answer,
@@ -229,9 +229,9 @@ public:
 	virtual void                setStatusBarShown(bool /*bShowStatusbar*/) {}
 	virtual void                setMenuBarShown(bool /*bShowMenubar*/) {}
 	time_t                      getTimeSinceSave() const;
-	bool                        isFrameLocked(void) const 
+	bool                        isFrameLocked(void) const
 	                            {return m_bIsFrameLocked;}
-	void                        setFrameLocked(bool bLock) 
+	void                        setFrameLocked(bool bLock)
 	                            {m_bIsFrameLocked = bLock;}
 	bool                        isMenuScrollHidden(void) const
 	{ return m_bHideMenuScroll;}
@@ -259,9 +259,9 @@ protected:
 	GR_Graphics::Cursor         m_cursor;
 	void *						m_pData;		/* app-specific frame data */
 	bool                        m_bHideMenuScroll;
-	
+
 	static int					_getNextUntitledNumber();
-	
+
 private:
 	void						_createAutoSaveTimer();
 	void						_removeAutoSaveFile();
@@ -275,8 +275,8 @@ private:
 	UT_String					m_stAutoSaveNamePrevious;
 	bool						m_bBackupRunning;
 	bool						m_bBackupInProgress;
-	
-	static int					s_iUntitled;	
+
+	static int					s_iUntitled;
 
 	XAP_Toolbar_Id              m_isrcId;
 	UT_sint32                   m_isrcTBNr;

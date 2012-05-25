@@ -8,20 +8,20 @@
 //
 // Copyright (C) 2001 Mike Nordell <tamlin@algonet.se>
 // Copyright (c) 2007 Hubert Figuiere <hub@figuiere.net>
-// 
+//
 // This class is free software; you can redistribute it and/or
 // modify it under the terms of the GNU General Public License
 // as published by the Free Software Foundation; either version 2
 // of the License, or (at your option) any later version.
-// 
+//
 // This class is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 // 02111-1307, USA.
 //
 
@@ -104,7 +104,7 @@ public:
 	~UT_UTF8Stringbuf ();
 
 	void		operator=(const UT_UTF8Stringbuf & rhs);
-	
+
 	void		assign (const char * sz, size_t n = 0 /* 0 == null-termination */);
 	void		append (const char * sz, size_t n = 0 /* 0 == null-termination */);
 	void		append (const UT_UTF8Stringbuf & rhs);
@@ -119,10 +119,10 @@ public:
 	void		escapeMIME (); // translates the current string to
 							   // MIME "quoted-printable" format
 	void        escapeURL ();  // makes string conform to RFC 1738
-	void        decodeURL ();  
-	
+	void        decodeURL ();
+
 	UT_UTF8Stringbuf * lowerCase ();
-	
+
 	void		clear ();
 	void        reserve(size_t n);
 
@@ -174,7 +174,7 @@ private:
 //
 //  Generic string implementation
 //
-//  String is built of char_type units 
+//  String is built of char_type units
 //  Encoding could be any single-byte or multi-byte encoding
 //
 ////////////////////////////////////////////////////////////////////////
@@ -315,10 +315,10 @@ void UT_StringImpl<char_type>::reserve(size_t n)
 
 
 template <typename char_type>
-const char*	UT_StringImpl<char_type>::utf8_data() 
-{ 
+const char*	UT_StringImpl<char_type>::utf8_data()
+{
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-	return ""; 
+	return "";
 }
 
 

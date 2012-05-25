@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -48,7 +48,7 @@ public:
 	virtual void						useEnd(void);
 
 	typedef enum { a_VOID, a_OK, a_CANCEL }	tAnswer;
-	
+
 	void								setCurrentPathname(const char * szPathname);
 	void								setSuggestFilename(bool);
 	XAP_Dialog_FileOpenSaveAs::tAnswer	getAnswer(void) const;
@@ -61,7 +61,7 @@ public:
 														const char ** szSuffixes,
 														const UT_sint32 * nTypeList);
 	void								setDefaultFileType(UT_sint32 nType);
-	
+
 	// this dialog reserves the negative number space to return an
 	// "automatically detected" type, so the caller should NOT supply one
 	// in the list.  This is done because each platform has a different notion
@@ -85,7 +85,7 @@ public:
 	// derived classes set this for query
 	UT_sint32							m_nFileType;
 	UT_sint32							m_nDefaultFileType;
-		
+
 	bool								m_bSuggestName;
 	XAP_Dialog_FileOpenSaveAs::tAnswer	m_answer;
 

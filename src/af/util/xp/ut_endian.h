@@ -51,7 +51,7 @@
 	#endif
 #elif defined(__FreeBSD__)
 	#include <machine/endian.h>
-	#if __BYTE_ORDER == __LITTLE_ENDIAN		
+	#if __BYTE_ORDER == __LITTLE_ENDIAN
 		#define UT_LITTLE_ENDIAN
 	#else
 		#define UT_BIG_ENDIAN
@@ -78,7 +78,7 @@
         #endif
 #elif defined(__NetBSD__) || defined(__OpenBSD__)
 	#include <machine/endian.h>
-	#if BYTE_ORDER == LITTLE_ENDIAN         
+	#if BYTE_ORDER == LITTLE_ENDIAN
 		#define UT_LITTLE_ENDIAN
 	#elif BYTE_ORDER == BIG_ENDIAN
 		#define UT_BIG_ENDIAN
@@ -101,10 +101,10 @@
 	/* We should probably do some check as the WinAPI could be on other computers */
 	#if !defined(UT_LITTLE_ENDIAN) && !defined(UT_BIG_ENDIAN)
 		#define UT_LITTLE_ENDIAN
-	#endif		
+	#endif
 #else /* this is for Linux */
 	#include <endian.h>
-	#if __BYTE_ORDER == __LITTLE_ENDIAN		
+	#if __BYTE_ORDER == __LITTLE_ENDIAN
 		#define UT_LITTLE_ENDIAN
 	#else
 		#define UT_BIG_ENDIAN
@@ -127,7 +127,7 @@
  can be the same
 */
 
-#ifdef UT_LITTLE_ENDIAN		
+#ifdef UT_LITTLE_ENDIAN
 #define LE2BE16(x,y)                                  \
 char * lb1;                                           \
 UT_UCSChar tucs;                                      \

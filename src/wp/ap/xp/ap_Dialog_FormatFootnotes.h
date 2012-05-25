@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (c) 2003 Martin Sevior
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -74,9 +74,9 @@ public:
 	void                recalcTextValues(void);
 	void                updateDocWithValues(void);
 	void                setInitialValues(void);
-	
+
 	static const FootnoteTypeDesc * getFootnoteTypeLabelList(void);
-	
+
 private:
 	tAnswer         m_answer;
 	FL_DocLayout *  m_pDocLayout;
@@ -85,12 +85,12 @@ private:
 	PD_Document *   m_pDoc;
 	UT_sint32       m_iFootnoteVal;
 	UT_String       m_sFootnoteVal;
-	FootnoteType    m_iFootnoteType; 
+	FootnoteType    m_iFootnoteType;
 	bool            m_bRestartFootSection;
 	bool            m_bRestartFootPage;
 	UT_sint32       m_iEndnoteVal;
 	UT_String       m_sEndnoteVal;
-	FootnoteType    m_iEndnoteType; 
+	FootnoteType    m_iEndnoteType;
 	bool            m_bRestartEndSection;
 	bool            m_bPlaceAtDocEnd;
 	bool            m_bPlaceAtSecEnd;

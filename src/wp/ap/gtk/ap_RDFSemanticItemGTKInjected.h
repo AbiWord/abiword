@@ -52,12 +52,12 @@ public:
 
 void GDestroyNotify_GObjectSemItem(gpointer data);
 PD_RDFSemanticItemHandle getHandle(GtkDialog* d);
-void OnSemItemEdited ( GtkDialog* d, gint /*response_id*/, 
+void OnSemItemEdited ( GtkDialog* d, gint /*response_id*/,
 					   gpointer /*user_data*/);
 
 void GDestroyNotify_GObjectSemItem_List(gpointer data);
 PD_RDFSemanticItems getSemItemListHandle(GtkDialog* d);
-void OnSemItemListEdited ( GtkDialog* d, gint response_id, 
+void OnSemItemListEdited ( GtkDialog* d, gint response_id,
 						   gpointer /*user_data*/);
 
 
@@ -76,7 +76,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
       : ParentClass( rdf, it, v )
     {
     }
-    
+
     void showEditorWindow( PD_RDFSemanticItemHandle c )
     {
         UT_DEBUGMSG(("showEditorWindow(INJECTED) name:%s linksubj:%s\n",
@@ -97,11 +97,11 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
         /*                         new struct G_OBJECT_SEMITEM( c ), */
         /*                         GDestroyNotify_G_OBJECT_SEMITEM ); */
         gtk_widget_reparent( w, GTK_WIDGET( gtk_dialog_get_content_area( GTK_DIALOG (d))));
-    
+
         g_signal_connect (G_OBJECT(d), "response",  G_CALLBACK(OnSemItemEdited), c.get() );
-        gtk_widget_show_all (d); 
+        gtk_widget_show_all (d);
     }
-    
+
     void showEditorWindow( PD_RDFSemanticItems cl )
     {
         UT_DEBUGMSG(("showEditorWindow() list... sz:%ld\n", cl.size() ));
@@ -139,9 +139,9 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
                                 new ap_GObjectSemItem_List( cl ),
                                 GDestroyNotify_GObjectSemItem_List );
         g_signal_connect (G_OBJECT(d), "response",  G_CALLBACK(OnSemItemListEdited), 0 );
-        gtk_widget_show_all (d); 
+        gtk_widget_show_all (d);
     }
- 
+
     void importFromDataComplete( std::istream& /*iss*/,
                                 PD_DocumentRDFHandle rdf,
                                 PD_DocumentRDFMutationHandle m,
@@ -168,7 +168,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
                                        std::list< std::pair< std::string, std::string> > types ) const
     {
         std::string ret = filename_const;
-    
+
         UT_runDialog_AskForPathname afp( XAP_DIALOG_ID_FILE_IMPORT );
         if( !types.empty() )
         {
@@ -180,7 +180,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
         {
             afp.appendFiletype(    iter->first, iter->second );
         }
-    
+
         if( afp.run( XAP_App::getApp()->getLastFocussedFrame() ) )
         {
             ret = afp.getPath();
@@ -196,7 +196,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
                              std::list< std::pair< std::string, std::string> > types ) const
     {
         std::string filename = filename_const;
-    
+
         if( filename.empty() )
         {
             UT_runDialog_AskForPathname afp( XAP_DIALOG_ID_FILE_EXPORT );
@@ -210,7 +210,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
             {
                 afp.appendFiletype(    iter->first, iter->second );
             }
-        
+
             if( afp.run( XAP_App::getApp()->getLastFocussedFrame() ) )
             {
                 filename = afp.getPath();
@@ -224,6 +224,6 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
         return filename;
     }
 
-    
+
 };
 #endif

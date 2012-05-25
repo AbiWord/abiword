@@ -322,7 +322,7 @@
 	DefineToolbarIcon(tb_SplitBelow_xpm)
 	DefineToolbarIcon(tb_SplitHoriMid_xpm)
 	DefineToolbarIcon(tb_SplitLeft_xpm)
-	DefineToolbarIcon(tb_SplitRight_xpm)	
+	DefineToolbarIcon(tb_SplitRight_xpm)
 	DefineToolbarIcon(tb_SplitVertMid_xpm)
 	DefineToolbarIcon(tb_stock_font_xpm)
 	DefineToolbarIcon(tb_stock_paint_xpm)

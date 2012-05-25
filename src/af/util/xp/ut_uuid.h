@@ -107,7 +107,7 @@ class ABI_EXPORT UT_UUID
 	   internal state */
 	bool            toString(UT_UTF8String & to) const;
     std::string&    toString( std::string& to ) const;
-    
+
 	/* get the binary representation of the uuid */
 	bool            toBinary(struct uuid &u) const;
 

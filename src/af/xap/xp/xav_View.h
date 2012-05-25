@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998-2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -73,7 +73,7 @@ class ABI_EXPORT AV_ScrollObj
 				 void (*pfnY)(void *,UT_sint32,UT_sint32))
 			: m_pData(pData), m_pfnX(pfnX), m_pfnY(pfnY)
 		{	};
-	
+
 	void* m_pData;
 	void (*m_pfnX)(void *, UT_sint32 xoff, UT_sint32 xlimit);
 	void (*m_pfnY)(void *, UT_sint32 yoff, UT_sint32 ylimit);
@@ -117,7 +117,7 @@ public:
 	virtual void          rebuildLayout(void) = 0;
 	virtual void          remeasureCharsWithoutRebuild() = 0;
 	virtual void          fontMetricsChange() = 0;
-	
+
 	virtual void	cmdScroll(AV_ScrollCmd cmd, UT_uint32 iPos = 0) = 0;
 	void			addScrollListener(AV_ScrollObj*);
 	void			removeScrollListener(AV_ScrollObj*);

@@ -4,20 +4,20 @@
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
  * Copyright (C) 2004 Hubert Figuière
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -65,12 +65,12 @@ public:
 
 /*****************************************************************/
 
-class ABI_EXPORT AP_TopRulerInfo 
+class ABI_EXPORT AP_TopRulerInfo
 {
 public:
 	typedef enum _mode { TRI_MODE_COLUMNS, TRI_MODE_TABLE, TRI_MODE_FRAME } Mode;
 
-	AP_TopRulerInfo(void) :	
+	AP_TopRulerInfo(void) :
 							m_mode(TRI_MODE_COLUMNS),
 							m_xPaperSize(0),
 							m_xPageViewMargin(0),
@@ -123,14 +123,14 @@ public:
 				delete m_vecFullTable;
 				m_vecFullTable = NULL;
 			}
-		}		
-		
+		}
+
 	Mode					m_mode;
 	UT_uint32				m_xPaperSize;
 	UT_uint32				m_xPageViewMargin;
-	
+
 	// current caret position -- relative to the current column
-	
+
 	UT_sint32				m_xrPoint;
 	UT_sint32				m_xrLeftIndent;
 	UT_sint32				m_xrFirstLineIndent;
@@ -146,7 +146,7 @@ public:
 	const char *			m_pszTabStops;
 
 	// current column number and the number of columns
-	
+
 	UT_uint32				m_iCurrentColumn;
 	UT_uint32				m_iNumColumns;
 
@@ -162,13 +162,13 @@ public:
 		struct _c {
 
 			// page absolute document margins
-			
+
 			UT_sint32		m_xaLeftMargin;
 			UT_sint32		m_xaRightMargin;
 
 			// column width and spacing -- currently we only support
 			// uniform gaps and widths for columns
-			
+
 			UT_uint32		m_xColumnGap;
 			UT_uint32		m_xColumnWidth;
 
@@ -177,7 +177,7 @@ public:
 		struct _t {
 
 			int foo;
-			
+
 		} t;									/* valid when table mode */
 
 	} u;
@@ -225,7 +225,7 @@ public:
 	UT_uint32       getTabToggleAreaWidth() const;
 
 	static UT_uint32 getFixedWidth(){return s_iFixedWidth;}
-	
+
 protected:
 	/* implement XAP_CustomWidgetLU::drawLU */
 	virtual void drawLU(const UT_Rect *clip);
@@ -271,7 +271,7 @@ protected:
 	void		_drawColumnProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo,
 									  UT_uint32 kCol);
-	void		_getCellMarkerRect(AP_TopRulerInfo * pInfo, UT_sint32 kCell, 
+	void		_getCellMarkerRect(AP_TopRulerInfo * pInfo, UT_sint32 kCell,
 								   UT_Rect * prCell);
 	void		_drawCellProperties(const UT_Rect * pClipRect,
 									  AP_TopRulerInfo * pInfo,
@@ -317,7 +317,7 @@ protected:
 
 	// autoscroll stuff
 	static void			_autoScroll(UT_Worker * pTimer);
-	
+
 	XAP_Frame *			m_pFrame;
 	GR_Graphics *		m_pG;
 	UT_uint32			m_iLeftRulerWidth; // device
@@ -380,7 +380,7 @@ private:
 	bool				m_bGuide;	/* true ==> guide line XORed onscreen */
 	UT_sint32			m_xGuide;	/* valid iff m_bGuide */
 	UT_sint32			m_xOtherGuide;
-	
+
 	AV_ListenerId		m_lidTopRuler;		/* need to save the view/listenerID so we can removeListener in destructor */
 	UT_sint32           m_iCellContainerLeftPos; // position of the left side of the container
                                                  // holding the cell

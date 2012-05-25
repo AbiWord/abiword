@@ -85,14 +85,14 @@ void AP_UnixFrame::setXScrollRange(void)
 	gtk_widget_get_allocation(GTK_WIDGET(pFrameImpl->m_dArea),&allocation);
 	if(pFrameImpl->m_dArea) //this isn't guaranteed in AbiCommand
 		windowWidth = static_cast<int>(pGr->tluD (allocation.width));
-	
+
 	int newvalue = ((m_pView) ? m_pView->getXScrollOffset() : 0);
 	int newmax = width - windowWidth; /* upper - page_size */
 	if (newmax <= 0)
 		newvalue = 0;
 	else if (newvalue > newmax)
 		newvalue = newmax;
-	
+
 	bool bDifferentPosition = false;
 	bool bDifferentLimits = false;
 	if(pFrameImpl->m_pHadj) //this isn't guaranteed in AbiCommand
@@ -101,14 +101,16 @@ void AP_UnixFrame::setXScrollRange(void)
 		bDifferentLimits = ((width-windowWidth) != gtk_adjustment_get_upper(pFrameImpl->m_pHadj)-
 						                        gtk_adjustment_get_page_size(pFrameImpl->m_pHadj));
 	}
-		
-	pFrameImpl->_setScrollRange(apufi_scrollX, newvalue, static_cast<gfloat>(width), static_cast<gfloat>(windowWidth));
-	
+
+
 	if (m_pView && (bDifferentPosition || bDifferentLimits))
+	{
+		pFrameImpl->_setScrollRange(apufi_scrollX, newvalue, static_cast<gfloat>(width), static_cast<gfloat>(windowWidth));
 		m_pView->sendHorizontalScrollEvent(newvalue, 
 										   static_cast<UT_sint32>
 												(gtk_adjustment_get_upper(pFrameImpl->m_pHadj)-
 												 gtk_adjustment_get_page_size(pFrameImpl->m_pHadj)));
+	}
 }
 
 void AP_UnixFrame::setYScrollRange(void)

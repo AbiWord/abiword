@@ -37,15 +37,15 @@ class ABI_EXPORT AP_RDFContactGTK
     GtkEntry* w_imageUrl;
     GtkEntry* w_phone;
     GtkEntry* w_jabberID;
-    
+
   public:
 
     AP_RDFContactGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it );
     virtual ~AP_RDFContactGTK();
-    
+
     virtual void* createEditor();
     virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
-    
+
 };
 
 

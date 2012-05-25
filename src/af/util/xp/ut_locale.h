@@ -35,7 +35,7 @@ class ABI_EXPORT UT_LocaleTransactor
   UT_LocaleTransactor ();
   UT_LocaleTransactor (const UT_LocaleTransactor & rhs);
   UT_LocaleTransactor& operator=(const UT_LocaleTransactor & rhs);
-  
+
   int mCategory;
   char * mOldLocale;
 };
@@ -43,7 +43,7 @@ class ABI_EXPORT UT_LocaleTransactor
 class ABI_EXPORT UT_LocaleInfo
 {
  public:
-  
+
   UT_LocaleInfo ();
   UT_LocaleInfo (const char * locale);
 

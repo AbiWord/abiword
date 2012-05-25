@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 
 
 #ifndef XAP_UNIXHILDONDIALOG_FONTCHOOSER_H
@@ -47,14 +47,14 @@ public:
 	// the state of what data is hidden and what is public is
 	// pretty grave here.
 	//XAP_UnixFontManager * 	m_fontManager;
-	
+
 	GtkWidget* 				m_Widget;
-	
+
 	bool		 			m_blockUpdate;
 	bool		 			m_doneFirstFont;
 
 protected:
-	
+
 
 	virtual void 			fillFontInfo();
 	virtual void			loadFontInfo();
@@ -77,7 +77,7 @@ protected:
 		LIST_STYLE_BOLD,
 		LIST_STYLE_BOLD_ITALIC
 	} listStyle;
-	
+
 	// a temporary font to hold dynamically allocated "rented"
 	// fonts between style changes
 	//XAP_UnixFontHandle * 	m_lastFont;

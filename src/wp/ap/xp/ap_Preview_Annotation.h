@@ -38,7 +38,7 @@ class ABI_EXPORT AP_Preview_Annotation : public XAP_Preview, public XAP_Dialog_M
 public:
 	AP_Preview_Annotation(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Preview_Annotation(void);
-	
+
 	void					setTitle(const gchar * pTitle);
 	void					setTitle(const std::string & sTitle)
 		{ m_sTitle = sTitle; }
@@ -61,13 +61,13 @@ public:
 	UT_uint32	getAnnotationID() const
 	{  return m_iAID; }
 
-	
+
 	virtual void	draw(const UT_Rect *clip=NULL);
 	void			clearScreen(void);
 	void			setXY(UT_sint32 x, UT_sint32 y);                                void            setOffset(UT_sint32 ioff);
 	void			setActiveFrame(XAP_Frame *pFrame);
 	void			setSizeFromAnnotation(void);
-	
+
 protected:
 	void			_createAnnotationPreviewFromGC(GR_Graphics * gc, UT_uint32 width, UT_uint32 height);
 	UT_sint32		m_width;
@@ -77,7 +77,7 @@ protected:
 	UT_sint32       m_Offset;
 	void            ConstructWindowName(void);
 	UT_RGBColor		m_clrBackground;
-	
+
 private:
 	UT_uint32			m_iAID;
 	// assume that these strings are always UTF8

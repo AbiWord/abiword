@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2009 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -44,7 +44,7 @@ class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	virtual ~AP_Dialog_Styles(void);
 
 	virtual void			  runModal(XAP_Frame * pFrame) = 0;
-	
+
 	typedef enum { a_OK, a_CANCEL }   tAnswer;
 	AP_Dialog_Styles::tAnswer	  getAnswer(void) const;
 
@@ -61,7 +61,7 @@ class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 				       const gchar * beforeSpacing,
 				       const gchar * afterSpacing,
 				       const gchar * lineSpacing) const;
-	virtual void event_charPreviewUpdated (void) const; 
+	virtual void event_charPreviewUpdated (void) const;
 
 	virtual const char * getCurrentStyle (void) const = 0;
 	virtual void setDescription (const char * desc) const = 0;

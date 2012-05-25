@@ -1496,7 +1496,7 @@ dcl(MENU_LABEL_RDF_ADV_TEST,            "Test RDF subsystem")
 dcl(MENU_LABEL_RDF_ADV_DUMP_OBJECTS,    "Dump RDF Objects")
 dcl(MENU_LABEL_RDF_ADV_DUMP_FOR_POINT,  "Dump RDF related to Cursor Position")
 dcl(MENU_LABEL_RDF_ADV_PLAY,            "Playing with RDF during development")
-    
+
 
 
 dcl(MENU_STATUSLINE_RDF,             "Interact with RDF")
@@ -1534,15 +1534,15 @@ dcl(MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES,"Summary
 dcl(MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES,         "Summary, Start and End Times")
 dcl(MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION,                    "Apply Location")
 dcl(MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME,               "Name")
-dcl(MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG,       "Name, Latitude and Longitude")    
+dcl(MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG,       "Name, Latitude and Longitude")
 dcl(MENU_STATUSLINE_RDF_ADV,             "Advanced RDF")
 dcl(MENU_STATUSLINE_RDF_ADV_TEST,            "Run some RDF tests and show results on console")
 dcl(MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS,    "Dump out information about RDF Objects")
 dcl(MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT,  "Dump the raw RDF associated with the cursor position")
 dcl(MENU_STATUSLINE_RDF_ADV_PLAY,            "Run some RDF tests that change during development")
 
-    
-    
+
+
 /* Toolbar labels */
 dcl(TB_Extra,"Extra")
 dcl(TB_Format,"Format")

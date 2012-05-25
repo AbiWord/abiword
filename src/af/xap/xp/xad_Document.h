@@ -3,20 +3,20 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -47,7 +47,7 @@ class ABI_EXPORT AD_VersionData
 	// constructor for importers
 	AD_VersionData(UT_uint32 v, UT_UTF8String &uuid, time_t start, bool autorev, UT_uint32 xid);
 	AD_VersionData(UT_uint32 v, const char * uuid, time_t start, bool autorev, UT_uint32 xid);
-	
+
 	// constructor for new entries
 	AD_VersionData(UT_uint32 v, time_t start, bool autorev, UT_uint32 xid);
 
@@ -55,7 +55,7 @@ class ABI_EXPORT AD_VersionData
 	AD_VersionData(const AD_VersionData & v);
 
 	virtual ~AD_VersionData();
-	
+
 	AD_VersionData & operator = (const AD_VersionData &v);
 
 	bool operator == (const AD_VersionData &v);
@@ -65,14 +65,14 @@ class ABI_EXPORT AD_VersionData
 	time_t         getStartTime()const {return m_tStart;}
 	const UT_UUID& getUID()const {return (const UT_UUID&)*m_pUUID;}
 	bool           newUID(); // true on success
-	
+
 	void           setId(UT_uint32 iid) {m_iId = iid;}
 
 	bool           isAutoRevisioned()const {return m_bAutoRevision;}
 	void           setAutoRevisioned(bool autorev);
 
 	UT_uint32      getTopXID() const {return m_iTopXID;}
-	
+
   private:
 	UT_uint32   m_iId;
 	UT_UUID *   m_pUUID;
@@ -95,9 +95,9 @@ class ABI_EXPORT AD_Revision
   public:
 	AD_Revision(UT_uint32 iId, UT_UCS4Char * pDesc, time_t start, UT_uint32 iVer = 0)
 		:m_iId(iId),m_pDescription(pDesc), m_tStart(start), m_iVersion(iVer){};
-	
+
 	~AD_Revision(){delete [] m_pDescription;}
-	
+
 	UT_uint32         getId()const{return m_iId;}
 	UT_UCS4Char *     getDescription() const {return m_pDescription;}
 
@@ -131,14 +131,14 @@ public:
 	void				unref(void);
 
 	virtual AD_DOCUMENT_TYPE getType() const = 0;
-	
+
 	XAP_ResourceManager &	resourceManager () const { return *m_pResourceManager; }
 
 	const char *			getFilename(void) const;
 	const std::string     & getPrintFilename(void) const;
 	void                    setPrintFilename(const std::string & sFile);
 	void                    clearFilename(void) {_setFilename(NULL); forceDirty();}
-	// TODO - this should be returning IEFileType, 
+	// TODO - this should be returning IEFileType,
 	// but that's AP stuff, so it's not here
 
 	virtual UT_Error		readFromFile(const char * szFilename, int ieft, const char * props = NULL) = 0;
@@ -147,7 +147,7 @@ public:
 	virtual bool			isDirty(void) const = 0;
 	virtual void            forceDirty() {m_bForcedDirty = true;};
 	bool                    isForcedDirty() const {return m_bForcedDirty;}
-	
+
 	virtual bool			canDo(bool bUndo) const = 0;
 	virtual bool			undoCmd(UT_uint32 repeatCount) = 0;
 	virtual bool			redoCmd(UT_uint32 repeatCount) = 0;
@@ -156,20 +156,20 @@ public:
 	UT_Error		        saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL);
 	UT_Error		        save(void);
 	virtual bool			createDataItem(const char * szName,
-										   bool bBase64, 
+										   bool bBase64,
 										   const UT_ByteBuf * pByteBuf,
-										   const std::string & mime_type, 
+										   const std::string & mime_type,
 										   PD_DataItemHandle* ppHandle) = 0;
-	virtual bool            replaceDataItem(const char * szName, 
+	virtual bool            replaceDataItem(const char * szName,
 											const UT_ByteBuf * pByteBuf) = 0;
 	virtual bool			getDataItemDataByName(const char * szName,
 												  const UT_ByteBuf ** ppByteBuf,
-												  std::string * mime_type, 
-												  PD_DataItemHandle* ppHandle) const = 0;		
+												  std::string * mime_type,
+												  PD_DataItemHandle* ppHandle) const = 0;
 public:
-	
+
 	/**
-	 * Returns the # of seconds since the last save of this file 
+	 * Returns the # of seconds since the last save of this file
 	 */
 	time_t          getTimeSinceSave () const { return (time(NULL) - m_lastSavedTime); }
 	time_t          getLastSavedTime() const {return m_lastSavedTime;}
@@ -185,7 +185,7 @@ public:
 
 	void            setDocVersion(UT_uint32 i){m_iVersion = i;}
 	UT_uint32       getDocVersion() const {return m_iVersion;}
-	
+
 	void			setEncodingName(const char * szEncodingName);
 	const char *	getEncodingName() const;
 
@@ -197,7 +197,7 @@ public:
 	// RIVERA TODO not working and may not be needed
 	virtual void setAnnotationProp (const std::string & key, const std::string & value) = 0;
 	virtual bool getAnnotationProp (const std::string & key, std::string & outProp) const = 0;
-	
+
 	// history tracking
 	void            addRecordToHistory(const AD_VersionData & v);
 	void            purgeHistory();
@@ -213,14 +213,14 @@ public:
 	AD_HISTORY_STATE       verifyHistoryState(UT_uint32 &iVersion) const;
 	const AD_VersionData * findHistoryRecord(UT_uint32 iVersion) const;
     bool                   showHistory(AV_View * pView);
-	
+
 	bool            areDocumentsRelated (const AD_Document &d) const;
 	bool            areDocumentHistoriesEqual(const AD_Document &d, UT_uint32 &iVer) const;
 
 	virtual bool    areDocumentContentsEqual(const AD_Document &d, UT_uint32 &pos) const = 0;
 	virtual bool    areDocumentFormatsEqual(const AD_Document &d, UT_uint32 &pos) const = 0;
 	virtual bool    areDocumentStylesheetsEqual(const AD_Document &d) const = 0;
-	
+
 	void            setDocUUID(const char * u);
 	const char *    getDocUUIDString()const;
 	const UT_UUID * getDocUUID()const {return m_pUUID;};
@@ -234,10 +234,10 @@ public:
 	UT_UUID *       getNewUUID()   const;
 	UT_uint32       getNewUUID32() const;
 	UT_uint64       getNewUUID64() const;
-	
+
 	bool            addRevision(UT_uint32 iId, UT_UCS4Char * pDesc,
 								time_t tStart, UT_uint32 iVersion, bool bGenCR=true);
-	
+
 	bool            addRevision(UT_uint32 iId, const UT_UCS4Char * pDesc, UT_uint32 iLen,
 								time_t tStart, UT_uint32 iVersion, bool bGenCR=true);
 	bool            addRevision(AD_Revision * pRev, bool bGenCR=true);
@@ -257,7 +257,7 @@ public:
 
 	UT_uint32           findAutoRevisionId(UT_uint32 iVersion) const;
 	UT_uint32           findNearestAutoRevisionId(UT_uint32 iVersion, bool bLesser = true) const;
-	
+
 	void                toggleMarkRevisions();
 	void                toggleShowRevisions();
 
@@ -268,7 +268,7 @@ public:
 
 	bool                isAutoRevisioning()const {return m_bAutoRevisioning;}
 	virtual void        setAutoRevisioning(bool autorev);
-	
+
 	virtual void        purgeRevisionTable(bool bUnconditional = false) = 0;
 
 	virtual bool        acceptRejectRevision(bool bReject,
@@ -286,8 +286,8 @@ public:
 	{_setFilename(name);}
 	virtual UT_uint32   getXID() const = 0;
 	virtual UT_uint32   getTopXID() const = 0;
-	
- protected:	
+
+ protected:
 	virtual UT_Error	_saveAs(const char * szFilename, int ieft, const char * props = NULL) = 0;
 	virtual UT_Error	_saveAs(const char * szFilename, int ieft, bool cpy, const char * props = NULL) = 0;
 	virtual UT_Error	_save(void) = 0;
@@ -302,13 +302,13 @@ public:
     bool            _restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion);
 
 	virtual void    _clearUndo() = 0;
-	
-	
+
+
 	virtual ~AD_Document();		//  Use unref() instead.
 
 private:
 	XAP_ResourceManager *	m_pResourceManager;
-	
+
 	int				m_iRefCount;
 	const char *	m_szFilename;
 	UT_String		m_szEncodingName;
@@ -331,7 +331,7 @@ private:
 	bool            m_bAutoRevisioning;
 
 	bool            m_bForcedDirty;
-	
+
 	UT_UUID *       m_pUUID;
 	UT_UUID *       m_pOrigUUID;
 	UT_UUID *       m_pMyUUID;

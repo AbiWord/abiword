@@ -2,20 +2,20 @@
 
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -53,7 +53,7 @@ typedef enum _ev_Toolbar_ItemState			/* values may be ORed */
 	EV_TIS_Toggled			= 0x02,			/* should be pressed down */
 	EV_TIS_UseString		= 0x04,			/* should reference pszState */
 	EV_TIS_Hidden           = 0x08          /* stronger version of Gray, you want to hide if possible */
-	
+
 } EV_Toolbar_ItemState;
 
 typedef EV_Toolbar_ItemState ( EV_GetToolbarItemState_Fn )(AV_View * pAV_View, XAP_Toolbar_Id id, const char ** pszState);
@@ -85,7 +85,7 @@ typedef enum _ev_Toolbar_ItemType
 	EV_TBIT_ColorFore       = 9,    /* control to set the foreground color */
 	EV_TBIT_ColorBack       = 10,   /* control to set the background color */
 	EV_TBIT_MenuButton      = 11    /* Button that brings up a menu */
-	
+
 } EV_Toolbar_ItemType;
 
 /*****************************************************************/
@@ -105,7 +105,7 @@ public:
 	const char *					getMethodName(void) const;
 	AV_ChangeMask					getChangeMaskOfInterest(void) const;
 	EV_Toolbar_ItemState			getToolbarItemState(AV_View * pView, const char ** pszState) const;
-	
+
 protected:
 	XAP_Toolbar_Id					m_id;
 	EV_Toolbar_ItemType				m_type;

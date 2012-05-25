@@ -3,20 +3,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2005 Robert Staudinger <robsta@stereolyzer.net>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -33,11 +33,11 @@ class XAP_UnixFrame;
 class AP_UnixDialog_Tab: public AP_Dialog_Tab
 {
 public:
-	AP_UnixDialog_Tab		   (XAP_DialogFactory *pDlgFactory, 
+	AP_UnixDialog_Tab		   (XAP_DialogFactory *pDlgFactory,
 								XAP_Dialog_Id 	   id);
 	virtual ~AP_UnixDialog_Tab (void);
 
-	static XAP_Dialog *		static_constructor (XAP_DialogFactory *pDlgFactory, 
+	static XAP_Dialog *		static_constructor (XAP_DialogFactory *pDlgFactory,
 												XAP_Dialog_Id 	   id);
 
 	virtual void			runModal		   (XAP_Frame *pFrame);
@@ -82,11 +82,11 @@ public:
 
 	// clear all the items from the tab list - only gui side
 	virtual void _clearList();
-	
+
 	// private construction functions
 	virtual GtkWidget * _constructWindow(void);
-	
-private: 
+
+private:
 
 	void 	   _connectSignals 	 (GtkBuilder *builder);
 	UT_sint32  _getSelectedIndex (void);

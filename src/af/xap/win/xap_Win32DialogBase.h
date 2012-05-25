@@ -3,20 +3,20 @@
 /* AbiWord
  * Copyright (C) 2003 AbiSource, Inc.
  *           (C) 2003 Mike Nordell
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -25,7 +25,7 @@
 
 // MSVC++ warns about using 'this' in initializer list.
 // and the DialogHelper uses 'this' typically for its contructor
-#ifdef _MSC_VER	
+#ifdef _MSC_VER
 #pragma warning(disable: 4355)
 #endif
 
@@ -49,7 +49,7 @@ public:
 	static bool setWindowText (HWND hWnd, const char* uft8_str);
 	static bool getDlgItemText(HWND hWnd, int nIDDlgItem, UT_Win32LocaleString& str);
     static bool setDlgItemText(HWND hWnd, int nIDDlgItem, const char* uft8_str);
-		
+
 protected:
 	void createModal(XAP_Frame* pFrame, LPCWSTR dlgTemplate);
     void createModal(XAP_Frame* pFrame);
@@ -74,7 +74,7 @@ protected:
 	int	 showControl(UT_sint32 controlId, int Mode);
 	int	 bringWindowToTop();
     bool setDlgItemText(int nIDDlgItem, const char* uft8_str);
-	bool getDlgItemText(int nIDDlgItem, UT_Win32LocaleString& str);	
+	bool getDlgItemText(int nIDDlgItem, UT_Win32LocaleString& str);
 
 	// Combo boxes.
 
@@ -102,9 +102,9 @@ protected:
 	void localizeControlText(UT_sint32 controlId, UT_uint32 stringId);
 	void setControlInt(UT_sint32 controlId, int value);
 	int	 getControlInt(UT_sint32 controlId) const;
-	
+
 	void selectControlText(UT_sint32 controlId, UT_sint32 start, UT_sint32 end);
-	
+
 	int  isChecked(UT_sint32 controlId) const;
 	void getControlText(UT_sint32 controlId, LPSTR p_buffer, UT_sint32 Buffer_length) const;
 
@@ -117,11 +117,11 @@ protected:
 
 protected:
 HWND m_hDlg;
-	
+
 protected:
 	static BOOL CALLBACK s_dlgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 private:
-	
+
 	// disallow copying and assignment
 	XAP_Win32DialogBase(const XAP_Win32DialogBase&);	// no impl.
 	void operator=(const XAP_Win32DialogBase&);			// no impl.
@@ -130,7 +130,7 @@ private:
 		magic_tag = 0x327211
 	};
 
-	int m_tag;	// all for safety	
+	int m_tag;	// all for safety
 	XAP_Dialog* m_pDlg;
 	const XAP_StringSet* m_pSS;
 };

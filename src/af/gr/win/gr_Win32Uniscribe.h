@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -71,7 +71,7 @@ typedef enum _SCRIPT_JUSTIFY
     SCRIPT_JUSTIFY_NONE           = 0,
     SCRIPT_JUSTIFY_ARABIC_BLANK   = 1, //0001
     SCRIPT_JUSTIFY_CHARACTER      = 2, //0010
-    SCRIPT_JUSTIFY_RESERVED1      = 3, 
+    SCRIPT_JUSTIFY_RESERVED1      = 3,
     SCRIPT_JUSTIFY_BLANK          = 4, //0100
     SCRIPT_JUSTIFY_RESERVED2      = 5, //0101
     SCRIPT_JUSTIFY_RESERVED3      = 6, //0110
@@ -213,8 +213,8 @@ G_BEGIN_DECLS
 /* functions -- we are loading these dynamically, so we define them as
    pointers, and prefix t for type */
 
-typedef HRESULT (WINAPI * tScriptApplyDigitSubstitution) (const SCRIPT_DIGITSUBSTITUTE* psds, 
-														  SCRIPT_CONTROL* psc, 
+typedef HRESULT (WINAPI * tScriptApplyDigitSubstitution) (const SCRIPT_DIGITSUBSTITUTE* psds,
+														  SCRIPT_CONTROL* psc,
 														  SCRIPT_STATE* pss);
 
 typedef HRESULT (WINAPI * tScriptApplyLogicalWidth) (const int *piDx,
@@ -227,39 +227,39 @@ typedef HRESULT (WINAPI * tScriptApplyLogicalWidth) (const int *piDx,
 													ABC *pABC,
 													int *piJustify);
 
-typedef HRESULT (WINAPI * tScriptBreak) (const WCHAR *pwcChars, 
-										 int cChars, 
-										 const SCRIPT_ANALYSIS *psa, 
+typedef HRESULT (WINAPI * tScriptBreak) (const WCHAR *pwcChars,
+										 int cChars,
+										 const SCRIPT_ANALYSIS *psa,
 										 SCRIPT_LOGATTR *psla);
 
-typedef HRESULT (WINAPI * tScriptCacheGetHeight) (HDC hdc, 
-												  SCRIPT_CACHE *psc, 
+typedef HRESULT (WINAPI * tScriptCacheGetHeight) (HDC hdc,
+												  SCRIPT_CACHE *psc,
 												  long *tmHeight);
 
-typedef HRESULT (WINAPI * tScriptCPtoX) (int iCP, 
-										 BOOL fTrailing, 
-										 int cChars, 
-										 int cGlyphs, 
-										 const WORD *pwLogClust, 
-										 const SCRIPT_VISATTR *psva, 
-										 const int *piAdvance, 
-										 const SCRIPT_ANALYSIS *psa, 
+typedef HRESULT (WINAPI * tScriptCPtoX) (int iCP,
+										 BOOL fTrailing,
+										 int cChars,
+										 int cGlyphs,
+										 const WORD *pwLogClust,
+										 const SCRIPT_VISATTR *psva,
+										 const int *piAdvance,
+										 const SCRIPT_ANALYSIS *psa,
 										 int *piX);
 
 typedef HRESULT (WINAPI * tScriptFreeCache) (SCRIPT_CACHE *psc);
 
-typedef HRESULT (WINAPI * tScriptGetCMap) (HDC hdc, 
-										   SCRIPT_CACHE *psc, 
-										   const WCHAR *pwcInChars, 
-										   int cChars, 
-										   DWORD dwFlags, 
+typedef HRESULT (WINAPI * tScriptGetCMap) (HDC hdc,
+										   SCRIPT_CACHE *psc,
+										   const WCHAR *pwcInChars,
+										   int cChars,
+										   DWORD dwFlags,
 										   WORD *pwOutGlyphs);
 
-typedef HRESULT (WINAPI * tScriptGetFontProperties) (HDC hdc, 
-													 SCRIPT_CACHE *psc, 
+typedef HRESULT (WINAPI * tScriptGetFontProperties) (HDC hdc,
+													 SCRIPT_CACHE *psc,
 													 SCRIPT_FONTPROPERTIES *sfp);
 
-typedef HRESULT (WINAPI * tScriptGetGlyphABCWidth) (HDC hdc, 
+typedef HRESULT (WINAPI * tScriptGetGlyphABCWidth) (HDC hdc,
 													SCRIPT_CACHE *psc,
 													WORD wGlyph,
 													ABC *pABC);
@@ -272,56 +272,56 @@ typedef HRESULT (WINAPI * tScriptGetLogicalWidths) (const SCRIPT_ANALYSIS *psa,
 													const SCRIPT_VISATTR *psva,
 													int *piDx);
 
-typedef HRESULT (WINAPI * tScriptGetProperties) (const SCRIPT_PROPERTIES ***ppSp, 
+typedef HRESULT (WINAPI * tScriptGetProperties) (const SCRIPT_PROPERTIES ***ppSp,
 												 int *piNumScripts);
 
 typedef HRESULT (WINAPI * tScriptIsComplex) (const WCHAR *pwcInChars,
 											 int cInChars,
 											 DWORD dwFlags);
 
-typedef HRESULT (WINAPI * tScriptItemize) (const WCHAR *pwcInChars, 
-										   int cInChars, 
-										   int cMaxItems, 
-										   const SCRIPT_CONTROL *psControl, 
-										   const SCRIPT_STATE *psState, 
-										   SCRIPT_ITEM *pItems, 
+typedef HRESULT (WINAPI * tScriptItemize) (const WCHAR *pwcInChars,
+										   int cInChars,
+										   int cMaxItems,
+										   const SCRIPT_CONTROL *psControl,
+										   const SCRIPT_STATE *psState,
+										   SCRIPT_ITEM *pItems,
 										   int *pcItems);
 
 
-typedef HRESULT (WINAPI * tScriptJustify) (const SCRIPT_VISATTR *psva, 
-										   const int *piAdvance, 
-										   int cGlyphs, 
-										   int iDx, 
-										   int iMinKashida, 
+typedef HRESULT (WINAPI * tScriptJustify) (const SCRIPT_VISATTR *psva,
+										   const int *piAdvance,
+										   int cGlyphs,
+										   int iDx,
+										   int iMinKashida,
 										   int *piJustify);
 
-typedef HRESULT (WINAPI * tScriptLayout) (int cRuns, 
-										  const BYTE *pbLevel, 
-										  int *piVisualToLogical, 
+typedef HRESULT (WINAPI * tScriptLayout) (int cRuns,
+										  const BYTE *pbLevel,
+										  int *piVisualToLogical,
 										  int *piLogicalToVisual);
 
-typedef HRESULT (WINAPI * tScriptPlace) (HDC hdc, 
-										 SCRIPT_CACHE *psc, 
-										 const WORD *pwGlyphs, 
-										 int cGlyphs, 
-										 const SCRIPT_VISATTR *psva, 
-										 SCRIPT_ANALYSIS *psa, 
-										 int *piAdvance, 
-										 GOFFSET *pGoffset, 
+typedef HRESULT (WINAPI * tScriptPlace) (HDC hdc,
+										 SCRIPT_CACHE *psc,
+										 const WORD *pwGlyphs,
+										 int cGlyphs,
+										 const SCRIPT_VISATTR *psva,
+										 SCRIPT_ANALYSIS *psa,
+										 int *piAdvance,
+										 GOFFSET *pGoffset,
 										 ABC *pABC);
 
 typedef HRESULT (WINAPI * tScriptRecordDigitSubstitution) (LCID Locale,
 														   SCRIPT_DIGITSUBSTITUTE *psds);
 
-typedef HRESULT (WINAPI * tScriptShape) (HDC hdc, 
-										 SCRIPT_CACHE *psc, 
-										 const WCHAR *pwcChars, 
-										 int cChars, 
-										 int cMaxGlyphs, 
-										 SCRIPT_ANALYSIS *psa, 
-										 WORD *pwOutGlyphs, 
-										 WORD *pwLogClust, 
-										 SCRIPT_VISATTR *psva, 
+typedef HRESULT (WINAPI * tScriptShape) (HDC hdc,
+										 SCRIPT_CACHE *psc,
+										 const WCHAR *pwcChars,
+										 int cChars,
+										 int cMaxGlyphs,
+										 SCRIPT_ANALYSIS *psa,
+										 WORD *pwOutGlyphs,
+										 WORD *pwLogClust,
+										 SCRIPT_VISATTR *psva,
 										 int *pcGlyphs);
 
 typedef HRESULT (WINAPI * tScriptStringAnalyse) (HDC hdc,
@@ -338,9 +338,9 @@ typedef HRESULT (WINAPI * tScriptStringAnalyse) (HDC hdc,
 												 const BYTE *pbInClass,
 												 SCRIPT_STRING_ANALYSIS *pssa);
 
-typedef HRESULT (WINAPI *tScriptStringCPtoX) (SCRIPT_STRING_ANALYSIS ssa, 
-											  int icp, 
-											  BOOL fTrailing, 
+typedef HRESULT (WINAPI *tScriptStringCPtoX) (SCRIPT_STRING_ANALYSIS ssa,
+											  int icp,
+											  BOOL fTrailing,
 											  int *pX);
 
 typedef HRESULT (WINAPI * tScriptStringFree) (SCRIPT_STRING_ANALYSIS *pssa);
@@ -349,13 +349,13 @@ typedef HRESULT (WINAPI * tScriptStringGetLogicalWidths) (SCRIPT_STRING_ANALYSIS
 
 typedef HRESULT (WINAPI * tScriptStringGetOrder) (SCRIPT_STRING_ANALYSIS ssa, UINT *puOrder);
 
-typedef HRESULT (WINAPI * tScriptStringOut) (SCRIPT_STRING_ANALYSIS ssa, 
-											 int iX, 
-											 int iY, 
-											 UINT uOptions, 
-											 const RECT *prc, 
-											 int iMinSel, 
-											 int iMaxSel, 
+typedef HRESULT (WINAPI * tScriptStringOut) (SCRIPT_STRING_ANALYSIS ssa,
+											 int iX,
+											 int iY,
+											 UINT uOptions,
+											 const RECT *prc,
+											 int iMinSel,
+											 int iMaxSel,
 											 BOOL fDisabled);
 
 typedef const int* (WINAPI * tScriptString_pcOutChars) (SCRIPT_STRING_ANALYSIS ssa);
@@ -366,34 +366,34 @@ typedef const SIZE* (WINAPI * tScriptString_pSize) (SCRIPT_STRING_ANALYSIS ssa);
 
 typedef HRESULT (WINAPI * tScriptStringValidate) (SCRIPT_STRING_ANALYSIS ssa);
 
-typedef HRESULT (WINAPI * tScriptStringXtoCP) (SCRIPT_STRING_ANALYSIS  ssa, 
-											   int iX, 
-											   int *piCh, 
+typedef HRESULT (WINAPI * tScriptStringXtoCP) (SCRIPT_STRING_ANALYSIS  ssa,
+											   int iX,
+											   int *piCh,
 											   int *piTrailing);
 
-typedef HRESULT (WINAPI * tScriptTextOut) (const HDC hdc, 
-										   SCRIPT_CACHE *psc, 
-										   int x, 
-										   int y, 
-										   UINT fuOptions, 
-										   const RECT *lprc, 
-										   const SCRIPT_ANALYSIS *psa, 
-										   const WCHAR *pwcReserved, 
-										   int iReserved, 
-										   const WORD *pwGlyphs, 
-										   int cGlyphs, 
-										   const int *piAdvance, 
-										   const int *piJustify, 
+typedef HRESULT (WINAPI * tScriptTextOut) (const HDC hdc,
+										   SCRIPT_CACHE *psc,
+										   int x,
+										   int y,
+										   UINT fuOptions,
+										   const RECT *lprc,
+										   const SCRIPT_ANALYSIS *psa,
+										   const WCHAR *pwcReserved,
+										   int iReserved,
+										   const WORD *pwGlyphs,
+										   int cGlyphs,
+										   const int *piAdvance,
+										   const int *piJustify,
 										   const GOFFSET *pGoffset);
 
-typedef HRESULT (WINAPI * tScriptXtoCP) (int iX, 
-										 int cChars, 
-										 int cGlyphs, 
-										 const WORD *pwLogClust, 
-										 const SCRIPT_VISATTR *psva, 
-										 const int *piAdvance, 
-										 const SCRIPT_ANALYSIS *psa, 
-										 int *piCP, 
+typedef HRESULT (WINAPI * tScriptXtoCP) (int iX,
+										 int cChars,
+										 int cGlyphs,
+										 const WORD *pwLogClust,
+										 const SCRIPT_VISATTR *psva,
+										 const int *piAdvance,
+										 const SCRIPT_ANALYSIS *psa,
+										 int *piCP,
 										 int *piTrailing);
 
 

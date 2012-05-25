@@ -7,15 +7,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -62,7 +62,7 @@ public:
 
 	// data twiddlers
 	void			draw(const UT_Rect *clip=NULL);
-	GR_Graphics *   getGraphics(void) const { return m_gc;} 
+	GR_Graphics *   getGraphics(void) const { return m_gc;}
 	/*void			set(UT_uint32 iColumns, bool bLines)
 					{
 						m_iColumns = iColumns;
@@ -86,7 +86,7 @@ public:
 
 	typedef enum { a_OK, a_CLOSE } tAnswer;
 	typedef enum { toggle_left, toggle_right, toggle_top, toggle_bottom } toggle_button;
-	
+
 	AP_Dialog_FormatFrame::tAnswer		getAnswer(void) const;
 	virtual void                        startUpdater(void);
 	virtual void                        stopUpdater(void);
@@ -102,12 +102,12 @@ public:
 	bool                                getWrapping(void) const { return m_bSetWrapping; }
 
 	void                                setAllSensitivities(void);
-	void 								setCurFrameProps(void);	
+	void 								setCurFrameProps(void);
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void                                clearImage(void);
 	void                                askForGraphicPathName(void);
-	void                                ShowErrorBox(const std::string & sFile, 
+	void                                ShowErrorBox(const std::string & sFile,
                                                      UT_Error errorCode);
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
@@ -116,11 +116,11 @@ public:
 
 	GR_Image *                          getImage(void) { return m_pImage;}
 	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
-				
+
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 
-	UT_PropVector                           m_vecProps;									
+	UT_PropVector                           m_vecProps;
 
 	void					setBGColor (UT_RGBColor clr);
 
@@ -165,7 +165,7 @@ public:
 	void					setBorderThicknessLeft   (const UT_UTF8String & sThick);
 	void					setBorderThicknessTop    (const UT_UTF8String & sThick);
 	void					setBorderThicknessBottom (const UT_UTF8String & sThick);
-	
+
 	const UT_UTF8String &	getBorderThicknessRight ()  const { return m_sBorderThicknessRight;  }
 	const UT_UTF8String &	getBorderThicknessLeft ()   const { return m_sBorderThicknessLeft;   }
 	const UT_UTF8String &	getBorderThicknessTop ()    const { return m_sBorderThicknessTop;    }
@@ -193,7 +193,7 @@ protected:
 	AP_FormatFrame_preview				*m_pFormatFramePreview;
 	AP_FormatFrame_preview_drawer		m_previewDrawer;
 private:
-    GR_Image * _makeImageForRaster(const std::string & name, 
+    GR_Image * _makeImageForRaster(const std::string & name,
                                    GR_Graphics * pGraphics,
                                    const FG_Graphic * pG);
 	bool					_getToggleButtonStatus(const char * lineStyle);
@@ -225,7 +225,7 @@ private:
 	UT_UTF8String			m_sBorderThicknessBottom;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
-	
+
 	// Handshake variables
 	bool m_bDestroy_says_stopupdating;
 	bool m_bAutoUpdate_happening_now;

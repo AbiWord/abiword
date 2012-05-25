@@ -120,10 +120,10 @@ public:
 	bool                overlapsRect(UT_Rect & rec);
 	bool                isAbove(void);
 	void                setAbove(bool bAbove)
-	        { m_bIsAbove = bAbove;} 
+	        { m_bIsAbove = bAbove;}
 private:
 	void                   _drawLine (const PP_PropertyMap::Line & style,
-									  UT_sint32 left, UT_sint32 top, 
+									  UT_sint32 left, UT_sint32 top,
 									  UT_sint32 right, UT_sint32 bot,
 									  GR_Graphics * pGr);
 	fp_Page * m_pPage;

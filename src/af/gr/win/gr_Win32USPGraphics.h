@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -51,7 +51,7 @@ class ABI_EXPORT GR_Win32USPFont : public GR_Win32Font
   protected:
 	// all construction has to be done via the graphics class
 	GR_Win32USPFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC);
-	
+
 	virtual void _clearAnyCachedInfo();
 
   private:
@@ -71,19 +71,19 @@ public:
 
 	static UT_uint32 s_getClassId() {return GRID_WIN32_UNISCRIBE;}
 	virtual UT_uint32 getClassId() {return s_getClassId();}
-	
+
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_AND_PRINTER;}
 	static const char *    graphicsDescriptor();
 	static const char *    getUSPVersion();
 	static GR_Graphics *   graphicsAllocator(GR_AllocInfo&);
 
 	virtual void		   setFont(const GR_Font* pFont);
-	
+
 	virtual void		   drawChars(const UT_UCSChar* pChars,
 									  int iCharOffset, int iLength,
 									  UT_sint32 xoff, UT_sint32 yoff,
 									  int * pCharWidth);
-	
+
 	virtual void           drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
 													   int iCharOffset,
 													   int iLength,
@@ -99,7 +99,7 @@ public:
 	virtual UT_uint32		getFontHeight(GR_Font *);
 
 	virtual void      setZoomPercentage(UT_uint32 iZoom);
-	
+
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
 	//
@@ -123,7 +123,7 @@ public:
 								   UT_sint32& x, UT_sint32& y,
 								   UT_sint32& x2, UT_sint32& y2,
 								   UT_sint32& height, bool& bDirection) const;
-	
+
 	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri);
 
 	virtual bool      needsSpecialCaretPositioning(GR_RenderInfo & ri);
@@ -140,12 +140,12 @@ public:
 
 	virtual void          setPrintDC(HDC dc);
 
-	
+
   protected:
 	// all instances have to be created via GR_GraphicsFactory; see gr_Graphics.h
 	GR_Win32USPGraphics(HDC, HWND);
 	GR_Win32USPGraphics(HDC, const DOCINFOW *, HGLOBAL hDevMode = NULL);
-	
+
   private:
 	bool      _constructorCommonCode();
 	virtual GR_Win32Font * _newFont(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC);
@@ -156,9 +156,9 @@ public:
 					  int iCharOffset, int iLength,
 					  UT_sint32 xoff, UT_sint32 yoff,
 					  int * pCharWidth);
-	
+
 	bool   m_bConstructorSucceeded;
-	
+
 	static HINSTANCE s_hUniscribe;
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
@@ -174,7 +174,7 @@ public:
 	//
 	// IMPORTANT: All uniscribe functions must be called via these
 	// pointers since we do not want to link against usp10.dll !!!
-	
+
 	static tScriptItemize       fScriptItemize;
 	static tScriptShape         fScriptShape;
 	static tScriptStringOut     fScriptStringOut;

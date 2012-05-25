@@ -36,7 +36,7 @@ public:
 		: m_obj(_obj)
 		{
 			_ref();
-		}	
+		}
 	~XAP_GtkObjectHolder()
 		{
 			_unref();
@@ -61,12 +61,12 @@ public:
 		}
 private:
 	void _unref()
-		{ 
+		{
 			if(m_obj)
 				g_object_unref(m_obj);
 		}
 	void _ref()
-		{ 
+		{
 			if(m_obj)
 				g_object_ref(m_obj);
 		}

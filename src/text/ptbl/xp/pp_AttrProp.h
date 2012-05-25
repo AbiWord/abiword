@@ -57,7 +57,7 @@ class ABI_EXPORT PP_RevisionState
 				 return true;
 			 return false;
 		 }
-	
+
 	UT_uint32 m_iId;
 	bool      m_bShow;
 	bool      m_bMark;
@@ -137,7 +137,7 @@ public:
 	   state */
 	PT_AttrPropIndex   getRevisedIndex() const {return m_iRevisedIndex;}
 	PP_RevisionState & getRevisionState() const {return m_RevisionState;}
-	
+
 	void               setRevisedIndex (PT_AttrPropIndex i, UT_uint32 iId, bool bShow, bool bMark, bool bHidden) const
 	                       {
 							   m_iRevisedIndex = i; m_RevisionState.m_iId = iId;
@@ -151,7 +151,7 @@ public:
 	bool explodeStyle(const PD_Document * pDoc, bool bOverwrite = false);
 
 	void miniDump(const PD_Document * pDoc) const;
-	
+
 protected:
 	void _computeCheckSum(void);
 	void _clearEmptyProperties();
@@ -162,12 +162,12 @@ protected:
 
 	UT_GenericStringMap<gchar*> * m_pAttributes; // of gchar*
 	UT_GenericStringMap<PropertyPair*> * m_pProperties; // of PropertyPair
-	
+
 	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
 	UT_uint32			m_index;	//$HACK
 	mutable const gchar **   m_szProperties;
-	
+
 	mutable PT_AttrPropIndex    m_iRevisedIndex;
 	mutable PP_RevisionState    m_RevisionState;
 	mutable bool                m_bRevisionHidden;

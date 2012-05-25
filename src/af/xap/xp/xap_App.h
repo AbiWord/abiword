@@ -3,20 +3,20 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (C) 2004 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -94,7 +94,7 @@ struct ABI_EXPORT XAP_StateData
 
 /*****************************************************************
 ******************************************************************
-** This file defines the base class for the cross-platform 
+** This file defines the base class for the cross-platform
 ** application.  This is used to hold all of the application-specific
 ** data.  Only one of these is created by the application.
 ******************************************************************
@@ -110,7 +110,7 @@ public:									/* TODO these should be protected */
 	static const char* s_szBuild_CompileTime;
 	static const char* s_szBuild_CompileDate;
 	static const char* s_szAbiSuite_Home;
-	
+
 public:
 	static const char* getBuildId ();
 	static const char* getBuildVersion ();
@@ -150,7 +150,7 @@ public:
 	void						enumerateDocuments(UT_Vector & v, const AD_Document * pExclude) const;
 	const char *					getApplicationTitleForTitleBar() const;
 	const char *					getApplicationName() const;
-	
+
 	virtual void                rebuildMenus(void);
 
 	EV_EditMethodContainer *			getEditMethodContainer() const;
@@ -178,7 +178,7 @@ public:
 	virtual XAP_Toolbar_ControlFactory *		getControlFactory() = 0;
 
 	virtual const XAP_StringSet *			getStringSet() const = 0;
-	virtual void						migrate(const char *oldName, const char *newName, const char *path) const;                
+	virtual void						migrate(const char *oldName, const char *newName, const char *path) const;
 	virtual const char *				getUserPrivateDirectory() = 0;
 	virtual const char *				getAbiSuiteLibDir() const;
 	virtual const char *				getAbiSuiteAppDir() const = 0;
@@ -210,10 +210,10 @@ public:
 
 	virtual void					setViewSelection(AV_View * /*pView*/) {}; //subclasses override
 	virtual AV_View *				getViewSelection() { return static_cast<AV_View *>(NULL);} ; // subclasses override
-	
-	virtual	bool					setGeometry(UT_sint32 x, UT_sint32 y, 
+
+	virtual	bool					setGeometry(UT_sint32 x, UT_sint32 y,
 									UT_uint32 width, UT_uint32 height, UT_uint32 flags = 0);
-	virtual	bool					getGeometry(UT_sint32 *x, UT_sint32 *y, 
+	virtual	bool					getGeometry(UT_sint32 *x, UT_sint32 *y,
 									UT_uint32 *width, UT_uint32 *height, UT_uint32 *flags = 0);
 	virtual void 					parseAndSetGeometry(const char *string);
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const = 0;
@@ -221,15 +221,15 @@ public:
 	XAP_Toolbar_Factory *				getToolbarFactory(void) const { return m_pToolbarFactory; }
 
 	typedef enum {BIDI_SUPPORT_NONE, BIDI_SUPPORT_GUI, BIDI_SUPPORT_FULL} BidiSupportType;
-	
+
 	virtual BidiSupportType				theOSHasBidiSupport() const {return BIDI_SUPPORT_NONE;}
 	void						setEnableSmoothScrolling(bool b);
 	bool						isSmoothScrollingEnabled(void) { return m_bEnableSmoothScrolling; }
 
 	void						setBonoboRunning(void) { m_bBonoboRunning = true; }
 	bool						isBonoboRunning(void) const { return m_bBonoboRunning; }
-	virtual void					getDefaultGeometry(UT_uint32& /*width*/, 
-													   UT_uint32& /*height*/, 
+	virtual void					getDefaultGeometry(UT_uint32& /*width*/,
+													   UT_uint32& /*height*/,
 													   UT_uint32& /*flags*/) {}
 
 	const UT_LangRecord *				getKbdLanguage() const { return m_pKbdLang; }
@@ -240,7 +240,7 @@ public:
 
 	bool						openURL(const char * url) { return m_pImpl->openURL(url); }
 	bool						openHelpURL(const char * url) { return m_pImpl->openHelpURL(url); }
-	UT_String					localizeHelpUrl(const char * pathBeforeLang, 
+	UT_String					localizeHelpUrl(const char * pathBeforeLang,
 									const char * pathAfterLang, const char * remoteURLbase)
 							{ return m_pImpl->localizeHelpUrl(pathBeforeLang, pathAfterLang, remoteURLbase); }
 
@@ -251,7 +251,7 @@ public:
 	/* secondary graphics allocator; use only in special cases */
 	GR_Graphics *					newGraphics(UT_uint32 iClassId, GR_AllocInfo &ai) const;
 	virtual GR_Graphics *				newDefaultScreenGraphics() const = 0;
-	
+
 	virtual UT_sint32				setInputMode(const char * szName, bool bForce=false);
 	const char *					getInputMode() const;
 	EV_EditEventMapper *				getEditEventMapper() const;
@@ -263,7 +263,7 @@ public:
 	bool						unRegisterEmbeddable(const char *uid);
 	GR_EmbedManager *				getEmbeddableManager(GR_Graphics * pG, const char * szObjectType);
 	XAP_Module *				getPlugin(const char * szPluginName);
-	
+
 	static const char*			findNearestFont(const char* pszFontFamily,
 												const char* pszFontStyle,
 												const char* pszFontVariant,
@@ -280,7 +280,7 @@ public:
 	void                        setDisableDoubleBuffering( bool v );
 	bool                        getNoGUI() const;
 	void                        setNoGUI( bool v );
-    
+
 protected:
 	void						_setAbiSuiteLibDir(const char * sz);
 	virtual const char *				_getKbdLanguage() {return NULL;}
@@ -305,12 +305,12 @@ protected:
 	XAP_Menu_Factory *              	        m_pMenuFactory;
 	XAP_Toolbar_Factory *				m_pToolbarFactory;
 
-	struct modeless_pair 
-	{ 
+	struct modeless_pair
+	{
 		UT_sint32 id;
 		XAP_Dialog_Modeless * pDialog;
-	} m_IdTable[NUM_MODELESSID+1]; 
-        
+	} m_IdTable[NUM_MODELESSID+1];
+
 	static XAP_App *				m_pApp;
 	bool						m_bAllowCustomizing;
 	bool						m_bAreCustomized;
@@ -325,9 +325,9 @@ private:
 
 	GR_GraphicsFactory *				m_pGraphicsFactory;
 	UT_uint32					m_iDefaultGraphicsId;
-	
+
 	XAP_InputModes *				m_pInputModes;
-	std::map<std::string, GR_EmbedManager *> m_mapEmbedManagers;	
+	std::map<std::string, GR_EmbedManager *> m_mapEmbedManagers;
 	XAP_App(const XAP_App&);			// should not even be called. Just to avoid a warning.
 	void operator=(const XAP_App&);
 #ifdef DEBUG

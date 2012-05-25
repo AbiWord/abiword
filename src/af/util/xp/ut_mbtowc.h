@@ -41,7 +41,7 @@ class ABI_EXPORT UT_UCS2_mbtowc
   void initialize (bool clear = true);
 
   UT_UCS2_mbtowc (const char * from_charset);
-  ~UT_UCS2_mbtowc();  
+  ~UT_UCS2_mbtowc();
 
   void setInCharset (const char * from_charset);
 
@@ -82,7 +82,7 @@ class ABI_EXPORT UT_UCS4_mbtowc
   void initialize (bool clear = true);
 
   UT_UCS4_mbtowc (const char * from_charset);
-  ~UT_UCS4_mbtowc();  
+  ~UT_UCS4_mbtowc();
 
   void setInCharset (const char * from_charset);
 

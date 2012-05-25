@@ -5,15 +5,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -28,10 +28,10 @@
 // hack to fix problem in wincrypt.h;  according to the docs the RSA
 // cryptographic provider is included from win95OS2 but the include
 // file assumes NT >= 4
-// 
+//
 // (I do not want to just test for _WIN32_WINNT < 0x0400, in case this
 // problem was fixed in later versions of MSVC)
-// 
+//
 // we need to provide our own definitions here ...
 extern "C" {
 typedef unsigned long HCRYPTPROV;
@@ -61,7 +61,7 @@ class ABI_EXPORT UT_Win32UUID : public UT_UUID
 	   all constructors are protected; instances of UT_UUID will be
 	   created through UT_UUIDGenerator declared below
 	*/
-	
+
 	/* virtual destructor*/
 	virtual ~UT_Win32UUID ();
 
@@ -70,13 +70,13 @@ class ABI_EXPORT UT_Win32UUID : public UT_UUID
 	/* various protected constructors */
 	// the first constr. constructs NULL uuid; subsequent call to makeUUID() needed
 	UT_Win32UUID():UT_UUID(){s_iInstCount++;};
-	
+
 	UT_Win32UUID(const UT_UTF8String &s):UT_UUID(s){s_iInstCount++;};
 	UT_Win32UUID(const char *s):UT_UUID(s){s_iInstCount++;};
 	UT_Win32UUID(const UT_UUID &u):UT_UUID(u){s_iInstCount++;};
 	UT_Win32UUID(const UT_Win32UUID &u):UT_UUID((UT_UUID&)u){s_iInstCount++;};
 	UT_Win32UUID(const struct uuid &u):UT_UUID(u){s_iInstCount++;};
-	
+
 	virtual bool    _getRandomBytes(void *buf, int nbytes);
 
   private:
@@ -88,7 +88,7 @@ class ABI_EXPORT UT_Win32UUID : public UT_UUID
 
 /*
     This class mediates creation of UT_UUID class.
-    
+
     We create an instance of UT_UUIDGeneratr (or derived) class in
     XAP_App() and have XAP_App::getUUIDGenerator() to gain access to
     it.  This allows us to create platform specific instances of
@@ -103,7 +103,7 @@ class ABI_EXPORT UT_Win32UUIDGenerator : public UT_UUIDGenerator
 	// because the default constructor creates NULL uuid, we also need
 	// to call makeUUID() with this one
 	virtual UT_UUID * createUUID(){UT_UUID *p=new UT_Win32UUID(); if(p)p->makeUUID(); return p;}
-	
+
 	virtual UT_UUID * createUUID(const UT_UTF8String &s){return new UT_Win32UUID(s);}
 	virtual UT_UUID * createUUID(const char *s){return new UT_Win32UUID(s);}
 	virtual UT_UUID * createUUID(const UT_UUID &u){return new UT_Win32UUID(u);}

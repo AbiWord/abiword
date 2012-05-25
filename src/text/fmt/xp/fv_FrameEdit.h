@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (c) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
+ * Copyright (c) 2003 Martin Sevior <msevior@physics.unimelb.edu.au>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -62,7 +62,7 @@ public:
 	void                  abortDrag(void);
 	UT_sint32             haveDragged(void) const;
     void                  setMode(FV_FrameEditMode iEditMode);
-	FV_FrameEditMode      getFrameEditMode(void) const 
+	FV_FrameEditMode      getFrameEditMode(void) const
 		{ return m_iFrameEditMode;}
 	void                  mouseLeftPress(UT_sint32 x, UT_sint32 y);
 	void                  mouseRelease(UT_sint32 x, UT_sint32 y);
@@ -81,11 +81,11 @@ public:
 	fp_FrameContainer *   getFrameContainer(void) { return m_pFrameContainer;}
 	static void 		  _actuallyScroll(UT_Worker * pTimer);
 	static void 		  _autoScroll(UT_Worker * pTimer);
-    bool                  isImageWrapper(void) const;  	
+    bool                  isImageWrapper(void) const;
 
 protected:
 	virtual void          _mouseDrag(UT_sint32 x, UT_sint32 y);
-	
+
 private:
 	FV_FrameEditMode      m_iFrameEditMode;
 	fl_FrameLayout *      m_pFrameLayout;

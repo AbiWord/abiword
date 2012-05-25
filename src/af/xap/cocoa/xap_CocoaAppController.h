@@ -4,20 +4,20 @@
  * Copyright (C) 2003 Hubert Figuiere
  * Copyright (C) 2004 Francis James Franklin
  * Copyright (C) 2009 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -37,7 +37,7 @@ class XAP_Frame;
 
 @interface XAP_CocoaApplication : NSApplication
 {
-	// 
+	//
 }
 - (void)terminate:(id)sender;
 - (void)orderFrontStandardAboutPanel:(id)sender;
@@ -184,7 +184,7 @@ enum XAP_CocoaAppMenu_Id
 
 /**
  * Load .Abi bundle plugin at path.
- * 
+ *
  * \return Returns nil on failure.
  */
 - (XAP_CocoaPlugin *)loadPlugin:(NSString *)path;
@@ -196,14 +196,14 @@ enum XAP_CocoaAppMenu_Id
 
 /**
  * Checks to see whether the plugins can deactivate, and, if they can, deactivates them.
- * 
+ *
  * \return Returns false if any of the plugins object.
  */
 - (BOOL)deactivateAllPlugins;
 
 /**
  * Checks to see whether the plugins can deactivate, and, if they can, deactivates them.
- * 
+ *
  * \return Returns false if the plugin objects, unless override is YES.
  */
 - (BOOL)deactivatePlugin:(XAP_CocoaPlugin *)plugin overridePlugin:(BOOL)override;
@@ -229,7 +229,7 @@ enum XAP_CocoaAppMenu_Id
 /**
  * Get a list of all the tool providers.
  * Each tool provider is of type id <NSObject, XAP_CocoaPlugin_ToolProvider>.
- * 
+ *
  * \return The tool providers.
  */
 - (NSArray *)toolProviders;
@@ -238,9 +238,9 @@ enum XAP_CocoaAppMenu_Id
  * Find a tool provider by name.
  * (TODO: If plug-ins are registering tool providers, we need to implement a notification
  *        system to update toolbar systems.)
- * 
+ *
  * \param name The name of the tool provider to find.
- * 
+ *
  * \return The tool provider, or nil if none is registered with the given name.
  */
 - (id <NSObject, XAP_CocoaPlugin_ToolProvider>)toolProvider:(NSString *)name;

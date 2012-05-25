@@ -48,11 +48,11 @@ BeginLayout(Main,0)
 	BeginSubMenu(AP_MENU_ID_FILE)
 		MenuItem(AP_MENU_ID_FILE_NEW_USING_TEMPLATE)
 		MenuItem(AP_MENU_ID_FILE_OPEN)
-	
+
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_SAVEAS)
 		MenuItem(AP_MENU_ID_FILE_REVERT)
-	
+
 #ifdef ENABLE_PRINT
 		Separator()
 		MenuItem(AP_MENU_ID_FILE_PAGESETUP)
@@ -106,7 +106,7 @@ BeginLayout(Main,0)
 		Separator()
 		MenuItem(AP_MENU_ID_VIEW_LOCKSTYLES)
 #endif
-      
+
         MenuItem(AP_MENU_ID_VIEW_SHOWPARA)
 	    Separator()
 
@@ -120,7 +120,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_VIEW_ZOOM_50)
 		EndSubMenu()
 	EndSubMenu()
-	
+
 	BeginSubMenu(AP_MENU_ID_INSERT)
 		MenuItem(AP_MENU_ID_INSERT_BREAK)
 		MenuItem(AP_MENU_ID_INSERT_PAGENO)
@@ -133,7 +133,7 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_INSERT_MAILMERGE)
 #endif
 		MenuItem(AP_MENU_ID_INSERT_SYMBOL)
-		
+
 		Separator()
 
 		MenuItem(AP_MENU_ID_INSERT_HEADER)
@@ -169,14 +169,14 @@ BeginLayout(Main,0)
 		MenuItem(AP_MENU_ID_FMT_FRAME)
     MenuItem(AP_MENU_ID_FMT_IMAGE)
 // #if 1 // someone code and turn this back on
-	//	Maleesh 6/10/2010 -  
+	//	Maleesh 6/10/2010 -
 		MenuItem(AP_MENU_ID_FMT_BORDERS)
 // #endif
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_COLUMNS)
 #if 0
 		MenuItem(AP_MENU_ID_FMT_TABS)
-#endif	
+#endif
 		MenuItem(AP_MENU_ID_FMT_HDRFTR)
 		MenuItem(AP_MENU_ID_FMT_FOOTNOTES)
 		MenuItem(AP_MENU_ID_FMT_TABLEOFCONTENTS)
@@ -219,10 +219,10 @@ BeginLayout(Main,0)
       MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_LTR)
       MenuItem(AP_MENU_ID_FMT_DIRECTION_DO_RTL)
     EndSubMenu()
-        
+
 		Separator()
 		MenuItem(AP_MENU_ID_FMT_STYLE_DEFINE)
-	
+
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TOOLS)
@@ -232,9 +232,9 @@ BeginLayout(Main,0)
 #endif
 		MenuItem(AP_MENU_ID_FMT_LANGUAGE)
 		MenuItem(AP_MENU_ID_TOOLS_WORDCOUNT)
-#if !XAP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU
         MenuItem(AP_MENU_ID_FMT_STYLIST)
-#endif	
+#endif
 
 		Separator()
 
@@ -242,16 +242,16 @@ BeginLayout(Main,0)
 	        MenuItem(AP_MENU_ID_TOOLS_HISTORY_SHOW)
 	        MenuItem(AP_MENU_ID_TOOLS_REVISIONS_COMPARE_DOCUMENTS)
 		    MenuItem(AP_MENU_ID_TOOLS_REVISIONS_AUTO)
-#if !XAP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU
 		    MenuItem(AP_MENU_ID_TOOLS_HISTORY_PURGE)
-#endif	
+#endif
 		EndSubMenu()
-	
+
 		BeginSubMenu(AP_MENU_ID_TOOLS_REVISIONS)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_MARK)
-#if !XAP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_NEW_REVISION)
-#endif	
+#endif
 		    Separator()
 	        MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SHOW)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTER)
@@ -264,9 +264,9 @@ BeginLayout(Main,0)
 	        Separator()
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_ACCEPT_REVISION)
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_REJECT_REVISION)
-#if !XAP_SIMPLE_MENU	
+#if !XAP_SIMPLE_MENU
 			MenuItem(AP_MENU_ID_TOOLS_REVISIONS_PURGE)
-#endif	
+#endif
 		EndSubMenu()
 
 		// RIVERA
@@ -278,7 +278,7 @@ BeginLayout(Main,0)
 			MenuItem(AP_MENU_ID_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY)
 		EndSubMenu()
 #endif
-	
+
 	    Separator()
 
 #if !XAP_SIMPLE_MENU
@@ -290,7 +290,7 @@ BeginLayout(Main,0)
 #if XAP_PREFSMENU_UNDER_TOOLS
 		Separator()
 		MenuItem(AP_MENU_ID_TOOLS_OPTIONS)
-#endif	
+#endif
 	EndSubMenu()
 
 	BeginSubMenu(AP_MENU_ID_TABLE)
@@ -362,7 +362,7 @@ BeginLayout(Main,0)
 #endif
 	EndSubMenu()
 
-#if !XAP_SIMPLE_MENU 
+#if !XAP_SIMPLE_MENU
 	BeginSubMenu(AP_MENU_ID_WINDOW)
 		MenuItem(AP_MENU_ID_WINDOW_NEW)
 		Separator()
@@ -397,5 +397,5 @@ BeginLayout(Main,0)
 #endif
 
 EndLayout()
-	
+
 #endif

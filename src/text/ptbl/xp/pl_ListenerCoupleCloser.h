@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2011 Ben Martin
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -39,7 +39,7 @@ class fl_ContainerLayout;
 struct ABI_EXPORT PL_FinishingListener : public PL_Listener
 {
     virtual bool isFinished() = 0;
-        
+
     virtual bool		change(fl_ContainerLayout* /*sfh*/,
                                const PX_ChangeRecord * /*pcr*/)
     {return true;}
@@ -52,7 +52,7 @@ struct ABI_EXPORT PL_FinishingListener : public PL_Listener
                                                                 fl_ContainerLayout* sfhNew))
     { return true;}
     virtual bool		signal(UT_uint32 /*iSignal*/)
-    { return true;}    
+    { return true;}
 };
 
 
@@ -90,7 +90,7 @@ struct ABI_EXPORT PL_FinishingListener : public PL_Listener
  * delegate->populate(). So the delegate will see something like the
  * following as the selection and have matched start and end bookmark
  * tags.
- * 
+ *
  * text <bm-start>I can jump<bm-end>
  *
  * Having this functionality in a separate closer class allows for
@@ -105,21 +105,21 @@ struct ABI_EXPORT PL_FinishingListener : public PL_Listener
  * This scenario is handled for you with the PL_ListenerCoupleCloser
  * and pt_PieceTable::tellListenerSubset(): The delegate listener
  * only ever sees items once, and in document ordering.
- * 
+ *
  * Some text <bm-start>I can jump here<bm-end> and then more waffle
  *                          ^-------------------------^
  *
  * While all range cases might not be covered right now, this class is
  * a good foundation for adding new cases as they are found such that
  * all listeners can benefit from proper closed ranges.
- * 
+ *
  * This class can be passed as the "closer" parameter to
  * PD_Document::tellListenerSubset() and maintains the open/closed
  * state of matched tags. Once the document range has been visited
  * PD_Document::tellListenerSubset() calls methods like
  * populateClose() in the closer which in turn might call populate()
  * on the delegate listener.
- * 
+ *
  */
 class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
 {
@@ -136,15 +136,15 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
     bool shouldOpen( const std::string& id,  bool isEnd, stringlist_t& sl );
     void trackOpenClose( const std::string& id, bool isEnd,
                          stringlist_t& unclosed, stringlist_t& unopened );
-    
-    
+
+
     struct ABI_EXPORT AfterContentListener : public PL_FinishingListener
     {
         PL_ListenerCoupleCloser* m_self;
         AfterContentListener( PL_ListenerCoupleCloser* self )
             : m_self(self)
         {}
-        
+
         virtual bool isFinished();
         virtual bool populate( fl_ContainerLayout* sfh,
                                const PX_ChangeRecord * pcr );
@@ -160,7 +160,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
         BeforeContentListener( PL_ListenerCoupleCloser* self )
             : m_self(self)
         {}
-        
+
         virtual bool isFinished();
         virtual bool populate( fl_ContainerLayout* sfh,
                                const PX_ChangeRecord * pcr );
@@ -176,8 +176,8 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
         NullContentListener( PL_ListenerCoupleCloser* self )
             : m_self(self)
         {}
-        
-        virtual bool isFinished() 
+
+        virtual bool isFinished()
         {
             return true;
         }
@@ -191,11 +191,11 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
                                     fl_ContainerLayout**)
         {
             return false;
-        }            
+        }
     };
     NullContentListener m_NullContentListener;
 
-    
+
   public:
     PL_ListenerCoupleCloser();
     virtual ~PL_ListenerCoupleCloser();
@@ -213,12 +213,12 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
     PL_FinishingListener* getAfterContentListener();
     PL_FinishingListener* getBeforeContentListener();
     PL_FinishingListener* getNullContentListener();
-    
-    
+
+
     virtual bool		change(fl_ContainerLayout* /*sfh*/,
                                const PX_ChangeRecord * /*pcr*/)
     {return true;}
-    
+
     virtual bool		insertStrux(fl_ContainerLayout* /*sfh*/,
                                     const PX_ChangeRecord * /*pcr*/,
                                     pf_Frag_Strux* /*sdhNew*/,
@@ -227,7 +227,7 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
                                                                 PL_ListenerId lid,
                                                                 fl_ContainerLayout* sfhNew))
     { return true;}
-    
+
 	virtual bool		signal(UT_uint32 /*iSignal*/)
     { return true;}
 
@@ -245,9 +245,9 @@ class ABI_EXPORT PL_ListenerCoupleCloser : public PL_Listener
     virtual bool populateStruxBefore( pf_Frag_Strux* sdh,
                                       const PX_ChangeRecord * pcr,
                                       fl_ContainerLayout* * psfh);
-    
 
-    
+
+
 };
 
 #endif

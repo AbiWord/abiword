@@ -1,20 +1,20 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 2008 Dominic Lachowicz
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -36,10 +36,10 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
   virtual ~GR_RSVGVectorImage();
 
   virtual bool convertToBuffer(UT_ByteBuf** ppBB) const;
-  virtual bool convertFromBuffer(const UT_ByteBuf* pBB, 
+  virtual bool convertFromBuffer(const UT_ByteBuf* pBB,
                  const std::string& mimetype,
-				 UT_sint32 iDisplayWidth, 
-				 UT_sint32 iDisplayHeight);	
+				 UT_sint32 iDisplayWidth,
+				 UT_sint32 iDisplayHeight);
   virtual void cairoSetSource(cairo_t *cr);
   virtual void scaleImageTo(GR_Graphics * pG, const UT_Rect & rec);
 
@@ -63,7 +63,7 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
   double m_scaleX;
   double m_scaleY;
   bool m_needsNewSurface;
-  GR_UnixImage * m_rasterImage;	
+  GR_UnixImage * m_rasterImage;
 };
 
 #endif

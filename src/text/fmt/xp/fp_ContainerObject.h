@@ -40,7 +40,7 @@
  * Modified by the GTK+ Team and others 1997-1999.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
 #ifndef CONTAINEROBJECT_H
@@ -65,13 +65,13 @@ typedef enum {
 	FG_FILL_COLOR,
 	FG_FILL_IMAGE
 } FG_Fill_Type;
-		
+
 #define INITIAL_OFFSET -99999999
 
 typedef struct _fp_Requisition	  fp_Requisition;
 typedef struct _fp_Allocation    fp_Allocation;
 
-/*! 
+/*!
  *  A requisition is a desired amount of space which a
  *  container may request.
  */
@@ -121,7 +121,7 @@ typedef enum {
 	FP_CONTAINER_FRAME, // 12
 	FP_CONTAINER_TOC, // 13
 	FP_CONTAINER_ANNOTATION // 14
-	
+
 } FP_ContainerType;
 
 class ABI_EXPORT fg_FillType
@@ -156,7 +156,7 @@ private:
 	FL_DocLayout *       m_pDocLayout;
 	FG_Fill_Type         m_FillType;
 	GR_Image *           m_pImage;
-	FG_Graphic *         m_pGraphic;    
+	FG_Graphic *         m_pGraphic;
 	UT_uint32            m_iGraphicTick;
 	bool                 m_bTransparentForPrint;
 	UT_RGBColor          m_color;
@@ -293,13 +293,13 @@ public:
 																 const void *));
 	UT_uint32           getBrokenCount(void) { return m_cBrokenContainers; }
 	void                incBrokenCount(void) { m_cBrokenContainers += 1; }
-	void                decBrokenCount(void) { if (m_cBrokenContainers > 0) { 
+	void                decBrokenCount(void) { if (m_cBrokenContainers > 0) {
 			m_cBrokenContainers -= 1; }}
 
         fg_FillType &       getFillType(void);
 	const fg_FillType & getFillType(void) const;
   	void                drawLine(const PP_PropertyMap::Line & style,
-				     UT_sint32 left, UT_sint32 top, 
+				     UT_sint32 left, UT_sint32 top,
 				     UT_sint32 right, UT_sint32 bot,
 				     GR_Graphics * pGr);
 

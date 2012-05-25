@@ -1,5 +1,5 @@
 /*
- * go-file.h : 
+ * go-file.h :
  *
  * Copyright (C) 2004 Morten Welinder (terra@gnome.org)
  *

@@ -62,7 +62,7 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 
 	UT_sint32					registerListener(AP_FrameListener* pListener);
 	void						unregisterListener(UT_sint32 iListenerId);
-	
+
  protected:
 
 	UT_Error _loadDocument(const char * szFilename, IEFileType ieft, bool createNew);
@@ -79,11 +79,11 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
 			  ap_Scrollbar_ViewListener *pScrollbarViewListener,
 			  AV_ListenerId lid, AV_ListenerId lidScrollbarViewListener,
 			  UT_uint32 iZoom);
-	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj, 
-				       ap_ViewListener *& pViewListener, 
+	virtual bool _createScrollBarListeners(AV_View * pView, AV_ScrollObj *& pScrollObj,
+				       ap_ViewListener *& pViewListener,
 				       ap_Scrollbar_ViewListener *& pScrollbarViewListener,
-				       AV_ListenerId &lid, 
-				       AV_ListenerId &lidScrollbarViewListener) = 0;	
+				       AV_ListenerId &lid,
+				       AV_ListenerId &lidScrollbarViewListener) = 0;
 	virtual void _bindToolbars(AV_View *pView) = 0;
 	virtual void _setViewFocus(AV_View *pView) = 0;
 
@@ -96,6 +96,6 @@ class ABI_EXPORT AP_Frame : public XAP_Frame
  private:
 	bool    m_bShowMargin;
 	bool    m_bWordSelections;
-	std::vector<AP_FrameListener*> m_listeners;	
+	std::vector<AP_FrameListener*> m_listeners;
 };
 #endif // AP_FRAME_H

@@ -230,7 +230,7 @@ private:
 	double                 m_dTopOffsetUserUnits;
 	UT_sint32              m_iBottomOffset;
 	double                 m_dBottomOffsetUserUnits;
-	
+
 	bool                   m_bIsHomogeneous;
 	bool                   m_bSameRowOnTopOfPage;
 	UT_sint32              m_iRowNumberForTop;
@@ -348,12 +348,12 @@ private:
 	double                 m_dTopOffsetUserUnits;
 	UT_sint32              m_iBottomOffset;
 	double                 m_dBottomOffsetUserUnits;
-	
+
 	UT_sint32              m_iLeftAttach;
 	UT_sint32              m_iRightAttach;
 	UT_sint32              m_iTopAttach;
 	UT_sint32              m_iBottomAttach;
-	
+
 	bool                   m_bCellPositionedOnPage;
 	UT_sint32              m_iCellHeight;
 	UT_sint32              m_iCellWidth;

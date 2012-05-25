@@ -2,20 +2,20 @@
 /* AbiWord
  * Copyright (C) 2004-6 Tomas Frydrych <dr.tomas@yahoo.co.uk>
  * Copyright (C) 2009 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -70,7 +70,7 @@ private:
 };
 
 
-class GR_CairoVectorImage 
+class GR_CairoVectorImage
 	: public GR_VectorImage
 {
 public:
@@ -99,7 +99,7 @@ class ABI_EXPORT GR_PangoFont : public GR_Font
 					 GR_CairoGraphics * pG,
 					 const char * pLang,
 					 bool bGuiFont = false);
-	
+
 	virtual ~GR_PangoFont();
 
 	/*!
@@ -148,7 +148,7 @@ class ABI_EXPORT GR_PangoFont : public GR_Font
 class GR_PangoRenderInfo;
 
 
-class ABI_EXPORT GR_CairoAllocInfo 
+class ABI_EXPORT GR_CairoAllocInfo
 	: public GR_AllocInfo
 {
 public:
@@ -180,26 +180,26 @@ public:
 	virtual GR_Capability  getCapability() {return GRCAP_SCREEN_ONLY;}
 
 	virtual UT_sint32      measureUnRemappedChar(const UT_UCSChar c, UT_uint32 * height = 0);
-	
+
 	virtual void		   drawChars(const UT_UCSChar* pChars,
 									 int iCharOffset, int iLength,
 									 UT_sint32 xoff, UT_sint32 yoff,
 									 int * pCharWidth);
-                    
+
 	virtual void           drawGlyph(UT_uint32 glyph_idx,
 									 UT_sint32 xoff, UT_sint32 yoff);
 
 	virtual UT_uint32      measureString(const UT_UCSChar* s, int iOffset,
 										 int num,  UT_GrowBufElement* pWidths, UT_uint32 * height = 0);
-	
+
 	virtual GR_Font*	   getDefaultFont(UT_String& fontFamily,
 										  const char * pszLang);
-	
+
 	virtual void           setFont(const GR_Font *);
-	virtual void           clearFont(void) {m_pPFont = NULL;} 
+	virtual void           clearFont(void) {m_pPFont = NULL;}
 
 	virtual void           setZoomPercentage(UT_uint32 iZoom);
-	
+
 	///////////////////////////////////////////////////////////////////
 	// complex script processing
 	//
@@ -215,7 +215,7 @@ public:
 	virtual UT_uint32 adjustCaretPosition(GR_RenderInfo & ri, bool bForward);
 	virtual void adjustDeletePosition(GR_RenderInfo & ri);
 	virtual bool nativeBreakInfoForRightEdge() {return false;}
-	
+
 	virtual UT_sint32 resetJustification(GR_RenderInfo & ri, bool bPermanent);
 	virtual UT_sint32 countJustificationPoints(const GR_RenderInfo & ri) const;
 	virtual void      justify(GR_RenderInfo & ri);
@@ -231,7 +231,7 @@ public:
 
 	virtual void setColor(const UT_RGBColor& clr);
 	virtual void getColor(UT_RGBColor &clr);
-	
+
 	PangoFontMap * getFontMap() const {return m_pFontMap;}
 	PangoContext * getContext() const {return m_pContext;}
 	PangoFontMap * getLayoutFontMap() const {return m_pLayoutFontMap;}
@@ -248,9 +248,9 @@ public:
 	virtual void		fillRect(GR_Color3D c,
 								 UT_sint32 x, UT_sint32 y,
 								 UT_sint32 w, UT_sint32 h);
-	virtual void		fillRect(GR_Color3D c, UT_Rect &r);   
+	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
 	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
-	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);  
+	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		polyLine(UT_Point * pts, UT_uint32 nPoints);
@@ -262,7 +262,7 @@ public:
 
 	bool isDingbat(void) const {return m_bIsDingbat;}
 	bool isSymbol(void) const {return m_bIsSymbol;};
-	
+
 	void resetFontMapResolution(void);
 
 	virtual GR_Font* _findFont(const char* pszFontFamily,
@@ -272,7 +272,7 @@ public:
 							   const char* pszFontStretch,
 							   const char* pszFontSize,
 							   const char* pszLang);
-	
+
 	virtual void getCoverage(UT_NumberVector& coverage);
 	virtual void setLineWidth(UT_sint32);
 	virtual void setClipRect(const UT_Rect* pRect);
@@ -298,7 +298,7 @@ public:
 //									   UT_sint32 iDisplayWidth,
 //									   UT_sint32 iDisplayHeight,
 //									   GR_Image::GRType =GR_Image::GRT_Raster);
- 
+
   	virtual bool		startPrint(void);
 	virtual bool		endPrint(void);
 	virtual bool		startPage(const char * szPageLabel,
@@ -308,7 +308,7 @@ public:
 
 	virtual void		setColorSpace(GR_Graphics::ColorSpace c);
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const;
-	
+
 	// virtual void		setCursor(GR_Graphics::Cursor c);
 	virtual GR_Graphics::Cursor getCursor(void) const;
 
@@ -324,7 +324,7 @@ public:
 	virtual void	    	restoreRectangle(UT_uint32 iIndx);
 	// virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
-	virtual void setLineProperties(double inWidth, 
+	virtual void setLineProperties(double inWidth,
 					 GR_Graphics::JoinStyle inJoinStyle = JOIN_MITER,
 					 GR_Graphics::CapStyle inCapStyle   = CAP_BUTT,
 					 GR_Graphics::LineStyle inLineStyle = LINE_SOLID);
@@ -339,7 +339,7 @@ public:
 	virtual void		_resetClip(void);
 
 	// this is called to get the surface out of what is drawning.
-	static cairo_surface_t * _getCairoSurfaceFromContext(cairo_t *cr, 
+	static cairo_surface_t * _getCairoSurfaceFromContext(cairo_t *cr,
 												const cairo_rectangle_t & rect);
 	static void _setSource(cairo_t *, const UT_RGBColor &);
 
@@ -358,7 +358,7 @@ public:
 									 int * & pLogOffsets,
 									 UT_sint32 & iStart,
 									 UT_sint32 & iEnd);
-	
+
 	inline int * _calculateLogicalOffsets (PangoGlyphString * pGlyphs,
 										   UT_BidiCharType iVisDir,
 										   const char * pUtf8);
@@ -368,10 +368,10 @@ public:
 
 	PangoFont *  _adjustedPangoFont (GR_PangoFont * pFont, PangoFont * pf);
 	PangoFont *  _adjustedLayoutPangoFont (GR_PangoFont * pFont, PangoFont * pf);
- 
+
 	double            _tdudX(UT_sint32 layoutUnits) const;
 	double            _tdudY(UT_sint32 layoutUnits) const;
- 	
+
 	PangoFontMap *    m_pFontMap;
 	PangoContext *    m_pContext;
 	PangoFontMap *    m_pLayoutFontMap;
@@ -383,16 +383,16 @@ public:
 	PangoFont *       m_pAdjustedPangoFont;
 	PangoFontDescription* m_pAdjustedPangoFontDescription;
 	UT_sint32         m_iAdjustedPangoFontSize;
-		
+
 	// adjusted layout font caching
 	PangoFont *       m_pAdjustedLayoutPangoFont;
 	PangoFontDescription* m_pAdjustedLayoutPangoFontDescription;
 	UT_sint32         m_iAdjustedLayoutPangoFontSize;
-	
+
 	UT_uint32         m_iDeviceResolution;
 
 	cairo_t	*         m_cr;
-	
+
 	GR_Graphics::Cursor	    m_cursor;
 	GR_Graphics::ColorSpace	m_cs;
 
@@ -406,7 +406,7 @@ public:
 	GR_Graphics::CapStyle  m_capStyle;
 	GR_Graphics::LineStyle m_lineStyle;
 	bool            m_linePropsDirty;
-	bool                    m_bIsSymbol;       
+	bool                    m_bIsSymbol;
 	bool                    m_bIsDingbat;
 	UT_sint32               m_iPrevX1;
 	UT_sint32               m_iPrevX2;
@@ -414,7 +414,7 @@ public:
 	UT_sint32               m_iPrevY2;
 	UT_uint32               m_iPrevRect;
 	UT_sint32               m_iXORCount;
-	
+
 	/** init the cairo context once created */
 	void _initCairo();
 
@@ -425,7 +425,7 @@ public:
 	// Suspend / resume drawing
 	void _DeviceContext_SuspendDrawing();
 	void _DeviceContext_ResumeDrawing();
-	
+
 	// save / restore rectangle vectors
 	std::vector<UT_Rect*> m_vSaveRect;
 	std::vector<cairo_surface_t*> m_vSaveRectBuf;

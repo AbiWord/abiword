@@ -37,7 +37,7 @@ public:
 	virtual void			draw(const UT_Rect *clip);
 
 	static XAP_Dialog *		static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-	
+
 private:
 	void					_createToolTip(HWND hwndParent);
 

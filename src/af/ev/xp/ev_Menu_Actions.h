@@ -1,19 +1,19 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -74,7 +74,7 @@ typedef EV_Menu_ItemState (*EV_GetMenuItemState_pFn)(AV_View * pView, XAP_Menu_I
 // TODO the ap.  but for view-specific things (like toggles where we change the menu
 // TODO item name rather than doing a checkmark), we need the view.
 
-// for now, current (quick) compromise is to pass the XAP_Frame, 
+// for now, current (quick) compromise is to pass the XAP_Frame,
 // because you can get to either of them easily from there -- pcr
 
 typedef const char * ( EV_GetMenuItemComputedLabel_Fn )(const EV_Menu_Label * pLabel, XAP_Menu_Id id);
@@ -112,7 +112,7 @@ public:
 	bool							raisesDialog() const;
 	bool							isCheckable() const;
 	bool                            isRadio () const;
-	
+
 private:
 	XAP_Menu_Id						m_id;
 	bool							m_bHoldsSubMenu;	/* is a PullRight */

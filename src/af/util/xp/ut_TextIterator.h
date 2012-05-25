@@ -35,7 +35,7 @@
 //  Any derrived classes should implement the individual functions to
 //  conform to the behaviour outlined in the comments in the class
 //  definion below.
-//  
+//
 //  In addtion, the actual iterator implementations should provide a
 //  mechanism allowing to restrict upper and lower bounds (either at
 //  construction or subsequently), so that when passing iterators into
@@ -44,7 +44,7 @@
 //  entire document from the start of the strux onwards; we might want
 //  to restrict this to the part that only belongs to a particular
 //  TextRun, etc.
-//  
+//
 //  Notes on use
 //  ------------
 //  When passing iterators into functions, the iterator should be set
@@ -82,7 +82,7 @@ class pf_Frag;
 // The following enum defines possible iterator states:
 //
 //     OK: need I say more?
-//     
+//
 //     OutOfBounds: last positioning operation took the iterator
 //                  out of bounds; this error state is recoverable
 //                  by using the indexing operator [], or calling
@@ -108,7 +108,7 @@ class ABI_EXPORT UT_TextIterator
 
 	/////////////////////////////////////////////////////////////////////////
 	// data accessor; retrieves character at present position
-	// 
+	//
 	// NB: I.getChar() is functionally equivalent to I[getPosition()]
 	//
 	virtual UT_UCS4Char getChar() = 0;
@@ -133,7 +133,7 @@ class ABI_EXPORT UT_TextIterator
 	//
 	virtual void      setUpperLimit(UT_uint32 maxpos) = 0;
 	virtual UT_uint32 getUpperLimit() const = 0;
-	
+
 	///////////////////////////////////////////////////////////////////
 	// returns the current state of the iterator (see definition of
 	// UTIterStatus above)
@@ -147,7 +147,7 @@ class ABI_EXPORT UT_TextIterator
 	//
 	virtual UT_uint32 find(UT_UCS4Char * what, UT_uint32 iLen, bool bForward = true) = 0;
 	virtual UT_uint32 find(UT_TextIterator & text, UT_uint32 iLen, bool bForward = true) = 0;
-	
+
 	///////////////////////////////////////////////////////////////////
 	// makes a copy of the iterator in its present state
 	//
@@ -163,7 +163,7 @@ class ABI_EXPORT UT_TextIterator
 	virtual UT_TextIterator & operator -- () = 0;
 	virtual UT_TextIterator & operator += (UT_sint32 i) = 0;
 	virtual UT_TextIterator & operator -= (UT_sint32 i) = 0;
-	
+
 	////////////////////////////////////////////////////////////////////
 	// subscript operator []; repostions iterator and returns
 	// character at new postion
@@ -189,7 +189,7 @@ class ABI_EXPORT UT_TextIterator
 	// function f1(UT_TextIterator & I, UT_uint32 len)
 	// {
 	//    UT_uint32 pos = I.getPosition();
-	//    
+	//
 	//    for(UT_uint32 i = pos; i < len + pos; i++)
 	//    {
 	//       UT_UCS4Char c = text[i];
@@ -211,7 +211,7 @@ class ABI_EXPORT UT_TextIterator
 	// want; the actual implementation of the iterator can if fact
 	// restrict valid range of the subscript to an arbitrary range
 	// (i.e., I[0] may produce OutOfBounds state).
-	// 
+	//
 	// function f3(UT_TextIterator & I, UT_uint32 len)
 	// {
 	//    for(UT_uint32 i = 0; i < len; i++)

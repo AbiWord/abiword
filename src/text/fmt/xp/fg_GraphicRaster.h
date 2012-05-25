@@ -1,20 +1,20 @@
 /* AbiWord -- Embedded graphics for layout
  * Copyright (C) 1999 Matt Kimball
  * Copyright (C) 2009 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -34,7 +34,7 @@ public:
         PNG_FORMAT = 0,
         JPEG_FORMAT
     };
-	static FG_Graphic*	createFromChangeRecord(const fl_ContainerLayout *pFL, 
+	static FG_Graphic*	createFromChangeRecord(const fl_ContainerLayout *pFL,
 											   const PX_ChangeRecord_Object* pcro);
 	static FG_Graphic*	createFromStrux(const fl_ContainerLayout *pFL);
 
@@ -55,10 +55,10 @@ public:
 
 	virtual UT_Error   	insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 										   UT_uint32 iPos, const char* szName);
-	virtual UT_Error   	insertAtStrux(PD_Document* pDoc, 
+	virtual UT_Error   	insertAtStrux(PD_Document* pDoc,
 									  UT_uint32 res,
 									  UT_uint32 iPos,
-									  PTStruxType iStruxType, 
+									  PTStruxType iStruxType,
 									  const char* szName);
 
 	bool				setRaster_PNG(const UT_ByteBuf* pBB);

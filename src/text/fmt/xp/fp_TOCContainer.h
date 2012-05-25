@@ -43,7 +43,7 @@ public:
 	fp_TOCContainer(fl_SectionLayout* pSectionLayout);
 	fp_TOCContainer(fl_SectionLayout* pSectionLayout,fp_TOCContainer * pMaster);
 	virtual ~fp_TOCContainer();
-    virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y, 
+    virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y,
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool &isTOC);
 	UT_sint32           getValue(void);
@@ -73,9 +73,9 @@ public:
 		{ return m_bIsBroken;}
 	void                setYBreakHere(UT_sint32 iBreakHere);
 	void                setYBottom(UT_sint32 iBotContainer);
-	bool                isInBrokenTOC(fp_Container * pCon); 
+	bool                isInBrokenTOC(fp_Container * pCon);
 //
-// This is the smallest Y value of the TOC allowed in this 
+// This is the smallest Y value of the TOC allowed in this
 // broken TOC
 //
 	UT_sint32           getYBreak(void) const
@@ -93,9 +93,9 @@ public:
 	void                adjustBrokenTOCs(void);
 	UT_sint32           getBrokenTop(void);
 	UT_sint32           getBrokenBot(void);
-	void                setBrokenTop(UT_sint32 iTop) 
+	void                setBrokenTop(UT_sint32 iTop)
 		{ m_iBrokenTop = iTop;}
-	void                setBrokenBot(UT_sint32 iBot) 
+	void                setBrokenBot(UT_sint32 iBot)
 		{ m_iBrokenBottom = iBot;}
 	UT_sint32           getBrokenNumber(void);
 	void setLastWantedVBreak(UT_sint32 iBreakAt)

@@ -1,19 +1,19 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -39,8 +39,8 @@ class XAP_Frame;
 typedef struct
 {
 	XAP_Menu_Id 	id;					// Menu ID
-	char			szName[255];		// BitmapName	
-} EV_Menu_Bitmap;	
+	char			szName[255];		// BitmapName
+} EV_Menu_Bitmap;
 
 
 class ABI_EXPORT EV_Win32Menu : public EV_Menu
@@ -51,7 +51,7 @@ public:
 				 const char * szMenuLayoutName,
 				 const char * szMenuLabelSetName);
 	~EV_Win32Menu();
-	
+
 	void				destroy();
 
 	bool				synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot);
@@ -64,16 +64,16 @@ public:
 	XAP_Menu_Id			MenuIdFromWmCommand(UINT cmd)		{ return (XAP_Menu_Id)(cmd - WM_USER); }
 	UINT				WmCommandFromMenuId(XAP_Menu_Id id)	{ return (id + WM_USER); }
 
-	virtual bool		_doAddMenuItem(UT_uint32 /*id*/) { UT_ASSERT_HARMLESS(UT_TODO); return false;/* TODO */ }		
+	virtual bool		_doAddMenuItem(UT_uint32 /*id*/) { UT_ASSERT_HARMLESS(UT_TODO); return false;/* TODO */ }
 	void				onDrawItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
 	void				onMeasureItem(HWND hwnd, WPARAM wParam, LPARAM lParam);
-	LPARAM				onMenuChar(HWND hwnd, WPARAM wParam, LPARAM lParam);	
+	LPARAM				onMenuChar(HWND hwnd, WPARAM wParam, LPARAM lParam);
 	void				setTrackMenu(bool bTrack){m_bTrack=bTrack;};
 
 protected:
 
 	static bool					_isAMenuBar(XAP_Menu_Id	id,HMENU hMenu);
-	static HBITMAP				_loadBitmap(XAP_Menu_Id id, int width, int height, UT_RGBColor color);	
+	static HBITMAP				_loadBitmap(XAP_Menu_Id id, int width, int height, UT_RGBColor color);
 	void		 				_setBitmapforID(HMENU hMenu, XAP_Menu_Id id, UINT cmd);
 
 	XAP_Win32App *				m_pWin32App;
@@ -81,7 +81,7 @@ protected:
 	EV_Menu_Bitmap*				m_pArMenuBitmaps;
 	HMENU						m_myMenu;
 	UINT						m_nBitmapCX, m_nBitmapCY;
-	HFONT						m_hFont;		
+	HFONT						m_hFont;
 	UT_Vector					m_vecItems;
 	bool						m_bTrack;
 	UINT                        m_iDIR;
@@ -93,9 +93,9 @@ protected:
 typedef struct
 {
 	XAP_Menu_Id 	id;					// Menu ID
-	wchar_t			szText[256];		// Text	
-	EV_Win32Menu*	pMenu;				
-} EV_Menu_Item;	
+	wchar_t			szText[256];		// Text
+	EV_Win32Menu*	pMenu;
+} EV_Menu_Item;
 
 /*****************************************************************/
 

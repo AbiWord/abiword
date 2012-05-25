@@ -100,7 +100,7 @@ struct header
 	UT_uint32    len;
 	UT_uint32    pid;
 
-	struct _d 
+	struct _d
 	{
 		UT_Vector hdr;
 		UT_Vector frag;
@@ -249,8 +249,8 @@ private:
 
 	bool        _isTOCsupported(field *f);
 	bool        _insertTOC(field *f);
-	
-	
+
+
 	UT_UCS4String		m_pTextRun;
 	//UT_uint32			m_iImageCount;
 	UT_uint32			m_nSections;
@@ -287,12 +287,12 @@ private:
 	UT_Vector  m_vLists;
 	UT_uint32  m_iListIdIncrement[9];
 	UT_uint32  m_iMSWordListId;
-	
+
 	bool m_bEncounteredRevision;
 	bool		m_bInTable;						// are we in a table ?
 	int			m_iRowsRemaining;				// number of rows left to process
 	int			m_iCellsRemaining;				// number of cells left to process in the current row
-	int			m_iCurrentRow;					// 
+	int			m_iCurrentRow;					//
 	int			m_iCurrentCell;					//
 	bool		m_bRowOpen;						// row strux open ?
 	bool		m_bCellOpen;					// cell strux open ?

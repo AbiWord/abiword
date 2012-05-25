@@ -3,20 +3,20 @@
 /* AbiWord
  * Copyright (C) 2002 Francis James Franklin <fjf@alinameridon.com>
  * Copyright (C) 2001-2002 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -121,7 +121,7 @@
 #define TT_DIR		TT_UL	// <dir>	Directory list { cf. <ul> }
 #define TT_MENU		TT_UL	// <menu>	Menu list { cf. <ul> }
 
-/* Tables: 
+/* Tables:
  */
 #define TT_TABLE	65	// <table>	Table
 #define TT_CAPTION	66	// <caption>	Caption (child of <table>)

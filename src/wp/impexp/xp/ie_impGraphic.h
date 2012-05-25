@@ -2,20 +2,20 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -39,10 +39,10 @@ class IE_ImpGraphic;
 class ABI_EXPORT IE_ImpGraphicSniffer
 {
 	friend class IE_ImpGraphic;
-	
+
 public:
 	virtual ~IE_ImpGraphicSniffer() {}
-	
+
 	// these you get for free
 	inline bool supportsType (IEGraphicFileType type) {return m_type == type;}
 	inline IEGraphicFileType getType() const {return m_type;}
@@ -50,18 +50,18 @@ public:
 	// these you must override these
 	virtual const IE_SuffixConfidence * getSuffixConfidence () = 0;
 	virtual const IE_MimeConfidence * getMimeConfidence () = 0;
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 											   UT_uint32 iNumbytes);
 	virtual UT_Confidence_t recognizeContents (GsfInput * input);
 	virtual bool getDlgLabels (const char ** szDesc,
 				   const char ** szSuffixList,
 				   IEGraphicFileType * ft) = 0;
 	virtual UT_Error constructImporter (IE_ImpGraphic ** ppieg) = 0;
-	
+
  protected:
 	IE_ImpGraphicSniffer()
 		:m_type(IEGFT_Unknown) {}
-	
+
  private:
 	// only IE_ImpGraphic ever calls this
 	IEGraphicFileType m_type;
@@ -70,7 +70,7 @@ public:
 
 //
 // IE_ImpGraphic defines the abstract base class for graphic file importers.
-// 
+//
 // Subclasses which load raster files should generally convert to a
 // PNG format image and construct a FG_GraphicRaster.  Subclasses
 // which load vector files should generally convert to a SVG format
@@ -88,11 +88,11 @@ public:
   // either the filename or sniffing the file.  caller is
   // responsible for destroying the importer when finished
   // with it.
-  
+
   static IEGraphicFileType	fileTypeForSuffix(const char * szSuffix);
   static IEGraphicFileType	fileTypeForMimetype(const char * szMimetype);
   static IEGraphicFileType	fileTypeForContents(const char * szBuf, UT_uint32 iNumbytes);
-  
+
   static bool		enumerateDlgLabels(UT_uint32 ndx,
 					   const char ** pszDesc,
 					   const char ** pszSuffixList,
@@ -100,7 +100,7 @@ public:
   static UT_uint32	getImporterCount(void);
   static void registerImporter (IE_ImpGraphicSniffer * sniffer);
   static void unregisterImporter (IE_ImpGraphicSniffer * sniffer);
-  static void unregisterAllImporters ();  
+  static void unregisterAllImporters ();
   static std::vector<std::string> & getSupportedMimeTypes ();
   static std::vector<std::string> & getSupportedMimeClasses ();
   static std::vector<std::string> & getSupportedSuffixes ();
@@ -117,9 +117,9 @@ public:
   static UT_Error		constructImporter(GsfInput * input,
 						  IEGraphicFileType ft,
 						  IE_ImpGraphic **ppieg);
-  
+
   virtual ~IE_ImpGraphic() {}
-  
+
   static UT_Error loadGraphic(const char * szFilename,
 							  IEGraphicFileType iegft,
 							  FG_Graphic ** ppfg);
@@ -134,11 +134,11 @@ public:
   //  free pBB if you don't need it.
 
   // you must override at least one of the importGraphic calls
-  virtual UT_Error	importGraphic(UT_ByteBuf* pBB, 
-								  FG_Graphic ** ppfg);  
+  virtual UT_Error	importGraphic(UT_ByteBuf* pBB,
+								  FG_Graphic ** ppfg);
   virtual UT_Error  importGraphic(GsfInput * input,
 								  FG_Graphic ** ppfg);
-    
+
   UT_Error	importGraphic(const char * szFilename,
 						  FG_Graphic ** ppfg);
 

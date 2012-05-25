@@ -113,13 +113,13 @@ public:
 	void                itemize(void);
 	void                setItem(GR_Item * i);
 	const GR_Item *           getItem() const {return m_pItem;}
-	
+
 
 	virtual void        updateOnDelete(UT_uint32 offset, UT_uint32 iLen);
 
 	virtual UT_uint32   adjustCaretPosition(UT_uint32 iDocumentPosition, bool bForward);
 	virtual void        adjustDeletePosition(UT_uint32 &pos1, UT_uint32 &count);
-	
+
 	static UT_uint32	s_iClassInstanceCount;
 	UT_BidiCharType 	m_iDirOverride;
 	static bool 		s_bBidiOS;
@@ -128,7 +128,7 @@ public:
 
 	GR_ShapingInfo::TextTransform getTextTransform() const { return m_TextTransform;}
 	void setTextTransform(GR_ShapingInfo::TextTransform transform) { m_TextTransform = transform; }
-	
+
 private:
 	GR_ShapingInfo::TextTransform m_TextTransform;
 
@@ -162,7 +162,7 @@ protected:
 										 UT_uint32 iLen);
 
 	void					_drawLastChar(bool bSelection);
-	
+
 	void					_drawFirstChar(bool bSelection);
 
 	void					_fillRect(UT_RGBColor& clr,

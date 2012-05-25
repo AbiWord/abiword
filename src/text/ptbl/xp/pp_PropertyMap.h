@@ -30,7 +30,7 @@
 #endif
 
 #include <map>
-#endif 
+#endif
 
 /* pre-emptive dismissal; ut_types.h is needed by just about everything,
  * so even if it's commented out in-file that's still a lot of work for
@@ -58,7 +58,7 @@ public:
 	 * Keep these sorted.
 	 */
 	enum AbiPropertyIndex
-	{		
+	{
 		abi_annotation_author= 0,
 		abi_annotation_date,
 		abi_annotation_title,
@@ -354,19 +354,19 @@ public:
 
 	bool ins (AbiPropertyIndex key, UT_UTF8String * value) // responsibility for value passes here
 	{
-		if ((value == 0) || (key == abi__count)) 
+		if ((value == 0) || (key == abi__count))
 			return false;
 		std::pair<map_type::iterator, bool> p =
-			m_map.insert(map_type::value_type(static_cast<UT_sint32>(key), 
+			m_map.insert(map_type::value_type(static_cast<UT_sint32>(key),
 											  value));
 		return p.second;
 	}
 	bool ins (AbiPropertyIndex key, const char * value)
 	{
-		if ((value == 0) || (key == abi__count)) 
+		if ((value == 0) || (key == abi__count))
 			return false;
-		std::pair<map_type::iterator, bool> p = 
-			m_map.insert(map_type::value_type(static_cast<UT_sint32>(key), 
+		std::pair<map_type::iterator, bool> p =
+			m_map.insert(map_type::value_type(static_cast<UT_sint32>(key),
 											  new UT_UTF8String(value)));
 		return p.second;
 	}
@@ -400,7 +400,7 @@ public:
 
 	inline const UT_UTF8String * operator[] (AbiPropertyIndex key)
 	{
-		if (key == abi__count) 
+		if (key == abi__count)
 			return 0;
 		map_type::iterator i = m_map.find(static_cast<UT_sint32>(key));
 		if (i == m_map.end()) {

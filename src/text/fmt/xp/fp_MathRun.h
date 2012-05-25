@@ -45,7 +45,7 @@ public:
 	GR_EmbedManager *   getMathManager(void);
 
 	virtual void            updateVerticalMetric();
-	
+
 	const char *            getDataID(void) const;
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
@@ -54,7 +54,7 @@ protected:
 											  GR_Graphics * pG = NULL);
 
 	void                    _lookupLocalProperties();
-	
+
 	virtual void			_draw(dg_DrawArgs*);
 	virtual void			_clearScreen(bool bFullLineHeightRect);
 	virtual bool			_letPointPass(void) const;

@@ -8,9 +8,9 @@ class ABI_EXPORT XAP_Win32EncodingManager: public XAP_EncodingManager
 {
 protected:
     XAP_Win32EncodingManager();
-    virtual ~XAP_Win32EncodingManager();    
+    virtual ~XAP_Win32EncodingManager();
 
-    void 	initialize();    
+    void 	initialize();
 
 public:
 
@@ -22,7 +22,7 @@ public:
 	inline virtual bool isUnicodeLocale()	const {return m_bIsUnicodeLocale;}
     const char* getLanguageISOName() 		const;
     const char* getLanguageISOTerritory() 	const;
-    
+
 	friend class XAP_EncodingManager;
 
 private:

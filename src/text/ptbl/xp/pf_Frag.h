@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Updates by Ben Martin in 2011.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -92,22 +92,22 @@ public:
 
 	// I would much prefer if this was a pure vitual, but we do not have Eod frag
 	virtual bool            usesXID() const {return false;}
-	
+
 	// compare contents and format of two fragments
 	bool operator == (const pf_Frag & f2) const;
 
     std::string getXMLID() const;
-    
+
 #ifdef PT_TEST
 	virtual void			__dump(FILE * fp) const;
-#endif	
+#endif
 
 
 protected:
 /*!
     _isContentEqual() is a helper function for operator==() and
     isContentEqual().
-    
+
     This function compares the contents of the two fragments, but not
     their formatting properties.
 
@@ -124,23 +124,23 @@ protected:
     only examine the characters contained in the fragment, but not
     font face, font size, etc.
 */
-	
+
 	virtual bool            _isContentEqual(const pf_Frag & /*f2*/) const {return true;}
-	
+
 	PFType					m_type;
-	
+
 	fd_Field *              m_pField;
 	pt_PieceTable *			m_pPieceTable;
 	PT_AttrPropIndex		m_indexAP;
 
-	/* in PT_DocPosition-space - gives length of this fragment */ 
-	UT_uint32				m_length;	
+	/* in PT_DocPosition-space - gives length of this fragment */
+	UT_uint32				m_length;
 
 private:
         void                    _setNode(pf_Fragments::Node * pNode);
 	pf_Fragments::Node *    _getNode(void) const;
 	/* In PT_DocPosition space - specifies size of left subtree */
-	mutable UT_sint32       m_leftTreeLength;   
+	mutable UT_sint32       m_leftTreeLength;
 	UT_uint32               m_iXID;
 	pf_Fragments::Node *    m_pMyNode;
 };

@@ -2,20 +2,20 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 2001 Dom Lachowicz <cinamod@hotmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -49,7 +49,7 @@
   #define ABI_PLUGIN_DECLARE(name)
 #endif
 
-// we want to have C linkage for both 
+// we want to have C linkage for both
 // this and for all of our required functions
 extern "C" {
 	typedef struct {
@@ -74,13 +74,13 @@ protected:
 	XAP_Module ();
 
 	virtual ~XAP_Module (void);
-	
+
 	// load this module into memory. true on success
 	virtual bool load (const char * name) = 0;
-	
+
 	// unload this module from memory. true on success
-	virtual bool unload (void) = 0;	
-	
+	virtual bool unload (void) = 0;
+
 public:
 	// marks the module as loaded; returns false if module is already loaded
 	bool setSymbols (XAP_Plugin_Registration fnRegister,
@@ -93,25 +93,25 @@ private:
 	// silly names. fscking c/c++ has the keyword 'register' taken #:^)
 	bool registerThySelf ();
 	bool unregisterThySelf ();
-	bool supportsAbiVersion (UT_uint32 major, UT_uint32 minor, 
+	bool supportsAbiVersion (UT_uint32 major, UT_uint32 minor,
 							 UT_uint32 release);
 	inline void setCreator (XAP_ModuleManager * creator) {m_creator = creator;}
 	inline void setLoaded (bool bLoaded) {m_bLoaded = bLoaded;}
 
 public:
-	
-	// passed a symbol name and a void ** symbol, 
+
+	// passed a symbol name and a void ** symbol,
 	// *symbol refers to the actual representation of @symbol_name
 	//
 	// void (*func) (XAP_ModuleInfo *);
 	// resolveSymbol ("abi_plugin_init", static_cast<void **>(&func));
 	// int result = func (&m_info);
 	virtual bool resolveSymbol (const char * symbol_name, void ** symbol) = 0;
-	
+
 	// returns the name of this module, if it has one
 	// if return is true, you must FREEP dest
 	virtual bool getModuleName (char ** dest) const = 0;
-	
+
 	// returns the most recent error message from one of these
 	// calls failing. If return is true, you must FREEP dest
 	virtual bool getErrorMsg (char ** dest) const = 0;

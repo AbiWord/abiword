@@ -1,19 +1,19 @@
 /* AbiSource Application Framework
- * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net> 
- * 
+ * Copyright (C) 2003 Tomas Frydrych <tomas@frydrych.uklinux.net>
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -47,7 +47,7 @@ class AD_Document;
 	_setSelDocumentIndx() should be called to store the index of the
 	selection (if the subclass sorts the list, it needs to ensure that
 	the index stored is the original index of that entry).
-	
+
     There should be two buttons: OK and Cancel; the text for the OK
     button needs to be obtained using _getOKButtonText().
 
@@ -69,7 +69,7 @@ class ABI_EXPORT XAP_Dialog_ListDocuments : public XAP_Dialog_NonPersistent
 	typedef enum { a_OK, a_CANCEL }	tAnswer;
 
 	XAP_Dialog_ListDocuments::tAnswer getAnswer(void) const {return m_answer;}
-	
+
     AD_Document * 					  getDocument(void) const;
 
 	void                              setIncludeActiveDoc(bool b);
@@ -78,17 +78,17 @@ class ABI_EXPORT XAP_Dialog_ListDocuments : public XAP_Dialog_NonPersistent
 	void                       _setAnswer(XAP_Dialog_ListDocuments::tAnswer a){m_answer=a;}
 	UT_sint32                  _getDocumentCount() {return m_vDocs.getItemCount();}
 	const char *               _getNthDocumentName(UT_sint32 n) const;
-	
+
 	void                       _setSelDocumentIndx(UT_sint32 i);
 
 	const char *               _getTitle() const;
 	const char *               _getOKButtonText() const;
 	const char *               _getHeading() const;
-	
+
   private:
 
 	void                              _init();
-	
+
 	XAP_Dialog_ListDocuments::tAnswer m_answer;
 
 	UT_sint32						  m_ndxSelDoc;

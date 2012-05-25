@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -113,7 +113,7 @@ public:
 	IE_Exp_RTF(PD_Document * pDocument,bool atticFormat);
 	virtual ~IE_Exp_RTF();
 	ie_exp_RTF_MsWord97ListMulti * getNthMultiLevel(UT_uint32 i) const;
-	ie_exp_RTF_MsWord97ListSimple * getNthSimple(UT_uint32 i) const; 
+	ie_exp_RTF_MsWord97ListSimple * getNthSimple(UT_uint32 i) const;
 	ie_exp_RTF_ListOveride * getNthOveride(UT_uint32 i) const;
 	UT_uint32 getMultiLevelCount(void) const;
 	UT_uint32 getSimpleListCount(void) const;
@@ -168,13 +168,13 @@ protected:
 	void                            _write_prop_ifyes(const PD_Style * pStyle, const gchar * szPropName, const char * szRTFName);
 	void                            _write_tabdef(const char * szTabStops);
 	void                            _write_charfmt(const s_RTF_AttrPropAdapter &);
-	
+
 	void                            _write_parafmt(const PP_AttrProp * pSpanAP,
 												   const PP_AttrProp * pBlockAP,
 												   const PP_AttrProp * pSectionAP,
 												   bool & bStartedList, pf_Frag_Strux* sdh, UT_uint32 &iCurrID,
 												   bool &bIsListBlock, UT_sint32 iNestLevel);
-	
+
 	void                            _write_style_fmt(const PD_Style *);
 	void                            _write_stylesheets(void);
 	void                            _write_listtable(void);
@@ -189,17 +189,17 @@ protected:
 	void                            _output_revision(const s_RTF_AttrPropAdapter & apa, bool bPara,pf_Frag_Strux* sdh,
 													 UT_sint32 iNestLevel, bool & bStartedList,  bool &bIsListBlock,
 													 UT_uint32 &iCurrID);
-	
+
 	UT_sint32			_findFont(const s_RTF_AttrPropAdapter * apa) const;
 	UT_sint32			_findFont(const _rtf_font_info * pfi) const;
 	void				_addFont(const _rtf_font_info * pfi);
 
- private:	
-	static bool s_escapeString(UT_UTF8String &sOutStr, UT_UCS4String &sInStr, 
+ private:
+	static bool s_escapeString(UT_UTF8String &sOutStr, UT_UCS4String &sInStr,
 	                           UT_uint32 iAltChars);
 	static bool s_escapeString(UT_UTF8String &sOutStr, const char * szInStr,
                                UT_uint32 iSize, UT_uint32 iAltChars);
-	static bool s_escapeString( std::string& outStr, const std::string& inStr, 
+	static bool s_escapeString( std::string& outStr, const std::string& inStr,
 	                           UT_uint32 iAltChars = 1 );
 	static std::string s_escapeString( const std::string& inStr, UT_uint32 iAltChars = 1 );
     static std::string s_escapeXMLString( const std::string& inStr );
@@ -226,7 +226,7 @@ protected:
 /*****************************************************************/
 /*****************************************************************/
 
-/* This struct contains the RTF font info as needed for the 
+/* This struct contains the RTF font info as needed for the
    font table. */
 class ABI_EXPORT _rtf_font_info
 {
@@ -241,7 +241,7 @@ public:
 	int getFontCharset(void) const { return nCharset;}
 	int getFontPitch(void) const { return nPitch;}
 	bool isTrueType(void) const { return fTrueType;}
-private:    
+private:
     const gchar * szFamily;
     int nCharset;
     int nPitch;

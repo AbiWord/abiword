@@ -124,7 +124,7 @@ class ABI_EXPORT fl_BlockLayout : public fl_ContainerLayout
 	// here - to handle the squiggles
 	friend void FL_DocLayout::_toggleAutoSpell(bool bSpell);
 #endif
-	
+
 public:
 	fl_BlockLayout(pf_Frag_Strux* sdh,
 				   fl_ContainerLayout* pPrev, fl_SectionLayout*,
@@ -144,7 +144,7 @@ public:
 	fp_Line *           getNextWrappedLine(UT_sint32 iX,
 											  UT_sint32 iHeight,
 										   fp_Page * pPage);
-	void                getLeftRightForWrapping(UT_sint32 iX, 
+	void                getLeftRightForWrapping(UT_sint32 iX,
 												UT_sint32 iHeight,
 												UT_sint32 & iMinLeft,
 												UT_sint32 & iMinRight,
@@ -154,20 +154,20 @@ public:
 	virtual void		redrawUpdate();
 	virtual void        updateLayout(bool /*bDoAll*/) {}
 	virtual fp_Container * getNewContainer(fp_Container * pCon = NULL);
-	FV_View *		getView(void) const { 
-		UT_return_val_if_fail( m_pLayout, NULL ); 
-		return m_pLayout->getView(); 
+	FV_View *		getView(void) const {
+		UT_return_val_if_fail( m_pLayout, NULL );
+		return m_pLayout->getView();
 	}
 
 	const char* getProperty(const gchar * pszName, bool bExpandStyles = true) const;
-	const PP_PropertyType * getPropertyType(const gchar * szName, 
+	const PP_PropertyType * getPropertyType(const gchar * szName,
 											tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_sint32       getLength(void) const;
 	bool            isEmbeddedType(void) const;
 	bool            isNotTOCable(void) const;
 	bool            isLastRunInBlock(fp_Run * pRun) const;
-	void            updateOffsets(PT_DocPosition posEmbedded, 
+	void            updateOffsets(PT_DocPosition posEmbedded,
 								  UT_uint32 iEmebbedSize, UT_sint32 iSuggestedDiff);
 	void            updateEnclosingBlockIfNeeded(void);
 	fl_BlockLayout * getEnclosingBlock(void) const;
@@ -208,8 +208,8 @@ public:
 	void StartList( const gchar * style, pf_Frag_Strux* prevSDH = NULL);
 
 	void StartList( FL_ListType lType, UT_uint32 start,
-					const gchar * lDelim, const gchar * lDecimal, 
-					const gchar * fFont, float Align, float indent, 
+					const gchar * lDelim, const gchar * lDecimal,
+					const gchar * fFont, float Align, float indent,
 					UT_uint32 iParentID = 0, UT_uint32 level=0 );
 
 	void StopListInBlock(void);
@@ -229,16 +229,16 @@ public:
 	void drawGrammarSquiggles(void) const;
 	void findGrammarSquigglesForRun(fp_Run* pRun) const;
 #endif
-	
+
 	UT_uint32 canSlurp(fp_Line* pLine) const;
 
 	PT_DocPosition getPosition(bool bActualBlockPos=false) const;
-	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL, 
-							UT_sint32& x, UT_sint32& y, UT_sint32& x2, 
+	fp_Run* findPointCoords(PT_DocPosition position, bool bEOL,
+							UT_sint32& x, UT_sint32& y, UT_sint32& x2,
 							UT_sint32& y2, UT_sint32& height, bool& bDirection) const;
 
 	fp_Run* findRunAtOffset(UT_uint32 offset) const;
-	
+
 	bool	getBlockBuf(UT_GrowBuf * pgb) const;
 
 	void clearScreen(GR_Graphics*) const;
@@ -290,8 +290,8 @@ public:
 	bool    hasUpdatableField(void) { return m_bHasUpdatableField;}
 	void    setUpdatableField(bool bValue) { m_bHasUpdatableField = bValue;}
 	inline UT_sint32 getDefaultTabInterval(void) const { return m_iDefaultTabInterval; }
-	inline UT_sint32 getTabsCount(void) const { 
-		return m_vecTabs.getItemCount(); 
+	inline UT_sint32 getTabsCount(void) const {
+		return m_vecTabs.getItemCount();
 	}
 
 	bool doclistener_populateSpan(const PX_ChangeRecord_Span * pcrs, PT_BlockOffset blockOffset, UT_uint32 len);
@@ -358,7 +358,7 @@ public:
 		{ return m_bNeedsRedraw; }
 	virtual void			markAllRunsDirty(void);
 	UT_sint32               findLineInBlock(fp_Line * pLine) const;
-	
+
 	bool                    isWordDelimiter(UT_UCS4Char c, UT_UCS4Char next, UT_UCS4Char prev, UT_uint32 iBlockPos) const;
 	bool                    isSentenceSeparator(UT_UCS4Char c, UT_uint32 iBlockPos) const;
 #ifdef ENABLE_SPELL
@@ -389,7 +389,7 @@ public:
 	void                    setPrevListLabel(bool b)
 	{ m_bPrevListLabel = b;}
 	bool                    getNextTableElement(UT_GrowBuf * buf,
-												PT_DocPosition startPos, 
+												PT_DocPosition startPos,
 												PT_DocPosition & begPos,
 												PT_DocPosition & endPos,
 												UT_UTF8String & sWord,
@@ -426,18 +426,18 @@ public:
 	/** return true if the block is queued */
 	bool isQueued(void) const
 	{
-		return (m_prevToSpell != NULL) 
+		return (m_prevToSpell != NULL)
 			|| (m_pLayout->spellQueueHead() == this);
 	}
 #endif
-	
+
 #ifdef FMT_TEST
 	void					__dump(FILE * fp) const;
 #endif
 
 private:
 	virtual bool            _canContainPoint() const;
-	
+
 protected:
 
 	void					_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg) const;
@@ -451,7 +451,7 @@ protected:
 	bool					_spellCheckWord(const UT_UCSChar * word, UT_uint32 len, UT_uint32 blockPos) const;
 	SpellChecker * _getSpellChecker (UT_uint32 blockPos) const;
 #endif
-	
+
 	bool					_truncateLayout(fp_Run* pTruncRun);
 
 #ifndef NDEBUG
@@ -605,7 +605,7 @@ public:
 	{ return m_bIsInvisible;}
 	void             setGrammarMessage(UT_UTF8String & sMsg);
 	void             getGrammarMessage(UT_UTF8String & sMsg) const;
-	
+
 private:
 	UT_sint32	m_iOffset;
 	UT_sint32   m_iPTLength;

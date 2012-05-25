@@ -2,20 +2,20 @@
 /* AbiWord
  * Copyright (C) 2004-2006 Tomas Frydrych <dr.tomas@yahoo.co.uk>
  * Copyright (C) 2009 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -37,7 +37,7 @@ public:
 		: GR_CairoAllocInfo(false, false, double_buffered),
 		m_win(win)
 		{}
-	
+
 	explicit GR_CocoaCairoAllocInfo(bool bPreview)
 		: GR_CairoAllocInfo(bPreview, true, false),
 		  m_win(NULL){}
@@ -78,7 +78,7 @@ public:
 	XAP_CocoaNSView *  getView () {return m_pWin;}
 
 	virtual GR_Font * getGUIFont(void);
-	
+
 	virtual void		setCursor(GR_Graphics::Cursor c);
 
         static NSColor                          *_utRGBColorToNSColor (const UT_RGBColor& clr);
@@ -112,21 +112,21 @@ public:
 	void			setGrabCursor(GR_Graphics::Cursor c) { m_GrabCursor = c; }
 
 	// at least one instance of GR_CocoaGraphics must have been created...
-	static const UT_RGBColor &		HBlue() 
-		{ 
-			return *m_colorBlue16x15; 
+	static const UT_RGBColor &		HBlue()
+		{
+			return *m_colorBlue16x15;
 		}
 	static const UT_RGBColor &		VBlue()
-		{ 
-			return *m_colorBlue11x16; 
+		{
+			return *m_colorBlue11x16;
 		}
-	static const UT_RGBColor &		HGrey() 
-		{ 
-			return *m_colorGrey16x15; 
+	static const UT_RGBColor &		HGrey()
+		{
+			return *m_colorGrey16x15;
 		}
-	static const UT_RGBColor &		VGrey() 
-		{ 
-			return *m_colorGrey11x16; 
+	static const UT_RGBColor &		VGrey()
+		{
+			return *m_colorGrey11x16;
 		}
 
 	static bool _isFlipped();
@@ -158,7 +158,7 @@ private:
 	static UT_RGBColor *	m_colorBlue11x16;
 	static UT_RGBColor *	m_colorGrey16x15;
 	static UT_RGBColor *	m_colorGrey11x16;
-	
+
 	static NSCursor *	m_Cursor_E;
 	static NSCursor *	m_Cursor_N;
 	static NSCursor *	m_Cursor_NE;

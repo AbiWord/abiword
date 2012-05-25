@@ -107,7 +107,7 @@ public:
 	fl_DocSectionLayout * getDocSectionLayout(void);
 	virtual void        setY(UT_sint32 iY);
 	virtual UT_sint32   getY(void) const;
-	
+
 private:
 	fp_EndnoteContainer * m_pLocalNext;
 	fp_EndnoteContainer * m_pLocalPrev;

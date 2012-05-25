@@ -68,12 +68,12 @@ class ABI_EXPORT UT_Mutex
  *
  * void Clazz::method (int arg)
  * {
- *   UT_MutexAcquirer acquirer (m_ClazzMutex); 
+ *   UT_MutexAcquirer acquirer (m_ClazzMutex);
  *   // do stuff that modifies class data
  *   // ...
  *   // just return, no need to release mutex. it's
  *   // done transparently by the acquirer
- * }  
+ * }
  */
 class ABI_EXPORT UT_MutexAcquirer
 {

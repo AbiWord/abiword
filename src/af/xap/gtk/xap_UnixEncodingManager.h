@@ -8,9 +8,9 @@ class XAP_UnixEncodingManager: public XAP_EncodingManager
 {
 protected:
     XAP_UnixEncodingManager();
-    virtual ~XAP_UnixEncodingManager();    
+    virtual ~XAP_UnixEncodingManager();
 
-    void 	initialize();    
+    void 	initialize();
 
 public:
     const char* getNativeEncodingName() 	const;

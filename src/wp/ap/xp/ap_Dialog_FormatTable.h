@@ -6,15 +6,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -59,7 +59,7 @@ public:
 
 	// data twiddlers
 	void			draw(const UT_Rect *clip=NULL);
-	GR_Graphics *   getGraphics(void) const { return m_gc;} 
+	GR_Graphics *   getGraphics(void) const { return m_gc;}
 	/*void			set(UT_uint32 iColumns, bool bLines)
 					{
 						m_iColumns = iColumns;
@@ -83,7 +83,7 @@ public:
 
 	typedef enum { a_OK, a_CLOSE } tAnswer;
 	typedef enum { toggle_left, toggle_right, toggle_top, toggle_bottom } toggle_button;
-	
+
 	AP_Dialog_FormatTable::tAnswer		getAnswer(void) const;
 	virtual void                        startUpdater(void);
 	virtual void                        stopUpdater(void);
@@ -94,15 +94,15 @@ public:
 	void                                ConstructWindowName(void);
 	void                                event_update(void);
 	void                                finalize(void);
-		
+
 	void                                setAllSensitivities(void);
-	void 								setCurCellProps(void);	
+	void 								setCurCellProps(void);
 	void								setApplyFormatTo(FormatTable applyTo);
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
 	void								setBackgroundColor(UT_RGBColor clr);
-	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;	
+	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;
 	void                                setBorderThickness(UT_UTF8String & sThick);
 	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
 	void                                clearImage(void);
@@ -120,7 +120,7 @@ public:
 	bool								getLeftToggled();
 	GR_Image *                          getImage(void) { return m_pImage;}
 	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
-				
+
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 	gchar *							m_bgFillStyle;
@@ -133,7 +133,7 @@ protected:
 	AP_FormatTable_preview				*m_pFormatTablePreview;
 	AP_FormatTable_preview_drawer		m_previewDrawer;
 	double      m_dThickness[FORMAT_TABLE_NUMTHICKNESS];
-		
+
 private:
 	bool								_getToggleButtonStatus(const char * lineStyle);
 
@@ -143,9 +143,9 @@ private:
 	UT_PropVector                           m_vecPropsAdjBottom;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
-	
+
 	bool								m_borderToggled;
-	
+
 	FormatTable							m_ApplyTo;
 
 	// Handshake variables
@@ -156,7 +156,7 @@ private:
 	UT_String                           m_sImagePath;
 	IEGraphicFileType                   m_iGraphicType;
 	GR_Image *                          m_pImage;
-	FG_Graphic *                        m_pGraphic;    
+	FG_Graphic *                        m_pGraphic;
 };
 
 #endif /* AP_DIALOG_FORMATTABLE_H */

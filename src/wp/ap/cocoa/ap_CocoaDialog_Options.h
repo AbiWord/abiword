@@ -84,7 +84,7 @@ class AP_CocoaDialog_Options;
 	IBOutlet NSButton *         m_checkbuttonCustomSmartQuotes;
 	IBOutlet NSButton *         m_checkbuttonAutoSaveFile;
 	IBOutlet NSButton *         m_checkbuttonEnableOverwrite;
-	
+
 	IBOutlet NSTabView *		oTabView;
 }
 - (id)initFromNib;
@@ -104,7 +104,7 @@ class AP_CocoaDialog_Options;
 
 /*****************************************************************/
 
-class AP_CocoaDialog_Options 
+class AP_CocoaDialog_Options
 	: public AP_Dialog_Options
 	, public XAP_NotebookDialog
 {
@@ -119,7 +119,7 @@ public:
 
 	id _lookupWidget( tControl cid );
 	void _setupSmartQuotesCombos(NSPopUpButton *);
-	
+
 	void setReinit(bool value)
 		{
 			m_reinit = value;
@@ -128,7 +128,7 @@ public:
 		{
 			return m_reinit;
 		}
-	
+
 	virtual void _populateWindowData(void);
 protected:
 
@@ -214,7 +214,7 @@ protected:
 
 #undef SET_GATHER
 
-	virtual void addPage(const XAP_NotebookDialog::Page*) 
+	virtual void addPage(const XAP_NotebookDialog::Page*)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}

@@ -47,11 +47,11 @@ class ABI_EXPORT UT_MutexImpl
 
   void unlock ()
     {
-      ::LeaveCriticalSection(&m_cs); 
+      ::LeaveCriticalSection(&m_cs);
     }
 
  private:
-  
+
   // no impls
   UT_MutexImpl (const UT_MutexImpl & other);
   UT_MutexImpl & operator=(const UT_MutexImpl & other);

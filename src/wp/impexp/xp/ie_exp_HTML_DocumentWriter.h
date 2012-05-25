@@ -1,22 +1,22 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiSource
- * 
+ *
  * Copyright (C) 2011 Volodymyr Rudyj <vladimir.rudoy@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 #ifndef IE_EXP_HTML_MAINLISTENER_H
@@ -50,71 +50,71 @@ class ABI_EXPORT IE_Exp_HTML_DocumentWriter : public IE_Exp_HTML_ListenerImpl
 {
 public:
     IE_Exp_HTML_DocumentWriter(IE_Exp_HTML_OutputWriter* pOutputWriter);
-    
+
     virtual ~IE_Exp_HTML_DocumentWriter();
 
     void openSpan(const gchar *szStyleNames, const UT_UTF8String& style);
     void closeSpan();
-    
+
     void openBlock(const gchar* szStyleName, const UT_UTF8String& style,
         const PP_AttrProp *pAP);
     void closeBlock();
-    
-    void openHeading(size_t level, const gchar* szStyleName, 
+
+    void openHeading(size_t level, const gchar* szStyleName,
         const gchar *szId, const PP_AttrProp *pAP);
     void closeHeading();
-    
+
     void openSection(const gchar* szStyleName);
     void closeSection();
-    
-    void openHyperlink(const gchar *szUri, const gchar *szStyleName, 
+
+    void openHyperlink(const gchar *szUri, const gchar *szStyleName,
         const gchar *szId);
     void closeHyperlink();
-    
+
     void openDocument();
     void closeDocument();
-    
+
     void openHead();
     void closeHead();
-    
+
     void openBody();
     void closeBody();
-        
+
     void openTable(const UT_UTF8String &style,
         const UT_UTF8String &cellPadding, const UT_UTF8String &border);
     void closeTable();
-    
+
     void openRow();
     void closeRow();
-    
+
     void openCell(const UT_UTF8String &style,
         const UT_UTF8String &rowspan, const UT_UTF8String &colspan);
     void closeCell();
-    
+
     void openBookmark(const gchar* szBookmarkName);
     void closeBookmark();
-    
-    void openList(bool ordered, const gchar *szStyleName, 
+
+    void openList(bool ordered, const gchar *szStyleName,
         const PP_AttrProp *pAP);
     void closeList();
-    
+
     void openListItem();
     void closeListItem();
-    
+
     void openField(const UT_UTF8String &fieldType, const UT_UTF8String &value);
     void closeField(const UT_UTF8String& fieldType);
-    
+
     void openAnnotation();
     void closeAnnotation();
-    
+
     void openTextbox(const UT_UTF8String &style);
     void closeTextbox();
-    
+
     void insertDTD();
     void insertMeta(const std::string& name, const std::string& content,
             const std::string& httpEquiv);
     void insertText(const UT_UTF8String &text);
-    void insertImage(const UT_UTF8String &url, const UT_UTF8String &width, 
+    void insertImage(const UT_UTF8String &url, const UT_UTF8String &width,
         const UT_UTF8String &align, const UT_UTF8String &style,
         const UT_UTF8String &alt);
     void insertTOC(const gchar *title, const std::vector<UT_UTF8String> &items,
@@ -138,14 +138,14 @@ protected:
     IE_Exp_HTML_DocumentWriter(){}
     void inline _handleStyleAndId(const gchar *szStyleName, const gchar *szId,
             const gchar *szStyle);
-    
+
     IE_Exp_HTML_OutputWriter *m_pOutputWriter;
     IE_Exp_HTML_TagWriter *m_pTagWriter;
     UT_uint32 m_iEndnoteCount;
     UT_uint32 m_iEndnoteAnchorCount;
     UT_uint32 m_iFootnoteCount;
     UT_uint32 m_iAnnotationCount;
-    
+
     bool m_bInsertPhp;
     bool m_bInsertSvgScript;
 };
@@ -171,19 +171,19 @@ private:
     void _handleAwmlStyle(const PP_AttrProp *pAP);
     bool m_bEnableXmlDeclaration;
     bool m_bUseAwml;
-    
+
 };
 
 class ABI_EXPORT IE_Exp_HTML_HTML4Writer : public IE_Exp_HTML_DocumentWriter
 {
 public:
     IE_Exp_HTML_HTML4Writer(IE_Exp_HTML_OutputWriter* pOutputWriter);
-    void insertDTD();  
+    void insertDTD();
     void openHead();
 };
 
 /*
- * This factory class gives ability to customize HTML exporter using 
+ * This factory class gives ability to customize HTML exporter using
  * different content generators
  */
 class ABI_EXPORT IE_Exp_HTML_WriterFactory
@@ -192,7 +192,7 @@ public:
     virtual ~IE_Exp_HTML_WriterFactory() {}
     virtual IE_Exp_HTML_DocumentWriter *constructDocumentWriter(
         IE_Exp_HTML_OutputWriter *pOutputWriter) = 0;
-    
+
 };
 
 

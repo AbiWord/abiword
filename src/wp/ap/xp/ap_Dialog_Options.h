@@ -95,22 +95,22 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	// typedef enum { check_FALSE = 0, check_TRUE, check_INDETERMINATE } tCheckState;
 
 	AP_Dialog_Options::tAnswer	getAnswer(void) const;
-	
+
 	virtual void _populateWindowData(void);
 		// to be called when a control is toggled/changed
 	void _enableDisableLogic( tControl id );
-	
+
 	virtual void _storeWindowData(void);	// calls the following functions to
 						// lookup values to set as preferences
 	virtual void _storeDataForControl (tControl id);	// sets preferences for a particular control
 							 	// needed by instant apply and friends
-									
-	void _event_SetDefaults(void);									
+
+	void _event_SetDefaults(void);
 
 	//
 	// Screen Color stuff
 	//
-	const gchar * _gatherColorForTransparent(void);									
+	const gchar * _gatherColorForTransparent(void);
 	void _setColorForTransparent(const gchar * pzsColorForTransparent);
 	bool  isInitialPopulationHappenning(void)
 		{ return m_bInitialPop; }
@@ -123,7 +123,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	// to enable/disable a control
 	virtual void _controlEnable( tControl id, bool value )=0;
 
-	
+
 
 	// disable controls appropriately
 	void _initEnableControls();
@@ -133,7 +133,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	// platform basis
 	virtual void _initEnableControlsPlatformSpecific(){};
 
-	
+
 	void _eventSave(void);
 
 
@@ -177,7 +177,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	virtual void _setAutoSaveFilePeriod(const UT_String &stPeriod) = 0;
 	virtual void _gatherAutoSaveFileExt(UT_String &stRetVal) = 0;
 	virtual void _setAutoSaveFileExt(const UT_String &stExt) = 0;
-	
+
 	// Jordi: For now this is just implemented in win32, we should make it
 	// an abstract member if we decide to implemented in all platforms
 	virtual void _gatherUILanguage(UT_String &stRetVal){stRetVal.clear();};
@@ -186,7 +186,7 @@ class ABI_EXPORT AP_Dialog_Options : public XAP_TabbedDialog_NonPersistent
 	virtual void _setLanguageWithKeyboard(const bool) {}
 	virtual bool _gatherDirMarkerAfterClosingParenthesis(){return false;}
 	virtual void _setDirMarkerAfterClosingParenthesis(const bool){}
-	
+
 	// so we can save and restore to the same page - must be able to return
 	// the current page and reset it later (i.e., don't use a handle, but a
 	// page index)

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -68,7 +68,7 @@ private:
 	UT_GenericVector<const PD_Style *>    m_vecAllStyles;
 	UT_GenericVector<Stylist_row *> m_vecStyleRows;
 };
-		
+
 
 class ABI_EXPORT AP_Dialog_Stylist : public XAP_Dialog_Modeless
 {
@@ -97,7 +97,7 @@ public:
 	void              setCurStyle(UT_UTF8String & sStyle)
 		{ m_sCurStyle = sStyle;}
 	void              Apply(void);
-	virtual void      setStyleInGUI(void) = 0;       
+	virtual void      setStyleInGUI(void) = 0;
 	static void       autoUpdate(UT_Worker * pTimer);
 	void              updateDialog(void);
 	bool              isStyleChanged(void) const

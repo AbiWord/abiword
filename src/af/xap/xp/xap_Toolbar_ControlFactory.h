@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -22,7 +22,7 @@
 
 /*****************************************************************
 ******************************************************************
-** This file defines the base class for the cross-platform 
+** This file defines the base class for the cross-platform
 ** application Toolbar_Control factory.  This is used as a container
 ** and constructor for all Toolbar_Controls.
 ******************************************************************
@@ -62,7 +62,7 @@ public:
 
 protected:
 	bool						_find_ControlInTable(XAP_Toolbar_Id id, UT_uint32 * pIndex) const;
-	
+
 	UT_uint32					m_nrElementsCtlTable;
 	const _ctl_table *	m_ctl_table;			/* an array of elements */
 };

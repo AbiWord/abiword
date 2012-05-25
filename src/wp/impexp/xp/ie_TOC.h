@@ -1,4 +1,4 @@
-#ifndef IE_TOC_H 
+#ifndef IE_TOC_H
 #define IE_TOC_H
 
 #include "ut_string_class.h"
@@ -23,7 +23,7 @@ class ABI_EXPORT IE_TOCHelper
   bool isTOCStyle(const char * styleName, int * out_level = NULL) const;
 
   int getNumTOCEntries() const;
-  
+
   UT_UTF8String getNthTOCEntry(int nth, int * out_level = NULL) const;
   bool getNthTOCEntryPos(int nth, PT_DocPosition &pos) const;
 

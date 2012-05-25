@@ -2,20 +2,20 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 2002 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -69,7 +69,7 @@ public:
 
 	void			setHTMLOptions (XAP_Exp_HTMLOptions * exp_opt, XAP_App * app);
 	static void		getHTMLDefaults (XAP_Exp_HTMLOptions * exp_opt, XAP_App * app);
-	
+
 protected:
 	inline bool		get_HTML4 ()            const { return m_exp_opt->bIs4; }
 	inline bool		get_PHTML ()            const { return m_exp_opt->bIsAbiWebDoc; }
@@ -85,10 +85,10 @@ protected:
         inline bool             get_MathML_Render_PNG() const { return m_exp_opt->bMathMLRenderPNG; }
         inline bool		get_Split_Document()	const { return m_exp_opt->bSplitDocument; }
 	inline UT_uint32        get_Compact ()          const { return m_exp_opt->iCompact; }
-        
+
 
 	UT_UTF8String &         get_Link_CSS_File() const { return *m_pLinkCSS; }
-	
+
 	inline bool		can_set_Declare_XML ()      const { return m_exp_opt->bIs4 ? false : true; }
 	inline bool		can_set_Allow_AWML ()       const { return m_exp_opt->bIs4 ? false : true; }
 	inline bool		can_set_Embed_CSS ()        const { return m_exp_opt->bIsAbiWebDoc ? false : true; }
@@ -115,7 +115,7 @@ protected:
 	void                    set_Abs_Units (bool enable);
 	void                    set_Scale_Units (bool enable);
 	void                    set_Compact (UT_uint32 i) {m_exp_opt->iCompact = i;}
-	
+
 	void			saveDefaults ();
 	void			restoreDefaults ();
 

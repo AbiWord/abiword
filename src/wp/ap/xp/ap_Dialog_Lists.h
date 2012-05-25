@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -66,7 +66,7 @@ protected:
 	UT_sint32			m_iLine_height;
 	bool				m_bFirst;
 };
-		
+
 class ABI_EXPORT AP_Dialog_Lists : public AP_Dialog_Modeless
 {
   protected:
@@ -146,28 +146,28 @@ protected:
 
 #undef SET_GATHER
 
-    void copyCharToDelim(const std::string & pszDelim) 
-    { 
+    void copyCharToDelim(const std::string & pszDelim)
+    {
         m_pszDelim = pszDelim;
     }
-    const std::string & getDelim(void) const 
-    { 
+    const std::string & getDelim(void) const
+    {
         return m_pszDelim;
     }
-    void copyCharToDecimal(const std::string & pszDecimal) 
-    { 
+    void copyCharToDecimal(const std::string & pszDecimal)
+    {
         m_pszDecimal = pszDecimal;
     }
-	const std::string & getDecimal( void) const  
-    { 
+	const std::string & getDecimal( void) const
+    {
         return m_pszDecimal;
     }
-    void copyCharToFont(const std::string & pszFont) 
-    { 
+    void copyCharToFont(const std::string & pszFont)
+    {
         m_pszFont = pszFont;
     }
-	const std::string & getFont(void) 
-    { 
+	const std::string & getFont(void)
+    {
         return m_pszFont;
     }
     void copyCharToWindowName(const char* pszName);

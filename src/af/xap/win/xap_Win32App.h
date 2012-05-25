@@ -1,20 +1,20 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -50,7 +50,7 @@ public:
 
 	static const WCHAR * getWideString (const char * p_str);
 	static const char * getUTF8String (const WCHAR * p_str);
-	
+
 	virtual bool							initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue);
 	virtual XAP_Frame *						newFrame(void) = 0;
 	virtual void							reallyExit(void);
@@ -69,14 +69,14 @@ public:
 
 	virtual HICON							getIcon(void) = 0;
 	virtual HICON							getSmallIcon(void) = 0;
-	
+
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile) = 0;
 
 	void									enableAllTopLevelWindows(bool);
 	virtual UT_sint32					makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	virtual UT_sint32 				setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame);
     virtual XAP_App::BidiSupportType        theOSHasBidiSupport() const {return m_eBidiOS;}
-	
+
 	void									getDefaultGeometry(UT_uint32& width,
 															   UT_uint32& height,
 															   UT_uint32& flags);
@@ -90,7 +90,7 @@ protected:
 	void									_setAbiSuiteLibDir(void);
 	void									_setBidiOS(void);
 	virtual const char *                    _getKbdLanguage();
-	
+
 	HINSTANCE								m_hInstance;
 	AP_Win32DialogFactory					m_dialogFactory;
 	AP_Win32Toolbar_ControlFactory			m_controlFactory;

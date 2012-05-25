@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (c) 2011 Ben Martin
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -41,7 +41,7 @@ public:
         : m_st( stred )
     {
     }
-    
+
     ~RedStatementHolder()
     {
         librdf_free_statement( m_st );
@@ -66,7 +66,7 @@ public:
     librdf_storage* storage;
     librdf_model*   model;
     librdf_parser*  parser;
-    
+
     RDFArguments();
     ~RDFArguments();
 private:

@@ -32,7 +32,7 @@ public:
     virtual void      runModal(XAP_Frame * pFrame);
 
     static XAP_Dialog *   static_constructor(XAP_DialogFactory *, XAP_Dialog_Id id);
-   
+
 protected:
     BOOL          _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam);
     BOOL          _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);

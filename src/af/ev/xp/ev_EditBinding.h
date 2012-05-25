@@ -1,22 +1,22 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 
 
 
@@ -78,7 +78,7 @@ public:
 	bool				setBinding(EV_EditBits eb, EV_EditBinding * peb);
 	bool				removeBinding(EV_EditBits eb);
 	bool				parseEditBinding(void);
-	
+
 						// clears the entire map of ALL bindings
 	void				resetAll();	// --foddex
 						// adds all editbits that are a short cut for the specified command name
@@ -96,7 +96,7 @@ protected:
 	ev_EB_MouseTable *			m_pebMT[EV_COUNT_EMB];
 	ev_EB_NVK_Table *			m_pebNVK;
 	ev_EB_Char_Table *			m_pebChar;
-	
+
 	bool				bindingUsesMethod( EV_EditBinding* binding, EV_EditMethod* method );
 	UT_uint32 m_iLastMouseNo;
 };

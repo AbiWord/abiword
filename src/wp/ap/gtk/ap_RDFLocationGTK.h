@@ -41,11 +41,11 @@ class ABI_EXPORT AP_RDFLocationGTK
     GtkEntry* w_dlat;
     GtkEntry* w_dlong;
     GtkEntry* w_desc;
-    
+
   public:
     AP_RDFLocationGTK( PD_DocumentRDFHandle rdf, PD_ResultBindings_t::iterator& it, bool isGeo84 = false );
     virtual ~AP_RDFLocationGTK();
-    
+
     virtual void* createEditor();
     virtual void updateFromEditorData( PD_DocumentRDFMutationHandle m );
 #ifdef WITH_CHAMPLAIN

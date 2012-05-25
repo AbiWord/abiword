@@ -31,7 +31,7 @@ class UT_TextIterator;
    Identifies scripts for the shaping engine; the actual values are
    shaper specific and of no consequence to the xp layer; the only
    values that are defined are:
-   
+
    Undefined - identifies text that requires no special processing.
    Void      - indicates the record does not represent real item;
    only used with the last (dummy) record in GR_Itemization
@@ -83,10 +83,10 @@ class ABI_EXPORT GR_Item
 class ABI_EXPORT GR_XPItem : public GR_Item
 {
 	friend class GR_Graphics;
-	
+
   public:
 	virtual ~GR_XPItem(){};
-	
+
 	virtual GR_ScriptType getType() const {return m_eType;}
 	virtual GR_Item * makeCopy() const {return new GR_XPItem(m_eType);}
 	virtual GRRI_Type getClassId() const {return GRRI_XP;}
@@ -127,7 +127,7 @@ class ABI_EXPORT GR_Itemization
 	    m_pLang(NULL),
 	    m_pFont(NULL)
 	{};
-	
+
 	virtual ~GR_Itemization() {clear();} // do not delete the actual
 										 // items, they get passed on
 										 // to the runs
@@ -136,21 +136,21 @@ class ABI_EXPORT GR_Itemization
 	UT_sint32       getNthOffset(UT_sint32 i) const {return m_vOffsets.getNthItem(i);}
 	GR_ScriptType   getNthType(UT_sint32 i) const
 	                   {return ((GR_Item*)m_vItems.getNthItem(i))->getType();}
-	
+
 	UT_uint32       getNthLength(UT_sint32 i)
 	                   {
 						  UT_return_val_if_fail(i < m_vOffsets.getItemCount()-1, 0);
 						  return m_vOffsets.getNthItem(i+1) - m_vOffsets.getNthItem(i);
 					   }
-	
+
 	GR_Item *       getNthItem(UT_sint32 i) const {return (GR_Item *)m_vItems.getNthItem(i);}
-	
+
 	void            addItem(UT_sint32 offset, const GR_Item *item)
 	                    { m_vOffsets.addItem(offset); m_vItems.addItem(item);}
 
 	void            insertItem(UT_sint32 indx, UT_sint32 offset, const GR_Item *item)
 	                    { m_vOffsets.insertItemAt(offset, indx); m_vItems.insertItemAt(item,indx);}
-	
+
 	void            clear();
 
 	void            setEmbedingLevel(UT_uint32 l) {m_iEmbedingLevel = l;}
@@ -167,7 +167,7 @@ class ABI_EXPORT GR_Itemization
 
 	void            setFont(const GR_Font * pFont) {m_pFont = pFont;}
 	const GR_Font * getFont()const {return m_pFont;}
-	
+
   private:
 	UT_NumberVector m_vOffsets;
 	UT_Vector       m_vItems;
@@ -187,7 +187,7 @@ class ABI_EXPORT GR_Itemization
    by platform code.
 
    <b>Notes on append(), split() and cut()</b>
-   
+
    These functions allow our fp_TextRun to merge with next or to split
    into two without having to know about various platform dependent
    chaches that speed up shaping and drawing; append()
@@ -218,12 +218,12 @@ class ABI_EXPORT GR_RenderInfo
 		  m_bLastOnLine(false),
 		  m_pItem(NULL),
 		  m_bInvalidateFontCache(false){};
-	
-	
+
+
 	virtual ~GR_RenderInfo(){};
 
 	virtual GRRI_Type getType() const = 0;
-	
+
 	virtual bool append(GR_RenderInfo &ri, bool bReverse = false) = 0;
 	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false) = 0;
 	virtual bool cut(UT_uint32 offset, UT_uint32 len, bool bReverse = false) = 0;
@@ -232,8 +232,8 @@ class ABI_EXPORT GR_RenderInfo
 	              {return (m_eScriptType == ri.m_eScriptType);}
 
 	virtual bool isJustified() const = 0;
-	
-	
+
+
 	UT_sint32           m_iOffset;
 	UT_sint32           m_iLength;
 	GRShapingResult     m_eShapingResult;
@@ -267,19 +267,19 @@ class ABI_EXPORT GR_XPRenderInfo : public GR_RenderInfo
 {
   public:
 	GR_XPRenderInfo(GR_ScriptType type);
-	
+
 	virtual ~GR_XPRenderInfo();
 
 	virtual GRRI_Type getType() const {return GRRI_XP;}
-	
+
 	virtual bool append(GR_RenderInfo &ri, bool bReverse = false);
 	virtual bool split (GR_RenderInfo *&pri, bool bReverse = false);
 	virtual bool cut(UT_uint32 offset, UT_uint32 len, bool bReverse = false);
 
 	virtual bool isJustified() const {return (m_iJustificationPoints != 0);}
-	
+
 	void prepareToRenderChars();
-	
+
 
 	UT_UCS4Char *       m_pChars;
 	UT_sint32 *         m_pWidths;
@@ -301,7 +301,7 @@ class ABI_EXPORT GR_XPRenderInfo : public GR_RenderInfo
 	inline void            _stripLigaturePlaceHolders();
 	inline void            _calculateCharAdvances();
 	inline bool            _checkAndFixStaticBuffers();
-	
+
 };
 
 
@@ -330,12 +330,12 @@ class ABI_EXPORT GR_ShapingInfo
 		 m_eShapingRequired(eShapingRequired),
 	     m_pFont(pFont),
 		m_iJustifyBy(0),
-		m_pItem(pItem), 
+		m_pItem(pItem),
 		m_TextTransform(textTransform),
 		m_previousWasSpace(previousWasSpace)
 	{
 	}
-	
+
 	virtual ~GR_ShapingInfo() {};
 
 	UT_TextIterator &   m_Text;

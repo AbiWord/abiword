@@ -108,7 +108,7 @@ public:
 	SectionType     	getType(void) const { return m_iType; }
 
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
-	fl_BlockLayout *        getFirstBlock(void) const; 
+	fl_BlockLayout *        getFirstBlock(void) const;
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) = 0;
 	virtual FL_DocLayout*		getDocLayout(void) const;
 	virtual void                markAllRunsDirty(void) =0;
@@ -185,7 +185,7 @@ public:
 	virtual void         setImageHeight(UT_sint32 iHeight);
 	GR_Image *           getBackgroundImage(void)
 	  {	return m_pImageImage;}
-	
+
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
@@ -227,7 +227,7 @@ public:
 	virtual fp_Container * getLastContainer(void) const;
 	virtual void        setFirstContainer(fp_Container * pCon);
 	virtual void        setLastContainer(fp_Container * pCon);
-	
+
 	fl_FootnoteLayout  *       getFootnoteLayout(UT_uint32 footnotePID);
 	fl_AnnotationLayout  *       getAnnotationLayout(UT_uint32 footnotePID);
 
@@ -264,7 +264,7 @@ public:
 	virtual bool 	    doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 
-	virtual bool        bl_doclistener_insertFootnote(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx, 
+	virtual bool        bl_doclistener_insertFootnote(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
@@ -272,7 +272,7 @@ public:
 																	  fl_ContainerLayout* sfhNew));
 
 
-	virtual bool        bl_doclistener_insertAnnotation(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx, 
+	virtual bool        bl_doclistener_insertAnnotation(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
@@ -362,7 +362,7 @@ private:
 	double              m_dMaxSectionColumnHeight;
 	UT_sint32           m_iFootnoteLineThickness;
 	UT_sint32           m_iFootnoteYoff;
-	
+
 	//! First column in the section
 	fp_Column*			m_pFirstColumn;
 	//! Last column in the section

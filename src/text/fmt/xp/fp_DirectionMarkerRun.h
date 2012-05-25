@@ -38,7 +38,7 @@ public:
 											bool& bBOL,
 											bool& bEOL,
 											bool & isTOC);
-	
+
 	virtual void 			findPointCoords(UT_uint32 iOffset,
 											UT_sint32& x,
 											UT_sint32& y,
@@ -46,14 +46,14 @@ public:
 											UT_sint32& y2,
 											UT_sint32& height,
 											bool& bDirection);
-	
+
 	virtual bool			canBreakAfter(void) const;
 	virtual bool			canBreakBefore(void) const;
 	virtual UT_sint32       getDrawingWidth() const { return static_cast<UT_sint32>(m_iDrawWidth);}
 
 	// for the purposes of linebreaking, direction markers are just whitespace
 	virtual bool		    doesContainNonBlankData(void) const { return false; }
-	
+
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,

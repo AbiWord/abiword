@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 #ifndef FIELD_H
@@ -36,14 +36,14 @@ class pf_Frag_Object;
 class ABI_EXPORT fd_Field
 {
  public:
-    // TBD: convention for naming 
-    typedef enum _FieldType 
+    // TBD: convention for naming
+    typedef enum _FieldType
 	{
 	        FD_None,
 		FD_Test,
 		FD_MartinTest,
-		FD_Time, 
-		FD_PageNumber, 
+		FD_Time,
+		FD_PageNumber,
 		FD_PageCount,
 		FD_ListLabel,
 		FD_FileName,
@@ -80,13 +80,13 @@ class ABI_EXPORT fd_Field
 		FD_App_Target,
 		FD_App_CompileTime,
 		FD_App_CompileDate,
-		
+
 		FD_Endnote_Ref,
 		FD_Endnote_Anchor,
 
 		FD_Footnote_Ref,
 		FD_Footnote_Anchor,
-		
+
 		FD_PageReference,
 		FD_MailMerge,
 
@@ -122,7 +122,7 @@ class ABI_EXPORT fd_Field
     bool							_deleteSpan(void);
     void							_throwChangeRec(PT_DocPosition docPos);
     fl_BlockLayout * m_pBlock;
-    // will need some more helper functions in here eg. to test 
+    // will need some more helper functions in here eg. to test
     // whether text has changed to avoid unnecessary updates
  private:
     pf_Frag_Object& m_fragObject;

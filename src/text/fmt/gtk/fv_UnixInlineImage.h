@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (c) 2005 Martin Sevior <msevior@physics.unimelb.edu.au> 
+ * Copyright (c) 2005 Martin Sevior <msevior@physics.unimelb.edu.au>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -27,7 +27,7 @@
 
 class FV_View;
 
-class ABI_EXPORT FV_UnixVisualInlineImage : public FV_VisualInlineImage 
+class ABI_EXPORT FV_UnixVisualInlineImage : public FV_VisualInlineImage
 {
 
 public:

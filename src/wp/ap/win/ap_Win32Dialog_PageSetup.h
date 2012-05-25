@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2004 Mikey Cooper (mikey@bluey.com)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -32,17 +32,17 @@ class AP_Win32Dialog_PageSetup;
 */
 class ABI_EXPORT AP_Win32Dialog_PageSetup_Sheet: public XAP_Win32PropertySheet, XAP_Win32DialogBase
 {
-public:	
-		AP_Win32Dialog_PageSetup_Sheet();				
+public:
+		AP_Win32Dialog_PageSetup_Sheet();
 		void _onInitDialog(HWND hwnd);
-		
+
 		void setParent(AP_Win32Dialog_PageSetup*	pData){m_pParent=pData;};
 		AP_Win32Dialog_PageSetup* getParent(){return m_pParent;};
 		int _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
 		static INT_PTR CALLBACK s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam);
-		
-private:		
-	
+
+private:
+
 		AP_Win32Dialog_PageSetup*	m_pParent;
 };
 
@@ -51,9 +51,9 @@ private:
 */
 class ABI_EXPORT AP_Win32Dialog_PageSetup_Page: public XAP_Win32PropertyPage
 {
-public:		
+public:
 								AP_Win32Dialog_PageSetup_Page();
-								~AP_Win32Dialog_PageSetup_Page();	
+								~AP_Win32Dialog_PageSetup_Page();
 
 	void						setContainer(AP_Win32Dialog_PageSetup*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_PageSetup*	getContainer(){return m_pParent;};
@@ -67,9 +67,9 @@ private:
 	void						_onInitDialog();
 	void						_onKillActive(){};
 	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-		
-	AP_Win32Dialog_PageSetup*	m_pParent;	
-    int							m_nCentered;	
+
+	AP_Win32Dialog_PageSetup*	m_pParent;
+    int							m_nCentered;
 };
 
 /*
@@ -77,9 +77,9 @@ private:
 */
 class ABI_EXPORT AP_Win32Dialog_PageSetup_Margin: public XAP_Win32PropertyPage
 {
-public:		
+public:
 								AP_Win32Dialog_PageSetup_Margin();
-								~AP_Win32Dialog_PageSetup_Margin();	
+								~AP_Win32Dialog_PageSetup_Margin();
 
 	void						setContainer(AP_Win32Dialog_PageSetup*	pParent){m_pParent=pParent;};
 	AP_Win32Dialog_PageSetup*	getContainer(){return m_pParent;};
@@ -93,9 +93,9 @@ private:
 	void						_onInitDialog();
 	void						_onKillActive(){};
 	BOOL						_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam);
-		
-	AP_Win32Dialog_PageSetup*	m_pParent;	
-	
+
+	AP_Win32Dialog_PageSetup*	m_pParent;
+
 };
 
 
@@ -146,7 +146,7 @@ protected:
 	HBITMAP					m_bmpLandscape;
 	HBITMAP					m_bmpPortrait;
 	HBITMAP					m_bmpPreview;
-	
+
 	fp_PageSize					m_PageSize;
 
 private:

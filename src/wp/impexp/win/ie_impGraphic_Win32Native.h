@@ -4,21 +4,21 @@
  *
  * Copyright (C) 2003 Jordi Mas i Hernàndez
  * Copyright (C) 2003 Dom Lachowicz
- * Win32 native plugin based on win32 IPicture interface *  
+ * Win32 native plugin based on win32 IPicture interface *
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -35,7 +35,7 @@ class FG_Graphic;
 class ABI_EXPORT IE_ImpGraphic_Win32Native : public IE_ImpGraphic
 {
 public:
-  virtual UT_Error importGraphic(UT_ByteBuf* pBB, 
+  virtual UT_Error importGraphic(UT_ByteBuf* pBB,
                                  FG_Graphic ** ppfg);
 private:
   UT_Error _convertGraphic(UT_ByteBuf * pBB, std::string& mimetype);
@@ -59,14 +59,14 @@ private:
   // PNG structures used
   png_structp m_pPNG;				// libpng structure for the PNG Object
   png_infop   m_pPNGInfo;			// libpng structure for info on the PNG Object
-  
+
   // BMP File Header Data
   UT_uint16	m_iFileType;		// type - 'BM' for Bitmaps
   UT_uint32	m_iFileSize;		// file size in bytes
   UT_uint16	m_iXHotspot;		// 0 or x hotspot
   UT_uint16	m_iYHotspot;		// 0 or y hotspot
   UT_uint32	m_iOffset;			// Offset to BMP image
-  
+
   // BMP Header Data
   UT_uint32	m_iHeaderSize;		// Size of Header Data
   UT_sint32	m_iWidth;			// Image Width in pixels
@@ -87,12 +87,12 @@ private:
   UT_uint32	m_iHalfToningParam2;// Size Value 2
   UT_uint32	m_iClrEncoding;		// Color Encoding
   UT_uint32	m_iIdentifier;		//
-  
+
   // BMP Utility Data
   UT_uint32   m_iBytesRead;		// Number of Bytes Read
   bool		m_bOldBMPFormat;	// Older smaller file type
   bool		m_bHeaderDone;		// Check to see if finshed Reading Header
-  
+
   UT_ByteBuf*  m_pBB;				// pBB Converted to PNG File
 
 };
@@ -104,7 +104,7 @@ public:
 
     const IE_MimeConfidence * getMimeConfidence ();
     const IE_SuffixConfidence * getSuffixConfidence ();
-    virtual UT_Confidence_t recognizeContents (const char * szBuf, 
+    virtual UT_Confidence_t recognizeContents (const char * szBuf,
                                                UT_uint32 iNumbytes);
     virtual bool getDlgLabels (const char ** pszDesc,
                                const char ** pszSuffixList,

@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -47,7 +47,7 @@
   the clipboard RTF and text and the latter is quite undemading as far
   as resources go. When we add more export formats, such as AW native,
   this line should be uncommented.
-  
+
   Tomas, June 28, 2003
 */
 //#define COPY_ON_DEMAND
@@ -73,14 +73,14 @@ public:
 	virtual const char *			getAbiSuiteAppDir(void) const;
 	virtual void					copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true);
 	virtual GR_Graphics *           newDefaultScreenGraphics() const;
-	
+
 
 #ifdef COPY_ON_DEMAND
 	// see comments in the cpp file
 	bool                            copyFmtToClipboardOnDemand(UINT iFmt);
 	bool                            copyAllFmtsToClipboardOnDemand();
 #endif
-	
+
 	virtual void					pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting);
 	virtual bool					canPasteFromClipboard(void);
 	virtual void					cacheCurrentSelection(AV_View *) {};
@@ -88,8 +88,8 @@ public:
 	virtual void 					errorMsgBadArg(const char *msg);
 	virtual void 					errorMsgBadFile(XAP_Frame * pFrame, const char * file, UT_Error error);
 	virtual bool 					doWindowlessArgs (const AP_Args *, bool & bSuccess);
-	
-	static int WinMain (const char * szAppName, HINSTANCE hInstance, 
+
+	static int WinMain (const char * szAppName, HINSTANCE hInstance,
 						HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow);
 
 	virtual HICON							getIcon(void);
@@ -100,7 +100,7 @@ public:
 	bool									doesStringSetExist(const char* pLocale);
 
 	/*
-		Currently we need single byte strings to work with 
+		Currently we need single byte strings to work with
 		win32 UI until we do a Unicode port. It's better to do all UI
 		conversions in a single point. You are looking to this point right now. Jordi,
 	*/
@@ -109,11 +109,11 @@ public:
 	static UT_Win32LocaleString 	s_fromUTF8ToWinLocale(const char* szIn);
 	static UT_UTF8String	s_fromWinLocaleToUTF8(const char* szIn);
 
-	
-	
+
+
 	bool handleModelessDialogMessage( MSG * msg );
 
-private:	
+private:
 	bool               _copyFmtToClipboard(PD_DocumentRange * pDocRange, UINT iFmt);
 	bool               _copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *pszFmt);
 #ifdef COPY_ON_DEMAND

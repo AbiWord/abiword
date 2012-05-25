@@ -2,20 +2,20 @@
 
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -71,7 +71,7 @@ typedef long        UT_sintptr;
 /** use to mark variable as unused */
 #define UT_UNUSED(x) (void)(x);
 
-/** use to mark an argument as used in debug only 
+/** use to mark an argument as used in debug only
  *  otherwise equivalent to UT_UNUSED.
  *  If it is a local variable use UT_DebugOnly<> instead.
  */
@@ -98,7 +98,7 @@ typedef UT_uint8 UT_Confidence_t;
   #ifdef ABI_DLL
      /* we are building an AbiWord plugin and want to use something declared in a library */
      #define ABI_EXPORT __declspec(dllimport)
-  #else 
+  #else
      /* we are building AbiWord and wish for its parts to be used by plugins */
      #define ABI_EXPORT __declspec(dllexport)
   #endif
@@ -132,9 +132,9 @@ typedef UT_uint8 UT_Confidence_t;
 	should be propogated properly.
 
 	Addendum: 1-23-99
-	If you have any problems with or suggestions for error codes, 
+	If you have any problems with or suggestions for error codes,
 	please send them to Sam Tobin-Hochstadt (sytobinh@uchicago.edu).
-	I am the person that has worked the most with them. 
+	I am the person that has worked the most with them.
 */
 typedef	UT_sint32		UT_Error;
 #define	UT_OK			((UT_Error) 0)
@@ -162,7 +162,7 @@ typedef	UT_sint32		UT_Error;
 #define UT_IE_IMPORTERROR       ((UT_Error) -300) 	/* The general case */
 #define UT_IE_IMPSTYLEUNSUPPORTED  ((UT_Error) -314)
 #define UT_IE_XMLNOANGLEBRACKET    ((UT_Error) -360)
-#define UT_IE_TRY_RECOVER          ((UT_Error) -350)    // try recovering the document. ie, we have 
+#define UT_IE_TRY_RECOVER          ((UT_Error) -350)    // try recovering the document. ie, we have
                                                         // imported something
 
 #define UT_IS_IE_SUCCESS(x) (((x) == UT_OK) || ((x) == UT_IE_TRY_RECOVER))
@@ -172,8 +172,8 @@ ABI_EXPORT UT_Error UT_errnoToUTError (void);
 /* defined in ut_misc.cpp */
 ABI_EXPORT void * UT_calloc ( UT_uint32 nmemb, UT_uint32 size );
 
-/* 
-	The MSVC debug runtime library can track leaks back to the 
+/*
+	The MSVC debug runtime library can track leaks back to the
 	original allocation via the following black magic.
 */
 #if defined(_MSC_VER) && defined(_DEBUG) && defined(_CRTDBG_MAP_ALLOC)

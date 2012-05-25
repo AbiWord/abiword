@@ -114,13 +114,13 @@ public:
 	{
 		UT_ASSERT(iPos <= size());
 		if (iPos == size())
-			return L'\0';                            
+			return L'\0';
 		return (wchar_t) pimpl->data()[iPos];
 	}
 
 	wchar_t& operator[](size_t iPos)
 	{
-		UT_ASSERT(iPos <= size());		
+		UT_ASSERT(iPos <= size());
 		return (wchar_t &) pimpl->data()[iPos];
 	}
 };

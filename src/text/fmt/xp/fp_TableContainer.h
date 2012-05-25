@@ -44,7 +44,7 @@
  * Modified by the GTK+ Team and others 1997-1999.  See the AUTHORS
  * file for a list of people on the GTK+ Team.  See the ChangeLog
  * files for a list of changes.  These files are distributed with
- * GTK+ at ftp://ftp.gtk.org/pub/gtk/. 
+ * GTK+ at ftp://ftp.gtk.org/pub/gtk/.
  */
 
 #ifndef TABLECONTAINER_H
@@ -107,8 +107,8 @@ public:
 	fp_Container *      drawSelectedCell(fp_Line * pLine);
 	bool			    isSelected(void) const
 	{ return m_bIsSelected; }
-	void                clearSelection(void) 
-	{ m_bIsSelected = false; 
+	void                clearSelection(void)
+	{ m_bIsSelected = false;
 	  m_bLinesDrawn = true;
 	}
 	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke) const;
@@ -134,7 +134,7 @@ public:
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
-	void                recalcMaxWidth(bool bDontClearIfNeeded = false) 
+	void                recalcMaxWidth(bool bDontClearIfNeeded = false)
 	{ UT_UNUSED(bDontClearIfNeeded); }
 	virtual void        setAssignedScreenHeight(UT_sint32) {}
 	virtual fp_Container * getNextContainerInSection(void) const;
@@ -149,7 +149,7 @@ public:
 	void                extendBotLeft(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextLeft);
 	void                extendBotRight(PP_PropertyMap::Line & line,GR_Graphics * pG,UT_sint32 & iextRight);
 
-	UT_sint32           getCellX(fp_Line * pLine) const; 
+	UT_sint32           getCellX(fp_Line * pLine) const;
 	UT_sint32           getCellY(fp_Line * pLine) const;
 	UT_sint32           getSpannedHeight(void);
 	void                setLineMarkers(void);
@@ -192,7 +192,7 @@ public:
 		{ m_iTopPad = i;}
 	void                setBotPad(UT_sint32 i)
 		{ m_iBotPad = i;}
-		
+
 	PP_PropertyMap::Background getBackground () const;
 
 	void setBackground (const PP_PropertyMap::Background & style);
@@ -254,16 +254,16 @@ public:
 #endif
 
 private:
-		
+
 	void                _clear(fp_TableContainer * pBroke);
 	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec, GR_Graphics * pG);
-		
+
 //
 // These variables describe where the cell is attached to the table.
 // The first cell in the Table is at (0,0)
 //
 // m_iLeftAttach is the leftmost column containing the cell.
-//  
+//
 	UT_sint32           m_iLeftAttach;
 
 // m_iRightAttach is the first column to the right of the cell.
@@ -277,11 +277,11 @@ private:
 // m_iBottomAttach is the row immediately below the cell.
 
 	UT_sint32           m_iBottomAttach;
-	
+
 // a default color to use the a cell border style is set to "off"
 
 	UT_RGBColor			m_borderColorNone;
-	
+
 //
 // Padding left,right, top and bottom
 //
@@ -326,7 +326,7 @@ private:
 
 // bool to see if the background needs to be redrawn
 	bool				m_bBgDirty;
-	
+
 // cell-background properties
 	PP_PropertyMap::Background	m_background;
 
@@ -356,7 +356,7 @@ public:
 
 	void                sizeRequest(fp_Requisition * pRequest);
 	void                sizeAllocate(fp_Allocation * pAllocate);
-    virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y, 
+    virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y,
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual fp_Page *   getPage(void);
@@ -423,11 +423,11 @@ fp_Column *         getBrokenColumn(void);
 	bool                isThisBroken(void) const;
 	void                setYBreakHere(UT_sint32 iBreakHere);
 	void                setYBottom(UT_sint32 iBotContainer);
-	bool                isInBrokenTable(const fp_CellContainer * pCell, 
+	bool                isInBrokenTable(const fp_CellContainer * pCell,
 										fp_Container * pCon) const;
 
 //
-// This is the smallest Y value of the Table allowed in this 
+// This is the smallest Y value of the Table allowed in this
 // broken Table.
 //
 	UT_sint32           getYBreak(void) const
@@ -445,9 +445,9 @@ fp_Column *         getBrokenColumn(void);
 	void                adjustBrokenTables(void);
 	UT_sint32               getBrokenTop(void);
 	UT_sint32               getBrokenBot(void);
-	void                    setBrokenTop(UT_sint32 iTop) 
+	void                    setBrokenTop(UT_sint32 iTop)
 		{ m_iBrokenTop = iTop;}
-	void                    setBrokenBot(UT_sint32 iBot) 
+	void                    setBrokenBot(UT_sint32 iBot)
 		{ m_iBrokenBottom = iBot;}
 	UT_sint32           getNumRows(void) const;
 	UT_sint32           getNumCols(void) const;
@@ -462,11 +462,11 @@ fp_Column *         getBrokenColumn(void);
 	void setRowHeightType(FL_RowHeightType iType)
 		{
 	      m_iRowHeightType = iType;
-		}		
+		}
 	void setRowHeight(UT_sint32 iHeight)
 		{
 	      m_iRowHeight = iHeight;
-		}		
+		}
 	void setLastWantedVBreak(UT_sint32 iBreakAt)
 	{
 		m_iLastWantedVBreak = iBreakAt;

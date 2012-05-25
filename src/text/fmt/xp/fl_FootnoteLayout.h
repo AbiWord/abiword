@@ -35,7 +35,7 @@ class fl_BlockLayout;
 
 // We have one fl_FootnoteLayout for each footnote.  They all
 // get physically placed at the bottom of the fp_Page in their own
-// little container.  
+// little container.
 
 // The fl_FootnoteLayout lives after each block.
 
@@ -49,9 +49,9 @@ class ABI_EXPORT fl_EmbedLayout : public fl_SectionLayout
 
 public:
 	fl_EmbedLayout(FL_DocLayout* pLayout,
-				   fl_DocSectionLayout * pDocSL, 
-				   pf_Frag_Strux* sdh, 
-				   PT_AttrPropIndex ap, 
+				   fl_DocSectionLayout * pDocSL,
+				   pf_Frag_Strux* sdh,
+				   PT_AttrPropIndex ap,
 				   fl_ContainerLayout * pMyContainerLayout,
 				   SectionType iSecType,
 				   fl_ContainerType myType,
@@ -81,7 +81,7 @@ public:
 	virtual void		     redrawUpdate(void);
 	virtual fp_Container*	 getNewContainer(fp_Container* = NULL) =0;
 	fl_DocSectionLayout*	 getDocSectionLayout(void) const { return m_pDocSL; }
-	void                     setDocSectionLayout(fl_DocSectionLayout * pDSL) 
+	void                     setDocSectionLayout(fl_DocSectionLayout * pDSL)
 	  { m_pDocSL = pDSL;}
 	bool                     isEndFootnoteIn(void) const
 		{return m_bHasEndFootnote;}
@@ -111,10 +111,10 @@ class ABI_EXPORT fl_FootnoteLayout : public fl_EmbedLayout
 	friend class fp_FootnoteContainer;
 
 public:
-	fl_FootnoteLayout(FL_DocLayout* pLayout, 
-					  fl_DocSectionLayout * pDocSL, 
-					  pf_Frag_Strux* sdh, 
-					  PT_AttrPropIndex ap, 
+	fl_FootnoteLayout(FL_DocLayout* pLayout,
+					  fl_DocSectionLayout * pDocSL,
+					  pf_Frag_Strux* sdh,
+					  PT_AttrPropIndex ap,
 					  fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_FootnoteLayout();
 
@@ -164,10 +164,10 @@ class ABI_EXPORT fl_AnnotationLayout : public fl_EmbedLayout
 	friend class fp_AnnotationContainer;
 
 public:
-	fl_AnnotationLayout(FL_DocLayout* pLayout, 
-					  fl_DocSectionLayout * pDocSL, 
-					  pf_Frag_Strux* sdh, 
-					  PT_AttrPropIndex ap, 
+	fl_AnnotationLayout(FL_DocLayout* pLayout,
+					  fl_DocSectionLayout * pDocSL,
+					  pf_Frag_Strux* sdh,
+					  PT_AttrPropIndex ap,
 					  fl_ContainerLayout * pMyContainerLayout);
 	virtual ~fl_AnnotationLayout();
 	fp_AnnotationRun *           getAnnotationRun(void);

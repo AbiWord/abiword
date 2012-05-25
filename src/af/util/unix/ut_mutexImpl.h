@@ -31,7 +31,7 @@
 class UT_MutexImpl
 {
 public:
-	
+
 	UT_MutexImpl ()
 		: mMutex ( 0 )
 		{
@@ -40,10 +40,10 @@ public:
 			mMutex = g_mutex_new () ;
 			UT_ASSERT ( mMutex ) ;
 		}
-	
+
 	~UT_MutexImpl ()
 		{
-			if ( mMutex ) 
+			if ( mMutex )
 				g_mutex_free ( mMutex ) ;
 		}
 
@@ -54,16 +54,16 @@ public:
 			mLocker = g_thread_self();
 			iLockCount++;
 		}
-	
+
   void unlock ()
 		{
 			UT_ASSERT(mLocker == g_thread_self());
 			if (--iLockCount == 0 && mMutex)
 				g_mutex_unlock ( mMutex ) ;
 		}
-	
+
 private:
-	
+
 	// no impls
 	UT_MutexImpl (const UT_MutexImpl & other);
 	UT_MutexImpl & operator=(const UT_MutexImpl & other);

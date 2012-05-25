@@ -1,22 +1,22 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 #ifndef UTCOLOR_H
 #define UTCOLOR_H
 
@@ -63,7 +63,7 @@ public:
 	{
 		return (op1.m_red == m_red && op1.m_grn == m_grn && op1.m_blu == m_blu);
 	}
-	
+
 	// returns true if the two colors are near each other in the RGB space
 	bool operator %= (const UT_RGBColor &op1)
 	{
@@ -105,13 +105,13 @@ public:
 
     UT_RGBColor & operator=(const  UT_RGBColor &inc);
 
-	bool isTransparent() const 
+	bool isTransparent() const
 	{
 		return m_bIsTransparent;
 	}
 	bool setColor(const char * pszColor);
 
-    bool isPattern() const 
+    bool isPattern() const
     {
         return m_patImpl != NULL;
     }
@@ -120,7 +120,7 @@ public:
         return m_patImpl;
     }
 	// take ownership
-	void setPattern(const UT_ColorPatImpl *p) 
+	void setPattern(const UT_ColorPatImpl *p)
 	{
 		if(m_patImpl) {
 			delete m_patImpl;

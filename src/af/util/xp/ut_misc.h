@@ -1,22 +1,22 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 #ifndef UTMISC_H
 #define UTMISC_H
 
@@ -76,7 +76,7 @@ struct ABI_EXPORT UT_Point
 
 std::string UT_pathSuffix(std::string path);
 bool         UT_addOrReplacePathSuffix(std::string & sPath, const char* sSuffix);
- 
+
 bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSChar prevChar);
 
 /**
@@ -127,7 +127,7 @@ class ABI_EXPORT UT_UniqueId
   public:
 	UT_UniqueId();
 	~UT_UniqueId(){};
-	
+
 	enum idType
 	{
 		List = 0,
@@ -143,7 +143,7 @@ class ABI_EXPORT UT_UniqueId
 		/* must be last; for internal use only !*/
 		_Last
 	};
-	
+
 	UT_uint32 getUID(idType t);
 	bool      setMinId(idType t, UT_uint32 iMin);
 	bool      isIdUnique(idType t, UT_uint32 iId) const;
@@ -211,7 +211,7 @@ class ABI_EXPORT UT_VersionInfo
 				return true;
 			if(m_iMinor < v.m_iMinor)
 				return false;
-			
+
 			if(m_iMicro > v.m_iMicro)
 				return true;
 			if(m_iMicro < v.m_iMicro)
@@ -227,7 +227,7 @@ class ABI_EXPORT UT_VersionInfo
 
 	const UT_UTF8String & getString() const;
 
-	
+
   private:
 	UT_uint32 m_iMajor;
 	UT_uint32 m_iMinor;

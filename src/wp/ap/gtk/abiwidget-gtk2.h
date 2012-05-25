@@ -4,20 +4,20 @@
  * Copyright (C) 2001,2002 Dom Lachowicz <cinamod@hotmail.com>
  * Copyright (C) 2002 Martin Sevior <msevior@physics.unimelb.edu.au>
  * Copyright (C) 2007 One Laptop Per Child
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 #ifndef ABI_WIDGET_H
@@ -87,12 +87,12 @@ G_BEGIN_DECLS
 #define IS_ABI_WIDGET(obj)     (G_TYPE_CHECK_INSTANCE_TYPE((obj), ABI_TYPE_WIDGET))
 #define IS_ABI_WIDGET_CLASS(k) (G_TYPE_CHECK_CLASS_TYPE ((k), ABI_TYPE_WIDGET))
 #define ABI_WIDGET_CLASS(k)    (G_TYPE_CHECK_CLASS_CAST ((k), ABI_TYPE_WIDGET, AbiWidgetClass))
-	
+
   /* forward declarations */
   typedef struct _AbiWidget      AbiWidget;
   typedef struct _AbiWidgetClass AbiWidgetClass;
   typedef struct _AbiPrivData    AbiPrivData;
-  
+
   /*
    * These functions basically just marshall back their arguments into
    * the AbiWord application and return a boolean
@@ -101,50 +101,50 @@ G_BEGIN_DECLS
   typedef gboolean (*Abi_Void__Bool_EditMethod) (AbiWidget *);
   typedef gboolean (*Abi_Int_Int__Bool_EditMethod) (AbiWidget *, gint32, gint32);
   typedef gboolean (*Abi_CharPtr__Bool_EditMethod) (AbiWidget *, const char *);
-  
-  /* 
-   * Only here for completeness in that that we might want to 
+
+  /*
+   * Only here for completeness in that that we might want to
    * add signals (such as "saved") later
    */
   typedef gboolean (*AbiSignal) (AbiWidget *, gpointer closure);
-	
-  struct _AbiWidget 
+
+  struct _AbiWidget
   {
     GtkBin bin;
     GtkWidget * child;
     /* private instance data */
     AbiPrivData * priv;
-  };  
-  
+  };
+
   struct  _AbiWidgetClass {
     GtkBinClass parent_class;
-    
+
     /* invoke any edit method based on its name */
     gboolean (*invoke) (AbiWidget *, const char * mthdName);
     gboolean (*invoke_ex) (AbiWidget *, const char * mthdName,
 			   const char * data, gint32 x, gint32 y);
-    
+
     /* a list of some of our more useful edit methods */
     Abi_Void__Bool_EditMethod align_center;
     Abi_Void__Bool_EditMethod align_justify;
     Abi_Void__Bool_EditMethod align_left;
     Abi_Void__Bool_EditMethod align_right;
-    
+
     Abi_Void__Bool_EditMethod copy;
     Abi_Void__Bool_EditMethod cut;
     Abi_Void__Bool_EditMethod paste;
     Abi_Void__Bool_EditMethod paste_special;
     Abi_Void__Bool_EditMethod select_all;
     Abi_Void__Bool_EditMethod select_block;
-    Abi_Void__Bool_EditMethod select_line;	
-    Abi_Void__Bool_EditMethod select_word;	
-    
+    Abi_Void__Bool_EditMethod select_line;
+    Abi_Void__Bool_EditMethod select_word;
+
     Abi_Void__Bool_EditMethod undo;
     Abi_Void__Bool_EditMethod redo;
 
     Abi_CharPtr__Bool_EditMethod insert_data;
-    Abi_Void__Bool_EditMethod    insert_space;		
-        
+    Abi_Void__Bool_EditMethod    insert_space;
+
     Abi_Void__Bool_EditMethod delete_bob;
     Abi_Void__Bool_EditMethod delete_bod;
     Abi_Void__Bool_EditMethod delete_bol;
@@ -155,7 +155,7 @@ G_BEGIN_DECLS
     Abi_Void__Bool_EditMethod delete_eow;
     Abi_Void__Bool_EditMethod delete_left;
     Abi_Void__Bool_EditMethod delete_right;
-    
+
     Abi_Void__Bool_EditMethod edit_header;
     Abi_Void__Bool_EditMethod edit_footer;
 
@@ -164,9 +164,9 @@ G_BEGIN_DECLS
 
     Abi_Void__Bool_EditMethod remove_header;
     Abi_Void__Bool_EditMethod remove_footer;
-    
+
     Abi_Void__Bool_EditMethod save_immediate;
-    
+
     Abi_Void__Bool_EditMethod select_bob;
     Abi_Void__Bool_EditMethod select_bod;
     Abi_Void__Bool_EditMethod select_bol;
@@ -174,7 +174,7 @@ G_BEGIN_DECLS
     Abi_Void__Bool_EditMethod select_eob;
     Abi_Void__Bool_EditMethod select_eod;
     Abi_Void__Bool_EditMethod select_eol;
-    Abi_Void__Bool_EditMethod select_eow;    
+    Abi_Void__Bool_EditMethod select_eow;
     Abi_Void__Bool_EditMethod select_left;
     Abi_Void__Bool_EditMethod select_next_line;
     Abi_Void__Bool_EditMethod select_page_down;
@@ -184,7 +184,7 @@ G_BEGIN_DECLS
     Abi_Void__Bool_EditMethod select_screen_down;
     Abi_Void__Bool_EditMethod select_screen_up;
     Abi_Int_Int__Bool_EditMethod select_to_xy;
-    
+
     Abi_Void__Bool_EditMethod toggle_bold;
     Abi_Void__Bool_EditMethod toggle_underline;
     Abi_Void__Bool_EditMethod toggle_bottomline;
@@ -199,7 +199,7 @@ G_BEGIN_DECLS
     Abi_Void__Bool_EditMethod toggle_unindent;
     Abi_Void__Bool_EditMethod toggle_bullets;
     Abi_Void__Bool_EditMethod toggle_numbering;
-    
+
     Abi_Void__Bool_EditMethod view_formatting_marks;
     Abi_Void__Bool_EditMethod view_print_layout;
     Abi_Void__Bool_EditMethod view_normal_layout;
@@ -229,7 +229,7 @@ G_BEGIN_DECLS
     Abi_Void__Bool_EditMethod zoom_width;
 
     Abi_EditMethod em_pad[20];
-    
+
     /* signals */
     void (* signal_bold) (AbiWidget * widget, gboolean value);
     void (* signal_italic) (AbiWidget * widget, gboolean value);
@@ -264,7 +264,7 @@ G_BEGIN_DECLS
 
     AbiSignal sig_pad[20];
   };
-	
+
   /* the public API */
 
   /* widget creation functions */
@@ -277,12 +277,12 @@ G_BEGIN_DECLS
   void abi_widget_set_property(GObject  *object,
 			       guint	arg_id,
 			       const GValue *arg,
-			       GParamSpec *pspec);  
+			       GParamSpec *pspec);
   void abi_widget_get_property(GObject  *object,
 			       guint arg_id,
 			       GValue     *arg,
 			       GParamSpec *pspec);
-  
+
   /* bindings to our more useful edit methods */
 
   /* file handing functions */
@@ -300,7 +300,7 @@ G_BEGIN_DECLS
   gboolean abi_widget_align_justify (AbiWidget * w);
   gboolean abi_widget_align_left (AbiWidget * w);
   gboolean abi_widget_align_right (AbiWidget * w);
-  
+
   /* copy & paste functions */
   gboolean abi_widget_copy (AbiWidget * w);
   gboolean abi_widget_cut (AbiWidget * w);
@@ -308,17 +308,17 @@ G_BEGIN_DECLS
   gboolean abi_widget_paste_special (AbiWidget * w);
   gboolean abi_widget_select_all (AbiWidget * w);
   gboolean abi_widget_select_block (AbiWidget * w);
-  gboolean abi_widget_select_line (AbiWidget * w);	
-  gboolean abi_widget_select_word (AbiWidget * w);	
-    
+  gboolean abi_widget_select_line (AbiWidget * w);
+  gboolean abi_widget_select_word (AbiWidget * w);
+
   /* undo/redo */
   gboolean abi_widget_undo (AbiWidget * w);
   gboolean abi_widget_redo (AbiWidget * w);
 
   /* text insertion and removal */
   gboolean abi_widget_insert_data (AbiWidget * w, const char * str);
-  gboolean abi_widget_insert_space (AbiWidget * w);		
-        
+  gboolean abi_widget_insert_space (AbiWidget * w);
+
   gboolean abi_widget_delete_bob (AbiWidget * w);
   gboolean abi_widget_delete_bod (AbiWidget * w);
   gboolean abi_widget_delete_bol (AbiWidget * w);
@@ -332,7 +332,7 @@ G_BEGIN_DECLS
 
   gchar * abi_widget_get_content (AbiWidget * w, const gchar * extension_or_mimetype, const gchar * exp_props, gint* iLength);
   gchar * abi_widget_get_selection (AbiWidget * w, const gchar * extension_or_mimetype, gint* iLength);
-    
+
   /* selection functions */
   gboolean abi_widget_select_bob (AbiWidget * w);
   gboolean abi_widget_select_bod (AbiWidget * w);
@@ -341,7 +341,7 @@ G_BEGIN_DECLS
   gboolean abi_widget_select_eob (AbiWidget * w);
   gboolean abi_widget_select_eod (AbiWidget * w);
   gboolean abi_widget_select_eol (AbiWidget * w);
-  gboolean abi_widget_select_eow (AbiWidget * w);    
+  gboolean abi_widget_select_eow (AbiWidget * w);
   gboolean abi_widget_select_left (AbiWidget * w);
   gboolean abi_widget_select_next_line (AbiWidget * w);
   gboolean abi_widget_select_page_down (AbiWidget * w);
@@ -427,7 +427,7 @@ G_BEGIN_DECLS
   gboolean abi_widget_remove_footer (AbiWidget * w);
   gboolean abi_widget_edit_header (AbiWidget * w);
   gboolean abi_widget_edit_footer (AbiWidget * w);
-  
+
   /* table functions */
   gboolean abi_widget_insert_table(AbiWidget * w, gint32 rows, gint32 cols);
   gboolean abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y);
@@ -444,7 +444,7 @@ G_BEGIN_DECLS
   gboolean abi_widget_insert_image(AbiWidget * w, char* szFile, gboolean positioned);
 
   /* generic editmethod invocation hooks */
-  gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);    
+  gboolean    abi_widget_invoke(AbiWidget * w, const char * mthdName);
   gboolean    abi_widget_invoke_ex (AbiWidget * w, const char *mthdName, const char * data, gint32 x, gint32 y);
 
 #ifdef ABIWORD_INTERNAL

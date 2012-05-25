@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 2001 Tomas Frydrych
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 #ifndef BOOKMARK_H
@@ -36,14 +36,14 @@ class pf_Frag_Object;
 class ABI_EXPORT po_Bookmark
 {
  public:
-    // TBD: convention for naming 
+    // TBD: convention for naming
     typedef enum _bookmarkType
 	{
 		POBOOKMARK_START,
 		POBOOKMARK_END,
 		__last_field_dont_use__
 	} BookmarkType;
-	
+
     po_Bookmark(pf_Frag_Object& fO, pt_PieceTable * pt, BookmarkType type, const gchar* name);
     virtual							~po_Bookmark(void);
     void							setBlock(fl_BlockLayout * pBlock);
@@ -58,7 +58,7 @@ class ABI_EXPORT po_Bookmark
 
  private:
     fl_BlockLayout * m_pBlock;
-    // will need some more helper functions in here eg. to test 
+    // will need some more helper functions in here eg. to test
     // whether text has changed to avoid unnecessary updates
     pf_Frag_Object& m_fragObject;
     pt_PieceTable *	m_pPieceTable;

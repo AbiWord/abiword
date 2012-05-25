@@ -40,7 +40,7 @@ class ABI_EXPORT XAP_FontPreview
 public:
 	typedef std::map<std::string,std::string> PropMap;
 
-	XAP_FontPreview();	
+	XAP_FontPreview();
 	virtual ~XAP_FontPreview(void);
 
 	void							addOrReplaceVecProp(const std::string & pszProp,

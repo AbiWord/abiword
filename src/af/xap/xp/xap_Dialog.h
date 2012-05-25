@@ -2,20 +2,20 @@
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -79,7 +79,7 @@ public:
 
 	XAP_Dialog_Id				getDialogId(void) const { return m_id; }
 	XAP_App *				getApp(void) const { return m_pApp;}
-	
+
 	const UT_String& getHelpUrl () const { return *m_helpUrl ; }
 
 
@@ -118,7 +118,7 @@ public:
 
     virtual void maybeClosePopupPreviewBubbles();
     virtual void maybeReallowPopupPreviewBubbles();
-    
+
 protected:
 	/** localize the widgets in the dialog. Dialog specific, XP */
 	virtual void localizeDialog(void) {UT_ASSERT(UT_NOT_IMPLEMENTED);} //FIXME = 0
@@ -150,7 +150,7 @@ public:
 	virtual void			runModal(XAP_Frame * pFrame) = 0;
 
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_NON_PERSISTENT; };
-	
+
 protected:
 };
 
@@ -194,7 +194,7 @@ public:
 	virtual void				useEnd(void);
 
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_FRAME_PERSISTENT; };
-	
+
 protected:
 };
 
@@ -209,7 +209,7 @@ public:
 	virtual void				useEnd(void);
 
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
-	
+
 protected:
 };
 
@@ -242,7 +242,7 @@ public:
     std::string                 BuildWindowName( const char * pDialogName ) const;
 	void						BuildWindowName(char * pWindowName, const char * pDialogName, UT_uint32 width ) const;
 	static XAP_Dialog_Type		s_getPersistence(void) { return XAP_DLGT_APP_PERSISTENT; };
-	
+
 	// ugly hack necessary for Win32
 	virtual void *				pGetWindowHandle(void) { return NULL; }
 

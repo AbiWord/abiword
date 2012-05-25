@@ -82,7 +82,7 @@ public:
 	bool					getRedo(PX_ChangeRecord ** ppcr) const
 								{ return m_history.getRedo(ppcr); }
 	void                    clearUndo() {m_history.clearHistory();}
-	
+
 	static void		s_getLocalisedStyleName(const char *szStyle, UT_UTF8String &utf8);
 
 protected:
@@ -145,11 +145,11 @@ protected:
 	bool                    _realChangeStruxForLists(pf_Frag_Strux* sdh,
 													 const char * pszParentID,
 													 bool bRevisionDelete);
-	
+
     bool                    _realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfStrux, const char * attr, const char * attvalue);
 
 
-    
+
 	/******************************************************************
 	    these are the new revisions aware methods
 	*/
@@ -178,7 +178,7 @@ public:
     //                                      std::string v );
     // bool deleteSpanChangeTrackingMaybeMarkParagraphEndDeletion( PT_DocPosition currentpos,
     //                                                             PT_DocPosition endpos );
-    
+
 	bool					deleteSpan(PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
 									   PP_AttrProp *p_AttrProp_Before,
@@ -192,7 +192,7 @@ public:
 									   UT_uint32 &iRealDeleteCount,
 									   bool bDeleteTableStruxes,
 									   bool bDontGlob);
-	bool                    createAndSendCR(PT_DocPosition  dpos, 
+	bool                    createAndSendCR(PT_DocPosition  dpos,
 											UT_sint32 iType,bool bSave, UT_Byte iGlob);
 
 	bool                    createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps);
@@ -251,7 +251,7 @@ public:
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 													 const gchar ** attrs, const gchar ** props,
 													 bool bSkipEmbededSections);
-	
+
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
 													 const gchar ** attrs, const gchar * props,
 													 bool bSkipEmbededSections);
@@ -276,7 +276,7 @@ public:
 											   bool bSkipEmbededSections);
 	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar * props,
 											   bool bSkipEmbededSections);
-	
+
 	bool					appendFmt(const gchar ** attributes);
 	bool					appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
@@ -291,7 +291,7 @@ public:
 												   const gchar ** attributes);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes);
-	
+
 	bool					removeStyle(const gchar * name);
 	size_t					getStyleCount(void) const;
 
@@ -325,7 +325,7 @@ public:
 	PT_DocPosition			getFragPosition(const pf_Frag * pfToFind) const;
 
     bool dumpDoc( const char* msg, PT_DocPosition currentpos, PT_DocPosition endpos );
-    
+
 	bool					getFragFromPosition(PT_DocPosition docPos,
 												pf_Frag ** ppf,
 												PT_BlockOffset * pOffset) const;
@@ -355,11 +355,11 @@ public:
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
 	bool                    enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const;
-	
+
 	const UT_GenericStringMap<PD_Style *> & getAllStyles()const {return m_hashStyles;}
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;
-	
+
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
     pt_VarSet &             getVarSet(void) {return m_varset;};
     pf_Fragments &          getFragments(void) {return m_fragments;};
@@ -518,7 +518,7 @@ protected:
 	void                    _deleteHdrFtrStruxWithNotify( pf_Frag_Strux * pfFragStruxHdrFtr);
 
 	bool                    _fixHdrFtrReferences(const gchar * pType, const gchar * pId, bool bNotional = false);
-	
+
 	bool					_fmtChangeStrux(pf_Frag_Strux * pfs,
 											PT_AttrPropIndex indexNewAP);
 
@@ -527,7 +527,7 @@ protected:
 													  const gchar ** attributes,
 													  const gchar ** properties,
 													  bool bRevisionDelete);
-	
+
 	bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
 													  const gchar ** attributes,
@@ -549,7 +549,7 @@ protected:
 													 pf_Frag ** ppfNewEnd,
 													 UT_uint32 * pfragOffsetNewEnd,
 													 bool bRevisionDelete);
-	
+
 	bool					_fmtChangeObject(pf_Frag_Object * pfo,
 											 PT_AttrPropIndex indexNewAP,
 											 pf_Frag ** ppfNewEnd,
@@ -628,7 +628,7 @@ protected:
 														const gchar ** & ppRevProps,
 														const gchar **   ppAttrib,
 														const gchar **   ppProps);
-	
+
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;

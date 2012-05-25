@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (c) 2003 Martin Sevior <msevior@physics.unimelb.edu.au> 
+ * Copyright (c) 2003 Martin Sevior <msevior@physics.unimelb.edu.au>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -67,9 +67,9 @@ public:
 	PD_Document *         getDoc(void) const;
 	FL_DocLayout *        getLayout(void) const;
     void                  setMode(FV_SelectionMode iSelMode);
-	FV_SelectionMode      getSelectionMode(void) const 
+	FV_SelectionMode      getSelectionMode(void) const
 		{ return m_iSelectionMode;}
-	FV_SelectionMode      getPrevSelectionMode(void) const 
+	FV_SelectionMode      getPrevSelectionMode(void) const
 		{ return m_iPrevSelectionMode;}
 	void                  setTOCSelected(fl_TOCLayout * pTOCL);
 	fl_TOCLayout *        getSelectedTOC(void)

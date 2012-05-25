@@ -25,7 +25,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-// Mapping sof ID, to default icons		
+// Mapping sof ID, to default icons
 // Mappings to ID_LANG to non-default icons
 // We can do specific mappings for some languages. For example,
 // in Spainsh, some applications use N for Negrita instead of B for Bold
@@ -35,7 +35,7 @@
 
 ///////////////////////////////////////////
 // !!!!
-// 
+//
 // NB: Keep this list alphabetically sorted
 //
 // !!!!!

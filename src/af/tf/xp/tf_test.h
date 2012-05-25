@@ -41,9 +41,9 @@ class TF_Test
     static TF_Test *first, *last;
     static int fails, runs;
     static time_t start_time;
-    
+
     static void alarm_handler(int sig);
-   
+
 public:
     TF_Test(const char *_descr, const char *_idstr, MainFunc *_main);
     static int run_all(const char * const *prefixes = NULL);

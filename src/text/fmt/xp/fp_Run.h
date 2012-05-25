@@ -157,7 +157,7 @@ public:
 	UT_uint32		        getAscent() const;
 	UT_uint32		        getDescent() const;
 	virtual UT_sint32       getDrawingWidth() const;
-	
+
 	fp_Run* 		        getNextRun() const					{ return m_pNext; }
 	fp_Run*			        getPrevRun() const					{ return m_pPrev; }
 	bool                    isInSelectedTOC(void);
@@ -180,11 +180,11 @@ public:
 	void                getSpanAP(const PP_AttrProp * &pSpanAP);
 	const PP_AttrProp * getSpanAP(void);
 
-	
+
 	inline void         getBlockAP(const PP_AttrProp * &pBlockAP)
 	                                     {getBlock()->getAP(pBlockAP);}
-		
-	
+
+
 	void				insertIntoRunListBeforeThis(fp_Run& newRun);
 	void				insertIntoRunListAfterThis(fp_Run& newRun);
 	fd_Field*			getField(void) const { return m_pField; }
@@ -258,11 +258,11 @@ public:
 	virtual bool		findFirstNonBlankSplitPoint(fp_RunSplitInfo& /*si*/) { return false; }
 	virtual void		mapXYToPosition(UT_sint32 xPos, UT_sint32 yPos,
 										PT_DocPosition& pos, bool& bBOL, bool& bEOL, bool & isTOC) = 0;
-	
+
 	virtual void 		findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y,
 										UT_sint32& x2, UT_sint32& y2, UT_sint32& height,
 										bool& bDirection) = 0;
-	
+
 	void			    lookupProperties(GR_Graphics * pG=NULL);
 	virtual bool		doesContainNonBlankData(void) const { return true; }	// Things like text whould return false if it is all spaces.
 	void                drawDecors(UT_sint32 xoff, UT_sint32 yoff, GR_Graphics * pG);
@@ -303,7 +303,7 @@ public:
 	virtual UT_uint32   adjustCaretPosition(UT_uint32 iDocumentPosition, bool /*bForward*/)
 	                           { return iDocumentPosition;}
 
-	virtual void        adjustDeletePosition(UT_uint32 & /*pos1*/, 
+	virtual void        adjustDeletePosition(UT_uint32 & /*pos1*/,
 											 UT_uint32 & /*count*/) {}
 
 	bool                containsRevisions() const {return (m_pRevisions != NULL);}
@@ -316,7 +316,7 @@ public:
 	void                setVisibility(FPVisibility eVis);
 	void                Fill(GR_Graphics * pG, UT_sint32 x, UT_sint32 y,
 							 UT_sint32 width, UT_sint32 height);
-	
+
 	fg_FillType &       getFillType(void);
 	const fg_FillType & getFillType(void) const;
 	fp_Line *           getTmpLine(void) const
@@ -376,7 +376,7 @@ protected:
 	void				_setColorHL(UT_RGBColor c) { m_pColorHL = c; }
 	void                _setColorHL(const char *pszColor)
 		{ m_pColorHL.setColor(pszColor); }
-	
+
 	void				_setLine(fp_Line* pLine) { m_pLine = pLine; }
 	void				_setHeight(UT_sint32 iHeight)
 							{ m_iHeight = iHeight;}
@@ -388,7 +388,7 @@ protected:
 	// visibility/hiddenness issues
 	UT_sint32           _getWidth() {return m_iWidth;}
 	UT_sint32           _getHeight(){return m_iHeight;}
-	
+
 	void				_setBlock(fl_BlockLayout * pBL) { m_pBL = pBL; }
 	void				_setAscent(int iAscent) { m_iAscent = iAscent; }
 	void				_setDescent(int iDescent) {m_iDescent = iDescent;}
@@ -401,7 +401,7 @@ protected:
 	void  				_setFont(const GR_Font * f);
 	unsigned char		_getDecorations(void) const { return m_fDecorations; }
 	void				_setDecorations(unsigned char d) {m_fDecorations = d;}
-	
+
 	void				_orDecorations(unsigned char d) { m_fDecorations |= d; }
 	UT_sint32			_getLineWidth(void) { return m_iLineWidth; }
 	bool				_setLineWidth(UT_sint32 w)
@@ -423,7 +423,7 @@ protected:
 	                         { m_eRefreshDrawBuffer = eR; }
 	virtual void	    _lookupProperties(const PP_AttrProp * pSpanAP,
 										  const PP_AttrProp * pBlockAP,
-										  const PP_AttrProp * pSectionAP, 
+										  const PP_AttrProp * pSectionAP,
 										  GR_Graphics * pG = NULL) = 0;
 
 	virtual bool        _canContainPoint(void) const;
@@ -716,8 +716,8 @@ public:
 	virtual bool doesContainNonBlankData(void) const { return false; }
 
 	UT_uint32 getBookmarkedDocPosition(bool bAfter) const;
-	
-	
+
+
 private:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
@@ -768,7 +768,7 @@ public:
 
 	// for the purposes of linebreaking, just whitespace
 	virtual bool doesContainNonBlankData(void) const { return false; }
-	
+
 protected:
 	virtual void			_lookupProperties(const PP_AttrProp * pSpanAP,
 											  const PP_AttrProp * pBlockAP,
@@ -1502,7 +1502,7 @@ class ABI_EXPORT fp_FieldMailMergeRun : public fp_FieldRun
   fp_FieldMailMergeRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
   virtual ~fp_FieldMailMergeRun(){}
-  
+
   virtual bool			calculateValue(void);
   virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 
@@ -1515,7 +1515,7 @@ class ABI_EXPORT fp_FieldMetaRun : public fp_FieldRun
   fp_FieldMetaRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen, const char * which);
 
   virtual ~fp_FieldMetaRun(){}
-  
+
   virtual bool			calculateValue(void);
   virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 

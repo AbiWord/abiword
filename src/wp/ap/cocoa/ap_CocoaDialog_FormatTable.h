@@ -6,15 +6,15 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -52,13 +52,13 @@ public:
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
-	char * 					getWindowName() 
+	char * 					getWindowName()
 						{ return m_WindowName; };
 protected:
 	void					_populateWindowData(void);
 	void					_storeWindowData(void);
-	
-	GR_CocoaCairoGraphics	* 		m_pPreviewWidget;	
+
+	GR_CocoaCairoGraphics	* 		m_pPreviewWidget;
 private:
 	AP_CocoaDialog_FormatTableController*	m_dlg;
 };

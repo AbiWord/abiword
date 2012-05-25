@@ -1,24 +1,24 @@
 /* AbiSource Application Framework
  * Copyright (c) 2004 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
 /*
- * Port to Maemo Development Platform 
+ * Port to Maemo Development Platform
  * Author: INdT - Renato Araujo <renato.filho@indt.org.br>
  */
 
@@ -47,7 +47,7 @@
 /**
 	Quartz don't like XOR drawing. So choose an alternate method.
 	But since X11 don't like altenate method, we have to keep XOR in the code.
-	
+
 	Platforms: pick up the one you prefer. By defautl XOR since it worked since
  */
 #ifndef XAP_DONTUSE_XOR
@@ -74,7 +74,7 @@
 /**
 	Define to 1 if you don't inline XPMs into code but load them from disk files.
 	MacOS X store them as PNG inside the bundle.
-	
+
 	In the future, this should be 1 for UNIX as well.
  */
 #ifndef XAP_DONT_INLINE_XPM
