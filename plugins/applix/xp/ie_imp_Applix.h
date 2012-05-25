@@ -3,20 +3,20 @@
 /* AbiWord
  * Copyright (C) 1998-2001 AbiSource, Inc.
  * Copyright (C) 2001 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -44,7 +44,7 @@ public:
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
 	virtual const IE_MimeConfidence * getMimeConfidence ();
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
@@ -59,7 +59,7 @@ class IE_Imp_Applix : public IE_Imp
 public:
 	IE_Imp_Applix(PD_Document * pDocument);
 	~IE_Imp_Applix();
-	
+
 protected:
 	virtual UT_Error	_loadFile(GsfInput * fp);
 	UT_Error			_parseFile(GsfInput * fp);
@@ -68,7 +68,7 @@ protected:
  private:
 	UT_GrowBuf		m_textBuf;
 	UT_UCS4_mbtowc	m_mbtowc;
-	
+
 	// the applix tags that i know about && maybe handle
 	typedef enum {
 	    APPLIX_T,
@@ -77,7 +77,7 @@ protected:
 	    END_STYLES_T,
 		STYLE_T,
 	    COLOR_T,
-	    START_FLOW_T,			  
+	    START_FLOW_T,
 	    END_FLOW_T,
 	    WP400_T,
 	    TEXT_T,
@@ -94,7 +94,7 @@ protected:
 		START_FIELD_T,
 		END_FIELD_T,
 		FIELD_VALUE_T,
-	    NOT_A_TAG, 
+	    NOT_A_TAG,
 	    tag_Unknown
 	} Applix_tag_t;
 
@@ -105,7 +105,7 @@ protected:
 		axCtnField,
 		axCtnGlossary
 	} Applix_content_t;
-	
+
 	// context in the file
 	// because T tag have different meanings.
 	typedef enum {

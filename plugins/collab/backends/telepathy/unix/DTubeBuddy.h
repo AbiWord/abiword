@@ -53,13 +53,13 @@ public:
 	{
 		return UT_UTF8String("dtube://") + m_sDBusName;
 	}
-	
+
 	virtual UT_UTF8String getDescription() const
 	{
 		static UT_UTF8String description = m_sDBusName;
 		return description;
 	}
-	
+
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
 		UT_ASSERT_HARMLESS(UT_NOT_REACHED);
@@ -70,7 +70,7 @@ public:
 	{
 		return m_pChatRoom;
 	}
-	
+
 	TpHandle getHandle()
 	{
 		return m_handle;

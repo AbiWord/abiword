@@ -18,7 +18,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 #ifndef ABICOLLAB_SERIALIZATION_H
 #define ABICOLLAB_SERIALIZATION_H
 
@@ -67,18 +67,18 @@ class Archive;
  *	machines will crash.
  *	Use the COMPACT_INT define to easily serialize integer values:
  *		e.g.
- *			ar << COMPACT_INT(m_iRev); 
+ *			ar << COMPACT_INT(m_iRev);
  */
 #define COMPACT_INT(v) (*(CompactInt*)&v)
 struct  CompactInt {
-public:	
+public:
 	friend Archive& operator<<( Archive& ar, CompactInt& c );
 protected:
 	int Val;
 };
 
 /** Base archive */
-class Archive 
+class Archive
 {
 public:
 	virtual ~Archive() {}
@@ -94,7 +94,7 @@ protected:
 	{}
 private:
 	bool	m_bLoading;
-	
+
 public:
 	// pod types
 	DEFINE_POD_OPERATOR(unsigned char);
@@ -107,7 +107,7 @@ public:
 	DEFINE_POD_OPERATOR(float);
 	DEFINE_POD_OPERATOR(double);
 	DEFINE_POD_OPERATOR_ONE(bool);
-	
+
 	// basic string
 	Archive& operator<<( std::string& Val )
 	{
@@ -125,7 +125,7 @@ public:
 		return *this;
 	}
 #if !defined(SERIALIZATION_TEST)
-	// UT_UTF8String 
+	// UT_UTF8String
 	Archive& operator<<( UT_UTF8String& Val )
 	{
 		// easy, but not really the most efficient implementation :-)
@@ -153,7 +153,7 @@ public:
 	// Vector serialization (note: there are optimized version of this
 	// for the various POD types)
 	template<typename _K>
-	Archive& operator<<( std::vector<_K>& Val ) 
+	Archive& operator<<( std::vector<_K>& Val )
 	{
 		unsigned int count;
 		if (isLoading()) {
@@ -170,22 +170,22 @@ public:
 	}
 	// Map serialization
 	template<typename _K, typename _V>
-	Archive& operator<<( std::map<_K,_V>& Val ) 
+	Archive& operator<<( std::map<_K,_V>& Val )
 	{
 		unsigned int count;
-		if (isLoading()) 
+		if (isLoading())
 		{
 			Val.clear();
 			*this << count;
-			for (unsigned int i=0; i<count; ++i) 
+			for (unsigned int i=0; i<count; ++i)
 			{
 				_K k;
 				_V v;
 				*this << k << v;
 				Val.insert( typename std::map<_K,_V>::value_type( k, v ) );
 			}
-		} 
-		else 
+		}
+		else
 		{
 			count = Val.size();
 			*this << count;
@@ -216,7 +216,7 @@ protected:
 };
 
 /** Input (loading) archive */
-class IStrArchive : public StrArchive 
+class IStrArchive : public StrArchive
 {
 public:
 	IStrArchive( const std::string& sSource )

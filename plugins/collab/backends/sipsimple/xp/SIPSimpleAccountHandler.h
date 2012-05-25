@@ -32,7 +32,7 @@ using std::map;
 #include "SIPSimpleBuddy.h"
 
 extern AccountHandlerConstructor SIPSimpleAccountHandlerConstructor;
-	
+
 class SIPSimpleAccountHandler : public AccountHandler
 {
 public:
@@ -42,8 +42,8 @@ public:
 	// housekeeping
 	static UT_UTF8String	getStaticStorageType();
 	virtual UT_UTF8String	getStorageType()
-		{ return getStaticStorageType(); }	
-	virtual UT_UTF8String	getDescription();	
+		{ return getStaticStorageType(); }
+	virtual UT_UTF8String	getDescription();
 	virtual UT_UTF8String	getDisplayType();
 
 	// connection management
@@ -69,12 +69,12 @@ public:
 
 	// session management
 	virtual bool			allowsSessionTakeover()
-		{ return false; } // no technical reason not to allow this; we just didn't implement session takeover for this backend yet	
-	
+		{ return false; } // no technical reason not to allow this; we just didn't implement session takeover for this backend yet
+
 		// packet management
 	virtual bool			send(const Packet* pPacket);
 	virtual bool 			send(const Packet* pPacket, BuddyPtr pBuddy);
-	
+
 private:
 };
 

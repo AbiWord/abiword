@@ -76,7 +76,7 @@
 #include "ie_exp.h"
 #include "ie_types.h"
 
-#include <sys/types.h>  
+#include <sys/types.h>
 #include <sys/stat.h>
 
 /*
@@ -147,11 +147,11 @@ ABI_TOGGLEABLE_MENUITEM_PROTOTYPE(m) \
 
 
 /*
- * Abiword Plugin Interface 
+ * Abiword Plugin Interface
  * These are implemented by this generic class,
  * any work should be done by extending appropriate methods, not implementing these.
  */
-    
+
 ABI_FAR_CALL
 int abi_plugin_register (XAP_ModuleInfo * mi);
 
@@ -174,7 +174,7 @@ extern const gchar * szAbiPluginSchemeName;
 
 
 /* Note:  Make sure the methodName field is Not NULL, otherwise
- *        AbiWord.exe will probably segfault -- actual results 
+ *        AbiWord.exe will probably segfault -- actual results
  *        depend on where other plugins add menu items.
  * Note2: Make sure the label is unique across ALL plugins (and
  *        internal menu labels), any duplicates [including NULL]
@@ -200,7 +200,7 @@ typedef struct AbiMenuOptions
   XAP_Menu_Id id;
 } AbiMenuOptions ;
 
-    
+
 /*
  *   Adds [or removes] all of this plugins menu items to AbiWord
  *   amo is an array of the above structure, each element of the array defines an

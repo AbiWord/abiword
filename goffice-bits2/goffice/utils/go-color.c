@@ -28,7 +28,7 @@
  * go_color_from_str :
  * @str :
  * @res :
- * 
+ *
  * Returns TRUE if @str can be parsed as a color of the form R:G:B:A and the
  * result is stored in @res.
  **/

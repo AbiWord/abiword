@@ -47,7 +47,7 @@ typedef struct {
 	char *desc;
 	char *ext;
 	gboolean has_pixbuf_saver;
-	gboolean is_dpi_useful; 
+	gboolean is_dpi_useful;
 	gboolean alpha_support;
 } GOImageFormatInfo;
 

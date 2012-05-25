@@ -40,10 +40,10 @@ public:
 	{
 		return UT_UTF8String("fake://") + m_sDescriptor;
 	}
-	
+
 	virtual UT_UTF8String		getDescription() const
 		{ return m_sDescriptor; }
-		
+
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
 		UT_ASSERT_HARMLESS(UT_NOT_REACHED);

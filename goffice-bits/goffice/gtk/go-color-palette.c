@@ -345,7 +345,7 @@ go_color_palette_button_new (GOColorPalette *pal, GtkTable* table,
 	GdkRGBA   gdk;
 
 	swatch = gtk_drawing_area_new ();
-	g_signal_connect (G_OBJECT (swatch), "draw", G_CALLBACK (draw_color_cb), 
+	g_signal_connect (G_OBJECT (swatch), "draw", G_CALLBACK (draw_color_cb),
 	                  GUINT_TO_POINTER (color_name->color));
 	gtk_widget_override_background_color (swatch, GTK_STATE_NORMAL,
 	        go_color_to_gdk_rgba (color_name->color, &gdk));

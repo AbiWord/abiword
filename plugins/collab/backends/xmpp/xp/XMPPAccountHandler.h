@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2005 by Martin Sevior
- * Copyright (C) 2006-2008 by Marc Maurer <uwog@uwog.net> 
+ * Copyright (C) 2006-2008 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ using std::map;
 #define XMPP_RESOURCE "AbiCollab"
 
 extern AccountHandlerConstructor XMPPAccountHandlerConstructor;
-	
+
 class XMPPAccountHandler : public AccountHandler
 {
 public:
@@ -50,21 +50,21 @@ public:
 	// housekeeping
 	static UT_UTF8String	getStaticStorageType();
 	virtual UT_UTF8String	getStorageType()
-		{ return getStaticStorageType(); }	
-	virtual UT_UTF8String	getDescription();	
+		{ return getStaticStorageType(); }
+	virtual UT_UTF8String	getDescription();
 	virtual UT_UTF8String	getDisplayType();
 
 	// connection management
 	virtual ConnectResult	connect();
 	virtual bool			disconnect(void);
 	virtual bool			isOnline()
-		{ return m_bLoggedIn; }		
+		{ return m_bLoggedIn; }
 
 	// asynchronous connection helper functions
 	bool					authenticate();
 	bool					setup();
 	bool					tearDown();
-	
+
 	// dialog management
 	virtual void			embedDialogWidgets(void* pEmbeddingParent) = 0;
 	virtual void			removeDialogWidgets(void* pEmbeddingParent) = 0;
@@ -82,19 +82,19 @@ public:
 
 	// session management
 	virtual bool							allowsSessionTakeover()
-		{ return false; } // no technical reason not to allow this; we just didn't implement session takeover for this backend yet	
-	
+		{ return false; } // no technical reason not to allow this; we just didn't implement session takeover for this backend yet
+
 		// packet management
 	virtual bool			send(const Packet* pPacket);
 	virtual bool 			send(const Packet* pPacket, BuddyPtr pBuddy);
-	
+
 	virtual void 			handleMessage(const gchar* packet_data, const std::string& from_address);
 
 private:
 	UT_UTF8String			_getNameFromFqa(const UT_UTF8String& fqa);
 	bool					_send(const char* base64data, XMPPBuddyPtr pBuddy);
 	XMPPBuddyPtr			_getBuddy(const std::string& from_address);
-		
+
 	// connection management
 	LmConnection *			m_pConnection;
 	LmMessageHandler *		m_pPresenceHandler;

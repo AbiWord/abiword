@@ -15,7 +15,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 #ifndef __EVENTPACKET_H__
 #define __EVENTPACKET_H__
 
@@ -29,7 +29,7 @@ class EventPacket : public Packet
 {
 public:
 	DECLARE_ABSTRACT_PACKET(EventPacket);
-	
+
 	virtual PacketType getType() const
 		{ return PT_Event; }
 };

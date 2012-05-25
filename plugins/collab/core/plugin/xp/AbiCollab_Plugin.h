@@ -20,7 +20,7 @@
 #ifndef ABI_COLLAB_PLUGIN_H
 #define ABI_COLLAB_PLUGIN_H
 
-// Our protocol version. Increase this number whenever you make changes to any 
+// Our protocol version. Increase this number whenever you make changes to any
 // part of the communication protocols used
 #define ABICOLLAB_PROTOCOL_VERSION 	(UT_sint32(11))
 

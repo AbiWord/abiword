@@ -35,10 +35,10 @@ class TCPWin32AccountHandler : public TCPAccountHandler
 {
 public:
 	TCPWin32AccountHandler();
-	
+
 	static AccountHandler*					static_constructor();
 
-	// dialog management 
+	// dialog management
 	virtual void							embedDialogWidgets(void* pEmbeddingParent);
 	virtual void							removeDialogWidgets(void* pEmbeddingParent);
 	virtual void							loadProperties();
@@ -48,7 +48,7 @@ public:
 
 private:
 	XAP_Win32DialogHelper *					m_pWin32Dialog;
-	
+
 	// handles
 	HINSTANCE								m_hInstance;
 	HWND									m_hServerEntry;
@@ -59,7 +59,7 @@ private:
 	HWND									m_hPortLabel;
 	HWND									m_hAllowAllCheck;
 	HWND									m_hAutoconnectCheck;
-	
+
 	void									_checkButtonHwnd(HWND hCtrl, bool bChecked);
 	bool									_isCheckedHwnd(HWND hCtrl);
 	int										_getControlTextHwnd(HWND hCtrl, int iLen, const char * p_szBuf);

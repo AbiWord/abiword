@@ -1,22 +1,22 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiSource
- * 
+ *
  * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -45,7 +45,7 @@ typedef boost::shared_ptr<OXML_Section> OXML_SharedSection;
 
 /* \class OXML_Section
  * \brief This class represents a single section in the OpenXML data model.
- * It holds references to all its content, as well as references 
+ * It holds references to all its content, as well as references
  * to all its corresponding headers and footers.
 */
 class OXML_Section : public OXML_ObjectWithAttrProp
@@ -55,20 +55,20 @@ public:
 	OXML_Section(const std::string & id);
 	virtual ~OXML_Section();
 
-	const std::string & getId() const 
+	const std::string & getId() const
 		{ return m_id; }
 	OXML_SectionBreakType getBreakType() const
 		{ return m_breakType; }
-	void setBreakType(OXML_SectionBreakType br) 
+	void setBreakType(OXML_SectionBreakType br)
 		{ m_breakType = br; }
 
 	const char * getHeaderId(OXML_HeaderFooterType type) const
 		{ return m_headerIds[type]; }
 	const char * getFooterId(OXML_HeaderFooterType type) const
 		{ return m_footerIds[type]; }
-	void setHeaderId(const char * id, OXML_HeaderFooterType type) 
+	void setHeaderId(const char * id, OXML_HeaderFooterType type)
 		{ m_headerIds[type] = g_strdup(id); }
-	void setFooterId(const char * id, OXML_HeaderFooterType type) 
+	void setFooterId(const char * id, OXML_HeaderFooterType type)
 		{ m_footerIds[type] = g_strdup(id); }
 
 	bool operator ==(const std::string & id);
@@ -122,9 +122,9 @@ private:
 typedef std::vector< OXML_SharedSection > OXML_SectionVector;
 typedef std::map<std::string, OXML_SharedSection > OXML_SectionMap;
 
-inline bool operator ==(const OXML_SharedSection& lhs, const std::string & id) 
-{ 
-	return (*lhs) == id; 
+inline bool operator ==(const OXML_SharedSection& lhs, const std::string & id)
+{
+	return (*lhs) == id;
 }
 
 #endif //_OXML_SECTION_H_

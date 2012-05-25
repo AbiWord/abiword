@@ -37,24 +37,24 @@ public:
 		m_address(address)
 	{
 	}
-	
+
 	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
 	{
 		return UT_UTF8String("sipsimple://") + m_address.c_str();
 	}
-	
+
 	virtual UT_UTF8String		getDescription() const
 		{ return m_address.c_str(); }
-		
+
 	virtual const std::string& getAddress() const {
 		return m_address;
 	}
-		
+
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
 		const vector<DocHandle*>& docHandles = getDocHandles();
 		DocTreeItem* first = 0;
-		DocTreeItem* prev = 0;		
+		DocTreeItem* prev = 0;
 		for (vector<DocHandle*>::const_iterator pos = docHandles.begin(); pos != docHandles.end(); pos++)
 		{
 			DocTreeItem* item = new DocTreeItem();
@@ -62,7 +62,7 @@ public:
 			item->m_docHandle = *pos;
 			item->m_child = 0;
 			item->m_next = 0;
-			
+
 			if (!first)
 				first = item;
 			if (prev)
@@ -71,7 +71,7 @@ public:
 		}
 		return first;
 	}
-	
+
 private:
 	std::string m_address;
 };

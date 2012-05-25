@@ -1,19 +1,19 @@
 /* Abiword
  * Copyright (C) 2002 Christian Biesinger <cbiesinger@web.de>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -32,7 +32,7 @@ class SDWCryptor {
 		/** Intializes the cryptor. The arguments are used to verify
 		 * that the password is correct. A date and time of zero tells
 		 * the cryptor to not use these values.
-		 * If you give aDate and aTime, you really should also give aFilePass - 
+		 * If you give aDate and aTime, you really should also give aFilePass -
 		 * results might not be what you expect otherwise
 		 * @param aDate The date given in the file header
 		 * @param aTime Time from file header. */

@@ -76,11 +76,11 @@ public:
 	// housekeeping
 	static UT_UTF8String					getStaticStorageType();
 	virtual UT_UTF8String					getStorageType()
-		{ return getStaticStorageType(); }	
+		{ return getStaticStorageType(); }
 	virtual UT_UTF8String					getDescription();
 	virtual UT_UTF8String					getDisplayType();
 
-	// dialog management 
+	// dialog management
 	virtual UT_UTF8String					getShareHint(PD_Document* pDoc);
 	static XAP_Dialog_Id					getDialogGenericInputId();
 	static XAP_Dialog_Id					getDialogGenericProgressId();
@@ -111,7 +111,7 @@ public:
 	// session management
 	virtual void							getSessionsAsync();
 	virtual void							getSessionsAsync(const Buddy& buddy);
-	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** pSession);	
+	virtual bool							startSession(PD_Document* pDoc, const std::vector<std::string>& vAcl, AbiCollab** pSession);
 	virtual bool							getAcl(AbiCollab* pSession, std::vector<std::string>& vAcl);
 	virtual bool							setAcl(AbiCollab* pSession, const std::vector<std::string>& vAcl);
 	virtual void							joinSessionAsync(BuddyPtr pBuddy, DocHandle& docHandle);
@@ -130,13 +130,13 @@ public:
 	const std::string&						getCA() const
 		{ return m_ssl_ca_file; }
 	static bool							parseUserInfo(const std::string& userinfo, uint64_t& user_id);
-	
+
 	static XAP_Dialog_Id		 			m_iDialogGenericInput;
 	static XAP_Dialog_Id		 			m_iDialogGenericProgress;
 	static AbiCollabSaveInterceptor			m_saveInterceptor;
 
 private:
-	ConnectionPtr							_realmConnect(soa::CollectionPtr rcp, 
+	ConnectionPtr							_realmConnect(soa::CollectionPtr rcp,
 													UT_uint64 doc_id, const std::string& session_id, bool master);
 
 	ServiceBuddyPtr							_getBuddy(const UT_UTF8String& descriptor);
@@ -163,21 +163,21 @@ private:
 													const std::string uri, bool verify_webapp_host,
 													boost::shared_ptr<std::string> result_ptr);
 	void									_listDocuments_cb(bool success, soa::function_call_ptr fc_ptr, boost::shared_ptr<std::string> result_ptr);
-	
-	acs::SOAP_ERROR							_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame, 
+
+	acs::SOAP_ERROR							_openDocumentMaster(ConnectionPtr connection, soa::CollectionPtr rcp, PD_Document** pDoc, XAP_Frame* pFrame,
 													const std::string& session_id, const std::string& filename, bool bLocallyOwned);
-	acs::SOAP_ERROR							_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame, 
+	acs::SOAP_ERROR							_openDocumentSlave(ConnectionPtr connection, PD_Document** pDoc, XAP_Frame* pFrame,
 													const std::string& filename, bool bLocallyOwned);
 	bool									_getConnections();
 	bool									_getPermissions(uint64_t doc_id, DocumentPermissions& perms);
 	bool									_setPermissions(UT_uint64 doc_id, DocumentPermissions& perms);
 
 	void									_handleJoinSessionRequestResponse(
-													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy, 
+													JoinSessionRequestResponseEvent* jsre, BuddyPtr pBuddy,
 													XAP_Frame* pFrame, PD_Document** pDoc, const std::string& filename,
 													bool bLocallyOwned);
 	void									_handleRealmPacket(ConnectionPtr connection);
-	ConnectionPtr							_getConnection(const std::string& session_id);	
+	ConnectionPtr							_getConnection(const std::string& session_id);
 	void									_removeConnection(const std::string& session_id);
 	void									_handleMessages(ConnectionPtr connection);
 	void									_parseSessionFiles(soa::ArrayPtr files_array, GetSessionsResponseEvent& gsre);
@@ -186,14 +186,14 @@ private:
 	std::string								_getDomain();
 	bool									_parseUserInfo(const std::string& userinfo, uint64_t& user_id);
 
-	bool									m_bOnline;  // only used to determine if we are allowed to 
+	bool									m_bOnline;  // only used to determine if we are allowed to
 														// communicate with abicollab.net or not
 	std::vector<ConnectionPtr>				m_connections;
 	std::map<uint64_t, DocumentPermissions> m_permissions;
 	std::string								m_ssl_ca_file;
 	PL_ListenerId             m_iListenerID;
 	AbiCollabService_Export * m_pExport;
-	  
+
 };
 
 #endif /* __SERVICEACCOUNTHANDLER__ */

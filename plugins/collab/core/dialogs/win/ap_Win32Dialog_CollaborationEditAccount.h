@@ -60,7 +60,7 @@ protected:
 	HHOOK						m_hDetailsHook;
 
 private:
-	
+
 	void						_populateWindowData(void);
 };
 

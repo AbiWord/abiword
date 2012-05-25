@@ -37,7 +37,7 @@ GladeXML  *go_libglade_new (char const *gladefile, char const *root,
 #endif
 
 GdkPixbuf *go_pixbuf_new_from_file	(char const *filename);
-GdkPixbuf *go_pixbuf_intelligent_scale	(GdkPixbuf *pixbuf, 
+GdkPixbuf *go_pixbuf_intelligent_scale	(GdkPixbuf *pixbuf,
 					 guint width, guint height);
 
 int	   go_pango_measure_string	(PangoContext *context,
@@ -47,7 +47,7 @@ int	   go_pango_measure_string	(PangoContext *context,
 gint       go_gtk_dialog_run		(GtkDialog *dialog, GtkWindow *parent);
 GtkWidget *go_gtk_dialog_add_button	(GtkDialog *dialog, char const *text, char const *stock_id,
 					 gint response_id);
-void       go_gtk_notice_dialog		(GtkWindow *parent, GtkMessageType type, 
+void       go_gtk_notice_dialog		(GtkWindow *parent, GtkMessageType type,
 					 const gchar *format, ...);
 void       go_gtk_notice_nonmodal_dialog (GtkWindow *parent, GtkWidget **ref,
 					  GtkMessageType type, const gchar *format, ...);

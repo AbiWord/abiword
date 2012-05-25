@@ -38,11 +38,11 @@ public:
 	// housekeeping
 	static UT_UTF8String					getStaticStorageType();
 	virtual UT_UTF8String					getStorageType()
-		{ return getStaticStorageType(); }	
+		{ return getStaticStorageType(); }
 	virtual UT_UTF8String					getDescription();
 	virtual UT_UTF8String					getDisplayType();
-	
-	// dialog management 
+
+	// dialog management
 	virtual void							storeProperties();
 
 	// connection management
@@ -83,7 +83,7 @@ private:
 	// connection management
 	virtual UT_sint32						_getPort(const PropertyMap& props);
 	void									_handleAccept(IOServerHandler* pHandler, boost::shared_ptr<Session> session);
-		
+
 	asio::io_service						m_io_service;
 	asio::io_service::work					m_work;
 	asio::thread*							m_thread;

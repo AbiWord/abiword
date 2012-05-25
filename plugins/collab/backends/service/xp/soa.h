@@ -12,16 +12,16 @@
  *       names of other contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY ABISOURCE CORPORATION B.V. AND OTHER 
- * CONTRIBUTORS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, 
- * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ABISOURCE 
- * CORPORATION B.V OR OTHER CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+ * THIS SOFTWARE IS PROVIDED BY ABISOURCE CORPORATION B.V. AND OTHER
+ * CONTRIBUTORS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+ * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ABISOURCE
+ * CORPORATION B.V OR OTHER CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
@@ -49,7 +49,7 @@ public:
 		: name_(n),
 		type_(t)
 	{}
-	
+
 	virtual ~function_arg() {}
 
 	const std::string& name() const {
@@ -68,7 +68,7 @@ public:
 		return "";
 	}
 
-	// FIXME: returning an std::string is inefficient for large blocks of 
+	// FIXME: returning an std::string is inefficient for large blocks of
 	// data; we should make it a boost::shared_ptr<std::string>
 	virtual std::string str() const = 0;
 
@@ -87,7 +87,7 @@ public:
 	virtual std::string str() const {
 		return value_;
 	}
-	
+
 private:
 	std::string value_;
 };
@@ -106,7 +106,7 @@ public:
 			return "0";
 		}
 	}
-	
+
 private:
 	int64_t value_;
 };
@@ -121,7 +121,7 @@ public:
 	virtual std::string str() const {
 		return value_ ? "true" : "false";
 	}
-	
+
 private:
 	bool value_;
 };
@@ -136,7 +136,7 @@ public:
 	virtual std::string str() const {
 		return value_.value();
 	}
-	
+
 private:
 	Base64Bin value_;
 };
@@ -181,7 +181,7 @@ public:
 		}
 		return ret;
 	}
-	
+
 private:
 	ArrayPtr value_;
 	Type element_type_;
@@ -243,9 +243,9 @@ public:
 		// TODO: XML escape args/values
 		for (std::vector< boost::shared_ptr<function_arg> >::const_iterator cit = args.begin(); cit != args.end(); cit++) {
 			const function_arg& arg = **cit;
-			ret += "<" + arg.name() + " " + "xsi:type=\"" + soap_type(arg.type()) + "\"" + 
+			ret += "<" + arg.name() + " " + "xsi:type=\"" + soap_type(arg.type()) + "\"" +
 						(arg.type_props() ? " " + arg.props() : "") +
-				">" + 
+				">" +
 				arg.str() +
 				"</" + arg.name() + ">\n";
 		}
@@ -288,14 +288,14 @@ public:
 	std::string str() const {
 		return "<SOAP-ENV:Body>\n" \
 			"<" + ns_ref + ":" + fc_.request() + ">\n" +
-			fc_.str() + 
+			fc_.str() +
 			"</" + ns_ref + ":" + fc_.request() + ">\n" \
 			"</SOAP-ENV:Body>\n";
 	}
 
 private:
 	std::string ns_ref;
-	function_call fc_;	
+	function_call fc_;
 };
 
 class method_invocation {
@@ -318,10 +318,10 @@ public:
 
 	std::string str() const {
 		return "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" \
-			"<SOAP-ENV:Envelope " + 
+			"<SOAP-ENV:Envelope " +
 			default_namespaces() +
 			" xmlns:" + custom_ns_ref_ + "=\"" + custom_ns_ + "\"" +
-			" " + encoding_style() + ">\n" + 
+			" " + encoding_style() + ">\n" +
 			header_.str() +
 			body_.str() +
 			"</SOAP-ENV:Envelope>";

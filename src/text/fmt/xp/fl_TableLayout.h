@@ -334,7 +334,7 @@ UT_sint32                    getBottomOffset(void) const;
 		{ return m_iCellHeight;}
 	UT_sint32                getCellWidth(void) const
 		{ return m_iCellWidth;}
-		
+
 protected:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void             _purgeLayout(void);

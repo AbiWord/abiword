@@ -48,7 +48,7 @@ public:
 		m_progressSynchronizerPtr(),
 		m_result()
 	{}
-	
+
 	T run()
 	{
 		UT_DEBUGMSG(("InterruptableAsyncWorker::run()\n"));
@@ -67,13 +67,13 @@ public:
 
 		m_pProgressDlg = static_cast<AP_Dialog_GenericProgress*>(
 					pFactory->requestDialog(ServiceAccountHandler::getDialogGenericProgressId())
-				);		
+				);
 		m_pProgressDlg->setTitle("Retrieving Document");
 		m_pProgressDlg->setInformation("Please wait while retrieving document...");
 
 		// start the asynchronous process
 		m_worker_ptr->start();
-		
+
 		// run the dialog
 		m_pProgressDlg->runModal(pFrame);
 		UT_DEBUGMSG(("Progress dialog destroyed...\n"));
@@ -84,7 +84,7 @@ public:
 			throw InterruptedException();
 		return m_result;
 	}
-	
+
 	bool cancelled()
 	{
 		return m_cancelled;
@@ -93,11 +93,11 @@ public:
 	void progress(uint32_t _progress)
 	{
 		UT_DEBUGMSG(("InterruptableAsyncWorker::_progress_cb() - %d\n", _progress));
-		UT_return_if_fail(m_progressSynchronizerPtr);		
-		
+		UT_return_if_fail(m_progressSynchronizerPtr);
+
 		if (_progress > 100)
 			_progress = 100;
-		
+
 		m_progress = _progress;
 		m_progressSynchronizerPtr->signal();
 	}
@@ -108,18 +108,18 @@ public:
 		m_finished = true;
 		m_progressSynchronizerPtr->signal();
 	}
-	
+
 private:
 	void invoke_cb(T result)
 	{
 		UT_DEBUGMSG(("InterruptableAsyncWorker::invoke_cb()\n"));
 		m_result = result;
-		
+
 		// signal the mainloop that we are done
 		m_finished = true;
 		m_progressSynchronizerPtr->signal();
 	}
-	
+
 	void _updateDialog()
 	{
 		UT_DEBUGMSG(("InterruptableAsyncWorker::_updateDialog()\n"));
@@ -148,16 +148,16 @@ private:
 			}
 		}
 	}
-	
+
 	boost::function<T ()>				m_async_func;
 	boost::shared_ptr< AsyncWorker<T> > m_worker_ptr;
-	
+
 	AP_Dialog_GenericProgress*			m_pProgressDlg;
 	uint32_t							m_progress;
-	bool								m_cancelled;	
+	bool								m_cancelled;
 	bool								m_finished;
 	boost::shared_ptr<Synchronizer>		m_progressSynchronizerPtr;
-	
+
 	T									m_result;
 };
 

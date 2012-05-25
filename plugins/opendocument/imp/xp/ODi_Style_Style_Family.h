@@ -1,21 +1,21 @@
 /* AbiSource
- * 
+ *
  * Copyright (C) 2005 Daniel d'Andrada T. de Carvalho
  * <daniel.carvalho@indt.org.br>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -45,37 +45,37 @@ class ODi_Abi_Data;
  */
 class ODi_Style_Style_Family {
 public:
-    
+
     ODi_Style_Style_Family() : m_pDefaultStyle(NULL) {}
     virtual ~ODi_Style_Style_Family();
-    
+
     ODi_Style_Style* addStyle(const gchar** ppAtts,
                              ODi_ElementStack& rElementStack,
 			     ODi_Abi_Data & rAbiData,
                              UT_UTF8String* pReplacementName = NULL,
                              UT_UTF8String* pReplacementDisplayName = NULL);
-                             
+
     ODi_Style_Style* addDefaultStyle(ODi_ElementStack& rElementStack,
 				     ODi_Abi_Data & rAbiData) {
       m_pDefaultStyle = new ODi_Style_Style(rElementStack,rAbiData);
         return m_pDefaultStyle;
     }
-    
+
     void fixStyles();
     void linkStyles();
-    
+
     const ODi_Style_Style* getStyle(const gchar* pStyleName,
                                    bool bOnContentStream) const;
-                                   
+
     const ODi_Style_Style* getDefaultStyle() const {
         return m_pDefaultStyle;
     }
-    
+
     void removeStyleStyle(ODi_Style_Style* pRemovedStyle, bool bOnContentStream);
-    
+
     void defineAbiStyles(PD_Document* pDocument) const;
     void buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls);
-    
+
 private:
 
     typedef std::map<std::string, ODi_Style_Style*> StyleMap;
@@ -93,14 +93,14 @@ private:
 
     // Styles define inside the styles stream (<office:document-styles>).
     StyleMap m_styles;
-    
+
     // Styles defined inside the content stream, only automatic styles.
     // (<office:document-content> element)
     StyleMap m_styles_contentStream;
-    
+
     // <style:default-style style:family="...">
     ODi_Style_Style* m_pDefaultStyle;
-    
+
     // The styles (<style:style> kind) that get removed due to lack of
     // properties have their names stored here.
     //

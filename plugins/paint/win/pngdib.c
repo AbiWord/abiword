@@ -10,7 +10,7 @@
 //
 // write_dib_to_png()
 //     Write a DIB to a PNG image file
-// 
+//
 // pngdib_get_version_string(void)
 //
 // pngdib_get_version(void)
@@ -42,7 +42,7 @@
 
 
 // This is basically a Windows-only utility with a simple-as-possible
-// interface, so I'm not too concerned about allowing a 
+// interface, so I'm not too concerned about allowing a
 // user-configurable screen gamma.
 static const double screen_gamma = 2.2;
 
@@ -359,8 +359,8 @@ int read_png_to_dib(PNGD_P2DINFO *p2dp)
 			manual_trns=1;
 		}
 	}
-	else if(!has_bkgd && (has_trns || has_alpha_channel) && 
-		(p2dp->flags & PNGD_USE_CUSTOM_BG) ) 
+	else if(!has_bkgd && (has_trns || has_alpha_channel) &&
+		(p2dp->flags & PNGD_USE_CUSTOM_BG) )
 	{      // process most CUSTOM background colors
 		bkgd.index = 0; // unused
 		bkgd.red   = p2dp->bgcolor.red;
@@ -372,7 +372,7 @@ int read_png_to_dib(PNGD_P2DINFO *p2dp)
 		bkgd.gray  = p2dp->bgcolor.red;
 
 		if(png_bit_depth>8) {
-			bkgd.red  = (bkgd.red  <<8)|bkgd.red; 
+			bkgd.red  = (bkgd.red  <<8)|bkgd.red;
 			bkgd.green= (bkgd.green<<8)|bkgd.green;
 			bkgd.blue = (bkgd.blue <<8)|bkgd.blue;
 			bkgd.gray = (bkgd.gray <<8)|bkgd.gray;
@@ -390,16 +390,16 @@ int read_png_to_dib(PNGD_P2DINFO *p2dp)
 				// work. Libpng will think black pixels are transparent.
 				// I don't know exactly why it works. It does *not* add an
 				// alpha channel, as you might think (adding an alpha
-				// channnel makes no sense if you are using 
+				// channnel makes no sense if you are using
 				// png_set_background).
 				//
 				// Here's an alternate hack that also seems to work, but
 				// uses direct structure access:
 				//
-				// png_ptr->trans_values.red   =    				
+				// png_ptr->trans_values.red   =
 				//  png_ptr->trans_values.green =
 				//	png_ptr->trans_values.blue  = png_ptr->trans_values.gray;
-				if(has_trns) 
+				if(has_trns)
 					png_set_tRNS_to_alpha(png_ptr);
 
 				png_set_background(png_ptr, &bkgd,
@@ -422,7 +422,7 @@ notrans:
 
 	// If we don't have any background color at all that we can use,
 	// strip the alpha channel.
-	if(has_alpha_channel && !has_bkgd && 
+	if(has_alpha_channel && !has_bkgd &&
 		!(p2dp->flags & PNGD_USE_CUSTOM_BG) )
 	{
 		png_set_strip_alpha(png_ptr);
@@ -581,7 +581,7 @@ notrans:
 			ZeroMemory(row_pointers[j], (width+1)/2 );
 
 			for(i=0;i<(int)width;i++) {
-				row_pointers[j][i/2] |= 
+				row_pointers[j][i/2] |=
 					( ((tmprow[i/4] >> (2*(3-i%4)) ) & 0x03)<< (4*(1-i%2)) );
 			}
 		}
@@ -688,7 +688,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 	char dummy_errmsg[MAX_ERRMSGLEN];
 
 	if(d2pp->structsize != sizeof(PNGD_D2PINFO)) return PNGD_E_VERSION;
-	                 
+
 	rv=PNGD_E_ERROR;  // this should always get changed before returning
 	png_ptr=NULL;
 	info_ptr=NULL;
@@ -751,7 +751,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 
 	// only certain combinations of compression and bpp are allowed
 	switch(compression) {
-	case BI_RGB: 
+	case BI_RGB:
 		if(dib_bpp!=1 && dib_bpp!=4 && dib_bpp!=8 && dib_bpp!=16
 			&& dib_bpp!=24 && dib_bpp!=32)
 		{
@@ -838,7 +838,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 	bf_format=0;
 	if(compression==BI_BITFIELDS) {
 		if(dib_bpp==16) {
-			if     (bitfields[0]==0x00007c00 && bitfields[1]==0x000003e0 && 
+			if     (bitfields[0]==0x00007c00 && bitfields[1]==0x000003e0 &&
 			        bitfields[2]==0x0000001f) bf_format=11;  // 555
 			else if(bitfields[0]==0x0000f800 && bitfields[1]==0x000007e0 &&
 			        bitfields[2]==0x0000001f) bf_format=12;  // 565
@@ -973,7 +973,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 		}
 
 		for(i=0;i<height;i++) {
-			if(topdown) 
+			if(topdown)
 				row_pointers[i]= &newimage[i*width*3];
 			else
 				row_pointers[height-1-i]= &newimage[i*width*3];
@@ -987,7 +987,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 		newimage= uncompress_dib((LPBITMAPINFO)d2pp->lpdib, headersize+bfsize+palsize, bits);
 		if(!newimage) { rv=PNGD_E_NOMEM; goto abort; }
 		for(i=0;i<height;i++) {
-			if(topdown) 
+			if(topdown)
 				row_pointers[i]= &newimage[i*dib_bytesperrow];
 			else
 				row_pointers[height-1-i]= &newimage[i*dib_bytesperrow];
@@ -999,7 +999,7 @@ int write_dib_to_png(PNGD_D2PINFO *d2pp)
 	}
 	else {
 		for(i=0;i<height;i++) {
-			if(topdown) 
+			if(topdown)
 				row_pointers[i]= &bits[i*dib_bytesperrow];
 			else
 				row_pointers[height-1-i]= &bits[i*dib_bytesperrow];

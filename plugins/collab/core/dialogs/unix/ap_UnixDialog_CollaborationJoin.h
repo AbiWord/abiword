@@ -52,7 +52,7 @@ private:
 
 	GtkWidget*			m_wWindowMain;
 	GtkWidget*			m_wAddBuddy;
-	GtkWidget*			m_wRefresh;	
+	GtkWidget*			m_wRefresh;
 	GtkTreeStore*		m_wModel;
 	GtkWidget *			m_wBuddyTree;
 	GtkWidget*			m_wOpen;

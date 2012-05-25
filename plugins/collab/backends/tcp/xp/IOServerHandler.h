@@ -47,7 +47,7 @@ public:
  		UT_DEBUGMSG(("IOServerHandler()\n"));
  		m_pAcceptor = new tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), port));
 	}
-	
+
 	virtual ~IOServerHandler()
 	{
 		UT_DEBUGMSG(("IOServerHandler::~IOServerHandler()\n"));
@@ -64,7 +64,7 @@ public:
 			DELETEP(m_pAcceptor);
 		}
 	}
-	
+
 	void run()
 	{
 		UT_DEBUGMSG(("IOServerHandler::run()\n"));

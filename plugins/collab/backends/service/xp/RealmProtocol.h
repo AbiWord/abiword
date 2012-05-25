@@ -24,14 +24,14 @@ enum handshake_response {
 };
 
 }
-	
+
 namespace protocolv1 {
 
 class Packet;
 typedef boost::shared_ptr<Packet> PacketPtr;
 typedef boost::shared_ptr<asio::streambuf> StreamPtr;
 
-// the packet type values must match up the corresponding body_size in 
+// the packet type values must match up the corresponding body_size in
 // RealmProtocol.cpp (ugly, but it's fast)!
 enum packet_type {
 	PACKET_RESERVED = 0x00,
@@ -65,10 +65,10 @@ public:
 	virtual int parse(const char* /*buf*/, size_t /*size*/) {
 		return 0;
 	}
-		
+
 	const uint8_t & type() const {
 		return m_type;
-	}	
+	}
 
 protected:
 	Packet(uint8_t type);
@@ -113,15 +113,15 @@ public:
 
 	const std::vector<uint8_t>& getConnectionIds() const {
 		return m_connection_ids;
-	}	
-	
+	}
+
 	boost::shared_ptr<std::string> getMessage() const {
 		return m_msg;
 	}
-	
+
 private:
-	uint8_t					m_address_count;	// a bit redundant (as it can be derived from m_connection_ids.size()), 
-												// but it's convenient to be able to get a reference to this value 
+	uint8_t					m_address_count;	// a bit redundant (as it can be derived from m_connection_ids.size()),
+												// but it's convenient to be able to get a reference to this value
 												// when sending this packet
 	std::vector<uint8_t>	m_connection_ids;
 	boost::shared_ptr<std::string> m_msg;
@@ -132,18 +132,18 @@ public:
 	DeliverPacket();
 	DeliverPacket(uint8_t connection_id, boost::shared_ptr<std::string> msg);
 	virtual int parse(const char* buf, size_t size);
-	
+
 	const uint8_t& getConnectionId() const {
 		return m_connection_id;
 	}
-	
+
 	boost::shared_ptr<std::string> getMessage() const {
 		return m_msg;
 	}
-	
+
 private:
 	uint8_t			m_connection_id;
-	boost::shared_ptr<std::string>	m_msg;	
+	boost::shared_ptr<std::string>	m_msg;
 };
 
 class UserJoinedPacket : public PayloadPacket {
@@ -151,15 +151,15 @@ public:
 	UserJoinedPacket();
 	UserJoinedPacket(uint8_t connection_id, bool master, boost::shared_ptr<std::string> userinfo);
 	virtual int parse(const char* buf, size_t size);
-	
+
 	const uint8_t& getConnectionId() const {
 		return m_connection_id;
 	}
-	
+
 	const uint8_t& isMaster() const {
 		return m_master;
 	}
-	
+
 	boost::shared_ptr<std::string> getUserInfo() const {
 		return m_userinfo;
 	}
@@ -175,11 +175,11 @@ public:
 	UserLeftPacket();
 	UserLeftPacket(uint8_t connection_id);
 	virtual int parse(const char* buf, size_t size);
-	
+
 	const uint8_t& getConnectionId() const {
 		return m_connection_id;
 	}
-	
+
 private:
 	uint8_t m_connection_id;
 };

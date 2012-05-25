@@ -75,20 +75,20 @@ public:
 	virtual void		setNewDocument(PD_Document * pDoc);
 	virtual void		removeDocument(void);
 
-	const UT_GenericVector<ChangeAdjust *> * getAdjusts(void) const 
+	const UT_GenericVector<ChangeAdjust *> * getAdjusts(void) const
 		{ return & m_vecAdjusts;}
 	UT_GenericVector<ChangeAdjust *> * getAdjusts(void)
 		{ return & m_vecAdjusts;}
-		
+
 	void				masterInit();
 	void				slaveInit(const UT_UTF8String& docUUID, UT_sint32 iRemoteRev);
-	
+
 private:
 
 	ChangeRecordSessionPacket*		_buildPacket( const PX_ChangeRecord* pcr );
 	void							_handleNewPacket( ChangeRecordSessionPacket* pPacket, const PX_ChangeRecord* pcr );
 	bool							_isGlobEnd(UT_Byte istart, UT_Byte istop);
-	void							_mapPropsAtts( UT_sint32 indx, std::map<UT_UTF8String,UT_UTF8String>& props, 
+	void							_mapPropsAtts( UT_sint32 indx, std::map<UT_UTF8String,UT_UTF8String>& props,
 											std::map<UT_UTF8String,UT_UTF8String>& atts );
 
 	void				_init();

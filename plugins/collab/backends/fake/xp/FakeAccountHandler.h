@@ -40,8 +40,8 @@ public:
 		{ return getStaticStorageType(); }
 	virtual UT_UTF8String					getDescription();
 	virtual UT_UTF8String					getDisplayType();
-	
-	// dialog management 
+
+	// dialog management
 	virtual void							embedDialogWidgets(void* /*pEmbeddingParent*/)
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
 	virtual void							removeDialogWidgets(void* /*pEmbeddingParent*/)
@@ -55,7 +55,7 @@ public:
 	virtual bool							isOnline();
 	bool									isLocallyControlled()
 		{ return false; }
-	
+
 	// user management
 	FakeBuddyPtr							getBuddy(const UT_UTF8String& description);
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
@@ -72,27 +72,27 @@ public:
 	// packet management
 	virtual bool							send(const Packet* pPacket);
 	virtual bool							send(const Packet* pPacket, BuddyPtr pBuddy);
-	
+
 	// functions for the regression test
 	bool									process();
-		
+
 	// functions for the debug test
 	bool									getCurrentRev(UT_sint32& iLocalRev, UT_sint32& iRemoteRev);
 	bool									stepToRemoteRev(UT_sint32 iRemoteRev);
 	bool									canStep();
 	bool									step(UT_sint32& iLocalRev);
-	
+
 	// misc. functions
 	bool									initialize(UT_UTF8String* pForceSessionId);
 	void									cleanup();
 	XAP_Frame*								getFrame()
 		{ return m_pFrame; }
-	
+
 private:
 	bool									_loadDocument(UT_UTF8String* pForceSessionId);
 	bool									_createSession();
 	bool									_import(const RecordedPacket& rp);
-	
+
 	UT_UTF8String							m_sSessionURI;
 	XAP_Frame*								m_pFrame;
 	AbiCollab*								m_pSession;
@@ -100,7 +100,7 @@ private:
 	PD_Document*							m_pDoc;
 	std::vector<RecordedPacket*>			m_packets;
 	UT_sint32								m_iIndex;
-	
+
 	// variables for the debug test
 	UT_sint32								m_iLocalRev;
 	UT_sint32								m_iRemoteRev;

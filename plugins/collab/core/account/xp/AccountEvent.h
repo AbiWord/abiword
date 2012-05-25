@@ -81,9 +81,9 @@ public:
 		{}
 	DocHandle*					getDocHandle() const
 		{ return m_pDocHandle; }
-	
+
 private:
-	DocHandle* 					m_pDocHandle;	
+	DocHandle* 					m_pDocHandle;
 };
 
 #endif /* __ACCOUNTEVENT_H__ */

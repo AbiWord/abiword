@@ -15,7 +15,7 @@ extern "C" {
 //   write_dib_to_png()
 
 #define PNGD_E_SUCCESS   0
-#define PNGD_E_ERROR     1   // unspecified error 
+#define PNGD_E_ERROR     1   // unspecified error
 #define PNGD_E_VERSION   2   // struct size problem
 #define PNGD_E_NOMEM     3   // could not alloc memory
 #define PNGD_E_UNSUPP    4   // unsupported image type

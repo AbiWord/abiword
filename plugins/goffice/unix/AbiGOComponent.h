@@ -41,7 +41,7 @@ class GR_AbiGOComponentItems
   bool m_bHasSnapshot;
 };
 
-class GR_GOComponentManager : public GR_EmbedManager 
+class GR_GOComponentManager : public GR_EmbedManager
 {
 public:
     GR_GOComponentManager(GR_Graphics * pG);

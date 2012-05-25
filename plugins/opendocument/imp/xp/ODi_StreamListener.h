@@ -1,21 +1,21 @@
 /* AbiSource
- * 
+ *
  * Copyright (C) 2005 Daniel d'Andrada T. de Carvalho
  * <daniel.carvalho@indt.org.br>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -46,7 +46,7 @@ class PD_Document;
 
 /**
  * This class parses the OpenDocument XML.
- * 
+ *
  * Its behaviour is distributed among several ODi_*_ListenerState classes.
  * So, the code used for its functions depends on its current state.
  *
@@ -59,13 +59,13 @@ public:
     ODi_StreamListener(PD_Document* pAbiDocument, GsfInfile* pGsfInfile,
                       ODi_Office_Styles* pStyles, ODi_Abi_Data& rAbiData,
                       ODi_ElementStack* pElementStack = NULL);
-    
+
     virtual ~ODi_StreamListener();
-    
+
     void startElement (const gchar* pName, const gchar** ppAtts) {
         _startElement(pName, ppAtts, false);
     }
-                       
+
     void endElement (const gchar* pName) {
         _endElement(pName, false);
     }
@@ -79,13 +79,13 @@ public:
 
     ODi_ElementStack* getElementStack() {return m_pElementStack;}
     ODi_ListenerState* getCurrentState() { return m_pCurrentState; }
-    
+
 
 private:
 
     void _startElement (const gchar* pName, const gchar** ppAtts,
                        bool doingRecursion);
-                       
+
     void _endElement (const gchar* pName, bool doingRecursion);
 
     void _handleStateAction();
@@ -116,10 +116,10 @@ private:
 
     ODi_XMLRecorder m_xmlRecorder;
 
-    
+
     ////
     // Listener state related variables:
-    
+
     class StackCell {
     public:
         StackCell() {m_pState=NULL; m_deleteWhenPop=false;}
@@ -129,22 +129,22 @@ private:
         }
         // Work around the "return 0" issue of the UT_GenericVector::getNhItem()
         StackCell(UT_uint32 /*i*/) {m_pState=NULL; m_deleteWhenPop=false;}
-        
+
         StackCell& operator=(const StackCell& sc) {
             this->m_deleteWhenPop = sc.m_deleteWhenPop;
             this->m_pState = sc.m_pState;
-            
+
             return *this;
         }
-        
+
         bool m_deleteWhenPop;
         ODi_ListenerState* m_pState;
     };
-    
+
     ODi_ListenerState* m_pCurrentState;
     bool m_deleteCurrentWhenPop;
     bool m_ownStack;
-    
+
     UT_GenericVector <ODi_StreamListener::StackCell> m_stateStack;
     UT_GenericVector <ODi_Postpone_ListenerState*> m_postponedParsing;
 };

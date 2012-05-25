@@ -4,17 +4,17 @@
  * Copyright (C) 2001 AbiSource, Inc.
  * Copyright (C) 2002-2004 Marc Maurer (uwog@uwog.net)
  * Copyright (C) 2001-2003 William Lachance (william.lachance@sympatico.ca)
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
@@ -22,7 +22,7 @@
  */
 
 /* See bug 1764
- * This product is not manufactured, approved, or supported by 
+ * This product is not manufactured, approved, or supported by
  * Corel Corporation or Corel Corporation Limited."
  */
 
@@ -59,7 +59,7 @@ public:
     void setListLeftOffset(const int iLevel, const float listLeftOffset) { m_listLeftOffset[iLevel - 1] = listLeftOffset; }
     void setListMinLabelWidth(const int iLevel, const float listMinLabelWidth) { m_listMinLabelWidth[iLevel - 1] = listMinLabelWidth; }
     int getLevelNumber(const int iLevel) const { return m_iListNumbers[iLevel - 1]; }
-    float getListLeftOffset(const int iLevel) const { return m_listLeftOffset[iLevel - 1]; } 
+    float getListLeftOffset(const int iLevel) const { return m_listLeftOffset[iLevel - 1]; }
     float getListMinLabelWidth(const int iLevel) const { return m_listMinLabelWidth[iLevel - 1]; }
     int getOutlineHash() const { return m_iOutlineHash; }
 
@@ -77,11 +77,11 @@ class IE_Imp_WordPerfect_Sniffer : public IE_ImpSniffer
 {
     friend class IE_Imp;
     friend class IE_Imp_WordPerfect;
-    
+
 public:
     IE_Imp_WordPerfect_Sniffer();
     virtual ~IE_Imp_WordPerfect_Sniffer();
-    
+
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
     virtual UT_Confidence_t recognizeContents (GsfInput * input);
 	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
@@ -97,10 +97,10 @@ class IE_Imp_WordPerfect : public IE_Imp, public WPXDocumentInterface
 public:
     IE_Imp_WordPerfect(PD_Document * pDocument);
     virtual ~IE_Imp_WordPerfect();
-    
+
     virtual void pasteFromBuffer(PD_DocumentRange * pDocRange,
 				 UT_uint8 * pData, UT_uint32 lenData, const char * szEncoding = 0);
-    
+
     virtual void setDocumentMetaData(const WPXPropertyList &propList);
 
     virtual void startDocument();
@@ -115,7 +115,7 @@ public:
 
     virtual void openParagraph(const WPXPropertyList &propList, const WPXPropertyListVector &tabStops);
     virtual void closeParagraph() {}
-	
+
     virtual void openSpan(const WPXPropertyList &propList);
     virtual void closeSpan() {}
 
@@ -127,7 +127,7 @@ public:
     virtual void insertLineBreak();
 
     virtual void defineOrderedListLevel(const WPXPropertyList &propList);
-    virtual void defineUnorderedListLevel(const WPXPropertyList &propList);	
+    virtual void defineUnorderedListLevel(const WPXPropertyList &propList);
     virtual void openOrderedListLevel(const WPXPropertyList &propList);
     virtual void openUnorderedListLevel(const WPXPropertyList &propList);
     virtual void closeOrderedListLevel();
@@ -163,7 +163,7 @@ public:
     virtual void insertBinaryObject(const WPXPropertyList&, const WPXBinaryData&) {}
     virtual void insertEquation(const WPXPropertyList&, const WPXString&) {}
 
-    
+
 protected:
 	virtual UT_Error _loadFile(GsfInput * input);
     UT_Error							_appendSection(int numColumns, const float, const float);
@@ -171,13 +171,13 @@ protected:
     UT_Error                            _appendListSpan(UT_uint32 listTag);
 //    UT_Error							_appendParagraph(const guint8 paragraphJustification, const guint32 textAttributeBits,
 //										 const gchar *fontName, const float fontSize, const float lineSpacing);
-    UT_Error							_updateDocumentOrderedListDefinition(ABI_ListDefinition *pListDefinition, 
-												     int iLevel, const char listType, 
-												     const UT_UTF8String &sTextBeforeNumber, 
+    UT_Error							_updateDocumentOrderedListDefinition(ABI_ListDefinition *pListDefinition,
+												     int iLevel, const char listType,
+												     const UT_UTF8String &sTextBeforeNumber,
 												     const UT_UTF8String &sTextAfterNumber,
-												     int iStartingNumber);    
-    UT_Error							_updateDocumentUnorderedListDefinition(ABI_ListDefinition *pListDefinition, 
-												       int level);    
+												     int iStartingNumber);
+    UT_Error							_updateDocumentUnorderedListDefinition(ABI_ListDefinition *pListDefinition,
+												       int level);
 private:
     // section props
     float								m_leftPageMargin;
@@ -218,11 +218,11 @@ class IE_Imp_MSWorks_Sniffer : public IE_ImpSniffer
 {
     friend class IE_Imp;
     friend class IE_Imp_MSWorks;
-    
+
 public:
     IE_Imp_MSWorks_Sniffer();
     virtual ~IE_Imp_MSWorks_Sniffer();
-    
+
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
     virtual UT_Confidence_t recognizeContents (GsfInput * input);
 	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }

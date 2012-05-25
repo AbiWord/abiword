@@ -1,22 +1,22 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiSource
- * 
+ *
  * Copyright (C) 2008 Firat Kiyak <firatkiyak@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -70,14 +70,14 @@ class IE_Exp_OpenXML_Listener : public PL_Listener
 public:
 	IE_Exp_OpenXML_Listener(PD_Document* doc);
 	~IE_Exp_OpenXML_Listener();
-	
-	virtual bool populate(fl_ContainerLayout* sfh, const PX_ChangeRecord * pcr); 
+
+	virtual bool populate(fl_ContainerLayout* sfh, const PX_ChangeRecord * pcr);
 	virtual bool populateStrux(pf_Frag_Strux* sdh, const PX_ChangeRecord * pcr, fl_ContainerLayout* * psfh);
 	virtual bool change(fl_ContainerLayout* sfh, const PX_ChangeRecord * pcr);
 	virtual bool insertStrux(fl_ContainerLayout* sfh, const PX_ChangeRecord * pcr, pf_Frag_Strux* sdhNew, PL_ListenerId lid,
 				     		 void (* pfnBindHandles)(pf_Frag_Strux* sdhNew, PL_ListenerId lid, fl_ContainerLayout* sfhNew));
 	virtual bool signal(UT_uint32 iSignal);
-	
+
 	OXML_Document* getDocument();
 
 private:

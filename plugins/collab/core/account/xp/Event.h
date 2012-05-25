@@ -17,7 +17,7 @@
  */
 
 #ifndef __EVENT_H__
-#define __EVENT_H__	
+#define __EVENT_H__
 
 #include <vector>
 #include <account/xp/Buddy.h>
@@ -25,9 +25,9 @@
 
 class Event	: public EventPacket
 {
-public:	
+public:
 	DECLARE_ABSTRACT_PACKET(Event);
-	
+
 	Event()
 		: m_bBroadcast(false)
 	{
@@ -39,27 +39,27 @@ public:
 
 	const std::vector<BuddyPtr>&		getRecipients() const
 		{ return m_vRecipients; }
-		
+
 	void 								setRecipients(std::vector<BuddyPtr>& vRecipients)
 	{
 			m_vRecipients = vRecipients;
 	}
-	
+
 	void								addRecipient(BuddyPtr pBuddy)
 	{
 			UT_return_if_fail(pBuddy);
 			m_vRecipients.push_back(pBuddy);
 	}
-		
+
 	void								setBroadcast(bool bBroadcast)
 		{ m_bBroadcast = bBroadcast; }
 	bool								isBroadcast() const
 		{ return m_bBroadcast; }
-		
+
 private:
 
 	std::vector<BuddyPtr>		   m_vRecipients;
 	bool							m_bBroadcast;
-};	
-		
+};
+
 #endif /* __EVENT_H__ */

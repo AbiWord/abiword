@@ -1,22 +1,22 @@
 /* AbiSource
- * 
+ *
  * Copyright (C) 2005 INdT
  * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
  * Copyright 2009-2010 AbiSource Corporation B.V.
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -45,42 +45,42 @@ public:
 
     ODe_Style_Style();
     virtual ~ODe_Style_Style();
-    
+
     // Write the <style:style> element.
     bool write(GsfOutput* pODT, const UT_UTF8String& rSpacesOffset) const;
-    
+
     static bool hasTextStyleProps(const PP_AttrProp* pAP);
     static bool hasParagraphStyleProps(const PP_AttrProp* pAP);
     static bool hasSectionInfo(const PP_AttrProp* pAP);
-    static bool hasTableStyleProps(const PP_AttrProp* pAP);    
+    static bool hasTableStyleProps(const PP_AttrProp* pAP);
 
     // It does not take style names into consideration.
     // Read it like: "is style "T1" equivalent to style "T2"
     // It is *NOT* like: "is style A equal to style B"
     bool isEquivalentTo(const ODe_Style_Style& rStyle);
-    
+
     bool isEmpty() const;
-    
+
     ODe_Style_Style& operator=(const ODe_Style_Style& rStyle);
-    
+
     // Defines the style from attributes and properties of an AbiWord <s>.
     bool fetchAttributesFromAbiStyle(const PP_AttrProp* pAP);
-    
+
     // Defines the style from attributes and properties of an AbiWord <span>.
     void fetchAttributesFromAbiSpan(const PP_AttrProp* pAP);
-    
+
     // Defines the style from attributes and properties of an AbiWord <p>.
     void fetchAttributesFromAbiBlock(const PP_AttrProp* pAP, const ODe_Style_List* pCurrentListStyle);
-    
+
     // Defines the style from attributes and properties of an AbiWord <section>.
     void fetchAttributesFromAbiSection(const PP_AttrProp* pAP);
-    
+
     // Defines the style from attributes and properties of an AbiWord <table>.
     void fetchAttributesFromAbiTable(const PP_AttrProp* pAP);
-    
+
     // Defines the style from attributes and properties of an AbiWord <cell>.
     void fetchAttributesFromAbiCell(const PP_AttrProp* pAP);
-    
+
     // Defines the style from attributes and properties of an AbiWord <frame>.
     void fetchAttributesFromAbiFrame(const PP_AttrProp& rAP);
 
@@ -89,19 +89,19 @@ public:
         if (m_pParagraphProps)
             m_pParagraphProps->m_defaultStyle = m_defaultStyle;
     }
-    
+
     void setStyleName(const UT_UTF8String& rStyleName) {
         m_name = rStyleName;
     }
-    
+
     const UT_UTF8String& getName() const {
         return m_name;
     }
-    
+
     void setFamily(const gchar* pFamily) {
         m_family = pFamily;
     }
-    
+
 	void setParentStyleName(const gchar* pParentStyleName) {
         m_parentStyleName = pParentStyleName;
 	}
@@ -113,10 +113,10 @@ public:
 	 void setListStyleName(const UT_UTF8String& rListStyleName) {
         m_listStyleName = rListStyleName;
     }
-    
-    const UT_UTF8String& getFontName();    
 
-    void setBreakBefore(const gchar* pBreakBefore);    
+    const UT_UTF8String& getFontName();
+
+    void setBreakBefore(const gchar* pBreakBefore);
     void setColumnWidth(const gchar* pColumnWidth);
     void setRelColumnWidth(const gchar* pRelColumnWidth);
     void setRelTableWidth(const gchar* pRelTableWidth);
@@ -133,19 +133,19 @@ public:
 
     const UT_UTF8String& getDefaultTabInterval();
     void setDefaultTabInterval(const UT_UTF8String& rDefaultTabInterval);
-    
+
     static UT_UTF8String convertStyleToNCName(const UT_UTF8String& name);
-    
+
 private:
 
 	// It's not really nice that this mapping is static, but otherwise we'd
-	// for example have to pass an ODe_Styles object which holds the mapping to 
+	// for example have to pass an ODe_Styles object which holds the mapping to
 	// the ODe_Style_Style constuctor. This would mean changing lots of code.
 	// Having a static mapping can do no harm whatsoever, so let's just use
 	// that -- MARCM
 	static std::map<std::string, std::string> m_NCStyleMappings;
 
-    
+
     ////
     // <style:style> attributes
     bool m_defaultStyle;             // if we are a <style:style>, or a <style:default-style>
@@ -161,13 +161,13 @@ private:
     // <style:section-properties> attributes
     class SectionProps {
         public:
-        
+
         bool isEmpty() const;
         void fetchAttributesFromAbiProps(const PP_AttrProp& rAP);
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
         SectionProps& operator=(const SectionProps& rSectionProps);
         bool operator==(const SectionProps& rSectionProps) const;
-        
+
         ////
         // <style:columns> attributes
         UT_UTF8String m_columnCount;     // fo:column-count
@@ -187,7 +187,7 @@ private:
         UT_UTF8String m_leaderStyle;     // style:leader-style
         UT_UTF8String m_leaderText;      // style:leader-text
     };
-    
+
     ////
     // <style:paragraph-properties> attributes
     class ParagraphProps {
@@ -199,7 +199,7 @@ private:
         ParagraphProps(bool defaultStyle)
             : m_defaultStyle(defaultStyle)
         { }
-        
+
         bool isEmpty() const;
         void fetchAttributesFromAbiProps(const PP_AttrProp& rAP);
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
@@ -207,10 +207,10 @@ private:
         bool operator==(const ParagraphProps& rParagraphProps) const;
 
         bool m_defaultStyle;             // if we are a <style:style>, or a <style:default-style>
-            
+
         UT_UTF8String m_textAlign;       // fo:text-align
         UT_UTF8String m_textIndent;      // fo:text-indent
-        UT_UTF8String m_lineHeight;      // fo:line-height    
+        UT_UTF8String m_lineHeight;      // fo:line-height
         UT_UTF8String m_lineHeightAtLeast; // style:line-height-at-least
         UT_UTF8String m_backgroundColor; // fo:background-color
         UT_UTF8String m_widows;          // fo:widows
@@ -231,23 +231,23 @@ private:
         UT_UTF8String m_leftSpace;       // fo:padding-left
         UT_UTF8String m_rightSpace;      // fo:padding-right
         UT_UTF8String m_topSpace;        // fo:padding-top
-       
+
         UT_UTF8String m_defaultTabInterval; // style:tab-stop-distance
         std::vector<TabStop> m_tabStops; // style:tab-stops
     } *m_pParagraphProps;
-    
-    
+
+
     ////
     // <style:text-properties> attributes
     class TextProps {
         public:
-        
+
         bool isEmpty() const;
         void fetchAttributesFromAbiProps(const PP_AttrProp& rAP);
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
         TextProps& operator=(const TextProps& rTextProps);
         bool operator==(const TextProps& rTextProps) const;
-        
+
         UT_UTF8String m_color;           // fo:color
         UT_UTF8String m_underlineType;   // style:text-underline-type
         UT_UTF8String m_lineThroughType; // style:text-line-through-type
@@ -268,13 +268,13 @@ private:
     // <style:table-properties> attributes:
     class TableProps {
         public:
-        
+
         bool isEmpty() const;
         void fetchAttributesFromAbiProps(const PP_AttrProp& rAP);
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
         TableProps& operator=(const TableProps& rTableProps);
         bool operator==(const TableProps& rTableProps) const;
-      
+
         UT_UTF8String m_width;           // style:width
         UT_UTF8String m_RelTableWidth;     // style:rel-width
         UT_UTF8String m_backgroundColor; // fo:background-color
@@ -282,33 +282,33 @@ private:
         UT_UTF8String m_marginLeft;      // fo:margin-left
         UT_UTF8String m_marginRight;     // fo:margin-right
     } *m_pTableProps;
-    
+
 
     ////
     // <style:table-column-properties> attributes:
     class ColumnProps {
         public:
-        
+
         bool isEmpty() const;
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
         ColumnProps& operator=(const ColumnProps& rColumnProps);
         bool operator==(const ColumnProps& rColumnProps) const;
-        
+
         UT_UTF8String m_columnWidth;     // style:column-width
         UT_UTF8String m_RelColumnWidth;     // style:rel-column-width
     } *m_pColumnProps;
-    
-    
+
+
     ////
     // <style:table-row-properties> attributes:
     class RowProps {
         public:
-        
+
         bool isEmpty() const;
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
         RowProps& operator=(const RowProps& rRowProps);
         bool operator==(const RowProps& rRowProps) const;
-        
+
         UT_UTF8String m_rowHeight;       // style:row-height
         UT_UTF8String m_minRowHeight;    // style:min-row-height
     } *m_pRowProps;
@@ -318,7 +318,7 @@ private:
     // <style:table-cell-properties> attributes:
     class CellProps {
         public:
-        
+
         bool isEmpty() const;
         void fetchAttributesFromAbiProps(const PP_AttrProp& rAP);
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
@@ -339,19 +339,19 @@ private:
 
         // TODO: support line styles
     } *m_pCellProps;
-    
-    
+
+
     ////
     // <style:graphic-properties> attributes:
     class GraphicProps {
         public:
-        
+
         bool isEmpty() const;
         void fetchAttributesFromAbiProps(const PP_AttrProp& rAP);
         void write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const ;
         GraphicProps& operator=(const GraphicProps& rGraphicProps);
         bool operator==(const GraphicProps& rGraphicProps) const;
-        
+
         UT_UTF8String m_backgroundColor; // fo:background-color
         UT_UTF8String m_borderLeft;      // fo:border-left
         UT_UTF8String m_borderRight;     // fo:border-right

@@ -33,7 +33,7 @@ class EV_EditMethodCallData;
 enum {
 	DONT_UNBIND_MOUSECONTEXTS	= 0x01,
 	DONT_UNBIND_KEYSTROKES		= 0x02,
-		
+
 	DONT_UNBIND_ANYTHING		= 0x03
 };
 
@@ -52,7 +52,7 @@ class LoadBindings
 		bool Load();
 		bool Set() const;
 		const std::string& GetName() const { return m_sName; }
-		
+
 	protected:
 		XAP_App*			m_pApp;
 		xmlDocPtr 			m_pXMLDoc;
@@ -60,32 +60,32 @@ class LoadBindings
 		bool				m_bReplace;
 		BindingMap			m_BindMap;
 		UnbindMap			m_UnbindMap;
-		
-	
+
+
 		int strcmp( const char* s1, const char* s2 ) {			return ::strcmp( s1, s2 ); }
 		int strcmp( const char* s1, const xmlChar* s2 ) { 		return ::strcmp( s1, reinterpret_cast<const char*>(s2) ); }
 		int strcmp( const xmlChar* s1, const xmlChar* s2 ) {	return ::strcmp( reinterpret_cast<const char*>(s1), reinterpret_cast<const char*>(s2) ); }
 		int strcmp( const xmlChar* s1, const char* s2 ) { 		return ::strcmp( reinterpret_cast<const char*>(s1), s2 ); }
-	
+
 		/** Parses the control, shift and alt attribute's (if present)
 	 	 *	and converts them to a EV_EditModifierState value.
 		 */
 		EV_EditModifierState GetModifiers( xmlNodePtr node );
-	
+
 		/** Searches the specified node's attributes for a certain
 	 	 *	named attribute and returns its value, if present.
 		 */
 		const char* FindAttribute( xmlNodePtr node, const char* name );
-	
+
 		/** Adds a new mapping to the internal binding map */
 		bool AddMapping( UT_uint32 binding, const char* command );
-	
+
 		/** Adds a new mapping removal */
 		bool RemoveMapping( const char* command, UT_uint8 unbinding );
-	
+
 		/** Reports an error. */
 		void ReportError( const char* format, ... ) const;
-	
+
 		/** Reports a warning. */
 		void ReportWarning( const char* format, ... ) const;
 };

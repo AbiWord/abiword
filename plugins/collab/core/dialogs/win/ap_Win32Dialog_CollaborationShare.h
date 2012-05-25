@@ -59,15 +59,15 @@ private:
 	void					_setAccountHint(const UT_UTF8String& sHint);
 	void					_getSelectedBuddies(std::vector<std::string>& vACL);
 	void					_freeBuddyList();
-	
+
 	// Handles
 	HINSTANCE 				m_hInstance;
 	HWND					m_hAccountCombo;
 	HWND					m_hBuddyList;
-	
+
 	// Internal states
 	HTREEITEM				m_hSelected;
-	
+
 	// Model
 	std::vector<AccountHandler*>		m_vAccountCombo;
 	std::map< HTREEITEM, ShareListItem > m_mTreeItemHandles;

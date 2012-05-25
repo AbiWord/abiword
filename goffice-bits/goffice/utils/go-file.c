@@ -1050,7 +1050,7 @@ go_url_check_extension (gchar const *uri,
  *
  * returns: the mime type for the file as a newly allocated string. Needs to
  * be freed with g_free().
-**/ 
+**/
 
 gchar *
 go_get_mime_type (gchar const *uri)
@@ -1111,7 +1111,7 @@ go_get_mime_type (gchar const *uri)
  *
  * returns: the mime type for the data as a newly allocated string. Needs to
  * be freed with g_free().
-**/ 
+**/
 gchar *
 go_get_mime_type_for_data (gconstpointer data, int data_size)
 {
@@ -1151,7 +1151,7 @@ go_get_mime_type_for_data (gconstpointer data, int data_size)
  * returns: the description for the mime type as a newly allocated string.
  * Needs to be freed with g_free(). If the description is not found, the
  * mime type itself will be returned.
-**/ 
+**/
 
 gchar *
 go_mime_type_get_description (gchar const *mime_type)

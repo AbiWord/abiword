@@ -1,20 +1,20 @@
 /* AbiSource
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
  * Copyright (C) 2009 Hubert Figuiere
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -52,9 +52,9 @@ public:
 
 protected:
   virtual UT_Error	_writeDocument(void);
-  
+
 private:
-  GsfOutfile * m_oo;	
+  GsfOutfile * m_oo;
 };
 
 /*****************************************************************************/
@@ -66,11 +66,11 @@ public:
    OO_ListenerImpl() {}
    virtual ~OO_ListenerImpl() {}
    virtual void insertText(const UT_UCSChar * data, UT_uint32 length) = 0;
-   virtual void openBlock(const std::string & styleAtts, const std::string & styleProps, 
+   virtual void openBlock(const std::string & styleAtts, const std::string & styleProps,
                           const std::string & font, bool bIsHeading = false) = 0;
    virtual void closeBlock() = 0;
    virtual void openSpan(const std::string & props, const std::string & font) = 0;
-   virtual void closeSpan() = 0;   
+   virtual void closeSpan() = 0;
    virtual void openHyperlink(const PP_AttrProp* pAP) = 0;
    virtual void closeHyperlink() = 0;
 };
@@ -115,7 +115,7 @@ class OO_StylesContainer
 {
 public:
    OO_StylesContainer() {}
-   ~OO_StylesContainer() { 
+   ~OO_StylesContainer() {
 	   m_spanStylesHash.purgeData();
 	   m_blockAttsHash.purgeData();
 	   m_fontsHash.purgeData();
@@ -139,14 +139,14 @@ private:
 /*!
  * OO_AccumulatorImpl: This class collects style definitions from the document,
  * gathering information from the listener which references it. It does not
- * actually write anything, merely storing 
+ * actually write anything, merely storing
  */
 class OO_AccumulatorImpl : public OO_ListenerImpl
 {
 public:
    OO_AccumulatorImpl(OO_StylesContainer *pStylesContainer) : OO_ListenerImpl() { m_pStylesContainer = pStylesContainer; }
    virtual void insertText(const UT_UCSChar * /*data*/, UT_uint32 /*length*/) {}
-   virtual void openBlock(const std::string & styleAtts, const std::string & styleProps, 
+   virtual void openBlock(const std::string & styleAtts, const std::string & styleProps,
                           const std::string & font, bool bIsHeading = false);
    virtual void closeBlock() {};
    virtual void openSpan(const std::string & props, const std::string & font);
@@ -168,7 +168,7 @@ public:
    OO_WriterImpl(GsfOutfile *pOutfile, OO_StylesContainer *pStylesContainer);
    ~OO_WriterImpl();
    virtual void insertText(const UT_UCSChar * data, UT_uint32 length);
-   virtual void openBlock(const std::string & styleAtts, const std::string & styleProps, 
+   virtual void openBlock(const std::string & styleAtts, const std::string & styleProps,
                           const std::string & font, bool bIsHeading = false);
    virtual void closeBlock();
    virtual void openSpan(const std::string & props, const std::string & font);

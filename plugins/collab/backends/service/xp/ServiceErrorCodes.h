@@ -29,22 +29,22 @@ enum SOAP_ERROR
 	// generic error (reserved)
 	SOAP_ERROR_OK = 0x00,
 	SOAP_ERROR_GENERIC = 0x01,
-	
+
 	// exception soap errors
 	SOAP_ERROR_GENERIC_EXCEPTION = 0x101,
 	SOAP_ERROR_DATABASE_EXCEPTION = 0x102,
-	
+
 	// abicollab soap errors
 	SOAP_ERROR_INVALID_PASSWORD = 0x201,
 	SOAP_ERROR_INVALID_EMAIL = 0x202,
 	// TODO: add more errors
-	
+
 	// saveDocument soap errors
 	SOAP_ERROR_NO_CHANGES = 0x908,
-		
+
 	// openDocument soap errors
 	// TODO: add more errors
-	
+
 	// publishDocument soap errors
 	SOAP_ERROR_DUP_FILENAME =  0xB03
 };

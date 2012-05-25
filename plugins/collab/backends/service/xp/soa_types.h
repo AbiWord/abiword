@@ -12,16 +12,16 @@
  *       names of other contributors may be used to endorse or promote products
  *       derived from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY ABISOURCE CORPORATION B.V. AND OTHER 
- * CONTRIBUTORS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, 
- * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS 
- * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ABISOURCE 
- * CORPORATION B.V OR OTHER CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
- * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
- * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
- * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
+ * THIS SOFTWARE IS PROVIDED BY ABISOURCE CORPORATION B.V. AND OTHER
+ * CONTRIBUTORS ''AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING,
+ * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
+ * FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL ABISOURCE
+ * CORPORATION B.V OR OTHER CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+ * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA,
+ * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
@@ -75,14 +75,14 @@ public:
 
 	template <class T>
 	boost::shared_ptr<T> as() {
-		return boost::dynamic_pointer_cast<T>(shared_from_this()); 
+		return boost::dynamic_pointer_cast<T>(shared_from_this());
 	}
 
 	template <class T>
 	boost::shared_ptr<T> as(const std::string& n) {
 		if (name_ != n)
 			return boost::shared_ptr<T>();
-		return boost::dynamic_pointer_cast<T>(shared_from_this()); 
+		return boost::dynamic_pointer_cast<T>(shared_from_this());
 	}
 
 private:
@@ -122,11 +122,11 @@ public:
 		: Generic(n, BASE64BIN_TYPE),
 		m_data(data)
 	{}
-	
+
 	const std::string& value() const {
 		return *m_data;
 	}
-	
+
 private:
 	boost::shared_ptr<std::string> m_data;
 };
@@ -228,23 +228,23 @@ public:
 	SoapFault()
 		: code_(), string_(), detail_() {
 	}
-	
+
 	SoapFault(QNamePtr c, StringPtr s, StringPtr det)
 		: code_(c), string_(s), detail_(det) {
 	}
-	
+
 	QNamePtr code() const {
 		return code_;
 	}
-	
+
 	StringPtr string() const {
 		return string_;
 	}
-	
+
 	StringPtr detail() const {
 		return detail_;
 	}
-	
+
 private:
 	QNamePtr code_;
 	StringPtr string_;

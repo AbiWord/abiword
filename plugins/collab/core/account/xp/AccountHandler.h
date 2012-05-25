@@ -53,7 +53,7 @@ typedef enum _ConnectResult
 
 typedef AccountHandler* (*AccountHandlerConstructor)();
 
-typedef map<string, string> PropertyMap; 
+typedef map<string, string> PropertyMap;
 
 class ProtocolErrorPacket : public Packet
 {
@@ -61,12 +61,12 @@ public:
 	ProtocolErrorPacket();
 	ProtocolErrorPacket( UT_sint32 errorEnum );
 	DECLARE_PACKET(ProtocolErrorPacket);
-	
+
 	virtual UT_sint32						getProtocolVersion() const
 		{ return 0; } // not ABICOLLAB_PROTOCOL_VERSION!!
 	UT_sint32 								getErrorEnum() const
 		{ return m_errorEnum; }
-	UT_sint32								getRemoteVersion() const	
+	UT_sint32								getRemoteVersion() const
 		{ return m_remoteVersion; }
 protected:
 	UT_sint32		m_errorEnum;
@@ -83,9 +83,9 @@ public:
 	static UT_UTF8String					getStaticStorageType()
 		{ /* every backend should re-implement this static function */ return "null"; };
 	virtual UT_UTF8String					getStorageType() = 0;
-	virtual UT_UTF8String					getDescription() = 0;	
+	virtual UT_UTF8String					getDescription() = 0;
 	virtual UT_UTF8String					getDisplayType() = 0;
-	
+
 	void									addProperty(const string& key, const string& value)
 		{ m_properties[key] = value; }
 	bool									hasProperty(const string& key);
@@ -103,7 +103,7 @@ public:
 		{ return true; }
 	virtual void							loadProperties() = 0;
 	virtual void							storeProperties() = 0;
-	
+
 	#ifdef WIN32
 	virtual BOOL							_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) = 0;
 	virtual bool							shouldProcessFocus() = 0;
@@ -114,14 +114,14 @@ public:
 	virtual bool							disconnect() = 0;
 	virtual bool							isOnline() = 0;
 	virtual bool							autoConnect();
-	
+
 	// for duplicate prevention
 	virtual bool							operator==(AccountHandler & rhHandler);
 
 	// packet management
 	virtual bool							send(const Packet* packet) = 0;
 	virtual bool							send(const Packet* packet, BuddyPtr buddy) = 0;
-	
+
 	// user management
 	void									addBuddy(BuddyPtr pBuddy);
 	std::vector<BuddyPtr>&					getBuddies()
@@ -132,9 +132,9 @@ public:
 	virtual BuddyPtr						constructBuddy(const PropertyMap& vProps) = 0;
 	// Constructs a buddy given a buddy descriptor
 	// NOTE: some backends require additional *backend specific* session information
-	// to construct a particular buddy. Information that is not available in the buddy 
+	// to construct a particular buddy. Information that is not available in the buddy
 	// descriptor (the service and sugar backends need this for example)
-	// This additional information can then be retrieved via the 'pBuddy' 
+	// This additional information can then be retrieved via the 'pBuddy'
 	// argument. That means that the pBuddy should already be in a session and
 	// thus have access to all backend specific session information
 	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy) = 0;
@@ -173,7 +173,7 @@ public:
 
 	// signal management
 	virtual void							signal(const Event& event, BuddyPtr pSource);
-	
+
 	// protocol error management
 	enum
 	{
@@ -186,7 +186,7 @@ protected:
 	void 									_createPacketStream(std::string& sString, const Packet* pPacket);	// creates binary string!
 	virtual bool							_handleProtocolError(Packet* packet, BuddyPtr buddy);
 	virtual	void							_handlePacket(Packet* packet, BuddyPtr buddy);
-	
+
 	// protocol error management
 	void									_sendProtocolError(BuddyPtr, UT_sint32 errorEnum);
 

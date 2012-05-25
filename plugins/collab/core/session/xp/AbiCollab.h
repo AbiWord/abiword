@@ -55,30 +55,30 @@ enum SessionTakeoverState
 	STS_SENT_TAKEOVER_REQUEST,
 	STS_SENT_TAKEOVER_ACK,
 	STS_SENT_SESSION_RECONNECT_REQUEST
-};	
+};
 
 class ChangeAdjust
 {
 friend class AbiCollab_ImportRuleSet;
-	
+
 public:
 	ChangeAdjust(const AbstractChangeRecordSessionPacket& packet, PT_DocPosition iOrigDocPos, const UT_UTF8String& sRemoteDocUUID);
 	~ChangeAdjust();
-	
+
 	PT_DocPosition				getLocalPos() const	{ return m_iLocalPos; }
 	void						setLocalPos(PT_DocPosition iLocalPos) { m_iLocalPos = iLocalPos; }
 	UT_sint32					getLocalLength() const { return m_pPacket->getLength(); }
 	UT_sint32					getLocalAdjust() const { return m_pPacket->getAdjust(); }
 	UT_sint32					getLocalRev() const { return m_pPacket->getRev(); }
-	
+
 	PT_DocPosition				getRemoteDocPos() const	{ return m_iRemoteDocPos; }
 	const UT_UTF8String&		getRemoteDocUUID() const { return m_sRemoteDocUUID; }
-	
+
 private:
 	// locally generated data (possibly in response to remotely generated data)
 	const AbstractChangeRecordSessionPacket*	m_pPacket;
 	PT_DocPosition								m_iLocalPos;
-	
+
 	// remotely generated data
 	PT_DocPosition								m_iRemoteDocPos;
 	UT_UTF8String								m_sRemoteDocUUID;
@@ -104,13 +104,13 @@ class AbiCollab : public EV_MouseListener
 public:
 	// master constructor
 	AbiCollab(PD_Document* pDoc,
-					const UT_UTF8String& sSessionId, 
+					const UT_UTF8String& sSessionId,
 					AccountHandler* pAclAccount,
 					bool bLocallyOwned);
 
 	// slave constructor
-	AbiCollab(const UT_UTF8String& sSessionId, 
-					PD_Document* pDoc, 
+	AbiCollab(const UT_UTF8String& sSessionId,
+					PD_Document* pDoc,
 					const UT_UTF8String& docUUID,
 					UT_sint32 iRev,
 					BuddyPtr pControler,
@@ -134,7 +134,7 @@ public:
 		{ return m_pAclAccount; }
 	void								setAcl(const std::vector<std::string> vAcl);
 	void								appendAcl(const std::string& sBuddyDescriptor);
-	
+
 
 	// import/export management
 	ABI_Collab_Import*					getImport(void)
@@ -160,13 +160,13 @@ public:
 		{ return m_sId; }
 	bool								isLocallyControlled() const
 		{ return m_pController == NULL; }
-	
+
 	void								setIsReverting(bool bIsReverting)
 		{ m_bIsReverting = bIsReverting; }
-	
+
 	// session takeover
 	void								initiateSessionTakeover(BuddyPtr pNewMaster);
-	
+
 	// session recording functionality
 	bool								isRecording()
 		{ return m_pRecorder != NULL; }
@@ -203,8 +203,8 @@ private:
 	void								_setDocument(PD_Document* pDoc);
 	void								_setDocListenerId(UT_uint32 iDocListenerId)
 		{ m_iDocListenerId = iDocListenerId; }
-	
-	void								_fillRemoteRev(Packet* pPacket, BuddyPtr pBuddy); 
+
+	void								_fillRemoteRev(Packet* pPacket, BuddyPtr pBuddy);
 
 	// mouse listener functionality
 	void								_releaseMouseDrag();
@@ -243,7 +243,7 @@ private:
 
 	const AbstractChangeRecordSessionPacket* m_pActivePacket;
 	bool								m_bIsReverting;
-	
+
 	SessionRecorderInterface*			m_pRecorder;
 
 	std::map<EV_Mouse*, UT_sint32>		m_mMouseListenerIds;

@@ -25,14 +25,14 @@ class AbiCollab;
  class DocHandle
 {
 public:
-	DocHandle(const UT_UTF8String& sSessionId, const UT_UTF8String& name) 
+	DocHandle(const UT_UTF8String& sSessionId, const UT_UTF8String& name)
 		: m_sSessionId(sSessionId),
 	  m_name(name),
 	  m_pAbiCollab(NULL)
 	{
 	}
 	virtual ~DocHandle() {}
-	
+
 	const UT_UTF8String&		getSessionId() const
 		{ return m_sSessionId; }
 	const UT_UTF8String&		getName() const
@@ -42,7 +42,7 @@ public:
 
 	AbiCollab *					getSession(void)
 		{ return m_pAbiCollab;}
-	  
+
 private:
 	const UT_UTF8String			m_sSessionId;
 	const UT_UTF8String			m_name;

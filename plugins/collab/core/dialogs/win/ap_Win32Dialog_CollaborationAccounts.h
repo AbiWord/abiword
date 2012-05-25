@@ -35,7 +35,7 @@ class AP_Win32Dialog_CollaborationAccounts : public AP_Dialog_CollaborationAccou
 {
 public:
 	AP_Win32Dialog_CollaborationAccounts(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
-	
+
 	static XAP_Dialog * 	static_constructor(XAP_DialogFactory * pFactory, XAP_Dialog_Id id);
 	void					runModal(XAP_Frame * pFrame);
 	static BOOL CALLBACK	s_dlgProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -49,7 +49,7 @@ private:
 	void					_populateWindowData();
 	void					_updateSelection();
 	void					_setOnline(AccountHandler* pHandler, bool online);
-	
+
 	XAP_Win32DialogHelper *	m_pWin32Dialog;
 	HINSTANCE 				m_hInstance;
 	HWND					m_hAccountList;

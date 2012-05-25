@@ -51,13 +51,13 @@ public:
 	{
 		return UT_UTF8String("telepathy://") + tp_contact_get_identifier (m_pContact);
 	}
-	
+
 	virtual UT_UTF8String getDescription() const
 	{
 		UT_UTF8String description = tp_contact_get_identifier (m_pContact);
 		return description;
 	}
-	
+
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
 		UT_ASSERT_HARMLESS(UT_NOT_REACHED);
@@ -75,7 +75,7 @@ public:
 		TpContact* pContact = pBuddy->getContact();
 		return strcmp(tp_contact_get_identifier(pContact), tp_contact_get_identifier (m_pContact)) == 0;
 	}
-	
+
 private:
 
 	TpContact*			m_pContact;

@@ -149,7 +149,7 @@ go_cmd_context_set_sensitive (GOCmdContext *cc, gboolean sensitive)
 }
 
 
-static void    
+static void
 go_cmd_context_error_info_list_default 	(GOCmdContext *gcc, GSList *errs)
 {
 	if (errs == NULL)

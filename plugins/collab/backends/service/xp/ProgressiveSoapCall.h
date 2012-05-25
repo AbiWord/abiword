@@ -37,7 +37,7 @@ public:
 		m_ssl_ca_file(ssl_ca_file),
 		m_worker_ptr()
 	{}
-	
+
 	soa::GenericPtr run()
 	{
 		UT_DEBUGMSG(("ProgressiveSoapCall::run()\n"));
@@ -67,11 +67,11 @@ private:
 		UT_DEBUGMSG(("ProgressiveSoapCall::invoke()\n"));
 		return soup_soa::invoke(
 						m_uri, m_mi, m_ssl_ca_file,
-						boost::bind(&ProgressiveSoapCall::_progress_cb, this, _1, _2, _3), 
+						boost::bind(&ProgressiveSoapCall::_progress_cb, this, _1, _2, _3),
 						m_result
 					);
 	}
-	
+
 	void _progress_cb(SoupSession* session, SoupMessage* msg, uint32_t progress)
 	{
 		UT_DEBUGMSG(("ProgressiveSoapCall::_progress_cb()\n"));
@@ -84,18 +84,18 @@ private:
 			soup_session_cancel_message(session, msg, SOUP_STATUS_CANCELLED);
 #else
 			soup_message_set_status(msg, SOUP_STATUS_CANCELLED);
-			soup_session_cancel_message(session, msg);	
+			soup_session_cancel_message(session, msg);
 #endif
 			return;
 		}
-		
+
 		m_worker_ptr->progress(progress);
 	}
-	
+
 	std::string							m_uri;
 	soa::method_invocation				m_mi;
 	std::string							m_ssl_ca_file;
-	
+
 	boost::shared_ptr< InterruptableAsyncWorker<bool> >
 										m_worker_ptr;
 

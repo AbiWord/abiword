@@ -44,7 +44,7 @@ class GR_AbiMathItems
   bool m_bHasSnapshot;
 };
 
-class GR_MathManager : public GR_EmbedManager 
+class GR_MathManager : public GR_EmbedManager
 {
 public:
     GR_MathManager(GR_Graphics * pG);

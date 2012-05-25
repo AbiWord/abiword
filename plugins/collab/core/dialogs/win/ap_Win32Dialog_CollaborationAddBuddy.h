@@ -52,7 +52,7 @@ private:
 	HINSTANCE					m_hInstance;
 	HWND						m_hOK;
 	HWND						m_hCancel;
-	
+
 	AccountHandler*				m_pAccount;
 
 };

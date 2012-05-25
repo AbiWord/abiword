@@ -127,7 +127,7 @@ get_index (int n_swatches, GOColorGroup *color_group, GOColor color)
 {
 	int i = 0;
 	int index = -1;
-	
+
 	while (default_color_set[i].name != NULL) {
 		if (default_color_set[i].color == color && index < 0) {
 			index = i;
@@ -153,14 +153,14 @@ get_color (int n_swatches, GOColorGroup *color_group, int index)
 {
 	if (index < 0 || index >= (n_swatches))
 		index = 0;
-		
+
        	if (index < n_swatches - GO_COLOR_GROUP_HISTORY_SIZE)
 		return default_color_set[index].color;
 	else
 		return color_group->history[index - (n_swatches - GO_COLOR_GROUP_HISTORY_SIZE)];
 }
 
-GOColor 
+GOColor
 go_color_selector_get_color (GOSelector *selector, gboolean *is_auto)
 {
 	GOColorSelectorState *state;
@@ -168,7 +168,7 @@ go_color_selector_get_color (GOSelector *selector, gboolean *is_auto)
 	gboolean flag;
 
 	g_return_val_if_fail (GO_IS_SELECTOR (selector), RGB_WHITE);
-	
+
 	index = go_selector_get_active (selector, &flag);
 	state = go_selector_get_user_data (selector);
 	if (is_auto != NULL)
@@ -178,7 +178,7 @@ go_color_selector_get_color (GOSelector *selector, gboolean *is_auto)
 	 * successive color choices. */
 	if (flag)
 		return state->default_color;
-	
+
 	return get_color (state->n_swatches, state->color_group, index);
 }
 
@@ -207,7 +207,7 @@ draw_check (cairo_surface_t *surface, int width, int height)
 static void
 go_color_palette_render_func (cairo_t *cr,
 			      GdkRectangle const *area,
-			      int index, 
+			      int index,
 			      gpointer data)
 {
 	GOColor color;
@@ -215,7 +215,7 @@ go_color_palette_render_func (cairo_t *cr,
 	cairo_surface_t *check;
 
 	color = get_color (state->n_swatches, state->color_group, index);
-	
+
 	check = cairo_image_surface_create (CAIRO_FORMAT_RGB24, 12, 12);
 	draw_check (check, 12, 12);
 
@@ -228,15 +228,15 @@ go_color_palette_render_func (cairo_t *cr,
 	cairo_move_to (cr, area->x, area->y + area->height);
 	cairo_rel_line_to (cr, area->width, 0);
 	cairo_rel_line_to (cr, 0, -area->height);
-	cairo_close_path (cr);	
+	cairo_close_path (cr);
 	cairo_fill (cr);
 	cairo_restore (cr);
 
 	cairo_surface_destroy (check);
 
 	cairo_set_line_width (cr, 1);
-	cairo_set_source_rgba (cr, 
-			       DOUBLE_RGBA_R(color), 
+	cairo_set_source_rgba (cr,
+			       DOUBLE_RGBA_R(color),
 			       DOUBLE_RGBA_G(color),
 			       DOUBLE_RGBA_B(color),
 			       DOUBLE_RGBA_A(color));
@@ -252,20 +252,20 @@ cb_color_dialog_response (GtkColorSelectionDialog *color_dialog,
 			  GOSelector *selector)
 {
 	GtkWidget *color_selection;
-	
+
 	color_selection = GTK_COLOR_SELECTION_DIALOG (color_dialog)->colorsel;
-	
+
 	if (response == GTK_RESPONSE_OK) {
 		GOColorSelectorState *state;
 		GdkColor gdk_color;
 		GOColor color;
 		guint16 alpha;
-		
+
 		gtk_color_selection_get_current_color (GTK_COLOR_SELECTION (color_selection),
 						       &gdk_color);
 		alpha = gtk_color_selection_get_current_alpha (GTK_COLOR_SELECTION (color_selection));
 		state = go_selector_get_user_data (selector);
-		
+
 		color = GDK_TO_UINT (gdk_color);
 		alpha >>= 8;
 		color = UINT_RGBA_CHANGE_A (color, alpha);
@@ -284,14 +284,14 @@ cb_combo_custom_activate (GOPalette *palette, GOSelector *selector)
 	GtkWidget *color_selection;
 	GdkColor gdk_color;
 	GOColor color;
-	
+
 	color_dialog = g_object_get_data (G_OBJECT (selector), "color-dialog");
 	if (color_dialog != NULL) {
 		color_selection = GTK_COLOR_SELECTION_DIALOG (color_dialog)->colorsel;
 		color = go_color_selector_get_color (selector, NULL);
-		gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (color_selection), 
+		gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (color_selection),
 						       go_color_to_gdk (color, &gdk_color));
-		gtk_color_selection_set_current_alpha (GTK_COLOR_SELECTION (color_selection), 
+		gtk_color_selection_set_current_alpha (GTK_COLOR_SELECTION (color_selection),
 						       UINT_RGBA_A (color) * 257);
 		gtk_window_present (GTK_WINDOW (color_dialog));
 		return;
@@ -299,13 +299,13 @@ cb_combo_custom_activate (GOPalette *palette, GOSelector *selector)
 
 	color_dialog = gtk_color_selection_dialog_new (_("Custom color..."));
 	color_selection = GTK_COLOR_SELECTION_DIALOG (color_dialog)->colorsel;
-	g_object_set_data_full (G_OBJECT (selector), "color-dialog", color_dialog, 
+	g_object_set_data_full (G_OBJECT (selector), "color-dialog", color_dialog,
 				(GDestroyNotify) gtk_widget_destroy);
 	color = go_color_selector_get_color (selector, NULL);
-	gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (color_selection), 
+	gtk_color_selection_set_current_color (GTK_COLOR_SELECTION (color_selection),
 					       go_color_to_gdk (color, &gdk_color));
 	gtk_color_selection_set_has_opacity_control (GTK_COLOR_SELECTION (color_selection), TRUE);
-	gtk_color_selection_set_current_alpha (GTK_COLOR_SELECTION (color_selection), 
+	gtk_color_selection_set_current_alpha (GTK_COLOR_SELECTION (color_selection),
 					       UINT_RGBA_A (color) * 257);
 	g_signal_connect (color_dialog, "response", G_CALLBACK (cb_color_dialog_response), selector);
        	gtk_widget_show (color_dialog);
@@ -326,7 +326,7 @@ go_color_selector_drag_data_received (GOSelector *selector, gpointer data)
 }
 
 static gpointer
-go_color_selector_drag_data_get (GOSelector *selector) 
+go_color_selector_drag_data_get (GOSelector *selector)
 {
 	GOColorSelectorState *state;
 	GOColor color;
@@ -334,7 +334,7 @@ go_color_selector_drag_data_get (GOSelector *selector)
 	guint16 *data;
 
 	state = go_selector_get_user_data (selector);
-	
+
 	data = g_new0 (guint16, 4);
 	index = go_selector_get_active (selector, NULL);
 	color = get_color (state->n_swatches, state->color_group, index);
@@ -342,7 +342,7 @@ go_color_selector_drag_data_get (GOSelector *selector)
 	data[0] = UINT_RGBA_R (color) << 8;
 	data[1] = UINT_RGBA_G (color) << 8;
 	data[2] = UINT_RGBA_B (color) << 8;
-	data[3] = UINT_RGBA_A (color) << 8; 
+	data[3] = UINT_RGBA_A (color) << 8;
 
 	return data;
 }
@@ -362,7 +362,7 @@ go_color_selector_drag_fill_icon (GOSelector *selector, GdkPixbuf *pixbuf)
 }
 
 GtkWidget *
-go_color_selector_new (GOColor initial_color, 
+go_color_selector_new (GOColor initial_color,
 		       GOColor default_color,
 		       char const *group)
 {
@@ -375,7 +375,7 @@ go_color_selector_new (GOColor initial_color,
 
 	state = g_new (GOColorSelectorState, 1);
 	state->default_color = default_color;
-	
+
 	while (default_color_set[count].name != NULL) count ++;
 	state->n_swatches = count + GO_COLOR_GROUP_HISTORY_SIZE;
 	state->color_group = go_color_group_fetch (group, NULL);
@@ -384,11 +384,11 @@ go_color_selector_new (GOColor initial_color,
 	default_index = get_index (state->n_swatches, state->color_group, default_color);
 	/* In case default_color is not in standard palette */
 	initial_index = get_index (state->n_swatches, state->color_group, initial_color);
-	
-	palette = go_palette_new (state->n_swatches, 1.0, 8, 
+
+	palette = go_palette_new (state->n_swatches, 1.0, 8,
 				  go_color_palette_render_func,
 				  state, go_color_selector_state_free);
-	go_palette_show_automatic (GO_PALETTE (palette), default_index, NULL); 	
+	go_palette_show_automatic (GO_PALETTE (palette), default_index, NULL);
 	go_palette_show_custom (GO_PALETTE (palette), "Custom color...");
 	selector = go_selector_new (GO_PALETTE (palette));
 	go_selector_set_active (GO_SELECTOR (selector), initial_index);
@@ -397,7 +397,7 @@ go_color_selector_new (GOColor initial_color,
 	go_selector_setup_dnd (GO_SELECTOR (selector), "application/x-color", 8,
 			       go_color_selector_drag_data_get,
 			       go_color_selector_drag_data_received,
-			       go_color_selector_drag_fill_icon); 
+			       go_color_selector_drag_fill_icon);
 
 	return selector;
 }
@@ -407,13 +407,13 @@ go_color_selector_set_color (GOSelector *selector, GOColor color)
 {
 	GOColorSelectorState *state;
 	int index;
-	
+
 	g_return_val_if_fail (GO_IS_SELECTOR (selector), FALSE);
 
 	state =  go_selector_get_user_data (selector);
 	g_return_val_if_fail (state != NULL, FALSE);
-	
+
 	index = get_index (state->n_swatches, state->color_group, color);
-	
+
 	return go_selector_set_active (selector, index);
 }

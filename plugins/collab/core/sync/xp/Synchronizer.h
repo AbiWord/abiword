@@ -44,7 +44,7 @@ public:
 	// Windows-only static stuff
 	static bool sm_bClassRegistered;
 	static int sm_iMessageWindows;
-	
+
 	static LRESULT CALLBACK s_wndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static void _registerWndClass();
 	static void _unregisterWndClass();
@@ -53,7 +53,7 @@ public:
 	// XP prototypes
 	Synchronizer(boost::function<void ()> signalhandler);
 	virtual ~Synchronizer();
-	
+
 	void signal();
 
 	void callMainloop()
@@ -77,8 +77,8 @@ private:
 	int m_iDeferredMessages;
 
 	// This hack should not be needed if the Synchronizer was always uses
-	// as a shared pointer. Without that, when this object is destroyed as the 
-	// result of a mainloop callback, we can't determine the number of deferred 
+	// as a shared pointer. Without that, when this object is destroyed as the
+	// result of a mainloop callback, we can't determine the number of deferred
 	// signals anymore.
 	// If this hack is removed (because all uses of the Synchronizer are
 	// shared pointer uses, and the wndProc has been updated accordingly),

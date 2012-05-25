@@ -974,7 +974,7 @@ go_set_file_permissions (char const *uri, GOFilePermissions * file_permissions)
 		permissions |= S_IXOTH;
 
 	filename = go_filename_from_uri (uri);
-	
+
 #ifdef HAVE_G_CHMOD
 	result = g_chmod (filename, permissions);
 #else
@@ -1398,8 +1398,8 @@ go_file_access (char const *uri, gint mode)
 #else
 	ret = access (filename, mode);
 #endif
-	
+
 	g_free (filename);
-	
+
 	return ret;
 }

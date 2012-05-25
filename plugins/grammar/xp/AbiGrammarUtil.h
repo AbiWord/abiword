@@ -23,7 +23,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 
-class AbiGrammarError 
+class AbiGrammarError
 {
  public:
   AbiGrammarError(void);

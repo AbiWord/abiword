@@ -3,20 +3,20 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2000,2004 Frodo Looijaard <frodol@dds.nl>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -53,7 +53,7 @@ public:
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
 	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									           UT_uint32 iNumbytes);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
@@ -62,17 +62,17 @@ public:
 										IE_Imp ** ppie);
 };
 
-class IE_Imp_Psion_TextEd_Sniffer : 
+class IE_Imp_Psion_TextEd_Sniffer :
 	                                                public IE_Imp_Psion_Sniffer
 {
 public:
-	IE_Imp_Psion_TextEd_Sniffer(const char * _name): 
+	IE_Imp_Psion_TextEd_Sniffer(const char * _name):
                                                   IE_Imp_Psion_Sniffer(_name) {}
 	virtual ~IE_Imp_Psion_TextEd_Sniffer() {}
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
 	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									           UT_uint32 iNumbytes);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
@@ -90,9 +90,9 @@ public:
 protected:
 	virtual UT_Error _loadFile(GsfInput * input);
 
-	UT_Error getCharacterAttributes(const psiconv_character_layout layout, 
+	UT_Error getCharacterAttributes(const psiconv_character_layout layout,
                                 UT_UTF8String &props);
-	UT_Error getParagraphAttributes(const psiconv_paragraph_layout layout, 
+	UT_Error getParagraphAttributes(const psiconv_paragraph_layout layout,
                                 UT_UTF8String &props);
 	UT_Error applyCharacterAttributes(const psiconv_character_layout layout);
 	UT_Error applyParagraphAttributes(const psiconv_paragraph_layout layout,

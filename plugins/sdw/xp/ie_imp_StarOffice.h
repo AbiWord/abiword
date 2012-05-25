@@ -2,20 +2,20 @@
 
 /* Abiword
  * Copyright (C) 2001 Christian Biesinger <cbiesinger@web.de>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -46,9 +46,9 @@ struct ClsId {
 
 /*! Reads a string from the file where the first uint16 contains the length. If it
  * is zero-terminated, length must include the byte for termination.
- * str must be delete[]'d, not free'd! 
+ * str must be delete[]'d, not free'd!
  * aLength, if non-null, contains the length of the string in bytes. */
-void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength = NULL) 
+void readByteString(GsfInput* stream, char*& str, UT_uint16* aLength = NULL)
     throw(UT_Error);
 
 /*! Reads a bytestring from a stream and converts it to UCS-4. Optionally,
@@ -65,7 +65,7 @@ class DocHdr {
 		~DocHdr() { if (sBlockName) free(sBlockName); if (UT_iconv_isValid(converter)) UT_iconv_close(converter); }
 		/*! Reads the document header
 		 * \param stream The OLE Stream to load from - should be the one
-		 *               with the name "StarWriterDocument" 
+		 *               with the name "StarWriterDocument"
 		 * \throw UT_Error on failure */
 		void load(GsfInput* stream) throw(UT_Error);
 

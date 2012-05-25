@@ -1,21 +1,21 @@
 /* AbiSource
- * 
+ *
  * Copyright (C) 2005 INdT
  * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -46,32 +46,32 @@ public:
     // Write this <text:list-style> element.
     virtual bool write(GsfOutput* pODT,
                        const UT_UTF8String& rSpacesOffset) const = 0;
-    
+
     const UT_UTF8String& getAbiListID() const {return m_AbiListId;}
 
     const UT_UTF8String& getFontName() const {return m_fontName;}
 
-    static void calculateListMargins(const PP_AttrProp& rAP, 
-                    UT_UTF8String& textIndent, UT_UTF8String& spaceBefore, 
+    static void calculateListMargins(const PP_AttrProp& rAP,
+                    UT_UTF8String& textIndent, UT_UTF8String& spaceBefore,
                     UT_UTF8String& minLabelWidth, UT_UTF8String& marginLeft);
 
 protected:
 
     void _writeTextProperties(GsfOutput* pODT,
                          const UT_UTF8String& rSpacesOffset) const;
-                         
+
     void _writeListLevelProperties(GsfOutput* pODT,
                               const UT_UTF8String& rSpacesOffset) const;
 
     // listid attribute fom AbiWord <p> tag.
     UT_UTF8String m_AbiListId;
-    
+
     UT_UTF8String m_level; // text:level
-    
+
     ////
     // <style:text-properties> sub element
     UT_UTF8String m_fontName; // style:font-name
-    
+
     ////
     // <style:list-level-properties> sub element
     UT_UTF8String m_textIndent;    // fo:text-indent

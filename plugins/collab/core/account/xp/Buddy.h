@@ -31,7 +31,7 @@ class AccountHandler;
 
 using std::vector;
 
-class Buddy 
+class Buddy
 {
 public:
 	Buddy(AccountHandler* handler)
@@ -40,20 +40,20 @@ public:
 	{
 	}
 	virtual ~Buddy() {}
-	
+
 	/*
 	 * Buddy management
 	 */
-	
-	// Should be globally unique if possible, so it can be used to identify 
-	// authors when they reconnect or to allow sessions to be taken over. 
-	// Session takeover can NOT be enabled in the account handler if the buddy 
+
+	// Should be globally unique if possible, so it can be used to identify
+	// authors when they reconnect or to allow sessions to be taken over.
+	// Session takeover can NOT be enabled in the account handler if the buddy
 	// descriptor is not globally unique.
-	// When a buddy decriptor is not globally unique, then it must at least 
+	// When a buddy decriptor is not globally unique, then it must at least
 	// uniquely identify a buddy within a collaboration session.
 	//
 	// When include_session_info is true, the descriptor should contain
-	// all the information required to construct a buddy object from it for the 
+	// all the information required to construct a buddy object from it for the
 	// backends that support session takeover
 	// When include_session_info is false, the descriptor only has to include the
 	// information needed to *recognize* a particular author
@@ -66,7 +66,7 @@ public:
 		{ m_volatile = _volatile; }
 	bool							isVolatile()
 		{ return m_volatile; }
-	
+
 	/*
 	 * Document management
 	 */
@@ -100,13 +100,13 @@ public:
 			}
 		}
 		UT_ASSERT(UT_NOT_REACHED);
-	}	
-	
+	}
+
 private:
 	AccountHandler*				m_handler;
 	UT_UTF8String				m_descriptor;
 	vector<DocHandle*>			m_docHandles;
-	bool						m_volatile;	
+	bool						m_volatile;
 };
 
 typedef boost::shared_ptr<Buddy> BuddyPtr;

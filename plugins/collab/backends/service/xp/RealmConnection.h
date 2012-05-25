@@ -39,7 +39,7 @@ using realm::protocolv1::PacketPtr;
 struct PendingDocumentProperties
 {
 	PendingDocumentProperties(AP_Dialog_GenericProgress* pDlg_,
-								PD_Document** pDoc_, XAP_Frame* pFrame_, 
+								PD_Document** pDoc_, XAP_Frame* pFrame_,
 								const std::string& filename_, bool bLocallyOwned_)
 	: pDlg(pDlg_),
 	pDoc(pDoc_),
@@ -47,7 +47,7 @@ struct PendingDocumentProperties
 	filename(filename_),
 	bLocallyOwned(bLocallyOwned_)
 	{}
-	
+
 	AP_Dialog_GenericProgress* pDlg;
 	PD_Document** pDoc;
 	XAP_Frame* pFrame;
@@ -64,11 +64,11 @@ public:
 	RealmConnection(const std::string& ca_file, const std::string& address, int port, bool tls,
 					const std::string& cookie, UT_uint64 doc_id, bool master, const std::string& session_id,
 					boost::function<void (boost::shared_ptr<RealmConnection>)> sig);
-	
+
 	bool								connect();
 	void								disconnect();
 	bool								isConnected();
-	
+
 	void								addBuddy(RealmBuddyPtr buddy_ptr);
 	void								removeBuddy(UT_uint8 realm_connection_id);
 	RealmBuddyPtr						getBuddy(UT_uint8 realm_connection_id);
@@ -80,7 +80,7 @@ public:
 	UT_uint8							connection_id()
 		{ return m_connection_id; }
 	UT_uint64							doc_id()
-		{ return m_doc_id; }	
+		{ return m_doc_id; }
 	bool								master()
 		{ return m_master; }
 	void								promote();
@@ -107,8 +107,8 @@ public:
 		{ return m_pdp_ptr; }
 	void								loadDocumentEnd()
 		{ m_pdp_ptr.reset(); }
-	
-	
+
+
 private:
 	void								_disconnect();
 	void								_signal();

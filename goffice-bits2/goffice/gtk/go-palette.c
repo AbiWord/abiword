@@ -70,7 +70,7 @@ struct _GOPalettePrivate {
 	int		 swatch_width;
 	int		 swatch_height;
 
-	GOPaletteSwatchRenderCallback swatch_render; 
+	GOPaletteSwatchRenderCallback swatch_render;
 	gpointer 	 data;
 	GDestroyNotify	 destroy;
 
@@ -79,7 +79,7 @@ struct _GOPalettePrivate {
 	GtkWidget	*automatic_separator;
 	char		*automatic_label;
 	int		 automatic_index;
-	
+
 	gboolean	 show_custom;
 	GtkWidget	*custom;
 	GtkWidget	*custom_separator;
@@ -116,7 +116,7 @@ go_palette_init (GOPalette *palette)
 	priv->show_custom = FALSE;
 
 	priv->automatic_index = 0;
-	
+
 	layout = gtk_widget_create_pango_layout (GTK_WIDGET (palette), "A");
 	pango_layout_get_pixel_extents (layout, NULL, &rect);
 	g_object_unref (layout);
@@ -143,7 +143,7 @@ go_palette_realize (GtkWidget *widget)
 	if (priv->show_automatic) {
 		priv->automatic = gtk_menu_item_new_with_label (priv->automatic_label);
 		gtk_menu_attach	(GTK_MENU (palette), priv->automatic, 0, priv->n_columns, 0, 1);
-		g_signal_connect (priv->automatic, "activate", G_CALLBACK (cb_automatic_activate), palette); 
+		g_signal_connect (priv->automatic, "activate", G_CALLBACK (cb_automatic_activate), palette);
 		priv->automatic_separator = gtk_separator_menu_item_new ();
 		gtk_menu_attach	(GTK_MENU (palette), priv->automatic_separator, 0, priv->n_columns, 1, 2);
 		gtk_widget_show (GTK_WIDGET (palette->priv->automatic));
@@ -154,16 +154,16 @@ go_palette_realize (GtkWidget *widget)
 		row = ((priv->n_swatches - 1) / priv->n_columns) + 3;
 
 		priv->custom_separator = gtk_separator_menu_item_new ();
-		gtk_menu_attach (GTK_MENU (palette), priv->custom_separator, 0, priv->n_columns, 
+		gtk_menu_attach (GTK_MENU (palette), priv->custom_separator, 0, priv->n_columns,
 				 row, row + 1);
 		priv->custom = gtk_menu_item_new_with_label (priv->custom_label);
-		gtk_menu_attach (GTK_MENU (palette), priv->custom, 0, priv->n_columns, 
+		gtk_menu_attach (GTK_MENU (palette), priv->custom, 0, priv->n_columns,
 				 row + 1, row + 2);
-		g_signal_connect (priv->custom, "activate", G_CALLBACK (cb_custom_activate), palette); 
+		g_signal_connect (priv->custom, "activate", G_CALLBACK (cb_custom_activate), palette);
 		gtk_widget_show (GTK_WIDGET (palette->priv->custom));
 		gtk_widget_show (GTK_WIDGET (palette->priv->custom_separator));
 	}
-	
+
 	GTK_WIDGET_CLASS (go_palette_parent_class)->realize (widget);
 }
 
@@ -172,7 +172,7 @@ go_palette_class_init (GOPaletteClass *class)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (class);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
-	
+
 	object_class->finalize = go_palette_finalize;
 	widget_class->realize = go_palette_realize;
 
@@ -193,7 +193,7 @@ go_palette_class_init (GOPaletteClass *class)
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__INT,
 			      G_TYPE_NONE, 1, G_TYPE_INT);
-	
+
 	go_palette_signals[GO_PALETTE_CUSTOM_ACTIVATE] =
 		g_signal_new ("custom-activate",
 			      G_OBJECT_CLASS_TYPE (class),
@@ -202,7 +202,7 @@ go_palette_class_init (GOPaletteClass *class)
 			      NULL, NULL,
 			      g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
-	
+
 	g_type_class_add_private (object_class, sizeof (GOPalettePrivate));
 }
 
@@ -247,13 +247,13 @@ GtkWidget *
 go_palette_swatch_new (GOPalette *palette, int index)
 {
 	GtkWidget *swatch;
-	
+
 	swatch = gtk_drawing_area_new ();
 
 	g_object_set_data (G_OBJECT (swatch), "index", GINT_TO_POINTER (index));
 	g_signal_connect (G_OBJECT (swatch), "expose-event", G_CALLBACK (cb_swatch_expose), palette);
-	gtk_widget_set_size_request (swatch, 
-				     palette->priv->swatch_width, 
+	gtk_widget_set_size_request (swatch,
+				     palette->priv->swatch_width,
 				     palette->priv->swatch_height);
 
 	gtk_widget_show (swatch);
@@ -273,14 +273,14 @@ cb_menu_item_activate (GtkWidget *item, GOPalette *palette)
 static GtkWidget *
 go_palette_menu_item_new (GOPalette *palette, int index)
 {
-	GtkWidget *swatch; 
+	GtkWidget *swatch;
 	GtkWidget *item;
 
 	item = gtk_menu_item_new ();
 	swatch = go_palette_swatch_new (palette, index);
 	gtk_container_add (GTK_CONTAINER (item), swatch);
-	
-	g_signal_connect (item, "activate", G_CALLBACK (cb_menu_item_activate), palette); 
+
+	g_signal_connect (item, "activate", G_CALLBACK (cb_menu_item_activate), palette);
 
 	return item;
 }
@@ -288,7 +288,7 @@ go_palette_menu_item_new (GOPalette *palette, int index)
 static void
 cb_automatic_activate (GtkWidget *item, GOPalette *palette)
 {
-	g_signal_emit (palette, go_palette_signals[GO_PALETTE_AUTOMATIC_ACTIVATE], 0, 
+	g_signal_emit (palette, go_palette_signals[GO_PALETTE_AUTOMATIC_ACTIVATE], 0,
 		       palette->priv->automatic_index);
 }
 
@@ -310,7 +310,7 @@ go_palette_new (int n_swatches,
 		GOPaletteSwatchRenderCallback swatch_render,
 		gpointer data,
 		GDestroyNotify destroy)
-			
+
 {
 	GOPalettePrivate *priv;
 	GtkWidget *palette;
@@ -336,7 +336,7 @@ go_palette_new (int n_swatches,
 }
 
 void
-go_palette_show_automatic (GOPalette *palette, 
+go_palette_show_automatic (GOPalette *palette,
 			   int index,
 			   char const *label)
 {
@@ -347,17 +347,17 @@ go_palette_show_automatic (GOPalette *palette,
 	priv = palette->priv;
 	g_return_if_fail (!priv->show_automatic);
 
-	priv->automatic_label = g_strdup (label == NULL ?  _("Automatic"): _(label));	
+	priv->automatic_label = g_strdup (label == NULL ?  _("Automatic"): _(label));
 	priv->automatic_index = index;
 	priv->show_automatic = TRUE;
 }
 
 void
-go_palette_show_custom (GOPalette *palette, 
+go_palette_show_custom (GOPalette *palette,
 			char const *label)
 {
 	GOPalettePrivate *priv;
-	
+
 	g_return_if_fail (GO_IS_PALETTE (palette));
 
 	priv = palette->priv;
@@ -377,6 +377,6 @@ gpointer
 go_palette_get_user_data (GOPalette *palette)
 {
 	g_return_val_if_fail (GO_IS_PALETTE (palette), NULL);
-	
-	return palette->priv->data;		      
+
+	return palette->priv->data;
 }

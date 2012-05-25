@@ -39,12 +39,12 @@ public:
 	{
 		setVolatile(true);
 	}
-	
+
 	virtual UT_UTF8String getDescriptor(bool /*include_session_info = false*/) const
 	{
 		return UT_UTF8String("tcp://") + m_address.c_str() + UT_UTF8String(":") + m_port.c_str();
 	}
-	
+
 	virtual UT_UTF8String getDescription() const
 	{
 		return UT_UTF8String(m_address.c_str()) + UT_UTF8String(":") + m_port.c_str();
@@ -55,12 +55,12 @@ public:
 
 	const std::string& getPort() const
 		{ return m_port; }
-		
+
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
 		const vector<DocHandle*>& docHandles = getDocHandles();
 		DocTreeItem* first = 0;
-		DocTreeItem* prev = 0;		
+		DocTreeItem* prev = 0;
 		for (vector<DocHandle*>::const_iterator pos = docHandles.begin(); pos != docHandles.end(); pos++)
 		{
 			DocTreeItem* item = new DocTreeItem();
@@ -68,7 +68,7 @@ public:
 			item->m_docHandle = *pos;
 			item->m_child = 0;
 			item->m_next = 0;
-			
+
 			if (!first)
 				first = item;
 			if (prev)

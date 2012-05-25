@@ -19,7 +19,7 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 #ifndef ABICOLLAB_PACKET_H
 #define ABICOLLAB_PACKET_H
 
@@ -55,7 +55,7 @@ enum PacketEventType
 enum PClassType // send over the net to identify classes
 {
 	// NOTE: do not reshuffle these values: it will make the protocol incompatible with previous versions
-	
+
 	//
 	// base
 	//
@@ -63,7 +63,7 @@ enum PClassType // send over the net to identify classes
 	PCT_EventPacket,
 	PCT_Event,
 	PCT_ProtocolErrorPacket,
-	
+
 	//
 	// session packets
 	//
@@ -80,7 +80,7 @@ enum PClassType // send over the net to identify classes
 	PCT_DeleteStrux_ChangeRecordSessionPacket,
 	PCT_Object_ChangeRecordSessionPacket,
 	PCT_Data_ChangeRecordSessionPacket,
-	PCT_Glob_ChangeRecordSessionPacket,			
+	PCT_Glob_ChangeRecordSessionPacket,
 	PCT_RDF_ChangeRecordSessionPacket,          // update _PCT_LastChangeRecord if you move this
 	/* session takeover packets */
 	PCT_SessionTakeoverRequestPacket = 0x40,	// update _PCT_FirstSessionTakeoverPacket if you move this
@@ -109,19 +109,19 @@ enum PClassType // send over the net to identify classes
 	PCT_CloseSessionEvent,
 	PCT_GetSessionsEvent,
 	PCT_GetSessionsResponseEvent,
-	
+
 	//
 	// meta values (KEEP THESE UPDATED WHEN ADDING NEW PACKET TYPES!!)
 	//
 	_PCT_FirstSessionPacket = PCT_SignalSessionPacket,
 	_PCT_LastSessionPacket = PCT_SessionReconnectAckPacket,
-	
+
 	_PCT_FirstChangeRecord = PCT_ChangeRecordSessionPacket,
 	_PCT_LastChangeRecord = PCT_RDF_ChangeRecordSessionPacket,
-	
+
 	_PCT_FirstSessionTakeoverPacket = PCT_SessionTakeoverRequestPacket,
 	_PCT_LastSessionTakeoverPacket = PCT_SessionReconnectAckPacket,
-	
+
 	_PCT_FirstEvent = PCT_AccountNewEvent,
 	_PCT_LastEvent = PCT_GetSessionsResponseEvent
 };
@@ -160,7 +160,7 @@ class Packet
 {
 public:
 	DECLARE_ABSTRACT_PACKET(Packet);
-	
+
 	Packet();
 	Packet( AbiCollab* session );
 	virtual ~Packet() {}
@@ -169,17 +169,17 @@ public:
 	const AbiCollab* getSession() const				{ return m_pSession; }
 	AbiCollab* getSession() 						{ return m_pSession; }
 	virtual UT_sint32 getProtocolVersion() const;
-	
+
     virtual void serialize(Archive & ar);										// overridden automatically throught DECLARE_PACKET
 	void setParent( Packet* pParent )		{ m_pParent = pParent; }
 	Packet* getParent() 					{ return m_pParent; }
-	
+
 	virtual std::string	toStr() const;
-	
+
 protected:
 	AbiCollab*			m_pSession;
 	Packet*				m_pParent;
-	
+
 	/** Class reconstruction */
 public:
 	typedef Packet*(*PacketCreateFuncType)();
@@ -206,7 +206,7 @@ public:
 	DECLARE_SERIALIZABLE_PACKET
 
 	static bool isInstanceOf(const Packet& packet);
-		
+
 protected:
 	SessionPacket() : m_sSessionId(""), m_sDocUUID("")  {}
 	SessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID);
@@ -223,12 +223,12 @@ public:
 
 	void setDocUUID(const UT_UTF8String& sDocUUID)
 		{ m_sDocUUID = sDocUUID; }
-		
+
 	virtual std::string toStr() const;
-	
+
 private:
 	UT_UTF8String			m_sSessionId;
-	UT_UTF8String			m_sDocUUID;	
+	UT_UTF8String			m_sDocUUID;
 };
 
 class AbstractChangeRecordSessionPacket : public SessionPacket
@@ -237,13 +237,13 @@ public:
 	AbstractChangeRecordSessionPacket()
 		: SessionPacket("", "")
 		{}
-		
+
 	AbstractChangeRecordSessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
 		: SessionPacket(sSessionId, sDocUUID)
 		{}
-	
+
 	static bool isInstanceOf(const SessionPacket& packet);
-	
+
 	virtual PT_DocPosition getPos() const = 0;
 	virtual UT_sint32 getLength() const = 0;
 	virtual UT_sint32 getAdjust() const = 0;
@@ -256,28 +256,28 @@ class ChangeRecordSessionPacket : public AbstractChangeRecordSessionPacket
 public:
 	DECLARE_PACKET(ChangeRecordSessionPacket);
 	ChangeRecordSessionPacket()
-			: m_cType(PX_ChangeRecord::PXType(0)), 
+			: m_cType(PX_ChangeRecord::PXType(0)),
 			m_iLength(0),
 			m_iAdjust(0),
 			m_iPos(0),
-			m_iRev(0), 
+			m_iRev(0),
 			m_iRemoteRev(0) {}
 	ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			PX_ChangeRecord::PXType cType,
+			const UT_UTF8String& sDocUUID,
 		 	PT_DocPosition iPos,
-			int iRev, 
+			int iRev,
 			int iRemoteRev);
-	
+
 	PX_ChangeRecord::PXType getPXType() const			{ return m_cType; }
-	
+
 	virtual PT_DocPosition getPos() const				{ return m_iPos; }
 	virtual UT_sint32 getLength() const					{ return m_iLength; }
 	virtual UT_sint32 getAdjust() const					{ return m_iAdjust; }
 	virtual UT_sint32 getRev() const 					{ return m_iRev; }
 	virtual UT_sint32 getRemoteRev(void) const			{ return m_iRemoteRev; }
-	
+
 	void setPos( UT_sint32 iPos )						{ m_iPos = iPos; }
 	void setLength( UT_sint32 iLength )					{ m_iLength = iLength; }
 	void setAdjust(UT_sint32 iAdjust)					{ m_iAdjust = iAdjust; }
@@ -285,7 +285,7 @@ public:
 	void setRemoteRev( UT_sint32 iRemoteRev )			{ m_iRemoteRev = iRemoteRev; }
 
 	virtual std::string toStr() const;
-	
+
 private:
 	PX_ChangeRecord::PXType		m_cType;
 
@@ -304,39 +304,39 @@ public:
 	Props_ChangeRecordSessionPacket( const Props_ChangeRecordSessionPacket& );
 	Props_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			PX_ChangeRecord::PXType cType,
+			const UT_UTF8String& sDocUUID,
 			PT_DocPosition iPos,
-			int iRev, 
+			int iRev,
 			int iRemoteRev)
 	: ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	, m_szAtts( NULL )
 	, m_szProps( NULL )
 	{}
-	~Props_ChangeRecordSessionPacket() 
+	~Props_ChangeRecordSessionPacket()
 	{
 		_freeProps();
 		_freeAtts();
 	}
-	
-	gchar** getProps() const										{ return m_szProps; }	
+
+	gchar** getProps() const										{ return m_szProps; }
 	const std::map<UT_UTF8String,UT_UTF8String>& getPropMap() const	{ return m_sProps; }
 	std::map<UT_UTF8String,UT_UTF8String>& getPropMap() 			{ return m_sProps; }
-	
+
 	gchar** getAtts() const											{ return m_szAtts; }
 	const std::map<UT_UTF8String,UT_UTF8String>& getAttMap() const	{ return m_sAtts; }
 	std::map<UT_UTF8String,UT_UTF8String>& getAttMap() 				{ return m_sAtts; }
 	gchar* getAttribute( const gchar* attr ) const;
 
-	virtual std::string toStr() const;		
-	
+	virtual std::string toStr() const;
+
 protected:
 	gchar**									m_szAtts;
 	gchar**									m_szProps;
 	std::map<UT_UTF8String,UT_UTF8String>	m_sAtts;
 	std::map<UT_UTF8String,UT_UTF8String>	m_sProps;
-	
-	void _freeProps(); 
+
+	void _freeProps();
 	void _freeAtts();
 	void _fillProps();		// uses m_sProps to make m_szProps
 	void _fillAtts();		// uses m_sAtts to make m_szAtts
@@ -348,17 +348,17 @@ public:
 	InsertSpan_ChangeRecordSessionPacket() : m_sText("") {}
 	InsertSpan_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			PX_ChangeRecord::PXType cType,
+			const UT_UTF8String& sDocUUID,
 			PT_DocPosition iPos,
-			int iRev, 
+			int iRev,
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	, m_sText("")
 	{}
-	
+
 	virtual std::string toStr() const;
-	
+
 	// XXX: make proper setters/getters when done!
 	UT_UTF8String				m_sText;
 };
@@ -369,15 +369,15 @@ public:
 	ChangeStrux_ChangeRecordSessionPacket() : m_eStruxType(PTStruxType(0)) {} // FIXME: 0 is not a good initializer
 	ChangeStrux_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			PX_ChangeRecord::PXType cType,
+			const UT_UTF8String& sDocUUID,
 			PT_DocPosition iPos,
-			int iRev, 
+			int iRev,
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	, m_eStruxType(PTStruxType(0)) // FIXME: 0 is not a good initializer
 	{}
-	
+
 	virtual std::string toStr() const;
 
 	// XXX: make proper setters/getters when done!
@@ -391,17 +391,17 @@ public:
 	{}
 	DeleteStrux_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			PX_ChangeRecord::PXType cType,
+			const UT_UTF8String& sDocUUID,
 			PT_DocPosition iPos,
-			int iRev, 
+			int iRev,
 			int iRemoteRev)
 	: ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	, m_eStruxType(PTStruxType(0)) // FIXME: 0 is not a good initializer
 	{}
-	
-	virtual std::string toStr() const;	
-	
+
+	virtual std::string toStr() const;
+
 	// XXX: make proper setters/getters when done!
 	PTStruxType					m_eStruxType;
 };
@@ -412,15 +412,15 @@ public:
 	Object_ChangeRecordSessionPacket() : m_eObjectType(PTObjectType(0)) {} // FIXME: 0 is not a good initializer
 	Object_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			PX_ChangeRecord::PXType cType,
+			const UT_UTF8String& sDocUUID,
 			PT_DocPosition iPos,
-			int iRev, 
+			int iRev,
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	, m_eObjectType(PTObjectType(0)) // FIXME: 0 is not a good initializer
 	{}
-	
+
 	virtual std::string toStr() const;
 
 	PTObjectType getObjectType() const
@@ -439,14 +439,14 @@ public:
 	RDF_ChangeRecordSessionPacket() {} // FIXME: 0 is not a good initializer
 	RDF_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			PX_ChangeRecord::PXType cType,
+			const UT_UTF8String& sDocUUID,
 			PT_DocPosition iPos,
-			int iRev, 
+			int iRev,
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	{}
-	
+
 	virtual std::string toStr() const;
 
 private:
@@ -458,17 +458,17 @@ public:
 	Data_ChangeRecordSessionPacket() : m_bTokenSet(false) {}
 	Data_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			PX_ChangeRecord::PXType cType,
+			const UT_UTF8String& sDocUUID,
 			PT_DocPosition iPos,
-			int iRev, 
+			int iRev,
 			int iRemoteRev)
 	: Props_ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	, m_bTokenSet(false)
 	{}
-	
+
 	virtual std::string toStr() const;
-	
+
 	// XXX: make proper setters/getters when done!
 	std::vector<char>			m_vecData;
 	bool						m_bTokenSet;
@@ -480,18 +480,18 @@ class Glob_ChangeRecordSessionPacket : public ChangeRecordSessionPacket
 public:
 	DECLARE_PACKET(Glob_ChangeRecordSessionPacket);
 	Glob_ChangeRecordSessionPacket() {}
-	Glob_ChangeRecordSessionPacket( 
+	Glob_ChangeRecordSessionPacket(
 			const UT_UTF8String& sSessionId,
-			PX_ChangeRecord::PXType cType, 
-			const UT_UTF8String& sDocUUID, 
+			PX_ChangeRecord::PXType cType,
+			const UT_UTF8String& sDocUUID,
 			PT_DocPosition iPos,
-			int iRev, 
+			int iRev,
 			int iRemoteRev)
 	: ChangeRecordSessionPacket( sSessionId, cType, sDocUUID, iPos, iRev, iRemoteRev )
 	{}
 
 	virtual std::string toStr() const;
-	
+
 	// XXX: make proper setters/getters when done!
 	UT_Byte							m_iGLOBType;
 };
@@ -510,13 +510,13 @@ public:
 	const std::vector<SessionPacket*>& getPackets() const	{ return m_pPackets; }
 
 	void addPacket(SessionPacket* pPacket);
-	
+
 	virtual PT_DocPosition getPos() const;
 	virtual UT_sint32 getLength() const;
 	virtual UT_sint32 getAdjust() const;
 	virtual UT_sint32 getRev() const;
 	virtual UT_sint32 getRemoteRev(void) const;
-	
+
 	virtual std::string toStr() const;
 
 private:
@@ -529,12 +529,12 @@ public:
 	DECLARE_PACKET(SignalSessionPacket);
 	SignalSessionPacket() {}
 	SignalSessionPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, UT_uint32 iSignal);
-	
+
 	UT_uint32 getSignalType() const
 		{ return m_iSignal; }
-	
+
 	virtual std::string toStr() const;
-		
+
 private:
 	UT_uint32	m_iSignal;
 };
@@ -548,7 +548,7 @@ public:
 
 	UT_sint32			getRev() const
 		{ return m_iRev; }
-	
+
 	virtual std::string toStr() const;
 
 private:
@@ -564,7 +564,7 @@ public:
 
 	UT_sint32			getRev() const
 		{ return m_iRev; }
-	
+
 	virtual std::string toStr() const;
 
 private:
@@ -584,7 +584,7 @@ public:
 	AbstractSessionTakeoverPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
 		: SessionPacket(sSessionId, sDocUUID)
 		{}
-		
+
 	static bool isInstanceOf(const SessionPacket& packet);
 };
 
@@ -594,7 +594,7 @@ public:
 	DECLARE_PACKET(SessionTakeoverRequestPacket);
 	SessionTakeoverRequestPacket() {}
 	SessionTakeoverRequestPacket(
-		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID, 
+		const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID,
 		bool bPromote, const std::vector<std::string>& vBuddyIdentifiers
 	);
 
@@ -603,7 +603,7 @@ public:
 
 	const std::vector<std::string>& getBuddyIdentifiers() const
 		{ return m_vBuddyIdentifiers; }
-		
+
 	virtual std::string toStr() const;
 
 private:
@@ -619,7 +619,7 @@ public:
 	SessionTakeoverAckPacket(const UT_UTF8String& sSessionId, const UT_UTF8String& sDocUUID)
 		: AbstractSessionTakeoverPacket(sSessionId, sDocUUID) { }
 
-	virtual std::string toStr() const;	
+	virtual std::string toStr() const;
 };
 
 class SessionFlushedPacket : public AbstractSessionTakeoverPacket
@@ -654,11 +654,11 @@ public:
 
 	UT_sint32					getRev() const
 		{ return m_iRev; }
-	
+
 	virtual std::string toStr() const;
 
 private:
-	UT_sint32					m_iRev;	
+	UT_sint32					m_iRev;
 };
 
 #endif /* ABICOLLAB_PACKET_H */

@@ -22,7 +22,7 @@
 #define ABI_COLLAB_COMMAND_H
 
 class UT_UTF8String;
-#ifdef ABICOLLAB_HANDLER_FAKE	
+#ifdef ABICOLLAB_HANDLER_FAKE
 class FakeAccountHandler;
 #endif
 
@@ -35,14 +35,14 @@ public:
 	bool					execute();
 
 private:
-	bool					_doCmdRegression(const UT_UTF8String& sSessionFile);	
-	bool					_doCmdDebug(const UT_UTF8String& sServerSessionFile, const UT_UTF8String& sClientSessionFile, bool bSingleStep);	
-	
-#ifdef ABICOLLAB_HANDLER_FAKE	
+	bool					_doCmdRegression(const UT_UTF8String& sSessionFile);
+	bool					_doCmdDebug(const UT_UTF8String& sServerSessionFile, const UT_UTF8String& sClientSessionFile, bool bSingleStep);
+
+#ifdef ABICOLLAB_HANDLER_FAKE
 	bool					_syncDocs(FakeAccountHandler* pServerHandler, FakeAccountHandler* pClientHandler, bool bSingleStep);
 #endif
-	
-	UT_UTF8String			m_argv;	
+
+	UT_UTF8String			m_argv;
 };
 
 #endif /* ABI_COLLAB_COMMAND_H */

@@ -42,23 +42,23 @@
 class AbiCollab;
 class Event;
 class EventListener;
-	
+
 class AbiCollabSessionManager
 {
 public:
 	static AbiCollabSessionManager*				getManager();
-	
+
 	virtual		       							~AbiCollabSessionManager(void);
 
 	// helper functions
 	static UT_Error								serializeDocument(const PD_Document* pDoc, std::string& document, bool encodeBase64=true );
-	static UT_Error								deserializeDocument(PD_Document** pDoc, const std::string& document, bool isEncodedBase64=true);	
+	static UT_Error								deserializeDocument(PD_Document** pDoc, const std::string& document, bool isEncodedBase64=true);
 
 	// dialog code
 	bool										registerDialogs(void);
 	bool										unregisterDialogs(void);
 	XAP_Dialog_Id								getDialogShareId()
-		{ return m_iDialogShare; }	
+		{ return m_iDialogShare; }
 	XAP_Dialog_Id								getDialogJoinId()
 		{ return m_iDialogJoin; }
 	XAP_Dialog_Id								getDialogAccountsId()
@@ -76,14 +76,14 @@ public:
 		{ m_hModule = hModule; }
 	HINSTANCE									getInstance()
 		{ return m_hModule; }
-	
+
 	#endif
 
 	// profile code
 	void										loadProfile();
 	void										storeProfile();
 
-	// session code	
+	// session code
 	bool										destroySession(PD_Document* pDoc);
 	bool										destroySession(AbiCollab* pSession);
 	void										disconnectSession(AbiCollab* pSession);
@@ -93,22 +93,22 @@ public:
 	AbiCollab*									getSessionFromSessionId(const UT_UTF8String& sSessionId);
 	const UT_GenericVector<AbiCollab *>&		getSessions(void) const
 		{ return m_vecSessions;}
-	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId, AccountHandler* pAclAccount, 
+	AbiCollab*									startSession(PD_Document* pDoc, UT_UTF8String& sNewSessionId, AccountHandler* pAclAccount,
 														bool bLocallyOwned,	XAP_Frame* pFrame, const UT_UTF8String& masterDescriptor);
 	void										closeSession(AbiCollab* pSession, bool canConfirm);
 	void										closeSessions();
 	void										joinSessionInitiate(BuddyPtr pBuddy, DocHandle* pDocHandle);
-	void										joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc, 
+	void										joinSession(const UT_UTF8String& sSessionId, PD_Document* pDoc,
 														const UT_UTF8String& docUUID, UT_sint32 iRev, UT_sint32 iAuthorId,
-														BuddyPtr pCollaborator, AccountHandler* pAclAccount, bool bLocallyOwned, 
+														BuddyPtr pCollaborator, AccountHandler* pAclAccount, bool bLocallyOwned,
 														XAP_Frame *pFrame);
 	void										joinSession(AbiCollab* pSession, BuddyPtr pCollaborator);
-	void										disjoinSession(const UT_UTF8String& sSessionId);	
+	void										disjoinSession(const UT_UTF8String& sSessionId);
 	bool										isLocallyControlled(PD_Document* pDoc);
 	bool										isInSession(PD_Document* pDoc);
 	bool										isActive(const UT_UTF8String& sSessionId);
 	void										removeBuddy(BuddyPtr pBuddy, bool graceful = true);
-	void										updateAcl(AbiCollab* pSession, AccountHandler* pAccount, const std::vector<std::string> acl);  
+	void										updateAcl(AbiCollab* pSession, AccountHandler* pAccount, const std::vector<std::string> acl);
 	XAP_Frame*									findFrameForSession(AbiCollab* pSession);
 
 	// account code
@@ -127,7 +127,7 @@ public:
 
 	// packet handling
 	bool										processPacket(AccountHandler& handler, Packet* pPacket, BuddyPtr buddy);
-	
+
 	// signalling code
 	void										registerEventListener(EventListener* pListener);
 	void										unregisterEventListener(EventListener* pListener);
@@ -137,11 +137,11 @@ public:
 	void										beginAsyncOperation(AbiCollab* pSession);
 	void										endAsyncOperation(AbiCollab* pSession);
 	void										beginAsyncOperation(AccountHandler* pSession);
-	void										endAsyncOperation(AccountHandler* pSession);		
+	void										endAsyncOperation(AccountHandler* pSession);
 
 	// file format handling
 	void										unregisterSniffers(void);
-	
+
 	AbiCollabSessionManager(void); // TODO: this constructor shouldn't be public
 
 private:
@@ -151,12 +151,12 @@ private:
 	void										_deleteSession(AbiCollab* pSession);
 	void										_deleteAccount(AccountHandler* pHandler);
 	bool										_nullUpdate();
-	
+
 	// session code
 	bool										_canInitiateSessionTakeover(AbiCollab* pSession);
-	
-	static AbiCollabSessionManager* 			m_pManager;	
-	
+
+	static AbiCollabSessionManager* 			m_pManager;
+
 	// dialog code
 	XAP_Dialog_Id								m_iDialogShare;
 	XAP_Dialog_Id								m_iDialogJoin;
@@ -164,19 +164,19 @@ private:
 	XAP_Dialog_Id								m_iDialogAddAccount;
 	XAP_Dialog_Id								m_iDialogEditAccount;
 	XAP_Dialog_Id								m_iDialogAddBuddy;
-	
+
 	#ifdef WIN32
 	HINSTANCE 									m_hModule;
 	#endif
 
-	// session code	
+	// session code
 	UT_GenericVector<AbiCollab *>				m_vecSessions;
-	
+
 	// account code
 	std::map<UT_UTF8String, AccountHandlerConstructor>	m_regAccountHandlers;
 	std::vector<AccountHandler *>				m_vecAccounts;
 	UT_GenericVector<EventListener *>			m_vecEventListeners;
-	
+
 	// asynchronous opertation registration
 	std::map<AbiCollab*, int>					m_asyncSessionOps;
 	std::map<AccountHandler*, int>				m_asyncAccountOps;

@@ -1,21 +1,21 @@
 /* AbiSource
- * 
+ *
  * Copyright (C) 2005 INdT
  * Author: Daniel d'Andrada T. de Carvalho <daniel.carvalho@indt.org.br>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -63,7 +63,7 @@ public:
                       UT_uint8 zIndex,
                       UT_uint8 spacesOffset,
                       const UT_UTF8String& rPendingMasterPageStyleName);
-                      
+
     ~ODe_Text_Listener();
 
     // Listener methods
@@ -78,16 +78,16 @@ public:
 
     virtual void openSpan(const PP_AttrProp* pAP);
     virtual void closeSpan();
-    
+
     virtual void openFrame(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
     virtual void closeFrame(ODe_ListenerAction& rAction);
 
     virtual void openField(const fd_Field* field, const UT_UTF8String& fieldType, const UT_UTF8String& fieldValue);
     virtual void closeField(const UT_UTF8String& fieldType);
-    
+
     virtual void openFootnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
     virtual void closeFootnote(ODe_ListenerAction& rAction);
-    
+
     virtual void openEndnote(const PP_AttrProp* pAP, ODe_ListenerAction& rAction);
     virtual void closeEndnote(ODe_ListenerAction& rAction);
 
@@ -107,7 +107,7 @@ public:
 
     void openRDFAnchor(const PP_AttrProp* pAP);
     void closeRDFAnchor(const PP_AttrProp* pAP);
-    
+
     virtual void insertText(const UT_UTF8String& rText);
 
     virtual void insertLineBreak();
@@ -132,7 +132,7 @@ private:
     void _closeODParagraph();
     void _closeODList();
 
-    
+
     bool m_openedODParagraph;
     bool m_openedODSpan;
     bool m_isFirstCharOnParagraph;
@@ -143,18 +143,18 @@ private:
 
     // Content of the current paragraph.
     GsfOutput* m_pParagraphContent;
-    
+
     // The number of currently nested <text:list> tags
     // (meaning the current list level).
     UT_uint8 m_currentListLevel;
     ODe_Style_List* m_pCurrentListStyle;
-    
+
     bool m_pendingColumnBrake;
     bool m_pendingPageBrake;
-    
+
     bool m_pendingMasterPageStyleChange;
     UT_UTF8String m_masterPageStyleName;
-    
+
 	ODe_Styles& m_rStyles;
     ODe_AutomaticStyles& m_rAutomatiStyles;
     GsfOutput* m_pTextOutput;

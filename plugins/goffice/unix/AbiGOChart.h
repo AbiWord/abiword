@@ -43,7 +43,7 @@ class GR_AbiGOChartItems
   bool m_bHasSnapshot;
 };
 
-class GR_GOChartManager : public GR_EmbedManager 
+class GR_GOChartManager : public GR_EmbedManager
 {
 public:
     GR_GOChartManager(GR_Graphics * pG);

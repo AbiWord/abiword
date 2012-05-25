@@ -77,7 +77,7 @@ go_gtk_button_new_with_stock (char const *text, char const* stock_id)
  *
  * Creates and adds a button with stock image to the action area of an existing dialog.
  * Code from gedit
- * 
+ *
  * return : newly created button
  **/
 GtkWidget*
@@ -97,7 +97,7 @@ go_gtk_dialog_add_button (GtkDialog *dialog, const gchar* text, const gchar* sto
 
 	gtk_widget_show (button);
 
-	gtk_dialog_add_action_widget (dialog, button, response_id);	
+	gtk_dialog_add_action_widget (dialog, button, response_id);
 
 	return button;
 }
@@ -142,7 +142,7 @@ go_libglade_new (char const *gladefile, char const *root,
 /**
  * go_gtk_editable_enters:
  * @window:
- * @w: 
+ * @w:
  *
  * Normally if there's an editable widget (such as #GtkEntry) in your
  * dialog, pressing Enter will activate the editable rather than the
@@ -524,7 +524,7 @@ typedef struct {
 } SaveInfoState;
 
 static void
-save_info_state_free (SaveInfoState *state) 
+save_info_state_free (SaveInfoState *state)
 {
 	g_free (state->uri);
 	g_free (state);
@@ -536,8 +536,8 @@ cb_format_combo_changed (GtkComboBox *combo, GtkWidget *expander)
 	GOImageFormatInfo const *format_info;
 
 	format_info = go_image_get_format_info (gtk_combo_box_get_active (combo));
-	gtk_widget_set_sensitive (expander, 
-				  format_info != NULL && 
+	gtk_widget_set_sensitive (expander,
+				  format_info != NULL &&
 				  format_info->is_dpi_useful);
 }
 
@@ -573,8 +573,8 @@ gui_get_image_save_info (GtkWindow *toplevel, GSList *supported_formats,
 
 	g_object_set (G_OBJECT (fsel), "title", _("Save as"), NULL);
 
-	gui = go_libglade_new ("go-image-save-dialog-extra.glade", 
-			       "image_save_dialog_extra", 
+	gui = go_libglade_new ("go-image-save-dialog-extra.glade",
+			       "image_save_dialog_extra",
 			       GETTEXT_PACKAGE, NULL);
 	if (gui != NULL) {
 		GtkWidget *widget;
@@ -587,8 +587,8 @@ gui_get_image_save_info (GtkWindow *toplevel, GSList *supported_formats,
 			for (l = supported_formats, i = 0; l != NULL; l = l->next, i++) {
 				format = GPOINTER_TO_UINT (l->data);
 				format_info = go_image_get_format_info (format);
-				gtk_combo_box_append_text (format_combo, _(format_info->desc)); 
-				if (format == state->format) 
+				gtk_combo_box_append_text (format_combo, _(format_info->desc));
+				if (format == state->format)
 					gtk_combo_box_set_active (format_combo, i);
 			}
 			if (gtk_combo_box_get_active (format_combo) < 0)
@@ -604,7 +604,7 @@ gui_get_image_save_info (GtkWindow *toplevel, GSList *supported_formats,
 			gtk_expander_set_expanded (GTK_EXPANDER (expander), state->is_expanded);
 			resolution_spin = glade_xml_get_widget (gui, "resolution_spin");
 			gtk_spin_button_set_value (GTK_SPIN_BUTTON (resolution_spin), state->resolution);
-		} else 
+		} else
 			gtk_widget_hide (expander);
 
 		if (resolution != NULL && supported_formats != NULL && ret_format != NULL) {
@@ -612,9 +612,9 @@ gui_get_image_save_info (GtkWindow *toplevel, GSList *supported_formats,
 			gtk_file_chooser_set_extra_widget (fsel, widget);
 
 			resolution_table = glade_xml_get_widget (gui, "resolution_table");
-		
-			cb_format_combo_changed (format_combo, resolution_table);	
-			g_signal_connect (GTK_WIDGET (format_combo), "changed", 
+
+			cb_format_combo_changed (format_combo, resolution_table);
+			g_signal_connect (GTK_WIDGET (format_combo), "changed",
 					  G_CALLBACK (cb_format_combo_changed), resolution_table);
 		}
 
@@ -625,7 +625,7 @@ gui_get_image_save_info (GtkWindow *toplevel, GSList *supported_formats,
 		gtk_file_chooser_set_uri (fsel, state->uri);
 		gtk_file_chooser_unselect_all (fsel);
 	}
-	
+
 	/* Show file selector */
  loop:
 	if (!go_gtk_file_sel_dialog (toplevel, GTK_WIDGET (fsel)))
@@ -634,8 +634,8 @@ gui_get_image_save_info (GtkWindow *toplevel, GSList *supported_formats,
 	if (format_combo) {
 		char *new_uri = NULL;
 
-		format = GPOINTER_TO_UINT (g_slist_nth_data 
-			(supported_formats, 
+		format = GPOINTER_TO_UINT (g_slist_nth_data
+			(supported_formats,
 			 gtk_combo_box_get_active (format_combo)));
 		format_info = go_image_get_format_info (format);
 		if (!go_url_check_extension (uri, format_info->ext, &new_uri) &&

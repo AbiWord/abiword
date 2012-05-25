@@ -1,26 +1,26 @@
 /* AbiSource
- * 
+ *
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
  * Copyright (C) 2004 Robert Staudinger <robsta@stereolyzer.net>
  * Copyright (C) 2005 Daniel d'Andrada T. de Carvalho
  * <daniel.carvalho@indt.org.br>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
- 
+
 
 #ifndef _IE_IMP_OPENDOCUMENT_H_
 #define _IE_IMP_OPENDOCUMENT_H_
@@ -54,13 +54,13 @@ public:
     IE_Imp_OpenDocument (PD_Document * pDocument);
     virtual ~IE_Imp_OpenDocument ();
    virtual bool   pasteFromBuffer(PD_DocumentRange * pDocRange,
-				const unsigned char * pData, 
-				UT_uint32 lenData, 
+				const unsigned char * pData,
+				UT_uint32 lenData,
 				const char * szEncoding = 0);
 
  protected:
     virtual UT_Error _loadFile(GsfInput * input);
-    
+
 private:
 
     UT_Error _handleManifestStream ();
@@ -88,7 +88,7 @@ private:
     ODi_StreamListener* m_pStreamListener;
     ODi_Office_Styles m_styles;
     ODi_Abi_Data* m_pAbiData;
-    
+
 };
 
 #endif //_IE_IMP_OPENDOCUMENT_H_

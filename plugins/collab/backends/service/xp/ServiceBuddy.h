@@ -51,7 +51,7 @@ public:
 	{
 		setVolatile(true);
 	}
-	
+
 	virtual UT_UTF8String getDescriptor(bool include_session_info = false) const
 	{
 		if (include_session_info)
@@ -59,29 +59,29 @@ public:
 			UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
 		std::string descr = std::string("acn://")+
-								boost::lexical_cast<std::string>(m_user_id) + ":" + 
+								boost::lexical_cast<std::string>(m_user_id) + ":" +
 								boost::lexical_cast<std::string>(m_type) + "@" +
 								m_domain;
 		return descr.c_str();
 	}
-	
+
 	virtual UT_UTF8String getDescription() const
 		{ return m_name.c_str(); }
-	
+
 	ServiceBuddyType getType() const
 		{ return m_type; }
-	
+
 	uint64_t getUserId() const
 		{ return m_user_id; }
-	
+
 	const std::string& getName() const
 		{ return m_name; }
-	
+
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
 		const vector<DocHandle*>& docHandles = getDocHandles();
 		DocTreeItem* first = 0;
-		DocTreeItem* prev = 0;		
+		DocTreeItem* prev = 0;
 		for (vector<DocHandle*>::const_iterator pos = docHandles.begin(); pos != docHandles.end(); pos++)
 		{
 			DocTreeItem* item = new DocTreeItem();
@@ -89,7 +89,7 @@ public:
 			item->m_docHandle = *pos;
 			item->m_child = 0;
 			item->m_next = 0;
-			
+
 			if (!first)
 				first = item;
 			if (prev)
@@ -98,7 +98,7 @@ public:
 		}
 		return first;
 	}
-	
+
 private:
 	ServiceBuddyType	m_type;
 	uint64_t			m_user_id;

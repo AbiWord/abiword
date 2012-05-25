@@ -40,7 +40,7 @@ public:
 
 	void push(T t)
 	{
-		abicollab::scoped_lock lock(m_mutex); 
+		abicollab::scoped_lock lock(m_mutex);
 		m_queue.push_back( t );
 		Synchronizer::signal();
 	}
@@ -49,12 +49,12 @@ public:
 	{
 		if (m_queue.size() == 0)
 			throw EmptyQueueException();
-		abicollab::scoped_lock lock(m_mutex); 
+		abicollab::scoped_lock lock(m_mutex);
 		T t = m_queue.front();
 		m_queue.pop_front();
 		return t;
 	}
-	
+
 	bool peek()
 	{
 		return m_queue.size() > 0;

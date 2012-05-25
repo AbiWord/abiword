@@ -1,20 +1,20 @@
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
  * Copyright (C) 2000,2001,2004 Frodo Looijaard <frodol@dds.nl>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -77,12 +77,12 @@ public:
  * Abstract listener class for Psion files.
  *
  * The actual Word and TextEd listeners are derived from this class.
- * Listener classes are used to traverse the AbiWord document, using the 
+ * Listener classes are used to traverse the AbiWord document, using the
  * defined callbacks whenever something interesting is found. This specific
  * class builds a psiconv representation of the AbiWord document internally.
  * The abstract createPsionFile method will need to be defined to return this
  * psiconv document, currently in Word or TextEd form.
- */ 
+ */
 class PL_Psion_Listener : public PL_Listener
 {
 public:
@@ -97,9 +97,9 @@ public:
 	                           const PX_ChangeRecord * pcr,
 	                           fl_ContainerLayout* * psfh);
 
-	// New public methods 
+	// New public methods
 	bool startDocument(void);
-	bool finishDocument(void); 							 
+	bool finishDocument(void);
 	virtual psiconv_file createPsionFile(void) = 0;
 
 protected:
@@ -115,13 +115,13 @@ private:
 	enum sectionType { section_none,section_header,section_footer,
                        section_main };
 	sectionType m_sectionType;
-	
+
 	psiconv_list m_currentParagraphText /* of psiconv_ucs2 */;
 	psiconv_paragraph_layout m_currentParagraphPLayout;
 	psiconv_character_layout m_currentParagraphCLayout;
 	psiconv_in_line_layouts m_currentParagraphInLines;
 	psiconv_s16 m_currentParagraphStyle;
-	
+
 	// New methods
 	bool _writeText(const UT_UCSChar *p, UT_uint32 inlength,
 	                UT_uint32 &outlength);
@@ -148,7 +148,7 @@ public:
 	                                             PL_ListenerId lid,
 	                                             fl_ContainerLayout* sfhNew))
 		                     { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
-	virtual bool signal(UT_uint32 /*iSignal*/) 
+	virtual bool signal(UT_uint32 /*iSignal*/)
 	                         { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return false; }
 
 };
@@ -156,7 +156,7 @@ public:
 
 /*!
  * Listener class for Psion Word files.
- * 
+ *
  * The only important difference with its base class is that createPsionFile
  * returns an actual Psion Word document.
  */
@@ -166,7 +166,7 @@ public:
 	// Constructors and destructor
 	PL_Psion_Word_Listener(PD_Document * pDocument): PL_Psion_Listener(pDocument) {}
 	virtual ~PL_Psion_Word_Listener(void) { }
-	
+
 	// Public functions
 	virtual psiconv_file createPsionFile(void);
 };
@@ -174,7 +174,7 @@ public:
 
 /*!
  * Listener class for Psion TextEd files.
- * 
+ *
  * The only important difference with its base class is that createPsionFile
  * returns an actual Psion TextEd document.
  */
@@ -192,7 +192,7 @@ public:
 
 /*!
  * Abstract base class for Psion exporters
- * 
+ *
  * The actual Word and TextEd exporters are derived from this class.
  * Exporter classes are used to write an AbiWord file to disk. This
  * specific implementation is meant for Psion files. It extends its
@@ -230,7 +230,7 @@ public:
 	// Constructors and destructor
 	IE_Exp_Psion_TextEd(PD_Document * pDocument): IE_Exp_Psion(pDocument) {}
 	virtual ~IE_Exp_Psion_TextEd(void) { }
-	
+
 protected:
 	// Overriding methods from the base class
 	virtual PL_Psion_Listener *_constructListener(void);
@@ -249,7 +249,7 @@ public:
 	// Constructors and destructor
 	IE_Exp_Psion_Word(PD_Document * pDocument): IE_Exp_Psion(pDocument) { }
 	virtual ~IE_Exp_Psion_Word(void) { }
-	
+
 protected:
 	// Overriding methods from the base class
 	virtual PL_Psion_Listener *_constructListener(void);

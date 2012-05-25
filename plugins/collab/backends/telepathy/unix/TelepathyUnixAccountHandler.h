@@ -53,8 +53,8 @@ public:
 	virtual UT_UTF8String					getDescription();
 	virtual UT_UTF8String					getDisplayType();
 	virtual UT_UTF8String					getStorageType();
-	
-	// dialog management 
+
+	// dialog management
 	virtual void							embedDialogWidgets(void* pEmbeddingParent);
 	virtual void							removeDialogWidgets(void* pEmbeddingParent);
 	virtual bool							canDelete()
@@ -92,12 +92,12 @@ public:
 
 	// signal management
 	virtual void							signal(const Event& event, BuddyPtr pSource);
-	
+
 	// packet management
 	virtual bool							send(const Packet* pPacket);
 	virtual bool							send(const Packet* pPacket, BuddyPtr buddy);
 	void									handleMessage(DTubeBuddyPtr pBuddy, const std::string& packet_str);
-	
+
 private:
 	void									_inviteBuddies(TelepathyChatroomPtr pChatroom, const std::vector<std::string>& /*vAcl*/);
 	std::vector<TelepathyBuddyPtr>			_getBuddies(const std::vector<std::string>& vAcl);

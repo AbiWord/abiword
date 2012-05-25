@@ -43,18 +43,18 @@ public:
 		m_pPacket(pPacket),
 		m_bDeleteAtDestroy(false)
 	{}
-	
+
 	~RecordedPacket()
 	{
 		DELETEP(m_pPacket);
 	}
-	
+
 	bool			m_bIncoming;
 	bool			m_bHasBuddy;
 	UT_UTF8String	m_buddyName;
 	UT_uint64		m_timestamp;
 	Packet*			m_pPacket;
-	
+
 	bool			m_bDeleteAtDestroy;
 };
 
@@ -62,16 +62,16 @@ class DiskSessionRecorder : public SessionRecorderInterface
 {
 public:
 	DiskSessionRecorder(AbiCollab* pSession);
-	~DiskSessionRecorder();		
-		
+	~DiskSessionRecorder();
+
 	static const char* getTargetDirectory()
 		{ return XAP_App::getApp()->getUserPrivateDirectory(); }
 
 	static const char* getPrefix()
 		{ return "Session-"; }
-	
+
 	static bool getPackets(const std::string& filename, bool& bLocallyControlled, std::vector<RecordedPacket*>& packets);
-		
+
 	static bool	dumpSession(const std::string& filename);
 
 	void storeOutgoing(const Packet* pPacket)
@@ -90,7 +90,7 @@ protected:
 	GsfOutput* 		m_GsfStream;
 	GError*			m_Error;
 	const char*		m_URI;
-	
+
 	void destroy();
 	void store(bool incoming, const Packet* pPacket, BuddyPtr pBuddy);
 	void write(const void* data, int count);

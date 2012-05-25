@@ -66,7 +66,7 @@ protected:
 	std::vector<AccountHandler*>	m_vAccountTypeCombo;
 
 private:
-	
+
 	void						_populateWindowData(void);
 };
 

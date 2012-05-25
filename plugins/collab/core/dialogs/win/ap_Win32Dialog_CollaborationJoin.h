@@ -63,7 +63,7 @@ private:
 	void					_updateSelection();
 	void					_eventOpen();
 	void					_addDocument(BuddyPtr pBuddy, DocHandle* pDocHandle);
-	void					_freeBuddyList();	
+	void					_freeBuddyList();
 
 	// Handles
 	HINSTANCE 				m_hInstance;

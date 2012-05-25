@@ -31,7 +31,7 @@ public:
 			boost::shared_ptr<File> file(new File());
 			if (soa::IntPtr doc_id = coll->get<soa::Int>("doc_id"))
 				file->doc_id = boost::lexical_cast<std::string>(doc_id->value());
-			else if (soa::StringPtr doc_id_ = coll->get<soa::String>("doc_id")) 
+			else if (soa::StringPtr doc_id_ = coll->get<soa::String>("doc_id"))
 				// HACK: sometimes the webapp returns the IDs as strings instead of
 				// integers. Until the webapp is fixed, we'll just handle both types.
 				file->doc_id = doc_id_->value();
@@ -51,7 +51,7 @@ public:
 		}
 		return boost::shared_ptr<File>();
 	}
-	
+
 	std::string doc_id;
 	std::string filename;
 	std::string tags;
@@ -64,7 +64,7 @@ typedef boost::shared_ptr<abicollab::File> FilePtr;
 typedef boost::shared_ptr< soa::Array< abicollab::FilePtr > > FileArrayPtr;
 
 class Friend : public soa::Collection {
-public:	
+public:
 	Friend(const std::string& n)
 		: soa::Collection(n)
 	{}
@@ -88,7 +88,7 @@ typedef boost::shared_ptr<abicollab::Friend> FriendPtr;
 typedef boost::shared_ptr< soa::Array< abicollab::FriendPtr > > FriendArrayPtr;
 
 class Group : public soa::Collection {
-public:	
+public:
 	Group(const std::string& n)
 		: soa::Collection(n)
 	{}
@@ -121,7 +121,7 @@ public:
 		if (soa::CollectionPtr coll = value->as<soa::Collection>()) {
 			boost::shared_ptr<FriendFiles> friend_(new FriendFiles(coll->name()));
 			if (soa::IntPtr friend_id_ = coll->get<soa::Int>("friend_id"))
-				friend_->friend_id = friend_id_->value();			
+				friend_->friend_id = friend_id_->value();
 			if (soa::StringPtr name_ = coll->get<soa::String>("name"))
 				friend_->name = name_->value();
 			if (soa::StringPtr email_ = coll->get<soa::String>("email"))
@@ -150,7 +150,7 @@ public:
 		if (soa::CollectionPtr coll = value->as<soa::Collection>()) {
 			boost::shared_ptr<GroupFiles> group_(new GroupFiles(coll->name()));
 			if (soa::IntPtr group_id_ = coll->get<soa::Int>("group_id"))
-				group_->group_id = group_id_->value();			
+				group_->group_id = group_id_->value();
 			if (soa::StringPtr name_ = coll->get<soa::String>("name"))
 				group_->name = name_->value();
 			group_->files = coll->get< soa::Array<soa::GenericPtr> >("files");

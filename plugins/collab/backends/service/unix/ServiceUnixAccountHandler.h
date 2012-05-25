@@ -31,7 +31,7 @@ public:
 
 	static AccountHandler*					static_constructor();
 
-	// dialog management 
+	// dialog management
 	virtual void							embedDialogWidgets(void* pEmbeddingParent);
 	virtual void							removeDialogWidgets(void* pEmbeddingParent);
 	virtual void							loadProperties();

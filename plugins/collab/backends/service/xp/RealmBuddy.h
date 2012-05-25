@@ -48,21 +48,21 @@ public:
 	{
 		setVolatile(true);
 	}
-	
+
 	virtual UT_UTF8String getDescriptor(bool include_session_info = false) const
 	{
-		return UT_UTF8String("acn://") + 
-					boost::lexical_cast<std::string>(m_user_id).c_str() + 
+		return UT_UTF8String("acn://") +
+					boost::lexical_cast<std::string>(m_user_id).c_str() +
 					(include_session_info ? UT_UTF8String(":") + boost::lexical_cast<std::string>((uint32_t)m_realm_connection_id).c_str() : UT_UTF8String("")) +
-					UT_UTF8String("@") + 
+					UT_UTF8String("@") +
 					m_domain.c_str();
 	}
-	
+
 	virtual UT_UTF8String getDescription() const
 	{
 		return getDescriptor();
 	}
-	
+
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
 		return NULL;
@@ -87,11 +87,11 @@ public:
 	UT_uint8 realm_connection_id() const {
 		return m_realm_connection_id;
 	}
-	
+
 	bool master() const {
 		return m_master;
 	}
-	
+
 	void demote() {
 		m_master = false;
 	}
@@ -99,7 +99,7 @@ public:
 	void promote() {
 		m_master = true;
 	}
-	
+
 private:
 	uint64_t			m_user_id;
 	std::string			m_domain;

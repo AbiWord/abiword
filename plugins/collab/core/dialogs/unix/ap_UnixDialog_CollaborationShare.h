@@ -34,7 +34,7 @@ public:
 
 	void						eventOk();
 	void						eventToggle(gchar* path_str);
-		
+
 private:
 	GtkWidget*	 				_constructWindow(void);
 	void						_populateWindowData(void);
@@ -44,7 +44,7 @@ private:
 	void						_refreshWindow();
 	void						_getSelectedBuddies(std::vector<std::string>& vACL);
 	void						_freeBuddyList();
-		
+
 	GtkWidget*					m_wWindowMain;
 	GtkWidget*					m_wAccount;
 	GtkWidget*					m_wAccountHint;

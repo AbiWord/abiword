@@ -45,11 +45,11 @@ public:
 	// housekeeping
 	static UT_UTF8String					getStaticStorageType();
 	virtual UT_UTF8String					getStorageType()
-		{ return getStaticStorageType(); }	
+		{ return getStaticStorageType(); }
 	virtual UT_UTF8String					getDescription();
 	virtual UT_UTF8String					getDisplayType();
-	
-	// dialog management 
+
+	// dialog management
 	virtual void							embedDialogWidgets(void* /*pEmbeddingParent*/)
 		{ UT_ASSERT_HARMLESS(UT_NOT_REACHED); }
 	virtual void							removeDialogWidgets(void* /*pEmbeddingParent*/)
@@ -65,7 +65,7 @@ public:
 	virtual ConnectResult					connect();
 	virtual bool							disconnect();
 	virtual bool							isOnline();
-	
+
 	// user management
 	virtual BuddyPtr						constructBuddy(const PropertyMap& props);
 	virtual BuddyPtr						constructBuddy(const std::string& descriptor, BuddyPtr pBuddy);
@@ -87,7 +87,7 @@ public:
 	virtual bool							send(const Packet* pPacket);
 	virtual bool							send(const Packet* pPacket, BuddyPtr buddy);
 	Packet*									createPacket(const std::string& packet, BuddyPtr pBuddy);
-	
+
 	// event management
 	void									handleEvent(Session& pSession);
 
@@ -104,7 +104,7 @@ public:
 
 	bool									isIgnoredBuddy(const UT_UTF8String& buddyName)
 		{ return m_ignoredBuddies.find(buddyName) != m_ignoredBuddies.end(); }
-	
+
 protected:
 	bool									_send(const Packet* pPacket, const char* dbusAddress);
 	void									_registerEditMethods();

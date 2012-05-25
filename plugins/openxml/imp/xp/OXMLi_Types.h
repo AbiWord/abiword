@@ -1,22 +1,22 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiSource
- * 
+ *
  * Copyright (C) 2007 Philippe Milot <PhilMilot@gmail.com>
- * 
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -40,7 +40,7 @@ struct OXMLi_StartElementRequest
 	std::string pName;
 	std::map<std::string, std::string>* ppAtts;
 	OXMLi_ElementStack * stck;
-	OXMLi_SectionStack * sect_stck;	
+	OXMLi_SectionStack * sect_stck;
 	OXMLi_ContextVector * context;
 	bool handled;
 	bool valid;
@@ -50,7 +50,7 @@ struct OXMLi_EndElementRequest
 {
 	std::string pName;
 	OXMLi_ElementStack * stck;
-	OXMLi_SectionStack * sect_stck;	
+	OXMLi_SectionStack * sect_stck;
 	OXMLi_ContextVector * context;
 	bool handled;
 	bool valid;
@@ -102,7 +102,7 @@ enum OXMLi_Keyword
 	KEYWORD_autoSpaceDN,
 	KEYWORD_autoSpaceLikeWord95,
 	KEYWORD_b,
-	KEYWORD_background, 
+	KEYWORD_background,
 	KEYWORD_balanceSingleByteDoubleByteWidth,
 	KEYWORD_bar,
 	KEYWORD_basedOn,
@@ -217,11 +217,11 @@ enum OXMLi_Keyword
 	KEYWORD_docPartPr,
 	KEYWORD_docParts,
 	KEYWORD_docPartUnique,
-	KEYWORD_document, 
+	KEYWORD_document,
 	KEYWORD_documentProtection,
 	KEYWORD_documentType,
-	KEYWORD_docVar,  
-	KEYWORD_docVars, 
+	KEYWORD_docVar,
+	KEYWORD_docVars,
 	KEYWORD_doNotAutoCompressPictures,
 	KEYWORD_doNotAutofitConstrainedTables,
 	KEYWORD_doNotBreakConstrainedForcedTable,

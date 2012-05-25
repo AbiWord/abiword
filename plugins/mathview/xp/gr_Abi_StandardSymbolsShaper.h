@@ -40,7 +40,7 @@ public:
 
 protected:
   virtual AreaRef getGlyphArea(const SmartPtr<class AreaFactory>&, Char8, const scaled&) const;
-   
+
   struct AbiTextProperties
   {
     MathVariant variant;

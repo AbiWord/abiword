@@ -73,7 +73,7 @@ public:
 
 	DBusConnection* getTube()
 		{ return m_pTube; }
-	
+
 	const UT_UTF8String& getSessionId()
 		{ return m_sSessionId; }
 

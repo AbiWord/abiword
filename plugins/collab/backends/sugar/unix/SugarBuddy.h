@@ -40,10 +40,10 @@ public:
 	{
 		return UT_UTF8String("sugar://") + m_sDBusAddress;
 	}
-	
+
 	virtual UT_UTF8String		getDescription() const
 		{ return m_sDBusAddress; }
-		
+
 	virtual const DocTreeItem* getDocTreeItems() const
 	{
 		UT_ASSERT_HARMLESS(UT_NOT_REACHED);

@@ -47,7 +47,7 @@ public:
 
 	virtual void start()
 	{
-		m_synchronizer.reset(new Synchronizer(boost::bind(&AsyncWorker<T>::_signal, 
+		m_synchronizer.reset(new Synchronizer(boost::bind(&AsyncWorker<T>::_signal,
 												boost::enable_shared_from_this<AsyncWorker<T> >::shared_from_this())));
 		m_thread_ptr.reset(
 				new asio::thread(

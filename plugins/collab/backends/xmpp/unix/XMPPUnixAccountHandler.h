@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net> 
+ * Copyright (C) 2006 by Marc Maurer <uwog@uwog.net>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ private:
 	GtkWidget*				username_entry;
 	GtkWidget*				password_entry;
 	GtkWidget*				server_entry;
-	GtkWidget*				port_entry;	
+	GtkWidget*				port_entry;
 	GtkWidget*				starttls_button;
 	GtkWidget*				autoconnect_button;
 };

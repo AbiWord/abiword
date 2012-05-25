@@ -34,7 +34,7 @@ public:
 	virtual UT_Confidence_t recognizeContents(const char * szBuf, UT_uint32 iNumbytes);
 	virtual const IE_MimeConfidence * getMimeConfidence () { return NULL; }
 	virtual bool getDlgLabels (const char ** pszDesc, const char ** pszSuffixList, IEFileType * ft);
-	virtual UT_Error constructImporter (PD_Document * pDocument, IE_Imp ** ppie);	
+	virtual UT_Error constructImporter (PD_Document * pDocument, IE_Imp ** ppie);
 };
 
 class IE_Imp_AbiCollab : public IE_Imp

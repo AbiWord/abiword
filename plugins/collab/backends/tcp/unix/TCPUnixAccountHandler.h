@@ -25,24 +25,24 @@ class TCPUnixAccountHandler : public TCPAccountHandler
 {
 public:
 	TCPUnixAccountHandler();
-	
+
 	static AccountHandler*					static_constructor();
 
 	void									eventGroupChanged();
 
-	// dialog management 
+	// dialog management
 	virtual void							embedDialogWidgets(void* pEmbeddingParent);
 	virtual void							removeDialogWidgets(void* pEmbeddingParent);
 	virtual void							loadProperties();
 	virtual void							storeProperties();
-	
+
 private:
 	GtkWidget*								vbox;
 	GtkWidget*								server_button;
 	GtkWidget*								client_button;
 	GtkWidget*								server_entry;
 	GtkWidget*								port_button;
-	GtkWidget*								allow_all_button;	
+	GtkWidget*								allow_all_button;
 	GtkWidget*								autoconnect_button;
 };
 

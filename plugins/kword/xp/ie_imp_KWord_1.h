@@ -15,7 +15,7 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
  */
 
@@ -40,7 +40,7 @@ public:
 
 	virtual const IE_SuffixConfidence * getSuffixConfidence ();
 	virtual const IE_MimeConfidence * getMimeConfidence ();
-	virtual UT_Confidence_t recognizeContents (const char * szBuf, 
+	virtual UT_Confidence_t recognizeContents (const char * szBuf,
 									UT_uint32 iNumbytes);
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
@@ -58,7 +58,7 @@ public:
 
   void startElement(const gchar *name, const gchar **atts);
   void endElement(const gchar *name);
-  void charData(const gchar*, int len); 
+  void charData(const gchar*, int len);
 
 private:
 

@@ -260,7 +260,7 @@ go_combo_box_class_init (GObjectClass *object_class)
 				       _("Add tearoffs to menus"),
 				       _("Whether dropdowns should have a tearoff menu item"),
 				       FALSE,
-				       GSF_PARAM_STATIC | 
+				       GSF_PARAM_STATIC |
 				       G_PARAM_READABLE));
 	widget_class->style_set = go_combo_box_style_set;
 
