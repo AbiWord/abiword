@@ -9,6 +9,7 @@
     <property name="title" translatable="yes">AbiWord Plugin Manager</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
+    <property name="window_position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbDialog">
         <property name="visible">True</property>

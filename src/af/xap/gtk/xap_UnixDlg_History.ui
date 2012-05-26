@@ -6,8 +6,9 @@
     <property name="can_focus">False</property>
     <property name="border_width">8</property>
     <property name="modal">True</property>
-    <property name="window_position">center</property>
-    <property name="default_height">328</property>
+    <property name="window_position">center-on-parent</property>
+    <property name="default_height">450</property>
+    <property name="default_width">380</property>
     <property name="type_hint">normal</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
