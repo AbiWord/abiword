@@ -3,7 +3,7 @@
 <interface>
   <object class="GtkDialog" id="xap_UnixDlg_Encoding">
     <property name="border_width">5</property>
-    <property name="default_height">295</property>
+    <property name="default_height">297</property>
     <property name="default_width">350</property>
     <property name="has_separator">False</property>
     <property name="modal">True</property>
