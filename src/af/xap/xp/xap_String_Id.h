@@ -120,7 +120,7 @@ dcl(DLG_MB_No,					"No")
 /* More Windows dialog */
 dcl(DLG_MW_MoreWindows, 		"View Document")
 dcl(DLG_MW_Activate,			"View:")
-dcl(DLG_MW_AvailableDocuments,		"Available Documents")
+dcl(DLG_MW_AvailableDocuments,		"Available Documents:")
 dcl(DLG_MW_ViewButton,			"&View")
 
 /* Remove Toolbar Icon */
@@ -253,7 +253,7 @@ dcl(DLG_PLUGIN_MANAGER_NAME,			"Name:")
 dcl(DLG_PLUGIN_MANAGER_DESC,			"Description:")
 dcl(DLG_PLUGIN_MANAGER_AUTHOR,			"Author:")
 dcl(DLG_PLUGIN_MANAGER_VERSION, 		"Version:")
-dcl(DLG_PLUGIN_MANAGER_DETAILS, 		"Plugin Details:")
+dcl(DLG_PLUGIN_MANAGER_DETAILS, 		"Plugin Details")
 dcl(DLG_PLUGIN_MANAGER_NOT_AVAILABLE, 		"Not available")
 
 /* spellchecker */
