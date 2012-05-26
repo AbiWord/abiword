@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-05-24 00:26-0400\n"
-"PO-Revision-Date: 2012-05-24 18:52+0200\n"
+"PO-Revision-Date: 2012-05-25 19:07+0200\n"
 "Last-Translator: Jaroslav <jrynik@yahoo.co.uk>\n"
 "Language-Team: Slovak\n"
 "Language: sk\n"
@@ -793,7 +793,7 @@ msgstr "&Vymazať históriu"
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "&Query RDF"
-msgstr ""
+msgstr "& Požiadavka RDF"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
@@ -4984,13 +4984,12 @@ msgstr "Vydavateľ:"
 #. MENU_STATUSLINE_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF associated with location"
-msgstr ""
+msgstr "Požiadavka RDF priradená k umiestneniu"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query RDF for cursor position"
-msgstr "Požiadavka RDF kvôli pozícii kurzora"
+msgstr "Požiadavka RDF na pozíciu kurzora"
 
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
@@ -5000,9 +4999,8 @@ msgstr "Požiadavka RDF: %d z celkovo: %ld"
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query the RDF associated with the cursor position..."
-msgstr "Požiadavka RDF na pozícii kurzora..."
+msgstr "Požiadavka RDF s pozíciou kurzora..."
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -7336,24 +7334,23 @@ msgstr "Dostupné dokumenty"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Available Languages:"
-msgstr "Dostupné jazyky"
+msgstr "Dostupné jazyky:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
 msgid "Aymara (Central/Northern Bolivia)"
-msgstr ""
+msgstr "ajmarský (stredná/severná Bolívia)"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
 msgid "Aymara (Southern Bolivia)"
-msgstr ""
+msgstr "ajmarský (južná Bolívia)"
 
 #. LANG_AYR
 #: po/tmp/xap_String_Id.h
 msgid "Aymara, Central"
-msgstr ""
+msgstr "ajmarský, stred"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7378,7 +7375,7 @@ msgstr "bieloruský"
 #. LANG_BE_LATIN
 #: po/tmp/xap_String_Id.h
 msgid "Belarusian, Latin"
-msgstr "bieloruský (latinka)"
+msgstr "bieloruský, latinka"
 
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h
@@ -7398,7 +7395,7 @@ msgstr "Blok textu"
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h
 msgid "Bokmal"
-msgstr ""
+msgstr "Bokmål"
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
@@ -7735,7 +7732,7 @@ msgstr "Dokumenty boli porovnané"
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
 msgid "Dutch"
-msgstr ""
+msgstr "holandský"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7825,7 +7822,7 @@ msgstr "anglický (USA)"
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h
 msgid "English, DOS/Windows Code Page 437"
-msgstr ""
+msgstr "Angličtina, DOS/Kódová stránka Windows 437"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
@@ -7891,7 +7888,7 @@ msgstr "fínsky"
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
 msgid "Flemish"
-msgstr ""
+msgstr "flámsky"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -7951,7 +7948,7 @@ msgstr "fulský"
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
 msgid "Galician"
-msgstr ""
+msgstr "galícijský"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8116,12 +8113,12 @@ msgstr "Identifikátor:"
 #. DLG_Image_ImageDesc
 #: po/tmp/xap_String_Id.h
 msgid "Image Name"
-msgstr ""
+msgstr "Názov obrázka"
 
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h
 msgid "Image Placement"
-msgstr ""
+msgstr "Umiestnenie obrázka"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
@@ -8131,7 +8128,7 @@ msgstr "Vlastnosti obrázka"
 #. DLG_Image_ImageSize
 #: po/tmp/xap_String_Id.h
 msgid "Image Size"
-msgstr ""
+msgstr "Veľkosť obrázka"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8236,7 +8233,7 @@ msgstr "írsky"
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
 msgid "Italian"
-msgstr ""
+msgstr "talianský"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8271,12 +8268,12 @@ msgstr "kannadský (India)"
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
 msgid "Kazakh"
-msgstr ""
+msgstr "kazašský"
 
 #. LANG_KM_KH
 #: po/tmp/xap_String_Id.h
 msgid "Khmer"
-msgstr ""
+msgstr "khmérsky"
 
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
@@ -8286,7 +8283,7 @@ msgstr "kórejský"
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h
 msgid "Korean (South Korea)"
-msgstr ""
+msgstr "kórejský (Južná Kórea)"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8296,7 +8293,7 @@ msgstr "Kórejčina, EUC-KR"
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
 msgid "Korean, JOHAB"
-msgstr ""
+msgstr "Kórejčina, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8326,7 +8323,7 @@ msgstr "Naposledy uložený:"
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
 msgid "Latin"
-msgstr ""
+msgstr "latinský"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8366,7 +8363,7 @@ msgstr "malajský"
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
 msgid "Mandinka"
-msgstr ""
+msgstr "mandinka"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8381,7 +8378,7 @@ msgstr "marathický"
 #. LANG_MH_MH
 #: po/tmp/xap_String_Id.h
 msgid "Marshallese (Marshall Islands)"
-msgstr "maršalsky (Maršálove ostrovy)"
+msgstr "maršalský (Maršálove ostrovy)"
 
 #. LANG_MH_NR
 #: po/tmp/xap_String_Id.h
@@ -8406,7 +8403,7 @@ msgstr "Názov:"
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
 msgid "Nepali"
-msgstr ""
+msgstr "nepálsky"
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8451,7 +8448,7 @@ msgstr "Číslovaný nadpis 3"
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h
 msgid "Nynorsk"
-msgstr ""
+msgstr "Nynorsk"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8596,12 +8593,12 @@ msgstr "Príkaz na tlač: "
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
 msgid "Punjabi (India)"
-msgstr ""
+msgstr "pandžábsky (India)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
 msgid "Punjabi (Pakistan)"
-msgstr ""
+msgstr "pandžábsky (Pakistan)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
@@ -8611,12 +8608,12 @@ msgstr "kečuánsky"
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
-msgstr ""
+msgstr "kečuánsky (severná Bolívia)"
 
 #. LANG_QUH_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Southern Bolivia)"
-msgstr ""
+msgstr "kečuánsky (južná Bolívia)"
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
@@ -8680,13 +8677,12 @@ msgstr "Rumunčina, Macintosh"
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
 msgid "Russian"
-msgstr ""
+msgstr "ruský"
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Russian, pre-1918"
-msgstr "ruský (pred 1918)"
+msgstr "ruský, pred 1918"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h
@@ -8745,9 +8741,8 @@ msgstr "srbský"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Serbian, Latin"
-msgstr "srbský (latinka)"
+msgstr "srbský, latinka"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -9149,7 +9144,7 @@ msgstr "Šírka:  "
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
 msgid "Wolof"
-msgstr ""
+msgstr "wolof"
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
