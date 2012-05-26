@@ -6,6 +6,8 @@
     <property name="has_separator">False</property>
     <property name="height_request">351</property>
     <property name="modal">True</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbxDialog">
         <property name="spacing">2</property>
@@ -52,7 +54,6 @@
               <object class="GtkTable" id="tblTypes">
                 <property name="n_columns">2</property>
                 <property name="n_rows">2</property>
-                <property name="row_spacing">6</property>
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbTypes">
@@ -60,6 +61,7 @@
                     <property name="use_markup">True</property>
                     <property name="visible">True</property>
                     <property name="xalign">0</property>
+                    <property name="ypad">8</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -92,7 +94,6 @@
                     <property name="shadow_type">GTK_SHADOW_IN</property>
                     <property name="visible">True</property>
                     <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                    <property name="window_placement">GTK_CORNER_BOTTOM_LEFT</property>
                     <child>
                       <object class="GtkTreeView" id="tvTypes">
                         <property name="can_focus">True</property>
@@ -120,7 +121,7 @@
                   <object class="GtkTable" id="tblFields">
                     <property name="n_columns">2</property>
                     <property name="n_rows">2</property>
-                    <property name="row_spacing">6</property>
+                    <property name="row_spacing">7</property>
                     <property name="visible">True</property>
                     <child>
                       <object class="GtkLabel" id="lbFields">
@@ -128,6 +129,7 @@
                         <property name="use_markup">True</property>
                         <property name="visible">True</property>
                         <property name="xalign">0</property>
+                        <property name="yalign">1</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>

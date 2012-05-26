@@ -23,6 +23,7 @@
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="type_hint">normal</property>
+    <property name="window_position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbxDialog">
         <property name="visible">True</property>
