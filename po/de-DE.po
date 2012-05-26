@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-25 14:07+0200\n"
-"PO-Revision-Date: 2012-05-25 14:07+0200\n"
+"POT-Creation-Date: 2012-05-26 14:44+0200\n"
+"PO-Revision-Date: 2012-05-26 14:44+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -3534,7 +3534,7 @@ msgstr "Aktiv"
 #. WORD_PassInvalid
 #: po/tmp/ap_String_Id.h
 msgid "Incorrect Password"
-msgstr "Falsches Passwort"
+msgstr "Falsches Kennwort"
 
 #. TOOLBAR_LABEL_INDENT
 #. TOOLBAR_STATUSLINE_INDENT
@@ -4787,7 +4787,7 @@ msgstr "Absätze:"
 #. WORD_PassRequired
 #: po/tmp/ap_String_Id.h
 msgid "Password required, this is an encrypted document"
-msgstr "Passwort erforderlich, dieses Dokument ist verschlüsselt"
+msgstr "Kennwort erforderlich, dieses Dokument ist verschlüsselt"
 
 #. TOOLBAR_LABEL_EDIT_PASTE
 #. TOOLBAR_STATUSLINE_EDIT_PASTE
@@ -7340,8 +7340,8 @@ msgstr "Automatische Überarbeitung"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
-msgstr "Verfügbare Dokumente"
+msgid "Available Documents:"
+msgstr "Verfügbare Dokumente:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
@@ -7648,7 +7648,7 @@ msgstr "Erstellt"
 #. DLG_History_Created
 #: po/tmp/xap_String_Id.h
 msgid "Created:"
-msgstr "Erstellt:"
+msgstr "Erstellt am:"
 
 #. LANG_HR_HR
 #: po/tmp/xap_String_Id.h
@@ -7838,7 +7838,7 @@ msgstr "Englisch, DOS/Windows Codepage 437"
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
-msgstr "Passwort eingeben"
+msgstr "Kennwort eingeben"
 
 #. LANG_EO
 #: po/tmp/xap_String_Id.h
@@ -8329,7 +8329,7 @@ msgstr "Laotisch"
 #. DLG_History_LastSaved
 #: po/tmp/xap_String_Id.h
 msgid "Last saved:"
-msgstr "Zuletzt gespeichert:"
+msgstr "Zuletzt gespeichert am:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
@@ -8523,8 +8523,8 @@ msgstr "Einfacher Text"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
-msgstr "Plugin-Details:"
+msgid "Plugin Details"
+msgstr "Plugin-Details"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
