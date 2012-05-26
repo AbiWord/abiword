@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-26 14:44+0200\n"
-"PO-Revision-Date: 2012-05-26 14:44+0200\n"
+"POT-Creation-Date: 2012-05-26 22:44+0200\n"
+"PO-Revision-Date: 2012-05-26 22:44+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -1472,8 +1472,8 @@ msgstr "Vorhandene Felder"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
-msgstr "Verfügbare Formate"
+msgid "Available Formats:"
+msgstr "Verfügbare Formate:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
@@ -2860,8 +2860,8 @@ msgstr "Verweis auf Endnote"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
-msgstr "Stil der Endnote"
+msgid "Endnote style:"
+msgstr "Stil der Endnote:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
@@ -3196,8 +3196,8 @@ msgstr "Verweis auf Fußnote"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
-msgstr "Stil der Fußnote"
+msgid "Footnote style:"
+msgstr "Stil der Fußnote:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
@@ -3560,13 +3560,13 @@ msgstr "Wortanfang groß schreiben"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
-msgstr "Anfangswert für die Endnote"
+msgid "Initial Endnote value:"
+msgstr "Anfangswert für die Endnote:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
-msgstr "Anfangswert für die Fußnote"
+msgid "Initial Footnote value:"
+msgstr "Anfangswert für die Fußnote:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -3683,7 +3683,7 @@ msgstr "Verweis auf semantisches Element einfügen"
 #. MENU_STATUSLINE_TABLE_INSERTTABLE
 #: po/tmp/ap_String_Id.h
 msgid "Insert Table"
-msgstr "Eine Tabelle einfügen"
+msgstr "Tabelle einfügen"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER
 #: po/tmp/ap_String_Id.h
@@ -4537,7 +4537,6 @@ msgstr "Nummerierung"
 msgid "Numbered List"
 msgstr "Zahlen"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
@@ -4545,6 +4544,11 @@ msgstr "Zahlen"
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
 msgstr "Nummerierung"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+msgid "Numbering:"
+msgstr "Nummerierung:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4823,8 +4827,8 @@ msgstr "Am Ende des Abschnitts"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
-msgstr "Platzierung"
+msgid "Placement:"
+msgstr "Platzierung:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
