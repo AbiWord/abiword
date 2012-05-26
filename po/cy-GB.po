@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2012-05-11 19:46+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2012-05-24 00:26-0400\n"
+"PO-Revision-Date: 2012-05-25 10:46+0200\n"
+"Last-Translator: rprys <rprys@yahoo.com>\n"
 "Language-Team: Cymraeg\n"
 "Language: cy\n"
 "MIME-Version: 1.0\n"
@@ -264,11 +264,6 @@ msgstr "&Awto ffitio Tabl"
 msgid "&Automatically save this Scheme"
 msgstr "&Cadw'r Cynllun hwn yn awtomatig"
 
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "&Fformatau ar gael:"
-
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
 msgid "&Before:"
@@ -433,11 +428,6 @@ msgstr "Golygu hypergyswllt"
 msgid "&Enable overwrite mode toggle"
 msgstr "&Galluogi toglo'r modd trosysgrifwn"
 
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "&Galluogi dyfyniadau slic"
-
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
 msgid "&Endnote"
@@ -514,17 +504,17 @@ msgstr "&Pennawd yn Bodoli"
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h
 msgid "&Header and Footer"
-msgstr "&Pennawd a Throedyn"
+msgstr "&Pennyn a Throedyn"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
 msgid "&Header/Footers"
-msgstr "&Pennawd/Troedyn"
+msgstr "&Pennyn/Troedyn"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h
 msgid "&Header:"
-msgstr "&Pennawd:"
+msgstr "&Pennyn:"
 
 #. DLG_PageSetup_Height
 #: po/tmp/ap_String_Id.h
@@ -825,6 +815,11 @@ msgstr "&Ymholiad RDF"
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "&Gadael"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr "&RDF"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1444,14 +1439,9 @@ msgstr "Awto-gadw"
 msgid "Auto replace misspelled words"
 msgstr "Awto-newid pob gair sydd wedi ei gamsillafu"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Ymddygiad Awto-Ffit"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "Ymddygiad Awto-Ffit"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1494,7 +1484,7 @@ msgstr "Awto-uno"
 msgid "Available Fields"
 msgstr "Meysydd ar Gael"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
 msgid "Available Formats"
 msgstr "Fformatau ar Gael"
@@ -1535,11 +1525,6 @@ msgstr "Tab y Bar"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Yn Seiliedig Ar:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Dewisiadau Dau Gyfeiriad"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -1957,11 +1942,8 @@ msgstr ""
 "Dewiswch eich targed ar yr ochr chwith.\n"
 "Os ydych am ddefnyddio'r botwm \"Mynd i\", yna llanwch y Cofnod Rhif gyda'ch "
 "rhif.  Medrwch ddefnyddio + a - i'w newid.\t H.y., os ydych am ysgrifennu "
-"\"+2\" a dewis \"Llinell\", bydd \"Mynd i\" yn mynd â chi dwy linell o dan eich "
-"safle presennol.Os ydych am ddefnyddio'r botwm \"Mynd i\", yna llanwch y "
-"Cofnod Rhif gyda'ch rhif.  Medrwch ddefnyddio + a - i'w newid.\t H.y., os "
-"ydych am ysgrifennu \"+2\" a dewis \"Llinell\", bydd \"Mynd i\" yn mynd â chi dwy "
-"linell o dan eich safle presennol."
+"\"+2\" a dewis \"Llinell\", bydd \"Mynd i\" yn mynd â chi 2 linell o dan eich "
+"safle presennol."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2086,7 +2068,7 @@ msgstr "Cysylltiad"
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Contact from File"
-msgstr "Cysylltiad o'r Ffeil..."
+msgstr "Cysylltiad o'r Ffeil"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
 #. DLG_RDF_SemanticStylesheets_Contacts
@@ -2644,17 +2626,17 @@ msgstr "Troedyn gwahanol ar dudalen olaf"
 #. DLG_HdrFtr_HeaderEven
 #: po/tmp/ap_String_Id.h
 msgid "Different header on facing pages"
-msgstr "Pennawd gwahanol ar dudalennau cybyniol"
+msgstr "Pennyn gwahanol ar dudalennau cybyniol"
 
 #. DLG_HdrFtr_HeaderFirst
 #: po/tmp/ap_String_Id.h
 msgid "Different header on first page"
-msgstr "Pennawd gwahanol ar dudalen gyntaf"
+msgstr "Pennyn gwahanol ar dudalen gyntaf"
 
 #. DLG_HdrFtr_HeaderLast
 #: po/tmp/ap_String_Id.h
 msgid "Different header on last page"
-msgstr "Pennawd gwahanol ar dudalen olaf"
+msgstr "Pennyn gwahanol ar dudalen olaf"
 
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
@@ -2811,7 +2793,7 @@ msgstr "Golygu Troedyn"
 #. TOOLBAR_TOOLTIP_EDIT_HEADER
 #: po/tmp/ap_String_Id.h
 msgid "Edit Header"
-msgstr "Golygu Pennawd"
+msgstr "Golygu Pennyn"
 
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h
@@ -2821,7 +2803,7 @@ msgstr "Golygu Hafaliad LaTex"
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples"
-msgstr "Golygu Triphygion RDF..."
+msgstr "Golygu Triphygion RDF"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
@@ -2861,7 +2843,7 @@ msgstr "Golygu Troedyn ar y dudalen gyfredol"
 #. MENU_STATUSLINE_EDIT_EDITHEADER
 #: po/tmp/ap_String_Id.h
 msgid "Edit the Header on the current page"
-msgstr "Golygu'r Pennawd ar y dudalen gyfredol"
+msgstr "Golygu'r Pennyn ar y dudalen gyfredol"
 
 #. TOOLBAR_LABEL_SEMITEM_EDIT
 #. TOOLBAR_STATUSLINE_SEMITEM_EDIT
@@ -2909,6 +2891,11 @@ msgstr "Cyfeirnod diwednod"
 #: po/tmp/ap_String_Id.h
 msgid "Endnote style"
 msgstr "Arddull diweddnod"
+
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+msgid "Endnotes"
+msgstr "Diweddnod"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -2972,7 +2959,7 @@ msgstr "Gweithredu'r Ymholiad"
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
 msgid "Execute SPARQL on document RDF"
-msgstr "Gweithredu SPARQL ar RDF dogfen..."
+msgstr "Gweithredu SPARQL ar RDF dogfen"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
@@ -3010,20 +2997,15 @@ msgstr "Allforio Eitemau Semantig ar gyfer y lleoliad"
 msgid "Extra"
 msgstr "Ychwanegol"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
-msgstr "Paramedrau ychwanegol"
+msgid "Extra Parameters:"
+msgstr "Paramedrau Ychwanegol:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Bar Offer Ychwanegol"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Paramedrau ychwanegol:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3044,11 +3026,6 @@ msgstr "Sg&rin Lawn"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "Ca&nfod beth:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Enw Maes"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3253,6 +3230,11 @@ msgstr "Cyfeirnod troednodyn"
 msgid "Footnote style"
 msgstr "Arddull troednodyn"
 
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+msgid "Footnotes"
+msgstr "Troednodau"
+
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
 msgid "Footnotes and &Endnotes"
@@ -3301,16 +3283,6 @@ msgstr "Fformat"
 msgid "Format Embedded Object"
 msgstr "Fformatio Gwrthrych Mewnosodedig"
 
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Fformatio Diweddnodau"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Fformatio Troednodau"
-
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
 msgid "Format Footnotes and Endnotes"
@@ -3319,7 +3291,7 @@ msgstr "Fformatio Troednodau a Diweddnodau"
 #. DLG_HdrFtr_Title
 #: po/tmp/ap_String_Id.h
 msgid "Format Header/Footers"
-msgstr "Fformatio Pennawd/Troedyn"
+msgstr "Fformatio Pennyn/Troedyn"
 
 #. MENU_LABEL_FMT_EMBED
 #: po/tmp/ap_String_Id.h
@@ -3433,18 +3405,18 @@ msgstr "Crog"
 #. MENU_LABEL_INSERT_HEADER
 #: po/tmp/ap_String_Id.h
 msgid "Header"
-msgstr "Pennawd"
+msgstr "Pennyn"
 
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h
 msgid "Header Properties"
-msgstr "Priodweddau Pennawd"
+msgstr "Priodweddau Pennyn"
 
 #. HeaderStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Header [%s]"
-msgstr "Pennawd [%s]"
+msgstr "Pennyn [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
@@ -3454,7 +3426,7 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Dim ond ym Modd Golwg Argraffu mae modd creu Penawdau a Throedynnau. \n"
+"Dim ond ym Modd Golwg Argraffu mae modd creu Penynnau a Throedynnau. \n"
 " I fynd i'r modd hwn dewiswch Golwg yna Gosodiad Argraffu o'r Dewislenni. \n"
 " Hoffech chi fynd i Osodiad Argraffu?"
 
@@ -3663,7 +3635,7 @@ msgstr "Mewnosod &Tabl"
 msgid "Insert Bookmark"
 msgstr "Mewnosod Nod Tudalen"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Mewnosod Toriad"
@@ -3693,7 +3665,7 @@ msgstr "Mewnosod Hafaliad"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Mewnosod Hafaliad o fynegiant LaTeX"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Mewnosod Maes"
@@ -3759,7 +3731,7 @@ msgstr "Mewnosod Troedyn"
 #. MENU_STATUSLINE_INSERT_HEADER
 #: po/tmp/ap_String_Id.h
 msgid "Insert a Header"
-msgstr "Mewnosod Pennawd"
+msgstr "Mewnosod Pennyn"
 
 #. MENU_STATUSLINE_INSERT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -3868,20 +3840,10 @@ msgstr "Mewnosod delwedd i'r ddogfen"
 msgid "Insert bookmark"
 msgstr "Mewnosod nod tudalen"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Mewnosod toriad"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Mewnosod clipgelf"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Mewnosod maes"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -4010,10 +3972,14 @@ msgid "Keywords:"
 msgstr "Allweddeiriau:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
 msgstr "Hafaliad LaTeX"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "Hafaliad LaTeX:"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
@@ -4405,7 +4371,7 @@ msgstr "Symud y pwynt gosod i fan penodol"
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h
 msgid "Mth. Day, Year"
-msgstr "Mis, Dydd, Blwyddyn"
+msgstr "Mis. Dydd, Blwyddyn"
 
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h
@@ -4426,7 +4392,7 @@ msgstr "Enw"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, (Homepage), Phone"
-msgstr "Enw. (Tudalen cartref). Ffôn"
+msgstr "Enw. (Tudalen Cartref), Ffôn"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
@@ -4689,8 +4655,8 @@ msgstr "Agor y ddogfen"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
-msgstr "Cyfeiriadedd..."
+msgid "Orientation"
+msgstr "Cyfeiriadedd"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4821,15 +4787,15 @@ msgstr "Tudalennau:"
 msgid "Pagination"
 msgstr "Tudalennu"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr "Papur"
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "Maint Pa&pur:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Papur..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4910,11 +4876,6 @@ msgstr "Chwarae gyda RDF yn ystod y datblygu"
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Safle"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Gosod y Bwlch Testun"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -5083,11 +5044,6 @@ msgstr "Ymholi'r RDF sy'n gysylltiedig â safle'r cyrchwr..."
 msgid "R&eplace"
 msgstr "A&mnewid"
 
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr "RDF"
-
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
@@ -5192,7 +5148,7 @@ msgstr "Tynnu Troedyn"
 #. TOOLBAR_TOOLTIP_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h
 msgid "Remove Header"
-msgstr "Tynnu Pennawd"
+msgstr "Tynnu Pennyn"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
@@ -5229,7 +5185,7 @@ msgstr "Tynnu'r Troedyn o'r dudalen hon o'r Ddogfen"
 #. MENU_STATUSLINE_EDIT_REMOVEHEADER
 #: po/tmp/ap_String_Id.h
 msgid "Remove the Header on this page from the Document"
-msgstr "Tynnu'r Pennawd o'r dudalen hon o'r Ddogfen"
+msgstr "Tynnu'r Pennyn o'r dudalen hon o'r Ddogfen"
 
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h
@@ -5329,7 +5285,7 @@ msgstr "Ailgychwyn rhifau'r dudalen mewn adrannau newydd"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr "Cyfyngu i Ddolen RDF"
+msgstr "Cyfyngu i Ddolen RDF:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5552,8 +5508,8 @@ msgstr "Cadw i ffeil"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Graddio..."
+msgid "Scale"
+msgstr "Graddfa"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5571,15 +5527,9 @@ msgid "Seconds since the epoch"
 msgstr "Eiliadau rhwng y cyfnod"
 
 # DLG_Options_Label_SpellDictionaries
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Toriadau adran"
-
-# DLG_Options_Label_SpellDictionaries
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Toriadau adran"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -5895,7 +5845,7 @@ msgstr "Gosod y math o Benawdau a Throedynnau"
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
 msgid "Set the types of Headers and Footers"
-msgstr "Gosod y math o Benawdau a Throedynnau"
+msgstr "Gosod y math o Benynnau a Throedynnau"
 
 # DLG_FormatTOC_HasHeading
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
@@ -6548,7 +6498,7 @@ msgstr "Atalnodau tab i'w clirio:"
 msgid "Table"
 msgstr "Tabl"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Maint Tabl"
@@ -6573,11 +6523,6 @@ msgstr "Label Rhestr Tabl Cynnwys"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Tudalen Tabl Cynnwys"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Maint Tabl"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6626,13 +6571,24 @@ msgstr "Alinio Testun:"
 msgid "Text Box"
 msgstr "Blwch Testun"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr "Safle Blwch Testun"
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr "Cyfeiriad Testun"
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr "Plygu Testun"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Amlapio Testun"
 
@@ -7351,8 +7307,8 @@ msgstr "Gadael rhagor o le yng ngofod AWML"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Amhareg (Ethiopia)"
+msgid "Amharic"
+msgstr "Amharic"
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7401,8 +7357,8 @@ msgstr "Assameg"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Asturieg (Sbaen)"
+msgid "Asturian"
+msgstr "Asturieg"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7431,18 +7387,23 @@ msgstr "Dogfennau ar Gael"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
-msgstr "Dewis"
+msgid "Available Languages:"
+msgstr "Ieithoedd ar Gael:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
-msgstr "Aymara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
+msgstr "Aymara (Canol/Gogledd Bolivia)"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
-msgstr "Aymara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr "Aymara (De Bolivia)"
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
+msgstr "Aymara, Canol"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7484,6 +7445,11 @@ msgstr "Du a Gwyn"
 msgid "Block Text"
 msgstr "Testun Bloc"
 
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr "Bokmal"
+
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
 msgid "Bold Italic"
@@ -7519,11 +7485,6 @@ msgstr "Diddymu"
 #: po/tmp/xap_String_Id.h
 msgid "Catalan"
 msgstr "Catalaneg"
-
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr "Canol Aymar"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7684,7 +7645,7 @@ msgstr "Cynnwys 4"
 #. STYLE_TOCHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Contents Header"
-msgstr "Pennawd Cynnwys"
+msgstr "Pennyn Cynnwys"
 
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h
@@ -7792,16 +7753,6 @@ msgstr "Cyhoeddi fel XML (fersiwn 1.0)"
 msgid "Default language: "
 msgstr "Iaith rhagosodedig: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Diffinio Lleoliad Delwedd"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Gosod Amlapio Testun"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -7835,8 +7786,8 @@ msgstr "Cymharu dogfennau"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Iseldireg (Iseldiroedd)"
+msgid "Dutch"
+msgstr "Iseldireg"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7923,6 +7874,11 @@ msgstr "Saesneg (DU)"
 msgid "English (US)"
 msgstr "Saesneg (UDA)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr "Saesneg, Tudalen Cod DOS/Windows 437"
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7967,7 +7923,7 @@ msgstr "Ffeil"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Mae'r ffeil yn bodoli eisoes. Ysgrifennu dros ffeil '%s'?"
+msgstr "Mae'r ffeil yn bodoli eisoes.  Ysgrifennu dros ffeil '%s'?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h
@@ -7986,8 +7942,8 @@ msgstr "Ffineg"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Fflemeg (Belg)"
+msgid "Flemish"
+msgstr "Fflemeg"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -8046,8 +8002,8 @@ msgstr "Fulah"
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-msgid "Galician (Galego)"
-msgstr "Galesieg (Galego)"
+msgid "Galician"
+msgstr "Galisieg"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8213,10 +8169,25 @@ msgstr "Eislandeg, Macintosh"
 msgid "Identifier:"
 msgstr "Enw:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr "Enw Delwedd"
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr "Lleoli Delwedd"
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Priodweddau Delweddau"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr "Maint Delwedd"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8321,8 +8292,8 @@ msgstr "Gwyddeleg"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Eidaleg (Yr Eidal)"
+msgid "Italian"
+msgstr "Eidaleg"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8356,14 +8327,23 @@ msgstr "Kannada"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
-msgstr "Kazakh (Kazakhstan)"
+msgid "Kazakh"
+msgstr "Kazakh"
 
-#. LANG_KO_KR
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr "Khmer"
+
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Corëeg"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr "Corëeg (De Corea)"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8372,8 +8352,8 @@ msgstr "Corëeg, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Corëeg, Johab"
+msgid "Korean, JOHAB"
+msgstr "Corëeg, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8402,8 +8382,8 @@ msgstr "Cadwyd diwethaf:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Lladin (Dadeni)"
+msgid "Latin"
+msgstr "Lladin"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8442,8 +8422,8 @@ msgstr "Malay"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
-msgstr "Mandinka (Senegal)"
+msgid "Mandinka"
+msgstr "Mandinka"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8482,8 +8462,8 @@ msgstr "Enw:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr "Nepali (Nepal)"
+msgid "Nepali"
+msgstr "Nepali"
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8505,16 +8485,6 @@ msgstr "Dim ategyn wedi ei ddewis"
 msgid "Normal"
 msgstr "Normal"
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Norwyeg Bokmal"
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Norwyeg Nynorsk"
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8534,6 +8504,11 @@ msgstr "Pennawd Rhif 2"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Pennawd Rhif 3"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr "Nynorsk"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8679,28 +8654,28 @@ msgstr "Gorchymyn argraffydd: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Punjabi (Gurmukhi)"
+msgid "Punjabi (India)"
+msgstr "Punjabi (India)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Punjabi (Shahmukhi)"
+msgid "Punjabi (Pakistan)"
+msgstr "Punjabi (Pacistan)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Quechua"
 
-#. LANG_QUH_BO
-#: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
-msgstr "Quechua (3 llafariad)"
-
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
-msgstr "Quechua (5 llafariad)"
+msgid "Quechua (Northern Bolivia)"
+msgstr "Quechua (Gogledd Bolivia)"
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
+msgstr "Quechua (De Bolivia)"
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
@@ -8763,13 +8738,13 @@ msgstr "Rwmaneg, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Rwsieg, (Rwsia)"
+msgid "Russian"
+msgstr "Rwsieg"
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
-msgstr "Rwsieg (cyn 1918)"
+msgid "Russian, pre-1918"
+msgstr "Rwsieg, cyn 1918"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h
@@ -8828,18 +8803,8 @@ msgstr "Serbeg"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-msgid "Serbian, latin"
-msgstr "Serbeg, lladin"
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Gosod Enw'r Ddelwedd"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Gosod Maint Delwedd"
+msgid "Serbian, Latin"
+msgstr "Serbeg, Lladin"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -9195,11 +9160,6 @@ msgstr "Golwg:"
 msgid "Welsh"
 msgstr "Cymraeg"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Gorllewin Ewrop, DOS/Tudalen Cod Windows 437"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9247,8 +9207,8 @@ msgstr "Lled:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
-msgstr "Wolof (Senegal)"
+msgid "Wolof"
+msgstr "Wolof"
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9337,6 +9297,133 @@ msgstr "siblingiaid"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "heb berthynas"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhareg (Ethiopia)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturieg (Sbaen)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aymara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aymara (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "Canol Aymar"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Iseldireg (Iseldiroedd)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Fflemeg (Belg)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galesieg (Galego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Eidaleg (Yr Eidal)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Kazakh (Kazakhstan)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Corëeg, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Lladin (Dadeni)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinka (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepali (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Norwyeg Bokmal"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Norwyeg Nynorsk"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punjabi (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punjabi (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 llafariad)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 llafariad)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Rwsieg, (Rwsia)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Gorllewin Ewrop, DOS/Tudalen Cod Windows 437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Senegal)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "&Fformatau ar gael:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Galluogi dyfyniadau slic"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Ymddygiad Awto-Ffit"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Dewisiadau Dau Gyfeiriad"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Paramedrau ychwanegol:"
+
+#~ msgid "Field Name"
+#~ msgstr "Enw Maes"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Fformatio Diweddnodau"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Fformatio Troednodau"
+
+#~ msgid "Insert break"
+#~ msgstr "Mewnosod toriad"
+
+#~ msgid "Insert field"
+#~ msgstr "Mewnosod maes"
+
+#~ msgid "Paper..."
+#~ msgstr "Papur..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Gosod y Bwlch Testun"
+
+#~ msgid "Scale..."
+#~ msgstr "Graddio..."
+
+# DLG_Options_Label_SpellDictionaries
+#~ msgid "Section breaks"
+#~ msgstr "Toriadau adran"
+
+#~ msgid "Table size"
+#~ msgstr "Maint Tabl"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Diffinio Lleoliad Delwedd"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Gosod Amlapio Testun"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Gosod Enw'r Ddelwedd"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Gosod Maint Delwedd"
 
 #~ msgid "&Show RDF"
 #~ msgstr "&Dangos RDF"
