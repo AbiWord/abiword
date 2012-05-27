@@ -10,7 +10,6 @@
   <object class="GtkDialog" id="ap_UnixDialog_HdrFtr">
     <property name="border_width">5</property>
     <property name="resizable">False</property>
-    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbDialog">
         <property name="spacing">2</property>

@@ -8,7 +8,6 @@
     <property name="has_separator">False</property>
     <property name="resizable">False</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
-    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbDialog">
         <property name="spacing">2</property>

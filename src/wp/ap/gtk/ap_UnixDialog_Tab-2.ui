@@ -16,7 +16,6 @@
   <object class="GtkDialog" id="ap_UnixDialog_Tab">
     <property name="border_width">5</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
-    <property name="visible">True</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox2">
         <property name="spacing">18</property>
