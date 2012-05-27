@@ -86,7 +86,6 @@ void  AP_UnixPreview_Annotation::_constructWindow(void)
 	UT_DEBUGMSG(("Contructing Window width %d height %d left %d top %d \n",m_width,m_height,m_left,m_top));
 	m_pPreviewWindow = gtk_window_new(GTK_WINDOW_POPUP);
 	gtk_widget_set_size_request(m_pPreviewWindow, m_width, m_height);
-	gtk_window_set_position(GTK_WINDOW(m_pPreviewWindow),GTK_WIN_POS_MOUSE);
 	gint root_x,root_y;
 	gtk_window_get_position (GTK_WINDOW(m_pPreviewWindow),&root_x,&root_y);
 	m_pDrawingArea = createDrawingArea();
