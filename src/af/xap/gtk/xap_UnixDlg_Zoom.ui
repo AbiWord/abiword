@@ -14,7 +14,7 @@
     <property name="title" translatable="yes">dialog1</property>
     <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
-    <property name="window_position">mouse</property>
+    <property name="window_position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>

@@ -14,7 +14,7 @@
     <property name="resizable">False</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <property name="visible">True</property>
-    <property name="window_position">GTK_WIN_POS_MOUSE</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="spacing">8</property>
