@@ -13,9 +13,11 @@
     <property name="page_increment">10</property>
   </object>
   <object class="GtkDialog" id="xap_UnixDlg_Image">
+    <property name="border_width">5</property>
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Image Properties</property>
     <property name="type_hint">dialog</property>
+    <property name="window_position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
