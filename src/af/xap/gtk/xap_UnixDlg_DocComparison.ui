@@ -3,15 +3,16 @@
   <!-- interface-requires gtk+ 3.0 -->
   <object class="GtkDialog" id="xap_UnixDlg_DocComparison">
     <property name="can_focus">False</property>
-    <property name="border_width">6</property>
+    <property name="border_width">5</property>
     <property name="title" translatable="yes">dialog1</property>
     <property name="type_hint">normal</property>
+    <property name="window_position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">4</property>
+        <property name="spacing">2</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
@@ -58,6 +59,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
+                    <property name="ypad">4</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </object>
@@ -78,6 +80,7 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
                 <child>
@@ -106,12 +109,14 @@
                     <property name="right_attach">2</property>
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
+                    <property name="y_options"></property>
                   </packing>
                 </child>
               </object>
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
+                <property name="padding">4</property>
                 <property name="position">0</property>
               </packing>
             </child>
@@ -126,6 +131,7 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
+                    <property name="ypad">4</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
                     <property name="use_markup">True</property>
                   </object>
@@ -280,6 +286,7 @@
               <packing>
                 <property name="expand">True</property>
                 <property name="fill">True</property>
+                <property name="padding">6</property>
                 <property name="position">1</property>
               </packing>
             </child>
