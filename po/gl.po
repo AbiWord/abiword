@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-24 00:26-0400\n"
-"PO-Revision-Date: 2012-05-25 11:21+0200\n"
-"Last-Translator: Miguel Anxo <mbouzada@gmail.com>\n"
+"POT-Creation-Date: 2012-05-27 23:09-0400\n"
+"PO-Revision-Date: 2012-05-28 05:58+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Galician <proxecto@trasno.net>\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
@@ -1466,8 +1466,8 @@ msgstr "Campos dispoñíbeis"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
-msgstr "Formatos dispoñíbeis"
+msgid "Available Formats:"
+msgstr "Formatos dispoñíbeis:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
@@ -2854,8 +2854,8 @@ msgstr "Referencia de nota final"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
-msgstr "Estilo de nota final"
+msgid "Endnote style:"
+msgstr "Estilo de nota final:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
@@ -3191,8 +3191,8 @@ msgstr "Referencia do rodapé"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
-msgstr "Estilo do rodapé"
+msgid "Footnote style:"
+msgstr "Estilo do rodapé:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
@@ -3554,13 +3554,13 @@ msgstr "Maiús. iniciais"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
-msgstr "Valor inicial da nota final"
+msgid "Initial Endnote value:"
+msgstr "Valor inicial da nota final:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
-msgstr "Valor inicial da nota ao rodapé"
+msgid "Initial Footnote value:"
+msgstr "Valor inicial da nota ao rodapé:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -4378,8 +4378,8 @@ msgstr "Nova &anotación"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
-msgstr "Novo contacto..."
+msgid "New Contact"
+msgstr "Novo contacto"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4530,7 +4530,6 @@ msgstr "Numerado"
 msgid "Numbered List"
 msgstr "Lista numerada"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
@@ -4538,6 +4537,11 @@ msgstr "Lista numerada"
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
 msgstr "Números"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+msgid "Numbering:"
+msgstr "Números:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4816,8 +4820,8 @@ msgstr "Colocar ao final da sección"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
-msgstr "Colocación"
+msgid "Placement:"
+msgstr "Colocación:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -5601,14 +5605,14 @@ msgstr "Seleccione as partes do documento que pertencen á versión anterior..."
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
-msgstr "Seleccione as partes do documento que figuran na seguinte revisión..."
+msgid "Select the parts of the document contained in the next revision"
+msgstr "Seleccione as partes do documento que figuran na seguinte revisión"
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
-msgstr "Seleccione as partes do documento que figuran na revisión anterior..."
+msgid "Select the parts of the document contained in the previous revision"
+msgstr "Seleccione as partes do documento que figuran na revisión anterior"
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -7319,8 +7323,8 @@ msgstr "Revisión automática"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
-msgstr "Documentos dispoñíbeis"
+msgid "Available Documents:"
+msgstr "Documentos dispoñíbeis:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
@@ -8502,8 +8506,8 @@ msgstr "Texto simple"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
-msgstr "Detalles do complemento:"
+msgid "Plugin Details"
+msgstr "Detalles do complemento"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
