@@ -17,8 +17,9 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Format Table of Contents</property>
-    <property name="window_position">center</property>
-    <property name="type_hint">normal</property>
+    <property name="resizable">False</property>
+    <property name="type_hint">dialog</property>
+    <property name="window_position">mouse</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
