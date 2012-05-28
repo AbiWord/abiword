@@ -112,25 +112,19 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkVBox" id="vbox25">
-                    <property name="spacing">12</property>
+                  <object class="GtkScrolledWindow" id="scrolledwindow1">
+                    <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="shadow_type">GTK_SHADOW_IN</property>
                     <property name="visible">True</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
                     <child>
-                      <object class="GtkScrolledWindow" id="scrolledwindow4">
+                      <object class="GtkTreeView" id="lvBookmarks">
                         <property name="can_focus">True</property>
-                        <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                        <property name="shadow_type">GTK_SHADOW_IN</property>
+                        <property name="headers_visible">False</property>
+                        <property name="reorderable">True</property>
+                        <property name="rules_hint">True</property>
                         <property name="visible">True</property>
-                        <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
-                        <child>
-                          <object class="GtkTreeView" id="lvBookmarks">
-                            <property name="can_focus">True</property>
-                            <property name="headers_visible">False</property>
-                            <property name="reorderable">True</property>
-                            <property name="rules_hint">True</property>
-                            <property name="visible">True</property>
-                          </object>
-                        </child>
                       </object>
                     </child>
                   </object>
@@ -149,12 +143,21 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkTreeView" id="lvXMLIDs">
+                  <object class="GtkScrolledWindow" id="scrolledwindow2">
                     <property name="can_focus">True</property>
-                    <property name="headers_visible">False</property>
-                    <property name="reorderable">True</property>
-                    <property name="rules_hint">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="shadow_type">GTK_SHADOW_IN</property>
                     <property name="visible">True</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <child>
+                      <object class="GtkTreeView" id="lvXMLIDs">
+                        <property name="can_focus">True</property>
+                        <property name="headers_visible">False</property>
+                        <property name="reorderable">True</property>
+                        <property name="rules_hint">True</property>
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="position">2</property>
@@ -171,9 +174,18 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkTreeView" id="lvAnno">
+                  <object class="GtkScrolledWindow" id="scrolledwindow3">
                     <property name="can_focus">True</property>
+                    <property name="hscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <property name="shadow_type">GTK_SHADOW_IN</property>
                     <property name="visible">True</property>
+                    <property name="vscrollbar_policy">GTK_POLICY_AUTOMATIC</property>
+                    <child>
+                      <object class="GtkTreeView" id="lvAnno">
+                        <property name="can_focus">True</property>
+                        <property name="visible">True</property>
+                      </object>
+                    </child>
                   </object>
                   <packing>
                     <property name="position">3</property>
