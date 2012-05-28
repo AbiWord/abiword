@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-24 00:26-0400\n"
-"PO-Revision-Date: 2012-05-27 15:04+0200\n"
-"Last-Translator: Aputsiaq Niels <aj@isit.gl>\n"
+"POT-Creation-Date: 2012-05-27 23:09-0400\n"
+"PO-Revision-Date: 2012-05-28 05:58+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
 "MIME-Version: 1.0\n"
@@ -1483,8 +1483,8 @@ msgstr "Mulige felter"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
-msgstr "Mulige formater"
+msgid "Available Formats:"
+msgstr "Mulige formater:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
@@ -2873,8 +2873,8 @@ msgstr "Slutnotereference"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
-msgstr "Slutnotetypografi"
+msgid "Endnote style:"
+msgstr "Slutnotetypografi:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
@@ -3210,8 +3210,8 @@ msgstr "Fodnotereference"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
-msgstr "Fodnotetypografi"
+msgid "Footnote style:"
+msgstr "Fodnotetypografi:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
@@ -3575,13 +3575,13 @@ msgstr "Store Forbogstaver"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
-msgstr "Startværdi for slutnote"
+msgid "Initial Endnote value:"
+msgstr "Startværdi for slutnote:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
-msgstr "Startværdi for fodnote"
+msgid "Initial Footnote value:"
+msgstr "Startværdi for fodnote:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -4399,8 +4399,8 @@ msgstr "Ny &anmærkning"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
-msgstr "Ny kontakt..."
+msgid "New Contact"
+msgstr "Ny kontakt"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4551,7 +4551,6 @@ msgstr "Numre"
 msgid "Numbered List"
 msgstr "Nummeret liste"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
@@ -4559,6 +4558,11 @@ msgstr "Nummeret liste"
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
 msgstr "Nummerering"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+msgid "Numbering:"
+msgstr "Nummerering:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4837,8 +4841,8 @@ msgstr "Placér til sidst i sektionen"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
-msgstr "Placering"
+msgid "Placement:"
+msgstr "Placering:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -5625,14 +5629,14 @@ msgstr "Vælg delene af dokumentet som hører til den forrige version..."
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
-msgstr "Vælg delene af dokumentet som er indeholdt i den næste revision..."
+msgid "Select the parts of the document contained in the next revision"
+msgstr "Vælg delene af dokumentet som er indeholdt i den næste revision"
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
-msgstr "Vælg delene af dokumentet som er indeholdt i den forrige revision..."
+msgid "Select the parts of the document contained in the previous revision"
+msgstr "Vælg delene af dokumentet som er indeholdt i den forrige revision"
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -7347,8 +7351,8 @@ msgstr "Autorevision"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
-msgstr "Tilgængelige dokumenter"
+msgid "Available Documents:"
+msgstr "Tilgængelige dokumenter:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
@@ -8536,8 +8540,8 @@ msgstr "Ren tekst"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
-msgstr "Detaljer om udvidelsesmoduler:"
+msgid "Plugin Details"
+msgstr "Detaljer om udvidelsesmoduler"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
