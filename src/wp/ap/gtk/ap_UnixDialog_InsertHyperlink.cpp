@@ -50,13 +50,16 @@ XAP_Dialog * AP_UnixDialog_InsertHyperlink::static_constructor(XAP_DialogFactory
 
 AP_UnixDialog_InsertHyperlink::AP_UnixDialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_InsertHyperlink(pDlgFactory,id)
+	: AP_Dialog_InsertHyperlink(pDlgFactory,id),
+	m_entry(0),
+	m_windowMain(0),
+	// m_comboEntry(0),
+	m_clist(0),
+	m_swindow(0),
+	m_iRow(-1)
+	
 {
-	m_windowMain = 0;
-	//m_comboEntry = 0;
-	m_clist = 0;
-	m_iRow = -1;
-	m_entry = 0;
+
 }
 
 AP_UnixDialog_InsertHyperlink::~AP_UnixDialog_InsertHyperlink(void)
