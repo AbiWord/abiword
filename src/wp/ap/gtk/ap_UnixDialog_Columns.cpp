@@ -39,6 +39,7 @@
 #include "xap_App.h"
 #include "xap_UnixApp.h"
 #include "xap_Frame.h"
+#include "xap_UnixFrameImpl.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -269,6 +270,13 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	// Build the window's widgets and arrange them
 	GtkWidget * mainWindow = _constructWindow();
 	UT_return_if_fail(mainWindow);
+
+	XAP_UnixFrameImpl *pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
+	GtkWidget *parentWindow = pUnixFrameImpl->getTopLevelWindow();
+	if (GTK_IS_WINDOW(parentWindow) != TRUE)
+		parentWindow = gtk_widget_get_parent(parentWindow);
+	gtk_window_set_transient_for(GTK_WINDOW(mainWindow), GTK_WINDOW(parentWindow));
+	gtk_window_set_position(GTK_WINDOW(mainWindow), GTK_WIN_POS_CENTER_ON_PARENT);    
 
 	// ***show*** before creating gc's
 	gtk_widget_show ( mainWindow ) ;
@@ -529,6 +537,10 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_ColumnTitle,s);
 	
 	windowColumns = abiDialogNew ( "column dialog", TRUE, s.utf8_str() ) ;
+	gtk_window_set_resizable(GTK_WINDOW(windowColumns), FALSE);
+#if !GTK_CHECK_VERSION(3,0,0)
+	gtk_dialog_set_has_separator(GTK_DIALOG(windowColumns), FALSE);
+#endif	  	
 
 	_constructWindowContents(gtk_dialog_get_content_area(GTK_DIALOG(windowColumns)));
 
@@ -543,6 +555,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 {
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
+	GtkWidget *lbColFrame;
 	GtkWidget *wColumnFrame;
 	GtkWidget *tableColumns;
 	GtkWidget *hboxColumns;
@@ -552,6 +565,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	GtkWidget *wLabelTwo;
 	GtkWidget *wToggleThree;
 	GtkWidget *wLabelThree;
+	GtkWidget *lbPrevFrame;
 	GtkWidget *wPreviewFrame;
 	GtkWidget *wDrawFrame;
 	GtkWidget *wPreviewArea;
@@ -572,7 +586,12 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_box_pack_start (GTK_BOX (windowColumns), tableTop, FALSE, FALSE, 6);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number,s);
-	wColumnFrame = gtk_frame_new ( s.utf8_str());
+	s = "<b>" + s + "</b>";
+	lbColFrame = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(lbColFrame), s.utf8_str());
+	gtk_widget_show(lbColFrame);
+	wColumnFrame = gtk_frame_new(NULL);
+	gtk_frame_set_label_widget(GTK_FRAME(wColumnFrame), lbColFrame);
 	gtk_frame_set_shadow_type(GTK_FRAME(wColumnFrame), GTK_SHADOW_NONE);
 	gtk_widget_show(wColumnFrame);
 	gtk_table_attach (GTK_TABLE (tableTop), wColumnFrame, 0, 1, 0, 1,
@@ -583,9 +602,9 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_container_set_border_width(GTK_CONTAINER (hboxColumns), 6);
 	gtk_container_add (GTK_CONTAINER (wColumnFrame), hboxColumns);
 
-	tableColumns = gtk_table_new (3, 2, FALSE);
+	tableColumns = gtk_table_new (3, 2, TRUE);
 	gtk_widget_show (tableColumns);
-	gtk_box_pack_start (GTK_BOX (hboxColumns), tableColumns, TRUE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (hboxColumns), tableColumns, FALSE, FALSE, 0);
 	
 	wToggleOne = gtk_toggle_button_new();
 	gtk_widget_show(wToggleOne );
@@ -629,7 +648,12 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_misc_set_alignment (GTK_MISC (wLabelThree), 0, 0.5);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Preview,s);
-	wPreviewFrame = gtk_frame_new ( s.utf8_str());
+	s = "<b>" + s + "</b>";
+	lbPrevFrame = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(lbPrevFrame), s.utf8_str());
+	gtk_widget_show(lbPrevFrame);
+	wPreviewFrame = gtk_frame_new(NULL);
+	gtk_frame_set_label_widget(GTK_FRAME(wPreviewFrame), lbPrevFrame);
 	gtk_frame_set_shadow_type(GTK_FRAME(wPreviewFrame), GTK_SHADOW_NONE);
 	gtk_widget_show(wPreviewFrame);
 	gtk_table_attach (GTK_TABLE (tableTop), wPreviewFrame, 1, 2, 0, 1,
@@ -675,6 +699,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	
 	GtkWidget * table = gtk_table_new (6, 3, FALSE);
 	gtk_widget_show (table);
+	gtk_container_set_border_width(GTK_CONTAINER(table), 3);
 	gtk_box_pack_start (GTK_BOX (windowColumns), table, FALSE, FALSE, 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Line_Between,s);
@@ -695,10 +720,10 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 // Spin Button for Columns
 /////////////////////////////////////////////////////////
 
-	hseparator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	hseparator = gtk_label_new("");
 	gtk_widget_show(hseparator);
 	gtk_table_attach (GTK_TABLE (table), hseparator, 0, 3, 2, 3,
-				  (GtkAttachOptions) (GTK_SHRINK | GTK_FILL), (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 0, 6);
+				  (GtkAttachOptions) (0), (GtkAttachOptions) (0), 0, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Number_Cols,s);
 	SpinLabel = gtk_label_new ( s.utf8_str());
 	gtk_widget_show(SpinLabel);
