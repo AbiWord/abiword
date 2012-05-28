@@ -9,6 +9,7 @@
     <property name="default_width">400</property>
     <property name="default_height">250</property>
     <property name="type_hint">normal</property>
+    <property name="window_position">mouse</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbDialog">
         <property name="visible">True</property>
