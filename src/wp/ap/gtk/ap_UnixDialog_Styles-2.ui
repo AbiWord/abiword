@@ -2,7 +2,10 @@
 <!--*- mode: xml -*-->
 <interface>
   <object class="GtkDialog" id="ap_UnixDialog_Styles">
+    <property name="border_width">5</property>
     <property name="has_separator">False</property>
+    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
@@ -198,6 +201,7 @@
                         <child>
                           <object class="GtkFrame" id="frameParagraph">
                             <property name="label_yalign">0</property>
+                            <property name="shadow_type">GTK_SHADOW_NONE</property>
                             <property name="visible">True</property>
                           </object>
                         </child>
@@ -233,6 +237,7 @@
                         <child>
                           <object class="GtkFrame" id="frameCharacter">
                             <property name="label_yalign">0</property>
+                            <property name="shadow_type">GTK_SHADOW_NONE</property>
                             <property name="visible">True</property>
                           </object>
                         </child>
