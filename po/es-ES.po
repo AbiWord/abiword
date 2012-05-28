@@ -3,12 +3,13 @@
 # Copyright by:
 # Francisco Javier F. Serrador <serrador@arrakis.es>, 2003.
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2004, 2005.
+# Chris Leonard <cjl@laptop.org>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-17 14:03-0400\n"
-"PO-Revision-Date: 2012-05-22 07:32+0200\n"
+"POT-Creation-Date: 2012-05-27 23:09-0400\n"
+"PO-Revision-Date: 2012-05-28 06:04+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: <es@li.org>\n"
 "Language: es\n"
@@ -1468,8 +1469,8 @@ msgstr "Campos disponibles"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
-msgstr "Formatos disponibles"
+msgid "Available Formats:"
+msgstr "Formatos disponibles:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
@@ -2856,8 +2857,8 @@ msgstr "Referencia de nota final"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
-msgstr "Estilo de nota final"
+msgid "Endnote style:"
+msgstr "Estilo de nota final:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
@@ -3192,8 +3193,8 @@ msgstr "Referencia de pie de página"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
-msgstr "Estilo de nota a pie de página"
+msgid "Footnote style:"
+msgstr "Estilo de nota a pie de página:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
@@ -3556,13 +3557,13 @@ msgstr "Mayúsculas Iniciales"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
-msgstr "Valor inicial de la nota final"
+msgid "Initial Endnote value:"
+msgstr "Valor inicial de la nota final:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
-msgstr "Valor inicial de la nota a pie de página"
+msgid "Initial Footnote value:"
+msgstr "Valor inicial de la nota a pie de página:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -4381,8 +4382,8 @@ msgstr "Nuevo &anotación"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
-msgstr "Contacto nuevo..."
+msgid "New Contact"
+msgstr "Contacto nuevo"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4533,7 +4534,6 @@ msgstr "Numerado"
 msgid "Numbered List"
 msgstr "Lista numerada"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
@@ -4541,6 +4541,11 @@ msgstr "Lista numerada"
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
 msgstr "Numeración"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+msgid "Numbering:"
+msgstr "Numeración:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4819,8 +4824,8 @@ msgstr "Colocar al final de la sección"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
-msgstr "Colocación"
+msgid "Placement:"
+msgstr "Colocación:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -5607,16 +5612,14 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
-msgstr ""
-"Seleccionar la parte del documento contenido en la siguiente revisión..."
+msgid "Select the parts of the document contained in the next revision"
+msgstr "Seleccionar la parte del documento contenido en la siguiente revisión"
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
-msgstr ""
-"Seleccionar las partes del documento contenido en la anterior revisión..."
+msgid "Select the parts of the document contained in the previous revision"
+msgstr "Seleccionar las partes del documento contenido en la anterior revisión"
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -7261,8 +7264,8 @@ msgstr "Permitir marcado adicional en espacio de nombres AWML"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Amhárico (Etiopía)"
+msgid "Amharic"
+msgstr ""
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7311,8 +7314,8 @@ msgstr "Asamés"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Asturiano (España)"
+msgid "Asturian"
+msgstr "Asturiano"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7336,23 +7339,28 @@ msgstr "Autorevisión"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
-msgstr "Documentos disponibles"
+msgid "Available Documents:"
+msgstr "Documentos disponibles:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
-msgstr "Idiomas disponibles"
+msgid "Available Languages:"
+msgstr "Idiomas disponibles:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
-msgstr "Aymara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
+msgstr "Aimara"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
-msgstr "Aymara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr "Aimara (Sur de Bolivia)"
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
+msgstr "Aimara (Central)"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7394,6 +7402,11 @@ msgstr "Blanco y negro"
 msgid "Block Text"
 msgstr "Bloque de texto"
 
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr ""
+
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
 msgid "Bold Italic"
@@ -7429,11 +7442,6 @@ msgstr "Cancelar"
 #: po/tmp/xap_String_Id.h
 msgid "Catalan"
 msgstr "Catalán"
-
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr "Aymara Central"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7733,8 +7741,8 @@ msgstr "Documentos comparados"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Holandés (Holanda)"
+msgid "Dutch"
+msgstr "Holandés"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7821,6 +7829,11 @@ msgstr "Inglés (Reino Unido)"
 msgid "English (US)"
 msgstr "Inglés (Estados Unidos)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr "Inglés, DOS/Windows Página de Código 437"
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7884,8 +7897,8 @@ msgstr "Finlandés"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Flamenco (Bélgica)"
+msgid "Flemish"
+msgstr ""
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -7944,8 +7957,8 @@ msgstr "Fula"
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-msgid "Galician (Galego)"
-msgstr "Gallego (Galego)"
+msgid "Galician"
+msgstr "Gallego"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8229,8 +8242,8 @@ msgstr "Irlandés"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Italiano (Italia)"
+msgid "Italian"
+msgstr "Italiano"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8264,19 +8277,23 @@ msgstr "Kannada"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
-msgstr "Kazako (Kazajistán)"
+msgid "Kazakh"
+msgstr ""
 
 #. LANG_KM_KH
 #: po/tmp/xap_String_Id.h
 msgid "Khmer"
 msgstr "Khmer"
 
-#. LANG_KO_KR
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Coreano"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr "Coreano (Corea del Sur)"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8285,8 +8302,8 @@ msgstr "Coreano, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Coreano, Johab"
+msgid "Korean, JOHAB"
+msgstr "Coreano, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8315,8 +8332,8 @@ msgstr "Última vez que se guardó:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Latín (Renacimiento)"
+msgid "Latin"
+msgstr "Latín"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8355,8 +8372,8 @@ msgstr "Malayo"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
-msgstr "Mandinka (Senegal)"
+msgid "Mandinka"
+msgstr ""
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8395,8 +8412,8 @@ msgstr "Nombre:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr "Nepalés (Nepal)"
+msgid "Nepali"
+msgstr ""
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8418,16 +8435,6 @@ msgstr "No hay un complemento seleccionado"
 msgid "Normal"
 msgstr "Normal"
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Noruego Bokmal"
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Noruego Nynorsk"
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8447,6 +8454,11 @@ msgstr "Cabecera numerada 2"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Cabecera numerada 3"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr ""
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8510,8 +8522,8 @@ msgstr "Texto plano"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
-msgstr "Detalles del complemento:"
+msgid "Plugin Details"
+msgstr "Detalles del complemento"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
@@ -8590,28 +8602,28 @@ msgstr "Comando de impresión: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Penyabi (Gurmukhi)"
+msgid "Punjabi (India)"
+msgstr ""
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Penyabi (Shahmukhi)"
+msgid "Punjabi (Pakistan)"
+msgstr ""
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Quechua"
 
-#. LANG_QUH_BO
-#: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
-msgstr "Quechua (3 vocales)"
-
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
-msgstr "Quechua (5 vocales)"
+msgid "Quechua (Northern Bolivia)"
+msgstr "Quechua (Norte de Bolivia)"
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
+msgstr "Quechua (Sur de Bolivia)"
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
@@ -8674,13 +8686,14 @@ msgstr "Rumano, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Ruso (Rusia)"
+msgid "Russian"
+msgstr "Ruso"
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
-msgstr "Rusia (antes-1918)"
+#, fuzzy
+msgid "Russian, pre-1918"
+msgstr "Ruso (antes de 1918)"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h
@@ -8739,7 +8752,7 @@ msgstr "Servio"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-msgid "Serbian, latin"
+msgid "Serbian, Latin"
 msgstr "Servio, latino"
 
 #. DLG_ULANG_LangTitle
@@ -9096,11 +9109,6 @@ msgstr "Ver:"
 msgid "Welsh"
 msgstr "Galés"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Europeo occidental, página de códigos Windows/DOS 437"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9148,8 +9156,8 @@ msgstr "Anchura:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
-msgstr "Wolof (Senegal)"
+msgid "Wolof"
+msgstr ""
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9240,6 +9248,75 @@ msgstr "similares"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "no relacionados"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhárico (Etiopía)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturiano (España)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aymara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aymara (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "Aymara Central"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Holandés (Holanda)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Flamenco (Bélgica)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Gallego (Galego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italiano (Italia)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Kazako (Kazajistán)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Coreano, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latín (Renacimiento)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinka (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepalés (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Noruego Bokmal"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Noruego Nynorsk"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Penyabi (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Penyabi (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 vocales)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 vocales)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Ruso (Rusia)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Europeo occidental, página de códigos Windows/DOS 437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Senegal)"
 
 #~ msgid "&Available formats:"
 #~ msgstr "Formatos &disponibles:"
