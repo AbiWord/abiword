@@ -8,12 +8,13 @@
     <property name="title" translatable="yes">Insert Page Numbers</property>
     <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
+    <property name="window_position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">13</property>
+        <property name="spacing">12</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area1">
             <property name="visible">True</property>
