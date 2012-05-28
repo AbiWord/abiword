@@ -4,7 +4,9 @@
   <object class="GtkDialog" id="ap_UnixDialog_FormatTable">
     <property name="border_width">5</property>
     <property name="has_separator">False</property>
+    <property name="resizable">False</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="window_position">GTK_WIN_POS_MOUSE</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="vbDialog">
         <property name="spacing">2</property>
