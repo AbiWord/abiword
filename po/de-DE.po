@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-26 22:44+0200\n"
-"PO-Revision-Date: 2012-05-26 22:44+0200\n"
+"POT-Creation-Date: 2012-05-28 16:15+0200\n"
+"PO-Revision-Date: 2012-05-28 16:15+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -1467,8 +1467,8 @@ msgstr "Automatisch verbinden"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Vorhandene Felder"
+msgid "Available Fields:"
+msgstr "Vorhandene Felder:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -4205,8 +4205,8 @@ msgstr "Martins Test"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Maximale Spaltenbreite"
+msgid "Max Column size:"
+msgstr "Maximale Spaltenbreite:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4503,8 +4503,8 @@ msgstr "Noten-Stile"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Anzahl der Spalten"
+msgid "Number of Columns:"
+msgstr "Anzahl der Spalten:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -5116,8 +5116,8 @@ msgstr "Kopfzeile entfernen"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "Eigenschaft aus Vorlage entfernen"
+msgid "Remove Property from Style:"
+msgstr "Eigenschaft aus Vorlage entfernen:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -6064,8 +6064,8 @@ msgstr "Quelle:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "Abstand nach Spalte"
+msgid "Space after Column:"
+msgstr "Abstand nach Spalte:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6295,13 +6295,13 @@ msgstr "Name der Vorlage:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Vorlagentyp"
+msgid "Style Type:"
+msgstr "Vorlagentyp:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Vorlage für den folgenden Absatz"
+msgid "Style for following paragraph:"
+msgstr "Vorlage für den folgenden Absatz:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
