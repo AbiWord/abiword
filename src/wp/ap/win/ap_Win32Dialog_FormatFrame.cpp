@@ -211,10 +211,16 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 
 	/* Combo Values for Thickness */
 	
-	for(i=0; i < FORMAT_FRAME_NUMTHICKNESS ;i++)
+    // current select index in AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS
+	int iCurrentIndex = 0 ; 
+	//most time, all the thickness is same for top,right,bottom,left
+	UT_UTF8String currentTickness = getBorderThicknessRight();
+	for(i=0; i < FORMAT_FRAME_NUMTHICKNESS ;i++){	
+		if( currentTickness == sThickness[i]) iCurrentIndex=i;  
 		addItemToCombo (AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, sThickness[i]);
+	}
 
-	selectComboItem (AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, 0);
+	selectComboItem (AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, iCurrentIndex);
 
 	centerDialog();
 	return 1; 
