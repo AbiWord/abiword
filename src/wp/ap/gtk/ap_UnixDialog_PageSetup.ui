@@ -54,7 +54,9 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Page Setup</property>
+    <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
+    <property name="window_position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
