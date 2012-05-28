@@ -15,10 +15,12 @@
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_Tab">
     <property name="border_width">5</property>
+    <property name="has_separator">False</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
+    <property name="window_position">GTK_WIN_POS_CENTER_ON_PARENT</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox2">
-        <property name="spacing">18</property>
+        <property name="spacing">5</property>
         <property name="visible">True</property>
         <child>
           <object class="GtkVBox" id="vbox11">
@@ -32,8 +34,6 @@
                 <property name="visible">True</property>
                 <child>
                   <object class="GtkLabel" id="lbDefaultTab">
-                    <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
                     <property name="visible">True</property>
                     <property name="ypad">2</property>
                   </object>

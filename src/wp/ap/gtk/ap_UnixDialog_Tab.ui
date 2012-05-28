@@ -19,6 +19,7 @@
     <property name="border_width">5</property>
     <property name="title" translatable="yes">dialog1</property>
     <property name="type_hint">dialog</property>
+    <property name="window_position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox2">
         <property name="visible">True</property>
@@ -73,7 +74,6 @@
                     <property name="can_focus">False</property>
                     <property name="ypad">2</property>
                     <property name="label" translatable="yes">&lt;b&gt;%s&lt;/b&gt;</property>
-                    <property name="use_markup">True</property>
                   </object>
                   <packing>
                     <property name="x_options">GTK_FILL</property>
