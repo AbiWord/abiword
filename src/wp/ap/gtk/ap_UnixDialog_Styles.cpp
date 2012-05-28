@@ -723,6 +723,10 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 
 	modifyDialog = abiDialogNew("modify style dialog", TRUE, title.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (modifyDialog), 5);
+	gtk_window_set_resizable(GTK_WINDOW(modifyDialog), FALSE);
+#if !GTK_CHECK_VERSION(3,0,0)
+	gtk_dialog_set_has_separator(GTK_DIALOG(modifyDialog), FALSE);
+#endif	  	
 
 	_constructModifyDialogContents(gtk_dialog_get_content_area(GTK_DIALOG (modifyDialog)));
 
@@ -878,19 +882,35 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	}
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyPreview,s);
-	previewFrame = gtk_frame_new (s.utf8_str());
+	s = "<b>" + s + "</b>";
+	GtkWidget *lbPrevFrame = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(lbPrevFrame), s.utf8_str());
+	gtk_widget_show(lbPrevFrame);
+	previewFrame = gtk_frame_new(NULL);
+	gtk_frame_set_label_widget(GTK_FRAME(previewFrame), lbPrevFrame);
 	gtk_frame_set_shadow_type(GTK_FRAME(previewFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (previewFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), previewFrame, TRUE, TRUE, 2);
-	gtk_container_set_border_width (GTK_CONTAINER (previewFrame), 5);
+	gtk_container_set_border_width (GTK_CONTAINER (previewFrame), 3);
+
+	GtkWidget *wDrawFrame = gtk_frame_new(NULL);
+	gtk_frame_set_shadow_type(GTK_FRAME(wDrawFrame), GTK_SHADOW_NONE);
+	gtk_widget_show(wDrawFrame);
+	gtk_container_add(GTK_CONTAINER(previewFrame), wDrawFrame);
+	gtk_container_set_border_width(GTK_CONTAINER(wDrawFrame), 6);
 
 	modifyDrawingArea = createDrawingArea();
+	gtk_widget_set_size_request (modifyDrawingArea, -1, 85);
+	gtk_container_add (GTK_CONTAINER (wDrawFrame), modifyDrawingArea);
 	gtk_widget_show (modifyDrawingArea);
-	gtk_container_add (GTK_CONTAINER (previewFrame), modifyDrawingArea);
-	gtk_widget_set_size_request (modifyDrawingArea, -1, 120);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyDescription,s);
-	GtkWidget * descriptionFrame = gtk_frame_new (s.utf8_str());
+	s = "<b>" + s + "</b>";
+	GtkWidget *lbDescrFrame = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(lbDescrFrame), s.utf8_str());
+	gtk_widget_show(lbDescrFrame);
+	GtkWidget *descriptionFrame = gtk_frame_new(NULL);
+	gtk_frame_set_label_widget(GTK_FRAME(descriptionFrame), lbDescrFrame);
 	gtk_frame_set_shadow_type(GTK_FRAME(descriptionFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (descriptionFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), descriptionFrame, FALSE, FALSE, 0);
@@ -899,9 +919,12 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	DescriptionText = gtk_label_new (NULL);
 	gtk_widget_show (DescriptionText);
 	gtk_container_add (GTK_CONTAINER (descriptionFrame), DescriptionText);
-	gtk_misc_set_alignment (GTK_MISC (DescriptionText), 0, 0.5);
+	gtk_misc_set_alignment (GTK_MISC (DescriptionText), 0.1, 0.5);
 	gtk_label_set_justify (GTK_LABEL (DescriptionText), GTK_JUSTIFY_LEFT);
 	gtk_label_set_line_wrap (GTK_LABEL (DescriptionText), TRUE);
+	GtkRequisition requisition;
+	gtk_widget_size_request(OverallVbox, &requisition);
+	gtk_widget_set_size_request(DescriptionText, requisition.width, -1);
 //
 // Code to choose properties to be removed from the current style.
 //
