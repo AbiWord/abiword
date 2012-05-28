@@ -12,9 +12,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-24 00:26-0400\n"
-"PO-Revision-Date: 2012-05-25 07:59+0200\n"
-"Last-Translator: wwycheuk <wwycheuk@gmail.com>\n"
+"POT-Creation-Date: 2012-05-27 23:09-0400\n"
+"PO-Revision-Date: 2012-05-28 05:58+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Traditional Chinese <zh-l10n@linux.org.tw>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
@@ -1467,8 +1467,8 @@ msgstr "可用的功能變數"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
-msgstr "可用格式"
+msgid "Available Formats:"
+msgstr "可用格式:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
@@ -2851,8 +2851,8 @@ msgstr "章節附註參照"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
-msgstr "章節附註樣式"
+msgid "Endnote style:"
+msgstr "章節附註樣式:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
@@ -3187,8 +3187,8 @@ msgstr "註腳參照"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
-msgstr "註腳樣式"
+msgid "Footnote style:"
+msgstr "註腳樣式:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
@@ -3549,13 +3549,13 @@ msgstr "詞首大寫"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
-msgstr "初始章節附註值"
+msgid "Initial Endnote value:"
+msgstr "初始章節附註值:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
-msgstr "初始註腳值"
+msgid "Initial Footnote value:"
+msgstr "初始註腳值:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -4373,8 +4373,8 @@ msgstr "新註記(&A)"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
-msgstr "新增聯絡人..."
+msgid "New Contact"
+msgstr "新增聯絡人"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4525,7 +4525,6 @@ msgstr "編號"
 msgid "Numbered List"
 msgstr "編號清單"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
@@ -4533,6 +4532,11 @@ msgstr "編號清單"
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
 msgstr "項目編號"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+msgid "Numbering:"
+msgstr "項目編號:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4811,8 +4815,8 @@ msgstr "置於節段尾部"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
-msgstr "置放方式"
+msgid "Placement:"
+msgstr "置放方式:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -5596,14 +5600,14 @@ msgstr "選擇文件中屬於前一個修訂的部份..."
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
-msgstr "選擇文件中包含下一個修訂的部份..."
+msgid "Select the parts of the document contained in the next revision"
+msgstr "選擇文件中包含下一個修訂的部份"
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
-msgstr "選擇文件中包含前一個修訂的部份..."
+msgid "Select the parts of the document contained in the previous revision"
+msgstr "選擇文件中包含前一個修訂的部份"
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -7286,8 +7290,8 @@ msgstr "自動製作修訂版"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
-msgstr "可用文件"
+msgid "Available Documents:"
+msgstr "可用文件:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
@@ -8475,8 +8479,8 @@ msgstr "純文字"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
-msgstr "插件詳情:"
+msgid "Plugin Details"
+msgstr "插件詳情"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
