@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-24 00:26-0400\n"
-"PO-Revision-Date: 2012-05-24 21:09+0200\n"
-"Last-Translator: filmsi <miles@filmsi.net>\n"
+"POT-Creation-Date: 2012-05-27 23:09-0400\n"
+"PO-Revision-Date: 2012-05-28 05:57+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
 "Language: sl\n"
 "MIME-Version: 1.0\n"
@@ -1465,8 +1465,8 @@ msgstr "Polja, ki so na voljo"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
-msgstr "Oblike, ki so na voljo"
+msgid "Available Formats:"
+msgstr "Oblike, ki so na voljo:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
@@ -2854,8 +2854,8 @@ msgstr "Navezava na končno opombo"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
-msgstr "Slog končne opombe"
+msgid "Endnote style:"
+msgstr "Slog končne opombe:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
@@ -3190,8 +3190,8 @@ msgstr "Sklic na sprotno opombo"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
-msgstr "Slog sprotne opombe"
+msgid "Footnote style:"
+msgstr "Slog sprotne opombe:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
@@ -3552,13 +3552,13 @@ msgstr "Začetne velike začetnice"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
-msgstr "Začetna vrednost končne opombe"
+msgid "Initial Endnote value:"
+msgstr "Začetna vrednost končne opombe:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
-msgstr "Začetna vrednost sprotne opombe"
+msgid "Initial Footnote value:"
+msgstr "Začetna vrednost sprotne opombe:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -4375,8 +4375,8 @@ msgstr "Nova &pripomba"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
-msgstr "Nov stik ..."
+msgid "New Contact"
+msgstr "Nov stik"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4527,7 +4527,6 @@ msgstr "Oštevilčeno"
 msgid "Numbered List"
 msgstr "Oštevilčen seznam"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
@@ -4535,6 +4534,11 @@ msgstr "Oštevilčen seznam"
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
 msgstr "Oštevilčevanje"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+msgid "Numbering:"
+msgstr "Oštevilčevanje:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4813,8 +4817,8 @@ msgstr "Postavi na konec odseka"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
-msgstr "Postavitev"
+msgid "Placement:"
+msgstr "Postavitev:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -5598,14 +5602,14 @@ msgstr "Izberi dele dokumenta, ki pripadajo prejšnji različici ..."
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
-msgstr "Izberi dele dokumenta, ki so vsebovani v naslednji reviziji ..."
+msgid "Select the parts of the document contained in the next revision"
+msgstr "Izberi dele dokumenta, ki so vsebovani v naslednji reviziji"
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
-msgstr "Izberi dele dokumenta, ki so vsebovani v prejšnji reviziji ..."
+msgid "Select the parts of the document contained in the previous revision"
+msgstr "Izberi dele dokumenta, ki so vsebovani v prejšnji reviziji"
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -7314,8 +7318,8 @@ msgstr "Samorevizija"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
-msgstr "Dokumenti, ki so na voljo"
+msgid "Available Documents:"
+msgstr "Dokumenti, ki so na voljo:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
@@ -8497,8 +8501,8 @@ msgstr "Enostavno besedilo"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
-msgstr "Podrobnosti vtičnika:"
+msgid "Plugin Details"
+msgstr "Podrobnosti vtičnika"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
