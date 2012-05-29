@@ -841,6 +841,7 @@ dcl(DLG_InsertXMLID_Msg,      "Type a name for the RDF link")
 
 dcl(DLG_InsertHyperlink_Title, "Insert Hyperlink")
 dcl(DLG_InsertHyperlink_Msg, "Select a target bookmark from the list.")
+dcl(DLG_InsertHyperlink_TitleLabel, "Type a title for the hyperlink")
 
 	/* Mark revisions dialog */
 dcl(DLG_MarkRevisions_Title, "Mark Revisions")

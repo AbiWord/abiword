@@ -3052,6 +3052,7 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK)
     , m_bIsStart(false)
     , m_pTarget(NULL)
+    , m_pTitle(NULL)
 {
 	_setLength(1);
 	_setDirty(false);
@@ -3061,13 +3062,15 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 	UT_ASSERT((pBL));
 	_setDirection(UT_BIDI_WS);
 
-	_setTargetFromAPAttribute( "xlink:href" );
+	_setTargetFromAPAttribute( "xlink:href");
+	_setTitleFromAPAttribute( "xlink:title");
 }
 
 
 fp_HyperlinkRun::~fp_HyperlinkRun()
 {
 	DELETEPV(m_pTarget);
+	DELETEPV(m_pTitle);
 }
 
 void fp_HyperlinkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
@@ -3147,7 +3150,7 @@ void fp_HyperlinkRun::_setTargetFromAPAttribute( const gchar* pAttrName )
 	// is to a potentially volatile location
 	if(bFound)
 	{
-        _setTarget( pTarget );
+		_setTarget( pTarget );
 		m_bIsStart = true;
 		//if this is a start of the hyperlink, we set m_pHyperlink to this,
 		//so that when a run gets inserted after this one, its m_pHyperlink is
@@ -3162,6 +3165,20 @@ void fp_HyperlinkRun::_setTargetFromAPAttribute( const gchar* pAttrName )
 	}
 }
 
+void fp_HyperlinkRun::_setTitleFromAPAttribute( const gchar* pAttrName )
+{
+	const PP_AttrProp * pAP = NULL;
+	getSpanAP(pAP);
+	
+	const gchar *pTitle;
+	if (pAP->getAttribute(pAttrName, pTitle))
+	{
+	    _setTitle(pTitle);
+	} else
+	{
+	    m_pTitle = NULL;
+	}
+}
 
 void fp_HyperlinkRun::_setTarget( const gchar * pTarget )
 {
@@ -3169,6 +3186,14 @@ void fp_HyperlinkRun::_setTarget( const gchar * pTarget )
     UT_uint32 iTargetLen = strlen(pTarget);
     m_pTarget = new gchar [iTargetLen + 1];
     strncpy(m_pTarget, pTarget, iTargetLen + 1);
+}
+
+void fp_HyperlinkRun::_setTitle( const gchar * pTitle )
+{
+    DELETEPV(m_pTitle);
+    UT_uint32 iTitleLen = strlen(pTitle);
+    m_pTitle = new gchar [iTitleLen + 1];
+    strncpy(m_pTitle, pTitle, iTitleLen + 1);
 }
 
 

@@ -290,7 +290,7 @@ public:
 	UT_Error		cmdInsertField(const char* szName, const gchar ** extra_attrs = NULL, const gchar ** extra_props = NULL);
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
-	UT_Error		cmdInsertHyperlink(const char* szName);
+	UT_Error		cmdInsertHyperlink(const char* szName, const char* szTitle = NULL);
 	UT_Error		cmdInsertXMLID(const std::string& name);
 	UT_Error		cmdDeleteXMLID(const std::string& name);
 

@@ -5000,7 +5000,7 @@ fl_AnnotationLayout *FV_View::insertAnnotationDescription(UT_uint32 aID, AP_Dial
 	return pAL;
 }
 
-UT_Error FV_View::cmdInsertHyperlink(const char * szName)
+UT_Error FV_View::cmdInsertHyperlink(const char * szName, const char * szTitle)
 {
 	bool bRet;
 
@@ -5111,8 +5111,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	{
 		return false;
 	}
-	gchar * pAttr[4];
-
+	
 	UT_uint32 target_len = strlen(szName);
 	gchar * target  = new gchar[ target_len+ 2];
 
@@ -5125,12 +5124,36 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		target[0] =  '#';
 		strncpy(target + 1, static_cast<const gchar*>(szName), target_len + 1);
 	}
+	
+	gchar * title;
+	int attrCount = 0;
+	
+	if (szTitle != NULL)
+	{
+	    UT_uint32 title_len = strlen(szTitle);
+	    title  = new gchar[ title_len + 1];
+	    strncpy(title, static_cast<const gchar*>(szTitle), title_len);
+	    attrCount = 6;
+	} else
+	{
+	    attrCount = 4;
+	    title = NULL;
+	}
+	
+	gchar * pAttr[attrCount];
+	int attr = 0;
 
 	gchar target_l[]  = "xlink:href";
-	pAttr [0] = &target_l[0];
-	pAttr [1] = &target[0];
-	pAttr [2] = 0;
-	pAttr [3] = 0;
+	gchar title_l[] = "xlink:title";
+	pAttr [attr++] = &target_l[0];
+	pAttr [attr++] = &target[0];
+	if ((szTitle != NULL) && (strlen(szTitle) > 0))
+	{
+		pAttr [attr++] = &title_l[0];
+		pAttr [attr++] = &title[0];
+	}
+	pAttr[attr++] = 0;
+	pAttr[attr++] = 0;
 
 	UT_DEBUGMSG(("fv_View::cmdInsertHyperlink: target \"%s\"\n", target));
 
@@ -5159,6 +5182,11 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	}
 
 	delete [] target;
+	
+	if (szTitle != NULL)
+	{
+		delete [] title;
+	}
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();

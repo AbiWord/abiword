@@ -744,7 +744,8 @@ public:
 	virtual FP_HYPERLINK_TYPE getHyperlinkType(void) const { return HYPERLINK_NORMAL;}
 	bool 				isStartOfHyperlink() const {return m_bIsStart;};
 	const gchar * 	getTarget() const {return static_cast<const gchar *>(m_pTarget);};
-
+	const gchar * 	getTitle() const {return static_cast<const gchar *>(m_pTitle);};
+	
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
 
@@ -780,11 +781,13 @@ protected:
 	virtual bool _letPointPass(void) const;
 	virtual bool _canContainPoint(void) const;
 	virtual bool _deleteFollowingIfAtInsPoint() const;
-    void _setTarget( const gchar * pTarget );
+	void _setTarget( const gchar * pTarget );
+	void _setTitle( const gchar * pTitle );
 	void _setTargetFromAPAttribute( const gchar* pAttrName );
-
+	void _setTitleFromAPAttribute( const gchar* pAttrName );
 	bool m_bIsStart;
 	gchar *	  	m_pTarget;
+	gchar *		m_pTitle;
 };
 
 

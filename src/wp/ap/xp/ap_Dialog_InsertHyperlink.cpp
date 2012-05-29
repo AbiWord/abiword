@@ -24,7 +24,10 @@
 
 AP_Dialog_InsertHyperlink::AP_Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
-  : XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoghyperlink"), m_answer(a_CANCEL), m_pHyperlink(0)
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoghyperlink"), 
+	m_answer(a_CANCEL), 
+	m_pHyperlink(0),
+	m_pHyperlinkTitle(0)
 {
 }
 
@@ -60,12 +63,25 @@ const gchar * AP_Dialog_InsertHyperlink::getHyperlink() const
   return (const gchar *)m_pHyperlink;
 }
 
+const gchar * AP_Dialog_InsertHyperlink::getHyperlinkTitle() const
+{
+    return (const gchar*)m_pHyperlinkTitle;
+}
+
 void AP_Dialog_InsertHyperlink::setHyperlink(const gchar * link)
 {
 	DELETEPV(m_pHyperlink);
 	UT_uint32 len = strlen(link);
 	m_pHyperlink = new gchar [len+1];
 	strncpy(m_pHyperlink, link, len + 1);
+}
+
+void AP_Dialog_InsertHyperlink::setHyperlinkTitle(const gchar * title)
+{
+	DELETEPV(m_pHyperlinkTitle);
+	UT_uint32 len = strlen(title);
+	m_pHyperlinkTitle = new gchar [len+1];
+	strncpy(m_pHyperlinkTitle, title, len + 1);
 }
 
 void AP_Dialog_InsertHyperlink::setDoc(FV_View * pView)
