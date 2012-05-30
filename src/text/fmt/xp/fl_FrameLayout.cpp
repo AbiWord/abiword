@@ -1119,7 +1119,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	//
 	// Expandable Height
-	//
+	// so that here, m_bExpandHeight = true;
 	if(pSectionAP && pSectionAP->getProperty("frame-expand-height",pszExpandHeight))
 	{
 		m_iMinHeight = m_iHeight;
