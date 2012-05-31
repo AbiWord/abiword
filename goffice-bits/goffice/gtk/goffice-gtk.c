@@ -467,7 +467,7 @@ gui_image_chooser_new (gboolean is_save)
 
 	/* Preview */
 	{
-		GtkWidget *vbox = gtk_vbox_new (FALSE, 2);
+		GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 2);
 		GtkWidget *preview_image = gtk_image_new ();
 		GtkWidget *preview_label = gtk_label_new ("");
 
