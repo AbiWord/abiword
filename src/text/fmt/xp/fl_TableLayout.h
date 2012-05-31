@@ -25,6 +25,7 @@
 #include <stdio.h>
 #endif
 
+#include <vector>
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
@@ -216,7 +217,7 @@ UT_sint32                    getBottomOffset(void) const;
 	{ return m_bDoingDestructor;}
 
 //Table Header
-	UT_sint32 getHeaderRowNos() const { return m_iheaderRowNumber; }
+	std::vector<UT_sint32> getHeaderRowNos() const { return m_vHeaderRowNumber; }
 	bool isHeaderSet() const { return m_bIsHeaderSet; }
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
@@ -271,7 +272,7 @@ private:
 	double                 m_dTableRelWidth;
 
 //Table Header
- 	UT_sint32 	m_iheaderRowNumber;
+ 	std::vector<UT_sint32> 	m_vHeaderRowNumber;
 	bool 		m_bIsHeaderSet;
 };
 

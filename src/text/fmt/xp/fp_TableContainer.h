@@ -92,6 +92,7 @@ class fp_Page;
 class PP_AttrProp;
 class GR_Graphics;
 class fp_TableContainer;
+class fp_TableHeader;
 struct dg_DrawArgs;
 struct fp_Sliver;
 
@@ -478,6 +479,12 @@ fp_Column *         getBrokenColumn(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
+
+//Table Header
+
+	void calculateHeaderHeight(void);
+	void populateCells(void);
+
 private:
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
@@ -549,6 +556,27 @@ private:
 	fp_CellContainer *  m_pLastBrokenCell;
 	bool                m_bRecursiveClear;
 	UT_sint32           m_iAdditionalMarginAfter;
+
+//Table Header
+	
+	fp_TableHeader * m_pTableHeader;
 };
 
+class fp_TableHeader : public fp_TableContainer
+{
+
+public:
+	fp_TableHeader(fl_SectionLayout *);
+	UT_sint32 getHeaderHeight(void) const
+	{ 	return m_iHeaderHeight; }
+	std::vector<UT_sint32> getHeaderRowNos(void) const
+	{ 	return m_vHeaderRowNumber; }
+	UT_sint32 m_iHeaderHeight;
+	void setHeaderRows();
+	std::vector<fp_CellContainer *> m_vecCells;
+
+private:
+	std::vector<UT_sint32> m_vHeaderRowNumber;
+};
+	
 #endif /* TABLECONTAINER_H */

@@ -107,7 +107,6 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
 	  m_bDoingDestructor(false),
 	  m_iTableWidth(0),
 	  m_dTableRelWidth(0.0),
-	  m_iheaderRowNumber(0),
 	  m_bIsHeaderSet(false)
 {
 	UT_DEBUGMSG(("Created Table Layout %p \n",this));
@@ -1633,15 +1632,27 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
 
-	const char * pszTableHeader = NULL;
+	char * pszTableHeader = NULL;
 
 	pSectionAP->getProperty("header",(const gchar *&)pszTableHeader);
 
+	char *pszTableHeaderRows;
+
 	if(pszTableHeader != NULL)
 	{
-		m_iheaderRowNumber = atoi(pszTableHeader);
+		pszTableHeaderRows = strtok(pszTableHeader,",");
+		m_vHeaderRowNumber.push_back(atoi(pszTableHeaderRows));
+		while(pszTableHeaderRows != NULL)
+		{
+
+			pszTableHeaderRows = strtok(NULL,",");
+			if(pszTableHeaderRows != NULL)
+			{
+				m_vHeaderRowNumber.push_back(atoi(pszTableHeaderRows));
+			}
+		}
+		//UT_DEBUGMSG(("\n\n\n\n%d\n\n",m_vHeaderRowNumber.size()));
 		m_bIsHeaderSet = true;
-		UT_DEBUGMSG(("\n\nThe header row is %d",m_iheaderRowNumber));
 	}
 }
 
