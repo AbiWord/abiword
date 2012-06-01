@@ -217,7 +217,7 @@ UT_sint32                    getBottomOffset(void) const;
 	{ return m_bDoingDestructor;}
 
 //Table Header
-	std::vector<UT_sint32> getHeaderRowNos() const { return m_vHeaderRowNumber; }
+	const std::vector<UT_sint32> & getHeaderRowNos() const { return m_vHeaderRowNumber; }
 	bool isHeaderSet() const { return m_bIsHeaderSet; }
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);

@@ -569,7 +569,7 @@ public:
 	fp_TableHeader(fl_SectionLayout *);
 	UT_sint32 getHeaderHeight(void) const
 	{ 	return m_iHeaderHeight; }
-	std::vector<UT_sint32> getHeaderRowNos(void) const
+	const std::vector<UT_sint32> & getHeaderRowNos(void) const
 	{ 	return m_vHeaderRowNumber; }
 	UT_sint32 m_iHeaderHeight;
 	void setHeaderRows();

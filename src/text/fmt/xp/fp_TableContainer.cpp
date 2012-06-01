@@ -6602,7 +6602,7 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 void fp_TableContainer::populateCells(void)
 {
 	int i,noOfColumns=getNumCols(),j;
-	std::vector<UT_sint32> headerRowNum =  m_pTableHeader->getHeaderRowNos();
+	const std::vector<UT_sint32> & headerRowNum =  m_pTableHeader->getHeaderRowNos();
 	int totRows = headerRowNum.size();
 	for(j=0;j<totRows;j++)
 	{
@@ -6628,18 +6628,19 @@ void fp_TableHeader::setHeaderRows()
 
 void fp_TableContainer::calculateHeaderHeight(void)
 {
-	std::vector<UT_sint32> headerRowNum =  m_pTableHeader->getHeaderRowNos();
+	const std::vector<UT_sint32> & headerRowNum =  m_pTableHeader->getHeaderRowNos();
 	if(!headerRowNum.empty())
 	{
 		int totRows = headerRowNum.size();
 		int i;
 		fp_TableRowColumn * pRow;
+		std::vector<UT_sint32>::const_iterator itrHeaderRowNum = headerRowNum.begin();
 		for(i=0;i<totRows;i++)
 		{
-			pRow = getNthRow(headerRowNum.back()-1);
+			pRow = getNthRow((*itrHeaderRowNum)-1);
 			UT_sint32 iDefaultHeight = pRow->allocation;
-			m_pTableHeader->m_iHeaderHeight += fp_TableContainer::getRowHeight(headerRowNum.back(),iDefaultHeight);
-			headerRowNum.pop_back();
+			m_pTableHeader->m_iHeaderHeight += fp_TableContainer::getRowHeight((*itrHeaderRowNum),iDefaultHeight);
+			itrHeaderRowNum++;
 		}
 		UT_DEBUGMSG(("The header height is %d \n",m_pTableHeader->m_iHeaderHeight));
 	}
