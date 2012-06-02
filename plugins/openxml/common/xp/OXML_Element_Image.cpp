@@ -85,6 +85,10 @@ UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
 	
+	if(getId().empty())
+	{
+		return UT_OK;
+	}
 	ret = setAttribute("dataid", getId().c_str());
 	if(ret != UT_OK)
 		return ret;
