@@ -127,6 +127,8 @@ public:
 	const UT_RGBColor &		backgroundColor () const { return m_backgroundColor; }
 
 	void					setBorderColor (UT_RGBColor clr);
+	void					setWidth(UT_uint32 width);
+	void					setHeight(UT_uint32 height);
 
 	void					setBorderColorAll (UT_RGBColor clr);
 
@@ -223,6 +225,8 @@ private:
 	UT_UTF8String			m_sBorderThicknessLeft;
 	UT_UTF8String			m_sBorderThicknessTop;
 	UT_UTF8String			m_sBorderThicknessBottom;
+	UT_uint32                            m_width;
+	UT_uint32                            m_height;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
 	
