@@ -587,6 +587,29 @@ void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
 	m_bSettingsChanged = true;
 }
 
+void AP_Dialog_FormatTable::setWidth(UT_uint32 width)
+{
+	m_width = width;
+
+	UT_String s_width = UT_String_sprintf("%02d", m_width);	
+
+	m_vecProps.addOrReplaceProp("table-width", s_width.c_str());
+
+	m_bSettingsChanged = true;  
+
+}
+
+void AP_Dialog_FormatTable::setHeight(UT_uint32 height)
+{
+	m_height = height;
+
+	UT_String s_height = UT_String_sprintf("%02d", m_height);	
+
+	m_vecProps.addOrReplaceProp("table-height", s_height.c_str());
+
+	m_bSettingsChanged = true;  
+}
+
 void AP_Dialog_FormatTable::clearImage(void)
 {
 	DELETEP(m_pGraphic);

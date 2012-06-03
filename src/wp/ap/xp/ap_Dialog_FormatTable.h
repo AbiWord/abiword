@@ -101,6 +101,8 @@ public:
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
+	void								setWidth(UT_uint32 width);
+	void								setHeight(UT_uint32 height);
 	void								setBackgroundColor(UT_RGBColor clr);
 	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;	
 	void                                setBorderThickness(UT_UTF8String & sThick);
@@ -126,6 +128,8 @@ public:
 	gchar *							m_bgFillStyle;
 	UT_PropVector                           m_vecProps;
 	UT_UTF8String                           m_sBorderThickness;
+	UT_uint32                            m_width;
+	UT_uint32                            m_height;
 protected:
 	guint                               _findClosestThickness(const char *) const;
 	AP_Dialog_FormatTable::tAnswer		m_answer;
