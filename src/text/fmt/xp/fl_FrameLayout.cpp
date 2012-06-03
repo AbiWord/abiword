@@ -101,7 +101,7 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_bIsTightWrap(false),
 	  m_iPrefPage(-1),
 	  m_iPrefColumn(0),
-	  m_bExpandHeight(false),
+	  m_bExpandHeight(true),
 	  m_iMinHeight(0),
 	  m_pParentContainer(NULL)
 {
@@ -1125,7 +1125,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_iMinHeight = m_iHeight;
 		m_bExpandHeight = true;
 	}
-
+    
 	//
 	// left/right aligned
 	//
