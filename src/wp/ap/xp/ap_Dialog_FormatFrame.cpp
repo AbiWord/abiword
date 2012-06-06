@@ -697,6 +697,7 @@ void AP_Dialog_FormatFrame::setWrapping(bool bWrap)
 
 void AP_Dialog_FormatFrame::applyChanges()
 {
+	//get Height & Width to call function
 	UT_sint32 count = m_vecProps.getItemCount();
 
 	UT_DEBUGMSG(("Doing apply changes number props %d \n", count));

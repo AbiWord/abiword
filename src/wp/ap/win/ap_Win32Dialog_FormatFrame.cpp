@@ -161,6 +161,8 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	_DS(FORMATFRAME_BUTTON_SELIMAGE,	DLG_FormatFrame_SelectImage);
 	_DS(FORMATFRAME_BUTTON_NOIMAGE,		DLG_FormatFrame_NoImageBackground);
 	_DS(FORMATFRAME_TEXT_THICKNESS,		DLG_FormatTable_Thickness);
+	_DS(FORMATFRAME_TEXT_HEIGHT,		DLG_FormatTable_Height);
+	_DS(FORMATFRAME_TEXT_WIDTH, 		DLG_FormatTable_Width);
 	_DS(FORMATFRAME_TEXT_IMGBACK,		DLG_FormatFrame_SetImageBackground);
 
 
