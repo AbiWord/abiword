@@ -2503,7 +2503,7 @@ FL_DocLayout* FV_View::getLayout() const
 	return m_pLayout;
 }
 
-bool FV_View::notifyListeners(const AV_ChangeMask hint, void * )
+bool FV_View::notifyListeners(const AV_ChangeMask hint)
 {
 //
 // No need to update stuff if we're in preview mode
