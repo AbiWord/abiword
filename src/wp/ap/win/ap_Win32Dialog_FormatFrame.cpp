@@ -38,6 +38,7 @@
 
 #define BITMAP_WITDH	15
 #define BITMAP_HEIGHT	15
+#define BUFSIZE		64
 
 const char * sThickness[FORMAT_FRAME_NUMTHICKNESS] = {"0.25pt","0.5pt",
 													   "0.75pt","1.0pt",
@@ -193,6 +194,13 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
+    /* Set the value of TEXT BOX */
+	wchar_t 	szValue[BUFSIZE];
+	swprintf(szValue, L"%02.2f", getFrameWidth());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_TEXT_WIDTH, szValue);
+
+	swprintf(szValue, L"%02.2f", getFrameHeight());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_TEXT_HEIGHT, szValue);
 
 	/* Position to radio buttons */
 	if(positionMode() == FL_FRAME_POSITIONED_TO_BLOCK)

@@ -184,6 +184,8 @@ public:
 	float					borderThicknessLeft ()   const { return m_borderThicknessLeft;   }
 	float					borderThicknessTop ()    const { return m_borderThicknessTop;    }
 	float					borderThicknessBottom () const { return m_borderThicknessBottom; }
+	float                   getFrameWidth(void);
+	float                   getFrameHeight(void);
 
 	void					setPositionMode (FL_FrameFormatMode mode);
 
