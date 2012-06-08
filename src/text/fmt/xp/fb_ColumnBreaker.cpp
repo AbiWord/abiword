@@ -1471,6 +1471,26 @@ bool fb_ColumnBreaker::_breakCON(fp_Container*& pOffendingContainer,
  * Breaks the given table, if appropriate.  
  * \return true iff the table was broken.
  */
+//tnkk:
+//If a table is like this,
+//  ===|===|===|===|=== <-- YBreak. Offset of the Master Table Container. 
+//  ===|===|===|===|===      
+//  ===|===|===|===|===    Page One.
+//  ===|===|===|===|===    First broken Table Container. The offset of this container from the master table is 0 always.
+//  ===|===|===|===|===
+//  ===|===|===|===|=== <-- this is the YBottom
+//  ====================================== Page Break
+//  ===|===|===|===|=== <-- YBreak. Offset of the second broken Table Container from Master Table.
+//  ===|===|===|===|===
+//  ===|===|===|===|===
+//  ===|===|===|===|===    Page Two.
+//  ===|===|===|===|===    Second broken Table Container.
+//  ===|===|===|===|===
+//  ===|===|===|===|=== <-- YBottom.
+//
+//  Table Container height = YBottom - YBreak.
+//  Additional note: You can never get the height of MasterTable through fp_TableContainer::getHeight() method.
+
 bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 								   fp_Container*& pLastContainerToKeep,
 								   int iMaxColHeight, 
@@ -1529,6 +1549,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 		{
 //
 // Break it at 0 first.
+//tnkk: Breaking at 0 implies that even if your table has only one row, it will be broken.
 //
 			xxx_UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
 			fp_Container * pNext = static_cast<fp_Container *>(pTab->getNext());
@@ -1542,7 +1563,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 		}
 //
 // Now get a broken table and break it again.
-//
+//tnkk: Should this if be nested inside the previous one?(Like this: pBroke = pTab->VBreakAt(0))
 		if(!pTab->isThisBroken())
 		{
 			pBroke = pTab->getFirstBrokenTable();

@@ -2145,7 +2145,6 @@ void fp_Column::layout(void)
 	{
 		return;
 	}
-
 	setHeight(iY);
 	getPage()->columnHeightChanged(this);
 	fl_DocSectionLayout * pDSL = getPage()->getOwningSection();

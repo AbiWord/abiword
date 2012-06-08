@@ -309,7 +309,6 @@ private:
 	bool                m_bYfill;
 
 // Local size request and allocation.
-
 	fp_Allocation       m_MyAllocation;
 	fp_Requisition      m_MyRequest;
 
@@ -481,9 +480,8 @@ fp_Column *         getBrokenColumn(void);
 #endif
 
 //Table Header
-
-	void calculateHeaderHeight(void);
-	void populateCells(void);
+	fp_TableHeader * getHeaderObject() const
+	{ return m_pTableHeader; }
 
 private:
 	void                    _size_request_init(void);
@@ -560,23 +558,27 @@ private:
 //Table Header
 	
 	fp_TableHeader * m_pTableHeader;
+	bool m_bHeaderInitialized;
 };
 
 class fp_TableHeader : public fp_TableContainer
 {
-
 public:
-	fp_TableHeader(fl_SectionLayout *);
+	fp_TableHeader(fl_SectionLayout *,fp_TableContainer *);
 	UT_sint32 getHeaderHeight(void) const
 	{ 	return m_iHeaderHeight; }
 	const std::vector<UT_sint32> & getHeaderRowNos(void) const
 	{ 	return m_vHeaderRowNumber; }
-	UT_sint32 m_iHeaderHeight;
 	void setHeaderRows();
 	std::vector<fp_CellContainer *> m_vecCells;
+	void calculateHeaderHeight(void);
+	void populateCells(void);
+	UT_sint32 getActualRowHeight(UT_sint32 iRowNumber);
 
 private:
 	std::vector<UT_sint32> m_vHeaderRowNumber;
+	fp_TableContainer *pTab;
+	UT_sint32 m_iHeaderHeight;
 };
 	
 #endif /* TABLECONTAINER_H */

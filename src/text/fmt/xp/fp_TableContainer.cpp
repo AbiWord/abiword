@@ -159,6 +159,7 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 	}
 	clearScreen();
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+//tnkk here: Theoretically, this piece of code(inside the if{} block) will get executed only while drawing the cells of the first row.
 	if(pTab && getBottomAttach() == pTab->getNumRows())
 	{
 		fp_CellContainer * pCell = pTab->getCellAtRowColumn(pTab->getNumRows() -1,0);
@@ -3175,7 +3176,9 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_iLastWantedVBreak(-1),
 	  m_pFirstBrokenCell(NULL),
 	  m_pLastBrokenCell(NULL),
-	  m_bRecursiveClear(false)
+	  m_bRecursiveClear(false),
+//tnkk: A Header object is created only for the master table. This eliminates the trouble of keeping track of the object. Simon's initial suggestion.
+	  m_bHeaderInitialized(false)
 
 {
 	if(getSectionLayout())
@@ -3223,7 +3226,9 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_pFirstBrokenCell(NULL),
 	  m_pLastBrokenCell(NULL),
 	  m_bRecursiveClear(false),
-	  m_iAdditionalMarginAfter(0)
+	  m_iAdditionalMarginAfter(0),
+	  m_bHeaderInitialized(true),
+	  m_pTableHeader(NULL)
 {
 }
 
@@ -3928,6 +3933,10 @@ void fp_TableContainer::adjustBrokenTables(void)
 	//
 
 	return;
+/*
+ * TODO
+ * tnkk:The following is purely unreachable :( Either it should be fixed soon and committed, or deleted... Will do as soon as I finish the draw thing for header. 
+ */
 	fp_TableContainer * pBroke = getFirstBrokenTable();
 	fp_VerticalContainer * pVC = static_cast<fp_VerticalContainer *>(getContainer());
 	UT_sint32 iNewHeight = pVC->getMaxHeight() - getY();	
@@ -4310,17 +4319,23 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
  will be calculated only with the top level broken table.
 */
 
+//Table Header
+	
+	fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(getSectionLayout());
+	if(pTableLayout->isHeaderSet())
+	{
+		if(!isThisBroken() && !m_bHeaderInitialized)
+		{
+			m_pTableHeader = new fp_TableHeader(getSectionLayout(),this);
+			m_pTableHeader->calculateHeaderHeight();
+			m_bHeaderInitialized = true;
+		}
+	}
+
 //
 // Do the case of creating the first broken table from the master table.
 // 
 	fp_TableContainer * pBroke = NULL;
-	fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(getSectionLayout());
-	if(pTableLayout->isHeaderSet())
-	{
-		m_pTableHeader = new fp_TableHeader(getSectionLayout());
-		calculateHeaderHeight();
-		populateCells();
-	}
 	if(!isThisBroken() && getLastBrokenTable() == NULL)
 	{
 		if(getFirstBrokenTable() != NULL)
@@ -4328,7 +4343,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return NULL;
 		}
-		UT_DEBUGMSG(("The height is %d \n",getHeight()));
+		xxx_UT_DEBUGMSG(("The height is %d \n",getHeight()));
 		pBroke = new fp_TableContainer(getSectionLayout(),this);
 		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!!! Frist broken table %x \n",pBroke));
 		pBroke->setYBreakHere(vpos);
@@ -4360,9 +4375,20 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 // to add in the height above it.
 //
 	pBroke->setYBreakHere(getYBreak()+vpos);
+	
+//Table Header
+	pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
+	if(pTableLayout->isHeaderSet())
+	{
+		pBroke->setYBottom(getMasterTable()->getYBottom() + getMasterTable()->getHeaderObject()->getHeaderHeight());
+	}
+	else
+	{
+		pBroke->setYBottom(getMasterTable()->getYBottom());
+	}
+	UT_DEBUGMSG(("The height of the broken table is %d\n",pBroke->getHeight()));
 	setYBottom(getYBreak() + vpos -1);
 	UT_ASSERT(getHeight() >0);
-	pBroke->setYBottom(getMasterTable()->getYBottom());
 	xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken table %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
 	xxx_UT_DEBUGMSG(("SEVIOR????????: Previous table YBreak %d YBottom  %d Height of broken table %d \n",getYBreak(),getYBottom(),getHeight()));
 	UT_ASSERT(pBroke->getHeight() > 0);
@@ -5191,7 +5217,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 		pCell->draw(pDA);
 		pCell = static_cast<fp_Container *>(pCell->getNext());
 	}
-    _drawBoundaries(pDA);
+	_drawBoundaries(pDA);
 
 }
 
@@ -5278,8 +5304,8 @@ bool fp_TableContainer::containsFootnoteReference(void)
 							}
 						}
 						pCellCon = static_cast<fp_Container *>(pCellCon->getNext());
- 					}
-  				}
+					}
+				}
 				else
 				{
 					bFound = true;
@@ -5357,8 +5383,8 @@ bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContai
 							}
 						}
 						pCellCon = static_cast<fp_Container *>(pCellCon->getNext());
- 					}
-  				}
+					}
+				}
 				else
 				{
 					UT_GenericVector<fp_FootnoteContainer*> vecFC;
@@ -5441,8 +5467,8 @@ bool fp_TableContainer::containsAnnotations(void)
 							}
 						}
 						pCellCon = static_cast<fp_Container *>(pCellCon->getNext());
- 					}
-  				}
+					}
+				}
 				else
 				{
 					bFound = true;
@@ -5520,8 +5546,8 @@ bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationCo
 							}
 						}
 						pCellCon = static_cast<fp_Container *>(pCellCon->getNext());
- 					}
-  				}
+					}
+				}
 				else
 				{
 					UT_GenericVector<fp_AnnotationContainer*> vecAC;
@@ -5573,21 +5599,21 @@ bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Conta
 //
 // We don't assume that this is the top level table
 //
-	//
-	// Short circuit things if the BrokenContainer pointer is set.
-    //
+//
+// Short circuit things if the BrokenContainer pointer is set.
+//
 	xxx_UT_DEBUGMSG(("isInBrokenTable %p pcell %p line %p\n",this,pCell,pCon));
 #if 1
- 	if(pCon->getMyBrokenContainer() == static_cast<const fp_Container *>(this))
- 	{
+	if(pCon->getMyBrokenContainer() == static_cast<const fp_Container *>(this))
+	{
 		xxx_UT_DEBUGMSG(("Already set to this %p\n",this));
- 		return true;
- 	}
- 	if(pCon->getMyBrokenContainer() != NULL)
- 	{
+		return true;
+	}
+	if(pCon->getMyBrokenContainer() != NULL)
+	{
 		xxx_UT_DEBUGMSG(("Already set to other  %p\n",pCon->getMyBrokenContainer() ));
- 		return false;
- 	}
+		return false;
+	}
 #endif
 	UT_sint32 iTop = 0;
 	iTop = pCell->getY() + pCon->getY();
@@ -5612,7 +5638,7 @@ bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Conta
 
 	UT_sint32 iBreak = getYBreak();
 	UT_sint32 iBottom = getYBottom();
-	
+
 	xxx_UT_DEBUGMSG(("Column %p iTop = %d ybreak %d iBot= %d ybottom= %d \n",getBrokenColumn(),iTop,iBreak,iBot,iBottom));
 	//
 	// When breaking a nested table, it is possible that the pieces don't
@@ -5745,13 +5771,13 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 				botY -= 2 * pMaster->getBorderWidth();
 				botY +=  pMaster->getNthRow(pMaster->getNumRows()-1)->spacing/2;
 			}
-			UT_sint32 yOffset = pCell->getY() - getYOfRow(pCell->getTopAttach()) ;
+			UT_sint32 yOffset = pCell->getY() - getYOfRow(pCell->getTopAttach());
 			if((pCell->getY() - yOffset) > getYBottom())
 			{
 				xxx_UT_DEBUGMSG(("yOffset %d \n",yOffset));
 				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
 				break;
-				pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+//				pCell = static_cast<fp_CellContainer *>(pCell->getNext()); --> tnkk:Unreachable code. Commented out.
 			}
 			else
 			{
@@ -6585,7 +6611,7 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 	m_MyAllocation.y = pAllocation->y;
 	m_MyAllocation.y = 0;
 	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height is %d \n", pAllocation->height));
-	
+
 	_size_allocate_init ();
 	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height 1 is %d \n", m_MyAllocation.height));
 	_size_allocate_pass1 ();
@@ -6597,26 +6623,36 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 //	m_MyAllocation.height = pReq.height;
 }
 
+
 //Table Header
 
-void fp_TableContainer::populateCells(void)
+void fp_TableHeader::populateCells(void)
 {
 	int i,noOfColumns=getNumCols(),j;
-	const std::vector<UT_sint32> & headerRowNum =  m_pTableHeader->getHeaderRowNos();
+	const std::vector<UT_sint32> & headerRowNum =  getHeaderRowNos();
 	int totRows = headerRowNum.size();
 	for(j=0;j<totRows;j++)
 	{
 		for(i=0;i<noOfColumns;i++)
 		{
-			m_pTableHeader->m_vecCells.push_back(getCellAtRowColumn(j,i));
-			UT_DEBUGMSG(("Adding Cell at Row %d Column %d\n",j,i));
+			m_vecCells.push_back(getMasterTable()->getCellAtRowColumn(j,i));
+			xxx_UT_DEBUGMSG(("Adding Cell at Row %d Column %d\n",j,i));
 		}
 	}
 }
-fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout)
-	:  fp_TableContainer(pSectionLayout),
+
+UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
+{
+	UT_sint32 iRowHeight=0;
+	iRowHeight = (pTab->getNthRow(iRowNumber)->allocation);
+	return iRowHeight;
+}
+
+fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContainer *pTableContainer)
+	:  fp_TableContainer(pSectionLayout,pTableContainer),
 	   m_iHeaderHeight(0)
 {
+	pTab = pTableContainer;
 	setHeaderRows();
 }
 
@@ -6626,22 +6662,19 @@ void fp_TableHeader::setHeaderRows()
 	m_vHeaderRowNumber = pTableLayout->getHeaderRowNos();
 }
 
-void fp_TableContainer::calculateHeaderHeight(void)
+void fp_TableHeader::calculateHeaderHeight(void)
 {
-	const std::vector<UT_sint32> & headerRowNum =  m_pTableHeader->getHeaderRowNos();
+	const std::vector<UT_sint32> & headerRowNum =  getHeaderRowNos();
 	if(!headerRowNum.empty())
 	{
 		int totRows = headerRowNum.size();
 		int i;
-		fp_TableRowColumn * pRow;
-		std::vector<UT_sint32>::const_iterator itrHeaderRowNum = headerRowNum.begin();
+		xxx_UT_DEBUGMSG(("The total no of rows are %d\n",totRows));
 		for(i=0;i<totRows;i++)
 		{
-			pRow = getNthRow((*itrHeaderRowNum)-1);
-			UT_sint32 iDefaultHeight = pRow->allocation;
-			m_pTableHeader->m_iHeaderHeight += fp_TableContainer::getRowHeight((*itrHeaderRowNum),iDefaultHeight);
-			itrHeaderRowNum++;
+			xxx_UT_DEBUGMSG(("The height of %d row is %d\n",i+1,getActualRowHeight(i)));
+			m_iHeaderHeight += getActualRowHeight(i);
 		}
-		UT_DEBUGMSG(("The header height is %d \n",m_pTableHeader->m_iHeaderHeight));
+		UT_DEBUGMSG(("The header height is %d \n",m_iHeaderHeight));
 	}
 }

@@ -1651,7 +1651,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 				m_vHeaderRowNumber.push_back(atoi(pszTableHeaderRows));
 			}
 		}
-		//UT_DEBUGMSG(("\n\n\n\n%d\n\n",m_vHeaderRowNumber.size()));
+		xxx_UT_DEBUGMSG(("\n\n\n\n%d\n\n",m_vHeaderRowNumber.size()));
 		m_bIsHeaderSet = true;
 	}
 }
