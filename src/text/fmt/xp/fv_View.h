@@ -900,6 +900,7 @@ public:
 	bool				rtlPages(void) const;
 
 protected:
+	void				_updateDatesBeforeSave(bool bOverwriteCreated);
 	void				_saveAndNotifyPieceTableChange(void);
 	void				_restorePieceTableState(void);
 
