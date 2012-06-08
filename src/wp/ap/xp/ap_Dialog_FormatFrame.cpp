@@ -1049,16 +1049,6 @@ void AP_Dialog_FormatFrame::setHeight(UT_uint32 height)
 	m_bSettingsChanged = true;  
 }
 
-float AP_Dialog_FormatFrame::getFrameWidth(void)
-{
-	return m_width;
-}
-
-float AP_Dialog_FormatFrame::getFrameHeight(void)
-{
-	return m_height;
-}
-
 void AP_Dialog_FormatFrame::setBorderColorRight (const UT_RGBColor & clr)
 {
 	m_borderColorRight = clr;

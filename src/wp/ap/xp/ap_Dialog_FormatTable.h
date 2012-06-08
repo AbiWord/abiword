@@ -122,8 +122,8 @@ public:
 	bool								getLeftToggled();
 	GR_Image *                          getImage(void) { return m_pImage;}
 	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
-	float                               getTableWidth(void);
-	float                               getTableHeight(void);
+	inline float                        getTableWidth(void) { return m_width; } 
+	inline float                        getTableHeight(void) { return m_height; }
 				
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;

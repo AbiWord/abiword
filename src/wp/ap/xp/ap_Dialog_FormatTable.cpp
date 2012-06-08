@@ -683,16 +683,6 @@ bool AP_Dialog_FormatTable::getLeftToggled()
 	return _getToggleButtonStatus("left-style");
 }
 
-float AP_Dialog_FormatTable::getTableWidth(void)
-{
-	return m_width;
-}
-
-float AP_Dialog_FormatTable::getTableHeight(void)
-{
-	return m_height;
-}
-
 guint AP_Dialog_FormatTable::_findClosestThickness(const char *sthickness) const
 {
 	double thickness = UT_convertToInches(sthickness);
