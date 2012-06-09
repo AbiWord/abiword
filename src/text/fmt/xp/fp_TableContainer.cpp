@@ -3253,6 +3253,10 @@ fp_TableContainer::~fp_TableContainer()
 	setPrev(NULL);
 	setNext(NULL);
 	m_pMasterTable = NULL;
+	if(!isThisBroken())
+	{
+		delete(m_pTableHeader);
+	}
 }
 
 fp_Column * fp_TableContainer::getBrokenColumn(void)
@@ -6628,15 +6632,15 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 
 void fp_TableHeader::populateCells(void)
 {
-	int i,noOfColumns=getNumCols(),j;
+	int i,noOfColumns=getNumCols();
 	const std::vector<UT_sint32> & headerRowNum =  getHeaderRowNos();
-	int totRows = headerRowNum.size();
-	for(j=0;j<totRows;j++)
+	std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
+	for(;itr < headerRowNum.end() ; itr++)
 	{
 		for(i=0;i<noOfColumns;i++)
 		{
-			m_vecCells.push_back(getMasterTable()->getCellAtRowColumn(j,i));
-			xxx_UT_DEBUGMSG(("Adding Cell at Row %d Column %d\n",j,i));
+			m_vecCells.push_back(getMasterTable()->getCellAtRowColumn(*itr-1,i));
+			xxx_UT_DEBUGMSG(("Adding Cell at Row %d Column %d\n",*itr-1,i));
 		}
 	}
 }
@@ -6644,7 +6648,7 @@ void fp_TableHeader::populateCells(void)
 UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
 {
 	UT_sint32 iRowHeight=0;
-	iRowHeight = (pTab->getNthRow(iRowNumber)->allocation);
+	iRowHeight = (pTab->getNthRow(iRowNumber)->allocation) + (pTab->getNthRow(iRowNumber)->spacing);
 	return iRowHeight;
 }
 
@@ -6667,13 +6671,12 @@ void fp_TableHeader::calculateHeaderHeight(void)
 	const std::vector<UT_sint32> & headerRowNum =  getHeaderRowNos();
 	if(!headerRowNum.empty())
 	{
-		int totRows = headerRowNum.size();
-		int i;
 		xxx_UT_DEBUGMSG(("The total no of rows are %d\n",totRows));
-		for(i=0;i<totRows;i++)
+		std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
+		for(;itr < headerRowNum.end() ; itr++)
 		{
-			xxx_UT_DEBUGMSG(("The height of %d row is %d\n",i+1,getActualRowHeight(i)));
-			m_iHeaderHeight += getActualRowHeight(i);
+			UT_DEBUGMSG(("The height of %d row is %d\n",(*itr),getActualRowHeight((*itr)-1)));
+			m_iHeaderHeight += getActualRowHeight(*itr - 1);
 		}
 		UT_DEBUGMSG(("The header height is %d \n",m_iHeaderHeight));
 	}
