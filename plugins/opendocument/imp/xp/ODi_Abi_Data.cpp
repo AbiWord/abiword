@@ -213,8 +213,11 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     // changed the math_header to include the simple math tag, as DOC_TYPE has become obsolete
     static const char math_header[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<math";
 
-    if ((object_buf->getLength () > strlen (math_header)) &&
-	(strncmp ((const char*)object_buf->getPointer (0), math_header, strlen (math_header)) != 0)) {
+    // keepin an option for old documents as well which might have DOC_TYPE
+    static const char math_header_old[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE math:math";
+
+    if (((object_buf->getLength () > strlen (math_header)) &&
+	(strncmp ((const char*)object_buf->getPointer (0), math_header, strlen (math_header)) != 0)) && ((object_buf->getLength () > strlen (math_header_old)) && (strncmp ((const char*)object_buf->getPointer (0), math_header_old, strlen (math_header_old)) != 0)))  {
 	delete object_buf;
         return false;
     }
