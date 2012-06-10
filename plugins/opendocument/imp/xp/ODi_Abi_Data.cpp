@@ -210,7 +210,8 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     }
 
     // check to ensure that we're seeing math. this can probably be made smarter.
-    static const char math_header[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE math:math";
+    // changed the math_header to include the simple math tag, as DOC_TYPE has become obsolete
+    static const char math_header[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<math";
 
     if ((object_buf->getLength () > strlen (math_header)) &&
 	(strncmp ((const char*)object_buf->getPointer (0), math_header, strlen (math_header)) != 0)) {
