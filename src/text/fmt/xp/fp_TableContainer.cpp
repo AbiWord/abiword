@@ -3255,7 +3255,7 @@ fp_TableContainer::~fp_TableContainer()
 	m_pMasterTable = NULL;
 	if(!isThisBroken())
 	{
-		delete(m_pTableHeader);
+		DELETEP(m_pTableHeader);
 	}
 }
 
@@ -6635,7 +6635,7 @@ void fp_TableHeader::populateCells(void)
 	int i,noOfColumns=getNumCols();
 	const std::vector<UT_sint32> & headerRowNum =  getHeaderRowNos();
 	std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
-	for(;itr < headerRowNum.end() ; itr++)
+	for(;itr != headerRowNum.end() ; ++itr)
 	{
 		for(i=0;i<noOfColumns;i++)
 		{
@@ -6673,7 +6673,7 @@ void fp_TableHeader::calculateHeaderHeight(void)
 	{
 		xxx_UT_DEBUGMSG(("The total no of rows are %d\n",totRows));
 		std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
-		for(;itr < headerRowNum.end() ; itr++)
+		for(;itr != headerRowNum.end() ; ++itr)
 		{
 			UT_DEBUGMSG(("The height of %d row is %d\n",(*itr),getActualRowHeight((*itr)-1)));
 			m_iHeaderHeight += getActualRowHeight(*itr - 1);
