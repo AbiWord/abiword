@@ -3,6 +3,7 @@
 <interface>
   <object class="GtkDialog" id="ap_UnixDialog_Stylist">
     <property name="border_width">5</property>
+    <property name="default_width">235</property>
     <property name="has_separator">False</property>
     <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <property name="window_position">GTK_WIN_POS_MOUSE</property>
