@@ -227,8 +227,8 @@ private:
 	UT_UTF8String			m_sBorderThicknessLeft;
 	UT_UTF8String			m_sBorderThicknessTop;
 	UT_UTF8String			m_sBorderThicknessBottom;
-	UT_uint32                            m_width;
-	UT_uint32                            m_height;
+	float                            m_width;
+	float                            m_height;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
 	

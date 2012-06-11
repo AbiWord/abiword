@@ -244,7 +244,36 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			toggleLineType(AP_Dialog_FormatTable::toggle_left, bChecked);				
 			event_previewExposed();			
 			return 1;
-		}			 
+		}		
+		case AP_RID_DIALOG_FORMATTABLE_TEXT_HEIGHT:
+			{
+				wchar_t buf[BUFSIZE];
+				if( wNotifyCode == EN_KILLFOCUS )
+				{
+					GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
+					if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getTableHeight() )
+					{
+						setHeight( _wtoi(buf) );
+					}
+				}					
+				event_previewExposed();
+				return 1;
+			}
+
+		case AP_RID_DIALOG_FORMATTABLE_TEXT_WIDTH:
+			{
+				wchar_t buf[BUFSIZE];
+				if( wNotifyCode == EN_KILLFOCUS )
+				{
+					GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
+					if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getTableWidth() )
+					{
+						setWidth( _wtoi(buf) );
+					}
+				}					
+				event_previewExposed();
+				return 1;
+			}
 		case AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR:		
 		{	
 			CHOOSECOLORW cc;                

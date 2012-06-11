@@ -197,10 +197,10 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
     /* Set the value of TEXT BOX */
 	wchar_t 	szValue[BUFSIZE];
 	swprintf(szValue, L"%02.2f", getFrameWidth());
-	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_TEXT_WIDTH, szValue);
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_TEXT_WIDTH, szValue);
 
 	swprintf(szValue, L"%02.2f", getFrameHeight());
-	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_TEXT_HEIGHT, szValue);
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_TEXT_HEIGHT, szValue);
 
 	/* Position to radio buttons */
 	if(positionMode() == FL_FRAME_POSITIONED_TO_BLOCK)
@@ -376,6 +376,36 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			}
 			return 1;
 		}
+
+		case AP_RID_DIALOG_FORMATFRAME_TEXT_HEIGHT:
+			{
+				wchar_t buf[BUFSIZE];
+				if( wNotifyCode == EN_KILLFOCUS )
+				{
+					GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
+					if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getFrameHeight() )
+					{
+						setHeight( _wtoi(buf) );
+					}
+				}					
+				event_previewExposed();
+				return 1;
+			}
+
+		case AP_RID_DIALOG_FORMATFRAME_TEXT_WIDTH:
+			{
+				wchar_t buf[BUFSIZE];
+				if( wNotifyCode == EN_KILLFOCUS )
+				{
+					GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
+					if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getFrameWidth() )
+					{
+						setWidth( _wtoi(buf) );
+					}
+				}					
+				event_previewExposed();
+				return 1;
+			}
 
 		case AP_RID_DIALOG_FORMATFRAME_BUTTON_SELIMAGE:
 				askForGraphicPathName();
