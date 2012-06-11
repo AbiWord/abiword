@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-28 16:15+0200\n"
-"PO-Revision-Date: 2012-05-28 16:15+0200\n"
+"POT-Creation-Date: 2012-06-11 15:21+0200\n"
+"PO-Revision-Date: 2012-06-11 15:21+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -4308,12 +4308,12 @@ msgstr "Militärische Zeit"
 #. DLG_Options_TabLabel_Misc
 #: po/tmp/ap_String_Id.h
 msgid "Misc."
-msgstr "Verschiedenes"
+msgstr "Sonst."
 
 #. DLG_Stylist_MiscStyles
 #: po/tmp/ap_String_Id.h
 msgid "Miscellaneous Styles"
-msgstr "Andere Vorlagen"
+msgstr "Sonstige"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
@@ -4499,7 +4499,7 @@ msgstr "Nicht im Wörterbuch:"
 #. DLG_Stylist_FootnoteStyles
 #: po/tmp/ap_String_Id.h
 msgid "Note Styles"
-msgstr "Noten-Stile"
+msgstr "Anmerkungen"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
@@ -6274,7 +6274,7 @@ msgstr "Markierte Auswahl durchstreichen (ein/aus)"
 #. MENU_LABEL_FMT_STYLIST
 #: po/tmp/ap_String_Id.h
 msgid "Sty&list"
-msgstr "Sty&list"
+msgstr "Sti&lvorlage"
 
 #. TOOLBAR_LABEL_FMT_STYLE
 #. TOOLBAR_STATUSLINE_FMT_STYLE
@@ -6338,7 +6338,7 @@ msgstr "Stilvorlage"
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
 msgid "Stylist"
-msgstr "Stylist"
+msgstr "Stilvorlage anwenden"
 
 #. DLG_MetaData_Subject_LBL
 #: po/tmp/ap_String_Id.h
