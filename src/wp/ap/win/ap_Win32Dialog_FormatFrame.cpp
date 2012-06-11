@@ -196,6 +196,14 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
     /* Set the value of TEXT BOX */
 	wchar_t 	szValue[BUFSIZE];
+	//init value is current Frame width and height
+	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+	if (!pView)
+		return;
+    fl_FrameLayout * pFL = pView->getFrameLayout();
+	setHeight(pFL->getFrameHeight());
+	setWidth(pFL->getFrameWidth());
+
 	swprintf(szValue, L"%02.2f", getFrameWidth());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_TEXT_WIDTH, szValue);
 
