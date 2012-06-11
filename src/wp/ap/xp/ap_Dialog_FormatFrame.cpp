@@ -1030,7 +1030,7 @@ void AP_Dialog_FormatFrame::setWidth(UT_uint32 width)
 {
 	m_width = width;
 
-	UT_String s_width = UT_String_sprintf("%02d", m_width);	
+	std::string s_width = UT_std_string_sprintf("%02d", m_width);
 
 	m_vecProps.addOrReplaceProp("frame-width", s_width.c_str());
 
@@ -1042,8 +1042,7 @@ void AP_Dialog_FormatFrame::setHeight(UT_uint32 height)
 {
 	m_height = height;
 
-	UT_String s_height = UT_String_sprintf("%02d", m_height);	
-
+	std::string s_height = UT_std_string_sprintf("%02d", m_height);
 	m_vecProps.addOrReplaceProp("frame-height", s_height.c_str());
 
 	m_bSettingsChanged = true;  
