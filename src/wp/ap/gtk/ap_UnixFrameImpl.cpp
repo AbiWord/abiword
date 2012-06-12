@@ -217,7 +217,8 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 						    GDK_KEY_RELEASE_MASK |
 						    GDK_ENTER_NOTIFY_MASK |  
 						    GDK_FOCUS_CHANGE_MASK |
-						    GDK_LEAVE_NOTIFY_MASK));
+						    GDK_LEAVE_NOTIFY_MASK |
+						    GDK_SCROLL_MASK));
 	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
 #if GTK_CHECK_VERSION(3,0,0)
 	g_signal_connect(G_OBJECT(m_dArea), "draw",
