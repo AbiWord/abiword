@@ -84,19 +84,34 @@ UT_Error OXML_Element_Image::serialize(IE_Exp_OpenXML* exporter)
 UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
+
+	ret = setProperty("frame-type", "image");
+	if(ret != UT_OK)
+		return ret;
+
+	// TODO: handle different wrapping options: wrapped-to-left, wrapped-to-right, wrapped-both
+	ret = setProperty("wrap-mode", "wrapped-both");
+	if(ret != UT_OK)
+		return ret;
 	
 	if(getId().empty())
 	{
 		return UT_OK;
 	}
-	ret = setAttribute("dataid", getId().c_str());
+	ret = setAttribute("strux-image-dataid", getId().c_str());
 	if(ret != UT_OK)
 		return ret;
 
 	const gchar ** atts = getAttributesWithProps();
 
-	if(!pDocument->appendObject(PTO_Image, atts))
-		return UT_ERROR;
+	ret = pDocument->appendStrux(PTX_SectionFrame, atts) ? UT_OK : UT_ERROR;
+	if(ret != UT_OK)
+		return ret;
 
-	return UT_OK;
+	ret = this->addChildrenToPT(pDocument);
+	if(ret != UT_OK)
+		return ret;
+
+	ret = pDocument->appendStrux(PTX_EndFrame, NULL) ? UT_OK : UT_ERROR;
+	return ret;
 }

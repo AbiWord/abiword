@@ -51,6 +51,83 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->stck->push(imgElem);
 		rqst->handled = true;
 	}
+	else if(nameMatches(rqst->pName, NS_WP_KEY, "anchor"))
+	{
+		if(rqst->stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+		std::string contextTag = "";
+		if(!rqst->context->empty())
+		{
+			contextTag = rqst->context->back();
+		}
+		int drawing = contextMatches(contextTag, NS_W_KEY, "drawing");
+		if(drawing)
+		{
+			rqst->handled = true;
+		}	
+	}
+	else if(nameMatches(rqst->pName, NS_WP_KEY, "positionH"))
+	{
+		if(rqst->stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+		std::string contextTag = "";
+		if(!rqst->context->empty())
+		{
+			contextTag = rqst->context->back();
+		}
+		int anchor = contextMatches(contextTag, NS_WP_KEY, "anchor");
+		if(anchor)
+		{	
+			rqst->handled = true;
+		}	
+	}
+	else if(nameMatches(rqst->pName, NS_WP_KEY, "positionV"))
+	{
+		if(rqst->stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+		std::string contextTag = "";
+		if(!rqst->context->empty())
+		{
+			contextTag = rqst->context->back();
+		}
+		int anchor = contextMatches(contextTag, NS_WP_KEY, "anchor");
+		if(anchor)
+		{	
+			rqst->handled = true;
+		}
+	}
+	else if(nameMatches(rqst->pName, NS_WP_KEY, "posOffset"))
+	{
+		if(rqst->stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+		std::string contextTag = "";
+		if(!rqst->context->empty())
+		{
+			contextTag = rqst->context->back();
+		}
+		int positionH = contextMatches(contextTag, NS_WP_KEY, "positionH");
+		int positionV = contextMatches(contextTag, NS_WP_KEY, "positionV");
+		if(positionH || positionV)
+		{
+			rqst->handled = true;
+		}
+	}
 	else if(nameMatches(rqst->pName, NS_WP_KEY, "extent"))
 	{
 		if(rqst->stck->empty())
@@ -183,7 +260,11 @@ void OXMLi_ListenerState_Image::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = (_flushTopLevel(rqst->stck, rqst->sect_stck) == UT_OK);
 	}
 	else if (nameMatches(rqst->pName, NS_A_KEY, "blip") || 
-			nameMatches(rqst->pName, NS_WP_KEY, "extent"))
+			nameMatches(rqst->pName, NS_WP_KEY, "extent") ||
+			nameMatches(rqst->pName, NS_WP_KEY, "posOffset") ||
+			nameMatches(rqst->pName, NS_WP_KEY, "anchor") ||
+			nameMatches(rqst->pName, NS_WP_KEY, "positionH") ||
+			nameMatches(rqst->pName, NS_WP_KEY, "positionV"))
 	{
 		rqst->handled = true;
 	}
@@ -194,9 +275,55 @@ void OXMLi_ListenerState_Image::endElement (OXMLi_EndElementRequest * rqst)
 	//TODO: more coming here
 }
 
-void OXMLi_ListenerState_Image::charData (OXMLi_CharDataRequest * /*rqst*/)
+void OXMLi_ListenerState_Image::charData (OXMLi_CharDataRequest * rqst)
 {
-	//don't do anything here
+	if(rqst->stck->empty())
+	{
+		rqst->handled = false;
+		rqst->valid = false;
+		return;
+	}
+
+	if(!rqst)
+	{
+		UT_DEBUGMSG(("SERHAT: OpenXML importer invalid NULL request in OXMLi_ListenerState_Image.charData\n"));
+		return;
+	}
+
+	std::string contextTag = "";
+	if(!rqst->context->empty())
+	{
+		contextTag = rqst->context->back();
+	}
+	int posOffset = contextMatches(contextTag, NS_WP_KEY, "posOffset");
+	if(posOffset)
+	{
+		OXML_SharedElement imgElem = rqst->stck->top();
+		rqst->stck->pop();
+
+		if(rqst->context->size() >= 2)
+			contextTag = rqst->context->at(rqst->context->size() - 2);
+		int positionH = contextMatches(contextTag, NS_WP_KEY, "positionH");
+		int positionV = contextMatches(contextTag, NS_WP_KEY, "positionV");
+		if(rqst->buffer == NULL)
+		{
+			UT_DEBUGMSG(("SERHAT: Unexpected situation, request with a null buffer\n"));
+			return;
+		}
+		if(positionH)
+		{
+			std::string position(_EmusToInches(rqst->buffer));
+			position += "in";
+			imgElem->setProperty("xpos", position);
+		}
+		else if(positionV)
+		{
+			std::string position(_EmusToInches(rqst->buffer));
+			position += "in";
+			imgElem->setProperty("ypos", position);
+		}
+		rqst->stck->push(imgElem);
+	}
 }
 
 
