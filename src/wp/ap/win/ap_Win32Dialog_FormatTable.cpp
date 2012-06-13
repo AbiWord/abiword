@@ -192,10 +192,10 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	/* Set the value of TEXT BOX */
 	wchar_t 	szValue[BUFSIZE];
 	swprintf(szValue, L"%02.2f", getTableWidth());
-	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_TEXT_WIDTH, szValue);
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_VAL_WIDTH, szValue);
 
 	swprintf(szValue, L"%02.2f", getTableHeight());
-	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_TEXT_HEIGHT, szValue);
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_VAL_HEIGHT, szValue);
 
 
 	/* Combo Values for Thickness */	
@@ -245,7 +245,7 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			event_previewExposed();			
 			return 1;
 		}		
-		case AP_RID_DIALOG_FORMATTABLE_TEXT_HEIGHT:
+		case AP_RID_DIALOG_FORMATTABLE_VAL_HEIGHT:
 			{
 				wchar_t buf[BUFSIZE];
 				if( wNotifyCode == EN_KILLFOCUS )
@@ -260,7 +260,7 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 				return 1;
 			}
 
-		case AP_RID_DIALOG_FORMATTABLE_TEXT_WIDTH:
+		case AP_RID_DIALOG_FORMATTABLE_VAL_WIDTH:
 			{
 				wchar_t buf[BUFSIZE];
 				if( wNotifyCode == EN_KILLFOCUS )

@@ -205,10 +205,10 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	setWidth(pFL->getFrameWidth());
 
 	swprintf(szValue, L"%02.2f", getFrameWidth());
-	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_TEXT_WIDTH, szValue);
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
 
 	swprintf(szValue, L"%02.2f", getFrameHeight());
-	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_TEXT_HEIGHT, szValue);
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
 
 	/* Position to radio buttons */
 	if(positionMode() == FL_FRAME_POSITIONED_TO_BLOCK)
@@ -385,7 +385,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			return 1;
 		}
 
-		case AP_RID_DIALOG_FORMATFRAME_TEXT_HEIGHT:
+		case AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT:
 			{
 				wchar_t buf[BUFSIZE];
 				if( wNotifyCode == EN_KILLFOCUS )
@@ -400,7 +400,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 				return 1;
 			}
 
-		case AP_RID_DIALOG_FORMATFRAME_TEXT_WIDTH:
+		case AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH:
 			{
 				wchar_t buf[BUFSIZE];
 				if( wNotifyCode == EN_KILLFOCUS )
