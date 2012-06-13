@@ -220,6 +220,7 @@ AP_UnixDialog_FormatFrame__onBackgroundColorClicked (GtkWidget 		*button,
 /*****************************************************************/
 
 #define	WIDGET_ID_TAG_KEY "id"
+#define BUFSIZE     64
 
 /*****************************************************************/
 
@@ -501,6 +502,7 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
     g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
     g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
     // Set init Value
+    wchar_t      szValue[BUFSIZE];
     FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
     if (!pView)
         return;
