@@ -941,7 +941,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 
 // Width
-
+// really set Frame width
 	if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 	{
 		m_iWidth = UT_convertToLogicalUnits("1.0in");
@@ -956,7 +956,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	UT_DEBUGMSG(("Width %s \n",pszWidth));
 // Height
-
+//here really to the Frame height
 	if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 	{
 		m_iHeight = UT_convertToLogicalUnits("1.0in");
