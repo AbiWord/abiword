@@ -494,6 +494,25 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorder")), pSS, AP_STRING_ID_DLG_FormatFrame_Borders);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderColor")), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderThickness")), pSS, AP_STRING_ID_DLG_FormatTable_Thickness);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFrameHeight")), pSS, AP_STRING_ID_DLG_FormatTable_Height);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFrameWidth")), pSS, AP_STRING_ID_DLG_FormatTable_Width);
+    m_wWidth = GTK_WIDGET(gtk_builder_get_object(builder, "entryFrameWidth"));
+    m_wHeight = GTK_WIDGET(gtk_builder_get_object(builder, "entryFrameHeight")); 
+    g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
+    g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
+    // Set init Value
+    FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+    if (!pView)
+        return;
+    fl_FrameLayout * pFL = pView->getFrameLayout();
+    setHeight(pFL->getFrameHeight());
+    setWidth(pFL->getFrameWidth());
+    swprintf(szValue, L"%02.2f", getFrameWidth());
+    gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
+
+    swprintf(szValue, L"%02.2f", getFrameHeight());
+    gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
+
 	
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackground")), pSS, AP_STRING_ID_DLG_FormatFrame_Background);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackgroundColor")), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
@@ -557,6 +576,40 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	g_object_unref(G_OBJECT(builder));
 	
 	return window;
+}
+
+static gboolean s_focus_out_height(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+    UT_UNUSED(event);
+    UT_UNUSED(user_data);
+
+    gtk_editable_select_region(GTK_EDITABLE(widget), 0, 0); 
+    //set Height & Width
+    const char * buf = gtk_entry_get_text(GTK_ENTRY(widget));
+    AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(data);
+    UT_return_if_fail(widget && dlg);
+    if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getFrameHeight() ){
+       setHeight( _wtoi(buf) );
+    }
+    dlg->event_previewExposed();
+    return FALSE;
+}
+
+static gboolean s_focus_out_width(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+    UT_UNUSED(event);
+    UT_UNUSED(user_data);
+
+    gtk_editable_select_region(GTK_EDITABLE(widget), 0, 0); 
+    //set Height & Width
+    const char * buf = gtk_entry_get_text(GTK_ENTRY(widget));
+    AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(data);
+    UT_return_if_fail(widget && dlg);
+    if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getFrameWidth() ){
+       setWidth( _wtoi(buf) );
+    }
+    dlg->event_previewExposed();
+    return FALSE;
 }
 
 static void s_destroy_clicked(GtkWidget * /* widget */,

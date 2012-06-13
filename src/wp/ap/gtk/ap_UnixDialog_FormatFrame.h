@@ -74,6 +74,8 @@ protected:
 	GtkWidget * m_wLineRight;
 	GtkWidget * m_wLineTop;
 	GtkWidget * m_wLineBottom;
+	GtkWidget * m_wWidth;
+	GtkWidget * m_wHeight;
 	
 	GtkWidget * m_wPreviewArea;
 
