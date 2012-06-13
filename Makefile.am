@@ -1,7 +1,7 @@
 
 ACLOCAL_AMFLAGS = -I .
 
-DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins po user
+DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins user
 
 if WITH_GOFFICE_BUILTIN
 
@@ -14,7 +14,7 @@ endif
 else 
 SUBDIRS =
 endif
-SUBDIRS += src plugins po user
+SUBDIRS += src plugins user
 
 if TOOLKIT_GTK_ALL
 
@@ -32,8 +32,8 @@ pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
 dist_man1_MANS = abiword.1
 endif
 
-icondir= $(ABIWORD_ICONDIR)
-icon_DATA = abiword.png
+icondir= $(datadir)/icons
+icon_DATA = abiword_48.png
 
 EXTRA_DIST = \
 	AUTHORS \
@@ -47,7 +47,7 @@ EXTRA_DIST = \
 	ChangeLog \
 	abiword.desktop \
 	abiword.keys \
-	abiword.png \
+	abiword_48.png \
 	libabiword.pc.in \
 	compile-resource \
 	lt-compile-resource
@@ -57,7 +57,9 @@ DISTCLEANFILES = \
 	plugin-builtin.m4 \
 	plugin-configure.m4 \
 	plugin-list.m4 \
-	plugin-makefiles.m4
+	plugin-makefiles.m4 \
+	doltcompile \
+	doltlibtool
 
 abiword-$(ABIWORD_SERIES).pc: libabiword.pc
 	cp $< $@

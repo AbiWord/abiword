@@ -308,7 +308,7 @@ void ODi_Office_Styles::_defineAbiStyles(PD_Document* pDocument) const
     }
     
     if (!m_listStyles.empty()) {
-        UT_DebugOnly<bool> ok = pDocument->fixListHierarchy();
+        bool ok = pDocument->fixListHierarchy();
         UT_ASSERT(ok);
     }
 

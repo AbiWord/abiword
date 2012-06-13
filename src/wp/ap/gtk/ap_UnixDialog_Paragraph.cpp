@@ -263,13 +263,11 @@ void AP_UnixDialog_Paragraph::event_ComboBoxChanged(GtkWidget * widget)
 
 void AP_UnixDialog_Paragraph::event_SpinIncrement(GtkWidget * widget)
 {
-	UT_DEBUG_ONLY_ARG(widget);
 	UT_ASSERT(widget);
 }
 
 void AP_UnixDialog_Paragraph::event_SpinDecrement(GtkWidget * widget)
 {
-	UT_DEBUG_ONLY_ARG(widget);
 	UT_ASSERT(widget);
 }
 

@@ -95,15 +95,23 @@ AP_Dialog_RDFQuery::executeQuery( const std::string& sparql )
     for( PD_ResultBindings_t::iterator iter = b.begin();
          iter != iterend; ++iter )
     {
-        UT_DEBUGMSG(("iter.sz: %lu\n", (unsigned long) iter->size()));
+        cerr << "iter.sz:" << iter->size() << endl;
         addBinding( *iter );
     }
+    
+#else
+    
+    addStatement(
+        PD_RDFStatement(
+            PD_URI("http://www.example.com/foo"),
+            PD_URI("http://www.example.com/bar"),
+            PD_Literal("AABBCC") ));
 #endif
     
-    std::string stat;
-    const XAP_StringSet *pSS = m_pApp->getStringSet();
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Status, stat);
-    setStatus(UT_std_string_sprintf(stat.c_str(), m_count, getRDF()->getTripleCount()));
+    stringstream ss;
+    ss << "Query RDF:" << m_count
+       << " of total:" << getRDF()->getTripleCount();
+    setStatus(ss.str());
 }
 
 void

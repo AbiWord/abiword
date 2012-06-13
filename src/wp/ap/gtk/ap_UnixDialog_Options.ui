@@ -15,7 +15,6 @@
     <property name="resizable">False</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
-    <property name="window_position">center-on-parent</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox1">
         <property name="visible">True</property>
@@ -432,7 +431,7 @@
                             <property name="width_request">75</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="text" translatable="no">.bak~</property>
+                            <property name="text" translatable="yes">.bak~</property>
                           </object>
                           <packing>
                             <property name="left_attach">1</property>

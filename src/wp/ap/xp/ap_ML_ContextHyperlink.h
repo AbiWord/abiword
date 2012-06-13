@@ -1,19 +1,19 @@
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
- *
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
 
@@ -68,7 +68,7 @@ BeginLayout(ContextHyperlinkT,EV_EMC_HYPERLINKTEXT)
 		MenuItem(AP_MENU_ID_TABLE_INSERTTABLE)
 		MenuItem(AP_MENU_ID_TABLE_DELETETABLE)
 		Separator()
-		MenuItem(AP_MENU_ID_TABLE_INSERTROW)
+		MenuItem(AP_MENU_ID_TABLE_INSERTROW)		
 		MenuItem(AP_MENU_ID_TABLE_INSERTCOLUMN)
 		MenuItem(AP_MENU_ID_TABLE_DELETEROW)
 		MenuItem(AP_MENU_ID_TABLE_DELETECOLUMN)
@@ -127,7 +127,7 @@ BeginLayout(ContextRDFAnchorT,EV_EMC_ANNOTATIONTEXT)
 		MenuItem(AP_MENU_ID_TABLE_INSERTTABLE)
 		MenuItem(AP_MENU_ID_TABLE_DELETETABLE)
 		Separator()
-		MenuItem(AP_MENU_ID_TABLE_INSERTROW)
+		MenuItem(AP_MENU_ID_TABLE_INSERTROW)		
 		MenuItem(AP_MENU_ID_TABLE_INSERTCOLUMN)
 		MenuItem(AP_MENU_ID_TABLE_DELETEROW)
 		MenuItem(AP_MENU_ID_TABLE_DELETECOLUMN)
@@ -148,48 +148,8 @@ EndLayout()
 BeginLayout(ContextAnnotationT,EV_EMC_RDFANCHORTEXT)
 
 	BeginPopupMenu()
-		MenuItem(AP_MENU_ID_RDFANCHOR_EDIT_TRIPLES)
-		MenuItem(AP_MENU_ID_RDFANCHOR_QUERY)
-		MenuItem(AP_MENU_ID_RDFANCHOR_EDITSEMITEM)
-		MenuItem(AP_MENU_ID_RDFANCHOR_EXPORTSEMITEM)
-		MenuItem(AP_MENU_ID_RDFANCHOR_SELECTTHISREFTOSEMITEM)
-		MenuItem(AP_MENU_ID_RDFANCHOR_SELECTNEXTREFTOSEMITEM)
-		MenuItem(AP_MENU_ID_RDFANCHOR_SELECTPREVREFTOSEMITEM)
-        BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_RELATION)
-            MenuItem(AP_MENU_ID_RDF_SEMITEM_SET_AS_SOURCE)
-            Separator()
-            BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_RELATED_TO_SOURCE)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_RELATED_TO_SOURCE_FOAFKNOWS)
-            EndSubMenu()
-            BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_FIND_RELATED)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS)
-            EndSubMenu()
-        EndSubMenu()
-        BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_STYLESHEET)
-            MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_APPLY)
-            MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_DISASSOCIATE)
-            Separator()
-            BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NAME)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NICK)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE)
-             EndSubMenu()
-		    BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_NAME)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES)
-            EndSubMenu()
-		    BeginSubMenu(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_NAME)
-                MenuItem(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG)
-            EndSubMenu()
-        EndSubMenu()
-
-
+		MenuItem(AP_MENU_ID_RDFANCHOR_SHOW_TRIPLES)
+		MenuItem(AP_MENU_ID_RDFANCHOR_SPARQL)
 		Separator()
 		MenuItem(AP_MENU_ID_EDIT_CUT)
 		MenuItem(AP_MENU_ID_EDIT_COPY)
@@ -200,7 +160,7 @@ BeginLayout(ContextAnnotationT,EV_EMC_RDFANCHORTEXT)
 		MenuItem(AP_MENU_ID_TABLE_INSERTTABLE)
 		MenuItem(AP_MENU_ID_TABLE_DELETETABLE)
 		Separator()
-		MenuItem(AP_MENU_ID_TABLE_INSERTROW)
+		MenuItem(AP_MENU_ID_TABLE_INSERTROW)		
 		MenuItem(AP_MENU_ID_TABLE_INSERTCOLUMN)
 		MenuItem(AP_MENU_ID_TABLE_DELETEROW)
 		MenuItem(AP_MENU_ID_TABLE_DELETECOLUMN)
@@ -217,4 +177,4 @@ BeginLayout(ContextAnnotationT,EV_EMC_RDFANCHORTEXT)
 
 EndLayout()
 
-
+    

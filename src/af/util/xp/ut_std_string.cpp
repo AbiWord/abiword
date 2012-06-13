@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2009 Hubert Figuiere
@@ -24,10 +23,6 @@
 #include "ut_assert.h"
 #include "ut_std_string.h"
 #include "ut_string.h"
-
-#include <iostream>
-#include <sstream>
-#include <list>
 
 std::string UT_escapeXML(const std::string &s)
 {
@@ -267,25 +262,13 @@ void UT_std_string_removeProperty(std::string & sPropertyString, const std::stri
 	const char * szLoc = strstr(szProps,szWork);
 	if(szLoc == NULL)
 	{
-	    //Not here, do nothing
-	    return ;
+//
+// Not here, do nothing
+		return ;
 	}
-	// Check if this is a real match
-	if (szLoc != szProps)
-	{
-		// This is not the first property. It could be a false match
-		// for example, 'frame-col-xpos' and 'xpos'
-		std::string sWorkCheck("; ");
-		sWorkCheck += sWork;
-		const char * szLocCheck = strstr(szProps,sWorkCheck.c_str());
-		if (!szLocCheck)
-		{
-			// False match
-			return;
-		}
-		szLoc = szLocCheck;
-	}	    
-
+//
+// Found it, Get left part.
+//
 	UT_sint32 locLeft = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
 	std::string sLeft;
 	if(locLeft == 0)
@@ -297,7 +280,19 @@ void UT_std_string_removeProperty(std::string & sPropertyString, const std::stri
 		sLeft = sPropertyString.substr(0,locLeft);
 	}
 	locLeft = static_cast<UT_sint32>(sLeft.size());
-
+	if(locLeft > 0)
+	{
+//
+// If this element is the last item in the properties there is no "; ".
+//
+// Remove trailing ';' and ' '
+//
+		locLeft--;
+		while(locLeft >= 0 && (sLeft[locLeft] == ';' || sLeft[locLeft] == ' '))
+		{
+			locLeft--;
+		}
+	}
 	std::string sNew;
 	if(locLeft > 0)
 	{
@@ -307,18 +302,22 @@ void UT_std_string_removeProperty(std::string & sPropertyString, const std::stri
 	{
 		sNew.clear();
 	}
-
-	// Look for ";" to get right part
-
+//
+// Look for ";" to get right part
+//
 	const char * szDelim = strchr(szLoc,';');
 	if(szDelim == NULL)
 	{
-		// No properties after this, just assign and return
+//
+// No properties after this, just assign and return
+//
 		sPropertyString = sNew;
 	}
 	else
 	{
-		// Just slice off the properties and tack them onto the pre-existing sNew
+//
+// Just slice off the properties and tack them onto the pre-existing sNew
+//
 		while(*szDelim == ';' || *szDelim == ' ')
 		{
 			szDelim++;
@@ -331,70 +330,5 @@ void UT_std_string_removeProperty(std::string & sPropertyString, const std::stri
 		}
 		sNew += sPropertyString.substr(offset,iLen);
 		sPropertyString = sNew;
-	}  
-}
-
-
-
-const std::string StreamToString( std::istream& iss )
-{
-    std::stringstream ss;
-    iss.clear();
-    std::copy( std::istreambuf_iterator<char>(iss),
-               std::istreambuf_iterator<char>(),
-               std::ostreambuf_iterator<char>(ss));
-    return ss.str();
-}
-
-std::string toTimeString( time_t TT )
-{
-    const int bufmaxlen = 1025;
-    char buf[bufmaxlen];
-    struct tm* TM = 0;
-    std::string format = "%y %b %e %H:%M";
-
-//    TM = gmtime( &TT );
-    TM = localtime( &TT );
-            
-    if( TM && strftime( buf, bufmaxlen, format.c_str(), TM) )
-    {
-        std::string s = buf;
-        return s;
-    }
-    // FIXME
-    return "";
-}
-
-time_t toTime( struct tm *tm )
-{
-    return mktime( tm );
-}
-time_t parseTimeString( const std::string& stddatestr )
-{
-    const char* datestr = stddatestr.c_str();
-    const char* eos     = datestr + strlen( datestr );
-
-    typedef std::list<std::string> formats_t;
-    formats_t formats;
-    
-    formats.push_back( "%Y-%m-%dT%H:%M:%S" );
-    formats.push_back( "%y %b %d %H:%M:%S" );
-    formats.push_back( "%y %b %d %H:%M" );
-
-    for( formats_t::iterator iter = formats.begin(); iter != formats.end(); ++iter )
-    {
-        std::string format = *iter;
-        struct tm tm;
-        memset( &tm, 0, sizeof(struct tm));
-        const char* rc = UT_strptime( datestr, format.c_str(), &tm );
-        if( rc == eos )
-        {
-//            UT_DEBUGMSG(("parseTimeString(OK) input:%s format:%s ret:%ld\n",
-//                         datestr, format.c_str(), toTime(&tm) ));
-            return toTime(&tm);
-        }
-    }
-
-//    UT_DEBUGMSG(("parseTimeString(f) input:%s\n", datestr ));
-    return 0;
+	}
 }

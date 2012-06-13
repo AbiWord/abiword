@@ -87,7 +87,6 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
         m_style_tree(new IE_Exp_HTML_StyleTree(pDocument)),
         m_styleListener(new IE_Exp_HTML_StyleListener(m_style_tree)),
         m_bSuppressDialog(false),
-        m_bDefaultWriterFactory(true),
         m_suffix(""),
     m_pNavigationHelper(new IE_Exp_HTML_NavigationHelper(getDoc(), getFileName())),
 	m_pWriterFactory( 
@@ -114,8 +113,7 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 
 IE_Exp_HTML::~IE_Exp_HTML()
 {
-    if (m_bDefaultWriterFactory)
-        delete m_pWriterFactory;
+	delete m_pWriterFactory;
 	delete m_pNavigationHelper;
 	delete m_styleListener;
     delete m_style_tree;
@@ -178,34 +176,32 @@ UT_Error IE_Exp_HTML::_doOptions()
     }
     /* run the dialog
      */
-	if(!pFrame->getFilename())
-	{
-	    XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
 
-	    XAP_DialogFactory * pDialogFactory
-	            = static_cast<XAP_DialogFactory *> (XAP_App::getApp()->getDialogFactory());
+    XAP_Dialog_Id id = XAP_DIALOG_ID_HTMLOPTIONS;
 
-	    XAP_Dialog_HTMLOptions * pDialog
-	            = static_cast<XAP_Dialog_HTMLOptions *> (pDialogFactory->requestDialog(id));
+    XAP_DialogFactory * pDialogFactory
+            = static_cast<XAP_DialogFactory *> (XAP_App::getApp()->getDialogFactory());
 
-	    UT_return_val_if_fail(pDialog, false);
+    XAP_Dialog_HTMLOptions * pDialog
+            = static_cast<XAP_Dialog_HTMLOptions *> (pDialogFactory->requestDialog(id));
 
-	    pDialog->setHTMLOptions(&m_exp_opt, XAP_App::getApp());
+    UT_return_val_if_fail(pDialog, false);
 
-	    pDialog->runModal(pFrame);
+    pDialog->setHTMLOptions(&m_exp_opt, XAP_App::getApp());
 
-	    /* extract what they did
-	     */
-	    bool bSave = pDialog->shouldSave();
-	
-	    pDialogFactory->releaseDialog(pDialog);
+    pDialog->runModal(pFrame);
 
-	    if (!bSave)
-	    {
-	        return UT_SAVE_CANCELLED;
-	    }
-	}
-        return UT_OK;
+    /* extract what they did
+     */
+    bool bSave = pDialog->shouldSave();
+
+    pDialogFactory->releaseDialog(pDialog);
+
+    if (!bSave)
+    {
+        return UT_SAVE_CANCELLED;
+    }
+    return UT_OK;
 }
 
 UT_Error IE_Exp_HTML::_writeDocument()
@@ -659,10 +655,9 @@ void IE_Exp_HTML::_createMultipart()
 
 void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
 {
-	if ((m_pWriterFactory != NULL) && (m_bDefaultWriterFactory))
+	if (m_pWriterFactory != NULL)
 	{
 		DELETEP(m_pWriterFactory);
-        m_bDefaultWriterFactory = false;
 	}
 	
 	if (pWriterFactory == NULL)
@@ -670,7 +665,6 @@ void IE_Exp_HTML::setWriterFactory(IE_Exp_HTML_WriterFactory* pWriterFactory)
 		m_pWriterFactory = 
             new IE_Exp_HTML_DefaultWriterFactory(getDoc(),
                                                              this->m_exp_opt);
-        m_bDefaultWriterFactory = true;
 	} else
     {
         m_pWriterFactory = pWriterFactory;

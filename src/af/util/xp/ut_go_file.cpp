@@ -43,11 +43,6 @@
 #include <glib/gstdio.h>
 #include <libxml/encoding.h>
 
-#if TOOLKIT_COCOA
-#include <CoreFoundation/CoreFoundation.h>
-#include <ApplicationServices/ApplicationServices.h>
-#endif
-
 #ifdef WITH_GSF_INPUT_HTTP
 #include <gsf/gsf-input-http.h>
 #endif
@@ -64,13 +59,13 @@
 #  include <gsf-gnome/gsf-output-gnomevfs.h>
 #endif
 
-#ifdef TOOLKIT_GTK_ALL
+#ifdef HAVE_GTK214
+// needed for gtk_show_uri()
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-#if defined(WITH_GNOMEVFS)
+#elif defined(WITH_GNOMEVFS)
 // needed for gnome_vfs_url_show()
 #include <libgnomevfs/gnome-vfs-utils.h>
-#endif
 #endif
 
 #if defined G_OS_WIN32
@@ -1663,11 +1658,8 @@ UT_go_file_get_date_changed (char const *uri)
 }
 
 /* ------------------------------------------------------------------------- */
-#ifdef TOOLKIT_GTK_ALL
-// We need this for systems where gtk_show_uri() is broken
-// Don't get me started.
-// Note that if gtk_show_uri() fails but returns true, then
-// there is nothing that can be done.
+
+#if !defined(WITH_GNOMEVFS) && !defined(HAVE_GTK214)
 static char *
 check_program (char const *prog)
 {
@@ -1680,10 +1672,29 @@ check_program (char const *prog)
 		return NULL;
 	return g_strdup (prog);
 }
+#endif
 
-static void 
-fallback_open_uri(const gchar* url, GError** err)
+#ifdef G_OS_WIN32
+#include "ut_Win32LocaleString.h"
+#endif
+
+GError *
+UT_go_url_show (gchar const *url)
 {
+#ifdef G_OS_WIN32
+	UT_Win32LocaleString str;
+	str.fromUTF8 (url);
+	ShellExecuteW (NULL, L"open", str.c_str(), NULL, NULL, SW_SHOWNORMAL);
+	return NULL;
+#else
+	GError *err = NULL;
+#ifdef HAVE_GTK214
+	gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &err);
+	return err;
+#elif defined(WITH_GNOMEVFS)
+	gnome_vfs_url_show (url);
+	return err;
+#else
 	gchar *browser = NULL;
 	gchar *clean_url = NULL;
 
@@ -1692,7 +1703,6 @@ fallback_open_uri(const gchar* url, GError** err)
 
 	if (browser == NULL) {
 		static char const * const browsers[] = {
-			"xdg-open",             /* XDG. you shouldn't need anything else */
 			"sensible-browser",	/* debian */
 			"epiphany",		/* primary gnome */
 			"galeon",		/* secondary gnome */
@@ -1717,7 +1727,7 @@ fallback_open_uri(const gchar* url, GError** err)
 		gchar **argv = NULL;
 		char   *cmd_line = g_strconcat (browser, " %1", NULL);
 
-		if (g_shell_parse_argv (cmd_line, &argc, &argv, err)) {
+		if (g_shell_parse_argv (cmd_line, &argc, &argv, &err)) {
 			/* check for '%1' in an argument and substitute the url
 			 * otherwise append it */
 			gint i;
@@ -1740,50 +1750,13 @@ fallback_open_uri(const gchar* url, GError** err)
 				argv[argc-1] = NULL;
 			}
 			g_spawn_async (NULL, argv, NULL, G_SPAWN_SEARCH_PATH,
-				NULL, NULL, NULL, err);
+				NULL, NULL, NULL, &err);
 			g_strfreev (argv);
 		}
 		g_free (cmd_line);
 	}
 	g_free (browser);
 	g_free (clean_url);
-}
-#endif
-
-#ifdef G_OS_WIN32
-#include "ut_Win32LocaleString.h"
-#endif
-
-GError *
-UT_go_url_show (gchar const *url)
-{
-#ifdef G_OS_WIN32
-	UT_Win32LocaleString str;
-	str.fromUTF8 (url);
-	ShellExecuteW (NULL, L"open", str.c_str(), NULL, NULL, SW_SHOWNORMAL);
-	return NULL;
-#elif TOOLKIT_COCOA
-	CFStringRef urlStr = CFStringCreateWithCString(kCFAllocatorDefault, url, kCFStringEncodingUTF8);
-	CFURLRef cfUrl = CFURLCreateWithString(kCFAllocatorDefault, urlStr, NULL);
-	OSStatus err = LSOpenCFURLRef(cfUrl, NULL);
-	CFRelease(cfUrl);
-	CFRelease(urlStr);
-	if (err != noErr) {
-		;
-	}
-	return NULL;
-#else
-	GError *err = NULL;
-#if GTK_CHECK_VERSION(2,14,0)
-	if(!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &err)) {
-		fallback_open_uri(url, &err);
-	}
-	return err;
-#elif defined(WITH_GNOMEVFS)
-	gnome_vfs_url_show (url);
-	return err;
-#else
-	fallback_open_uri(url, &err);
 	return err;
 #endif
 #endif

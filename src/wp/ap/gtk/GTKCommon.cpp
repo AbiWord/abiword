@@ -24,7 +24,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_std_string.h"
 
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
@@ -58,8 +57,6 @@ tostr( GtkTextView* tv )
 std::string
 tostr( GtkEntry* e )
 {
-    if(!e)
-        return "";
     std::string ret;
     ret = gtk_entry_get_text (GTK_ENTRY (e));
     return ret;
@@ -68,20 +65,18 @@ tostr( GtkEntry* e )
 std::string
 getSelectedText( GtkTreeView* tv, int colnum )
 {
-	std::string ret;
-
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
-	UT_return_val_if_fail (model != NULL, ret);
+	UT_return_val_if_fail (model != NULL, NULL);
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (GTK_TREE_VIEW (tv));
 	GtkTreeIter iter;
 	gboolean haveSelected = gtk_tree_selection_get_selected (selection, &model, &iter);
 	if (!haveSelected)
-		return ret;
+		return NULL;
 
 	gchar *label = NULL;
 	gtk_tree_model_get (model, &iter, colnum, &label, -1);
-    ret = label;
+    std::string ret = label;
     g_free(label);
 	return ret;
 }
@@ -198,33 +193,6 @@ std::string tostr( GtkComboBox* combo )
     }
     return "";
 }
-
-void setEntry( GtkWidget* w, const std::string& v )
-{
-    if( v.empty() )
-        gtk_entry_set_text(GTK_ENTRY(w), "" );
-    else 
-        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
-}
-
-void setEntry( GtkEntry* w, const std::string& v )
-{
-    if( v.empty() )
-        gtk_entry_set_text(GTK_ENTRY(w), "" );
-    else 
-        gtk_entry_set_text(GTK_ENTRY(w), v.c_str());
-}
-void setEntry( GtkEntry* w, time_t v )
-{
-    UT_DEBUGMSG(("setEntry(time) v:%ld str:%s\n", v, toTimeString(v).c_str()));
-    gtk_entry_set_text(GTK_ENTRY(w), toTimeString(v).c_str());
-}
-void setEntry( GtkEntry* w, double v )
-{
-    UT_DEBUGMSG(("setEntry(double) v:%f str:%s\n", v, tostr(v).c_str()));
-    gtk_entry_set_text(GTK_ENTRY(w), tostr(v).c_str());
-}
-
 
 
 static

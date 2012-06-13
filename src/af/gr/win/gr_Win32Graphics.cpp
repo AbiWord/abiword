@@ -1273,15 +1273,7 @@ void GR_Win32Graphics::setCursor(GR_Graphics::Cursor c)
 	// set the cursor type, but wait for a WM_SETCURSOR
 	// to do anything about it.
 	m_cursor = c;
-}
 
-GR_Graphics::Cursor GR_Win32Graphics::getCursor(void) const
-{
-	return m_cursor;
-}
-
-void GR_Win32Graphics::handleSetCursorMessage(void)
-{
 	// deal with WM_SETCURSOR message.
 
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
@@ -1393,13 +1385,18 @@ void GR_Win32Graphics::handleSetCursorMessage(void)
 		SetCursor(hCursor);
 }
 
+GR_Graphics::Cursor GR_Win32Graphics::getCursor(void) const
+{
+	return m_cursor;
+}
+
 void GR_Win32Graphics::setColor3D(GR_Color3D c)
 {
 	UT_ASSERT(c < COUNT_3D_COLORS);
 	_setColor(m_3dColors[c]);
 }
 
-void GR_Win32Graphics::init3dColors(void)
+void GR_Win32Graphics::init3dColors()
 {
 	m_3dColors[CLR3D_Foreground] = GetSysColor(COLOR_BTNTEXT);
 	m_3dColors[CLR3D_Background] = GetSysColor(COLOR_3DFACE);
@@ -1438,6 +1435,7 @@ void GR_Win32Graphics::fillRect(GR_Color3D c, UT_Rect &r)
 	fillRect(c,r.left,r.top,r.width,r.height);
 }
 
+#ifndef WITH_CAIRO
 //////////////////////////////////////////////////////////////////
 // This is a static method in the GR_Font base class implemented
 // in platform code.
@@ -1515,6 +1513,7 @@ void GR_Font::s_getGenericFontProperties(const char * szFontName,
 
 	return;
 }
+#endif
 
 /*!
     hdc - the primary hdc on which we are expected to draw

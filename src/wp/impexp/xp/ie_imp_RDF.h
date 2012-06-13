@@ -40,11 +40,11 @@ class ABI_EXPORT IE_Imp_RDF_Sniffer : public IE_ImpSniffer
 	friend class IE_Imp_RDF;
 
   protected:
-
+    
   public:
 	IE_Imp_RDF_Sniffer( const char * name );
 	virtual ~IE_Imp_RDF_Sniffer();
-
+    
 	virtual UT_Confidence_t recognizeContents ( const char * szBuf,
                                                 UT_uint32 iNumbytes );
 
@@ -105,12 +105,12 @@ class ABI_EXPORT IE_Imp_RDF : public IE_Imp
 	virtual UT_Error	_loadFile(GsfInput * fp);
 
     virtual bool pasteFromBufferSS( PD_DocumentRange * pDocRange,
-                                    std::stringstream& ss,
+                                    const std::stringstream& ss,
                                     const char * szEncoding );
 
     std::pair< PT_DocPosition, PT_DocPosition > insertTextWithXMLID( const std::string& text,
                                                                      const std::string& xmlid );
-
+    
 
   private:
 
@@ -124,9 +124,9 @@ class ABI_EXPORT IE_Imp_RDF_VCard : public IE_Imp_RDF
 	virtual ~IE_Imp_RDF_VCard();
 
     virtual bool pasteFromBufferSS( PD_DocumentRange * pDocRange,
-                                    std::stringstream& ss,
+                                    const std::stringstream& ss,
                                     const char * szEncoding );
-
+    
 };
 
 
@@ -138,9 +138,9 @@ class ABI_EXPORT IE_Imp_RDF_Calendar : public IE_Imp_RDF
 	virtual ~IE_Imp_RDF_Calendar();
 
     virtual bool pasteFromBufferSS( PD_DocumentRange * pDocRange,
-                                    std::stringstream& ss,
+                                    const std::stringstream& ss,
                                     const char * szEncoding );
-
+    
 };
 
 

@@ -21,7 +21,6 @@
 #
 #  Authors: Kenneth Christiansen <kenneth@gnu.org>
 #
-#  Contributors: Ingo Brueckl <ib@wupperonline.de>
 
 
 
@@ -31,7 +30,7 @@ use Getopt::Long;
 
 #---------------------------
 
-my $VERSION     = "0.11";
+my $VERSION     = "0.9";
 
 #---------------------------
 
@@ -229,33 +228,16 @@ sub Convert($) {
         ### For generic translatable XP header files ###
         
         if ($FILE =~ /\/xp\/(.*)\.h$/sg){
-        while ($input =~ /^\s*dcl\s*\((\w+)\s*,(\s*)\"(.*)\"[)\s]+(\/\/xgettext:.*)*/mg) {        
+        while ($input =~ /\((\w+),(\s*)\"(.*)\"/g) {
                my $tag = $1;
-               my $ctxt = "";     
-		if (defined($4)) {
-			if (substr($4, 11) eq "msgctxt") { 
-				$ctxt = "|$1|"; 
-			} else { 
-				$tag .= " */ /* " . substr($4, 2); 
-			}
-		}
 		if (defined($string{$3})) {
-			push @{$string{$ctxt . $3}}, $tag;
+			push @{$string{$3}}, $tag;
 		} else {
-			$string{$ctxt . $3} = [$tag];
+			$string{$3} = [$tag];
 		}
         }}
 
     }
-
-sub ctxt {
-
-    if ($_[0] =~ /^\|(\w+\|)(.*)/) {
-        "Q_(\"$1$2";
-    } else {
-        "N_(\"$_[0]";
-    }
-}
 
 sub addMessages{
 
@@ -275,8 +257,8 @@ sub addMessages{
         for ($n = 0; $n < @elements; $n++) {
 
            if ($n == 0) {
-	       print OUT "gchar *s = " . ctxt("$elements[$n]"); 
-               print OUT "\\n\"\n";
+	       print OUT "gchar *s = N_"; 
+               print OUT "(\"$elements[$n]\\n\"\n";
            }
 
            elsif ($n == @elements - 1) { 
@@ -295,7 +277,7 @@ sub addMessages{
 	    for my $value (@tag) {
 			if ($value) { print OUT "/* $value */\n"; }		
 	    }
-		print OUT "gchar *s = " . ctxt("$theMessage") . "\");\n";
+		print OUT "gchar *s = N_(\"$theMessage\");\n";
 
 	}
 	    

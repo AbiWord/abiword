@@ -283,7 +283,6 @@ static GSList * awt_only (const char *path) {
 static void s_template_clicked(GtkTreeView *treeview,
 							   AP_UnixDialog_New * dlg)
 {
-	UT_DEBUG_ONLY_ARG(treeview);
 	UT_ASSERT(treeview && dlg);
 	dlg->event_ListClicked();
 }

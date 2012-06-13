@@ -108,7 +108,7 @@ public:
 	SectionType     	getType(void) const { return m_iType; }
 
 	virtual bool		recalculateFields(UT_uint32 iUpdateCount);
-	fl_BlockLayout *        getFirstBlock(void) const;
+	fl_BlockLayout *        getFirstBlock(void) const; 
 	virtual fp_Container*		getNewContainer(fp_Container * pFirstContainer = NULL) = 0;
 	virtual FL_DocLayout*		getDocLayout(void) const;
 	virtual void                markAllRunsDirty(void) =0;
@@ -185,7 +185,7 @@ public:
 	virtual void         setImageHeight(UT_sint32 iHeight);
 	GR_Image *           getBackgroundImage(void)
 	  {	return m_pImageImage;}
-
+	
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif
@@ -227,7 +227,7 @@ public:
 	virtual fp_Container * getLastContainer(void) const;
 	virtual void        setFirstContainer(fp_Container * pCon);
 	virtual void        setLastContainer(fp_Container * pCon);
-
+	
 	fl_FootnoteLayout  *       getFootnoteLayout(UT_uint32 footnotePID);
 	fl_AnnotationLayout  *       getAnnotationLayout(UT_uint32 footnotePID);
 
@@ -264,7 +264,7 @@ public:
 	virtual bool 	    doclistener_changeStrux(const PX_ChangeRecord_StruxChange * pcrxc);
 	bool				doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx);
 
-	virtual bool        bl_doclistener_insertFootnote(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
+	virtual bool        bl_doclistener_insertFootnote(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx, 
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
@@ -272,7 +272,7 @@ public:
 																	  fl_ContainerLayout* sfhNew));
 
 
-	virtual bool        bl_doclistener_insertAnnotation(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx,
+	virtual bool        bl_doclistener_insertAnnotation(fl_ContainerLayout*, const PX_ChangeRecord_Strux * pcrx, 
 											  pf_Frag_Strux* sdh,
 											  PL_ListenerId lid,
 											  void (* pfnBindHandles)(pf_Frag_Strux* sdhNew,
@@ -281,14 +281,14 @@ public:
 
 	void				setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL);
 
-	fl_HdrFtrSectionLayout*         getHeader(void) const;
-	fl_HdrFtrSectionLayout*         getFooter(void) const;
-	fl_HdrFtrSectionLayout*         getHeaderEven(void) const;
-	fl_HdrFtrSectionLayout*         getFooterEven(void) const;
-	fl_HdrFtrSectionLayout*         getHeaderFirst(void) const;
-	fl_HdrFtrSectionLayout*         getFooterFirst(void) const;
-	fl_HdrFtrSectionLayout*         getHeaderLast(void) const;
-	fl_HdrFtrSectionLayout*         getFooterLast(void) const;
+	fl_HdrFtrSectionLayout*         getHeader(void);
+	fl_HdrFtrSectionLayout*         getFooter(void);
+	fl_HdrFtrSectionLayout*         getHeaderEven(void);
+	fl_HdrFtrSectionLayout*         getFooterEven(void);
+	fl_HdrFtrSectionLayout*         getHeaderFirst(void);
+	fl_HdrFtrSectionLayout*         getFooterFirst(void);
+	fl_HdrFtrSectionLayout*         getHeaderLast(void);
+	fl_HdrFtrSectionLayout*         getFooterLast(void);
 
 	bool                            setHdrFtrHeightChange(bool bDoHdr, UT_sint32 newHeight);
 	static void         _HdrFtrChangeCallback(UT_Worker * pWorker);
@@ -297,7 +297,6 @@ public:
 	void                            prependOwnedHeaderPage(fp_Page * p_Page);
 	void                            prependOwnedFooterPage(fp_Page * p_Page);
 	void				deleteOwnedPage(fp_Page*, bool bReallyDeleteIT=true);
-	fp_Page *                       getFirstOwnedPage(void) const {return m_pFirstOwnedPage;}
 	void                markForRebuild(void) { m_bNeedsRebuild = true;}
 	void                clearRebuild(void) { m_bNeedsRebuild = false;}
 	bool                needsRebuild(void) const { return m_bNeedsRebuild;}
@@ -362,6 +361,8 @@ private:
 	double              m_dMaxSectionColumnHeight;
 	UT_sint32           m_iFootnoteLineThickness;
 	UT_sint32           m_iFootnoteYoff;
+	
+	bool				m_bForceNewPage;
 
 	//! First column in the section
 	fp_Column*			m_pFirstColumn;

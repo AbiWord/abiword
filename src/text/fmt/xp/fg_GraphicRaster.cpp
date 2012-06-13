@@ -108,8 +108,6 @@ FG_Graphic* FG_GraphicRaster::createFromStrux(const fl_ContainerLayout* pFL)
             }
 
 		}
-		pFG->m_iWidth = UT_convertToPoints(pFG->getWidthProp());
-		pFG->m_iHeight = UT_convertToPoints(pFG->getHeightProp());
 	}
 
 	if (!bFoundDataItem)

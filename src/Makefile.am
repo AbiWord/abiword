@@ -48,10 +48,9 @@ libabiword_@ABIWORD_SERIES@_la_CPPFLAGS = \
 
 libabiword_@ABIWORD_SERIES@_la_LDFLAGS = \
 	$(DEPS_LIBS) \
-	$(CHAMPLAIN_LIBS) \
-	-Wl, --no-undefined \
+	-no-undefined \
 	-avoid-version \
-	-Wl, --export-dynamic
+	-export-dynamic
 
 
 if TOOLKIT_COCOA
@@ -59,6 +58,7 @@ libabiword_@ABIWORD_SERIES@_la_LDFLAGS += -headerpad_max_install_names
 endif	
 
 libabiword_@ABIWORD_SERIES@_la_LIBADD = \
+	$(opt_libs) \
 	plugins/libplugins.la \
 	text/fmt/xp/libxp.la \
 	text/ptbl/xp/libxp.la \
@@ -72,8 +72,7 @@ libabiword_@ABIWORD_SERIES@_la_LIBADD = \
 	af/util/$(PLATFORM)/lib$(PLATFORM).la \
 	af/util/xp/libxp.la \
 	af/ev/$(TOOLKIT)/lib$(TOOLKIT).la \
-	af/ev/xp/libxp.la \
-	$(opt_libs)
+	af/ev/xp/libxp.la
 
 if TOOLKIT_GTK_ALL
 libabiword_@ABIWORD_SERIES@_la_LIBADD += \
@@ -115,9 +114,10 @@ AbiWord_CPPFLAGS = \
 	$(libabiword_@ABIWORD_SERIES@_la_CPPFLAGS)
 
 AbiWord_LDFLAGS = \
-	-Wl, --no-undefined \
+	$(DEPS_LIBS) \
+	-no-undefined \
 	-avoid-version \
-	-Wl, --export-dynamic \
+	-export-dynamic \
 	-headerpad_max_install_names 
 
 AbiWord_LDADD = \
@@ -140,7 +140,8 @@ abiword_LDFLAGS = \
 
 abiword_LDADD = \
 	libabiword-@ABIWORD_SERIES@.la \
-	$(resources)
+	$(resources) \
+	$(DEPS_LIBS)
 
 abiword_DEPENDENCIES = \
 	libabiword-@ABIWORD_SERIES@.la \

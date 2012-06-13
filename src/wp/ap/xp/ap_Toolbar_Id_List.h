@@ -63,8 +63,8 @@ toolbaritem(SPELLCHECK)
 toolbaritem(IMG)
 toolbaritem(FMT_STYLE)
 #if XAP_SIMPLE_TOOLBAR
-toolbaritem(FMT_CHOOSE)
-toolbaritem(VIEW_FULL_SCREEN)
+toolbaritem(FMT_CHOOSE)	
+toolbaritem(VIEW_FULL_SCREEN)	
 #else
 #endif
 toolbaritem(FMT_FONT)
@@ -126,9 +126,4 @@ toolbaritem(REVISIONS_SELECT)
 toolbaritem(REVISIONS_SHOW_FINAL)
 toolbaritem(REVISIONS_FIND_PREV)
 toolbaritem(REVISIONS_FIND_NEXT)
-toolbaritem(SEMITEM_THIS)
-toolbaritem(SEMITEM_NEXT)
-toolbaritem(SEMITEM_PREV)
-toolbaritem(SEMITEM_EDIT)
-toolbaritem(SEMITEM_STYLESHEET_APPLY)
 

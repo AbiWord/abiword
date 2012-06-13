@@ -159,11 +159,6 @@ tb_revision_select.png\
 tb_revision_show_final.png\
 tb_revision_find_prev.png\
 tb_revision_find_next.png\
-tb_semitem_this.png \
-tb_semitem_next.png \
-tb_semitem_prev.png \
-tb_semitem_edit.png \
-tb_semitem_stylesheet_apply.png
 $(NULL)
 
 CLEANFILES=$(PNG_FILES)
@@ -328,9 +323,5 @@ EXTRA_DIST = \
 	tb_revision_select.xpm \
 	tb_revision_show_final.xpm \
 	tb_revision_find_prev.xpm \
-	tb_revision_find_next.xpm \
-	tb_semitem_this.xpm \
-	tb_semitem_next.xpm \
-	tb_semitem_prev.xpm \
-	tb_semitem_edit.xpm \
-	tb_semitem_stylesheet_apply.xpm 
+	tb_revision_find_next.xpm
+

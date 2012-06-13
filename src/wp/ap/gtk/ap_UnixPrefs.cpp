@@ -43,15 +43,12 @@ const char * AP_UnixPrefs::_getPrefsPathname(void) const
 	  return buf.c_str();
 
 	const char * szDirectory = XAP_App::getApp()->getUserPrivateDirectory();
-	const char * szFile = "profile";
+	const char * szFile = "AbiWord.Profile";
 
 	buf = szDirectory;
 	if (!buf.size() || szDirectory[buf.size()-1] != '/')
 	  buf += "/";
 	buf += szFile;
-
-	// migration / legacy
-	XAP_App::getApp()->migrate("/AbiWord.Profile", szFile, buf.c_str());  
 
 	return buf.c_str();
 }

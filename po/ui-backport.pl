@@ -21,18 +21,14 @@
 #
 #  Authors: Kenneth Christiansen <kenneth@gnu.org>
 #
-#  Contributors: Hubert Figuiere <hub@figuiere.net>
-#                Ingo Brueckl <ib@wupperonline.de>
 
 use strict;
 
 # Declare global variables
 #-------------------------
-my $VERSION 	= "0.6b";
+my $VERSION 	= "0.5";
 
-my $in          = "$ARGV[0]"; # input file (.po)
-my $out         = "$ARGV[1]"; # output file (.strings)
-my $lang        = `basename $in .po`;
+my $lang 	= "$ARGV[0]";
 my $kind 	= "0";
 my @xap_strings;
 my @ap_strings;
@@ -42,15 +38,14 @@ my $cont 	= "0";
 my $encoding	= "iso-8859-1";
 
 $lang =~ s/_/-/g;
-chop $lang;
 
-print "Converting localization file $in to Abiword .strings format.\n";
+print "Porting the PO translation back to AbiWord XP format\n";
 
-if (! -s "$in") { print "Error: file $in does not exist!\n"; exit; }
+if (! -s "$lang.po") { print "Error: file $lang.po does not exist!\n"; exit; }
 
-open FILE, ">$out";
+open FILE, ">../user/wp/strings/$lang.strings";
 
-open (IN, "<$in") || die "can't open $in: $!";
+open (IN, "<$lang.po") || die "can't open $lang.po: $!";
 
 while (<IN>) {
     $encoding = $1 if (/\"Content-Type:\s+text\/plain;\s+charset=(.*)\\n\"/);
@@ -98,20 +93,13 @@ while (<IN>) {
     
 }
 
-if ($cont == "1") {
-    for $tag (@tags) {
-        if ($kind == 1) { push @xap_strings, "$tag=\"$str\""; $cont=0; next; }
-        if ($kind == 2) { push @ap_strings,  "$tag=\"$str\""; $cont=0; next; }
-    }
-}
-
 # Add the tags and the strings to the file
 #-----------------------------------------
 
 @xap_strings = sort (@xap_strings);
 @ap_strings = sort (@ap_strings);
 
-print FILE "<Strings class=\"XAP\"\n";
+print FILE "<Strings    class=\"XAP\"\n";
 for (my $n = 0; $n < @xap_strings; $n++) {
     $xap_strings[$n] =~ s/&/&amp;/mg;
     $xap_strings[$n] =~ s/\\n/&#x000a;/mg;
@@ -121,7 +109,7 @@ for (my $n = 0; $n < @xap_strings; $n++) {
     print FILE "$xap_strings[$n]\n";
 }   print FILE "/>\n\n";
 
-print FILE "<Strings class=\"AP\"\n";
+print FILE "<Strings    class=\"AP\"\n";
 for (my $n = 0; $n < @ap_strings; $n++) {
     $ap_strings[$n] =~ s/&/&amp;/mg;
     $ap_strings[$n] =~ s/\\n/&#x000a;/mg;
@@ -131,4 +119,6 @@ for (my $n = 0; $n < @ap_strings; $n++) {
     print FILE "$ap_strings[$n]\n";
 }   print FILE "/>\n\n";
 
-print FILE "</AbiStrings>\n";
+print FILE "</AbiStrings>\n\n";
+
+print "Wrote ../user/wp/strings/$lang.strings\n";

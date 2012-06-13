@@ -60,8 +60,7 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 		m_pHeader(0),
 		m_FillType(NULL,NULL,FG_FILL_TRANSPARENT),
 		m_pLastMappedTOC(NULL),
-		m_iCountWrapPasses(0),
-		m_iFieldPageNumber(-1)
+		m_iCountWrapPasses(0)
 {
 	UT_ASSERT(pLayout);
 	UT_ASSERT(pOwner);
@@ -873,52 +872,12 @@ bool fp_Page::containsPageBreak(void) const
 }
 
 /*!
- * Returns the physical page number (the numbering starts from 0)
+ * Returns the page number
  */
 UT_sint32 fp_Page::getPageNumber(void)
 {
 	return m_pLayout->findPage(this);
 }
-
-/*!
- * Return the page number as indicated in a page number field run.
- * This value depends on the section properties "section-restart" 
- * and "section-restart-value".
- */
-
-UT_sint32 fp_Page::getFieldPageNumber(void) const
-{
-	return m_iFieldPageNumber;
-}
-
-void fp_Page::setFieldPageNumber(UT_sint32 iPageNum)
-{
-	m_iFieldPageNumber = iPageNum;
-}
-
-void fp_Page::resetFieldPageNumber(void)
-{
-	fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(getOwningSection());
-	m_iFieldPageNumber = getPageNumber();
-	if (m_iFieldPageNumber >= 0)
-	{
-		m_iFieldPageNumber++;
-		while(pDSL && !pDSL->arePageNumbersRestarted())
-		{
-			pDSL =  pDSL->getPrevDocSection();
-		}
-		if(pDSL && pDSL->arePageNumbersRestarted())
-		{
-			fp_Page * pFirstPage = pDSL->getFirstOwnedPage();
-			if(pFirstPage)
-			{
-				UT_sint32 iFirstPage = pFirstPage->getPageNumber();
-				m_iFieldPageNumber += pDSL->getRestartedPageNumber() - iFirstPage - 1;
-			}
-		}
-	}
-}
-
 /*!
  * This method returns the height available to the requested column. It 
  * subtracts the height given to previous columns on the page as well as the 
@@ -1530,7 +1489,7 @@ bool fp_Page::breakPage(void)
 	{
 		iFootnoteHeight += getNthFootnoteContainer(i)->getHeight();
 	}
-	iY += iFootnoteHeight;
+	iY =+ iFootnoteHeight;
 
 		
 	// we need the height of the annotations on this page, to deduct.
@@ -1541,7 +1500,7 @@ bool fp_Page::breakPage(void)
 			{
 					iAnnotationHeight += getNthAnnotationContainer(i)->getHeight();
 			}
-			iY += iAnnotationHeight;
+			iY =+ iAnnotationHeight;
 	}
 
 	for (i=0; i<count; i++)

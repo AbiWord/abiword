@@ -6,9 +6,7 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Format Frame</property>
-    <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
-    <property name="window_position">mouse</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbDialog">
         <property name="visible">True</property>
@@ -192,7 +190,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBox" id="omBorderThickness">
+                      <object class="GtkComboBoxText" id="omBorderThickness">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -672,9 +670,11 @@
                         <property name="width_request">25</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="inconsistent">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -690,9 +690,11 @@
                         <property name="width_request">25</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="inconsistent">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -708,9 +710,11 @@
                         <property name="width_request">25</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="inconsistent">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
                       </object>
                       <packing>
                         <property name="top_attach">1</property>
@@ -724,9 +728,11 @@
                         <property name="width_request">25</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="inconsistent">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>

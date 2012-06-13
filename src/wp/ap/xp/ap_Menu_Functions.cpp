@@ -48,7 +48,6 @@
 #include "ap_FrameData.h"
 #include "ap_Prefs.h"
 #include "pd_Document.h"
-#include "pd_DocumentRDF.h"
 #include "ut_Script.h"
 
 #ifdef ENABLE_SPELL
@@ -136,11 +135,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
     {
         const char * szFormat = pLabel->getMenuLabel();
         const char * szURI = pPrefs->getRecent(ndx);
-        char *szFname = g_filename_from_uri(szURI, NULL, NULL);
-        char *szRecent = g_filename_to_utf8(szFname, -1, NULL, NULL, NULL);
+        char *szRecent = g_filename_from_uri(szURI, NULL, NULL);
         char *szBasename = szRecent ? g_path_get_basename(szRecent) : g_strdup ("");
 		char *szMenuname = s_escapeMenuString(szBasename);
-        g_free(szFname);
         g_free(szRecent);
 		g_free(szBasename);
 
@@ -158,7 +155,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Recent)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 {
-	UT_DEBUG_ONLY_ARG(id);
 	// Compute the menu label for the _help_about item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -177,7 +173,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_About)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents)
 {
-	UT_DEBUG_ONLY_ARG(id);
 	// Compute the menu label for the _help_contents item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -196,7 +191,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Contents)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Intro)
 {
-	UT_DEBUG_ONLY_ARG(id);
 	// Compute the menu label for the _help_intro item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -215,8 +209,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Intro)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search)
 {
-	UT_DEBUG_ONLY_ARG(id);
-
 	// Compute the menu label for the _help_search item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -235,7 +227,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Search)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Checkver)
 {
-	UT_DEBUG_ONLY_ARG(id);
 	// Compute the menu label for the about the check version item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -316,8 +307,6 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Window)
 
 Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_WindowMore)
 {
-	UT_DEBUG_ONLY_ARG(id);
-
 	// Compute the menu label for the _window_more ("More Windows...") item.
 
 	XAP_App * pApp = XAP_App::getApp();
@@ -634,62 +623,14 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_HyperlinkOK)
 	return HyperLinkOK(pView);
 }
 
-Defun_EV_GetMenuItemState_Fn(ap_GetState_RDF_Query)
+Defun_EV_GetMenuItemState_Fn(ap_GetState_RDFAnchorOK)
 {
 	UT_UNUSED(id);
 	ABIWORD_VIEW ;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	return 
-#ifdef WITH_REDLAND
-	       EV_MIS_ZERO; 
-#else
-	       EV_MIS_Gray;
-#endif
-}
-
-Defun_EV_GetMenuItemState_Fn(ap_GetState_RDF_Contact)
-{
-	UT_UNUSED(id);
-	ABIWORD_VIEW ;
-	UT_return_val_if_fail (pView, EV_MIS_Gray);
-
-	return 
-#ifdef WITH_EVOLUTION_DATA_SERVER
-	       EV_MIS_ZERO; 
-#else
-	       EV_MIS_Gray;
-#endif
-}
-
-Defun_EV_GetMenuItemState_Fn(ap_GetState_haveSemItems)
-{
-	ABIWORD_VIEW ;
-	UT_return_val_if_fail (pView, EV_MIS_Gray);
-	PD_Document * pDoc = pView->getDocument();
-	UT_return_val_if_fail( pDoc, EV_MIS_Gray );
-    PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF();
-	UT_return_val_if_fail( rdf, EV_MIS_Gray );
-
-	/* The editors aren't working yet. Remove if they do work. */
-	if (id == AP_MENU_ID_RDFANCHOR_EDITSEMITEM) 
-		return EV_MIS_Gray;
-
-#ifndef WITH_EVOLUTION_DATA_SERVER
-	if (id == AP_MENU_ID_RDFANCHOR_EXPORTSEMITEM) 
-		return EV_MIS_Gray;
-#endif
-    
 	EV_Menu_ItemState s = EV_MIS_ZERO ;
-    return s;
-
-    
-    PD_RDFContacts contacts = rdf->getContacts();
-
-    std::set< std::string > xmlids;
-    rdf->addRelevantIDsForPosition( xmlids, pView->getPoint() );
-    
-	if( xmlids.size() < 1 )
+	if(false)
 	{
 		return EV_MIS_Gray;
 	}
@@ -1385,12 +1326,12 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_InsTextBox)
 	ABIWORD_VIEW;
 	UT_return_val_if_fail (pView, EV_MIS_Gray);
 
-	if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB))
+        if((pView->getViewMode() == VIEW_NORMAL) || (pView->getViewMode() == VIEW_WEB))
 	{
             return EV_MIS_Gray;
-	}
+        }
 
-	return EV_MIS_ZERO;
+        return EV_MIS_ZERO;
 }
 
 Defun_EV_GetMenuItemState_Fn(ap_GetState_StylesLocked)

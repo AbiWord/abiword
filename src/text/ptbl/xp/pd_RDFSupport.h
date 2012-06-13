@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (c) 2011 Ben Martin
- *
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -27,7 +27,7 @@
 ABI_EXPORT std::string toRDFXML( const std::list< PD_RDFModelHandle >& ml );
 ABI_EXPORT std::string toRDFXML( PD_RDFModelHandle m );
 ABI_EXPORT UT_Error    loadRDFXML( PD_DocumentRDFMutationHandle m,
-                                   const std::string& rdfxml,
-                                   const std::string& baseuri = "" );
+                                   std::string rdfxml,
+                                   std::string baseuri = "" );
 
 #endif

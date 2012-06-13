@@ -48,7 +48,6 @@
 #include "ap_Prefs_SchemeIds.h"
 #include "ap_FrameData.h"
 #include "pd_Document.h"
-#include "pd_DocumentRDF.h"
 #include "ut_Script.h"
 
 #ifdef ENABLE_SPELL
@@ -964,8 +963,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_AlwaysDisabled)
 
 Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HasRevisions)
 {
-	UT_UNUSED(id);
-	UT_UNUSED(pszState);
 	ABIWORD_VIEW;
  	UT_return_val_if_fail (pView, EV_TIS_Gray);
 
@@ -974,36 +971,4 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_HasRevisions)
 	
 	return EV_TIS_ZERO;
    
-}
-
-Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CursorInSemItem)
-{
-	UT_UNUSED(pszState);
-	ABIWORD_VIEW;
- 	UT_return_val_if_fail (pView, EV_TIS_Gray);
-
-	/* The editors aren't working yet. Remove if they do work. */
-	if (id == AP_TOOLBAR_ID_SEMITEM_EDIT) 
-		return EV_TIS_Gray;
-
-    xxx_UT_DEBUGMSG((" ap_ToolbarGetState_CursorInSemItem() pDoc:%p\n", pView->getDocument() ));
-	if( PD_Document * pDoc = pView->getDocument() )
-	{
-		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
-		{
-            xxx_UT_DEBUGMSG((" ap_ToolbarGetState_CursorInSemItem(have rdf) point:%d\n", pView->getPoint() ));
-            std::set< std::string > col;
-            rdf->addRelevantIDsForPosition( col, pView->getPoint() );
-            if( col.empty() )
-                rdf->addRelevantIDsForPosition( col, pView->getPoint()-1 );
-            xxx_UT_DEBUGMSG((" ap_ToolbarGetState_CursorInSemItem(d) point:%ld col.sz:%ld\n",
-                             pView->getPoint(), col.size() ));
-            if( col.empty() )
-            {
-                return EV_TIS_Gray;
-            }
-        }
-    }
-    
-	return EV_TIS_ZERO;
 }

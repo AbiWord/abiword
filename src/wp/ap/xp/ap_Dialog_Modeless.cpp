@@ -69,9 +69,8 @@ AP_Dialog_Modeless::~AP_Dialog_Modeless(void)
 }
 
 
-void AP_Dialog_Modeless::setStatus( const std::string& /*msg*/ )
-{
-}
+void AP_Dialog_Modeless::setStatus( const std::string& msg )
+{}
 
 
 // --------------------------------------------------

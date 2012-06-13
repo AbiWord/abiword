@@ -73,7 +73,7 @@ AP_Dialog_RDFEditor::showAllRDF()
 {
     PD_RDFModelHandle model = getModel();
 
-    UT_DEBUGMSG(("showAllRDF() top\n"));
+    cerr << "showAllRDF() top" << endl;
     
     clear();
     PD_RDFModelIterator iter = model->begin();
@@ -82,11 +82,11 @@ AP_Dialog_RDFEditor::showAllRDF()
     {
         const PD_RDFStatement& st = *iter;
         addStatement( st );
-        UT_DEBUGMSG(("showAllRDF() st:%s\n", st.toString().c_str()));        
+        cerr << "showAllRDF() st:" << st << endl;
         
     }
     statusIsTripleCount();
-    UT_DEBUGMSG(("showAllRDF() done\n"));
+    cerr << "showAllRDF() done" << endl;
 }
 
 void
@@ -101,10 +101,9 @@ AP_Dialog_RDFEditor::setRestrictedModel( PD_RDFModelHandle model )
 void
 AP_Dialog_RDFEditor::statusIsTripleCount()
 {
-    std::string stat;
-    const XAP_StringSet *pSS = m_pApp->getStringSet();
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Editor_Status, stat);
-    setStatus(UT_std_string_sprintf(stat.c_str(), m_count));
+    stringstream ss;
+    ss << "Total RDF:" << m_count;
+    setStatus(ss.str());
 }
 
 
@@ -265,10 +264,12 @@ AP_Dialog_RDFEditor::setRestrictedXMLID( const std::string& xmlid )
     std::set< std::string > xmlids;
     if( std::string::npos == xmlid.find(','))
     {
+        writeID = xmlid;
         xmlids.insert(xmlid);
     }
     else
     {
+        writeID = "";
         std::string s;
         std::stringstream ss;
         ss << xmlid;

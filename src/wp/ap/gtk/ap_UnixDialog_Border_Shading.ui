@@ -6,9 +6,7 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Format Table</property>
-    <property name="resizable">False</property>
     <property name="type_hint">dialog</property>
-    <property name="window_position">mouse</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbDialog">
         <property name="visible">True</property>
@@ -193,7 +191,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBox" id="cmbBorderStyle">
+                      <object class="GtkComboBoxText" id="cmbBorderStyle">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -202,11 +200,10 @@
                         <property name="right_attach">4</property>
                         <property name="top_attach">3</property>
                         <property name="bottom_attach">4</property>
-                        <property name="y_options"></property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBox" id="omBorderThickness">
+                      <object class="GtkComboBoxText" id="omBorderThickness">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -259,7 +256,6 @@
                         <property name="right_attach">5</property>
                         <property name="top_attach">1</property>
                         <property name="bottom_attach">2</property>
-                        <property name="y_options"></property>
                       </packing>
                     </child>
                     <child>
@@ -278,7 +274,7 @@
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkComboBox" id="cmbShadingOffset">
+                      <object class="GtkComboBoxText" id="cmbShadingOffset">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                       </object>
@@ -437,9 +433,11 @@
                         <property name="width_request">25</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="inconsistent">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">2</property>
@@ -455,9 +453,11 @@
                         <property name="width_request">25</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="inconsistent">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -473,9 +473,11 @@
                         <property name="width_request">25</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="inconsistent">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
                       </object>
                       <packing>
                         <property name="top_attach">1</property>
@@ -489,9 +491,11 @@
                         <property name="width_request">25</property>
                         <property name="height_request">25</property>
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
-                        <property name="inconsistent">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="active">True</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>

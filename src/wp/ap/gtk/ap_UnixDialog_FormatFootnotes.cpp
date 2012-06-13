@@ -57,12 +57,14 @@ AP_UnixDialog_FormatFootnotes::AP_UnixDialog_FormatFootnotes(XAP_DialogFactory *
 
 	m_wFootnotesStyleMenu = NULL;
 	m_wFootnoteNumberingMenu = NULL;
+	m_wFootnotesInitialValText = NULL;
 	m_wFootnoteSpin = NULL;
 	m_oFootnoteSpinAdj = NULL;
 
 	m_wEndnotesStyleMenu = NULL;
 	m_wEndnotesPlaceMenu= NULL;
 	m_wEndnotesRestartOnSection = NULL;
+	m_wEndnotesInitialValText = NULL;
 	m_wEndnoteSpin = NULL;
 	m_oEndnoteSpinAdj = NULL;
 
@@ -290,8 +292,13 @@ void AP_UnixDialog_FormatFootnotes::event_MenuEndnoteChange(GtkWidget * widget)
 */
 void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
 {
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wFootnoteSpin), getFootnoteVal());
-	gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_wEndnoteSpin), getEndnoteVal());
+	UT_String sVal;
+	getFootnoteValString(sVal);
+	gtk_label_set_text(GTK_LABEL(m_wFootnotesInitialValText),sVal.c_str());
+
+	getEndnoteValString(sVal);
+	gtk_label_set_text(GTK_LABEL(m_wEndnotesInitialValText),sVal.c_str());
+
 
 	XAP_GtkSignalBlocker b1(G_OBJECT(m_wEndnotesRestartOnSection), 
 							m_EndRestartSectionID);
@@ -369,7 +376,7 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	// set the dialog title
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_Title,s);
-	abiDialogSetTitle(window, "%s", s.c_str());
+	abiDialogSetTitle(window, s.c_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
@@ -414,29 +421,27 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 //
 // Footnotes number menu
 //
-	m_wFootnoteNumberingMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omNumbering"));
+	m_wFootnoteNumberingMenu = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "omNumbering"));
 	UT_ASSERT(m_wFootnoteNumberingMenu );
-	XAP_makeGtkComboBoxText(m_wFootnoteNumberingMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartNone,s);
-	XAP_appendComboBoxText(m_wFootnoteNumberingMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wFootnoteNumberingMenu, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartSec,s);
-	XAP_appendComboBoxText(m_wFootnoteNumberingMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wFootnoteNumberingMenu, s.c_str());
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_FootRestartPage,s);
-	XAP_appendComboBoxText(m_wFootnoteNumberingMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wFootnoteNumberingMenu, s.c_str());
 //	m_wFootnotesRestartOnPage = gtk_menu_item_new_with_label (s.utf8_str());
 
 
 //
 // Endnotes placement menu
 //
-	m_wEndnotesPlaceMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnotePlacement"));
+	m_wEndnotesPlaceMenu = GTK_COMBO_BOX_TEXT(gtk_builder_get_object(builder, "omEndnotePlacement"));
 	UT_ASSERT(m_wEndnotesPlaceMenu );
-	XAP_makeGtkComboBoxText(m_wEndnotesPlaceMenu, G_TYPE_NONE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
-	XAP_appendComboBoxText(m_wEndnotesPlaceMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wEndnotesPlaceMenu, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);
-	XAP_appendComboBoxText(m_wEndnotesPlaceMenu, s.c_str());
+	gtk_combo_box_text_append_text(m_wEndnotesPlaceMenu, s.c_str());
 
 //
 // Now grab widgets for the remaining controls.
@@ -445,6 +450,8 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	UT_ASSERT(m_wEndnotesRestartOnSection );
 // Endnote Initial Value Control
 
+	m_wEndnotesInitialValText = GTK_WIDGET(gtk_builder_get_object(builder, "endSpinValueText"));
+	UT_ASSERT(m_wEndnotesInitialValText );
 	m_wEndnoteSpin = GTK_WIDGET(gtk_builder_get_object(builder, "endnoteSpin"));
 	m_oEndnoteSpinAdj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wEndnoteSpin));
 
@@ -453,6 +460,8 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	m_wFootnoteSpin = GTK_WIDGET(gtk_builder_get_object(builder, "footnoteSpin"));
 	UT_ASSERT(m_wFootnoteSpin );
 	m_oFootnoteSpinAdj = gtk_spin_button_get_adjustment(GTK_SPIN_BUTTON(m_wFootnoteSpin));
+	m_wFootnotesInitialValText = GTK_WIDGET(gtk_builder_get_object(builder, "footSpinValueText"));
+	UT_ASSERT(m_wFootnotesInitialValText );
 	_connectSignals();
 	refreshVals();
 

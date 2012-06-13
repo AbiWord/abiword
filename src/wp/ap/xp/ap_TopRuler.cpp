@@ -409,7 +409,6 @@ void AP_TopRuler::drawLU(const UT_Rect *clip)
 	// draw the background
 
 	GR_Painter painter(m_pG);
-	painter.beginDoubleBuffering();
 	painter.fillRect(GR_Graphics::CLR3D_Background,0,0,getWidth (),getHeight ());
 
 	// draw the foreground
@@ -2288,7 +2287,7 @@ void AP_TopRuler::mousePress(EV_EditModifierState /* ems */,
 			UT_sint32 j;
 			for (j = 0; j < m_infoCache.m_iTabStops; j++)
 			{
-				if (j == iTab)
+				if ((j == iTab))
 					continue;
 
 				if (!buf.empty())

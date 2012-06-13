@@ -4309,7 +4309,8 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
  The offsets for each line
  will be calculated only with the top level broken table.
 */
-
+	fp_Container * pCon = getContainer();
+	UT_return_val_if_fail(pCon, NULL);
 //
 // Do the case of creating the first broken table from the master table.
 // 
@@ -4354,11 +4355,16 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	pBroke->setYBreakHere(getYBreak()+vpos);
 	setYBottom(getYBreak() + vpos -1);
 	UT_ASSERT(getHeight() >0);
-	pBroke->setYBottom(getMasterTable()->getYBottom());
+	fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(getMasterTable());
+	if(pVCon == NULL)
+	{
+
+	}
+	pBroke->setYBottom(pVCon->getHeight());
 	xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken table %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
 	xxx_UT_DEBUGMSG(("SEVIOR????????: Previous table YBreak %d YBottom  %d Height of broken table %d \n",getYBreak(),getYBottom(),getHeight()));
 	UT_ASSERT(pBroke->getHeight() > 0);
-	UT_sint32 i = -1;
+	UT_sint32 i = 0;
 //
 // The structure of table linked list is as follows.
 // NULL <= Master <==> Next <==> Next => NULL
@@ -4370,50 +4376,54 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	fp_Container * pUpCon = NULL;
 	if(getMasterTable()->getFirstBrokenTable() == this)
 	{
+		i = getContainer()->findCon(getMasterTable());
 		pUpCon = getMasterTable()->getContainer();
   		pBroke->setPrev(getMasterTable());
   		pBroke->setNext(NULL);
   		getMasterTable()->setNext(pBroke);
 		setNext(pBroke);
-		if (pUpCon)
-		{
-			i = pUpCon->findCon(getMasterTable());
-		}
 	}
 	else
 	{
-		pBroke->setNext(NULL);
+  		pBroke->setNext(NULL);
   		setNext(pBroke);
 		if(getYBreak() == 0 )
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			pUpCon = getMasterTable()->getContainer();
-			if (pUpCon)
+//
+// Fallback for loads...
+//
+			if(pUpCon == NULL)
 			{
-				i = pUpCon->findCon(getMasterTable());
+				pUpCon = getContainer();
 			}
 		}
 		else
 		{
 			pUpCon = getContainer();
-			if (pUpCon)
-			{
-				i = pUpCon->findCon(this);
-			}
+		}
+		if(getYBreak() == 0)
+		{
+			i = pUpCon->findCon(getMasterTable());
+		}
+		else
+		{
+			i = pUpCon->findCon(this);
 		}
 	}
-
-	if((i >=0) && (i < pUpCon->countCons() - 1))
+	if(i >=0 && i < pUpCon->countCons() -1)
 	{
 		pUpCon->insertConAt(pBroke,i+1);
 	}
-	else if((i >= 0) && (i == pUpCon->countCons() -1))
+	else if( i == pUpCon->countCons() -1)
 	{
 		pUpCon->addCon(pBroke);
 	}
 	else
 	{
-		UT_DEBUGMSG(("Breaking a table that is not yet inserted\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return NULL;
 	}
 	pBroke->setContainer(pUpCon);
 	//
@@ -5202,7 +5212,7 @@ UT_sint32 fp_TableContainer::getNumCols(void) const
  * Return the height of this Table taking into account the possibility
  * of it being broken.
  */
-UT_sint32 fp_TableContainer::getHeight(void) const
+UT_sint32 fp_TableContainer::getHeight(void)
 {
 	UT_sint32 iFullHeight =  fp_VerticalContainer::getHeight();
 	if(!isThisBroken())

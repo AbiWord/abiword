@@ -230,7 +230,7 @@ void IE_Exp_HTML_DocumentWriter::openField(const UT_UTF8String& fieldType,
     }
 }
 
-void IE_Exp_HTML_DocumentWriter::closeField(const UT_UTF8String&)
+void IE_Exp_HTML_DocumentWriter::closeField()
 {
     m_pTagWriter->closeTag();
 }
@@ -321,17 +321,17 @@ void IE_Exp_HTML_DocumentWriter::closeTextbox()
 void IE_Exp_HTML_DocumentWriter::_handleStyleAndId(const gchar* szStyleName, 
     const gchar* szId, const gchar* szStyle)
 {
-    if ((szStyleName != NULL)  && (szStyle != NULL) && (strlen(szStyle) > 0))
+    if (szStyleName != NULL)
     {
         m_pTagWriter->addAttribute("class", szStyleName);
     }
 
-    if ((szId != NULL) && (strlen(szId) > 0))
+    if (szId != NULL)
     {
         m_pTagWriter->addAttribute("id", szId);
     }
 	
-	if ((szStyle != NULL) && (strlen(szStyle) > 0))
+	if (szStyle != NULL)
 	{
 		m_pTagWriter->addAttribute("style", szStyle);
 	}
@@ -417,16 +417,12 @@ void IE_Exp_HTML_DocumentWriter::insertDTD()
 {
 }
 
-void IE_Exp_HTML_DocumentWriter::insertMeta(const std::string& name, 
-                                            const std::string& content,
-                                            const std::string& httpEquiv)
+void IE_Exp_HTML_DocumentWriter::insertMeta(const UT_UTF8String& name, 
+                                            const UT_UTF8String& content)
 {
     m_pTagWriter->openTag("meta", false, true);
-    if (name.size() > 0)
-        m_pTagWriter->addAttribute("name", name);
-    if (httpEquiv.size() > 0)
-        m_pTagWriter->addAttribute("http-equiv", httpEquiv);
-    m_pTagWriter->addAttribute("content", content);
+    m_pTagWriter->addAttribute("name",name.utf8_str());
+    m_pTagWriter->addAttribute("content",content.utf8_str());
     m_pTagWriter->closeTag();
 }
 
@@ -492,10 +488,10 @@ void IE_Exp_HTML_DocumentWriter::insertStyle(const UT_UTF8String &style)
     m_pTagWriter->closeTag();
 }
 
-void IE_Exp_HTML_DocumentWriter::insertTitle(const std::string& title)
+void IE_Exp_HTML_DocumentWriter::insertTitle(const UT_UTF8String& title)
 {
 	m_pTagWriter->openTag("title", false, false);
-	m_pTagWriter->writeData(title);
+	m_pTagWriter->writeData(title.utf8_str());
 	m_pTagWriter->closeTag();
 }
 
@@ -577,13 +573,6 @@ void IE_Exp_HTML_XHTMLWriter::openBlock(const gchar* szStyleName,
     _handleAwmlStyle(pAP);
 }
 
-void IE_Exp_HTML_XHTMLWriter::openHead()
-{
-    IE_Exp_HTML_DocumentWriter::openHead();
-    insertMeta(std::string(),  "application/xhtml+xml; charset=UTF-8", 
-               "Content-Type");
-}
-
 
 void IE_Exp_HTML_XHTMLWriter::_handleAwmlStyle(const PP_AttrProp *pAP)
 {
@@ -616,12 +605,6 @@ IE_Exp_HTML_OutputWriter* pOutputWriter):
 void IE_Exp_HTML_HTML4Writer::insertDTD()
 {
 	m_pOutputWriter->write(HTML4_DTD);
-}
-
-void IE_Exp_HTML_HTML4Writer::openHead()
-{
-    IE_Exp_HTML_DocumentWriter::openHead();
-    insertMeta(std::string(), "text/html; charset=UTF-8", "Content-Type");
 }
 
 IE_Exp_HTML_DefaultWriterFactory::IE_Exp_HTML_DefaultWriterFactory(

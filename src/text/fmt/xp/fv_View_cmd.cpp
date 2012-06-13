@@ -3259,7 +3259,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 	{
 	         PT_DocPosition posEnd = 0;
 		 getEditableBounds(true,posEnd);
-		 if(posEnd == getPoint())
+		 if((posEnd == getPoint()))
 		 {
 		         pointBreak--;
 			 bPointBreak = true;
@@ -3301,6 +3301,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 #endif
 	secSDH = NULL;
 	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
+	UT_ASSERT(bres);
 #if DEBUG
 	if(secSDH != NULL)
 	{
@@ -3588,7 +3589,6 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 	else
 	{
 		bool b_editStarted = false;
-		bool b_delBlockWithFrames = false;
 		//
 		// Look to see if there is a tab - list label deal with these together
 		//
@@ -3627,6 +3627,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 //
 		fl_BlockLayout * pFirstBlock = NULL;
 		fl_BlockLayout * pSecondBlock = NULL;
+		bool b_delBlockWithFrames = false;
 
 		if((bForward == false) && (count == 1)) 
 		{
@@ -3673,16 +3674,10 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 
 		if (b_delBlockWithFrames)
 		{
-			_saveAndNotifyPieceTableChange();
-			m_pDoc->beginUserAtomicGlob();
-			m_pDoc->disableListUpdates();
-			b_editStarted = true;
-
+			UT_sint32 i = 0;
 			UT_sint32 extraHeight = 0;
 			bool b_evalHeightOfFirstBlock = false;
-			UT_sint32 i = 0;
-			UT_sint32 imax = pSecondBlock->getNumFrames();
-			for(i=0; i < imax;i++)
+			for(i=0; i < pSecondBlock->getNumFrames();i++)
 			{
 				fl_FrameLayout * pFL = pSecondBlock->getNthFrameLayout(i);
 				if(pFL->isHidden() > FP_VISIBLE)
@@ -3707,26 +3702,41 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 						extraHeight = pFirstBlock->getHeightOfBlock(false);
 						b_evalHeightOfFirstBlock = true;
 					}
-					ypos = UT_convertToInches(pszYPos) + double(extraHeight)/double(UT_LAYOUT_RESOLUTION);
-					UT_String sValY = UT_formatDimensionString(DIM_IN,ypos);
-					const gchar * frameProperties[] = {"ypos",sValY.c_str(),NULL};
+					ypos = UT_convertToInches(pszYPos) + double(extraHeight)/UT_LAYOUT_RESOLUTION;
+					const gchar * frameProperties[] = {"ypos",UT_formatDimensionString(DIM_IN,ypos),NULL};
 					PT_DocPosition posStart = pFL->getPosition(true)+1;
 					PT_DocPosition posEnd = posStart;
+					if (!b_editStarted)
+					{
+						m_pDoc->beginUserAtomicGlob();
+						_saveAndNotifyPieceTableChange();
+						b_editStarted = true;
+					}
 					UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
 																	 frameProperties,PTX_SectionFrame);
 					UT_ASSERT(bRet);
 				}
 			}
-			imax = pFirstBlock->getNumFrames();
-			for(i=0; i < imax;i++)
+			m_pDoc->enableListUpdates();
+			m_pDoc->updateDirtyLists();
+			m_pDoc->disableListUpdates();
+			UT_sint32 k = pFirstBlock->getNumFrames();
+			while (k > 0)
 			{
+				k--;
 				fl_FrameLayout * pFL = pFirstBlock->getNthFrameLayout(0);
 				if(pFL->getContainerType() != FL_CONTAINER_FRAME)
 				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				m_pLayout->relocateFrame(pFL,pSecondBlock);
+				pf_Frag_Strux* sdhStart =  pFL->getStruxDocHandle();
+				PT_DocPosition pos = m_pDoc->getStruxPosition(sdhStart);
+				changeBlockAssociatedWithFrame(pos,pSecondBlock,!b_editStarted);
+				if (!b_editStarted)
+				{
+					b_editStarted = true;
+				}
 			}
 			if (bForward)
 			{
@@ -3993,6 +4003,7 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 		// Signal PieceTable Change
 		if (!b_editStarted)
 		{
+			m_pDoc->beginUserAtomicGlob();
 			_saveAndNotifyPieceTableChange();
 			b_editStarted = true;
 		}
@@ -4079,15 +4090,12 @@ void FV_View::cmdCharDelete(bool bForward, UT_uint32 count)
 			UT_ASSERT( iRealDeleteCount <= count );
 			_charMotion(bForward,count - iRealDeleteCount);
 		}
-		if (b_delBlockWithFrames)
-		{
-			m_pDoc->endUserAtomicGlob();
-		}
 	}
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_setPoint(getPoint());
+	m_pDoc->endUserAtomicGlob();
 	if(!bSimple)
 		notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 	else
@@ -4948,8 +4956,32 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	}
 	else if (bApply)
 	{
-		pAL = insertAnnotationDescription(aID, pDialog);
-		UT_return_val_if_fail(pAL, false);
+		UT_UCS4String sDescr(pDialog->getDescription());
+		pAL = getAnnotationLayout(aID);
+		if(!pAL)
+		  return false;
+		pf_Frag_Strux* sdhAnn = pAL->getStruxDocHandle();
+		pf_Frag_Strux* sdhEnd = NULL;
+		getDocument()->getNextStruxOfType(sdhAnn,PTX_EndAnnotation, &sdhEnd);
+		
+		UT_return_val_if_fail(sdhEnd != NULL, false);
+		//
+		// Start of the text covered by the annotations
+		//
+		PT_DocPosition posStart = getDocument()->getStruxPosition(sdhEnd); 
+		posStart++;
+		fp_Run * pRun = getHyperLinkRun(posStart);
+		UT_return_val_if_fail(pRun, false);
+		pRun = pRun->getNextRun();
+		while(pRun && (pRun->getType() != FPRUN_HYPERLINK))
+		  pRun = pRun->getNextRun();
+		UT_return_val_if_fail(pRun, false);
+		UT_return_val_if_fail(pRun->getType() == FPRUN_HYPERLINK, false);
+		PT_DocPosition posEnd = pRun->getBlock()->getPosition(false) + pRun->getBlockOffset();
+		if(posStart> posEnd)
+		  posStart = posEnd;
+		cmdSelect(posStart,posEnd);
+		cmdCharInsert(sDescr.ucs4_str(),sDescr.size());
 	}
 	// release the dialog
 	pDialogFactory->releaseDialog(pDialog);
@@ -4962,42 +4994,6 @@ bool FV_View::cmdEditAnnotationWithDialog(UT_uint32 aID)
 	selectAnnotation(pAL);
 
 	return true;	
-}
-
-fl_AnnotationLayout *FV_View::insertAnnotationDescription(UT_uint32 aID, AP_Dialog_Annotation *pDialog)
-{
-	fl_AnnotationLayout *pAL = getAnnotationLayout(aID);
-	UT_return_val_if_fail(pAL, NULL);
-
-	UT_UCS4String sDescr(pDialog->getDescription());  
-	pf_Frag_Strux *sdhAnn = pAL->getStruxDocHandle();
-	pf_Frag_Strux *sdhEnd = NULL;
-
-	getDocument()->getNextStruxOfType(sdhAnn, PTX_EndAnnotation, &sdhEnd);
-	UT_return_val_if_fail(sdhEnd, NULL);
-
-	// Start of the text covered by the annotations
-	PT_DocPosition posStart = getDocument()->getStruxPosition(sdhEnd); 
-	posStart++;
-
-	fp_Run *pRun = getHyperLinkRun(posStart);
-	UT_return_val_if_fail(pRun, NULL);
-
-	pRun = pRun->getNextRun();
-	while (pRun && (pRun->getType() != FPRUN_HYPERLINK))
-		pRun = pRun->getNextRun();
-	UT_return_val_if_fail(pRun, NULL);
-	UT_return_val_if_fail(pRun->getType() == FPRUN_HYPERLINK, NULL);
-
-	PT_DocPosition posEnd = pRun->getBlock()->getPosition(false) + pRun->getBlockOffset();
-
-	if(posStart > posEnd)
-		posStart = posEnd;
-
-	cmdSelect(posStart, posEnd);
-	cmdCharInsert(sDescr.ucs4_str(), sDescr.size());
-
-	return pAL;
 }
 
 UT_Error FV_View::cmdInsertHyperlink(const char * szName)

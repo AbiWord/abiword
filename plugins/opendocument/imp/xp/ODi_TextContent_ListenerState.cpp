@@ -480,11 +480,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         m_pAbiDocument->appendObject(PTO_Field, (const gchar**)field_fmt);
         m_bAcceptingText = false;
         
-    } else if (!strcmp(pName, "text:tracked-changes")){
-		 UT_DEBUGMSG(("Ignoring text:tracked-changes \n"));
-		 rAction.ignoreElement(-1);
-       
-	} else if (!strcmp(pName, "style:header") ||
+    } else if (!strcmp(pName, "style:header") ||
                !strcmp(pName, "style:footer") ||
                !strcmp(pName, "style:header-left") ||
                !strcmp(pName, "style:footer-left")) {
@@ -2111,7 +2107,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
 
     if (!m_sAnnotationAuthor.empty()) {
         props = "annotation-author: ";
-        props += m_sAnnotationAuthor;
+        props += m_sAnnotationAuthor.c_str();
         m_sAnnotationAuthor.clear();
     }
 
@@ -2120,7 +2116,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
             props += "; ";
         }
         props += "annotation-date: ";
-        props += ODc_reorderDate(m_sAnnotationDate, true);
+        props += m_sAnnotationDate.c_str();
         m_sAnnotationDate.clear();
     }
 
@@ -2158,7 +2154,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
                 props += "; ";
             }
             props += "annotation-title: ";
-            props += title;
+            props += title.c_str();
 
             // DEBUG
             UT_DEBUGMSG(("title:%s\n", title.c_str() ));

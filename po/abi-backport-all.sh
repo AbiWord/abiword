@@ -1,13 +1,9 @@
 #!/bin/bash
 
-#
-# For sole use by the web server to generate translation statistics!
-#
+./update.pl --pot
 
-for I in *.po;
+for I in `ls *.po` ;
 do
     I=`echo "$I" | cut -d . -f1`
-    ./ui-backport.pl $I.po $I.strings
+    ./ui-backport.pl $I
 done
-
-echo "It is completely pointless to generate the .strings files here!"

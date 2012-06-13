@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -942,6 +941,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, pf_Frag_Strux* s
 	  m_iFootnoteLineThickness(0),
 	  m_iFootnoteYoff(0),
 
+	  m_bForceNewPage(false),
 	  m_pFirstColumn(NULL),
 	  m_pLastColumn(NULL),
 	  m_pFirstOwnedPage(NULL),
@@ -1451,45 +1451,45 @@ bool fl_DocSectionLayout::setHdrFtrHeightChange(bool bHdrFtr, UT_sint32 newHeigh
 	return true;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeader(void) const
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeader(void)
 {
 	return m_pHeaderSL;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooter(void) const
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooter(void)
 {
 	return m_pFooterSL;
 }
 
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderEven(void) const
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderEven(void)
 {
 	return m_pHeaderEvenSL;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterEven(void) const
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterEven(void)
 {
 	return m_pFooterEvenSL;
 }
 
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderFirst(void) const
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderFirst(void)
 {
 	return m_pHeaderFirstSL;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterFirst(void) const
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterFirst(void)
 {
 	return m_pFooterFirstSL;
 }
 
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderLast(void) const
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getHeaderLast(void)
 {
 	return m_pHeaderLastSL;
 }
 
-fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterLast(void) const
+fl_HdrFtrSectionLayout*   fl_DocSectionLayout::getFooterLast(void)
 {
 	return m_pFooterLastSL;
 }
@@ -1613,15 +1613,76 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 		fl_DocSectionLayout* pPrevSL = getPrevDocSection();
 		if (pPrevSL)
 		{
+//
+// This should make sure the last column in the previous section  has it's last container
+// on a sane page.
+//
+
+#if 0
+			//
+			// Sevior this code should not be needed!
+			//
+			UT_DEBUGMSG(("code sez: this code should not be needed!\n"));
+			UT_ASSERT(0);
+
+			// says not needed, but clearly still is
+#endif
 			fp_Column * pPrevCol = static_cast<fp_Column *>(pPrevSL->getLastContainer());
 			while(pPrevCol == NULL)
 			{
 				UT_DEBUGMSG(("BUG! BUG! Prev section has no last container! Attempting to fix this \n"));
 				pPrevSL->format();
-				pPrevCol = static_cast<fp_Column *>(pPrevSL->getLastContainer());
+			    pPrevCol = static_cast<fp_Column *>(pPrevSL->getLastContainer());
 			}
-			pPage = pPrevCol->getPage();
-			pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
+			fp_Page* pTmpPage = pPrevSL->getLastContainer()->getPage();
+			fp_Container * prevContainer = NULL;
+			if(pFirstContainer != NULL)
+			{
+				prevContainer = static_cast<fp_Container *>(pFirstContainer->getPrevContainerInSection());
+			}
+
+			UT_sint32 pageHeight = pTmpPage->getFilledHeight(prevContainer);
+			if(pFirstContainer != NULL)
+			{
+				iNextCtrHeight = pFirstContainer->getHeight();
+			}
+			else if(pPrevCol->getLastContainer())
+			{
+				iNextCtrHeight = pPrevCol->getLastContainer()->getHeight();
+			}
+			else
+			{
+				iNextCtrHeight = 12*14; //average height!
+			}
+			bool bForce = (pageHeight + 2*iNextCtrHeight) >= pTmpPage->getAvailableHeight();
+//
+// Note that the HdrFtr Shadows are created BEFORE the columns are placed
+// on the page.
+//
+
+			if (m_bForceNewPage || bForce)
+			{
+				if (pTmpPage->getNext())
+				{
+					pPage = pTmpPage->getNext();
+				}
+				else
+				{
+					pPage = m_pLayout->addNewPage(this);
+				}
+			}
+			else
+			{
+				pPage = pTmpPage;
+				if(prevContainer == NULL)
+				{
+					pAfterColumn = pPage->getNthColumnLeader(pPage->countColumnLeaders()-1);
+				}
+				else
+				{
+					pAfterColumn = static_cast<fp_Column *>(prevContainer->getContainer())->getLeader();
+				}
+			}
 		}
 		else
 		{
@@ -1696,21 +1757,6 @@ fp_Container* fl_DocSectionLayout::getNewContainer(fp_Container * pFirstContaine
 
 		pTmpCol = pTmpCol->getFollower();
 		i++;
-	}
-
-	// Check if a frame needs to be inserted on this page
-	if (m_pLayout->isLayoutFilling())
-	{
-	    fp_FrameContainer * pFrame = m_pLayout->findFramesToBeInserted(pPage);
-	    while(pFrame)
-	    {
-		if (pPage->findFrameContainer(pFrame) < 0)
-		{
-		    pPage->insertFrameContainer(pFrame);
-		}
-		m_pLayout->removeFramesToBeInserted(pFrame);
-		pFrame = m_pLayout->findFramesToBeInserted(pPage);
-	    }
 	}
 
 	return pLeaderColumn;
@@ -1830,7 +1876,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	// FIXME!! Do extensive tests to see if we can remove this line!
 	//
 	bDoFull = true;
-	UT_DEBUGMSG(("Doing DocSection Update layout (section %p)\n",this));
+	xxx_UT_DEBUGMSG(("Doing DocSection Update layout \n"));
 	if (!bDoFull || (m_vecFormatLayout.getItemCount() > 0))
 	{
 	        UT_sint32 i =0;
@@ -1902,33 +1948,7 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	m_vecFormatLayout.clear();
 	if(needsSectionBreak() && !getDocument()->isDontImmediateLayout() )
 	{
-	    if (getPrev())
-	    {
-		// Verify that the current section starts after the end of the previous section
-		fp_Container * pFirstCon = getFirstContainer();
-		fp_Container * pPrevLastCon = getPrev()->getLastContainer();
-		fp_Page * pFirstPage = NULL;
-		fp_Page * pPrevLastPage = NULL;
-		if (pFirstCon && pPrevLastCon)
-		{
-		    pFirstPage = pFirstCon->getPage();
-		    pPrevLastPage = pPrevLastCon->getPage();
-		    if (pFirstPage && pPrevLastPage && 
-			(pFirstPage->getPageNumber() < pPrevLastPage->getPageNumber()))
-		    {
-			// The previous section ends on a page farther in the document than the present section
-			// first page. We reformat completely the section
-			// TODO: a better method would be to create one new page and move the present section
-			//       first page columns to that new page. Then insert the page at the correct place 
-			//       in the page list. If the section starts with a page break, there would not be any 
-			//       other changes necessary to the document.
-			collapse();
-			format();
-			return;
-		    }
-		}
-	    }
-	    m_ColumnBreaker.breakSection();
+		m_ColumnBreaker.breakSection();
 //		UT_ASSERT(!needsSectionBreak());
 	}
 	if(needsRebuild() && !getDocument()->isDontImmediateLayout() )
@@ -2393,6 +2413,7 @@ void fl_DocSectionLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_pGraphicImage = FG_Graphic::createFromStrux(this);
 	}
 	setPaperColor();
+	m_bForceNewPage = false;
 }
 
 UT_sint32 fl_DocSectionLayout::getTopMargin(void) const
@@ -2546,7 +2567,7 @@ void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_ContainerLayout * pTL)
 	{
 		return;
 	}
-	if(!m_pLayout || m_pLayout->isLayoutDeleting())
+	if(getDocLayout()->isLayoutDeleting())
 	{
 	        return;
 	}

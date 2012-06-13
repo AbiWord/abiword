@@ -271,14 +271,9 @@ static const gchar *
 guess_category_value (const gchar *categoryname)
 {
 	const gchar *retval;
-	
-	/* Let's check passed category.  */
-	retval = g_getenv (categoryname);
-	if (retval != NULL && retval[0] != '\0')
-		return retval;
-	
-	/* The highest priority value after passed category is the `LANGUAGE' 
-	environment variable.  This is a GNU extension.  */
+
+	/* The highest priority value is the `LANGUAGE' environment
+		 variable.  This is a GNU extension.  */
 	retval = g_getenv ("LANGUAGE");
 	if (retval != NULL && retval[0] != '\0')
 		return retval;
@@ -292,6 +287,10 @@ guess_category_value (const gchar *categoryname)
 	if (retval != NULL && retval[0] != '\0')
 		return retval;
 
+	/* Next comes the name of the desired category.  */
+	retval = g_getenv (categoryname);
+	if (retval != NULL && retval[0] != '\0')
+		return retval;
 
 	/* Last possibility is the LANG environment variable.  */
 	retval = g_getenv ("LANG");

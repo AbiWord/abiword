@@ -120,6 +120,19 @@ bool FV_View::_isSpaceBefore(PT_DocPosition pos) const
 		return false;
 }
 
+/*!
+  Reverse the direction of the current selection
+  Does so without changing the screen.
+*/
+void FV_View::_swapSelectionOrientation(void)
+{
+	UT_ASSERT(!isSelectionEmpty());
+	_fixInsertionPointCoords();
+	PT_DocPosition curPos = getPoint();
+	UT_ASSERT(curPos != m_Selection.getSelectionAnchor());
+	_setPoint(m_Selection.getSelectionAnchor());
+	m_Selection.setSelectionAnchor(curPos);
+}
 
 /*!
   Move point to requested end of selection and clear selection
@@ -139,7 +152,7 @@ void FV_View::_moveToSelectionEnd(bool bForward)
 
 	if (bForward != bForwardSelection)
 	{
-		swapSelectionOrientation();
+		_swapSelectionOrientation();
 	}
 
 	_clearSelection();
@@ -1585,7 +1598,7 @@ void FV_View::_insertSectionBreak(void)
 /*!
  * Return the next line in the document.
  */
-fp_Line * FV_View::_getNextLineInDoc(fp_Container * pCon) const
+fp_Line * FV_View::_getNextLineInDoc(fp_Container * pCon)
 {
 	fp_ContainerObject * pNext = NULL;
 	fl_ContainerLayout * pCL = NULL;

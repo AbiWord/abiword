@@ -474,17 +474,11 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	label_button_with_abi_pixmap(m_wLineRight, "tb_LineRight_xpm");
 	label_button_with_abi_pixmap(m_wLineBottom, "tb_LineBottom_xpm");
 	
-	// set button states
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineTop), getTopToggled());  
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineLeft), getLeftToggled());  
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineRight), getRightToggled());  
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineBottom), getBottomToggled());  
-	
 	m_wPreviewArea = GTK_WIDGET(gtk_builder_get_object(builder, "daPreview"));
 	
 	// set the dialog title
 	ConstructWindowName();
-	abiDialogSetTitle(window, "%s", m_WindowName);
+	abiDialogSetTitle(window, m_WindowName);
 	
 	// disable double buffering on our preview
 	gtk_widget_set_double_buffered(m_wPreviewArea, FALSE); 	
@@ -517,7 +511,6 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wWrapButton),TRUE);
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTextWrapState")), pSS, AP_STRING_ID_DLG_FormatFrame_TextWrapping);
-	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btTextWrapState")), pSS, AP_STRING_ID_DLG_FormatFrame_SetTextWrapping);
 
 //	add the buttons for background image to the dialog.
 
@@ -537,17 +530,16 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 // Now the Border Thickness Option menu
 // 
 	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
-	GtkComboBox* combo = GTK_COMBO_BOX(m_wBorderThickness);
-	XAP_makeGtkComboBoxText(combo, G_TYPE_NONE);
+	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(m_wBorderThickness);
 	// TODO WTF is this hardcoded. 
-	XAP_appendComboBoxText(combo, "1/2 pt");
-	XAP_appendComboBoxText(combo, "3/4 pt");
-	XAP_appendComboBoxText(combo, "1 pt");
-	XAP_appendComboBoxText(combo, "1 1/2 pt");
-	XAP_appendComboBoxText(combo, "2 1/4 pt");
-	XAP_appendComboBoxText(combo, "3 pt");
-	XAP_appendComboBoxText(combo, "4 1/2 pt");
-	XAP_appendComboBoxText(combo, "6 pt");
+	gtk_combo_box_text_append_text(combo, "1/2 pt");
+	gtk_combo_box_text_append_text(combo, "3/4 pt");
+	gtk_combo_box_text_append_text(combo, "1 pt");
+	gtk_combo_box_text_append_text(combo, "1 1/2 pt");
+	gtk_combo_box_text_append_text(combo, "2 1/4 pt");
+	gtk_combo_box_text_append_text(combo, "3 pt");
+	gtk_combo_box_text_append_text(combo, "4 1/2 pt");
+	gtk_combo_box_text_append_text(combo, "6 pt");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 	
 	// add the apply and ok buttons to the dialog

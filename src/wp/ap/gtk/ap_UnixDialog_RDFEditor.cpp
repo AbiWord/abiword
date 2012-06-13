@@ -25,10 +25,6 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "GTKCommon.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -182,6 +178,7 @@ AP_UnixDialog_RDFEditor::AP_UnixDialog_RDFEditor( XAP_DialogFactory *pDlgFactory
     , m_wDialog 	   (0)
     , m_btClose 	   (0)
     , m_btShowAll      (0)
+    , m_query          (0)
     , m_resultsView    (0)
 	, m_resultsModel   (0)
     , m_status         (0)
@@ -494,12 +491,9 @@ AP_UnixDialog_RDFEditor::setStatus( const std::string& msg )
 * Build dialog.
 */
 void 
-AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/) 
+AP_UnixDialog_RDFEditor::constuctWindow (XAP_Frame * /*pFrame*/) 
 {
-	UT_DEBUGMSG (("MIQ: _constructWindow ()\n"));		
-
-	const XAP_StringSet *pSS = m_pApp->getStringSet();
-	std::string text;
+	UT_DEBUGMSG (("MIQ: constuctWindow ()\n"));		
 
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
@@ -512,7 +506,9 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_RDFEditor"));
 	m_btClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
     m_btShowAll = GTK_WIDGET(gtk_builder_get_object(builder, "btShowAll"));
+    m_query     = GTK_WIDGET(gtk_builder_get_object(builder, "query"));
 	m_resultsView   = GTK_TREE_VIEW(gtk_builder_get_object(builder, "resultsView"));
+//	m_resultsModel  = GTK_LIST_STORE(gtk_builder_get_object(builder, "resultsModel"));
     m_status        = GTK_WIDGET(gtk_builder_get_object(builder, "status"));
     m_anewtriple    = GTK_ACTION(gtk_builder_get_object(builder, "anewtriple"));
     m_acopytriple   = GTK_ACTION(gtk_builder_get_object(builder, "acopytriple"));
@@ -522,20 +518,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     m_selectedxmlid = GTK_COMBO_BOX(gtk_builder_get_object(builder, "selectedxmlid"));
     m_restrictxmlidhidew = GTK_WIDGET(gtk_builder_get_object(builder, "restrictxmlidhidew"));
 
-    // localization
-    localizeMenuItem(GTK_WIDGET(gtk_builder_get_object(builder, "filemenuitem")), pSS, AP_STRING_ID_DLG_RDF_Editor_Menu_File);
-    localizeMenuItem(GTK_WIDGET(gtk_builder_get_object(builder, "editmenuitem")), pSS, AP_STRING_ID_DLG_RDF_Editor_Menu_Triple);
-    localizeButton(m_btShowAll, pSS, AP_STRING_ID_DLG_RDF_Editor_ShowAll);
-    localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbRestrict")), pSS, AP_STRING_ID_DLG_RDF_Editor_Restrict);
-
-    // add three dots to menu items raising a dialog
-    text = gtk_action_get_label(m_aimportrdfxml);
-    text += "...";
-    gtk_action_set_label(m_aimportrdfxml, text.c_str());
-    text = gtk_action_get_label(m_aexportrdfxml);
-    text += "...";
-    gtk_action_set_label(m_aexportrdfxml, text.c_str());
-
+    
     GObject *selection;
     selection = G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_resultsView)));
     gtk_tree_selection_set_mode (GTK_TREE_SELECTION (selection), GTK_SELECTION_MULTIPLE);
@@ -555,8 +538,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
                            (gpointer)this, 0, GConnectFlags(0));
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Subject, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( "Subject", ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
@@ -568,8 +550,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
                            (gpointer)this, 0, GConnectFlags(0));
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Predicate, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( "Predicate", ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
@@ -581,8 +562,7 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
     g_signal_connect_data( G_OBJECT( ren ), "edited",
                            G_CALLBACK (cell_edited_cb),
                            (gpointer)this, 0, GConnectFlags(0));
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Object, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( "Object", ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
@@ -609,47 +589,38 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
             std::set< std::string > xmlids;
             rdf->addRelevantIDsForPosition( xmlids, point );
 
-            bool combined = false; 
             std::stringstream combinedxmlidss;
             for( std::set< std::string >::const_iterator iter = xmlids.begin();
                  iter != xmlids.end(); ++iter )
             {
                 if( iter != xmlids.begin() )
-                {
                     combinedxmlidss << ",";
-                    combined = true;
-                }
                 combinedxmlidss << *iter;
             }
             XAP_appendComboBoxTextAndInt( m_selectedxmlid, combinedxmlidss.str().c_str(), 0 );
             setRestrictedXMLID( combinedxmlidss.str() );
             
-            if (combined)
+            int idx = 1;
+            for( std::set< std::string >::const_iterator iter = xmlids.begin();
+                 iter != xmlids.end(); ++iter, ++idx )
             {
-                int idx = 1;
-                for( std::set< std::string >::const_iterator iter = xmlids.begin();
-                     iter != xmlids.end(); ++iter, ++idx )
-                {
-                    XAP_appendComboBoxTextAndInt( m_selectedxmlid, iter->c_str(), idx );
-                }
-
-                gtk_combo_box_set_active( m_selectedxmlid, 0 );
-        
-                // std::list< std::string > xmlids;
-                // getRDF()->addRelevantIDsForPosition( xmlids, getView()->getPoint() );
-                // UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, have restricted xmlids size:%d\n", xmlids.size() ));
-                // if( !xmlids.empty() )
-                // {
-                //     setRestrictedXMLID( xmlids.front() );
-                // }
-                
-                g_signal_connect(G_OBJECT(m_selectedxmlid),
-                                 "changed",
-                                 G_CALLBACK(s_OnXMLIDChanged),
-                                 (gpointer) this);
+                XAP_appendComboBoxTextAndInt( m_selectedxmlid, iter->c_str(), idx );
             }
-            else gtk_container_remove(GTK_CONTAINER(gtk_builder_get_object(builder, "topvbox")),  m_restrictxmlidhidew);
         }
+        gtk_combo_box_set_active( m_selectedxmlid, 0 );
+        
+        // std::list< std::string > xmlids;
+        // getRDF()->addRelevantIDsForPosition( xmlids, getView()->getPoint() );
+        // UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, have restricted xmlids size:%d\n", xmlids.size() ));
+        // if( !xmlids.empty() )
+        // {
+        //     setRestrictedXMLID( xmlids.front() );
+        // }
+        
+        g_signal_connect(G_OBJECT(m_selectedxmlid),
+                         "changed",
+                         G_CALLBACK(s_OnXMLIDChanged),
+                         (gpointer) this);
     }
     
     
@@ -675,11 +646,6 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 	g_signal_connect (m_resultsView, "cursor-changed",
 					  G_CALLBACK (AP_UnixDialog_RDFEditor__onCursorChanged), static_cast <gpointer>(this));
 
-#ifndef WITH_REDLAND
-	gtk_action_set_sensitive(m_aimportrdfxml, FALSE);  
-	gtk_action_set_sensitive(m_aexportrdfxml, FALSE);  
-#endif
-
 	g_object_unref(G_OBJECT(builder));
 }
 
@@ -687,9 +653,9 @@ AP_UnixDialog_RDFEditor::_constructWindow (XAP_Frame * /*pFrame*/)
 * Update dialog's data.
 */
 void 
-AP_UnixDialog_RDFEditor::_updateWindow ()
+AP_UnixDialog_RDFEditor::updateWindow ()
 {
-    UT_DEBUGMSG(("RDFEditor::_updateWindow()\n"));
+    UT_DEBUGMSG(("RDFEditor::updateWindow()\n"));
 	ConstructWindowName ();
 	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName.c_str() );
 }
@@ -698,9 +664,9 @@ void
 AP_UnixDialog_RDFEditor::runModeless (XAP_Frame * pFrame)
 {
 	UT_DEBUGMSG (("MIQ: runModeless ()\n"));
-	_constructWindow (pFrame);
+	constuctWindow (pFrame);
 	UT_ASSERT (m_wDialog);
-	_updateWindow ();
+	updateWindow ();
 	abiSetupModelessDialog (GTK_DIALOG (m_wDialog), pFrame, this, GTK_RESPONSE_CLOSE);
     showAllRDF();
 	gtk_widget_show_all (m_wDialog);
@@ -712,7 +678,7 @@ AP_UnixDialog_RDFEditor::notifyActiveFrame (XAP_Frame * /*pFrame*/)
 {
 	UT_DEBUGMSG (("MIQ: notifyActiveFrame ()\n"));
 	UT_ASSERT (m_wDialog);
-	_updateWindow ();
+	updateWindow ();
 }
 
 void 
@@ -720,7 +686,7 @@ AP_UnixDialog_RDFEditor::activate (void)
 {
 	UT_ASSERT (m_wDialog);
 	UT_DEBUGMSG (("MIQ: AP_UnixDialog_RDFEditor::activate ()\n"));
-	_updateWindow ();
+	updateWindow ();
 	gtk_window_present (GTK_WINDOW (m_wDialog));
 }
 

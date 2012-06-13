@@ -29,7 +29,6 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
-#include "xap_GtkSignalBlocker.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixApp.h"
@@ -42,22 +41,6 @@
 
 #include "GTKCommon.h"
 
-
-static void AP_UnixDialog_Goto__onSwitchPage (GtkNotebook *notebook,
-											  gpointer Page,
-											  guint page,
-											  gpointer data)
-{
-	UT_UNUSED(notebook);
-	UT_UNUSED(Page);
-	UT_DEBUGMSG(("_onSwitchPage() '%d'\n", page));
-
-	if (page == 0)
-	{
-		AP_UnixDialog_Goto *dlg = static_cast<AP_UnixDialog_Goto *>(data);
-		dlg->updatePosition();
-	}
-}
 
 /*!
 * Event dispatcher for spinbutton "page".
@@ -273,12 +256,9 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
 									   XAP_Dialog_Id 	 id)
 	: AP_Dialog_Goto   (pDlgFactory, id), 
 	  m_wDialog 	   (NULL),
-	  m_nbNotebook	   (NULL),
 	  m_lbPage		   (NULL),
 	  m_lbLine		   (NULL),
 	  m_lbBookmarks    (NULL),
-	  m_lbXMLids	   (NULL),
-	  m_lbAnnotations  (NULL),
 	  m_sbPage		   (NULL),
 	  m_sbLine		   (NULL),
 	  m_lvBookmarks	   (NULL),
@@ -288,8 +268,6 @@ AP_UnixDialog_Goto::AP_UnixDialog_Goto(XAP_DialogFactory *pDlgFactory,
       m_lvXMLIDs       (0),
       m_lvAnno         (0),
 	  m_btClose 	   (NULL), 
-	  m_iPageConnect (0),
-	  m_iLineConnect (0),
 	  m_JumpTarget	   (AP_JUMPTARGET_BOOKMARK)
 {
 }
@@ -331,9 +309,6 @@ AP_UnixDialog_Goto::onLineChanged ()
 	if (line > m_DocCount.line) {
 		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), 1);
 	}
-	if (line == 0) {
-		gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), m_DocCount.line);
-	}
 	onJumpClicked();
 }
 
@@ -365,17 +340,14 @@ AP_UnixDialog_Goto::onAnnoDblClicked ()
 void 
 AP_UnixDialog_Goto::onJumpClicked () 
 {
-    std::string text;
-    XAP_GtkSignalBlocker b(G_OBJECT(m_sbLine), m_iLineConnect);
+    std::string text = "";
 
 	switch (m_JumpTarget) {
 		case AP_JUMPTARGET_PAGE:
-			gtk_spin_button_set_value(GTK_SPIN_BUTTON(m_sbLine), 0);
 			text = tostr(GTK_ENTRY (m_sbPage));
 			break;
 		case AP_JUMPTARGET_LINE:
 			text = tostr(GTK_ENTRY (m_sbLine));
-			if (text == "0") return;
 			break;
 		case AP_JUMPTARGET_BOOKMARK:
 			text = _getSelectedBookmarkLabel ();
@@ -501,19 +473,6 @@ AP_UnixDialog_Goto::updateDocCount ()
 	UT_DEBUGMSG (("ROB: updateCache () page='%d' line='%d'\n", m_DocCount.page, m_DocCount.line));
 }
 
-void AP_UnixDialog_Goto::updatePosition (void)
-{
-	// pages, page increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
-	UT_uint32 currentPage = getView()->getCurrentPageNumForStatusBar ();
-	XAP_GtkSignalBlocker b1(G_OBJECT(m_sbPage), m_iPageConnect);
-	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), currentPage);
-
-	// lines, line increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
-	UT_uint32 currentLine = 0; /* FIXME get current line */
-	XAP_GtkSignalBlocker b2(G_OBJECT(m_sbLine), m_iLineConnect);
-	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), currentLine);
-}
-
 void
 AP_UnixDialog_Goto::setupXMLIDList( GtkWidget* w )
 {
@@ -551,16 +510,9 @@ AP_UnixDialog_Goto::setupAnnotationList( GtkWidget* w )
 	gtk_tree_view_set_model (GTK_TREE_VIEW (w), GTK_TREE_MODEL (store));
 	g_object_unref (G_OBJECT (store));
 
-	// localization
-	const XAP_StringSet * pSS = m_pApp->getStringSet ();
-	std::string id, title, author;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Column_ID, id);
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Column_Title, title);
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Column_Author, author);
-
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
-												-1, id.c_str(), renderer,
+												-1, "ID", renderer,
 												"text", COLUMN_ANNO_ID,
 												NULL);
 	column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), COLUMN_ANNO_ID );
@@ -568,7 +520,7 @@ AP_UnixDialog_Goto::setupAnnotationList( GtkWidget* w )
 
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
-												-1, title.c_str(), renderer,
+												-1, "Title", renderer,
 												"text", COLUMN_ANNO_TITLE,
 												NULL);
 	column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), COLUMN_ANNO_TITLE );
@@ -577,7 +529,7 @@ AP_UnixDialog_Goto::setupAnnotationList( GtkWidget* w )
 
 	renderer = gtk_cell_renderer_text_new ();
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (w),
-												-1, author.c_str(), renderer,
+												-1, "Author", renderer,
 												"text", COLUMN_ANNO_AUTHOR,
 												NULL);
 	column = gtk_tree_view_get_column (GTK_TREE_VIEW (w), COLUMN_ANNO_AUTHOR );
@@ -596,9 +548,9 @@ AP_UnixDialog_Goto::setupAnnotationList( GtkWidget* w )
 * Build dialog.
 */
 void 
-AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/) 
+AP_UnixDialog_Goto::constuctWindow (XAP_Frame * /*pFrame*/) 
 {
-	UT_DEBUGMSG (("ROB: _constructWindow ()\n"));		
+	UT_DEBUGMSG (("ROB: constuctWindow ()\n"));		
 
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
@@ -608,12 +560,9 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 #endif
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Goto"));
-	m_nbNotebook = GTK_WIDGET(gtk_builder_get_object(builder, "nbNotebook"));
 	m_lbPage = GTK_WIDGET(gtk_builder_get_object(builder, "lbPage"));
 	m_lbLine = GTK_WIDGET(gtk_builder_get_object(builder, "lbLine"));
 	m_lbBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lbBookmarks"));
-	m_lbXMLids = GTK_WIDGET(gtk_builder_get_object(builder, "lbXMLids"));
-	m_lbAnnotations = GTK_WIDGET(gtk_builder_get_object(builder, "lbAnnotations"));
 	m_sbPage = GTK_WIDGET(gtk_builder_get_object(builder, "sbPage"));
 	m_sbLine = GTK_WIDGET(gtk_builder_get_object(builder, "sbLine"));
 	m_lvBookmarks = GTK_WIDGET(gtk_builder_get_object(builder, "lvBookmarks"));
@@ -626,8 +575,7 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 
 
 	// localise	
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbPosition")), pSS, AP_STRING_ID_DLG_Goto_Label_Position);
+	// const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	/* FIXME jump targets localised in xp land, make sure they work for non ascii characters */
 	const gchar **targets = getJumpTargets ();
 	const gchar *text = NULL;
@@ -637,10 +585,6 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 		gtk_label_set_text (GTK_LABEL (m_lbLine), text);
 	if ((text = targets[AP_JUMPTARGET_BOOKMARK]) != NULL)
 		gtk_label_set_text (GTK_LABEL (m_lbBookmarks), text);
-	if ((text = targets[AP_JUMPTARGET_XMLID]) != NULL)
-		gtk_label_set_text (GTK_LABEL (m_lbXMLids), text);
-	if ((text = targets[AP_JUMPTARGET_ANNOTATION]) != NULL)
-		gtk_label_set_text (GTK_LABEL (m_lbAnnotations), text);
 
 
     setupXMLIDList( m_lvXMLIDs );
@@ -662,16 +606,14 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 	gtk_tree_view_column_set_sort_column_id (column, COLUMN_NAME);
 
 	// Signals
-	g_signal_connect (GTK_NOTEBOOK (m_nbNotebook), "switch-page", 
-					  G_CALLBACK (AP_UnixDialog_Goto__onSwitchPage), static_cast <gpointer>(this)); 
 	g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "focus-in-event", 
 					  G_CALLBACK (AP_UnixDialog_Goto__onFocusPage), static_cast <gpointer>(this)); 
-	m_iPageConnect = g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "value-changed",
+	g_signal_connect (GTK_SPIN_BUTTON (m_sbPage), "value-changed", 
 					  G_CALLBACK (AP_UnixDialog_Goto__onPageChanged), static_cast <gpointer>(this)); 
 
 	g_signal_connect (GTK_SPIN_BUTTON (m_sbLine), "focus-in-event", 
 					  G_CALLBACK (AP_UnixDialog_Goto__onFocusLine), static_cast <gpointer>(this)); 
-	m_iLineConnect = g_signal_connect (GTK_SPIN_BUTTON (m_sbLine), "value-changed",
+	g_signal_connect (GTK_SPIN_BUTTON (m_sbLine), "value-changed", 
 					  G_CALLBACK (AP_UnixDialog_Goto__onLineChanged), static_cast <gpointer>(this)); 
 
 	g_signal_connect (GTK_TREE_VIEW (m_lvBookmarks), "focus-in-event", 
@@ -698,16 +640,21 @@ AP_UnixDialog_Goto::_constructWindow (XAP_Frame * /*pFrame*/)
 * Update dialog's data.
 */
 void 
-AP_UnixDialog_Goto::_updateWindow ()
+AP_UnixDialog_Goto::updateWindow ()
 {
-	UT_DEBUGMSG (("ROB: _updateWindow () #bookmarks='%d', mapped='%d'\n", getExistingBookmarksCount(), gtk_widget_get_mapped(m_wDialog)));
+	UT_DEBUGMSG (("ROB: updateWindow () #bookmarks='%d', mapped='%d'\n", getExistingBookmarksCount(), gtk_widget_get_mapped(m_wDialog)));
 
 	ConstructWindowName ();
 	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName);
 
-	// position: pages and lines
-	updatePosition();
+	// pages, page increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
+	UT_uint32 currentPage = getView()->getCurrentPageNumForStatusBar ();
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPage), currentPage);
 
+	// lines, line increment of 10 is pretty arbitrary (set in the GtkBuilder UI file)
+	UT_uint32 currentLine = 1; /* FIXME get current line */
+	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbLine), currentLine);
+	
 	// bookmarks, detaching model for faster updates
 	GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (m_lvBookmarks));
 	g_object_ref (G_OBJECT (model));
@@ -807,9 +754,9 @@ void
 AP_UnixDialog_Goto::runModeless (XAP_Frame * pFrame)
 {
 	UT_DEBUGMSG (("ROB: runModeless ()\n"));
-	_constructWindow (pFrame);
+	constuctWindow (pFrame);
 	UT_ASSERT (m_wDialog);
-	_updateWindow ();
+	updateWindow ();
 	abiSetupModelessDialog (GTK_DIALOG (m_wDialog), pFrame, this, GTK_RESPONSE_CLOSE);
 	gtk_widget_show_all (m_wDialog);
 	gtk_window_present (GTK_WINDOW (m_wDialog));
@@ -821,7 +768,7 @@ AP_UnixDialog_Goto::notifyActiveFrame (XAP_Frame * /*pFrame*/)
 	UT_DEBUGMSG (("ROB: notifyActiveFrame ()\n"));
 	UT_ASSERT (m_wDialog);
 
-	_updateWindow ();
+	updateWindow ();
 	/* default to page */
 	m_JumpTarget = AP_JUMPTARGET_PAGE;
 }
@@ -831,7 +778,7 @@ AP_UnixDialog_Goto::activate (void)
 {
 	UT_ASSERT (m_wDialog);
 	UT_DEBUGMSG (("ROB: AP_UnixDialog_Goto::activate ()\n"));
-	_updateWindow ();
+	updateWindow ();
 	gtk_window_present (GTK_WINDOW (m_wDialog));
 }
 

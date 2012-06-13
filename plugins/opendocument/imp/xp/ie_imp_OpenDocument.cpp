@@ -442,10 +442,7 @@ UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInput* pInput,
 {
     UT_return_val_if_fail(pInput, UT_ERROR);
 #ifndef WITH_REDLAND
-    UT_UNUSED(pStream);
-    UT_UNUSED(args);
-
-    return UT_OK;
+    return(UT_OK);
 #else
     
     int sz = gsf_input_size (pInput);

@@ -46,8 +46,6 @@ const char * AP_Dialog_Goto::s_pJumpTargets[] = {
 	NULL,
 	NULL,
 //	"Picture",  TODO
-	NULL,
-	NULL,
 	NULL
 };
 
@@ -73,8 +71,6 @@ void AP_Dialog_Goto::_setupJumpTargets(void)
     s_pJumpTargets[1] = ::g_strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Line));
     s_pJumpTargets[2] = ::g_strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Bookmark));
     //s_pJumpTargets[2] = ::g_strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Picture)); //TODO
-    s_pJumpTargets[3] = ::g_strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_XMLid));    
-    s_pJumpTargets[4] = ::g_strdup(pSS->getValue (AP_STRING_ID_DLG_Goto_Target_Annotation));    
 
 }
 
@@ -94,12 +90,13 @@ void AP_Dialog_Goto::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	gchar * tmp = NULL;
+	UT_uint32 title_width = 33;
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Goto_Title, s);
 	
 	UT_XML_cloneNoAmpersands(tmp, s.c_str());
-	BuildWindowName(m_WindowName, tmp, sizeof(m_WindowName));
+	BuildWindowName(m_WindowName, tmp, title_width);
 	FREEP(tmp);
 }							
 

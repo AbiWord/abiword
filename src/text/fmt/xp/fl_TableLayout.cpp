@@ -1617,6 +1617,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	s_border_properties (pszBorderColor, pszBorderStyle, pszBorderWidth, pszColor, m_lineTop);
 
+
 	/* table fill
 	 */
 	m_background.reset ();
@@ -1630,6 +1631,8 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty ("background-color", pszBackgroundColor);
 	
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
+
+
 }
 
 void fl_TableLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
@@ -2915,9 +2918,7 @@ static void s_background_properties (const char * pszBgStyle, const char * pszBg
 			{
 				background.m_t_background = PP_PropertyMap::background_type (pszBgColor);
 				if (background.m_t_background == PP_PropertyMap::background_solid)
-				{
 					UT_parseColor (pszBgColor, background.m_color);
-				}
 			}
 		}
 	}

@@ -116,8 +116,9 @@ void AP_Dialog_FormatTable::ConstructWindowName(void)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	gchar * tmp = NULL;
+	UT_uint32 title_width = 26;
 	UT_XML_cloneNoAmpersands(tmp, pSS->getValue(AP_STRING_ID_DLG_FormatTableTitle));
-	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),sizeof(m_WindowName));
+	BuildWindowName(static_cast<char *>(m_WindowName),static_cast<char*>(tmp),title_width);
 	FREEP(tmp);
 }
 
@@ -342,7 +343,7 @@ void AP_Dialog_FormatTable::setAllSensitivities(void)
 	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
 	if (frame) {
 		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
-		setSensitivity(pView->isInTable(pView->getPoint()));
+		setSensitivity(pView->isInTable());
 	}
 	else {
 		setSensitivity(false);
@@ -355,40 +356,34 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	if (frame) {
 		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
 
-		if (m_bSettingsChanged || m_iOldPos == pView->getPoint()) 
-		{
-		    //comparing the actual cell pos would be even better; but who cares :)
-		    return;
-		}
+		if (m_bSettingsChanged || 
+			m_iOldPos == pView->getPoint()) // comparing the actual cell pos would be even better; but who cares :)
+			return;
 		
 		m_iOldPos = pView->getPoint();
-		PT_DocPosition pos = 0;pView->getPoint();
-		if (pView->getSelectionAnchor() > pView->getPoint())
-		{
-		    pos = pView->getPoint() + 2;
-		}
+
 		/*
 		 * update the border colors
 		 */
 		
 		gchar * color = NULL;
 		
-		if (pView->getCellProperty(pos, "left-color", color))
+		if (pView->getCellProperty("left-color", color))
 			m_vecProps.addOrReplaceProp("left-color", color);
 		else
 			m_vecProps.removeProp("left-color");
 
-		if (pView->getCellProperty(pos, "right-color", color))
+		if (pView->getCellProperty("right-color", color))
 			m_vecProps.addOrReplaceProp("right-color", color);
 		else
 			m_vecProps.removeProp("right-color");
 
-		if (pView->getCellProperty(pos, "top-color", color))
+		if (pView->getCellProperty("top-color", color))
 			m_vecProps.addOrReplaceProp("top-color", color);
 		else
 			m_vecProps.removeProp("top-color");
 		
-		if (pView->getCellProperty(pos, "bot-color", color))
+		if (pView->getCellProperty("bot-color", color))
 			m_vecProps.addOrReplaceProp("bot-color", color);
 		else
 			m_vecProps.removeProp("bot-color");
@@ -399,7 +394,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 		UT_RGBColor clr;
 		gchar * bgColor = NULL;
-		if (pView->getCellProperty(pos, "background-color", bgColor))
+		if (pView->getCellProperty("background-color", bgColor))
 		{
 			m_vecProps.addOrReplaceProp("background-color", bgColor);
 			clr.setColor(bgColor);

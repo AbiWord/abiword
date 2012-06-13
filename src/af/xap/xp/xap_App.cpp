@@ -24,7 +24,6 @@
 #include <signal.h>
 #include <string.h>
 #include <time.h>
-#include <memory>
 
 #include <glib.h>
 #include <gsf/gsf-utils.h>
@@ -792,12 +791,12 @@ XAP_Frame * XAP_App::getFrame(UT_sint32 ndx) const
 	return pFrame;
 }
 	
-UT_sint32 XAP_App::findFrame(XAP_Frame * pFrame) const
+UT_sint32 XAP_App::findFrame(XAP_Frame * pFrame)
 {
 	return m_vecFrames.findItem(pFrame);
 }
 	
-UT_sint32 XAP_App::findFrame(const char * szFilename) const
+UT_sint32 XAP_App::findFrame(const char * szFilename)
 {
 	if (!szFilename || !*szFilename)
 		return -1;
@@ -821,14 +820,6 @@ void XAP_App::_setAbiSuiteLibDir(const char * sz)
 {
 	FREEP(m_szAbiSuiteLibDir);
 	m_szAbiSuiteLibDir = g_strdup(sz);
-}
-
-// This should be removed at some time.
-void XAP_App::migrate (const char *oldName, const char *newName, const char *path) const
-{
-	UT_UNUSED(oldName);
-	UT_UNUSED(newName);
-	UT_UNUSED(path);
 }
 
 const char * XAP_App::getAbiSuiteLibDir() const
@@ -1203,7 +1194,7 @@ void XAP_App::setKbdLanguage(const char * pszLang)
 	}
 }
 
-void XAP_App::enumerateFrames(UT_Vector & v) const
+void XAP_App::enumerateFrames(UT_Vector & v)
 {
 	for(UT_sint32 i = 0; i < getFrameCount(); ++i)
 	{
@@ -1218,18 +1209,6 @@ void XAP_App::enumerateFrames(UT_Vector & v) const
 	}
 }
 
-std::list< AD_Document* >
-XAP_App::getDocuments( const AD_Document * pExclude ) const
-{
-    UT_Vector t;
-    enumerateDocuments( t, pExclude );
-    std::list< AD_Document* > ret;
-    for( int i=0; i < t.size(); ++i )
-        ret.push_back( (AD_Document*)t[i] );
-    return ret;
-}
-
-
 /*!
     Enumerates currently open document associated with the
     application, excluding document pointed to by pExclude
@@ -1241,7 +1220,7 @@ XAP_App::getDocuments( const AD_Document * pExclude ) const
                     inside a document, it might be desirable to
                     exclude that document)
 */
-void XAP_App::enumerateDocuments(UT_Vector & v, const AD_Document * pExclude) const
+void XAP_App::enumerateDocuments(UT_Vector & v, const AD_Document * pExclude)
 {
 	UT_sint32 iIndx;
 
@@ -1691,14 +1670,5 @@ XAP_App::setNoGUI( bool v )
 {
     setDisableDoubleBuffering(true);
     m_bNoGUI = v;
-}
-
-std::string
-XAP_App::createUUIDString() const
-{
-    std::auto_ptr<UT_UUID> uuido(getUUIDGenerator()->createUUID());
-    std::string ret;
-	uuido->toString(ret);
-    return ret;
 }
 

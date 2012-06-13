@@ -35,9 +35,9 @@
 
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
+#include "ut_vector.h"
 #include "ut_locale.h"
 #include "ut_std_string.h"
-#include "ut_std_vector.h"
 
 // need this to include what Pango considers 'low-level' api
 #define PANGO_ENABLE_ENGINE
@@ -434,9 +434,9 @@ GR_CairoGraphics::~GR_CairoGraphics()
 {
 	xxx_UT_DEBUGMSG(("Deleting UnixPangoGraphics %x \n",this));
 
-	// free m_vSaveRect & m_vSaveRectBuf elements
-	UT_std_vector_purgeall(m_vSaveRect);
-	UT_std_vector_freeall(m_vSaveRectBuf, cairo_surface_destroy);
+	// free m_vSaveRect & m_vSaveRectBuf
+	UT_VECTOR_SPARSEPURGEALL(UT_Rect*, m_vSaveRect);
+	UT_VECTOR_SPARSECLEANUP(cairo_surface_t*, m_vSaveRectBuf, cairo_surface_destroy);
 
 	cairo_destroy(m_cr);
 	m_cr = NULL;
@@ -478,11 +478,8 @@ GR_CairoGraphics::~GR_CairoGraphics()
 	// documents with lots of Math. This fixes those crashes and checks with
 	// valgrind show no measureable increase in leacked memory.
 	// 
-	// Hub: but we still leak and the doc say to unref.
-	if (m_pLayoutFontMap) {
-		g_object_unref(m_pLayoutFontMap);
-		m_pLayoutFontMap = NULL;
-	}
+	m_pLayoutFontMap = NULL;
+
 }
 
 void GR_CairoGraphics::resetFontMapResolution(void)
@@ -2629,6 +2626,7 @@ static const FieldMap *find_field(const FieldMap *fma, size_t n, const char *ele
 	return NULL;
 }
 
+#ifdef XAP_HAVE_GR_findNearestFont
 /* Static 'virtual' function declared in gr_Graphics.h */
 const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -2692,7 +2690,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 
 	return s.utf8_str();
 }
-
+#endif
 
 GR_Font* GR_CairoGraphics::_findFont(const char* pszFontFamily,
 										 const char* pszFontStyle,
@@ -2712,12 +2710,14 @@ GR_Font* GR_CairoGraphics::_findFont(const char* pszFontFamily,
 	const char * pWeight = pszFontWeight;
 	const char * pStretch = pszFontStretch;
 
-#ifdef WITH_STANDARD_SYMBOLS_L 
-	if(pszFontFamily && !strcmp(pszFontFamily, "Symbol"))
-	{
-		pszFontFamily = "Standard Symbols L";
-	}
-#endif
+//  This substitution does not seem to be need on my Linux system
+//  and acutally cause problem on Mac with Cairo as it never finds the
+//  font "Standards Symbols L" -- hub
+//
+//	if(pszFontFamily && !strcmp(pszFontFamily, "Symbol"))
+//	{
+//		pszFontFamily = "Standard Symbols L";
+//	}
 	   
 	if(pszFontStyle && *pszFontStyle == 'n')
 		pStyle = "";
@@ -2865,7 +2865,7 @@ const std::vector<std::string> & GR_CairoGraphics::getAllFontNames(void)
 		int n_families;
 		pango_font_map_list_families(fontmap, &font_families, &n_families);
 
-		UT_DEBUGMSG(("@@@@ ===== Loading system fonts n_families: %d =====\n", n_families));
+		UT_DEBUGMSG(("@@@@ ===== Loading system fonts n_families:%ld=====\n", n_families));
 		for(UT_sint32 i = 0; i < n_families; ++i)
 		{
 			const char *family = pango_font_family_get_name(font_families[i]);
@@ -3308,29 +3308,21 @@ void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 
 void GR_CairoGraphics::saveRectangle(UT_Rect &r, UT_uint32 iIndex)
 {
-	if(iIndex >= m_vSaveRect.size())
-		m_vSaveRect.resize(iIndex + 1, NULL);
-	if(iIndex >= m_vSaveRectBuf.size())
-		m_vSaveRectBuf.resize(iIndex + 1, NULL);
-
-	delete m_vSaveRect[iIndex];
-	m_vSaveRect[iIndex] = new UT_Rect(r);
-
+	UT_Rect * oldR = NULL;
 	cairo_save(m_cr);
 	cairo_reset_clip(m_cr);
-
+	m_vSaveRect.setNthItem(iIndex, new UT_Rect(r), &oldR);
+	if(oldR) delete oldR;
 	cairo_rectangle_t cacheRect;
 	cacheRect.x = -static_cast<double>(_tduX(r.left));
 	cacheRect.y = -static_cast<double>(_tduY(r.top ));
 	cacheRect.width  = static_cast<double>(_tduR(r.width ));
 	cacheRect.height = static_cast<double>(_tduR(r.height));
-
 	cairo_surface_flush(cairo_get_target(m_cr));
+	cairo_surface_t* oldC = NULL;
 	cairo_surface_t* newC = _getCairoSurfaceFromContext(m_cr, cacheRect);
-
-	cairo_surface_destroy(m_vSaveRectBuf[iIndex]);
-	m_vSaveRectBuf[iIndex] = newC;
-
+	m_vSaveRectBuf.setNthItem(iIndex, newC, &oldC);
+	cairo_surface_destroy(oldC);
 	cairo_restore(m_cr);
 }
 
@@ -3338,8 +3330,8 @@ void GR_CairoGraphics::restoreRectangle(UT_uint32 iIndex)
 {
 	cairo_save(m_cr);
 	cairo_reset_clip(m_cr);
-	UT_Rect *r = m_vSaveRect[iIndex];
-	cairo_surface_t *s = m_vSaveRectBuf[iIndex];
+	UT_Rect *r = m_vSaveRect.getNthItem(iIndex);
+	cairo_surface_t *s = m_vSaveRectBuf.getNthItem(iIndex);
 	double idx = static_cast<double>(_tduX(r->left)) - 0.5;
 	double idy = static_cast<double>(_tduY(r->top)) - 0.5;
 	cairo_surface_flush(cairo_get_target(m_cr));
@@ -3560,7 +3552,7 @@ PangoCoverage * GR_PangoFont::getPangoCoverage() const
     
     NB: it is essential that this function is fast
 */
-bool GR_PangoFont::doesGlyphExist(UT_UCS4Char g) const
+bool GR_PangoFont::doesGlyphExist(UT_UCS4Char g)
 {
 	UT_return_val_if_fail( m_pf, false );
 
@@ -3845,6 +3837,7 @@ UT_uint32 adobeDingbatsToUnicode(UT_uint32 c)
 		return c;
 }
 
+#ifdef WITH_CAIRO
 void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 										 FontFamilyEnum * pff,
 										 FontPitchEnum * pfp,
@@ -3863,3 +3856,4 @@ void GR_Font::s_getGenericFontProperties(const char * /*szFontName*/,
 	*pfp = FP_Unknown;
 	*pbTrueType = true;
 }
+#endif

@@ -28,16 +28,16 @@
 #include "ut_types.h"
 
 
-/** replacement for UT_UTF8String::escapeXML
+/** replacement for UT_UTF8String::escapeXML 
  *  escapes '<', '>', '\"' and '&' in the current string
  */
 ABI_EXPORT std::string UT_escapeXML(const std::string &);
 
-ABI_EXPORT std::string& UT_std_string_vprintf (std::string & inStr,
+ABI_EXPORT std::string& UT_std_string_vprintf (std::string & inStr, 
                                                const char *format,
                                                va_list      args1)
     ABI_PRINTF_FORMAT(2,0);
-
+ 
 ABI_EXPORT std::string UT_std_string_sprintf(const char * inFormat, ...)
     ABI_PRINTF_FORMAT(1,2);
 
@@ -61,13 +61,6 @@ ABI_EXPORT std::string UT_XML_cloneNoAmpersands( const std::string& szSource );
 ABI_EXPORT std::string UT_std_string_getPropVal(const std::string & sPropertyString, const std::string & sProp);
 ABI_EXPORT void UT_std_string_removeProperty(std::string & sPropertyString, const std::string & sProp);
 ABI_EXPORT void UT_std_string_setProperty(std::string & sPropertyString, const std::string &sProp, const std::string & sVal);
-
-
-ABI_EXPORT const std::string StreamToString( std::istream& iss );
-ABI_EXPORT std::string toTimeString( time_t TT );
-ABI_EXPORT time_t toTime( struct tm *tm );
-ABI_EXPORT time_t parseTimeString( const std::string& stddatestr );
-
 
 
 

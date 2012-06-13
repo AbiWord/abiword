@@ -1,5 +1,3 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
-
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -413,15 +411,9 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 				if (pL && pL->containsForcedPageBreak() && pL->getContainer() 
 				&& (pCurColumn->getPage() == pL->getContainer()->getPage()))
 				{
-					if (pCurColumn->getNext())
-					{
-						pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
-					}
-					else
-					{
-						pCurColumn = static_cast<fp_Column *>(m_pDocSec->getNewContainer(pCurContainer));
-					}
-					continue;
+					  //						pCurColumn->validate();
+				  pCurColumn = static_cast<fp_Column *>(pCurColumn->getNext());
+				  continue;
 				}
 				
 			}

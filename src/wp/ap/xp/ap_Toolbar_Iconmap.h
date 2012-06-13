@@ -25,7 +25,7 @@
 /*****************************************************************/
 /*****************************************************************/
 
-// Mapping sof ID, to default icons
+// Mapping sof ID, to default icons		
 // Mappings to ID_LANG to non-default icons
 // We can do specific mappings for some languages. For example,
 // in Spainsh, some applications use N for Negrita instead of B for Bold
@@ -35,7 +35,7 @@
 
 ///////////////////////////////////////////
 // !!!!
-//
+// 
 // NB: Keep this list alphabetically sorted
 //
 // !!!!!
@@ -173,11 +173,6 @@ toolbariconmap(REVISIONS_NEW,tb_revision_new_xpm)
 toolbariconmap(REVISIONS_SELECT,tb_revision_select_xpm)
 toolbariconmap(REVISIONS_SHOW_FINAL,tb_revision_show_final_xpm)
 toolbariconmap(SCRIPT_PLAY,tb_script_play_xpm)
-toolbariconmap(SEMITEM_EDIT, tb_semitem_edit_xpm)
-toolbariconmap(SEMITEM_NEXT, tb_semitem_next_xpm)
-toolbariconmap(SEMITEM_PREV, tb_semitem_prev_xpm)
-toolbariconmap(SEMITEM_STYLESHEET_APPLY, tb_semitem_stylesheet_apply_xpm)
-toolbariconmap(SEMITEM_THIS, tb_semitem_this_xpm)
 toolbariconmap(SINGLE_SPACE,tb_line_single_space_xpm)
 toolbariconmap(SPELLCHECK,tb_spellcheck_xpm)
 toolbariconmap(SPLIT_CELLS, tb_split_cells_xpm)

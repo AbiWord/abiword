@@ -17,9 +17,8 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">Format Table of Contents</property>
-    <property name="resizable">False</property>
-    <property name="type_hint">dialog</property>
-    <property name="window_position">mouse</property>
+    <property name="window_position">center</property>
+    <property name="type_hint">normal</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
@@ -504,7 +503,7 @@
                             </child>
                             <child>
                               <object class="GtkSpinButton" id="wStartSpin">
-                                <property name="width_request">14</property>
+                                <property name="width_request">11</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">adjustment1</property>
@@ -734,7 +733,7 @@
                             </child>
                             <child>
                               <object class="GtkSpinButton" id="wIndentSpin">
-                                <property name="width_request">14</property>
+                                <property name="width_request">11</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="adjustment">adjustment2</property>

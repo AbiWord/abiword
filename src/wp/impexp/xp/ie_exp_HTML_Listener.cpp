@@ -1007,6 +1007,7 @@ void IE_Exp_HTML_Listener::_closeSpan(void)
         return;
 
     m_bInSpan = false;
+    UT_DEBUGMSG(("CLOSED SPAN\n"));
     m_pCurrentImpl->closeSpan();
     return;
 }
@@ -1119,6 +1120,8 @@ void IE_Exp_HTML_Listener::_openHeading(PT_AttrPropIndex api, size_t level,
 {
     const PP_AttrProp* pAP;
     bool ok;
+
+    m_bInBlock = true;
 
     ok = m_pDocument->getAttrProp(api, &pAP);
     if (!ok) 
@@ -2432,19 +2435,19 @@ void IE_Exp_HTML_Listener::_insertMeta()
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_TITLE, metaProp) 
 									 && metaProp.size())
-        m_pCurrentImpl->insertMeta("title", metaProp, std::string());
+        m_pCurrentImpl->insertMeta("title", metaProp);
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_CREATOR, metaProp) 
 									 && metaProp.size())
-        m_pCurrentImpl->insertMeta("author", metaProp, std::string());
+        m_pCurrentImpl->insertMeta("author", metaProp);
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_KEYWORDS, metaProp) 
 									 && metaProp.size())
-        m_pCurrentImpl->insertMeta("keywords", metaProp, std::string());
+        m_pCurrentImpl->insertMeta("keywords", metaProp);
 
     if (m_pDocument->getMetaDataProp(PD_META_KEY_SUBJECT, metaProp) 
 									 && metaProp.size())
-        m_pCurrentImpl->insertMeta("subject", metaProp, std::string());
+        m_pCurrentImpl->insertMeta("subject", metaProp);
 }
     
 void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)

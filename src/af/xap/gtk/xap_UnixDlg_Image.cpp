@@ -525,16 +525,16 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_wAspectCheck), m_bAspect);
 	
 	m_oHeightSpin_adj = (GtkAdjustment*)gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
-   	gtk_widget_set_size_request(m_wHeightSpin,14,-1);  
+   	gtk_widget_set_size_request(m_wHeightSpin,13,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wHeightSpin), GTK_ADJUSTMENT(m_oHeightSpin_adj));
 	
 	m_oWidthSpin_adj = (GtkAdjustment*)gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
-	gtk_widget_set_size_request(m_wWidthSpin,14,-1);  
+	gtk_widget_set_size_request(m_wWidthSpin,13,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wWidthSpin), GTK_ADJUSTMENT(m_oWidthSpin_adj));
 	
     std::string s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title,s);
-	abiDialogSetTitle(mMainWindow, "%s", s.c_str());
+	abiDialogSetTitle(mMainWindow, s.c_str());
 
     localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescTab")), pSS, XAP_STRING_ID_DLG_Image_DescTabLabel);
     localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbWrapTab")), pSS, XAP_STRING_ID_DLG_Image_WrapTabLabel);
@@ -581,6 +581,11 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_wrbSquareWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap"));
 	m_wrbTightWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap"));
 
+
+// the check button already contains a label. We have to remove this
+// before we can localize it
+
+	gtk_container_remove(GTK_CONTAINER(m_wAspectCheck), gtk_bin_get_child(GTK_BIN(m_wAspectCheck)));
 	pSS->getValueUTF8 (XAP_STRING_ID_DLG_Image_Aspect,s);
 	gtk_button_set_label(GTK_BUTTON(m_wAspectCheck), s.c_str());
 

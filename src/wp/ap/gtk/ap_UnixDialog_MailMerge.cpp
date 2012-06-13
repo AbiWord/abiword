@@ -173,13 +173,13 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MailMerge_MailMergeTitle,s);
-	abiDialogSetTitle(m_windowMain, "%s", s.utf8_str());
+	abiDialogSetTitle(m_windowMain, s.utf8_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFields")), pSS, AP_STRING_ID_DLG_MailMerge_AvailableFields);
 
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFieldName")), pSS, AP_STRING_ID_DLG_MailMerge_Insert);	
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbFieldName")), pSS, AP_STRING_ID_DLG_MailMerge_Insert_No_Colon);	
 
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbOpenFile")), pSS, AP_STRING_ID_DLG_MailMerge_OpenFile);	
 

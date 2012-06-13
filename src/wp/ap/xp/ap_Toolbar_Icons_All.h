@@ -132,12 +132,6 @@
 #	include "tb_revision_find_prev.xpm"
 #	include "tb_revision_find_next.xpm"
 
-#	include "tb_semitem_this.xpm"
-#	include "tb_semitem_next.xpm"
-#	include "tb_semitem_prev.xpm"
-#	include "tb_semitem_edit.xpm"
-#	include "tb_semitem_stylesheet_apply.xpm"
-
 
 	// ... add new icons here (don't forget to add below the #else) ...
 
@@ -310,11 +304,6 @@
 	DefineToolbarIcon(tb_save_as_xpm)
 	DefineToolbarIcon(tb_save_xpm)
 	DefineToolbarIcon(tb_script_play_xpm)
-	DefineToolbarIcon(tb_semitem_edit_xpm)
-	DefineToolbarIcon(tb_semitem_next_xpm)
-	DefineToolbarIcon(tb_semitem_prev_xpm)
-	DefineToolbarIcon(tb_semitem_stylesheet_apply_xpm)
-	DefineToolbarIcon(tb_semitem_this_xpm)
 	DefineToolbarIcon(tb_smiley)
 	DefineToolbarIcon(tb_spellcheck_xpm)
 	DefineToolbarIcon(tb_split_cells_xpm)
@@ -322,7 +311,7 @@
 	DefineToolbarIcon(tb_SplitBelow_xpm)
 	DefineToolbarIcon(tb_SplitHoriMid_xpm)
 	DefineToolbarIcon(tb_SplitLeft_xpm)
-	DefineToolbarIcon(tb_SplitRight_xpm)
+	DefineToolbarIcon(tb_SplitRight_xpm)	
 	DefineToolbarIcon(tb_SplitVertMid_xpm)
 	DefineToolbarIcon(tb_stock_font_xpm)
 	DefineToolbarIcon(tb_stock_paint_xpm)

@@ -270,7 +270,7 @@ void AP_UnixDialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 
 	// Populate the window's data items
 	_populateWindowData();
-	_connectSignals();
+//	_connectSignals(); // last call runs setSensitivity which calls _connectSignals
 	abiSetupModelessDialog(GTK_DIALOG(m_windowMain), pFrame, this, BUTTON_CLOSE);
 	
 	// *** this is how we add the gc for Column Preview ***
@@ -306,14 +306,20 @@ void AP_UnixDialog_Border_Shading::setSensitivity(bool /* bSens */)
 {
 //	UT_DEBUGMSG(("========================= Set the sensitivity \n"));
 
+	if (m_iLineLeftConnect == 0)
+		_connectSignals();// avoids some criticals
+		
+	XAP_GtkSignalBlocker b1(G_OBJECT(m_wLineLeft), m_iLineLeftConnect);
 	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineLeft, getLeftToggled() ? TRUE: FALSE);
-	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineRight, getRightToggled() ? TRUE: FALSE);
-	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineTop, getTopToggled() ? TRUE: FALSE);
-	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineBottom, getBottomToggled() ? TRUE: FALSE);
 
-	gboolean bEnable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wShadingEnable)); 
-	gtk_widget_set_sensitive(m_wShadingColorButton, bEnable);
-	gtk_widget_set_sensitive(m_wShadingOffset, bEnable);
+	XAP_GtkSignalBlocker b2(G_OBJECT(m_wLineRight), m_iLineRightConnect);
+	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineRight, getRightToggled() ? TRUE: FALSE);
+
+	XAP_GtkSignalBlocker b3(G_OBJECT(m_wLineTop), m_iLineTopConnect);
+	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineTop, getTopToggled() ? TRUE: FALSE);
+
+	XAP_GtkSignalBlocker b4(G_OBJECT(m_wLineBottom), m_iLineBotConnect);
+	gtk_toggle_button_set_active((GtkToggleButton*)m_wLineBottom, getBottomToggled() ? TRUE: FALSE);
 }
 
 void AP_UnixDialog_Border_Shading::event_Close(void)
@@ -423,7 +429,7 @@ void AP_UnixDialog_Border_Shading::event_BorderStyleChanged(void)
 	{
 		gint index = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderStyle));
 
-		if (index >= 0 && index < BORDER_SHADING_NUMOFSTYLES)
+		if (index >= 0 && index <= BORDER_SHADING_NUMOFSTYLES)
 		{
 			UT_UTF8String style_utf8 = sBorderStyle[index];
 			setBorderStyle(style_utf8);
@@ -514,24 +520,28 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	m_wLineRight 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderRight"));
 	m_wLineBottom 	= GTK_WIDGET(gtk_builder_get_object(builder, "tbBorderBottom"));
 
+#if !GTK_CHECK_VERSION (3,0,0)
+	// the toggle buttons created by GtkBuilder already contain a label, remove that, 
+	// so we can add a pixmap as a child
+	// Fixed in the Gtk3 version
+	gtk_container_remove(GTK_CONTAINER(m_wLineTop), gtk_bin_get_child(GTK_BIN(m_wLineTop)));
+	gtk_container_remove(GTK_CONTAINER(m_wLineLeft), gtk_bin_get_child(GTK_BIN(m_wLineLeft)));
+	gtk_container_remove(GTK_CONTAINER(m_wLineRight), gtk_bin_get_child(GTK_BIN(m_wLineRight)));
+	gtk_container_remove(GTK_CONTAINER(m_wLineBottom), gtk_bin_get_child(GTK_BIN(m_wLineBottom)));
+#endif
+
 	// place some nice pixmaps on our border toggle buttons
 	label_button_with_abi_pixmap(m_wLineTop, "tb_LineTop_xpm");
 	label_button_with_abi_pixmap(m_wLineLeft, "tb_LineLeft_xpm");
 	label_button_with_abi_pixmap(m_wLineRight, "tb_LineRight_xpm");
 	label_button_with_abi_pixmap(m_wLineBottom, "tb_LineBottom_xpm");
 	
-	// set button states
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineTop), getTopToggled());  
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineLeft), getLeftToggled());  
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineRight), getRightToggled());  
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wLineBottom), getBottomToggled());  
-	
 	m_wPreviewArea 		= GTK_WIDGET(gtk_builder_get_object(builder, "daPreview"));
 	m_wShadingEnable	= GTK_WIDGET(gtk_builder_get_object(builder, "cbShadingEnable"));
 	
 	// set the dialog title
 	ConstructWindowName();
-	abiDialogSetTitle(window, "%s", m_WindowName);
+	abiDialogSetTitle(window, m_WindowName);
 	
 	// disable double buffering on our preview
 	gtk_widget_set_double_buffered(m_wPreviewArea, FALSE); 	
@@ -544,7 +554,6 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lblBorderStyle")), pSS, AP_STRING_ID_DLG_BorderShading_Border_Style);
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbShading")), pSS, AP_STRING_ID_DLG_BorderShading_Shading);
-	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "cbShadingEnable")), pSS, AP_STRING_ID_DLG_BorderShading_Use_Shading);
 	m_wShadingColorLabel = GTK_WIDGET(gtk_builder_get_object(builder, "lbShadingColor"));
 	localizeLabel(m_wShadingColorLabel, pSS, AP_STRING_ID_DLG_BorderShading_Shading_Color);
 	m_wShadingOffsetLabel = GTK_WIDGET(gtk_builder_get_object(builder, "lblShadingOffset"));
@@ -559,50 +568,41 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 // Border Thickness Option menu
 // 
 	m_wBorderThickness = GTK_WIDGET(gtk_builder_get_object(builder, "omBorderThickness"));
-	GtkComboBox* combo = GTK_COMBO_BOX(m_wBorderThickness);
-	XAP_makeGtkComboBoxText(combo, G_TYPE_NONE);
-	XAP_appendComboBoxText(combo, "1/2 pt");
-	XAP_appendComboBoxText(combo, "3/4 pt");
-	XAP_appendComboBoxText(combo, "1 pt");
-	XAP_appendComboBoxText(combo, "1 1/2 pt");
-	XAP_appendComboBoxText(combo, "2 1/4 pt");
-	XAP_appendComboBoxText(combo, "3 pt");
-	XAP_appendComboBoxText(combo, "4 1/2 pt");
-	XAP_appendComboBoxText(combo, "6 pt");
+	GtkComboBoxText *combo = GTK_COMBO_BOX_TEXT(m_wBorderThickness);
+	gtk_combo_box_text_append_text(combo, "1/2 pt");
+	gtk_combo_box_text_append_text(combo, "3/4 pt");
+	gtk_combo_box_text_append_text(combo, "1 pt");
+	gtk_combo_box_text_append_text(combo, "1 1/2 pt");
+	gtk_combo_box_text_append_text(combo, "2 1/4 pt");
+	gtk_combo_box_text_append_text(combo, "3 pt");
+	gtk_combo_box_text_append_text(combo, "4 1/2 pt");
+	gtk_combo_box_text_append_text(combo, "6 pt");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 
 //
 // Border Style Option menu
 //
 	m_wBorderStyle = GTK_WIDGET(gtk_builder_get_object(builder, "cmbBorderStyle"));
-	GtkComboBox* combo_style = GTK_COMBO_BOX(m_wBorderStyle);
-	XAP_makeGtkComboBoxText(combo_style, G_TYPE_NONE);
-	
-	UT_UTF8String s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_None, s);
-	XAP_appendComboBoxText(combo_style, s.utf8_str());
-	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Solid, s);
-	XAP_appendComboBoxText(combo_style, s.utf8_str());
-	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Dashed, s);
-	XAP_appendComboBoxText(combo_style, s.utf8_str());
-	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Dotted, s);
-	XAP_appendComboBoxText(combo_style, s.utf8_str());
+	GtkComboBoxText *combo_style = GTK_COMBO_BOX_TEXT(m_wBorderStyle);
+	gtk_combo_box_text_append_text(combo_style, "None");
+	gtk_combo_box_text_append_text(combo_style, "Solid line");
+	gtk_combo_box_text_append_text(combo_style, "Dashed line");
+	gtk_combo_box_text_append_text(combo_style, "Dotted line");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_style), 0);
 
 //
 // Shading offset Option menu
 //
 	m_wShadingOffset = GTK_WIDGET(gtk_builder_get_object(builder, "cmbShadingOffset"));
-	GtkComboBox* combo_offset = GTK_COMBO_BOX(m_wShadingOffset);
-	XAP_makeGtkComboBoxText(combo_offset, G_TYPE_NONE);
-	XAP_appendComboBoxText(combo_offset, "1/2 pt");
-	XAP_appendComboBoxText(combo_offset, "3/4 pt");
-	XAP_appendComboBoxText(combo_offset, "1 pt");
-	XAP_appendComboBoxText(combo_offset, "1 1/2 pt");
-	XAP_appendComboBoxText(combo_offset, "2 1/4 pt");
-	XAP_appendComboBoxText(combo_offset, "3 pt");
-	XAP_appendComboBoxText(combo_offset, "4 1/2 pt");
-	XAP_appendComboBoxText(combo_offset, "6 pt");
+	GtkComboBoxText *combo_offset = GTK_COMBO_BOX_TEXT(m_wShadingOffset);
+	gtk_combo_box_text_append_text(combo_offset, "1/2 pt");
+	gtk_combo_box_text_append_text(combo_offset, "3/4 pt");
+	gtk_combo_box_text_append_text(combo_offset, "1 pt");
+	gtk_combo_box_text_append_text(combo_offset, "1 1/2 pt");
+	gtk_combo_box_text_append_text(combo_offset, "2 1/4 pt");
+	gtk_combo_box_text_append_text(combo_offset, "3 pt");
+	gtk_combo_box_text_append_text(combo_offset, "4 1/2 pt");
+	gtk_combo_box_text_append_text(combo_offset, "6 pt");
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_offset), 0);
 
 	// add the apply and ok buttons to the dialog

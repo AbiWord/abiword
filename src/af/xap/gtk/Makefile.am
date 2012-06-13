@@ -8,7 +8,7 @@ AM_CPPFLAGS = \
 	$(IMPEXP_CPPFLAGS) \
 	-I$(top_srcdir)/src/wp/ap/gtk \
 	-I$(top_srcdir)/src/wp/ap/xp \
-	-DICONDIR="\"$(ABIWORD_ICONDIR)\""
+	-DDATADIR="\"$(datadir)\""
 
 hildon_src = hildon/xap_UnixHildonApp.cpp \
        hildon/xap_UnixHildonApp.h \

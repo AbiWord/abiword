@@ -149,11 +149,11 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle,s);
-	abiDialogSetTitle(window, "%s", s.utf8_str());
+	abiDialogSetTitle(window, s.utf8_str());
 	
 	// localize the strings in our dialog
 	
-	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFormats")), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats);
+	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableFormats")), pSS, AP_STRING_ID_DLG_DateTime_AvailableFormats_Capital);
 	localizeButtonUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "btInsert")), pSS, AP_STRING_ID_DLG_InsertButton);
 	
 	// add a column to our TreeView

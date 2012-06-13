@@ -1005,16 +1005,15 @@ void fl_ContainerLayout::remove(fl_ContainerLayout * pL)
 {
 	UT_ASSERT(pL);
 	UT_ASSERT(m_pFirstL);
-	fl_ContainerLayout* prev = pL->getPrev(); // can be NULL
 
-	if (prev)
+	if (pL->getPrev())
 	{
-		prev->setNext(pL->getNext());
+		pL->getPrev()->setNext(pL->getNext());
 	}
 
 	if (pL->getNext())
 	{
-		pL->getNext()->setPrev(prev);
+		pL->getNext()->setPrev(pL->getPrev());
 		if(pL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
 			UT_ASSERT(getContainerType() != FL_CONTAINER_BLOCK);
@@ -1028,9 +1027,9 @@ void fl_ContainerLayout::remove(fl_ContainerLayout * pL)
 				pBNext->setLineHeightBlockWithBorders(1);
 			}
 		}
-		if (prev && prev->getContainerType() == FL_CONTAINER_BLOCK)
+		if (pL->getPrev()->getContainerType() == FL_CONTAINER_BLOCK)
 		{
-			fl_BlockLayout* pBPrev = static_cast<fl_BlockLayout *>(prev);
+			fl_BlockLayout* pBPrev = static_cast<fl_BlockLayout *>(pL->getPrev());
 			if (pBPrev->hasBorders())
 			{
 				pBPrev->setLineHeightBlockWithBorders(-1);
@@ -1265,14 +1264,6 @@ void fl_ContainerLayout::addFrame(fl_FrameLayout * pFrame)
 		return;
 	}
 	m_vecFrames.addItem(pFrame);
-	if (!pFrame->getParentContainer())
-	{
-		pFrame->setParentContainer(this);
-	}
-	else
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	}
 }
 
 UT_sint32 fl_ContainerLayout::getNumFrames(void) const
@@ -1301,22 +1292,17 @@ fp_FrameContainer * fl_ContainerLayout::getNthFrameContainer(UT_sint32 i) const
 	return pFC;
 }
 
-bool fl_ContainerLayout::removeFrame(fl_FrameLayout * pFrame)
+void fl_ContainerLayout:: removeFrame(fl_FrameLayout * pFrame)
 {
 	UT_DEBUGMSG(("Remove Frame %p from this container %p \n",pFrame,this));
 	UT_sint32 i = m_vecFrames.findItem(pFrame);
 	if(i >= 0)
 	{
 		m_vecFrames.deleteNthItem(i);
-		if (pFrame->getParentContainer() == this)
-		{
-			pFrame->setParentContainer(NULL);
-		}
-		return true;
 	}
 	else
 	{
 		UT_DEBUGMSG((" Requested Frame not found \n"));
-		return false;
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	}
 }

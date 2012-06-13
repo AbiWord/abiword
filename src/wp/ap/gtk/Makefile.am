@@ -7,8 +7,7 @@ AM_CPPFLAGS = 						\
 	-DPREFIX=\""$(prefix)"\" 				\
 	-DSYSCONFDIR=\""$(sysconfdir)"\" 			\
 	-DABIWORD_PLUGINSDIR="\"$(ABIWORD_PLUGINSDIR)"\"	\
-	-DICONDIR="\"$(ABIWORD_ICONDIR)\"" \
-        $(CHAMPLAIN_CFLAGS)
+	-DDATADIR="\"$(datadir)\""
 
 
 # source and ui files for Hildon
@@ -179,17 +178,7 @@ libgtk_la_SOURCES = \
 	ap_UnixTopRuler.cpp \
 	ap_UnixTopRuler.h \
 	ap_UnixViewListener.cpp \
-	ap_UnixViewListener.h \
-	ap_RDFContactGTK.h \
-	ap_RDFContactGTK.cpp \
-	ap_RDFEventGTK.h \
-	ap_RDFEventGTK.cpp \
-	ap_RDFLocationGTK.h \
-	ap_RDFLocationGTK.cpp \
-	ap_RDFSemanticItemFactoryGTK.h \
-	ap_RDFSemanticItemFactoryGTK.cpp \
-	ap_RDFSemanticItemGTKInjected.h \
-	ap_RDFSemanticItemGTKInjected.cpp
+	ap_UnixViewListener.h
 
 
 
@@ -215,16 +204,12 @@ ui_DATA = \
 	ap_UnixDialog_New-2.ui \
 	ap_UnixDialog_Styles-2.ui \
 	ap_UnixDialog_Stylist-2.ui \
+	ap_UnixDialog_Stylist_modal-2.ui \
 	ap_UnixDialog_Tab-2.ui	\
 	ap_UnixDialog_WordCount-2.ui \
 	ap_UnixDialog_Latex-2.ui \
 	ap_UnixDialog_RDFQuery-2.ui \
 	ap_UnixDialog_RDFEditor-2.ui \
-	pd_RDFContact-2.ui \
-	pd_RDFInsertReference-2.ui \
-	pd_RDFEvent-2.ui \
-	pd_RDFLocation-2.ui \
-	ap_UnixDialog_SemanticStylesheets-2.ui \
 	$(NULL)
 else
 ui_DATA = \
@@ -247,16 +232,12 @@ ui_DATA = \
 	ap_UnixDialog_New.ui \
 	ap_UnixDialog_Styles.ui \
 	ap_UnixDialog_Stylist.ui \
+	ap_UnixDialog_Stylist_modal.ui \
 	ap_UnixDialog_Tab.ui	\
 	ap_UnixDialog_WordCount.ui \
 	ap_UnixDialog_Latex.ui \
 	ap_UnixDialog_RDFQuery.ui \
 	ap_UnixDialog_RDFEditor.ui \
-	pd_RDFContact.ui \
-	pd_RDFInsertReference.ui \
-	pd_RDFEvent.ui \
-	pd_RDFLocation.ui \
-	ap_UnixDialog_SemanticStylesheets.ui \
 	$(NULL)
 endif
 

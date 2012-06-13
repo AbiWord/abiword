@@ -1093,21 +1093,6 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, background);
 
-	UT_uint32 kk = 0;
-	std::string sFrameProps, esc;
-	const gchar * szName = NULL;
-	const gchar * szValue = NULL;
-	while (pSectionAP->getNthProperty (kk++, szName, szValue))
-	{
-		if (kk != 1)
-		{
-			sFrameProps += "; ";
-		}
-		sFrameProps += szName; 
-		sFrameProps += ":";
-		sFrameProps += szValue;
-	}
-	
 //
 // OK got all the props of the frame.
 //
@@ -1200,7 +1185,7 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 		if(background.m_t_background != PP_PropertyMap::background_none)
 		{
 			UT_RGBColor color = background.m_color;
-			UT_sint32 iCol = color.m_red+color.m_grn*0x100+color.m_blu*0x10000;
+			UT_sint32 iCol = color.m_red+color.m_grn*256+color.m_blu*256*256;
 			if(iCol != 0)
 			{
 				_writeSPNumProp("fillColor",iCol); // Background color
@@ -1341,12 +1326,6 @@ void s_RTF_ListenerWriteDoc::_openFrame(PT_AttrPropIndex apiFrame)
 	_writeSPNumProp("dxTextRight",convertTwipsToEMU(iXpad));
 	_writeSPNumProp("dxTextTop",convertTwipsToEMU(iYpad));
 	_writeSPNumProp("dxTextBottom",convertTwipsToEMU(iYpad));
-
-	// Print the abiword props string; this is for the internal copy/paste
-	m_pie->_rtf_open_brace();
-	m_pie->_rtf_keyword("abiframeprops ",sFrameProps.c_str());
-	m_pie->_rtf_close_brace();
-
 	m_bTextBox = false;
 
 	if(iFrameType == FL_FRAME_TEXTBOX_TYPE)
@@ -1811,7 +1790,7 @@ s_RTF_ListenerWriteDoc::s_RTF_ListenerWriteDoc(PD_Document * pDocument,
 
 s_RTF_ListenerWriteDoc::~s_RTF_ListenerWriteDoc()
 {
-	UT_DEBUGMSG(("~s_RTF_ListenerWriteDoc() rdfstack.sz:%lu\n" , m_rdfAnchorStack.size() ));
+	UT_DEBUGMSG(("~s_RTF_ListenerWriteDoc() rdfstack.sz:%d \n" , m_rdfAnchorStack.size() ));
 
 	_closeSpan();
 
@@ -4399,10 +4378,8 @@ bool s_RTF_ListenerWriteDoc::populateStrux(pf_Frag_Strux* sdh,
 			bool bHeaderFirst = false;
 			const gchar* pszFooterFirstID = NULL;
 			bool bFooterFirst = false;
-#if 0
 			const gchar* pszHeaderLastID = NULL;
 			const gchar* pszFooterLastID = NULL;
-#endif
 			
 // header,headerl (odd) ,headerr(even) ,headerf(first) ,footer,footerl,footerr,footerf
 

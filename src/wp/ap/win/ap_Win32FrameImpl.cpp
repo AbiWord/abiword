@@ -24,6 +24,7 @@
 #include "ut_Win32Timer.h"
 #include "ut_Win32OS.h"
 #include "gr_Win32Graphics.h"
+#include "gr_Win32CairoGraphics.h"
 #include "gr_Painter.h"
 #include "ap_Win32TopRuler.h"
 #include "ap_Win32LeftRuler.h"
@@ -172,7 +173,12 @@ HWND AP_Win32FrameImpl::_createDocumentWindow(XAP_Frame *pFrame, HWND hwndParent
 	int xLeftRulerWidth = 0;
 
 	/* Create Graphics */
+#ifdef WITH_CAIRO
+	GR_Win32CairoAllocInfo ai(m_hwndContainer, false);
+#else
 	GR_Win32AllocInfo ai(GetDC(m_hwndContainer), m_hwndContainer);
+#endif
+
 	GR_Win32Graphics * pG = (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
 
 	UT_return_val_if_fail (pG, 0);	   
@@ -1078,14 +1084,9 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 			return 0;
 
 		case WM_SETCURSOR:
-		{
-			FV_View * pFV = static_cast<FV_View *>(pView);
-			GR_Graphics * pG = pFV->getGraphics();
-			GR_Win32Graphics * pGWin32 = static_cast<GR_Win32Graphics *>(pG);
-			pGWin32->handleSetCursorMessage();
+			pView->getGraphics()->setCursor();
 			return 1;
-		}
-
+		
 		case WM_LBUTTONDOWN:
 			if(GetFocus() != hwnd)
 			{
@@ -1390,8 +1391,12 @@ UT_RGBColor AP_Win32FrameImpl::getColorSelBackground () const
 	return UT_RGBColor( red, green, blue );
 }
 
-GR_Win32Graphics *AP_Win32FrameImpl::createDocWndGraphics(void)
+GR_Graphics *AP_Win32FrameImpl::createDocWndGraphics(void)
 {
+#ifdef WITH_CAIRO
+	GR_Win32CairoAllocInfo ai(getHwndDocument(), false);
+#else
 	GR_Win32AllocInfo ai(GetDC(getHwndDocument()), getHwndDocument());
-	return (GR_Win32Graphics *)XAP_App::getApp()->newGraphics(ai);
+#endif
+	return XAP_App::getApp()->newGraphics(ai);
 }

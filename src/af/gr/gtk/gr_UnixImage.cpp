@@ -128,7 +128,12 @@ void GR_UnixImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 {
 	UT_sint32 width = pG->tdu(rec.width);
 	UT_sint32 height = pG->tdu(rec.height);
+	if((width == getDisplayWidth()) && (height == getDisplayHeight()))
+	{
+		return;
+	}
 	scale(width,height);
+	//	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
 static gboolean convCallback(const gchar *buf,
@@ -245,8 +250,8 @@ void GR_UnixImage::scale (UT_sint32 iDisplayWidth,
 {
 	UT_return_if_fail(m_image);
 	
-	// don't scale if passed -1 for either, or either is 0
-	if (iDisplayWidth <= 0 || iDisplayHeight <= 0)
+	// don't scale if passed -1 for either
+	if (iDisplayWidth < 0 || iDisplayHeight < 0)
 		return;
 
 	GdkPixbuf * image = 0;
@@ -333,6 +338,7 @@ bool GR_UnixImage::convertFromBuffer(const UT_ByteBuf* pBB,
 		return false;
 	}
 
+	G_IS_OBJECT(G_OBJECT(m_image));
 //
 // Have to put a reference on it to prevent it being deleted during the close.
 //

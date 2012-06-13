@@ -214,7 +214,6 @@ UT_sint32                    getBottomOffset(void) const;
 	  { return m_bIsEndTableIn;}
 	bool                     isDoingDestructor(void)
 	{ return m_bDoingDestructor;}
-
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
 	virtual void			    _lookupMarginProperties(const PP_AttrProp* pAP);
@@ -230,7 +229,7 @@ private:
 	double                 m_dTopOffsetUserUnits;
 	UT_sint32              m_iBottomOffset;
 	double                 m_dBottomOffsetUserUnits;
-
+	
 	bool                   m_bIsHomogeneous;
 	bool                   m_bSameRowOnTopOfPage;
 	UT_sint32              m_iRowNumberForTop;
@@ -334,7 +333,6 @@ UT_sint32                    getBottomOffset(void) const;
 		{ return m_iCellHeight;}
 	UT_sint32                getCellWidth(void) const
 		{ return m_iCellWidth;}
-
 protected:
 	virtual void		     _lookupProperties(const PP_AttrProp* pAP);
 	virtual void             _purgeLayout(void);
@@ -348,12 +346,12 @@ private:
 	double                 m_dTopOffsetUserUnits;
 	UT_sint32              m_iBottomOffset;
 	double                 m_dBottomOffsetUserUnits;
-
+	
 	UT_sint32              m_iLeftAttach;
 	UT_sint32              m_iRightAttach;
 	UT_sint32              m_iTopAttach;
 	UT_sint32              m_iBottomAttach;
-
+	
 	bool                   m_bCellPositionedOnPage;
 	UT_sint32              m_iCellHeight;
 	UT_sint32              m_iCellWidth;
@@ -374,7 +372,6 @@ private:
 
 // Vertical alignment property
 	UT_sint32	m_iVertAlign;
-
 };
 
 ///

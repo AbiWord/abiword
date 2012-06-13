@@ -600,7 +600,6 @@ public:
 	UT_sint32        m_iFrameWrapMode;
     UT_sint32        m_iBackgroundColor;
 	UT_sint32	     m_iFillType;
-	std::string      m_abiProps;
 };
 
 
@@ -618,8 +617,7 @@ RTFProps_FrameProps::RTFProps_FrameProps(void):
 	m_bCleared(true),
 	m_iFrameWrapMode(3),
 	m_iBackgroundColor(0),
-	m_iFillType(0),
-	m_abiProps("")
+	m_iFillType(0)
 {
 }
 
@@ -639,7 +637,6 @@ void RTFProps_FrameProps::clear(void)
 	m_iFrameWrapMode=3;
 	m_iBackgroundColor= 0;
 	m_iFillType = 0;
-	m_abiProps = "";
 }
 
 
@@ -655,7 +652,7 @@ void RTFProps_FrameProps::_setProperty(const PropertyPair *pair)
 	const std::string &propName = pair->first;
 	const std::string &propValue = pair->second;
 
-	if(propName.empty())
+	if(!propName.empty())
 		return;
 
 	UT_sint32 ival = 0;
@@ -934,22 +931,17 @@ public:
 	virtual ~IE_Imp_ShpGroupParser();
 	virtual bool tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID, 
 							  UT_sint32 param, bool paramUsed);
-	virtual bool tokenCloseBrace(IE_Imp_RTF *ie);
-	virtual bool tokenData(IE_Imp_RTF * ie, UT_UTF8String & data);
+	
 	RTFProps_FrameProps & frame(void)
 		{ return m_currentFrame; }
 private:
-	RTF_KEYWORD_ID m_last_kwID;
 	IE_Imp_RTF * m_ieRTF;
 	RTFProps_FrameProps m_currentFrame;	
 	UT_sint32    m_iOrigTableDepth;
-	std::string *m_lastData;
 };
 
 
-IE_Imp_ShpGroupParser::IE_Imp_ShpGroupParser(IE_Imp_RTF * ie) 
-							: m_ieRTF(ie),
-							  m_lastData(NULL)
+IE_Imp_ShpGroupParser::IE_Imp_ShpGroupParser(IE_Imp_RTF * ie) : m_ieRTF(ie) 
 {
 	m_currentFrame.clear();
 	m_iOrigTableDepth = m_ieRTF->getPasteDepth();
@@ -983,7 +975,6 @@ IE_Imp_ShpGroupParser::~IE_Imp_ShpGroupParser()
 	}
 	m_ieRTF->setStruxImage(false);
 	m_ieRTF->clearImageName();
-	DELETEP(m_lastData);
 }
 
 
@@ -993,7 +984,6 @@ IE_Imp_ShpGroupParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
 									UT_sint32 param, bool /*paramUsed*/)
 {
 	UT_DEBUGMSG(("IE_Imp_ShpGroupParser::tokenKeyword %d\n", kwID));
-	m_last_kwID = kwID;
 	switch(kwID) {
 	case RTF_KW_shprslt:
 		UT_DEBUGMSG(("Found \\shprslt\n"));
@@ -1047,39 +1037,9 @@ IE_Imp_ShpGroupParser::tokenKeyword(IE_Imp_RTF * ie, RTF_KEYWORD_ID kwID,
 		delete parser;
 		break;
 	}
-	case RTF_KW_abiframeprops:
-	{
-		break;
-	}
 	default:
 		break;
 	};
-	return true;
-}
-
-
-bool IE_Imp_ShpGroupParser::tokenCloseBrace(IE_Imp_RTF * ie)
-{
-	switch(m_last_kwID) 
-	{
-	case RTF_KW_abiframeprops:
-		UT_ASSERT(m_lastData);
-		m_currentFrame.m_abiProps = *m_lastData;
-		m_lastData = NULL;
-		m_last_kwID = RTF_UNKNOWN_KEYWORD;
-		break;
-	default:
-		break;
-	}
-
-	return IE_Imp_RTFGroupParser::tokenCloseBrace(ie);
-}
-
-
-bool IE_Imp_ShpGroupParser::tokenData(IE_Imp_RTF * /*ie*/, UT_UTF8String & data)
-{
-	DELETEP(m_lastData);
-	m_lastData = new std::string(data.utf8_str());
 	return true;
 }
 
@@ -1156,156 +1116,127 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 		attribs[2] = PT_STRUX_IMAGE_DATAID;
 		attribs[3] = m_sImageName.utf8_str();
 	}
-
-	std::string sPropString;
-	if(frame.m_abiProps.empty())
+	UT_UTF8String sPropString;
+	UT_UTF8String sP;
+	UT_UTF8String sV;
+	sP = "frame-type";
+	m_bFrameTextBox = false;
+	if(	frame.m_iFrameType == 1)
 	{
-		std::string sP;
-		std::string sV;
-		sP = "frame-type";
-		m_bFrameTextBox = false;
-		if(	frame.m_iFrameType == 1)
-		{
-			sV = "image";
-			UT_std_string_setProperty(sPropString,sP,sV); 
-			sP = "top-style";
-			sV = "none";
-			UT_std_string_setProperty(sPropString,sP,sV); 
-			sP = "right-style";
-			UT_std_string_setProperty(sPropString,sP,sV); 
-			sP = "left-style";
-			UT_std_string_setProperty(sPropString,sP,sV); 
-			sP = "bot-style";
-			UT_std_string_setProperty(sPropString,sP,sV); 
-		}
-		else
-		{
-			sV = "textbox";
-			UT_std_string_setProperty(sPropString,sP,sV); // fixme make other types
-			m_bFrameTextBox = true;
-		}
-		
-		sP = "position-to";
-		if(frame.m_iFramePositionTo == FL_FRAME_POSITIONED_TO_COLUMN)
-		{
-			sV = "column-above-text";
-		}
-		else if(frame.m_iFramePositionTo == FL_FRAME_POSITIONED_TO_PAGE)
-		{
-			sV = "page-above-text";
-		}
-		else
-		{
-			sV = "block-above-text";
-		}
-		UT_std_string_setProperty(sPropString,sP,sV); // fixme make other types
-		
-		sP = "wrap-mode";
-		if(frame.m_iFrameWrapMode == FL_FRAME_ABOVE_TEXT)
-		{
-			sV = "above-text";
-		}
-		else
-		{
-			sV = "wrapped-both";
-		}
-		UT_std_string_setProperty(sPropString,sP,sV); // fixme make other types
-		if(frame.m_iBackgroundColor > 0)
-		{
-			sP = "bg-style";
-			if(frame.m_iFillType == 0)
-			{
-				sV = "solid";
-			}
-			else
-			{
-				sV = "none";
-			}
-			UT_std_string_setProperty(sPropString,sP,sV);
-			sP="bgcolor";
-			// RTF uses BGR encoding for colors while Abiword uses RGB 
-			UT_sint32 iRGBColor = (((frame.m_iBackgroundColor & 0xff0000) >> 16) |
-								   ((frame.m_iBackgroundColor & 0xff00)) |
-								   ((frame.m_iBackgroundColor & 0xff) << 16));
-			sV = UT_std_string_sprintf("%06x",iRGBColor);
-			UT_std_string_setProperty(sPropString,sP,sV);
-			sP="background-color";
-			UT_std_string_setProperty(sPropString,sP,sV);
-		}
-		{
-			UT_LocaleTransactor t(LC_NUMERIC, "C");
-			
-			//
-			// Shift positions a little for pasted frames so they don't
-			// appear right on top of other frames
-			//
-			double dOff = 0.0;
-			if(bUseInsertNotAppend())
-			{
-				dOff = 0.05; // 0.1 inches
-				dOff += 0.2*static_cast<double>(UT_rand())/static_cast<double>(UT_RAND_MAX);
-			}
-			double dV = dOff + static_cast<double>(frame.m_iLeftPos)/1440.0;
-			sV= UT_std_string_sprintf("%fin",dV);
-			sP= "xpos";
-			UT_std_string_setProperty(sPropString,sP,sV);
-			sP= "frame-col-xpos";
-			UT_std_string_setProperty(sPropString,sP,sV);
-			sP= "frame-page-xpos";
-			UT_std_string_setProperty(sPropString,sP,sV);
-			
-			dV = dOff + static_cast<double>(frame.m_iTopPos)/1440.0;
-			sV= UT_std_string_sprintf("%fin",dV);
-			sP= "ypos";
-			UT_std_string_setProperty(sPropString,sP,sV);
-			sP= "frame-col-ypos";
-			UT_std_string_setProperty(sPropString,sP,sV);
-			sP= "frame-page-ypos";
-			UT_std_string_setProperty(sPropString,sP,sV);
-			
-			dV = static_cast<double>(frame.m_iRightPos - frame.m_iLeftPos)/1440.0;
-			sV= UT_std_string_sprintf("%fin",dV);
-			sP= "frame-width";
-			UT_std_string_setProperty(sPropString,sP,sV); 
-			
-			dV = static_cast<double>(frame.m_iBotPos - frame.m_iTopPos)/1440.0;
-			sV= UT_std_string_sprintf("%fin",dV);
-			sP= "frame-height";
-			UT_std_string_setProperty(sPropString,sP,sV); 
-			
-			dV = static_cast<double>(frame.m_iRightPad + frame.m_iLeftPad)/9114400.0; // EMU
-			sV= UT_std_string_sprintf("%fin",dV);
-			sP= "xpad";
-			UT_std_string_setProperty(sPropString,sP,sV); 
-			
-			dV = static_cast<double>(frame.m_iBotPad + frame.m_iTopPad)/9114400.0; //EMU
-			sV= UT_std_string_sprintf("%fin",dV);
-			sP= "ypad";
-			UT_std_string_setProperty(sPropString,sP,sV); 
-		}
+		sV = "image";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		sP = "top-style";
+		sV = "none";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		sP = "right-style";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		sP = "left-style";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		sP = "bot-style";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
 	}
 	else
 	{
-		size_t pos1,pos2;
-		pos1 = frame.m_abiProps.find("frame-pref-page");
-		if (pos1 != std::string::npos)
+		sV = "textbox";
+		UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
+		m_bFrameTextBox = true;
+	}
+
+	sP = "position-to";
+	if(frame.m_iFramePositionTo == FL_FRAME_POSITIONED_TO_COLUMN)
+	{
+		sV = "column-above-text";
+	}
+	else if(frame.m_iFramePositionTo == FL_FRAME_POSITIONED_TO_PAGE)
+	{
+		sV = "page-above-text";
+	}
+	else
+	{
+		sV = "block-above-text";
+	}
+	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
+
+	sP = "wrap-mode";
+	if(frame.m_iFrameWrapMode == FL_FRAME_ABOVE_TEXT)
+	{
+		sV = "above-text";
+	}
+	else
+	{
+		sV = "wrapped-both";
+	}
+	UT_UTF8String_setProperty(sPropString,sP,sV); // fixme make other types
+	if(frame.m_iBackgroundColor > 0)
+	{
+		sP = "bg-style";
+		if(frame.m_iFillType == 0)
 		{
-			pos2 = frame.m_abiProps.find("; ",pos1);
-			if (pos2 != std::string::npos)
-			{
-				sPropString = frame.m_abiProps.substr(0,pos1) + frame.m_abiProps.substr(pos2);
-			}
-			else
-			{
-				sPropString = frame.m_abiProps.substr(0,pos1); 
-			}
+			sV = "solid";
 		}
 		else
 		{
-			sPropString = frame.m_abiProps;
+			sV = "none";
 		}
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP="bgcolor";
+		UT_UTF8String_sprintf(sV, "%06x",frame.m_iBackgroundColor);
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP="background-color";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
 	}
-	attribs[1] = sPropString.c_str();
+	{
+		UT_LocaleTransactor t(LC_NUMERIC, "C");
+
+		//
+		// Shift positions a little for pasted frames so they don't
+		// appear right on top of other frames
+		//
+		double dOff = 0.0;
+		if(bUseInsertNotAppend())
+		{
+			dOff = 0.05; // 0.1 inches
+			dOff += 0.2*static_cast<double>(UT_rand())/static_cast<double>(UT_RAND_MAX);
+		}
+		double dV = dOff + static_cast<double>(frame.m_iLeftPos)/1440.0;
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "xpos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP= "frame-col-xpos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP= "frame-page-xpos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		
+		dV = dOff + static_cast<double>(frame.m_iTopPos)/1440.0;
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "ypos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP= "frame-col-ypos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		sP= "frame-page-ypos";
+		UT_UTF8String_setProperty(sPropString,sP,sV);
+		
+		dV = static_cast<double>(frame.m_iRightPos - frame.m_iLeftPos)/1440.0;
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "frame-width";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		
+		dV = static_cast<double>(frame.m_iBotPos - frame.m_iTopPos)/1440.0;
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "frame-height";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		
+		dV = static_cast<double>(frame.m_iRightPad + frame.m_iLeftPad)/9114400.0; // EMU
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "xpad";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+		
+		dV = static_cast<double>(frame.m_iBotPad + frame.m_iTopPad)/9114400.0; //EMU
+		sV= UT_UTF8String_sprintf("%fin",dV);
+		sP= "ypad";
+		UT_UTF8String_setProperty(sPropString,sP,sV); 
+	}
+	attribs[1] = sPropString.utf8_str();
 
 	UT_DEBUGMSG(("Start Frame\n"));
 	if(!bUseInsertNotAppend())

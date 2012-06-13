@@ -685,11 +685,11 @@ FV_View::~FV_View()
 	UT_VECTOR_PURGEALL(fv_CaretProps *,m_vecCarets);
 }
 
-bool FV_View::isActive(void) const
+bool FV_View::isActive(void) 
 {
 	if(!couldBeActive())
 	        return false;
-	const AV_View* pActiveView = NULL;
+	AV_View* pActiveView = NULL;
 	XAP_Frame* lff = getApp()->getLastFocussedFrame();
 	if(lff) 
 	{
@@ -887,7 +887,7 @@ UT_RGBColor	FV_View::getColorAnnotation(const fp_Run * pRun) const
 			return pRun->_getColorFG();
 	}
 	fp_Page * pPage = pARun->getLine()->getPage();
-	xxx_UT_DEBUGMSG(("getColorAnnotation() page:%p\n", pPage ));
+	UT_DEBUGMSG(("getColorAnnotation() page:%p\n", pPage ));
 	if(!pPage)
 			return pRun->_getColorFG();
 	UT_uint32 pos = pPage->getAnnotationPos(pARun->getPID());
@@ -910,7 +910,7 @@ UT_RGBColor	FV_View::getColorAnnotation(fp_Page * pPage,UT_uint32 pid) const
 UT_RGBColor	FV_View::getColorRDFAnchor(const fp_Run * pRun) const
 {
 	fp_Page* pPage = pRun->getLine()->getPage();
-	xxx_UT_DEBUGMSG(("getColorRDFAnchor() page:%p\n", pPage ));
+	UT_DEBUGMSG(("getColorRDFAnchor() page:%p\n", pPage ));
 	if(!pPage)
 		return pRun->_getColorFG();
 
@@ -1045,7 +1045,7 @@ const UT_ByteBuf * FV_View::getLocalBuf(void) const
 void FV_View::copyToLocal(PT_DocPosition pos1, PT_DocPosition pos2)
 {
 	DELETEP(m_pLocalBuf);
-	m_pLocalBuf = new UT_ByteBuf;
+	m_pLocalBuf = new UT_ByteBuf(1024);
 	IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(m_pDoc);
 	PD_DocumentRange docRange(m_pDoc, pos1,pos2);
 
@@ -1388,21 +1388,12 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 }
 
 void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG, 
-							 const std::string & sDataID, fl_BlockLayout * pNewBL)
+							 const std::string & sDataID)
 {
 	setCursorWait();
 	//
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
-
-	fl_FrameLayout * pFrame = getFrameLayout();
-	if(pFrame == NULL)
-	{
-		UT_DEBUGMSG(("No frame selected. Aborting! \n"));
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		return;
-	}
-
 	if(isHdrFtrEdit())
 	{
 		clearHdrFtrEdit();
@@ -1437,20 +1428,9 @@ void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG,
 		UT_ASSERT(bRet);
 	}
 
-	if(pNewBL && (pFrame->getParentContainer() != pNewBL))
-	{
-		UT_DEBUGMSG(("BEGIN RELOCATION\n"));
-		getLayout()->relocateFrame(pFrame,pNewBL,NULL,properties);
-	}
-	else
-	{ 
-		UT_DEBUGMSG(("BEGIN CHANGE\n"));
-		//posStart = pFrame->getPosition(true)+1;
-		//PT_DocPosition posEnd = posStart;
-		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
-														 properties,PTX_SectionFrame);
-		UT_ASSERT(bRet);
-	}
+	UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
+													 properties,PTX_SectionFrame);
+	UT_ASSERT(bRet);
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
@@ -1461,15 +1441,8 @@ void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG,
 	notifyListeners(AV_CHG_MOTION);
 }
 
-bool FV_View::getFrameStrings_view(UT_sint32 x, UT_sint32 y,fv_FrameStrings & FrameStrings,
-								   fl_BlockLayout ** pCloseBL,fp_Page ** ppPage)
-{
-	return (m_FrameEdit.getFrameStrings(x,y,FrameStrings,pCloseBL,ppPage));
-}
 
-
-
-void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[], fl_BlockLayout *pNewBL)
+void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[])
 {
 	setCursorWait();
 	//
@@ -1487,19 +1460,13 @@ void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[]
 		// should we assert ?
 		return;
 	}
+	PT_DocPosition posStart = pFrame->getPosition(true)+1;
+	PT_DocPosition posEnd = posStart;
 
-	if(pNewBL && (pFrame->getParentContainer() != pNewBL))
-	{
-		getLayout()->relocateFrame(pFrame,pNewBL,attribs,properties);
-	}
-	else
-	{ 
-		PT_DocPosition posStart = pFrame->getPosition(true)+1;
-		PT_DocPosition posEnd = posStart;
-		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,
-														 attribs,properties,PTX_SectionFrame);
-		UT_ASSERT(bRet);
-	}
+	UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,
+													 attribs,properties,PTX_SectionFrame);
+	UT_ASSERT(bRet);
+
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_generalUpdate();
@@ -1520,7 +1487,7 @@ void FV_View::releaseFrame(UT_sint32 x, UT_sint32 y)
 	m_FrameEdit.mouseRelease(x,y);
 }
 
-void FV_View::copyFrame(bool b_keepFrame)
+void FV_View::cutFrame(void)
 {
 	if(!m_FrameEdit.isActive())
 	{
@@ -1547,10 +1514,7 @@ void FV_View::copyFrame(bool b_keepFrame)
 	PT_DocPosition posHigh = posLow + pFL->getLength();
 	PD_DocumentRange dr(m_pDoc,posLow,posHigh);
 	XAP_App::getApp()->copyToClipboard(&dr, true);
-	if (!b_keepFrame)
-	{
-		m_FrameEdit.deleteFrame();
-	}
+	m_FrameEdit.deleteFrame();	
 	notifyListeners(AV_CHG_CLIPBOARD);
 }
 
@@ -1587,11 +1551,6 @@ void FV_View::selectFrame(void)
 	_drawSelection();
 }
 
-bool FV_View::isFrameSelected(void) const
-{
-	return(m_FrameEdit.isActive());
-}
-
 void FV_View::deleteFrame(void)
 {
 	if(!m_FrameEdit.isActive())
@@ -1619,7 +1578,7 @@ void FV_View::deleteFrame(void)
 	setCursorToContext();
 }
 
-fl_FrameLayout * FV_View::getFrameLayout(void) const
+fl_FrameLayout * FV_View::getFrameLayout(void)
 {
         if(m_FrameEdit.isActive())
 	{
@@ -1628,7 +1587,7 @@ fl_FrameLayout * FV_View::getFrameLayout(void) const
 	return getFrameLayout(getPoint());
 }
 
-fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos) const
+fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos)
 {
 	if(m_pDoc->isFrameAtPos(pos))
 	{
@@ -1695,10 +1654,111 @@ fl_FrameLayout * FV_View::getFrameLayout(PT_DocPosition pos) const
 	return NULL;
 }
 
+void FV_View::changeBlockAssociatedWithFrame(PT_DocPosition pos, fl_BlockLayout * newBlock, bool b_NotifyPT)
+{
+	fl_FrameLayout * pFL = NULL;
+	if(m_pDoc->isFrameAtPos(pos))
+	{
+		fl_ContainerLayout* psfh = NULL;
+		m_pDoc->getStruxOfTypeFromPosition(getLayout()->getLID(),pos+1,
+										   PTX_SectionFrame, &psfh);
+		pFL = static_cast<fl_FrameLayout *>(psfh);
+		UT_ASSERT(pFL->getContainerType() == FL_CONTAINER_FRAME);
+	}
+	else
+	{
+		return;
+	}
+	const PP_AttrProp* pSectionAP = NULL;
+	pFL->getAP(pSectionAP);
+
+	// Signal PieceTable Change and turn off list updates
+	if (b_NotifyPT)
+	{
+		m_pDoc->beginUserAtomicGlob();
+		_saveAndNotifyPieceTableChange();
+		getDocument()->disableListUpdates();
+		_clearSelection();
+	}
+
+	// Copy the frame content to clipboard
+	bool isTextBox = true;
+	if(pFL->getFrameType() >= FL_FRAME_WRAPPER_IMAGE)
+	{
+		isTextBox = false;
+	}
+	PT_DocPosition posStart = pFL->getPosition(true);
+	PT_DocPosition posEnd = posStart + pFL->getLength();
+	bool bHasContent = false;
+	if(isTextBox)
+	{
+		PD_DocumentRange dr_oldFrame;
+		dr_oldFrame.set(getDocument(),posStart+1,posEnd-1);
+		copyToLocal(posStart+1,posEnd-1);
+		bHasContent = true;
+	}
+
+	// Delete Frame
+	pf_Frag_Strux* sdhStart =  pFL->getStruxDocHandle();
+	pf_Frag_Strux* sdhEnd = NULL;
+	posStart = getDocument()->getStruxPosition(sdhStart);
+	getDocument()->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
+	if(sdhEnd == NULL)
+	{
+		posEnd= posStart+1;
+	}
+	else
+	{
+		posEnd = getDocument()->getStruxPosition(sdhEnd)+1;
+	}
+	UT_uint32 iRealDeleteCount;
+	PP_AttrProp * p_AttrProp_Before = NULL;
+
+	getDocument()->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
+	pFL = NULL;
+
+	// Insert the new frame struxes
+	pf_Frag_Strux * pfFrame = NULL;
+	getDocument()->insertStrux(newBlock->getPosition(),PTX_SectionFrame,
+							   pSectionAP->getAttributes(),pSectionAP->getProperties(),&pfFrame);
+	PT_DocPosition posFrame = pfFrame->getPos();
+	if(isTextBox && !bHasContent)
+	{
+		getDocument()->insertStrux(posFrame+1,PTX_Block);
+		getDocument()->insertStrux(posFrame+2,PTX_EndFrame);
+		insertParaBreakIfNeededAtPos(posFrame+3);
+	}
+	else
+	{
+		getDocument()->insertStrux(posFrame+1,PTX_EndFrame);
+		insertParaBreakIfNeededAtPos(posFrame+2);
+	}
+	
+	// paste in the content of the frame.
+	if(isTextBox)
+	{
+		if(!bHasContent)
+		{
+			_pasteFromLocalTo(posFrame+2);
+		}
+		else
+		{
+			_pasteFromLocalTo(posFrame+1);
+		}
+	}
+	
+	//	Finish up with the usual stuff
+	getDocument()->setDontImmediatelyLayout(false);
+	_generalUpdate();
+	getDocument()->enableListUpdates();
+	getDocument()->updateDirtyLists();
+}
+
+
 /*!
  * Returns true if the supplied Doc Position is inside a frame.
  */
-bool FV_View::isInFrame(PT_DocPosition pos) const
+bool FV_View::isInFrame(PT_DocPosition pos)
 {
 //
 // If at exactly the frame return true
@@ -4939,12 +4999,15 @@ bool FV_View::resetCharFormat(bool bAll)
 	// first we reset everything ...
 	// we have to do this, because setCharFormat() calls are cumulative (it uses
 	// PTC_AddFmt)
-	const gchar * attrs_out[5] = {"props","","style","",NULL};	
-	bool bRet = setCharFormat(NULL,attrs_out);
+	const gchar p[] = "props";
+	const gchar v[] = "";
+	const gchar * props_out[3] = {p,v,NULL};
+	
+	bool bRet = setCharFormat(NULL, props_out);
 
 	// now if we have something to set, we do so ...
 	if(AP.hasAttributes() || AP.hasProperties())
-		bRet &= setCharFormat(AP.getProperties(), AP.getAttributes());
+		bRet &= setCharFormat(AP.getAttributes(), AP.getProperties());
 	
 	m_pDoc->endUserAtomicGlob();
 	return bRet;
@@ -6168,7 +6231,7 @@ bool FV_View::getSectionFormat(const gchar ***pProps) const
 // Check we have a layout defined first. On start up we don't
 //
 	bool b = m_SecProps.isValid();
-	if((AV_View::getTick() == m_SecProps.getTick()) && b)
+	if((AV_View::getTick() == m_SecProps.getTick()) && m_SecProps.isValid())
 	{
 		xxx_UT_DEBUGMSG(("GOt a valid cache for section props \n"));
 		*pProps = m_SecProps.getCopyOfProps();
@@ -7539,7 +7602,7 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			_moveInsPtToPage (pPage);
 		}
 
-		notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
+		notifyListeners(AV_CHG_MOTION);
 
 		break;
 	}
@@ -7597,12 +7660,12 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			moveInsPtTo (dp);
 		}
 
-		notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR);
+		notifyListeners(AV_CHG_MOTION);
 
 		break;
-/*	case AP_JUMPTARGET_PICTURE:
+	case AP_JUMPTARGET_PICTURE:
 		// TODO
-		break; */
+		break;
     case AP_JUMPTARGET_XMLID:
 	{
 		std::string xmlid = numberString;
@@ -7612,7 +7675,6 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 			std::pair< PT_DocPosition, PT_DocPosition > range = rdf->getIDRange( xmlid );
 			UT_DEBUGMSG(("jump xmlid:%s gives range:%d to %d\n",
 						 xmlid.c_str(), range.first, range.second ));
-			moveInsPtTo(range.second);
 			selectRange( range.first, range.second );
 		}
 		break;
@@ -7691,7 +7753,6 @@ bool FV_View::gotoTarget(AP_JumpTarget type, const char *numberString)
 					moveInsPtTo (dp2);
 				else
 				{
-					moveInsPtTo(dp1);
 					selectRange( dp2, dp1 );
 					
 					//make a selection
@@ -8902,7 +8963,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	
 	// Find the enclosing table. If just look for the first one we can get fooled by nested tables.
 	pf_Frag_Strux* tableSDH;
-	bRet = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionTable,&tableSDH);
+	bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+1,PTX_SectionTable,&tableSDH);
 	if(!bRet)
 	{
 		// Allow table updates
@@ -8914,8 +8975,21 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 		return false;
 	}
 	posTable = m_pDoc->getStruxPosition(tableSDH)+1;
-	posStart = (posTable > posStart)?posTable:posStart;
-
+	if(posTable > posStart)
+	{
+		bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tableSDH);
+		if(!bRet)
+			{
+				// Allow table updates
+				m_pDoc->setDontImmediatelyLayout(false);
+				
+				// Signal PieceTable Changes have finished
+				_restorePieceTableState();
+				clearCursorWait();
+				return false;
+			}
+		posTable = m_pDoc->getStruxPosition(tableSDH)+1;
+	}
 	// Need this to trigger a table update!
 	UT_sint32 iLineType = _changeCellParams(posTable, tableSDH);
 	
@@ -8923,51 +8997,67 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	if (applyTo == FORMAT_TABLE_SELECTION)
 	{
 		pf_Frag_Strux* cellSDH;
-		bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+2,PTX_SectionCell,&cellSDH);
-		if(bRet)
+        bRet = m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionCell,&cellSDH);
+        if(!bRet)
+        {
+//
+// Might have exactly selected the table start and end struxes
+//
+			bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+2,PTX_SectionCell,&cellSDH);
+			if(!bRet)
+			{
+                // Allow table updates
+                m_pDoc->setDontImmediatelyLayout(false);
+                                                                                                                                                                                                         
+                // Signal PieceTable Changes have finished
+                _restorePieceTableState();
+				clearCursorWait();
+                return false;
+			}
+		}
+        posStart = m_pDoc->getStruxPosition(cellSDH)+1;
+		
+//
+// Make sure posEnd is inside the Table.
+//
+		pf_Frag_Strux* endTableSDH = m_pDoc->getEndTableStruxFromTablePos(posTable);
+		UT_ASSERT(endTableSDH);
+		if(endTableSDH == NULL)
 		{
-			posStart = m_pDoc->getStruxPosition(cellSDH)+1;
-			//
-			// Make sure posEnd is inside the Table.
-			//
-			pf_Frag_Strux* endTableSDH = m_pDoc->getEndTableStruxFromTablePos(posTable);
-			UT_ASSERT(endTableSDH);
-			if(endTableSDH == NULL)
+			return false;
+		}
+		PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+		if(posEnd > posEndTable)
+		{
+			posEnd = posEndTable -1;
+		}
+		// Do the actual change
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
+		UT_GenericVector<fl_BlockLayout*> vBlock;
+		getBlocksInSelection(&vBlock);
+		fl_ContainerLayout * pCL = NULL;
+		fl_CellLayout * pCell = NULL;
+		UT_sint32 i =0;
+		for(i=0; i<vBlock.getItemCount();i++)
+		{
+			fl_BlockLayout * pBL = vBlock.getNthItem(i);
+			pCL = pBL->myContainingLayout();
+			if(pCL->getContainerType() == FL_CONTAINER_CELL)
 			{
-				return false;
-			}
-			PT_DocPosition posEndTable = m_pDoc->getStruxPosition(endTableSDH);
-			if(posEnd > posEndTable)
-			{
-				posEnd = posEndTable -1;
-			}
-			// Do the actual change
-			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
-			UT_GenericVector<fl_BlockLayout*> vBlock;
-			getBlocksInSelection(&vBlock);
-			fl_ContainerLayout * pCL = NULL;
-			fl_CellLayout * pCell = NULL;
-			UT_sint32 i =0;
-			for(i=0; i<vBlock.getItemCount();i++)
-			{
-				fl_BlockLayout * pBL = vBlock.getNthItem(i);
-				pCL = pBL->myContainingLayout();
-				if(pCL->getContainerType() == FL_CONTAINER_CELL)
+				if(static_cast<fl_CellLayout *>(pCL) != pCell)
 				{
-					if(static_cast<fl_CellLayout *>(pCL) != pCell)
+					if(pFG != NULL)
 					{
-						if(pFG != NULL)
-						{
-							pCell = static_cast<fl_CellLayout *>(pCL);
-							pFG->insertAtStrux(m_pDoc,72,pBL->getPosition(),
+						pCell = static_cast<fl_CellLayout *>(pCL);
+						pFG->insertAtStrux(m_pDoc,72,pBL->getPosition(),
 										   PTX_SectionCell,sDataID.c_str());
-						}
-						else
-						{
-							const gchar * attributes[3] = {
+					}
+					else
+					{
+						const gchar * attributes[3] = {
 							PT_STRUX_IMAGE_DATAID,NULL,NULL};
-							bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pBL->getPosition(),pBL->getPosition(),attributes,NULL,PTX_SectionCell);	
-						}
+						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pBL->getPosition(),pBL->getPosition(),attributes,NULL,PTX_SectionCell);	
+						
 					}
 				}
 			}
@@ -8975,50 +9065,33 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	}
 	else if(applyTo == FORMAT_TABLE_TABLE)
 	{
-        UT_DEBUGMSG(("Doing apply FORMAT_TABLE_TABLE \n"));
+		UT_DEBUGMSG(("Doing apply FORMAT_TABLE_TABLE \n"));
 		// Loop through the table cells to adjust their formatting		
 		// get the number of rows and columns in the current table
+
+// First set the table format
+
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,properties,PTX_SectionTable);	
+
+// Now clear these away from the cell's so they'll inherit the table's 
+// properties.
 
 		UT_sint32 numRows;
 		UT_sint32 numCols;
 		bRet = m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
-
-		UT_sint32 rowStart = 0;
-		UT_sint32 rowEnd;
-		UT_sint32 colStart = 0;
-		UT_sint32 colEnd;
-		
-			colStart = 0;
-			colEnd = numCols-1;
-		
-			rowStart = 0;
-			rowEnd = numRows-1;
-					
-		// Loop through the table cells to adjust their formatting		
 		UT_sint32 i;
 		UT_sint32 j;
-		for (j = rowStart; j <= rowEnd; j++)
+		for (j = 0; j < numRows; j++)
 		{
-			for (i = colStart; i <= colEnd; i++)
+			for (i = 0; i < numCols; i++)
 			{
 				pf_Frag_Strux* cellSDH = m_pDoc->getCellSDHFromRowCol(tableSDH, isShowRevisions(), getRevisionLevel(),
 																		 j, i);
 				if(cellSDH)
 				{
-					// Do the actual change
+					// Remove these properties from the cell
 					posStart = m_pDoc->getStruxPosition(cellSDH)+1;
-					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
-					if(pFG != NULL)
-					{
-						pFG->insertAtStrux(m_pDoc,72,posStart,
-										   PTX_SectionCell,sDataID.c_str());
-					}
-					else
-					{
-						const gchar * attributes[3] = {
-							PT_STRUX_IMAGE_DATAID,NULL,NULL};
-						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, posStart, posStart, attributes, NULL, PTX_SectionCell);	
-					}
+					bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
 				}
 				else
 				{
@@ -9150,8 +9223,21 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
  \param col will be set to the cell to the property value, if the requested property exists
  \return True if succesful (ie. the property value is set), false otherwise
  */
-bool FV_View::getCellProperty(PT_DocPosition posCell, const gchar * szPropName, gchar * &szPropValue) const
+bool FV_View::getCellProperty(const gchar * szPropName, gchar * &szPropValue) const
 {
+	PT_DocPosition posCell = getPoint();
+	if (!isSelectionEmpty())
+	{
+		if (m_Selection.getSelectionAnchor() < posCell)
+		{
+			posCell = m_Selection.getSelectionAnchor();
+		}
+		if(posCell < 2)
+		{
+			posCell = 2;
+		}
+	}	
+	
 	pf_Frag_Strux* cellSDH;
 	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell,PTX_SectionCell,&cellSDH);
 	if(!bres)
@@ -10431,7 +10517,7 @@ EV_EditMouseContext FV_View::_getMouseContext(UT_sint32 xPos, UT_sint32 yPos)
 		return EV_EMC_UNKNOWN;
 	}
 
-#if 0 //defined(DEBUG)
+#ifdef DEBUG	
 	xxx_UT_DEBUGMSG(("fv_View::getMouseContext: () Run.type:%d\n", pRun->getType() ));
 	if( fp_Run* t = pRun->getNextRun() )
 	{
@@ -11210,7 +11296,7 @@ fp_Page* FV_View::getCurrentPage(void) const
 /*!
  * Returns true if there is some Layout classes defined. Not true at startup.
  */
-bool FV_View::isDocumentPresent(void) const
+bool FV_View::isDocumentPresent(void)
 {
 	return (getLayout()->getFirstSection() != NULL);
 }
@@ -11492,8 +11578,7 @@ void FV_View::setShowPara(bool bShowPara)
 	{
 		m_bShowPara = bShowPara;
 		m_pDoc->setDontChangeInsPoint();
-		// FIXME: test if next line can be safely removed
-		//m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
+		m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 		m_pDoc->allowChangeInsPoint();
 		if(getPoint() > 0)
 		{
@@ -11918,12 +12003,11 @@ void FV_View::populateThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
  * This function returns true if there is a header on the current page.
 \returns true if is there a header on the current page.
 */
-bool FV_View::isHeaderOnPage(void) const
+bool FV_View::isHeaderOnPage(void)
 {
-	const fp_Page * pPage = getCurrentPage();
+	fp_Page * pPage = getCurrentPage();
 	//UT_return_val_if_fail(pPage, false);
-	if(!pPage) 
-		return false;
+	if(!pPage) return false;
 	return (pPage->getHdrFtrP(FL_HDRFTR_HEADER) != NULL);
 }
 
@@ -11931,12 +12015,11 @@ bool FV_View::isHeaderOnPage(void) const
  * This function returns true if there is a footer on the current page.
 \returns true if is there a footer on the current page.
 */
-bool FV_View::isFooterOnPage(void) const
+bool FV_View::isFooterOnPage(void)
 {
-	const fp_Page * pPage = getCurrentPage();
+	fp_Page * pPage = getCurrentPage();
 	//UT_return_val_if_fail(pPage, false);
-	if(!pPage) 
-		return false;
+	if(!pPage) return false;
 	return (pPage->getHdrFtrP(FL_HDRFTR_FOOTER) != NULL);
 }
 
@@ -11974,7 +12057,7 @@ void FV_View::clearHdrFtrEdit(void)
 /*!
  *	 Returns the pointer to the current shadow.
  */
-fl_HdrFtrShadow *  FV_View::getEditShadow(void) const
+fl_HdrFtrShadow *  FV_View::getEditShadow(void)
 {
 	return m_pEditShadow;
 }
@@ -11982,7 +12065,7 @@ fl_HdrFtrShadow *  FV_View::getEditShadow(void) const
 /*!
  *	 Returns true if we're currently editting a HdrFtr section.
  */
-bool FV_View::isHdrFtrEdit(void) const
+bool FV_View::isHdrFtrEdit(void)
 {
 	return m_bEditHdrFtr;
 }
@@ -12004,7 +12087,7 @@ void FV_View::rememberCurrentPosition(void)
  * later.
  */
 
-PT_DocPosition FV_View::getSavedPosition(void) const
+PT_DocPosition FV_View::getSavedPosition(void)
 {
 	return m_iSavedPosition;
 }
@@ -12023,7 +12106,7 @@ void FV_View::clearSavedPosition(void)
  * This method tells us we need the old position after an undo because of
  * header/footer undo's. Might be useful for other stuff later.
  */
-bool FV_View::needSavedPosition(void) const
+bool FV_View::needSavedPosition(void)
 {
 	return m_bNeedSavedPosition;
 }
@@ -12328,7 +12411,7 @@ bool FV_View::insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_Doc
  * point is inside a footnote or endnote return 1, if the  point is inside
  * an endnote inside a footnote return 2 etc.
  */
-UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos) const
+UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos)
 {
 	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	if(pBL == NULL)
@@ -12353,7 +12436,7 @@ UT_sint32 FV_View::getEmbedDepth(PT_DocPosition pos) const
  * requested doc position. If the is no footnote before the doc position, NULL
  * is returned.
  */
-fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos) const
+fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos)
 {
 	fl_FootnoteLayout * pFL = NULL;
 	fl_FootnoteLayout * pClosest = NULL;
@@ -12382,7 +12465,7 @@ fl_FootnoteLayout * FV_View::getClosestFootnote(PT_DocPosition pos) const
  * requested doc position. If the is no footnote before the doc position, NULL
  * is returned.
  */
-fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos) const
+fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos)
 {
 	fl_EndnoteLayout * pFL = NULL;
 	fl_EndnoteLayout * pClosest = NULL;
@@ -12412,7 +12495,7 @@ fl_EndnoteLayout * FV_View::getClosestEndnote(PT_DocPosition pos) const
  * requested doc position. If the is no annnotation before the doc position, NULL
  * is returned.
  */
-fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos) const
+fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos)
 {
 	fl_AnnotationLayout * pAL = NULL;
 	fl_AnnotationLayout * pClosest = NULL;
@@ -12435,7 +12518,7 @@ fl_AnnotationLayout * FV_View::getClosestAnnotation(PT_DocPosition pos) const
 	return pClosest;
 }
 
-bool FV_View::isInHdrFtr(PT_DocPosition pos) const
+bool FV_View::isInHdrFtr(PT_DocPosition pos)
 {
 	fl_BlockLayout * pBL = _findBlockAtPosition(pos);
 	if(pBL == NULL)
@@ -12461,7 +12544,7 @@ bool FV_View::isInHdrFtr(PT_DocPosition pos) const
  * Returns true if the point is located with a block so stuff can be typed
  * or inserted.
  */
-bool FV_View::isPointLegal(PT_DocPosition pos) const
+bool FV_View::isPointLegal(PT_DocPosition pos)
 {
 	pf_Frag_Strux* prevSDH = NULL;
 	pf_Frag_Strux* nextSDH = NULL;
@@ -12560,7 +12643,7 @@ bool FV_View::isPointLegal(PT_DocPosition pos) const
 	return false;
 }
 
-bool FV_View::isPointLegal(void) const
+bool FV_View::isPointLegal(void)
 {
 	return isPointLegal(getPoint());
 }
@@ -12568,7 +12651,7 @@ bool FV_View::isPointLegal(void) const
 /*!
  * Returns true if the current insertion point is inside a footnote.
  */
-bool FV_View::isInFootnote(void) const
+bool FV_View::isInFootnote(void)
 {
 	return isInFootnote(getPoint());
 }
@@ -12576,7 +12659,7 @@ bool FV_View::isInFootnote(void) const
 /*!
  * Returns true if the requested position is inside a footnote.
  */
-bool FV_View::isInFootnote(PT_DocPosition pos) const
+bool FV_View::isInFootnote(PT_DocPosition pos)
 {
 	fl_FootnoteLayout * pFL = getClosestFootnote(pos);
 	if(pFL == NULL)
@@ -12597,7 +12680,7 @@ bool FV_View::isInFootnote(PT_DocPosition pos) const
 /*!
  * Returns true if the current insertion point is inside a footnote.
  */
-bool FV_View::isInEndnote(void) const
+bool FV_View::isInEndnote(void)
 {
 	return isInEndnote(getPoint());
 }
@@ -12605,7 +12688,7 @@ bool FV_View::isInEndnote(void) const
 /*!
  * Returns true if the requested position is inside a endnote.
  */
-bool FV_View::isInEndnote(PT_DocPosition pos) const
+bool FV_View::isInEndnote(PT_DocPosition pos)
 {
 	fl_EndnoteLayout * pFL = getClosestEndnote(pos);
 	if(pFL == NULL)
@@ -12627,7 +12710,7 @@ bool FV_View::isInEndnote(PT_DocPosition pos) const
 /*!
  * Returns true if the current insertion point is inside a annotation.
  */
-bool FV_View::isInAnnotation(void) const
+bool FV_View::isInAnnotation(void)
 {
 	return isInAnnotation(getPoint());
 }
@@ -12635,7 +12718,7 @@ bool FV_View::isInAnnotation(void) const
 /*!
  * Returns true if the requested position is inside a endnote.
  */
-bool FV_View::isInAnnotation(PT_DocPosition pos) const
+bool FV_View::isInAnnotation(PT_DocPosition pos)
 {
 	fl_AnnotationLayout * pAL = getClosestAnnotation(pos);
 	if(pAL == NULL)
@@ -13268,7 +13351,8 @@ bool FV_View::insertFootnote(bool bFootnote)
 	       m_FrameEdit.setPointInside();
 	}
 	_makePointLegal();
-	const PP_AttrProp * pAP_in = getAttrPropForPoint();
+	const gchar ** props_in = NULL;
+	getCharFormat(&props_in);
 
 	// add field for footnote reference
 	// first, make up an id for this footnote.
@@ -13279,7 +13363,6 @@ bool FV_View::insertFootnote(bool bFootnote)
 	
 	const gchar* attrs[] = {
 		"footnote-id", footpid.c_str(),
-		NULL, NULL,
 		NULL, NULL
 	};
 	if(!bFootnote)
@@ -13292,8 +13375,12 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 
 	PT_DocPosition FrefStart = getPoint();
+	PT_DocPosition FrefEnd = FrefStart + 1;
 	PT_DocPosition FanchStart;
 	PT_DocPosition FanchEnd;
+
+	const gchar *cur_style;  // TODO variable cur_style not used? delete it?
+	getStyle(&cur_style);
 
 	PT_DocPosition dpFT = 0;
 	const gchar * dumProps[3] = {"list-tag","123",NULL};
@@ -13314,20 +13401,37 @@ bool FV_View::insertFootnote(bool bFootnote)
 	UT_DebugOnly<bool> bRet = false;
 	if(bFootnote)
 	{
-		attrs[2] = "style";
-		attrs[3] = "Footnote Reference";
 		if (_insertField("footnote_ref", attrs)==false)
 			return false;
+		FrefEnd = FrefStart+1;
+		setStyleAtPos("Footnote Reference", FrefStart, FrefEnd,true);
+
+		// setStyleAtPos() creates a selection, clear it before adding an fmt mark
+		_clearSelection();
+
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
+		UT_ASSERT(bRet);
+		setCharFormat(props_in);
 	}
 	else
 	{
-		attrs[2] = "style";
-		attrs[3] = "Endnote Reference";		
 		if (_insertField("endnote_ref", attrs)==false)
 			return false;
+		FrefEnd = FrefStart+1;
+		setStyleAtPos("Endnote Reference", FrefStart, FrefEnd,true);
+
+		// setStyleAtPos() creates a selection, clear it before adding an fmt mark
+		_clearSelection();
+//
+// Put the character format back to it previous value
+//
+		bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,getPoint(),getPoint(),NULL,props_in);
+		UT_ASSERT(bRet);
 	}
-	attrs[2] = NULL;
-	attrs[3] = NULL;
+	g_free(props_in);
 	fl_BlockLayout * pBL;
 
 //
@@ -13374,14 +13478,22 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	m_pDoc->insertSpan(FanchEnd, &tab, 1,const_cast<PP_AttrProp *>(pSpanAP));
 
-	//
-	// Put the character format after footnote back to its previous value
-	//
-	PP_AttrProp * pAP_after = pAP_in->createExactly(pAP_in->getAttributes(),pAP_in->getProperties());
-	bRet = m_pDoc->insertFmtMark(PTC_AddFmt,FanchEnd+2,pAP_after);
-	UT_ASSERT(bRet);
+
+	// apply footnote text style to the body of the footnote and the
+	// reference style to the anchor follows it
+	propListTag[0]="text-position";
+	propListTag[1]="superscript";
+	if(bFootnote)
+	{
+		setStyleAtPos("Footnote", FanchStart-1, FanchEnd, true);
+	}
+	else
+	{
+		setStyleAtPos("Endnote", FanchStart, FanchEnd, true);
+	}
 
 	_setPoint(FanchEnd+1);
+	_resetSelection(); // needed because of the setStyle calls ...
 	
 	/*	some magic to make the endnote reference and anchor recalculate
 		its widths
@@ -13439,13 +13551,13 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const gchar * enpid)
 	}
 	const gchar* block_attrs2[] = {
 		"footnote-id", enpid,
-		"style", "Footnote", // xxx 'Footnote Body'
+		"style", "Footnote Text", // xxx 'Footnote Body'
 		NULL, NULL
 	};
 	if(!bFootnote)
 	{
 		block_attrs2[0] = "endnote-id";
-		block_attrs2[3] = "Endnote";
+		block_attrs2[3] = "Endnote Text";
 	}
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
@@ -13769,17 +13881,18 @@ void FV_View::updateRevisionMode()
  */
 bool FV_View::isInTable() const
 {
-	PT_DocPosition pos = getPoint();
+	PT_DocPosition pos;
 
 	if (isSelectionEmpty())
 	{
-		return isInTable(pos);
+		pos = getPoint();
 	}
 	else
 	{
   		PT_DocPosition posA = getSelectionAnchor();
-		return (isInTable(posA) && isInTable(pos));
+		return (isInTableForSure(posA) && isInTableForSure(getPoint()));
 	}
+	return isInTableForSure(pos);
 }
 
 fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos) const
@@ -13811,8 +13924,13 @@ fl_TableLayout * FV_View::getTableAtPos(PT_DocPosition pos) const
 	return NULL;
 }
 
+bool FV_View::isInTableForSure(PT_DocPosition pos) const
+{
+	return (isInTable(pos));
+}
 /*!
- * Returns true if the point supplied is inside a Table. 
+ * Returns true if the point supplied is inside a Table. Use isInTableForSure
+ * To cover the case if
  */
 bool FV_View::isInTable( PT_DocPosition pos) const
 {
@@ -13845,7 +13963,7 @@ bool FV_View::isInTable( PT_DocPosition pos) const
 		xxx_UT_DEBUGMSG(("As cell pos in table pos %d \n",pos));
 		return true;
 	}
-	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos,true);
+	fl_BlockLayout * pBL =	m_pLayout->findBlockAtPosition(pos);
 	xxx_UT_DEBUGMSG((" Got Bokc at pos %d looking at pos %d \n",pBL->getPosition(true),pos));
 	if(!pBL)
 	{
@@ -13932,7 +14050,7 @@ bool FV_View::isInTable( PT_DocPosition pos) const
  * Returns the position of the cell strux of cell specified by (row,col) within the
  * Table surrounding the supplied point.
  */
-PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col) const
+PT_DocPosition FV_View::findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col)
 {
 	pf_Frag_Strux* cellSDH,*tableSDH;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posTable,PTX_SectionTable,&tableSDH);
@@ -14562,30 +14680,9 @@ bool FV_View::rtlPages() const
 void
 FV_View::selectRange( PT_DocPosition start, PT_DocPosition end )
 {
-	_clearSelection();
 	_setPoint(start);
 	_setSelectionAnchor();
 	setPoint(end);
 	_drawSelection();
-}
-
-void
-FV_View::selectRange( const std::pair< PT_DocPosition, PT_DocPosition >& range )
-{
-	selectRange( range.first, range.second );
-}
-
-/*!
-  Reverse the direction of the current selection
-  Does so without changing the screen.
-*/
-void FV_View::swapSelectionOrientation(void)
-{
-	UT_ASSERT(!isSelectionEmpty());
-	_fixInsertionPointCoords();
-	PT_DocPosition curPos = getPoint();
-	UT_ASSERT(curPos != m_Selection.getSelectionAnchor());
-	_setPoint(m_Selection.getSelectionAnchor());
-	m_Selection.setSelectionAnchor(curPos);
 }
 

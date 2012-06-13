@@ -1,4 +1,3 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 // ut_string_class.cpp
 
 // A simple string class for use where templates are not
@@ -479,25 +478,13 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 	const char * szLoc = strstr(szProps,szWork);
 	if(szLoc == NULL)
 	{
-		//Not here, do nothing
+//
+// Not here, do nothing
 		return ;
 	}
-	// Check if this is a real match
-	if (szLoc != szProps)
-	{
-		// This is not the first property. It could be a false match
-		// for example, 'frame-col-xpos' and 'xpos'
-		UT_String sWorkCheck("; ");
-		sWorkCheck += sWork;
-		const char * szLocCheck = strstr(szProps,sWorkCheck.c_str());
-		if (!szLocCheck)
-		{
-			// False match
-			return;
-		}
-		szLoc = szLocCheck;
-	}	    
-
+//
+// Found it, Get left part.
+//
 	UT_sint32 locLeft = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
 	UT_String sLeft;
 	if(locLeft == 0)
@@ -509,7 +496,19 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 		sLeft = sPropertyString.substr(0,locLeft);
 	}
 	locLeft = static_cast<UT_sint32>(sLeft.size());
-
+	if(locLeft > 0)
+	{
+//
+// If this element is the last item in the properties there is no "; ".
+//
+// Remove trailing ';' and ' '
+//
+		locLeft--;
+		while(locLeft >= 0 && (sLeft[locLeft] == ';' || sLeft[locLeft] == ' '))
+		{
+			locLeft--;
+		}
+	}
 	UT_String sNew;
 	if(locLeft > 0)
 	{
@@ -519,17 +518,22 @@ void UT_String_removeProperty(UT_String & sPropertyString, const UT_String & sPr
 	{
 		sNew.clear();
 	}
-
-	// Look for ";" to get right part
+//
+// Look for ";" to get right part
+//
 	const char * szDelim = strchr(szLoc,';');
 	if(szDelim == NULL)
 	{
-		// No properties after this, just assign and return
+//
+// No properties after this, just assign and return
+//
 		sPropertyString = sNew;
 	}
 	else
 	{
-		// Just slice off the properties and tack them onto the pre-existing sNew
+//
+// Just slice off the properties and tack them onto the pre-existing sNew
+//
 		while(*szDelim == ';' || *szDelim == ' ')
 		{
 			szDelim++;
@@ -1078,29 +1082,15 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 	const char * szWork = sWork.utf8_str();
 	const char * szProps = sPropertyString.utf8_str();
 	const char * szLoc = strstr(szProps,szWork);
-
-	if(!szLoc)
+	if(szLoc == NULL)
 	{
-		//Not here, do nothing
+//
+// Not here, do nothing
 		return ;
 	}
-
-	// Check if this is a real match
-	if (szLoc != szProps)
-	{
-		// This is not the first property. It could be a false match
-		// for example, 'frame-col-xpos' and 'xpos'
-		UT_UTF8String sWorkCheck("; ");
-		sWorkCheck += sWork;
-		const char * szLocCheck = strstr(szProps,sWorkCheck.utf8_str());
-		if (!szLocCheck)
-		{
-			// False match
-			return;
-		}
-		szLoc = szLocCheck;
-	}	    
-
+//
+// Found it, Get left part.
+//
 	UT_sint32 locLeft = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
 	UT_UTF8String sLeft;
 	if(locLeft == 0)
@@ -1109,30 +1099,51 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 	}
 	else
 	{
-		sLeft = sPropertyString.substr(0,locLeft);
+		UT_UTF8String sTmp =  sPropertyString;
+		char * szTmp = const_cast<char *>(sTmp.utf8_str());
+		szTmp[locLeft] = 0; 
+		sLeft = szTmp;
 	}
-
+	char * szLeft = const_cast<char *>(sLeft.utf8_str());
+	locLeft--;
+	if(locLeft > 0)
+	{
+//
+// If this element is the last item in the properties there is no "; ".
+//
+// Remove trailing ';' and ' '
+//
+		while(locLeft >= 0 && (szLeft[locLeft] == ';' || szLeft[locLeft] == ' '))
+		{
+			locLeft--;
+		}
+	}
 	UT_UTF8String sNew;
 	if(locLeft > 0)
 	{
-		sNew = sLeft;
+		szLeft[locLeft+1] = 0;
+		sNew = szLeft;
 	}
 	else
 	{
 		sNew.clear();
 	}
-	//
-	// Look for ";" to get right part
-	//
+//
+// Look for ";" to get right part
+//
 	const char * szDelim = strchr(szLoc,';');
 	if(szDelim == NULL)
 	{
-		// No properties after this, just assign and return
+//
+// No properties after this, just assign and return
+//
 		sPropertyString = sNew;
 	}
 	else
 	{
-		// Just slice off the properties and tack them onto the pre-existing sNew
+//
+// Just slice off the properties and tack them onto the pre-existing sNew
+//
 		while(*szDelim == ';' || *szDelim == ' ')
 		{
 			szDelim++;

@@ -84,7 +84,7 @@ PLListenerType ABI_Collab_Export::getType() const
  */
 ChangeRecordSessionPacket* ABI_Collab_Export::_buildPacket( const PX_ChangeRecord * pcr )
 {
-	UT_return_val_if_fail(pcr, NULL);
+	UT_return_val_if_fail(pcr, false);
 	
 	UT_sint32 index = static_cast<UT_sint32>(pcr->getIndexAP());
 	switch(pcr->getType()) {
@@ -527,13 +527,7 @@ bool ABI_Collab_Export::insertStrux(fl_ContainerLayout* sfh,
 {
 	if(pfnBindHandles)
 	{
-// Ugly hack for MSVC and GCC comlilant warnings
-#ifdef __GNUC__
-	#warning not sure
-#else
-	#pragma message("WARNING: not sure")
-#endif
-
+#warning not sure
 		fl_ContainerLayout* sfhNew = sfh; // WAS static_cast<fl_ContainerLayout*>(this);
 		pfnBindHandles(sdh,lid,sfhNew);
 	}

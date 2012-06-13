@@ -26,7 +26,7 @@
 #include "ut_assert.h"
 
 template <class V>
-void UT_std_vector_purgeall(V & v)
+void UT_std_vector_purgeall(V & v) 
 {
 	for(typename V::iterator iter = v.begin();iter != v.end(); ++iter) {
 		UT_ASSERT_HARMLESS(*iter);
@@ -35,13 +35,6 @@ void UT_std_vector_purgeall(V & v)
 	}
 }
 
-template <class V, typename F>
-void UT_std_vector_freeall(V & v, F free_func = g_free)
-{
-	for(typename V::iterator iter = v.begin();iter != v.end(); ++iter) {
-		if(*iter)
-			free_func(*iter);
-	}
-}
+
 
 #endif

@@ -25,10 +25,6 @@
 #include <string.h>
 #include <gtk/gtk.h>
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-
 #include "GTKCommon.h"
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -284,12 +280,9 @@ AP_UnixDialog_RDFQuery::setQueryString( const std::string& sparql )
 * Build dialog.
 */
 void 
-AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/) 
+AP_UnixDialog_RDFQuery::constuctWindow (XAP_Frame * /*pFrame*/) 
 {
-	UT_DEBUGMSG (("ROB: _constructWindow ()\n"));		
-
-	const XAP_StringSet *pSS = m_pApp->getStringSet();
-	std::string text;
+	UT_DEBUGMSG (("ROB: constuctWindow ()\n"));		
 
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
@@ -304,16 +297,8 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
     m_btShowAll = GTK_WIDGET(gtk_builder_get_object(builder, "btShowAll"));
     m_query     = GTK_WIDGET(gtk_builder_get_object(builder, "query"));
 	m_resultsView  = GTK_TREE_VIEW(gtk_builder_get_object(builder, "resultsView"));
+//	m_resultsModel = GTK_LIST_STORE(gtk_builder_get_object(builder, "resultsModel"));
     m_status    = GTK_WIDGET(gtk_builder_get_object(builder, "status"));
-
-    // localization
-    localizeButton(m_btShowAll, pSS, AP_STRING_ID_DLG_RDF_Query_ShowAll); 
-    localizeButton(m_btExecute, pSS, AP_STRING_ID_DLG_RDF_Query_Execute); 
-    GtkTextIter iter;
-    GtkTextBuffer *buffer = gtk_text_view_get_buffer(GTK_TEXT_VIEW(m_query));
-    gtk_text_buffer_get_iter_at_line(buffer, &iter, 0);
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Comment, text);
-    gtk_text_buffer_insert(buffer, &iter, text.c_str(), -1);     
 
     GObject *selection;
     selection = G_OBJECT (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_resultsView)));
@@ -329,24 +314,21 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
 
     colid = C_SUBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Subject, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( "Subject", ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
     
     colid = C_PRED_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Predicate, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( "Predicate", ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
 
     colid = C_OBJ_COLUMN;
     ren = gtk_cell_renderer_text_new ();
-    pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_Query_Column_Object, text);
-    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( text.c_str(), ren, "text", colid, NULL);
+    w_cols[ colid ] = gtk_tree_view_column_new_with_attributes( "Object", ren, "text", colid, NULL);
     gtk_tree_view_append_column( GTK_TREE_VIEW( m_resultsView ), w_cols[ colid ] );
     gtk_tree_view_column_set_sort_column_id( w_cols[ colid ], colid );
     gtk_tree_view_column_set_resizable ( w_cols[ colid ], true );
@@ -363,11 +345,6 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
 	g_signal_connect (m_wDialog, "delete-event",
 					  G_CALLBACK (AP_UnixDialog_RDFQuery__onDeleteWindow), static_cast <gpointer>(this));
 
-#ifndef WITH_REDLAND
-	gtk_widget_set_sensitive(m_btExecute, FALSE);  
-	gtk_widget_set_sensitive(m_btShowAll, FALSE);  
-#endif
-
 	g_object_unref(G_OBJECT(builder));
 }
 
@@ -375,9 +352,9 @@ AP_UnixDialog_RDFQuery::_constructWindow (XAP_Frame * /*pFrame*/)
 * Update dialog's data.
 */
 void 
-AP_UnixDialog_RDFQuery::_updateWindow ()
+AP_UnixDialog_RDFQuery::updateWindow ()
 {
-    UT_DEBUGMSG(("RDFQuery::_updateWindow()\n"));
+    UT_DEBUGMSG(("RDFQuery::updateWindow()\n"));
 	ConstructWindowName ();
 	gtk_window_set_title (GTK_WINDOW (m_wDialog), m_WindowName.c_str() );
 }
@@ -386,9 +363,9 @@ void
 AP_UnixDialog_RDFQuery::runModeless (XAP_Frame * pFrame)
 {
 	UT_DEBUGMSG (("MIQ: runModeless ()\n"));
-	_constructWindow (pFrame);
+	constuctWindow (pFrame);
 	UT_ASSERT (m_wDialog);
-	_updateWindow ();
+	updateWindow ();
 	abiSetupModelessDialog (GTK_DIALOG (m_wDialog), pFrame, this, GTK_RESPONSE_CLOSE);
 	gtk_widget_show_all (m_wDialog);
 	gtk_window_present (GTK_WINDOW (m_wDialog));
@@ -399,7 +376,7 @@ AP_UnixDialog_RDFQuery::notifyActiveFrame (XAP_Frame * /*pFrame*/)
 {
 	UT_DEBUGMSG (("MIQ: notifyActiveFrame ()\n"));
 	UT_ASSERT (m_wDialog);
-	_updateWindow ();
+	updateWindow ();
 }
 
 void 
@@ -407,7 +384,7 @@ AP_UnixDialog_RDFQuery::activate (void)
 {
 	UT_ASSERT (m_wDialog);
 	UT_DEBUGMSG (("MIQ: AP_UnixDialog_RDFQuery::activate ()\n"));
-	_updateWindow ();
+	updateWindow ();
 	gtk_window_present (GTK_WINDOW (m_wDialog));
 }
 

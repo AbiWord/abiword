@@ -45,7 +45,6 @@
 #include "fp_Line.h"
 #include "fp_TextRun.h"
 #include "fp_Run.h"
-#include "fp_FrameContainer.h"
 #include "fv_View.h"
 #include "pd_Document.h"
 #include "pp_Property.h"
@@ -64,7 +63,6 @@
 #include "ut_misc.h"
 #include "pf_Frag_Strux.h"
 #include "ie_imp_RTF.h"
-#include "ie_exp_RTF.h"
 #include "ap_StatusBar.h"
 #include "ap_FrameData.h"
 
@@ -692,15 +690,10 @@ void FL_DocLayout::fillLayouts(void)
 			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			continue;
 		}
-		if (pTOC->isTOCEmpty())
-		{
-			pTOC->fillTOC();
-			m_pView->updateLayout();
-		}
 
 		// because the incremental load is sequential, the TOCs are in the order they have in the
 		// document, so we just need to remember the first one.
-		if(!pBadTOC && pTOC->verifyBookmarkAssumptions())
+		if(pTOC->verifyBookmarkAssumptions() && !pBadTOC)
 		{
 			pBadTOC = pTOC;
 		}
@@ -753,27 +746,6 @@ void FL_DocLayout::fillLayouts(void)
 			}
 		}
 	}
-
-	// Frame related tasks
-
-	if (m_vecFramesToBeInserted.getItemCount() > 0)
-	{
-		// There is a mismatch between the new layout and the saved file.
-		// The requested page for some frames does not exists.
-		// Insert all remaining frames on the last page.
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		fp_FrameContainer * pFrame = NULL;
-		UT_sint32 k = 0;
-		UT_sint32 kmax = m_vecFramesToBeInserted.getItemCount();
-		fp_Page * pPage = getLastPage();
-		for (k = 0; k < kmax; k++)
-		{
-			pFrame = m_vecFramesToBeInserted.getNthItem(0);
-			m_vecFramesToBeInserted.deleteNthItem(0);
-			pPage->insertFrameContainer(pFrame);
-		}		
-	}
-
 	setFramePageNumbers(0);
 	loadPendingObjects();
 	//
@@ -1139,142 +1111,22 @@ void FL_DocLayout::setFramePageNumbers(UT_sint32 iStartPage)
 }
 
 /*!
- * relocate the frame given to a new block. This involves changing the piece table as the 
- * frame strux is placed immediately after its parent block strux.
- * The function returns the pointer to the new frame layout. 
+ * relocate the frame given to the block on the page requested by the
+ * Frame
+ *
  */
-fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayout * newBlock, 
-											  const gchar** attributes, const gchar **properties)
+void FL_DocLayout:: relocateFrame(fl_FrameLayout * /*pFrame*/)
 {
-	if(m_pDoc->isDoingTheDo())
-	{
-		return(pFL);
-	}
-	m_pDoc->beginUserAtomicGlob();
-	const PP_AttrProp* pFrameAP = NULL;
-	PP_AttrProp * pUpdatedFrameAP = NULL;
-	pFL->getAP(pFrameAP);
-	pUpdatedFrameAP = pFrameAP->cloneWithReplacements(attributes,properties,false);
-
-	// Copy the frame content to clipboard
-	bool isTextBox = (pFL->getFrameType() < FL_FRAME_WRAPPER_IMAGE);
-	PT_DocPosition posStart = pFL->getPosition(true);
-	PT_DocPosition posEnd = posStart + pFL->getLength();
-	UT_ByteBuf * pLocalBuf = new UT_ByteBuf;
-	if(isTextBox)
-	{
-		PD_DocumentRange dr_oldFrame;
-		dr_oldFrame.set(m_pDoc,posStart+1,posEnd-1);
-		IE_Exp_RTF * pExpRtf = new IE_Exp_RTF(m_pDoc);
-		PD_DocumentRange docRange(m_pDoc, posStart+1,posEnd-1);
-		pExpRtf->copyToBuffer(&docRange,pLocalBuf);
-		delete pExpRtf;
-	}
-
-	// Delete Frame
-	pf_Frag_Strux* sdhStart =  pFL->getStruxDocHandle();
-	pf_Frag_Strux* sdhEnd = NULL;
-	posStart = m_pDoc->getStruxPosition(sdhStart);
-	m_pDoc->getNextStruxOfType(sdhStart, PTX_EndFrame, &sdhEnd);
-	if(sdhEnd == NULL)
-	{
-		posEnd = posStart+1;
-	}
-	else
-	{
-		posEnd = m_pDoc->getStruxPosition(sdhEnd)+1;
-	}
-	UT_uint32 iRealDeleteCount;
-	PP_AttrProp * p_AttrProp_Before = NULL;
-	m_pDoc->deleteSpan(posStart, posEnd, p_AttrProp_Before, iRealDeleteCount,true);
-	pFL = NULL;
-	// Insert the new frame struxes
-	pf_Frag_Strux * pfFrame = NULL;
-	m_pDoc->insertStrux(newBlock->getPosition(),PTX_SectionFrame,pUpdatedFrameAP->getAttributes(),
-						pUpdatedFrameAP->getProperties(),&pfFrame);
-	PT_DocPosition posFrame = pfFrame->getPos();
-	m_pDoc->insertStrux(posFrame+1,PTX_EndFrame);
-	m_pView->insertParaBreakIfNeededAtPos(posFrame+2);
-	// paste in the content of the frame.
-	if(isTextBox)
-	{
-		PD_DocumentRange docRange(m_pDoc,posFrame+1,posFrame+1);
-		IE_Imp_RTF * pImpRTF = new IE_Imp_RTF(m_pDoc);
-		const unsigned char * pData = static_cast<const unsigned char *>(pLocalBuf->getPointer(0));
-		UT_uint32 iLen = pLocalBuf->getLength();		
-		pImpRTF->pasteFromBuffer(&docRange,pData,iLen);
-		delete pImpRTF;
-	}
-	delete pLocalBuf;
-	m_pDoc->endUserAtomicGlob();
-
-	fl_ContainerLayout * pNewFL = pfFrame->getFmtHandle(m_lid);
-	if (pNewFL && (pNewFL->getContainerType() == FL_CONTAINER_FRAME))
-	{
-		return (static_cast <fl_FrameLayout *>(pNewFL));
-	}
-	else
-	{
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		return NULL;
-	}
+  //
+  // Get all the attributes/properties
+  // Copy the content
+  // Get page requested.
+  // get the position coords of the frame on the page
+  // delete the old frame
+  // find the correct block on the page
+  // Insert the frame - make sure "relocate" is 0
+  // paste content
 }
-
-/*! 
-  add a frame to the list of frames that need to be inserted on a page later in the document than its 
-  parent block. A frame can be placed up to 3 pages after its parent block. This list is needed during 
-  the initial layout stage.
- */
-
-bool FL_DocLayout::addFramesToBeInserted(fp_FrameContainer * pFrame)
-{
-	m_vecFramesToBeInserted.addItem(pFrame);
-	return true;
-}
-
-/*! 
-  remove a frame from the list of frames that need to be inserted on a page later in the document.
- */
-
-bool FL_DocLayout::removeFramesToBeInserted(fp_FrameContainer * pFrame)
-{
-	UT_sint32 i = m_vecFramesToBeInserted.findItem(pFrame);
-	if(i < 0)
-	{
-		return false;
-	}
-	m_vecFramesToBeInserted.deleteNthItem(i);
-	return true;
-}
-
-/*! 
-  find a frame that needs to be inserted on page pPage. Only frames that are inserted on a page later
-  in the document than their parent block are placed in this list. This list is needed during 
-  the initial layout stage.
- */
-
-fp_FrameContainer * FL_DocLayout::findFramesToBeInserted(fp_Page * pPage)
-{
-	UT_sint32 count = m_vecFramesToBeInserted.getItemCount();
-	if (count == 0)
-	{
-		return NULL;
-	}
-
-	UT_sint32 iPage = pPage->getPageNumber();
-	UT_sint32 k = 0;
-	fp_FrameContainer * pFrame = NULL;
-	for (k = 0;k < count;k++)
-	{
-		pFrame = m_vecFramesToBeInserted.getNthItem(k);
-		if (pFrame->getPreferedPageNo() == iPage)
-		{
-			return pFrame;
-		}
-	}
-	return NULL;
-}
-
 
 void FL_DocLayout::setView(FV_View* pView)
 {
@@ -2124,6 +1976,115 @@ bool FL_DocLayout::removeTOC(fl_TOCLayout * pTOC)
 	return true;
 }
 
+bool FL_DocLayout::fillTOC(fl_TOCLayout * pTOC)
+{
+	fl_DocSectionLayout * pDSL = m_pFirstSection;
+	fl_BlockLayout * pBlock = NULL;
+	fl_ContainerLayout * pCL = static_cast<fl_ContainerLayout *>(pDSL);
+	while(pCL && pCL->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+		pCL = pCL->getFirstLayout();
+	}
+	if(pCL == NULL)
+	{
+		return false;
+	}
+	if(pCL->getContainerType() != FL_CONTAINER_BLOCK)
+	{
+		return false;
+	}
+	UT_UTF8String sStyle;
+	pBlock = static_cast<fl_BlockLayout *>(pCL);
+	bool filled = false;
+
+	const gchar * pBookmark = pTOC->getRangeBookmarkName().size() ? pTOC->getRangeBookmarkName().utf8_str() : NULL;
+	
+	if(pBookmark)
+	{
+		if(m_pDoc->isBookmarkUnique(pBookmark))
+		{
+			// bookmark does not exist
+			pBookmark = NULL;
+		}
+	}
+
+	fl_BlockLayout * pBlockLast = NULL;
+	
+	if(pBookmark)
+	{
+		UT_uint32 i = 0;
+		fp_BookmarkRun * pB[2] = {NULL,NULL};
+		fp_Run * pRun;
+		fl_BlockLayout * pBlockStart = pBlock;
+		bool bFound = false;
+		
+		while(pBlock)
+		{
+			pRun = pBlock->getFirstRun();
+
+			while(pRun)
+			{
+				if(pRun->getType()== FPRUN_BOOKMARK)
+				{
+					fp_BookmarkRun * pBR = static_cast<fp_BookmarkRun*>(pRun);
+					if(!strcmp(pBR->getName(),pBookmark))
+					{
+						pB[i] = pBR;
+						i++;
+						if(i>1)
+						{
+							bFound = true;
+							break;
+						}
+					}
+				}
+
+				pRun = pRun->getNextRun();
+			}
+			
+			if(bFound)
+				break;
+			
+			pBlock = pBlock->getNextBlockInDocument();
+		}
+
+		if(pB[0] && pB[1])
+		{
+			pBlockLast = pB[1]->getBlock();
+
+			pBlock = pB[0]->getBlock();
+			PT_DocPosition pos1 = pB[0]->getBookmarkedDocPosition(false);
+
+			if(pBlock->getPosition(true) < pos1)
+				pBlock = pBlock->getNextBlockInDocument();
+		}
+		else
+		{
+			UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
+			pBlock = pBlockStart;
+		}
+	}
+
+	// clear any existing contents
+	pTOC->purgeLayout();
+
+	while(pBlock)
+	{
+		pBlock->getStyle(sStyle);
+		if(pTOC->isStyleInTOC(sStyle))
+		{
+			filled = true;
+			pTOC->addBlock(pBlock, false);
+		}
+
+		if(pBlockLast && pBlockLast == pBlock)
+			break;
+		
+		pBlock = pBlock->getNextBlockInDocument();
+	}
+	return filled;
+}
+
 /*
    updates affected TOCs in response to bookmark operation
    returns true if operation resulted in change, false otherwise
@@ -2141,7 +2102,7 @@ bool FL_DocLayout::updateTOCsOnBookmarkChange(const gchar * pBookmark)
 		if(pTOC->getRangeBookmarkName().size() && !strcmp(pTOC->getRangeBookmarkName().utf8_str(), pBookmark))
 		{
 			// this TOC depends on the given bookmark, update ...
-			pTOC->fillTOC();
+			fillTOC(pTOC);
 			bChange = true;
 		}
 	}
@@ -2488,12 +2449,11 @@ fp_Page* FL_DocLayout::addNewPage(fl_DocSectionLayout* pOwner, bool bNoUpdate)
 /*!
   Find block at document position
   \param pos Document position
-  \return Block at specified position.
-  If bLookOnlyBefore = true, it returns NULL if no block can be found
-  If bLookOnlyBefore = false, it returns the first block to the right of
-  that position (it may still return NULL).
+  \return Block at specified posistion, or the first block to the
+          rigth of that position. May return NULL.
+
 */
-fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLookOnlyBefore) const
+fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos) const
 {
 	fl_BlockLayout* pBL = NULL;
 	fl_ContainerLayout* sfh = 0;
@@ -2522,7 +2482,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLook
 	bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
 	// If block wasn't found at position, try finding it to the right,
 	// limited only by the EOD.
-	while(!bRes && !bLookOnlyBefore && (pos < posEOD) )
+	while(!bRes && (pos < posEOD))
 	{
 		pos++;
 		bRes = m_pDoc->getStruxOfTypeFromPosition(m_lid, pos, PTX_Block, &sfh);
@@ -2554,6 +2514,7 @@ fl_BlockLayout* FL_DocLayout::findBlockAtPosition(PT_DocPosition pos, bool bLook
 	}
 	else
 	{
+		UT_ASSERT_HARMLESS(0);
 		return NULL;
 	}
 

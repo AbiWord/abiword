@@ -1,30 +1,51 @@
-<?xml version="1.0" ?>
-<!--*- mode: xml -*-->
+<?xml version="1.0"?>
 <interface>
+  <object class="GtkListStore" id="model1">
+    <columns>
+      <!-- column-name gchararray -->
+      <column type="gchararray"></column>
+    </columns>
+    <data>
+      <row>
+        <col id="0">fake</col>
+      </row>
+    </data>
+  </object>
+  <object class="GtkListStore" id="model2">
+    <columns>
+      <!-- column-name gchararray -->
+      <column type="gchararray"></column>
+    </columns>
+    <data>
+      <row>
+        <col id="0">fake</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkDialog" id="ap_UnixDialog_Replace">
-    <property name="border_width">5</property>
+    <property name="visible">True</property>
+    <property name="title" translatable="yes">Replace</property>
+    <property name="type_hint">dialog</property>
     <property name="has_separator">False</property>
-    <property name="resizable">False</property>
-    <property name="type_hint">GDK_WINDOW_TYPE_HINT_DIALOG</property>
     <child internal-child="vbox">
       <object class="GtkVBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <child>
           <object class="GtkTable" id="table2">
-            <property name="border_width">4</property>
-            <property name="column_spacing">12</property>
-            <property name="n_columns">3</property>
-            <property name="n_rows">5</property>
-            <property name="row_spacing">12</property>
             <property name="visible">True</property>
+            <property name="border_width">12</property>
+            <property name="n_rows">5</property>
+            <property name="n_columns">3</property>
+            <property name="column_spacing">12</property>
+            <property name="row_spacing">12</property>
             <child>
               <object class="GtkButton" id="btnFind">
-                <property name="can_default">True</property>
-                <property name="can_focus">True</property>
                 <property name="label">gtk-find</property>
-                <property name="use_stock">True</property>
                 <property name="visible">True</property>
-                <property name="width_request">100</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -35,11 +56,12 @@
             </child>
             <child>
               <object class="GtkButton" id="btnFindReplace">
-                <property name="can_default">True</property>
-                <property name="can_focus">True</property>
                 <property name="label">gtk-find-and-replace</property>
-                <property name="use_stock">True</property>
                 <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="left_attach">2</property>
@@ -52,10 +74,10 @@
             </child>
             <child>
               <object class="GtkButton" id="btnReplaceAll">
-                <property name="can_default">True</property>
-                <property name="can_focus">True</property>
-                <property name="image">image1</property>
                 <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="receives_default">False</property>
                 <child>
                   <object class="GtkAlignment" id="alignment1">
                     <property name="visible">True</property>
@@ -63,23 +85,26 @@
                     <property name="yscale">0</property>
                     <child>
                       <object class="GtkHBox" id="hbox2">
-                        <property name="spacing">2</property>
                         <property name="visible">True</property>
+                        <property name="spacing">2</property>
                         <child>
                           <object class="GtkImage" id="image1">
-                            <property name="stock">gtk-find-and-replace</property>
                             <property name="visible">True</property>
+                            <property name="stock">gtk-find-and-replace</property>
+                            <property name="icon-size">4</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">False</property>
+                            <property name="position">0</property>
                           </packing>
                         </child>
                         <child>
                           <object class="GtkLabel" id="label3">
-                            <property name="justify">GTK_JUSTIFY_FILL</property>
-                            <property name="use_underline">True</property>
                             <property name="visible">True</property>
+                            <property name="label" translatable="yes">Replace _All</property>
+                            <property name="use_underline">True</property>
+                            <property name="justify">fill</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -103,9 +128,12 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="chkMatchCase">
-                <property name="can_focus">True</property>
-                <property name="use_underline">True</property>
+                <property name="label" translatable="yes">_Match case</property>
                 <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="draw_indicator">True</property>
               </object>
               <packing>
                 <property name="right_attach">2</property>
@@ -117,9 +145,12 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="chkWholeWord">
-                <property name="can_focus">True</property>
-                <property name="use_underline">True</property>
+                <property name="label" translatable="yes">_Whole word</property>
                 <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="draw_indicator">True</property>
               </object>
               <packing>
                 <property name="right_attach">2</property>
@@ -131,9 +162,12 @@
             </child>
             <child>
               <object class="GtkCheckButton" id="chkReverseFind">
-                <property name="can_focus">True</property>
-                <property name="use_underline">True</property>
+                <property name="label" translatable="yes">Re_verse find</property>
                 <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="draw_indicator">True</property>
               </object>
               <packing>
                 <property name="right_attach">2</property>
@@ -147,6 +181,7 @@
               <object class="GtkLabel" id="lblReplace">
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
+                <property name="label" translatable="yes">Replace with: </property>
               </object>
               <packing>
                 <property name="top_attach">1</property>
@@ -159,6 +194,7 @@
               <object class="GtkLabel" id="lblFind">
                 <property name="visible">True</property>
                 <property name="xalign">0</property>
+                <property name="label" translatable="yes">Find what:</property>
               </object>
               <packing>
                 <property name="x_options">GTK_FILL</property>
@@ -167,8 +203,14 @@
             </child>
             <child>
               <object class="GtkComboBoxEntry" id="comboFind">
-                <property name="text_column">0</property>
                 <property name="visible">True</property>
+                <property name="model">model1</property>
+                <child>
+                  <object class="GtkCellRendererText" id="renderer1"></object>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -178,8 +220,14 @@
             </child>
             <child>
               <object class="GtkComboBoxEntry" id="comboReplace">
-                <property name="text_column">0</property>
                 <property name="visible">True</property>
+                <property name="model">model2</property>
+                <child>
+                  <object class="GtkCellRendererText" id="renderer2"></object>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
               </object>
               <packing>
                 <property name="left_attach">1</property>
@@ -189,6 +237,12 @@
                 <property name="y_options"></property>
               </packing>
             </child>
+            <child>
+              <placeholder></placeholder>
+            </child>
+            <child>
+              <placeholder></placeholder>
+            </child>
           </object>
           <packing>
             <property name="position">1</property>
@@ -196,25 +250,28 @@
         </child>
         <child internal-child="action_area">
           <object class="GtkHButtonBox" id="dialog-action_area1">
-            <property name="layout_style">GTK_BUTTONBOX_END</property>
             <property name="visible">True</property>
+            <property name="layout_style">end</property>
             <child>
               <object class="GtkButton" id="closebutton1">
-                <property name="can_default">True</property>
-                <property name="can_focus">True</property>
                 <property name="label">gtk-close</property>
-                <property name="use_stock">True</property>
                 <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="can_default">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_stock">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">False</property>
+                <property name="position">0</property>
               </packing>
             </child>
           </object>
           <packing>
             <property name="expand">False</property>
-            <property name="pack_type">GTK_PACK_END</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </object>

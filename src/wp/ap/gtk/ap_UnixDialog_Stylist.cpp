@@ -112,6 +112,9 @@ AP_UnixDialog_Stylist::AP_UnixDialog_Stylist(XAP_DialogFactory * pDlgFactory,
 	: AP_Dialog_Stylist(pDlgFactory,id), 
 	  m_windowMain(NULL),
 	  m_wStyleList(NULL),
+	  m_wApply(NULL),
+	  m_wClose(NULL),
+	  m_wOK(NULL),
 	  m_wRenderer(NULL),
 	  m_wModel(NULL),
 	  m_wStyleListContainer(NULL)
@@ -239,33 +242,49 @@ void AP_UnixDialog_Stylist::runModal(XAP_Frame * pFrame)
 
 GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 {
-	GtkWidget *button;
-	
-	// load the dialog from the UI file
+	// get the path where our UI file is located
+	const char* ui_path;
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Stylist.ui");
+	if(m_bIsModal)
+	{
+		ui_path = "ap_UnixDialog_Stylist_modal.ui";
+	}
+	else
+	{
+		ui_path = "ap_UnixDialog_Stylist.ui";
+	}
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Stylist-2.ui");
+	if(m_bIsModal)
+	{
+		ui_path = "ap_UnixDialog_Stylist_modal-2.ui";
+	}
+	else
+	{
+		ui_path = "ap_UnixDialog_Stylist-2.ui";
+	}
 #endif
 
+	// load the dialog from the UI file
+	GtkBuilder* builder = newDialogBuilder(ui_path);
+	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 
 	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Stylist"));
 	m_wStyleListContainer  = GTK_WIDGET(gtk_builder_get_object(builder, "TreeViewContainer"));
-
 	if(m_bIsModal)
 	{
-		button = gtk_dialog_add_button(GTK_DIALOG(m_windowMain), "gtk-ok", GTK_RESPONSE_OK);
+		m_wApply = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
 	}
 	else
-	{                                
-		button = gtk_dialog_add_button(GTK_DIALOG(m_windowMain), "gtk-apply", GTK_RESPONSE_APPLY);    
+	{
+		m_wOK = GTK_WIDGET(gtk_builder_get_object(builder, "btOK"));
 	}
+	m_wClose = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 
 	// set the dialog title
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title,s);
-	abiDialogSetTitle(m_windowMain, "%s", s.utf8_str());
+	abiDialogSetTitle(m_windowMain, s.utf8_str());
 
 	g_object_unref(G_OBJECT(builder));
 	

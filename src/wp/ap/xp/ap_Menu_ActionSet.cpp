@@ -128,8 +128,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_DELETEFRAME,		0,0,0,0,	"deleteFrame", NULL,NULL);
 	_s(AP_MENU_ID_EDIT_DELETEIMAGE,		0,0,0,0,	"deleteFrame", NULL,NULL);
 	_s(AP_MENU_ID_FMT_POSIMAGE,		0,1,0,0,	"dlgFmtPosImage", NULL,NULL);
-	_s(AP_MENU_ID_EDIT_CUTIMAGE,		0,0,0,0,	"cutFrame", NULL,NULL);
-	_s(AP_MENU_ID_EDIT_COPYIMAGE,		0,0,0,0,	"copyFrame", NULL,NULL);
+	_s(AP_MENU_ID_EDIT_CUTIMAGE,		0,0,0,0,	"cut", NULL,NULL);
+	_s(AP_MENU_ID_EDIT_COPYIMAGE,		0,0,0,0,	"copy", NULL,NULL);
 	_s(AP_MENU_ID_EDIT_CUT_FRAME,		0,0,0,0,	"cutFrame", NULL,NULL);
 	_s(AP_MENU_ID_EDIT_COPY_FRAME,		0,0,0,0,	"copyFrame",NULL,NULL);
 	_s(AP_MENU_ID_EDIT_SELECT_FRAME,	0,0,0,0,	"selectFrame",NULL,NULL);
@@ -196,7 +196,6 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_FONT,			0,1,0,0,	"dlgFont",	ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_FMT_PARAGRAPH,	0,1,0,0,	"dlgParagraph",		ap_GetState_StylesLocked,	NULL);
 	_s(AP_MENU_ID_FMT_BULLETS,		0,1,0,0,	"dlgBullets",	ap_GetState_Lists,	NULL);
-	_s(AP_MENU_ID_FMT_TABLE,		0,1,0,0, "formatTable", ap_GetState_PointOrAnchorInTable, NULL);
 	_s(AP_MENU_ID_FMT_DOCUMENT, 0,1,0,0, "pageSetup", NULL, NULL);
 	_s(AP_MENU_ID_FMT_BORDERS,		0,1,0,0,	"dlgBorders",		NULL,					NULL);
 	_s(AP_MENU_ID_FMT_COLUMNS,		0,1,0,0,	"dlgColumns",		ap_GetState_ColumnsActive,					NULL);
@@ -277,13 +276,8 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_EDIT_ANNOTATION,					0,1,0,0,	"editAnnotation",			ap_GetState_HyperlinkOK,			NULL);
 	_s(AP_MENU_ID_DELETE_ANNOTATION,				0,0,0,0,	"deleteHyperlink",			NULL,								NULL);
 
-	_s(AP_MENU_ID_RDFANCHOR_EDIT_TRIPLES,   0,0,0,0, "rdfAnchorEditTriples", NULL, NULL);
-	_s(AP_MENU_ID_RDFANCHOR_QUERY,         0,0,0,0, "rdfAnchorQuery", NULL, NULL);
-	_s(AP_MENU_ID_RDFANCHOR_EDITSEMITEM,      0,0,0,0, "rdfAnchorEditSemanticItem", ap_GetState_haveSemItems, NULL);
-	_s(AP_MENU_ID_RDFANCHOR_EXPORTSEMITEM,    0,0,0,0, "rdfAnchorExportSemanticItem", ap_GetState_haveSemItems, NULL);
-	_s(AP_MENU_ID_RDFANCHOR_SELECTTHISREFTOSEMITEM,    0,0,0,0, "rdfAnchorSelectThisReferenceToSemanticItem", ap_GetState_haveSemItems, NULL);
-	_s(AP_MENU_ID_RDFANCHOR_SELECTNEXTREFTOSEMITEM,    0,0,0,0, "rdfAnchorSelectNextReferenceToSemanticItem", ap_GetState_haveSemItems, NULL);
-	_s(AP_MENU_ID_RDFANCHOR_SELECTPREVREFTOSEMITEM,    0,0,0,0, "rdfAnchorSelectPrevReferenceToSemanticItem", ap_GetState_haveSemItems, NULL);
+	_s(AP_MENU_ID_RDFANCHOR_SHOW_TRIPLES,   0,0,0,0, "rdfAnchorShowTriples", ap_GetState_RDFAnchorOK, NULL);
+	_s(AP_MENU_ID_RDFANCHOR_SPARQL,         0,0,0,0, "rdfAnchorSPARQL", ap_GetState_RDFAnchorOK, NULL);
     
 
     
@@ -337,47 +331,15 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 
 	_s(AP_MENU_ID_RDF,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_RDF_HIGHLIGHT, 0,0,1,0, "toggleRDFAnchorHighlight",	ap_GetState_ToggleRDFAnchorHighlight,		NULL);
-	_s(AP_MENU_ID_RDF_QUERY, 0,1,0,0, "rdfQuery", NULL, NULL);    
-	_s(AP_MENU_ID_RDF_EDITOR, 0,1,0,0, "rdfEditor", NULL, NULL);    
-	_s(AP_MENU_ID_RDF_QUERY_XMLIDS, 0,1,0,0, "rdfQueryXMLIDs", NULL, NULL);    
-    _s(AP_MENU_ID_RDF_SEMITEM,              1,0,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_CREATE,       1,0,0,0,NULL,NULL,NULL);
-	_s(AP_MENU_ID_RDF_SEMITEM_CREATEREF,    0,1,0,0,"rdfInsertRef",ap_GetState_RDF_Query,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_NEW,          1,0,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_NEW_CONTACT,  0,0,0,0,"rdfInsertNewContact",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_NEW_CONTACT_FROM_FILE,  0,1,0,0,"rdfInsertNewContactFromFile",ap_GetState_RDF_Contact,NULL);
-#ifdef DEBUG
+	_s(AP_MENU_ID_RDF_QUERY, 0,0,0,0, "rdfQuery", NULL, NULL);    
+	_s(AP_MENU_ID_RDF_EDITOR, 0,0,0,0, "rdfEditor", NULL, NULL);    
+	_s(AP_MENU_ID_RDF_QUERY_XMLIDS, 0,0,0,0, "rdfQueryXMLIDs", NULL, NULL);    
 	_s(AP_MENU_ID_RDF_ADV,1,0,0,0,NULL,NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_DUMP_FOR_POINT,0,0,0,0,"dumpRDFForPoint",NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_DUMP_OBJECTS  ,0,0,0,0,"dumpRDFObjects",NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_TEST          ,0,0,0,0,"rdfTest",NULL,NULL);
 	_s(AP_MENU_ID_RDF_ADV_PLAY          ,0,0,0,0,"rdfPlay",NULL,NULL);
-#endif
-    _s(AP_MENU_ID_RDF_SEMITEM_RELATION,          1,0,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_SET_AS_SOURCE,     0,0,0,0,"rdfSemitemSetAsSource",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_RELATED_TO_SOURCE, 1,0,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_RELATED_TO_SOURCE_FOAFKNOWS, 0,0,0,0,"rdfSemitemRelatedToSourceFoafKnows",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_FIND_RELATED,           1,0,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS, 0,0,0,0,"rdfSemitemFindRelatedFoafKnows",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET,          1,0,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_APPLY,       0,0,0,0,"rdfApplyCurrentStyleSheet",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_DISASSOCIATE,  0,0,0,0,"rdfDisassocateCurrentStyleSheet",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT,  1,0,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NAME,                0,0,0,0,"rdfApplyStylesheetContactName",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NICK,                0,0,0,0,"rdfApplyStylesheetContactNick",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE,          0,0,0,0,"rdfApplyStylesheetContactNamePhone",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE,          0,0,0,0,"rdfApplyStylesheetContactNickPhone",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE, 0,0,0,0,"rdfApplyStylesheetContactNameHomepagePhone",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT,                        1,0,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_NAME,                   0,0,0,0,"rdfApplyStylesheetEventName",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY,                0,0,0,0,"rdfApplyStylesheetEventSummary",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION,       0,0,0,0,"rdfApplyStylesheetEventSummaryLocation",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES, 0,0,0,0,"rdfApplyStylesheetEventSummaryLocationTimes",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES,          0,0,0,0,"rdfApplyStylesheetEventSummaryTimes",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION,         1,0,0,0,NULL,NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_NAME,    0,0,0,0,"rdfApplyStylesheetLocationName",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG, 0,0,0,0,"rdfApplyStylesheetLocationLatLong",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_SETTINGS,         0,0,0,0,"rdfStylesheetSettings",NULL,NULL);
+
     
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent, NULL);

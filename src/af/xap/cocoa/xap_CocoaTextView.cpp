@@ -363,7 +363,6 @@
 - (NSRect)firstRectForCharacterRange:(NSRange)theRange
 {
 	// UT_ASSERT_NOT_REACHED();
-	UT_DEBUG_ONLY_ARG(theRange);
 	UT_DEBUGMSG(("characterRange=(location=%u,length=%u)\n",theRange.location,theRange.length));
 	return NSZeroRect;
 }

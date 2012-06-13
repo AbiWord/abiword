@@ -208,13 +208,6 @@ PD_Document::PD_Document()
 #endif
 	UT_UTF8String sDoc;
 	getOrigDocUUID()->toString(sDoc);
-
-	const gchar *name = g_get_real_name();
-	if(strcmp(name, "Unknown") == 0)
-		name = g_get_user_name();
-	gchar *utf8name = g_locale_to_utf8(name, -1, NULL, NULL, NULL);
-	m_sUserName = utf8name;
-	g_free(utf8name);
 }
 
 PD_Document::~PD_Document()
@@ -1085,8 +1078,13 @@ UT_Error PD_Document::newDocument(void)
 	setEditTime(0);
 	setLastOpenedTime(time(NULL));
 
-	// set document metadata from context
-	setMetaDataProp(PD_META_KEY_CREATOR, m_sUserName);
+    // set document metadata from context
+    {
+        const gchar* name = g_get_real_name();
+        if( !strcmp( name, "Unknown" ))
+            name = g_get_user_name();
+        setMetaDataProp( PD_META_KEY_CREATOR, name );
+    }
     
 	// mark the document as not-dirty
 	_setClean();
@@ -1311,15 +1309,6 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 	*pField = pfo->getField();
 	return b;
 }
-
-bool PD_Document::insertSpan( PT_DocPosition dpos,
-                              const std::string& s,
-                              PP_AttrProp *p_AttrProp )
-{
-	UT_UCS4String t( s );
-    return insertSpan( dpos, t.ucs4_str(), t.length(), p_AttrProp );
-}
-
 
 /*!
  * Note that the text will be set to exactly the properties of given by
@@ -1823,43 +1812,6 @@ bool PD_Document::repairDoc(void)
 			bRepaired = true;
 		}
 	}
-	//
-	// Check that no section is empty. Add block if necessary
-	//
-	for(i = 0; i < vecSections.getItemCount(); i++)
-	{
-		pfs = vecSections.getNthItem(i);
-		pf_Frag * pfsNext = pfs->getNext();
-		if (!pfsNext)
-		{
-			appendStrux(PTX_Block,NULL);
-			bRepaired = true;
-		}
-		else if ((pfsNext->getType() == pf_Frag::PFT_Strux) &&
-				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() == PTX_Section))
-		{
-			insertStruxBeforeFrag(pfsNext, PTX_Block,NULL);
-			bRepaired = true;
-		}
-	}
-
-	for(i = 0; i < vecHdrFtrs.getItemCount(); i++)
-	{
-		pfs = vecHdrFtrs.getNthItem(i);
-		pf_Frag * pfsNext = pfs->getNext();
-		if (!pfsNext)
-		{
-			appendStrux(PTX_Block,NULL);
-			bRepaired = true;
-		}
-		else if ((pfsNext->getType() == pf_Frag::PFT_Strux) &&
-				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() == PTX_Section))
-		{
-			insertStruxBeforeFrag(pfsNext, PTX_Block,NULL);
-			bRepaired = true;
-		}
-	}
-
 	//
 	// Now repair text and objects which aren't enclosed in a paragraph
 	//
@@ -2845,7 +2797,7 @@ pf_Frag_Strux* PD_Document::findHdrFtrStrux(const gchar * pszHdrFtr,
 				 indexAP = pfSec->getIndexAP();
 				 const PP_AttrProp * pAP = NULL;
 				 m_pPieceTable->getAttrProp(indexAP,&pAP);
-				 UT_return_val_if_fail (pAP, NULL);
+				 UT_return_val_if_fail (pAP,false);
 				 const gchar * pszIDName = NULL;
 				 const gchar * pszHeaderName = NULL;
 				 (pAP)->getAttribute(PT_TYPE_ATTRIBUTE_NAME, pszHeaderName);
@@ -4093,17 +4045,6 @@ void PD_Document::changeConnectedDocument(PD_Document * pDoc)
 	}
 }
 
-std::list<AV_View*> PD_Document::getAllViews() const
-{
-    UT_GenericVector<AV_View *> t;
-    getAllViews( &t );
-    std::list<AV_View*> ret;
-    for( int i=0; i < t.size(); ++i )
-        ret.push_back( (AV_View*)t[i] );
-    return ret;
-}
-
-
 /*!
  * return a vector of all the views attached to this document.
  */
@@ -5095,7 +5036,7 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
 	if (ppHandle)
 	{
 		hash_data_items_t::iterator iter = m_hashDataItems.find(szName);
-		UT_return_val_if_fail (iter != m_hashDataItems.end(), false);
+		UT_return_val_if_fail (iter == m_hashDataItems.end(), false);
 		*ppHandle = iter->second;
 	}
 	{
@@ -5278,7 +5219,7 @@ bool PD_Document::enumDataItems(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 
-	UT_uint32 i = 0;
+	UT_uint32 i;
 	hash_data_items_t::const_iterator iter;
 	for (iter = m_hashDataItems.begin();
 		 iter != m_hashDataItems.end() && i < k; ++i, ++iter) {

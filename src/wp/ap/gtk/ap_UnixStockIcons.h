@@ -1,21 +1,21 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
-/*
+/* 
  * Copyright (C) 2006 Robert Staudinger <robert.staudinger@gmail.com>
- *
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
  * 02111-1307, USA.
  */
 
@@ -121,12 +121,6 @@
 #define ABIWORD_REVISIONS_SHOW_FINAL	"abiword-revisions-show-final"
 #define ABIWORD_REVISIONS_FIND_PREV  	"abiword-revisions-find-prev"
 #define ABIWORD_REVISIONS_FIND_NEXT  	"abiword-revisions-find-next"
-
-#define ABIWORD_SEMITEM_THIS            "abiword-semitem-this"
-#define ABIWORD_SEMITEM_NEXT            "abiword-semitem-next"
-#define ABIWORD_SEMITEM_PREV            "abiword-semitem-prev"
-#define ABIWORD_SEMITEM_EDIT            "abiword-semitem-edit"
-#define ABIWORD_SEMITEM_STYLESHEET_APPLY "abiword-semitem-stylesheet-apply"
 
 void		  abi_stock_init 				(void);
 const gchar * abi_stock_from_menu_id 		(XAP_Menu_Id menu_id);

@@ -10,12 +10,14 @@ AC_CANONICAL_HOST
 AC_CONFIG_HEADERS(config.h)
 
 AM_INIT_AUTOMAKE([1.9 tar-ustar])
+
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
 dnl we use AM_MAINTAINER_MODE and enable it to allow to disable it.
 dnl very usefull to build in scratchbox where the maintainer mode is used for the PC
 dnl build but the embedded build just use pregenerated one (with a different version)
 AM_MAINTAINER_MODE([enable])
+
 
 #
 # Dependency requirements 
@@ -102,15 +104,11 @@ opt_pkgs=''
 
 # gtk deps
 cairo_req='cairo-pdf cairo-ps pangocairo'
-#
 if test "x$abi_cv_gtk2" = "xyes"; then
 gtk_req="gtk+-2.0 >= $GTK2_VERSION_REQ gtk+-unix-print-2.0 librsvg-2.0 >= 2.16.0"
 else
 gtk_req="gtk+-3.0 >= $GTK_VERSION_REQ gtk+-unix-print-3.0 librsvg-2.0 >= 2.16.0"
 fi
-dnl cairo-fc is needed but only available on cairo > 1.10
-dnl http://bugzilla.abisource.com/show_bug.cgi?id=13265
-PKG_CHECK_EXISTS(cairo >= 1.10, [gtk_req="$gtk_req cairo-fc"],[])
 gtk_pkgs="
   ${cairo_req}
   ${gtk_req}
@@ -133,13 +131,8 @@ AC_PROG_INSTALL
 # For libtool 1.5.x compatability (AC_PROG_LIBTOOL is deprecated version of LT_INIT)
 m4_ifdef([LT_INIT], [LT_INIT([disable-static win32-dll])], [AC_LIBTOOL_WIN32_DLL])
 m4_ifdef([LT_INIT], [], [AC_PROG_LIBTOOL])
+DOLT
 AC_PROG_LN_S
-
-AC_CHECK_PROG(HAVE_PERL, perl, yes, no)
-if test "x$HAVE_PERL" = "xno"; then
-	AC_MSG_ERROR([*** perl program not found])
-fi
-
 
 TOOLKIT_IS_GTK2="no"
 AC_MSG_CHECKING([for platform and toolkit])
@@ -421,6 +414,7 @@ AC_ARG_WITH([darwinports],
         if test "x$withval" != "xno"; then
             CPPFLAGS="$CPPFLAGS -I/opt/local/include"
             LDFLAGS="$LDFLAGS -headerpad_max_install_names -L/opt/local/lib"
+            CC=$CXX
         fi
 ])
 
@@ -430,6 +424,7 @@ AC_ARG_WITH([fink],
         if test "x$withval" != "xno"; then
                 CPPFLAGS="$CPPFLAGS -I/sw/include"
                 LDFLAGS="$LDFLAGS -L/sw/lib"
+		CC=$CXX
         fi
 ])
 
@@ -442,8 +437,9 @@ AC_ARG_WITH([abisdk],
 	if test "x$withval" != "xno"; then
 		PKG_CONFIG=/opt/abi/bin/pkg-config
 		PKG_CONFIG_PATH=/usr/lib/pkgconfig ; export PKG_CONFIG_PATH
-		CPPFLAGS="$CPPFLAGS -mmacosx-version-min=10.4 -isysroot $withval -I/opt/abi/include"
-		LDFLAGS="$LDFLAGS -mmacosx-version-min=10.4 -isysroot $withval -L/opt/abi/lib"
+		CPPFLAGS="$CPPFLAGS -isysroot $withval -I/opt/abi/include"
+		LDFLAGS="$LDFLAGS -isysroot $withval -L/opt/abi/lib"
+		CC=$CXX
 	fi
 ])
 
@@ -466,10 +462,13 @@ AC_ARG_WITH([redland],
 if test "$abi_cv_redland" = "yes"; then
 	opt_pkgs="$opt_pkgs $redland_req"
 	AC_DEFINE([WITH_REDLAND], [1], [Using redland])
+	WITH_REDLAND=1
 fi
 
-AM_CONDITIONAL([WITH_REDLAND], test "$abi_cv_redland" = "yes")
-AM_CONDITIONAL([HAVE_REDLAND], test "$abi_cv_redland" = "yes")
+AC_SUBST([REDLAND_CFLAGS])
+AC_SUBST([REDLAND_LIBS])
+AM_CONDITIONAL([WITH_REDLAND], test "$WITH_REDLAND" = "1")
+AM_CONDITIONAL([HAVE_REDLAND], test "$WITH_REDLAND" = "1")
 
 
 evolution_data_server_req='libebook-1.2 libecal-1.2'
@@ -490,10 +489,13 @@ AC_ARG_WITH([evolution_data_server],
 if test "$abi_cv_evolution_data_server" = "yes"; then
 	opt_pkgs="$opt_pkgs $evolution_data_server_req"
 	AC_DEFINE([WITH_EVOLUTION_DATA_SERVER], [1], [Using evolution_data_server])
+	WITH_EVOLUTION_DATA_SERVER=1
 fi
 
-AM_CONDITIONAL([WITH_EVOLUTION_DATA_SERVER], test "$abi_cv_evolution_data_server" = "yes")
-AM_CONDITIONAL([HAVE_EVOLUTION_DATA_SERVER], test "$abi_cv_evolution_data_server" = "yes")
+AC_SUBST([EVOLUTION_DATA_SERVER_CFLAGS])
+AC_SUBST([EVOLUTION_DATA_SERVER_LIBS])
+AM_CONDITIONAL([WITH_EVOLUTION_DATA_SERVER], test "$WITH_EVOLUTION_DATA_SERVER" = "1")
+AM_CONDITIONAL([HAVE_EVOLUTION_DATA_SERVER], test "$WITH_EVOLUTION_DATA_SERVER" = "1")
 
 
 libical_req=' libical >= 0.46 '
@@ -514,102 +516,13 @@ AC_ARG_WITH([libical],
 if test "$abi_cv_libical" = "yes"; then
 	opt_pkgs="$opt_pkgs $libical_req"
 	AC_DEFINE([WITH_LIBICAL], [1], [Using libical])
+	WITH_LIBICAL=1
 fi
 
-AM_CONDITIONAL([WITH_LIBICAL], test "$abi_cv_libical" = "yes")
-AM_CONDITIONAL([HAVE_LIBICAL], test "$abi_cv_libical" = "yes")
-
-
-champlain_req=' champlain-gtk-0.12 '
-AC_ARG_WITH([champlain], 
-	[AS_HELP_STRING([--with-champlain], [use champlain to display maps])],
-	,[with_champlain="check"])
-
-if test "x$with_champlain" != "xno"; then
-    PKG_CHECK_MODULES(CHAMPLAIN, [ $champlain_req ],,
-    [if test "x$with_champlain" = "xyes"; then
-    	AC_MSG_FAILURE([--with-champlain was given, but test for champlain failed])
-    fi])
-    abi_cv_champlain=yes
-
-	if test "$pkg_failed" = "no"; then
-	#
-	# try to make sure that champlain-gtk through pkg-config and
- 	# the GTK+ version that the user wants abiword to directly
- 	# link with match on major number.
-	# 
-	# The test is simple, make sure that a little client using the
-	# GTK+ that champlain natively uses is using the GTK+ version
-	# that we want to link with.
- 	#
-	AC_LANG_PUSH(C++)
-	CXXFLAGS_cache=$CXXFLAGS
-	CXXFLAGS=" $CHAMPLAIN_CFLAGS "
-	LDFLAGS_cache=$LDFLAGS
-	LDFLAGS=" $CHAMPLAIN_LIBS "
-
-	if test "x$abi_cv_gtk2" = "xyes"; then
- 	  echo -n "checking whether CHAMPLAIN uses GTK+2... "
- 	  
-		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <champlain-gtk/champlain-gtk.h>],[
- #if GTK_MAJOR_VERSION > 2
- #error bad
- #endif
-                               ])], gtk_matches=yes, gtk_matches=no)
-	else
- 	  echo -n "checking whether CHAMPLAIN uses GTK+3... "
-		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([#include <champlain-gtk/champlain-gtk.h>],[
- #if GTK_MAJOR_VERSION < 3
- #error bad
- #endif
-                               ])], gtk_matches=yes, gtk_matches=no)
-	fi
-        echo "$gtk_matches"        
-
-	LDFLAGS=$LDFLAGS_cache
-	CXXFLAGS=$CXXFLAGS_cache
-        AC_LANG_POP
-
- 	# Don't do mapping if their libchamplain is not using the right GTK+
-	if test "$gtk_matches" = "no"; then
-		if test "x$with_champlain" = "xyes"; then
-			AC_MSG_FAILURE([--with-champlain was given, but champlain does not use the correct gtk version])
-		fi
-	   abi_cv_champlain=no
-           CHAMPLAIN_CFLAGS=
-           CHAMPLAIN_LIBS=
-	fi
-	else
-		abi_cv_champlain=no
-	fi
-else
-	abi_cv_champlain=no
-fi
-
-if test "$abi_cv_champlain" = "yes"; then
-dnl	opt_pkgs="$opt_pkgs $champlain_req"
-	AC_DEFINE([WITH_CHAMPLAIN], [1], [Using champlain])
-fi
-
-AC_SUBST([CHAMPLAIN_CFLAGS])
-AC_SUBST([CHAMPLAIN_LIBS])
-AM_CONDITIONAL([WITH_CHAMPLAIN], test "$abi_cv_champlain" = "yes")
-AM_CONDITIONAL([HAVE_CHAMPLAIN], test "$abi_cv_champlain" = "yes")
-
-
-AC_ARG_WITH([icondir],
-	[AS_HELP_STRING([--with-icondir=DIR], [install icon in DIR instead of PREFIX/share/icons/hicolor/48x48/apps])],
-[
-	abi_cv_icondir="$withval"
-])
-if test "$abi_cv_icondir" = "" -o \
-        "$abi_cv_icondir" = "yes" -o \
-        "$abi_cv_icondir" = "no"; then
-	abi_cv_prefix="$prefix"
-	test "$abi_cv_prefix" = "NONE" && abi_cv_prefix="$ac_default_prefix"  
-	abi_cv_icondir="${abi_cv_prefix}/share/icons/hicolor/48x48/apps"
-fi
-AC_SUBST(ABIWORD_ICONDIR, "$abi_cv_icondir") 	     
+AC_SUBST([LIBICAL_CFLAGS])
+AC_SUBST([LIBICAL_LIBS])
+AM_CONDITIONAL([WITH_LIBICAL], test "$WITH_LIBICAL" = "1")
+AM_CONDITIONAL([HAVE_LIBICAL], test "$WITH_LIBICAL" = "1")
 
 
 #
@@ -620,13 +533,13 @@ AC_LANG_PUSH(C++)
 if test "$GCC" = "yes"; then
 	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
 		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
-		      -Wunused -Wpointer-arith -Wshadow -Wno-overloaded-virtual; do
+		      -Wunused -Wpointer-arith -Wshadow ; do
 		SAVE_CPPFLAGS="$CPPFLAGS"
 		CPPFLAGS="$CPPFLAGS $option"
 		AC_MSG_CHECKING([whether gcc understands $option])
-		AC_COMPILE_IFELSE([AC_LANG_PROGRAM([], [])],
+		AC_TRY_COMPILE([], [],
 			has_option=yes,
-			has_option=no)
+			has_option=no,)
 		if test $has_option = no; then
 		  CPPFLAGS="$SAVE_CPPFLAGS"
 		fi
@@ -695,12 +608,18 @@ elif test "$TOOLKIT" = "cocoa"; then
 	SYSTEM_LIBS="-framework Cocoa"
 	AC_CHECK_PROG([CONVERT], [convert], convert, AC_MSG_ERROR(Cannot find ImageMagick convert))
 else
-	SYSTEM_CFLAGS=$PNG_CFLAGS
-	SYSTEM_LIBS=$PNG_LIBS
-	deps_pkgs="$deps_pkgs $gtk_pkgs x11"
+	deps_pkgs="$deps_pkgs $gtk_pkgs"
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
+dnl specific gtk214 test. 	 
+	if test "$TOOLKIT_IS_GTK2" = "yes"; then 	 
+	        PKG_CHECK_MODULES(GTK214, gtk+-2.0 > 2.14, [abi_cv_gtk214=yes], 	 
+	                 [abi_cv_gtk214=no]) 	 
+	        if test "$abi_cv_gtk214" = "yes" ; then 	 
+	                AC_DEFINE([HAVE_GTK214], [1], [GTK is at least 2.14]) 	 
+	        fi 	 
+	fi 	 
 
 dnl make that for all.
 if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa"; then
@@ -1045,12 +964,14 @@ fi
 AC_SUBST(VALGRIND)
 
 
+SHAVE_INIT
 AC_OUTPUT(
+  shave
+  shave-libtool
   libabiword.pc
   Makefile
   goffice-bits/Makefile
   goffice-bits2/Makefile
-  po/Makefile
   src/Makefile
   src/af/Makefile
   src/af/ev/Makefile
@@ -1113,6 +1034,7 @@ AC_OUTPUT(
   user/wp/Makefile
   user/wp/clipart/Makefile
   user/wp/dictionary/Makefile
+  user/wp/strings/Makefile
   user/wp/templates/Makefile
 )
 
@@ -1146,7 +1068,6 @@ Optional dependencies:
   redland               ${abi_cv_redland}
   evolution_data_server ${abi_cv_evolution_data_server}
   libical               ${abi_cv_libical}
-  champlain             ${abi_cv_champlain}
 
 Builtin plugins         ${BUILTIN_PLUGINS}
 Plugins                 ${PLUGINS}
