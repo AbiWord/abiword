@@ -1559,15 +1559,10 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 				xxx_UT_DEBUGMSG(("SEVIOR: Container of next %d \n",pNext->getContainerType()));
 			}
 			pTab->deleteBrokenTables(true,true);
-			pTab->VBreakAt(0);
+			pBroke = static_cast<fp_TableContainer *>(pTab->VBreakAt(0));
 		}
 //
 // Now get a broken table and break it again.
-//tnkk: Should this if be nested inside the previous one?(Like this: pBroke = pTab->VBreakAt(0))
-		if(!pTab->isThisBroken())
-		{
-			pBroke = pTab->getFirstBrokenTable();
-		}
 		else
 		{
 			pBroke = pTab;

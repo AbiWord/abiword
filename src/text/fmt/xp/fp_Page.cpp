@@ -1229,7 +1229,7 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 
 	// draw each column on the page
 	count = m_vecColumnLeaders.getItemCount();
-
+	
 	GR_Painter painter(pDA->pG);
 
 	for (i=0; i<count; i++)

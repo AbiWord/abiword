@@ -1641,6 +1641,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	if(pszTableHeader != NULL)
 	{
 		pszTableHeaderRows = strtok(pszTableHeader,",");
+		m_vHeaderRowNumber.clear();
 		m_vHeaderRowNumber.push_back(atoi(pszTableHeaderRows));
 		while(pszTableHeaderRows != NULL)
 		{

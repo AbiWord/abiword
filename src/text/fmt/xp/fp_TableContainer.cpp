@@ -1135,7 +1135,7 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
 		return;
 	}
 
-	pPage = pBroke->getPage(); 
+	//pPage = pBroke->getPage(); -->redundant code
 	if(getContainer()->getContainerType() == FP_CONTAINER_FRAME)
 	{
 		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getContainer());
@@ -1250,6 +1250,11 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
 	iRight = col_x + m_iRight + offx;
 	iTop = col_y + m_iTopY + offy;
 	iBot = col_y + m_iBotY + offy;
+	if(pBroke->getMasterTable()->getHeaderObject() != NULL)
+	{
+		iTop += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
+		iBot += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
+	}
 }
 /*!
  * Draw background and lines around a cell in a broken table.
@@ -2419,6 +2424,10 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 
 	GR_Painter painter(pG);
 
+	if(pBroke->getMasterTable()->getHeaderObject() != NULL)
+	{
+		bRec.top += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
+	}
 	if (((m_bIsSelected == false) || (!pG->queryProperties(GR_Graphics::DGP_SCREEN))) && (m_bBgDirty || !pDA->bDirtyRunsOnly))
 	{
 		UT_sint32 srcX = 0;
@@ -2476,6 +2485,10 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 
 			da.xoff += pContainer->getX() + getX();
 			da.yoff += pContainer->getY() + getY();
+			if(pBroke->getMasterTable()->getHeaderObject() != NULL)
+			{
+				da.yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
+			}
 			UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 			if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
@@ -3253,7 +3266,7 @@ fp_TableContainer::~fp_TableContainer()
 	setPrev(NULL);
 	setNext(NULL);
 	m_pMasterTable = NULL;
-	if(!isThisBroken())
+	if(getMasterTable() && m_pTableHeader!=NULL)
 	{
 		DELETEP(m_pTableHeader);
 	}
@@ -4331,6 +4344,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		if(!isThisBroken() && !m_bHeaderInitialized)
 		{
 			m_pTableHeader = new fp_TableHeader(getSectionLayout(),this);
+			m_pTableHeader->populateCells();
 			m_pTableHeader->calculateHeaderHeight();
 			m_bHeaderInitialized = true;
 		}
@@ -4338,7 +4352,8 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 
 //
 // Do the case of creating the first broken table from the master table.
-// 
+//
+	
 	fp_TableContainer * pBroke = NULL;
 	if(!isThisBroken() && getLastBrokenTable() == NULL)
 	{
@@ -4347,11 +4362,11 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			return NULL;
 		}
-		xxx_UT_DEBUGMSG(("The height is %d \n",getHeight()));
 		pBroke = new fp_TableContainer(getSectionLayout(),this);
 		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!!! Frist broken table %x \n",pBroke));
 		pBroke->setYBreakHere(vpos);
 		pBroke->setYBottom(fp_VerticalContainer::getHeight());
+		UT_DEBUGMSG(("The height is %d \n",pBroke->getHeight()));
 		// leave this in!		UT_ASSERT(pBroke->getHeight());
 		setFirstBrokenTable(pBroke);
 		setLastBrokenTable(pBroke);
@@ -4378,9 +4393,8 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 // vpos is relative to the container that contains this height but we need
 // to add in the height above it.
 //
-	pBroke->setYBreakHere(getYBreak()+vpos);
-	
 //Table Header
+	pBroke->setYBreakHere(getYBreak()+vpos);
 	pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
 	if(pTableLayout->isHeaderSet())
 	{
@@ -4485,6 +4499,7 @@ UT_sint32 fp_TableContainer::tweakBrokenTable(fp_TableContainer * pBroke)
 	UT_sint32 iTweak = 0;
 	fp_CellContainer * pCell = NULL;
 	UT_sint32 i = 0;
+	//pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
 	for(i =0; i<pTab->countCons(); i++)
 	{
 		pCell = static_cast<fp_CellContainer *>(pTab->getNthCon(i));
@@ -5687,6 +5702,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	if(iCount > 0)
 	{
 		xxx_UT_DEBUGMSG(("Draw the repeated Row here \n"));
+
 	}
 	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 	{
@@ -5795,6 +5811,10 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 						da.yoff = da.yoff + getYBreak();
 				}
 				da.yoff = da.yoff - getYBreak();
+				if(getMasterTable()->getHeaderObject() != NULL)
+				{
+					da.yoff += getMasterTable()->getHeaderObject()->getHeaderHeight();
+				}
 				iCountCells++;
 				xxx_UT_DEBUGMSG((" -2- da.yoff set to %d \n",da.yoff));
 				pCell->drawBroken(&da, this);
