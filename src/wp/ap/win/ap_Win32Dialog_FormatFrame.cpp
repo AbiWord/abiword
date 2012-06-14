@@ -201,6 +201,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	if (!pView)
 		return;
     fl_FrameLayout * pFL = pView->getFrameLayout();
+	//here need : UT_convertSizeToLayoutUnits
 	setHeight(pFL->getFrameHeight());
 	setWidth(pFL->getFrameWidth());
 
