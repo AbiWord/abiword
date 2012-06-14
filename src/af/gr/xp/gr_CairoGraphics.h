@@ -237,6 +237,10 @@ public:
 	PangoFontMap * getLayoutFontMap() const {return m_pLayoutFontMap;}
 	PangoContext * getLayoutContext() const {return m_pLayoutContext;}
 
+	// sets and returns the angle of rotated text
+	void setTextAngle(const double *);
+	double getTextAngle() const {return m_rTextAngle;}
+	
 	virtual UT_uint32 getFontAscent();
 	virtual UT_uint32 getFontDescent();
 	virtual UT_uint32 getFontHeight();
@@ -434,6 +438,7 @@ private:
 	static UT_uint32 s_iInstanceCount;
 	static UT_VersionInfo s_Version;
 	static int s_iMaxScript;
+	double m_rTextAngle;
 	/** common private init for pango called from the constructor */
 	void _initPango();
 };
