@@ -1,4 +1,4 @@
-<?
+<?php
 
 define('REPOROOT', 'http://svn.abisource.com');
 define('TAGROOT', REPOROOT . '/abiword/tags');
@@ -61,18 +61,23 @@ function detect_embedded_commit($msg) {
 }
 
 function human_readable_author($author) {
-	if ($author == 'uwog')
-		return 'Marc Maurer';
-	if ($author == 'dom')
-		return 'Dominic Lachowicz';
-	if ($author == 'jbrefort')
-		return 'Jean Br&#233fort';
-	if ($author == 'hub')
-		return 'Hubert Figuiere';
-	if ($author == 'msevior')
-		return 'Martin Sevior';
-	if ($author == 'strbafridrich')
-		return 'Fridrich Strba';
+	$table = array(
+		'asfrent' => 'Andrei Sfrent',
+		'cjl' => 'Chris Leonard',
+		'dom' => 'Dominic Lachowicz',
+		'hub' => 'Hubert Figui&egrave;re',
+		'ib' => 'Ingo Br&uuml;ckl',
+		'jbrefort' => 'Jean Br&eacute;fort',
+		'monkeyiq' => 'Ben Martin',
+		'msevior' => 'Martin Sevior',
+		'pradeeban' => 'Kathiravelu Pradeeban',
+		'slaroche' => 'Simon Larochelle',
+		'strbafridrich' => 'Fridrich Strba',
+		'uwog' => 'Marc Maurer',
+		'volodymyr' => 'Volodymyr Rudyj',
+		);
+	if (array_key_exists($author, $table))
+		return $table[$author];
 	return $author;
 }
 
