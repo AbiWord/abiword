@@ -88,11 +88,6 @@ UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 	ret = setProperty("frame-type", "image");
 	if(ret != UT_OK)
 		return ret;
-
-	// TODO: handle different wrapping options: wrapped-to-left, wrapped-to-right, wrapped-both
-	ret = setProperty("wrap-mode", "wrapped-both");
-	if(ret != UT_OK)
-		return ret;
 	
 	if(getId().empty())
 	{

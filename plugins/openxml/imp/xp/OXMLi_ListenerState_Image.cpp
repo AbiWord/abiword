@@ -165,6 +165,46 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 
 		rqst->handled = true;
 	}
+	else if(nameMatches(rqst->pName, NS_WP_KEY, "wrapSquare"))
+	{
+		if(rqst->stck->empty())
+		{
+			rqst->handled = false;
+			rqst->valid = false;
+			return;
+		}
+
+		OXML_SharedElement imgElem = rqst->stck->top();
+		if(!imgElem)
+			return;
+
+		const gchar * wrapText = attrMatches(NS_WP_KEY, "wrapText", rqst->ppAtts);
+		if(wrapText)
+		{
+			if(!strcmp(wrapText, "bothSides"))
+			{
+				if(imgElem->setProperty("wrap-mode", "wrapped-both") != UT_OK)
+				{
+					UT_DEBUGMSG(("SERHAT:OpenXML importer image wrap-mode property can't be set\n"));
+				}
+			}
+			else if(!strcmp(wrapText, "right"))
+			{
+				if(imgElem->setProperty("wrap-mode", "wrapped-to-right") != UT_OK)
+				{
+					UT_DEBUGMSG(("SERHAT:OpenXML importer image wrap-mode property can't be set\n"));
+				}				
+			}
+			else if(!strcmp(wrapText, "left"))
+			{
+				if(imgElem->setProperty("wrap-mode", "wrapped-to-left") != UT_OK)
+				{
+					UT_DEBUGMSG(("SERHAT:OpenXML importer image wrap-mode property can't be set\n"));
+				}				
+			}
+		}
+		rqst->handled = true;
+	}
 	else if (nameMatches(rqst->pName, NS_A_KEY, "blip"))
 	{
 		if(rqst->stck->empty())
@@ -261,6 +301,7 @@ void OXMLi_ListenerState_Image::endElement (OXMLi_EndElementRequest * rqst)
 	}
 	else if (nameMatches(rqst->pName, NS_A_KEY, "blip") || 
 			nameMatches(rqst->pName, NS_WP_KEY, "extent") ||
+			nameMatches(rqst->pName, NS_WP_KEY, "wrapSquare") ||
 			nameMatches(rqst->pName, NS_WP_KEY, "posOffset") ||
 			nameMatches(rqst->pName, NS_WP_KEY, "anchor") ||
 			nameMatches(rqst->pName, NS_WP_KEY, "positionH") ||
