@@ -373,7 +373,14 @@ UT_Error IE_Imp_MathML::_parseStream(ImportStream * pStream)
 	while (pStream->getChar(c))
 	{
 		uc = static_cast<unsigned char>(c);
-		BB.append(&uc,1);
+		// remove Unicode related error in Windows
+		if(BB.getLength() == 0)
+		{
+			if(uc=='<')
+				BB.append(&uc,1);
+		}
+		else
+			BB.append(&uc,1);
 	}
 	return m_EntityTable->convert(reinterpret_cast<const char *>(BB.getPointer(0)), BB.getLength(), *m_pByteBuf) ? UT_OK : UT_ERROR;
 }
