@@ -372,15 +372,12 @@ UT_Error IE_Imp_MathML::_parseStream(ImportStream * pStream)
 	unsigned char uc;
 	while (pStream->getChar(c))
 	{
-		uc = static_cast<unsigned char>(c);
-		// remove Unicode related error in Windows
-		if(BB.getLength() == 0)
+		// Check to identify & ignore BOM
+		if(c!=((UT_UCSChar)0x00EF) && c!=((UT_UCSChar)0x00BB) && c!=((UT_UCSChar)0x00BF))
 		{
-			if(uc=='<')
-				BB.append(&uc,1);
-		}
-		else
+			uc = static_cast<unsigned char>(c);
 			BB.append(&uc,1);
+		}
 	}
 	return m_EntityTable->convert(reinterpret_cast<const char *>(BB.getPointer(0)), BB.getLength(), *m_pByteBuf) ? UT_OK : UT_ERROR;
 }
