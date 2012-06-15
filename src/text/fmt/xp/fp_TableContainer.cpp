@@ -1250,7 +1250,8 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
 	iRight = col_x + m_iRight + offx;
 	iTop = col_y + m_iTopY + offy;
 	iBot = col_y + m_iBotY + offy;
-	if(pBroke->getMasterTable()->getHeaderObject() != NULL)
+	fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(pBroke->getMasterTable()->getSectionLayout());
+	if((pTableLayout->isHeaderSet()) &&(pBroke->getMasterTable()->getHeaderObject() != NULL))
 	{
 		iTop += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
 		iBot += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
@@ -2424,7 +2425,8 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 
 	GR_Painter painter(pG);
 
-	if(pBroke->getMasterTable()->getHeaderObject() != NULL)
+	fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(pBroke->getMasterTable()->getSectionLayout());
+	if((pTableLayout->isHeaderSet()) &&(pBroke->getMasterTable()->getHeaderObject() != NULL))
 	{
 		bRec.top += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
 	}
@@ -2485,7 +2487,8 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 
 			da.xoff += pContainer->getX() + getX();
 			da.yoff += pContainer->getY() + getY();
-			if(pBroke->getMasterTable()->getHeaderObject() != NULL)
+			fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(pBroke->getMasterTable()->getSectionLayout());
+			if((pTableLayout->isHeaderSet()) && (pBroke->getMasterTable()->getHeaderObject() != NULL))
 			{
 				da.yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
 			}
@@ -4394,14 +4397,15 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 // to add in the height above it.
 //
 //Table Header
-	pBroke->setYBreakHere(getYBreak()+vpos);
 	pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
 	if(pTableLayout->isHeaderSet())
 	{
+		pBroke->setYBreakHere(getYBreak()+vpos+getMasterTable()->getHeaderObject()->getHeaderHeight());
 		pBroke->setYBottom(getMasterTable()->getYBottom() + getMasterTable()->getHeaderObject()->getHeaderHeight());
 	}
 	else
 	{
+		pBroke->setYBreakHere(getYBreak()+vpos);
 		pBroke->setYBottom(getMasterTable()->getYBottom());
 	}
 	UT_DEBUGMSG(("The height of the broken table is %d\n",pBroke->getHeight()));
@@ -4548,7 +4552,7 @@ void fp_TableContainer::setY(UT_sint32 i)
 // automatically?
 //
 	xxx_UT_DEBUGMSG(("Set Reformat 1 now from table %x in TableLayout %x \n",this,getSectionLayout()));
-	//	getSectionLayout()->setNeedsReformat();
+	getSectionLayout()->setNeedsReformat(getSectionLayout());
 	fp_VerticalContainer::setY(i);
 	adjustBrokenTables();
 }
@@ -5811,7 +5815,8 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 						da.yoff = da.yoff + getYBreak();
 				}
 				da.yoff = da.yoff - getYBreak();
-				if(getMasterTable()->getHeaderObject() != NULL)
+				fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
+				if((pTableLayout->isHeaderSet()) &&(getMasterTable()->getHeaderObject() != NULL))
 				{
 					da.yoff += getMasterTable()->getHeaderObject()->getHeaderHeight();
 				}
