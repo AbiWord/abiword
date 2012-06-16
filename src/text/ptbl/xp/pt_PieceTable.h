@@ -23,6 +23,7 @@
 #define PT_PIECETABLE_H
 
 #include <stdio.h>
+#include <list>
 #include "ut_types.h"
 #include "ut_growbuf.h"
 #include "ut_hash.h"
@@ -611,7 +612,7 @@ protected:
 	bool					_lastUndoIsThisFmtMark(PT_DocPosition dpos);
 
 	bool					_changePointWithNotify(PT_DocPosition dpos);
-
+	bool                    _checkSkipFootnote(PT_DocPosition dpos1, PT_DocPosition dpos2, pf_Frag * pf_End) const;
 	// helper methods for the appned and insert*BeforeFrag methods
 	bool					_makeStrux(PTStruxType pts, const gchar ** attributes,
 									   pf_Frag_Strux * &pfs);
@@ -628,7 +629,7 @@ protected:
 														const gchar ** & ppRevProps,
 														const gchar **   ppAttrib,
 														const gchar **   ppProps);
-
+	bool                    _insertNoteInEmbeddedStruxList(pf_Frag_Strux * pfsNew);
 
 	PTState					m_pts;		/* are we loading or editing */
 	pt_VarSet				m_varset;
@@ -648,6 +649,12 @@ protected:
 
 	UT_uint32               m_iXID;
 	UT_sint32               m_iCurCRNumber;
+	struct embeddedStrux {
+		pf_Frag_Strux * beginNote;
+		pf_Frag_Strux * endNote;
+	};
+
+	std::list <embeddedStrux> m_embeddedStrux;
 };
 
 #endif /* PT_PIECETABLE_H */

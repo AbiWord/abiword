@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -42,7 +43,7 @@
 bool pt_PieceTable::_unlinkStrux(pf_Frag_Strux * pfs,
 									pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd)
 {
-#if 1
+#if DEBUG
 	if(pfs->getStruxType() == PTX_SectionTable)
 	{
 		UT_DEBUGMSG(("_unlink Strux Table %p \n",pfs));
@@ -312,6 +313,31 @@ bool pt_PieceTable::_unlinkStrux_Section(pf_Frag_Strux * pfs,
 		UT_DEBUGMSG(("Cannot delete first section in document.\n"));
 		UT_ASSERT_HARMLESS(0);
 		return false;
+	}
+
+	// delete frag from the embedded_strux list if needed
+	if ((pfs->getStruxType() == PTX_SectionFootnote) || 
+		(pfs->getStruxType() == PTX_SectionEndnote) || 
+		(pfs->getStruxType() == PTX_SectionAnnotation)) 
+	{
+		bool bNoteRemoved = false;
+		if (!m_embeddedStrux.empty())
+		{
+			std::list<embeddedStrux>::iterator it;
+			for (it = m_embeddedStrux.begin(); it != m_embeddedStrux.end(); ++it)
+			{
+				if ((*it).beginNote == pfs)
+				{
+					m_embeddedStrux.erase(it);
+					bNoteRemoved = true;
+					break;
+				}
+			}
+		}
+		if (!bNoteRemoved)
+		{
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 
 	switch (pfsPrev->getStruxType())

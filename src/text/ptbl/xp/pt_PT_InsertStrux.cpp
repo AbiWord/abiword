@@ -1,5 +1,4 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -21,7 +20,7 @@
 
 
 // insertStrux-related functions for class pt_PieceTable
-
+#include <list>
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
@@ -629,6 +628,12 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 	if (ppfs_ret)
 		*ppfs_ret = pfsNew;
 
+	// insert frag in the embedded_strux list if needed
+	if ((pts == PTX_EndFootnote) || (pts == PTX_EndEndnote) || (pts == PTX_EndAnnotation)) 
+	{
+		_insertNoteInEmbeddedStruxList(pfsNew);
+	}
+
 	// create a change record to describe the change, add
 	// it to the history, and let our listeners know about it.
 	if(pfsNew->getStruxType() == PTX_SectionFrame)
@@ -742,3 +747,52 @@ bool pt_PieceTable::_computeFmtMarkForNewBlock(pf_Frag_Strux * /* pfsNewBlock */
 }
 
 
+bool pt_PieceTable::_insertNoteInEmbeddedStruxList(pf_Frag_Strux * pfsNew)
+{
+	pf_Frag * pfPrev = pfsNew->getPrev();
+	pf_Frag_Strux * pfsPrev = NULL;
+	while(pfPrev)
+	{
+		if (pfPrev->getType() == pf_Frag::PFT_Strux) 
+		{
+			pfsPrev = static_cast <pf_Frag_Strux *> (pfPrev);
+			if ((pfsPrev->getStruxType() == PTX_SectionFootnote) ||
+				(pfsPrev->getStruxType() == PTX_SectionEndnote) ||
+				(pfsPrev->getStruxType() == PTX_SectionAnnotation))
+			{
+				break;
+			}
+		}
+		pfPrev = pfPrev->getPrev();
+	}
+	if (pfsPrev)
+	{
+		embeddedStrux newNote;
+		newNote.beginNote = pfsPrev;
+		newNote.endNote = pfsNew;
+		bool bNoteInserted = false;
+		if (!m_embeddedStrux.empty())
+		{
+			std::list<embeddedStrux>::iterator it;
+			for (it = m_embeddedStrux.begin(); it != m_embeddedStrux.end(); ++it)
+			{
+				if (pfsPrev->getPos() < (*it).beginNote->getPos())
+				{
+					m_embeddedStrux.insert(it,newNote);
+					bNoteInserted = true;
+					break;
+				}
+			}
+		}
+		if (!bNoteInserted)
+		{
+			m_embeddedStrux.push_back(newNote);
+		}
+		return true;
+	}
+	else
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+}

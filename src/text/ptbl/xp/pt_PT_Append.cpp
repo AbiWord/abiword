@@ -71,6 +71,12 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const gchar ** attributes, pf_F
 		}
 	}
 	m_fragments.appendFrag(pfs);
+	// insert frag in the embedded_strux list if needed
+	if ((pts == PTX_EndFootnote) || (pts == PTX_EndEndnote) || (pts == PTX_EndAnnotation)) 
+	{
+		_insertNoteInEmbeddedStruxList(pfs);
+	}
+
 	if(bDoInsertFmt)
 	{
 		insertFmtMarkBeforeFrag(static_cast<pf_Frag *>(pfs));
@@ -478,6 +484,12 @@ bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 	m_fragments.insertFragBefore(pF, pfs);
 	if (ppfs_ret)
 		*ppfs_ret = pfs;
+	// insert frag in the embedded_strux list if needed
+	if ((pts == PTX_EndFootnote) || (pts == PTX_EndEndnote) || (pts == PTX_EndAnnotation)) 
+	{
+		_insertNoteInEmbeddedStruxList(pfs);
+	}
+
 	return true;
 }
 

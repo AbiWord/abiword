@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -493,6 +494,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 	bool bFound;
 	bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_return_val_if_fail (bFound, false);
+	bool bSkipFootnote = _checkSkipFootnote(dpos1,dpos2,pf_End);
 
 #if 0
 	{
@@ -561,15 +563,38 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 			{
 				// we are only applying span-level changes, so we ignore strux.
 				// but we still need to update our loop indices.
-
-				pfNewEnd = pf_First->getNext();
-				fragOffsetNewEnd = 0;
-				pfsContainer = static_cast<pf_Frag_Strux *> (pf_First);
-				bool bFoundStrux = false;
-				if(isEndFootnote(pfsContainer))
+				if (bSkipFootnote  && isFootnote(pf_First))
 				{
-					bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
-					UT_return_val_if_fail (bFoundStrux, false);
+					UT_uint32 extraLength = 0;
+					pfNewEnd = pf_First;
+					while(pfNewEnd && !isEndFootnote(pfNewEnd))
+					{
+						pfNewEnd = pfNewEnd->getNext();
+						extraLength += pfNewEnd->getLength();
+					}
+					if(lengthThisStep + extraLength <= length)
+					{
+						lengthThisStep += extraLength;
+					}
+					else
+					{
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+						lengthThisStep = length;
+					}
+					pfNewEnd = pfNewEnd->getNext();
+					fragOffsetNewEnd = 0;
+				}
+				else
+				{
+					pfNewEnd = pf_First->getNext();
+					pfsContainer = static_cast<pf_Frag_Strux *> (pf_First);
+					fragOffsetNewEnd = 0;
+					bool bFoundStrux = false;
+					if(isEndFootnote(pfsContainer))
+					{
+						bFoundStrux = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
+						UT_return_val_if_fail (bFoundStrux, false);
+					}
 				}
 			}
 			break;
@@ -671,5 +696,3 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 
 	return true;
 }
-
-

@@ -19,7 +19,7 @@
  * 02111-1307, USA.
  */
 
-
+#include <list>
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
@@ -293,6 +293,12 @@ bool pt_PieceTable::insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pt
 	UT_return_val_if_fail (pfPrev,false);
 
 	m_fragments.insertFrag(pfPrev,pNewStrux);
+	// insert frag in the embedded_strux list if needed
+	if ((pts == PTX_EndFootnote) || (pts == PTX_EndEndnote) || (pts == PTX_EndAnnotation)) 
+	{
+		_insertNoteInEmbeddedStruxList(pNewStrux);
+	}
+
 #if 0
 	m_pDocument->miniDump(sdh,8);
 #endif
@@ -1429,5 +1435,51 @@ UT_uint32 pt_PieceTable::getXID()
 }
 
 
+/* Return true if neither dpos1 nor dpos2 is within a note and the whole document is not selected*/
+bool pt_PieceTable::_checkSkipFootnote(PT_DocPosition dpos1, PT_DocPosition dpos2, pf_Frag * pf_End) const
+{
+	if(m_embeddedStrux.empty())
+	{
+		return true;
+	}
 
+	if ((dpos1 == 1) && ((pf_End->getType() == pf_Frag::PFT_EndOfDoc) ||
+						 ((pf_End->getType() == pf_Frag::PFT_Strux) && 
+						  (static_cast<pf_Frag_Strux*>(pf_End)->getStruxType() == PTX_SectionHdrFtr))))
+	{
+		return false;
+	}
 
+	bool bSkipNote = true;
+	std::list<embeddedStrux>::const_reverse_iterator it;
+	for (it = m_embeddedStrux.rbegin(); it != m_embeddedStrux.rend(); ++it)
+	{
+		if ((*it).beginNote->getPos() < dpos2)
+		{
+			if ((*it).endNote->getPos() > dpos2)
+			{
+				bSkipNote = false;
+			}
+			break;
+		}
+	}
+	if (bSkipNote)
+	{
+		if (it != m_embeddedStrux.rbegin())
+		{
+			it--;
+		}
+		for (; it != m_embeddedStrux.rend(); ++it)
+		{
+			if ((*it).beginNote->getPos() < dpos1)
+			{
+				if ((*it).endNote->getPos() > dpos1)
+				{
+					bSkipNote = false;
+				}
+				break;
+			}
+		}
+	}
+	return bSkipNote;
+}
