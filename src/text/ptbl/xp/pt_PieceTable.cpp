@@ -989,6 +989,37 @@ bool pt_PieceTable::isFootnote(pf_Frag * pf) const
 	return false;
 }
 
+
+bool pt_PieceTable::isInsideFootnote(PT_DocPosition dpos, pf_Frag ** pfBegin) const
+{
+	// return true if pos is inside a footnote, an endnote or an annotation.
+	// the address of the footnote (endnote or annotation) pfs_strux is 
+	// returned in pfBegin if pfBegin is not NULL
+	if(m_embeddedStrux.empty())
+	{
+		return false;
+	}
+
+	std::list<embeddedStrux>::const_iterator it;
+	it = m_embeddedStrux.begin();
+	for (it = m_embeddedStrux.begin(); it != m_embeddedStrux.end(); ++it)
+	{
+		if ((*it).endNote->getPos() > dpos)
+		{
+			if ((*it).beginNote->getPos() < dpos)
+			{
+				if (pfBegin)
+				{
+					*pfBegin = (*it).beginNote;
+				}
+				return true;
+			}
+			break;
+		}
+	}
+	return false;
+}
+
 bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 											 pf_Frag_Strux ** ppfs,
                                               bool bSkipFootnotes) const
@@ -1443,6 +1474,11 @@ bool pt_PieceTable::_checkSkipFootnote(PT_DocPosition dpos1, PT_DocPosition dpos
 		return true;
 	}
 
+	if (!pf_End)
+	{
+		PT_BlockOffset offset;
+		getFragFromPosition(dpos2,&pf_End,&offset);
+	}
 	if ((dpos1 == 1) && ((pf_End->getType() == pf_Frag::PFT_EndOfDoc) ||
 						 ((pf_End->getType() == pf_Frag::PFT_Strux) && 
 						  (static_cast<pf_Frag_Strux*>(pf_End)->getStruxType() == PTX_SectionHdrFtr))))

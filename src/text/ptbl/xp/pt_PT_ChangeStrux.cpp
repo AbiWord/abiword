@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -20,6 +21,8 @@
 
 // changeStrux-related functions for class pt_PieceTable.
 
+#include <vector>
+#include <string>
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_assert.h"
@@ -437,31 +440,72 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	// look backwards and find the containing strux of the given
 	// type for both end points of the change.
 
-	bool bFoundFirst;
 	PTStruxType ptsTemp = pts;
 	if(bDoAll)
 	{
 		ptsTemp = PTX_Block;
 	}
-	bFoundFirst = _getStruxOfTypeFromPosition(dpos1,ptsTemp,&pfs_First);
+	bool bApplyStyle = (ptc == PTC_AddStyle);
+
+	// determine the first and last strux on which changes are applied
+	// if the selection anchor and the caret position are both in the main text,
+	// changes are not applied to embedded structures (footnotes ...)
+	//
+	// if the selection spans both the main text and an embedded structure, the
+	// extreme strux are determined within the main text in order to capture the
+	// outside block structure and the change is applied both to the main text 
+	// and the embedded structures
+	// NB: changes will be applied to all footnotes within a block (not only 
+	// those within the selection) 
+	
+	bool bSkipFootnote = _checkSkipFootnote(dpos1,dpos2);
+	bool bStopOnEndFootnote = (ptsTemp != PTX_Block);
+	bool bFoundFirst;
 	bool bFoundEnd;
-	bFoundEnd = _getStruxOfTypeFromPosition(dpos2,ptsTemp,&pfs_End);
-	if(!(bFoundFirst && bFoundEnd))
+	if (bSkipFootnote || bStopOnEndFootnote)
 	{
-		UT_DEBUGMSG((" could not find bFoundFirst %d or Maybe bFoundEnd %d \n",
-					 bFoundFirst,bFoundEnd));
-		UT_DEBUGMSG(("Aborting attempted change. \n"));
-		return false;
-	}
-	while(pfs_End && (pfs_End->getPos() < pfs_First->getPos() && (dpos2 >= dpos1)))
-	{
-		dpos2--;
+		bFoundFirst = _getStruxOfTypeFromPosition(dpos1,ptsTemp,&pfs_First);
 		bFoundEnd = _getStruxOfTypeFromPosition(dpos2,ptsTemp,&pfs_End);
 	}
-	if(!pfs_End)
+	else
 	{
-		return false;
+		pf_Frag * pfPos1 = NULL;
+		pf_Frag * pfPos2 = NULL;
+		bool bNoteFirst = isInsideFootnote(dpos1,&pfPos1);
+		bool bNoteEnd = isInsideFootnote(dpos2,&pfPos2);
+
+		if (bNoteFirst && bNoteEnd && (pfPos1 == pfPos2))
+		{
+			bStopOnEndFootnote = true;
+			bFoundFirst = _getStruxOfTypeFromPosition(dpos1,ptsTemp,&pfs_First);
+			bFoundEnd = _getStruxOfTypeFromPosition(dpos2,ptsTemp,&pfs_End);
+		}
+		else 
+		{
+			PT_BlockOffset offset;
+			bool bFound;
+			if (!bNoteFirst)
+			{
+				bFound = getFragFromPosition(dpos1,&pfPos1,&offset);
+				UT_return_val_if_fail(bFound,false);
+			}
+			bFoundFirst = _getStruxFromFragSkip(pfPos1,&pfs_First);
+			
+			if (!bNoteEnd || !bApplyStyle)
+			{
+				// When not changing style, the algorithm exits right after
+				// the end structure is found; the end block should be thus 
+				// be inside the embedded structure if requested
+				bFound = getFragFromPosition(dpos2,&pfPos2,&offset);
+				UT_return_val_if_fail(bFound,false);
+			}
+			bFoundEnd = _getStruxFromFragSkip(pfPos2,&pfs_End);
+		}
 	}
+
+	UT_return_val_if_fail(bFoundEnd && bFoundFirst,false);
+	UT_return_val_if_fail(pfs_End->getPos() >= pfs_First->getPos(),false);
+
 	// see if the change is exactly one block.  if so, we have
 	// a simple change.  otherwise, we have a multistep change.
 
@@ -469,7 +513,6 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	// NOTE: endMultiStepGlob() before we return -- otherwise,
 	// NOTE: the undo/redo won't be properly bracketed.
 
-	bool bApplyStyle = (ptc == PTC_AddStyle);
 	bool bSimple = (!bApplyStyle && (pfs_First == pfs_End));
 	if (!bSimple)
 		beginMultiStepGlob();
@@ -480,7 +523,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	if (!bApplyStyle)
 	{
 		// simple loop for normal strux change
-		while (!bFinished)
+		while (!bFinished && pf)
 		{
 			switch (pf->getType())
 			{
@@ -490,6 +533,15 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 				return false;
 
 			case pf_Frag::PFT_Strux:
+			{
+				if (bSkipFootnote && isFootnote(pf))
+				{
+					while(pf && !isEndFootnote(pf))
+					{
+						pf = pf->getNext();
+					}
+				}
+				else
 				{
 					pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 					if (bDoAll || (pfs->getStruxType() == pts))
@@ -502,7 +554,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 						bFinished = true;
 				}
 				break;
-
+			}
 			case pf_Frag::PFT_Object:
 			case pf_Frag::PFT_Text:
 			case pf_Frag::PFT_FmtMark:
@@ -514,64 +566,42 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	}
 	else
 	{
-		// when applying a block-level style, we also need to clear
-		// any props at the frag level, which might trigger coalescing,
-		// thus this version of the loop is more complex.
-
-//
-// OK for styles we expand out all defined properties including BasedOn styles
-// Then we use these to eliminate any specfic properties in the current strux
-// Then properties in the current strux will resolve to those defined in the
-// style (they exist there) to specifc values in strux (if not overridden by
-// the style) then finally to default value.
-//
-// TODO this is not right; first of all, paragraph style should be applied
-// 		to the block Strux only and nothing else -- no Spans, Fmt marks, etc.
-//		Second, when applying paragraph style, we should clear the existing
-//		strux of all its properties inherited from any previous style
-//		not just the ones defined explicitely, by this style, because what
-//		is not defined is assumed to default, not to be inherited from a style
-//		we are trying to get rid off.
-//
-// NO. We want to remove all character level properties that clash with properties
-// defined in th strux level style. -MES
-//
-		const gchar * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
-
-		PD_Style * pStyle = NULL;
-		PTChangeFmt ptcs = PTC_RemoveFmt;
-		getDocument()->getStyle(szStyle,&pStyle);
-		UT_return_val_if_fail (pStyle,false);
-		UT_Vector vProps;
-//
-// Get the vector of properties
-//
-		pStyle->getAllProperties(&vProps,0);
-//
-// Finally make the const gchar * array of properties
-//
-		const gchar ** sProps = NULL;
-		UT_uint32 countp = vProps.getItemCount() + 1;
-		sProps = (const gchar **) UT_calloc(countp, sizeof(gchar *));
-		countp--;
-		UT_uint32 i;
-		for(i=0; i<countp; i++)
+		// Changing block style should not affect character styles
+		UT_uint32 countAttr = 0;
+		while(attributes[2*countAttr])
 		{
-			sProps[i] = (const gchar *) vProps.getNthItem(i);
+			countAttr ++;
 		}
-		sProps[i] = NULL;
 
-		PT_DocPosition dpos = getFragPosition(pfs_First);
+		const gchar * attrNoStyle[2*countAttr+1];
+		UT_uint32 i = 0;
+		UT_uint32 k = 0;
+		for(i = 0;i < 2*countAttr + 1;++i)
+		{
+			if (strcmp(attributes[i],PT_STYLE_ATTRIBUTE_NAME) == 0)
+			{
+				i += 2;
+			}
+			attrNoStyle[k] = attributes[i];
+			++k;
+		}
+		const gchar ** attrSpan = (attrNoStyle[0]?attrNoStyle:NULL);
+
+		PTChangeFmt ptcs = PTC_RemoveFmt;
 		pf_Frag_Strux * pfsContainer = pfs_First;
+		pf_Frag_Strux * pfsMainBlock = NULL;
 		pf_Frag * pfNewEnd = NULL;
 		UT_uint32 fragOffsetNewEnd;
+		const gchar ** sProps = NULL;
+		const gchar * sOldStyleBlock = NULL;
+		const gchar * sStyleMainBlock = NULL;
+		std::vector <std::string> vPropNames;
 
 		bool bEndSeen = false;
+		bool bEndSeenMainBlock = false;
 
-		while (!bFinished)
+		while (!bFinished && pf)
 		{
-			UT_uint32 lengthThisStep = pf->getLength();
-
 			switch (pf->getType())
 			{
 			case pf_Frag::PFT_EndOfDoc:
@@ -579,89 +609,118 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 				bFinished = true;
 				break;
 
-			default:
-				UT_ASSERT_HARMLESS(0);
-				return false;
-
 			case pf_Frag::PFT_Strux:
+			{
+				if (isFootnote(pf))
 				{
-					pfNewEnd = pf->getNext();
-					fragOffsetNewEnd = 0;
+					if (bSkipFootnote)
+					{
+						while(pf && !isEndFootnote(pf))
+						{
+							pf = pf->getNext();
+						}
+						if (!pf)
+						{
+							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+							continue;
+						}
+					}
+					else
+					{
+						sStyleMainBlock = sOldStyleBlock;
+						pfsMainBlock = pfsContainer;
+						bEndSeenMainBlock = bEndSeen;
+						bEndSeen = false;
+					}
+				}
+				else
+				{
 					pfsContainer = static_cast<pf_Frag_Strux *> (pf);
 					if (!bEndSeen && (bDoAll || (pfsContainer->getStruxType() == pts)))
 					{
+						const PP_AttrProp * pAP = m_varset.getAP(pf->getIndexAP());
+						pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,sOldStyleBlock);
 						bool bResult;
 						bResult = _fmtChangeStruxWithNotify(ptc,pfsContainer,attributes,sProps,bRevisionDelete);
-						pfNewEnd = pf->getNext(); // fix 9226 change strux can delete the following object!
 						UT_return_val_if_fail (bResult,false);
 					}
-					if(!bEndSeen && isEndFootnote(static_cast<pf_Frag *>(pfsContainer)))
-					{
-						_getStruxFromFragSkip(pfNewEnd,&pfsContainer);
-					} 
-					if (pfsContainer == pfs_End)
-						bEndSeen = true;
-					else if (bEndSeen)
-						bFinished = true;
-				}
-				break;
-			case pf_Frag::PFT_Text:
-				{
-					bool bResult;
 
-					bResult = _fmtChangeSpanWithNotify(ptcs,static_cast<pf_Frag_Text *>(pf),
-												   0,dpos,lengthThisStep,
-													   attributes,sProps,
-												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
-					UT_return_val_if_fail (bResult, false);
-					if (fragOffsetNewEnd > 0)
+					bool bEndFootnote = isEndFootnote(pf);
+					if(bEndFootnote)
 					{
-						// skip over the rest of this frag since we've already
-						// dealt with it.
-						dpos += pfNewEnd->getLength() - fragOffsetNewEnd;
-						pfNewEnd = pfNewEnd->getNext();
-						fragOffsetNewEnd = 0;
+						sOldStyleBlock = sStyleMainBlock;
+						pfsContainer = pfsMainBlock;
+						bEndSeen = (bEndSeen || bEndSeenMainBlock);
 					}
 
+					if (pfsContainer == pfs_End)
+					{
+						bEndSeen = true;
+					}
+					else if (bEndSeen && (!bEndFootnote || bStopOnEndFootnote))
+					{
+						bFinished = true;
+					}
 				}
-				break;
+
+				pfNewEnd = pf->getNext();
+			}
+			break;
+
+			case pf_Frag::PFT_Text:
+			{
+				bool bResult;
+				bResult = _generateExtraPropList(pf,sOldStyleBlock,sProps,vPropNames);
+				UT_return_val_if_fail (bResult, false);
+				bResult = _fmtChangeSpanWithNotify(ptcs,static_cast<pf_Frag_Text *>(pf),
+												   0,pf->getPos(),pf->getLength(),attrSpan,sProps,
+												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
+				UT_return_val_if_fail (bResult, false);
+				if ((fragOffsetNewEnd > 0) && pfNewEnd->getNext())
+				{
+					pfNewEnd = pfNewEnd->getNext();
+				}
+			}
+			break;
 
 			case pf_Frag::PFT_Object:
-				{
-					bool bResult;
-					bResult = _fmtChangeObjectWithNotify(ptcs,static_cast<pf_Frag_Object *>(pf),
-													 0,dpos,lengthThisStep,
-														 attributes,sProps,
+			{
+				bool bResult;
+				bResult = _generateExtraPropList(pf,sOldStyleBlock,sProps,vPropNames);
+				UT_return_val_if_fail (bResult, false);
+				bResult = _fmtChangeObjectWithNotify(ptcs,static_cast<pf_Frag_Object *>(pf),
+													 0,pf->getPos(),pf->getLength(),attrSpan,sProps,
 													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
-					UT_return_val_if_fail (bResult, false);
-					UT_return_val_if_fail (fragOffsetNewEnd == 0,false);
+				UT_return_val_if_fail (bResult, false);
+				if ((fragOffsetNewEnd > 0) && pfNewEnd->getNext())
+				{
+					pfNewEnd = pfNewEnd->getNext();
 				}
-				break;
+			}
+			break;
 
 			case pf_Frag::PFT_FmtMark:
-				{
-					bool bResult;
-				 	bResult = _fmtChangeFmtMarkWithNotify(ptcs,static_cast<pf_Frag_FmtMark *>(pf),
-														  dpos,
-														  attributes,sProps,
+			{
+				bool bResult;
+				bResult = _generateExtraPropList(pf,sOldStyleBlock,sProps,vPropNames);
+				UT_return_val_if_fail (bResult, false);
+				bResult = _fmtChangeFmtMarkWithNotify(ptcs,static_cast<pf_Frag_FmtMark *>(pf),
+													  pf->getPos(),attrSpan,sProps,
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
-					UT_return_val_if_fail (bResult,false);
-				}
-				break;
+				UT_return_val_if_fail (bResult,false);
 			}
-			dpos += lengthThisStep;
+			break;
+			default:
+				UT_ASSERT_HARMLESS(0);
+				return false;
+			}
 
-			// since _fmtChange{Span,FmtMark,...}WithNotify(), can delete pf, mess with the
-			// fragment list, and does some aggressive coalescing of
-			// fragments, we cannot just do a pf->getNext() here.
-			// to advance to the next fragment, we use the *NewEnd variables
-			// that each of the cases routines gave us.
 			pf = pfNewEnd;
-
-			if (!pf)
-				bFinished = true;
 		}
-		FREEP(sProps);
+		if (sProps)
+		{
+			FREEP(sProps);
+		}
 	}
 
 	if (!bSimple)
@@ -738,3 +797,68 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 }
 
 
+/* This function generate a list of the properties that are defined with the same value in the style and in the
+   props list of a fragment. These properties can be removed from the props list without affecting the document.
+*/
+
+bool pt_PieceTable::_generateExtraPropList(pf_Frag * pf, const gchar * sStyleBlock, 
+										   const gchar ** & sProps, std::vector <std::string> & vPropNames)
+{
+	if (sProps)
+	{
+		FREEP(sProps);
+	}
+	if (!vPropNames.empty())
+	{
+		vPropNames.clear();
+	}
+
+	const PP_AttrProp * pAP = m_varset.getAP(pf->getIndexAP());
+	const gchar * sStyleSpan = NULL;
+	pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,sStyleSpan);
+	UT_uint32 count = pAP->getPropertyCount();
+	sProps = (const gchar **) UT_calloc(2*count + 1, sizeof(gchar *));
+
+	PD_Style * pStyleBlock = NULL;
+	PD_Style * pStyleSpan = NULL;
+	getDocument()->getStyle(sStyleBlock,&pStyleBlock);
+	UT_return_val_if_fail (pStyleBlock,false);
+	if (sStyleSpan)
+	{
+		getDocument()->getStyle(sStyleSpan,&pStyleSpan);
+		UT_return_val_if_fail (pStyleSpan,false);
+	}
+
+	const gchar * szName = NULL;
+	const gchar * szValueFrag = NULL;
+	const gchar * szValueStyle = NULL;
+	bool bDefined;
+	UT_uint32 i = 0;
+	UT_uint32 k = 0;
+	for(i=0; i < count; ++i)
+	{
+		pAP->getNthProperty(i, szName, szValueFrag);
+		if (sStyleSpan)
+		{
+			bDefined = pStyleSpan->getProperty(szName, szValueStyle);
+		}
+		else
+		{
+			bDefined = false;
+		}
+
+		if (!bDefined)
+		{
+			bDefined = pStyleBlock->getProperty(szName, szValueStyle);
+		}
+
+		if (bDefined && (strcmp(szValueFrag,szValueStyle) == 0))
+		{
+			vPropNames.push_back(szName);
+			sProps[k] = vPropNames.back().c_str();
+			k += 2;
+		}
+	}
+	sProps[k] = NULL;
+	return true;
+}
