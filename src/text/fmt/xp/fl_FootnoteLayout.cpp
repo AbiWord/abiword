@@ -288,6 +288,8 @@ void fl_EmbedLayout::updateLayout(bool /*bDoAll*/)
 bool fl_EmbedLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 {
 	UT_ASSERT(pcrx->getType()==PX_ChangeRecord::PXT_DeleteStrux);
+	// Move cursor to its new position
+	m_pLayout->getView()->setPoint(pcrx->getPosition());
 //
 // Remove all remaining structures
 //
