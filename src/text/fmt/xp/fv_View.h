@@ -355,6 +355,7 @@ public:
 	PT_DocPosition saveSelectedImage (const char * toFile );
 	PT_DocPosition saveSelectedImage (const UT_ByteBuf ** outByteBuf);
 	PT_DocPosition getSelectedImage(const char **dataId) const;
+	PT_DocPosition getSelectedImage(const char **dataId,const fp_Run **pImRun) const;
 	fp_Run *getSelectedObject(void) const;
 
 	void            getTextInCurrentBlock(UT_GrowBuf & buf) const;
@@ -537,6 +538,7 @@ public:
 	void            copyFrame(bool b_keepFrame = true);
 	void            selectFrame(void);
 	bool            isFrameSelected(void) const;
+	void            activateFrame(void);
 	fl_FrameLayout * getFrameLayout(PT_DocPosition pos) const;
 	fl_FrameLayout * getFrameLayout(void) const;
 	void            setFrameFormat(const gchar ** props);

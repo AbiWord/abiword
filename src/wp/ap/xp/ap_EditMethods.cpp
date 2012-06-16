@@ -524,6 +524,7 @@ public:
 	static EV_EditMethod_Fn dlgBorders;
 	static EV_EditMethod_Fn dlgColumns;
 	static EV_EditMethod_Fn dlgFmtImage;
+	static EV_EditMethod_Fn dlgFmtImageCtxt;
 	static EV_EditMethod_Fn dlgFmtPosImage;
 	static EV_EditMethod_Fn setPosImage;
 	static EV_EditMethod_Fn dlgHdrFtr;
@@ -892,6 +893,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(dlgColorPickerFore),	0,	""),
 	EV_EditMethod(NF(dlgColumns),			0,	""),
 	EV_EditMethod(NF(dlgFmtImage), 			0, ""),
+	EV_EditMethod(NF(dlgFmtImageCtxt), 	   	0, ""),
 	EV_EditMethod(NF(dlgFmtPosImage), 		0, ""),
 	EV_EditMethod(NF(dlgFont),				0,	""),
 	EV_EditMethod(NF(dlgFormatFrame),		0,	""),
@@ -11373,7 +11375,13 @@ Defun1(dlgFmtPosImage)
 	fl_FrameLayout * pPosObj = pView->getFrameLayout();
 	if(pPosObj == NULL)
 	{
-	  return true;
+		// try to select frame
+		pView->activateFrame();
+		pPosObj = pView->getFrameLayout();
+		if (pPosObj == NULL)
+		{
+			return true;
+		}
 	}
 	if(pPosObj-> getFrameType() < FL_FRAME_WRAPPER_IMAGE)
 	{
@@ -11606,25 +11614,9 @@ Defun1(dlgFmtPosImage)
 }
 
 
-Defun(dlgFmtImage)
+static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallData, bool bCtxtMenu)
 {
-	CHECK_FRAME;
-	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	if(pView->getFrameEdit()->isActive())
-	{
-	  fl_FrameLayout * pFL = pView->getFrameLayout();
-
-	  if(pFL == NULL)
-	  {
-	    return false;
-	  }
-	  if(pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
-	  {
-	    return true;
-	  }
-	  return EX(dlgFmtPosImage);
-	}
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -11637,9 +11629,7 @@ Defun(dlgFmtImage)
 		= static_cast<XAP_Dialog_Image *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_IMAGE));
 	UT_return_val_if_fail(pDialog, false);
 	double max_width = 0., max_height = 0.;
-	UT_sint32 x1,x2,y1,y2,iHeight,iWidth;
-	bool bEOL = false;
-	bool bDir = false;
+	UT_sint32 iHeight,iWidth;
 
 	// set units in the dialog.
 	const char * pszRulerUnits = NULL;
@@ -11663,27 +11653,45 @@ Defun(dlgFmtImage)
 	pDialog->setMaxWidth (max_width);
 	pDialog->setMaxHeight (max_height); // units are 1/72 of an inch
 	UT_DEBUGMSG(("formatting  image: %d\n", pCallData->m_xPos));
-	PT_DocPosition pos = pView->getDocPositionFromLastXY();
+	const fp_Run * pRun = NULL;
+	const char * dataID = NULL;
+	fl_BlockLayout * pBlock = NULL;
+	PT_DocPosition pos = 0;
 
-	fl_BlockLayout * pBlock = pView->getBlockAtPosition(pos);
-	fp_Run *  pRun = NULL;
-	if(pBlock)
+	if (bCtxtMenu)
 	{
-		pRun = pBlock->findPointCoords(pos,bEOL,x1,y1,x2,y2,iHeight,bDir);
-		while(pRun && pRun->getType() != FPRUN_IMAGE)
-		{
-			pRun = pRun->getNextRun();
-		}
-		if(pRun && pRun->getType() == FPRUN_IMAGE)
-		{
-			UT_DEBUGMSG(("SEVIOR: Image run on pos \n"));
+		pos = pView->getDocPositionFromLastXY();
+		pBlock = pView->getBlockAtPosition(pos);
+		if(pBlock)
+        {
+			pRun = pBlock->findRunAtOffset(pos - pBlock->getPosition());
+			if(pRun && (pRun->getType() == FPRUN_IMAGE))
+			{
+				dataID = static_cast<const fp_ImageRun *>(pRun)->getDataId();
+			}
+			else
+			{
+				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+				return false;
+			}
 		}
 		else
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			return false;
-		}
+        }
 	}
+	else
+	{
+		pos = pView->getSelectedImage(&dataID,&pRun);
+		if (!pRun)
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+		pBlock = pRun->getBlock();
+	}
+
     pView->cmdSelect(pos,pos+1);
 	const gchar ** props_in = NULL;
 
@@ -11809,11 +11817,7 @@ Defun(dlgFmtImage)
 // Get the line of the image. (We have the run and Block)
 //
 			  fp_Line * pLine = pRun->getLine();
-//
-// Get the dataID of the image.
 
-			  fp_ImageRun * pImageRun = static_cast<fp_ImageRun *>(pRun);
-			  const char * dataID = pImageRun->getDataId();
 			  UT_String sFrameProps;
 			  UT_String sProp;
 			  UT_String sVal;
@@ -12073,6 +12077,38 @@ Defun(dlgFmtImage)
 		return false;
 	}
 }
+
+
+Defun(dlgFmtImageCtxt)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+   	return s_doFormatImageDlg(pView,pCallData,true);
+}
+
+
+Defun(dlgFmtImage)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	if(pView->getFrameEdit()->isActive())
+	{
+	  fl_FrameLayout * pFL = pView->getFrameLayout();
+
+	  if(pFL == NULL)
+	  {
+	    return false;
+	  }
+	  if(pFL->getFrameType() == FL_FRAME_TEXTBOX_TYPE)
+	  {
+	    return true;
+	  }
+	  return EX(dlgFmtPosImage);
+	}
+
+	return s_doFormatImageDlg(pView,pCallData,false);
+}
+
 
 Defun(dlgColumns)
 {

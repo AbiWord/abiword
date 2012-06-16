@@ -207,6 +207,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_FMT_TABLEOFCONTENTS, 0,1,0,0, "formatTOC", ap_GetState_InTOC, NULL);
 	_s(AP_MENU_ID_FMT_FOOTNOTES,     0,1,0,0, "formatFootnotes", NULL, NULL);
 	_s(AP_MENU_ID_FMT_IMAGE, 0,1,0,0, "dlgFmtImage", ap_GetState_InImage, NULL);
+	_s(AP_MENU_ID_CONTEXT_IMAGE, 0,1,0,0, "dlgFmtImageCtxt", ap_GetState_InImage, NULL);
 	_s(AP_MENU_ID_FMT_SETPOSIMAGE, 0,0,0,0, "setPosImage", ap_GetState_SetPosImage, NULL);
 	_s(AP_MENU_ID_FMT_STYLE_DEFINE,		0,1,0,0,	"dlgStyle",			NULL,					NULL);
 	_s(AP_MENU_ID_FMT_STYLE,		1,0,0,0,	NULL,			NULL,					NULL);

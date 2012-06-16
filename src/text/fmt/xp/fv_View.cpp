@@ -1520,6 +1520,14 @@ void FV_View::releaseFrame(UT_sint32 x, UT_sint32 y)
 	m_FrameEdit.mouseRelease(x,y);
 }
 
+void FV_View::activateFrame(void)
+{
+	if(!m_FrameEdit.isActive())
+	{
+		m_FrameEdit.mouseLeftPress(m_iMouseX,m_iMouseY);
+	}
+}
+
 void FV_View::copyFrame(bool b_keepFrame)
 {
 	if(!m_FrameEdit.isActive())
@@ -2887,7 +2895,14 @@ PT_DocPosition FV_View::saveSelectedImage (const UT_ByteBuf ** pBytes)
  * Otherwise returns a nonzero value indicating the position of the image
  * and if dataId is not NULL will set value to the image's data ID
  */
+
 PT_DocPosition FV_View::getSelectedImage(const char **dataId) const
+{
+	const fp_Run * pRun = NULL;
+	return getSelectedImage(dataId,&pRun);
+}
+
+PT_DocPosition FV_View::getSelectedImage(const char **dataId, const fp_Run **pImRun) const
 {
 	// if nothing selected, then an image can't be
 	if (!isSelectionEmpty())
@@ -2929,9 +2944,9 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId) const
 				pos = pBlock->getPosition() +  pRun->getBlockOffset();
 				if (dataId != NULL)
 				{
-					const fp_ImageRun * pImRun = static_cast<const fp_ImageRun *>(pRun);
-					*dataId = pImRun->getDataId();
+					*dataId = static_cast<fp_ImageRun *>(pRun)->getDataId();
 				}
+				*pImRun = pRun;
 				return pos;
 			}
 		}
@@ -2941,6 +2956,8 @@ PT_DocPosition FV_View::getSelectedImage(const char **dataId) const
 	if (dataId != NULL) {
 		*dataId = NULL;
 	}
+	pImRun = NULL;
+	
 	return 0;
 }
 
