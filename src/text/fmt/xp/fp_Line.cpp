@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
@@ -995,10 +996,17 @@ void fp_Line::setMaxWidth(UT_sint32 iMaxWidth)
 	//
 	m_iClearLeftOffset = getHeight()/5;
 	if(getGraphics() && (m_iClearLeftOffset < getGraphics()->tlu(3)))
-	     m_iClearLeftOffset = getGraphics()->tlu(3);
+	{
+		m_iClearLeftOffset = getGraphics()->tlu(3);
+	}
 	if(hasBordersOrShading())
 	{
-	  m_iClearLeftOffset = 0;
+		m_iClearLeftOffset = 0;
+	}
+	if (getPage() && (getPage()->getWidth() - m_iMaxWidth < m_iClearLeftOffset))
+	{
+		m_iClearLeftOffset = getPage()->getWidth() - m_iMaxWidth;
+		UT_ASSERT(m_iClearLeftOffset >= 0);
 	}
 }
 
@@ -1520,7 +1528,14 @@ void fp_Line::recalcHeight(fp_Run * pLastRun)
 	//
 	m_iClearLeftOffset = iMaxDescent;
 	if(hasBordersOrShading())
-	  m_iClearLeftOffset = 0;
+	{
+		m_iClearLeftOffset = 0;
+	}
+	if (getPage() && (getPage()->getWidth() - m_iMaxWidth < m_iClearLeftOffset))
+	{
+		m_iClearLeftOffset = getPage()->getWidth() - m_iMaxWidth;
+		UT_ASSERT(m_iClearLeftOffset >= 0);
+	}
 
 	UT_sint32 iNewHeight = iMaxAscent + iMaxDescent;
 	UT_sint32 iNewAscent = iMaxAscent;
@@ -1740,7 +1755,7 @@ void fp_Line::clearScreen(void)
 					iExtra = pSL->getRightMargin()/2;
 				}
 			}
-			UT_ASSERT(m_iClearToPos + m_iClearLeftOffset < getPage()->getWidth());
+			UT_ASSERT(m_iClearToPos + m_iClearLeftOffset <= getPage()->getWidth());
 //			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, m_iClearToPos + m_iClearLeftOffset+iExtra, height);
 			pRun->Fill(getGraphics(),xoffLine - m_iClearLeftOffset, yoffLine, getMaxWidth() + m_iClearLeftOffset +iExtra, height);
 			xxx_UT_DEBUGMSG(("Clear pLine %x clearoffset %d xoffline %d width %d \n",this,m_iClearLeftOffset,xoffLine,getMaxWidth() + m_iClearLeftOffset +iExtra));
@@ -3650,11 +3665,22 @@ void fp_Line::recalcMaxWidth(bool bDontClearIfNeeded)
 			m_iClearLeftOffset = pSL->getLeftMargin() - getGraphics()->tlu(1);
 		}
 	}
-	if( hasBordersOrShading())
+
+	if (m_iClearLeftOffset < 0)
 	{
-	        m_iClearToPos = getRightEdge();
 		m_iClearLeftOffset = 0;
 	}
+	if(hasBordersOrShading())
+	{
+		m_iClearToPos = getRightEdge();
+		m_iClearLeftOffset = 0;
+	}
+	if (getPage() && (getPage()->getWidth() - m_iMaxWidth < m_iClearLeftOffset))
+	{
+		m_iClearLeftOffset = getPage()->getWidth() - m_iMaxWidth;
+		UT_ASSERT(m_iClearLeftOffset >= 0);
+	}
+
 
 	iMaxWidth -= m_pBlock->getRightMargin();
 	iMaxWidth -= m_pBlock->getLeftMargin();
