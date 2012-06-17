@@ -1,5 +1,4 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
-
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * BIDI Copyright (c) 2001,2002 Tomas Frydrych
@@ -9921,9 +9920,17 @@ bool fl_BlockLayout::doclistener_changeFmtMark(const PX_ChangeRecord_FmtMarkChan
 	fp_Run* pRun = m_pFirstRun;
 	while (pRun)
 	{
+		if ((pRun->getBlockOffset() > blockOffset) ||
+			((pRun->getBlockOffset() == blockOffset) && (pRun->getType() != FPRUN_FMTMARK)))
+		{
+			// The FmtMark run no longer exists. Exit function
+			// Since the runs and text fragments are coalesced separately, a FmtMark run may
+			// have been deleted even if the corresponding pf_Frag still exists
+			return true;
+		}
+
 		if (pRun->getBlockOffset() == blockOffset)
 		{
-			UT_ASSERT(pRun->getType() == FPRUN_FMTMARK);
 			pRun->lookupProperties();
 			if(!isHdrFtr())
 			{
