@@ -1567,7 +1567,7 @@ UT_Error IE_Exp_OpenXML::setMultilevelType(int target, const char* type)
 }
 
 /**
- * Sets the image 
+ * Sets the inline image 
  */
 UT_Error IE_Exp_OpenXML::setImage(const char* id, const char* relId, const char* filename, const char* width, const char* height)
 {
@@ -1623,6 +1623,100 @@ UT_Error IE_Exp_OpenXML::setImage(const char* id, const char* relId, const char*
 	str += "</a:graphicData>";
 	str += "</a:graphic>";
 	str += "</wp:inline>";
+	str += "</w:drawing>";
+
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
+ * Sets the positioned image 
+ */
+UT_Error IE_Exp_OpenXML::setPositionedImage(const char* id, const char* relId, const char* filename, const char* width, const char* height, const char* xpos, const char* ypos, const char* wrapMode)
+{
+	std::string str("");
+	std::string h("");
+	std::string w("");
+	std::string x("");
+	std::string y("");
+	std::string wm("bothSides"); // default wrap mode
+
+	if(!strcmp(wrapMode, "wrapped-to-right"))
+	{
+		wm = "right";
+	}
+	else if(!strcmp(wrapMode, "wrapped-to-left"))
+	{
+		wm = "left";
+	}
+
+	h += convertToPositiveEmus(height);
+	w += convertToPositiveEmus(width);
+	x += convertToPositiveEmus(xpos);
+	y += convertToPositiveEmus(ypos);
+
+	str += "<w:drawing>";
+	str += "<wp:anchor distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" allowOverlap=\"0\" layoutInCell=\"1\" locked=\"0\" behindDoc=\"0\" relativeHeight=\"0\">";
+	str += "<wp:simplePos x=\"0\" y=\"0\"/>";
+	str += "<wp:positionH relativeFrom=\"column\">";
+	str += "<wp:posOffset>";
+	str += x;
+	str += "</wp:posOffset>";
+	str += "</wp:positionH>";
+	str += "<wp:positionV relativeFrom=\"paragraph\">";
+	str += "<wp:posOffset>";
+	str += y;
+	str += "</wp:posOffset>";
+	str += "</wp:positionV>";
+	str += "<wp:extent cx=\"";
+	str += w;
+	str += "\" cy=\"";
+	str += h;
+	str += "\"/>";
+	str += "<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>";
+	str += "<wp:wrapSquare wrapText=\"";
+	str += wm;
+	str += "\"/>";
+	str += "<wp:docPr id=\"";
+	str += id;
+	str += "\" name=\"";
+	str += filename;
+	str += "\"/>";
+	str += "<wp:cNvGraphicFramePr>";
+	str += "<a:graphicFrameLocks noChangeAspect=\"1\"/>";
+	str += "</wp:cNvGraphicFramePr>";
+	str += "<a:graphic>";
+	str += "<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">";
+	str += "<pic:pic>";
+	str += "<pic:nvPicPr>";
+	str += "<pic:cNvPr id=\"";
+	str += id;
+	str += "\" name=\"";
+	str += filename;
+	str += "\"/>";
+	str += "<pic:cNvPicPr/>";
+	str += "</pic:nvPicPr>";
+	str += "<pic:blipFill>";
+	str += "<a:blip r:embed=\"";
+	str += relId;
+	str += "\"/>";
+	str += "</pic:blipFill>";
+	str += "<pic:spPr>";
+	str += "<a:xfrm>";
+	str += "<a:off x=\"0\" y=\"0\"/>";
+	str += "<a:ext cx=\"";
+	str += w;
+	str += "\" cy=\"";
+	str += h;
+	str += "\"/>";
+	str += "</a:xfrm>";
+	str += "<a:prstGeom prst=\"rect\">";
+	str += "<a:avLst/>";
+	str += "</a:prstGeom>";
+	str += "</pic:spPr>";
+	str += "</pic:pic>";
+	str += "</a:graphicData>";
+	str += "</a:graphic>";
+	str += "</wp:anchor>";
 	str += "</w:drawing>";
 
 	return writeTargetStream(TARGET_DOCUMENT, str.c_str());

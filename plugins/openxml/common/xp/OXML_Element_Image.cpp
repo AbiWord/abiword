@@ -40,44 +40,61 @@ OXML_Element_Image::~OXML_Element_Image()
 
 UT_Error OXML_Element_Image::serialize(IE_Exp_OpenXML* exporter)
 {
-	//TODO: serialize image here
 	UT_Error err = UT_OK;
 	const gchar* szValue;
-	const gchar* height;
-	const gchar* width;
+	const gchar* height = "1.0in";
+	const gchar* width = "1.0in";
+	const gchar* xpos = "0.0in";
+	const gchar* ypos = "0.0in";
+	const gchar* wrapMode = NULL;
+	bool bPositionedImage = false;
 
-	if(getAttribute("dataid", szValue) == UT_OK)
+	bPositionedImage = (getAttribute("strux-image-dataid", szValue) == UT_OK);
+
+	if (!bPositionedImage)
 	{
+		getAttribute("dataid", szValue);
+	}	
 
-		if(getProperty("height", height) != UT_OK)
-			height = "1.0in";
-					
-		if(getProperty("width", width) != UT_OK)
-			width = "1.0in";
+	UT_UTF8String sEscValue = szValue;
+	sEscValue.escapeXML();
 
-		UT_UTF8String sEscValue = szValue;
-		sEscValue.escapeXML();
+	std::string filename("");
+	filename += sEscValue.utf8_str();
 
-		std::string filename("");
-		filename += sEscValue.utf8_str();
+	std::string extension;
+	if(!exporter->getDoc()->getDataItemFileExtension(szValue, extension))
+		extension = ".png";
+	filename += extension;
 
-		std::string extension;
-		if(!exporter->getDoc()->getDataItemFileExtension(szValue, extension))
-			extension = ".png";
-		filename += extension;
+	std::string relId("rId");
+	relId += getId();
 
-		std::string relId("rId");
-		relId += getId();
-
-		err = exporter->setImageRelation(filename.c_str(), relId.c_str());
+	err = exporter->setImageRelation(filename.c_str(), relId.c_str());
+	if(err != UT_OK)
+		return err;
+	
+	if(bPositionedImage)
+	{
+		// positioned image
+		getProperty("wrap-mode", wrapMode);
+		getProperty("frame-height", height);
+		getProperty("frame-width", width);
+		getProperty("xpos", xpos);
+		getProperty("ypos", ypos);
+		err = exporter->setPositionedImage(getId().c_str(), relId.c_str(), filename.c_str(), width, height, xpos, ypos, wrapMode);
 		if(err != UT_OK)
-			return err;
-		
+			return err;			
+	}
+	else
+	{
+		// inline image
+		getProperty("height", height);
+		getProperty("width", width);
 		err = exporter->setImage(getId().c_str(), relId.c_str(), filename.c_str(), width, height);
 		if(err != UT_OK)
-			return err;
+			return err;			
 	}
-
 	return UT_OK;
 }
 

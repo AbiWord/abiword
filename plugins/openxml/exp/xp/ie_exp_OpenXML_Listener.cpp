@@ -37,6 +37,7 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	savedParagraph(NULL),
 	hyperlink(NULL),
 	textbox(NULL),
+	bInPositionedImage(false),
 	bInHyperlink(false),
 	bInTextbox(false),
 	idCount(10) //the first ten IDs are reserved for the XML file references
@@ -776,7 +777,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 			}
 			else if(!strcmp(frameType,"image"))
 			{
-				// TODO: handle positioned images
+				bInPositionedImage = true;
 			}
 
 			if(bInTextbox)
@@ -820,6 +821,48 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 				}
 
 				return paragraph->appendElement(shared_element_run) == UT_OK;
+			}
+			
+			if(bInPositionedImage)
+			{
+				OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
+				OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
+
+				if(paragraph->appendElement(shared_element_run) != UT_OK)
+					return false;
+
+				OXML_Element_Image* element_image = new OXML_Element_Image(getNextId());
+				OXML_SharedElement shared_element_image(static_cast<OXML_Element*>(element_image));		
+
+				const gchar* szValue;
+				const gchar* szName;			
+
+				if(bHaveProp && pAP)
+				{
+					size_t propCount = pAP->getPropertyCount();
+			
+					size_t i;
+					for(i=0; i<propCount; i++)
+					{
+						if(pAP->getNthProperty(i, szName, szValue))
+						{
+							if(element_image->setProperty(szName, szValue) != UT_OK)
+								return false;		
+						}
+					}
+
+					size_t attrCount = pAP->getAttributeCount();
+
+					for(i=0; i<attrCount; i++)
+					{
+						if(pAP->getNthAttribute(i, szName, szValue))
+						{
+							if(element_image->setAttribute(szName, szValue) != UT_OK)
+								return false;		
+						}
+					}
+				}
+				return element_run->appendElement(shared_element_image) == UT_OK;			
 			}
 			return true;
 		}

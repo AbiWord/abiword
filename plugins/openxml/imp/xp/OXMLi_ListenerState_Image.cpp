@@ -146,7 +146,7 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			std::string width(_EmusToInches(cx));
 			width += "in";
-			if(imgElem->setProperty("width", width) != UT_OK)
+			if(imgElem->setProperty("frame-width", width) != UT_OK)
 			{
 				UT_DEBUGMSG(("FRT:OpenXML importer image width property can't be set\n"));
 			}
@@ -157,7 +157,7 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 		{
 			std::string height(_EmusToInches(cy));
 			height += "in";
-			if(imgElem->setProperty("height", height) != UT_OK)
+			if(imgElem->setProperty("frame-height", height) != UT_OK)
 			{
 				UT_DEBUGMSG(("FRT:OpenXML importer image height property can't be set\n"));
 			}
