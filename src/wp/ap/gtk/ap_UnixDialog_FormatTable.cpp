@@ -463,7 +463,9 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
     g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
     g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
     // Set init Value
-    wchar_t         szValue[BUFSIZE];
+    UT_Dimension dim = DIM_IN;
+    float value = getTableWidth();
+    const gchar *szValue= UT_formatDimensionString (dim, value);
     /* todo: Get Table handle
     FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
     if (!pView)
@@ -472,10 +474,10 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
     setHeight(pFL->getTableHeight());
     setWidth(pFL->getTableWidth());
     */
-    swprintf(szValue, L"%02.2f", getTableWidth());
     gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
 
-    swprintf(szValue, L"%02.2f", getTableHeight());
+    value = getTableHeight();
+    szValue= UT_formatDimensionString (dim, value);
     gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
    
 	
