@@ -1599,9 +1599,14 @@ bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
 		return false;
 	if (!cur)
 	{
-		UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
-		path += "/xsltml/mmltex.xsl";
-
+		#ifdef WIN32
+			UT_UTF8String path("../../plugins/latex/xsltml/mmltex.xsl");
+			// changed the path string as the below works for linux, however in windows it goes to msvc2008/Debug/xsltml which is wrong
+		#else
+			UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
+			path += "/xsltml/mmltex.xsl";
+		#endif
+		
 		cur = xsltParseStylesheetFile((const xmlChar *)(path.utf8_str()));
 		if (!cur)
 		{
