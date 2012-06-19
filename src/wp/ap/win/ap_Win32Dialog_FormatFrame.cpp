@@ -205,10 +205,10 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	setHeight(pFL->getFrameHeight());
 	setWidth(pFL->getFrameWidth());
 
-	swprintf(szValue, L"%02.2f", getFrameWidth());
+	swprintf(szValue, L"%02.2f", UT_convertSizeToLayoutUnits(getFrameWidth(),DIM_IN));
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
 
-	swprintf(szValue, L"%02.2f", getFrameHeight());
+	swprintf(szValue, L"%02.2f", UT_convertSizeToLayoutUnits(getFrameHeight(),DIM_IN));
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
 
 	/* Position to radio buttons */

@@ -210,10 +210,10 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
     setHeight(pTL->getActualColumnHeight());
     setWidth(pTL->getActualColumnWidth());
 
-	swprintf(szValue, L"%02.2f", getTableWidth());
+	swprintf(szValue, L"%02.2f", UT_convertSizeToLayoutUnits(getTableWidth(),DIM_IN));
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_VAL_WIDTH, szValue);
 
-	swprintf(szValue, L"%02.2f", getTableHeight());
+	swprintf(szValue, L"%02.2f", UT_convertSizeToLayoutUnits(getTableHeight(),DIM_IN));
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_VAL_HEIGHT, szValue);
 
 
