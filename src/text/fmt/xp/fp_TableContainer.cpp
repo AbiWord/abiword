@@ -127,7 +127,8 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bIsSelected(false),
 	  m_bDirty(true),
 	  m_bIsRepeated(false),
-	  m_iVertAlign(0)
+	  m_iVertAlign(0),
+	  m_bHeaderCell(false)
 {
 }
 
@@ -1251,7 +1252,7 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
 	iTop = col_y + m_iTopY + offy;
 	iBot = col_y + m_iBotY + offy;
 	fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(pBroke->getMasterTable()->getSectionLayout());
-	if((pTableLayout->isHeaderSet()) &&(pBroke->getMasterTable()->getHeaderObject() != NULL))
+	if((pTableLayout->isHeaderSet()) &&(pBroke->getMasterTable()->getHeaderObject() != NULL && !m_bHeaderCell))
 	{
 		iTop += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
 		iBot += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
@@ -2361,6 +2362,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	m_bDrawTop = false;
 	fp_TableContainer * pTab2 = NULL;
 	bool bIsNested = isInNestedTable();
+	xxx_UT_DEBUGMSG(("The Y of this cell %x is %d table Y is %d address %x master %x\n",this,getY(),getContainer()->getY(),getContainer(),pBroke->getMasterTable())); 
 	if(pBroke && pBroke->isThisBroken())
 	{
 		pTab2 = pBroke->getMasterTable();
@@ -2426,7 +2428,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	GR_Painter painter(pG);
 
 	fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(pBroke->getMasterTable()->getSectionLayout());
-	if((pTableLayout->isHeaderSet()) &&(pBroke->getMasterTable()->getHeaderObject() != NULL))
+	if((pTableLayout->isHeaderSet()) &&(pBroke->getMasterTable()->getHeaderObject() != NULL) && !m_bHeaderCell)
 	{
 		bRec.top += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
 	}
@@ -2488,7 +2490,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 			da.xoff += pContainer->getX() + getX();
 			da.yoff += pContainer->getY() + getY();
 			fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(pBroke->getMasterTable()->getSectionLayout());
-			if((pTableLayout->isHeaderSet()) && (pBroke->getMasterTable()->getHeaderObject() != NULL))
+			if((pTableLayout->isHeaderSet()) && (pBroke->getMasterTable()->getHeaderObject() != NULL) && !m_bHeaderCell)
 			{
 				da.yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
 			}
@@ -3953,10 +3955,6 @@ void fp_TableContainer::adjustBrokenTables(void)
 	//
 
 	return;
-/*
- * TODO
- * tnkk:The following is purely unreachable :( Either it should be fixed soon and committed, or deleted... Will do as soon as I finish the draw thing for header. 
- */
 	fp_TableContainer * pBroke = getFirstBrokenTable();
 	fp_VerticalContainer * pVC = static_cast<fp_VerticalContainer *>(getContainer());
 	UT_sint32 iNewHeight = pVC->getMaxHeight() - getY();	
@@ -4218,6 +4216,14 @@ void fp_TableContainer::setHeight(UT_sint32 iHeight)
 	}
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	iHeight += (pTL->getBottomOffset() + pTL->getTopOffset());
+	if(getMasterTable() && getMasterTable()->getHeaderObject())
+	{
+		fl_TableLayout *pTabLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
+		if(pTabLayout->isHeaderSet())
+		{
+			iHeight += getMasterTable()->getHeaderObject()->getHeaderHeight();
+		}
+	}
 	fp_VerticalContainer::setHeight(iHeight);
 }
 
@@ -4369,7 +4375,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!!! Frist broken table %x \n",pBroke));
 		pBroke->setYBreakHere(vpos);
 		pBroke->setYBottom(fp_VerticalContainer::getHeight());
-		UT_DEBUGMSG(("The height is %d \n",pBroke->getHeight()));
+		UT_DEBUGMSG(("The height of pBroke is %d \n",pBroke->getHeight()));
 		// leave this in!		UT_ASSERT(pBroke->getHeight());
 		setFirstBrokenTable(pBroke);
 		setLastBrokenTable(pBroke);
@@ -4398,16 +4404,8 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 //
 //Table Header
 	pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
-	if(pTableLayout->isHeaderSet())
-	{
-		pBroke->setYBreakHere(getYBreak()+vpos+getMasterTable()->getHeaderObject()->getHeaderHeight());
-		pBroke->setYBottom(getMasterTable()->getYBottom() + getMasterTable()->getHeaderObject()->getHeaderHeight());
-	}
-	else
-	{
-		pBroke->setYBreakHere(getYBreak()+vpos);
-		pBroke->setYBottom(getMasterTable()->getYBottom());
-	}
+	pBroke->setYBreakHere(getYBreak()+vpos);
+	pBroke->setYBottom(getMasterTable()->getYBottom());
 	UT_DEBUGMSG(("The height of the broken table is %d\n",pBroke->getHeight()));
 	setYBottom(getYBreak() + vpos -1);
 	UT_ASSERT(getHeight() >0);
@@ -4552,7 +4550,7 @@ void fp_TableContainer::setY(UT_sint32 i)
 // automatically?
 //
 	xxx_UT_DEBUGMSG(("Set Reformat 1 now from table %x in TableLayout %x \n",this,getSectionLayout()));
-	getSectionLayout()->setNeedsReformat(getSectionLayout());
+//	getSectionLayout()->setNeedsReformat(getSectionLayout());
 	fp_VerticalContainer::setY(i);
 	adjustBrokenTables();
 }
@@ -5706,6 +5704,22 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	if(iCount > 0)
 	{
 		xxx_UT_DEBUGMSG(("Draw the repeated Row here \n"));
+		if(getMasterTable() && getMasterTable()->getHeaderObject())
+		{
+			fp_TableHeader *pHeader = getMasterTable()->getHeaderObject();
+			fl_TableLayout *pTabLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
+			if(pHeader && pTabLayout->isHeaderSet())
+			{
+				fp_CellContainer *pCell = pHeader->m_vecCells[0];
+				if(pCell)
+				{
+					pCell->setHeaderCell(true);
+					dg_DrawArgs da = *pDA;
+			//			pCell->drawBroken(&da,this);
+					pCell->setHeaderCell(false);
+				}
+			}
+		}
 
 	}
 	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
@@ -6657,15 +6671,27 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 
 void fp_TableHeader::populateCells(void)
 {
-	int i,noOfColumns=getNumCols();
+	int i,noOfColumns=pTabMaster->getNumCols();
 	const std::vector<UT_sint32> & headerRowNum =  getHeaderRowNos();
 	std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
 	for(;itr != headerRowNum.end() ; ++itr)
 	{
 		for(i=0;i<noOfColumns;i++)
 		{
-			m_vecCells.push_back(getMasterTable()->getCellAtRowColumn(*itr-1,i));
-			xxx_UT_DEBUGMSG(("Adding Cell at Row %d Column %d\n",*itr-1,i));
+			fp_CellContainer *pCell =  new fp_CellContainer(pTabMaster->getSectionLayout());
+			fp_CellContainer *pOldCell = pTabMaster->getCellAtRowColumn(*itr-1,i);
+			//pCell->getSectionLayout()->setContainingLayout(getSectionLayout());
+			if(pOldCell)
+			{
+				fl_CellLayout *pCellLayout = static_cast<fl_CellLayout *>(pOldCell->getSectionLayout());
+	//			pCellLayout->setCellContainerProperties(pCell); //Have to fix a few asserts here
+			}
+			pCell->setTopAttach(*itr -1);
+			pCell->setBottomAttach(*itr);
+			pCell->setRightAttach(i+1);
+			pCell->setLeftAttach(i);
+			m_vecCells.push_back(pCell);
+			UT_DEBUGMSG(("Adding Cell at Row %d Column %d\n",*itr-1,i));
 		}
 	}
 }
@@ -6673,7 +6699,7 @@ void fp_TableHeader::populateCells(void)
 UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
 {
 	UT_sint32 iRowHeight=0;
-	iRowHeight = (pTab->getNthRow(iRowNumber)->allocation) + (pTab->getNthRow(iRowNumber)->spacing);
+	iRowHeight = (pTabMaster->getNthRow(iRowNumber)->allocation) + (pTabMaster->getNthRow(iRowNumber)->spacing);
 	return iRowHeight;
 }
 
@@ -6681,7 +6707,11 @@ fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContai
 	:  fp_TableContainer(pSectionLayout,pTableContainer),
 	   m_iHeaderHeight(0)
 {
-	pTab = pTableContainer;
+	pTabMaster = pTableContainer;
+
+	fl_TableLayout *pTabLayout = static_cast<fl_TableLayout *>(pTabMaster->getSectionLayout());
+	pTabLayout->setTableContainerProperties(static_cast<fp_TableContainer *>(this));
+	
 	setHeaderRows();
 }
 
@@ -6696,7 +6726,6 @@ void fp_TableHeader::calculateHeaderHeight(void)
 	const std::vector<UT_sint32> & headerRowNum =  getHeaderRowNos();
 	if(!headerRowNum.empty())
 	{
-		xxx_UT_DEBUGMSG(("The total no of rows are %d\n",totRows));
 		std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
 		for(;itr != headerRowNum.end() ; ++itr)
 		{

@@ -2020,6 +2020,7 @@ void fp_Column::layout(void)
 // fxime comeback and re-evaluate this
 //		UT_ASSERT(iY>=0);
 		pContainer->setY(iY);
+		UT_DEBUGMSG(("The total no of containers are %d\n",pContainer->countCons()));
 //		UT_ASSERT(iY == pContainer->getY());
 		//UT_ASSERT(pContainer->getY() == iY);
 //

@@ -253,6 +253,8 @@ public:
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
+	void 			setHeaderCell(bool bHeader)
+	{ 	m_bHeaderCell = bHeader; }
 
 private:
 		
@@ -341,6 +343,7 @@ private:
 	bool                   m_bDirty;
 
 	bool                   m_bIsRepeated;
+	bool 		       m_bHeaderCell;
 
 // Vertical alignment property
 
@@ -577,7 +580,7 @@ public:
 
 private:
 	std::vector<UT_sint32> m_vHeaderRowNumber;
-	fp_TableContainer *pTab;
+	fp_TableContainer *pTabMaster;
 	UT_sint32 m_iHeaderHeight;
 };
 	

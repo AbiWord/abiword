@@ -394,6 +394,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		    bEquivColumnBreak = true;
 		}
 		UT_sint32 iWorkingColHeight = 0;
+		UT_sint32 iHeaderAdjust = 0;
 
 		fp_Container* pCurContainer = pFirstContainerToKeep;
 		
@@ -540,6 +541,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 					}	
 					xxx_UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
 					iWorkingColHeight += iTheseFootnotes;
+					iHeaderAdjust += iTheseFootnotes;
 				}
 				if(pCurLine->containsAnnotations() && _displayAnnotations())
 				  {
@@ -563,8 +565,13 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 						}				
 					}	
 					iWorkingColHeight += iTheseAnnotations;
-
+					iHeaderAdjust += iTheseAnnotations;
 				  }
+			}
+			if(iWorkingColHeight > iHeaderAdjust)
+			{
+				iHeaderAdjust = iWorkingColHeight - iHeaderAdjust;
+				iWorkingColHeight -= iHeaderAdjust;
 			}
 			xxx_UT_DEBUGMSG(("WorkingColHeight = %d \n",iWorkingColHeight));
 			xxx_UT_DEBUGMSG(("iTotalContainerSpace = %d MarginAfter %d \n",iTotalContainerSpace,iContainerMarginAfter));
@@ -1489,7 +1496,6 @@ bool fb_ColumnBreaker::_breakCON(fp_Container*& pOffendingContainer,
 //  ===|===|===|===|=== <-- YBottom.
 //
 //  Table Container height = YBottom - YBreak.
-//  Additional note: You can never get the height of MasterTable through fp_TableContainer::getHeight() method.
 
 bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 								   fp_Container*& pLastContainerToKeep,
@@ -1549,7 +1555,6 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 		{
 //
 // Break it at 0 first.
-//tnkk: Breaking at 0 implies that even if your table has only one row, it will be broken.
 //
 			xxx_UT_DEBUGMSG(("SEVIOR: Breaking MAster iBreakAt %d yloc = %d \n",iBreakAt,pTab->getY()));
 			fp_Container * pNext = static_cast<fp_Container *>(pTab->getNext());
@@ -1590,6 +1595,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 			fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(pBroke->VBreakAt(iBreakAt));
 			pOffendingContainer = static_cast<fp_Container *>(pNewTab);
 			pLastContainerToKeep = static_cast<fp_Container *>(pTab);
+			UT_DEBUGMSG(("The height of the master table is %d, pBroke %d, pNewTab %d\n",pNewTab->getMasterTable()->getHeight(),pBroke->getHeight(),pNewTab->getHeight()));
                         if(pNewTab == NULL)
 			{
 			  return false;
