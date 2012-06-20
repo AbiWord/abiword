@@ -3270,11 +3270,11 @@ fp_TableContainer::~fp_TableContainer()
 	setContainer(NULL);
 	setPrev(NULL);
 	setNext(NULL);
-	m_pMasterTable = NULL;
 	if(getMasterTable() && m_pTableHeader!=NULL)
 	{
 		DELETEP(m_pTableHeader);
 	}
+	m_pMasterTable = NULL;
 }
 
 fp_Column * fp_TableContainer::getBrokenColumn(void)
