@@ -769,9 +769,14 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         _flush();
         m_bAcceptingText = false;
         
-    } else if (!strcmp(pName, "text:note-body")) {
+    } else if (!strcmp(pName, "text:note-citation")) {  
+        m_bPendingNoteCitation = true;
+        m_bAcceptingText = false;
+    } 
+    else if (!strcmp(pName, "text:note-body")) {
 
-        const gchar* ppAtts2[10];
+        int attrCount = m_bPendingNoteCitation ? 12 : 10;
+        const gchar* ppAtts2[attrCount];
         UT_uint32 id;
         const ODi_NotesConfiguration* pNotesConfig;
         const ODi_Style_Style* pStyle = NULL;
@@ -826,6 +831,11 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         }
         ppAtts2[i++] = "props";
         ppAtts2[i++] = "text-position:superscript";
+        if (m_bPendingNoteCitation) {
+            ppAtts2[i++] = "text:note-citation";
+            ppAtts2[i++] = m_noteCitation.c_str();
+            m_bPendingNoteCitation = false;
+        }
         ppAtts2[i] = 0;
         
         UT_DebugOnly<bool> ok;
@@ -1077,6 +1087,8 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         // We were inside a <table:table-cell> element.
         rAction.popState();
         
+    } else if (!strcmp(pName, "text:note-citation")) {  
+        m_bAcceptingText = true;
     } else if (!strcmp(pName, "text:note-body")) {
         UT_DebugOnly<bool> ok = false;
         const gchar* pNoteClass;
@@ -1352,6 +1364,9 @@ void ODi_TextContent_ListenerState::charData (
     {
         m_sAnnotationDate = pBuffer;
     }
+    else if (m_bPendingNoteCitation) {  
+        m_noteCitation = pBuffer;
+    } 
 }
 
 

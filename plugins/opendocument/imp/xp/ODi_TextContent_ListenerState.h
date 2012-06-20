@@ -180,9 +180,11 @@ private:
     UT_uint8 m_listLevel;
     bool m_alreadyDefinedAbiParagraphForList;
 
-    // Stuff for footnotes and endnotes.
+    // Stuff for footnotes and endnotes
+    bool m_bPendingNoteCitation;
     bool m_pendingNoteAnchorInsertion;
     UT_UTF8String m_currentNoteId;
+    std::string m_noteCitation;
 
     // Annotations
     bool m_bPendingAnnotation;
