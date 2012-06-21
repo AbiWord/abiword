@@ -56,11 +56,10 @@ UT_Error OXML_Element_Image::serialize(IE_Exp_OpenXML* exporter)
 		getAttribute("dataid", szValue);
 	}	
 
-	UT_UTF8String sEscValue = szValue;
-	sEscValue.escapeXML();
+	std::string sEscValue = UT_escapeXML(szValue);
 
 	std::string filename("");
-	filename += sEscValue.utf8_str();
+	filename += sEscValue;
 
 	std::string extension;
 	if(!exporter->getDoc()->getDataItemFileExtension(szValue, extension))
