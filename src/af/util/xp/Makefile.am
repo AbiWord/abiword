@@ -49,6 +49,8 @@ libxp_la_SOURCES = \
 	ut_locale.h \
 	ut_math.cpp \
 	ut_math.h \
+	ut_math_convert.cpp \
+	ut_math_convert.h \
 	ut_mbtowc.cpp \
 	ut_mbtowc.h \
 	ut_misc.cpp \
