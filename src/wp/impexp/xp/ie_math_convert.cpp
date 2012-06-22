@@ -1,6 +1,6 @@
 // part of the code here taken from ie_exp_LaTeX.cpp in the latex plugin
 
-#include "ut_math_convert.h"
+#include "ie_math_convert.h"
 #include "ut_debugmsg.h"
 #include "xap_App.h"
 

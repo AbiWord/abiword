@@ -52,7 +52,7 @@
 #include "ut_string_class.h"
 #include "xap_Module.h"
 #include "ut_misc.h"
-#include "ut_math_convert.h"
+#include "ie_math_convert.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_latex_register

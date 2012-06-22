@@ -1,5 +1,5 @@
-#ifndef UT_MATH_CONVERT_H
-#define UT_MATH_CONVERT_H
+#ifndef IE_MATH_CONVERT_H
+#define IE_MATH_CONVERT_H
 #endif
 
 #ifndef UT_TYPES_H
