@@ -477,20 +477,39 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				OXML_FontLevel level = UNKNOWN_LEVEL;
 				OXML_CharRange range = UNKNOWN_RANGE;
 
-				const gchar * ascii = NULL; //TODO: add support for eastAsia, bidi, and hAnsi
+				const gchar * ascii = NULL;
+				const gchar * eastAsia = NULL;
+				const gchar * bidi = NULL;
+				const gchar * hAnsi = NULL;
 				if (NULL != (ascii = attrMatches(NS_W_KEY, "asciiTheme", rqst->ppAtts))) {
 					this->getFontLevelRange(ascii, level, range);
 					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme
 				} else if (NULL != (ascii = attrMatches(NS_W_KEY, "ascii", rqst->ppAtts))) {
-					fontName = ascii;
-					fontName = fmgr->getValidFont(fontName); //Make sure the name is valid
+					fontName = fmgr->getValidFont(ascii); //Make sure the name is valid
+				} else if (NULL != (eastAsia = attrMatches(NS_W_KEY, "eastAsiaTheme", rqst->ppAtts))) {
+					this->getFontLevelRange(eastAsia, level, range);
+					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme					
+				} else if (NULL != (eastAsia = attrMatches(NS_W_KEY, "eastAsia", rqst->ppAtts))) {
+					fontName = fmgr->getValidFont(eastAsia); //Make sure the name is valid									
+				} else if (NULL != (bidi = attrMatches(NS_W_KEY, "csTheme", rqst->ppAtts))) {
+					this->getFontLevelRange(bidi, level, range);
+					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme						
+				} else if (NULL != (bidi = attrMatches(NS_W_KEY, "cs", rqst->ppAtts))) {
+					fontName = fmgr->getValidFont(bidi); //Make sure the name is valid					
+				} else if (NULL != (hAnsi = attrMatches(NS_W_KEY, "hAnsiTheme", rqst->ppAtts))) {
+					this->getFontLevelRange(hAnsi, level, range);
+					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme	
+				} else if (NULL != (hAnsi = attrMatches(NS_W_KEY, "hAnsi", rqst->ppAtts))) {
+					fontName = fmgr->getValidFont(hAnsi); //Make sure the name is valid
 				} else {
 					fontName = fmgr->getDefaultFont();
 				}
 				UT_return_if_fail( _error_if_fail( UT_OK == run->setProperty("font-family", fontName.c_str()) ));
 
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "lang")) {
-				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts); //TODO: add support for eastAsia and bidi attributes
+				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts); 
+				const gchar * eastAsia = attrMatches(NS_W_KEY, "eastAsia", rqst->ppAtts); 
+				const gchar * bidi = attrMatches(NS_W_KEY, "bidi", rqst->ppAtts); 
 				const gchar * previousVal = NULL;
 				if (UT_OK == run->getProperty("lang", previousVal)) {
 					if ( 0 != strcmp(previousVal, "-none-"))
@@ -498,6 +517,10 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 				if ( val != NULL)
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("lang", val) ));
+				if ( eastAsia != NULL)
+					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("lang", eastAsia) ));
+				if ( bidi != NULL)
+					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("lang", bidi) ));
 
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "noProof")) {
 				//noProof has priority over lang, so no need to check for previous values
@@ -516,7 +539,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "sz")) {
 				const gchar * szStr = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(szStr != NULL) );
-				double sz = UT_convertDimensionless(szStr) / 2; //TODO: error-check this
+				double sz = UT_convertDimensionless(szStr) / 2;
+				UT_return_if_fail( this->_error_if_fail(sz > 0) );
 				std::string pt_value = UT_convertToDimensionlessString(sz);
 				pt_value += "pt";
 				UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("font-size", pt_value.c_str()) ));

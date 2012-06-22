@@ -28,7 +28,6 @@
 #include <ie_exp_OpenXML.h>
 
 // AbiWord includes
-#include <ut_std_string.h>
 #include <ut_types.h>
 #include <ut_string.h>
 #include <pd_Document.h>
