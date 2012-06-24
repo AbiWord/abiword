@@ -86,7 +86,7 @@ public:
 	UT_Error finishParagraphProperties(int target);
 	UT_Error startCellProperties(int target);
 	UT_Error finishCellProperties(int target);
-	UT_Error startStyle(std::string name, std::string basedon, std::string followedby);
+	UT_Error startStyle(std::string name, std::string basedon, std::string followedby, std::string type);
 	UT_Error finishStyle();
 	UT_Error startTable();
 	UT_Error finishTable();

@@ -976,7 +976,27 @@ UT_Error IE_Exp_OpenXML_Listener::addDocumentStyles()
 			continue;
 
 		OXML_Style* style = new OXML_Style(styleName, styleName);
-		OXML_SharedStyle shared_style(style);			
+		OXML_SharedStyle shared_style(style);		
+
+		bool isChar = pStyle->isCharStyle();
+		if(isChar)
+		{
+			err = style->setAttribute("type", "character");
+			if(err != UT_OK)
+			{
+				UT_DEBUGMSG(("SERHAT:ERROR, Setting Type Attribute failed"));	
+				return err;
+			}
+		}	
+		else
+		{
+			err = style->setAttribute("type", "paragraph");
+			if(err != UT_OK)
+			{
+				UT_DEBUGMSG(("SERHAT:ERROR, Setting Type Attribute failed"));	
+				return err;
+			}			
+		}
 
 		PD_Style* basedOnStyle = pStyle->getBasedOn();
 		if(basedOnStyle)

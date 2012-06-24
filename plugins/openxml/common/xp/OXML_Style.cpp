@@ -53,8 +53,10 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
 	const gchar* szValue = NULL;
-	
-	err = exporter->startStyle(m_name, m_basedon, m_followedby);
+	const gchar* type = NULL;
+	getAttribute("type", type);
+	std::string szType(type); // type is character or paragraph
+	err = exporter->startStyle(m_name, m_basedon, m_followedby, szType);
 	if(err != UT_OK)
 		return err;
 

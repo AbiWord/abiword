@@ -24,6 +24,9 @@
 // Class definition include
 #include <ie_exp_OpenXML.h>
 
+// Abiword includes
+#include <ut_std_string.h>
+
 /**
  * Constructor
  */
@@ -2838,36 +2841,38 @@ UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
 	return UT_OK;
 }
 
-UT_Error IE_Exp_OpenXML::startStyle(std::string style, std::string basedon, std::string followedby)
+UT_Error IE_Exp_OpenXML::startStyle(std::string style, std::string basedon, std::string followedby, std::string type)
 {
-	UT_UTF8String sEscStyle = style.c_str();
-	UT_UTF8String sEscBasedOn = basedon.c_str();
-	UT_UTF8String sEscFollowedBy = followedby.c_str();
-
-	sEscStyle.escapeXML();
-	sEscBasedOn.escapeXML();
-	sEscFollowedBy.escapeXML();
-
-	// TODO: export w:type (character or paragraph)
+	std::string sEscStyle = UT_escapeXML(style.c_str());
+	std::string sEscBasedOn = UT_escapeXML(basedon.c_str());
+	std::string sEscFollowedBy = UT_escapeXML(followedby.c_str());
+	std::string sEscType = UT_escapeXML(type.c_str());
 
 	std::string str("");
-	str += "<w:style w:styleId=\"";
-	str += sEscStyle.utf8_str();
+	str += "<w:style";
+	if(!type.empty())
+	{
+		str += " w:type=\"";
+		str += sEscType;
+		str += "\"";
+	}
+	str += " w:styleId=\"";
+	str += sEscStyle;
 	str += "\">";
 	str += "<w:name w:val=\"";
-	str += sEscStyle.utf8_str();
+	str += sEscStyle;
 	str += "\"/>";
 	
 	if(!basedon.empty())
 	{
 		str += "<w:basedOn w:val=\"";
-		str += sEscBasedOn.utf8_str();
+		str += sEscBasedOn;
 		str += "\"/>";		
 	}
 	if(!followedby.empty())
 	{
 		str += "<w:next w:val=\"";
-		str += sEscFollowedBy.utf8_str();
+		str += sEscFollowedBy;
 		str += "\"/>";
 	}
 

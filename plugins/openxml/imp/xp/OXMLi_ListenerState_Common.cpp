@@ -40,6 +40,7 @@
 #include <ut_units.h>
 #include <ut_misc.h>
 #include <ut_debugmsg.h>
+#include <ut_assert.h>
 
 // External includes
 #include <cstring>
@@ -58,6 +59,11 @@ OXMLi_ListenerState_Common::~OXMLi_ListenerState_Common()
 void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 {
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
+
+	if(nameMatches(rqst->pName, NS_W_KEY, "instrText")) // to handle texts created by using EQ fields 
+	{
+		rqst->handled = true;
+	}
 
 	if(nameMatches(rqst->pName, NS_W_KEY, "p")) {
 		//New paragraph...
@@ -776,7 +782,7 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 
 		rqst->handled = true;
-	} else if (nameMatches(rqst->pName, NS_W_KEY, "t")) {
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "t") || nameMatches(rqst->pName, NS_W_KEY, "instrText")) {
 		//Text is done, appending it.
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		rqst->handled = true;
@@ -866,12 +872,57 @@ void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
 	if(rqst->stck->empty())
 		return;
 
-	OXML_SharedElement sharedElem = rqst->stck->top();
-	OXML_Element* elem = sharedElem.get();
+	std::string contextTag = "";
+	if(!rqst->context->empty())
+	{
+		contextTag = rqst->context->back();
+	}
+	int instrText = contextMatches(contextTag, NS_W_KEY, "instrText");
+	if(instrText) // to handle EQ fields
+	{
+		UT_ASSERT(rqst->buffer != NULL);
+		OXML_SharedElement run = rqst->stck->top();
+		OXML_SharedElement sharedElem(new OXML_Element_Text("", 0));
+		std::string overline = "\\to";
+		std::string underline = "\\bo";
+		std::string v(rqst->buffer); 
+		std::string value = "";
+		size_t isOverline = v.find(overline);
+		size_t isUnderline = v.find(underline);
+		size_t openingParenthesis;
+		size_t closingParenthesis;
+		if(isOverline != std::string::npos && isUnderline == std::string::npos)
+		{
+			// if starts with "EQ \x \to", then overline property is used
+			UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-decoration", "overline") ));
+			rqst->stck->push(sharedElem);
+		}
+		else if(isUnderline != std::string::npos && isOverline == std::string::npos)
+		{
+			// if starts with "EQ \x \bo", then underline property is used
+			UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-decoration", "underline") ));
+			rqst->stck->push(sharedElem);
+		}
+		else // To import at least standard text without properties, in the case of other EQ fields that Abiword does not support such as border from left, border from right etc. 
+		{
+			rqst->stck->push(sharedElem);
+		}
+		openingParenthesis = v.find("(");
+		closingParenthesis = v.find(")");
+		value = v.substr(int(openingParenthesis)+1, int(closingParenthesis)-int(openingParenthesis)-1); // the string between parentheses is extracted
+		OXML_Element* elem = sharedElem.get();
+		OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem); 
+		textElement->setText(value.c_str(), value.size());
+	}
+	else
+	{
+		OXML_SharedElement sharedElem = rqst->stck->top();
+		OXML_Element* elem = sharedElem.get();
 
-	if(!elem || (elem->getTag() != T_TAG))
-		return;
+		if(!elem || (elem->getTag() != T_TAG))
+			return;
 
-	OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem);
-	textElement->setText(rqst->buffer, rqst->length);
+		OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem);
+		textElement->setText(rqst->buffer, rqst->length);		
+	}
 }
