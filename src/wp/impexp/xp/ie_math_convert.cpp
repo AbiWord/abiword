@@ -67,6 +67,7 @@ bool convertMathMLtoLaTeX(const UT_UTF8String & sMathML, UT_UTF8String & sLaTeX)
 
 bool convertLaTeXtoEqn(const UT_UTF8String & sLaTeX,UT_UTF8String & eqnLaTeX)
 {
+
 	if (sLaTeX.empty())
 		return false;
 
@@ -87,9 +88,16 @@ bool convertLaTeXtoEqn(const UT_UTF8String & sLaTeX,UT_UTF8String & eqnLaTeX)
 		eqnLaTeX = sLaTeX.substr(i,(j-i)+1);
 		return true;
 	}
+	else if(strcmp((sLaTeX.substr(0,1)).utf8_str(),"$")==0 && strcmp((sLaTeX.substr(sLaTeX.size()-1,1)).utf8_str(),"$")==0)
+	{
+		eqnLaTeX = sLaTeX.substr(1,sLaTeX.size()-2);
+		return true;
+	}
 	else
 	{
-		return false;
+		// No Conversion Required
+		eqnLaTeX = sLaTeX;
+		return true;
 	}
 
 }
