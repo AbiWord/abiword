@@ -201,14 +201,13 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	if (!pView)
 		return;
     fl_FrameLayout * pFL = pView->getFrameLayout();
-	//here need : UT_convertSizeToLayoutUnits
 	setHeight(pFL->getFrameHeight());
 	setWidth(pFL->getFrameWidth());
 
-	swprintf(szValue, L"%02.2f", UT_convertSizeToLayoutUnits(getFrameWidth(),DIM_IN));
+	swprintf(szValue, L"%02.2f", getFrameWidth());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
 
-	swprintf(szValue, L"%02.2f", UT_convertSizeToLayoutUnits(getFrameHeight(),DIM_IN));
+	swprintf(szValue, L"%02.2f", getFrameHeight());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
 
 	/* Position to radio buttons */

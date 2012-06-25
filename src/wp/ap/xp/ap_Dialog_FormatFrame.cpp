@@ -434,6 +434,8 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	m_borderThicknessLeft   = 1.0f;
 	m_borderThicknessTop    = 1.0f;
 	m_borderThicknessBottom = 1.0f;
+	m_height = 1.0f;
+	m_width = 1.0f;
 
 	m_sBorderThickness = "1.00pt",
  
@@ -441,6 +443,8 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	m_sBorderThicknessLeft   = "1.00pt";
 	m_sBorderThicknessTop    = "1.00pt";
 	m_sBorderThicknessBottom = "1.00pt";
+	m_sHeight = "1.00pt";
+	m_sWidth = "1.00pt";
 
 	m_backgroundColor = white;
 
@@ -479,6 +483,9 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 					REPLACE_CELL_PROPERTY("left-thickness");
 					REPLACE_CELL_PROPERTY("top-thickness");
 					REPLACE_CELL_PROPERTY("bot-thickness");
+
+					REPLACE_CELL_PROPERTY("frame-height");
+					REPLACE_CELL_PROPERTY("frame-width");
 
 					REPLACE_CELL_PROPERTY("right-color");
 					REPLACE_CELL_PROPERTY("left-color");
@@ -603,7 +610,8 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	}
 
 	UT_UTF8String thickness;
-
+	/* update thickness properties
+	*/
 	pszStyle = 0;
 	m_vecProps.getProp("right-thickness", pszStyle);
 	if (pszStyle) {
@@ -628,7 +636,8 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 		thickness = pszStyle;
 		setBorderThicknessBottom(thickness);
 	}
-
+	/* update height&width properties
+	*/
 	pszStyle = 0;
 	m_vecProps.getProp("frame-height", pszStyle);
 	if (pszStyle) {
