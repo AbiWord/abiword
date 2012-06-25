@@ -129,6 +129,8 @@ public:
 	void					setBorderColor (UT_RGBColor clr);
 	void					setWidth(UT_uint32 width);
 	void					setHeight(UT_uint32 height);
+	void					setWidth(const UT_UTF8String &  width);
+	void					setHeight(const UT_UTF8String &  height);
 
 	void					setBorderColorAll (UT_RGBColor clr);
 
@@ -186,6 +188,8 @@ public:
 	float					borderThicknessBottom () const { return m_borderThicknessBottom; }
 	inline float            getFrameWidth() const {  return m_width; }
 	inline float            getFrameHeight() const { return m_height; }
+	const UT_UTF8String &   getFrameWidth_Str() const {  return m_sWidth; }
+	const UT_UTF8String &   getFrameHeight_Str() const { return m_sHeight; }
 
 	void					setPositionMode (FL_FrameFormatMode mode);
 
@@ -227,8 +231,10 @@ private:
 	UT_UTF8String			m_sBorderThicknessLeft;
 	UT_UTF8String			m_sBorderThicknessTop;
 	UT_UTF8String			m_sBorderThicknessBottom;
-	float                            m_width;
-	float                            m_height;
+	float                   m_width;
+	float                   m_height;
+	UT_UTF8String			m_sWidth;
+	UT_UTF8String			m_sHeight;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
 	
