@@ -573,19 +573,22 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 			countAttr ++;
 		}
 
-		const gchar * attrNoStyle[2*countAttr+1];
-		UT_uint32 i = 0;
-		UT_uint32 k = 0;
-		for(i = 0;i < 2*countAttr + 1;++i)
+		const gchar ** attrSpan = NULL;
+		if (countAttr > 1)
 		{
-			if (strcmp(attributes[i],PT_STYLE_ATTRIBUTE_NAME) == 0)
+			attrSpan = (const gchar **) UT_calloc(2*countAttr + 1, sizeof(gchar *));
+			UT_uint32 i = 0;
+			UT_uint32 k = 0;
+			for(i = 0;i < 2*countAttr + 1;++i)
 			{
-				i += 2;
+				if (strcmp(attributes[i],PT_STYLE_ATTRIBUTE_NAME) == 0)
+				{
+					i += 2;
+				}
+				attrSpan[k] = attributes[i];
+				++k;
 			}
-			attrNoStyle[k] = attributes[i];
-			++k;
 		}
-		const gchar ** attrSpan = (attrNoStyle[0]?attrNoStyle:NULL);
 
 		PTChangeFmt ptcs = PTC_RemoveFmt;
 		pf_Frag_Strux * pfsContainer = pfs_First;
@@ -720,6 +723,10 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 		if (sProps)
 		{
 			FREEP(sProps);
+		}
+		if (attrSpan)
+		{
+			FREEP(attrSpan);
 		}
 	}
 
