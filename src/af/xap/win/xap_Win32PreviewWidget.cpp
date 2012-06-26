@@ -17,8 +17,8 @@
  * 02111-1307, USA.
  */
 
-#include <windows.h>
 #include <stdio.h>
+#include <windows.h>
 
 #include "ut_types.h"
 #include "ut_assert.h"

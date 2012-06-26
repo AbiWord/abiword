@@ -35,11 +35,7 @@ endif
 if TOOLKIT_COCOA
 frameworks_LTLIBRARIES = libabiword-@ABIWORD_SERIES@.la
 else
-if TOOLKIT_WIN
 lib_LTLIBRARIES = libabiword-@ABIWORD_SERIES@.la
-else
-lib_LTLIBRARIES = libabiword-@ABIWORD_SERIES@.la
-endif
 endif
 
 libabiword_@ABIWORD_SERIES@_la_CPPFLAGS = \
@@ -49,9 +45,9 @@ libabiword_@ABIWORD_SERIES@_la_CPPFLAGS = \
 libabiword_@ABIWORD_SERIES@_la_LDFLAGS = \
 	$(DEPS_LIBS) \
 	$(CHAMPLAIN_LIBS) \
-	-Wl, --no-undefined \
+	-no-undefined \
 	-avoid-version \
-	-Wl, --export-dynamic
+	-export-dynamic
 
 
 if TOOLKIT_COCOA
@@ -115,9 +111,9 @@ AbiWord_CPPFLAGS = \
 	$(libabiword_@ABIWORD_SERIES@_la_CPPFLAGS)
 
 AbiWord_LDFLAGS = \
-	-Wl, --no-undefined \
+	-no-undefined \
 	-avoid-version \
-	-Wl, --export-dynamic \
+	-export-dynamic \
 	-headerpad_max_install_names 
 
 AbiWord_LDADD = \
