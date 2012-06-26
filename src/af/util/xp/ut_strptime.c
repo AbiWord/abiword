@@ -33,6 +33,9 @@ this is enough information for determining the date.  */
 #include <string.h>
 #include <time.h>
 
+// ABI EXPORT
+#include "ut_export.h"
+
 static int UT_strncasecmp (const char *s1, const char *s2, size_t n)
 {
 	int ret;
@@ -861,6 +864,8 @@ start_over:
 	return (char *) rp;
 }
 
+ABI_EXPORT
+char *UT_strptime (const char *buf, const char *format, struct tm *tmtm);
 
 char *UT_strptime (const char *buf, const char *format, struct tm *tmtm)
 {

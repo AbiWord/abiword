@@ -29,6 +29,7 @@ libxp_la_SOURCES = \
 	ut_Encoding.h \
 	ut_endian.h \
 	ut_exception.h \
+	ut_export.h \
 	ut_go_file.cpp \
 	ut_go_file.h \
 	ut_growbuf.cpp \

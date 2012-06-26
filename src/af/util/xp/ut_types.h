@@ -93,24 +93,7 @@ typedef UT_uint8 UT_Confidence_t;
 #define UT_CONFIDENCE_POOR     85
 #define UT_CONFIDENCE_ZILCH     0
 
-#if defined(WIN32) /* && !defined(__MINGW32__) */
-  #define ABI_PLUGIN_EXPORT __declspec(dllexport)
-  #ifdef ABI_DLL
-     /* we are building an AbiWord plugin and want to use something declared in a library */
-     #define ABI_EXPORT __declspec(dllimport)
-  #else
-     /* we are building AbiWord and wish for its parts to be used by plugins */
-     #define ABI_EXPORT __declspec(dllexport)
-  #endif
-#elif defined (DISABLE_EXPORTS)
-  /* ignore DISABLE_EXPORTS until we have assigned all symbols proper
-   * visibility */
-  #define ABI_PLUGIN_EXPORT
-  #define ABI_EXPORT
-#else
-  #define ABI_PLUGIN_EXPORT
-  #define ABI_EXPORT
-#endif
+#include "ut_export.h" // ABI_EXPORT is defined in there.
 
 #if __GNUC__
   #define ABI_NORETURN __attribute__((noreturn))
