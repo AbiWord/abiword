@@ -16,6 +16,7 @@ strings_DATA = \
 	be-BY.strings \
 	be@latin.strings \
 	bg-BG.strings \
+	bm.strings \
 	br-FR.strings \
 	ca-ES.strings \
 	cgg.strings \
