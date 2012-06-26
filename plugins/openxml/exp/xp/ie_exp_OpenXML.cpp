@@ -48,7 +48,8 @@ IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
 	headerStream(NULL),
 	footerStream(NULL),
 	footnoteStream(NULL),
-	endnoteStream(NULL)
+	endnoteStream(NULL),
+	isOverline(false)
 {
 }
 
@@ -255,7 +256,14 @@ UT_Error IE_Exp_OpenXML::finishParagraph(int target)
  */
 UT_Error IE_Exp_OpenXML::startText(int target)
 {
-	return writeTargetStream(target, "<w:t xml:space=\"preserve\">");
+	if(isOverline)
+	{
+		return writeTargetStream(target, "<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r><w:instrText xml:space=\"preserve\"> EQ \\x \\to(");
+	}
+	else
+	{
+		return writeTargetStream(target, "<w:t xml:space=\"preserve\">");
+	}
 }
 
 /**
@@ -303,7 +311,14 @@ UT_Error IE_Exp_OpenXML::writeText(int target, const UT_UCS4Char* text)
  */
 UT_Error IE_Exp_OpenXML::finishText(int target)
 {
-	return writeTargetStream(target, "</w:t>");
+	if(isOverline)
+	{
+		return writeTargetStream(target, ") </w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"end\"/>");
+	}
+	else
+	{
+		return writeTargetStream(target, "</w:t>");
+	}
 }
 
 /**
@@ -319,6 +334,7 @@ UT_Error IE_Exp_OpenXML::startRun(int target)
  */
 UT_Error IE_Exp_OpenXML::finishRun(int target)
 {
+	isOverline = false;
 	return writeTargetStream(target, "</w:r>");
 }
 
@@ -779,9 +795,9 @@ UT_Error IE_Exp_OpenXML::setUnderline(int target)
 /**
  * Sets overline style
  */
-UT_Error IE_Exp_OpenXML::setOverline(int /* target */)
+UT_Error IE_Exp_OpenXML::setOverline(int target)
 {
-	//TODO: Is there an overline option in Word 2007?
+	isOverline = true;
 	return UT_OK;
 }
 

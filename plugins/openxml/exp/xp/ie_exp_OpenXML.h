@@ -219,6 +219,8 @@ private:
 	std::map<std::string, GsfOutput*> headerStreams; //all header id, stream pairs
 	std::map<std::string, GsfOutput*> footerStreams; //all footer id, stream pairs
 
+	bool isOverline;
+
 	UT_Error startNumbering();
 	UT_Error startStyles();
 	UT_Error startContentTypes();
