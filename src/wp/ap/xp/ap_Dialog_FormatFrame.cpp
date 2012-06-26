@@ -128,7 +128,9 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
 	  m_width(1.0f),
       m_height(1.0f),
 	  m_sWidth("0.00pt"),
-	  m_sHeight("0.00pt")
+	  m_sHeight("0.00pt"),
+	  m_sOldWidth("0.00pt"),
+	  m_sOldHeight("0.00pt")
 {
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
@@ -401,7 +403,8 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 
 	if (/* m_bSettingsChanged || */ m_iOldPos == pos) {
 		// comparing the actual cell pos would be even better; but who cares :)
-		return;
+		// we can't return since we need to update when change width and height
+		// return;  
 	}
 	m_iOldPos = pos;
 
@@ -642,6 +645,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	m_vecProps.getProp("frame-height", pszStyle);
 	if (pszStyle) {
 		thickness = pszStyle;
+		m_sOldHeight = thickness;
 		setHeight(thickness);
 	}
 
@@ -649,6 +653,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	m_vecProps.getProp("frame-width", pszStyle);
 	if (pszStyle) {
 		thickness = pszStyle;
+		m_sOldWidth = thickness;
 		setWidth(thickness);
 	}
 
@@ -1108,6 +1113,30 @@ void AP_Dialog_FormatFrame::setWidth(const UT_UTF8String & width)
 	m_sWidth = s_canonical_width_height(width, m_width);
     m_vecProps.addOrReplaceProp("frame-width", m_sWidth.utf8_str());
     m_bSettingsChanged = true;  
+}
+
+const UT_UTF8String &   AP_Dialog_FormatFrame::getFrameWidth_Str() 
+{  
+	UT_UTF8String thickness;
+	const gchar * pszStyle = 0;
+	m_vecProps.getProp("frame-width", pszStyle);
+	if (pszStyle) {
+		thickness = pszStyle;
+		setWidth(thickness);
+	}
+	return thickness;
+}
+
+const UT_UTF8String &   AP_Dialog_FormatFrame::getFrameHeight_Str() 
+{ 
+	UT_UTF8String thickness;
+	const gchar * pszStyle = 0;
+	m_vecProps.getProp("frame-height", pszStyle);
+	if (pszStyle) {
+		thickness = pszStyle;
+		setHeight(thickness);
+	}
+	return thickness;
 }
 
 void AP_Dialog_FormatFrame::setHeight(const UT_UTF8String &  height)
