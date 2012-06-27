@@ -328,7 +328,7 @@ dcl(TB_ClearBackground,"Clear Background")
 	  or, surround it by some other characters, so that it will appear on the top
 	  of the list when sorted alphabetically.
 */
-dcl(LANG_0, 							"(no proofing)")
+dcl(LANG_0,     							"(no proofing)")
 dcl(LANG_EN_AU, 							"English (Australia)")
 dcl(LANG_EN_CA, 							"English (Canada)")
 dcl(LANG_EN_GB, 							"English (UK)")
@@ -336,6 +336,7 @@ dcl(LANG_EN_IE, 							"English (Ireland)")
 dcl(LANG_EN_NZ, 							"English (New Zealand)")
 dcl(LANG_EN_ZA, 							"English (South Africa)")
 dcl(LANG_EN_US, 							"English (US)")
+dcl(LANG_ACH,   							"Acoli")
 dcl(LANG_AF_ZA, 							"Afrikaans")
 dcl(LANG_AK_GH, 							"Akan")	//
 dcl(LANG_SQ_AL, 							"Albanian")	// Jordi 19/10/2002
@@ -349,6 +350,7 @@ dcl(LANG_AST_ES, 							"Asturian")
 dcl(LANG_AYR, 								"Aymara, Central")
 dcl(LANG_AYM_BO, 							"Aymara (Central/Northern Bolivia)")
 dcl(LANG_AYC_BO, 							"Aymara (Southern Bolivia)")
+dcl(LANG_BM,    							"Bambara")
 dcl(LANG_EU_ES, 							"Basque")
 dcl(LANG_BE_BY, 							"Belarusian")
 dcl(LANG_BE_LATIN,							"Belarusian, Latin")
@@ -357,6 +359,7 @@ dcl(LANG_NB_NO, 							"Bokmal")
 dcl(LANG_BR_FR,								"Breton")		// Jordi 19/10/2002
 dcl(LANG_BG_BG, 							"Bulgarian")
 dcl(LANG_CA_ES, 							"Catalan")
+dcl(LANG_CGG,   							"Chiga")
 dcl(LANG_KW_GB,								"Cornish")		// Jordi 19/10/2002
 dcl(LANG_CO_FR,								"Corsican")		// Jordi 19/10/2002
 dcl(LANG_HR_HR,								"Croatian")
@@ -380,6 +383,7 @@ dcl(LANG_FR_CH, 							"French (Switzerland)")
 dcl(LANG_FY_NL,								"Frisian")	// Jordi 19/10/2002
 dcl(LANG_FF,								"Fulah")
 dcl(LANG_GL, 								"Galician")
+dcl(LANG_LG, 								"Ganda")
 dcl(LANG_KA_GE, 							"Georgian")
 dcl(LANG_DE_AT, 							"German (Austria)")
 dcl(LANG_DE_DE, 							"German (Germany)")
@@ -408,8 +412,10 @@ dcl(LANG_LO_LA,                             "Lao")
 dcl(LANG_LA_IT, 							"Latin")	// Is _IT the right thing here?
 dcl(LANG_LV_LV, 							"Latvian")
 dcl(LANG_LT_LT, 							"Lithuanian")
+dcl(LANG_JBO,   							"Lojban")
 dcl(LANG_MK,								"Macedonian")	// Jordi 19/10/2002 Hipi: Why not mk-MK?
 dcl(LANG_MS_MY,                             "Malay")
+dcl(LANG_MG_MG,                             "Malagasy")
 dcl(LANG_MI_NZ,                             "Maori")
 dcl(LANG_MR_IN,                             "Marathi")
 dcl(LANG_MH_MH, 							"Marshallese (Marshall Islands)")
@@ -428,6 +434,7 @@ dcl(LANG_PA_PK,                             "Punjabi (Pakistan)")
 dcl(LANG_QU_BO,                             "Quechua")
 dcl(LANG_QUH_BO,                            "Quechua (Southern Bolivia)")
 dcl(LANG_QUL_BO,                            "Quechua (Northern Bolivia)")
+dcl(LANG_QUZ,                               "Quechua (Cusco)")
 dcl(LANG_RO_RO, 							"Romanian")
 dcl(LANG_RU_RU, 							"Russian")
 dcl(LANG_RU_PETR1708,						"Russian, pre-1918")
@@ -436,6 +443,7 @@ dcl(LANG_SR,								"Serbian")		// Jordi 19/10/2002 Hipi: Why not sr-YU?
 dcl(LANG_SR_LATIN,							"Serbian, Latin")
 dcl(LANG_SK_SK, 							"Slovak")				// or Slovakian?
 dcl(LANG_SL_SI, 							"Slovenian")
+dcl(LANG_SON,   							"Songhai")
 dcl(LANG_ES_MX, 							"Spanish (Mexico)")
 dcl(LANG_ES_ES, 							"Spanish (Spain)")
 dcl(LANG_SW,                                "Swahili")
@@ -454,6 +462,7 @@ dcl(LANG_VI_VN, 							"Vietnamese")
 dcl(LANG_CY_GB, 							"Welsh")
 dcl(LANG_WO_SN, 							"Wolof")
 dcl(LANG_YI,								"Yiddish")
+dcl(LANG_ZU,								"Zulu")
 
 
 /* Encoding Dialog */
