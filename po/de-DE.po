@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-06-11 15:21+0200\n"
-"PO-Revision-Date: 2012-06-11 15:21+0200\n"
+"POT-Creation-Date: 2012-06-27 16:56+0200\n"
+"PO-Revision-Date: 2012-06-27 16:56+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -7227,6 +7227,11 @@ msgstr "AbiWord: Seitenansicht"
 msgid "About %s"
 msgstr "Info zu %s"
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acoli"
+msgstr "Acholi"
+
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
@@ -7377,6 +7382,11 @@ msgstr "Baltisch, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltisch, Windows Codepage 1257"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bambara"
+msgstr "Bambara"
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7472,6 +7482,11 @@ msgstr "Beim Wechsel der Tastatur die Sprache wechseln"
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Kapitelüberschrift"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr "Rukiga"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7965,6 +7980,11 @@ msgstr "Fulfulde"
 msgid "Galician"
 msgstr "Galicisch"
 
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr "Luganda"
+
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
 msgid "Georgian"
@@ -8355,6 +8375,11 @@ msgstr "Litauisch"
 msgid "Loading Clip Art"
 msgstr "Clipart wird geladen"
 
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr "Lojban"
+
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
 msgid "Lowercase"
@@ -8369,6 +8394,11 @@ msgstr "Mazedonisch"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "Auswahl als Standard für das Dokument festlegen"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr "Malagasy"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8620,6 +8650,11 @@ msgstr "Panjabi (Pakistan)"
 msgid "Quechua"
 msgstr "Quechua"
 
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr "Quechua (Cusco)"
+
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
@@ -8788,6 +8823,11 @@ msgstr "Slowenisch"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "Kapitälchen"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhai"
+msgstr "Songhai"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9187,6 +9227,11 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "Zoom-Einstellung"
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr "Zulu"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
