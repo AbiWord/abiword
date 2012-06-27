@@ -26,13 +26,14 @@
 #  NOTICE: Please remember to change the variable $PACKAGE to reflect
 #  the package this script is used within.
 
-$PACKAGE="abiword";
-
+use strict;
 use File::Basename;
+
+my $PACKAGE="abiword";
 
 # Declare global variables
 #-------------------------
-my $VERSION = "1.5beta14";
+my $VERSION = "1.5beta15";
 my $LANG    = $ARGV[0];
 
 # Always print as the first thing
@@ -145,7 +146,7 @@ sub Maintain{
 
     # Search and fine, all translatable files
     # ---------------------------------------
-    $i18nfiles="find ../ -print | egrep '.*\\.(c|y|cc|c++|cpp|h|gob)\$' ";
+    my $i18nfiles="find ../ -print | egrep '.*\\.(c|y|cc|c++|cpp|h|gob)\$' ";
 
     open(BUF2, "POTFILES.in") || die "update.pl:  there's no POTFILES.in!!!\n";
 
@@ -153,13 +154,14 @@ sub Maintain{
 
     open(BUF1, "$i18nfiles|");
 
-    @buf1_1 = <BUF1>;
-    @buf1_2 = <BUF2>;
+    my @buf1_1 = <BUF1>;
+    my @buf1_2 = <BUF2>;
 
     # Check if we should ignore some found files, when
     # comparing with POTFILES.in
     #-------------------------------------------------
     if (-s ".potignore"){
+        my @bup;
         open FILE, ".potignore";
         while (<FILE>) {
             if ($_=~/^[^#]/o){
@@ -170,6 +172,7 @@ sub Maintain{
         @buf1_2 = (@bup, @buf1_2);
     }
 
+    my @buf2_1;
     foreach my $file (@buf1_1){
         open FILE, "<$file";
         while (<FILE>) {
@@ -181,14 +184,15 @@ sub Maintain{
         }
     }
 
-    @buf3_1 = sort (@buf2_1);
-    @buf3_2 = sort (@buf1_2);
+    my @buf3_1 = sort (@buf2_1);
+    my @buf3_2 = sort (@buf1_2);
 
     my %in2;
     foreach (@buf3_2) {
         $in2{$_} = 1;
     }
 
+    my @result;
     foreach (@buf3_1){
         if (!exists($in2{$_})){
             push @result, $_
@@ -222,6 +226,9 @@ sub InvalidOption{
 }
 
 sub GenHeaders{
+
+    my $filename;
+    my $xmlfiles;
 
     # Generate the .h header files, so we can allow glade and
     # xml translation support
@@ -301,10 +308,10 @@ sub GeneratePot{
     close OUTFILE;
     close INFILE;
 
-    $GETTEXT ="xgettext --default-domain\=$PACKAGE --directory\=\.\."
-             ." --add-comments --msgid-bugs-address=abiword-dev\@abisource.com"
-             ." --keyword\=\_ --keyword\=N\_ --keyword\=Q\_:1g"
-             ." --files-from\=\.\/POTFILES\.in ";
+    my $GETTEXT ="xgettext --default-domain\=$PACKAGE --directory\=\.\."
+                ." --add-comments --msgid-bugs-address=abiword-dev\@abisource.com"
+                ." --keyword\=\_ --keyword\=N\_ --keyword\=Q\_:1g"
+                ." --files-from\=\.\/POTFILES\.in ";
 
     system($GETTEXT);
 
@@ -356,7 +363,7 @@ sub Merging{
 
     print "Merging $LANG.po with $PACKAGE.pot...";
 
-    $MERGE="cp $LANG.po $LANG.po.old && msgmerge $LANG.po.old $PACKAGE.pot -o $LANG.po";
+    my $MERGE="cp $LANG.po $LANG.po.old && msgmerge $LANG.po.old $PACKAGE.pot -o $LANG.po";
 
     system($MERGE);
 
@@ -385,7 +392,7 @@ sub Status{
 
     # Print status information about the po file
     #-------------------------------------------
-    $STATUS="msgfmt --statistics $LANG.po";
+    my $STATUS="msgfmt --statistics $LANG.po";
 
     system($STATUS);
     print "\n";
