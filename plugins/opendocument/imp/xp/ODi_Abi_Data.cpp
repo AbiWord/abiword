@@ -27,6 +27,7 @@
 #include <pt_Types.h>
 #include <ie_impGraphic.h>
 #include <fg_GraphicRaster.h>
+#include "ie_math_convert.h"
 
 // External includes
 #include <glib-object.h>
@@ -176,12 +177,15 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
         rDataId = id;
         return true;
     }
-    
-    
+        
     // Get a new, unique, ID.
     objectID = m_pAbiDocument->getUID(UT_UniqueId::Math);
     UT_String_sprintf(rDataId, "MathLatex%d", objectID);
-    
+
+	std::string rLatexId;
+	rLatexId.assign("LatexMath");
+	rLatexId.append((rDataId.substr(9,rDataId.length()-8)).c_str());
+	  
     // Add this id to the list
     UT_DebugOnly<href_id_map_t::iterator> iter = m_href_to_id
 		.insert(m_href_to_id.begin(),
@@ -226,11 +230,26 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     // Create the data item.
     //
 
-    if (!m_pAbiDocument->createDataItem(rDataId.c_str(), false, object_buf, 
+	UT_ByteBuf latexBuf;
+	UT_UTF8String PbMathml = (const char*)(object_buf->getPointer(0));
+	UT_UTF8String PbLatex,Pbitex;
+	
+	if (!m_pAbiDocument->createDataItem(rDataId.c_str(), false, object_buf, 
                                         "application/mathml+xml", NULL)) {            
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         return false;
     }  
+
+	if(convertMathMLtoLaTeX(PbMathml, PbLatex) && convertLaTeXtoEqn(PbLatex,Pbitex))
+	{
+		// Conversion of MathML to LaTeX and the Equation Form suceeds
+		latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(Pbitex.utf8_str()),static_cast<UT_uint32>(Pbitex.size()));
+		if(!m_pAbiDocument->createDataItem(rLatexId.c_str(), false,&latexBuf,"", NULL))		
+		{
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			return false;
+		}
+	}
 
     pto_Type = PTO_Math;
     return true;

@@ -36,7 +36,6 @@
 #include <ut_locale.h>
 #include <ut_units.h>
 
-
 /**
  * Constructor
  */
@@ -388,8 +387,19 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
             UT_DEBUGMSG(("ODT import: no suitable object importer found\n"));
             return;
         }
-       
-        const gchar* attribs[5];
+		 
+		const gchar* attribs[7];
+
+		std::string extraID;
+		std::string objectID;
+		objectID = (dataId.substr(9,dataId.length()-8)).c_str();
+		extraID.assign("LatexMath");
+		extraID.append(objectID.c_str());
+
+		attribs[4] = static_cast<const gchar *>("latexid");
+		attribs[5] = static_cast<const gchar *>(extraID.c_str());
+		attribs[6] = 0;
+	   
         UT_String propsBuffer;
         
         pWidth = m_rElementStack.getStartTag(0)->getAttributeValue("svg:width");
@@ -403,8 +413,7 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
         attribs[0] = "props";
         attribs[1] = propsBuffer.c_str();
         attribs[2] = "dataid";
-        attribs[3] = dataId.c_str();
-        attribs[4] = 0;
+        attribs[3] = static_cast<const gchar *>(dataId.c_str());    
     
         if (!m_pAbiDocument->appendObject ((PTObjectType)pto_Type, attribs)) {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
