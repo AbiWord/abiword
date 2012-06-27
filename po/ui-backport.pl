@@ -25,14 +25,15 @@
 #                Ingo Brueckl <ib@wupperonline.de>
 
 use strict;
+use File::Basename;
 
 # Declare global variables
 #-------------------------
-my $VERSION 	= "0.6b";
+my $VERSION 	= "0.6c";
 
 my $in          = "$ARGV[0]"; # input file (.po)
 my $out         = "$ARGV[1]"; # output file (.strings)
-my $lang        = `basename $in .po`;
+my $lang        = basename($in, ".po");
 my $kind 	= "0";
 my @xap_strings;
 my @ap_strings;
@@ -42,7 +43,6 @@ my $cont 	= "0";
 my $encoding	= "iso-8859-1";
 
 $lang =~ s/_/-/g;
-chop $lang;
 
 print "Converting localization file $in to Abiword .strings format.\n";
 
