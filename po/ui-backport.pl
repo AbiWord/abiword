@@ -70,10 +70,10 @@ print FILE
 
 my @tags = ();
 while (<IN>) {
-    if ($cont == "1") { 
+    if ($cont == "1") {
        if (m@^\"(.*)\"@)  { $str .= $1; next; } else
        { for $tag (@tags)
-       { 
+       {
           if ($kind == 1) { push @xap_strings, "$tag=\"$str\""; $cont=0; next; }
           if ($kind == 2) { push @ap_strings,  "$tag=\"$str\""; $cont=0; next; }
         }
@@ -81,13 +81,13 @@ while (<IN>) {
        }
     }
 
-    if (m@^#\.\s(\w+)@)            { push (@tags, $1); next; } 
-    if (m@^#:\s(.*)/xap[^/.]+\.h@) { $kind =  1; next; } 
+    if (m@^#\.\s(\w+)@)            { push (@tags, $1); next; }
+    if (m@^#:\s(.*)/xap[^/.]+\.h@) { $kind =  1; next; }
     if (m@^#:\s(.*)/ap[^/.]+\.h@)  { $kind =  2; next; }
     if (m@^msgstr\s\"(.*)\"@)      { $str  = $1; $cont=1; next; }
 
     if ($cont == "1") {
-        for $tag (@tags) { 
+        for $tag (@tags) {
         {
         if ($kind == 1) { push @xap_strings, "$tag=\"$str\""; $cont=0; next; }
         if ($kind == 2) { push @ap_strings,  "$tag=\"$str\""; $cont=0; next; }
@@ -95,7 +95,7 @@ while (<IN>) {
         @tags = ();
         }
 }
-    
+
 }
 
 if ($cont == "1") {

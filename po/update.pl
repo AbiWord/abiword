@@ -23,7 +23,7 @@
 #
 #  Contributors: Ingo Brueckl <ib@wupperonline.de>
 
-#  NOTICE: Please remember to change the variable $PACKAGE to reflect 
+#  NOTICE: Please remember to change the variable $PACKAGE to reflect
 #  the package this script is used within.
 
 $PACKAGE="abiword";
@@ -52,7 +52,7 @@ $| = 1;
 #            $PACKAGE=$1;
 #            last; #stop when found
 #            }
-#        }   
+#        }
 #close FILE;
 
 
@@ -94,21 +94,21 @@ if ($LANG=~/^-(.)*/){
     }
 
 } else {
-   
+
    # Run standard procedure
    #-----------------------
    if(-s "$LANG.po"){
-        &GenHeaders; 
+        &GenHeaders;
 	&GeneratePot;
 	&Merging;
 	&Status;
-   }  
+   }
 
    # Report error if the language file supplied
    # to the command line is non-existent
    #-------------------------------------------
    else {
-	&NotExisting;       
+	&NotExisting;
    }
 }
 
@@ -142,21 +142,21 @@ sub Help{
 }
 
 sub Maintain{
-   
+
     # Search and fine, all translatable files
     # ---------------------------------------
     $i18nfiles="find ../ -print | egrep '.*\\.(c|y|cc|c++|cpp|h|gob)\$' ";
 
     open(BUF2, "POTFILES.in") || die "update.pl:  there's no POTFILES.in!!!\n";
-    
+
     print "Searching for _(\" \") entries...\n";
-    
+
     open(BUF1, "$i18nfiles|");
 
     @buf1_1 = <BUF1>;
     @buf1_2 = <BUF2>;
 
-    # Check if we should ignore some found files, when 
+    # Check if we should ignore some found files, when
     # comparing with POTFILES.in
     #-------------------------------------------------
     if (-s ".potignore"){
@@ -191,7 +191,7 @@ sub Maintain{
 
     foreach (@buf3_1){
         if (!exists($in2{$_})){
-            push @result, $_ 
+            push @result, $_
         }
     }
 
@@ -210,7 +210,7 @@ sub Maintain{
     #-------------------------------------------------------
     else{
         print "\nWell, it's all perfect! Congratulation!\n";
-    }         
+    }
 }
 
 sub InvalidOption{
@@ -220,7 +220,7 @@ sub InvalidOption{
     print "update.pl: invalid option -- $LANG\n";
     print "Try `update.pl --help' for more information.\n";
 }
- 
+
 sub GenHeaders{
 
     # Generate the .h header files, so we can allow glade and
@@ -241,14 +241,14 @@ sub GenHeaders{
               $xmlfiles="perl \.\/ui-extract.pl --local $filename";
               system($xmlfiles);
            }
-      
+
            # Find .glade files in POTFILES.in and generate
            # the files with help from the ui-extract.pl script
            #--------------------------------------------------
            elsif ($_=~ /(.*)(\.glade)/o){
               $filename = "../$1.glade";
               $xmlfiles="perl \.\/ui-extract.pl --local $filename";
-              system($xmlfiles);  
+              system($xmlfiles);
            }
 
            # Find XP i18n files in POTFILES.in and generate
@@ -262,11 +262,11 @@ sub GenHeaders{
        }
        close FILE;
 
-       # Create .headerlock file, so the script will know 
-       # that we already passed this section. This is required 
+       # Create .headerlock file, so the script will know
+       # that we already passed this section. This is required
        # since the individual sections can be reaced at different
        # times by the Makefile
-       #--------------------------------------------------------- 
+       #---------------------------------------------------------
        system("touch .headerlock");
    }
 }
@@ -278,7 +278,7 @@ sub GeneratePot{
 
     print "Building the $PACKAGE.pot...\n";
 
-    system ("mv POTFILES.in POTFILES.in.old");    
+    system ("mv POTFILES.in POTFILES.in.old");
 
     open INFILE, "<POTFILES.in.old";
     open OUTFILE, ">POTFILES.in";
@@ -304,7 +304,7 @@ sub GeneratePot{
     $GETTEXT ="xgettext --default-domain\=$PACKAGE --directory\=\.\."
              ." --add-comments --msgid-bugs-address=abiword-dev\@abisource.com"
              ." --keyword\=\_ --keyword\=N\_ --keyword\=Q\_:1g"
-             ." --files-from\=\.\/POTFILES\.in ";  
+             ." --files-from\=\.\/POTFILES\.in ";
 
     system($GETTEXT);
 
@@ -326,13 +326,13 @@ sub GeneratePot{
         close INFILE;
         unlink "$PACKAGE.po";
     }
- 
+
     print "Wrote $PACKAGE.pot\n";
     system("mv POTFILES.in.old POTFILES.in");
 
     # If .headerlock file is found, it means that the potfiles
-    # already has been generated. If so delete the generated 
-    # .h header files. The reason for this approach with a 
+    # already has been generated. If so delete the generated
+    # .h header files. The reason for this approach with a
     # file as a marker is due to that the Makefile runs the
     # scripts in turns
     #---------------------------------------------------------
@@ -349,7 +349,7 @@ sub GeneratePot{
 sub Merging{
 
     if ($ARGV[1]){
-        $LANG   = $ARGV[1]; 
+        $LANG   = $ARGV[1];
     } else {
 	$LANG   = $ARGV[0];
     }
@@ -359,7 +359,7 @@ sub Merging{
     $MERGE="cp $LANG.po $LANG.po.old && msgmerge $LANG.po.old $PACKAGE.pot -o $LANG.po";
 
     system($MERGE);
-    
+
     if ($ARGV[0] ne "--dist" && $ARGV[0] ne "-D") {
         print "\n";
     }
@@ -373,11 +373,11 @@ sub Merging{
 
 sub NotExisting{
 
-    # Report error if supplied language 
+    # Report error if supplied language
     # file is non-existant
     #----------------------------------
     print "update.pl:  sorry, $LANG.po does not exist!\n";
-    print "Try `update.pl --help' for more information.\n";    
+    print "Try `update.pl --help' for more information.\n";
     exit;
 }
 
@@ -386,12 +386,12 @@ sub Status{
     # Print status information about the po file
     #-------------------------------------------
     $STATUS="msgfmt --statistics $LANG.po";
-    
-    system($STATUS);
-    print "\n";   
 
-    # Remove the binary message catalog output file 
-    # generated by msgfmt                              
+    system($STATUS);
+    print "\n";
+
+    # Remove the binary message catalog output file
+    # generated by msgfmt
     #----------------------------------------------
     unlink "messages.mo";
 }
