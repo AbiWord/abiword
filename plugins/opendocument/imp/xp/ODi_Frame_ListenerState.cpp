@@ -210,28 +210,28 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
             UT_uint32 id = m_pAbiDocument->getUID(UT_UniqueId::Math);
             UT_UTF8String sID = UT_UTF8String_sprintf("MathLatex%d", id);
 					
-			std::string lID;
-			lID.assign("LatexMath");
-			lID.append((sID.substr(9,sID.length()-8)).utf8_str());
+            std::string lID;
+	    lID.assign("LatexMath");
+     	    lID.append((sID.substr(9,sID.length()-8)).utf8_str());
 			
-			UT_ByteBuf latexBuf;
-			UT_UTF8String PMathml = (const char*)(m_pMathBB->getPointer(0));
-			UT_UTF8String PLatex,Pitex;
+      	    UT_ByteBuf latexBuf;
+   	    UT_UTF8String PMathml = (const char*)(m_pMathBB->getPointer(0));
+	    UT_UTF8String PLatex,Pitex;
 
-			m_pAbiDocument->createDataItem(sID.utf8_str(), false, m_pMathBB, "", NULL);
+	    m_pAbiDocument->createDataItem(sID.utf8_str(), false, m_pMathBB, "", NULL);
 			
-			if(convertMathMLtoLaTeX(PMathml, PLatex) && convertLaTeXtoEqn(PLatex,Pitex))
-			{
-				// Conversion of MathML to LaTeX and the Equation Form suceeds
-				latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(Pitex.utf8_str()),static_cast<UT_uint32>(Pitex.size()));
-				m_pAbiDocument->createDataItem(lID.c_str(), false,&latexBuf,"", NULL);
-			}
+	    if(convertMathMLtoLaTeX(PMathml, PLatex) && convertLaTeXtoEqn(PLatex,Pitex))
+ 	    {    
+		// Conversion of MathML to LaTeX and the Equation Form suceeds
+		latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(Pitex.utf8_str()),static_cast<UT_uint32>(Pitex.size()));
+		m_pAbiDocument->createDataItem(lID.c_str(), false,&latexBuf,"", NULL);
+    	    }
 
             const gchar *atts[5] = { NULL, NULL, NULL, NULL, NULL };
             atts[0] = PT_IMAGE_DATAID;
             atts[1] = sID.utf8_str();
-			atts[2] = static_cast<const gchar *>("latexid");
-			atts[3] = static_cast<const gchar *>(lID.c_str());
+	    atts[2] = static_cast<const gchar *>("latexid");
+	    atts[3] = static_cast<const gchar *>(lID.c_str());
             m_pAbiDocument->appendObject(PTO_Math, atts);
 
             DELETEP(m_pMathBB);
@@ -407,17 +407,17 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
             return;
         }
 		 
-		const gchar* attribs[7];
+	const gchar* attribs[7];
 
-		std::string extraID;
-		std::string objectID;
-		objectID = (dataId.substr(9,dataId.length()-8)).c_str();
-		extraID.assign("LatexMath");
-		extraID.append(objectID.c_str());
+	std::string extraID;
+	std::string objectID;
+	objectID = (dataId.substr(9,dataId.length()-8)).c_str();
+	extraID.assign("LatexMath");
+	extraID.append(objectID.c_str());
 
-		attribs[4] = static_cast<const gchar *>("latexid");
-		attribs[5] = static_cast<const gchar *>(extraID.c_str());
-		attribs[6] = 0;
+	attribs[4] = static_cast<const gchar *>("latexid");
+	attribs[5] = static_cast<const gchar *>(extraID.c_str());
+	attribs[6] = 0;
 	   
         UT_String propsBuffer;
         
