@@ -120,8 +120,7 @@ typedef enum {
 	FP_CONTAINER_COLUMN_SHADOW, // 11
 	FP_CONTAINER_FRAME, // 12
 	FP_CONTAINER_TOC, // 13
-	FP_CONTAINER_ANNOTATION, // 14
-	FP_CONTAINER_TABLE_HEADER //15
+	FP_CONTAINER_ANNOTATION // 14
 	
 } FP_ContainerType;
 
@@ -182,7 +181,6 @@ public:
 	  \return Type
 	*/
 	FP_ContainerType	getContainerType(void) const { return m_iConType; }
-	void setContainerType(FP_ContainerType m_iType ) { m_iConType = m_iType ;}
 	bool                isColumnType(void) const;
 	virtual void		setWidth(UT_sint32) = 0;
 	virtual void		setHeight(UT_sint32) = 0 ;

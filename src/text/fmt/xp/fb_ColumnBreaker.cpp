@@ -1439,7 +1439,7 @@ void fb_ColumnBreaker::_setLastWantedVBreak(fp_Container * pCon, UT_sint32 iBrea
 
 UT_sint32 fb_ColumnBreaker::_getLastWantedVBreak(fp_Container * pCon)
 {
-	if(pCon->getContainerType() == FP_CONTAINER_TABLE || pCon->getContainerType() == FP_CONTAINER_TABLE_HEADER)
+	if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 	{
 		return static_cast<fp_TableContainer *>(pCon)->getLastWantedVBreak();
 	}
@@ -1458,7 +1458,7 @@ bool fb_ColumnBreaker::_breakCON(fp_Container*& pOffendingContainer,
 								   int iWorkingColHeight,
 								   int iContainerMarginAfter)
 {
-	if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE || pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE_HEADER)
+	if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
 	{
 		return _breakTable(pOffendingContainer,pLastContainerToKeep,
 						   iMaxColHeight,iWorkingColHeight,

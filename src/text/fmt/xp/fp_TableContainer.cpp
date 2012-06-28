@@ -4366,7 +4366,6 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	if(static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet())
 	{
 		pHeader = new fp_TableHeader(getSectionLayout(),getMasterTable());
-	//	pHeader->setContainerType(FP_CONTAINER_TABLE_HEADER);
 		pHeader->setYBreakHere(getYBreak()+vpos);
 		pHeader->setYBottom(getYBreak()+vpos+getMasterTable()->getHeaderObject()->getHeaderHeight());
 		getMasterTable()->setLastBrokenTable(static_cast<fp_TableContainer *>(pHeader));
