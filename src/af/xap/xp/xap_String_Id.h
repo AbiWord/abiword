@@ -323,19 +323,22 @@ dcl(TB_Rows_x_Cols_Table,                "Table")
 dcl(TB_ClearBackground,"Clear Background")
 
 /*
-	  Language property in different languages; alphabetical except English first.
+	  Language names, arranged alphabetically.
+	
+	  Please add a country (in parentheses) only if there is more than one 
+	  entry for the language (or if it's not the main dialect).
+
+	  A specification in parentheses shall refer to the country code, if   
+	  possible, rather than to geographical or descriptive information.
+
+	  Add other information such as variant information solely by using a 
+	  comma.
+	
 	  Please when translating the first entry, put it also into parenthesis
 	  or, surround it by some other characters, so that it will appear on the top
 	  of the list when sorted alphabetically.
 */
 dcl(LANG_0,     							"(no proofing)")
-dcl(LANG_EN_AU, 							"English (Australia)")
-dcl(LANG_EN_CA, 							"English (Canada)")
-dcl(LANG_EN_GB, 							"English (UK)")
-dcl(LANG_EN_IE, 							"English (Ireland)")
-dcl(LANG_EN_NZ, 							"English (New Zealand)")
-dcl(LANG_EN_ZA, 							"English (South Africa)")
-dcl(LANG_EN_US, 							"English (US)")
 dcl(LANG_ACH,   							"Acholi")
 dcl(LANG_AF_ZA, 							"Afrikaans")
 dcl(LANG_AK_GH, 							"Akan")	//
@@ -371,6 +374,13 @@ dcl(LANG_HR_HR,								"Croatian")
 dcl(LANG_CS_CZ, 							"Czech")
 dcl(LANG_DA_DK, 							"Danish")
 dcl(LANG_NL_NL, 							"Dutch")
+dcl(LANG_EN_AU, 							"English (Australia)")
+dcl(LANG_EN_CA, 							"English (Canada)")
+dcl(LANG_EN_IE, 							"English (Ireland)")
+dcl(LANG_EN_NZ, 							"English (New Zealand)")
+dcl(LANG_EN_ZA, 							"English (South Africa)")
+dcl(LANG_EN_GB, 							"English (UK)")
+dcl(LANG_EN_US, 							"English (US)")
 dcl(LANG_EO,								"Esperanto")
 dcl(LANG_ET,								"Estonian")		// Hipi: Why not et-EE?
 dcl(LANG_FA_IR, 							"Farsi")
