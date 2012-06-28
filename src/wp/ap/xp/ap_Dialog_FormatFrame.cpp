@@ -1115,7 +1115,7 @@ void AP_Dialog_FormatFrame::setWidth(const UT_UTF8String & width)
     m_bSettingsChanged = true;  
 }
 
-const UT_UTF8String &   AP_Dialog_FormatFrame::initFrameWidthStr() 
+void AP_Dialog_FormatFrame::initFrameWidthStr() 
 {  
 	UT_UTF8String thickness;
 	const gchar * pszStyle = 0;
@@ -1124,10 +1124,9 @@ const UT_UTF8String &   AP_Dialog_FormatFrame::initFrameWidthStr()
 		thickness = pszStyle;
 		setWidth(thickness);
 	}
-	return thickness;
 }
 
-const UT_UTF8String &   AP_Dialog_FormatFrame::initFrameHeightStr() 
+void AP_Dialog_FormatFrame::initFrameHeightStr() 
 { 
 	UT_UTF8String thickness;
 	const gchar * pszStyle = 0;
@@ -1136,7 +1135,6 @@ const UT_UTF8String &   AP_Dialog_FormatFrame::initFrameHeightStr()
 		thickness = pszStyle;
 		setHeight(thickness);
 	}
-	return thickness;
 }
 
 void AP_Dialog_FormatFrame::setHeight(const UT_UTF8String &  height)
