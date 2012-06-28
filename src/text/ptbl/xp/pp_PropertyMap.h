@@ -120,6 +120,7 @@ public:
 		abi_frame_pref_column,
 		abi_frame_pref_page,
 		abi_frame_rel_width,
+		abi_frame_rot_angle,
 		abi_frame_type,
 		abi_frame_width,
 		abi_header,

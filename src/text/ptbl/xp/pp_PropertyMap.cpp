@@ -91,6 +91,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"frame-pref-column",
 	"frame-pref-page",
 	"frame-rel-width",
+	"frame-rot-angle",
 	"frame-type",
 	"frame-width",
 	"header",

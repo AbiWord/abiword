@@ -127,6 +127,7 @@ static PP_Property _props[] =
 	{"frame-pref-column",      "0",               false, NULL, PP_LEVEL_FRAME}, 
 	{"frame-pref-page",        "0",               false, NULL, PP_LEVEL_FRAME},
 	{"frame-rel-width",        "0.5",             false, NULL, PP_LEVEL_FRAME},
+	{"frame-rot-angle",		   "0.0",			  true , NULL, PP_LEVEL_FRAME},
 	{"frame-type",             "textbox",         false, NULL, PP_LEVEL_FRAME},
 	{"frame-width",            "0.0in",           false, NULL, PP_LEVEL_FRAME},
 

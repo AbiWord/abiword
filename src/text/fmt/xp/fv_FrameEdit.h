@@ -66,6 +66,7 @@ public:
 					      UT_String & sPageYpos,
 					      UT_String & sPrefPage,
 					      UT_String & sPrefColumn,
+					      UT_String & sRotAngle,
 					      fl_BlockLayout ** pCloseBL,
 					      fp_Page ** pPage);
 	fl_FrameLayout *      getFrameLayout(void)

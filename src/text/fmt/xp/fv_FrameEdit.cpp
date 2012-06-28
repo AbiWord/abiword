@@ -833,6 +833,7 @@ bool FV_FrameEdit::getFrameStrings(UT_sint32 x, UT_sint32 y,
 				   UT_String & sPageYpos,
 				   UT_String & sPrefPage,
 				   UT_String & sPrefColumn,
+				   UT_String & sRotAngle,
 				   fl_BlockLayout ** pCloseBL,
 				   fp_Page ** ppPage)
 {
@@ -1080,16 +1081,17 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sHeight("");
 		UT_String sPrefPage("");
 		UT_String sPrefColumn("");
+		UT_String sRotAngle("");
 		fl_BlockLayout * pCloseBL = NULL;
 		fp_Page * pPage = NULL;
 		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,
-				sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,sPrefColumn,&pCloseBL,&pPage);
+				sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,sPrefColumn,sRotAngle,&pCloseBL,&pPage);
 		pf_Frag_Strux * pfFrame = NULL;
 		// WARNING: Will need to change this to accomodate variable styles without constantly resetting to solid.
 		//				 Recommend to do whatever is done for thickness, which must also have a default set but not
 		//				 reverted to on every change.
 		// TODO: if(pAP->getProperty("*-thickness", somePropHolder)) sLeftThickness = gchar_strdup(somePropHolder); else sLeftThickness = "1px";
-		const gchar * props[48] = {"frame-type","textbox",
+		const gchar * props[50] = {"frame-type","textbox",
 					      "wrap-mode","wrapped-both",
 					      "position-to","column-above-text",
 					      "xpos",sXpos.c_str(),
@@ -1112,6 +1114,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 					   "frame-rel-width",m_sRelWidth.c_str(),
 					   "frame-min-height",m_sMinHeight.c_str(),
 					   "frame-expand-height",m_sExpandHeight.c_str(),
+					   "frame-rot-angle","0",
 					      NULL,NULL};
 //
 // This should place the the frame strux immediately after the block containing
@@ -1241,6 +1244,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		const gchar *pszWrapMode=NULL;
 		const gchar *pszXpad = NULL;
 		const gchar *pszYpad = NULL;
+		
+		const gchar *pszFrameRotAngle = NULL;
 
 		const gchar * pszColor = NULL;
 		const gchar * pszBorderColor = NULL;
@@ -1262,7 +1267,21 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		}
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 		
+// Frame Rotate Angle
 
+		sProp = "frame-rot-angle";
+		if(!pSectionAP || !pSectionAP->getProperty("frame-rot-angle",pszFrameRotAngle))
+		{
+			sVal = "0.0";
+			UT_String_setProperty(sFrameProps,sProp,sVal);		
+		}
+		else 
+		{
+			sVal = pszFrameRotAngle;
+		}
+		UT_String_setProperty(sFrameProps,sProp,sVal);
+		
+		
 // Position-to
 
 		sProp = "position-to";
@@ -1498,10 +1517,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String sPageYpos("");
 		UT_String sPrefPage("");
 		UT_String sPrefColumn("");
+		UT_String sRotAngle("");
 		fl_BlockLayout * pCloseBL = NULL;
 		fp_Page * pPage = NULL;
 		getFrameStrings(m_recCurFrame.left,m_recCurFrame.top,sXpos,sYpos,sWidth,sHeight,
-				sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,sPrefColumn,
+				sColXpos,sColYpos,sPageXpos,sPageYpos,sPrefPage,sPrefColumn,sRotAngle,
 				&pCloseBL,&pPage);
 		posAtXY = pCloseBL->getPosition();
 
@@ -1517,7 +1537,11 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		UT_String_setProperty(sFrameProps,sProp,sVal);		
 		sProp = "frame-col-ypos";
 		sVal = sColYpos;
-		UT_String_setProperty(sFrameProps,sProp,sVal);		
+		UT_String_setProperty(sFrameProps,sProp,sVal);	
+		
+		sProp = "frame-rot-angle";
+		sVal = sRotAngle;
+		UT_String_setProperty(sFrameProps,sProp,sVal);	
 
 
 		sProp = "frame-page-xpos";
@@ -1900,6 +1924,8 @@ void FV_FrameEdit::drawFrame(bool bWithHandles)
 	m_pView->getPageScreenOffsets(pPage,xPage,yPage);
 	da.xoff = xPage + m_pFrameContainer->getX();
 	da.yoff = yPage + m_pFrameContainer->getY();
+	double iA = m_pFrameLayout->getFrameAngle();
+	m_pFrameLayout->setFrameAngle(iA);
 	if((m_pFrameImage == NULL) || (getDragWhat() != FV_DragWhole) )
 	{
 //		m_pFrameContainer->clearScreen();

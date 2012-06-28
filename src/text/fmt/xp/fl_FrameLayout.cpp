@@ -103,7 +103,8 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_iPrefColumn(0),
 	  m_bRelocate(false),
 	  m_bExpandHeight(false),
-	  m_iMinHeight(0)
+	  m_iMinHeight(0),
+	  m_RotateAngle(0.0)
 {
 }
 
@@ -158,7 +159,7 @@ void 	fl_FrameLayout::setContainerProperties(void)
 	pFrame->setRightStyle(m_lineRight );
 	pFrame->setXpad(m_iXpad);
 	pFrame->setYpad(m_iYpad);
-	pFrame->setTightWrapping(m_bIsTightWrap);
+	pFrame->setTightWrapping(m_bIsTightWrap);		
 	if(FL_FRAME_BELOW_TEXT ==  m_iFrameWrapMode)
         {
 	        pFrame->setAbove(false);
@@ -658,7 +659,7 @@ void fl_FrameLayout::miniFormat(void)
 
 void fl_FrameLayout::format(void)
 {
-	// ingnore frames in normal view mode
+	// ignore frames in normal view mode
 	FV_View * pView = getDocLayout()->getView();
 	GR_Graphics * pG = getDocLayout()->getGraphics();
 	UT_return_if_fail( pView && pG );
@@ -822,6 +823,8 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const gchar * pszExpandHeight = NULL;
 	const gchar * pszPercentWidth = NULL;
 	const gchar * pszMinHeight = NULL;
+	
+	const gchar * pszRotationAngle = NULL;
 // Frame Type
 
 	if(!pSectionAP || !pSectionAP->getProperty("frame-type",pszFrameType))
@@ -1159,6 +1162,22 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		else
 			m_iPrefColumn = -1;
 	}
+	//
+	// Rotation Angle
+	//
+	if((!pSectionAP || !pSectionAP->getProperty("frame-rot-angle",pszRotationAngle)))
+	{
+		m_RotateAngle = 0.0;
+	}
+	else
+	{
+		if(pszRotationAngle && *pszRotationAngle != 0)
+			m_RotateAngle = atof(pszRotationAngle);
+		else
+			m_RotateAngle = 0.0;
+	}
+	UT_DEBUGMSG(("Present Angle Set for frame is %s \n",pszRotationAngle));
+	
 	// 
 	// Percent Width
 	//
@@ -1205,7 +1224,6 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 			m_iXpos =  pDSL->getActualColumnWidth() - m_iWidth;
 		}
 	}
-
 }
 
 void fl_FrameLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)

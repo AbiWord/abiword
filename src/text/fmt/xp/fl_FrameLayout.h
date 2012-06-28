@@ -132,11 +132,14 @@ public:
 		{ return m_iXPage;}
 	UT_sint32                getFrameYPagepos(void) const
 		{ return m_iYPage;}
+	double 					 getFrameAngle(void) const
+		{ return m_RotateAngle;}
 
 	void                setFrameWidth(UT_sint32 iW) { m_iWidth = iW;}
 	void                setFrameHeight(UT_sint32 iH) { m_iHeight = iH;}
 	void                setFrameXpos(UT_sint32 iX) 	{ m_iXpos = iX;}
 	void                setFrameYpos(UT_sint32 iY) { m_iYpos = iY;}
+	void				setFrameAngle(double iA) { m_RotateAngle = iA;}
 	bool                isEndFrameIn(void) const
 		{ return m_bHasEndFrame;}
 	bool                isTightWrap(void)
@@ -159,6 +162,7 @@ private:
 	bool                     m_bNeedsFormat;
 	bool                     m_bIsOnPage;
 	bool                     m_bHasEndFrame;
+	double   				 m_RotateAngle;
 
 // Frame-background properties
 	PP_PropertyMap::Background	m_background;
