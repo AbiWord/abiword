@@ -202,8 +202,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 		return 1;
     fl_FrameLayout * pFL = pView->getFrameLayout();
 
-	getFrameWidth_Str();
-	getFrameHeight_Str();
+	setCurFrameProps();
 	swprintf(szValue, L"%02.2f", getFrameWidth());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
 
@@ -461,6 +460,13 @@ void AP_Win32Dialog_FormatFrame::setSensitivity(bool /*bSens*/)
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);	
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping()?  BST_CHECKED: BST_UNCHECKED);
+	//update height and width
+	wchar_t 	szValue[BUFSIZE];
+	swprintf(szValue, L"%02.2f", getFrameWidth());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
+
+	swprintf(szValue, L"%02.2f", getFrameHeight());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
 }
 
 void AP_Win32Dialog_FormatFrame::destroy(void) 
@@ -493,14 +499,6 @@ void AP_Win32Dialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-		//update height and width
-		wchar_t 	szValue[BUFSIZE];
-		swprintf(szValue, L"%02.2f", getFrameWidth());
-		SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
-
-		swprintf(szValue, L"%02.2f", getFrameHeight());
-		SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
-
 	}
 }
 
