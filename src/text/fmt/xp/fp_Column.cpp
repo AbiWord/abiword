@@ -1138,7 +1138,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 	dg_DrawArgs da = *pDA;
 	UT_uint32 count = countCons();
 	UT_sint32 iCurrHeight = 0;
-	xxx_UT_DEBUGMSG(("number of container %d \n",count));
+	xxx_UT_DEBUGMSG(("Vertical: number of container %d \n",count));
 	for (UT_uint32 i = 0; i < count; i++)
 	{
 		fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));

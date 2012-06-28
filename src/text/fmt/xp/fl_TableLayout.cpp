@@ -220,6 +220,10 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setLineThickness(m_iLineThickness);
 	pTab->setRowHeightType(m_iRowHeightType);
 	pTab->setRowHeight(m_iRowHeight);
+	if(isHeaderSet())
+	{
+		pTab->identifyHeaderRows(getHeaderRowNos());
+	}
 }
 
 

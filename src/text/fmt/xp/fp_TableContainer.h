@@ -482,10 +482,19 @@ fp_Column *         getBrokenColumn(void);
 	void				__dump(FILE * fp) const;
 #endif
 
-//Table Header
 	fp_TableHeader * getHeaderObject() const
-	{ return m_pTableHeader; }
-
+	{ 
+		return m_pTableHeader; 
+	}
+	void 	identifyHeaderRows(std::vector<UT_sint32>); 
+	void 	setHeader(bool bHeader)
+	{
+		m_bHeader = bHeader;
+	}
+	bool isThisHeader(void) const
+	{
+		return m_bHeader;
+	}
 private:
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
@@ -558,25 +567,26 @@ private:
 	bool                m_bRecursiveClear;
 	UT_sint32           m_iAdditionalMarginAfter;
 
-//Table Header
-	
 	fp_TableHeader * m_pTableHeader;
-	bool m_bHeaderInitialized;
+	bool m_bHeader;
 };
 
 class fp_TableHeader : public fp_TableContainer
 {
 public:
 	fp_TableHeader(fl_SectionLayout *,fp_TableContainer *);
+	
 	UT_sint32 getHeaderHeight(void) const
 	{ 	return m_iHeaderHeight; }
 	const std::vector<UT_sint32> & getHeaderRowNos(void) const
 	{ 	return m_vHeaderRowNumber; }
-	void setHeaderRows();
-	std::vector<fp_CellContainer *> m_vecCells;
+	
+	void createLocalListOfHeaderRows(std::vector<UT_sint32> &);
 	void calculateHeaderHeight(void);
-	void populateCells(void);
+	//void markHeaderCells(void);
 	UT_sint32 getActualRowHeight(UT_sint32 iRowNumber);
+
+	std::vector<fp_CellContainer *> m_vecCells;
 
 private:
 	std::vector<UT_sint32> m_vHeaderRowNumber;

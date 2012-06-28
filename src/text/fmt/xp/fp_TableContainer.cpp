@@ -1251,12 +1251,6 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
 	iRight = col_x + m_iRight + offx;
 	iTop = col_y + m_iTopY + offy;
 	iBot = col_y + m_iBotY + offy;
-	fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(pBroke->getMasterTable()->getSectionLayout());
-	if((pTableLayout->isHeaderSet()) &&(pBroke->getMasterTable()->getHeaderObject() != NULL && !m_bHeaderCell))
-	{
-		iTop += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
-		iBot += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
-	}
 }
 /*!
  * Draw background and lines around a cell in a broken table.
@@ -2427,11 +2421,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 
 	GR_Painter painter(pG);
 
-	fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(pBroke->getMasterTable()->getSectionLayout());
-	if((pTableLayout->isHeaderSet()) &&(pBroke->getMasterTable()->getHeaderObject() != NULL) && !m_bHeaderCell)
-	{
-		bRec.top += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
-	}
 	if (((m_bIsSelected == false) || (!pG->queryProperties(GR_Graphics::DGP_SCREEN))) && (m_bBgDirty || !pDA->bDirtyRunsOnly))
 	{
 		UT_sint32 srcX = 0;
@@ -2489,11 +2478,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 
 			da.xoff += pContainer->getX() + getX();
 			da.yoff += pContainer->getY() + getY();
-			fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(pBroke->getMasterTable()->getSectionLayout());
-			if((pTableLayout->isHeaderSet()) && (pBroke->getMasterTable()->getHeaderObject() != NULL) && !m_bHeaderCell)
-			{
-				da.yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
-			}
 			UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 			if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
@@ -3196,7 +3180,8 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_pLastBrokenCell(NULL),
 	  m_bRecursiveClear(false),
 //tnkk: A Header object is created only for the master table. This eliminates the trouble of keeping track of the object. Simon's initial suggestion.
-	  m_bHeaderInitialized(false)
+	  m_pTableHeader(NULL),
+          m_bHeader(false)
 
 {
 	if(getSectionLayout())
@@ -3245,8 +3230,8 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_pLastBrokenCell(NULL),
 	  m_bRecursiveClear(false),
 	  m_iAdditionalMarginAfter(0),
-	  m_bHeaderInitialized(true),
-	  m_pTableHeader(NULL)
+	  m_pTableHeader(NULL),
+	  m_bHeader(false)
 {
 }
 
@@ -4216,14 +4201,6 @@ void fp_TableContainer::setHeight(UT_sint32 iHeight)
 	}
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	iHeight += (pTL->getBottomOffset() + pTL->getTopOffset());
-	if(getMasterTable() && getMasterTable()->getHeaderObject())
-	{
-		fl_TableLayout *pTabLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
-		if(pTabLayout->isHeaderSet())
-		{
-			iHeight += getMasterTable()->getHeaderObject()->getHeaderHeight();
-		}
-	}
 	fp_VerticalContainer::setHeight(iHeight);
 }
 
@@ -4345,25 +4322,17 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
  will be calculated only with the top level broken table.
 */
 
-//Table Header
-	
-	fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(getSectionLayout());
-	if(pTableLayout->isHeaderSet())
-	{
-		if(!isThisBroken() && !m_bHeaderInitialized)
-		{
-			m_pTableHeader = new fp_TableHeader(getSectionLayout(),this);
-			m_pTableHeader->populateCells();
-			m_pTableHeader->calculateHeaderHeight();
-			m_bHeaderInitialized = true;
-		}
-	}
-
 //
 // Do the case of creating the first broken table from the master table.
 //
 	
 	fp_TableContainer * pBroke = NULL;
+	fp_TableHeader *pHeader = NULL;
+	if(getMasterTable() && getMasterTable()->getHeaderObject())
+	{
+		fp_TableHeader *pTabHeader = getMasterTable()->getHeaderObject();
+		pTabHeader->calculateHeaderHeight();
+	}
 	if(!isThisBroken() && getLastBrokenTable() == NULL)
 	{
 		if(getFirstBrokenTable() != NULL)
@@ -4384,6 +4353,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
 		static_cast<fp_VerticalContainer *>(pBroke)->setY(getY());
 		pBroke->breakCellsAt(vpos);
+		UT_DEBUGMSG(("pBroke is for %p\n",pBroke));
 		return pBroke;
 	}
 //
@@ -4393,55 +4363,43 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	{
 		return getLastBrokenTable()->VBreakAt(vpos);
 	}
-	pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
-	getMasterTable()->setLastBrokenTable(pBroke);
-
-	xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!!!  New broken table %x \n",getLastBrokenTable()));
-
-//
-// vpos is relative to the container that contains this height but we need
-// to add in the height above it.
-//
-//Table Header
-	pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
-	pBroke->setYBreakHere(getYBreak()+vpos);
-	pBroke->setYBottom(getMasterTable()->getYBottom());
-	UT_DEBUGMSG(("The height of the broken table is %d\n",pBroke->getHeight()));
-	setYBottom(getYBreak() + vpos -1);
-	UT_ASSERT(getHeight() >0);
-	xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken table %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
-	xxx_UT_DEBUGMSG(("SEVIOR????????: Previous table YBreak %d YBottom  %d Height of broken table %d \n",getYBreak(),getYBottom(),getHeight()));
-	UT_ASSERT(pBroke->getHeight() > 0);
-	UT_sint32 i = -1;
-//
-// The structure of table linked list is as follows.
-// NULL <= Master <==> Next <==> Next => NULL
-//          first 
-// ie terminated by NULL's in the getNext getPrev list. The second
-// broken table points and is pointed to by the Master table
-// 
-	pBroke->setPrev(this);
-	fp_Container * pUpCon = NULL;
-	if(getMasterTable()->getFirstBrokenTable() == this)
+	if(static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet())
 	{
-		pUpCon = getMasterTable()->getContainer();
-  		pBroke->setPrev(getMasterTable());
-  		pBroke->setNext(NULL);
-  		getMasterTable()->setNext(pBroke);
-		setNext(pBroke);
-		if (pUpCon)
+		pHeader = new fp_TableHeader(getSectionLayout(),getMasterTable());
+	//	pHeader->setContainerType(FP_CONTAINER_TABLE_HEADER);
+		pHeader->setYBreakHere(getYBreak()+vpos);
+		pHeader->setYBottom(getYBreak()+vpos+getMasterTable()->getHeaderObject()->getHeaderHeight());
+		getMasterTable()->setLastBrokenTable(static_cast<fp_TableContainer *>(pHeader));
+		
+		
+		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
+		getMasterTable()->setLastBrokenTable(pBroke);
+		pBroke->setYBreakHere(getYBreak() + vpos + getMasterTable()->getHeaderObject()->getHeaderHeight());
+		pBroke->setYBottom( getMasterTable()->getYBottom() + getMasterTable()->getHeaderObject()->getHeaderHeight() );
+		
+		
+		setYBottom(getYBreak() + vpos -1);
+
+		UT_ASSERT(getHeight() >0);
+		UT_ASSERT(pBroke->getHeight() > 0);
+		UT_sint32 i = -1;
+		
+		pHeader->setPrev(this);
+		pHeader->setNext(pBroke);
+		pBroke->setPrev(pHeader);
+		fp_Container * pUpCon = NULL;
+		if(getMasterTable()->getFirstBrokenTable() == this)
 		{
-			i = pUpCon->findCon(getMasterTable());
-		}
-	}
-	else
-	{
-		pBroke->setNext(NULL);
-  		setNext(pBroke);
-		if(getYBreak() == 0 )
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			pUpCon = getMasterTable()->getContainer();
+
+			pHeader->setPrev(getMasterTable());
+			pHeader->setNext(pBroke);
+
+  			pBroke->setPrev(pHeader);
+  			pBroke->setNext(NULL);
+
+	  		getMasterTable()->setNext(pHeader);
+			setNext(pHeader);
 			if (pUpCon)
 			{
 				i = pUpCon->findCon(getMasterTable());
@@ -4449,48 +4407,165 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		}
 		else
 		{
-			pUpCon = getContainer();
-			if (pUpCon)
+			pBroke->setNext(NULL);
+	  		setNext(pHeader);
+			if(getYBreak() == 0 )
 			{
-				i = pUpCon->findCon(this);
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				pUpCon = getMasterTable()->getContainer();
+				if (pUpCon)
+				{
+					i = pUpCon->findCon(getMasterTable());
+				}
+			}
+			else
+			{
+				pUpCon = getContainer();
+				if (pUpCon)
+				{
+					i = pUpCon->findCon(this);
+				}
 			}
 		}
-	}
 
-	if((i >=0) && (i < pUpCon->countCons() - 1))
-	{
-		pUpCon->insertConAt(pBroke,i+1);
-	}
-	else if((i >= 0) && (i == pUpCon->countCons() -1))
-	{
-		pUpCon->addCon(pBroke);
+		if((i >=0) && (i < pUpCon->countCons() - 1))
+		{
+			pUpCon->insertConAt(pHeader,i+1);
+			pUpCon->insertConAt(pBroke,i+1);
+		}
+		else if((i >= 0) && (i == pUpCon->countCons() -1))
+		{
+			pUpCon->addCon(pHeader);
+			pUpCon->addCon(pBroke);
+		}
+		else
+		{
+			UT_DEBUGMSG(("Breaking a table that is not yet inserted\n"));
+		}
+		pHeader->setContainer(pUpCon);
+		pBroke->setContainer(pUpCon);
+		//
+		// Now deal with issues from a container overlapping the top of the
+		// of the new broken table.
+		//
+		UT_sint32 iTweak = tweakBrokenTable(pBroke);
+		xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
+	 	if(iTweak > 0)
+ 		{
+
+			xxx_UT_DEBUGMSG(("Ybreak of %x set to %d after tweak \n",pBroke,pBroke->getYBreak() - iTweak));
+ 			pBroke->setYBreakHere(pBroke->getYBreak() - iTweak);
+			xxx_UT_DEBUGMSG(("YBottom set to %d after tweak \n",getYBottom() - iTweak -1));
+	 	}
+		static_cast<fp_VerticalContainer *>(pHeader)->setHeight(static_cast<fp_TableContainer *>(pHeader)->getHeight());
+		static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
+		//
+		// The cells are broken relative to the top of the table 
+		//
+		breakCellsAt(getYBottom() - iTweak);
+		pHeader->setHeader(true);
+		return pBroke;
 	}
 	else
 	{
-		UT_DEBUGMSG(("Breaking a table that is not yet inserted\n"));
-	}
-	pBroke->setContainer(pUpCon);
-	//
-	// Now deal with issues from a container overlapping the top of the
-	// of the new broken table.
-	//
-	UT_sint32 iTweak = tweakBrokenTable(pBroke);
-	xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
- 	if(iTweak > 0)
- 	{
+		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
+		getMasterTable()->setLastBrokenTable(pBroke);
 
-		xxx_UT_DEBUGMSG(("Ybreak of %x set to %d after tweak \n",pBroke,pBroke->getYBreak() - iTweak));
- 		pBroke->setYBreakHere(pBroke->getYBreak() - iTweak);
-		xxx_UT_DEBUGMSG(("YBottom set to %d after tweak \n",getYBottom() - iTweak -1));
- 	}
-	static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
-	//
-	// The cells are broken relative to the top of the table 
-	//
-	breakCellsAt(getYBottom() - iTweak);
+		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!!!  New broken table %x \n",getLastBrokenTable()));
+
+		//
+		// vpos is relative to the container that contains this height but we need
+		// to add in the height above it.
+		//
+		pBroke->setYBreakHere(getYBreak()+vpos);
+		pBroke->setYBottom(getMasterTable()->getYBottom());
+		UT_DEBUGMSG(("The height of the broken table is %d\n",pBroke->getHeight()));
+		setYBottom(getYBreak() + vpos -1);
+		UT_ASSERT(getHeight() >0);
+		xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken table %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
+		xxx_UT_DEBUGMSG(("SEVIOR????????: Previous table YBreak %d YBottom  %d Height of broken table %d \n",getYBreak(),getYBottom(),getHeight()));
+		UT_ASSERT(pBroke->getHeight() > 0);
+		UT_sint32 i = -1;
+		//
+		// The structure of table linked list is as follows.
+		// NULL <= Master <==> Next <==> Next => NULL
+		//          first 
+		// ie terminated by NULL's in the getNext getPrev list. The second
+		// broken table points and is pointed to by the Master table
+		// 
+		pBroke->setPrev(this);
+		fp_Container * pUpCon = NULL;
+		if(getMasterTable()->getFirstBrokenTable() == this)
+		{
+			pUpCon = getMasterTable()->getContainer();
+  			pBroke->setPrev(getMasterTable());
+  			pBroke->setNext(NULL);
+  			getMasterTable()->setNext(pBroke);
+			setNext(pBroke);
+			if (pUpCon)
+			{
+				i = pUpCon->findCon(getMasterTable());
+			}
+		}
+		else
+		{
+			pBroke->setNext(NULL);
+  			setNext(pBroke);
+			if(getYBreak() == 0 )
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				pUpCon = getMasterTable()->getContainer();
+				if (pUpCon)
+				{
+					i = pUpCon->findCon(getMasterTable());
+				}
+			}
+			else
+			{
+				pUpCon = getContainer();
+				if (pUpCon)
+				{
+					i = pUpCon->findCon(this);
+				}
+			}
+		}
+	
+		if((i >=0) && (i < pUpCon->countCons() - 1))
+		{
+			pUpCon->insertConAt(pBroke,i+2);
+		}
+		else if((i >= 0) && (i == pUpCon->countCons() -1))
+		{
+			pUpCon->addCon(pBroke);
+		}
+		else
+		{
+			UT_DEBUGMSG(("Breaking a table that is not yet inserted\n"));
+		}
+		pBroke->setContainer(pUpCon);
+		//
+		// Now deal with issues from a container overlapping the top of the
+		// of the new broken table.
+		//
+		UT_sint32 iTweak = tweakBrokenTable(pBroke);
+		xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
+ 		if(iTweak > 0)
+ 		{
+	
+			xxx_UT_DEBUGMSG(("Ybreak of %x set to %d after tweak \n",pBroke,pBroke->getYBreak() - iTweak));
+ 			pBroke->setYBreakHere(pBroke->getYBreak() - iTweak);
+			xxx_UT_DEBUGMSG(("YBottom set to %d after tweak \n",getYBottom() - iTweak -1));
+ 		}
+		static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
+		//
+		// The cells are broken relative to the top of the table 
+		//
+		breakCellsAt(getYBottom() - iTweak);
+		return pBroke;
+	}
 	return pBroke;
 }
-
+	
 UT_sint32 fp_TableContainer::tweakBrokenTable(fp_TableContainer * pBroke)
 {
 	fp_TableContainer * pTab = getMasterTable();
@@ -4963,6 +5038,12 @@ void fp_TableContainer::setBorderWidth(UT_sint32 iBorder)
 	queueResize();
 }
 
+void fp_TableContainer::identifyHeaderRows(std::vector<UT_sint32> m_vecHeaderRows)
+{
+	m_pTableHeader = new fp_TableHeader(getSectionLayout(),this);
+	m_pTableHeader->createLocalListOfHeaderRows(m_vecHeaderRows);
+}
+
 void fp_TableContainer::queueResize(void)
 {
 	static_cast<fl_TableLayout *>(getSectionLayout())->setDirty();
@@ -5220,6 +5301,12 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 			xxx_UT_DEBUGMSG(("TablecONTAINER leave draw section does not want redraw \n"));
 //			return;
 		}
+	}
+	if(isThisHeader())
+	{
+		UT_DEBUGMSG(("Draw the header row here. pHeader is %p and pNext is %p\n",this,getNext()));
+		fp_TableHeader *pHeader = static_cast<fp_TableHeader *>(this);
+//		pHeader->drawHeader(pDA);
 	}
 	if(isThisBroken())
 	{
@@ -5704,23 +5791,6 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	if(iCount > 0)
 	{
 		xxx_UT_DEBUGMSG(("Draw the repeated Row here \n"));
-		if(getMasterTable() && getMasterTable()->getHeaderObject())
-		{
-			fp_TableHeader *pHeader = getMasterTable()->getHeaderObject();
-			fl_TableLayout *pTabLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
-			if(pHeader && pTabLayout->isHeaderSet())
-			{
-				fp_CellContainer *pCell = pHeader->m_vecCells[0];
-				if(pCell)
-				{
-					pCell->setHeaderCell(true);
-					dg_DrawArgs da = *pDA;
-			//			pCell->drawBroken(&da,this);
-					pCell->setHeaderCell(false);
-				}
-			}
-		}
-
 	}
 	if(getContainer()->getContainerType() == FP_CONTAINER_CELL)
 	{
@@ -5791,6 +5861,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	else
 	{
 		UT_DEBUGMSG(("Not doing FirstBrokenCell \n"));
+		UT_sint32 iCount1 = 0;
 		while(pCell)
 		{
 			UT_sint32 botY = 0;
@@ -5814,7 +5885,9 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 			{
 				xxx_UT_DEBUGMSG(("yOffset %d \n",yOffset));
 				xxx_UT_DEBUGMSG(("SEVIOR: _drawBroken skipping cell %x cellY %d cellHeight %d YBreak %d yBottom %d \n",pCell,pCell->getY(), pCell->getHeight(), getYBreak(),getYBottom()));
-				break;
+				pCell=static_cast<fp_CellContainer *>(pCell->getNext());
+				iCount1++;
+				continue;
 //				pCell = static_cast<fp_CellContainer *>(pCell->getNext()); --> tnkk:Unreachable code. Commented out.
 			}
 			else
@@ -5829,11 +5902,6 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 						da.yoff = da.yoff + getYBreak();
 				}
 				da.yoff = da.yoff - getYBreak();
-				fl_TableLayout *pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
-				if((pTableLayout->isHeaderSet()) &&(getMasterTable()->getHeaderObject() != NULL))
-				{
-					da.yoff += getMasterTable()->getHeaderObject()->getHeaderHeight();
-				}
 				iCountCells++;
 				xxx_UT_DEBUGMSG((" -2- da.yoff set to %d \n",da.yoff));
 				pCell->drawBroken(&da, this);
@@ -5845,6 +5913,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 				pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 			}
 		}
+		UT_DEBUGMSG(("the number of skipped cells are %d\n",iCount1));
 	}
 	xxx_UT_DEBUGMSG(("_brokenDraw: Draw %d cells \n",iCountCells));
     _drawBrokenBoundaries(pDA);
@@ -6667,9 +6736,7 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 }
 
 
-//Table Header
-
-void fp_TableHeader::populateCells(void)
+/*void fp_TableHeader::markHeaderCells(void)
 {
 	int i,noOfColumns=pTabMaster->getNumCols();
 	const std::vector<UT_sint32> & headerRowNum =  getHeaderRowNos();
@@ -6678,6 +6745,12 @@ void fp_TableHeader::populateCells(void)
 	{
 		for(i=0;i<noOfColumns;i++)
 		{
+			fp_CellContainer *pCell = pTabMaster->getCellAtRowColumn(*itr-1,i);
+			fl_CellLayout *pCL = static_cast<fl_CellLayout *>(pCell->getSectionLayout());
+			fp_CellContainer *pNewCell = 
+
+			
+			
 			fp_CellContainer *pCell =  new fp_CellContainer(pTabMaster->getSectionLayout());
 			fp_CellContainer *pOldCell = pTabMaster->getCellAtRowColumn(*itr-1,i);
 			//pCell->getSectionLayout()->setContainingLayout(getSectionLayout());
@@ -6694,7 +6767,7 @@ void fp_TableHeader::populateCells(void)
 			UT_DEBUGMSG(("Adding Cell at Row %d Column %d\n",*itr-1,i));
 		}
 	}
-}
+}*/
 
 UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
 {
@@ -6708,26 +6781,19 @@ fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContai
 	   m_iHeaderHeight(0)
 {
 	pTabMaster = pTableContainer;
-
-	fl_TableLayout *pTabLayout = static_cast<fl_TableLayout *>(pTabMaster->getSectionLayout());
-	pTabLayout->setTableContainerProperties(static_cast<fp_TableContainer *>(this));
-	
-	setHeaderRows();
 }
 
-void fp_TableHeader::setHeaderRows()
+void fp_TableHeader::createLocalListOfHeaderRows(std::vector<UT_sint32> & m_vHeaderRows)
 {
-	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(getSectionLayout());
-	m_vHeaderRowNumber = pTableLayout->getHeaderRowNos();
+	m_vHeaderRowNumber = m_vHeaderRows;
 }
 
 void fp_TableHeader::calculateHeaderHeight(void)
 {
-	const std::vector<UT_sint32> & headerRowNum =  getHeaderRowNos();
-	if(!headerRowNum.empty())
+	if(!m_vHeaderRowNumber.empty())
 	{
-		std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
-		for(;itr != headerRowNum.end() ; ++itr)
+		std::vector<UT_sint32>::const_iterator itr = m_vHeaderRowNumber.begin();
+		for(;itr != m_vHeaderRowNumber.end() ; ++itr)
 		{
 			UT_DEBUGMSG(("The height of %d row is %d\n",(*itr),getActualRowHeight((*itr)-1)));
 			m_iHeaderHeight += getActualRowHeight(*itr - 1);

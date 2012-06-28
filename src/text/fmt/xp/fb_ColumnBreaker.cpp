@@ -568,11 +568,6 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 					iHeaderAdjust += iTheseAnnotations;
 				  }
 			}
-			if(iWorkingColHeight > iHeaderAdjust)
-			{
-				iHeaderAdjust = iWorkingColHeight - iHeaderAdjust;
-				iWorkingColHeight -= iHeaderAdjust;
-			}
 			xxx_UT_DEBUGMSG(("WorkingColHeight = %d \n",iWorkingColHeight));
 			xxx_UT_DEBUGMSG(("iTotalContainerSpace = %d MarginAfter %d \n",iTotalContainerSpace,iContainerMarginAfter));
 			if ((iWorkingColHeight + iTotalContainerSpace) > iMaxColHeight)
@@ -1444,7 +1439,7 @@ void fb_ColumnBreaker::_setLastWantedVBreak(fp_Container * pCon, UT_sint32 iBrea
 
 UT_sint32 fb_ColumnBreaker::_getLastWantedVBreak(fp_Container * pCon)
 {
-	if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+	if(pCon->getContainerType() == FP_CONTAINER_TABLE || pCon->getContainerType() == FP_CONTAINER_TABLE_HEADER)
 	{
 		return static_cast<fp_TableContainer *>(pCon)->getLastWantedVBreak();
 	}
@@ -1463,7 +1458,7 @@ bool fb_ColumnBreaker::_breakCON(fp_Container*& pOffendingContainer,
 								   int iWorkingColHeight,
 								   int iContainerMarginAfter)
 {
-	if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
+	if(pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE || pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE_HEADER)
 	{
 		return _breakTable(pOffendingContainer,pLastContainerToKeep,
 						   iMaxColHeight,iWorkingColHeight,
@@ -1593,7 +1588,7 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // be bumped into the next column. Pretty cool eh ? :-)
 //
 			fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(pBroke->VBreakAt(iBreakAt));
-			pOffendingContainer = static_cast<fp_Container *>(pNewTab);
+			pOffendingContainer = static_cast<fp_Container *>(pNewTab->getPrev());
 			pLastContainerToKeep = static_cast<fp_Container *>(pTab);
 			UT_DEBUGMSG(("The height of the master table is %d, pBroke %d, pNewTab %d\n",pNewTab->getMasterTable()->getHeight(),pBroke->getHeight(),pNewTab->getHeight()));
                         if(pNewTab == NULL)
