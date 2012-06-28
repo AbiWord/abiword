@@ -2857,12 +2857,12 @@ UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
 	return UT_OK;
 }
 
-UT_Error IE_Exp_OpenXML::startStyle(std::string style, std::string basedon, std::string followedby, std::string type)
+UT_Error IE_Exp_OpenXML::startStyle(const std::string& name, const std::string& basedon, const std::string& followedby, const std::string& type)
 {
-	std::string sEscStyle = UT_escapeXML(style.c_str());
-	std::string sEscBasedOn = UT_escapeXML(basedon.c_str());
-	std::string sEscFollowedBy = UT_escapeXML(followedby.c_str());
-	std::string sEscType = UT_escapeXML(type.c_str());
+	std::string sEscName = UT_escapeXML(name);
+	std::string sEscBasedOn = UT_escapeXML(basedon);
+	std::string sEscFollowedBy = UT_escapeXML(followedby);
+	std::string sEscType = UT_escapeXML(type);
 
 	std::string str("");
 	str += "<w:style";
@@ -2873,10 +2873,10 @@ UT_Error IE_Exp_OpenXML::startStyle(std::string style, std::string basedon, std:
 		str += "\"";
 	}
 	str += " w:styleId=\"";
-	str += sEscStyle;
+	str += sEscName;
 	str += "\">";
 	str += "<w:name w:val=\"";
-	str += sEscStyle;
+	str += sEscName;
 	str += "\"/>";
 	
 	if(!basedon.empty())

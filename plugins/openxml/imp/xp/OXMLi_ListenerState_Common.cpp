@@ -891,16 +891,27 @@ void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
 		size_t isUnderline = v.find(underline);
 		size_t openingParenthesis;
 		size_t closingParenthesis;
+		UT_Error err;
 		if(isOverline != std::string::npos && isUnderline == std::string::npos)
 		{
 			// if starts with "EQ \x \to", then overline property is used
-			UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-decoration", "overline") ));
+			err = run->setProperty("text-decoration", "overline");
+			if(err != UT_OK)
+			{
+				UT_DEBUGMSG(("SERHAT: Could not set overline property!\n"));
+				return;
+			}
 			rqst->stck->push(sharedElem);
 		}
 		else if(isUnderline != std::string::npos && isOverline == std::string::npos)
 		{
 			// if starts with "EQ \x \bo", then underline property is used
-			UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("text-decoration", "underline") ));
+			err = run->setProperty("text-decoration", "underline");
+			if(err != UT_OK)
+			{
+				UT_DEBUGMSG(("SERHAT: Could not set underline property!\n"));
+				return;
+			}
 			rqst->stck->push(sharedElem);
 		}
 		else // To import at least standard text without properties, in the case of other EQ fields that Abiword does not support such as border from left, border from right etc. 
