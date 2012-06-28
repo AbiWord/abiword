@@ -188,8 +188,8 @@ public:
 	float					borderThicknessBottom () const { return m_borderThicknessBottom; }
 	inline float            getFrameWidth() const {  return m_width; }
 	inline float            getFrameHeight() const { return m_height; }
-	const UT_UTF8String &   getFrameWidth_Str();  
-	const UT_UTF8String &   getFrameHeight_Str();  
+	const UT_UTF8String &   initFrameWidthStr();  
+	const UT_UTF8String &   initFrameHeightStr();  
 
 	void					setPositionMode (FL_FrameFormatMode mode);
 
