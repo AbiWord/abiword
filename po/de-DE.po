@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-06-27 16:56+0200\n"
-"PO-Revision-Date: 2012-06-27 16:56+0200\n"
+"POT-Creation-Date: 2012-06-28 12:49+0200\n"
+"PO-Revision-Date: 2012-06-28 12:49+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -7229,7 +7229,7 @@ msgstr "Info zu %s"
 
 #. LANG_ACH
 #: po/tmp/xap_String_Id.h
-msgid "Acoli"
+msgid "Acholi"
 msgstr "Acholi"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
@@ -7384,8 +7384,8 @@ msgstr "Baltisch, Windows Codepage 1257"
 
 #. LANG_BM
 #: po/tmp/xap_String_Id.h
-msgid "Bambara"
-msgstr "Bambara"
+msgid "Bamanankan"
+msgstr "Bamanankan"
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -8826,8 +8826,8 @@ msgstr "Kapitälchen"
 
 #. LANG_SON
 #: po/tmp/xap_String_Id.h
-msgid "Songhai"
-msgstr "Songhai"
+msgid "Songhay"
+msgstr "Songhay"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
