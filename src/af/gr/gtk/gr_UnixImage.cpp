@@ -128,12 +128,7 @@ void GR_UnixImage::scaleImageTo(GR_Graphics * pG, const UT_Rect & rec)
 {
 	UT_sint32 width = pG->tdu(rec.width);
 	UT_sint32 height = pG->tdu(rec.height);
-	if((width == getDisplayWidth()) && (height == getDisplayHeight()))
-	{
-		return;
-	}
 	scale(width,height);
-	//	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
 static gboolean convCallback(const gchar *buf,
