@@ -239,8 +239,6 @@ void AP_UnixDialog_Stylist::runModal(XAP_Frame * pFrame)
 
 GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 {
-	GtkWidget *button;
-	
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Stylist.ui");
@@ -255,11 +253,11 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 
 	if(m_bIsModal)
 	{
-		button = gtk_dialog_add_button(GTK_DIALOG(m_windowMain), "gtk-ok", GTK_RESPONSE_OK);
+		/*button =*/ gtk_dialog_add_button(GTK_DIALOG(m_windowMain), "gtk-ok", GTK_RESPONSE_OK);
 	}
 	else
-	{                                
-		button = gtk_dialog_add_button(GTK_DIALOG(m_windowMain), "gtk-apply", GTK_RESPONSE_APPLY);    
+	{
+		/*button =*/ gtk_dialog_add_button(GTK_DIALOG(m_windowMain), "gtk-apply", GTK_RESPONSE_APPLY);
 	}
 
 	// set the dialog title

@@ -234,7 +234,6 @@ RDFArguments::~RDFArguments()
 
 void dumpModelToTest( RDFArguments& args )
 {
-    librdf_world* world = args.world;
     librdf_model* model = args.model;
 
     // Convert redland model to RDF/XML
@@ -283,6 +282,8 @@ std::string toString( librdf_node *node )
             return s;
         case LIBRDF_NODE_TYPE_RESOURCE:
             return toString( librdf_node_get_uri(node) );
+        case LIBRDF_NODE_TYPE_UNKNOWN:
+            break; // fallthrough
     }
 
     // fallback

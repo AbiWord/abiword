@@ -11095,7 +11095,7 @@ Defun1(rdfQueryXMLIDs)
 			{
 				std::set< std::string > xmlids;
 				rdf->addRelevantIDsForPosition( xmlids, point );
-				UT_DEBUGMSG(("xmlids.sz:%d\n", xmlids.size() ));
+				UT_DEBUGMSG(("xmlids.sz:%lu\n", (long unsigned)xmlids.size() ));
 
 				sparql = PD_DocumentRDF::getSPARQL_LimitedToXMLIDList( xmlids );
 			}
