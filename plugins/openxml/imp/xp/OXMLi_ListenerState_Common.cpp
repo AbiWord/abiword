@@ -47,7 +47,8 @@
 
 OXMLi_ListenerState_Common::OXMLi_ListenerState_Common() : 
 	OXMLi_ListenerState(), 
-	m_pendingSectBreak(false)
+	m_pendingSectBreak(false),
+	m_eqField(false)
 {
 
 }
@@ -782,9 +783,16 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 
 		rqst->handled = true;
-	} else if (nameMatches(rqst->pName, NS_W_KEY, "t") || nameMatches(rqst->pName, NS_W_KEY, "instrText")) {
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "t")) {
 		//Text is done, appending it.
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
+		rqst->handled = true;
+	} else if(nameMatches(rqst->pName, NS_W_KEY, "instrText")) {
+		if(m_eqField)
+		{
+			//instrText including equation field is done, appending it.
+			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
+		}
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "sectPr")) {
 		std::string contextTag = rqst->context->back();
@@ -885,45 +893,50 @@ void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
 		OXML_SharedElement sharedElem(new OXML_Element_Text("", 0));
 		std::string overline = "\\to";
 		std::string underline = "\\bo";
+		std::string eq = "EQ";
 		std::string v(rqst->buffer); 
 		std::string value = "";
 		size_t isOverline = v.find(overline);
 		size_t isUnderline = v.find(underline);
+		size_t isEQ = v.find(eq);
 		size_t openingParenthesis;
 		size_t closingParenthesis;
 		UT_Error err;
-		if(isOverline != std::string::npos && isUnderline == std::string::npos)
+		if(isEQ != std::string::npos)
 		{
-			// if starts with "EQ \x \to", then overline property is used
-			err = run->setProperty("text-decoration", "overline");
-			if(err != UT_OK)
+			if(isOverline != std::string::npos && isUnderline == std::string::npos)
 			{
-				UT_DEBUGMSG(("SERHAT: Could not set overline property!\n"));
-				return;
+				// if starts with "EQ \x \to", then overline property is used
+				err = run->setProperty("text-decoration", "overline");
+				if(err != UT_OK)
+				{
+					UT_DEBUGMSG(("SERHAT: Could not set overline property!\n"));
+					return;
+				}
+			}
+			else if(isUnderline != std::string::npos && isOverline == std::string::npos)
+			{
+				// if starts with "EQ \x \bo", then underline property is used
+				err = run->setProperty("text-decoration", "underline");
+				if(err != UT_OK)
+				{
+					UT_DEBUGMSG(("SERHAT: Could not set underline property!\n"));
+					return;
+				}
 			}
 			rqst->stck->push(sharedElem);
+			m_eqField = true;
+			openingParenthesis = v.find("(");
+			closingParenthesis = v.find(")");
+			value = v.substr(int(openingParenthesis)+1, int(closingParenthesis)-int(openingParenthesis)-1); // the string between parentheses is extracted
+			OXML_Element* elem = sharedElem.get();
+			OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem); 
+			textElement->setText(value.c_str(), value.size());
 		}
-		else if(isUnderline != std::string::npos && isOverline == std::string::npos)
+		else
 		{
-			// if starts with "EQ \x \bo", then underline property is used
-			err = run->setProperty("text-decoration", "underline");
-			if(err != UT_OK)
-			{
-				UT_DEBUGMSG(("SERHAT: Could not set underline property!\n"));
-				return;
-			}
-			rqst->stck->push(sharedElem);
+			m_eqField = false;
 		}
-		else // To import at least standard text without properties, in the case of other EQ fields that Abiword does not support such as border from left, border from right etc. 
-		{
-			rqst->stck->push(sharedElem);
-		}
-		openingParenthesis = v.find("(");
-		closingParenthesis = v.find(")");
-		value = v.substr(int(openingParenthesis)+1, int(closingParenthesis)-int(openingParenthesis)-1); // the string between parentheses is extracted
-		OXML_Element* elem = sharedElem.get();
-		OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem); 
-		textElement->setText(value.c_str(), value.size());
 	}
 	else
 	{
