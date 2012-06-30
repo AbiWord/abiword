@@ -20,17 +20,16 @@ hildon_ui = hildon/xap_UnixHildonDlg_Image.ui \
 altgtk_src = xap_UnixDlg_FontChooser.cpp \
 	xap_UnixDlg_FontChooser.h \
 	$(NULL)
-if TOOLKIT_GTK2
-altgtk_ui = xap_UnixDlg_Image-2.ui \
+
+altgtk_ui_gtk2 = xap_UnixDlg_Image-2.ui \
 	$(NULL)
-else
-altgtk_ui = xap_UnixDlg_Image.ui \
+altgtk_ui_gtk3 = xap_UnixDlg_Image.ui \
 	$(NULL)
-endif
+
 # list all conditional source files here so they end up in the dist tarball
 conditional_src = $(hildon_src) $(altgtk_src)
 
-conditional_ui = $(hildon_ui) $(altgtk_ui)
+conditional_ui = $(hildon_ui) $(altgtk_ui_gtk2) $(altgtk_ui_gtk3)
 
 libgtk_la_SOURCES = \
 	xap_Gtk2Compat.h \
@@ -103,8 +102,8 @@ libgtk_la_SOURCES = \
 
 
 uidir=$(ABIWORD_UIDIR)
-if TOOLKIT_GTK2
-ui_DATA = \
+
+ui_gtk2 = \
 	xap_UnixDlg_Encoding-2.ui \
 	xap_UnixDlg_Language-2.ui \
 	xap_UnixDlg_Password-2.ui \
@@ -115,8 +114,8 @@ ui_DATA = \
 	xap_UnixDlg_DocComparison-2.ui \
 	xap_UnixDlg_ListDocuments-2.ui \
 	$(NULL)
-else
-ui_DATA = \
+
+ui_gtk3 = \
 	xap_UnixDlg_Encoding.ui \
 	xap_UnixDlg_Language.ui \
 	xap_UnixDlg_Password.ui \
@@ -127,18 +126,31 @@ ui_DATA = \
 	xap_UnixDlg_DocComparison.ui \
 	xap_UnixDlg_ListDocuments.ui \
 	$(NULL)
+
+if TOOLKIT_GTK2
+ui_DATA = $(ui_gtk2)
+else
+ui_DATA = $(ui_gtk3)
 endif
 
 if EMBEDDED_HILDON
 libgtk_la_SOURCES += $(hildon_src)
 ui_DATA += $(hildon_ui)
 else
+
 libgtk_la_SOURCES += $(altgtk_src)
-ui_DATA += $(altgtk_ui)	
+
+if TOOLKIT_GTK2
+ui_DATA += $(altgtk_ui_gtk2)
+else
+ui_DATA += $(altgtk_ui_gtk3)
+endif
+
 endif
 
 EXTRA_DIST = \
 	$(conditional_src) \
 	$(conditional_ui) \
-	$(ui_DATA)
+	$(ui_gtk2)
+	$(ui_gtk3)
 

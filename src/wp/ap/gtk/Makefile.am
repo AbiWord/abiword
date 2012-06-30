@@ -20,52 +20,32 @@ hildon_ui = hildon/ap_UnixHildonDialog_HdrFtr.ui \
 spell_src = ap_UnixDialog_Spell.cpp
 
 # these are alternate file for a plain Gtk build.
-if TOOLKIT_GTK2
-spell_ui = ap_UnixDialog_Spell-2.ui
-altgtk_ui = ap_UnixDialog_Options-2.ui \
+spell_ui_gtk2 = ap_UnixDialog_Spell-2.ui
+altgtk_ui_gtk2 = ap_UnixDialog_Options-2.ui \
 	ap_UnixDialog_HdrFtr-2.ui \
 	ap_UnixDialog_Options_ColorSel-2.ui \
 	$(NULL)
-else
-spell_ui = ap_UnixDialog_Spell.ui
-altgtk_ui = ap_UnixDialog_Options.ui \
+
+spell_ui_gtk3 = ap_UnixDialog_Spell.ui
+altgtk_ui_gtk3 = ap_UnixDialog_Options.ui \
 	ap_UnixDialog_HdrFtr.ui \
 	ap_UnixDialog_Options_ColorSel.ui \
 	$(NULL)
-endif
 
 statusbar_src = ap_UnixStatusBar.cpp
 
-if TOOLKIT_GTK2
-abiwidget_src =	abiwidget-gtk2.cpp \
+abiwidget_src_gtk2 = abiwidget-gtk2.cpp \
 	abiwidget-gtk2.h \
 	$(NULL)
-else
-abiwidget_src = abiwidget.cpp \
+
+abiwidget_src_gtk3 = abiwidget.cpp \
 	abiwidget.h \
-	$(NULL)
-endif
-
-
-# list all conditional source files here so they end up in the dist tarball
-conditional_src = \
-	$(hildon_src) \
-	$(spell_src) \
-	$(statusbar_src) \
-	$(abiwidget_src) \
-	$(NULL)
-
-
-conditional_ui = \
-	$(altgtk_ui) \
-	$(spell_ui) \
 	$(NULL)
 
 
 libgtk_la_SOURCES = \
 	GTKCommon.h \
 	GTKCommon.cpp \
-	$(abiwidget_src) \
 	ap_DocView.cpp \
 	ap_DocView.h \
 	ap_UnixApp.cpp \
@@ -191,12 +171,15 @@ libgtk_la_SOURCES = \
 	ap_RDFSemanticItemGTKInjected.h \
 	ap_RDFSemanticItemGTKInjected.cpp
 
-
+if TOOLKIT_GTK2
+libgtk_la_SOURCES += $(abiwidget_src_gtk2)
+else
+libgtk_la_SOURCES += $(abiwidget_src_gtk3)
+endif
 
 uidir=$(ABIWORD_UIDIR)
-if TOOLKIT_GTK2
-ui_DATA = \
-	ap_UnixDialog_Annotation-2.ui \
+
+uifiles_gtk2 = ap_UnixDialog_Annotation-2.ui \
 	ap_UnixDialog_Border_Shading-2.ui \
 	ap_UnixDialog_Break-2.ui \
 	ap_UnixDialog_Field-2.ui \
@@ -226,9 +209,8 @@ ui_DATA = \
 	pd_RDFLocation-2.ui \
 	ap_UnixDialog_SemanticStylesheets-2.ui \
 	$(NULL)
-else
-ui_DATA = \
-	ap_UnixDialog_Annotation.ui \
+
+uifiles_gtk3 = ap_UnixDialog_Annotation.ui \
 	ap_UnixDialog_Border_Shading.ui \
 	ap_UnixDialog_Break.ui \
 	ap_UnixDialog_Field.ui \
@@ -258,12 +240,40 @@ ui_DATA = \
 	pd_RDFLocation.ui \
 	ap_UnixDialog_SemanticStylesheets.ui \
 	$(NULL)
+
+if TOOLKIT_GTK2
+ui_DATA = $(uifiles_gtk2)
+else
+ui_DATA = $(uifiles_gtk3)
 endif
 
+# list all conditional source files here so they end up in the dist tarball
+conditional_src = \
+	$(hildon_src) \
+	$(spell_src) \
+	$(statusbar_src) \
+	$(abiwidget_src_gtk2) \
+	$(abiwidget_src_gtk3) \
+	$(NULL)
+
+conditional_ui = \
+	$(altgtk_ui_gtk2) \
+	$(altgtk_ui_gtk3) \
+	$(spell_ui_gtk2) \
+	$(spell_ui_gtk3) \
+	$(uifiles_gtk2) \
+	$(uifiles_gtk3) \
+	$(NULL)
 
 if ENABLE_SPELL
 libgtk_la_SOURCES += $(spell_src)
-ui_DATA += $(spell_ui)
+
+if TOOLKIT_GTK2
+ui_DATA += $(spell_ui_gtk2)
+else
+ui_DATA += $(spell_ui_gtk3)
+endif
+
 endif
 
 if ENABLE_STATUSBAR
@@ -284,16 +294,19 @@ hildondbus_DATA = hildon/com.abisource.abiword.service
 hildonicondir = @datadir@/pixmaps
 hildonicon_DATA = hildon/qgn_list_abiword.png
 
-else 
+else
 
-ui_DATA += $(altgtk_ui)
+if TOOLKIT_GTK2
+ui_DATA += $(altgtk_ui_gtk2)
+else
+ui_DATA += $(altgtk_ui_gtk3)
+endif
 
 endif
 
 EXTRA_DIST = \
 	$(conditional_src) \
 	$(conditional_ui) \
-	$(ui_DATA) \
 	hildon/qgn_list_abiword.png \
 	hildon/com.abisource.abiword.service.in \
 	hildon/abiword.desktop.in \
