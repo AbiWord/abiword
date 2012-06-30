@@ -461,12 +461,17 @@ void AP_Win32Dialog_FormatFrame::setSensitivity(bool /*bSens*/)
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);	
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping()?  BST_CHECKED: BST_UNCHECKED);
 	//update height and width
-	wchar_t 	szValue[BUFSIZE];
-	swprintf(szValue, L"%02.2f", getFrameWidth());
-	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
+	/* FIXME: if update in the way, will cause the users can't input because it update all the time
+	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(getActiveFrame()->getFrameImpl())->getTopLevelWindow())
+	{
+		wchar_t 	szValue[BUFSIZE];
+		swprintf(szValue, L"%02.2f", getFrameWidth());
+		SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
 
-	swprintf(szValue, L"%02.2f", getFrameHeight());
-	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
+		swprintf(szValue, L"%02.2f", getFrameHeight());
+		SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
+	}
+	*/
 }
 
 void AP_Win32Dialog_FormatFrame::destroy(void) 
