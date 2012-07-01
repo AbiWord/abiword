@@ -338,3 +338,20 @@ void OXML_Element_Paragraph::setPageBreak()
 	pageBreak = true;
 }
 
+bool OXML_Element_Paragraph::isNumberedList()
+{
+	UT_Error err = UT_OK;
+	const gchar* szValue;
+
+	err = getProperty("list-style", szValue);
+	if(err != UT_OK)
+	{
+		return false;
+	}
+	if(!strcmp(szValue, "Numbered List"))
+	{
+		return true;
+	}
+	return false;	
+}
+

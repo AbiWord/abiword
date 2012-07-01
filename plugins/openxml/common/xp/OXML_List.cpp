@@ -264,13 +264,13 @@ UT_Error OXML_List::serialize(IE_Exp_OpenXML* exporter)
 		{
 			case NUMBERED_LIST:
 				if((i % 3) == 1){
-					listType = "decimal";
+					listType = "lowerRoman";
 				}
 				else if((i % 3) == 2){
 					listType = "lowerLetter";
 				}
 				else{
-					listType = "lowerRoman";
+					listType = "decimal";
 				}
 				break;
 			

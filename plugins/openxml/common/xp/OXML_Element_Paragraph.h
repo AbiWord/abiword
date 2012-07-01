@@ -44,6 +44,7 @@ public:
 	virtual const gchar* getListLevel();
 	virtual const gchar* getListId();
 	virtual void setPageBreak();
+	virtual bool isNumberedList();
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);

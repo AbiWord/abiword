@@ -54,7 +54,8 @@ UT_Error OXML_Element_List::serializeProperties(IE_Exp_OpenXML* exporter)
 		return err;
 
 	const gchar* listLevel = parent->getListLevel();
-	if(!listLevel)
+	bool isNumbered = parent->isNumberedList();
+	if(!listLevel || isNumbered)
 	{
 		listLevel = "0";
 	}
