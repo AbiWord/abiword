@@ -404,7 +404,7 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	if (/* m_bSettingsChanged || */ m_iOldPos == pos) {
 		// comparing the actual cell pos would be even better; but who cares :)
 		// we can't return since we need to update when change width and height
-		// return;  
+		 return;  
 	}
 	m_iOldPos = pos;
 
@@ -1101,11 +1101,13 @@ void AP_Dialog_FormatFrame::setBorderColorAll(UT_RGBColor clr)
 void AP_Dialog_FormatFrame::setWidth(UT_uint32 width)
 {
 	setWidth(s_canonical_width_height(width));  
+	m_bSettingsChanged = true;
 }
 
 void AP_Dialog_FormatFrame::setHeight(UT_uint32 height)
 {
 	 setHeight(s_canonical_width_height(height)); 
+	 m_bSettingsChanged = true;
 }
 
 void AP_Dialog_FormatFrame::setWidth(const UT_UTF8String & width)
