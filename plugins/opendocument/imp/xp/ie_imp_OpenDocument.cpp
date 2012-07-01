@@ -415,7 +415,7 @@ UT_Error IE_Imp_OpenDocument::_handleContentStream ()
 //    ODi_ListenerState* ls = m_pStreamListener->getCurrentState();
     _handleStream (m_pGsfInfile, "content.xml", *m_pStreamListener);
 
-    UT_DEBUGMSG(("rangedAnnotations.sz:%ld\n", m_pAbiData->m_rangedAnnotationNames.size() ));
+    UT_DEBUGMSG(("rangedAnnotations.sz:%lu\n", (long unsigned)m_pAbiData->m_rangedAnnotationNames.size() ));
     
     // if( ODi_ContentStreamAnnotationMatcher_ListenerState* matcher =
     //     dynamic_cast<ODi_ContentStreamAnnotationMatcher_ListenerState*>(ls))

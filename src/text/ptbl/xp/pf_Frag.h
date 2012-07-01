@@ -140,7 +140,7 @@ private:
         void                    _setNode(pf_Fragments::Node * pNode);
 	pf_Fragments::Node *    _getNode(void) const;
 	/* In PT_DocPosition space - specifies size of left subtree */
-	mutable UT_sint32       m_leftTreeLength;
+	mutable UT_uint32       m_leftTreeLength;
 	UT_uint32               m_iXID;
 	pf_Fragments::Node *    m_pMyNode;
 };

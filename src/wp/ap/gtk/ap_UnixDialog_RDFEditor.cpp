@@ -307,7 +307,7 @@ AP_UnixDialog_RDFEditor::hideRestrictionXMLID( bool v )
         PD_RDFModelHandle model;
         std::set< std::string > xmlids;
         getRDF()->addRelevantIDsForPosition( xmlids, getView()->getPoint() );
-        UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, have restricted xmlids size:%lu\n", xmlids.size() ));
+        UT_DEBUGMSG(("AP_UnixDialog_RDFEditor, have restricted xmlids size:%lu\n", (long unsigned)xmlids.size() ));
         
 		/// FIXME...
 		setRestrictedModel( model );

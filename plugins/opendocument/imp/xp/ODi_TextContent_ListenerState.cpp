@@ -2149,7 +2149,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
         PD_DocumentRDFHandle rdf = doc->getDocumentRDF();
         PD_RDFQuery q( rdf, rdf );
         PD_ResultBindings_t bindings = q.executeQuery(sparql.str());
-        UT_DEBUGMSG(("bindings.sz:%lu\n", bindings.size() ));
+        UT_DEBUGMSG(("bindings.sz:%lu\n", (long unsigned)bindings.size() ));
         for( PD_ResultBindings_t::iterator iter = bindings.begin(); iter != bindings.end(); ++iter )
         {
             std::map< std::string, std::string > d = *iter;

@@ -189,8 +189,6 @@ PL_ListenerCoupleCloser::populate(fl_ContainerLayout* /* sfh */,
 	{
         case PX_ChangeRecord::PXT_InsertSpan:
         {
-            const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *>(pcr);
-            UT_uint32 len = pcrs->getLength();
             return true;
         }
         case PX_ChangeRecord::PXT_InsertObject:
@@ -284,8 +282,6 @@ PL_ListenerCoupleCloser::populateAfter( fl_ContainerLayout* sfh,
 	{
         case PX_ChangeRecord::PXT_InsertSpan:
         {
-            const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *>(pcr);
-            UT_uint32 len = pcrs->getLength();
             return true;
         }
         case PX_ChangeRecord::PXT_InsertObject:
@@ -390,8 +386,6 @@ PL_ListenerCoupleCloser::populateBefore( fl_ContainerLayout* sfh,
 	{
         case PX_ChangeRecord::PXT_InsertSpan:
         {
-            const PX_ChangeRecord_Span * pcrs = static_cast<const PX_ChangeRecord_Span *>(pcr);
-            UT_uint32 len = pcrs->getLength();
             return true;
         }
         case PX_ChangeRecord::PXT_InsertObject:

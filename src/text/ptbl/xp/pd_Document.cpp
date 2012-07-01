@@ -8427,7 +8427,7 @@ PD_XMLIDCreator::rebuildCache()
         }
     }
 
-	UT_DEBUGMSG(("PD_XMLIDCreator::rebuildCache() cache.sz:%lu \n", m_cache.size() ));
+	UT_DEBUGMSG(("PD_XMLIDCreator::rebuildCache() cache.sz:%lu \n", (long unsigned)m_cache.size() ));
     
 }
 

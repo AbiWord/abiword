@@ -1777,7 +1777,7 @@ PD_RDFSemanticItem::showEditorWindow( const PD_RDFSemanticItems& cl )
 {
 	UT_DEBUG_ONLY_ARG(cl);
 
-    UT_DEBUGMSG(("showEditorWindow(base) list... sz:%ld\n", cl.size() ));
+    UT_DEBUGMSG(("showEditorWindow(base) list... sz:%lu\n", (long unsigned)cl.size() ));
 }
 
 
@@ -4318,7 +4318,7 @@ void PD_DocumentRDF::runPlay()
     UT_DEBUGMSG(("PD_DocumentRDF::runPlay() o:%s\n", "foo" ));
 
     PD_RDFContacts cl = getContacts();
-    UT_DEBUGMSG(("PD_DocumentRDF::runPlay() contacts.sz:%ld\n", cl.size() ));
+    UT_DEBUGMSG(("PD_DocumentRDF::runPlay() contacts.sz:%lu\n", (long unsigned)cl.size() ));
 
     for( PD_RDFContacts::iterator ci = cl.begin(); ci != cl.end(); ++ci )
     {
@@ -4345,7 +4345,7 @@ void PD_DocumentRDF::runPlay()
     }
 
     PD_RDFEvents el = getEvents();
-    UT_DEBUGMSG((" events.sz:%ld\n", el.size() ));
+    UT_DEBUGMSG((" events.sz:%lu\n", (long unsigned)el.size() ));
     for( PD_RDFEvents::iterator ei = el.begin(); ei != el.end(); ++ei )
     {
         PD_RDFEventHandle e = *ei;
@@ -5090,7 +5090,7 @@ PD_DocumentRDF::getContacts( PD_RDFModelHandle alternateModel )
     PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
     PD_RDFQuery q( rdf, m );
     PD_ResultBindings_t bindings = q.executeQuery( sparqlQuery.str() );
-    UT_DEBUGMSG(("getContacts() bindings.sz:%ld\n", bindings.size() ));
+    UT_DEBUGMSG(("getContacts() bindings.sz:%lu\n", (long unsigned)bindings.size() ));
     
     // uniqfilter is needed because redland might not honour the
     // DISTINCT sparql keyword
@@ -5145,7 +5145,7 @@ PD_DocumentRDF::getEvents( PD_RDFModelHandle alternateModel )
     PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
     PD_RDFQuery q( rdf, m );
     PD_ResultBindings_t bindings = q.executeQuery( sparqlQuery.str() );
-    UT_DEBUGMSG(("getEvents() bindings.sz:%ld\n", bindings.size() ));
+    UT_DEBUGMSG(("getEvents() bindings.sz:%lu\n", (long unsigned)bindings.size() ));
     
     // uniqfilter is needed because redland might not honour the
     // DISTINCT sparql keyword
@@ -5175,7 +5175,7 @@ PD_DocumentRDF::addLocations( PD_RDFLocations& ret,
     PD_DocumentRDFHandle rdf = getDocument()->getDocumentRDF();
     PD_RDFQuery q( rdf, rdf );
     PD_ResultBindings_t bindings = q.executeQuery( sparql );
-    UT_DEBUGMSG(("addLocations() bindings.sz:%ld sparql\n%s\n", bindings.size(), sparql.c_str() ));
+    UT_DEBUGMSG(("addLocations() bindings.sz:%lu sparql\n%s\n", (long unsigned)bindings.size(), sparql.c_str() ));
     std::set<std::string> uniqfilter;
     for( PD_ResultBindings_t::iterator it = bindings.begin(); it != bindings.end(); ++it )
     {
@@ -5214,7 +5214,7 @@ PD_DocumentRDF::getLocations( PD_RDFModelHandle alternateModel )
                   "               ?joiner rdf:first ?long \n"
                   "               OPTIONAL { ?geo dc:title ?desc } \n"
                   "  } \n", alternateModel );
-    UT_DEBUGMSG(( "getLocations(1) ret.size:%ld\n", ret.size() ));
+    UT_DEBUGMSG(( "getLocations(1) ret.size:%lu\n", (long unsigned)ret.size() ));
     
     addLocations( ret, true,
                   " prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> \n"
@@ -5231,7 +5231,7 @@ PD_DocumentRDF::getLocations( PD_RDFModelHandle alternateModel )
                   "        OPTIONAL { ?geo dc:title ?desc } \n"
                   "  \n"
                   " } \n", alternateModel );
-    UT_DEBUGMSG(( "getLocations(2) ret.size:%ld\n", ret.size() ));
+    UT_DEBUGMSG(( "getLocations(2) ret.size:%lu\n", (long unsigned)ret.size() ));
 
     return ret;
 }

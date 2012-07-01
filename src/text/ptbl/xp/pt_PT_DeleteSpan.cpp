@@ -2268,12 +2268,9 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 	}
 	bool bPrevWasFootnote = false;
 	UT_sint32 iLoopCount = -1;
-	while (length >=0)
+	while ((length > 0) || (iFootnoteCount > 0))
 	{
-        UT_DEBUGMSG(("_deleteComplexSpan() len:%d\n", length ));
-        
-	        if(length == 0 && iFootnoteCount <= 0)
-		  break;
+		UT_DEBUGMSG(("_deleteComplexSpan() len:%d\n", length ));
 		iLoopCount++;
 		UT_uint32 lengthInFrag = pf_First->getLength() - fragOffset_First;
 		UT_uint32 lengthThisStep = UT_MIN(lengthInFrag, length);
