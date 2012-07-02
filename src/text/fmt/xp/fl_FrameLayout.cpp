@@ -589,6 +589,7 @@ void fl_FrameLayout::_createFrameContainer(void)
 	setLastContainer(pFrameContainer);
 	pFrameContainer->setWidth(m_iWidth);
 	pFrameContainer->setHeight(m_iHeight);
+	pFrameContainer->setRotationAngle(m_RotateAngle);
 	// Now do Frame image
 
 	const PP_AttrProp* pSectionAP = NULL;

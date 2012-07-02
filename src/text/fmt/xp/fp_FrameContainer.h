@@ -63,6 +63,7 @@ public:
 	virtual UT_sint32   getWidth() const;
 	virtual UT_sint32   getHeight() const;
 	virtual void        setHeight(UT_sint32 iHeight);
+	virtual double		getRotationAngle(void) const { return m_RotationAngle;}
 	UT_sint32           getLeftPad(UT_sint32 y, UT_sint32 height);
 	UT_sint32           getRightPad(UT_sint32 y, UT_sint32 height);
 	virtual bool        isVBreakable(void)
@@ -94,6 +95,8 @@ public:
 	void setLeftStyle   (const PP_PropertyMap::Line & style) { m_lineLeft   = style; }
 	void setRightStyle  (const PP_PropertyMap::Line & style) { m_lineRight  = style; }
 	void setTopStyle    (const PP_PropertyMap::Line & style) { m_lineTop    = style; }
+	void 				setRotationAngle(double angle) 
+		{m_RotationAngle = angle;}
 	void                setOverWrote(void)
 		{m_bOverWrote = true;}
 	void                setWrapping(bool bWrapping)
@@ -130,8 +133,7 @@ private:
 	fp_Page * m_pPage;
 	UT_sint32 m_iXpad;
 	UT_sint32 m_iYpad;
-	bool      m_bNeverDrawn;
-
+	bool      m_bNeverDrawn;	
 // cell-background properties
 	PP_PropertyMap::Background	m_background;
 
@@ -149,6 +151,7 @@ private:
 	bool                   m_bIsRightWrapped;
 	UT_sint32              m_iPreferedPageNo;
 	UT_sint32              m_iPreferedColumnNo;
+	double 				   m_RotationAngle;
 };
 
 

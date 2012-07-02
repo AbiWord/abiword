@@ -636,6 +636,18 @@ bool GR_Graphics::scaleDimensions(const char * szLeftIn, const char * szWidthIn,
 	return true;
 }
 
+double GR_Graphics::getTextAngle(void)
+{ 
+	// returns the value of rotation that has been set by setRotationAngle()
+	return m_rTextAngle;
+}
+
+void GR_Graphics::setTextAngle(double angle)
+{ 
+	// the function is called from fp_FrameContainer::draw() and has been set there.
+	m_rTextAngle = angle; 
+}
+
 void GR_Graphics::flush(void)
 {
 	// default implementation does nothing

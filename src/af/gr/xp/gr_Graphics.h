@@ -408,6 +408,8 @@ class ABI_EXPORT GR_Graphics
 	{ m_bAntiAliasAlways = bAntiAlias;}
 	bool        getAntiAliasAlways(void)
 	{ return m_bAntiAliasAlways;}
+	double 		getTextAngle(void);
+	void 		setTextAngle(double angle); 
 
 	/*!
 		Font units to layout units. Returns the dimension in layout units since font
@@ -892,6 +894,7 @@ class ABI_EXPORT GR_Graphics
 	UT_sint32        m_iPrevYOffset;
 	UT_sint32        m_iPrevXOffset;
 	GR_Transform     m_Transform;
+	double 			 m_rTextAngle;
 
 	UT_GenericStringMap<GR_Font*> m_hashFontCache;
 

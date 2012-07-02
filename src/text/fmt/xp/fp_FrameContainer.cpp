@@ -654,6 +654,8 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	GR_Graphics * pG = da.pG;
 	UT_return_if_fail( pG);
 
+	double iA = getRotationAngle();
+	pG->setTextAngle(iA);
 	UT_sint32 x = pDA->xoff - m_iXpad;
 	UT_sint32 y = pDA->yoff - m_iYpad;
 	getPage()->expandDamageRect(x,y,getFullWidth(),getFullHeight());
