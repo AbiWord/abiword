@@ -43,7 +43,7 @@ public:
 private:
 	bool addImage(const std::string & id);
 	std::string m_style;
-	bool isEmbeddedObject;
+	bool m_isEmbeddedObject;
 };
 
 #endif //_OXMLI_LISTENERSTATE_IMAGE_H_

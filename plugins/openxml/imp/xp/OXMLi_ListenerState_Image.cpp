@@ -40,7 +40,7 @@
 OXMLi_ListenerState_Image::OXMLi_ListenerState_Image()
   : OXMLi_ListenerState(), 
 	m_style(""),
-	isEmbeddedObject(false)
+	m_isEmbeddedObject(false)
 {
 
 }
@@ -50,10 +50,10 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 	if(nameMatches(rqst->pName, NS_W_KEY, "object"))
 	{
 		// Abiword doesn't support embedded objects, enable this boolean lock when needed
-		isEmbeddedObject = true;
+		m_isEmbeddedObject = true;
 		rqst->handled = true;
 	}
-	if(isEmbeddedObject)
+	if(m_isEmbeddedObject)
 	{
 		return;
 	}
@@ -308,11 +308,11 @@ void OXMLi_ListenerState_Image::endElement (OXMLi_EndElementRequest * rqst)
 {
 	if(nameMatches(rqst->pName, NS_W_KEY, "object"))
 	{
-		isEmbeddedObject = false;
+		m_isEmbeddedObject = false;
 		rqst->handled = true;
 		return;
 	}
-	if(isEmbeddedObject)
+	if(m_isEmbeddedObject)
 	{
 		return;
 	}
@@ -342,7 +342,7 @@ void OXMLi_ListenerState_Image::endElement (OXMLi_EndElementRequest * rqst)
 
 void OXMLi_ListenerState_Image::charData (OXMLi_CharDataRequest * rqst)
 {
-	if(isEmbeddedObject)
+	if(m_isEmbeddedObject)
 	{
 		return;
 	}
