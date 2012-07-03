@@ -37,14 +37,27 @@
 // External includes
 #include <string>
 
-OXMLi_ListenerState_Image::OXMLi_ListenerState_Image():
-	OXMLi_ListenerState(), m_style("")
+OXMLi_ListenerState_Image::OXMLi_ListenerState_Image()
+  : OXMLi_ListenerState(), 
+	m_style(""),
+	isEmbeddedObject(false)
 {
 
 }
 
 void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 {
+	if(nameMatches(rqst->pName, NS_W_KEY, "object"))
+	{
+		// Abiword doesn't support embedded objects, enable this boolean lock when needed
+		isEmbeddedObject = true;
+		rqst->handled = true;
+	}
+	if(isEmbeddedObject)
+	{
+		return;
+	}
+
 	if(nameMatches(rqst->pName, NS_W_KEY, "drawing"))
 	{
 		OXML_SharedElement imgElem(new OXML_Element_Image(""));
@@ -151,7 +164,7 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 				UT_DEBUGMSG(("FRT:OpenXML importer image width property can't be set\n"));
 			}
 		}
-	
+
 		const gchar * cy = attrMatches(NS_WP_KEY, "cy", rqst->ppAtts); //height
 		if(cy)
 		{
@@ -268,7 +281,7 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 					{
 						attrName = attrNameValPair.substr(0, seperator);
 						attrValue = attrNameValPair.substr(seperator+1);
-					
+				
 						//convert and apply attributes here
 						if(!attrName.compare("width"))
 						{
@@ -293,6 +306,17 @@ void OXMLi_ListenerState_Image::startElement (OXMLi_StartElementRequest * rqst)
 
 void OXMLi_ListenerState_Image::endElement (OXMLi_EndElementRequest * rqst)
 {
+	if(nameMatches(rqst->pName, NS_W_KEY, "object"))
+	{
+		isEmbeddedObject = false;
+		rqst->handled = true;
+		return;
+	}
+	if(isEmbeddedObject)
+	{
+		return;
+	}
+
 	if(nameMatches(rqst->pName, NS_W_KEY, "drawing") || 
 		nameMatches(rqst->pName, NS_V_KEY, "imagedata"))
 	{
@@ -318,13 +342,16 @@ void OXMLi_ListenerState_Image::endElement (OXMLi_EndElementRequest * rqst)
 
 void OXMLi_ListenerState_Image::charData (OXMLi_CharDataRequest * rqst)
 {
+	if(isEmbeddedObject)
+	{
+		return;
+	}
 	if(rqst->stck->empty())
 	{
 		rqst->handled = false;
 		rqst->valid = false;
 		return;
 	}
-
 	if(!rqst)
 	{
 		UT_DEBUGMSG(("SERHAT: OpenXML importer invalid NULL request in OXMLi_ListenerState_Image.charData\n"));
