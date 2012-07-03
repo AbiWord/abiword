@@ -103,6 +103,10 @@ public:
 	void								setBorderColor(UT_RGBColor clr);
 	void								setWidth(UT_uint32 width);
 	void								setHeight(UT_uint32 height);
+	void					            setWidth(const UT_UTF8String &  width);
+	void					            setHeight(const UT_UTF8String &  height);
+	const UT_UTF8String &   getFrameWidth_Str() const {  return m_sWidth; }
+    const UT_UTF8String &   getFrameHeight_Str() const { return m_sHeight; }
 	void								setBackgroundColor(UT_RGBColor clr);
 	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;	
 	void                                setBorderThickness(UT_UTF8String & sThick);
@@ -132,6 +136,8 @@ public:
 	UT_UTF8String                           m_sBorderThickness;
 	UT_uint32                            m_width;
 	UT_uint32                            m_height;
+	UT_UTF8String                   m_sWidth;
+	UT_UTF8String                   m_sHeight;
 protected:
 	guint                               _findClosestThickness(const char *) const;
 	AP_Dialog_FormatTable::tAnswer		m_answer;

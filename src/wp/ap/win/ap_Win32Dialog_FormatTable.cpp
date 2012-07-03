@@ -201,7 +201,7 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
      */
   
     XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
-    if (!frame) return;
+    if (!frame) return 1;
 
     FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
     fl_BlockLayout * pBL = pView->getCurrentBlock();

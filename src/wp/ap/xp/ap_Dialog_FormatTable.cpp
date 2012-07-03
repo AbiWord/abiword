@@ -70,7 +70,11 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	  m_sImagePath(""),
 	  m_iGraphicType(0),
 	  m_pImage(NULL),
-	  m_pGraphic(NULL)
+	  m_pGraphic(NULL),
+	  m_width(1.0f),
+	  m_height(1.0f),
+	  m_sWidth("0.00pt"),
+	  m_sHeight("0.00pt")
 {
 	//
 	// These are hardwired into the GUI.
@@ -609,6 +613,22 @@ void AP_Dialog_FormatTable::setHeight(UT_uint32 height)
 	m_vecProps.addOrReplaceProp("table-height", s_height.c_str());
 
 	m_bSettingsChanged = true;  
+}
+
+void AP_Dialog_FormatTable::setWidth(const UT_UTF8String & width)
+{
+	m_sWidth = width;
+	m_vecProps.addOrReplaceProp("table-width", m_sWidth.utf8_str());
+
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatTable::setHeight(const UT_UTF8String &  height)
+{
+	m_sHeight = height;
+	m_vecProps.addOrReplaceProp("table-height", m_sHeight.utf8_str());
+
+	m_bSettingsChanged = true;
 }
 
 void AP_Dialog_FormatTable::clearImage(void)
