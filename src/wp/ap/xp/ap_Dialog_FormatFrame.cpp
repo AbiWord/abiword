@@ -946,7 +946,7 @@ static UT_UTF8String s_canonical_thickness (float thickness)
 	else {
 		char buf[16];
 		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		UT_String_sprintf(buf, "%.2fpt", thickness);
+		sprintf(buf, "%.2fpt", thickness);
 		sThick = buf;
 	}
 	return sThick;
@@ -969,7 +969,7 @@ static UT_UTF8String s_canonical_thickness (const UT_UTF8String & sThickness, fl
 	else {
 		char buf[16];
 		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		UT_String_sprintf(buf, "%.2fpt", thickness);
+		sprintf(buf, "%.2fpt", thickness);
 		sThick = buf;
 	}
 	return sThick;
@@ -988,7 +988,7 @@ static UT_UTF8String s_canonical_width_height (float height_width)
 	else {
 		char buf[16];
 		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		UT_String_sprintf(buf, "%.2fpt", height_width);
+		sprintf(buf, "%.2fpt", height_width);
 		sHeight_width = buf;
 	}
 	return sHeight_width;
@@ -1011,7 +1011,7 @@ static UT_UTF8String s_canonical_width_height (const UT_UTF8String & sHeight_wid
 	else {
 		char buf[16];
 		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		UT_String_sprintf(buf, "%.2fpt", height_width);
+		sprintf(buf, "%.2fpt", height_width);
 		sHeight_width_new = buf;
 	}
 	return sHeight_width_new;

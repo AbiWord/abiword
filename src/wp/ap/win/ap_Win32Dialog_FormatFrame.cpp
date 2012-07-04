@@ -197,11 +197,11 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
     /* Set the value of TEXT BOX */
 	wchar_t 	szValue[BUFSIZE];
 	//init value is current Frame width and height
-	FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
+	/*FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
 	if (!pView)
 		return 1;
     fl_FrameLayout * pFL = pView->getFrameLayout();
-
+    */
 	setCurFrameProps();
 	swprintf(szValue, L"%02.2f", getFrameWidth());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
@@ -375,8 +375,8 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 				{
 					UT_LocaleTransactor t(LC_NUMERIC, "C");					
 					UT_Win32LocaleString thickness;
-					UT_UTF8String thickness_utf8 = thickness.utf8_str ();
 					getComboTextItem(AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, nSelected, thickness);
+					UT_UTF8String thickness_utf8 = thickness.utf8_str ();
 					setBorderThicknessAll(thickness_utf8);					
 					event_previewExposed();
 				}
@@ -462,16 +462,16 @@ void AP_Win32Dialog_FormatFrame::setSensitivity(bool /*bSens*/)
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping()?  BST_CHECKED: BST_UNCHECKED);
 	//update height and width
 	/* FIXME: if update in the way, will cause the users can't input because it update all the time
-	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(getActiveFrame()->getFrameImpl())->getTopLevelWindow())
-	{
-		wchar_t 	szValue[BUFSIZE];
-		swprintf(szValue, L"%02.2f", getFrameWidth());
-		SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
-
-		swprintf(szValue, L"%02.2f", getFrameHeight());
-		SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
-	}
 	*/
+	// Reset the value using the value from Prop vectot
+	initFrameWidthStr();
+	initFrameHeightStr();
+	wchar_t 	szValue[BUFSIZE];
+	swprintf(szValue, L"%02.2f", getFrameWidth());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
+
+	swprintf(szValue, L"%02.2f", getFrameHeight());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
 }
 
 void AP_Win32Dialog_FormatFrame::destroy(void) 
