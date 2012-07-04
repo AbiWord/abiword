@@ -52,6 +52,9 @@
 #include "ut_units.h"
 #include "ap_Strings.h"
 
+static UT_UTF8String s_canonical_width_height (const UT_UTF8String & sHeight_width, float & height_width);
+static UT_UTF8String s_canonical_width_height (float height_width);
+
 AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),
 	  m_borderColor(0,0,0),
@@ -473,12 +476,50 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 		UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
 		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
-		
+		/* update height&width properties
+		*/
+		const gchar* pszStyle = 0;
+		UT_UTF8String thickness;
+		m_vecProps.getProp("table-height", pszStyle);
+		if (pszStyle) {
+			thickness = pszStyle;
+			setHeight(thickness);
+		}
+
+		pszStyle = 0;
+		m_vecProps.getProp("table-width", pszStyle);
+		if (pszStyle) {
+			thickness = pszStyle;
+			setWidth(thickness);
+		}
 		// draw the preview with the changed properties
 		if(m_pFormatTablePreview)
 			m_pFormatTablePreview->queueDraw();
 	}
 }
+
+void AP_Dialog_FormatTable::initFrameWidthStr() 
+{  
+	UT_UTF8String thickness;
+	const gchar * pszStyle = 0;
+	m_vecProps.getProp("table-width", pszStyle);
+	if (pszStyle) {
+		thickness = pszStyle;
+		setWidth(thickness);
+	}
+}
+
+void AP_Dialog_FormatTable::initFrameHeightStr() 
+{ 
+	UT_UTF8String thickness;
+	const gchar * pszStyle = 0;
+	m_vecProps.getProp("table-height", pszStyle);
+	if (pszStyle) {
+		thickness = pszStyle;
+		setHeight(thickness);
+	}
+}
+
 
 void AP_Dialog_FormatTable::setApplyFormatTo(FormatTable applyTo)
 {
@@ -594,30 +635,19 @@ void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
 
 void AP_Dialog_FormatTable::setWidth(UT_uint32 width)
 {
-	m_width = width;
-
-	std::string s_width = UT_std_string_sprintf("%02d", m_width);	
-
-	m_vecProps.addOrReplaceProp("table-width", s_width.c_str());
-
-	m_bSettingsChanged = true;  
-
+	setWidth(s_canonical_width_height(width)); 
+	m_bSettingsChanged = true;
 }
 
 void AP_Dialog_FormatTable::setHeight(UT_uint32 height)
 {
-	m_height = height;
-
-	std::string s_height = UT_std_string_sprintf("%02d", m_height);	
-
-	m_vecProps.addOrReplaceProp("table-height", s_height.c_str());
-
-	m_bSettingsChanged = true;  
+	setHeight(s_canonical_width_height(height)); 
+	m_bSettingsChanged = true;
 }
 
 void AP_Dialog_FormatTable::setWidth(const UT_UTF8String & width)
 {
-	m_sWidth = width;
+	m_sWidth = s_canonical_width_height(width, m_width);
 	m_vecProps.addOrReplaceProp("table-width", m_sWidth.utf8_str());
 
 	m_bSettingsChanged = true;
@@ -625,7 +655,7 @@ void AP_Dialog_FormatTable::setWidth(const UT_UTF8String & width)
 
 void AP_Dialog_FormatTable::setHeight(const UT_UTF8String &  height)
 {
-	m_sHeight = height;
+	m_sHeight = s_canonical_width_height(height, m_height);
 	m_vecProps.addOrReplaceProp("table-height", m_sHeight.utf8_str());
 
 	m_bSettingsChanged = true;
@@ -948,3 +978,42 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 	}
 }
 
+static UT_UTF8String s_canonical_width_height (float height_width)
+{
+	UT_UTF8String sHeight_width;
+
+	if (height_width < 0.01) {
+		sHeight_width = "0.01pt";
+	}
+	else if (height_width > 9999.99) {
+		sHeight_width = "9999.99pt";
+	}
+	else {
+		char buf[16];
+		sprintf(buf, "%.2fpt", height_width);
+		sHeight_width = buf;
+	}
+	return sHeight_width;
+}
+
+static UT_UTF8String s_canonical_width_height (const UT_UTF8String & sHeight_width, float & height_width)
+{
+	height_width = static_cast<float>(UT_convertToPoints(sHeight_width.utf8_str()));
+
+	UT_UTF8String sHeight_width_new;
+
+	if (height_width < 0.01) {
+		height_width = 0.01f;
+		sHeight_width_new = "0.01pt";
+	}
+	else if (height_width > 9999.99) {
+		height_width = 9999.99f;
+		sHeight_width_new = "99.99pt";
+	}
+	else {
+		char buf[16];
+		sprintf(buf, "%.2fpt", height_width);
+		sHeight_width_new = buf;
+	}
+	return sHeight_width_new;
+}

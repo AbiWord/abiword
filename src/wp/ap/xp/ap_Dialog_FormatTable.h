@@ -128,14 +128,16 @@ public:
 	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
 	inline float                        getTableWidth(void) { return m_width; } 
 	inline float                        getTableHeight(void) { return m_height; }
+	void                    initFrameWidthStr();  
+	void                    initFrameHeightStr(); 
 				
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 	gchar *							m_bgFillStyle;
 	UT_PropVector                           m_vecProps;
 	UT_UTF8String                           m_sBorderThickness;
-	UT_uint32                            m_width;
-	UT_uint32                            m_height;
+	float                            m_width;
+	float                            m_height;
 	UT_UTF8String                   m_sWidth;
 	UT_UTF8String                   m_sHeight;
 protected:
