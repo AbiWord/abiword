@@ -1275,6 +1275,9 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 	double yoff = _tdudY(RI.m_yoff + getFontAscent(pFont));
 
 	UT_return_if_fail(RI.m_pScaledGlyphs);
+	
+	if(getTextAngle() > .0001)
+		cairo_rotate(m_cr,3.1428);
 
 	// TODO -- test here for the endpoint as well
 	if(RI.m_iOffset == 0 &&

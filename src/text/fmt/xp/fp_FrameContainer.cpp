@@ -655,7 +655,6 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	UT_return_if_fail( pG);
 
 	double iA = getRotationAngle();
-	pG->setTextAngle(iA);
 	UT_sint32 x = pDA->xoff - m_iXpad;
 	UT_sint32 y = pDA->yoff - m_iYpad;
 	getPage()->expandDamageRect(x,y,getFullWidth(),getFullHeight());
@@ -696,6 +695,7 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	const UT_Rect * pPrevRect = pDA->pG->getClipRect();
 	UT_Rect * pRect = getScreenRect();
 	UT_Rect newRect;
+	fp_Container *pContainer = NULL;
 	bool bRemoveRectAfter = false;
 	bool bSetOrigClip = false;
 	bool bSkip = false;
@@ -736,6 +736,10 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 			da.xoff = pDA->xoff + pContainer->getX();
 			da.yoff = pDA->yoff + pContainer->getY();
 			pContainer->draw(&da);
+			if(pContainer -> getContainerType() == FP_CONTAINER_LINE)
+			pG->setTextAngle(iA);
+			else
+			pG->setTextAngle(0.0);
 		}
 	}
 	m_bNeverDrawn = false;

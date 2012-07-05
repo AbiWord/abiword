@@ -104,7 +104,7 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_bRelocate(false),
 	  m_bExpandHeight(false),
 	  m_iMinHeight(0),
-	  m_RotateAngle(0.0)
+	  m_RotateAngle(1.0)			//set it one for testing purpose
 {
 }
 
