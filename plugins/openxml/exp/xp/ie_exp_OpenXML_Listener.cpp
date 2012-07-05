@@ -117,7 +117,7 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 					}
 				}
 			}
-			
+
 			if(bInHyperlink)
 			{
 				//make sure hyperlinks are blue and underlined
@@ -319,6 +319,64 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 									return false;		
 							}
 						}
+					}
+					return element_run->appendElement(shared_element_image) == UT_OK;
+				}
+
+				case PTO_Embed:			
+				{
+					pAP->getProperty("embed-type", szValue);
+					if(strcmp(szValue, "GOChart") != 0)
+					{
+						UT_DEBUGMSG(("SERHAT: Embedding without a GOChart\n"));
+						return true;
+					}
+					OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
+					OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
+
+					if(paragraph->appendElement(shared_element_run) != UT_OK)
+						return false;
+
+					OXML_Element_Image* element_image = new OXML_Element_Image(getNextId());
+					OXML_SharedElement shared_element_image(static_cast<OXML_Element*>(element_image));					
+
+					if(bHaveProp && pAP)
+					{
+						size_t propCount = pAP->getPropertyCount();
+				
+						size_t i;
+						for(i=0; i<propCount; i++)
+						{
+							if(pAP->getNthProperty(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Embedded Image Property %s=%s\n", szName, szValue));
+								if(element_image->setProperty(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
+
+						size_t attrCount = pAP->getAttributeCount();
+
+						for(i=0; i<attrCount; i++)
+						{
+							if(pAP->getNthAttribute(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Embedded Image Attribute: %s=%s\n", szName, szValue));	
+								if(element_image->setAttribute(szName, szValue) != UT_OK)
+									return false;		
+							}
+						}
+						const gchar* pImageName = NULL;
+						UT_UTF8String snapshot = "snapshot-png-";
+						element_image->getAttribute("dataid", pImageName);
+						if(pImageName) 
+						{
+							snapshot += pImageName;
+							if(element_image->setAttribute("dataid", snapshot.utf8_str()) != UT_OK)
+								return false;	
+   						}
 					}
 					return element_run->appendElement(shared_element_image) == UT_OK;
 				}
