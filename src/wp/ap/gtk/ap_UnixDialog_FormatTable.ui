@@ -118,10 +118,10 @@
                         <property name="label" translatable="yes">Height:</property>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
-                        <property name="top_attach">2</property>
-                        <property name="bottom_attach">3</property>
+                        <property name="left_attach">4</property>
+                        <property name="right_attach">5</property>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
                         <property name="x_options">GTK_FILL</property>
                         <property name="y_options"></property>
                       </packing>
@@ -134,10 +134,10 @@
                         <property name="label" translatable="yes">Width:</property>
                       </object>
                       <packing>
-                        <property name="left_attach">1</property>
-                        <property name="right_attach">2</property>
-                        <property name="top_attach">2</property>
-                        <property name="bottom_attach">3</property>
+                        <property name="left_attach">5</property>
+                        <property name="right_attach">6</property>
+                        <property name="top_attach">1</property>
+                        <property name="bottom_attach">2</property>
                         <property name="x_options">GTK_FILL</property>
                         <property name="y_options"></property>
                       </packing>
@@ -155,10 +155,10 @@
                     <property name="activates_default">False</property>
                    </object>
                    <packing>
-                     <property name="left_attach">1</property>
-                     <property name="right_attach">2</property>
-                     <property name="top_attach">1</property>
-                     <property name="bottom_attach">2</property>
+                     <property name="left_attach">4</property>
+                     <property name="right_attach">5</property>
+                     <property name="top_attach">2</property>
+                     <property name="bottom_attach">3</property>
                      <property name="y_options"></property>
                    </packing>
                 </child>
@@ -175,10 +175,10 @@
                 <property name="activates_default">False</property>
               </object>
               <packing>
-                <property name="left_attach">1</property>
-                <property name="right_attach">2</property>
-                <property name="top_attach">1</property>
-                <property name="bottom_attach">2</property>
+                <property name="left_attach">5</property>
+                <property name="right_attach">6</property>
+                <property name="top_attach">2</property>
+                <property name="bottom_attach">3</property>
                 <property name="y_options"></property>
               </packing>
             </child>
