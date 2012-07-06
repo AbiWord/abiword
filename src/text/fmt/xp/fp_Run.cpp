@@ -5028,7 +5028,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	}
 	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
-
+        
 	if(!bRes || !footid)
 	{
 		UT_DEBUGMSG(("fp_FieldFootnoteRefRun::calculateValue: Missing footnote-id attribute. Probably a malformed file.\n"));
@@ -5036,7 +5036,10 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	}
 	FV_View * pView = _getView();
 	UT_uint32 iPID = atoi(footid);
-	UT_sint32 footnoteNo = pView->getLayout()->getFootnoteVal(iPID);
+        const gchar *szCitation = NULL;
+        bool bHaveCitation = pp->getAttribute("text:note-citation", szCitation);
+	UT_sint32 footnoteNo = bHaveCitation ? 
+            atoi(szCitation) : pView->getLayout()->getFootnoteVal(iPID);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
@@ -5089,7 +5092,10 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	}
 	UT_uint32 iPID = atoi(footid);
 	FV_View * pView = _getView();
-	UT_sint32 footnoteNo = pView->getLayout()->getFootnoteVal(iPID);
+        const gchar *szCitation = NULL;
+        bool bHaveCitation = pp->getAttribute("text:note-citation", szCitation);
+	UT_sint32 footnoteNo = bHaveCitation ? 
+            atoi(szCitation) : pView->getLayout()->getFootnoteVal(iPID);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
