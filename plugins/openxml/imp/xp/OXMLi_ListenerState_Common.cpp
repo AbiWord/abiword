@@ -30,6 +30,7 @@
 #include <OXML_Element.h>
 #include <OXML_Element_Run.h>
 #include <OXML_Element_Text.h>
+#include <OXML_Element_Field.h>
 #include <OXML_Types.h>
 #include <OXML_Theme.h>
 #include <OXML_Style.h>
@@ -48,7 +49,9 @@
 OXMLi_ListenerState_Common::OXMLi_ListenerState_Common() : 
 	OXMLi_ListenerState(), 
 	m_pendingSectBreak(false),
-	m_eqField(false)
+	m_eqField(false),
+	m_pageNumberField(false),
+	m_fldChar(false)
 {
 
 }
@@ -61,12 +64,29 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 {
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
 
-	if(nameMatches(rqst->pName, NS_W_KEY, "instrText")) // to handle texts created by using EQ fields 
+	if(nameMatches(rqst->pName, NS_W_KEY, "instrText"))
 	{
 		rqst->handled = true;
-	}
-
-	if(nameMatches(rqst->pName, NS_W_KEY, "p")) {
+	} else if(nameMatches(rqst->pName, NS_W_KEY, "fldChar")) {
+		const gchar* fldCharType = attrMatches(NS_W_KEY, "fldCharType", rqst->ppAtts);
+		if(!fldCharType)
+		{
+			UT_DEBUGMSG(("SERHAT: fldChar tag without fldCharType attribute\n"));
+			return;
+		}
+		if(!strcmp(fldCharType, "begin"))
+		{
+			m_eqField = false;
+			m_pageNumberField = false;
+			m_fldChar = true;
+		}
+		else if(!strcmp(fldCharType, "end"))
+		{
+			m_eqField = false;
+			m_pageNumberField = false;
+			m_fldChar = false;
+		}
+	} else if(nameMatches(rqst->pName, NS_W_KEY, "p")) {
 		//New paragraph...
 		OXML_SharedElement elem(new OXML_Element_Paragraph(""));
 		rqst->stck->push(elem);
@@ -80,6 +100,11 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->handled = true;
 
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "t")) {
+		if(m_fldChar && m_pageNumberField) // page number is already set with field element correctly.
+		{
+			rqst->handled = true;
+			return;
+		}
 		//New text...
 		OXML_SharedElement elem(new OXML_Element_Text("", 0));
 		rqst->stck->push(elem);
@@ -784,13 +809,18 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "t")) {
+		if(m_fldChar && m_pageNumberField) // page number is already set with field element correctly.
+		{
+			rqst->handled = true;
+			return;
+		}
 		//Text is done, appending it.
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		rqst->handled = true;
 	} else if(nameMatches(rqst->pName, NS_W_KEY, "instrText")) {
-		if(m_eqField)
+		if(m_eqField || m_pageNumberField)
 		{
-			//instrText including equation field is done, appending it.
+			//instrText including equation or page number field is done, appending it.
 			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		}
 		rqst->handled = true;
@@ -829,6 +859,7 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 				nameMatches(rqst->pName, NS_W_KEY, "lang") ||
 				nameMatches(rqst->pName, NS_W_KEY, "noProof") ||
 				nameMatches(rqst->pName, NS_W_KEY, "vanish") ||
+				nameMatches(rqst->pName, NS_W_KEY, "fldChar") ||
 				nameMatches(rqst->pName, NS_W_KEY, "sz") ) {
 		rqst->handled = true;
 	} else if (	nameMatches(rqst->pName, NS_W_KEY, "type") ||
@@ -886,7 +917,7 @@ void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
 		contextTag = rqst->context->back();
 	}
 	int instrText = contextMatches(contextTag, NS_W_KEY, "instrText");
-	if(instrText) // to handle EQ fields
+	if(instrText)
 	{
 		UT_ASSERT(rqst->buffer != NULL);
 		OXML_SharedElement run = rqst->stck->top();
@@ -894,15 +925,17 @@ void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
 		std::string overline = "\\to";
 		std::string underline = "\\bo";
 		std::string eq = "EQ";
+		std::string pageNumber = "PAGE   \\* MERGEFORMAT";
 		std::string v(rqst->buffer); 
 		std::string value = "";
 		size_t isOverline = v.find(overline);
 		size_t isUnderline = v.find(underline);
 		size_t isEQ = v.find(eq);
+		size_t isPageNumber = v.find(pageNumber);
 		size_t openingParenthesis;
 		size_t closingParenthesis;
 		UT_Error err;
-		if(isEQ != std::string::npos)
+		if(isEQ != std::string::npos) // handle EQ fields
 		{
 			if(isOverline != std::string::npos && isUnderline == std::string::npos)
 			{
@@ -926,6 +959,7 @@ void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
 			}
 			rqst->stck->push(sharedElem);
 			m_eqField = true;
+			m_pageNumberField = false;
 			openingParenthesis = v.find("(");
 			closingParenthesis = v.find(")");
 			value = v.substr(int(openingParenthesis)+1, int(closingParenthesis)-int(openingParenthesis)-1); // the string between parentheses is extracted
@@ -933,9 +967,17 @@ void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
 			OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem); 
 			textElement->setText(value.c_str(), value.size());
 		}
+		else if(isPageNumber != std::string::npos) // handle page number fields
+		{
+			m_pageNumberField = true;
+			m_eqField = false;
+			OXML_SharedElement fieldElem(new OXML_Element_Field("", v, ""));
+			rqst->stck->push(fieldElem);
+		}
 		else
 		{
 			m_eqField = false;
+			m_pageNumberField = false;
 		}
 	}
 	else

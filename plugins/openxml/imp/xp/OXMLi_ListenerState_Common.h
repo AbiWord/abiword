@@ -43,6 +43,8 @@ public:
 private:
 	bool m_pendingSectBreak;
 	bool m_eqField;
+	bool m_pageNumberField;
+	bool m_fldChar;
 };
 
 #endif //_OXMLI_LISTENERSTATE_COMMON_H_
