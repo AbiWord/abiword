@@ -821,12 +821,21 @@ void ODe_Text_Listener::openHyperlink(const PP_AttrProp* pAP) {
     UT_return_if_fail(pAP);
 
     const gchar* pValue = NULL;
+    const gchar* pTitle = NULL;
+    bool bHaveTitle = false;
+
+    bHaveTitle = pAP->getAttribute("xlink:title", pTitle) && pTitle;
 
     if(pAP->getAttribute("xlink:href",pValue) && pValue) {
         xmlChar * uri = xmlURIEscape(BAD_CAST pValue);
 
         if(uri && *uri) {
 	    UT_UTF8String output = "<text:a ";
+	    	if (bHaveTitle){
+	    		output += "office:title=\"";
+	    		output += pTitle;
+	    		output += "\" ";
+	    	}
             output+="xlink:href=\"";
             output+= (const char*)uri;
             output+="\">";
