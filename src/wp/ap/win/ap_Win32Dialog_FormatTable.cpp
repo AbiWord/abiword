@@ -206,14 +206,14 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
     FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
     fl_BlockLayout * pBL = pView->getCurrentBlock();
     fl_DocSectionLayout * pTL= pBL->getDocSectionLayout();
-	//here need : UT_convertSizeToLayoutUnits
-    setHeight(pTL->getActualColumnHeight());
-    setWidth(pTL->getActualColumnWidth());
-
-	swprintf(szValue, L"%02.2f", UT_convertSizeToLayoutUnits(getTableWidth(),DIM_IN));
+	
+	setCurCellProps();
+	initFrameWidthStr();
+	initFrameHeightStr();
+	swprintf(szValue, L"%02.2f", getTableWidth());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_VAL_WIDTH, szValue);
 
-	swprintf(szValue, L"%02.2f", UT_convertSizeToLayoutUnits(getTableHeight(),DIM_IN));
+	swprintf(szValue, L"%02.2f", getTableHeight());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_VAL_HEIGHT, szValue);
 
 
