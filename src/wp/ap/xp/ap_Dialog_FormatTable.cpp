@@ -480,6 +480,19 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		*/
 		const gchar* pszStyle = 0;
 		UT_UTF8String thickness;
+		gchar * pszThickness = NULL;
+		fl_BlockLayout * pBL = pView->getCurrentBlock();
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pBL->myContainingLayout());
+		
+		if (pView->getCellProperty("table-height", pszThickness))
+			m_vecProps.addOrReplaceProp("table-height", pszThickness);
+		else
+			m_vecProps.removeProp("table-height");
+		if (pView->getCellProperty("table-width", pszThickness))
+			m_vecProps.addOrReplaceProp("table-width", pszThickness);
+		else
+			m_vecProps.removeProp("table-width");
+
 		m_vecProps.getProp("table-height", pszStyle);
 		if (pszStyle) {
 			thickness = pszStyle;
