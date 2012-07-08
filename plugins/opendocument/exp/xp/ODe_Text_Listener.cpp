@@ -82,6 +82,7 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_zIndex(zIndex),
                         m_iCurrentTOC(0)
 {
+	_initDefaultHeadingStyles();
 }
 
 
@@ -119,6 +120,7 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_zIndex(zIndex),
                         m_iCurrentTOC(0)
 {
+	_initDefaultHeadingStyles();
 }
 
 
@@ -1579,3 +1581,27 @@ UT_UTF8String& ODe_Text_Listener::appendAttribute(
     return ret;
 }
 
+/*
+ * Initializing style list with default values to provide correct
+ * outline numbers. Doesn't handle numbered headings
+ *
+ * TODO: Replace this with something more correct
+ */
+void ODe_Text_Listener::_initDefaultHeadingStyles()
+{
+	 for (UT_sint32 iLevel = 1; iLevel <= 4; iLevel++) {
+	        // gather the source style names for all levels
+	        UT_UTF8String sSourceStyle = UT_UTF8String_sprintf("toc-source-style%d", iLevel);
+	        const PP_Property* pProp = PP_lookupProperty(sSourceStyle.utf8_str());
+	        UT_continue_if_fail(pProp);
+	        m_rAuxiliaryData.m_headingStyles.addStyleName(pProp->getInitial(), iLevel);
+
+
+	        // gather the destination style names for all levels
+	        UT_UTF8String sDestStyle = UT_UTF8String_sprintf("toc-dest-style%u", iLevel);
+	        UT_UTF8String destStyle;
+	        destStyle = fl_TOCLayout::getDefaultDestStyle(iLevel);
+	        m_rAuxiliaryData.m_mDestStyles[iLevel] = destStyle;
+	        m_rStyles.addStyle(destStyle);
+	 }
+}
