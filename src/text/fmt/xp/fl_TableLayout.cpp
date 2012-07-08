@@ -106,6 +106,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
       m_pNewHeightCell(NULL),
 	  m_bDoingDestructor(false),
 	  m_iTableWidth(0),
+	  m_iTableHeight(0),
 	  m_dTableRelWidth(0.0)
 {
 	UT_DEBUGMSG(("Created Table Layout %p \n",this));
@@ -1135,6 +1136,10 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	const char* pszRelTableWidth = NULL;
 	pSectionAP->getProperty("table-width", (const gchar *&)pszTableWidth);
 	pSectionAP->getProperty("table-rel-width", (const gchar *&)pszRelTableWidth);
+	const char* pszTableHeight = NULL;
+	const char* pszRelTableHeight = NULL;
+	pSectionAP->getProperty("table-height", (const gchar *&)pszTableHeight);
+	pSectionAP->getProperty("table-rel-height", (const gchar *&)pszRelTableHeight);
 	if(pszTableWidth && pszTableWidth[0])
 	{
 		m_iTableWidth = UT_convertToLogicalUnits(pszTableWidth);
@@ -1152,6 +1157,25 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		double rel = UT_convertDimensionless(pszRelTableWidth);
 		m_dTableRelWidth = static_cast<double>(m_iTableWidth)*rel/100.;
 		m_iTableWidth = m_dTableRelWidth;
+	}
+
+	if(pszTableHeight && pszTableHeight[0])
+	{
+		m_iTableHeight = UT_convertToLogicalUnits(pszTableHeight);
+	}
+	else
+	{
+		m_iTableHeight = getDocSectionLayout()->getActualColumnWidth();
+	}
+	if(pszRelTableWidth && pszRelTableWidth[0])
+	{
+		m_iTableHeight = getDocSectionLayout()->getActualColumnHeight();
+		//
+		// Assume the relative table width is in percent
+		//
+		double rel = UT_convertDimensionless(pszRelTableHeight);
+		m_dTableRelHeight = static_cast<double>(m_iTableHeight)*rel/100.;
+		m_iTableHeight = m_dTableRelHeight;
 	}
 
 	const char* pszLeftOffset = NULL;

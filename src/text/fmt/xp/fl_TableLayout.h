@@ -265,6 +265,8 @@ private:
 	bool                   m_bDoingDestructor;
 	UT_sint32              m_iTableWidth;
 	double                 m_dTableRelWidth;
+	UT_sint32              m_iTableHeight;
+	double                 m_dTableRelHeight;
 };
 
 
