@@ -507,13 +507,15 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
     if (!pView)
         return;
     fl_FrameLayout * pFL = pView->getFrameLayout();
-    setHeight(pFL->getFrameHeight());
-    setWidth(pFL->getFrameWidth());
-    float value = getTableWidth();
+    //setHeight(pFL->getFrameHeight());
+    //setWidth(pFL->getFrameWidth());
+    //update height&width
+    setCurFrameProps();
+    float value = getFrameWidth();
     const gchar *szValue= UT_formatDimensionString (dim, value);
     gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
 
-    value = getTableHeight();
+    value = getFrameHeight();
     szValue= UT_formatDimensionString (dim, value);
     gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
 
