@@ -594,8 +594,8 @@ static gboolean s_focus_out_height(GtkWidget *widget, GdkEvent *event, gpointer 
     const char * buf = gtk_entry_get_text(GTK_ENTRY(widget));
     AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(data);
     UT_return_if_fail(widget && dlg);
-    if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getFrameHeight() ){
-       setHeight( _wtoi(buf) );
+    if( atoi( buf ) > 0 && atoi(buf) != (signed) getFrameHeight() ){
+       setHeight( atoi(buf) );
     }
     dlg->event_previewExposed();
     return FALSE;
@@ -611,8 +611,8 @@ static gboolean s_focus_out_width(GtkWidget *widget, GdkEvent *event, gpointer u
     const char * buf = gtk_entry_get_text(GTK_ENTRY(widget));
     AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(data);
     UT_return_if_fail(widget && dlg);
-    if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getFrameWidth() ){
-       setWidth( _wtoi(buf) );
+    if( atoi( buf ) > 0 && atoi(buf) != (signed) getFrameWidth() ){
+       setWidth( atoi(buf) );
     }
     dlg->event_previewExposed();
     return FALSE;
