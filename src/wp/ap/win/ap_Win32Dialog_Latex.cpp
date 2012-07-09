@@ -168,7 +168,6 @@ BOOL AP_Win32Dialog_Latex::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM /*lPar
 	localizeControlText(AP_RID_DIALOG_LATEX_BTN_CLOSE,XAP_STRING_ID_DLG_Close);
 	localizeControlText(AP_RID_DIALOG_LATEX_BTN_INSERT,XAP_STRING_ID_DLG_Insert);
 
-	setLatexInGUI();
 	centerDialog();	
 
 	if (GetDlgCtrlID((HWND) wParam) != AP_RID_DIALOG_LATEX_EDIT_LATEX) 
