@@ -695,7 +695,6 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	const UT_Rect * pPrevRect = pDA->pG->getClipRect();
 	UT_Rect * pRect = getScreenRect();
 	UT_Rect newRect;
-	fp_Container *pContainer = NULL;
 	bool bRemoveRectAfter = false;
 	bool bSetOrigClip = false;
 	bool bSkip = false;
@@ -735,11 +734,16 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 			fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
 			da.xoff = pDA->xoff + pContainer->getX();
 			da.yoff = pDA->yoff + pContainer->getY();
-			pContainer->draw(&da);
 			if(pContainer -> getContainerType() == FP_CONTAINER_LINE)
-			pG->setTextAngle(iA);
+			{
+				UT_DEBUGMSG(("Angle Set for frame containers %f\n",getRotationAngle()));
+				da.pG->setTextAngle(iA);
+				pContainer->draw(&da);
+				da.pG->setTextAngle(0.0);
+			}
 			else
-			pG->setTextAngle(0.0);
+			pContainer->draw(&da);
+			
 		}
 	}
 	m_bNeverDrawn = false;
