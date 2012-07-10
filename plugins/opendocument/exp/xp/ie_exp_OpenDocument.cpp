@@ -36,6 +36,7 @@
 #include "ODe_RDFWriter.h"
 #include "ODe_Main_Listener.h"
 #include "ODe_MetaDataWriter.h"
+#include "ODe_ThumbnailsWriter.h"
 #include "ODe_PicturesWriter.h"
 #include "ODe_SettingsWriter.h"
 
@@ -253,6 +254,12 @@ UT_Error IE_Exp_OpenDocument::_writeDocument(void)
     }
 
 	if (!ODe_MetaDataWriter::writeMetaData(getDoc(), m_odt))
+	{
+		ODe_gsf_output_close(GSF_OUTPUT(m_odt));
+		return UT_ERROR;
+	}
+
+	if (!ODe_ThumbnailsWriter::writeThumbnails(getDoc(), m_odt))
 	{
 		ODe_gsf_output_close(GSF_OUTPUT(m_odt));
 		return UT_ERROR;
