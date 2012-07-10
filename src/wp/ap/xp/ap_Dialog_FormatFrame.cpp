@@ -944,9 +944,7 @@ static UT_UTF8String s_canonical_thickness (float thickness)
 		sThick = "99.99pt";
 	}
 	else {
-		char buf[16];
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		sprintf(buf, "%.2fpt", thickness);
+        std::string buf = UT_std_string_sprintf("%.2fpt", thickness);
 		sThick = buf;
 	}
 	return sThick;
@@ -967,9 +965,7 @@ static UT_UTF8String s_canonical_thickness (const UT_UTF8String & sThickness, fl
 		sThick = "99.99pt";
 	}
 	else {
-		char buf[16];
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		sprintf(buf, "%.2fpt", thickness);
+        std::string buf = UT_std_string_sprintf("%.2fpt", thickness);
 		sThick = buf;
 	}
 	return sThick;
@@ -986,9 +982,7 @@ static UT_UTF8String s_canonical_width_height (float height_width)
 		sHeight_width = "9999.99pt";
 	}
 	else {
-		char buf[16];
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		sprintf(buf, "%.2fpt", height_width);
+        std::string buf = UT_std_string_sprintf("%.2fpt", height_width);
 		sHeight_width = buf;
 	}
 	return sHeight_width;
@@ -1009,9 +1003,7 @@ static UT_UTF8String s_canonical_width_height (const UT_UTF8String & sHeight_wid
 		sHeight_width_new = "99.99pt";
 	}
 	else {
-		char buf[16];
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		sprintf(buf, "%.2fpt", height_width);
+        std::string buf = UT_std_string_sprintf("%.2fpt", height_width);
 		sHeight_width_new = buf;
 	}
 	return sHeight_width_new;
