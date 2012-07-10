@@ -604,14 +604,60 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 
 				if(pAP->getAttribute("type", szValue))
 				{
-					if(strstr(szValue, "header"))
+					if(!strcmp(szValue, "header"))
 					{
 						section->setTarget(TARGET_HEADER);
+						if(section->setAttribute("type", "default") != UT_OK)
+							return false;
 						return document->addHeader(shared_section) == UT_OK;
 					}
-					else if(strstr(szValue, "footer"))
+					else if(!strcmp(szValue, "header-first"))
+					{
+						section->setTarget(TARGET_HEADER);
+						if(section->setAttribute("type", "first") != UT_OK)
+							return false;	
+						return document->addHeader(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "header-last"))
+					{
+						section->setTarget(TARGET_HEADER);
+						if(section->setAttribute("type", "default") != UT_OK)
+							return false;
+						return document->addHeader(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "header-even"))
+					{
+						section->setTarget(TARGET_HEADER);
+						if(section->setAttribute("type", "even") != UT_OK)
+							return false;
+						return document->addHeader(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "footer"))
 					{
 						section->setTarget(TARGET_FOOTER);
+						if(section->setAttribute("type", "default") != UT_OK)
+							return false;
+						return document->addFooter(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "footer-first"))
+					{
+						section->setTarget(TARGET_FOOTER);
+						if(section->setAttribute("type", "first") != UT_OK)
+							return false;	
+						return document->addFooter(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "footer-last"))
+					{
+						section->setTarget(TARGET_FOOTER);
+						if(section->setAttribute("type", "default") != UT_OK)
+							return false;
+						return document->addFooter(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "footer-even"))
+					{
+						section->setTarget(TARGET_FOOTER);
+						if(section->setAttribute("type", "even") != UT_OK)
+							return false;
 						return document->addFooter(shared_section) == UT_OK;
 					}
 				}				
