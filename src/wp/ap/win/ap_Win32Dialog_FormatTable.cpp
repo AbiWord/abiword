@@ -208,8 +208,8 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
     fl_DocSectionLayout * pTL= pBL->getDocSectionLayout();
 	
 	setCurCellProps();
-	initFrameWidthStr();
-	initFrameHeightStr();
+	initTableWidthStr();
+	initTableHeightStr();
 	swprintf(szValue, L"%02.2f", getTableWidth());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_VAL_WIDTH, szValue);
 

@@ -511,7 +511,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	}
 }
 
-void AP_Dialog_FormatTable::initFrameWidthStr() 
+void AP_Dialog_FormatTable::initTableWidthStr() 
 {  
 	UT_UTF8String thickness;
 	const gchar * pszStyle = 0;
@@ -522,7 +522,7 @@ void AP_Dialog_FormatTable::initFrameWidthStr()
 	}
 }
 
-void AP_Dialog_FormatTable::initFrameHeightStr() 
+void AP_Dialog_FormatTable::initTableHeightStr() 
 { 
 	UT_UTF8String thickness;
 	const gchar * pszStyle = 0;
