@@ -31,11 +31,8 @@
 #include <pd_Document.h>
 #include <xap_App.h>
 #include <xap_Frame.h>
-#include <fl_DocLayout.h>
-#include <fp_Page.h>
 #include <fv_View.h>
 #include <gr_Graphics.h>
-#include <gr_DrawArgs.h>
 #include <gr_Painter.h>
 
 // External includes
