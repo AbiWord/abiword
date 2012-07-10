@@ -1242,7 +1242,6 @@ void fp_Page::draw(dg_DrawArgs* pDA, bool /*bAlwaysUseWhiteBackground*/)
 			da.xoff += pCol->getX();
 			da.yoff += pCol->getY(pDA->pG);
 
-			xxx_UT_DEBUGMSG(("Draw in page col Y offset %d \n",da.yoff));
 			pCol->draw(&da);
 
 			fp_Column *pNextCol = pCol->getFollower();

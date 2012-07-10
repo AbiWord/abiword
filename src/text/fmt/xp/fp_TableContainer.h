@@ -255,6 +255,47 @@ public:
 #endif
 	void 			setHeaderCell(bool bHeader)
 	{ 	m_bHeaderCell = bHeader; }
+	bool isHeaderCell(void) const
+	{
+		return m_bHeaderCell;
+	}
+	fp_TableHeader * getHeaderPointer(void) const
+	{
+		return m_pHeader;
+	}
+	void setHeaderPointer(fp_TableHeader * pHeader)
+	{
+		m_pHeader = pHeader;
+	}
+	void setiTopY(UT_sint32 iTopY)
+	{
+		m_iTopY = iTopY;
+	}
+	void setiBotY(UT_sint32 iBotY)
+	{
+		m_iBotY = iBotY;
+	}
+	UT_sint32 getiTopY() const
+	{
+		return m_iTopY;
+	}
+	UT_sint32 getiBotY() const
+	{
+		return m_iBotY;
+	}
+
+	bool isToBeShifted(void) const
+	{
+		return m_bIsToBeDisplaced;
+	}
+	void setToBeShifted(bool bShift)
+	{
+		m_bIsToBeDisplaced = bShift;
+	}
+	void setShiftHeight(UT_sint32 iShift)
+	{
+		m_iShiftHeight = iShift;
+	}
 
 private:
 		
@@ -315,7 +356,6 @@ private:
 	fp_Requisition      m_MyRequest;
 
 // Coordinates of the cell used for drawing lines around it.
-
 	UT_sint32           m_iLeft;
 	UT_sint32           m_iRight;
 	UT_sint32           m_iTopY;
@@ -325,7 +365,6 @@ private:
 	bool                m_bDrawBot;
 	bool                m_bDrawRight;
 	bool                m_bLinesDrawn;
-
 // bool to see if the background needs to be redrawn
 	bool				m_bBgDirty;
 	
@@ -348,6 +387,10 @@ private:
 // Vertical alignment property
 
 	UT_sint32	m_iVertAlign;
+	fp_TableHeader *m_pHeader;
+
+	UT_sint32 	m_iShiftHeight;
+	bool 		m_bIsToBeDisplaced;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
@@ -486,7 +529,7 @@ fp_Column *         getBrokenColumn(void);
 	{ 
 		return m_pTableHeader; 
 	}
-	void 	identifyHeaderRows(std::vector<UT_sint32>); 
+	void 	identifyHeaderRows(const std::vector<UT_sint32>& ); 
 	void 	setHeader(bool bHeader)
 	{
 		m_bHeader = bHeader;
@@ -495,6 +538,15 @@ fp_Column *         getBrokenColumn(void);
 	{
 		return m_bHeader;
 	}
+	bool isHeaderSet(void) const
+	{
+		return static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet();
+	}
+	bool isCellPositionChanged() const
+	{
+		return m_bCellPositionChanged;
+	}
+	void changeCellPositions(bool);
 private:
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
@@ -569,6 +621,7 @@ private:
 
 	fp_TableHeader * m_pTableHeader;
 	bool m_bHeader;
+	bool m_bCellPositionChanged;
 };
 
 class fp_TableHeader : public fp_TableContainer
@@ -581,9 +634,10 @@ public:
 	const std::vector<UT_sint32> & getHeaderRowNos(void) const
 	{ 	return m_vHeaderRowNumber; }
 	
-	void createLocalListOfHeaderRows(std::vector<UT_sint32> &);
+	void createLocalListOfHeaderRows(const std::vector<UT_sint32>&);
 	void calculateHeaderHeight(void);
-	//void markHeaderCells(void);
+	void headerDraw(dg_DrawArgs *);
+	void markCellsForHeader(void);
 	UT_sint32 getActualRowHeight(UT_sint32 iRowNumber);
 
 	std::vector<fp_CellContainer *> m_vecCells;

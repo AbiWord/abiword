@@ -1588,7 +1588,14 @@ bool fb_ColumnBreaker::_breakTable(fp_Container*& pOffendingContainer,
 // be bumped into the next column. Pretty cool eh ? :-)
 //
 			fp_TableContainer * pNewTab = static_cast<fp_TableContainer *>(pBroke->VBreakAt(iBreakAt));
-			pOffendingContainer = static_cast<fp_Container *>(pNewTab->getPrev());
+			if(pNewTab->getMasterTable()->getHeaderObject())
+			{
+				pOffendingContainer = static_cast<fp_Container *>(pNewTab->getPrev());
+			}
+			else
+			{
+				pOffendingContainer = static_cast<fp_Container *>(pNewTab);
+			}
 			pLastContainerToKeep = static_cast<fp_Container *>(pTab);
 			UT_DEBUGMSG(("The height of the master table is %d, pBroke %d, pNewTab %d\n",pNewTab->getMasterTable()->getHeight(),pBroke->getHeight(),pNewTab->getHeight()));
                         if(pNewTab == NULL)
