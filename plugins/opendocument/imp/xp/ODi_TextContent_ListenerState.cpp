@@ -505,20 +505,16 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         if (m_bPendingAnnotation) {
             _insertAnnotation();
         }
-        
-        if (m_pCurrentListStyle != NULL) {
-            m_listLevel++;
-        } else {
-            const gchar* pVal;
-            
-            pVal = UT_getAttribute("text:style-name", ppAtts);
-            
-            
-            if (pVal && *pVal)
-                m_pCurrentListStyle = m_pStyles->getList(pVal);
-            UT_ASSERT(m_pCurrentListStyle != NULL);
-            
-            m_listLevel = 1;
+        m_listLevel++;
+        if (m_pCurrentListStyle == NULL) {
+			const gchar* pVal;
+
+			pVal = UT_getAttribute("text:style-name", ppAtts);
+
+
+			if (pVal && *pVal)
+				m_pCurrentListStyle = m_pStyles->getList(pVal);
+			UT_ASSERT(m_pCurrentListStyle != NULL);
         }
         
     } else if (!strcmp(pName, "text:list-item")) {
