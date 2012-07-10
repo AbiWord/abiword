@@ -195,13 +195,8 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
     /* Set the value of TEXT BOX */
-	wchar_t 	szValue[BUFSIZE];
 	//init value is current Frame width and height
-	/*FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-	if (!pView)
-		return 1;
-    fl_FrameLayout * pFL = pView->getFrameLayout();
-    */
+	wchar_t 	szValue[BUFSIZE];
 	setCurFrameProps();
 	swprintf(szValue, L"%02.2f", getFrameWidth());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
@@ -460,9 +455,6 @@ void AP_Win32Dialog_FormatFrame::setSensitivity(bool /*bSens*/)
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);	
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping()?  BST_CHECKED: BST_UNCHECKED);
-	//update height and width
-	/* FIXME: if update in the way, will cause the users can't input because it update all the time
-	*/
 	// Reset the value using the value from Prop vectot
 	initFrameWidthStr();
 	initFrameHeightStr();

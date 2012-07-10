@@ -940,7 +940,6 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszPageYpos,m_iYPage));
 
 
-// Width
 // really set Frame width
 	if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 	{
@@ -955,7 +954,6 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_iWidth = m_pLayout->getGraphics()->tlu(2);
 	}
 	UT_DEBUGMSG(("Width %s \n",pszWidth));
-// Height
 //here really to the Frame height
 	if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 	{

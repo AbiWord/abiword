@@ -507,8 +507,6 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
     if (!pView)
         return;
     fl_FrameLayout * pFL = pView->getFrameLayout();
-    //setHeight(pFL->getFrameHeight());
-    //setWidth(pFL->getFrameWidth());
     //update height&width
     setCurFrameProps();
     float value = getFrameWidth();
