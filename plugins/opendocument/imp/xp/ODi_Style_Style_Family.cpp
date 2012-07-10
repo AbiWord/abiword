@@ -488,15 +488,14 @@ void ODi_Style_Style_Family::_linkStyles(const StyleMap & map, bool onContentStr
             
             pOtherStyle = getStyle(pStyle->getParentName().utf8_str(),
                                          onContentStream);
-            
-            UT_ASSERT_HARMLESS(pOtherStyle);
-            
+
             if (pOtherStyle) {
                 pStyle->setParentStylePointer(pOtherStyle);
             } 
             else {
                 // We don't have this style!
                 // Let's pretend that it never existed.
+                UT_ASSERT_HARMLESS(pOtherStyle);
                 pStyle->setParentName(NULL);
             }
         }
@@ -506,15 +505,14 @@ void ODi_Style_Style_Family::_linkStyles(const StyleMap & map, bool onContentStr
             
             pOtherStyle = getStyle(pStyle->getNextStyleName().utf8_str(),
                                          onContentStream);
-                
-            UT_ASSERT_HARMLESS(pOtherStyle);
-                
+
             if (pOtherStyle) {
                 pStyle->setNextStylePointer(pOtherStyle);
             } 
             else {
                 // We don't have this style!
                 // Let's pretend that it never existed.
+                UT_ASSERT_HARMLESS(pOtherStyle);
                 pStyle->setNextStyleName(NULL);
             }
         }
