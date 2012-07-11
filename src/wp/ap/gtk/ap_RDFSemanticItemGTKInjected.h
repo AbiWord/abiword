@@ -129,7 +129,6 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
                                     GDestroyNotify_GObjectSemItem );
 
             std::string label = c->getDisplayLabel();
-            gboolean homogeneous = false;
             GtkWidget* container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
             gtk_notebook_append_page( notebook, container, gtk_label_new( label.c_str() ));
             gtk_widget_reparent( w, GTK_WIDGET( container));
