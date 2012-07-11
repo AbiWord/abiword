@@ -248,7 +248,11 @@ AP_UnixDialog_FormatFrame::AP_UnixDialog_FormatFrame(XAP_DialogFactory * pDlgFac
 	m_wSelectImageButton = NULL;
 	m_wNoImageButton = NULL;
 	m_wBorderThickness = NULL;
+	m_wHeight = NULL;
+	m_wWidth= NULL;
 	m_iBorderThicknessConnect = 0;
+    m_iFrameHeightConnect = 0;
+    m_iFrameWidthConnect = 0;
 	m_wWrapButton = NULL;
 	m_wPosParagraph =  NULL;
 	m_wPosColumn = NULL;
@@ -499,8 +503,6 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFrameWidth")), pSS, AP_STRING_ID_DLG_FormatTable_Width);
     m_wWidth = GTK_WIDGET(gtk_builder_get_object(builder, "entryFrameWidth"));
     m_wHeight = GTK_WIDGET(gtk_builder_get_object(builder, "entryFrameHeight")); 
-    g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
-    g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
     // Set init Value
     UT_Dimension dim = DIM_IN;
     FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
@@ -701,6 +703,8 @@ void AP_UnixDialog_FormatFrame::_connectSignals(void)
 							"changed",
 							G_CALLBACK(s_border_thickness),
 							reinterpret_cast<gpointer>(this));
+    m_iFrameWidthConnect = g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
+    m_iFrameHeightConnect = g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
 #if GTK_CHECK_VERSION(3,0,0)

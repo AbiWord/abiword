@@ -84,6 +84,8 @@ protected:
 	GtkWidget * m_wNoImageButton;
 	GtkWidget * m_wBorderThickness;
 	guint       m_iBorderThicknessConnect;
+	guint       m_iFrameHeightConnect;
+	guint       m_iFrameWidthConnect;
 	double      m_dThickness[FORMAT_FRAME_NUMTHICKNESS];
 	GtkWidget * m_wWrapButton;
 	GtkWidget * m_wPosParagraph;
