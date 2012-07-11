@@ -4456,7 +4456,7 @@ fl_BlockLayout * FV_View::getBlockFromSDH(pf_Frag_Strux* sdh)
 	sfh = m_pDoc->getNthFmtHandle(sdh, m_pLayout->getLID());
 	if(sfh != NULL)
 	{
-		pBlock = const_cast<fl_BlockLayout *>(static_cast<const fl_BlockLayout *>(sfh));
+		pBlock = static_cast<fl_BlockLayout *>(sfh);
 		if(pBlock->getDocLayout() != m_pLayout)
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
