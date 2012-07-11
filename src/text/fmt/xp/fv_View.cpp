@@ -13130,11 +13130,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 	// add field for footnote reference
 	// first, make up an id for this footnote.
-	UT_String footpid;
+	std::string footpid;
 	UT_return_val_if_fail(m_pDoc, false);
 	UT_uint32 pid = m_pDoc->getUID(bFootnote ? UT_UniqueId::Footnote : UT_UniqueId::Endnote);
-	UT_String_sprintf(footpid,"%d",pid);
-	
+	footpid = UT_std_string_sprintf("%d",pid);
+
 	const gchar* attrs[] = {
 		"footnote-id", footpid.c_str(),
 		NULL, NULL,
@@ -13180,7 +13180,7 @@ bool FV_View::insertFootnote(bool bFootnote)
 	else
 	{
 		attrs[2] = "style";
-		attrs[3] = "Endnote Reference";		
+		attrs[3] = "Endnote Reference";
 		if (_insertField("endnote_ref", attrs)==false)
 			return false;
 	}
@@ -13230,17 +13230,20 @@ bool FV_View::insertFootnote(bool bFootnote)
 	const PP_AttrProp * pBlockAP = NULL;
 	getAttributes(&pSpanAP,&pBlockAP,FanchStart);
 
-	m_pDoc->insertSpan(FanchEnd, &tab, 1,const_cast<PP_AttrProp *>(pSpanAP));
+	m_pDoc->insertSpan(FanchEnd, &tab, 1, const_cast<PP_AttrProp *>(pSpanAP));
 
 	//
 	// Put the character format after footnote back to its previous value
 	//
-	PP_AttrProp * pAP_after = pAP_in->createExactly(pAP_in->getAttributes(),pAP_in->getProperties());
-	bRet = m_pDoc->insertFmtMark(PTC_AddFmt,FanchEnd+2,pAP_after);
-	UT_ASSERT(bRet);
+	// But if we are the first thing in the document, we have no attr prop.
+	if (pAP_in) {
+		PP_AttrProp * pAP_after = pAP_in->createExactly(pAP_in->getAttributes(),pAP_in->getProperties());
+		bRet = m_pDoc->insertFmtMark(PTC_AddFmt,FanchEnd+2,pAP_after);
+		UT_ASSERT(bRet);
+	}
 
 	_setPoint(FanchEnd+1);
-	
+
 	/*	some magic to make the endnote reference and anchor recalculate
 		its widths
 	*/
