@@ -1527,7 +1527,7 @@ void AP_UnixApp::catchSignals(int /*sig_num*/)
 		fflush(stdout);
 		abort();
     }
-    
+
     UT_DEBUGMSG(("Oh no - we just crashed!\n"));
 //
 // fixme: Enable this to help debug the bonobo component. After a crash the
@@ -1548,16 +1548,16 @@ void AP_UnixApp::catchSignals(int /*sig_num*/)
 	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
     for(;i<m_vecFrames.getItemCount();i++)
     {
-		AP_UnixFrame * curFrame = const_cast<AP_UnixFrame*>(static_cast<const AP_UnixFrame*>(m_vecFrames[i]));
+		XAP_Frame * curFrame = m_vecFrames[i];
 		UT_continue_if_fail(curFrame);
 		if (NULL == curFrame->getFilename())
 		  curFrame->backup(".abw.saved",abiType);
 		else
 		  curFrame->backup(".saved",abiType);
     }
-    
+
     fflush(stdout);
-    
+
     // Abort and dump core
     abort();
 }
