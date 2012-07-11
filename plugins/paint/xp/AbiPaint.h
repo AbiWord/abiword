@@ -50,6 +50,8 @@
 #ifndef ABIPAINT_H
 #define ABIPAINT_H
 
+#include <string>
+
 #include "AbiGeneric.h"
 
 #ifdef WIN32
@@ -66,7 +68,7 @@ const char *szProgramSuffix= "*";
 #endif
 
 // various helper functions
-static void getDefaultApp(UT_String &imageApp, bool &bLeaveImageAsPNG);
+static void getDefaultApp(std::string &imageApp, bool &bLeaveImageAsPNG);
 
 
 #ifdef ENABLE_BMP

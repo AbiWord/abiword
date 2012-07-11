@@ -178,6 +178,16 @@ bool XAP_PrefsScheme::getValue(const UT_String &stKey, UT_String &stValue) const
 	return true;
 }
 
+bool XAP_PrefsScheme::getValue(const char* szKey, std::string &stValue) const
+{
+	const char *pEntry = m_hash.pick(szKey);
+	if (!pEntry)
+		return false;
+
+	stValue = pEntry;
+	return true;
+}
+
 bool XAP_PrefsScheme::getValueInt(const gchar * szKey, int& nValue) const
 {
 	const gchar * szValue = NULL;

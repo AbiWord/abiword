@@ -253,15 +253,13 @@ UT_Error removeFromMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems)
   return UT_OK;
 }
 
-    
-
 /*
  * Helper functions
  *
  */
 
 /* returns true only if user requested to cancel save, pass suggested path in */
-bool getFileName(UT_String &szFile, XAP_Frame * pFrame, XAP_Dialog_Id id,
+bool getFileName(std::string &szFile, XAP_Frame * pFrame, XAP_Dialog_Id id,
                  const char **szDescList, const char **szSuffixList, int *ft)
 
 {
@@ -288,7 +286,7 @@ bool getFileName(UT_String &szFile, XAP_Frame * pFrame, XAP_Dialog_Id id,
 		szFile = pDialog->getPathname();
 	else
 		szFile.clear();
-	
+
 	pDialogFactory->releaseDialog(pDialog);
 
 	return !bOK;

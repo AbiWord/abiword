@@ -214,7 +214,7 @@ UT_Error addToMenus(AbiMenuOptions amo[], UT_uint32 num_menuitems, XAP_Menu_Id p
 UT_Error removeFromMenus(const AbiMenuOptions amo[], UT_uint32 num_menuitems);
 
 /* returns true only if user requested to cancel save, pass suggested path in */
-bool getFileName(UT_String &szFile, XAP_Frame * pFrame, XAP_Dialog_Id id,
+bool getFileName(std::string &szFile, XAP_Frame * pFrame, XAP_Dialog_Id id,
                  const char **szDescList, const char **szSuffixList, int *ft);
 
 /* returns true only if currently an image is selected */

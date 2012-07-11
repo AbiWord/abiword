@@ -19,9 +19,9 @@
  * 02111-1307, USA.
  */
 
-#include "ut_process.h"
-#include "ut_string_class.h"
+#include <string>
 
+#include "ut_process.h"
 
 // returns true if process is still alive
 bool isProcessStillAlive(ProcessInfo &pI)
@@ -61,7 +61,9 @@ BOOL CreateChildProcess(char * appName, char *cmdline,
 bool createChildProcess(const char *app, const char *args, ProcessInfo *pI)
 {
   STARTUPINFO startInfo;
-  UT_String cmdline = app;  cmdline += " ";  cmdline += args;
+  std::string cmdline = app;
+  cmdline += " ";
+  cmdline += args;
 
   return CreateChildProcess(NULL, const_cast<char *>(cmdline.c_str()), pI, &startInfo) != FALSE;
 }

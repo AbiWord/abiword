@@ -61,7 +61,7 @@ XAP_PrefsScheme * prefsScheme = NULL;
 const gchar * szAbiPluginSchemeName = ABI_PLUGIN_SCHEME_NAME ;
 // settings within our plugin scheme
 const gchar * ABIPAINT_PREF_KEY_bLeaveImageAsPNG = "bLeaveImageAsPNG";
-const UT_String ABIPAINT_PREF_KEY_szProgramName = "szImageEditor";
+const char* ABIPAINT_PREF_KEY_szProgramName = "szImageEditor";
 
 
 /*
@@ -137,10 +137,10 @@ bool doRegistration(void)
         return false;
 
 	// go ahead and set our default values
-	UT_String szProgramName;
+        std::string szProgramName;
 	bool bLeaveImageAsPNG;
 	getDefaultApp(szProgramName, bLeaveImageAsPNG);
-	prefsScheme->setValue(ABIPAINT_PREF_KEY_szProgramName.c_str(), szProgramName.c_str());
+	prefsScheme->setValue(ABIPAINT_PREF_KEY_szProgramName, szProgramName.c_str());
 	prefsScheme->setValueBool(ABIPAINT_PREF_KEY_bLeaveImageAsPNG, bLeaveImageAsPNG);
     }
 
@@ -172,7 +172,7 @@ static DECLARE_ABI_PLUGIN_METHOD(specify)
 	UT_UNUSED(v);
 	UT_UNUSED(d);
 	// get current value
-	UT_String szProgramName = "";
+	std::string szProgramName;
 	prefsScheme->getValue(ABIPAINT_PREF_KEY_szProgramName, szProgramName);
 
 	// Get a frame in case we need to show an error message
@@ -192,15 +192,15 @@ static DECLARE_ABI_PLUGIN_METHOD(specify)
 
 		UT_DEBUGMSG(("ABIPAINT: szProgramName to use is  %s\n", szProgramName.c_str()));
 	}
-	
+
 	// now write it to the preference
-	prefsScheme->setValue(ABIPAINT_PREF_KEY_szProgramName.c_str(), szProgramName.c_str());
+	prefsScheme->setValue(ABIPAINT_PREF_KEY_szProgramName, szProgramName.c_str());
 
 	return true;
 }
 
 
-//   When no image is selected, we gray out this menu item 
+//   When no image is selected, we gray out this menu item
 DECLARE_ABI_GRAYABLE_MENUITEM(editImage,isImageSelected)
 
 
@@ -266,12 +266,12 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 	}
 	close(fp);
 
-	UT_String szTmpPng = szTempFileName;
+	std::string szTmpPng = szTempFileName;
 	szTmpPng += ".png";
 	remove(szTempFileName);
 	g_free (szTempFileName); szTempFileName = NULL;
-	
-	PT_DocPosition pos = pView->saveSelectedImage((const char *)szTmpPng.c_str());
+
+	PT_DocPosition pos = pView->saveSelectedImage(szTmpPng.c_str());
 	if(pos == 0)
 	{
 		pFrame->showMessageBox("You must select an Image before trying to save it as a BMP file!", XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
@@ -283,7 +283,7 @@ static DECLARE_ABI_PLUGIN_METHOD(saveAsBmp)
 	// NOTE: probably looses detail/information though!!!
 	//
 
-	UT_String szBMPFile = pFrame->getFilename(); // perhaps a different default directory should be used???
+	std::string szBMPFile = pFrame->getFilename(); // perhaps a different default directory should be used???
 	{
 		const char * szDescList[2];
 		const char * szSuffixList[2];
@@ -335,8 +335,8 @@ Defun_EV_GetMenuItemComputedLabel_Fn(getEditImageMenuName)
 	UT_UNUSED(pLabel);
 	UT_UNUSED(id);
 
-	UT_String szProgramName;
-	static UT_String MenuName;
+	std::string szProgramName;
+	static std::string MenuName;
 	MenuName = "&Edit Image";
 
 	// give user some indication of program that will be executed
@@ -377,7 +377,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 //
 // get values from preference (initial plugin execution should have set sensible defaults)
 //
-	UT_String imageApp;  // holds MAXPATH\appName <space> MAXPATH\imagefilename
+    std::string imageApp;  // holds MAXPATH\appName <space> MAXPATH\imagefilename
 	bool bLeaveImageAsPNG;
 
 	// read stuff from the preference value
@@ -386,7 +386,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		getDefaultApp(imageApp, bLeaveImageAsPNG);
 	}
-	
+
 	// now that we have program name, try to get other flag (allows overriding default value)
 	// Note: we allow overriding, otherwise if we don't adhere to user's setting
 	//       then the use BMP or not menu should be greyed to note it has no effect
@@ -406,10 +406,10 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	}
 	close(fp);
 
-	UT_String szTmpPng = szTempFileName;
+	std::string szTmpPng = szTempFileName;
 	szTmpPng += ".png";
-	UT_String szTmp = szTmpPng; // default: our temp file is the created png file
-	
+	std::string szTmp = szTmpPng; // default: our temp file is the created png file
+
 	PT_DocPosition pos = pView->saveSelectedImage((const char *)szTmpPng.c_str());
 	if(pos == 0)
 	{
@@ -469,7 +469,8 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 	if (!createChildProcess(imageApp.c_str(), szTmp.c_str(), &procInfo))
 
 	{
-		UT_String msg = "Unable to run program: ";  msg += imageApp + " " + szTmp;
+		std::string msg = "Unable to run program: ";  
+		msg += imageApp + " " + szTmp;
 		pFrame->showMessageBox(msg.c_str(), XAP_Dialog_MessageBox::b_O,XAP_Dialog_MessageBox::a_OK);
 
 		// failed to spawn stuff, so do some cleanup and return failure
@@ -486,7 +487,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 		pFrame->nullUpdate();
 		ok = stat(szTmp.c_str(),&myFileStat);
 		if(ok == 0)
-		{ 
+		{
 			if(myFileStat.st_mtime != mod_time)
 			{
 				// wait for changes to settle (program done writing changes)
@@ -595,7 +596,7 @@ static DECLARE_ABI_PLUGIN_METHOD(editImage)
 }
 
 
-static void getDefaultApp(UT_String &imageApp, bool &bLeaveImageAsPNG)
+static void getDefaultApp(std::string &imageApp, bool &bLeaveImageAsPNG)
 {
 #ifdef WIN32
 	bLeaveImageAsPNG = false;
@@ -615,7 +616,7 @@ static void getDefaultApp(UT_String &imageApp, bool &bLeaveImageAsPNG)
 	if (imageApp.empty())
 	{
 		HKEY hKey;
-		unsigned long lType;	
+		unsigned long lType;
 		DWORD dwSize;
 		unsigned char* szValue = NULL;
 		if( ::RegOpenKeyExA( HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Windows\\CurrentVersion", 0, KEY_READ, &hKey) == ERROR_SUCCESS )
