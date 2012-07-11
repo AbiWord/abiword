@@ -88,6 +88,8 @@ bool pt_PieceTable::dumpDoc(
     PT_DocPosition currentpos,
     PT_DocPosition endpos )
 {
+    UT_DEBUG_ONLY_ARG(msg);
+
     if( !endpos )
     {
         m_pDocument->getBounds( true, endpos );

@@ -11616,6 +11616,8 @@ Defun1(dlgFmtPosImage)
 
 static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallData, bool bCtxtMenu)
 {
+	UT_DEBUG_ONLY_ARG(pCallData);
+	
 	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
