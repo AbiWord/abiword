@@ -704,7 +704,7 @@ go_combo_box_construct (GOComboBox *combo,
 	combo->priv->popdown_container = popdown_container;
 	combo->priv->display_widget = NULL;
 
-	vbox = gtk_vbox_new (FALSE, 5);
+	vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 5);
 	tearable = gtk_tearoff_menu_item_new ();
 	g_signal_connect (tearable, "enter-notify-event",
 			  G_CALLBACK (cb_tearable_enter_leave),

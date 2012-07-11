@@ -22,6 +22,7 @@
 #include <string.h>
 #include <gtk/gtk.h>
 #include <X11/Xlib.h>
+#include <X11/XKBlib.h>
 #include <gdk/gdkx.h>
 
 #include "xap_Gtk2Compat.h"
@@ -87,9 +88,9 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 		// Gdk does us the favour of working out a translated keyvalue for us,
 		// but with the Ctrl keys, we do not want that -- see bug 9545
 		Display * display = GDK_DISPLAY_XDISPLAY(gdk_window_get_display(e->window));
-		KeySym sym = XKeycodeToKeysym(display,
-									  e->hardware_keycode,
-									  e->state & GDK_SHIFT_MASK ? 1 : 0);
+		KeySym sym = XkbKeycodeToKeysym(display,
+						e->hardware_keycode,
+						e->state & GDK_SHIFT_MASK ? 1 : 0, 0);
 		xxx_UT_DEBUGMSG(("ev_UnixKeyboard::keyPressEvent: keyval %d, hardware_keycode %d\n"
 					 "                                sym: 0x%x\n",
 					 e->keyval, e->hardware_keycode, sym));

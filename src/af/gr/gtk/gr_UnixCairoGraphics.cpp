@@ -379,7 +379,11 @@ void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 	xxx_UT_DEBUGMSG(("cursor set to %d  gdk %d \n",c,cursor_number));
 	GdkCursor * cursor = gdk_cursor_new(cursor_number);
 	gdk_window_set_cursor(m_pWin, cursor);
+#if GTK_CHECK_VERSION(3,0,0)
+	g_object_unref(cursor);
+#else
 	gdk_cursor_unref(cursor);
+#endif
 }
 
 
