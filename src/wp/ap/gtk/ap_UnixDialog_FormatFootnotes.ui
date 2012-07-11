@@ -22,8 +22,8 @@
     <property name="title" translatable="yes">Format Footnotes and Endnotes</property>
     <property name="resizable">False</property>
     <property name="modal">True</property>
-    <property name="type_hint">normal</property>
     <property name="window_position">center-on-parent</property>
+    <property name="type_hint">normal</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbxDialog">
         <property name="visible">True</property>
@@ -38,6 +38,7 @@
             <child>
               <object class="GtkButton" id="btCancel">
                 <property name="label">gtk-cancel</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -54,6 +55,7 @@
             <child>
               <object class="GtkButton" id="btOK">
                 <property name="label">gtk-ok</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
@@ -78,10 +80,10 @@
         </child>
         <child>
           <object class="GtkBox" id="vbxContent">
-            <property name="orientation">vertical</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">5</property>
+            <property name="orientation">vertical</property>
             <property name="spacing">18</property>
             <child>
               <object class="GtkTable" id="tblFootnote">
@@ -175,10 +177,10 @@
                     <child>
                       <object class="GtkBox" id="hbxFootnoteSpin">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="spacing">2</property>
                         <child>
                           <object class="GtkSpinButton" id="footnoteSpin">
-                            <property name="editable">False</property>
                             <property name="width_request">1</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
@@ -312,11 +314,13 @@
                     <child>
                       <object class="GtkCheckButton" id="cbSectionRestart">
                         <property name="label" translatable="yes">Restart on each Section</property>
+                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">False</property>
                         <property name="use_action_appearance">False</property>
                         <property name="use_underline">True</property>
+                        <property name="xalign">0.5</property>
                         <property name="draw_indicator">True</property>
                       </object>
                       <packing>
@@ -339,10 +343,10 @@
                     <child>
                       <object class="GtkBox" id="hbxEndnoteSpin">
                         <property name="visible">True</property>
+                        <property name="can_focus">False</property>
                         <property name="spacing">2</property>
                         <child>
                           <object class="GtkSpinButton" id="endnoteSpin">
-                            <property name="editable">False</property>
                             <property name="width_request">1</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
