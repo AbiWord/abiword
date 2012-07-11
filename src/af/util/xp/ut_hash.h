@@ -646,10 +646,10 @@ void UT_GenericStringMap<T>::clear()
 {
 	FREEP(m_list);
 
-	hash_slot<T>* slots = m_pMapping;
+	hash_slot<T>* the_slots = m_pMapping;
 	for (size_t x=0; x < m_nSlots; x++)
 	{
-		hash_slot<T>& this_slot = slots[x];
+		hash_slot<T>& this_slot = the_slots[x];
 		if (!this_slot.empty())
 		{
 			if (!this_slot.deleted())
