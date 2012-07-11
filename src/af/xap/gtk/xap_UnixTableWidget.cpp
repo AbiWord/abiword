@@ -345,7 +345,11 @@ restart_widget (AbiTable *table)
 	table->total_cols = my_max(init_cols + 1, 5);
 	table->total_rows = my_max(init_rows + 1, 6);
 
+#if GTK_CHECK_VERSION(2,24,0)
+	g_signal_emit_by_name(table, "button-release-event");
+#else
 	gtk_button_released(GTK_BUTTON(table));
+#endif
 
 	gtk_widget_hide(GTK_WIDGET(table->window));
 }
@@ -420,15 +424,15 @@ popup_grab_on_window (GdkWindow *window,
 	GdkEventMask emask = static_cast<GdkEventMask>(GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
 												   GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK |
 												   GDK_ENTER_NOTIFY_MASK) ;
-	if ((gdk_pointer_grab (window, FALSE,emask,
+	if ((XAP_gdk_pointer_grab (window, FALSE,emask,
 						   NULL, NULL, activate_time) == 0))
 	{
-		if (gdk_keyboard_grab (window, FALSE,
+		if (XAP_gdk_keyboard_grab (window, FALSE,
 							   activate_time) == 0)
 			return TRUE;
 		else
 		{
-			gdk_pointer_ungrab (activate_time);
+			XAP_gdk_pointer_ungrab (activate_time);
 			return FALSE;
 		}
 	}

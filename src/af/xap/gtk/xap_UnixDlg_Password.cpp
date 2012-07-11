@@ -24,6 +24,7 @@
 #include "ut_debugmsg.h"
 
 #include "xap_UnixDialogHelper.h"
+#include "xap_Gtk2Compat.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -83,7 +84,7 @@ void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 		event_Cancel(); break;
     }
 	
-	gdk_keyboard_ungrab(GDK_CURRENT_TIME);
+	XAP_gdk_keyboard_ungrab(GDK_CURRENT_TIME);
 	
 	abiDestroyWidget(cf);
 }

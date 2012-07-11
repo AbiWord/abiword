@@ -22,6 +22,8 @@
 #ifndef _XAP_GTK2COMPAT_H_
 #define _XAP_GTK2COMPAT_H_
 
+#include "ut_types.h"
+
 #include <gtk/gtk.h>
 
 #if !GTK_CHECK_VERSION(3,0,0)
@@ -266,5 +268,82 @@ inline void gtk_combo_box_text_remove_all(GtkComboBoxText *combo_box)
 typedef GdkWindow GdkDrawable;
 
 #endif
+
+
+// Now onto the device were the deprecated functions are to be
+// with several line of code.
+inline
+GdkGrabStatus XAP_gdk_keyboard_grab(GdkWindow *window,
+				    gboolean owner_events,
+				    guint32 time_)
+{
+#if GTK_CHECK_VERSION(3,0,0)
+	GdkDeviceManager *manager
+		= gdk_display_get_device_manager(gdk_display_get_default());
+	GdkDevice *device = gdk_device_manager_get_client_pointer (manager);
+
+	return gdk_device_grab (gdk_device_get_associated_device(device),
+				window,
+				GDK_OWNERSHIP_WINDOW,
+				owner_events,
+				GDK_ALL_EVENTS_MASK,
+				NULL,
+				time_);
+#else
+	return gdk_keyboard_grab(window, owner_events, time_);
+#endif
+}
+
+inline
+GdkGrabStatus XAP_gdk_pointer_grab(GdkWindow *window,
+				   gboolean owner_events,
+				   GdkEventMask event_mask,
+				   GdkWindow *confine_to,
+				   GdkCursor *cursor,
+				   guint32 time_)
+{
+#if GTK_CHECK_VERSION(3,0,0)
+	GdkDeviceManager *manager
+		= gdk_display_get_device_manager(gdk_display_get_default());
+	GdkDevice *device = gdk_device_manager_get_client_pointer (manager);
+	UT_UNUSED(confine_to);
+	return gdk_device_grab (device, window,
+				GDK_OWNERSHIP_WINDOW,
+				owner_events, event_mask,
+				cursor, time_);
+#else
+	return gdk_pointer_grab(window, owner_events, event_mask,
+				confine_to, cursor, time_);
+#endif
+}
+
+
+// http://permalink.gmane.org/gmane.comp.gnome.svn/520942
+inline
+void XAP_gdk_keyboard_ungrab(guint32 t)
+{
+#if GTK_CHECK_VERSION(3,0,0)
+	GdkDeviceManager *manager
+		= gdk_display_get_device_manager(gdk_display_get_default());
+	GdkDevice *device = gdk_device_manager_get_client_pointer (manager);
+	gdk_device_ungrab (gdk_device_get_associated_device(device),
+			   t);
+#else
+	gdk_keyboard_ungrab(t);
+#endif
+}
+
+inline
+void XAP_gdk_pointer_ungrab(guint32 t)
+{
+#if GTK_CHECK_VERSION(3,0,0)
+	GdkDeviceManager *manager
+		= gdk_display_get_device_manager(gdk_display_get_default());
+	GdkDevice *device = gdk_device_manager_get_client_pointer (manager);
+	gdk_device_ungrab (device, t);
+#else
+	gdk_pointer_ungrab(t);
+#endif
+}
 
 #endif
