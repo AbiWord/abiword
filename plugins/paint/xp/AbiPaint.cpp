@@ -146,14 +146,14 @@ bool doRegistration(void)
 
 
     // Add the image editor to AbiWord's menus.
-    addToMenus(amo, NUM_MENUITEMS, AP_MENU_ID_TOOLS_WORDCOUNT, AP_MENU_ID_FMT_IMAGE);
+    addToMenus(amo, NUM_MENUITEMS, AP_MENU_ID_TOOLS_WORDCOUNT, AP_MENU_ID_CONTEXT_IMAGE);
 
 
     return true;
 }
 
-void doUnregistration(void) 
-{ 
+void doUnregistration(void)
+{
     removeFromMenus(amo, NUM_MENUITEMS);
 }
 
