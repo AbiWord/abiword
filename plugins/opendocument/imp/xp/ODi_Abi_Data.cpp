@@ -194,6 +194,7 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     pObjects_dir =
         GSF_INFILE(gsf_infile_child_by_name(m_pGsfInfile, dirName.c_str()));
 
+
     UT_return_val_if_fail(pObjects_dir, false);
 
     // Loads object_buf
@@ -206,9 +207,13 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
         return false;
     }
 
-    // check to ensure that we're seeing math. this can probably be made smarter.
+    /* Check to ensure that we're seeing math. this can probably be made smarter.
+     * Second "fallback" string is needed because sometimes there is no DOCTYPE in XML.
+     * It's not 100% guarantee that there is MathML in file that contains such namespace, but
+     * at this moment it's the only possible way not to miss formula(see 12296)
+    */
     static const char math_header[] = "<!DOCTYPE math:math";
-    static const char math_tag[] = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">";
+    static const char math_tag[] = "http://www.w3.org/1998/Math/MathML";
 
     if ((strstr((const char*)object_buf->getPointer (0), math_header) == NULL) &&
     	(strstr((const char*)object_buf->getPointer (0), math_tag) == NULL))
@@ -220,7 +225,6 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     //
     // Create the data item.
     //
-
     if (!m_pAbiDocument->createDataItem(rDataId.c_str(), false, object_buf, 
                                         "application/mathml+xml", NULL)) {            
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -245,8 +249,9 @@ UT_Error ODi_Abi_Data::_loadStream (GsfInfile* oo,
     buf.truncate (0);
     GsfInput * input = gsf_infile_child_by_name(oo, stream);
 
-    if (!input)
-        return UT_ERROR;
+    if (!input){
+    	return UT_ERROR;
+    }
   
     if (gsf_input_size (input) > 0) {
         while ((len = gsf_input_remaining (input)) > 0) {
@@ -283,24 +288,24 @@ void ODi_Abi_Data::_splitDirectoryAndFileName(const gchar* pHRef, UT_String& dir
     int len = href.length();
     for (int i = iStart; i < len; i++) {
         if (href[i] == '/') {
-            i=len; // exit loop
+            break;
         } else {
             nChars++;
         }
     }
     
-    UT_ASSERT (nChars > 0 && nChars < len);
-    
-    dirName = href.substr(iStart, nChars);
-    
-    ////
-    // Get the file name
-    
-    iStart = iStart + nChars + 1;
-    
-    nChars = len - iStart;
-    
-    UT_ASSERT (nChars); // The file name must have at least one char.
-    
-    fileName = href.substr(iStart, nChars);
+	dirName = href.substr(iStart, nChars);
+
+    if (nChars == len - 1){
+    	fileName = "";
+    }
+    else{
+		UT_ASSERT (nChars > 0 && nChars < len);
+
+		// Get the file name
+		iStart = iStart + nChars + 1;
+		nChars = len - iStart;
+		UT_ASSERT (nChars); // The file name must have at least one char.
+		fileName = href.substr(iStart, nChars);
+    }
 }
