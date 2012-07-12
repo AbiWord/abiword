@@ -820,6 +820,12 @@ abi_table_new (void)
 	return GTK_WIDGET (g_object_new (abi_table_get_type (), NULL));
 }
 
+/**
+ * abi_table_get_label:
+ * @abi_table: #AbiTable
+ *
+ * Returns: (transfer none): the label widget.
+ */
  GtkWidget* abi_table_get_label(AbiTable* abi_table)
 {
 	return abi_table->label;

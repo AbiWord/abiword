@@ -1412,9 +1412,13 @@ abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y)
 	return true;
 }
 
-/*!
+/**
+ * abi_widget_render_page_to_image:
+ * 
  * Caller owns the returned GdkPixmap and must free it after use.
  * The first page is "1"
+ * 
+ * Returns: (transfer full): the pixbuf.
  */
 extern "C" GdkPixbuf *
 abi_widget_render_page_to_image(AbiWidget *abi, int iPage)
@@ -1591,6 +1595,11 @@ abi_widget_set_text_color(AbiWidget * w, guint8 red, guint8 green, guint8 blue)
 	return pView->setCharFormat(properties);
 }
 
+/**
+ * abi_widget_get_font_names:
+ * 
+ * Returns: (transfer full): the font names.
+ */
 extern "C" const gchar**
 abi_widget_get_font_names (AbiWidget * /*w*/)
 {
