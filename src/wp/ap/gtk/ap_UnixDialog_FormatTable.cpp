@@ -245,7 +245,11 @@ AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFac
 	m_wSelectImageButton = NULL;
 	m_wNoImageButton = NULL;
 	m_wBorderThickness = NULL;
+	m_wWidth = NULL;
+	m_wHeight = NULL;
 	m_iBorderThicknessConnect = 0;
+	m_iWidthConnect = 0;
+	m_iHeightConnect = 0;
 }
 
 AP_UnixDialog_FormatTable::~AP_UnixDialog_FormatTable(void)
@@ -460,8 +464,6 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
     localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableWidth")), pSS, AP_STRING_ID_DLG_FormatTable_Width);
     m_wWidth = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableWidth"));
     m_wHeight = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableHeight")); 
-    g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
-    g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
     // Set init Value
     UT_Dimension dim = DIM_IN;
     float value = getTableWidth();
@@ -552,8 +554,8 @@ static gboolean s_focus_out_height(GtkWidget *widget, GdkEvent *event, gpointer 
     const char * buf = gtk_entry_get_text(GTK_ENTRY(widget));
     AP_UnixDialog_FormatTable* dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
     UT_return_if_fail(widget && dlg);
-    if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getTableHeight() ){
-        setHeight( _wtoi(buf) );
+    if( atoi( buf ) > 0 && atoi(buf) != (signed) getTableHeight() ){
+        setHeight( atoi(buf) );
     }
     dlg->event_previewExposed();
     return FALSE;
@@ -569,8 +571,8 @@ static gboolean s_focus_out_width(GtkWidget *widget, GdkEvent *event, gpointer u
     const char * buf = gtk_entry_get_text(GTK_ENTRY(widget));
     AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable*>(data);
     UT_return_if_fail(widget && dlg);
-    if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getTableWidth() ){
-        setWidth( _wtoi(buf) );
+    if( atoi( buf ) > 0 && _wtoi(buf) != (signed) getTableWidth() ){
+        setWidth( atoi(buf) );
     }
     dlg->event_previewExposed();
     return FALSE;
@@ -669,6 +671,8 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 							"changed",
 							G_CALLBACK(s_border_thickness),
 							reinterpret_cast<gpointer>(this));
+    m_iWidthConnect = g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
+    m_iHeightConnect = g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
 }
 
 void AP_UnixDialog_FormatTable::_populateWindowData(void)

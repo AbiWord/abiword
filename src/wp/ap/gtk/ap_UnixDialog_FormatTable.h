@@ -84,6 +84,8 @@ protected:
 	GtkWidget * m_wNoImageButton;
 	GtkWidget * m_wBorderThickness;
 	guint       m_iBorderThicknessConnect;
+	guint       m_iWidthConnect;
+	guint       m_iHeightConnect;
 };
 
 #endif /* AP_UNIXDIALOG_FORMATTABLE_H */
