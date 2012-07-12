@@ -152,9 +152,9 @@ private:
 	UT_sint32              m_iPreferedPageNo;
 	UT_sint32              m_iPreferedColumnNo;
 	double 				   m_RotationAngle;
-	double 				   iA;
-	bool				   bA;
-	bool 				   bUnset;
+	double 				   m_iA;
+	bool				   m_bA;
+	bool 				   m_bUnset;
 };
 
 
