@@ -268,24 +268,20 @@ UT_Error ODi_Abi_Data::_loadStream (GsfInfile* oo,
  * subdirectory name ("ObjectReplacements") and file name ("Object 1").
  */
 void ODi_Abi_Data::_splitDirectoryAndFileName(const gchar* pHRef, UT_String& dirName, UT_String& fileName) const {
-    UT_String href;
-    UT_String str;
-    int iStart, nChars, i, len;
-    
-    href = pHRef;
-    
-    ////
+    UT_String href = pHRef;
+
+    int iStart;
     // Get the directory name
-    
-    str = href.substr(0, 2);
+    UT_String str = href.substr(0, 2);
     if (str == "./") {
         iStart = 2;
     } else {
         iStart = 0;
     }
 
-    len = href.length();
-    for (i=iStart, nChars=0; i<len; i++) {
+    int nChars = 0;
+    int len = href.length();
+    for (int i = iStart; i < len; i++) {
         if (href[i] == '/') {
             i=len; // exit loop
         } else {
