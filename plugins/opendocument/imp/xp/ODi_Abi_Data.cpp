@@ -155,9 +155,6 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     const gchar* pHRef = UT_getAttribute ("xlink:href", ppAtts);
     UT_return_val_if_fail(pHRef,false);
 
-    // If we have a string smaller then this we are in trouble. File corrupted?
-    UT_return_val_if_fail((strlen(pHRef) >= 10 /*10 == strlen("Pictures/a")*/), false);
-
     UT_Error error = UT_OK;
     UT_ByteBuf *object_buf;
     GsfInfile* pObjects_dir;
@@ -168,7 +165,7 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     
     // The file name of the picture. e.g.: "Object 1" or "10000201000000D100000108FF0E3707.png" 
     UT_String fileName;
-    
+
     const std::string id = m_href_to_id[pHRef];
     if (!id.empty()) {
         // This object was already added.
@@ -177,11 +174,11 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
         return true;
     }
     
-    
+
     // Get a new, unique, ID.
     objectID = m_pAbiDocument->getUID(UT_UniqueId::Math);
     UT_String_sprintf(rDataId, "MathLatex%d", objectID);
-    
+
     // Add this id to the list
     UT_DebugOnly<href_id_map_t::iterator> iter = m_href_to_id
 		.insert(m_href_to_id.begin(),
@@ -210,11 +207,13 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     }
 
     // check to ensure that we're seeing math. this can probably be made smarter.
-    static const char math_header[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE math:math";
+    static const char math_header[] = "<!DOCTYPE math:math";
+    static const char math_tag[] = "<math xmlns=\"http://www.w3.org/1998/Math/MathML\">";
 
-    if ((object_buf->getLength () > strlen (math_header)) &&
-	(strncmp ((const char*)object_buf->getPointer (0), math_header, strlen (math_header)) != 0)) {
-	delete object_buf;
+    if ((strstr((const char*)object_buf->getPointer (0), math_header) == NULL) &&
+    	(strstr((const char*)object_buf->getPointer (0), math_tag) == NULL))
+    {
+    	delete object_buf;
         return false;
     }
 
