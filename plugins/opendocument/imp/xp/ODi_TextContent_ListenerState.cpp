@@ -454,8 +454,12 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             type = "page_number";
         else if(!strcmp(pName, "text:page-count"))
             type = "page_count";
-        else if(!strcmp(pName, "text:file-name"))
-            type = "file_name";
+        else if(!strcmp(pName, "text:file-name")){
+        	const gchar * pDisplay = UT_getAttribute ("text:display", ppAtts);
+        	if (!strcmp(pDisplay, "name-and-extension"))
+        		type = "short_file_name";
+        	else type = "file_name";
+        }
         else if(!strcmp(pName, "text:paragraph-count"))
             type = "para_count";
         else if(!strcmp(pName, "text:word-count"))

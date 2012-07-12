@@ -612,6 +612,7 @@ dcl(FIELD_DateTime_Custom, "Customizable date/time")
 
 dcl(FIELD_Application, "Application")
 dcl(FIELD_Application_Filename, "File Name")
+dcl(FIELD_Application_ShortFilename, "Short File Name")
 dcl(FIELD_Application_Version, "Version")
 dcl(FIELD_Application_BuildId, "Build Id.")
 dcl(FIELD_Application_Options, "Build Options")

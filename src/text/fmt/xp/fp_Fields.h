@@ -36,6 +36,7 @@ _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_Custom, datetime_custom)
 
 _FIELDTYPE(APPLICATION, AP_STRING_ID_FIELD_Application)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Filename, file_name)
+_FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_ShortFilename, short_file_name)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_MailMerge, mail_merge)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Version, app_ver)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_BuildId, app_id)

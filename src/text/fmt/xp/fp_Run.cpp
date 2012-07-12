@@ -45,6 +45,7 @@
 #include "ut_assert.h"
 #include "ut_string.h"
 #include "ut_growbuf.h"
+#include "ut_go_file.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 #include "fl_FootnoteLayout.h"
@@ -5276,6 +5277,36 @@ bool fp_FieldFileNameRun::calculateValue(void)
 
 	//copy in the name or some wierd char instead
 	const char * name = pDoc->getFilename();
+	if (!name)
+		name = "*";
+
+	strncpy (szFieldValue, name, FPFIELD_MAX_LENGTH);
+	szFieldValue[FPFIELD_MAX_LENGTH] = '\0';
+
+	if (getField())
+	  getField()->setValue(static_cast<const gchar*>(szFieldValue));
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldShortFileNameRun::fp_FieldShortFileNameRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldShortFileNameRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+
+	//copy in the name or some wierd char instead
+	const char * name = UT_go_basename_from_uri(pDoc->getFilename());
 	if (!name)
 		name = "*";
 

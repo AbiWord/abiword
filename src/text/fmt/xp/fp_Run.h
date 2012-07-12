@@ -1160,6 +1160,17 @@ public:
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
 };
 
+class ABI_EXPORT fp_FieldShortFileNameRun : public fp_FieldRun
+{
+public:
+	fp_FieldShortFileNameRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldShortFileNameRun() {}
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
 // BEGIN DOM
 
 // document-related information fields
