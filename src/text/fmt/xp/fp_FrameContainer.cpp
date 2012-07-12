@@ -60,7 +60,10 @@ fp_FrameContainer::fp_FrameContainer(fl_SectionLayout* pSectionLayout)
 	  m_bIsLeftWrapped(false),
 	  m_bIsRightWrapped(false),
 	  m_iPreferedPageNo(-1),
-	  m_iPreferedColumnNo(0)
+	  m_iPreferedColumnNo(0),
+	  bA(false),
+	  iA(0.0),
+	  bUnset(false)
 {
 }
 
@@ -654,7 +657,12 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 	GR_Graphics * pG = da.pG;
 	UT_return_if_fail( pG);
 
-	double iA = getRotationAngle();
+	if(getRotationAngle() - iA > .001)
+	{
+		iA = getRotationAngle();
+		bA = true;
+	}
+	
 	UT_sint32 x = pDA->xoff - m_iXpad;
 	UT_sint32 y = pDA->yoff - m_iYpad;
 	getPage()->expandDamageRect(x,y,getFullWidth(),getFullHeight());
@@ -734,16 +742,19 @@ void fp_FrameContainer::draw(dg_DrawArgs* pDA)
 			fp_ContainerObject* pContainer = static_cast<fp_ContainerObject*>(getNthCon(i));
 			da.xoff = pDA->xoff + pContainer->getX();
 			da.yoff = pDA->yoff + pContainer->getY();
-			if(pContainer -> getContainerType() == FP_CONTAINER_LINE)
+			if(pContainer -> getContainerType() == FP_CONTAINER_LINE && bA)
 			{
-				UT_DEBUGMSG(("Angle Set for frame containers %f\n",getRotationAngle()));
+				UT_DEBUGMSG(("Aaditya : Angle Set for frame containers %f\n",getRotationAngle()));
 				da.pG->setTextAngle(iA);
-				pContainer->draw(&da);
-				da.pG->setTextAngle(0.0);
+				bUnset = true;
 			}
-			else
 			pContainer->draw(&da);
-			
+			bA = false;			
+		}
+		if(bUnset)
+		{
+			da.pG->setTextAngle(-iA);
+			bUnset = false;
 		}
 	}
 	m_bNeverDrawn = false;
