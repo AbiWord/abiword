@@ -149,3 +149,42 @@ endif # TOOLKIT_COCOA
 
 CLEANFILES = \
 	abiword.dll.a
+
+BUILT_GIRSOURCES = Abi-@ABIWORD_SERIES@.gir
+
+AbiGirSources = \
+	af/xap/gtk/xap_UnixTableWidget.h \
+	af/xap/gtk/xap_UnixTableWidget.cpp \
+	wp/ap/gtk/abiwidget.h \
+	wp/ap/gtk/abiwidget.cpp
+
+Abi-@ABIWORD_SERIES@.gir: libabiword-@ABIWORD_SERIES@.la
+Abi-@ABIWORD_SERIES@.gir: $(INTROSPECTION_SCANNER) Makefile
+	$(AM_V_GEN) $(INTROSPECTION_SCANNER) -v --warn-all --namespace Abi \
+		--nsversion="@ABIWORD_SERIES@" \
+	    --add-include-path=$(srcdir) --add-include-path=. \
+	    --include=GObject-2.0 \
+	    --include=Gtk-3.0 \
+	    --include=Gsf-1 \
+	    --library=libabiword-@ABIWORD_SERIES@.la \
+	    --libtool="$(LIBTOOL)" \
+	    --output $@ \
+	    --pkg abiword-@ABIWORD_SERIES@\
+	    -I$(top_srcdir)/src \
+		$(AbiGirSources)
+	    
+if HAVE_INTROSPECTION
+
+girdir = $(GIRDIR)
+gir_DATA = $(BUILT_GIRSOURCES)
+
+typelibsdir = $(TYPELIBDIR)
+typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+
+CLEANFILES += $(gir_DATA) $(typelibs_DATA)
+
+%.typelib: %.gir $(INTROSPECTION_COMPILER)
+	$(AM_V_GEN) LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(INTROSPECTION_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
+
+endif # HAVE_INTROSPECTION
+
