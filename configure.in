@@ -1101,6 +1101,9 @@ AC_SUBST(INTROSPECTION_CFLAGS)
 AC_SUBST(INTROSPECTION_LIBS)
 AC_SUBST(INTROSPECTION_MAKEFILE)
 
+ABI_SUB_SERIES="abi_version_major"_"abi_version_minor"
+AC_SUBST(ABI_SUB_SERIES)
+
 AM_CONDITIONAL(HAVE_INTROSPECTION, test "x$found_introspection" = "xyes")
 dnl we need to change the install directories for distcheck
 AC_ARG_WITH([gir-dir],

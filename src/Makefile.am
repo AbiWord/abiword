@@ -6,6 +6,14 @@ opt_libs =
 platform_ldflags = 
 resources = 
 
+-include $(INTROSPECTION_MAKEFILE)
+INTROSPECTION_GIRS =
+INTROSPECTION_SCANNER_ARGS = \
+	-v --warn-all --accept-unprefixed
+INTROSPECTION_COMPILER_ARGS = \
+	--includedir=$(srcdir) \
+    --includedir=.
+
 if TOOLKIT_COCOA
 main_cpp = $(top_srcdir)/src/wp/main/cocoa/CocoaMain.cpp
 include $(top_srcdir)/src/wp/main/cocoa/bundle.mk
@@ -150,41 +158,28 @@ endif # TOOLKIT_COCOA
 CLEANFILES = \
 	abiword.dll.a
 
-BUILT_GIRSOURCES = Abi-@ABIWORD_SERIES@.gir
 
-AbiGirSources = \
+if HAVE_INTROSPECTION
+
+INTROSPECTION_GIRS += Abi-@ABIWORD_SERIES@.gir
+
+Abi_@ABIWORD_SERIES@.gir: $(INTROSPECTION_SCANNER) libabiword-@ABIWORD_SERIES@.la Makefile
+Abi_@ABI_SUB_SERIES@_gir_INCLUDES = GObject-2.0 Gtk-3.0 Gsf-1
+Abi_@ABI_SUB_SERIES@_gir_CFLAGS = $(libabiword_@ABIWORD_SERIES@_la_CPPFLAGS)
+Abi_@ABI_SUB_SERIES@_gir_LIBS = libabiword-@ABIWORD_SERIES@.la
+Abi_@ABI_SUB_SERIES@_gir_FILES = \
 	af/xap/gtk/xap_UnixTableWidget.h \
 	af/xap/gtk/xap_UnixTableWidget.cpp \
 	wp/ap/gtk/abiwidget.h \
 	wp/ap/gtk/abiwidget.cpp
 
-Abi-@ABIWORD_SERIES@.gir: libabiword-@ABIWORD_SERIES@.la
-Abi-@ABIWORD_SERIES@.gir: $(INTROSPECTION_SCANNER) Makefile
-	$(AM_V_GEN) $(INTROSPECTION_SCANNER) -v --warn-all --namespace Abi \
-		--nsversion="@ABIWORD_SERIES@" \
-	    --add-include-path=$(srcdir) --add-include-path=. \
-	    --include=GObject-2.0 \
-	    --include=Gtk-3.0 \
-	    --include=Gsf-1 \
-	    --library=libabiword-@ABIWORD_SERIES@.la \
-	    --libtool="$(LIBTOOL)" \
-	    --output $@ \
-	    --pkg abiword-@ABIWORD_SERIES@\
-	    -I$(top_srcdir)/src \
-		$(AbiGirSources)
-	    
-if HAVE_INTROSPECTION
-
 girdir = $(GIRDIR)
-gir_DATA = $(BUILT_GIRSOURCES)
+gir_DATA = $(INTROSPECTION_GIRS)
 
 typelibsdir = $(TYPELIBDIR)
-typelibs_DATA = $(BUILT_GIRSOURCES:.gir=.typelib)
+typelibs_DATA = $(INTROSPECTION_GIRS:.gir=.typelib)
 
 CLEANFILES += $(gir_DATA) $(typelibs_DATA)
-
-%.typelib: %.gir $(INTROSPECTION_COMPILER)
-	$(AM_V_GEN) LD_LIBRARY_PATH=$${LD_LIBRARY_PATH:+$$LD_LIBRARY_PATH:}. $(INTROSPECTION_COMPILER) --includedir=$(srcdir) --includedir=. $(G_IR_COMPILER_OPTS) $< -o $(builddir)/$(@F)
 
 endif # HAVE_INTROSPECTION
 
