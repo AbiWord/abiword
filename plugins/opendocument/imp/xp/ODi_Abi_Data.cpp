@@ -155,6 +155,9 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     const gchar* pHRef = UT_getAttribute ("xlink:href", ppAtts);
     UT_return_val_if_fail(pHRef,false);
 
+    // If we have a string smaller then this we are in trouble. File corrupted?
+    UT_return_val_if_fail((strlen(pHRef) >= 9 /*10 == strlen("Object 1/")*/), false);
+
     UT_Error error = UT_OK;
     UT_ByteBuf *object_buf;
     GsfInfile* pObjects_dir;
@@ -301,11 +304,9 @@ void ODi_Abi_Data::_splitDirectoryAndFileName(const gchar* pHRef, UT_String& dir
     }
     else{
 		UT_ASSERT (nChars > 0 && nChars < len);
-
 		// Get the file name
 		iStart = iStart + nChars + 1;
 		nChars = len - iStart;
-		UT_ASSERT (nChars); // The file name must have at least one char.
 		fileName = href.substr(iStart, nChars);
     }
 }
