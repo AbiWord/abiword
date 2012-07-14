@@ -157,7 +157,7 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     UT_return_val_if_fail(pHRef,false);
 
     // If we have a string smaller then this we are in trouble. File corrupted?
-    UT_return_val_if_fail((strlen(pHRef) >= 10 /*10 == strlen("Pictures/a")*/), false);
+    UT_return_val_if_fail((strlen(pHRef) >= 9 /*9 == strlen("Object a/")*/), false);
 
     UT_Error error = UT_OK;
     UT_ByteBuf *object_buf;
@@ -220,9 +220,12 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     // keepin an option for old documents as well which might have DOC_TYPE
     static const char math_header_old[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE math:math";
 
-    if (((object_buf->getLength () > strlen (math_header)) &&
-	(strncmp ((const char*)object_buf->getPointer (0), math_header, strlen (math_header)) != 0)) && ((object_buf->getLength () > strlen (math_header_old)) && (strncmp ((const char*)object_buf->getPointer (0), math_header_old, strlen (math_header_old)) != 0)))  {
-	delete object_buf;
+    // for math from odt generated in MS Word
+    static const char math_ms[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<mml:math";
+     
+    if (((object_buf->getLength () > strlen (math_header)) && (strncmp ((const char*)object_buf->getPointer (0), math_header, strlen (math_header)) != 0)) && ((object_buf->getLength () > strlen (math_header_old)) && (strncmp ((const char*)object_buf->getPointer (0), math_header_old, strlen (math_header_old)) != 0)) && ((object_buf->getLength () > strlen (math_ms)) && (strncmp ((const char*)object_buf->getPointer (0), math_ms, strlen (math_ms)) != 0)))
+    {
+    	delete object_buf;
         return false;
     }
 
@@ -312,24 +315,26 @@ void ODi_Abi_Data::_splitDirectoryAndFileName(const gchar* pHRef, UT_String& dir
     len = href.length();
     for (i=iStart, nChars=0; i<len; i++) {
         if (href[i] == '/') {
-            i=len; // exit loop
+            break;
         } else {
             nChars++;
         }
     }
     
-    UT_ASSERT (nChars > 0 && nChars < len);
-    
+
     dirName = href.substr(iStart, nChars);
-    
-    ////
-    // Get the file name
-    
-    iStart = iStart + nChars + 1;
-    
-    nChars = len - iStart;
-    
-    UT_ASSERT (nChars); // The file name must have at least one char.
-    
-    fileName = href.substr(iStart, nChars);
+
+    if (nChars == len - 1)
+    {
+        fileName = "";    
+    }
+    else
+    {
+        UT_ASSERT (nChars > 0 && nChars < len);
+        // Get the file name
+        iStart = iStart + nChars + 1;
+        nChars = len - iStart;
+        UT_ASSERT (nChars); // The file name must have at least one char.
+        fileName = href.substr(iStart, nChars);
+    }
 }
