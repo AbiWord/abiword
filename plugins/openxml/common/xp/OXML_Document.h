@@ -82,6 +82,9 @@ public:
 	UT_Error addHeader(const OXML_SharedSection & obj);
 	UT_Error clearHeaders();
 
+	bool isAllDefault(const bool & header) const;
+	OXML_SharedSection getHdrFtrById(const bool & header, const std::string & id) const;
+
 	//! Returns a reference to the FIRST footer with corresponding ID OR NULL if none found.
 	OXML_SharedSection getFooter(const std::string & id) const;
 	UT_Error addFooter(const OXML_SharedSection & obj);

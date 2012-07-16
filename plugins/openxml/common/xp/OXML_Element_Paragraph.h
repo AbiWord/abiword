@@ -45,10 +45,12 @@ public:
 	virtual const gchar* getListId();
 	virtual void setPageBreak();
 	virtual bool isNumberedList();
+	virtual void setSection(OXML_Section* section);
 
 private:
 	virtual UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
 	bool pageBreak;
+	OXML_Section* m_section;
 };
 
 #endif //_OXML_ELEMENT_PARAGRAPH_H_

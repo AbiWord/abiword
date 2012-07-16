@@ -621,7 +621,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					else if(!strcmp(szValue, "header-last"))
 					{
 						section->setTarget(TARGET_HEADER);
-						if(section->setAttribute("type", "default") != UT_OK)
+						if(section->setAttribute("type", "last") != UT_OK)
 							return false;
 						return document->addHeader(shared_section) == UT_OK;
 					}
@@ -649,7 +649,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					else if(!strcmp(szValue, "footer-last"))
 					{
 						section->setTarget(TARGET_FOOTER);
-						if(section->setAttribute("type", "default") != UT_OK)
+						if(section->setAttribute("type", "last") != UT_OK)
 							return false;
 						return document->addFooter(shared_section) == UT_OK;
 					}

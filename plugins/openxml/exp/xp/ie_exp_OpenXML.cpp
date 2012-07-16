@@ -1250,6 +1250,16 @@ UT_Error IE_Exp_OpenXML::setColumns(int target, const gchar* num, const gchar* s
 }
 
 /**
+ * Sets the section type continuous
+ */
+UT_Error IE_Exp_OpenXML::setContinuousSection(int target)
+{
+	std::string str("");
+	str += "<w:type w:val=\"continuous\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
  * Sets grid span for horizontally merged cells
  */
 UT_Error IE_Exp_OpenXML::setGridSpan(int target, UT_sint32 hspan)
