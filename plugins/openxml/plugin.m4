@@ -11,6 +11,8 @@ PKG_CHECK_EXISTS([ $openxml_pkgs ],
 	test "$enable_openxml" = "auto" && AC_MSG_WARN([openxml plugin: dependencies not satisfied - $openxml_pkgs])
 ])
 
+AC_SUBST(ABIWORD_OMMLXSLTDIR, "${ABIWORD_DATADIR}/omml_xslt")
+
 fi
 
 if test "$enable_openxml" = "yes" || \
