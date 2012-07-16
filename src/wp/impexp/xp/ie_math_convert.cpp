@@ -1,4 +1,22 @@
-// part of the code here taken from ie_exp_LaTeX.cpp in the latex plugin
+/* AbiWord
+ * Copyright (C) 2008 Xun Sun (xun.sun.cn@gmail.com)
+ * Copyright (C) 2012 Prashant Bafna (appu.bafna@gmail.com)
+ * 
+ * This program is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU General Public License
+ * as published by the Free Software Foundation; either version 2
+ * of the License, or (at your option) any later version.
+ * 
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  
+ * 02111-1307, USA.
+ */
 
 #include "ie_math_convert.h"
 #include "ut_debugmsg.h"
@@ -99,5 +117,69 @@ bool convertLaTeXtoEqn(const UT_UTF8String & sLaTeX,UT_UTF8String & eqnLaTeX)
 		eqnLaTeX = sLaTeX;
 		return true;
 	}
+
+}
+
+// Function to convert OMML (from docx) to MathML
+
+static xsltStylesheet * cur2 = NULL;
+
+bool convertOMMLtoMathML(const std::string & pOMML, std::string & pMathML)
+{
+    xmlDocPtr doc,res;
+    xmlChar * qMathML = NULL;
+    int len;
+
+    if(pOMML.empty())
+    {
+        return false;
+    }
+
+    if(!cur2)
+    {
+        std::string path(XAP_App::getApp()->getAbiSuiteLibDir());
+        path+= "/omml_xslt/omml2mml.xsl";
+        
+        // TO DO : add the post build event to the msvc project to copy the omml_xslt folder from openxml plugin to debug/release, after the gsoc2012math branch is merged with trunk
+
+        //path = "../../plugins/openxml/common/omml_xslt/omml2mml.xsl";
+
+        cur2 = xsltParseStylesheetFile((const xmlChar *)(path.c_str()));
+        if(!cur2)
+        {
+            UT_DEBUGMSG(("convertOMMLtoMathML : Parsing stylesheet failed\n"));
+            return false;
+        }
+
+    }
+
+    doc = xmlParseDoc((xmlChar*)(pOMML.c_str()));
+    if(!doc)
+    {
+        xxx_UT_DEBUGMSG(("convertOMMLtoMathML : Parsing OMML document failed\n"));
+        return false;
+    }
+
+    res = xsltApplyStylesheet(cur2, doc, NULL);
+    if(!res)
+    {
+        xxx_UT_DEBUGMSG(("convertOMMLtoMathML: Applying stylesheet failed\n"));
+        xmlFreeDoc(doc);
+        return false;
+    }
+
+    if(xsltSaveResultToString(&qMathML, &len, res, cur2) != 0)
+    {
+        xmlFreeDoc(res);
+        xmlFreeDoc(doc);
+        return false;
+    }
+
+    pMathML.assign((const char*)qMathML, len);
+
+    g_free(qMathML);
+    xmlFreeDoc(res);
+    xmlFreeDoc(doc);
+    return true;
 
 }
