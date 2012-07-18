@@ -4323,7 +4323,7 @@ void fp_TableContainer::breakCellsAt(UT_sint32 vpos)
 	}
 }
 
-void fp_TableContainer::changeCellPositions(bool bChange)
+/*void fp_TableContainer::changeCellPositions(bool bChange)
 {
 	if(!bChange)
 	{
@@ -4353,7 +4353,7 @@ void fp_TableContainer::changeCellPositions(bool bChange)
 
 		}
 	}
-}
+}*/
 /*!
  * This method creates a new broken tablecontainer, broken at the
  * offset given. 
@@ -4428,22 +4428,13 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	}
 	if(static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet())
 	{
-		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
-		pBroke->setYBreakHere(getYBreak()+vpos);
-		pBroke->setYBottom(getMasterTable()->getYBottom());
-		pBroke->changeCellPositions(m_bCellPositionChanged);
-
-
 		pHeader = new fp_TableHeader(getSectionLayout(),getMasterTable());
-		pHeader->setYBreakHere(getYBreak()+vpos);
-		pHeader->setYBottom(getYBreak()+vpos+getMasterTable()->getHeaderObject()->getHeaderHeight());
-		getMasterTable()->setLastBrokenTable(static_cast<fp_TableContainer *>(pHeader));
+		static_cast<fp_VerticalContainer *>(pHeader)->setHeight(pHeader->getHeaderHeight());
 		
-		
+		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
 		getMasterTable()->setLastBrokenTable(pBroke);
-		pBroke->setYBreakHere(getYBreak() + vpos + getMasterTable()->getHeaderObject()->getHeaderHeight());
-		pBroke->setYBottom(getMasterTable()->getYBottom() + getMasterTable()->getHeaderObject()->getHeaderHeight() + 2*getMasterTable()->getBorderWidth());
-		
+		pBroke->setYBreakHere(getYBreak() + vpos);
+		pBroke->setYBottom(getMasterTable()->getYBottom() + getMasterTable()->getHeaderObject()->getHeaderHeight());
 		
 		setYBottom(getYBreak() + vpos -1);
 
@@ -5427,7 +5418,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	if(isThisHeader())
 	{
 		fp_TableHeader *pHeader = static_cast<fp_TableHeader *>(this);
-		pHeader->headerDraw(pDA);
+	//	pHeader->headerDraw(pDA);
 		return;
 	}
 	else if(isThisBroken() && !isThisHeader()) 
