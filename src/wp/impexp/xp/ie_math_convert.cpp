@@ -183,3 +183,62 @@ bool convertOMMLtoMathML(const std::string & pOMML, std::string & pMathML)
     return true;
 
 }
+
+// Function to convert MathML to OMML (for export to docx)
+
+static xsltStylesheet * cur3 = NULL;
+
+bool convertMathMLtoOMML(const std::string & rMathML, std::string & rOMML)
+{
+    xmlDocPtr doc,res;
+    xmlChar * sOMML = NULL;
+    int len;
+    
+    if(rMathML.empty())
+    {
+        return false;
+    }
+
+    if(!cur3)
+    {
+        std::string path(XAP_App::getApp()->getAbiSuiteLibDir());
+        path+= "/omml_xslt/mml2omml.xsl";
+
+        cur3 = xsltParseStylesheetFile((const xmlChar *)(path.c_str()));
+        if(!cur3)
+        {
+            UT_DEBUGMSG(("convertMathMLtoOMML : Parsing stylesheet failed\n"));
+            return false;
+        }
+    }
+
+    doc = xmlParseDoc((xmlChar*)(rMathML.c_str()));
+    if(!doc)
+    {
+        xxx_UT_DEBUGMSG(("convertMathMLtoOMML : Parsing MathML document failed\n"));
+        return false;
+    }
+
+    res = xsltApplyStylesheet(cur3, doc, NULL);
+    if(!res)
+    {
+        xxx_UT_DEBUGMSG(("convertMathMLtoOMML : Applying stylesheet failed\n"));
+        xmlFreeDoc(doc);
+        return false;
+    }
+
+    if(xsltSaveResultToString(&sOMML, &len, res, cur3) != 0)
+    {
+        xmlFreeDoc(res);
+        xmlFreeDoc(doc);
+        return false;
+    }
+
+    rOMML.assign((const char*)sOMML, len);
+
+    g_free(sOMML);
+    xmlFreeDoc(res);
+    xmlFreeDoc(doc);
+    return true;
+
+}
