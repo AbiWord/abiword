@@ -105,7 +105,7 @@ public:
 	void setTarget(int target);
 	bool hasFirstPageHdrFtr();
 	bool hasEvenPageHdrFtr();
-	void setHandledHdrFtr();
+	void setHandledHdrFtr(bool val);
 	bool getHandledHdrFtr();
 
 	UT_Error setPageMargins(const std::string & top, const std::string & left, const std::string & right, const std::string & bottom);

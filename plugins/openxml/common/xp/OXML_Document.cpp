@@ -409,6 +409,18 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 	if(ret != UT_OK)
 		return ret;
 
+	OXML_SectionMap::iterator it5;
+	for (it5 = m_headers.begin(); it5 != m_headers.end(); it5++)
+	{
+		it5->second->setHandledHdrFtr(false); // Headers are not handled before serialization of sections
+	}
+
+	OXML_SectionMap::iterator it6;
+	for (it6 = m_footers.begin(); it6 != m_footers.end(); it6++) 
+	{
+		it6->second->setHandledHdrFtr(false); // Footers are not handled before serialization of sections
+	}
+
 	OXML_SectionVector::size_type i;
 	for (i = 0; i < m_sections.size(); i++)
 	{
@@ -426,7 +438,6 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 	bool handled = false;
 
 	//serialize headers
-	OXML_SectionMap::iterator it5;
 	for (it5 = m_headers.begin(); it5 != m_headers.end(); it5++) {
 
 		if(it5->second->hasFirstPageHdrFtr())
@@ -438,7 +449,7 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 
 		if(!handled)
 		{
-			it5->second->setHandledHdrFtr();
+			it5->second->setHandledHdrFtr(true);
 			ret = it5->second->serializeHeader(exporter);
 			if (ret != UT_OK)
 				return ret;
@@ -446,7 +457,6 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 	}
 
 	//serialize footers
-	OXML_SectionMap::iterator it6;
 	for (it6 = m_footers.begin(); it6 != m_footers.end(); it6++) {
 
 		if(it6->second->hasFirstPageHdrFtr())
@@ -458,7 +468,7 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 
 		if(!handled)
 		{
-			it6->second->setHandledHdrFtr();
+			it6->second->setHandledHdrFtr(true);
 			ret = it6->second->serializeFooter(exporter);
 			if (ret != UT_OK)
 				return ret;

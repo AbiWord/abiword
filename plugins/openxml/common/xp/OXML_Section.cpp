@@ -234,7 +234,7 @@ UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter, OXML_Elemen
 		OXML_SharedSection header_section = doc->getHdrFtrById(true, headerId);
 		if(header_section != NULL)
 		{
-			header_section->setHandledHdrFtr();
+			header_section->setHandledHdrFtr(true);
 			err = header_section->serializeHeader(exporter);
 			if (err != UT_OK)
 				return err;		
@@ -246,7 +246,7 @@ UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter, OXML_Elemen
 		OXML_SharedSection footer_section = doc->getHdrFtrById(false, footerId);
 		if(footer_section != NULL)
 		{
-			footer_section->setHandledHdrFtr();
+			footer_section->setHandledHdrFtr(true);
 			err = footer_section->serializeFooter(exporter);
 			if (err != UT_OK)
 				return err;		
@@ -289,9 +289,9 @@ bool OXML_Section::hasEvenPageHdrFtr()
 	return strstr(headerType, "even");
 }
 
-void OXML_Section::setHandledHdrFtr()
+void OXML_Section::setHandledHdrFtr(bool val)
 {
-	b_handledHdrFtr = true;
+	b_handledHdrFtr = val;
 }
 
 bool OXML_Section::getHandledHdrFtr()
