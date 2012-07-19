@@ -147,19 +147,11 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->handled = true;
 
 	} else if ( nameMatches(rqst->pName, NS_W_KEY, "pageBreakBefore")){
-		//verify the context
-		std::string contextTag = rqst->context->back();
+		OXML_ElementTag tag = PG_BREAK;
+		OXML_SharedElement br ( new OXML_Element("", tag, SPAN) );
+		rqst->stck->push(br);
+		rqst->handled = true;
 
-		if (contextMatches(contextTag, NS_W_KEY, "pPr")) {
-			OXML_SharedElement elem = rqst->stck->top();
-			if(elem->getTag() == P_TAG)
-			{
-				OXML_Element_Paragraph* para = static_cast<OXML_Element_Paragraph*>(get_pointer(elem)); 
-				para->setPageBreak();
-			}
-			rqst->handled = true;
-		}
-	
 	} else if ( nameMatches(rqst->pName, NS_W_KEY, "tab")){
 		//verify the context
 		std::string contextTag = rqst->context->back();
@@ -893,7 +885,8 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		rqst->handled = true;		
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "pageBreakBefore")) {
-		rqst->handled = contextMatches(rqst->context->back(), NS_W_KEY, "pPr");		
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
+		rqst->handled = true;	
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "shd")) {
 		std::string contextTag = rqst->context->back();
 		rqst->handled = contextMatches(contextTag, NS_W_KEY, "pPr") || contextMatches(contextTag, NS_W_KEY, "rPr");
