@@ -106,6 +106,10 @@ void AP_UnixDialog_Field::runModal(XAP_Frame * pFrame)
 			break;
 	}
 
+        // We need to disconnect handler or answer will reset to "Cancel" during
+        // destruction
+        g_signal_handler_disconnect(G_OBJECT(m_listTypes), m_cursorChangedHandlerId);
+        g_signal_handler_disconnect(G_OBJECT(m_listFields), m_rowActivatedHandlerId);
 	abiDestroyWidget ( m_windowMain ) ;
 }
 
@@ -330,12 +334,12 @@ GtkWidget * AP_UnixDialog_Field::_constructWindow(void)
 
 	// connect a clicked signal to the column
 
-	g_signal_connect_after(G_OBJECT(m_listTypes),
+	m_cursorChangedHandlerId = g_signal_connect_after(G_OBJECT(m_listTypes),
 						   "cursor-changed",
 						   G_CALLBACK(s_types_clicked),
 						   static_cast<gpointer>(this));
 
-	g_signal_connect_after(G_OBJECT(m_listFields),
+	m_rowActivatedHandlerId = g_signal_connect_after(G_OBJECT(m_listFields),
 						   "row-activated",
 						   G_CALLBACK(s_field_dblclicked),
 						   static_cast<gpointer>(this));
