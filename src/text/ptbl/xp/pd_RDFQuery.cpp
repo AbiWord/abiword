@@ -382,14 +382,14 @@ abiword_storage_terminate(librdf_storage* storage)
 static int
 abiword_storage_open(librdf_storage* storage, librdf_model* /*model*/)
 {
-    abiwordContext* c = abiwordContext::get( storage );
+    /*abiwordContext* c =*/ abiwordContext::get( storage );
     return 0;
 }
 
 static int
 abiword_storage_close(librdf_storage* storage)
 {
-    abiwordContext* c = abiwordContext::get( storage );
+    /*abiwordContext* c =*/ abiwordContext::get( storage );
     return 0;
 
 }
@@ -529,7 +529,7 @@ abiword_storage_context_add_statement( librdf_storage* storage,
                                        librdf_statement* /*statement*/ )
 {
     // storage models are read-only and used for queries only.
-    abiwordContext* c = abiwordContext::get( storage );
+    /*abiwordContext* c =*/ abiwordContext::get( storage );
     return 0;
 }
 

@@ -2937,12 +2937,10 @@ void fp_CellContainer::layout(void)
 	UT_sint32 iY = 0, iPrevY = 0;
 	fp_Container *pContainer, *pPrevContainer = NULL;
 	xxx_UT_DEBUGMSG(("Doing Cell layout %x \n",this));
-	fp_TableContainer * pMyBrokenTable = NULL;
 	if(countCons() == 0)
 	{
 		return;
 	}
-	pMyBrokenTable = getBrokenTable(static_cast<fp_Container*>(getNthCon(0)));
 	for (UT_sint32 i=0; i < countCons(); i++)
 	{
 		pContainer = static_cast<fp_Container*>(getNthCon(i));
