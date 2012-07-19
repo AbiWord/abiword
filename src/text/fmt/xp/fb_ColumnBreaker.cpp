@@ -608,39 +608,32 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 				}
 				if(pOffendingContainer->isVBreakable())
 				{
-					xxx_UT_DEBUGMSG(("fb_ColumnBreak 1 Broken Container num %d \n",(static_cast<fp_TableContainer *>(pOffendingContainer))->getBrokenNumber()));
-					if (_breakCON(pOffendingContainer,
-									pLastContainerToKeep,
-									iMaxColHeight, iWorkingColHeight, 
-									iContainerMarginAfter))
+					xxx_UT_DEBUGMSG(("fb_ColumnBreak 1 Broken Container num %d \n",
+									 (static_cast<fp_TableContainer *>(pOffendingContainer))->getBrokenNumber()));
+					if (_breakCON(pOffendingContainer,pLastContainerToKeep,
+								  iMaxColHeight, iWorkingColHeight,iContainerMarginAfter))
 					{
 						pCurContainer = pOffendingContainer;
 					}
-					else if(pOffendingContainer && pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE)
+					else if(pOffendingContainer && ((pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE) ||
+													(pOffendingContainer->getContainerType() == FP_CONTAINER_TOC)))
 					{
-//
-// Can't break the table so bump it.
-//
+						//
+						// Can't break the table or the TOC; so bump it to next column.
+						//
 						pCurContainer = pOffendingContainer;
-						fp_TableContainer * pTabOffend = static_cast<fp_TableContainer *>(pOffendingContainer);
-						pLastContainerToKeep = pTabOffend->getPrevContainerInSection();
-						xxx_UT_DEBUGMSG(("Can't break table. pCurContainer %x pTabOffend %x pLastContainerToKeep %x \n",pCurContainer,pTabOffend,pLastContainerToKeep));
+						pLastContainerToKeep = pOffendingContainer->getPrevContainerInSection();
+						UT_DEBUGMSG(("Can't break table or TOC. pOffendingContainer %p pLastContainerToKeep %p\n",
+									 pCurContainer,pLastContainerToKeep));
 						break;
 					}
-					else if( pOffendingContainer == NULL)
+					else if(!pOffendingContainer)
 					{
-					        break;
+						break;
 					}
 					else
 					{
-//
-// Can't break the TOC so bump it.
-//
-						pCurContainer = pOffendingContainer;
-						UT_ASSERT(pCurContainer->getContainerType() == FP_CONTAINER_TOC);
-						fp_TOCContainer * pTOCOffend = static_cast<fp_TOCContainer *>(pOffendingContainer);
-						pLastContainerToKeep = pTOCOffend->getPrevContainerInSection();
-					    UT_DEBUGMSG(("Can't break TOC. pCurContainer %p pTabOffend %p pLastContainerToKeep %p \n",pCurContainer,pTOCOffend,pLastContainerToKeep));
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 						break;
 					}
 				}
