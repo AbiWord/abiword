@@ -441,7 +441,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             !strcmp(pName, "text:description") ||
             !strcmp(pName, "text:keywords") ||
             !strcmp(pName, "text:subject") ||
-            !strcmp(pName, "text:title")) {
+            !strcmp(pName, "text:title") ||
+            !strcmp(pName, "text:modification-date")) {
                 
         _flush ();
 
@@ -476,6 +477,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             type = "meta_subject";
         else if(!strcmp(pName, "text:title"))
             type = "meta_title";
+        else if(!strcmp(pName, "text:modification-date"))
+            type = "meta_date_last_changed";
+
 
         const gchar *field_fmt[3];
         field_fmt[0] = "type";
