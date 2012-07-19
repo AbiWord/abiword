@@ -458,7 +458,12 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	// NB: changes will be applied to all footnotes within a block (not only 
 	// those within the selection) 
 	
-	bool bSkipFootnote = _checkSkipFootnote(dpos1,dpos2);
+	bool bSkipFootnote = false;
+	if ((pts != PTX_SectionTOC) && (pts != PTX_SectionFootnote) && 
+		(pts != PTX_SectionEndnote) && (pts != PTX_SectionAnnotation))
+	{
+		bSkipFootnote = _checkSkipFootnote(dpos1,dpos2); 
+	}
 	bool bStopOnEndFootnote = (ptsTemp != PTX_Block);
 	bool bFoundFirst;
 	bool bFoundEnd;
