@@ -6684,7 +6684,7 @@ void FV_View::warpInsPtNextPrevScreen(bool bNext)
 
 	_resetSelection();
 	_clearIfAtFmtMark(getPoint());
-	_moveInsPtNextPrevScreen(bNext);
+	_moveInsPtNextPrevScreen(bNext,true);
 
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
@@ -6795,7 +6795,7 @@ void FV_View::extSelNextPrevScreen(bool bNext)
 	{
 		_setSelectionAnchor();
 		_clearIfAtFmtMark(getPoint());
-		_moveInsPtNextPrevScreen(bNext);
+		_moveInsPtNextPrevScreen(bNext,false);
 
 		if (isSelectionEmpty())
 		{
@@ -6809,7 +6809,7 @@ void FV_View::extSelNextPrevScreen(bool bNext)
 	else
 	{
 		PT_DocPosition iOldPoint = getPoint();
-		_moveInsPtNextPrevScreen(bNext);
+		_moveInsPtNextPrevScreen(bNext,false);
 
 		// top/bottom of doc - nowhere to go
 		if (iOldPoint == getPoint())

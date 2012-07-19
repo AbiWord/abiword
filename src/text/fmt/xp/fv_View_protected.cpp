@@ -2263,7 +2263,7 @@ void FV_View::_moveInsPtNextPrevPage(bool bNext)
 	_moveInsPtToPage(pPage);
 }
 
-void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
+void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown, bool bClearSelection)
 {
 	fl_BlockLayout * pBlock;
 	fp_Run * pRun;
@@ -2302,11 +2302,11 @@ void FV_View::_moveInsPtNextPrevScreen(bool bMovingDown)
 		// Move insertion pointer to BOD/EOD instead
 		if (iDir == 1)
 		{
-			moveInsPtTo(FV_DOCPOS_EOD);
+			moveInsPtTo(FV_DOCPOS_EOD, bClearSelection);
 		}
 		else
 		{
-			moveInsPtTo(FV_DOCPOS_BOD);
+			moveInsPtTo(FV_DOCPOS_BOD, bClearSelection);
 		}
 		return;
 	}

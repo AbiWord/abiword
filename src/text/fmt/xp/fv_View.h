@@ -912,7 +912,7 @@ protected:
 	bool                		_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition iPos2, bool bClear, bool bFullLineHeight);
 	bool				_ensureInsertionPointOnScreen();
 	void				_moveInsPtNextPrevPage(bool bNext);
-	void				_moveInsPtNextPrevScreen(bool bNext);
+	void				_moveInsPtNextPrevScreen(bool bNext, bool bClearSelection);
 	void				_moveInsPtNextPrevLine(bool bNext);
 	fp_Line *           _getNextLineInDoc(fp_Container * pCon) const;
 	fp_Page *			_getCurrentPage(void) const;
