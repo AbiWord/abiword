@@ -95,6 +95,7 @@ class ABI_EXPORT fd_Field
 		FD_Meta_Subject,
 		FD_Meta_Publisher,
 		FD_Meta_Date,
+                FD_Meta_Date_Last_Changed,
 		FD_Meta_Type,
 		FD_Meta_Language,
 		FD_Meta_Rights,

@@ -628,6 +628,7 @@ dcl(FIELD_Document_Subject, "Subject")		//xgettext:msgctxt
 dcl(FIELD_Document_Publisher, "Publisher")
 dcl(FIELD_Document_Contributor, "Contributor")
 dcl(FIELD_Document_Date, "Date")
+dcl(FIELD_Document_Date_Last_Changed, "Date Last Changed")
 dcl(FIELD_Document_Type, "Type")
 dcl(FIELD_Document_Language, "Language")
 dcl(FIELD_Document_Coverage, "Coverage")

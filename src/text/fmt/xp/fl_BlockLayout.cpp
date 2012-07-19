@@ -6184,6 +6184,10 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	  {
 	    pNewRun = new fp_FieldMetaDateRun(this,   blockOffset, 1);
 	  }
+        else if(strcmp(pszType, "meta_date_last_changed") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaDateLastChangedRun(this,   blockOffset, 1);
+	  }
 	else if(strcmp(pszType, "meta_type") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaTypeRun(this,   blockOffset, 1);

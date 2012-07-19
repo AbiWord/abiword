@@ -227,6 +227,11 @@ pf_Frag_Object::pf_Frag_Object(pt_PieceTable * pPT,
 			  {
 			    fieldType = fd_Field::FD_Meta_Date;
 			  }
+                        
+                        else if(0 == strcmp(pszType, "meta_date_last_changed"))
+			  {
+			    fieldType = fd_Field::FD_Meta_Date_Last_Changed;
+			  }
 			else if(0 == strcmp(pszType, "meta_type"))
 			  {
 			    fieldType = fd_Field::FD_Meta_Type;

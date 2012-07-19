@@ -1574,6 +1574,13 @@ class ABI_EXPORT fp_FieldMetaDateRun : public fp_FieldMetaRun
   virtual ~fp_FieldMetaDateRun(){}
 };
 
+class ABI_EXPORT fp_FieldMetaDateLastChangedRun : public fp_FieldMetaRun
+{
+ public:
+  fp_FieldMetaDateLastChangedRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  virtual ~fp_FieldMetaDateLastChangedRun(){}
+};
+
 class ABI_EXPORT fp_FieldMetaTypeRun : public fp_FieldMetaRun
 {
  public:

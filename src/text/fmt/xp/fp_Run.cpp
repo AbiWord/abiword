@@ -5559,6 +5559,10 @@ fp_FieldMetaDateRun::fp_FieldMetaDateRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFi
 {
 }
 
+fp_FieldMetaDateLastChangedRun::fp_FieldMetaDateLastChangedRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_DATE_LAST_CHANGED)
+{
+}
+
 fp_FieldMetaTypeRun::fp_FieldMetaTypeRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_TYPE)
 {
 }
