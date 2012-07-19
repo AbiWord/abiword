@@ -8309,29 +8309,6 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	m_pG->scroll(0, dy);
 	m_yScrollOffset = v;
 
-	UT_sint32 y1 = 0;
-	UT_sint32 dy2 = getWindowHeight();
-
-	if (dy > 0)
-	{
-		if (dy < getWindowHeight())
-		{
-			y1 = getWindowHeight() - dy;
-			dy2 = dy;
-		}
-	}
-	else
-	{
-		if (dy > -getWindowHeight())
-		{
-			dy2 = -dy;
-		}
-	}
-
-// expose should handle this! FIXME remove this code when we're sure
-// we don't need this.
-//	_draw(0, y1, getWindowWidth(), dy2, false, true);
-
 	_fixInsertionPointCoords();
 }
 
