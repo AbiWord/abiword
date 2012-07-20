@@ -52,15 +52,42 @@ OXML_Style::~OXML_Style()
 UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
+	bool b_docDefaults = false;
 	const gchar* szValue = NULL;
+	const gchar* name = NULL;
 	const gchar* type = NULL;
 	getAttribute("type", type);
+	getAttribute("name", name);
+	if(name)
+	{
+		if(!strcmp(name, "Normal"))
+		{
+			b_docDefaults = true;
+		}
+	}
 	std::string szType(type); // type is character or paragraph
-	err = exporter->startStyle(m_name.c_str(), m_basedon.c_str(), m_followedby.c_str(), szType.c_str());
-	if(err != UT_OK)
-		return err;
+
+	if(b_docDefaults)
+	{
+		err = exporter->startDocumentDefaultProperties();
+		if(err != UT_OK)
+			return err;
+	}
+	else
+	{
+		err = exporter->startStyle(m_name.c_str(), m_basedon.c_str(), m_followedby.c_str(), szType.c_str());
+		if(err != UT_OK)
+			return err;
+	}
 
 	// PARAGRAPH PROPERTIES
+
+	if(b_docDefaults)
+	{
+		err = exporter->startParagraphDefaultProperties();
+		if(err != UT_OK)
+			return err;		
+	}
 
 	err = exporter->startParagraphProperties(TARGET_STYLES);
 	if(err != UT_OK)
@@ -142,7 +169,23 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
+	if(b_docDefaults)
+	{
+		err = exporter->finishParagraphDefaultProperties();
+		if(err != UT_OK)
+			return err;		
+	}
+
+	// END OF PARAGRAPH PROPERTIES
+
 	// RUN PROPERTIES
+
+	if(b_docDefaults)
+	{
+		err = exporter->startRunDefaultProperties();
+		if(err != UT_OK)
+			return err;		
+	}
 
 	err = exporter->startRunProperties(TARGET_STYLES);
 	if(err != UT_OK)
@@ -241,7 +284,29 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
-	return exporter->finishStyle();
+	if(b_docDefaults)
+	{
+		err = exporter->finishRunDefaultProperties();
+		if(err != UT_OK)
+			return err;		
+	}
+
+	// END OF RUN PROPERTIES
+
+	if(b_docDefaults)
+	{
+		err = exporter->finishDocumentDefaultProperties();
+		if(err != UT_OK)
+			return err;
+	}
+	else
+	{
+		err = exporter->finishStyle();
+		if(err != UT_OK)
+			return err;
+	}
+
+	return UT_OK;
 }
 
 UT_Error OXML_Style::addToPT(PD_Document * pDocument)

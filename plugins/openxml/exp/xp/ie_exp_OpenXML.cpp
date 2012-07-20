@@ -2910,15 +2910,34 @@ UT_Error IE_Exp_OpenXML::finishStyle()
 	return writeTargetStream(TARGET_STYLES, "</w:style>");
 }
 
-UT_Error IE_Exp_OpenXML::writeDefaultStyle()
+UT_Error IE_Exp_OpenXML::startDocumentDefaultProperties()
 {
-	//TODO: add more default settings here
-	std::string str("<w:docDefaults>");
-	str += "<w:pPrDefault><w:pPr><w:pStyle w:val=\"Normal\"/></w:pPr></w:pPrDefault>";
-	str += "<w:rPrDefault><w:rPr><w:rStyle w:val=\"Normal\"/></w:rPr></w:rPrDefault>";
-	str += "</w:docDefaults>";
-	return writeTargetStream(TARGET_STYLES, str.c_str());
+	return writeTargetStream(TARGET_STYLES, "<w:docDefaults>");
+}
 
+UT_Error IE_Exp_OpenXML::finishDocumentDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "</w:docDefaults>");
+}
+
+UT_Error IE_Exp_OpenXML::startRunDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "<w:rPrDefault>");
+}
+
+UT_Error IE_Exp_OpenXML::finishRunDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "</w:rPrDefault>");
+}
+
+UT_Error IE_Exp_OpenXML::startParagraphDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "<w:pPrDefault>");
+}
+
+UT_Error IE_Exp_OpenXML::finishParagraphDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "</w:pPrDefault>");
 }
 
 UT_Error IE_Exp_OpenXML::writeImage(const char* filename, const UT_ByteBuf* data)

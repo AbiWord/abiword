@@ -405,10 +405,6 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 			return ret;
 	}
 
-	ret = exporter->writeDefaultStyle();
-	if(ret != UT_OK)
-		return ret;
-
 	OXML_SectionMap::iterator it5;
 	for (it5 = m_headers.begin(); it5 != m_headers.end(); it5++)
 	{

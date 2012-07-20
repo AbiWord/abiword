@@ -88,6 +88,12 @@ public:
 	UT_Error finishCellProperties(int target);
 	UT_Error startStyle(const std::string& name, const std::string& basedon, const std::string& followedby, const std::string& type);
 	UT_Error finishStyle();
+	UT_Error startDocumentDefaultProperties();
+	UT_Error finishDocumentDefaultProperties();
+	UT_Error startRunDefaultProperties();
+	UT_Error finishRunDefaultProperties();
+	UT_Error startParagraphDefaultProperties();
+	UT_Error finishParagraphDefaultProperties();
 	UT_Error startTable();
 	UT_Error finishTable();
 	UT_Error startTableProperties(int target);
@@ -129,7 +135,6 @@ public:
 	UT_Error finishFootnote();
 	UT_Error startEndnote(const gchar* id);
 	UT_Error finishEndnote();
-	UT_Error writeDefaultStyle();
 	UT_Error setBold(int target);
 	UT_Error setItalic(int target);
 	UT_Error setUnderline(int target);
