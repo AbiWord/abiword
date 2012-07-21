@@ -893,6 +893,14 @@ void fp_TextRun::findPointCoords(UT_uint32 iOffset, UT_sint32& x, UT_sint32& y, 
 	//docPos = adjustCaretPosition(docPos,true);
 	//iOffset = docPos - getBlockOffset() + getBlock()->getPosition();
 	getLine()->getOffsets(this, xoff, yoff);
+	if (getLine()->getY() == INITIAL_OFFSET) 
+	{
+		UT_DEBUGMSG(("Line position requested prior to line being placed\n"));
+		if (getLine()->getPrev())
+		{
+			yoff += getLine()->getPrev()->getY() + getLine()->getHeight() - INITIAL_OFFSET;
+		}
+	}
 
 	if (m_fPosition == TEXT_POSITION_SUPERSCRIPT)
 	{

@@ -6352,15 +6352,14 @@ bool FV_View::_charInsert(const UT_UCSChar * text, UT_uint32 count, bool bForce)
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
 
-	_setPoint(getPoint());
-	_fixInsertionPointCoords();
-	_ensureInsertionPointOnScreen();
 	if(!doInsert)
 	{
 	  notifyListeners(AV_CHG_ALL);
 	}
 
 	_generalUpdate();
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
 
 	return bResult;
 }
