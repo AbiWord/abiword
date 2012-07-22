@@ -112,6 +112,16 @@ void AP_CocoaDialog_FormatFrame::setBorderThicknessInGUI(UT_UTF8String & /*sThic
 	UT_ASSERT_NOT_REACHED();
 }
 
+void AP_CocoaDialog_FormatFrame::setHeightInGUI(UT_UTF8String & /*sHeight*/)
+{
+	UT_ASSERT_NOT_REACHED();
+}
+
+void AP_CocoaDialog_FormatFrame::setWidthInGUI(UT_UTF8String & /*sWidth*/)
+{
+	UT_ASSERT_NOT_REACHED();
+}
+
 void AP_CocoaDialog_FormatFrame::event_Close(void)
 {
 	m_answer = AP_Dialog_FormatFrame::a_CLOSE;
@@ -265,6 +275,9 @@ void AP_CocoaDialog_FormatFrame::_populateWindowData(void)
 
 		bca = backgroundColor().m_bIsTransparent ? 0.0f : 1.0f;
 
+        //setHeight & setWidth
+        
+
 		[m_dlg setBackgroundColor:[NSColor colorWithCalibratedRed:bcr green:bcg blue:bcb alpha:bca]];
 
 		[m_dlg setWrapState:(getWrapping() ? NSOnState : NSOffState)];
@@ -360,6 +373,52 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 		[[self window] makeFirstResponder:_borderNumberForm];
 	}
+}
+
+- (IBAction)frameHeightField:(id)sender;
+{
+    /*
+    NSStepper * stepper = 0;
+    NSFormCell * field = 0;
+    float thickness = 0;
+    float height= 0;
+    float width= 0;
+    UT_UTF8String sThick;
+    stepper   = _rightBorderStepper;
+    field     = _rightBorderNumber;
+    sThick    = [[field stringValue] UTF8String];
+    _xap->setBorderThicknessRight(sThick);
+    thickness = _xap->borderThicknessRight();
+    [stepper setFloatValue:thickness];
+    [field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessRight().utf8_str())]];
+    _xap->event_previewExposed();
+    */
+}
+- (IBAction)frameHeightStepper:(id)sender;
+{
+    /*
+    NSStepper * stepper = 0;
+    NSFormCell * field = 0;
+    float thickness = 0;
+
+    stepper   = _rightBorderStepper;
+    field     = _rightBorderNumber;
+    thickness = [stepper floatValue];
+    _xap->setBorderThicknessRight(thickness);
+    thickness = _xap->borderThicknessRight();
+    [stepper setFloatValue:thickness];
+    [field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessRight().utf8_str())]];
+    _xap->event_previewExposed();
+    */
+}
+
+- (IBAction)frameWidthField:(id)sender;
+{
+
+}
+- (IBAction)frameWidthStepper:(id)sender;
+{
+
 }
 
 - (IBAction)borderThicknessField:(id)sender
