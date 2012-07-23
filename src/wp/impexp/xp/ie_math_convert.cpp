@@ -176,6 +176,12 @@ bool convertOMMLtoMathML(const std::string & pOMML, std::string & pMathML)
     }
 
     pMathML.assign((const char*)qMathML, len);
+    
+    if(strncmp(pMathML.c_str(),"<?xml version=\"1.0\"?>\n",22) == 0)
+    {
+        // remove <?xml version=\"1.0\"?>\n from the MathML
+        pMathML = pMathML.substr(22);
+    }
 
     g_free(qMathML);
     xmlFreeDoc(res);

@@ -61,13 +61,13 @@
 	  </xsl:template>
 
 	  <!-- Templates -->
-	<!--
-	    <xsl:template match="/">
+	
+	<xsl:template match="/">
 	    <math>
-	    <xsl:apply-templates select="*" />
+		    <xsl:apply-templates select="*" />
 	    </math>
 	</xsl:template>
-	-->
+	
 	<xsl:template match="m:borderBox">
 
 		<!-- Get Lowercase versions of properties -->
