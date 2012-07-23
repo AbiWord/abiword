@@ -49,6 +49,8 @@ public:
 	virtual void			setSensitivity(bool bSens);
 	virtual void            setBackgroundColorInGUI(UT_RGBColor clr);
 	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
+    virtual void            setWidthInGUI(UT_UTF8String & sWidth);
+    virtual void            setHeightInGUI(UT_UTF8String & sHeight);
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
@@ -85,6 +87,10 @@ private:
     IBOutlet NSButton *_topBorderBtn;
     IBOutlet NSButton *_setImageBtn;
     IBOutlet NSButton *_noImageBtn;
+    IBOutlet NSForm *           tableHeightField;
+    IBOutlet NSForm *           tableWidthField;
+    IBOutlet NSStepper *        tableHeightStepper;
+    IBOutlet NSStepper *        tableWidthStepper;
 	IBOutlet NSTextField *_thicknessLabel;
 	IBOutlet NSPopUpButton *_thicknessPopup;
 	AP_CocoaDialog_FormatTable*	_xap;
@@ -100,6 +106,10 @@ private:
 - (IBAction)topBorderAction:(id)sender;
 - (IBAction)applyToAction:(id)sender;
 - (IBAction)borderThicknessAction:(id)sender;
+- (IBAction)tableHeightField:(id)sender;
+- (IBAction)tableHeightStepper:(id)sender;
+- (IBAction)tableWidthField:(id)sender;
+- (IBAction)tableWidthStepper:(id)sender;
 
 - (XAP_CocoaNSView*)preview;
 - (void)setSensitivity:(bool)bSens;

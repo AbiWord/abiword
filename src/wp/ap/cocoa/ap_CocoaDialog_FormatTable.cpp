@@ -114,6 +114,35 @@ void AP_CocoaDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 	[m_dlg->_thicknessPopup selectItemAtIndex:closest];
 }
 
+void AP_CocoaDialog_FormatTable::setHeightInGUI(UT_UTF8String & /*sHeight*/)
+{
+        UT_ASSERT_NOT_REACHED();
+}
+
+void AP_CocoaDialog_FormatTable::setWidthInGUI(UT_UTF8String & /*sWidth*/)
+{
+        UT_ASSERT_NOT_REACHED();
+}
+- (IBAction)tableHeightField:(id)sender;
+{
+
+}
+- (IBAction)tableHeightStepper:(id)sender;
+{
+
+}
+
+- (IBAction)tableWidthField:(id)sender;
+{
+
+}
+- (IBAction)tableWidthStepper:(id)sender;
+{
+
+}
+
+
+
 void AP_CocoaDialog_FormatTable::event_Close(void)
 {
 	m_answer = AP_Dialog_FormatTable::a_CLOSE;
