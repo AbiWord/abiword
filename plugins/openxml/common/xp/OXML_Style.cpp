@@ -236,7 +236,7 @@ UT_Error OXML_Style::serialize(IE_Exp_OpenXML* exporter)
 
 		if(strstr(szValue, "overline"))
 		{
-			err = exporter->setOverline(TARGET_STYLES);
+			err = exporter->setOverline();
 			if(err != UT_OK)
 				return err;
 		}

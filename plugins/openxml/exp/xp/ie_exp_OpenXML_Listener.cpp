@@ -91,7 +91,8 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 			}
 
 			UT_UCS4String str(pData, pcrs->getLength());
-			OXML_SharedElement shared_element_text(new OXML_Element_Text(str.utf8_str(), str.length()));
+			OXML_Element_Text* element_text = new OXML_Element_Text(str.utf8_str(), str.length());
+			OXML_SharedElement shared_element_text(static_cast<OXML_Element*>(element_text));
 
 			OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
 			OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
@@ -113,6 +114,19 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 					if(pAP->getNthProperty(i, szName, szValue))
 					{
 						if(element_run->setProperty(szName, szValue) != UT_OK)
+							return false;		
+						if(element_text->setProperty(szName, szValue) != UT_OK)
+							return false;		
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						if(element_text->setAttribute(szName, szValue) != UT_OK)
 							return false;		
 					}
 				}

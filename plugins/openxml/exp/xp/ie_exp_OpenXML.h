@@ -76,7 +76,7 @@ public:
 	UT_Error startParagraph(int target);
 	UT_Error finishParagraph(int target);
 	UT_Error startText(int target);
-	UT_Error writeText(int target, const UT_UCS4Char* text);
+	UT_Error writeText(int target, const UT_UCS4Char* text, bool list);
 	UT_Error finishText(int target);
 	UT_Error startRun(int target);
 	UT_Error finishRun(int target);
@@ -138,7 +138,7 @@ public:
 	UT_Error setBold(int target);
 	UT_Error setItalic(int target);
 	UT_Error setUnderline(int target);
-	UT_Error setOverline(int target);
+	UT_Error setOverline();
 	UT_Error setLineThrough(int target);
 	UT_Error setSuperscript(int target);
 	UT_Error setSubscript(int target);

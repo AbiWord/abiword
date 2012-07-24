@@ -144,7 +144,7 @@ UT_Error OXML_Element_Run::serializeProperties(IE_Exp_OpenXML* exporter)
 
 		if(strstr(szValue, "overline"))
 		{
-			err = exporter->setOverline(TARGET);
+			err = exporter->setOverline();
 			if(err != UT_OK)
 				return err;
 		}

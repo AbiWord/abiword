@@ -269,7 +269,7 @@ UT_Error IE_Exp_OpenXML::startText(int target)
 /**
  * Writes the actual content of OXML_Element_Text object
  */
-UT_Error IE_Exp_OpenXML::writeText(int target, const UT_UCS4Char* text)
+UT_Error IE_Exp_OpenXML::writeText(int target, const UT_UCS4Char* text, bool list)
 {
 	// This shouldn't happen, but if it does just return UT_OK
 	// to prevent export errors
@@ -283,6 +283,12 @@ UT_Error IE_Exp_OpenXML::writeText(int target, const UT_UCS4Char* text)
 	const UT_UCS4Char* pText;
 	for(pText = text; pText < text + len; pText++)
 	{
+		// Skipping first tab character of list element
+		if(list && pText == text && *pText == '\t') 
+		{
+			continue;
+		}
+
 		switch(*pText)
 		{
 			// any other special handling needed?
@@ -795,7 +801,7 @@ UT_Error IE_Exp_OpenXML::setUnderline(int target)
 /**
  * Sets overline style
  */
-UT_Error IE_Exp_OpenXML::setOverline(int target)
+UT_Error IE_Exp_OpenXML::setOverline()
 {
 	isOverline = true;
 	return UT_OK;
