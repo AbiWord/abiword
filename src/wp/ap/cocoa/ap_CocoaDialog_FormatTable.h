@@ -87,10 +87,10 @@ private:
     IBOutlet NSButton *_topBorderBtn;
     IBOutlet NSButton *_setImageBtn;
     IBOutlet NSButton *_noImageBtn;
-    IBOutlet NSForm *           tableHeightField;
-    IBOutlet NSForm *           tableWidthField;
-    IBOutlet NSStepper *        tableHeightStepper;
-    IBOutlet NSStepper *        tableWidthStepper;
+    IBOutlet NSForm *           _tableHeightField;
+    IBOutlet NSForm *           _tableWidthField;
+    IBOutlet NSStepper *        _tableHeightStepper;
+    IBOutlet NSStepper *        _tableWidthStepper;
 	IBOutlet NSTextField *_thicknessLabel;
 	IBOutlet NSPopUpButton *_thicknessPopup;
 	AP_CocoaDialog_FormatTable*	_xap;
