@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-06-28 12:49+0200\n"
-"PO-Revision-Date: 2012-06-28 12:49+0200\n"
+"POT-Creation-Date: 2012-07-24 16:32+0200\n"
+"PO-Revision-Date: 2012-07-24 16:32+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -426,7 +426,7 @@ msgstr "Hyperlink &bearbeiten"
 #. DLG_Options_Label_EnableOverwrite
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
-msgstr "Ü&berschreibemodus wechselbar"
+msgstr "Umschaltbaren Ü&berschreibmodus verwenden"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -533,7 +533,7 @@ msgstr "&Verborgenen Text"
 #. DLG_Options_Label_SpellHighlightMisspelledWords
 #: po/tmp/ap_String_Id.h
 msgid "&Highlight misspelled words"
-msgstr "Schreibfehler &hervorheben"
+msgstr "Rechtschreibfehler &hervorheben"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -1423,7 +1423,7 @@ msgstr "Automatisch speichern"
 #. DLG_Options_Label_SpellAutoReplace
 #: po/tmp/ap_String_Id.h
 msgid "Auto replace misspelled words"
-msgstr "Schreibfehler automatisch korrigieren"
+msgstr "Rechtschreibfehler automatisch korrigieren"
 
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
@@ -1634,7 +1634,7 @@ msgstr "&Nummerierung und Aufzählung"
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
-msgstr "Schalterstil"
+msgstr "Schaltflächenstil"
 
 #. MENU_LABEL_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h
@@ -1866,7 +1866,7 @@ msgstr "&Rechtschreibung prüfen"
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h
 msgid "Check &grammar as you type"
-msgstr "&Grammatik bei der Eingabe überprüfen"
+msgstr "&Grammatik bei der Eingabe prüfen"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h
@@ -1901,7 +1901,7 @@ msgstr "Bildschirmfarbe auswählen"
 #. DLG_Options_Label_ColorChooserLabel
 #: po/tmp/ap_String_Id.h
 msgid "Choose screen color for AbiWord"
-msgstr "Bildschirmfarbe für AbiWord wählen"
+msgstr "Bildschirmfarbe für AbiWord auswählen"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
@@ -2184,7 +2184,7 @@ msgstr "Abdeckung"
 #. DLG_MetaData_Coverage_LBL
 #: po/tmp/ap_String_Id.h
 msgid "Coverage:"
-msgstr "Abdeckung:"
+msgstr "Geltungsbereich:"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
@@ -2443,7 +2443,7 @@ msgstr "Standard-Tabulatoren:"
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h
 msgid "Default to right-to-left direction of text"
-msgstr "Standardtextrichtung von rechts nach links"
+msgstr "Textrichtung von rechts nach links als Standard festlegen"
 
 #. DLG_FormatTOC_LevelDefs
 #: po/tmp/ap_String_Id.h
@@ -2846,7 +2846,7 @@ msgstr "Schattierung verwenden"
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h
 msgid "Enable smart (curly) quotes"
-msgstr "Geschweifte Anführungszeichen verwenden"
+msgstr "Typografische Anführungszeichen verwenden"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h
@@ -3570,8 +3570,8 @@ msgstr "Anfangswert für die Fußnote:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "Innerer (einfacher) Anführungsstil"
+msgid "Inner (single) quote style:"
+msgstr "Innere (einfache) Anführungszeichen:"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -4065,11 +4065,6 @@ msgstr "Ebene:"
 msgid "Li&ne spacing:"
 msgstr "&Zeilenabstand:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Zeile"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4094,6 +4089,11 @@ msgstr "Linie unter der markierten Auswahl (ein/aus)"
 #: po/tmp/ap_String_Id.h
 msgid "Line between"
 msgstr "Zwischenlinie"
+
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr "Zeile:"
 
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
@@ -4639,8 +4639,8 @@ msgstr "Fehler beim Öffnen von %s: kein freier Speicher"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
-msgstr "Äußerer (doppelter) Anführungsstil"
+msgid "Outer (double) quote style:"
+msgstr "Äußere (doppelte) Anführungszeichen:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4675,7 +4675,6 @@ msgstr "Än&derungen entfernen"
 msgid "Pa&ste Unformatted"
 msgstr "In&halte einfügen"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4736,6 +4735,11 @@ msgstr "Seite einr&ichten"
 msgid "Page Setup"
 msgstr "Seite einrichten"
 
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr "Seite:"
+
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -4755,7 +4759,7 @@ msgstr "Textfluß"
 #. DLG_PageSetup_Paper
 #: po/tmp/ap_String_Id.h
 msgid "Paper"
-msgstr "Papier"
+msgstr "Größe"
 
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
@@ -4803,7 +4807,7 @@ msgstr "Einfügen"
 #. DLG_MetaData_TAB_Permission
 #: po/tmp/ap_String_Id.h
 msgid "Permissions"
-msgstr "Berechtigungen"
+msgstr "Genehmigungen"
 
 #. DLG_Goto_Target_Picture
 #: po/tmp/ap_String_Id.h
@@ -5091,7 +5095,7 @@ msgstr "Beziehung"
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
 msgid "Relation:"
-msgstr "Beziehung:"
+msgstr "Zusammenhang:"
 
 #. DLG_Styles_RemoveButton
 #: po/tmp/ap_String_Id.h
@@ -5188,7 +5192,7 @@ msgstr "Ersetzen"
 #. DLG_FR_ReplaceAllButton
 #: po/tmp/ap_String_Id.h
 msgid "Replace &All"
-msgstr "&Alle ersetzen"
+msgstr "&Alles ersetzen"
 
 #. DLG_Annotation_Replace_tooltip
 #: po/tmp/ap_String_Id.h
@@ -6829,7 +6833,7 @@ msgstr "RNL-Reihenfolge verwenden"
 #. DLG_Options_Label_CustomSmartQuotes
 #: po/tmp/ap_String_Id.h
 msgid "Use custom smart quote style"
-msgstr "Selbstdefinierte Anführungszeichen verwenden"
+msgstr "Benutzerdefinierte Anführungszeichen verwenden"
 
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h
@@ -6844,7 +6848,7 @@ msgstr "Benutzeroberfläche"
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h
 msgid "User Interface Language"
-msgstr "Benutzeroberfläche"
+msgstr "Sprache der Benutzeroberfläche"
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h
@@ -6989,8 +6993,8 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
 msgstr ""
-"Der Wert für Auto-Speichern sollte in einem Interverall zwischen 1 und 120 "
-"liegen"
+"Der Wert für automatisches Speichern sollte in einem Interverall zwischen 1 "
+"und 120 liegen"
 
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h
@@ -7330,7 +7334,7 @@ msgstr "Asturisch"
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
 msgid "Auto-insert direction markers"
-msgstr "Richtungsmarke automatisch einfügen"
+msgstr "Richtungsmarkierungen automatisch einfügen"
 
 #. DLG_History_Version_AutoRevisioned
 #: po/tmp/xap_String_Id.h
