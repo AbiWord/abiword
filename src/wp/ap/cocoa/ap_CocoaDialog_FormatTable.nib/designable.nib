@@ -1338,11 +1338,11 @@ AAAAAAAAAAAAAAAAA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">tableWidthStepper</string>
+						<string key="label">tableWidthStepper:</string>
 						<reference key="source" ref="927931310"/>
 						<reference key="destination" ref="154705693"/>
 					</object>
-					<int key="connectionID">121</int>
+					<int key="connectionID">122</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -1883,6 +1883,7 @@ AAAAAAAAAAAAAAAAA</bytes>
 					<string>72.IBPluginDependency</string>
 					<string>72.ImportedFromIB2</string>
 					<string>73.IBPluginDependency</string>
+					<string>73.IBViewBoundsToFrameTransform</string>
 					<string>73.ImportedFromIB2</string>
 					<string>75.IBPluginDependency</string>
 					<string>75.ImportedFromIB2</string>
@@ -1961,9 +1962,9 @@ AAAAAAAAAAAAAAAAA</bytes>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<boolean value="YES"/>
-					<string>{{239, 201}, {560, 443}}</string>
+					<string>{{68, 201}, {560, 443}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{239, 201}, {560, 443}}</string>
+					<string>{{68, 201}, {560, 443}}</string>
 					<boolean value="YES"/>
 					<boolean value="YES"/>
 					<string>{213, 113}</string>
@@ -1984,6 +1985,9 @@ AAAAAAAAAAAAAAAAA</bytes>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
+					<object class="NSAffineTransform">
+						<bytes key="NSTransformStruct">AUGgAABCxAAAA</bytes>
+					</object>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<boolean value="YES"/>
@@ -2021,7 +2025,7 @@ AAAAAAAAAAAAAAAAA</bytes>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">121</int>
+			<int key="maxID">122</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2043,10 +2047,18 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>removeImageAction:</string>
 							<string>rightBorderAction:</string>
 							<string>selectImageAction:</string>
+							<string>tableHeightField:</string>
+							<string>tableHeightStepper:</string>
+							<string>tableWidthField:</string>
+							<string>tableWidthStepper:</string>
 							<string>topBorderAction:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -2074,6 +2086,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>removeImageAction:</string>
 							<string>rightBorderAction:</string>
 							<string>selectImageAction:</string>
+							<string>tableHeightField:</string>
+							<string>tableHeightStepper:</string>
+							<string>tableWidthField:</string>
+							<string>tableWidthStepper:</string>
 							<string>topBorderAction:</string>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
@@ -2119,6 +2135,22 @@ AAAAAAAAAAAAAAAAA</bytes>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
+								<string key="name">tableHeightField:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">tableHeightStepper:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">tableWidthField:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">tableWidthStepper:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
 								<string key="name">topBorderAction:</string>
 								<string key="candidateClassName">id</string>
 							</object>
@@ -2145,6 +2177,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>_previewBox</string>
 							<string>_rightBorderBtn</string>
 							<string>_setImageBtn</string>
+							<string>_tableHeightField</string>
+							<string>_tableHeightStepper</string>
+							<string>_tableWidthField</string>
+							<string>_tableWidthStepper</string>
 							<string>_thicknessLabel</string>
 							<string>_thicknessPopup</string>
 							<string>_topBorderBtn</string>
@@ -2168,6 +2204,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>NSBox</string>
 							<string>NSButton</string>
 							<string>NSButton</string>
+							<string>NSForm</string>
+							<string>NSStepper</string>
+							<string>NSForm</string>
+							<string>NSStepper</string>
 							<string>NSTextField</string>
 							<string>NSPopUpButton</string>
 							<string>NSButton</string>
@@ -2194,6 +2234,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>_previewBox</string>
 							<string>_rightBorderBtn</string>
 							<string>_setImageBtn</string>
+							<string>_tableHeightField</string>
+							<string>_tableHeightStepper</string>
+							<string>_tableWidthField</string>
+							<string>_tableWidthStepper</string>
 							<string>_thicknessLabel</string>
 							<string>_thicknessPopup</string>
 							<string>_topBorderBtn</string>
@@ -2267,6 +2311,22 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<object class="IBToOneOutletInfo">
 								<string key="name">_setImageBtn</string>
 								<string key="candidateClassName">NSButton</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">_tableHeightField</string>
+								<string key="candidateClassName">NSForm</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">_tableHeightStepper</string>
+								<string key="candidateClassName">NSStepper</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">_tableWidthField</string>
+								<string key="candidateClassName">NSForm</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">_tableWidthStepper</string>
+								<string key="candidateClassName">NSStepper</string>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">_thicknessLabel</string>
