@@ -21,6 +21,8 @@ libxp_la_SOURCES = \
 	OXMLi_ListenerState_HdrFtr.h \
 	OXMLi_ListenerState_MainDocument.cpp \
 	OXMLi_ListenerState_MainDocument.h \
+	OXMLi_ListenerState_Math.cpp \
+	OXMLi_ListenerState_Math.h \
 	OXMLi_ListenerState_Styles.cpp \
 	OXMLi_ListenerState_Styles.h \
 	OXMLi_ListenerState_Theme.cpp \
