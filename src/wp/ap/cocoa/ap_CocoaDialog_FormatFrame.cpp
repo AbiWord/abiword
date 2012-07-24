@@ -377,47 +377,47 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (IBAction)frameHeightField:(id)sender;
 {
-    /*
     NSStepper * stepper = 0;
-    NSFormCell * field = 0;
-    float thickness = 0;
-    float height= 0;
-    float width= 0;
-    UT_UTF8String sThick;
-    stepper   = _rightBorderStepper;
-    field     = _rightBorderNumber;
-    sThick    = [[field stringValue] UTF8String];
-    _xap->setBorderThicknessRight(sThick);
-    thickness = _xap->borderThicknessRight();
-    [stepper setFloatValue:thickness];
-    [field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessRight().utf8_str())]];
+    NSForm * field = 0;
+    UT_UTF8String sHeight;
+    stepper   = _frameHeightStepper;
+    field     = _frameHeightField;
+    sHeight = [[field stringValue] UTF8String];
+    _xap->setHeight(sHeight);
     _xap->event_previewExposed();
-    */
 }
 - (IBAction)frameHeightStepper:(id)sender;
 {
-    /*
     NSStepper * stepper = 0;
-    NSFormCell * field = 0;
-    float thickness = 0;
-
-    stepper   = _rightBorderStepper;
-    field     = _rightBorderNumber;
-    thickness = [stepper floatValue];
-    _xap->setBorderThicknessRight(thickness);
-    thickness = _xap->borderThicknessRight();
-    [stepper setFloatValue:thickness];
-    [field   setStringValue:[NSString stringWithUTF8String:(_xap->getBorderThicknessRight().utf8_str())]];
+    NSForm * field = 0;
+    stepper   = _frameHeightStepper;
+    field     = _frameHeightField;
+    float height= [stepper floatValue];
+    _xap->setHeight(height);
     _xap->event_previewExposed();
-    */
 }
 
 - (IBAction)frameWidthField:(id)sender;
 {
+    NSStepper * stepper = 0;
+    NSForm * field = 0;
+    UT_UTF8String sWidth;
+    stepper   = _frameWidthStepper;
+    field     = _frameWidthField;
+    sWidth    = [[field stringValue] UTF8String];
+    _xap->setWidth(sWidth);
+    _xap->event_previewExposed();
 
 }
 - (IBAction)frameWidthStepper:(id)sender;
 {
+    NSStepper * stepper = 0;
+    NSForm * field = 0;
+    stepper   = _frameWidthStepper;
+    field     = _frameWidthField;
+    float width= [stepper floatValue];
+    _xap->setWidth(width);
+    _xap->event_previewExposed();
 
 }
 
