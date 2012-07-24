@@ -123,23 +123,6 @@ void AP_CocoaDialog_FormatTable::setWidthInGUI(UT_UTF8String & /*sWidth*/)
 {
         UT_ASSERT_NOT_REACHED();
 }
-- (IBAction)tableHeightField:(id)sender;
-{
-
-}
-- (IBAction)tableHeightStepper:(id)sender;
-{
-
-}
-
-- (IBAction)tableWidthField:(id)sender;
-{
-
-}
-- (IBAction)tableWidthStepper:(id)sender;
-{
-
-}
 
 
 
@@ -298,6 +281,23 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 	}
 }
 
+- (IBAction)tableHeightField:(id)sender;
+{
+
+}
+- (IBAction)tableHeightStepper:(id)sender;
+{
+
+}
+
+- (IBAction)tableWidthField:(id)sender;
+{
+
+}
+- (IBAction)tableWidthStepper:(id)sender;
+{
+
+}
 - (IBAction)applyAction:(id)sender
 {
 	UT_UNUSED(sender);
