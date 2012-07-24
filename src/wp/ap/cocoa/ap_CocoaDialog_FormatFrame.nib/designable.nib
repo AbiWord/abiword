@@ -1956,35 +1956,35 @@ AAAAAAAAAAAAAAAAA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">frameHeightField:</string>
+						<string key="label">frameWidthField:</string>
 						<reference key="source" ref="678614788"/>
 						<reference key="destination" ref="652971245"/>
 					</object>
-					<int key="connectionID">219</int>
+					<int key="connectionID">228</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
-						<string key="label">frameHeightStepper:</string>
+						<string key="label">frameHeightField:</string>
 						<reference key="source" ref="678614788"/>
 						<reference key="destination" ref="261763716"/>
 					</object>
-					<int key="connectionID">220</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBActionConnection" key="connection">
-						<string key="label">frameWidthField:</string>
-						<reference key="source" ref="678614788"/>
-						<reference key="destination" ref="969011149"/>
-					</object>
-					<int key="connectionID">221</int>
+					<int key="connectionID">229</int>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBActionConnection" key="connection">
 						<string key="label">frameWidthStepper:</string>
 						<reference key="source" ref="678614788"/>
+						<reference key="destination" ref="969011149"/>
+					</object>
+					<int key="connectionID">230</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBActionConnection" key="connection">
+						<string key="label">frameHeightStepper:</string>
+						<reference key="source" ref="678614788"/>
 						<reference key="destination" ref="228474027"/>
 					</object>
-					<int key="connectionID">223</int>
+					<int key="connectionID">231</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2865,9 +2865,9 @@ AAAAAAAAAAAAAAAAA</bytes>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<boolean value="YES"/>
-					<string>{{465, 341}, {518, 286}}</string>
+					<string>{{54, 341}, {518, 286}}</string>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
-					<string>{{465, 341}, {518, 286}}</string>
+					<string>{{54, 341}, {518, 286}}</string>
 					<boolean value="YES"/>
 					<boolean value="YES"/>
 					<string>{213, 113}</string>
@@ -2913,7 +2913,7 @@ AAAAAAAAAAAAAAAAA</bytes>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">223</int>
+			<int key="maxID">231</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -2933,6 +2933,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>borderThicknessField:</string>
 							<string>borderThicknessStepper:</string>
 							<string>bottomBorderAction:</string>
+							<string>frameHeightField:</string>
+							<string>frameHeightStepper:</string>
+							<string>frameWidthField:</string>
+							<string>frameWidthStepper:</string>
 							<string>leftBorderAction:</string>
 							<string>positionAction:</string>
 							<string>removeImageAction:</string>
@@ -2943,6 +2947,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 						</object>
 						<object class="NSMutableArray" key="dict.values">
 							<bool key="EncodedWithXMLCoder">YES</bool>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
+							<string>id</string>
 							<string>id</string>
 							<string>id</string>
 							<string>id</string>
@@ -2972,6 +2980,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>borderThicknessField:</string>
 							<string>borderThicknessStepper:</string>
 							<string>bottomBorderAction:</string>
+							<string>frameHeightField:</string>
+							<string>frameHeightStepper:</string>
+							<string>frameWidthField:</string>
+							<string>frameWidthStepper:</string>
 							<string>leftBorderAction:</string>
 							<string>positionAction:</string>
 							<string>removeImageAction:</string>
@@ -3012,6 +3024,22 @@ AAAAAAAAAAAAAAAAA</bytes>
 							</object>
 							<object class="IBActionInfo">
 								<string key="name">bottomBorderAction:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">frameHeightField:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">frameHeightStepper:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">frameWidthField:</string>
+								<string key="candidateClassName">id</string>
+							</object>
+							<object class="IBActionInfo">
+								<string key="name">frameWidthStepper:</string>
 								<string key="candidateClassName">id</string>
 							</object>
 							<object class="IBActionInfo">
@@ -3063,6 +3091,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>_bottomBorderNumber</string>
 							<string>_bottomBorderNumberForm</string>
 							<string>_bottomBorderStepper</string>
+							<string>_frameHeightField</string>
+							<string>_frameHeightStepper</string>
+							<string>_frameWidthField</string>
+							<string>_frameWidthStepper</string>
 							<string>_leftBorderBtn</string>
 							<string>_leftBorderColorWell</string>
 							<string>_leftBorderNumber</string>
@@ -3105,6 +3137,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>XAP_CocoaToolbarButton</string>
 							<string>NSColorWell</string>
 							<string>NSFormCell</string>
+							<string>NSForm</string>
+							<string>NSStepper</string>
+							<string>NSForm</string>
+							<string>NSStepper</string>
 							<string>NSForm</string>
 							<string>NSStepper</string>
 							<string>XAP_CocoaToolbarButton</string>
@@ -3154,6 +3190,10 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>_bottomBorderNumber</string>
 							<string>_bottomBorderNumberForm</string>
 							<string>_bottomBorderStepper</string>
+							<string>_frameHeightField</string>
+							<string>_frameHeightStepper</string>
+							<string>_frameWidthField</string>
+							<string>_frameWidthStepper</string>
 							<string>_leftBorderBtn</string>
 							<string>_leftBorderColorWell</string>
 							<string>_leftBorderNumber</string>
@@ -3241,6 +3281,22 @@ AAAAAAAAAAAAAAAAA</bytes>
 							</object>
 							<object class="IBToOneOutletInfo">
 								<string key="name">_bottomBorderStepper</string>
+								<string key="candidateClassName">NSStepper</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">_frameHeightField</string>
+								<string key="candidateClassName">NSForm</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">_frameHeightStepper</string>
+								<string key="candidateClassName">NSStepper</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">_frameWidthField</string>
+								<string key="candidateClassName">NSForm</string>
+							</object>
+							<object class="IBToOneOutletInfo">
+								<string key="name">_frameWidthStepper</string>
 								<string key="candidateClassName">NSStepper</string>
 							</object>
 							<object class="IBToOneOutletInfo">
