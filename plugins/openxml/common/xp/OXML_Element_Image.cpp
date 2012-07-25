@@ -101,29 +101,60 @@ UT_Error OXML_Element_Image::serialize(IE_Exp_OpenXML* exporter)
 UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
+	bool bInline = false;
+	const gchar* szValue = NULL;
 
-	ret = setProperty("frame-type", "image");
-	if(ret != UT_OK)
-		return ret;
-	
+	ret = getProperty("height", szValue);
+	if(ret == UT_OK && szValue)
+	{
+		bInline = true;
+	}
+
+	if(!bInline)
+	{
+		ret = setProperty("frame-type", "image");
+		if(ret != UT_OK)
+			return ret;
+	}
+
 	if(getId().empty())
 	{
 		return UT_OK;
 	}
-	ret = setAttribute("strux-image-dataid", getId().c_str());
-	if(ret != UT_OK)
-		return ret;
+
+	if(bInline)
+	{
+		ret = setAttribute("dataid", getId().c_str());
+		if(ret != UT_OK)
+			return ret;		
+	}
+	else
+	{
+		ret = setAttribute("strux-image-dataid", getId().c_str());
+		if(ret != UT_OK)
+			return ret;
+	}
 
 	const gchar ** atts = getAttributesWithProps();
 
-	ret = pDocument->appendStrux(PTX_SectionFrame, atts) ? UT_OK : UT_ERROR;
-	if(ret != UT_OK)
-		return ret;
+	if(bInline)
+	{
+		if(!pDocument->appendObject(PTO_Image, atts))
+			return UT_ERROR;
+	}
+	else
+	{
+		ret = pDocument->appendStrux(PTX_SectionFrame, atts) ? UT_OK : UT_ERROR;
+		if(ret != UT_OK)
+			return ret;
 
-	ret = this->addChildrenToPT(pDocument);
-	if(ret != UT_OK)
-		return ret;
+		ret = this->addChildrenToPT(pDocument);
+		if(ret != UT_OK)
+			return ret;
 
-	ret = pDocument->appendStrux(PTX_EndFrame, NULL) ? UT_OK : UT_ERROR;
-	return ret;
+		ret = pDocument->appendStrux(PTX_EndFrame, NULL) ? UT_OK : UT_ERROR;
+		if(ret != UT_OK)
+			return ret;
+	}
+	return UT_OK;
 }
