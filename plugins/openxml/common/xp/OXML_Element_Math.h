@@ -40,6 +40,7 @@ public:
     virtual UT_Error addToPT(PD_Document * pDocument);
 
     void setMathML(const std::string & sMathML);
+    const char * getMathML();
 
 private:
     std::string m_MathML;

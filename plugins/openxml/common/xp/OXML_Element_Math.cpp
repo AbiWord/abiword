@@ -40,12 +40,32 @@ void OXML_Element_Math::setMathML(const std::string & sMathML)
     m_MathML = sMathML;
 }
 
+const char * OXML_Element_Math::getMathML()
+{
+    UT_return_val_if_fail(!m_MathML.empty(), NULL);
+    return m_MathML.c_str();
+}
+
 UT_Error OXML_Element_Math::serialize(IE_Exp_OpenXML* exporter)
 {
-    //TO DO: serialize math here
     UT_Error err = UT_OK;
+	
+    err = exporter->startMath();
+    if(err != UT_OK)
+        return err;
+    
+    std::string sMathML;
+    sMathML.assign(getMathML());
+    std::string sOMML;
 
-    return UT_OK;
+    if(convertMathMLtoOMML(sMathML, sOMML))
+    {
+        err = exporter->writeMath(sOMML.c_str());
+        if(err != UT_OK)
+            return err;
+    }
+    
+    return exporter->finishMath();
 }
 
 UT_Error OXML_Element_Math::addToPT(PD_Document * pDocument)

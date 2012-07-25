@@ -45,6 +45,7 @@
 #include <OXML_Element_Bookmark.h>
 #include <OXML_Element_Field.h>
 #include <OXML_Element_TextBox.h>
+#include <OXML_Element_Math.h>
 #include <OXML_List.h>
 #include <OXML_Image.h>
 #include <ie_Table.h>
