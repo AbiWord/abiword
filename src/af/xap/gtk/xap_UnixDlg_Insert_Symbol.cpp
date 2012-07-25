@@ -590,27 +590,35 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	ConstructWindowName();
 
 	m_windowMain = abiDialogNew ("insert symbol dialog", TRUE, m_WindowName);
+	gtk_window_set_position(GTK_WINDOW(m_windowMain), GTK_WIN_POS_MOUSE);
+#if !GTK_CHECK_VERSION(3,0,0)
+	gtk_dialog_set_has_separator(GTK_DIALOG(m_windowMain), FALSE);
+#endif	
 
 	// Now put in a Vbox to hold our 3 widgets (Font Selector, Symbol Table
 	// and OK -Selected Symbol- Cancel
 	tmp = gtk_dialog_get_content_area(GTK_DIALOG(m_windowMain));
 
+	GtkWidget * vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+	GtkWidget * vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	GtkWidget * hbox = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_show (hbox);
+	gtk_box_pack_start(GTK_BOX(hbox), vbox1, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(hbox), vbox2, TRUE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(tmp), hbox, FALSE, FALSE, 0);
 
 	// Finally construct the combo box
 	m_fontcombo = _createComboboxWithFonts ();
 
 	// Now put the font combo box at the top of the dialog 
-	gtk_box_pack_start(GTK_BOX(hbox), m_fontcombo, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox1), m_fontcombo, FALSE, FALSE, 0);
 
 	// Now the Symbol Map. 
 	// TODO: 32 * x (19) = 608, 7 * y (21) = 147  FIXME!
 	//
 	GtkWidget * hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 4);
 	gtk_widget_show (hbox1);
-	gtk_box_pack_start(GTK_BOX(tmp), hbox1, TRUE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(tmp), hbox1, TRUE, TRUE, 4);
 
 
 		
@@ -623,13 +631,15 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	gtk_box_pack_start (GTK_BOX (hbox1), vscroll, FALSE, FALSE, 0);
 
 	m_areaCurrentSym = _previewNew (60, 45);
-	gtk_box_pack_start(GTK_BOX(hbox), m_areaCurrentSym, TRUE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(vbox2), m_areaCurrentSym, TRUE, FALSE, 0);
 
 	gtk_widget_show_all (hbox);
 
 	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CLOSE);
 	tmp = abiAddButton (GTK_DIALOG(m_windowMain), "&Insert" /* not used */, BUTTON_INSERT);
 	localizeButtonUnderline (tmp, pSS, XAP_STRING_ID_DLG_Insert);
+	GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image(GTK_BUTTON(tmp), img);      
 	
 	_connectSignals ();
 
