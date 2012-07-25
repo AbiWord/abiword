@@ -380,10 +380,13 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     NSStepper * stepper = 0;
     NSForm * field = 0;
     UT_UTF8String sHeight;
+    float height = 0;
     stepper   = _frameHeightStepper;
     field     = _frameHeightField;
     sHeight = [[field stringValue] UTF8String];
+    height = [field floatValue];
     _xap->setHeight(sHeight);
+    [stepper setFloatValue:height];
     _xap->event_previewExposed();
 }
 - (IBAction)frameHeightStepper:(id)sender;
@@ -392,8 +395,11 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     NSForm * field = 0;
     stepper   = _frameHeightStepper;
     field     = _frameHeightField;
+    UT_UTF8String sHeight;
     float height= [stepper floatValue];
+    sHeight = [[stepper stringValue] UTF8String];
     _xap->setHeight(height);
+    [field   setFloatValue:(_xap->getFrameHeight())];
     _xap->event_previewExposed();
 }
 
@@ -402,10 +408,13 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     NSStepper * stepper = 0;
     NSForm * field = 0;
     UT_UTF8String sWidth;
+    float width = 0;
     stepper   = _frameWidthStepper;
     field     = _frameWidthField;
     sWidth    = [[field stringValue] UTF8String];
+    width = [field floatValue];  
     _xap->setWidth(sWidth);
+    [stepper setFloatValue:width];
     _xap->event_previewExposed();
 
 }
@@ -415,10 +424,12 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     NSForm * field = 0;
     stepper   = _frameWidthStepper;
     field     = _frameWidthField;
+    UT_UTF8String sWidth;
     float width= [stepper floatValue];
+    sWidth = [[stepper stringValue] UTF8String];
     _xap->setWidth(width);
+    [field   setFloatValue:(_xap->getFrameWidth())];
     _xap->event_previewExposed();
-
 }
 
 - (IBAction)borderThicknessField:(id)sender
