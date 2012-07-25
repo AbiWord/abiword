@@ -241,6 +241,25 @@ bool convertMathMLtoOMML(const std::string & rMathML, std::string & rOMML)
     }
 
     rOMML.assign((const char*)sOMML, len);
+    
+    if(strncmp(rOMML.c_str(),"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n",39) == 0)
+    {
+        rOMML = rOMML.substr(39);
+    }
+
+    if(strncmp(rOMML.c_str(),"<m:oMath xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:mml=\"http://www.w3.org/1998/Math/MathML\">",125) == 0)
+    {
+        rOMML = rOMML.substr(125);
+        std::string temp;
+        temp.assign("<m:oMath>");
+        temp.append(rOMML.c_str());
+        rOMML.assign(temp.c_str());
+    }
+
+    if(strncmp((rOMML.substr(rOMML.length()-1)).c_str(),"\n",1)==0)
+    {
+        rOMML = rOMML.substr(0,rOMML.length()-1);
+    }
 
     g_free(sOMML);
     xmlFreeDoc(res);
