@@ -835,12 +835,12 @@ dcl(DLG_MetaData_TAB_General,"General")
 dcl(MSG_EmptySelection, "Current Selection is Empty")
 
 dcl(DLG_InsertBookmark_Title, "Insert Bookmark")
-dcl(DLG_InsertBookmark_Msg,   "Type a name for the bookmark, or select an existing from the list.")
+dcl(DLG_InsertBookmark_Msg,   "Type a name for the bookmark, or select an existing from the list:")
 dcl(DLG_InsertXMLID_Title,    "Insert RDF Link")
-dcl(DLG_InsertXMLID_Msg,      "Type a name for the RDF link")
+dcl(DLG_InsertXMLID_Msg,      "Type a name for the RDF link:")
 
 dcl(DLG_InsertHyperlink_Title, "Insert Hyperlink")
-dcl(DLG_InsertHyperlink_Msg, "Select a target bookmark from the list.")
+dcl(DLG_InsertHyperlink_Msg, "Select a target bookmark from the list:")
 
 	/* Mark revisions dialog */
 dcl(DLG_MarkRevisions_Title, "Mark Revisions")
