@@ -236,6 +236,8 @@ AP_UnixDialog_InsertXMLID::_constructWindow(void)
     abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_DELETE, BUTTON_DELETE);
     m_btInsert = abiAddButton(GTK_DIALOG(m_window), "", BUTTON_INSERT);
     localizeButtonUnderline (m_btInsert, pSS, AP_STRING_ID_DLG_InsertButton);
+    GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
+    gtk_button_set_image(GTK_BUTTON(m_btInsert), img);      
 
     gtk_widget_grab_focus (GTK_WIDGET(m_combo));
 
