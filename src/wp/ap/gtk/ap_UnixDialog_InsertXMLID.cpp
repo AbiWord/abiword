@@ -131,7 +131,8 @@ AP_UnixDialog_InsertXMLID::event_OK(void)
 {
 	UT_ASSERT(m_window);
 	// get the bookmark name, if any (return cancel if no name given)
-    std::string mark = tostr(m_combo);
+    //std::string mark = tostr(GTK_COMBO_BOX(m_combo));
+    std::string mark = tostr(GTK_ENTRY(m_combo));
 	if( !mark.empty() )
 	{
 		xxx_UT_DEBUGMSG(("InsertXMLID: OK pressed, first char 0x%x\n", (UT_uint32)mark[0]));
@@ -153,23 +154,24 @@ AP_UnixDialog_InsertXMLID::event_Cancel(void)
 void
 AP_UnixDialog_InsertXMLID::event_Delete(void)
 {
-    setString(tostr(m_combo));
+    //setString(tostr(GTK_COMBO_BOX(m_combo)));
+    setString(tostr(GTK_ENTRY(m_combo)));
 	setAnswer(AP_Dialog_InsertXMLID::a_DELETE);
 }
 
 void
 AP_UnixDialog_InsertXMLID::_setList(void)
 {
-	std::list<std::string> bookmarks;
+	// std::list<std::string> bookmarks;
 
 	// for(UT_sint32 i = 0; i < getExistingBookmarksCount(); i++)
     // {
 	// 	bookmarks.push_back(getNthExistingBookmark(i));
 	// }
 	
-	GtkComboBoxText * combo = GTK_COMBO_BOX_TEXT(m_combo);
-    bookmarks.sort();
-    append( combo, bookmarks );
+	// GtkComboBoxText * combo = GTK_COMBO_BOX_TEXT(m_combo);
+  //   bookmarks.sort();
+  //   append( combo, bookmarks );
 	
 	// GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_combo)));
 	// if (getBookmark() && strlen(getBookmark()) > 0)
@@ -200,13 +202,16 @@ AP_UnixDialog_InsertXMLID::_constructWindowContents(GtkWidget * container )
     gtk_widget_show (label1);
     gtk_box_pack_start (GTK_BOX (container), label1, FALSE, FALSE, 0);
 
-    m_combo = GTK_COMBO_BOX(gtk_combo_box_text_new_with_entry());
-    gtk_widget_show (GTK_WIDGET(m_combo));
-    gtk_box_pack_start (GTK_BOX (container), GTK_WIDGET(m_combo), FALSE, FALSE, 0);
+    // m_combo = gtk_combo_box_text_new_with_entry();
+    // doesn't yet work as a combo box!
+    m_combo = gtk_entry_new();
+    gtk_widget_show (m_combo);
+    gtk_box_pack_start (GTK_BOX (container), m_combo, FALSE, FALSE, 0);
 
-    GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_combo)));
+    // GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(m_combo)));
 
-	g_signal_connect (GTK_ENTRY (entry), "key-press-event", 
+	// g_signal_connect (GTK_ENTRY (entry), "key-press-event", 
+	g_signal_connect (GTK_ENTRY (m_combo), "key-press-event", 
 					  G_CALLBACK (__onKeyPressed), static_cast <gpointer>(this));
 
 
@@ -239,7 +244,7 @@ AP_UnixDialog_InsertXMLID::_constructWindow(void)
     GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
     gtk_button_set_image(GTK_BUTTON(m_btInsert), img);      
 
-    gtk_widget_grab_focus (GTK_WIDGET(m_combo));
+    gtk_widget_grab_focus (m_combo);
 
     return m_window;
 }

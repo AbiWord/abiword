@@ -53,7 +53,7 @@ protected:
 	  } ResponseId ;
 
 	GtkWidget*   m_window;
-	GtkComboBox* m_combo;
+	GtkWidget*   m_combo;
 	GtkWidget*   m_btInsert;
 };
 
