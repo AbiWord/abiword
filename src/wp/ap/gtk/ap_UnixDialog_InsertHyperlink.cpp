@@ -205,6 +205,9 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
   UT_UTF8String s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Title,s);
   m_windowMain = abiDialogNew("insert table dialog", TRUE, s.utf8_str());
+#if !GTK_CHECK_VERSION(3,0,0)
+  gtk_dialog_set_has_separator(GTK_DIALOG(m_windowMain), FALSE);
+#endif
 
   frame1 = gtk_frame_new (NULL);
   gtk_widget_show (frame1);
