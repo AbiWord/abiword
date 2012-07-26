@@ -25,6 +25,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_locale.h"
 
 #include "gr_CocoaCairoGraphics.h"
 
@@ -386,6 +387,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     sHeight = [[field stringValue] UTF8String];
     height = [field floatValue];
     _xap->setHeight(sHeight);
+    // update stepper
     [stepper setFloatValue:height];
     _xap->event_previewExposed();
 }
@@ -397,8 +399,12 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     field     = _frameHeightField;
     UT_UTF8String sHeight;
     float height= [stepper floatValue];
-    sHeight = [[stepper stringValue] UTF8String];
+    {   
+        UT_LocaleTransactor t(LC_NUMERIC, "C");
+        sHeight = UT_UTF8String_sprintf("%fpt",height);
+    }   
     _xap->setHeight(height);
+    // update field
     [field   setFloatValue:(_xap->getFrameHeight())];
     _xap->event_previewExposed();
 }
@@ -411,9 +417,13 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     float width = 0;
     stepper   = _frameWidthStepper;
     field     = _frameWidthField;
-    sWidth    = [[field stringValue] UTF8String];
     width = [field floatValue];  
+    {   
+        UT_LocaleTransactor t(LC_NUMERIC, "C");
+        sWidth = UT_UTF8String_sprintf("%fpt",width);
+    }   
     _xap->setWidth(sWidth);
+    // update stepper
     [stepper setFloatValue:width];
     _xap->event_previewExposed();
 

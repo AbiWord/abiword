@@ -304,9 +304,13 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     float height = 0;
     stepper   = _tableHeightStepper;
     field     = _tableHeightField;
-    sHeight = [[stepper stringValue] UTF8String];
     height = [stepper floatValue];
+    {   
+        UT_LocaleTransactor t(LC_NUMERIC, "C");
+        sHeight = UT_UTF8String_sprintf("%fpt",height);
+    }   
     _xap->setHeight(sHeight);
+    // update filed
     [field   setFloatValue:height];
     _xap->event_previewExposed();
 }
@@ -321,6 +325,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     field     = _tableWidthField;
     sWidth = [[field stringValue] UTF8String];
     width = [field floatValue];
+    // update stepper
     [stepper setFloatValue:width];
     _xap->setWidth(sWidth);
     _xap->event_previewExposed();
@@ -334,9 +339,13 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     float width= 0;
     stepper   = _tableWidthStepper;
     field     = _tableWidthField;
-    sWidth = [[stepper stringValue] UTF8String];
     width  = [stepper floatValue];
+    {   
+        UT_LocaleTransactor t(LC_NUMERIC, "C");
+        sWidth = UT_UTF8String_sprintf("%fpt",width);
+    }   
     _xap->setWidth(sWidth);
+    // update field
     [field   setFloatValue:width];
     _xap->event_previewExposed();
 
