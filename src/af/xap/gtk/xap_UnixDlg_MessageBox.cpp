@@ -132,13 +132,16 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 			message = gtk_dialog_new_with_buttons("",
 							      toplevel, 
 							      static_cast<GtkDialogFlags>(dflFlags),
-							      tmp_str,
-							      GTK_RESPONSE_NO,
-							      GTK_STOCK_CANCEL, 
-							      GTK_RESPONSE_CANCEL, 
-							      GTK_STOCK_SAVE, 
-							      GTK_RESPONSE_YES,
 							      NULL);
+			GtkWidget *button_no = gtk_dialog_add_button(GTK_DIALOG(message), tmp_str, GTK_RESPONSE_NO);
+			GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_DELETE, GTK_ICON_SIZE_BUTTON);
+			gtk_button_set_image(GTK_BUTTON(button_no), img);      
+			gtk_dialog_add_buttons(GTK_DIALOG(message), 
+							       GTK_STOCK_CANCEL, 
+							       GTK_RESPONSE_CANCEL, 
+							       GTK_STOCK_SAVE, 
+							       GTK_RESPONSE_YES,
+							       NULL);
 
 			dflResponse = GTK_RESPONSE_YES;
 			FREEP(tmp_str);
