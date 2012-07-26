@@ -283,19 +283,62 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 
 - (IBAction)tableHeightField:(id)sender;
 {
+    NSForm * field = 0;
+    NSStepper * stepper = 0;
+    UT_UTF8String sHeight;
+    stepper   = _tableHeightStepper;
+    field     = _tableHeightField;
+    float height = [field floatValue];
+    sHeight = [[field stringValue] UTF8String];
+    // update stepper
+    [stepper setFloatValue:height];
+    _xap->setHeight(sHeight);
+    _xap->event_previewExposed();
 
 }
 - (IBAction)tableHeightStepper:(id)sender;
 {
-
+    NSForm * field = 0;
+    NSStepper * stepper = 0;
+    UT_UTF8String sHeight;
+    float height = 0;
+    stepper   = _tableHeightStepper;
+    field     = _tableHeightField;
+    sHeight = [[stepper stringValue] UTF8String];
+    height = [stepper floatValue];
+    _xap->setHeight(sHeight);
+    [field   setFloatValue:height];
+    _xap->event_previewExposed();
 }
 
 - (IBAction)tableWidthField:(id)sender;
 {
+    NSForm * field = 0;
+    NSStepper * stepper = 0;
+    float width = 0;
+    UT_UTF8String sWidth;
+    stepper   = _tableWidthStepper;
+    field     = _tableWidthField;
+    sWidth = [[field stringValue] UTF8String];
+    width = [field floatValue];
+    [stepper setFloatValue:width];
+    _xap->setWidth(sWidth);
+    _xap->event_previewExposed();
 
 }
 - (IBAction)tableWidthStepper:(id)sender;
 {
+    NSForm * field = 0;
+    NSStepper * stepper = 0;
+    UT_UTF8String sWidth;
+    float width= 0;
+    stepper   = _tableWidthStepper;
+    field     = _tableWidthField;
+    sWidth = [[stepper stringValue] UTF8String];
+    width  = [stepper floatValue];
+    _xap->setWidth(sWidth);
+    [field   setFloatValue:width];
+    _xap->event_previewExposed();
 
 }
 - (IBAction)applyAction:(id)sender
