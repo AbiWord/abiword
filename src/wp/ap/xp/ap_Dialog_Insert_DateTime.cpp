@@ -74,23 +74,23 @@ const char *InsertDateTimeFmts[] = {
 };
 #else
 const char *InsertDateTimeFmts[] = {
-    "%m/%d/%y",
-	"%A, %B %d, %Y",
-	"%B %d, %Y",
-	"%m/%d/%Y",
 	"%Y-%m-%d",
-	"%d-%b-%y",
-    "%m.%d.%y",
-	"%b. %d, %y",
-	"%d %B, %Y",
+	"%m/%d/%Y",
+	"%m/%d/%y",
+	"%m.%d.%y",
 	"%B, %Y",
 	"%b-%y",
-	"%m/%d/%y %I:%M %p",
-    "%m/%d/%y %I:%M:%S %p",
-	"%I:%M %p",
-	"%I:%M:%S %p",
+	"%B %d, %Y",
+	"%b. %d, %y",
+	"%d %B, %Y",
+	"%d-%b-%y",
+	"%A, %B %d, %Y",
 	"%H:%M",
 	"%H:%M:%S",
+	"%I:%M %p",
+	"%I:%M:%S %p",
+	"%m/%d/%y %I:%M %p",
+	"%m/%d/%y %I:%M:%S %p",
 	NULL
 };
 #endif
