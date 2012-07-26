@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-24 16:32+0200\n"
-"PO-Revision-Date: 2012-07-24 16:32+0200\n"
+"POT-Creation-Date: 2012-07-26 13:11+0200\n"
+"PO-Revision-Date: 2012-07-26 13:11+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -5548,8 +5548,8 @@ msgstr "Textrahmen markieren"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
-msgstr "Bitte wählen Sie eine Textmarke als Ziel aus der Liste."
+msgid "Select a target bookmark from the list:"
+msgstr "Bitte wählen Sie eine Textmarke als Ziel aus der Liste:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6759,13 +6759,14 @@ msgstr "Typ"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
-msgstr "Geben Sie dem RDF-Link einen Namen"
+msgid "Type a name for the RDF link:"
+msgstr "Geben Sie dem RDF-Link einen Namen:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Geben Sie der Textmarke einen Namen oder wählen Sie aus der Liste."
+msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr ""
+"Geben Sie der Textmarke einen Namen oder wählen Sie eine aus der Liste:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
