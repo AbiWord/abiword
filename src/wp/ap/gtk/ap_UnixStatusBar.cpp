@@ -55,12 +55,12 @@ void ap_usb_TextListener::notify()
 		GtkRequisition requisition;
 		gint iOldWidthRequest, iOldHeightRequest;
 		gtk_widget_get_size_request(m_pLabel, &iOldWidthRequest, &iOldHeightRequest);
-		gtk_widget_set_size_request(m_pLabel, -1, -1);		
-		gtk_widget_size_request(m_pLabel, &requisition);
-		if (requisition.width > iOldWidthRequest)			
-			gtk_widget_set_size_request(m_pLabel, requisition.width, -1);		
+		gtk_widget_set_size_request(m_pLabel, -1, -1);
+		gtk_widget_get_preferred_size(m_pLabel, &requisition, NULL);
+		if (requisition.width > iOldWidthRequest)
+			gtk_widget_set_size_request(m_pLabel, requisition.width, -1);
 		else
-			gtk_widget_set_size_request(m_pLabel, iOldWidthRequest, -1);					
+			gtk_widget_set_size_request(m_pLabel, iOldWidthRequest, -1);
 	}
 }
 
@@ -155,19 +155,19 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 			if (pf_TextInfo->getAlignmentMethod() == LEFT) {
 				gtk_misc_set_alignment(GTK_MISC(pStatusBarElementLabel), 0.0, 0.0);
 			}
-			
+
 			// size and place
 			if (pf_TextInfo->getFillMethod() == REPRESENTATIVE_STRING) {
 				GtkRequisition requisition;
-				gtk_widget_size_request(pStatusBarElementLabel, &requisition);				
+				gtk_widget_get_preferred_size(pStatusBarElementLabel, &requisition, NULL);
 				gtk_widget_set_size_request(pStatusBarElementLabel, requisition.width, -1);
-				
+
 				gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, FALSE, FALSE, 0);
 			}
 			else { // fill
 				gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, TRUE, TRUE, 0);
 			}
-			
+
 			gtk_label_set_label(GTK_LABEL(pStatusBarElementLabel), ""); 
 			gtk_widget_show(pStatusBarElementLabel);
 		}
@@ -175,7 +175,7 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 		{
 			GtkRequisition requisition;
 			pStatusBarElement = gtk_frame_new(NULL);
-			gtk_widget_size_request(pStatusBarElement, &requisition);				
+			gtk_widget_get_preferred_size(pStatusBarElement, &requisition, NULL);
 			gtk_widget_set_size_request(pStatusBarElement, -1, requisition.height);
 			gtk_frame_set_shadow_type(GTK_FRAME(pStatusBarElement), GTK_SHADOW_IN);
 
@@ -191,7 +191,7 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 			gtk_widget_show(pProgress);
 			pf->setListener((AP_StatusBarFieldListener *)(new ap_usb_ProgressListener(pf, pProgress)));
 			m_wProgressFrame = pStatusBarElement;
-			
+
 		}
 		else
 		{

@@ -923,7 +923,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_label_set_justify (GTK_LABEL (DescriptionText), GTK_JUSTIFY_LEFT);
 	gtk_label_set_line_wrap (GTK_LABEL (DescriptionText), TRUE);
 	GtkRequisition requisition;
-	gtk_widget_size_request(OverallVbox, &requisition);
+	gtk_widget_get_preferred_size(OverallVbox, &requisition, NULL);
 	gtk_widget_set_size_request(DescriptionText, requisition.width, -1);
 //
 // Code to choose properties to be removed from the current style.

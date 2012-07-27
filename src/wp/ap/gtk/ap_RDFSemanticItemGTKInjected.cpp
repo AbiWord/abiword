@@ -435,7 +435,7 @@ public:
 
         // set max. text width for explanation
         GtkRequisition requisition;
-        gtk_widget_size_request(gtk_widget_get_parent(lbExplanation), &requisition);
+        gtk_widget_get_preferred_size(gtk_widget_get_parent(lbExplanation), &requisition, NULL);
         gtk_widget_set_size_request(lbExplanation, requisition.width, -1);
 
         // window title and icon

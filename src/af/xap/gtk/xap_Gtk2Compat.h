@@ -261,6 +261,13 @@ inline void gtk_combo_box_text_remove_all(GtkComboBoxText *combo_box)
   gtk_list_store_clear(GTK_LIST_STORE(gtk_combo_box_get_model(GTK_COMBO_BOX(combo_box))));
 }
 
+inline void gtk_widget_get_preferred_size(GtkWidget *widget,
+					  GtkRequisition *minimum_size,
+					  GtkRequisition * /*natural_size*/)
+{
+	return gtk_widget_size_request(widget, minimum_size);
+}
+
 #endif
 
 #if GTK_CHECK_VERSION(3,0,0)
