@@ -414,7 +414,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes);
 
 	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
-										   const pf_Frag * pfStart = NULL);
+										   pf_Frag * pfStart = NULL) const;
 	pf_Frag *               getLastFrag() const;
 	bool                    checkForSuspect(void);
 	bool                    repairDoc(void);

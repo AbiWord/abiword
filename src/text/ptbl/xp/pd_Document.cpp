@@ -3800,11 +3800,11 @@ bool PD_Document::removeStyle(const gchar * pszName)
 		
 		bool bDoBasedOn = false;
 		bool bDoFollowedby = false;
-		if(const_cast<PD_Style *>(pStyle)->getBasedOn() == pNuke)
+		if(pStyle->getBasedOn() == pNuke)
 		{
 			bDoBasedOn = true;
 		}
-		if(const_cast<PD_Style *>(pStyle)->getFollowedBy() == pNuke)
+		if(pStyle->getFollowedBy() == pNuke)
 		{
 			bDoFollowedby = true;
 		}
@@ -6859,11 +6859,11 @@ bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attribute
 	return m_pPieceTable->insertFmtMarkBeforeFrag(pF,attributes);
 }
 
-pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, const pf_Frag * pfStart)
+pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, pf_Frag * pfStart) const
 {
 	UT_return_val_if_fail(m_pPieceTable,NULL);
 
-	pf_Frag * pf = const_cast<pf_Frag *>(pfStart);
+	pf_Frag * pf = pfStart;
 	
 	if(!pf)
 		pf = m_pPieceTable->getFragments().getFirst();
@@ -6888,7 +6888,7 @@ pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, 
 
 				case pf_Frag::PFT_Object:
 					{
-						pf_Frag_Object * pfo = static_cast<pf_Frag_Object*>(pf);
+						const pf_Frag_Object * pfo = static_cast<const pf_Frag_Object*>(pf);
 						if((UT_sint32)pfo->getObjectType() != iSubtype)
 							bBreak = false;
 					}
@@ -6896,13 +6896,14 @@ pf_Frag * PD_Document::findFragOfType(pf_Frag::PFType type, UT_sint32 iSubtype, 
 					
 				case pf_Frag::PFT_Strux:
 					{
-						pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf);
+						const pf_Frag_Strux * pfs = static_cast<const pf_Frag_Strux*>(pf);
 						if((UT_sint32)pfs->getStruxType() != iSubtype)
 							bBreak = false;
 					}
 					break;
 
-				default: UT_ASSERT_HARMLESS(UT_NOT_REACHED);
+				default: 
+					UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 			}
 
 			if(bBreak)
