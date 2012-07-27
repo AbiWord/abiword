@@ -275,8 +275,8 @@ dcl(DLG_ULANG_DefaultLangChkbox,        "Make default for document")
 
 /* ClipArt Dialog */
 dcl(DLG_CLIPART_Title, "Clip Art")
-dcl(DLG_CLIPART_Loading, "Loading Clip Art")
-dcl(DLG_CLIPART_Error, "Clip Art could not be loaded")
+dcl(DLG_CLIPART_Loading, "Loading Clip Art...")
+dcl(DLG_CLIPART_Error, "Clip Art could not be loaded.")
 
 /* About Dialog */
 dcl(DLG_ABOUT_Title,					"About %s")

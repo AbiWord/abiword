@@ -138,6 +138,9 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 	UT_ASSERT(pFrame);
 
 	this->dlg = abiDialogNew ("clipart dialog", TRUE, pSS->getValue (XAP_STRING_ID_DLG_CLIPART_Title));
+#if !GTK_CHECK_VERSION(3,0,0)
+	gtk_dialog_set_has_separator(GTK_DIALOG(this->dlg), FALSE);
+#endif
 	gtk_window_set_default_size (GTK_WINDOW (this->dlg), 640, 480);
 	abiAddStockButton(GTK_DIALOG(this->dlg), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	abiAddStockButton(GTK_DIALOG(this->dlg), GTK_STOCK_OK, GTK_RESPONSE_OK);
