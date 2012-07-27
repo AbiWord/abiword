@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-26 13:11+0200\n"
-"PO-Revision-Date: 2012-07-26 13:11+0200\n"
+"POT-Creation-Date: 2012-07-27 13:52+0200\n"
+"PO-Revision-Date: 2012-07-27 13:52+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -993,12 +993,12 @@ msgstr "&Tripel"
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "&Types"
-msgstr "&Typen"
+msgstr "&Feldarten"
 
 #. DLG_Field_Types
 #: po/tmp/ap_String_Id.h
 msgid "&Types:"
-msgstr "&Typen:"
+msgstr "&Feldarten:"
 
 #. MENU_LABEL_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h
@@ -1308,7 +1308,7 @@ msgstr "Anmerkung"
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
 msgid "Application"
-msgstr "Anwendung"
+msgstr "Programm"
 
 #. DLG_Options_Label_AppStartup
 #: po/tmp/ap_String_Id.h
@@ -2274,7 +2274,7 @@ msgstr "Verfasser"
 msgid "Cu&t"
 msgstr "A&usschneiden"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Aktuelles Datum"
@@ -2307,7 +2307,7 @@ msgstr "Aktuelle Einstellungen"
 #. FIELD_Datetime_CurrentTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Time"
-msgstr "Aktuelle Zeit"
+msgstr "Aktuelle Uhrzeit"
 
 #. DLG_Options_Label_ViewCursorBlink
 #: po/tmp/ap_String_Id.h
@@ -2322,7 +2322,7 @@ msgstr "Benutzerdefiniertes Wörterbuch:"
 #. FIELD_DateTime_Custom
 #: po/tmp/ap_String_Id.h
 msgid "Customizable date/time"
-msgstr "Datum/Zeit (änderbar)"
+msgstr "Benutzerdefiniert"
 
 #. DLG_Lists_Customize
 #: po/tmp/ap_String_Id.h
@@ -2396,7 +2396,7 @@ msgstr "Datum und Uhrzeit"
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h
 msgid "Day # in the year"
-msgstr "Tag # im Jahr"
+msgstr "Nummer des Tags im Jahr"
 
 #. DLG_Options_Btn_Default
 #: po/tmp/ap_String_Id.h
@@ -2419,11 +2419,6 @@ msgstr "Dezimaler Tabulator"
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
 msgstr "Einzug verkleinern"
-
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Standard-Datum (ohne Uhrzeit)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -4151,7 +4146,7 @@ msgstr "Römische Ziffern (klein)"
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h
 msgid "Mail Merge"
-msgstr "Serienbrief"
+msgstr "Serienbrieffeld"
 
 #. MENU_STATUSLINE_FMT_BOLD
 #: po/tmp/ap_String_Id.h
@@ -4303,7 +4298,7 @@ msgstr "Mit Zelle rechts verbinden"
 #. FIELD_DateTime_MilTime
 #: po/tmp/ap_String_Id.h
 msgid "Military Time"
-msgstr "Militärische Zeit"
+msgstr "Uhrzeit im 24-Stundenformat"
 
 #. DLG_Options_TabLabel_Misc
 #: po/tmp/ap_String_Id.h
@@ -4338,7 +4333,7 @@ msgstr "Cursor zu einer konkreten Stelle bewegen"
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h
 msgid "Mth. Day, Year"
-msgstr "Mon. Tag, Jahr"
+msgstr "Mon Tag, Jahr"
 
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h
@@ -6926,6 +6921,11 @@ msgstr "Vorsicht! Die angebene Textmarke [%s] ist nicht vorhanden."
 msgid "Web Layout"
 msgstr "Weblayout"
 
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr "Wochentag Monat Tag, Jahr"
+
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
 msgid "What Hath God Wrought"
@@ -7570,8 +7570,8 @@ msgstr "Clipart"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "Clipart konnte nicht geladen werden"
+msgid "Clip Art could not be loaded."
+msgstr "Clipart konnte nicht geladen werden."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -8377,8 +8377,8 @@ msgstr "Litauisch"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "Clipart wird geladen"
+msgid "Loading Clip Art..."
+msgstr "Clipart wird geladen..."
 
 #. LANG_JBO
 #: po/tmp/xap_String_Id.h
