@@ -1071,7 +1071,7 @@ AS_CASE([$enable_introspection],
 dnl Canonicalize enable_introspection
 enable_introspection=$found_introspection
 ],
-[	
+[
     AC_MSG_ERROR([invalid argument passed to --enable-introspection, should be one of @<:@no/auto/yes@:>@])
 ])
 
@@ -1104,7 +1104,6 @@ AC_SUBST(INTROSPECTION_MAKEFILE)
 ABI_SUB_SERIES="abi_version_major"_"abi_version_minor"
 AC_SUBST(ABI_SUB_SERIES)
 
-AM_CONDITIONAL(HAVE_INTROSPECTION, test "x$found_introspection" = "xyes")
 dnl we need to change the install directories for distcheck
 AC_ARG_WITH([gir-dir],
 	AS_HELP_STRING(
@@ -1131,6 +1130,8 @@ AC_ARG_WITH([typelib-dir],
 )
 AC_SUBST(TYPELIBDIR)
 fi
+
+AM_CONDITIONAL(HAVE_INTROSPECTION, test "x$found_introspection" = "xyes")
 
 AC_OUTPUT(
   libabiword.pc
