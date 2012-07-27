@@ -25,7 +25,7 @@
 #include <algorithm>
 
 #ifndef TOOLKIT_COCOA
-#include <gtk/gtk.h>
+# include <glib.h>
 #else
 # include "ut_mutex.h"
 # include "xap_CocoaTimer.h"
