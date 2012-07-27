@@ -265,35 +265,20 @@ void IE_Imp_XML::charData(const gchar *s, int len)
 				switch (m_parseState)
 					{
 					case _PS_Block:
+						if (!m_bWhiteSignificant && m_bStripLeading && (buf[0] == UCS_SPACE))
 						{
-						unsigned int i = 0, j = 0;
-						UT_UCS4Char *pbuf = (UT_UCS4Char*) buf.ucs4_str();
-						unsigned int newlen = buf.size();
-						while (i < newlen) {
-							if (pbuf[i]!=10 && pbuf[i]!=13) {
-								if (i > j) 
-									pbuf[j] = pbuf[i];
-								j++;
-							}
-							i++;
-						}
-						newlen = j;
-
-						if (!m_bWhiteSignificant && m_bStripLeading && (pbuf[0] == UCS_SPACE))
-						{
-							if (newlen > 1)
+							if (buf.size () > 1)
 							{
-								X_CheckError(appendSpan (pbuf+1, newlen-1));
-								m_iCharCount += newlen - 1;
+								X_CheckError(appendSpan (buf.ucs4_str()+1, buf.size()-1));
+								m_iCharCount += buf.size () - 1;
 							}
 						}
 						else
 						{
-							X_CheckError(appendSpan (pbuf, newlen));
-							m_iCharCount += newlen;
+							X_CheckError(appendSpan (buf.ucs4_str(), buf.size()));
+							m_iCharCount += buf.size ();
 						}
-						m_bStripLeading = (pbuf[newlen-1] == UCS_SPACE);
-						}
+						m_bStripLeading = (buf[buf.size()-1] == UCS_SPACE);
 						return;
 					case _PS_IgnoredWordsItem:
 						return;
