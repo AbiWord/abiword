@@ -49,6 +49,7 @@
 OXMLi_ListenerState_Common::OXMLi_ListenerState_Common() : 
 	OXMLi_ListenerState(), 
 	m_pendingSectBreak(false),
+	m_pendingSectBreakType(NEXTPAGE_BREAK),
 	m_eqField(false),
 	m_pageNumberField(false),
 	m_fldChar(false)
@@ -589,15 +590,15 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(val != NULL) );
 
-				OXML_SharedSection last = rqst->sect_stck->top();
+				UT_ASSERT(m_pendingSectBreak == true);
 				if (!strcmp(val, "continuous")) {
-					last->setBreakType(CONTINUOUS_BREAK);
+					m_pendingSectBreakType = CONTINUOUS_BREAK;
 				} else if (!strcmp(val, "evenPage")) {
-					last->setBreakType(EVENPAGE_BREAK);
+					m_pendingSectBreakType = EVENPAGE_BREAK;
 				} else if (!strcmp(val, "oddPage")) {
-					last->setBreakType(ODDPAGE_BREAK);
+					m_pendingSectBreakType = ODDPAGE_BREAK;
 				} else { //nextPage and nextColumn
-					last->setBreakType(NEXTPAGE_BREAK);
+					m_pendingSectBreakType = NEXTPAGE_BREAK;
 				}
 				rqst->handled = true;
 
@@ -789,7 +790,8 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 			OXML_Document * doc = OXML_Document::getInstance();
 			UT_return_if_fail(_error_if_fail(doc != NULL));
 			OXML_SharedSection sect(new OXML_Section());
-
+			sect->setBreakType(m_pendingSectBreakType);
+			m_pendingSectBreakType = NEXTPAGE_BREAK;
 			rqst->sect_stck->push(sect);
 			m_pendingSectBreak = false;
 		}

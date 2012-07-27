@@ -488,25 +488,17 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 	ret = _setReferenceIds();
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
-	//Appending page break to current section if necessary
-	if (m_breakType == ODDPAGE_BREAK || m_breakType == EVENPAGE_BREAK) {
-		UT_UCSChar ucs = UCS_FF;
-		ret = pDocument->appendSpan(&ucs, 1) ? UT_OK : UT_ERROR;
-		UT_return_val_if_fail(ret == UT_OK, ret);
-	}
-
-	//Appending new section
+	//Appending section
 	attr = this->getAttributesWithProps();
 	ret = pDocument->appendStrux(PTX_Section, attr) ? UT_OK : UT_ERROR;
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
-	//Appending new page break to the new section if necessary
-	if (m_breakType == NEXTPAGE_BREAK || m_breakType == EVENPAGE_BREAK) {
+	//Appending page break to the section if necessary
+	if (m_breakType == NEXTPAGE_BREAK || m_breakType == ODDPAGE_BREAK || m_breakType == EVENPAGE_BREAK) {
 		UT_UCSChar ucs = UCS_FF;
 		ret = pDocument->appendSpan(&ucs, 1) ? UT_OK : UT_ERROR;
 		UT_return_val_if_fail(ret == UT_OK, ret);
 	}
-
 
 	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
@@ -514,7 +506,8 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 		ret = m_children[i]->addToPT(pDocument);
 		UT_return_val_if_fail(ret == UT_OK, ret);
 	}
-	return ret;
+
+	return UT_OK;
 }
 
 UT_Error OXML_Section::addToPTAsFootnote(PD_Document * pDocument)

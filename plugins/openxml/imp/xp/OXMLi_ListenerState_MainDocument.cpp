@@ -51,7 +51,7 @@ void OXMLi_ListenerState_MainDocument::startElement (OXMLi_StartElementRequest *
 
 	if (nameMatches(rqst->pName, NS_W_KEY, "body")) {
 		//This signals the start of the first section.
-		OXML_SharedSection sect(new OXML_Section());
+		OXML_SharedSection sect(new OXML_Section());	
 		sect->setBreakType(CONTINUOUS_BREAK); //First section of the document does not have breaks at beginning and end
 		rqst->sect_stck->push(sect);
 		rqst->handled = true;
