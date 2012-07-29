@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-29 18:10+0200\n"
-"PO-Revision-Date: 2012-07-29 18:10+0200\n"
+"POT-Creation-Date: 2012-07-29 18:52+0200\n"
+"PO-Revision-Date: 2012-07-29 18:52+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -920,7 +920,7 @@ msgstr "Anmerkungen &anzeigen"
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h
 msgid "&Special:"
-msgstr "&Extra:"
+msgstr "&Sondereinzug:"
 
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h
@@ -2967,7 +2967,7 @@ msgstr "Extras"
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
 msgid "Extra Parameters:"
-msgstr "Zusätzliche Parameter:"
+msgstr "Ergänzende Parameter:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
