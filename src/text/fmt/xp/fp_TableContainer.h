@@ -112,6 +112,7 @@ public:
 	{ m_bIsSelected = false; 
 	  m_bLinesDrawn = true;
 	}
+	bool 			isInsideBrokenTable(fp_TableContainer *pBroke) const;
 	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke) const;
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
@@ -296,7 +297,12 @@ public:
 	{
 		m_iShiftHeight = iShift;
 	}
+	UT_sint32 getBrokenTableNumber()
+	{
+		return m_iBrokenTableNumber;
+	}
 
+	void fixLines(UT_sint32, fp_TableContainer *,bool);
 private:
 		
 	void                _clear(fp_TableContainer * pBroke);
@@ -391,6 +397,7 @@ private:
 
 	UT_sint32 	m_iShiftHeight;
 	bool 		m_bIsToBeDisplaced;
+	UT_sint32 	m_iBrokenTableNumber;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
@@ -459,7 +466,7 @@ fp_Column *         getBrokenColumn(void);
 	UT_sint32           getLineThickness(void)
 		{ return m_iLineThickness;}
 	void                queueResize(void);
-	UT_sint32           getYOfRow(UT_sint32 row);
+	UT_sint32      getYOfRow(UT_sint32 row);
 	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column);
 	fp_CellContainer *  getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 column);
 	virtual fp_Container * getNextContainerInSection(void) const;
@@ -546,7 +553,9 @@ fp_Column *         getBrokenColumn(void);
 	{
 		return m_bCellPositionChanged;
 	}
-	void changeCellPositions(bool);
+	void changeCellPositions(UT_sint32,bool);
+	UT_sint32 countBrokenTables();
+	UT_sint32 getBrokenTablePosition();
 private:
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
@@ -622,6 +631,9 @@ private:
 	fp_TableHeader * m_pTableHeader;
 	bool m_bHeader;
 	bool m_bCellPositionChanged;
+
+	fp_CellContainer * m_pFirstShiftedCell;
+	fp_CellContainer * m_pLastShiftedCell;
 };
 
 class fp_TableHeader : public fp_TableContainer
@@ -639,13 +651,15 @@ public:
 	void headerDraw(dg_DrawArgs *);
 	void markCellsForHeader(void);
 	UT_sint32 getActualRowHeight(UT_sint32 iRowNumber);
+	~fp_TableHeader();
 
 	std::vector<fp_CellContainer *> m_vecCells;
-
 private:
 	std::vector<UT_sint32> m_vHeaderRowNumber;
 	fp_TableContainer *pTabMaster;
 	UT_sint32 m_iHeaderHeight;
+	fp_CellContainer *m_pFirstCachedCell;
+	fp_CellContainer *m_pLastCachedCell;
 };
 	
 #endif /* TABLECONTAINER_H */
