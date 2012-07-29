@@ -641,20 +641,22 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	}
 	/* update height&width properties
 	*/
+	UT_UTF8String height;
+	UT_UTF8String width;
 	pszStyle = 0;
 	m_vecProps.getProp("frame-height", pszStyle);
 	if (pszStyle) {
-		thickness = pszStyle;
-		m_sOldHeight = thickness;
-		setHeight(thickness);
+		height = pszStyle;
+		m_sOldHeight = height;
+		setHeight(height);
 	}
 
 	pszStyle = 0;
 	m_vecProps.getProp("frame-width", pszStyle);
 	if (pszStyle) {
-		thickness = pszStyle;
-		m_sOldWidth = thickness;
-		setWidth(thickness);
+		width = pszStyle;
+		m_sOldWidth = width;
+		setWidth(width);
 	}
 
 	/* update wrap properties
@@ -1111,23 +1113,23 @@ void AP_Dialog_FormatFrame::setWidth(const UT_UTF8String & width)
 
 void AP_Dialog_FormatFrame::initFrameWidthStr() 
 {  
-	UT_UTF8String thickness;
+	UT_UTF8String width;
 	const gchar * pszStyle = 0;
 	m_vecProps.getProp("frame-width", pszStyle);
 	if (pszStyle) {
-		thickness = pszStyle;
-		setWidth(thickness);
+		width = pszStyle;
+		setWidth(width);
 	}
 }
 
 void AP_Dialog_FormatFrame::initFrameHeightStr() 
 { 
-	UT_UTF8String thickness;
+	UT_UTF8String height;
 	const gchar * pszStyle = 0;
 	m_vecProps.getProp("frame-height", pszStyle);
 	if (pszStyle) {
-		thickness = pszStyle;
-		setHeight(thickness);
+		height = pszStyle;
+		setHeight(height);
 	}
 }
 
