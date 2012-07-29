@@ -478,32 +478,33 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
 		/* update height&width properties
 		*/
-		const gchar* pszStyle = 0;
-		UT_UTF8String thickness;
-		gchar * pszThickness = NULL;
+		UT_UTF8String height;
+		UT_UTF8String width;
+		gchar * pszHeight = NULL;
+		gchar * pszWidth = NULL;
+		const gchar * pszStyle = NULL;
 		fl_BlockLayout * pBL = pView->getCurrentBlock();
 		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pBL->myContainingLayout());
 		
-		if (pView->getCellProperty("table-height", pszThickness))
-			m_vecProps.addOrReplaceProp("table-height", pszThickness);
+		if (pView->getCellProperty("table-height", pszHeight))
+			m_vecProps.addOrReplaceProp("table-height", pszHeight);
 		else
 			m_vecProps.removeProp("table-height");
-		if (pView->getCellProperty("table-width", pszThickness))
-			m_vecProps.addOrReplaceProp("table-width", pszThickness);
+		if (pView->getCellProperty("table-width", pszWidth))
+			m_vecProps.addOrReplaceProp("table-width", pszWidth);
 		else
 			m_vecProps.removeProp("table-width");
 
 		m_vecProps.getProp("table-height", pszStyle);
 		if (pszStyle) {
-			thickness = pszStyle;
-			setHeight(thickness);
+			height = pszStyle;
+			setHeight(height);
 		}
 
-		pszStyle = 0;
 		m_vecProps.getProp("table-width", pszStyle);
 		if (pszStyle) {
-			thickness = pszStyle;
-			setWidth(thickness);
+			width = pszStyle;
+			setWidth(width);
 		}
 		// draw the preview with the changed properties
 		if(m_pFormatTablePreview)
@@ -513,23 +514,23 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 void AP_Dialog_FormatTable::initTableWidthStr() 
 {  
-	UT_UTF8String thickness;
+	UT_UTF8String width;
 	const gchar * pszStyle = 0;
 	m_vecProps.getProp("table-width", pszStyle);
 	if (pszStyle) {
-		thickness = pszStyle;
-		setWidth(thickness);
+		width = pszStyle;
+		setWidth(width);
 	}
 }
 
 void AP_Dialog_FormatTable::initTableHeightStr() 
 { 
-	UT_UTF8String thickness;
+	UT_UTF8String height;
 	const gchar * pszStyle = 0;
 	m_vecProps.getProp("table-height", pszStyle);
 	if (pszStyle) {
-		thickness = pszStyle;
-		setHeight(thickness);
+		height = pszStyle;
+		setHeight(height);
 	}
 }
 

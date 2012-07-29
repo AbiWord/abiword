@@ -105,8 +105,6 @@ public:
 	void								setHeight(UT_uint32 height);
 	void					            setWidth(const UT_UTF8String &  width);
 	void					            setHeight(const UT_UTF8String &  height);
-	const UT_UTF8String &   getFrameWidth_Str() const {  return m_sWidth; }
-    const UT_UTF8String &   getFrameHeight_Str() const { return m_sHeight; }
 	void								setBackgroundColor(UT_RGBColor clr);
 	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;	
 	void                                setBorderThickness(UT_UTF8String & sThick);
@@ -128,6 +126,8 @@ public:
 	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
 	inline float                        getTableWidth(void) { return m_width; } 
 	inline float                        getTableHeight(void) { return m_height; }
+	inline const UT_UTF8String &   tableWidth() const {  return m_sWidth; }
+	inline const UT_UTF8String &   tableHeight() const { return m_sHeight; }
 	void                    initTableWidthStr();  
 	void                    initTableHeightStr(); 
 				
