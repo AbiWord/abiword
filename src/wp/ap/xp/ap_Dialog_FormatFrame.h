@@ -238,8 +238,8 @@ private:
 	UT_UTF8String			m_sWidth;
 	UT_UTF8String			m_sHeight;
 	//for update
-	UT_UTF8String			m_sOldWidth;
-	UT_UTF8String			m_sOldHeight;
+	UT_sint32			m_OldWidth;
+	UT_sint32			m_OldHeight;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
 	

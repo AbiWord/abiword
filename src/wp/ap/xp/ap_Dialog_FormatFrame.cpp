@@ -129,8 +129,8 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
       m_height(1.0f),
 	  m_sWidth("0.00pt"),
 	  m_sHeight("0.00pt"),
-	  m_sOldWidth("0.00pt"),
-	  m_sOldHeight("0.00pt")
+	  m_OldWidth(1.0f),
+	  m_OldHeight(1.0f)
 {
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
@@ -399,9 +399,14 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 		return;
 	}
 
-	PT_DocPosition pos = pView->getPoint();
 
-	if (/* m_bSettingsChanged || */ m_iOldPos == pos) {
+	PT_DocPosition pos = pView->getPoint();
+	fl_FrameLayout * pFL = pView->getFrameLayout();
+	UT_sint32 layout_height = pFL->getFrameHeight();
+	UT_sint32 layout_width = pFL->getFrameWidth();
+
+	if (/* m_bSettingsChanged || */ m_iOldPos == pos 
+		&& layout_height == m_OldHeight && layout_width == m_OldWidth) {
 		// comparing the actual cell pos would be even better; but who cares :)
 		// we can't return since we need to update when change width and height
 		 return;  
@@ -647,17 +652,17 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	m_vecProps.getProp("frame-height", pszStyle);
 	if (pszStyle) {
 		height = pszStyle;
-		m_sOldHeight = height;
 		setHeight(height);
 	}
+	m_OldHeight = layout_height;
 
 	pszStyle = 0;
 	m_vecProps.getProp("frame-width", pszStyle);
 	if (pszStyle) {
 		width = pszStyle;
-		m_sOldWidth = width;
 		setWidth(width);
 	}
+	m_OldWidth = layout_width;
 
 	/* update wrap properties
 	 */
