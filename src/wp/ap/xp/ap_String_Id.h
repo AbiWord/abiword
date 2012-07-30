@@ -710,7 +710,7 @@ dcl(DLG_Lists_Current_List_Type,		 "Current List Type")
 dcl(DLG_Lists_Current_List_Label,		 "Current List Label")
 dcl(DLG_Lists_Cur_Change_Start, 		 "Change Current \nList")
 dcl(DLG_Lists_Type, 					 "Type:")
-dcl(DLG_Lists_Type_none,				 "None")
+dcl(DLG_Lists_Type_none,				 "None")		//xgettext:msgctxt
 dcl(DLG_Lists_Type_bullet,				 "Bullet")
 dcl(DLG_Lists_Type_numbered,			 "Numbered")
 dcl(DLG_Lists_Style,					 "Style:")
