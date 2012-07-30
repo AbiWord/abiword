@@ -4352,7 +4352,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	pBroke->setYBreakHere(getYBreak()+vpos);
 	setYBottom(getYBreak() + vpos -1);
 	UT_ASSERT(getHeight() >0);
-	pBroke->setYBottom(getMasterTable()->getYBottom());
+	pBroke->setYBottom(getMasterTable()->getYOfRow(getMasterTable()->getNumRows()));
 	xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken table %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
 	xxx_UT_DEBUGMSG(("SEVIOR????????: Previous table YBreak %d YBottom  %d Height of broken table %d \n",getYBreak(),getYBottom(),getHeight()));
 	UT_ASSERT(pBroke->getHeight() > 0);
