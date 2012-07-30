@@ -1106,7 +1106,7 @@ void AP_UnixDialog_Lists::_getGlistFonts (std::vector<std::string> & glFonts)
 void AP_UnixDialog_Lists::_fillNoneStyleMenu( GtkListStore *listmenu)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	addToStore(listmenu, pSS, AP_STRING_ID_DLG_Lists_Type_none,
+	addToStore(listmenu, pSS, AP_STRING_ID_DLG_Lists_Style_none,
 			   NOT_A_LIST);
 }
 
