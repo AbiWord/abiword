@@ -21,6 +21,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "config.h"
+
 #include "ap_Features.h"
 
 #include "ut_assert.h"
@@ -298,7 +300,11 @@ void AP_Dialog_Lists::Apply(void)
  */
 	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
 	{
+#ifdef WITH_STANDARD_SYMBOLS_L
+		m_pszFont = "Standard Symbols L";
+#else 
 		m_pszFont = "Symbol";
+#endif		
 	}
 	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
 	{
@@ -627,7 +633,11 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	}
 	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
 	{
+#ifdef WITH_STANDARD_SYMBOLS_L
+		m_pszFont = "Standard Symbols L";
+#else 
 		m_pszFont = "Symbol";
+#endif		
 	}
 	else if (m_NewListType == NOT_A_LIST)
 	{
@@ -682,7 +692,11 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 		 m_NewListType == IMPLIES_LIST  ||
 		 m_NewListType == DASHED_LIST )
 	{
+#ifdef WITH_STANDARD_SYMBOLS_L
+		m_pszFont = "Standard Symbols L";
+#else 
 		m_pszFont = "Symbol";
+#endif		
 		m_pszDelim = "%L";
 	}
 	else if (m_NewListType == NOT_A_LIST)

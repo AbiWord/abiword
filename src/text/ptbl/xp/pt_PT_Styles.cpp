@@ -19,6 +19,7 @@
  * 02111-1307, USA.
  */
 
+#include "config.h"
 #include "ut_locale.h"
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -208,10 +209,22 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	UT_String_sprintf(stTmp, list_fmt,"Upper Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
 	_s("Upper Roman List",false,"P", "Numbered List", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Bullet List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Bullet List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", 
+#ifdef WITH_STANDARD_SYMBOLS_L
+	                                                                                                                            "Standard Symbols L",
+#else																				
+	                                                                                                                            "Symbol",
+#endif																				                                                                                                                               
+                                                                                                                                         "NULL");
 
 	_s("Bullet List",true, "P", "", "Current Settings", stTmp.c_str());
-	UT_String_sprintf(stTmp, list_fmt, "Implies List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Symbol", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Implies List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", 
+#ifdef WITH_STANDARD_SYMBOLS_L
+	                                                                                                                            "Standard Symbols L",
+#else																				
+	                                                                                                                            "Symbol",
+#endif																				                                                                                                                               
+                                                                                                                                         "NULL");
 	_s("Implies List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Dashed List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", "NULL");

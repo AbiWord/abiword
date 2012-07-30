@@ -2720,13 +2720,6 @@ GR_Font* GR_CairoGraphics::_findFont(const char* pszFontFamily,
 	const char * pWeight = pszFontWeight;
 	const char * pStretch = pszFontStretch;
 
-#ifdef WITH_STANDARD_SYMBOLS_L 
-	if(pszFontFamily && !strcmp(pszFontFamily, "Symbol"))
-	{
-		pszFontFamily = "Standard Symbols L";
-	}
-#endif
-	   
 	if(pszFontStyle && *pszFontStyle == 'n')
 		pStyle = "";
 	else if(pszFontStyle == NULL)

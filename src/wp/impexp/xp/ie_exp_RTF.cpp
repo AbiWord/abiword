@@ -20,6 +20,7 @@
  */
 
 #include <stdlib.h>
+#include "config.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -3019,7 +3020,11 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 	case BULLETED_LIST:
 		Param = 23;
 		bulletsym = 0xb7;
+#ifdef WITH_STANDARD_SYMBOLS_L
+		fontName = "Standard Symbols L";
+#else 
 		fontName = "Symbol";
+#endif		
 		break;
 	case DASHED_LIST:
 		Param = 23;
