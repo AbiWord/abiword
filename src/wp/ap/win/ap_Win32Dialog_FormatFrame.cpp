@@ -196,8 +196,9 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
     /* Set the value of TEXT BOX */
 	//init value is current Frame width and height
-	wchar_t 	szValue[BUFSIZE];
 	setCurFrameProps();
+	wchar_t 	szValue[BUFSIZE];
+	
 	swprintf(szValue, L"%02.2f", getFrameWidth());
 	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
 
@@ -389,8 +390,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 					{
 						setHeight( _wtoi(buf) );
 					}
-				}					
-				event_previewExposed();
+				}				
 				return 1;
 			}
 
@@ -404,8 +404,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 					{
 						setWidth( _wtoi(buf) );
 					}
-				}					
-				event_previewExposed();
+				}			
 				return 1;
 			}
 
