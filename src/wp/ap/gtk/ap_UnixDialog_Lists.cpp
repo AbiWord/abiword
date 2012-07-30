@@ -1006,7 +1006,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_widget_show (preview_area);
 	gtk_container_add (GTK_CONTAINER (preview_frame), preview_area);
 
-	hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+	hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 16);
 	if(!isModal())
 		gtk_widget_show (hbox1);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);
