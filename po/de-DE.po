@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-29 18:52+0200\n"
-"PO-Revision-Date: 2012-07-29 18:52+0200\n"
+"POT-Creation-Date: 2012-07-30 17:09+0200\n"
+"PO-Revision-Date: 2012-07-30 17:09+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -1391,7 +1391,7 @@ msgstr "Mindestens"
 #. DLG_Lists_Resume
 #: po/tmp/ap_String_Id.h
 msgid "Attach to Previous List"
-msgstr "Voriger Liste anhängen"
+msgstr "An vorige Liste anhängen"
 
 #. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
@@ -1632,6 +1632,11 @@ msgstr "Aufzählung"
 msgid "Bullets and &Numbering"
 msgstr "&Nummerierung und Aufzählung"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "Nummerierung und Aufzählung"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1741,7 +1746,7 @@ msgid ""
 "Change Current \n"
 "List"
 msgstr ""
-"aktuelle Liste \n"
+"Aktuelle Liste \n"
 "ändern"
 
 #. DLG_Background_TitleHighlight
@@ -2293,7 +2298,7 @@ msgstr "Aktuelles Aufzählungszeichen"
 #. DLG_Lists_Current_List_Type
 #: po/tmp/ap_String_Id.h
 msgid "Current List Type"
-msgstr "Aktueller Listentyp"
+msgstr "Aktuelle Listenart"
 
 #. MSG_EmptySelection
 #: po/tmp/ap_String_Id.h
@@ -3088,22 +3093,22 @@ msgstr "Feste Spaltenbreite:"
 #. DLG_Lists_FoldingLevel1
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 1"
-msgstr "Unter Ebene 1 verbergen"
+msgstr "Unterhalb Ebene 1 ausblenden"
 
 #. DLG_Lists_FoldingLevel2
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 2"
-msgstr "Unter Ebene 2 verbergen"
+msgstr "Unterhalb Ebene 2 ausblenden"
 
 #. DLG_Lists_FoldingLevel3
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 3"
-msgstr "Unter Ebene 3 verbergen"
+msgstr "Unterhalb Ebene 3 ausblenden"
 
 #. DLG_Lists_FoldingLevel4
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
-msgstr "Unter Ebene 4 verbergen"
+msgstr "Unterhalb Ebene 4 ausblenden"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -4120,11 +4125,6 @@ msgstr "Listeneigenschaften"
 msgid "List Styles"
 msgstr "Listen"
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Listen für "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
 msgid "Locations"
@@ -4404,8 +4404,8 @@ msgid ""
 "New List \n"
 "Type"
 msgstr ""
-"Neuer Listen-\n"
-"Typ"
+"Neue \n"
+"Listenart"
 
 #. TOOLBAR_LABEL_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
@@ -4456,7 +4456,7 @@ msgstr "Keine Datei"
 #. DLG_Lists_FoldingLevel0
 #: po/tmp/ap_String_Id.h
 msgid "No Folding"
-msgstr "Nicht verbergen"
+msgstr "Nicht ausblenden"
 
 #. DLG_Styles_ErrNoStyle
 #: po/tmp/ap_String_Id.h
@@ -4476,7 +4476,6 @@ msgstr "Keine Skripte gefunden"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "ohne"
@@ -6550,7 +6549,7 @@ msgstr "Schreibrichtung"
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
-msgstr "Text-Faltung"
+msgstr "Textausblendung"
 
 #. DLG_FormatFrame_TextWrapping
 #. DLG_Image_TextWrapping
@@ -6766,7 +6765,7 @@ msgstr ""
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
 msgid "Type:"
-msgstr "Typ:"
+msgstr "Art:"
 
 #. DLG_ToggleCase_UpperCase
 #: po/tmp/ap_String_Id.h
@@ -7089,6 +7088,18 @@ msgstr "MM/TT/JJ"
 #: po/tmp/ap_String_Id.h
 msgid "tOGGLE cASE"
 msgstr "gROSS-/kLEINSCHREIBUNG umkehren"
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Keiner"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Keine"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
