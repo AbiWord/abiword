@@ -305,6 +305,7 @@ public:
     void                markForReformat(void) { m_bNeedsFormat = true;}
     bool                needsReFormat(void) const { return m_bNeedsFormat;}
 	bool                isThisPageValid(HdrFtrType hfType, fp_Page * pThisPage);
+	bool                isFirstPageValid(void) const; 
     void                getVecOfHdrFtrs(UT_GenericVector<fl_HdrFtrSectionLayout *> * vecHdrFtr);
 	void                formatAllHdrFtr(void);
 	void                doMarginChangeOnly(void);

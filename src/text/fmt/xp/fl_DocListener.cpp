@@ -370,7 +370,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 				//
 				UT_DEBUGMSG(("SEVIOR: Doing Populate DocSection in DocListener \n"));
 				fl_DocSectionLayout * pPDSL = m_pLayout->getLastSection();
-				if(pPDSL != NULL)
+				if(pPDSL && !m_pLayout->isLayoutFilling())
 				{
 					pPDSL->format();
 				}

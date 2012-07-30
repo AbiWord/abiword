@@ -1902,20 +1902,8 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 	m_vecFormatLayout.clear();
 	if(needsSectionBreak() && !getDocument()->isDontImmediateLayout() )
 	{
-	    if (getPrev())
-	    {
-		// Verify that the current section starts after the end of the previous section
-		fp_Container * pFirstCon = getFirstContainer();
-		fp_Container * pPrevLastCon = getPrev()->getLastContainer();
-		fp_Page * pFirstPage = NULL;
-		fp_Page * pPrevLastPage = NULL;
-		if (pFirstCon && pPrevLastCon)
+		if (!isFirstPageValid())
 		{
-		    pFirstPage = pFirstCon->getPage();
-		    pPrevLastPage = pPrevLastCon->getPage();
-		    if (pFirstPage && pPrevLastPage && 
-			(pFirstPage->getPageNumber() < pPrevLastPage->getPageNumber()))
-		    {
 			// The previous section ends on a page farther in the document than the present section
 			// first page. We reformat completely the section
 			// TODO: a better method would be to create one new page and move the present section
@@ -1925,15 +1913,11 @@ void fl_DocSectionLayout::updateLayout(bool bDoFull)
 			collapse();
 			format();
 			return;
-		    }
 		}
-	    }
-	    m_ColumnBreaker.breakSection();
-//		UT_ASSERT(!needsSectionBreak());
+		m_ColumnBreaker.breakSection();
 	}
 	if(needsRebuild() && !getDocument()->isDontImmediateLayout() )
 	{
-//		UT_ASSERT(0);
 		checkAndRemovePages();
 		addValidPages();
 	}
@@ -3064,6 +3048,37 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage, bool bReallyDeleteIt)
 			pDSL = pDSL->getNextDocSection();
 		}
 	}
+}
+
+/*
+  This method returns true if the first column of the section starts on the 
+  same page as the last column of the previous section and false otherwise. 
+  If this is the first section, it tests whether the section starts on the first page.
+ */
+
+bool fl_DocSectionLayout::isFirstPageValid(void) const
+{
+	fp_Container * pFirstCon = getFirstContainer();
+	fp_Page * pFirstPage = NULL;
+	if (!pFirstCon)
+	{
+		return true;
+	}
+	pFirstPage = pFirstCon->getPage();
+	UT_return_val_if_fail(pFirstPage,true);
+	if (!getPrev())
+	{
+		// This is the first section of the document
+		return (pFirstPage->getPageNumber() == 0)? true:false;
+	}
+
+	fp_Container * pPrevLastCon = getPrev()->getLastContainer();
+	fp_Page * pPrevLastPage = NULL;
+	UT_return_val_if_fail(pPrevLastCon,false);
+	pPrevLastPage = pPrevLastCon->getPage();
+	UT_return_val_if_fail(pPrevLastPage,false);
+
+	return (pFirstPage == pPrevLastPage)? true:false;
 }
 
 /*!

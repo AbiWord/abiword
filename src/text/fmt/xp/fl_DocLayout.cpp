@@ -2823,24 +2823,26 @@ void FL_DocLayout::formatAll()
 	UT_return_if_fail(m_pDoc);
 	m_pDoc->enableListUpdates();
 	fl_SectionLayout* pSL = m_pFirstSection;
-//  	while (pSL)
-//  	{
-//  		if(pSL->getType() == FL_SECTION_DOC)
-//  		{
-//  			static_cast<fl_DocSectionLayout *>(pSL)->collapseDocSection();
-//  		}
-//  		pSL = pSL->getNext();
-//  	}
 	clearAllCountWraps();
 	while (pSL)
 	{
-		pSL->recalculateFields(0);
-		pSL->format();
 		if(pSL->getContainerType() == FL_CONTAINER_DOCSECTION)
 		{
-		        fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pSL);
-			pDSL->checkAndRemovePages();
+			fl_DocSectionLayout * pDSL = static_cast<fl_DocSectionLayout *>(pSL);
+			pDSL->recalculateFields(0);
+			if (!pDSL->isFirstPageValid())
+			{
+				pDSL->collapse();
+			}
+			pDSL->format();
+			pDSL->checkAndRemovePages();			
 		}
+		else
+		{
+			pSL->recalculateFields(0);
+			pSL->format();
+		}
+
 		pSL = static_cast<fl_SectionLayout *>(pSL->getNext());
 	}
 }
