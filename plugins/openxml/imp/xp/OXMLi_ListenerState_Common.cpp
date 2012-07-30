@@ -404,7 +404,10 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "u")) {
 				const gchar * newVal = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
-				UT_return_if_fail( this->_error_if_fail(newVal != NULL) );
+				if(!newVal)
+				{
+					newVal = "single";
+				}
 				std::string final_val = "";
 				const gchar * previousVal = NULL;
 				if (UT_OK == run->getProperty("text-decoration", previousVal)) {
