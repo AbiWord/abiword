@@ -1585,6 +1585,17 @@ bool fp_Page::breakPage(void)
 		UT_sint32 maxContainers= 0;
 		UT_sint32 maxContainerHeight = 0;
 		fp_Column * pCol = pPrev;
+		if (pCol && pCol->getFirstContainer() &&
+			(pCol->getFirstContainer()->getContainerType() == FP_CONTAINER_LINE))
+		{
+			fp_Line * pLine = static_cast <fp_Line*>(pCol->getFirstContainer());
+			if (pLine->getFirstRun() &&
+				(pLine->getFirstRun()->getType() == FPRUN_FORCEDPAGEBREAK))
+			{
+				return true;
+			}
+		}
+
 		while(pCol != NULL)
 		{
 			UT_sint32 countContainers = 0;
