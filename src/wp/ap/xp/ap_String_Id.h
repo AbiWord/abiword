@@ -681,7 +681,7 @@ dcl(DLG_RDF_SemanticStylesheets_Set,		"Set For All Existing")
 
 // Lists Dialog
 
-dcl(DLG_Lists_Title,					 "Lists for ")
+dcl(DLG_Lists_Title,					 "Bullets and Numbering")
 dcl(DLG_Lists_Start_New_List,			  "Start New List")
 dcl(DLG_Lists_Stop_Current_List,			 "Stop Current List")
 dcl(DLG_Lists_Resume_Previous_List, 			"Resume Previous List")
