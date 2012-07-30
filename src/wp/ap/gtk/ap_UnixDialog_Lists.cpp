@@ -572,6 +572,9 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow(void)
 
 	ConstructWindowName();
 	m_wMainWindow = abiDialogNew ( "list dialog", TRUE, getWindowName() );	
+#if !GTK_CHECK_VERSION(3,0,0)
+	gtk_dialog_set_has_separator(GTK_DIALOG(m_wMainWindow), FALSE);
+#endif
 	vbox1 = gtk_dialog_get_content_area(GTK_DIALOG(m_wMainWindow));
 
 	contents = _constructWindowContents();
@@ -867,6 +870,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_SetDefault,s);
 	customized_cb = gtk_dialog_add_button (GTK_DIALOG(m_wMainWindow), s.utf8_str(), BUTTON_RESET);
+	GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_REVERT_TO_SAVED, GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image(GTK_BUTTON(customized_cb), img);      
 	gtk_widget_show (customized_cb);
 
 	/* todo
