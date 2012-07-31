@@ -485,7 +485,43 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		const gchar * pszStyle = NULL;
 		fl_BlockLayout * pBL = pView->getCurrentBlock();
 		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pBL->myContainingLayout());
-		
+        fl_ContainerLayout * pCL = pTL->myContainingLayout();
+		fp_Container * pCon = pCL->getLastContainer();
+		UT_sint32 iWidth = 0;
+		UT_sint32 iHeight = 0;
+		if(pCon != NULL)
+		{
+			iWidth = pCon->getWidth();
+			iHeight = pCon->getHeight();
+		}
+		if(iWidth == 0)
+		{
+			iWidth = pTL->getDocSectionLayout()->getWidth();
+		}
+		if(iHeight == 0)
+		{
+			iHeight = pTL->getDocSectionLayout()->getHeight();			
+		}
+
+		if(iWidth != 0)
+		{
+
+			iWidth = UT_convertDimToInches(iWidth, DIM_PT);
+            std::string buf = UT_std_string_sprintf("%dpt", iWidth);
+			m_vecProps.addOrReplaceProp("table-width", buf.c_str());
+		}
+		else
+			m_vecProps.removeProp("table-width");
+
+		if(iHeight != 0)
+		{
+        	iHeight = UT_convertDimToInches(iHeight, DIM_PT);
+			std::string buf = UT_std_string_sprintf("%dpt", iHeight);
+			m_vecProps.addOrReplaceProp("table-height", buf.c_str());
+		}
+		else
+			m_vecProps.removeProp("table-height");
+		/*
 		if (pView->getCellProperty("table-height", pszHeight))
 			m_vecProps.addOrReplaceProp("table-height", pszHeight);
 		else
@@ -506,6 +542,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 			width = pszStyle;
 			setWidth(width);
 		}
+		*/
 		// draw the preview with the changed properties
 		if(m_pFormatTablePreview)
 			m_pFormatTablePreview->queueDraw();
