@@ -298,7 +298,7 @@ fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 		pCol = static_cast<fp_Column *>(pBroke->getContainer());
 	}
 	//	UT_ASSERT(pCol->getContainerType() != FP_CONTAINER_CELL);
-	if(pCol->getContainerType() == FP_CONTAINER_CELL)
+	if(pCol && pCol->getContainerType() == FP_CONTAINER_CELL)
 	{
 		fp_Container * pCon = static_cast<fp_Container *>(pCol);
 		while(pCon && !pCon->isColumnType())
