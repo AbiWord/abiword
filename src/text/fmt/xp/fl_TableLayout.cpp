@@ -1165,9 +1165,9 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 	else
 	{
-		m_iTableHeight = getDocSectionLayout()->getActualColumnWidth();
+		m_iTableHeight = getDocSectionLayout()->getActualColumnHeight();
 	}
-	if(pszRelTableWidth && pszRelTableWidth[0])
+	if(pszRelTableHeight && pszRelTableHeight[0])
 	{
 		m_iTableHeight = getDocSectionLayout()->getActualColumnHeight();
 		//
