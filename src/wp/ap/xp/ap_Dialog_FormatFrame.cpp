@@ -129,8 +129,8 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
       m_height(1.0f),
 	  m_sWidth("0.00pt"),
 	  m_sHeight("0.00pt"),
-	  m_OldWidth(1.0f),
-	  m_OldHeight(1.0f)
+	  m_OldWidth(0),
+	  m_OldHeight(0)
 {
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
