@@ -44,6 +44,15 @@ void OXMLi_ListenerState_Math::startElement (OXMLi_StartElementRequest * rqst)
 
         m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<m:"), 3);
         m_pMathBB->append(reinterpret_cast<const UT_Byte *>(((rqst->pName).substr(2)).c_str()),((rqst->pName).substr(2)).length());
+
+        const gchar* val = attrMatches(NS_M_KEY, "val", rqst->ppAtts);
+        if(val != NULL)
+        {
+            m_pMathBB->append(reinterpret_cast<const UT_Byte *>(" m:val=\""), 8);
+            m_pMathBB->append(reinterpret_cast<const UT_Byte *>(val), strlen(val));
+            m_pMathBB->append(reinterpret_cast<const UT_Byte *>("\""), 1);
+        }
+
         m_pMathBB->append(reinterpret_cast<const UT_Byte *>(">"), 1);
 
         rqst->handled = true;
