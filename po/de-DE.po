@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-30 17:09+0200\n"
-"PO-Revision-Date: 2012-07-30 17:09+0200\n"
+"POT-Creation-Date: 2012-08-01 16:56+0200\n"
+"PO-Revision-Date: 2012-08-01 16:56+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -50,6 +50,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid " "
 msgstr " "
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgid "          "
+msgstr "          "
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h
@@ -124,11 +129,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Ohne"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -136,11 +136,6 @@ msgstr "&1 Ohne"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -150,11 +145,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -162,11 +152,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -612,7 +597,7 @@ msgstr "&Zeilen nicht trennen"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h
 msgid "&LRM"
-msgstr "&LNR"
+msgstr "&Links nach rechts"
 
 #. DLG_PageSetup_Landscape
 #: po/tmp/ap_String_Id.h
@@ -632,7 +617,7 @@ msgstr "&Links"
 #. MENU_LABEL_FMT_DIRECTION_DO_LTR
 #: po/tmp/ap_String_Id.h
 msgid "&Left-to-right text"
-msgstr "&Links-nach-rechts"
+msgstr "&Links-nach-rechts-Text"
 
 #. DLG_Para_LabelLeft
 #. DLG_PageSetup_Left
@@ -813,7 +798,7 @@ msgstr "&RDF"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
 msgid "&RLM"
-msgstr "&RNL"
+msgstr "&Rechts nach links"
 
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h
@@ -853,7 +838,7 @@ msgstr "&Rechts"
 #. MENU_LABEL_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h
 msgid "&Right-to-left text"
-msgstr "&Rechts-nach-links"
+msgstr "&Rechts-nach-links-Text"
 
 #. DLG_Para_LabelRight
 #. DLG_PageSetup_Right
@@ -1073,6 +1058,16 @@ msgstr "(keine Schreibvorschläge)"
 msgid "(none)"
 msgstr "(ohne)"
 
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "----------"
+msgstr "----------"
+
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid ".........."
+msgstr ".........."
+
 #. TOOLBAR_LABEL_1COLUMN
 #. TOOLBAR_STATUSLINE_1COLUMN
 #. TOOLBAR_TOOLTIP_1COLUMN
@@ -1273,12 +1268,12 @@ msgstr "&Nach:"
 msgid "Ali&gnment:"
 msgstr "&Ausrichtung:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Ausrichtung"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1382,6 +1377,12 @@ msgstr ""
 "Sind Sie sicher, dass Sie keine vollständige Aufzeichnung über Änderungen "
 "führen möchten? Wenn Sie fortfahren, gehen frühere Versionen dieses "
 "Dokuments verloren."
+
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr "Pfeilspitzen"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -2439,7 +2440,7 @@ msgstr "Standard-Seitengröße"
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h
 msgid "Default tab stops:"
-msgstr "Standard-Tabulatoren:"
+msgstr "Standard-Tabulator:"
 
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h
@@ -3214,33 +3215,33 @@ msgstr "&Fuß- und Endnoten"
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
 #: po/tmp/ap_String_Id.h
 msgid "Force LTR direction of text"
-msgstr "Textrichtung LNR forcieren"
+msgstr "Textrichtung »links nach rechts« festlegen"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_RTL
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Force RTL direction of text"
-msgstr "Textrichtung RNL forcieren"
+msgstr "Textrichtung »rechts nach links« festlegen"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_LTR
 #: po/tmp/ap_String_Id.h
 msgid "Force left-to-right direction of text"
-msgstr "Textrichtung Links-nach-rechts forcieren"
+msgstr "Textrichtung »links nach rechts« festlegen"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Force right-to-left direction of text"
-msgstr "Textrichtung Rechts-nach-links forcieren"
+msgstr "Textrichtung »rechts nach links« festlegen"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR
 #: po/tmp/ap_String_Id.h
 msgid "Force text LTR"
-msgstr "LNR-Text forcieren"
+msgstr "Text auf Schreibrichtung »links nach rechts« festlegen"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Force text RTL"
-msgstr "RNL-Text forcieren"
+msgstr "Text auf Schreibrichtung »rechts nach links« festlegen"
 
 #. DLG_Styles_ModifyFormat
 #. TB_Format
@@ -3330,7 +3331,8 @@ msgstr "&Ganzer Bildschirm"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Allgemein"
 
@@ -3820,12 +3822,12 @@ msgstr "Einen Hyperlink einfügen"
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h
 msgid "Insert left-to-right direction marker (LRM)"
-msgstr "Eine Markierung für Links-nach-rechts (LNR) einfügen"
+msgstr "Eine Markierung für »links nach rechts« (LNR) einfügen"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
 msgid "Insert right-to-left direction marker (RLM)"
-msgstr "Eine Markierung für Rechts-nach-links (RNL) einfügen"
+msgstr "Eine Markierung für »rechts nach links« (RNL) einfügen"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
@@ -3990,8 +3992,8 @@ msgstr "Layout-Details"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "Füllzeichen"
+msgid "Leader:"
+msgstr "Füllzeichen:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4093,7 +4095,7 @@ msgstr "Linie unter der markierten Auswahl (ein/aus)"
 #. DLG_Column_Line_Between
 #: po/tmp/ap_String_Id.h
 msgid "Line between"
-msgstr "Zwischenlinie"
+msgstr "Zwischenlinie verwenden"
 
 #. DLG_Goto_Target_Line
 #: po/tmp/ap_String_Id.h
@@ -4838,7 +4840,6 @@ msgstr "Platzierung:"
 msgid "Playing with RDF during development"
 msgstr "Mit RDF während der Entwicklung herumspielen"
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -4860,6 +4861,7 @@ msgstr "An Seite"
 msgid "Position to Paragraph"
 msgstr "An Absatz"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5331,7 +5333,7 @@ msgstr "Den Absatz rechtsbündig ausrichten"
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h
 msgid "Right-to-left &dominant"
-msgstr "Rechts-nach-links als &Standard"
+msgstr "»Rechts nach links« als &Standard"
 
 #. FIELD_Document_Rights
 #: po/tmp/ap_String_Id.h
@@ -5742,17 +5744,17 @@ msgstr "Als sematisches Quell-Element festlegen"
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Set dominant direction of document to RTL"
-msgstr "Die Standardtextrichtung im Dokument auf RNL setzen"
+msgstr "Die Standardtextrichtung im Dokument auf »rechts nach links« setzen"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Set dominant direction of paragraph to RTL"
-msgstr "Die Standardtextrichtung im Absatz auf RNL setzen"
+msgstr "Die Standardtextrichtung im Absatz auf »rechts nach links« setzen"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Set dominant direction of section to RTL"
-msgstr "Die Standardtextrichtung im Abschnitt auf RNL setzen"
+msgstr "Die Standardtextrichtung im Abschnitt auf »rechts nach links« setzen"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h
@@ -6068,7 +6070,7 @@ msgstr "Quelle:"
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
 msgid "Space after Column:"
-msgstr "Abstand nach Spalte:"
+msgstr "Spaltenabstand:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6823,7 +6825,7 @@ msgstr "Römische Ziffern (groß)"
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h
 msgid "Use RTL Order"
-msgstr "RNL-Reihenfolge verwenden"
+msgstr "Spaltenreihenfolge »rechts nach links«"
 
 #. DLG_Options_Label_CustomSmartQuotes
 #: po/tmp/ap_String_Id.h
@@ -7059,6 +7061,11 @@ msgstr "In Seitenbreite einpassen"
 msgid "Zoom to whole page"
 msgstr "In ganze Seite einpassen"
 
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+msgid "__________"
+msgstr "_____"
+
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h
 msgid "custom.dic"
@@ -7146,11 +7153,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "B&eschreibung"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -8184,12 +8186,12 @@ msgstr "Bildgröße"
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
 msgid "Image floats above text"
-msgstr "Bild schwebt über Text"
+msgstr "Bild schwebt über dem Text"
 
 #. DLG_Image_InLine
 #: po/tmp/xap_String_Id.h
 msgid "Image placed in-line (no text wrapping)"
-msgstr "Bild im Fließtext (ohne Textumlauf)"
+msgstr "Bild im Fließtext (kein Textumlauf)"
 
 #. DLG_FOSA_ImportTitle
 #: po/tmp/xap_String_Id.h
@@ -8599,17 +8601,17 @@ msgstr "Portugiesisch (Portugal)"
 #. DLG_Image_PlaceColumn
 #: po/tmp/xap_String_Id.h
 msgid "Position relative to its Column"
-msgstr "Positionierung relativ zur Spalte"
+msgstr "Relativ zur Spalte"
 
 #. DLG_Image_PlacePage
 #: po/tmp/xap_String_Id.h
 msgid "Position relative to its Page"
-msgstr "Positionierung relativ zur Seite"
+msgstr "Relativ zur Seite"
 
 #. DLG_Image_PlaceParagraph
 #: po/tmp/xap_String_Id.h
 msgid "Position relative to nearest paragraph"
-msgstr "Position relativ zum nächsten Absatz"
+msgstr "Relativ zum nächstgelegenen Absatz"
 
 #. DLG_Image_Aspect
 #: po/tmp/xap_String_Id.h
@@ -8967,7 +8969,7 @@ msgid ""
 "The nearest version that can be restored fully is %d. Would you like to "
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
-"Die nächste Version, die vollständig wiederhergestellt werden kann, ist %d. "
+"Die letzte Version, die vollständig wiederhergestellt werden kann, ist %d. "
 "Möchten Sie stattdessen zu dieser zurückkehren? Um Version %d teilweise "
 "wiederherzustellen, wählen Sie »Nein«."
 
@@ -8986,7 +8988,7 @@ msgstr ""
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h
 msgid "Tight text wrapping"
-msgstr "Enger Textumlauf"
+msgstr "Naher Textumlauf"
 
 #. MSG_HistoryPartRestore3
 #: po/tmp/xap_String_Id.h
