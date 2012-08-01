@@ -548,6 +548,12 @@ void AP_CocoaDialog_Lists::_fillBulletedStyleMenu(NSMenu *listmenu)
 	[item setTag:(int)HEART_LIST];
 	[listmenu addItem:item];
 	[item release];
+
+	item = [[NSMenuItem alloc] initWithTitle:LocalizedString(pSS, AP_STRING_ID_DLG_Lists_Arrowhead_List)  
+			action:nil keyEquivalent:@""];
+	[item setTag:(int)ARROWHEAD_LIST];
+	[listmenu addItem:item];
+	[item release];
 }
 
 void AP_CocoaDialog_Lists::_setRadioButtonLabels(void)

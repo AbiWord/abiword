@@ -61,6 +61,7 @@ class ABI_EXPORT fl_AutoLists
 #define  XML_BOX_LIST ((const gchar *) "Box List")
 #define  XML_HAND_LIST ((const gchar *) "Hand List")
 #define  XML_HEART_LIST ((const gchar *) "Heart List")
+#define  XML_ARROWHEAD_LIST ((const gchar *) "Arrowhead List")
 
 //
 // MS Word uses 0.5 inches so we do too.

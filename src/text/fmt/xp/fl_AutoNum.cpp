@@ -592,6 +592,10 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xAA;
 		break;
 
+	case ARROWHEAD_LIST:
+		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xE3;
+		break;
+
 	default:
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;

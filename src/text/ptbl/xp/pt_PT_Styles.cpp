@@ -93,6 +93,7 @@ ST_LOCALISED_STYLES stLocalised[] =
 	{"Box List",                XAP_STRING_ID_STYLE_BOXLIST},		
 	{"Hand List",               XAP_STRING_ID_STYLE_HANDLIST},		
 	{"Heart List",              XAP_STRING_ID_STYLE_HEARTLIST},	
+	{"Arrowhead List",          XAP_STRING_ID_STYLE_ARROWHEADLIST},	
 	{"Chapter Heading",         XAP_STRING_ID_STYLE_CHAPHEADING},	
 	{"Section Heading",         XAP_STRING_ID_STYLE_SECTHEADING},	
 	{"Endnote Reference",       XAP_STRING_ID_STYLE_ENDREFERENCE},	
@@ -253,6 +254,9 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 
 	UT_String_sprintf(stTmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
 	_s("Heart List",false, "P", "", "Current Settings", stTmp.c_str());
+
+	UT_String_sprintf(stTmp, list_fmt, "Arrowhead List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	_s("Arrowhead List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	// pszFamily is the nearest font to Arial found in the system
 	UT_String_sprintf(stTmp, "tabstops:0.3in/L0; list-style:Numbered List; "

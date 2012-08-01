@@ -40,6 +40,7 @@ static const gchar * xml_Lists[] = { XML_NUMBERED_LIST,
 				     XML_BOX_LIST,
 				     XML_HAND_LIST,
 				     XML_HEART_LIST,
+				     XML_ARROWHEAD_LIST,
 				     XML_ARABICNUM_LIST,
 				     XML_HEBREW_LIST,
 };

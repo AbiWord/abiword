@@ -1161,6 +1161,8 @@ void AP_UnixDialog_Lists::_fillBulletedStyleMenu( GtkListStore *listmenu)
 			   HAND_LIST);
 	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Heart_List,
 			   HEART_LIST);
+	addToStore(listmenu, pSS,AP_STRING_ID_DLG_Lists_Arrowhead_List,
+			   ARROWHEAD_LIST);
 }
 
 void AP_UnixDialog_Lists::_setRadioButtonLabels(void)

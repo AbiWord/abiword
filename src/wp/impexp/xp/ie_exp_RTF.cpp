@@ -3071,6 +3071,11 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 		bulletsym = 0xAA;
 		fontName = "Dingbats";
 		break;
+	case ARROWHEAD_LIST:
+		Param = 23;
+		bulletsym = 0xE3;
+		fontName = "Dingbats";
+		break;
 	}
 	_rtf_keyword("levelnfc",Param);
 	UT_sint32 startParam = 0;

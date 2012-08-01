@@ -39,11 +39,12 @@ typedef enum
 	BOX_LIST = 13,
 	HAND_LIST = 14,
 	HEART_LIST = 15,
+	ARROWHEAD_LIST = 16,
 	// add new bulleted lists here, and increase LAST_BULLETED_LIST accordingly
 	// any new numbered lists should be added below OTHER_NUMBERED_LISTS
 
 	//could not just add the extra numbered lists above the bulletted one, since that would break compatibility
-	LAST_BULLETED_LIST = 16,
+	LAST_BULLETED_LIST = 17,
 	OTHER_NUMBERED_LISTS = 0x7f,
 	ARABICNUMBERED_LIST = 0x80,
 	HEBREW_LIST = 0x81,
