@@ -1477,7 +1477,7 @@ static void mapDashStyle(GR_Graphics::LineStyle in, double width, double *dashes
 		break;
 	case GR_Graphics::LINE_DOTTED:
 		UT_ASSERT(*n_dashes > 0);
-		dashes[0] = width;
+		dashes[0] = 2 * width;
 		*n_dashes = 1;
 		break;
 	case GR_Graphics::LINE_SOLID:
