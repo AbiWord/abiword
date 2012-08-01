@@ -288,7 +288,7 @@ dcl(DLG_ABOUT_URL,                      "For more information: http://www.abisou
 
 /* image size dialog */
 dcl(DLG_Image_Title, "Image Properties")
-dcl(DLG_Image_DescTabLabel, "&Description")
+dcl(DLG_Image_DescTabLabel, "General")
 dcl(DLG_Image_WrapTabLabel, "&Wrapping")
 dcl(DLG_Image_PlacementTabLabel, "&Placement")
 dcl(DLG_Image_Width, "Width:")
