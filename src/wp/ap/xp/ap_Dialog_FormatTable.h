@@ -140,6 +140,8 @@ public:
 	float                            m_height;
 	UT_UTF8String                   m_sWidth;
 	UT_UTF8String                   m_sHeight;
+	UT_sint32                       i_OldWidth;
+	UT_sint32                       i_OldHeight;
 protected:
 	guint                               _findClosestThickness(const char *) const;
 	AP_Dialog_FormatTable::tAnswer		m_answer;

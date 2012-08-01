@@ -77,7 +77,10 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	  m_width(1.0f),
 	  m_height(1.0f),
 	  m_sWidth("0.00pt"),
-	  m_sHeight("0.00pt")
+	  m_sHeight("0.00pt"),
+	  i_OldWidth(0),
+	  i_OldHeight(0)
+
 {
 	//
 	// These are hardwired into the GUI.
@@ -362,9 +365,23 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
 	if (frame) {
 		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
-
+		UT_UTF8String height;
+		UT_UTF8String width;
+		fl_BlockLayout * pBL = pView->getCurrentBlock();
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pBL->myContainingLayout());
+		fl_ContainerLayout * pCL = pTL->myContainingLayout();
+		fp_Container * pCon = pCL->getLastContainer();
+		UT_sint32 iWidth = 0;
+		UT_sint32 iHeight = 0;
+		if(pCon != NULL)
+		{
+			iWidth = pCon->getWidth();
+			iHeight = pCon->getHeight();
+		}
+          
+		//We need update if users change height or widht in UI (Drap & Drop) 
 		if (m_bSettingsChanged || 
-			m_iOldPos == pView->getPoint()) // comparing the actual cell pos would be even better; but who cares :)
+			( m_iOldPos == pView->getPoint() && i_OldWidth != iWidth && i_OldHeight != iHeight) ) // comparing the actual cell pos would be even better; but who cares :)
 			return;
 		
 		m_iOldPos = pView->getPoint();
@@ -478,19 +495,6 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
 		/* update height&width properties
 		*/
-		UT_UTF8String height;
-		UT_UTF8String width;
-		fl_BlockLayout * pBL = pView->getCurrentBlock();
-		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pBL->myContainingLayout());
-        fl_ContainerLayout * pCL = pTL->myContainingLayout();
-		fp_Container * pCon = pCL->getLastContainer();
-		UT_sint32 iWidth = 0;
-		UT_sint32 iHeight = 0;
-		if(pCon != NULL)
-		{
-			iWidth = pCon->getWidth();
-			iHeight = pCon->getHeight();
-		}
 		if(iWidth == 0)
 		{
 			iWidth = pTL->getDocSectionLayout()->getWidth();
@@ -502,7 +506,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 		if(iWidth != 0)
 		{
-
+            i_OldWidth = iWidth;
 			iWidth = UT_convertDimToInches(iWidth, DIM_PT);
             std::string buf = UT_std_string_sprintf("%dpt", iWidth);
 			m_vecProps.addOrReplaceProp("table-width", buf.c_str());
@@ -512,6 +516,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 		if(iHeight != 0)
 		{
+			i_OldHeight = iHeight;
         	iHeight = UT_convertDimToInches(iHeight, DIM_PT);
 			std::string buf = UT_std_string_sprintf("%dpt", iHeight);
 			m_vecProps.addOrReplaceProp("table-height", buf.c_str());
