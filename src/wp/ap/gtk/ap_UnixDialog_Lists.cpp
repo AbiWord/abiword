@@ -698,7 +698,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 // Container for Text Folding
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_PageFolding,s);
 		GtkWidget * lbPageFolding = gtk_label_new(s.utf8_str());
-		GtkWidget * wFoldingTable = gtk_table_new(6,3,FALSE);
+		GtkWidget * wFoldingTable = gtk_table_new(7,3,FALSE);
 		gtk_widget_show(lbPageFolding);
 		gtk_widget_show(wFoldingTable);
 		gtk_notebook_append_page(GTK_NOTEBOOK(wNoteBook),wFoldingTable,lbPageFolding);
@@ -709,7 +709,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 		GtkWidget * lbLeftSpacer = gtk_label_new("");
 		gtk_misc_set_padding(GTK_MISC(lbLeftSpacer),8,0);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),lbLeftSpacer,0,1,0,6,GTK_SHRINK,GTK_FILL,0,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),lbLeftSpacer,0,1,0,7,GTK_SHRINK,GTK_FILL,0,0);
 		gtk_widget_show(lbLeftSpacer);
 
 // Bold markup
@@ -717,14 +717,14 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		gtk_label_set_use_markup(GTK_LABEL(lbFoldHeading),TRUE);
 
 		localizeLabelMarkup(lbFoldHeading,pSS,AP_STRING_ID_DLG_Lists_FoldingLevelexp);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),lbFoldHeading,1,3,0,1,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),lbFoldHeading,1,3,0,1,GTK_FILL,GTK_FILL,0,16);
 		gtk_widget_show(lbFoldHeading);
 
 // Mid Left Spacing Here
 
 		GtkWidget * lbMidLeftSpacer = gtk_label_new("");
 		gtk_misc_set_padding(GTK_MISC(lbMidLeftSpacer),8,0);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),lbMidLeftSpacer,1,2,1,6,GTK_SHRINK,GTK_FILL,0,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),lbMidLeftSpacer,1,2,1,7,GTK_SHRINK,GTK_FILL,0,0);
 		gtk_widget_show(lbMidLeftSpacer);
 
 		m_vecFoldCheck.clear();
@@ -740,7 +740,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,1,2,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,2,3,GTK_FILL,GTK_FILL,0,6);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
@@ -753,7 +753,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,2,3,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,3,4,GTK_FILL,GTK_FILL,0,6);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
@@ -766,7 +766,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,3,4,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,4,5,GTK_FILL,GTK_FILL,0,6);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
@@ -779,7 +779,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,4,5,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,5,6,GTK_FILL,GTK_FILL,0,6);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
@@ -791,7 +791,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,5,6,GTK_FILL,GTK_EXPAND,0,0);
+		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,6,7,GTK_FILL,GTK_FILL,0,6);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
