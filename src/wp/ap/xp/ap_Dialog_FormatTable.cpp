@@ -596,6 +596,7 @@ void AP_Dialog_FormatTable::applyChanges()
 	}
 
 	pView->setCellFormat(propsArray, m_ApplyTo,m_pGraphic,m_sImagePath);
+	
 	delete [] propsArray;
 	m_bSettingsChanged = false;
 }
@@ -701,6 +702,15 @@ void AP_Dialog_FormatTable::setWidth(const UT_UTF8String & width)
 	m_sWidth = s_canonical_width_height(width, m_width);
 	m_vecProps.addOrReplaceProp("table-width", m_sWidth.utf8_str());
 
+	//update height & width
+	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
+	if (!frame) return;
+	FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pBL->myContainingLayout());
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
+	pTab->setWidth(UT_convertInchesToDimension(m_width,DIM_PT));
+
 	m_bSettingsChanged = true;
 }
 
@@ -708,6 +718,15 @@ void AP_Dialog_FormatTable::setHeight(const UT_UTF8String &  height)
 {
 	m_sHeight = s_canonical_width_height(height, m_height);
 	m_vecProps.addOrReplaceProp("table-height", m_sHeight.utf8_str());
+
+	//update height & width
+	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
+	if (!frame) return;
+	FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pBL->myContainingLayout());
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTL->getFirstContainer());
+	pTab->setHeight(UT_convertInchesToDimension(m_height,DIM_PT));
 
 	m_bSettingsChanged = true;
 }
