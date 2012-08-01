@@ -251,9 +251,9 @@ AP_UnixDialog_Tab::_constructWindow ()
 	
 	localizeLabel (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbDefaultTab")), pSS, AP_STRING_ID_DLG_Tab_Label_DefaultTS);
 	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbUserTabs")), pSS, AP_STRING_ID_DLG_Tab_Label_Existing);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbPosition")), pSS, AP_STRING_ID_DLG_Tab_Label_Position);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbAlignment")), pSS, AP_STRING_ID_DLG_Tab_Label_Alignment);
-	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbLeader")), pSS, AP_STRING_ID_DLG_Tab_Label_Leader);
+	localizeLabel (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbPosition")), pSS, AP_STRING_ID_DLG_Tab_Label_Position);
+	localizeLabel (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbAlignment")), pSS, AP_STRING_ID_DLG_Tab_Label_Alignment);
+	localizeLabel (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbLeader")), pSS, AP_STRING_ID_DLG_Tab_Label_Leader);
 
 
 	// initialise
