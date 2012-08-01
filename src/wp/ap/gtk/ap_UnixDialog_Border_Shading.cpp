@@ -45,8 +45,8 @@
 const char * sBorderStyle[BORDER_SHADING_NUMOFSTYLES] = {
 														"0",	//No line
 														"1",	//Solid line
-														"2",	//Dashed line
-														"3"};	//Dotted line
+														"2",	//Dotted line
+														"3"};	//Dashed line
 
 static void s_apply_changes(GtkWidget *widget, gpointer data )
 {
@@ -583,9 +583,9 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	XAP_appendComboBoxText(combo_style, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Solid, s);
 	XAP_appendComboBoxText(combo_style, s.utf8_str());
-	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Dashed, s);
-	XAP_appendComboBoxText(combo_style, s.utf8_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Dotted, s);
+	XAP_appendComboBoxText(combo_style, s.utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Dashed, s);
 	XAP_appendComboBoxText(combo_style, s.utf8_str());
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_style), 0);
 
