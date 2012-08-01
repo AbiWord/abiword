@@ -480,9 +480,6 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		*/
 		UT_UTF8String height;
 		UT_UTF8String width;
-		gchar * pszHeight = NULL;
-		gchar * pszWidth = NULL;
-		const gchar * pszStyle = NULL;
 		fl_BlockLayout * pBL = pView->getCurrentBlock();
 		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pBL->myContainingLayout());
         fl_ContainerLayout * pCL = pTL->myContainingLayout();
@@ -522,6 +519,9 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		else
 			m_vecProps.removeProp("table-height");
 		/*
+		gchar * pszHeight = NULL;
+		gchar * pszWidth = NULL;
+		const gchar * pszStyle = NULL;
 		if (pView->getCellProperty("table-height", pszHeight))
 			m_vecProps.addOrReplaceProp("table-height", pszHeight);
 		else
