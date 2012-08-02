@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-01 16:56+0200\n"
-"PO-Revision-Date: 2012-08-01 16:56+0200\n"
+"POT-Creation-Date: 2012-08-02 13:03+0200\n"
+"PO-Revision-Date: 2012-08-02 13:03+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -50,11 +50,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid " "
 msgstr " "
-
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "          "
-msgstr "          "
 
 #. DLG_Styles_ErrNotTitle2
 #: po/tmp/ap_String_Id.h
@@ -1058,16 +1053,6 @@ msgstr "(keine Schreibvorschläge)"
 msgid "(none)"
 msgstr "(ohne)"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "----------"
-msgstr "----------"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid ".........."
-msgstr ".........."
-
 #. TOOLBAR_LABEL_1COLUMN
 #. TOOLBAR_STATUSLINE_1COLUMN
 #. TOOLBAR_TOOLTIP_1COLUMN
@@ -1739,7 +1724,7 @@ msgstr "Hintergrundfarbe ändern"
 #. DLG_ToggleCase_Title
 #: po/tmp/ap_String_Id.h
 msgid "Change Case"
-msgstr "Groß-/Kleinschreibung ändern"
+msgstr "Groß-/Kleinschreibung"
 
 #. DLG_Lists_Cur_Change_Start
 #: po/tmp/ap_String_Id.h
@@ -2384,6 +2369,11 @@ msgstr "Spiegelstriche"
 msgid "Dashed line"
 msgstr "gestrichelt"
 
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr "Striche"
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2589,7 +2579,7 @@ msgstr "Wörterbücher"
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h
 msgid "Different footer on facing pages"
-msgstr "Andere Fußzeile auf zugewandten Seiten"
+msgstr "Andere Fußzeile auf gegenüberliegenden Seiten"
 
 #. DLG_HdrFtr_FooterFirst
 #: po/tmp/ap_String_Id.h
@@ -2604,7 +2594,7 @@ msgstr "Andere Fußzeile auf der letzten Seite"
 #. DLG_HdrFtr_HeaderEven
 #: po/tmp/ap_String_Id.h
 msgid "Different header on facing pages"
-msgstr "Andere Kopfzeile auf zugewandten Seiten"
+msgstr "Andere Kopfzeile auf gegenüberliegenden Seiten"
 
 #. DLG_HdrFtr_HeaderFirst
 #: po/tmp/ap_String_Id.h
@@ -2695,6 +2685,11 @@ msgstr "Dokumente"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Fortlaufend"
+
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr "Punkte"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2863,7 +2858,7 @@ msgstr "Endnotenverweis"
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
 msgid "Endnote style:"
-msgstr "Stil der Endnote:"
+msgstr "Stil:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
@@ -3178,7 +3173,7 @@ msgstr "Fußzeile"
 #. DLG_HdrFtr_FooterFrame
 #: po/tmp/ap_String_Id.h
 msgid "Footer Properties"
-msgstr "Eigenschaften der Fußzeile"
+msgstr "Fußzeilen"
 
 #. FooterStatus
 #: po/tmp/ap_String_Id.h
@@ -3199,7 +3194,7 @@ msgstr "Fußnotenverweis"
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
 msgid "Footnote style:"
-msgstr "Stil der Fußnote:"
+msgstr "Stil:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
@@ -3380,7 +3375,7 @@ msgstr "Kopfzeile"
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h
 msgid "Header Properties"
-msgstr "Eigenschaften der Kopfzeile"
+msgstr "Kopfzeilen"
 
 #. HeaderStatus
 #: po/tmp/ap_String_Id.h
@@ -3559,17 +3554,17 @@ msgstr "Einzüge und Abstände"
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h
 msgid "Initial Caps"
-msgstr "Wortanfang groß schreiben"
+msgstr "Wörter alle groß schreiben"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
 msgid "Initial Endnote value:"
-msgstr "Anfangswert für die Endnote:"
+msgstr "Anfangswert:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
 msgid "Initial Footnote value:"
-msgstr "Anfangswert für die Fußnote:"
+msgstr "Anfangswert:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -4714,7 +4709,7 @@ msgstr "Seitennummer"
 #. DLG_HdrFtr_PageNumberProperties
 #: po/tmp/ap_String_Id.h
 msgid "Page Number Properties"
-msgstr "Eigenschaften der Seitenzahlen"
+msgstr "Seitenzahlen"
 
 #. DLG_PageNumbers_Title
 #: po/tmp/ap_String_Id.h
@@ -5230,23 +5225,23 @@ msgstr "Die Bildgröße ändern"
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h
 msgid "Restart numbering at:"
-msgstr "Zählung neu beginnen bei:"
+msgstr "Nummerierung neu beginnen bei:"
 
 #. DLG_FormatFootnotes_FootRestartPage
 #: po/tmp/ap_String_Id.h
 msgid "Restart on each page"
-msgstr "Auf jeder Seite"
+msgstr "Neu auf jeder Seite"
 
 #. DLG_FormatFootnotes_FootRestartSec
 #. DLG_FormatFootnotes_EndRestartSec
 #: po/tmp/ap_String_Id.h
 msgid "Restart on each section"
-msgstr "Bei neuen Kapiteln"
+msgstr "Neu bei jedem Abschnitt"
 
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h
 msgid "Restart page numbers on new sections"
-msgstr "Bei neuen Kapiteln neu durchnummerieren"
+msgstr "Neue Nummerierung bei neuem Abschnitt"
 
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
@@ -5662,7 +5657,7 @@ msgstr "Semantisches Element"
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
 msgid "Sentence case"
-msgstr "Satzanfang groß schreiben"
+msgstr "Satzanfänge groß schreiben"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h
@@ -6787,6 +6782,11 @@ msgstr "Unterstrichen"
 msgid "Underline the selection (toggle)"
 msgstr "Markierte Auswahl unterstreichen (ein/aus)"
 
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+msgid "Underlines"
+msgstr "Unterstriche"
+
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
 msgid "Undo"
@@ -7061,11 +7061,6 @@ msgstr "In Seitenbreite einpassen"
 msgid "Zoom to whole page"
 msgstr "In ganze Seite einpassen"
 
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "__________"
-msgstr "_____"
-
 #. DLG_Options_Label_CustomDict
 #: po/tmp/ap_String_Id.h
 msgid "custom.dic"
@@ -7113,6 +7108,12 @@ msgstr "Keine"
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Subjekt"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Keine"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
