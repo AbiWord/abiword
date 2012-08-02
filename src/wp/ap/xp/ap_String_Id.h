@@ -475,10 +475,10 @@ dcl(DLG_Tab_Radio_Decimal,				"Decimal")
 dcl(DLG_Tab_Radio_Bar,					"Bar")
 
 dcl(DLG_Tab_Label_Leader,				"Leader:")
-dcl(DLG_Tab_Radio_None, 				"          ")
-dcl(DLG_Tab_Radio_Dot,					"..........")
-dcl(DLG_Tab_Radio_Dash, 				"----------")
-dcl(DLG_Tab_Radio_Underline,			"__________")
+dcl(DLG_Tab_Radio_None, 				"None")		//xgettext:msgctxt
+dcl(DLG_Tab_Radio_Dot,					"Dots")
+dcl(DLG_Tab_Radio_Dash, 				"Dashes")
+dcl(DLG_Tab_Radio_Underline,			"Underlines")
 
 dcl(DLG_Tab_Button_Set, 				"Set")
 dcl(DLG_Tab_Button_Clear,				"Clear")
