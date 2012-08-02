@@ -27,6 +27,7 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_Gtk2Compat.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -86,8 +87,15 @@ GtkWidget * AP_UnixDialog_ToggleCase::_constructWindow (void)
   UT_UTF8String s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_Title,s);
   GtkWidget * windowMain = abiDialogNew("toggle case dialog", TRUE, s.utf8_str());
+#if !GTK_CHECK_VERSION(3,0,0)
+  gtk_dialog_set_has_separator(GTK_DIALOG(windowMain), FALSE);
+#endif
 
-  _constructWindowContents (gtk_dialog_get_content_area(GTK_DIALOG(windowMain)));
+  GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
+  gtk_widget_show(vbox);
+  gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
+  gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(windowMain))), vbox);
+  _constructWindowContents(vbox);
 
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
   abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
