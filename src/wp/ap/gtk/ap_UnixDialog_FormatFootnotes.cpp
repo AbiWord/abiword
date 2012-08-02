@@ -243,7 +243,7 @@ void AP_UnixDialog_FormatFootnotes::event_MenuFootnoteChange(GtkWidget * widget)
 	int idx = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	switch(idx) {
 	case 0:
-		setRestartFootnoteOnPage(true);
+		setRestartFootnoteOnPage(false);
 		setRestartFootnoteOnSection(false);
 		refreshVals();
 		return;
@@ -253,7 +253,7 @@ void AP_UnixDialog_FormatFootnotes::event_MenuFootnoteChange(GtkWidget * widget)
 		refreshVals();
 		return;
 	case 2:
-		setRestartFootnoteOnPage(false);
+		setRestartFootnoteOnPage(true);
 		setRestartFootnoteOnSection(false);
 		refreshVals();
 		return;
