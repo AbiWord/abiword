@@ -270,13 +270,13 @@ void AP_UnixDialog_FormatFootnotes::event_MenuEndnoteChange(GtkWidget * widget)
 	int idx = gtk_combo_box_get_active(GTK_COMBO_BOX(widget));
 	switch(idx) {
 	case 0:
-		setPlaceAtSecEnd(false);
 		setPlaceAtDocEnd(true);
+		setPlaceAtSecEnd(false);
 		refreshVals();
 		return;
 	case 1:
-		setPlaceAtSecEnd(true);
 		setPlaceAtDocEnd(false);
+		setPlaceAtSecEnd(true);
 		refreshVals();
 		return;
 	}
@@ -315,11 +315,11 @@ void  AP_UnixDialog_FormatFootnotes::refreshVals(void)
 
 	if(getPlaceAtDocEnd())
 	{
-		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wEndnotesPlaceMenu),1);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wEndnotesPlaceMenu),0);
 	}
 	else if(getPlaceAtSecEnd())
 	{
-		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wEndnotesPlaceMenu),0);
+		gtk_combo_box_set_active(GTK_COMBO_BOX(m_wEndnotesPlaceMenu),1);
 	}
 
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wEndnotesRestartOnSection), static_cast<gboolean>(getRestartEndnoteOnSection()));
@@ -433,9 +433,9 @@ GtkWidget * AP_UnixDialog_FormatFootnotes::_constructWindow(void)
 	m_wEndnotesPlaceMenu = GTK_COMBO_BOX(gtk_builder_get_object(builder, "omEndnotePlacement"));
 	UT_ASSERT(m_wEndnotesPlaceMenu );
 	XAP_makeGtkComboBoxText(m_wEndnotesPlaceMenu, G_TYPE_NONE);
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
-	XAP_appendComboBoxText(m_wEndnotesPlaceMenu, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndDoc,s);
+	XAP_appendComboBoxText(m_wEndnotesPlaceMenu, s.c_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatFootnotes_EndPlaceEndSec,s);
 	XAP_appendComboBoxText(m_wEndnotesPlaceMenu, s.c_str());
 
 //
