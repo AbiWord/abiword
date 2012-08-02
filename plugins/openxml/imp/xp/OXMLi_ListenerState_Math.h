@@ -38,8 +38,8 @@ public:
     void charData (OXMLi_CharDataRequest * rqst);
 
 private:
-    bool m_bInMath;
     UT_ByteBuf* m_pMathBB;
+    bool m_bInMath;
 
 };
 
