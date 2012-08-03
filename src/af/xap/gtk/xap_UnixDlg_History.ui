@@ -39,13 +39,18 @@
             </child>
             <child>
               <object class="GtkButton" id="okbutton1">
-                <property name="label">gtk-ok</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
+                <property name="image">image1</property>
                 <property name="receives_default">False</property>
                 <property name="use_action_appearance">False</property>
-                <property name="use_stock">True</property>
+                <child>
+                  <object class="GtkImage" id="image1">
+                    <property name="stock">gtk-ok</property>
+                    <property name="visible">True</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -100,6 +105,7 @@
                     <property name="top_attach">1</property>
                     <property name="bottom_attach">2</property>
                     <property name="y_options"></property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -115,6 +121,7 @@
                     <property name="top_attach">2</property>
                     <property name="bottom_attach">3</property>
                     <property name="y_options"></property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -131,6 +138,7 @@
                     <property name="bottom_attach">3</property>
                     <property name="y_options"></property>
                     <property name="x_padding">6</property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -147,6 +155,7 @@
                     <property name="bottom_attach">2</property>
                     <property name="y_options"></property>
                     <property name="x_padding">6</property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -162,6 +171,7 @@
                     <property name="top_attach">3</property>
                     <property name="bottom_attach">4</property>
                     <property name="y_options"></property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -178,6 +188,7 @@
                     <property name="bottom_attach">4</property>
                     <property name="y_options"></property>
                     <property name="x_padding">6</property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -193,6 +204,7 @@
                     <property name="top_attach">4</property>
                     <property name="bottom_attach">5</property>
                     <property name="y_options"></property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -209,6 +221,7 @@
                     <property name="bottom_attach">5</property>
                     <property name="y_options"></property>
                     <property name="x_padding">6</property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -239,6 +252,7 @@
                     <property name="bottom_attach">6</property>
                     <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -255,6 +269,7 @@
                     <property name="bottom_attach">6</property>
                     <property name="y_options"></property>
                     <property name="x_padding">6</property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -271,6 +286,7 @@
                     <property name="bottom_attach">7</property>
                     <property name="x_options">GTK_FILL</property>
                     <property name="y_options"></property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
                 <child>
@@ -287,6 +303,7 @@
                     <property name="bottom_attach">7</property>
                     <property name="y_options"></property>
                     <property name="x_padding">6</property>
+                    <property name="y_padding">2</property>
                   </packing>
                 </child>
               </object>

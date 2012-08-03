@@ -219,7 +219,7 @@ void XAP_UnixDialog_History::_populateWindowData(GtkBuilder* builder)
 	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbIdentifier")), getHeaderLabel(5));
 	gtk_label_set_text (GTK_LABEL(gtk_builder_get_object(builder, "lbIdentifierVal")), getHeaderValue(5));
 	setLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbVersionHistory")), getListTitle());
-
+	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "okbutton1")), pSS, XAP_STRING_ID_DLG_History_Restore);
 }
 
 
