@@ -471,7 +471,10 @@ public:
         GtkWidget*  tv      = GTK_WIDGET(gtk_builder_get_object(builder, "tv"));
 
         // localization
-        localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "ok")), pSS, AP_STRING_ID_DLG_RDF_SemanticItemInsert_Ok);
+        GtkWidget *ok = GTK_WIDGET(gtk_builder_get_object(builder, "ok"));
+        localizeButton(ok, pSS, AP_STRING_ID_DLG_RDF_SemanticItemInsert_Ok);
+        GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
+        gtk_button_set_image(GTK_BUTTON(ok), img);      
 
         // window title and icon
         pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticItemInsert_Title, text);
