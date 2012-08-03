@@ -1244,7 +1244,7 @@ dcl(MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT,"Reset the current toolbar layout to 
 dcl(MENU_STATUSLINE_VIEW_RULER,"Show or hide the rulers")
 dcl(MENU_STATUSLINE_VIEW_STATUSBAR,"Show or hide the status bar")
 dcl(MENU_STATUSLINE_VIEW_SHOWPARA,"Display non-printing characters")
-dcl(MENU_STATUSLINE_VIEW_LOCKSTYLES,"Allow formatting using styles only")
+dcl(MENU_STATUSLINE_VIEW_LOCKSTYLES,"Allow formatting not using styles only")
 dcl(MENU_STATUSLINE_VIEW_HEADFOOT,"Edit text at the top or bottom of every page")
 dcl(MENU_STATUSLINE_VIEW_FULLSCREEN,"View the document in full screen mode")
 dcl(MENU_STATUSLINE_VIEW_ZOOM_MENU,"Reduce or enlarge the document display")
