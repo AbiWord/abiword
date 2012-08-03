@@ -68,19 +68,12 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	static GdkPixbuf * logo = NULL;
 	static GtkWidget * dlg = NULL;
 
-	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
-	GtkWidget * parent;
-
 	// TODO Rob: use the more fancy "sidebar.png" logo, just like win32
 	if (!logo) {
 		std::string str (ICONDIR);
 		str += "/abiword.png";
 		logo = gdk_pixbuf_new_from_file (str.c_str(), NULL); // ignore errors
 	}
-
-	// Get the GtkWindow of the parent frame
-	// TODO fix that in hildon frame impl
-	parent = gtk_widget_get_parent(pUnixFrameImpl->getTopLevelWindow());
 
 	dlg = gtk_about_dialog_new();
 #if !GTK_CHECK_VERSION(2,24,0)
