@@ -61,7 +61,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	static const gchar *documenters[] = {"David Chart <linux@dchart.demon.co.uk>",
 										 NULL};
 
-	static const gchar *copyright = "(c) 1998-2011 Dom Lachowicz and other contributors, GNU GPL v2.0";
+	static const gchar *copyright = "(c) 1998-2012 Dom Lachowicz and other contributors, GNU GPL v2.0";
 
 	static const gchar *website = "http://www.abisource.com";
 
@@ -89,13 +89,15 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
 	//JEAN: do we really need the "activate-link" signal?
 	g_signal_connect(dlg, "activate-link", G_CALLBACK(onAboutDialogActivate), NULL);
 #endif
-	gtk_show_about_dialog(GTK_WINDOW (parent), 
-						  "authors", authors, 
-						  "documenters", documenters, 
-						  "copyright", copyright, 
-						  "logo", logo, 
-						  "version", XAP_App::s_szBuild_Version, 
-						  "website", website, 
-						  "website-label", website, 
-						  NULL);
+	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dlg), authors); 
+	gtk_about_dialog_set_documenters(GTK_ABOUT_DIALOG(dlg), documenters); 
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dlg), copyright); 
+	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(dlg), logo); 
+	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dlg), XAP_App::s_szBuild_Version); 
+	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dlg), website); 
+	gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(dlg), website);
+	gtk_window_set_icon(GTK_WINDOW(dlg), logo);
+	gtk_window_set_position(GTK_WINDOW(dlg), GTK_WIN_POS_CENTER);       
+	gtk_dialog_run(GTK_DIALOG(dlg));
+	gtk_widget_destroy(dlg);
 }
