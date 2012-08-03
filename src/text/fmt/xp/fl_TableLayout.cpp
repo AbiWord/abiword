@@ -1156,7 +1156,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_iTableWidth = getDocSectionLayout()->getActualColumnWidth();
-		std::string buf = UT_std_string_sprintf("%.2fpt", m_iTableWidth);
+		std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableWidth,DIM_PT));
 		m_sTableWidth = buf;
 	}
 	if(pszRelTableWidth && pszRelTableWidth[0])
@@ -1178,7 +1178,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_iTableHeight = getDocSectionLayout()->getActualColumnHeight();
-		std::string buf = UT_std_string_sprintf("%.2fpt", m_iTableHeight);
+		std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableHeight,DIM_PT));
 		m_sTableHeight = buf;
 	}
 	if(pszRelTableHeight && pszRelTableHeight[0])
