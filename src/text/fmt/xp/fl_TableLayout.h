@@ -207,6 +207,8 @@ UT_sint32                    getBottomOffset(void) const;
 	UT_sint32                getNumNestedTables(void) const;
 	void                     incNumNestedTables(void);
 	void                     decNumNestedTables(void);
+	inline const UT_UTF8String &  tableWidth() const {  return m_sTableWidth; }
+	inline const UT_UTF8String &  tableHeight() const { return m_sTableHeight; }
 
 	void                     setEndTableIn(void)
 		{ m_bIsEndTableIn = true;}
@@ -267,6 +269,8 @@ private:
 	double                 m_dTableRelWidth;
 	UT_sint32              m_iTableHeight;
 	double                 m_dTableRelHeight;
+	UT_UTF8String          m_sTableWidth;
+	UT_UTF8String          m_sTableHeight;
 };
 
 

@@ -60,6 +60,7 @@
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
 #include "xap_App.h"
+#include "ut_std_string.h"
 
 static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
 								 const char * color, PP_PropertyMap::Line & line);
@@ -107,7 +108,9 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
 	  m_bDoingDestructor(false),
 	  m_iTableWidth(0),
 	  m_iTableHeight(0),
-	  m_dTableRelWidth(0.0)
+	  m_dTableRelWidth(0.0),
+	  m_sTableHeight("0.0pt"),
+	  m_sTableWidth("0.0pt")
 {
 	UT_DEBUGMSG(("Created Table Layout %p \n",this));
 	UT_ASSERT(pLayout);
@@ -1148,10 +1151,13 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	if(pszTableWidth && pszTableWidth[0])
 	{
 		m_iTableWidth = UT_convertToLogicalUnits(pszTableWidth);
+		m_sTableWidth = pszTableWidth;
 	}
 	else
 	{
 		m_iTableWidth = getDocSectionLayout()->getActualColumnWidth();
+		std::string buf = UT_std_string_sprintf("%.2fpt", m_iTableWidth);
+		m_sTableWidth = buf;
 	}
 	if(pszRelTableWidth && pszRelTableWidth[0])
 	{
@@ -1167,10 +1173,13 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	if(pszTableHeight && pszTableHeight[0])
 	{
 		m_iTableHeight = UT_convertToLogicalUnits(pszTableHeight);
+		m_sTableHeight = pszTableHeight;
 	}
 	else
 	{
 		m_iTableHeight = getDocSectionLayout()->getActualColumnHeight();
+		std::string buf = UT_std_string_sprintf("%.2fpt", m_iTableHeight);
+		m_sTableHeight = buf;
 	}
 	if(pszRelTableHeight && pszRelTableHeight[0])
 	{
