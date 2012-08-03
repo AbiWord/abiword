@@ -1378,7 +1378,6 @@ void ODe_Text_Listener::_openODListItem(const PP_AttrProp* pAP) {
  * 
  */
 void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
-	UT_UTF8String abiStyleName;
     UT_UTF8String styleName;
     UT_UTF8String output;
     UT_UTF8String str;
