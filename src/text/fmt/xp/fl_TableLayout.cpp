@@ -163,7 +163,10 @@ void fl_TableLayout::createTableContainer(void)
 	fl_ContainerLayout * pCL = myContainingLayout();
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_sint32 iWidth = 0;
-	if(pCon != NULL)
+	if(m_iTableWidth != 0) {
+        iWidth = m_iTableWidth;
+	}
+	else if(pCon != NULL)
 	{
 		iWidth = pCon->getWidth();
 	}
@@ -220,6 +223,8 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setLineThickness(m_iLineThickness);
 	pTab->setRowHeightType(m_iRowHeightType);
 	pTab->setRowHeight(m_iRowHeight);
+	pTab->setHeight(m_iTableHeight);
+	pTab->setWidth(m_iTableWidth);
 }
 
 
