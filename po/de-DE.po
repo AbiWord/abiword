@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-02 13:03+0200\n"
-"PO-Revision-Date: 2012-08-02 13:03+0200\n"
+"POT-Creation-Date: 2012-08-03 17:26+0200\n"
+"PO-Revision-Date: 2012-08-03 17:26+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -534,7 +534,7 @@ msgstr "Alle &ignorieren"
 #. MENU_LABEL_FMT_POSIMAGE
 #: po/tmp/ap_String_Id.h
 msgid "&Image"
-msgstr "&Bild formatieren"
+msgstr "&Bild"
 
 #. MENU_LABEL_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h
@@ -633,7 +633,7 @@ msgstr "Serie&nbrief"
 #. MENU_LABEL_INSERT_MAILMERGE
 #: po/tmp/ap_String_Id.h
 msgid "&Mail Merge Field"
-msgstr "Feld für Se&rienbrief"
+msgstr "Se&rienbrief-Feld"
 
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h
@@ -1272,8 +1272,8 @@ msgstr "Alle"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
-msgstr "Alternativ Formatieren nur über Stilvorlagen"
+msgid "Allow formatting not using styles only"
+msgstr "Formatieren nicht nur über Stilvorlagen zulassen"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -2051,10 +2051,14 @@ msgid "Contact from File"
 msgstr "Kontakt aus Datei"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 msgid "Contacts"
 msgstr "Kontakte"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts:"
+msgstr "Kontakte:"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2239,7 +2243,7 @@ msgstr "Ein leeres Dokument anlegen"
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
-msgstr "Markierte Auswahl &einfügen"
+msgstr "Mit markierter Auswahl erstellen"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
@@ -2614,7 +2618,7 @@ msgstr "RDF des ganzen Dokuments direkt bearbeiten..."
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
 msgid "Disable all formatting commands, except styles"
-msgstr "Alle Formatierbefehle sperren, außer Stilvorlagen"
+msgstr "Alle Formatierbefehle außer Stilvorlagen sperren"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
@@ -2828,7 +2832,7 @@ msgstr "Eingebettet"
 #. MENU_LABEL_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
 msgid "Enable F&ormatting Tools"
-msgstr "F&ormatierfunktionen aktiv"
+msgstr "F&ormatierung ermöglichen"
 
 #. DLG_Options_Label_CheckEnableSmoothScrolling
 #: po/tmp/ap_String_Id.h
@@ -2901,8 +2905,8 @@ msgstr "Datei »%s« konnte nicht gespeichert werden: ungültiger Name"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
-msgstr "Ereignisse"
+msgid "Events:"
+msgstr "Ereignisse:"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -4124,8 +4128,8 @@ msgstr "Listen"
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
-msgstr "Standorte"
+msgid "Locations:"
+msgstr "Standorte:"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -8719,6 +8723,7 @@ msgid "Replay Editing from File"
 msgstr "Bearbeitung aus Datei wiedergeben"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Wiederherstellen"
