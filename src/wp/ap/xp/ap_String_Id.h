@@ -1479,7 +1479,7 @@ dcl(MENU_LABEL_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS,      "Both People Know Each O
 dcl(MENU_LABEL_RDF_SEMITEM_STYLESHEET,     "Stylesheet")
 dcl(MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY,                       "Apply Current")
 dcl(MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE,                "Disassociate")
-dcl(MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS,                    "Settings...")
+dcl(MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS,                    "Settings")
 dcl(MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT,                     "Apply Contact")
 dcl(MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME,                "Name")
 dcl(MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK,                "Nick")

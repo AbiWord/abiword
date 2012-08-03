@@ -378,7 +378,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
     _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION,         1,0,0,0,NULL,NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_NAME,    0,0,0,0,"rdfApplyStylesheetLocationName",NULL,NULL);
     _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG, 0,0,0,0,"rdfApplyStylesheetLocationLatLong",NULL,NULL);
-    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_SETTINGS,         0,0,0,0,"rdfStylesheetSettings",NULL,NULL);
+    _s(AP_MENU_ID_RDF_SEMITEM_STYLESHEET_SETTINGS,         0,1,0,0,"rdfStylesheetSettings",NULL,NULL);
     
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_ACCEPT_REVISION, 0,0,0,0, "revisionAccept", ap_GetState_RevisionPresent,NULL);
 	_s(AP_MENU_ID_CONTEXT_REVISIONS_REJECT_REVISION, 0,0,0,0, "revisionReject", ap_GetState_RevisionPresent, NULL);
