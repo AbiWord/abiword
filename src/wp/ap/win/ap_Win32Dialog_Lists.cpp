@@ -647,7 +647,7 @@ void AP_Win32Dialog_Lists::_fillStyleList(int iType)
 		AP_STRING_ID_DLG_Lists_Tick_List,
 		AP_STRING_ID_DLG_Lists_Box_List,
 		AP_STRING_ID_DLG_Lists_Hand_List,
-		AP_STRING_ID_DLG_Lists_Heart_List
+		AP_STRING_ID_DLG_Lists_Heart_List,
 		AP_STRING_ID_DLG_Lists_Arrowhead_List
 	};
 
