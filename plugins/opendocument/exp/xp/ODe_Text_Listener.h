@@ -150,8 +150,8 @@ private:
     UT_uint8 m_currentListLevel;
     ODe_Style_List* m_pCurrentListStyle;
 
-    bool m_pendingColumnBrake;
-    bool m_pendingPageBrake;
+    bool m_pendingColumnBreak;
+    bool m_pendingPageBreak;
 
     bool m_pendingMasterPageStyleChange;
     UT_UTF8String m_masterPageStyleName;

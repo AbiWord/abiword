@@ -72,8 +72,8 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_pParagraphContent(NULL),
                         m_currentListLevel(0),
                         m_pCurrentListStyle(NULL),
-                        m_pendingColumnBrake(false),
-                        m_pendingPageBrake(false),
+                        m_pendingColumnBreak(false),
+                        m_pendingPageBreak(false),
                         m_pendingMasterPageStyleChange(false),
                         m_rStyles(rStyles),
                         m_rAutomatiStyles(rAutomatiStyles),
@@ -109,8 +109,8 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_pParagraphContent(NULL),
                         m_currentListLevel(0),
                         m_pCurrentListStyle(NULL),
-                        m_pendingColumnBrake(false),
-                        m_pendingPageBrake(false),
+                        m_pendingColumnBreak(false),
+                        m_pendingPageBreak(false),
                         m_pendingMasterPageStyleChange(true),
                         m_masterPageStyleName(rPendingMasterPageStyleName),
                         m_rStyles(rStyles),
@@ -925,7 +925,7 @@ void ODe_Text_Listener::insertLineBreak() {
  */
 void ODe_Text_Listener::insertColumnBreak() {
     _closeODList();
-    m_pendingColumnBrake = true;
+    m_pendingColumnBreak = true;
 }
 
 
@@ -934,7 +934,7 @@ void ODe_Text_Listener::insertColumnBreak() {
  */
 void ODe_Text_Listener::insertPageBreak() {
     _closeODList();
-    m_pendingPageBrake = true;
+    m_pendingPageBreak = true;
 }
 
 
@@ -1391,8 +1391,8 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
     if (ODe_Style_Style::hasParagraphStyleProps(pAP) ||
         ODe_Style_Style::hasTextStyleProps(pAP) ||
         m_pendingMasterPageStyleChange ||
-        m_pendingColumnBrake ||
-        m_pendingPageBrake) {
+        m_pendingColumnBreak ||
+        m_pendingPageBreak) {
             
         // Need to create a new automatic style to hold those paragraph
         // properties.
@@ -1411,16 +1411,16 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
         
         // Can't have both breaks
         UT_ASSERT(
-            !(m_pendingColumnBrake==true && m_pendingPageBrake==true) );
+            !(m_pendingColumnBreak==true && m_pendingPageBreak==true) );
         
-        if (m_pendingColumnBrake) {
+        if (m_pendingColumnBreak) {
             pStyle->setBreakBefore("column");
-            m_pendingColumnBrake = false;
+            m_pendingColumnBreak = false;
         }
         
-        if (m_pendingPageBrake) {
+        if (m_pendingPageBreak) {
             pStyle->setBreakBefore("page");
-            m_pendingPageBrake = false;
+            m_pendingPageBreak = false;
         }
         
         m_rAutomatiStyles.storeParagraphStyle(pStyle);
