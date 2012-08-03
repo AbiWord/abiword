@@ -4192,6 +4192,17 @@ void fp_TableContainer::setHeight(UT_sint32 iHeight)
 	fp_VerticalContainer::setHeight(iHeight);
 }
 
+void fp_TableContainer::setWidth(UT_sint32 iWidth)
+{
+	if(!isThisBroken())
+	{
+		xxx_UT_DEBUGMSG(("Unbroken Table Width set to %d from %d \n",iWidth,getWidth()));
+	}
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	iWidth += (pTL->getLeftOffset() + pTL->getRightOffset());
+	fp_VerticalContainer::setWidth(iWidth);
+}
+
 UT_sint32 fp_TableContainer::getMarginBefore(void) const
 {
 	if(isThisBroken())
@@ -4855,7 +4866,6 @@ void fp_TableContainer::setContainer(fp_Container * pContainer)
 		xxx_UT_DEBUGMSG(("Set master table %x container to NULL \n",this));
 		return;
 	}
-	setWidth(pContainer->getWidth());
 }
 
 
@@ -4953,7 +4963,7 @@ void fp_TableContainer::layout(void)
 	alloc.x = getX();
 	alloc.y = getY() + pTL->getTopOffset();
 	alloc.width = getWidth();
-	alloc.height = requisition.height;
+	alloc.height = getHeight();
 	sizeAllocate(&alloc);
 	setToAllocation();
 #if BENCHLAYOUT
@@ -5233,6 +5243,29 @@ UT_sint32 fp_TableContainer::getHeight(void)
 	UT_sint32 iMyHeight = getYBottom() - getYBreak();
 	return iMyHeight;
 }
+
+UT_sint32 fp_TableContainer::getWidth(void)
+{
+	UT_sint32 iFullWidth =  fp_VerticalContainer::getWidth();
+	if(!isThisBroken())
+	{
+		//
+		// If this is a master table but it contains broken tables, we actually
+		// want the height of the first broken table. The Master table is the 
+		// one that actually has a relevant Y value in the vertical container.
+		// All other Y offsets from the broken tables are calculated relative to
+		// it.
+		//
+		if(getFirstBrokenTable() != NULL)
+		{
+			return getFirstBrokenTable()->getWidth();
+		}
+		return iFullWidth;
+	}
+	UT_sint32 iMyWidth = m_iRightOffset - m_iLeftOffset;
+	return iMyWidth;
+}
+
 /*!
  * Return true if the table contains footnote references
  */
