@@ -61,6 +61,7 @@
 #include "fg_GraphicVector.h"
 #include "xap_App.h"
 #include "ut_std_string.h"
+#include "ut_locale.h"
 
 static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
 								 const char * color, PP_PropertyMap::Line & line);
@@ -1156,8 +1157,11 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_iTableWidth = getDocSectionLayout()->getActualColumnWidth();
-		std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableWidth,DIM_PT));
-		m_sTableWidth = buf;
+		{
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
+		    std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableWidth,DIM_PT));
+		    m_sTableWidth = buf;
+		}
 	}
 	if(pszRelTableWidth && pszRelTableWidth[0])
 	{
@@ -1178,8 +1182,11 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	else
 	{
 		m_iTableHeight = getDocSectionLayout()->getActualColumnHeight();
-		std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableHeight,DIM_PT));
-		m_sTableHeight = buf;
+		{
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
+		    std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableHeight,DIM_PT));
+		    m_sTableHeight = buf;
+		}
 	}
 	if(pszRelTableHeight && pszRelTableHeight[0])
 	{
