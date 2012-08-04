@@ -94,7 +94,7 @@ const char * AP_Dialog_MarkRevisions::getRadio2Label()
 	return m_pSS->getValue(AP_STRING_ID_DLG_MarkRevisions_Check2Label);
 }
 
-char * AP_Dialog_MarkRevisions::getComment1()
+char * AP_Dialog_MarkRevisions::getComment1(bool utf8)
 {
 	_initRevision();
 
@@ -125,10 +125,21 @@ char * AP_Dialog_MarkRevisions::getComment1()
 
 	}
 
-	char * pComment = (char *)UT_calloc(UT_UCS4_strlen(pC) + 1, sizeof(char));
-	UT_return_val_if_fail(pComment,NULL);
+	char * pComment;
 
-	UT_UCS4_strcpy_to_char(pComment,pC);
+	if (utf8)
+	{
+		UT_UTF8String comment(pC);
+		pComment = (char *)UT_calloc(comment.byteLength() + 1, sizeof(char));
+		UT_return_val_if_fail(pComment,NULL);
+		pComment = strcpy(pComment, comment.utf8_str());
+	}
+	else
+	{
+		pComment = (char *)UT_calloc(UT_UCS4_strlen(pC) + 1, sizeof(char));
+		UT_return_val_if_fail(pComment,NULL);
+		UT_UCS4_strcpy_to_char(pComment,pC);
+	}
 
 	if(bFree)
 	{

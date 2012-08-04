@@ -52,7 +52,7 @@ public:
 	   the following two functions (use FREEP)
 	*/
 	char *        getRadio1Label();
-	char *        getComment1();
+	char *        getComment1(bool utf8 = false);
 
 	void          setComment2(const char * pszComment);
 	void          addRevision();
