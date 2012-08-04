@@ -510,8 +510,8 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		}
 
         fl_TableLayout* tl = pView->getTableAtPos(pView->getPoint());
-		UT_UTF8String tableHeight = tl->tableHeight();
-		UT_UTF8String tableWidth = tl->tableWidth();
+        std::string tableHeight = tl->tableHeight();
+        std::string tableWidth = tl->tableWidth();
 		UT_sint32 i_tableheight = tl->getTableHeight();
 		UT_sint32 i_tablewidth = tl->getTableWidth();
 
@@ -519,7 +519,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 		if( i_tablewidth > 0)
 		{
-            m_vecProps.addOrReplaceProp("table-width", tableWidth.utf8_str());
+            m_vecProps.addOrReplaceProp("table-width", tableWidth.c_str());
 		}
 		else
 		{
@@ -535,7 +535,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 		if( i_tableheight > 0)
 		{
-			m_vecProps.addOrReplaceProp("table-height", tableHeight.utf8_str());
+			m_vecProps.addOrReplaceProp("table-height", tableHeight.c_str());
 		}
 		else
 		{
