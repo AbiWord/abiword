@@ -124,6 +124,7 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "sz")) {
 		const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+		UT_return_if_fail( this->_error_if_fail(val != NULL) );
 		if(!strcmp(val, "0"))
 		{
 			m_szValZero = true;
