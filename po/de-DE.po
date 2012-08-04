@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-04 21:58+0200\n"
-"PO-Revision-Date: 2012-08-04 21:58+0200\n"
+"POT-Creation-Date: 2012-08-05 00:24+0200\n"
+"PO-Revision-Date: 2012-08-05 00:24+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -2003,12 +2003,12 @@ msgstr "Spalten"
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "Columns &Left"
-msgstr "&Spalten links"
+msgstr "&Spalte links"
 
 #. MENU_LABEL_TABLE_INSERT_COLUMNS_AFTER
 #: po/tmp/ap_String_Id.h
 msgid "Columns &Right"
-msgstr "Sp&alten rechts"
+msgstr "Sp&alte rechts"
 
 #. DLG_ListRevisions_Column3Label
 #: po/tmp/ap_String_Id.h
@@ -2473,7 +2473,7 @@ msgstr "S&palte löschen"
 #. MENU_STATUSLINE_TABLE_DELETECOLUMN
 #: po/tmp/ap_String_Id.h
 msgid "Delete Column"
-msgstr "Spalte löschen"
+msgstr "Diese Spalte löschen"
 
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h
@@ -5352,12 +5352,12 @@ msgstr "Zeile"
 #. MENU_LABEL_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "Rows &Above"
-msgstr "&Zeilen oberhalb"
+msgstr "&Zeile oberhalb"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_AFTER
 #: po/tmp/ap_String_Id.h
 msgid "Rows &Below"
-msgstr "Z&eilen unterhalb"
+msgstr "Z&eile unterhalb"
 
 #. MENU_STATUSLINE_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
@@ -6372,12 +6372,12 @@ msgstr "Vorschläge nur aus dem &Hauptwörterbuch"
 #. MENU_LABEL_TABLE_INSERT_SUMROWS
 #: po/tmp/ap_String_Id.h
 msgid "Sum a Column"
-msgstr "Spalte summieren"
+msgstr "Summe der Spalte"
 
 #. MENU_LABEL_TABLE_INSERT_SUMCOLS
 #: po/tmp/ap_String_Id.h
 msgid "Sum a Row"
-msgstr "Zeile summieren"
+msgstr "Summe der Zeile"
 
 #. FIELD_Numbers_TableSumRows
 #: po/tmp/ap_String_Id.h
