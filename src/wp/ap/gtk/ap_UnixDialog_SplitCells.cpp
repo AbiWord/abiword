@@ -213,6 +213,10 @@ GtkWidget * AP_UnixDialog_SplitCells::_constructWindow(void)
 	GtkWidget * windowSplitCells;
 	ConstructWindowName();
 	windowSplitCells = abiDialogNew ( "split cell dialog", TRUE, static_cast<char *>(m_WindowName));
+	gtk_window_set_position(GTK_WINDOW(windowSplitCells), GTK_WIN_POS_MOUSE);
+#if !GTK_CHECK_VERSION(3,0,0)
+	gtk_dialog_set_has_separator(GTK_DIALOG(windowSplitCells), FALSE);
+#endif
 	
 	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowSplitCells));
 	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	
@@ -251,7 +255,7 @@ GtkWidget * AP_UnixDialog_SplitCells::_constructWindowContents(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_UTF8String s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_SplitCells_Frame,s);
-	frame1 = gtk_frame_new (s.utf8_str());
+	frame1 = gtk_frame_new (NULL);
 	gtk_widget_show (frame1);
 	gtk_container_add (GTK_CONTAINER (wContents), frame1);
 	gtk_container_set_border_width (GTK_CONTAINER (frame1), 3);
