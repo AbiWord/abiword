@@ -42,6 +42,7 @@ public:
 	void charData (OXMLi_CharDataRequest * rqst);
 private:
 	OXML_Style * m_pCurrentStyle;
+	bool m_szValZero;
 };
 
 #endif //_OXMLI_LISTENERSTATE_STYLES_H_

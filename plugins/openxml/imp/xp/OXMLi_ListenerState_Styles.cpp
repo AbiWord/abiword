@@ -35,7 +35,8 @@
 
 OXMLi_ListenerState_Styles::OXMLi_ListenerState_Styles() : 
 	OXMLi_ListenerState(), 
-	m_pCurrentStyle(NULL)
+	m_pCurrentStyle(NULL),
+	m_szValZero(false)
 {
 
 }
@@ -121,6 +122,13 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 			m_pCurrentStyle->setAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, val);
 		}
 		rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "sz")) {
+		const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+		if(!strcmp(val, "0"))
+		{
+			m_szValZero = true;
+			rqst->handled = true;
+		}
 	}
 }
 
@@ -155,6 +163,12 @@ void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = !nameMatches(rqst->pName, NS_W_KEY, "tblPr") &&
 						!nameMatches(rqst->pName, NS_W_KEY, "trPr") &&
 						!nameMatches(rqst->pName, NS_W_KEY, "tcPr");
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "sz")) {
+		if(m_szValZero)
+		{
+			rqst->handled = true;
+		}
+		m_szValZero = false;
 	}
 }
 
