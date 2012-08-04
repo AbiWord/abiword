@@ -134,6 +134,9 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
   GtkWidget *aaDialog;
 	
   ap_UnixDialog_ListRevisions = abiDialogNew ( "list revisions dialog", TRUE, getTitle());	
+#if !GTK_CHECK_VERSION(3,0,0)
+  gtk_dialog_set_has_separator(GTK_DIALOG(ap_UnixDialog_ListRevisions), FALSE);
+#endif
 	
   gtk_window_set_modal (GTK_WINDOW (ap_UnixDialog_ListRevisions), TRUE);
   gtk_window_set_default_size ( GTK_WINDOW(ap_UnixDialog_ListRevisions), 800, 450 ) ;
@@ -165,7 +168,11 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   gtk_container_add (GTK_CONTAINER (vbDialog), vbContent);
   gtk_container_set_border_width (GTK_CONTAINER (vbContent), 5);
 
-  lbExistingRevisions = gtk_label_new (getLabel1());
+  lbExistingRevisions = gtk_label_new (NULL);
+  std::string s("<b>");
+  s += getLabel1();
+  s += "</b>";
+  gtk_label_set_markup(GTK_LABEL(lbExistingRevisions), s.c_str());
   gtk_widget_show (lbExistingRevisions);
   gtk_misc_set_alignment (GTK_MISC (lbExistingRevisions), 0.0, 0.5);
   gtk_box_pack_start (GTK_BOX (vbContent), lbExistingRevisions, FALSE, FALSE, 0);
