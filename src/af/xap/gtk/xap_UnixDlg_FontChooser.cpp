@@ -494,6 +494,10 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	UT_UTF8String s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle,s);
 	windowFontSelection = abiDialogNew ( "font dialog", TRUE, s.utf8_str() ) ;
+	gtk_window_set_position(GTK_WINDOW(windowFontSelection), GTK_WIN_POS_CENTER_ON_PARENT);
+#if !GTK_CHECK_VERSION(3,0,0)
+	gtk_dialog_set_has_separator(GTK_DIALOG(windowFontSelection), FALSE);
+#endif
 
 	vboxOuter = gtk_dialog_get_content_area(GTK_DIALOG(windowFontSelection));
 
