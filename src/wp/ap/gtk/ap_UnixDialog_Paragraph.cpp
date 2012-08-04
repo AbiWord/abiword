@@ -349,6 +349,10 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ParaTitle,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	windowParagraph = abiDialogNew("paragraph dialog", TRUE, unixstr);
+	gtk_window_set_position(GTK_WINDOW(windowParagraph), GTK_WIN_POS_CENTER_ON_PARENT);
+#if !GTK_CHECK_VERSION(3,0,0)
+	gtk_dialog_set_has_separator(GTK_DIALOG(windowParagraph), FALSE);
+#endif
 	FREEP(unixstr);
 
 	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowParagraph));
