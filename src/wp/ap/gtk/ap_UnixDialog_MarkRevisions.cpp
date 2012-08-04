@@ -97,7 +97,9 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
   UT_UTF8String s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_MarkRevisions_Title,s);
   dialog1 = abiDialogNew ( "mark revisions", TRUE, s.utf8_str());
-  gtk_window_set_default_size ( GTK_WINDOW(dialog1), 250, 150 ) ;
+#if !GTK_CHECK_VERSION(3,0,0)
+  gtk_dialog_set_has_separator(GTK_DIALOG(dialog1), FALSE);
+#endif
 
   dialog_vbox1 = gtk_dialog_get_content_area(GTK_DIALOG (dialog1));
   gtk_widget_show (dialog_vbox1);
@@ -151,7 +153,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
 		 if (isRev ())
 			 gtk_widget_show (radiobutton2);
 		 
-		 gtk_box_pack_start (GTK_BOX (vbox1), radiobutton2, FALSE, FALSE, 0);
+		 gtk_box_pack_start (GTK_BOX (vbox1), radiobutton2, FALSE, FALSE, 6);
 		 
 		 g_signal_connect ( G_OBJECT(radiobutton2), "toggled",
 							G_CALLBACK(focus_toggled_callback), this ) ;
@@ -166,7 +168,7 @@ void AP_UnixDialog_MarkRevisions::constructWindowContents ( GtkWidget * containe
    
    entry1 = gtk_entry_new();
    gtk_widget_show (entry1);
-   gtk_box_pack_start (GTK_BOX (vbox1), entry1, FALSE, FALSE, 0);
+   gtk_box_pack_start (GTK_BOX (vbox1), entry1, FALSE, FALSE, 8);
    
    mEntryLbl = lbl2 ;
    mComment = entry1 ;
