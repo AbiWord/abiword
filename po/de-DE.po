@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-03 17:26+0200\n"
-"PO-Revision-Date: 2012-08-03 17:26+0200\n"
+"POT-Creation-Date: 2012-08-04 21:58+0200\n"
+"PO-Revision-Date: 2012-08-04 21:58+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -370,7 +370,7 @@ msgstr "&Dokument"
 #. MENU_LABEL_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h
 msgid "&Document History"
-msgstr "&Versionskontrolle"
+msgstr "&Versionen"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h
@@ -638,12 +638,12 @@ msgstr "Se&rienbrief-Feld"
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h
 msgid "&Maintain Full History"
-msgstr "&Vollständige Änderungslegende"
+msgstr "&Vollständiger Versionsverlauf"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h
 msgid "&Mark revisions while typing"
-msgstr "Änderungen während der &Eingabe markieren"
+msgstr "Änderungen bei der &Eingabe hervorheben"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h
@@ -773,7 +773,7 @@ msgstr "&Seitenlayout"
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h
 msgid "&Purge History"
-msgstr "Änderungen &entfernen"
+msgstr "Versionsverlauf &entfernen"
 
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
@@ -823,7 +823,7 @@ msgstr "&Original-Layout rücksetzen"
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h
 msgid "&Revisions"
-msgstr "Änderungen verf&olgen"
+msgstr "Än&derungen"
 
 #. MENU_LABEL_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h
@@ -885,7 +885,7 @@ msgstr "Änderung aus&wählen"
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h
 msgid "&Show History"
-msgstr "Änderungen &anzeigen"
+msgstr "Versionsverl&auf"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
@@ -895,7 +895,7 @@ msgstr "&Statusleiste anzeigen"
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h
 msgid "&Show annotations"
-msgstr "Anmerkungen &anzeigen"
+msgstr "&Anmerkungen hervorheben"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h
@@ -1189,7 +1189,7 @@ msgstr "Über das GNOME-Office-Projekt"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Accept the suggested change"
-msgstr "Vorgeschlagene Änderung übernehmen"
+msgstr "Die vorgeschlagene Änderung übernehmen"
 
 #. TOOLBAR_STATUSLINE_ADD_COLUMN
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
@@ -1359,9 +1359,9 @@ msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
-"Sind Sie sicher, dass Sie keine vollständige Aufzeichnung über Änderungen "
-"führen möchten? Wenn Sie fortfahren, gehen frühere Versionen dieses "
-"Dokuments verloren."
+"Sind Sie sicher, dass Sie keinen vollständigen Versionsverlauf führen "
+"möchten? Wenn Sie fortfahren, gehen frühere Versionen dieses Dokuments "
+"verloren."
 
 #. DLG_Lists_Arrowhead_List
 #. STYLE_ARROWHEADLIST
@@ -1908,7 +1908,7 @@ msgstr "Die anzuzeigende Änderung auswählen"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h
 msgid "Choose which revision you wish to view"
-msgstr "Die anzuzeigenden Änderung auswählen"
+msgstr "Die anzuzeigende Änderung auswählen"
 
 #. DLG_Goto_Label_Help
 #: po/tmp/ap_String_Id.h
@@ -3062,12 +3062,12 @@ msgstr "Nach Beziehung suchen"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Find next visible revision in the document"
-msgstr "Die nächste sichtbare Änderung im Dokument anzeigen"
+msgstr "Die nächste Änderung im Dokument anzeigen"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Find previous visible revision in the document"
-msgstr "Vorige sichtbare Änderung im Dokument anzeigen"
+msgstr "Die vorige Änderung im Dokument anzeigen"
 
 #. MENU_STATUSLINE_EDIT_FIND
 #: po/tmp/ap_String_Id.h
@@ -4192,7 +4192,7 @@ msgstr "Seitenränder"
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h
 msgid "Mark Revisions"
-msgstr "Änderungen markieren"
+msgstr "Änderungen kennzeichnen"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h
@@ -5141,7 +5141,7 @@ msgstr "Alle Änderungsinformationen aus dem Dokument entfernen"
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h
 msgid "Remove full document history from the document"
-msgstr "Vollständige Änderungslegende aus dem Dokument entfernen"
+msgstr "Gesamten Versionsverlauf aus dem Dokument entfernen"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h
@@ -5260,7 +5260,7 @@ msgstr "Vorige Liste fortsetzen"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h
 msgid "Retain all document changes"
-msgstr "Alle Änderungen am Dokument aufbewahren"
+msgstr "Alle Versionen des Dokuments aufbewahren"
 
 #. MSG_RevertFile
 #: po/tmp/ap_String_Id.h
@@ -5482,7 +5482,7 @@ msgstr "Nach Hilfe suchen zu..."
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h
 msgid "Seconds between updates"
-msgstr "Sekunden zw. Aktualisierungen"
+msgstr "Sekunden zwischen Aktualisierungen"
 
 #. FIELD_DateTime_Epoch
 #: po/tmp/ap_String_Id.h
@@ -5497,7 +5497,7 @@ msgstr "Abschnittswechsel"
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h
 msgid "See history of the current document"
-msgstr "Die Änderungslegende des aktuellen Dokuments einsehen"
+msgstr "Den Versionsverlauf des aktuellen Dokuments einsehen"
 
 #. MENU_STATUSLINE_TABLE_SELECT
 #. DLG_Select
@@ -5879,22 +5879,22 @@ msgstr "Alle RDF anzeigen"
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
-msgstr "&Formatierungszeichen"
+msgstr "&Formatierungszeichen anzeigen"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "Show document &before revisions"
-msgstr "Dok&ument ohne Änderungen anzeigen"
+msgstr "Dok&ument vor den Änderungen anzeigen"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h
 msgid "Show document a&fter revisions"
-msgstr "Dokument &mit Änderungen anzeigen"
+msgstr "Doku&ment nach den Änderungen anzeigen"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
 msgid "Show document after &previous revisions"
-msgstr "Do&kument nach vorigen Änderungen anzeigen"
+msgstr "Do&kument bis auf die letzte Änderung anzeigen"
 
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
@@ -5942,7 +5942,9 @@ msgstr "In diesem Dokument vorhandene Änderungen anzeigen"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
 msgid "Show what the document looks like after previous revisions"
-msgstr "Das Dokument so anzeigen, wie es nach den vorigen Änderungen aussieht"
+msgstr ""
+"Das Dokument so anzeigen, wie es nach allen Änderungen bis auf die letzte "
+"aussieht"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h
@@ -6648,7 +6650,7 @@ msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
 msgstr ""
-"Dieses Dokument enthält Änderungen, momentan nicht sichtbar sind. In der "
+"Dieses Dokument enthält Änderungen, die Sie momentan nicht sehen. In der "
 "Dokumentation zu AbiWord erfahren Sie Näheres zur Arbeit mit Änderungen."
 
 #. DLG_Para_PreviewSampleFallback
@@ -6880,7 +6882,7 @@ msgstr "Anzeigen"
 #. MENU_STATUSLINE_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h
 msgid "View document history"
-msgstr "Die Änderungslegende des Dokuments einsehen"
+msgstr "Den Versionsverlauf des Dokuments einsehen"
 
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h
@@ -7770,7 +7772,7 @@ msgstr "Informationen zum Dokument"
 #. DLG_History_WindowLabel
 #: po/tmp/xap_String_Id.h
 msgid "Document History"
-msgstr "Änderungslegende"
+msgstr "Versionsverlauf"
 
 #. DLG_History_Path
 #: po/tmp/xap_String_Id.h
