@@ -688,7 +688,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
 		if(id)
 		{
-			OXML_SharedElement endnote(new OXML_Element_Field(id, fd_Field::FD_Endnote_Ref, NULL));
+			OXML_SharedElement endnote(new OXML_Element_Field(id, fd_Field::FD_Endnote_Ref, ""));
 			rqst->stck->push(endnote);
 		}
 		rqst->handled = true;		
