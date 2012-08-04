@@ -254,7 +254,7 @@ EV_Menu_ActionSet * AP_CreateMenuActionSet(void)
 	_s(AP_MENU_ID_TOOLS_MAILMERGE,	0,1,0,0,	"mailMerge", ap_GetState_MailMerge, NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS,  1,0,0,0,  NULL,               NULL,                   NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_MARK, 0,0,1,0, "toggleMarkRevisions", ap_GetState_MarkRevisionsCheck,NULL);
-	_s(AP_MENU_ID_TOOLS_REVISIONS_NEW_REVISION, 0,0,0,0, "startNewRevision", ap_GetState_MarkRevisions,NULL);
+	_s(AP_MENU_ID_TOOLS_REVISIONS_NEW_REVISION, 0,1,0,0, "startNewRevision", ap_GetState_MarkRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW, 0,0,1,0, "toggleShowRevisions", ap_GetState_ShowRevisions,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTERPREV, 0,0,1,0, "toggleShowRevisionsAfterPrevious", ap_GetState_ShowRevisionsAfterPrev,NULL);
 	_s(AP_MENU_ID_TOOLS_REVISIONS_SHOW_AFTER, 0,0,1,0, "toggleShowRevisionsAfter", ap_GetState_ShowRevisionsAfter,NULL);
