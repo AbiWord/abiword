@@ -134,7 +134,7 @@ const char * AP_Dialog_ListRevisions::getNthItemTime(UT_uint32 n) const
 	return s;
 }
 
-char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n) const
+char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n, bool utf8) const
 {
 	bool bFree = false;
 
@@ -172,10 +172,21 @@ char * AP_Dialog_ListRevisions::getNthItemText(UT_uint32 n) const
 
 		}
 
-		char * pComment = (char *)UT_calloc(UT_UCS4_strlen(pC) + 1, sizeof(char));
-		UT_return_val_if_fail(pComment,NULL);
+		char * pComment;
 
-		UT_UCS4_strcpy_to_char(pComment,pC);
+		if (utf8)
+		{
+			UT_UTF8String comment(pC);
+			pComment = (char *)UT_calloc(comment.byteLength() + 1, sizeof(char));
+			UT_return_val_if_fail(pComment,NULL);
+			pComment = strcpy(pComment, comment.utf8_str());
+		}
+		else
+		{
+			pComment = (char *)UT_calloc(UT_UCS4_strlen(pC) + 1, sizeof(char));
+			UT_return_val_if_fail(pComment,NULL);
+			UT_UCS4_strcpy_to_char(pComment,pC);
+		}
 
 		if(bFree)
 		{

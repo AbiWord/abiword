@@ -53,7 +53,7 @@ public:
 
 	/* the caller is responsible for freeing the pointer returned by
 	   the following function (use FREEP) */
-	char *              getNthItemText(UT_uint32 n) const;
+	char *              getNthItemText(UT_uint32 n, bool utf8 = false) const;
 
 	const char *        getNthItemTime(UT_uint32 n) const;
     time_t              getNthItemTimeT(UT_uint32 n) const;

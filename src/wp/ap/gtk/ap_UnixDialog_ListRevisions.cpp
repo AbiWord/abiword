@@ -236,7 +236,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
     sprintf (buf, "%d", getNthItemId(i));
 	gtk_list_store_append(list_store, &iter);
 
-	gchar * txt = getNthItemText(i);
+	gchar * txt = getNthItemText(i, true);
 	const gchar * itemtime = getNthItemTime(i);
 	gtk_list_store_set(list_store, &iter, 
 					   COL_REVID,         getNthItemId(i), 
