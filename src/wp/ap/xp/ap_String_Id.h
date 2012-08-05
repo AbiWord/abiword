@@ -251,7 +251,7 @@ dcl(DLG_Styles_ModifyNumbering, "Numbering")
 dcl(DLG_Styles_ModifyLanguage,	"Language")
 dcl(DLG_Styles_ModifyCharacter,  "Character")
 dcl(DLG_Styles_ModifyType,		 "Style Type:")
-dcl(DLG_Styles_DefNone, 		 "None")
+dcl(DLG_Styles_DefNone, 		 "None")		//xgettext:msgctxt
 dcl(DLG_Styles_DefCurrent,		 "Current Settings")
 dcl(DLG_Styles_NewTitle,		 "New Style")
 dcl(DLG_Styles_RemoveLab,		 "Remove Property from Style:")
