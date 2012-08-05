@@ -354,6 +354,33 @@ void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)
 		event_previewExposed();
 	}
 }
+void AP_UnixDialog_FormatTable::event_WidthChanged(void)
+{
+        if(m_wWidth)
+        {
+		gtk_editable_select_region(GTK_EDITABLE(m_wWidth), 0, 0);  
+		//set Height & Width 
+		const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wWidth));
+		if( atoi( buf ) > 0 && atoi(buf) != (signed) getTableWidth() )
+                {
+			setWidth( atoi(buf) );
+		}
+	}
+}
+void AP_UnixDialog_FormatTable::event_HeightChanged(void)
+{
+	if(m_wHeight)
+        {
+		gtk_editable_select_region(GTK_EDITABLE(m_wHeight), 0, 0);  
+		//set Height & Width 
+		const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wHeight));
+		if( atoi( buf ) > 0 && atoi(buf) != (signed) getTableHeight() )
+		{
+			setHeight( atoi(buf) );
+		}
+	}
+}
+
 
 void AP_UnixDialog_FormatTable::event_ApplyToChanged(void)
 {
@@ -544,38 +571,22 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	return window;
 }
 
-static gboolean s_focus_out_height(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+static void s_focus_out_height(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
     UT_UNUSED(event);
     UT_UNUSED(user_data);
-
-    gtk_editable_select_region(GTK_EDITABLE(widget), 0, 0); 
-    //set Height & Width
-    const char * buf = gtk_entry_get_text(GTK_ENTRY(widget));
-    AP_UnixDialog_FormatTable* dlg = reinterpret_cast<AP_UnixDialog_FormatTable *>(data);
+    AP_UnixDialog_FormatTable* dlg = reinterpret_cast<AP_UnixDialog_FormatTable*>(user_data);
     UT_return_if_fail(widget && dlg);
-    if( atoi( buf ) > 0 && atoi(buf) != (signed) getTableHeight() ){
-        setHeight( atoi(buf) );
-    }
-    dlg->event_previewExposed();
-    return FALSE;
+    dlg->event_HeightChanged();
 }
 
-static gboolean s_focus_out_width(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+static void s_focus_out_width(GtkWidget *widget, GdkEvent *event, gpointer user_data)
 {
     UT_UNUSED(event);
     UT_UNUSED(user_data);
-
-    gtk_editable_select_region(GTK_EDITABLE(widget), 0, 0); 
-    //set Height & Width
-    const char * buf = gtk_entry_get_text(GTK_ENTRY(widget));
-    AP_UnixDialog_FormatTable * dlg = reinterpret_cast<AP_UnixDialog_FormatTable*>(data);
+    AP_UnixDialog_FormatTable* dlg = reinterpret_cast<AP_UnixDialog_FormatTable*>(user_data);
     UT_return_if_fail(widget && dlg);
-    if( atoi( buf ) > 0 && _wtoi(buf) != (signed) getTableWidth() ){
-        setWidth( atoi(buf) );
-    }
-    dlg->event_previewExposed();
-    return FALSE;
+    dlg->event_WidthChanged();
 }
 
 static void s_destroy_clicked(GtkWidget * /* widget */,
