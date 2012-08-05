@@ -244,13 +244,14 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
 	gtk_list_store_append(list_store, &iter);
 
 	gchar * txt = getNthItemText(i, true);
-	const gchar * itemtime = getNthItemTime(i);
+	gchar * itemtime = g_locale_to_utf8(getNthItemTime(i), -1, NULL, NULL, NULL);
 	gtk_list_store_set(list_store, &iter, 
 					   COL_REVID,         getNthItemId(i), 
 					   COL_DATE_STRING,   itemtime?itemtime:"",
 					   COL_COMMENT,       txt,
                        COL_DATE_AS_TIMET, getNthItemTimeT(i),
 					   -1);
+	g_free(itemtime);
 
     UT_DEBUGMSG(("appending revision %s : %s, %s\n", itemtime, buf, txt));
 

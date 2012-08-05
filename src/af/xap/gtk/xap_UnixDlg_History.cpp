@@ -165,12 +165,14 @@ void XAP_UnixDialog_History::_fillHistoryTree(void)
     for (i = 0; i < getListItemCount(); i++)
 	{
 		// Add a new row to the model
+		gchar *itime = g_locale_to_utf8(getListValue(i,1), -1, NULL, NULL, NULL);
 		gtk_tree_store_append (model, &iter,NULL);
 		gtk_tree_store_set (model, &iter, 0, getListValue(i,0), 
-							1,getListValue(i,1) ,
+							1,itime ,
 							2,getListValue(i,2) ,
 							3,getListItemId(i) ,
 							-1);
+    g_free(itime);
 	}
     m_wTreeView = gtk_tree_view_new_with_model (GTK_TREE_MODEL (model));
 
