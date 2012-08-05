@@ -364,6 +364,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ButtonTabs,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
 	buttonTabs = abiAddButton (GTK_DIALOG(windowParagraph), unixstr, BUTTON_TABS);
+	GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_GOTO_LAST, GTK_ICON_SIZE_BUTTON);
+	gtk_button_set_image(GTK_BUTTON(buttonTabs), img);      
 	FREEP(unixstr);
 	buttonOK = abiAddStockButton(GTK_DIALOG(windowParagraph), GTK_STOCK_OK, BUTTON_OK);
 
