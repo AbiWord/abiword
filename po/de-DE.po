@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-05 00:24+0200\n"
-"PO-Revision-Date: 2012-08-05 00:24+0200\n"
+"POT-Creation-Date: 2012-08-05 14:20+0200\n"
+"PO-Revision-Date: 2012-08-05 14:20+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -549,7 +549,7 @@ msgstr "Im &Web-Browser"
 #. DLG_FormatTOC_InheritLabel
 #: po/tmp/ap_String_Id.h
 msgid "&Inherit label"
-msgstr "&Beschriftung vererben"
+msgstr "&Nummerierung vererben"
 
 #. DLG_InsertButton
 #. MENU_LABEL_INSERT
@@ -1738,7 +1738,7 @@ msgstr ""
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h
 msgid "Change Highlight Color"
-msgstr "Hervorhebungsfarbe ändern"
+msgstr "Markierungsfarbe ändern"
 
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h
@@ -1948,7 +1948,7 @@ msgstr "Hintergrundfarbe löschen"
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h
 msgid "Clear Highlight Color"
-msgstr "Farbe für Hervorhebungen löschen"
+msgstr "Markierungsfarbe löschen"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h
@@ -2373,6 +2373,7 @@ msgstr "Spiegelstriche"
 msgid "Dashed line"
 msgstr "gestrichelt"
 
+#. DLG_FormatTOC_Dash
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h
 msgid "Dashes"
@@ -2690,6 +2691,7 @@ msgstr "Dokumente"
 msgid "Don't restart"
 msgstr "Fortlaufend"
 
+#. DLG_FormatTOC_Dot
 #. DLG_Tab_Radio_Dot
 #: po/tmp/ap_String_Id.h
 msgid "Dots"
@@ -3353,7 +3355,7 @@ msgstr "Gehe zu"
 #. DLG_FormatTOC_HasLabel
 #: po/tmp/ap_String_Id.h
 msgid "H&as label"
-msgstr "Mit &Nummer"
+msgstr "Mit &Nummerierung"
 
 #. DLG_FormatTOC_HeadingText
 #: po/tmp/ap_String_Id.h
@@ -4473,8 +4475,6 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Keine Skripte gefunden"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
 #: po/tmp/ap_String_Id.h
@@ -6189,7 +6189,7 @@ msgstr "Text an Leerzeichen, Komma oder Tabulator trennen"
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h
 msgid "Split this cell"
-msgstr "Diese Zelle teilen"
+msgstr "Zellen teilen"
 
 #. DLG_Lists_Square_List
 #. STYLE_SQUARELIST
@@ -6788,6 +6788,7 @@ msgstr "Unterstrichen"
 msgid "Underline the selection (toggle)"
 msgstr "Markierte Auswahl unterstreichen (ein/aus)"
 
+#. DLG_FormatTOC_Underline
 #. DLG_Tab_Radio_Underline
 #: po/tmp/ap_String_Id.h
 msgid "Underlines"
@@ -7097,6 +7098,12 @@ msgstr "MM/TT/JJ"
 msgid "tOGGLE cASE"
 msgstr "gROSS-/kLEINSCHREIBUNG umkehren"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Keine"
+
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_Lists_Style_none"
@@ -7114,6 +7121,12 @@ msgstr "Keine"
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Subjekt"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Keiner"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
@@ -7796,8 +7809,8 @@ msgstr "Bearbeitungszeit:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "Effekte"
+msgid "Effects:"
+msgstr "Effekte:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -8143,7 +8156,7 @@ msgstr "Ausgeblendet"
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h
 msgid "HighLight Color"
-msgstr "Hervorhebungsfarbe"
+msgstr "Markierungsfarbe"
 
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h
@@ -8828,12 +8841,12 @@ msgstr "Sprache festlegen"
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h
 msgid "Set no Highlight Color"
-msgstr "Keine Hervorhebungsfarbe festlegen"
+msgstr "Keine Markierungsfarbe festlegen"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h
 msgid "Size:"
-msgstr "Schriftgrad:"
+msgstr "Größe:"
 
 #. LANG_SK_SK
 #: po/tmp/xap_String_Id.h
