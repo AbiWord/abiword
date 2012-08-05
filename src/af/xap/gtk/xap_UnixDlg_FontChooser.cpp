@@ -522,9 +522,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	GtkWidget *listFonts;
 	GtkWidget *labelSize;
 	GtkWidget *frameEffects;
-	GtkWidget *vboxEffectRows;
-	GtkWidget *hboxDecorations;
-	GtkWidget *hboxAdvDecorations;
+	GtkWidget *tblEffectRows;
 	GtkWidget *checkbuttonStrikeout;
 	GtkWidget *checkbuttonUnderline;
 	GtkWidget *checkbuttonOverline;
@@ -600,7 +598,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	g_object_set_data_full (G_OBJECT (window1), "labelFont", labelFont,
 							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (labelFont);
-	gtk_box_pack_start (GTK_BOX (vbox1), labelFont, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox1), labelFont, FALSE, FALSE, 6);
 
 	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow1, "scrolledwindow1");
@@ -638,7 +636,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	g_object_set_data_full (G_OBJECT (window1), "labelStyle", labelStyle,
 							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (labelStyle);
-	gtk_box_pack_start (GTK_BOX (vbox2), labelStyle, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox2), labelStyle, FALSE, FALSE, 6);
 
 	scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow2, "scrolledwindow2");
@@ -676,7 +674,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	g_object_set_data_full (G_OBJECT (window1), "labelSize", labelSize,
 							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (labelSize);
-	gtk_box_pack_start (GTK_BOX (vbox3), labelSize, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (vbox3), labelSize, FALSE, FALSE, 6);
 
 	scrolledwindow3 = gtk_scrolled_window_new (NULL, NULL);
 	gtk_widget_set_name (scrolledwindow3, "scrolledwindow3");
@@ -711,57 +709,61 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	frameEffects = gtk_frame_new (s.utf8_str());
 	gtk_frame_set_shadow_type(GTK_FRAME(frameEffects), GTK_SHADOW_NONE);
 	gtk_widget_show (frameEffects);
-	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 2);
+	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 6);
 
-	vboxEffectRows = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_show (vboxEffectRows);
-	gtk_container_add (GTK_CONTAINER (frameEffects), vboxEffectRows);
-
-	hboxDecorations = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-	gtk_widget_show (hboxDecorations);
-	gtk_box_pack_start (GTK_BOX (vboxEffectRows), hboxDecorations, FALSE, FALSE, 0);
+	tblEffectRows = gtk_table_new(2, 4, FALSE);
+	gtk_widget_show (tblEffectRows);
+	gtk_container_add (GTK_CONTAINER (frameEffects), tblEffectRows);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StrikeoutCheck,s);
 	checkbuttonStrikeout = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
 	gtk_widget_show (checkbuttonStrikeout);
-	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonStrikeout, TRUE, TRUE, 0);
+	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonStrikeout, 0, 1, 0, 1,
+					  static_cast<GtkAttachOptions>(GTK_FILL),
+					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_UnderlineCheck,s);
 	checkbuttonUnderline = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
 	gtk_widget_show (checkbuttonUnderline);
-	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonUnderline, TRUE, TRUE, 0);
+	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonUnderline, 1, 2, 0, 1,
+					  static_cast<GtkAttachOptions>(GTK_FILL),
+					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_OverlineCheck,s);
 	checkbuttonOverline = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonOverline), 5);
 	gtk_widget_show (checkbuttonOverline);
-	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonOverline, TRUE, TRUE, 0);
+	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonOverline, 2, 3, 0, 1,
+					  static_cast<GtkAttachOptions>(GTK_FILL),
+					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_HiddenCheck,s);
 	checkbuttonHidden = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonHidden), 5);
 	gtk_widget_show (checkbuttonHidden);
-	gtk_box_pack_start (GTK_BOX (hboxDecorations), checkbuttonHidden, TRUE, TRUE, 0);
+	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonHidden, 3, 4, 0, 1,
+					  static_cast<GtkAttachOptions>(GTK_FILL),
+					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
 	/* subscript/superscript */
-
-	hboxAdvDecorations = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-	gtk_widget_show (hboxAdvDecorations);
-	gtk_box_pack_start (GTK_BOX (vboxEffectRows), hboxAdvDecorations, FALSE, FALSE, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SubScript,s);
 	checkbuttonSubscript = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonSubscript), 5);
 	gtk_widget_show (checkbuttonSubscript);
-	gtk_box_pack_start (GTK_BOX (hboxAdvDecorations), checkbuttonSubscript, FALSE, FALSE, 0);
+	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonSubscript, 0, 1, 1, 2,
+					  static_cast<GtkAttachOptions>(GTK_FILL),
+					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SuperScript,s);
 	checkbuttonSuperscript = gtk_check_button_new_with_label (s.utf8_str());
 	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonSuperscript), 5);
 	gtk_widget_show (checkbuttonSuperscript);
-	gtk_box_pack_start (GTK_BOX (hboxAdvDecorations), checkbuttonSuperscript, FALSE, FALSE, 0);
+	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonSuperscript, 1, 2, 1, 2,
+					  static_cast<GtkAttachOptions>(GTK_FILL),
+					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
 
 	/* Notebook page for ForeGround Color Selector */
 
