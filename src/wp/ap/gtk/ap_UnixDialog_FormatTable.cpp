@@ -493,6 +493,9 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
     m_wHeight = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableHeight")); 
     // Set init Value
     UT_Dimension dim = DIM_IN;
+    setCurCellProps();
+    initTableWidthStr();
+    initTableHeightStr();
     float value = getTableWidth();
     const gchar *szValue= UT_formatDimensionString (dim, value);
     /* todo: Get Table handle
