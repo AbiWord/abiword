@@ -64,13 +64,16 @@ AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Di
 	  m_iDetailsLevel(1)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
-	static UT_UTF8String sNone;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_None, sNone);
-	
-	m_vecTABLeadersLabel.addItem(sNone.utf8_str());
-	m_vecTABLeadersLabel.addItem("....");
-	m_vecTABLeadersLabel.addItem("----");
-	m_vecTABLeadersLabel.addItem("____");
+	static UT_UTF8String s1, s2, s3, s4;
+
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_None, s1);
+	m_vecTABLeadersLabel.addItem(s1.utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Dot, s2);
+	m_vecTABLeadersLabel.addItem(s2.utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Dash, s3);
+	m_vecTABLeadersLabel.addItem(s3.utf8_str());
+	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Underline, s4);
+	m_vecTABLeadersLabel.addItem(s4.utf8_str());
 	m_vecTABLeadersProp.addItem("none");
 	m_vecTABLeadersProp.addItem("dot");
 	m_vecTABLeadersProp.addItem("hyphen");
