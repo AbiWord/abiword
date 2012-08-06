@@ -165,6 +165,8 @@ private:
 - (void)setPositionState:(int)state;
 - (void)setBorderColor:(NSColor *)color;
 - (void)setBackgroundColor:(NSColor *)color;
+- (void)setHeight:(float)height;
+- (void)setWidth:(float)width;
 
 - (void)menuWillActivate:(NSMenu *)menu forButton:(XAP_CocoaToolbarButton *)button;
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem;

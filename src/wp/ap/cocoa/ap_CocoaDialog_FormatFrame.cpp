@@ -276,14 +276,17 @@ void AP_CocoaDialog_FormatFrame::_populateWindowData(void)
 
 		bca = backgroundColor().m_bIsTransparent ? 0.0f : 1.0f;
 
-        //setHeight & setWidth
-        
-
 		[m_dlg setBackgroundColor:[NSColor colorWithCalibratedRed:bcr green:bcg blue:bcb alpha:bca]];
 
 		[m_dlg setWrapState:(getWrapping() ? NSOnState : NSOffState)];
 
 		[m_dlg setPositionState:((int) positionMode())];
+        //init value is current Frame width and height
+        setCurFrameProps();
+        float height = getFrameHeight();
+        float width = getFrameWidth();
+        setHeight(height);
+        setWidth(width);
 
 		setAllSensitivities();
 	}
@@ -870,6 +873,18 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 {
 	UT_UNUSED(sender);
 	_xap->setWrapping([_wrapSwitch state] == NSOnState);
+}
+
+- (void)setHeight:(float)height
+{
+    [_frameHeightStepper setFloatValue:height];
+    [_frameHeightField setFloatValue:height];
+}
+
+- (void)setWidth:(float)width
+{
+    [_frameWidthStepper setFloatValue:width];
+    [_frameWidthField setFloatValue:width];
 }
 
 - (void)setPositionState:(int)state
