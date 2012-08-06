@@ -1378,16 +1378,9 @@ void ODe_Text_Listener::_openODListItem(const PP_AttrProp* pAP) {
  * 
  */
 void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
-    UT_UTF8String styleName;
-    UT_UTF8String output;
-    UT_UTF8String str;
-    UT_UTF8String escape;
-    const gchar* pValue;
-    bool ok;
-    
     ////
     // Figure out the paragraph style
-    
+    m_delayedAP = pAP;
     if (ODe_Style_Style::hasParagraphStyleProps(pAP) ||
         ODe_Style_Style::hasTextStyleProps(pAP) ||
         m_pendingMasterPageStyleChange ||
@@ -1397,114 +1390,34 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
         // Need to create a new automatic style to hold those paragraph
         // properties.
         
-        ODe_Style_Style* pStyle;
-        pStyle = new ODe_Style_Style();
-        pStyle->setFamily("paragraph");
-        
-        pStyle->fetchAttributesFromAbiBlock(pAP, m_pCurrentListStyle);
-        
-        if (m_pendingMasterPageStyleChange) {
-            pStyle->setMasterPageName(m_masterPageStyleName);
-            m_pendingMasterPageStyleChange = false;
-            m_masterPageStyleName.clear();
+        m_delayedListStyle = m_pCurrentListStyle;
+        if (m_pendingMasterPageStyleChange){
+                m_delayedPendingMasterPageStyleChange = m_pendingMasterPageStyleChange;
+                m_delayedMasterPageStyleName = m_masterPageStyleName.utf8_str();
+                m_masterPageStyleName.clear();
+                m_pendingMasterPageStyleChange = false;
         }
-        
+                
         // Can't have both breaks
         UT_ASSERT(
             !(m_pendingColumnBreak==true && m_pendingPageBreak==true) );
         
-        if (m_pendingColumnBreak) {
-            pStyle->setBreakBefore("column");
-            m_pendingColumnBreak = false;
+        if (m_pendingColumnBreak){
+            m_delayedColumnBreak = true;
         }
         
-        if (m_pendingPageBreak) {
-            pStyle->setBreakBefore("page");
-            m_pendingPageBreak = false;
+        if (m_pendingPageBreak){
+            m_delayedPageBreak = true;
         }
         
-        m_rAutomatiStyles.storeParagraphStyle(pStyle);
-        styleName = pStyle->getName();
-
-        // There is a special case for the default-tab-interval property, as in
-        // AbiWord that is a paragraph property, but in ODF it belongs in the
-        // default style for the "paragraph" family.
-        ok = pAP->getProperty("default-tab-interval", pValue);
-        if (ok && pValue != NULL) {
-            UT_DEBUGMSG(("Got a default tab interval:  !!!!!!!!!!!!! %s\n", pValue));
-        }
+        m_pendingColumnBreak = false;
+        m_pendingPageBreak = false;
             
-    } else {
-        ok = pAP->getAttribute("style", pValue);
-        if (ok) {
-            styleName = pValue;
-        }
-    }
-    
+    } 
     
     ////
     // Write the output string
-    
-    output.clear();
-    _printSpacesOffset(output);
-    
-    if (styleName.empty()) {
-        output += "<text:p>";
-        m_isHeadingParagraph = false;
-    } else {
-        UT_uint8 outlineLevel = 0;
-        
-        // Use the original AbiWord style name to see which outline level this
-        // style belongs to (if any). Don't use the generated ODT style for this,
-        // as that name is not what AbiWord based its decisions on.
-        ok = pAP->getAttribute("style", pValue);
-        if (ok) {
-            outlineLevel = m_rAuxiliaryData.m_headingStyles.
-                            getHeadingOutlineLevel(pValue);
-        }
-        
-        if (outlineLevel > 0) {
-            // It's a heading.
-            
-            UT_UTF8String_sprintf(str, "%u", outlineLevel);
-            
-            escape = styleName;
-            output += "<text:h text:style-name=\"";
-            output += ODe_Style_Style::convertStyleToNCName(escape).escapeXML();
-            output += "\" text:outline-level=\"";
-            output += str;
-            output += "\" ";
-            const char* xmlid = 0;
-            if( pAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
-            {
-                appendAttribute( output, "xml:id", xmlid );
-            }
-
-            output += " >";
-            
-            m_isHeadingParagraph = true;
-            
-        } else {
-            // It's a regular paragraph.
-            escape = styleName;
-            output += "<text:p text:style-name=\"";
-            output += ODe_Style_Style::convertStyleToNCName(escape).escapeXML();
-            output += "\" ";
-            const char* xmlid = 0;
-            if( pAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
-            {
-                appendAttribute( output, "xml:id", xmlid );
-            }
-            output += ">";
-            
-            m_isHeadingParagraph = false;
-        }
-    }
-    
-    ////
-    // Write output string to file and update related variables.
-    
-    ODe_writeUTF8String(m_pTextOutput, output);
+    m_delayedSpacesOffset = m_spacesOffset;
     m_openedODParagraph = true;
     m_isFirstCharOnParagraph = true;
     m_spacesOffset++;
@@ -1549,12 +1462,141 @@ void ODe_Text_Listener::_closeODList() {
 }
 
 
+void ODe_Text_Listener::_openParagraphDelayed(){
+    UT_UTF8String styleName;
+    UT_UTF8String output;
+    UT_UTF8String str;
+    UT_UTF8String escape;
+    const gchar* pValue;
+    bool ok;
+    
+    ////
+    // Figure out the paragraph style
+    if (m_pendingColumnBreak){
+        m_delayedColumnBreak = true;
+    }
+
+    if (m_pendingPageBreak){
+        m_delayedPageBreak = true;
+    }
+    
+    if (ODe_Style_Style::hasParagraphStyleProps(m_delayedAP) ||
+        ODe_Style_Style::hasTextStyleProps(m_delayedAP) ||
+        m_delayedPendingMasterPageStyleChange ||
+        m_delayedColumnBreak ||
+        m_delayedPageBreak) {
+            
+        // Need to create a new automatic style to hold those paragraph
+        // properties.
+        
+        ODe_Style_Style* pStyle;
+        pStyle = new ODe_Style_Style();
+        pStyle->setFamily("paragraph");
+        
+        pStyle->fetchAttributesFromAbiBlock(m_delayedAP, m_delayedListStyle);
+        
+        if (m_delayedPendingMasterPageStyleChange) {
+            pStyle->setMasterPageName(m_delayedMasterPageStyleName.c_str());
+        }
+        
+        
+        if (m_delayedColumnBreak) {
+            pStyle->setBreakBefore("column");
+            m_delayedColumnBreak = false;
+        }
+        
+        if (m_delayedPageBreak) {
+            pStyle->setBreakBefore("page");
+            m_delayedPageBreak = false;
+        }
+        
+        m_rAutomatiStyles.storeParagraphStyle(pStyle);
+        styleName = pStyle->getName();
+
+        // There is a special case for the default-tab-interval property, as in
+        // AbiWord that is a paragraph property, but in ODF it belongs in the
+        // default style for the "paragraph" family.
+        ok = m_delayedAP->getProperty("default-tab-interval", pValue);
+        if (ok && pValue != NULL) {
+            UT_DEBUGMSG(("Got a default tab interval:  !!!!!!!!!!!!! %s\n", pValue));
+        }
+            
+    } else {
+        ok = m_delayedAP->getAttribute("style", pValue);
+        if (ok) {
+            styleName = pValue;
+        }
+    }
+    
+    
+    ////
+    // Write the output string
+    UT_uint32 oldOffsets = m_spacesOffset;
+    m_spacesOffset = m_delayedSpacesOffset;
+    output.clear();
+    _printSpacesOffset(output);
+    m_spacesOffset = oldOffsets;
+    
+    if (styleName.empty()) {
+        output += "<text:p>";
+        m_isHeadingParagraph = false;
+    } else {
+        UT_uint8 outlineLevel = 0;
+        
+        // Use the original AbiWord style name to see which outline level this
+        // style belongs to (if any). Don't use the generated ODT style for this,
+        // as that name is not what AbiWord based its decisions on.
+        ok = m_delayedAP->getAttribute("style", pValue);
+        if (ok) {
+            outlineLevel = m_rAuxiliaryData.m_headingStyles.
+                            getHeadingOutlineLevel(pValue);
+        }
+        
+        if (outlineLevel > 0) {
+            // It's a heading.
+            
+            UT_UTF8String_sprintf(str, "%u", outlineLevel);
+            
+            escape = styleName;
+            output += "<text:h text:style-name=\"";
+            output += ODe_Style_Style::convertStyleToNCName(escape).escapeXML();
+            output += "\" text:outline-level=\"";
+            output += str;
+            output += "\" ";
+            const char* xmlid = 0;
+            if( m_delayedAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
+            {
+                appendAttribute( output, "xml:id", xmlid );
+            }
+
+            output += " >";            
+        } else {
+            // It's a regular paragraph.
+            escape = styleName;
+            output += "<text:p text:style-name=\"";
+            output += ODe_Style_Style::convertStyleToNCName(escape).escapeXML();
+            output += "\" ";
+            const char* xmlid = 0;
+            if( m_delayedAP->getAttribute( PT_XMLID, xmlid ) && xmlid )
+            {
+                appendAttribute( output, "xml:id", xmlid );
+            }
+            output += ">";
+        }
+    }
+    
+    ////
+    // Write output string to file and update related variables.
+    ODe_writeUTF8String(m_pTextOutput, output);
+}
+
 /**
  * 
  */
 void ODe_Text_Listener::_closeODParagraph() {
 
-    if (m_openedODParagraph) {         
+    if (m_openedODParagraph) { 
+        _openParagraphDelayed();
         gsf_output_write(m_pTextOutput, gsf_output_size(m_pParagraphContent),
 			 gsf_output_memory_get_bytes(GSF_OUTPUT_MEMORY(m_pParagraphContent)));
 

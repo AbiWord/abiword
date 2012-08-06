@@ -132,7 +132,15 @@ private:
     void _openODParagraph(const PP_AttrProp* pAP);
     void _closeODParagraph();
     void _closeODList();
-
+    void _openParagraphDelayed();
+    
+    const PP_AttrProp* m_delayedAP;
+    ODe_Style_List*    m_delayedListStyle;
+    bool               m_delayedPendingMasterPageStyleChange;
+    bool               m_delayedPageBreak;
+    bool               m_delayedColumnBreak;
+    std::string        m_delayedMasterPageStyleName;
+    UT_uint32          m_delayedSpacesOffset;
 
     bool m_openedODParagraph;
     bool m_openedODSpan;
