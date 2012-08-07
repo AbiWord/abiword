@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-05 14:20+0200\n"
-"PO-Revision-Date: 2012-08-05 14:20+0200\n"
+"POT-Creation-Date: 2012-08-07 14:55+0200\n"
+"PO-Revision-Date: 2012-08-07 14:55+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -228,7 +228,7 @@ msgstr "Übernehmen"
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h
 msgid "&At:"
-msgstr "&Von:"
+msgstr "&Maß:"
 
 #. MENU_LABEL_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h
@@ -1470,7 +1470,7 @@ msgstr "Verfügbare Stilvorlagen"
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
 msgid "B&y:"
-msgstr "&Von:"
+msgstr "&Um:"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1646,12 +1646,12 @@ msgstr "&Mitwirkende"
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
 msgid "Can not insert a Break inside a table"
-msgstr "In Tabellen kann kein Umbruch eingefügt werden"
+msgstr "In Tabellen kann kein Wechsel eingefügt werden"
 
 #. MSG_NoBreakInsideFrame
 #: po/tmp/ap_String_Id.h
 msgid "Can not insert a Break inside a text box"
-msgstr "In einen Textrahmen kann kein Umbruch eingefügt werden"
+msgstr "In einen Textrahmen kann kein Wechsel eingefügt werden"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h
@@ -4346,7 +4346,7 @@ msgstr "Mon Tag, Jahr"
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h
 msgid "Multiple"
-msgstr "Mehrfach"
+msgstr "Vielfaches"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_NAME
@@ -4754,7 +4754,7 @@ msgstr "Seiten:"
 #. DLG_Para_LabelPagination
 #: po/tmp/ap_String_Id.h
 msgid "Pagination"
-msgstr "Textfluß"
+msgstr "Textfluss"
 
 #. DLG_PageSetup_Paper
 #: po/tmp/ap_String_Id.h
