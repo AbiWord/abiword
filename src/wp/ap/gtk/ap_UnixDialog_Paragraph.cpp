@@ -477,7 +477,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_box_pack_start (GTK_BOX (hboxAlignment), GTK_WIDGET(listAlignment), FALSE, FALSE, 0);
 	gtk_table_attach ( GTK_TABLE(boxSpacing), hboxAlignment, 1,2, 0,1,
                     (GtkAttachOptions) (GTK_FILL|GTK_EXPAND),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0);
+                    (GtkAttachOptions) (GTK_FILL), 0, 3);
 
 	XAP_appendComboBoxTextAndInt(listAlignment, " ", 0); // add an empty menu option to fix bug 594
 	
@@ -512,6 +512,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_box_pack_start (GTK_BOX (hboxIndentation), labelIndentation, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelIndentation), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelIndentation), 0, 0.5);
+	gtk_misc_set_padding (GTK_MISC (labelIndentation), 0, 3);
 
 	hseparator3 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show (hseparator3);
@@ -646,6 +647,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_box_pack_start (GTK_BOX (hboxSpacing), labelSpacing, FALSE, FALSE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelSpacing), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelSpacing), 0, 0.5);
+	gtk_misc_set_padding (GTK_MISC (labelSpacing), 0, 3);
 
 	hseparator1 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_box_pack_start (GTK_BOX (hboxSpacing), hseparator1, TRUE, TRUE, 0);
@@ -780,6 +782,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	FREEP(unixstr);
 	gtk_widget_show (labelPagination);
 	gtk_box_pack_start (GTK_BOX (hboxPagination), labelPagination, FALSE, FALSE, 0);
+	gtk_misc_set_padding (GTK_MISC (labelPagination), 0, 3);
 
 	hseparator5 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show (hseparator5);
@@ -836,7 +839,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (hseparator6);
 	gtk_table_attach ( GTK_TABLE(boxBreaks), hseparator6, 0,2, 3,4,
                     (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (GTK_FILL), 0, 0 );
+                    (GtkAttachOptions) (GTK_FILL), 0, 4 );                    
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PushSuppressLineNumbers,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
@@ -879,6 +882,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_box_pack_start (GTK_BOX (hboxPreview), labelPreview, FALSE, TRUE, 0);
 	gtk_label_set_justify (GTK_LABEL (labelPreview), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_alignment (GTK_MISC (labelPreview), 0, 0.5);
+	gtk_misc_set_padding (GTK_MISC (labelPreview), 0, 8);
 
 	hseparator4 = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
 	gtk_widget_show (hseparator4);
