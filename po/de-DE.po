@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-07 14:55+0200\n"
-"PO-Revision-Date: 2012-08-07 14:55+0200\n"
+"POT-Creation-Date: 2012-08-08 21:36+0200\n"
+"PO-Revision-Date: 2012-08-08 21:36+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -1983,6 +1983,11 @@ msgstr "Farbe:"
 msgid "Column"
 msgstr "Spalte"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr "    Spaltenwechsel"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2038,7 +2043,7 @@ msgstr "Erstellungszeit"
 #. DLG_Break_Continuous
 #: po/tmp/ap_String_Id.h
 msgid "Con&tinuous"
-msgstr "&Fortlaufend"
+msgstr "&Diese Seite"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
@@ -3119,7 +3124,7 @@ msgid ""
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
 msgstr ""
 "Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster "
-"Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz"
+"Absatz"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -4690,6 +4695,11 @@ msgstr "&Seitenwechsel oberhalb"
 msgid "Page Background"
 msgstr "&Hintergrund"
 
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr "    Seitenwechsel"
+
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
 msgid "Page C&olor"
@@ -4919,8 +4929,7 @@ msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr ""
-"Voriger Absatz Voriger Absatz Voriger Absatz Voriger Absatz Voriger Absatz "
-"Voriger Absatz Voriger Absatz Voriger Absatz Voriger Absatz"
+"Voriger Absatz Voriger Absatz Voriger Absatz Voriger Absatz Voriger Absatz"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
@@ -6660,9 +6669,9 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Dieser Absatz zeigt Wörter, wie sie in Ihrem Dokument erscheinen könnten. Um "
-"Text aus Ihrem Dokument in dieser Ansicht zu sehen, bewegen Sie den Cursor "
-"in einen Absatz, der Text enthält und öffnen diesen Dialog."
+"Dieser Absatz zeigt Ihnen Text, wie er in Ihrem Dokument erscheinen dürfte. "
+"Um Text aus Ihrem Dokument in dieser Ansicht zu sehen, bewegen Sie den "
+"Cursor in einen Absatz, der Text enthält, und öffnen diesen Dialog."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
