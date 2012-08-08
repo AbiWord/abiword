@@ -127,6 +127,8 @@ dcl(DLG_Break_NextPage, 		"&Next page")
 dcl(DLG_Break_Continuous,		"Con&tinuous")
 dcl(DLG_Break_EvenPage, 		"&Even page")
 dcl(DLG_Break_OddPage,			"&Odd page")
+dcl(BREAK_Column,				"Column Break")
+dcl(BREAK_Page,					"Page Break")
 
 /* Insert Table dialog */
 dcl(DLG_InsertTable_TableTitle,		"Insert Table")

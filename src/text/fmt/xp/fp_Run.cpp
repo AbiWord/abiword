@@ -5634,8 +5634,11 @@ void fp_ForcedColumnBreakRun::_draw(dg_DrawArgs* pDA)
 
     UT_sint32 iLineWidth  = getLine()->getMaxWidth();
 
+    const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+    std::string s;
+    pSS->getValueUTF8(AP_STRING_ID_BREAK_Column, s);
     UT_UCSChar *pColumnBreak;
-    UT_UCS4_cloneString_char(&pColumnBreak,"Column Break");
+    UT_UCS4_cloneString_char(&pColumnBreak, s.c_str());
 	_drawTextLine(pDA->xoff,pDA->yoff+getLine()->getAscent(),iLineWidth,getLine()->getHeight(),pColumnBreak);
     FREEP(pColumnBreak);
 }
@@ -5757,8 +5760,11 @@ void fp_ForcedPageBreakRun::_draw(dg_DrawArgs* pDA)
 
     UT_sint32 iLineWidth  = getLine()->getMaxWidth();
 
+    const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+    std::string s;
+    pSS->getValueUTF8(AP_STRING_ID_BREAK_Page, s);
     UT_UCSChar *pPageBreak;
-    UT_UCS4_cloneString_char(&pPageBreak,"Page Break");
+    UT_UCS4_cloneString_char(&pPageBreak, s.c_str());
 
 	_drawTextLine(pDA->xoff,pDA->yoff+getLine()->getAscent(),iLineWidth,getLine()->getHeight(),pPageBreak);
     FREEP(pPageBreak);
