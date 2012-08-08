@@ -1010,19 +1010,19 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	if(!isModal())
 		gtk_widget_show (hbox1);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New,s);
-	start_list_rb = gtk_radio_button_new_with_label (action_group, s.utf8_str());
-	action_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (start_list_rb));
-	if(!isModal())
-		gtk_widget_show (start_list_rb);
-	gtk_box_pack_start (GTK_BOX (hbox1), start_list_rb, FALSE, FALSE, 0);
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (start_list_rb), TRUE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Apply_Current,s);
 	apply_list_rb = gtk_radio_button_new_with_label (action_group, s.utf8_str());
 	action_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (apply_list_rb));
 	if(!isModal())
 		gtk_widget_show (apply_list_rb);
 	gtk_box_pack_start (GTK_BOX (hbox1), apply_list_rb, FALSE, FALSE, 0);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (apply_list_rb), TRUE);
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New,s);
+	start_list_rb = gtk_radio_button_new_with_label (action_group, s.utf8_str());
+	action_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (start_list_rb));
+	if(!isModal())
+		gtk_widget_show (start_list_rb);
+	gtk_box_pack_start (GTK_BOX (hbox1), start_list_rb, FALSE, FALSE, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Resume,s);
 	resume_list_rb = gtk_radio_button_new_with_label (action_group, s.utf8_str());
 	action_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (resume_list_rb));
