@@ -695,7 +695,10 @@ void AP_Dialog_Paragraph::_createPreviewFromGC(GR_Graphics * gc,
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 		// if the paragraph was empty, use our sample
-		UT_UCS4_cloneString_char(&tmp, pSS->getValue(AP_STRING_ID_DLG_Para_PreviewSampleFallback));
+		std::string s;
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewSampleFallback, s);
+		UT_UCS4String ucs4str(s.c_str());
+		UT_UCS4_cloneString(&tmp, ucs4str.ucs4_str());
 	}
 
 	m_paragraphPreview = new AP_Preview_Paragraph(gc, tmp, this, pfont);
