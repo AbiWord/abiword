@@ -292,6 +292,19 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 						 static_cast<UT_uint32>(allocation.height));	
 	
 	m_pFormatTablePreview->draw();
+	// Set init Value
+        UT_Dimension dim = DIM_PT;
+        setCurCellProps();
+        initTableWidthStr();
+        initTableHeightStr();
+        float value = getTableWidth();
+        const gchar *szValue= UT_formatDimensionString (dim, value);
+        gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
+
+        value = getTableHeight();
+        szValue= UT_formatDimensionString (dim, value);
+        gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
+
 	
 	startUpdater();
 }
@@ -491,28 +504,6 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
     localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableWidth")), pSS, AP_STRING_ID_DLG_FormatTable_Width);
     m_wWidth = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableWidth"));
     m_wHeight = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableHeight")); 
-    // Set init Value
-    UT_Dimension dim = DIM_IN;
-    setCurCellProps();
-    initTableWidthStr();
-    initTableHeightStr();
-    float value = getTableWidth();
-    const gchar *szValue= UT_formatDimensionString (dim, value);
-    /* todo: Get Table handle
-    FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-    if (!pView)
-        return;
-    fl_FrameLayout * pFL = pView->getFrameLayout();
-    setHeight(pFL->getTableHeight());
-    setWidth(pFL->getTableWidth());
-    */
-    gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
-
-    value = getTableHeight();
-    szValue= UT_formatDimensionString (dim, value);
-    gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
-   
-	
 
 //	add the buttons for background image to the dialog.
 
@@ -568,7 +559,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 	m_wApplyButton = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
-	
+
 	g_object_unref(G_OBJECT(builder));
 
 	return window;
