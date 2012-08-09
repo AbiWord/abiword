@@ -783,11 +783,10 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_box_pack_start (GTK_BOX (dialog_vbox1), OverallVbox, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (OverallVbox), 5);
 
-	comboTable = gtk_table_new (4,2, TRUE);
+	comboTable = gtk_table_new (6,2, FALSE);
 	gtk_widget_show (comboTable);
-	gtk_box_pack_start (GTK_BOX (OverallVbox), comboTable, TRUE, TRUE, 2);
+	gtk_box_pack_start (GTK_BOX (OverallVbox), comboTable, FALSE, FALSE, 2);
 	gtk_container_set_border_width (GTK_CONTAINER (comboTable), 2);
-	gtk_table_set_row_spacings (GTK_TABLE (comboTable), 6);
 	gtk_table_set_col_spacings (GTK_TABLE (comboTable), 2);
 
 	UT_UTF8String s;
@@ -810,11 +809,20 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_misc_set_alignment (GTK_MISC (styleTypeLabel), 0, 0.5);
 	gtk_label_set_justify (GTK_LABEL (styleTypeLabel), GTK_JUSTIFY_LEFT);
 	gtk_misc_set_padding (GTK_MISC (styleTypeLabel), 2, 2);
+	
+	GtkWidget *spacer = gtk_label_new(" ");
+	gtk_widget_show(spacer);
+	gtk_table_attach (GTK_TABLE (comboTable), spacer, 0, 2, 2, 3,
+					  (GtkAttachOptions) (GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
+	gtk_table_attach (GTK_TABLE (comboTable), spacer, 0, 2, 5, 6,
+					  (GtkAttachOptions) (GTK_FILL),
+					  (GtkAttachOptions) (0), 0, 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyBasedOn,s);
 	basedOnLabel = gtk_label_new (s.utf8_str() );
 	gtk_widget_show (basedOnLabel);
-	gtk_table_attach (GTK_TABLE (comboTable), basedOnLabel, 0, 1, 2, 3,
+	gtk_table_attach (GTK_TABLE (comboTable), basedOnLabel, 0, 1, 3, 4,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (basedOnLabel), 0, 0.5);
@@ -824,24 +832,24 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFollowing,s);
 	followingLabel = gtk_label_new (s.utf8_str());
 	gtk_widget_show (followingLabel);
-	gtk_table_attach (GTK_TABLE (comboTable), followingLabel, 1, 2, 2, 3,
+	gtk_table_attach (GTK_TABLE (comboTable), followingLabel, 1, 2, 3, 4,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (followingLabel), 0, 0.5);
-	gtk_misc_set_padding (GTK_MISC (followingLabel), 2, 3);
+	gtk_misc_set_padding (GTK_MISC (followingLabel), 2, 2);
 
 	styleNameEntry = gtk_entry_new ();
 	gtk_widget_show (styleNameEntry);
 	gtk_table_attach (GTK_TABLE (comboTable), styleNameEntry, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+					  (GtkAttachOptions) (0), 0, 4);
 	gtk_widget_set_size_request (styleNameEntry, 158, -1);
 
 	basedOnCombo = gtk_combo_box_text_new_with_entry ();
 	gtk_widget_show (basedOnCombo);
-	gtk_table_attach (GTK_TABLE (comboTable), basedOnCombo, 0, 1, 3, 4,
+	gtk_table_attach (GTK_TABLE (comboTable), basedOnCombo, 0, 1, 4, 5,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+					  (GtkAttachOptions) (0), 0, 4);
 		
 	basedOnEntry = gtk_bin_get_child(GTK_BIN(basedOnCombo));
 	gtk_widget_show (basedOnEntry);
@@ -849,9 +857,9 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	followingCombo = gtk_combo_box_text_new_with_entry ();
 	gtk_widget_show (followingCombo);
-	gtk_table_attach (GTK_TABLE (comboTable), followingCombo, 1, 2, 3, 4,
+	gtk_table_attach (GTK_TABLE (comboTable), followingCombo, 1, 2, 4, 5,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+					  (GtkAttachOptions) (0), 0, 4);
 
 	followingEntry = gtk_bin_get_child(GTK_BIN(followingCombo));
 	gtk_widget_show (followingEntry);
@@ -865,7 +873,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 		gtk_widget_show (styleTypeCombo);
 		gtk_table_attach (GTK_TABLE (comboTable), styleTypeCombo, 1, 2, 1, 2,
 						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						  (GtkAttachOptions) (0), 0, 0);
+						  (GtkAttachOptions) (0), 0, 4);
 
 		styleTypeEntry = gtk_bin_get_child(GTK_BIN(styleTypeCombo));
 		gtk_widget_show (styleTypeEntry);
@@ -877,7 +885,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 		gtk_widget_show (styleTypeEntry);
 		gtk_table_attach (GTK_TABLE (comboTable), styleTypeEntry, 1, 2, 1, 2,
 						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						  (GtkAttachOptions) (0), 0, 0);
+						  (GtkAttachOptions) (0), 0, 4);
 		gtk_widget_set_size_request (styleTypeEntry, 158, -1);
 	}
 
@@ -890,7 +898,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_frame_set_label_widget(GTK_FRAME(previewFrame), lbPrevFrame);
 	gtk_frame_set_shadow_type(GTK_FRAME(previewFrame), GTK_SHADOW_NONE);
 	gtk_widget_show (previewFrame);
-	gtk_box_pack_start (GTK_BOX (OverallVbox), previewFrame, TRUE, TRUE, 2);
+	gtk_box_pack_start (GTK_BOX (OverallVbox), previewFrame, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (previewFrame), 3);
 
 	GtkWidget *wDrawFrame = gtk_frame_new(NULL);
@@ -917,14 +925,11 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_container_set_border_width (GTK_CONTAINER (descriptionFrame), 5);
 
 	DescriptionText = gtk_label_new (NULL);
+	gtk_misc_set_padding(GTK_MISC(DescriptionText), 0, 6);
 	gtk_widget_show (DescriptionText);
 	gtk_container_add (GTK_CONTAINER (descriptionFrame), DescriptionText);
-	gtk_misc_set_alignment (GTK_MISC (DescriptionText), 0.1, 0.5);
-	gtk_label_set_justify (GTK_LABEL (DescriptionText), GTK_JUSTIFY_LEFT);
 	gtk_label_set_line_wrap (GTK_LABEL (DescriptionText), TRUE);
-	GtkRequisition requisition;
-	gtk_widget_get_preferred_size(OverallVbox, &requisition, NULL);
-	gtk_widget_set_size_request(DescriptionText, requisition.width, -1);
+	gtk_widget_set_size_request(DescriptionText, 438, -1);
 //
 // Code to choose properties to be removed from the current style.
 //
