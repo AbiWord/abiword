@@ -322,6 +322,7 @@ For insert Table widget
 dcl(TB_InsertNewTable,                   "Insert New Table")
 dcl(TB_Rows_x_Cols_Table,                "Table")
 dcl(TB_ClearBackground,"Clear Background")
+dcl(TB_ClearForeground,"Clear Foreground")
 
 /*
 	  Language names, arranged alphabetically.

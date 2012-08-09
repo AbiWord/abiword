@@ -1099,12 +1099,16 @@ bool EV_UnixToolbar::synthesize(void)
 				UT_ASSERT (g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon") != 0);
 
 			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
+					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+                    std::string sClear;
+					pSS->getValueUTF8(XAP_STRING_ID_TB_ClearForeground,sClear);
+
 					action_name = "dlgColorPickerFore";
 					stock_id = ABIWORD_COLOR_FORE;
 					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_FORE, 
 													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
 					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
-					combo = go_combo_color_new (pixbuf, pLabel->getToolbarLabel(), 0, cg);
+					combo = go_combo_color_new (pixbuf, sClear.c_str(), 0, cg);
 
 				    wd->m_widget = combo;
 				    g_signal_connect (G_OBJECT (combo), "color-changed",
