@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
-"PO-Revision-Date: 2012-05-28 05:58+0200\n"
+"POT-Creation-Date: 2012-07-30 21:11-0400\n"
+"PO-Revision-Date: 2012-07-31 20:12+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
 "Language: zh_CN\n"
@@ -1381,6 +1381,7 @@ msgstr "最小行高"
 msgid "Attach to Previous List"
 msgstr "连结至上一个列表"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1455,8 +1456,8 @@ msgstr "自动合并"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "可用的字段"
+msgid "Available Fields:"
+msgstr "可用字段："
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -1619,6 +1620,11 @@ msgstr "项目符号"
 msgid "Bullets and &Numbering"
 msgstr "项目符号及编号(&N)"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "项目符号及编号"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1663,6 +1669,11 @@ msgstr "不能修改内定的样式"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "不能开始打印任务"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "类别"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2056,7 +2067,7 @@ msgstr "继续前一个修订 (number %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
+msgid "Contributor(s)"
 msgstr "贡献者"
 
 #. DLG_MetaData_CoAuthor_LBL
@@ -2248,17 +2259,12 @@ msgstr "对现有的语义项创建新的引用"
 msgid "Create new Semantic Item"
 msgstr "创建新的语义项"
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "文档工具"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "剪切(&T)"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "当前日期"
@@ -2403,11 +2409,6 @@ msgstr "小数点制表符"
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
 msgstr "减少缩进"
-
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "预设日期 (不含时间)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -3375,8 +3376,8 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"页眉和页脚只能在打印视图模式中创建和编辑。\n"
-"要进入该模式，从“查看”菜单中选择“打印布局”。\n"
+"页眉和页脚只能在打印视图模式创建和编辑。\n"
+"要进入该模式，请从菜单中选择“查看”->“打印布局”。\n"
 "你要立即进入打印布局模式吗?"
 
 #. DLG_Stylist_HeadingStyles
@@ -3550,8 +3551,8 @@ msgstr "最初的脚注值:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "内部(单)引号风格"
+msgid "Inner (single) quote style:"
+msgstr "内部(单)引号风格："
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3938,7 +3939,6 @@ msgstr "标签定义"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "语言"
@@ -3947,6 +3947,11 @@ msgstr "语言"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "语言设定"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "语言"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4045,11 +4050,6 @@ msgstr "分级:"
 msgid "Li&ne spacing:"
 msgstr "行距(&N):"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "行"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4075,6 +4075,11 @@ msgstr "选区内加行底线 (切换)"
 msgid "Line between"
 msgstr "分隔线"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr "行数："
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
@@ -4099,11 +4104,6 @@ msgstr "列表属性"
 #: po/tmp/ap_String_Id.h
 msgid "List Styles"
 msgstr "列表样式"
-
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "列表 "
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
@@ -4185,8 +4185,8 @@ msgstr "边界测试"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "最大栏宽"
+msgid "Max Column size:"
+msgstr "最大列宽："
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4454,7 +4454,6 @@ msgstr "找不到任何脚本"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "无"
@@ -4481,8 +4480,8 @@ msgstr "注释样式"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "栏数"
+msgid "Number of Columns:"
+msgstr "列数："
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4617,8 +4616,8 @@ msgstr "打开 %s 时内存不足"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
-msgstr "外部（双）引号风格"
+msgid "Outer (double) quote style:"
+msgstr "外部（双）引号风格："
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4653,7 +4652,6 @@ msgstr "清理修订(&U)"
 msgid "Pa&ste Unformatted"
 msgstr "无格式粘贴(&S)"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4701,8 +4699,8 @@ msgstr "页数"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "页码参照"
+msgid "Page Reference to Bookmark"
+msgstr "页面引用书签"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4713,6 +4711,11 @@ msgstr "页面设置(&U)"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "页面设置"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr "页数："
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5092,8 +5095,8 @@ msgstr "删除页眉"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "从样式中删除属性"
+msgid "Remove Property from Style:"
+msgstr "从样式中删除属性："
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5518,8 +5521,8 @@ msgstr "选择文本框"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
-msgstr "从列表中选择目标书签。"
+msgid "Select a target bookmark from the list:"
+msgstr "从列表中选择目标书签："
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6031,8 +6034,8 @@ msgstr "源："
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "栏后间距"
+msgid "Space after Column:"
+msgstr "列后的间距："
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6262,13 +6265,13 @@ msgstr "样式名称:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "样式类型"
+msgid "Style Type:"
+msgstr "样式类型："
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "下一段的样式"
+msgid "Style for following paragraph:"
+msgstr "下一段的样式："
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6691,20 +6694,15 @@ msgstr "三角列表"
 msgid "Two"
 msgstr "两栏"
 
-#. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h
-msgid "Type"
-msgstr "类型"
-
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
-msgstr "输入一个RDF链接的名称"
+msgid "Type a name for the RDF link:"
+msgstr "为RDF链接输入一个名称："
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "键入书签名称，或从列表中选择一个。"
+msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr "为书签键入名称，或从列表中选择已有的："
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6863,6 +6861,11 @@ msgstr "警告: 您提供的书签 [%s] 并不存在。"
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "网页查看模式"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr "周日 月 日，年"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7024,17 +7027,29 @@ msgstr "月／日／年"
 msgid "tOGGLE cASE"
 msgstr "切换大小写"
 
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "无"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "无"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
-msgstr "标题"
+msgstr "主题"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
-msgstr "标题"
+msgstr "主题"
 
 #.
 #. * Translatable strings file generated by extract-ui.
@@ -7161,6 +7176,11 @@ msgstr "AbiWord: 打印预览"
 #, c-format
 msgid "About %s"
 msgstr "关于 %s"
+
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr "阿乔利语"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7312,6 +7332,11 @@ msgstr "波罗的海区域语文, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "波罗的海区域语文, Windows 代码页 1257"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr "班巴拉语"
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7408,6 +7433,11 @@ msgstr "改变键盘映射时改变语言"
 msgid "Chapter Heading"
 msgstr "章标题"
 
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr "奇加语"
+
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
 msgid "Chinese (Hong Kong)"
@@ -7485,8 +7515,8 @@ msgstr "美工图案"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "无法加载美工图案"
+msgid "Clip Art could not be loaded."
+msgstr "无法载入美工图案。"
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7546,7 +7576,7 @@ msgstr "目录标题"
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h
 msgid "Copies: "
-msgstr "份数:  "
+msgstr "份数: "
 
 #. LANG_COP_EG
 #: po/tmp/xap_String_Id.h
@@ -7888,7 +7918,7 @@ msgstr "弗里斯兰文"
 #. DLG_UP_From
 #: po/tmp/xap_String_Id.h
 msgid "From: "
-msgstr "从:  "
+msgstr "从: "
 
 #. LANG_FF
 #: po/tmp/xap_String_Id.h
@@ -7899,6 +7929,11 @@ msgstr "富拉语"
 #: po/tmp/xap_String_Id.h
 msgid "Galician"
 msgstr "加利西亚"
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr "干达语"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8023,7 +8058,7 @@ msgstr "高:"
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h
 msgid "Height: "
-msgstr "高:  "
+msgstr "高: "
 
 #. DLG_UFS_HiddenCheck
 #: po/tmp/xap_String_Id.h
@@ -8288,8 +8323,13 @@ msgstr "立陶宛文"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "正在载入美工图案"
+msgid "Loading Clip Art..."
+msgstr "正在载入美工图案..."
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr "逻辑语"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8305,6 +8345,11 @@ msgstr "马其顿语"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "设为该文件的默认语言"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr "马尔加什语"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8524,12 +8569,12 @@ msgstr "打印文件格式(&t)："
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h
 msgid "Print in: "
-msgstr "打印方式:  "
+msgstr "打印方式: "
 
 #. DLG_UP_PrintTo
 #: po/tmp/xap_String_Id.h
 msgid "Print to: "
-msgstr "打印至:  "
+msgstr "打印至: "
 
 #. DLG_UP_Printer
 #: po/tmp/xap_String_Id.h
@@ -8539,7 +8584,7 @@ msgstr "打印机"
 #. DLG_UP_PrinterCommand
 #: po/tmp/xap_String_Id.h
 msgid "Printer command: "
-msgstr "打印机指令:  "
+msgstr "打印机指令: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
@@ -8554,7 +8599,12 @@ msgstr "旁遮普语（巴基斯坦）"
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
-msgstr "盖丘亚语"
+msgstr "克丘亚语"
+
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr "克丘亚语（库斯科）"
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
@@ -8722,6 +8772,11 @@ msgstr "斯洛文尼亚语"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "小写"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr "桑海语"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9113,6 +9168,11 @@ msgstr "你应该在继续之前把修改保存到文件 %s，现在保存吗？
 msgid "Zoom to"
 msgstr "缩放至"
 
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr "祖鲁语"
+
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
 msgid "_No"
@@ -9141,7 +9201,7 @@ msgstr "在文件 %d后分割"
 
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h
-#, c-format
+#, c-format, fuzzy
 msgid "diverging after version %d of %s"
 msgstr "在%s的%d版本后分割"
 
@@ -9179,6 +9239,30 @@ msgstr "同"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "无关的"
+
+#~ msgid "Contributor"
+#~ msgstr "贡献者"
+
+#~ msgid "Creator"
+#~ msgstr "文档工具"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "预设日期 (不含时间)"
+
+#~ msgid "Line"
+#~ msgstr "行"
+
+#~ msgid "Lists for "
+#~ msgstr "列表 "
+
+#~ msgid "Page Reference"
+#~ msgstr "页码参照"
+
+#~ msgid "Type"
+#~ msgstr "类型"
+
+#~ msgid "Bambara"
+#~ msgstr "班巴拉语"
 
 #~ msgid "Amharic (Ethiopia)"
 #~ msgstr "阿姆哈拉语 (埃塞俄比亚)"
