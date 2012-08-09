@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
-"PO-Revision-Date: 2012-05-28 05:57+0200\n"
+"POT-Creation-Date: 2012-07-30 21:11-0400\n"
+"PO-Revision-Date: 2012-07-31 20:21+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
 "Language: sl\n"
@@ -1386,6 +1386,7 @@ msgstr "Vsaj"
 msgid "Attach to Previous List"
 msgstr "Pripni na prejšnji seznam"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1460,8 +1461,8 @@ msgstr "Samodejno spajanje"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Polja, ki so na voljo"
+msgid "Available Fields:"
+msgstr "Polja, ki so na voljo:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -1624,6 +1625,11 @@ msgstr "Oznake"
 msgid "Bullets and &Numbering"
 msgstr "O&značevanje in oštevilčevanje"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "Označevanje in oštevilčevanje"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1668,6 +1674,11 @@ msgstr "Vgrajenega sloga ni možno spremeniti"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Tiskalniškega posla ni mogoče zagnati"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "Kategorija"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2065,8 +2076,8 @@ msgstr "Nadaljuj prejšnjo revizijo (številka %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Avtor prispevka"
+msgid "Contributor(s)"
+msgstr "Avtor(ji) prispevkov"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2257,17 +2268,12 @@ msgstr "Ustvari nov sklic na obstoječi semantični element"
 msgid "Create new Semantic Item"
 msgstr "Ustvari nov semantični element"
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Avtor"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "&Izreži"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Trenutni datum"
@@ -2412,11 +2418,6 @@ msgstr "Desetiški zamik"
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
 msgstr "Zmanjšaj zamik"
-
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Privzeti datum (brez časa)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -3562,8 +3563,8 @@ msgstr "Začetna vrednost sprotne opombe:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "Slog notranjega (enojnega) navedka"
+msgid "Inner (single) quote style:"
+msgstr "Slog notranjega (enojnega) navedka:"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3950,7 +3951,6 @@ msgstr "Definicije oznak"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Jezik"
@@ -3959,6 +3959,11 @@ msgstr "Jezik"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Nastavitve jezika"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "Jezik(i)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4057,11 +4062,6 @@ msgstr "Raven:"
 msgid "Li&ne spacing:"
 msgstr "Razmik med &vrsticami:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Vrstico"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4087,6 +4087,11 @@ msgstr "Črta pod izbiro (preklopi)"
 msgid "Line between"
 msgstr "Vmesna črta"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr "Vrstica:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
@@ -4111,11 +4116,6 @@ msgstr "Lastnosti seznama"
 #: po/tmp/ap_String_Id.h
 msgid "List Styles"
 msgstr "Slogi seznama"
-
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Seznami za "
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
@@ -4197,8 +4197,8 @@ msgstr "Martinov preizkus"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Največja velikost stolpca"
+msgid "Max Column size:"
+msgstr "Največja velikost stolpca:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4466,7 +4466,6 @@ msgstr "Nobena skripta ni bila najdena"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Brez"
@@ -4493,8 +4492,8 @@ msgstr "Slog opomb"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Število stolpcev"
+msgid "Number of Columns:"
+msgstr "Število stolpcev:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4629,8 +4628,8 @@ msgstr "Ob poskusu odpiranja %s je zmanjkalo pomnilnika"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
-msgstr "Slog zunanjega (dvojnega) navedka"
+msgid "Outer (double) quote style:"
+msgstr "Slog zunanjega (dvojnega) navedka:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4665,7 +4664,6 @@ msgstr "Počisti &revizije"
 msgid "Pa&ste Unformatted"
 msgstr "Pri&lepi neoblikovano"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4713,8 +4711,8 @@ msgstr "Številke strani"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Sklic strani"
+msgid "Page Reference to Bookmark"
+msgstr "Sklic strani na zaznamek"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4725,6 +4723,11 @@ msgstr "Nastav&itve strani"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Nastavitve strani"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr "Stran:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5106,8 +5109,8 @@ msgstr "Odstrani glavo"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "Slogu odstrani lastnost"
+msgid "Remove Property from Style:"
+msgstr "Slogu odstrani lastnost:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5532,8 +5535,8 @@ msgstr "Izberi okvir z besedilom"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
-msgstr "Izberi ciljni zaznamek iz sezama."
+msgid "Select a target bookmark from the list:"
+msgstr "Izberite ciljni zaznamek s sezama:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6050,8 +6053,8 @@ msgstr "Izvor:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "Prostor za stolpcem"
+msgid "Space after Column:"
+msgstr "Prostor za stolpcem:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6281,13 +6284,13 @@ msgstr "Ime sloga:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Vrsta sloga"
+msgid "Style Type:"
+msgstr "Vrsta sloga:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Slog sledečega odstavka"
+msgid "Style for following paragraph:"
+msgstr "Slog sledečega odstavka:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6724,20 +6727,15 @@ msgstr "Seznam s trikotniki"
 msgid "Two"
 msgstr "Dva"
 
-#. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h
-msgid "Type"
-msgstr "Vrsta"
-
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
-msgstr "Vnesite ime za povezavo RDF"
+msgid "Type a name for the RDF link:"
+msgstr "Vnesite ime za povezavo RDF:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Vpišite ime zaznamka ali izberite obstoječega iz seznama."
+msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr "Vpišite ime zaznamka ali izberite obstoječega iz seznama:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6896,6 +6894,11 @@ msgstr "Opozorilo: zaznamek, ki ste ga navedli [%s] ne obstaja."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Spletna postavitev"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr "Dan v tednu mesec dan, leto"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7059,6 +7062,18 @@ msgstr "mm.dd.ll"
 msgid "tOGGLE cASE"
 msgstr "pREKLOPI vELIKE čRKE"
 
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Brez"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Brez"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_RDF_Query_Column_Subject"
@@ -7200,6 +7215,11 @@ msgstr "AbiWord: Predogled tiskanja"
 #, c-format
 msgid "About %s"
 msgstr "O programu %s"
+
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr "akolski"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7351,6 +7371,11 @@ msgstr "baltski, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "baltski, nabor znakov Windows-1257"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr "bamanankanski"
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7447,6 +7472,11 @@ msgstr "Ob spremembi tipkovnice spremeni tudi jezik"
 msgid "Chapter Heading"
 msgstr "Glava poglavja"
 
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr "čigaški"
+
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
 msgid "Chinese (Hong Kong)"
@@ -7524,8 +7554,8 @@ msgstr "Izrezek"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "Izrezka ni mogoče naložiti"
+msgid "Clip Art could not be loaded."
+msgstr "Izrezka ni mogoče naložiti."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7939,6 +7969,11 @@ msgstr "fulski"
 msgid "Galician"
 msgstr "galicijski"
 
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr "gandajski"
+
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
 msgid "Georgian"
@@ -8326,8 +8361,13 @@ msgstr "litavski"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "Nalaganje izrezka"
+msgid "Loading Clip Art..."
+msgstr "Nalaganje izrezka ..."
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr "lojbanski"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8343,6 +8383,11 @@ msgstr "makedonski"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "Naredi privzeto za dokument"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr "malagajski"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8594,6 +8639,11 @@ msgstr "pundžabski (Pakistan)"
 msgid "Quechua"
 msgstr "kečuanski"
 
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr "kečuanski (Cusco)"
+
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
@@ -8762,6 +8812,11 @@ msgstr "slovenski"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "Majhne začetnice"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr "songajski"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9158,6 +9213,11 @@ msgstr ""
 msgid "Zoom to"
 msgstr "Povečaj na"
 
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr "zulujski"
+
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
 msgid "_No"
@@ -9224,6 +9284,30 @@ msgstr "soroden"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "nepovezan"
+
+#~ msgid "Contributor"
+#~ msgstr "Avtor prispevka"
+
+#~ msgid "Creator"
+#~ msgstr "Avtor"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Privzeti datum (brez časa)"
+
+#~ msgid "Line"
+#~ msgstr "Vrstico"
+
+#~ msgid "Lists for "
+#~ msgstr "Seznami za "
+
+#~ msgid "Page Reference"
+#~ msgstr "Sklic strani"
+
+#~ msgid "Type"
+#~ msgstr "Vrsta"
+
+#~ msgid "Bambara"
+#~ msgstr "bambarski"
 
 #~ msgid "Amharic (Ethiopia)"
 #~ msgstr "amharski (Etiopija)"
