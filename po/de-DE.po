@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-08 21:36+0200\n"
-"PO-Revision-Date: 2012-08-08 21:36+0200\n"
+"POT-Creation-Date: 2012-08-09 18:05+0200\n"
+"PO-Revision-Date: 2012-08-09 18:05+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -477,7 +477,7 @@ msgstr "&Gehe zu"
 #. DLG_FormatTOC_HasHeading
 #: po/tmp/ap_String_Id.h
 msgid "&Has Heading"
-msgstr "&Mit Überschrift"
+msgstr "Mit &Titel"
 
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h
@@ -698,7 +698,7 @@ msgstr "&Nummer:"
 #. DLG_FormatTOC_NumberingType
 #: po/tmp/ap_String_Id.h
 msgid "&Numbering type:"
-msgstr "&Zifferntyp:"
+msgstr "N&ummerierung:"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h
@@ -1464,8 +1464,8 @@ msgstr "Verfügbare Formate:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "Verfügbare Stilvorlagen"
+msgid "Available Styles:"
+msgstr "Verfügbare Stilvorlagen:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1743,7 +1743,7 @@ msgstr "Markierungsfarbe ändern"
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h
 msgid "Change Style"
-msgstr "Vorlage ändern"
+msgstr "Vorlage wechseln"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h
@@ -2245,6 +2245,11 @@ msgstr "Ein neues Dokument aus einer Vorlage anlegen"
 msgid "Create an empty document"
 msgstr "Ein leeres Dokument anlegen"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+msgid "Create and Modify Styles"
+msgstr "Stilvorlagen bearbeiten"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2450,13 +2455,19 @@ msgstr "Textrichtung von rechts nach links als Standard festlegen"
 #. DLG_FormatTOC_LevelDefs
 #: po/tmp/ap_String_Id.h
 msgid "Define Main Properties"
-msgstr "Allgemeine Einstellungen"
+msgstr "Einstellungen"
 
 #. MENU_STATUSLINE_FMT_STYLE
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Stilvorlage für die markierte Auswahl bestimmen"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr "Definition"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2560,8 +2571,6 @@ msgstr "Diese Spalte aus der Tabelle entfernen"
 msgid "Delete this row from its table"
 msgstr "Diese Zeile aus der Tabelle entfernen"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2574,6 +2583,11 @@ msgstr "Beschreibung"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Beschreibung:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr "Details"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2664,7 +2678,7 @@ msgstr "Programminformation, Version und Copyright anzeigen"
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h
 msgid "Display style:"
-msgstr "Zeichenformat:"
+msgstr "Stil des Eintrags:"
 
 #. DLG_Options_Prompt_IgnoreResetAll
 #: po/tmp/ap_String_Id.h
@@ -3043,7 +3057,7 @@ msgstr "Dateiname"
 #. DLG_FormatTOC_FillStyle
 #: po/tmp/ap_String_Id.h
 msgid "Fill style:"
-msgstr "Zeilenformat:"
+msgstr "Stil für Eintrag:"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h
@@ -3122,9 +3136,7 @@ msgstr "Unterhalb Ebene 4 ausblenden"
 msgid ""
 "Following Paragraph Following Paragraph Following Paragraph Following "
 "Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr ""
-"Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz Nächster "
-"Absatz"
+msgstr "Nächster Absatz Nächster Absatz Nächster Absatz Nächster Absatz"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -3365,7 +3377,7 @@ msgstr "Mit &Nummerierung"
 #. DLG_FormatTOC_HeadingText
 #: po/tmp/ap_String_Id.h
 msgid "H&eading text:"
-msgstr "Ü&berschrift:"
+msgstr "T&itel:"
 
 #. DLG_Lists_Hand_List
 #. STYLE_HANDLIST
@@ -3416,7 +3428,7 @@ msgstr "Überschriften"
 #. DLG_FormatTOC_HeadingStyle
 #: po/tmp/ap_String_Id.h
 msgid "Heading style:"
-msgstr "Stilvorlage:"
+msgstr "Stil des Titels:"
 
 #. DLG_Lists_Heart_List
 #. STYLE_HEARTLIST
@@ -3538,7 +3550,7 @@ msgstr "Vorlagendefinitionen aus einem Dokument importieren"
 #. DLG_Styles_LBL_InUse
 #: po/tmp/ap_String_Id.h
 msgid "In Use"
-msgstr "Aktiv"
+msgstr "Verwendet"
 
 #. WORD_PassInvalid
 #: po/tmp/ap_String_Id.h
@@ -3963,7 +3975,7 @@ msgstr "Label-Abstand:"
 #. DLG_FormatTOC_DetailsTop
 #: po/tmp/ap_String_Id.h
 msgid "Label Definitions"
-msgstr "Aufzählungszeichen"
+msgstr "Nummerierungen"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
@@ -3990,11 +4002,6 @@ msgstr "Sprache(n):"
 #: po/tmp/ap_String_Id.h
 msgid "Layout"
 msgstr "Layout"
-
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Layout-Details"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
@@ -4112,11 +4119,6 @@ msgstr "Zeile:"
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "Zeilen:"
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Liste"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4325,8 +4327,8 @@ msgstr "Sonstige"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
-msgstr "Stilvorlagen ändern"
+msgid "Modify Style"
+msgstr "Stilvorlage ändern"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h
@@ -4928,8 +4930,7 @@ msgstr "Vorschau auf das Dokument vor dem Druck"
 msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
 "Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr ""
-"Voriger Absatz Voriger Absatz Voriger Absatz Voriger Absatz Voriger Absatz"
+msgstr "Voriger Absatz Voriger Absatz Voriger Absatz Voriger Absatz"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
@@ -6311,7 +6312,7 @@ msgstr "Name der Vorlage:"
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
 msgid "Style Type:"
-msgstr "Vorlagentyp:"
+msgstr "Typ der Vorlage:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
@@ -6334,7 +6335,6 @@ msgstr "Stil:"
 # MS Word = Formatvorlagen
 # QuarkXPress, InDesign... = Stilvorlagen
 # (...the latter being a good compromise)
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6763,6 +6763,11 @@ msgstr "Dreiecke"
 msgid "Two"
 msgstr "Zwei"
 
+#. DLG_Styles_List
+#: po/tmp/ap_String_Id.h
+msgid "Type"
+msgstr "Art"
+
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link:"
@@ -6946,7 +6951,7 @@ msgstr "Wochentag Monat Tag, Jahr"
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
 msgid "What Hath God Wrought"
-msgstr "Im Anfang war das Wort"
+msgstr "Im Anfang war das Wort."
 
 #. DLG_Options_Label_WithExtension
 #: po/tmp/ap_String_Id.h
