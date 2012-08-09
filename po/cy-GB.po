@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
-"PO-Revision-Date: 2012-05-28 05:57+0200\n"
+"POT-Creation-Date: 2012-07-30 21:11-0400\n"
+"PO-Revision-Date: 2012-08-01 01:39+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Cymraeg\n"
 "Language: cy\n"
@@ -426,7 +426,7 @@ msgstr "Golygu hypergyswllt"
 #. DLG_Options_Label_EnableOverwrite
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
-msgstr "&Galluogi toglo'r modd trosysgrifwn"
+msgstr "&Galluogi toglo'r modd trosysgrifo"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -783,7 +783,7 @@ msgstr "&Darlun"
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h
 msgid "&Plugins"
-msgstr "&Ategynnau"
+msgstr "&Ategion"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h
@@ -1406,6 +1406,7 @@ msgstr "O leiaf"
 msgid "Attach to Previous List"
 msgstr "Atodi i'r Rhestr Flaenorol"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1481,8 +1482,8 @@ msgstr "Awto-uno"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Meysydd ar Gael"
+msgid "Available Fields:"
+msgstr "Meysydd ar Gael:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -1645,6 +1646,11 @@ msgstr "Bwledi"
 msgid "Bullets and &Numbering"
 msgstr "&Bwledi a Rhifo"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "Bwledi a Rhifo"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1690,6 +1696,11 @@ msgstr "Methu newid yr arddull fewnol"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Methu cychwyn y gwaith argraffu"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "Categori"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -1941,7 +1952,7 @@ msgid ""
 msgstr ""
 "Dewiswch eich targed ar yr ochr chwith.\n"
 "Os ydych am ddefnyddio'r botwm \"Mynd i\", yna llanwch y Cofnod Rhif gyda'ch "
-"rhif.  Medrwch ddefnyddio + a - i'w newid.\t H.y., os ydych am ysgrifennu "
+"rhif.   Medrwch ddefnyddio + a - i'w newid.\t H.y., os ydych am ysgrifennu "
 "\"+2\" a dewis \"Llinell\", bydd \"Mynd i\" yn mynd â chi 2 linell o dan eich "
 "safle presennol."
 
@@ -2089,8 +2100,8 @@ msgstr "Parhau'r newid blaenorol (rhif %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Cyfrannwr"
+msgid "Contributor(s)"
+msgstr "Cyfranwyr"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2286,17 +2297,12 @@ msgstr "Creu Cyfeirnod newydd i eitem Semanteg gyfredol"
 msgid "Create new Semantic Item"
 msgstr "Creu eitem Semanteg newydd"
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Awdur"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "&Torri"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Dyddiad Heddiw"
@@ -2441,11 +2447,6 @@ msgstr "Tab Degol"
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
 msgstr "Cynyddu'r mewnoliad"
-
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Dyddiad rhagosodedig (heb amser)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -3603,8 +3604,8 @@ msgstr "Gwerth Troednodyn cyntaf:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "Arddull dyfynod mewnol (sengl)"
+msgid "Inner (single) quote style:"
+msgstr "Arddull dyfynod mewnol (sengl):"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3993,7 +3994,6 @@ msgstr "Diffiniadau Label"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Iaith"
@@ -4002,6 +4002,11 @@ msgstr "Iaith"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Gosodiadau iaith"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "Iaith (Ieithoedd)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4100,11 +4105,6 @@ msgstr "Lefel:"
 msgid "Li&ne spacing:"
 msgstr "&Bylchiad llinell:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Linell"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4130,6 +4130,11 @@ msgstr "Llinell o dan y dewis (newid)"
 msgid "Line between"
 msgstr "Llinell rhwng"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr "Llinell:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
@@ -4154,11 +4159,6 @@ msgstr "Rhestri Priodoleddau"
 #: po/tmp/ap_String_Id.h
 msgid "List Styles"
 msgstr "Rhestri Arddulliau"
-
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Rhestrau ar gyfer "
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
@@ -4240,8 +4240,8 @@ msgstr "Prawf Martin"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Maint mwyaf Colofn"
+msgid "Max Column size:"
+msgstr "Maint Mwyaf Colofn:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4392,7 +4392,7 @@ msgstr "Enw"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, (Homepage), Phone"
-msgstr "Enw. (Tudalen Cartref), Ffôn"
+msgstr "Enw, (Tudalen Cartref), Ffôn"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
@@ -4510,7 +4510,6 @@ msgstr "Heb ganfod sgriptiau"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Dim"
@@ -4537,8 +4536,8 @@ msgstr "Arddulliau Nodyn"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Nifer y Colofnau"
+msgid "Number of Columns:"
+msgstr "Nifer y Colofnau:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4676,8 +4675,8 @@ msgstr "Dim cof ar ôl wrth geisio agor %s"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
-msgstr "Arddull dyfynnod allanol (dwbl)"
+msgid "Outer (double) quote style:"
+msgstr "Arddull dyfynnod allanol (dwbl):"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4695,7 +4694,7 @@ msgstr "Gosod llinell uwch ben y dewis (newid)"
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h
 msgid "Overwrite"
-msgstr "Trosysgrifennu"
+msgstr "Trosysgrifo"
 
 #. MENU_LABEL_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h
@@ -4712,7 +4711,6 @@ msgstr "Dileu adolygiau"
 msgid "Pa&ste Unformatted"
 msgstr "G&ludo Difformat"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4763,8 +4761,8 @@ msgstr "Rhifau Tudalen"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Cyfeirnod Tudalen"
+msgid "Page Reference to Bookmark"
+msgstr "Cyfeirnod Tudalen i Nod Tudalen"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4775,6 +4773,11 @@ msgstr "Gosodiad T&udalen"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Gosodiad Tudalen"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr "Tudalen:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5157,8 +5160,8 @@ msgstr "Tynnu Pennyn"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "Tynnu Priodwedd o Arddull"
+msgid "Remove Property from Style:"
+msgstr "Tynnu Priodwedd o Arddull:"
 
 # DLG_FormatTOC_HasHeading
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
@@ -5462,7 +5465,7 @@ msgstr "Cadw Fel"
 #. MENU_STATUSLINE_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h
 msgid "Save a copy of the image on the clipboard"
-msgstr "Cadw copi o'r ddelwedd i'r clipfwrdd"
+msgstr "Cadw copi o'r ddelwedd ar y clipfwrdd"
 
 #. MSG_ConfirmSave
 #: po/tmp/ap_String_Id.h
@@ -5591,8 +5594,8 @@ msgstr "Dewis Bwlch Testun"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
-msgstr "Dewis nod tudalen penodol o'r rhestr."
+msgid "Select a target bookmark from the list:"
+msgstr "Dewis nod tudalen penodol o'r rhestr:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6111,8 +6114,8 @@ msgstr "Ffynhonnell:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "Bwlch ar ôl Colofn"
+msgid "Space after Column:"
+msgstr "Bwlch ar ôl Colofn:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6345,13 +6348,13 @@ msgstr "Enw'r Arddull:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Math o Arddull"
+msgid "Style Type:"
+msgstr "Math o Arddull:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Arddull ar gyfer y paragraff sy'n dilyn"
+msgid "Style for following paragraph:"
+msgstr "Arddull ar gyfer y paragraff sy'n dilyn:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6790,20 +6793,15 @@ msgstr "Rhestr Triongl"
 msgid "Two"
 msgstr "Dau"
 
-#. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h
-msgid "Type"
-msgstr "Math"
-
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
-msgstr "Rhowch enw i'r ddolen RDF"
+msgid "Type a name for the RDF link:"
+msgstr "Rhowch enw i'r ddolen RDF:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Teipiwch enw ar gyfer y nod tudalen, neu dewiswch un o'r rhestr."
+msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr "Teipiwch enw ar gyfer y nod tudalen, neu dewiswch un o'r rhestr:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6964,6 +6962,11 @@ msgstr "Rhybudd: nid yw'r nod tudalen [%s] a roddwyd yn bod."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Gosodiad Gwe"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr "Diwrnod o'r wythnos Mis Diwrnod, Blwyddyn"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7126,6 +7129,18 @@ msgstr "mm/dd/bb"
 msgid "tOGGLE cASE"
 msgstr "nEWID mAINT"
 
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Dim"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Dim"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_RDF_Query_Column_Subject"
@@ -7225,7 +7240,7 @@ msgstr "Nid oes cyfeiriadur yn bodoli yn y llwybr enw hwn."
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h
 msgid "AbiWord Plugin Manager"
-msgstr "Rheolwr Ategynnau Abiword"
+msgstr "Rheolwr Ategion Abiword"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h
@@ -7268,10 +7283,15 @@ msgstr "Abiword: Rhagolwg Argraffu"
 msgid "About %s"
 msgstr "Ynghylch %s"
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr "Acholi"
+
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
-msgstr "Ategynnau Gweithredol"
+msgstr "Ategion Gweithredol"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h
@@ -7419,6 +7439,11 @@ msgstr "Baltig, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltig, Cod Tudalen Windows 1257"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr "Bamanankan"
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7516,6 +7541,11 @@ msgstr "Newid iaith wrth newid bysellfwrdd"
 msgid "Chapter Heading"
 msgstr "Pennawd Pennod"
 
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr "Chiga"
+
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
 msgid "Chinese (Hong Kong)"
@@ -7593,8 +7623,8 @@ msgstr "Clip Gelf"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "Methwyd llwytho'r Clip Gelf"
+msgid "Clip Art could not be loaded."
+msgstr "Methwyd llwytho'r Clip Gelf."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7927,7 +7957,7 @@ msgstr "Ffeil"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Mae'r ffeil yn bodoli eisoes.  Ysgrifennu dros ffeil '%s'?"
+msgstr "Mae'r ffeil yn bodoli eisoes.  Trosysgrifo ffeil '%s'?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h
@@ -8008,6 +8038,11 @@ msgstr "Fulah"
 #: po/tmp/xap_String_Id.h
 msgid "Galician"
 msgstr "Galisieg"
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr "Ganda"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8302,27 +8337,27 @@ msgstr "Eidaleg"
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
 msgid "Japanese"
-msgstr "Siapanëeg"
+msgstr "Japanëeg"
 
 #. ENC_JAPN_EUC
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, EUC-JP"
-msgstr "Siapanëeg, EUC-JP"
+msgstr "Japanëeg, EUC-JP"
 
 #. ENC_JAPN_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, ISO-2022-JP"
-msgstr "Siapanëeg, ISO-2022-JP"
+msgstr "Japanëeg, ISO-2022-JP"
 
 #. ENC_JAPN_SJIS
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, Shift-JIS"
-msgstr "Siapanëeg, Shift-JIS"
+msgstr "Japanëeg, Shift-JIS"
 
 #. ENC_JAPN_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, Windows Code Page 932"
-msgstr "Siapanëeg, Cod Tudalen Windows 932"
+msgstr "Japanëeg, Cod Tudalen Windows 932"
 
 #. LANG_KN_IN
 #: po/tmp/xap_String_Id.h
@@ -8401,8 +8436,13 @@ msgstr "Lithuaneg"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "Llwytho Clip Gelf"
+msgid "Loading Clip Art..."
+msgstr "Llwytho Clip Gelf..."
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr "Lojban"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8418,6 +8458,11 @@ msgstr "Macedoneg"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "Gwneud yn rhagosodedig ar gyfer dogfen"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr "Malagasy"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8584,7 +8629,7 @@ msgstr "Manylion Ategyn"
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
 msgid "Plugin List"
-msgstr "Rhestr Ategynnau"
+msgstr "Rhestr Ategion"
 
 #. LANG_PL_PL
 #: po/tmp/xap_String_Id.h
@@ -8670,6 +8715,11 @@ msgstr "Punjabi (Pacistan)"
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Quechua"
+
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr "Quechua (Cusco)"
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
@@ -8839,6 +8889,11 @@ msgstr "Slofeneg"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "Prif Lythrennau Bach"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr "Songhay"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9137,7 +9192,7 @@ msgstr "Fietnameg"
 #. ENC_VIET_TCVN
 #: po/tmp/xap_String_Id.h
 msgid "Vietnamese, TCVN"
-msgstr "Fietnameg,TCVN"
+msgstr "Fietnameg, TCVN"
 
 #. ENC_VIET_VISCII
 #: po/tmp/xap_String_Id.h
@@ -9235,6 +9290,11 @@ msgstr "Cadw newidiadau i ddogfen %s cyn cau. Cadw?"
 msgid "Zoom to"
 msgstr "Chwyddo i"
 
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr "Zulu"
+
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
 msgid "_No"
@@ -9301,6 +9361,30 @@ msgstr "siblingiaid"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "heb berthynas"
+
+#~ msgid "Contributor"
+#~ msgstr "Cyfrannwr"
+
+#~ msgid "Creator"
+#~ msgstr "Awdur"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Dyddiad rhagosodedig (heb amser)"
+
+#~ msgid "Line"
+#~ msgstr "Linell"
+
+#~ msgid "Lists for "
+#~ msgstr "Rhestrau ar gyfer "
+
+#~ msgid "Page Reference"
+#~ msgstr "Cyfeirnod Tudalen"
+
+#~ msgid "Type"
+#~ msgstr "Math"
+
+#~ msgid "Bambara"
+#~ msgstr "Bambara"
 
 #~ msgid "Amharic (Ethiopia)"
 #~ msgstr "Amhareg (Ethiopia)"
