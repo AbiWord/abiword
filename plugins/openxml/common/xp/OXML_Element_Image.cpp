@@ -100,6 +100,18 @@ UT_Error OXML_Element_Image::serialize(IE_Exp_OpenXML* exporter)
 
 UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 {
+	OXML_Document* doc = OXML_Document::getInstance();
+	if(!doc)
+	{
+		return UT_OK;
+	}
+	OXML_SharedImage sImage = doc->getImageById(getId());
+	if(!sImage)
+	{
+		UT_DEBUGMSG(("SERHAT: Skipping image element in import, since fail occured in import of image data previously\n"));
+		return UT_OK;
+	}
+
 	UT_Error ret = UT_OK;
 	bool bInline = false;
 	const gchar* szValue = NULL;

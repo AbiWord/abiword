@@ -140,6 +140,13 @@ OXML_SharedList OXML_Document::getListById(UT_uint32 id) const
 	return it != m_lists_by_id.end() ? it->second : OXML_SharedList() ;
 }
 
+OXML_SharedImage OXML_Document::getImageById(const std::string & id) const
+{
+	OXML_ImageMap::const_iterator it;
+	it = m_images_by_id.find(id);
+	return it != m_images_by_id.end() ? it->second : OXML_SharedImage() ;
+}
+
 UT_Error OXML_Document::addImage(const OXML_SharedImage & obj)
 {
 	UT_return_val_if_fail(obj, UT_ERROR);
