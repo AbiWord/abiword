@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2011-06-18 03:17+0200\n"
+"POT-Creation-Date: 2012-07-30 21:11-0400\n"
+"PO-Revision-Date: 2012-08-03 07:42+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: SWEDISH <sv@li.org>\n"
 "Language: sv\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.0.1\n"
+"X-Generator: Pootle 2.0.5\n"
 "X-Poedit-Country: SWEDEN\n"
 "X-Poedit-Language: Swedish\n"
 
@@ -52,7 +52,7 @@ msgid ""
 " You cannot use this name. Choose Another \n"
 msgstr ""
 " - Reserverat. \n"
-" Du kan inte använda det här namnet. Välj ett annat.\n"
+" Du kan inte använda det här namnet. Välj ett annat. \n"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h
@@ -69,7 +69,6 @@ msgstr ""
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
 #, no-c-format
-#, fuzzy
 msgid "% of normal size"
 msgstr "% av normal storlek"
 
@@ -231,7 +230,7 @@ msgstr "&Alla tecken"
 #. MENU_LABEL_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h
 msgid "&Annotations"
-msgstr ""
+msgstr "&Anteckningar"
 
 #. DLG_ApplyButton
 #: po/tmp/ap_String_Id.h
@@ -258,11 +257,6 @@ msgstr "&Autopassa tabell"
 msgid "&Automatically save this Scheme"
 msgstr "&Spara inställningarna automatiskt"
 
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "Tillgängliga &format:"
-
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
 msgid "&Before:"
@@ -275,7 +269,6 @@ msgstr "&Fet"
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Borders and Shading"
 msgstr "Kantlinjer och f&yllning"
 
@@ -291,7 +284,6 @@ msgstr "&Brytning"
 
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Cell"
 msgstr "&Cell"
 
@@ -340,7 +332,7 @@ msgstr "S&palter"
 #. MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h
 msgid "&Compare documents"
-msgstr ""
+msgstr "&Jämför dokument"
 
 #. MENU_LABEL_EDIT_COPY
 #: po/tmp/ap_String_Id.h
@@ -365,7 +357,7 @@ msgstr "&Ta bort"
 #. MENU_LABEL_DELETE_ANNOTATION
 #: po/tmp/ap_String_Id.h
 msgid "&Delete annotation"
-msgstr ""
+msgstr "&Ta bort anteckning"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -389,9 +381,8 @@ msgstr "&Dokument"
 
 #. MENU_LABEL_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Document History"
-msgstr "Dokumenthistorik"
+msgstr "&Dokumenthistorik"
 
 #. MENU_LABEL_WINDOW
 #: po/tmp/ap_String_Id.h
@@ -417,7 +408,7 @@ msgstr ""
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
 msgid "&Edit annotation"
-msgstr ""
+msgstr "&Redigera antecking"
 
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -427,12 +418,7 @@ msgstr "&Redigera hyperlänk"
 #. DLG_Options_Label_EnableOverwrite
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
-msgstr ""
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "Använd smarta &citattecken"
+msgstr "&Möjlighet att växla till överskrivningsläge"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -492,9 +478,8 @@ msgstr "Sid&fot:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Format"
+msgstr "&Format"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -513,9 +498,8 @@ msgstr "&Sidhuvud och sidfot"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Header/Footers"
-msgstr "Sidhuvud/sidfot"
+msgstr "Sid&huvud/sidfot"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h
@@ -577,7 +561,7 @@ msgstr "Som &webbsida"
 #. DLG_FormatTOC_InheritLabel
 #: po/tmp/ap_String_Id.h
 msgid "&Inherit label"
-msgstr ""
+msgstr "&Ärv etikett"
 
 #. DLG_InsertButton
 #. MENU_LABEL_INSERT
@@ -600,7 +584,7 @@ msgstr "&Kursiv"
 #. MENU_LABEL_GOTO_ANNOTATION
 #: po/tmp/ap_String_Id.h
 msgid "&Jump to annotation"
-msgstr ""
+msgstr "&Hoppa till anteckning"
 
 #. MENU_LABEL_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -655,7 +639,6 @@ msgstr "&Lås layout"
 
 #. MENU_LABEL_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Mail Merge"
 msgstr "&Mail Merge"
 
@@ -667,7 +650,7 @@ msgstr "&Mail Merge-fält"
 #. MENU_LABEL_TOOLS_REVISIONS_AUTO
 #: po/tmp/ap_String_Id.h
 msgid "&Maintain Full History"
-msgstr ""
+msgstr "&Behåll full historik"
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h
@@ -727,7 +710,7 @@ msgstr "&Nummer:"
 #. DLG_FormatTOC_NumberingType
 #: po/tmp/ap_String_Id.h
 msgid "&Numbering type:"
-msgstr ""
+msgstr "&Typ av numrering:"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h
@@ -762,7 +745,7 @@ msgstr "&Sidbrytning"
 #. DLG_FormatTOC_PageNumbering
 #: po/tmp/ap_String_Id.h
 msgid "&Page numbering:"
-msgstr ""
+msgstr "&Sidnumrering:"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h
@@ -813,6 +796,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "&Avsluta"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -909,7 +897,7 @@ msgstr ""
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h
 msgid "&Show History"
-msgstr ""
+msgstr "&Visa historik"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
@@ -919,11 +907,10 @@ msgstr "S&tatusrad"
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h
 msgid "&Show annotations"
-msgstr ""
+msgstr "&Visa anteckningar"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Special:"
 msgstr "&Special:"
 
@@ -1215,7 +1202,7 @@ msgstr "Visar information om GNOME Office-projektet"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Accept the suggested change"
-msgstr ""
+msgstr "Acceptera föreslagen ändring"
 
 #. TOOLBAR_STATUSLINE_ADD_COLUMN
 #. TOOLBAR_TOOLTIP_ADD_COLUMN
@@ -1309,7 +1296,7 @@ msgstr "Tillåt andra bakgrundsfärger än vit"
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
 msgid "Annotation"
-msgstr ""
+msgstr "Anteckning"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
@@ -1385,6 +1372,9 @@ msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
+"Är du säker på att du inte vill ha full dokumenthistorik? Om du fortsätter "
+"så kommer du inte att kunna gå tilbaka till tidigare versioner av det här "
+"dokumentet."
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1396,11 +1386,11 @@ msgstr "Minst"
 msgid "Attach to Previous List"
 msgstr "Fäst vid föregående lista"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Författare:"
+msgstr "Författare"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
@@ -1429,14 +1419,9 @@ msgstr "Spara automatiskt"
 msgid "Auto replace misspelled words"
 msgstr "Ersätt automatiskt felstavade ord"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Autopassa"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "Autopassa"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1476,13 +1461,13 @@ msgstr ""
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Tillgängliga fält"
+msgid "Available Fields:"
+msgstr "Tillgängliga fält:"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
-msgstr "Tillgängliga format"
+msgid "Available Formats:"
+msgstr "Tillgängliga format:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
@@ -1521,16 +1506,10 @@ msgstr "Fälttabulatorstopp"
 msgid "Based On:"
 msgstr "Baserad på:"
 
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Inställningar för dubbelriktning"
-
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Bo&ttomline"
-msgstr "Undre kantlinje"
+msgstr "&Undre kantlinje"
 
 #. TOOLBAR_LABEL_FMT_BOLD
 #. TOOLBAR_STATUSLINE_FMT_BOLD
@@ -1611,7 +1590,7 @@ msgstr "Lista punkterad med boxar"
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h
 msgid "Build Id."
-msgstr "KompileringsID"
+msgstr "KompileringsID."
 
 #. FIELD_Application_Options
 #: po/tmp/ap_String_Id.h
@@ -1646,6 +1625,11 @@ msgstr "Punktlista"
 msgid "Bullets and &Numbering"
 msgstr "Punkter och &numrering"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "Punkter och numrering"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1659,7 +1643,7 @@ msgstr "&Ändra skiftläge"
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "C&opy hyperlink location"
-msgstr ""
+msgstr "K&opiera hyperlänkadress"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -1690,6 +1674,11 @@ msgstr "En inbyggd formatmall kan inte ändras"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Kunde inte starta utskriften"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "Kategori"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -1759,7 +1748,7 @@ msgstr "Ändra bakgrundsfärg"
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h
 msgid "Change Style"
-msgstr ""
+msgstr "Ändra format"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h
@@ -1795,7 +1784,7 @@ msgstr "Formaterar aktuellt eller markerade stycken"
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
 msgid "Change the format of the table"
-msgstr ""
+msgstr "Ändra tabellens format"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -1816,7 +1805,7 @@ msgstr "Ändra inställningar för dokumentet"
 #. MENU_STATUSLINE_FMT_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Change the properties of the Text Box"
-msgstr ""
+msgstr "Ändra textrutans egenskaper"
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_1
 #. MENU_STATUSLINE_SPELL_SUGGEST_2
@@ -1884,12 +1873,12 @@ msgstr "Kontrollera grammatik automatiskt"
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h
 msgid "Check for &Updates"
-msgstr ""
+msgstr "Sök efter &uppdateringar"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h
 msgid "Check online for newer versions of AbiWord"
-msgstr ""
+msgstr "Gör en kontroll på nätet efter nyare version av AbiWord"
 
 #. DLG_Options_Label_SpellCheckAsType
 #: po/tmp/ap_String_Id.h
@@ -2029,7 +2018,7 @@ msgstr "Kolumner till &höger"
 #. DLG_ListRevisions_Column3Label
 #: po/tmp/ap_String_Id.h
 msgid "Comment"
-msgstr ""
+msgstr "Kommentar"
 
 #. DLG_MarkRevisions_Comment2Label
 #: po/tmp/ap_String_Id.h
@@ -2058,9 +2047,8 @@ msgstr "&Löpande"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact"
-msgstr "Innehåll"
+msgstr "Kontakt"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
@@ -2070,9 +2058,8 @@ msgstr ""
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
 #. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contacts"
-msgstr "Innehåll"
+msgstr "Kontakter"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2087,8 +2074,8 @@ msgstr ""
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Bidragsgivare"
+msgid "Contributor(s)"
+msgstr "Medhjälpare"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2125,7 +2112,7 @@ msgstr "Kopiera"
 #. MENU_STATUSLINE_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h
 msgid "Copy Embedded Object"
-msgstr ""
+msgstr "Kopiera inbäddat objekt"
 
 #. MENU_LABEL_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h
@@ -2145,17 +2132,17 @@ msgstr "Kopiera textruta"
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Copy hyperlink location"
-msgstr ""
+msgstr "Kopiera hyperlänkadress"
 
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Copy the Text Box to the clipboard"
-msgstr ""
+msgstr "Kopiera textrutan till urklipp"
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Copy the Text Box to the clipboard then remove it"
-msgstr ""
+msgstr "Kopiera textrutan till urklipp och ta sedan bort"
 
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h
@@ -2208,9 +2195,8 @@ msgstr ""
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "Sidhänvisning"
+msgstr "Skapa referens"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
@@ -2280,17 +2266,12 @@ msgstr ""
 msgid "Create new Semantic Item"
 msgstr ""
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Skapare"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "&Klipp ut"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Dagens datum"
@@ -2355,7 +2336,7 @@ msgstr "Klipp ut"
 #. MENU_STATUSLINE_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h
 msgid "Cut Embedded Object"
-msgstr ""
+msgstr "Klipp ut inbäddat objekt"
 
 #. MENU_LABEL_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h
@@ -2391,7 +2372,7 @@ msgstr "Lista punkterad med streck"
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
 msgid "Dashed line"
-msgstr ""
+msgstr "Streckad linje"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2421,7 +2402,6 @@ msgstr "Standard&värden"
 
 #. DLG_Tab_Radio_Decimal
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Decimal"
 msgstr "Decimal"
 
@@ -2436,11 +2416,6 @@ msgstr "Decimalanpassat tabulatorstopp"
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
 msgstr "Minska indrag"
-
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Standarddatumformat (utan klockslag)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -2499,7 +2474,7 @@ msgstr "Ta bort kolumn"
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h
 msgid "Delete Embedded Object"
-msgstr ""
+msgstr "Ta bort inbäddat objekt"
 
 #. MENU_LABEL_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h
@@ -2541,7 +2516,7 @@ msgstr "Ta bort textruta"
 #. MENU_STATUSLINE_DELETE_ANNOTATION
 #: po/tmp/ap_String_Id.h
 msgid "Delete annotation"
-msgstr ""
+msgstr "Ta bort anteckning"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h
@@ -2714,7 +2689,7 @@ msgstr "Börja inte om"
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
 msgid "Dotted line"
-msgstr ""
+msgstr "Punktlinje"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2760,7 +2735,7 @@ msgstr ""
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
 msgid "Edit Annotation"
-msgstr ""
+msgstr "Redigera antecking"
 
 #. MENU_LABEL_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h
@@ -2806,7 +2781,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
 msgid "Edit annotation"
-msgstr ""
+msgstr "Redigera antecking"
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
@@ -2857,9 +2832,8 @@ msgstr "Använd Smooth Scrolling"
 
 #. DLG_BorderShading_Use_Shading
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Enable shading"
-msgstr "Dubbelt radavstånd"
+msgstr "Aktivera skuggning"
 
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h
@@ -2878,8 +2852,13 @@ msgstr "Slutnotshänvisning"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
-msgstr "Slutnotsformat"
+msgid "Endnote style:"
+msgstr "Slutnotsformat:"
+
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+msgid "Endnotes"
+msgstr "Slutnoter"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -2978,24 +2957,18 @@ msgstr ""
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Extra"
 msgstr "Extra"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
-msgstr "Extra parametrar"
+msgid "Extra Parameters:"
+msgstr "Extra parametrar:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Verktygsraden Extra"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Extra parametrar:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3016,11 +2989,6 @@ msgstr "&Helsida"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "&Sök efter:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Fältnamn"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3220,14 +3188,18 @@ msgstr "Fotnotshänvisning"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
-msgstr "Fotnotsformat"
+msgid "Footnote style:"
+msgstr "Fotnotsformat:"
+
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+msgid "Footnotes"
+msgstr "Fotnoter"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnotes and &Endnotes"
-msgstr "Fotnoter och slutnoter"
+msgstr "Fotnoter och &slutnoter"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
@@ -3270,17 +3242,7 @@ msgstr "Format"
 #. MENU_STATUSLINE_FMT_EMBED
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
-msgstr ""
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Formatera slutnoter"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Formatera fotnoter"
+msgstr "Ändra format på inbäddat objekt"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3294,9 +3256,8 @@ msgstr ""
 
 #. MENU_LABEL_FMT_EMBED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Format Ob&ject"
-msgstr "Formatera objekt"
+msgstr "Formatera ob&jekt"
 
 #. TOOLBAR_LABEL_FMTPAINTER
 #: po/tmp/ap_String_Id.h
@@ -3376,7 +3337,6 @@ msgstr "Gå till &vad:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
 msgstr "Gå till"
 
@@ -3419,7 +3379,6 @@ msgstr "Sidhuvud [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3427,8 +3386,7 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "Sidhuvuden och sidfötter kan bara skapas och ändras i utskriftslayoutläge. \n"
-" För att gå till detta läge välj \"Visa\" och sedan \"Utskriftslayoutläge\" i "
-"menyn. \n"
+" För att gå till detta läge välj Visa och sedan Utskriftslayoutläge i menyn. "
 " Vill du ändra till utskriftslayoutläge nu?"
 
 #. DLG_Stylist_HeadingStyles
@@ -3592,17 +3550,17 @@ msgstr "Varje Ord Med Stor Begynnelsebokstav"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
-msgstr "Initialt slutnotsvärde"
+msgid "Initial Endnote value:"
+msgstr "Initialt slutnotsvärde:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
-msgstr "Initialt fotnotsvärde"
+msgid "Initial Footnote value:"
+msgstr "Initialt fotnotsvärde:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
+msgid "Inner (single) quote style:"
 msgstr ""
 
 #. InsertModeFieldINS
@@ -3634,7 +3592,7 @@ msgstr "Infoga &Tabell"
 msgid "Insert Bookmark"
 msgstr "Infoga bokmärke"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Infoga brytning"
@@ -3664,7 +3622,7 @@ msgstr "Infoga ekvation"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Infoga ekvation från ett LaTex-uttryck"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Infoga fält"
@@ -3838,20 +3796,10 @@ msgstr "Infoga en bild till dokumentet"
 msgid "Insert bookmark"
 msgstr "Infoga bokmärke"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Brytning"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Infoga clipart"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Fält"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3930,7 +3878,7 @@ msgstr "Kursiv"
 #. MENU_STATUSLINE_GOTO_ANNOTATION
 #: po/tmp/ap_String_Id.h
 msgid "Jump to annotation"
-msgstr ""
+msgstr "Hoppa till anteckning"
 
 #. MENU_STATUSLINE_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3979,10 +3927,14 @@ msgid "Keywords:"
 msgstr "Nyckelord:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
 msgstr "LaTeX-ekvation"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "LaTeX-ekvation:"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
@@ -3996,7 +3948,6 @@ msgstr ""
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Språk"
@@ -4005,6 +3956,11 @@ msgstr "Språk"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Språkinställningar"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "Språk"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4103,11 +4059,6 @@ msgstr "Nivåavgränsning:"
 msgid "Li&ne spacing:"
 msgstr "Radavst&ånd:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Rad"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4132,6 +4083,11 @@ msgstr "Linje under markeringen (växlande)"
 #: po/tmp/ap_String_Id.h
 msgid "Line between"
 msgstr "Linje mellan"
+
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr "Rad:"
 
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
@@ -4158,11 +4114,6 @@ msgstr "Listegenskaper"
 msgid "List Styles"
 msgstr "Listformatmallar"
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Listor för "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
 msgid "Locations"
@@ -4188,9 +4139,8 @@ msgstr "Lista med romerska siffror i gemena"
 #. FIELD_Application_MailMerge
 #. MENU_STATUSLINE_TOOLS_MAILMERGE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Mail Merge"
-msgstr "&Mail Merge"
+msgstr "Mail Merge"
 
 #. MENU_STATUSLINE_FMT_BOLD
 #: po/tmp/ap_String_Id.h
@@ -4244,8 +4194,8 @@ msgstr "Martins försök"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Maximal spalthöjd"
+msgid "Max Column size:"
+msgstr "Maximal spalthöjd:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4389,9 +4339,8 @@ msgstr "Flera"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Namn:"
+msgstr "Namn"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
@@ -4423,8 +4372,8 @@ msgstr ""
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
-msgstr ""
+msgid "New Contact"
+msgstr "Ny kontakt"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4510,7 +4459,6 @@ msgstr "Inga skript funna"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Ingen"
@@ -4537,8 +4485,8 @@ msgstr "Formatmallar för noter"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Antal spalter"
+msgid "Number of Columns:"
+msgstr "Antal spalter:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4571,7 +4519,6 @@ msgstr "Numrering"
 msgid "Numbered List"
 msgstr "Numrerad lista"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
@@ -4579,6 +4526,11 @@ msgstr "Numrerad lista"
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
 msgstr "Numrering"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+msgid "Numbering:"
+msgstr "Numrering:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4653,8 +4605,8 @@ msgstr "Öppnar detta dokumentet"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
-msgstr "Pappersorientering..."
+msgid "Orientation"
+msgstr "Pappersorientering"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4669,7 +4621,7 @@ msgstr "Slut på minne när filen %s skulle öppnas"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+msgid "Outer (double) quote style:"
 msgstr ""
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
@@ -4705,7 +4657,6 @@ msgstr ""
 msgid "Pa&ste Unformatted"
 msgstr "Klistra in oforma&terat"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4753,8 +4704,8 @@ msgstr "Sidnummer"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Sidhänvisning"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4765,6 +4716,11 @@ msgstr "Utskrifts&format"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Sidformat"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr "Sida:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -4782,15 +4738,15 @@ msgstr "Sidor:"
 msgid "Pagination"
 msgstr "Sidbrytning"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr "Papper"
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "P&appersstorlek:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Papper..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4857,8 +4813,8 @@ msgstr "Placera i slutet av sektionen"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
-msgstr "Placering"
+msgid "Placement:"
+msgstr "Placering:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -4871,11 +4827,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Placering"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr ""
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -5043,11 +4994,6 @@ msgstr ""
 msgid "R&eplace"
 msgstr "&Ersätt"
 
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr ""
-
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
@@ -5125,13 +5071,11 @@ msgstr ""
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Relation:"
+msgstr "Relation"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation:"
 msgstr "Relation:"
 
@@ -5158,8 +5102,8 @@ msgstr "Ta bort sidhuvud"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "Ta bort egenskap från formatmallen"
+msgid "Remove Property from Style:"
+msgstr "Ta bort egenskap från formatmallen:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5209,7 +5153,7 @@ msgstr ""
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "Remove the suggested change"
-msgstr ""
+msgstr "Ta bort föreslagen ändring"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h
@@ -5507,8 +5451,8 @@ msgstr "Spara till fil"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Skala..."
+msgid "Scale"
+msgstr "Skala"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5525,14 +5469,9 @@ msgstr "Sekunder mellan uppdateringar"
 msgid "Seconds since the epoch"
 msgstr "Sekunder sedan epok"
 
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Avsnittsbrytningar"
-
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Avsnittsbrytningar"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -5589,7 +5528,7 @@ msgstr "Markera textruta"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+msgid "Select a target bookmark from the list:"
 msgstr ""
 
 #. DLG_FormatFrame_SelectImage
@@ -5638,9 +5577,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select the Text Box"
-msgstr "Markera textruta"
+msgstr "Markera textrutan"
 
 #. MENU_STATUSLINE_EDIT_SELECTALL
 #: po/tmp/ap_String_Id.h
@@ -5660,13 +5598,13 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
+msgid "Select the parts of the document contained in the next revision"
 msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
+msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -5878,9 +5816,8 @@ msgstr ""
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Shading"
-msgstr "Avstånd"
+msgstr "Skuggning"
 
 #. DLG_BorderShading_Shading_Color
 #: po/tmp/ap_String_Id.h
@@ -6105,8 +6042,8 @@ msgstr "Källa:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "Mellanrum efter kolumn"
+msgid "Space after Column:"
+msgstr "Mellanrum efter kolumn:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6239,7 +6176,6 @@ msgstr "Format&mall"
 
 #. TB_Standard
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Standard"
 msgstr "Standard"
 
@@ -6337,13 +6273,13 @@ msgstr "Formatnamn:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Formatmallstyp"
+msgid "Style Type:"
+msgstr "Formatmallstyp:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Format för efterföljande stycke"
+msgid "Style for following paragraph:"
+msgstr "Format för efterföljande stycke:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6457,13 +6393,11 @@ msgstr "Upphöjd"
 
 #. MENU_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Sy&mbol"
 msgstr "Sy&mbol"
 
 #. TOOLBAR_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Symbol"
 msgstr "Symbol"
 
@@ -6496,7 +6430,7 @@ msgstr "Tabulatorstopp att avlägsna:"
 msgid "Table"
 msgstr "Tabell"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Tabellstorlek"
@@ -6521,11 +6455,6 @@ msgstr "Innehållsförteckning - rubrikrad"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Innehållsförteckning - sidnummer"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Tabellstorlek"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6574,13 +6503,24 @@ msgstr "Textjustering:"
 msgid "Text Box"
 msgstr "Textruta"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr "Textruteplacering"
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr "Läsriktning"
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr ""
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr ""
 
@@ -6641,12 +6581,11 @@ msgstr "Tjocklek:"
 
 #. MSG_XMLIDAlreadyExists
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "This RDF link already exists. Would you like to replace the existing RDF "
 "link with this new one?"
 msgstr ""
-"Ett sådant bokmärke finns redan. Vill du ersätta det befintliga bokmärket?"
+"En sådan RDF-länk finns redan. Vill du ersätta den befintliga RDF-länken?"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
@@ -6729,9 +6668,8 @@ msgstr "Titel:"
 
 #. MENU_LABEL_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "To&pline"
-msgstr "Övre kantlinje"
+msgstr "&Övre kantlinje"
 
 #. DLG_Options_Label_Toolbars
 #: po/tmp/ap_String_Id.h
@@ -6774,20 +6712,15 @@ msgstr "Lista punkterad med trianglar"
 msgid "Two"
 msgstr "Två"
 
-#. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h
-msgid "Type"
-msgstr "Typ"
-
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
 msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Ange ett namn för bokmärket, eller välj ett befintligt från listan."
+msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr "Ange ett namn för bokmärket, eller välj ett befintligt från listan:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6890,7 +6823,6 @@ msgstr "Egna formatmallar"
 #. FIELD_Application_Version
 #. DLG_History_Version_Version
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Version"
 msgstr "Version"
 
@@ -6947,6 +6879,11 @@ msgstr "Varning: det angivna bokmärket [%s] finns inte."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Webblayoutläge"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7025,7 +6962,6 @@ msgstr "Dina ändringar kommer att gå förlorade om du inte sparar."
 #. TOOLBAR_TOOLTIP_ZOOM
 #. DLG_Zoom_ZoomTitle
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Zoom"
 msgstr "Zoom"
 
@@ -7109,16 +7045,26 @@ msgstr "mm/dd/åå"
 msgid "tOGGLE cASE"
 msgstr "vÄXLA sKIFTLÄGE"
 
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Ingen"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Ingen"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Ämne"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Ämne"
@@ -7249,6 +7195,11 @@ msgstr "AbiWord: Förhandsgranska"
 msgid "About %s"
 msgstr "Om %s"
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr "Acholi"
+
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
@@ -7291,8 +7242,8 @@ msgstr ""
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Amhariska (Etiopien)"
+msgid "Amharic"
+msgstr "Amhariska"
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7312,7 +7263,7 @@ msgstr "Arabiska (Saudiarabien)"
 #. ENC_ARAB_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Arabic, ISO-8859-6"
-msgstr "Arabisk, ISO 8859-6"
+msgstr "Arabisk, ISO-8859-6"
 
 #. ENC_ARAB_MAC
 #: po/tmp/xap_String_Id.h
@@ -7341,8 +7292,8 @@ msgstr "Assamesiska"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Asturiska (Spanien)"
+msgid "Asturian"
+msgstr "Asturiska"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7361,39 +7312,48 @@ msgstr "Automatisk igenkänning"
 
 #. MSG_AutoRevision
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Autorevision"
 msgstr "Automatspårning"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
-msgstr "Tillgängliga dokument"
+msgid "Available Documents:"
+msgstr "Tillgängliga dokument:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
-msgstr "Tillgängliga språk"
+msgid "Available Languages:"
+msgstr "Tillgängliga språk:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
-msgstr "Aymara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
+msgstr "Aymara (Centrala/Norra Bolivia)"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
-msgstr "Aymara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr "Aymara (Södra Bolivia)"
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
+msgstr "Aymara, Central-"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, ISO-8859-4"
-msgstr "Baltisk ISO 8859-4"
+msgstr "Baltisk ISO-8859-4"
 
 #. ENC_BALT_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltisk Windows Code Page 1257"
+
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr "Bambara"
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7424,6 +7384,11 @@ msgstr "Svartvitt"
 #: po/tmp/xap_String_Id.h
 msgid "Block Text"
 msgstr ""
+
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr "Bokmål"
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
@@ -7461,15 +7426,10 @@ msgstr "Avbryt"
 msgid "Catalan"
 msgstr "Katalanska"
 
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr "Aymara (Central)"
-
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Central European, ISO-8859-2"
-msgstr "Centraleuropeisk, ISO 8859-2"
+msgstr "Centraleuropeisk, ISO-8859-2"
 
 #. ENC_CENT_MAC
 #: po/tmp/xap_String_Id.h
@@ -7490,6 +7450,11 @@ msgstr "Ändra språk när tangentbordet ändras"
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Kapitelrubrik"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr "Rukiga"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7563,13 +7528,12 @@ msgstr "Ingen bakgrund"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clip Art"
 msgstr "Clip Art"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
+msgid "Clip Art could not be loaded."
 msgstr ""
 
 #. DLG_Close
@@ -7686,7 +7650,7 @@ msgstr "Kroatisk, Macintosh"
 #. ENC_CYRL_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Cyrillic, ISO-8859-5"
-msgstr "Kyrillisk, ISO 8859-5"
+msgstr "Kyrillisk, ISO-8859-5"
 
 #. ENC_CYRL_KOI
 #: po/tmp/xap_String_Id.h
@@ -7733,16 +7697,6 @@ msgstr "Ange som XML (version 1.0)"
 msgid "Default language: "
 msgstr "Förvalt språk: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr ""
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr ""
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -7775,8 +7729,8 @@ msgstr "Dokumenten"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Holländska (Nederländerna)"
+msgid "Dutch"
+msgstr "Holländska"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7863,6 +7817,11 @@ msgstr "Engelska (UK)"
 msgid "English (US)"
 msgstr "Engelska (US)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr "Engelsk, DOS/Windows Code Page 437"
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7926,8 +7885,8 @@ msgstr "Finska"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Flamländska (Belgien)"
+msgid "Flemish"
+msgstr "Flamländska"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -7986,8 +7945,13 @@ msgstr "Fula"
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-msgid "Galician (Galego)"
-msgstr "Galiciska (Galego)"
+msgid "Galician"
+msgstr "Galiciska"
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr "Ganda"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8032,7 +7996,7 @@ msgstr "Grekiska"
 #. ENC_GREE_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Greek, ISO-8859-7"
-msgstr "Grekisk, ISO 8859-7"
+msgstr "Grekisk, ISO-8859-7"
 
 #. ENC_GREE_MAC
 #: po/tmp/xap_String_Id.h
@@ -8092,7 +8056,7 @@ msgstr "Hebreiska"
 #. ENC_HEBR_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Hebrew, ISO-8859-8"
-msgstr "Hebreisk, ISO 8859-8"
+msgstr "Hebreisk, ISO-8859-8"
 
 #. ENC_HEBR_MAC
 #: po/tmp/xap_String_Id.h
@@ -8149,10 +8113,25 @@ msgstr "Isländsk, Macintosh"
 msgid "Identifier:"
 msgstr "Identifierare:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr "Bildnamn"
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr "Bildplacering"
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Egenskaper för bild"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr "Bildstorlek"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8171,9 +8150,8 @@ msgstr "Importera fil"
 
 #. MSG_ParagraphsImported
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Imported Paragraph"
-msgstr "Stycke"
+msgstr "Importerat stycke"
 
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h
@@ -8217,9 +8195,8 @@ msgstr ""
 
 #. TB_InsertNewTable
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Insert New Table"
-msgstr "Infoga tabell"
+msgstr "Infoga ny tabell"
 
 #. DLG_IP_Title
 #: po/tmp/xap_String_Id.h
@@ -8258,8 +8235,8 @@ msgstr "Iriska"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Italienska (Italien)"
+msgid "Italian"
+msgstr "Italienska"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8274,7 +8251,7 @@ msgstr "Japansk, EUC-JP"
 #. ENC_JAPN_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Japanese, ISO-2022-JP"
-msgstr "Japansk, ISO 2022-JP"
+msgstr "Japansk, ISO-2022-JP"
 
 #. ENC_JAPN_SJIS
 #: po/tmp/xap_String_Id.h
@@ -8293,14 +8270,23 @@ msgstr "Kanaresiska"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
-msgstr "Kazakiska (Kazakstan)"
+msgid "Kazakh"
+msgstr "Kazakiska"
 
-#. LANG_KO_KR
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr "Khmer"
+
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Koreanska"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr "Koreanska (Sydkorea)"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8309,8 +8295,8 @@ msgstr "Koreansk, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Koreansk, Johab"
+msgid "Korean, JOHAB"
+msgstr "Koreansk, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8339,8 +8325,8 @@ msgstr "Senast sparad:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Latin (Renässans-)"
+msgid "Latin"
+msgstr "Latin"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8354,8 +8340,13 @@ msgstr "Litauiska"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "Läser in ClipArt"
+msgid "Loading Clip Art..."
+msgstr "Läser in ClipArt..."
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr "Lojban"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8372,6 +8363,11 @@ msgstr "Makedoniska"
 msgid "Make default for document"
 msgstr ""
 
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr "Malagassiska"
+
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
 msgid "Malay"
@@ -8379,8 +8375,8 @@ msgstr "Malajiska"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
-msgstr "Mandinka (Senegal)"
+msgid "Mandinka"
+msgstr "Mandinka"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8419,8 +8415,8 @@ msgstr "Namn:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr "Nepali (Nepal)"
+msgid "Nepali"
+msgstr "Nepali"
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8439,19 +8435,8 @@ msgstr "Ingen insticksmodul vald"
 
 #. STYLE_NORMAL
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Normal"
 msgstr "Normal"
-
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Norska (Bokmål)"
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Norska (Nynorsk)"
 
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
@@ -8472,6 +8457,11 @@ msgstr "Numrerad rubrik 2"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Numrerad rubrik 3"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr "Nynorska"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8535,8 +8525,8 @@ msgstr ""
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
-msgstr "Detaljer:"
+msgid "Plugin Details"
+msgstr "Detaljer"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
@@ -8615,28 +8605,33 @@ msgstr "Utskriftskommando: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Punjabi (Gurmukhi)"
+msgid "Punjabi (India)"
+msgstr "Punjabi (Indien)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Punjabi (Shahmukhi)"
+msgid "Punjabi (Pakistan)"
+msgstr "Punjabi (Pakistan)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Quechua"
 
-#. LANG_QUH_BO
+#. LANG_QUZ
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
-msgstr "Quechua (3 vokaler)"
+msgid "Quechua (Cusco)"
+msgstr "Quechua (Cusco)"
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
-msgstr "Quechua (5 vokaler)"
+msgid "Quechua (Northern Bolivia)"
+msgstr "Quechua (Norra Bolivia)"
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
+msgstr "Quechua (Södra Bolivia)"
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
@@ -8655,9 +8650,8 @@ msgstr "Normal"
 
 #. DLG_DocComparison_Relationship
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Relationship:"
-msgstr "Relationship:"
+msgstr "Relation:"
 
 #. DLG_HTMLOPT_ExpMathMLRenderPNG
 #: po/tmp/xap_String_Id.h
@@ -8698,13 +8692,13 @@ msgstr "Rumänsk, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Ryska (Ryssland)"
+msgid "Russian"
+msgstr "Ryska"
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
-msgstr "Ryska (före 1918)"
+msgid "Russian, pre-1918"
+msgstr "Ryska, före 1918"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h
@@ -8763,18 +8757,8 @@ msgstr "Serbiska"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-msgid "Serbian, latin"
+msgid "Serbian, Latin"
 msgstr "Serbiska, latin"
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr ""
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr ""
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -8805,6 +8789,11 @@ msgstr "Slovenska"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "Kapitäler"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr "Songhai"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -8962,7 +8951,7 @@ msgstr "Turkiska"
 #. ENC_TURK_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Turkish, ISO-8859-9"
-msgstr "Turkisk, ISO 8859-9"
+msgstr "Turkisk, ISO-8859-9"
 
 #. ENC_TURK_MAC
 #: po/tmp/xap_String_Id.h
@@ -9022,12 +9011,12 @@ msgstr "Unicode UCS-4 Little Endian"
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
-msgstr "Unicode UCS-2 Big Endian"
+msgstr "Unicode UTF-16 Big Endian"
 
 #. ENC_UNIC_UTF_16LE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
-msgstr "Unicode UCS-2 Little Endian"
+msgstr "Unicode UTF-16 Little Endian"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
@@ -9083,14 +9072,12 @@ msgstr "Versionshistorik"
 #. DLG_PLUGIN_MANAGER_VERSION
 #. DLG_History_Version
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Version:"
 msgstr "Version:"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
 #, c-format
-#, fuzzy
 msgid "Version: %s"
 msgstr "Version: %s"
 
@@ -9129,11 +9116,6 @@ msgstr "Visa:"
 msgid "Welsh"
 msgstr "Walesiska"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Västerländsk, DOS/Windows Code Page 437"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9147,7 +9129,7 @@ msgstr "Västerländsk, HP"
 #. ENC_WEST_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Western European, ISO-8859-1"
-msgstr "Västerländsk (Latin 1), ISO 8859-1"
+msgstr "Västerländsk,ISO 8859-1"
 
 #. ENC_WEST_MAC
 #: po/tmp/xap_String_Id.h
@@ -9181,8 +9163,8 @@ msgstr "Bredd:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
-msgstr "Wolof (Senegal)"
+msgid "Wolof"
+msgstr "Wolof"
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9205,6 +9187,11 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "Zooma till"
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr "Zulu"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9272,6 +9259,138 @@ msgstr "var närliggande"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "var orelaterade"
+
+#~ msgid "Contributor"
+#~ msgstr "Bidragsgivare"
+
+#~ msgid "Creator"
+#~ msgstr "Skapare"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Standarddatumformat (utan klockslag)"
+
+#~ msgid "Line"
+#~ msgstr "Rad"
+
+#~ msgid "Lists for "
+#~ msgstr "Listor för "
+
+#~ msgid "Page Reference"
+#~ msgstr "Sidhänvisning"
+
+#~ msgid "Type"
+#~ msgstr "Typ"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhariska (Etiopien)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturiska (Spanien)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aymara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aymara (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "Aymara (Central)"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Holländska (Nederländerna)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Flamländska (Belgien)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galiciska (Galego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italienska (Italien)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Kazakiska (Kazakstan)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Koreansk, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latin (Renässans-)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinka (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepali (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Norska (Bokmål)"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Norska (Nynorsk)"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punjabi (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punjabi (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 vokaler)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 vokaler)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Ryska (Ryssland)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Västerländsk, DOS/Windows Code Page 437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Senegal)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "Tillgängliga &format:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "Använd smarta &citattecken"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Autopassa"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Inställningar för dubbelriktning"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Extra parametrar:"
+
+#~ msgid "Field Name"
+#~ msgstr "Fältnamn"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Formatera slutnoter"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Formatera fotnoter"
+
+#~ msgid "Insert break"
+#~ msgstr "Brytning"
+
+#~ msgid "Insert field"
+#~ msgstr "Fält"
+
+#~ msgid "Paper..."
+#~ msgstr "Papper..."
+
+#~ msgid "Scale..."
+#~ msgstr "Skala..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Avsnittsbrytningar"
+
+#~ msgid "Table size"
+#~ msgstr "Tabellstorlek"
 
 #~ msgid "Unicode UCS-2"
 #~ msgstr "Unicode UCS-2"
