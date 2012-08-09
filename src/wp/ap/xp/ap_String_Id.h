@@ -159,7 +159,7 @@ dcl(DLG_FormatFootnotes_FootnoteRestart,   "Numbering:")
 /* Format TOC dialog */
 dcl(DLG_FormatTOC_Title,                  "Format Table of Contents")
 dcl(DLG_FormatTOC_General,                "General")
-dcl(DLG_FormatTOC_LayoutDetails,          "Layout Details")
+dcl(DLG_FormatTOC_LayoutDetails,          "Details")
 dcl(DLG_FormatTOC_None,                   "None")		//xgettext:msgctxt
 dcl(DLG_FormatTOC_Dot,                    "Dots")
 dcl(DLG_FormatTOC_Dash,                   "Dashes")
