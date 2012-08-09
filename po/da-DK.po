@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
-"PO-Revision-Date: 2012-05-28 05:58+0200\n"
+"POT-Creation-Date: 2012-07-30 21:11-0400\n"
+"PO-Revision-Date: 2012-08-01 01:52+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -1403,6 +1403,7 @@ msgid "Attach to Previous List"
 msgstr "Fortsæt foregående liste"
 
 # Kun forfatter til plugins? Og hvad hedder det så?
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1478,8 +1479,8 @@ msgstr "Autoflet"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Mulige felter"
+msgid "Available Fields:"
+msgstr "Mulige felter:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -1642,6 +1643,11 @@ msgstr "Punkter"
 msgid "Bullets and &Numbering"
 msgstr "&Liste"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "&Punktopstilling"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1686,6 +1692,11 @@ msgstr "En indbygget typografi kan ikke ændres"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Kan ikke starte udskriftsopgave"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "Kategori"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2084,8 +2095,8 @@ msgstr "Fortsæt tidligere revision (nummer %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Bidragsyder"
+msgid "Contributor(s)"
+msgstr "Bidragsyder(e)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2276,17 +2287,12 @@ msgstr "Opret ny reference til eksisterende semantisk element"
 msgid "Create new Semantic Item"
 msgstr "Opret nyt semantisk element"
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Dokumentforfatter"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "&Klip"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Nuværende dato"
@@ -2431,11 +2437,6 @@ msgstr "Decimaltabulator"
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
 msgstr "Reducér indrykning"
-
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Standard dato (uden tid)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -3409,10 +3410,10 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "Sidehoveder og -fødder kan kun oprettes og redigeres, hvis du er i "
-"tilstanden for udskriftsvisning.\n"
-"For at gå til denne tilstand, så vælg Vis og dernæst Udskriftslayout fra "
+"tilstanden for Udskriftsvisning. \n"
+" For at gå til denne tilstand, så vælg Vis og dernæst Udskriftslayout fra "
 "menuerne. \n"
-"Vil du skifte til tilstanden Udskriftslayout nu?"
+" Vil du skifte til tilstanden Udskriftslayout nu?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -3585,8 +3586,8 @@ msgstr "Startværdi for fodnote:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "Indre (enkelte) citationstegn"
+msgid "Inner (single) quote style:"
+msgstr "Indre (enkelte) citationstegn:"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3974,7 +3975,6 @@ msgstr "Etiketdefinitioner"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Sprog"
@@ -3983,6 +3983,11 @@ msgstr "Sprog"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Sprogindstillinger"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "Sprog"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4081,11 +4086,6 @@ msgstr "Niveau:"
 msgid "Li&ne spacing:"
 msgstr "&Linjeafstand:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Linje"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4111,6 +4111,11 @@ msgstr "Linje under markering (til/fra)"
 msgid "Line between"
 msgstr "Linje imellem"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr "Linje:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
@@ -4135,11 +4140,6 @@ msgstr "Listeegenskaber"
 #: po/tmp/ap_String_Id.h
 msgid "List Styles"
 msgstr "Listetypografier"
-
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Lister for "
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
@@ -4221,8 +4221,8 @@ msgstr "Martins Test"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Maksimal spaltestørrelse"
+msgid "Max Column size:"
+msgstr "Maksimal spaltestørrelse:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4490,7 +4490,6 @@ msgstr "Ingen skripter fundet"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Ingen"
@@ -4517,8 +4516,8 @@ msgstr "Notetypografier"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Antal spalter"
+msgid "Number of Columns:"
+msgstr "Antal spalter:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4653,8 +4652,8 @@ msgstr "Ikke nok hukommelse til at åbne %s"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
-msgstr "Ydre (dobbelte) citationstegn"
+msgid "Outer (double) quote style:"
+msgstr "Ydre (dobbelte) citationstegn:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4689,7 +4688,6 @@ msgstr "R&yd revisioner"
 msgid "Pa&ste Unformatted"
 msgstr "I&ndsæt rå tekst"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4737,8 +4735,8 @@ msgstr "Sidenumre"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Sidereference"
+msgid "Page Reference to Bookmark"
+msgstr "Sidehenvisning til bogmærke"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4749,6 +4747,11 @@ msgstr "S&ideopsætning"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Sideopsætning"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr "Side:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5131,8 +5134,8 @@ msgstr "Fjern sidehoved"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "Fjern egenskab fra typografi"
+msgid "Remove Property from Style:"
+msgstr "Fjern egenskab fra typografi:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5559,8 +5562,8 @@ msgstr "Vælg tekstboks"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
-msgstr "Vælg bogmærke fra liste."
+msgid "Select a target bookmark from the list:"
+msgstr "Vælg et bogmærke fra listen:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6080,8 +6083,8 @@ msgstr "Kilde:"
 # Spalte?
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "Mellemrum efter Kolonne"
+msgid "Space after Column:"
+msgstr "Mellemrum efter Kolonne:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6311,13 +6314,13 @@ msgstr "Typografinavn:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Typografitype"
+msgid "Style Type:"
+msgstr "Typografitype:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Typografi for det følgende afsnit"
+msgid "Style for following paragraph:"
+msgstr "Typografi for det følgende afsnit:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6755,20 +6758,15 @@ msgstr "Liste med trekanter"
 msgid "Two"
 msgstr "To"
 
-#. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h
-msgid "Type"
-msgstr "Type"
-
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
-msgstr "Indtast et navn for RDF-henvisningen"
+msgid "Type a name for the RDF link:"
+msgstr "Indtast et navn på RDF-henvisningen:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Indtast et navn til bogmærket, eller vælg et fra listen."
+msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr "Indtast et navn til bogmærket, eller vælg et fra listen:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6928,6 +6926,11 @@ msgstr "Advarsel: Det bogmærke, som du opgav [%s], findes ikke."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Web-udseende"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr "Ugedag Måned Dag, År"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7092,6 +7095,18 @@ msgstr "mm/dd/åå"
 msgid "tOGGLE cASE"
 msgstr "sKIFT mELLEM sTORE oG sMÅ bOGSTAVER"
 
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Ingen"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Ingen"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_RDF_Query_Column_Subject"
@@ -7233,6 +7248,11 @@ msgstr "Abiword: Forhåndsvisning af udskrift"
 #, c-format
 msgid "About %s"
 msgstr "Om %s"
+
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr "Acoli"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7384,6 +7404,11 @@ msgstr "Baltisk, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltisk, Windows CP-1257"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr "Bambara"
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7454,7 +7479,7 @@ msgstr "Fortryd"
 #. LANG_CA_ES
 #: po/tmp/xap_String_Id.h
 msgid "Catalan"
-msgstr "Katalansk"
+msgstr "Catalansk"
 
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7480,6 +7505,11 @@ msgstr "Skift sprog ved tastaturskift"
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Kapiteloverskrift"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr "Kiga"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7558,8 +7588,8 @@ msgstr "Udklipskunst"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "Udklipskunst kunne ikke indlæses"
+msgid "Clip Art could not be loaded."
+msgstr "Udklipskunst kunne ikke indlæses."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7974,6 +8004,11 @@ msgstr "Fula"
 msgid "Galician"
 msgstr "Galicisk"
 
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr "Luganda"
+
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
 msgid "Georgian"
@@ -8361,8 +8396,13 @@ msgstr "Littauisk"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "Indlæser Udklipskunst-grafik"
+msgid "Loading Clip Art..."
+msgstr "Indlæser Udklipskunst..."
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr "Lojban"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8378,6 +8418,11 @@ msgstr "Makedonsk"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "Gør til standard for dokumentet"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr "Malagasy"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8633,6 +8678,11 @@ msgstr "Punjabi (Pakistan)"
 msgid "Quechua"
 msgstr "Quechua"
 
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr "Quechua (Cusco)"
+
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
@@ -8801,6 +8851,11 @@ msgstr "Slovensk"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "Kapitæler"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr "Songhai"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9200,6 +9255,11 @@ msgstr ""
 msgid "Zoom to"
 msgstr "Zoom til"
 
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr "Zulu"
+
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
 msgid "_No"
@@ -9269,6 +9329,30 @@ msgstr "beslægtede"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "urelateret"
+
+#~ msgid "Contributor"
+#~ msgstr "Bidragsyder"
+
+#~ msgid "Creator"
+#~ msgstr "Dokumentforfatter"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Standard dato (uden tid)"
+
+#~ msgid "Line"
+#~ msgstr "Linje"
+
+#~ msgid "Lists for "
+#~ msgstr "Lister for "
+
+#~ msgid "Page Reference"
+#~ msgstr "Sidereference"
+
+#~ msgid "Type"
+#~ msgstr "Type"
+
+#~ msgid "Bambara"
+#~ msgstr "Bambara"
 
 #~ msgid "Amharic (Ethiopia)"
 #~ msgstr "Amharisk (Etiopien)"
