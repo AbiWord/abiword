@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-09 18:05+0200\n"
-"PO-Revision-Date: 2012-08-09 18:05+0200\n"
+"POT-Creation-Date: 2012-08-09 20:35+0200\n"
+"PO-Revision-Date: 2012-08-09 20:35+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -1738,7 +1738,7 @@ msgstr ""
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h
 msgid "Change Highlight Color"
-msgstr "Markierungsfarbe ändern"
+msgstr "Hintergrundfarbe ändern"
 
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h
@@ -1948,7 +1948,7 @@ msgstr "Hintergrundfarbe löschen"
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h
 msgid "Clear Highlight Color"
-msgstr "Markierungsfarbe löschen"
+msgstr "Hintergrundfarbe löschen"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h
@@ -3478,7 +3478,7 @@ msgstr "Text unterhalb Gliederungsebenen"
 #. TOOLBAR_TOOLTIP_COLOR_BACK
 #: po/tmp/ap_String_Id.h
 msgid "Highlight"
-msgstr "Hervorheben"
+msgstr "Hintergrundfarbe"
 
 #. MENU_LABEL_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
@@ -7608,7 +7608,12 @@ msgstr "Wählen Sie ein Dokument aus der Liste:"
 #. TB_ClearBackground
 #: po/tmp/xap_String_Id.h
 msgid "Clear Background"
-msgstr "Hintergrund löschen"
+msgstr "Hintergrundfarbe zurücksetzen"
+
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+msgid "Clear Foreground"
+msgstr "Schriftfarbe zurücksetzen"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
@@ -8170,7 +8175,7 @@ msgstr "Ausgeblendet"
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h
 msgid "HighLight Color"
-msgstr "Markierungsfarbe"
+msgstr "Hintergrundfarbe"
 
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h
@@ -8855,7 +8860,7 @@ msgstr "Sprache festlegen"
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h
 msgid "Set no Highlight Color"
-msgstr "Keine Markierungsfarbe festlegen"
+msgstr "Keine Hintergrundfarbe festlegen"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h
