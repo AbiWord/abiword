@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
-"PO-Revision-Date: 2012-05-28 05:58+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2012-07-30 21:11-0400\n"
+"PO-Revision-Date: 2012-08-04 21:39+0200\n"
+"Last-Translator: Pjotr <pjotrvertaalt@gmail.com>\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -1391,6 +1391,7 @@ msgstr "Minstens"
 msgid "Attach to Previous List"
 msgstr "Aan voorgaande lijst koppelen"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1465,8 +1466,8 @@ msgstr "Automatisch samenvoegen"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Beschikbare velden"
+msgid "Available Fields:"
+msgstr "Beschikbare velden:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -1629,6 +1630,11 @@ msgstr "Opsommingtekens"
 msgid "Bullets and &Numbering"
 msgstr "Opsommingtekens en &nummering"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "Opsommingtekens en nummering"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1673,6 +1679,11 @@ msgstr "Kan een ingebouwde stijl niet veranderen"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "De afdrukopdracht kan niet gestart worden"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "Categorie"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2072,8 +2083,8 @@ msgstr "Verdergaan met de vorige revisie (nummer %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Bijdrager"
+msgid "Contributor(s)"
+msgstr "Bijdrager(s):"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2266,17 +2277,12 @@ msgstr "Nieuwe verwijzing maken naar bestaand semantisch onderdeel"
 msgid "Create new Semantic Item"
 msgstr "Nieuw semantisch onderdeel maken"
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Maker"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "K&nippen"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Huidige datum"
@@ -2421,11 +2427,6 @@ msgstr "Decimale tab"
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
 msgstr "Minder inspringen"
-
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Standaarddatum (zonder tijd)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -3572,8 +3573,8 @@ msgstr "Beginwaarde van voetnoot:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "Binnenste (enkele) aanhalingsstijl"
+msgid "Inner (single) quote style:"
+msgstr "Binnenste (enkele) aanhalingstekenstijl:"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3960,7 +3961,6 @@ msgstr "Etiketdefinities"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Taal"
@@ -3969,6 +3969,11 @@ msgstr "Taal"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Taalinstellingen"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "Ta(a)l(en)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4067,11 +4072,6 @@ msgstr "Niveau:"
 msgid "Li&ne spacing:"
 msgstr "Re&gelafstand:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Regel"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4097,6 +4097,11 @@ msgstr "Regel onder de selectie (omschakelen)"
 msgid "Line between"
 msgstr "Scheidingsregel"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr "Regel:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
@@ -4121,11 +4126,6 @@ msgstr "Lijsteigenschappen"
 #: po/tmp/ap_String_Id.h
 msgid "List Styles"
 msgstr "Lijst-stijlen"
-
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Lijsten voor "
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
@@ -4207,8 +4207,8 @@ msgstr "Martins proef"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Maximale kolomgrootte"
+msgid "Max Column size:"
+msgstr "Maximale kolomgrootte:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4478,7 +4478,6 @@ msgstr "Geen scripts gevonden"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Geen"
@@ -4505,8 +4504,8 @@ msgstr "Nootstijlen"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Aantal kolommen"
+msgid "Number of Columns:"
+msgstr "Aantal kolommen:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4641,7 +4640,7 @@ msgstr "Geen geheugen meer beschikbaar bij het openen van %s"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+msgid "Outer (double) quote style:"
 msgstr "Stijl van het buitenste (dubbele) aanhalingsteken"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
@@ -4677,7 +4676,6 @@ msgstr "Revisies &opschonen"
 msgid "Pa&ste Unformatted"
 msgstr "&Plakken zonder opmaak"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4725,8 +4723,8 @@ msgstr "Paginanummers"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Paginaverwijzing"
+msgid "Page Reference to Bookmark"
+msgstr "Paginaverwijzing naar bladwijzer"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4737,6 +4735,11 @@ msgstr "Pagina-&instelling"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Pagina-instelling"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr "Pagina:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5118,8 +5121,8 @@ msgstr "Koptekst verwijderen"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "Eigenschap van stijl verwijderen"
+msgid "Remove Property from Style:"
+msgstr "Eigenschap van stijl verwijderen:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5544,8 +5547,8 @@ msgstr "Tekstvak selecteren"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
-msgstr "Selecteer een doelbladwijzer uit de lijst."
+msgid "Select a target bookmark from the list:"
+msgstr "Selecteer een doelbladwijzer uit de lijst:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6067,8 +6070,8 @@ msgstr "Bron:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "Ruimte na kolom"
+msgid "Space after Column:"
+msgstr "Ruimte na kolom:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6298,13 +6301,13 @@ msgstr "Stijlnaam:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Stijltype"
+msgid "Style Type:"
+msgstr "Stijltype:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Stijl voor volgende alinea"
+msgid "Style for following paragraph:"
+msgstr "Stijl voor volgende alinea:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6743,20 +6746,15 @@ msgstr "Driehoekjeslijst"
 msgid "Two"
 msgstr "Twee"
 
-#. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h
-msgid "Type"
-msgstr "Intikken"
-
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
-msgstr "Tik een naam in voor de RDF-koppeling"
+msgid "Type a name for the RDF link:"
+msgstr "Tik een naam in voor de RDF-koppeling:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Tik een naam in voor de bladwijzer, of kies een bestaande uit de lijst."
+msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr "Tik een naam in voor de bladwijzer, of kies een bestaande uit de lijst:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6915,6 +6913,11 @@ msgstr "Waarschuwing: de opgegeven bladwijzer [%s] bestaat niet."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Webvormgeving"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr "Weekdag maand dag, jaar"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7080,6 +7083,18 @@ msgstr "mm/dd/jj"
 msgid "tOGGLE cASE"
 msgstr "hOOFD- eN kLEINE lETTERS oMWISSELEN"
 
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Geen"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Geen"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_RDF_Query_Column_Subject"
@@ -7221,6 +7236,11 @@ msgstr "AbiWord: afdrukvoorbeeld"
 #, c-format
 msgid "About %s"
 msgstr "Over %s"
+
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr "Acholi"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7372,6 +7392,11 @@ msgstr "Baltisch, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltisch, Windows-codepagina 1257"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr "Bamanankan"
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7468,6 +7493,11 @@ msgstr "Verander taal wanneer toetsenbord wordt verwisseld"
 msgid "Chapter Heading"
 msgstr "Hoofdstuk-kop"
 
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr "Chiga"
+
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
 msgid "Chinese (Hong Kong)"
@@ -7545,8 +7575,8 @@ msgstr "Illustraties"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "Inlezen van illustratie is mislukt"
+msgid "Clip Art could not be loaded."
+msgstr "Illustratie kon niet geladen worden."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7960,6 +7990,11 @@ msgstr "Fulah"
 msgid "Galician"
 msgstr "Galicisch"
 
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr "Ganda"
+
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
 msgid "Georgian"
@@ -8347,8 +8382,13 @@ msgstr "Litouws"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "Illustraties aan het laden"
+msgid "Loading Clip Art..."
+msgstr "Illustraties aan het laden..."
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr "Lojban"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8364,6 +8404,11 @@ msgstr "Macedonisch"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "Standaard maken voor document"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr "Malagazisch"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8615,6 +8660,11 @@ msgstr "Punjabi (Pakistan)"
 msgid "Quechua"
 msgstr "Quechua"
 
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr "Quechua (Cuzco)"
+
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
@@ -8783,6 +8833,11 @@ msgstr "Sloveens"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "Kleine hoofdletters"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr "Songhay"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9182,6 +9237,11 @@ msgstr ""
 msgid "Zoom to"
 msgstr "Inzoomen naar"
 
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr "Zoeloe"
+
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
 msgid "_No"
@@ -9248,6 +9308,30 @@ msgstr "verwanten"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "niet-gerelateerd"
+
+#~ msgid "Contributor"
+#~ msgstr "Bijdrager"
+
+#~ msgid "Creator"
+#~ msgstr "Maker"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Standaarddatum (zonder tijd)"
+
+#~ msgid "Line"
+#~ msgstr "Regel"
+
+#~ msgid "Lists for "
+#~ msgstr "Lijsten voor "
+
+#~ msgid "Page Reference"
+#~ msgstr "Paginaverwijzing"
+
+#~ msgid "Type"
+#~ msgstr "Intikken"
+
+#~ msgid "Bambara"
+#~ msgstr "Bambara"
 
 #~ msgid "Amharic (Ethiopia)"
 #~ msgstr "Amhaars (Ethiopië)"
