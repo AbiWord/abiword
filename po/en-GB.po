@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
-"PO-Revision-Date: 2012-05-28 05:16+0200\n"
+"POT-Creation-Date: 2012-07-30 21:11-0400\n"
+"PO-Revision-Date: 2012-07-31 05:54+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
 "Language: en_GB\n"
@@ -1386,6 +1386,7 @@ msgstr "At least"
 msgid "Attach to Previous List"
 msgstr "Attach to Previous List"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1460,8 +1461,8 @@ msgstr "Automerge"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Available Fields"
+msgid "Available Fields:"
+msgstr "Available Fields:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -1624,6 +1625,11 @@ msgstr "Bullets"
 msgid "Bullets and &Numbering"
 msgstr "Bullets and &Numbering"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "Bullets and Numbering"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1668,6 +1674,11 @@ msgstr "Cannot modify a builtin style"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Cannot start print job"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "Category"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2065,8 +2076,8 @@ msgstr "Continue previous revision (number %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Contributer"
+msgid "Contributor(s)"
+msgstr "Contributer(s)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2257,17 +2268,12 @@ msgstr "Create new Reference to existing Semantic Item"
 msgid "Create new Semantic Item"
 msgstr "Create new Semantic Item"
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Creator"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "Cu&t"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Current Date"
@@ -2412,11 +2418,6 @@ msgstr "Decimal Tab"
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
 msgstr "Decrease indent"
-
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Default date (w/o time)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -3561,8 +3562,8 @@ msgstr "Initial Footnote value:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "Inner (single) quote style"
+msgid "Inner (single) quote style:"
+msgstr "Inner (single) quote style:"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3949,7 +3950,6 @@ msgstr "Label Definitions"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Language"
@@ -3958,6 +3958,11 @@ msgstr "Language"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Language settings"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "Language(s)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4056,11 +4061,6 @@ msgstr "Level:"
 msgid "Li&ne spacing:"
 msgstr "Li&ne spacing:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Line"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4086,6 +4086,11 @@ msgstr "Line below the selection (toggle)"
 msgid "Line between"
 msgstr "Line between"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr "Line:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
@@ -4110,11 +4115,6 @@ msgstr "List Properties"
 #: po/tmp/ap_String_Id.h
 msgid "List Styles"
 msgstr "List Styles"
-
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Lists for "
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
@@ -4196,8 +4196,8 @@ msgstr "Martins Test"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Max Column size"
+msgid "Max Column size:"
+msgstr "Max Column size:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4465,7 +4465,6 @@ msgstr "No scripts found"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "None"
@@ -4492,8 +4491,8 @@ msgstr "Note Styles"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Number of Columns"
+msgid "Number of Columns:"
+msgstr "Number of Columns:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4628,8 +4627,8 @@ msgstr "Out of memory attempting to open %s"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
-msgstr "Outer (double) quote style"
+msgid "Outer (double) quote style:"
+msgstr "Outer (double) quote style:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4664,7 +4663,6 @@ msgstr "P&urge revisions"
 msgid "Pa&ste Unformatted"
 msgstr "Pa&ste Unformatted"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4712,8 +4710,8 @@ msgstr "Page Numbers"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Page Reference"
+msgid "Page Reference to Bookmark"
+msgstr "Page Reference to Bookmark"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4724,6 +4722,11 @@ msgstr "Page Set&up"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Page Setup"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr "Page:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5105,8 +5108,8 @@ msgstr "Remove Header"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "Remove Property from Style"
+msgid "Remove Property from Style:"
+msgstr "Remove Property from Style:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5531,8 +5534,8 @@ msgstr "Select Text Box"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
-msgstr "Select a target bookmark from the list."
+msgid "Select a target bookmark from the list:"
+msgstr "Select a target bookmark from the list:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6048,8 +6051,8 @@ msgstr "Source:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "Space after Column"
+msgid "Space after Column:"
+msgstr "Space after Column:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6279,13 +6282,13 @@ msgstr "Style Name:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Style Type"
+msgid "Style Type:"
+msgstr "Style Type:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Style for following paragraph"
+msgid "Style for following paragraph:"
+msgstr "Style for following paragraph:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6724,20 +6727,15 @@ msgstr "Triangle List"
 msgid "Two"
 msgstr "Two"
 
-#. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h
-msgid "Type"
-msgstr "Type"
-
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
-msgstr "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
+msgstr "Type a name for the RDF link:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Type a name for the bookmark, or select an existing from the list."
+msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr "Type a name for the bookmark, or select an existing from the list:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6896,6 +6894,11 @@ msgstr "Warning: the bookmark you provided [%s] does not exist."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Web Layout"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr "Weekday Month Day, Year"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7057,6 +7060,18 @@ msgstr "mm/dd/yy"
 msgid "tOGGLE cASE"
 msgstr "tOGGLE cASE"
 
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "None"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "None"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_RDF_Query_Column_Subject"
@@ -7198,6 +7213,11 @@ msgstr "AbiWord: Print Preview"
 #, c-format
 msgid "About %s"
 msgstr "About %s"
+
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr "Acholi"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7349,6 +7369,11 @@ msgstr "Baltic, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltic, Windows Code Page 1257"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr "Bamanankan"
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7445,6 +7470,11 @@ msgstr "Change Language when changing keyboard"
 msgid "Chapter Heading"
 msgstr "Chapter Heading"
 
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr "Chiga"
+
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
 msgid "Chinese (Hong Kong)"
@@ -7522,8 +7552,8 @@ msgstr "Clip Art"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "Clip Art could not be loaded"
+msgid "Clip Art could not be loaded."
+msgstr "Clip Art could not be loaded."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7937,6 +7967,11 @@ msgstr "Fulah"
 msgid "Galician"
 msgstr "Galician"
 
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr "Ganda"
+
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
 msgid "Georgian"
@@ -8324,8 +8359,13 @@ msgstr "Lithuanian"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "Loading Clip Art"
+msgid "Loading Clip Art..."
+msgstr "Loading Clip Art..."
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr "Lojban"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8341,6 +8381,11 @@ msgstr "Macedonian"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "Make default for document"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr "Malagasy"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8592,6 +8637,11 @@ msgstr "Punjabi (Pakistan)"
 msgid "Quechua"
 msgstr "Quechua"
 
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr "Quechua (Cusco-Collao)"
+
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
@@ -8760,6 +8810,11 @@ msgstr "Slovenian"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "Small Capitals"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr "Songhay"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9155,6 +9210,11 @@ msgstr "You have to save changes to document %s before proceeding. Save now?"
 msgid "Zoom to"
 msgstr "Zoom to"
 
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr "Zulu"
+
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
 msgid "_No"
@@ -9221,6 +9281,30 @@ msgstr "siblings"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "unrelated"
+
+#~ msgid "Contributor"
+#~ msgstr "Contributer"
+
+#~ msgid "Creator"
+#~ msgstr "Creator"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Default date (w/o time)"
+
+#~ msgid "Line"
+#~ msgstr "Line"
+
+#~ msgid "Lists for "
+#~ msgstr "Lists for "
+
+#~ msgid "Page Reference"
+#~ msgstr "Page Reference"
+
+#~ msgid "Type"
+#~ msgstr "Type"
+
+#~ msgid "Bambara"
+#~ msgstr "Bamnankan"
 
 #~ msgid "Amharic (Ethiopia)"
 #~ msgstr "Amharic (Ethiopia)"
