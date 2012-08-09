@@ -569,17 +569,6 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 		iTop -= ydiff;
 		iBot -= ydiff;
 	}
-	/*if((static_cast<fp_TableContainer *>(getContainer()))->getFirstBrokenTable() != pBroke)
-	{
-		if(static_cast<fp_TableContainer *>(getContainer())->isHeaderSet())
-		{
-			if(!pBroke->isThisHeader())
-			{
-				iTop += static_cast<fp_TableContainer *>(getContainer())->getHeaderObject()->getHeaderHeight();
-				iBot += static_cast<fp_TableContainer *>(getContainer())->getHeaderObject()->getHeaderHeight();
-			}
-		}
-	}*/
 	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
 }
 
@@ -1411,11 +1400,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 		UT_sint32 iextTop=0;
 		UT_sint32 iextBot= 0;
 
-		if(isHeaderCell())
-		{
-			m_bDrawTop = true;
-			m_bDrawBot = true;
-		}
 		if (m_bDrawLeft)
 		{
 			if(bDoClear)
@@ -2033,6 +2017,62 @@ UT_sint32 fp_CellContainer::getCellY(fp_Line * /*pLine*/) const
  Draw container content
  \param pDA Draw arguments
  */
+
+void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA)
+{
+	GR_Graphics * pG=pDA->pG;
+	
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+
+	xxx_UT_DEBUGMSG(("Left %d Right %d Top %d Bot %d page %d\n",iLeft,iRight,iTop,iBot,getPage()->getPageNumber()));
+	xxx_UT_DEBUGMSG(("The broken table is %p this %p\n",getBrokenTable(static_cast<fp_Container *>(getNthCon(0))),pNext));
+	
+	const UT_Rect * pClipRect = pDA->pG->getClipRect();
+	UT_sint32 ytop,ybot;
+	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<29)) - 1);
+	if(pClipRect)
+	{
+		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
+		ytop = pClipRect->top;
+		ybot = ybot + ytop + pG->tlu(1);
+	}
+	else
+	{
+		ytop = 0;
+		ybot = imax;
+	}
+	
+	dg_DrawArgs da=*pDA;
+	xxx_UT_DEBUGMSG(("da.yoff %d ytop %d ybot %d\n",da.yoff,ytop,ybot));
+	for(int i=0;i<countCons();i++)
+	{
+		fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
+		
+		da.xoff += pCon->getX() + getX();
+		da.yoff += pCon->getY();
+		if(da.yoff >=ytop && da.yoff <= ybot)
+		{
+			pCon->draw(&da);
+		}
+	}
+	
+/*	GR_Painter painter(pG);
+	fp_Column *pCol = NULL;
+	fp_ShadowContainer *pShadow = NULL;
+	UT_sint32 iTop,iBot,iLeft,iRight;
+	UT_sint32 col_y=0;
+	bool bClear=false;
+	
+	fp_TableContainer *pNext=static_cast<fp_TableContainer *>(getHeaderPointer()->getNext());
+	fp_TableContainer *pOwnContainer=static_cast<fp_TableContainer *>(getHeaderPointer());
+
+	getScreenPositions(static_cast<fp_TableContainer *>(getHeaderPointer()),pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bClear);
+
+	painter.drawLine(iLeft,iTop,iRight,iTop);
+	painter.drawLine(iLeft,iBot,iRight,iBot);
+	painter.drawLine(iLeft,iTop,iLeft,iBot);
+	painter.drawLine(iRight,iTop,iRight,iBot);*/
+}
 void fp_CellContainer::draw(dg_DrawArgs* pDA)
 {
 	m_bDrawTop = false;
@@ -2041,7 +2081,6 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 // draw bottom if this cell is the last of the table and fully contained on the page
 
 	m_bDrawBot = (pTab->getNumRows() == getBottomAttach());
-
 	m_bDrawLeft = true;
 	
 	if(isHeaderCell())
@@ -2340,7 +2379,7 @@ bool fp_CellContainer::isInsideBrokenTable(fp_TableContainer *pBroke) const
 
 void fp_CellContainer::fixLines(UT_sint32 iShift,fp_TableContainer *pBroke,bool bBack)
 {
-	UT_sint32 iTY=pBroke->getYBreak(),iTB=pBroke->getYBottom();
+/*	UT_sint32 iTY=pBroke->getYBreak(),iTB=pBroke->getYBottom();
 	xxx_UT_DEBUGMSG(("%d\n",countCons()));
 	UT_sint32 i=0,count=countCons();
 	for(i=0;i<count;i++)
@@ -2349,7 +2388,7 @@ void fp_CellContainer::fixLines(UT_sint32 iShift,fp_TableContainer *pBroke,bool 
 		if(pCon)
 		{
 			UT_DEBUGMSG(("The page of this line is %p\n",pCon->getMyBrokenContainer()));
-	/*		UT_sint32 iY=getY()+pCon->getY();
+			UT_sint32 iY=getY()+pCon->getY();
 			UT_sint32 iB=iY+pCon->getHeight();
 			UT_DEBUGMSG(("iY %d and iB %d iTY %d and iTB %d\n",iY,iB,iTY,iTB));
 			if( (iY>=iTY) && (iB <=iTB))
@@ -2364,9 +2403,9 @@ void fp_CellContainer::fixLines(UT_sint32 iShift,fp_TableContainer *pBroke,bool 
 					UT_DEBUGMSG(("Backwards line \n"));
 					pCon->setY(pCon->getY()-iShift);
 				}
-			}*/
+			}
 		}
-	}
+	}*/
 }
 
 /*!
@@ -2417,6 +2456,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	m_bDrawTop = false;
 	fp_TableContainer * pTab2 = NULL;
 	bool bIsNested = isInNestedTable();
+	xxx_UT_DEBUGMSG(("The page no is %p\n",getColumn()));
 	xxx_UT_DEBUGMSG(("The Y of this cell %x is %d table Y is %d address %x master %x\n",this,getY(),getContainer()->getY(),getContainer(),pBroke->getMasterTable())); 
 	if(pBroke && pBroke->isThisBroken())
 	{
@@ -2622,7 +2662,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 					{
 						pContainer->setBreakTick(getBreakTick());
 						pContainer->setMyBrokenContainer(pBroke);
-						xxx_UT_DEBUGMSG((" -3- da.yoff %d ydiff %d \n",da.yoff,ydiff));
+						xxx_UT_DEBUGMSG((" -3- da.yoff %d ydiff %d\n",da.yoff,ydiff));
 						pContainer->draw(&da);
 						iLastDraw = i;
 					}
@@ -3425,6 +3465,11 @@ void fp_TableContainer::drawLines(void)
 		{
 			while(pBroke)
 			{
+				if(pBroke->isThisHeader())
+				{
+					pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
+					continue;
+				}
 				pCell->drawLines(pBroke,getGraphics(),true);
 				pCell->drawLines(pBroke,getGraphics(),false);
 				pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
@@ -4440,7 +4485,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 	if(bBack)
 	{
 		pCell = m_pFirstShiftedCell;
-		UT_DEBUGMSG(("First %p and last %p\n",m_pFirstShiftedCell,m_pLastShiftedCell));
+		xxx_UT_DEBUGMSG(("First %p and last %p\n",m_pFirstShiftedCell,m_pLastShiftedCell));
 		fp_CellContainer *pLast=NULL;
 		{
 			if(m_pLastShiftedCell)
@@ -4450,7 +4495,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 			while(pCell && pCell != pLast)
 			{
 				iCount++;
-				UT_DEBUGMSG(("Shifting backward %d %p\n",iCount,pCell));
+				xxx_UT_DEBUGMSG(("Shifting backward %d %p\n",iCount,pCell));
 				pCell->setY(pCell->getY() - iShift);
 				pCell->setiTopY(pCell->getiTopY() - iShift);
 				pCell->setiBotY(pCell->getiBotY() - iShift);
@@ -4476,7 +4521,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 				{
 					m_pFirstShiftedCell=pCell;
 				}
-				UT_DEBUGMSG(("Shifting forward %d\n",iCount));
+				xxx_UT_DEBUGMSG(("Shifting forward %d\n",iCount));
 				pCell->setY(pCell->getY() + iShift);
 				pCell->setiTopY(pCell->getiTopY() + iShift);
 				pCell->setiBotY(pCell->getiBotY() + iShift);
@@ -4486,7 +4531,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 		}
 		else
 		{
-			UT_DEBUGMSG(("else for cell %d\n",iCount));
+			xxx_UT_DEBUGMSG(("else for cell %d\n",iCount));
 			pCell->fixLines(iShift,this,false);
 		}
 		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
@@ -4581,7 +4626,10 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	if(static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet())
 	{
 		pHeader = new fp_TableHeader(getSectionLayout(),getMasterTable());
-		static_cast<fp_VerticalContainer *>(pHeader)->setHeight(pHeader->getHeaderHeight());
+		pHeader->assignPositions(getYBreak()+vpos,getYBreak()+vpos+getMasterTable()->getHeaderObject()->getHeaderHeight());
+		/*pHeader->setHeight(pTabHeader->getHeaderHeight());
+		static_cast<fp_VerticalContainer *>(pHeader)->setHeight(pTabHeader->getHeaderHeight());*/
+		pHeader->setHeader(true);
 		
 		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
 		getMasterTable()->setLastBrokenTable(pBroke);
@@ -4674,10 +4722,9 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		// The cells are broken relative to the top of the table 
 		//
 		breakCellsAt(getYBottom() - iTweak);
-		pHeader->setHeader(true);
 
 		pBroke->m_bCellPositionChanged = true;
-		return pBroke;
+		return pHeader;
 	}
 	else
 	{
@@ -5504,39 +5551,6 @@ void  fp_TableContainer::clearScreen(void)
 	}
 }
 
-void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
-{
-	fp_TableContainer *pMaster = getMasterTable();
-	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
-
-	while(pCell)
-	{
-		if(pCell->isHeaderCell())
-		{
-			UT_sint32 yTemp = pCell->getY();
-			UT_sint32 iTopY = pCell->getiTopY();
-			UT_sint32 iBotY = pCell->getiBotY();
-			UT_sint32 idiff = iBotY - iTopY;
-			fp_Container *pTempCon = static_cast<fp_Container *>(pCell->getNthCon(0))->getMyBrokenContainer();
-
-			pCell->setY(getYBreak());
-			pCell->setHeaderPointer(this);
-			pCell->setiTopY(getYBreak() + 2*pMaster->getBorderWidth());
-			pCell->setiBotY(pCell->getiTopY() + idiff);
-			static_cast<fp_Container *>(pCell->getNthCon(0))->setMyBrokenContainer(NULL);
-			
-			pCell->drawBroken(pDA,static_cast<fp_TableContainer *>(this));
-			//pCell->draw(pDA);
-
-			pCell->setY(yTemp);
-			pCell->setiBotY(iBotY);
-			pCell->setiTopY(iTopY);
-			static_cast<fp_Container *>(pCell->getNthCon(0))->setMyBrokenContainer(pTempCon);
-		}
-		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
-	}
-	pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
-}
 void fp_TableContainer::draw(dg_DrawArgs* pDA)
 {
 //
@@ -5558,13 +5572,14 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	}
 	if(isThisHeader())
 	{
-		//fp_TableHeader *pHeader = static_cast<fp_TableHeader *>(this);
-		//pHeader->headerDraw(pDA);
+		fp_TableHeader *pHeader = static_cast<fp_TableHeader *>(this);
+		pHeader->headerDraw(pDA);
 		return;
 	}
 	else if(isThisBroken() && !isThisHeader()) 
 	{
 		xxx_UT_DEBUGMSG(("YBreak %d YBottom %d height %d\n",getYBreak(),getYBottom(),getHeight()));
+		//if(getNext()==NULL)
 		_brokenDraw(pDA);
 		return;
 	}
@@ -5603,6 +5618,11 @@ UT_sint32 fp_TableContainer::getNumCols(void) const
 UT_sint32 fp_TableContainer::getHeight(void) const
 {
 	UT_sint32 iFullHeight =  fp_VerticalContainer::getHeight();
+	if(isThisHeader())
+	{
+		xxx_UT_DEBUGMSG(("Header - returning full height %d\n",iFullHeight));
+		return iFullHeight;
+	}
 	if(!isThisBroken())
 	{
 //
@@ -5966,6 +5986,7 @@ bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Conta
 //
 // Short circuit things if the BrokenContainer pointer is set.
 //
+
 	xxx_UT_DEBUGMSG(("isInBrokenTable %p pcell %p line %p\n",this,pCell,pCon));
 #if 1
 	if(pCon->getMyBrokenContainer() == static_cast<const fp_Container *>(this))
@@ -7004,11 +7025,11 @@ void fp_TableHeader::markCellsForHeader(void)
 			fp_CellContainer *pCell = pTabMaster->getCellAtRowColumn(*itr-1,i);
 			xxx_UT_DEBUGMSG(("Marking cell at row %d and column for header%d\n",*itr,i));
 			pCell->setHeaderCell(true);
-			if(m_pFirstCachedCell == NULL)
+/*			if(m_pFirstCachedCell == NULL)
 			{
 				m_pFirstCachedCell=pCell;
 			}
-			m_pLastCachedCell = pCell;
+			m_pLastCachedCell = pCell;*/
 		}
 	}
 }
@@ -7024,7 +7045,9 @@ fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContai
 	:  fp_TableContainer(pSectionLayout,pTableContainer),
 	   m_iHeaderHeight(0),
 	   m_pFirstCachedCell(NULL),
-	   m_pLastCachedCell(NULL)
+	   m_pLastCachedCell(NULL),
+	   m_iTopOfHeader(-1),
+	   m_iBottomOfHeader(-1)
 {
 	pTabMaster = pTableContainer;
 }
@@ -7053,5 +7076,73 @@ void fp_TableHeader::calculateHeaderHeight(void)
 			m_iHeaderHeight += getActualRowHeight(*itr - 1);
 		}
 		UT_DEBUGMSG(("The header height is %d \n",m_iHeaderHeight));
+	}
+}
+
+void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
+{
+	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
+	while(pCell)
+	{
+		if(pCell->isHeaderCell())
+		{
+			if(m_pFirstCachedCell == NULL)
+			{
+				m_pFirstCachedCell=pCell;
+			}
+			m_pLastCachedCell=pCell;
+		}
+		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+}
+
+void fp_TableHeader::assignPositions(UT_sint32 iTop,UT_sint32 iBottom)
+{
+	m_iTopOfHeader=iTop;
+	m_iBottomOfHeader=iBottom;
+}
+
+void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
+{
+	fp_TableContainer *pMaster = getMasterTable();
+	fp_CellContainer *pCell = NULL;
+
+	pCell=static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
+	UT_sint32 count=0;
+
+	if(m_pFirstCachedCell == NULL)
+	{
+		cacheCells(pMaster);
+	}
+	pCell=m_pFirstCachedCell;
+	fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
+
+	xxx_UT_DEBUGMSG(("Draw header fired\n"));
+
+	while(pCell && pCell != pStopCell && pCell->isHeaderCell())
+	{
+
+		UT_sint32 yTemp = pCell->getY();
+		UT_sint32 iTopY = pCell->getiTopY();
+		UT_sint32 iBotY = pCell->getiBotY();
+		fp_Container *pTempCon = static_cast<fp_Container *>(pCell->getNthCon(0))->getMyBrokenContainer();
+
+		pCell->setY(m_iTopOfHeader+2*pMaster->getBorderWidth());
+		pCell->setHeaderPointer(this);
+		pCell->setiTopY(m_iTopOfHeader);
+		pCell->setiBotY(m_iBottomOfHeader);
+		static_cast<fp_Container *>(pCell->getNthCon(0))->setMyBrokenContainer(NULL);
+		pCell->setToAllocation();
+		xxx_UT_DEBUGMSG(("pcell is %p Top %d Bottom %d page %d\n",pCell,pCell->getiTopY(),pCell->getiBotY(),getPage()->getPageNumber()));
+
+		pCell->drawHeaderCell(pDA);
+
+		pCell->setY(yTemp);
+		pCell->setiBotY(iBotY);
+		pCell->setiTopY(iTopY);
+		static_cast<fp_Container *>(pCell->getNthCon(0))->setMyBrokenContainer(pTempCon);
+		pCell->setToAllocation();
+		
+		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 }
