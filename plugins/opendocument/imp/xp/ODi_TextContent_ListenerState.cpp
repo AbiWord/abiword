@@ -958,6 +958,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             m_bAcceptingText = false;
         }
 
+    } else if (!strcmp(pName, "text:soft-page-break")){
+        UT_UCS4Char pageBreak = UCS_FF;
+        m_pAbiDocument->appendSpan(&pageBreak, 1);
     }
     
     m_elementParsingLevel++;
