@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
-"PO-Revision-Date: 2012-05-28 05:57+0200\n"
+"POT-Creation-Date: 2012-07-30 21:11-0400\n"
+"PO-Revision-Date: 2012-08-01 02:03+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Slovak\n"
 "Language: sk\n"
@@ -1388,6 +1388,7 @@ msgstr "Aspoň"
 msgid "Attach to Previous List"
 msgstr "Pridať do predošlého zoznamu"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1462,8 +1463,8 @@ msgstr "Automatické zlúčenie"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Dostupné polia"
+msgid "Available Fields:"
+msgstr "Dostupné polia:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -1626,6 +1627,11 @@ msgstr "Odrážky"
 msgid "Bullets and &Numbering"
 msgstr "O&drážky a číslovanie"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "Odrážky a číslovanie"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1670,6 +1676,11 @@ msgstr "Zabudovaný štýl sa nedá upraviť"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Tlačová úloha sa nedá spustiť"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "Kategória"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2067,13 +2078,13 @@ msgstr "Pokračovať v predchádzajúcej oprave (číslo %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Spolupracoval(a)"
+msgid "Contributor(s)"
+msgstr "Spolupracoval(i)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
 msgid "Contributor(s):"
-msgstr "Spolupracoval (-i):"
+msgstr "Spolupracoval(i):"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h
@@ -2259,17 +2270,12 @@ msgstr "Vytvoriť k existujúcej sémantickej položke nový odkaz"
 msgid "Create new Semantic Item"
 msgstr "Vytvoriť novú sémantickú položku"
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Vytvoril(a)"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "&Vystrihnúť"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Aktuálny dátum"
@@ -2414,11 +2420,6 @@ msgstr "Desatinný tabulátor"
 #: po/tmp/ap_String_Id.h
 msgid "Decrease indent"
 msgstr "Zmenšíte odsadenie"
-
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Predvolený dátum (bez času)"
 
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -2612,7 +2613,7 @@ msgstr "Iná hlavička na poslednej strane"
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Directly edit the RDF for the entire document..."
-msgstr "Pramo upravíte RDF pre celý dokument."
+msgstr "Pramo upravíte RDF pre celý dokument..."
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
@@ -3391,10 +3392,10 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Hlavičky a päty sa dajú vytvárať a upravovať len v zobrazení ako pri tlači. \n"
-" Na to, aby sa vám dokument takto zobrazil, treba v menu Zobraziť kliknúť na "
-"Zobrazenie ako pri tlači. \n"
-" Chcete prejsť do zobrazenia ako pri tlači hneď teraz?"
+"Hlavičky a päty môžete vytvárať a upravovať len v zobrazení ako pri tlači. \n"
+" Na to, aby ste prešli do tohto režimu, si v menu Zobraziť zvoľte Zobrazenie "
+"ako pri tlači.\n"
+" Chcete prejsť do režimu zobrazenia ako pri tlači hneď teraz?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -3567,8 +3568,8 @@ msgstr "Číslovať od:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "Štýl jednoduchých úvodzoviek"
+msgid "Inner (single) quote style:"
+msgstr "Štýl jednoduchých úvodzoviek:"
 
 # InsertModeFieldINS - should be translated as "Insert"
 # The other occurences should be translated as "Vložiť"
@@ -3665,7 +3666,7 @@ msgstr "Vložiť odkaz RDF"
 #. MENU_STATUSLINE_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF link..."
-msgstr "Vložíte odkaz RDF."
+msgstr "Vložíte odkaz RDF..."
 
 #. DLG_RDF_SemanticItemInsert_Ok
 #: po/tmp/ap_String_Id.h
@@ -3957,7 +3958,6 @@ msgstr "Vlastnosti nadpisov"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Jazyk"
@@ -3966,6 +3966,11 @@ msgstr "Jazyk"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Nastavenie jazyka"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "Jazyk(y)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4064,11 +4069,6 @@ msgstr "Úroveň:"
 msgid "Li&ne spacing:"
 msgstr "Ria&dkovanie:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Riadok"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4094,6 +4094,11 @@ msgstr "Zobrazí sa alebo sa zmaže čiara pod textom"
 msgid "Line between"
 msgstr "Medzi riadkami"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+msgid "Line:"
+msgstr "Riadok:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
@@ -4118,11 +4123,6 @@ msgstr "Vlastnosti zoznamu"
 #: po/tmp/ap_String_Id.h
 msgid "List Styles"
 msgstr "Štýly zoznamov"
-
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Zoznamy pre "
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
@@ -4210,8 +4210,8 @@ msgstr "Martinov test"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Maximálna veľkosť stĺpca"
+msgid "Max Column size:"
+msgstr "Max. veľkosť stĺpca:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4479,7 +4479,6 @@ msgstr "Nenašli sa žiadne skripty"
 #. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Žiadny"
@@ -4506,8 +4505,8 @@ msgstr "Štýly poznámky"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Počet stĺpcov"
+msgid "Number of Columns:"
+msgstr "Počet stĺpcov:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4642,8 +4641,8 @@ msgstr "Pri pokuse otvoriť súbor %s nemal počítač dosť pamäte"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
-msgstr "Štýl dvojitých úvodzoviek"
+msgid "Outer (double) quote style:"
+msgstr "Štýl dvojitých úvodzoviek:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4678,7 +4677,6 @@ msgstr "&Odstrániť opravy"
 msgid "Pa&ste Unformatted"
 msgstr "Vložiť ne&naformátované"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4726,8 +4724,8 @@ msgstr "Čísla strán"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Odkaz na stranu"
+msgid "Page Reference to Bookmark"
+msgstr "Odkaz strany na záložku"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4738,6 +4736,11 @@ msgstr "&Nastavenie strany"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Nastavenie strany"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page:"
+msgstr "Strana:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5119,8 +5122,8 @@ msgstr "Odstrániť hlavičku"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "Odstrániť vlastnosť štýlu"
+msgid "Remove Property from Style:"
+msgstr "Odstrániť vlastnosť zo štýlu:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5474,7 +5477,7 @@ msgstr "Mierka"
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
 msgid "Search for help about..."
-msgstr "Môžete vyhľadať pomoc zadaním slov."
+msgstr "Môžete vyhľadať pomoc zadaním slov..."
 
 #. DLG_WordCount_Update_Rate
 #: po/tmp/ap_String_Id.h
@@ -5545,8 +5548,8 @@ msgstr "Označiť textový rám"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
-msgstr "Vyberte si záložku zo zoznamu."
+msgid "Select a target bookmark from the list:"
+msgstr "Vyberte si cieľovú záložku zo zoznamu:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -5605,12 +5608,12 @@ msgstr "Označíte celý dokument"
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the next version..."
-msgstr "Označí časti dokumentu, ktoré patria do novej opravy."
+msgstr "Označí časti dokumentu, ktoré patria do novej opravy..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the previous version..."
-msgstr "Označí časti dokumentu, ktoré patria do predchádzajúcej opravy."
+msgstr "Označí časti dokumentu, ktoré patria do predchádzajúcej opravy..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
@@ -5904,7 +5907,7 @@ msgstr "Zobraziť konečnú podobu dokumentu"
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document..."
-msgstr "Zobrazí sa konečná podoba dokumentu."
+msgstr "Zobrazí sa konečná podoba dokumentu..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -6063,8 +6066,8 @@ msgstr "Zdroj:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "Medzera za stĺpcom"
+msgid "Space after Column:"
+msgstr "Medzera za stĺpcom:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6285,7 +6288,7 @@ msgstr "Štýl"
 #. DLG_Styles_ErrNotTitle1
 #: po/tmp/ap_String_Id.h
 msgid "Style Name - "
-msgstr "Názov štýlu — "
+msgstr "Názov štýlu – "
 
 #. DLG_Styles_ModifyName
 #: po/tmp/ap_String_Id.h
@@ -6294,13 +6297,13 @@ msgstr "Názov štýlu:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Typ štýlu"
+msgid "Style Type:"
+msgstr "Typ štýlu:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Štýl ďalšieho odseku"
+msgid "Style for following paragraph:"
+msgstr "Štýl ďalšieho odseku:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6742,20 +6745,15 @@ msgstr "Odrážky v tvare trojuholníka"
 msgid "Two"
 msgstr "Dva"
 
-#. FIELD_Document_Type
-#: po/tmp/ap_String_Id.h
-msgid "Type"
-msgstr "Typ"
-
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
-msgstr "Napíšte názov odkazu RDF"
+msgid "Type a name for the RDF link:"
+msgstr "Napíšte názov odkazu RDF:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
-msgstr "Zadajte názov novej záložky alebo si nejakú vyberte zo zoznamu."
+msgid "Type a name for the bookmark, or select an existing from the list:"
+msgstr "Zadajte názov novej záložky alebo si nejakú vyberte zo zoznamu:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -6914,6 +6912,11 @@ msgstr "Varovanie: zadaná záložka (%s) neexistuje."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Zobrazenie ako na internete"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr "Deň Mesiac, Rok"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7075,6 +7078,18 @@ msgstr "mm/dd/yy"
 msgid "tOGGLE cASE"
 msgstr "zmeniť na malé/VEĽKÉ"
 
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Žiadny"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Žiadny"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_RDF_Query_Column_Subject"
@@ -7215,6 +7230,11 @@ msgstr "AbiWord: ukážka pred tlačou"
 #, c-format
 msgid "About %s"
 msgstr "O %se"
+
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr "ačolčina"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7366,6 +7386,11 @@ msgstr "Pobaltské jazyky, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Pobaltské jazyky, kódová stránka Windows 1256"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr "bambarčina"
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7462,6 +7487,11 @@ msgstr "Pri zmene klávesnice zmeniť aj jazyk"
 msgid "Chapter Heading"
 msgstr "Nadpis kapitoly"
 
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr "čigačtina"
+
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
 msgid "Chinese (Hong Kong)"
@@ -7539,8 +7569,8 @@ msgstr "Clip Art"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "Clip Art sa nepodarilo spustiť"
+msgid "Clip Art could not be loaded."
+msgstr "Clip Art sa nepodarilo nahrať."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7954,6 +7984,11 @@ msgstr "fulština"
 msgid "Galician"
 msgstr "galícijčina"
 
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr "ganda"
+
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
 msgid "Georgian"
@@ -8341,8 +8376,13 @@ msgstr "litovský"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "Spúšťa sa Clip Art"
+msgid "Loading Clip Art..."
+msgstr "Nahráva sa Clip Art..."
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr "ložban"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8358,6 +8398,11 @@ msgstr "macedónsky"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "Predvoliť pre tento dokument"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr "malgaština"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8487,7 +8532,7 @@ msgstr "Iné..."
 #. DLG_Zoom_Percent
 #: po/tmp/xap_String_Id.h
 msgid "P&ercent:"
-msgstr "P&ercent:"
+msgstr "P&očet percent:"
 
 #. TB_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -8608,6 +8653,11 @@ msgstr "pandžábsky (Pakistan)"
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "kečuánsky"
+
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr "kečuánsky (Cusco)"
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
@@ -8778,15 +8828,20 @@ msgstr "slovinský"
 msgid "Small Capitals"
 msgstr "Malé verzálky"
 
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr "songajský"
+
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
 msgid "Spanish (Mexico)"
-msgstr "španielský (Mexiko)"
+msgstr "španielsky (Mexiko)"
 
 #. LANG_ES_ES
 #: po/tmp/xap_String_Id.h
 msgid "Spanish (Spain)"
-msgstr "španielský (Španielsko)"
+msgstr "španielsky (Španielsko)"
 
 #. DLG_HTMLOPT_ExpSplitDocument
 #: po/tmp/xap_String_Id.h
@@ -9173,6 +9228,11 @@ msgstr ""
 msgid "Zoom to"
 msgstr "Upraviť na"
 
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr "zulu"
+
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
 msgid "_No"
@@ -9239,6 +9299,27 @@ msgstr "podobné"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "žiadna podobnosť"
+
+#~ msgid "Contributor"
+#~ msgstr "Spolupracoval(a)"
+
+#~ msgid "Creator"
+#~ msgstr "Vytvoril(a)"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Predvolený dátum (bez času)"
+
+#~ msgid "Line"
+#~ msgstr "Riadok"
+
+#~ msgid "Lists for "
+#~ msgstr "Zoznamy pre "
+
+#~ msgid "Page Reference"
+#~ msgstr "Odkaz na stranu"
+
+#~ msgid "Type"
+#~ msgstr "Typ"
 
 #~ msgid "Amharic (Ethiopia)"
 #~ msgstr "amharský (Etiópia)"
