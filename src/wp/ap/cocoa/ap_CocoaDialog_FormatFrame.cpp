@@ -441,6 +441,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     float width= [stepper floatValue];
     sWidth = [[stepper stringValue] UTF8String];
     _xap->setWidth(width);
+    // update field
     [field   setFloatValue:(_xap->getFrameWidth())];
     _xap->event_previewExposed();
 }
