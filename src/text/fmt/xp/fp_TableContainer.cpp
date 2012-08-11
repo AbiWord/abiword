@@ -2018,7 +2018,7 @@ UT_sint32 fp_CellContainer::getCellY(fp_Line * /*pLine*/) const
  \param pDA Draw arguments
  */
 
-void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA)
+void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iMultiplier)
 {
 	GR_Graphics * pG=pDA->pG;
 	
@@ -2044,6 +2044,10 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA)
 	
 	dg_DrawArgs da=*pDA;
 	xxx_UT_DEBUGMSG(("da.yoff %d ytop %d ybot %d\n",da.yoff,ytop,ybot));
+
+	da.yoff+=(getHeight()+2*pTab->getBorderWidth()) * iMultiplier;
+	UT_DEBUGMSG(("Height increased by %d\n",getHeight()+2*pTab->getBorderWidth()));
+	
 	for(int i=0;i<countCons();i++)
 	{
 		fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
@@ -2056,7 +2060,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA)
 		}
 	}
 	
-/*	GR_Painter painter(pG);
+	GR_Painter painter(pG);
 	fp_Column *pCol = NULL;
 	fp_ShadowContainer *pShadow = NULL;
 	UT_sint32 iTop,iBot,iLeft,iRight;
@@ -2068,10 +2072,15 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA)
 
 	getScreenPositions(static_cast<fp_TableContainer *>(getHeaderPointer()),pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bClear);
 
-	painter.drawLine(iLeft,iTop,iRight,iTop);
-	painter.drawLine(iLeft,iBot,iRight,iBot);
-	painter.drawLine(iLeft,iTop,iLeft,iBot);
-	painter.drawLine(iRight,iTop,iRight,iBot);*/
+	iTop=da.yoff+20;
+	xxx_UT_DEBUGMSG(("The height of this cell is %d\n",getHeight()));
+	xxx_UT_DEBUGMSG(("iLeft %d iTop %d iRight %d iBot %d\n",iLeft,iTop,iRight,iBot));
+
+
+//	painter.drawLine(iLeft,iTop,iRight,iTop);
+//	painter.drawLine(iLeft,iBot,iRight,iBot);
+//	painter.drawLine(iLeft,iTop,iLeft,iBot);
+//	painter.drawLine(iRight,iTop,iRight,iBot);
 }
 void fp_CellContainer::draw(dg_DrawArgs* pDA)
 {
@@ -7118,6 +7127,8 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
 
 	xxx_UT_DEBUGMSG(("Draw header fired\n"));
+	UT_sint32 iCount=0,iNoColumns=pMaster->getNumCols();
+	UT_sint32 iHeightCount=0;
 
 	while(pCell && pCell != pStopCell && pCell->isHeaderCell())
 	{
@@ -7134,8 +7145,12 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 		static_cast<fp_Container *>(pCell->getNthCon(0))->setMyBrokenContainer(NULL);
 		pCell->setToAllocation();
 		xxx_UT_DEBUGMSG(("pcell is %p Top %d Bottom %d page %d\n",pCell,pCell->getiTopY(),pCell->getiBotY(),getPage()->getPageNumber()));
-
-		pCell->drawHeaderCell(pDA);
+		iCount++;
+		if((iCount%iNoColumns)==1 && iCount!=1)
+		{
+			iHeightCount++;
+		}
+		pCell->drawHeaderCell(pDA,iHeightCount);
 
 		pCell->setY(yTemp);
 		pCell->setiBotY(iBotY);
