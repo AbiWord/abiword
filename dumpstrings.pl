@@ -74,7 +74,7 @@ foreach my $dlg (keys %dlgs) {
 my $dlg_count = keys %dlgs;
 foreach my $lang (@lang) {
   warn("$lang: $missing{$lang}\n");
-  my $percent = sprintf("%3d%", 100 - ($missing{$lang} / $dlg_count) * 100);
+  my $percent = sprintf("%3d%", (($dlg_count - $missing{$lang}) / $dlg_count) * 100);
   push ( @td, td( [ b( ($lang =~ "en-US" ? $lang : a({href=>"http://www.abisource.com/dev/strings/".$lang.".po"},$lang))) , $percent == 100 ? b($percent) : $percent ]),"\n");
 }
 print
