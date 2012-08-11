@@ -205,8 +205,10 @@ AC_ARG_ENABLE([default-plugins],
 	fi
 ])
 
+m4_define([plugin_list], m4_include([plugin-list.m4]))
+
 AC_ARG_ENABLE([plugins], 
-	[AS_HELP_STRING([--enable-plugins], [="foo bar baz", list of plugins to build. Use --disable-plugins to disable plugin loading support, resulting in a smaller binary size.])], 
+	[AS_HELP_STRING([--enable-plugins], [="foo bar baz", list of plugins to build. Use --disable-plugins to disable plugin loading support, resulting in a smaller binary size. The list of plugins : ]m4_n([plugin_list]))], 
 [
 	if test "$enableval" = "no"; then
 		abi_cv_disable_exports="yes"
@@ -963,7 +965,7 @@ AM_CONDITIONAL([WITH_GOFFICE_BUILTIN], (test "$TOOLKIT" = "gtk" || test "$TOOLKI
 AC_SUBST([GOFFICE_BUILTIN_LIBS])
 
 ALL_PLUGINS_="\
-  m4_include([plugin-list.m4])"
+  m4_n([plugin_list])"
 # strip trailing newline from the included file, it messes up sed on windows
 ALL_PLUGINS=
 for p in $(echo $ALL_PLUGINS_); do ALL_PLUGINS="$ALL_PLUGINS $p"; done
