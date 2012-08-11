@@ -120,8 +120,9 @@ BEGIN
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,92,119,62,1
     LTEXT           "Image for Background",
                     AP_RID_DIALOG_FORMATFRAME_TEXT_IMGBACK,9,115,72,8
+	CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,260,156,60,1
 	LTEXT           "Width and Height",AP_RID_DIALOG_FORMATFRAME_TEXT_WIDTHHEIGHT,
-                    220,152,100,8
+                    220,152,40,8
     LTEXT           "Height:", AP_RID_DIALOG_FORMATFRAME_TEXT_HEIGHT,220,172,25,12
     EDITTEXT        AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT,246,170,30,14,
                     ES_AUTOHSCROLL
