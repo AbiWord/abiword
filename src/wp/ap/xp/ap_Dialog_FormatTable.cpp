@@ -379,7 +379,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 			iHeight = pCon->getHeight();
 		}
           
-		//We need update if users change height or widht in UI (Drap & Drop) 
+		//We need update if users change height or width in UI (Drap & Drop) 
 		if (m_bSettingsChanged || 
 			( m_iOldPos == pView->getPoint() && i_OldWidth != iWidth && i_OldHeight != iHeight) ) // comparing the actual cell pos would be even better; but who cares :)
 			return;
@@ -503,10 +503,15 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		{
 			iHeight = pTL->getDocSectionLayout()->getHeight();			
 		}
-
+        //restore i_OldWidth & i_OldHeight
 		if(iWidth != 0)
 		{
             i_OldWidth = iWidth;
+		}
+
+		if(iHeight != 0)
+		{
+			i_OldHeight = iHeight;
 		}
 
         fl_TableLayout* tl = pView->getTableAtPos(pView->getPoint());
@@ -515,60 +520,32 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		UT_sint32 i_tableheight = tl->getTableHeight();
 		UT_sint32 i_tablewidth = tl->getTableWidth();
 
-
-
 		if( i_tablewidth > 0)
 		{
             m_vecProps.addOrReplaceProp("table-width", tableWidth.c_str());
+			setWidth(tableWidth.c_str());
 		}
 		else
 		{
 			iWidth = UT_convertDimToInches(iWidth, DIM_PT);
 			std::string buf = UT_std_string_sprintf("%dpt", iWidth);
 			m_vecProps.addOrReplaceProp("table-width", buf.c_str());
-		}
-
-		if(iHeight != 0)
-		{
-			i_OldHeight = iHeight;
+			setWidth(buf.c_str());
 		}
 
 		if( i_tableheight > 0)
 		{
 			m_vecProps.addOrReplaceProp("table-height", tableHeight.c_str());
+			setHeight(tableHeight.c_str());			
 		}
 		else
 		{
 			iHeight = UT_convertDimToInches(iHeight, DIM_PT);
 			std::string buf = UT_std_string_sprintf("%dpt", iHeight);
 			m_vecProps.addOrReplaceProp("table-height", buf.c_str());
+			setHeight(buf.c_str());		
 		}
 
-		/*
-		gchar * pszHeight = NULL;
-		gchar * pszWidth = NULL;
-		const gchar * pszStyle = NULL;
-		if (pView->getCellProperty("table-height", pszHeight))
-			m_vecProps.addOrReplaceProp("table-height", pszHeight);
-		else
-			m_vecProps.removeProp("table-height");
-		if (pView->getCellProperty("table-width", pszWidth))
-			m_vecProps.addOrReplaceProp("table-width", pszWidth);
-		else
-			m_vecProps.removeProp("table-width");
-
-		m_vecProps.getProp("table-height", pszStyle);
-		if (pszStyle) {
-			height = pszStyle;
-			setHeight(height);
-		}
-
-		m_vecProps.getProp("table-width", pszStyle);
-		if (pszStyle) {
-			width = pszStyle;
-			setWidth(width);
-		}
-		*/
 		// draw the preview with the changed properties
 		if(m_pFormatTablePreview)
 			m_pFormatTablePreview->queueDraw();
