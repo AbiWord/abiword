@@ -1047,7 +1047,9 @@ write(UT_UTF8String& rOutput, const UT_UTF8String& rSpacesOffset) const {
     }
     
     rOutput += rSpacesOffset;
-    rOutput += "<style:section-properties>\n";
+    // We don't need to balance text columns automatically because in Abiword 
+    // we set distribution explicitly by inserting VTAB's
+    rOutput += "<style:section-properties text:dont-balance-text-columns=\"true\">\n";
     
     rOutput += rSpacesOffset;
     rOutput += " <style:columns";
