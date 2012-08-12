@@ -191,14 +191,6 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 
 	/* Set the value of TEXT BOX */
 	wchar_t 	szValue[BUFSIZE];
-    /* todo: Get Table handler
-       FV_View * pView = static_cast<FV_View *>(m_pApp->getLastFocussedFrame()->getCurrentView());
-       if (!pView)
-       return;
-       fl_FrameLayout * pFL = pView->getFrameLayout();
-       setHeight(pFL->getTableHeight());
-       setWidth(pFL->getTableWidth());
-     */
   
     XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
     if (!frame) return 1;
