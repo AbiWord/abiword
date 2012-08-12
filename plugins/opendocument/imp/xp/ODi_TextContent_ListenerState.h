@@ -212,6 +212,9 @@ private:
     bool m_bHeadingList;
     UT_sint32 m_prevLevel;
     bool m_bContentWritten;
+    
+    UT_uint32 m_columnsCount;
+    UT_uint32 m_columnIndex;
 };
 
 #endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_

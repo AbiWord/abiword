@@ -100,7 +100,9 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
 		  m_bPendingTextbox(false),
 		  m_bHeadingList(false),
 		  m_prevLevel(0),
-		  m_bContentWritten(false)
+		  m_bContentWritten(false),
+                  m_columnsCount(1),
+                  m_columnIndex(1)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pStyles);
@@ -1521,6 +1523,21 @@ void ODi_TextContent_ListenerState::_insureInSection(
         m_currentODSection = ODI_SECTION_NONE;
     }
     
+    if (!props.empty()){
+        gchar* propsCopy = g_strdup(props.utf8_str());
+        const gchar** propsArray = UT_splitPropsToArray(propsCopy);
+        const gchar* pColumns = UT_getAttribute("columns", propsArray);
+        
+        if (pColumns != NULL){
+            m_columnsCount = atoi(pColumns);
+            m_columnIndex = 1;
+        } else{
+            m_columnsCount = 1;
+            m_columnIndex = 1;
+        }
+        
+        g_free(propsArray);
+    }
     _openAbiSection(props, pMasterPageName);
 }
 
@@ -1799,10 +1816,20 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 }
             } else {
                 _insureInSection();
+                UT_UCSChar ucs;
+                if ((m_columnIndex <= m_columnsCount)){
+                    
+                    if (m_columnIndex > 1){
+                        ucs = UCS_VTAB;
+                        // Append an empty paragraph with this one char
+                        m_pAbiDocument->appendStrux(PTX_Block, NULL);
+                        m_pAbiDocument->appendSpan (&ucs, 1);
+                    }
+                    m_columnIndex++;
+                }
                 
                 // Should we insert a break before this paragraph?
                 if (pStyle != NULL && !pStyle->getBreakBefore().empty()) {
-                    UT_UCSChar ucs;
                     if (pStyle->getBreakBefore() == "page") {
                         ucs = UCS_FF;
                         // Append an empty paragraph with this one char
