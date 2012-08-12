@@ -1141,6 +1141,14 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_bIsHomogeneous = false;
 	}
+
+	const gchar * szRulerUnits;
+	UT_Dimension dim;
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+		dim = UT_determineDimension(szRulerUnits);
+	else
+		dim = DIM_IN;
+
 	const char* pszTableWidth = NULL;
 	const char* pszRelTableWidth = NULL;
 	pSectionAP->getProperty("table-width", (const gchar *&)pszTableWidth);
@@ -1159,7 +1167,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_iTableWidth = getDocSectionLayout()->getActualColumnWidth();
 		{
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
-		    std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableWidth,DIM_PT));
+		    std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableWidth,DIM_MM));
 		    m_sTableWidth = buf;
 		}
 	}
@@ -1184,7 +1192,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_iTableHeight = getDocSectionLayout()->getActualColumnHeight();
 		{
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
-		    std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableHeight,DIM_PT));
+		    std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableHeight,DIM_MM));
 		    m_sTableHeight = buf;
 		}
 	}
@@ -1207,13 +1215,6 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty("table-margin-top", (const gchar *&)pszTopOffset);
 	pSectionAP->getProperty("table-margin-right", (const gchar *&)pszRightOffset);
 	pSectionAP->getProperty("table-margin-bottom", (const gchar *&)pszBottomOffset);
-
-	const gchar * szRulerUnits;
-	UT_Dimension dim;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		dim = UT_determineDimension(szRulerUnits);
-	else
-		dim = DIM_IN;
 
 	UT_String defaultOffset;
 	switch(dim)
