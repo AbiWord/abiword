@@ -1819,11 +1819,14 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 UT_UCSChar ucs;
                 if ((m_columnIndex <= m_columnsCount)){
                     
-                    if (m_columnIndex > 1){
-                        ucs = UCS_VTAB;
-                        // Append an empty paragraph with this one char
-                        m_pAbiDocument->appendStrux(PTX_Block, NULL);
-                        m_pAbiDocument->appendSpan (&ucs, 1);
+                    if((pStyle == NULL) || (pStyle->getBreakBefore().empty()))
+                    {
+                        if ((m_columnIndex > 1)){
+                            ucs = UCS_VTAB;
+                            // Append an empty paragraph with this one char
+                            m_pAbiDocument->appendStrux(PTX_Block, NULL);
+                            m_pAbiDocument->appendSpan (&ucs, 1);
+                        }
                     }
                     m_columnIndex++;
                 }
