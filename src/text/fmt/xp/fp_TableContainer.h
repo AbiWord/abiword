@@ -303,7 +303,7 @@ public:
 	}
 
 	void fixLines(UT_sint32, fp_TableContainer *,bool);
-	void drawHeaderCell(dg_DrawArgs *,UT_sint32);
+	void drawHeaderCell(dg_DrawArgs *,UT_sint32,UT_sint32);
 private:
 		
 	void                _clear(fp_TableContainer * pBroke);

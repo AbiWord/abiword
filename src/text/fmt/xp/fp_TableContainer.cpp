@@ -2018,7 +2018,7 @@ UT_sint32 fp_CellContainer::getCellY(fp_Line * /*pLine*/) const
  \param pDA Draw arguments
  */
 
-void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iMultiplier)
+void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iMultiplier,UT_sint32 iPrevHeight)
 {
 	GR_Graphics * pG=pDA->pG;
 	
@@ -2045,15 +2045,19 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iMultiplier)
 	dg_DrawArgs da=*pDA;
 	xxx_UT_DEBUGMSG(("da.yoff %d ytop %d ybot %d\n",da.yoff,ytop,ybot));
 
-	da.yoff+=(getHeight()+2*pTab->getBorderWidth()) * iMultiplier;
-	UT_DEBUGMSG(("Height increased by %d\n",getHeight()+2*pTab->getBorderWidth()));
+	da.yoff+=(iPrevHeight+2*pTab->getBorderWidth()) * iMultiplier;
+	xxx_UT_DEBUGMSG(("da.yoff is %d\n",da.yoff));
+	xxx_UT_DEBUGMSG(("Height increased by %d\n",iPrevHeight+2*pTab->getBorderWidth()));
+
+	da.xoff+=getX();
 	
 	for(int i=0;i<countCons();i++)
 	{
 		fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
 		
-		da.xoff += pCon->getX() + getX();
-		da.yoff += pCon->getY();
+		da.xoff += pCon->getX();
+		xxx_UT_DEBUGMSG(("the getY of pCon %d is %d\n",i+1,pCon->getY()));
+		xxx_UT_DEBUGMSG(("da.yoff is %d\n",da.yoff));
 		if(da.yoff >=ytop && da.yoff <= ybot)
 		{
 			pCon->draw(&da);
@@ -2069,18 +2073,19 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iMultiplier)
 	
 	fp_TableContainer *pNext=static_cast<fp_TableContainer *>(getHeaderPointer()->getNext());
 	fp_TableContainer *pOwnContainer=static_cast<fp_TableContainer *>(getHeaderPointer());
+	
+	getScreenPositions(pNext,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bClear);
 
-	getScreenPositions(static_cast<fp_TableContainer *>(getHeaderPointer()),pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bClear);
-
-	iTop=da.yoff+20;
+	iTop=da.yoff;
+	iBot=iTop+getHeight()+(2*pTab->getBorderWidth());
 	xxx_UT_DEBUGMSG(("The height of this cell is %d\n",getHeight()));
-	xxx_UT_DEBUGMSG(("iLeft %d iTop %d iRight %d iBot %d\n",iLeft,iTop,iRight,iBot));
+	xxx_UT_DEBUGMSG(("iTop %d iBot %d\n",iTop,iBot));
+	
 
-
-//	painter.drawLine(iLeft,iTop,iRight,iTop);
-//	painter.drawLine(iLeft,iBot,iRight,iBot);
-//	painter.drawLine(iLeft,iTop,iLeft,iBot);
-//	painter.drawLine(iRight,iTop,iRight,iBot);
+	/*painter.drawLine(iLeft,iTop,iRight,iTop); 
+	painter.drawLine(iLeft,iBot,iRight,iBot);
+	painter.drawLine(iLeft,iTop,iLeft,iBot);
+	painter.drawLine(iRight,iTop,iRight,iBot);*/
 }
 void fp_CellContainer::draw(dg_DrawArgs* pDA)
 {
@@ -7128,7 +7133,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 
 	xxx_UT_DEBUGMSG(("Draw header fired\n"));
 	UT_sint32 iCount=0,iNoColumns=pMaster->getNumCols();
-	UT_sint32 iHeightCount=0;
+	UT_sint32 iHeightCount=0,iPrevHeight=0;
 
 	while(pCell && pCell != pStopCell && pCell->isHeaderCell())
 	{
@@ -7149,8 +7154,19 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 		if((iCount%iNoColumns)==1 && iCount!=1)
 		{
 			iHeightCount++;
+			UT_sint32 i=0;
+			while(i<iNoColumns)
+			{
+				fp_CellContainer *pPrevCell=static_cast<fp_CellContainer *>(pCell->getPrev());
+				UT_sint32 iHeight=pPrevCell->getHeight();
+				if(iHeight > iPrevHeight)
+				{
+					iPrevHeight=pPrevCell->getHeight();
+				}
+				i++;
+			}
 		}
-		pCell->drawHeaderCell(pDA,iHeightCount);
+		pCell->drawHeaderCell(pDA,iHeightCount,iPrevHeight);
 
 		pCell->setY(yTemp);
 		pCell->setiBotY(iBotY);
