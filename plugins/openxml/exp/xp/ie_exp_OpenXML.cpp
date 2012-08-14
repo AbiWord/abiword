@@ -1910,7 +1910,7 @@ const gchar * IE_Exp_OpenXML::convertToPositiveTwips(const gchar* str)
 	if(pt < 0) 
 		pt = -pt;
 	if(pt < 1.0)
-		return NULL;
+		pt = 0.0;
 	return UT_convertToDimensionlessString(pt, ".0");
 }
 
