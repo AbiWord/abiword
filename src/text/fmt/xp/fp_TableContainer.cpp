@@ -2013,20 +2013,12 @@ UT_sint32 fp_CellContainer::getCellY(fp_Line * /*pLine*/) const
 	return pTab->getY();
 }
 
-/*!
- Draw container content
- \param pDA Draw arguments
- */
-
-void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iMultiplier,UT_sint32 iPrevHeight)
+void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight)
 {
 	GR_Graphics * pG=pDA->pG;
 	
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 
-	xxx_UT_DEBUGMSG(("Left %d Right %d Top %d Bot %d page %d\n",iLeft,iRight,iTop,iBot,getPage()->getPageNumber()));
-	xxx_UT_DEBUGMSG(("The broken table is %p this %p\n",getBrokenTable(static_cast<fp_Container *>(getNthCon(0))),pNext));
-	
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
 	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<29)) - 1);
@@ -2043,12 +2035,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iMultiplier,UT_
 	}
 	
 	dg_DrawArgs da=*pDA;
-	xxx_UT_DEBUGMSG(("da.yoff %d ytop %d ybot %d\n",da.yoff,ytop,ybot));
-
-	da.yoff+=(iPrevHeight+2*pTab->getBorderWidth()) * iMultiplier;
-	xxx_UT_DEBUGMSG(("da.yoff is %d\n",da.yoff));
-	xxx_UT_DEBUGMSG(("Height increased by %d\n",iPrevHeight+2*pTab->getBorderWidth()));
-
+	da.yoff+=iPrevHeight;
 	da.xoff+=getX();
 	
 	for(int i=0;i<countCons();i++)
@@ -2056,8 +2043,6 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iMultiplier,UT_
 		fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
 		
 		da.xoff += pCon->getX();
-		xxx_UT_DEBUGMSG(("the getY of pCon %d is %d\n",i+1,pCon->getY()));
-		xxx_UT_DEBUGMSG(("da.yoff is %d\n",da.yoff));
 		if(da.yoff >=ytop && da.yoff <= ybot)
 		{
 			pCon->draw(&da);
@@ -2078,15 +2063,17 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iMultiplier,UT_
 
 	iTop=da.yoff;
 	iBot=iTop+getHeight()+(2*pTab->getBorderWidth());
-	xxx_UT_DEBUGMSG(("The height of this cell is %d\n",getHeight()));
-	xxx_UT_DEBUGMSG(("iTop %d iBot %d\n",iTop,iBot));
-	
 
 	/*painter.drawLine(iLeft,iTop,iRight,iTop); 
 	painter.drawLine(iLeft,iBot,iRight,iBot);
 	painter.drawLine(iLeft,iTop,iLeft,iBot);
 	painter.drawLine(iRight,iTop,iRight,iBot);*/
 }
+
+/*!
+ Draw container content
+ \param pDA Draw arguments
+ */
 void fp_CellContainer::draw(dg_DrawArgs* pDA)
 {
 	m_bDrawTop = false;
@@ -2430,6 +2417,10 @@ bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke) const
 {
 	UT_sint32 nextRow = m_iBottomAttach;
 	UT_sint32 yCellBot = 0;
+	if(pBroke->getMasterTable() != NULL)
+	{
+		return false;
+	}
 	if(nextRow <= pBroke->getMasterTable()->getNumRows())
 	{
 		yCellBot = pBroke->getMasterTable()->getYOfRow(nextRow);
@@ -7061,14 +7052,14 @@ fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContai
 	   m_pFirstCachedCell(NULL),
 	   m_pLastCachedCell(NULL),
 	   m_iTopOfHeader(-1),
-	   m_iBottomOfHeader(-1)
+	   m_iBottomOfHeader(-1),
+	   m_iTotalNoOfCells(0)
 {
 	pTabMaster = pTableContainer;
 }
 
 fp_TableHeader::~fp_TableHeader()
 {
-	UT_DEBUGMSG(("Destructor called\n\n\n\n"));
 	m_pFirstCachedCell = NULL;
 	m_pLastCachedCell = NULL;
 }
@@ -7105,6 +7096,8 @@ void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
 				m_pFirstCachedCell=pCell;
 			}
 			m_pLastCachedCell=pCell;
+			m_vecCells.push_back(pCell);
+			m_iTotalNoOfCells++;
 		}
 		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 	}
@@ -7116,6 +7109,10 @@ void fp_TableHeader::assignPositions(UT_sint32 iTop,UT_sint32 iBottom)
 	m_iBottomOfHeader=iBottom;
 }
 
+fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
+{
+	return m_vecCells[iPos];
+}
 void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 {
 	fp_TableContainer *pMaster = getMasterTable();
@@ -7135,9 +7132,8 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	UT_sint32 iCount=0,iNoColumns=pMaster->getNumCols();
 	UT_sint32 iHeightCount=0,iPrevHeight=0;
 
-	while(pCell && pCell != pStopCell && pCell->isHeaderCell())
+	while(pCell && (pCell != pStopCell && (pCell->isHeaderCell())) && (iCount!=m_iTotalNoOfCells))
 	{
-
 		UT_sint32 yTemp = pCell->getY();
 		UT_sint32 iTopY = pCell->getiTopY();
 		UT_sint32 iBotY = pCell->getiBotY();
@@ -7149,24 +7145,24 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 		pCell->setiBotY(m_iBottomOfHeader);
 		static_cast<fp_Container *>(pCell->getNthCon(0))->setMyBrokenContainer(NULL);
 		pCell->setToAllocation();
-		xxx_UT_DEBUGMSG(("pcell is %p Top %d Bottom %d page %d\n",pCell,pCell->getiTopY(),pCell->getiBotY(),getPage()->getPageNumber()));
 		iCount++;
 		if((iCount%iNoColumns)==1 && iCount!=1)
 		{
 			iHeightCount++;
-			UT_sint32 i=0;
-			while(i<iNoColumns)
+			UT_sint32 i=iCount-iNoColumns,iHeight,iTemp=0;
+			while(i<=iNoColumns)
 			{
-				fp_CellContainer *pPrevCell=static_cast<fp_CellContainer *>(pCell->getPrev());
-				UT_sint32 iHeight=pPrevCell->getHeight();
-				if(iHeight > iPrevHeight)
+				fp_CellContainer *pPrevCell=static_cast<fp_CellContainer *>(getNthCell(i-1));
+				iHeight=pPrevCell->getHeight();
+				if(iHeight > iTemp)
 				{
-					iPrevHeight=pPrevCell->getHeight();
+					iTemp=iHeight;
 				}
 				i++;
 			}
+			iPrevHeight+=iTemp;
 		}
-		pCell->drawHeaderCell(pDA,iHeightCount,iPrevHeight);
+		pCell->drawHeaderCell(pDA,iPrevHeight);
 
 		pCell->setY(yTemp);
 		pCell->setiBotY(iBotY);
@@ -7174,6 +7170,6 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 		static_cast<fp_Container *>(pCell->getNthCon(0))->setMyBrokenContainer(pTempCon);
 		pCell->setToAllocation();
 		
-		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
+		pCell = static_cast<fp_CellContainer *>(getNthCell(iCount));
 	}
 }

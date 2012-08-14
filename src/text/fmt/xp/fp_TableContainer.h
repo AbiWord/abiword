@@ -303,7 +303,7 @@ public:
 	}
 
 	void fixLines(UT_sint32, fp_TableContainer *,bool);
-	void drawHeaderCell(dg_DrawArgs *,UT_sint32,UT_sint32);
+	void drawHeaderCell(dg_DrawArgs *,UT_sint32);
 private:
 		
 	void                _clear(fp_TableContainer * pBroke);
@@ -657,6 +657,7 @@ public:
 	void markCellsForHeader(void);
 	void cacheCells(fp_TableContainer *);
 	void assignPositions(UT_sint32, UT_sint32);
+	fp_ContainerObject * getNthCell(UT_sint32);
 	UT_sint32 getActualRowHeight(UT_sint32 iRowNumber);
 	~fp_TableHeader();
 
@@ -669,6 +670,7 @@ private:
 	fp_CellContainer *m_pLastCachedCell;
 	UT_sint32 m_iTopOfHeader;
 	UT_sint32 m_iBottomOfHeader;
+	UT_sint32 m_iTotalNoOfCells;
 
 };
 	
