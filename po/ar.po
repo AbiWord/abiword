@@ -1,11 +1,13 @@
 # Arabic translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Arafat Medini <lumina@silverpen.de>, 2003.
 # IBRAHIM ALIBRAHIM <iki2@eudoramail.com>, 2003.
 # Youssef CHAHIBI <chahibi@gmail.com>, 2006.
 # Djihed Afifi <djihed@gmail.com>, 2006.
 # Khaled Hosny <khaledhosny@eglug.org>, 2007, 2009, 2011.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

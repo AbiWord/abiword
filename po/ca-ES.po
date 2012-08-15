@@ -1,10 +1,12 @@
 # Catalan translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:	
 # Quico Llach <qllach@softcatala.org>
 # Jesús Corrius <jesus@softcatala.org>
 # Jordi Mas <jmas@softcatala.org>
 # Mireia Farrús <mfarrus@softcatala.org>
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

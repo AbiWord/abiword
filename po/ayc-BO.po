@@ -1,3 +1,4 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.4.6 in aymara sureño (Oruro)\n"

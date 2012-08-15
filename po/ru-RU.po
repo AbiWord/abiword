@@ -1,9 +1,11 @@
 # Russian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Nickolay Shmyrev (Николай В. Шмырёв) <nshmyrev@yandex.ru>, 2003.
 # Сергей Ирюпин <biblelamp@gmail.com>, 2008.
 # Alex <dxma8zp02@sneakemail.com>, 2009.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

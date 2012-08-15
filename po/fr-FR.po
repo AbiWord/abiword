@@ -1,9 +1,11 @@
 # French translation of AbiWord.
 # Please see http://live.gnome.org/GnomeFr/Traduire for translation guidelines.
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Camille Moulin <camille.moulin@gmail.com>, 2006.
 # Jonathan Ernst <jonathan@ernstfamily.ch>, 2006.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

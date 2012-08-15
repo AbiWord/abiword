@@ -1,7 +1,9 @@
 # Serbian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Bogosavljeviæ Ivica (ivica84@email.co.yu)
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

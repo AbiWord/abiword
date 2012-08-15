@@ -1,8 +1,10 @@
 # Songhay translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Mohomodou Houssouba <mh@bollag-areal.ch>, 2012.
 # Chris Leonard <cjl@laptop.org>, 2012.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

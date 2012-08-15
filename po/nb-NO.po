@@ -1,9 +1,11 @@
 # Norwegian Bokmål translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Kjartan Maraas <kmaraas@gnome.org>, 2001.
 # Terance Edward Sola <terance@lyse.net>, 2005.
 # Trond Gundersen <trondsg@gmail.net>, 2008
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

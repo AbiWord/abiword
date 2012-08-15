@@ -1,9 +1,11 @@
 # Dutch translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Reinout van Schouwen <reinout@cs.vu.nl>, 2004-2005.
 # Benno Schulenberg <benno@vertaalt.nl>, 2007, 2008.
 # Pjotr Kan <pjotrvertaalt@gmail.com>, 2012.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

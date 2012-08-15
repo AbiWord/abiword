@@ -1,7 +1,9 @@
 # Belarusian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Vital Khilko <dojlid@mova.org>, 2002,2003.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

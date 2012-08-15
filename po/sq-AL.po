@@ -1,9 +1,11 @@
 # Albanian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Me ndihmën e çmuar të Laurent Dhimës, Alan Horkan, Keneth Jeremy Davis, Pierre Abbat,
 # Besnik Bleta <besnik@programeshqip.org>, 2002-2012.
 # për versionin head të abiword.pot-it
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

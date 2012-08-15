@@ -1,8 +1,10 @@
 # Breton translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Philippe BASCIANO-LE GALL <drouizig@drouizig.org>, 2005-2010.
 # Denis Arnaud <denisarnuad@yahoo.fr>,2011.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

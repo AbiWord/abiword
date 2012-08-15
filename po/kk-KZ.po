@@ -1,7 +1,9 @@
 # Kazakh translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Baurzhan Muftakhidinov <baurthefirst@gmail.com>, 2010.
+#
 msgid ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"

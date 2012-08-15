@@ -1,5 +1,6 @@
 # Greek translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Nick Niktaris <niktarin@yahoo.com>, 2002.
 # Simos Xenitellis <simos@gnome.org>, 2001, 2005.
@@ -10,6 +11,7 @@
 # Kostas, convert to UTF-8, updated translation.
 # Socrates completed translation (Jun 2005), 1520 messages
 # Simos reviewed and tested translation, 1520 messages.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

@@ -1,7 +1,9 @@
 # Brazilian Portuguese translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Nelson Ferraz <nferraz@gnubis.com.br>, 2004.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: pt-BR\n"

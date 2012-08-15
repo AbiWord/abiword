@@ -1,7 +1,9 @@
 # Estonian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Marek Laane <bald@starman.ee>, 2003-2005.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"

@@ -1,8 +1,10 @@
 # Chinese (China) zh_CN translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # baidongyi <baidongyi@gmail.com>, 2006.
 # lite <litekok@gmail.com>, 2012.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

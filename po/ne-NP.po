@@ -1,10 +1,12 @@
 # Nepali translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Pawan Chitrakar <pchitrakar@gmail.com>, 2006.
 # Shyam Krishna Bal <shyamkrishna_bal@yahoo.com>, 2006.
 # Aman Maharjan <aman.maharjan@olenepal.org>, 2012
 # Niraj Paudel <niraj.paudel@olenepal.org>, 2012
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

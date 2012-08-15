@@ -1,5 +1,6 @@
 # Quechua (Cusco-Collao) lang-quz translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Amos Batto <amosbatt@yahoo.com>, 2010.
 # Irma Alvarez <sankaypillo@gmail.com>, 2011.

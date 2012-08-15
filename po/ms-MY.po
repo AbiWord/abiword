@@ -1,7 +1,9 @@
 # Bahasa Melayu (Malay) (ms-MY) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Sharuzzaman Ahmat Raslan <sharuzzaman@myrealbox.com>, 2002, 2003, 2004, 2005, 2006, 2007, 2008.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

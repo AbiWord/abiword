@@ -1,8 +1,10 @@
 # Macedonian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Zaklina Gjalevska <zaklina@nubsk.edu.mk>, 2004.
 # Zaklina Gjalevska <gjalevska@yahoo.com>, 2004.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

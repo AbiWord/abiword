@@ -1,6 +1,7 @@
 # Canadian English translation for AbiWord
 # Copyright (C) 2004-2005 Adam Weinberger and the AbiWord project
 # This file is distributed under the same licence as the AbiWord package.
+#
 # Adam Weinberger <adamw@gnome.org>, 2004, 2005.
 #
 #

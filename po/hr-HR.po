@@ -1,8 +1,10 @@
 # Croatian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Renato PaviÄiÄ‡ <http://www.translator-shop.org> 2006
 # Special thanks to Martin Srebotnjak <miles@filmsi.net>
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

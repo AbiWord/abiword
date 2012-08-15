@@ -1,7 +1,9 @@
 # Hungarian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Gabor Kelemen <kelemeng at gnome dot hu>, 2012.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

@@ -1,7 +1,9 @@
 # Fulah translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Ibrahima SARR <ibrahima.sarr@pulaagu.com>, 2010, 2011, 2012.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

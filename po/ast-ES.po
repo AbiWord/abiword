@@ -1,8 +1,10 @@
 # Asturian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Xosé Carrero Alea, Esbardu
 # Coordination project: Softastur (http://wiki.altuxa.com/softastur/Portada)
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

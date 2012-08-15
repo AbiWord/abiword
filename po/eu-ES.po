@@ -1,5 +1,6 @@
 # Basque (Euskara) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Iurreta GLHB Institutuko SA3-1D ikasleek euskaratua.
 # 2002:
@@ -18,6 +19,7 @@
 # Alfredo Barrainkua <alfredobz euskalnet net>, 2002, 2003.
 # Itzulpen eta zuzenketa
 # Mikel Pascual Aldabaldetreku <mikel.paskual@gmail.com>, 2008
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

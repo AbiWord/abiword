@@ -1,7 +1,9 @@
 # Irish (Gaelic) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # SEANÁN Ó COISTÍN <seananoc@hotmail.com>, 2006.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

@@ -13,9 +13,11 @@
 #  translation of qu-BO.po to Bolivian Quechua
 #  translation of AbiWord to Bolivian Quechua.
 #  This file is distributed under the same license as the PACKAGE package.
+#
 #  Copyright (C) 2004-2006
 #  Maria Elena Pozo Tapia <marielenapozo@yahoo.es>, Amos Batto <abatto@indiana.edu>
 #  Using some Spanish translations from Francisco Javier F. Serrador <serrador@arrakis.es>
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: qu-BO\n"

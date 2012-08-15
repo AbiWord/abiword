@@ -1,9 +1,11 @@
 # Mandinka translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Dominique Rochefort
 # Ousmane Faty Ndongo
 # Cheikh Tidiane Guèye
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

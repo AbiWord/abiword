@@ -1,7 +1,9 @@
 # Chinese (Hong Kong) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # wwycheuk <wwycheuk@gmail.com>, 2011.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 2.3.0\n"

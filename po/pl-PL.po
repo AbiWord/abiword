@@ -1,10 +1,12 @@
 # Polish translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Sercxemulo <explo@poczta.wp.pl>
 # Piotr Banski <bansp@bigfoot.com>
 # Andrzej Pruszynski <donkiszot@rth,coi,waw,pl>, 2002
 # Marcin <ulinski.marcin@gmail.com> 2012
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

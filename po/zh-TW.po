@@ -1,5 +1,6 @@
 # Chinese (Taiwan) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+#
 # Copyright by:
 # Chih-Wei Huang <cwhuang@linux.org.tw>, 2000.
 # Armani <armani@cle.linux.org.tw>
@@ -8,6 +9,7 @@
 # Anthony Fok <anthony@thizlinux.com>, ThizLinux Laboratory Ltd.
 # December 2001  (AbiWord-0.9.6)
 # Walter Cheuk <wwycheuk@gmail.com>, 2006.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"

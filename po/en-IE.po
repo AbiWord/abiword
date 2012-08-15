@@ -1,6 +1,7 @@
 # po file for Abiword
 # Copyright (C) 2005 AbiWord
 # This file is distributed under the GPL license.
+#
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 #, fuzzy
