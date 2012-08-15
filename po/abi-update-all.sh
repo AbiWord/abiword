@@ -11,4 +11,5 @@ do
     ./update.pl $OPT $I
 done
 
-echo "Use 'abi-update-all.sh fuzzy' for fuzzy matching of msgmerge."
+echo "Use 'abi-update-all.sh fuzzy' for fuzzy matching of msgmerge,"
+echo "but what would be the point of that?"
