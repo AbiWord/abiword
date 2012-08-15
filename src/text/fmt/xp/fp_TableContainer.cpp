@@ -2020,8 +2020,19 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight)
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
+	UT_sint32 iTop,iBot,iLeft,iRight;
 	UT_sint32 ytop,ybot;
 	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<29)) - 1);
+	
+	GR_Painter painter(pG);
+	fp_Column *pCol = NULL;
+	fp_ShadowContainer *pShadow = NULL;
+	UT_sint32 col_y=0;
+	bool bClear=false;
+	fp_TableContainer *pNext=static_cast<fp_TableContainer *>(getHeaderPointer()->getNext());
+	fp_TableContainer *pOwnContainer=static_cast<fp_TableContainer *>(getHeaderPointer());
+	getScreenPositions(pNext,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bClear);
+	
 	if(pClipRect)
 	{
 		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
@@ -2037,7 +2048,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight)
 	dg_DrawArgs da=*pDA;
 	da.yoff+=iPrevHeight;
 	da.xoff+=getX();
-	
+	iTop=da.yoff-42;
 	for(int i=0;i<countCons();i++)
 	{
 		fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
@@ -2048,21 +2059,10 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight)
 			pCon->draw(&da);
 		}
 	}
-	
-	GR_Painter painter(pG);
-	fp_Column *pCol = NULL;
-	fp_ShadowContainer *pShadow = NULL;
-	UT_sint32 iTop,iBot,iLeft,iRight;
-	UT_sint32 col_y=0;
-	bool bClear=false;
-	
-	fp_TableContainer *pNext=static_cast<fp_TableContainer *>(getHeaderPointer()->getNext());
-	fp_TableContainer *pOwnContainer=static_cast<fp_TableContainer *>(getHeaderPointer());
-	
-	getScreenPositions(pNext,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bClear);
 
-	iTop=da.yoff;
-	iBot=iTop+getHeight()+(2*pTab->getBorderWidth());
+	iBot=da.yoff+42;
+
+	xxx_UT_DEBUGMSG(("iTop %d and iBot %d\n",iTop,iBot));
 
 	/*painter.drawLine(iLeft,iTop,iRight,iTop); 
 	painter.drawLine(iLeft,iBot,iRight,iBot);
@@ -7053,7 +7053,8 @@ fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContai
 	   m_pLastCachedCell(NULL),
 	   m_iTopOfHeader(-1),
 	   m_iBottomOfHeader(-1),
-	   m_iTotalNoOfCells(0)
+	   m_iTotalNoOfCells(0),
+	   m_iRowNumber(-1)
 {
 	pTabMaster = pTableContainer;
 }
@@ -7087,17 +7088,24 @@ void fp_TableHeader::calculateHeaderHeight(void)
 void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
 {
 	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
+	UT_sint32 iRowNumber=1,i=0,iCols=pMaster->getNumCols();
 	while(pCell)
 	{
+		i++;
+		if(i==iCols)
+		{
+			i=0;
+			iRowNumber++;
+		}
 		if(pCell->isHeaderCell())
 		{
-			if(m_pFirstCachedCell == NULL)
-			{
-				m_pFirstCachedCell=pCell;
-			}
 			m_pLastCachedCell=pCell;
 			m_vecCells.push_back(pCell);
 			m_iTotalNoOfCells++;
+			if(m_iRowNumber==-1)
+			{
+				m_iRowNumber=iRowNumber;
+			}
 		}
 		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 	}
@@ -7118,21 +7126,19 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	fp_TableContainer *pMaster = getMasterTable();
 	fp_CellContainer *pCell = NULL;
 
-	pCell=static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
-	UT_sint32 count=0;
 
 	if(m_pFirstCachedCell == NULL)
 	{
 		cacheCells(pMaster);
 	}
-	pCell=m_pFirstCachedCell;
+	pCell=pMaster->getCellAtRowColumn(m_iRowNumber-1,0);
+	m_pFirstCachedCell=pCell;
 	fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
 
-	xxx_UT_DEBUGMSG(("Draw header fired\n"));
 	UT_sint32 iCount=0,iNoColumns=pMaster->getNumCols();
 	UT_sint32 iHeightCount=0,iPrevHeight=0;
 
-	while(pCell && (pCell != pStopCell && (pCell->isHeaderCell())) && (iCount!=m_iTotalNoOfCells))
+	while(pCell && (pCell != pStopCell) && (iCount!=m_iTotalNoOfCells))
 	{
 		UT_sint32 yTemp = pCell->getY();
 		UT_sint32 iTopY = pCell->getiTopY();

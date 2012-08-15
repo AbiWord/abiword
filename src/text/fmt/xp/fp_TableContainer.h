@@ -671,7 +671,7 @@ private:
 	UT_sint32 m_iTopOfHeader;
 	UT_sint32 m_iBottomOfHeader;
 	UT_sint32 m_iTotalNoOfCells;
-
+	UT_sint32 m_iRowNumber;
 };
 	
 #endif /* TABLECONTAINER_H */
