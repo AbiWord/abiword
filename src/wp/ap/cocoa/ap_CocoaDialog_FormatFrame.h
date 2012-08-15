@@ -112,8 +112,8 @@ private:
 	IBOutlet NSForm *			_leftBorderNumberForm;
 	IBOutlet NSForm *			_topBorderNumberForm;
 	IBOutlet NSForm *			_bottomBorderNumberForm;
-	IBOutlet NSForm *			_frameHeightField;
-	IBOutlet NSForm *			_frameWidthField;
+	IBOutlet NSFormCell *			_frameHeightField;
+	IBOutlet NSFormCell *			_frameWidthField;
 
 	IBOutlet NSStepper *		_borderStepper;
 	IBOutlet NSStepper *		_rightBorderStepper;

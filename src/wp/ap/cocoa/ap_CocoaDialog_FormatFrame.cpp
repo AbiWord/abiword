@@ -382,7 +382,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 - (IBAction)frameHeightField:(id)sender;
 {
     NSStepper * stepper = 0;
-    NSForm * field = 0;
+    NSFormCell * field = 0;
     UT_UTF8String sHeight;
     float height = 0;
     stepper   = _frameHeightStepper;
@@ -397,7 +397,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 - (IBAction)frameHeightStepper:(id)sender;
 {
     NSStepper * stepper = 0;
-    NSForm * field = 0;
+    NSFormCell * field = 0;
     stepper   = _frameHeightStepper;
     field     = _frameHeightField;
     UT_UTF8String sHeight;
@@ -415,7 +415,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 - (IBAction)frameWidthField:(id)sender;
 {
     NSStepper * stepper = 0;
-    NSForm * field = 0;
+    NSFormCell * field = 0;
     UT_UTF8String sWidth;
     float width = 0;
     stepper   = _frameWidthStepper;
@@ -434,7 +434,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 - (IBAction)frameWidthStepper:(id)sender;
 {
     NSStepper * stepper = 0;
-    NSForm * field = 0;
+    NSFormCell * field = 0;
     stepper   = _frameWidthStepper;
     field     = _frameWidthField;
     UT_UTF8String sWidth;
