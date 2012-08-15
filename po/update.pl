@@ -33,7 +33,7 @@ my $PACKAGE="abiword";
 
 # Declare global variables
 #-------------------------
-my $VERSION = "1.5beta15";
+my $VERSION = "1.5beta16";
 my $LANG    = $ARGV[0];
 
 # Always print as the first thing
@@ -75,7 +75,8 @@ if ($LANG=~/^-(.)*/){
     elsif ($LANG eq "--help"     || "$LANG" eq "-H"){
 	&Help;
     }
-    elsif ($LANG eq "--dist"     || "$LANG" eq "-D"){
+    elsif ($LANG eq "--dist"     || "$LANG" eq "-D" ||
+           $LANG eq "--stat"     || "$LANG" eq "-T"){
         &Merging;
     }
     elsif ($LANG eq "--pot"      || "$LANG" eq "-P"){
@@ -355,19 +356,23 @@ sub GeneratePot{
 
 sub Merging{
 
+    my $FUZZY = "";
+
     if ($ARGV[1]){
         $LANG   = $ARGV[1];
+        $FUZZY = "--no-fuzzy-matching" if ($ARGV[0] eq "--stat" || $ARGV[0] eq "-T");
     } else {
 	$LANG   = $ARGV[0];
     }
 
     print "Merging $LANG.po with $PACKAGE.pot...";
 
-    my $MERGE="cp $LANG.po $LANG.po.old && msgmerge $LANG.po.old $PACKAGE.pot -o $LANG.po";
+    my $MERGE="cp $LANG.po $LANG.po.old && msgmerge $FUZZY $LANG.po.old $PACKAGE.pot -o $LANG.po";
 
     system($MERGE);
 
-    if ($ARGV[0] ne "--dist" && $ARGV[0] ne "-D") {
+    if ($ARGV[0] ne "--dist" && $ARGV[0] ne "-D" && 
+        $ARGV[0] ne "--stat" && $ARGV[0] ne "-T") {
         print "\n";
     }
 
