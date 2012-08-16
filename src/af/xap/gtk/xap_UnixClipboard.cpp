@@ -324,7 +324,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 		UT_DEBUGMSG(("Looking for %s on clipbaord \n",formatList[i]));
 		if(selection)
 		{
-			if (gtk_selection_data_get_target(selection) && (gtk_selection_data_get_length(selection) > 0))
+			if (gtk_selection_data_get_data(selection) && (gtk_selection_data_get_length(selection) > 0))
 			{
 			  if(!rval)
 			    {
