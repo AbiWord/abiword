@@ -1924,38 +1924,6 @@ AAAAAAAAAAAAAAAAA</bytes>
 				</object>
 				<object class="IBConnectionRecord">
 					<object class="IBOutletConnection" key="connection">
-						<string key="label">_frameHeightField</string>
-						<reference key="source" ref="678614788"/>
-						<reference key="destination" ref="655096682"/>
-					</object>
-					<int key="connectionID">170</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">_frameWidthField</string>
-						<reference key="source" ref="678614788"/>
-						<reference key="destination" ref="655096682"/>
-					</object>
-					<int key="connectionID">171</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">_frameHeightFieldForm</string>
-						<reference key="source" ref="678614788"/>
-						<reference key="destination" ref="808277867"/>
-					</object>
-					<int key="connectionID">172</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
-						<string key="label">_frameWidthFieldForm</string>
-						<reference key="source" ref="678614788"/>
-						<reference key="destination" ref="808277867"/>
-					</object>
-					<int key="connectionID">173</int>
-				</object>
-				<object class="IBConnectionRecord">
-					<object class="IBOutletConnection" key="connection">
 						<string key="label">_positionPopUp</string>
 						<reference key="source" ref="678614788"/>
 						<reference key="destination" ref="156288831"/>
@@ -2033,6 +2001,22 @@ AAAAAAAAAAAAAAAAA</bytes>
 						<reference key="destination" ref="228474027"/>
 					</object>
 					<int key="connectionID">237</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">_frameWidthField</string>
+						<reference key="source" ref="678614788"/>
+						<reference key="destination" ref="669395884"/>
+					</object>
+					<int key="connectionID">238</int>
+				</object>
+				<object class="IBConnectionRecord">
+					<object class="IBOutletConnection" key="connection">
+						<string key="label">_frameHeightField</string>
+						<reference key="source" ref="678614788"/>
+						<reference key="destination" ref="586450885"/>
+					</object>
+					<int key="connectionID">239</int>
 				</object>
 			</object>
 			<object class="IBMutableOrderedSet" key="objectRecords">
@@ -2965,7 +2949,7 @@ AAAAAAAAAAAAAAAAA</bytes>
 				</object>
 			</object>
 			<nil key="sourceID"/>
-			<int key="maxID">237</int>
+			<int key="maxID">239</int>
 		</object>
 		<object class="IBClassDescriber" key="IBDocument.Classes">
 			<object class="NSMutableArray" key="referencedPartialClassDescriptions">
@@ -3246,8 +3230,8 @@ AAAAAAAAAAAAAAAAA</bytes>
 							<string>_bottomBorderNumber</string>
 							<string>_bottomBorderNumberForm</string>
 							<string>_bottomBorderStepper</string>
-							<string>_frameHeightFieldForm</string>
 							<string>_frameHeightField</string>
+							<string>_frameHeightFieldForm</string>
 							<string>_frameHeightStepper</string>
 							<string>_frameWidthField</string>
 							<string>_frameWidthFieldForm</string>
@@ -3358,7 +3342,7 @@ AAAAAAAAAAAAAAAAA</bytes>
 								<string key="candidateClassName">NSFormCell</string>
 							</object>
 							<object class="IBToOneOutletInfo">
-								<string key="name">_frameHeightFieldForm</string>
+								<string key="name">_frameWidthFieldForm</string>
 								<string key="candidateClassName">NSForm</string>
 							</object>
 							<object class="IBToOneOutletInfo">
