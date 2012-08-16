@@ -69,6 +69,11 @@ inline GdkWindow* gtk_widget_get_window(GtkWidget* w)
   return w->window;
 }
 
+inline const guchar *gtk_selection_data_get_data(const GtkSelectionData *s)
+{
+	return s->data;
+}
+
 inline GdkAtom gtk_selection_data_get_target(const GtkSelectionData *s)
 {
   return s->target;
