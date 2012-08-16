@@ -309,8 +309,6 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 	GtkClipboard * clipboard = gtkClipboardForTarget (tFrom);
 #if DEBUG
 	gtk_clipboard_request_targets(clipboard,( GtkClipboardTargetsReceivedFunc) allTargets, this);
-#else
-	gtk_clipboard_request_targets(clipboard, NULL, NULL);
 #endif
 	UT_GenericVector<GdkAtom> atoms ;
 	for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
