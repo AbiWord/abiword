@@ -767,10 +767,12 @@ void AP_UnixApp::pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipb
 		{
 			UT_uint32 iread,iwritten = 0;
 			const char * szutf8= static_cast<const char *>(UT_convert(reinterpret_cast<const char *>(pData),iLen,szRes,"UTF-8",&iread,&iwritten));
+			if (szutf8) { 
 			IE_Imp_XHTML * pImpHTML = new IE_Imp_XHTML(pDocRange->m_pDoc);
 			bSuccess = pImpHTML->pasteFromBuffer(pDocRange,reinterpret_cast<const unsigned char *>(szutf8),iwritten,"UTF-8");
 			g_free(const_cast<char *>(szutf8));
 			DELETEP(pImpHTML);
+			}
 		}
 		else
 		{
