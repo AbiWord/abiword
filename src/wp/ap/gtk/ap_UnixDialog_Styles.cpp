@@ -626,8 +626,8 @@ void AP_UnixDialog_Styles::_populateCList(void)
 		gtk_tree_view_append_column(GTK_TREE_VIEW(m_tvStyles), column);
 	}
 
-	GtkTreeIter iter;
-	GtkTreeIter *pHighlightIter = NULL;
+	GtkTreeIter iter, pHighlightIter;
+	bool highlight = false;
 	UT_GenericVector<PD_Style*> *pStyles = NULL;
 	getDoc()->enumStyles(pStyles);
 	for (UT_uint32 i = 0; i < nStyles; i++)
@@ -649,17 +649,22 @@ void AP_UnixDialog_Styles::_populateCList(void)
 			gtk_list_store_set(m_listStyles, &iter, 0, name, -1);
 			
 			if (!strcmp(m_sNewStyleName.utf8_str(), name)) {
-				pHighlightIter = gtk_tree_iter_copy(&iter);
+				pHighlightIter = iter;
+				highlight = true;
 			}
 		}
 	}
 	DELETEP(pStyles);
 
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(m_tvStyles));
-	if (pHighlightIter) {
+	if (highlight) {
 		// select new/modified
-		gtk_tree_selection_select_iter(selection, pHighlightIter);
-		gtk_tree_iter_free(pHighlightIter);
+		GtkTreeModel *sort = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
+		gtk_tree_model_sort_convert_child_iter_to_iter(GTK_TREE_MODEL_SORT(sort), &iter, &pHighlightIter);
+		gtk_tree_selection_select_iter(selection, &iter);
+		GtkTreePath *path = gtk_tree_model_get_path(sort, &iter); 
+		gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_tvStyles), path, NULL, FALSE, 0, 0);
+		gtk_tree_path_free(path);
 	}
 	else {
 		// select first
