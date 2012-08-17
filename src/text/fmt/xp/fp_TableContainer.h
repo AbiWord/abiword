@@ -304,6 +304,15 @@ public:
 
 	void fixLines(UT_sint32, fp_TableContainer *,bool);
 	void drawHeaderCell(dg_DrawArgs *,UT_sint32);
+	void setPos(UT_sint32 i)
+	{
+		m_iCellPos=i;
+	}
+	UT_sint32 getPos() const
+	{
+		return m_iCellPos;
+	}
+
 private:
 		
 	void                _clear(fp_TableContainer * pBroke);
@@ -399,6 +408,7 @@ private:
 	UT_sint32 	m_iShiftHeight;
 	bool 		m_bIsToBeDisplaced;
 	UT_sint32 	m_iBrokenTableNumber;
+	UT_sint32 	m_iCellPos;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
@@ -561,6 +571,7 @@ fp_Column *         getBrokenColumn(void);
 	{
 		return m_pFirstShiftedCell;
 	}
+	void tweakFirstRowAlone(UT_sint32);
 private:
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
@@ -639,6 +650,10 @@ private:
 
 	fp_CellContainer * m_pFirstShiftedCell;
 	fp_CellContainer * m_pLastShiftedCell;
+	UT_sint32 m_iFirstShiftedCellPos;
+	UT_sint32 m_iLastShiftedCellPos;
+
+	UT_sint32 m_iLastCellHeight;
 };
 
 class fp_TableHeader : public fp_TableContainer

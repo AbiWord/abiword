@@ -130,7 +130,8 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_iVertAlign(0),
 	  m_bHeaderCell(false),
 	  m_pHeader(NULL),
-	  m_bIsToBeDisplaced(false)
+	  m_bIsToBeDisplaced(false),
+	  m_iCellPos(0)
 {
 }
 
@@ -3290,7 +3291,8 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
           m_bHeader(false),
 	  m_bCellPositionChanged(false),
 	  m_pFirstShiftedCell(NULL),
-	  m_pLastShiftedCell(NULL)
+	  m_pLastShiftedCell(NULL),
+	  m_iLastCellHeight(0)
 
 {
 	if(getSectionLayout())
@@ -3343,7 +3345,8 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_bHeader(false),
 	  m_bCellPositionChanged(false),
 	  m_pFirstShiftedCell(NULL),
-	  m_pLastShiftedCell(NULL)
+	  m_pLastShiftedCell(NULL),
+	  m_iLastCellHeight(0)
 {
 }
 
@@ -4460,20 +4463,20 @@ UT_sint32 fp_TableContainer::getBrokenTablePosition()
 		pMaster=this;
 	}
 	UT_sint32 pos=0;
-	fp_TableContainer *pCon=pMaster->getFirstBrokenTable();
-	while(pCon)
+	fp_TableContainer *pTab=pMaster->getFirstBrokenTable();
+	while(pTab)
 	{
-		if(pCon->isThisHeader())
+		if(pTab->isThisHeader())
 		{
-			pCon=static_cast<fp_TableContainer *>(pCon->getNext());
+			pTab=static_cast<fp_TableContainer *>(pTab->getNext());
 			continue;
 		}
 		pos++;
-		if(this == pCon)
-			return pos;
-		pCon=static_cast<fp_TableContainer *>(pCon->getNext());
+		if(this == pTab)
+			break;
+		pTab=static_cast<fp_TableContainer *>(pTab->getNext());
 	}
-	return -1;
+	return pos;
 }
 
 void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
@@ -4513,11 +4516,14 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 		return;
 	}
 	pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
+	bool bEnd=false;
 	while(pCell)
 	{
 		iCount++;
-		if(pCell->isInsideBrokenTable(this))
+		pCell->setPos(iCount);
+		if(pCell->isInsideBrokenTable(this) || bEnd)
 		{
+			bEnd=true;
 			xxx_UT_DEBUGMSG(("inside %d\n",iCount));
 			xxx_UT_DEBUGMSG(("Previous Y %d shift %d for cell %d pTab %p\n",pCell->getY(),iShift,iCount,this));
 			if(!bBack /*&& !pCell->isToBeShifted()*/)
@@ -4525,6 +4531,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 				if(m_pFirstShiftedCell == NULL)
 				{
 					m_pFirstShiftedCell=pCell;
+					m_iFirstShiftedCellPos=iCount;
 				}
 				xxx_UT_DEBUGMSG(("Shifting forward %d\n",iCount));
 				pCell->setY(pCell->getY() + iShift);
@@ -4532,6 +4539,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 				pCell->setiBotY(pCell->getiBotY() + iShift);
 				pCell->setToBeShifted(true);
 				m_pLastShiftedCell=pCell;
+				m_iLastShiftedCellPos=iCount;
 			}
 		}
 		else
@@ -4541,7 +4549,35 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 		}
 		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 	}
+	pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(iCount-1));
+	if(pCell)
+	{
+		UT_sint32 iY=pCell->getY();
+		UT_DEBUGMSG(("iY %d\n",iY));
+		iY+=pCell->getHeight();
+		m_iLastCellHeight=iY+100;
+	}
+	xxx_UT_DEBUGMSG(("Last cell yBot %d and iCount %d and %p\n",m_iLastCellHeight,iCount,pMaster->getNthCon(iCount-1)));
 }
+void fp_TableContainer::tweakFirstRowAlone(UT_sint32 iTweakHeight)
+{
+	fp_TableContainer *pMaster=getMasterTable();
+	UT_sint32 iNumCols=pMaster->getNumCols();
+
+	fp_CellContainer *pCell=static_cast<fp_CellContainer *>(pMaster->getNthCon(m_iFirstShiftedCellPos-6));
+	UT_sint32 iCount=0;
+	while(pCell && iNumCols)
+	{
+		iNumCols--;
+		iCount++;
+		pCell->setY(pCell->getY() + iTweakHeight);
+		pCell->setiTopY(pCell->getiTopY() + iTweakHeight);
+		pCell->setiBotY(pCell->getiBotY() + iTweakHeight);
+		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+	UT_DEBUGMSG(("The total no of shifted cells %d\n",iCount));
+}
+
 /*!
  * This method creates a new broken tablecontainer, broken at the
  * offset given. 
@@ -4639,13 +4675,13 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
 		getMasterTable()->setLastBrokenTable(pBroke);
 		pBroke->setYBreakHere(getYBreak() + vpos);
-		pBroke->setYBottom(getMasterTable()->getYBottom() + getMasterTable()->getHeaderObject()->getHeaderHeight());
-		pBroke->changeCellPositions(getMasterTable()->getHeaderObject()->getHeaderHeight(),false);
+/*		pBroke->setYBottom(getMasterTable()->getYBottom() + getMasterTable()->getHeaderObject()->getHeaderHeight());
+		pBroke->changeCellPositions(getMasterTable()->getHeaderObject()->getHeaderHeight(),false);*/
 		
 		setYBottom(getYBreak() + vpos -1);
 
 		UT_ASSERT(getHeight() >0);
-		UT_ASSERT(pBroke->getHeight() > 0);
+	//	UT_ASSERT(pBroke->getHeight() > 0);
 		UT_sint32 i = -1;
 		
 		pHeader->setPrev(this);
@@ -4712,6 +4748,24 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		// Now deal with issues from a container overlapping the top of the
 		// of the new broken table.
 		//
+
+//Don't touch this :P		
+		UT_sint32 iHeaderHeight=pTabHeader->getHeaderHeight();
+		pBroke->setYBottom(getMasterTable()->getYOfRow(getMasterTable()->getNumRows()) + iHeaderHeight); 
+		pBroke->changeCellPositions(iHeaderHeight,false);
+		if(pBroke->m_iLastCellHeight > 0)
+			pBroke->setYBottom(pBroke->m_iLastCellHeight);
+
+		UT_sint32 iPos=getBrokenTablePosition();
+		if(iPos>=2)
+		{
+			UT_DEBUGMSG(("iPos %d\n",iPos));
+			pBroke->tweakFirstRowAlone(iHeaderHeight);
+		}
+		
+		UT_ASSERT(pBroke->getHeight() > 0);
+//My tough part over :P
+
 		UT_sint32 iTweak = tweakBrokenTable(pBroke);
 		xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
 	 	if(iTweak > 0)
