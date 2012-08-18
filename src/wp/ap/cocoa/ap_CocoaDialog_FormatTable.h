@@ -110,6 +110,8 @@ private:
 - (IBAction)tableHeightStepper:(id)sender;
 - (IBAction)tableWidthField:(id)sender;
 - (IBAction)tableWidthStepper:(id)sender;
+- (void)setHeight:(float)height;
+- (void)setWidth:(float)width;
 
 - (XAP_CocoaNSView*)preview;
 - (void)setSensitivity:(bool)bSens;

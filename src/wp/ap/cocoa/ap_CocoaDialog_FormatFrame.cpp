@@ -878,7 +878,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (void)setWidth:(float)width
 {
-    [_frameWidthStepper setInttValue:width];
+    [_frameWidthStepper setIntValue:width];
     [_frameWidthField setIntValue:width];
 }
 

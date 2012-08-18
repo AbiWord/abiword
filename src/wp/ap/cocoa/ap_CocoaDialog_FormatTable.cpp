@@ -211,6 +211,14 @@ void AP_CocoaDialog_FormatTable::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 void AP_CocoaDialog_FormatTable::_populateWindowData(void)
 {
    setAllSensitivities();
+   //init value is current Table width and height
+   setCurCellProps();
+   initTableWidthStr();
+   initTableHeightStr();
+   float height = getTableHeight();
+   float width = getTableWidth();
+   [m_dlg setHeight:height];
+   [m_dlg setWidth:width];
 }
 
 void AP_CocoaDialog_FormatTable::_storeWindowData(void)
@@ -291,7 +299,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     float height = [field floatValue];
     sHeight = [[field stringValue] UTF8String];
     // update stepper
-    [stepper setFloatValue:height];
+    [stepper setIntValue:height];
     _xap->setHeight(sHeight);
 }
 - (IBAction)tableHeightStepper:(id)sender;
@@ -309,7 +317,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     }   
     _xap->setHeight(sHeight);
     // update filed
-    [field   setFloatValue:height];
+    [field   setIntValue:height];
 }
 
 - (IBAction)tableWidthField:(id)sender;
@@ -323,7 +331,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     sWidth = [[field stringValue] UTF8String];
     width = [field floatValue];
     // update stepper
-    [stepper setFloatValue:width];
+    [stepper setIntValue:width];
     _xap->setWidth(sWidth);
 }
 - (IBAction)tableWidthStepper:(id)sender;
@@ -341,7 +349,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     }   
     _xap->setWidth(sWidth);
     // update field
-    [field   setFloatValue:width];
+    [field   setIntValue:width];
 }
 - (IBAction)applyAction:(id)sender
 {
@@ -417,7 +425,17 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 {
 	return _preview;
 }
+- (void)setHeight:(float)height
+{
+    [_tableHeightStepper setIntValue:height];
+    [_tableHeightField setIntValue:height];
+}
 
+- (void)setWidth:(float)width
+{
+    [_tableWidthStepper setIntValue:width];
+    [_tableWidthField setIntValue:width];
+}
 
 - (void)setSensitivity:(bool)bSens
 {
