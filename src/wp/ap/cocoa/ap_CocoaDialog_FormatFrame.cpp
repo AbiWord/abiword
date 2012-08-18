@@ -388,7 +388,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     field     = _frameHeightField;
     sHeight = [[field stringValue] UTF8String];
     height = [field floatValue];
-    _xap->setHeight(sHeight);
+    _xap->setHeight(height);
     // update stepper
     [stepper setFloatValue:height];
 }
@@ -422,7 +422,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
         UT_LocaleTransactor t(LC_NUMERIC, "C");
         sWidth = UT_UTF8String_sprintf("%fpt",width);
     }   
-    _xap->setWidth(sWidth);
+    _xap->setWidth(width);
     // update stepper
     [stepper setFloatValue:width];
 }
