@@ -1252,19 +1252,19 @@ void XAP_EncodingManager::initialize()
 	
 	// UCS-2 Encoding Names
 	static const char * (szUCS2BENames[]) = {
+		"UTF-16BE",			// superset
+		"UTF-16-BE",		// my guess		
 		"UCS-2BE",			// preferred
 		"UCS-2-BE",			// older libiconv
 		"UNICODEBIG",		// older glibc
 		"UNICODE-1-1",		// in libiconv source
-		"UTF-16BE",			// superset
-		"UTF-16-BE",		// my guess
 		0 };
 	static const char * (szUCS2LENames[]) = {
+		"UTF-16LE",			// superset
+		"UTF-16-LE",		// my guess
 		"UCS-2LE",			// preferred
 		"UCS-2-LE",			// older libiconv
 		"UNICODELITTLE",	// older glibc
-		"UTF-16LE",			// superset
-		"UTF-16-LE",		// my guess
 		0 };
 
 	// UCS-4 Encoding Names
