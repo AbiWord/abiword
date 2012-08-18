@@ -320,7 +320,7 @@ void AP_UnixFrame::_scrollFuncX(void * pData, UT_sint32 xoff, UT_sint32 /*xrange
 	// (with clamping).  then cause the view to scroll.
 
 	gfloat xoffNew = xoff;
-	gfloat xoffMax = gtk_adjustment_get_upper(pFrameImpl->m_pVadj) - 
+	gfloat xoffMax = gtk_adjustment_get_upper(pFrameImpl->m_pHadj) - 
 		gtk_adjustment_get_page_size(pFrameImpl->m_pHadj);
 	if (xoffMax <= 0)
 		xoffNew = 0;
