@@ -440,7 +440,7 @@ UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const gchar *szDataId,
     
     UT_UTF8String contents;
     encodeDataBase64(szDataId, contents, false);
-    UT_DEBUGMSG(("%lu", contents.length()));
+    UT_DEBUGMSG(("%lu", (long unsigned)contents.length()));
     m_buffer += contents;
     m_buffer += MYEOL;
     m_buffer += MYEOL;
