@@ -281,14 +281,13 @@ void AP_CocoaDialog_FormatFrame::_populateWindowData(void)
 		[m_dlg setWrapState:(getWrapping() ? NSOnState : NSOffState)];
 
 		[m_dlg setPositionState:((int) positionMode())];
+		setAllSensitivities();
         //init value is current Frame width and height
         setCurFrameProps();
         float height = getFrameHeight();
         float width = getFrameWidth();
-        setHeight(height);
-        setWidth(width);
-
-		setAllSensitivities();
+        [m_dlg setHeight:height];
+        [m_dlg setWidth:width];
 	}
 }
 
@@ -873,14 +872,14 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (void)setHeight:(float)height
 {
-    [_frameHeightStepper setFloatValue:height];
-    [_frameHeightField setFloatValue:height];
+    [_frameHeightStepper setIntValue:height];
+    [_frameHeightField setIntValue:height];
 }
 
 - (void)setWidth:(float)width
 {
-    [_frameWidthStepper setFloatValue:width];
-    [_frameWidthField setFloatValue:width];
+    [_frameWidthStepper setInttValue:width];
+    [_frameWidthField setIntValue:width];
 }
 
 - (void)setPositionState:(int)state
