@@ -956,8 +956,8 @@ AAAAAAAAAAAAAAAAA</bytes>
 								<reference key="NSControlView" ref="393637175"/>
 								<double key="NSValue">1</double>
 								<double key="NSMinValue">0.01</double>
-								<double key="NSMaxValue">99.989999999999995</double>
-								<double key="NSIncrement">0.10000000000000001</double>
+								<double key="NSMaxValue">9999.9899999999998</double>
+								<double key="NSIncrement">1</double>
 								<bool key="NSValueWraps">YES</bool>
 								<bool key="NSAutorepeat">YES</bool>
 							</object>
@@ -1022,8 +1022,8 @@ AAAAAAAAAAAAAAAAA</bytes>
 								<reference key="NSControlView" ref="154705693"/>
 								<double key="NSValue">1</double>
 								<double key="NSMinValue">0.01</double>
-								<double key="NSMaxValue">99.989999999999995</double>
-								<double key="NSIncrement">0.10000000000000001</double>
+								<double key="NSMaxValue">9999.9899999999998</double>
+								<double key="NSIncrement">1</double>
 								<bool key="NSValueWraps">YES</bool>
 								<bool key="NSAutorepeat">YES</bool>
 							</object>
@@ -1940,7 +1940,7 @@ AAAAAAAAAAAAAAAAA</bytes>
 					<bool key="EncodedWithXMLCoder">YES</bool>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
 					<object class="NSAffineTransform">
-						<bytes key="NSTransformStruct">P4AAAL+AAABDIQAAwqgAAA</bytes>
+						<bytes key="NSTransformStruct">P4AAAL+AAABC2AAAwqgAAA</bytes>
 					</object>
 					<boolean value="YES"/>
 					<string>com.apple.InterfaceBuilder.CocoaPlugin</string>
