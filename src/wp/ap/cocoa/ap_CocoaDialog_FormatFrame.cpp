@@ -392,7 +392,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     _xap->setHeight(sHeight);
     // update stepper
     [stepper setFloatValue:height];
-    _xap->event_previewExposed();
 }
 - (IBAction)frameHeightStepper:(id)sender;
 {
@@ -409,7 +408,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     _xap->setHeight(height);
     // update field
     [field   setFloatValue:(_xap->getFrameHeight())];
-    _xap->event_previewExposed();
 }
 
 - (IBAction)frameWidthField:(id)sender;
@@ -428,8 +426,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     _xap->setWidth(sWidth);
     // update stepper
     [stepper setFloatValue:width];
-    _xap->event_previewExposed();
-
 }
 - (IBAction)frameWidthStepper:(id)sender;
 {
@@ -443,7 +439,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     _xap->setWidth(width);
     // update field
     [field   setFloatValue:(_xap->getFrameWidth())];
-    _xap->event_previewExposed();
 }
 
 - (IBAction)borderThicknessField:(id)sender

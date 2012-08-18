@@ -293,8 +293,6 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     // update stepper
     [stepper setFloatValue:height];
     _xap->setHeight(sHeight);
-    _xap->event_previewExposed();
-
 }
 - (IBAction)tableHeightStepper:(id)sender;
 {
@@ -312,7 +310,6 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     _xap->setHeight(sHeight);
     // update filed
     [field   setFloatValue:height];
-    _xap->event_previewExposed();
 }
 
 - (IBAction)tableWidthField:(id)sender;
@@ -328,8 +325,6 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     // update stepper
     [stepper setFloatValue:width];
     _xap->setWidth(sWidth);
-    _xap->event_previewExposed();
-
 }
 - (IBAction)tableWidthStepper:(id)sender;
 {
@@ -347,8 +342,6 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     _xap->setWidth(sWidth);
     // update field
     [field   setFloatValue:width];
-    _xap->event_previewExposed();
-
 }
 - (IBAction)applyAction:(id)sender
 {
