@@ -303,7 +303,6 @@ public:
 	}
 
 	void fixLines(UT_sint32, fp_TableContainer *,bool);
-	void drawHeaderCell(dg_DrawArgs *,UT_sint32);
 	void setPos(UT_sint32 i)
 	{
 		m_iCellPos=i;
@@ -312,7 +311,6 @@ public:
 	{
 		return m_iCellPos;
 	}
-
 private:
 		
 	void                _clear(fp_TableContainer * pBroke);
@@ -567,10 +565,6 @@ fp_Column *         getBrokenColumn(void);
 	void changeCellPositions(UT_sint32,bool);
 	UT_sint32 countBrokenTables();
 	UT_sint32 getBrokenTablePosition();
-	fp_CellContainer *getFirstShiftedCell() const
-	{
-		return m_pFirstShiftedCell;
-	}
 	void tweakFirstRowAlone(UT_sint32);
 private:
 	void                    _size_request_init(void);
@@ -670,9 +664,6 @@ public:
 	void calculateHeaderHeight(void);
 	void headerDraw(dg_DrawArgs *);
 	void markCellsForHeader(void);
-	void cacheCells(fp_TableContainer *);
-	void assignPositions(UT_sint32, UT_sint32);
-	fp_ContainerObject * getNthCell(UT_sint32);
 	UT_sint32 getActualRowHeight(UT_sint32 iRowNumber);
 	~fp_TableHeader();
 
@@ -683,10 +674,6 @@ private:
 	UT_sint32 m_iHeaderHeight;
 	fp_CellContainer *m_pFirstCachedCell;
 	fp_CellContainer *m_pLastCachedCell;
-	UT_sint32 m_iTopOfHeader;
-	UT_sint32 m_iBottomOfHeader;
-	UT_sint32 m_iTotalNoOfCells;
-	UT_sint32 m_iRowNumber;
 };
 	
 #endif /* TABLECONTAINER_H */
