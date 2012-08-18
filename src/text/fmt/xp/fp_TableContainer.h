@@ -303,6 +303,7 @@ public:
 	}
 
 	void fixLines(UT_sint32, fp_TableContainer *,bool);
+	void drawHeaderCell(dg_DrawArgs *,UT_sint32,UT_sint32 &,UT_sint32 &,UT_sint32,UT_sint32 &);
 	void setPos(UT_sint32 i)
 	{
 		m_iCellPos=i;
@@ -310,6 +311,18 @@ public:
 	UT_sint32 getPos() const
 	{
 		return m_iCellPos;
+	}
+	void incCount() 
+	{
+		m_iHeaderIncCount++;
+	}
+	void setCountToZero()
+	{
+		m_iHeaderIncCount=0;
+	}
+	UT_sint32 getCount() const
+	{
+		return m_iHeaderIncCount;
 	}
 private:
 		
@@ -407,6 +420,9 @@ private:
 	bool 		m_bIsToBeDisplaced;
 	UT_sint32 	m_iBrokenTableNumber;
 	UT_sint32 	m_iCellPos;
+	UT_sint32 	m_iHeaderIncCount;
+	UT_sint32 	m_iHeaderTop;
+	UT_sint32 	m_iHeaderBot;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
@@ -566,6 +582,10 @@ fp_Column *         getBrokenColumn(void);
 	UT_sint32 countBrokenTables();
 	UT_sint32 getBrokenTablePosition();
 	void tweakFirstRowAlone(UT_sint32);
+	fp_CellContainer *getFirstShiftedCell() const
+	{
+		return m_pFirstShiftedCell;
+	}
 private:
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
@@ -665,6 +685,9 @@ public:
 	void headerDraw(dg_DrawArgs *);
 	void markCellsForHeader(void);
 	UT_sint32 getActualRowHeight(UT_sint32 iRowNumber);
+	void cacheCells(fp_TableContainer *);
+	void assignPositions(UT_sint32, UT_sint32);
+	fp_ContainerObject * getNthCell(UT_sint32);
 	~fp_TableHeader();
 
 	std::vector<fp_CellContainer *> m_vecCells;
@@ -674,6 +697,10 @@ private:
 	UT_sint32 m_iHeaderHeight;
 	fp_CellContainer *m_pFirstCachedCell;
 	fp_CellContainer *m_pLastCachedCell;
+	UT_sint32 m_iTopOfHeader;
+	UT_sint32 m_iBottomOfHeader;
+	UT_sint32 m_iTotalNoOfCells;
+	UT_sint32 m_iRowNumber;
 };
 	
 #endif /* TABLECONTAINER_H */
