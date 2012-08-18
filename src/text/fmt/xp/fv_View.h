@@ -1161,6 +1161,7 @@ private:
 	bool                m_bAllowSmartQuoteReplacement;  // Enable/disable replacing of quote with smart quote
 														// This allows temporarily disabling smart quotes to allow inserting ANSI quote.
     int                 m_bubbleBlockerCount;
+	UT_sint32           m_iOldPageCount;
 
 public:
 	bool registerDoubleBufferingObject(FV_ViewDoubleBuffering *obj);

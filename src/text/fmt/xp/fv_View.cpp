@@ -299,6 +299,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bAnnotationPreviewActive(false),
 		m_bAllowSmartQuoteReplacement(true),
 		m_bubbleBlockerCount(0),
+		m_iOldPageCount(-1),
 		m_pViewDoubleBufferingObject(NULL)
 {
 	if(m_pDoc)
@@ -2740,7 +2741,19 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 
 	if (mask & AV_CHG_PAGECOUNT)
 	{
-		// NOTE: we don't attempt to filter this
+		// We keep track of the number of page in the document in order
+		// to recalculate the vertical scrollbar only when needed
+		// (this prevents bug #13355 (comment #17))
+
+		UT_sint32 iNbPages = getLayout()->countPages();
+		if (m_iOldPageCount == iNbPages)
+		{
+			mask ^= AV_CHG_PAGECOUNT;
+		}
+		else
+		{
+			m_iOldPageCount = iNbPages;
+		}
 	}
 
 	if (mask & AV_CHG_COLUMN)
