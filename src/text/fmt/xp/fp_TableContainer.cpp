@@ -3305,6 +3305,7 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
  */
 fp_TableContainer::~fp_TableContainer()
 {
+	UT_DEBUGMSG(("Destructor called for %p\n",this));
 	if(isThisBroken() && !isThisHeader() && getMasterTable()->isHeaderSet())
 	{
 		if(m_bCellPositionChanged && getMasterTable()->countCons())
@@ -4433,28 +4434,18 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 
 	if(bBack)
 	{
-		pCell = m_pFirstShiftedCell;
-		xxx_UT_DEBUGMSG(("First %p and last %p\n",m_pFirstShiftedCell,m_pLastShiftedCell));
-		fp_CellContainer *pLast=NULL;
+		pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
+		while(pCell)
 		{
-			if(m_pLastShiftedCell)
-			{
-				pLast = static_cast<fp_CellContainer *>(m_pLastShiftedCell->getNext());
-			}
-			while(pCell && pCell != pLast)
-			{
-				iShift = (iShift*pCell->getCount());
-				iCount++;
-				UT_DEBUGMSG(("Shifting backward %d by %d\n",iCount,pCell->getCount()));
-				pCell->setY(pCell->getY() - iShift);
-				pCell->setiTopY(pCell->getiTopY() - iShift);
-				pCell->setiBotY(pCell->getiBotY() - iShift);
-				pCell->fixLines(iShift,this,true);
-				pCell->setCountToZero();
-				pCell=static_cast<fp_CellContainer *>(pCell->getNext());
-			}
-			m_pFirstShiftedCell=NULL;
-			m_pLastShiftedCell=NULL;
+			UT_sint32 iShift1 = (iShift*pCell->getCount());
+			iCount++;
+			UT_DEBUGMSG(("Shifting backward %d by %d\n",iCount,pCell->getCount()));
+			pCell->_setY(pCell->getY() - iShift1);
+			pCell->setiTopY(pCell->getiTopY() - iShift1);
+			pCell->setiBotY(pCell->getiBotY() - iShift1);
+			pCell->fixLines(iShift1,this,true);
+			pCell->setCountToZero();
+			pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 		}
 		return;
 	}
