@@ -83,7 +83,7 @@ private:
 
     GsfInfile* m_pGsfInfile;
 
-    UT_UTF8String m_sPassword;
+    std::string m_sPassword;
     std::map<std::string, ODc_CryptoInfo> m_cryptoInfo;
     ODi_StreamListener* m_pStreamListener;
     ODi_Office_Styles m_styles;
