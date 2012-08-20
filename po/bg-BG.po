@@ -1,16 +1,15 @@
 # Bulgarian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Yasen Pramatarov <yasen@lindeas.com>, 2001, 2005, 2006.
 # Alexander Shopov <ash@contact.bg>, 2001.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2011-06-12 01:29+0200\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"PO-Revision-Date: 2012-07-24 07:26+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Bulgarian <dict@fsa-bg.org>\n"
 "Language: bg\n"
@@ -18,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Pootle 2.0.1\n"
+"X-Generator: Pootle 2.0.5\n"
 "X-Project-Style: default\n"
 
 #.
@@ -119,11 +118,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Без"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -131,11 +125,6 @@ msgstr "&1 Без"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -145,11 +134,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -157,11 +141,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -260,11 +239,6 @@ msgstr "&Автоматично оразмеряване на таблицата
 #: po/tmp/ap_String_Id.h
 msgid "&Automatically save this Scheme"
 msgstr "&Автоматично запомняне на тези настройки"
-
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "&Налични формати:"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
@@ -431,11 +405,6 @@ msgstr "&Редактиране на хипервръзка"
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr ""
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "&Включване на закривени кавички"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -815,6 +784,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "&Изход"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1283,12 +1257,12 @@ msgstr "&След:"
 msgid "Ali&gnment:"
 msgstr "&Подравняване:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Подравняване"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1302,7 +1276,8 @@ msgstr "Всички"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
+#, fuzzy
+msgid "Allow formatting not using styles only"
 msgstr "Позволяване на форматиране само със стилове"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
@@ -1393,6 +1368,12 @@ msgstr ""
 "Наистина ли не искате да поддържате пълна история на промените? Ако "
 "продължите, няма да можете да възстановявате предишни версии на документа."
 
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
+
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
 msgid "At least"
@@ -1403,6 +1384,7 @@ msgstr "Най-плътно"
 msgid "Attach to Previous List"
 msgstr "Добавяне към предишния списък"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -1436,14 +1418,9 @@ msgstr "Автоматичен запис"
 msgid "Auto replace misspelled words"
 msgstr "Автоматична замяна на сгрешените думи"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Настройки на автоматичното оразмеряване"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "Настройки на автоматичното оразмеряване"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1483,17 +1460,20 @@ msgstr "Автоматично сливане"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
+#, fuzzy
+msgid "Available Fields:"
 msgstr "Налични полета"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
+#, fuzzy
+msgid "Available Formats:"
 msgstr "Налични формати"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
+#, fuzzy
+msgid "Available Styles:"
 msgstr "Налични стилове"
 
 #. DLG_Para_LabelBy
@@ -1527,11 +1507,6 @@ msgstr "Табулация с черта"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Основан на:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Настройки за двупосочно писане"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -1654,6 +1629,12 @@ msgstr "Точки"
 msgid "Bullets and &Numbering"
 msgstr "&Точки и номерация"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Bullets and Numbering"
+msgstr "&Точки и номерация"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1698,6 +1679,12 @@ msgstr "Не може да бъде променен вграден стил"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Не може да се започне печатане"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Category"
+msgstr "Категория:"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2008,6 +1995,12 @@ msgstr "Цвят:"
 msgid "Column"
 msgstr "Колона"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Column Break"
+msgstr "&Край на колона"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2077,10 +2070,15 @@ msgid "Contact from File"
 msgstr ""
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Contacts"
+msgstr "Съдържание 1"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Contacts:"
 msgstr "Съдържание 1"
 
 #. TOC_TocHeading
@@ -2097,8 +2095,9 @@ msgstr "Продължаване на предишна ревизия (номе�
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Сътрудник(-ци)"
+#, fuzzy
+msgid "Contributor(s)"
+msgstr "Сътрудник(-ци):"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2265,6 +2264,12 @@ msgstr "Създаване на нов документ по шаблон"
 msgid "Create an empty document"
 msgstr "Създаване на празен документ"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Create and Modify Styles"
+msgstr "&Създаване и промяна"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -2291,17 +2296,12 @@ msgstr ""
 msgid "Create new Semantic Item"
 msgstr ""
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Създаден от"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "Изря&зване"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Текуща дата"
@@ -2404,6 +2404,12 @@ msgstr "Тирета"
 msgid "Dashed line"
 msgstr ""
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr ""
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2447,11 +2453,6 @@ msgstr "Табулация за числа"
 msgid "Decrease indent"
 msgstr "Намаляване на отстъпа"
 
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Дата по подразбиране (без часа)"
-
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
@@ -2482,6 +2483,12 @@ msgstr "Задаване на основни настройки"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Дефинирай или приложи стил към избраното"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2586,8 +2593,6 @@ msgstr "Изтриване на тази колона от таблицата й
 msgid "Delete this row from its table"
 msgstr "Изтриване на този ред от таблицата му"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2600,6 +2605,11 @@ msgstr "Описание"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Описание:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2722,6 +2732,12 @@ msgstr "Документи"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Без рестартиране"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2894,8 +2910,15 @@ msgstr "Съдържание на бележката в края"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
+#, fuzzy
+msgid "Endnote style:"
 msgstr "Стил на бележките в края"
+
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Endnotes"
+msgstr "&Бележка в края"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -2933,7 +2956,7 @@ msgstr "Грешка при опит за запис на %s: невалидно
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
+msgid "Events:"
 msgstr ""
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
@@ -2997,20 +3020,16 @@ msgstr ""
 msgid "Extra"
 msgstr "Допълнително"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
+#, fuzzy
+msgid "Extra Parameters:"
 msgstr "Допълнителни параметри"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Допълнителна лента"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Допълнителни параметри:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3031,11 +3050,6 @@ msgstr "&Цял екран"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "На&мери следното:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Име на поле"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3235,8 +3249,15 @@ msgstr "Препратка към бележка под линия"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
+#, fuzzy
+msgid "Footnote style:"
 msgstr "Стил на бележка под линия"
+
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Footnotes"
+msgstr "&Бележка под линия"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
@@ -3286,16 +3307,6 @@ msgstr "Форматиране"
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "Форматиране на вградения обект"
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Форматиране на бележките в края"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Форматиране на бележките под линия"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3375,7 +3386,8 @@ msgstr "Цял екран"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Общи настройки"
 
@@ -3606,17 +3618,19 @@ msgstr "Главни букви в началото на думите"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
+#, fuzzy
+msgid "Initial Endnote value:"
 msgstr "Начална стойност"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
+#, fuzzy
+msgid "Initial Footnote value:"
 msgstr "Начална стойност"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
+msgid "Inner (single) quote style:"
 msgstr ""
 
 #. InsertModeFieldINS
@@ -3648,7 +3662,7 @@ msgstr "Вмъкване на &таблица"
 msgid "Insert Bookmark"
 msgstr "Вмъкване на отметка"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Вмъкване на разделител"
@@ -3678,7 +3692,7 @@ msgstr "Вмъкване на уравнение"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Вмъкване на уравнение от LaTeX-израз"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Вмъкване на поле"
@@ -3853,20 +3867,10 @@ msgstr "Вмъкване на изображение в документа"
 msgid "Insert bookmark"
 msgstr "Вмъкване на отметка"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Вмъкване на разделител"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Вмъкване на клипче"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Вмъкване на поле"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3995,9 +3999,14 @@ msgid "Keywords:"
 msgstr "Ключови думи:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
+msgstr "LaTeX-уравнение"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "LaTeX Equation:"
 msgstr "LaTeX-уравнение"
 
 #. DLG_Lists_Indent
@@ -4012,7 +4021,6 @@ msgstr "Определения на етикети"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Език"
@@ -4021,6 +4029,12 @@ msgstr "Език"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Настройки на език"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Language(s)"
+msgstr "Език(-ци):"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4032,14 +4046,10 @@ msgstr "Език(-ци):"
 msgid "Layout"
 msgstr "Изглед"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Подробности на изгледа"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
+#, fuzzy
+msgid "Leader:"
 msgstr "Символи"
 
 #. DLG_Para_AlignLeft
@@ -4119,11 +4129,6 @@ msgstr "Ниво:"
 msgid "Li&ne spacing:"
 msgstr "&Разстояние между редовете:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Ред"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4149,15 +4154,16 @@ msgstr "Поставяне/махане на черта под избранот�
 msgid "Line between"
 msgstr "Разделени с линия"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Line:"
+msgstr "Редове:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "Редове:"
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Списък"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4174,14 +4180,9 @@ msgstr "Настройки на списъка"
 msgid "List Styles"
 msgstr "Списък със стилове"
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Списъци за "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
+msgid "Locations:"
 msgstr ""
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
@@ -4260,7 +4261,8 @@ msgstr "Тест на Мартин"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
+#, fuzzy
+msgid "Max Column size:"
 msgstr "Макс. размер на колона"
 
 #. TOOLBAR_LABEL_MENU
@@ -4370,7 +4372,8 @@ msgstr "Други стилове"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+#, fuzzy
+msgid "Modify Style"
 msgstr "Промяна на стилове"
 
 #. DLG_Styles_Modify
@@ -4440,7 +4443,7 @@ msgstr "Отстъп"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
+msgid "New Contact"
 msgstr ""
 
 #. DLG_NEW_Title
@@ -4527,11 +4530,8 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Не са открити скриптове"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Без"
@@ -4558,7 +4558,8 @@ msgstr "Стилове за бележки"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
+#, fuzzy
+msgid "Number of Columns:"
 msgstr "Брой колони"
 
 #. FIELD_Numbers_PagesCount
@@ -4592,13 +4593,18 @@ msgstr "Номериран"
 msgid "Numbered List"
 msgstr "Арабски цифри"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
+msgstr "Номериране"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Numbering:"
 msgstr "Номериране"
 
 #. FIELD_Type_Numbers
@@ -4674,7 +4680,8 @@ msgstr "Отваряне на документа"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
+#, fuzzy
+msgid "Orientation"
 msgstr "Разположение..."
 
 #. DLG_Options_TabLabel_Other
@@ -4690,7 +4697,7 @@ msgstr "Недостиг на памет при опит за отваряне �
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+msgid "Outer (double) quote style:"
 msgstr ""
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
@@ -4727,7 +4734,6 @@ msgstr "Из&чистване на ревизиите"
 msgid "Pa&ste Unformatted"
 msgstr "В&мъкване неформатирано"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4742,6 +4748,12 @@ msgstr "Край на &страница преди"
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "Фон на страницата"
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page Break"
+msgstr "&Край на страница"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4775,8 +4787,8 @@ msgstr "Номера на страници"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Препратка към страница"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4787,6 +4799,12 @@ msgstr "&Настройка на страница"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Настройка на страница"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page:"
+msgstr "Страници:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -4804,15 +4822,15 @@ msgstr "Страници:"
 msgid "Pagination"
 msgstr "Страниране"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr ""
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "Размер на &хартията:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Хартия..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4879,7 +4897,8 @@ msgstr "Поставяне в края на раздела"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
+#, fuzzy
+msgid "Placement:"
 msgstr "Разположение"
 
 #. MENU_LABEL_RDF_ADV_PLAY
@@ -4887,17 +4906,11 @@ msgstr "Разположение"
 msgid "Playing with RDF during development"
 msgstr ""
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Разположение"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Разположение на текстовото поле"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -4914,6 +4927,7 @@ msgstr "Разположение спрямо страницата"
 msgid "Position to Paragraph"
 msgstr "Разположение спрямо абзаца"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5066,11 +5080,6 @@ msgstr ""
 msgid "R&eplace"
 msgstr "&Замяна"
 
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr ""
-
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
@@ -5180,7 +5189,8 @@ msgstr "Премахване на горния колонтитул"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
+#, fuzzy
+msgid "Remove Property from Style:"
 msgstr "Премахване свойство на стила"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
@@ -5530,8 +5540,8 @@ msgstr "Запис във файл"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Увеличение..."
+msgid "Scale"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5548,14 +5558,9 @@ msgstr "секунди"
 msgid "Seconds since the epoch"
 msgstr "Секунди след епохата"
 
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Указатели за край на раздел"
-
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Указатели за край на раздел"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -5612,7 +5617,8 @@ msgstr "Избиране на текстовото поле"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+#, fuzzy
+msgid "Select a target bookmark from the list:"
 msgstr "Изберете целта - отметка от списъка."
 
 #. DLG_FormatFrame_SelectImage
@@ -5682,13 +5688,13 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
+msgid "Select the parts of the document contained in the next revision"
 msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
+msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -6127,7 +6133,8 @@ msgstr "Източник:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
+#, fuzzy
+msgid "Space after Column:"
 msgstr "Разстояние след колона"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
@@ -6358,12 +6365,14 @@ msgstr "Име на стила:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
+#, fuzzy
+msgid "Style Type:"
 msgstr "Вид на стила"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
+#, fuzzy
+msgid "Style for following paragraph:"
 msgstr "Стил за следващия абзац"
 
 #. DLG_Styles_ErrBlankName
@@ -6378,7 +6387,6 @@ msgstr "Стилът не може да бъде без име"
 msgid "Style:"
 msgstr "Стил:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6515,7 +6523,7 @@ msgstr "Табулации за махане:"
 msgid "Table"
 msgstr "Таблица"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Размери на таблицата"
@@ -6540,11 +6548,6 @@ msgstr "Списъчен указател в съдържанието"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Страница със съдържанието"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Размери на таблицата"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6593,13 +6596,24 @@ msgstr "Подравняване на текста:"
 msgid "Text Box"
 msgstr "Текстово поле"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr ""
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr ""
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr "Скриване на текст"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Загръщане на текста"
 
@@ -6793,19 +6807,20 @@ msgstr "Триъгълници"
 msgid "Two"
 msgstr "Две"
 
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "Вид"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
 msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+#, fuzzy
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Въведете име за отметката или изберете от списъка."
 
 #. DLG_Lists_Type
@@ -6830,6 +6845,13 @@ msgstr "Подчертан"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Подчертаване на избраното (смяна)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Underlines"
+msgstr "Подчертан"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -6965,6 +6987,11 @@ msgstr "Предупреждение: отметката, която посоч�
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Изглед за Интернет"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7128,12 +7155,47 @@ msgstr "мес/ден/год"
 msgid "tOGGLE cASE"
 msgstr "Смяна малки <-> главни"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Без"
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Без"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Без"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Относно"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Без"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Без"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7173,12 +7235,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "&Description"
-msgstr "Описание"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7274,6 +7330,11 @@ msgstr "AbiWord: Преглед за печат"
 msgid "About %s"
 msgstr "Информация за %s"
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
@@ -7316,8 +7377,9 @@ msgstr "Допълнително маркиране с елементи от о�
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Амхарски (Етиопия)"
+#, fuzzy
+msgid "Amharic"
+msgstr "амхарски"
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7367,8 +7429,9 @@ msgstr "Асамски (Индия)"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Астурски (Испания)"
+#, fuzzy
+msgid "Asturian"
+msgstr "астурски"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7392,22 +7455,29 @@ msgstr "Автоматична ревизия"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
+#, fuzzy
+msgid "Available Documents:"
 msgstr "Налични документи"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
+#, fuzzy
+msgid "Available Languages:"
 msgstr "Налични езици"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
 msgstr ""
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr ""
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
 msgstr ""
 
 #. ENC_BALT_ISO
@@ -7419,6 +7489,12 @@ msgstr "Балтийски, ISO-8859-4"
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Балтийски, Windows Code Page 1257"
+
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Bamanankan"
+msgstr "бамбара"
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7434,7 +7510,7 @@ msgstr "Беларуски"
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Belarusian, Latin"
-msgstr "Беларуски"
+msgstr "Беларуски, Латинска"
 
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h
@@ -7450,6 +7526,12 @@ msgstr "Черно-бяло"
 #: po/tmp/xap_String_Id.h
 msgid "Block Text"
 msgstr "Текстово поле"
+
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Bokmal"
+msgstr "норвежки бокмал"
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
@@ -7488,11 +7570,6 @@ msgstr "Отказ"
 msgid "Catalan"
 msgstr "Каталонски"
 
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr ""
-
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Central European, ISO-8859-2"
@@ -7517,6 +7594,11 @@ msgstr "Смяна на езика заедно с клавиатурната п
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Заглавие на глава"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7589,6 +7671,12 @@ msgstr "Изберете документ от списъка:"
 msgid "Clear Background"
 msgstr "Изчистване цвета на фона"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "Изчистване цвета на фона"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7596,7 +7684,7 @@ msgstr "Клипчета"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
+msgid "Clip Art could not be loaded."
 msgstr ""
 
 #. DLG_Close
@@ -7761,16 +7849,6 @@ msgstr "Обявяване като XML (версия 1.0)"
 msgid "Default language: "
 msgstr "Език по подразбиране: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Задаване разположение на изображението"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Задаване на загръщане на текста"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -7803,8 +7881,9 @@ msgstr "Документите са сравнени"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Холандски (Холандия)"
+#, fuzzy
+msgid "Dutch"
+msgstr "холандски"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7813,7 +7892,8 @@ msgstr "Време на редактиране:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
+#, fuzzy
+msgid "Effects:"
 msgstr "Ефекти"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
@@ -7892,6 +7972,11 @@ msgstr "Английски (Великобритания)"
 msgid "English (US)"
 msgstr "Английски (Съединени Щати)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr ""
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7955,8 +8040,9 @@ msgstr "Финландски"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Фламандски (Белгия)"
+#, fuzzy
+msgid "Flemish"
+msgstr "фламандски"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -8011,14 +8097,21 @@ msgstr "От: "
 
 #. LANG_FF
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Fulah"
-msgstr ""
+msgstr "фула"
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Galician (Galego)"
-msgstr "Галийски"
+msgid "Galician"
+msgstr "галисийски"
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Ganda"
+msgstr "ганда"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8180,10 +8273,25 @@ msgstr "Исландски, Macintosh"
 msgid "Identifier:"
 msgstr "Идентификатор:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr ""
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr ""
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Настройки на изображението"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr ""
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8289,8 +8397,9 @@ msgstr "Ирландски"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Италиански (Италия)"
+#, fuzzy
+msgid "Italian"
+msgstr "италиански"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8324,14 +8433,26 @@ msgstr "Каннада"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
-msgstr ""
+#, fuzzy
+msgid "Kazakh"
+msgstr "казахски"
 
-#. LANG_KO_KR
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Khmer"
+msgstr "кхмерски"
+
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Корейски"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Korean (South Korea)"
+msgstr "корейски (Корея, Южна)"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8340,8 +8461,9 @@ msgstr "Корейски, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Корейски, Johab"
+#, fuzzy
+msgid "Korean, JOHAB"
+msgstr "Корейски, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8370,13 +8492,14 @@ msgstr "Последен запис:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Латински (Ренесансов)"
+msgid "Latin"
+msgstr "латински"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Latvian"
-msgstr "Латвийски"
+msgstr "латвийски"
 
 #. LANG_LT_LT
 #: po/tmp/xap_String_Id.h
@@ -8386,8 +8509,13 @@ msgstr "Литовски"
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Loading Clip Art"
+msgid "Loading Clip Art..."
 msgstr "Клипчета"
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8405,6 +8533,12 @@ msgstr "Македонски"
 msgid "Make default for document"
 msgstr "По подразбиране за документа"
 
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Malagasy"
+msgstr "малгашки"
+
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
 msgid "Malay"
@@ -8412,7 +8546,7 @@ msgstr "Малайски"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
+msgid "Mandinka"
 msgstr ""
 
 #. LANG_MI_NZ
@@ -8452,8 +8586,9 @@ msgstr "Име:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr ""
+#, fuzzy
+msgid "Nepali"
+msgstr "непалски"
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8475,16 +8610,6 @@ msgstr "Не е избрана приставка"
 msgid "Normal"
 msgstr "Нормален"
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Норвежки бокмал"
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Норвежки нинорск"
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8504,6 +8629,12 @@ msgstr "Номерирано заглавие 2"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Номерирано заглавие 3"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Nynorsk"
+msgstr "съвременен норвежки"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8569,7 +8700,8 @@ msgstr "Чист текст"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
+#, fuzzy
+msgid "Plugin Details"
 msgstr "Информация за приставката:"
 
 #. DLG_PLUGIN_MANAGER_LIST
@@ -8650,27 +8782,32 @@ msgstr "Команда към принтера: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Пенджабски (Гурмуркхи)"
+msgid "Punjabi (India)"
+msgstr "пенджабски (Индия)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Пенджабски (Шахмукхи)"
+msgid "Punjabi (Pakistan)"
+msgstr "пенджабски (Пакистан)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Кечуа"
 
-#. LANG_QUH_BO
+#. LANG_QUZ
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
+msgid "Quechua (Cusco)"
 msgstr ""
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
+msgid "Quechua (Northern Bolivia)"
+msgstr ""
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
 msgstr ""
 
 #. ReadOnly
@@ -8706,6 +8843,7 @@ msgid "Replay Editing from File"
 msgstr ""
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Възстановяване"
@@ -8732,13 +8870,15 @@ msgstr "Румънски, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Руски (Русия)"
+#, fuzzy
+msgid "Russian"
+msgstr "руски"
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
-msgstr ""
+#, fuzzy
+msgid "Russian, pre-1918"
+msgstr "руски, pre-1918"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h
@@ -8799,18 +8939,8 @@ msgstr "Сръбски"
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Serbian, latin"
+msgid "Serbian, Latin"
 msgstr "Сръбски"
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Задаване име на изображението"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Задаване размер на изображението"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -8841,6 +8971,12 @@ msgstr "Словенски"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr ""
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Songhay"
+msgstr "сонгхай"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9167,11 +9303,6 @@ msgstr "Изглед:"
 msgid "Welsh"
 msgstr "Уелски"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Западноевропейски, DOS/Windows Code Page 437"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9219,8 +9350,9 @@ msgstr "Широчина:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
-msgstr ""
+#, fuzzy
+msgid "Wolof"
+msgstr "волоф"
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9244,6 +9376,12 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "Увеличение до"
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Zulu"
+msgstr "зулуски"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9311,6 +9449,146 @@ msgstr "подобни"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "несвързано"
+
+#~ msgid "List"
+#~ msgstr "Списък"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Без"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Подробности на изгледа"
+
+#, fuzzy
+#~ msgid "&Description"
+#~ msgstr "Описание"
+
+#~ msgid "Contributor"
+#~ msgstr "Сътрудник(-ци)"
+
+#~ msgid "Creator"
+#~ msgstr "Създаден от"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Дата по подразбиране (без часа)"
+
+#~ msgid "Line"
+#~ msgstr "Ред"
+
+#~ msgid "Lists for "
+#~ msgstr "Списъци за "
+
+#~ msgid "Page Reference"
+#~ msgstr "Препратка към страница"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Амхарски (Етиопия)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Астурски (Испания)"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Холандски (Холандия)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Фламандски (Белгия)"
+
+#, fuzzy
+#~ msgid "Galician (Galego)"
+#~ msgstr "Галийски"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Италиански (Италия)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Корейски, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Латински (Ренесансов)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Норвежки бокмал"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Норвежки нинорск"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Пенджабски (Гурмуркхи)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Пенджабски (Шахмукхи)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Руски (Русия)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Западноевропейски, DOS/Windows Code Page 437"
+
+#~ msgid "&Available formats:"
+#~ msgstr "&Налични формати:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Включване на закривени кавички"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Настройки на автоматичното оразмеряване"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Настройки за двупосочно писане"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Допълнителни параметри:"
+
+#~ msgid "Field Name"
+#~ msgstr "Име на поле"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Форматиране на бележките в края"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Форматиране на бележките под линия"
+
+#~ msgid "Insert break"
+#~ msgstr "Вмъкване на разделител"
+
+#~ msgid "Insert field"
+#~ msgstr "Вмъкване на поле"
+
+#~ msgid "Paper..."
+#~ msgstr "Хартия..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Разположение на текстовото поле"
+
+#~ msgid "Scale..."
+#~ msgstr "Увеличение..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Указатели за край на раздел"
+
+#~ msgid "Table size"
+#~ msgstr "Размери на таблицата"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Задаване разположение на изображението"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Задаване на загръщане на текста"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Задаване име на изображението"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Задаване размер на изображението"
 
 #~ msgid "Unicode UCS-2"
 #~ msgstr "Уникод UCS-2"
