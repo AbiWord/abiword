@@ -1,18 +1,17 @@
 # Dutch translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Reinout van Schouwen <reinout@cs.vu.nl>, 2004-2005.
 # Benno Schulenberg <benno@vertaalt.nl>, 2007, 2008.
 # Pjotr Kan <pjotrvertaalt@gmail.com>, 2012.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-30 21:11-0400\n"
-"PO-Revision-Date: 2012-08-04 21:39+0200\n"
-"Last-Translator: Pjotr <pjotrvertaalt@gmail.com>\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"PO-Revision-Date: 2012-08-19 10:04+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -120,11 +119,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Geen"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -132,11 +126,6 @@ msgstr "&1 Geen"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -146,11 +135,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -158,11 +142,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -1074,12 +1053,12 @@ msgstr "(geen)"
 #. TOOLBAR_TOOLTIP_1COLUMN
 #: po/tmp/ap_String_Id.h
 msgid "1 Column"
-msgstr "1 kolom"
+msgstr "1 Kolom"
 
 #. TOOLBAR_LABEL_MIDDLE_SPACE
 #: po/tmp/ap_String_Id.h
 msgid "1.5 Spacing"
-msgstr "1,5 regelafstand"
+msgstr "1,5 Regelafstand"
 
 #. DLG_Para_SpacingHalf
 #: po/tmp/ap_String_Id.h
@@ -1102,14 +1081,14 @@ msgstr "12 pt ervoor"
 #. TOOLBAR_TOOLTIP_2COLUMN
 #: po/tmp/ap_String_Id.h
 msgid "2 Columns"
-msgstr "2 kolommen"
+msgstr "2 Kolommen"
 
 #. TOOLBAR_LABEL_3COLUMN
 #. TOOLBAR_STATUSLINE_3COLUMN
 #. TOOLBAR_TOOLTIP_3COLUMN
 #: po/tmp/ap_String_Id.h
 msgid "3 Columns"
-msgstr "3 kolommen"
+msgstr "3 Kolommen"
 
 #. DLG_Goto_Btn_Prev
 #: po/tmp/ap_String_Id.h
@@ -1123,7 +1102,7 @@ msgid ""
 "The current document has been saved to disc with a \".saved\" extension."
 msgstr ""
 "Er is een kritieke fout opgetreden. AbiWord zal worden afgesloten.\n"
-"Het huidige document is opgeslagen met het achtervoegsel '.saved'."
+"Het huidige document is opgeslagen met het \".saved\" achtervoegsel."
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h
@@ -1175,9 +1154,9 @@ msgstr ""
 "AbiWord is ontworpen voor nieuwere versies van het systeembestand "
 "COMCTL32.DLL\n"
 "dan de versie die nu op uw systeem staat (COMCTL32.DLL versie 4.72 of "
-"nieuwer).\n"
+"nieuwer)\n"
 "Een oplossing voor dit probleem wordt uitgelegd in de sectie FAQ op de "
-"AbiSource website:\n"
+"AbiSource website\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
@@ -1191,10 +1170,10 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/msdownload/"
 "platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
-"AbiWord heeft het bestand %s.dll nodig.\n"
-"Haal dit bestand a.u.b. binnen van "
+"AbiWord heeft het bestand %s.dll nodig\n"
+"Haal dit bestand binnen van "
 "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm en "
-"installeer het."
+"installeer het"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1273,12 +1252,12 @@ msgstr "&Na:"
 msgid "Ali&gnment:"
 msgstr "Uitlijnin&g:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Uitlijning"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1292,8 +1271,8 @@ msgstr "Alle"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
-msgstr "Alleen opmaak toestaan met behulp van stijlen"
+msgid "Allow formatting not using styles only"
+msgstr "Alleen opmaak toestaan zonder stijlen"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -1382,6 +1361,12 @@ msgstr ""
 "Weet u zeker dat u de volledige opgeslagen geschiedenis niet wilt behouden? "
 "Als u doorgaat, kunt u eerdere versies van dit document niet meer "
 "herstellen."
+
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr "Pijlpunt Lijst"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1478,8 +1463,8 @@ msgstr "Beschikbare opmaaktypen:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "Beschikbare stijlen"
+msgid "Available Styles:"
+msgstr "Beschikbare stijlen:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1540,7 +1525,7 @@ msgstr "Bladwijzer"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Bladwijzer '%s' werd niet gevonden in dit document."
+msgstr "Bladwijzer \"%s\" werd niet gevonden in dit document."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
@@ -1936,10 +1921,10 @@ msgid ""
 "below your current position."
 msgstr ""
 "Kies uw doel aan de linkerkant.\n"
-"Als u de 'Ga Naar' knop wilt gebruiken, vul dan in het Nummerveld het "
+"Als u de \"Ga Naar\" knop wilt gebruiken, vul dan in het Nummerveld het "
 "gewenste nummer in.   U kunt + en - gebruiken om relatieve beweging uit te "
-"voeren. Bijvoorbeeld: als u '+2' schrijft en 'Regel' selecteert, dan zal 'Ga "
-"Naar' twee regels verder naar onderen gaan dan uw huidige positie."
+"voeren.\tBijv., als u \"+2\" schrijft en \"Regel\" selecteert, dan zal \"Ga Naar\" "
+"2 regels verder naar onderen gaan dan uw huidige positie."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -1998,6 +1983,11 @@ msgstr "Kleur:"
 #: po/tmp/ap_String_Id.h
 msgid "Column"
 msgstr "Kolom"
+
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr "Kolomeinde"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
@@ -2067,10 +2057,14 @@ msgid "Contact from File"
 msgstr "Contactpersoon vanuit bestand"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 msgid "Contacts"
 msgstr "Contactpersonen"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts:"
+msgstr "Contactpersonen:"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2086,7 +2080,7 @@ msgstr "Verdergaan met de vorige revisie (nummer %d)"
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
 msgid "Contributor(s)"
-msgstr "Bijdrager(s):"
+msgstr "Bijdrager(s)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2252,6 +2246,11 @@ msgstr "Een nieuw document maken met gebruik van een sjabloon"
 msgid "Create an empty document"
 msgstr "Een leeg document maken"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+msgid "Create and Modify Styles"
+msgstr "Stijlen maken en wijzigen"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2387,6 +2386,12 @@ msgstr "Lijst met streepjes"
 msgid "Dashed line"
 msgstr "Regel met streepjes"
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr "Streepjes"
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2460,6 +2465,12 @@ msgstr "Hoofdeigenschappen bepalen"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Een stijl definiëren voor of toepassen op de selectie"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2563,8 +2574,6 @@ msgstr "Deze kolom uit zijn tabel verwijderen"
 msgid "Delete this row from its table"
 msgstr "Deze rij uit zijn tabel verwijderen"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2577,6 +2586,11 @@ msgstr "Omschrijving"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Omschrijving:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr "Details"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2698,6 +2712,12 @@ msgstr "Documenten"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Niet herstarten"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr "Puntjes"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2909,8 +2929,8 @@ msgstr "Fout bij opslaan van %s: ongeldige naam"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
-msgstr "Gebeurtenissen"
+msgid "Events:"
+msgstr "Gebeurtenissen:"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3334,7 +3354,8 @@ msgstr "Volledig scherm"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Algemeen"
 
@@ -3987,15 +4008,10 @@ msgstr "Taal(en):"
 msgid "Layout"
 msgstr "Vormgeving"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Details van vormgeving"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "Opvulteken"
+msgid "Leader:"
+msgstr "Opvulteken:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4109,11 +4125,6 @@ msgstr "Regel:"
 msgid "Lines:"
 msgstr "Regels:"
 
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Lijst"
-
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
 msgid "List Label"
@@ -4131,8 +4142,8 @@ msgstr "Lijst-stijlen"
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
-msgstr "Locaties"
+msgid "Locations:"
+msgstr "Locaties:"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4312,7 +4323,7 @@ msgstr "Militaire tijd"
 #. DLG_Options_TabLabel_Misc
 #: po/tmp/ap_String_Id.h
 msgid "Misc."
-msgstr "Overig"
+msgstr "Overig."
 
 #. DLG_Stylist_MiscStyles
 #: po/tmp/ap_String_Id.h
@@ -4321,7 +4332,7 @@ msgstr "Overige stijlen"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+msgid "Modify Style"
 msgstr "Stijlen aanpassen"
 
 #. DLG_Styles_Modify
@@ -4342,7 +4353,7 @@ msgstr "De invoegplaats naar een specifieke positie verplaatsen"
 #. FIELD_DateTime_MthDayYear
 #: po/tmp/ap_String_Id.h
 msgid "Mth. Day, Year"
-msgstr "Mnd. dag, jaar"
+msgstr "Mnd. Dag, Jaar"
 
 #. DLG_Para_SpacingMultiple
 #: po/tmp/ap_String_Id.h
@@ -4476,8 +4487,6 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Geen scripts gevonden"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
 #: po/tmp/ap_String_Id.h
@@ -4643,7 +4652,7 @@ msgstr "Geen geheugen meer beschikbaar bij het openen van %s"
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
 msgid "Outer (double) quote style:"
-msgstr "Stijl van het buitenste (dubbele) aanhalingsteken"
+msgstr "Stijl van het buitenste (dubbele) aanhalingsteken:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4692,6 +4701,11 @@ msgstr "Pagina-&einde vóór"
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "Pagina-achtergrond"
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr "Pagina-einde"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4842,7 +4856,6 @@ msgstr "Plaatsing:"
 msgid "Playing with RDF during development"
 msgstr "Aan het spelen met RDF gedurende ontwikkeling"
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -4864,6 +4877,7 @@ msgstr "Positioneren naar pagina"
 msgid "Position to Paragraph"
 msgstr "Positioneren naar alinea"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -6323,7 +6337,6 @@ msgstr "De stijlnaam kan niet leeg gelaten worden"
 msgid "Style:"
 msgstr "Stijl:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6748,6 +6761,11 @@ msgstr "Driehoekjeslijst"
 msgid "Two"
 msgstr "Twee"
 
+#. DLG_Styles_List
+#: po/tmp/ap_String_Id.h
+msgid "Type"
+msgstr "Intikken"
+
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link:"
@@ -6780,6 +6798,12 @@ msgstr "Onderstrepen"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Het geselecteerde onderstrepen (omschakelen)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+msgid "Underlines"
+msgstr "Onderstrepen"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -7085,6 +7109,12 @@ msgstr "mm/dd/jj"
 msgid "tOGGLE cASE"
 msgstr "hOOFD- eN kLEINE lETTERS oMWISSELEN"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Geen"
+
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_Lists_Style_none"
@@ -7102,6 +7132,18 @@ msgstr "Geen"
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Onderwerp"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Geen"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Geen"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7142,11 +7184,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "&Omschrijving"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7206,7 +7243,7 @@ msgid ""
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
 "AbiWord kan het spellingbestand %s.dll niet vinden\n"
-"Haal a.u.b. Aspell binnen vanaf http://aspell.net/win32/ en installeer het."
+"Haal Aspell binnen en installeer het vanaf http://aspell.net/win32/"
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h
@@ -7372,7 +7409,7 @@ msgstr "Beschikbare talen:"
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
 msgid "Aymara (Central/Northern Bolivia)"
-msgstr "Aymara (centraal- / noord-Bolivia)"
+msgstr "Aymara (Centraal/Noord Bolivia)"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
@@ -7568,6 +7605,12 @@ msgstr "Kies document uit de lijst:"
 #. TB_ClearBackground
 #: po/tmp/xap_String_Id.h
 msgid "Clear Background"
+msgstr "Achtergrond wissen"
+
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
 msgstr "Achtergrond wissen"
 
 #. DLG_CLIPART_Title
@@ -7783,13 +7826,13 @@ msgstr "Bewerkingstijd:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "Effecten"
+msgid "Effects:"
+msgstr "Effecten:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
 msgid "Embed (CSS) style sheet"
-msgstr "(CSS) Style Sheet opnemen"
+msgstr "Opnemen(CSS) style sheet"
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h
@@ -7910,7 +7953,7 @@ msgstr "Bestand"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Bestand bestaat al.   Wilt u bestand '%s' overschrijven?"
+msgstr "Bestand bestaat al.  Wilt u bestand '%s' overschrijven?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h
@@ -8712,6 +8755,7 @@ msgid "Replay Editing from File"
 msgstr "Bewerken afspelen vanuit bestand"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Herstellen"
@@ -9311,6 +9355,27 @@ msgstr "verwanten"
 msgid "unrelated"
 msgstr "niet-gerelateerd"
 
+#~ msgid "List"
+#~ msgstr "Lijst"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Geen"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Details van vormgeving"
+
+#~ msgid "&Description"
+#~ msgstr "&Omschrijving"
+
 #~ msgid "Contributor"
 #~ msgstr "Bijdrager"
 
@@ -9328,9 +9393,6 @@ msgstr "niet-gerelateerd"
 
 #~ msgid "Page Reference"
 #~ msgstr "Paginaverwijzing"
-
-#~ msgid "Type"
-#~ msgstr "Intikken"
 
 #~ msgid "Bambara"
 #~ msgstr "Bambara"
