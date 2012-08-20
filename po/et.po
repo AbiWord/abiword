@@ -1,14 +1,13 @@
 # Estonian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Marek Laane <bald@starman.ee>, 2003-2005.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: abiword\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
 "PO-Revision-Date: 2011-06-13 05:53+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Estonian <et@li.org>\n"
@@ -116,11 +115,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 puudub"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -128,11 +122,6 @@ msgstr "&1 puudub"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -142,11 +131,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -154,11 +138,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -257,11 +236,6 @@ msgstr "&Mahuta tabel automaatselt"
 #: po/tmp/ap_String_Id.h
 msgid "&Automatically save this Scheme"
 msgstr "Pr&aegune skeem salvestatakse automaatselt"
-
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "S&aadaolevad vormingud:"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
@@ -428,11 +402,6 @@ msgstr "Muuda hüp&erlinki"
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr ""
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "Nutikat&e jutumärkide lubamine"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -812,6 +781,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "&Välju"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1278,12 +1252,12 @@ msgstr "Päras&t:"
 msgid "Ali&gnment:"
 msgstr "&Joondus:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Joondus"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1297,7 +1271,8 @@ msgstr "Kõik"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
+#, fuzzy
+msgid "Allow formatting not using styles only"
 msgstr "Vormindamine lubatakse ainult stiile kasutades"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
@@ -1388,6 +1363,12 @@ msgstr ""
 "Kas oled kindel, et ei soovi säilitada kogu ajalugu? Jätkamise korral ei saa "
 "sa selle dokumendi varasemaid versioone taastada."
 
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
+
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
 msgid "At least"
@@ -1398,6 +1379,7 @@ msgstr "Vähemalt"
 msgid "Attach to Previous List"
 msgstr "Eelmisele nimekirjale lisamine"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -1431,14 +1413,9 @@ msgstr "Automaatsalvestamine"
 msgid "Auto replace misspelled words"
 msgstr "Valesti kirjutatud sõnade automaatne asendamine"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Automaatne mahutamine"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "Automaatne mahutamine"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1478,17 +1455,20 @@ msgstr "Automaatne ühendamine"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
+#, fuzzy
+msgid "Available Fields:"
 msgstr "Saadaolevad väljad"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
+#, fuzzy
+msgid "Available Formats:"
 msgstr "Saadaolevad vormingud"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
+#, fuzzy
+msgid "Available Styles:"
 msgstr "Saadaolevad stiilid"
 
 #. DLG_Para_LabelBy
@@ -1522,11 +1502,6 @@ msgstr "Tulptabeldusmärk"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Stiili alus:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Kirjutamissuuna valikud"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -1648,6 +1623,12 @@ msgstr "Täpid"
 msgid "Bullets and &Numbering"
 msgstr "&Täpid ja nummerdamine"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Bullets and Numbering"
+msgstr "&Täpid ja nummerdamine"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1692,6 +1673,12 @@ msgstr "Püsistiili ei saa muuta"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Trükitöö käivitamine ebaõnnestus"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Category"
+msgstr "Kategooria:"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2003,6 +1990,12 @@ msgstr "Värv:"
 msgid "Column"
 msgstr "Veerg"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Column Break"
+msgstr "&Veeru katkestus"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2072,10 +2065,15 @@ msgid "Contact from File"
 msgstr ""
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Contacts"
+msgstr "Sisukord 1"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Contacts:"
 msgstr "Sisukord 1"
 
 #. TOC_TocHeading
@@ -2092,8 +2090,9 @@ msgstr "Jätka eelmise versiooniga (number %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Kaasautor"
+#, fuzzy
+msgid "Contributor(s)"
+msgstr "Kaasautor(id):"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2260,6 +2259,12 @@ msgstr "Uue dokumendi loomine malli põhjal"
 msgid "Create an empty document"
 msgstr "Tühja dokumendi loomine"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Create and Modify Styles"
+msgstr "&Loo ja muuda stiile"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -2286,17 +2291,12 @@ msgstr ""
 msgid "Create new Semantic Item"
 msgstr ""
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Looja"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "&Lõika"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Tänane kuupäev"
@@ -2399,6 +2399,12 @@ msgstr "Kriipsudega nimekiri"
 msgid "Dashed line"
 msgstr ""
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr ""
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2442,11 +2448,6 @@ msgstr "Detsimaaltabeldusmärk"
 msgid "Decrease indent"
 msgstr "Vähenda taanet"
 
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Vaikimisi kuupäev (ilma kellaajata)"
-
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
@@ -2477,6 +2478,12 @@ msgstr "Põhiomadused"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Valiku stiili määramine või rakendamine"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2581,8 +2588,6 @@ msgstr "Kustutab selle veeru tabelist"
 msgid "Delete this row from its table"
 msgstr "Kustutab selle rea tabelist"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2595,6 +2600,11 @@ msgstr "Kirjeldus"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Kirjeldus:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2717,6 +2727,12 @@ msgstr "Dokumendid"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Ei käivitata uuesti"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2890,8 +2906,15 @@ msgstr "Lõpumärkuse viide"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
+#, fuzzy
+msgid "Endnote style:"
 msgstr "Lõpumärkuse stiil"
+
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Endnotes"
+msgstr "Lõp&umärkus"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -2929,7 +2952,7 @@ msgstr "Viga %s salvestamisel: vigane nimi"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
+msgid "Events:"
 msgstr ""
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
@@ -2993,20 +3016,16 @@ msgstr ""
 msgid "Extra"
 msgstr "Ekstra"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
+#, fuzzy
+msgid "Extra Parameters:"
 msgstr "Lisaparameetrid"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Ekstratööriistariba"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Lisaparameetrid:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3027,11 +3046,6 @@ msgstr "Täi&sekraan"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "&Otsitakse:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Välja nimi"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3231,8 +3245,15 @@ msgstr "Allmärkuse viide"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
+#, fuzzy
+msgid "Footnote style:"
 msgstr "Allmärkuse stiil"
+
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Footnotes"
+msgstr "All&märkus"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
@@ -3282,16 +3303,6 @@ msgstr "Vormindus"
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "Põimitud objekti vormindus"
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Lõpumärkuste vormindus"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Allmärkuste vormindus"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3372,7 +3383,8 @@ msgstr "Täi&sekraan"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Üldine"
 
@@ -3603,17 +3615,19 @@ msgstr "Sõnade Esitähed Suurtähena"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
+#, fuzzy
+msgid "Initial Endnote value:"
 msgstr "Esimese lõpumärkuse tähis"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
+#, fuzzy
+msgid "Initial Footnote value:"
 msgstr "Esimese allmärkuse tähis"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
+msgid "Inner (single) quote style:"
 msgstr ""
 
 #. InsertModeFieldINS
@@ -3645,7 +3659,7 @@ msgstr "&Lisa tabel"
 msgid "Insert Bookmark"
 msgstr "Lisa järjehoidja"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Lisa katkestus"
@@ -3675,7 +3689,7 @@ msgstr "Lisa võrrand"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Lisa võrrand LaTeXi avaldisest"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Välja lisamine"
@@ -3850,20 +3864,10 @@ msgstr "Pildi lisamine dokumenti"
 msgid "Insert bookmark"
 msgstr "Järjehoidja lisamine"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Katkestuse lisamine"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Lõikepildi lisamine"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Välja lisamine"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3992,9 +3996,14 @@ msgid "Keywords:"
 msgstr "Märksõnad:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
+msgstr "LaTeXi võrrand"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "LaTeX Equation:"
 msgstr "LaTeXi võrrand"
 
 #. DLG_Lists_Indent
@@ -4009,7 +4018,6 @@ msgstr "Pealdise definitsioonid"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Keel"
@@ -4018,6 +4026,12 @@ msgstr "Keel"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Keeleseadistused"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Language(s)"
+msgstr "Keel(ed):"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4029,14 +4043,10 @@ msgstr "Keel(ed):"
 msgid "Layout"
 msgstr "Paigutus"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Paigutuse üksikasjad"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
+#, fuzzy
+msgid "Leader:"
 msgstr "Tähis"
 
 #. DLG_Para_AlignLeft
@@ -4116,11 +4126,6 @@ msgstr "Tase:"
 msgid "Li&ne spacing:"
 msgstr "&Reavahe:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Rida"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4146,15 +4151,16 @@ msgstr "Joon valiku all (lülitamine)"
 msgid "Line between"
 msgstr "Joon vahel"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Line:"
+msgstr "Ridu:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "Ridu:"
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Nimekiri"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4171,14 +4177,9 @@ msgstr "Nimekirja omadused"
 msgid "List Styles"
 msgstr "Nimekirja stiilid"
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Nimekirjad "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
+msgid "Locations:"
 msgstr ""
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
@@ -4257,7 +4258,8 @@ msgstr "Martini test"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
+#, fuzzy
+msgid "Max Column size:"
 msgstr "Veeru maks. suurus"
 
 #. TOOLBAR_LABEL_MENU
@@ -4369,7 +4371,8 @@ msgstr "Muud stiilid"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+#, fuzzy
+msgid "Modify Style"
 msgstr "Stiilide muutmine"
 
 #. DLG_Styles_Modify
@@ -4439,7 +4442,7 @@ msgstr "Taandus"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
+msgid "New Contact"
 msgstr ""
 
 #. DLG_NEW_Title
@@ -4526,11 +4529,8 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Skripti ei leitud"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Puudub"
@@ -4557,7 +4557,8 @@ msgstr "Märkuse stiilid"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
+#, fuzzy
+msgid "Number of Columns:"
 msgstr "Veergude arv"
 
 #. FIELD_Numbers_PagesCount
@@ -4591,13 +4592,18 @@ msgstr "Nummerdatud"
 msgid "Numbered List"
 msgstr "Nummerdatud nimekiri"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
+msgstr "Nummerdamine"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Numbering:"
 msgstr "Nummerdamine"
 
 #. FIELD_Type_Numbers
@@ -4673,7 +4679,8 @@ msgstr "Selle dokumendi avamine"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
+#, fuzzy
+msgid "Orientation"
 msgstr "Orientatsioon..."
 
 #. DLG_Options_TabLabel_Other
@@ -4689,7 +4696,7 @@ msgstr "%s avamisel jäi mälu napiks"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+msgid "Outer (double) quote style:"
 msgstr ""
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
@@ -4726,7 +4733,6 @@ msgstr "&Hävita versioonid"
 msgid "Pa&ste Unformatted"
 msgstr "A&seta vormindamata"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4741,6 +4747,12 @@ msgstr "Eelnev lehekülje&katkestus"
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "Lehekülje taust"
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page Break"
+msgstr "&Lehekülje katkestus"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4774,8 +4786,8 @@ msgstr "Leheküljenumbrid"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Lehekülje viide"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4786,6 +4798,12 @@ msgstr "&Lehekülje seadistamine"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Lehekülje seadistamine"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page:"
+msgstr "Lehekülgi:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -4803,15 +4821,15 @@ msgstr "Lehekülgi:"
 msgid "Pagination"
 msgstr "Lehekülgjaotus"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr ""
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "&Paberi suurus:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Paber..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4878,7 +4896,8 @@ msgstr "Sektsiooni lõpus"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
+#, fuzzy
+msgid "Placement:"
 msgstr "Asukoht"
 
 #. MENU_LABEL_RDF_ADV_PLAY
@@ -4886,17 +4905,11 @@ msgstr "Asukoht"
 msgid "Playing with RDF during development"
 msgstr ""
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Asukoht"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Tekstikasti asukoht"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -4913,6 +4926,7 @@ msgstr "Asukoht leheküljel"
 msgid "Position to Paragraph"
 msgstr "Asukoht lõigu suhtes"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5065,11 +5079,6 @@ msgstr ""
 msgid "R&eplace"
 msgstr "Ase&nda"
 
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr ""
-
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
@@ -5181,7 +5190,8 @@ msgstr "Eemalda päis"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
+#, fuzzy
+msgid "Remove Property from Style:"
 msgstr "Stiilist eemaldatakse omadus"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
@@ -5531,8 +5541,8 @@ msgstr "Salvesta failina"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Skaleerimine..."
+msgid "Scale"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5549,14 +5559,9 @@ msgstr "Sekundit uuendamise vahel"
 msgid "Seconds since the epoch"
 msgstr "Sekundit alates epohhist"
 
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Sektsiooni katkestused"
-
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Sektsiooni katkestused"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -5613,7 +5618,8 @@ msgstr "Vali tekstikast"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+#, fuzzy
+msgid "Select a target bookmark from the list:"
 msgstr "Vali nimekirjast vajalik järjehoidja-"
 
 #. DLG_FormatFrame_SelectImage
@@ -5683,13 +5689,13 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
+msgid "Select the parts of the document contained in the next revision"
 msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
+msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -6132,7 +6138,8 @@ msgstr "Allikas:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
+#, fuzzy
+msgid "Space after Column:"
 msgstr "Vahe veeru järel"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
@@ -6363,12 +6370,14 @@ msgstr "Stiili nimi:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
+#, fuzzy
+msgid "Style Type:"
 msgstr "Stiili tüüp"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
+#, fuzzy
+msgid "Style for following paragraph:"
 msgstr "Järgmise lõigu stiil"
 
 #. DLG_Styles_ErrBlankName
@@ -6383,7 +6392,6 @@ msgstr "Stiilile tuleb nimi anda"
 msgid "Style:"
 msgstr "Stiil:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6520,7 +6528,7 @@ msgstr "Eemaldatavad tabeldusmärgid:"
 msgid "Table"
 msgstr "Tabel"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Tabeli suurus"
@@ -6545,11 +6553,6 @@ msgstr "Sisukorra nimekirja pealdis"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Sisukorra lehekülg"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Tabeli suurus"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6598,13 +6601,24 @@ msgstr "Teksti joondus:"
 msgid "Text Box"
 msgstr "Tekstikast"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr ""
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr ""
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr "Teksti kokkukerimine"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Teksti mähkimine"
 
@@ -6792,19 +6806,20 @@ msgstr "Kolmnurkadega nimekiri"
 msgid "Two"
 msgstr "Kaks"
 
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "Tüüp"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
 msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+#, fuzzy
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Kirjuta järjehoidja nimi või vali nimekirjast mõni olemasolev"
 
 #. DLG_Lists_Type
@@ -6829,6 +6844,13 @@ msgstr "Allajoonitud"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Valiku allajoonimine (lülitamine)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Underlines"
+msgstr "Allajoonitud"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -6964,6 +6986,11 @@ msgstr "Hoiatus: antud järjehoidjat [%s] ei ole olemas."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Veebivaade"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7125,12 +7152,47 @@ msgstr "mm/dd/yy"
 msgid "tOGGLE cASE"
 msgstr "tÕSTU lÜLITAMINE"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Puudub"
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Puudub"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Puudub"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Teema"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Puudub"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Puudub"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7170,12 +7232,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "&Description"
-msgstr "Kirjeldus"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7271,6 +7327,11 @@ msgstr "AbiWord: trükkimise eelvaatlus"
 msgid "About %s"
 msgstr "%s info"
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
@@ -7313,8 +7374,8 @@ msgstr "Lisamärgistuse lubamine AWML nimeruumis"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Amhaari (Etioopia)"
+msgid "Amharic"
+msgstr ""
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7364,8 +7425,8 @@ msgstr "Assami"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Aatuuria (Hispaania)"
+msgid "Asturian"
+msgstr ""
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7389,22 +7450,29 @@ msgstr "Automaatne versioon"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
+#, fuzzy
+msgid "Available Documents:"
 msgstr "Saadaolevad dokumendid"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
+#, fuzzy
+msgid "Available Languages:"
 msgstr "Saadaolevad keeled"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
 msgstr ""
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr ""
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
 msgstr ""
 
 #. ENC_BALT_ISO
@@ -7416,6 +7484,11 @@ msgstr "Balti (ISO-8859-4)"
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Balti (Windowsi koodileht 1257)"
+
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr ""
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7447,6 +7520,11 @@ msgstr "Mustvalge"
 #: po/tmp/xap_String_Id.h
 msgid "Block Text"
 msgstr "Plokktekst"
+
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr ""
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
@@ -7485,11 +7563,6 @@ msgstr "Loobu"
 msgid "Catalan"
 msgstr "Katalaani"
 
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr ""
-
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Central European, ISO-8859-2"
@@ -7514,6 +7587,11 @@ msgstr "Klaviatuuri muutmisel muudetakse ka keelt"
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Peatüki pealkiri"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7586,6 +7664,12 @@ msgstr "Vali nimekirjast dokument:"
 msgid "Clear Background"
 msgstr "Puhasta taustavärv"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "Puhasta taustavärv"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7593,7 +7677,7 @@ msgstr "Lõikepilt"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
+msgid "Clip Art could not be loaded."
 msgstr ""
 
 #. DLG_Close
@@ -7758,16 +7842,6 @@ msgstr "Deklareerimine XML-ina (versioon 1.0)"
 msgid "Default language: "
 msgstr "Vaikekeel: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Pildi asetus"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Teksti mähkimine"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -7800,8 +7874,8 @@ msgstr "Võrreldavad dokumendid"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Hollandi (Holland)"
+msgid "Dutch"
+msgstr ""
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7810,7 +7884,8 @@ msgstr "Redigeerimisaeg:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
+#, fuzzy
+msgid "Effects:"
 msgstr "Efektid"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
@@ -7889,6 +7964,11 @@ msgstr "Inglise (Briti)"
 msgid "English (US)"
 msgstr "Inglise (USA)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr ""
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7952,8 +8032,8 @@ msgstr "Soome"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Flaami (Belgia)"
+msgid "Flemish"
+msgstr ""
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -8013,9 +8093,13 @@ msgstr ""
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "Galician (Galego)"
-msgstr "Galeegi"
+msgid "Galician"
+msgstr ""
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr ""
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8177,10 +8261,25 @@ msgstr "Islandi (Macintosh)"
 msgid "Identifier:"
 msgstr "ID:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr ""
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr ""
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Pildi omadused"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr ""
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8286,8 +8385,8 @@ msgstr "Iiri"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Itaalia (Itaalia)"
+msgid "Italian"
+msgstr ""
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8321,14 +8420,23 @@ msgstr "Kannada"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
+msgid "Kazakh"
 msgstr ""
 
-#. LANG_KO_KR
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr ""
+
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Korea"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr ""
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8337,8 +8445,8 @@ msgstr "Korea (EUC-KR)"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Korea (Johab)"
+msgid "Korean, JOHAB"
+msgstr ""
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8367,8 +8475,8 @@ msgstr "Viimati salvestatud:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Ladina (renessanss)"
+msgid "Latin"
+msgstr ""
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8383,8 +8491,13 @@ msgstr "Leedu"
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Loading Clip Art"
+msgid "Loading Clip Art..."
 msgstr "Lõikepilt"
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8402,6 +8515,11 @@ msgstr "Makedoonia"
 msgid "Make default for document"
 msgstr "Vaikeväärtus dokumendile"
 
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr ""
+
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
 msgid "Malay"
@@ -8409,7 +8527,7 @@ msgstr ""
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
+msgid "Mandinka"
 msgstr ""
 
 #. LANG_MI_NZ
@@ -8449,7 +8567,7 @@ msgstr "Nimi:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
+msgid "Nepali"
 msgstr ""
 
 #. DLG_MB_No
@@ -8472,16 +8590,6 @@ msgstr "Pluginat ei ole valitud"
 msgid "Normal"
 msgstr "Normaalne"
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Norra (Bokmaal)"
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Norra (Nynorsk)"
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8501,6 +8609,11 @@ msgstr "Nummerdatud pealkiri 2"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Nummerdatud pealkiri 3"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr ""
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8566,7 +8679,8 @@ msgstr "Klaartekst"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
+#, fuzzy
+msgid "Plugin Details"
 msgstr "Plugina üksikasjad:"
 
 #. DLG_PLUGIN_MANAGER_LIST
@@ -8648,27 +8762,32 @@ msgstr "Printeri käsk: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Pandžabi (gurmukhi)"
+msgid "Punjabi (India)"
+msgstr ""
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Pandžabi (šahmukhi)"
+msgid "Punjabi (Pakistan)"
+msgstr ""
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Ketšua"
 
-#. LANG_QUH_BO
+#. LANG_QUZ
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
+msgid "Quechua (Cusco)"
 msgstr ""
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
+msgid "Quechua (Northern Bolivia)"
+msgstr ""
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
 msgstr ""
 
 #. ReadOnly
@@ -8706,6 +8825,7 @@ msgid "Replay Editing from File"
 msgstr "Vali pilt failist"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Taasta"
@@ -8732,12 +8852,12 @@ msgstr "Rumeenia (Macintosh)"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Vene (Venemaa)"
+msgid "Russian"
+msgstr ""
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
+msgid "Russian, pre-1918"
 msgstr ""
 
 #. DLG_UFS_SampleFrameLabel
@@ -8799,18 +8919,8 @@ msgstr "Serbia"
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Serbian, latin"
+msgid "Serbian, Latin"
 msgstr "Serbia"
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Pildi nimi"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Pildi suurus"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -8840,6 +8950,11 @@ msgstr "Sloveeni"
 #. DLG_UFS_Effects_SmallCaps
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
+msgstr ""
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
 msgstr ""
 
 #. LANG_ES_MX
@@ -9164,11 +9279,6 @@ msgstr "Vaade:"
 msgid "Welsh"
 msgstr "Uelsi"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Lääne-Euroopa (DOS/Windowsi koodileht 437)"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9216,7 +9326,7 @@ msgstr "Laius:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
+msgid "Wolof"
 msgstr ""
 
 #. DLG_MB_Yes
@@ -9240,6 +9350,11 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "Suurendus"
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr ""
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9308,6 +9423,146 @@ msgstr "järglased"
 msgid "unrelated"
 msgstr "seoseta"
 
+#~ msgid "List"
+#~ msgstr "Nimekiri"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 puudub"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Paigutuse üksikasjad"
+
+#, fuzzy
+#~ msgid "&Description"
+#~ msgstr "Kirjeldus"
+
+#~ msgid "Contributor"
+#~ msgstr "Kaasautor"
+
+#~ msgid "Creator"
+#~ msgstr "Looja"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Vaikimisi kuupäev (ilma kellaajata)"
+
+#~ msgid "Line"
+#~ msgstr "Rida"
+
+#~ msgid "Lists for "
+#~ msgstr "Nimekirjad "
+
+#~ msgid "Page Reference"
+#~ msgstr "Lehekülje viide"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhaari (Etioopia)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Aatuuria (Hispaania)"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Hollandi (Holland)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Flaami (Belgia)"
+
+#, fuzzy
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galeegi"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Itaalia (Itaalia)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Korea (Johab)"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Ladina (renessanss)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Norra (Bokmaal)"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Norra (Nynorsk)"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Pandžabi (gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Pandžabi (šahmukhi)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Vene (Venemaa)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Lääne-Euroopa (DOS/Windowsi koodileht 437)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "S&aadaolevad vormingud:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "Nutikat&e jutumärkide lubamine"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Automaatne mahutamine"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Kirjutamissuuna valikud"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Lisaparameetrid:"
+
+#~ msgid "Field Name"
+#~ msgstr "Välja nimi"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Lõpumärkuste vormindus"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Allmärkuste vormindus"
+
+#~ msgid "Insert break"
+#~ msgstr "Katkestuse lisamine"
+
+#~ msgid "Insert field"
+#~ msgstr "Välja lisamine"
+
+#~ msgid "Paper..."
+#~ msgstr "Paber..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Tekstikasti asukoht"
+
+#~ msgid "Scale..."
+#~ msgstr "Skaleerimine..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Sektsiooni katkestused"
+
+#~ msgid "Table size"
+#~ msgstr "Tabeli suurus"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Pildi asetus"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Teksti mähkimine"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Pildi nimi"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Pildi suurus"
+
 #~ msgid "Unicode UCS-2"
 #~ msgstr "Unicode (UCS-2)"
 
@@ -9356,3 +9611,250 @@ msgstr "seoseta"
 #~ msgstr ""
 #~ "Dokumendid, mida soovid ühendada, pole omavahel seotud. AbiWord püüab "
 #~ "need ühendada, kuid tulemus võib olla mõttetu."
+
+#~ msgid "Page Reference"
+#~ msgstr "Lehekülje viide"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Lõpumärkuste vormindus"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode (UTF-16)"
+
+#~ msgid "Table size"
+#~ msgstr "Tabeli suurus"
+
+#, fuzzy
+#~ msgid "Loading Clip Art"
+#~ msgstr "Lõikepilt"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Lääne-Euroopa (DOS/Windowsi koodileht 437)"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Hollandi (Holland)"
+
+#~ msgid "Orientation..."
+#~ msgstr "Orientatsioon..."
+
+#~ msgid "Insert field"
+#~ msgstr "Välja lisamine"
+
+#~ msgid "Available Formats"
+#~ msgstr "Saadaolevad vormingud"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Aatuuria (Hispaania)"
+
+#~ msgid "Effects"
+#~ msgstr "Efektid"
+
+#~ msgid "Available Fields"
+#~ msgstr "Saadaolevad väljad"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Ladina (renessanss)"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 puudub"
+
+#, fuzzy
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galeegi"
+
+#~ msgid "Modify Styles"
+#~ msgstr "Stiilide muutmine"
+
+#~ msgid "Available Languages"
+#~ msgstr "Saadaolevad keeled"
+
+#~ msgid "Scale..."
+#~ msgstr "Skaleerimine..."
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Vaikimisi kuupäev (ilma kellaajata)"
+
+#~ msgid "Section breaks"
+#~ msgstr "Sektsiooni katkestused"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Norra (Bokmaal)"
+
+#~ msgid "Placement"
+#~ msgstr "Asukoht"
+
+#~ msgid "Lists for "
+#~ msgstr "Nimekirjad "
+
+#~ msgid "Layout Details"
+#~ msgstr "Paigutuse üksikasjad"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Kirjutamissuuna valikud"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "Nutikat&e jutumärkide lubamine"
+
+#, fuzzy
+#~ msgid "Edit LaTex Equation"
+#~ msgstr "LaTeXi võrrand"
+
+#~ msgid "Line"
+#~ msgstr "Rida"
+
+#, fuzzy
+#~ msgid "&Description"
+#~ msgstr "Kirjeldus"
+
+#~ msgid "Header/Footers"
+#~ msgstr "Päis/jalus"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Pandžabi (gurmukhi)"
+
+#~ msgid "Go to..."
+#~ msgstr "Liikumine..."
+
+#~ msgid "Plugin Details:"
+#~ msgstr "Plugina üksikasjad:"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode (UCS-2)"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode (UCS-4)"
+
+#~ msgid "Endnote style"
+#~ msgstr "Lõpumärkuse stiil"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Teksti mähkimine"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Flaami (Belgia)"
+
+#~ msgid "Available Styles"
+#~ msgstr "Saadaolevad stiilid"
+
+#~ msgid "Footnotes and Endnotes"
+#~ msgstr "All- ja lõpumärkused"
+
+#~ msgid "Allow formatting using styles only"
+#~ msgstr "Vormindamine lubatakse ainult stiile kasutades"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Lisaparameetrid:"
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "Field Name"
+#~ msgstr "Välja nimi"
+
+#~ msgid "Leader"
+#~ msgstr "Tähis"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode (UTF-32)"
+
+#~ msgid "Footnote style"
+#~ msgstr "Allmärkuse stiil"
+
+#~ msgid "Max Column size"
+#~ msgstr "Veeru maks. suurus"
+
+#~ msgid "Space after Column"
+#~ msgstr "Vahe veeru järel"
+
+#~ msgid "Extra Parameters"
+#~ msgstr "Lisaparameetrid"
+
+#~ msgid "Available Documents"
+#~ msgstr "Saadaolevad dokumendid"
+
+#~ msgid "Number of Columns"
+#~ msgstr "Veergude arv"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Pandžabi (šahmukhi)"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "Style for following paragraph"
+#~ msgstr "Järgmise lõigu stiil"
+
+#~ msgid "Initial Endnote value"
+#~ msgstr "Esimese lõpumärkuse tähis"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Pildi nimi"
+
+#~ msgid "Creator"
+#~ msgstr "Looja"
+
+#~ msgid "Type a name for the bookmark, or select an existing from the list."
+#~ msgstr "Kirjuta järjehoidja nimi või vali nimekirjast mõni olemasolev"
+
+#~ msgid "Select a target bookmark from the list."
+#~ msgstr "Vali nimekirjast vajalik järjehoidja-"
+
+#~ msgid "Style Type"
+#~ msgstr "Stiili tüüp"
+
+#~ msgid "Initial Footnote value"
+#~ msgstr "Esimese allmärkuse tähis"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Automaatne mahutamine"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Korea (Johab)"
+
+#~ msgid "Position Text Box"
+#~ msgstr "Tekstikasti asukoht"
+
+#~ msgid "Format Object"
+#~ msgstr "Objekti vormindus"
+
+#~ msgid "Remove Property from Style"
+#~ msgstr "Stiilist eemaldatakse omadus"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Allmärkuste vormindus"
+
+#~ msgid "List"
+#~ msgstr "Nimekiri"
+
+#~ msgid "Contributor"
+#~ msgstr "Kaasautor"
+
+#~ msgid "&Available formats:"
+#~ msgstr "S&aadaolevad vormingud:"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Vene (Venemaa)"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Pildi asetus"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Pildi suurus"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhaari (Etioopia)"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Norra (Nynorsk)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Itaalia (Itaalia)"
+
+#~ msgid "Paper..."
+#~ msgstr "Paber..."
+
+#~ msgid "Insert break"
+#~ msgstr "Katkestuse lisamine"
