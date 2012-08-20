@@ -122,7 +122,7 @@ bool convertLaTeXtoEqn(const UT_UTF8String & sLaTeX,UT_UTF8String & eqnLaTeX)
 
 }
 
-// Function to convert OMML (from docx) to MathML
+// Function to convert OMML to MathML (for import of Math from docx)
 
 static xsltStylesheet * cur2 = NULL;
 
@@ -190,7 +190,7 @@ bool convertOMMLtoMathML(const std::string & pOMML, std::string & pMathML)
 
 }
 
-// Function to convert MathML to OMML (for export to docx)
+// Function to convert MathML to OMML (for export of Math to docx)
 
 static xsltStylesheet * cur3 = NULL;
 
@@ -209,6 +209,8 @@ bool convertMathMLtoOMML(const std::string & rMathML, std::string & rOMML)
     {
         std::string path(XAP_App::getApp()->getAbiSuiteLibDir());
         path+= "/omml_xslt/mml2omml.xsl";
+
+        // TO DO : add a post build event to the msvc project to copy the omml_xslt folder from openxml plugin to debug/release, after the gsoc2012math branch is merged with trunk
 
         cur3 = xsltParseStylesheetFile((const xmlChar *)(path.c_str()));
         if(!cur3)
