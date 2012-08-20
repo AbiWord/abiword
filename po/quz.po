@@ -1,6 +1,6 @@
 # Quechua (Cusco-Collao) lang-quz translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Amos Batto <amosbatt@yahoo.com>, 2010.
 # Irma Alvarez <sankaypillo@gmail.com>, 2011.
@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-02 23:52-0400\n"
-"PO-Revision-Date: 2011-09-30 19:03+0200\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"PO-Revision-Date: 2012-08-19 03:07+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: quz\n"
@@ -133,12 +133,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-# [es] "&1 Ninguno"
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Ni ima"
-
 # [es] "&2 %s"
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
@@ -147,12 +141,6 @@ msgstr "&1 Ni ima"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-# [es] "&2 .........."
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 # [es] "&3 %s"
 #. MENU_LABEL_FILE_RECENT_3
@@ -163,12 +151,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-# [es] "&3 ----------"
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 # [es] "&4 %s"
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
@@ -177,12 +159,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-# [es] "&4 __________"
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 # [es] "&5 %s"
 #. MENU_LABEL_FILE_RECENT_5
@@ -267,11 +243,10 @@ msgstr "&Tukuy"
 msgid "&Annotations"
 msgstr ""
 
-# [es] "&Aplicar"
 #. DLG_ApplyButton
 #: po/tmp/ap_String_Id.h
 msgid "&Apply"
-msgstr "&Aplicar"
+msgstr ""
 
 # [es] "&En:"
 #. DLG_Para_LabelAt
@@ -297,12 +272,6 @@ msgstr "&Pachanmanta tablata mat'iy"
 msgid "&Automatically save this Scheme"
 msgstr "&Pachanmanta kaykuna aqllasqasta jallch'ay"
 
-# [es] "Formatos &disponibles:"
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "&Apaykacháy atisqa ukhunpi kamachis:"
-
 # [es] "&Anterior:"
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
@@ -318,9 +287,8 @@ msgstr "&Yanachasqa"
 # [es] "Bordes y sombreado"
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Borders and Shading"
-msgstr "Kantusninwan llanthunwan"
+msgstr "&Kantusninwan llanthunwan"
 
 # [es] "&Inferior:"
 #. DLG_PageSetup_Bottom
@@ -393,9 +361,8 @@ msgstr "&Suk'asqakuna"
 # [es] "&Comparar documentos"
 #. MENU_LABEL_TOOLS_REVISIONS_COMPARE_DOCUMENTS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Compare documents"
-msgstr "&Comparar documentos"
+msgstr ""
 
 # [es] "&Copiar"
 #. MENU_LABEL_EDIT_COPY
@@ -496,12 +463,6 @@ msgstr "&Web-waskhata uqjinayachiy"
 msgid "&Enable overwrite mode toggle"
 msgstr ""
 
-# [es] "&Activar comillas inteligentes"
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "Pachanmanta &juch'uy pakanchanasta jap'ichiy"
-
 # [es] "&Nota final"
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -572,9 +533,8 @@ msgstr "Laqhiqpa &chakin:"
 # [es] "Formato"
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Ukhunpi kamachi"
+msgstr "&Ukhunpi kamachi"
 
 # [es] "&Ir a"
 #. MENU_LABEL_EDIT_GOTO
@@ -597,9 +557,8 @@ msgstr "&Laqhiqpa umakunanpis chakikunanpis"
 # [es] "Cabeceras/pies de página"
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Header/Footers"
-msgstr "Laqhiqpa umanpis chakinpis"
+msgstr "&Laqhiqpa umanpis chakinpis"
 
 # [es] "&Cabecera:"
 #. DLG_PageSetup_Header
@@ -624,7 +583,7 @@ msgstr "&Yanapay"
 #. DLG_Options_Label_ViewHiddenText
 #: po/tmp/ap_String_Id.h
 msgid "&Hidden Text"
-msgstr "&Pakasqa texto"
+msgstr "&Pakasqa qillqa"
 
 # [es] "&Resaltar palabras mal escritas"
 #. DLG_Options_Label_SpellHighlightMisspelledWords
@@ -748,7 +707,7 @@ msgstr "&Lluq'i"
 #. MENU_LABEL_FMT_DIRECTION_DO_LTR
 #: po/tmp/ap_String_Id.h
 msgid "&Left-to-right text"
-msgstr "Ll&uq'imanta pañaman texto"
+msgstr "Ll&uq'imanta pañaman qillqa"
 
 # [es] "&Izquierda:"
 #. DLG_Para_LabelLeft
@@ -955,6 +914,11 @@ msgstr ""
 msgid "&Quit"
 msgstr "&Lluqsiy"
 
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr ""
+
 # [es] "Marcador &D->I"
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1007,7 +971,7 @@ msgstr "&Paña"
 #. MENU_LABEL_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h
 msgid "&Right-to-left text"
-msgstr "P&añamanta lluq'iman texto"
+msgstr "P&añamanta lluq'iman qillqa"
 
 # [es] "&Derecha:"
 #. DLG_Para_LabelRight
@@ -1514,13 +1478,13 @@ msgid "Ali&gnment:"
 msgstr "&Mayqin chirupitaq:"
 
 # [es] "Alineación"
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Mayqin chirupitaq"
 
 # [es] "Alineación:"
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1536,7 +1500,8 @@ msgstr "Tukuy"
 # [es] "Permitir formatear usando estilos únicamente"
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
+#, fuzzy
+msgid "Allow formatting not using styles only"
 msgstr "Permitir formatear usando estilos únicamente"
 
 # [es] "Permitir colores de pantalla distintos del blanco"
@@ -1562,13 +1527,11 @@ msgstr "Aplicación"
 msgid "Application Startup"
 msgstr "AbiWordpa qallarnin"
 
-# [es] "&Aplicar"
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Apply"
-msgstr "Aplicar"
+msgstr ""
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
@@ -1605,6 +1568,7 @@ msgstr ""
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Apply the previously copied paragraph formatting onto the selected text"
 msgstr "Aplica el formato del parágrafo copiado en el texto seleccionado"
 
@@ -1637,6 +1601,12 @@ msgstr ""
 "continúa, no será capaz de restaurar versiones más antiguas de este "
 "documento."
 
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
+
 # [es] "Al menos"
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1650,11 +1620,11 @@ msgid "Attach to Previous List"
 msgstr "Ñawpaq kaq listaman yapallaypuni"
 
 # [es] "Autor:"
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Ruraqi:"
+msgstr "Ruraqi"
 
 # [es] "Autor:"
 #. DLG_MetaData_Author_LBL
@@ -1689,15 +1659,9 @@ msgid "Auto replace misspelled words"
 msgstr "Pachanmanta pantasqa simikunata chiqachay"
 
 # [es] "Comportamiento del auto-ajuste"
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Imayna pachanmanta chhikanta mat'in"
-
-# [es] "Comportamiento del auto-ajuste"
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "Imayna pachanmanta chhikanta mat'in"
 
 # [es] "Auto-ajustar tabla"
@@ -1745,20 +1709,20 @@ msgstr "Pachanmanta t'inkiy"
 # [es] "Campos disponibles"
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Apaykacháy atisqa kanchas"
+msgid "Available Fields:"
+msgstr "Apaykacháy atisqa kanchas:"
 
 # [es] "Formatos disponibles"
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
-msgstr "Apaykacháy atisqa ukhunpi kamachis"
+msgid "Available Formats:"
+msgstr "Apaykacháy atisqa ukhunpi kamachis:"
 
 # [es] "Estilos disponibles"
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "Apaykacháy atisqa estilos"
+msgid "Available Styles:"
+msgstr "Apaykacháy atisqa estilos:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1796,12 +1760,6 @@ msgstr "Siqiwan tabulador"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Imamantá lloqsin:"
-
-# [es] "Opciones bidireccionales"
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Opciones bidireccionales"
 
 # [es] "Línea inferior"
 #. MENU_LABEL_FMT_BOTTOMLINE
@@ -1946,6 +1904,12 @@ msgstr "Sut'us"
 msgid "Bullets and &Numbering"
 msgstr "S&ut'usninwan yupanasninwan"
 
+# [es] "Puntos y &numeración"
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "Sut'usninwan yupanasninwan"
+
 # [es] "Estilo del botón"
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
@@ -1982,6 +1946,7 @@ msgstr ""
 # [es] "No se puede introducir un salto dentro de una caja de texto"
 #. MSG_NoBreakInsideFrame
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Can not insert a Break inside a text box"
 msgstr ""
 "Mana textoq tawak'uchunpi phinkinata churayta atinchu.\n"
@@ -2010,6 +1975,12 @@ msgstr ""
 "Mana ñit'iyta qhallariyta atinchu.\n"
 "\n"
 "No se puede iniciar el trabajo de impresión."
+
+# [es] "Categoría:"
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "Laya"
 
 # [es] "Categoría:"
 #. DLG_MetaData_Category_LBL
@@ -2162,6 +2133,7 @@ msgstr "Ñit'inapaq aqllasqasta uqjinayachiy"
 # [es] "Cambiar las propiedades de la caja de texto"
 #. MENU_STATUSLINE_FMT_FRAME
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Change the properties of the Text Box"
 msgstr "Cambiar las propiedades de la caja de texto"
 
@@ -2382,6 +2354,12 @@ msgstr "Llimp'i:"
 msgid "Column"
 msgstr "Suk'asqa"
 
+# [es] "Salto de &columna"
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr "Suk'asqa phinkina"
+
 # [es] "Hueco de columna [%s]"
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
@@ -2464,10 +2442,16 @@ msgstr ""
 
 # [es] "Índice:"
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Contacts"
+msgstr "Ukhunpi kasqan"
+
+# [es] "Índice:"
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Contacts:"
 msgstr "Ukhunpi kasqan"
 
 # [es] "Índice:"
@@ -2484,11 +2468,11 @@ msgstr "Ukhunpi kasqan"
 msgid "Continue previous revision (number %d)"
 msgstr "Continuar la revisión anterior (número %d)"
 
-# [es] "Colaborador"
+# [es] "Colaborador(es):"
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Yanapaq"
+msgid "Contributor(s)"
+msgstr "Yanapaq(kuna)"
 
 # [es] "Colaborador(es):"
 #. DLG_MetaData_CoAuthor_LBL
@@ -2550,7 +2534,7 @@ msgstr "Objetota kikinchay"
 #. MENU_LABEL_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Copy Text Box"
-msgstr "Textoq tawak'uchunta kikinchay"
+msgstr "Qillqa tawak'uchunta kikinchay"
 
 # [es] "Copia la dirección del hiperenlace"
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
@@ -2562,11 +2546,12 @@ msgstr "Maypichus web-waskhata kikinchay"
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Copy the Text Box to the clipboard"
-msgstr "Laqhis-apaqman textoq tawak'uchunta kikinchay"
+msgstr "Laqhis-apaqman qillqa tawak'uchunta kikinchay"
 
 # [es] "Copia la caja de texto al portapapeles y después la elimina"
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Copy the Text Box to the clipboard then remove it"
 msgstr "Copiar la caja de texto al portapapeles y después la elimina"
 
@@ -2695,6 +2680,13 @@ msgstr "Lastrumanta musuq qhilqa-khiputa wallpay"
 msgid "Create an empty document"
 msgstr "Ch'usaq qhilqa-khiputa wallpay"
 
+# [es] "&Crear y modificar estilos"
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Create and Modify Styles"
+msgstr "&Imayna kayninta uqjinayachiy"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2720,12 +2712,6 @@ msgstr ""
 msgid "Create new Semantic Item"
 msgstr ""
 
-# [es] "Creador"
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Rikhurichiq"
-
 # [es] "Cor&tar"
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
@@ -2733,7 +2719,7 @@ msgid "Cu&t"
 msgstr "K&huchuy"
 
 # [es] "Fecha actual"
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Kunitan p'unchay"
@@ -2854,6 +2840,12 @@ msgstr "Siqikunawan lista"
 msgid "Dashed line"
 msgstr ""
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr ""
+
 # [es] "Fecha"
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2905,12 +2897,6 @@ msgstr "Tabulación decimal"
 msgid "Decrease indent"
 msgstr "Qhilqanapaq puchuta juch'uyachiy"
 
-# [es] "Fecha predeterminada (sin hora)"
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "(Ma pachayuq) ma aqllasqa p'unchay"
-
 # [es] "Representación predeterminada de la fecha"
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
@@ -2947,6 +2933,12 @@ msgstr "Definir propiedades principales"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Aqllasqa textopaq estilota churay"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 # [es] "Borrar"
 #. DLG_Styles_Delete
@@ -3023,7 +3015,7 @@ msgstr "Tablata chinkachiy"
 #. MENU_LABEL_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h
 msgid "Delete Text Box"
-msgstr "Textoq tawak'uchunta chinkachiy"
+msgstr "Qillqa tawak'uchunta chinkachiy"
 
 #. MENU_STATUSLINE_DELETE_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -3069,8 +3061,6 @@ msgid "Delete this row from its table"
 msgstr "Tablaykimanta sinruta chinkachiy"
 
 # [es] "Descripción"
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -3084,6 +3074,11 @@ msgstr "Kasqanta niranapaq"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Kasqanta niranapaq:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
 
 # [es] "Lista de diamantes"
 #. DLG_Lists_Diamond_List
@@ -3146,9 +3141,13 @@ msgid "Disable all formatting commands, except styles"
 msgstr "Mana munanchu mana imayna kayninman jina kaqtinqa"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
-#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
+msgstr ""
+
+#. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
+#: po/tmp/ap_String_Id.h
+msgid "Disassociate and apply default stylesheet"
 msgstr ""
 
 # [es] "Mostrar créditos"
@@ -3229,6 +3228,12 @@ msgstr "Qhilqa-khipus"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Ama watiqmanta qhallariychu"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -3413,8 +3418,16 @@ msgstr "Tukukuypa willayninpaq"
 # [es] "Estilo de nota final"
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
-msgstr "Imayna kayninpa tukukuypa willaynin"
+#, fuzzy
+msgid "Endnote style:"
+msgstr "Imayna kayninpa tukukuypa willaynin:"
+
+# [es] "&Nota final"
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Endnotes"
+msgstr "Tukukuypa willaynin"
 
 # [es] "Ecuación:"
 #. MENU_LABEL_INSERT_EQUATION
@@ -3474,7 +3487,7 @@ msgstr ""
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
+msgid "Events:"
 msgstr ""
 
 # [es] "Ejecutar script"
@@ -3546,9 +3559,10 @@ msgid "Extra"
 msgstr "Uqtaq"
 
 # [es] "Parámetros adicionales"
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
+#, fuzzy
+msgid "Extra Parameters:"
 msgstr "Parámetros adicionales"
 
 # [es] "Barra de herramientas adicional"
@@ -3556,12 +3570,6 @@ msgstr "Parámetros adicionales"
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Waq llank'anas chunpi"
-
-# [es] "Parámetros adicionales:"
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Waq tupuykuna:"
 
 # [es] "&Archivo"
 #. MENU_LABEL_INSERT_FILE
@@ -3586,12 +3594,6 @@ msgstr "Tukuynin p&antalla"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "&Mask'ay:"
-
-# [es] "Nombre del campo"
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Kanchaqpa sutin"
 
 # [es] "Nombre del campo:"
 #. DLG_MailMerge_Insert
@@ -3839,8 +3841,16 @@ msgstr "Chakiq willayninpaq"
 # [es] "Estilo de nota a pie de página"
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
-msgstr "Imayna kayninpa chakiqpa willaynin"
+#, fuzzy
+msgid "Footnote style:"
+msgstr "Imayna kayninpa chakiqpa willaynin:"
+
+# [es] "&Nota a pie de página"
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Footnotes"
+msgstr "Chakiqpa willaynin"
 
 # [es] "Notas a pie de página y notas finales"
 #. MENU_LABEL_FMT_FOOTNOTES
@@ -3900,18 +3910,6 @@ msgstr "Ukhunpi kamachi"
 msgid "Format Embedded Object"
 msgstr "Formato del objeto incrustado"
 
-# [es] "Formato de notas finales"
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Ukhunta kamachi"
-
-# [es] "Formato de nota a pie de página"
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Ukhunta kamachi"
-
 # [es] "Formato de notas a pie de página y notas finales"
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3929,7 +3927,7 @@ msgstr "Laqhiq umanpapis chakinpapis kamachiy"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Format Ob&ject"
-msgstr "Formato del objeto"
+msgstr "Formato del ob&jeto"
 
 # [es] "Formato de brocha"
 #. TOOLBAR_LABEL_FMTPAINTER
@@ -4005,7 +4003,8 @@ msgstr "Tukuynin p&antalla"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Uqlla tukuypaq"
 
@@ -4024,7 +4023,6 @@ msgstr "&Imaman riy:"
 # [es] "Ir a"
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
 msgstr "Riy ...man"
 
@@ -4038,7 +4036,7 @@ msgstr "&Suti tiyan"
 #. DLG_FormatTOC_HeadingText
 #: po/tmp/ap_String_Id.h
 msgid "H&eading text:"
-msgstr "&Laqhiq umanpi texto:"
+msgstr "&Laqhiq umanpi qillqa:"
 
 # [es] "Lista de manos"
 #. DLG_Lists_Hand_List
@@ -4078,7 +4076,6 @@ msgstr "Laqhiqpa uman [%s]"
 #  [es] "¿quiere entrar en el modo Diseño de impresión ahora?"
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -4154,6 +4151,7 @@ msgstr "Ortografiaq pantayninkunata pakay"
 # [es] "Ocultar texto bajo los niveles de listas"
 #. DLG_Lists_FoldingLevelexp
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Hide text below List Levels"
 msgstr "Ocultar texto bajo los niveles de listas"
 
@@ -4284,18 +4282,20 @@ msgstr "Jatunwan Ñawpaq Kaq k'illpa"
 # [es] "Valor inicial de la nota final"
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
-msgstr "Ñawpaq kaq yupana"
+#, fuzzy
+msgid "Initial Endnote value:"
+msgstr "Ñawpaq kaq yupana:"
 
 # [es] "Valor inicial de la nota a pie de página"
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
-msgstr "Ñawpaq kaq yupana"
+#, fuzzy
+msgid "Initial Footnote value:"
+msgstr "Ñawpaq kaq yupana:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
+msgid "Inner (single) quote style:"
 msgstr ""
 
 # [es] "Insertar"
@@ -4333,7 +4333,7 @@ msgid "Insert Bookmark"
 msgstr "Markasqata sat'iy"
 
 # [es] "Insertar salto"
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Phinkinata sat'iy"
@@ -4369,7 +4369,7 @@ msgid "Insert Equation from a LaTeX expression"
 msgstr "Inserta una ecuación desde una expresión LaTeX"
 
 # [es] "Insertar campo"
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Kanchata sat'iy"
@@ -4570,23 +4570,11 @@ msgstr "Qhilqa-khipupi pallayta sat'iy"
 msgid "Insert bookmark"
 msgstr "Markasqata sat'iy"
 
-# [es] "Inserta un salto"
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Phinkinata sat'iy"
-
 # [es] "Inserta un clipart"
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Pallayta sat'iy"
-
-# [es] "Inserta un campo"
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Kanchata sat'iy"
 
 # [es] "Inserta un hiperenlace"
 #. MENU_STATUSLINE_INSERT_HYPERLINK
@@ -4736,10 +4724,15 @@ msgstr "Anchayupa simikuna:"
 
 # [es] "Ecuación LaTeX"
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
 msgstr "Ecuación LaTeX"
+
+# [es] "Ecuación LaTeX"
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
+msgstr "Ecuación LaTeX:"
 
 # [es] "Alineación de etiqueta:"
 #. DLG_Lists_Indent
@@ -4756,7 +4749,6 @@ msgstr "Definiciones de etiquetas"
 # [es] "Idioma"
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Simi"
@@ -4766,6 +4758,12 @@ msgstr "Simi"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Simita kamachi"
+
+# [es] "Idioma(s):"
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "Simi(kuna)"
 
 # [es] "Idioma(s):"
 #. DLG_MetaData_Languages_LBL
@@ -4779,17 +4777,12 @@ msgstr "Simi(kuna):"
 msgid "Layout"
 msgstr "Chiqachay"
 
-# [es] "Detalles del disposición"
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Detalles del disposición"
-
 # [es] "Relleno"
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "Imawan qhallariy"
+#, fuzzy
+msgid "Leader:"
+msgstr "Imawan qhallariy:"
 
 # [es] "Izquierda"
 #. DLG_Para_AlignLeft
@@ -4881,12 +4874,6 @@ msgstr "T'aqasqa:"
 msgid "Li&ne spacing:"
 msgstr "Su&rk'as chawpipi:"
 
-# [es] "Línea"
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Surk'a"
-
 # [es] "Contador de líneas"
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
@@ -4918,16 +4905,17 @@ msgid "Line between"
 msgstr "Surk'awan t'aqay"
 
 # [es] "Líneas:"
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Line:"
+msgstr "Surk'as:"
+
+# [es] "Líneas:"
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "Surk'as:"
-
-# [es] "Lista"
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Mayqintá suk'anki"
 
 # [es] "Lista de etiquetas"
 #. FIELD_Numbers_ListLabel
@@ -4946,15 +4934,9 @@ msgstr "Propiedades de listas"
 msgid "List Styles"
 msgstr ""
 
-# [es] "Listas para "
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Listaspaq "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
+msgid "Locations:"
 msgstr ""
 
 # [es] "Bloquea la distribución de las barras de herramientas actuales"
@@ -5046,8 +5028,9 @@ msgstr "Martinpata khuskin"
 # [es] "Tamaño máx. de columna"
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Aswan jatun chhikan"
+#, fuzzy
+msgid "Max Column size:"
+msgstr "Aswan jatun chhikan:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -5176,7 +5159,8 @@ msgstr "Estilos misceláneos"
 # [es] "Modificar estilos"
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+#, fuzzy
+msgid "Modify Style"
 msgstr "Imayna kayninta uqjinayachiy"
 
 # [es] "Modificar..."
@@ -5217,9 +5201,8 @@ msgstr "Ashka puchus"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Suti:"
+msgstr "Suti"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
@@ -5252,7 +5235,7 @@ msgstr ""
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
+msgid "New Contact"
 msgstr ""
 
 # [es] "Documento nuevo"
@@ -5363,11 +5346,8 @@ msgstr ""
 "No se encontraron scripts."
 
 # [es] "Ninguno"
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Ni mayqin"
@@ -5399,8 +5379,8 @@ msgstr "Estilo de anotaciones"
 # [es] "Número de columnas"
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Suk'asqakunaq yupaynin"
+msgid "Number of Columns:"
+msgstr "Suk'asqakunaq yupaynin:"
 
 # [es] "Número de páginas"
 #. FIELD_Numbers_PagesCount
@@ -5440,7 +5420,6 @@ msgid "Numbered List"
 msgstr "Yupayniyuq lista"
 
 # [es] "Numeración"
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
@@ -5448,6 +5427,12 @@ msgstr "Yupayniyuq lista"
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
 msgstr "Yupanapaq"
+
+# [es] "Numeración"
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+msgid "Numbering:"
+msgstr "Yupanapaq:"
 
 # [es] "Números"
 #. FIELD_Type_Numbers
@@ -5533,8 +5518,9 @@ msgstr "Kay qhilqa-khiputa kichay"
 # [es] "Orientación..."
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
-msgstr "Maychiqanpichus laqhi..."
+#, fuzzy
+msgid "Orientation"
+msgstr "Maychiqanpichus laqhi"
 
 # [es] "Otro"
 #. DLG_Options_TabLabel_Other
@@ -5554,7 +5540,7 @@ msgstr ""
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+msgid "Outer (double) quote style:"
 msgstr ""
 
 # [es] "Sobrelinear"
@@ -5595,7 +5581,6 @@ msgid "Pa&ste Unformatted"
 msgstr ""
 
 # [es] "Página"
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -5612,6 +5597,12 @@ msgstr "&Manaraq tukuspa laqhita phinkina"
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "Laqhiq ukhunpi"
+
+# [es] "Salto de &página"
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr "Laqhi phinkina"
 
 # [es] "Color de la página"
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
@@ -5649,11 +5640,10 @@ msgstr "Laqhi yupanaqpata imayna kaynin"
 msgid "Page Numbers"
 msgstr "Laqhiqpata yupanasnin"
 
-# [es] "Referencia de página"
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Referencia de página"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 # [es] "Config&urar página"
 #. MENU_LABEL_FILE_PAGESETUP
@@ -5666,6 +5656,13 @@ msgstr "L&aqhita allichay"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Laqhita allichay"
+
+# [es] "Páginas:"
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page:"
+msgstr "Laqhis:"
 
 # [es] "Página: %d/%d"
 #. PageInfoField
@@ -5686,17 +5683,16 @@ msgstr "Laqhis:"
 msgid "Pagination"
 msgstr "Laqhis"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr ""
+
 # [es] "Tam&año del papel:"
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "Laqhiqpa &chhikannin:"
-
-# [es] "Papel..."
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Laqhi..."
 
 # [es] "Parágrafo"
 #. DLG_Styles_ModifyParagraph
@@ -5779,8 +5775,8 @@ msgstr "Seccionpa tukukuyninpi"
 # [es] "Colocación"
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
-msgstr "Maychus"
+msgid "Placement:"
+msgstr "Maychus:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -5788,18 +5784,11 @@ msgid "Playing with RDF during development"
 msgstr ""
 
 # [es] "Posición"
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Maychus"
-
-# [es] "Posición de la caja de texto"
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Maychus textoq tawak'uchun"
 
 # [es] "Posición a la columna"
 #. DLG_FormatFrame_SetToColumn
@@ -5820,6 +5809,7 @@ msgid "Position to Paragraph"
 msgstr "Maychus phatma"
 
 # [es] "Posición:"
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5992,11 +5982,6 @@ msgstr ""
 msgid "R&eplace"
 msgstr "&Uqtataq churay"
 
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr ""
-
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
@@ -6088,7 +6073,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Relation"
-msgstr "Relación:"
+msgstr "Relación"
 
 # [es] "Relación:"
 #. DLG_MetaData_Relation_LBL
@@ -6123,7 +6108,8 @@ msgstr "Laqhiq umanta qhichuy"
 # [es] "Eliminar propiedad del estilo"
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
+#, fuzzy
+msgid "Remove Property from Style:"
 msgstr "Imallatapis qhichuy"
 
 # [es] "Quitar fila como cabecera"
@@ -6220,7 +6206,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
 msgid "Replace the specified text with different text"
-msgstr "Nisqan texto kananpi uqtataq churay"
+msgstr "Nisqan qillqa kananpi uqtataq churay"
 
 # [es] "Informar de un &fallo"
 #. MENU_LABEL_HELP_REPORT_BUG
@@ -6270,6 +6256,11 @@ msgstr "Sapa seccionpi watiqmanta qhallariy"
 #: po/tmp/ap_String_Id.h
 msgid "Restart page numbers on new sections"
 msgstr "Musuq seccionkunapi watiqmanta yupáy qhallariy"
+
+#. DLG_RDF_Editor_Restrict
+#: po/tmp/ap_String_Id.h
+msgid "Restrict to RDF Link:"
+msgstr ""
 
 # [es] "Continuar lista anterior"
 #. DLG_Lists_Resume_Previous_List
@@ -6533,11 +6524,10 @@ msgstr "Aqllasqa imagenta khipupi jallch'ay"
 msgid "Save to file"
 msgstr "Khipuman jallch'ay"
 
-# [es] "Escala..."
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Ima chhikanmanta..."
+msgid "Scale"
+msgstr ""
 
 # [es] "Buscar ayuda acerca de..."
 #. MENU_STATUSLINE_HELP_SEARCH
@@ -6558,15 +6548,9 @@ msgid "Seconds since the epoch"
 msgstr "Unaymantapacha ch'ipiq ch'ipiq"
 
 # [es] "Saltos de sección"
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Seccionpaq phinkina"
-
-# [es] "Saltos de sección"
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Seccionpaq phinkina"
 
 # [es] "Ver histórico del documento actual"
@@ -6629,12 +6613,13 @@ msgstr "Tablata aqllay"
 #. MENU_LABEL_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Select Text Box"
-msgstr "Textoq tawak'uchunta aqllay"
+msgstr "Qillqa tawak'uchunta aqllay"
 
 # [es] "Seleccione un marcador de la lista."
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+#, fuzzy
+msgid "Select a target bookmark from the list:"
 msgstr "Listamanta uq markasqata aqllay."
 
 # [es] "Seleccione la imagen del archivo"
@@ -6686,7 +6671,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Select the Text Box"
-msgstr "Textoq tawak'uchunta aqllay"
+msgstr "Qillqa tawak'uchunta aqllay"
 
 # [es] "Selecciona el documento completo"
 #. MENU_STATUSLINE_EDIT_SELECTALL
@@ -6707,13 +6692,13 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
+msgid "Select the parts of the document contained in the next revision"
 msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
+msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -6827,6 +6812,7 @@ msgstr "Establecer imagen en posición"
 # [es] "Establecer ajuste de texto"
 #. DLG_FormatFrame_SetTextWrapping
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Set Text Wrapping"
 msgstr "Establecer ajuste de texto"
 
@@ -6895,10 +6881,9 @@ msgstr "Tabuladorkunata churay"
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
 msgid ""
-"Set the default stylesheet for Semantic objects in this document. New RDF "
+"Set the current stylesheet for Semantic Items in this document. New RDF "
 "objects will use this stylesheet automatically. The buttons allow you to set "
-"the stylesheet for all existing semantic objects to the new default "
-"stylesheet as well."
+"the stylesheet for all existing Semantic Items to the new stylesheet as well."
 msgstr ""
 
 # [es] "Establecer el tipo y estilos del índice"
@@ -7221,7 +7206,8 @@ msgstr "Maymanta:"
 # [es] "Espacio después de columna"
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
+#, fuzzy
+msgid "Space after Column:"
 msgstr "Suk'asqaq qhipanpi puchu"
 
 # [es] "Espacio antes: 12 pt"
@@ -7494,14 +7480,14 @@ msgstr "Imayna kayninpa sutin:"
 # [es] "Tipo del estilo"
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Imayna kayninpaq layan"
+msgid "Style Type:"
+msgstr "Imayna kayninpaq layan:"
 
 # [es] "Estilo para el siguiente parágrafo"
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Qhipan phatmapaq imayna kaynin"
+msgid "Style for following paragraph:"
+msgstr "Qhipan phatmapaq imayna kaynin:"
 
 # [es] "El nombre del estilo no puede dejarse en blanco"
 #. DLG_Styles_ErrBlankName
@@ -7518,7 +7504,6 @@ msgid "Style:"
 msgstr "Imayna kaynin:"
 
 # [es] "Estilos"
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -7670,7 +7655,7 @@ msgid "Table"
 msgstr "Tabla"
 
 # [es] "Tamaño de la tabla"
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Tablaq chhikannin"
@@ -7700,12 +7685,6 @@ msgstr "Lista de etiquetas del índice"
 msgid "Table of Contents Page"
 msgstr "índiceq laqhin"
 
-# [es] "Tamaño de la tabla"
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Tablaq chhikannin"
-
 # [es] "Tabulaciones"
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -7734,44 +7713,55 @@ msgstr ""
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h
 msgid "Text"
-msgstr "Texto"
+msgstr "Qillqa"
 
 # [es] "Texto &después:"
 #. DLG_FormatTOC_TextAfter
 #: po/tmp/ap_String_Id.h
 msgid "Text &after:"
-msgstr "&Qhipan texto:"
+msgstr "&Qhipan qillqa:"
 
 # [es] "Texto &antes:"
 #. DLG_FormatTOC_TextBefore
 #: po/tmp/ap_String_Id.h
 msgid "Text &before:"
-msgstr "Ñ&awpaq texto:"
+msgstr "Ñ&awpaq qillqa:"
 
 # [es] "Alineación del texto:"
 #. DLG_Lists_Align
 #: po/tmp/ap_String_Id.h
 msgid "Text Align:"
-msgstr "Mayqin chirumanchus texto:"
+msgstr "Mayqin chirumanchus qillqa:"
 
 # [es] "Caja de texto"
 #. MENU_LABEL_INSERT_TEXTBOX
 #. MENU_LABEL_FMT_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Text Box"
-msgstr "Textoq tawak'uchun"
+msgstr "Qillqa tawak'uchun"
 
-# [es] "Plegado del texto"
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr ""
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr ""
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
-msgstr "Plegado de texto"
+msgstr ""
 
-# [es] "Ajuste de texto"
+# [es] "Establecer ajuste de texto"
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Text Wrapping"
-msgstr "Ajuste de texto"
+msgstr "Establecer ajuste de texto"
 
 # [es] "Texto e iconos"
 #. DLG_Options_Label_Both
@@ -7822,14 +7812,11 @@ msgstr ""
 # [es] "El texto al que el hiperenlace está vinculado debe estar dentro de un único parágrafo."
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
-msgstr ""
-"Web-waskhapaq textoqa uq phatmallapi kanan tiyan.\n"
-"\n"
-"El texto al que el hiperenlace está vinculado debe estar dentro de un único "
-"parágrafo."
+msgstr "Web-waskhapaq textoqa uq phatmallapi kanan tiyan."
 
 # [es] "El día de la semana"
 #. FIELD_DateTime_Wkday
@@ -8000,24 +7987,23 @@ msgid "Two"
 msgstr "Iskay"
 
 # [es] "Tipo"
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "Laya"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
 msgstr ""
 
 # [es] "Escriba un nombre para el marcador, o seleccione uno de la lista."
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+#, fuzzy
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr ""
-"Markasqapaq sutita qhilqay, mana chayqa kasqaña sutita listamanta aqllay.\n"
-"\n"
-"Escriba un nombre para el marcador, o seleccione uno de la lista."
+"Markasqapaq sutita qhilqay, mana chayqa kasqaña sutita listamanta aqllay:"
 
 # [es] "Tipo:"
 #. DLG_Lists_Type
@@ -8045,6 +8031,14 @@ msgstr "Uranpi siqisqa"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Aqllasqata siqiy (tikray)"
+
+# [es] "Subrayar"
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Underlines"
+msgstr "Uranpi siqisqa"
 
 # [es] "Deshacer"
 #. TOOLBAR_LABEL_EDIT_UNDO
@@ -8205,6 +8199,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Webpaq qhaway"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 # [es] "Lorem ipsum dolor"
 #. DLG_Styles_LBL_TxtMsg
@@ -8404,18 +8403,51 @@ msgstr "kk/pp/ww"
 msgid "tOGGLE cASE"
 msgstr "jAtUn/JuCh'UyKuNaTa tikray"
 
+# [es] "Ninguno"
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Ni mayqin"
+
+# [es] "Ninguno"
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Ni mayqin"
+
+# [es] "Ninguno"
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Ni mayqin"
+
 # [es] "Asunto"
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Imamanta"
 
+# [es] "Ninguno"
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Ni mayqin"
+
+# [es] "Ninguno"
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Ni mayqin"
+
 # [es] "Asunto"
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Imamanta"
@@ -8456,13 +8488,6 @@ msgstr "&200%"
 msgid "&75%"
 msgstr "&75%"
 
-# [es] "Descripción"
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "&Description"
-msgstr "Kasqanta niranapaq"
-
 # [es] "Anchura de &página"
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -8472,9 +8497,8 @@ msgstr "&Laqhi jina anchu"
 # [es] "Colocación"
 #. DLG_Image_PlacementTabLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "&Placement"
-msgstr "Maychus"
+msgstr "&Maychus"
 
 # [es] "E&stablecer idioma"
 #. DLG_ULANG_SetLangButton
@@ -8496,7 +8520,6 @@ msgstr ""
 # [es] "(ninguno)"
 #. DLG_UFS_Effects_None
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "(None)"
 msgstr "(Ni mayqen)"
 
@@ -8575,6 +8598,11 @@ msgstr "AbiWord: Manaraq ñit'ishaspa qhawanapaq"
 msgid "About %s"
 msgstr "%smanta"
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
+
 # [es] "Complementos activos"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -8585,7 +8613,7 @@ msgstr "Apaykachasqa complementos"
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h
 msgid "Afrikaans"
-msgstr "Afrikaans"
+msgstr "Africaans simi"
 
 # [es] "Akan"
 #. LANG_AK_GH
@@ -8623,11 +8651,10 @@ msgstr "Pallaywan tukuy khipus"
 msgid "Allow extra markup in AWML namespace"
 msgstr "Permitir marcado adicional en espacio de nombres AWML"
 
-# [es] "Amhárico (Etiopía)"
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Amhárico (Etiopía)"
+msgid "Amharic"
+msgstr ""
 
 # [es] "Árabe"
 #. LANG_AR
@@ -8683,11 +8710,10 @@ msgstr "Armenio, ARMSCII-8"
 msgid "Assamese"
 msgstr "Assamese"
 
-# [es] "Asturiano (España)"
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Asturiano (España)"
+msgid "Asturian"
+msgstr ""
 
 # [es] "Auto-inserción de marcadores de dirección"
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
@@ -8716,23 +8742,28 @@ msgstr "Auto-revisión"
 # [es] "Documentos disponibles"
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
-msgstr "Apaykacháy atisqa qhilqa-khipus"
+msgid "Available Documents:"
+msgstr "Apaykacháy atisqa qhilqa-khipus:"
 
 # [es] "Idiomas disponibles"
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
-msgstr "Apaykacháy atisqa simikuna"
+msgid "Available Languages:"
+msgstr "Apaykacháy atisqa simikuna:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
 msgstr ""
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr ""
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
 msgstr ""
 
 # [es] "Báltico, ISO-8859-4"
@@ -8746,6 +8777,11 @@ msgstr "Báltico, ISO-8859-4"
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Báltico, página de códigos Windows 1257"
+
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr ""
 
 # [es] "Vasco"
 #. LANG_EU_ES
@@ -8780,7 +8816,12 @@ msgstr "Yanawan Yuraqwan"
 #. STYLE_BLOCKTEXT
 #: po/tmp/xap_String_Id.h
 msgid "Block Text"
-msgstr "Bloque de texto"
+msgstr "Qillqa Phatma"
+
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr ""
 
 # [es] "Cursiva negrita"
 #. DLG_UFS_StyleBoldItalic
@@ -8824,11 +8865,6 @@ msgstr "Ni munaspaña"
 msgid "Catalan"
 msgstr "Catalán"
 
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr ""
-
 # [es] "Centroeuropeo, ISO-8859-2"
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
@@ -8858,6 +8894,11 @@ msgstr "Tecladota uqjinachishaspa simitataq uqjinaychiy"
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Capituloq uman"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
 
 # [es] "Chino (Hong Kong)"
 #. LANG_ZH_HK
@@ -8942,6 +8983,11 @@ msgstr "Listamanta qhilqa-khiputa aqllay:"
 msgid "Clear Background"
 msgstr ""
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+msgid "Clear Foreground"
+msgstr ""
+
 # [es] "Clip Art"
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
@@ -8950,7 +8996,7 @@ msgstr "K'achanchanapaq pallaykuna"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
+msgid "Clip Art could not be loaded."
 msgstr ""
 
 # [es] "Cerrar"
@@ -9086,13 +9132,13 @@ msgstr "Wallpasqa:"
 #. LANG_HR_HR
 #: po/tmp/xap_String_Id.h
 msgid "Croatian"
-msgstr "Croata"
+msgstr "Croata simi"
 
 # [es] "Croata, Macintosh"
 #. ENC_CROA_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Croatian, Macintosh"
-msgstr "Croata, Macintosh"
+msgstr "Croata simi, Macintosh"
 
 # [es] "Cirílico, ISO-8859-5"
 #. ENC_CYRL_ISO
@@ -9122,7 +9168,7 @@ msgstr "Cirílico, página de códigos Windows 1251"
 #. LANG_CS_CZ
 #: po/tmp/xap_String_Id.h
 msgid "Czech"
-msgstr "Checo"
+msgstr "Cueco simi"
 
 # [es] "Danés"
 #. LANG_DA_DK
@@ -9153,18 +9199,6 @@ msgstr "Declarar como XML (versión 1.0)"
 #: po/tmp/xap_String_Id.h
 msgid "Default language: "
 msgstr "Mana aqllasqaraq simi: "
-
-# [es] "Definir emplazamiento de la imagen"
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Definir emplazamiento de la imagen"
-
-# [es] "Definir ajuste de texto"
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Definir ajuste de texto"
 
 # [es] "¿Quiere quitar este icono de la barra de herramientas?"
 #. DLG_Remove_Icon
@@ -9205,11 +9239,10 @@ msgstr "Qhilqa-khipuq sutin:"
 msgid "Documents compared"
 msgstr "Documentos comparados"
 
-# [es] "Holandés (Holanda)"
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Holandés (Holanda)"
+msgid "Dutch"
+msgstr ""
 
 # [es] "Tiempo de edición:"
 #. DLG_History_EditTime
@@ -9220,8 +9253,9 @@ msgstr "Tiempo de edición:"
 # [es] "Efectos"
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "Efectos"
+#, fuzzy
+msgid "Effects:"
+msgstr "Efectos:"
 
 # [es] "Embeber hoja de estilos (CSS)"
 #. DLG_HTMLOPT_ExpEmbedCSS
@@ -9258,7 +9292,7 @@ msgstr "Codificación:"
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Endnote"
-msgstr "&Tukukuypa willaynin"
+msgstr "Tukukuypa willaynin"
 
 # [es] "Referencia a nota final"
 #. STYLE_ENDREFERENCE
@@ -9270,7 +9304,7 @@ msgstr "Tukukuypa willayninpaq"
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h
 msgid "Endnote Text"
-msgstr "Tukukuypa willayninpaq texto"
+msgstr "Tukukuypa willayninpaq qillqa"
 
 # [es] "Inglés (Australia)"
 #. LANG_EN_AU
@@ -9314,6 +9348,11 @@ msgstr "Inglés (Reino Unido)"
 msgid "English (US)"
 msgstr "Inglés (Estados Unidos)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr ""
+
 # [es] "Introduzca contraseña"
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
@@ -9324,7 +9363,7 @@ msgstr "Yaykunapaq sutita qhilqay"
 #. LANG_EO
 #: po/tmp/xap_String_Id.h
 msgid "Esperanto"
-msgstr "Esperanto"
+msgstr "Esperanto simi"
 
 # [es] "Estonio"
 #. LANG_ET
@@ -9386,20 +9425,18 @@ msgstr ""
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
 msgid "Finnish"
-msgstr "Finlandés"
+msgstr "Finlandes simi"
 
-# [es] "Flamenco (Bélgica)"
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Flamenco (Bélgica)"
+msgid "Flemish"
+msgstr ""
 
 # [es] "&Nota a pie de página"
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Footnote"
-msgstr "C&hakiqpa willaynin"
+msgstr "Chakiqpa willaynin"
 
 # [es] "Referencia nota a pie de página"
 #. STYLE_FOOTREFERENCE
@@ -9411,7 +9448,7 @@ msgstr "Chakiqpa willayninpaq"
 #. STYLE_FOOTTEXT
 #: po/tmp/xap_String_Id.h
 msgid "Footnote Text"
-msgstr "Chakiqpa willayninpaq texto"
+msgstr "Chakiqpa willayninpaq qillqa"
 
 #. DLG_ABOUT_URL
 #: po/tmp/xap_String_Id.h
@@ -9461,7 +9498,12 @@ msgstr ""
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-msgid "Galician (Galego)"
+msgid "Galician"
+msgstr ""
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
 msgstr ""
 
 # [es] "Georgiano"
@@ -9510,25 +9552,25 @@ msgstr "Ñawrayasqa uqi"
 #. LANG_EL_GR
 #: po/tmp/xap_String_Id.h
 msgid "Greek"
-msgstr "Griego"
+msgstr "Griego simi"
 
 # [es] "Griego, ISO-8859-7"
 #. ENC_GREE_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Greek, ISO-8859-7"
-msgstr "Griego, ISO-8859-7"
+msgstr "Griego simi, ISO-8859-7"
 
 # [es] "Griego, Macintosh"
 #. ENC_GREE_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Greek, Macintosh"
-msgstr "Griego, Macintosh"
+msgstr "Griego simi, Macintosh"
 
 # [es] "Griego, página de códigos Windows 1253"
 #. ENC_GREE_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Greek, Windows Code Page 1253"
-msgstr "Griego, página de códigos Windows 1253"
+msgstr "Griego simi, página de códigos Windows 1253"
 
 # [es] "Opciones de exportación HTML"
 #. DLG_HTMLOPT_ExpTitle
@@ -9630,25 +9672,25 @@ msgstr "Aqllanapaj llimp'i"
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h
 msgid "Hindi"
-msgstr "Hindi"
+msgstr "Hindi simi"
 
 # [es] "Húngaro"
 #. LANG_HU_HU
 #: po/tmp/xap_String_Id.h
 msgid "Hungarian"
-msgstr "Húngaro"
+msgstr "Hüngaro simi"
 
 # [es] "Islandés"
 #. LANG_IS_IS
 #: po/tmp/xap_String_Id.h
 msgid "Icelandic"
-msgstr "Islandés"
+msgstr "Islandes simi"
 
 # [es] "Islandés, Macintosh"
 #. ENC_ICEL_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Icelandic, Macintosh"
-msgstr "Islandés, Macintosh"
+msgstr "Islandes simi, Macintosh"
 
 # [es] "Identificador:"
 #. DLG_History_Id
@@ -9656,21 +9698,37 @@ msgstr "Islandés, Macintosh"
 msgid "Identifier:"
 msgstr "Sutita t'uqsiq:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr ""
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr ""
+
 # [es] "Propiedades de la imagen"
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Pallasqakunaq imayna kaynin"
 
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr ""
+
 # [es] "La imagen flota sobre el texto"
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
 msgid "Image floats above text"
-msgstr "Pallayqa texto patapi tuytun"
+msgstr "Pallayqa qillqa patapi tuytun"
 
 # [es] "Imagen colocada en línea (sin ajuste de texto)"
 #. DLG_Image_InLine
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Image placed in-line (no text wrapping)"
 msgstr "Imagen colocada en línea (sin ajuste de texto)"
 
@@ -9782,11 +9840,10 @@ msgstr "Khipupaq pantasqa ñan."
 msgid "Irish"
 msgstr "Irlandés"
 
-# [es] "Italiano (Italia)"
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Italiano (Italia)"
+msgid "Italian"
+msgstr ""
 
 # [es] "Japonés"
 #. LANG_JA_JP
@@ -9826,15 +9883,24 @@ msgstr "Kannada"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
+msgid "Kazakh"
+msgstr ""
+
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
 msgstr ""
 
 # [es] "Coreano"
-#. LANG_KO_KR
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Coreano"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr ""
 
 # [es] "Coreano, EUC-KR"
 #. ENC_KORE_EUC
@@ -9842,11 +9908,10 @@ msgstr "Coreano"
 msgid "Korean, EUC-KR"
 msgstr "Coreano, EUC-KR"
 
-# [es] "Coreano, Johab"
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Coreano, Johab"
+msgid "Korean, JOHAB"
+msgstr ""
 
 # [es] "Coreano, KSC_5601"
 #. ENC_KORE_KSC
@@ -9878,11 +9943,10 @@ msgstr "Lao"
 msgid "Last saved:"
 msgstr "Qhipa kuti jallch'asqa:"
 
-# [es] "Latín (Renacimiento)"
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Latín (Renacimiento)"
+msgid "Latin"
+msgstr ""
 
 # [es] "Letón"
 #. LANG_LV_LV
@@ -9898,27 +9962,36 @@ msgstr "Lituano"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
+msgid "Loading Clip Art..."
+msgstr ""
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
 msgstr ""
 
 # [es] "minúscula"
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Lowercase"
-msgstr "juch'uykuna"
+msgstr "Juch'uykuna"
 
 # [es] "Macedonio"
 #. LANG_MK
 #: po/tmp/xap_String_Id.h
 msgid "Macedonian"
-msgstr "Macedonio"
+msgstr "Macedonio simi"
 
 # [es] "Convertir en predeterminado para el documento"
 #. DLG_ULANG_DefaultLangChkbox
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "Qhilqa-khipupaq mana aqllasqaraq simi"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr ""
 
 # [es] "Malayo"
 #. LANG_MS_MY
@@ -9928,7 +10001,7 @@ msgstr "Malayo"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
+msgid "Mandinka"
 msgstr ""
 
 # [es] "Maori"
@@ -9973,11 +10046,10 @@ msgstr "Mongol"
 msgid "Name:"
 msgstr "Suti:"
 
-# [es] "Nepalés"
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr "Nepalés (Nepal)"
+msgid "Nepali"
+msgstr ""
 
 # [es] "No"
 #. DLG_MB_No
@@ -10006,23 +10078,11 @@ msgstr ""
 msgid "Normal"
 msgstr "Maychus kaqlla"
 
-# [es] "Noruego Bokmaal"
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Noruego Bokmaal"
-
-# [es] "Noruego Nynorsk"
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Noruego Nynorsk"
-
 # [es] "No disponible"
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
-msgstr "Mana apaykachaychu"
+msgstr "Mana hap'ikunchu"
 
 # [es] "Cabecera numerada 1"
 #. STYLE_NUMHEAD1
@@ -10041,6 +10101,11 @@ msgstr "Yupana 2 laqhiq uman"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Yupana 3 laqhiq uman"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr ""
 
 # [es] "Aceptar"
 #. DLG_OK
@@ -10109,13 +10174,14 @@ msgstr "Yaykunapaq suti:"
 #. STYLE_PLAIN_TEXT
 #: po/tmp/xap_String_Id.h
 msgid "Plain Text"
-msgstr ""
+msgstr "Pampa qillqa"
 
 # [es] "Detalles del complemento:"
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
-msgstr "Detalles del complemento:"
+#, fuzzy
+msgid "Plugin Details"
+msgstr "Detalles del complemento"
 
 # [es] "Lista de complementos"
 #. DLG_PLUGIN_MANAGER_LIST
@@ -10127,7 +10193,7 @@ msgstr "Lista de complementos"
 #. LANG_PL_PL
 #: po/tmp/xap_String_Id.h
 msgid "Polish"
-msgstr "Polaco"
+msgstr "Polaco simi"
 
 # [es] "Portugués (Brasil)"
 #. LANG_PT_BR
@@ -10206,17 +10272,15 @@ msgstr "Ñit'inapi"
 msgid "Printer command: "
 msgstr "Ñit'inapaq kamachi: "
 
-# [es] "Punjabi (Gurmukhi)"
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Punjabi (Gurmukhi)"
+msgid "Punjabi (India)"
+msgstr ""
 
-# [es] "Punjabi (Shahmukhi)"
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Punjabi (Shahmukhi)"
+msgid "Punjabi (Pakistan)"
+msgstr ""
 
 # [es] "Quechua"
 #. LANG_QU_BO
@@ -10224,14 +10288,19 @@ msgstr "Punjabi (Shahmukhi)"
 msgid "Quechua"
 msgstr "Quechua"
 
-#. LANG_QUH_BO
+#. LANG_QUZ
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
+msgid "Quechua (Cusco)"
 msgstr ""
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
+msgid "Quechua (Northern Bolivia)"
+msgstr ""
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
 msgstr ""
 
 #. ReadOnly
@@ -10270,6 +10339,7 @@ msgstr ""
 
 # [es] "Restablecer"
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Restablecer"
@@ -10290,23 +10360,22 @@ msgstr "Resultados"
 #. LANG_RO_RO
 #: po/tmp/xap_String_Id.h
 msgid "Romanian"
-msgstr "Rumano"
+msgstr "Rumano simi"
 
 # [es] "Rumano, Macintosh"
 #. ENC_ROMA_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Romanian, Macintosh"
-msgstr "Rumano, Macintosh"
+msgstr "Rumano simi, Macintosh"
 
-# [es] "Ruso (Rusia)"
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Ruso (Rusia)"
+msgid "Russian"
+msgstr ""
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
+msgid "Russian, pre-1918"
 msgstr ""
 
 # [es] "Muestra"
@@ -10376,20 +10445,8 @@ msgstr "Servio"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-msgid "Serbian, latin"
+msgid "Serbian, Latin"
 msgstr ""
-
-# [es] "Establecer nombre de la imagen"
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "&Pallaypa sutinta churay"
-
-# [es] "Establecer tamaño de la imagen"
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Laqhiqpa chhikanta churay"
 
 # [es] "Establecer idioma"
 #. DLG_ULANG_LangTitle
@@ -10413,7 +10470,7 @@ msgstr "Chhikan:"
 #. LANG_SK_SK
 #: po/tmp/xap_String_Id.h
 msgid "Slovak"
-msgstr "Eslovaco"
+msgstr "Eslovaco simi"
 
 # [es] "Esloveno"
 #. LANG_SL_SI
@@ -10424,6 +10481,11 @@ msgstr "Esloveno"
 #. DLG_UFS_Effects_SmallCaps
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
+msgstr ""
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
 msgstr ""
 
 # [es] "Español (México)"
@@ -10443,16 +10505,14 @@ msgstr "Español (España)"
 msgid "Split document"
 msgstr ""
 
-# [es] "Ajuste de texto cuadrado"
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h
 msgid "Square text wrapping"
-msgstr "Ajuste de texto cuadrado"
+msgstr ""
 
 # [es] "Estilo:"
 #. DLG_DocComparison_Styles
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Styles:"
 msgstr "Imayna kaynin:"
 
@@ -10460,13 +10520,13 @@ msgstr "Imayna kaynin:"
 #. LANG_SW
 #: po/tmp/xap_String_Id.h
 msgid "Swahili"
-msgstr "Swahili"
+msgstr "Suajli simi"
 
 # [es] "Sueco"
 #. LANG_SV_SE
 #: po/tmp/xap_String_Id.h
 msgid "Swedish"
-msgstr "Sueco"
+msgstr "Sueco simi"
 
 # [es] "Símbolos"
 #. TB_Font_Symbol
@@ -10502,17 +10562,19 @@ msgstr "Telugu"
 #. DLG_UFS_ColorTab
 #: po/tmp/xap_String_Id.h
 msgid "Text Color"
-msgstr "Textoqpa llimp'in"
+msgstr "Qillqap llimp'in"
 
 # [es] "Texto ajustado a ambos lados de la imagen"
 #. DLG_Image_WrappedBoth
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Text wrapped on both sides of the Image"
 msgstr "Texto ajustado a ambos lados de la imagen"
 
-# [es] "Texto ajustado a la izquierda de la imagen"
+# [es] "Texto ajustado a la derecha de la imagen"
 #. DLG_Image_WrappedLeft
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Text wrapped to the Left of the Image"
 msgstr "Texto ajustado a la derecha de la imagen"
 
@@ -10609,25 +10671,25 @@ msgstr "Para eliminar el intento de restauración, pulse \"Ni munaspaña\"."
 #. LANG_TR_TR
 #: po/tmp/xap_String_Id.h
 msgid "Turkish"
-msgstr "Turco"
+msgstr "Turco simi"
 
 # [es] "Turco, ISO-8859-9"
 #. ENC_TURK_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Turkish, ISO-8859-9"
-msgstr "Turco, ISO-8859-9"
+msgstr "Turco simi, ISO-8859-9"
 
 # [es] "Turco, Macintosh"
 #. ENC_TURK_MAC
 #: po/tmp/xap_String_Id.h
 msgid "Turkish, Macintosh"
-msgstr "Turco, Macintosh"
+msgstr "Turco simi, Macintosh"
 
 # [es] "Turco, página de códigos Windows 1254"
 #. ENC_TURK_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Turkish, Windows Code Page 1254"
-msgstr "Turco, página de códigos Windows 1254"
+msgstr "Turco simi, página de códigos Windows 1254"
 
 # [es] "Tipo de ajuste de texto"
 #. DLG_Image_WrapType
@@ -10807,13 +10869,7 @@ msgstr "Qhaway:"
 #. LANG_CY_GB
 #: po/tmp/xap_String_Id.h
 msgid "Welsh"
-msgstr "Galés"
-
-# [es] "Europeo occidental, página de códigos Windows/DOS 437"
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Europeo occidental, página de códigos DOS/Windows 437"
+msgstr "Galës simi"
 
 # [es] "Europeo occidental, página de códigos Windows/DOS 850"
 #. ENC_MLNG_DOS
@@ -10871,7 +10927,7 @@ msgstr "Anchun:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
+msgid "Wolof"
 msgstr ""
 
 # [es] "Sí"
@@ -10902,6 +10958,11 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "Ima chhikan"
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr ""
 
 # [es] "_No"
 #. DLG_UnixMB_No
@@ -10982,6 +11043,191 @@ msgstr "wawqikuna"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "mana aylluchasqas"
+
+# [es] "Lista"
+#~ msgid "List"
+#~ msgstr "Mayqintá suk'anki"
+
+# [es] "&1 Ninguno"
+#~ msgid "&1 None"
+#~ msgstr "&1 Ni ima"
+
+# [es] "&2 .........."
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+# [es] "&3 ----------"
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+# [es] "&4 __________"
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+# [es] "Detalles del disposición"
+#~ msgid "Layout Details"
+#~ msgstr "Detalles del disposición"
+
+# [es] "Descripción"
+#, fuzzy
+#~ msgid "&Description"
+#~ msgstr "Kasqanta niranapaq"
+
+# [es] "Colaborador"
+#~ msgid "Contributor"
+#~ msgstr "Yanapaq"
+
+# [es] "Creador"
+#~ msgid "Creator"
+#~ msgstr "Rikhurichiq"
+
+# [es] "Fecha predeterminada (sin hora)"
+#~ msgid "Default date (w/o time)"
+#~ msgstr "(Ma pachayuq) ma aqllasqa p'unchay"
+
+# [es] "Línea"
+#~ msgid "Line"
+#~ msgstr "Surk'a"
+
+# [es] "Listas para "
+#~ msgid "Lists for "
+#~ msgstr "Listaspaq "
+
+# [es] "Referencia de página"
+#~ msgid "Page Reference"
+#~ msgstr "Referencia de página"
+
+# [es] "Amhárico (Etiopía)"
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhárico (Etiopía)"
+
+# [es] "Asturiano (España)"
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturiano (España)"
+
+# [es] "Holandés (Holanda)"
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Holandés (Holanda)"
+
+# [es] "Flamenco (Bélgica)"
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Flamenco (Bélgica)"
+
+# [es] "Italiano (Italia)"
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italiano (Italia)"
+
+# [es] "Coreano, Johab"
+#~ msgid "Korean, Johab"
+#~ msgstr "Coreano, Johab"
+
+# [es] "Latín (Renacimiento)"
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latín (Renacimiento)"
+
+# [es] "Nepalés"
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepalés (Nepal)"
+
+# [es] "Noruego Bokmaal"
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Noruego Bokmaal"
+
+# [es] "Noruego Nynorsk"
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Noruego Nynorsk"
+
+# [es] "Punjabi (Gurmukhi)"
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punjabi (Gurmukhi)"
+
+# [es] "Punjabi (Shahmukhi)"
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punjabi (Shahmukhi)"
+
+# [es] "Ruso (Rusia)"
+#~ msgid "Russian (Russia)"
+#~ msgstr "Ruso (Rusia)"
+
+# [es] "Europeo occidental, página de códigos Windows/DOS 437"
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Europeo occidental, página de códigos DOS/Windows 437"
+
+# [es] "Formatos &disponibles:"
+#~ msgid "&Available formats:"
+#~ msgstr "&Apaykacháy atisqa ukhunpi kamachis:"
+
+# [es] "&Activar comillas inteligentes"
+#~ msgid "&Enable smart quotes"
+#~ msgstr "Pachanmanta &juch'uy pakanchanasta jap'ichiy"
+
+# [es] "Comportamiento del auto-ajuste"
+#~ msgid "AutoFit behavior"
+#~ msgstr "Imayna pachanmanta chhikanta mat'in"
+
+# [es] "Opciones bidireccionales"
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Opciones bidireccionales"
+
+# [es] "Parámetros adicionales:"
+#~ msgid "Extra parameters:"
+#~ msgstr "Waq tupuykuna:"
+
+# [es] "Nombre del campo"
+#~ msgid "Field Name"
+#~ msgstr "Kanchaqpa sutin"
+
+# [es] "Formato de notas finales"
+#~ msgid "Format Endnotes"
+#~ msgstr "Ukhunta kamachi"
+
+# [es] "Formato de nota a pie de página"
+#~ msgid "Format Footnotes"
+#~ msgstr "Ukhunta kamachi"
+
+# [es] "Inserta un salto"
+#~ msgid "Insert break"
+#~ msgstr "Phinkinata sat'iy"
+
+# [es] "Inserta un campo"
+#~ msgid "Insert field"
+#~ msgstr "Kanchata sat'iy"
+
+# [es] "Papel..."
+#~ msgid "Paper..."
+#~ msgstr "Laqhi..."
+
+# [es] "Posición de la caja de texto"
+#~ msgid "Position Text Box"
+#~ msgstr "Maychus textoq tawak'uchun"
+
+# [es] "Escala..."
+#~ msgid "Scale..."
+#~ msgstr "Ima chhikanmanta..."
+
+# [es] "Saltos de sección"
+#~ msgid "Section breaks"
+#~ msgstr "Seccionpaq phinkina"
+
+# [es] "Tamaño de la tabla"
+#~ msgid "Table size"
+#~ msgstr "Tablaq chhikannin"
+
+# [es] "Definir emplazamiento de la imagen"
+#~ msgid "Define Image Placement"
+#~ msgstr "Definir emplazamiento de la imagen"
+
+# [es] "Definir ajuste de texto"
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Definir ajuste de texto"
+
+# [es] "Establecer nombre de la imagen"
+#~ msgid "Set Image Name"
+#~ msgstr "&Pallaypa sutinta churay"
+
+# [es] "Establecer tamaño de la imagen"
+#~ msgid "Set Image Size"
+#~ msgstr "Laqhiqpa chhikanta churay"
 
 # [es] "Unicode UCS-2"
 #~ msgid "Unicode UCS-2"
