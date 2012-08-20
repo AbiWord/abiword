@@ -49,6 +49,7 @@ public:
 	UT_sint32           getValue(void);
 	void				layout(void);
 	void		        forceClearScreen(void);
+	UT_sint32		getTotalTOCHeight(void) const;
 	virtual UT_sint32   getHeight(void) const;
 	virtual void		clearScreen(void);
 	virtual void		draw(dg_DrawArgs*);

@@ -343,7 +343,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 				}
 				
 		}
-		if((nWrappedObjs == 0) &&(m_iCountWrapPasses == 0))
+		if((nWrappedObjs == 0) &&(m_iCountWrapPasses == 1))
 		{
 			return NULL;
 		}

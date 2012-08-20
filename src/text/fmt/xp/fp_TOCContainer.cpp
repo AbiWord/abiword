@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2004 Martin Sevior <msevior@physics.unimelb.edu.au>
@@ -469,10 +470,7 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 	{
 		return getLastBrokenTOC()->VBreakAt(vpos);
 	}
-	if(getContainer() == NULL)
-	{
-	    return NULL;
-	}
+
 	pBroke = new fp_TOCContainer(getSectionLayout(),getMasterTOC());
 	getMasterTOC()->setLastBrokenTOC(pBroke);
 
@@ -482,19 +480,14 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 // vpos is relative to the container that contains this height but we need
 // to add in the height above it.
 //
-	pBroke->setYBreakHere(getYBreak()+vpos);
 	setYBottom(getYBreak() + vpos -1);
 	UT_ASSERT(getHeight() >0);
-	fp_VerticalContainer * pVCon = static_cast<fp_VerticalContainer *>(getMasterTOC());
-	if(pVCon == NULL)
-	{
-
-	}
-	pBroke->setYBottom(pVCon->getHeight());
+	pBroke->setYBreakHere(getYBreak()+vpos);
+	pBroke->setYBottom(getTotalTOCHeight());
 	xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken TOC %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
 	xxx_UT_DEBUGMSG(("SEVIOR????????: Previous TOC YBreak %d YBottom  %d Height of broken TOC %d \n",getYBreak(),getYBottom(),getHeight()));
 	UT_ASSERT(pBroke->getHeight() > 0);
-	UT_sint32 i = 0;
+	UT_sint32 i = -1;
 //
 // The structure of TOC linked list is as follows.
 // NULL <= Master <==> Next <==> Next => NULL
@@ -506,63 +499,59 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 	fp_Container * pUpCon = NULL;
 	if(getMasterTOC()->getFirstBrokenTOC() == this)
 	{
-		i = getContainer()->findCon(getMasterTOC());
 		pUpCon = getMasterTOC()->getContainer();
-  		pBroke->setPrev(getMasterTOC());
-  		pBroke->setNext(NULL);
-  		getMasterTOC()->setNext(pBroke);
+		pBroke->setPrev(getMasterTOC());
+		pBroke->setNext(NULL);
+		getMasterTOC()->setNext(pBroke);
 		setNext(pBroke);
+		if (pUpCon)
+		{
+			i = pUpCon->findCon(getMasterTOC());
+		}
 	}
 	else
 	{
-  		pBroke->setNext(NULL);
-  		setNext(pBroke);
+		pBroke->setNext(NULL);
+		setNext(pBroke);
 		if(getYBreak() == 0 )
 		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			pUpCon = getMasterTOC()->getContainer();
-//
-// Fallback for loads...
-//
-			if(pUpCon == NULL)
+			if(pUpCon)
 			{
-				pUpCon = getContainer();
+				i = pUpCon->findCon(getMasterTOC());
 			}
 		}
 		else
 		{
 			pUpCon = getContainer();
-		}
-		if(getYBreak() == 0)
-		{
-			i = pUpCon->findCon(getMasterTOC());
-		}
-		else
-		{
-			i = pUpCon->findCon(this);
+			if (pUpCon)
+			{
+				i = pUpCon->findCon(this);
+			}
 		}
 	}
-	if(i >=0 && i < pUpCon->countCons() -1)
+	if((i >= 0) && (i < pUpCon->countCons() -1))
 	{
 		pUpCon->insertConAt(pBroke,i+1);
 	}
-	else if( i == pUpCon->countCons() -1)
+	else if((i >= 0) && (i == pUpCon->countCons() -1))
 	{
 		pUpCon->addCon(pBroke);
 	}
 	else
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return NULL;
+		UT_DEBUGMSG(("Breaking a TOC that is not yet inserted\n"));
 	}
 	pBroke->setContainer(pUpCon);
 	//
 	// Now deal with issues from a container overlapping the top of the
 	// of the new broken TOC.
 	//
-// Skip this for now. Look at fp_TableContainer to see if it's needed later
-//
-	static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());	return pBroke;
+	// Skip this for now. Look at fp_TableContainer to see if it's needed later
+	//
+	static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());	
+	return pBroke;
 }
 
 
@@ -679,6 +668,22 @@ UT_sint32 fp_TOCContainer::getHeight(void) const
 	}
 	UT_sint32 iMyHeight = getYBottom() - getYBreak();
 	return iMyHeight;
+}
+
+
+
+/*
+  Return the height of the complete TOC as if it was not broken
+*/
+
+UT_sint32 fp_TOCContainer::getTotalTOCHeight(void) const
+{
+	if (getMasterTOC())
+	{
+		return getMasterTOC()->getTotalTOCHeight();
+	}
+
+	return fp_VerticalContainer::getHeight();
 }
 
 /*!

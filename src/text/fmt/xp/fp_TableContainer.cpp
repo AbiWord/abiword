@@ -2434,12 +2434,14 @@ bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke) const
 void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
-	
-	
 	if(partiallyInsideBrokenTable(pBroke))
 	{
 		setBrokenCell(true);
 		//pCell->fixLines(iShift,this,false);
+	}
+	if(m_pBroke == pBroke)
+	{
+		pDA->yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
 	}
 	GR_Graphics * pG = pDA->pG;
 	m_bDrawLeft = false;
@@ -2575,10 +2577,6 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 
 			da.xoff += pContainer->getX() + getX();
 			da.yoff += pContainer->getY() + getY();
-			if(m_pBroke == pBroke)
-			{
-				da.yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
-			}
 			UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 			if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{

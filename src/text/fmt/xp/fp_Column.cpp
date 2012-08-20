@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -781,7 +782,13 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		}
 		pPrev = pCon;
 		pCon = pCon->getContainer();
-		UT_return_if_fail(pCon);
+		if (!pCon)
+		{
+			// Can happen during loading
+			xoff = 0;
+			yoff = 0;
+			return;
+		}
 	}
 	UT_return_if_fail(pCon);
 	UT_sint32 col_x =0;
