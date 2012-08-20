@@ -17,7 +17,9 @@ strings_DATA = \
 	be@latin.strings \
 	bg-BG.strings \
 	bm.strings \
+	bn.strings \
 	br-FR.strings \
+	bs.strings \
 	ca-ES.strings \
 	cgg.strings \
 	cs-CZ.strings \
@@ -35,12 +37,15 @@ strings_DATA = \
 	es-MX.strings \
 	et.strings \
 	eu-ES.strings \
+	fa-AF.strings \
 	ff.strings \
 	fi-FI.strings \
+	fil.strings \
 	fr-FR.strings \
 	ga-IE.strings \
 	gl.strings \
 	he-IL.strings \
+	hi.strings \
 	hr-HR.strings \
 	hu-HU.strings \
 	id-ID.strings \
