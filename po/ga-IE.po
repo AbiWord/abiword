@@ -1,14 +1,13 @@
 # Irish (Gaelic) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # SEANÁN Ó COISTÍN <seananoc@hotmail.com>, 2006.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
 "PO-Revision-Date: 2011-06-15 04:01+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
@@ -116,11 +115,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Tada"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -128,11 +122,6 @@ msgstr "&1 Tada"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -142,11 +131,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -154,11 +138,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -257,11 +236,6 @@ msgstr "&Uathoiriúnaigh an Tábla"
 #: po/tmp/ap_String_Id.h
 msgid "&Automatically save this Scheme"
 msgstr "&Uathchoimeád an Gúm seo"
-
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "&Cruthanna ar Fáil:"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
@@ -428,11 +402,6 @@ msgstr "&Eagraigh an hipearnasc"
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr ""
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "&Cumasaigh comharthaí athfhriotail cliste"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -812,6 +781,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "&Scoir"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1280,12 +1254,12 @@ msgstr "I &ndiaidh:"
 msgid "Ali&gnment:"
 msgstr "Ailí&niú:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Ailíniú"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1299,7 +1273,8 @@ msgstr "Gach"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
+#, fuzzy
+msgid "Allow formatting not using styles only"
 msgstr "Lig do cruthú ag baint feidhm as módhanna amháin"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
@@ -1391,6 +1366,12 @@ msgstr ""
 "choinneáil?Má leanann tú, ní bheidh tú in ann leagan níos luaithe den "
 "cháipéis seo a aischuir."
 
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
+
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
 msgid "At least"
@@ -1401,6 +1382,7 @@ msgstr "Ar a laighead"
 msgid "Attach to Previous List"
 msgstr "Ceangail leis an Réim Roimhe"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -1434,15 +1416,10 @@ msgstr "Uathchoimeád"
 msgid "Auto replace misspelled words"
 msgstr "Uath athchuir focail litrithe mícheart"
 
-#. DLG_InsertTable_AutoFit_Capital
+#. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
 msgid "AutoFit Behavior"
 msgstr "Iompar Uathoiriúnaigh"
-
-#. DLG_InsertTable_AutoFit
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
-msgstr "Iompar UathOiriúnaigh"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h
@@ -1481,17 +1458,20 @@ msgstr "Uathchumaiscigh"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
+#, fuzzy
+msgid "Available Fields:"
 msgstr "Réimsí ar fáil"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
+#, fuzzy
+msgid "Available Formats:"
 msgstr "Cruthanna ar fáil"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
+#, fuzzy
+msgid "Available Styles:"
 msgstr "Nósanna Ar Fáil"
 
 #. DLG_Para_LabelBy
@@ -1525,11 +1505,6 @@ msgstr "Barra Tábanna"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Bunaithe Ar:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Roghanna Dethreoch"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -1651,6 +1626,12 @@ msgstr "Urchair"
 msgid "Bullets and &Numbering"
 msgstr "Urchair agus Uimhriú"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Bullets and Numbering"
+msgstr "Urchair agus Uimhriú"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1695,6 +1676,12 @@ msgstr "Ní féidir nós ionsuite a athrú"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Ní féidir an obair clóbhualadh a thosú"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Category"
+msgstr "Aicme:"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2008,6 +1995,12 @@ msgstr "Dath:"
 msgid "Column"
 msgstr "Colún"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Column Break"
+msgstr "&Briseadh Colúin"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2077,10 +2070,15 @@ msgid "Contact from File"
 msgstr ""
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Contacts"
+msgstr "Inneachair a 1"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Contacts:"
 msgstr "Inneachair a 1"
 
 #. TOC_TocHeading
@@ -2097,8 +2095,9 @@ msgstr "Lean leis an athchóiriú roimhe (uimhir %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Rannpháirtí"
+#, fuzzy
+msgid "Contributor(s)"
+msgstr "Rannpháirtithe:"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2265,6 +2264,12 @@ msgstr "Cruthaigh cáipéis nua ó teimpleád"
 msgid "Create an empty document"
 msgstr "Cruthaigh cáipéis folamh"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Create and Modify Styles"
+msgstr "&Cruthaigh agus Athraigh Módhanna"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -2291,17 +2296,12 @@ msgstr ""
 msgid "Create new Semantic Item"
 msgstr ""
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Cruthathóir"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "Ge&arr"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Dáta Reatha"
@@ -2404,6 +2404,12 @@ msgstr "Réim Fleasca"
 msgid "Dashed line"
 msgstr ""
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr ""
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2447,11 +2453,6 @@ msgstr "Táb Deachúil"
 msgid "Decrease indent"
 msgstr "Laghdaigh eang"
 
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Dáta réamhshocraithe (gan am)"
-
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
@@ -2482,6 +2483,12 @@ msgstr "Sainigh na Príomh Airíonna"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Sainigh nó cuir i bhfeidhm módh don rogha"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2586,8 +2593,6 @@ msgstr "Scrios an colún seo óna tábla"
 msgid "Delete this row from its table"
 msgstr "Scrios an sraith seo óna tábla"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2600,6 +2605,11 @@ msgstr "Tuairisc"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Tuairisc:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2726,6 +2736,12 @@ msgstr "Cáipéisí"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Ná aththosaigh"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2898,8 +2914,15 @@ msgstr "Tagairt fonóta"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
+#, fuzzy
+msgid "Endnote style:"
 msgstr "Módh fonóta"
+
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Endnotes"
+msgstr "&Nótaí Mínithe"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -2939,7 +2962,7 @@ msgstr "Botún le linn iarracht %s a cuir i dtaisce:: ainm neamhsheasmhach"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
+msgid "Events:"
 msgstr ""
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
@@ -3003,20 +3026,16 @@ msgstr ""
 msgid "Extra"
 msgstr "Breise"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
+#, fuzzy
+msgid "Extra Parameters:"
 msgstr "Paraiméadair Breise"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Barra Uirlisí Breise"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Paraiméadair breise:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3037,11 +3056,6 @@ msgstr "Lá&nscáileán"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "Fai&gh céard:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Ainm Réimse"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3241,8 +3255,15 @@ msgstr "Tagairt buntásca"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
+#, fuzzy
+msgid "Footnote style:"
 msgstr "Nós buntásca"
+
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Footnotes"
+msgstr "Fo&nóta"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
@@ -3292,16 +3313,6 @@ msgstr "Cruth"
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "Cuir Cruth ar an Ní Inleabaithe"
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Cuir Cruth ar na Nótaí Mínithe"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Cuir Cruth ar na bhFonótaí"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3381,7 +3392,8 @@ msgstr "Lánscáileán"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Coiteanta"
 
@@ -3614,17 +3626,19 @@ msgstr "Ceannlitreacha Thosaigh"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
+#, fuzzy
+msgid "Initial Endnote value:"
 msgstr "Luach Nóta Mínithe thosaigh"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
+#, fuzzy
+msgid "Initial Footnote value:"
 msgstr "Luach Fonóta thosaigh"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
+msgid "Inner (single) quote style:"
 msgstr ""
 
 #. InsertModeFieldINS
@@ -3656,7 +3670,7 @@ msgstr "Ionsáigh &Tábla"
 msgid "Insert Bookmark"
 msgstr "Ionsáigh Leabharlorg"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Ionsáigh Briseadh"
@@ -3686,7 +3700,7 @@ msgstr "Ionsáigh Cothromóid"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Ionsáigh Cothromód ó slonn LaTeX"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Ionsáigh Réimse"
@@ -3861,20 +3875,10 @@ msgstr "Ionsáigh íomhá istigh sa cháipéis"
 msgid "Insert bookmark"
 msgstr "Ionsáigh leabharlorg"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Ionsáigh briseadh"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Ionsáigh fáisc-ealaíon"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Ionsáigh réimse"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -4003,9 +4007,14 @@ msgid "Keywords:"
 msgstr "Eochairfhocail:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
+msgstr "Cothromóid LaTeX"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "LaTeX Equation:"
 msgstr "Cothromóid LaTeX"
 
 #. DLG_Lists_Indent
@@ -4020,7 +4029,6 @@ msgstr "Sainmhínithe Lipéide"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Béarla"
@@ -4029,6 +4037,12 @@ msgstr "Béarla"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Socraithe an Bhéarla"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Language(s)"
+msgstr "Béarla(í):"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4040,14 +4054,10 @@ msgstr "Béarla(í):"
 msgid "Layout"
 msgstr "Leagan Amach"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Sonraí an Leagan Amach"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
+#, fuzzy
+msgid "Leader:"
 msgstr "Treoraí"
 
 #. DLG_Para_AlignLeft
@@ -4127,11 +4137,6 @@ msgstr "Leibhéal:"
 msgid "Li&ne spacing:"
 msgstr "Bearnaí lí&ne:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Líne"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4157,15 +4162,16 @@ msgstr "Líne faoin roghnúchán (scoránaigh)"
 msgid "Line between"
 msgstr "Líne eatartha"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Line:"
+msgstr "Línte:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "Línte:"
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Réim"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4182,14 +4188,9 @@ msgstr "Airíonna na Réime"
 msgid "List Styles"
 msgstr "Nósanna na Réim"
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Réimeanna do "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
+msgid "Locations:"
 msgstr ""
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
@@ -4268,7 +4269,8 @@ msgstr "Scrúdú Martins"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
+#, fuzzy
+msgid "Max Column size:"
 msgstr "Uasmhéid Colún"
 
 #. TOOLBAR_LABEL_MENU
@@ -4380,7 +4382,8 @@ msgstr "Módhanna Éagsúla"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+#, fuzzy
+msgid "Modify Style"
 msgstr "Athraigh Módhanna"
 
 #. DLG_Styles_Modify
@@ -4450,7 +4453,7 @@ msgstr "Eanganú"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
+msgid "New Contact"
 msgstr ""
 
 #. DLG_NEW_Title
@@ -4535,11 +4538,8 @@ msgstr "Níor roghnaíodh Módh mar sin ní féidir é a mhionathrú"
 msgid "No scripts found"
 msgstr "Níor aimsíodh scripteanna"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Tada"
@@ -4566,7 +4566,8 @@ msgstr "Módhanna Nótaí"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
+#, fuzzy
+msgid "Number of Columns:"
 msgstr "Líon na gColún"
 
 #. FIELD_Numbers_PagesCount
@@ -4600,13 +4601,18 @@ msgstr "Uimrithe"
 msgid "Numbered List"
 msgstr "Réim Uimhrithe"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
+msgstr "Uimhriú"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Numbering:"
 msgstr "Uimhriú"
 
 #. FIELD_Type_Numbers
@@ -4682,7 +4688,8 @@ msgstr "Oscail an cháipéis seo"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
+#, fuzzy
+msgid "Orientation"
 msgstr "Treoshuíomh..."
 
 #. DLG_Options_TabLabel_Other
@@ -4698,7 +4705,7 @@ msgstr "As cuimhne ag iarradh %s a oscailt"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+msgid "Outer (double) quote style:"
 msgstr ""
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
@@ -4735,7 +4742,6 @@ msgstr "Scrios na h-athchóirithe"
 msgid "Pa&ste Unformatted"
 msgstr "Greamaigh gan cruthú"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4750,6 +4756,12 @@ msgstr "Leathanach &briseadh roimhe"
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "Cúlra Leathanach"
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page Break"
+msgstr "&Briseadh leathanaigh"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4783,8 +4795,8 @@ msgstr "Uimhreacha na Leathanaigh"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Tagairt Leathanach"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4795,6 +4807,12 @@ msgstr "Cum&raíocht Leathanach"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Cumraíocht Leathanach"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page:"
+msgstr "Leathanaigh:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -4812,15 +4830,15 @@ msgstr "Leathanaigh:"
 msgid "Pagination"
 msgstr "Uimhriú Leathanach"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr ""
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "Mé&id Páipéir:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Páipéir..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4887,7 +4905,8 @@ msgstr "Lonnaigh ag deireadh an rannáin"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
+#, fuzzy
+msgid "Placement:"
 msgstr "Socrúcháin"
 
 #. MENU_LABEL_RDF_ADV_PLAY
@@ -4895,17 +4914,11 @@ msgstr "Socrúcháin"
 msgid "Playing with RDF during development"
 msgstr ""
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Suíomh"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Suigh Bosca Téacs"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -4922,6 +4935,7 @@ msgstr "Suigh go Leathanach"
 msgid "Position to Paragraph"
 msgstr "Suigh go an Alt"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5073,11 +5087,6 @@ msgstr ""
 msgid "R&eplace"
 msgstr "A&thchuir"
 
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr ""
-
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
@@ -5187,7 +5196,8 @@ msgstr "Bain an Ceanntásc"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
+#, fuzzy
+msgid "Remove Property from Style:"
 msgstr "Bain Airíonna ó Módh"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
@@ -5537,8 +5547,8 @@ msgstr "Cuir i dtaisce i gcomhad"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Scála..."
+msgid "Scale"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5555,15 +5565,10 @@ msgstr "Buillí idir nuashonraithe"
 msgid "Seconds since the epoch"
 msgstr "Buillí ón sainré"
 
-#. DLG_Break_SectionBreaks_Capital
+#. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
 msgid "Section Breaks"
 msgstr "Briseadh Rannáin"
-
-#. DLG_Break_SectionBreaks
-#: po/tmp/ap_String_Id.h
-msgid "Section breaks"
-msgstr "Briseadh rannáin"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h
@@ -5619,7 +5624,8 @@ msgstr "Roghnaigh Bosca Téacs"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+#, fuzzy
+msgid "Select a target bookmark from the list:"
 msgstr "Roghnaigh leabharlorg sprice ón réim."
 
 #. DLG_FormatFrame_SelectImage
@@ -5689,13 +5695,13 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
+msgid "Select the parts of the document contained in the next revision"
 msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
+msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -6137,7 +6143,8 @@ msgstr "Foinse:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
+#, fuzzy
+msgid "Space after Column:"
 msgstr "Bearna i ndiaidh Colún"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
@@ -6368,12 +6375,14 @@ msgstr "Módh Ainm:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
+#, fuzzy
+msgid "Style Type:"
 msgstr "Cineál Módh"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
+#, fuzzy
+msgid "Style for following paragraph:"
 msgstr "Módh don alt ar lean"
 
 #. DLG_Styles_ErrBlankName
@@ -6388,7 +6397,6 @@ msgstr "Ní féidir an módh ainm a fhágáil bán"
 msgid "Style:"
 msgstr "Módh:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6525,7 +6533,7 @@ msgstr "Stadanna tába le glanadh:"
 msgid "Table"
 msgstr "Tábla"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Méid an Tábla"
@@ -6550,11 +6558,6 @@ msgstr "Lipéid Réim an Tábla Inneachair"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Leathanach an Tábla Inneachair"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Méid an tábla"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6603,13 +6606,24 @@ msgstr "Ailínigh Téacs:"
 msgid "Text Box"
 msgstr "Bosca Téacs"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr ""
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr ""
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr "Téacsfhilleadh"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Slánfhoclacht"
 
@@ -6801,19 +6815,20 @@ msgstr "Réim Triantán"
 msgid "Two"
 msgstr "Dó"
 
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "Cló"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
 msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+#, fuzzy
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr ""
 "Clóscríobh ainm don leabharlorg, nó roghnaigh ceann ón réim atá ann cheana."
 
@@ -6839,6 +6854,13 @@ msgstr "Cuir líne faoi"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Cuir líne faoin roghnúchán (scoránaigh)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Underlines"
+msgstr "Cuir líne faoi"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -6974,6 +6996,11 @@ msgstr "Rabhadh: níl an leabharlorg a thug tú [%s] ann."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Leagan Amach Idirlíona"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7135,12 +7162,47 @@ msgstr "mm/ll/bb"
 msgid "tOGGLE cASE"
 msgstr "cÁS sCORÁN"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Tada"
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Tada"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Tada"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Ábhar"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Tada"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Tada"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7180,12 +7242,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "&Description"
-msgstr "Tuairisc"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7281,6 +7337,11 @@ msgstr "AbiWord: Réamhamharc Clóbhualadh"
 msgid "About %s"
 msgstr "Faoi %s"
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
@@ -7323,8 +7384,8 @@ msgstr "Lig do breis comharthú in ainm AWML"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Amaraic (An Aetóip)"
+msgid "Amharic"
+msgstr ""
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7373,8 +7434,8 @@ msgstr "Asaimis"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Ástúrais (An Spáin)"
+msgid "Asturian"
+msgstr ""
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7398,22 +7459,29 @@ msgstr "Uathathchóiriú"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
+#, fuzzy
+msgid "Available Documents:"
 msgstr "Cáipéisí Ar Fáil"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
+#, fuzzy
+msgid "Available Languages:"
 msgstr "Béarlaí Ar Fáil"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
 msgstr ""
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr ""
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
 msgstr ""
 
 #. ENC_BALT_ISO
@@ -7425,6 +7493,11 @@ msgstr "Bailtis, ISO-8859-4"
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Bailtis, Tagairt Windows Leathanach 1257"
+
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr ""
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7456,6 +7529,11 @@ msgstr "Dubh & Bán"
 #: po/tmp/xap_String_Id.h
 msgid "Block Text"
 msgstr "Ceap Téacs"
+
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr ""
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
@@ -7494,11 +7572,6 @@ msgstr "Cealaigh"
 msgid "Catalan"
 msgstr "Catalóinis"
 
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr ""
-
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Central European, ISO-8859-2"
@@ -7523,6 +7596,11 @@ msgstr "Athraigh an Bhéarla nuair a n-athraítear an méarchlár"
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Teideal Caibidil"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7595,6 +7673,12 @@ msgstr "Roghnaigh cáispéis ón réim:"
 msgid "Clear Background"
 msgstr "Glan Dath an Cúlra"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "Glan Dath an Cúlra"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7602,7 +7686,7 @@ msgstr "Fáisc-ealaín"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
+msgid "Clip Art could not be loaded."
 msgstr ""
 
 #. DLG_Close
@@ -7767,16 +7851,6 @@ msgstr "Fógraigh mar XML (leagan 1.0)"
 msgid "Default language: "
 msgstr "Béarla réamhshocraithe: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Cinntigh Lonnú Íomhánna"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Cinntigh Slánfhoclacht"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -7809,8 +7883,8 @@ msgstr "Coimhmeasach na gcáipéisí"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Ollainnis (an Ísiltír)"
+msgid "Dutch"
+msgstr ""
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7819,7 +7893,8 @@ msgstr "Am eagarthóireacht:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
+#, fuzzy
+msgid "Effects:"
 msgstr "Tionchair"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
@@ -7898,6 +7973,11 @@ msgstr "Sacs-bhéarla (RA)"
 msgid "English (US)"
 msgstr "Sacs-bhéarla (SAM)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr ""
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7961,8 +8041,8 @@ msgstr "Fionlainnis"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Pléimeannais (An Bheilg)"
+msgid "Flemish"
+msgstr ""
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -8022,9 +8102,13 @@ msgstr ""
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "Galician (Galego)"
-msgstr "Gailísis"
+msgid "Galician"
+msgstr ""
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr ""
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8186,10 +8270,25 @@ msgstr "Ioslannais, Macintosh"
 msgid "Identifier:"
 msgstr "Aitheantóir:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr ""
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr ""
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Airí an Íomhá"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr ""
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8295,8 +8394,8 @@ msgstr "Gaeilge"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Iodáilis (An Iodáil)"
+msgid "Italian"
+msgstr ""
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8330,14 +8429,23 @@ msgstr "Cannadais"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
+msgid "Kazakh"
 msgstr ""
 
-#. LANG_KO_KR
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr ""
+
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Cóiréis"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr ""
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8346,8 +8454,8 @@ msgstr "Cóiréis, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Cóiréis, Íohab"
+msgid "Korean, JOHAB"
+msgstr ""
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8376,8 +8484,8 @@ msgstr "An rud deirneach taiscithe:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Laidin (Athbheochan)"
+msgid "Latin"
+msgstr ""
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8392,8 +8500,13 @@ msgstr "Liotuánais"
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Loading Clip Art"
+msgid "Loading Clip Art..."
 msgstr "Fáisc-ealaín"
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8411,6 +8524,11 @@ msgstr "Macadónais"
 msgid "Make default for document"
 msgstr "Déan mar réamhshocrú don cáipéis"
 
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr ""
+
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
 msgid "Malay"
@@ -8418,7 +8536,7 @@ msgstr "Malaeis"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
+msgid "Mandinka"
 msgstr ""
 
 #. LANG_MI_NZ
@@ -8458,8 +8576,8 @@ msgstr "Ainm:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr "Neipeailis"
+msgid "Nepali"
+msgstr ""
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8481,16 +8599,6 @@ msgstr "Níl breiseán roghnaithe"
 msgid "Normal"
 msgstr "Gnáth"
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Ioruais Bokmal"
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Nua-Ioruais"
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8510,6 +8618,11 @@ msgstr "Ceannteideal Uimhrithe a 2"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Ceannteideal Uimhrithe a 3"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr ""
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8575,7 +8688,8 @@ msgstr "Gnáth Téacs"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
+#, fuzzy
+msgid "Plugin Details"
 msgstr "Sonraí an Breiseán:"
 
 #. DLG_PLUGIN_MANAGER_LIST
@@ -8656,27 +8770,32 @@ msgstr "Aithne clóbhualtóir: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Puinseáibis (Gurmoicí)"
+msgid "Punjabi (India)"
+msgstr ""
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Puinseáibis (Seamoicí)"
+msgid "Punjabi (Pakistan)"
+msgstr ""
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Ceatsuais"
 
-#. LANG_QUH_BO
+#. LANG_QUZ
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
+msgid "Quechua (Cusco)"
 msgstr ""
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
+msgid "Quechua (Northern Bolivia)"
+msgstr ""
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
 msgstr ""
 
 #. ReadOnly
@@ -8712,6 +8831,7 @@ msgid "Replay Editing from File"
 msgstr "Aithshein Eagarthóireacht ón gComhad"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Athbhunaigh"
@@ -8738,12 +8858,12 @@ msgstr "Romainis, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Rúisis (An Rúis)"
+msgid "Russian"
+msgstr ""
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
+msgid "Russian, pre-1918"
 msgstr ""
 
 #. DLG_UFS_SampleFrameLabel
@@ -8805,18 +8925,8 @@ msgstr "Seirbis"
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Serbian, latin"
+msgid "Serbian, Latin"
 msgstr "Seirbis"
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Socraigh Ainm an Íomhá"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Socraigh Méad an Íomhá"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -8846,6 +8956,11 @@ msgstr "Slóibhéinis"
 #. DLG_UFS_Effects_SmallCaps
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
+msgstr ""
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
 msgstr ""
 
 #. LANG_ES_MX
@@ -9173,11 +9288,6 @@ msgstr "Breathnaigh:"
 msgid "Welsh"
 msgstr "Breathnais"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Iar-Eorpach, Tagairt DOS/Windows Leathanach 437"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9225,7 +9335,7 @@ msgstr "Leithead:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
+msgid "Wolof"
 msgstr ""
 
 #. DLG_MB_Yes
@@ -9250,6 +9360,11 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "Feith go"
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr ""
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9317,6 +9432,149 @@ msgstr "dearthóireacha"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "neamhghaolta"
+
+#~ msgid "List"
+#~ msgstr "Réim"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Tada"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Sonraí an Leagan Amach"
+
+#, fuzzy
+#~ msgid "&Description"
+#~ msgstr "Tuairisc"
+
+#~ msgid "Contributor"
+#~ msgstr "Rannpháirtí"
+
+#~ msgid "Creator"
+#~ msgstr "Cruthathóir"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Dáta réamhshocraithe (gan am)"
+
+#~ msgid "Line"
+#~ msgstr "Líne"
+
+#~ msgid "Lists for "
+#~ msgstr "Réimeanna do "
+
+#~ msgid "Page Reference"
+#~ msgstr "Tagairt Leathanach"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amaraic (An Aetóip)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Ástúrais (An Spáin)"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Ollainnis (an Ísiltír)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Pléimeannais (An Bheilg)"
+
+#, fuzzy
+#~ msgid "Galician (Galego)"
+#~ msgstr "Gailísis"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Iodáilis (An Iodáil)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Cóiréis, Íohab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Laidin (Athbheochan)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Neipeailis"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Ioruais Bokmal"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Nua-Ioruais"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Puinseáibis (Gurmoicí)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Puinseáibis (Seamoicí)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Rúisis (An Rúis)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Iar-Eorpach, Tagairt DOS/Windows Leathanach 437"
+
+#~ msgid "&Available formats:"
+#~ msgstr "&Cruthanna ar Fáil:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Cumasaigh comharthaí athfhriotail cliste"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Iompar UathOiriúnaigh"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Roghanna Dethreoch"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Paraiméadair breise:"
+
+#~ msgid "Field Name"
+#~ msgstr "Ainm Réimse"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Cuir Cruth ar na Nótaí Mínithe"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Cuir Cruth ar na bhFonótaí"
+
+#~ msgid "Insert break"
+#~ msgstr "Ionsáigh briseadh"
+
+#~ msgid "Insert field"
+#~ msgstr "Ionsáigh réimse"
+
+#~ msgid "Paper..."
+#~ msgstr "Páipéir..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Suigh Bosca Téacs"
+
+#~ msgid "Scale..."
+#~ msgstr "Scála..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Briseadh rannáin"
+
+#~ msgid "Table size"
+#~ msgstr "Méid an tábla"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Cinntigh Lonnú Íomhánna"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Cinntigh Slánfhoclacht"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Socraigh Ainm an Íomhá"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Socraigh Méad an Íomhá"
 
 #~ msgid "Unicode UCS-2"
 #~ msgstr "Unicode UCS-2"
