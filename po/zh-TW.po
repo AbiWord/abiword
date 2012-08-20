@@ -1,6 +1,6 @@
 # Chinese (Taiwan) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Chih-Wei Huang <cwhuang@linux.org.tw>, 2000.
 # Armani <armani@cle.linux.org.tw>
@@ -9,13 +9,12 @@
 # Anthony Fok <anthony@thizlinux.com>, ThizLinux Laboratory Ltd.
 # December 2001  (AbiWord-0.9.6)
 # Walter Cheuk <wwycheuk@gmail.com>, 2006.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
-"PO-Revision-Date: 2012-05-28 05:58+0200\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"PO-Revision-Date: 2012-08-19 09:30+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Traditional Chinese <zh-l10n@linux.org.tw>\n"
 "Language: zh_TW\n"
@@ -124,11 +123,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "(&1) %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 無"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -136,11 +130,6 @@ msgstr "&1 無"
 #, c-format
 msgid "&2 %s"
 msgstr "(&2) %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -150,11 +139,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "(&3) %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -162,11 +146,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "(&4) %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -1273,12 +1252,12 @@ msgstr "與後段距離(&E):"
 msgid "Ali&gnment:"
 msgstr "對齊方式(&G):"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "對齊方式"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1292,7 +1271,8 @@ msgstr "所有樣式"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
+#, fuzzy
+msgid "Allow formatting not using styles only"
 msgstr "只允許使用樣式作格式化"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
@@ -1380,6 +1360,12 @@ msgid ""
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr "確定不要保存完整的歷史紀錄嗎？如您這樣做，將無法回復此文件的較早版本。"
 
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
+
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
 msgid "At least"
@@ -1390,6 +1376,7 @@ msgstr "最少"
 msgid "Attach to Previous List"
 msgstr "連結至上一個清單"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1464,8 +1451,8 @@ msgstr "自動合併"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "可用的功能變數"
+msgid "Available Fields:"
+msgstr "可用的功能變數:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
@@ -1474,8 +1461,8 @@ msgstr "可用格式:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "可用的樣式"
+msgid "Available Styles:"
+msgstr "可用的樣式:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1628,6 +1615,11 @@ msgstr "項目符號"
 msgid "Bullets and &Numbering"
 msgstr "項目符號及編號(&N)"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "項目符號及編號"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1672,6 +1664,11 @@ msgstr "無法修改內定的樣式"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "無法開始列印工作"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "分類"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -1979,6 +1976,11 @@ msgstr "色彩:"
 msgid "Column"
 msgstr "欄"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr "分欄符號"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2047,10 +2049,14 @@ msgid "Contact from File"
 msgstr "從檔案中選取聯絡人"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 msgid "Contacts"
 msgstr "聯絡人"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts:"
+msgstr "聯絡人:"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2065,7 +2071,7 @@ msgstr "繼續前一修訂（編號 %d）"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
+msgid "Contributor(s)"
 msgstr "內容提供者"
 
 #. DLG_MetaData_CoAuthor_LBL
@@ -2232,6 +2238,11 @@ msgstr "以範本建立新文件"
 msgid "Create an empty document"
 msgstr "建立空白文件"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+msgid "Create and Modify Styles"
+msgstr "建立及修改樣式"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2257,17 +2268,12 @@ msgstr "由現有語意項目新增參照"
 msgid "Create new Semantic Item"
 msgstr "新增語意項目"
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "建立者"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "剪下(&T)"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "現在日期"
@@ -2370,6 +2376,12 @@ msgstr "小橫線清單"
 msgid "Dashed line"
 msgstr "虛線"
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr ""
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2413,11 +2425,6 @@ msgstr "小數點定位點"
 msgid "Decrease indent"
 msgstr "減少縮排"
 
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "預設日期 (不含時間)"
-
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
@@ -2448,6 +2455,12 @@ msgstr "定義主要屬性"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "為選取區文字定義或套用樣式"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2551,8 +2564,6 @@ msgstr "從表格刪除此欄位"
 msgid "Delete this row from its table"
 msgstr "從表格刪除此橫列"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2565,6 +2576,11 @@ msgstr "描述"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "描述:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2686,6 +2702,12 @@ msgstr "文件"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "不要重新開始"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2897,8 +2919,8 @@ msgstr "儲存 %s 時發生錯誤: 檔名無效"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
-msgstr "事件"
+msgid "Events:"
+msgstr "事件:"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3322,7 +3344,8 @@ msgstr "全螢幕"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "一般"
 
@@ -3561,8 +3584,8 @@ msgstr "初始註腳值:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "內層（單）引號樣式"
+msgid "Inner (single) quote style:"
+msgstr "內層（單）引號樣式:"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3949,7 +3972,6 @@ msgstr "標籤定義"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "語言"
@@ -3958,6 +3980,11 @@ msgstr "語言"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "語言設定"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "語言"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -3969,15 +3996,10 @@ msgstr "語言:"
 msgid "Layout"
 msgstr "版面設定"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "版面設定詳情"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "導引字元"
+msgid "Leader:"
+msgstr "導引字元:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4056,11 +4078,6 @@ msgstr "層次:"
 msgid "Li&ne spacing:"
 msgstr "行距(&N):"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "行"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4086,15 +4103,16 @@ msgstr "選取區內加行底線 (切換)"
 msgid "Line between"
 msgstr "分隔線"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Line:"
+msgstr "行數:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "行數:"
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "清單"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4111,15 +4129,10 @@ msgstr "清單屬性"
 msgid "List Styles"
 msgstr "清單樣式"
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "清單用於: "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
-msgstr "位置"
+msgid "Locations:"
+msgstr "位置:"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4197,8 +4210,8 @@ msgstr "Martins 測試"
 # 指整頁文字分欄
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "最大欄寬"
+msgid "Max Column size:"
+msgstr "最大欄寬:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4307,7 +4320,7 @@ msgstr "雜項樣式"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+msgid "Modify Style"
 msgstr "修改樣式"
 
 #. DLG_Styles_Modify
@@ -4462,11 +4475,8 @@ msgstr ""
 msgid "No scripts found"
 msgstr "找不到任何 scripts"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "無"
@@ -4493,8 +4503,8 @@ msgstr "記事樣式"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "欄數"
+msgid "Number of Columns:"
+msgstr "欄數:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4629,8 +4639,8 @@ msgstr "開啟 %s 時記憶體不足"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
-msgstr "外層（雙）引號樣式"
+msgid "Outer (double) quote style:"
+msgstr "外層（雙）引號樣式:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4665,7 +4675,6 @@ msgstr "清除修訂(&U)"
 msgid "Pa&ste Unformatted"
 msgstr "以原始格式貼上(&S)"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4680,6 +4689,11 @@ msgstr "段落前分頁(&B)"
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "頁面背景"
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr "分頁符號"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4713,8 +4727,8 @@ msgstr "頁碼"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "頁面參照"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4725,6 +4739,12 @@ msgstr "頁面設定(&U)"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "頁面設定"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page:"
+msgstr "頁數:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -4825,7 +4845,6 @@ msgstr "置放方式:"
 msgid "Playing with RDF during development"
 msgstr "開發中使用 RDF"
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -4847,6 +4866,7 @@ msgstr "頁面位置"
 msgid "Position to Paragraph"
 msgstr "段落位置"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5106,8 +5126,9 @@ msgstr "移除頁首"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "從樣式中移除屬性"
+#, fuzzy
+msgid "Remove Property from Style:"
+msgstr "從樣式中移除屬性:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5532,7 +5553,8 @@ msgstr "選取文字框"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+#, fuzzy
+msgid "Select a target bookmark from the list:"
 msgstr "從清單中選擇目標書籤。"
 
 #. DLG_FormatFrame_SelectImage
@@ -6046,7 +6068,8 @@ msgstr "來源:"
 # Column指整頁文字分成多少欄
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
+#, fuzzy
+msgid "Space after Column:"
 msgstr "欄後空間"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
@@ -6277,12 +6300,14 @@ msgstr "樣式名稱:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
+#, fuzzy
+msgid "Style Type:"
 msgstr "樣式類型"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
+#, fuzzy
+msgid "Style for following paragraph:"
 msgstr "下一段的樣式"
 
 #. DLG_Styles_ErrBlankName
@@ -6297,7 +6322,6 @@ msgstr "樣式名稱不能留空"
 msgid "Style:"
 msgstr "樣式:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6704,19 +6728,21 @@ msgstr "三角清單"
 msgid "Two"
 msgstr "兩欄"
 
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "類型"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+#, fuzzy
+msgid "Type a name for the RDF link:"
 msgstr "為 RDF 連結提供名稱"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+#, fuzzy
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "鍵入書籤名稱，或從清單中選取。"
 
 #. DLG_Lists_Type
@@ -6741,6 +6767,13 @@ msgstr "底線"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "在選取區加底線 (切換)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Underlines"
+msgstr "底線"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -6876,6 +6909,11 @@ msgstr "警告: 沒有您提供的書籤 [%s]。"
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "網頁版面模式"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7037,11 +7075,41 @@ msgstr "mm/dd/yy"
 msgid "tOGGLE cASE"
 msgstr "切換大小寫"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "無"
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "無"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "無"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "主語"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "無"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "無"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7082,11 +7150,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "描述(&D)"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7174,6 +7237,11 @@ msgstr "AbiWord: 預覽列印"
 #, c-format
 msgid "About %s"
 msgstr "關於 %s"
+
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7325,6 +7393,11 @@ msgstr "波羅的語系, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "波羅的語系, Windows 代碼頁 1257"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr ""
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7421,6 +7494,11 @@ msgstr "變更鍵盤時同時變更語言"
 msgid "Chapter Heading"
 msgstr "章節標題"
 
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
+
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
 msgid "Chinese (Hong Kong)"
@@ -7491,6 +7569,12 @@ msgstr "從清單選擇文件:"
 msgid "Clear Background"
 msgstr "清除背景色彩"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "清除背景色彩"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7498,7 +7582,8 @@ msgstr "美工圖案"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
+#, fuzzy
+msgid "Clip Art could not be loaded."
 msgstr "無法載入美工圖案"
 
 #. DLG_Close
@@ -7705,8 +7790,9 @@ msgstr "編輯時間:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "效果"
+#, fuzzy
+msgid "Effects:"
+msgstr "效果:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -7913,6 +7999,11 @@ msgstr "富拉文"
 #: po/tmp/xap_String_Id.h
 msgid "Galician"
 msgstr "加利西亞文"
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr ""
 
 # zh-hk:格魯吉亞文
 #. LANG_KA_GE
@@ -8306,8 +8397,14 @@ msgstr "立陶宛文"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
+#, fuzzy
+msgid "Loading Clip Art..."
 msgstr "正載入美工圖案"
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8323,6 +8420,11 @@ msgstr "馬其頓文"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "設為此文件的預設值"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr ""
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8574,6 +8676,11 @@ msgstr "旁遮普文 (巴基斯坦)"
 msgid "Quechua"
 msgstr "蓋丘亞文"
 
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr ""
+
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
@@ -8617,6 +8724,7 @@ msgid "Replay Editing from File"
 msgstr "從檔案重播編輯"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "回復"
@@ -8741,6 +8849,11 @@ msgstr "斯洛維尼亞文"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "小型大寫字"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr ""
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9132,6 +9245,11 @@ msgstr "要儲存文件 %s 的變更才能繼續。要儲存嗎？"
 msgid "Zoom to"
 msgstr "縮放至"
 
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr ""
+
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
 msgid "_No"
@@ -9198,6 +9316,45 @@ msgstr "同級元素(siblings)"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "無關"
+
+#~ msgid "List"
+#~ msgstr "清單"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 無"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "版面設定詳情"
+
+#~ msgid "&Description"
+#~ msgstr "描述(&D)"
+
+#~ msgid "Contributor"
+#~ msgstr "內容提供者"
+
+#~ msgid "Creator"
+#~ msgstr "建立者"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "預設日期 (不含時間)"
+
+#~ msgid "Line"
+#~ msgstr "行"
+
+#~ msgid "Lists for "
+#~ msgstr "清單用於: "
+
+#~ msgid "Page Reference"
+#~ msgstr "頁面參照"
 
 # zh-hk:埃塞俄比亞
 #~ msgid "Amharic (Ethiopia)"
