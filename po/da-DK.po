@@ -1,16 +1,15 @@
 # Danish translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Kenneth Christiansen <kenneth@gnu.org>, 2000.
 # Aputsiaq Janussen <aj@isit.gl>, 2012.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-30 21:11-0400\n"
-"PO-Revision-Date: 2012-08-01 01:52+0200\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"PO-Revision-Date: 2012-08-19 05:24+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -122,11 +121,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Ingen"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -134,11 +128,6 @@ msgstr "&1 Ingen"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -148,11 +137,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -160,11 +144,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -1282,12 +1261,12 @@ msgstr "&Efter:"
 msgid "Ali&gnment:"
 msgstr "&Justering:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Justering"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1301,8 +1280,8 @@ msgstr "Alle"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
-msgstr "Tillad udelukkende formattering med typografier"
+msgid "Allow formatting not using styles only"
+msgstr "Tillad formattering udover typografier"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -1393,6 +1372,12 @@ msgstr ""
 "Er du sikker på, at du ikke ønsker at beholde den fulde historik? Hvis du "
 "fortsætter, vil du ikke være i stand til at reetablere tidligere versioner "
 "af dette dokument."
+
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr "Liste med pile"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1491,8 +1476,8 @@ msgstr "Mulige formater:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "Mulige typografier"
+msgid "Available Styles:"
+msgstr "Mulige typografier:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -2010,6 +1995,11 @@ msgstr "Farve:"
 msgid "Column"
 msgstr "Kolonne"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr "Spalteskift"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2079,10 +2069,15 @@ msgid "Contact from File"
 msgstr "Kontakt fra fil"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 msgid "Contacts"
 msgstr "Kontakter"
+
+# RDF-semantisk kontekst
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts:"
+msgstr "Kontakter:"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2264,6 +2259,11 @@ msgstr "Opret et nyt dokument baseret på en skabelon"
 msgid "Create an empty document"
 msgstr "Opret et tomt dokument"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+msgid "Create and Modify Styles"
+msgstr "Opret og redigér typografier"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2397,6 +2397,12 @@ msgstr "Liste med streger"
 msgid "Dashed line"
 msgstr "Stiplet linje"
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr "Streger"
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2470,6 +2476,12 @@ msgstr "Definér hovedopsætning"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Angiv eller tilføj typografi for den markerede tekst"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2574,8 +2586,6 @@ msgstr "Slet denne kolonne fra dens tabel"
 msgid "Delete this row from its table"
 msgstr "Slet denne række fra dens tabel"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2588,6 +2598,11 @@ msgstr "Beskrivelse"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Beskrivelse:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr "Detaljer"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2709,6 +2724,12 @@ msgstr "Dokumenter"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Genstart ikke"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr "Prikker"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2920,8 +2941,8 @@ msgstr "Kunne ikke skrive til filen %s: ulovligt filnavn"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
-msgstr "Begivenheder"
+msgid "Events:"
+msgstr "Begivenheder:"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3346,7 +3367,8 @@ msgstr "Fuldskærm"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Generelt"
 
@@ -4001,15 +4023,10 @@ msgstr "Sprog(ene):"
 msgid "Layout"
 msgstr "Udseende"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Layoutdetaljer"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "Tabulatortegn"
+msgid "Leader:"
+msgstr "Tabulatortegn:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4123,11 +4140,6 @@ msgstr "Linje:"
 msgid "Lines:"
 msgstr "Linjer:"
 
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Liste"
-
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
 msgid "List Label"
@@ -4145,8 +4157,8 @@ msgstr "Listetypografier"
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
-msgstr "Placeringer"
+msgid "Locations:"
+msgstr "Placeringer:"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4333,7 +4345,8 @@ msgstr "Andre typografier"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+#, fuzzy
+msgid "Modify Style"
 msgstr "Modificér typografier"
 
 #. DLG_Styles_Modify
@@ -4488,8 +4501,6 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Ingen skripter fundet"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
 #: po/tmp/ap_String_Id.h
@@ -4705,6 +4716,11 @@ msgstr "Sid&eskift før"
 msgid "Page Background"
 msgstr "Sidebaggrund"
 
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr "Sideskift"
+
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
 msgid "Page C&olor"
@@ -4854,7 +4870,6 @@ msgstr "Placering:"
 msgid "Playing with RDF during development"
 msgstr "Leger med RDF under udvikling"
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -4876,6 +4891,7 @@ msgstr "Placér efter side"
 msgid "Position to Paragraph"
 msgstr "Placér efter afsnit"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -6336,7 +6352,6 @@ msgstr "Typografinavnet skal være udfyldt"
 msgid "Style:"
 msgstr "Typografi:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6760,6 +6775,11 @@ msgstr "Liste med trekanter"
 msgid "Two"
 msgstr "To"
 
+#. DLG_Styles_List
+#: po/tmp/ap_String_Id.h
+msgid "Type"
+msgstr "Type"
+
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link:"
@@ -6792,6 +6812,12 @@ msgstr "Understreg"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Understreg den markerede tekst (til/fra)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+msgid "Underlines"
+msgstr "Understreger"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -7097,6 +7123,12 @@ msgstr "mm/dd/åå"
 msgid "tOGGLE cASE"
 msgstr "sKIFT mELLEM sTORE oG sMÅ bOGSTAVER"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Ingen"
+
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_Lists_Style_none"
@@ -7114,6 +7146,18 @@ msgstr "Ingen"
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Emne"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Ingen"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Ingen"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7154,11 +7198,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "&Beskrivelse"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7583,6 +7622,12 @@ msgstr "Vælg dokument fra liste:"
 msgid "Clear Background"
 msgstr "Ryd baggrund"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "Ryd baggrund"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7797,8 +7842,8 @@ msgstr "Redigeringstid:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "Effekter"
+msgid "Effects:"
+msgstr "Effekter:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -8730,6 +8775,7 @@ msgid "Replay Editing from File"
 msgstr "Gengiv redigering fra fil"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Gendan"
@@ -9332,6 +9378,27 @@ msgstr "beslægtede"
 msgid "unrelated"
 msgstr "urelateret"
 
+#~ msgid "List"
+#~ msgstr "Liste"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Ingen"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Layoutdetaljer"
+
+#~ msgid "&Description"
+#~ msgstr "&Beskrivelse"
+
 #~ msgid "Contributor"
 #~ msgstr "Bidragsyder"
 
@@ -9349,9 +9416,6 @@ msgstr "urelateret"
 
 #~ msgid "Page Reference"
 #~ msgstr "Sidereference"
-
-#~ msgid "Type"
-#~ msgstr "Type"
 
 #~ msgid "Bambara"
 #~ msgstr "Bambara"
