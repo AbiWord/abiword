@@ -1,6 +1,6 @@
 # Basque (Euskara) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Iurreta GLHB Institutuko SA3-1D ikasleek euskaratua.
 # 2002:
@@ -19,12 +19,11 @@
 # Alfredo Barrainkua <alfredobz euskalnet net>, 2002, 2003.
 # Itzulpen eta zuzenketa
 # Mikel Pascual Aldabaldetreku <mikel.paskual@gmail.com>, 2008
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
 "PO-Revision-Date: 2011-12-05 08:54+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: eu-ES <eu@li.org>\n"
@@ -132,11 +131,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Bat ere ez"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -144,11 +138,6 @@ msgstr "&1 Bat ere ez"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -158,11 +147,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -170,11 +154,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -272,11 +251,6 @@ msgstr "&Taula AutoDoitu"
 #: po/tmp/ap_String_Id.h
 msgid "&Automatically save this Scheme"
 msgstr "&Automatikoki gorde eskema"
-
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "&Formatu erabilgarriak:"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
@@ -442,11 +416,6 @@ msgstr "Hiperesteka &editatu"
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr ""
-
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "&Komatxo adimentsuak gaitu"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -826,6 +795,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "&Irten"
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1290,12 +1264,12 @@ msgstr "&Ondoren:"
 msgid "Ali&gnment:"
 msgstr "&Lerrokatzea:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Lerrokatzea"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1309,7 +1283,8 @@ msgstr "Guztia"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
+#, fuzzy
+msgid "Allow formatting not using styles only"
 msgstr "Estiloak bakarrik erabiltzen formateatzea onartu"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
@@ -1400,6 +1375,12 @@ msgstr ""
 "Ziur al zaude ez duzula historia guztia mantendu nahi? Jarraituz gero, "
 "ezingo duzu dokumentu honen bertsio zaharrik berreskuratu."
 
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
+
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
 msgid "At least"
@@ -1410,6 +1391,7 @@ msgstr "Gutxienez"
 msgid "Attach to Previous List"
 msgstr "Aurreko zerrendara erantsi"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -1443,14 +1425,9 @@ msgstr "Automatikoki gorde"
 msgid "Auto replace misspelled words"
 msgstr "Oker idatzitako hitzak automatikoki aldatu"
 
-#. DLG_InsertTable_AutoFit_Capital
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit Behavior"
-msgstr "Autodoiketaren portaera"
-
 #. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
+msgid "AutoFit Behavior"
 msgstr "Autodoiketaren portaera"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1490,17 +1467,20 @@ msgstr "Autokonbinatu"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
+#, fuzzy
+msgid "Available Fields:"
 msgstr "Eremu erabilgarriak"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
+#, fuzzy
+msgid "Available Formats:"
 msgstr "Formatu erabilgarriak"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
+#, fuzzy
+msgid "Available Styles:"
 msgstr "Estilo erabilgarriak"
 
 #. DLG_Para_LabelBy
@@ -1534,11 +1514,6 @@ msgstr "Tabulazio-barra"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Oinarria:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Noranzko-aukerak"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -1660,6 +1635,12 @@ msgstr "Buletak"
 msgid "Bullets and &Numbering"
 msgstr "&Buletak eta zenbakitzea"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Bullets and Numbering"
+msgstr "&Buletak eta zenbakitzea"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1704,6 +1685,12 @@ msgstr "Ezin da barne-estilorik aldatu"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Ezin inprimatze-lana hasi"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Category"
+msgstr "Maila:"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2015,6 +2002,12 @@ msgstr "Kolorea:"
 msgid "Column"
 msgstr "Zutabea"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Column Break"
+msgstr "&Zutabe-jauzia"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2084,10 +2077,15 @@ msgid "Contact from File"
 msgstr ""
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Contacts"
+msgstr "Edukiak"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Contacts:"
 msgstr "Edukiak"
 
 #. TOC_TocHeading
@@ -2103,8 +2101,9 @@ msgstr "Aurreko berrikuspena jarraitu (%d zenbakia)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Laguntzailea"
+#, fuzzy
+msgid "Contributor(s)"
+msgstr "Laguntzailea(k):"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2271,6 +2270,12 @@ msgstr "Dokumentu berri bat sortu, txantiloi bat erabiliz"
 msgid "Create an empty document"
 msgstr "Dokumentu huts bat sortu"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Create and Modify Styles"
+msgstr "Estiloak &sortu eta aldatu"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2296,17 +2301,12 @@ msgstr ""
 msgid "Create new Semantic Item"
 msgstr ""
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Sortzailea"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "&Ebaki"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Gaurko data"
@@ -2409,6 +2409,12 @@ msgstr "Zerrenda gidoiduna"
 msgid "Dashed line"
 msgstr ""
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr ""
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2452,11 +2458,6 @@ msgstr "Tabulazio hamartarra"
 msgid "Decrease indent"
 msgstr "Koska txikitu"
 
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Data lehenetsia (ordurik gabe)"
-
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
@@ -2487,6 +2488,12 @@ msgstr "Propietate orokorrak ezarri"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Hautespenarentzako estiloa ezarri edo aplikatu"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2590,8 +2597,6 @@ msgstr "Zutabe hau ezabatu taulatik"
 msgid "Delete this row from its table"
 msgstr "Lerro hau ezabatu taulatik"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2604,6 +2609,11 @@ msgstr "Deskribapena"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Deskribapena:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2726,6 +2736,12 @@ msgstr "Dokumentuak"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Ez berrabiarazi"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2893,8 +2909,15 @@ msgstr "Bukaerako oharraren erreferentzia"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
+#, fuzzy
+msgid "Endnote style:"
 msgstr "Bukaerako oharraren estiloa"
+
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Endnotes"
+msgstr "&Bukaerako oharra"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -2932,7 +2955,7 @@ msgstr "Errorea %s gordetzen saiatzean: izen baliogabea"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
+msgid "Events:"
 msgstr ""
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
@@ -2997,20 +3020,16 @@ msgstr ""
 msgid "Extra"
 msgstr "Extra"
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
+#, fuzzy
+msgid "Extra Parameters:"
 msgstr "Parametro extrak"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Tresna-barra extra"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Parametro extrak:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3031,11 +3050,6 @@ msgstr "Pantaila &osoa"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "Bilatu:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Eremu-izena"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3235,8 +3249,15 @@ msgstr "Orri-oin erreferentzia"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
+#, fuzzy
+msgid "Footnote style:"
 msgstr "Orri-oin estiloa"
+
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Footnotes"
+msgstr "Orri-&oina"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
@@ -3286,16 +3307,6 @@ msgstr "Formatua"
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "Kapsulatutako objektuaren formatua"
-
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Bukaerako oharren formatua"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Orri-oinen formatua"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3375,7 +3386,8 @@ msgstr "Pantaila osoa"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Orokorra"
 
@@ -3608,17 +3620,20 @@ msgstr "Maiuskulaz hasi guztiak"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
+#, fuzzy
+msgid "Initial Endnote value:"
 msgstr "Bukaerako oharraren hasierako balioa"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
+#, fuzzy
+msgid "Initial Footnote value:"
 msgstr "Orri-oinaren hasierako balioa"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
+#, fuzzy
+msgid "Inner (single) quote style:"
 msgstr "Barne-komatxo (bakuna) estiloa"
 
 #. InsertModeFieldINS
@@ -3650,7 +3665,7 @@ msgstr "&Taula txertatu"
 msgid "Insert Bookmark"
 msgstr "Liburu-marka txertatu"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Jauzia txertatu"
@@ -3680,7 +3695,7 @@ msgstr "Ekuazioa txertatu"
 msgid "Insert Equation from a LaTeX expression"
 msgstr "Ekuazioa txertatu LaTeX espresio batetik"
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Eremua txertatu"
@@ -3854,20 +3869,10 @@ msgstr "Irudia txertatu dokumentuan"
 msgid "Insert bookmark"
 msgstr "Liburu-marka txertatu"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Jauzia txertatu"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Clip Art irudia txertatu"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Eremua txertatu"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3995,9 +4000,14 @@ msgid "Keywords:"
 msgstr "Gako-hitzak:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
+msgstr "LaTeX ekuazioa"
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "LaTeX Equation:"
 msgstr "LaTeX ekuazioa"
 
 #. DLG_Lists_Indent
@@ -4012,7 +4022,6 @@ msgstr "Etiketa-definizioak"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Hizkuntza"
@@ -4021,6 +4030,12 @@ msgstr "Hizkuntza"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Lengoaia ezarpenak"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Language(s)"
+msgstr "Lengoaia(k):"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4032,15 +4047,10 @@ msgstr "Lengoaia(k):"
 msgid "Layout"
 msgstr "Diseinua"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Diseinuaren xehetasunak"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
 #, fuzzy
-msgid "Leader"
+msgid "Leader:"
 msgstr "Gida"
 
 #. DLG_Para_AlignLeft
@@ -4120,11 +4130,6 @@ msgstr "Maila:"
 msgid "Li&ne spacing:"
 msgstr "&Lerroarteak:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Lerroa"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4150,15 +4155,16 @@ msgstr "Hautespena azpimarratu/desmarratu"
 msgid "Line between"
 msgstr "Zutabe arteko marra"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Line:"
+msgstr "Lerroak:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "Lerroak:"
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Zerrenda"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4175,14 +4181,9 @@ msgstr "Zerrenden propietateak"
 msgid "List Styles"
 msgstr "Zerrenden estiloak"
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Zerrendak "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
+msgid "Locations:"
 msgstr ""
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
@@ -4260,7 +4261,8 @@ msgstr "Martin-en test-a"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
+#, fuzzy
+msgid "Max Column size:"
 msgstr "Zutabe-tamaina maximoa"
 
 #. TOOLBAR_LABEL_MENU
@@ -4372,7 +4374,8 @@ msgstr "Hainbat estilo"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+#, fuzzy
+msgid "Modify Style"
 msgstr "Estiloak modifikatu"
 
 #. DLG_Styles_Modify
@@ -4441,7 +4444,7 @@ msgstr "&Ohar berria"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
+msgid "New Contact"
 msgstr ""
 
 #. DLG_NEW_Title
@@ -4528,11 +4531,8 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Ez da script-ik aurkitu"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Bat ere ez"
@@ -4559,7 +4559,8 @@ msgstr "Oharren estiloak"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
+#, fuzzy
+msgid "Number of Columns:"
 msgstr "Zutabe kopurua"
 
 #. FIELD_Numbers_PagesCount
@@ -4593,13 +4594,18 @@ msgstr "Zenbakitua"
 msgid "Numbered List"
 msgstr "Zerrenda zenbakitua"
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
+msgstr "Zenbakitzea"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Numbering:"
 msgstr "Zenbakitzea"
 
 #. FIELD_Type_Numbers
@@ -4675,7 +4681,8 @@ msgstr "Dokumentu hau ireki"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
+#, fuzzy
+msgid "Orientation"
 msgstr "Orientazioa..."
 
 #. DLG_Options_TabLabel_Other
@@ -4691,7 +4698,8 @@ msgstr "Memoria agortu da %s zabaltzen saiatzean"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+#, fuzzy
+msgid "Outer (double) quote style:"
 msgstr "Kanpo-komatxo (bikoitza) estiloa"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
@@ -4727,7 +4735,6 @@ msgstr "Berrikuspenak &ezabatu"
 msgid "Pa&ste Unformatted"
 msgstr "&Formaturik gabe itsatsi"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4742,6 +4749,12 @@ msgstr "Orri-jauzia &aurretik"
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "Orriaren atzealdea"
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page Break"
+msgstr "&Orri-jauzia"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4775,8 +4788,8 @@ msgstr "Orri-zenbakiak"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Orri-erreferentzia"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4787,6 +4800,12 @@ msgstr "Orria &konfiguratu"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Orria konfiguratu"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page:"
+msgstr "Orriak:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -4804,15 +4823,15 @@ msgstr "Orriak:"
 msgid "Pagination"
 msgstr "Orrikatzea"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr ""
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "Paper-&tamaina:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Papera..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4879,7 +4898,8 @@ msgstr "Sekzioaren amaieran jarri"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
+#, fuzzy
+msgid "Placement:"
 msgstr "Kokapena"
 
 #. MENU_LABEL_RDF_ADV_PLAY
@@ -4887,17 +4907,11 @@ msgstr "Kokapena"
 msgid "Playing with RDF during development"
 msgstr ""
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Posizioa"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Testu-kutxa kokatu"
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -4914,6 +4928,7 @@ msgstr "Orriarekiko posizioa"
 msgid "Position to Paragraph"
 msgstr "Paragrafoarekiko posizioa"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5065,11 +5080,6 @@ msgstr ""
 msgid "R&eplace"
 msgstr "Or&deztu"
 
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr ""
-
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
@@ -5179,7 +5189,8 @@ msgstr "Goiburua ezabatu"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
+#, fuzzy
+msgid "Remove Property from Style:"
 msgstr "Propietatea ezabatu estilotik"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
@@ -5529,8 +5540,8 @@ msgstr "Fitxategira gorde"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Eskala..."
+msgid "Scale"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5548,14 +5559,9 @@ msgstr "Eguneratzeen arteko segundoak"
 msgid "Seconds since the epoch"
 msgstr "Data eta ordua segundotan"
 
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Sekzio-jauziak"
-
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Sekzio-jauziak"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -5612,7 +5618,8 @@ msgstr "Testu-kutxa hautatu"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+#, fuzzy
+msgid "Select a target bookmark from the list:"
 msgstr "Zerrendako liburu-marka bat hautatu."
 
 #. DLG_FormatFrame_SelectImage
@@ -5682,13 +5689,13 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
+msgid "Select the parts of the document contained in the next revision"
 msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
+msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -6125,7 +6132,8 @@ msgstr "Iturburua:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
+#, fuzzy
+msgid "Space after Column:"
 msgstr "Zutabe ondorengo hutsunea"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
@@ -6356,12 +6364,14 @@ msgstr "Estiloaren izena:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
+#, fuzzy
+msgid "Style Type:"
 msgstr "Estilo mota"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
+#, fuzzy
+msgid "Style for following paragraph:"
 msgstr "Hurrengo paragrafoarentzako estiloa"
 
 #. DLG_Styles_ErrBlankName
@@ -6376,7 +6386,6 @@ msgstr "Estiloaren izena ezin da hutsik utzi"
 msgid "Style:"
 msgstr "Estiloa:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6513,7 +6522,7 @@ msgstr "Ezabatu beharreko tabulazioak:"
 msgid "Table"
 msgstr "Taula"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Taula-tamaina"
@@ -6538,11 +6547,6 @@ msgstr "Eduki-taularen zerrenda-etiketa"
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Eduki-taularen orria"
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Taularen tamaina"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6591,13 +6595,24 @@ msgstr "Testuaren lerrokatzea:"
 msgid "Text Box"
 msgstr "Testu-kutxa"
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr ""
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr ""
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr "Testu-tolestea"
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Testu-egokitzea"
 
@@ -6790,19 +6805,20 @@ msgstr "Triangelu-zerrenda"
 msgid "Two"
 msgstr "Bi"
 
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "Mota"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
 msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+#, fuzzy
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Liburu-markarentzako izen bat idatzi, edo zerrendako bat hautatu."
 
 #. DLG_Lists_Type
@@ -6827,6 +6843,13 @@ msgstr "Azpimarratu"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Hautespena azpimarratu/desmarratu"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Underlines"
+msgstr "Azpimarratu"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -6962,6 +6985,11 @@ msgstr "Kontuz: [%s] liburu-marka ez da existitzen."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Web diseinua"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7125,12 +7153,47 @@ msgstr "hh/ee/uu"
 msgid "tOGGLE cASE"
 msgstr "mAIUSKULA eTA mINISKULAK aLDATU"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Bat ere ez"
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Bat ere ez"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Bat ere ez"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Gaia"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Bat ere ez"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Bat ere ez"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7172,11 +7235,6 @@ msgstr "%&200"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "%&75"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "&Deskribapena"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7269,6 +7327,11 @@ msgstr "AbiWord: Inprimatze-aurrebista"
 msgid "About %s"
 msgstr "%s-ri buruz"
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
@@ -7311,8 +7374,8 @@ msgstr "Marka bereziak gaitu AWML izen-inguruan"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Amharera (Etiopia)"
+msgid "Amharic"
+msgstr ""
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7361,8 +7424,8 @@ msgstr "Assamera"
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Asturiera (Espainia)"
+msgid "Asturian"
+msgstr ""
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7386,23 +7449,30 @@ msgstr "Autoberrikuspena"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
+#, fuzzy
+msgid "Available Documents:"
 msgstr "Dokumentu erabilgarriak"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
+#, fuzzy
+msgid "Available Languages:"
 msgstr "Hizkuntza erabilgarriak"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
-msgstr "Aimara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
+msgstr ""
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
-msgstr "Aimara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr ""
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
+msgstr ""
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7413,6 +7483,11 @@ msgstr "Baltar hizkuntzak, ISO-8859-4"
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltar hizkuntzak, Windows 1257 kode-orria"
+
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr ""
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7443,6 +7518,11 @@ msgstr "Zuria eta beltza"
 #: po/tmp/xap_String_Id.h
 msgid "Block Text"
 msgstr "Testu-blokea"
+
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr ""
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
@@ -7480,11 +7560,6 @@ msgstr "Utzi"
 msgid "Catalan"
 msgstr "Katalan"
 
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr "Erdialdeko Aimara"
-
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Central European, ISO-8859-2"
@@ -7509,6 +7584,11 @@ msgstr "Hizkuntza aldatu teklatua aldatzean"
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Kapituluaren izenburua"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7580,6 +7660,12 @@ msgstr "Zerrendako dokumentu bat hautatu:"
 msgid "Clear Background"
 msgstr "Atzealdea garbitu"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "Atzealdea garbitu"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 #, fuzzy
@@ -7588,7 +7674,8 @@ msgstr "Clip Art"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
+#, fuzzy
+msgid "Clip Art could not be loaded."
 msgstr "Ezin izan da Clip Art irudia kargatu"
 
 #. DLG_Close
@@ -7752,16 +7839,6 @@ msgstr "XML (1.0 bertsioa) bezala deklaratu"
 msgid "Default language: "
 msgstr "Hizkuntza lehenetsia: "
 
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Irudiaren kokalekua definitu"
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Testu-egokitzea definitu"
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -7794,8 +7871,8 @@ msgstr "Konparatutako dokumentuak"
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Nederlandera (Holanda)"
+msgid "Dutch"
+msgstr ""
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7804,7 +7881,8 @@ msgstr "Edizio-denbora:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
+#, fuzzy
+msgid "Effects:"
 msgstr "Efektuak"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
@@ -7883,6 +7961,11 @@ msgstr "Ingelesa (BH)"
 msgid "English (US)"
 msgstr "Ingelesa (AEB)"
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr ""
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -7946,8 +8029,8 @@ msgstr "Finlandiera"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Flandriera (Belgika)"
+msgid "Flemish"
+msgstr ""
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -8007,8 +8090,13 @@ msgstr "Fulah"
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-msgid "Galician (Galego)"
-msgstr "Galiziera"
+msgid "Galician"
+msgstr ""
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr ""
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8170,10 +8258,25 @@ msgstr "Islandiera, Macintosh"
 msgid "Identifier:"
 msgstr "Identifikatzailea:"
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr ""
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr ""
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Irudi-propietateak"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr ""
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8278,8 +8381,8 @@ msgstr "Gaelera"
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Italiera (Italia)"
+msgid "Italian"
+msgstr ""
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8313,14 +8416,23 @@ msgstr "Kannadera"
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
-msgstr "Kazakh (Kazakhstan)"
+msgid "Kazakh"
+msgstr ""
 
-#. LANG_KO_KR
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr ""
+
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Koreera"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr ""
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8329,8 +8441,8 @@ msgstr "Koreera, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Koreera, Johab"
+msgid "Korean, JOHAB"
+msgstr ""
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8359,8 +8471,8 @@ msgstr "Azkenekoz gordea:"
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Latin (Berpizkundea)"
+msgid "Latin"
+msgstr ""
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8374,8 +8486,14 @@ msgstr "Lituaniera"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
+#, fuzzy
+msgid "Loading Clip Art..."
 msgstr "Clip Art irudia kargatzen"
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8392,6 +8510,11 @@ msgstr "Mazedoniera"
 msgid "Make default for document"
 msgstr "Dokumentuentzako lehenetsi"
 
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr ""
+
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
 msgid "Malay"
@@ -8399,8 +8522,8 @@ msgstr "Malaysiera"
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
-msgstr "Mandinka (Senegal)"
+msgid "Mandinka"
+msgstr ""
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8439,8 +8562,8 @@ msgstr "Izena:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr "Nepalera"
+msgid "Nepali"
+msgstr ""
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8462,16 +8585,6 @@ msgstr "Ez da pluginik hautatu"
 msgid "Normal"
 msgstr "Normala"
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Bokmal Norvegiera"
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Nynorsk Norvegiera"
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8491,6 +8604,11 @@ msgstr "Izenburu zenbakitua 2"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Izenburu zenbakitua 3"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr ""
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8554,7 +8672,8 @@ msgstr "Testu arrunta"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
+#, fuzzy
+msgid "Plugin Details"
 msgstr "Pluginaren zehaztasunak:"
 
 #. DLG_PLUGIN_MANAGER_LIST
@@ -8634,28 +8753,33 @@ msgstr "Inprimatze-komandoa: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Punjabera (Gurmukhi)"
+msgid "Punjabi (India)"
+msgstr ""
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Punjabera (Shahmukhi)"
+msgid "Punjabi (Pakistan)"
+msgstr ""
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Quechuera"
 
-#. LANG_QUH_BO
+#. LANG_QUZ
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
-msgstr "Quechuera (3 bokal)"
+msgid "Quechua (Cusco)"
+msgstr ""
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
-msgstr "Quechuera (5 bokal)"
+msgid "Quechua (Northern Bolivia)"
+msgstr ""
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
+msgstr ""
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
@@ -8690,6 +8814,7 @@ msgid "Replay Editing from File"
 msgstr "Fitxategitik erreproduzitu edizioa"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Berreskuratu"
@@ -8716,13 +8841,13 @@ msgstr "Errumaniera, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Errusiera (Errusia)"
+msgid "Russian"
+msgstr ""
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Russian (pre-1918)"
+msgid "Russian, pre-1918"
 msgstr "Errusiera (pre-1918)"
 
 #. DLG_UFS_SampleFrameLabel
@@ -8782,18 +8907,9 @@ msgstr "Serbiera"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-msgid "Serbian, latin"
+#, fuzzy
+msgid "Serbian, Latin"
 msgstr "Serbiera, Latin"
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Irudiaren izena ezarri"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Irudiaren tamaina ezarri"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -8824,6 +8940,11 @@ msgstr "Esloveniera"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "Maiuskula txikiak"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr ""
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9149,11 +9270,6 @@ msgstr "Ikusi:"
 msgid "Welsh"
 msgstr "Galesera"
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Mendebaldeko Europa, DOS/Windows 437 kode-orria"
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9201,8 +9317,8 @@ msgstr "Zabalera:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
-msgstr "Wolofera (Senegal)"
+msgid "Wolof"
+msgstr ""
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9226,6 +9342,11 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "Zoom egin"
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr ""
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9293,6 +9414,171 @@ msgstr "antzekoak"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "zerikusirik ez"
+
+#~ msgid "List"
+#~ msgstr "Zerrenda"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Bat ere ez"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Diseinuaren xehetasunak"
+
+#~ msgid "&Description"
+#~ msgstr "&Deskribapena"
+
+#~ msgid "Contributor"
+#~ msgstr "Laguntzailea"
+
+#~ msgid "Creator"
+#~ msgstr "Sortzailea"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Data lehenetsia (ordurik gabe)"
+
+#~ msgid "Line"
+#~ msgstr "Lerroa"
+
+#~ msgid "Lists for "
+#~ msgstr "Zerrendak "
+
+#~ msgid "Page Reference"
+#~ msgstr "Orri-erreferentzia"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amharera (Etiopia)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturiera (Espainia)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aimara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aimara (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "Erdialdeko Aimara"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Nederlandera (Holanda)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Flandriera (Belgika)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galiziera"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italiera (Italia)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Kazakh (Kazakhstan)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Koreera, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latin (Berpizkundea)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinka (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepalera"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Bokmal Norvegiera"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Nynorsk Norvegiera"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punjabera (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punjabera (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechuera (3 bokal)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechuera (5 bokal)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Errusiera (Errusia)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Mendebaldeko Europa, DOS/Windows 437 kode-orria"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolofera (Senegal)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "&Formatu erabilgarriak:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Komatxo adimentsuak gaitu"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Autodoiketaren portaera"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Noranzko-aukerak"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Parametro extrak:"
+
+#~ msgid "Field Name"
+#~ msgstr "Eremu-izena"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Bukaerako oharren formatua"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Orri-oinen formatua"
+
+#~ msgid "Insert break"
+#~ msgstr "Jauzia txertatu"
+
+#~ msgid "Insert field"
+#~ msgstr "Eremua txertatu"
+
+#~ msgid "Paper..."
+#~ msgstr "Papera..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Testu-kutxa kokatu"
+
+#~ msgid "Scale..."
+#~ msgstr "Eskala..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Sekzio-jauziak"
+
+#~ msgid "Table size"
+#~ msgstr "Taularen tamaina"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Irudiaren kokalekua definitu"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Testu-egokitzea definitu"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Irudiaren izena ezarri"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Irudiaren tamaina ezarri"
 
 #~ msgid "Unicode UCS-2"
 #~ msgstr "Unicode UCS-2"
