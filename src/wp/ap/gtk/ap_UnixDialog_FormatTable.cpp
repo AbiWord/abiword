@@ -293,18 +293,17 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	
 	m_pFormatTablePreview->draw();
 	// Set init Value
-        UT_Dimension dim = DIM_PT;
-        setCurCellProps();
-        initTableWidthStr();
-        initTableHeightStr();
-        float value = getTableWidth();
-        const gchar *szValue= UT_formatDimensionString (dim, value);
-        gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
+    UT_Dimension dim = DIM_PT;
+    setCurCellProps();
+    initTableWidthStr();
+    initTableHeightStr();
+    float value = getTableWidth();
+    const gchar *szValue= UT_formatDimensionString (dim, value);
+    gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
 
-        value = getTableHeight();
-        szValue= UT_formatDimensionString (dim, value);
-        gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
-
+    value = getTableHeight();
+    szValue= UT_formatDimensionString (dim, value);
+    gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
 	
 	startUpdater();
 }
@@ -369,13 +368,13 @@ void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)
 }
 void AP_UnixDialog_FormatTable::event_WidthChanged(void)
 {
-        if(m_wWidth)
-        {
+   if(m_wWidth)
+   {
 		gtk_editable_select_region(GTK_EDITABLE(m_wWidth), 0, 0);  
 		//set Height & Width 
 		const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wWidth));
 		if( atoi( buf ) > 0 && atoi(buf) != (signed) getTableWidth() )
-                {
+        {
 			setWidth( atoi(buf) );
 		}
 	}
@@ -383,7 +382,7 @@ void AP_UnixDialog_FormatTable::event_WidthChanged(void)
 void AP_UnixDialog_FormatTable::event_HeightChanged(void)
 {
 	if(m_wHeight)
-        {
+    {
 		gtk_editable_select_region(GTK_EDITABLE(m_wHeight), 0, 0);  
 		//set Height & Width 
 		const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wHeight));
