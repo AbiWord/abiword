@@ -298,7 +298,8 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
     field     = _tableHeightField;
     float height = [field floatValue];
     sHeight = [[field stringValue] UTF8String];
-    // update stepper
+    // update stepper to the same value
+    // using INT for better display
     [stepper setIntValue:height];
     _xap->setHeight(sHeight);
 }

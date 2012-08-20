@@ -378,6 +378,9 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 	}
 }
 
+/* 
+ * IBAction: connection with IOutlet
+ */
 - (IBAction)frameHeightField:(id)sender;
 {
     NSStepper * stepper = 0;
@@ -389,9 +392,12 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
     sHeight = [[field stringValue] UTF8String];
     height = [field floatValue];
     _xap->setHeight(height);
-    // update stepper
+    // update stepper to the same value
     [stepper setFloatValue:height];
 }
+/* 
+ * IBAction: connection with IOutlet
+ */
 - (IBAction)frameHeightStepper:(id)sender;
 {
     NSStepper * stepper = 0;
@@ -405,7 +411,7 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
         sHeight = UT_UTF8String_sprintf("%fpt",height);
     }   
     _xap->setHeight(height);
-    // update field
+    // update field to the same value
     [field   setFloatValue:(_xap->getFrameHeight())];
 }
 
