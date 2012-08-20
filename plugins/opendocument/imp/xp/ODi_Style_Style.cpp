@@ -1124,7 +1124,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("text-position: ", m_textPos);
     
     if (!m_fontName.empty()) {
-        const std::string & fontFamily = rFontFaceDecls.getFontFamily(m_fontName);
+        const std::string & fontFamily = rFontFaceDecls.getFontFamily(m_fontName.utf8_str());
         
         UT_ASSERT_HARMLESS(!fontFamily.empty());
         if (!fontFamily.empty()) {
