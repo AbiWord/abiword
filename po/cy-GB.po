@@ -1,17 +1,16 @@
 # Cymraeg (Welsh) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Rhoslyn Prys <rhoslyn.prys@meddal.org.uk>, 2003.
 # Rhoslyn Prys <post@meddal.com>, 2007.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-30 21:11-0400\n"
-"PO-Revision-Date: 2012-08-01 01:39+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"PO-Revision-Date: 2012-08-19 19:51+0200\n"
+"Last-Translator: rprys <rprys@yahoo.com>\n"
 "Language-Team: Cymraeg\n"
 "Language: cy\n"
 "MIME-Version: 1.0\n"
@@ -124,11 +123,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Dim"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -136,11 +130,6 @@ msgstr "&1 Dim"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -150,11 +139,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -162,11 +146,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -1287,12 +1266,12 @@ msgstr "We&di:"
 msgid "Ali&gnment:"
 msgstr "Ali&nio:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Alinio"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1306,8 +1285,8 @@ msgstr "Popeth"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
-msgstr "Caniatáu fformatio gan ddefnyddio arddulliau'n unig"
+msgid "Allow formatting not using styles only"
+msgstr "Caniatáu fformatio heb ddefnyddio arddulliau'n unig"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -1397,6 +1376,12 @@ msgid ""
 msgstr ""
 "Ydych chi'n siŵr eich bod am gynnal cofnod hanes llawn? Os parhewch, ni fydd "
 "modd adfer fersiynau blaenorol o'r ddogfen."
+
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr "Rhestr Pen Saeth"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1494,8 +1479,8 @@ msgstr "Fformatau ar Gael:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "Arddulliau ar Gael"
+msgid "Available Styles:"
+msgstr "Arddulliau ar Gael:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -2016,6 +2001,11 @@ msgstr "Lliw:"
 msgid "Column"
 msgstr "Colofn"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr "Toriad colofn"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2084,10 +2074,14 @@ msgid "Contact from File"
 msgstr "Cysylltiad o'r Ffeil"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 msgid "Contacts"
 msgstr "Cysylltiadau"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts:"
+msgstr "Cysylltiadau:"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2274,6 +2268,11 @@ msgstr "Creu dogfen newydd gan ddefnyddio Templed"
 msgid "Create an empty document"
 msgstr "Creu dogfen wag"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+msgid "Create and Modify Styles"
+msgstr "Creu a Newid Arddulliau"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2407,6 +2406,12 @@ msgstr "Llinell Doriad"
 msgid "Dashed line"
 msgstr "Llinell doredig"
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr "Llinellau Torredig"
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2481,6 +2486,12 @@ msgstr "Diffinio'r Prif Briodoleddau"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Diffinio neu osod arddull ar gyfer y dewis"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr "Diffiniad"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2584,8 +2595,6 @@ msgstr "Dileu'r golofn o'i thabl"
 msgid "Delete this row from its table"
 msgstr "Dileu'r rhes o'i thabl"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2598,6 +2607,11 @@ msgstr "Disgrifiad"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Disgrifiad:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr "Manylion"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2725,6 +2739,12 @@ msgstr "Dogfennau"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Peidiwch ailgychwyn"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr "Dotiau"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2936,8 +2956,8 @@ msgstr "Gwall wrth geisio cadw %s: enw annilys"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
-msgstr "Digwyddiadau"
+msgid "Events:"
+msgstr "Digwyddiadau:"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3364,7 +3384,8 @@ msgstr "Sgrin Lawn"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Cyffredinol"
 
@@ -4020,15 +4041,10 @@ msgstr "Iaith (Ieithoedd):"
 msgid "Layout"
 msgstr "Cynllun"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Manylion cynllun"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "Arweinydd"
+msgid "Leader:"
+msgstr "Arweinydd:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4142,11 +4158,6 @@ msgstr "Llinell:"
 msgid "Lines:"
 msgstr "Llinellau:"
 
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Rhestr"
-
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
 msgid "List Label"
@@ -4164,8 +4175,8 @@ msgstr "Rhestri Arddulliau"
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
-msgstr "Lleoliadau"
+msgid "Locations:"
+msgstr "Lleoliadau:"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4352,7 +4363,7 @@ msgstr "Arddulliau Amrywiol"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+msgid "Modify Style"
 msgstr "Newid Arddulliau"
 
 #. DLG_Styles_Modify
@@ -4508,8 +4519,6 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Heb ganfod sgriptiau"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
 #: po/tmp/ap_String_Id.h
@@ -4728,6 +4737,11 @@ msgstr "Toriad &tudalen cyn"
 msgid "Page Background"
 msgstr "Cefndir Tudalen"
 
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr "Toriad tudalen"
+
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
 msgid "Page C&olor"
@@ -4880,7 +4894,6 @@ msgstr "Gosodiad:"
 msgid "Playing with RDF during development"
 msgstr "Chwarae gyda RDF yn ystod y datblygu"
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -4902,6 +4915,7 @@ msgstr "Gosod i Dudalen"
 msgid "Position to Paragraph"
 msgstr "Gosod i Baragraff"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -6370,7 +6384,6 @@ msgstr "Nid oes modd gadael enw'r arddull yn wag"
 msgid "Style:"
 msgstr "Arddull:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6795,6 +6808,11 @@ msgstr "Rhestr Triongl"
 msgid "Two"
 msgstr "Dau"
 
+#. DLG_Styles_List
+#: po/tmp/ap_String_Id.h
+msgid "Type"
+msgstr "Math"
+
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link:"
@@ -6827,6 +6845,12 @@ msgstr "Tanlinellu"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Tanlinellu'r dewis (newid)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+msgid "Underlines"
+msgstr "Tanlinellu"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -7131,6 +7155,12 @@ msgstr "mm/dd/bb"
 msgid "tOGGLE cASE"
 msgstr "nEWID mAINT"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Dim"
+
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_Lists_Style_none"
@@ -7148,6 +7178,18 @@ msgstr "Dim"
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Pwnc"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Dim"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Dim"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7188,11 +7230,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "&Disgrifiad"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7618,6 +7655,11 @@ msgstr "Dewis dogfen o'r rhestr:"
 msgid "Clear Background"
 msgstr "Clirio'r Cefndir"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+msgid "Clear Foreground"
+msgstr "Clirio'r Blaendir"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7832,8 +7874,8 @@ msgstr "Amser golygu:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "Effeithiau"
+msgid "Effects:"
+msgstr "Effeithiau:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -8768,6 +8810,7 @@ msgid "Replay Editing from File"
 msgstr "Ailadrodd Golygu o Ffeil"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Adfer"
@@ -9364,6 +9407,27 @@ msgstr "siblingiaid"
 msgid "unrelated"
 msgstr "heb berthynas"
 
+#~ msgid "List"
+#~ msgstr "Rhestr"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Dim"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Manylion cynllun"
+
+#~ msgid "&Description"
+#~ msgstr "&Disgrifiad"
+
 #~ msgid "Contributor"
 #~ msgstr "Cyfrannwr"
 
@@ -9381,9 +9445,6 @@ msgstr "heb berthynas"
 
 #~ msgid "Page Reference"
 #~ msgstr "Cyfeirnod Tudalen"
-
-#~ msgid "Type"
-#~ msgstr "Math"
 
 #~ msgid "Bambara"
 #~ msgstr "Bambara"
