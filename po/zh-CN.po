@@ -1,16 +1,15 @@
 # Chinese (China) zh_CN translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # baidongyi <baidongyi@gmail.com>, 2006.
 # lite <litekok@gmail.com>, 2012.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-30 21:11-0400\n"
-"PO-Revision-Date: 2012-07-31 20:12+0200\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"PO-Revision-Date: 2012-08-19 09:00+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
 "Language: zh_CN\n"
@@ -119,11 +118,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "(&1) %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 无"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -131,11 +125,6 @@ msgstr "&1 无"
 #, c-format
 msgid "&2 %s"
 msgstr "(&2) %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -145,11 +134,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "(&3) %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -157,11 +141,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "(&4) %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -1266,12 +1245,12 @@ msgstr "与后段距离(&E):"
 msgid "Ali&gnment:"
 msgstr "对齐方式(&G):"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "对齐方式"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1285,8 +1264,8 @@ msgstr "所有样式"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
-msgstr "允许只用样式进行格式化"
+msgid "Allow formatting not using styles only"
+msgstr "允许格式不使用样式"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -1372,6 +1351,12 @@ msgid ""
 "Are you sure you do not want to maintain full history record? If you "
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr "你确认不想保存全部的历史记录吗？如果你这样执行，你就不能将这个文档还原至早期版本。"
+
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr "箭头列表"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1468,8 +1453,8 @@ msgstr "可用格式:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "可用的样式"
+msgid "Available Styles:"
+msgstr "可用的样式:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1983,6 +1968,11 @@ msgstr "颜色:"
 msgid "Column"
 msgstr "栏"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr "分栏符"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2051,10 +2041,14 @@ msgid "Contact from File"
 msgstr "来自文件的联系人"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 msgid "Contacts"
 msgstr "联系人"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts:"
+msgstr "联系人："
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2236,6 +2230,12 @@ msgstr "从模板新建文件"
 msgid "Create an empty document"
 msgstr "新建空白文件"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Create and Modify Styles"
+msgstr "创建并修改样式(&C)"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2369,6 +2369,12 @@ msgstr "横线列表"
 msgid "Dashed line"
 msgstr "虚线"
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr "破折号"
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2442,6 +2448,12 @@ msgstr "设定主要属性"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "为选中文字定义或应用样式"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2545,8 +2557,6 @@ msgstr "删除表格中的这一列"
 msgid "Delete this row from its table"
 msgstr "删除表格中的这一行"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2559,6 +2569,11 @@ msgstr "描述"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "描述："
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr "详情"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2680,6 +2695,12 @@ msgstr "文档"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "不要断字"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr "点"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2891,8 +2912,8 @@ msgstr "保存 %s 时发生错误: 文档名无效"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
-msgstr "事件"
+msgid "Events:"
+msgstr "事件："
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3314,7 +3335,8 @@ msgstr "全屏幕"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "一般"
 
@@ -3378,9 +3400,9 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"页眉和页脚只能在打印视图模式创建和编辑。\n"
-"要进入该模式，请从菜单中选择“查看”->“打印布局”。\n"
-"你要立即进入打印布局模式吗?"
+"页眉和页脚只在打印布局模式下创建和编辑。\n"
+"从菜单中选择“查看”，“打印布局”进入该模式。\n"
+"你想进入打印布局模式吗?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -3965,15 +3987,10 @@ msgstr "语言："
 msgid "Layout"
 msgstr "页面布局"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "布局细节"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "前导符"
+msgid "Leader:"
+msgstr "前导符："
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4087,11 +4104,6 @@ msgstr "行数："
 msgid "Lines:"
 msgstr "行数："
 
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "样式列表"
-
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
 msgid "List Label"
@@ -4109,8 +4121,8 @@ msgstr "列表样式"
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
-msgstr "地点"
+msgid "Locations:"
+msgstr "地点："
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4297,7 +4309,8 @@ msgstr "其它样式"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+#, fuzzy
+msgid "Modify Style"
 msgstr "修改样式"
 
 #. DLG_Styles_Modify
@@ -4452,8 +4465,6 @@ msgstr ""
 msgid "No scripts found"
 msgstr "找不到任何脚本"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
 #: po/tmp/ap_String_Id.h
@@ -4669,6 +4680,11 @@ msgstr "段落前分页(&B)"
 msgid "Page Background"
 msgstr "页面背景"
 
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr "分页符"
+
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
 msgid "Page C&olor"
@@ -4818,7 +4834,6 @@ msgstr "布局:"
 msgid "Playing with RDF during development"
 msgstr "开发中使用RDF"
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -4840,6 +4855,7 @@ msgstr "页位置"
 msgid "Position to Paragraph"
 msgstr "段落位置"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -6287,7 +6303,6 @@ msgstr "样式名称不能留空"
 msgid "Style:"
 msgstr "样式:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6696,6 +6711,11 @@ msgstr "三角列表"
 msgid "Two"
 msgstr "两栏"
 
+#. DLG_Styles_List
+#: po/tmp/ap_String_Id.h
+msgid "Type"
+msgstr "类型"
+
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link:"
@@ -6728,6 +6748,12 @@ msgstr "下划线"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "在选取区加下划线(切换)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+msgid "Underlines"
+msgstr "下划线"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -7029,6 +7055,12 @@ msgstr "月／日／年"
 msgid "tOGGLE cASE"
 msgstr "切换大小写"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "无"
+
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_Lists_Style_none"
@@ -7046,6 +7078,18 @@ msgstr "无"
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "主题"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "无"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "无"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7086,11 +7130,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "描述(&D)"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7510,6 +7549,12 @@ msgstr "从列表中选择文件"
 msgid "Clear Background"
 msgstr "清除背景"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "清除背景"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7723,8 +7768,8 @@ msgstr "编辑时间："
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "效果"
+msgid "Effects:"
+msgstr "特效："
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -8651,6 +8696,7 @@ msgid "Replay Editing from File"
 msgstr "重做编辑"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "恢复"
@@ -9203,9 +9249,9 @@ msgstr "在文件 %d后分割"
 
 #. DLG_DocComparison_Diverging
 #: po/tmp/xap_String_Id.h
-#, c-format, fuzzy
+#, c-format
 msgid "diverging after version %d of %s"
-msgstr "在%s的%d版本后分割"
+msgstr "版本%d后%s分支"
 
 #. DLG_DocComparison_Identical
 #: po/tmp/xap_String_Id.h
@@ -9242,6 +9288,27 @@ msgstr "同"
 msgid "unrelated"
 msgstr "无关的"
 
+#~ msgid "List"
+#~ msgstr "样式列表"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 无"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "布局细节"
+
+#~ msgid "&Description"
+#~ msgstr "描述(&D)"
+
 #~ msgid "Contributor"
 #~ msgstr "贡献者"
 
@@ -9259,9 +9326,6 @@ msgstr "无关的"
 
 #~ msgid "Page Reference"
 #~ msgstr "页码参照"
-
-#~ msgid "Type"
-#~ msgstr "类型"
 
 #~ msgid "Bambara"
 #~ msgstr "班巴拉语"
