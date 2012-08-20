@@ -1,17 +1,16 @@
 # Galician translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Antón Méixome <meixome@certima.net>, 2010.
 # Miguel Anxo Bouzada <mbouzada@gmail.com>, 2011.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-07-30 21:11-0400\n"
-"PO-Revision-Date: 2012-07-31 08:40+0200\n"
-"Last-Translator: Miguel Anxo <mbouzada@gmail.com>\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"PO-Revision-Date: 2012-08-19 18:46+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Galician <proxecto@trasno.net>\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
@@ -120,11 +119,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Ningún"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -132,11 +126,6 @@ msgstr "&1 Ningún"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -146,11 +135,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -158,11 +142,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -1270,12 +1249,12 @@ msgstr "D&espois:"
 msgid "Ali&gnment:"
 msgstr "Aliña&mento:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Aliñamento"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1289,8 +1268,8 @@ msgstr "Todo"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
-msgstr "Permitir formatar usando só estilos"
+msgid "Allow formatting not using styles only"
+msgstr "Permitir formatar usando non só estilos"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -1378,6 +1357,12 @@ msgid ""
 msgstr ""
 "Está seguro de que non quere manter un rexistro do historial completo? Se "
 "continúa, non será quen de restaurar versións máis antigas deste documento."
+
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr "Lista de puntas de frecha"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1474,8 +1459,8 @@ msgstr "Formatos dispoñíbeis:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "Estilos dispoñíbeis"
+msgid "Available Styles:"
+msgstr "Estilos dispoñíbeis:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1993,6 +1978,11 @@ msgstr "Cor:"
 msgid "Column"
 msgstr "Columna"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr "Salto de columna"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2061,10 +2051,14 @@ msgid "Contact from File"
 msgstr "Contacto desde ficheiro"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 msgid "Contacts"
 msgstr "Contactos"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts:"
+msgstr "Contactos:"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2246,6 +2240,11 @@ msgstr "Crea un documento novo usando un modelo"
 msgid "Create an empty document"
 msgstr "Crea un documento baleiro"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+msgid "Create and Modify Styles"
+msgstr "Crear e modificar estilos"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2379,6 +2378,12 @@ msgstr "Lista con guións"
 msgid "Dashed line"
 msgstr "Liña de guións"
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr "Guións"
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2452,6 +2457,12 @@ msgstr "Definir propiedades principais"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Definir ou aplicar o estilo para a selección"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2555,8 +2566,6 @@ msgstr "Borrar esta columna da táboa"
 msgid "Delete this row from its table"
 msgstr "Borrar esta fila da táboa"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2569,6 +2578,11 @@ msgstr "Descrición"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Descrición:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr "Detalles"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2690,6 +2704,12 @@ msgstr "Documentos"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Non reiniciar"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr "Puntos"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2902,8 +2922,8 @@ msgstr "Produciuse un erro ao tentar gardar %s: o nome é incorrecto"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
-msgstr "Actividades"
+msgid "Events:"
+msgstr "Actividades:"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3327,7 +3347,8 @@ msgstr "Pantalla completa"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Xeral"
 
@@ -3979,15 +4000,10 @@ msgstr "Idioma(s):"
 msgid "Layout"
 msgstr "Disposición"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Detalles de disposición"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "Guía"
+msgid "Leader:"
+msgstr "Guía:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4101,11 +4117,6 @@ msgstr "Liña:"
 msgid "Lines:"
 msgstr "Liñas:"
 
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Lista"
-
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
 msgid "List Label"
@@ -4123,8 +4134,8 @@ msgstr "Estilos de listas"
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
-msgstr "Localizacións"
+msgid "Locations:"
+msgstr "Localizacións:"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4312,8 +4323,8 @@ msgstr "Estilos varios"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
-msgstr "Modificar estilos"
+msgid "Modify Style"
+msgstr "Modificar Estilo"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h
@@ -4467,8 +4478,6 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Non se atoparon scripts"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
 #: po/tmp/ap_String_Id.h
@@ -4684,6 +4693,11 @@ msgstr "&Salto de páxina anterior"
 msgid "Page Background"
 msgstr "Fondo de páxina"
 
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr "Salto de páxina"
+
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
 msgid "Page C&olor"
@@ -4833,7 +4847,6 @@ msgstr "Colocación:"
 msgid "Playing with RDF during development"
 msgstr "Xogando con RDF durante o desenvolvemento"
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -4855,6 +4868,7 @@ msgstr "Posición respecto da páxina"
 msgid "Position to Paragraph"
 msgstr "Posición respecto do parágrafo"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -6308,7 +6322,6 @@ msgstr "O nome do estilo non pode deixarse en branco"
 msgid "Style:"
 msgstr "Estilo:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6734,6 +6747,11 @@ msgstr "Lista de triángulos"
 msgid "Two"
 msgstr "Dos"
 
+#. DLG_Styles_List
+#: po/tmp/ap_String_Id.h
+msgid "Type"
+msgstr "Tipo"
+
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link:"
@@ -6766,6 +6784,12 @@ msgstr "Subliñar"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Subliñar a selección (cambiar)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+msgid "Underlines"
+msgstr "Subliñados"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -7069,6 +7093,12 @@ msgstr "mm/dd/aa"
 msgid "tOGGLE cASE"
 msgstr "cAMBIAR mINÚSCULAS E mAIÚSCULAS"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Ningún"
+
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
 msgctxt "DLG_Lists_Style_none"
@@ -7086,6 +7116,18 @@ msgstr "Ningún"
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Asunto"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Ningún"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Ningún"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7126,11 +7168,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "&Descrición"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7554,6 +7591,12 @@ msgstr "Escoller documento da lista:"
 msgid "Clear Background"
 msgstr "Limpar fondo"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "Limpar fondo"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7767,8 +7810,8 @@ msgstr "Hora de edición:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "Efectos"
+msgid "Effects:"
+msgstr "Efectos:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -8696,6 +8739,7 @@ msgid "Replay Editing from File"
 msgstr "Reproducir edición desde un ficheiro"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Restaurar"
@@ -9294,6 +9338,27 @@ msgstr "irmáns"
 msgid "unrelated"
 msgstr "non relacionados"
 
+#~ msgid "List"
+#~ msgstr "Lista"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Ningún"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Detalles de disposición"
+
+#~ msgid "&Description"
+#~ msgstr "&Descrición"
+
 #~ msgid "Contributor"
 #~ msgstr "Colaborador"
 
@@ -9311,9 +9376,6 @@ msgstr "non relacionados"
 
 #~ msgid "Page Reference"
 #~ msgstr "Referencia da páxina"
-
-#~ msgid "Type"
-#~ msgstr "Tipo"
 
 #~ msgid "Amharic (Ethiopia)"
 #~ msgstr "Amhárico (Etiopía)"
