@@ -1,20 +1,19 @@
 # Wolof translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Camille Moulin <camille.moulin@gmail.com>, 2006.
 # Jonathan Ernst <jonathan@ernstfamily.ch>, 2006.
 # Ousmane Faty Ndongo
 # Dominique Rochefort
 # Cheikh Tidiane Guèye
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2011-08-14 16:32+0200\n"
-"Last-Translator: <alfanet@anafa.org>\n"
+"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"PO-Revision-Date: 2012-08-18 19:40+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Ousmane Faty Ndongo, Dominique Rochefort, Cheikh Tidiane "
 "Guèye <direction@anafa.org>\n"
 "Language: wo\n"
@@ -22,7 +21,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Pootle 2.0.1\n"
+"X-Generator: Pootle 2.0.5\n"
 "X-Poedit-Bookmarks: -1,96,-1,-1,-1,-1,-1,-1,-1,-1\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-Country: SENEGAL\n"
@@ -62,7 +61,6 @@ msgid ""
 msgstr ""
 " - Am na boroom. \n"
 "Mënuloo jëfandikoo tur bile Wutall beneen tur \n"
-"    "
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h
@@ -80,7 +78,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, no-c-format
 msgid "% of normal size"
-msgstr "%  / Daytal bi war /   "
+msgstr "%  / Daytal bi war /"
 
 #. MENU_LABEL_SPELL_SUGGEST_1
 #. MENU_LABEL_SPELL_SUGGEST_2
@@ -127,11 +125,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Dara   "
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -139,11 +132,6 @@ msgstr "&1 Dara   "
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -153,11 +141,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3\t----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -165,11 +148,6 @@ msgstr "&3\t----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -210,52 +188,52 @@ msgstr "&9 %s"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "&About %s"
-msgstr "Ci mbirum %s   "
+msgstr "Ci mbirum %s"
 
 #. MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
 msgid "&Accept revision"
-msgstr "Nangu nafar gi   "
+msgstr "Nangu nafar gi"
 
 # On peut choisir cette forme ou l'injonctif - Yokkal
 #. DLG_Spell_AddToDict
 #. MENU_LABEL_SPELL_ADD
 #: po/tmp/ap_String_Id.h
 msgid "&Add"
-msgstr "Yokk   "
+msgstr "&Yokk"
 
 # Jagal ak
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h
 msgid "&Adjust to:"
-msgstr "Natt ba ci:   "
+msgstr "Natt ba ci:"
 
 # ou Lëlu, dans le sens de moroomante, (cf L K Sekk)
 # Dendale
 #. MENU_LABEL_ALIGN
 #: po/tmp/ap_String_Id.h
 msgid "&Align"
-msgstr "Leru gi    "
+msgstr "Leru gi"
 
 #. DLG_Options_Label_ViewAll
 #: po/tmp/ap_String_Id.h
 msgid "&All"
-msgstr "Lépp "
+msgstr "Lépp"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h
 msgid "&Annotations"
-msgstr "Takku "
+msgstr "Takku"
 
 #. DLG_ApplyButton
 #: po/tmp/ap_String_Id.h
 msgid "&Apply"
-msgstr "Jëfe "
+msgstr "Jëfe"
 
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h
 msgid "&At:"
-msgstr "Ci : "
+msgstr "Ci:"
 
 # ou Seetal boppam, voir aussi settantal
 #. MENU_LABEL_TOOLS_AUTOSPELL
@@ -275,18 +253,12 @@ msgstr "Àlluwa natt boppam   "
 msgid "&Automatically save this Scheme"
 msgstr "Tem bi A&ar  boppam   "
 
-# Pour Format (ici et partout ailleurs) Mool est préférable
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "Daytal yi am :   "
-
 # Li jiitu :
 # (Kanam est équivoque)
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
 msgid "&Before:"
-msgstr "Kanam :"
+msgstr "Kanam:"
 
 #. MENU_LABEL_FMT_BOLD
 #: po/tmp/ap_String_Id.h
@@ -453,12 +425,6 @@ msgstr "Jagal gudd buum bi "
 msgid "&Enable overwrite mode toggle"
 msgstr ""
 
-# ??? Jottali bànkeel yi (?)
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "Wuutal bànkeeli? jottali baat yi ?"
-
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
 msgid "&Endnote"
@@ -535,7 +501,7 @@ msgstr "Am na tur "
 #. MENU_LABEL_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h
 msgid "&Header and Footer"
-msgstr "Kow xët yi ak suufu xët   ..."
+msgstr "Kow xët yi ak suufu xët"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
@@ -598,7 +564,7 @@ msgstr "Nataal "
 #. MENU_LABEL_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h
 msgid "&Import Styles"
-msgstr "Fat ay melin..."
+msgstr "Fat ay melin"
 
 # Biir jëmmu xëtu web
 #. MENU_LABEL_WEB_WEBPREVIEW
@@ -831,7 +797,7 @@ msgstr "Nataal "
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h
 msgid "&Plugins"
-msgstr "Modilu mottali / ..."
+msgstr "Modilu mottali"
 
 # Taxawaayu xët
 #. DLG_PageSetup_Portrait
@@ -864,6 +830,11 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "Génn "
+
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+msgid "&RDF"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -1085,7 +1056,7 @@ msgstr "Neenal"
 #. DLG_PageSetup_Units
 #: po/tmp/ap_String_Id.h
 msgid "&Units:"
-msgstr "Kem&u yi :"
+msgstr "Kem&u yi:"
 
 #. MENU_LABEL_VIEW
 #. DLG_MW_ViewButton
@@ -1230,7 +1201,7 @@ msgstr "AM/PM"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
-msgstr "AbiWord mënula ubbi %s. Dencukaay bi dafa melni lu tëbe./ lu tële"
+msgstr "AbiWord mënula ubbi %s. Dencukaay bi dafa melni lu tëbe./ lu tële."
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h
@@ -1276,7 +1247,7 @@ msgstr ""
 "\thttp://www.abisource.com\n"
 "\n"
 "Mën ngeen jëfandikoo tërëlin bi, wante mën nga /na/ baña am banqaasu "
-"jumtukaay yi. OK..."
+"jumtukaay yi. OK."
 
 # Abiwood soxla na dencukaayu %s. dll/n. Ngir sàmp ko, danga koy jële ci http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm
 #. WINDOWS_NEED_UNICOWS
@@ -1300,7 +1271,7 @@ msgstr "Ci mbirum G&NOME Office "
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
 msgid "About the GNOME Office project"
-msgstr "Ci mbirum porose GNOME Office / ..."
+msgstr "Ci mbirum porose GNOME Office"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -1376,13 +1347,13 @@ msgid "Ali&gnment:"
 msgstr "Leru : "
 
 # Raŋale
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Leru "
 
 # Raŋale
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1396,7 +1367,8 @@ msgstr "Lépp "
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
+#, fuzzy
+msgid "Allow formatting not using styles only"
 msgstr "Nangu lalin bu and aki melin doŋŋ  "
 
 #. DLG_Options_Label_CheckWhiteForTransparent
@@ -1488,7 +1460,13 @@ msgid ""
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
 "Ndax wóor na ne da nga bëgg màbb jaar jaar bi yépp?\n"
-"Soo kontinee doo mënati jot ci sumbi jukki yu jëkk yi.    OK"
+"Soo kontinee doo mënati jot ci sumbi jukki yu jëkk yi.    OK."
+
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1502,6 +1480,7 @@ msgid "Attach to Previous List"
 msgstr "Jëlaat lim gu jëkk gi   "
 
 # Ki ko jëf  /  Bindkat bi
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -1538,16 +1517,10 @@ msgid "Auto replace misspelled words"
 msgstr "Wuutal boppam baat yi am njuumte  "
 
 # Jagal boppam
-#. DLG_InsertTable_AutoFit_Capital
+#. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
 msgid "AutoFit Behavior"
 msgstr "Nattable-boppam"
-
-# Jagal boppam
-#. DLG_InsertTable_AutoFit
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
-msgstr "Nattable-boppam   "
 
 # Tablo bi jagal boppam
 #. MENU_STATUSLINE_TABLE_AUTOFIT
@@ -1592,19 +1565,22 @@ msgstr "Roofoo-boppam   "
 # Tool yi jàppandi
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
+#, fuzzy
+msgid "Available Fields:"
 msgstr "Tool yi féex  "
 
 # ... jàppandi
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
+#, fuzzy
+msgid "Available Formats:"
 msgstr "Daytal yi féex :   "
 
 # ... jàppandi
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
+#, fuzzy
+msgid "Available Styles:"
 msgstr "Melin yi féex   "
 
 #. DLG_Para_LabelBy
@@ -1640,11 +1616,6 @@ msgstr "Banqaasu tëbaan   "
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Aju ci : "
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Tannéefi ñaari jëmu   "
 
 # Rëddu dayo
 #. MENU_LABEL_FMT_BOTTOMLINE
@@ -1781,6 +1752,13 @@ msgstr "Limu fellit"
 msgid "Bullets and &Numbering"
 msgstr "Fellit ak nimero"
 
+# Fellit ak nimoro
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Bullets and Numbering"
+msgstr "Fellit ak nimero"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1830,6 +1808,12 @@ msgstr "Mënessula soppi melin wu roofu   "
 msgid "Cannot start print job"
 msgstr "Mënessula door sasub mool"
 
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Category"
+msgstr "Giir : "
+
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
 msgid "Category:"
@@ -1874,7 +1858,7 @@ msgstr "Digge   "
 #. DLG_Spell_ChangeTo
 #: po/tmp/ap_String_Id.h
 msgid "Change &to:"
-msgstr "Wuutal ak"
+msgstr "Wuutal ak:"
 
 # Soppali lépp/fépp
 #. DLG_Spell_ChangeAll
@@ -2178,6 +2162,13 @@ msgstr "Melo : "
 msgid "Column"
 msgstr "Xàll wi "
 
+# Tëbub tegle
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Column Break"
+msgstr "Tëbub xàll    "
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2252,10 +2243,15 @@ msgid "Contact from File"
 msgstr ""
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Contacts"
+msgstr "Àlluwa këmb bi "
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Contacts:"
 msgstr "Àlluwa këmb bi "
 
 #. TOC_TocHeading
@@ -2270,11 +2266,11 @@ msgstr "Àlluwa këmb bi "
 msgid "Continue previous revision (number %d)"
 msgstr "Kontinel nafar bi jiitu (lim %d) "
 
-# (Jàppandoo bi)
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Jàppalekat "
+#, fuzzy
+msgid "Contributor(s)"
+msgstr "Jàppalekat yi : "
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2455,6 +2451,12 @@ msgstr "Sos jukki bu bees ci ndimbalu benn roytéef "
 msgid "Create an empty document"
 msgstr "Sos jukki bu weyëŋ "
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Create and Modify Styles"
+msgstr "Sàkk ak soppali ay melin "
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2480,17 +2482,12 @@ msgstr ""
 msgid "Create new Semantic Item"
 msgstr ""
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Boroom "
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "Dog  "
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Besu coste jukki bi "
@@ -2594,6 +2591,12 @@ msgstr "Lim ak ay tomb /bu tombu/  "
 msgid "Dashed line"
 msgstr ""
 
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr ""
+
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
 #: po/tmp/ap_String_Id.h
@@ -2641,12 +2644,6 @@ msgid "Decrease indent"
 msgstr "Waññi beddeeku (mi) bi / "
 
 # (limu bésub tey)
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Bésu tey (bu ñakk waxtu) "
-
-# (limu bésub tey)
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
@@ -2678,6 +2675,12 @@ msgstr "Biral ndeyi jikko yi  "
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Biral mba jëfe am melin ci pal mi   "
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 # Far (dinndi)
 #. DLG_Styles_Delete
@@ -2785,8 +2788,6 @@ msgstr "Far xàll bii ci tablo bi  "
 msgid "Delete this row from its table"
 msgstr "Far sappe bii ci tablo bi "
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2799,6 +2800,11 @@ msgstr "Tegtal  "
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Tegtal : "
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
 
 # toftalinu losaas
 # toftalin ak losaas
@@ -2931,6 +2937,12 @@ msgstr "Jukki yi   "
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Bañ tàmbaliwaat  "
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -3110,8 +3122,15 @@ msgstr "Karmatu geenu jukki    "
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
+#, fuzzy
+msgid "Endnote style:"
 msgstr "Melinu karmatu geenu jukki    "
+
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Endnotes"
+msgstr "Karmatu geenu jukki "
 
 # Ekwasyon
 #. MENU_LABEL_INSERT_EQUATION
@@ -3147,11 +3166,11 @@ msgstr "Mëneesula bind ci jukki %s. "
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Error while attempting to save %s: invalid name"
-msgstr "Mëneesula bind ci jukki %s."
+msgstr "Mëneesula bind ci jukki %s"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
+msgid "Events:"
 msgstr ""
 
 # Bind
@@ -3216,9 +3235,10 @@ msgstr ""
 msgid "Extra"
 msgstr "Buuñaa   "
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
+#, fuzzy
+msgid "Extra Parameters:"
 msgstr "Nattin yi yokku   "
 
 # Banqaasi jumtukaay yi yokku
@@ -3226,11 +3246,6 @@ msgstr "Nattin yi yokku   "
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Banqaasu jumtukaay yi ñu yokk  "
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Nattin yi yokku :  "
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3251,11 +3266,6 @@ msgstr "Palanteer yambalaŋ  "
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "Wut :   "
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Turu tool bi   "
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3472,8 +3482,15 @@ msgstr "Xammeeku karmati suuf   "
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
+#, fuzzy
+msgid "Footnote style:"
 msgstr "Melini karmati suuf xët   "
+
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Footnotes"
+msgstr "Karmati suuf   "
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
@@ -3528,18 +3545,6 @@ msgstr "Daytal    "
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
 msgstr "Jekk jekkal mbir mi ñu roof  "
-
-# Jagal  ...
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Jekk jekkal karmati jeexitalu jukki   "
-
-# Jagal...
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Jekk jekkalu karmatu suuf xët   "
 
 # Karmati suuf xët ak jeexitalu jukki
 #. DLG_FormatFootnotes_Title
@@ -3632,7 +3637,8 @@ msgstr "Seetukaay yambalaŋ   "
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Ëmb lépp   "
 
@@ -3880,17 +3886,19 @@ msgstr "Araf bi jëkk mu mage  "
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
+#, fuzzy
+msgid "Initial Endnote value:"
 msgstr "Dayo bi njëkk  "
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
-msgstr "Dayo bi njëkk"
+#, fuzzy
+msgid "Initial Footnote value:"
+msgstr "Dayo bi njëkk:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
+msgid "Inner (single) quote style:"
 msgstr ""
 
 #. InsertModeFieldINS
@@ -3922,7 +3930,7 @@ msgstr "Roof tablo  "
 msgid "Insert Bookmark"
 msgstr "Roof takku   "
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Roof /ab/ tëb   "
@@ -3954,7 +3962,7 @@ msgid "Insert Equation from a LaTeX expression"
 msgstr "Roof benn tëkkaale dole ko benn feeñ feeñu LaTex "
 
 # Peut-être "Tool", comme pour le français, puiqu'on passe par "Insérer"
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Roof tool  "
@@ -4135,20 +4143,10 @@ msgstr "Roof benn nataal ci jukki bi   "
 msgid "Insert bookmark"
 msgstr "Roof benn takku   "
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Tëb   "
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Roof ëmbu nataal   "
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Roof tool   "
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -4279,9 +4277,14 @@ msgid "Keywords:"
 msgstr "Caabi baat yi :  "
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
+msgstr "Tëkkale LaTeX   "
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "LaTeX Equation:"
 msgstr "Tëkkale LaTeX   "
 
 #. DLG_Lists_Indent
@@ -4297,7 +4300,6 @@ msgstr "Birëlinu etiket yi    "
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Lammiñ   "
@@ -4306,6 +4308,13 @@ msgstr "Lammiñ   "
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Birëliinu lammiñ   "
+
+# Làkk yi me semble plus approprié, làmmi pouvant être retenu pour l'oral
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Language(s)"
+msgstr "Lammiñ yi :  "
 
 # Làkk yi me semble plus approprié, làmmi pouvant être retenu pour l'oral
 #. DLG_MetaData_Languages_LBL
@@ -4319,14 +4328,10 @@ msgstr "Lammiñ yi :  "
 msgid "Layout"
 msgstr "Tëddin  "
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Benn benni lalinu xët wi  "
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
+#, fuzzy
+msgid "Leader:"
 msgstr "Ñetti tomb  "
 
 #. DLG_Para_AlignLeft
@@ -4411,11 +4416,6 @@ msgstr "Tollu tollu :"
 msgid "Li&ne spacing:"
 msgstr "Diggante rëdd :   "
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Rëdd   "
-
 # Limu/Xaymay...
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
@@ -4443,15 +4443,16 @@ msgstr "Rëdd ci kow pal mi (wangarñi)   "
 msgid "Line between"
 msgstr "Rëddu ci diggante   "
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Line:"
+msgstr "Rëdd yi :   "
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "Rëdd yi :   "
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Lim   "
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4469,14 +4470,9 @@ msgstr "Jikkoy lim gi   "
 msgid "List Styles"
 msgstr "Melinu lim gi   "
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Fellit yi ak nimero yi   "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
+msgid "Locations:"
 msgstr ""
 
 # Xomb ???
@@ -4561,7 +4557,8 @@ msgstr "Testu Martin   "
 # Biralinu Martin
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
+#, fuzzy
+msgid "Max Column size:"
 msgstr "Dayo bi gëna rëy ci xàll"
 
 #. TOOLBAR_LABEL_MENU
@@ -4673,7 +4670,8 @@ msgstr "Yeneen melin   "
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+#, fuzzy
+msgid "Modify Style"
 msgstr "Soppali melin yi   "
 
 # Nafar
@@ -4745,7 +4743,7 @@ msgstr "Takku bu bees   "
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
+msgid "New Contact"
 msgstr ""
 
 #. DLG_NEW_Title
@@ -4833,11 +4831,8 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Amul benn Script   "
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Dara   "
@@ -4865,7 +4860,8 @@ msgstr "Melinu karmatu suuf xët   "
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
+#, fuzzy
+msgid "Number of Columns:"
 msgstr "Limu xàll yi   "
 
 #. FIELD_Numbers_PagesCount
@@ -4901,13 +4897,18 @@ msgstr "Bu limun  "
 msgid "Numbered List"
 msgstr "Lim bu ànd ak nimero  "
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
+msgstr "Lim gi   "
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Numbering:"
 msgstr "Lim gi   "
 
 #. FIELD_Type_Numbers
@@ -4985,7 +4986,8 @@ msgstr "Ubbi jukki bii   "
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
+#, fuzzy
+msgid "Orientation"
 msgstr "Gindi...   "
 
 #. DLG_Options_TabLabel_Other
@@ -5002,7 +5004,7 @@ msgstr "Dàmb bi doyul mënul ubbi %s   "
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+msgid "Outer (double) quote style:"
 msgstr ""
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
@@ -5038,7 +5040,6 @@ msgstr "Randal nafar yi   "
 msgid "Pa&ste Unformatted"
 msgstr "Taf bu amul daytal   "
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -5053,6 +5054,12 @@ msgstr "Tëbu xët ci kanam   "
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "Laltu   "
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page Break"
+msgstr "Tëb xët "
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -5086,8 +5093,8 @@ msgstr "Nimero/y/ xët wi   "
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Sukkandiku ci xët bi   "
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -5098,6 +5105,12 @@ msgstr "Lalinu xët   "
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Lalinu xët   "
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page:"
+msgstr "Xët yi   "
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5115,16 +5128,16 @@ msgstr "Xët yi   "
 msgid "Pagination"
 msgstr "Limu xët   "
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+msgid "Paper"
+msgstr ""
+
 # Dayo këyit /ou/ alluwa
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "Dayo :   "
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Daytalu kayit wi...   "
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -5196,7 +5209,8 @@ msgstr "Teg ko ci jeexitalu seksiyoŋ bi   "
 # Tegtéeef (?)
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
+#, fuzzy
+msgid "Placement:"
 msgstr "Teg   "
 
 #. MENU_LABEL_RDF_ADV_PLAY
@@ -5205,18 +5219,11 @@ msgid "Playing with RDF during development"
 msgstr ""
 
 # Bërëbu bi (néolog)
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Taxawaay   "
-
-# Bërëbub...
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr "Taxawaayu boyetu mbind mi   "
 
 # ... jële ko ci ...
 #. DLG_FormatFrame_SetToColumn
@@ -5234,6 +5241,7 @@ msgstr "Taxawaay bi ak xët wi   "
 msgid "Position to Paragraph"
 msgstr "Taxawaay bi ak xise bi    "
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5390,11 +5398,6 @@ msgstr ""
 msgid "R&eplace"
 msgstr "Wuutal   "
 
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr ""
-
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
@@ -5509,7 +5512,8 @@ msgstr "Dindi kow xët   "
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
+#, fuzzy
+msgid "Remove Property from Style:"
 msgstr "Dindi jikkoy melin   "
 
 # Màbb ? -  Veiller à l'uniformité de" sàppe" /vs/ "rëdd" pour ligne. On pourrait affecter l'un ou l'autre à ligne de texte /vs/ ligne de tableau
@@ -5875,11 +5879,10 @@ msgstr "Aar nataal bi ñu fal ci benn dencukaay   "
 msgid "Save to file"
 msgstr "Aar ci dencukaay   "
 
-# Esel (?)
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Eseel   "
+msgid "Scale"
+msgstr ""
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5897,15 +5900,10 @@ msgid "Seconds since the epoch"
 msgstr "Saa yi dale ko ci epoch   "
 
 # (Ay) Tëbi xaaj (penser à uniformiser xaaj/pàcc/war)
-#. DLG_Break_SectionBreaks_Capital
+#. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
 msgid "Section Breaks"
 msgstr "Tëbu xaaj  "
-
-#. DLG_Break_SectionBreaks
-#: po/tmp/ap_String_Id.h
-msgid "Section breaks"
-msgstr "Tëbu xaaj   "
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h
@@ -5965,7 +5963,8 @@ msgstr "Fal boyetu mbind   "
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+#, fuzzy
+msgid "Select a target bookmark from the list:"
 msgstr "Fal benn takku ci lim gi.   "
 
 #. DLG_FormatFrame_SelectImage
@@ -6036,13 +6035,13 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
+msgid "Select the parts of the document contained in the next revision"
 msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
+msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -6497,7 +6496,8 @@ msgstr "Cosaan :   "
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
+#, fuzzy
+msgid "Space after Column:"
 msgstr "Diggante /bi/ boo weesoo xall wi :   "
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
@@ -6736,12 +6736,14 @@ msgstr "Turu melin wi :   "
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
+#, fuzzy
+msgid "Style Type:"
 msgstr "Giiri melin :   "
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
+#, fuzzy
+msgid "Style for following paragraph:"
 msgstr "Melin ngir xise bi ci topp   "
 
 # Fàww turu melin wi
@@ -6757,7 +6759,6 @@ msgstr "Turu melin wi ken mënu koo bayyi ci weex   "
 msgid "Style:"
 msgstr "Melin :   "
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6895,7 +6896,7 @@ msgstr "Tëbaan bu ñu wara far :   "
 msgid "Table"
 msgstr "Tablo   "
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Dayo tablo bi   "
@@ -6922,11 +6923,6 @@ msgstr "Limu etiket yu àlluwa këmb yi   "
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr "Xëtu àlluwa këmb bi   "
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Dayo tablo bi   "
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6976,6 +6972,16 @@ msgstr "Leru lim :   "
 msgid "Text Box"
 msgstr "Boyetu mbind   "
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr ""
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr ""
+
 # Wàññiw mbind
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
@@ -6983,7 +6989,8 @@ msgid "Text Folding"
 msgstr "Waññeeku mbind   "
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr "Colaayu mbind   "
 
@@ -7181,19 +7188,20 @@ msgstr "Lim ak ñatti koñ   "
 msgid "Two"
 msgstr "Ñaar   "
 
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "Giir   "
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
 msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+#, fuzzy
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Dugal benn takku wala nga tànn ko ci lim bi.   "
 
 #. DLG_Lists_Type
@@ -7219,6 +7227,14 @@ msgstr "Rëddaatu   "
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Rëddaatu pal mi (wangarñi)   "
+
+# Suufu (?)
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Underlines"
+msgstr "Rëddaatu   "
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -7357,6 +7373,11 @@ msgstr "Artu : takku \"%s\" amul.   "
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Taxawaay ci melokaanu web   "
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7523,6 +7544,27 @@ msgstr "ww/bb/aa   "
 msgid "tOGGLE cASE"
 msgstr "WAŊŊARÑI JËMMALIN WI   "
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Dara   "
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Dara   "
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Dara   "
+
 # ??? Nas wi ; li ñu nas...
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
@@ -7530,6 +7572,20 @@ msgstr "WAŊŊARÑI JËMMALIN WI   "
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Mbóot mi "
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Dara   "
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Dara   "
 
 # ??? Nas wi ; li ñu nas...
 #. FIELD_Document_Subject
@@ -7571,12 +7627,6 @@ msgstr "&200%   "
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%   "
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "&Description"
-msgstr "Tegtal  "
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7677,6 +7727,11 @@ msgstr "AbiWord : Seen laata mool   "
 msgid "About %s"
 msgstr "Ci mbiru %s   "
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
@@ -7718,11 +7773,10 @@ msgstr "Dencukaayu nataal yépp   "
 msgid "Allow extra markup in AWML namespace"
 msgstr "Nangu yeneen xammeekaay ci déndu AWML   "
 
-# Amaarik
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
-msgstr "Amharique (Ethiopie)   "
+msgid "Amharic"
+msgstr ""
 
 # Araab
 #. LANG_AR
@@ -7773,8 +7827,8 @@ msgstr "Assamais   "
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
-msgstr "Asturien (Espagne)   "
+msgid "Asturian"
+msgstr ""
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7799,23 +7853,30 @@ msgstr "Nafar boppam   "
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
+#, fuzzy
+msgid "Available Documents:"
 msgstr "Jukki yi am   "
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
+#, fuzzy
+msgid "Available Languages:"
 msgstr "Lammiñ yi am   "
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
-msgstr "Aymara (La Paz)   "
+msgid "Aymara (Central/Northern Bolivia)"
+msgstr ""
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
-msgstr "Aymara (Oruro)   "
+msgid "Aymara (Southern Bolivia)"
+msgstr ""
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
+msgstr ""
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7826,6 +7887,11 @@ msgstr "Baltique, ISO-8859-4   "
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltique, Page de codes Windows 1257  "
+
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr ""
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7857,6 +7923,11 @@ msgstr "Ñuul ak weex   "
 #: po/tmp/xap_String_Id.h
 msgid "Block Text"
 msgstr "Mbind mu beddeeku   "
+
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr ""
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
@@ -7895,11 +7966,6 @@ msgstr "Neenal   "
 msgid "Catalan"
 msgstr "Catalan   "
 
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr "Central Aymara   "
-
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Central European, ISO-8859-2"
@@ -7925,6 +7991,11 @@ msgstr "Soppi lammiñ te soppiwaale arafukaay bi   "
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Boppu xaaj   "
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
 
 # Sinwaa
 #. LANG_ZH_HK
@@ -7999,6 +8070,12 @@ msgstr "Tànn benn jukki ci lim gi :   "
 msgid "Clear Background"
 msgstr "Far laltu bi   "
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "Far laltu bi   "
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -8007,7 +8084,8 @@ msgstr "Ëmbu nataal   "
 # ëmbub nataal /ou/ ëmbu nattal bi
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
+#, fuzzy
+msgid "Clip Art could not be loaded."
 msgstr "Mëneesula yab ëmbu nataal   "
 
 #. DLG_Close
@@ -8175,18 +8253,6 @@ msgstr "Yeene niki XML (sumb 1.0)   "
 msgid "Default language: "
 msgstr "Lammiñ ñakk ndiga:    "
 
-# Teginu...
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr "Peete nataal bi  "
-
-# ...rëdd/sàppe
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
-msgstr "Delloo boppam ci rëdd   "
-
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8219,8 +8285,8 @@ msgstr "Jukki yi ñu mengale   "
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Hollandais (Pays-Bas)   "
+msgid "Dutch"
+msgstr ""
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -8230,7 +8296,7 @@ msgstr "Besu soppali :   "
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Effects"
+msgid "Effects:"
 msgstr "Effets"
 
 # ... bu yabu
@@ -8312,6 +8378,11 @@ msgstr "Anglais (Grande-Bretagne)   "
 msgid "English (US)"
 msgstr "Anglais (États-Unis)   "
 
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr ""
+
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
 msgid "Enter Password"
@@ -8378,11 +8449,10 @@ msgstr "Dencukaay bi ñuy dale di defaat jéego jagal yi :   "
 msgid "Finnish"
 msgstr "Finlandais    "
 
-# Falamang
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Hollandais (Belgique)... Flamand   "
+msgid "Flemish"
+msgstr ""
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -8443,8 +8513,13 @@ msgstr ""
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-msgid "Galician (Galego)"
-msgstr "Galicien   "
+msgid "Galician"
+msgstr ""
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr ""
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8610,10 +8685,25 @@ msgstr "Islandais, Macintosh   "
 msgid "Identifier:"
 msgstr "Xammeeku :   "
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr ""
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr ""
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Nataal   "
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr ""
 
 # Nataal baa ngi féete ci kaw
 #. DLG_Image_WrappedNone
@@ -8719,8 +8809,8 @@ msgstr "Irlandais   "
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Italien (Italie)   "
+msgid "Italian"
+msgstr ""
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8754,14 +8844,23 @@ msgstr "Kannada   "
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
+msgid "Kazakh"
 msgstr ""
 
-#. LANG_KO_KR
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr ""
+
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Coréen   "
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr ""
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8770,8 +8869,8 @@ msgstr "Coréen, EUC-KR  "
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Coréen, Johab   "
+msgid "Korean, JOHAB"
+msgstr ""
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8800,8 +8899,8 @@ msgstr "Aar bi mujj :   "
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
-msgstr "Latin (Renaissance)   "
+msgid "Latin"
+msgstr ""
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8815,8 +8914,14 @@ msgstr "Lituanien   "
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
+#, fuzzy
+msgid "Loading Clip Art..."
 msgstr "Fatum ëmbu nataal   "
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8835,6 +8940,11 @@ msgstr "Macédonien   "
 msgid "Make default for document"
 msgstr "Lammiñu ñakk ndigal bu jukki bi   "
 
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr ""
+
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
 msgid "Malay"
@@ -8842,8 +8952,8 @@ msgstr "Malais   "
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
-msgstr "Mandinka (Senegal)"
+msgid "Mandinka"
+msgstr ""
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8882,8 +8992,8 @@ msgstr "Tur :   "
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
-msgstr "Nepali (Nepal)   "
+msgid "Nepali"
+msgstr ""
 
 # Dédéet
 #. DLG_MB_No
@@ -8906,16 +9016,6 @@ msgstr "Benn modil faluwul   "
 msgid "Normal"
 msgstr "Jaar yoon   "
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr "Norvégien Bokmal "
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr "Norvégien Nynorsk "
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8935,6 +9035,11 @@ msgstr "Bopp 2   "
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Bopp 3   "
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr ""
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -9003,7 +9108,8 @@ msgstr "Mbindu cosaan   "
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
+#, fuzzy
+msgid "Plugin Details"
 msgstr "Benn bennali modil yi   "
 
 #. DLG_PLUGIN_MANAGER_LIST
@@ -9085,28 +9191,33 @@ msgstr "Santaane mool :    "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
-msgstr "Punjabi (Gurmukhi)   "
+msgid "Punjabi (India)"
+msgstr ""
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
-msgstr "Punjabi (Shahmukhi)   "
+msgid "Punjabi (Pakistan)"
+msgstr ""
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua"
 msgstr "Quechu"
 
-#. LANG_QUH_BO
+#. LANG_QUZ
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
-msgstr "Quechua (3 vowels)   "
+msgid "Quechua (Cusco)"
+msgstr ""
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
-msgstr "Quechua (5 vowels)   "
+msgid "Quechua (Northern Bolivia)"
+msgstr ""
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
+msgstr ""
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
@@ -9142,6 +9253,7 @@ msgid "Replay Editing from File"
 msgstr "Defaat jéego jagal dencukaay bi   "
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Delloo   "
@@ -9168,12 +9280,12 @@ msgstr "Roumain, Macintosh   "
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Russe (Russie)   "
+msgid "Russian"
+msgstr ""
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
+msgid "Russian, pre-1918"
 msgstr ""
 
 #. DLG_UFS_SampleFrameLabel
@@ -9234,18 +9346,8 @@ msgstr "Serbe   "
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-msgid "Serbian, latin"
+msgid "Serbian, Latin"
 msgstr ""
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Turu nataal bi   "
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Yaatuwaayu nataal bi   "
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -9275,6 +9377,11 @@ msgstr "Slovène   "
 #. DLG_UFS_Effects_SmallCaps
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
+msgstr ""
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
 msgstr ""
 
 #. LANG_ES_MX
@@ -9602,11 +9709,6 @@ msgstr "Suqali :   "
 msgid "Welsh"
 msgstr "Gallois   "
 
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Européen de l'Ouest, Page de codes DOS/Windows 437   "
-
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
 msgid "Western European, DOS/Windows Code Page 850"
@@ -9654,8 +9756,8 @@ msgstr "Yaatuwaay :     "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
-msgstr "Wolof (Senegal)   "
+msgid "Wolof"
+msgstr ""
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9677,6 +9779,11 @@ msgstr "War nga aar soppali jukki %s laata ngay jàll. Aar leegi?   "
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "Dayob yambalaŋ   "
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr ""
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9744,6 +9851,182 @@ msgstr "xale yi"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "bokkul"
+
+#~ msgid "List"
+#~ msgstr "Lim   "
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Dara   "
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3\t----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Benn benni lalinu xët wi  "
+
+#, fuzzy
+#~ msgid "&Description"
+#~ msgstr "Tegtal  "
+
+# (Jàppandoo bi)
+#~ msgid "Contributor"
+#~ msgstr "Jàppalekat "
+
+#~ msgid "Creator"
+#~ msgstr "Boroom "
+
+# (limu bésub tey)
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Bésu tey (bu ñakk waxtu) "
+
+#~ msgid "Line"
+#~ msgstr "Rëdd   "
+
+#~ msgid "Lists for "
+#~ msgstr "Fellit yi ak nimero yi   "
+
+#~ msgid "Page Reference"
+#~ msgstr "Sukkandiku ci xët bi   "
+
+# Amaarik
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amharique (Ethiopie)   "
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturien (Espagne)   "
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aymara (La Paz)   "
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aymara (Oruro)   "
+
+#~ msgid "Central Aymara"
+#~ msgstr "Central Aymara   "
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Hollandais (Pays-Bas)   "
+
+# Falamang
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Hollandais (Belgique)... Flamand   "
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galicien   "
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italien (Italie)   "
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Coréen, Johab   "
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latin (Renaissance)   "
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinka (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepali (Nepal)   "
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Norvégien Bokmal "
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Norvégien Nynorsk "
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punjabi (Gurmukhi)   "
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punjabi (Shahmukhi)   "
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 vowels)   "
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 vowels)   "
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Russe (Russie)   "
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Européen de l'Ouest, Page de codes DOS/Windows 437   "
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Senegal)   "
+
+# Pour Format (ici et partout ailleurs) Mool est préférable
+#~ msgid "&Available formats:"
+#~ msgstr "Daytal yi am :   "
+
+# ??? Jottali bànkeel yi (?)
+#~ msgid "&Enable smart quotes"
+#~ msgstr "Wuutal bànkeeli? jottali baat yi ?"
+
+# Jagal boppam
+#~ msgid "AutoFit behavior"
+#~ msgstr "Nattable-boppam   "
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Tannéefi ñaari jëmu   "
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Nattin yi yokku :  "
+
+#~ msgid "Field Name"
+#~ msgstr "Turu tool bi   "
+
+# Jagal  ...
+#~ msgid "Format Endnotes"
+#~ msgstr "Jekk jekkal karmati jeexitalu jukki   "
+
+# Jagal...
+#~ msgid "Format Footnotes"
+#~ msgstr "Jekk jekkalu karmatu suuf xët   "
+
+#~ msgid "Insert break"
+#~ msgstr "Tëb   "
+
+#~ msgid "Insert field"
+#~ msgstr "Roof tool   "
+
+#~ msgid "Paper..."
+#~ msgstr "Daytalu kayit wi...   "
+
+# Bërëbub...
+#~ msgid "Position Text Box"
+#~ msgstr "Taxawaayu boyetu mbind mi   "
+
+# Esel (?)
+#~ msgid "Scale..."
+#~ msgstr "Eseel   "
+
+#~ msgid "Section breaks"
+#~ msgstr "Tëbu xaaj   "
+
+#~ msgid "Table size"
+#~ msgstr "Dayo tablo bi   "
+
+# Teginu...
+#~ msgid "Define Image Placement"
+#~ msgstr "Peete nataal bi  "
+
+# ...rëdd/sàppe
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Delloo boppam ci rëdd   "
+
+#~ msgid "Set Image Name"
+#~ msgstr "Turu nataal bi   "
+
+#~ msgid "Set Image Size"
+#~ msgstr "Yaatuwaayu nataal bi   "
 
 #~ msgid "Unicode UCS-2"
 #~ msgstr "Unicode UCS-2  "
