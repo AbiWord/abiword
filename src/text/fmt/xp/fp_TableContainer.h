@@ -564,6 +564,7 @@ fp_Column *         getBrokenColumn(void);
 	void				__dump(FILE * fp) const;
 #endif
 
+//The following functions are associated with table header.
 	fp_TableHeader * getHeaderObject() const
 	{ 
 		return m_pTableHeader; 
@@ -658,7 +659,7 @@ private:
 
 	UT_sint32           m_iLastWantedVBreak;
 
-// Cache the first and last cells of a broken table
+// Cache the first and last cells of a broken table. All the following variables are associated with header.
 
 	fp_CellContainer *  m_pFirstBrokenCell;
 	fp_CellContainer *  m_pLastBrokenCell;

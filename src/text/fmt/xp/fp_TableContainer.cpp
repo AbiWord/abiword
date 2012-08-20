@@ -1362,6 +1362,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 				pBroke->setBrokenBot(1);
 			}
 		}
+//This code(inside the if{} will execute only if there is a header. It is concerned with moving the downwards cells broken across pages.
 		if(m_bIsBrokenCell)
 		{
 			if(m_pBroke == pBroke)
@@ -4415,7 +4416,9 @@ void fp_TableContainer::breakCellsAt(UT_sint32 vpos)
 		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 }
-
+/*!
+ \Function created for debugging purpose.
+ */
 UT_sint32 fp_TableContainer::countBrokenTables()
 {
 	fp_TableContainer *pMaster = NULL;
@@ -4441,6 +4444,9 @@ UT_sint32 fp_TableContainer::countBrokenTables()
 	return count;
 }
 
+/*!
+ \Function created for debugging purpose.
+ */
 UT_sint32 fp_TableContainer::getBrokenTablePosition()
 {
 	fp_TableContainer *pMaster = NULL;
@@ -4469,6 +4475,10 @@ UT_sint32 fp_TableContainer::getBrokenTablePosition()
 	return pos;
 }
 
+/*!
+ \Moves the cells downwards to acccomodate the header.
+ \It is also called from destructor to move the cells back to their original positions(solely to make the table editable).
+ */
 void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 {
 	fp_TableContainer *pMaster=NULL;
@@ -6079,6 +6089,9 @@ bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Conta
  */
 void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
+//It is actually a nice idea to fire the headerDraw() from this function rather than from fp_TableContainer::draw(). 
+//The da.yoff value is properly set to the top of page(where the header should be drawn) in this function.
+//Calculation of da.yoff in headerDraw(), if it is fired from fp_TableContainer::draw() is complex.
 	fp_TableContainer *pPrevious = static_cast<fp_TableContainer *>(getPrev());
 	if(pPrevious && pPrevious->isThisHeader())
 	{
@@ -7039,6 +7052,15 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 //	sizeRequest(&pReq);
 //	m_MyAllocation.height = pReq.height;
 }
+
+/*!
+ \This function draws a header cell. 
+ \Args: iPrevHeight -> Gives the YPosition of the previous cell. Intially set to the start of header YPosition
+ \iMaxBot -> Gives the maximum YBot of the current row.
+ \iLeftMost -> Gives the XPos of the first cell in a row.
+ \iPrevBot -> Gives the YBot of the previous row. Primarily useful in multi-row headers.
+ \iTempColOffset -> Used to determine the right border of each cell.
+ */
 void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_sint32 &iMaxBot,UT_sint32 &iLeftMost,UT_sint32 iPrevBot,UT_sint32 &iTempColOffset)
 {
 	GR_Graphics * pG=pDA->pG;
@@ -7111,6 +7133,11 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 		painter.drawLine(iRight,iTop,iRight,iMaxBot);
 	}
 }
+
+/*! 
+ \Used to determine which cells form the header.
+ \The caching done here is eventually replaced in the cacheCells() function.
+ */
 void fp_TableHeader::markCellsForHeader(void)
 {
 	int i,noOfColumns=pTabMaster->getNumCols();
@@ -7136,6 +7163,9 @@ void fp_TableHeader::markCellsForHeader(void)
 	}
 }
 
+/*!
+ \Returns the actual row height. The getRowHeight() in fp_TableContainer class cannot be used to determine the row height.
+ */
 UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
 {
 	UT_sint32 iRowHeight=0;
@@ -7167,6 +7197,10 @@ void fp_TableHeader::createLocalListOfHeaderRows(const std::vector<UT_sint32> & 
 	m_vHeaderRowNumber = vecHeaderRows;
 }
 
+/*!
+ \Used to calcuate the header height. 
+ \It also sets the local m_iHeaderHeight variable.
+ */
 void fp_TableHeader::calculateHeaderHeight(void)
 {
 	if(!m_vHeaderRowNumber.empty())
@@ -7189,6 +7223,11 @@ fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
 	return m_vecCells[iPos];
 }
 
+/*!
+ \Makes a draw call for each header cell.
+ \The lines around header are partially drawn here and partially in the drawHeaderCell() function. This means colors for each cell border is "not possible".
+ */
+//FIXME: The lines around header should be drawn like the one available in fp_CellContainer::drawLines() function. Fix this.
 void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 {
 	fp_TableContainer *pMaster = pTabMaster;
@@ -7246,6 +7285,12 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	}
 
 }
+
+/*!
+ \Used to cache the cells for the header. What I do here as caching is push all the header cells into a vector. m_iRowNumber variable identifies the first row
+ \that forms the header. So if three rows, say 1,5 and 10 are to be set as header, m_iRowNumber will be 1. When drawing I will use the m_iRowNumber variable to
+ \get the first cell in the vector. From there on, to get the subsequent cells, the getNthCell is used/
+ */
 void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
 {
 	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
