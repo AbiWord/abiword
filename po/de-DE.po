@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-09 20:35+0200\n"
-"PO-Revision-Date: 2012-08-09 20:35+0200\n"
+"POT-Creation-Date: 2012-08-20 11:38+0200\n"
+"PO-Revision-Date: 2012-08-20 11:38+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -7479,6 +7479,11 @@ msgstr "Bokmål"
 msgid "Bold Italic"
 msgstr "Fett Kursiv"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr "Bosnisch"
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7766,6 +7771,11 @@ msgstr "Tschechisch"
 msgid "Danish"
 msgstr "Dänisch"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr "Darī"
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -7966,6 +7976,11 @@ msgstr "Datei zum Aufzeichnen der Bearbeitung:"
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
 msgstr "Datei zur Wiedergabe der Bearbeitung:"
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr "Filipino"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
