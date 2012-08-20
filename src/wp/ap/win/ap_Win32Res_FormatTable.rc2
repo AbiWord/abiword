@@ -96,7 +96,7 @@ BEGIN
     PUSHBUTTON      "Cancel",AP_RID_DIALOG_FORMATTABLE_BTN_CANCEL,236,186,50,
                     14
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,47,13,121,1
-    LTEXT           "Borders & Demension",AP_RID_DIALOG_FORMATTABLE_TEXT_BORDERS,9,9,35,
+    LTEXT           "Borders & Dimension",AP_RID_DIALOG_FORMATTABLE_TEXT_BORDERS,9,9,35,
                     8
     CONTROL         "",IDC_STATIC,"Static",SS_ETCHEDHORZ,64,86,107,1
     LTEXT           "Background",AP_RID_DIALOG_FORMATTABLE_TEXT_BACKGROUNDS,
