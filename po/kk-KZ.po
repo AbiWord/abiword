@@ -5,6 +5,7 @@
 # Baurzhan Muftakhidinov <baurthefirst@gmail.com>, 2010.
 #
 msgid ""
+msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-05-06 23:15-0400\n"
