@@ -2339,9 +2339,9 @@ bool fp_CellContainer::partiallyInsideBrokenTable(fp_TableContainer *pBroke) con
 
 	if(iCellTop <= iYBreak)
 	{
-		if(iCellBot >= iYBreak)
+		if(iCellBot >= iYBreak) 
 		{
-			UT_DEBUGMSG(("I found this cell is broken %d\n",m_iCellPos));
+			xxx_UT_DEBUGMSG(("I found this cell is broken %d\n",m_iCellPos));
 			return true;
 		}
 	}
@@ -2434,6 +2434,13 @@ bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke) const
 void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
+	
+	
+	if(partiallyInsideBrokenTable(pBroke))
+	{
+		setBrokenCell(true);
+		//pCell->fixLines(iShift,this,false);
+	}
 	GR_Graphics * pG = pDA->pG;
 	m_bDrawLeft = false;
 	m_bDrawTop = false;
@@ -4497,7 +4504,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 		{
 			UT_sint32 iShift1 = (iShift*pCell->getCount());
 			iCount++;
-			UT_DEBUGMSG(("Shifting backward %d by %d\n",iCount,pCell->getCount()));
+			xxx_UT_DEBUGMSG(("Shifting backward %d by %d\n",iCount,pCell->getCount()));
 			pCell->_setY(pCell->getY() - iShift1);
 			pCell->setiTopY(pCell->getiTopY() - iShift1);
 			pCell->setiBotY(pCell->getiBotY() - iShift1);
@@ -4532,12 +4539,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 			m_iLastShiftedCellPos=iCount;
 			xxx_UT_DEBUGMSG(("New Y %d shift %d for cell %d pTab %p\n",pCell->getY(),iShift,iCount,this));
 		}
-		if(pCell->partiallyInsideBrokenTable(this))
-		{
-			xxx_UT_DEBUGMSG(("else for cell %d\n",iCount));
-			pCell->setBrokenCell(true);
-			//pCell->fixLines(iShift,this,false);
-		}
+		
 
 		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 	}
@@ -4547,7 +4549,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 	if(pCell)
 	{
 		UT_sint32 iY=pCell->getY();
-		UT_DEBUGMSG(("iY %d\n",iY));
+		xxx_UT_DEBUGMSG(("iY %d\n",iY));
 		iY+=pCell->getHeight();
 		m_iLastCellHeight=iY+100;
 	}
@@ -4560,6 +4562,7 @@ void fp_TableContainer::tweakFirstRowAlone(UT_sint32 iTweakHeight)
 	UT_sint32 iNumCols=pMaster->getNumCols();
 
 	fp_CellContainer *pCell=static_cast<fp_CellContainer *>(pMaster->getNthCon(m_iFirstShiftedCellPos-6));
+	
 	UT_sint32 iCount=0;
 	while(pCell && iNumCols)
 	{
@@ -4737,7 +4740,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 			pBroke->setYBottom(pBroke->m_iLastCellHeight);
 
 		UT_sint32 iPos=getBrokenTablePosition();
-		if(iPos>=2)
+		if(iPos==2)
 		{
 			UT_DEBUGMSG(("iPos %d\n",iPos));
 			pBroke->tweakFirstRowAlone(iHeaderHeight);
