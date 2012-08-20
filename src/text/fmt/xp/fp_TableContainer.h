@@ -113,6 +113,7 @@ public:
 	  m_bLinesDrawn = true;
 	}
 	bool 			isInsideBrokenTable(fp_TableContainer *pBroke) const;
+	bool 			partiallyInsideBrokenTable(fp_TableContainer *) const;
 	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke) const;
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
@@ -324,6 +325,10 @@ public:
 	{
 		return m_iHeaderIncCount;
 	}
+	void setBrokenCell(bool bBroken)
+	{
+		m_bIsBrokenCell=bBroken;
+	}
 private:
 		
 	void                _clear(fp_TableContainer * pBroke);
@@ -423,6 +428,8 @@ private:
 	UT_sint32 	m_iHeaderIncCount;
 	UT_sint32 	m_iHeaderTop;
 	UT_sint32 	m_iHeaderBot;
+	bool 		m_bIsBrokenCell;
+	fp_TableContainer *m_pBroke;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer

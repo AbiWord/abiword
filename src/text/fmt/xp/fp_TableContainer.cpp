@@ -134,7 +134,9 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_iCellPos(0),
 	  m_iHeaderIncCount(0),
 	  m_iHeaderTop(-1),
-	  m_iHeaderBot(-1)
+	  m_iHeaderBot(-1),
+	  m_bIsBrokenCell(false),
+	  m_pBroke(NULL)
 {
 }
 
@@ -1360,6 +1362,16 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 				pBroke->setBrokenBot(1);
 			}
 		}
+		if(m_bIsBrokenCell)
+		{
+			if(m_pBroke == pBroke)
+			{
+				UT_sint32 iHeaderHeight=pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
+				xxx_UT_DEBUGMSG(("iTop %d iBot %d pBroke %p iHeaderHeight %d\n",iTop,iBot,pBroke,iHeaderHeight));
+				iTop+=iHeaderHeight;
+				iBot+=iHeaderHeight;
+			}
+		}
 		//
 		// Now get a rectangle to calculate draw arguments
 		//
@@ -2317,6 +2329,23 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * /*pLine*/)
 	return pLast;
 }
 
+bool fp_CellContainer::partiallyInsideBrokenTable(fp_TableContainer *pBroke) const
+{
+	UT_sint32 iCellTop = getiTopY();
+	UT_sint32 iCellBot = getiBotY();
+	UT_sint32 iYBreak = pBroke->getYBreak();
+	UT_sint32 iYBottom = pBroke->getYBottom();
+
+	if(iCellTop <= iYBreak)
+	{
+		if(iCellBot >= iYBreak)
+		{
+			UT_DEBUGMSG(("I found this cell is broken %d\n",m_iCellPos));
+			return true;
+		}
+	}
+	return false;
+}
 bool fp_CellContainer::isInsideBrokenTable(fp_TableContainer *pBroke) const
 {
 	if((getY()>=pBroke->getYBreak())&&(getY()+getHeight()<=pBroke->getYBottom()))
@@ -2328,18 +2357,18 @@ bool fp_CellContainer::isInsideBrokenTable(fp_TableContainer *pBroke) const
 
 void fp_CellContainer::fixLines(UT_sint32 iShift,fp_TableContainer *pBroke,bool bBack)
 {
+
 /*	UT_sint32 iTY=pBroke->getYBreak(),iTB=pBroke->getYBottom();
 	xxx_UT_DEBUGMSG(("%d\n",countCons()));
 	UT_sint32 i=0,count=countCons();
 	for(i=0;i<count;i++)
 	{
-		fp_Line *pCon=static_cast<fp_Line *>(getNthCon(i));
+		fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
 		if(pCon)
 		{
-			xxx_UT_DEBUGMSG(("The page of this line is %p\n",pCon->getMyBrokenContainer()));
-			UT_sint32 iY=getY()+pCon->getY();
+			UT_sint32 iY=getiTopY()+pCon->getY();
 			UT_sint32 iB=iY+pCon->getHeight();
-			UT_DEBUGMSG(("iY %d and iB %d iTY %d and iTB %d\n",iY,iB,iTY,iTB));
+			UT_DEBUGMSG(("iY %d and iTY %d and iB %d and iTB %d and cellpos %d\n",iY,iTY,iB,iTB,m_iCellPos));
 			if( (iY>=iTY) && (iB <=iTB))
 			{
 				if(!bBack)
@@ -2511,7 +2540,14 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 //
 // Only draw the lines in the clipping region.
 //
-
+	
+	if(m_bIsBrokenCell)
+	{
+		if(pBroke->getYBottom() >= getiBotY())
+		{
+			m_pBroke=pBroke;
+		}
+	}
 	xxx_UT_DEBUGMSG(("number containers %d \n",countCons()));
 	UT_sint32 iLastDraw = 0;
 	for ( i = 0; (i< countCons() && !bStop); i++)
@@ -2531,6 +2567,10 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 
 			da.xoff += pContainer->getX() + getX();
 			da.yoff += pContainer->getY() + getY();
+			if(m_pBroke == pBroke)
+			{
+				da.yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
+			}
 			UT_sint32 ydiff = da.yoff + pContainer->getHeight();
 			if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
@@ -2653,10 +2693,18 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		}
 		getSectionLayout()->clearNeedsRedraw();
 	}
+	if(m_iCellPos !=200)
+	{
 	drawLines(pBroke,pG,true);
 	drawLines(pBroke,pG,false);
 	pTab2->setRedrawLines();
     _drawBoundaries(pDA,pBroke);
+    	}
+	else
+	{
+		drawLines(pBroke,pG,false);
+	}
+
 }
 
 /*!
@@ -4474,15 +4522,12 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 			m_iLastShiftedCellPos=iCount;
 			xxx_UT_DEBUGMSG(("New Y %d shift %d for cell %d pTab %p\n",pCell->getY(),iShift,iCount,this));
 		}
-	/*	else
+		if(pCell->partiallyInsideBrokenTable(this))
 		{
 			xxx_UT_DEBUGMSG(("else for cell %d\n",iCount));
-			pCell->fixLines(iShift,this,false);
+			pCell->setBrokenCell(true);
+			//pCell->fixLines(iShift,this,false);
 		}
-		if(pCell->getPos() >= 391 && pCell->getPos() <=395)
-		{
-			xxx_UT_DEBUGMSG(("In change cell pos. Ytop %d YBot %d of %d\n",pCell->getiTopY(),pCell->getiBotY(),iCount));
-		}*/
 
 		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 	}
@@ -5571,7 +5616,6 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	}
 	else if(getFirstBrokenTable() != NULL)
 	{
-		xxx_UT_DEBUGMSG(("broken count %d\n",countBrokenTables()));
 		getFirstBrokenTable()->draw(pDA);
 		return;
 	}
@@ -7031,6 +7075,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 	da.yoff+=iPrevHeight;
 	da.xoff+=getX();
 	iTop=iPrevBot;
+	xxx_UT_DEBUGMSG(("Height of cell is %d\n",getHeight()));
 	for(int i=0;i<countCons();i++)
 	{
 	       fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
@@ -7038,6 +7083,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 	       da.xoff += pCon->getX();
 	       if(da.yoff >=ytop && da.yoff <= ybot)
 	       {
+		       xxx_UT_DEBUGMSG(("da.yoff is %d for cell %d height %d\n",da.yoff,m_iCellPos,pCon->getHeight()));
 		       pCon->draw(&da);
 	       }
 	}
@@ -7049,7 +7095,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 		iMaxBot=iBot;
 	}
 	UT_sint32 iNoColumns=pTab->getNumCols();
-	if((m_iCellPos%iNoColumns)==1)
+	if(((m_iCellPos%iNoColumns)==1)||(iNoColumns==1))
 	{
 		iLeftMost=iLeft;
 	}
@@ -7138,6 +7184,8 @@ void fp_TableHeader::calculateHeaderHeight(void)
 
 fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
 {
+	if(iPos >= m_iTotalNoOfCells)
+		return NULL;
 	return m_vecCells[iPos];
 }
 
@@ -7158,7 +7206,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	UT_sint32 iHeightCount=0,iPrevHeight=0,iMaxBot=0,iLeftMost=0,iPrevBot=pDA->yoff-42;
 	UT_sint32 iColOffsets[iNoColumns];
 
-	while(pCell && (pCell != pStopCell) && (iCount!=m_iTotalNoOfCells))
+	while(pCell /*&& (pCell != pStopCell) && (iCount<m_iTotalNoOfCells)*/)
 	{
 	       pCell->setHeaderPointer(this);
 	       iCount++;
@@ -7202,6 +7250,8 @@ void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
 {
 	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
 	UT_sint32 iRowNumber=1,i=0,iCols=pMaster->getNumCols();
+	m_iTotalNoOfCells=0;
+	m_vecCells.clear();
 	while(pCell)
 	{
 	       i++;
@@ -7221,6 +7271,10 @@ void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
 		       }
 	       }
 	       pCell=static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+	if(iCols==1)
+	{
+		m_iRowNumber--;
 	}
 }
 
