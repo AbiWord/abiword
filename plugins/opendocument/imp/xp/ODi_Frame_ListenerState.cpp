@@ -208,12 +208,12 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
 
             // Create the data item
             UT_uint32 id = m_pAbiDocument->getUID(UT_UniqueId::Math);
-            UT_UTF8String sID = UT_UTF8String_sprintf("MathLatex%d", id);
-            m_pAbiDocument->createDataItem(sID.utf8_str(), false, m_pMathBB, "", NULL);
+            std::string sID = UT_std_string_sprintf("MathLatex%d", id);
+            m_pAbiDocument->createDataItem(sID.c_str(), false, m_pMathBB, "", NULL);
 
             const gchar *atts[3] = { NULL, NULL, NULL };
             atts[0] = PT_IMAGE_DATAID;
-            atts[1] = sID.utf8_str();
+            atts[1] = sID.c_str();
             m_pAbiDocument->appendObject(PTO_Math, atts);
 
             DELETEP(m_pMathBB);
@@ -287,7 +287,7 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
             return;
         }
         
-        UT_UTF8String props = "frame-type:image";
+        std::string props = "frame-type:image";
             
         if(!_getFrameProperties(props, ppAtts)) {
             // Abort mission!
@@ -306,7 +306,7 @@ void ODi_Frame_ListenerState::_drawImage (const gchar** ppAtts,
         }
         
 		m_mPendingImgProps["strux-image-dataid"] = dataId.c_str();
-        m_mPendingImgProps["props"] = props.utf8_str();
+        m_mPendingImgProps["props"] = props.c_str();
         
 		// don't write the image out yet as we might get more properties, for
 		// example alt descriptions from the <svg:desc> tag
@@ -420,7 +420,7 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
             return;
         }
         
-        UT_UTF8String props = "frame-type:image";
+        std::string props = "frame-type:image";
         if(!_getFrameProperties(props, ppAtts)) {
             return;
         }
@@ -436,7 +436,7 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
         }
         
 		m_mPendingImgProps["strux-image-dataid"] = dataId.c_str();
-		m_mPendingImgProps["props"] = props.utf8_str();
+		m_mPendingImgProps["props"] = props.c_str();
         
 		// don't write the image out yet as we might get more properties, for
 		// example alt descriptions from the <svg:desc> tag
@@ -446,7 +446,7 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
 }
 
 
-static bool _convertBorderThickness(const char* szIncoming, UT_UTF8String& sConverted)
+static bool _convertBorderThickness(const char* szIncoming, std::string& sConverted)
 {
     UT_return_val_if_fail(szIncoming && *szIncoming, false);
 
@@ -463,7 +463,7 @@ static bool _convertBorderThickness(const char* szIncoming, UT_UTF8String& sConv
     }
 
     UT_LocaleTransactor t(LC_NUMERIC, "C");
-    sConverted = UT_UTF8String_sprintf("%.2fpt", d);
+    sConverted = UT_std_string_sprintf("%.2fpt", d);
 
     return true;
 }
@@ -478,8 +478,8 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
     const gchar* attribs[3];
     const gchar* pStyleName = NULL;
     const ODi_Style_Style* pGraphicStyle = NULL;
-    UT_UTF8String props;
-    UT_UTF8String sThickness;
+    std::string props;
+    std::string sThickness;
     
     props = "frame-type:textbox";
             
@@ -551,44 +551,44 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
         if(pGraphicStyle->getBorderBottom_thickness() && !pGraphicStyle->getBorderBottom_thickness()->empty()) {
 
             sThickness.clear();
-            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderBottom_thickness()->utf8_str(), sThickness);
+            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderBottom_thickness()->c_str(), sThickness);
 
             if(bRet) {
                 props += "; bot-thickness:";
-                props += sThickness.utf8_str();
+                props += sThickness.c_str();
             }
         }
 
         if(pGraphicStyle->getBorderLeft_thickness() && !pGraphicStyle->getBorderLeft_thickness()->empty()) {
 
             sThickness.clear();
-            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderLeft_thickness()->utf8_str(), sThickness);
+            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderLeft_thickness()->c_str(), sThickness);
 
             if(bRet) {
                 props += "; left-thickness:";
-                props += sThickness.utf8_str();
+                props += sThickness.c_str();
             }
         }
 
         if(pGraphicStyle->getBorderRight_thickness() && !pGraphicStyle->getBorderRight_thickness()->empty()) {
 
             sThickness.clear();
-            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderRight_thickness()->utf8_str(), sThickness);
+            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderRight_thickness()->c_str(), sThickness);
 
             if(bRet) {
                 props += "; right-thickness:";
-                props += sThickness.utf8_str();
+                props += sThickness.c_str();
             }
         }
 
         if(pGraphicStyle->getBorderTop_thickness() && !pGraphicStyle->getBorderTop_thickness()->empty()) {
 
             sThickness.clear();
-            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderTop_thickness()->utf8_str(), sThickness);
+            bool bRet = _convertBorderThickness(pGraphicStyle->getBorderTop_thickness()->c_str(), sThickness);
 
             if(bRet) {
                 props += "; top-thickness:";
-                props += sThickness.utf8_str();
+                props += sThickness.c_str();
             }
         }
 
@@ -596,7 +596,7 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
         if(pGraphicStyle->getHorizPos(true) && !pGraphicStyle->getHorizPos(true)->empty()) 
 	{
 	       props += "; frame-horiz-align:";
-	       props += pGraphicStyle->getHorizPos(true)->utf8_str();
+	       props += *(pGraphicStyle->getHorizPos(true));
             
         }
 
@@ -606,7 +606,7 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
     }
 
     attribs[0] = "props";
-    attribs[1] = props.utf8_str();
+    attribs[1] = props.c_str();
     attribs[2] = 0;
 		   
     if(!m_pAbiDocument->appendStrux(PTX_SectionFrame, attribs)) {
@@ -623,13 +623,13 @@ void ODi_Frame_ListenerState::_drawTextBox (const gchar** ppAtts,
 /**
  * 
  */
-bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
+bool ODi_Frame_ListenerState::_getFrameProperties(std::string& rProps,
                                                    const gchar** ppAtts) {
 
     const gchar* pStyleName;
     const ODi_Style_Style* pGraphicStyle;
-    const UT_UTF8String* pWrap;
-    const UT_UTF8String* pBackgroundColor;
+    const std::string* pWrap;
+    const std::string* pBackgroundColor;
     const gchar* pVal = NULL;
     
     pStyleName = m_rElementStack.getStartTag(0)->getAttributeValue("draw:style-name");
@@ -640,17 +640,17 @@ bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
     
     pWrap = pGraphicStyle->getWrap(false);
                                                     
-    if ( !strcmp(pWrap->utf8_str(), "run-through")) {
+    if ( !strcmp(pWrap->c_str(), "run-through")) {
         // Floating wrapping.
         rProps += "; wrap-mode:above-text";
         
-    } else if ( !strcmp(pWrap->utf8_str(), "left")) {
+    } else if ( !strcmp(pWrap->c_str(), "left")) {
         rProps += "; wrap-mode:wrapped-to-left";
         
-    } else if ( !strcmp(pWrap->utf8_str(), "right")) {
+    } else if ( !strcmp(pWrap->c_str(), "right")) {
         rProps += "; wrap-mode:wrapped-to-right";
         
-    } else if ( !strcmp(pWrap->utf8_str(), "parallel")) {
+    } else if ( !strcmp(pWrap->c_str(), "parallel")) {
         rProps += "; wrap-mode:wrapped-both";
         
     } else {
@@ -663,7 +663,7 @@ bool ODi_Frame_ListenerState::_getFrameProperties(UT_UTF8String& rProps,
     pBackgroundColor = pGraphicStyle->getBackgroundColor();
     if(pBackgroundColor && pBackgroundColor->length()) {
         rProps += "; background-color:";
-        rProps += pBackgroundColor->utf8_str();
+        rProps += pBackgroundColor->c_str();
     }
 
     

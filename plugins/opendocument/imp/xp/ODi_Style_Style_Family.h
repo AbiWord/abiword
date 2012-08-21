@@ -52,8 +52,8 @@ public:
     ODi_Style_Style* addStyle(const gchar** ppAtts,
                              ODi_ElementStack& rElementStack,
 			     ODi_Abi_Data & rAbiData,
-                             UT_UTF8String* pReplacementName = NULL,
-                             UT_UTF8String* pReplacementDisplayName = NULL);
+                             std::string* pReplacementName = NULL,
+                             std::string* pReplacementDisplayName = NULL);
 
     ODi_Style_Style* addDefaultStyle(ODi_ElementStack& rElementStack,
 				     ODi_Abi_Data & rAbiData) {
@@ -82,11 +82,11 @@ private:
 
     void _buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls,
                                   const StyleMap & map);
-    void _findSuitableReplacement(UT_UTF8String& rReplacementName,
+    void _findSuitableReplacement(std::string& rReplacementName,
                     const ODi_Style_Style* pRemovedStyle,
                     bool bOnContentStream);
-    void _reparentStyles(const StyleMap & map, const UT_UTF8String & removedName,
-                         const UT_UTF8String & replacementName);
+    void _reparentStyles(const StyleMap & map, const std::string & removedName,
+                         const std::string & replacementName);
 
     void _linkStyles(const StyleMap & map, bool onContentStream);
     void _removeEmptyStyles(const StyleMap & map, bool bOnContentStream);

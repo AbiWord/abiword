@@ -58,68 +58,68 @@ public:
 
     // Returns the value to be used on every <section> tag of the AbiWord
     // document.
-    const UT_UTF8String getSectionProps(bool hasHeader, bool hasFooter) const;
+    const std::string getSectionProps(bool hasHeader, bool hasFooter) const;
 
-    const UT_UTF8String getMarginLeft() const {
+    const std::string getMarginLeft() const {
         return m_marginLeft;
     }
 
-    const UT_UTF8String getMarginRight() const {
+    const std::string getMarginRight() const {
         return m_marginRight;
     }
 
-    inline const UT_UTF8String& getSectionDataID() const {return m_sectionDataID;}
+    inline const std::string& getSectionDataID() const {return m_sectionDataID;}
 
-    inline const UT_UTF8String& getName() const {return m_name;}
+    inline const std::string& getName() const {return m_name;}
 
 private:
 
     void _parseHeaderFooterProperties(const gchar** ppAtts);
     void _parsePageLayoutProperties(const gchar** ppAtts);
     void _parseBackgroundImage(const gchar** ppAtts);
-    UT_UTF8String _buildSectionPropsString(bool hasHeader, bool hasFooter) const;
+    std::string _buildSectionPropsString(bool hasHeader, bool hasFooter) const;
     void _buildSectionDataIDString();
 
     ODi_Abi_Data& m_rAbiData;
 
-    UT_UTF8String m_name;
+    std::string m_name;
 
     ////
     // <style:page-layout-properties>
-    UT_UTF8String m_pageWidth;        // fo:page-width
-    UT_UTF8String m_pageHeight;       // fo:page-height
-    UT_UTF8String m_printOrientation; // style:print-orientation
-    UT_UTF8String m_marginLeft;       // fo:margin-left
-    UT_UTF8String m_marginRight;      // fo:margin-right
-    UT_UTF8String m_marginTop;        // fo:margin-top
-    UT_UTF8String m_marginBottom;     // fo:margin-bottom
-    UT_UTF8String m_backgroundColor;  // fo:background-color
+    std::string m_pageWidth;        // fo:page-width
+    std::string m_pageHeight;       // fo:page-height
+    std::string m_printOrientation; // style:print-orientation
+    std::string m_marginLeft;       // fo:margin-left
+    std::string m_marginRight;      // fo:margin-right
+    std::string m_marginTop;        // fo:margin-top
+    std::string m_marginBottom;     // fo:margin-bottom
+    std::string m_backgroundColor;  // fo:background-color
 
     ////
     // <style:columns>
-    UT_UTF8String m_columnCount; // fo:column-count
-    UT_UTF8String m_columnGap;   // fo:column-gap
+    std::string m_columnCount; // fo:column-count
+    std::string m_columnGap;   // fo:column-gap
 
     ////
     // <style:column-sep>
-    UT_UTF8String m_columnLine; // style:style or style:width
+    std::string m_columnLine; // style:style or style:width
 
     ////
     // <style:header-style>
-    UT_UTF8String m_headerHeight;       // svg:height
-    UT_UTF8String m_headerMarginBottom; // fo:margin-bottom
+    std::string m_headerHeight;       // svg:height
+    std::string m_headerMarginBottom; // fo:margin-bottom
 
     ////
     // <style:footer-style>
-    UT_UTF8String m_footerHeight;    // svg:height
-    UT_UTF8String m_footerMarginTop; // fo:margin-top
+    std::string m_footerHeight;    // svg:height
+    std::string m_footerMarginTop; // fo:margin-top
 
     ////
     // <style:background-image>
-    UT_UTF8String m_backgroundImage; // xlink:href
+    std::string m_backgroundImage; // xlink:href
 
     // The strux-image-dataid attribute for the section
-    UT_UTF8String m_sectionDataID;
+    std::string m_sectionDataID;
 };
 
 #endif //_ODI_STYLE_PAGELAYOUT_H_

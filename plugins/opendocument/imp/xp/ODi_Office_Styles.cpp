@@ -71,8 +71,8 @@ ODi_Style_Style* ODi_Office_Styles::addStyle(const gchar** ppAtts,
     const gchar* pDisplayName;
     ODi_Style_Style* pStyle = NULL;
     const ODi_Style_Style* pConstStyle;
-    UT_UTF8String replacementName;
-    UT_UTF8String replacementDisplayName;
+    std::string replacementName;
+    std::string replacementDisplayName;
     
     pFamily = UT_getAttribute("style:family", ppAtts);
     pName = UT_getAttribute("style:name", ppAtts);
@@ -250,7 +250,7 @@ void ODi_Office_Styles::_linkMasterStyles() {
         pMasterStyle = iter->second;
         
         PageLayoutMap::const_iterator l_iter 
-            = m_pageLayoutStyles.find(pMasterStyle->getLayoutName().utf8_str());
+            = m_pageLayoutStyles.find(pMasterStyle->getLayoutName().c_str());
         if(l_iter != m_pageLayoutStyles.end()) {
             pMasterStyle->setLayoutStylePointer(l_iter->second);
         }
@@ -281,7 +281,7 @@ void ODi_Office_Styles::_linkListStyles() const
             pLevelStyle = pListStyle->getLevelStyle(j);
             
             pStyle = getTextStyle(
-                pLevelStyle->getTextStyleName()->utf8_str(), false);
+                pLevelStyle->getTextStyleName()->c_str(), false);
             pLevelStyle->setTextStyle(pStyle);
         }
     }

@@ -98,10 +98,10 @@ void ODi_Style_MasterPage::startElement(const gchar* pName,
             ppSecAttr[2] = "type";
             
             if (m_AW_evenHeaderSectionID.empty()) {
-                ppSecAttr[1] = m_AW_headerSectionID.utf8_str();
+                ppSecAttr[1] = m_AW_headerSectionID.c_str();
                 ppSecAttr[3] = "header";
             } else {
-                ppSecAttr[1] = m_AW_evenHeaderSectionID.utf8_str();
+                ppSecAttr[1] = m_AW_evenHeaderSectionID.c_str();
                 ppSecAttr[3] = "header-even";
             }
             
@@ -135,10 +135,10 @@ void ODi_Style_MasterPage::startElement(const gchar* pName,
             ppSecAttr[2] = "type";
             
             if (m_AW_evenFooterSectionID.empty()) {
-                ppSecAttr[1] = m_AW_footerSectionID.utf8_str();
+                ppSecAttr[1] = m_AW_footerSectionID.c_str();
                 ppSecAttr[3] = "footer";
             } else {
-                ppSecAttr[1] = m_AW_evenFooterSectionID.utf8_str();
+                ppSecAttr[1] = m_AW_evenFooterSectionID.c_str();
                 ppSecAttr[3] = "footer-even";
             }
             
@@ -169,7 +169,7 @@ void ODi_Style_MasterPage::startElement(const gchar* pName,
         } else if (m_parsingState == ODI_POSTPONED_SECOND_PASS) {
             const gchar* ppSecAttr[5];
             ppSecAttr[0] = "id";
-            ppSecAttr[1] = m_AW_headerSectionID.utf8_str();
+            ppSecAttr[1] = m_AW_headerSectionID.c_str();
             ppSecAttr[2] = "type";
             ppSecAttr[3] = "header";
             ppSecAttr[4] = 0;
@@ -199,7 +199,7 @@ void ODi_Style_MasterPage::startElement(const gchar* pName,
         } else if (m_parsingState == ODI_POSTPONED_SECOND_PASS) {
             const gchar* ppSecAttr[5];
             ppSecAttr[0] = "id";
-            ppSecAttr[1] = m_AW_footerSectionID.utf8_str();
+            ppSecAttr[1] = m_AW_footerSectionID.c_str();
             ppSecAttr[2] = "type";
             ppSecAttr[3] = "footer";
             ppSecAttr[4] = 0;

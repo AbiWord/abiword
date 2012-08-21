@@ -169,7 +169,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
             if (pStyle != NULL) {
                 if (!pStyle->getBackgroundColor()->empty()) {
                     props += "background-color:";
-                    props += pStyle->getBackgroundColor()->utf8_str();
+                    props += pStyle->getBackgroundColor()->c_str();
                 }
             }
             // Left table pos
@@ -179,7 +179,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
 		        props += "; ";
 		    }
 		    props += "table-column-leftpos:";
-		    props += pStyle->getTableMarginLeft()->utf8_str();
+		    props += pStyle->getTableMarginLeft()->c_str();
 		    
                 }
             }
@@ -191,7 +191,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
 		        props += "; ";
 		    }
 		    props += "table-width:";
-		    props += pStyle->getTableWidth()->utf8_str();
+		    props += pStyle->getTableWidth()->c_str();
 		    
                 }
             }
@@ -204,7 +204,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
 		        props += "; ";
 		    }
 		    props += "table-rel-width:";
-		    props += pStyle->getTableRelWidth()->utf8_str();
+		    props += pStyle->getTableRelWidth()->c_str();
 		    
                 }
             }
@@ -532,23 +532,23 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
             // background color
             if (!pStyle->getBackgroundColor()->empty()) {
                 props += "; background-color:";
-                props += pStyle->getBackgroundColor()->utf8_str();
+                props += pStyle->getBackgroundColor()->c_str();
             }
 
             // background-image
             if(!pStyle->getBackgroundImageID()->empty())
             {
-                dataID = pStyle->getBackgroundImageID()->utf8_str();
+                dataID = pStyle->getBackgroundImageID()->c_str();
             }
 
             // Vertical align
             if (!pStyle->getVerticalAlign()->empty())
             {
-                if (!strcmp(pStyle->getVerticalAlign()->utf8_str(), "top"))
+                if (!strcmp(pStyle->getVerticalAlign()->c_str(), "top"))
                     props += "; vert-align:0";
-                else if (!strcmp(pStyle->getVerticalAlign()->utf8_str(), "middle"))
+                else if (!strcmp(pStyle->getVerticalAlign()->c_str(), "middle"))
                     props += "; vert-align:50";
-                else if (!strcmp(pStyle->getVerticalAlign()->utf8_str(), "bottom"))
+                else if (!strcmp(pStyle->getVerticalAlign()->c_str(), "bottom"))
                     props += "; vert-align:100";
             }
         }
