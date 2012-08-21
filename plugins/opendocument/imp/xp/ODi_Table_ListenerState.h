@@ -93,13 +93,13 @@ private:
 
     UT_sint32 m_rowsLeftToRepeat;
 
-    UT_UTF8String m_columnWidths;
-    UT_UTF8String m_rowHeights;
-    UT_UTF8String m_columnRelWidths;
+    std::string m_columnWidths;
+    std::string m_rowHeights;
+    std::string m_columnRelWidths;
 
     bool m_gotAllColumnWidths;
 
-    UT_UTF8String m_waitingEndElement;
+    std::string m_waitingEndElement;
 };
 
 #endif //_ODI_TABLE_LISTENERSTATE_H_
