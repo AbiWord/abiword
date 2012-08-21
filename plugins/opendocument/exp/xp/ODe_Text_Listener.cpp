@@ -66,6 +66,7 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_openedODParagraph(false),
                         m_openedODSpan(false),
                         m_isFirstCharOnParagraph(true),
+                        m_isHeadingParagraph(false),
                         m_openedODTextboxFrame(false),
                         m_openedODNote(false),
                         m_bIgoreFirstTab(false),
@@ -1568,10 +1569,11 @@ void ODe_Text_Listener::_openParagraphDelayed(){
             {
                 appendAttribute( output, "xml:id", xmlid );
             }
-
+            m_isHeadingParagraph = true;
             output += " >";            
         } else {
             // It's a regular paragraph.
+            m_isHeadingParagraph = false;
             escape = styleName;
             output += "<text:p text:style-name=\"";
             output += ODe_Style_Style::convertStyleToNCName(escape).escapeXML();
