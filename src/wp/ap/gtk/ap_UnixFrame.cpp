@@ -536,7 +536,7 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);
 	GR_UnixCairoGraphics *pUnixGraphics = static_cast<GR_UnixCairoGraphics *>(pG);
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkWidget * w = gtk_label_new("");
+	GtkWidget * w = gtk_entry_new();
 	pUnixGraphics->init3dColors(w);
 	gtk_widget_destroy(w);
 #else

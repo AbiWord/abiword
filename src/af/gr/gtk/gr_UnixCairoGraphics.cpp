@@ -156,46 +156,50 @@ void GR_UnixCairoGraphics::initWidget(GtkWidget* widget)
 }
 
 #if GTK_CHECK_VERSION(3,0,0)
+#define COLOR_MIX 0.67   //COLOR_MIX should be between 0 and 1
+#define SQUARE(A) (A)*(A)
 void GR_UnixCairoGraphics::init3dColors(GtkWidget* w)
 {
 	GtkStyleContext* pCtxt = gtk_widget_get_style_context(w);
-	GdkRGBA rgba, rgba_;
-	gtk_style_context_get_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba);
-	m_3dColors[CLR3D_Foreground] = _convertGdkRGBA(rgba);
-	gtk_style_context_get_background_color (pCtxt, GTK_STATE_FLAG_PRELIGHT, &rgba);
-	m_3dColors[CLR3D_Highlight]  = _convertGdkRGBA(rgba);
-	gtk_style_context_get_background_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba);
-	m_3dColors[CLR3D_Background] = _convertGdkRGBA(rgba);
+	GdkRGBA rgba1, rgba2, rgba_;
+	bool bUseThemeColors = true;
+
+	gtk_style_context_get_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba1);
+	gtk_style_context_get_background_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba2);
+	if ((SQUARE(rgba1.red-rgba2.red) + SQUARE(rgba1.green-rgba2.green) + SQUARE(rgba1.blue - rgba2.blue)) < 0.01)
+	{
+		// There is very little contrast between the bg and fg colors
+		// Use default values (black for fg and white for bg)
+		// This happens for unknown reasons with some themes
+		UT_DEBUGMSG(("No contrast between the theme foreground and background colors! Use black and white instead.\n"));
+		bUseThemeColors = false;
+		rgba1.red = 0.;
+		rgba1.green = 0.;
+		rgba1.blue = 0.;
+		rgba2.red = 1.;
+		rgba2.green = 1.;
+		rgba2.blue = 1.;
+	} 
+	m_3dColors[CLR3D_Foreground] = _convertGdkRGBA(rgba1);
+	m_3dColors[CLR3D_Background] = _convertGdkRGBA(rgba2);
 	rgba_.alpha = 1.;   // we don't really care, abiword does not use transparency
-	rgba_.red = rgba.red + .1;
-	double f, rf = 1. + .1 / rgba.red;
-	if (rf > 1. / rgba.red)
-		rf = 1. / rgba.red;
-	f = 1. + .1 / rgba.green;
-	if (f < rf)
-		rf = f;
-	f = 1. + .1 / rgba.blue;
-	if (f < rf)
-		rf = f;
-	rgba_.red = rgba.red * rf;
-	rgba_.green = rgba.green* rf;
-	rgba_.blue = rgba.blue * rf;
+	rgba_.red = rgba1.red*COLOR_MIX + rgba2.red*(1.-COLOR_MIX);
+	rgba_.green = rgba1.green*COLOR_MIX + rgba2.green*(1.-COLOR_MIX);
+	rgba_.blue = rgba1.blue*COLOR_MIX + rgba2.blue*(1.-COLOR_MIX);
 	m_3dColors[CLR3D_BevelUp]    = _convertGdkRGBA(rgba_);
-	rf = 1. - .1 / rgba.red;
-	f = 1. - .1 / rgba.green;
-	if (f > rf)
-		rf = f;
-	f = 1. - .1 / rgba.blue;
-	if (f > rf)
-		rf = f;
-	if (rf < .5)
-		rf = .5;
-	rgba_.red = rgba.red * rf;
-	rgba_.green = rgba.green* rf;
-	rgba_.blue = rgba.blue * rf;
+	rgba_.red = rgba1.red*(1.-COLOR_MIX) + rgba2.red*COLOR_MIX;
+	rgba_.green = rgba1.green*(1.-COLOR_MIX) + rgba2.green*COLOR_MIX;
+	rgba_.blue = rgba1.blue*(1.-COLOR_MIX) + rgba2.blue*COLOR_MIX;
 	m_3dColors[CLR3D_BevelDown]  = _convertGdkRGBA(rgba_);
+	if (bUseThemeColors)
+	{
+		gtk_style_context_get_background_color (pCtxt, GTK_STATE_FLAG_PRELIGHT, &rgba2);
+	}
+	m_3dColors[CLR3D_Highlight]  = _convertGdkRGBA(rgba2);
 	m_bHave3DColors = true;
 }
+#undef COLOR_MIX
+#undef SQUARE
 #else
 void GR_UnixCairoGraphics::init3dColors(GtkWidget* w)
 {
