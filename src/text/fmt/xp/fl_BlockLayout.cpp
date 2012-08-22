@@ -875,7 +875,11 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		}
 		else
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			if (!m_pAlignment)
+			{
+				m_pAlignment = new fb_Alignment_left;
+			}
 		}
 	}
 
