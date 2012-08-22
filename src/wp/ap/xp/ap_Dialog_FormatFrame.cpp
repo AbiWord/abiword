@@ -406,9 +406,9 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	UT_sint32 layout_width = pFL->getFrameWidth();
 
 	if (/* m_bSettingsChanged || */ m_iOldPos == pos 
+		// add the following condition since we need to update when change width and height
 		&& layout_height == m_OldHeight && layout_width == m_OldWidth) {
 		// comparing the actual cell pos would be even better; but who cares :)
-		// we can't return since we need to update when change width and height
 		 return;  
 	}
 	m_iOldPos = pos;

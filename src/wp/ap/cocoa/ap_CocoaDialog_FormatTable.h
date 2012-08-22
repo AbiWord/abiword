@@ -49,8 +49,8 @@ public:
 	virtual void			setSensitivity(bool bSens);
 	virtual void            setBackgroundColorInGUI(UT_RGBColor clr);
 	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
-    virtual void            setWidthInGUI(UT_UTF8String & sWidth);
-    virtual void            setHeightInGUI(UT_UTF8String & sHeight);
+	virtual void            setHeightInGUI(UT_UTF8String & sHeight);
+	virtual void            setWidthInGUI(UT_UTF8String & sWidth);
 	virtual void            destroy(void);
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);

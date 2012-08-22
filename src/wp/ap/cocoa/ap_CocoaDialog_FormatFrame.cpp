@@ -282,12 +282,13 @@ void AP_CocoaDialog_FormatFrame::_populateWindowData(void)
 
 		[m_dlg setPositionState:((int) positionMode())];
 		setAllSensitivities();
-        //init value is current Frame width and height
-        setCurFrameProps();
-        float height = getFrameHeight();
-        float width = getFrameWidth();
-        [m_dlg setHeight:height];
-        [m_dlg setWidth:width];
+
+		//init value is current Frame width and height
+		setCurFrameProps();
+		float height = getFrameHeight();
+		float width = getFrameWidth();
+		[m_dlg setHeight:height];
+		[m_dlg setWidth:width];
 	}
 }
 

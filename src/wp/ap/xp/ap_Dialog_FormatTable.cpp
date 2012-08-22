@@ -381,7 +381,8 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
           
 		//We need update if users change height or width in UI (Drap & Drop) 
 		if (m_bSettingsChanged || 
-			( m_iOldPos == pView->getPoint() && i_OldWidth != iWidth && i_OldHeight != iHeight) ) // comparing the actual cell pos would be even better; but who cares :)
+			( m_iOldPos == pView->getPoint() && i_OldWidth != iWidth && i_OldHeight != iHeight) ) 
+            // comparing the actual cell pos would be even better; but who cares :)
 			return;
 		
 		m_iOldPos = pView->getPoint();
