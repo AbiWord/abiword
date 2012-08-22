@@ -319,7 +319,8 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
 									   UT_uint32 length,
-									   PP_AttrProp *p_AttrProp = NULL);
+									   PP_AttrProp *p_AttrProp = NULL,
+									   UT_uint32 * insertedSpanLength = NULL);
 	bool					insertSpan(PT_DocPosition dpos,
 									   const std::string& s,
 									   PP_AttrProp *p_AttrProp = NULL);

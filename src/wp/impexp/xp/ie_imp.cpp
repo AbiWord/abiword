@@ -140,8 +140,9 @@ bool IE_Imp::appendSpan (const UT_UCSChar * p, UT_uint32 length)
 		return m_pDocument->appendSpan(p, length);
 	else
 		{
-			bool bRes = m_pDocument->insertSpan (m_dpos, p, length);
-			m_dpos += length;
+			UT_uint32 fragLength = 0;
+			bool bRes = m_pDocument->insertSpan (m_dpos, p, length, NULL, &fragLength);
+			m_dpos += fragLength;
 			return bRes;
 		}
 }

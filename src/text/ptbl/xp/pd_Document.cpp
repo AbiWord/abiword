@@ -1327,10 +1327,9 @@ bool PD_Document::insertSpan( PT_DocPosition dpos,
  * If pAttrProp is set to NULL, the text will be set to exactly
  * the properties of the style of the current paragraph.
  */
-bool PD_Document::insertSpan(PT_DocPosition dpos,
-							 const UT_UCSChar * pbuf,
-							 UT_uint32 length,
-							 PP_AttrProp *p_AttrProp)
+bool PD_Document::insertSpan(PT_DocPosition dpos, const UT_UCSChar * pbuf,
+							 UT_uint32 length, PP_AttrProp *p_AttrProp,
+							 UT_uint32 *insertedSpanLength)
 {
 	if(isDoingTheDo())
 	{
@@ -1366,6 +1365,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 	
 	bool result = true;
 	const UT_UCS4Char * pStart = pbuf;
+	UT_sint32 newLength = length;
 
 	for(const UT_UCS4Char * p = pbuf; p < pbuf + length; p++)
 	{
@@ -1382,6 +1382,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 				result &= m_pPieceTable->insertFmtMark(PTC_AddFmt, cur_pos, &AP);
 				pStart = p + 1;
 				m_iLastDirMarker = *p;
+				newLength--;
 				break;
 				
 			case UCS_RLO:
@@ -1395,6 +1396,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 				result &= m_pPieceTable->insertFmtMark(PTC_AddFmt, cur_pos, &AP);
 				pStart = p + 1;
 				m_iLastDirMarker = *p;
+				newLength--;
 				break;
 				
 			case UCS_PDF:
@@ -1412,6 +1414,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 
 				pStart = p + 1;
 				m_iLastDirMarker = *p;
+				newLength--;
 				break;
 				
 			case UCS_LRE:
@@ -1424,6 +1427,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 				
 				pStart = p + 1;
 				m_iLastDirMarker = *p;
+				newLength--;
 				break;
 		}
 	}
@@ -1432,6 +1436,11 @@ bool PD_Document::insertSpan(PT_DocPosition dpos,
 	// in the above switch comprises the entire span.
 	if((length - (pStart - pbuf)) > 0)
 		result &= m_pPieceTable->insertSpan(cur_pos, pStart, length - (pStart - pbuf));
+
+	if (insertedSpanLength)
+	{
+		*insertedSpanLength = (newLength >= 0) ? newLength:0;
+	}
 	return result;
 }
 
