@@ -293,17 +293,17 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	
 	m_pFormatTablePreview->draw();
 	// Set init Value
-    UT_Dimension dim = DIM_PT;
-    setCurCellProps();
-    initTableWidthStr();
-    initTableHeightStr();
-    float value = getTableWidth();
-    const gchar *szValue= UT_formatDimensionString (dim, value);
-    gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
+		UT_Dimension dim = DIM_PT;
+		setCurCellProps();
+		initTableWidthStr();
+		initTableHeightStr();
+		float value = getTableWidth();
+		const gchar *szValue= UT_formatDimensionString (dim, value);
+		gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
 
-    value = getTableHeight();
-    szValue= UT_formatDimensionString (dim, value);
-    gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
+		value = getTableHeight();
+		szValue= UT_formatDimensionString (dim, value);
+		gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
 	
 	startUpdater();
 }
@@ -368,13 +368,13 @@ void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)
 }
 void AP_UnixDialog_FormatTable::event_WidthChanged(void)
 {
-   if(m_wWidth)
-   {
+		if(m_wWidth)
+		{
 		gtk_editable_select_region(GTK_EDITABLE(m_wWidth), 0, 0);  
 		//set Height & Width 
 		const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wWidth));
 		if( atoi( buf ) > 0 && atoi(buf) != (signed) getTableWidth() )
-        {
+		{
 			setWidth( atoi(buf) );
 		}
 	}
@@ -382,7 +382,7 @@ void AP_UnixDialog_FormatTable::event_WidthChanged(void)
 void AP_UnixDialog_FormatTable::event_HeightChanged(void)
 {
 	if(m_wHeight)
-    {
+		{
 		gtk_editable_select_region(GTK_EDITABLE(m_wHeight), 0, 0);  
 		//set Height & Width 
 		const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wHeight));
@@ -499,10 +499,10 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 
 	
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSetImageBackground")), pSS, AP_STRING_ID_DLG_FormatTable_SetImageBackground);
-    localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableHeight")), pSS, AP_STRING_ID_DLG_FormatTable_Height);
-    localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableWidth")), pSS, AP_STRING_ID_DLG_FormatTable_Width);
-    m_wWidth = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableWidth"));
-    m_wHeight = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableHeight")); 
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableHeight")), pSS, AP_STRING_ID_DLG_FormatTable_Height);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableWidth")), pSS, AP_STRING_ID_DLG_FormatTable_Width);
+	m_wWidth = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableWidth"));
+	m_wHeight = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableHeight")); 
 
 //	add the buttons for background image to the dialog.
 
@@ -675,8 +675,8 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 							"changed",
 							G_CALLBACK(s_border_thickness),
 							reinterpret_cast<gpointer>(this));
-    m_iWidthConnect = g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
-    m_iHeightConnect = g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
+	m_iWidthConnect = g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
+	m_iHeightConnect = g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
 }
 
 void AP_UnixDialog_FormatTable::_populateWindowData(void)
