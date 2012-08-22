@@ -866,31 +866,31 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 			     *
 			     * TODO -- devise a sensible way of handling this.
 			     */
-				UT_DEBUGMSG(("@@@@ ===== Font for u%04x does not match "
-							 "earlier font\n", c));
-				pFontSubst = font;
+#if DEBUG
+				PangoFontDescription * pfd = pango_font_describe (pFontSubst);
+				char * sFontSubst = pango_font_description_to_string (pfd);
+				pango_font_description_free (pfd);
+				pfd = pango_font_describe (font);
+				char * sFont = pango_font_description_to_string (pfd);
+				pango_font_description_free (pfd);
+				UT_DEBUGMSG(("@@@@ ===== Font for u%04x (%s) does not match "
+							 "earlier font %s\n", c, sFont, sFontSubst));
+				g_free (sFontSubst);
+				g_free (sFont);
+#endif
 				g_object_unref (G_OBJECT (pFontSubst));
+				pFontSubst = font;
 			}
 			else if (pFontSubst == font)
 			{
 				/* We now have two references to this font, rectify */
-				g_object_unref (G_OBJECT (pFontSubst));
+				g_object_unref (G_OBJECT (font));
 			}
 			else
 			{
 				pFontSubst = font;
 			}
 
-#if 0 //def DEBUG
-			PangoFontDescription * pfd =
-				pango_font_describe (font);
-			char * s = pango_font_description_to_string (pfd);
-
-			UT_DEBUGMSG(("@@@@ ===== Font for u%04x: %s\n", c, s));
-			g_free (s);
-			pango_font_description_free (pfd);
-#endif
-			
 		}
 	}
 
