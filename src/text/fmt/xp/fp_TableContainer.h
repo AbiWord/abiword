@@ -302,8 +302,6 @@ public:
 	{
 		return m_iBrokenTableNumber;
 	}
-
-	void fixLines(UT_sint32, fp_TableContainer *,bool);
 	void drawHeaderCell(dg_DrawArgs *,UT_sint32,UT_sint32 &,UT_sint32 &,UT_sint32,UT_sint32 &);
 	void setPos(UT_sint32 i)
 	{

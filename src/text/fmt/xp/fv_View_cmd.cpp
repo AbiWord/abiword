@@ -2287,6 +2287,9 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	return true;
 }
 
+bool FV_View::cmdInsertHeaderRow(PT_DocPosition posRow)
+{
+}
 /*!
  * posRow is the position of the start of the selection in the table.
  * insert rows into the table.

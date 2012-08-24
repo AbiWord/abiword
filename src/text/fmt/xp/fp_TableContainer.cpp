@@ -2356,36 +2356,6 @@ bool fp_CellContainer::isInsideBrokenTable(fp_TableContainer *pBroke) const
 	return false;
 }
 
-void fp_CellContainer::fixLines(UT_sint32 iShift,fp_TableContainer *pBroke,bool bBack)
-{
-
-/*	UT_sint32 iTY=pBroke->getYBreak(),iTB=pBroke->getYBottom();
-	xxx_UT_DEBUGMSG(("%d\n",countCons()));
-	UT_sint32 i=0,count=countCons();
-	for(i=0;i<count;i++)
-	{
-		fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
-		if(pCon)
-		{
-			UT_sint32 iY=getiTopY()+pCon->getY();
-			UT_sint32 iB=iY+pCon->getHeight();
-			UT_DEBUGMSG(("iY %d and iTY %d and iB %d and iTB %d and cellpos %d\n",iY,iTY,iB,iTB,m_iCellPos));
-			if( (iY>=iTY) && (iB <=iTB))
-			{
-				if(!bBack)
-				{
-					UT_DEBUGMSG(("Forwards line %d Y %d\n",i+1,pCon->getY()));
-					pCon->setY(pCon->getY()+iShift);
-				}
-				else
-				{
-					UT_DEBUGMSG(("Backwards line \n"));
-					pCon->setY(pCon->getY()-iShift);
-				}
-			}
-		}
-	}*/
-}
 
 /*!
  * This method returns true if the cell overlaps the supplied broken
@@ -2437,15 +2407,14 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	if(partiallyInsideBrokenTable(pBroke))
 	{
 		setBrokenCell(true);
-		//pCell->fixLines(iShift,this,false);
 	}
 	if(m_pBroke == pBroke)
 	{
 		pDA->yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
 	}
 	GR_Graphics * pG = pDA->pG;
-	m_bDrawLeft = false;
 	m_bDrawTop = false;
+	m_bDrawLeft = false;
 	fp_TableContainer * pTab2 = NULL;
 	bool bIsNested = isInNestedTable();
 	xxx_UT_DEBUGMSG(("The Y of this cell %x is %d table Y is %d address %x master %x\n",this,getY(),getContainer()->getY(),getContainer(),pBroke->getMasterTable())); 
@@ -4506,7 +4475,6 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 			pCell->_setY(pCell->getY() - iShift1);
 			pCell->setiTopY(pCell->getiTopY() - iShift1);
 			pCell->setiBotY(pCell->getiBotY() - iShift1);
-			pCell->fixLines(iShift1,this,true);
 			pCell->setCountToZero();
 			pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 		}

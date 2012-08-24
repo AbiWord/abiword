@@ -800,6 +800,7 @@ public:
 	bool                cmdDeleteRow(PT_DocPosition pos);
 	bool                cmdDeleteTable(PT_DocPosition pos, bool bDontNotify=false);
 	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
+	bool 		    cmdInsertHeaderRow(PT_DocPosition posTable);
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
 	bool                cmdSplitCells(AP_CellSplitType iSplitType);
 	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
