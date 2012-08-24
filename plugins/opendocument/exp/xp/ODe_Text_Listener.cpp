@@ -75,6 +75,7 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_pCurrentListStyle(NULL),
                         m_pendingColumnBreak(false),
                         m_pendingPageBreak(false),
+                        m_bAfter(false),
                         m_pendingMasterPageStyleChange(false),
                         m_rStyles(rStyles),
                         m_rAutomatiStyles(rAutomatiStyles),
@@ -927,6 +928,9 @@ void ODe_Text_Listener::insertLineBreak() {
 void ODe_Text_Listener::insertColumnBreak() {
     _closeODList();
     m_pendingColumnBreak = true;
+    if (!m_isFirstCharOnParagraph){
+        m_bAfter = true;
+    }
 }
 
 
@@ -936,6 +940,9 @@ void ODe_Text_Listener::insertColumnBreak() {
 void ODe_Text_Listener::insertPageBreak() {
     _closeODList();
     m_pendingPageBreak = true;
+    if (!m_isFirstCharOnParagraph){
+        m_bAfter = true;
+    }
 }
 
 
@@ -1403,17 +1410,17 @@ void ODe_Text_Listener::_openODParagraph(const PP_AttrProp* pAP) {
         UT_ASSERT(
             !(m_pendingColumnBreak==true && m_pendingPageBreak==true) );
         
-        if (m_pendingColumnBreak){
+        if (m_pendingColumnBreak && !m_bAfter){
             m_delayedColumnBreak = true;
+            m_pendingPageBreak = false;
         }
         
-        if (m_pendingPageBreak){
+        if (m_pendingPageBreak && !m_bAfter){
             m_delayedPageBreak = true;
+            m_pendingColumnBreak = false;
         }
         
-        m_pendingColumnBreak = false;
-        m_pendingPageBreak = false;
-            
+                 
     } 
     
     ////
@@ -1475,10 +1482,12 @@ void ODe_Text_Listener::_openParagraphDelayed(){
     // Figure out the paragraph style
     if (m_pendingColumnBreak){
         m_delayedColumnBreak = true;
+        m_pendingColumnBreak = false;
     }
 
     if (m_pendingPageBreak){
         m_delayedPageBreak = true;
+        m_pendingPageBreak = false;
     }
     
     if (ODe_Style_Style::hasParagraphStyleProps(m_delayedAP) ||
@@ -1501,12 +1510,12 @@ void ODe_Text_Listener::_openParagraphDelayed(){
         }
         
         
-        if (m_delayedColumnBreak) {
+        if (m_delayedColumnBreak && !m_bAfter) {
             pStyle->setBreakBefore("column");
-            m_delayedColumnBreak = false;
+               m_delayedColumnBreak = false;
         }
         
-        if (m_delayedPageBreak) {
+        if (m_delayedPageBreak && !m_bAfter) {
             pStyle->setBreakBefore("page");
             m_delayedPageBreak = false;
         }
@@ -1607,6 +1616,8 @@ void ODe_Text_Listener::_closeODParagraph() {
     
         m_openedODParagraph = false;
         m_spacesOffset--;
+        
+        m_bAfter = false;
     }
 }
 

@@ -160,6 +160,7 @@ private:
 
     bool m_pendingColumnBreak;
     bool m_pendingPageBreak;
+    bool m_bAfter;
 
     bool m_pendingMasterPageStyleChange;
     UT_UTF8String m_masterPageStyleName;
