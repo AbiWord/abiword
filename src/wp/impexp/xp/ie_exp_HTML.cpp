@@ -25,6 +25,20 @@
 
 #include "ie_exp_HTML.h"
 
+#include <pd_DocumentRDF.h>
+#include "ie_exp_DocRangeListener.h"
+#include "pl_ListenerCoupleCloser.h"
+
+#include <gsf/gsf-outfile.h>
+#include <gsf/gsf-output-stdio.h>
+#include <gsf/gsf-outfile-stdio.h>
+#include <gsf/gsf-output-memory.h>
+#include <gsf/gsf-infile.h>
+#include <gsf/gsf-input.h>
+#include <gsf/gsf-input-stdio.h>
+#include <glib.h>
+#include <glib/gstdio.h>
+
 #define MYEOL "\n"
 #define MAX_LINE_LEN 200
 
@@ -119,6 +133,99 @@ IE_Exp_HTML::~IE_Exp_HTML()
 	delete m_pNavigationHelper;
 	delete m_styleListener;
     delete m_style_tree;
+}
+
+
+/*
+ * Copies document contents to the clipboard. Based on ODF exporter method.
+*/
+UT_Error IE_Exp_HTML::copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bufHTML)
+{
+    //
+    // First export selected range to a tempory document
+    //
+    PD_Document * outDoc = new PD_Document();
+    outDoc->createRawDocument();
+    IE_Exp_DocRangeListener * pRangeListener = new IE_Exp_DocRangeListener(pDocRange,outDoc);
+    UT_DEBUGMSG(("DocumentRange low %d High %d \n",pDocRange->m_pos1,pDocRange->m_pos2));
+    PL_ListenerCoupleCloser* pCloser = new PL_ListenerCoupleCloser();
+    pDocRange->m_pDoc->tellListenerSubset(pRangeListener,pDocRange,pCloser);
+    if( pCloser)
+        delete pCloser;
+    
+    //
+    // Grab the RDF triples while we are copying...
+    //
+    if( PD_DocumentRDFHandle outrdf = outDoc->getDocumentRDF() )
+    {
+
+        std::set< std::string > xmlids;
+        PD_DocumentRDFHandle inrdf = pDocRange->m_pDoc->getDocumentRDF();
+        inrdf->addRelevantIDsForRange( xmlids, pDocRange );
+
+        if( !xmlids.empty() )
+        {
+            UT_DEBUGMSG(("HTML export creating restricted RDF model xmlids.sz:%ld \n",(long)xmlids.size()));
+            PD_RDFModelHandle subm = inrdf->createRestrictedModelForXMLIDs( xmlids );
+            PD_DocumentRDFMutationHandle m = outrdf->createMutation();
+            m->add( subm );
+            m->commit();
+            subm->dumpModel("copied rdf triples subm");
+            outrdf->dumpModel("copied rdf triples result");
+        }
+        
+        // PD_DocumentRDFMutationHandle m = outrdf->createMutation();
+        // m->add( PD_URI("http://www.example.com/foo"),
+        //         PD_URI("http://www.example.com/bar"),
+        //         PD_Literal("copyToBuffer path") );
+        // m->commit();
+    }
+    outDoc->finishRawCreation();
+    //
+    // OK now we have a complete and valid document containing our selected 
+    // content. We export this to an in memory GSF buffer
+    //
+    IE_Exp_HTML * pNewExp = NULL; 
+    char *szTempFileName = NULL;
+    GError *err = NULL;
+    g_file_open_tmp ("XXXXXX", &szTempFileName, &err);
+    GsfOutput * outBuf =  gsf_output_stdio_new (szTempFileName,&err);
+    IEFileType ftHTML = IE_Exp::fileTypeForMimetype("text/html");
+    UT_Error aerr = IE_Exp::constructExporter(outDoc,outBuf,
+											  ftHTML,(IE_Exp**)&pNewExp);
+    if(pNewExp == NULL)
+    {
+         return aerr;
+    }
+
+	pNewExp->suppressDialog();
+	
+    aerr = pNewExp->writeFile(szTempFileName);
+    if(aerr != UT_OK)
+    {
+	delete pNewExp;
+	delete pRangeListener;
+	UNREFP( outDoc);
+	g_remove(szTempFileName);
+	g_free (szTempFileName);
+	return aerr;
+    }
+    //
+    // File is closed at the end of the export. Open it again.
+    //
+
+    GsfInput *  fData = gsf_input_stdio_new(szTempFileName,&err);
+    UT_DebugOnly<UT_sint32> siz = gsf_input_size(fData);
+    const UT_Byte * pData = gsf_input_read(fData,gsf_input_size(fData),NULL);
+    UT_DEBUGMSG(("Writing %d bytes to clipboard \n", (UT_sint32)siz));
+    bufHTML->append( pData, gsf_input_size(fData));
+    
+    delete pNewExp;
+    delete pRangeListener;
+    UNREFP( outDoc);
+    g_remove(szTempFileName);
+    g_free (szTempFileName);
+    return aerr;
 }
 
 void IE_Exp_HTML::_buildStyleTree()

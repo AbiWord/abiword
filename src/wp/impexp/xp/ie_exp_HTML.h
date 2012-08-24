@@ -87,6 +87,8 @@ public:
 	IE_Exp_HTML (PD_Document * pDocument);
 	virtual ~IE_Exp_HTML ();
 
+	virtual UT_Error copyToBuffer(PD_DocumentRange * pDocRange,UT_ByteBuf *  bufHTML);
+
 	static bool			RecognizeSuffix (const gchar * szSuffix);
 	static UT_Error		StaticConstructor (PD_Document * pDocument,
 										   IE_Exp ** ppie);
