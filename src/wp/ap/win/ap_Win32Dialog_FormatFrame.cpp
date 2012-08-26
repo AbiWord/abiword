@@ -194,7 +194,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
-    /* Set the value of TEXT BOX */
+	/* Set the value of TEXT BOX */
 	//init value is current Frame width and height
 	setCurFrameProps();
 	wchar_t 	szValue[BUFSIZE];
@@ -224,7 +224,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 
 	/* Combo Values for Thickness */
 	
-    // current select index in AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS
+	// current select index in AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS
 	// most time, all the thickness is same for top,right,bottom,left
 
 	int iCurrentIndex = 0 ; 
