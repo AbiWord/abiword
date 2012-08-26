@@ -382,7 +382,7 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		//We need update if users change height or width in UI (Drap & Drop) 
 		if (m_bSettingsChanged || 
 			( m_iOldPos == pView->getPoint() && i_OldWidth != iWidth && i_OldHeight != iHeight) ) 
-            // comparing the actual cell pos would be even better; but who cares :)
+			// comparing the actual cell pos would be even better; but who cares :)
 			return;
 		
 		m_iOldPos = pView->getPoint();
@@ -504,10 +504,10 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		{
 			iHeight = pTL->getDocSectionLayout()->getHeight();			
 		}
-        //restore i_OldWidth & i_OldHeight
+			//restore i_OldWidth & i_OldHeight
 		if(iWidth != 0)
 		{
-            i_OldWidth = iWidth;
+			i_OldWidth = iWidth;
 		}
 
 		if(iHeight != 0)
@@ -515,15 +515,15 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 			i_OldHeight = iHeight;
 		}
 
-        fl_TableLayout* tl = pView->getTableAtPos(pView->getPoint());
-        std::string tableHeight = tl->tableHeight();
-        std::string tableWidth = tl->tableWidth();
+			fl_TableLayout* tl = pView->getTableAtPos(pView->getPoint());
+			std::string tableHeight = tl->tableHeight();
+			std::string tableWidth = tl->tableWidth();
 		UT_sint32 i_tableheight = tl->getTableHeight();
 		UT_sint32 i_tablewidth = tl->getTableWidth();
 
 		if( i_tablewidth > 0)
 		{
-            m_vecProps.addOrReplaceProp("table-width", tableWidth.c_str());
+			m_vecProps.addOrReplaceProp("table-width", tableWidth.c_str());
 			setWidth(tableWidth.c_str());
 		}
 		else
