@@ -2646,6 +2646,13 @@ UT_Error IE_Imp_RTF::_parseText()
 			UT_DEBUGMSG(("FlushStoredChars()\n"));
 		}
 	}
+
+	/* m_stateStack.getDepth() == 0 if the functions PushRTFState and PopRTFState
+	   have been called the same number of times. Each call to PushRTFState on an
+	   opening bracket ("{") should be followed by a call to PopRTFState on the
+	   corresponding closing bracket ("}").*/
+	UT_ASSERT(m_stateStack.getDepth() == 0);
+
 //	UT_DEBUGMSG(("dumping document\n"));
 //	getDoc()->__dump(stderr);
 	return ok ? UT_OK : UT_ERROR;
@@ -8913,6 +8920,7 @@ bool IE_Imp_RTF::ReadRDFTriples()
 	PD_DocumentRDFMutationHandle m = rdf->createMutation();
 	/*UT_Error e = */loadRDFXML( m, rdfxml );
 	m->commit();
+	PopRTFState();
 	UT_DEBUGMSG(("rdf triples after read of rdf tag size:%ld\n", (long)rdf->size() ));
 	return true;
 }
@@ -12533,6 +12541,7 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 			break;
 		}
 	} while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
+	PopRTFState();
 	return true;
 }
 
