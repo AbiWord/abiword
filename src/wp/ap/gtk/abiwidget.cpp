@@ -2031,7 +2031,7 @@ abi_widget_init (AbiWidget * abi)
 	gtk_widget_set_can_focus(GTK_WIDGET(abi), true);
 	gtk_widget_set_receives_default(GTK_WIDGET(abi), true);
 	gtk_widget_set_can_default(GTK_WIDGET(abi), true);
-	gtk_widget_set_has_window(GTK_WIDGET(abi), false);
+	gtk_widget_set_has_window(GTK_WIDGET(abi), true);
 }
 
 static void
