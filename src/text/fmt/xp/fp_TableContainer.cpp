@@ -127,8 +127,8 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bIsSelected(false),
 	  m_bDirty(true),
 	  m_bIsRepeated(false),
-	  m_iVertAlign(0),
 	  m_bHeaderCell(false),
+	  m_iVertAlign(0),
 	  m_pHeader(NULL),
 	  m_bIsToBeDisplaced(false),
 	  m_iCellPos(0),
@@ -2335,7 +2335,6 @@ bool fp_CellContainer::partiallyInsideBrokenTable(fp_TableContainer *pBroke) con
 	UT_sint32 iCellTop = getiTopY();
 	UT_sint32 iCellBot = getiBotY();
 	UT_sint32 iYBreak = pBroke->getYBreak();
-	UT_sint32 iYBottom = pBroke->getYBottom();
 
 	if(iCellTop <= iYBreak)
 	{
@@ -4573,7 +4572,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	UT_DEBUGMSG(("VBreak at %d\n",vpos));
 	xxx_UT_DEBUGMSG(("VBreak for %x first\n %d",this,countBrokenTables()));
 	fp_TableHeader *pHeader = NULL;
-	fp_TableHeader *pTabHeader;
+	fp_TableHeader *pTabHeader  = NULL;
 	if((getMasterTable() && getMasterTable()->getHeaderObject()))
 	{
 		pTabHeader = getMasterTable()->getHeaderObject();
@@ -7047,7 +7046,6 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 	UT_sint32 col_y=0;
 	bool bClear=false;
 	fp_TableContainer *pNext=static_cast<fp_TableContainer *>(getHeaderPointer()->getNext());
-	fp_TableContainer *pOwnContainer=static_cast<fp_TableContainer *>(getHeaderPointer());
 	getScreenPositions(pNext,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bClear);
 
 	if(pClipRect)
@@ -7208,13 +7206,13 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	}
 	pCell=pMaster->getCellAtRowColumn(m_iRowNumber-1,0);
 	m_pFirstCachedCell=pCell;
-	fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
+	//fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
 
 	UT_sint32 iCount=0,iNoColumns=pMaster->getNumCols();
 	UT_sint32 iHeightCount=0,iPrevHeight=0,iMaxBot=0,iLeftMost=0,iPrevBot=pDA->yoff-42;
 	UT_sint32 iColOffsets[iNoColumns];
 
-	while(pCell /*&& (pCell != pStopCell) && (iCount<m_iTotalNoOfCells)*/)
+	while(pCell)
 	{
 	       pCell->setHeaderPointer(this);
 	       iCount++;
