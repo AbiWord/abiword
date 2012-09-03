@@ -339,6 +339,7 @@ void AP_UnixDialog_FormatTOC::runModeless(XAP_Frame * pFrame)
 	_connectSignals();
 	abiSetupModelessDialog(GTK_DIALOG(mainWindow),pFrame,this,GTK_RESPONSE_CLOSE);
 	startUpdater();
+	s_DetailsLevel_changed(_getWidget("wDetailsLevel"), this);
 }
 
 GtkWidget * AP_UnixDialog_FormatTOC::_getWidget(const char * szNameBase, UT_sint32 iLevel)
