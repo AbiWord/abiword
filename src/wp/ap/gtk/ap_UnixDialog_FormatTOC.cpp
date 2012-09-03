@@ -211,12 +211,7 @@ void AP_UnixDialog_FormatTOC::setStyle(GtkWidget * wid)
 
 void AP_UnixDialog_FormatTOC::setSensitivity(bool bSensitive)
 {
-	gboolean gSensitive = TRUE;
-	if(!bSensitive)
-	{
-		gSensitive = FALSE;
-	}
-	gtk_widget_set_sensitive (m_wApply,gSensitive);
+	gtk_widget_set_sensitive (m_wApply, bSensitive ? TRUE : FALSE);
 }
 
 void AP_UnixDialog_FormatTOC::destroy(void)
