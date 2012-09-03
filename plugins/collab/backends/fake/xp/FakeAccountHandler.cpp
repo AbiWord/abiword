@@ -295,7 +295,7 @@ bool FakeAccountHandler::_createSession()
 	{
 		UT_DEBUGMSG(("Starting a locally controlled collaboration session: %s\n", sSessionId.utf8_str()));
 		// FIXME: we need to set the proper collab id and master descriptor
-		m_pSession = pManager->startSession(m_pDoc, sSessionId, NULL, "fake://master");
+		m_pSession = pManager->startSession(m_pDoc, sSessionId, this, true, NULL, "fake://master");
 	}
 	else
 	{
@@ -320,8 +320,7 @@ bool FakeAccountHandler::_createSession()
 		}
 		
 		addBuddy(pCollaborator);
-		XAP_Frame* pFrame = XAP_App::getApp()->newFrame(); // FIXME: this is a memory leak
-		m_pSession = new AbiCollab(sSessionId, m_pDoc, sDocUUID /* FIXME: this is the local doc uuid, is that valid?? */, jsrre.m_iRev, pCollaborator, pFrame);
+		m_pSession = new AbiCollab(sSessionId, m_pDoc, sDocUUID /* FIXME: this is the local doc uuid, is that valid?? */, jsrre.m_iRev, pCollaborator, this, true);
 		pManager->joinSession(m_pSession, pCollaborator);
 	}
 

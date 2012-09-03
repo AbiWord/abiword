@@ -64,6 +64,8 @@ public:
 		{ return false; }
 	virtual void							forceDisconnectBuddy(BuddyPtr pBuddy);
 	virtual bool							recognizeBuddyIdentifier(const std::string& identifier);
+	virtual bool							hasPersistentAccessControl()
+		{ return true; }
 
 	// session management
 	virtual bool							allowsSessionTakeover()

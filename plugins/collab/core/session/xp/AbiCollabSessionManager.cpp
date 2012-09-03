@@ -94,6 +94,9 @@
 #ifdef ABICOLLAB_HANDLER_SIPSIMPLE
 #include <backends/sipsimple/unix/SIPSimpleUnixAccountHandler.h>
 #endif
+#ifdef ABICOLLAB_HANDLER_FAKE
+#include <backends/fake/xp/FakeAccountHandler.h>
+#endif
 
 // event includes
 #include <account/xp/Event.h>
@@ -286,6 +289,10 @@ bool AbiCollabSessionManager::registerAccountHandlers()
 #endif
 #ifdef ABICOLLAB_HANDLER_SIPSIMPLE
 	m_regAccountHandlers[SIPSimpleAccountHandler::getStaticStorageType()] = SIPSimpleAccountHandlerConstructor;
+#endif
+#ifdef ABICOLLAB_HANDLER_FAKE
+	AccountHandler *pFakeHandler = new FakeAccountHandler("FakeAbiCollabBackend", NULL);
+	addAccount(pFakeHandler);
 #endif
 	return true;
 }
