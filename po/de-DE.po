@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-08-20 11:38+0200\n"
-"PO-Revision-Date: 2012-08-20 11:38+0200\n"
+"PO-Revision-Date: 2012-09-03 16:19+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -6205,7 +6205,7 @@ msgstr "Zellen teilen"
 #. STYLE_SQUARELIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Square List"
-msgstr "Quadrat"
+msgstr "Quadrate"
 
 #. MENU_LABEL_FMT_STYLE
 #: po/tmp/ap_String_Id.h
