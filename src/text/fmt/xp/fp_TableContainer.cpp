@@ -4389,33 +4389,6 @@ void fp_TableContainer::breakCellsAt(UT_sint32 vpos)
 		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 }
-/*!
- \Function created for debugging purpose.
- */
-UT_sint32 fp_TableContainer::countBrokenTables()
-{
-	fp_TableContainer *pMaster = NULL;
-	if(isThisBroken())
-	{
-		pMaster = getMasterTable();
-	}
-	else
-	{
-		pMaster=this;
-	}
-	UT_sint32 count=0;
-	fp_TableContainer *pCon = pMaster->getFirstBrokenTable();
-	if(pCon && pCon->getPrev() != NULL)
-	{
-		//count++;
-	}
-	while(pCon)
-	{
-		count++;
-		pCon=static_cast<fp_TableContainer*>(pCon->getNext());
-	}
-	return count;
-}
 
 /*!
  \Function created for debugging purpose.
