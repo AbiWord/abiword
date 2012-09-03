@@ -157,6 +157,17 @@ static void s_response_triggered(GtkWidget * widget, gint resp, AP_UnixDialog_Fo
 	  abiDestroyWidget(widget);
 }
 
+static gboolean s_Text_changed (GtkWidget *widget, GdkEvent */*event*/, AP_UnixDialog_FormatTOC *me)
+{
+	UT_UTF8String sVal(gtk_entry_get_text(GTK_ENTRY(widget)));
+	UT_UTF8String sProp;
+	sProp = static_cast<const char *>(g_object_get_data(G_OBJECT(widget), "toc-prop"));
+	UT_String sNum = UT_String_sprintf("%d", me->getDetailsLevel());
+	sProp += sNum.c_str();
+	me->setTOCProperty(sProp, sVal);
+	return FALSE;
+}
+
 XAP_Dialog * AP_UnixDialog_FormatTOC::static_constructor(XAP_DialogFactory * pFactory,
 														  XAP_Dialog_Id id)
 {
@@ -826,5 +837,13 @@ void  AP_UnixDialog_FormatTOC::_connectSignals(void)
 	g_signal_connect(G_OBJECT(_getWidget("wTabLeaderChoose")),
 					 "changed",
 					 G_CALLBACK(s_TabLeader_changed),
+					 (gpointer) this);
+	g_signal_connect(G_OBJECT(_getWidget("edTextBefore")),
+					 "focus-out-event",
+					 G_CALLBACK(s_Text_changed),
+					 (gpointer) this);
+	g_signal_connect(G_OBJECT(_getWidget("edTextAfter")),
+					 "focus-out-event",
+					 G_CALLBACK(s_Text_changed),
 					 (gpointer) this);
 }
