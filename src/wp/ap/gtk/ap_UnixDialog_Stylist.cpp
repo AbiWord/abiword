@@ -35,6 +35,38 @@
 #include "ap_Dialog_Id.h"
 #include "ap_UnixDialog_Stylist.h"
 
+static gint s_compare (GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b, gpointer /*userdata*/)
+{
+	GtkTreePath *path;
+	gint depth, row1, row2, res;
+	gchar *style1, *style2;
+
+	path = gtk_tree_model_get_path(model, a);	
+	depth = gtk_tree_path_get_depth(path);
+	
+	if (depth == 1)
+	{
+		gtk_tree_model_get(model, a, 1, &row1, -1);
+		gtk_tree_model_get(model, b, 1, &row2, -1);
+		
+		res = row1 - row2;
+	}
+	else
+	{
+		gtk_tree_model_get(model, a, 0, &style1, -1);
+		gtk_tree_model_get(model, b, 0, &style2, -1);
+	
+		res = g_utf8_collate(style1, style2);
+	
+		g_free(style1);
+		g_free(style2);
+	}
+	
+	gtk_tree_path_free(path);
+	
+	return res;
+}
+
 static void s_types_clicked(GtkTreeView *treeview,
                             AP_UnixDialog_Stylist * dlg)
 {
@@ -130,7 +162,9 @@ void AP_UnixDialog_Stylist::event_Close(void)
 
 void AP_UnixDialog_Stylist::setStyleInGUI(void)
 {
-	UT_sint32 row,col;
+	GtkTreeIter child, parent;
+	gboolean itering;
+	gchar *entry;
 	UT_UTF8String sCurStyle = *getCurStyle();
 
 	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
@@ -142,13 +176,34 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 	if(isStyleTreeChanged())
 		_fillTree();
 
-	getStyleTree()->findStyle(sCurStyle,row,col);
-	UT_DEBUGMSG(("After findStyle row %d col %d col \n",row,col));
-	UT_UTF8String sPathFull = UT_UTF8String_sprintf("%d:%d",row,col);
-	UT_UTF8String sPathRow = UT_UTF8String_sprintf("%d",row);
-	UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.utf8_str()));
-	GtkTreePath * gPathRow = gtk_tree_path_new_from_string (sPathRow.utf8_str());
-	GtkTreePath * gPathFull = gtk_tree_path_new_from_string (sPathFull.utf8_str());
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_wStyleList)); 
+	itering = gtk_tree_model_get_iter_first(model, &parent);
+
+	while (itering)
+	{
+		if (gtk_tree_model_iter_children(model, &child, &parent))
+		{
+			do
+			{
+				gtk_tree_model_get(model, &child, 0, &entry, -1);
+		
+				if (strcmp(sCurStyle.utf8_str(), entry) == 0)
+				{
+					itering = FALSE;
+					break;
+				}
+			
+				g_free(entry);
+			
+			}
+			while (gtk_tree_model_iter_next(model, &child));
+		}
+		
+		if (itering) itering = gtk_tree_model_iter_next(model, &parent);
+	}
+
+	GtkTreePath *gPathFull = gtk_tree_model_get_path(model, &child); 
+	GtkTreePath *gPathRow = gtk_tree_model_get_path(model, &parent); 
 	gtk_tree_view_expand_row( GTK_TREE_VIEW(m_wStyleList),gPathRow,TRUE);
 	gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE,0.5,0.5);
 	gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE);
@@ -342,7 +397,10 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	}
 
 	// create a new treeview
-	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (m_wModel));
+	GtkTreeSortable *sort = GTK_TREE_SORTABLE(m_wModel);
+	gtk_tree_sortable_set_sort_func(sort, 0, s_compare, NULL, NULL);
+	gtk_tree_sortable_set_sort_column_id(sort, 0, GTK_SORT_ASCENDING);     
+	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (sort));
 	g_object_unref (G_OBJECT (m_wModel));
 	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (m_wStyleList), true);
 
