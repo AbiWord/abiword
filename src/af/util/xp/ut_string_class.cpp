@@ -1073,6 +1073,7 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 // Warning, warning!!! lots of brutal const casts and assignments into
 // strings to handle utf8 encoding.
 //
+	size_t offset = 0;
 	UT_UTF8String sWork ( sProp );
 	sWork += ":";
 	const char * szWork = sWork.utf8_str();
@@ -1099,6 +1100,7 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 			return;
 		}
 		szLoc = szLocCheck;
+		offset = 1;
 	}	    
 
 	UT_sint32 locLeft = static_cast<UT_sint32>(reinterpret_cast<size_t>(szLoc) - reinterpret_cast<size_t>(szProps));
@@ -1124,7 +1126,7 @@ void UT_UTF8String_removeProperty(UT_UTF8String & sPropertyString, const UT_UTF8
 	//
 	// Look for ";" to get right part
 	//
-	const char * szDelim = strchr(szLoc,';');
+	const char * szDelim = strchr(szLoc + offset,';');
 	if(szDelim == NULL)
 	{
 		// No properties after this, just assign and return
