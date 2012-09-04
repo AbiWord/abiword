@@ -2242,6 +2242,9 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 
 	PangoFont * pf = m_pPFont->getPangoFont();
 	PangoRectangle LR;
+	PangoFontset *pfs = NULL;
+	bool bDoFontSubstitution = false;
+	bool bClear_pf = false;
 	
 	for(int i = 0; i < iItemCount; ++i)
 	{
@@ -2256,6 +2259,22 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 			return;
 		}
 
+		if (bDoFontSubstitution)
+		{
+			if (bClear_pf)
+			{
+				g_object_unref(pf);
+			}
+			UT_ASSERT(pfs);
+			UT_sint32 fontSize = pango_font_description_get_size(pango_font_describe(m_pPFont->getPangoFont()));
+			pf = pango_fontset_get_font (pfs, g_utf8_get_char (utf8.utf8_str()+pItem->offset));
+			PangoFontDescription * pfd = pango_font_describe (pf);
+			pango_font_description_set_size (pfd, fontSize*m_iDeviceResolution/getResolution());
+			UT_ASSERT(pfd);
+			pf = pango_context_load_font(getLayoutContext(), pfd);
+			pango_font_description_free(pfd);
+			bClear_pf = true;
+		}
 		g_object_unref(pItem->analysis.font);
 		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
 
@@ -2263,6 +2282,24 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 					pItem->length,
 					&(pItem->analysis),
 					pGstring);
+
+		if (!bDoFontSubstitution)
+		{
+			// The following code only checks the first character of utf8
+			// to see if a font substitution is needed
+			// TODO: modify code so that it can handle a string where multiple
+			//       fonts are needed.
+			if (pGstring->glyphs[0].glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+			{
+				bDoFontSubstitution = true;
+				pfs = pango_font_map_load_fontset (getFontMap(),getContext(),
+												   m_pPFont->getPangoDescription(),
+												   pItem->analysis.language);
+				i--;
+				continue;
+			}
+		}
+
 		if(pCharWidth)
 		{
 			for(int j=0; j<pGstring->num_glyphs; j++)
@@ -2285,6 +2322,15 @@ void GR_CairoGraphics::drawChars(const UT_UCSChar* pChars,
 	if(pGstring)
 		pango_glyph_string_free(pGstring);
 	_pango_item_list_free(pItems);
+	if(pfs)
+	{
+		g_object_unref((GObject*)pfs);
+		pfs = NULL;
+	}
+	if (bClear_pf)
+	{
+		g_object_unref(pf);
+	}
 }
 
 UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
@@ -2334,6 +2380,10 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 	if (height)
 		*height = 0;
 	
+	PangoFontset *pfs = NULL;
+	bool bDoFontSubstitution = false;
+	bool bClear_pf = false;
+
 	while (l)
 	{
 		PangoItem *pItem = (PangoItem*)l->data;
@@ -2345,6 +2395,23 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 			goto cleanup;
 		}
 
+		if (bDoFontSubstitution)
+		{
+			if (bClear_pf)
+			{
+				g_object_unref(pf);
+			}
+			UT_ASSERT(pfs);
+			UT_sint32 fontSize = pango_font_description_get_size(pango_font_describe(m_pPFont->getPangoFont()));
+			pf = pango_fontset_get_font (pfs, g_utf8_get_char (utf8.utf8_str()+pItem->offset));
+			PangoFontDescription * pfd = pango_font_describe (pf);
+			pango_font_description_set_size (pfd, fontSize);
+			UT_ASSERT(pfd);
+			pf = pango_context_load_font(getLayoutContext(), pfd);
+			pango_font_description_free(pfd);
+			bClear_pf = true;
+		}
+
 		// the PangoItem has to take ownership of that.
 		g_object_unref(pItem->analysis.font);
 		pItem->analysis.font = (PangoFont*)g_object_ref((GObject*)pf);
@@ -2353,6 +2420,23 @@ UT_uint32 GR_CairoGraphics::measureString(const UT_UCSChar * pChars,
 					pItem->length,
 					&(pItem->analysis),
 					pGstring);
+
+		if (!bDoFontSubstitution)
+		{
+			// The following code only checks the first character of utf8
+			// to see if a font substitution is needed
+			// TODO: modify code so that it can handle a string where multiple
+			//       fonts are needed.
+			if (pGstring->glyphs[0].glyph & PANGO_GLYPH_UNKNOWN_FLAG)
+			{
+				UT_DEBUGMSG(("How MANY TIMES?\n"));
+				bDoFontSubstitution = true;
+				pfs = pango_font_map_load_fontset (getFontMap(),getContext(),
+												   m_pPFont->getPangoDescription(),
+												   pItem->analysis.language);
+				continue;
+			}
+		}
 
 		pango_glyph_string_extents(pGstring, pf, NULL, &LR);
 		iWidth += (UT_uint32)(((double) LR.width + (double)LR.x)/PANGO_SCALE);
@@ -2442,6 +2526,16 @@ cleanup:
 		pango_glyph_string_free(pGstring);
 
 	_pango_item_list_free(pItems);
+	if(pfs)
+	{
+		g_object_unref((GObject*)pfs);
+		pfs = NULL;
+	}
+	if (bClear_pf)
+	{
+		g_object_unref(pf);
+	}
+
 
 	return iWidth;
 }
