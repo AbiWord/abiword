@@ -17,7 +17,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-08-20 11:38+0200\n"
-"PO-Revision-Date: 2012-09-03 16:19+0200\n"
+"PO-Revision-Date: 2012-09-04 15:20+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -1646,17 +1646,17 @@ msgstr "&Mitwirkende"
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
 msgid "Can not insert a Break inside a table"
-msgstr "In Tabellen kann kein Wechsel eingefügt werden"
+msgstr "In Tabellen kann kein Wechsel eingefügt werden."
 
 #. MSG_NoBreakInsideFrame
 #: po/tmp/ap_String_Id.h
 msgid "Can not insert a Break inside a text box"
-msgstr "In einen Textrahmen kann kein Wechsel eingefügt werden"
+msgstr "In einen Textrahmen kann kein Wechsel eingefügt werden."
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h
 msgid "Cannot delete this style"
-msgstr "Diese Stilvorlage kann nicht gelöscht werden"
+msgstr "Diese Stilvorlage kann nicht gelöscht werden."
 
 #. DLG_Styles_ErrStyleBuiltin
 #: po/tmp/ap_String_Id.h
@@ -2163,7 +2163,7 @@ msgstr "Datei »%s« konnte nicht zum Schreiben geöffnet werden"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Could not open file %s."
-msgstr "Datei »%s« konnte nicht geöffnet werden."
+msgstr "Datei »%s« konnte nicht geöffnet werden"
 
 #. MSG_IE_CouldNotWrite
 #: po/tmp/ap_String_Id.h
@@ -2175,7 +2175,7 @@ msgstr "Datei »%s« konnte nicht geschrieben werden"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Could not write to the file %s."
-msgstr "Datei »%s« konnte nicht geschrieben werden."
+msgstr "Datei »%s« konnte nicht geschrieben werden"
 
 #. MENU_STATUSLINE_TOOLS_WORDCOUNT
 #: po/tmp/ap_String_Id.h
@@ -2910,7 +2910,7 @@ msgstr "Fehler beim Ausführen von Skript »%s«."
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Error importing file %s."
-msgstr "Fehler beim Importieren der Datei »%s«."
+msgstr "Fehler beim Importieren der Datei »%s«"
 
 #. MSG_SaveFailedExport
 #: po/tmp/ap_String_Id.h
@@ -7683,7 +7683,7 @@ msgstr "Inhaltsverzeichnis 4"
 #. STYLE_TOCHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Contents Header"
-msgstr "Inhaltsverzeichnis Überschrift"
+msgstr "Inhaltsverzeichnis (Überschrift)"
 
 #. DLG_UP_Copies
 #: po/tmp/xap_String_Id.h
@@ -7874,12 +7874,12 @@ msgstr "Endnote"
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h
 msgid "Endnote Reference"
-msgstr "Verweis auf Endnote"
+msgstr "Endnotenverweis"
 
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h
 msgid "Endnote Text"
-msgstr "Text der Endnote"
+msgstr "Endnotentext"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h
@@ -8000,12 +8000,12 @@ msgstr "Fußnote"
 #. STYLE_FOOTREFERENCE
 #: po/tmp/xap_String_Id.h
 msgid "Footnote Reference"
-msgstr "Verweis auf Fußnote"
+msgstr "Fußnotenverweis"
 
 #. STYLE_FOOTTEXT
 #: po/tmp/xap_String_Id.h
 msgid "Footnote Text"
-msgstr "Text der Fußnote"
+msgstr "Fußnotentext"
 
 #. DLG_ABOUT_URL
 #: po/tmp/xap_String_Id.h
