@@ -2934,7 +2934,7 @@ void FL_DocLayout::updateLayout()
 	fl_SectionLayout* pSL = m_pFirstSection;
 	while (pSL)
 	{
-	        if(!isLayoutFilling() || (pSL->getType() == FL_SECTION_DOC))
+		if(!isLayoutFilling())
 		{
 		        pSL->updateLayout(false);
 		}
