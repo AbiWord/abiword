@@ -134,6 +134,21 @@ void pt_PieceTable::s_getLocalisedStyleName(const char *szStyle, UT_UTF8String &
 	
 }
 
+/*
+	Gets the style name from its localised name
+*/
+const char *pt_PieceTable::s_getUnlocalisedStyleName (const char *szLocStyle)
+{		
+	static XAP_App *pApp = XAP_App::getApp();
+	const XAP_StringSet *pSS = pApp->getStringSet();
+
+	for (int n = 0; stLocalised[n].pStyle; n++)
+		if (strcmp(szLocStyle, pSS->getValue(stLocalised[n].nID)) == 0)
+			return stLocalised[n].pStyle;
+
+	return szLocStyle;
+}
+
 bool pt_PieceTable::_loadBuiltinStyles(void)
 {
 	/* 	
