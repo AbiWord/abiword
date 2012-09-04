@@ -296,24 +296,6 @@ void AP_Dialog_Lists::Apply(void)
 	}
 
 /*!
- *
- * OK this is failsafe code incase the user has changed the font but wants a
- * bullet list anyway. We don't let then!
- */
-	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
-	{
-#ifdef WITH_STANDARD_SYMBOLS_L
-		m_pszFont = "Standard Symbols L";
-#else 
-		m_pszFont = "Symbol";
-#endif		
-	}
-	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
-	{
-		m_pszFont = _getDingbatsFontName();
-	}
-
-/*!
  * Just to make things even more confusing this method is also used in a Modal
  * mannor by the styles dialog. This method is called when the users clicks "OK"
  * on the modal dialog. When that happens we fill an output vector with all the
@@ -633,21 +615,9 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 		m_pszDecimal = ".";
 		m_iStartValue = 0;
 	}
-	if(m_NewListType == BULLETED_LIST || m_NewListType == IMPLIES_LIST)
-	{
-#ifdef WITH_STANDARD_SYMBOLS_L
-		m_pszFont = "Standard Symbols L";
-#else 
-		m_pszFont = "Symbol";
-#endif		
-	}
-	else if (m_NewListType == NOT_A_LIST)
+	if (m_NewListType == NOT_A_LIST)
 	{
 		m_pszFont = "NULL";
-	}
-	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
-	{
-		m_pszFont = _getDingbatsFontName();
 	}
 
 	if(props_in)
@@ -685,32 +655,13 @@ void  AP_Dialog_Lists::fillFakeLabels(void)
 			m_NewListType = m_DocListType;
 		m_bguiChanged = false;
 	}
-/*!
- * For Bullet type lists we don't allow the user to set either the delimimiter
- * or font from their specified values. Here we override whatever was in them
- * to the values they SHOULD be given the list type.
- */
-	if(  m_NewListType == BULLETED_LIST ||
-		 m_NewListType == IMPLIES_LIST  ||
-		 m_NewListType == DASHED_LIST )
-	{
-#ifdef WITH_STANDARD_SYMBOLS_L
-		m_pszFont = "Standard Symbols L";
-#else 
-		m_pszFont = "Symbol";
-#endif		
-		m_pszDelim = "%L";
-	}
-	else if (m_NewListType == NOT_A_LIST)
+
+	if (m_NewListType == NOT_A_LIST)
 	{
 		m_pszFont = "NULL";
 		m_pszDelim = "%L";
 	}
-	else if(m_NewListType > DASHED_LIST && m_NewListType < OTHER_NUMBERED_LISTS)
-	{
-		m_pszFont = _getDingbatsFontName();
-		m_pszDelim = "%L";
-	}
+
 /*!
  * OK fill the preview variables with what they need and load them into
  * the preview class.
@@ -1130,10 +1081,6 @@ AV_View * AP_Dialog_Lists::getAvView(void)
 	return pFrame->getCurrentView();
 }
 
-const gchar* AP_Dialog_Lists::_getDingbatsFontName() const
-{
-	return "Dingbats";
-}
 
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////

@@ -549,51 +549,51 @@ void    fl_AutoNum::_getLabelstr( UT_UCSChar labelStr[], UT_uint32 * insPoint,
 		break;
 
 	case BULLETED_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xb7; // was UCS_BULLET;
+		labelStr[(*insPoint)++] =  0x2022;
 		break;
 
 	case DASHED_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS '-';
+		labelStr[(*insPoint)++] =  0x002D;
 		break;
 
 	case SQUARE_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x6E;
+		labelStr[(*insPoint)++] =  0x25A0;
 		break;
 
 	case TRIANGLE_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x73;
+		labelStr[(*insPoint)++] =  0x25B2;
 		break;
 
 	case DIAMOND_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xA9;
+		labelStr[(*insPoint)++] =  0x2666;
 		break;
 
 	case STAR_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x53;
+		labelStr[(*insPoint)++] =  0x2733;
 		break;
 
 	case IMPLIES_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xDE;
+		labelStr[(*insPoint)++] =  0x21D2;
 		break;
 
 	case TICK_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x33;
+		labelStr[(*insPoint)++] =  0x2713;
 		break;
 
 	case BOX_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x72;
+		labelStr[(*insPoint)++] =  0x2752;
 		break;
 
 	case HAND_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0x2B;
+		labelStr[(*insPoint)++] =  0x261E;
 		break;
 
 	case HEART_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xAA;
+		labelStr[(*insPoint)++] =  0x2665;
 		break;
 
 	case ARROWHEAD_LIST:
-		labelStr[(*insPoint)++] =  CONV_TO_UCS 0xE3;
+		labelStr[(*insPoint)++] =  0x27A3;
 		break;
 
 	default:

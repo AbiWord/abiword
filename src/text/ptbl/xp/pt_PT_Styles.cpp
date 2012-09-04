@@ -227,52 +227,40 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 	UT_String_sprintf(stTmp, list_fmt,"Upper Roman List","1", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", ".");
 	_s("Upper Roman List",false,"P", "Numbered List", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Bullet List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", 
-#ifdef WITH_STANDARD_SYMBOLS_L
-	                                                                                                                            "Standard Symbols L",
-#else																				
-	                                                                                                                            "Symbol",
-#endif																				                                                                                                                               
-                                                                                                                                         "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Bullet List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily,"NULL");
 
 	_s("Bullet List",true, "P", "", "Current Settings", stTmp.c_str());
-	UT_String_sprintf(stTmp, list_fmt, "Implies List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", 
-#ifdef WITH_STANDARD_SYMBOLS_L
-	                                                                                                                            "Standard Symbols L",
-#else																				
-	                                                                                                                            "Symbol",
-#endif																				                                                                                                                               
-                                                                                                                                         "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Implies List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Implies List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	UT_String_sprintf(stTmp, list_fmt, "Dashed List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "NULL", "NULL");
 	_s("Dashed List",true, "P", "", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Square List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Square List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Square List",false, "P", "", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Triangle List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Triangle List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Triangle List",false, "P", "", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Diamond List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Diamond List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Diamond List",false, "P", "", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Star List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Star List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Star List",false, "P", "", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Tick List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Tick List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Tick List",false, "P", "", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Box List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Box List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Box List",false, "P", "", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Hand List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Hand List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Hand List",false, "P", "", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Heart List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Heart List",false, "P", "", "Current Settings", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, list_fmt, "Arrowhead List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", "Dingbats", "NULL");
+	UT_String_sprintf(stTmp, list_fmt, "Arrowhead List","0", LIST_DEFAULT_INDENT, LIST_DEFAULT_INDENT_LABEL, "transparent", "%L", pszFamily, "NULL");
 	_s("Arrowhead List",false, "P", "", "Current Settings", stTmp.c_str());
 
 	// pszFamily is the nearest font to Arial found in the system

@@ -429,7 +429,7 @@ void  AP_UnixDialog_Lists::styleChanged(gint type)
 								GTK_TREE_MODEL(m_wListStyleBulleted_menu.obj()));
 		gtk_combo_box_set_active(m_wListTypeBox, 1);
 		setNewListType(BULLETED_LIST);
-		gtk_widget_set_sensitive(GTK_WIDGET(m_wFontOptions), false);
+		gtk_widget_set_sensitive(GTK_WIDGET(m_wFontOptions), true);
 		gtk_widget_set_sensitive(m_wStartSpin, false);
 		gtk_widget_set_sensitive(m_wDelimEntry, false);
 		gtk_widget_set_sensitive(m_wDecimalEntry, false);		

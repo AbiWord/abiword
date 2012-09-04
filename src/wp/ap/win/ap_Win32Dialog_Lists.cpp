@@ -1187,9 +1187,3 @@ void AP_Win32Dialog_Lists::autoupdateLists(UT_Worker * pWorker)
 		}
 	}
 }
-
-const gchar* AP_Win32Dialog_Lists::_getDingbatsFontName() const
-{
-	return "Dingbats";
-}
-

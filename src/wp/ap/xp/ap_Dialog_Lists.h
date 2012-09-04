@@ -119,7 +119,6 @@ public:
 	bool						isModal(void) const { return m_bIsModal;}
 
 protected:
-	virtual const gchar*	_getDingbatsFontName() const;
 
 	// declare JavaBean-like accessors for private variable needed in the
 	// platform code.
