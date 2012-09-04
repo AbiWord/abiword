@@ -37,6 +37,7 @@
 #include "fv_View.h"
 #include "pd_Style.h"
 #include "ut_string_class.h"
+#include "pt_PieceTable.h"
 
 #include "gr_UnixCairoGraphics.h"
 #include "xap_Gtk2Compat.h"
@@ -405,7 +406,7 @@ void AP_UnixDialog_Styles::event_DeleteClicked(void)
 		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
 		GtkTreeIter iter;
 		gtk_tree_model_get_iter(model, &iter, m_selectedStyle);
-		gtk_tree_model_get(model, &iter, 0, &style, -1);
+		gtk_tree_model_get(model, &iter, 1, &style, -1);
 
 		if (!style)
 			return; // ok, nothing's selected. that's fine
@@ -603,13 +604,13 @@ void AP_UnixDialog_Styles::_connectSignals(void) const
 void AP_UnixDialog_Styles::_populateCList(void)
 {
 	const PD_Style * pStyle;
-	const gchar * name = NULL;
+	const gchar *org_name, *loc_name;
 
 	size_t nStyles = getDoc()->getStyleCount();
 	xxx_UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
 	
 	if (m_listStyles == NULL) {
-		m_listStyles = gtk_list_store_new (1, G_TYPE_STRING);
+		m_listStyles = gtk_list_store_new(2, G_TYPE_STRING, G_TYPE_STRING);
 		GtkTreeModel *sort = gtk_tree_model_sort_new_with_model (GTK_TREE_MODEL (m_listStyles));
 		gtk_tree_sortable_set_sort_column_id (GTK_TREE_SORTABLE (sort), 0, GTK_SORT_ASCENDING);
 		gtk_tree_view_set_model (GTK_TREE_VIEW(m_tvStyles), sort);
@@ -638,17 +639,21 @@ void AP_UnixDialog_Styles::_populateCList(void)
 		if (!pStyle)
 			continue;
 
-		name = pStyle->getName();
+		org_name = pStyle->getName();
+		
+		UT_UTF8String sLoc;
+		pt_PieceTable::s_getLocalisedStyleName(org_name, sLoc);
+		loc_name = sLoc.utf8_str();
 
 		if ((m_whichType == ALL_STYLES) || 
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()) ||
-			(!strcmp(m_sNewStyleName.utf8_str(), name))) /* show newly created style anyways */
+			(!strcmp(m_sNewStyleName.utf8_str(), loc_name))) /* show newly created style anyways */
 		{
 			gtk_list_store_append(m_listStyles, &iter);
-			gtk_list_store_set(m_listStyles, &iter, 0, name, -1);
+			gtk_list_store_set(m_listStyles, &iter, 0, loc_name, 1, org_name, -1);
 			
-			if (!strcmp(m_sNewStyleName.utf8_str(), name)) {
+			if (!strcmp(m_sNewStyleName.utf8_str(), loc_name)) {
 				pHighlightIter = iter;
 				highlight = true;
 			}
@@ -703,7 +708,7 @@ const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
 	GtkTreeIter iter;
 	gtk_tree_model_get_iter(model, &iter, m_selectedStyle);
-	gtk_tree_model_get(model, &iter, 0, &style, -1);
+	gtk_tree_model_get(model, &iter, 1, &style, -1);
 	
 	if (!style)
 		return NULL;
@@ -1191,7 +1196,12 @@ void AP_UnixDialog_Styles::rebuildDeleteProps(void)
  */
 void AP_UnixDialog_Styles::event_basedOn(void)
 {
+	const XAP_StringSet *pSS = m_pApp->getStringSet();
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
+	if (strcmp(psz, pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone)) == 0)
+		psz = "None";    
+	else
+		psz = pt_PieceTable::s_getUnlocalisedStyleName(psz);	
 	g_snprintf(static_cast<gchar *>(m_basedonName),40,"%s",psz);
 	addOrReplaceVecAttribs("basedon",getBasedonName());
 	updateCurrentStyle();
@@ -1203,7 +1213,12 @@ void AP_UnixDialog_Styles::event_basedOn(void)
  */
 void AP_UnixDialog_Styles::event_followedBy(void)
 {
+	const XAP_StringSet *pSS = m_pApp->getStringSet();
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
+	if (strcmp(psz, pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent)) == 0)
+		psz = "Current Settings";    
+	else
+		psz = pt_PieceTable::s_getUnlocalisedStyleName(psz);	
 	g_snprintf(static_cast<gchar *>(m_followedbyName),40,"%s",psz);
 	addOrReplaceVecAttribs("followedby",getFollowedbyName());
 }
@@ -1426,7 +1441,9 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 			m_answer = AP_Dialog_Styles::a_CANCEL;
 			return false;
 		}
-		gtk_entry_set_text (GTK_ENTRY(m_wStyleNameEntry), getCurrentStyle());
+		UT_UTF8String sLoc;
+		pt_PieceTable::s_getLocalisedStyleName(getCurrentStyle(), sLoc);
+		gtk_entry_set_text(GTK_ENTRY(m_wStyleNameEntry), sLoc.utf8_str());
 		gtk_editable_set_editable(GTK_EDITABLE(m_wStyleNameEntry),FALSE );
 	}
 	else
@@ -1470,6 +1487,8 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 	{
 		const PD_Style * pcStyle = pStyles->getNthItem(i);
 		const char * name = pcStyle->getName();
+		UT_UTF8String sLoc;
+		pt_PieceTable::s_getLocalisedStyleName(name, sLoc);
 		if(pBasedOnStyle && pcStyle == pBasedOnStyle)
 		{
 			szBasedOn = name;
@@ -1477,11 +1496,11 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		if(pFollowedByStyle && pcStyle == pFollowedByStyle)
 			szFollowedBy = name;
 		if(szCurrentStyle && strcmp(name,szCurrentStyle) != 0)
-			m_gbasedOnStyles.push_back(name);
+			m_gbasedOnStyles.push_back(sLoc.utf8_str());
 		else if(szCurrentStyle == NULL)
-			m_gbasedOnStyles.push_back(name);
+			m_gbasedOnStyles.push_back(sLoc.utf8_str());
 
-		m_gfollowedByStyles.push_back(name);
+		m_gfollowedByStyles.push_back(sLoc.utf8_str());
 	}
 	DELETEP(pStyles);
 
@@ -1506,8 +1525,13 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 	if(!isNew())
 	{
+		UT_UTF8String sLoc;
+		
 		if(pBasedOnStyle != NULL)
-			gtk_entry_set_text (GTK_ENTRY(m_wBasedOnEntry),szBasedOn);
+		{
+			pt_PieceTable::s_getLocalisedStyleName(szBasedOn, sLoc);
+			gtk_entry_set_text(GTK_ENTRY(m_wBasedOnEntry), sLoc.utf8_str());
+		}
 		else
 		{
 			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s);
@@ -1515,7 +1539,10 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 		}
 		
 		if(pFollowedByStyle != NULL)
-			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry),szFollowedBy);
+		{
+			pt_PieceTable::s_getLocalisedStyleName(szFollowedBy, sLoc);
+			gtk_entry_set_text(GTK_ENTRY(m_wFollowingEntry), sLoc.utf8_str());
+		}
 		else
 		{
 			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefCurrent,s);
