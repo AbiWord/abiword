@@ -24,6 +24,7 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "pt_PieceTable.h"
 
 #include "xap_UnixDialogHelper.h"
 
@@ -165,7 +166,7 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 	GtkTreeIter child, parent;
 	gboolean itering;
 	gchar *entry;
-	UT_UTF8String sCurStyle = *getCurStyle();
+	UT_UTF8String sLocCurStyle, sCurStyle = *getCurStyle();
 
 	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
 		updateDialog();
@@ -175,6 +176,8 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 
 	if(isStyleTreeChanged())
 		_fillTree();
+
+	pt_PieceTable::s_getLocalisedStyleName(sCurStyle.utf8_str(), sLocCurStyle);
 
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_wStyleList)); 
 	itering = gtk_tree_model_get_iter_first(model, &parent);
@@ -187,7 +190,7 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 			{
 				gtk_tree_model_get(model, &child, 0, &entry, -1);
 		
-				if (strcmp(sCurStyle.utf8_str(), entry) == 0)
+				if (strcmp(sLocCurStyle.utf8_str(), entry) == 0)
 				{
 					itering = FALSE;
 					break;
@@ -361,7 +364,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	m_wModel = gtk_tree_store_new (3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
 
 	page = 0;
-	UT_UTF8String sTmp(""); 
+	UT_UTF8String sTmp(""), sLoc; 
 	for(row= 0; row < pStyleTree->getNumRows();row++)
 	{
 		gtk_tree_store_append (m_wModel, &iter, NULL);
@@ -383,15 +386,17 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				gtk_tree_store_set (m_wModel, &child_iter, 0, sTmp.utf8_str(), 1, row,2,col+1, -1);
-				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));
+				pt_PieceTable::s_getLocalisedStyleName(sTmp.utf8_str(), sLoc);
+				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n", sLoc.utf8_str(), row, col + 1));
+				gtk_tree_store_set(m_wModel, &child_iter, 0, sLoc.utf8_str(), 1, row, 2, col + 1, -1);
 				page++;
 			}
 		}
 		else
 		{
-			xxx_UT_DEBUGMSG(("Adding style %s at row %d \n",sTmp.utf8_str(),row));
-			gtk_tree_store_set (m_wModel, &iter, 0, sTmp.utf8_str(), 1,row,2,0,-1);
+			pt_PieceTable::s_getLocalisedStyleName(sTmp.utf8_str(), sLoc);
+			xxx_UT_DEBUGMSG(("Adding style %s at row %d \n", sLoc.utf8_str(), row));
+			gtk_tree_store_set(m_wModel, &iter, 0, sLoc.utf8_str(), 1, row, 2, 0, -1);
 			page++;
 		}
 	}
