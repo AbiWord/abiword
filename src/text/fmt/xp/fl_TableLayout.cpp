@@ -539,7 +539,7 @@ void fl_TableLayout::format(void)
 	}
 	if(!m_bIsEndTableIn)
 	{
-		UT_DEBUGMSG(("Don't format TABLE coz there is no endtable yet! \n"));
+		xxx_UT_DEBUGMSG(("Don't format TABLE coz there is no endtable yet! \n"));
 		return;
 	}
 	m_bRecursiveFormat = true;
@@ -2486,7 +2486,7 @@ void fl_CellLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		UT_DEBUGMSG(("!!!!!!!!!!!!!!!!!!------------------!!!!!!!!!!!\n"));
 	}
 
-	UT_DEBUGMSG(("SEVIOR: indexAp in Cell Layout %d \n",m_apIndex));
+	xxx_UT_DEBUGMSG(("SEVIOR: indexAp in Cell Layout %d \n",m_apIndex));
 	/*
 	  TODO shouldn't we be using PP_evalProperty like
 	  the blockLayout does?

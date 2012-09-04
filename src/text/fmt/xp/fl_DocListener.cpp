@@ -636,7 +636,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 				return false;
 			}
 			fl_CellLayout * pCell = (fl_CellLayout *) pCon;
-			UT_DEBUGMSG(("SEVIOR: Appending block to cell %p \n",pCell));
+			xxx_UT_DEBUGMSG(("SEVIOR: Appending block to cell %p \n",pCell));
 			// Append a new BlockLayout to this cell
 
 			pCL = pCell->append(sdh, pcr->getIndexAP(),FL_CONTAINER_BLOCK);
@@ -797,7 +797,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 	case PTX_SectionCell:
 	{
 		UT_ASSERT(m_pCurrentSL);
-		UT_DEBUGMSG(("!!!! Append Section Cell \n"));
+		xxx_UT_DEBUGMSG(("!!!! Append Section Cell \n"));
 		
 		// Append a new CallLayout to the Current TableLayout
 		fl_ContainerLayout * pCon = getTopContainerLayout();
@@ -862,7 +862,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 	case PTX_EndCell:
 	{
 		UT_ASSERT(m_pCurrentSL);
-		UT_DEBUGMSG(("!!!! Append End Cell \n"));
+		xxx_UT_DEBUGMSG(("!!!! Append End Cell \n"));
 		fl_ContainerLayout *  pCon = popContainerLayout();
 		UT_ASSERT(pCon);
 		if(pCon == NULL)
