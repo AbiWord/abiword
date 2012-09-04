@@ -365,7 +365,6 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 	fp_Container * pCon = static_cast<fp_Container *>(this);
 	fp_Container * pPrev = NULL;
 	fp_TableContainer * pTab = NULL;
-	fp_TOCContainer * pTOC = NULL;
 	while(pCon && !pCon->isColumnType())
 	{
 		my_xoff += pCon->getX();
@@ -459,47 +458,12 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 			return;
 		}
 	}
-//
-// Correct for the offset of the column in continuous section breaks.
-//
+
 	UT_sint32 col_x =0;
 	UT_sint32 col_y =0;
-	if(pPrev && pPrev->getContainerType() == FP_CONTAINER_TABLE)
+	if(pPrev && ((pPrev->getContainerType() == FP_CONTAINER_TABLE) ||
+				 (pPrev->getContainerType() == FP_CONTAINER_TOC)))
 	{
-		pTab = static_cast<fp_TableContainer *>(pPrev);
-		fp_Container * pTopCol = NULL;
-		if(pTab->isThisBroken())
-		{
-			pTopCol = static_cast<fp_Container *>(pTab->getMasterTable()->getFirstBrokenTable()->getColumn());
-		}
-		else
-		{
-			if(pTab->getFirstBrokenTable())
-			{
-				pTopCol = static_cast<fp_Column *>(pTab->getFirstBrokenTable()->getColumn());
-			}
-			else
-			{
-				pTopCol = static_cast<fp_Column *>(pTab->getColumn());
-			}
-		}
-		if(pTopCol != NULL)
-		{
-			if(pTopCol->getContainerType() == FP_CONTAINER_COLUMN)
-			{
-				fp_Page * pPage = pTopCol->getPage();
-				if(pPage == NULL)
-				{
-					return;
-				}
-				fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
-				UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
-				if(pPage != pTab->getPage())
-				{
-					my_yoff += iColOffset;
-				}
-			}
-		}
 		if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
 		{
 			UT_sint32 col_xV =0;
@@ -513,56 +477,14 @@ void fp_VerticalContainer::getOffsets(fp_ContainerObject* pContainer, UT_sint32&
 		}
 		xoff = pCon->getX() + my_xoff + pOrig->getX();
 		yoff = pCon->getY() + my_yoff + pOrig->getY();
-	}
-	if(pPrev && pPrev->getContainerType() == FP_CONTAINER_TOC)
-	{
-		pTOC = static_cast<fp_TOCContainer *>(pPrev);
-		fp_Column * pTopCol = NULL;
-		if(pTOC->isThisBroken())
-		{
-			pTopCol = static_cast<fp_Column *>(pTOC->getMasterTOC()->getFirstBrokenTOC()->getColumn());
-		}
-		else
-		{
-			if(pTOC->getFirstBrokenTOC())
-			{
-				pTopCol = static_cast<fp_Column *>(pTOC->getFirstBrokenTOC()->getColumn());
-			}
-			else
-			{
-				pTopCol = static_cast<fp_Column *>(pTOC->getColumn());
-			}
-		}
-		if(pTopCol != NULL  && (pTopCol->getContainerType() == FP_CONTAINER_COLUMN))
-		{
-			fp_Page * pPage = pTopCol->getPage();
-			fp_Column * pFirstLeader = pPage->getNthColumnLeader(0);
-			UT_sint32 iColOffset = pTopCol->getY() - pFirstLeader->getY();
-			if(pPage != pTOC->getPage())
-			{
-				my_yoff += iColOffset;
-			}
-		}
-		if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
-		{
-			UT_sint32 col_xV =0;
-			UT_sint32 col_yV =0;
-			fp_Column * pCol = static_cast<fp_Column *>(pCon);
-			pCol->getPage()->getScreenOffsets(pCol, col_xV, col_yV);
-			pCol =static_cast<fp_Column *>(pCon->getColumn());
-			pCol->getPage()->getScreenOffsets(pCol, col_x, col_y);
-			UT_sint32 ydiff = col_yV - col_y;
-			my_yoff += ydiff;
-		}
-		xoff = pCon->getX() + my_xoff + pOrig->getX();
-		yoff = pCon->getY() + my_yoff + pOrig->getY();
-		if(pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW)
+		if ((pPrev->getContainerType() == FP_CONTAINER_TOC) &&
+			(pCon->getContainerType() != FP_CONTAINER_COLUMN_SHADOW))
 		{
 			xxx_UT_DEBUGMSG(("Not in shadow final xoff %d \n",xoff));
 			return;
 		}
-		xxx_UT_DEBUGMSG(("Offsets not FP_CONTAINER_COLUMN_SHADOW x= %d \n",xoff));
 	}
+
 	if(pCon && pCon->getContainerType() == FP_CONTAINER_COLUMN_SHADOW)
 	{
 		xoff = pCon->getX() + my_xoff + pOrig->getX();
