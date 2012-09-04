@@ -20,6 +20,7 @@
  */
 
 #include <stdlib.h>
+#include <string>
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_base64.h"
@@ -1716,9 +1717,12 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 			{
 				UT_uint32 j,len;
 				len = UT_UCS4_strlen(tmp);
-				for(j=0;j<=len;j++)
-					p[j] = (char) (unsigned char) *tmp++;
-				_rtf_chardata(p,len);
+				write(" ");
+				for(j=0;j < len;j++)
+				{
+					std::string sBullet = UT_std_string_sprintf("\\u%d",(UT_sint32)tmp[j]);
+					write(sBullet.c_str());
+				}
 			}
 			_rtf_close_brace();
 		}
@@ -2820,9 +2824,8 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
 	}
 	else
 	{
-		_rtf_nonascii_hex2(1);
-		_rtf_nonascii_hex2((UT_sint32) bulletsym);
-		write(" ");
+		std::string sBullet = UT_std_string_sprintf(" \\u%d",(UT_sint32) bulletsym);
+		write(sBullet.c_str());
 		write(";");
 		_rtf_close_brace();
 		_rtf_open_brace();
@@ -2984,7 +2987,6 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 {
 // List Type
 	UT_sint32 Param = 0;
-	UT_String fontName;
 	UT_UCSChar bulletsym=0;
 	FL_ListType lType = NUMBERED_LIST;
 	if(pAuto != NULL)
@@ -3018,63 +3020,51 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 		break;
 	case BULLETED_LIST:
 		Param = 23;
-		bulletsym = 0xb7;
-		fontName = "Symbol";
+		bulletsym = 0x2022;
 		break;
 	case DASHED_LIST:
 		Param = 23;
-		bulletsym = '-';
-		fontName = "Times New Roman";
+		bulletsym = 0x002D;
 		break;
 	case SQUARE_LIST:
 		Param = 23;
-		bulletsym = 0x6E;
-		fontName = "Dingbats";
+		bulletsym = 0x25A0;
 		break;
 	case TRIANGLE_LIST:
 		Param = 23;
-		bulletsym = 0x73;
-		fontName = "Dingbats";
+		bulletsym = 0x25B2;
 		break;
 	case DIAMOND_LIST:
 		Param = 23;
-		bulletsym = 0xA9;
-		fontName = "Dingbats";
+		bulletsym = 0x2666;
 		break;
 	case STAR_LIST:
 		Param = 23;
-		bulletsym = 0x53;
-		fontName = "Dingbats";
+		bulletsym = 0x2733;
 		break;
 	case IMPLIES_LIST:
 		Param = 23;
-		bulletsym = 0xDE;
-		fontName = "Dingbats";
+		bulletsym = 0x21D2;
 		break;
 	case TICK_LIST:
 		Param = 23;
-		bulletsym = 0x33;
-		fontName = "Dingbats";
+		bulletsym = 0x2713;
 		break;
 	case BOX_LIST:
 		Param = 23;
-		bulletsym = 0x72;
-		fontName = "Dingbats";
+		bulletsym = 0x2752;
 		break;
 	case HAND_LIST:
 		Param = 23;
-		bulletsym = 0x2B;
-		fontName = "Dingbats";
+		bulletsym = 0x261E;
 		break;
 	case HEART_LIST:
 		Param = 23;
-		bulletsym = 0xAA;
-		fontName = "Dingbats";
+		bulletsym = 0x2665;
 		break;
 	case ARROWHEAD_LIST:
 		Param = 23;
-		bulletsym = 0xE3;
-		fontName = "Dingbats";
+		bulletsym = 0x27A3;
 		break;
 	}
 	_rtf_keyword("levelnfc",Param);
@@ -3132,25 +3122,6 @@ void IE_Exp_RTF::_output_ListRTF(fl_AutoNum * pAuto, UT_uint32 iLevel)
 // Leveltext and levelnumbers
 //
 	_output_LevelText(pAuto,iLevel,bulletsym);
-//
-// Export the bullet font
-//
-	if(Param == 23)
-	{
-			{
-				_rtf_font_info fi;
-
-				if (fi.init(fontName.c_str())) {
-					UT_sint32 ifont = _findFont(&fi);
-					if(ifont < 0)
-					{
-						UT_ASSERT_NOT_REACHED();
-						ifont = 0;
-					}
-					_rtf_keyword("f",ifont);
-				}
-			}
-	}
 }
 
 /*!
