@@ -1696,6 +1696,7 @@ void fp_VerticalContainer::bumpContainers(fp_ContainerObject* pLastContainerToKe
 	}
 }
 
+
 /*!
   Create column
   \param pSectionLayout Section layout type used for this container
@@ -2029,8 +2030,14 @@ void fp_Column::layout(void)
 		iPrevY2 = iY;
 		iY += iContainerHeight;
 		iY += iContainerMarginAfter;
-		//iY +=  0.5;
-
+#if DEBUG
+		if (iY - iContainerMarginAfter > getMaxHeight())
+		{
+			UT_DEBUGMSG(("Problem; MaxColHeight: %d present height: %d\n",
+						 getMaxHeight(), iY - iContainerMarginAfter));
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
+#endif
 		pPrevContainer = pContainer;
 	}
 	// Correct height position of the last line

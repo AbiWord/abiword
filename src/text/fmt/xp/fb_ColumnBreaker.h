@@ -42,21 +42,8 @@ public:
 private:
 	fp_Page *               _getLastValidPage(void);
 	UT_sint32               _breakSection(fp_Page * pStartPage);
-	bool                    _isThisBroken(fp_Container * pCon);
-	void                    _setLastWantedVBreak(fp_Container * pCon, UT_sint32 iBreakAt);
-	UT_sint32               _getLastWantedVBreak(fp_Container * pCon);
-	bool _breakCON(fp_Container *& pOffendingContainer,
-							fp_Container *& pLastContainerToKeep,
-							int iMaxColHeight, int iWorkingColHeight,
-							int iContainerMarginAfter);
-	bool _breakTable(fp_Container *& pOffendingContainer,
-							fp_Container *& pLastContainerToKeep,
-							int iMaxColHeight, int iWorkingColHeight,
-							int iContainerMarginAfter);
-	bool _breakTOC(fp_Container *& pOffendingContainer,
-							fp_Container *& pLastContainerToKeep,
-							int iMaxColHeight, int iWorkingColHeight,
-							int iContainerMarginAfter);
+	bool                    _checkVBreakableContainer(fp_Container * pContainer, UT_sint32 iAvail);
+
 	fp_Container * _getNext(fp_Container * pCon);
 	bool           _displayAnnotations(void);
 	fp_Page *             m_pStartPage;

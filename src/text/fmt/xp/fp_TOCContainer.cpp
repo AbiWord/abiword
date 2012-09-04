@@ -397,15 +397,7 @@ void fp_TOCContainer::setFirstBrokenTOC(fp_TOCContainer * pBroke)
 {
 	if(isThisBroken())
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		fp_TOCContainer * pMaster = getMasterTOC();
-		pMaster->setFirstBrokenTOC(pBroke);
-		fp_TOCContainer * pNext = static_cast<fp_TOCContainer *>(pMaster);
-		while(pNext)
-		{
-			pNext->setFirstBrokenTOC( pBroke);
-			pNext = static_cast<fp_TOCContainer *>(pNext->getNext());
-		}
+		getMasterTOC()->setFirstBrokenTOC(pBroke);
 	}
 	m_pFirstBrokenTOC = pBroke;
 
@@ -415,14 +407,7 @@ void fp_TOCContainer::setLastBrokenTOC(fp_TOCContainer * pBroke)
 {
 	if(isThisBroken())
 	{
-		fp_TOCContainer * pMaster = getMasterTOC();
-		pMaster->setLastBrokenTOC(pBroke);
-		fp_TOCContainer * pNext = static_cast<fp_TOCContainer *>(pMaster);
-		while(pNext)
-		{
-			pNext->setLastBrokenTOC( pBroke);
-			pNext = static_cast<fp_TOCContainer *>(pNext->getNext());
-		}
+		getMasterTOC()->setLastBrokenTOC(pBroke);
 	}
 	m_pLastBrokenTOC = pBroke;
 }
@@ -470,6 +455,12 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 	{
 		return getLastBrokenTOC()->VBreakAt(vpos);
 	}
+	UT_sint32 iTotalHeight = getTotalTOCHeight();
+	if (vpos >= iTotalHeight)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return NULL;
+	}
 
 	pBroke = new fp_TOCContainer(getSectionLayout(),getMasterTOC());
 	getMasterTOC()->setLastBrokenTOC(pBroke);
@@ -483,9 +474,7 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 	setYBottom(getYBreak() + vpos -1);
 	UT_ASSERT(getHeight() >0);
 	pBroke->setYBreakHere(getYBreak()+vpos);
-	pBroke->setYBottom(getTotalTOCHeight());
-	xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken TOC %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
-	xxx_UT_DEBUGMSG(("SEVIOR????????: Previous TOC YBreak %d YBottom  %d Height of broken TOC %d \n",getYBreak(),getYBottom(),getHeight()));
+	pBroke->setYBottom(iTotalHeight);
 	UT_ASSERT(pBroke->getHeight() > 0);
 	UT_sint32 i = -1;
 //
@@ -617,7 +606,8 @@ void fp_TOCContainer::setYBottom(UT_sint32 i)
 /*!
  * The caller to this method requests a break at the vertical height
  * given. It returns the actual break height, which will always be
- * less than or equal to the requested height.
+ * less than or equal to the requested height. The function returns -1
+ * if the table does not need to be broken.
  */
 UT_sint32 fp_TOCContainer::wantVBreakAt(UT_sint32 vpos)
 {
@@ -640,7 +630,7 @@ UT_sint32 fp_TOCContainer::wantVBreakAt(UT_sint32 vpos)
 			iYBreak = pLine->getY();
 		}
 	}
-	return iYBreak;
+	return (iYBreak < getTotalTOCHeight()) ? iYBreak:-1;
 }
 
 
@@ -888,6 +878,57 @@ void fp_TOCContainer::deleteBrokenTOCs(bool bClearFirst)
 	}
 }
 
+
+/*
+  Delete all broken TOCs that follows this TOC. The first broken TOC
+  is kept if the function is called by the master TOC.
+*/
+
+void fp_TOCContainer::deleteBrokenAfter(bool bClearFirst)
+{
+	if (!isThisBroken())
+	{
+		if (getFirstBrokenTOC())
+		{
+			return getFirstBrokenTOC()->deleteBrokenAfter(bClearFirst);
+		}
+		return;
+	}
+
+	if (bClearFirst)
+	{
+		clearScreen();
+		getMasterTOC()->clearBrokenContainers();
+	}
+
+	fp_TOCContainer * pBroke = static_cast<fp_TOCContainer *>(getNext());
+	fp_TOCContainer * pNext = NULL;
+	while(pBroke)
+	{
+		pNext = static_cast<fp_TOCContainer *> (pBroke->getNext());
+		if (pBroke->getContainer())
+		{
+			UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
+			if (i >= 0)
+			{
+				pBroke->getContainer()->deleteNthCon(i);
+				pBroke->setContainer(NULL);
+			}
+		}
+		delete pBroke;
+		pBroke = pNext;
+	}
+
+	setNext(NULL);
+	if (!getPrev())
+	{
+		getMasterTOC()->setNext(NULL);
+	}
+	getMasterTOC()->setLastBrokenTOC(this);
+	setYBottom(getTotalTOCHeight());
+}
+
+
 fp_TOCContainer * fp_TOCContainer::getFirstBrokenTOC(void) const
 {
 	if(isThisBroken())
@@ -895,6 +936,12 @@ fp_TOCContainer * fp_TOCContainer::getFirstBrokenTOC(void) const
 		return getMasterTOC()->getFirstBrokenTOC();
 	}
 	return m_pFirstBrokenTOC;
+}
+
+
+fp_Container * fp_TOCContainer::getFirstBrokenContainer() const
+{
+	return getFirstBrokenTOC();
 }
 
 

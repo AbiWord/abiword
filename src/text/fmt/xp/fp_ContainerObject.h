@@ -290,7 +290,7 @@ public:
 	void                setMyBrokenContainer(fp_Container * pMyBroken);
 	void                clearBrokenContainers(void);
 	UT_uint32           binarysearchCons(const void* key,int (*compar)(const void *,
-																 const void *));
+																 const void *)) const;
 	UT_uint32           getBrokenCount(void) { return m_cBrokenContainers; }
 	void                incBrokenCount(void) { m_cBrokenContainers += 1; }
 	void                decBrokenCount(void) { if (m_cBrokenContainers > 0) {

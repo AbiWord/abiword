@@ -163,6 +163,12 @@ public:
 		{ m_vecWrappedLines.clear();}
 	fp_Line *           getNthWrappedLine(UT_sint32 i)
 		{ return m_vecWrappedLines.getNthItem(i);}
+	/* Virtual functions for vertical breakable containers*/
+	virtual fp_Container * getFirstBrokenContainer() const {UT_ASSERT(0);return NULL;}
+	virtual UT_sint32      getLastWantedVBreak(void) const {return 0;}
+	virtual void           setLastWantedVBreak(UT_sint32) {;}
+	virtual void           deleteBrokenAfter(bool) {;}
+
 protected:
     void                _setMaxContainerHeight(UT_sint32 iContainerHeight);
 	UT_sint32           _getMaxContainerHeight(void) const;

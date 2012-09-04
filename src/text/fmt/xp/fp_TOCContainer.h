@@ -99,14 +99,12 @@ public:
 	void                setBrokenBot(UT_sint32 iBot)
 		{ m_iBrokenBottom = iBot;}
 	UT_sint32           getBrokenNumber(void);
-	void setLastWantedVBreak(UT_sint32 iBreakAt)
-	{
-		m_iLastWantedVBreak = iBreakAt;
-	}
-	UT_sint32 getLastWantedVBreak(void) const
-	{
-		return m_iLastWantedVBreak;
-	}
+	virtual void setLastWantedVBreak(UT_sint32 iBreakAt)
+		{m_iLastWantedVBreak = iBreakAt;}
+	virtual UT_sint32 getLastWantedVBreak(void) const
+		{return m_iLastWantedVBreak;}
+	virtual fp_Container * getFirstBrokenContainer() const;
+	virtual void    deleteBrokenAfter(bool bClearFirst);
 
 private:
 //

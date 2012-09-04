@@ -413,9 +413,9 @@ fp_Column *         getBrokenColumn(void);
 	UT_sint32           getLineThickness(void)
 		{ return m_iLineThickness;}
 	void                queueResize(void);
-	UT_sint32           getYOfRow(UT_sint32 row);
-	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column);
-	fp_CellContainer *  getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 column);
+	UT_sint32           getYOfRow(UT_sint32 row) const;
+	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column) const;
+	fp_CellContainer *  getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 column) const;
 	virtual fp_Container * getNextContainerInSection(void) const;
 	virtual fp_Container * getPrevContainerInSection(void) const;
 	fp_TableContainer * getMasterTable(void) const
@@ -452,12 +452,13 @@ fp_Column *         getBrokenColumn(void);
 	UT_sint32           getNumRows(void) const;
 	UT_sint32           getNumCols(void) const;
 	UT_sint32           getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight);
+	UT_sint32           getTotalTableHeight(void) const;
 	void                setRedrawLines(void)
 		{ m_bRedrawLines = true;}
 	bool                doRedrawLines(void) const
 		{ return m_bRedrawLines;}
 	fp_TableRowColumn *     getNthCol(UT_sint32 i);
-	fp_TableRowColumn *     getNthRow(UT_sint32 i);
+	fp_TableRowColumn *     getNthRow(UT_sint32 i) const;
 	bool                    containsNestedTables(void);
 	void setRowHeightType(FL_RowHeightType iType)
 		{
@@ -467,14 +468,12 @@ fp_Column *         getBrokenColumn(void);
 		{
 	      m_iRowHeight = iHeight;
 		}
-	void setLastWantedVBreak(UT_sint32 iBreakAt)
-	{
-		m_iLastWantedVBreak = iBreakAt;
-	}
-	UT_sint32 getLastWantedVBreak(void) const
-	{
-		return m_iLastWantedVBreak;
-	}
+	virtual void setLastWantedVBreak(UT_sint32 iBreakAt)
+		{m_iLastWantedVBreak = iBreakAt;}
+	virtual UT_sint32 getLastWantedVBreak(void) const
+		{return m_iLastWantedVBreak;}
+	virtual fp_Container * getFirstBrokenContainer() const;
+	virtual void deleteBrokenAfter(bool bClearFirst);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif

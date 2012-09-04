@@ -296,6 +296,10 @@ fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 	if(!bStop)
 	{
 		pCol = static_cast<fp_Column *>(pBroke->getContainer());
+		if (!pCol)
+		{
+			return NULL;
+		}
 	}
 	//	UT_ASSERT(pCol->getContainerType() != FP_CONTAINER_CELL);
 	if(pCol->getContainerType() == FP_CONTAINER_CELL)
@@ -3386,15 +3390,7 @@ void fp_TableContainer::setFirstBrokenTable(fp_TableContainer * pBroke)
 {
 	if(isThisBroken())
 	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		fp_TableContainer * pMaster = getMasterTable();
-		pMaster->setFirstBrokenTable(pBroke);
-		fp_TableContainer * pNext = static_cast<fp_TableContainer *>(pMaster);
-		while(pNext)
-		{
-			pNext->setFirstBrokenTable( pBroke);
-			pNext = static_cast<fp_TableContainer *>(pNext->getNext());
-		}
+		getMasterTable()->setFirstBrokenTable(pBroke);
 	}
 	m_pFirstBrokenTable = pBroke;
 
@@ -3404,14 +3400,7 @@ void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke)
 {
 	if(isThisBroken())
 	{
-		fp_TableContainer * pMaster = getMasterTable();
-		pMaster->setLastBrokenTable(pBroke);
-		fp_TableContainer * pNext = static_cast<fp_TableContainer *>(pMaster);
-		while(pNext)
-		{
-			pNext->setLastBrokenTable( pBroke);
-			pNext = static_cast<fp_TableContainer *>(pNext->getNext());
-		}
+		getMasterTable()->setLastBrokenTable(pBroke);
 	}
 	m_pLastBrokenTable = pBroke;
 }
@@ -3419,7 +3408,7 @@ void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke)
 /*!
  * Return the Y location of row number row
  */
-UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row)
+UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row) const
 {
 	UT_sint32 i =0;
 	UT_sint32 numCols = getNumCols();
@@ -3549,7 +3538,7 @@ static UT_sint32 compareCellPosBinary(const void * vX1, const void * vX2)
 /*!
  * Binary search failed. Do a simple Linear search instead
  */
-fp_CellContainer * fp_TableContainer::getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 col)
+fp_CellContainer * fp_TableContainer::getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 col) const
 {
 	UT_sint32 i = 0;
 	fp_CellContainer * pCell = NULL;
@@ -3568,7 +3557,7 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumnLinear(UT_sint32 row, UT
 /*!
  * Return the cell container at the specified row and column
  */
-fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint32 col)
+fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint32 col) const
 {
 	UT_Point pt;
 	pt.x = col;
@@ -4179,6 +4168,56 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 	}
 }
 
+
+/*
+  Delete all broken tables that follows this table. The first broken table
+  is kept if the function is called by the master table.
+*/
+
+void fp_TableContainer::deleteBrokenAfter(bool bClearFirst)
+{
+	if (!isThisBroken())
+	{
+		if (getFirstBrokenTable())
+		{
+			return getFirstBrokenTable()->deleteBrokenAfter(bClearFirst);
+		}
+		return;
+	}
+
+	if (bClearFirst)
+	{
+		clearScreen();
+		getMasterTable()->clearBrokenContainers();
+	}
+
+	fp_TableContainer * pBroke = static_cast<fp_TableContainer *>(getNext());
+	fp_TableContainer * pNext = NULL;
+	while(pBroke)
+	{
+		pNext = static_cast<fp_TableContainer *> (pBroke->getNext());
+		if (pBroke->getContainer())
+		{
+			UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
+			if (i >= 0)
+			{
+				pBroke->getContainer()->deleteNthCon(i);
+				pBroke->setContainer(NULL);
+			}
+		}
+		delete pBroke;
+		pBroke = pNext;
+	}
+
+	setNext(NULL);
+	if (!getPrev())
+	{
+		getMasterTable()->setNext(NULL);
+	}
+	getMasterTable()->setLastBrokenTable(this);
+	setYBottom(getTotalTableHeight());
+}
+
 void fp_TableContainer::setHeight(UT_sint32 iHeight)
 {
 	if(!isThisBroken())
@@ -4340,6 +4379,13 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	{
 		return getLastBrokenTable()->VBreakAt(vpos);
 	}
+	UT_sint32 iTotalHeight = getTotalTableHeight();
+	if (vpos >= iTotalHeight)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return NULL;
+	}
+
 	pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
 	getMasterTable()->setLastBrokenTable(pBroke);
 
@@ -4352,9 +4398,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	pBroke->setYBreakHere(getYBreak()+vpos);
 	setYBottom(getYBreak() + vpos -1);
 	UT_ASSERT(getHeight() >0);
-	pBroke->setYBottom(getMasterTable()->getYOfRow(getMasterTable()->getNumRows()));
-	xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken table %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
-	xxx_UT_DEBUGMSG(("SEVIOR????????: Previous table YBreak %d YBottom  %d Height of broken table %d \n",getYBreak(),getYBottom(),getHeight()));
+	pBroke->setYBottom(iTotalHeight);
 	UT_ASSERT(pBroke->getHeight() > 0);
 	UT_sint32 i = -1;
 //
@@ -4518,7 +4562,8 @@ void fp_TableContainer::setYBottom(UT_sint32 i)
 /*!
  * The caller to this method requests a break at the vertical height
  * given. It returns the actual break height, which will always be
- * less than or equal to the requested height.
+ * less than or equal to the requested height. The function returns -1
+ * if the table does not need to be broken.
  */
 UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 {
@@ -4545,8 +4590,31 @@ UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 			}
 		}
 	}
-	return iYBreak;
+	return (iYBreak < getTotalTableHeight()) ? iYBreak:-1; 
 }
+
+
+fp_Container * fp_TableContainer::getFirstBrokenContainer() const
+{
+	return getFirstBrokenTable();
+}
+
+
+/*
+  Return the height of the complete table as if it was not broken
+*/
+
+UT_sint32 fp_TableContainer::getTotalTableHeight(void) const
+{
+	if (getMasterTable())
+	{
+		return getMasterTable()->getTotalTableHeight();
+	}
+
+	return getYOfRow(getNumRows());
+}
+
+
 
 /*!
  * returns the first fp_Line of the table in this column by recursively 
@@ -6503,7 +6571,7 @@ fp_TableRowColumn * fp_TableContainer::getNthCol(UT_sint32 i)
 	return m_vecColumns.getNthItem(i);
 }
 
-fp_TableRowColumn * fp_TableContainer::getNthRow(UT_sint32 i)
+fp_TableRowColumn * fp_TableContainer::getNthRow(UT_sint32 i) const
 {
 	UT_ASSERT(i < m_vecRows.getItemCount());
 	return m_vecRows.getNthItem(i);
