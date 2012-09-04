@@ -64,6 +64,8 @@
 #include "gr_Graphics.h"
 #include "fl_TableLayout.h"
 
+#define FP_TABLE_MIN_BROKEN_HEIGHT 60
+
 class fl_TableLayout;
 
 class ABI_EXPORT fp_TableRowColumn

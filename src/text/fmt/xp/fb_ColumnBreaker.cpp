@@ -1353,7 +1353,7 @@ bool fb_ColumnBreaker::_checkVBreakableContainer(fp_Container * pContainer, UT_s
 	// Look to see if the table can be broken and if the break is sufficently large. 
 	// If not, the table is moved to the next column
 	//
-	if(iBreakAt < 30)
+	if(iBreakAt < FP_TABLE_MIN_BROKEN_HEIGHT)
 	{
 		return false;
 	}

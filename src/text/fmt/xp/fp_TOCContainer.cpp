@@ -28,6 +28,7 @@
 #include "fp_Page.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
+#include "fp_TableContainer.h"
 #include "fl_DocLayout.h"
 #include "fl_SectionLayout.h"
 #include "gr_DrawArgs.h"
@@ -618,6 +619,16 @@ UT_sint32 fp_TOCContainer::wantVBreakAt(UT_sint32 vpos)
 	UT_sint32 count = countCons();
 	UT_sint32 i =0;
 	UT_sint32 iYBreak = vpos;
+	UT_sint32 iTotHeight = getTotalTOCHeight();
+	if (iYBreak > iTotHeight)
+	{
+		return -1;
+	}
+	else if (iYBreak > iTotHeight - FP_TABLE_MIN_BROKEN_HEIGHT)
+	{
+		iYBreak = iTotHeight - FP_TABLE_MIN_BROKEN_HEIGHT;
+	}
+
 	fp_Line * pLine;
 	for(i=0; i< count; i++)
 	{
@@ -630,7 +641,7 @@ UT_sint32 fp_TOCContainer::wantVBreakAt(UT_sint32 vpos)
 			iYBreak = pLine->getY();
 		}
 	}
-	return (iYBreak < getTotalTOCHeight()) ? iYBreak:-1;
+	return iYBreak;
 }
 
 

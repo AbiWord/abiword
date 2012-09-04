@@ -4224,8 +4224,7 @@ void fp_TableContainer::setHeight(UT_sint32 iHeight)
 	{
 		xxx_UT_DEBUGMSG(("Unbroken Table Height set to %d from %d \n",iHeight,getHeight()));
 	}
-	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-	iHeight += (pTL->getBottomOffset() + pTL->getTopOffset());
+
 	fp_VerticalContainer::setHeight(iHeight);
 }
 
@@ -4574,6 +4573,16 @@ UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 	UT_sint32 count = countCons();
 	UT_sint32 i =0;
 	UT_sint32 iYBreak = vpos;
+	UT_sint32 iTotHeight = getTotalTableHeight();
+	if (iYBreak > iTotHeight)
+	{
+		return -1;
+	}
+	else if (iYBreak > iTotHeight - FP_TABLE_MIN_BROKEN_HEIGHT)
+	{
+		iYBreak = iTotHeight - FP_TABLE_MIN_BROKEN_HEIGHT;
+	}
+
 	fp_CellContainer * pCell;
 	for(i=0; i< count; i++)
 	{
@@ -4590,7 +4599,7 @@ UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 			}
 		}
 	}
-	return (iYBreak < getTotalTableHeight()) ? iYBreak:-1; 
+	return iYBreak; 
 }
 
 
@@ -5001,13 +5010,12 @@ void fp_TableContainer::layout(void)
 	clock_gettime(CLOCK_REALTIME, &t1);
 #endif
 
-	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
 	sizeRequest(&requisition);
 	setX(m_iBorderWidth);
 	alloc.x = getX();
-	alloc.y = getY() + pTL->getTopOffset();
+	alloc.y = getY();
 	alloc.width = getWidth();
 	alloc.height = requisition.height;
 	sizeAllocate(&alloc);
