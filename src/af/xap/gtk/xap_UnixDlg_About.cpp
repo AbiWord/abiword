@@ -53,7 +53,7 @@ static void onAboutDialogActivate (GtkAboutDialog 	* /*about*/,
 	XAP_App::getApp()->openURL(link);
 }
 
-void XAP_UnixDialog_About::runModal(XAP_Frame * pFrame)
+void XAP_UnixDialog_About::runModal(XAP_Frame * /*pFrame*/)
 {
 	static const gchar *authors[] = {"Abi the Ant <abi@abisource.com>",
 									 NULL};
