@@ -63,6 +63,7 @@
 #include "xap_UnixFontPreview.h"
 #include "xap_FontPreview.h"
 #include "ut_string_class.h"
+#include "pt_PieceTable.h"
 #include "ap_Toolbar_Id.h"
 #include "ap_UnixStockIcons.h"
 #include "ev_UnixFontCombo.h"
@@ -548,6 +549,7 @@ public:									// we create...
  	 */
 	static void s_combo_apply_changes(GtkComboBox * combo, _wd * wd)
 	{
+		const char *text;
 		// TODO Rob: move this into ev_UnixFontCombo
 		gchar *buffer = NULL;
 		GtkTreeModel *model = gtk_combo_box_get_model (combo);
@@ -580,7 +582,12 @@ public:									// we create...
 			}
 		}
 
-		UT_UCS4String ucsText(buffer);
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE)
+			text = pt_PieceTable::s_getUnlocalisedStyleName(buffer);
+		else
+			text = buffer;
+
+		UT_UCS4String ucsText(text);
 		wd->m_pUnixToolbar->toolbarEvent(wd, ucsText.ucs4_str(), ucsText.length());
 		g_free (buffer);
 	}
@@ -1069,6 +1076,12 @@ bool EV_UnixToolbar::synthesize(void)
 					else {
 						for (gint m=0; m < items; m++) {
 							const char * sz = v->getNthItem(m);
+							UT_UTF8String sLoc;
+							if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE)
+							{
+								pt_PieceTable::s_getLocalisedStyleName(sz, sLoc);
+								sz = sLoc.utf8_str();
+							}
 							gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), sz);
 						}
 					}
@@ -1362,6 +1375,9 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					}
 					else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
 #define BUILTIN_INDEX "builtin-index"
+						UT_UTF8String sLoc;
+						pt_PieceTable::s_getLocalisedStyleName(szState, sLoc);
+						szState = sLoc.utf8_str();
 						gint idx = GPOINTER_TO_INT(g_object_steal_data(G_OBJECT(combo), BUILTIN_INDEX));
 						if (idx > 0) {
 							gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(combo), idx);
@@ -1546,10 +1562,35 @@ bool EV_UnixToolbar::repopulateStyles(void)
 		g_free (fonts); fonts = NULL;
 	}
 	else {
+		GtkTreeIter iter;
+		GtkListStore *list = gtk_list_store_new(1, G_TYPE_STRING);
 		for (gint m=0; m < items; m++) {
 			const char * sz = v->getNthItem(m);
-			gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), sz);
+			UT_UTF8String sLoc;
+			if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE)
+			{
+				pt_PieceTable::s_getLocalisedStyleName(sz, sLoc);
+				sz = sLoc.utf8_str();
+			}
+			gtk_list_store_append(list, &iter);
+			gtk_list_store_set(list, &iter, 0, sz, -1);
 		}
+		if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE)
+		{
+			GtkTreeSortable *sort;
+			sort = GTK_TREE_SORTABLE(list);
+			gtk_tree_sortable_set_sort_column_id(sort, 0, GTK_SORT_ASCENDING);
+		}
+		gboolean itering = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list), &iter);
+		while (itering)
+		{
+			gchar *entry;
+			gtk_tree_model_get(GTK_TREE_MODEL(list), &iter, 0, &entry, -1);
+			gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(combo), entry);
+			g_free(entry);
+			itering = gtk_tree_model_iter_next(GTK_TREE_MODEL(list), &iter);
+		}
+		g_object_unref(G_OBJECT(list));
 	}
 
 	wd->m_blockSignal = wasBlocked;
