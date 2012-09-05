@@ -1385,7 +1385,7 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 
 	const gchar * szPattern = PP_evalProperty("shading-pattern",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
 	const gchar * szShadingForeCol =  PP_evalProperty("shading-foreground-color",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
-	const gchar * szShadingBackCol =  PP_evalProperty("shading-background-color",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
+	//const gchar * szShadingBackCol =  PP_evalProperty("shading-background-color",pSpanAP,pBlockAP,pSectionAP,getDoc(),true);
 
 
 	// TODO add other properties here
