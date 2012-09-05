@@ -1553,34 +1553,19 @@ bool EV_UnixToolbar::repopulateStyles(void)
 // Now make a new one.
 //
 	gint items = v->getItemCount();
-	if (ABI_IS_FONT_COMBO (combo)) {
-		const gchar **fonts = g_new0 (const gchar *, items + 1);
-		for (gint m=0; m < items; m++) {
-			fonts[m] = v->getNthItem(m);
-		}						
-		abi_font_combo_set_fonts (ABI_FONT_COMBO (combo), fonts);
-		g_free (fonts); fonts = NULL;
-	}
-	else {
 		GtkTreeIter iter;
 		GtkListStore *list = gtk_list_store_new(1, G_TYPE_STRING);
 		for (gint m=0; m < items; m++) {
 			const char * sz = v->getNthItem(m);
 			UT_UTF8String sLoc;
-			if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE)
-			{
 				pt_PieceTable::s_getLocalisedStyleName(sz, sLoc);
 				sz = sLoc.utf8_str();
-			}
 			gtk_list_store_append(list, &iter);
 			gtk_list_store_set(list, &iter, 0, sz, -1);
 		}
-		if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE)
-		{
 			GtkTreeSortable *sort;
 			sort = GTK_TREE_SORTABLE(list);
 			gtk_tree_sortable_set_sort_column_id(sort, 0, GTK_SORT_ASCENDING);
-		}
 		gboolean itering = gtk_tree_model_get_iter_first(GTK_TREE_MODEL(list), &iter);
 		while (itering)
 		{
@@ -1591,7 +1576,6 @@ bool EV_UnixToolbar::repopulateStyles(void)
 			itering = gtk_tree_model_iter_next(GTK_TREE_MODEL(list), &iter);
 		}
 		g_object_unref(G_OBJECT(list));
-	}
 
 	wd->m_blockSignal = wasBlocked;
 
