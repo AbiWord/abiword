@@ -149,6 +149,8 @@ const char *pt_PieceTable::s_getUnlocalisedStyleName (const char *szLocStyle)
 
 bool pt_PieceTable::_loadBuiltinStyles(void)
 {
+	static XAP_App *pApp = XAP_App::getApp();
+	const XAP_StringSet *pSS = pApp->getStringSet();
 	/* 	
 		!!! if adding or removing properties to the list_fmt, you have to make also changes to
 		pt_VarSet.cpp mergeAP()
@@ -295,11 +297,11 @@ bool pt_PieceTable::_loadBuiltinStyles(void)
 		"start-value:1; margin-left:0.0in; text-indent:0.0in; "
 		"field-color:transparent; list-delim:%s %%L.; "
 		"field-font:%s; list-decimal:";
-	UT_String_sprintf(stTmp, szFmt, "Chapter", pszFamily);
+	UT_String_sprintf(stTmp, szFmt, pSS->getValue(XAP_STRING_ID_STYLE_DELIM_CHAPTER), pszFamily);
 
     _s("Chapter Heading",true,"P","Numbered Heading 1","Normal", stTmp.c_str());
 
-	UT_String_sprintf(stTmp, szFmt, "Section", pszFamily);
+	UT_String_sprintf(stTmp, szFmt, pSS->getValue(XAP_STRING_ID_STYLE_DELIM_SECTION), pszFamily);
     _s("Section Heading",true,"P","Numbered Heading 1","Normal", stTmp.c_str());
 
 	_s("Endnote Reference",false,"C", "None", "Current Settings", "text-position:superscript; font-size:10pt");

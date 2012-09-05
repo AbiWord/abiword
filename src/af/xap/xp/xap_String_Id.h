@@ -85,6 +85,8 @@ dcl(STYLE_NUMHEAD1,			"Numbered Heading 1")
 dcl(STYLE_NUMHEAD2,			"Numbered Heading 2")
 dcl(STYLE_NUMHEAD3,			"Numbered Heading 3")
 dcl(STYLE_IMPLIES_LIST,		"Implies List")
+dcl(STYLE_DELIM_CHAPTER,	"Chapter")
+dcl(STYLE_DELIM_SECTION,	"Section")
 
 
 /* Common to many dialogs */
