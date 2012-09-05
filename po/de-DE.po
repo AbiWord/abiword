@@ -16,8 +16,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-20 11:38+0200\n"
-"PO-Revision-Date: 2012-09-04 15:20+0200\n"
+"POT-Creation-Date: 2012-09-05 15:31+0200\n"
+"PO-Revision-Date: 2012-09-05 15:31+0200\n"
 "Last-Translator: Ingo Brückl <ib@wupperonline.de>\n"
 "Language-Team: gnome-de@gnome.org\n"
 "Language: de\n"
@@ -1604,7 +1604,7 @@ msgstr "Aufzählungszeichen"
 #. STYLE_BULLETLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Bullet List"
-msgstr "Kreise"
+msgstr "Punkte"
 
 #. TOOLBAR_LABEL_LISTS_BULLETS
 #. TOOLBAR_STATUSLINE_LISTS_BULLETS
@@ -7535,6 +7535,11 @@ msgstr "Mitteleuropäisch, Windows Codepage 1250"
 msgid "Change Language when changing keyboard"
 msgstr "Beim Wechsel der Tastatur die Sprache wechseln"
 
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr "Kapitel"
+
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
@@ -8837,6 +8842,11 @@ msgstr "Speichern als &Dateityp:"
 msgid "Script:"
 msgstr "Skript:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+msgid "Section"
+msgstr "Abschnitt"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -9372,3 +9382,9 @@ msgstr "verwandt"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "ohne Bezug"
+
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Keine"
