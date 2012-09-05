@@ -10253,7 +10253,6 @@ void	fl_BlockLayout::StartList( const gchar * style, pf_Frag_Strux* prevSDH)
 			szDec=".";
 		if(!szFont)
 		{
-			FL_ListType lType = getListTypeFromStyle(szListStyle);
 			szFont = "Times New Roman";
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		}
