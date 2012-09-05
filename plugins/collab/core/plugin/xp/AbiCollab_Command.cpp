@@ -149,6 +149,7 @@ bool AbiCollab_Command::_doCmdDebug(const UT_UTF8String& sServerSessionFile, con
 #ifdef ABICOLLAB_HANDLER_FAKE
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	UT_return_val_if_fail(pManager, false);	
+	UT_DEBUG_ONLY_ARG(bSingleStep);
 	
 #ifndef WIN32
 		// FIXME: this breaks on OSX

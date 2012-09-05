@@ -183,8 +183,10 @@ static bool s_abicollab_offer(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_join(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_accounts(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_authors(AV_View* v, EV_EditMethodCallData *d);
+#ifdef DEBUG
 static bool s_abicollab_record(AV_View* v, EV_EditMethodCallData *d);
 static bool s_abicollab_viewrecord(AV_View* v, EV_EditMethodCallData *d);
+#endif
 static bool s_abicollab_command_invoke(AV_View* v, EV_EditMethodCallData *d);
 #define ABIWORD_VIEW  	FV_View * pView = static_cast<FV_View *>(pAV_View)
 
@@ -721,11 +723,11 @@ bool s_abicollab_accounts(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	return true;
 }
 
+#ifdef DEBUG
 bool s_abicollab_record(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {
-	UT_DEBUGMSG(("s_abicollab_offer\n"));
+	UT_DEBUGMSG(("s_abicollab_record\n"));
 	// this option only works in debug mode
-#ifdef DEBUG
 	AbiCollabSessionManager* pManager = AbiCollabSessionManager::getManager();
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	UT_return_val_if_fail(pFrame, false);
@@ -744,13 +746,12 @@ bool s_abicollab_record(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 			UT_ASSERT(session->isRecording());
 		}
 	}
-#endif
 	return true;
 }
 
 bool s_abicollab_viewrecord(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 {
-	UT_DEBUGMSG(("s_abicollab_record\n"));
+	UT_DEBUGMSG(("s_abicollab_viewrecord\n"));
 	
 	// ask user what file to open
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -783,6 +784,7 @@ bool s_abicollab_viewrecord(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	pDialogFactory->releaseDialog(pDialog);
 	return true;
 }
+#endif
 
 bool s_abicollab_command_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 {
