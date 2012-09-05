@@ -44,6 +44,7 @@ dcl(UntitledDocument,			"Untitled%d")
 dcl(ReadOnly,					"Read-Only")
 
 /*  Styles */
+dcl(STYLE_NONE,			    "None")		//xgettext:msgctxt
 dcl(STYLE_NUMBER_LIST,		"Numbered List")
 dcl(STYLE_PLAIN_TEXT,		"Plain Text")
 dcl(STYLE_NORMAL,			"Normal")

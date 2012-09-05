@@ -105,6 +105,7 @@ ST_LOCALISED_STYLES stLocalised[] =
 	{"Numbered Heading 2",      XAP_STRING_ID_STYLE_NUMHEAD2},		
 	{"Numbered Heading 3",      XAP_STRING_ID_STYLE_NUMHEAD3},		
 	{"Implies List",	       	XAP_STRING_ID_STYLE_IMPLIES_LIST},		
+	{"None",                    XAP_STRING_ID_STYLE_NONE},		
 	{NULL,	0}	
 };
 
