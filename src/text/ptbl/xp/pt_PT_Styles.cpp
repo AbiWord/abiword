@@ -19,9 +19,6 @@
  * 02111-1307, USA.
  */
 
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
 #include "ut_locale.h"
 #include "ut_types.h"
 #include "ut_misc.h"

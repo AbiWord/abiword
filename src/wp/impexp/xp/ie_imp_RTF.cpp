@@ -358,19 +358,11 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 	    FieldFont = m_pParaProps->m_pszFieldFont;
     if(abiListType == BULLETED_LIST)
     {
-#ifdef WITH_STANDARD_SYMBOLS_L
-        FieldFont = "Standard Symbols L";
-#else
         FieldFont = "Symbol";
-#endif
     }
     if(abiListType == IMPLIES_LIST)
     {
-#ifdef WITH_STANDARD_SYMBOLS_L
-        FieldFont = "Standard Symbols L";
-#else
         FieldFont = "Symbol";
-#endif
     }
     *szFieldFont = FieldFont.c_str();
 //

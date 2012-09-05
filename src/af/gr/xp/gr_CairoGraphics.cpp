@@ -2596,11 +2596,7 @@ void GR_CairoGraphics::setFont(const GR_Font * pFont)
 	if (szLCFontName)
 	{
 		xxx_UT_DEBUGMSG(("GR_CairoGraphics::setFont: %s\n", szLCFontName));
-#ifdef WITH_STANDARD_SYMBOLS_L
-		if(strstr(szLCFontName,"standard symbols l") != NULL)
-#else
 		if(strstr(szLCFontName,"symbol") != NULL)
-#endif		
 		{
 			/*
 			 * I am not too happy about this, and do not want to see the exception
