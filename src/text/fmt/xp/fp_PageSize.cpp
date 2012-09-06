@@ -114,7 +114,7 @@ pagesizes[fp_PageSize::_last_predefined_pagesize_dont_use_] =
 
 	// English sizes
 	{   8.5,   14.0, DIM_IN,	"Legal", 1.0, 1.0, 1.0, 1.0, AP_STRING_ID_DLG_PageFormat_Legal },
-	{   7.5,   10.0, DIM_IN,	"Folio", 1.0, 1.0, 1.0, 1.0, AP_STRING_ID_DLG_PageFormat_Folio },
+	{   210,   330,  DIM_MM,	"Folio", 1.0, 1.0, 1.0, 1.0, AP_STRING_ID_DLG_PageFormat_Folio },
 	{   8.5,   11.0, DIM_IN,	"Letter", 1.0, 1.0, 1.0, 1.0, AP_STRING_ID_DLG_PageFormat_Letter },
 
 	// Weirdos
