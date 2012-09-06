@@ -80,6 +80,7 @@ public:
 	static bool	IsPredefinedName(const char* szPageSizeName);
 	static Predefined NameToPredefined(const char *name);
 	static const char * PredefinedToName(Predefined preDef);
+	static int PredefinedToLocalName(Predefined preDef);
 
 private:
 	char * m_predefined;

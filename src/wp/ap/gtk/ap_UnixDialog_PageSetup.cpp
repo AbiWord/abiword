@@ -626,7 +626,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	{
 		gtk_list_store_append(pagesize_store, &pagesize_iter);
 		gtk_list_store_set(pagesize_store, &pagesize_iter,
-					0, fp_PageSize::PredefinedToName ((fp_PageSize::Predefined)i),
+					0, pSS->getValue(fp_PageSize::PredefinedToLocalName((fp_PageSize::Predefined) i)),
 					1, this,
 					-1);
 	}
