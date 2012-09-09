@@ -1573,7 +1573,7 @@ bool AbiCollabSessionManager::_nullUpdate()
 		}
 	}
 	Sleep(10);
-#elif defined(TOOLKIT_GTK) || defined(TOOLKIT_GTK2)
+#elif defined(TOOLKIT_GTK_ALL)
 		for (UT_sint32 i = 0; (i < 10) && gtk_events_pending(); i++)
 			gtk_main_iteration ();
 		usleep(1000*10);
