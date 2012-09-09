@@ -7,7 +7,7 @@ if test "$enable_aiksaurus" != ""; then
 
 PKG_CHECK_EXISTS([ $aiksaurus_pkgs ], 
 [
-	if test "$TOOLKIT" = "gtk2"; then
+	if test "$TOOLKIT_IS_GTK2" = "yes"; then
 	PKG_CHECK_EXISTS([ $aiksaurus_gtk_pkgs ], 
 	[
 		aiksaurus_deps="yes"
@@ -32,7 +32,7 @@ fi
 
 PKG_CHECK_MODULES(AIKSAURUS,[ $aiksaurus_pkgs ])
 
-if test "$TOOLKIT" = "gtk2"; then
+if test "$TOOLKIT_IS_GTK2" = "yes"; then
 	PKG_CHECK_MODULES(AIKSAURUS_GTK,[ $aiksaurus_gtk_pkgs ])
 	AIKSAURUS_CFLAGS="$AIKSAURUS_CFLAGS $AIKSAURUS_GTK_CFLAGS"
 	AIKSAURUS_LIBS="$AIKSAURUS_LIBS $AIKSAURUS_GTK_LIBS"
