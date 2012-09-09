@@ -2292,7 +2292,13 @@ void fl_CellLayout::format(void)
 	
 	UT_sint32 iNewHeight = getFirstContainer()->getHeight();
 	fl_ContainerLayout * myL = myContainingLayout();
-	if((myL->getContainerType() != FL_CONTAINER_SHADOW) &&
+	while (myL && (myL->getContainerType() != FL_CONTAINER_SHADOW &&
+				   myL->getContainerType() != FL_CONTAINER_HDRFTR &&
+				   myL->getContainerType() != FL_CONTAINER_DOCSECTION))
+	{
+		myL = myL->myContainingLayout();
+	}
+	if(myL && (myL->getContainerType() != FL_CONTAINER_SHADOW) &&
 	   (myL->getContainerType() != FL_CONTAINER_HDRFTR))
 	{
 		if(iNewHeight != iOldHeight)
