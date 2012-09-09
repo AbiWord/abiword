@@ -7695,7 +7695,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	else
 	{
 		bool bSuccess = true;
-		if(bAbiList && (bUseInsertNotAppend()))
+		if(bAbiList || bWord97List )
 		{
 			if(!bDontInsert)
 			{
@@ -7782,7 +7782,6 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			//
 			pf_Frag_Strux* sdh = NULL;
 			getDoc()->getStruxOfTypeFromPosition(m_dposPaste,PTX_Block,&sdh);
-			UT_uint32 nLists = getDoc()->getListsCount();
 			bool bisListItem = false;
 			//
 			// Have to loop so that multi-level lists get stopped. Each StopList removes
@@ -7793,7 +7792,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			{
 				fl_AutoNum * pAuto = NULL;
 				bisListItem = false;
-				for(UT_uint32 i=0; (i< nLists && !bisListItem); i++)
+				for(UT_uint32 i=0; (i< getDoc()->getListsCount() && !bisListItem); i++)
 				{
 					pAuto = getDoc()->getNthList(i);
 					if(pAuto)
@@ -10824,9 +10823,8 @@ bool IE_Imp_RTF::HandleAbiLists()
 		}
 	}
 
-	// Put the '}' back into the input stream
+	PopRTFState();
 
-	//return SkipBackChar(ch);
 	return true;
 }
 
