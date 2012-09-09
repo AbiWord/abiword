@@ -2,7 +2,7 @@
 rsvg_pkgs="librsvg-2.0 >= 2.0 glib-2.0"
 rsvg_deps="no"
 
-if test "$TOOLKIT" = "gtk" || test "$TOOLKIT" = "gtk2"; then
+if test "$TOOLKIT" = "gtk"; then
  
  if test "$enable_rsvg" = "auto"; then
    AC_MSG_WARN([rsvg plugin: not needed with gtk])
