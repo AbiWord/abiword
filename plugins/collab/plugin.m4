@@ -1,7 +1,7 @@
 
 collab_req="libgsf-1 >= 1.12 libxml-2.0 >= 2.4.0"
 collab_telepathy_req="dbus-glib-1 >= 0.70 telepathy-glib >= 0.14.5"
-if test "$TOOLKIT" = "gtk2"; then
+if test "$TOOLKIT_IS_GTK2" = "yes"; then
 collab_xmpp_req="loudmouth-1.0 >= 1.3.2 gtk+-2.0"
 else
 collab_xmpp_req="loudmouth-1.0 >= 1.3.2 gtk+-3.0"
