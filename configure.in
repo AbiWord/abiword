@@ -961,7 +961,7 @@ if test "$abi_cv_goffice" = "yes"; then
 	AC_DEFINE([WITH_GOFFICE], [1], [Define if using goffice])
 fi
 AM_CONDITIONAL([TOOLKIT_GTK_ALL], test "$TOOLKIT" = "gtk")
-AM_CONDITIONAL([WITH_GOFFICE_BUILTIN], (test "$TOOLKIT" = "gtk" || test "$TOOLKIT" = "gtk2") && test "$abi_cv_goffice" != "yes")
+AM_CONDITIONAL([WITH_GOFFICE_BUILTIN], test "$TOOLKIT" = "gtk" && test "$abi_cv_goffice" != "yes")
 AC_SUBST([GOFFICE_BUILTIN_LIBS])
 
 ALL_PLUGINS_="\
