@@ -434,52 +434,54 @@ void ODi_Bullet_ListLevelStyle::buildAbiPropsString() {
     m_abiProperties += "list-style:";
     switch (atoi(m_abiListType.utf8_str())) {
         case BULLETED_LIST:
-            m_abiProperties += "Bullet List; field-font:Symbol";
+            m_abiProperties += "Bullet List;";
             break;
             
         case DASHED_LIST:
-            m_abiProperties += "Dashed List; field-font:Symbol";
+            m_abiProperties += "Dashed List;";
             break;
             
         case SQUARE_LIST:
-            m_abiProperties += "Square List; field-font:Dingbats";
+            m_abiProperties += "Square List;";
             break;
             
         case TRIANGLE_LIST:
-            m_abiProperties += "Triangle List; field-font:Dingbats";
+            m_abiProperties += "Triangle List;";
             break;
             
         case DIAMOND_LIST:
-            m_abiProperties += "Diamond List; field-font:Dingbats";
+            m_abiProperties += "Diamond List;";
             break;
             
         case STAR_LIST:
-            m_abiProperties += "Star List; field-font:Dingbats";
+            m_abiProperties += "Star List;";
             break;
             
         case IMPLIES_LIST:
-            m_abiProperties += "Implies List; field-font:Symbol";
+            m_abiProperties += "Implies List;";
             break;
             
         case TICK_LIST:
-            m_abiProperties += "Tick List; field-font:Dingbats";
+            m_abiProperties += "Tick List;";
             break;
             
         case BOX_LIST:
-            m_abiProperties += "Box List; field-font:Dingbats";
+            m_abiProperties += "Box List;";
             break;
             
         case HAND_LIST:
-            m_abiProperties += "Hand List; field-font:Dingbats";
+            m_abiProperties += "Hand List;";
             break;
             
         case HEART_LIST:
-            m_abiProperties += "Heart List; field-font:Dingbats";
+            m_abiProperties += "Heart List;";
             break;
             
         default:
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
     }
+
+    m_abiProperties += " field-font:NULL";
 }
 
 
