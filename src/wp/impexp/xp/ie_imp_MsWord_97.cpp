@@ -635,7 +635,7 @@ s_fieldFontForListStyle (MSWordListIdType id)
 
 	case WLNF_BULLETS: // bullet list
 		UT_DEBUGMSG(("Fieldfont set to symbol \n"));
-	  return "Symbol";
+	  return "NULL";
 
 	case WLNF_EUROPEAN_ARABIC:
 	case WLNF_ORDINAL: // ordinal

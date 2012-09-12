@@ -353,18 +353,14 @@ void RTF_msword97_level::buildAbiListProperties( const char ** szListID,
 //
 // Field Font
 //
-    FieldFont = "NULL";
-    if(m_pParaProps &&  m_pParaProps->m_pszFieldFont)
-	    FieldFont = m_pParaProps->m_pszFieldFont;
-    if(abiListType == BULLETED_LIST)
-    {
-        FieldFont = "Symbol";
-    }
-    if(abiListType == IMPLIES_LIST)
-    {
-        FieldFont = "Symbol";
-    }
-    *szFieldFont = FieldFont.c_str();
+	FieldFont = "NULL";
+	if(m_pParaProps &&  m_pParaProps->m_pszFieldFont)
+	{
+		FieldFont = m_pParaProps->m_pszFieldFont;
+	}
+
+	*szFieldFont = FieldFont.c_str();
+
 //
 // List Delim
 //

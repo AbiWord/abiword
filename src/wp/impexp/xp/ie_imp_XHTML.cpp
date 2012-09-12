@@ -210,7 +210,7 @@ bool	IE_Imp_XHTML_Sniffer::getDlgLabels(const char ** pszDesc,
     "level", "1",
     "listid", "2",
     "parentid", "0",
-    "props", "list-style:Bullet List; start-value:0; text-indent:-0.3in; field-font: Symbol;",
+    "props", "list-style:Bullet List; start-value:0; text-indent:-0.3in; field-font: NULL;",
 	/* margin-left is purposefully left out of the props.  It is computed
 	   based on the depth of the list, and appended to this list of
 	   attributes.
