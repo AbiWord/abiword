@@ -1387,34 +1387,35 @@ UT_Error IE_Exp_AbiWord_1::_writeDocument(void)
 
 	m_pListener = new s_AbiWord_1_Listener(getDoc(),this, m_bIsTemplate);
 	if (!m_pListener)
-		{
-			close_gsf_handle(m_output);
-			return UT_IE_NOMEMORY;
-		}
+	{
+		close_gsf_handle(m_output);
+		return UT_IE_NOMEMORY;
+	}
 
+	bool bStatusTellListener = true;
 	if (getDocRange())
 	{
-		if(!getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange()))
-			{
-				close_gsf_handle(m_output);
-				return UT_ERROR;
-			}
+		bStatusTellListener = getDoc()->tellListenerSubset(static_cast<PL_Listener *>(m_pListener),getDocRange());
 	}
 	else
 	{
-		if (!getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener)))
-			{
-				close_gsf_handle(m_output);
-				return UT_ERROR;
-			}
+		bStatusTellListener = getDoc()->tellListener(static_cast<PL_Listener *>(m_pListener));
 	}
 	
 	delete m_pListener;
 	m_pListener = NULL;
-
 	close_gsf_handle(m_output);
 
-	return ((m_error) ? UT_IE_COULDNOTWRITE : UT_OK);
+	if (!bStatusTellListener)
+	{
+		return UT_ERROR;
+	}
+	else if (m_error)
+	{
+		return UT_IE_COULDNOTWRITE;
+	}
+
+	return UT_OK;
 }
 
 /*****************************************************************/
