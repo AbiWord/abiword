@@ -88,71 +88,71 @@ void OXML_List::setDelim(const std::string & dlm)
 			{
 				case 8226: // U+2022 BULLET
 					type = BULLETED_LIST;
-					err = setProperty("field-font", "Symbol");
+					err = setProperty("field-font", "NULL");
 					break;
                         
 				case 8211: // U+2013 EN DASH
 					type = DASHED_LIST;
-					err = setProperty("field-font", "Symbol");
+					err = setProperty("field-font", "NULL");
 					break;
 
 				case 9632:  // U+25A0 BLACK SQUARE                        
 				case 61607: // MS WORD 2007 BLACK SQUARE
 					type = SQUARE_LIST;
-					err = setProperty("field-font", "Dingbats");
+					err = setProperty("field-font", "NULL");
 					break;
                         
 				case 9650: // U+25B2 BLACK UP-POINTING TRIANGLE
 				case 9654: // TRIANGLE
 				case 61656: // MS WORD 2007 TRIANGLE ARROW
 					type = TRIANGLE_LIST;
-					err = setProperty("field-font", "Dingbats");
+					err = setProperty("field-font", "NULL");
 					break;
                     
 				case 9670: //U+25C6 DIAMOND
 				case 9830: // U+2666 BLACK DIAMOND SUIT
 				case 61558: // MS WORD 2007 DIAMOND SUIT
 					type = DIAMOND_LIST;
-					err = setProperty("field-font", "Dingbats");
+					err = setProperty("field-font", "NULL");
 					break;
                         
 				case 10035: // U+2733 EIGHT SPOKED ASTERISK
 				case 42: // MS WORD 2007 EIGHT SPOKED ASTERISK
 					type = STAR_LIST;
-					err = setProperty("field-font", "Dingbats");
+					err = setProperty("field-font", "NULL");
 					break;
                         
 				case 10003: // U+2713 CHECK MARK
 				case 61692: // MS WORD 2007 CHECK MARK
 					type = TICK_LIST;
-					err = setProperty("field-font", "Dingbats");
+					err = setProperty("field-font", "NULL");
 					break;
                         
 				case 9633: //BOX
 				case 10066: // U+2752 UPPER RIGHT SHADOWED WHITE SQUARE
 					type = BOX_LIST;
-					err = setProperty("field-font", "Dingbats");
+					err = setProperty("field-font", "NULL");
 					break;
                         
 				case 9758: // U+261E WHITE RIGHT POINTING INDEX
 					type = HAND_LIST;
-					err = setProperty("field-font", "Dingbats");
+					err = setProperty("field-font", "NULL");
 					break;                        
 
 				case 9829: // U+2665 BLACK HEART SUIT
 				case 61609: //MS WORD 2007 HEART SUIT
 					type = HEART_LIST;
-					err = setProperty("field-font", "Dingbats");
+					err = setProperty("field-font", "NULL");
 					break;
                         
 				case 8658: // U+21D2 RIGHTWARDS DOUBLE ARROW
 					type = IMPLIES_LIST;
-					err = setProperty("field-font", "Symbol");
+					err = setProperty("field-font", "NULL");
 					break;
 
 				default:
 					type = BULLETED_LIST;
-					err = setProperty("field-font", "Symbol");
+					err = setProperty("field-font", "NULL");
 					break;
 			};
 		}
