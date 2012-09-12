@@ -136,7 +136,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Msg,s);
   label1 = gtk_label_new (s.utf8_str());
   gtk_widget_show (label1);
-  gtk_box_pack_start (GTK_BOX (vbox2), label1, TRUE, FALSE, 3);
+  gtk_box_pack_start (GTK_BOX (vbox2), label1, FALSE, FALSE, 3);
 
   m_entry = gtk_entry_new();
   gtk_box_pack_start (GTK_BOX (vbox2), m_entry, FALSE, FALSE, 0);
@@ -160,7 +160,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   m_swindow  = gtk_scrolled_window_new(NULL, NULL);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (m_swindow),GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
   gtk_widget_show(m_swindow);
-  gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, FALSE, FALSE, 0);
+  gtk_box_pack_start (GTK_BOX (vbox2), m_swindow, TRUE, TRUE, 0);
    
   GtkListStore * store = gtk_list_store_new(1, G_TYPE_STRING);
 
@@ -211,7 +211,7 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
 
   frame1 = gtk_frame_new (NULL);
   gtk_widget_show (frame1);
-  gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area(GTK_DIALOG(m_windowMain))), frame1);
+  gtk_box_pack_start(GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(m_windowMain))), frame1,true,true,0);
   gtk_container_set_border_width (GTK_CONTAINER (frame1), 4);
   gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 
