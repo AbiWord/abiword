@@ -995,6 +995,7 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
    				{
    					_closeSpan();
    					_closeField();
+					_closeHyperlink();
 					const PP_AttrProp * pAP = NULL;
 					m_pDocument->getAttrProp(api,&pAP);
 					const gchar * pName;
@@ -1008,27 +1009,22 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
 						if(bFound)
 							break;
 					}
-
+					
 					if(bFound)
 					{
 						//this is the start of the hyperlink
    						_openTag("a", "",false, api,pcr->getXID(),true);
    						m_bInHyperlink = true;
    					}
-   					else
-   					{
-   						_closeHyperlink();
-   					}
-
 
    					return true;
-
    				}
 
    			case PTO_Annotation:
    				{
    					_closeSpan();
    					_closeField();
+					_closeAnnotation();
 					const PP_AttrProp * pAP = NULL;
 					m_pDocument->getAttrProp(api,&pAP);
 					const gchar * pName;
@@ -1048,15 +1044,8 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
 						UT_DEBUGMSG(("Doing open annotation object \n"));
    						m_bInAnnotation = true;
    					}
-   					else
-   					{
-						UT_DEBUGMSG(("Doing close annotation object \n"));
-   						_closeAnnotation();
-   					}
-
 					
    					return true;
-
    				}
 
    			case PTO_RDFAnchor:
