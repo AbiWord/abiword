@@ -9,9 +9,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
-"PO-Revision-Date: 2012-08-19 10:04+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"PO-Revision-Date: 2012-09-12 15:53+0200\n"
+"Last-Translator: Pjotr <pjotrvertaalt@gmail.com>\n"
 "Language-Team: Dutch\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -1071,6 +1071,31 @@ msgstr "1,5 regels"
 msgid "1.5 spacing"
 msgstr "1,5 regelafstand"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr "1/3 A4"
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr "1/3 A5"
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr "1/4 A3"
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr "1/4 A4"
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr "1/8 A4"
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1108,6 +1133,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "Altijd verbeteringen &voorstellen"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr "A0"
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr "A1"
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr "A10"
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr "A2"
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr "A3"
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr "A4"
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr "A5"
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr "A6"
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr "A7"
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr "A8"
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1155,7 +1235,7 @@ msgstr ""
 "COMCTL32.DLL\n"
 "dan de versie die nu op uw systeem staat (COMCTL32.DLL versie 4.72 of "
 "nieuwer)\n"
-"Een oplossing voor dit probleem wordt uitgelegd in de sectie FAQ op de "
+"Een oplossing voor dit probleem is uitgelegd in de sectie FAQ op de "
 "AbiSource website\n"
 "\n"
 "\thttp://www.abisource.com\n"
@@ -1471,6 +1551,61 @@ msgstr "Beschikbare stijlen:"
 msgid "B&y:"
 msgstr "&Met:"
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr "B0"
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr "B1"
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr "B10"
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr "B2"
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr "B3"
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr "B4"
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr "B5"
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr "B6"
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr "B7"
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr "B8"
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr "B9"
+
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h
@@ -1641,6 +1776,66 @@ msgstr "&Webkoppelingslocatie kopiëren"
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "Met da&nk aan"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr "C0"
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr "C1"
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr "C10"
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr "C2"
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr "C3"
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr "C4"
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr "C5"
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr "C6"
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr "C6/C5 Enveloppe"
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr "C7"
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr "C8"
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2323,6 +2518,11 @@ msgstr "Huidige tijd"
 msgid "Cursor &blink"
 msgstr "&Muispijl knipperen"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr "Aangepast"
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2374,6 +2574,11 @@ msgstr "De selectie knippen en op het Klembord plaatsen"
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
 msgstr "&Richtinggevoelig"
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr "DL Enveloppe"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2470,7 +2675,7 @@ msgstr "Een stijl definiëren voor of toepassen op de selectie"
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h
 msgid "Definition"
-msgstr ""
+msgstr "Definitie"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2893,6 +3098,16 @@ msgstr "Eindnootstijl:"
 msgid "Endnotes"
 msgstr "Eindnoten"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr "Enveloppe 6x9"
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr "Enveloppe No10"
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -3133,6 +3348,11 @@ msgstr "Opvouwen onder niveau 3"
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
 msgstr "Opvouwen onder niveau 4"
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr "Folio"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -3783,7 +4003,7 @@ msgstr "Een nieuwe tabel in uw document voegen"
 #. MENU_STATUSLINE_INSERT_BREAK
 #: po/tmp/ap_String_Id.h
 msgid "Insert a page, column, or section break"
-msgstr "Een pagina-, kolom- of sectie-einde invoegen"
+msgstr "Een pagina-, kolom- of paragraaf-einde invoegen"
 
 #. MENU_STATUSLINE_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -4054,6 +4274,16 @@ msgstr "Linkse uitlijning"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "Alinea links uitlijnen"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr "Kabinet"
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr "Brief"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -4844,7 +5074,7 @@ msgstr "Aan einde van document plaatsen"
 #. DLG_FormatFootnotes_EndPlaceEndSec
 #: po/tmp/ap_String_Id.h
 msgid "Place at end of section"
-msgstr "Aan einde van sectie plaatsen"
+msgstr "Aan einde van paragraaf plaatsen"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
@@ -5053,7 +5283,7 @@ msgstr "RnL-&Alinea"
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "RTL &Section"
-msgstr "RnL-&Sectie"
+msgstr "RTL &Section"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h
@@ -5255,12 +5485,12 @@ msgstr "Op elke pagina opnieuw beginnen"
 #. DLG_FormatFootnotes_EndRestartSec
 #: po/tmp/ap_String_Id.h
 msgid "Restart on each section"
-msgstr "Bij elke sectie opnieuw beginnen"
+msgstr "Bij elke paragraaf opnieuw beginnen"
 
 #. DLG_HdrFtr_RestartCheck
 #: po/tmp/ap_String_Id.h
 msgid "Restart page numbers on new sections"
-msgstr "Paginanummers herstarten bij nieuwe secties"
+msgstr "Paginanummers herstarten bij nieuwe paragrafen"
 
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
@@ -5507,7 +5737,7 @@ msgstr "Seconden sinds de mijlpaal"
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
 msgid "Section Breaks"
-msgstr "Sectie-einden"
+msgstr "Paragraaf-einden"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
 #: po/tmp/ap_String_Id.h
@@ -5766,7 +5996,7 @@ msgstr "Dominante richting van alinea instellen op RnL"
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Set dominant direction of section to RTL"
-msgstr "Dominante richting van sectie instellen op RnL"
+msgstr "Dominante richting van paragraaf instellen op RnL"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h
@@ -7476,6 +7706,11 @@ msgstr "Bokmal"
 msgid "Bold Italic"
 msgstr "Vet cursief"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr "Bosnisch"
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7526,6 +7761,11 @@ msgstr "Centraal-Europees, Windows-codepagina 1250"
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
 msgstr "Verander taal wanneer toetsenbord wordt verwisseld"
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr "Hoofdstuk"
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7609,7 +7849,6 @@ msgstr "Achtergrond wissen"
 
 #. TB_ClearForeground
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clear Foreground"
 msgstr "Achtergrond wissen"
 
@@ -7763,6 +8002,11 @@ msgstr "Tsjechisch"
 #: po/tmp/xap_String_Id.h
 msgid "Danish"
 msgstr "Deens"
+
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr "Dari"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
@@ -7964,6 +8208,11 @@ msgstr "Bestand om bewerking in op te nemen:"
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
 msgstr "Bestand om bewerking opnieuw af te spelen:"
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr "Filipijns"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8820,10 +9069,15 @@ msgstr "Bestand opslaan als &type:"
 msgid "Script:"
 msgstr "Script:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+msgid "Section"
+msgstr "Paragraaf"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
-msgstr "Sectiekop"
+msgstr "Paragraafkop"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h
@@ -9354,6 +9608,12 @@ msgstr "verwanten"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "niet-gerelateerd"
+
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Geen"
 
 #~ msgid "List"
 #~ msgstr "Lijst"
