@@ -4389,6 +4389,33 @@ void fp_TableContainer::breakCellsAt(UT_sint32 vpos)
 		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 }
+/*!
+ \Function created for debugging purpose.
+ */
+UT_sint32 fp_TableContainer::countBrokenTables()
+{
+	fp_TableContainer *pMaster = NULL;
+	if(isThisBroken())
+	{
+		pMaster = getMasterTable();
+	}
+	else
+	{
+		pMaster=this;
+	}
+	UT_sint32 count=0;
+	fp_TableContainer *pCon = pMaster->getFirstBrokenTable();
+	if(pCon && pCon->getPrev() != NULL)
+	{
+		//count++;
+	}
+	while(pCon)
+	{
+		count++;
+		pCon=static_cast<fp_TableContainer*>(pCon->getNext());
+	}
+	return count;
+}
 
 /*!
  \Function created for debugging purpose.
@@ -7050,7 +7077,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 	       }
 	}
 
-	iBot=da.yoff+42;
+	iBot=da.yoff;
 
 	if(iBot > iMaxBot)
 	{
@@ -7179,10 +7206,14 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	}
 	pCell=pMaster->getCellAtRowColumn(m_iRowNumber-1,0);
 	m_pFirstCachedCell=pCell;
+	dg_DrawArgs da=*pDA;
+
+//This is to avoid the short gap between the header and the rest of the table
+	da.yoff+=170;
 	//fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
 
 	UT_sint32 iCount=0,iNoColumns=pMaster->getNumCols();
-	UT_sint32 iHeightCount=0,iPrevHeight=0,iMaxBot=0,iLeftMost=0,iPrevBot=pDA->yoff-42;
+	UT_sint32 iHeightCount=0,iPrevHeight=0,iMaxBot=0,iLeftMost=0,iPrevBot=da.yoff;
 	UT_sint32 iColOffsets[iNoColumns];
 
 	while(pCell)
@@ -7209,7 +7240,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 		       iPrevBot=iMaxBot;
 		       iMaxBot=0;
 	       }
-	       pCell->drawHeaderCell(pDA,iPrevHeight,iMaxBot,iLeftMost,iPrevBot,iTempColOffset);
+	       pCell->drawHeaderCell(&da,iPrevHeight,iMaxBot,iLeftMost,iPrevBot,iTempColOffset);
 	       iColOffsets[iCount]=iTempColOffset;
 	       pCell = static_cast<fp_CellContainer *>(getNthCell(iCount));
 	}
@@ -7220,7 +7251,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	while(i<=iNoColumns)
 	{
 		xxx_UT_DEBUGMSG(("iColOffsets %d %d\n",iColOffsets[i],i));
-		painter.drawLine(iColOffsets[i],pDA->yoff-42,iColOffsets[i],iMaxBot);
+		painter.drawLine(iColOffsets[i],da.yoff,iColOffsets[i],iMaxBot);
 		i++;
 	}
 

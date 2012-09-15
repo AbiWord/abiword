@@ -585,6 +585,7 @@ fp_Column *         getBrokenColumn(void);
 		return m_bCellPositionChanged;
 	}
 	void changeCellPositions(UT_sint32,bool);
+	UT_sint32 countBrokenTables();
 	UT_sint32 getBrokenTablePosition();
 	void tweakFirstRowAlone(UT_sint32);
 	fp_CellContainer *getFirstShiftedCell() const
