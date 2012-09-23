@@ -82,15 +82,15 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * /*pFrame*/)
 	//JEAN: do we really need the "activate-link" signal?
 	g_signal_connect(dlg, "activate-link", G_CALLBACK(onAboutDialogActivate), NULL);
 #endif
-	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dlg), authors); 
-	gtk_about_dialog_set_documenters(GTK_ABOUT_DIALOG(dlg), documenters); 
-	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dlg), copyright); 
-	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(dlg), logo); 
-	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dlg), XAP_App::s_szBuild_Version); 
-	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dlg), website); 
+	gtk_about_dialog_set_authors(GTK_ABOUT_DIALOG(dlg), authors);
+	gtk_about_dialog_set_documenters(GTK_ABOUT_DIALOG(dlg), documenters);
+	gtk_about_dialog_set_copyright(GTK_ABOUT_DIALOG(dlg), copyright);
+	gtk_about_dialog_set_logo(GTK_ABOUT_DIALOG(dlg), logo);
+	gtk_about_dialog_set_version(GTK_ABOUT_DIALOG(dlg), XAP_App::s_szBuild_Version);
+	gtk_about_dialog_set_website(GTK_ABOUT_DIALOG(dlg), website);
 	gtk_about_dialog_set_website_label(GTK_ABOUT_DIALOG(dlg), website);
 	gtk_window_set_icon(GTK_WINDOW(dlg), logo);
-	gtk_window_set_position(GTK_WINDOW(dlg), GTK_WIN_POS_CENTER);       
+	gtk_window_set_position(GTK_WINDOW(dlg), GTK_WIN_POS_CENTER);
 	gtk_dialog_run(GTK_DIALOG(dlg));
 	gtk_widget_destroy(dlg);
 }
