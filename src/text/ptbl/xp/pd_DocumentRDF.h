@@ -991,6 +991,11 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
 
     UT_Error setupWithPieceTable();
 
+    /**
+     * Does this document have any semantic items like contacts, events etc.
+     */
+    bool haveSemItems() const;
+    
     // PD_RDFModel methods...
     virtual PD_ObjectList getObjects( const PD_URI& s, const PD_URI& p );
     virtual PD_URIList getSubjects( const PD_URI& p, const PD_Object& o );
@@ -1076,7 +1081,8 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     static PD_SemanticItemFactory *s_SemanticItemFactory;
     static PD_RDFDialogs *s_RDFDialogs;
 	PT_AttrPropIndex m_indexAP;
-
+    bool m_haveSemItems;
+    
     PD_Document*   getDocument(void) const;
     pt_PieceTable* getPieceTable(void) const;
     void setIndexAP( PT_AttrPropIndex idx );
@@ -1097,6 +1103,8 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     bool           apContains(       const PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o );
     void           apDumpModel(      const PP_AttrProp* AP, const std::string& headerMsg );
 
+    void updateHaveSemItemsCache();
+    
   private:
     PD_RDFLocations& addLocations( PD_RDFLocations& ret,
                                    bool isGeo84,

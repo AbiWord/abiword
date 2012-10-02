@@ -3007,7 +3007,8 @@ PD_RDFSemanticItemViewSite::selectRange( FV_View* pView, std::pair< PT_DocPositi
 PD_DocumentRDF::PD_DocumentRDF( PD_Document* doc )
     :
     m_doc( doc ),
-    m_indexAP( 0 )
+    m_indexAP( 0 ),
+    m_haveSemItems( false )
 {
     UT_DEBUGMSG(("PD_DocumentRDF() this:%p doc:%p\n",this,doc));
 }
@@ -4308,6 +4309,17 @@ static void dump( const std::string& msg, PD_RDFModelIterator iter, PD_RDFModelI
 }
 #endif
 
+
+void PD_DocumentRDF::updateHaveSemItemsCache()
+{
+    PD_RDFSemanticItems items = getAllSemanticObjects();
+    m_haveSemItems = !items.empty();
+}
+
+bool PD_DocumentRDF::haveSemItems() const 
+{
+    return m_haveSemItems;
+}
 
 
 
@@ -5681,6 +5693,7 @@ UT_Error PD_DocumentRDFMutation::commit()
 
     m_committed = true;
     m_rdf->maybeSetDocumentDirty();
+    m_rdf->updateHaveSemItemsCache();
     
     return UT_OK;
 }

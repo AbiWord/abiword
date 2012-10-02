@@ -991,6 +991,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CursorInSemItem)
 	{
 		if( PD_DocumentRDFHandle rdf = pDoc->getDocumentRDF() )
 		{
+            if( !rdf->haveSemItems() )
+            {
+                return EV_TIS_Gray;
+            }
+            
             xxx_UT_DEBUGMSG((" ap_ToolbarGetState_CursorInSemItem(have rdf) point:%d\n", pView->getPoint() ));
             std::set< std::string > col;
             rdf->addRelevantIDsForPosition( col, pView->getPoint() );
