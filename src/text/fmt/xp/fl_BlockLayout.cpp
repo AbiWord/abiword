@@ -2080,11 +2080,11 @@ void fl_BlockLayout::collapse(void)
 		fl_DocSectionLayout * pDSL = getDocSectionLayout();
 		if(!pDSL->isCollapsing())
 		{
-			_removeLine(pLine,true,true);
+			_removeLine(pLine,true,false);
 		}
 		else
 		{
-			_removeLine(pLine,false,true);
+			_removeLine(pLine,false,false);
 		}
 		pLine = static_cast<fp_Line *>(getFirstContainer());
 	}
