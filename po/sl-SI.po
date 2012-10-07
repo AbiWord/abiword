@@ -1,5 +1,6 @@
 # Slovenian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+# 
 # Copyright by:
 # Andraz Tori <andraz.tori1@guest.arnes.si> 2000.
 # Martin Srebotnjak <miles@filmsi.net> 2006, 2012.
