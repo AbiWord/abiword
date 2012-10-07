@@ -1,18 +1,17 @@
 # Polish translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Sercxemulo <explo@poczta.wp.pl>
 # Piotr Banski <bansp@bigfoot.com>
 # Andrzej Pruszynski <donkiszot@rth,coi,waw,pl>, 2002
 # Marcin <ulinski.marcin@gmail.com> 2012
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-27 23:09-0400\n"
-"PO-Revision-Date: 2012-05-30 05:15+0200\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"PO-Revision-Date: 2012-08-21 03:30+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: \n"
 "Language: pl\n"
@@ -122,11 +121,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Brak"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -134,11 +128,6 @@ msgstr "&1 Brak"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -148,11 +137,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -160,11 +144,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -1094,6 +1073,31 @@ msgstr "Półtora wiersza"
 msgid "1.5 spacing"
 msgstr "Interlinia półtora wiersza"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1131,6 +1135,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "Zawsze sugeruj poprawki"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1275,12 +1334,12 @@ msgstr "&Po:"
 msgid "Ali&gnment:"
 msgstr "Wyrów&nanie:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Typ tabulatora"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1294,7 +1353,8 @@ msgstr "Wszystkie style"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
+#, fuzzy
+msgid "Allow formatting not using styles only"
 msgstr "Pozwala na formatowanie tylko przy użyciu stylów"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
@@ -1385,6 +1445,12 @@ msgstr ""
 "dokumencie? Jeśli tak, to nie będziesz w stanie odtworzyć wcześniejszych "
 "wersji dokumentu."
 
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
+
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
 msgid "At least"
@@ -1395,6 +1461,7 @@ msgstr "Co najmniej"
 msgid "Attach to Previous List"
 msgstr "Kontynuuj bieżącą listę"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 msgid "Author"
@@ -1469,23 +1536,78 @@ msgstr "Automatyczne łączenie"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
-msgstr "Dostępne pola"
+msgid "Available Fields:"
+msgstr "Dostępne pola:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
 msgid "Available Formats:"
-msgstr "Dostępne formaty"
+msgstr "Dostępne formaty:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
-msgstr "Dostępne style"
+msgid "Available Styles:"
+msgstr "Dostępne style:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
 msgid "B&y:"
 msgstr "&Ile:"
+
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1633,6 +1755,11 @@ msgstr "Wypunktowanie"
 msgid "Bullets and &Numbering"
 msgstr "Wyliczanie (pod&punkty)"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+msgid "Bullets and Numbering"
+msgstr "Wyliczanie (podpunkty)"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1652,6 +1779,66 @@ msgstr "K&opiuj położenie hyperłącza"
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "Twó&rcy programu"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -1677,6 +1864,11 @@ msgstr "Nie można modyfikować wbudowanego stylu"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr "Nie można rozpocząć drukowania"
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+msgid "Category"
+msgstr "Kategoria"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -1988,6 +2180,11 @@ msgstr "Kolor:"
 msgid "Column"
 msgstr "kolumny"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+msgid "Column Break"
+msgstr "nowa kolumna"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2056,10 +2253,14 @@ msgid "Contact from File"
 msgstr "Kontakt z pliku"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 msgid "Contacts"
 msgstr "Kontakty"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+msgid "Contacts:"
+msgstr "Kontakty:"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2074,8 +2275,8 @@ msgstr "Kontynuacja poprzedniej wersji (nummer %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Współautor"
+msgid "Contributor(s)"
+msgstr "Współautorzy"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2241,6 +2442,12 @@ msgstr "Tworzy nowy dokument wg szablonu"
 msgid "Create an empty document"
 msgstr "Utwórz pusty dokument"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Create and Modify Styles"
+msgstr "Utwórz lub zmodyfikuj"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 msgid "Create from &selection"
@@ -2266,17 +2473,12 @@ msgstr "Utwórz nowe odwołanie do istniejącego elementu semantycznego"
 msgid "Create new Semantic Item"
 msgstr "Utwórz nowe element semantyczny"
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Utworzył"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "Wyt&nij"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Dzisiejsza data"
@@ -2315,6 +2517,11 @@ msgstr "Bieżący czas"
 #: po/tmp/ap_String_Id.h
 msgid "Cursor &blink"
 msgstr "Migający kursor"
+
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
@@ -2368,6 +2575,11 @@ msgstr "Przenosi zaznaczony fragment do schowka"
 msgid "D&irectional"
 msgstr "Kierunek tekstu"
 
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
+
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
@@ -2378,6 +2590,12 @@ msgstr "Kreski"
 #: po/tmp/ap_String_Id.h
 msgid "Dashed line"
 msgstr "Linia przerywana"
+
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
+msgstr ""
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2422,11 +2640,6 @@ msgstr "Tabulator dziesiętny"
 msgid "Decrease indent"
 msgstr "Mniejsze wcięcie"
 
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Domyślny format daty (bez czasu)"
-
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
@@ -2457,6 +2670,12 @@ msgstr "Definiuj podstawowe właściwości"
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Uruchamia menedżera stylów"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2560,8 +2779,6 @@ msgstr "Usuwa kolumnę"
 msgid "Delete this row from its table"
 msgstr "Usuwa wiersz"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
 msgid "Description"
@@ -2574,6 +2791,11 @@ msgstr "Opis"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Description:"
 msgstr "Opis:"
+
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2695,6 +2917,12 @@ msgstr "Dokumenty"
 #: po/tmp/ap_String_Id.h
 msgid "Don't restart"
 msgstr "Nie restartuj"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2870,6 +3098,16 @@ msgstr "Styl przypisów końcowych:"
 msgid "Endnotes"
 msgstr "Przypis końcowy"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -2906,8 +3144,8 @@ msgstr "Błąd w czasie próby zapisu %s: błędna nazwa"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
-msgstr "Wydarzenia"
+msgid "Events:"
+msgstr "Wydarzenia:"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3111,6 +3349,11 @@ msgstr "Zwiń poniżej poziomu 3"
 msgid "Fold below level 4"
 msgstr "Zwiń poniżej poziomu 4"
 
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
+
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
 msgid ""
@@ -3199,7 +3442,7 @@ msgstr "Odnośnik do przypisu bieżącego"
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
 msgid "Footnote style:"
-msgstr "Styl przypisów w stopce"
+msgstr "Styl przypisów w stopce:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
@@ -3331,7 +3574,8 @@ msgstr "Pełny ekran"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Ogólne"
 
@@ -3389,6 +3633,7 @@ msgstr "Górny margines nagłówka [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3562,17 +3807,17 @@ msgstr "Jak W Nazwie Własnej"
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
 msgid "Initial Endnote value:"
-msgstr "Pierwotna wartość przypisu końcowego"
+msgstr "Pierwotna wartość przypisu końcowego:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
 msgid "Initial Footnote value:"
-msgstr "Pierwotna wartość przypisu w stopce"
+msgstr "Pierwotna wartość przypisu w stopce:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
-msgstr "Styl wewnętrznego (pojedynczego) cudzysłowu"
+msgid "Inner (single) quote style:"
+msgstr "Styl wewnętrznego (pojedynczego) cudzysłowu:"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3959,7 +4204,6 @@ msgstr "Definicje punktorów"
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Język"
@@ -3968,6 +4212,11 @@ msgstr "Język"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Ustawienia języka"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+msgid "Language(s)"
+msgstr "Język(i)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -3979,15 +4228,10 @@ msgstr "Język(i):"
 msgid "Layout"
 msgstr "Układ strony"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr "Szczegóły układu"
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
-msgstr "Znaki wiodące"
+msgid "Leader:"
+msgstr "Znaki wiodące:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4031,6 +4275,16 @@ msgstr "Wyrównuje do lewej"
 msgid "Left-align the paragraph"
 msgstr "Wyrównuje akapit do lewego marginesu"
 
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
+
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
 msgid "Level 1"
@@ -4066,11 +4320,6 @@ msgstr "Poziom:"
 msgid "Li&ne spacing:"
 msgstr "&Z interlinią:"
 
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Wiersz"
-
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
 msgid "Line Count"
@@ -4096,15 +4345,16 @@ msgstr "Włącza lub wyłącza linię pod tekstem"
 msgid "Line between"
 msgstr "Rozdzielone pionową linią"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Line:"
+msgstr "Wiersze:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "Wiersze:"
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Kategoria"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4121,15 +4371,10 @@ msgstr "Właściwości listy"
 msgid "List Styles"
 msgstr "Styl listy"
 
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Wyliczanie "
-
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
-msgstr "Położenie"
+msgid "Locations:"
+msgstr "Położenie:"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4206,8 +4451,9 @@ msgstr "Test Martina"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
-msgstr "Maksymalna wysokość"
+#, fuzzy
+msgid "Max Column size:"
+msgstr "Maksymalna wysokość:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4316,8 +4562,8 @@ msgstr "Inne style"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
-msgstr "Modyfikacja stylu"
+msgid "Modify Style"
+msgstr "Modyfikacja Stylu"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h
@@ -4467,11 +4713,8 @@ msgstr "Aby zmodyfikować jakiś styl, musisz go najpierw wybrać z listy obok"
 msgid "No scripts found"
 msgstr "Nie znaleziono żadnego skryptu"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "(żaden)"
@@ -4498,8 +4741,9 @@ msgstr "Style przypisów"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
-msgstr "Liczba kolumn"
+#, fuzzy
+msgid "Number of Columns:"
+msgstr "Liczba kolumn:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4634,8 +4878,8 @@ msgstr "Zbyt mało pamięci przy próbie otwarcia %s"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
-msgstr "Styl zewnętrznego (podwójnego) cudzysłowu"
+msgid "Outer (double) quote style:"
+msgstr "Styl zewnętrznego (podwójnego) cudzysłowu:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4670,7 +4914,6 @@ msgstr "Wyczyść wersje"
 msgid "Pa&ste Unformatted"
 msgstr "Wklej &bez formatowania"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4685,6 +4928,11 @@ msgstr "Wstaw podział &strony przed"
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
 msgstr "Kolor &tła"
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+msgid "Page Break"
+msgstr "nowa strona"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4718,8 +4966,8 @@ msgstr "Numeracja stron"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Odnośnik do strony"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4730,6 +4978,12 @@ msgstr "&Ustawienia strony"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Właściwości strony"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page:"
+msgstr "Strony:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -4830,7 +5084,6 @@ msgstr "Umieszczenie:"
 msgid "Playing with RDF during development"
 msgstr "Odtwarzanie RDF podczas rozwoju"
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -4852,6 +5105,7 @@ msgstr "Pozycjonuj na stronie"
 msgid "Position to Paragraph"
 msgstr "Pozycjonuj do akapitu"
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5111,8 +5365,9 @@ msgstr "&Usuń nagłówek"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
-msgstr "Usuń następującą właściwość"
+#, fuzzy
+msgid "Remove Property from Style:"
+msgstr "Usuń następującą właściwość:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5537,7 +5792,8 @@ msgstr "Wybierz ramkę tekstową"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+#, fuzzy
+msgid "Select a target bookmark from the list:"
 msgstr "Docelowa zakładka."
 
 #. DLG_FormatFrame_SelectImage
@@ -6055,8 +6311,9 @@ msgstr "Źródło:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
-msgstr "Odstęp między kolumnami"
+#, fuzzy
+msgid "Space after Column:"
+msgstr "Odstęp między kolumnami:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6286,13 +6543,15 @@ msgstr "Nazwa stylu:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
-msgstr "Rodzaj stylu"
+#, fuzzy
+msgid "Style Type:"
+msgstr "Rodzaj stylu:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
-msgstr "Domyślny styl następnego akapitu"
+#, fuzzy
+msgid "Style for following paragraph:"
+msgstr "Domyślny styl następnego akapitu:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6306,7 +6565,6 @@ msgstr "Należy wypełnić pole nazwy stylu"
 msgid "Style:"
 msgstr "Styl listy:"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6723,19 +6981,21 @@ msgstr "Trójkąty"
 msgid "Two"
 msgstr "Dwie"
 
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "Rodzaj"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
-msgstr "Wpisz nazwę dla łącza RDF"
+#, fuzzy
+msgid "Type a name for the RDF link:"
+msgstr "Wpisz nazwę dla łącza RDF:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+#, fuzzy
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Podaj nazwę zakładki lub wybierz ją z listy."
 
 #. DLG_Lists_Type
@@ -6760,6 +7020,13 @@ msgstr "Podkreślona"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Włącza lub wyłącza podkreślenie"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Underlines"
+msgstr "Podkreślona"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -6895,6 +7162,11 @@ msgstr "Uwaga: zakładka \"%s\" nie istnieje."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Przełącza edycję do trybu hipertekst"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7056,14 +7328,51 @@ msgstr "mm/dd/rr"
 msgid "tOGGLE cASE"
 msgstr "oDWRÓĆ małe/WIELKIE"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "(żaden)"
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "(żaden)"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "(żaden)"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Temat"
 
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "(żaden)"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "(żaden)"
+
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Temat"
@@ -7101,11 +7410,6 @@ msgstr "&200%"
 #: po/tmp/xap_String_Id.h
 msgid "&75%"
 msgstr "&75%"
-
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-msgid "&Description"
-msgstr "&Opis"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7197,6 +7501,11 @@ msgstr "AbiWord: Generowanie podglądu"
 #, c-format
 msgid "About %s"
 msgstr "O programie %s"
+
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7348,6 +7657,11 @@ msgstr "Kraje Bałtyckie, ISO-8859-4"
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Kraje Bałtyckie, strona kodowa Windows 1257"
 
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr ""
+
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
 msgid "Basque"
@@ -7387,6 +7701,11 @@ msgstr "Bokmal"
 #: po/tmp/xap_String_Id.h
 msgid "Bold Italic"
 msgstr "Pogrubiona kursywa"
+
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
@@ -7439,10 +7758,20 @@ msgstr "Europa Wschodnia, strona kodowa Windows 1250"
 msgid "Change Language when changing keyboard"
 msgstr "Zmień język przy zmianie klawiatury"
 
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
+
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Tytułowy rozdziałów"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7514,6 +7843,12 @@ msgstr "Wybierz dokument z listy:"
 msgid "Clear Background"
 msgstr "Wyczyść tło"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "Wyczyść tło"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7521,8 +7856,9 @@ msgstr "Grafika gotowiec"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
-msgstr "Clipart nie mógł zostać załadowany"
+#, fuzzy
+msgid "Clip Art could not be loaded."
+msgstr "Clipart nie mógł zostać załadowany."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -7665,6 +8001,11 @@ msgstr "Czeski"
 msgid "Danish"
 msgstr "Duński"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -7727,8 +8068,9 @@ msgstr "Czas edycji:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
-msgstr "Atrybuty dodatkowe"
+#, fuzzy
+msgid "Effects:"
+msgstr "Atrybuty dodatkowe:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -7866,6 +8208,11 @@ msgstr "Plik do nagrania edycji:"
 msgid "File to replay editing:"
 msgstr "Plik do powtórenia edycji:"
 
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr ""
+
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
 msgid "Finnish"
@@ -7935,6 +8282,11 @@ msgstr "Fula"
 #: po/tmp/xap_String_Id.h
 msgid "Galician"
 msgstr "Galicyjski"
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr ""
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8323,8 +8675,14 @@ msgstr "Litewski"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-msgid "Loading Clip Art"
-msgstr "Ładowanie clipart"
+#, fuzzy
+msgid "Loading Clip Art..."
+msgstr "Ładowanie clipart..."
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8340,6 +8698,11 @@ msgstr "Macedoński"
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
 msgstr "Uczyń domyślnym dla dokumentu"
+
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr ""
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8591,6 +8954,11 @@ msgstr "Pendżabski (Pakistan)"
 msgid "Quechua"
 msgstr "Keczua"
 
+#. LANG_QUZ
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Cusco)"
+msgstr ""
+
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
@@ -8636,6 +9004,7 @@ msgid "Replay Editing from File"
 msgstr "Powtórz edycję z pliku"
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr "Odtwórz"
@@ -8700,6 +9069,12 @@ msgstr "Zapisz plik jako &typ:"
 msgid "Script:"
 msgstr "Zestaw znaków:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Section"
+msgstr "zaznaczonego"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -8759,6 +9134,11 @@ msgstr "Słoweński (Słowenia)"
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
 msgstr "Kapitaliki"
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
+msgstr ""
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9157,6 +9537,11 @@ msgstr ""
 msgid "Zoom to"
 msgstr "Powiększenie"
 
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr ""
+
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
 msgid "_No"
@@ -9224,201 +9609,10 @@ msgstr "potomne"
 msgid "unrelated"
 msgstr "bez związku"
 
-#~ msgid "Amharic (Ethiopia)"
-#~ msgstr "Amharski (Etiopia)"
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "(żaden)"
 
-#~ msgid "Asturian (Spain)"
-#~ msgstr "Asturyjski (Hiszpania)"
-
-#~ msgid "Aymara (La Paz)"
-#~ msgstr "Aymara (La Paz)"
-
-#~ msgid "Aymara (Oruro)"
-#~ msgstr "Aymara (Oruro)"
-
-#~ msgid "Central Aymara"
-#~ msgstr "Centralna Aymara"
-
-#~ msgid "Dutch (Netherlands)"
-#~ msgstr "Holenderski (Holandia)"
-
-#~ msgid "Flemish (Belgium)"
-#~ msgstr "Flamandzki (Belgia)"
-
-#~ msgid "Galician (Galego)"
-#~ msgstr "Galicyjski (Galego)"
-
-#~ msgid "Italian (Italy)"
-#~ msgstr "Włoski"
-
-#~ msgid "Kazakh (Kazakhstan)"
-#~ msgstr "Kazachski (Kazachstan)"
-
-#~ msgid "Korean, Johab"
-#~ msgstr "Koreański, Johab"
-
-#~ msgid "Latin (Renaissance)"
-#~ msgstr "Łacina"
-
-#~ msgid "Mandinka (Senegal)"
-#~ msgstr "Mandinka (Senegal)"
-
-#~ msgid "Nepali (Nepal)"
-#~ msgstr "Nepalski (Nepal)"
-
-#~ msgid "Norwegian Bokmal"
-#~ msgstr "Norweski (Bokmal)"
-
-#~ msgid "Norwegian Nynorsk"
-#~ msgstr "Norweski (Nynorsk)"
-
-#~ msgid "Punjabi (Gurmukhi)"
-#~ msgstr "Pendżabski (Gurmukhi)"
-
-#~ msgid "Punjabi (Shahmukhi)"
-#~ msgstr "Pendżabski (Shahmukhi)"
-
-#~ msgid "Quechua (3 vowels)"
-#~ msgstr "Keczua (3 samogłoski)"
-
-#~ msgid "Quechua (5 vowels)"
-#~ msgstr "Keczua (5 samogłosek)"
-
-#~ msgid "Russian (Russia)"
-#~ msgstr "Rosyjski (Rosja)"
-
-#~ msgid "Western European, DOS/Windows Code Page 437"
-#~ msgstr "Europa Zachodnia, strona kodowa DOS/Windows 437"
-
-#~ msgid "Wolof (Senegal)"
-#~ msgstr "Wolof (Senegal)"
-
-#~ msgid "&Available formats:"
-#~ msgstr "&Dostępne formaty:"
-
-#~ msgid "&Enable smart quotes"
-#~ msgstr "Zamieniaj cudzysłowy proste na drukarskie"
-
-#~ msgid "AutoFit behavior"
-#~ msgstr "Szerokość kolumn"
-
-#~ msgid "Bi-Directional Options"
-#~ msgstr "Opcje pisma dwukierunkowego"
-
-#~ msgid "Extra parameters:"
-#~ msgstr "Opcje dodatkowe:"
-
-#~ msgid "Field Name"
-#~ msgstr "Nazwa pola"
-
-#~ msgid "Format Endnotes"
-#~ msgstr "Formatuj przypisy końcowe"
-
-#~ msgid "Format Footnotes"
-#~ msgstr "Formatuj przypisy bieżące"
-
-#~ msgid "Insert break"
-#~ msgstr "Znak podziału"
-
-#~ msgid "Insert field"
-#~ msgstr "Wstawianie pola"
-
-#~ msgid "Paper..."
-#~ msgstr "Papier..."
-
-#~ msgid "Position Text Box"
-#~ msgstr "Położenie ramki tekstowej"
-
-#~ msgid "Scale..."
-#~ msgstr "Skalowanie..."
-
-#~ msgid "Section breaks"
-#~ msgstr "Wstaw znak podziału sekcji"
-
-#~ msgid "Table size"
-#~ msgstr "Wielkość"
-
-#~ msgid "Define Image Placement"
-#~ msgstr "Definiuj położenie obrazka"
-
-#~ msgid "Define Text Wrapping"
-#~ msgstr "Definiuj opływ tekstu"
-
-#~ msgid "Set Image Name"
-#~ msgstr "Wprowadź nazwę obrazka"
-
-#~ msgid "Set Image Size"
-#~ msgstr "Wprowadź wymiary obrazka"
-
-#~ msgid "&Show RDF"
-#~ msgstr "&Pokaż RDF"
-
-#~ msgid "Execute SPARQL Query for location"
-#~ msgstr "Wykonaj zapytanie SPARQL dla położenia"
-
-#~ msgid "SPARQL &Query"
-#~ msgstr "&Zapytanie SPARQL"
-
-#~ msgid "Stylesheet Settings"
-#~ msgstr "Ustawienia arkusza stylu"
-
-#~ msgid "Unicode UCS-2"
-#~ msgstr "Unicode UCS-2"
-
-#~ msgid "Unicode UCS-4"
-#~ msgstr "Unicode UCS-4"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "Unicode, UTF-16, Big Endian"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "Unicode, UTF-32, Big Endian"
-
-#~ msgid "Location, Start and End Times"
-#~ msgstr "Położenie, czas początkowy i końcowy"
-
-#~ msgid "Name, Nick"
-#~ msgstr "Imię, Nick"
-
-#~ msgid "Start and End Times"
-#~ msgstr "Czas rozpoczęcia i zakończenia"
-
-#~ msgid "Go to..."
-#~ msgstr "Przejście do..."
-
-#~ msgid "SPARQL Query..."
-#~ msgstr "Zapytanie SPARQL..."
-
-#~ msgid "&Format Table"
-#~ msgstr "Formatowanie"
-
-#~ msgid "&From File"
-#~ msgstr "&Rycina"
-
-#~ msgid "Allow Custom Toolbars"
-#~ msgstr "Dopuść niestandardowe paski narzędzi"
-
-#~ msgid "Display Help Index"
-#~ msgstr "Wyświetla skorowidz systemu pomocy."
-
-#~ msgid "INS"
-#~ msgstr "+INS"
-
-#~ msgid "Insert a picture"
-#~ msgstr "Wstawia element graficzny."
-
-#~ msgid "M&erge documents"
-#~ msgstr "Połącz dokumenty"
-
-#~ msgid "OVR"
-#~ msgstr "-ins"
-
-#~ msgid "Show the AbiWord splash screen on application startup"
-#~ msgstr "Pokaż ekran powitalny przy uruchomieniu programu"
-
-#~ msgid ""
-#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
-#~ "to merge them, but the result might be meaningless."
-#~ msgstr ""
-#~ "Dokumenty, które próbujesz połączyć nie są powiązane. AbiWord spróbuje je "
-#~ "połączyć, ale efekty mogą być zadziwiające."
