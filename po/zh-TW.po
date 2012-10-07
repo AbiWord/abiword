@@ -13,8 +13,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
-"PO-Revision-Date: 2012-08-19 09:30+0200\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"PO-Revision-Date: 2012-08-21 00:37+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Traditional Chinese <zh-l10n@linux.org.tw>\n"
 "Language: zh_TW\n"
@@ -1077,6 +1077,31 @@ msgstr "一行半"
 msgid "1.5 spacing"
 msgstr "一行半間距"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1114,6 +1139,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "定必建議糾正(&L)"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1469,6 +1549,61 @@ msgstr "可用的樣式:"
 msgid "B&y:"
 msgstr "位移點數(&Y):"
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
+
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h
@@ -1639,6 +1774,66 @@ msgstr "複製超連結位置(&O)"
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "製作人員芳名(&R)"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2313,6 +2508,11 @@ msgstr "現在時間"
 msgid "Cursor &blink"
 msgstr "游標閃爍(&B)"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2364,6 +2564,11 @@ msgstr "剪下選取範圍到剪貼簿"
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
 msgstr "文字左右方向選項(&I)"
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2883,6 +3088,16 @@ msgstr "章節附註樣式:"
 msgid "Endnotes"
 msgstr "章節附註"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -3123,6 +3338,11 @@ msgstr "第三級後摺疊"
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
 msgstr "第四級後摺疊"
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -3403,6 +3623,7 @@ msgstr "頁首 [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -4042,6 +4263,16 @@ msgstr "靠左對齊"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "段落靠左對齊"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -6300,9 +6531,8 @@ msgstr "樣式名稱:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Style Type:"
-msgstr "樣式類型"
+msgstr "樣式類型:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
@@ -7077,42 +7307,49 @@ msgstr "切換大小寫"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "無"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "無"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "無"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "主語"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "無"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "無"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "主語"
@@ -7438,6 +7675,11 @@ msgstr "挪威書面文"
 msgid "Bold Italic"
 msgstr "粗斜體"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7488,6 +7730,11 @@ msgstr "中歐語系, Windows 代碼頁 1250"
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
 msgstr "變更鍵盤時同時變更語言"
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7728,6 +7975,11 @@ msgstr "捷克文"
 msgid "Danish"
 msgstr "丹麥文"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -7929,6 +8181,11 @@ msgstr "要紀錄編輯的檔案:"
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
 msgstr "要重播編輯的檔案:"
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr ""
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8789,6 +9046,12 @@ msgstr "儲存檔案的格式(&T):"
 msgid "Script:"
 msgstr "命令稿:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Section"
+msgstr "選取範圍"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -9317,358 +9580,10 @@ msgstr "同級元素(siblings)"
 msgid "unrelated"
 msgstr "無關"
 
-#~ msgid "List"
-#~ msgstr "清單"
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "無"
 
-#~ msgid "&1 None"
-#~ msgstr "&1 無"
-
-#~ msgid "&2 .........."
-#~ msgstr "&2 .........."
-
-#~ msgid "&3 ----------"
-#~ msgstr "&3 ----------"
-
-#~ msgid "&4 __________"
-#~ msgstr "&4 __________"
-
-#~ msgid "Layout Details"
-#~ msgstr "版面設定詳情"
-
-#~ msgid "&Description"
-#~ msgstr "描述(&D)"
-
-#~ msgid "Contributor"
-#~ msgstr "內容提供者"
-
-#~ msgid "Creator"
-#~ msgstr "建立者"
-
-#~ msgid "Default date (w/o time)"
-#~ msgstr "預設日期 (不含時間)"
-
-#~ msgid "Line"
-#~ msgstr "行"
-
-#~ msgid "Lists for "
-#~ msgstr "清單用於: "
-
-#~ msgid "Page Reference"
-#~ msgstr "頁面參照"
-
-# zh-hk:埃塞俄比亞
-#~ msgid "Amharic (Ethiopia)"
-#~ msgstr "阿姆哈拉文 (衣索比亞)"
-
-#~ msgid "Asturian (Spain)"
-#~ msgstr "阿斯圖里亞斯文 (西班牙)"
-
-#~ msgid "Aymara (La Paz)"
-#~ msgstr "艾馬拉文 (La Paz)"
-
-#~ msgid "Aymara (Oruro)"
-#~ msgstr "艾馬拉文 (Oruro)"
-
-#~ msgid "Central Aymara"
-#~ msgstr "中央艾馬拉文"
-
-#~ msgid "Dutch (Netherlands)"
-#~ msgstr "荷蘭文 (荷蘭)"
-
-#~ msgid "Flemish (Belgium)"
-#~ msgstr "弗拉芒文 (比利時)"
-
-#~ msgid "Galician (Galego)"
-#~ msgstr "加里西亞文 (Galego)"
-
-# zh-hk:意大利文
-#~ msgid "Italian (Italy)"
-#~ msgstr "義大利文 (義大利)"
-
-#~ msgid "Kazakh (Kazakhstan)"
-#~ msgstr "哈薩克文 (Kazakhstan)"
-
-#~ msgid "Korean, Johab"
-#~ msgstr "韓文, Johab"
-
-#~ msgid "Latin (Renaissance)"
-#~ msgstr "拉丁文 (文藝復興)"
-
-#~ msgid "Mandinka (Senegal)"
-#~ msgstr "曼丁哥文 (塞內加爾)"
-
-#~ msgid "Nepali (Nepal)"
-#~ msgstr "尼泊爾文 (尼泊爾)"
-
-#~ msgid "Norwegian Bokmal"
-#~ msgstr "挪威文 (波克默爾文)"
-
-#~ msgid "Norwegian Nynorsk"
-#~ msgstr "挪威文 (新挪威文)"
-
-#~ msgid "Punjabi (Gurmukhi)"
-#~ msgstr "旁遮普文 (果魯穆奇)"
-
-#~ msgid "Punjabi (Shahmukhi)"
-#~ msgstr "旁遮普文 (Shahmukhi)"
-
-#~ msgid "Quechua (3 vowels)"
-#~ msgstr "蓋丘亞文 (3 元音)"
-
-#~ msgid "Quechua (5 vowels)"
-#~ msgstr "蓋丘亞文 (5 元音)"
-
-#~ msgid "Russian (Russia)"
-#~ msgstr "俄文 (俄羅斯)"
-
-#~ msgid "Western European, DOS/Windows Code Page 437"
-#~ msgstr "西歐語系, DOS/Windows 代碼頁 437"
-
-#~ msgid "Wolof (Senegal)"
-#~ msgstr "沃洛夫文 (塞內加爾)"
-
-#~ msgid "&Available formats:"
-#~ msgstr "可用格式(&A):"
-
-#~ msgid "&Enable smart quotes"
-#~ msgstr "啟用智能引號(&E)"
-
-#~ msgid "AutoFit behavior"
-#~ msgstr "自動調整行為"
-
-#~ msgid "Bi-Directional Options"
-#~ msgstr "文字左右方向選項"
-
-#~ msgid "Extra parameters:"
-#~ msgstr "額外參數:"
-
-#~ msgid "Field Name"
-#~ msgstr "功能變數名稱"
-
-#~ msgid "Format Endnotes"
-#~ msgstr "設定章節附註格式"
-
-#~ msgid "Format Footnotes"
-#~ msgstr "設定註腳格式"
-
-#~ msgid "Insert break"
-#~ msgstr "插入分隔符號"
-
-#~ msgid "Insert field"
-#~ msgstr "插入功能變數"
-
-#~ msgid "Paper..."
-#~ msgstr "紙張..."
-
-#~ msgid "Position Text Box"
-#~ msgstr "文字框位置"
-
-#~ msgid "Scale..."
-#~ msgstr "比例縮放..."
-
-#~ msgid "Section breaks"
-#~ msgstr "分節符號"
-
-#~ msgid "Table size"
-#~ msgstr "表格大小"
-
-#~ msgid "Define Image Placement"
-#~ msgstr "定義影像置放方式"
-
-#~ msgid "Define Text Wrapping"
-#~ msgstr "定義文字換行方式"
-
-#~ msgid "Set Image Name"
-#~ msgstr "設定影像名稱"
-
-#~ msgid "Set Image Size"
-#~ msgstr "設定影像大小"
-
-#~ msgid "&Show RDF"
-#~ msgstr "顯示 &amp;RDF"
-
-#~ msgid "Execute SPARQL Query for location"
-#~ msgstr "對此位置執行 SPARQL 查詢:"
-
-#~ msgid "SPARQL &Query"
-#~ msgstr "SPARQL 查詢(&Q)"
-
-#~ msgid "Unicode UCS-2"
-#~ msgstr "萬國碼 UCS-2"
-
-#~ msgid "Unicode UCS-4"
-#~ msgstr "萬國碼 UCS-4"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "萬國碼 UTF-16"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "萬國碼 UTF-32"
-
-#~ msgid "Go to..."
-#~ msgstr "到..."
-
-#~ msgid "SPARQL Query..."
-#~ msgstr "SPARQL 查詢..."
-
-#~ msgid "&Format Table"
-#~ msgstr "格式化表格(&F)"
-
-#~ msgid "Allow Custom Toolbars"
-#~ msgstr "允許自訂工具列"
-
-#~ msgid "Display Help Index"
-#~ msgstr "顯示說明索引"
-
-#~ msgid "INS"
-#~ msgstr "插入"
-
-#~ msgid "M&erge documents"
-#~ msgstr "合併文件(&E)"
-
-#~ msgid "OVR"
-#~ msgstr "覆寫"
-
-#~ msgid "Show the AbiWord splash screen on application startup"
-#~ msgstr "程式啟動時顯示 AbiWord 歡迎畫面"
-
-#~ msgid ""
-#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
-#~ "to merge them, but the result might be meaningless."
-#~ msgstr ""
-#~ "您要合併的文字並無關聯。 AbiWord 會試著合併它們，但其成品可能難以理解"
-
-#~ msgid "&From File"
-#~ msgstr "從檔案(&F)"
-
-#~ msgid "Insert a picture"
-#~ msgstr "插入圖片"
-
-#~ msgid "Break"
-#~ msgstr "分隔符號"
-
-#~ msgid "Field"
-#~ msgstr "功能變數"
-
-#~ msgid "Height in pixels:"
-#~ msgstr "高度 (像素):"
-
-#~ msgid "Width in pixels:"
-#~ msgstr "寬度 (像素):"
-
-#~ msgid "Activate:"
-#~ msgstr "啟用:"
-
-#~ msgid "Activate Window"
-#~ msgstr "啟用視窗"
-
-#~ msgid "Start with an empty document"
-#~ msgstr "從一個空白文件開始作業"
-
-#~ msgid "Choose a Template"
-#~ msgstr "選擇範本"
-
-#~ msgid "Modify Unix Font Path"
-#~ msgstr "修改 Unix 字型路徑"
-
-#~ msgid "Save visual glyph shapes"
-#~ msgstr "儲存可見的字形形狀"
-
-#~ msgid "Ignore Internet and &file addresses"
-#~ msgstr "忽略 Internet 和檔案位址(&F)"
-
-#~ msgid "Show font warning at start up"
-#~ msgstr "開始時顯示字型警告"
-
-#~ msgid "Determine correct glyph shapes from context"
-#~ msgstr "依上下文斷定正確的字形形狀"
-
-#~ msgid "First In Word Uppercase, Rest Lowercase"
-#~ msgstr "詞首大寫"
-
-#~ msgid "   Font   "
-#~ msgstr "   字型   "
-
-#~ msgid "Strikeout"
-#~ msgstr "刪除線"
-
-#~ msgid "Closing:"
-#~ msgstr "結束語:"
-
-#~ msgid "Email:"
-#~ msgstr "電子郵件:"
-
-#~ msgid "Reference:"
-#~ msgstr "附件列:"
-
-#~ msgid "About &Open Source"
-#~ msgstr "關於開放原始碼 (&O)"
-
-#~ msgid "About &GNU Free Software"
-#~ msgstr "關於 &GNU 自由軟體"
-
-#~ msgid "Check &Version"
-#~ msgstr "檢查版次(&V)"
-
-#~ msgid "Help &Index"
-#~ msgstr "說明索引(&I)"
-
-#~ msgid "&Autotext"
-#~ msgstr "自動圖文集(&A)"
-
-#~ msgid "&Bookmark"
-#~ msgstr "書籤(&B)"
-
-#~ msgid "&Preferences"
-#~ msgstr "偏好設定(&P)"
-
-#~ msgid "Show Para&graphs"
-#~ msgstr "顯示段落標記(&G)"
-
-#~ msgid "Zoom to &Whole Page"
-#~ msgstr "縮放至整頁"
-
-#~ msgid "Zoom to &Page Width"
-#~ msgstr "縮放至頁寬"
-
-#~ msgid "We&b"
-#~ msgstr "Web 網頁(&B)"
-
-#~ msgid "Save as &web"
-#~ msgstr "另存成 Web 網頁(&W)"
-
-#~ msgid "&Window"
-#~ msgstr "視窗(&W)"
-
-#~ msgid "&More Windows"
-#~ msgstr "更多的視窗(&M)"
-
-#~ msgid "Left-justify the paragraph"
-#~ msgstr "段落靠左對齊"
-
-#~ msgid "Right-justify the paragraph"
-#~ msgstr "段落靠右對齊"
-
-#~ msgid "Display information about Open Source"
-#~ msgstr "顯示關於開放原始碼的資訊"
-
-#~ msgid "About the GNU project"
-#~ msgstr "關於 GNU 計劃"
-
-#~ msgid "Display program version number"
-#~ msgstr "顯示程式版本"
-
-#~ msgid "Show or hide the standard toolbar"
-#~ msgstr "顯現/隱藏標準工具列"
-
-#~ msgid "Raise this window"
-#~ msgstr "把這個視窗放在最上面"
-
-#~ msgid "Save changes to %s?"
-#~ msgstr "把變更儲存至 %s 嗎？"
-
-#~ msgid "AbiWord was not able to add its fonts to the X "
-#~ msgstr "AbiWord 無法把它的字型加進 X "
-
-#~ msgid "Width"
-#~ msgstr "頁寬"
