@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
 "PO-Revision-Date: 2012-08-19 17:18+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -448,13 +448,15 @@ msgstr ""
 msgid "&Fields:"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (3)
+# (poterminology) /home/sayamindu/test/am/log-activity.po (3)<br />
+# (poterminology) /home/sayamindu/test/am/record-activity.po (2)<br />
+# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
 #. DLG_RDF_Editor_Menu_File
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&File"
-msgstr ""
+msgstr "file"
 
 #. DLG_Options_Label_FileExtension
 #: po/tmp/ap_String_Id.h
@@ -704,10 +706,14 @@ msgstr ""
 msgid "&More Documents"
 msgstr ""
 
+# (poterminology) /home/sayamindu/test/am/memorize.po (2)<br />
+# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (3)<br />
+# (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
 #. DLG_Goto_Label_Name
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Name:"
-msgstr ""
+msgstr "Laro"
 
 #. MENU_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -817,11 +823,6 @@ msgstr ""
 msgid "&Portrait"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/oficina.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
 #. MENU_LABEL_FILE_PRINT
 #: po/tmp/ap_String_Id.h
 msgid "&Print"
@@ -1122,9 +1123,6 @@ msgstr "&Lapad:"
 msgid "&Word Count"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/read-activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/write.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (2)
 #. MENU_LABEL_VIEW_ZOOM_MENU
 #. MENU_LABEL_VIEW_ZOOM
 #: po/tmp/ap_String_Id.h
@@ -1169,6 +1167,31 @@ msgstr ""
 msgid "1.5 spacing"
 msgstr ""
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1203,6 +1226,61 @@ msgstr ""
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
+msgstr ""
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
 msgstr ""
 
 #. FIELD_DateTime_AMPM
@@ -1548,6 +1626,61 @@ msgstr ""
 msgid "B&y:"
 msgstr ""
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
+
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h
@@ -1717,6 +1850,66 @@ msgstr ""
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
+msgstr ""
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
 msgstr ""
 
 #. MSG_NoBreakInsideTable
@@ -2416,6 +2609,11 @@ msgstr ""
 msgid "Cursor &blink"
 msgstr ""
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2466,6 +2664,11 @@ msgstr ""
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
+msgstr ""
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
 msgstr ""
 
 #. DLG_Lists_Dashed_List
@@ -2994,6 +3197,16 @@ msgstr ""
 msgid "Endnotes"
 msgstr ""
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -3104,12 +3317,14 @@ msgstr ""
 msgid "Extra Toolbar"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (3)
+# (poterminology) /home/sayamindu/test/am/log-activity.po (3)<br />
+# (poterminology) /home/sayamindu/test/am/record-activity.po (2)<br />
+# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "F&ile"
-msgstr ""
+msgstr "file"
 
 # (poterminology) /home/sayamindu/test/am/write.po (1)<br /><br />
 # (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)
@@ -3118,8 +3333,6 @@ msgstr ""
 msgid "F&ormat"
 msgstr "&Ayos"
 
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h
 msgid "F&ull Screen"
@@ -3241,6 +3454,11 @@ msgstr ""
 #. DLG_Lists_FoldingLevel4
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
+msgstr ""
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
 msgstr ""
 
 #. DLG_Para_PreviewFollowParagraph
@@ -3455,8 +3673,6 @@ msgstr ""
 msgid "From LaTeX"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)
 #. TOOLBAR_LABEL_VIEW_FULL_SCREEN
 #. TOOLBAR_STATUSLINE_VIEW_FULL_SCREEN
 #. TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN
@@ -3464,10 +3680,6 @@ msgstr ""
 msgid "Full Screen"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (5)
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
@@ -4177,6 +4389,16 @@ msgstr ""
 msgid "Left-align the paragraph"
 msgstr ""
 
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
+
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
 msgid "Level 1"
@@ -4491,7 +4713,7 @@ msgstr ""
 msgid "Multiple"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/memorize.po (9)<br />
+# (poterminology) /home/sayamindu/test/am/memorize.po (2)<br />
 # (poterminology) /home/sayamindu/test/am/slider-puzzle.po (3)<br />
 # (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME
@@ -4501,8 +4723,9 @@ msgstr ""
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Name"
-msgstr ""
+msgstr "Laro"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
@@ -4674,8 +4897,9 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/calculate-activity.po (2)
 #. DLG_Lists_Type_numbered
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Numbered"
-msgstr ""
+msgstr "&Bilang:"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
@@ -4701,11 +4925,10 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/calculate-activity.po (2)
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Numbers"
-msgstr ""
+msgstr "&Bilang:"
 
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/journal-activity.po (1)
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
 msgid "Object"
@@ -5107,11 +5330,6 @@ msgid ""
 "Previous Paragraph Previous Paragraph Previous Paragraph"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/oficina.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
 #. DLG_UP_PrintButton
@@ -5529,19 +5747,21 @@ msgstr ""
 msgid "Right-to-left &dominant"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)<br /><br />
+# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)&lt;br /&gt;<br />
 # (poterminology) /home/sayamindu/test/am/oficina.po (1)
 #. FIELD_Document_Rights
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Rights"
-msgstr ""
+msgstr "Kanan"
 
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)<br /><br />
+# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)&lt;br /&gt;<br />
 # (poterminology) /home/sayamindu/test/am/oficina.po (1)
 #. DLG_MetaData_Rights_LBL
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Rights:"
-msgstr ""
+msgstr "Kanan"
 
 #. DLG_FormatTable_Apply_To_Row
 #: po/tmp/ap_String_Id.h
@@ -5597,8 +5817,9 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/memorize.po (1)
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Sa&ve"
-msgstr ""
+msgstr "I-save"
 
 #. MENU_LABEL_FILE_EXPORT
 #: po/tmp/ap_String_Id.h
@@ -5624,8 +5845,9 @@ msgstr "I-save"
 # (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
 #. MENU_LABEL_FILE_SAVEAS
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Save &As"
-msgstr ""
+msgstr "I-save bilang"
 
 #. MENU_LABEL_FILE_SAVE_TEMPLATE
 #: po/tmp/ap_String_Id.h
@@ -7230,9 +7452,6 @@ msgstr ""
 msgid "Your changes will be lost if you don't save them."
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/read-activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/write.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (2)
 #. TOOLBAR_LABEL_ZOOM
 #. TOOLBAR_STATUSLINE_ZOOM
 #. TOOLBAR_TOOLTIP_ZOOM
@@ -7306,9 +7525,6 @@ msgstr ""
 msgid "lowercase"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/record-activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/measure_stable.po (2)
 #. DLG_Options_Label_Minutes
 #: po/tmp/ap_String_Id.h
 msgid "minutes"
@@ -7703,6 +7919,11 @@ msgstr ""
 msgid "Bold Italic"
 msgstr ""
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7760,6 +7981,11 @@ msgstr ""
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
+msgstr ""
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
 msgstr ""
 
 #. STYLE_CHAPHEADING
@@ -7957,15 +8183,11 @@ msgstr ""
 msgid "Could not load the dictionary for the %s language"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (1)
 #. DLG_History_Version_Started
 #: po/tmp/xap_String_Id.h
 msgid "Created"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (1)
 #. DLG_History_Created
 #: po/tmp/xap_String_Id.h
 msgid "Created:"
@@ -8009,6 +8231,11 @@ msgstr ""
 #. LANG_DA_DK
 #: po/tmp/xap_String_Id.h
 msgid "Danish"
+msgstr ""
+
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
 msgstr ""
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
@@ -8194,12 +8421,14 @@ msgstr ""
 msgid "Farsi"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (3)
+# (poterminology) /home/sayamindu/test/am/log-activity.po (3)<br />
+# (poterminology) /home/sayamindu/test/am/record-activity.po (2)<br />
+# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "File"
-msgstr ""
+msgstr "file"
 
 #. DLG_OverwriteFile
 #: po/tmp/xap_String_Id.h
@@ -8215,6 +8444,11 @@ msgstr ""
 #. DLG_FOSA_ReplayFromFileLabel
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
+msgstr ""
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
 msgstr ""
 
 #. LANG_FI_FI
@@ -8751,13 +8985,14 @@ msgstr ""
 msgid "Mongolian"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/memorize.po (9)<br />
+# (poterminology) /home/sayamindu/test/am/memorize.po (2)<br />
 # (poterminology) /home/sayamindu/test/am/slider-puzzle.po (3)<br />
 # (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Name:"
-msgstr ""
+msgstr "Laro"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
@@ -9075,6 +9310,11 @@ msgstr ""
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h
 msgid "Script:"
+msgstr ""
+
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+msgid "Section"
 msgstr ""
 
 #. STYLE_SECTHEADING
@@ -9611,1077 +9851,13 @@ msgstr ""
 msgid "unrelated"
 msgstr ""
 
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Drone and Jump"
-#~ msgstr "Ugong at Talon"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/pippy-activity.po (1)
-#~ msgid "Error"
-#~ msgstr "Pagkakamali"
-
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)
-#~ msgid "Unable"
-#~ msgstr "Hindi kaya"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (13)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "pitch"
-#~ msgstr "tono"
-
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)
-#~ msgid "Forward"
-#~ msgstr "Pasulong"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)
-#~ msgid "line"
-#~ msgstr "linya"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (10)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (7)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (7)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (4)
-#~ msgid "slot"
-#~ msgstr "slot"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "note"
-#~ msgstr "nota"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "generator"
-#~ msgstr "generator"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "density"
-#~ msgstr "kakapalan"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
-#~ msgid "chosen"
-#~ msgstr "pinili"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)
-#~ msgid "send"
-#~ msgstr "ipadala"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Highpass"
-#~ msgstr "Highpass"
-
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "add"
-#~ msgstr "magdagdag"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
-#~ msgid "Unknown"
-#~ msgstr "Hindi alam"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
-#~ msgid "Not"
-#~ msgstr "Hindi"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)
-#~ msgid "Sine"
-#~ msgstr "Sine"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Harmonic minor scale"
-#~ msgstr "Menor na eskalang Harmonic"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)
-#~ msgid "Sound"
-#~ msgstr "Tunog"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (49)<br />
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/pippy-activity.po (1)
-#~ msgid "sound"
-#~ msgstr "tunog"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)
-#~ msgid "string"
-#~ msgstr "string"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)
-#~ msgid "Register"
-#~ msgstr "Magrehistro"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (3)
-#~ msgid "Maximum"
-#~ msgstr "Pinakamataas"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/sugar-toolkit.po (3)
-#~ msgid "Keep"
-#~ msgstr "Itago"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)
-#~ msgid "Control"
-#~ msgstr "Kontrol"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Record to ogg"
-#~ msgstr "I-rekord sa ogg"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/journal-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/measure_stable.po (1)
-#~ msgid "Start"
-#~ msgstr "Simulan"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Random"
-#~ msgstr "Sapalaran"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (3)
-#~ msgid "list"
-#~ msgstr "listahan"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (4)
-#~ msgid "Duplicate"
-#~ msgstr "Kumopya"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (3)
-#~ msgid "server"
-#~ msgstr "server"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Minimum"
-#~ msgstr "Pinakamababa"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Lowpass"
-#~ msgstr "Lowpass"
-
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/pippy-activity.po (3)
-#~ msgid "activity"
-#~ msgstr "aktibidad"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)
-#~ msgid "Ring"
-#~ msgstr "Ring"
-
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)
-#~ msgid "Previous"
-#~ msgstr "Nakaraan"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (3)
-#~ msgid "Rythm"
-#~ msgstr "Ritmo"
-
-# (poterminology) /home/sayamindu/test/am/chat-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/sugar-toolkit.po (1)
-#~ msgid "Share"
-#~ msgstr "Ibahagi"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
-#~ msgid "play"
-#~ msgstr "paandarin"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (2)
-#~ msgid "Send"
-#~ msgstr "Ipadala"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)
-#~ msgid "Next"
-#~ msgstr "Kasunod"
-
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/connect-activity.po (2)
-#~ msgid "Waiting"
-#~ msgstr "Naghihintay"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (6)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "frequency"
-#~ msgstr "kadalasan"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Master"
-#~ msgstr "Master"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (5)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (7)
-#~ msgid "duration"
-#~ msgstr "tagal"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Decay duration"
-#~ msgstr "Tagal ng paghina"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (4)
-#~ msgid "click"
-#~ msgstr "pindutin"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Filter cutoff"
-#~ msgstr "Filter cutoff"
-
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/oficina.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (3)
-#~ msgid "Tool"
-#~ msgstr "Gamit"
-
-# (poterminology) /home/sayamindu/test/am/memorize.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/pippy-activity.po (1)
-#~ msgid "selected"
-#~ msgstr "pinili"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)
-#~ msgid "recorded"
-#~ msgstr "narekord"
-
-# (poterminology) /home/sayamindu/test/am/memorize.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
-#~ msgid "Game"
-#~ msgstr "Laro"
-
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/pippy-activity.po (1)
-#~ msgid "clipboard"
-#~ msgstr "clipboard"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/chat-activity.po (1)
-#~ msgid "Connected"
-#~ msgstr "Konektado"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)
-#~ msgid "Key"
-#~ msgstr "Susi"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Loop"
-#~ msgstr "Loop"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "noise"
-#~ msgstr "ingay"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
 # (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)<br />
 # (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
 # (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Natural"
-#~ msgstr "Natural"
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Wala"
 
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/measure_stable.po (1)
-#~ msgid "power"
-#~ msgstr "lakas"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Mute"
-#~ msgstr "Pipi"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (9)
-#~ msgid "This"
-#~ msgstr "Ito"
-
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/pippy-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)
-#~ msgid "journal"
-#~ msgstr "journal"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)
-#~ msgid "args"
-#~ msgstr "args"
-
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (3)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (1)
-#~ msgid "Play"
-#~ msgstr "Paandarin"
-
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (1)
-#~ msgid "Equal"
-#~ msgstr "Katumbas"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (12)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (9)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (9)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (7)
-#~ msgid "Record"
-#~ msgstr "Rekord"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "step"
-#~ msgstr "hakbang"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (3)
-#~ msgid "Pitch"
-#~ msgstr "Tono"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Reverb"
-#~ msgstr "Reverb"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Silence"
-#~ msgstr "Katahimikan"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/oficina.po (1)
-#~ msgid "Square"
-#~ msgstr "Parisukat"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/sugar-toolkit.po (1)
-#~ msgid "Neighborhood"
-#~ msgstr "Kapitbahayan"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/journal-activity.po (1)
-#~ msgid "Resume"
-#~ msgstr "I-pagpatuloy"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/journal-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)
-#~ msgid "Back"
-#~ msgstr "Balik"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Dorian scale"
-#~ msgstr "Eskalang Dorian"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Jump"
-#~ msgstr "Tumalon"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "minor scale"
-#~ msgstr "menor na eskala"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "top"
-#~ msgstr "tuktok"
-
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)
-#~ msgid "first"
-#~ msgstr "una"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "cutoff"
-#~ msgstr "cutoff"
-
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)
-#~ msgid "Use"
-#~ msgstr "Gamitin"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Pause"
-#~ msgstr "I-hinto sandali"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (7)
-#~ msgid "Log"
-#~ msgstr "Tala"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Decay"
-#~ msgstr "Paghina"
-
-# (poterminology) /home/sayamindu/test/am/write.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/oficina.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (5)<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (1)
-#~ msgid "image"
-#~ msgstr "larawan"
-
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/pippy-activity.po (2)
-#~ msgid "Please"
-#~ msgstr "Pakisuyo"
-
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "Click to add"
-#~ msgstr "Pindutin upang magdagdag"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)
-#~ msgid "Playback"
-#~ msgstr "Patugtugin"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "Free"
-#~ msgstr "Libre"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/journal-activity.po (1)
-#~ msgid "friend"
-#~ msgstr "kaibigan"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)
-#~ msgid "not exist"
-#~ msgstr "hindi umiiral"
-
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)
-#~ msgid "size"
-#~ msgstr "laki"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Draw"
-#~ msgstr "Gumuhit"
-
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "Downloading"
-#~ msgstr "Nagda-download"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)
-#~ msgid "takes"
-#~ msgstr "mga kuha"
-
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/measure_stable.po (1)
-#~ msgid "second"
-#~ msgstr "segundo"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (6)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "create"
-#~ msgstr "lumikha"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Tempo"
-#~ msgstr "Tempo"
-
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)
-#~ msgid "Zoom out"
-#~ msgstr "Mag-zoom out"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)
-#~ msgid "change"
-#~ msgstr "baguhin"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (10)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (7)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (7)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (4)
-#~ msgid "into slot"
-#~ msgstr "sa slot"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "minor"
-#~ msgstr "menor"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)
-#~ msgid "option"
-#~ msgstr "pagpipilian"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (2)
-#~ msgid "Click"
-#~ msgstr "Pindutin"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Phrygian scale"
-#~ msgstr "Eskalang Phrygian"
-
-# (poterminology) /home/sayamindu/test/am/chat-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
-#~ msgid "joined"
-#~ msgstr "sumali"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (17)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (3)
-#~ msgid "volume"
-#~ msgstr "lakas ng tunog"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/measure_stable.po (1)
-#~ msgid "Time"
-#~ msgstr "Oras"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "ogg"
-#~ msgstr "ogg"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Balance"
-#~ msgstr "Balanse"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Load"
-#~ msgstr "Ikarga"
-
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "distance"
-#~ msgstr "layo"
-
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (3)
-#~ msgid "microphone into slot"
-#~ msgstr "mikropono sa loob ng slot"
-
-# (poterminology) /home/sayamindu/test/am/record-activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/measure_stable.po (1)
-#~ msgid "hour"
-#~ msgstr "oras"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "Frame"
-#~ msgstr "Kuwadro"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "maximum"
-#~ msgstr "pinakamataas"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (5)
-#~ msgid "remaining"
-#~ msgstr "natitira"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "recording"
-#~ msgstr "kasalukuyang nagre-rekord"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "record"
-#~ msgstr "rekord"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/chat-activity.po (1)
-#~ msgid "Clipboard"
-#~ msgstr "Clipboard"
-
-# (poterminology) /home/sayamindu/test/am/sugar-base.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "Video"
-#~ msgstr "Video"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
-#~ msgid "Connect"
-#~ msgstr "I-dugtong"
-
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (6)<br />
-# (poterminology) /home/sayamindu/test/am/sugar-toolkit.po (2)
-#~ msgid "error"
-#~ msgstr "pagkakamali"
-
-# (poterminology) /home/sayamindu/test/am/terminal-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (2)
-#~ msgid "root"
-#~ msgstr "root"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Left click"
-#~ msgstr "Pindutin ang kaliwa"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Attack duration"
-#~ msgstr "Tagal ng atake"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (2)
-#~ msgid "argument"
-#~ msgstr "argumento"
-
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (3)
-#~ msgid "Record microphone into"
-#~ msgstr "I-rekord ang mikropono sa"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)
-#~ msgid "Delay"
-#~ msgstr "Antala"
-
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "download"
-#~ msgstr "download"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Attack"
-#~ msgstr "Atake"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (1)
-#~ msgid "Restart"
-#~ msgstr "Simulan muli"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)
-#~ msgid "exist"
-#~ msgstr "umiiral"
-
-# (poterminology) /home/sayamindu/test/am/log-activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
-#~ msgid "file"
-#~ msgstr "file"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
-#~ msgid "You"
-#~ msgstr "Ikaw"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (5)<br />
-# (poterminology) /home/sayamindu/test/am/measure_stable.po (1)
-#~ msgid "Frequency"
-#~ msgstr "Kadalasan"
-
-# (poterminology) /home/sayamindu/test/am/chat-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
-#~ msgid "invite"
-#~ msgstr "mag-imbita"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (7)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (3)
-#~ msgid "filter"
-#~ msgstr "filter"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "microphone"
-#~ msgstr "mikropono"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/oficina.po (1)
-#~ msgid "Triangle"
-#~ msgstr "Tatsulok"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (16)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Beat"
-#~ msgstr "Pintig"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (5)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (4)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (4)&lt;br /&gt;<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (4)
-#~ msgid "mic"
-#~ msgstr "mikropono"
-
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/sugar-toolkit.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/measure_stable.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)
-#~ msgid "Stop"
-#~ msgstr "Hinto"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (5)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (5)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (6)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (5)
-#~ msgid "Kit"
-#~ msgstr "Kit"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (5)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (6)
-#~ msgid "Volume"
-#~ msgstr "Lakas ng tunog"
-
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
-#~ msgid "Finished"
-#~ msgstr "Tapos na"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "right click"
-#~ msgstr "pindutin ang kanan"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "parameter"
-#~ msgstr "parametro"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (1)
-#~ msgid "information about"
-#~ msgstr "impormasyon tungkol sa"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/write.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Lower"
-#~ msgstr "Mas mababa"
-
-# (poterminology) /home/sayamindu/test/am/oficina.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "Rotate"
-#~ msgstr "Paiikutin"
-
-# (poterminology) /home/sayamindu/test/am/read-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)
-#~ msgid "Zoom in"
-#~ msgstr "Mag-zoom in"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (5)
-#~ msgid "track"
-#~ msgstr "track"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/write.po (5)
-#~ msgid "List"
-#~ msgstr "Listahan"
-
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
-#~ msgid "Joined"
-#~ msgstr "Sumali"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Drone"
-#~ msgstr "Ugong"
-
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/sugar-toolkit.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/pippy-activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/terminal-activity.po (1)
-#~ msgid "Activity"
-#~ msgstr "Aktibidad"
-
-# (poterminology) /home/sayamindu/test/am/journal-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
-#~ msgid "Your"
-#~ msgstr "Iyong"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Repeater"
-#~ msgstr "Repeater"
-
-# (poterminology) /home/sayamindu/test/am/sugar.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/log-activity.po (3)
-#~ msgid "information"
-#~ msgstr "impormasyon"
-
-# (poterminology) /home/sayamindu/test/am/sugar-base.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "Audio"
-#~ msgstr "Audio"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
-#~ msgid "Bandpass"
-#~ msgstr "Bandpass"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (4)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (3)
-#~ msgid "Filter"
-#~ msgstr "Filter"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "minimum"
-#~ msgstr "pinakamababa"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Drunk"
-#~ msgstr "Lasing"
-
-# (poterminology) /home/sayamindu/test/am/chat-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/sugar-toolkit.po (1)
-#~ msgid "Private"
-#~ msgstr "Pribado"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (4)
-#~ msgid "Track"
-#~ msgstr "Track"
-
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Regularity"
-#~ msgstr "Regularidad"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "in time"
-#~ msgstr "sa oras"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "Noise"
-#~ msgstr "Ingay"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (7)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamMini.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamJam.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "time"
-#~ msgstr "oras"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
-#~ msgid "Duration"
-#~ msgstr "Tagal"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (3)<br />
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/memorize.po (1)
-#~ msgid "audio"
-#~ msgstr "audio"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/acoustic-measure-activity.po (1)
-#~ msgid "Speed"
-#~ msgstr "Bilis"
-
-# (poterminology) /home/sayamindu/test/am/journal-activity.po (2)<br />
-# (poterminology) /home/sayamindu/test/am/web-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/record-activity.po (1)
-#~ msgid "Journal"
-#~ msgstr "Journal"
-
-# (poterminology) /home/sayamindu/test/am/TamTamSynthLab.activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/chat-activity.po (1)<br />
-# (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
-#~ msgid "left"
-#~ msgstr "kaliwa"
