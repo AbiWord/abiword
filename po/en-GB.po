@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-20 15:06-0400\n"
-"PO-Revision-Date: 2012-08-20 21:36+0200\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"PO-Revision-Date: 2012-09-08 06:25+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
 "Language: en_GB\n"
@@ -1071,6 +1071,31 @@ msgstr "1.5 lines"
 msgid "1.5 spacing"
 msgstr "1.5 spacing"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr "1/3 A4"
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr "1/3 A5"
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr "1/4 A3"
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr "1/4 A4"
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr "1/8 A4"
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1108,6 +1133,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "A&lways suggest corrections"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr "A0"
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr "A1"
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr "A10"
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr "A2"
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr "A3"
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr "A4"
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr "A5"
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr "A6"
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr "A7"
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr "A8"
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1466,6 +1546,61 @@ msgstr "Available Styles:"
 msgid "B&y:"
 msgstr "B&y:"
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr "B0"
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr "B1"
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr "B10"
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr "B2"
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr "B3"
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr "B4"
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr "B5"
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr "B6"
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr "B7"
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr "B8"
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr "B9"
+
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h
@@ -1636,6 +1771,66 @@ msgstr "C&opy hyperlink location"
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "C&redits"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr "C0"
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr "C1"
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr "C10"
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr "C2"
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr "C3"
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr "C4"
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr "C5"
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr "C6"
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr "C6/C5 Envelope"
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr "C7"
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr "C8"
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2314,6 +2509,11 @@ msgstr "Current Time"
 msgid "Cursor &blink"
 msgstr "Cursor &blink"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr "Custom"
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2365,6 +2565,11 @@ msgstr "Cut the selection and put it on the Clipboard"
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
 msgstr "D&irectional"
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr "DL Envelope"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2884,6 +3089,16 @@ msgstr "Endnote style:"
 msgid "Endnotes"
 msgstr "Endnotes"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr "Envelope 6x9"
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr "Envelope #10"
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -3124,6 +3339,11 @@ msgstr "Fold below level 3"
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
 msgstr "Fold below level 4"
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr "Folio"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -4043,6 +4263,16 @@ msgstr "Left alignment"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "Left-align the paragraph"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr "Legal"
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr "Letter"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -7509,6 +7739,11 @@ msgstr "Central European, Windows Code Page 1250"
 msgid "Change Language when changing keyboard"
 msgstr "Change Language when changing keyboard"
 
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr "Chapter"
+
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
@@ -8811,6 +9046,11 @@ msgstr "Save file as &type:"
 msgid "Script:"
 msgstr "Script:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+msgid "Section"
+msgstr "Section"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -9342,309 +9582,9 @@ msgstr "siblings"
 msgid "unrelated"
 msgstr "unrelated"
 
-#~ msgid "List"
-#~ msgstr "List"
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "None"
 
-#~ msgid "&1 None"
-#~ msgstr "&1 None"
-
-#~ msgid "&2 .........."
-#~ msgstr "&2 .........."
-
-#~ msgid "&3 ----------"
-#~ msgstr "&3 ----------"
-
-#~ msgid "&4 __________"
-#~ msgstr "&4 __________"
-
-#~ msgid "&Available formats:"
-#~ msgstr "&Available formats:"
-
-#~ msgid "&Enable smart quotes"
-#~ msgstr "&Enable smart quotes"
-
-#~ msgid "&Show RDF"
-#~ msgstr "&Show RDF"
-
-#~ msgid "AutoFit behavior"
-#~ msgstr "AutoFit behaviour"
-
-#~ msgid "Bi-Directional Options"
-#~ msgstr "Bi-Directional Options"
-
-#~ msgid "Contributor"
-#~ msgstr "Contributer"
-
-#~ msgid "Creator"
-#~ msgstr "Creator"
-
-#~ msgid "Default date (w/o time)"
-#~ msgstr "Default date (w/o time)"
-
-#~ msgid "Execute SPARQL Query for location"
-#~ msgstr "Execute SPARQL Query for location"
-
-#~ msgid "Extra parameters:"
-#~ msgstr "Extra parameters:"
-
-#~ msgid "Field Name"
-#~ msgstr "Field Name"
-
-#~ msgid "Format Endnotes"
-#~ msgstr "Format Endnotes"
-
-#~ msgid "Format Footnotes"
-#~ msgstr "Format Footnotes"
-
-#~ msgid "Insert break"
-#~ msgstr "Insert break"
-
-#~ msgid "Insert field"
-#~ msgstr "Insert field"
-
-#~ msgid "Layout Details"
-#~ msgstr "Layout Details"
-
-#~ msgid "Line"
-#~ msgstr "Line"
-
-#~ msgid "Lists for "
-#~ msgstr "Lists for "
-
-#~ msgid "Page Reference"
-#~ msgstr "Page Reference"
-
-#~ msgid "Paper..."
-#~ msgstr "Paper..."
-
-#~ msgid "Position Text Box"
-#~ msgstr "Position Text Box"
-
-#~ msgid "SPARQL &Query"
-#~ msgstr "SPARQL &Query"
-
-#~ msgid "Scale..."
-#~ msgstr "Scale..."
-
-#~ msgid "Section breaks"
-#~ msgstr "Section breaks"
-
-#~ msgid "Stylesheet Settings"
-#~ msgstr "Stylesheet Settings"
-
-#~ msgid "Table size"
-#~ msgstr "Table size"
-
-#~ msgid "&Description"
-#~ msgstr "&Description"
-
-#~ msgid "Amharic (Ethiopia)"
-#~ msgstr "Amharic (Ethiopia)"
-
-#~ msgid "Asturian (Spain)"
-#~ msgstr "Asturian (Spain)"
-
-#~ msgid "Aymara (La Paz)"
-#~ msgstr "Aymara (La Paz)"
-
-#~ msgid "Aymara (Oruro)"
-#~ msgstr "Aymara (Oruro)"
-
-#~ msgid "Central Aymara"
-#~ msgstr "Central Aymara"
-
-#~ msgid "Define Image Placement"
-#~ msgstr "Define Image Placement"
-
-#~ msgid "Define Text Wrapping"
-#~ msgstr "Define Text Wrapping"
-
-#~ msgid "Dutch (Netherlands)"
-#~ msgstr "Dutch (Netherlands)"
-
-#~ msgid "Flemish (Belgium)"
-#~ msgstr "Flemish (Belgium)"
-
-#~ msgid "Galician (Galego)"
-#~ msgstr "Galician (Galego)"
-
-#~ msgid "Italian (Italy)"
-#~ msgstr "Italian (Italy)"
-
-#~ msgid "Kazakh (Kazakhstan)"
-#~ msgstr "Kazakh (Kazakhstan)"
-
-#~ msgid "Korean, Johab"
-#~ msgstr "Korean, Johab"
-
-#~ msgid "Latin (Renaissance)"
-#~ msgstr "Latin (Renaissance)"
-
-#~ msgid "Mandinka (Senegal)"
-#~ msgstr "Mandinka (Senegal)"
-
-#~ msgid "Nepali (Nepal)"
-#~ msgstr "Nepali (Nepal)"
-
-#~ msgid "Norwegian Bokmal"
-#~ msgstr "Norwegian Bokmal"
-
-#~ msgid "Norwegian Nynorsk"
-#~ msgstr "Norwegian Nynorsk"
-
-#~ msgid "Punjabi (Gurmukhi)"
-#~ msgstr "Punjabi (Gurmukhi)"
-
-#~ msgid "Punjabi (Shahmukhi)"
-#~ msgstr "Punjabi (Shahmukhi)"
-
-#~ msgid "Quechua (3 vowels)"
-#~ msgstr "Quechua (3 vowels)"
-
-#~ msgid "Quechua (5 vowels)"
-#~ msgstr "Quechua (5 vowels)"
-
-#~ msgid "Russian (Russia)"
-#~ msgstr "Russian (Russia)"
-
-#~ msgid "Set Image Name"
-#~ msgstr "Set Image Name"
-
-#~ msgid "Set Image Size"
-#~ msgstr "Set Image Size"
-
-#~ msgid "Unicode UCS-2"
-#~ msgstr "Unicode UCS-2"
-
-#~ msgid "Unicode UCS-4"
-#~ msgstr "Unicode UCS-4"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "Unicode UTF-16"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "Unicode UTF-32"
-
-#~ msgid "Western European, DOS/Windows Code Page 437"
-#~ msgstr "Western European, DOS/Windows Code Page 437"
-
-#~ msgid "Wolof (Senegal)"
-#~ msgstr "Wolof (Senegal)"
-
-#~ msgid "Bambara"
-#~ msgstr "Bamnankan"
-
-#~ msgid "&Tripel"
-#~ msgstr "&Triple"
-
-#~ msgid "Lat & Long"
-#~ msgstr "Lat & Long"
-
-#~ msgid "Location, Start and End Times"
-#~ msgstr "Location, Start and End Times"
-
-#~ msgid "Name, Nick"
-#~ msgstr "Name, Nick"
-
-#~ msgid "Start and End Times"
-#~ msgstr "Start and End Times"
-
-#~ msgid "Go to..."
-#~ msgstr "Go to..."
-
-#~ msgid "SPARQL Query..."
-#~ msgstr "SPARQL Query..."
-
-#~ msgid "&Format Table"
-#~ msgstr "&Format Table"
-
-#~ msgid "&From File"
-#~ msgstr "&From File"
-
-#~ msgid "Allow Custom Toolbars"
-#~ msgstr "Allow Custom Toolbars"
-
-#~ msgid "Display Help Index"
-#~ msgstr "Display Help Index"
-
-#~ msgid "INS"
-#~ msgstr "INS"
-
-#~ msgid "Insert a picture"
-#~ msgstr "Insert a picture"
-
-#~ msgid "M&erge documents"
-#~ msgstr "M&erge documents"
-
-#~ msgid "OVR"
-#~ msgstr "OVR"
-
-#~ msgid "Show the AbiWord splash screen on application startup"
-#~ msgstr "Show the AbiWord splash screen on application startup"
-
-#~ msgid ""
-#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
-#~ "to merge them, but the result might be meaningless."
-#~ msgstr ""
-#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
-#~ "to merge them, but the result might be meaningless."
-
-#~ msgid "&Autotext"
-#~ msgstr "&Autotext"
-
-#~ msgid "About &Open Source"
-#~ msgstr "About &Open Source"
-
-#~ msgid "Attention:"
-#~ msgstr "Attention:"
-
-#~ msgid "Best regards,"
-#~ msgstr "Yours faithfully,"
-
-#~ msgid "CERTIFIED MAIL"
-#~ msgstr "RECORDED DELIVERY"
-
-#~ msgid "Check &Version"
-#~ msgstr "Check &Version"
-
-#~ msgid "Closing:"
-#~ msgstr "Closing:"
-
-#~ msgid "Dear Mom and Dad,"
-#~ msgstr "Dear Mum and Dad,"
-
-#~ msgid "Display information about Open Source"
-#~ msgstr "Display information about Open Source"
-
-#~ msgid "Display program version number"
-#~ msgstr "Display program version number"
-
-#~ msgid "Email:"
-#~ msgstr "Email:"
-
-#~ msgid "Mail Instructions:"
-#~ msgstr "Mail Instructions:"
-
-#~ msgid "Reference:"
-#~ msgstr "Reference:"
-
-#~ msgid "Respectfully yours,"
-#~ msgstr "Respectfully,"
-
-#~ msgid "Respectfully,"
-#~ msgstr "Take care,"
-
-#~ msgid "Salutation:"
-#~ msgstr "Salutation:"
-
-#~ msgid "Sincerely yours,"
-#~ msgstr "Thank you,"
-
-#~ msgid "Thank you,"
-#~ msgstr "Yours faithfully,"
-
-#~ msgid "Thanks,"
-#~ msgstr "Yours sincerely,"
-
-#~ msgid "Yours truly,"
-#~ msgstr "Yours truly,"
