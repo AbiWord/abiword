@@ -1,15 +1,14 @@
 # Vietnamese translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # pclouds <pclouds@gmx.net>, 2002.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-05-06 23:15-0400\n"
-"PO-Revision-Date: 2012-05-08 06:31+0200\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"PO-Revision-Date: 2012-08-13 06:23+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: GnomeVI <gnomevi-list@lists.sourceforge.net>\n"
 "Language: vi\n"
@@ -116,11 +115,6 @@ msgstr ""
 msgid "&1 %s"
 msgstr "&1 %s"
 
-#. DLG_Tab_Radio_None
-#: po/tmp/ap_String_Id.h
-msgid "&1 None"
-msgstr "&1 Không"
-
 #. MENU_LABEL_FILE_RECENT_2
 #. MENU_LABEL_VIEW_TB_2
 #. MENU_LABEL_WINDOW_2
@@ -128,11 +122,6 @@ msgstr "&1 Không"
 #, c-format
 msgid "&2 %s"
 msgstr "&2 %s"
-
-#. DLG_Tab_Radio_Dot
-#: po/tmp/ap_String_Id.h
-msgid "&2 .........."
-msgstr "&2 .........."
 
 #. MENU_LABEL_FILE_RECENT_3
 #. MENU_LABEL_VIEW_TB_3
@@ -142,11 +131,6 @@ msgstr "&2 .........."
 msgid "&3 %s"
 msgstr "&3 %s"
 
-#. DLG_Tab_Radio_Dash
-#: po/tmp/ap_String_Id.h
-msgid "&3 ----------"
-msgstr "&3 ----------"
-
 #. MENU_LABEL_FILE_RECENT_4
 #. MENU_LABEL_VIEW_TB_4
 #. MENU_LABEL_WINDOW_4
@@ -154,11 +138,6 @@ msgstr "&3 ----------"
 #, c-format
 msgid "&4 %s"
 msgstr "&4 %s"
-
-#. DLG_Tab_Radio_Underline
-#: po/tmp/ap_String_Id.h
-msgid "&4 __________"
-msgstr "&4 __________"
 
 #. MENU_LABEL_FILE_RECENT_5
 #. MENU_LABEL_WINDOW_5
@@ -231,12 +210,13 @@ msgstr "&Tất cả"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "&Annotations"
-msgstr "Thụt dòng"
+msgstr "&Thụt dòng"
 
 #. DLG_ApplyButton
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Apply"
-msgstr ""
+msgstr "&Áp dụng"
 
 #. DLG_Para_LabelAt
 #: po/tmp/ap_String_Id.h
@@ -250,18 +230,14 @@ msgstr "&Tự động kiểm lỗi chính tả"
 
 #. MENU_LABEL_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Autofit Table"
-msgstr "Tự động &khít bảng"
+msgstr "&Tự động khít bảng"
 
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h
 msgid "&Automatically save this Scheme"
 msgstr "&Tự động lưu scheme này"
-
-#. DLG_DateTime_AvailableFormats
-#: po/tmp/ap_String_Id.h
-msgid "&Available formats:"
-msgstr "&Dạng thức hỗ trợ:"
 
 #. DLG_Para_LabelBefore
 #: po/tmp/ap_String_Id.h
@@ -277,7 +253,7 @@ msgstr "Đậ&m"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "&Borders and Shading"
-msgstr "Biên và bóng"
+msgstr "&Biên và bóng"
 
 #. DLG_PageSetup_Bottom
 #: po/tmp/ap_String_Id.h
@@ -291,14 +267,16 @@ msgstr "N&gắt"
 
 #. MENU_LABEL_TABLE_SELECT_CELL
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Cell"
-msgstr "Ô"
+msgstr "&Ô"
 
 #. MENU_LABEL_TABLE_INSERT_CELLS
 #. MENU_LABEL_TABLE_DELETE_CELLS
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Cells"
-msgstr "Ô"
+msgstr "&Ô"
 
 #. MENU_LABEL_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h
@@ -353,8 +331,9 @@ msgstr "&Tạo và Hiệu chỉnh"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Current Preferences Scheme"
-msgstr "Thông số scheme hiện thời"
+msgstr "&Thông số scheme hiện thời"
 
 #. MENU_LABEL_TABLE_DELETE
 #: po/tmp/ap_String_Id.h
@@ -365,7 +344,7 @@ msgstr "&Xóa"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "&Delete annotation"
-msgstr "Xóa vùng chọn"
+msgstr "&Xóa vùng chọn"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -410,8 +389,9 @@ msgstr "&Sửa"
 
 #. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Edit RDF"
-msgstr ""
+msgstr "&Sửa RDF"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -421,24 +401,20 @@ msgstr "Thụt dòng"
 
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Edit hyperlink"
-msgstr ""
+msgstr "&Sửa siêu liên kết"
 
 #. DLG_Options_Label_EnableOverwrite
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
 msgstr ""
 
-#. DLG_Options_Label_SmartQuotesEnable
-#: po/tmp/ap_String_Id.h
-msgid "&Enable smart quotes"
-msgstr "&Bật dấu nháy thông minh"
-
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "&Endnote"
-msgstr "&Endnote"
+msgstr "&Kết chú"
 
 #. DLG_Break_EvenPage
 #: po/tmp/ap_String_Id.h
@@ -470,7 +446,7 @@ msgstr "&Tập tin"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "&File extension:"
-msgstr "Với phần mở rộng:"
+msgstr "&Thụt dòngVới phần mở rộng:"
 
 #. MENU_LABEL_EDIT_FIND
 #: po/tmp/ap_String_Id.h
@@ -496,7 +472,7 @@ msgstr "&Footer:"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "&Format"
-msgstr "Dạng thức"
+msgstr "&Dạng thức"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -517,7 +493,7 @@ msgstr "&Header và Footer"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "&Header/Footers"
-msgstr "Header/Footer"
+msgstr "&Header/Footer"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h
@@ -591,8 +567,9 @@ msgstr "&Chữ tự động"
 
 #. DLG_Options_Label_AutoSaveInterval
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Interval:"
-msgstr ""
+msgstr "&Khoảng:"
 
 #. MENU_LABEL_FMT_ITALIC
 #: po/tmp/ap_String_Id.h
@@ -616,8 +593,9 @@ msgstr "Canh đề&u"
 
 #. DLG_Para_PushKeepLinesTogether
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Keep lines together"
-msgstr "Giữ các dòng liền nhau"
+msgstr "&Giữ các dòng liền nhau"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h
@@ -672,13 +650,15 @@ msgstr ""
 
 #. MENU_LABEL_TOOLS_REVISIONS_MARK
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Mark revisions while typing"
-msgstr "Đánh dấu &hiệu chỉnh lúc nhập"
+msgstr "&Đánh dấu &hiệu chỉnh lúc nhập"
 
 #. DLG_FR_MatchCase
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Match case"
-msgstr "Phân biệt hoa/thường"
+msgstr "&Phân biệt hoa/thường"
 
 #. MENU_LABEL_TABLE_MERGE_CELLS
 #: po/tmp/ap_String_Id.h
@@ -728,7 +708,7 @@ msgstr "&Số:"
 #. DLG_FormatTOC_NumberingType
 #: po/tmp/ap_String_Id.h
 msgid "&Numbering type:"
-msgstr ""
+msgstr "&Kiểu đánh số:"
 
 #. DLG_Break_OddPage
 #: po/tmp/ap_String_Id.h
@@ -762,8 +742,9 @@ msgstr "Ngắt t&rang"
 
 #. DLG_FormatTOC_PageNumbering
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Page numbering:"
-msgstr ""
+msgstr "Đặt số t&rang:"
 
 #. MENU_LABEL_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h
@@ -807,18 +788,26 @@ msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Query RDF"
-msgstr ""
+msgstr "&Truy vấn RDF"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
 msgid "&Quit"
 msgstr "T&hoát"
 
+#. MENU_LABEL_RDF
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "&RDF"
+msgstr "&RDF"
+
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&RLM"
-msgstr ""
+msgstr "&RLM"
 
 #. MENU_LABEL_EDIT_REDO
 #: po/tmp/ap_String_Id.h
@@ -937,7 +926,7 @@ msgstr "&Chính tả"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "&Start at:"
-msgstr "Bắt đầu tại:"
+msgstr "&Bắt đầu tại:"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h
@@ -1046,8 +1035,9 @@ msgstr "Nguyên &từ"
 
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Widow/Orphan control"
-msgstr "Điều khiển widow/orphan"
+msgstr "Điều khiển &widow/orphan"
 
 #. DLG_PageSetup_Width
 #: po/tmp/ap_String_Id.h
@@ -1103,6 +1093,31 @@ msgstr "1.5 dòng"
 msgid "1.5 spacing"
 msgstr "1.5 khoảng trống"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1138,6 +1153,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "&Luôn đề nghị sửa lỗi"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1278,12 +1348,12 @@ msgstr "&Sau:"
 msgid "Ali&gnment:"
 msgstr "&Canh hàng:"
 
-#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Alignment"
 msgstr "Canh hàng"
 
+#. DLG_Tab_Label_Alignment
 #. DLG_PageNumbers_Alignment
 #: po/tmp/ap_String_Id.h
 msgid "Alignment:"
@@ -1298,7 +1368,8 @@ msgstr "&Tất cả"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-msgid "Allow formatting using styles only"
+#, fuzzy
+msgid "Allow formatting not using styles only"
 msgstr "Cho phép chỉ định dạng bằng style"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
@@ -1325,8 +1396,9 @@ msgstr ""
 #. DLG_Options_Btn_Apply
 #. DLG_Apply
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Apply"
-msgstr ""
+msgstr "Áp dụng"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
@@ -1387,6 +1459,12 @@ msgid ""
 "proceed, you will not be able to restore earlier versions of this document."
 msgstr ""
 
+#. DLG_Lists_Arrowhead_List
+#. STYLE_ARROWHEADLIST
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+msgid "Arrowhead List"
+msgstr ""
+
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
 msgid "At least"
@@ -1397,6 +1475,7 @@ msgstr "Ít nhất"
 msgid "Attach to Previous List"
 msgstr "Gắc vào Danh sách trước"
 
+#. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -1431,15 +1510,10 @@ msgstr "Tự động lưu"
 msgid "Auto replace misspelled words"
 msgstr "Tự động thay thế từ sai chính tả"
 
-#. DLG_InsertTable_AutoFit_Capital
+#. DLG_InsertTable_AutoFit
 #: po/tmp/ap_String_Id.h
 msgid "AutoFit Behavior"
 msgstr "Hành vi Tự động khít"
-
-#. DLG_InsertTable_AutoFit
-#: po/tmp/ap_String_Id.h
-msgid "AutoFit behavior"
-msgstr "Hành vi AutoFit"
 
 #. MENU_STATUSLINE_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h
@@ -1478,23 +1552,81 @@ msgstr ""
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-msgid "Available Fields"
+#, fuzzy
+msgid "Available Fields:"
 msgstr "Trường hiện có"
 
-#. DLG_DateTime_AvailableFormats_Capital
+#. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-msgid "Available Formats"
+#, fuzzy
+msgid "Available Formats:"
 msgstr "Dạng thức hỗ trợ"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-msgid "Available Styles"
+#, fuzzy
+msgid "Available Styles:"
 msgstr "Kiểu hiện có"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
 msgid "B&y:"
 msgstr "&Bởi:"
+
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1522,11 +1654,6 @@ msgstr "Thanh Tab"
 #: po/tmp/ap_String_Id.h
 msgid "Based On:"
 msgstr "Dựa trên:"
-
-#. DLG_Options_Label_BiDiOptions
-#: po/tmp/ap_String_Id.h
-msgid "Bi-Directional Options"
-msgstr "Tùy chọn hai chiều"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -1649,6 +1776,12 @@ msgstr "Nút"
 msgid "Bullets and &Numbering"
 msgstr "Đặt nút và Đánh số"
 
+#. DLG_Lists_Title
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Bullets and Numbering"
+msgstr "Đặt nút và Đánh số"
+
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
 msgid "Button Style"
@@ -1661,13 +1794,74 @@ msgstr "Đổ&i hoa/thường"
 
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "C&opy hyperlink location"
-msgstr ""
+msgstr "&Chép vị trí siêu liên kết"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "C&redit"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -1694,6 +1888,12 @@ msgstr "Không thể thay đổi kiểu có sẵn"
 #: po/tmp/ap_String_Id.h
 msgid "Cannot start print job"
 msgstr ""
+
+#. FIELD_Document_Type
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Category"
+msgstr "Phân loại:"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -1765,7 +1965,7 @@ msgstr "Đổi màu điểm sáng"
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h
 msgid "Change Style"
-msgstr ""
+msgstr "Đổi kiểu dáng"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h
@@ -1885,8 +2085,9 @@ msgstr "Kiểm &chính tả"
 
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Check &grammar as you type"
-msgstr ""
+msgstr "Kiểm tra n&gữ pháp trong khi gõ"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h
@@ -2009,6 +2210,12 @@ msgstr "Màu sắc"
 msgid "Column"
 msgstr "&Cột"
 
+#. BREAK_Column
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Column Break"
+msgstr "Ngắt &cột"
+
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
 #, c-format
@@ -2038,8 +2245,9 @@ msgstr "Bên &phải cột"
 
 #. DLG_ListRevisions_Column3Label
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Comment"
-msgstr ""
+msgstr "Ghi chú"
 
 #. DLG_MarkRevisions_Comment2Label
 #: po/tmp/ap_String_Id.h
@@ -2078,10 +2286,15 @@ msgid "Contact from File"
 msgstr ""
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
-#. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Contacts"
+msgstr "&Nội dung trợ giúp"
+
+#. DLG_RDF_SemanticStylesheets_Contacts
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Contacts:"
 msgstr "&Nội dung trợ giúp"
 
 #. TOC_TocHeading
@@ -2098,8 +2311,9 @@ msgstr "Tiếp tục với bản hiệu chỉnh trước (số %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-msgid "Contributor"
-msgstr "Người tham gia"
+#, fuzzy
+msgid "Contributor(s)"
+msgstr "Người tham gia:"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2115,18 +2329,19 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Convert Table to Text"
-msgstr "Chèn bảng"
+msgstr "Chuyển đổi bảng thành văn bản"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Convert Text to Table"
-msgstr ""
+msgstr "Chuyển đổi văn bản thành bảng"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Convert from a Table to Text"
-msgstr "Chèn bảng"
+msgstr "Chuyển đổi bảng thành văn bản"
 
 #. TOOLBAR_LABEL_EDIT_COPY
 #. TOOLBAR_STATUSLINE_EDIT_COPY
@@ -2158,7 +2373,7 @@ msgstr ""
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Copy hyperlink location"
-msgstr ""
+msgstr "Sao chép đích của siêu liên kết"
 
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h
@@ -2216,8 +2431,9 @@ msgstr ""
 
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Create New"
-msgstr ""
+msgstr "Tạo mới"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
@@ -2269,6 +2485,12 @@ msgstr "Tạo tài liệu mới từ mẫu"
 msgid "Create an empty document"
 msgstr "Tạo tài liệu trắng mới"
 
+#. DLG_Styles_StylesTitle
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Create and Modify Styles"
+msgstr "&Tạo và Hiệu chỉnh"
+
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -2295,17 +2517,12 @@ msgstr ""
 msgid "Create new Semantic Item"
 msgstr ""
 
-#. FIELD_Document_Creator
-#: po/tmp/ap_String_Id.h
-msgid "Creator"
-msgstr "Người tạo"
-
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
 msgid "Cu&t"
 msgstr "&Cắt"
 
-#. FIELD_Datetime_CurrentDate
+#. FIELD_DateTime_DefaultDateNoTime
 #: po/tmp/ap_String_Id.h
 msgid "Current Date"
 msgstr "Ngày hiện tại"
@@ -2344,6 +2561,11 @@ msgstr "Thời gian hiện tại"
 #: po/tmp/ap_String_Id.h
 msgid "Cursor &blink"
 msgstr "Con trỏ &chớp"
+
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
@@ -2398,6 +2620,11 @@ msgstr "Cắt vùng chọn và đặt vào clipboard"
 msgid "D&irectional"
 msgstr ""
 
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
+
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
@@ -2407,6 +2634,12 @@ msgstr ""
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
 msgid "Dashed line"
+msgstr ""
+
+#. DLG_FormatTOC_Dash
+#. DLG_Tab_Radio_Dash
+#: po/tmp/ap_String_Id.h
+msgid "Dashes"
 msgstr ""
 
 #. FIELD_Document_Date
@@ -2452,11 +2685,6 @@ msgstr "Tab thập phân"
 msgid "Decrease indent"
 msgstr "Giảm thụt dòng"
 
-#. FIELD_DateTime_DefaultDateNoTime
-#: po/tmp/ap_String_Id.h
-msgid "Default date (w/o time)"
-msgstr "Ngày mặc định (không có giờ)"
-
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
@@ -2487,6 +2715,12 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
 msgstr "Định nghĩa hoặc áp dụng kiểu cho vùng chọn"
+
+#. DLG_Styles_Description
+#. DLG_Styles_ModifyDescription
+#: po/tmp/ap_String_Id.h
+msgid "Definition"
+msgstr ""
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2592,13 +2826,10 @@ msgstr "Xóa cột này khỏi bảng"
 msgid "Delete this row from its table"
 msgstr "Xoá hàng này khỏi bảng"
 
-#. DLG_Styles_Description
-#. DLG_Styles_ModifyDescription
 #. FIELD_Document_Description
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Description"
-msgstr "Mô tả:"
+msgstr "Mô tả"
 
 #. DLG_MetaData_Description_LBL
 #. DLG_Annotation_Description_LBL
@@ -2608,6 +2839,11 @@ msgstr "Mô tả:"
 msgid "Description:"
 msgstr "Mô tả:"
 
+#. DLG_FormatTOC_LayoutDetails
+#: po/tmp/ap_String_Id.h
+msgid "Details"
+msgstr ""
+
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
@@ -2616,8 +2852,9 @@ msgstr ""
 
 #. DLG_Options_Label_SpellDictionaries
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Dictionaries"
-msgstr ""
+msgstr "Từ điển"
 
 #. DLG_HdrFtr_FooterEven
 #: po/tmp/ap_String_Id.h
@@ -2724,12 +2961,19 @@ msgstr "Thuộc tính tài liệu"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Documents"
-msgstr "&Tài liệu"
+msgstr "Tài liệu"
 
 #. DLG_FormatFootnotes_FootRestartNone
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Don't restart"
-msgstr "&Không khởi động lại"
+msgstr "Không khởi động lại"
+
+#. DLG_FormatTOC_Dot
+#. DLG_Tab_Radio_Dot
+#: po/tmp/ap_String_Id.h
+msgid "Dots"
+msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2837,8 +3081,9 @@ msgstr ""
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Edit hyperlink"
-msgstr ""
+msgstr "Sửa siêu liên kết"
 
 #. MENU_STATUSLINE_VIEW_HEADFOOT
 #: po/tmp/ap_String_Id.h
@@ -2887,27 +3132,47 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Enable smart (curly) quotes"
-msgstr "&Bật dấu nháy thông minh"
+msgstr "Bật dấu nháy thông minh"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Endnote anchor"
-msgstr "Neo Endnote"
+msgstr "Neo Kết chú"
 
 #. FIELD_Numbers_EndnoteReference
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Endnote reference"
-msgstr "Tham chiếu Endnote"
+msgstr "Tham chiếu Kết chú"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-msgid "Endnote style"
-msgstr "Kiểu Endnote"
+#, fuzzy
+msgid "Endnote style:"
+msgstr "Kiểu Kết chú"
+
+#. DLG_FormatFootnotes_Endnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Endnotes"
+msgstr "Kết chú"
+
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Equation"
-msgstr ""
+msgstr "Phương trình"
 
 #. FIELD_Error
 #: po/tmp/ap_String_Id.h
@@ -2940,8 +3205,9 @@ msgstr "Lỗi lưu %s: tên không hợp lệ"
 
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
-msgid "Events"
-msgstr ""
+#, fuzzy
+msgid "Events:"
+msgstr "Dữ kiện"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3005,20 +3271,16 @@ msgstr ""
 msgid "Extra"
 msgstr ""
 
-#. DLG_Field_Parameters_Capital
+#. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-msgid "Extra Parameters"
+#, fuzzy
+msgid "Extra Parameters:"
 msgstr "Tham số bổ sung"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
 msgid "Extra Toolbar"
 msgstr "Thanh công cụ mở rộng"
-
-#. DLG_Field_Parameters
-#: po/tmp/ap_String_Id.h
-msgid "Extra parameters:"
-msgstr "Tham số bổ sung:"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
@@ -3039,11 +3301,6 @@ msgstr "Toàn &màn hình"
 #: po/tmp/ap_String_Id.h
 msgid "Fi&nd what:"
 msgstr "Tìm cái gì:"
-
-#. DLG_MailMerge_Insert_No_Colon
-#: po/tmp/ap_String_Id.h
-msgid "Field Name"
-msgstr "Tên trường"
 
 #. DLG_MailMerge_Insert
 #: po/tmp/ap_String_Id.h
@@ -3081,8 +3338,9 @@ msgstr "Tên tập tin"
 
 #. DLG_FormatTOC_FillStyle
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Fill style:"
-msgstr ""
+msgstr "Kiểu tô đầy"
 
 #. DLG_FR_FindTitle
 #: po/tmp/ap_String_Id.h
@@ -3156,6 +3414,11 @@ msgstr ""
 msgid "Fold below level 4"
 msgstr ""
 
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
+
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
 msgid ""
@@ -3174,7 +3437,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Font"
-msgstr "&Font"
+msgstr "Phông chữ"
 
 #. TOOLBAR_STATUSLINE_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h
@@ -3210,9 +3473,8 @@ msgstr "Font..."
 #. DLG_Lists_Font
 #. DLG_UFS_FontLabel
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Font:"
-msgstr "&Font"
+msgstr "Phông chữ;:"
 
 #. MENU_LABEL_INSERT_FOOTNOTE
 #: po/tmp/ap_String_Id.h
@@ -3247,14 +3509,21 @@ msgstr "Tham chiếu Footnote"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-msgid "Footnote style"
+#, fuzzy
+msgid "Footnote style:"
 msgstr "Kiểu Footnote"
+
+#. DLG_FormatFootnotes_Footnotes
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Footnotes"
+msgstr "Foot&note"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Footnotes and &Endnotes"
-msgstr "Footnote và Endnote"
+msgstr "Footnote và Kết chú"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
@@ -3301,20 +3570,11 @@ msgstr "Dạng thức"
 msgid "Format Embedded Object"
 msgstr ""
 
-#. DLG_FormatFootnotes_Endnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Endnotes"
-msgstr "Định dạng Endnote"
-
-#. DLG_FormatFootnotes_Footnotes
-#: po/tmp/ap_String_Id.h
-msgid "Format Footnotes"
-msgstr "Định dạng Footnote"
-
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Format Footnotes and Endnotes"
-msgstr "Định dạng Footnote and Endnote"
+msgstr "Định dạng Footnote and Kết chú"
 
 #. DLG_HdrFtr_Title
 #: po/tmp/ap_String_Id.h
@@ -3373,7 +3633,7 @@ msgstr "Dạng thức:"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "From File"
-msgstr "&Từ tập tin"
+msgstr "Từ tập tin"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3391,7 +3651,8 @@ msgstr "Toàn &màn hình"
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
 #. DLG_MetaData_TAB_General
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_DescTabLabel
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "General"
 msgstr "Chung"
 
@@ -3538,8 +3799,9 @@ msgstr "&Bỏ qua tất cả"
 
 #. DLG_FormatTOC_Indent
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "I&ndent:"
-msgstr ""
+msgstr "Th&ụt lề:"
 
 #. DLG_Goto_Column_ID
 #: po/tmp/ap_String_Id.h
@@ -3613,8 +3875,9 @@ msgstr "Thụt dòng"
 
 #. DLG_Para_TabLabelIndentsAndSpacing
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Indents and Spacing"
-msgstr "&Thụt dòng và khoảng trống"
+msgstr "Thụt dòng và khoảng trống"
 
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h
@@ -3623,17 +3886,19 @@ msgstr "Chữ hoa đầu tiên"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Endnote value"
-msgstr "Giá trị Endnote khởi đầu"
+#, fuzzy
+msgid "Initial Endnote value:"
+msgstr "Giá trị Kết chú khởi đầu"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-msgid "Initial Footnote value"
+#, fuzzy
+msgid "Initial Footnote value:"
 msgstr "Giá trị Footnote khởi đầu"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Inner (single) quote style"
+msgid "Inner (single) quote style:"
 msgstr ""
 
 #. InsertModeFieldINS
@@ -3665,7 +3930,7 @@ msgstr "Chèn &bảng"
 msgid "Insert Bookmark"
 msgstr "Chèn Đánh Dấu"
 
-#. DLG_Break_BreakTitle_Capital
+#. DLG_Break_BreakTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Break"
 msgstr "Chèn Ngắt"
@@ -3695,7 +3960,7 @@ msgstr ""
 msgid "Insert Equation from a LaTeX expression"
 msgstr ""
 
-#. DLG_Field_FieldTitle_Capital
+#. DLG_Field_FieldTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Field"
 msgstr "Chèn Trường"
@@ -3842,7 +4107,7 @@ msgstr "Chèn ký hiệu hoặc ký tự đặc biệt"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Insert an annotation"
-msgstr "Chèn endnote"
+msgstr "Chèn Kết chú"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h
@@ -3851,8 +4116,9 @@ msgstr "Chèn số trang được tự động cập nhật"
 
 #. MENU_STATUSLINE_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Insert an endnote"
-msgstr "Chèn endnote"
+msgstr "Chèn Kết chú"
 
 #. MENU_STATUSLINE_INSERT_GRAPHIC
 #: po/tmp/ap_String_Id.h
@@ -3870,20 +4136,10 @@ msgstr "Chèn ảnh vào tài liệu"
 msgid "Insert bookmark"
 msgstr "Chèn Đánh Dấu"
 
-#. DLG_Break_BreakTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert break"
-msgstr "Chèn Ngắt"
-
 #. MENU_STATUSLINE_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "Insert clipart"
 msgstr "Chèn tập ảnh"
-
-#. DLG_Field_FieldTitle
-#: po/tmp/ap_String_Id.h
-msgid "Insert field"
-msgstr "Chèn Trường"
 
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3958,7 +4214,7 @@ msgstr "Đánh dấu &bố trí ẩn"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Italic"
-msgstr "&Nghiêng"
+msgstr "Nghiêng"
 
 #. MENU_STATUSLINE_GOTO_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -4012,9 +4268,13 @@ msgid "Keywords:"
 msgstr "Từ khóa:"
 
 #. DLG_Latex_LatexTitle
-#. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
 msgid "LaTeX Equation"
+msgstr ""
+
+#. DLG_Latex_LatexEquation
+#: po/tmp/ap_String_Id.h
+msgid "LaTeX Equation:"
 msgstr ""
 
 #. DLG_Lists_Indent
@@ -4029,7 +4289,6 @@ msgstr ""
 
 #. DLG_Styles_ModifyLanguage
 #. DLG_Options_Label_Language
-#. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
 msgid "Language"
 msgstr "Ngôn ngữ"
@@ -4038,6 +4297,12 @@ msgstr "Ngôn ngữ"
 #: po/tmp/ap_String_Id.h
 msgid "Language settings"
 msgstr "Thiết lập Ngôn ngữ"
+
+#. FIELD_Document_Language
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Language(s)"
+msgstr "Ngôn ngữ:"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4049,14 +4314,10 @@ msgstr "Ngôn ngữ:"
 msgid "Layout"
 msgstr "Bố trí"
 
-#. DLG_FormatTOC_LayoutDetails
-#: po/tmp/ap_String_Id.h
-msgid "Layout Details"
-msgstr ""
-
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-msgid "Leader"
+#, fuzzy
+msgid "Leader:"
 msgstr "Đầu"
 
 #. DLG_Para_AlignLeft
@@ -4101,25 +4362,39 @@ msgstr "Canh trái"
 msgid "Left-align the paragraph"
 msgstr "Canh trái đoạn"
 
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
+
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Level 1"
-msgstr ""
+msgstr "Cấp 1"
 
 #. DLG_FormatTOC_Level2
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Level 2"
-msgstr ""
+msgstr "Cấp 2"
 
 #. DLG_FormatTOC_Level3
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Level 3"
-msgstr ""
+msgstr "Cấp 3"
 
 #. DLG_FormatTOC_Level4
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Level 4"
-msgstr ""
+msgstr "Cấp 4"
 
 #. DLG_Lists_DelimiterString
 #: po/tmp/ap_String_Id.h
@@ -4135,11 +4410,6 @@ msgstr "Cấp:"
 #: po/tmp/ap_String_Id.h
 msgid "Li&ne spacing:"
 msgstr "Khoảng cách &dòng:"
-
-#. DLG_Goto_Target_Line
-#: po/tmp/ap_String_Id.h
-msgid "Line"
-msgstr "Dòng"
 
 #. FIELD_Numbers_LineCount
 #: po/tmp/ap_String_Id.h
@@ -4166,15 +4436,16 @@ msgstr "Dòng dưới vùng chọn (bật tắt)"
 msgid "Line between"
 msgstr "Dòng giữa"
 
+#. DLG_Goto_Target_Line
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Line:"
+msgstr "Dòng:"
+
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
 msgid "Lines:"
 msgstr "Dòng:"
-
-#. DLG_Styles_List
-#: po/tmp/ap_String_Id.h
-msgid "List"
-msgstr "Danh sách"
 
 #. FIELD_Numbers_ListLabel
 #: po/tmp/ap_String_Id.h
@@ -4188,17 +4459,13 @@ msgstr ""
 
 #. DLG_Stylist_ListStyles
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "List Styles"
-msgstr ""
-
-#. DLG_Lists_Title
-#: po/tmp/ap_String_Id.h
-msgid "Lists for "
-msgstr "Danh sách cho "
+msgstr "Kiểu dáng danh sách"
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-msgid "Locations"
+msgid "Locations:"
 msgstr ""
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
@@ -4257,8 +4524,9 @@ msgstr "Quản lý plugin"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Margin"
-msgstr "&Biên"
+msgstr "Biên"
 
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h
@@ -4277,15 +4545,17 @@ msgstr "Kiểm tra Martins"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-msgid "Max Column size"
+#, fuzzy
+msgid "Max Column size:"
 msgstr "Cỡ cột tối đa"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
 #. TOOLBAR_TOOLTIP_MENU
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Menu"
-msgstr ""
+msgstr "Trình đơn"
 
 #. DLG_MergeCells_Above
 #: po/tmp/ap_String_Id.h
@@ -4387,7 +4657,8 @@ msgstr ""
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-msgid "Modify Styles"
+#, fuzzy
+msgid "Modify Style"
 msgstr "Sửa kiểu"
 
 #. DLG_Styles_Modify
@@ -4457,7 +4728,7 @@ msgstr "Thụt dòng"
 
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
-msgid "New Contact..."
+msgid "New Contact"
 msgstr ""
 
 #. DLG_NEW_Title
@@ -4544,11 +4815,8 @@ msgstr ""
 msgid "No scripts found"
 msgstr "Không tìm thấy script"
 
-#. DLG_FormatTOC_None
-#. DLG_Styles_DefNone
 #. DLG_Tab_Radio_NoAlign
 #. DLG_BorderShading_Border_Style_None
-#. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
 msgid "None"
 msgstr "Không"
@@ -4575,7 +4843,8 @@ msgstr ""
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-msgid "Number of Columns"
+#, fuzzy
+msgid "Number of Columns:"
 msgstr "Số cột"
 
 #. FIELD_Numbers_PagesCount
@@ -4609,13 +4878,18 @@ msgstr "Đánh số"
 msgid "Numbered List"
 msgstr ""
 
-#. DLG_FormatFootnotes_FootnoteRestart
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
 #. TOOLBAR_STATUSLINE_LISTS_NUMBERS
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
+msgstr "Đánh số"
+
+#. DLG_FormatFootnotes_FootnoteRestart
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Numbering:"
 msgstr "Đánh số"
 
 #. FIELD_Type_Numbers
@@ -4625,13 +4899,15 @@ msgstr "Số"
 
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Object"
-msgstr ""
+msgstr "Đối tượng"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Offset:"
-msgstr ""
+msgstr "Khoảng lệch:"
 
 #. DLG_Column_One
 #: po/tmp/ap_String_Id.h
@@ -4691,7 +4967,8 @@ msgstr "Mở tài liệu này"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-msgid "Orientation..."
+#, fuzzy
+msgid "Orientation"
 msgstr "Hướng..."
 
 #. DLG_Options_TabLabel_Other
@@ -4707,7 +4984,7 @@ msgstr "Không đủ bộ nhớ để mở %s"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-msgid "Outer (double) quote style"
+msgid "Outer (double) quote style:"
 msgstr ""
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
@@ -4746,7 +5023,6 @@ msgstr "&Hiệu chỉnh"
 msgid "Pa&ste Unformatted"
 msgstr "Dán &không định dạng"
 
-#. DLG_Goto_Target_Page
 #. DLG_PageSetup_Page
 #: po/tmp/ap_String_Id.h
 msgid "Page"
@@ -4759,8 +5035,15 @@ msgstr "Ngắt trang trước"
 
 #. MENU_LABEL_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Page Background"
-msgstr "&Nền"
+msgstr "Nền"
+
+#. BREAK_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page Break"
+msgstr "Ngắt t&rang"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4794,8 +5077,8 @@ msgstr "Số trang"
 
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
-msgid "Page Reference"
-msgstr "Tham chiếu trang"
+msgid "Page Reference to Bookmark"
+msgstr ""
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4806,6 +5089,12 @@ msgstr "Thiết lập t&rang"
 #: po/tmp/ap_String_Id.h
 msgid "Page Setup"
 msgstr "Thiết lập trang"
+
+#. DLG_Goto_Target_Page
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Page:"
+msgstr "Trang:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -4823,15 +5112,16 @@ msgstr "Trang:"
 msgid "Pagination"
 msgstr "Phân trang"
 
+#. DLG_PageSetup_Paper
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Paper"
+msgstr "Giấy"
+
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
 msgid "Paper Si&ze:"
 msgstr "&Cỡ giấy:"
-
-#. DLG_PageSetup_Paper
-#: po/tmp/ap_String_Id.h
-msgid "Paper..."
-msgstr "Giấy..."
 
 #. DLG_Styles_ModifyParagraph
 #. DLG_Para_ParaTitle
@@ -4898,7 +5188,8 @@ msgstr "Vị trí cuối Phần"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-msgid "Placement"
+#, fuzzy
+msgid "Placement:"
 msgstr "Vị trí"
 
 #. MENU_LABEL_RDF_ADV_PLAY
@@ -4906,17 +5197,11 @@ msgstr "Vị trí"
 msgid "Playing with RDF during development"
 msgstr ""
 
-#. DLG_Tab_Label_Position
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "Position"
 msgstr "Vị trí"
-
-#. DLG_FormatFrame_PositionTo
-#: po/tmp/ap_String_Id.h
-msgid "Position Text Box"
-msgstr ""
 
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
@@ -4933,6 +5218,7 @@ msgstr ""
 msgid "Position to Paragraph"
 msgstr ""
 
+#. DLG_Tab_Label_Position
 #. DLG_PageNumbers_Position
 #: po/tmp/ap_String_Id.h
 msgid "Position:"
@@ -5085,11 +5371,6 @@ msgstr ""
 msgid "R&eplace"
 msgstr "&Thay thế"
 
-#. MENU_LABEL_RDF
-#: po/tmp/ap_String_Id.h
-msgid "RDF"
-msgstr ""
-
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
@@ -5200,7 +5481,8 @@ msgstr "Loại bỏ Header"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-msgid "Remove Property from Style"
+#, fuzzy
+msgid "Remove Property from Style:"
 msgstr "Bỏ thuộc tính khỏi kiểu"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
@@ -5432,7 +5714,7 @@ msgstr "Phải:"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Row"
-msgstr "&Hàng"
+msgstr "Hàng"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5456,6 +5738,7 @@ msgstr ""
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "S&cripts"
 msgstr "&Script"
 
@@ -5557,8 +5840,9 @@ msgstr "Lưu tập tin là"
 
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
-msgid "Scale..."
-msgstr "Co dãn..."
+#, fuzzy
+msgid "Scale"
+msgstr "Co giãn"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5575,14 +5859,9 @@ msgstr "Số giây giữa lần cập nhật"
 msgid "Seconds since the epoch"
 msgstr "Số giây từ epoch"
 
-#. DLG_Break_SectionBreaks_Capital
-#: po/tmp/ap_String_Id.h
-msgid "Section Breaks"
-msgstr "Ngắt Phần"
-
 #. DLG_Break_SectionBreaks
 #: po/tmp/ap_String_Id.h
-msgid "Section breaks"
+msgid "Section Breaks"
 msgstr "Ngắt Phần"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY
@@ -5640,7 +5919,8 @@ msgstr ""
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Select a target bookmark from the list."
+#, fuzzy
+msgid "Select a target bookmark from the list:"
 msgstr "Chọn đích Đánh Dấu từ danh sách."
 
 #. DLG_FormatFrame_SelectImage
@@ -5710,13 +5990,13 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the next revision..."
+msgid "Select the parts of the document contained in the next revision"
 msgstr ""
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
-msgid "Select the parts of the document contained in the previous revision..."
+msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -5739,8 +6019,9 @@ msgstr ""
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Selection"
-msgstr ""
+msgstr "Lựa chọn"
 
 #. MENU_LABEL_RDF_SEMITEM
 #. MENU_STATUSLINE_RDF_SEMITEM
@@ -5892,8 +6173,9 @@ msgstr ""
 
 #. MENU_STATUSLINE_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Set the types of Footnotes and Endnotes"
-msgstr "Đặt loại Footnote và Endnote"
+msgstr "Đặt loại Footnote và Kết chú"
 
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
@@ -5934,8 +6216,9 @@ msgstr "Đặt thuộc tính trang của tài liệu như kích thước trang v
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Shading"
-msgstr ""
+msgstr "Đổ bóng"
 
 #. DLG_BorderShading_Shading_Color
 #: po/tmp/ap_String_Id.h
@@ -6096,7 +6379,7 @@ msgstr "Khoảng trống đơn"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Smart Quotes"
-msgstr "&Bật dấu nháy thông minh"
+msgstr "Bật dấu nháy thông minh"
 
 #. MENU_LABEL_TABLE_SORT
 #: po/tmp/ap_String_Id.h
@@ -6165,7 +6448,8 @@ msgstr "Nguồn:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-msgid "Space after Column"
+#, fuzzy
+msgid "Space after Column:"
 msgstr "Khoảng trống sau cột"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
@@ -6367,7 +6651,7 @@ msgstr "&Gạch đè"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Strike"
-msgstr "&Gạch đè"
+msgstr "Gạch đè"
 
 #. MENU_STATUSLINE_FMT_STRIKE
 #: po/tmp/ap_String_Id.h
@@ -6398,12 +6682,14 @@ msgstr "Tên kiểu"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-msgid "Style Type"
+#, fuzzy
+msgid "Style Type:"
 msgstr "Loại kiểu"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-msgid "Style for following paragraph"
+#, fuzzy
+msgid "Style for following paragraph:"
 msgstr "Kiểu cho đoạn sau"
 
 #. DLG_Styles_ErrBlankName
@@ -6419,7 +6705,6 @@ msgstr "Tên kểu không thể chứa khoảng trắng"
 msgid "Style:"
 msgstr "Kiểu"
 
-#. DLG_Styles_StylesTitle
 #. DLG_Stylist_Styles
 #: po/tmp/ap_String_Id.h
 msgid "Styles"
@@ -6558,7 +6843,7 @@ msgstr "Điểm Tab cần xóa:"
 msgid "Table"
 msgstr "Bảng tự động vừa khít"
 
-#. DLG_InsertTable_TableSize_Capital
+#. DLG_InsertTable_TableSize
 #: po/tmp/ap_String_Id.h
 msgid "Table Size"
 msgstr "Kích thước bảng"
@@ -6583,11 +6868,6 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Table of Contents Page"
 msgstr ""
-
-#. DLG_InsertTable_TableSize
-#: po/tmp/ap_String_Id.h
-msgid "Table size"
-msgstr "Kích thước bảng"
 
 #. DLG_Styles_ModifyTabs
 #. DLG_Tab_TabTitle
@@ -6636,13 +6916,24 @@ msgstr "Canh hàng chữ:"
 msgid "Text Box"
 msgstr ""
 
+#. DLG_FormatFrame_PositionTo
+#: po/tmp/ap_String_Id.h
+msgid "Text Box Position"
+msgstr ""
+
+#. DLG_Options_Label_BiDiOptions
+#: po/tmp/ap_String_Id.h
+msgid "Text Directionality"
+msgstr ""
+
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
 msgid "Text Folding"
 msgstr ""
 
 #. DLG_FormatFrame_TextWrapping
-#: po/tmp/ap_String_Id.h
+#. DLG_Image_TextWrapping
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Text Wrapping"
 msgstr ""
 
@@ -6824,19 +7115,20 @@ msgstr ""
 msgid "Two"
 msgstr "Hai"
 
-#. FIELD_Document_Type
+#. DLG_Styles_List
 #: po/tmp/ap_String_Id.h
 msgid "Type"
 msgstr "Loại"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the RDF link"
+msgid "Type a name for the RDF link:"
 msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-msgid "Type a name for the bookmark, or select an existing from the list."
+#, fuzzy
+msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Nhập tên cho Đánh Dấu, hoặc chọn tên có sẵn từ danh sách."
 
 #. DLG_Lists_Type
@@ -6862,6 +7154,13 @@ msgstr "Gạch c&hân"
 #: po/tmp/ap_String_Id.h
 msgid "Underline the selection (toggle)"
 msgstr "Gạch chân vùng chọn (bật tắt)"
+
+#. DLG_FormatTOC_Underline
+#. DLG_Tab_Radio_Underline
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgid "Underlines"
+msgstr "Gạch c&hân"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -6945,7 +7244,7 @@ msgstr "Kiểu tự định nghĩa"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Version"
-msgstr "phiên bản"
+msgstr "Phiên bản"
 
 #. DLG_Options_TabLabel_View
 #: po/tmp/ap_String_Id.h
@@ -7000,6 +7299,11 @@ msgstr "Cảnh báo: Đánh Dấu bạn cung cấp [%s] không tồn tại."
 #: po/tmp/ap_String_Id.h
 msgid "Web Layout"
 msgstr "Bố trí Web"
+
+#. FIELD_Datetime_CurrentDate
+#: po/tmp/ap_String_Id.h
+msgid "Weekday Month Day, Year"
+msgstr ""
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7080,7 +7384,7 @@ msgstr "Các thay đổi của bạn sẽ bị mất nếu bạn không lưu l�
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Zoom"
-msgstr "&Phóng to/thu nhỏ"
+msgstr "Phóng to/thu nhỏ"
 
 #. MENU_LABEL_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h
@@ -7162,12 +7466,47 @@ msgstr "th/ng/na"
 msgid "tOGGLE cASE"
 msgstr "đẢO hOA/tHƯỜNG"
 
+#. DLG_FormatTOC_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_FormatTOC_None"
+msgid "None"
+msgstr "Không"
+
+#. DLG_Lists_Style_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Style_none"
+msgid "None"
+msgstr "Không"
+
+#. DLG_Lists_Type_none
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Lists_Type_none"
+msgid "None"
+msgstr "Không"
+
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Chủ đề"
+
+#. DLG_Styles_DefNone
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Styles_DefNone"
+msgid "None"
+msgstr "Không"
+
+#. DLG_Tab_Radio_None
+#: po/tmp/ap_String_Id.h
+#, fuzzy
+msgctxt "DLG_Tab_Radio_None"
+msgid "None"
+msgstr "Không"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
@@ -7208,12 +7547,6 @@ msgstr "&200%"
 msgid "&75%"
 msgstr "&75%"
 
-#. DLG_Image_DescTabLabel
-#: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "&Description"
-msgstr "Mô tả:"
-
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
 msgid "&Page width"
@@ -7223,7 +7556,7 @@ msgstr "Bề &rộng trang"
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "&Placement"
-msgstr "Vị trí"
+msgstr "&Vị trí"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h
@@ -7242,9 +7575,8 @@ msgstr ""
 
 #. DLG_UFS_Effects_None
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "(None)"
-msgstr "(không)"
+msgstr "(Không)"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h
@@ -7303,6 +7635,11 @@ msgstr "AbiWord: Xem thử bản in"
 msgid "About %s"
 msgstr "Giới thiệu %s"
 
+#. LANG_ACH
+#: po/tmp/xap_String_Id.h
+msgid "Acholi"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
@@ -7346,7 +7683,7 @@ msgstr "Cho phép đánh dấu mở rộng trong vùng tên AWML"
 
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
-msgid "Amharic (Ethiopia)"
+msgid "Amharic"
 msgstr ""
 
 #. LANG_AR
@@ -7397,7 +7734,7 @@ msgstr ""
 
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
-msgid "Asturian (Spain)"
+msgid "Asturian"
 msgstr ""
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
@@ -7422,22 +7759,29 @@ msgstr ""
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-msgid "Available Documents"
+#, fuzzy
+msgid "Available Documents:"
 msgstr "Tài liệu sẵn có"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-msgid "Available Languages"
+#, fuzzy
+msgid "Available Languages:"
 msgstr "Ngôn ngữ hỗ trợ"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (La Paz)"
+msgid "Aymara (Central/Northern Bolivia)"
 msgstr ""
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
-msgid "Aymara (Oruro)"
+msgid "Aymara (Southern Bolivia)"
+msgstr ""
+
+#. LANG_AYR
+#: po/tmp/xap_String_Id.h
+msgid "Aymara, Central"
 msgstr ""
 
 #. ENC_BALT_ISO
@@ -7449,6 +7793,11 @@ msgstr "Baltic, ISO-8859-4"
 #: po/tmp/xap_String_Id.h
 msgid "Baltic, Windows Code Page 1257"
 msgstr "Baltic, CP1257"
+
+#. LANG_BM
+#: po/tmp/xap_String_Id.h
+msgid "Bamanankan"
+msgstr ""
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7481,10 +7830,20 @@ msgstr "Trắng và đen"
 msgid "Block Text"
 msgstr "Văn bản khối"
 
+#. LANG_NB_NO
+#: po/tmp/xap_String_Id.h
+msgid "Bokmal"
+msgstr ""
+
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
 msgid "Bold Italic"
 msgstr "Đậm nghiêng"
+
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
@@ -7518,11 +7877,6 @@ msgstr "Hủy bỏ"
 msgid "Catalan"
 msgstr ""
 
-#. LANG_AYR
-#: po/tmp/xap_String_Id.h
-msgid "Central Aymara"
-msgstr ""
-
 #. ENC_CENT_ISO
 #: po/tmp/xap_String_Id.h
 msgid "Central European, ISO-8859-2"
@@ -7543,10 +7897,20 @@ msgstr "Trung Âu, CP 1250"
 msgid "Change Language when changing keyboard"
 msgstr "Đổi ngôn ngữ khi đổi bàn phím"
 
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
+
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Chapter Heading"
 msgstr "Tiêu đề Chương"
+
+#. LANG_CGG
+#: po/tmp/xap_String_Id.h
+msgid "Chiga"
+msgstr ""
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7619,6 +7983,12 @@ msgstr ""
 msgid "Clear Background"
 msgstr "Xóa màu nền"
 
+#. TB_ClearForeground
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Clear Foreground"
+msgstr "Xóa màu nền"
+
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
 msgid "Clip Art"
@@ -7626,7 +7996,7 @@ msgstr "Tập ảnh"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-msgid "Clip Art could not be loaded"
+msgid "Clip Art could not be loaded."
 msgstr ""
 
 #. DLG_Close
@@ -7658,31 +8028,31 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Content:"
-msgstr "&Nội dung trợ giúp"
+msgstr "Nội dung trợ giúp:"
 
 #. STYLE_TOCHEADING1
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Contents 1"
-msgstr "&Nội dung trợ giúp"
+msgstr "Nội dung trợ giúp 1"
 
 #. STYLE_TOCHEADING2
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Contents 2"
-msgstr "&Nội dung trợ giúp"
+msgstr "Nội dung trợ giúp 2"
 
 #. STYLE_TOCHEADING3
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Contents 3"
-msgstr "&Nội dung trợ giúp"
+msgstr "Nội dung trợ giúp 3"
 
 #. STYLE_TOCHEADING4
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Contents 4"
-msgstr "&Nội dung trợ giúp"
+msgstr "Nội dung trợ giúp 4"
 
 #. STYLE_TOCHEADING
 #: po/tmp/xap_String_Id.h
@@ -7776,6 +8146,11 @@ msgstr "Séc"
 msgid "Danish"
 msgstr "Đan Mạch"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -7794,16 +8169,6 @@ msgstr "Khái báo là XML (phiên bản 1.0)"
 #. DLG_ULANG_DefaultLangLabel
 #: po/tmp/xap_String_Id.h
 msgid "Default language: "
-msgstr ""
-
-#. DLG_Image_Placement
-#: po/tmp/xap_String_Id.h
-msgid "Define Image Placement"
-msgstr ""
-
-#. DLG_Image_TextWrapping
-#: po/tmp/xap_String_Id.h
-msgid "Define Text Wrapping"
 msgstr ""
 
 #. DLG_Remove_Icon
@@ -7838,8 +8203,8 @@ msgstr ""
 
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
-msgid "Dutch (Netherlands)"
-msgstr "Hà Lan"
+msgid "Dutch"
+msgstr ""
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -7848,7 +8213,8 @@ msgstr ""
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-msgid "Effects"
+#, fuzzy
+msgid "Effects:"
 msgstr "Hiệu ứng"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
@@ -7880,17 +8246,19 @@ msgstr "Bảng mã:"
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Endnote"
-msgstr "&Endnote"
+msgstr "Kết chú"
 
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Endnote Reference"
-msgstr "Tham chiếu Endnote"
+msgstr "Tham chiếu Kết chú"
 
 #. STYLE_ENDTEXT
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Endnote Text"
-msgstr "Nội dung Endnote"
+msgstr "Nội dung Kết chú"
 
 #. LANG_EN_AU
 #: po/tmp/xap_String_Id.h
@@ -7926,6 +8294,11 @@ msgstr "Tiếng Anh (UK)"
 #: po/tmp/xap_String_Id.h
 msgid "English (US)"
 msgstr "Tiếng Anh (Mỹ)"
+
+#. ENC_US_DOS
+#: po/tmp/xap_String_Id.h
+msgid "English, DOS/Windows Code Page 437"
+msgstr ""
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
@@ -7983,6 +8356,11 @@ msgstr ""
 msgid "File to replay editing:"
 msgstr ""
 
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr ""
+
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
 msgid "Finnish"
@@ -7990,8 +8368,8 @@ msgstr "Phần Lan"
 
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
-msgid "Flemish (Belgium)"
-msgstr "Flemish (Bỉ)"
+msgid "Flemish"
+msgstr ""
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -8051,9 +8429,13 @@ msgstr ""
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "Galician (Galego)"
-msgstr "Ý"
+msgid "Galician"
+msgstr ""
+
+#. LANG_LG
+#: po/tmp/xap_String_Id.h
+msgid "Ganda"
+msgstr ""
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8216,10 +8598,25 @@ msgstr ""
 msgid "Identifier:"
 msgstr ""
 
+#. DLG_Image_ImageDesc
+#: po/tmp/xap_String_Id.h
+msgid "Image Name"
+msgstr ""
+
+#. DLG_Image_Placement
+#: po/tmp/xap_String_Id.h
+msgid "Image Placement"
+msgstr ""
+
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
 msgid "Image Properties"
 msgstr "Thuộc tính ảnh"
+
+#. DLG_Image_ImageSize
+#: po/tmp/xap_String_Id.h
+msgid "Image Size"
+msgstr ""
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8327,8 +8724,8 @@ msgstr ""
 
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
-msgid "Italian (Italy)"
-msgstr "Ý"
+msgid "Italian"
+msgstr ""
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8362,14 +8759,23 @@ msgstr ""
 
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
-msgid "Kazakh (Kazakhstan)"
+msgid "Kazakh"
 msgstr ""
 
-#. LANG_KO_KR
+#. LANG_KM_KH
+#: po/tmp/xap_String_Id.h
+msgid "Khmer"
+msgstr ""
+
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
 msgid "Korean"
 msgstr "Hàn Quốc"
+
+#. LANG_KO_KR
+#: po/tmp/xap_String_Id.h
+msgid "Korean (South Korea)"
+msgstr ""
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8378,8 +8784,8 @@ msgstr "Hàn Quốc, EUC-KR"
 
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
-msgid "Korean, Johab"
-msgstr "Hàn Quốc, Johab"
+msgid "Korean, JOHAB"
+msgstr ""
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8409,7 +8815,7 @@ msgstr ""
 
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
-msgid "Latin (Renaissance)"
+msgid "Latin"
 msgstr ""
 
 #. LANG_LV_LV
@@ -8425,14 +8831,19 @@ msgstr "Lithuania"
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Loading Clip Art"
+msgid "Loading Clip Art..."
 msgstr "Tập ảnh"
+
+#. LANG_JBO
+#: po/tmp/xap_String_Id.h
+msgid "Lojban"
+msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Lowercase"
-msgstr "chữ thường"
+msgstr "Chữ thường"
 
 #. LANG_MK
 #: po/tmp/xap_String_Id.h
@@ -8444,6 +8855,11 @@ msgstr "Macedonia"
 msgid "Make default for document"
 msgstr ""
 
+#. LANG_MG_MG
+#: po/tmp/xap_String_Id.h
+msgid "Malagasy"
+msgstr ""
+
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
 msgid "Malay"
@@ -8451,7 +8867,7 @@ msgstr ""
 
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
-msgid "Mandinka (Senegal)"
+msgid "Mandinka"
 msgstr ""
 
 #. LANG_MI_NZ
@@ -8491,7 +8907,7 @@ msgstr "Tên"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
-msgid "Nepali (Nepal)"
+msgid "Nepali"
 msgstr ""
 
 #. DLG_MB_No
@@ -8514,16 +8930,6 @@ msgstr "Chưa chọn plugin"
 msgid "Normal"
 msgstr "Bình thường"
 
-#. LANG_NB_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Bokmal"
-msgstr ""
-
-#. LANG_NN_NO
-#: po/tmp/xap_String_Id.h
-msgid "Norwegian Nynorsk"
-msgstr ""
-
 #. DLG_PLUGIN_MANAGER_NOT_AVAILABLE
 #: po/tmp/xap_String_Id.h
 msgid "Not available"
@@ -8543,6 +8949,11 @@ msgstr "Tiêu đề 2 (Đánh số)"
 #: po/tmp/xap_String_Id.h
 msgid "Numbered Heading 3"
 msgstr "Tiêu đề 3 (Đánh số)"
+
+#. LANG_NN_NO
+#: po/tmp/xap_String_Id.h
+msgid "Nynorsk"
+msgstr ""
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8608,7 +9019,8 @@ msgstr "Văn bản thô"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-msgid "Plugin Details:"
+#, fuzzy
+msgid "Plugin Details"
 msgstr "Chi tiết plugin"
 
 #. DLG_PLUGIN_MANAGER_LIST
@@ -8689,12 +9101,12 @@ msgstr "Lệnh in: "
 
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Gurmukhi)"
+msgid "Punjabi (India)"
 msgstr ""
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
-msgid "Punjabi (Shahmukhi)"
+msgid "Punjabi (Pakistan)"
 msgstr ""
 
 #. LANG_QU_BO
@@ -8702,14 +9114,19 @@ msgstr ""
 msgid "Quechua"
 msgstr ""
 
-#. LANG_QUH_BO
+#. LANG_QUZ
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (3 vowels)"
+msgid "Quechua (Cusco)"
 msgstr ""
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
-msgid "Quechua (5 vowels)"
+msgid "Quechua (Northern Bolivia)"
+msgstr ""
+
+#. LANG_QUH_BO
+#: po/tmp/xap_String_Id.h
+msgid "Quechua (Southern Bolivia)"
 msgstr ""
 
 #. ReadOnly
@@ -8745,6 +9162,7 @@ msgid "Replay Editing from File"
 msgstr ""
 
 #. DLG_Restore
+#. DLG_History_Restore
 #: po/tmp/xap_String_Id.h
 msgid "Restore"
 msgstr ""
@@ -8771,12 +9189,12 @@ msgstr "Rumani, Macintosh"
 
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
-msgid "Russian (Russia)"
-msgstr "Nga"
+msgid "Russian"
+msgstr ""
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-msgid "Russian (pre-1918)"
+msgid "Russian, pre-1918"
 msgstr ""
 
 #. DLG_UFS_SampleFrameLabel
@@ -8809,7 +9227,13 @@ msgstr "Lưu tập tin loại:"
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Script:"
-msgstr "&Script"
+msgstr "Script:"
+
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Section"
+msgstr "Lựa chọn"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
@@ -8839,18 +9263,8 @@ msgstr "Serbia"
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
 #, fuzzy
-msgid "Serbian, latin"
+msgid "Serbian, Latin"
 msgstr "Serbia"
-
-#. DLG_Image_ImageDesc
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Name"
-msgstr "Thiết lập tên ảnh"
-
-#. DLG_Image_ImageSize
-#: po/tmp/xap_String_Id.h
-msgid "Set Image Size"
-msgstr "Thiết lập kích thước ảnh"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -8880,6 +9294,11 @@ msgstr "Slovenia"
 #. DLG_UFS_Effects_SmallCaps
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
+msgstr ""
+
+#. LANG_SON
+#: po/tmp/xap_String_Id.h
+msgid "Songhay"
 msgstr ""
 
 #. LANG_ES_MX
@@ -9137,8 +9556,9 @@ msgstr ""
 
 #. DLG_UFS_Effects_UpperCase
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Uppercase"
-msgstr "chữ hoa"
+msgstr "Chữ hoa"
 
 #. LANG_UR
 #: po/tmp/xap_String_Id.h
@@ -9164,7 +9584,7 @@ msgstr ""
 #. DLG_History_Version
 #: po/tmp/xap_String_Id.h
 msgid "Version:"
-msgstr "phiên bản"
+msgstr "Phiên bản:"
 
 #. DLG_ABOUT_Version
 #: po/tmp/xap_String_Id.h
@@ -9207,12 +9627,6 @@ msgstr "Xem:"
 #: po/tmp/xap_String_Id.h
 msgid "Welsh"
 msgstr "Welsh"
-
-#. ENC_US_DOS
-#: po/tmp/xap_String_Id.h
-#, fuzzy
-msgid "Western European, DOS/Windows Code Page 437"
-msgstr "Tây Âu, CP1252"
 
 #. ENC_MLNG_DOS
 #: po/tmp/xap_String_Id.h
@@ -9262,7 +9676,7 @@ msgstr "Rộng:  "
 
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
-msgid "Wolof (Senegal)"
+msgid "Wolof"
 msgstr ""
 
 #. DLG_MB_Yes
@@ -9277,7 +9691,8 @@ msgstr ""
 
 #. MSG_HistoryConfirmSave
 #: po/tmp/xap_String_Id.h
-#, c-format, fuzzy
+#, c-format
+#, fuzzy
 msgid "You have to save changes to document %s before proceeding. Save now?"
 msgstr "Bạn phải lưu lại các thay đổi trước khi tiếp tục. Lưu lại ngay bây giờ?"
 
@@ -9285,6 +9700,11 @@ msgstr "Bạn phải lưu lại các thay đổi trước khi tiếp tục. Lưu
 #: po/tmp/xap_String_Id.h
 msgid "Zoom to"
 msgstr "Phóng to"
+
+#. LANG_ZU
+#: po/tmp/xap_String_Id.h
+msgid "Zulu"
+msgstr ""
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9353,140 +9773,10 @@ msgstr ""
 msgid "unrelated"
 msgstr "không liên quan"
 
-#~ msgid "Unicode UCS-2"
-#~ msgstr "Unicode UCS-2"
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Không"
 
-#~ msgid "Unicode UCS-4"
-#~ msgstr "Unicode UCS-4"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "Unicode UTF-16"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "Unicode UTF-32"
-
-#~ msgid "Go to..."
-#~ msgstr "Đi tới..."
-
-#~ msgid "&Format Table"
-#~ msgstr "Định &dạng bảng"
-
-#~ msgid "Allow Custom Toolbars"
-#~ msgstr "Cho phép Thanh công cụ riêng"
-
-#~ msgid "Display Help Index"
-#~ msgstr "Hiện chỉ mục trợ giúp"
-
-#~ msgid "INS"
-#~ msgstr "CHÈN"
-
-#~ msgid "Insert a picture"
-#~ msgstr "Chèn ảnh"
-
-#~ msgid "OVR"
-#~ msgstr "ĐÈ"
-
-#~ msgid "Show the AbiWord splash screen on application startup"
-#~ msgstr "Hiện AbiWord splash screen khi khởi động"
-
-#~ msgid "&Autotext"
-#~ msgstr "&Chữ tự động"
-
-#~ msgid "ATTN:"
-#~ msgstr "ATTN:"
-
-#~ msgid "About &GNU Free Software"
-#~ msgstr "Giới thiệu &GNU Free Software"
-
-#~ msgid "About &Open Source"
-#~ msgstr "Giới thiệu &Open Source"
-
-#~ msgid "About the GNU project"
-#~ msgstr "Giới thiệu về Dự án GNU"
-
-#~ msgid "Attention:"
-#~ msgstr "Chú ý:"
-
-#~ msgid "BCC:"
-#~ msgstr "BCC:"
-
-#~ msgid "Best regards,"
-#~ msgstr "Xin cám ơn,"
-
-#~ msgid "CC:"
-#~ msgstr "CC:"
-
-#~ msgid "CERTIFIED MAIL"
-#~ msgstr "THƯ CHỨNG NHẬN"
-
-#~ msgid "CONFIDENTIAL"
-#~ msgstr "TIN TƯỞNG"
-
-#~ msgid "Check &Version"
-#~ msgstr "Kiểm tra &phiên bản"
-
-#~ msgid "Closing:"
-#~ msgstr "Kết:"
-
-#~ msgid "Dear Mom and Dad,"
-#~ msgstr "Cha mẹ thân mến,"
-
-#~ msgid "Display information about Open Source"
-#~ msgstr "Hiện thông tin về Open Source (Mã Nguồn Mở)"
-
-#~ msgid "Display program version number"
-#~ msgstr "Hiện số phiên bản chương trình"
-
-#~ msgid "Email:"
-#~ msgstr "Email:"
-
-#~ msgid "From:"
-#~ msgstr "Từ:"
-
-#~ msgid "Fwd:"
-#~ msgstr "Fwd:"
-
-#~ msgid "In reply to:"
-#~ msgstr "Trả lời cho:"
-
-#~ msgid "Ladies and Gentlemen:"
-#~ msgstr "Quý bà và quý ông:"
-
-#~ msgid "Mail Instructions:"
-#~ msgstr "Chỉ dẫn Thư:"
-
-#~ msgid "PERSONAL"
-#~ msgstr "CÁ NHÂN"
-
-#~ msgid "RE:"
-#~ msgstr "RE:"
-
-#~ msgid "REGISTERED MAIL"
-#~ msgstr "THƯ ĐĂNG KÝ"
-
-#~ msgid "Reference:"
-#~ msgstr "Tham chiếu:"
-
-#~ msgid "SPECIAL DELIVERY"
-#~ msgstr "GỬI ĐẶC BIỆT"
-
-#~ msgid "Salutation:"
-#~ msgstr "Lời chào:"
-
-#~ msgid "Thank you,"
-#~ msgstr "Xin cám ơn,"
-
-#~ msgid "Thanks,"
-#~ msgstr "Cám ơn,"
-
-#~ msgid "To Whom It May Concern:"
-#~ msgstr "Với những ai quan tâm:"
-
-#~ msgid "To:"
-#~ msgstr "Tới:"
-
-#~ msgid "VIA FACSIMILE"
-#~ msgstr "QUA BẢN SAO"
-
-#~ msgid "\tFont   "
-#~ msgstr "\tFont   "
