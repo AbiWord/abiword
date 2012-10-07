@@ -73,7 +73,7 @@ msgstr ""
 "\n"
 " - Reservado. \n"
 " No puede usar este nombre. Elija otro. \n"
-" "
+
 
 #  [es] " Actualizar automáticamente"
 #. DLG_WordCount_Auto_Update
