@@ -52,7 +52,7 @@ msgstr " "
 msgid ""
 " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
-msgstr "I te i faŋ nafaa noo la ñiŋ too la. A ye maariyo soto le"
+msgstr "I te i faŋ nafaa noo la ñiŋ too la. A ye maariyo soto le \n"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h
@@ -4479,7 +4479,9 @@ msgstr ""
 msgid ""
 "New Starting \n"
 "Value"
-msgstr "Ka warariŋ kutoo foloo \n"
+msgstr ""
+"Ka warariŋ kutoo \n"
+"foloo"
 
 #. DLG_Styles_NewTitle
 #: po/tmp/ap_String_Id.h
