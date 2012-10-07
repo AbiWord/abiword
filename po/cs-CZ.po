@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
-"PO-Revision-Date: 2012-08-19 09:57+0200\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
+"PO-Revision-Date: 2012-08-21 00:41+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "Language: cs\n"
@@ -1069,6 +1069,31 @@ msgstr "1.5 řádku"
 msgid "1.5 spacing"
 msgstr "1.5 mezery"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1106,6 +1131,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "Vždy nav&rhovat opravy"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1464,6 +1544,61 @@ msgstr "Dostupné styly:"
 msgid "B&y:"
 msgstr "&Od:"
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
+
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h
@@ -1634,6 +1769,66 @@ msgstr "Kopírovat u&místění odkazu"
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "Spo&lupracovali"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2239,9 +2434,8 @@ msgstr "Vytvořit nový dokument"
 
 #. DLG_Styles_StylesTitle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create and Modify Styles"
-msgstr "&Vytvořit a změnit styly"
+msgstr "Vytvořit a změnit styly"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
@@ -2313,6 +2507,11 @@ msgstr "Aktuální čas"
 msgid "Cursor &blink"
 msgstr "&Blikající kurzor"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2364,6 +2563,11 @@ msgstr "Přesune označené oblasti do schránky"
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
 msgstr "&Obousměrnost"
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2883,6 +3087,16 @@ msgstr "Styl vysvětlivky"
 msgid "Endnotes"
 msgstr "Vysvětlivky"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -3123,6 +3337,11 @@ msgstr "Složit pod úrovní 3"
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
 msgstr "Složit pod úrovní 4"
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -3403,6 +3622,7 @@ msgstr "Záhlaví [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -4042,6 +4262,16 @@ msgstr "Levé zarovnání"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "Zarovnání odstavce vlevo"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -7090,42 +7320,49 @@ msgstr "zMěNIT vELIKOST"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Nic"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Nic"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Nic"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Předmět"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Nic"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Nic"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Předmět"
@@ -7454,6 +7691,11 @@ msgstr "Bokmål"
 msgid "Bold Italic"
 msgstr "Tučná kurzíva"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7504,6 +7746,11 @@ msgstr "Východní Evropa, kódová stránka Windows 1250"
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
 msgstr "Změnit jazyk při změně klávesnice"
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7743,6 +7990,11 @@ msgstr "čeština"
 msgid "Danish"
 msgstr "Dánština"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -7943,6 +8195,11 @@ msgstr "Soubor pro zaznamenání úprav:"
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
 msgstr "Soubor pro přehrání úprav:"
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr ""
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8800,6 +9057,12 @@ msgstr "Uložit soubor jako typ:"
 msgid "Script:"
 msgstr "Skript:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Section"
+msgstr "Výběr"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -9330,4 +9593,11 @@ msgstr "podobné"
 #: po/tmp/xap_String_Id.h
 msgid "unrelated"
 msgstr "neporovnatelné"
+
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Nic"
 
