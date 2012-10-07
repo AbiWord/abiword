@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
 "PO-Revision-Date: 2011-06-15 04:01+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
@@ -1074,6 +1074,31 @@ msgstr "Línte 1.5"
 msgid "1.5 spacing"
 msgstr "Bearnaí 1.5"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1111,6 +1136,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "Mol ceartúcháin i g&cónaí"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1479,6 +1559,61 @@ msgstr "Nósanna Ar Fáil"
 msgid "B&y:"
 msgstr "Ó&:"
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
+
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h
@@ -1651,6 +1786,66 @@ msgstr "Cói&peáil láthair an hipearnasc"
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "Teidil C&hreidiúna"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2341,6 +2536,11 @@ msgstr "An t-am anois"
 msgid "Cursor &blink"
 msgstr "Cursóir &caoch"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2392,6 +2592,11 @@ msgstr "Gearr an rogha agus cuir ar an Gearrthaisce é"
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
 msgstr "T&reoúl"
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2924,6 +3129,16 @@ msgstr "Módh fonóta"
 msgid "Endnotes"
 msgstr "&Nótaí Mínithe"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -3167,6 +3382,11 @@ msgstr "Fill faoi léibhéal a 3"
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
 msgstr "Fill faoi léibhéal a 4"
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -4101,6 +4321,16 @@ msgstr "Clé ailíniú"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "Clé ailínigh an alt"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -7540,6 +7770,11 @@ msgstr ""
 msgid "Bold Italic"
 msgstr "Cló trom Iodálach"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7591,6 +7826,11 @@ msgstr "Lár-Eorpach, Tagairt Windows Leathanach 1250"
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
 msgstr "Athraigh an Bhéarla nuair a n-athraítear an méarchlár"
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7831,6 +8071,11 @@ msgstr "Seicis"
 msgid "Danish"
 msgstr "Danmhargais"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -8033,6 +8278,11 @@ msgstr "Comhad chun an eagarthóireacht a thaifead:"
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
 msgstr "Comhad chun an eagarthóireacht a athsheint:"
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr ""
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8897,6 +9147,12 @@ msgstr "Cuir an comhad i dtaisce mar cineál:"
 msgid "Script:"
 msgstr "Script:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Section"
+msgstr "Roghnúchán"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -9433,230 +9689,10 @@ msgstr "dearthóireacha"
 msgid "unrelated"
 msgstr "neamhghaolta"
 
-#~ msgid "List"
-#~ msgstr "Réim"
-
-#~ msgid "&1 None"
-#~ msgstr "&1 Tada"
-
-#~ msgid "&2 .........."
-#~ msgstr "&2 .........."
-
-#~ msgid "&3 ----------"
-#~ msgstr "&3 ----------"
-
-#~ msgid "&4 __________"
-#~ msgstr "&4 __________"
-
-#~ msgid "Layout Details"
-#~ msgstr "Sonraí an Leagan Amach"
-
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
 #, fuzzy
-#~ msgid "&Description"
-#~ msgstr "Tuairisc"
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Tada"
 
-#~ msgid "Contributor"
-#~ msgstr "Rannpháirtí"
-
-#~ msgid "Creator"
-#~ msgstr "Cruthathóir"
-
-#~ msgid "Default date (w/o time)"
-#~ msgstr "Dáta réamhshocraithe (gan am)"
-
-#~ msgid "Line"
-#~ msgstr "Líne"
-
-#~ msgid "Lists for "
-#~ msgstr "Réimeanna do "
-
-#~ msgid "Page Reference"
-#~ msgstr "Tagairt Leathanach"
-
-#~ msgid "Amharic (Ethiopia)"
-#~ msgstr "Amaraic (An Aetóip)"
-
-#~ msgid "Asturian (Spain)"
-#~ msgstr "Ástúrais (An Spáin)"
-
-#~ msgid "Dutch (Netherlands)"
-#~ msgstr "Ollainnis (an Ísiltír)"
-
-#~ msgid "Flemish (Belgium)"
-#~ msgstr "Pléimeannais (An Bheilg)"
-
-#, fuzzy
-#~ msgid "Galician (Galego)"
-#~ msgstr "Gailísis"
-
-#~ msgid "Italian (Italy)"
-#~ msgstr "Iodáilis (An Iodáil)"
-
-#~ msgid "Korean, Johab"
-#~ msgstr "Cóiréis, Íohab"
-
-#~ msgid "Latin (Renaissance)"
-#~ msgstr "Laidin (Athbheochan)"
-
-#~ msgid "Nepali (Nepal)"
-#~ msgstr "Neipeailis"
-
-#~ msgid "Norwegian Bokmal"
-#~ msgstr "Ioruais Bokmal"
-
-#~ msgid "Norwegian Nynorsk"
-#~ msgstr "Nua-Ioruais"
-
-#~ msgid "Punjabi (Gurmukhi)"
-#~ msgstr "Puinseáibis (Gurmoicí)"
-
-#~ msgid "Punjabi (Shahmukhi)"
-#~ msgstr "Puinseáibis (Seamoicí)"
-
-#~ msgid "Russian (Russia)"
-#~ msgstr "Rúisis (An Rúis)"
-
-#~ msgid "Western European, DOS/Windows Code Page 437"
-#~ msgstr "Iar-Eorpach, Tagairt DOS/Windows Leathanach 437"
-
-#~ msgid "&Available formats:"
-#~ msgstr "&Cruthanna ar Fáil:"
-
-#~ msgid "&Enable smart quotes"
-#~ msgstr "&Cumasaigh comharthaí athfhriotail cliste"
-
-#~ msgid "AutoFit behavior"
-#~ msgstr "Iompar UathOiriúnaigh"
-
-#~ msgid "Bi-Directional Options"
-#~ msgstr "Roghanna Dethreoch"
-
-#~ msgid "Extra parameters:"
-#~ msgstr "Paraiméadair breise:"
-
-#~ msgid "Field Name"
-#~ msgstr "Ainm Réimse"
-
-#~ msgid "Format Endnotes"
-#~ msgstr "Cuir Cruth ar na Nótaí Mínithe"
-
-#~ msgid "Format Footnotes"
-#~ msgstr "Cuir Cruth ar na bhFonótaí"
-
-#~ msgid "Insert break"
-#~ msgstr "Ionsáigh briseadh"
-
-#~ msgid "Insert field"
-#~ msgstr "Ionsáigh réimse"
-
-#~ msgid "Paper..."
-#~ msgstr "Páipéir..."
-
-#~ msgid "Position Text Box"
-#~ msgstr "Suigh Bosca Téacs"
-
-#~ msgid "Scale..."
-#~ msgstr "Scála..."
-
-#~ msgid "Section breaks"
-#~ msgstr "Briseadh rannáin"
-
-#~ msgid "Table size"
-#~ msgstr "Méid an tábla"
-
-#~ msgid "Define Image Placement"
-#~ msgstr "Cinntigh Lonnú Íomhánna"
-
-#~ msgid "Define Text Wrapping"
-#~ msgstr "Cinntigh Slánfhoclacht"
-
-#~ msgid "Set Image Name"
-#~ msgstr "Socraigh Ainm an Íomhá"
-
-#~ msgid "Set Image Size"
-#~ msgstr "Socraigh Méad an Íomhá"
-
-#~ msgid "Unicode UCS-2"
-#~ msgstr "Unicode UCS-2"
-
-#~ msgid "Unicode UCS-4"
-#~ msgstr "Unicode UCS-4"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "Unicode UTF-16"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "Unicode UTF-32"
-
-#~ msgid "Go to..."
-#~ msgstr "Téigh chuig..."
-
-#~ msgid "&Format Table"
-#~ msgstr "&Cuir Cruth ar Tábla"
-
-#~ msgid "&From File"
-#~ msgstr "Ó &Comhad"
-
-#~ msgid "Allow Custom Toolbars"
-#~ msgstr "Lig do Barrauirlisí Saincheapaithe"
-
-#~ msgid "Display Help Index"
-#~ msgstr "Taispeán Innéacs Cabhair"
-
-#~ msgid "INS"
-#~ msgstr "INS"
-
-#~ msgid "Insert a picture"
-#~ msgstr "Ionsáigh griangraf"
-
-#~ msgid "M&erge documents"
-#~ msgstr "C&umaiscigh cáipéisí"
-
-#~ msgid "OVR"
-#~ msgstr "OVR"
-
-#~ msgid "Show the AbiWord splash screen on application startup"
-#~ msgstr "Taispeáin splancscáileán AbiWord ag tosú an bhfeidhmchláir"
-
-#~ msgid ""
-#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
-#~ "to merge them, but the result might be meaningless."
-#~ msgstr ""
-#~ "Níl na cáipéisí a dteastaíonn uait cumascú gaolta. Déanfaidh AbiWord "
-#~ "iarracht iad a chumascú, ach bfhéidir go mbeadh an tortha gan mhaitheas."
-
-#~ msgid "&Autotext"
-#~ msgstr "&Uaththéacs"
-
-#~ msgid "About &Open Source"
-#~ msgstr "Faoi &Foinse Oscailte"
-
-#~ msgid "Attention:"
-#~ msgstr "Aire:"
-
-#~ msgid "Check &Version"
-#~ msgstr "Promh &Leagan"
-
-#~ msgid "Closing:"
-#~ msgstr "Ag Dúnadh:"
-
-#~ msgid "Display information about Open Source"
-#~ msgstr "Taispeán eolas faoi Foinse Oscailte"
-
-#~ msgid "Display program version number"
-#~ msgstr "Taispeán uimhir leagan an ríomhoideas"
-
-#~ msgid "Email:"
-#~ msgstr "Ríomhphost:"
-
-#~ msgid "Mail Instructions:"
-#~ msgstr "Treoracha Posta:"
-
-#~ msgid "Reference:"
-#~ msgstr "Tagairt:"
-
-#~ msgid "Salutation:"
-#~ msgstr "Beannacht:"
-
-#~ msgid "\tFont   "
-#~ msgstr "\tCló  "
