@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
 "PO-Revision-Date: 2011-06-18 04:50+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
@@ -1082,6 +1082,31 @@ msgstr "1,5-zeilig"
 msgid "1.5 spacing"
 msgstr "1.5-facher Zeilenabstand"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1117,6 +1142,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "Vorschläge &immer anzeigen"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1472,6 +1552,61 @@ msgstr "Verfügbare Stile"
 msgid "B&y:"
 msgstr "&Von:"
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
+
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h
@@ -1646,6 +1781,66 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "Mitwi&rkende"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2338,6 +2533,11 @@ msgstr "Aktuelle Zeit"
 msgid "Cursor &blink"
 msgstr "Cursor &blinkend"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2390,6 +2590,11 @@ msgstr "Markierung ausschneiden und in die Zwischenablage kopieren"
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
 msgstr "S&chreibrichtung"
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2925,6 +3130,16 @@ msgstr ""
 msgid "Endnotes"
 msgstr "Querverweis einfügen"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -3168,6 +3383,11 @@ msgstr ""
 #. DLG_Lists_FoldingLevel4
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
+msgstr ""
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
 msgstr ""
 
 #. DLG_Para_PreviewFollowParagraph
@@ -4120,6 +4340,16 @@ msgstr "Linksbündig"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "Absatz links ausrichten"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -7613,6 +7843,11 @@ msgstr ""
 msgid "Bold Italic"
 msgstr "Fett Kursiv"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7663,6 +7898,11 @@ msgstr "Zentral·Europäisch, Windows Code Page 1250"
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
+msgstr ""
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
 msgstr ""
 
 #. STYLE_CHAPHEADING
@@ -7905,6 +8145,11 @@ msgstr "Tschechisch"
 msgid "Danish"
 msgstr "Dänisch"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -8106,6 +8351,11 @@ msgstr ""
 #. DLG_FOSA_ReplayFromFileLabel
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
+msgstr ""
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
 msgstr ""
 
 #. LANG_FI_FI
@@ -8977,6 +9227,11 @@ msgstr "Datei speichern als Typ:"
 msgid "Script:"
 msgstr "Skript:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+msgid "Section"
+msgstr ""
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -9510,282 +9765,10 @@ msgstr "Geschwister"
 msgid "unrelated"
 msgstr ""
 
-#~ msgid "List"
-#~ msgstr "Liste"
-
-#~ msgid "&1 None"
-#~ msgstr "&1 kein"
-
-#~ msgid "&2 .........."
-#~ msgstr "&2 .........."
-
-#~ msgid "&3 ----------"
-#~ msgstr "&3 ----------"
-
-#~ msgid "&4 __________"
-#~ msgstr "&4 __________"
-
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
 #, fuzzy
-#~ msgid "&Description"
-#~ msgstr "Ti&efgestellt"
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Keine"
 
-#~ msgid "Default date (w/o time)"
-#~ msgstr "Voreingestelltes Datum (ohne Uhrzeit)"
-
-#~ msgid "Line"
-#~ msgstr "Zeile"
-
-#~ msgid "Lists for "
-#~ msgstr "Listen für "
-
-#~ msgid "Page Reference"
-#~ msgstr "Seitenreferenz"
-
-#~ msgid "Dutch (Netherlands)"
-#~ msgstr "Niederländisch (Niederlande)"
-
-#~ msgid "Flemish (Belgium)"
-#~ msgstr "Niederlandisch/Flämisch (Belgien)"
-
-#, fuzzy
-#~ msgid "Galician (Galego)"
-#~ msgstr "Galizisch"
-
-#~ msgid "Italian (Italy)"
-#~ msgstr "Italienisch (Italien)"
-
-#~ msgid "Korean, Johab"
-#~ msgstr "Koreanisch, Johab"
-
-#~ msgid "Latin (Renaissance)"
-#~ msgstr "Latein (Rennaissance)"
-
-#~ msgid "Norwegian Bokmal"
-#~ msgstr "Norwegisch (Bokmal)"
-
-#~ msgid "Norwegian Nynorsk"
-#~ msgstr "Norwegisch (Nynorsk)"
-
-#~ msgid "Russian (Russia)"
-#~ msgstr "Russisch (Russland)"
-
-#, fuzzy
-#~ msgid "Western European, DOS/Windows Code Page 437"
-#~ msgstr "Westeuropäisch, Windows Code Page 1252"
-
-#~ msgid "&Available formats:"
-#~ msgstr "&Verfügbare Formate:"
-
-#~ msgid "&Enable smart quotes"
-#~ msgstr "Anführungs&zeichen automatisch"
-
-#~ msgid "Bi-Directional Options"
-#~ msgstr "Bi-Direktionale Optionen"
-
-#~ msgid "Extra parameters:"
-#~ msgstr "Zusätzliche Parameter:"
-
-#, fuzzy
-#~ msgid "Field Name"
-#~ msgstr "Dateiname"
-
-#~ msgid "Insert break"
-#~ msgstr "Wechsel"
-
-#~ msgid "Insert field"
-#~ msgstr "Feld"
-
-#~ msgid "Paper..."
-#~ msgstr "Papier..."
-
-#~ msgid "Scale..."
-#~ msgstr "Skalieren..."
-
-#~ msgid "Section breaks"
-#~ msgstr "Abschnittwechsel"
-
-#~ msgid "Define Image Placement"
-#~ msgstr "Bildanordnung festlegen"
-
-#~ msgid "Define Text Wrapping"
-#~ msgstr "Textumbruch festlegen"
-
-#~ msgid "Set Image Name"
-#~ msgstr "Bildname festlegen"
-
-#~ msgid "Set Image Size"
-#~ msgstr "Bildgrösse festlegen"
-
-#~ msgid "Unicode UCS-2"
-#~ msgstr "Unicode·UCS-2"
-
-#~ msgid "Unicode UCS-4"
-#~ msgstr "Unicode·UCS-4"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "Unicode·UTF-16"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "Unicode·UTF-32"
-
-#~ msgid "Go to..."
-#~ msgstr "Gehe zu..."
-
-#~ msgid "Allow Custom Toolbars"
-#~ msgstr "Angepasste Werkzeugeisten zulassen"
-
-#~ msgid "Display Help Index"
-#~ msgstr "Benutzerhandbuch anzeigen"
-
-#~ msgid "INS"
-#~ msgstr "EINFG"
-
-#~ msgid "Insert a picture"
-#~ msgstr "Bild einfügen"
-
-#~ msgid "M&erge documents"
-#~ msgstr "Dokumente zusammen&führen"
-
-#~ msgid "OVR"
-#~ msgstr "ÜBER"
-
-#~ msgid "Show the AbiWord splash screen on application startup"
-#~ msgstr "Den AbiWord-Begrüssungsbildschirm beim Starten zeigen"
-
-#~ msgid "&Autotext"
-#~ msgstr "&Autotext"
-
-#~ msgid "ATTN:"
-#~ msgstr "Ihr Zeichen:"
-
-#~ msgid "About &GNU Free Software"
-#~ msgstr "Info zu &GNU Free Software"
-
-#~ msgid "About &Open Source"
-#~ msgstr "Info zu &Open Source"
-
-#~ msgid "About the GNU project"
-#~ msgstr "Über das GNU-Projekt"
-
-#~ msgid "Attention:"
-#~ msgstr "Zu Handen von:"
-
-#~ msgid "BCC:"
-#~ msgstr "BCC:"
-
-#~ msgid "Best regards,"
-#~ msgstr "Vielen Dank!"
-
-#~ msgid "Best wishes,"
-#~ msgstr "Herzliche Grüsse"
-
-#~ msgid "CC:"
-#~ msgstr "CC:"
-
-#~ msgid "CERTIFIED MAIL"
-#~ msgstr "EINSCHREIBEN"
-
-#~ msgid "CONFIDENTIAL"
-#~ msgstr "VERTRAULICH"
-
-#~ msgid "Check &Version"
-#~ msgstr "&Version überprüfen"
-
-#~ msgid "Closing:"
-#~ msgstr "Grussformeln:"
-
-#~ msgid "Cordially,"
-#~ msgstr "Herzlichst"
-
-#~ msgid "Dear Mom and Dad,"
-#~ msgstr "Sehr geehrte Damen und Herren,"
-
-#~ msgid "Dear Sir or Madam:"
-#~ msgstr "Sehr geehrter Herr"
-
-#~ msgid "Display information about Open Source"
-#~ msgstr "Informationen über Open Source anzeigen"
-
-#~ msgid "Display program version number"
-#~ msgstr "Versionsnummer anzeigen"
-
-#~ msgid "Email:"
-#~ msgstr "Email:"
-
-#~ msgid "From:"
-#~ msgstr "Von:"
-
-#~ msgid "Fwd:"
-#~ msgstr "Fwd:"
-
-#~ msgid "In reply to:"
-#~ msgstr "Als Antwort auf:"
-
-#~ msgid "Ladies and Gentlemen:"
-#~ msgstr "Sehr geehrte Frau"
-
-#~ msgid "Love,"
-#~ msgstr "Dein"
-
-#~ msgid "Mail Instructions:"
-#~ msgstr "Brief:"
-
-#~ msgid "PERSONAL"
-#~ msgstr "PERSÖNLICH"
-
-#~ msgid "RE:"
-#~ msgstr "RE:"
-
-#~ msgid "REGISTERED MAIL"
-#~ msgstr "Eingeschriebene Post"
-
-#~ msgid "Reference:"
-#~ msgstr "Referenz:"
-
-#~ msgid "Regards,"
-#~ msgstr "Ihr"
-
-#~ msgid "Respectfully yours,"
-#~ msgstr "Beste Grüsse"
-
-#~ msgid "Respectfully,"
-#~ msgstr "Bis bald!"
-
-#~ msgid "SPECIAL DELIVERY"
-#~ msgstr "PER KURIER"
-
-#~ msgid "Salutation:"
-#~ msgstr "Anrede:"
-
-#~ msgid "Sincerely yours,"
-#~ msgstr "Liebe Grüsse"
-
-#~ msgid "Take care,"
-#~ msgstr "Alles Gute"
-
-#~ msgid "Thank you,"
-#~ msgstr "Vielen Dank!"
-
-#~ msgid "Thanks,"
-#~ msgstr "Danke!"
-
-#~ msgid "To Whom It May Concern:"
-#~ msgstr "Wen es betrifft:"
-
-#~ msgid "To:"
-#~ msgstr "An:"
-
-#~ msgid "VIA AIRMAIL"
-#~ msgstr "PER LUFTPOST"
-
-#~ msgid "VIA FACSIMILE"
-#~ msgstr "PER FAX"
-
-#~ msgid "VIA OVERNIGHT MAIL"
-#~ msgstr "PER A-POST"
-
-#~ msgid "Yours truly,"
-#~ msgstr "Hochachtungsvoll"
-
-#~ msgid "\tFont   "
-#~ msgstr "\tSchrift   "
