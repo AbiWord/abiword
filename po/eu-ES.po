@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
 "PO-Revision-Date: 2011-12-05 08:54+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: eu-ES <eu@li.org>\n"
@@ -1087,6 +1087,31 @@ msgstr "1.5 lerro"
 msgid "1.5 spacing"
 msgstr "1.5eko lerroartea"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1124,6 +1149,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "&Beti iradoki zuzenketak"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1488,6 +1568,61 @@ msgstr "Estilo erabilgarriak"
 msgid "B&y:"
 msgstr "&Egilea:"
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
+
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h
@@ -1660,6 +1795,66 @@ msgstr "Hiperestekaren kokapena &kopiatu"
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "&Kredituak"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2346,6 +2541,11 @@ msgstr "Oraingo ordua"
 msgid "Cursor &blink"
 msgstr "Kurtsorearen &keinua"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2397,6 +2597,11 @@ msgstr "Hautespena ebaki eta arbelean jarri"
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
 msgstr "&Noranzkoa"
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2919,6 +3124,16 @@ msgstr "Bukaerako oharraren estiloa"
 msgid "Endnotes"
 msgstr "&Bukaerako oharra"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -3161,6 +3376,11 @@ msgstr "3. mailaren azpitik tolestu"
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
 msgstr "4. mailaren azpitik tolestu"
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -4094,6 +4314,16 @@ msgstr "Ezker lerrokatzea"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "Ezkerraldean lerrokatu paragrafoa"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -7529,6 +7759,11 @@ msgstr ""
 msgid "Bold Italic"
 msgstr "Lodia eta etzana"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7579,6 +7814,11 @@ msgstr "Erdialdeko Europa, Windows 1250 kode-orria"
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
 msgstr "Hizkuntza aldatu teklatua aldatzean"
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7819,6 +8059,11 @@ msgstr "Txekiera"
 msgid "Danish"
 msgstr "Daniera"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -8021,6 +8266,11 @@ msgstr "Edizioa gordetzeko fitxategia:"
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
 msgstr "Edizioa erreproduzitzeko fitxategia:"
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr ""
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8880,6 +9130,12 @@ msgstr "&Honela gorde fitxategia:"
 msgid "Script:"
 msgstr "Script-a:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Section"
+msgstr "Hautespena"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -9415,182 +9671,10 @@ msgstr "antzekoak"
 msgid "unrelated"
 msgstr "zerikusirik ez"
 
-#~ msgid "List"
-#~ msgstr "Zerrenda"
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Bat ere ez"
 
-#~ msgid "&1 None"
-#~ msgstr "&1 Bat ere ez"
-
-#~ msgid "&2 .........."
-#~ msgstr "&2 .........."
-
-#~ msgid "&3 ----------"
-#~ msgstr "&3 ----------"
-
-#~ msgid "&4 __________"
-#~ msgstr "&4 __________"
-
-#~ msgid "Layout Details"
-#~ msgstr "Diseinuaren xehetasunak"
-
-#~ msgid "&Description"
-#~ msgstr "&Deskribapena"
-
-#~ msgid "Contributor"
-#~ msgstr "Laguntzailea"
-
-#~ msgid "Creator"
-#~ msgstr "Sortzailea"
-
-#~ msgid "Default date (w/o time)"
-#~ msgstr "Data lehenetsia (ordurik gabe)"
-
-#~ msgid "Line"
-#~ msgstr "Lerroa"
-
-#~ msgid "Lists for "
-#~ msgstr "Zerrendak "
-
-#~ msgid "Page Reference"
-#~ msgstr "Orri-erreferentzia"
-
-#~ msgid "Amharic (Ethiopia)"
-#~ msgstr "Amharera (Etiopia)"
-
-#~ msgid "Asturian (Spain)"
-#~ msgstr "Asturiera (Espainia)"
-
-#~ msgid "Aymara (La Paz)"
-#~ msgstr "Aimara (La Paz)"
-
-#~ msgid "Aymara (Oruro)"
-#~ msgstr "Aimara (Oruro)"
-
-#~ msgid "Central Aymara"
-#~ msgstr "Erdialdeko Aimara"
-
-#~ msgid "Dutch (Netherlands)"
-#~ msgstr "Nederlandera (Holanda)"
-
-#~ msgid "Flemish (Belgium)"
-#~ msgstr "Flandriera (Belgika)"
-
-#~ msgid "Galician (Galego)"
-#~ msgstr "Galiziera"
-
-#~ msgid "Italian (Italy)"
-#~ msgstr "Italiera (Italia)"
-
-#~ msgid "Kazakh (Kazakhstan)"
-#~ msgstr "Kazakh (Kazakhstan)"
-
-#~ msgid "Korean, Johab"
-#~ msgstr "Koreera, Johab"
-
-#~ msgid "Latin (Renaissance)"
-#~ msgstr "Latin (Berpizkundea)"
-
-#~ msgid "Mandinka (Senegal)"
-#~ msgstr "Mandinka (Senegal)"
-
-#~ msgid "Nepali (Nepal)"
-#~ msgstr "Nepalera"
-
-#~ msgid "Norwegian Bokmal"
-#~ msgstr "Bokmal Norvegiera"
-
-#~ msgid "Norwegian Nynorsk"
-#~ msgstr "Nynorsk Norvegiera"
-
-#~ msgid "Punjabi (Gurmukhi)"
-#~ msgstr "Punjabera (Gurmukhi)"
-
-#~ msgid "Punjabi (Shahmukhi)"
-#~ msgstr "Punjabera (Shahmukhi)"
-
-#~ msgid "Quechua (3 vowels)"
-#~ msgstr "Quechuera (3 bokal)"
-
-#~ msgid "Quechua (5 vowels)"
-#~ msgstr "Quechuera (5 bokal)"
-
-#~ msgid "Russian (Russia)"
-#~ msgstr "Errusiera (Errusia)"
-
-#~ msgid "Western European, DOS/Windows Code Page 437"
-#~ msgstr "Mendebaldeko Europa, DOS/Windows 437 kode-orria"
-
-#~ msgid "Wolof (Senegal)"
-#~ msgstr "Wolofera (Senegal)"
-
-#~ msgid "&Available formats:"
-#~ msgstr "&Formatu erabilgarriak:"
-
-#~ msgid "&Enable smart quotes"
-#~ msgstr "&Komatxo adimentsuak gaitu"
-
-#~ msgid "AutoFit behavior"
-#~ msgstr "Autodoiketaren portaera"
-
-#~ msgid "Bi-Directional Options"
-#~ msgstr "Noranzko-aukerak"
-
-#~ msgid "Extra parameters:"
-#~ msgstr "Parametro extrak:"
-
-#~ msgid "Field Name"
-#~ msgstr "Eremu-izena"
-
-#~ msgid "Format Endnotes"
-#~ msgstr "Bukaerako oharren formatua"
-
-#~ msgid "Format Footnotes"
-#~ msgstr "Orri-oinen formatua"
-
-#~ msgid "Insert break"
-#~ msgstr "Jauzia txertatu"
-
-#~ msgid "Insert field"
-#~ msgstr "Eremua txertatu"
-
-#~ msgid "Paper..."
-#~ msgstr "Papera..."
-
-#~ msgid "Position Text Box"
-#~ msgstr "Testu-kutxa kokatu"
-
-#~ msgid "Scale..."
-#~ msgstr "Eskala..."
-
-#~ msgid "Section breaks"
-#~ msgstr "Sekzio-jauziak"
-
-#~ msgid "Table size"
-#~ msgstr "Taularen tamaina"
-
-#~ msgid "Define Image Placement"
-#~ msgstr "Irudiaren kokalekua definitu"
-
-#~ msgid "Define Text Wrapping"
-#~ msgstr "Testu-egokitzea definitu"
-
-#~ msgid "Set Image Name"
-#~ msgstr "Irudiaren izena ezarri"
-
-#~ msgid "Set Image Size"
-#~ msgstr "Irudiaren tamaina ezarri"
-
-#~ msgid "Unicode UCS-2"
-#~ msgstr "Unicode UCS-2"
-
-#~ msgid "Unicode UCS-4"
-#~ msgstr "Unicode UCS-4"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "Unicode UTF-16"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "Unicode UTF-32"
-
-#~ msgid "Go to..."
-#~ msgstr "Hona joan..."
