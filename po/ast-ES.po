@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
 "PO-Revision-Date: 2011-08-02 22:14-0400\n"
 "Last-Translator: Chris Leonard <cjl@laptop.org>\n"
 "Language-Team: Softastur\n"
@@ -1324,6 +1324,31 @@ msgstr "1,5 llinies"
 msgid "1.5 spacing"
 msgstr "espaciáu a 1,5"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 # TOOLBAR_LABEL_PARA_12BEFORE
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1371,6 +1396,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "&Proponer correiciones siempre"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 # FIELD_DateTime_AMPM
 #. FIELD_DateTime_AMPM
@@ -1795,6 +1875,61 @@ msgstr "Estilos disponibles"
 msgid "B&y:"
 msgstr "P&or:"
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
+
 # DLG_FormatTable_Background
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -2010,6 +2145,66 @@ msgstr "C&opiar l'allugamientu del hiperenllaz"
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "C&reitos"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 # MSG_NoBreakInsideTable
 #. MSG_NoBreakInsideTable
@@ -2824,6 +3019,11 @@ msgstr "Hora actual"
 msgid "Cursor &blink"
 msgstr "Parpagar del &cursor"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
+
 # DLG_Options_Label_SpellCustomDict
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
@@ -2886,6 +3086,11 @@ msgstr "Cortar la seleición y pasala al cartafueyu"
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
 msgstr "D&ireicional"
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
 
 # DLG_Lists_Dashed_List
 #  STYLE_DASHEDLIST
@@ -3513,6 +3718,16 @@ msgstr "Estilu de la nota a lo cabero"
 msgid "Endnotes"
 msgstr "&Nota a lo cabero"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 # MENU_LABEL_AUTOTEXT_SALUTATION
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -3788,6 +4003,11 @@ msgstr "Plegar baxo'l nivel 3"
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
 msgstr "Plegar baxo'l nivel 4"
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
 
 # DLG_Para_PreviewFollowParagraph
 #. DLG_Para_PreviewFollowParagraph
@@ -4925,6 +5145,16 @@ msgstr "Alliniamientu a la esquierda"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "Alliniar el parágrafu a la esquierda"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
 
 # DLG_Lists_Level
 #. DLG_FormatTOC_Level1
@@ -9022,6 +9252,11 @@ msgstr ""
 msgid "Bold Italic"
 msgstr "Negrina cursiva"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
+
 # LANG_BR_FR
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
@@ -9082,6 +9317,11 @@ msgstr "Européu Central, Páxina de Códigu Windows 1250"
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
 msgstr "Camudar la llingua al camudar el tecláu"
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
 
 # STYLE_CHAPHEADING
 #. STYLE_CHAPHEADING
@@ -9363,6 +9603,11 @@ msgstr "Checu"
 msgid "Danish"
 msgstr "Danés"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 # DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
@@ -9599,6 +9844,11 @@ msgstr "Archivu nel que grabar la edición:"
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
 msgstr "Archivu del que reproducir la edición:"
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr ""
 
 # LANG_FI_FI
 #. LANG_FI_FI
@@ -10585,6 +10835,14 @@ msgstr "Guardar archivu como triba:"
 msgid "Script:"
 msgstr "Script:"
 
+# DLG_FormatTable_Apply_To_Selection
+#  DLG_UP_Selection
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Section"
+msgstr "Seleición"
+
 # STYLE_SECTHEADING
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
@@ -11187,227 +11445,12 @@ msgstr "asemeyaos"
 msgid "unrelated"
 msgstr "non rellacionaos"
 
-# DLG_Styles_List
-#~ msgid "List"
-#~ msgstr "Llista"
-
-# DLG_Tab_Radio_None
-#~ msgid "&1 None"
-#~ msgstr "&1 Nengún"
-
-# DLG_Tab_Radio_Dot
-#~ msgid "&2 .........."
-#~ msgstr "&2 .........."
-
-# DLG_Tab_Radio_Dash
-#~ msgid "&3 ----------"
-#~ msgstr "&3 ----------"
-
-# DLG_Tab_Radio_Underline
-#~ msgid "&4 __________"
-#~ msgstr "&4 __________"
-
-# DLG_PLUGIN_MANAGER_DETAILS
-#~ msgid "Layout Details"
-#~ msgstr "Detalles de diseñu"
-
-# DLG_Styles_Description
-#  DLG_Styles_ModifyDescription
-#  FIELD_Document_Description
+# DLG_Styles_DefNone
+#  DLG_Lists_Type_none
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
 #, fuzzy
-#~ msgid "&Description"
-#~ msgstr "&Descripción"
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Nengún"
 
-# FIELD_Document_Contributor
-#~ msgid "Contributor"
-#~ msgstr "Contribuidor"
-
-# FIELD_Document_Creator
-#~ msgid "Creator"
-#~ msgstr "Creador"
-
-# FIELD_DateTime_DefaultDateNoTime
-#~ msgid "Default date (w/o time)"
-#~ msgstr "Data por defeutu (ensin hora)"
-
-# DLG_Goto_Target_Line
-#~ msgid "Line"
-#~ msgstr "Llinia"
-
-# DLG_Lists_Title
-#~ msgid "Lists for "
-#~ msgstr "Llistes pa "
-
-# FIELD_Numbers_PageReference
-#~ msgid "Page Reference"
-#~ msgstr "Referencia de páxina"
-
-# LANG_AM_ET
-#~ msgid "Amharic (Ethiopia)"
-#~ msgstr "Amháricu (Etiopía)"
-
-# LANG_ES_ES
-#~ msgid "Asturian (Spain)"
-#~ msgstr "Asturianu (Bable)"
-
-#~ msgid "Aymara (La Paz)"
-#~ msgstr "Aimara (La Paz)"
-
-#~ msgid "Aymara (Oruro)"
-#~ msgstr "Aimara (Oruro)"
-
-#~ msgid "Central Aymara"
-#~ msgstr "Aimara Central"
-
-# LANG_NL_NL
-#~ msgid "Dutch (Netherlands)"
-#~ msgstr "Holandés (Holanda)"
-
-# LANG_NL_BE
-#~ msgid "Flemish (Belgium)"
-#~ msgstr "Flamencu (Bélxica)"
-
-# LANG_GL_ES
-#~ msgid "Galician (Galego)"
-#~ msgstr "Gallegu (Galego)"
-
-# LANG_IT_IT
-#~ msgid "Italian (Italy)"
-#~ msgstr "Italianu (Italia)"
-
-# ENC_KORE_JOHAB
-#~ msgid "Korean, Johab"
-#~ msgstr "Coreanu, Johab"
-
-# LANG_LA_IT
-#~ msgid "Latin (Renaissance)"
-#~ msgstr "Llatín (Renacimientu)"
-
-#, fuzzy
-#~ msgid "Mandinka (Senegal)"
-#~ msgstr "Wolof (Senegal)"
-
-#~ msgid "Nepali (Nepal)"
-#~ msgstr "Nepalín (Nepal)"
-
-# LANG_NB_NO
-#~ msgid "Norwegian Bokmal"
-#~ msgstr "Noruegu Bokmal"
-
-# LANG_NN_NO
-#~ msgid "Norwegian Nynorsk"
-#~ msgstr "Noruegu Nynorsk"
-
-#~ msgid "Punjabi (Gurmukhi)"
-#~ msgstr "Punjabi (Gurmukhi)"
-
-#~ msgid "Punjabi (Shahmukhi)"
-#~ msgstr "Punjabi (Shahmukhi)"
-
-#~ msgid "Quechua (3 vowels)"
-#~ msgstr "Quechua (3 vocales)"
-
-#~ msgid "Quechua (5 vowels)"
-#~ msgstr "Quechua (5 vocales)"
-
-# LANG_RU_RU
-#~ msgid "Russian (Russia)"
-#~ msgstr "Rusu (Rusia)"
-
-# ENC_WEST_WIN
-#~ msgid "Western European, DOS/Windows Code Page 437"
-#~ msgstr "Européu Occidental, Páxina de Códigu DOS/Windows 437"
-
-#~ msgid "Wolof (Senegal)"
-#~ msgstr "Wolof (Senegal)"
-
-# DLG_DateTime_AvailableFormats
-#~ msgid "&Available formats:"
-#~ msgstr "&Formatos disponibles:"
-
-# DLG_Options_Label_SmartQuotesEnable
-#~ msgid "&Enable smart quotes"
-#~ msgstr "&Activar comines elegantes"
-
-# DLG_InsertTable_AutoFit
-#~ msgid "AutoFit behavior"
-#~ msgstr "Comportamientu del autoaxuste"
-
-# DLG_Options_Label_BiDiOptions
-#~ msgid "Bi-Directional Options"
-#~ msgstr "Opciones bidireicionales"
-
-# DLG_Field_Parameters
-#~ msgid "Extra parameters:"
-#~ msgstr "Parámetros adicionales:"
-
-# DLG_MailMerge_Insert_No_Colon
-#~ msgid "Field Name"
-#~ msgstr "Nome de campu"
-
-# DLG_FormatFootnotes_Endnotes
-#~ msgid "Format Endnotes"
-#~ msgstr "Formatiar notes a lo cabero"
-
-# DLG_FormatFootnotes_Footnotes
-#~ msgid "Format Footnotes"
-#~ msgstr "Formatiar notes al pie"
-
-# DLG_Break_BreakTitle
-#~ msgid "Insert break"
-#~ msgstr "Enxertar un saltu"
-
-# DLG_Field_FieldTitle
-#~ msgid "Insert field"
-#~ msgstr "Enxertar campu"
-
-# DLG_PageSetup_Paper
-#~ msgid "Paper..."
-#~ msgstr "Papel..."
-
-# DLG_PageNumbers_Position_No_Colon
-#~ msgid "Position Text Box"
-#~ msgstr "Allugamientu de la caxa de testu"
-
-# DLG_PageSetup_Scale
-#~ msgid "Scale..."
-#~ msgstr "Escala..."
-
-# DLG_Break_SectionBreaks
-#~ msgid "Section breaks"
-#~ msgstr "Saltos de seición"
-
-# DLG_InsertTable_TableSize
-#~ msgid "Table size"
-#~ msgstr "Tamañu de la tabla"
-
-#~ msgid "Define Image Placement"
-#~ msgstr "Definir l'allugamientu de la imaxe"
-
-#~ msgid "Define Text Wrapping"
-#~ msgstr "Definir axuste de testu"
-
-# MENU_LABEL_FILE_SAVEIMAGE
-#~ msgid "Set Image Name"
-#~ msgstr "Establecer nome d'imaxe"
-
-# DLG_Options_Label_DefaultPageSize
-#~ msgid "Set Image Size"
-#~ msgstr "Establecer tamañu d'imaxe"
-
-# ENC_UNIC_UCS2
-#~ msgid "Unicode UCS-2"
-#~ msgstr "Unicode UCS-2"
-
-#~ msgid "Unicode UCS-4"
-#~ msgstr "Unicode UCS-4"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "Unicode UTF-16"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "Unicode UTF-32"
-
-#  DLG_Goto_Title
-#~ msgid "Go to..."
-#~ msgstr "Dir a..."
