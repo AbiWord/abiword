@@ -1,13 +1,13 @@
 # Yiddish translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-#
+# 
 # Copyright by:
 # Raphael Finkel <raphael@cs.uky.edu>, 2002.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
 "PO-Revision-Date: 2012-08-18 17:04+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Yiddish <raphael@cs.uky.edu>\n"
@@ -1076,6 +1076,31 @@ msgstr "‫1.5 שורות"
 msgid "1.5 spacing"
 msgstr "‫1.5 אָפּרוקונג"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1114,6 +1139,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "(&G)גיב אַלעמאָל קאָרעקטור־עצות"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1481,6 +1561,61 @@ msgstr "סטילן בנימצה"
 msgid "B&y:"
 msgstr "(&F)פֿון"
 
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
+msgstr ""
+
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
 #: po/tmp/ap_String_Id.h
@@ -1654,6 +1789,66 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
 msgstr "(&K)אָנערקענונג"
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
+msgstr ""
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2346,6 +2541,11 @@ msgstr "איצטיקע צײַט"
 msgid "Cursor &blink"
 msgstr "(&L)לױפֿער פּינטלען"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2399,6 +2599,11 @@ msgstr "שער די סעלעקציע און שטעל אין שנײַדברעטל
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
 msgstr "ריכטונגדיק"
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
+msgstr ""
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2930,6 +3135,16 @@ msgstr "סוף־הערה סטיל"
 msgid "Endnotes"
 msgstr "(&O)סוף־הערה"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 #, fuzzy
@@ -3173,6 +3388,11 @@ msgstr "פֿאַלײג אונטער מדרגה 3"
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
 msgstr "פֿאַלײג אונטער מדרגה 4"
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -3464,6 +3684,7 @@ msgstr "‫קאָפּצעטל [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -4114,6 +4335,16 @@ msgstr "לינקע אױסגלײַכונג"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "גלײַך אױס דעם פּאַראַגראַף צום לינקס"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -7203,42 +7434,49 @@ msgstr "פֿאַרקער אות־גרײס"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "קײנע"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "קײנע"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "קײנע"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "ענין"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "קײנע"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "קײנע"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "ענין"
@@ -7574,6 +7812,11 @@ msgstr ""
 msgid "Bold Italic"
 msgstr "פֿעטע קורסיװ"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7625,6 +7868,11 @@ msgstr "‫צענטראַל אײראָפּעיִש, Windows Code Page 1250"
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
 msgstr "בײַט שפּראַך בשעת מען בײַט די קלאַװיאַטור"
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7865,6 +8113,11 @@ msgstr "טשעכיש"
 msgid "Danish"
 msgstr "דאַניש"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -8066,6 +8319,11 @@ msgstr ""
 #. DLG_FOSA_ReplayFromFileLabel
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
+msgstr ""
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
 msgstr ""
 
 #. LANG_FI_FI
@@ -8939,6 +9197,12 @@ msgstr "‫היט אױף טעקע װי סאָרט:"
 msgid "Script:"
 msgstr "סקריפּט"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Section"
+msgstr "סעלעקציע"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -9476,357 +9740,10 @@ msgstr "נאָענטע קרובֿים"
 msgid "unrelated"
 msgstr "ניט קײן שײכות"
 
-#~ msgid "List"
-#~ msgstr "רשימה"
-
-#~ msgid "&1 None"
-#~ msgstr "&1 גאָרניט"
-
-#~ msgid "&2 .........."
-#~ msgstr "&2 .........."
-
-#~ msgid "&3 ----------"
-#~ msgstr "&3 ----------"
-
-#~ msgid "&4 __________"
-#~ msgstr "&4 __________"
-
-#~ msgid "Layout Details"
-#~ msgstr "אױסשטעל־פּרטים"
-
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
 #, fuzzy
-#~ msgid "&Description"
-#~ msgstr "באַשרײַבונג"
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "קײנע"
 
-#~ msgid "Contributor"
-#~ msgstr "‫מיט־פּראָגראַמירער(ס)"
-
-#~ msgid "Creator"
-#~ msgstr "שאַפֿער"
-
-#~ msgid "Default date (w/o time)"
-#~ msgstr "‫געװײנטלעכע־טאָג (אָן צײַט)"
-
-#~ msgid "Line"
-#~ msgstr "שורה"
-
-#~ msgid "Lists for "
-#~ msgstr "רשימות צוליב "
-
-#~ msgid "Page Reference"
-#~ msgstr "זײַט רעפֿערענץ"
-
-#~ msgid "Amharic (Ethiopia)"
-#~ msgstr "‫אַמהאַריש (עטיִאָפּיע)"
-
-#, fuzzy
-#~ msgid "Asturian (Spain)"
-#~ msgstr "‫שפּאַניש (שפּאַניע)"
-
-#~ msgid "Dutch (Netherlands)"
-#~ msgstr "‫האָלענדיש (נעדערלאַנדיש)"
-
-#~ msgid "Flemish (Belgium)"
-#~ msgstr "‫פֿלעמיש (בעלגיע)"
-
-#, fuzzy
-#~ msgid "Galician (Galego)"
-#~ msgstr "גאַליציש"
-
-#~ msgid "Italian (Italy)"
-#~ msgstr "‫איטאַליעניש (איטאַליע)"
-
-#~ msgid "Korean, Johab"
-#~ msgstr "‫קאָרעיִש (יאָהאַב)"
-
-#~ msgid "Latin (Renaissance)"
-#~ msgstr "‫לאַטײַניש (רענאַסאַנס)"
-
-#~ msgid "Norwegian Bokmal"
-#~ msgstr "‫נאָרװעגיש (באָקמאַל)"
-
-#~ msgid "Norwegian Nynorsk"
-#~ msgstr "‫נאָרװעגיש (נינאָרסק)"
-
-#~ msgid "Punjabi (Gurmukhi)"
-#~ msgstr "‫פּונדזשאַבי (גורמוקהי)"
-
-#~ msgid "Punjabi (Shahmukhi)"
-#~ msgstr "‫פּונדזשאַבי (שאַמוקהי)"
-
-#~ msgid "Russian (Russia)"
-#~ msgstr "‫רוסיש (רוסלאַנד)"
-
-#~ msgid "Western European, DOS/Windows Code Page 437"
-#~ msgstr "‫מעריבֿ־אײראָפּעיִש (DOS/Windows Code Page 437)"
-
-#~ msgid "&Available formats:"
-#~ msgstr "‫(&A)פֿאָרעמס בנימצה:"
-
-#~ msgid "&Enable smart quotes"
-#~ msgstr "(&K)דערמעגלעך קלוגע גענדזן־פֿיסלעך"
-
-#~ msgid "AutoFit behavior"
-#~ msgstr "פּאַס אױטאָמאַטיש צו"
-
-#~ msgid "Bi-Directional Options"
-#~ msgstr "בײד־ריכטונגדיקע אָפּציעס"
-
-#~ msgid "Extra parameters:"
-#~ msgstr "איבעריקע פּאַראַמעטערס"
-
-#~ msgid "Field Name"
-#~ msgstr "נאָמען פֿון פֿעלד"
-
-#~ msgid "Format Endnotes"
-#~ msgstr "פֿאָרמאַטיר סוף־הערות"
-
-#~ msgid "Format Footnotes"
-#~ msgstr "פֿאָרמאַטיר הערות"
-
-#~ msgid "Insert break"
-#~ msgstr "לײג איבעררײַס אַרײַן"
-
-#~ msgid "Insert field"
-#~ msgstr "לײג פֿעלד אַרײַן"
-
-#~ msgid "Paper..."
-#~ msgstr "‫פּאַפּיר..."
-
-#~ msgid "Position Text Box"
-#~ msgstr "שטעל טעקסטקעסטל"
-
-#~ msgid "Scale..."
-#~ msgstr "‫מאָס..."
-
-#~ msgid "Section breaks"
-#~ msgstr "סעקציע איבעררײַסן"
-
-#~ msgid "Table size"
-#~ msgstr "גרײס פֿון טאַבעלע"
-
-#~ msgid "Define Image Placement"
-#~ msgstr "דעפֿיניר בילד־פּאָזיציע"
-
-#~ msgid "Define Text Wrapping"
-#~ msgstr "דעפֿיניר טעקסט־שאַר"
-
-#~ msgid "Set Image Name"
-#~ msgstr "באַשטעטיק בילדנאָמען"
-
-#~ msgid "Set Image Size"
-#~ msgstr "באַשטעטיק בילדגרײס"
-
-#~ msgid "Unicode UCS-2"
-#~ msgstr "‫אוניקאָד (UCS-2)"
-
-#~ msgid "Unicode UCS-4"
-#~ msgstr "‫אוניקאָד (UCS-4)"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "‫אוניקאָד (UTF-16)"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "‫אוניקאָד (UTF-32)"
-
-#~ msgid "Go to..."
-#~ msgstr "‫צו..."
-
-#~ msgid "&Format Table"
-#~ msgstr "(&F)פֿאָרמיר טאַבעלע צו"
-
-#~ msgid "&From File"
-#~ msgstr "(&F)פֿון טעקע"
-
-#~ msgid "Allow Custom Toolbars"
-#~ msgstr "דערלאָז אײגענע מכשיר־װירעס"
-
-#~ msgid "Display Help Index"
-#~ msgstr "װײַז געהילף־אינדעקס"
-
-#~ msgid "INS"
-#~ msgstr "לײג אַרײַן"
-
-#~ msgid "Insert a picture"
-#~ msgstr "לײג אַ בילד אַרײַן"
-
-#~ msgid "M&erge documents"
-#~ msgstr "(&K)קאָמביניר דאָקומענטן"
-
-#~ msgid "OVR"
-#~ msgstr "שרײַב איבער"
-
-#~ msgid "Show the AbiWord splash screen on application startup"
-#~ msgstr "‫װײַז די AbiWord בילד בראשית"
-
-#~ msgid ""
-#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
-#~ "to merge them, but the result might be meaningless."
-#~ msgstr ""
-#~ "די דאָקומענטן װאָס איר פּרוּװט קאָמבינירן האָבן קײן שײכות ניט.  מען קען פּרוּװן "
-#~ "זײ קאָמבינירן, אָבער קען זײַן אַז דער אַרױסקום װעט טױגן אױף כּפּרות."
-
-#~ msgid "&Autotext"
-#~ msgstr "(&M)אױטאָמאַטישער טעקסט"
-
-#~ msgid "ATTN:"
-#~ msgstr "קוקט אײַן"
-
-#~ msgid "About &GNU Free Software"
-#~ msgstr "(&G)װעגן GNU בחינמװאַרג"
-
-#~ msgid "About &Open Source"
-#~ msgstr "(&O)װעגן אָפֿענע קװאַל־טעקסט"
-
-#~ msgid "About the GNU project"
-#~ msgstr "װעגן דעם GNU פּראָיעקט"
-
-#~ msgid "Attention:"
-#~ msgstr "‫בנוגע:"
-
-#~ msgid "BCC:"
-#~ msgstr "בלינדע בריװ־קאָפּיע"
-
-#~ msgid "Best regards,"
-#~ msgstr "‫מיט ייִדישע גרוסן,"
-
-#~ msgid "Best wishes,"
-#~ msgstr "‫מיט בעסטע װוּנטשן,"
-
-#~ msgid "CC:"
-#~ msgstr "בריװ־קאָפּיע"
-
-#~ msgid "CERTIFIED MAIL"
-#~ msgstr "באַשטעטיקטע פּאָסט"
-
-#~ msgid "CONFIDENTIAL"
-#~ msgstr "אונטער פֿיר אױגן"
-
-#~ msgid "Check &Version"
-#~ msgstr "(&V)װערסיע קאָנטראָל"
-
-#~ msgid "Closing:"
-#~ msgstr "‫פֿאַרמאַכנדיק:"
-
-#~ msgid "Cordially,"
-#~ msgstr "‫מיט װאַרעמע גרוסן,"
-
-#~ msgid "Dear Mom and Dad,"
-#~ msgstr "‫טײַערע טאַטע־מאַמע,"
-
-#~ msgid "Dear Sir or Madam:"
-#~ msgstr "‫חשובֿער הער אָדער פֿרױ:"
-
-#~ msgid "Display information about Open Source"
-#~ msgstr "װײַז אינפֿאָרמאַציע װעגן אָפֿענע קװאַל־טעקסט"
-
-#~ msgid "Display program version number"
-#~ msgstr "װײַז פּראָגראַם װערסיע"
-
-#~ msgid "Email:"
-#~ msgstr "‫בליצפּאָסט:"
-
-#~ msgid "From:"
-#~ msgstr "‫פֿון:"
-
-#~ msgid "Fwd:"
-#~ msgstr "‫שיק װײַטער:"
-
-#~ msgid "In reply to:"
-#~ msgstr "‫װי אַן ענטפֿער צו:"
-
-#~ msgid "Ladies and Gentlemen:"
-#~ msgstr "‫ייִדן און ייִדענעס:"
-
-#~ msgid "Love,"
-#~ msgstr "‫מיט ליבע,"
-
-#~ msgid "Mail Instructions:"
-#~ msgstr "‫פּאָסט אינסטרוקציעס:"
-
-#~ msgid "PERSONAL"
-#~ msgstr "אונטער פֿיר אױגן"
-
-#~ msgid "RE:"
-#~ msgstr "‫בנוגע:"
-
-#~ msgid "REGISTERED MAIL"
-#~ msgstr "רעגיסטרירט פּאָסט"
-
-#~ msgid "Reference:"
-#~ msgstr "‫רעפֿערענץ:"
-
-#~ msgid "Regards,"
-#~ msgstr "‫מיט דרך־ארץ,"
-
-#~ msgid "Respectfully yours,"
-#~ msgstr "מיט טיפֿן דרך־ארץ"
-
-#~ msgid "Respectfully,"
-#~ msgstr "‫מיט אָפּשײַ,"
-
-#~ msgid "SPECIAL DELIVERY"
-#~ msgstr "ספּעציעלע ליפֿערונג"
-
-#~ msgid "Sincerely yours,"
-#~ msgstr "‫אַ דאַנק אין פֿאָרױס,"
-
-#~ msgid "Take care,"
-#~ msgstr "‫מיט ייִדישע גרוסן,"
-
-#~ msgid "Thank you,"
-#~ msgstr "‫אַ דאַנק,"
-
-#~ msgid "Thanks,"
-#~ msgstr "‫אַ דאַנק,"
-
-#~ msgid "To Whom It May Concern:"
-#~ msgstr "חשובֿע לײענערס"
-
-#~ msgid "To:"
-#~ msgstr "‫צו:"
-
-#~ msgid "VIA AIRMAIL"
-#~ msgstr "לופֿטפּאָסט"
-
-#~ msgid "VIA FACSIMILE"
-#~ msgstr "דורך ”פֿאַקס“ "
-
-#~ msgid "VIA OVERNIGHT MAIL"
-#~ msgstr "דורך אײן־נאַכט פּאָסט"
-
-#~ msgid "Yours truly,"
-#~ msgstr "‫מיט דרך־ארץ,"
-
-#~ msgid "\tFont   "
-#~ msgstr "שריפֿט"
-
-#~ msgid "&Insert File"
-#~ msgstr "(&R)לײג טעקע אַרײַן"
-
-#~ msgid "Insert Footer"
-#~ msgstr "לײג אַרײַן פֿוסצעטל"
-
-#~ msgid "Insert Header"
-#~ msgstr "לײג אַרײַן קאָפּצעטל"
-
-#~ msgid "Alt:"
-#~ msgstr "(&A)אַלט"
-
-#~ msgid "Internet and &file addresses"
-#~ msgstr "(&T)אינטערנעץ און טעקע אַדרעסן"
-
-#~ msgid "Save visual glyph shapes"
-#~ msgstr "היט אױף װיזועלע אות־פֿאָרעמס"
-
-#~ msgid "Define Level 1 Properties"
-#~ msgstr "‫באַשטעטיק נאַטור (שטאַפּל 1)"
-
-#~ msgid "Define Level 2 Properties"
-#~ msgstr "‫באַשטעטיק נאַטור (שטאַפּל 2)"
-
-#~ msgid "Define Level 3 Properties"
-#~ msgstr "‫באַשטעטיק נאַטור (שטאַפּל 3)"
-
-#~ msgid "Format Frame"
-#~ msgstr "פֿאָרמאַטיר ראַם"
