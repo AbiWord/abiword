@@ -1,5 +1,6 @@
 # Slovak translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
+# 
 # Copyright by:
 # Martin Lacko <lacko@host.sk>, 2001.
 # Jaroslav Ryník <jrynik@szm.sk>, 2008-2012.
