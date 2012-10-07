@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-08-18 10:29-0400\n"
+"POT-Creation-Date: 2012-09-06 14:41-0400\n"
 "PO-Revision-Date: 2012-08-19 23:47+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -925,8 +925,9 @@ msgstr "&Emmeeza"
 
 #. MENU_LABEL_FMT_TABS
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "&Tabs"
-msgstr ""
+msgstr "Awaddirira"
 
 #. DLG_Para_ButtonTabs
 #: po/tmp/ap_String_Id.h
@@ -1059,6 +1060,31 @@ msgstr "1.5 emisitale"
 msgid "1.5 spacing"
 msgstr "1.5 okutemu ebanga"
 
+#. DLG_PageFormat_1_3_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_3_A5
+#: po/tmp/ap_String_Id.h
+msgid "1/3 A5"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A3
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A3"
+msgstr ""
+
+#. DLG_PageFormat_1_4_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/4 A4"
+msgstr ""
+
+#. DLG_PageFormat_1_8_A4
+#: po/tmp/ap_String_Id.h
+msgid "1/8 A4"
+msgstr ""
+
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "12 pt before"
@@ -1096,6 +1122,61 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "A&lways suggest corrections"
 msgstr "A&lwaya Tessa ebituufu"
+
+#. DLG_PageFormat_A0
+#: po/tmp/ap_String_Id.h
+msgid "A0"
+msgstr ""
+
+#. DLG_PageFormat_A1
+#: po/tmp/ap_String_Id.h
+msgid "A1"
+msgstr ""
+
+#. DLG_PageFormat_A10
+#: po/tmp/ap_String_Id.h
+msgid "A10"
+msgstr ""
+
+#. DLG_PageFormat_A2
+#: po/tmp/ap_String_Id.h
+msgid "A2"
+msgstr ""
+
+#. DLG_PageFormat_A3
+#: po/tmp/ap_String_Id.h
+msgid "A3"
+msgstr ""
+
+#. DLG_PageFormat_A4
+#: po/tmp/ap_String_Id.h
+msgid "A4"
+msgstr ""
+
+#. DLG_PageFormat_A5
+#: po/tmp/ap_String_Id.h
+msgid "A5"
+msgstr ""
+
+#. DLG_PageFormat_A6
+#: po/tmp/ap_String_Id.h
+msgid "A6"
+msgstr ""
+
+#. DLG_PageFormat_A7
+#: po/tmp/ap_String_Id.h
+msgid "A7"
+msgstr ""
+
+#. DLG_PageFormat_A8
+#: po/tmp/ap_String_Id.h
+msgid "A8"
+msgstr ""
+
+#. DLG_PageFormat_A9
+#: po/tmp/ap_String_Id.h
+msgid "A9"
+msgstr ""
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1437,12 +1518,68 @@ msgstr "Emisono Egiriwo:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Available Styles:"
-msgstr ""
+msgstr "Ebibangirizi ebiriwo:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
 msgid "B&y:"
+msgstr ""
+
+#. DLG_PageFormat_B0
+#: po/tmp/ap_String_Id.h
+msgid "B0"
+msgstr ""
+
+#. DLG_PageFormat_B1
+#: po/tmp/ap_String_Id.h
+msgid "B1"
+msgstr ""
+
+#. DLG_PageFormat_B10
+#: po/tmp/ap_String_Id.h
+msgid "B10"
+msgstr ""
+
+#. DLG_PageFormat_B2
+#: po/tmp/ap_String_Id.h
+msgid "B2"
+msgstr ""
+
+#. DLG_PageFormat_B3
+#: po/tmp/ap_String_Id.h
+msgid "B3"
+msgstr ""
+
+#. DLG_PageFormat_B4
+#: po/tmp/ap_String_Id.h
+msgid "B4"
+msgstr ""
+
+#. DLG_PageFormat_B5
+#: po/tmp/ap_String_Id.h
+msgid "B5"
+msgstr ""
+
+#. DLG_PageFormat_B6
+#: po/tmp/ap_String_Id.h
+msgid "B6"
+msgstr ""
+
+#. DLG_PageFormat_B7
+#: po/tmp/ap_String_Id.h
+msgid "B7"
+msgstr ""
+
+#. DLG_PageFormat_B8
+#: po/tmp/ap_String_Id.h
+msgid "B8"
+msgstr ""
+
+#. DLG_PageFormat_B9
+#: po/tmp/ap_String_Id.h
+msgid "B9"
 msgstr ""
 
 #. DLG_FormatFrame_Background
@@ -1603,17 +1740,79 @@ msgstr "Omusono gwepeesa"
 
 #. MENU_LABEL_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "C&hange Case"
-msgstr ""
+msgstr "Kyusa Enukuta"
 
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "C&opy hyperlink location"
-msgstr ""
+msgstr "Kopa ekifo kya akagata"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
 msgid "C&redits"
+msgstr ""
+
+#. DLG_PageFormat_C0
+#: po/tmp/ap_String_Id.h
+msgid "C0"
+msgstr ""
+
+#. DLG_PageFormat_C1
+#: po/tmp/ap_String_Id.h
+msgid "C1"
+msgstr ""
+
+#. DLG_PageFormat_C10
+#: po/tmp/ap_String_Id.h
+msgid "C10"
+msgstr ""
+
+#. DLG_PageFormat_C2
+#: po/tmp/ap_String_Id.h
+msgid "C2"
+msgstr ""
+
+#. DLG_PageFormat_C3
+#: po/tmp/ap_String_Id.h
+msgid "C3"
+msgstr ""
+
+#. DLG_PageFormat_C4
+#: po/tmp/ap_String_Id.h
+msgid "C4"
+msgstr ""
+
+#. DLG_PageFormat_C5
+#: po/tmp/ap_String_Id.h
+msgid "C5"
+msgstr ""
+
+#. DLG_PageFormat_C6
+#: po/tmp/ap_String_Id.h
+msgid "C6"
+msgstr ""
+
+#. DLG_PageFormat_C6C5Envelope
+#: po/tmp/ap_String_Id.h
+msgid "C6/C5 Envelope"
+msgstr ""
+
+#. DLG_PageFormat_C7
+#: po/tmp/ap_String_Id.h
+msgid "C7"
+msgstr ""
+
+#. DLG_PageFormat_C8
+#: po/tmp/ap_String_Id.h
+msgid "C8"
+msgstr ""
+
+#. DLG_PageFormat_C9
+#: po/tmp/ap_String_Id.h
+msgid "C9"
 msgstr ""
 
 #. MSG_NoBreakInsideTable
@@ -1900,8 +2099,9 @@ msgstr ""
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Cle&ar"
-msgstr ""
+msgstr "Gyawo"
 
 #. DLG_Tab_Button_Clear
 #: po/tmp/ap_String_Id.h
@@ -1940,8 +2140,9 @@ msgstr "Galawo ekiwandiko"
 
 #. MENU_LABEL_TABLE_SELECT_COLUMN
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Co&lumn"
-msgstr ""
+msgstr "Olukuubo Olwabuka"
 
 #. DLG_FormatFrame_Color
 #. DLG_FormatTable_Color
@@ -2299,6 +2500,11 @@ msgstr "Essaawa eriwo"
 msgid "Cursor &blink"
 msgstr "Akawandika &katemya"
 
+#. DLG_PageFormat_Custom
+#: po/tmp/ap_String_Id.h
+msgid "Custom"
+msgstr ""
+
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
 msgid "Custom Dictionary:"
@@ -2349,6 +2555,11 @@ msgstr "Sala ebilondedwa ate obiteeke ku kabawo akawandikilwaako"
 #. MENU_LABEL_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h
 msgid "D&irectional"
+msgstr ""
+
+#. DLG_PageFormat_DLEnvelope
+#: po/tmp/ap_String_Id.h
+msgid "DL Envelope"
 msgstr ""
 
 #. DLG_Lists_Dashed_List
@@ -2870,6 +3081,16 @@ msgstr "Omusono gwebigambo ebisembayo:"
 msgid "Endnotes"
 msgstr "Ekomerero ye"
 
+#. DLG_PageFormat_Envelope6x9
+#: po/tmp/ap_String_Id.h
+msgid "Envelope 6x9"
+msgstr ""
+
+#. DLG_PageFormat_EnvelopeNo10
+#: po/tmp/ap_String_Id.h
+msgid "Envelope No10"
+msgstr ""
+
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
 msgid "Equation"
@@ -2982,18 +3203,21 @@ msgstr "Omuit gwebikozesebwa omulala"
 
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "F&ile"
-msgstr ""
+msgstr "Fayilo"
 
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "F&ormat"
-msgstr ""
+msgstr "Okutereza"
 
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "F&ull Screen"
-msgstr ""
+msgstr "Olutimbe Olujudde"
 
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h
@@ -3111,6 +3335,11 @@ msgstr "Zinga Wansi womudaala 3"
 #: po/tmp/ap_String_Id.h
 msgid "Fold below level 4"
 msgstr "Zinga Wansi womudaala 4"
+
+#. DLG_PageFormat_Folio
+#: po/tmp/ap_String_Id.h
+msgid "Folio"
+msgstr ""
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -3393,6 +3622,7 @@ msgstr "Ebigambo wagulu wabuli muzingo [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3945,8 +4175,9 @@ msgstr "Ebigambo ebikulu:"
 
 #. DLG_Latex_LatexTitle
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "LaTeX Equation"
-msgstr ""
+msgstr "LaTeX Equation"
 
 #. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
@@ -4037,6 +4268,16 @@ msgstr "Okuzza kukkono"
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
 msgstr "Zza ekitundu ku kkono"
+
+#. DLG_PageFormat_Legal
+#: po/tmp/ap_String_Id.h
+msgid "Legal"
+msgstr ""
+
+#. DLG_PageFormat_Letter
+#: po/tmp/ap_String_Id.h
+msgid "Letter"
+msgstr ""
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -4871,8 +5112,9 @@ msgstr "Teka mukifo:"
 
 #. MENU_LABEL_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Pr&eferences"
-msgstr ""
+msgstr "Byoyagala"
 
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
@@ -5010,8 +5252,9 @@ msgstr ""
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "R&eplace"
-msgstr ""
+msgstr "Zaawo"
 
 #. DLG_Goto_Target_XMLid
 #. MENU_LABEL_INSERT_XMLID
@@ -5371,8 +5614,9 @@ msgstr ""
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "S&cripts"
-msgstr ""
+msgstr "Ekiwandiko:"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h
@@ -6279,8 +6523,9 @@ msgstr "Sazaamu ebilondedwa (toggle)"
 
 #. MENU_LABEL_FMT_STYLIST
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Sty&list"
-msgstr ""
+msgstr "Akola emisono"
 
 #. TOOLBAR_LABEL_FMT_STYLE
 #. TOOLBAR_STATUSLINE_FMT_STYLE
@@ -6422,8 +6667,9 @@ msgstr "Ewandika ye wansi"
 
 #. MENU_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Sy&mbol"
-msgstr ""
+msgstr "Akabonero"
 
 #. TOOLBAR_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h
@@ -6432,8 +6678,9 @@ msgstr "Akabonero"
 
 #. MENU_LABEL_TABLE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "T&able"
-msgstr ""
+msgstr "Emmeeza"
 
 #. TabStopStatus
 #: po/tmp/ap_String_Id.h
@@ -7084,42 +7331,49 @@ msgstr "tOGGLR cASE"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Tewali"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Tewali"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Tewali"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Ensomo"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Tewali"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Tewali"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Ensomo"
@@ -7185,8 +7439,9 @@ msgstr "&Okusabika"
 
 #. DLG_UFS_Effects_None
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "(None)"
-msgstr ""
+msgstr "(tewali)"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h
@@ -7451,6 +7706,11 @@ msgstr ""
 msgid "Bold Italic"
 msgstr "Kwafuu Mukyike"
 
+#. LANG_BS_BA
+#: po/tmp/xap_String_Id.h
+msgid "Bosnian"
+msgstr ""
+
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
 msgid "Breton"
@@ -7501,6 +7761,11 @@ msgstr "Central European, Windows code Page 1250"
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
 msgstr "Kyusa Oluulimi ngokyusa olubawo lwenukuta"
+
+#. STYLE_DELIM_CHAPTER
+#: po/tmp/xap_String_Id.h
+msgid "Chapter"
+msgstr ""
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7740,6 +8005,11 @@ msgstr "Czech"
 msgid "Danish"
 msgstr "Danish"
 
+#. LANG_FA_AF
+#: po/tmp/xap_String_Id.h
+msgid "Dari"
+msgstr ""
+
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
@@ -7940,6 +8210,11 @@ msgstr "Fayilo okuwandika okutereza:"
 #: po/tmp/xap_String_Id.h
 msgid "File to replay editing:"
 msgstr "Fayilo okudamu okullaga okutereza:"
+
+#. LANG_FIL_PH
+#: po/tmp/xap_String_Id.h
+msgid "Filipino"
+msgstr ""
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8796,6 +9071,12 @@ msgstr "Kuuma fayilo nga &wandika:"
 msgid "Script:"
 msgstr "Ekiwandiko:"
 
+#. STYLE_DELIM_SECTION
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgid "Section"
+msgstr "Ebilondedwako"
+
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
@@ -9329,173 +9610,10 @@ msgstr "aboluganda"
 msgid "unrelated"
 msgstr "ebitakwatagana"
 
-#~ msgid "List"
-#~ msgstr "Olukalala"
+#. STYLE_NONE
+#: po/tmp/xap_String_Id.h
+#, fuzzy
+msgctxt "STYLE_NONE"
+msgid "None"
+msgstr "Tewali"
 
-#~ msgid "&1 None"
-#~ msgstr "&1 Ttewali"
-
-#~ msgid "Layout Details"
-#~ msgstr "Ebisingawo Kungeriyokwalira"
-
-#~ msgid "&Description"
-#~ msgstr "&Ennyinyonyola"
-
-#~ msgid "Contributor"
-#~ msgstr "Omuyambi"
-
-#~ msgid "Creator"
-#~ msgstr "Omutonzi"
-
-#~ msgid "Default date (w/o time)"
-#~ msgstr "Essaawa ezirina okuberawo (W/o time)"
-
-#~ msgid "Line"
-#~ msgstr "Omusitale"
-
-#~ msgid "Lists for "
-#~ msgstr "Enkalala za "
-
-#~ msgid "Page Reference"
-#~ msgstr "Omuko ngu Juliza"
-
-#~ msgid "Amharic (Ethiopia)"
-#~ msgstr "Amharic (Ethiopian)"
-
-#~ msgid "Asturian (Spain)"
-#~ msgstr "Asturian (spain)"
-
-#~ msgid "Aymara (La Paz)"
-#~ msgstr "Aymara (La Paz)"
-
-#~ msgid "Aymara (Oruro)"
-#~ msgstr "Aymara (Oruro)"
-
-#~ msgid "Central Aymara"
-#~ msgstr "Central Aymara"
-
-#~ msgid "Dutch (Netherlands)"
-#~ msgstr "Dutch (Netherlands)"
-
-#~ msgid "Flemish (Belgium)"
-#~ msgstr "Flemish (Belgium)"
-
-#~ msgid "Galician (Galego)"
-#~ msgstr "Galician (Galego)"
-
-#~ msgid "Italian (Italy)"
-#~ msgstr "Italian (Italy)"
-
-#~ msgid "Kazakh (Kazakhstan)"
-#~ msgstr "Kazakh (Kazakhstan)"
-
-#~ msgid "Korean, Johab"
-#~ msgstr "Korean, Johab"
-
-#~ msgid "Latin (Renaissance)"
-#~ msgstr "Layin (Renaissance)"
-
-#~ msgid "Mandinka (Senegal)"
-#~ msgstr "Mandinka (Senegal)"
-
-#~ msgid "Nepali (Nepal)"
-#~ msgstr "Nepali (Nepal)"
-
-#~ msgid "Norwegian Bokmal"
-#~ msgstr "Norwegian Bokmal"
-
-#~ msgid "Norwegian Nynorsk"
-#~ msgstr "Noregian Nynorsk"
-
-#~ msgid "Punjabi (Gurmukhi)"
-#~ msgstr "Punjabi (Gurmukhi)"
-
-#~ msgid "Punjabi (Shahmukhi)"
-#~ msgstr "Punjabi (Shahmukhi)"
-
-#~ msgid "Quechua (3 vowels)"
-#~ msgstr "Quechua (3 Vowels)"
-
-#~ msgid "Quechua (5 vowels)"
-#~ msgstr "Quechua (5 Vowels)"
-
-#~ msgid "Russian (Russia)"
-#~ msgstr "Russian (Russia)"
-
-#~ msgid "Western European, DOS/Windows Code Page 437"
-#~ msgstr "Western European, DOS/Windows Code Page 437"
-
-#~ msgid "Wolof (Senegal)"
-#~ msgstr "Wolof (Senegal)"
-
-#~ msgid "&Available formats:"
-#~ msgstr "&Emisono Egiriwo:"
-
-#~ msgid "&Enable smart quotes"
-#~ msgstr "&Sobozesa smart quotes"
-
-#~ msgid "AutoFit behavior"
-#~ msgstr "Autofit Empisa"
-
-#~ msgid "Bi-Directional Options"
-#~ msgstr "Ebiriwo mu Ndagiriro-Bili"
-
-#~ msgid "Extra parameters:"
-#~ msgstr "Parameters endala:"
-
-#~ msgid "Field Name"
-#~ msgstr "Erinya ekintu"
-
-#~ msgid "Format Endnotes"
-#~ msgstr "Tereza ebigambo ebisembayo"
-
-#~ msgid "Format Footnotes"
-#~ msgstr "Tereza ebigambo ebisooka"
-
-#~ msgid "Insert break"
-#~ msgstr "Tekamu Wokukoma"
-
-#~ msgid "Insert field"
-#~ msgstr "Tekamu Etuluba"
-
-#~ msgid "Paper..."
-#~ msgstr "Olupapula..."
-
-#~ msgid "Position Text Box"
-#~ msgstr "Teka Mukifo bokisi yebigambo"
-
-#~ msgid "Scale..."
-#~ msgstr "Ekipimo..."
-
-#~ msgid "Section breaks"
-#~ msgstr "Ebitundu webikoma"
-
-#~ msgid "Table size"
-#~ msgstr "Ekigero Kyemmeeza"
-
-#~ msgid "Define Image Placement"
-#~ msgstr "Nyonyola Wokuteeka ekifananyi"
-
-#~ msgid "Define Text Wrapping"
-#~ msgstr "Nyonyola Okusabika ebigambo"
-
-#~ msgid "Set Image Name"
-#~ msgstr "Tekateka erinya Lyekifananyi"
-
-#~ msgid "Set Image Size"
-#~ msgstr "Tekateka Ekigero kyekifananyi"
-
-#~ msgid "Unicode UCS-2"
-#~ msgstr "Unicode UCS-2"
-
-#~ msgid "Unicode UCS-4"
-#~ msgstr "Unicode UCS-4"
-
-#~ msgid "Unicode UTF-16"
-#~ msgstr "Unicode UTF-16"
-
-#~ msgid "Unicode UTF-32"
-#~ msgstr "Unicode UTF-32"
-
-#~ msgid "Go to..."
-#~ msgstr "Genda ku..."
