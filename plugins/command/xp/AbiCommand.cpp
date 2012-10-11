@@ -1258,10 +1258,10 @@ AbiCommand::parseTokens (UT_GenericVector<const UT_UTF8String*> * pToks)
 		if (!g_file_test (src.utf8_str (), G_FILE_TEST_EXISTS)) 
 			return -1;
 
-		APConvert.convertTo (src.utf8_str (), IEFT_Unknown, dest.utf8_str (),
+		bool success = APConvert.convertTo (src.utf8_str (), IEFT_Unknown, dest.utf8_str (),
 							 ieft);
 							 
-		if (g_file_test (dest.utf8_str (), G_FILE_TEST_EXISTS))
+		if (success && g_file_test (dest.utf8_str (), G_FILE_TEST_EXISTS))
 			return 0;
 
 		return -1;
