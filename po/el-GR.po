@@ -6,7 +6,8 @@
 # Simos Xenitellis <simos@gnome.org>, 2001, 2005.
 # Kostas Papadimas <pkst@gnome.org>, 2005.
 # Socrates Vavilis <s_vavilis@yahoo.fr>, 2005.
-# Nick, 556 messages, initial translation.
+# George Amvrosiadis <gamvrosi@gmail.com>, 2012.
+# Nick, 556 messages, initial translation
 # Simos, 625 messages, added remaining 69 messages + review.
 # Kostas, convert to UTF-8, updated translation.
 # Socrates completed translation (Jun 2005), 1520 messages
