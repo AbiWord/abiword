@@ -1,15 +1,15 @@
 # Swedish translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
 # Copyright by:
-# Per Larsson < tucker@algonet.se>, 2012.
+# Per Larsson <tucker@algonet.se>, 2001-2012.
+# Svante Signell <svante.signell@telia.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-09-30 05:02+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"PO-Revision-Date: 2012-10-19 16:05+0200\n"
+"Last-Translator: Tucker <tucker@algonet.se>\n"
 "Language-Team: Sugar Labs\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
@@ -2937,22 +2937,22 @@ msgstr "Dubbelt radavstånd"
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF Objects"
-msgstr ""
+msgstr "Dumpa RDF-objekt"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF related to Cursor Position"
-msgstr ""
+msgstr "Dumpa RDF relaterat till markörens position"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump out information about RDF Objects"
-msgstr ""
+msgstr "Dumpa information om RDF-objekt"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump the raw RDF associated with the cursor position"
-msgstr ""
+msgstr "Dumpa rådata för RDF relaterat till markörens position"
 
 #. MENU_LABEL_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
@@ -3365,7 +3365,7 @@ msgstr "Typsnitt"
 #. TOOLBAR_STATUSLINE_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h
 msgid "Font Choose"
-msgstr ""
+msgstr "Välj typsnitt"
 
 #. TOOLBAR_LABEL_FMT_SIZE
 #. TOOLBAR_STATUSLINE_FMT_SIZE
@@ -3377,7 +3377,7 @@ msgstr "Teckenstorlek"
 #. TOOLBAR_LABEL_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h
 msgid "Font choose"
-msgstr ""
+msgstr "Typsnittsval"
 
 #. TOOLBAR_LABEL_COLOR_FORE
 #. TOOLBAR_STATUSLINE_COLOR_FORE
@@ -6015,7 +6015,7 @@ msgid ""
 "the stylesheet for all existing Semantic Items to the new stylesheet as well."
 msgstr ""
 "Ställ in den aktuella mallen för dokumentets semantiska element. Nya RDF-"
-"obkekt kommer att använda den här mallen automatiskt. Knapparna låter dig "
+"objekt kommer att använda den här mallen automatiskt. Knapparna låter dig "
 "ange att mallen ska användas som mall även för alla existerande semantiska "
 "element."
 
@@ -9233,8 +9233,8 @@ msgid ""
 "restore this version instead? To partially restore version %d press No."
 msgstr ""
 "Den närmaste revisionen som kan återställas fullständigt är %d. Vill du "
-"återställa denna version instället? För att göra partiell återställning av %"
-"d, tryck Nej."
+"återställa denna version instället? För att göra partiell återställning av "
+"version %d, tryck Nej."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -9584,3 +9584,326 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ingen"
 
+#~ msgid "List"
+#~ msgstr "Listor"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Ingen"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "&Description"
+#~ msgstr "&Beskrivning"
+
+#~ msgid "Contributor"
+#~ msgstr "Bidragsgivare"
+
+#~ msgid "Creator"
+#~ msgstr "Skapare"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Standarddatumformat (utan klockslag)"
+
+#~ msgid "Line"
+#~ msgstr "Rad"
+
+#~ msgid "Lists for "
+#~ msgstr "Listor för "
+
+#~ msgid "Page Reference"
+#~ msgstr "Sidhänvisning"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhariska (Etiopien)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturiska (Spanien)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aymara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aymara (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "Aymara (Central)"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Holländska (Nederländerna)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Flamländska (Belgien)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galiciska (Galego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italienska (Italien)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Kazakiska (Kazakstan)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Koreansk, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latin (Renässans-)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinka (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepali (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Norska (Bokmål)"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Norska (Nynorsk)"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punjabi (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punjabi (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 vokaler)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 vokaler)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Ryska (Ryssland)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Västerländsk, DOS/Windows Code Page 437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Senegal)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "Tillgängliga &format:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "Använd smarta &citattecken"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Autopassa"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Inställningar för dubbelriktning"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Extra parametrar:"
+
+#~ msgid "Field Name"
+#~ msgstr "Fältnamn"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Formatera slutnoter"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Formatera fotnoter"
+
+#~ msgid "Insert break"
+#~ msgstr "Brytning"
+
+#~ msgid "Insert field"
+#~ msgstr "Fält"
+
+#~ msgid "Paper..."
+#~ msgstr "Papper..."
+
+#~ msgid "Scale..."
+#~ msgstr "Skala..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Avsnittsbrytningar"
+
+#~ msgid "Table size"
+#~ msgstr "Tabellstorlek"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UCS-2 Big Endian"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32 Big Endian"
+
+#~ msgid "Go to..."
+#~ msgstr "Gå till..."
+
+#~ msgid "&Format Table"
+#~ msgstr "&Formatera tabell"
+
+#~ msgid "&From File"
+#~ msgstr "B&ildobjekt"
+
+#~ msgid "Allow Custom Toolbars"
+#~ msgstr "Tillåt egna verktygsrader"
+
+#~ msgid "Display Help Index"
+#~ msgstr "Visar hjälpindex"
+
+#~ msgid "INS"
+#~ msgstr "INS"
+
+#~ msgid "Insert a picture"
+#~ msgstr "Infoga en bild"
+
+#~ msgid "OVR"
+#~ msgstr "OVR"
+
+#~ msgid "Show the AbiWord splash screen on application startup"
+#~ msgstr "Visa startbild vid uppstart av AbiWord"
+
+#~ msgid "&Autotext"
+#~ msgstr "&Autotext"
+
+#~ msgid "ATTN:"
+#~ msgstr "OBS:"
+
+#~ msgid "About &GNU Free Software"
+#~ msgstr "Om &GNU Free Software"
+
+#~ msgid "About &Open Source"
+#~ msgstr "Om O&pen Source"
+
+#~ msgid "About the GNU project"
+#~ msgstr "Visar information om GNU-projektet"
+
+#~ msgid "Attention:"
+#~ msgstr "Viktigt:"
+
+#~ msgid "BCC:"
+#~ msgstr "Hemlig kopia:"
+
+#~ msgid "Best regards,"
+#~ msgstr "Tack så mycket!"
+
+#~ msgid "Best wishes,"
+#~ msgstr "Bästa hälsningar"
+
+#~ msgid "CC:"
+#~ msgstr "Kopia:"
+
+#~ msgid "CERTIFIED MAIL"
+#~ msgstr "ATTESTERAT BREV"
+
+#~ msgid "CONFIDENTIAL"
+#~ msgstr "KONFIDENTIELLT"
+
+#~ msgid "Check &Version"
+#~ msgstr "Visa &version"
+
+#~ msgid "Closing:"
+#~ msgstr "Avslutningsfraser:"
+
+#~ msgid "Cordially,"
+#~ msgstr "Hjärtliga hälsningar"
+
+#~ msgid "Dear Mom and Dad,"
+#~ msgstr "Kära mamma och pappa!"
+
+#~ msgid "Dear Sir or Madam:"
+#~ msgstr "Bäste herr eller fru!"
+
+#~ msgid "Display information about Open Source"
+#~ msgstr "Visar information om Open Source"
+
+#~ msgid "Display program version number"
+#~ msgstr "Visar programmets versionsnummer"
+
+#~ msgid "Email:"
+#~ msgstr "E-post:"
+
+#~ msgid "From:"
+#~ msgstr "Från:"
+
+#~ msgid "Fwd:"
+#~ msgstr "Vidarebefordrat:"
+
+#~ msgid "In reply to:"
+#~ msgstr "Svar på:"
+
+#~ msgid "Ladies and Gentlemen:"
+#~ msgstr "Mina damer och herrar!"
+
+#~ msgid "Love,"
+#~ msgstr "Kram!"
+
+#~ msgid "Mail Instructions:"
+#~ msgstr "Brevkategorier:"
+
+#~ msgid "PERSONAL"
+#~ msgstr "PERSONLIGT"
+
+#~ msgid "RE:"
+#~ msgstr "Sv:"
+
+#~ msgid "REGISTERED MAIL"
+#~ msgstr "REKOMMENDERAT"
+
+#~ msgid "Reference:"
+#~ msgstr "Referens:"
+
+#~ msgid "Regards,"
+#~ msgstr "Hälsningar"
+
+#~ msgid "Respectfully yours,"
+#~ msgstr "Eder ödmjuke tjänare"
+
+#~ msgid "Respectfully,"
+#~ msgstr "Högaktningsfullt"
+
+#~ msgid "SPECIAL DELIVERY"
+#~ msgstr "SPECIALLEVERANS"
+
+#~ msgid "Salutation:"
+#~ msgstr "Hälsningsfraser:"
+
+#~ msgid "Sincerely yours,"
+#~ msgstr "Eder"
+
+#~ msgid "Take care,"
+#~ msgstr "Sköt om dig!"
+
+#~ msgid "Thank you,"
+#~ msgstr "Tack så mycket!"
+
+#~ msgid "Thanks,"
+#~ msgstr "Tack!"
+
+#~ msgid "To Whom It May Concern:"
+#~ msgstr "Till den det berör!"
+
+#~ msgid "To:"
+#~ msgstr "Till:"
+
+#~ msgid "VIA AIRMAIL"
+#~ msgstr "FLYGPOST"
+
+#~ msgid "VIA FACSIMILE"
+#~ msgstr "TELEFAX"
+
+#~ msgid "VIA OVERNIGHT MAIL"
+#~ msgstr "EXPRESSBREV"
+
+#~ msgid "Yours truly,"
+#~ msgstr "Din tillgivne"
+
+#~ msgid "\tFont   "
+#~ msgstr "   Typsnitt   "
