@@ -5,12 +5,13 @@
 # Copyright by:
 # Camille Moulin <camille.moulin@gmail.com>, 2006.
 # Jonathan Ernst <jonathan@ernstfamily.ch>, 2006.
+# Simon Larochelle <larochelle.simon.1@gmail.com>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-08-19 18:42+0200\n"
+"PO-Revision-Date: 2012-10-19 20:06+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: \n"
 "Language: fr\n"
@@ -54,7 +55,7 @@ msgid ""
 " You cannot use this name. Choose Another \n"
 msgstr ""
 " - Réservé. \n"
-" Vous ne pouvez utiliser ce nom. Choisissez-en un autre \n"
+" Vous ne pouvez utiliser ce nom. Choisissez-en un autre nom\n"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h
@@ -252,9 +253,8 @@ msgstr "&Gras"
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Borders and Shading"
-msgstr "Bor&dures et trames"
+msgstr "Bor&dures et ombrages"
 
 #. DLG_PageSetup_Bottom
 #: po/tmp/ap_String_Id.h
@@ -290,7 +290,7 @@ msgstr "Remplacer &par"
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
 msgid "&Clip Art"
-msgstr "&Clip Art"
+msgstr "&Galerie d'images"
 
 #. DLG_CloseButton
 #. MENU_LABEL_FILE_CLOSE
@@ -402,7 +402,7 @@ msgstr "Editer hyperlien"
 #. DLG_Options_Label_EnableOverwrite
 #: po/tmp/ap_String_Id.h
 msgid "&Enable overwrite mode toggle"
-msgstr ""
+msgstr "Permettre le changement du mode de réécriture"
 
 #. MENU_LABEL_INSERT_ENDNOTE
 #: po/tmp/ap_String_Id.h
@@ -483,7 +483,7 @@ msgstr "&En-têtes et pieds de page"
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
 msgid "&Header/Footers"
-msgstr "&En-tête/pied de page"
+msgstr "&En-têtes/pieds de page"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h
@@ -509,7 +509,7 @@ msgstr "Cac&her le texte"
 #. DLG_Options_Label_SpellHighlightMisspelledWords
 #: po/tmp/ap_String_Id.h
 msgid "&Highlight misspelled words"
-msgstr "Met en évidence les mots mals orthographiés"
+msgstr "Mettre en évidence les mots mals orthographiés"
 
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -583,7 +583,7 @@ msgstr "&Justifié"
 #. DLG_Para_PushKeepLinesTogether
 #: po/tmp/ap_String_Id.h
 msgid "&Keep lines together"
-msgstr "L&ignes solidaires"
+msgstr "&Garder le paragraphe groupé"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h
@@ -774,7 +774,7 @@ msgstr "Purger l'historique"
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "&Query RDF"
-msgstr ""
+msgstr "&Chercher les liens RDF"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
@@ -814,7 +814,7 @@ msgstr "&Remise à zéro"
 #. MENU_LABEL_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
 msgid "&Reset to default layout"
-msgstr "Réinitialiser à la disposition par défaut"
+msgstr "Réinitialiser la mise en page à la  valeur par défaut"
 
 #. MENU_LABEL_TOOLS_REVISIONS
 #: po/tmp/ap_String_Id.h
@@ -886,7 +886,7 @@ msgstr "Montrer l'historique"
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
 msgid "&Show Status Bar"
-msgstr "Barre d'é&tat"
+msgstr "Montrer la barre d'é&tat"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h
@@ -906,7 +906,7 @@ msgstr "&Orthographe"
 #. DLG_FormatTOC_StartAt
 #: po/tmp/ap_String_Id.h
 msgid "&Start at:"
-msgstr "&Débute à :"
+msgstr "&Débuter à :"
 
 #. DLG_Options_Label_ViewStatusBar
 #: po/tmp/ap_String_Id.h
@@ -964,7 +964,7 @@ msgstr "&Haut :"
 #. DLG_RDF_Editor_Menu_Triple
 #: po/tmp/ap_String_Id.h
 msgid "&Triple"
-msgstr ""
+msgstr "&Triplet"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -1016,7 +1016,7 @@ msgstr "Mot entier"
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h
 msgid "&Widow/Orphan control"
-msgstr "Eviter &veuves et orphelines"
+msgstr "Eviter les lignes &veuves et orphelines"
 
 #. DLG_PageSetup_Width
 #: po/tmp/ap_String_Id.h
@@ -1075,27 +1075,27 @@ msgstr "Interligne : 1,5 lignes"
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr ""
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr ""
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr ""
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr ""
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr ""
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1123,13 +1123,12 @@ msgstr "<< &Précédent"
 
 #. MSG_Exception
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "A fatal error has just occurred. AbiWord is going to shutdown.\n"
 "The current document has been saved to disc with a \".saved\" extension."
 msgstr ""
-"Une erreur fatale vient de survenir. AbiWord va se fermer.#10;Le document en "
-"cours a été enregistré avec une extension « .saved »."
+"Une erreur fatale vient de survenir. AbiWord va se fermer.\n"
+"Le document en cours a été enregistré avec une extension « .saved »."
 
 #. DLG_Options_Label_SpellSuggest
 #: po/tmp/ap_String_Id.h
@@ -1139,57 +1138,57 @@ msgstr "&Toujours suggérer des corrections"
 #. DLG_PageFormat_A0
 #: po/tmp/ap_String_Id.h
 msgid "A0"
-msgstr ""
+msgstr "A0"
 
 #. DLG_PageFormat_A1
 #: po/tmp/ap_String_Id.h
 msgid "A1"
-msgstr ""
+msgstr "A1"
 
 #. DLG_PageFormat_A10
 #: po/tmp/ap_String_Id.h
 msgid "A10"
-msgstr ""
+msgstr "A10"
 
 #. DLG_PageFormat_A2
 #: po/tmp/ap_String_Id.h
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #. DLG_PageFormat_A3
 #: po/tmp/ap_String_Id.h
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #. DLG_PageFormat_A4
 #: po/tmp/ap_String_Id.h
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #. DLG_PageFormat_A5
 #: po/tmp/ap_String_Id.h
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #. DLG_PageFormat_A6
 #: po/tmp/ap_String_Id.h
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #. DLG_PageFormat_A7
 #: po/tmp/ap_String_Id.h
 msgid "A7"
-msgstr ""
+msgstr "A7"
 
 #. DLG_PageFormat_A8
 #: po/tmp/ap_String_Id.h
 msgid "A8"
-msgstr ""
+msgstr "A8"
 
 #. DLG_PageFormat_A9
 #: po/tmp/ap_String_Id.h
 msgid "A9"
-msgstr ""
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1317,15 +1316,13 @@ msgstr "Ajouter au modèle"
 
 #. MENU_LABEL_RDF_ADV
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Advanced"
-msgstr "Avancé"
+msgstr "Options avancées"
 
 #. MENU_STATUSLINE_RDF_ADV
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Advanced RDF"
-msgstr "RDF Avancé"
+msgstr "Options avancées RDF"
 
 #. DLG_Para_LabelAfter
 #: po/tmp/ap_String_Id.h
@@ -1389,28 +1386,24 @@ msgstr "Appliquer"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Contact"
 msgstr "Appliquer Contact"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_APPLY
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Current"
 msgstr "Appliquer Actuel"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Event"
 msgstr "Appliquer Événement"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Apply Location"
 msgstr "Appliquer Emplacement"
 
@@ -1419,7 +1412,7 @@ msgstr "Appliquer Emplacement"
 #. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
 msgid "Apply stylesheet to this Semantic Item"
-msgstr ""
+msgstr "Appliquer la feuille de style à cet élément sémantique"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1456,7 +1449,7 @@ msgstr ""
 #. STYLE_ARROWHEADLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Arrowhead List"
-msgstr ""
+msgstr "Liste avec flèche"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1564,57 +1557,57 @@ msgstr "Par :"
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1698,7 +1691,7 @@ msgstr "Bor&dures et trames"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr ""
+msgstr "Les deux individus se connaissent"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -1791,42 +1784,42 @@ msgstr "&Crédits et remerciements"
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
@@ -1836,17 +1829,17 @@ msgstr ""
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2108,7 +2101,7 @@ msgstr "Choisir la couleur d'écran pour AbiWord"
 #. TOOLBAR_TOOLTIP_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Choose which revision of the document to see and edit"
-msgstr ""
+msgstr "Choisir la version du document à voir et éditer"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h
@@ -2423,7 +2416,7 @@ msgstr "Créer une télécopie"
 #. TOOLBAR_TOOLTIP_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create a new Revision"
-msgstr ""
+msgstr "Créer une nouvelle révision"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h
@@ -2465,22 +2458,22 @@ msgstr "Créer à partir de la &sélection"
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item"
-msgstr ""
+msgstr "Ajouter un nouvel élément sémantique de contact"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr ""
+msgstr "Ajouter un nouvel élément sémantique de contact en important une vcard"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
 msgid "Create new Reference to existing Semantic Item"
-msgstr ""
+msgstr "Créer une nouvelle référence à partir d'un élément sémantique existant"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create new Semantic Item"
-msgstr ""
+msgstr "Créer un nouvel élément sémantique"
 
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
@@ -2530,7 +2523,7 @@ msgstr "&Clignotement du curseur"
 #. DLG_PageFormat_Custom
 #: po/tmp/ap_String_Id.h
 msgid "Custom"
-msgstr ""
+msgstr "Format personnalisé"
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
@@ -2598,13 +2591,13 @@ msgstr "Liste avec pointillée"
 #. DLG_BorderShading_Border_Style_Dashed
 #: po/tmp/ap_String_Id.h
 msgid "Dashed line"
-msgstr ""
+msgstr "Ligne avec tirets"
 
 #. DLG_FormatTOC_Dash
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h
 msgid "Dashes"
-msgstr ""
+msgstr "Tirets"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2684,7 +2677,7 @@ msgstr "Définit ou applique un style à la sélection"
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h
 msgid "Definition"
-msgstr ""
+msgstr "Définition"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2850,7 +2843,7 @@ msgstr "En-tête différent sur dernière page"
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Directly edit the RDF for the entire document..."
-msgstr ""
+msgstr "Éditer directement le contenu RDF de l'ensemble du document ..."
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
@@ -2865,7 +2858,7 @@ msgstr "Dissocier"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate and apply default stylesheet"
-msgstr ""
+msgstr "Dissocier et appliquer les styles par défaut"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -2880,7 +2873,7 @@ msgstr "Affiche le sommaire de l'aide"
 #. MENU_STATUSLINE_HELP_INTRO
 #: po/tmp/ap_String_Id.h
 msgid "Display Help Introduction"
-msgstr ""
+msgstr "Afficher l'introduction de la rubrique d'aide"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
@@ -2933,12 +2926,12 @@ msgstr "Ne pas redémarrer"
 #. DLG_Tab_Radio_Dot
 #: po/tmp/ap_String_Id.h
 msgid "Dots"
-msgstr ""
+msgstr "Pointillés"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
 msgid "Dotted line"
-msgstr ""
+msgstr "Ligne pointillée"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2959,27 +2952,27 @@ msgstr "Interligne double"
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF Objects"
-msgstr ""
+msgstr "Enlever les objets RDF"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF related to Cursor Position"
-msgstr ""
+msgstr "Enlever l'élément RDF lié à la position du curseur"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump out information about RDF Objects"
-msgstr ""
+msgstr "Enlever les informations des objets RDF"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump the raw RDF associated with the cursor position"
-msgstr ""
+msgstr "Enlever le RDF de base lié à la position du curseur"
 
 #. MENU_LABEL_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "E&dit Semantic Items"
-msgstr ""
+msgstr "É&diter les éléments sémantiques"
 
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
@@ -3015,17 +3008,17 @@ msgstr "Editer l'équation LaTeX"
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples"
-msgstr ""
+msgstr "Éditer les triplets RDF"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples associated with location"
-msgstr ""
+msgstr "Éditer les triplets RDF associés aux lieux"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr ""
+msgstr "Éditer les éléments sémantiques associés aux lieux"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -3035,7 +3028,7 @@ msgstr "Editer l'annotation"
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
 msgid "Edit document RDF"
-msgstr ""
+msgstr "Éditer les éléments RDF"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -3062,7 +3055,7 @@ msgstr "Edite l'en-tête de la page"
 #. TOOLBAR_TOOLTIP_SEMITEM_EDIT
 #: po/tmp/ap_String_Id.h
 msgid "Edit this Semantic Item"
-msgstr ""
+msgstr "Éditer cet élément sémantique"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
@@ -3082,13 +3075,12 @@ msgstr "Permettre le défilement continu"
 #. DLG_BorderShading_Use_Shading
 #: po/tmp/ap_String_Id.h
 msgid "Enable shading"
-msgstr ""
+msgstr "Permettre les ombrages"
 
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Enable smart (curly) quotes"
-msgstr "Remplacer les guillemets"
+msgstr "Permettre les guillemets intelligents"
 
 #. FIELD_Numbers_EndnoteAnchor
 #: po/tmp/ap_String_Id.h
@@ -3182,12 +3174,12 @@ msgstr "Exécuter de la Requête"
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
 msgid "Execute SPARQL on document RDF"
-msgstr ""
+msgstr "Exécuter la requête SPARQL sur les éléments RDF"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Execute a SPARQL Query on all document RDF..."
-msgstr ""
+msgstr "Exécuter la requête SPARQL sur tout les éléments RDF ..."
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -3208,12 +3200,12 @@ msgstr "Révisions existantes:"
 #. MENU_LABEL_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items"
-msgstr ""
+msgstr "Exporter les éléments sémantiques"
 
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr ""
+msgstr "Exporter les éléments sémantiques de lieux"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
@@ -3308,7 +3300,7 @@ msgstr "Rechercher la révision précédente"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED
 #: po/tmp/ap_String_Id.h
 msgid "Find by Relation"
-msgstr ""
+msgstr "Rechercher par type de relation"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
@@ -3364,7 +3356,7 @@ msgstr "Réduire sous le niveau 4"
 #. DLG_PageFormat_Folio
 #: po/tmp/ap_String_Id.h
 msgid "Folio"
-msgstr ""
+msgstr "Folio"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -3593,7 +3585,6 @@ msgstr "Général"
 
 #. DLG_Goto_Btn_Goto
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go To"
 msgstr "Atteindre"
 
@@ -3604,7 +3595,6 @@ msgstr "&Cible :"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
 msgstr "Atteindre"
 
@@ -3647,7 +3637,6 @@ msgstr "En-tête [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3723,12 +3712,12 @@ msgstr "Arrière plan"
 #. MENU_LABEL_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight RDF"
-msgstr ""
+msgstr "Surligner les éléments RDF"
 
 #. MENU_STATUSLINE_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight areas of the document with RDF associated"
-msgstr ""
+msgstr "Surligner les zones du document avec un contenu RDF"
 
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h
@@ -3823,18 +3812,18 @@ msgstr "Première lettre en majuscule"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Initial Endnote value:"
-msgstr "Valeur initiale"
+msgstr "Valeur initiale:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Initial Footnote value:"
-msgstr "Valeur initiale"
+msgstr "Valeur initiale:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
 msgid "Inner (single) quote style:"
-msgstr ""
+msgstr "Style des guillemets simples:"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3924,12 +3913,12 @@ msgstr "Insérer du MathML depuis un fichier"
 #. DLG_InsertXMLID_Title
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF Link"
-msgstr ""
+msgstr "Insérer un lien RDF"
 
 #. MENU_STATUSLINE_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF link..."
-msgstr ""
+msgstr "Insérer un lien RDF ..."
 
 #. DLG_RDF_SemanticItemInsert_Ok
 #: po/tmp/ap_String_Id.h
@@ -3939,7 +3928,7 @@ msgstr "Insérer une référence"
 #. DLG_RDF_SemanticItemInsert_Title
 #: po/tmp/ap_String_Id.h
 msgid "Insert Reference to Semantic Item"
-msgstr ""
+msgstr "Insérer une référence à un élément sémantique"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -4133,7 +4122,7 @@ msgstr "Insère le contenu du presse-papiers sans son format"
 #. MENU_STATUSLINE_RDF
 #: po/tmp/ap_String_Id.h
 msgid "Interact with RDF"
-msgstr ""
+msgstr "Interagir avec les éléments RDF"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h
@@ -4212,7 +4201,7 @@ msgstr "Equation LaTeX:"
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
 msgid "Label Align:"
-msgstr ""
+msgstr "Aligner les étiquettes:"
 
 #. DLG_FormatTOC_DetailsTop
 #: po/tmp/ap_String_Id.h
@@ -4247,9 +4236,8 @@ msgstr "Disposition"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Leader:"
-msgstr "&En-tête :"
+msgstr "Amorce :"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4296,12 +4284,12 @@ msgstr "Aligne le paragraphe à gauche"
 #. DLG_PageFormat_Legal
 #: po/tmp/ap_String_Id.h
 msgid "Legal"
-msgstr ""
+msgstr "Légal"
 
 #. DLG_PageFormat_Letter
 #: po/tmp/ap_String_Id.h
 msgid "Letter"
-msgstr ""
+msgstr "Lettre"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -4622,19 +4610,19 @@ msgstr "Nom"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, (Homepage), Phone"
-msgstr ""
+msgstr "Nom, (Page Web), Téléphone"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #: po/tmp/ap_String_Id.h
 msgid "Name, Latitude and Longitude"
-msgstr ""
+msgstr "Nom, latitude et longitude"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, Phone"
-msgstr ""
+msgstr "Nom, téléphone"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -4649,13 +4637,12 @@ msgstr "Nouvelle &annotation"
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
 msgid "New Contact"
-msgstr ""
+msgstr "Nouveau contact"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "New Document"
-msgstr "Nouveau"
+msgstr "Nouveau document"
 
 #. DLG_Lists_New_List_Label
 #: po/tmp/ap_String_Id.h
@@ -4674,7 +4661,7 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "New Revision"
-msgstr ""
+msgstr "Nouvelle révision"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h
@@ -4704,13 +4691,13 @@ msgstr "&Suivant >>"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK
 #: po/tmp/ap_String_Id.h
 msgid "Nick"
-msgstr ""
+msgstr "Surnom"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Nick, Phone"
-msgstr ""
+msgstr "Surnom, téléphone"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h
@@ -4902,7 +4889,7 @@ msgstr "Pas assez de mémoire à la tentative d'ouverture de %s"
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
 msgid "Outer (double) quote style:"
-msgstr ""
+msgstr "Style de guillemets externes:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4919,7 +4906,6 @@ msgstr "Barre la sélection en haut (bascule)"
 
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Overwrite"
 msgstr "Écraser"
 
@@ -4991,7 +4977,7 @@ msgstr "Numéros de page"
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
 msgid "Page Reference to Bookmark"
-msgstr ""
+msgstr "Référence aux hyperliens"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -5099,14 +5085,13 @@ msgstr "Placer à la fin de la section"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Placement:"
-msgstr "Placer"
+msgstr "Emplacement:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr ""
+msgstr "Jouer avec RDF durant le développement"
 
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
@@ -5259,23 +5244,23 @@ msgstr "Editeur :"
 #. MENU_STATUSLINE_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF associated with location"
-msgstr ""
+msgstr "Faire une recherche sur les éléments RDF associés à des lieux"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF for cursor position"
-msgstr ""
+msgstr "Rechercher le RDF à la position du curseur"
 
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
-msgstr ""
+msgstr "Rechercher les RDF: %d du total de: %ld"
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query the RDF associated with the cursor position..."
-msgstr ""
+msgstr "Rechercher le RDF associé à la position du curseur ..."
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5286,12 +5271,12 @@ msgstr "R&emplacer"
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "RDF Link"
-msgstr ""
+msgstr "Lien RDF"
 
 #. DLG_RDF_SemanticStylesheets_Title
 #: po/tmp/ap_String_Id.h
 msgid "RDF Stylesheet"
-msgstr ""
+msgstr "Feuille de style RDF"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5354,7 +5339,7 @@ msgstr "Règle le facteur d'agrandissement"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "Apparenté à l'élément sémantique d'origine"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
@@ -5466,9 +5451,8 @@ msgstr "Remplacer &tout"
 
 #. DLG_Annotation_Replace_tooltip
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Replace the annotated text with the annotation content"
-msgstr "Recherche et remplace le texte spécifié par un différent"
+msgstr "Rechercher et remplacer le texte spécifié par un différent"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5519,7 +5503,7 @@ msgstr "Redémarrer la numérotation sur une nouvelle section"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr ""
+msgstr "Limiter aux liens RDF:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5555,12 +5539,12 @@ msgstr "Révision"
 #. TOOLBAR_STATUSLINE_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Revisions new..."
-msgstr ""
+msgstr "Nouvelles révisions ..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Revisions select..."
-msgstr ""
+msgstr "Sélectionner une révision ..."
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -5631,12 +5615,12 @@ msgstr "Li&gnes au-dessous"
 #. MENU_STATUSLINE_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests and show results on console"
-msgstr ""
+msgstr "Effectuer des tests RDF et montrer les résultats"
 
 #. MENU_STATUSLINE_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests that change during development"
-msgstr ""
+msgstr "Effectuer des tests RDF qui ont changé durant le développement"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -5656,7 +5640,7 @@ msgstr "Scinder les &cellules"
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "SPARQL Query"
-msgstr ""
+msgstr "Requête SPARQL"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
@@ -5832,17 +5816,17 @@ msgstr "Insérer une image"
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to Semantic Item"
-msgstr ""
+msgstr "Sélectionner la prochaine référence à l'élément sémantique"
 
 #. TOOLBAR_LABEL_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item"
-msgstr ""
+msgstr "Sélectionner la prochaine référence à cet élément sémantique"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item..."
-msgstr ""
+msgstr "Sélectionner la prochaine référence à cet élément sémantique ..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
@@ -5854,17 +5838,17 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to Semantic Item"
-msgstr ""
+msgstr "Sélectionner les références précédante de cet élément sémantique"
 
 #. TOOLBAR_LABEL_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item"
-msgstr ""
+msgstr "Sélectionner les références précédante de cet élément sémantique"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item..."
-msgstr ""
+msgstr "Sélectionner les références précédante de cet élément sémantique ..."
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -5885,35 +5869,38 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the previous version..."
 msgstr ""
+"Sélectionner les parties du documents appartenant à la version précédente"
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the next revision"
 msgstr ""
+"Sélectionner les parties du document contenues dans la prochaine revision"
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the previous revision"
 msgstr ""
+"Sélectionner les parties du document contenues dans la révision précédente"
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to Semantic Item"
-msgstr ""
+msgstr "Sélectionner cette référence à l'élément sémantique"
 
 #. TOOLBAR_LABEL_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item"
-msgstr ""
+msgstr "Sélectionner cette référence à cet élément sémantique"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item..."
-msgstr ""
+msgstr "Sélectionner cette référence à cet élément sémantique ..."
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
@@ -5980,7 +5967,7 @@ msgstr "Fixer les paramètres par défaut"
 #. DLG_RDF_SemanticStylesheets_Set
 #: po/tmp/ap_String_Id.h
 msgid "Set For All Existing"
-msgstr ""
+msgstr "Définir pour tous les éléments existants"
 
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
@@ -6007,7 +5994,7 @@ msgstr "Applique une image au fond de la page"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr ""
+msgstr "Définir comme source de l'élément sémantique"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -6057,6 +6044,10 @@ msgid ""
 "objects will use this stylesheet automatically. The buttons allow you to set "
 "the stylesheet for all existing Semantic Items to the new stylesheet as well."
 msgstr ""
+"Définir cette page de style comme éléments sémantiques du document. Les "
+"nouveaux objets RDF vont utiliser cette page de style automatiquement. Les "
+"boutons vous permettent de sélectionner cette nouvelle page de style pour "
+"tous les éléments sémantiques."
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -6134,17 +6125,17 @@ msgstr "&Règles"
 #. TOOLBAR_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show All"
-msgstr ""
+msgstr "Montrer tout"
 
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
 msgid "Show All RDF"
-msgstr ""
+msgstr "Montrer tous les RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
-msgstr ""
+msgstr "Montrer les marques de mise en page"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -6164,17 +6155,17 @@ msgstr "Montrer le document après les révisions précédentes"
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show document at final version without revision highlighting"
-msgstr ""
+msgstr "Montrer le document dans sa version finale sans les révisions"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document"
-msgstr ""
+msgstr "Montrer le document final"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document..."
-msgstr ""
+msgstr "Montrer le document final ..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -6276,12 +6267,12 @@ msgstr "&Trier le tableau"
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
 msgid "Solid line"
-msgstr ""
+msgstr "Ligne solide"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
 msgid "Some errors were encountered during the import."
-msgstr ""
+msgstr "Des erreurs sont survenues durant l'importation du document"
 
 #. MENU_LABEL_TABLE_SORTCOLSASCEND
 #: po/tmp/ap_String_Id.h
@@ -6656,19 +6647,19 @@ msgstr "Sommaire"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
-msgstr ""
+msgstr "Sommaire, lieu"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr ""
+msgstr "Sommaire, lieu, heures du début et de la fin "
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr ""
+msgstr "Sommaire, heures du début et de la fin"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6767,7 +6758,7 @@ msgstr "Te&xte"
 #. MENU_LABEL_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Test RDF subsystem"
-msgstr ""
+msgstr "Tester le sous-système RDF"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h
@@ -6798,12 +6789,12 @@ msgstr "&Boîte de texte"
 #. DLG_FormatFrame_PositionTo
 #: po/tmp/ap_String_Id.h
 msgid "Text Box Position"
-msgstr ""
+msgstr "Position de l'encart de texte"
 
 #. DLG_Options_Label_BiDiOptions
 #: po/tmp/ap_String_Id.h
 msgid "Text Directionality"
-msgstr ""
+msgstr "Direction du texte"
 
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
@@ -6829,6 +6820,10 @@ msgid ""
 "piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 "
 "myfile.txt | lpr'"
 msgstr ""
+"L'option '--print' n'exxiste plus depuis Abiword 2.8. Vous pouvez obtenir le "
+"résultat désiré en utilisant les outils de conversion d'Abiword et ensuite "
+"transmettre la sortie à un getionnaire d'impression, i.e.: 'abiword --to=ps "
+"--to-name=fd://1 myfile.txt | lpr' "
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6877,6 +6872,8 @@ msgid ""
 "This RDF link already exists. Would you like to replace the existing RDF "
 "link with this new one?"
 msgstr ""
+"Ce lien RDF existe déjà. Voulez-vous remplacer le lien RDF existant par ce "
+"nouveau lien?"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
@@ -6884,6 +6881,8 @@ msgid ""
 "This bookmark already exists. Would you like to replace the existing "
 "bookmark with this new one?"
 msgstr ""
+"Ce marque-page existe déjà. Voulez-vous remplacer le marque-page existant "
+"par ce nouveau marque-page?"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h
@@ -6962,9 +6961,8 @@ msgstr "Titre :"
 
 #. MENU_LABEL_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "To&pline"
-msgstr "Ligne au-dess&us"
+msgstr "Ligne du dess&us"
 
 #. DLG_Options_Label_Toolbars
 #: po/tmp/ap_String_Id.h
@@ -6994,7 +6992,7 @@ msgstr "Ligne au-dess&us"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Total RDF: %d"
-msgstr ""
+msgstr "Total RDF: %d"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
@@ -7015,7 +7013,7 @@ msgstr "Catégorie"
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link:"
-msgstr ""
+msgstr "Entrez un nom pour le lien RDF:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
@@ -7097,7 +7095,7 @@ msgstr "Ordonné de droite à gauche"
 #. DLG_Options_Label_CustomSmartQuotes
 #: po/tmp/ap_String_Id.h
 msgid "Use custom smart quote style"
-msgstr ""
+msgstr "Utiliser un style particulier de guillemets intelligents"
 
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h
@@ -7192,7 +7190,7 @@ msgstr "Disposition sous forme Web"
 #. FIELD_Datetime_CurrentDate
 #: po/tmp/ap_String_Id.h
 msgid "Weekday Month Day, Year"
-msgstr ""
+msgstr "Jour de la semaine Mois Jour, Année"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7362,49 +7360,42 @@ msgstr "iNVERSER LA CASSE"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Aucun"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Aucun"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Aucun"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Sujet"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Aucun"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Aucun"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Sujet"
@@ -7425,6 +7416,8 @@ msgid ""
 "%s is an Open Source application licensed under the GNU GPL.\n"
 "You are free to redistribute this application."
 msgstr ""
+"%s est un logiciel libre sous license GNU GPL.\n"
+"Vous êtes libres de redistribuer ce logiciel."
 
 #. DLG_Zoom_100
 #: po/tmp/xap_String_Id.h
@@ -7538,7 +7531,7 @@ msgstr "A propos de %s"
 #. LANG_ACH
 #: po/tmp/xap_String_Id.h
 msgid "Acholi"
-msgstr ""
+msgstr "Acholi"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7583,7 +7576,7 @@ msgstr "Permettre des balises additionnelles dans l'espace de nommage AWML"
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
 msgid "Amharic"
-msgstr ""
+msgstr "Amharique"
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7633,7 +7626,7 @@ msgstr "Assamais"
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
 msgid "Asturian"
-msgstr ""
+msgstr "Asturien"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7668,17 +7661,17 @@ msgstr "Langues disponibles:"
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
 msgid "Aymara (Central/Northern Bolivia)"
-msgstr ""
+msgstr "Aymara (centre et nord de la Bolivie)"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
 msgid "Aymara (Southern Bolivia)"
-msgstr ""
+msgstr "Aymara (sud de la Bolivie)"
 
 #. LANG_AYR
 #: po/tmp/xap_String_Id.h
 msgid "Aymara, Central"
-msgstr ""
+msgstr "Aymara, centre"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7693,7 +7686,7 @@ msgstr "Baltique, Page de codes Windows 1257"
 #. LANG_BM
 #: po/tmp/xap_String_Id.h
 msgid "Bamanankan"
-msgstr ""
+msgstr "Bamanankan"
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7707,9 +7700,8 @@ msgstr "Biélorusse"
 
 #. LANG_BE_LATIN
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Belarusian, Latin"
-msgstr "Biélorusse"
+msgstr "Biélorusse, latin"
 
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h
@@ -7729,7 +7721,7 @@ msgstr "Texte en retrait"
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h
 msgid "Bokmal"
-msgstr ""
+msgstr "Bokmal"
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
@@ -7739,7 +7731,7 @@ msgstr "Gras Italique"
 #. LANG_BS_BA
 #: po/tmp/xap_String_Id.h
 msgid "Bosnian"
-msgstr ""
+msgstr "Bosnien"
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
@@ -7750,7 +7742,7 @@ msgstr "Breton"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "Build options: %s"
-msgstr ""
+msgstr "Options de compilation: %s"
 
 #. MSG_BuildingDoc
 #: po/tmp/xap_String_Id.h
@@ -7795,7 +7787,7 @@ msgstr "Changer la langue en même temps que le clavier"
 #. STYLE_DELIM_CHAPTER
 #: po/tmp/xap_String_Id.h
 msgid "Chapter"
-msgstr ""
+msgstr "Chapitre"
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7805,7 +7797,7 @@ msgstr "Titre de chapitre"
 #. LANG_CGG
 #: po/tmp/xap_String_Id.h
 msgid "Chiga"
-msgstr ""
+msgstr "Chiga"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -8038,7 +8030,7 @@ msgstr "Danois"
 #. LANG_FA_AF
 #: po/tmp/xap_String_Id.h
 msgid "Dari"
-msgstr ""
+msgstr "Dari"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
@@ -8093,7 +8085,7 @@ msgstr "Documents comparés"
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
 msgid "Dutch"
-msgstr ""
+msgstr "Néerlandais"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -8183,7 +8175,7 @@ msgstr "Anglais (États-Unis)"
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h
 msgid "English, DOS/Windows Code Page 437"
-msgstr ""
+msgstr "Anglais, DOS/Windows page de code 437"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
@@ -8244,7 +8236,7 @@ msgstr "Fichier depuis lequel rejouer les étapes d'éditions :"
 #. LANG_FIL_PH
 #: po/tmp/xap_String_Id.h
 msgid "Filipino"
-msgstr ""
+msgstr "Phillippin"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8254,7 +8246,7 @@ msgstr "Finlandais"
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
 msgid "Flemish"
-msgstr ""
+msgstr "Flamand"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -8274,7 +8266,7 @@ msgstr "Texte de bas de page"
 #. DLG_ABOUT_URL
 #: po/tmp/xap_String_Id.h
 msgid "For more information: http://www.abisource.com/"
-msgstr ""
+msgstr "Pour plus d'information: http://www.abisource.com/"
 
 #. LANG_FR_BE
 #: po/tmp/xap_String_Id.h
@@ -8309,17 +8301,17 @@ msgstr "De : "
 #. LANG_FF
 #: po/tmp/xap_String_Id.h
 msgid "Fulah"
-msgstr ""
+msgstr "Peul (fulfude)"
 
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
 msgid "Galician"
-msgstr ""
+msgstr "Galicien"
 
 #. LANG_LG
 #: po/tmp/xap_String_Id.h
 msgid "Ganda"
-msgstr ""
+msgstr "Ganda"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8484,12 +8476,12 @@ msgstr "Identifiant :"
 #. DLG_Image_ImageDesc
 #: po/tmp/xap_String_Id.h
 msgid "Image Name"
-msgstr ""
+msgstr "Nom de l'image"
 
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h
 msgid "Image Placement"
-msgstr ""
+msgstr "Emplacement de l'image"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
@@ -8499,7 +8491,7 @@ msgstr "Image"
 #. DLG_Image_ImageSize
 #: po/tmp/xap_String_Id.h
 msgid "Image Size"
-msgstr ""
+msgstr "Taille de l'image"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8605,7 +8597,7 @@ msgstr "Irlandais"
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
 msgid "Italian"
-msgstr ""
+msgstr "Italien"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8640,12 +8632,12 @@ msgstr "Kannada"
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
 msgid "Kazakh"
-msgstr ""
+msgstr "Kazakh"
 
 #. LANG_KM_KH
 #: po/tmp/xap_String_Id.h
 msgid "Khmer"
-msgstr ""
+msgstr "Khmer"
 
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
@@ -8655,7 +8647,7 @@ msgstr "Coréen"
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h
 msgid "Korean (South Korea)"
-msgstr ""
+msgstr "Coréen (Corée du sud)"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8665,7 +8657,7 @@ msgstr "Coréen, EUC-KR"
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
 msgid "Korean, JOHAB"
-msgstr ""
+msgstr "Coréen, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8695,7 +8687,7 @@ msgstr "Dernier enregistrement :"
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
 msgid "Latin"
-msgstr ""
+msgstr "Latin"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8709,14 +8701,13 @@ msgstr "Lituanien"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Loading Clip Art..."
-msgstr "Chargement de la banque d'image"
+msgstr "Chargement de la banque d'image ..."
 
 #. LANG_JBO
 #: po/tmp/xap_String_Id.h
 msgid "Lojban"
-msgstr ""
+msgstr "Lojban"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8736,7 +8727,7 @@ msgstr "Langue par défaut du document"
 #. LANG_MG_MG
 #: po/tmp/xap_String_Id.h
 msgid "Malagasy"
-msgstr ""
+msgstr "Malgache"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8746,7 +8737,7 @@ msgstr "Malais"
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
 msgid "Mandinka"
-msgstr ""
+msgstr "Mandinka"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8786,7 +8777,7 @@ msgstr "Nom :"
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
 msgid "Nepali"
-msgstr ""
+msgstr "Népalais"
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8831,7 +8822,7 @@ msgstr "Titre numéroté 3"
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h
 msgid "Nynorsk"
-msgstr ""
+msgstr "Nynorsk"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8882,7 +8873,7 @@ msgstr "Plusieurs pages :"
 #. LANG_PS
 #: po/tmp/xap_String_Id.h
 msgid "Pashto"
-msgstr ""
+msgstr "Pachto"
 
 #. DLG_Password_Password
 #: po/tmp/xap_String_Id.h
@@ -8979,12 +8970,12 @@ msgstr "Commande d'impression : "
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
 msgid "Punjabi (India)"
-msgstr ""
+msgstr "Panjabi (Inde)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
 msgid "Punjabi (Pakistan)"
-msgstr ""
+msgstr "Panjabi (Pakistan)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
@@ -8994,22 +8985,22 @@ msgstr "Quechua"
 #. LANG_QUZ
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Cusco)"
-msgstr ""
+msgstr "Quechua (Cusco)"
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
-msgstr ""
+msgstr "Quechua (nord de la Bolivie)"
 
 #. LANG_QUH_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Southern Bolivia)"
-msgstr ""
+msgstr "Quechua (sud de la Bolivie)"
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
 msgid "Read-Only"
-msgstr ""
+msgstr "Lecture seulement"
 
 #. DLG_FOSA_RecordToFileTitle
 #: po/tmp/xap_String_Id.h
@@ -9032,6 +9023,8 @@ msgid ""
 "Render MathML to PNG images (JavaScript will be used if option is not "
 "checked)"
 msgstr ""
+"Convertir le MathML en images PNG (JavaScript sera utilisé si cette option "
+"n'est pas choisie)"
 
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h
@@ -9067,12 +9060,12 @@ msgstr "Roumain, Macintosh"
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
 msgid "Russian"
-msgstr ""
+msgstr "Russe"
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
 msgid "Russian, pre-1918"
-msgstr ""
+msgstr "Russe, pré 1918"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h
@@ -9107,9 +9100,8 @@ msgstr "Script :"
 
 #. STYLE_DELIM_SECTION
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Section"
-msgstr "Sélection"
+msgstr "Section"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
@@ -9138,9 +9130,8 @@ msgstr "Serbe"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Serbian, Latin"
-msgstr "Serbe"
+msgstr "Serbe, latin"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -9170,12 +9161,12 @@ msgstr "Slovène"
 #. DLG_UFS_Effects_SmallCaps
 #: po/tmp/xap_String_Id.h
 msgid "Small Capitals"
-msgstr ""
+msgstr "Lettres majuscules petites"
 
 #. LANG_SON
 #: po/tmp/xap_String_Id.h
 msgid "Songhay"
-msgstr ""
+msgstr "Songhay"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9190,7 +9181,7 @@ msgstr "Espagnol (Espagne)"
 #. DLG_HTMLOPT_ExpSplitDocument
 #: po/tmp/xap_String_Id.h
 msgid "Split document"
-msgstr ""
+msgstr "Diviser le document"
 
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h
@@ -9289,6 +9280,8 @@ msgid ""
 "The given file extension does not match the chosen file type. Do you want to "
 "use this name anyway?"
 msgstr ""
+"L'extension de fichier ne correspond pas au type de fichier choisi. Voulez-"
+"vous utiliser ce nom malgré tout?"
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h
@@ -9548,7 +9541,7 @@ msgstr "Largeur :  "
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
 msgid "Wolof"
-msgstr ""
+msgstr "Wolof"
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9576,7 +9569,7 @@ msgstr "Facteur de zoom"
 #. LANG_ZU
 #: po/tmp/xap_String_Id.h
 msgid "Zulu"
-msgstr ""
+msgstr "Zoulou"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9647,8 +9640,200 @@ msgstr "indépendant"
 
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Aucun"
 
+#~ msgid "List"
+#~ msgstr "Liste"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Aucun"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3\t----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Détails de la mise en page"
+
+#, fuzzy
+#~ msgid "&Description"
+#~ msgstr "Description"
+
+#~ msgid "Contributor"
+#~ msgstr "Collaborateur(s)"
+
+#~ msgid "Creator"
+#~ msgstr "Auteur"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "La date du jour (sans l'heure)"
+
+#~ msgid "Line"
+#~ msgstr "Ligne"
+
+#~ msgid "Lists for "
+#~ msgstr "Puces et numéros "
+
+#~ msgid "Page Reference"
+#~ msgstr "Référence à la page"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amharique (Ethiopie)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturien (Espagne)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aymara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aymara (Oruro)"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Hollandais (Pays-Bas)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Hollandais (Belgique)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galicien (Galego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italien (Italie)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Coréen, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latin (Renaissance)"
+
+#, fuzzy
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Wolof (Sénégal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Népalais (Népal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Norvégien Bokmal"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Norvégien Nynorsk"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punjabi (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punjabi (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 voyelles)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 voyelles)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Russe (Russie)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Européen de l'Ouest, Page de codes DOS/Windows 437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Sénégal)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "&Formats disponibles :"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "Remplacer les &guillemets"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Auto-ajustement"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Options bidirectionnelles"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "&Paramètres supplémentaires :"
+
+#~ msgid "Field Name"
+#~ msgstr "Nom du champ"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Mise en forme de note de fin de document"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Mise en forme de note de bas de page"
+
+#~ msgid "Insert break"
+#~ msgstr "Saut"
+
+#~ msgid "Insert field"
+#~ msgstr "Champ"
+
+#~ msgid "Paper..."
+#~ msgstr "Format du papier..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Position de la boîte de texte"
+
+#~ msgid "Scale..."
+#~ msgstr "Echelle..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Saut de section"
+
+#~ msgid "Table size"
+#~ msgstr "Dimension du tableau"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Position de l'image"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Retour à la ligne automatique"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Nom de l'image"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Dimension de l'image"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32 Gros-boutiste"
+
+#~ msgid "Go to..."
+#~ msgstr "Atteindre..."
+
+#~ msgid "&Format Table"
+#~ msgstr "&Mettre en forme le tableau"
+
+#~ msgid "Allow Custom Toolbars"
+#~ msgstr "Permettre des barres d'outils personnalisées"
+
+#~ msgid "Display Help Index"
+#~ msgstr "Affiche l'index de l'aide"
+
+#~ msgid "INS"
+#~ msgstr "INS"
+
+#~ msgid "OVR"
+#~ msgstr "RFP"
+
+#~ msgid "Show the AbiWord splash screen on application startup"
+#~ msgstr "Montrer l'écran fugitif d'AbiWord au démarrage de l'application"
