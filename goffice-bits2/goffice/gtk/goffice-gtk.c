@@ -853,7 +853,7 @@ go_gtk_url_is_writeable (GtkWindow *parent, char const *uri,
 			 GTK_DIALOG_DESTROY_WITH_PARENT,
 			 GTK_MESSAGE_WARNING,
 			 GTK_BUTTONS_OK_CANCEL,
-			 msg);
+			 "%s",msg);
 		gtk_dialog_set_default_response (GTK_DIALOG (dialog),
 			overwrite_by_default ? GTK_RESPONSE_OK : GTK_RESPONSE_CANCEL);
 		result = GTK_RESPONSE_OK ==
