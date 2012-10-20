@@ -144,6 +144,7 @@ go_cmd_context_get_type (void)
 			sizeof (GOCmdContextClass),	/* class_size */
 			NULL,				/* base_init */
 			NULL,				/* base_finalize */
+			NULL, NULL, NULL, 0, 0, NULL, NULL
 		};
 
 		go_cmd_context_type = g_type_register_static (G_TYPE_INTERFACE,

@@ -226,7 +226,7 @@ cb_arrow_pressed (GOComboBox *combo_box)
 }
 
 static gboolean
-go_combo_box_mnemonic_activate (GtkWidget *w, gboolean group_cycling)
+go_combo_box_mnemonic_activate (GtkWidget *w, G_GNUC_UNUSED gboolean group_cycling)
 {
 	GOComboBox *combo_box = GO_COMBO_BOX (w);
 	cb_arrow_pressed (combo_box);
@@ -281,7 +281,7 @@ _go_combo_is_updating (GOComboBox const *combo_box)
 }
 
 static  gint
-cb_combo_keypress (GtkWidget *widget, GdkEventKey *event,
+cb_combo_keypress (G_GNUC_UNUSED GtkWidget *widget, GdkEventKey *event,
 		   GOComboBox *combo_box)
 {
 	if (event->keyval == GDK_Escape) {
@@ -507,7 +507,7 @@ go_combo_box_button_press (GtkWidget *widget, GdkEventButton *event, GOComboBox 
 }
 
 static void
-cb_state_change (GtkWidget *widget, GtkStateType old_state, GOComboBox *combo_box)
+cb_state_change (GtkWidget *widget, G_GNUC_UNUSED GtkStateType old_state, GOComboBox *combo_box)
 {
 	GtkStateType const new_state = GTK_WIDGET_STATE(widget);
 	gtk_widget_set_state (combo_box->priv->display_widget, new_state);
@@ -608,7 +608,7 @@ go_combo_box_set_display (GOComboBox *combo_box, GtkWidget *display_widget)
 }
 
 static gboolean
-cb_tearable_enter_leave (GtkWidget *w, GdkEventCrossing *event, gpointer data)
+cb_tearable_enter_leave (GtkWidget *w, G_GNUC_UNUSED GdkEventCrossing *event, gpointer data)
 {
 	gboolean const flag = GPOINTER_TO_INT(data);
 	gtk_widget_set_state (w, flag ? GTK_STATE_PRELIGHT : GTK_STATE_NORMAL);
@@ -654,7 +654,7 @@ cb_popup_delete (GOComboBox *combo)
 }
 
 static gboolean
-cb_tearable_button_release (GtkWidget *w, GdkEventButton *event,
+cb_tearable_button_release (GtkWidget *w, G_GNUC_UNUSED GdkEventButton *event,
 			    GOComboBox *combo)
 {
 	GtkTearoffMenuItem *tearable;
@@ -684,7 +684,7 @@ void
 go_combo_box_construct (GOComboBox *combo,
 			GtkWidget *display_widget,
 			GtkWidget *popdown_container,
-			GtkWidget *popdown_focus)
+			G_GNUC_UNUSED GtkWidget *popdown_focus)
 {
 	GtkWidget *tearable;
 	GtkWidget *vbox;

@@ -56,7 +56,7 @@ go__BOOLEAN__OBJECT (GClosure     *closure,
                      GValue       *return_value,
                      guint         n_param_values,
                      const GValue *param_values,
-                     gpointer      invocation_hint,
+                     G_GNUC_UNUSED gpointer      invocation_hint,
                      gpointer      marshal_data)
 {
   typedef gboolean (*GMarshalFunc_BOOLEAN__OBJECT) (gpointer     data1,
@@ -95,7 +95,7 @@ go__BOOLEAN__POINTER (GClosure     *closure,
                       GValue       *return_value,
                       guint         n_param_values,
                       const GValue *param_values,
-                      gpointer      invocation_hint,
+                      G_GNUC_UNUSED gpointer      invocation_hint,
                       gpointer      marshal_data)
 {
   typedef gboolean (*GMarshalFunc_BOOLEAN__POINTER) (gpointer     data1,
@@ -134,7 +134,7 @@ go__STRING__POINTER (GClosure     *closure,
                      GValue       *return_value,
                      guint         n_param_values,
                      const GValue *param_values,
-                     gpointer      invocation_hint,
+                     G_GNUC_UNUSED gpointer invocation_hint,
                      gpointer      marshal_data)
 {
   typedef gchar* (*GMarshalFunc_STRING__POINTER) (gpointer     data1,
@@ -170,10 +170,10 @@ go__STRING__POINTER (GClosure     *closure,
 /* VOID:INT,BOOLEAN,BOOLEAN,BOOLEAN (../../../../goffice/goffice/utils/go-marshalers.list:26) */
 void
 go__VOID__INT_BOOLEAN_BOOLEAN_BOOLEAN (GClosure     *closure,
-                                       GValue       *return_value,
+                                       G_GNUC_UNUSED GValue       *return_value,
                                        guint         n_param_values,
                                        const GValue *param_values,
-                                       gpointer      invocation_hint,
+                                       G_GNUC_UNUSED gpointer      invocation_hint,
                                        gpointer      marshal_data)
 {
   typedef void (*GMarshalFunc_VOID__INT_BOOLEAN_BOOLEAN_BOOLEAN) (gpointer     data1,

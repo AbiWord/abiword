@@ -261,7 +261,7 @@ go_url_simplify (const char *uri)
 
 	if (g_ascii_strncasecmp (uri, "file:///", 8) == 0) {
 		char *filename = go_filename_from_uri (uri);
-		char *simp = filename ? go_filename_to_uri (filename) : NULL;
+		simp = filename ? go_filename_to_uri (filename) : NULL;
 		g_free (filename);
 		return simp;
 	}
@@ -1164,7 +1164,7 @@ go_url_show (gchar const *url)
 	gnome_url_show (url, &err);
 	return err;
 #else
-	guint8 *browser = NULL;
+	char *browser = NULL;
 	guint8 *clean_url = NULL;
 
 	/* 1) Check BROWSER env var */
@@ -1273,12 +1273,16 @@ go_url_check_extension (gchar const *uri,
 	return res;
 }
 
+#ifdef GOFFICE_WITH_GNOME
 gchar *
 go_get_mime_type (gchar const *uri)
 {
-#ifdef GOFFICE_WITH_GNOME
 	return gnome_vfs_get_mime_type (uri);
+}
 #elif defined(G_OS_WIN32)
+gchar *
+go_get_mime_type (gchar const *uri)
+{
 	LPWSTR wuri, mime_type;
 
 	wuri = g_utf8_to_utf16 (uri, -1, NULL, NULL, NULL);
@@ -1297,20 +1301,28 @@ go_get_mime_type (gchar const *uri)
 	 * "text/plain"
 	 */
 	return g_strdup ("text/plain");
-#else
-	return g_strdup ("application/octet-stream");
-#endif
 }
+#else
+gchar *
+go_get_mime_type (G_GNUC_UNUSED gchar const *uri)
+{
+	return g_strdup ("application/octet-stream");
+}
+#endif
 
+#ifdef GOFFICE_WITH_GNOME
 gchar
 *go_get_mime_type_for_data	(gconstpointer data, int data_size)
 {
-#ifdef GOFFICE_WITH_GNOME
 	return g_strdup (gnome_vfs_get_mime_type_for_data (data, data_size));
-#else
-	return g_strdup ("application/octet-stream");
-#endif
 }
+#else
+gchar
+*go_get_mime_type_for_data	(G_GNUC_UNUSED gconstpointer data, G_GNUC_UNUSED int data_size)
+{
+	return g_strdup ("application/octet-stream");
+}
+#endif
 
 gchar const
 *go_mime_type_get_description	(gchar const *mime_type)
@@ -1329,10 +1341,10 @@ static gchar **saved_args;
 static int saved_argc;
 #endif
 
+#ifdef G_OS_WIN32
 gchar const **
 go_shell_argv_to_glib_encoding (gint argc, gchar const **argv)
 {
-#ifdef G_OS_WIN32
 	gchar **args;
 	gint i;
 
@@ -1359,10 +1371,14 @@ go_shell_argv_to_glib_encoding (gint argc, gchar const **argv)
 	saved_argc = argc;
 
 	return (gchar const **) args;
-#else
-	return argv;
-#endif
 }
+#else
+gchar const **
+go_shell_argv_to_glib_encoding (G_GNUC_UNUSED gint argc, gchar const **argv)
+{
+	return argv;
+}
+#endif
 
 void
 go_shell_argv_to_glib_encoding_free (void)

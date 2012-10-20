@@ -75,7 +75,7 @@ static GObjectClass *go_combo_color_parent_class;
 #define PREVIEW_SIZE 20
 
 static void
-go_combo_color_set_color_internal (GOComboColor *cc, GOColor color, gboolean is_default)
+go_combo_color_set_color_internal (GOComboColor *cc, GOColor color, G_GNUC_UNUSED gboolean is_default)
 {
 	guint color_y, color_height;
 	guint height, width;
@@ -115,7 +115,7 @@ go_combo_color_set_color_internal (GOComboColor *cc, GOColor color, gboolean is_
 }
 
 static void
-cb_screen_changed (GOComboColor *cc, GdkScreen *previous_screen)
+cb_screen_changed (GOComboColor *cc, G_GNUC_UNUSED GdkScreen *previous_screen)
 {
 	GtkWidget *w = GTK_WIDGET (cc);
 	GdkScreen *screen = gtk_widget_has_screen (w)
@@ -139,7 +139,7 @@ emit_color_changed (GOComboColor *cc, GOColor color,
 }
 
 static void
-cb_preview_clicked (GtkWidget *button, GOComboColor *cc)
+cb_preview_clicked (G_GNUC_UNUSED GtkWidget *button, GOComboColor *cc)
 {
 	if (_go_combo_is_updating (GO_COMBO_BOX (cc)))
 		return;
@@ -204,7 +204,7 @@ GSF_CLASS (GOComboColor, go_combo_color,
 	   GO_COMBO_BOX_TYPE)
 
 static void
-cb_palette_color_changed (GOColorPalette *P, GOColor color,
+cb_palette_color_changed (G_GNUC_UNUSED GOColorPalette *P, GOColor color,
 			  gboolean custom, gboolean by_user, gboolean is_default,
 			  GOComboColor *cc)
 {
@@ -213,7 +213,7 @@ cb_palette_color_changed (GOColorPalette *P, GOColor color,
 }
 
 static void
-cb_proxy_custom_dialog (GOColorPalette *pal, GtkWidget *dialog, GOComboColor *cc)
+cb_proxy_custom_dialog (G_GNUC_UNUSED GOColorPalette *pal, GtkWidget *dialog, GOComboColor *cc)
 {
 	go_combo_box_popup_hide (GO_COMBO_BOX (cc));
 	g_signal_emit (cc, go_combo_color_signals [DISPLAY_CUSTOM_DIALOG], 0,

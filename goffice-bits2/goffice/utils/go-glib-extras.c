@@ -28,7 +28,7 @@
 #include <errno.h>
 
 static void
-cb_hash_collect_keys (gpointer key, gpointer value, GSList **accum)
+cb_hash_collect_keys (gpointer key, G_GNUC_UNUSED gpointer value, GSList **accum)
 {
 	*accum = g_slist_prepend (*accum, key);
 }
@@ -52,7 +52,7 @@ go_hash_keys (GHashTable *hash)
 }
 
 static void
-cb_hash_collect_values (gpointer key, gpointer value, GSList **accum)
+cb_hash_collect_values (G_GNUC_UNUSED gpointer key, gpointer value, GSList **accum)
 {
 	*accum = g_slist_prepend (*accum, value);
 }
@@ -77,18 +77,18 @@ go_hash_values (GHashTable *hash)
 
 /***************************************************************************/
 void
-go_ptr_array_insert (GPtrArray *array, gpointer value, int index)
+go_ptr_array_insert (GPtrArray *array, gpointer value, int index_)
 {
-	if (index < (int)array->len) {
+	if (index_ < (int)array->len) {
 		int i = array->len - 1;
 		gpointer last = g_ptr_array_index (array, i);
 		g_ptr_array_add (array, last);
 
-		while (i-- > index) {
+		while (i-- > index_) {
 			gpointer tmp = g_ptr_array_index (array, i);
 			g_ptr_array_index (array, i + 1) = tmp;
 		}
-		g_ptr_array_index (array, index) = value;
+		g_ptr_array_index (array, index_) = value;
 	} else
 		g_ptr_array_add (array, value);
 }
@@ -468,7 +468,6 @@ go_mem_chunk_destroy (GOMemChunk *chunk, gboolean expect_leaks)
 	 * cases, don't report leaks.
 	 */
 	if (!expect_leaks) {
-		GSList *l;
 		int leaked = 0;
 
 		for (l = chunk->blocklist; l; l = l->next) {
@@ -500,12 +499,12 @@ go_mem_chunk_alloc (GOMemChunk *chunk)
 
 	/* First try the freelist.  */
 	if (chunk->freeblocks) {
-		go_mem_chunk_freeblock *res;
+		go_mem_chunk_freeblock *result;
 
 		block = chunk->freeblocks->data;
-		res = block->freelist;
-		if (res) {
-			block->freelist = res->next;
+		result = block->freelist;
+		if (result) {
+			block->freelist = result->next;
 
 			block->freecount--;
 			if (block->freecount == 0 && block->nonalloccount == 0) {
@@ -513,7 +512,7 @@ go_mem_chunk_alloc (GOMemChunk *chunk)
 				chunk->freeblocks = g_list_delete_link (chunk->freeblocks,
 									chunk->freeblocks);
 			}
-			return res;
+			return result;
 		}
 		/*
 		 * If we get here, the block has free space that was never
@@ -815,7 +814,7 @@ go_object_properties_collect (GObject *obj)
 void
 go_object_properties_apply (GObject *obj, GSList *props, gboolean changed_only)
 {
-	GValue current = { 0, };
+	GValue current = { 0, {{0}, {0}} };
 
 	for (; props; props = props->next->next) {
 		GParamSpec *pspec = props->data;

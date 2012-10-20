@@ -288,8 +288,8 @@ fsel_response_cb (GtkFileChooser *dialog,
 
 static gint
 gu_delete_handler (GtkDialog *dialog,
-		   GdkEventAny *event,
-		   gpointer data)
+		   G_GNUC_UNUSED GdkEventAny *event,
+		   G_GNUC_UNUSED gpointer data)
 {
 	gtk_dialog_response (dialog, GTK_RESPONSE_CANCEL);
 	return TRUE; /* Do not destroy */
@@ -324,7 +324,7 @@ static gboolean have_pixbufexts = FALSE;
 static GSList *pixbufexts = NULL;  /* FIXME: we leak this.  */
 
 static gboolean
-filter_images (const GtkFileFilterInfo *filter_info, gpointer data)
+filter_images (const GtkFileFilterInfo *filter_info, G_GNUC_UNUSED gpointer data)
 {
 	if (filter_info->mime_type)
 		return strncmp (filter_info->mime_type, "image/", 6) == 0;
@@ -336,7 +336,7 @@ filter_images (const GtkFileFilterInfo *filter_info, gpointer data)
 		ext++;
 
 		if (!have_pixbufexts) {
-			GSList *l, *pixbuf_fmts = gdk_pixbuf_get_formats ();
+			GSList *pixbuf_fmts = gdk_pixbuf_get_formats ();
 
 			for (l = pixbuf_fmts; l != NULL; l = l->next) {
 				GdkPixbufFormat *fmt = l->data;
@@ -516,7 +516,7 @@ go_gtk_select_image (GtkWindow *toplevel, const char *initial)
  * export resolution in @resolution.
  **/
 
-typedef struct {
+/*typedef struct {
 	char *uri;
 	double resolution;
 	gboolean is_expanded;
@@ -540,7 +540,7 @@ cb_format_combo_changed (GtkComboBox *combo, GtkWidget *expander)
 				  format_info != NULL &&
 				  format_info->is_dpi_useful);
 }
-
+*/
 #if 0 /* dropped, since abiword doesn't depend on libglade */
 
 char *
@@ -787,7 +787,7 @@ cb_help (CBHelpPaths const *paths)
 }
 
 void
-go_gtk_help_button_init (GtkWidget *w, char const *data_dir, char const *app, char const *link)
+go_gtk_help_button_init (GtkWidget *w, char const *data_dir, char const *app, char const *linkk)
 {
 	CBHelpPaths *paths = g_new (CBHelpPaths, 1);
 	GtkWidget *parent = gtk_widget_get_parent (w);
@@ -798,7 +798,7 @@ go_gtk_help_button_init (GtkWidget *w, char const *data_dir, char const *app, ch
 
 	paths->data_dir = data_dir;
 	paths->app	= app;
-	paths->link	= link;
+	paths->link	= linkk;
 	g_signal_connect_data (G_OBJECT (w), "clicked",
 		G_CALLBACK (cb_help), (gpointer) paths,
 		(GClosureNotify)g_free, G_CONNECT_SWAPPED);
@@ -1014,7 +1014,7 @@ gtk_dialog_get_response_for_widget (GtkDialog *dialog, GtkWidget *widget)
 void
 go_dialog_guess_alternative_button_order (GtkDialog *dialog)
 {
-	GList *children, *tmp;
+	GList *children, *ptr;
 	int i, nchildren;
 	int *new_order;
 	int i_yes = -1, i_no = -1, i_ok = -1, i_cancel = -1, i_apply = -1;
@@ -1029,8 +1029,8 @@ go_dialog_guess_alternative_button_order (GtkDialog *dialog)
 	nchildren = g_list_length (children);
 	new_order = g_new (int, nchildren);
 
-	for (tmp = children, i = 0; tmp; tmp = tmp->next, i++) {
-		GtkWidget *child = tmp->data;
+	for (ptr = children, i = 0; ptr; ptr = ptr->next, i++) {
+		GtkWidget *child = ptr->data;
 		int res = gtk_dialog_get_response_for_widget (dialog, child);
 		new_order[i] = res;
 		switch (res) {
