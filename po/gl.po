@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-08-20 21:49+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"PO-Revision-Date: 2012-10-21 10:13+0200\n"
+"Last-Translator: Miguel Anxo <mbouzada@gmail.com>\n"
 "Language-Team: Galician <proxecto@trasno.net>\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
@@ -1074,27 +1074,27 @@ msgstr "espazado a 1,5"
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr ""
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr ""
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr ""
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr ""
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr ""
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1137,57 +1137,57 @@ msgstr "&Suxerir correcións sempre"
 #. DLG_PageFormat_A0
 #: po/tmp/ap_String_Id.h
 msgid "A0"
-msgstr ""
+msgstr "A0"
 
 #. DLG_PageFormat_A1
 #: po/tmp/ap_String_Id.h
 msgid "A1"
-msgstr ""
+msgstr "A1"
 
 #. DLG_PageFormat_A10
 #: po/tmp/ap_String_Id.h
 msgid "A10"
-msgstr ""
+msgstr "A10"
 
 #. DLG_PageFormat_A2
 #: po/tmp/ap_String_Id.h
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #. DLG_PageFormat_A3
 #: po/tmp/ap_String_Id.h
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #. DLG_PageFormat_A4
 #: po/tmp/ap_String_Id.h
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #. DLG_PageFormat_A5
 #: po/tmp/ap_String_Id.h
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #. DLG_PageFormat_A6
 #: po/tmp/ap_String_Id.h
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #. DLG_PageFormat_A7
 #: po/tmp/ap_String_Id.h
 msgid "A7"
-msgstr ""
+msgstr "A7"
 
 #. DLG_PageFormat_A8
 #: po/tmp/ap_String_Id.h
 msgid "A8"
-msgstr ""
+msgstr "A8"
 
 #. DLG_PageFormat_A9
 #: po/tmp/ap_String_Id.h
 msgid "A9"
-msgstr ""
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1550,57 +1550,57 @@ msgstr "&Por:"
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1776,62 +1776,62 @@ msgstr "C&réditos"
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
 msgid "C6/C5 Envelope"
-msgstr ""
+msgstr "Sobre C6/C5"
 
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2513,7 +2513,7 @@ msgstr "&Intermitencia do cursor"
 #. DLG_PageFormat_Custom
 #: po/tmp/ap_String_Id.h
 msgid "Custom"
-msgstr ""
+msgstr "Personalizado"
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
@@ -2570,7 +2570,7 @@ msgstr "D&ireccional"
 #. DLG_PageFormat_DLEnvelope
 #: po/tmp/ap_String_Id.h
 msgid "DL Envelope"
-msgstr ""
+msgstr "Sobre DL"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -3093,12 +3093,12 @@ msgstr "Notas final"
 #. DLG_PageFormat_Envelope6x9
 #: po/tmp/ap_String_Id.h
 msgid "Envelope 6x9"
-msgstr ""
+msgstr "Sobre 6x9"
 
 #. DLG_PageFormat_EnvelopeNo10
 #: po/tmp/ap_String_Id.h
 msgid "Envelope No10"
-msgstr ""
+msgstr "Sobre No10"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -3345,7 +3345,7 @@ msgstr "Pregar por debaixo do nivel 4"
 #. DLG_PageFormat_Folio
 #: po/tmp/ap_String_Id.h
 msgid "Folio"
-msgstr ""
+msgstr "Folio"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -3626,7 +3626,6 @@ msgstr "Cabeceira [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -4271,12 +4270,12 @@ msgstr "Aliñar o parágrafo á esquerda"
 #. DLG_PageFormat_Legal
 #: po/tmp/ap_String_Id.h
 msgid "Legal"
-msgstr ""
+msgstr "Legal"
 
 #. DLG_PageFormat_Letter
 #: po/tmp/ap_String_Id.h
 msgid "Letter"
-msgstr ""
+msgstr "Carta"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -7326,49 +7325,42 @@ msgstr "cAMBIAR mINÚSCULAS E mAIÚSCULAS"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Ningún"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Ningún"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Ningún"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Asunto"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Ningún"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Ningún"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Asunto"
@@ -7701,7 +7693,7 @@ msgstr "Cursiva grosa"
 #. LANG_BS_BA
 #: po/tmp/xap_String_Id.h
 msgid "Bosnian"
-msgstr ""
+msgstr "Bosnio"
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
@@ -7757,7 +7749,7 @@ msgstr "Cambiar idioma ao cambiar o teclado"
 #. STYLE_DELIM_CHAPTER
 #: po/tmp/xap_String_Id.h
 msgid "Chapter"
-msgstr ""
+msgstr "Capítulo"
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7837,13 +7829,12 @@ msgstr "Escoller documento da lista:"
 #. TB_ClearBackground
 #: po/tmp/xap_String_Id.h
 msgid "Clear Background"
-msgstr "Limpar fondo"
+msgstr "Limpar o fondo"
 
 #. TB_ClearForeground
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clear Foreground"
-msgstr "Limpar fondo"
+msgstr "Limpar o fondo"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
@@ -7999,7 +7990,7 @@ msgstr "Danés"
 #. LANG_FA_AF
 #: po/tmp/xap_String_Id.h
 msgid "Dari"
-msgstr ""
+msgstr "Dari"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
@@ -8205,7 +8196,7 @@ msgstr "Ficheiro para reproducir a edición:"
 #. LANG_FIL_PH
 #: po/tmp/xap_String_Id.h
 msgid "Filipino"
-msgstr ""
+msgstr "Filipino"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -9064,9 +9055,8 @@ msgstr "Script:"
 
 #. STYLE_DELIM_SECTION
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Section"
-msgstr "Selección"
+msgstr "Sección"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
@@ -9604,7 +9594,6 @@ msgstr "non relacionados"
 
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ningún"
