@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-10-18 23:31+0200\n"
+"PO-Revision-Date: 2012-10-22 05:49+0200\n"
 "Last-Translator: Gábor <kelemeng@ubuntu.com>\n"
 "Language-Team: Hungarian <gnome-hu-list at gnome dot org>\n"
 "Language: hu\n"
@@ -1442,7 +1442,7 @@ msgstr ""
 #. STYLE_ARROWHEADLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Arrowhead List"
-msgstr ""
+msgstr "Nyílhegyes lista"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1550,57 +1550,57 @@ msgstr "&Mennyivel:"
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1776,62 +1776,62 @@ msgstr "&Köszönet"
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
 msgid "C6/C5 Envelope"
-msgstr ""
+msgstr "C6/C5 boríték"
 
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -2513,7 +2513,7 @@ msgstr "&Villogó kurzor"
 #. DLG_PageFormat_Custom
 #: po/tmp/ap_String_Id.h
 msgid "Custom"
-msgstr ""
+msgstr "Egyéni"
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
@@ -2570,7 +2570,7 @@ msgstr "Szö&vegirány"
 #. DLG_PageFormat_DLEnvelope
 #: po/tmp/ap_String_Id.h
 msgid "DL Envelope"
-msgstr ""
+msgstr "DL boríték"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2587,7 +2587,7 @@ msgstr "Szaggatott vonal"
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h
 msgid "Dashes"
-msgstr ""
+msgstr "Kötőjelek"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2667,7 +2667,7 @@ msgstr "Stílus megadása vagy alkalmazása a kijelölésre"
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h
 msgid "Definition"
-msgstr ""
+msgstr "Definíció"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2787,7 +2787,7 @@ msgstr "Leírás:"
 #. DLG_FormatTOC_LayoutDetails
 #: po/tmp/ap_String_Id.h
 msgid "Details"
-msgstr ""
+msgstr "Részletek"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2914,7 +2914,7 @@ msgstr "Ne indítsa újra"
 #. DLG_Tab_Radio_Dot
 #: po/tmp/ap_String_Id.h
 msgid "Dots"
-msgstr ""
+msgstr "Pontok"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -3093,12 +3093,12 @@ msgstr "Végjegyzetek"
 #. DLG_PageFormat_Envelope6x9
 #: po/tmp/ap_String_Id.h
 msgid "Envelope 6x9"
-msgstr ""
+msgstr "6x9 boríték"
 
 #. DLG_PageFormat_EnvelopeNo10
 #: po/tmp/ap_String_Id.h
 msgid "Envelope No10"
-msgstr ""
+msgstr "10-es boríték"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -3344,7 +3344,7 @@ msgstr "A negyedik szinttől rejtett"
 #. DLG_PageFormat_Folio
 #: po/tmp/ap_String_Id.h
 msgid "Folio"
-msgstr ""
+msgstr "Félív"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -3625,7 +3625,6 @@ msgstr "Fejléc [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -4271,12 +4270,12 @@ msgstr "A bekezdés igazítása balra"
 #. DLG_PageFormat_Legal
 #: po/tmp/ap_String_Id.h
 msgid "Legal"
-msgstr ""
+msgstr "Legal"
 
 #. DLG_PageFormat_Letter
 #: po/tmp/ap_String_Id.h
 msgid "Letter"
-msgstr ""
+msgstr "Letter"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -4340,9 +4339,8 @@ msgstr "Elválasztó vonal"
 
 #. DLG_Goto_Target_Line
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Line:"
-msgstr "Sorok:"
+msgstr "Sor:"
 
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
@@ -4964,7 +4962,7 @@ msgstr "Oldalszámok"
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
 msgid "Page Reference to Bookmark"
-msgstr ""
+msgstr "Oldalhivatkozás könyvjelzőbe"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -4978,9 +4976,8 @@ msgstr "Oldalbeállítás"
 
 #. DLG_Goto_Target_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page:"
-msgstr "Oldalak:"
+msgstr "Oldal:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5362,9 +5359,8 @@ msgstr "Fejléc eltávolítása"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove Property from Style:"
-msgstr "Stílus tulajdonságának eltávolítása"
+msgstr "Stílus tulajdonságának eltávolítása:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5789,9 +5785,8 @@ msgstr "Szövegdoboz kiválasztása"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select a target bookmark from the list:"
-msgstr "Válasszon egy cél könyvjelzőt a listából."
+msgstr "Válasszon egy cél könyvjelzőt a listából:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6307,7 +6302,6 @@ msgstr "Forrás:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Space after Column:"
 msgstr "Térköz a hasáb után:"
 
@@ -6988,15 +6982,13 @@ msgstr "Típus"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Type a name for the RDF link:"
 msgstr "Írja be az RDF hivatkozás nevét:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
-msgstr "Írja be a könyvjelző nevét, vagy válasszon egy meglévőt a listából."
+msgstr "Írja be a könyvjelző nevét, vagy válasszon egy meglévőt a listából:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7024,9 +7016,8 @@ msgstr "A kijelölés aláhúzása (átváltás)"
 #. DLG_FormatTOC_Underline
 #. DLG_Tab_Radio_Underline
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Underlines"
-msgstr "Aláhúzott"
+msgstr "Aláhúzások"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -7166,7 +7157,7 @@ msgstr "Webes elrendezés"
 #. FIELD_Datetime_CurrentDate
 #: po/tmp/ap_String_Id.h
 msgid "Weekday Month Day, Year"
-msgstr ""
+msgstr "Hét napja, hónap napja, év"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7270,25 +7261,21 @@ msgstr "&75%"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Zoom to 100%"
 msgstr "Nagyítás 100%-ra"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_200
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Zoom to 200%"
 msgstr "Nagyítás 200%-ra"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_50
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Zoom to 50%"
 msgstr "Nagyítás 50%-ra"
 
 #. MENU_STATUSLINE_VIEW_ZOOM_75
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Zoom to 75%"
 msgstr "Nagyítás 75%-ra"
 
@@ -7334,49 +7321,42 @@ msgstr "bETŰK cSERÉJE"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Nincs"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Nincs"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Nincs"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Tárgy"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Nincs"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Nincs"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Tárgy"
@@ -7509,7 +7489,7 @@ msgstr "Az %s névjegye"
 #. LANG_ACH
 #: po/tmp/xap_String_Id.h
 msgid "Acholi"
-msgstr ""
+msgstr "Acholi"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7664,7 +7644,7 @@ msgstr "Balti, Windows 1257-es kódlap"
 #. LANG_BM
 #: po/tmp/xap_String_Id.h
 msgid "Bamanankan"
-msgstr ""
+msgstr "Bamanankan"
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7709,7 +7689,7 @@ msgstr "Félkövér dőlt"
 #. LANG_BS_BA
 #: po/tmp/xap_String_Id.h
 msgid "Bosnian"
-msgstr ""
+msgstr "Bosnyák"
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
@@ -7765,7 +7745,7 @@ msgstr "Nyelv váltása a kiosztás váltásakor"
 #. STYLE_DELIM_CHAPTER
 #: po/tmp/xap_String_Id.h
 msgid "Chapter"
-msgstr ""
+msgstr "Fejezet"
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7775,7 +7755,7 @@ msgstr "Fejezet címsora"
 #. LANG_CGG
 #: po/tmp/xap_String_Id.h
 msgid "Chiga"
-msgstr ""
+msgstr "Chiga"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7849,9 +7829,8 @@ msgstr "Háttér törlése"
 
 #. TB_ClearForeground
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clear Foreground"
-msgstr "Háttér törlése"
+msgstr "Előtér törlése"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
@@ -7860,9 +7839,8 @@ msgstr "Képtár"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clip Art could not be loaded."
-msgstr "A Clip Art betöltése sikertelen"
+msgstr "A Clip Art betöltése sikertelen."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -8008,7 +7986,7 @@ msgstr "Dán"
 #. LANG_FA_AF
 #: po/tmp/xap_String_Id.h
 msgid "Dari"
-msgstr ""
+msgstr "Dari"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
@@ -8072,7 +8050,6 @@ msgstr "Szerkesztés időtartama:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Effects:"
 msgstr "Effektusok:"
 
@@ -8215,7 +8192,7 @@ msgstr "Szerkesztés visszajátszása ezen fájlból:"
 #. LANG_FIL_PH
 #: po/tmp/xap_String_Id.h
 msgid "Filipino"
-msgstr ""
+msgstr "Filippínó"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8290,7 +8267,7 @@ msgstr "Galíciai"
 #. LANG_LG
 #: po/tmp/xap_String_Id.h
 msgid "Ganda"
-msgstr ""
+msgstr "Ganda"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8679,14 +8656,13 @@ msgstr "Litván"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Loading Clip Art..."
 msgstr "Képtár betöltése..."
 
 #. LANG_JBO
 #: po/tmp/xap_String_Id.h
 msgid "Lojban"
-msgstr ""
+msgstr "Lojban"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8706,7 +8682,7 @@ msgstr "Legyen a dokumentum alapértelmezése"
 #. LANG_MG_MG
 #: po/tmp/xap_String_Id.h
 msgid "Malagasy"
-msgstr ""
+msgstr "Malgasi"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8961,7 +8937,7 @@ msgstr "Kecsua"
 #. LANG_QUZ
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Cusco)"
-msgstr ""
+msgstr "Kecsua (Cusco)"
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
@@ -9075,9 +9051,8 @@ msgstr "Makró:"
 
 #. STYLE_DELIM_SECTION
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Section"
-msgstr "Kijelölés"
+msgstr "Szakasz"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
@@ -9142,7 +9117,7 @@ msgstr "Kis kapitális"
 #. LANG_SON
 #: po/tmp/xap_String_Id.h
 msgid "Songhay"
-msgstr ""
+msgstr "Songhay"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9542,7 +9517,7 @@ msgstr "Méretezés"
 #. LANG_ZU
 #: po/tmp/xap_String_Id.h
 msgid "Zulu"
-msgstr ""
+msgstr "Zulu"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9613,7 +9588,6 @@ msgstr "nem kapcsolódnak"
 
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Nincs"
