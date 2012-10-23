@@ -1,6 +1,5 @@
 # Songhay translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
 # Copyright by:
 # Mohomodou Houssouba <mh@bollag-areal.ch>, 2012.
 # Chris Leonard <cjl@laptop.org>, 2012.
@@ -9,7 +8,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-08-14 22:22+0200\n"
+"PO-Revision-Date: 2012-10-24 01:41+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
 "Language: son\n"
@@ -1074,27 +1073,27 @@ msgstr "1,5 hibiyan"
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr ""
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr ""
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr ""
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr ""
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr ""
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1137,57 +1136,57 @@ msgstr "W&aatikul boryandiyaney honnandi"
 #. DLG_PageFormat_A0
 #: po/tmp/ap_String_Id.h
 msgid "A0"
-msgstr ""
+msgstr "A0"
 
 #. DLG_PageFormat_A1
 #: po/tmp/ap_String_Id.h
 msgid "A1"
-msgstr ""
+msgstr "A1"
 
 #. DLG_PageFormat_A10
 #: po/tmp/ap_String_Id.h
 msgid "A10"
-msgstr ""
+msgstr "A10"
 
 #. DLG_PageFormat_A2
 #: po/tmp/ap_String_Id.h
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #. DLG_PageFormat_A3
 #: po/tmp/ap_String_Id.h
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #. DLG_PageFormat_A4
 #: po/tmp/ap_String_Id.h
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #. DLG_PageFormat_A5
 #: po/tmp/ap_String_Id.h
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #. DLG_PageFormat_A6
 #: po/tmp/ap_String_Id.h
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #. DLG_PageFormat_A7
 #: po/tmp/ap_String_Id.h
 msgid "A7"
-msgstr ""
+msgstr "A7"
 
 #. DLG_PageFormat_A8
 #: po/tmp/ap_String_Id.h
 msgid "A8"
-msgstr ""
+msgstr "A8"
 
 #. DLG_PageFormat_A9
 #: po/tmp/ap_String_Id.h
 msgid "A9"
-msgstr ""
+msgstr "A8"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1350,9 +1349,8 @@ msgstr "Kul"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Allow formatting not using styles only"
-msgstr "Fasalyan noo fondo nda fasaley hinne"
+msgstr "Fasalyan noo fondo kaŋ ši koy nda fasaley hinne"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -1445,7 +1443,7 @@ msgstr ""
 #. STYLE_ARROWHEADLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Arrowhead List"
-msgstr ""
+msgstr "Arrowhead List"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1542,9 +1540,8 @@ msgstr "Takari barantey:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Styles:"
-msgstr "Fasal barantey"
+msgstr "Fasal barantey:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1554,57 +1551,57 @@ msgstr "Teeka&w:"
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1780,72 +1777,72 @@ msgstr "Alha&key"
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
 msgid "C6/C5 Envelope"
-msgstr ""
+msgstr "C6/C5 Batagaɲaa"
 
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
 msgid "Can not insert a Break inside a table"
-msgstr "Ši hin ka kayri foo dam taabal foo kuna"
+msgstr "Ši hin ka moo sari dam taabal foo kuna"
 
 #. MSG_NoBreakInsideFrame
 #: po/tmp/ap_String_Id.h
 msgid "Can not insert a Break inside a text box"
-msgstr "Ši hin ka kayri foo dam kalimaɲaa bata foo ra"
+msgstr "Ši hin ka moo sari dam kalimaɲaa bata foo ra"
 
 #. DLG_Styles_ErrStyleCantDelete
 #: po/tmp/ap_String_Id.h
@@ -2278,7 +2275,7 @@ msgstr "Kanbuzaakaw(ey)"
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
 msgid "Contributor(s):"
-msgstr "Kanbuzaakaw(ey):"
+msgstr "Kanbuzaak(ey):"
 
 #. MENU_STATUSLINE_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h
@@ -2441,9 +2438,8 @@ msgstr "Takadda koonu tee"
 
 #. DLG_Styles_StylesTitle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create and Modify Styles"
-msgstr "Fasaley &tee nd'i barmay"
+msgstr "Fasaley tee nd'i barmay"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
@@ -2518,7 +2514,7 @@ msgstr "Moo dirandikaw &momiti"
 #. DLG_PageFormat_Custom
 #: po/tmp/ap_String_Id.h
 msgid "Custom"
-msgstr ""
+msgstr "Alaada"
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
@@ -2575,7 +2571,7 @@ msgstr "Ceej&inante"
 #. DLG_PageFormat_DLEnvelope
 #: po/tmp/ap_String_Id.h
 msgid "DL Envelope"
-msgstr ""
+msgstr "DL Batagaɲaa"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2592,7 +2588,7 @@ msgstr "Žeeri cendante"
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h
 msgid "Dashes"
-msgstr ""
+msgstr "Cendarey"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2672,7 +2668,7 @@ msgstr "Fasal bayrandi wala kanandi suubaroo še"
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h
 msgid "Definition"
-msgstr ""
+msgstr "Maana"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2919,7 +2915,7 @@ msgstr "Ma ši tunandi taaga"
 #. DLG_Tab_Radio_Dot
 #: po/tmp/ap_String_Id.h
 msgid "Dots"
-msgstr ""
+msgstr "Tonbey"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -3098,12 +3094,12 @@ msgstr "Benandi fillawey"
 #. DLG_PageFormat_Envelope6x9
 #: po/tmp/ap_String_Id.h
 msgid "Envelope 6x9"
-msgstr ""
+msgstr "Batagaɲaa 6x9"
 
 #. DLG_PageFormat_EnvelopeNo10
 #: po/tmp/ap_String_Id.h
 msgid "Envelope No10"
-msgstr ""
+msgstr "Batagaɲaa No10"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -3349,7 +3345,7 @@ msgstr "Foolo dimma 4 cire"
 #. DLG_PageFormat_Folio
 #: po/tmp/ap_String_Id.h
 msgid "Folio"
-msgstr ""
+msgstr "Fita-taabu"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
@@ -3630,7 +3626,6 @@ msgstr "Boŋdeke [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3639,7 +3634,7 @@ msgid ""
 msgstr ""
 "Boŋdekey nda ceedekey ga hin ka tee wala fasal Karyan gunari alhaali hinne "
 "ra. \n"
-" Ka huru alhaaloo woo ra Gunari suuba, nga band'a ga Kar fasalyan "
+"  Ka huru alhaaloo woo ra Gunari suuba, nga band'a ga Kar fasalyan "
 "Šilbayboŋey cire. \n"
 " War ga baa ka huru Kar fasalyan alhaali ra sohõ?"
 
@@ -3910,7 +3905,7 @@ msgstr "RDF dobu dam"
 #. MENU_STATUSLINE_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF link..."
-msgstr "RDF dobu dam…"
+msgstr "RDF dobu dam..."
 
 #. DLG_RDF_SemanticItemInsert_Ok
 #: po/tmp/ap_String_Id.h
@@ -4276,12 +4271,12 @@ msgstr "Kalimaɲaa zuu tenjandiyan wowa"
 #. DLG_PageFormat_Legal
 #: po/tmp/ap_String_Id.h
 msgid "Legal"
-msgstr ""
+msgstr "Leegal"
 
 #. DLG_PageFormat_Letter
 #: po/tmp/ap_String_Id.h
 msgid "Letter"
-msgstr ""
+msgstr "Leetar"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -4558,9 +4553,8 @@ msgstr "Fasal kaašimey"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Modify Style"
-msgstr "Fasaley barmay"
+msgstr "Fasal barmay"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h
@@ -5081,7 +5075,7 @@ msgstr "Jišidoo:"
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr ""
+msgstr "Ga hooray nda RDF cinayan waate"
 
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
@@ -5233,24 +5227,23 @@ msgstr "Wallafikaw:"
 #. MENU_STATUSLINE_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF associated with location"
-msgstr ""
+msgstr "RDF ceeci kaŋ goo gorodoo bande"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF for cursor position"
-msgstr ""
+msgstr "RDF ceeci moo dirandikaa dogoo ga"
 
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
-msgstr ""
+msgstr "RDF ceeci: akul ra %d: %ld"
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Query the RDF associated with the cursor position..."
-msgstr "RDF gani kaŋ ga hanga moo dirandikaa fur"
+msgstr "RDF ceeci kaŋ ga hanga moo dirandikaa..."
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5261,12 +5254,12 @@ msgstr "B&armay"
 #. MENU_LABEL_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "RDF Link"
-msgstr ""
+msgstr "RDF dobu"
 
 #. DLG_RDF_SemanticStylesheets_Title
 #: po/tmp/ap_String_Id.h
 msgid "RDF Stylesheet"
-msgstr ""
+msgstr "RDF fasalfita"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5329,7 +5322,7 @@ msgstr "Takaddaa ceberoo kaccandi wal'a beerandi"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "Ga dobu aššil maana haya-ize ga"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
@@ -5365,9 +5358,8 @@ msgstr "Boŋdeke kaa"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove Property from Style:"
-msgstr "Mayray kaa fasaloo ra"
+msgstr "Mayray kaa fasaloo ra:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5494,7 +5486,7 @@ msgstr "Moo hinnawey šintin taaga dunbu taagey ra"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr ""
+msgstr "Kayandi RDF dobey ga:"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5530,12 +5522,12 @@ msgstr "Dumi barmante šilbaa"
 #. TOOLBAR_STATUSLINE_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Revisions new..."
-msgstr ""
+msgstr "Barmay taagey..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Revisions select..."
-msgstr ""
+msgstr "Barmawey suuba..."
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -5794,7 +5786,7 @@ msgstr "Kalimaɲaa bata suuba"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Select a target bookmark from the list:"
-msgstr "Doo-šilbay toodoo suuba maašeedaa ra."
+msgstr "Doo-šilbay toodoo suuba maašeedaa ra:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6997,7 +6989,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
-msgstr "Maa hantum doo-šilbaa še, wal'affoo suuba maašeede barantaa ra."
+msgstr "Maa hantum doo-šilbaa še, wal'affoo suuba maašeede barantaa ra:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7857,9 +7849,8 @@ msgstr "Cebebii"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clip Art could not be loaded."
-msgstr "Cebebii mana hin ka zumandi"
+msgstr "Cebebii mana hin ka zumandi."
 
 #. DLG_Close
 #: po/tmp/xap_String_Id.h
@@ -8675,9 +8666,8 @@ msgstr "Lituyaani"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Loading Clip Art..."
-msgstr "Goo ma cebebii zumandi"
+msgstr "Goo ma cebebii zumandi..."
 
 #. LANG_JBO
 #: po/tmp/xap_String_Id.h
