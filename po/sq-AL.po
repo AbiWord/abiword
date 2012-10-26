@@ -1,6 +1,5 @@
 # Albanian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
 # Copyright by:
 # Me ndihmën e çmuar të Laurent Dhimës, Alan Horkan, Keneth Jeremy Davis, Pierre Abbat,
 # Besnik Bleta <besnik@programeshqip.org>, 2002-2012.
@@ -10,10 +9,10 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-09-07 13:28+0200\n"
+"PO-Revision-Date: 2012-10-26 10:48+0200\n"
 "Last-Translator: Besnik Bleta <besnik@programeshqip.org>\n"
 "Language-Team: Albanian\n"
-"Language: sq\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -965,7 +964,7 @@ msgstr "&Krye:"
 #. DLG_RDF_Editor_Menu_Triple
 #: po/tmp/ap_String_Id.h
 msgid "&Triple"
-msgstr ""
+msgstr "&Treshe"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -2926,22 +2925,22 @@ msgstr "Ndërvijë dyshe"
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF Objects"
-msgstr ""
+msgstr "Trego Objekte RDF"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF related to Cursor Position"
-msgstr ""
+msgstr "Trego RDF të lidhur me Pozicionin e Kursorit"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump out information about RDF Objects"
-msgstr ""
+msgstr "Trego të dhëna mbi Objektet RDF"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump the raw RDF associated with the cursor position"
-msgstr ""
+msgstr "Trego RDF-në bruto përshoqëruar pozicionit të kursorit"
 
 #. MENU_LABEL_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
@@ -2982,12 +2981,12 @@ msgstr "Përpunoni Ekuacion LaTeX"
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples"
-msgstr ""
+msgstr "Përpunoni Treshe RDF"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples associated with location"
-msgstr ""
+msgstr "Përpunoni Treshe RDF të përshoqëruara vendndodhjes"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
@@ -3588,7 +3587,7 @@ msgstr "Listë Dorë"
 #. DLG_Para_SpecialHanging
 #: po/tmp/ap_String_Id.h
 msgid "Hanging"
-msgstr ""
+msgstr "Varje"
 
 #. MENU_LABEL_INSERT_HEADER
 #: po/tmp/ap_String_Id.h
@@ -5096,7 +5095,7 @@ msgstr "P&arapëlqime"
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
 msgid "Predicate"
-msgstr ""
+msgstr "Veti e treshes"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
@@ -5207,23 +5206,23 @@ msgstr "Botues:"
 #. MENU_STATUSLINE_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF associated with location"
-msgstr ""
+msgstr "Kërko te RDF-ja e përshoqëruar me vendndodhjen"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF for cursor position"
-msgstr ""
+msgstr "Kërko te RDF-ja për pozicionin e kursorit"
 
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
-msgstr ""
+msgstr "Kërkim te RDF: %d nga gjithsej: %ld"
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query the RDF associated with the cursor position..."
-msgstr ""
+msgstr "Kërko te RDF-ja e përshoqëruar me pozicionin e kursorit..."
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5502,12 +5501,12 @@ msgstr "ID Rishikimi"
 #. TOOLBAR_STATUSLINE_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Revisions new..."
-msgstr ""
+msgstr "Rishikim i ri..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Revisions select..."
-msgstr ""
+msgstr "Përzgjedhje rishikimesh..."
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -5521,7 +5520,7 @@ msgstr "Djathtas"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Right Indent [%s]"
-msgstr "Fillim rreshti Djathtas [%s}"
+msgstr "Hapësirë Djathtas [%s}"
 
 #. RightMarginStatus
 #: po/tmp/ap_String_Id.h
