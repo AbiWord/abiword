@@ -25,6 +25,8 @@ from sys import argv, exit
 from argparse import ArgumentParser
 
 
+contents_path = "abiword/AbiWord.app/Contents"
+
 def environment_prepare():
     abisource_path="/tmp/abisource"
     mkdir(abisource_path, 0755)
@@ -137,7 +139,6 @@ def _dep_list_get(lib):
     return stdout[0].split('\n')[:-1]
 
 def _rdeps_get():
-    contents_path = "abiword/AbiWord.app/Contents"
 
     libabiword = ""
     libabiword_deps = []
@@ -181,7 +182,7 @@ def _rdeps_get():
     return rdeps, libabiword, abiword, plugins
 
 def _rdeps_copy(rdeps):
-    rdeps_path = "abiword/AbiWord.app/Contents/Frameworks/rdeps"
+    rdeps_path = contents_path
     mkdir(rdeps_path, 0755)
 
     n_rdeps = []
@@ -324,9 +325,9 @@ if __name__ == "__main__":
                         help="This option will use a generated .app file \
                               to fix all linkage and put all nedded libs \
                               into .app in a specific folder. After that a \
-                              dmg file will be created. \
+                              dmg file will be created(Don't put '/' at the end of .app package path). \
                               ATTENTION: Is REALLY NECESSARY that you pass \
-                              --macports_path option.")
+                              --macports_path option. Eg: python build_script.py --start_from_app /Users/abi/Abiword.app")
 
     parser.add_argument("--start_from_linkage_fixed",
                         action="store",
@@ -342,15 +343,31 @@ if __name__ == "__main__":
         exit()
     else:
         args = parser.parse_args()
+#	print args
 
-    current_dir = getcwd()
-    environment_prepare()
-    macports_install()
-    dependencies_install()
-    abiword_install()
-    do_app()
-    do_dmg()
-    environment_clean(current_dir)
-    print "****************************************************"
-    print "* AbiWord.dmg was created in you ~/Desktop. Enjoy! *"
-    print "****************************************************"
+
+current_dir = getcwd()
+
+def cleanAndPrint():
+	environment_clean(current_dir)
+	print "****************************************************"
+	print "* AbiWord.dmg was created in you ~/Desktop. Enjoy! *"
+	print "****************************************************"
+
+dict_args=vars(args)
+print dict_args
+
+if dict_args['start_from_app'] != None:
+	contents_path = dict_args['start_from_app'] + "/Contents"
+	do_app()
+	do_dmg()
+	print_text()
+	exit()
+else:
+	environment_prepare()
+	macports_install()
+	dependencies_install()
+	abiword_install()
+	do_app()
+	do_dmg()
+	cleanAndPrint()
