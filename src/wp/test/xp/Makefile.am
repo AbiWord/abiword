@@ -22,5 +22,6 @@
 INCLUDES = $(top_srcdir)/.
 
 EXTRA_DIST = \
-        main.cpp
+        main.cpp \
+	all_test.h
 
