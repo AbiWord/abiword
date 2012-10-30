@@ -439,7 +439,7 @@ int abi_plugin_register (XAP_ModuleInfo * mi)
  	/* Initialize libgoffice */
 	libgoffice_init ();
 	cc = GO_CMD_CONTEXT (g_object_new (ABI_CMD_CONTEXT_TYPE, NULL));
-	go_component_set_command_context (cc);
+	go_component_set_default_command_context (cc);
 	/* Initialize plugins manager */
 	go_plugins_init (cc, NULL, NULL, NULL, TRUE, GO_TYPE_PLUGIN_LOADER_MODULE);
 	/* Ensure some types are created */
@@ -496,7 +496,7 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
     pApp->unRegisterEmbeddable(pGOComponentManager->getObjectType());
     DELETEP(pGOComponentManager);
     AbiGOffice_removeFromMenus();
-	go_component_set_command_context (NULL);
+	go_component_set_default_command_context (NULL);
 	g_object_unref (cc);
 	go_plugins_shutdown();
 	libgoffice_shutdown();

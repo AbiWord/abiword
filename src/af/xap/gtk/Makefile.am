@@ -151,6 +151,6 @@ endif
 EXTRA_DIST = \
 	$(conditional_src) \
 	$(conditional_ui) \
-	$(ui_gtk2)
+	$(ui_gtk2) \
 	$(ui_gtk3)
 
