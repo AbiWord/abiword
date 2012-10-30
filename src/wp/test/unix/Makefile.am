@@ -29,7 +29,8 @@ AbiWord_test_LDFLAGS =  -L$(top_builddir)/src -labiword-@ABIWORD_SERIES@ -L$(top
 
 AbiWord_test_LDADD =  $(DEPS_LIBS)
 
-AbiWord_test_SOURCES = test_main.cpp 
+AbiWord_test_SOURCES = test_main.cpp \
+	all_test_unix.h
 
 testwrap.sh-stamp: testwrap.sh
 	chmod a+x testwrap.sh
