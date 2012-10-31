@@ -29,11 +29,15 @@
 TFTEST_MAIN("UT_LocaleTransactor")
 {
 	char msg[128];
-	setlocale(LC_ALL, "fr_FR");
-	
+	if (setlocale(LC_ALL, "fr_FR") == NULL)
+	{
+		printf("Test skipped, fr_FR locale is unknown on this system\n");
+		return;
+	}
+
 	sprintf(msg, "%f", 1.0f);
 	TFPASS(strstr(msg, "1,0") == msg);
-	
+
 	TFPASS(strcmp(setlocale(LC_NUMERIC, NULL), "fr_FR") == 0);
 
 	{

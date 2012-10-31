@@ -21,13 +21,15 @@
 #include "../xp/main.cpp"
 
 #include "all_test_unix.h"
+#include "ap_UnixApp.h"
 
 #include <gtk/gtk.h>
 
 
 void init_platform(void)
 {
-	gtk_init(NULL, NULL);
+	AP_UnixApp *app = new AP_UnixApp(PACKAGE);
+	app->initialize(TRUE);
 }
 
 
