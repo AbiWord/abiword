@@ -37,4 +37,5 @@ testwrap.sh-stamp: testwrap.sh
 	touch $@
 
 CLEANFILES = vgcore.* \
-	testwrap.sh-stamp
+	testwrap.sh-stamp \
+	tf-vgdump
