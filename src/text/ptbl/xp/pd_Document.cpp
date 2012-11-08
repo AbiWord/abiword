@@ -213,8 +213,15 @@ PD_Document::PD_Document()
 	if(strcmp(name, "Unknown") == 0)
 		name = g_get_user_name();
 	gchar *utf8name = g_locale_to_utf8(name, -1, NULL, NULL, NULL);
-	m_sUserName = utf8name;
-	g_free(utf8name);
+	if (utf8name != NULL)
+	{
+		m_sUserName = utf8name;
+		g_free(utf8name);
+	}
+	else
+	{
+		m_sUserName = "Unknown";
+	}
 }
 
 PD_Document::~PD_Document()
