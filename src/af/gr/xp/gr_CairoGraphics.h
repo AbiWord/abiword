@@ -260,6 +260,9 @@ public:
 	virtual void		invertRect(const UT_Rect* pRect);
 	virtual void		drawLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 
+	bool isDingbat(void) const {return m_bIsDingbat;}
+	bool isSymbol(void) const {return m_bIsSymbol;};
+
 	void resetFontMapResolution(void);
 
 	virtual GR_Font* _findFont(const char* pszFontFamily,
@@ -360,6 +363,9 @@ public:
 										   UT_BidiCharType iVisDir,
 										   const char * pUtf8);
 
+	void         _setIsSymbol(bool b) {m_bIsSymbol = b;}
+	void         _setIsDingbat(bool b) {m_bIsDingbat = b;}
+
 	PangoFont *  _adjustedPangoFont (GR_PangoFont * pFont, PangoFont * pf);
 	PangoFont *  _adjustedLayoutPangoFont (GR_PangoFont * pFont, PangoFont * pf);
 
@@ -400,6 +406,8 @@ public:
 	GR_Graphics::CapStyle  m_capStyle;
 	GR_Graphics::LineStyle m_lineStyle;
 	bool            m_linePropsDirty;
+	bool                    m_bIsSymbol;
+	bool                    m_bIsDingbat;
 	UT_sint32               m_iPrevX1;
 	UT_sint32               m_iPrevX2;
 	UT_sint32               m_iPrevY1;
