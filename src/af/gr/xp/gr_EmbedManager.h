@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "ev_EditBits.h"
+#include "gr_Graphics.h"
 
 class GR_Graphics;
 class GR_Image;
@@ -85,6 +86,7 @@ public:
 	virtual void		   updateData(UT_sint32 uid, UT_sint32 api);
 	virtual EV_EditMouseContext		getContextualMenu(void) const
 		{ return EV_EMC_EMBED; }
+	virtual void           setFont(UT_sint32 uid, const GR_Font * pFont);
 
 private:
     GR_Graphics *               m_pG;
