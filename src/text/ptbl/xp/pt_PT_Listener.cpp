@@ -466,11 +466,11 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
     closerFragmentTypesToVisit.insert( pf_Frag::PFT_Strux );
     
 
-    bool rc = 0;
+    //bool rc = 0;
 
     if( closer )
     {
-        rc = _tellListenerSubsetWalkRange( this,
+        /*rc =*/ _tellListenerSubsetWalkRange( this,
                                            closer,
                                            pDocRange,
                                            pDocRange->m_pos1,
@@ -511,20 +511,20 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
 
             closer->setDelegate( pListener );
             closer->reset();
-            rc = _tellListenerSubsetWalkRange( this,
+            /*rc =*/ _tellListenerSubsetWalkRange( this,
                                                closer,
                                                pDocRange,
                                                pDocRange->m_pos1,
                                                pDocRange->m_pos2 );
             
-            rc = _tellListenerSubsetWalkRange( this, cl,
+            /*rc =*/ _tellListenerSubsetWalkRange( this, cl,
                                                pDocRange, startPos, pDocRange->m_pos1,
                                                f, closerFragmentTypesToVisit, walkForwards );
             
         }
     }
     
-    rc = _tellListenerSubsetWalkRange( this, pListener,
+    /*rc =*/ _tellListenerSubsetWalkRange( this, pListener,
                                        pDocRange, pDocRange->m_pos1, pDocRange->m_pos2 );
     
     if( closer )
@@ -535,7 +535,7 @@ bool pt_PieceTable::tellListenerSubset( PL_Listener * pListener,
         if( PL_FinishingListener* cl = closer->getAfterContentListener() )
         {
             f_WalkRangeFinished_t f = boost::bind( finishedFunctorFinishingListener, _1, _2, _3, _4, cl );
-            rc = _tellListenerSubsetWalkRange( this, cl,
+            /*rc =*/ _tellListenerSubsetWalkRange( this, cl,
                                                pDocRange, pDocRange->m_pos2, 0,
                                                f, closerFragmentTypesToVisit );
         }

@@ -1509,7 +1509,7 @@ void AP_LeftRuler::_getCellMarkerRects(const AP_LeftRulerInfo * pInfo, UT_sint32
 		rCell.set(0,0,0,0);
 		return;
 	}
-	
+	/*
 	UT_sint32 bottomSpacing;
 	UT_sint32 topSpacing;
 	
@@ -1539,7 +1539,7 @@ void AP_LeftRuler::_getCellMarkerRects(const AP_LeftRulerInfo * pInfo, UT_sint32
 	{
 		topSpacing = 0;
 	}
-	
+	*/
 	UT_uint32 xLeft = pG->tlu(s_iFixedHeight) / 4;
 //	rCell.set(xLeft, pos - bottomSpacing, xLeft * 2, bottomSpacing + topSpacing); //left/top/width/height
 	UT_sint32 mywidth = xLeft *2;

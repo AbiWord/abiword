@@ -3029,14 +3029,14 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 	case DW_CELLMARK:
 		{
             double dxrel;
-            UT_sint32 xdelta;
+            //UT_sint32 xdelta;
 			UT_sint32 iCell;
-			UT_sint32 nCells;
+			//UT_sint32 nCells;
 			AP_TopRulerTableInfo *pTInfo = NULL;
 			if(m_infoCache.m_mode == AP_TopRulerInfo::TRI_MODE_TABLE)
 			{
 				iCell =  m_infoCache.m_iCurCell;
-				nCells = m_infoCache.m_vecTableColInfo->getItemCount();
+				//nCells = m_infoCache.m_vecTableColInfo->getItemCount();
 				pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecTableColInfo->getNthItem(iCell));
 			}
 			else
@@ -3053,9 +3053,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			xAbsLeft1 = widthPrevPagesInRow + _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iCurrentColumn); 
 			xxx_UT_DEBUGMSG(("DW_CELLMARK (release): m_draggingCenter %d\n", m_draggingCenter));
 			dxrel = tick.scalePixelDistanceToUnits(m_draggingCenter - xAbsLeft1);
-			xdelta = m_draggingCenter - pTInfo->m_iLeftCellPos ;
+			//xdelta = m_draggingCenter - pTInfo->m_iLeftCellPos ;
 			UT_String sCellPos = pView1->getGraphics()->invertDimension(tick.dimType,dxrel);
-			xxx_UT_DEBUGMSG(("cellPos dragged to position %s from left column edge difference in pixels %d \n",sCellPos.c_str(),xdelta));
+			//xxx_UT_DEBUGMSG(("cellPos dragged to position %s from left column edge difference in pixels %d \n",sCellPos.c_str(),xdelta));
 			UT_String sColWidths;
 			UT_sint32 i;
 			bool bDragRightMost = false;
@@ -3555,11 +3555,11 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 		UT_sint32 iRightIndentPos;
 		UT_sint32 iFirstIndentL, iFirstIndentR;
 
-		UT_sint32 xAbsRight;
+		//UT_sint32 xAbsRight;
 
 		if(bRTLglobal)
 		{
-			xAbsRight = widthPrevPagesInRow + _getFirstPixelInColumn(&m_infoCache,0) + m_infoCache.u.c.m_xColumnWidth;
+			//xAbsRight = widthPrevPagesInRow + _getFirstPixelInColumn(&m_infoCache,0) + m_infoCache.u.c.m_xColumnWidth;
 			iFirstIndentL = 0;
 			iFirstIndentR = m_infoCache.m_xrFirstLineIndent;
 			iAbsLeft = widthPrevPagesInRow + _getFirstPixelInColumn(&m_infoCache,m_infoCache.m_iNumColumns - 1);
@@ -3736,7 +3736,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			}
 
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
-			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xAbsRight2 + xgrid;
 			_getColumnMarkerRect(&m_infoCache,0,m_draggingCenter,&m_draggingRect);
 
@@ -3788,7 +3787,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			double dgrid = tick.scalePixelDistanceToUnits(xrel);
 			UT_DEBUGMSG(("SettingLeftIndent: %s\n",pView->getGraphics()->invertDimension(tick.dimType,dgrid)));
 #endif
-			UT_Rect oldDraggingRect = m_draggingRect;
 
 			UT_sint32 iRightPos;
 
@@ -3883,8 +3881,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 #endif
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
 			UT_sint32 oldDragging2Center = m_dragging2Center;
-			UT_Rect oldDraggingRect = m_draggingRect;
-			UT_Rect oldDragging2Rect = m_dragging2Rect;
 
 			UT_sint32 iRightIndentPos;
 			UT_sint32 iFirstIndentShift = UT_MAX(0,m_infoCache.m_xrFirstLineIndent);
@@ -3989,7 +3985,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			UT_DEBUGMSG(("SettingRightIndent: %s\n",pView->getGraphics()->invertDimension(tick.dimType,dgrid)));
 #endif
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
-			UT_Rect oldDraggingRect = m_draggingRect;
 			UT_sint32 iLeftIndentPos;
 
 			if(bRTL)
@@ -4066,7 +4061,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 // 			double dgrid = tick.scalePixelDistanceToUnits(xrel2);
 			xxx_UT_DEBUGMSG(("SettingFirstLineIndent: %s\n",pView->getGraphics()->invertDimension(tick.dimType,dgrid)));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
-			UT_Rect oldDraggingRect = m_draggingRect;
 
             UT_sint32 iRightIndentPos;
 
@@ -4125,7 +4119,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			UT_sint32 xrel = static_cast<UT_sint32>(x) - xStartPixel - 1; // TODO why is the -1 necessary? w/o it problems arise.
 			UT_sint32 xgrid = tick.snapPixelToGrid(xrel);
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
-			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xStartPixel + xgrid;
 			_getTabStopRect(&m_infoCache,m_draggingCenter,&m_draggingRect);
 			if (!m_bBeforeFirstMotion && (m_draggingCenter != oldDraggingCenter))
@@ -4155,7 +4148,6 @@ void AP_TopRuler::mouseMotion(EV_EditModifierState /*ems*/, UT_sint32 x, UT_sint
 			UT_sint32 xrel = static_cast<UT_sint32>(x) - xStartPixel - 1; // TODO why is the -1 necessary? w/o it problems arise.
 			UT_DEBUGMSG(("MovingCellMark: %s\n",pView->getGraphics()->invertDimension(tick.dimType,tick.scalePixelDistanceToUnits(xrel))));
 			UT_sint32 oldDraggingCenter = m_draggingCenter;
-			UT_Rect oldDraggingRect = m_draggingRect;
 			m_draggingCenter = xStartPixel + xrel;
 			
 			// disalow that a cell marker is dragged over other cell markers

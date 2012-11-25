@@ -1612,7 +1612,6 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 	 "font-variant", "font-weight","text-decoration","lang"};
 
 	const size_t nCharFlds = sizeof(charFields)/sizeof(charFields[0]);
-	const gchar * charValues [nCharFlds];
 
 	szStyle = getCurrentStyle();
 
@@ -1681,13 +1680,7 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 				pStyle->getPropertyExpand(szName,szValue);
 				if (szValue == NULL)
 				{
-					charValues[i] = 0;
 					continue;
-				}
-				else
-				{
-
-					charValues[i] = szValue;
 				}
 			}
 			else

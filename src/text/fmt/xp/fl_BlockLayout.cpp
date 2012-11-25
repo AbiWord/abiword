@@ -5023,7 +5023,6 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg) const
 	if (iLen)
 	{
 		fl_PartOfBlock* pPending = NULL;
-		bool bNew = false;
 
 		if (m_pLayout->isPendingWordForSpell())
 		{
@@ -5033,7 +5032,6 @@ fl_BlockLayout::_recalcPendingWord(UT_uint32 iOffset, UT_sint32 chg) const
 
 		if (!pPending)
 		{
-			bNew = true;
 			pPending = new fl_PartOfBlock();
 			UT_ASSERT(pPending);
 		}
