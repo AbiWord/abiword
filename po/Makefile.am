@@ -1,4 +1,3 @@
-CLEANFILES = $(strings_DATA)
 EXTRA_DIST = $(strings_DATA)
 stringsdir = $(ABIWORD_DATADIR)/strings
 
