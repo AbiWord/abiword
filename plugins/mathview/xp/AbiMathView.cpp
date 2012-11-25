@@ -70,6 +70,7 @@
 #include "ap_Dialog_Latex.h"
 #include "ut_mbtowc.h"
 #include "ap_Menu_Id.h"
+#include "ie_math_convert.h"
 
 #include "ut_sleep.h"
 #include <sys/types.h>  
@@ -449,20 +450,34 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 		DELETEP(pImpMathML);
 		return false;
 	}
+	
+	UT_UTF8String PbMathml = (const char*)((pImpMathML->getByteBuf())->getPointer(0));
+	UT_UTF8String PbLatex;
+	UT_UTF8String Pbitex;
 
-	/* Create the data item */
-	UT_uint32 uid = pDoc->getUID(UT_UniqueId::Image);
-	UT_UTF8String sUID;
-	UT_UTF8String_sprintf(sUID,"%d",uid);
-	pDoc->createDataItem(sUID.utf8_str(), false, pImpMathML->getByteBuf(), 
-                         "application/mathml+xml", NULL);
+	if(convertMathMLtoLaTeX(PbMathml, PbLatex) && convertLaTeXtoEqn(PbLatex,Pbitex))
+	{
+		// Conversion of MathML to LaTeX and the Equation Form suceeds
+		pView->cmdInsertLatexMath(Pbitex,PbMathml);
+	}
+	else
+	{
+		// Conversion of MathML to LaTeX fails
+		// Inserting only the MathML
 
-	/* Insert the MathML Object */
-	PT_DocPosition pos = pView->getPoint();
-	pView->cmdInsertMathML(sUID.utf8_str(),pos);
+		/* Create the data item */
+		UT_uint32 uid = pDoc->getUID(UT_UniqueId::Image);
+		UT_UTF8String sUID;
+		UT_UTF8String_sprintf(sUID,"%d",uid);
+		pDoc->createDataItem(sUID.utf8_str(), false, pImpMathML->getByteBuf(), 
+		                     "application/mathml+xml", NULL); 
+
+		/* Insert the MathML Object */
+		PT_DocPosition pos = pView->getPoint();
+		pView->cmdInsertMathML(sUID.utf8_str(),pos); 
+	}
 
 	DELETEP(pImpMathML);
-
 	return true;
 }
 

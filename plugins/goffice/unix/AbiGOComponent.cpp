@@ -512,6 +512,12 @@ void GR_GOComponentManager::setRun(UT_sint32 uid, fp_Run *pRun)
 	pGOComponentView->SetRun (pRun);
 }
 
+void GR_GOComponentManager::setFont(UT_sint32 uid, const GR_Font * pFont)
+{
+	GOComponentView * pGOComponentView = m_vecGOComponentView.getNthItem(uid);
+	pGOComponentView->setFont (pFont);
+}
+
 void GR_GOComponentManager:: updateData(UT_sint32 uid, UT_sint32 api)
 {
 	GR_AbiGOComponentItems * pItem = m_vecItems.getNthItem(uid);
@@ -692,9 +698,16 @@ void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, const char 
 	descent =  (UT_sint32) rint (_descent * UT_LAYOUT_RESOLUTION);
 }
 
-
-void GOComponentView::setDefaultFontSize(G_GNUC_UNUSED UT_sint32 iSize)
+void GOComponentView::setDefaultFontSize(UT_sint32 /*iSize*/)
 {
+}
+
+void GOComponentView::setFont(const GR_Font * pFont)
+{
+	UT_return_if_fail(component && pFont);
+	const GR_PangoFont *pPF = dynamic_cast<const GR_PangoFont *>(pFont);
+	UT_return_if_fail(pPF);
+	go_component_set_font(component, pPF->getPangoDescription());
 }
 
 void GOComponentView::modify()

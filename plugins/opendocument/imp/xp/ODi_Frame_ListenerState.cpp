@@ -35,7 +35,7 @@
 #include <pd_Document.h>
 #include <ut_locale.h>
 #include <ut_units.h>
-
+#include <ie_math_convert.h>
 
 /**
  * Constructor
@@ -209,11 +209,29 @@ void ODi_Frame_ListenerState::endElement (const gchar* pName,
             // Create the data item
             UT_uint32 id = m_pAbiDocument->getUID(UT_UniqueId::Math);
             UT_UTF8String sID = UT_UTF8String_sprintf("MathLatex%d", id);
-            m_pAbiDocument->createDataItem(sID.utf8_str(), false, m_pMathBB, "", NULL);
+					
+            std::string lID;
+	    lID.assign("LatexMath");
+     	    lID.append((sID.substr(9,sID.length()-8)).utf8_str());
+			
+      	    UT_ByteBuf latexBuf;
+   	    UT_UTF8String PMathml = (const char*)(m_pMathBB->getPointer(0));
+	    UT_UTF8String PLatex,Pitex;
 
-            const gchar *atts[3] = { NULL, NULL, NULL };
+	    m_pAbiDocument->createDataItem(sID.utf8_str(), false, m_pMathBB, "", NULL);
+			
+	    if(convertMathMLtoLaTeX(PMathml, PLatex) && convertLaTeXtoEqn(PLatex,Pitex))
+ 	    {    
+		// Conversion of MathML to LaTeX and the Equation Form suceeds
+		latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(Pitex.utf8_str()),static_cast<UT_uint32>(Pitex.size()));
+		m_pAbiDocument->createDataItem(lID.c_str(), false,&latexBuf,"", NULL);
+    	    }
+
+            const gchar *atts[5] = { NULL, NULL, NULL, NULL, NULL };
             atts[0] = PT_IMAGE_DATAID;
             atts[1] = sID.utf8_str();
+	    atts[2] = static_cast<const gchar *>("latexid");
+	    atts[3] = static_cast<const gchar *>(lID.c_str());
             m_pAbiDocument->appendObject(PTO_Math, atts);
 
             DELETEP(m_pMathBB);
@@ -388,8 +406,19 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
             UT_DEBUGMSG(("ODT import: no suitable object importer found\n"));
             return;
         }
-       
-        const gchar* attribs[5];
+		 
+	const gchar* attribs[7];
+
+	std::string extraID;
+	std::string objectID;
+	objectID = (dataId.substr(9,dataId.length()-8)).c_str();
+	extraID.assign("LatexMath");
+	extraID.append(objectID.c_str());
+
+	attribs[4] = static_cast<const gchar *>("latexid");
+	attribs[5] = static_cast<const gchar *>(extraID.c_str());
+	attribs[6] = 0;
+	   
         UT_String propsBuffer;
         
         pWidth = m_rElementStack.getStartTag(0)->getAttributeValue("svg:width");
@@ -403,8 +432,7 @@ void ODi_Frame_ListenerState::_drawObject (const gchar** ppAtts,
         attribs[0] = "props";
         attribs[1] = propsBuffer.c_str();
         attribs[2] = "dataid";
-        attribs[3] = dataId.c_str();
-        attribs[4] = 0;
+        attribs[3] = static_cast<const gchar *>(dataId.c_str());    
     
         if (!m_pAbiDocument->appendObject ((PTObjectType)pto_Type, attribs)) {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);

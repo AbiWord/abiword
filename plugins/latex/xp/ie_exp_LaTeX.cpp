@@ -26,13 +26,6 @@
 #include <deque>
 #include <stack>
 
-#ifdef HAVE_LIBXSLT
-#include <libxslt/xslt.h>
-#include <libxslt/xsltInternals.h>
-#include <libxslt/transform.h>
-#include <libxslt/xsltutils.h>
-#endif
-
 #include "fp_types.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
@@ -59,6 +52,7 @@
 #include "ut_string_class.h"
 #include "xap_Module.h"
 #include "ut_misc.h"
+#include "ie_math_convert.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
 #define abi_plugin_register abipgn_latex_register
@@ -314,10 +308,7 @@ public:
 							fl_ContainerLayout* sfhNew));
 
 	virtual bool		signal(UT_uint32 iSignal);
-#ifdef HAVE_LIBXSLT	
-	static	bool		convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
-							UT_UTF8String & sLaTeX);
-#endif
+
 protected:
 	void				_closeBlock(void);
 	void				_closeCell(void);
@@ -398,14 +389,7 @@ protected:
 					   // or several \cline as appropriate
 	unsigned int	    m_index; // (dynamic, increase only) index into m_pqRect; it is safe
 				     // to skip anything before m_index
-#ifdef HAVE_LIBXSLT
-	static xsltStylesheet *cur;
-#endif
 };
-
-#ifdef HAVE_LIBXSLT
-	xsltStylesheet * s_LaTeX_Listener::cur = NULL;
-#endif
 
 void s_LaTeX_Listener::_closeParagraph(void)
 {
@@ -1561,13 +1545,6 @@ s_LaTeX_Listener::s_LaTeX_Listener(PD_Document * pDocument, IE_Exp_LaTeX * pie,
 s_LaTeX_Listener::~s_LaTeX_Listener()
 {
 	//if (!m_bInFootnote) return;
-#ifdef HAVE_LIBXSLT
-	if(cur)
-	{
-		xsltFreeStylesheet(cur);
-		cur = NULL;
-	}	
-#endif
 	_closeSection();
 	_handleDataItems();
 	DELETEP(m_pTableHelper);
@@ -1584,61 +1561,6 @@ s_LaTeX_Listener::~s_LaTeX_Listener()
 		m_pie->write("\n\\theendnotes");
 	m_pie->write("\n\\end{document}\n");
 }
-
-#ifdef HAVE_LIBXSLT
-bool s_LaTeX_Listener::convertMathMLtoLaTeX(const UT_UTF8String & sMathML,
-											UT_UTF8String & sLaTeX)
-{
-	//static xsltStylesheet *cur = NULL;
-	xmlDocPtr doc, res;
-	xmlChar * pLatex = NULL;
-	int len;
-	
-	if (sMathML.empty())
-		// Nothing has failed, but we have nothing to do anyway
-		return false;
-	if (!cur)
-	{
-		UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
-		path += "/xsltml/mmltex.xsl";
-
-		cur = xsltParseStylesheetFile((const xmlChar *)(path.utf8_str()));
-		if (!cur)
-		{
-			UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing stylesheet failed\n"));
-			return false;
-		}
-	}
-	// bad bad bad, apparently on MacOS X, the system libxml2 take a non-const here.
-	doc = xmlParseDoc((xmlChar*)(sMathML.utf8_str()));
-	if (!doc)
-	{
-		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Parsing MathML document failed\n"));
-		return false;
-	}	
-	
-	res = xsltApplyStylesheet(cur, doc, NULL);
-	if (!res)
-	{
-		xxx_UT_DEBUGMSG(("convertMathMLtoLaTeX: Applying stylesheet failed\n"));
-		xmlFreeDoc(doc);
-		return false;
-	}
-	
-	if (xsltSaveResultToString(&pLatex, &len, res, cur) != 0)
-	{
-		xmlFreeDoc(res);
-		xmlFreeDoc(doc);
-		return false;
-	}
-	sLaTeX.assign((const char*)pLatex, len);
-	
-	g_free(pLatex);
-	xmlFreeDoc(res);
-	xmlFreeDoc(doc);
-	return true;
-}
-#endif
 
 bool s_LaTeX_Listener::populate(fl_ContainerLayout* /*sfh*/,
 								   const PX_ChangeRecord * pcr)
@@ -1773,9 +1695,9 @@ bool s_LaTeX_Listener::populate(fl_ContainerLayout* /*sfh*/,
 						}
 						
 						sMathML.appendBuf(*pByteBuf, myWC);
-						
+
 						if(!convertMathMLtoLaTeX(sMathML, sLatex))
-							return true;
+							return true;		
 						/*The converted sLatex already contains $s*/
 						m_pie->write(sLatex.utf8_str());
 					}

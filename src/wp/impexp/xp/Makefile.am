@@ -79,6 +79,8 @@ libxp_la_SOURCES = \
 	ie_imp_XML.h \
 	ie_mailmerge.cpp \
 	ie_mailmerge.h \
+	ie_math_convert.cpp \
+	ie_math_convert.h \
 	ie_Table.cpp \
 	ie_Table.h \
 	ie_TOC.cpp \

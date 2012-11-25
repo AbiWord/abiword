@@ -78,6 +78,9 @@ public:
 	UT_Error startText(int target);
 	UT_Error writeText(int target, const UT_UCS4Char* text);
 	UT_Error finishText(int target);
+	UT_Error startMath();
+	UT_Error writeMath(const char* omml);
+	UT_Error finishMath();
 	UT_Error startRun(int target);
 	UT_Error finishRun(int target);
 	UT_Error startRunProperties(int target);

@@ -195,7 +195,7 @@ dcl(DLG_Latex_Example,		"Example:")
 /*Equation Menus */
 dcl(MENU_LABEL_INSERT_EQUATION,"Equation")
 dcl(MENU_LABEL_TOOLTIP_INSERT_EQUATION,"Insert Equation")
-dcl(MENU_LABEL_INSERT_EQUATION_FILE,"From File")
+dcl(MENU_LABEL_INSERT_EQUATION_FILE,"From File (.xml, .mathml)")
 dcl(MENU_LABEL_TOOLTIP_INSERT_EQUATION_FILE,"Insert MathML from a file")
 dcl(MENU_LABEL_INSERT_EQUATION_LATEX,"From LaTeX")
 dcl(MENU_LABEL_TOOLTIP_INSERT_EQUATION_LATEX,"Insert Equation from a LaTeX expression")

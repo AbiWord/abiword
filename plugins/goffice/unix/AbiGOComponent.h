@@ -67,6 +67,7 @@ public:
     virtual bool           isResizeable(UT_sint32 uid);
 	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
 	virtual void		   updateData(UT_sint32 uid, UT_sint32 api);
+	virtual void           setFont(UT_sint32 uid, const GR_Font * pFont);
 
 private:
     UT_sint32                              _makeGOComponentView(void);
@@ -94,6 +95,7 @@ public:
 	bool IsResizable () {return go_component_is_resizable (component);}
 	UT_ByteBuf *getSnapShot (std::string &mime_type);
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
+	void setFont(const GR_Font * pFont);
 
 private:
 	GR_GOComponentManager  * m_pGOMan;

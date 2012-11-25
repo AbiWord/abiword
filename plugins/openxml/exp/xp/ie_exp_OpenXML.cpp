@@ -304,6 +304,32 @@ UT_Error IE_Exp_OpenXML::finishText(int target)
 }
 
 /**
+ * Starts exporting the OXML_Element_Math object
+ */
+UT_Error IE_Exp_OpenXML::startMath()
+{
+    return writeTargetStream(TARGET_DOCUMENT, "<m:oMathPara>");
+}
+
+/**
+ * Writes the actual content of OXML_Element_Math object
+ */
+UT_Error IE_Exp_OpenXML::writeMath(const char* omml)
+{
+    std::string str;
+    str.assign(omml);
+    return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
+ * Finishes exporting the OXML_Element_Math object
+ */
+UT_Error IE_Exp_OpenXML::finishMath()
+{
+    return writeTargetStream(TARGET_DOCUMENT, "</m:oMathPara>");
+}
+
+/**
  * Starts exporting the OXML_Element_Run object
  */
 UT_Error IE_Exp_OpenXML::startRun(int target)
@@ -2373,6 +2399,7 @@ UT_Error IE_Exp_OpenXML::startMainPart()
 	str += "xmlns:v=\"urn:schemas-microsoft-com:vml\" ";
 	str += "xmlns:wx=\"http://schemas.microsoft.com/office/word/2003/auxHint\" ";
 	str += "xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" ";
+	str += "xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" ";
 	str += "xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" ";
 	str += "xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\" ";
 	str += "xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"><w:body>";

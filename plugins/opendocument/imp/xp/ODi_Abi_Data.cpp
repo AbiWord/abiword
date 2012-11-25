@@ -27,6 +27,7 @@
 #include <pt_Types.h>
 #include <ie_impGraphic.h>
 #include <fg_GraphicRaster.h>
+#include "ie_math_convert.h"
 
 // External includes
 #include <glib-object.h>
@@ -156,7 +157,7 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     UT_return_val_if_fail(pHRef,false);
 
     // If we have a string smaller then this we are in trouble. File corrupted?
-    UT_return_val_if_fail((strlen(pHRef) >= 10 /*10 == strlen("Pictures/a")*/), false);
+    UT_return_val_if_fail((strlen(pHRef) >= 9 /*9 == strlen("Object a/")*/), false);
 
     UT_Error error = UT_OK;
     UT_ByteBuf *object_buf;
@@ -176,12 +177,15 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
         rDataId = id;
         return true;
     }
-    
-    
+        
     // Get a new, unique, ID.
     objectID = m_pAbiDocument->getUID(UT_UniqueId::Math);
     UT_String_sprintf(rDataId, "MathLatex%d", objectID);
-    
+
+    std::string rLatexId;
+    rLatexId.assign("LatexMath");
+    rLatexId.append((rDataId.substr(9,rDataId.length()-8)).c_str());
+	  
     // Add this id to the list
     UT_DebugOnly<href_id_map_t::iterator> iter = m_href_to_id
 		.insert(m_href_to_id.begin(),
@@ -210,11 +214,18 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     }
 
     // check to ensure that we're seeing math. this can probably be made smarter.
-    static const char math_header[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE math:math";
+    // changed the math_header to include the simple math tag, as DOC_TYPE has become obsolete
+    static const char math_header[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<math";
 
-    if ((object_buf->getLength () > strlen (math_header)) &&
-	(strncmp ((const char*)object_buf->getPointer (0), math_header, strlen (math_header)) != 0)) {
-	delete object_buf;
+    // keepin an option for old documents as well which might have DOC_TYPE
+    static const char math_header_old[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!DOCTYPE math:math";
+
+    // for math from odt generated in MS Word
+    static const char math_ms[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<mml:math";
+     
+    if (((object_buf->getLength () > strlen (math_header)) && (strncmp ((const char*)object_buf->getPointer (0), math_header, strlen (math_header)) != 0)) && ((object_buf->getLength () > strlen (math_header_old)) && (strncmp ((const char*)object_buf->getPointer (0), math_header_old, strlen (math_header_old)) != 0)) && ((object_buf->getLength () > strlen (math_ms)) && (strncmp ((const char*)object_buf->getPointer (0), math_ms, strlen (math_ms)) != 0)))
+    {
+    	delete object_buf;
         return false;
     }
 
@@ -222,11 +233,27 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     // Create the data item.
     //
 
-    if (!m_pAbiDocument->createDataItem(rDataId.c_str(), false, object_buf, 
-                                        "application/mathml+xml", NULL)) {            
+    UT_ByteBuf latexBuf;
+    UT_UTF8String PbMathml = (const char*)(object_buf->getPointer(0));
+    UT_UTF8String PbLatex,Pbitex;
+	
+    if (!m_pAbiDocument->createDataItem(rDataId.c_str(), false, object_buf,"application/mathml+xml", NULL))
+    {            
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
         return false;
     }  
+
+    if(convertMathMLtoLaTeX(PbMathml, PbLatex) && convertLaTeXtoEqn(PbLatex,Pbitex))
+    {
+        
+	// Conversion of MathML to LaTeX and the Equation Form suceeds
+	latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(Pbitex.utf8_str()),static_cast<UT_uint32>(Pbitex.size()));
+	if(!m_pAbiDocument->createDataItem(rLatexId.c_str(), false,&latexBuf,"", NULL))		
+	{
+	    UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	    return false;
+	}
+    }
 
     pto_Type = PTO_Math;
     return true;
@@ -288,24 +315,26 @@ void ODi_Abi_Data::_splitDirectoryAndFileName(const gchar* pHRef, UT_String& dir
     len = href.length();
     for (i=iStart, nChars=0; i<len; i++) {
         if (href[i] == '/') {
-            i=len; // exit loop
+            break;
         } else {
             nChars++;
         }
     }
     
-    UT_ASSERT (nChars > 0 && nChars < len);
-    
+
     dirName = href.substr(iStart, nChars);
-    
-    ////
-    // Get the file name
-    
-    iStart = iStart + nChars + 1;
-    
-    nChars = len - iStart;
-    
-    UT_ASSERT (nChars); // The file name must have at least one char.
-    
-    fileName = href.substr(iStart, nChars);
+
+    if (nChars == len - 1)
+    {
+        fileName = "";    
+    }
+    else
+    {
+        UT_ASSERT (nChars > 0 && nChars < len);
+        // Get the file name
+        iStart = iStart + nChars + 1;
+        nChars = len - iStart;
+        UT_ASSERT (nChars); // The file name must have at least one char.
+        fileName = href.substr(iStart, nChars);
+    }
 }
