@@ -83,17 +83,18 @@ glib_req='glib-2.0 >= 2.6.0 gthread-2.0 >= 2.6.0 gobject-2.0 >= 2.6.0'
 gsf_req='libgsf-1 >= 1.14.18'
 gsf_gio_req='libgsf-1 >= 1.14.9'
 wv_req='wv-1.0 >= 1.2.0'
+xslt_req='libxslt'
 xp_pkgs="
   ${fribidi_req}
   ${glib_req}
   ${gsf_req}
   ${wv_req}
+  ${xslt_req}
 "
 
 # optional deps
 enchant_req='enchant >= 1.2.0'
-gio_req='gio-2.0'
-goffice_req='libgoffice-0.10 >= 0.10.0'
+gio_req='gio-2.0'10.09.91'
 
 hildon_pkgs='hildon-1 hildon-fm-2 dbus-1 libosso'
 dnl libosso-gsf-1'
