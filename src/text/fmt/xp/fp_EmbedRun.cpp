@@ -78,6 +78,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	pSpanAP->getProperty("embed-type", pszEmbedType);
 	UT_ASSERT(pszEmbedType);
 	UT_DEBUGMSG(("Embed Type %s \n",pszEmbedType));
+	bool bFontChanged = false;
 
 // Load this into EmbedView
 
@@ -118,6 +119,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	if (pFont != _getFont())
 	{
 		_setFont(pFont);
+		bFontChanged = true;
 	}
 	if(pG == NULL)
 	  pG = getGraphics();
@@ -139,7 +141,8 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  getEmbedManager()->loadEmbedData(m_iEmbedUID);
 	}
 	getEmbedManager()->setDefaultFontSize(m_iEmbedUID,atoi(pszSize));
-	getEmbedManager()->setFont(m_iEmbedUID,pFont);
+	if (bFontChanged)
+		getEmbedManager()->setFont(m_iEmbedUID,pFont);
 	if(getEmbedManager()->isDefault())
 	{
 	  iWidth = _getLayoutPropFromObject("width");
@@ -149,9 +152,9 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	else
 	{
 	  const char * pszHeight = NULL;
-	  bool bFoundHeight = pSpanAP->getProperty("height", pszHeight);
+	  bool bFoundHeight = pSpanAP->getProperty("height", pszHeight) && !bFontChanged;
 	  const char * pszWidth = NULL;
-	  bool bFoundWidth = pSpanAP->getProperty("width", pszWidth);
+	  bool bFoundWidth = pSpanAP->getProperty("width", pszWidth) && !bFontChanged;
 	  const char * pszAscent = NULL;
 	  bool bFoundAscent = pSpanAP->getProperty("ascent", pszAscent);
 
