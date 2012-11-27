@@ -128,7 +128,7 @@
 			{
 				UT_sint32 i = 0;
 				bool bFound = false;
-				for(i=0; i< m_Vec_lt.getItemCount(); i++)
+				for(i=0; i< m_Vec_lt.getItemCount() && !bFound; i++)
 				{
 					_lt * plt = (_lt *) m_Vec_lt.getNthItem(i);
 					if(plt->m_id == id)
@@ -136,7 +136,6 @@
 						m_Vec_lt.deleteNthItem(i);
 						delete plt;
 						bFound = true;
-						break;
 					}
 				}
 				UT_ASSERT_HARMLESS(bFound);
