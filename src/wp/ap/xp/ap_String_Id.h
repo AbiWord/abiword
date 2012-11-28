@@ -930,7 +930,7 @@ dcl(MSG_CHECK_PRINT_MODE,"Headers and Footers can only be created and edited whi
 
 
 /* Windows ap_App */
-dcl(WINDOWS_NEED_UNICOWS,	"AbiWord needs the file %s.dll\nPlease download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm")
+dcl(WINDOWS_NEED_UNICOWS,	"AbiWord needs the file %s.dll\nPlease download and install it from http://www.microsoft.com/en-us/download/details.aspx?id=4237")
 dcl(WINDOWS_COMCTL_WARNING,	"AbiWord is designed for a newer version of the system file COMCTL32.DLL\nthan the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\nA solution to this problem is explained in the FAQ on the AbiSource web site\n\n\thttp://www.abisource.com\n\nYou can use the program, but the toolbar may be missing.")
 
 dcl(MENU_LABEL__BOGUS1__," ")
