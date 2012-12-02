@@ -10114,6 +10114,8 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 			m_posSavedDocPosition++;
 	}
 
+	// Put the '}' back into the input stream
+	SkipBackChar(ch);
 	return true;
 }
 
