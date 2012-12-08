@@ -1497,6 +1497,7 @@ UT_sint32 fl_BlockLayout::getEmbeddedOffset(UT_sint32 offset, fl_ContainerLayout
 	{
 		if(pEmbedCL->getContainerType() == FL_CONTAINER_TOC)
 		{
+			pEmbedCL = NULL;
 			return -1;
 		}
 		return iEmbed;

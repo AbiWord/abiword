@@ -497,7 +497,7 @@ AP_UnixDialog_Goto::updateCache (AP_JumpTarget target)
 void
 AP_UnixDialog_Goto::updateDocCount ()
 {
-	m_DocCount = getView()->countWords (); 
+	m_DocCount = getView()->countWords(false); 
 	UT_DEBUGMSG (("ROB: updateCache () page='%d' line='%d'\n", m_DocCount.page, m_DocCount.line));
 }
 

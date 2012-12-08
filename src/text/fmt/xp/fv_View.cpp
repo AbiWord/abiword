@@ -11136,8 +11136,7 @@ static bool s_notChar(UT_UCSChar c)
  \return structure with word counts
  Count words in document (or selection).
 */
-FV_DocCount
-FV_View::countWords(void)
+FV_DocCount FV_View::countWords(bool bActuallyCountWords)
 {
 	FV_DocCount wCount;
 	memset(&wCount,0,sizeof(wCount));
@@ -11167,148 +11166,171 @@ FV_View::countWords(void)
 		}
 	}
 
-	UT_sint32 iSelLen = high - low;
 	fl_BlockLayout * pBL = _findBlockAtPosition(low);
+	if (pBL && pBL->isEmbeddedType())
+	{
+		fl_EmbedLayout * pEmbedL= static_cast<fl_EmbedLayout*>(pBL->myContainingLayout()); 
+		pBL = pEmbedL->getContainingBlock();
+	}
 	if(pBL == NULL)
 	{
 		return wCount;
 	}
 	// Selection may start inside first block
-	UT_sint32 iStartOffset = 0, iLineOffset = 0, iCount = 0;
 	fp_Line* pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
-	fp_Run* pRun = pLine->getFirstRun();
-	fp_Container * pColumn = pLine->getContainer();
-	if(pColumn == NULL)
+	if(!pLine->getContainer())
 	{
 		return (wCount);
 	}
-	fp_Page* pPage = pColumn->getPage();
-	wCount.page = 1;
-	if (low > pBL->getPosition())
-	{
-		iStartOffset = low - pBL->getPosition();
-		// Find first line in selection
-		if (pLine && iLineOffset < iStartOffset)
-		{
-			fp_Run* pPrevRun = NULL;
-			while (pRun && iLineOffset < iStartOffset)
-			{
-				iLineOffset += pRun->getLength();
-				pPrevRun = pRun;
-				pRun = pRun->getNextRun();
-			}
-			UT_ASSERT(pRun);
-			if (!pRun)
-			{
-				pRun = pBL->getNext()->getFirstRun();
-			}
 
-			iLineOffset -= iStartOffset;
-			UT_ASSERT(iLineOffset >= 0);
-			pLine = pRun->getLine();
-			pPage = pLine->getContainer()->getPage();
-			if (pPrevRun->getLine() != pLine)
+	UT_sint32 iStartOffset = 0;
+	if (low > pBL->getPosition(false))
+	{
+		iStartOffset = low - pBL->getPosition(false);
+		if (!isSelectionEmpty() && (iStartOffset == pBL->getLength() - 1))
+		{
+			// If the selection begin at the complete end of a line, we want to start
+			// counting at the next block. This allows to match the user perception of
+			// the number of lines with the actual line count.
+			// Note: the first line is visibly part of the selection only when the formatting
+			// markers are shown.
+			pBL = static_cast<fl_BlockLayout *>(pBL->getNextBlockInDocument());
+			iStartOffset = 0;
+			if (pBL) {
+				pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
+			}
+		}
+		// Find first line in selection
+		fp_Line* pNextLine = NULL;
+		while (pLine)
+		{
+			pNextLine = static_cast<fp_Line*>(pLine->getNext());
+			if (!pNextLine || (pNextLine->getFirstRun()->getBlockOffset() > static_cast<UT_uint32>(iStartOffset)))
 			{
-				wCount.line++;
-				if (pPrevRun->getLine()->getContainer()->getPage() != pPage)
-					wCount.page++;
+				break;
+			}
+			else
+			{
+				pLine = pNextLine;
 			}
 		}
 	}
 
-	while (NULL != pBL && iCount < iSelLen)
+	fp_Page* pPage = pLine->getPage();
+	fp_Page* pOldPage = pPage;
+	wCount.page++;
+
+	bool bFirstBlock = true;
+	while (pBL)
 	{
+		if (pBL->getPosition(false) >= high)
+		{
+			break;
+		}
+		bool bEndInThisBlock = false;
+		UT_uint32 iMaxOffset = 0;
+		if (pBL->getPosition(false) + pBL->getLength() > high)
+		{
+			bEndInThisBlock = true;
+			iMaxOffset = high - pBL->getPosition(false);
+		}
 		UT_GrowBuf gb(1024);
 		pBL->getBlockBuf(&gb);
 		const UT_UCSChar * pSpan = reinterpret_cast<UT_UCSChar*>(gb.getPointer(0));
 		UT_uint32 len = gb.getLength();
 
-		UT_uint32 i = iStartOffset;
-		iStartOffset = 0;
-
 		// Count lines and pages
-		while (pLine && iLineOffset < iSelLen)
+		while (pLine && (!bEndInThisBlock || (pLine->getFirstRun()->getBlockOffset() < iMaxOffset)))
 		{
 			wCount.line++;
 
 			// If this line is on a new page, increment page count
-			if (pLine->getContainer()->getPage() != pPage)
+			pPage = pLine->getPage();
+			if ((pOldPage != pPage) && (pOldPage->getPageNumber() < pPage->getPageNumber()))
 			{
 				wCount.page++;
-				pPage = pLine->getContainer()->getPage();
+				pOldPage = pPage;
 			}
 
-			// Add length for runs on this line
-			while (pRun && pRun->getLine() == pLine)
-			{
-				iLineOffset += pRun->getLength();
-				pRun = pRun->getNextRun();
-			}
 			pLine = static_cast<fp_Line *>(pLine->getNext());
-			UT_ASSERT((pLine && pRun) || (static_cast<void*>(pLine) == static_cast<void*>(pRun)));
-			UT_ASSERT(!pLine || pLine->getFirstRun() == pRun);
 		}
 
-		bool newWord = false;
-		bool delim = true;
-		for (; i < len; i++)
+		if (bActuallyCountWords)
 		{
-			if (++iCount > iSelLen) break;
+			bool newWord = false;
+			bool delim = true;
 
-			if (!s_notChar(pSpan[i]))
+			UT_sint32 i = (bFirstBlock ? iStartOffset : 0);
+			UT_sint32 imax = len;
+			if (bEndInThisBlock)
 			{
-				wCount.ch_sp++;
-				isPara = true;
-
-				switch (pSpan[i])
+				UT_ASSERT_HARMLESS(iMaxOffset <= len);
+				imax = UT_MIN(iMaxOffset,len);
+			}
+			fl_ContainerLayout * pNoteCL = NULL;
+			UT_sint32 iNote = pBL->getEmbeddedOffset(0,pNoteCL);
+			UT_sint32 iNoteEnd = -1;
+			if (pNoteCL)
+			{
+				iNoteEnd = iNote + static_cast<fl_EmbedLayout*>(pNoteCL)->getLength() - 1;
+			}
+			for (; i < imax; i++)
+			{
+				if (!s_notChar(pSpan[i]))
 				{
-				case UCS_SPACE:
-				case UCS_NBSP:
-				case UCS_EN_SPACE:
-				case UCS_EM_SPACE:
-					break;
+					wCount.ch_sp++;
+					isPara = true;
 
-				default:
-					wCount.ch_no++;
+					switch (pSpan[i])
+					{
+					case UCS_SPACE:
+					case UCS_NBSP:
+					case UCS_EN_SPACE:
+					case UCS_EM_SPACE:
+						break;
+
+					default:
+						wCount.ch_no++;
+					}
+				}
+				UT_UCSChar followChar, prevChar;
+				followChar = (static_cast<UT_uint32>(i+1) < len) ? pSpan[i+1] : UCS_UNKPUNK;
+				prevChar = i > 0 ? pSpan[i-1] : UCS_UNKPUNK;
+
+				newWord = (delim && !UT_isWordDelimiter(pSpan[i], followChar, prevChar));
+
+				delim = UT_isWordDelimiter(pSpan[i], followChar, prevChar);
+
+				if (delim) { // debatable...
+					if (pSpan[i]=='-' || pSpan[i]=='_') delim = false;
+				}
+
+				// CJK-FIXME: this can work incorrectly under CJK locales
+				// since it can give 'true' for UCS with value >0xff (like
+				// quotes, etc).
+				if (newWord || XAP_EncodingManager::get_instance()->is_cjk_letter(pSpan[i]))
+				{
+					wCount.word++;
+					wCount.words_no_notes++;
+					if ((iNote >= 0) && (i >= iNote))
+					{
+						while ((iNote >= 0) && i > iNoteEnd)
+						{
+							iNote = pBL->getEmbeddedOffset(iNoteEnd + 1,pNoteCL);
+							if (pNoteCL)
+							{
+								iNoteEnd = iNote + static_cast<fl_EmbedLayout*>(pNoteCL)->getLength() - 1;
+							}
+						}
+
+						if (iNote >= 0 && (i >= iNote) && (i < iNoteEnd))
+						{
+							// We are inside a note
+							wCount.words_no_notes--;
+						}
+					}
 				}
 			}
-			UT_UCSChar followChar, prevChar;
-			followChar = (i+1 < len) ? pSpan[i+1] : UCS_UNKPUNK;
-			prevChar = i > 0 ? pSpan[i-1] : UCS_UNKPUNK;
-
-			newWord = (delim && !UT_isWordDelimiter(pSpan[i], followChar, prevChar));
-
-			delim = UT_isWordDelimiter(pSpan[i], followChar, prevChar);
-
-			if (delim) { // debatable...
-				if (pSpan[i]=='-' || pSpan[i]=='_') delim = false;
-			}
-
-			// CJK-FIXME: this can work incorrectly under CJK locales
-			// since it can give 'true' for UCS with value >0xff (like
-			// quotes, etc).
-			if (newWord ||
-				XAP_EncodingManager::get_instance()->is_cjk_letter(pSpan[i]))
-                        {
-
-                                wCount.word++;
-                                wCount.words_no_hdrftr++;
-
-                                fl_ContainerLayout *l;
-
-                                pBL->getEmbeddedOffset(iCount, l);
-
-                                if (l)
-                                {
-                                        fl_ContainerType t = l->getContainerType();
-                                        if ((t == FL_CONTAINER_FOOTNOTE) ||
-                                            (t == FL_CONTAINER_ANNOTATION)||
-                                            (t == FL_CONTAINER_ENDNOTE))
-                                        {
-                                                wCount.words_no_hdrftr--;
-                                        }
-                                }
-                        }
 		}
 
 		if (isPara)
@@ -11318,18 +11340,13 @@ FV_View::countWords(void)
 		}
 
 		// Get next block, we want to include footnotes so can't use getNextBlockLayout
-		fl_ContainerLayout* pNextBlock = pBL->getNextBlockInDocument();
-		pBL = static_cast<fl_BlockLayout *>(pNextBlock);
-		pLine = NULL;
-		pRun = NULL;
+		pBL = static_cast<fl_BlockLayout *>(pBL->getNextBlockInDocument());
+		bFirstBlock = false;
 		if (pBL)
+		{
 			pLine = static_cast<fp_Line *>(pBL->getFirstContainer());
-		if (pLine)
-			pRun = pLine->getFirstRun();
-		iCount++;    // Extra character at the end of block
+		}
 	}
-
-	//wCount.words_no_hdrftr = wCount.word - wCount.words_no_hdrftr;
 
 	return (wCount);
 }

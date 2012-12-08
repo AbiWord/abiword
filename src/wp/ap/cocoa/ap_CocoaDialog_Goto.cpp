@@ -169,7 +169,7 @@ void AP_CocoaDialog_Goto::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 		[_bookmarkName selectItemAtIndex:0];
 	}
 	
-	m_docCount = _xap->getView()->countWords();
+	m_docCount = _xap->getView()->countWords(false);
 	NSNumberFormatter *formatter;
 	formatter = [_pageNum formatter];
 	[formatter setMinimum:[NSNumber numberWithInt:1]];

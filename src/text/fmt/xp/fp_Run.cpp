@@ -4503,7 +4503,7 @@ bool fp_FieldCharCountRun::calculateValue(void)
 	}
 	else
 	{
-	    FV_DocCount cnt = pView->countWords();
+	    FV_DocCount cnt = pView->countWords(true);
 	    UT_UTF8String_sprintf(szFieldValue, "%d", cnt.ch_sp);
 	}
 	if (getField())
@@ -4523,7 +4523,7 @@ bool fp_FieldNonBlankCharCountRun::calculateValue(void)
 	FV_View *pView = _getView();
 	if(pView)
 	{
-		FV_DocCount cnt = pView->countWords();
+		FV_DocCount cnt = pView->countWords(true);
 	    UT_UTF8String_sprintf(szFieldValue, "%d", cnt.ch_no);
 	}
 
@@ -4544,7 +4544,7 @@ bool fp_FieldLineCountRun::calculateValue(void)
 
 	if(pView)
 	{
-	    FV_DocCount cnt = pView->countWords();
+	    FV_DocCount cnt = pView->countWords(false);
 	    UT_UTF8String_sprintf(szFieldValue, "%d", cnt.line);
 	}
 
@@ -4565,7 +4565,7 @@ bool fp_FieldParaCountRun::calculateValue(void)
 	UT_UTF8String szFieldValue ("?");
 	if(pView)
 	{
-	    FV_DocCount cnt = pView->countWords();
+	    FV_DocCount cnt = pView->countWords(false);
 	    UT_UTF8String_sprintf(szFieldValue, "%d", cnt.para);
 	}
 
@@ -4585,7 +4585,7 @@ bool fp_FieldWordCountRun::calculateValue(void)
 	UT_UTF8String szFieldValue ("?");
 	if(pView)
 	{
-	    FV_DocCount cnt = pView->countWords();
+	    FV_DocCount cnt = pView->countWords(true);
 	    UT_UTF8String_sprintf(szFieldValue, "%d", cnt.word);
 	}
 

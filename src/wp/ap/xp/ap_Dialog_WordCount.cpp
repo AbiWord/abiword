@@ -77,7 +77,7 @@ void AP_Dialog_WordCount::localizeDialog(void)
 void AP_Dialog_WordCount::updateDialogData(void)
 {
 	setWidgetValueInt(WORDS_VAL_WID, m_count.word);
-	setWidgetValueInt(WORDSNF_VAL_WID, m_count.words_no_hdrftr);
+	setWidgetValueInt(WORDSNF_VAL_WID, m_count.words_no_notes);
 	setWidgetValueInt(PARA_VAL_WID, m_count.para);
 	setWidgetValueInt(CHARSP_VAL_WID, m_count.ch_sp);
 	setWidgetValueInt(CHARNSP_VAL_WID, m_count.ch_no);
@@ -112,7 +112,7 @@ void AP_Dialog_WordCount::setCountFromActiveFrame(void)
 	FV_View * pview = static_cast<FV_View *>(getActiveFrame()->getCurrentView());
 	if(!pview->isLayoutFilling())
 	{
-		setCount(pview->countWords());
+		setCount(pview->countWords(true));
 	}
 }
 

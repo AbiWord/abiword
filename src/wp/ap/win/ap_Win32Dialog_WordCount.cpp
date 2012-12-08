@@ -244,7 +244,7 @@ void AP_Win32Dialog_WordCount::_updateWindowData(void)
 	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_CHSP,		m_count.ch_sp);
 	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_PARA,		m_count.para);
 	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_LINE,		m_count.line);
-	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_WORDSONLY,	m_count.words_no_hdrftr);
+	_setDlgItemInt(AP_RID_DIALOG_WORDCOUNT_VAL_WORDSONLY,	m_count.words_no_notes);
 
 	// Update the caption in case the name of the document has changed
 	ConstructWindowName();

@@ -12446,7 +12446,7 @@ UT_return_val_if_fail(pDialog, false);
 	}
 	else
 	{
-		pDialog->setCount(pView->countWords());
+		pDialog->setCount(pView->countWords(true));
 		pDialog->runModeless(pFrame);
 	}
 	bool bOK = true;
