@@ -1464,7 +1464,7 @@ void ie_imp_table::buildTableStructure(void)
 //
 	UT_sint32 i = 0;
 	ie_imp_cell * pCell = NULL;
-	UT_sint32 cellx = 0;
+	//UT_sint32 cellx = 0;
 	UT_sint32 curRow = 0;
 	UT_sint32 iLeft =0;
 	UT_sint32 iRight=0;
@@ -1475,7 +1475,7 @@ void ie_imp_table::buildTableStructure(void)
 	{
 		bool bSkipThis = false;
 		pCell = m_vecCells.getNthItem(i);
-		cellx = pCell->getCellX();
+		//cellx = pCell->getCellX();
 		if(i==0 || (pCell->getRow() > curRow))
 		{
 			curRow = pCell->getRow();
@@ -1487,7 +1487,7 @@ void ie_imp_table::buildTableStructure(void)
 // This cell is vertically merged. Advance the left pointer to the position after this cell.
 //
 			iRight = getColNumber(pCell);
-			xxx_UT_DEBUGMSG(("SEVIOR: This cell is meregd above!!!!!!!!! cellx %d iLeft %d \n",cellx,iLeft));
+			//UT_DEBUGMSG(("SEVIOR: This cell is meregd above!!!!!!!!! cellx %d iLeft %d \n",cellx,iLeft));
 			bSkipThis = true;
 		}
 		if(pCell->isMergedLeft())
@@ -1495,7 +1495,7 @@ void ie_imp_table::buildTableStructure(void)
 //
 // This cell is Horizontally merged. Advance the left pointer to the position after this cell. Increment iRight
 //
-			xxx_UT_DEBUGMSG(("SEVIOR: This cell is meregd Left!!!!!!!!! cellx %d \n",cellx));
+			//UT_DEBUGMSG(("SEVIOR: This cell is meregd Left!!!!!!!!! cellx %d \n",cellx));
 			bSkipThis = true;
 		}
 		else
@@ -1517,11 +1517,11 @@ void ie_imp_table::buildTableStructure(void)
 			//
 			UT_sint32 newRow = curRow+1;
 			ie_imp_cell * pNewCell = getCellAtRowColX(newRow,pCell->getCellX());
-			xxx_UT_DEBUGMSG(("SEVIOR: This cell is first vertical mereged cell class %x cellx %d \n",pNewCell,cellx));
+			/*UT_DEBUGMSG(("SEVIOR: This cell is first vertical mereged cell class %x cellx %d \n",pNewCell,cellx));
 			if(pNewCell)
 			{
 				xxx_UT_DEBUGMSG(("SEVIOR: this cellx %d, found cellx %d, found row %d \n",cellx,pNewCell->getCellX(),pNewCell->getRow()));
-			}
+			}*/
 			while(pNewCell && (pNewCell->isMergedAbove()) )
 			{
 				newRow++;

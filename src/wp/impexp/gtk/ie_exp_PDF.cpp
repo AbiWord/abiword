@@ -90,11 +90,9 @@ public:
     const std::string & pages_prop = getProperty ("pages");
 
     double width, height;
-    bool portrait;
 
     width = getDoc()->m_docPageSize.Width (DIM_IN);
     height = getDoc()->m_docPageSize.Height (DIM_IN);
-    portrait = getDoc()->m_docPageSize.isPortrait();
 
 	// Cairo expects the width/height of the surface in points, with 1 point == 1/72 inch). For details, see
 	// http://cairographics.org/manual/cairo-pdf-surface.html#cairo-pdf-surface-create-for-stream

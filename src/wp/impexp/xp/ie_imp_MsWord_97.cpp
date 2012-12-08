@@ -929,7 +929,7 @@ IE_Imp_MsWord_97::IE_Imp_MsWord_97(PD_Document * pDocument)
 	m_bInTextboxes(false),
 	m_pTextboxEndSection(NULL),
 	m_iLeftCellPos(0),
-	m_iLastAppendedHeader(-1)
+	m_iLastAppendedHeader(0xffffffff)
 {
   for(UT_uint32 i = 0; i < 9; i++)
 	  m_iListIdIncrement[i] = 0;
@@ -1416,7 +1416,7 @@ void IE_Imp_MsWord_97::_flush ()
 			  {
 				  // strong character; if we previously issued an override,
 				  // we need to cancel it
-				  if(iOverride != UT_BIDI_UNSET)
+				  if(iOverride != static_cast<UT_uint32>(UT_BIDI_UNSET))
 				  {
 					  if(i - iLast > 0)
 					  {
@@ -1905,7 +1905,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 	Blip blip;
 	long pos;
 	FSPA * fspa;
-	FDOA * fdoa;
+	//FDOA * fdoa;
 #ifdef SUPPORTS_OLD_IMAGES
 	wvStream *fil;
 	PICF picf;
@@ -2222,7 +2222,7 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 		else
 		{
 			UT_DEBUGMSG(("pre Word8 0x08 graphic -- unsupported at the moment"));
-			fdoa = wvGetFDOAFromCP(ps->currentcp, NULL, ps->fdoapos,
+			/*fdoa =*/ wvGetFDOAFromCP(ps->currentcp, NULL, ps->fdoapos,
 								   ps->nooffdoa);
 
 			// TODO: do something with the data in this fdoa someday...

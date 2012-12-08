@@ -2030,7 +2030,7 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 	//###TF const gchar * szDir = apa.getProperty("dir");
 	const gchar * szDirOvrr = _getStyleProp(pADStyle,&apa,"dir-override");
 
-	bool bProceed = true;
+	//bool bProceed = true;
 	if (szDirOvrr)
 	{
 		if (!strcmp (szDirOvrr, "ltr"))
@@ -2038,14 +2038,14 @@ void IE_Exp_RTF::_write_charfmt(const s_RTF_AttrPropAdapter & apa)
 			_rtf_keyword ("ltrch");
 			_rtf_keyword ("abiltr");
 			m_CharRTL = UT_BIDI_LTR;
-			bProceed = false;
+			//bProceed = false;
 		}
 		else if (!strcmp (szDirOvrr, "rtl"))
 		{
 			_rtf_keyword ("rtlch");
 			_rtf_keyword ("abirtl");
 			m_CharRTL = UT_BIDI_RTL;
-			bProceed  = false;
+			//bProceed  = false;
 		}
 	}
 	/*

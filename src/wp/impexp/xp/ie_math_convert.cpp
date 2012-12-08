@@ -93,10 +93,10 @@ bool convertLaTeXtoEqn(const UT_UTF8String & sLaTeX,UT_UTF8String & eqnLaTeX)
 
     if(strcmp((sLaTeX.substr(1,2)).utf8_str(),"\\[")==0 && strcmp((sLaTeX.substr(sLaTeX.size()-2,2)).utf8_str(),"\\]")==0)
     {
-        UT_sint32 i=3;
-	UT_sint32 j=sLaTeX.size()-3;
+        UT_uint32 i=3;
+	UT_uint32 j=sLaTeX.size()-3;
 
-	while((strcmp((sLaTeX.substr(i,1)).utf8_str(),"\n")==0 || strcmp((sLaTeX.substr(i,1)).utf8_str(),"\t")==0) && i< sLaTeX.size()-2)
+	while((strcmp((sLaTeX.substr(i,1)).utf8_str(),"\n")==0 || strcmp((sLaTeX.substr(i,1)).utf8_str(),"\t")==0) && i+2< sLaTeX.size())
 	{
 	    i++;
 	}

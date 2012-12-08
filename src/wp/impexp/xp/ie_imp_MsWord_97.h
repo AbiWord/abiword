@@ -348,7 +348,7 @@ private:
 	pf_Frag *    m_pTextboxEndSection;
 	UT_GenericVector<textboxPos *> m_vecTextboxPos;
 	UT_sint32    m_iLeftCellPos;
-	UT_sint32    m_iLastAppendedHeader;
+	UT_uint32    m_iLastAppendedHeader;
 };
 
 #endif /* IE_IMP_MSWORD_H */

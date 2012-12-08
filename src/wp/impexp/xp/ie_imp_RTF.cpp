@@ -2783,7 +2783,7 @@ bool IE_Imp_RTF::HandleParKeyword()
 		std::string aStyle;
 		
 		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-		   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+		   && static_cast<UT_uint32>(m_currentRTFState.m_charProps.m_styleNumber) < m_styleTable.size())
 		{
 			aStyle = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber];
 		}
@@ -3034,7 +3034,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 // Get a font out of the font table, making sure we dont attempt to access off the end
 RTFFontTableItem* IE_Imp_RTF::GetNthTableFont(UT_sint32 fontNum)
 {
-	if (fontNum < m_fontTable.size())
+	if (static_cast<UT_uint32>(fontNum) < m_fontTable.size())
 	{
 		return m_fontTable.at(fontNum);
 	}
@@ -3048,7 +3048,7 @@ RTFFontTableItem* IE_Imp_RTF::GetNthTableFont(UT_sint32 fontNum)
 // Get a colour out of the colour table, making sure we dont attempt to access off the end
 UT_uint32 IE_Imp_RTF::GetNthTableColour(UT_sint32 colNum)
 {
-	if (colNum < m_colourTable.size())
+	if (static_cast<UT_uint32>(colNum) < m_colourTable.size())
 	{
 		return m_colourTable.at(colNum);
 	}
@@ -3060,7 +3060,7 @@ UT_uint32 IE_Imp_RTF::GetNthTableColour(UT_sint32 colNum)
 
 UT_sint32 IE_Imp_RTF::GetNthTableBgColour(UT_sint32 colNum)
 {
-	if (colNum < m_colourTable.size())
+	if (static_cast<UT_uint32>(colNum) < m_colourTable.size())
 	{
 		return m_colourTable.at(colNum);
 	}
@@ -3536,7 +3536,6 @@ bool IE_Imp_RTF::HandleField()
 		UT_ByteBuf fldBuf;
 		gchar * xmlField = NULL;
 		bool gotStarKW = false;
-		bool gotFldinstKW = false;
 		// bUseResult will to be set to false if we encounter a field
 		// instruction we know about. Otherwise, we use the result by default
 		bUseResult = true;
@@ -3567,7 +3566,6 @@ bool IE_Imp_RTF::HandleField()
 					{
 						UT_DEBUGMSG (("Ohoh, we were not supposed to get a 'fldinst' without a '*'. Go ahead.\n"));
 					}
-					gotFldinstKW = true;
 				}
 				else if (strcmp(reinterpret_cast<const char *>(&keyword[0]), "\\") == 0)
 				{
@@ -6401,7 +6399,7 @@ bool IE_Imp_RTF::_appendSpan()
 	propsArray[1] = prop_basic.c_str();
 
 	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-	   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+	   && static_cast<UT_uint32>(m_currentRTFState.m_charProps.m_styleNumber) < m_styleTable.size())
 	{
 		propsArray[2] = pStyle;
 		propsArray[3] = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber].c_str();
@@ -6527,7 +6525,7 @@ bool IE_Imp_RTF::_appendSpan()
 			{
 				// strong character; if we previously issued an override,
 				// we need to cancel it
-				if(m_iAutoBidiOverride != UT_BIDI_UNSET)
+				if(m_iAutoBidiOverride != static_cast<UT_uint32>(UT_BIDI_UNSET))
 				{
 					if(i - iLast > 0)
 					{
@@ -6638,7 +6636,7 @@ bool IE_Imp_RTF::_insertSpan()
 	UT_uint32 iLen = m_gbBlock.getLength();
 
 	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-	   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+	   && static_cast<UT_uint32>(m_currentRTFState.m_charProps.m_styleNumber) < m_styleTable.size())
 	{
 		propsArray[2] = pStyle;
 		propsArray[3] = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber].c_str();
@@ -6748,7 +6746,7 @@ bool IE_Imp_RTF::_insertSpan()
 			{
 				// strong character; if we previously issued an override,
 				// we need to cancel it
-				if(m_iAutoBidiOverride != UT_BIDI_UNSET)
+				if(m_iAutoBidiOverride != static_cast<UT_uint32>(UT_BIDI_UNSET))
 				{
 					if(i - iLast > 0)
 					{
@@ -6868,7 +6866,7 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		UT_uint32 iPos = 2;
 
 		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-		   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+		   && static_cast<UT_uint32>(m_currentRTFState.m_charProps.m_styleNumber) < m_styleTable.size())
 		{
 			propsArray[iPos++] = pStyle;
 			propsArray[iPos++] = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber].c_str();
@@ -7163,7 +7161,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		UT_ASSERT_HARMLESS(m_currentRTFState.m_paraProps.m_tabStops.size() ==
 					m_currentRTFState.m_paraProps.m_tabLeader.size() );
 		propBuffer += "tabstops:";
-		for (UT_sint32 i = 0; i < m_currentRTFState.m_paraProps.m_tabStops.size(); i++)
+		for (UT_uint32 i = 0; i < m_currentRTFState.m_paraProps.m_tabStops.size(); i++)
 		{
 			if (i > 0)
 				propBuffer += ",";
@@ -7269,7 +7267,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	std::string szStyle;
 	std::string szListID1;
 	std::string szParentID1;
-	UT_uint32 id = 0,pid = 0,startValue = 0;
+	UT_uint32 id = 0,parentID = 0,startValue = 0;
 //
 // This is for our own extensions to RTF.
 //
@@ -7293,9 +7291,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 	  //
 		id = mapID(m_currentRTFState.m_paraProps.m_rawID);
 		szListID1 = UT_std_string_sprintf("%d",id);
-		pid = mapParentID(m_currentRTFState.m_paraProps.m_rawParentID);
-		szParentID1 = UT_std_string_sprintf("%d",pid);
-		if(pid == 0)
+		parentID = mapParentID(m_currentRTFState.m_paraProps.m_rawParentID);
+		szParentID1 = UT_std_string_sprintf("%d",parentID);
+		if(parentID == 0)
 			m_currentRTFState.m_paraProps.m_level = 1;
 		szLevel1 = UT_std_string_sprintf("%d",m_currentRTFState.m_paraProps.m_level);
 
@@ -7507,7 +7505,8 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 		propBuffer += UT_std_string_sprintf("start-value:%d",startValue);
 	}
 	// Style name
-	if( m_currentRTFState.m_paraProps.m_styleNumber < m_styleTable.size() &&(m_currentRTFState.m_paraProps.m_styleNumber >= 0) )
+	if( static_cast<UT_uint32>(m_currentRTFState.m_paraProps.m_styleNumber) < m_styleTable.size() &&
+		(m_currentRTFState.m_paraProps.m_styleNumber >= 0) )
 	{
 		UT_uint32 styleNumber = m_currentRTFState.m_paraProps.m_styleNumber;
 		const std::string & styleName = m_styleTable[styleNumber];
@@ -7733,7 +7732,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 					lType = static_cast<FL_ListType>(j);
 				else
 					lType = static_cast<FL_ListType>(0);
-				pAuto = new fl_AutoNum(id, pid, lType, startValue,static_cast<gchar *>(m_currentRTFState.m_paraProps.m_pszListDelim),static_cast<gchar *>(m_currentRTFState.m_paraProps.m_pszListDecimal), getDoc(), NULL);
+				pAuto = new fl_AutoNum(id, parentID, lType, startValue,static_cast<gchar *>(m_currentRTFState.m_paraProps.m_pszListDelim),static_cast<gchar *>(m_currentRTFState.m_paraProps.m_pszListDecimal), getDoc(), NULL);
 				getDoc()->addList(pAuto);
 				pAuto->fixHierarchy();
 			}
@@ -7742,7 +7741,7 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			/// Now insert this into the pAuto List
 			///
 			pAuto->addItem(sdh_cur);
-			if(pid != 0)
+			if(parentID != 0)
 			{
 				pAuto->findAndSetParentItem();
 				pAuto->markAsDirty();
@@ -7956,7 +7955,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propBuffer += UT_std_string_sprintf("; page-margin-footer:%fin",inch);
 	}
 	UT_DEBUGMSG(("SEVIOR: propBuffer = %s \n",propBuffer.c_str()));
-	if(m_currentRTFState.m_sectionProps.m_dir != UT_BIDI_UNSET)
+	if(m_currentRTFState.m_sectionProps.m_dir != static_cast<UT_uint32>(UT_BIDI_UNSET))
 	{
 		const char r[] = "rtl";
 		const char l[] = "ltr";
@@ -8783,7 +8782,7 @@ bool IE_Imp_RTF::ReadListOverrideTable(void)
 RTF_msword97_listOverride*
 IE_Imp_RTF::_getTableListOverride(UT_uint32 id)
 {
-	UT_sint32 i;
+	UT_uint32 i;
 	RTF_msword97_listOverride* pLOver;
 
 	for (i = 0; i < m_vecWord97ListOverride.size(); i++)
@@ -10173,7 +10172,7 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 				std::string sPasteTableSDH;
 				std::string sProp = "table-sdh";
 				sPasteTableSDH = UT_std_string_getPropVal(sProps,sProp);
-				std::string sThisTableSDH = UT_std_string_sprintf("%x",sdhTable);
+				std::string sThisTableSDH = UT_std_string_sprintf("%p",sdhTable);
 				UT_DEBUGMSG(("sThisTableSDH %s sPasteTableSDH %s \n",sThisTableSDH.c_str(),sPasteTableSDH.c_str()));
 				bool isRow = (pView->getSelectionMode() == FV_SelectionMode_TableRow);
 				if(!isRow && pView->getSelectionMode() == FV_SelectionMode_NONE)
@@ -11340,8 +11339,8 @@ bool IE_Imp_RTF::HandleDeltaMoveID()
 	{
 //		m_ctMoveID = moveid;
 		pf_Frag_Strux* sdh;
-		bool rc = getDoc()->getStruxOfTypeFromPosition( m_dposPaste, PTX_Block, &sdh);
-		if( rc )
+		bool bResult = getDoc()->getStruxOfTypeFromPosition( m_dposPaste, PTX_Block, &sdh);
+		if( bResult )
 		{
 			getDoc()->changeStruxAttsNoUpdate( sdh, "delta:move-idref", moveid.c_str() );
 		}
@@ -11457,7 +11456,7 @@ bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 	const gchar * pStyle = NULL;
 	std::string styleName;
 	if(m_currentRTFState.m_charProps.m_styleNumber >= 0
-	   && m_currentRTFState.m_charProps.m_styleNumber < m_styleTable.size())
+	   && static_cast<UT_uint32>(m_currentRTFState.m_charProps.m_styleNumber) < m_styleTable.size())
 	{
 		pStyle = PT_STYLE_ATTRIBUTE_NAME;
 		styleName = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber];
@@ -11950,7 +11949,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 		}
 
 		// if the stylesheet is malformed there might be nothing in the table ...
-		if (nesting == 1 && m_styleTable.size() > styleNumber )
+		if (nesting == 1 && static_cast<UT_sint32>(m_styleTable.size()) > styleNumber )
 		{
 			// Reached the end of a single style definition.
 			// Use it.
@@ -12421,7 +12420,7 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 	UT_sint32 parameter = 0;
 	bool paramUsed = false;	
 	int nested = 0;
-	bool result;
+	//bool result;
 	const char * metaDataKey = NULL;
 	std::string metaDataProp;
 	enum {
@@ -12459,11 +12458,11 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 				action = ACT_PCDATA;
 				break;
 			case RTF_KW_company:
-				result = SkipCurrentGroup();
+				/*result =*/ SkipCurrentGroup();
 				action = ACT_NONE;
 				break;
 			case RTF_KW_operator:
-				result = SkipCurrentGroup();
+				/*result =*/ SkipCurrentGroup();
 				action = ACT_NONE;
 				break;
 			case RTF_KW_keywords:
@@ -12471,15 +12470,15 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 				action = ACT_PCDATA;
 				break;
 			case RTF_KW_comment:
-				result = SkipCurrentGroup();
+				/*result =*/ SkipCurrentGroup();
 				action = ACT_NONE;
 				break;
 			case RTF_KW_doccomm:
-				result = PD_META_KEY_DESCRIPTION;
+				metaDataKey = PD_META_KEY_DESCRIPTION;
 				action = ACT_PCDATA;
 				break;		
 			case RTF_KW_hlinkbase:
-				result = SkipCurrentGroup();
+				/*result =*/ SkipCurrentGroup();
 				action = ACT_NONE;
 				break;
 			case RTF_KW_creatim:
@@ -12491,23 +12490,23 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 				action = ACT_DATETIME;
 				break;
 			case RTF_KW_printim:
-				result = SkipCurrentGroup();
+				/*result =*/ SkipCurrentGroup();
 				action = ACT_NONE;
 				break;
 			case RTF_KW_buptim:
-				result = SkipCurrentGroup();
+				/*result =*/ SkipCurrentGroup();
 				action = ACT_NONE;
 				break;
 			default:
-				result = SkipCurrentGroup();
+				/*result =*/ SkipCurrentGroup();
 				action = ACT_NONE;
 			}
 			if (action == ACT_PCDATA) {
 				metaDataProp = "";
-				result = HandlePCData(metaDataProp);
+				/*result =*/ HandlePCData(metaDataProp);
 			}
 			else if (action == ACT_DATETIME) {
-				result = SkipCurrentGroup();
+				/*result =*/ SkipCurrentGroup();
 				action = ACT_NONE;
 				//result = HandlMetaDataTime(&metaTime);
 			}

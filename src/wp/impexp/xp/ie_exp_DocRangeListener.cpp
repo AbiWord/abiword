@@ -123,16 +123,16 @@ void  IE_Exp_DocRangeListener::assembleAtts(const char ** inAtts, const char ** 
     }	
     propsCount = i;
   }
-  UT_sint32 iSpace = 0;
+  //UT_sint32 iSpace = 0;
   if(bHasProps || (propsCount == 0))
   {
     sAtts = new const char*[attsCount+1];
-    iSpace = attsCount+1;
+    //iSpace = attsCount+1;
   }
   else if(propsCount > 0)
   {
      sAtts = new const char*[attsCount+3];
-     iSpace = attsCount+1;
+     //iSpace = attsCount+1;
   }
   else if((attsCount == 0) && (propsCount == 0))
   {
@@ -140,7 +140,7 @@ void  IE_Exp_DocRangeListener::assembleAtts(const char ** inAtts, const char ** 
     return;
   }
 
-  xxx_UT_DEBUGMSG(("iSpace count %d \n",iSpace));
+  //UT_DEBUGMSG(("iSpace count %d \n",iSpace));
   for(i=0; i<vecAtts.getItemCount();i++)
   {
     szVal = vecAtts.getNthItem(i);
