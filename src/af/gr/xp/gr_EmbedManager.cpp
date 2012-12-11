@@ -497,6 +497,7 @@ void GR_EmbedManager::updateData(UT_sint32 /*uid*/, UT_sint32 /*api*/)
 {
 }
 
-void GR_EmbedManager::setFont(UT_sint32 /*uid*/, const GR_Font * /*pFont*/)
+bool GR_EmbedManager::setFont(UT_sint32 /*uid*/, const GR_Font * /*pFont*/)
 {
+	return false;
 }

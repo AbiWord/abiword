@@ -142,7 +142,7 @@ void fp_EmbedRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	}
 	getEmbedManager()->setDefaultFontSize(m_iEmbedUID,atoi(pszSize));
 	if (bFontChanged)
-		getEmbedManager()->setFont(m_iEmbedUID,pFont);
+		bFontChanged = getEmbedManager()->setFont(m_iEmbedUID,pFont);
 	if(getEmbedManager()->isDefault())
 	{
 	  iWidth = _getLayoutPropFromObject("width");
