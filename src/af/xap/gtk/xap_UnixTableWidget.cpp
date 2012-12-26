@@ -344,13 +344,7 @@ restart_widget (AbiTable *table)
 	table->selected_rows = init_rows;
 	table->total_cols = my_max(init_cols + 1, 5);
 	table->total_rows = my_max(init_rows + 1, 6);
-
-#if GTK_CHECK_VERSION(2,24,0)
-	g_signal_emit_by_name(table, "button-release-event");
-#else
 	gtk_button_released(GTK_BUTTON(table));
-#endif
-
 	gtk_widget_hide(GTK_WIDGET(table->window));
 }
 
