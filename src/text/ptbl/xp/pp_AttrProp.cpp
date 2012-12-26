@@ -937,11 +937,18 @@ PP_AttrProp * PP_AttrProp::cloneWithReplacements(const gchar ** attributes,
 		// TODO we blowaway all of the existing properties and create
 		// TODO them from this?  or should we expand it and override
 		// TODO individual properties?
-		// TODO for now, we just barf on it.
-		UT_return_val_if_fail (strcmp(n,PT_PROPS_ATTRIBUTE_NAME)!=0, NULL); // cannot handle PROPS here
-		if (!papNew->getAttribute(n,vNew))
-			if (!papNew->setAttribute(n,v))
-				goto Failed;
+		// TODO for now, we just ignore it.
+	    if (strcmp(n,PT_PROPS_ATTRIBUTE_NAME) == 0)
+	    {
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		continue;
+	    }
+	    if (!papNew->getAttribute(n,vNew))
+	    {
+		bool bres = papNew->setAttribute(n,v);
+		if (!bres)
+		    goto Failed;
+	    }
 	}
 
 	// we want to be able to remove all properties by setting the

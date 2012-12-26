@@ -398,8 +398,16 @@ bool pt_PieceTable::_getSpanAttrPropHelper(pf_Frag * pf, const PP_AttrProp ** pp
 	case pf_Frag::PFT_Object:
 		{	
 			const PP_AttrProp * pAP = m_varset.getAP(pf->getIndexAP());
-		    *ppAP = pAP;
-		    return true;
+			if (pAP)
+			{
+				*ppAP = pAP;
+				return true;
+			}
+			else
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				return false;
+			}
 		}
 
 	case pf_Frag::PFT_Strux:
