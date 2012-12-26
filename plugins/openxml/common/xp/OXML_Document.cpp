@@ -140,6 +140,13 @@ OXML_SharedList OXML_Document::getListById(UT_uint32 id) const
 	return it != m_lists_by_id.end() ? it->second : OXML_SharedList() ;
 }
 
+OXML_SharedImage OXML_Document::getImageById(const std::string & id) const
+{
+	OXML_ImageMap::const_iterator it;
+	it = m_images_by_id.find(id);
+	return it != m_images_by_id.end() ? it->second : OXML_SharedImage() ;
+}
+
 UT_Error OXML_Document::addImage(const OXML_SharedImage & obj)
 {
 	UT_return_val_if_fail(obj, UT_ERROR);
@@ -176,6 +183,71 @@ UT_Error OXML_Document::clearHeaders()
 {
 	m_headers.clear();
 	return m_headers.size() == 0 ? UT_OK : UT_ERROR;
+}
+
+bool OXML_Document::isAllDefault(const bool & header) const
+{
+	const gchar* type = NULL;
+	OXML_SectionMap::const_iterator it;
+	if(!header)
+	{
+		for (it = m_footers.begin(); it != m_footers.end(); it++)
+		{
+			if(it->second->getAttribute("type", type) == UT_OK)
+			{
+				if(strcmp(type, "default") != 0)
+				{
+					return false;
+				}
+			}
+		}
+	}
+	else
+	{
+		for (it = m_headers.begin(); it != m_headers.end(); it++)
+		{
+			if(it->second->getAttribute("type", type) == UT_OK)
+			{
+				if(strcmp(type, "default") != 0)
+				{
+					return false;
+				}
+			}
+		}
+	}
+	return true;
+}
+OXML_SharedSection OXML_Document::getHdrFtrById(const bool & header, const std::string & id) const
+{
+	const gchar* hdrFtrId = NULL;
+	OXML_SectionMap::const_iterator it;
+	if(!header)
+	{
+		for (it = m_footers.begin(); it != m_footers.end(); it++)
+		{
+			if(it->second->getAttribute("id", hdrFtrId) == UT_OK)
+			{
+				if(!strcmp(hdrFtrId, id.c_str()))
+				{
+					return it->second;
+				}
+			}
+		}
+	}
+	else
+	{
+		for (it = m_headers.begin(); it != m_headers.end(); it++)
+		{
+			if(it->second->getAttribute("id", hdrFtrId) == UT_OK)
+			{
+				if(!strcmp(hdrFtrId, id.c_str()))
+				{
+					return it->second;
+				}
+			}
+		}
+	}
+	return OXML_SharedSection();
 }
 
 OXML_SharedSection OXML_Document::getFootnote(const std::string & id) const
@@ -340,9 +412,17 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 			return ret;
 	}
 
-	ret = exporter->writeDefaultStyle();
-	if(ret != UT_OK)
-		return ret;
+	OXML_SectionMap::iterator it5;
+	for (it5 = m_headers.begin(); it5 != m_headers.end(); it5++)
+	{
+		it5->second->setHandledHdrFtr(false); // Headers are not handled before serialization of sections
+	}
+
+	OXML_SectionMap::iterator it6;
+	for (it6 = m_footers.begin(); it6 != m_footers.end(); it6++)
+	{
+		it6->second->setHandledHdrFtr(false); // Footers are not handled before serialization of sections
+	}
 
 	OXML_SectionVector::size_type i;
 	for (i = 0; i < m_sections.size(); i++)
@@ -358,9 +438,9 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 
 	bool firstPageHdrFtr = false;
 	bool evenPageHdrFtr = false;
+	bool handled = false;
 
 	//serialize headers
-	OXML_SectionMap::iterator it5;
 	for (it5 = m_headers.begin(); it5 != m_headers.end(); it5++) {
 
 		if(it5->second->hasFirstPageHdrFtr())
@@ -368,13 +448,18 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 		if(it5->second->hasEvenPageHdrFtr())
 			evenPageHdrFtr = true;	
 
-		ret = it5->second->serializeHeader(exporter);
-		if (ret != UT_OK)
-			return ret;
+		handled = it5->second->getHandledHdrFtr();
+
+		if(!handled)
+		{
+			it5->second->setHandledHdrFtr(true);
+			ret = it5->second->serializeHeader(exporter);
+			if (ret != UT_OK)
+				return ret;
+		}
 	}
 
 	//serialize footers
-	OXML_SectionMap::iterator it6;
 	for (it6 = m_footers.begin(); it6 != m_footers.end(); it6++) {
 
 		if(it6->second->hasFirstPageHdrFtr())
@@ -382,10 +467,20 @@ UT_Error OXML_Document::serialize(IE_Exp_OpenXML* exporter)
 		if(it6->second->hasEvenPageHdrFtr())
 			evenPageHdrFtr = true;	
 
-		ret = it6->second->serializeFooter(exporter);
-		if (ret != UT_OK)
-			return ret;
+		handled = it6->second->getHandledHdrFtr();
+
+		if(!handled)
+		{
+			it6->second->setHandledHdrFtr(true);
+			ret = it6->second->serializeFooter(exporter);
+			if (ret != UT_OK)
+				return ret;
+		}
 	}
+
+	ret = exporter->setContinuousSection(TARGET_DOCUMENT);
+	if(ret != UT_OK)
+		return ret;
 
 	if(firstPageHdrFtr)
 	{

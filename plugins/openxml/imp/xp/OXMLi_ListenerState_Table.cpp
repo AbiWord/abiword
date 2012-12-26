@@ -458,7 +458,6 @@ void OXMLi_ListenerState_Table::endElement (OXMLi_EndElementRequest * rqst)
 		}
 		else //(pCell->startsHorizontalMerge() && pCell->startsVerticalMerge())
 		{
-			OXML_Element_Row* pRow = m_rowStack.top();
 			row->appendElement(cell);
 		}
 		m_cellStack.pop();

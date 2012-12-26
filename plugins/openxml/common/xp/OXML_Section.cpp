@@ -40,7 +40,9 @@ OXML_Section::OXML_Section() :
 	OXML_ObjectWithAttrProp(), 
 	m_id(""), 
 	m_breakType(NEXTPAGE_BREAK),
-	TARGET(0)
+	TARGET(0),
+	m_lastParagraph(NULL),
+	b_handledHdrFtr(false)
 {
 	m_headerIds[0] = NULL; m_headerIds[1] = NULL; m_headerIds[2] = NULL;
 	m_footerIds[0] = NULL; m_footerIds[1] = NULL; m_footerIds[2] = NULL;
@@ -102,10 +104,24 @@ UT_Error OXML_Section::clearChildren()
 UT_Error OXML_Section::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error ret = UT_OK;
+	OXML_Document* doc = OXML_Document::getInstance();
 
 	applyDocumentProperties();
 
 	OXML_ElementVector::size_type i;
+
+	if(this != doc->getLastSection().get())
+	{
+		for (i = 0; i < m_children.size(); i++)
+		{
+			if(m_children[i].get() && ((m_children[i].get())->getTag() == P_TAG))
+			{
+				static_cast<OXML_Element_Paragraph*>(m_children[i].get())->setSection(this);
+				m_lastParagraph = static_cast<OXML_Element_Paragraph*>(m_children[i].get());
+			}
+		}
+	}
+
 	for (i = 0; i < m_children.size(); i++)
 	{
 		ret = m_children[i]->serialize(exporter);
@@ -151,10 +167,19 @@ void OXML_Section::applyDocumentProperties()
 		pDoc->setPageMargins(marginTop, marginLeft, marginRight, marginBottom);
 }
 
-UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter)
+UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter, OXML_Element_Paragraph* pParagraph)
 {
 	//TODO: Add all the property serializations here
 	UT_Error err = UT_OK;
+
+	if(pParagraph != m_lastParagraph)
+	{
+		return UT_OK;
+	}
+
+	OXML_Document* doc = OXML_Document::getInstance();
+	bool defaultHdr = doc->isAllDefault(true);
+	bool defaultFtr = doc->isAllDefault(false);
 
 	const gchar* num = NULL;
 	const gchar* sep = "off";
@@ -162,6 +187,8 @@ UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter)
 	const gchar* marginLeft = NULL;
 	const gchar* marginRight = NULL;
 	const gchar* marginBottom = NULL;
+	const gchar* footerId = NULL;
+	const gchar* headerId = NULL;
 
 	if(getProperty("columns", num) != UT_OK)
 		num = NULL;
@@ -181,6 +208,11 @@ UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter)
 	if(getProperty("page-margin-bottom", marginBottom) != UT_OK)
 		marginBottom = NULL;
 
+	if(getAttribute("header", headerId) != UT_OK)
+		headerId = NULL;
+
+	if(getAttribute("footer", footerId) != UT_OK)
+		footerId = NULL;
 
 	err = exporter->startSectionProperties();
 	if(err != UT_OK)
@@ -191,6 +223,34 @@ UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter)
 		err = exporter->setColumns(TARGET, num, sep);
 		if(err != UT_OK)
 			return err;
+	}
+
+	err = exporter->setContinuousSection(TARGET);
+	if(err != UT_OK)
+		return err;
+
+	if(defaultHdr && headerId && doc)
+	{
+		OXML_SharedSection header_section = doc->getHdrFtrById(true, headerId);
+		if(header_section != NULL)
+		{
+			header_section->setHandledHdrFtr(true);
+			err = header_section->serializeHeader(exporter);
+			if (err != UT_OK)
+				return err;
+		}
+	}
+
+	if(defaultFtr && footerId && doc)
+	{
+		OXML_SharedSection footer_section = doc->getHdrFtrById(false, footerId);
+		if(footer_section != NULL)
+		{
+			footer_section->setHandledHdrFtr(true);
+			err = footer_section->serializeFooter(exporter);
+			if (err != UT_OK)
+				return err;
+		}
 	}
 
 	if(marginTop && marginLeft && marginRight && marginBottom)
@@ -227,6 +287,16 @@ bool OXML_Section::hasEvenPageHdrFtr()
 		return false;
 
 	return strstr(headerType, "even");
+}
+
+void OXML_Section::setHandledHdrFtr(bool val)
+{
+	b_handledHdrFtr = val;
+}
+
+bool OXML_Section::getHandledHdrFtr()
+{
+	return b_handledHdrFtr;
 }
 
 /**
@@ -418,25 +488,17 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 	ret = _setReferenceIds();
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
-	//Appending page break to current section if necessary
-	if (m_breakType == ODDPAGE_BREAK || m_breakType == EVENPAGE_BREAK) {
-		UT_UCSChar ucs = UCS_FF;
-		ret = pDocument->appendSpan(&ucs, 1) ? UT_OK : UT_ERROR;
-		UT_return_val_if_fail(ret == UT_OK, ret);
-	}
-
-	//Appending new section
+	//Appending section
 	attr = this->getAttributesWithProps();
 	ret = pDocument->appendStrux(PTX_Section, attr) ? UT_OK : UT_ERROR;
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
-	//Appending new page break to the new section if necessary
-	if (m_breakType == NEXTPAGE_BREAK || m_breakType == EVENPAGE_BREAK) {
+	//Appending page break to the section if necessary
+	if (m_breakType == NEXTPAGE_BREAK || m_breakType == ODDPAGE_BREAK || m_breakType == EVENPAGE_BREAK) {
 		UT_UCSChar ucs = UCS_FF;
 		ret = pDocument->appendSpan(&ucs, 1) ? UT_OK : UT_ERROR;
 		UT_return_val_if_fail(ret == UT_OK, ret);
 	}
-
 
 	OXML_ElementVector::size_type i;
 	for (i = 0; i < m_children.size(); i++)
@@ -444,7 +506,8 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 		ret = m_children[i]->addToPT(pDocument);
 		UT_return_val_if_fail(ret == UT_OK, ret);
 	}
-	return ret;
+
+	return UT_OK;
 }
 
 UT_Error OXML_Section::addToPTAsFootnote(PD_Document * pDocument)

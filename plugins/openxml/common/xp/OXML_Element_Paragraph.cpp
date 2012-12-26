@@ -29,7 +29,7 @@
 #include <pd_Document.h>
 
 OXML_Element_Paragraph::OXML_Element_Paragraph(const std::string & id) : 
-	OXML_Element(id, P_TAG, BLOCK), pageBreak(false)
+	OXML_Element(id, P_TAG, BLOCK), pageBreak(false), m_section(NULL)
 {
 }
 
@@ -46,7 +46,7 @@ UT_Error OXML_Element_Paragraph::serialize(IE_Exp_OpenXML* exporter)
 	if(err != UT_OK)
 		return err;
 
-	err = this->serializeProperties(exporter);
+	err = this->serializeProperties(exporter); // Paragraph properties
 	if(err != UT_OK)
 		return err;
 
@@ -210,6 +210,13 @@ UT_Error OXML_Element_Paragraph::serializeProperties(IE_Exp_OpenXML* exporter)
 		}
 	}
 
+	if(m_section)
+	{
+		err = m_section->serializeProperties(exporter, this); // Section properties
+		if(err != UT_OK)
+			return err;
+	}
+
 	return exporter->finishParagraphProperties(TARGET);
 }
 
@@ -336,5 +343,27 @@ const gchar* OXML_Element_Paragraph::getListId()
 void OXML_Element_Paragraph::setPageBreak()
 {
 	pageBreak = true;
+}
+
+bool OXML_Element_Paragraph::isNumberedList()
+{
+	UT_Error err = UT_OK;
+	const gchar* szValue;
+
+	err = getProperty("list-style", szValue);
+	if(err != UT_OK)
+	{
+		return false;
+	}
+	if(!strcmp(szValue, "Numbered List"))
+	{
+		return true;
+	}
+	return false;
+}
+
+void OXML_Element_Paragraph::setSection(OXML_Section* section)
+{
+	m_section = section;
 }
 

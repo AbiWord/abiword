@@ -35,7 +35,8 @@
 
 OXMLi_ListenerState_Styles::OXMLi_ListenerState_Styles() : 
 	OXMLi_ListenerState(), 
-	m_pCurrentStyle(NULL)
+	m_pCurrentStyle(NULL),
+	m_szValZero(false)
 {
 
 }
@@ -84,7 +85,12 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 		const gchar * type = attrMatches(NS_W_KEY, "type", rqst->ppAtts);
 		UT_return_if_fail( _error_if_fail( id != NULL ));
 		if (!strcmp(id, "Normal")) id = "_Normal"; //Cannot interfere with document defaults
-		m_pCurrentStyle = new OXML_Style(id, ""); //TODO: wrap this in try/catch
+		m_pCurrentStyle = new OXML_Style(id, "");
+		if(m_pCurrentStyle == NULL)
+		{
+			UT_DEBUGMSG(("SERHAT: Cannot create an OXML_Style object with the given id!\n"));
+			return;
+		}
 
 		if (!type || !*type) {
 			// default to paragraph in the case of a missing/blank attribute
@@ -116,6 +122,14 @@ void OXMLi_ListenerState_Styles::startElement (OXMLi_StartElementRequest * rqst)
 			m_pCurrentStyle->setAttribute(PT_FOLLOWEDBY_ATTRIBUTE_NAME, val);
 		}
 		rqst->handled = true;
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "sz")) {
+		const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+		UT_return_if_fail( this->_error_if_fail(val != NULL) );
+		if(!strcmp(val, "0"))
+		{
+			m_szValZero = true;
+			rqst->handled = true;
+		}
 	}
 }
 
@@ -150,6 +164,12 @@ void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 		rqst->handled = !nameMatches(rqst->pName, NS_W_KEY, "tblPr") &&
 						!nameMatches(rqst->pName, NS_W_KEY, "trPr") &&
 						!nameMatches(rqst->pName, NS_W_KEY, "tcPr");
+	} else if (nameMatches(rqst->pName, NS_W_KEY, "sz")) {
+		if(m_szValZero)
+		{
+			rqst->handled = true;
+		}
+		m_szValZero = false;
 	}
 }
 

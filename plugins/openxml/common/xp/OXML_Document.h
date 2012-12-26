@@ -67,6 +67,7 @@ public:
 	UT_Error addList(const OXML_SharedList& obj);
 	UT_Error addImage(const OXML_SharedImage& obj);
 	OXML_SharedList getListById(UT_uint32 id) const;
+	OXML_SharedImage getImageById(const std::string & id) const;
 
 	//! Returns a reference to the FIRST footnote with corresponding ID OR empty SharedSection if none found.
 	OXML_SharedSection getFootnote(const std::string & id) const;
@@ -81,6 +82,9 @@ public:
 	OXML_SharedSection getHeader(const std::string & id) const;
 	UT_Error addHeader(const OXML_SharedSection & obj);
 	UT_Error clearHeaders();
+
+	bool isAllDefault(const bool & header) const;
+	OXML_SharedSection getHdrFtrById(const bool & header, const std::string & id) const;
 
 	//! Returns a reference to the FIRST footer with corresponding ID OR NULL if none found.
 	OXML_SharedSection getFooter(const std::string & id) const;

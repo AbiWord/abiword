@@ -96,6 +96,7 @@ private:
 	OXML_Element_Hyperlink* hyperlink;
 	OXML_Element_TextBox* textbox;
 
+	bool bInPositionedImage;
 	bool bInHyperlink;
 	bool bInTextbox;
 	int idCount;

@@ -76,7 +76,7 @@ public:
 	UT_Error startParagraph(int target);
 	UT_Error finishParagraph(int target);
 	UT_Error startText(int target);
-	UT_Error writeText(int target, const UT_UCS4Char* text);
+	UT_Error writeText(int target, const UT_UCS4Char* text, bool list);
 	UT_Error finishText(int target);
 	UT_Error startMath();
 	UT_Error writeMath(const char* omml);
@@ -89,8 +89,14 @@ public:
 	UT_Error finishParagraphProperties(int target);
 	UT_Error startCellProperties(int target);
 	UT_Error finishCellProperties(int target);
-	UT_Error startStyle(std::string name, std::string basedon, std::string followedby);
+	UT_Error startStyle(const std::string& name, const std::string& basedon, const std::string& followedby, const std::string& type);
 	UT_Error finishStyle();
+	UT_Error startDocumentDefaultProperties();
+	UT_Error finishDocumentDefaultProperties();
+	UT_Error startRunDefaultProperties();
+	UT_Error finishRunDefaultProperties();
+	UT_Error startParagraphDefaultProperties();
+	UT_Error finishParagraphDefaultProperties();
 	UT_Error startTable();
 	UT_Error finishTable();
 	UT_Error startTableProperties(int target);
@@ -132,11 +138,10 @@ public:
 	UT_Error finishFootnote();
 	UT_Error startEndnote(const gchar* id);
 	UT_Error finishEndnote();
-	UT_Error writeDefaultStyle();
 	UT_Error setBold(int target);
 	UT_Error setItalic(int target);
 	UT_Error setUnderline(int target);
-	UT_Error setOverline(int target);
+	UT_Error setOverline();
 	UT_Error setLineThrough(int target);
 	UT_Error setSuperscript(int target);
 	UT_Error setSubscript(int target);
@@ -171,6 +176,7 @@ public:
 	UT_Error setMultilevelType(int target, const char* type);
 	UT_Error setHyperlinkRelation(int target, const char* id, const char* addr, const char* mode);
 	UT_Error setImage(const char* id, const char* relId, const char* filename, const char* width, const char* height);
+	UT_Error setPositionedImage(const char* id, const char* relId, const char* filename, const char* width, const char* height, const char* xpos, const char* ypos, const char* wrapMode);
 	UT_Error setImageRelation(const char* filename, const char* id);
 	UT_Error writeImage(const char* filename, const UT_ByteBuf* data);
 	UT_Error setSimpleField(int target, const char* instr, const char* value);
@@ -187,6 +193,7 @@ public:
 	UT_Error setTitlePage();
 	UT_Error setEvenAndOddHeaders();
 	UT_Error setColumns(int target, const gchar* num, const gchar* sep);
+	UT_Error setContinuousSection(int target);
 	UT_Error setPageBreak(int target);
 	UT_Error setPageSize(int target, const char* width, const char* height, const char* orientation);
 	UT_Error setPageMargins(int target, const char* top, const char* left, const char* right, const char* bottom);
@@ -220,6 +227,8 @@ private:
 	std::map<std::string, GsfOutput*> mediaStreams; // all image filename, stream pairs
 	std::map<std::string, GsfOutput*> headerStreams; //all header id, stream pairs
 	std::map<std::string, GsfOutput*> footerStreams; //all footer id, stream pairs
+
+	bool isOverline;
 
 	UT_Error startNumbering();
 	UT_Error startStyles();

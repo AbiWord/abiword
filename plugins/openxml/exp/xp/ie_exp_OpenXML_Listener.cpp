@@ -37,6 +37,7 @@ IE_Exp_OpenXML_Listener::IE_Exp_OpenXML_Listener(PD_Document* doc)
 	savedParagraph(NULL),
 	hyperlink(NULL),
 	textbox(NULL),
+	bInPositionedImage(false),
 	bInHyperlink(false),
 	bInTextbox(false),
 	idCount(10) //the first ten IDs are reserved for the XML file references
@@ -90,7 +91,8 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 			}
 
 			UT_UCS4String str(pData, pcrs->getLength());
-			OXML_SharedElement shared_element_text(new OXML_Element_Text(str.utf8_str(), str.length()));
+			OXML_Element_Text* element_text = new OXML_Element_Text(str.utf8_str(), str.length());
+			OXML_SharedElement shared_element_text(static_cast<OXML_Element*>(element_text));
 
 			OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
 			OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
@@ -113,10 +115,23 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 					{
 						if(element_run->setProperty(szName, szValue) != UT_OK)
 							return false;		
+						if(element_text->setProperty(szName, szValue) != UT_OK)
+							return false;
+					}
+				}
+
+				size_t attrCount = pAP->getAttributeCount();
+
+				for(i=0; i<attrCount; i++)
+				{
+					if(pAP->getNthAttribute(i, szName, szValue))
+					{
+						if(element_text->setAttribute(szName, szValue) != UT_OK)
+							return false;
 					}
 				}
 			}
-			
+
 			if(bInHyperlink)
 			{
 				//make sure hyperlinks are blue and underlined
@@ -348,6 +363,71 @@ bool IE_Exp_OpenXML_Listener::populate(fl_ContainerLayout* /* sfh */, const PX_C
 					return true;
 				}                 
 
+				case PTO_Embed:
+				{
+					if(bHaveProp && pAP)
+					{
+						if(!pAP->getProperty("embed-type", szValue))
+						{
+							UT_DEBUGMSG(("SERHAT: OpenXML exporter embed without embed-type property\n"));
+							return true;
+						}
+
+						if(strcmp(szValue, "GOChart") != 0)
+						{
+							UT_DEBUGMSG(("SERHAT: Embedding without a GOChart\n"));
+							return true;
+						}
+
+						OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
+						OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
+
+						if(paragraph->appendElement(shared_element_run) != UT_OK)
+							return false;
+
+						OXML_Element_Image* element_image = new OXML_Element_Image(getNextId());
+						OXML_SharedElement shared_element_image(static_cast<OXML_Element*>(element_image));
+
+						size_t propCount = pAP->getPropertyCount();
+
+						size_t i;
+						for(i=0; i<propCount; i++)
+						{
+							if(pAP->getNthProperty(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Embedded Image Property %s=%s\n", szName, szValue));
+								if(element_image->setProperty(szName, szValue) != UT_OK)
+									return false;
+							}
+						}
+
+						size_t attrCount = pAP->getAttributeCount();
+
+						for(i=0; i<attrCount; i++)
+						{
+							if(pAP->getNthAttribute(i, szName, szValue))
+							{
+								//TODO: Take the debug message out when we are done
+								UT_DEBUGMSG(("Embedded Image Attribute: %s=%s\n", szName, szValue));
+								if(element_image->setAttribute(szName, szValue) != UT_OK)
+									return false;
+							}
+						}
+						const gchar* pImageName = NULL;
+						std::string snapshot = "snapshot-png-";
+						element_image->getAttribute("dataid", pImageName);
+						if(pImageName)
+						{
+							snapshot += pImageName;
+							if(element_image->setAttribute("dataid", snapshot.c_str()) != UT_OK)
+								return false;
+						}
+						return element_run->appendElement(shared_element_image) == UT_OK;
+					}
+					return true;
+				}
+
 				case PTO_Bookmark:
 				{
 					if(bHaveProp && pAP)
@@ -564,14 +644,60 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 
 				if(pAP->getAttribute("type", szValue))
 				{
-					if(strstr(szValue, "header"))
+					if(!strcmp(szValue, "header"))
 					{
 						section->setTarget(TARGET_HEADER);
+						if(section->setAttribute("type", "default") != UT_OK)
+							return false;
 						return document->addHeader(shared_section) == UT_OK;
 					}
-					else if(strstr(szValue, "footer"))
+					else if(!strcmp(szValue, "header-first"))
+					{
+						section->setTarget(TARGET_HEADER);
+						if(section->setAttribute("type", "first") != UT_OK)
+							return false;
+						return document->addHeader(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "header-last"))
+					{
+						section->setTarget(TARGET_HEADER);
+						if(section->setAttribute("type", "last") != UT_OK)
+							return false;
+						return document->addHeader(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "header-even"))
+					{
+						section->setTarget(TARGET_HEADER);
+						if(section->setAttribute("type", "even") != UT_OK)
+							return false;
+						return document->addHeader(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "footer"))
 					{
 						section->setTarget(TARGET_FOOTER);
+						if(section->setAttribute("type", "default") != UT_OK)
+							return false;
+						return document->addFooter(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "footer-first"))
+					{
+						section->setTarget(TARGET_FOOTER);
+						if(section->setAttribute("type", "first") != UT_OK)
+							return false;
+						return document->addFooter(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "footer-last"))
+					{
+						section->setTarget(TARGET_FOOTER);
+						if(section->setAttribute("type", "last") != UT_OK)
+							return false;
+						return document->addFooter(shared_section) == UT_OK;
+					}
+					else if(!strcmp(szValue, "footer-even"))
+					{
+						section->setTarget(TARGET_FOOTER);
+						if(section->setAttribute("type", "even") != UT_OK)
+							return false;
 						return document->addFooter(shared_section) == UT_OK;
 					}
 				}				
@@ -802,7 +928,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 			}
 			else if(!strcmp(frameType,"image"))
 			{
-				// TODO: handle positioned images
+				bInPositionedImage = true;
 			}
 
 			if(bInTextbox)
@@ -846,6 +972,48 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 				}
 
 				return paragraph->appendElement(shared_element_run) == UT_OK;
+			}
+
+			if(bInPositionedImage)
+			{
+				OXML_Element_Run* element_run = new OXML_Element_Run(getNextId());
+				OXML_SharedElement shared_element_run(static_cast<OXML_Element*>(element_run));
+
+				if(paragraph->appendElement(shared_element_run) != UT_OK)
+					return false;
+
+				OXML_Element_Image* element_image = new OXML_Element_Image(getNextId());
+				OXML_SharedElement shared_element_image(static_cast<OXML_Element*>(element_image));
+
+				const gchar* szValue;
+				const gchar* szName;
+
+				if(bHaveProp && pAP)
+				{
+					size_t propCount = pAP->getPropertyCount();
+
+					size_t i;
+					for(i=0; i<propCount; i++)
+					{
+						if(pAP->getNthProperty(i, szName, szValue))
+						{
+							if(element_image->setProperty(szName, szValue) != UT_OK)
+								return false;
+						}
+					}
+
+					size_t attrCount = pAP->getAttributeCount();
+
+					for(i=0; i<attrCount; i++)
+					{
+						if(pAP->getNthAttribute(i, szName, szValue))
+						{
+							if(element_image->setAttribute(szName, szValue) != UT_OK)
+								return false;
+						}
+					}
+				}
+				return element_run->appendElement(shared_element_image) == UT_OK;
 			}
 			return true;
 		}
@@ -959,7 +1127,27 @@ UT_Error IE_Exp_OpenXML_Listener::addDocumentStyles()
 			continue;
 
 		OXML_Style* style = new OXML_Style(styleName, styleName);
-		OXML_SharedStyle shared_style(style);			
+		OXML_SharedStyle shared_style(style);
+
+		bool isChar = pStyle->isCharStyle();
+		if(isChar)
+		{
+			err = style->setAttribute("type", "character");
+			if(err != UT_OK)
+			{
+				UT_DEBUGMSG(("SERHAT:ERROR, Setting Type Attribute failed"));
+				return err;
+			}
+		}
+		else
+		{
+			err = style->setAttribute("type", "paragraph");
+			if(err != UT_OK)
+			{
+				UT_DEBUGMSG(("SERHAT:ERROR, Setting Type Attribute failed"));
+				return err;
+			}
+		}
 
 		PD_Style* basedOnStyle = pStyle->getBasedOn();
 		if(basedOnStyle)

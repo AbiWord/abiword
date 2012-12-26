@@ -77,6 +77,29 @@ const char * OXML_Element_Text::getText()
 UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 {
 	UT_Error err = UT_OK;
+	bool bList = false;
+	const gchar* szValue = NULL;
+	err = getAttribute("style", szValue);
+	if(err == UT_OK && szValue)
+	{
+		if(!strcmp(szValue, "List Paragraph"))
+		{
+			bList = true;
+		}
+	}
+	err = getAttribute("type", szValue);
+	if(err == UT_OK && szValue)
+	{
+		if(!strcmp(szValue, "list_label"))
+		{
+			bList = true;
+		}
+	}
+	err = getProperty("list-style", szValue);
+	if(err == UT_OK && szValue)
+	{
+		bList = true;
+	}
 
 	err = exporter->startText(TARGET);
 	if(err != UT_OK)
@@ -84,7 +107,7 @@ UT_Error OXML_Element_Text::serialize(IE_Exp_OpenXML* exporter)
 
 	const UT_UCS4Char * text = getText_UCS4String();
 	if(text)
-		err = exporter->writeText(TARGET, text);
+		err = exporter->writeText(TARGET, text, bList);
 
 	if(err != UT_OK)
 		return err;

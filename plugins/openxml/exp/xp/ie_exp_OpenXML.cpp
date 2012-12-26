@@ -24,6 +24,9 @@
 // Class definition include
 #include <ie_exp_OpenXML.h>
 
+// Abiword includes
+#include <ut_std_string.h>
+
 /**
  * Constructor
  */
@@ -45,7 +48,8 @@ IE_Exp_OpenXML::IE_Exp_OpenXML (PD_Document * pDocument)
 	headerStream(NULL),
 	footerStream(NULL),
 	footnoteStream(NULL),
-	endnoteStream(NULL)
+	endnoteStream(NULL),
+	isOverline(false)
 {
 }
 
@@ -252,13 +256,20 @@ UT_Error IE_Exp_OpenXML::finishParagraph(int target)
  */
 UT_Error IE_Exp_OpenXML::startText(int target)
 {
-	return writeTargetStream(target, "<w:t xml:space=\"preserve\">");
+	if(isOverline)
+	{
+		return writeTargetStream(target, "<w:fldChar w:fldCharType=\"begin\"/></w:r><w:r><w:instrText xml:space=\"preserve\"> EQ \\x \\to(");
+	}
+	else
+	{
+		return writeTargetStream(target, "<w:t xml:space=\"preserve\">");
+	}
 }
 
 /**
  * Writes the actual content of OXML_Element_Text object
  */
-UT_Error IE_Exp_OpenXML::writeText(int target, const UT_UCS4Char* text)
+UT_Error IE_Exp_OpenXML::writeText(int target, const UT_UCS4Char* text, bool list)
 {
 	// This shouldn't happen, but if it does just return UT_OK
 	// to prevent export errors
@@ -272,6 +283,12 @@ UT_Error IE_Exp_OpenXML::writeText(int target, const UT_UCS4Char* text)
 	const UT_UCS4Char* pText;
 	for(pText = text; pText < text + len; pText++)
 	{
+		// Skipping first tab character of list element
+		if(list && pText == text && *pText == '\t')
+		{
+			continue;
+		}
+
 		switch(*pText)
 		{
 			// any other special handling needed?
@@ -300,7 +317,14 @@ UT_Error IE_Exp_OpenXML::writeText(int target, const UT_UCS4Char* text)
  */
 UT_Error IE_Exp_OpenXML::finishText(int target)
 {
-	return writeTargetStream(target, "</w:t>");
+	if(isOverline)
+	{
+		return writeTargetStream(target, ") </w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"end\"/>");
+	}
+	else
+	{
+		return writeTargetStream(target, "</w:t>");
+	}
 }
 
 /**
@@ -342,6 +366,7 @@ UT_Error IE_Exp_OpenXML::startRun(int target)
  */
 UT_Error IE_Exp_OpenXML::finishRun(int target)
 {
+	isOverline = false;
 	return writeTargetStream(target, "</w:r>");
 }
 
@@ -802,9 +827,9 @@ UT_Error IE_Exp_OpenXML::setUnderline(int target)
 /**
  * Sets overline style
  */
-UT_Error IE_Exp_OpenXML::setOverline(int /* target */)
+UT_Error IE_Exp_OpenXML::setOverline()
 {
-	//TODO: Is there an overline option in Word 2007?
+	isOverline = true;
 	return UT_OK;
 }
 
@@ -1257,6 +1282,16 @@ UT_Error IE_Exp_OpenXML::setColumns(int target, const gchar* num, const gchar* s
 }
 
 /**
+ * Sets the section type continuous
+ */
+UT_Error IE_Exp_OpenXML::setContinuousSection(int target)
+{
+	std::string str("");
+	str += "<w:type w:val=\"continuous\"/>";
+	return writeTargetStream(target, str.c_str());
+}
+
+/**
  * Sets grid span for horizontally merged cells
  */
 UT_Error IE_Exp_OpenXML::setGridSpan(int target, UT_sint32 hspan)
@@ -1593,7 +1628,7 @@ UT_Error IE_Exp_OpenXML::setMultilevelType(int target, const char* type)
 }
 
 /**
- * Sets the image 
+ * Sets the inline image
  */
 UT_Error IE_Exp_OpenXML::setImage(const char* id, const char* relId, const char* filename, const char* width, const char* height)
 {
@@ -1649,6 +1684,100 @@ UT_Error IE_Exp_OpenXML::setImage(const char* id, const char* relId, const char*
 	str += "</a:graphicData>";
 	str += "</a:graphic>";
 	str += "</wp:inline>";
+	str += "</w:drawing>";
+
+	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
+}
+
+/**
+ * Sets the positioned image
+ */
+UT_Error IE_Exp_OpenXML::setPositionedImage(const char* id, const char* relId, const char* filename, const char* width, const char* height, const char* xpos, const char* ypos, const char* wrapMode)
+{
+	std::string str("");
+	std::string h("");
+	std::string w("");
+	std::string x("");
+	std::string y("");
+	std::string wm("bothSides"); // default wrap mode
+
+	if(!strcmp(wrapMode, "wrapped-to-right"))
+	{
+		wm = "right";
+	}
+	else if(!strcmp(wrapMode, "wrapped-to-left"))
+	{
+		wm = "left";
+	}
+
+	h += convertToPositiveEmus(height);
+	w += convertToPositiveEmus(width);
+	x += convertToPositiveEmus(xpos);
+	y += convertToPositiveEmus(ypos);
+
+	str += "<w:drawing>";
+	str += "<wp:anchor distT=\"0\" distB=\"0\" distL=\"0\" distR=\"0\" simplePos=\"0\" allowOverlap=\"0\" layoutInCell=\"1\" locked=\"0\" behindDoc=\"0\" relativeHeight=\"0\">";
+	str += "<wp:simplePos x=\"0\" y=\"0\"/>";
+	str += "<wp:positionH relativeFrom=\"column\">";
+	str += "<wp:posOffset>";
+	str += x;
+	str += "</wp:posOffset>";
+	str += "</wp:positionH>";
+	str += "<wp:positionV relativeFrom=\"paragraph\">";
+	str += "<wp:posOffset>";
+	str += y;
+	str += "</wp:posOffset>";
+	str += "</wp:positionV>";
+	str += "<wp:extent cx=\"";
+	str += w;
+	str += "\" cy=\"";
+	str += h;
+	str += "\"/>";
+	str += "<wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/>";
+	str += "<wp:wrapSquare wrapText=\"";
+	str += wm;
+	str += "\"/>";
+	str += "<wp:docPr id=\"";
+	str += id;
+	str += "\" name=\"";
+	str += filename;
+	str += "\"/>";
+	str += "<wp:cNvGraphicFramePr>";
+	str += "<a:graphicFrameLocks noChangeAspect=\"1\"/>";
+	str += "</wp:cNvGraphicFramePr>";
+	str += "<a:graphic>";
+	str += "<a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">";
+	str += "<pic:pic>";
+	str += "<pic:nvPicPr>";
+	str += "<pic:cNvPr id=\"";
+	str += id;
+	str += "\" name=\"";
+	str += filename;
+	str += "\"/>";
+	str += "<pic:cNvPicPr/>";
+	str += "</pic:nvPicPr>";
+	str += "<pic:blipFill>";
+	str += "<a:blip r:embed=\"";
+	str += relId;
+	str += "\"/>";
+	str += "</pic:blipFill>";
+	str += "<pic:spPr>";
+	str += "<a:xfrm>";
+	str += "<a:off x=\"0\" y=\"0\"/>";
+	str += "<a:ext cx=\"";
+	str += w;
+	str += "\" cy=\"";
+	str += h;
+	str += "\"/>";
+	str += "</a:xfrm>";
+	str += "<a:prstGeom prst=\"rect\">";
+	str += "<a:avLst/>";
+	str += "</a:prstGeom>";
+	str += "</pic:spPr>";
+	str += "</pic:pic>";
+	str += "</a:graphicData>";
+	str += "</a:graphic>";
+	str += "</wp:anchor>";
 	str += "</w:drawing>";
 
 	return writeTargetStream(TARGET_DOCUMENT, str.c_str());
@@ -1807,7 +1936,7 @@ const gchar * IE_Exp_OpenXML::convertToPositiveTwips(const gchar* str)
 	if(pt < 0) 
 		pt = -pt;
 	if(pt < 1.0)
-		return NULL;
+		pt = 0.0;
 	return UT_convertToDimensionlessString(pt, ".0");
 }
 
@@ -2771,36 +2900,38 @@ UT_Error IE_Exp_OpenXML::writeXmlHeader(GsfOutput* file)
 	return UT_OK;
 }
 
-UT_Error IE_Exp_OpenXML::startStyle(std::string style, std::string basedon, std::string followedby)
+UT_Error IE_Exp_OpenXML::startStyle(const std::string& name, const std::string& basedon, const std::string& followedby, const std::string& type)
 {
-	UT_UTF8String sEscStyle = style.c_str();
-	UT_UTF8String sEscBasedOn = basedon.c_str();
-	UT_UTF8String sEscFollowedBy = followedby.c_str();
-
-	sEscStyle.escapeXML();
-	sEscBasedOn.escapeXML();
-	sEscFollowedBy.escapeXML();
-
-	// TODO: export w:type (character or paragraph)
+	std::string sEscName = UT_escapeXML(name);
+	std::string sEscBasedOn = UT_escapeXML(basedon);
+	std::string sEscFollowedBy = UT_escapeXML(followedby);
+	std::string sEscType = UT_escapeXML(type);
 
 	std::string str("");
-	str += "<w:style w:styleId=\"";
-	str += sEscStyle.utf8_str();
+	str += "<w:style";
+	if(!type.empty())
+	{
+		str += " w:type=\"";
+		str += sEscType;
+		str += "\"";
+	}
+	str += " w:styleId=\"";
+	str += sEscName;
 	str += "\">";
 	str += "<w:name w:val=\"";
-	str += sEscStyle.utf8_str();
+	str += sEscName;
 	str += "\"/>";
 	
 	if(!basedon.empty())
 	{
 		str += "<w:basedOn w:val=\"";
-		str += sEscBasedOn.utf8_str();
+		str += sEscBasedOn;
 		str += "\"/>";		
 	}
 	if(!followedby.empty())
 	{
 		str += "<w:next w:val=\"";
-		str += sEscFollowedBy.utf8_str();
+		str += sEscFollowedBy;
 		str += "\"/>";
 	}
 
@@ -2812,15 +2943,34 @@ UT_Error IE_Exp_OpenXML::finishStyle()
 	return writeTargetStream(TARGET_STYLES, "</w:style>");
 }
 
-UT_Error IE_Exp_OpenXML::writeDefaultStyle()
+UT_Error IE_Exp_OpenXML::startDocumentDefaultProperties()
 {
-	//TODO: add more default settings here
-	std::string str("<w:docDefaults>");
-	str += "<w:pPrDefault><w:pPr><w:pStyle w:val=\"Normal\"/></w:pPr></w:pPrDefault>";
-	str += "<w:rPrDefault><w:rPr><w:rStyle w:val=\"Normal\"/></w:rPr></w:rPrDefault>";
-	str += "</w:docDefaults>";
-	return writeTargetStream(TARGET_STYLES, str.c_str());
+	return writeTargetStream(TARGET_STYLES, "<w:docDefaults>");
+}
 
+UT_Error IE_Exp_OpenXML::finishDocumentDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "</w:docDefaults>");
+}
+
+UT_Error IE_Exp_OpenXML::startRunDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "<w:rPrDefault>");
+}
+
+UT_Error IE_Exp_OpenXML::finishRunDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "</w:rPrDefault>");
+}
+
+UT_Error IE_Exp_OpenXML::startParagraphDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "<w:pPrDefault>");
+}
+
+UT_Error IE_Exp_OpenXML::finishParagraphDefaultProperties()
+{
+	return writeTargetStream(TARGET_STYLES, "</w:pPrDefault>");
 }
 
 UT_Error IE_Exp_OpenXML::writeImage(const char* filename, const UT_ByteBuf* data)

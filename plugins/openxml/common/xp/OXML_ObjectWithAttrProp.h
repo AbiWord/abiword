@@ -55,7 +55,7 @@ public:
  	 *  format.  This string is used as the value of a new attribute whose key is defined by PP_PROPS_ATTRIBUTE_NAME.
 	 	\return A list of all the object's attributes and with a new attribute containing all the properties.
 	*/
-	const gchar ** getAttributesWithProps() const;
+	const gchar ** getAttributesWithProps();
 
 	bool getNthProperty(int i, const gchar* & szName, const gchar* & szValue);
 	size_t getPropertyCount();

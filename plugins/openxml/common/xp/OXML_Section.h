@@ -39,6 +39,7 @@
 #include <boost/shared_ptr.hpp>
 
 class OXML_Section;
+class OXML_Element_Paragraph;
 class IE_Exp_OpenXML;
 
 typedef boost::shared_ptr<OXML_Section> OXML_SharedSection;
@@ -84,7 +85,7 @@ public:
 		\param exporter the actual exporter which handles writing the files.
 	*/
 	UT_Error serialize(IE_Exp_OpenXML* exporter);
-	UT_Error serializeProperties(IE_Exp_OpenXML* exporter);
+	UT_Error serializeProperties(IE_Exp_OpenXML* exporter, OXML_Element_Paragraph* pParagraph);
 	void applyDocumentProperties();
 
 	UT_Error serializeHeader(IE_Exp_OpenXML* exporter);
@@ -104,6 +105,8 @@ public:
 	void setTarget(int target);
 	bool hasFirstPageHdrFtr();
 	bool hasEvenPageHdrFtr();
+	void setHandledHdrFtr(bool val);
+	bool getHandledHdrFtr();
 
 	UT_Error setPageMargins(const std::string & top, const std::string & left, const std::string & right, const std::string & bottom);
 
@@ -111,9 +114,11 @@ private:
 	std::string m_id;
 	OXML_SectionBreakType m_breakType;
 	OXML_ElementVector m_children;
+	OXML_Element_Paragraph* m_lastParagraph;
 	char * m_headerIds[3];
 	char * m_footerIds[3];
 	int TARGET;
+	bool b_handledHdrFtr;
 
 	UT_Error _setReferenceIds();
 };

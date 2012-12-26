@@ -30,6 +30,7 @@
 #include <OXML_Element.h>
 #include <OXML_Element_Run.h>
 #include <OXML_Element_Text.h>
+#include <OXML_Element_Field.h>
 #include <OXML_Types.h>
 #include <OXML_Theme.h>
 #include <OXML_Style.h>
@@ -40,13 +41,18 @@
 #include <ut_units.h>
 #include <ut_misc.h>
 #include <ut_debugmsg.h>
+#include <ut_assert.h>
 
 // External includes
 #include <cstring>
 
 OXMLi_ListenerState_Common::OXMLi_ListenerState_Common() : 
 	OXMLi_ListenerState(), 
-	m_pendingSectBreak(false)
+	m_pendingSectBreak(false),
+	m_pendingSectBreakType(NEXTPAGE_BREAK),
+	m_eqField(false),
+	m_pageNumberField(false),
+	m_fldChar(false)
 {
 
 }
@@ -59,7 +65,29 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 {
 	UT_return_if_fail( this->_error_if_fail(rqst != NULL) );
 
-	if(nameMatches(rqst->pName, NS_W_KEY, "p")) {
+	if(nameMatches(rqst->pName, NS_W_KEY, "instrText"))
+	{
+		rqst->handled = true;
+	} else if(nameMatches(rqst->pName, NS_W_KEY, "fldChar")) {
+		const gchar* fldCharType = attrMatches(NS_W_KEY, "fldCharType", rqst->ppAtts);
+		if(!fldCharType)
+		{
+			UT_DEBUGMSG(("SERHAT: fldChar tag without fldCharType attribute\n"));
+			return;
+		}
+		if(!strcmp(fldCharType, "begin"))
+		{
+			m_eqField = false;
+			m_pageNumberField = false;
+			m_fldChar = true;
+		}
+		else if(!strcmp(fldCharType, "end"))
+		{
+			m_eqField = false;
+			m_pageNumberField = false;
+			m_fldChar = false;
+		}
+	} else if(nameMatches(rqst->pName, NS_W_KEY, "p")) {
 		//New paragraph...
 		OXML_SharedElement elem(new OXML_Element_Paragraph(""));
 		rqst->stck->push(elem);
@@ -73,6 +101,11 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->handled = true;
 
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "t")) {
+		if(m_fldChar && m_pageNumberField) // page number is already set with field element correctly.
+		{
+			rqst->handled = true;
+			return;
+		}
 		//New text...
 		OXML_SharedElement elem(new OXML_Element_Text("", 0));
 		rqst->stck->push(elem);
@@ -115,19 +148,11 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		rqst->handled = true;
 
 	} else if ( nameMatches(rqst->pName, NS_W_KEY, "pageBreakBefore")){
-		//verify the context
-		std::string contextTag = rqst->context->back();
+		OXML_ElementTag tag = PG_BREAK;
+		OXML_SharedElement br ( new OXML_Element("", tag, SPAN) );
+		rqst->stck->push(br);
+		rqst->handled = true;
 
-		if (contextMatches(contextTag, NS_W_KEY, "pPr")) {
-			OXML_SharedElement elem = rqst->stck->top();
-			if(elem->getTag() == P_TAG)
-			{
-				OXML_Element_Paragraph* para = static_cast<OXML_Element_Paragraph*>(get_pointer(elem)); 
-				para->setPageBreak();
-			}
-			rqst->handled = true;
-		}
-	
 	} else if ( nameMatches(rqst->pName, NS_W_KEY, "tab")){
 		//verify the context
 		std::string contextTag = rqst->context->back();
@@ -379,7 +404,10 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "u")) {
 				const gchar * newVal = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
-				UT_return_if_fail( this->_error_if_fail(newVal != NULL) );
+				if(!newVal)
+				{
+					newVal = "single";
+				}
 				std::string final_val = "";
 				const gchar * previousVal = NULL;
 				if (UT_OK == run->getProperty("text-decoration", previousVal)) {
@@ -477,20 +505,39 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				OXML_FontLevel level = UNKNOWN_LEVEL;
 				OXML_CharRange range = UNKNOWN_RANGE;
 
-				const gchar * ascii = NULL; //TODO: add support for eastAsia, bidi, and hAnsi
+				const gchar * ascii = NULL;
+				const gchar * eastAsia = NULL;
+				const gchar * bidi = NULL;
+				const gchar * hAnsi = NULL;
 				if (NULL != (ascii = attrMatches(NS_W_KEY, "asciiTheme", rqst->ppAtts))) {
 					this->getFontLevelRange(ascii, level, range);
 					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme
 				} else if (NULL != (ascii = attrMatches(NS_W_KEY, "ascii", rqst->ppAtts))) {
-					fontName = ascii;
-					fontName = fmgr->getValidFont(fontName); //Make sure the name is valid
+					fontName = fmgr->getValidFont(ascii); //Make sure the name is valid
+				} else if (NULL != (eastAsia = attrMatches(NS_W_KEY, "eastAsiaTheme", rqst->ppAtts))) {
+					this->getFontLevelRange(eastAsia, level, range);
+					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme
+				} else if (NULL != (eastAsia = attrMatches(NS_W_KEY, "eastAsia", rqst->ppAtts))) {
+					fontName = fmgr->getValidFont(eastAsia); //Make sure the name is valid
+				} else if (NULL != (bidi = attrMatches(NS_W_KEY, "csTheme", rqst->ppAtts))) {
+					this->getFontLevelRange(bidi, level, range);
+					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme
+				} else if (NULL != (bidi = attrMatches(NS_W_KEY, "cs", rqst->ppAtts))) {
+					fontName = fmgr->getValidFont(bidi); //Make sure the name is valid
+				} else if (NULL != (hAnsi = attrMatches(NS_W_KEY, "hAnsiTheme", rqst->ppAtts))) {
+					this->getFontLevelRange(hAnsi, level, range);
+					fontName = fmgr->getValidFont(level, range); //Retrieve valid font name from Theme
+				} else if (NULL != (hAnsi = attrMatches(NS_W_KEY, "hAnsi", rqst->ppAtts))) {
+					fontName = fmgr->getValidFont(hAnsi); //Make sure the name is valid
 				} else {
 					fontName = fmgr->getDefaultFont();
 				}
 				UT_return_if_fail( _error_if_fail( UT_OK == run->setProperty("font-family", fontName.c_str()) ));
 
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "lang")) {
-				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts); //TODO: add support for eastAsia and bidi attributes
+				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
+				const gchar * eastAsia = attrMatches(NS_W_KEY, "eastAsia", rqst->ppAtts);
+				const gchar * bidi = attrMatches(NS_W_KEY, "bidi", rqst->ppAtts);
 				const gchar * previousVal = NULL;
 				if (UT_OK == run->getProperty("lang", previousVal)) {
 					if ( 0 != strcmp(previousVal, "-none-"))
@@ -498,6 +545,10 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				}
 				if ( val != NULL)
 					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("lang", val) ));
+				if ( eastAsia != NULL)
+					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("lang", eastAsia) ));
+				if ( bidi != NULL)
+					UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("lang", bidi) ));
 
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "noProof")) {
 				//noProof has priority over lang, so no need to check for previous values
@@ -516,7 +567,8 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 			} else if (nameMatches(rqst->pName, NS_W_KEY, "sz")) {
 				const gchar * szStr = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(szStr != NULL) );
-				double sz = UT_convertDimensionless(szStr) / 2; //TODO: error-check this
+				double sz = UT_convertDimensionless(szStr) / 2;
+				UT_return_if_fail( this->_error_if_fail(sz > 0) );
 				std::string pt_value = UT_convertToDimensionlessString(sz);
 				pt_value += "pt";
 				UT_return_if_fail( this->_error_if_fail( UT_OK == run->setProperty("font-size", pt_value.c_str()) ));
@@ -541,15 +593,15 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 				const gchar * val = attrMatches(NS_W_KEY, "val", rqst->ppAtts);
 				UT_return_if_fail( this->_error_if_fail(val != NULL) );
 
-				OXML_SharedSection last = rqst->sect_stck->top();
+				UT_ASSERT(m_pendingSectBreak == true);
 				if (!strcmp(val, "continuous")) {
-					last->setBreakType(CONTINUOUS_BREAK);
+					m_pendingSectBreakType = CONTINUOUS_BREAK;
 				} else if (!strcmp(val, "evenPage")) {
-					last->setBreakType(EVENPAGE_BREAK);
+					m_pendingSectBreakType = EVENPAGE_BREAK;
 				} else if (!strcmp(val, "oddPage")) {
-					last->setBreakType(ODDPAGE_BREAK);
+					m_pendingSectBreakType = ODDPAGE_BREAK;
 				} else { //nextPage and nextColumn
-					last->setBreakType(NEXTPAGE_BREAK);
+					m_pendingSectBreakType = NEXTPAGE_BREAK;
 				}
 				rqst->handled = true;
 
@@ -636,7 +688,7 @@ void OXMLi_ListenerState_Common::startElement (OXMLi_StartElementRequest * rqst)
 		const gchar * id = attrMatches(NS_W_KEY, "id", rqst->ppAtts);
 		if(id)
 		{
-			OXML_SharedElement endnote(new OXML_Element_Field(id, fd_Field::FD_Endnote_Ref, NULL));
+			OXML_SharedElement endnote(new OXML_Element_Field(id, fd_Field::FD_Endnote_Ref, ""));
 			rqst->stck->push(endnote);
 		}
 		rqst->handled = true;		
@@ -741,7 +793,8 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 			OXML_Document * doc = OXML_Document::getInstance();
 			UT_return_if_fail(_error_if_fail(doc != NULL));
 			OXML_SharedSection sect(new OXML_Section());
-
+			sect->setBreakType(m_pendingSectBreakType);
+			m_pendingSectBreakType = NEXTPAGE_BREAK;
 			rqst->sect_stck->push(sect);
 			m_pendingSectBreak = false;
 		}
@@ -753,8 +806,20 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "t")) {
+		if(m_fldChar && m_pageNumberField) // page number is already set with field element correctly.
+		{
+			rqst->handled = true;
+			return;
+		}
 		//Text is done, appending it.
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
+		rqst->handled = true;
+	} else if(nameMatches(rqst->pName, NS_W_KEY, "instrText")) {
+		if(m_eqField || m_pageNumberField)
+		{
+			//instrText including equation or page number field is done, appending it.
+			UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
+		}
 		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "sectPr")) {
 		std::string contextTag = rqst->context->back();
@@ -791,6 +856,7 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 				nameMatches(rqst->pName, NS_W_KEY, "lang") ||
 				nameMatches(rqst->pName, NS_W_KEY, "noProof") ||
 				nameMatches(rqst->pName, NS_W_KEY, "vanish") ||
+				nameMatches(rqst->pName, NS_W_KEY, "fldChar") ||
 				nameMatches(rqst->pName, NS_W_KEY, "sz") ) {
 		rqst->handled = true;
 	} else if (	nameMatches(rqst->pName, NS_W_KEY, "type") ||
@@ -824,7 +890,8 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
 		rqst->handled = true;		
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "pageBreakBefore")) {
-		rqst->handled = contextMatches(rqst->context->back(), NS_W_KEY, "pPr");		
+		UT_return_if_fail( this->_error_if_fail( UT_OK == _flushTopLevel(rqst->stck, rqst->sect_stck) ) );
+		rqst->handled = true;
 	} else if (nameMatches(rqst->pName, NS_W_KEY, "shd")) {
 		std::string contextTag = rqst->context->back();
 		rqst->handled = contextMatches(contextTag, NS_W_KEY, "pPr") || contextMatches(contextTag, NS_W_KEY, "rPr");
@@ -842,12 +909,84 @@ void OXMLi_ListenerState_Common::charData (OXMLi_CharDataRequest * rqst)
 	if(rqst->stck->empty())
 		return;
 
-	OXML_SharedElement sharedElem = rqst->stck->top();
-	OXML_Element* elem = sharedElem.get();
+	std::string contextTag = "";
+	if(!rqst->context->empty())
+	{
+		contextTag = rqst->context->back();
+	}
+	int instrText = contextMatches(contextTag, NS_W_KEY, "instrText");
+	if(instrText)
+	{
+		UT_ASSERT(rqst->buffer != NULL);
+		OXML_SharedElement run = rqst->stck->top();
+		OXML_SharedElement sharedElem(new OXML_Element_Text("", 0));
+		std::string overline = "\\to";
+		std::string underline = "\\bo";
+		std::string eq = "EQ";
+		std::string pageNumber = "PAGE   \\* MERGEFORMAT";
+		std::string v(rqst->buffer);
+		std::string value = "";
+		size_t isOverline = v.find(overline);
+		size_t isUnderline = v.find(underline);
+		size_t isEQ = v.find(eq);
+		size_t isPageNumber = v.find(pageNumber);
+		size_t openingParenthesis;
+		size_t closingParenthesis;
+		UT_Error err;
+		if(isEQ != std::string::npos) // handle EQ fields
+		{
+			if(isOverline != std::string::npos && isUnderline == std::string::npos)
+			{
+				// if starts with "EQ \x \to", then overline property is used
+				err = run->setProperty("text-decoration", "overline");
+				if(err != UT_OK)
+				{
+					UT_DEBUGMSG(("SERHAT: Could not set overline property!\n"));
+					return;
+				}
+			}
+			else if(isUnderline != std::string::npos && isOverline == std::string::npos)
+			{
+				// if starts with "EQ \x \bo", then underline property is used
+				err = run->setProperty("text-decoration", "underline");
+				if(err != UT_OK)
+				{
+					UT_DEBUGMSG(("SERHAT: Could not set underline property!\n"));
+					return;
+				}
+			}
+			rqst->stck->push(sharedElem);
+			m_eqField = true;
+			m_pageNumberField = false;
+			openingParenthesis = v.find("(");
+			closingParenthesis = v.find(")");
+			value = v.substr(int(openingParenthesis)+1, int(closingParenthesis)-int(openingParenthesis)-1); // the string between parentheses is extracted
+			OXML_Element* elem = sharedElem.get();
+			OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem);
+			textElement->setText(value.c_str(), value.size());
+		}
+		else if(isPageNumber != std::string::npos) // handle page number fields
+		{
+			m_pageNumberField = true;
+			m_eqField = false;
+			OXML_SharedElement fieldElem(new OXML_Element_Field("", v, ""));
+			rqst->stck->push(fieldElem);
+		}
+		else
+		{
+			m_eqField = false;
+			m_pageNumberField = false;
+		}
+	}
+	else
+	{
+		OXML_SharedElement sharedElem = rqst->stck->top();
+		OXML_Element* elem = sharedElem.get();
 
-	if(!elem || (elem->getTag() != T_TAG))
-		return;
+		if(!elem || (elem->getTag() != T_TAG))
+			return;
 
-	OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem);
-	textElement->setText(rqst->buffer, rqst->length);
+		OXML_Element_Text* textElement = static_cast<OXML_Element_Text*>(elem);
+		textElement->setText(rqst->buffer, rqst->length);
+	}
 }
