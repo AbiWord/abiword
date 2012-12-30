@@ -3,15 +3,15 @@
 # 
 # Copyright by:
 # Antón Méixome <meixome@certima.net>, 2010.
-# Miguel Anxo Bouzada <mbouzada@gmail.com>, 2011.
+# Miguel Anxo Bouzada <mbouzada@gmail.com>, 2011, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-10-21 10:13+0200\n"
-"Last-Translator: Miguel Anxo <mbouzada@gmail.com>\n"
-"Language-Team: Galician <proxecto@trasno.net>\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2012-12-28 06:38+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
+"Language-Team: Proxecto Trasno proxecto@trasno.net\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -67,7 +67,7 @@ msgid ""
 "# Results are shown below."
 msgstr ""
 "# Insira aquí a súa consulta SPARQL\n"
-"# Os resultados móstranse a seguir."
+"# Os resultados amósanse a seguir."
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
@@ -498,12 +498,12 @@ msgstr "A&ltura:"
 #. MENU_LABEL_HELP
 #: po/tmp/ap_String_Id.h
 msgid "&Help"
-msgstr "A&xuda"
+msgstr "&Axuda"
 
 #. DLG_Options_Label_ViewHiddenText
 #: po/tmp/ap_String_Id.h
 msgid "&Hidden Text"
-msgstr "Texto o&cultado"
+msgstr "Texto a&gochado"
 
 #. DLG_Options_Label_SpellHighlightMisspelledWords
 #: po/tmp/ap_String_Id.h
@@ -880,17 +880,17 @@ msgstr "&Seleccionar revisión"
 #. MENU_LABEL_TOOLS_HISTORY_SHOW
 #: po/tmp/ap_String_Id.h
 msgid "&Show History"
-msgstr "&Mostrar historial"
+msgstr "A&mosar o historial"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
 msgid "&Show Status Bar"
-msgstr "&Mostrar barra de estado"
+msgstr "A&mosar a barra de estado"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h
 msgid "&Show annotations"
-msgstr "&Mostrar anotacións"
+msgstr "A&mosar as anotacións"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h
@@ -1244,17 +1244,17 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord necesita o ficheiro %s.dll\n"
-"Por favor, descárgueo e instáleo desde "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"AbiWord precisa do ficheiro %s.dll\n"
+"Descárgueo e instáleo de http://www.microsoft.com/en-"
+"us/download/details.aspx?id=4237"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
 msgid "About G&NOME Office"
-msgstr "Sobre G&NOME Office"
+msgstr "Sobre &GNOME Office"
 
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -2058,7 +2058,7 @@ msgstr "Verificar a &gramática mentres se escribe"
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h
 msgid "Check for &Updates"
-msgstr "Verificar as a&ctualizacións"
+msgstr "Verificar as &actualizacións"
 
 #. MENU_STATUSLINE_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h
@@ -2306,7 +2306,7 @@ msgstr "Copia"
 #. MENU_STATUSLINE_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h
 msgid "Copy Embedded Object"
-msgstr "Copia o obxecto incorporado"
+msgstr "Copia o obxecto incrustado"
 
 #. MENU_LABEL_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h
@@ -2540,7 +2540,7 @@ msgstr "Cortar"
 #. MENU_STATUSLINE_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h
 msgid "Cut Embedded Object"
-msgstr "Cortar o obxecto incorporado"
+msgstr "Cortar o obxecto incrustado"
 
 #. MENU_LABEL_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h
@@ -2635,22 +2635,22 @@ msgstr "Diminuír a sangría"
 #. FIELD_DateTime_DefaultDate
 #: po/tmp/ap_String_Id.h
 msgid "Default date representation"
-msgstr "Representación predefinida da data"
+msgstr "Representación predeterminada da data"
 
 #. DLG_Options_Label_DefaultPageSize
 #: po/tmp/ap_String_Id.h
 msgid "Default page size"
-msgstr "Tamaño de páxina predefinida"
+msgstr "Tamaño de páxina predeterminada"
 
 #. DLG_Tab_Label_DefaultTS
 #: po/tmp/ap_String_Id.h
 msgid "Default tab stops:"
-msgstr "Tabulacións predefinidas:"
+msgstr "Tabulacións predeterminadas:"
 
 #. DLG_Options_Label_DirectionRtl
 #: po/tmp/ap_String_Id.h
 msgid "Default to right-to-left direction of text"
-msgstr "Predefinida a dirección do texto de dereita a esquerda"
+msgstr "Dirección do texto predeterminada de dereita a esquerda"
 
 #. DLG_FormatTOC_LevelDefs
 #: po/tmp/ap_String_Id.h
@@ -2695,7 +2695,7 @@ msgstr "Borrar columna"
 #. MENU_STATUSLINE_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h
 msgid "Delete Embedded Object"
-msgstr "Borrar obxecto incorporado"
+msgstr "Borrar obxecto incrustado"
 
 #. MENU_LABEL_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h
@@ -2853,27 +2853,27 @@ msgstr "Desasociar e aplicar a folla de estilo predeterminada"
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
 msgid "Display Credits"
-msgstr "Mostrar os créditos"
+msgstr "Amosar os créditos"
 
 #. MENU_STATUSLINE_HELP_CONTENTS
 #: po/tmp/ap_String_Id.h
 msgid "Display Help Contents"
-msgstr "Mostrar os contidos de axuda"
+msgstr "Amosar os contidos de axuda"
 
 #. MENU_STATUSLINE_HELP_INTRO
 #: po/tmp/ap_String_Id.h
 msgid "Display Help Introduction"
-msgstr "Mostrar a Introdución da Axuda"
+msgstr "Amosar a introdución da axuda"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Display non-printing characters"
-msgstr "Mostrar caracteres non imprimíbeis"
+msgstr "Amosar caracteres non imprimíbeis"
 
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h
 msgid "Display program information, version number, and copyright"
-msgstr "Mostrar información do programa, número de versión, e dereitos de autor"
+msgstr "Amosar información do programa, número de versión, e dereitos de autor"
 
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h
@@ -3048,7 +3048,7 @@ msgstr "Editar este elemento semántico"
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
 msgid "Embedded"
-msgstr "Incorporado"
+msgstr "Incrustado"
 
 #. MENU_LABEL_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
@@ -3488,7 +3488,7 @@ msgstr "Formato"
 #. MENU_STATUSLINE_FMT_EMBED
 #: po/tmp/ap_String_Id.h
 msgid "Format Embedded Object"
-msgstr "Formato do obxecto incorporado"
+msgstr "Formato do obxecto incrustado"
 
 #. DLG_FormatFootnotes_Title
 #: po/tmp/ap_String_Id.h
@@ -3549,8 +3549,8 @@ msgstr "Formato:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Desde o ficheiro"
+msgid "From File (.xml, .mathml)"
+msgstr "Desde ficheiro (.xml, .mathml)"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3678,17 +3678,17 @@ msgstr "&Introdución da axuda"
 #. DLG_Options_Label_Hide
 #: po/tmp/ap_String_Id.h
 msgid "Hide"
-msgstr "Ocultar"
+msgstr "Agochar"
 
 #. DLG_Options_Label_SpellHideErrors
 #: po/tmp/ap_String_Id.h
 msgid "Hide &spelling errors in the document"
-msgstr "Ocultar os erros &ortográficos no documento"
+msgstr "Agochar os erros &ortográficos no documento"
 
 #. DLG_Lists_FoldingLevelexp
 #: po/tmp/ap_String_Id.h
 msgid "Hide text below List Levels"
-msgstr "Ocultar o texto baixo os niveis de listas"
+msgstr "Agochar o texto baixo os niveis de listas"
 
 #. TOOLBAR_LABEL_COLOR_BACK
 #. TOOLBAR_STATUSLINE_COLOR_BACK
@@ -5455,7 +5455,7 @@ msgstr "Informa dun fallo e axudar a AbiWord a se converter nun produto mellor"
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
 msgid "Reset the current toolbar layout to its defaults"
-msgstr "Restabelece a disposición da barra aos seus valores predefinidos"
+msgstr "Restabelece a disposición da barra aos seus valores predeterminados"
 
 #. MENU_STATUSLINE_FMT_IMAGE
 #: po/tmp/ap_String_Id.h
@@ -5598,7 +5598,7 @@ msgstr "Filas em&baixo"
 #. MENU_STATUSLINE_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests and show results on console"
-msgstr "Executar algunhas probas RDF e mostrar os resultados na consola"
+msgstr "Executar algunhas probas RDF e amosar os resultados na consola"
 
 #. MENU_STATUSLINE_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -5613,7 +5613,7 @@ msgstr "S&cripts"
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h
 msgid "S&how revisions"
-msgstr "&Mostrar revisións"
+msgstr "Am$osar revisións"
 
 #. MENU_LABEL_TABLE_SPLIT_CELLS
 #: po/tmp/ap_String_Id.h
@@ -5669,7 +5669,7 @@ msgstr "Gardar os cambios ao documento %s antes de pechar?"
 #. MENU_STATUSLINE_FILE_SAVEEMBED
 #: po/tmp/ap_String_Id.h
 msgid "Save the Embedded Object"
-msgstr "Garda o obxecto incorporado"
+msgstr "Garda o obxecto incrustado"
 
 #. MENU_STATUSLINE_FILE_SAVE
 #. TOOLBAR_STATUSLINE_FILE_SAVE
@@ -5940,7 +5940,7 @@ msgstr "Estabelecer &idioma"
 #. DLG_Lists_SetDefault
 #: po/tmp/ap_String_Id.h
 msgid "Set Default Values"
-msgstr "Estabelecer valores predefinidos"
+msgstr "Estabelecer valores predeterminados"
 
 #. DLG_RDF_SemanticStylesheets_Set
 #: po/tmp/ap_String_Id.h
@@ -6092,72 +6092,72 @@ msgstr "Atallo"
 #. DLG_Show
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Show"
-msgstr "Mostrar"
+msgstr "Amosar"
 
 #. MENU_LABEL_VIEW_RULER
 #: po/tmp/ap_String_Id.h
 msgid "Show &Ruler"
-msgstr "Mostrar &regra"
+msgstr "Amosar &regra"
 
 #. TOOLBAR_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show All"
-msgstr "Mostrar todo"
+msgstr "Amosar todo"
 
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
 msgid "Show All RDF"
-msgstr "Mostrar todo o RDF"
+msgstr "Amosar todo o RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show For&matting Marks"
-msgstr "Mostrar marcas de for&mato"
+msgstr "Amosar marcas de for&mato"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "Show document &before revisions"
-msgstr "Mostrar o documento an&tes das revisións"
+msgstr "Amosar o documento an&tes das revisións"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h
 msgid "Show document a&fter revisions"
-msgstr "Mostrar o documento &despois das revisións"
+msgstr "Amosar o documento &despois das revisións"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
 msgid "Show document after &previous revisions"
-msgstr "Mostrar o documento antes das revisións pre&vias"
+msgstr "Amosar o documento antes das revisións pre&vias"
 
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show document at final version without revision highlighting"
-msgstr "Mostrar documento en versión final, sen realzar a revisión"
+msgstr "Amosar documento en versión final, sen realzar a revisión"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document"
-msgstr "Mostrar o documento final"
+msgstr "Amosar o documento final"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document..."
-msgstr "Mostrar o documento final..."
+msgstr "Amosar o documento final..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
 msgid "Show full list of documents"
-msgstr "Mostrar a lista completa de documentos"
+msgstr "Amosar a lista completa de documentos"
 
 #. MENU_STATUSLINE_VIEW_RULER
 #: po/tmp/ap_String_Id.h
 msgid "Show or hide the rulers"
-msgstr "Mostrar ou ocultar as regras"
+msgstr "Amosar ou agochar as regras"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
 msgid "Show or hide the status bar"
-msgstr "Mostrar ou ocultar a barra de estado"
+msgstr "Amosar ou agochar a barra de estado"
 
 #. MENU_STATUSLINE_VIEW_TB_1
 #. MENU_STATUSLINE_VIEW_TB_2
@@ -6165,43 +6165,43 @@ msgstr "Mostrar ou ocultar a barra de estado"
 #. MENU_STATUSLINE_VIEW_TB_4
 #: po/tmp/ap_String_Id.h
 msgid "Show or hide the toolbar"
-msgstr "Mostrar ou ocultar a barra de ferramentas"
+msgstr "Amosar ou agochar a barra de ferramentas"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h
 msgid "Show revisions that are present in document"
-msgstr "Mostrar as revisións que están presentes no documento"
+msgstr "Amosar as revisións que están presentes no documento"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
 msgid "Show what the document looks like after previous revisions"
-msgstr "Mostrar a aparencia do documento despois das revisións anteriores"
+msgstr "Amosar a aparencia do documento despois das revisións anteriores"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h
 msgid "Show what the document looks like after revisions"
-msgstr "Mostrar a aparencia do documento despois das revisións"
+msgstr "Amosar a aparencia do documento despois das revisións"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "Show what the document looks like before revisions"
-msgstr "Mostrar a aparencia do documento antes das revisións"
+msgstr "Amosar a aparencia do documento antes das revisións"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h
 msgid "Show..."
-msgstr "Mostrar..."
+msgstr "Amosar..."
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h
 msgid "Show/hide annotations"
-msgstr "Mostrar/ocultar anotacións"
+msgstr "Amosar/agochar anotacións"
 
 #. TOOLBAR_STATUSLINE_VIEW_SHOWPARA
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show/hide formatting marks"
-msgstr "Mostrar/ocultar as marcas de formato"
+msgstr "Amosar/agochar as marcas de formato"
 
 #. TB_Simple
 #: po/tmp/ap_String_Id.h
@@ -6872,8 +6872,8 @@ msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
 msgstr ""
-"Este documento contén revisións que están actualmente ocultas á vista. Vexa "
-"a documentación de AbiWord para a información sobre o traballo con "
+"Este documento contén revisións que están actualmente agochadas á vista. "
+"Vexa a documentación de AbiWord para a información sobre o traballo con "
 "revisións."
 
 #. DLG_Para_PreviewSampleFallback
@@ -6884,7 +6884,7 @@ msgid ""
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
 "Este parágrafo representa palabras tal como poden aparecer no seu documento. "
-"Para ver texto do seu documento usado nesta vista previa, posicione o "
+" Para ver texto do seu documento usado nesta vista previa, posicione o "
 "cursor nun parágrafo do documento con algún texto nel e abra este diálogo."
 
 #. DLG_Styles_ErrStyleNot
@@ -7211,7 +7211,7 @@ msgstr "Erro de escritura ao tentar gardar %s"
 #. MSG_DefaultDirectionChg
 #: po/tmp/ap_String_Id.h
 msgid "You have changed the default direction."
-msgstr "Cambiou a dirección predefinida."
+msgstr "Cambiou a dirección predeterminada."
 
 #. MSG_DirectionModeChg
 #: po/tmp/ap_String_Id.h
@@ -8010,7 +8010,7 @@ msgstr "Declarar como XML (versión 1.0)"
 #. DLG_ULANG_DefaultLangLabel
 #: po/tmp/xap_String_Id.h
 msgid "Default language: "
-msgstr "Idioma predefinido: "
+msgstr "Idioma predeterminado: "
 
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
@@ -8060,17 +8060,17 @@ msgstr "Efectos:"
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
 msgid "Embed (CSS) style sheet"
-msgstr "Inserir folla de estilo (CSS)"
+msgstr "Incrustar folla de estilo (CSS)"
 
 #. DLG_UP_EmbedFonts
 #: po/tmp/xap_String_Id.h
 msgid "Embed Fonts"
-msgstr "Incluír tipos de letra"
+msgstr "Incrustar tipos de letra"
 
 #. DLG_HTMLOPT_ExpEmbedImages
 #: po/tmp/xap_String_Id.h
 msgid "Embed images in URLs (Base64-encoded)"
-msgstr "Inserir imaxes en URL (Base64-encoded)"
+msgstr "Incrustar imaxes en URL (Base64-encoded)"
 
 #. DLG_UENC_EncTitle
 #: po/tmp/xap_String_Id.h
@@ -8181,7 +8181,7 @@ msgstr "Ficheiro"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "O ficheiro «%s» xa existe. Quere substituílo?"
+msgstr "O ficheiro «%s» xa existe.  Quere substituílo?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h
@@ -8401,7 +8401,7 @@ msgstr "Altura: "
 #. DLG_UFS_HiddenCheck
 #: po/tmp/xap_String_Id.h
 msgid "Hidden"
-msgstr "Oculto"
+msgstr "Agochado"
 
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h
@@ -8491,12 +8491,12 @@ msgstr "Métodos de entrada"
 #. DLG_FOSA_InsertObject
 #: po/tmp/xap_String_Id.h
 msgid "Insert Embeddable Object"
-msgstr "Inserir obxecto incorporado"
+msgstr "Inserir obxecto incrustado"
 
 #. DLG_FOSA_FileInsertObject
 #: po/tmp/xap_String_Id.h
 msgid "Insert Embeddable Object file:"
-msgstr "Inserir ficheiro de obxecto icorporado:"
+msgstr "Inserir ficheiro de obxecto incrustado:"
 
 #. DLG_FOSA_InsertTitle
 #: po/tmp/xap_String_Id.h
@@ -8681,7 +8681,7 @@ msgstr "Macedonio"
 #. DLG_ULANG_DefaultLangChkbox
 #: po/tmp/xap_String_Id.h
 msgid "Make default for document"
-msgstr "Facer predefinido para o documento"
+msgstr "Facer predeterminado para o documento"
 
 #. LANG_MG_MG
 #: po/tmp/xap_String_Id.h
