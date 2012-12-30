@@ -1,15 +1,14 @@
 # Breton translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
-# Copyright by:
+#
 # Philippe BASCIANO-LE GALL <drouizig@drouizig.org>, 2005-2010.
-# Denis Arnaud <denisarnuad@yahoo.fr>,2011.
+# Denis Arnaud <denisarnuad@yahoo.fr>,2011-2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-05-12 00:35+0200\n"
+"PO-Revision-Date: 2012-12-28 06:22+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Drouizig <drouizig@drouizig.org>\n"
 "Language: br\n"
@@ -65,6 +64,8 @@ msgid ""
 "# Insert your SPARQL query here\n"
 "# Results are shown below."
 msgstr ""
+"# Ensoc'hañ hoc'h azgoulenn SPARQL amañ\n"
+"# Disoc'hoù a vo skrammet dindan."
 
 #. DLG_PageSetup_Percent
 #: po/tmp/ap_String_Id.h
@@ -101,8 +102,7 @@ msgid ""
 msgstr ""
 "N'eo ket kefloueret %s.\n"
 "\n"
-"Mard oc'h ur programour ac'hanoc'h e c'hallit skrivañ pezh a vank d'ar restr "
-"%s, d'l linenn %d\n"
+"Mard oc'h ur programour ac'hanoc'h e c'hallit skrivañ pezh a vank d'ar restr %s, d'l linenn %d\n"
 "ha kasit ho kemmoù da:\n"
 "\n"
 "\tabiword-dev@abisource.com\n"
@@ -384,7 +384,7 @@ msgstr "K&emmañ"
 #. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
 msgid "&Edit RDF"
-msgstr ""
+msgstr "K&emmañ ar RDF"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -771,7 +771,7 @@ msgstr "&Skarzhañ an istor"
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "&Query RDF"
-msgstr ""
+msgstr "&Klask ar RDF"
 
 #. MENU_LABEL_FILE_EXIT
 #: po/tmp/ap_String_Id.h
@@ -781,7 +781,7 @@ msgstr "Mont &kuit"
 #. MENU_LABEL_RDF
 #: po/tmp/ap_String_Id.h
 msgid "&RDF"
-msgstr ""
+msgstr "&RDF"
 
 #. MENU_LABEL_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
@@ -961,7 +961,7 @@ msgstr "&Krec'h :"
 #. DLG_RDF_Editor_Menu_Triple
 #: po/tmp/ap_String_Id.h
 msgid "&Triple"
-msgstr ""
+msgstr "&Tripl"
 
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
@@ -1072,27 +1072,27 @@ msgstr "Etrelinenn : 1,5 linenn"
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr ""
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr ""
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr ""
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr ""
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr ""
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1135,57 +1135,57 @@ msgstr "&Atav kinnig ar reizhadennoù"
 #. DLG_PageFormat_A0
 #: po/tmp/ap_String_Id.h
 msgid "A0"
-msgstr ""
+msgstr "A0"
 
 #. DLG_PageFormat_A1
 #: po/tmp/ap_String_Id.h
 msgid "A1"
-msgstr ""
+msgstr "A1"
 
 #. DLG_PageFormat_A10
 #: po/tmp/ap_String_Id.h
 msgid "A10"
-msgstr ""
+msgstr "A10"
 
 #. DLG_PageFormat_A2
 #: po/tmp/ap_String_Id.h
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #. DLG_PageFormat_A3
 #: po/tmp/ap_String_Id.h
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #. DLG_PageFormat_A4
 #: po/tmp/ap_String_Id.h
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #. DLG_PageFormat_A5
 #: po/tmp/ap_String_Id.h
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #. DLG_PageFormat_A6
 #: po/tmp/ap_String_Id.h
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #. DLG_PageFormat_A7
 #: po/tmp/ap_String_Id.h
 msgid "A7"
-msgstr ""
+msgstr "A7"
 
 #. DLG_PageFormat_A8
 #: po/tmp/ap_String_Id.h
 msgid "A8"
-msgstr ""
+msgstr "A8"
 
 #. DLG_PageFormat_A9
 #: po/tmp/ap_String_Id.h
 msgid "A9"
-msgstr ""
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1206,8 +1206,7 @@ msgstr "Echu eo gwiriañ an diuzad gant AbiWord."
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h
 #, c-format
-msgid ""
-"AbiWord has finished its search of the document and has made %d replacements."
+msgid "AbiWord has finished its search of the document and has made %d replacements."
 msgstr "Echu eo an klask er restr ha %d ger zo bet erlec'hiet gant AbiWord."
 
 #. DLG_FR_FinishedFind
@@ -1220,30 +1219,26 @@ msgstr "Echu eo klask er restr gant AbiWord."
 msgid ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
-"A solution to this problem is explained in the FAQ on the AbiSource web "
-"site\n"
+"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
 "Savet eo bet AbiWord evit labourat gant un handelv eus COMCTL32.DLL\n"
-" hag a zo freskoc'h eget an hini a zo war ho reizhiad (COMCTL32.DLL handelv "
-"4.72 pe freskoc'h).\n"
+" hag a zo freskoc'h eget an hini a zo war ho reizhiad (COMCTL32.DLL handelv 4.72 pe freskoc'h).\n"
 "Kavout a reot un diskoulm evit ar gudenn-mañ war al lec'hienn AbiWord\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
-"Gallout a rit implijout ar goulev, koulskoude ne zeuio ket ar varrenn "
-"ostilhoù war wel a-wechoù."
+"Gallout a rit implijout ar goulev, koulskoude ne zeuio ket ar varrenn ostilhoù war wel a-wechoù."
 
 #. WINDOWS_NEED_UNICOWS
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 msgstr ""
 "Rekis eo ar restr %s.dll\n"
 "Pellgargit ha staliit anezhi adalek lec'hienn \n"
@@ -1345,9 +1340,8 @@ msgstr "Holl"
 
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Allow formatting not using styles only"
-msgstr "Aotren ar mentrezhañ gant stiloù hepken"
+msgstr "Aotren ar mentrezhañ hep stil"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -1356,9 +1350,8 @@ msgstr "Aotren al livioù ouzhpenn ar gwenn"
 
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Annotation"
-msgstr "N&otennoù"
+msgstr "Notenn"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
@@ -1386,7 +1379,7 @@ msgstr "Arloañ an darempred"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
 msgid "Apply Current"
-msgstr ""
+msgstr "Arloañ an hini bremanel"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT
@@ -1405,7 +1398,7 @@ msgstr "Arloañ al lec'hiadur"
 #. TOOLBAR_TOOLTIP_SEMITEM_STYLESHEET_APPLY
 #: po/tmp/ap_String_Id.h
 msgid "Apply stylesheet to this Semantic Item"
-msgstr ""
+msgstr "Arloañ ar follenn stiloù d'an ergorenn sterek"
 
 #. TOOLBAR_STATUSLINE_FMTPAINTER
 #. TOOLBAR_TOOLTIP_FMTPAINTER
@@ -1430,18 +1423,14 @@ msgstr "Listenn arabek"
 
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h
-msgid ""
-"Are you sure you do not want to maintain full history record? If you "
-"proceed, you will not be able to restore earlier versions of this document."
-msgstr ""
-"Ha sur oc'h na fell deoc'h derc'hel soñj eus an istor enrollañ klok ? Ma "
-"kendalc'hit n'hallot ket adlakaat handelvoù kent an teuliad-mañ."
+msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
+msgstr "Ha sur oc'h na fell deoc'h derc'hel soñj eus an istor enrollañ klok ? Ma kendalc'hit n'hallot ket adlakaat handelvoù kent an teuliad-mañ."
 
 #. DLG_Lists_Arrowhead_List
 #. STYLE_ARROWHEADLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Arrowhead List"
-msgstr ""
+msgstr "Roll penn bir"
 
 #. DLG_Para_SpacingAtLeast
 #: po/tmp/ap_String_Id.h
@@ -1528,21 +1517,18 @@ msgstr "Kendeuziñ emgefre"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Fields:"
-msgstr "Maeziennoù hegerz"
+msgstr "Maeziennoù hegerz:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Formats:"
-msgstr "&Mentrezhoù hegerz"
+msgstr "Mentrezhoù hegerz:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Styles:"
-msgstr "Stiloù hegerz"
+msgstr "Stiloù hegerz:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1552,57 +1538,57 @@ msgstr "Dre :"
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1685,7 +1671,7 @@ msgstr "Rible&nnoù hag iriennoù"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr ""
+msgstr "An daou zen a anavez an eil d'an egile"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -1752,9 +1738,8 @@ msgstr "P&adelligoù ha niverennoù"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Bullets and Numbering"
-msgstr "P&adelligoù ha niverennoù"
+msgstr "Padelligoù ha niverennoù"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
@@ -1779,62 +1764,62 @@ msgstr "&Dleoù ha Gourc'hemennoù"
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
 msgid "C6/C5 Envelope"
-msgstr ""
+msgstr "Golo C6/C5"
 
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -1863,9 +1848,8 @@ msgstr "N'haller ket loc'hañ ar poellad moullañ"
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Category"
-msgstr "Rummad :"
+msgstr "Rummad"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -1973,7 +1957,7 @@ msgstr "Kemmañ mentrezh ar rannbennad diuzet"
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
 msgid "Change the format of the table"
-msgstr ""
+msgstr "Kemmañ mentrezh an daolenn"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -2097,7 +2081,7 @@ msgstr "Dibab liv ar skramm evit AbiWord"
 #. TOOLBAR_TOOLTIP_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Choose which revision of the document to see and edit"
-msgstr ""
+msgstr "Dibab peseurt adsell an teul zo da vezañ lennet hag kemmet"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SET_VIEW_LEVEL
 #: po/tmp/ap_String_Id.h
@@ -2108,15 +2092,12 @@ msgstr "Dibab an adweladenn da sellet"
 #: po/tmp/ap_String_Id.h
 msgid ""
 "Choose your target in the left side.\n"
-"If you want to use the \"Go To\" button, just fill the Number Entry with the "
-"desired number.  You can use + and - to perform relative movement.\tI.e., if "
-"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
-"below your current position."
+"If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
 msgstr ""
 "Dibabit ho lec'hiad labour war an tu kleiz.\n"
 "Evit ober gant ar veudell « Mont da », leugnit ar vaezienn\n"
-"« Niverenn » gant un niverenn a-feson. Gallout a rit ivez implijout + ha - "
-"evit kemmoù keñverel. D.l.e., ma skrivit « +2 » ha ma diuzit « Linenn » ez "
+"« Niverenn » gant un niverenn a-feson.  Gallout a rit ivez implijout + ha - "
+"evit kemmoù keñverel.\t D.l.e., ma skrivit « +2 » ha ma diuzit « Linenn » ez "
 "aio ar veudell « Mont da » eus 2 linenn war lec'hiad red ar biz red."
 
 #. MENU_LABEL_EDIT_CLEAR
@@ -2179,9 +2160,8 @@ msgstr "Bann"
 
 #. BREAK_Column
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Column Break"
-msgstr "Disvan&nañ"
+msgstr "Lamm bann"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
@@ -2247,21 +2227,18 @@ msgstr "Drempred"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact from File"
-msgstr "Darempred diouzh ar restr..."
+msgstr "Darempred diouzh ar restr"
 
 #. DLG_RDF_SemanticItemInsert_Column_Refdlg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contacts"
-msgstr "Drempred"
+msgstr "Darempredoù"
 
 #. DLG_RDF_SemanticStylesheets_Contacts
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contacts:"
-msgstr "Drempred"
+msgstr "Darempredoù"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2276,9 +2253,8 @@ msgstr "Kenderc'hel gant adweladenn gent (niver %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contributor(s)"
-msgstr "Perzhour(ion) :"
+msgstr "Perzhour(ion)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2315,42 +2291,42 @@ msgstr "Eilañ"
 #. MENU_STATUSLINE_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h
 msgid "Copy Embedded Object"
-msgstr "Kopiañ elfenn enkorfet"
+msgstr "Eilañ elfenn enkorfet"
 
 #. MENU_LABEL_EDIT_COPYIMAGE
 #: po/tmp/ap_String_Id.h
 msgid "Copy Image"
-msgstr "Kopiañ skeudenn"
+msgstr "Eilañ ar skeudenn"
 
 #. MENU_LABEL_EDIT_COPYEMBED
 #: po/tmp/ap_String_Id.h
 msgid "Copy Object"
-msgstr "Kopiañ elfenn"
+msgstr "Eilañ an elfenn"
 
 #. MENU_LABEL_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Copy Text Box"
-msgstr "Kopiañ testenn ar voest"
+msgstr "Eilañ testenn ar voest"
 
 #. MENU_STATUSLINE_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Copy hyperlink location"
-msgstr "Kopiañ lec'hiadur ar gourere"
+msgstr "Eilañ lec'hiadur ar gourere"
 
 #. MENU_STATUSLINE_EDIT_COPY_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Copy the Text Box to the clipboard"
-msgstr "Kopiañ ar voest destenn er skurzer"
+msgstr "Eilañ ar voest destenn er skurzer"
 
 #. MENU_STATUSLINE_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Copy the Text Box to the clipboard then remove it"
-msgstr "Aozañ ar voest destenn er skurzer ha dilemel anezhañ a-c'houdevezh"
+msgstr "Aozañ ar voest destenn er golver ha dilemel anezhañ a-c'houdevezh"
 
 #. MENU_STATUSLINE_EDIT_COPY
 #: po/tmp/ap_String_Id.h
 msgid "Copy the selection and put it on the Clipboard"
-msgstr "Kopiañ an diuzad hag e lakaat er golver"
+msgstr "Eilañ an diuzad hag e lakaat er golver"
 
 #. MSG_IE_CouldNotOpen
 #: po/tmp/ap_String_Id.h
@@ -2394,19 +2370,18 @@ msgstr "Goloenn :"
 #. MENU_LABEL_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create New"
-msgstr ""
+msgstr "Krouiñ an hini nevez"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "Dave d'ar bajenn"
+msgstr "Krouiñ un dave"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
 #: po/tmp/ap_String_Id.h
 msgid "Create Semantic Item"
-msgstr ""
+msgstr "Krouiñ un ergorenn ster"
 
 #. DLG_NEW_Tab1_FAX1
 #: po/tmp/ap_String_Id.h
@@ -2416,7 +2391,7 @@ msgstr "Krouiñ ur faks"
 #. TOOLBAR_TOOLTIP_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create a new Revision"
-msgstr ""
+msgstr "Krouiñ un adweladenn nevez"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h
@@ -2447,9 +2422,8 @@ msgstr "Ober gant ur restr goullo"
 
 #. DLG_Styles_StylesTitle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create and Modify Styles"
-msgstr "Sevel ha &kemmañ stiloù"
+msgstr "Krouiñ ha &kemmañ stiloù"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
@@ -2459,22 +2433,22 @@ msgstr "Krouiñ gant an &diuzad"
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item"
-msgstr ""
+msgstr "Krouiñ un ergorenn ster nevez diwar-benn un darempred"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
 msgid "Create new Contact Semantic Item by importing a vcard"
-msgstr ""
+msgstr "Krouiñ un ergorenn ster nevez diwar-benn un darempred en ur enporzhiañ un vcard"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
 msgid "Create new Reference to existing Semantic Item"
-msgstr ""
+msgstr "Krouiñ un dave nevez d'un ergorenn ster a zo anezhi"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create new Semantic Item"
-msgstr ""
+msgstr "Krouiñ un ergorenn ster nevez"
 
 #. MENU_LABEL_EDIT_CUT
 #: po/tmp/ap_String_Id.h
@@ -2524,7 +2498,7 @@ msgstr "&Blinkañ ar biz red"
 #. DLG_PageFormat_Custom
 #: po/tmp/ap_String_Id.h
 msgid "Custom"
-msgstr ""
+msgstr "Personalaat"
 
 #. DLG_Options_Label_SpellCustomDict
 #: po/tmp/ap_String_Id.h
@@ -2581,7 +2555,7 @@ msgstr "&Tuadur"
 #. DLG_PageFormat_DLEnvelope
 #: po/tmp/ap_String_Id.h
 msgid "DL Envelope"
-msgstr ""
+msgstr "Golo DL"
 
 #. DLG_Lists_Dashed_List
 #. STYLE_DASHEDLIST
@@ -2598,7 +2572,7 @@ msgstr "Linenn gant gourzhelloù"
 #. DLG_Tab_Radio_Dash
 #: po/tmp/ap_String_Id.h
 msgid "Dashes"
-msgstr ""
+msgstr "Gourzhelloù"
 
 #. FIELD_Document_Date
 #. DLG_ListRevisions_Column2Label
@@ -2678,7 +2652,7 @@ msgstr "Spisaat pe seveniñ ur stil d'an diuzad"
 #. DLG_Styles_ModifyDescription
 #: po/tmp/ap_String_Id.h
 msgid "Definition"
-msgstr ""
+msgstr "Termenadur"
 
 #. DLG_Styles_Delete
 #. MENU_STATUSLINE_TABLE_DELETE
@@ -2798,7 +2772,7 @@ msgstr "Deskrivadur :"
 #. DLG_FormatTOC_LayoutDetails
 #: po/tmp/ap_String_Id.h
 msgid "Details"
-msgstr ""
+msgstr "Munudoù"
 
 #. DLG_Lists_Diamond_List
 #. STYLE_DIAMONLIST
@@ -2844,23 +2818,22 @@ msgstr "Talbenn disheñvel war ar bajenn ziwezhañ"
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Directly edit the RDF for the entire document..."
-msgstr ""
+msgstr "Kemmañ ar RDF end-eeun evit an teul en e bezh..."
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
 msgid "Disable all formatting commands, except styles"
-msgstr ""
-"Difennet eo d'an arc'hadoù sot da vezañ implijet evit mentrezhañ ar stiloù"
+msgstr "Difennet eo d'an arc'hadoù sot da vezañ implijet evit mentrezhañ ar stiloù"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate"
-msgstr ""
+msgstr "Digevreañ"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
 msgid "Disassociate and apply default stylesheet"
-msgstr ""
+msgstr "Digevreañ ha arloañ ar follenn stil dre ziouer"
 
 #. MENU_STATUSLINE_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -2885,9 +2858,7 @@ msgstr "Diksouez pe kuzhat an arouezennoù divoul"
 #. MENU_STATUSLINE_HELP_ABOUT
 #: po/tmp/ap_String_Id.h
 msgid "Display program information, version number, and copyright"
-msgstr ""
-"Diskouez keloù diwar benn ar goulev, niverenn an handelv hag ar gwirioù "
-"implij"
+msgstr "Diskouez keloù diwar benn ar goulev, niverenn an handelv hag ar gwirioù implij"
 
 #. DLG_FormatTOC_DispStyle
 #: po/tmp/ap_String_Id.h
@@ -2928,7 +2899,7 @@ msgstr "Chom hep adloc'hañ"
 #. DLG_Tab_Radio_Dot
 #: po/tmp/ap_String_Id.h
 msgid "Dots"
-msgstr ""
+msgstr "Poentoù"
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
@@ -2954,27 +2925,27 @@ msgstr "Etrelinenn daougement"
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF Objects"
-msgstr ""
+msgstr "Skarzhañ an ergorennoù RDF"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump RDF related to Cursor Position"
-msgstr ""
+msgstr "Skarzhañ ar RDF a-fet reti al lec'hiadur"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
 msgid "Dump out information about RDF Objects"
-msgstr ""
+msgstr "Skarzhañ an titouroù a-fet ergorennoù ster"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
 msgid "Dump the raw RDF associated with the cursor position"
-msgstr ""
+msgstr "Skarzhañ an ergorenn ster eeun a-fet reti al lec'hiadur"
 
 #. MENU_LABEL_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "E&dit Semantic Items"
-msgstr ""
+msgstr "K&emmañ an ergorennoù ster"
 
 #. DLG_Annotation_Title
 #: po/tmp/ap_String_Id.h
@@ -3010,17 +2981,17 @@ msgstr "Kemmañ an atalad LaTeX"
 #. MENU_LABEL_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples"
-msgstr ""
+msgstr "Kemmañ Tripl ar RDF"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
 msgid "Edit RDF Triples associated with location"
-msgstr ""
+msgstr "Kemañ tripl ar RDF kevredet gant ul lec'hiadur"
 
 #. MENU_STATUSLINE_RDFANCHOR_EDITSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Edit Semantic Items for location"
-msgstr ""
+msgstr "Kemmañ an ergorennoù ster a-fet lec'hiadur"
 
 #. MENU_STATUSLINE_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -3029,7 +3000,6 @@ msgstr "Kemmañ an notenn"
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit document RDF"
 msgstr "Kemmañ RDF an teul"
 
@@ -3058,7 +3028,7 @@ msgstr "Kemmañ talbenn ar bajenn"
 #. TOOLBAR_TOOLTIP_SEMITEM_EDIT
 #: po/tmp/ap_String_Id.h
 msgid "Edit this Semantic Item"
-msgstr ""
+msgstr "Kemmañ an ergorenn ster-mañ"
 
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
@@ -3097,25 +3067,23 @@ msgstr "Dave evit notenn e dibenn teul"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Endnote style:"
-msgstr "Stil notenn eus dibenn teul"
+msgstr "Stil notenn eus dibenn teul :"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Endnotes"
-msgstr "Notenn dibenn"
+msgstr "Notennoù dibenn"
 
 #. DLG_PageFormat_Envelope6x9
 #: po/tmp/ap_String_Id.h
 msgid "Envelope 6x9"
-msgstr ""
+msgstr "Golo 6x9"
 
 #. DLG_PageFormat_EnvelopeNo10
 #: po/tmp/ap_String_Id.h
 msgid "Envelope No10"
-msgstr ""
+msgstr "Golo Nn10"
 
 #. MENU_LABEL_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -3154,7 +3122,7 @@ msgstr "N'eus ket tu da skrivañ er restr %s"
 #. DLG_RDF_SemanticStylesheets_Events
 #: po/tmp/ap_String_Id.h
 msgid "Events:"
-msgstr ""
+msgstr "Darvoudoù :"
 
 #. TOOLBAR_LABEL_SCRIPT_PLAY
 #: po/tmp/ap_String_Id.h
@@ -3174,17 +3142,17 @@ msgstr "Skouer :"
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
 msgid "Execute Query"
-msgstr ""
+msgstr "Erounit an azgoulenn"
 
 #. DLG_RDF_Query_Title
 #: po/tmp/ap_String_Id.h
 msgid "Execute SPARQL on document RDF"
-msgstr ""
+msgstr "Erounit SPARQL ouzh an teul RDF"
 
 #. MENU_STATUSLINE_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Execute a SPARQL Query on all document RDF..."
-msgstr ""
+msgstr "Erounit un azgoulenn SPARQL ouzh an holl teulioù RDF..."
 
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -3205,12 +3173,12 @@ msgstr "Adweladenn ez eus anezho :"
 #. MENU_LABEL_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items"
-msgstr ""
+msgstr "Ezporzhiañ an ergorennoù ster"
 
 #. MENU_STATUSLINE_RDFANCHOR_EXPORTSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Export Semantic Items for location"
-msgstr ""
+msgstr "Ezporzhiañ an ergorennoù ster a-fet lec'hiadur"
 
 #. TB_Extra
 #: po/tmp/ap_String_Id.h
@@ -3219,9 +3187,8 @@ msgstr "Ouzhpenn"
 
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Extra Parameters:"
-msgstr "Perzhioù ouzhpenn"
+msgstr "Perzhioù ouzhpenn:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
@@ -3306,7 +3273,7 @@ msgstr "Kavout adweladenn &gent"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED
 #: po/tmp/ap_String_Id.h
 msgid "Find by Relation"
-msgstr ""
+msgstr "Kavout dre zarempred"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
@@ -3362,16 +3329,12 @@ msgstr "Plegañ dindan live 4"
 #. DLG_PageFormat_Folio
 #: po/tmp/ap_String_Id.h
 msgid "Folio"
-msgstr ""
+msgstr "Folio"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
-msgid ""
-"Following Paragraph Following Paragraph Following Paragraph Following "
-"Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr ""
-"Rannbennad da heul Rannbennad da heul Rannbennad da heul Rannbennad da heul "
-"Rannbennad da heul Rannbennad da heul Rannbennad da heul"
+msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
+msgstr "Rannbennad da heul Rannbennad da heul Rannbennad da heul Rannbennad da heul Rannbennad da heul Rannbennad da heul Rannbennad da heul"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -3451,15 +3414,13 @@ msgstr "Dave notenn eus traoñ pajenn"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnote style:"
-msgstr "Stil notenn traoñ pajenn"
+msgstr "Stil notenn traoñ pajenn:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnotes"
-msgstr "Notenn diaz bajenn"
+msgstr "Notennoù diaz bajenn"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
@@ -3645,15 +3606,12 @@ msgstr "Talbenn [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
-"Headers and Footers can only be created and edited while in Print View "
-"Mode. \n"
+"Headers and Footers can only be created and edited while in Print View Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Gallout a ra bezañ savet hag embannet an talbennoù hag an treid pajenn e mod "
-"pajenn hepken. \n"
+"Gallout a ra bezañ savet hag embannet an talbennoù hag an treid pajenn e mod pajenn hepken. \n"
 "Diuzit « Diskouez » ha « Pajenn » adal barrenn al lañserioù. \n"
 "Fellout a ra deoc’h labourat evel-henn bremañ tout ?"
 
@@ -3720,12 +3678,12 @@ msgstr "Liv an drekleur"
 #. MENU_LABEL_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight RDF"
-msgstr ""
+msgstr "Usskediñ ar RDF"
 
 #. MENU_STATUSLINE_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Highlight areas of the document with RDF associated"
-msgstr ""
+msgstr "Usskediñ maezioù an teulioù gant ar RDF staget"
 
 #. DLG_Spell_IgnoreAll
 #: po/tmp/ap_String_Id.h
@@ -3740,7 +3698,7 @@ msgstr "&Kefoskañ :"
 #. DLG_Goto_Column_ID
 #: po/tmp/ap_String_Id.h
 msgid "ID"
-msgstr ""
+msgstr "Naoudi (ID)"
 
 #. DLG_Options_Label_Icons
 #: po/tmp/ap_String_Id.h
@@ -3818,21 +3776,18 @@ msgstr "An hini gentañ e pennlizherenn"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Initial Endnote value:"
-msgstr "Gwerzhiad deroù eus notenn penn teul"
+msgstr "Gwerzhiad deroù eus notenn penn teul:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Initial Footnote value:"
-msgstr "Gwerzhiad deroù eus notenn traoñ pajenn"
+msgstr "Gwerzhiad deroù eus notenn traoñ pajenn:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Inner (single) quote style:"
-msgstr "Stil an askoù eeun"
+msgstr "Stil an askoù eeun:"
 
 #. InsertModeFieldINS
 #. DLG_Break_Insert
@@ -3922,22 +3877,22 @@ msgstr "Enlakaat MathML adalek ur restr"
 #. DLG_InsertXMLID_Title
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF Link"
-msgstr ""
+msgstr "Ensoc'hañ un ere RDF"
 
 #. MENU_STATUSLINE_INSERT_XMLID
 #: po/tmp/ap_String_Id.h
 msgid "Insert RDF link..."
-msgstr ""
+msgstr "Ensoc'hañ un ere RDF..."
 
 #. DLG_RDF_SemanticItemInsert_Ok
 #: po/tmp/ap_String_Id.h
 msgid "Insert Reference"
-msgstr ""
+msgstr "Ensoc'hañ un dave"
 
 #. DLG_RDF_SemanticItemInsert_Title
 #: po/tmp/ap_String_Id.h
 msgid "Insert Reference to Semantic Item"
-msgstr ""
+msgstr "Enlakaat un dave d'an ergorenn ster"
 
 #. DLG_InsertTable_TableTitle
 #. MENU_STATUSLINE_TABLE_INSERT_TABLE
@@ -4131,7 +4086,7 @@ msgstr "Enlakaat ar golverad hep e mentrezhañ"
 #. MENU_STATUSLINE_RDF
 #: po/tmp/ap_String_Id.h
 msgid "Interact with RDF"
-msgstr ""
+msgstr "Oberiañ ouzh ar RDF"
 
 #. DLG_Options_Label_ViewUnprintable
 #: po/tmp/ap_String_Id.h
@@ -4230,9 +4185,8 @@ msgstr "Arventennoù yezh"
 
 #. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Language(s)"
-msgstr "Yezh(où) :"
+msgstr "Yezh(où)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4246,9 +4200,8 @@ msgstr "Kempenn"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Leader:"
-msgstr "Poentoù heuliad"
+msgstr "Poentoù heuliad:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4295,12 +4248,12 @@ msgstr "Steudañ ar rannbennad a-gleiz"
 #. DLG_PageFormat_Legal
 #: po/tmp/ap_String_Id.h
 msgid "Legal"
-msgstr ""
+msgstr "Lezennel"
 
 #. DLG_PageFormat_Letter
 #: po/tmp/ap_String_Id.h
 msgid "Letter"
-msgstr ""
+msgstr "Lizher"
 
 #. DLG_FormatTOC_Level1
 #: po/tmp/ap_String_Id.h
@@ -4364,9 +4317,8 @@ msgstr "Linenn disrannus"
 
 #. DLG_Goto_Target_Line
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Line:"
-msgstr "Linennoù :"
+msgstr "Linenn:"
 
 #. DLG_WordCount_Lines
 #: po/tmp/ap_String_Id.h
@@ -4390,9 +4342,8 @@ msgstr "Stiloù ar rolloù"
 
 #. DLG_RDF_SemanticStylesheets_Locations
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Locations:"
-msgstr "Lec'hiadur"
+msgstr "Lec'hiadurioù :"
 
 #. MENU_STATUSLINE_VIEW_LOCK_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -4469,9 +4420,8 @@ msgstr "Arnodenn Martin"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Max Column size:"
-msgstr "Ment uhelañ ur bann"
+msgstr "Ment uhelañ ur bann:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4515,9 +4465,7 @@ msgstr "Kendeuziñ a-us"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h
 msgid "Merge another document into the active document using revision marks"
-msgstr ""
-"Kendeuziñ un teuliad all gant an teuliad red en ur ober gant merkoù "
-"adweladenniñ"
+msgstr "Kendeuziñ un teuliad all gant an teuliad red en ur ober gant merkoù adweladenniñ"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h
@@ -4582,9 +4530,8 @@ msgstr "Stiloù a-bep seurt"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Modify Style"
-msgstr "Kemmañ ar stiloù"
+msgstr "Kemmañ ar stil"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h
@@ -4625,19 +4572,19 @@ msgstr "Anv"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, (Homepage), Phone"
-msgstr ""
+msgstr "Anv, (Lec'hienn web), Pelgomz"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME_LATLONG
 #: po/tmp/ap_String_Id.h
 msgid "Name, Latitude and Longitude"
-msgstr ""
+msgstr "Anv, Ledred ha Hedred"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Name, Phone"
-msgstr ""
+msgstr "Anv, pellgomz"
 
 #. TOOLBAR_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -4652,7 +4599,7 @@ msgstr "N&otennoù nevez"
 #. DLG_RDF_Insert_NewContact
 #: po/tmp/ap_String_Id.h
 msgid "New Contact"
-msgstr ""
+msgstr "Darempred nevez"
 
 #. DLG_NEW_Title
 #: po/tmp/ap_String_Id.h
@@ -4676,7 +4623,7 @@ msgstr ""
 #. TOOLBAR_LABEL_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
 msgid "New Revision"
-msgstr ""
+msgstr "Adweladenn nevez"
 
 #. DLG_Lists_Starting_Value
 #: po/tmp/ap_String_Id.h
@@ -4712,7 +4659,7 @@ msgstr "Lesanv"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NICK_PHONE
 #: po/tmp/ap_String_Id.h
 msgid "Nick, Phone"
-msgstr ""
+msgstr "Lesanv, Pellgomz"
 
 #. DLG_NEW_NoFile
 #: po/tmp/ap_String_Id.h
@@ -4766,9 +4713,8 @@ msgstr "Stiloù an notennoù"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Number of Columns:"
-msgstr "Niver a vannoù"
+msgstr "Niver a Vannoù:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4811,9 +4757,8 @@ msgstr "Niverennadur"
 
 #. DLG_FormatFootnotes_FootnoteRestart
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Numbering:"
-msgstr "Niverennadur"
+msgstr "Niverennadur:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4823,7 +4768,7 @@ msgstr "Niverennoù"
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
 msgid "Object"
-msgstr ""
+msgstr "Egorenn"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
@@ -4888,9 +4833,8 @@ msgstr "Digeriñ an teul-mañ"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Orientation"
-msgstr "Reteradur ..."
+msgstr "Reteradur"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4905,9 +4849,8 @@ msgstr "N'eus ket memor a-walc'h evit digeriñ %s"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Outer (double) quote style:"
-msgstr "Stil an daouaskoù"
+msgstr "Stil an daouaskoù:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4959,9 +4902,8 @@ msgstr "&Drekleur ar bajenn"
 
 #. BREAK_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page Break"
-msgstr "Dispajenn&añ"
+msgstr "Lamm pajenn"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -4996,7 +4938,7 @@ msgstr "Niverennoù pajenn"
 #. FIELD_Numbers_PageReference
 #: po/tmp/ap_String_Id.h
 msgid "Page Reference to Bookmark"
-msgstr ""
+msgstr "Dave ar bajenn da vezañ miret"
 
 #. MENU_LABEL_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
@@ -5010,9 +4952,8 @@ msgstr "Pajennaozañ"
 
 #. DLG_Goto_Target_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page:"
-msgstr "Pajennoù :"
+msgstr "Pajenn :"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5033,7 +4974,7 @@ msgstr "Pajennañ"
 #. DLG_PageSetup_Paper
 #: po/tmp/ap_String_Id.h
 msgid "Paper"
-msgstr ""
+msgstr "Paper"
 
 #. DLG_PageSetup_Paper_Size
 #: po/tmp/ap_String_Id.h
@@ -5105,14 +5046,13 @@ msgstr "Lakaat e fin ar gevrenn"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Placement:"
-msgstr "Lec'hiadur"
+msgstr "Lec'hiadur:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr ""
+msgstr "C'hoari gant ar RDF e-pad an diorren"
 
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
@@ -5149,7 +5089,7 @@ msgstr "G&wellvezioù"
 #. DLG_RDF_Query_Column_Predicate
 #: po/tmp/ap_String_Id.h
 msgid "Predicate"
-msgstr ""
+msgstr "Diouganañ"
 
 #. DLG_Options_TabLabel_Preferences
 #. DLG_Options_Label_Schemes
@@ -5190,12 +5130,8 @@ msgstr "Alberz an teul a-raok moullañ"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h
-msgid ""
-"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
-"Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr ""
-"Rannbennad kent Rannbennad kent Rannbennad kent Rannbennad kent Rannbennad "
-"kent Rannbennad kent Rannbennad kent"
+msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
+msgstr "Rannbennad kent Rannbennad kent Rannbennad kent Rannbennad kent Rannbennad kent Rannbennad kent Rannbennad kent"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
@@ -5264,23 +5200,23 @@ msgstr "Embanner :"
 #. MENU_STATUSLINE_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF associated with location"
-msgstr ""
+msgstr "Azgoulenn ar RDF a-fet lec'hiadur"
 
 #. MENU_LABEL_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query RDF for cursor position"
-msgstr ""
+msgstr "Azgoulenn ar RDF evit reti al lec'hiadur"
 
 #. DLG_RDF_Query_Status
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Query RDF: %d of total: %ld"
-msgstr ""
+msgstr "Azgoulenn RDF : %d eus an holl : %ld"
 
 #. MENU_STATUSLINE_RDF_QUERY_XMLIDS
 #: po/tmp/ap_String_Id.h
 msgid "Query the RDF associated with the cursor position..."
-msgstr ""
+msgstr "Azgoulenn ar RDF a-fet reti al lec'hiadur..."
 
 #. MENU_LABEL_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5296,7 +5232,7 @@ msgstr "Ere RDF"
 #. DLG_RDF_SemanticStylesheets_Title
 #: po/tmp/ap_String_Id.h
 msgid "RDF Stylesheet"
-msgstr ""
+msgstr "Follenn stil ar RDF"
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5359,7 +5295,7 @@ msgstr "Reizhañ ar periad brasaat"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr ""
+msgstr "A-fet an ergorenn ster mammenn"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
@@ -5395,9 +5331,8 @@ msgstr "Diverkañ an talbenn"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove Property from Style:"
-msgstr "Lemel perzhioù ar stil"
+msgstr "Lemel perzhioù ar stil:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5524,7 +5459,7 @@ msgstr "Adloc'hañ an niverennadur war ur gevrenn nevez"
 #. DLG_RDF_Editor_Restrict
 #: po/tmp/ap_String_Id.h
 msgid "Restrict to RDF Link:"
-msgstr ""
+msgstr "Bevennañ d'an ere RDF :"
 
 #. DLG_Lists_Resume_Previous_List
 #: po/tmp/ap_String_Id.h
@@ -5565,7 +5500,7 @@ msgstr "Adweladenn nevez..."
 #. TOOLBAR_STATUSLINE_REVISIONS_SELECT
 #: po/tmp/ap_String_Id.h
 msgid "Revisions select..."
-msgstr ""
+msgstr "Dibab adselloù..."
 
 #. DLG_Para_AlignRight
 #. DLG_Tab_Radio_Right
@@ -5636,12 +5571,12 @@ msgstr "Enlakaat li&nennoù war-lerc'h"
 #. MENU_STATUSLINE_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests and show results on console"
-msgstr ""
+msgstr "Lañsañ taolioù arnod RDF ha skrammañ an disoc'hoù er penel"
 
 #. MENU_STATUSLINE_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Run some RDF tests that change during development"
-msgstr ""
+msgstr "Lañsañ taolioù arnod RDF a cheñch e-pad an diorren"
 
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
@@ -5661,7 +5596,7 @@ msgstr "Rannañ al &logoù"
 #. MENU_LABEL_RDF_QUERY
 #: po/tmp/ap_String_Id.h
 msgid "SPARQL Query"
-msgstr ""
+msgstr "Azgoulenn SPARQL"
 
 #. DLG_Options_Btn_Save
 #: po/tmp/ap_String_Id.h
@@ -5748,7 +5683,7 @@ msgstr "Enrollañ etrezek restr"
 #. DLG_PageSetup_Scale
 #: po/tmp/ap_String_Id.h
 msgid "Scale"
-msgstr ""
+msgstr "Skeulaat"
 
 #. MENU_STATUSLINE_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
@@ -5824,9 +5759,8 @@ msgstr "Diuz testenn ar voest"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select a target bookmark from the list:"
-msgstr "Diuzit ur sined e-barzh al listenn."
+msgstr "Diuzit ur sined e-barzh al listenn:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -5838,39 +5772,39 @@ msgstr "Diuz ar skeudenn adalek ar restr"
 #. TOOLBAR_TOOLTIP_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to Semantic Item"
-msgstr ""
+msgstr "Diuzañ dave da-heul an ergorenn ster"
 
 #. TOOLBAR_LABEL_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item"
-msgstr ""
+msgstr "Diuzañ dave da-heul an ergorenn ster-mañ"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select next reference to this Semantic Item..."
-msgstr ""
+msgstr "Diuzañ dave da-heul an ergorenn ster-mañ..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTNEXTREFTOSEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Select next references to Semantic Item"
-msgstr ""
+msgstr "Diuzañ daveoù da-heul an ergorenn ster"
 
 #. MENU_LABEL_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTPREVREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to Semantic Item"
-msgstr ""
+msgstr "Diuzañ dave a-raok an ergorenn ster"
 
 #. TOOLBAR_LABEL_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item"
-msgstr ""
+msgstr "Diuzañ dave a-raok an ergorenn ster-mañ"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select previous reference to this Semantic Item..."
-msgstr ""
+msgstr "Diuzañ dave a-raok an ergorenn ster-mañ..."
 
 #. MENU_STATUSLINE_EDIT_SELECT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -5885,41 +5819,41 @@ msgstr "Diuzañ ar restr a-bezh"
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the next version..."
-msgstr ""
+msgstr "Diuzañ parzhioù an teull a zo en handelv da-heul..."
 
 #. TOOLBAR_STATUSLINE_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document belonging to the previous version..."
-msgstr ""
+msgstr "Diuzañ parzhioù an teull a zo en handelv a-raok..."
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_NEXT
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_NEXT
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the next revision"
-msgstr ""
+msgstr "Diuzañ parzhioù an teull a zo en adsell da-heul"
 
 #. TOOLBAR_LABEL_REVISIONS_FIND_PREV
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the previous revision"
-msgstr ""
+msgstr "Diuzañ parzhioù an teull a zo en adsell a-raok..."
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. TOOLBAR_TOOLTIP_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to Semantic Item"
-msgstr ""
+msgstr "Diuzañ an dave-se d'an ergorenn ster"
 
 #. TOOLBAR_LABEL_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item"
-msgstr ""
+msgstr "Diuzañ an dave-se d'an ergorenn ster-mañ"
 
 #. TOOLBAR_STATUSLINE_SEMITEM_THIS
 #: po/tmp/ap_String_Id.h
 msgid "Select this reference to this Semantic Item..."
-msgstr ""
+msgstr "Diuzañ an dave-se d'an ergorenn ster-mañ..."
 
 #. DLG_FormatTable_Apply_To_Selection
 #. DLG_UP_Selection
@@ -5931,7 +5865,7 @@ msgstr "Diuzad"
 #. MENU_STATUSLINE_RDF_SEMITEM
 #: po/tmp/ap_String_Id.h
 msgid "Semantic Item"
-msgstr ""
+msgstr "Ergorenn ster"
 
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
@@ -5986,7 +5920,7 @@ msgstr "Stabilaat an arventennoù anspiset"
 #. DLG_RDF_SemanticStylesheets_Set
 #: po/tmp/ap_String_Id.h
 msgid "Set For All Existing"
-msgstr ""
+msgstr "Arventenniñ evit an holl a zo anezho"
 
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
@@ -6013,7 +5947,7 @@ msgstr "Lakaat ur skeudenn evit drekleur ho pajennad"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr ""
+msgstr "Arventenniñ evel ergorenn ster mammenn"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -6058,11 +5992,8 @@ msgstr "Spisaat an taolennata"
 
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
-msgid ""
-"Set the current stylesheet for Semantic Items in this document. New RDF "
-"objects will use this stylesheet automatically. The buttons allow you to set "
-"the stylesheet for all existing Semantic Items to the new stylesheet as well."
-msgstr ""
+msgid "Set the current stylesheet for Semantic Items in this document. New RDF objects will use this stylesheet automatically. The buttons allow you to set the stylesheet for all existing Semantic Items to the new stylesheet as well."
+msgstr "Arventenniñ ar follenn stiloù red evit an ergorennoù ster en teul-mañ. Arverañ e raint an ergorennoù RDF nevez ar follen stiloù-mañ emgefreek. Gant an afell e c'hallo arverañ ar follenn stiloù nevez evit an holl ergorennoù a zo anezhe endeo."
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -6103,7 +6034,7 @@ msgstr "Kefluniañ ho kwellvezioù ar gwiriañ reizhskrivadur"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
 #: po/tmp/ap_String_Id.h
 msgid "Settings"
-msgstr ""
+msgstr "Arventennoù"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
@@ -6144,7 +6075,7 @@ msgstr "Diskouez/Kuzhat ¶"
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
 msgid "Show All RDF"
-msgstr ""
+msgstr "Diskouez an holl RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
@@ -6169,17 +6100,17 @@ msgstr "Diskouez teuliad goude e adweladennoù kent"
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show document at final version without revision highlighting"
-msgstr ""
+msgstr "Skrammañ handelv diwezhañ an teul hep usskediñ an adselloù"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document"
-msgstr ""
+msgstr "Skrammañ an teul diwezhañ"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show final document..."
-msgstr ""
+msgstr "Skrammañ an teul diwezhañ..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -6279,7 +6210,7 @@ msgstr "&Rummañ an daolenn"
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
 msgid "Solid line"
-msgstr ""
+msgstr "Linenn leun"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6338,9 +6269,8 @@ msgstr "Orin :"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Space after Column:"
-msgstr "Esaouenn goude ar bann"
+msgstr "Esaouenn goude ar bann :"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6570,15 +6500,13 @@ msgstr "Anv stil :"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Style Type:"
-msgstr "Seurt stil"
+msgstr "Rizh ar stil :"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Style for following paragraph:"
-msgstr "Stil evit ar rannbennad da heul"
+msgstr "Stil evit ar rannbennad da heul :"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6601,7 +6529,7 @@ msgstr "Stiloù"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
 msgid "Stylesheet"
-msgstr ""
+msgstr "Follenn stil"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
@@ -6662,19 +6590,19 @@ msgstr "Taolenn"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location"
-msgstr ""
+msgstr "Taolenn, lec'hiadur"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr ""
+msgstr "Taolenn, Lec'hiadur, amzer kregiñ hag amzer dibenn"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr ""
+msgstr "Taolen, amzer kregiñ hag amzer dibenn"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6773,7 +6701,7 @@ msgstr "Mentrezh an dest&enn"
 #. MENU_LABEL_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Test RDF subsystem"
-msgstr ""
+msgstr "Arnodiñ an isreizhiad RDF"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h
@@ -6804,12 +6732,12 @@ msgstr "Boest destenn"
 #. DLG_FormatFrame_PositionTo
 #: po/tmp/ap_String_Id.h
 msgid "Text Box Position"
-msgstr ""
+msgstr "Lec'hiadur ar boest testenn"
 
 #. DLG_Options_Label_BiDiOptions
 #: po/tmp/ap_String_Id.h
 msgid "Text Directionality"
-msgstr ""
+msgstr "Tuadur an destenn"
 
 #. DLG_Lists_PageFolding
 #: po/tmp/ap_String_Id.h
@@ -6829,16 +6757,8 @@ msgstr "Testenn hag Arlunioù"
 
 #. COMMAND_LINE_PRINTING_DEPRECATED
 #: po/tmp/ap_String_Id.h
-msgid ""
-"The '--print' option has been removed as of AbiWord 2.8. You can achieve the "
-"desired behavior using AbiWord's command-line conversion tools and then "
-"piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 "
-"myfile.txt | lpr'"
-msgstr ""
-"Lamet kuit eo bet an dibarzh '--print' diouzh AbiWord 2.8. Gallout a rit "
-"arverañ anezhañ gant an ostilh amdreiñ arc'had eus AbiWord ha goude-se kas "
-"an ec'hankad d'an reizhiad moullañ. Da skouer :'abiword --to=ps --to-"
-"name=fd://1 myfile.txt | lpr'"
+msgid "The '--print' option has been removed as of AbiWord 2.8. You can achieve the desired behavior using AbiWord's command-line conversion tools and then piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
+msgstr "Lamet kuit eo bet an dibarzh '--print' diouzh AbiWord 2.8. Gallout a rit arverañ anezhañ gant an ostilh amdreiñ arc'had eus AbiWord ha goude-se kas an ec'hankad d'an reizhiad moullañ. Da skouer :'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6847,12 +6767,8 @@ msgstr "Re ledan eo ar riblennoù diuzet evit bezañ lakaet er bajenn."
 
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h
-msgid ""
-"The new user interface language will take effect the next time that you "
-"start the application"
-msgstr ""
-"Dalc'het kont vo eus ar c'hetal implijiad nevez ar wech o tont e loc'hit an "
-"arload"
+msgid "The new user interface language will take effect the next time that you start the application"
+msgstr "Dalc'het kont vo eus ar c'hetal implijiad nevez ar wech o tont e loc'hit an arload"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h
@@ -6861,11 +6777,8 @@ msgstr "Echu eo gwiriañ ar reizhskrivadur."
 
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h
-msgid ""
-"The text to which the hyperlink is to be attached must be within a single "
-"paragraph."
-msgstr ""
-"Ret eo d'an destenn buket gant ar gourere bezañ en ur rannbennad hepken."
+msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
+msgstr "Ret eo d'an destenn buket gant ar gourere bezañ en ur rannbennad hepken."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h
@@ -6880,50 +6793,30 @@ msgstr "Tevder :"
 
 #. MSG_XMLIDAlreadyExists
 #: po/tmp/ap_String_Id.h
-msgid ""
-"This RDF link already exists. Would you like to replace the existing RDF "
-"link with this new one?"
-msgstr ""
-"Ar ere RDF-mañ a zo anezhañ endeo. Fellout a ra deoc'h amsaviñ anezhañ gant "
-"an hennezh nevez ?"
+msgid "This RDF link already exists. Would you like to replace the existing RDF link with this new one?"
+msgstr "Ar ere RDF-mañ a zo anezhañ endeo. Fellout a ra deoc'h amsaviñ anezhañ gant an hennezh nevez ?"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
-msgid ""
-"This bookmark already exists. Would you like to replace the existing "
-"bookmark with this new one?"
-msgstr ""
-"Ar sined-mañ a zo anezhañ endeo. Fellout a ra deoc'h amsaviñ anezhañ gant an "
-"hennezh nevez ?"
+msgid "This bookmark already exists. Would you like to replace the existing bookmark with this new one?"
+msgstr "Ar sined-mañ a zo anezhañ endeo. Fellout a ra deoc'h amsaviñ anezhañ gant an hennezh nevez ?"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h
-msgid ""
-"This change will only take effect when you restart AbiWord or create a new "
-"document."
-msgstr ""
-"Sevenet e vo ar c'hemmoù pa vo adloc'het AbiWord pe pa vo savet un teul "
-"nevez."
+msgid "This change will only take effect when you restart AbiWord or create a new document."
+msgstr "Sevenet e vo ar c'hemmoù pa vo adloc'het AbiWord pe pa vo savet un teul nevez."
 
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h
-msgid ""
-"This document contains revisions which are currently hidden from view. "
-"Please see AbiWord documentation for information on working with revisions."
-msgstr ""
-"Kavet e vez adweladennoù gant an teuliad-mañ ha n'hall ket bezañ gwelet. "
-"Trugarez da lenn skoazell AbiWord a-zivout an adweladennoù evit gouzout "
-"hiroc'h."
+msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
+msgstr "Kavet e vez adweladennoù gant an teuliad-mañ ha n'hall ket bezañ gwelet. Trugarez da lenn skoazell AbiWord a-zivout an adweladennoù evit gouzout hiroc'h."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
-msgid ""
-"This paragraph represents words as they might appear in your document.  To "
-"see the text from your document used in this preview, position your cursor "
-"in a document paragraph with some text in it and open this dialog."
+msgid "This paragraph represents words as they might appear in your document.  To see the text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
 msgstr ""
 "Diskouez a ra ar rannbennad-mañ un nebeud gerioù evel ma tlefent dispakañ "
-"e-barzh ho teul. A-benn gwelout testenn ho teul e-barzh an alberz-mañ, "
+"e-barzh ho teul.  A-benn gwelout testenn ho teul e-barzh an alberz-mañ, "
 "lakait ho piz red e-barzh ur rannbennad d'ho teul (gant testenn) ha digorit "
 "ar voest-mañ."
 
@@ -7004,7 +6897,7 @@ msgstr "Linenn a-&us"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Total RDF: %d"
-msgstr ""
+msgstr "Hollad RDF :%d"
 
 #. DLG_Lists_Triangle_List
 #. STYLE_TRIANGLELIST
@@ -7025,13 +6918,12 @@ msgstr "Rummad"
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the RDF link:"
-msgstr ""
+msgstr "Roit un anv evit an ere RDF :"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
-msgstr "Roit anv ur sined pe diuzit anezhañ el listenn."
+msgstr "Roit anv ur sined pe diuzit anezhañ diouzh ar roll :"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7059,7 +6951,6 @@ msgstr "Islinennañ an diuzad (gwintell)"
 #. DLG_FormatTOC_Underline
 #. DLG_Tab_Radio_Underline
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Underlines"
 msgstr "Islinennet"
 
@@ -7201,7 +7092,7 @@ msgstr "Kempennerezh kenrouedad"
 #. FIELD_Datetime_CurrentDate
 #: po/tmp/ap_String_Id.h
 msgid "Weekday Month Day, Year"
-msgstr ""
+msgstr "Deiz ar sizhun, Miz, Deiz, Bloaz"
 
 #. DLG_Styles_LBL_TxtMsg
 #: po/tmp/ap_String_Id.h
@@ -7367,49 +7258,42 @@ msgstr "Lizherenneg d'an tu gin"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Tra ebet"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Tra ebet"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Tra ebet"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Danvez"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Tra ebet"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Tra ebet"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Danvez"
@@ -7512,22 +7396,14 @@ msgstr ""
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h
 #, c-format
-msgid ""
-"AbiWord cannot fully restore version %d of the document because the version "
-"information is incomplete."
-msgstr ""
-"N'hall ket AbiWord adlakaat handelv %d eus an teul peogwir eo diglok an "
-"titouroù handelv."
+msgid "AbiWord cannot fully restore version %d of the document because the version information is incomplete."
+msgstr "N'hall ket AbiWord adlakaat handelv %d eus an teul peogwir eo diglok an titouroù handelv."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h
 #, c-format
-msgid ""
-"AbiWord cannot restore version %d of the document because the version "
-"information is missing."
-msgstr ""
-"N'hall ket AbiWord adlakaat ar stumm %d eus an teuliad peogwir e vank an "
-"titouroù stumm-mañ."
+msgid "AbiWord cannot restore version %d of the document because the version information is missing."
+msgstr "N'hall ket AbiWord adlakaat ar stumm %d eus an teuliad peogwir e vank an titouroù stumm-mañ."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h
@@ -7543,7 +7419,7 @@ msgstr "A-zivout %s"
 #. LANG_ACH
 #: po/tmp/xap_String_Id.h
 msgid "Acholi"
-msgstr ""
+msgstr "Akoli"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7588,7 +7464,7 @@ msgstr "Aotren ar balizennoù ouzhpenn en egor anvaduriñ AWML"
 #. LANG_AM_ET
 #: po/tmp/xap_String_Id.h
 msgid "Amharic"
-msgstr ""
+msgstr "Amareg"
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
@@ -7638,7 +7514,7 @@ msgstr "Asameg"
 #. LANG_AST_ES
 #: po/tmp/xap_String_Id.h
 msgid "Asturian"
-msgstr ""
+msgstr "Astureg"
 
 #. DLG_Options_Label_DirMarkerAfterClosingParenthesis
 #: po/tmp/xap_String_Id.h
@@ -7662,30 +7538,28 @@ msgstr "Adweladennoù emgefre"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Available Documents:"
-msgstr "Teulioù hegerz"
+msgstr "Teulioù hegerz :"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Available Languages:"
-msgstr "Yezhoù hegerz"
+msgstr "Yezhoù hegerz :"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
 msgid "Aymara (Central/Northern Bolivia)"
-msgstr ""
+msgstr "Aymara"
 
 #. LANG_AYC_BO
 #: po/tmp/xap_String_Id.h
 msgid "Aymara (Southern Bolivia)"
-msgstr ""
+msgstr "Aymara (Su ar Bolivia)"
 
 #. LANG_AYR
 #: po/tmp/xap_String_Id.h
 msgid "Aymara, Central"
-msgstr ""
+msgstr "Aymara, Kreizek"
 
 #. ENC_BALT_ISO
 #: po/tmp/xap_String_Id.h
@@ -7700,7 +7574,7 @@ msgstr "Balt, Pajenn enbonegañ Windows 1257"
 #. LANG_BM
 #: po/tmp/xap_String_Id.h
 msgid "Bamanankan"
-msgstr ""
+msgstr "Bamanankan"
 
 #. LANG_EU_ES
 #: po/tmp/xap_String_Id.h
@@ -7735,7 +7609,7 @@ msgstr "Testenn a-gil"
 #. LANG_NB_NO
 #: po/tmp/xap_String_Id.h
 msgid "Bokmal"
-msgstr ""
+msgstr "Norvegeg Bokmål"
 
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
@@ -7745,7 +7619,7 @@ msgstr "Tev Stouet"
 #. LANG_BS_BA
 #: po/tmp/xap_String_Id.h
 msgid "Bosnian"
-msgstr ""
+msgstr "Bosneg"
 
 #. LANG_BR_FR
 #: po/tmp/xap_String_Id.h
@@ -7801,7 +7675,7 @@ msgstr "Kemmañ ar yezh hag ar c'hlavier a-gevret"
 #. STYLE_DELIM_CHAPTER
 #: po/tmp/xap_String_Id.h
 msgid "Chapter"
-msgstr ""
+msgstr "Chabistr"
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7811,7 +7685,7 @@ msgstr "Talbenn pennad"
 #. LANG_CGG
 #: po/tmp/xap_String_Id.h
 msgid "Chiga"
-msgstr ""
+msgstr "Chiga"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7885,9 +7759,8 @@ msgstr "Skarzhañ an drekleur"
 
 #. TB_ClearForeground
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clear Foreground"
-msgstr "Skarzhañ an drekleur"
+msgstr "Skarzhañ an rakleur :"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
@@ -7896,7 +7769,6 @@ msgstr "Bank skeudennoù"
 
 #. DLG_CLIPART_Error
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clip Art could not be loaded."
 msgstr "N'eo ket bet karget ar skeudennaoueg"
 
@@ -8044,7 +7916,7 @@ msgstr "Daneg"
 #. LANG_FA_AF
 #: po/tmp/xap_String_Id.h
 msgid "Dari"
-msgstr ""
+msgstr "Dari"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
@@ -8099,7 +7971,7 @@ msgstr "Teuliadoù keñveriet"
 #. LANG_NL_NL
 #: po/tmp/xap_String_Id.h
 msgid "Dutch"
-msgstr ""
+msgstr "Nederlandeg"
 
 #. DLG_History_EditTime
 #: po/tmp/xap_String_Id.h
@@ -8108,9 +7980,8 @@ msgstr "Amzer aozañ :"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Effects:"
-msgstr "Efedoù"
+msgstr "Efedoù :"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -8190,7 +8061,7 @@ msgstr "Saozneg (Stadoù-Unanet)"
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h
 msgid "English, DOS/Windows Code Page 437"
-msgstr ""
+msgstr "Soazneg, pajenn 437 ar boneg DOS/Windows"
 
 #. DLG_Password_Title
 #: po/tmp/xap_String_Id.h
@@ -8236,7 +8107,7 @@ msgstr "Restr"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Amañ emañ ar restr '%s' dija. Lakaat unan all en he lec'h ?"
+msgstr "Amañ emañ ar restr '%s' dija.  Lakaat unan all en he lec'h ?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h
@@ -8251,7 +8122,7 @@ msgstr "Restr e vez adc'hoariet roll ar c'hemmoù dioutañ :"
 #. LANG_FIL_PH
 #: po/tmp/xap_String_Id.h
 msgid "Filipino"
-msgstr ""
+msgstr "Filipineg"
 
 #. LANG_FI_FI
 #: po/tmp/xap_String_Id.h
@@ -8261,7 +8132,7 @@ msgstr "Finneg"
 #. LANG_NL_BE
 #: po/tmp/xap_String_Id.h
 msgid "Flemish"
-msgstr ""
+msgstr "Flamank"
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
@@ -8321,12 +8192,12 @@ msgstr "Fulah"
 #. LANG_GL
 #: po/tmp/xap_String_Id.h
 msgid "Galician"
-msgstr ""
+msgstr "Galisianeg"
 
 #. LANG_LG
 #: po/tmp/xap_String_Id.h
 msgid "Ganda"
-msgstr ""
+msgstr "Ganda"
 
 #. LANG_KA_GE
 #: po/tmp/xap_String_Id.h
@@ -8491,12 +8362,12 @@ msgstr "Naouder :"
 #. DLG_Image_ImageDesc
 #: po/tmp/xap_String_Id.h
 msgid "Image Name"
-msgstr ""
+msgstr "Anv ar skeudenn"
 
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h
 msgid "Image Placement"
-msgstr ""
+msgstr "Lec'hiadur ar skeudenn"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
@@ -8506,7 +8377,7 @@ msgstr "Perzhioù skeudenn"
 #. DLG_Image_ImageSize
 #: po/tmp/xap_String_Id.h
 msgid "Image Size"
-msgstr ""
+msgstr "Ment ar skeudenn"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8611,7 +8482,7 @@ msgstr "Iwerzhoneg"
 #. LANG_IT_IT
 #: po/tmp/xap_String_Id.h
 msgid "Italian"
-msgstr ""
+msgstr "Italianeg"
 
 #. LANG_JA_JP
 #: po/tmp/xap_String_Id.h
@@ -8646,12 +8517,12 @@ msgstr "Kannada"
 #. LANG_KK_KZ
 #: po/tmp/xap_String_Id.h
 msgid "Kazakh"
-msgstr ""
+msgstr "Kazak"
 
 #. LANG_KM_KH
 #: po/tmp/xap_String_Id.h
 msgid "Khmer"
-msgstr ""
+msgstr "Khmer"
 
 #. LANG_KO
 #: po/tmp/xap_String_Id.h
@@ -8661,7 +8532,7 @@ msgstr "Koreaneg"
 #. LANG_KO_KR
 #: po/tmp/xap_String_Id.h
 msgid "Korean (South Korea)"
-msgstr ""
+msgstr "Koreeg"
 
 #. ENC_KORE_EUC
 #: po/tmp/xap_String_Id.h
@@ -8671,7 +8542,7 @@ msgstr "Koreek, EUC-KR"
 #. ENC_KORE_JOHAB
 #: po/tmp/xap_String_Id.h
 msgid "Korean, JOHAB"
-msgstr ""
+msgstr "Koreek, JOHAB"
 
 #. ENC_KORE_KSC
 #: po/tmp/xap_String_Id.h
@@ -8701,7 +8572,7 @@ msgstr "Enrollañ diwezhañ :"
 #. LANG_LA_IT
 #: po/tmp/xap_String_Id.h
 msgid "Latin"
-msgstr ""
+msgstr "Latin"
 
 #. LANG_LV_LV
 #: po/tmp/xap_String_Id.h
@@ -8715,14 +8586,13 @@ msgstr "Lituaneg"
 
 #. DLG_CLIPART_Loading
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Loading Clip Art..."
-msgstr "O kargañ skeudennoù (Clip Art)"
+msgstr "O kargañ skeudennoù (Clip Art)..."
 
 #. LANG_JBO
 #: po/tmp/xap_String_Id.h
 msgid "Lojban"
-msgstr ""
+msgstr "Lojban"
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
@@ -8742,7 +8612,7 @@ msgstr "Sevel diouer evit an teul"
 #. LANG_MG_MG
 #: po/tmp/xap_String_Id.h
 msgid "Malagasy"
-msgstr ""
+msgstr "Malgacheg"
 
 #. LANG_MS_MY
 #: po/tmp/xap_String_Id.h
@@ -8752,7 +8622,7 @@ msgstr "Malezieg"
 #. LANG_MNK_SN
 #: po/tmp/xap_String_Id.h
 msgid "Mandinka"
-msgstr ""
+msgstr "Mandinka"
 
 #. LANG_MI_NZ
 #: po/tmp/xap_String_Id.h
@@ -8792,7 +8662,7 @@ msgstr "Anv :"
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
 msgid "Nepali"
-msgstr ""
+msgstr "Nepaleg"
 
 #. DLG_MB_No
 #: po/tmp/xap_String_Id.h
@@ -8837,7 +8707,7 @@ msgstr "Talbenn niverennet 3"
 #. LANG_NN_NO
 #: po/tmp/xap_String_Id.h
 msgid "Nynorsk"
-msgstr ""
+msgstr "Norvegeg Nynorsk"
 
 #. DLG_OK
 #: po/tmp/xap_String_Id.h
@@ -8901,9 +8771,8 @@ msgstr "Testenn ziazez"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Plugin Details"
-msgstr "Munudoù ar mollad :"
+msgstr "Munudoù ar mollad"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
@@ -8983,12 +8852,12 @@ msgstr "Arc'had moullañ : "
 #. LANG_PA_IN
 #: po/tmp/xap_String_Id.h
 msgid "Punjabi (India)"
-msgstr ""
+msgstr "Pounjabi (India)"
 
 #. LANG_PA_PK
 #: po/tmp/xap_String_Id.h
 msgid "Punjabi (Pakistan)"
-msgstr ""
+msgstr "Pounjabi ( Pakistan)"
 
 #. LANG_QU_BO
 #: po/tmp/xap_String_Id.h
@@ -8998,17 +8867,17 @@ msgstr "Kechua"
 #. LANG_QUZ
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Cusco)"
-msgstr ""
+msgstr "Kechua, Cuzco"
 
 #. LANG_QUL_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Northern Bolivia)"
-msgstr ""
+msgstr "Kechuaeg (Bolivia an Norzh)"
 
 #. LANG_QUH_BO
 #: po/tmp/xap_String_Id.h
 msgid "Quechua (Southern Bolivia)"
-msgstr ""
+msgstr "Kechuaeg (Bolivia ar Su)"
 
 #. ReadOnly
 #: po/tmp/xap_String_Id.h
@@ -9032,12 +8901,8 @@ msgstr "Kerentiezh :"
 
 #. DLG_HTMLOPT_ExpMathMLRenderPNG
 #: po/tmp/xap_String_Id.h
-msgid ""
-"Render MathML to PNG images (JavaScript will be used if option is not "
-"checked)"
-msgstr ""
-"Amdreiñ MathML da skeudennoù PNG (Arveret e vo Javascript mar n'eo ket "
-"merket an dibarzh-mañ)"
+msgid "Render MathML to PNG images (JavaScript will be used if option is not checked)"
+msgstr "Amdreiñ MathML da skeudennoù PNG (Arveret e vo Javascript mar n'eo ket merket an dibarzh-mañ)"
 
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h
@@ -9073,13 +8938,12 @@ msgstr "Romanian, Macintosh"
 #. LANG_RU_RU
 #: po/tmp/xap_String_Id.h
 msgid "Russian"
-msgstr ""
+msgstr "Ruseg"
 
 #. LANG_RU_PETR1708
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Russian, pre-1918"
-msgstr "Ruseg (araok 1918)"
+msgstr "Ruseg, araok 1918"
 
 #. DLG_UFS_SampleFrameLabel
 #: po/tmp/xap_String_Id.h
@@ -9113,9 +8977,8 @@ msgstr "Skript :"
 
 #. STYLE_DELIM_SECTION
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Section"
-msgstr "Diuzad"
+msgstr "Kevrenn"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
@@ -9144,9 +9007,8 @@ msgstr "Serbeg"
 
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Serbian, Latin"
-msgstr "Serbeg (latin)"
+msgstr "Serbeg, latin"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
@@ -9181,7 +9043,7 @@ msgstr "Pennlizherennoù bihan"
 #. LANG_SON
 #: po/tmp/xap_String_Id.h
 msgid "Songhay"
-msgstr ""
+msgstr "Songhay"
 
 #. LANG_ES_MX
 #: po/tmp/xap_String_Id.h
@@ -9291,23 +9153,14 @@ msgstr "Gwarezet eo diouzh skrivañ ar renkell '%s'."
 
 #. DLG_FOSA_ExtensionDoesNotMatch
 #: po/tmp/xap_String_Id.h
-msgid ""
-"The given file extension does not match the chosen file type. Do you want to "
-"use this name anyway?"
-msgstr ""
-"An askouezhadenn roet ne glot ket gant rizh ar restr dibabet. Fellout a ra "
-"deoc'h arverañ an anv-mañ memes tra ?"
+msgid "The given file extension does not match the chosen file type. Do you want to use this name anyway?"
+msgstr "An askouezhadenn roet ne glot ket gant rizh ar restr dibabet. Fellout a ra deoc'h arverañ an anv-mañ memes tra ?"
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h
 #, c-format
-msgid ""
-"The nearest version that can be restored fully is %d. Would you like to "
-"restore this version instead? To partially restore version %d press No."
-msgstr ""
-"%d eo an handelv tostañ a c'hall bezañ adlakaet penn-da-benn. Ha fellout a "
-"ra deoc'h adlakaat an handelv-se kentoc'h ? Evit adlakaat ul lodenn hepken "
-"eus handelv %d, pouezit war Ket."
+msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
+msgstr "%d eo an handelv tostañ a c'hall bezañ adlakaet penn-da-benn. Ha fellout a ra deoc'h adlakaat an handelv-se kentoc'h ? Evit adlakaat ul lodenn hepken eus handelv %d, pouezit war Ket."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -9317,8 +9170,7 @@ msgstr "N'eo ket mat an arc'had moullañ."
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr ""
-"N'haller ket dizober an oberiadenn-se. Ha fellout a ra deoc'h kenderc'hel ?"
+msgstr "N'haller ket dizober an oberiadenn-se. Ha fellout a ra deoc'h kenderc'hel ?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h
@@ -9556,7 +9408,7 @@ msgstr "Ledander :  "
 #. LANG_WO_SN
 #: po/tmp/xap_String_Id.h
 msgid "Wolof"
-msgstr ""
+msgstr "Wolof"
 
 #. DLG_MB_Yes
 #: po/tmp/xap_String_Id.h
@@ -9572,9 +9424,7 @@ msgstr "Yidich"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr ""
-"Ret eo deoc'h enrollañ kemmoù en teuliad %s a-raok mont pelloc'h. Enrollañ "
-"diouzhtu ?"
+msgstr "Ret eo deoc'h enrollañ kemmoù en teuliad %s a-raok mont pelloc'h. Enrollañ diouzhtu ?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
@@ -9584,7 +9434,7 @@ msgstr "Zoumañ da"
 #. LANG_ZU
 #: po/tmp/xap_String_Id.h
 msgid "Zulu"
-msgstr ""
+msgstr "Zoulou"
 
 #. DLG_UnixMB_No
 #: po/tmp/xap_String_Id.h
@@ -9655,7 +9505,6 @@ msgstr "dizaveet"
 
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Tra ebet"
