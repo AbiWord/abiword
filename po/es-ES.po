@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-09-07 22:20+0200\n"
-"Last-Translator: AlanJAS <alanjas@hotmail.com>\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2012-12-28 06:19+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: <es@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -1246,12 +1246,12 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
 "AbiWord necesita el archivo %s.dll\n"
-"Por favor, descárguelo e instálelo desde "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"Por favor descargalo e instálalalo desde http://www.microsoft.com/en-"
+"us/download/details.aspx?id=4237"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -2113,7 +2113,7 @@ msgid ""
 msgstr ""
 "Elija su destino en el lado izquierdo.\n"
 "Si quiere usar el botón «Ir a», tan sólo rellene la entrada del «Número» con "
-"el número deseado. Puede usar + y - para hacer movimientos relativos. Ej: "
+"el número deseado. Puede usar + y - para hacer movimientos relativos.\t Ej: "
 "si escribe «+2» y selecciona «Línea», «Ir a» se desplazará 2 líneas por "
 "debajo de su posición actual."
 
@@ -3550,8 +3550,8 @@ msgstr "Formato:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Desde el archivo"
+msgid "From File (.xml, .mathml)"
+msgstr "Desde Archivo (.xml, .mathml)"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3633,7 +3633,7 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Los Encabezados y Pies de página sólo pueden crearse y editarse desde el "
+"Los Encabezados y Pies de página sólo pueden crearse y editarse desde "
 "Previsualizar impresión.\n"
 "Para entrar en este modo, elija Diseño de impresión en el Menú.\n"
 "¿Quiere entrar en el modo Diseño de impresión ahora?"
@@ -6745,7 +6745,7 @@ msgstr "Formato del Te&xto"
 #. MENU_LABEL_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
 msgid "Test RDF subsystem"
-msgstr "Test RDF de subsistema"
+msgstr "Probar subsistema RDF"
 
 #. DLG_Options_Label_Text
 #: po/tmp/ap_String_Id.h
@@ -8976,7 +8976,7 @@ msgstr "Sólo lectura"
 #. DLG_FOSA_RecordToFileTitle
 #: po/tmp/xap_String_Id.h
 msgid "Record Editing to File"
-msgstr "Tiempo de edición"
+msgstr "Registro de Edición a Archivo"
 
 #. DLG_UFS_StyleRegular
 #: po/tmp/xap_String_Id.h
@@ -9071,7 +9071,7 @@ msgstr "Guión:"
 #. STYLE_DELIM_SECTION
 #: po/tmp/xap_String_Id.h
 msgid "Section"
-msgstr "Selección"
+msgstr "Sección"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
