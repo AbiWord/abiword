@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 2.3.0\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-10-21 10:36+0200\n"
-"Last-Translator: wwycheuk <wwycheuk@gmail.com>\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2012-12-28 06:46+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
 "Language: zh_HK\n"
 "MIME-Version: 1.0\n"
@@ -748,7 +748,7 @@ msgstr "圖片(&P)"
 #. MENU_LABEL_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h
 msgid "&Plugins"
-msgstr "插件(&L)"
+msgstr "增效模組(&P)"
 
 #. DLG_PageSetup_Portrait
 #: po/tmp/ap_String_Id.h
@@ -1242,12 +1242,11 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord 要有 %s.dll 檔\n"
-"請自 http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm "
-"下載及安裝"
+"AbiWord 要有 %s.dll 檔案才可正常運作。\n"
+"請在 http://www.microsoft.com/en-us/download/details.aspx?id=4237 下載並安裝之"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1505,7 +1504,7 @@ msgstr "自動欄位大小"
 #. DLG_Options_Label_CheckAutoLoadPlugins
 #: po/tmp/ap_String_Id.h
 msgid "Automatically load all plugins found"
-msgstr "自動載入所有找到的插件"
+msgstr "自動載入所有找到的增效模組"
 
 #. MENU_STATUSLINE_TOOLS_AUTOSPELL
 #: po/tmp/ap_String_Id.h
@@ -3539,8 +3538,8 @@ msgstr "格式:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "從檔案"
+msgid "From File (.xml, .mathml)"
+msgstr "來源檔案 (.xml, .mathml)"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3623,8 +3622,8 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "新建或編輯頁首頁尾的工作，只可以在整頁檢視模式下進行。\n"
-"若要進入此模式，請在選單點選「檢視」，再點選「整頁模式」。\n"
-"現在想進入「整頁模式」嗎？"
+"　　若要進入此模式，請在選單點選「檢視」，再點選「整頁模式」。\n"
+"　　要立即進入「整頁模式」嗎？"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -4407,7 +4406,7 @@ msgstr "管理文件註釋"
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h
 msgid "Manage plugins"
-msgstr "管理插件"
+msgstr "管理增效模組"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h
@@ -7418,7 +7417,7 @@ msgstr "路徑名裏的目錄不存在。"
 #. DLG_PLUGIN_MANAGER_TITLE
 #: po/tmp/xap_String_Id.h
 msgid "AbiWord Plugin Manager"
-msgstr "AbiWord 插件管理員"
+msgstr "AbiWord 增效模組管理員"
 
 #. SPELL_CANTLOAD_DLL
 #: po/tmp/xap_String_Id.h
@@ -7465,7 +7464,7 @@ msgstr "阿喬利文"
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
 msgid "Active Plugins"
-msgstr "使用中插件"
+msgstr "使用中增效模組"
 
 #. LANG_AF_ZA
 #: po/tmp/xap_String_Id.h
@@ -7891,12 +7890,12 @@ msgstr "科西嘉文"
 #. DLG_PLUGIN_MANAGER_COULDNT_LOAD
 #: po/tmp/xap_String_Id.h
 msgid "Could not activate/load plugin"
-msgstr "不能啟用/載入插件"
+msgstr "不能啟用/載入增效模組"
 
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h
 msgid "Could not deactivate plugin"
-msgstr "不能停用插件"
+msgstr "不能停用增效模組"
 
 #. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h
@@ -7962,12 +7961,12 @@ msgstr "達利文"
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
-msgstr "停用所有插件"
+msgstr "停用所有增效模組"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate plugin"
-msgstr "停用插件"
+msgstr "停用增效模組"
 
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h
@@ -8498,7 +8497,7 @@ msgstr "插入符號"
 #. DLG_PLUGIN_MANAGER_INSTALL
 #: po/tmp/xap_String_Id.h
 msgid "Install new plugin"
-msgstr "安裝新插件"
+msgstr "安裝新的增效模組"
 
 #. LANG_IA
 #: po/tmp/xap_String_Id.h
@@ -8718,7 +8717,7 @@ msgstr "沒有圖片"
 #. DLG_PLUGIN_MANAGER_NONE_SELECTED
 #: po/tmp/xap_String_Id.h
 msgid "No plugin selected"
-msgstr "未選擇插件"
+msgstr "未選擇增效模組"
 
 #. STYLE_NORMAL
 #: po/tmp/xap_String_Id.h
@@ -8813,12 +8812,12 @@ msgstr "純文字"
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
 msgid "Plugin Details"
-msgstr "插件詳情"
+msgstr "增效模組詳情"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
 msgid "Plugin List"
-msgstr "插件清單"
+msgstr "增效模組清單"
 
 #. LANG_PL_PL
 #: po/tmp/xap_String_Id.h
