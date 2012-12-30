@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-09-08 16:41+0200\n"
-"Last-Translator: lite <litekok@gmail.com>\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2012-12-28 06:43+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -1241,12 +1241,11 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
 "AbiWord需要文件 %s.dll\n"
-"请从http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm下载"
-"并安装它"
+"请从http://www.microsoft.com/en-us/download/details.aspx?id=4237下载并安装"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -3536,8 +3535,8 @@ msgstr "格式:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "从文件"
+msgid "From File (.xml, .mathml)"
+msgstr "从文件 (.xml, .mathml)"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3620,8 +3619,8 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "页眉和页脚只在打印布局模式下创建和编辑。\n"
-"进入该模式请从菜单中选择“查看”，“打印布局”。\n"
-"你想进入打印布局模式吗?"
+"进入该模式请从菜单“查看”中选择“打印布局”。\n"
+"你想现在就进入打印布局模式吗?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -7417,7 +7416,7 @@ msgid ""
 "Please download and install Aspell from http://aspell.net/win32/"
 msgstr ""
 "AbiWord无法找到拼写文件 %s.dll\n"
-"请从http://aspell.net/win32/Aspell下载并安装它"
+"请从 http://aspell.net/win32/ Aspell下载并安装它"
 
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h
