@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-07-26 09:02+0200\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2012-12-28 01:31+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: translate-discuss-af@lists.sourceforge.net\n"
 "Language: af\n"
@@ -1232,8 +1232,8 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
@@ -1532,7 +1532,7 @@ msgstr "Beskikbare formate:"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Available Styles:"
-msgstr "Beskikbare style"
+msgstr "Beskikbare style:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1853,9 +1853,8 @@ msgstr "Kan nie 'n druktaak begin nie"
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Category"
-msgstr "Kategorie:"
+msgstr "Kategorie"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2245,7 +2244,7 @@ msgstr "Inhoud"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Contacts:"
-msgstr "Inhoud"
+msgstr "Inhoud:"
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
@@ -2260,9 +2259,8 @@ msgstr ""
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contributor(s)"
-msgstr "Bydraer(s):"
+msgstr "Bydraer(s)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -3553,8 +3551,8 @@ msgstr "Formaat:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Vanaf lêer"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -4214,9 +4212,8 @@ msgstr "Taalopstelling"
 
 #. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Language(s)"
-msgstr "Taal/tale:"
+msgstr "Taal/tale"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4230,9 +4227,8 @@ msgstr "Uitleg"
 
 #. DLG_Tab_Label_Leader
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Leader:"
-msgstr "Kop"
+msgstr ""
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4769,15 +4765,14 @@ msgstr "Aantal rye:"
 
 #. DLG_Lists_Type_numbered
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Numbered"
-msgstr "&Nommer:"
+msgstr "Genommerde"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Numbered List"
-msgstr ""
+msgstr "Genommerde lys"
 
 #. DLG_Styles_ModifyNumbering
 #. TOOLBAR_LABEL_LISTS_NUMBERS
@@ -4785,33 +4780,32 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_LISTS_NUMBERS
 #: po/tmp/ap_String_Id.h
 msgid "Numbering"
-msgstr ""
+msgstr "Nommering"
 
 #. DLG_FormatFootnotes_FootnoteRestart
 #: po/tmp/ap_String_Id.h
 msgid "Numbering:"
-msgstr ""
+msgstr "Nommering:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Numbers"
-msgstr "&Nommer:"
+msgstr "Nommers"
 
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
 msgid "Object"
-msgstr ""
+msgstr "Objek"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
 msgid "Offset:"
-msgstr ""
+msgstr "Afwyking:"
 
 #. DLG_Column_One
 #: po/tmp/ap_String_Id.h
 msgid "One"
-msgstr ""
+msgstr "Een"
 
 #. MENU_LABEL_FILE_IMPORT
 #: po/tmp/ap_String_Id.h
@@ -4820,9 +4814,8 @@ msgstr "Op&en kopie"
 
 #. TOOLBAR_LABEL_FILE_OPEN
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Open"
-msgstr "Open"
+msgstr "Maak oop"
 
 #. MENU_LABEL_OPEN_TEMPLATE
 #: po/tmp/ap_String_Id.h
@@ -4877,14 +4870,15 @@ msgstr "Ander"
 
 #. MSG_IE_NoMemory
 #: po/tmp/ap_String_Id.h
-#, c-format
+#, c-format, fuzzy
 msgid "Out of memory attempting to open %s"
-msgstr ""
+msgstr "Geheue is opgebruik"
 
 #. DLG_Options_Label_OuterQuoteStyle
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Outer (double) quote style:"
-msgstr ""
+msgstr "Dubbele aanhalingstekens styl:"
 
 #. TOOLBAR_LABEL_FMT_OVERLINE
 #. TOOLBAR_STATUSLINE_FMT_OVERLINE
@@ -4896,9 +4890,8 @@ msgstr "Bostreep"
 
 #. MENU_STATUSLINE_FMT_OVERLINE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Overline the selection (toggle)"
-msgstr "Onderstreep die seleksie (aan/af)"
+msgstr "Bostreep die seleksie (aan/af)"
 
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h
@@ -4912,8 +4905,9 @@ msgstr "&Eienskappe"
 
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "P&urge revisions"
-msgstr ""
+msgstr "Maak skoon hersiening"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h
@@ -4927,7 +4921,6 @@ msgstr "Bladsy"
 
 #. DLG_Para_PushPageBreakBefore
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page &break before"
 msgstr "Bladsy&breuk vooraf"
 
@@ -4989,9 +4982,8 @@ msgstr "Bladsyopstelling"
 
 #. DLG_Goto_Target_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page:"
-msgstr "Bladsye:"
+msgstr "Bladsy:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5059,8 +5051,9 @@ msgstr "Plak"
 
 #. DLG_MetaData_TAB_Permission
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Permissions"
-msgstr ""
+msgstr "Vergunnigs"
 
 #. DLG_Goto_Target_Picture
 #: po/tmp/ap_String_Id.h
@@ -5084,7 +5077,6 @@ msgstr "Plaas aan einde van afdeling"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Placement:"
 msgstr "Plasing:"
 
@@ -5303,8 +5295,9 @@ msgstr "&Omgekeerde soektog"
 
 #. MENU_LABEL_FILE_REVERT
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Re&vert"
-msgstr ""
+msgstr "Keer terug"
 
 #. MENU_LABEL_FILE_RECENT
 #: po/tmp/ap_String_Id.h
@@ -5344,12 +5337,12 @@ msgstr ""
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
 msgid "Relation"
-msgstr ""
+msgstr "Verhouding"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
 msgid "Relation:"
-msgstr ""
+msgstr "Verhouding:"
 
 #. DLG_Styles_RemoveButton
 #: po/tmp/ap_String_Id.h
@@ -5571,14 +5564,16 @@ msgstr "Linkerkantlyn [%s]"
 
 #. TabToggleRightTab
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Right Tab"
-msgstr ""
+msgstr "Regs oortjie"
 
 #. TOOLBAR_STATUSLINE_ALIGN_RIGHT
 #. TOOLBAR_TOOLTIP_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Right alignment"
-msgstr ""
+msgstr "Regsbelyn"
 
 #. MENU_STATUSLINE_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h
@@ -5607,13 +5602,15 @@ msgstr "Ry"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Rows &Above"
-msgstr ""
+msgstr "Rye &Bo"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_AFTER
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Rows &Below"
-msgstr ""
+msgstr "Rye &Onder"
 
 #. MENU_STATUSLINE_RDF_ADV_TEST
 #: po/tmp/ap_String_Id.h
@@ -5628,7 +5625,7 @@ msgstr ""
 #. MENU_LABEL_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
 msgid "S&cripts"
-msgstr ""
+msgstr "S&kripte"
 
 #. MENU_LABEL_TOOLS_REVISIONS_SHOW
 #: po/tmp/ap_String_Id.h
@@ -5952,7 +5949,7 @@ msgstr "Skei met keepkarakters"
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h
 msgid "Set"
-msgstr ""
+msgstr "Stel"
 
 #. MENU_LABEL_FMT_LANGUAGE
 #: po/tmp/ap_String_Id.h
@@ -5966,8 +5963,9 @@ msgstr "Stel verstekwaardes"
 
 #. DLG_RDF_SemanticStylesheets_Set
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Set For All Existing"
-msgstr ""
+msgstr "Stel vir alles"
 
 #. DLG_FormatFrame_SetImage
 #. DLG_FormatTable_SetImage
@@ -6026,8 +6024,9 @@ msgstr "Stel nuwe inkeep op"
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Set no image"
-msgstr ""
+msgstr "Stel geen beeld"
 
 #. MENU_STATUSLINE_TOOLS_OPTIONS
 #: po/tmp/ap_String_Id.h
@@ -6087,7 +6086,7 @@ msgstr "Stel die voorkeure vir spelling"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
 #: po/tmp/ap_String_Id.h
 msgid "Settings"
-msgstr ""
+msgstr "Instellings"
 
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
@@ -6097,12 +6096,13 @@ msgstr "Stel die dokument se bladsyeienskappe op, bv. bladsygrootte en kantlyne"
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
 msgid "Shading"
-msgstr ""
+msgstr "Skakering"
 
 #. DLG_BorderShading_Shading_Color
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Shading color:"
-msgstr ""
+msgstr "Kleur skakering:"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
@@ -6122,13 +6122,15 @@ msgstr "Wys &lineaal"
 
 #. TOOLBAR_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Show All"
-msgstr ""
+msgstr "Wys alle"
 
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Show All RDF"
-msgstr ""
+msgstr "Wys alle RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
@@ -6157,13 +6159,15 @@ msgstr ""
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Show final document"
-msgstr ""
+msgstr "Wys die finale dokument"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Show final document..."
-msgstr ""
+msgstr "Wys die finale dokument..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -6263,8 +6267,9 @@ msgstr "So&rteer tabel"
 
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Solid line"
-msgstr ""
+msgstr "Solied lyn"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6524,14 +6529,15 @@ msgstr ""
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Strike"
-msgstr ""
+msgstr "Slaan uit"
 
 #. MENU_STATUSLINE_FMT_STRIKE
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Strikeout the selection (toggle)"
-msgstr "Onderstreep die seleksie (aan/af)"
+msgstr "Slaan uit die seleksie (aan/af)"
 
 #. MENU_LABEL_FMT_STYLIST
 #: po/tmp/ap_String_Id.h
@@ -6586,8 +6592,9 @@ msgstr "Style"
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "Stylesheet"
-msgstr ""
+msgstr "Stylblad"
 
 #. DLG_Stylist_Title
 #: po/tmp/ap_String_Id.h
@@ -7059,8 +7066,9 @@ msgstr "Ontdoen verandering"
 #. DLG_RDF_Editor_ShowAll
 #. DLG_Update
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Update"
-msgstr ""
+msgstr "Werk by"
 
 #. DLG_Annotation_OK_tooltip
 #: po/tmp/ap_String_Id.h
@@ -7161,8 +7169,9 @@ msgstr "Bekyk nutswenke"
 
 #. DLG_Options_Label_ViewViewFrame
 #: po/tmp/ap_String_Id.h
+#, fuzzy
 msgid "View..."
-msgstr ""
+msgstr "Bekyk..."
 
 #. DLG_Options_Label_Visible
 #: po/tmp/ap_String_Id.h
@@ -7350,49 +7359,42 @@ msgstr ""
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Geen"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Geen"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Geen"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Onderwerp"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Geen"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Geen"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Onderwerp"
@@ -7524,8 +7526,9 @@ msgstr "Aangaande %s"
 
 #. LANG_ACH
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Acholi"
-msgstr ""
+msgstr "Acoli"
 
 #. DLG_PLUGIN_MANAGER_ACTIVE
 #: po/tmp/xap_String_Id.h
@@ -7783,7 +7786,7 @@ msgstr "Verander taal as sleutelbord verander"
 #. STYLE_DELIM_CHAPTER
 #: po/tmp/xap_String_Id.h
 msgid "Chapter"
-msgstr ""
+msgstr "Hoofstuk"
 
 #. STYLE_CHAPHEADING
 #: po/tmp/xap_String_Id.h
@@ -7828,7 +7831,7 @@ msgstr "Vereenvoudigde Sjinees, GB_2312-80"
 #. ENC_CHSI_HZ
 #: po/tmp/xap_String_Id.h
 msgid "Chinese Simplified, HZ"
-msgstr ""
+msgstr "Vereenvoudigde Sjinees, HZ"
 
 #. ENC_CHSI_WIN
 #: po/tmp/xap_String_Id.h
@@ -7863,12 +7866,12 @@ msgstr "Kies dokument vanuit die lys:"
 #. TB_ClearBackground
 #: po/tmp/xap_String_Id.h
 msgid "Clear Background"
-msgstr ""
+msgstr "Maak skoon Agtergrond"
 
 #. TB_ClearForeground
 #: po/tmp/xap_String_Id.h
 msgid "Clear Foreground"
-msgstr ""
+msgstr "Maak skoon Voorgrond"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
@@ -8322,7 +8325,7 @@ msgstr ""
 #. ENC_GEOR_PS
 #: po/tmp/xap_String_Id.h
 msgid "Georgian, PS"
-msgstr ""
+msgstr "Georgies, PS"
 
 #. LANG_DE_AT
 #: po/tmp/xap_String_Id.h
@@ -8342,7 +8345,7 @@ msgstr "Duits (Switserland)"
 #. DLG_UP_Grayscale
 #: po/tmp/xap_String_Id.h
 msgid "Grayscale"
-msgstr ""
+msgstr "Gryskleur"
 
 #. LANG_EL_GR
 #: po/tmp/xap_String_Id.h
@@ -8472,12 +8475,13 @@ msgstr "Identifiseerder:"
 #. DLG_Image_ImageDesc
 #: po/tmp/xap_String_Id.h
 msgid "Image Name"
-msgstr ""
+msgstr "Beeld Naam"
 
 #. DLG_Image_Placement
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Image Placement"
-msgstr ""
+msgstr "Beeld Plasing"
 
 #. DLG_Image_Title
 #: po/tmp/xap_String_Id.h
@@ -8487,7 +8491,7 @@ msgstr "Beeldeienskappe"
 #. DLG_Image_ImageSize
 #: po/tmp/xap_String_Id.h
 msgid "Image Size"
-msgstr ""
+msgstr "Beeld Grootte"
 
 #. DLG_Image_WrappedNone
 #: po/tmp/xap_String_Id.h
@@ -8759,8 +8763,9 @@ msgstr ""
 
 #. DLG_Merge
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Merge"
-msgstr ""
+msgstr "Voeg saam"
 
 #. LANG_MN_MN
 #: po/tmp/xap_String_Id.h
@@ -9093,18 +9098,18 @@ msgstr "Stoor lêer as &tipe:"
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h
 msgid "Script:"
-msgstr ""
+msgstr "Skrip:"
 
 #. STYLE_DELIM_SECTION
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Section"
-msgstr "Seleksie"
+msgstr "Seksie"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "Section Heading"
-msgstr ""
+msgstr "Kop die seksie"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h
@@ -9627,8 +9632,9 @@ msgstr "punte"
 
 #. DLG_DocComparison_Siblings
 #: po/tmp/xap_String_Id.h
+#, fuzzy
 msgid "siblings"
-msgstr ""
+msgstr "kinders"
 
 #. DLG_DocComparison_Unrelated
 #: po/tmp/xap_String_Id.h
@@ -9637,7 +9643,6 @@ msgstr "onverwant"
 
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Geen"
