@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-08-30 21:43+0200\n"
-"Last-Translator: Daniel <almazsolutions@yahoo.com>\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2012-12-30 17:41+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Amharic <locales@geez.org>\n"
 "Language: am\n"
 "MIME-Version: 1.0\n"
@@ -51,7 +51,7 @@ msgstr " "
 msgid ""
 " - Reserved. \n"
 " You cannot use this name. Choose Another \n"
-msgstr "- የተመደበ: ይህን ቃል መጠቀም አይቻልም: ሌላ ምረጥ:\n"
+msgstr " - የተመደበ: ይህን ቃል መጠቀም አይቻልም: ሌላ ምረጥ:\n"
 
 #. DLG_WordCount_Auto_Update
 #: po/tmp/ap_String_Id.h
@@ -1239,8 +1239,8 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
@@ -1251,7 +1251,7 @@ msgstr "ስለ G&NOME Office"
 #. MENU_STATUSLINE_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
 msgid "About the GNOME Office project"
-msgstr "ስለ ኖም  የኦፊስ የስራ ዕቅድ"
+msgstr "ስለ ኖም የኦፊስ የስራ ዕቅድ"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -2658,7 +2658,7 @@ msgstr ""
 #. MENU_STATUSLINE_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h
 msgid "Define or apply style for the selection"
-msgstr "ለምርጫው ዘይቤ  ግለጹ ወይም ተጠቀሙ"
+msgstr "ለምርጫው ዘይቤ ግለጹ ወይም ተጠቀሙ"
 
 #. DLG_Styles_Description
 #. DLG_Styles_ModifyDescription
@@ -3558,7 +3558,7 @@ msgstr "ፎርማት፦"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
+msgid "From File (.xml, .mathml)"
 msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
@@ -5044,7 +5044,7 @@ msgstr "የአንቀጽ አቅጣጫ"
 #. DLG_Styles_ParaPrev
 #: po/tmp/ap_String_Id.h
 msgid "Paragraph Preview"
-msgstr "የምዕራፍ  ቅድመ ዕይታ"
+msgstr "የምዕራፍ ቅድመ ዕይታ"
 
 #. DLG_WordCount_Paragraphs
 #: po/tmp/ap_String_Id.h
@@ -7084,7 +7084,7 @@ msgstr ""
 #. DLG_Options_Label_HebrewContextGlyphs
 #: po/tmp/ap_String_Id.h
 msgid "Use glyph shaping for Hebrew"
-msgstr "ለህብሩ የglyph  ቅርጽ አወጣት ተጠቀም"
+msgstr "ለህብሩ የglyph ቅርጽ አወጣት ተጠቀም"
 
 #. DLG_Options_Label_UI
 #: po/tmp/ap_String_Id.h
@@ -7340,49 +7340,42 @@ msgstr "የፊደል መጠኑን ቀያይሩ"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "ምንም"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "ምንም"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "ምንም"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "ጉዳዩ"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "ምንም"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "ምንም"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "ጉዳዩ"
@@ -7447,7 +7440,6 @@ msgstr ""
 
 #. DLG_UFS_Effects_None
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "(None)"
 msgstr "(ምንም)"
 
@@ -7757,7 +7749,7 @@ msgstr "መካከለኛ አውሮፓውያን፣ Macintosh"
 #. ENC_CENT_WIN
 #: po/tmp/xap_String_Id.h
 msgid "Central European, Windows Code Page 1250"
-msgstr "መካከለኛ አውሮፓውያን፣  Windows Code Page 1250"
+msgstr "መካከለኛ አውሮፓውያን፣ Windows Code Page 1250"
 
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h
@@ -9625,7 +9617,6 @@ msgstr ""
 
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "ምንም"
