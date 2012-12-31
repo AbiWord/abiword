@@ -8,11 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-10-26 10:48+0200\n"
-"Last-Translator: Besnik Bleta <besnik@programeshqip.org>\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2012-12-30 17:31+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Albanian\n"
-"Language: \n"
+"Language: sq\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -1209,8 +1209,10 @@ msgstr "AbiWord-i mbaroi së kontrolluari përzgjedhjen."
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h
 #, c-format
-msgid "AbiWord has finished its search of the document and has made %d replacements."
-msgstr "AbiWord-i ka përfunduar kërkimet në dokument dhe ka kryer %d zëvendësime."
+msgid ""
+"AbiWord has finished its search of the document and has made %d replacements."
+msgstr ""
+"AbiWord-i ka përfunduar kërkimet në dokument dhe ka kryer %d zëvendësime."
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h
@@ -1222,14 +1224,17 @@ msgstr "AbiWord-i ka përfunduar kërkimin në dokument."
 msgid ""
 "AbiWord is designed for a newer version of the system file COMCTL32.DLL\n"
 "than the one currently on your system. (COMCTL32.DLL version 4.72 or newer)\n"
-"A solution to this problem is explained in the FAQ on the AbiSource web site\n"
+"A solution to this problem is explained in the FAQ on the AbiSource web "
+"site\n"
 "\n"
 "\thttp://www.abisource.com\n"
 "\n"
 "You can use the program, but the toolbar may be missing."
 msgstr ""
-"AbiWord-i është hartuar për një version më të ri kartele sistemi COMCTL32.DLL\n"
-"se sa ai i tanishmi i sistemit tuaj. (COMCTL32.DLL version 4.72 ose më të ri)\n"
+"AbiWord-i është hartuar për një version më të ri kartele sistemi "
+"COMCTL32.DLL\n"
+"se sa ai i tanishmi i sistemit tuaj. (COMCTL32.DLL version 4.72 ose më të "
+"ri)\n"
 "Një zgjidhje për këtë problem shpjegohet në FAQ tek faqja web AbiSource\n"
 "\n"
 "\thttp://www.abisource.com\n"
@@ -1241,11 +1246,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord ka nevojë për kartelën %s.dll\n"
-"Ju lutemi, shkarkojeni prej http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm\n"
-"dhe instalojeni"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1407,7 +1410,8 @@ msgstr "Zbatoje stilin mbi këtë Element Semantik"
 #. TOOLBAR_TOOLTIP_FMTPAINTER
 #: po/tmp/ap_String_Id.h
 msgid "Apply the previously copied paragraph formatting onto the selected text"
-msgstr "Zbatoje formatimin e paragrafit të kopjuar më parë tek teksti i përzgjedhur"
+msgstr ""
+"Zbatoje formatimin e paragrafit të kopjuar më parë tek teksti i përzgjedhur"
 
 #. DLG_Lists_Apply_Current
 #: po/tmp/ap_String_Id.h
@@ -1426,8 +1430,13 @@ msgstr "Listë me Numra Arabë"
 
 #. MSG_AutoRevisionOffWarning
 #: po/tmp/ap_String_Id.h
-msgid "Are you sure you do not want to maintain full history record? If you proceed, you will not be able to restore earlier versions of this document."
-msgstr "Jeni i sigurt se nuk doni të mbahet regjistër historiku të plotë? Nëse e bëni, nuk do të mundni të riktheni versione më të hershëm të këtij dokumenti."
+msgid ""
+"Are you sure you do not want to maintain full history record? If you "
+"proceed, you will not be able to restore earlier versions of this document."
+msgstr ""
+"Jeni i sigurt se nuk doni të mbahet regjistër historiku të plotë? Nëse e "
+"bëni, nuk do të mundni të riktheni versione më të hershëm të këtij "
+"dokumenti."
 
 #. DLG_Lists_Arrowhead_List
 #. STYLE_ARROWHEADLIST
@@ -2095,10 +2104,16 @@ msgstr "Zgjidhni cilin rishikim doni të shihni"
 #: po/tmp/ap_String_Id.h
 msgid ""
 "Choose your target in the left side.\n"
-"If you want to use the \"Go To\" button, just fill the Number Entry with the desired number.  You can use + and - to perform relative movement.\tI.e., if you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines below your current position."
+"If you want to use the \"Go To\" button, just fill the Number Entry with the "
+"desired number.  You can use + and - to perform relative movement.\tI.e., if "
+"you write \"+2\" and you select \"Line\", the \"Go To\" will go 2 lines "
+"below your current position."
 msgstr ""
 "Zgjidhni majtas vendmbërritjen.\n"
-"Nëse doni të përdorni butonin \"Shko Tek\" , vendosni numrin e dëshiruar te Dhënie Numri.  Mund të përdorni + dhe - për këtë qëllim. P.sh., nëse shkruani \"+2\" dhe përzgjidhni \"Rresht\",  \"Shko Tek\" do të vejë dy rreshta më poshtë vendndodhjes suaj të atëçastshme."
+"Nëse doni të përdorni butonin \"Shko Tek\" , vendosni numrin e dëshiruar te "
+"Dhënie Numri.  Mund të përdorni + dhe - për këtë qëllim. P.sh., nëse "
+"shkruani \"+2\" dhe përzgjidhni \"Rresht\",  \"Shko Tek\" do të vejë dy rreshta më "
+"poshtë vendndodhjes suaj të atëçastshme."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -3334,8 +3349,12 @@ msgstr "Folio"
 
 #. DLG_Para_PreviewFollowParagraph
 #: po/tmp/ap_String_Id.h
-msgid "Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph Following Paragraph"
-msgstr "Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues"
+msgid ""
+"Following Paragraph Following Paragraph Following Paragraph Following "
+"Paragraph Following Paragraph Following Paragraph Following Paragraph"
+msgstr ""
+"Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues "
+"Paragrafi Pasues Paragrafi Pasues Paragrafi Pasues"
 
 #. DLG_Styles_ModifyFont
 #. TOOLBAR_LABEL_FMT_FONT
@@ -3530,8 +3549,8 @@ msgstr "Format:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Nga Kartelë"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3608,7 +3627,8 @@ msgstr "Kryefaqe [%s]"
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
 msgid ""
-"Headers and Footers can only be created and edited while in Print View Mode. \n"
+"Headers and Footers can only be created and edited while in Print View "
+"Mode. \n"
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
@@ -4468,7 +4488,9 @@ msgstr "Përziej më sipër"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h
 msgid "Merge another document into the active document using revision marks"
-msgstr "Përziej një tjetër dokument me dokumentin aktiv duke përdorur shënime rishikimesh"
+msgstr ""
+"Përziej një tjetër dokument me dokumentin aktiv duke përdorur shënime "
+"rishikimesh"
 
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h
@@ -5136,8 +5158,12 @@ msgstr "Parashiheni dokumentin para shtypjes"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h
-msgid "Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph"
-msgstr "Paragraf i Mëparshëm Paragraf i Mëparshëm Paragraf i Mëparshëm Paragraf i Mëparshëm Paragraf i Mëparshëm Paragraf i Mëparshëm"
+msgid ""
+"Previous Paragraph Previous Paragraph Previous Paragraph Previous Paragraph "
+"Previous Paragraph Previous Paragraph Previous Paragraph"
+msgstr ""
+"Paragraf i Mëparshëm Paragraf i Mëparshëm Paragraf i Mëparshëm Paragraf i "
+"Mëparshëm Paragraf i Mëparshëm Paragraf i Mëparshëm"
 
 #. TOOLBAR_LABEL_FILE_PRINT
 #. DLG_UP_PrintTitle
@@ -5997,8 +6023,15 @@ msgstr "Caktoni ndalesa tabulacioni"
 
 #. DLG_RDF_SemanticStylesheets_Explanation
 #: po/tmp/ap_String_Id.h
-msgid "Set the current stylesheet for Semantic Items in this document. New RDF objects will use this stylesheet automatically. The buttons allow you to set the stylesheet for all existing Semantic Items to the new stylesheet as well."
-msgstr "Caktoni fletëstilin e tanishëm për Elementë Semantikë në këtë dokument. Elementë e rinj RDF do të përdorin vetvetiu këtë fletëstil. Butonat ju lejojnë që ta zbatoni fletëstilin e ri për krejt Elementet Semantikë ekzistues gjithashtu."
+msgid ""
+"Set the current stylesheet for Semantic Items in this document. New RDF "
+"objects will use this stylesheet automatically. The buttons allow you to set "
+"the stylesheet for all existing Semantic Items to the new stylesheet as well."
+msgstr ""
+"Caktoni fletëstilin e tanishëm për Elementë Semantikë në këtë dokument. "
+"Elementë e rinj RDF do të përdorin vetvetiu këtë fletëstil. Butonat ju "
+"lejojnë që ta zbatoni fletëstilin e ri për krejt Elementet Semantikë "
+"ekzistues gjithashtu."
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -6044,7 +6077,9 @@ msgstr "Rregullime"
 #. MENU_STATUSLINE_FMT_DOCUMENT
 #: po/tmp/ap_String_Id.h
 msgid "Setup your document's page properties such as page size and margins"
-msgstr "Rregulloni për dokumentin tuaj veti të faqes si madhësia e faqes dhe mënjanat"
+msgstr ""
+"Rregulloni për dokumentin tuaj veti të faqes si madhësia e faqes dhe "
+"mënjanat"
 
 #. DLG_BorderShading_Shading
 #: po/tmp/ap_String_Id.h
@@ -6762,8 +6797,16 @@ msgstr "Tekst dhe Ikona"
 
 #. COMMAND_LINE_PRINTING_DEPRECATED
 #: po/tmp/ap_String_Id.h
-msgid "The '--print' option has been removed as of AbiWord 2.8. You can achieve the desired behavior using AbiWord's command-line conversion tools and then piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
-msgstr "Mundësia '--print' është hequr, që nga AbiWord 2.8. Mund të arrini efektin e dëshiruar duke përdorur prej rreshtit të urdhrave mjetin e AbiWord-it për shndërrime e mandej t'ia dërgoni përfundimin shtypësit. P.sh.: 'abiword --to=ps --to-name=fd://1 myfile.txt | lpr'"
+msgid ""
+"The '--print' option has been removed as of AbiWord 2.8. You can achieve the "
+"desired behavior using AbiWord's command-line conversion tools and then "
+"piping the output to a print spooler. Eg: 'abiword --to=ps --to-name=fd://1 "
+"myfile.txt | lpr'"
+msgstr ""
+"Mundësia '--print' është hequr, që nga AbiWord 2.8. Mund të arrini efektin e "
+"dëshiruar duke përdorur prej rreshtit të urdhrave mjetin e AbiWord-it për "
+"shndërrime e mandej t'ia dërgoni përfundimin shtypësit. P.sh.: 'abiword "
+"--to=ps --to-name=fd://1 myfile.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
 #: po/tmp/ap_String_Id.h
@@ -6772,8 +6815,12 @@ msgstr "Mënjanat e përzgjedhura janë tepër të gjera për t'u vendosur në f
 
 #. DLG_Options_Prompt_YouMustRestart
 #: po/tmp/ap_String_Id.h
-msgid "The new user interface language will take effect the next time that you start the application"
-msgstr "Gjuha e re për ndërfaqen e përdoruesit do të funksionojë herën pasuese që do të nisni programin"
+msgid ""
+"The new user interface language will take effect the next time that you "
+"start the application"
+msgstr ""
+"Gjuha e re për ndërfaqen e përdoruesit do të funksionojë herën pasuese që do "
+"të nisni programin"
 
 #. MSG_SpellDone
 #: po/tmp/ap_String_Id.h
@@ -6782,8 +6829,12 @@ msgstr "Kontrolli drejtshkrimor u përmbush."
 
 #. MSG_HyperlinkCrossesBoundaries
 #: po/tmp/ap_String_Id.h
-msgid "The text to which the hyperlink is to be attached must be within a single paragraph."
-msgstr "Teksti tek i cili doni të bashkangjisni tejlidhjen duhet të jetë brenda një paragrafi."
+msgid ""
+"The text to which the hyperlink is to be attached must be within a single "
+"paragraph."
+msgstr ""
+"Teksti tek i cili doni të bashkangjisni tejlidhjen duhet të jetë brenda një "
+"paragrafi."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h
@@ -6798,28 +6849,51 @@ msgstr "Trashësi:"
 
 #. MSG_XMLIDAlreadyExists
 #: po/tmp/ap_String_Id.h
-msgid "This RDF link already exists. Would you like to replace the existing RDF link with this new one?"
-msgstr "Ka tashmë një lidhje RDF të tillë. Do të donit të zëvendësohej RDF-ja ekzistuese me këtë të renë?"
+msgid ""
+"This RDF link already exists. Would you like to replace the existing RDF "
+"link with this new one?"
+msgstr ""
+"Ka tashmë një lidhje RDF të tillë. Do të donit të zëvendësohej RDF-ja "
+"ekzistuese me këtë të renë?"
 
 #. MSG_BookmarkAlreadyExists
 #: po/tmp/ap_String_Id.h
-msgid "This bookmark already exists. Would you like to replace the existing bookmark with this new one?"
-msgstr "Ky faqerojtës ekziston tashmë. Do të donit ta zëvendësonit faqerojtësin ekzistues me këtë të riun?"
+msgid ""
+"This bookmark already exists. Would you like to replace the existing "
+"bookmark with this new one?"
+msgstr ""
+"Ky faqerojtës ekziston tashmë. Do të donit ta zëvendësonit faqerojtësin "
+"ekzistues me këtë të riun?"
 
 #. MSG_AfterRestartNew
 #: po/tmp/ap_String_Id.h
-msgid "This change will only take effect when you restart AbiWord or create a new document."
-msgstr "Ky ndryshim do ketë efekt pasi të rinisni AbiWord-in ose të krijoni një dokument të ri."
+msgid ""
+"This change will only take effect when you restart AbiWord or create a new "
+"document."
+msgstr ""
+"Ky ndryshim do ketë efekt pasi të rinisni AbiWord-in ose të krijoni një "
+"dokument të ri."
 
 #. MSG_HiddenRevisions
 #: po/tmp/ap_String_Id.h
-msgid "This document contains revisions which are currently hidden from view. Please see AbiWord documentation for information on working with revisions."
-msgstr "Ky dokument përmban rishikime të cilët, për çastin, janë fshehur prej pamjes. Ju lutemi. shihni dokumentimin e AbiWord për të dhëna se si të punohet me rishikime."
+msgid ""
+"This document contains revisions which are currently hidden from view. "
+"Please see AbiWord documentation for information on working with revisions."
+msgstr ""
+"Ky dokument përmban rishikime të cilët, për çastin, janë fshehur prej "
+"pamjes. Ju lutemi. shihni dokumentimin e AbiWord për të dhëna se si të "
+"punohet me rishikime."
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
-msgid "This paragraph represents words as they might appear in your document.  To see the text from your document used in this preview, position your cursor in a document paragraph with some text in it and open this dialog."
-msgstr "Ky paragraf tregon si do të dukeshin fjalët në dokumentin tuaj. Që të shihni tekstin nga dokumenti juaj të përdorur në këtë paraparje, vendoseni kursorin në një paragraf me tekst dhe hapni këtë dialog."
+msgid ""
+"This paragraph represents words as they might appear in your document.  To "
+"see the text from your document used in this preview, position your cursor "
+"in a document paragraph with some text in it and open this dialog."
+msgstr ""
+"Ky paragraf tregon si do të dukeshin fjalët në dokumentin tuaj. Që të shihni "
+"tekstin nga dokumenti juaj të përdorur në këtë paraparje, vendoseni "
+"kursorin në një paragraf me tekst dhe hapni këtë dialog."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -6924,7 +6998,8 @@ msgstr "Shtypni një emër për lidhjen RDF:"
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
-msgstr "Shtypni një emër për faqerojtësin, ose përzgjidhni nga lista një ekzistues:"
+msgstr ""
+"Shtypni një emër për faqerojtësin, ose përzgjidhni nga lista një ekzistues:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7155,12 +7230,15 @@ msgstr "Keni ndryshuar kahun."
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h
 msgid "You must select a portion of the document before inserting a hyperlink."
-msgstr "Duhet të përzgjidhni një pjesë nga dokumenti para se të fusni një tejlidhje."
+msgstr ""
+"Duhet të përzgjidhni një pjesë nga dokumenti para se të fusni një tejlidhje."
 
 #. DLG_Options_Label_InvalidRangeForAutoSave
 #: po/tmp/ap_String_Id.h
 msgid "You should choose a range from 1 to 120 for the auto save frequency"
-msgstr "Duhet të zgjidhni një interval prej 1 deri në 120 për shpeshtinë e vetëruajtjes"
+msgstr ""
+"Duhet të zgjidhni një interval prej 1 deri në 120 për shpeshtinë e "
+"vetëruajtjes"
 
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h
@@ -7394,14 +7472,22 @@ msgstr ""
 #. MSG_HistoryPartRestore1
 #: po/tmp/xap_String_Id.h
 #, c-format
-msgid "AbiWord cannot fully restore version %d of the document because the version information is incomplete."
-msgstr "AbiWord-i nuk rikthen dot plotësisht versionin %d të dokumentit, sepse të dhënat e versionit nuk janë të plota."
+msgid ""
+"AbiWord cannot fully restore version %d of the document because the version "
+"information is incomplete."
+msgstr ""
+"AbiWord-i nuk rikthen dot plotësisht versionin %d të dokumentit, sepse të "
+"dhënat e versionit nuk janë të plota."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h
 #, c-format
-msgid "AbiWord cannot restore version %d of the document because the version information is missing."
-msgstr "AbiWord-i nuk rikthen dot plotësisht versionin %d të dokumentit, sepse mungojnë të dhënat e versionit."
+msgid ""
+"AbiWord cannot restore version %d of the document because the version "
+"information is missing."
+msgstr ""
+"AbiWord-i nuk rikthen dot plotësisht versionin %d të dokumentit, sepse "
+"mungojnë të dhënat e versionit."
 
 #. DLG_UP_PrintPreviewTitle
 #: po/tmp/xap_String_Id.h
@@ -8906,8 +8992,12 @@ msgstr "Marrëdhënie:"
 
 #. DLG_HTMLOPT_ExpMathMLRenderPNG
 #: po/tmp/xap_String_Id.h
-msgid "Render MathML to PNG images (JavaScript will be used if option is not checked)"
-msgstr "Vizatoji figurat MathML si figura PNG (nëse mundësisë nuk i vihet shenjë, do të përdoret JavaScript)"
+msgid ""
+"Render MathML to PNG images (JavaScript will be used if option is not "
+"checked)"
+msgstr ""
+"Vizatoji figurat MathML si figura PNG (nëse mundësisë nuk i vihet shenjë, do "
+"të përdoret JavaScript)"
 
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h
@@ -9161,14 +9251,22 @@ msgstr "Drejtoria '%s' është e mbrojtur ndaj shkrimit."
 
 #. DLG_FOSA_ExtensionDoesNotMatch
 #: po/tmp/xap_String_Id.h
-msgid "The given file extension does not match the chosen file type. Do you want to use this name anyway?"
-msgstr "Zgjatimi i dhënë i kartelës nuk përputhet me llojin e përzgjedhur për kartelën. Doni ta përdorni këtë emër sido që të jetë?"
+msgid ""
+"The given file extension does not match the chosen file type. Do you want to "
+"use this name anyway?"
+msgstr ""
+"Zgjatimi i dhënë i kartelës nuk përputhet me llojin e përzgjedhur për "
+"kartelën. Doni ta përdorni këtë emër sido që të jetë?"
 
 #. MSG_HistoryPartRestore2
 #: po/tmp/xap_String_Id.h
 #, c-format
-msgid "The nearest version that can be restored fully is %d. Would you like to restore this version instead? To partially restore version %d press No."
-msgstr "Versioni më i afërt që mund të rikthehet plotësisht është %d. Doni të rikthehet ky version? Për të rikthyer pjesërisht versionin %d, shtypni Jo."
+msgid ""
+"The nearest version that can be restored fully is %d. Would you like to "
+"restore this version instead? To partially restore version %d press No."
+msgstr ""
+"Versioni më i afërt që mund të rikthehet plotësisht është %d. Doni të "
+"rikthehet ky version? Për të rikthyer pjesërisht versionin %d, shtypni Jo."
 
 #. DLG_UP_InvalidPrintString
 #: po/tmp/xap_String_Id.h
@@ -9178,7 +9276,8 @@ msgstr "Vargu i urdhrit të shtypjes nuk është i vlefshëm."
 #. MSG_NoUndo
 #: po/tmp/xap_String_Id.h
 msgid "This operation cannot be undone. Are you sure you want to proceed?"
-msgstr "Ky veprim nuk mund të zhbëhet. Jeni i sigurt se doni të vazhdohet me të?"
+msgstr ""
+"Ky veprim nuk mund të zhbëhet. Jeni i sigurt se doni të vazhdohet me të?"
 
 #. DLG_Image_TightWrap
 #: po/tmp/xap_String_Id.h
@@ -9432,7 +9531,8 @@ msgstr "Jidish"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "You have to save changes to document %s before proceeding. Save now?"
-msgstr "Duhet që të ruani ndryshimet tek dokumenti %s para vazhdimit. Të ruhen tani?"
+msgstr ""
+"Duhet që të ruani ndryshimet tek dokumenti %s para vazhdimit. Të ruhen tani?"
 
 #. DLG_Zoom_RadioFrameCaption
 #: po/tmp/xap_String_Id.h
