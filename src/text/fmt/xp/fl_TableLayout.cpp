@@ -449,12 +449,15 @@ bool fl_TableLayout::doSimpleChange(void)
 	fp_CellContainer * pCell = pTab->getCellAtRowColumn(iTop,0);
 	UT_sint32 iMaxHeight = 0;
 	fp_Requisition Req;
+	UT_sint32 iPrevRight = 0;
 	while(pCell)
 	{
-		if((pCell->getTopAttach() != iTop) || (pCell->getBottomAttach() != iBot))
+		if((pCell->getTopAttach() != iTop) || (pCell->getBottomAttach() != iBot) ||
+		   (pCell->getLeftAttach() != iPrevRight))
 		{
 			break;
 		}
+		iPrevRight = pCell->getRightAttach();
 		pCell->sizeRequest(&Req);
 		if(Req.height > iMaxHeight)
 		{
@@ -462,14 +465,12 @@ bool fl_TableLayout::doSimpleChange(void)
 		}
 		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
-	if(pCell && ((pCell->getLeftAttach() != 0) || (pCell->getTopAttach() <iTop)))
+	if((pCell && (pCell->getTopAttach() != iBot)) || (iPrevRight != pTab->getNumCols()))
 	{
+		UT_DEBUGMSG(("fl_TableLayout::doSimpleChange aborted\n"));
 		return false;
 	}
-	if(pCell && (pCell->getTopAttach() != iBot))
-	{
-		return false;
-	}
+	UT_DEBUGMSG(("fl_TableLayout::doSimpleChange executed\n"));
 	fp_TableRowColumn * pRow = pTab->getNthRow(iTop);
 	UT_sint32 iAlloc = pRow->allocation;	
 	iMaxHeight = pTab->getRowHeight(iTop,iMaxHeight);
