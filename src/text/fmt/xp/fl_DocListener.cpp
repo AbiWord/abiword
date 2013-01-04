@@ -816,7 +816,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			UT_DEBUGMSG(("Appending a Cell to a Table in a HDrFtr %p \n",pTable->getHdrFtrLayout()));
 		}
 		fl_ContainerLayout*	pCL = pTable->append(sdh, pcr->getIndexAP(),FL_CONTAINER_CELL);
-		UT_DEBUGMSG(("SEVIOR: Appending Cell: layout is %p \n",pCL));
+		xxx_UT_DEBUGMSG(("SEVIOR: Appending Cell: layout is %p \n",pCL));
 		pTable->attachCell(pCL);
 		if (!pCL)
 		{
