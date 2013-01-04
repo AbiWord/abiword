@@ -839,67 +839,7 @@ bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32
 
 
 /*!
- * This method inserts the cell before the coordinates of the cell at (row,col) in the table
- * specified by
- * posTable at the cordinates specified.
- */
-bool FV_View::_insertCellBefore(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
-						  UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
-{
-	PT_DocPosition posCell = findCellPosAt(posTable,rowold,colold);
-	if(posCell == 0)
-	{
-		return false;
-	}
-	posCell--;
-	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-	UT_String sLeft,sRight,sTop,sBot;
-	props[0] = "left-attach";
-	UT_String_sprintf(sLeft,"%d",left);
-	props[1] = sLeft.c_str();
-	props[2] = "right-attach";
-	UT_String_sprintf(sRight,"%d",right);
-	props[3] = sRight.c_str();
-	props[4] = "top-attach";
-	UT_String_sprintf(sTop,"%d",top);
-	props[5] = sTop.c_str();
-	props[6] = "bot-attach";
-	UT_String_sprintf(sBot,"%d",bot);
-	props[7] = sBot.c_str();
-
-//
-// Here we trust that the calling routine will do all the begin/end globbing and other
-// stuff so that this will go smoothly and undo's in a single step.
-// Here we just insert
-//
-
-	bool bres = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
-	if(!bres)
-	{
-		return false;
-	}
-//
-// Insert a block for content
-//
-	bres = m_pDoc->insertStrux(posCell+1,PTX_Block);
-	if(!bres)
-	{
-		return false;
-	}
-//
-// Insert an endCell
-//
-	bres = m_pDoc->insertStrux(posCell+1,PTX_EndCell);
-	if(!bres)
-	{
-		return false;
-	}
-	return bres;
-}
-
-
-/*!
- * This method inserts a cell at PT_DocPosition with the specified left, right, top and bot attaches.
+ * This method inserts a cell at PT_DocPosition with the given left, right, top and bottom attach.
  */
 bool FV_View::_insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
 {

@@ -822,19 +822,6 @@ public:
 
 	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols,
 									   const gchar * pPropsArray[]);
-	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld,
-									  UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
-									  UT_sint32 top, UT_sint32 bot);
-	bool                changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld,
-									 UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
-		                             UT_sint32 top, UT_sint32 bot);
-	bool                _insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right,
-									  UT_sint32 top, UT_sint32 bot);
-	bool                _changeCellAttach(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right,
-									  UT_sint32 top, UT_sint32 bot);
-	bool                _insertCellBefore(PT_DocPosition posTable, UT_sint32 row,
-										  UT_sint32 col, UT_sint32 left, UT_sint32 right,
-										  UT_sint32 top, UT_sint32 bot);
 	void				_generalUpdate(void);
 
 	UT_RGBColor			getColorShowPara(void) const { return m_colorShowPara; }
@@ -999,6 +986,14 @@ protected:
 
     void                incremenetBubbleBlockerCount();
     void                decremenetBubbleBlockerCount();
+	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld,
+									  UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
+									  UT_sint32 top, UT_sint32 bot);
+	bool                _insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right,
+									  UT_sint32 top, UT_sint32 bot);
+	bool                _changeCellAttach(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right,
+									  UT_sint32 top, UT_sint32 bot);
+
 
 private:
 
