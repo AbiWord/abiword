@@ -213,10 +213,6 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setBorderWidth(borderWidth);
 	pTab->setColSpacings(m_iColSpacing);
 	pTab->setRowSpacings(m_iRowSpacing);
-	pTab->setLeftOffset(m_iLeftOffset);
-	pTab->setRightOffset(m_iRightOffset);
-	pTab->setTopOffset(m_iTopOffset);
-	pTab->setBottomOffset(m_iBottomOffset);
 	pTab->setLineThickness(m_iLineThickness);
 	pTab->setRowHeightType(m_iRowHeightType);
 	pTab->setRowHeight(m_iRowHeight);

@@ -406,14 +406,6 @@ fp_Column *         getBrokenColumn(void);
 	void                setBorderWidth(UT_sint32 i);
 	UT_sint32           getBorderWidth(void) const
 		{ return m_iBorderWidth;}
-	void                setLeftOffset(UT_sint32 iLeftOff)
-		{ m_iLeftOffset = iLeftOff;}
-	void                setRightOffset(UT_sint32 iRightOff)
-		{ m_iRightOffset = iRightOff;}
-	void                setTopOffset(UT_sint32 iTopOff)
-		{ m_iTopOffset = iTopOff;}
-	void                setBottomOffset(UT_sint32 iBotOff)
-		{ m_iBottomOffset = iBotOff;}
 	void                setLineThickness(UT_sint32 iLineThickness)
 		{ m_iLineThickness = iLineThickness;}
 	UT_sint32           getLineThickness(void)
@@ -537,10 +529,6 @@ private:
 //
 // Global Table properties
 //
-	UT_sint32               m_iLeftOffset;
-	UT_sint32               m_iRightOffset;
-	UT_sint32               m_iTopOffset;
-	UT_sint32               m_iBottomOffset;
 	UT_sint32               m_iLineThickness;
 
 // Global row height type

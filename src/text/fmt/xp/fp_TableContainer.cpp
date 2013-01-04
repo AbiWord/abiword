@@ -3134,10 +3134,6 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_bBrokenTop(false),
 	  m_bBrokenBottom(false),
 	  m_bRedrawLines(false),
-	  m_iLeftOffset(0),
-	  m_iRightOffset(0),
-	  m_iTopOffset(0),
-	  m_iBottomOffset(0),
 	  m_iLineThickness(1),
 	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
 	  m_iRowHeight(0),
@@ -3179,10 +3175,6 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_bBrokenTop(false),
 	  m_bBrokenBottom(false),
 	  m_bRedrawLines(false),
-	  m_iLeftOffset(0),
-	  m_iRightOffset(0),
-	  m_iTopOffset(0),
-	  m_iBottomOffset(0),
 	  m_iLineThickness(1),
 	  m_iRowHeightType(FL_ROW_HEIGHT_NOT_DEFINED),
 	  m_iRowHeight(0),
@@ -3412,7 +3404,8 @@ UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row) const
 	{
 		return getMasterTable()->getYOfRow(row);
 	}
-	if(row > m_iRows)
+	UT_sint32 numRows = getNumRows();
+	if((row > numRows) || (numRows == 0))
 	{
 		return 0;
 	}
@@ -3424,14 +3417,14 @@ UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row) const
 		pRow = getNthRow(0);
 		iYRow = pRow->position;
 	}
-	else if ((row < m_iRows) && (row > 0))
+	else if ((row < numRows) && (row > 0))
 	{
 		pRow = getNthRow(row);
 		iYRow = pRow->position - pRow->spacing/2;
 	}
 	else
 	{
-		pRow = getNthRow(m_iRows - 1);
+		pRow = getNthRow(numRows - 1);
 		iYRow = pRow->position + pRow->allocation;
 		iYRow += m_iBorderWidth;
 	}
@@ -3449,7 +3442,8 @@ UT_sint32 fp_TableContainer::getXOfColumn(UT_sint32 col) const
 	{
 		return getMasterTable()->getXOfColumn(col);
 	}
-	if(col > m_iCols)
+	UT_sint32 numCols = getNumCols();
+	if((col > numCols) || (numCols == 0))
 	{
 		return 0;
 	}
@@ -3461,14 +3455,14 @@ UT_sint32 fp_TableContainer::getXOfColumn(UT_sint32 col) const
 		pCol = getNthCol(0);
 		iXCol = pCol->position;
 	}
-	else if ((col < m_iCols) && (col > 0))
+	else if ((col < numCols) && (col > 0))
 	{
 		pCol = getNthCol(col);
 		iXCol = pCol->position - pCol->spacing/2;
 	}
 	else
 	{
-		pCol = getNthCol(m_iCols - 1);
+		pCol = getNthCol(numCols - 1);
 		iXCol = pCol->position + pCol->allocation;
 	}
 
@@ -4058,61 +4052,47 @@ void fp_TableContainer::setHeight(UT_sint32 iHeight)
 	fp_VerticalContainer::setHeight(iHeight);
 }
 
+/*
+ * Return the margin before the table. Note that TopOffset (set by the property table-margin-top)
+ * is not considered a margin, but as a gap at the top of the table (it is included in the height of
+ * the fp_TableContainer object). This allows to move down a table that is placed at the top of a page.
+ */
+
 UT_sint32 fp_TableContainer::getMarginBefore(void) const
 {
-	if(isThisBroken())
+
+	if(!isThisBroken() || !getPrev())
 	{
-		if(getPrev() && getPrev() == static_cast<fp_ContainerObject *>(getMasterTable()))
+		// getMargin of previous block
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+		fl_ContainerLayout * pCL = pTL->getPrev();
+		if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
-			// getMargin of revious block
-			fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-			fl_ContainerLayout * pCL = pTL->getPrev();
-			if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
-			{
-				return static_cast<fl_BlockLayout *>(pCL)->getBottomMargin();
-			}
-			return 0;
+			return static_cast<fl_BlockLayout *>(pCL)->getBottomMargin();
 		}
-		else if( getPrev() == NULL)
-		{
-			// getMargin of revious block
-			fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-			fl_ContainerLayout * pCL = pTL->getPrev();
-			if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
-			{
-				return static_cast<fl_BlockLayout *>(pCL)->getBottomMargin();
-			}
-			return 0;
-		}
-		else
-		{
-			return 0;
-		}
-	}
-	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-	fl_ContainerLayout * pCL = pTL->getPrev();
-	if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
-	{
-		return static_cast<fl_BlockLayout *>(pCL)->getBottomMargin();
+		return 0;
 	}
 	return 0;
 }
 
+/*
+ * Return the margin after the table. Note that BottomOffset (set by the property table-margin-bottom)
+ * is considered a margin and the function returns the maximum of BottomOffset and the margin before of
+ * the following block.
+ */
+
 
 UT_sint32 fp_TableContainer::getMarginAfter(void) const
 {
-	if(isThisBroken())
+	if(!isThisBroken() || !getNext())
 	{
-		if(getNext())
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+		fl_ContainerLayout * pCL = pTL->getNext();
+		if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
 		{
-			return 0; // still in the table list
+			return UT_MAX(static_cast<fl_BlockLayout *>(pCL)->getTopMargin(),pTL->getBottomOffset());
 		}
-	}
-	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-	fl_ContainerLayout * pCL = pTL->getNext();
-	if(pCL && pCL->getContainerType() == FL_CONTAINER_BLOCK)
-	{
-		return static_cast<fl_BlockLayout *>(pCL)->getTopMargin()+ 0;
+		return pTL->getBottomOffset();
 	}
 	return 0;
 }
@@ -4188,8 +4168,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		pBroke = new fp_TableContainer(getSectionLayout(),this);
 		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!!! Frist broken table %x \n",pBroke));
 		pBroke->setYBreakHere(vpos);
-		pBroke->setYBottom(fp_VerticalContainer::getHeight());
-		// leave this in!		UT_ASSERT(pBroke->getHeight());
+		pBroke->setYBottom(getTotalTableHeight());
 		setFirstBrokenTable(pBroke);
 		setLastBrokenTable(pBroke);
 		pBroke->setContainer(getContainer());
@@ -4936,7 +4915,7 @@ void fp_TableContainer::setRowSpacings ( UT_sint32 spacing)
 {
     UT_sint32 row;
 	m_iRowSpacing = spacing;
-	for (row = 0; row < m_iRows; row++)
+	for (row = 0; row < getNumRows(); row++)
 	{
 		getNthRow(row)->spacing = spacing;
 	}
@@ -5037,8 +5016,8 @@ void fp_TableContainer::setToAllocation(void)
 		// 
 		deleteBrokenTables(true,true);
 	}
-	setHeight(m_MyAllocation.height);
-	setMaxHeight(m_MyAllocation.height);
+	setHeight(getTotalTableHeight());
+	setMaxHeight(getTotalTableHeight());
 	xxx_UT_DEBUGMSG(("SEVIOR: Height is set to %d \n",m_MyAllocation.height));
 
 	fp_CellContainer * pCon = static_cast<fp_CellContainer *>(getNthCon(0));
@@ -5054,7 +5033,7 @@ void fp_TableContainer::setToAllocation(void)
 		pCon->doVertAlign();
 		pCon = static_cast<fp_CellContainer *>(pCon->getNext());
 	}
-	setYBottom(m_MyAllocation.height);
+	setYBottom(getTotalTableHeight());
 }
 
 void  fp_TableContainer::_size_request_init(void)
@@ -6069,9 +6048,8 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 	}
 	m_MyAllocation.x = pTL->getLeftColPos() - m_iBorderWidth;
 
-	double dBorder = static_cast<double>(m_iBorderWidth);
 	x = m_MyAllocation.x + m_iBorderWidth;
-	y = static_cast<UT_sint32> (m_MyAllocation.y + dBorder);
+	y = m_MyAllocation.y + m_iBorderWidth + pTL->getTopOffset();
 
 	for (col = 0; col < m_iCols; col++)
 	{

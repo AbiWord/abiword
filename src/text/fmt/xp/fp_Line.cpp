@@ -3428,6 +3428,11 @@ UT_sint32 fp_Line::getMarginAfter(void) const
 				iNextTopMargin = static_cast<fl_BlockLayout *>(pNext)->getTopMargin();
 				bLoop = false;
 			}
+			else if (pNext->getContainerType() == FL_CONTAINER_TABLE)
+			{
+				iNextTopMargin = 0;
+				bLoop = false;
+			}
 			else
 			{
 				if(pNext->getNext())
