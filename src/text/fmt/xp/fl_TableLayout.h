@@ -210,10 +210,12 @@ UT_sint32                    getBottomOffset(void) const;
 
 	void                     setEndTableIn(void)
 		{ m_bIsEndTableIn = true;}
-	bool                     isEndTableIn(void)
+	bool                     isEndTableIn(void) const
 	  { return m_bIsEndTableIn;}
-	bool                     isDoingDestructor(void)
+	bool                     isDoingDestructor(void) const
 	{ return m_bDoingDestructor;}
+	bool                     isInitialLayoutCompleted(void) const
+	{ return m_bInitialLayoutCompleted;}
 
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
@@ -240,6 +242,7 @@ private:
 	bool                   m_bRowsPositionedOnPage;
 	bool                   m_bIsDirty;
 	bool                   m_bDontImmediatelyLayout;
+	bool                   m_bInitialLayoutCompleted;
 	UT_sint32              m_iLineThickness;
 	UT_sint32              m_iColSpacing;
 	UT_sint32              m_iRowSpacing;

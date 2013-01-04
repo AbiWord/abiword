@@ -71,7 +71,7 @@ class fl_TableLayout;
 class ABI_EXPORT fp_TableRowColumn
 {
 public:
-	fp_TableRowColumn(void);
+	fp_TableRowColumn(UT_sint32 defaultSpacing = 0);
 	virtual ~fp_TableRowColumn(void);
 	UT_sint32 requisition;
 	UT_sint32 allocation;

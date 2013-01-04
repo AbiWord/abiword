@@ -93,6 +93,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
 	  m_bColumnsPositionedOnPage(false),
 	  m_bRowsPositionedOnPage(false),
 	  m_bIsDirty(true),
+	  m_bInitialLayoutCompleted(false),
 	  m_iLineThickness(0),
 	  m_iColSpacing(0),
 	  m_iRowSpacing(0),
@@ -638,6 +639,10 @@ void fl_TableLayout::format(void)
 			static_cast<fp_TableContainer *>(getFirstContainer())->layout();
 			setNeedsRedraw();
 			markAllRunsDirty();
+			if (!isInitialLayoutCompleted())
+			{
+				m_bInitialLayoutCompleted = true;
+			}
 		}
 	}
 //
@@ -651,6 +656,10 @@ void fl_TableLayout::format(void)
 		setNeedsRedraw();
    		markAllRunsDirty();
 		m_bIsDirty = false;
+		if (!isInitialLayoutCompleted())
+		{
+			m_bInitialLayoutCompleted = true;
+		}
 	}
 	UT_sint32 iNewHeight = -10;
 	bool isBroken = false;

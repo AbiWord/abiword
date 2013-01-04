@@ -73,15 +73,16 @@
 #include <time.h>
 #endif
 
-fp_TableRowColumn::fp_TableRowColumn(void) :
+fp_TableRowColumn::fp_TableRowColumn(UT_sint32 defaultSpacing) :
 		requisition(0),
-        allocation(0),
-        spacing(0),
-        need_expand(false),
-		need_shrink(true),
-		expand(true),
-        shrink(true),
-        empty(true)
+		allocation(0),
+		spacing(defaultSpacing),
+		position(0),
+		need_expand(false),
+		need_shrink(false),
+		expand(false),
+		shrink(false),
+		empty(true)
 {
 }
 
@@ -2819,24 +2820,25 @@ void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 		}
 		else
 		{
-			fp_Requisition pReq;
 			if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 			{
-				static_cast<fp_TableContainer *>(pCon)->sizeRequest(&pReq);
-			}
-			else if(pCon->getContainerType() == FP_CONTAINER_CELL)
-			{
-				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				fp_TableContainer * pTab = static_cast<fp_TableContainer*>(pCon);
+				fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pTab->getSectionLayout());
+				if (pTL->isInitialLayoutCompleted())
+				{
+					fp_Requisition pReq;
+					pTab->sizeRequest(&pReq);
+					if(width < pReq.width)
+					{
+						width = pReq.width;
+					}
+					height = height + pReq.height;
+				}
 			}
 			else
 			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			}
-			if(width < pReq.width)
-			{
-				width = pReq.width;
-			}
-			height = height + pReq.height;
 		}
 		xxx_UT_DEBUGMSG(("Total height %d \n",height));
 	}
@@ -3749,65 +3751,34 @@ void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition
 
 void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
 {
-  
-  if ((n_rows != m_iRows) ||
-     ( n_cols != m_iCols))
-  {
-	  fp_CellContainer * child = static_cast<fp_CellContainer *>(getNthCon(0));
-      while(child)
-	  {
-		  n_rows = UT_MAX (n_rows, child->getBottomAttach());
-		  n_cols = UT_MAX (n_cols, child->getRightAttach());
-		  child = static_cast<fp_CellContainer *>(child->getNext());
-	  }
-      
-      if (n_rows != m_iRows)
-	  {
-		  UT_sint32 i;
-
-		  i = m_iRows;
-	      m_iRows = n_rows;
-		  UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecRows);
-		  m_vecRows.clear();
-		  for(i=0; i< m_iRows; i++)
-		  {
-			  m_vecRows.addItem(new fp_TableRowColumn());
-			  fp_TableRowColumn * pRow = getNthRow(i);
-			  pRow->requisition = 0;
-			  pRow->allocation = 0;
-			  pRow->spacing = m_iRowSpacing;
-			  pRow->position = 0;
-			  pRow->need_expand = 0;
-			  pRow->need_shrink = 0;
-			  pRow->expand = 0;
-			  pRow->shrink = 0;
-		  }
-	  }
-
-      if (n_cols != m_iCols)
-	  {
-		  UT_sint32 i;
-
-		  i = m_iCols;
-	      m_iCols = n_cols;
-		  UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecColumns);
-		  m_vecColumns.clear();
-		  for(i=0; i< m_iCols; i++)
-		  {
-			  m_vecColumns.addItem(new fp_TableRowColumn());
-			  fp_TableRowColumn *pCol= getNthCol(i);
-			  pCol->requisition = 0;
-			  pCol->allocation = 0;
-			  pCol->spacing = m_iColSpacing;
-			  pCol->position = 0;
-			  pCol->need_expand = 0;
-			  pCol->need_shrink = 0;
-			  pCol->expand = 0;
-			  pCol->shrink = 0;
-		  }
-	  }
-  }
-  xxx_UT_DEBUGMSG(("SEVIOR: m_iRowSpacing = %d \n",m_iRowSpacing));
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	if (!pTL->isInitialLayoutCompleted() || (n_rows != m_iRows) ||
+		( n_cols != m_iCols))
+	{
+		if (!pTL->isInitialLayoutCompleted() || (n_rows != m_iRows))
+		{
+			UT_sint32 i;
+			m_iRows = n_rows;
+			UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecRows);
+			m_vecRows.clear();
+			for(i=0; i< m_iRows; i++)
+			{
+				m_vecRows.addItem(new fp_TableRowColumn(m_iRowSpacing));
+			}
+		}
+		
+		if (!pTL->isInitialLayoutCompleted() || (n_cols != m_iCols))
+		{
+			UT_sint32 i;
+			m_iCols = n_cols;
+			UT_VECTOR_PURGEALL(fp_TableRowColumn *, m_vecColumns);
+			m_vecColumns.clear();
+			for(i=0; i< m_iCols; i++)
+			{
+				m_vecColumns.addItem(new fp_TableRowColumn(m_iColSpacing));
+			}
+		}
+	}
 }
 
 /*!
@@ -4822,14 +4793,24 @@ void fp_TableContainer::tableAttach (fp_CellContainer *child)
 		pLast->setNext(child);
 		child->setPrev(pLast);
 	}
-    if (child->getRightAttach() >= m_iCols)
-	{
-		resize (m_iRows, child->getRightAttach());
-	}
 
-	if (child->getBottomAttach() >=  m_iRows)
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	if (!pTL->isInitialLayoutCompleted())
 	{
-		resize (child->getBottomAttach(), m_iCols);
+		m_iCols = UT_MAX(m_iCols, child->getRightAttach());
+		m_iRows = UT_MAX(m_iRows, child->getBottomAttach());
+	}
+	else
+	{
+		if (child->getRightAttach() >= m_iCols)
+		{
+			resize (m_iRows, child->getRightAttach());
+		}
+
+		if (child->getBottomAttach() >=  m_iRows)
+		{
+			resize (child->getBottomAttach(), m_iCols);
+		}
 	}
 	xxx_UT_DEBUGMSG(("tableAttach: Attaching cell %x to table \n",child));
 	addContainer(child);
@@ -4954,6 +4935,11 @@ void fp_TableContainer::layout(void)
 	clock_gettime(CLOCK_REALTIME, &t1);
 #endif
 
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	if (!pTL->isInitialLayoutCompleted())
+	{
+		resize(m_iRows,m_iCols);
+	}
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
 	sizeRequest(&requisition);
