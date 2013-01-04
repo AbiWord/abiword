@@ -395,6 +395,7 @@ fp_Container * fp_Page::updatePageForWrapping(fp_Column *& pNextCol)
 // SOMETHING HAS GONE HORRIBALLY WRONG. Try to recover by collapsing the
 // content in this column and rebuilding
 //
+						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 						UT_DEBUGMSG(("-ve width here!!!! %p left %d right %d \n",pLine,recLeft.width,recRight.width));
 						UT_VECTOR_PURGEALL(_BL *, vecBL);
 						fl_BlockLayout * pBL = pLine->getBlock();

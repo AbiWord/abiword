@@ -838,17 +838,12 @@ UT_Rect * fp_Line::getScreenRect(void)
 	UT_sint32 xoff = 0;
 	UT_sint32 yoff = 0;
 	UT_Rect * pRec = NULL; 
-	fp_Page * pPage = getPage();
-	if (pPage != NULL) {
-		pPage->getScreenOffsets(getColumn(),xoff,yoff);
-		xoff += getX();
-		yoff += getY();
-		if (getBlock() && getBlock()->hasBorders())
-		{
-			xoff -= getLeftThick();
-		}
-		pRec= new UT_Rect(xoff,yoff,getMaxWidth(),getHeight());
+	getScreenOffsets(NULL,xoff,yoff);
+	if (getBlock() && getBlock()->hasBorders())
+	{
+		xoff -= getLeftThick();
 	}
+	pRec= new UT_Rect(xoff,yoff,getMaxWidth(),getHeight());
 	return pRec;
 }
 	
