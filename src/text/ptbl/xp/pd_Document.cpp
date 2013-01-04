@@ -1852,7 +1852,8 @@ bool PD_Document::repairDoc(void)
 			bRepaired = true;
 		}
 		else if ((pfsNext->getType() == pf_Frag::PFT_Strux) &&
-				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() == PTX_Section))
+				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() != PTX_Block) &&
+				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() != PTX_SectionTable))
 		{
 			insertStruxBeforeFrag(pfsNext, PTX_Block,NULL);
 			bRepaired = true;
@@ -1869,7 +1870,8 @@ bool PD_Document::repairDoc(void)
 			bRepaired = true;
 		}
 		else if ((pfsNext->getType() == pf_Frag::PFT_Strux) &&
-				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() == PTX_Section))
+				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() != PTX_Block) &&
+				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() != PTX_SectionTable))
 		{
 			insertStruxBeforeFrag(pfsNext, PTX_Block,NULL);
 			bRepaired = true;

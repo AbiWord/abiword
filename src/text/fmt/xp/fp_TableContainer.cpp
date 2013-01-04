@@ -3220,6 +3220,10 @@ fp_Column * fp_TableContainer::getBrokenColumn(void)
 	while(pBroke && pBroke->isThisBroken() && !bStop)
 	{
 		fp_Container * pCon = pBroke->getContainer();
+		if (!pCon)
+		{
+			return NULL;
+		}
 		if(pCon->isColumnType())
 		{
 			if(pCon->getContainerType() == FP_CONTAINER_COLUMN)
