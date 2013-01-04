@@ -828,9 +828,10 @@ public:
 	bool                changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld,
 									 UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
 		                             UT_sint32 top, UT_sint32 bot);
-	bool                _insertCellAfter(PT_DocPosition posTable, UT_sint32 row,
-										 UT_sint32 col,UT_sint32 left,UT_sint32 right,
-										 UT_sint32 top, UT_sint32 bot);
+	bool                _insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right,
+									  UT_sint32 top, UT_sint32 bot);
+	bool                _changeCellAttach(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right,
+									  UT_sint32 top, UT_sint32 bot);
 	bool                _insertCellBefore(PT_DocPosition posTable, UT_sint32 row,
 										  UT_sint32 col, UT_sint32 left, UT_sint32 right,
 										  UT_sint32 top, UT_sint32 bot);

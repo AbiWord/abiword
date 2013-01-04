@@ -899,35 +899,10 @@ bool FV_View::_insertCellBefore(PT_DocPosition posTable, UT_sint32 rowold, UT_si
 
 
 /*!
- * This method inserts the cell after the coordinates of the cell at (row,col) in the table
- * specified by
- * posTable at the cordinates specified.
+ * This method inserts a cell at PT_DocPosition with the specified left, right, top and bot attaches.
  */
-bool FV_View::_insertCellAfter(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32 colold,
-						  UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
+bool FV_View::_insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
 {
-	pf_Frag_Strux* cellSDH,*endCellSDH;
-	PT_DocPosition posCell = findCellPosAt(posTable,rowold,colold);
-	if(posCell == 0)
-	{
-		return false;
-	}
-	bool bres = m_pDoc->getStruxOfTypeFromPosition(posCell+1,PTX_SectionCell,&cellSDH);
-	if(!bres)
-	{
-		return false;
-	}
-	endCellSDH = m_pDoc->getEndCellStruxFromCellSDH(cellSDH);
-	if(!endCellSDH)
-	{
-		return false;
-	}
-	PT_DocPosition posEndCell = m_pDoc->getStruxPosition(endCellSDH);
-	if(posEndCell == 0)
-	{
-		return false;
-	}
-	posEndCell++;
 	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	UT_String sLeft,sRight,sTop,sBot;
 	props[0] = "left-attach";
@@ -943,33 +918,37 @@ bool FV_View::_insertCellAfter(PT_DocPosition posTable, UT_sint32 rowold, UT_sin
 	UT_String_sprintf(sBot,"%d",bot);
 	props[7] = sBot.c_str();
 
-//
-// Here we trust that the calling routine will do all the begin/end globbing and other
-// stuff so that this will go smoothly and undo's in a single step.
-// Here we just insert
-//
-
+	bool bres = true;
 	bres = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
-	if(!bres)
-	{
-		return false;
-	}
-//
-// Insert a block for content
-//
+	UT_return_val_if_fail(bres,false);
 	bres = m_pDoc->insertStrux(posCell+1,PTX_Block);
-	if(!bres)
-	{
-		return false;
-	}
-//
-// Insert an endCell
-//
-	bres = m_pDoc->insertStrux(posCell+1,PTX_EndCell);
-	if(!bres)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(bres,false);
+	bres = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
+	return bres;
+}
+
+
+/*!
+  This method changes the attaches of the cell at position posCell
+ */
+bool FV_View::_changeCellAttach(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
+{
+	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
+	UT_String sLeft,sRight,sTop,sBot;
+	props[0] = "left-attach";
+	UT_String_sprintf(sLeft,"%d",left);
+	props[1] = sLeft.c_str();
+	props[2] = "right-attach";
+	UT_String_sprintf(sRight,"%d",right);
+	props[3] = sRight.c_str();
+	props[4] = "top-attach";
+	UT_String_sprintf(sTop,"%d",top);
+	props[5] = sTop.c_str();
+	props[6] = "bot-attach";
+	UT_String_sprintf(sBot,"%d",bot);
+	props[7] = sBot.c_str();
+
+	bool bres = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,NULL,props,PTX_SectionCell);
 	return bres;
 }
 
