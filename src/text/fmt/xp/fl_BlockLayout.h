@@ -393,7 +393,7 @@ public:
 												PT_DocPosition & begPos,
 												PT_DocPosition & endPos,
 												UT_UTF8String & sWord,
-												bool bIgnoreSpace) const;
+												UT_uint32 iDelim) const;
 	bool                   itemizeSpan(PT_BlockOffset blockOffset, UT_uint32 len,GR_Itemization & I);
 	const UT_RGBColor      getShadingingForeColor(void) const;
 	const UT_RGBColor      getShadingingBackColor(void) const;

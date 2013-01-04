@@ -11359,14 +11359,14 @@ void fl_BlockLayout::setStopping( bool bValue)
 \param begPos - first character of the word
 \param endPos - Last character of the word
 \param sWord - UTF8 string containing the word
-\param If true do not use a space as a delimiter.
+\param delim: use tab (0), comma (1), space (2) or all (>2) as delimiters
 */
 bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 										 PT_DocPosition startPos, 
 										 PT_DocPosition & begPos,
 										 PT_DocPosition & endPos,
 										 UT_UTF8String & sWord,
-										 bool bIgnoreSpace) const
+										 UT_uint32 iDelim) const
 {
 	UT_uint32 offset = startPos - getPosition(false);
 	UT_uint32 i = 0;
@@ -11444,15 +11444,13 @@ bool fl_BlockLayout::getNextTableElement(UT_GrowBuf * buf,
 		}
 		if(UT_isWordDelimiter(curChar,UCS_UNKPUNK,UCS_UNKPUNK))
 		{
-			if( bIgnoreSpace && (curChar == UCS_SPACE))
-			{
-				continue;
-			}
-			if(curChar==',' || curChar== UCS_TAB || curChar== UCS_SPACE)
+			if(((iDelim == 0) && (curChar == UCS_TAB)) ||
+			   ((iDelim == 1) && (curChar == ',')) ||
+			   ((iDelim == 2) && (curChar == UCS_SPACE)) ||
+			   ((iDelim >  2) && (curChar==',' || curChar== UCS_TAB || curChar== UCS_SPACE)))
 			{
 				break;
 			}
-			continue; // ignore all other punctuation marks
 		}
 	}
 	if(i< iMax)

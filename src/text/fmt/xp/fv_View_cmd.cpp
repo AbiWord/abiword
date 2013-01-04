@@ -1441,7 +1441,17 @@ bool FV_View::cmdAdvanceNextPrevCell(bool bGoNext)
 	return true;
 }
 
-bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
+/*!
+ * Convert a text fragment to a table to Text.
+ * The column delimiters are tabs, commas and spaces as follows:
+ * iDelim == 0 Use tabs
+ * iDelim == 1 Use commas
+ * iDelim == 2 Use spaces
+ * iDelim == 3 Use tabs, commas and spaces as delemiters
+ * Paragraph breaks are the row delimiters.
+ */
+
+bool FV_View::cmdTextToTable(UT_uint32 iDelim)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
@@ -1468,7 +1478,7 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 		bool bGetNext = true;
 		while(bGetNext)
 		{
-			bGetNext = pBL->getNextTableElement(pBuf,posStart,begPos,endPos, sWords, bIgnoreSpaces);
+			bGetNext = pBL->getNextTableElement(pBuf,posStart,begPos,endPos, sWords, iDelim);
 			if(begPos != 0)
 			{
 				count++;
@@ -1568,7 +1578,7 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 			sdhCell = m_pDoc->getCellSDHFromRowCol(sdhTable,isShowRevisions(),PD_MAX_REVISION,i,j);
 			posCell = m_pDoc->getStruxPosition(sdhCell)+1; // Points at block
 			sWords.clear();
-			bEnd = !pBL->getNextTableElement(pBuf,posStart,	begPos,	endPos,	sWords,	bIgnoreSpaces);
+			bEnd = !pBL->getNextTableElement(pBuf,posStart,	begPos,	endPos,	sWords,	iDelim);
 			if(begPos == endPos)
 			{
 			    posStart = endPos+1;

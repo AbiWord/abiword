@@ -715,7 +715,9 @@ public:
 	static EV_EditMethod_Fn rdfSemitemRelatedToSourceFoafKnows;
 	static EV_EditMethod_Fn rdfSemitemFindRelatedFoafKnows;
 	static EV_EditMethod_Fn textToTable;
-	static EV_EditMethod_Fn textToTableNoSpaces;
+	static EV_EditMethod_Fn textToTableCommas;
+	static EV_EditMethod_Fn textToTableSpaces;
+	static EV_EditMethod_Fn textToTableTabs;
 	static EV_EditMethod_Fn toggleMarkRevisions;
 	static EV_EditMethod_Fn toggleAutoRevision;
 	static EV_EditMethod_Fn revisionAccept;
@@ -1238,7 +1240,9 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(tableToTextCommasTabs),    0,		""),
 	EV_EditMethod(NF(tableToTextTabs),    0,		""),
 	EV_EditMethod(NF(textToTable),			0,		""),
-	EV_EditMethod(NF(textToTableNoSpaces),		0,		""),
+	EV_EditMethod(NF(textToTableCommas),		0,		""),
+	EV_EditMethod(NF(textToTableSpaces),			0,		""),
+	EV_EditMethod(NF(textToTableTabs),		0,		""),
 	EV_EditMethod(NF(toggleAutoRevision),  0,  ""),
 #ifdef ENABLE_SPELL
 	EV_EditMethod(NF(toggleAutoSpell),      0,  ""),
@@ -12554,20 +12558,36 @@ Defun1(textToTable)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	pView->cmdTextToTable(false);
+	pView->cmdTextToTable(3);
 	return true;
 }
 
-Defun1(textToTableNoSpaces)
+Defun1(textToTableTabs)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	pView->cmdTextToTable(true);
+	pView->cmdTextToTable(0);
 	return true;
 }
 
+Defun1(textToTableCommas)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	pView->cmdTextToTable(1);
+	return true;
+}
 
+Defun1(textToTableSpaces)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_return_val_if_fail(pView,false);
+	pView->cmdTextToTable(2);
+	return true;
+}
 
 Defun1(insertSumRows)
 {
