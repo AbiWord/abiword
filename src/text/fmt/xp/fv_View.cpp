@@ -9400,6 +9400,12 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 		pInfo->m_xrRightIndent = pBlock->getRightMargin();
 		pInfo->m_xrFirstLineIndent = pBlock->getTextIndent();
 		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pCell->getContainer());
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pTab->getSectionLayout());
+		if (!pTL || !pTL->isInitialLayoutCompleted())
+		{
+			// The table initialization is not yet completed
+			return;
+		}
 		UT_sint32 row = pCell->getTopAttach();
 		UT_sint32 numcols = pTab->getNumCols();
 		//UT_sint32 numrows = pTab->getNumRows();

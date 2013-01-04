@@ -1578,6 +1578,10 @@ void AP_LeftRuler::_drawCellProperties(const AP_LeftRulerInfo * pInfo)
 	if(pBroke == NULL)
 	{
 	  AP_LeftRulerTableInfo * pTInfo =  NULL;
+	  if (pInfo->m_vecTableRowInfo->getItemCount() == 0)
+	  {
+	      return;
+	  }
 	  pTInfo = pInfo->m_vecTableRowInfo->getNthItem(0);
 	  UT_return_if_fail(pTInfo);
 	  fp_CellContainer * pCell = pTInfo->m_pCell;

@@ -666,7 +666,8 @@ void AP_TopRuler::_getParagraphMarkerXCenters(AP_TopRulerInfo * pInfo,
 	AP_TopRulerTableInfo *pTInfo = NULL;
 	if(pInfo->m_mode == AP_TopRulerInfo::TRI_MODE_TABLE)
 	{
-		if(pInfo->m_vecTableColInfo->getItemCount() > 0 && pInfo->m_iCurCell < pInfo->m_vecTableColInfo->getItemCount())
+		if(pInfo->m_vecTableColInfo && pInfo->m_vecTableColInfo->getItemCount() > 0 && 
+		   pInfo->m_iCurCell < pInfo->m_vecTableColInfo->getItemCount())
 		{
 			pTInfo = static_cast<AP_TopRulerTableInfo *>(pInfo->m_vecTableColInfo->getNthItem(pInfo->m_iCurCell));
 		}
