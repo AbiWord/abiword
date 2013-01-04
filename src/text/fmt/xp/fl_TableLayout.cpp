@@ -1120,6 +1120,23 @@ bool fl_TableLayout::recalculateFields(UT_uint32 iUpdateCount)
 	return true;
 }
 
+
+void fl_TableLayout::setMaxExtraMargin(double margin)
+{
+	if (margin < 0)
+	{
+		m_dMaxExtraMargin = 0.;
+	}
+	else if (margin > 1)
+	{
+		m_dMaxExtraMargin = 1.;
+	}
+	else
+	{
+		m_dMaxExtraMargin = margin;
+	}
+}
+
 /*!
     this function is only to be called by fl_ContainerLayout::lookupProperties()
     all other code must call lookupProperties() instead
@@ -1172,6 +1189,22 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_dTableRelWidth = static_cast<double>(m_iTableWidth)*rel/100.;
 		m_iTableWidth = m_dTableRelWidth;
 	}
+
+	// This property defines the maximum extra margin that may be left at
+	// the bottom of the page when breaking a table along cell boundaries.
+	// The margin is defined as a fraction of the maximum column height.
+	const char* pszMaxExtraMargin = NULL;
+	pSectionAP->getProperty("table-max-extra-margin", (const gchar *&)pszMaxExtraMargin);
+	if(pszMaxExtraMargin && pszMaxExtraMargin[0])
+	{
+		m_dMaxExtraMargin = atof(pszMaxExtraMargin);
+	}
+	else
+	{
+		m_dMaxExtraMargin = 0.05;
+	}
+
+
 
 	const char* pszLeftOffset = NULL;
 	const char* pszTopOffset = NULL;

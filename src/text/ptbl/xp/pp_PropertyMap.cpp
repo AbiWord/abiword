@@ -153,6 +153,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"table-margin-left",
 	"table-margin-right",
 	"table-margin-top",
+	"table-max-extra-margin",
 	"table-rel-column-props",
 	"table-rel-width",
 	"table-row-props",

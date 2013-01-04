@@ -126,6 +126,7 @@ public:
 	fp_VerticalContainer * getColumn(fp_Container *pCon); // FIXME: see if we can make it const
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
 	fp_Container *      getFirstContainerInBrokenTable(fp_TableContainer * pBroke) const;
+	UT_sint32           wantCellVBreakAt(UT_sint32,UT_sint32);
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
@@ -134,7 +135,6 @@ public:
 	        void        _drawBoundaries(dg_DrawArgs* pDA, fp_TableContainer *pBroke);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
-	virtual UT_sint32   wantVBreakAt(UT_sint32);
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
@@ -158,6 +158,7 @@ public:
 	UT_sint32           getSpannedHeight(void);
 	void                setLineMarkers(void);
 	void                deleteBrokenTables(bool bClearFirst=true);
+	void                deleteBrokenAfter(bool bClearFirst,UT_sint32 iOldBottom);
 	bool                containsFootnoteReference(void);
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
 	bool                containsAnnotations(void);
@@ -445,10 +446,16 @@ fp_Column *         getBrokenColumn(void);
 		{return m_iYBottom;}
 	fp_TableContainer * getFirstBrokenTable(void) const;
 	fp_TableContainer * getLastBrokenTable(void) const;
+	fp_CellContainer *  getFirstBrokenCell(void) const
+		{ return m_pFirstBrokenCell;}
 	void                setFirstBrokenTable(fp_TableContainer * pBroke);
 	void                setLastBrokenTable(fp_TableContainer * pBroke);
 	void                deleteBrokenTables(bool bClearFirst, bool bRecurseUp = true);
 	void                adjustBrokenTables(void);
+	UT_sint32           getAdditionalBottomSpace(void) const
+		{ return m_iAdditionalBottomSpace;}
+	void                setAdditionalBottomSpace(UT_sint32 space)
+		{ m_iAdditionalBottomSpace = space;}
 	UT_sint32               getBrokenTop(void);
 	UT_sint32               getBrokenBot(void);
 	void                    setBrokenTop(UT_sint32 iTop)
@@ -522,6 +529,7 @@ private:
 	fp_TableContainer *     m_pMasterTable;
 	UT_sint32               m_iYBreakHere;
 	UT_sint32               m_iYBottom;
+	UT_sint32               m_iAdditionalBottomSpace;
 	UT_sint32               m_iBrokenTop;
 	UT_sint32               m_iBrokenBottom;
 	bool                    m_bRedrawLines;
@@ -545,9 +553,9 @@ private:
 // Global row height
 	UT_sint32           m_iRowHeight;
 
-// Last requested vbreak height
-
+// Last requested vbreak height and next one (for nested tables)
 	UT_sint32           m_iLastWantedVBreak;
+	UT_sint32           m_iNextWantedVBreak;
 
 // Cache the first and last cells of a broken table
 

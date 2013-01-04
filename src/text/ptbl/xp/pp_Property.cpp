@@ -198,6 +198,7 @@ static PP_Property _props[] =
  	{ "table-margin-left",     "0.005in",           false, NULL, PP_LEVEL_TABLE},
 	{ "table-margin-right",    "0.005in",           false, NULL, PP_LEVEL_TABLE},
 	{ "table-margin-top",      "0.01in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-max-extra-margin","0.05",            false, NULL, PP_LEVEL_TABLE},
 	{ "table-row-props",       "",                false, NULL, PP_LEVEL_TABLE},
 	{ "table-row-spacing",     "0.01in",           false, NULL, PP_LEVEL_TABLE},
 	{ "tabstops",              "",                false, NULL, PP_LEVEL_BLOCK},

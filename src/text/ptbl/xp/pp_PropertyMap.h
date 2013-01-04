@@ -182,6 +182,7 @@ public:
 		abi_table_margin_left,
 		abi_table_margin_right,
 		abi_table_margin_top,
+		abi_table_max_extra_margin,
 		abi_table_rel_column_props,
 		abi_table_rel_width,
 		abi_table_row_props,

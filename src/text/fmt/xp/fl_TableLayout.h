@@ -216,6 +216,9 @@ UT_sint32                    getBottomOffset(void) const;
 	{ return m_bDoingDestructor;}
 	bool                     isInitialLayoutCompleted(void) const
 	{ return m_bInitialLayoutCompleted;}
+	double                   getMaxExtraMargin(void) const
+	{ return m_dMaxExtraMargin;}
+	void                     setMaxExtraMargin(double margin);
 
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
@@ -269,6 +272,7 @@ private:
 	bool                   m_bDoingDestructor;
 	UT_sint32              m_iTableWidth;
 	double                 m_dTableRelWidth;
+	double                 m_dMaxExtraMargin;
 };
 
 
