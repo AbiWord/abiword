@@ -481,6 +481,12 @@ bool fl_TableLayout::doSimpleChange(void)
 	markAllRunsDirty();
 	UT_sint32 diff = iMaxHeight - iAlloc;
 	pRow->allocation += diff;
+	UT_sint32 kk;
+	for (kk = iTop + 1; kk < pTab->getNumRows(); kk++)
+	{
+		pRow = pTab->getNthRow(kk);
+		pRow->position += diff;
+	}
 	while(pCell)
 	{
 		pCell->setY(pCell->getY()+diff);

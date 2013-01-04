@@ -76,6 +76,7 @@ public:
 	UT_sint32 requisition;
 	UT_sint32 allocation;
 	UT_sint32 spacing;
+	UT_sint32 position;
 	bool need_expand;
 	bool need_shrink;
 	bool expand;
