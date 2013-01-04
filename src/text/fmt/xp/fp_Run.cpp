@@ -4473,7 +4473,10 @@ void fp_FieldRun::_defaultDraw(dg_DrawArgs* pDA)
 	xxx_UT_DEBUGMSG(("Field draw with font %s \n",_getFont()->getFamily()));
 
 	UT_uint32 len = UT_UCS4_strlen(m_sFieldValue);
-	UT_return_if_fail(len);
+	if (len == 0)
+	{
+		return;
+	}
 
 	painter.drawChars(m_sFieldValue, 0, len, pDA->xoff,iYdraw, NULL);
 //
