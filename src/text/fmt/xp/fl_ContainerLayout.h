@@ -155,6 +155,10 @@ public:
 	FPVisibility            getAP(const PP_AttrProp *& pAP)const;
 	void                    getSpanAP(UT_uint32 blockPos, bool bLeft, const PP_AttrProp * &pSpanAP) const;
 
+ // Embedded structures
+	bool                    containsFootnoteLayouts(void) const;
+	bool                    containsAnnotationLayouts(void) const;
+
 #ifdef FMT_TEST
 	virtual void		__dump(FILE * fp) const;
 #endif

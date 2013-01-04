@@ -1028,6 +1028,34 @@ bool pt_PieceTable::isInsideFootnote(PT_DocPosition dpos, pf_Frag ** pfBegin) co
 	return false;
 }
 
+
+bool  pt_PieceTable::hasEmbedStruxOfTypeInRange(PT_DocPosition posStart, PT_DocPosition posEnd, 
+												PTStruxType iType) const
+{
+	if(m_embeddedStrux.empty())
+	{
+		return false;
+	}
+
+	std::list<embeddedStrux>::const_iterator it;
+	it = m_embeddedStrux.begin();
+	for (it = m_embeddedStrux.begin(); it != m_embeddedStrux.end(); ++it)
+	{
+		if ((*it).type != iType)
+		{
+			continue;
+		}
+		if ((*it).beginNote->getPos() > posStart)
+		{
+			// if endNote->getPos() > posEnd, there are no notes inside the position range as
+			// m_embeddedStrux is ordered by position.
+			return ((*it).endNote->getPos() < posEnd);
+		}
+	}
+	return false;	
+}
+
+
 bool pt_PieceTable::_getStruxFromPosition(PT_DocPosition docPos,
 											 pf_Frag_Strux ** ppfs,
                                               bool bSkipFootnotes) const

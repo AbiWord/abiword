@@ -320,11 +320,13 @@ bool fl_FrameLayout::bl_doclistener_insertEndFrame(fl_ContainerLayout*,
 																	  fl_ContainerLayout* sfhNew))
 {
 	// The endFrame strux actually needs a format handle to to this Frame layout.
-	// so we bind to this layout.
+	// so we bind to this layout. We also set a pointer to keep track of the endFrame strux.
 
 	
 	fl_ContainerLayout* sfhNew = this;
 	pfnBindHandles(sdh,lid,sfhNew);
+	setEndStruxDocHandle(sdh);
+
 
 //
 // increment the insertion point in the view.

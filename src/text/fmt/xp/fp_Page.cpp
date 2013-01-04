@@ -922,19 +922,29 @@ void fp_Page::resetFieldPageNumber(void)
 /*!
  * This method returns the height available to the requested column. It 
  * subtracts the height given to previous columns on the page as well as the 
- * height given to footnotes and annotations.
+ * height given to footnotes and annotations of these columns.
 */  
 UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 {
 	fp_Column * pLeader = pColumn->getLeader();
-    fp_Column * pCurLeader = getNthColumnLeader(0);
+	fp_Column * pCurLeader = getNthColumnLeader(0);
 	fl_DocSectionLayout * pDSL = pCurLeader->getDocSectionLayout();
 	UT_sint32 avail = getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
-	UT_sint32 i =0;
-	xxx_UT_DEBUGMSG(("fp_Page:: Total avail after margins subtracted %d \n",avail));
-	UT_sint32 nLeaders = static_cast<UT_sint32>(countColumnLeaders()); 
-	while((pCurLeader != pLeader) && (nLeaders > 1))	
+	if ((countColumnLeaders() == 1) || (pCurLeader == pLeader))
 	{
+		return avail;
+	}
+
+	// Case with multiple sections on the page
+	UT_sint32 i = 0;
+	xxx_UT_DEBUGMSG(("fp_Page:: Total avail after margins subtracted %d \n",avail));
+	for(i = 0; i < countColumnLeaders(); i++)
+	{
+		pCurLeader = getNthColumnLeader(i);
+		if (pCurLeader == pLeader)
+		{
+			break;
+		}
 		UT_sint32 iMostHeight = pCurLeader->getHeight();
 		fp_Column* pTmpCol = pCurLeader;
 		while(pTmpCol)
@@ -944,35 +954,45 @@ UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 		}
 		xxx_UT_DEBUGMSG(("fp_Page: Subtracting height %d from column %d \n",iMostHeight,i));
 		avail -= iMostHeight;
-		i++;
-		if( i < nLeaders)
-		{
-			pCurLeader = getNthColumnLeader(i);
-		}
-		else
-		{
-			break;
-		}
 	}
-//
-// Now subtract the footnotes and annotations on this page too
-//
+	UT_ASSERT(getNthColumnLeader(i) == pLeader);
+
+	// Now subtract the footnotes and annotations on the page that are part of previous sections
+
+	UT_sint32 iLeader = i;
 	for(i=0; i< static_cast<UT_sint32>(countFootnoteContainers()); i++)
 	{
 		fp_FootnoteContainer * pFC = getNthFootnoteContainer(i);
-		avail -= pFC->getHeight();
+		fl_DocSectionLayout * pDSLFoot = static_cast<fl_FootnoteLayout*>(pFC->getSectionLayout())->getDocSectionLayout();
+		UT_sint32 k = 0;
+		for (k = 0; k < iLeader; k++)
+		{
+			if (pDSLFoot == getNthColumnLeader(i)->getDocSectionLayout())
+			{
+				avail -= pFC->getHeight();
+				break;
+			}
+		}
 	}
 	if(getDocLayout()->displayAnnotations())
 	{
-			for(i=0; i< static_cast<UT_sint32>(countAnnotationContainers()); i++)
+		for(i=0; i< static_cast<UT_sint32>(countAnnotationContainers()); i++)
+		{
+			fp_AnnotationContainer * pAC = getNthAnnotationContainer(i);
+			fl_DocSectionLayout * pDSLAnn = static_cast<fl_AnnotationLayout*>(pAC->getSectionLayout())->getDocSectionLayout();
+			UT_sint32 k = 0;
+			for (k = 0; k < iLeader; k++)
 			{
-					fp_AnnotationContainer * pAC = getNthAnnotationContainer(i);
+				if (pDSLAnn == getNthColumnLeader(i)->getDocSectionLayout())
+				{
 					avail -= pAC->getHeight();
+					break;
+				}
 			}
+		}
 	}
-	//UT_ASSERT(avail > 0);
-	return avail;
 
+	return avail;
 }
 
 /*!

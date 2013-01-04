@@ -557,6 +557,8 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool                    isFootnoteAtPos(PT_DocPosition pos);
 	bool                    isEndFootnoteAtPos(PT_DocPosition pos);
 	UT_sint32               getEmbeddedOffset(pf_Frag_Strux* sdh,PT_DocPosition posOff, pf_Frag_Strux* & sdhEmbedded);
+	bool                    hasEmbedStruxOfTypeInRange(PT_DocPosition posStart, PT_DocPosition posEnd, 
+													   PTStruxType iType) const;
 
 	// TOC functions
 	bool                    isTOCAtPos(PT_DocPosition pos);

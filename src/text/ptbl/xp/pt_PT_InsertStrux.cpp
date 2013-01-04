@@ -770,6 +770,7 @@ bool pt_PieceTable::_insertNoteInEmbeddedStruxList(pf_Frag_Strux * pfsNew)
 		embeddedStrux newNote;
 		newNote.beginNote = pfsPrev;
 		newNote.endNote = pfsNew;
+		newNote.type = pfsPrev->getStruxType();
 		bool bNoteInserted = false;
 		if (!m_embeddedStrux.empty())
 		{

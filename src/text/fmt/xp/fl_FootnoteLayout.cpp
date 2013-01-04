@@ -150,11 +150,12 @@ bool fl_EmbedLayout::bl_doclistener_insertEndEmbed(fl_ContainerLayout*,
 																	  fl_ContainerLayout* sfhNew))
 {
 	// The endFootnote strux actually needs a format handle to to this Footnote layout.
-	// so we bind to this layout.
+	// so we bind to this layout. We also set a pointer to keep track of the endEmbed strux.
 
 		
 	fl_ContainerLayout* sfhNew = this;
 	pfnBindHandles(sdh,lid,sfhNew);
+	setEndStruxDocHandle(sdh);
 
 //
 // increment the insertion point in the view.

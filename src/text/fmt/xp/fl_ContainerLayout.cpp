@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2002 Martin Sevior
@@ -1320,3 +1321,42 @@ bool fl_ContainerLayout::removeFrame(fl_FrameLayout * pFrame)
 		return false;
 	}
 }
+
+
+/* This function returns true if the layout contains a footnote layout and false otherwise.
+   The function returns false if the layout is contained inside a footnote layout.
+   TODO TODO TODO: Move embedded layouts out of the main fl_Container lists
+*/
+
+bool fl_ContainerLayout::containsFootnoteLayouts(void) const
+{
+	if (getEndStruxDocHandle())
+	{
+		PT_DocPosition posStart = getDocument()->getStruxPosition(getStruxDocHandle());
+		PT_DocPosition posEnd = getDocument()->getStruxPosition(getEndStruxDocHandle());
+		return getDocument()->hasEmbedStruxOfTypeInRange(posStart,posEnd,PTX_SectionFootnote);
+	}
+	// This function has not yet been implemented for layouts that do not have a end strux (blocks, sections)
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	return false;
+}
+
+
+/* This function returns true if the layout contains a footnote layout and false otherwise.
+   The function returns false if the layout is contained inside a footnote layout.
+   TODO TODO TODO: Move embedded layouts out of the main fl_Container lists
+*/
+
+bool fl_ContainerLayout::containsAnnotationLayouts(void) const
+{
+	if (getEndStruxDocHandle())
+	{
+		PT_DocPosition posStart = getDocument()->getStruxPosition(getStruxDocHandle());
+		PT_DocPosition posEnd = getDocument()->getStruxPosition(getEndStruxDocHandle());
+		return getDocument()->hasEmbedStruxOfTypeInRange(posStart,posEnd,PTX_SectionAnnotation);
+	}
+	// This function has not yet been implemented for layouts that do not have a end strux (blocks, sections)
+	UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	return false;
+}
+

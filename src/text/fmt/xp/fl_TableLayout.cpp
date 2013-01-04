@@ -1073,13 +1073,15 @@ bool fl_TableLayout::bl_doclistener_insertEndTable(fl_ContainerLayout*,
 																	  fl_ContainerLayout* sfhNew))
 {
 	// The endTable strux actually has a format handle to to the this table layout.
-	// so we bind to this layout.
+	// so we bind to this layout. We also set a pointer to keep track of the endTable strux.
 
 	if(pfnBindHandles)
 	{	
 		fl_ContainerLayout* sfhNew = this;
 		pfnBindHandles(sdh,lid,sfhNew);
 	}
+
+	setEndStruxDocHandle(sdh);
 
 //
 // increment the insertion point in the view.
@@ -2230,11 +2232,12 @@ bool fl_CellLayout::bl_doclistener_insertEndCell(fl_ContainerLayout*,
 																	  fl_ContainerLayout* sfhNew))
 {
 	// The endCell strux actually needs a format handle to to this cell layout.
-	// so we bind to this layout.
+	// so we bind to this layout. We also set a pointer to keep track of the endCell strux.
 
 		
 	fl_ContainerLayout* sfhNew = this;
 	pfnBindHandles(sdh,lid,sfhNew);
+	setEndStruxDocHandle(sdh);
 
 //
 // increment the insertion point in the view.

@@ -158,10 +158,10 @@ public:
 	void                setLineMarkers(void);
 	void                deleteBrokenTables(bool bClearFirst=true);
 	void                deleteBrokenAfter(bool bClearFirst,UT_sint32 iOldBottom);
-	bool                containsFootnoteReference(void);
-	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
-	bool                containsAnnotations(void);
-	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns);
+	bool                containsFootnoteReference(fp_TableContainer * pBroke = NULL) const;
+	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots, fp_TableContainer * pBroke = NULL);
+	bool                containsAnnotations(fp_TableContainer * pBroke = NULL) const;
+	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns, fp_TableContainer * pBroke = NULL);
 	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff) const;
    UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
@@ -388,10 +388,13 @@ fp_Column *         getBrokenColumn(void);
 	virtual bool        isHBreakable(void) {return false;}
 	virtual UT_sint32   wantVBreakAt(UT_sint32);
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
+	UT_sint32           wantVBreakAtNoFootnotes(UT_sint32);
+	UT_sint32           wantVBreakAtWithFootnotes(UT_sint32);
+	UT_sint32           sumFootnoteHeight(void);
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
 	void                breakCellsAt(UT_sint32 vpos);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
-	UT_sint32           getBrokenNumber(void);
+	UT_sint32           getBrokenNumber(void) const;
 	void                setToAllocation(void);
 	void                tableAttach(fp_CellContainer * pCell);
 	void                setHomogeneous (bool bIsHomogeneous);
@@ -444,8 +447,7 @@ fp_Column *         getBrokenColumn(void);
 		{return m_iYBottom;}
 	fp_TableContainer * getFirstBrokenTable(void) const;
 	fp_TableContainer * getLastBrokenTable(void) const;
-	fp_CellContainer *  getFirstBrokenCell(void) const
-		{ return m_pFirstBrokenCell;}
+	fp_CellContainer *  getFirstBrokenCell(bool bCacheResultOnly = false) const;
 	void                setFirstBrokenTable(fp_TableContainer * pBroke);
 	void                setLastBrokenTable(fp_TableContainer * pBroke);
 	void                deleteBrokenTables(bool bClearFirst, bool bRecurseUp = true);

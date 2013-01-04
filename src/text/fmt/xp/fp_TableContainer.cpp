@@ -1712,150 +1712,226 @@ fp_TableContainer * fp_CellContainer::getTopmostTable() const
 	return NULL;
 }
 /*!
- * Return true if the cell contains footnote references
+ * Return true if the segment of the cell within a broken table pBroke contains a footnote references
  */
-bool fp_CellContainer::containsFootnoteReference(void)
+bool fp_CellContainer::containsFootnoteReference(fp_TableContainer * pBroke) const
 {
+	// First check if there are footnotes in the whole cell
+	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
+	if (!pCL->containsFootnoteLayouts())
+	{
+		return false;
+	}
+	else if (!pBroke || ((getY() >= pBroke->getYBreak()) && 
+						 (getY() + getHeight() <= pBroke->getYBottom())))
+	{
+		// the complete cell is within the broken table
+		return true;
+	}
+
+	// Check if there are footnotes in the segment of the cell within the broken table
+
 	fp_Container * pCon = getFirstContainer();
 	bool bFound = false;
+	bool bFirst = false;
 	while(pCon && !bFound)
 	{
-		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		if (pBroke->isInBrokenTable(this,pCon))
 		{
-			fp_Line * pLine = static_cast<fp_Line *>(pCon);
-			if(pLine->containsFootnoteReference())
+			if(pCon->getContainerType() == FP_CONTAINER_LINE)
 			{
-				bFound = true;
+				fp_Line * pLine = static_cast<fp_Line *>(pCon);
+				if(pLine->containsFootnoteReference())
+				{
+					bFound = true;
+				}
 			}
+			else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
+				if(pTab->containsFootnoteReference())
+				{
+					bFound = true;
+				}
+			}
+			bFirst = true;
 		}
-		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		else if (bFirst)
 		{
-			fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
-			if(pTab->containsFootnoteReference())
-			{
-				bFound = true;
-			}
+			// this container is in the following broken table
+			break;
 		}
-		pCon = static_cast<fp_Container *>(pCon->getNext());
+		pCon = static_cast<fp_Container*>(pCon->getNext());
 	}
 	return bFound;
 }
 
 /*!
- * This method returns a vector of all the footnote layouts in this cell
+ * This method returns a vector of all the footnote layouts in the segment of the cell 
+ within a broke table pBroke
  */
-bool fp_CellContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pVecFoots)
+bool fp_CellContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pVecFoots,
+											 fp_TableContainer * pBroke)
 {
+	bool bWholeCell = (!pBroke || ((getY() >= pBroke->getYBreak()) && 
+								   (getY() + getHeight() <= pBroke->getYBottom())));
 	fp_Container * pCon = getFirstContainer();
 	bool bFound = false;
+	bool bFirst = false;
 	while(pCon)
 	{
-		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		if (bWholeCell || pBroke->isInBrokenTable(this,pCon))
 		{
-			fp_Line * pLine = static_cast<fp_Line *>(pCon);
-			if(pLine->containsFootnoteReference())
+			if(pCon->getContainerType() == FP_CONTAINER_LINE)
 			{
-				bFound = true;
+				fp_Line * pLine = static_cast<fp_Line *>(pCon);
 				UT_GenericVector<fp_FootnoteContainer*> vecFC;
 				pLine->getFootnoteContainers(&vecFC);
-				UT_sint32 i =0;
-				for(i=0; i< vecFC.getItemCount();i++)
+				if (vecFC.getItemCount() > 0)
 				{
-					pVecFoots->addItem(vecFC.getNthItem(i));
+					bFound = true;
+					UT_sint32 i = 0;
+					for(i = 0; i < vecFC.getItemCount();i++)
+					{
+						pVecFoots->addItem(vecFC.getNthItem(i));
+					}
 				}
 			}
-		}
-		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
-		{
-			fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
-			if(pTab->containsFootnoteReference())
+			else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 			{
-				bFound = true;
-				UT_GenericVector<fp_FootnoteContainer*> vecFC;
-				pTab->getFootnoteContainers(&vecFC);
-				UT_sint32 i =0;
-				for(i=0; i< vecFC.getItemCount();i++)
+				fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
+				if(pTab->containsFootnoteReference())
 				{
-					pVecFoots->addItem(vecFC.getNthItem(i));
+					bFound = true;
+					UT_GenericVector<fp_FootnoteContainer*> vecFC;
+					pTab->getFootnoteContainers(&vecFC);
+					UT_sint32 i = 0;
+					for(i = 0; i < vecFC.getItemCount();i++)
+					{
+						pVecFoots->addItem(vecFC.getNthItem(i));
+					}
 				}
 			}
+			bFirst = true;
 		}
- 		pCon = static_cast<fp_Container *>(pCon->getNext());
+		else if (bFirst)
+		{
+			break;
+		} 
+		pCon = static_cast<fp_Container*>(pCon->getNext());
 	}
 	return bFound;
 }
 
 
 /*!
- * Return true if the cell contains an annotation
+ * Return true if the segment of the cell within a broken table pBroke contains an annotation
  */
-bool fp_CellContainer::containsAnnotations(void)
+bool fp_CellContainer::containsAnnotations(fp_TableContainer * pBroke) const
 {
+	// First check if there are annotations in the whole cell
+	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
+	if (!pCL->containsAnnotationLayouts())
+	{
+		return false;
+	}
+	else if (!pBroke || ((getY() >= pBroke->getYBreak()) && 
+						 (getY() + getHeight() <= pBroke->getYBottom())))
+	{
+		// the complete cell is within the broken table
+		return true;
+	}
+
+	// Check if there are annotations in the segment of the cell within the broken table
+
 	fp_Container * pCon = getFirstContainer();
 	bool bFound = false;
+	bool bFirst = false;
 	while(pCon && !bFound)
 	{
-		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		if (pBroke->isInBrokenTable(this,pCon))
 		{
-			fp_Line * pLine = static_cast<fp_Line *>(pCon);
-			if(pLine->containsAnnotations())
+			if(pCon->getContainerType() == FP_CONTAINER_LINE)
 			{
-				bFound = true;
+				fp_Line * pLine = static_cast<fp_Line *>(pCon);
+				if(pLine->containsAnnotations())
+				{
+					bFound = true;
+				}
 			}
+			else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
+				if(pTab->containsAnnotations())
+				{
+					bFound = true;
+				}
+			}
+			bFirst = true;
 		}
-		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		else if (bFirst)
 		{
-			fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
-			if(pTab->containsAnnotations())
-			{
-				bFound = true;
-			}
+			// this container is in the following broken table
+			break;
 		}
-		pCon = static_cast<fp_Container *>(pCon->getNext());
+		pCon = static_cast<fp_Container*>(pCon->getNext());
 	}
 	return bFound;
 }
 
 /*!
- * This method returns a vector of all the footnote layouts in this cell
+ * This method returns a vector of all the annotation layouts in the segment of the cell 
+ within a broke table pBroke
  */
-bool fp_CellContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pVecAnns)
+bool fp_CellContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pVecAnns,
+											 fp_TableContainer * pBroke)
 {
+	bool bWholeCell = (!pBroke || ((getY() >= pBroke->getYBreak()) && 
+								   (getY() + getHeight() <= pBroke->getYBottom())));
 	fp_Container * pCon = getFirstContainer();
 	bool bFound = false;
+	bool bFirst = false;
 	while(pCon)
 	{
-		if(pCon->getContainerType() == FP_CONTAINER_LINE)
+		if (bWholeCell || pBroke->isInBrokenTable(this,pCon))
 		{
-			fp_Line * pLine = static_cast<fp_Line *>(pCon);
-			if(pLine->containsAnnotations())
+			if(pCon->getContainerType() == FP_CONTAINER_LINE)
 			{
-				bFound = true;
+				fp_Line * pLine = static_cast<fp_Line *>(pCon);
 				UT_GenericVector<fp_AnnotationContainer*> vecAC;
 				pLine->getAnnotationContainers(&vecAC);
-				UT_sint32 i =0;
-				for(i=0; i< vecAC.getItemCount();i++)
+				if (vecAC.getItemCount() > 0)
 				{
-					pVecAnns->addItem(vecAC.getNthItem(i));
+					bFound = true;
+					UT_sint32 i = 0;
+					for(i = 0; i < vecAC.getItemCount();i++)
+					{
+						pVecAnns->addItem(vecAC.getNthItem(i));
+					}
 				}
 			}
-		}
-		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
-		{
-			fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
-			if(pTab->containsAnnotations())
+			else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
 			{
-				bFound = true;
-				UT_GenericVector<fp_AnnotationContainer*> vecAC;
-				pTab->getAnnotationContainers(&vecAC);
-				UT_sint32 i =0;
-				for(i=0; i< vecAC.getItemCount();i++)
+				fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
+				if(pTab->containsAnnotations())
 				{
-					pVecAnns->addItem(vecAC.getNthItem(i));
+					bFound = true;
+					UT_GenericVector<fp_AnnotationContainer*> vecAC;
+					pTab->getAnnotationContainers(&vecAC);
+					UT_sint32 i = 0;
+					for(i = 0; i < vecAC.getItemCount();i++)
+					{
+						pVecAnns->addItem(vecAC.getNthItem(i));
+					}
 				}
 			}
+			bFirst = true;
 		}
- 		pCon = static_cast<fp_Container *>(pCon->getNext());
+		else if (bFirst)
+		{
+			break;
+		} 
+		pCon = static_cast<fp_Container*>(pCon->getNext());
 	}
 	return bFound;
 }
@@ -2609,27 +2685,6 @@ UT_sint32 fp_CellContainer::wantCellVBreakAt(UT_sint32 vpos, UT_sint32 yCellMin)
 			}
 		}
 
-		/*if(pCon->getContainerType() == FP_CONTAINER_LINE)
-		{
-			pLine = static_cast<fp_Line *>(pCon);
-			if(pLine->containsFootnoteReference())
-			{
-				UT_GenericVector<fp_FootnoteContainer*> vecFC;
-				if(pLine->getFootnoteContainers(&vecFC))
-				{
-					UT_sint32 k  = 0;
-					for(k=0; k < vecFC.getItemCount(); k++)
-					{
-						fp_FootnoteContainer * pFC = vecFC.getNthItem(k);
-						conHeight += pFC->getHeight();
-						if((pFC->getPage() == NULL) || (pFC->getPage() != pLine->getPage()))
-						{
-							footHeight += pFC->getHeight();
-						}
-					}
-				}
-			}
-		}*/
 		if(iY <= vpos && iY + conHeight > vpos)
 		{
 			//
@@ -3274,7 +3329,7 @@ fp_TableContainer * fp_TableContainer::getLastBrokenTable(void) const
 	return m_pLastBrokenTable;
 }
 
-UT_sint32 fp_TableContainer::getBrokenNumber(void)
+UT_sint32 fp_TableContainer::getBrokenNumber(void) const
 {
 	if(!isThisBroken())
 	{
@@ -3313,6 +3368,34 @@ void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke)
 	}
 	m_pLastBrokenTable = pBroke;
 }
+
+/* Return the first cell of a broken table.
+*/
+
+fp_CellContainer *  fp_TableContainer::getFirstBrokenCell(bool bCacheResultOnly) const
+{
+	if (bCacheResultOnly || m_pFirstBrokenCell)
+	{
+		return m_pFirstBrokenCell;
+	}
+
+	if (getPrev())
+	{
+		fp_TableContainer * pPrevTable = static_cast<fp_TableContainer*>(getPrev());
+		if (pPrevTable->getFirstBrokenCell(true))
+		{
+			return pPrevTable->getFirstBrokenCell(true);
+		}
+	}
+
+	if (!isThisBroken())
+	{
+		return static_cast<fp_CellContainer *>(getNthCon(0));
+	}
+
+	return static_cast<fp_CellContainer *>(getMasterTable()->getNthCon(0));
+}
+
 
 
 UT_sint32 fp_TableContainer::getYOfRowOrColumn(UT_sint32 row, bool bRow) const
@@ -4260,10 +4343,6 @@ void fp_TableContainer::setYBreakHere(UT_sint32 i)
 {
 	xxx_UT_DEBUGMSG(("SEVIOR: Ybreak set to %d \n",i));
 	m_iYBreakHere = i;
-	if(i > 0)
-	{
-		//	UT_ASSERT(getHeight() > 0);
-	}
 }
 
 void fp_TableContainer::setYBottom(UT_sint32 i)
@@ -4280,6 +4359,31 @@ void fp_TableContainer::setYBottom(UT_sint32 i)
  */
 UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 {
+	if (!isThisBroken())
+	{
+		if (!getFirstBrokenTable())
+		{
+			VBreakAt(0);
+			UT_ASSERT(getFirstBrokenTable());
+		}
+		return getFirstBrokenTable()->wantVBreakAt(vpos);
+	}
+
+	// Check if the table has footnotes and call the appropriate function
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	if (pTL->containsFootnoteLayouts() || 
+		(pTL->getDocLayout()->displayAnnotations() && pTL->containsAnnotationLayouts()))
+	{
+		return wantVBreakAtWithFootnotes(vpos);
+	}
+	else
+	{
+		return wantVBreakAtNoFootnotes(vpos);
+	}
+}
+
+UT_sint32 fp_TableContainer::wantVBreakAtNoFootnotes(UT_sint32 vpos)
+{
 	UT_sint32 iYBreakMax = vpos + getYBreak();
 	UT_sint32 iTotHeight = getTotalTableHeight();
 	if (iYBreakMax > iTotHeight)
@@ -4292,38 +4396,7 @@ UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 		iYBreakMax = iTotHeight - FP_TABLE_MIN_BROKEN_HEIGHT;
 	}
 
-	if (!isThisBroken())
-	{
-		if (!getFirstBrokenTable())
-		{
-			VBreakAt(0);
-			UT_ASSERT(getFirstBrokenTable());
-		}
-		return getFirstBrokenTable()->wantVBreakAt(vpos);
-	}
-
-	fp_TableContainer * pMaster = getMasterTable();	
-	fp_CellContainer * pCell = NULL;
-	if (m_pFirstBrokenCell)
-	{
-		pCell = m_pFirstBrokenCell;
-	}
-	else if (getPrev())
-	{
-		fp_TableContainer * pPrevTable = static_cast<fp_TableContainer*>(getPrev());
-		if (pPrevTable->getFirstBrokenCell())
-		{
-			pCell = pPrevTable->getFirstBrokenCell();
-		}
-		else
-		{
-			pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
-		}
-	}
-	else
-	{
-		pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
-	}
+	fp_CellContainer * pCell = getFirstBrokenCell(false);
 
 	// To avoid breaking small cells, we first check if the table can be broken
 	// along a cell boundary. We test if the height of the gap left at the bottom
@@ -4395,7 +4468,7 @@ UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 	// We need to do a second pass to find if there are some cells that could have fitted completely with the
 	// original break point that will be affected by the new break point. If that is the case, we adjust the
 	// bottom line position.
-	pCell = m_pFirstBrokenCell;
+	pCell = getFirstBrokenCell(false);
 	while (pCell)
 	{
 		if (getYOfRow(pCell->getTopAttach()) >= iYBreakMax)
@@ -4413,6 +4486,98 @@ UT_sint32 fp_TableContainer::wantVBreakAt(UT_sint32 vpos)
 	setAdditionalBottomSpace(iYBreakLine - iYBreak);
 	m_iNextWantedVBreak = iYBreak;
 	return (iYBreak - getYBreak());
+}
+
+
+UT_sint32 fp_TableContainer::wantVBreakAtWithFootnotes(UT_sint32 vpos)
+{
+	// This function is not optimized at all as it may require building several times
+	// nearly identical footnote vectors.
+	UT_sint32 iYBreakMax = vpos + getYBreak();
+	UT_sint32 iTotHeight = getTotalTableHeight();
+	if (iYBreakMax > iTotHeight)
+	{
+		// check if there is enough space to fit the table and the footnotes on the page
+		if (iYBreakMax > iTotHeight + sumFootnoteHeight())
+		{
+			return -1;
+		}
+	}
+
+	UT_sint32 iOrigBottom = getYBottom();
+	UT_sint32 vposHigh = vpos;
+	UT_sint32 vposLow = 0;
+	UT_sint32 iSumHigh = 0;
+	UT_sint32 iSumLow = vpos;
+	UT_sint32 k = 0;
+	for (k = 0; k < 10; k++)
+	{
+		setYBottom(getYBreak() + vposHigh);
+		iSumHigh = sumFootnoteHeight();
+		if (vpos - iSumHigh != vposLow)
+		{
+			vposLow = vpos - iSumHigh;
+		}
+		else
+		{
+			break;
+		}
+		setYBottom(getYBreak() + vposLow);
+		iSumLow = sumFootnoteHeight();
+		if (vpos - iSumLow != vposHigh)
+		{
+			vposHigh = vpos - iSumLow;
+		}
+		else
+		{
+			break;
+		}
+		if (vposHigh == vposLow)
+		{
+			break;
+		}
+	}
+
+	setYBottom(iOrigBottom);
+	return wantVBreakAtNoFootnotes(vposLow);
+}
+
+
+/* 
+   This function calculates the total height of all the footnotes in the broken table.
+*/
+
+UT_sint32 fp_TableContainer::sumFootnoteHeight(void)
+{
+	UT_sint32 iSum = 0;
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	if (pTL->containsFootnoteLayouts())
+	{
+		UT_GenericVector<fp_FootnoteContainer*> vecFootnotes;
+		getFootnoteContainers(&vecFootnotes);
+		UT_sint32 i = 0;
+		for(i = 0; i < vecFootnotes.getItemCount(); i++)
+		{
+			fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
+			iSum += pFC->getHeight();
+		}
+		vecFootnotes.clear();
+	}
+
+	if (pTL->getDocLayout()->displayAnnotations() && pTL->containsAnnotationLayouts())
+	{
+		UT_GenericVector<fp_AnnotationContainer*> vecAnnotations;
+		getAnnotationContainers(&vecAnnotations);
+		UT_sint32 i = 0;
+		for(i = 0; i < vecAnnotations.getItemCount(); i++)
+		{
+			fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);
+			iSum += pAC->getHeight();
+		}
+		vecAnnotations.clear();
+	}
+
+	return iSum;
 }
 
 
@@ -4435,6 +4600,8 @@ UT_sint32 fp_TableContainer::getTotalTableHeight(void) const
 
 	return getYOfRow(getNumRows());
 }
+
+
 
 
 
@@ -5126,325 +5293,112 @@ UT_sint32 fp_TableContainer::getHeight(void) const
  */
 bool fp_TableContainer::containsFootnoteReference(void)
 {
-	fp_Container * pCon = getFirstContainer();
-	if(isThisBroken())
+	// First check if there are footnotes in the whole table
+	// This operation is quite fast
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	if (!pTL->containsFootnoteLayouts())
 	{
-		pCon = getMasterTable()->getFirstContainer();
+		return false;
 	}
+
+	// Check if there are footnotes in the broken table
+	fp_CellContainer * pCell = getFirstBrokenCell(false);
+
 	bool bFound = false;
-	while(pCon && !bFound)
+	while(pCell && !bFound)
 	{
-		if(pCon->getContainerType() == FP_CONTAINER_CELL)
+		if (getYOfRow(pCell->getTopAttach()) >= getYBottom())
 		{
-			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
-			if(pCell->containsFootnoteReference())
-			{
-				if(isThisBroken())
-				{
-//
-// If broken check to see if the container containing the footnote reference
-// is on screen.
-//
-					fp_Container * pCellCon = pCell->getFirstContainer();
-					while(pCellCon && !bFound)
-					{
-						if(isInBrokenTable(pCell,pCellCon))
-						{
-							if(pCellCon->getContainerType() == FP_CONTAINER_LINE)
-							{
-								fp_Line * pLine = static_cast<fp_Line *>(pCellCon);
-								if(pLine->containsFootnoteReference())
-								{
-									bFound = true;
-								}
-							}
-							else if(pCellCon->getContainerType() == FP_CONTAINER_TABLE)
-							{
-								fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCellCon);
-								if(pTab->containsFootnoteReference())
-								{
-									bFound = true;
-								}
-							}
-						}
-						pCellCon = static_cast<fp_Container *>(pCellCon->getNext());
- 					}
-  				}
-				else
-				{
-					bFound = true;
-				}
-			}
+			break;
 		}
-		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		if ((pCell->getY() < getYBottom()) && (pCell->getY() + pCell->getHeight() >= getYBreak()))
 		{
-			fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
-			bFound = pTab->containsFootnoteReference();
+			bFound = pCell->containsFootnoteReference(this);
 		}
-		pCon = static_cast<fp_Container *>(pCon->getNext());
+		pCell = static_cast<fp_CellContainer*>(pCell->getNext());
 	}
 	return bFound;
 }
 
 /*!
- * This method returns a vector of call the footnote layouts in this table
+ * This method returns a vector of all the footnote object in the broken table
  */
 bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pVecFoots)
 {
-	fp_Container * pCon = getFirstContainer();
-	if(isThisBroken())
-	{
-		pCon = getMasterTable()->getFirstContainer();
-	}
+	fp_CellContainer * pCell = getFirstBrokenCell(false);
 	bool bFound = false;
-	while(pCon)
+	while(pCell)
 	{
-		if(pCon->getContainerType() == FP_CONTAINER_CELL)
+		if (getYOfRow(pCell->getTopAttach()) >= getYBottom())
 		{
-			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
-			if(pCell->containsFootnoteReference())
-			{
-				if(isThisBroken())
-				{
-//
-// If broken check to see if the container containing the footnote reference
-// is on screen.
-//
-					fp_Container * pCellCon = pCell->getFirstContainer();
-					while(pCellCon)
-					{
-						if(isInBrokenTable(pCell,pCellCon))
-						{
-							if(pCellCon->getContainerType() == FP_CONTAINER_LINE)
-							{
-								fp_Line * pLine = static_cast<fp_Line *>(pCellCon);
-								if(pLine->containsFootnoteReference())
-								{
-									bFound = true;
-									UT_GenericVector<fp_FootnoteContainer*> vecFC;
-									pLine->getFootnoteContainers(&vecFC);
-									UT_sint32 i =0;
-									for(i=0; i< vecFC.getItemCount();i++)
-									{
-										pVecFoots->addItem(vecFC.getNthItem(i));
-									}
-								}
-							}
-							else if(pCellCon->getContainerType() == FP_CONTAINER_TABLE)
-							{
-								fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCellCon);
-								if(pTab->containsFootnoteReference())
-								{
-									bFound = true;
-									UT_GenericVector<fp_FootnoteContainer*> vecFC;
-									pTab->getFootnoteContainers(&vecFC);
-									UT_sint32 i =0;
-									for(i=0; i< vecFC.getItemCount();i++)
-									{
-										pVecFoots->addItem(vecFC.getNthItem(i));
-									}
-								}
-							}
-						}
-						pCellCon = static_cast<fp_Container *>(pCellCon->getNext());
- 					}
-  				}
-				else
-				{
-					UT_GenericVector<fp_FootnoteContainer*> vecFC;
-					pCell->getFootnoteContainers(&vecFC);
-					UT_sint32 i =0;
-					for(i=0; i< vecFC.getItemCount();i++)
-					{
-						pVecFoots->addItem(vecFC.getNthItem(i));
-					}
-					bFound = true;
-				}
-			}
+			break;
 		}
-		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		if ((pCell->getY() < getYBottom()) && (pCell->getY() + pCell->getHeight() >= getYBreak()) &&
+			pCell->containsFootnoteReference(this))
 		{
-			fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
-			bFound = pTab->containsFootnoteReference();
-			if(bFound)
-			{
-				UT_GenericVector<fp_FootnoteContainer*> vecFC;
-				pTab->getFootnoteContainers(&vecFC);
-				UT_sint32 i =0;
-				for(i=0; i< vecFC.getItemCount();i++)
-				{
-					pVecFoots->addItem(vecFC.getNthItem(i));
-				}
-			}
+			bFound |= pCell->getFootnoteContainers(pVecFoots,this);
 		}
-		pCon = static_cast<fp_Container *>(pCon->getNext());
+		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 	return bFound;
-
 }
 
 
 /*!
- * Return true if the table contains Annotations
+ * Return true if the table contains annotation references
  */
 bool fp_TableContainer::containsAnnotations(void)
 {
-	fp_Container * pCon = getFirstContainer();
-	if(isThisBroken())
+	// First check if there are annotations in the whole table
+	// This operation is quite fast
+	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+	if (!pTL->containsAnnotationLayouts())
 	{
-		pCon = getMasterTable()->getFirstContainer();
+		return false;
 	}
+
+	// Check if there are annotations in the broken table
+	fp_CellContainer * pCell = getFirstBrokenCell(false);
+
 	bool bFound = false;
-	while(pCon && !bFound)
+	while(pCell && !bFound)
 	{
-		if(pCon->getContainerType() == FP_CONTAINER_CELL)
+		if (getYOfRow(pCell->getTopAttach()) >= getYBottom())
 		{
-			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
-			if(pCell->containsAnnotations())
-			{
-				if(isThisBroken())
-				{
-//
-// If broken check to see if the container containing the footnote reference
-// is on screen.
-//
-					fp_Container * pCellCon = pCell->getFirstContainer();
-					while(pCellCon && !bFound)
-					{
-						if(isInBrokenTable(pCell,pCellCon))
-						{
-							if(pCellCon->getContainerType() == FP_CONTAINER_LINE)
-							{
-								fp_Line * pLine = static_cast<fp_Line *>(pCellCon);
-								if(pLine->containsFootnoteReference())
-								{
-									bFound = true;
-								}
-							}
-							else if(pCellCon->getContainerType() == FP_CONTAINER_TABLE)
-							{
-								fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCellCon);
-								if(pTab->containsFootnoteReference())
-								{
-									bFound = true;
-								}
-							}
-						}
-						pCellCon = static_cast<fp_Container *>(pCellCon->getNext());
- 					}
-  				}
-				else
-				{
-					bFound = true;
-				}
-			}
+			break;
 		}
-		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		if ((pCell->getY() < getYBottom()) && (pCell->getY() + pCell->getHeight() >= getYBreak()))
 		{
-			fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
-			bFound = pTab->containsAnnotations();
+			bFound = pCell->containsAnnotations(this);
 		}
-		pCon = static_cast<fp_Container *>(pCon->getNext());
+		pCell = static_cast<fp_CellContainer*>(pCell->getNext());
 	}
 	return bFound;
 }
 
 /*!
- * This method returns a vector of call the Annotation layouts in this table
+ * This method returns a vector of all the annotation object in the broken table
  */
 bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pVecAnns)
 {
-	fp_Container * pCon = getFirstContainer();
-	if(isThisBroken())
-	{
-		pCon = getMasterTable()->getFirstContainer();
-	}
+	fp_CellContainer * pCell = getFirstBrokenCell(false);
 	bool bFound = false;
-	while(pCon)
+	while(pCell)
 	{
-		if(pCon->getContainerType() == FP_CONTAINER_CELL)
+		if (getYOfRow(pCell->getTopAttach()) >= getYBottom())
 		{
-			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pCon);
-			if(pCell->containsAnnotations())
-			{
-				if(isThisBroken())
-				{
-//
-// If broken check to see if the container containing the footnote reference
-// is on screen.
-//
-					fp_Container * pCellCon = pCell->getFirstContainer();
-					while(pCellCon)
-					{
-						if(isInBrokenTable(pCell,pCellCon))
-						{
-							if(pCellCon->getContainerType() == FP_CONTAINER_LINE)
-							{
-								fp_Line * pLine = static_cast<fp_Line *>(pCellCon);
-								if(pLine->containsAnnotations())
-								{
-									bFound = true;
-									UT_GenericVector<fp_AnnotationContainer*> vecAC;
-									pLine->getAnnotationContainers(&vecAC);
-									UT_sint32 i =0;
-									for(i=0; i< vecAC.getItemCount();i++)
-									{
-										pVecAnns->addItem(vecAC.getNthItem(i));
-									}
-								}
-							}
-							else if(pCellCon->getContainerType() == FP_CONTAINER_TABLE)
-							{
-								fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCellCon);
-								if(pTab->containsAnnotations())
-								{
-									bFound = true;
-									UT_GenericVector<fp_AnnotationContainer*> vecAC;
-									pTab->getAnnotationContainers(&vecAC);
-									UT_sint32 i =0;
-									for(i=0; i< vecAC.getItemCount();i++)
-									{
-										pVecAnns->addItem(vecAC.getNthItem(i));
-									}
-								}
-							}
-						}
-						pCellCon = static_cast<fp_Container *>(pCellCon->getNext());
- 					}
-  				}
-				else
-				{
-					UT_GenericVector<fp_AnnotationContainer*> vecAC;
-					pCell->getAnnotationContainers(&vecAC);
-					UT_sint32 i =0;
-					for(i=0; i< vecAC.getItemCount();i++)
-					{
-						pVecAnns->addItem(vecAC.getNthItem(i));
-					}
-					bFound = true;
-				}
-			}
+			break;
 		}
-		else if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		if ((pCell->getY() < getYBottom()) && (pCell->getY() + pCell->getHeight() >= getYBreak()) &&
+			pCell->containsAnnotations(this))
 		{
-			fp_TableContainer *pTab = static_cast<fp_TableContainer *>(pCon);
-			bFound = pTab->containsAnnotations();
-			if(bFound)
-			{
-				UT_GenericVector<fp_AnnotationContainer*> vecAC;
-				pTab->getAnnotationContainers(&vecAC);
-				UT_sint32 i =0;
-				for(i=0; i< vecAC.getItemCount();i++)
-				{
-					pVecAnns->addItem(vecAC.getNthItem(i));
-				}
-			}
+			bFound |= pCell->getAnnotationContainers(pVecAnns,this);
 		}
-		pCon = static_cast<fp_Container *>(pCon->getNext());
+		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 	return bFound;
-
 }
+
 
 /*!
  * Return true if the supplied Cell and its container are within this
@@ -5475,21 +5429,7 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 	UT_sint32 iCountCells = 0;
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 
-	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getMasterTable()->getNthCon(0));
-	bool bFirstCellKnown = false;
-	if(m_pFirstBrokenCell)
-	{
-		pCell = m_pFirstBrokenCell;
-		bFirstCellKnown = true;
-	}
-	else if (getPrev())
-	{
-		fp_TableContainer* pPrevTable = static_cast <fp_TableContainer*> (getPrev());
-		if (pPrevTable->getFirstBrokenCell())
-		{
-			pCell = pPrevTable->getFirstBrokenCell();
-		}
-	}
+	fp_CellContainer * pCell = getFirstBrokenCell(false);
 
 	xxx_UT_DEBUGMSG(("Drawing cells for table %p starting at cell %p \n",this,pCell));
 	while(pCell)
@@ -5499,10 +5439,9 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 
 		if(getYOfRow(pCell->getTopAttach()) > getYBottom())
 		{
-			xxx_UT_DEBUGMSG(("yOffset %d \n",yOffset));
 			break;
 		}
-		else if (bFirstCellKnown || (getYOfRow(pCell->getBottomAttach()) > getYBreak()))
+		else if (getYOfRow(pCell->getBottomAttach()) > getYBreak())
 		{
 			if(!pClipRect || (pCell->doesIntersectClip(this,pClipRect)))
 			{

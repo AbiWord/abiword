@@ -362,6 +362,8 @@ public:
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;
 	bool                    isInsideFootnote(PT_DocPosition dpos, pf_Frag ** pfBegin = NULL) const;
+	bool                    hasEmbedStruxOfTypeInRange(PT_DocPosition posStart, PT_DocPosition posEnd, 
+													   PTStruxType iType) const;
 
 	void					clearIfAtFmtMark(PT_DocPosition dpos);
     pt_VarSet &             getVarSet(void) {return m_varset;};
@@ -656,6 +658,7 @@ protected:
 	struct embeddedStrux {
 		pf_Frag_Strux * beginNote;
 		pf_Frag_Strux * endNote;
+		PTStruxType type;
 	};
 
 	std::list <embeddedStrux> m_embeddedStrux;

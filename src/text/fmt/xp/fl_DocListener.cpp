@@ -496,6 +496,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 		}
 #endif
 		*psfh = (fl_ContainerLayout*) pCL;
+		pCL->setEndStruxDocHandle(sdh);
 		m_pCurrentSL = (fl_SectionLayout *) static_cast<fl_EmbedLayout *>(m_pCurrentSL)->getDocSectionLayout();
 		fl_BlockLayout * pBL = NULL;
 		if(isFoot)
@@ -548,6 +549,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 		UT_ASSERT(pCL->getContainerType() == FL_CONTAINER_TOC);
 #endif
 		*psfh = (fl_ContainerLayout*) pCL;
+		pCL->setEndStruxDocHandle(sdh);		
 		static_cast<fl_TOCLayout *>(pCL)->setTOCEndIn();
 		m_pCurrentSL = (fl_SectionLayout *) static_cast<fl_TOCLayout *>(m_pCurrentSL)->getDocSectionLayout();
 		break;
@@ -785,6 +787,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 		UT_DEBUGMSG(("!!!!Appending EndFrame \n"));
 		pCL = m_pCurrentSL;
 		*psfh = (fl_ContainerLayout*)pCL;
+		pCL->setEndStruxDocHandle(sdh);
 		m_pCurrentSL = static_cast<fl_SectionLayout *>(pCL->myContainingLayout());
 		if(m_pCurrentSL->getContainerType() == FL_CONTAINER_CELL)
 		{
@@ -841,6 +844,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			return false;
 		}
 		*psfh = (fl_ContainerLayout*)pCon;
+		pCon->setEndStruxDocHandle(sdh);
 		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCon);
 		UT_DEBUGMSG(("SEVIOR: End table in doclistener \n"));
 		pTL->setDirty();
@@ -882,6 +886,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 			return false;
 		}
 		*psfh = (fl_ContainerLayout*) pCon;
+		pCon->setEndStruxDocHandle(sdh);
 	}
 	break;
 			

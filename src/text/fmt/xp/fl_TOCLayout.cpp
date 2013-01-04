@@ -231,11 +231,12 @@ bool fl_TOCLayout::bl_doclistener_insertEndTOC(fl_ContainerLayout*,
 																	  fl_ContainerLayout* sfhNew))
 {
 	// The endFootnote strux actually needs a format handle to to this Footnote layout.
-	// so we bind to this layout.
+	// so we bind to this layout. We also set a pointer to keep track of the endTOC strux.
 
 		
 	fl_ContainerLayout* sfhNew = this;
 	pfnBindHandles(sdh,lid,sfhNew);
+	setEndStruxDocHandle(sdh);
 
 //
 // increment the insertion point in the view.

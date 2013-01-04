@@ -36,7 +36,8 @@ fl_Layout::fl_Layout(PTStruxType type, pf_Frag_Strux* sdh) :
 	m_apIndex(0),
 	m_pAutoNum(NULL),
 	m_pDoc(NULL), // set by child
-	m_sdh(sdh)
+	m_sdh(sdh),
+	m_endSdh(NULL)
 {
 	xxx_UT_DEBUGMSG(("Layout Strux type = %d \n",type));
 	const pf_Frag * pf = static_cast<const pf_Frag *>(sdh);
@@ -55,6 +56,17 @@ pf_Frag_Strux* fl_Layout::getStruxDocHandle(void) const
 	return m_sdh;
 }
 
+
+pf_Frag_Strux* fl_Layout::getEndStruxDocHandle(void) const
+{
+    return m_endSdh;
+}
+
+void fl_Layout::setEndStruxDocHandle(pf_Frag_Strux* pfs)
+{
+    UT_ASSERT(!m_endSdh);
+    m_endSdh = pfs;
+}
 
 PTStruxType	fl_Layout::getType(void) const
 {

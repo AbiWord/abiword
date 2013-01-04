@@ -383,7 +383,6 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 		fp_Container* pOffendingContainer = NULL;
 		UT_sint32 iMaxSecCol = m_pDocSec->getActualColumnHeight();
  		UT_sint32 iMaxColHeight = pCurColumn->getMaxHeight();
-		UT_sint32 iFootnoteHeight = 0;
 		bool bEquivColumnBreak = false;
 		xxx_UT_DEBUGMSG(("fb_ColumnBreaker: iMaxSecCol = %d iMaxColHeight = %d \n",iMaxSecCol,iMaxColHeight));
 		if((iMaxSecCol > 0) && (iMaxSecCol < iMaxColHeight))
@@ -475,60 +474,55 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 					pCurContainer = _getNext(pCurContainer);
 					continue;
 				}
-				// Excellent.  If we have a footnote or annotation, we can start deducting
-				// from the working height if the footnote container is not on
-				// this page.
+
+				// Add the amount of space occupied by the footnotes and annotations
+				UT_sint32 iTheseFootnotes = 0;
+				UT_sint32 iTheseAnnotations = 0; 
 				if (pCurLine->containsFootnoteReference())
 				{
-					// Ok.  Now, deduct the proper amount from iMaxColHeight.
-
 					// OK get a vector of the footnote containers in this line.
-					UT_sint32 iTheseFootnotes = 0; 
 					UT_GenericVector<fp_FootnoteContainer*> vecFootnotes;
 					pCurLine->getFootnoteContainers(&vecFootnotes);
-					fp_Page *pCurPage = pCurColumn->getPage();
 					// Now loop through all these and add them to the height.
-					UT_sint32 i =0;
-					for(i=0; i< vecFootnotes.getItemCount();i++)
+					UT_sint32 i = 0;
+					for(i = 0; i < vecFootnotes.getItemCount(); i++)
 					{
 						fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
-						if(pFC->getHeight() > iMaxSecCol)
-						{
-							UT_DEBUGMSG(("Footnote container height %d \n",pFC->getHeight()));
-							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-							pFC->setHeight(iMaxSecCol -600);
-						}
-						if(pFC && ((pFC->getPage() == NULL) || (pFC->getPage() != pCurPage)))
-						{
-							iTheseFootnotes += pFC->getHeight();
-							iFootnoteHeight += pFC->getHeight();
-						}
-					}	
-					xxx_UT_DEBUGMSG(("got footnote section height %d\n", iFootnoteHeight));
-					iWorkingColHeight += iTheseFootnotes;
+						iTheseFootnotes += pFC->getHeight();
+					}
 				}
-				if(pCurLine->containsAnnotations() && _displayAnnotations())
+				if(_displayAnnotations() && pCurLine->containsAnnotations())
 				{
-					// Ok.  Now, deduct the proper amount from iMaxColHeight.
-
-					// OK get a vector of the Annotation containers in this line.
-					UT_sint32 iTheseAnnotations = 0; 
-				 
+					// OK get a vector of the Annotation containers in this line.		
 					UT_GenericVector<fp_AnnotationContainer*> vecAnnotations;
 					pCurLine->getAnnotationContainers(&vecAnnotations);
-					fp_Page *pCurPage = pCurColumn->getPage();
 					// Now loop through all these and add them to the height.
-					UT_sint32 i =0;
-					for(i=0; i< vecAnnotations.getItemCount();i++)
+					UT_sint32 i = 0;
+					for(i = 0; i < vecAnnotations.getItemCount(); i++)
 					{
 						fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);
-						if(pAC && ((pAC->getPage() == NULL) || (pAC->getPage() != pCurPage)))
-						{
-							iTheseAnnotations += pAC->getHeight();
-							iFootnoteHeight += pAC->getHeight();
-						}				
+						UT_ASSERT(pAC->getHeight() < iMaxSecCol);
+						iTheseAnnotations += pAC->getHeight();
 					}	
-					iWorkingColHeight += iTheseAnnotations;
+				}
+
+				if (iTheseAnnotations + iTheseFootnotes + pCurLine->getHeight() > iMaxSecCol)
+				{
+					// We are in trouble: the line and all its footnotes and annotations 
+					// occupy more than one column
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+					iTheseFootnotes = iMaxSecCol - pCurLine->getHeight() - 1;
+					iTheseAnnotations = 0;
+				}
+				iWorkingColHeight += iTheseFootnotes + iTheseAnnotations;
+			}
+			if (pCurContainer && pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
+			{
+				fp_TableContainer * pCurTable = static_cast<fp_TableContainer*>(pCurContainer);
+				if ((pCurTable->containsFootnoteReference()) || 
+					(_displayAnnotations() && pCurTable->containsAnnotations()))
+				{
+					iWorkingColHeight += pCurTable->sumFootnoteHeight();
 				}
 			}
 			xxx_UT_DEBUGMSG(("WorkingColHeight = %d \n",iWorkingColHeight));

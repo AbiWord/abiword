@@ -2921,6 +2921,20 @@ UT_sint32 PD_Document::getEmbeddedOffset(pf_Frag_Strux* sdh, PT_DocPosition poso
 	return diff;
 }
 
+bool PD_Document::hasEmbedStruxOfTypeInRange(PT_DocPosition posStart, PT_DocPosition posEnd, 
+											 PTStruxType iType) const
+{
+	UT_return_val_if_fail(posStart < posEnd,false);
+	if ((iType != PTX_SectionFootnote) && (iType != PTX_SectionEndnote) &&
+		(iType != PTX_SectionAnnotation))
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+	return m_pPieceTable->hasEmbedStruxOfTypeInRange(posStart,posEnd,iType);
+}
+
+
 /*!
  * This method returns true if there is a Footnote strux at exactly this 
  * position.

@@ -48,6 +48,8 @@ public:
 	virtual ~fl_Layout();
 
 	pf_Frag_Strux*               getStruxDocHandle(void) const;
+	pf_Frag_Strux*               getEndStruxDocHandle(void) const;
+	void                         setEndStruxDocHandle(pf_Frag_Strux * pfs);	
 	PTStruxType			getType(void) const;
 	void                setType(PTStruxType type);
 	PT_AttrPropIndex 	getAttrPropIndex(void) const;
@@ -78,6 +80,7 @@ protected:
 	PD_Document *			m_pDoc;		// set by child
 private:
 	pf_Frag_Strux*		m_sdh;
+	pf_Frag_Strux*		m_endSdh;
 };
 
 #endif /* FL_LAYOUT_H */
