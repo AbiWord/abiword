@@ -6619,7 +6619,7 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
   {
 	  pRequisition->width += getNthCol(col)->spacing;
   }
-//  for (row = 0; row + 1 < m_iRows; row++)
+
   for (row = 0; row < m_iRows; row++)
   {
 	  fp_TableRowColumn * pRow = getNthRow(row);
@@ -6630,17 +6630,14 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 		  iNewReq -= pRow->spacing;
 	  }
 	  pRow->requisition = iNewReq;
-	  pRequisition->height += pRow->spacing;
-
-	  xxx_UT_DEBUGMSG(("SEVIOR: requisition spacing 2 is %d \n", getNthRow(row)->spacing));
-	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height 2 is %d \n", pRequisition->height));
-  }
-  for (row = 0; row < m_iRows; row++)
-  {
 	  pRequisition->height += getNthRow(row)->requisition;
-	  xxx_UT_DEBUGMSG(("SEVIOR: requisition height %d \n", pRequisition->height));
+	  if (row < m_iRows - 1)
+	  {
+		  pRequisition->height += pRow->spacing;
+	  }
   }
   pRequisition->height += 2 * m_iBorderWidth;
+  xxx_UT_DEBUGMSG(("SEVIOR: requisition height %d \n", pRequisition->height));
 }
 
 void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
