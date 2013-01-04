@@ -125,6 +125,7 @@ public:
 	fp_TableContainer * getBrokenTable(fp_Container * pCon) const;
 	fp_VerticalContainer * getColumn(fp_Container *pCon); // FIXME: see if we can make it const
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
+	fp_Container *      getFirstContainerInBrokenTable(fp_TableContainer * pBroke) const;
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
@@ -416,7 +417,9 @@ fp_Column *         getBrokenColumn(void);
 	UT_sint32           getLineThickness(void)
 		{ return m_iLineThickness;}
 	void                queueResize(void);
+	UT_sint32           getYOfRowOrColumn(UT_sint32 row, bool bRow) const;
 	UT_sint32           getYOfRow(UT_sint32 row) const;
+	UT_sint32           getXOfColumn(UT_sint32 col) const;
 	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column) const;
 	fp_CellContainer *  getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 column) const;
 	virtual fp_Container * getNextContainerInSection(void) const;
@@ -456,11 +459,12 @@ fp_Column *         getBrokenColumn(void);
 	UT_sint32           getNumCols(void) const;
 	UT_sint32           getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight);
 	UT_sint32           getTotalTableHeight(void) const;
+	UT_sint32           getRowOrColumnAtPosition(UT_sint32 y, bool bRow) const;
 	void                setRedrawLines(void)
 		{ m_bRedrawLines = true;}
 	bool                doRedrawLines(void) const
 		{ return m_bRedrawLines;}
-	fp_TableRowColumn *     getNthCol(UT_sint32 i);
+	fp_TableRowColumn *     getNthCol(UT_sint32 i) const;
 	fp_TableRowColumn *     getNthRow(UT_sint32 i) const;
 	bool                    containsNestedTables(void);
 	void setRowHeightType(FL_RowHeightType iType)

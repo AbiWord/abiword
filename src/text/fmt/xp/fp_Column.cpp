@@ -1223,7 +1223,7 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 	    if((x < getX()) && (pCellCon->getLeftAttach() == 0) )
 	    {
 		fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
-		pos = pCL->getPosition(true)+1;
+		pos = pCL->getPosition(true)+2;
 		bBOL = true;
 		bEOL = false;
 		//		if((pCellCon->getTopAttach() == 0))

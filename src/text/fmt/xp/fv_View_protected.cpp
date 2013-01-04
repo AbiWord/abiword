@@ -1771,9 +1771,22 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 		}
 		else if(bCellSection)
 		{
-			UT_sint32 iAfter = m_pG->tlu(1);
-			yPoint += (iLineHeight + iAfter);
-			if(iHoriz > 1)
+			if (iHoriz <= 1)
+			{
+				UT_sint32 iAfter = m_pG->tlu(1);
+				fp_CellContainer * pCell =  static_cast<fp_CellContainer*> (pOldLine->getContainer());
+				fp_TableContainer * pTab = static_cast<fp_TableContainer*> (pCell->getContainer());
+				if (pCell->getLastContainer() == pOldLine)
+				{
+					yPoint += pTab->getYOfRow(pCell->getBottomAttach()) - pTab->getYOfRow(pCell->getTopAttach());
+					yPoint += iAfter - pOldLine->getY();
+				}
+				else
+				{
+					yPoint += (iLineHeight + iAfter);
+				}
+			}
+			else
 			{
 				fp_CellContainer * pCell =  static_cast<fp_CellContainer*> (pOldLine->getContainer());
 			    if(pCell->getLastContainer() == pOldLine)
@@ -2081,12 +2094,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			{
 				if (yClick+delta > pPage->getHeight())
 				{
-					delta -= pPage->getHeight();
 					pPage = pPage->getNext();
-				}
-				if(pPage == NULL)
-				{
-					return;
+					if (!pPage)
+					{
+						return;
+					}
+					delta = -yClick;
 				}
 				pPage->mapXYToPosition(xClick, yClick+delta, 
 									   iNewPoint, bBOL, bEOL,isTOC);
@@ -2104,12 +2117,12 @@ void FV_View::_moveInsPtNextPrevLine(bool bNext)
 			{
 				if (yClick-delta < 0)
 				{
-					delta += pPage->getHeight();
 					pPage = pPage->getPrev();
-				}
-				if(pPage == NULL)
-				{
-					return;
+					if (!pPage)
+					{
+						return;
+					}
+					delta = yClick - pPage->getBottom();
 				}
 				pPage->mapXYToPosition(xClick, yClick-delta, 
 									   iNewPoint, bBOL, bEOL,isTOC);

@@ -2796,6 +2796,32 @@ fp_Container * fp_CellContainer::getPrevContainerInSection() const
 }
 
 
+/*
+  This function returns the first container inside a cell that is also inside
+  a broken table. It returns NULL if no container is inside  the broken table
+*/
+
+fp_Container * fp_CellContainer::getFirstContainerInBrokenTable(fp_TableContainer * pBroke) const
+{
+	if (!pBroke->isThisBroken())
+	{
+		return NULL;
+	}
+	
+	UT_sint32 count = countCons();
+	UT_sint32 k = 0;
+	fp_Container * pCon = NULL;
+	for (k = 0; k < count; k++)
+	{
+		pCon = static_cast<fp_Container *>(getNthCon(k));
+		if (pBroke->isInBrokenTable(this, pCon))
+		{
+			return pCon;
+		}
+	}
+	return NULL;
+}
+
 void fp_CellContainer::sizeRequest(fp_Requisition * pRequest)
 {
 	xxx_UT_DEBUGMSG(("Doing size request on %x \n",pRequest));
@@ -3372,6 +3398,12 @@ void fp_TableContainer::setLastBrokenTable(fp_TableContainer * pBroke)
 	m_pLastBrokenTable = pBroke;
 }
 
+
+UT_sint32 fp_TableContainer::getYOfRowOrColumn(UT_sint32 row, bool bRow) const
+{
+	return ((bRow) ? getYOfRow(row) : getXOfColumn(row));
+}
+
 /*!
  * Return the Y location of row number row
  */
@@ -3406,6 +3438,43 @@ UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row) const
 
 	return iYRow;
  }
+
+
+/*!
+ * Return the X location of column number col
+ */
+UT_sint32 fp_TableContainer::getXOfColumn(UT_sint32 col) const
+{
+	if (getMasterTable())
+	{
+		return getMasterTable()->getXOfColumn(col);
+	}
+	if(col > m_iCols)
+	{
+		return 0;
+	}
+
+	UT_sint32 iXCol = 0;
+	fp_TableRowColumn *pCol = NULL;
+	if (col == 0)
+	{
+		pCol = getNthCol(0);
+		iXCol = pCol->position;
+	}
+	else if ((col < m_iCols) && (col > 0))
+	{
+		pCol = getNthCol(col);
+		iXCol = pCol->position - pCol->spacing/2;
+	}
+	else
+	{
+		pCol = getNthCol(m_iCols - 1);
+		iXCol = pCol->position + pCol->allocation;
+	}
+
+	return iXCol;
+ }
+
 
 /*!
  * This method returns the Y Location of the line drawn across the top of
@@ -3657,97 +3726,93 @@ UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
  \retval bEOL True if position is at end of line, otherwise false
  */
 void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
-								   bool& bBOL, bool& bEOL, bool & isTOC)
+										bool& bBOL, bool& bEOL, bool & isTOC)
 {
+	bool bAboveTable = false;
+	if (y <= 0)
+	{
+		y = 1;
+		bAboveTable = true;
+	}
+	if (isThisBroken() && y >= getYBottom())
+	{
+		y = getYBottom() - 1;
+	}
+	else if (!isThisBroken() && getFirstBrokenTable() && y >= getFirstBrokenTable()->getYBottom())
+	{
+		y = getFirstBrokenTable()->getYBottom() - 1;
+	}
+
+	fp_TableContainer * pMaster = NULL;
 	if(isThisBroken())
 	{
 		y = y + getYBreak();
-		getMasterTable()->mapXYToPosition(x,y, pos,bBOL,bEOL,isTOC);
-		return;
+		pMaster = getMasterTable();
 	}
-	UT_sint32 count = countCons();
-	if(count == 0)
+	else
 	{
+		pMaster = this;
+	}
+
+	if(!pMaster->countCons())
+	{
+		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		pos = 2;
 		bBOL = true;
 		bEOL = true;
 		return;
 	}
-	y = y + getYBreak();
-	xxx_UT_DEBUGMSG(("SEVIOR: Table %x Looking for location x %d y %d \n",this,x,y));
-	fp_VerticalContainer* pC = NULL;
-	UT_sint32 i = 0;
-	bool bFound = false;
 
-	// First see if there is a container with the point inside it.
-	for(i=0; (i< count) && !bFound; i++)
+	xxx_UT_DEBUGMSG(("SEVIOR: Table %x Looking for location x %d y %d \n",this,x,y));
+	UT_sint32 row = pMaster->getRowOrColumnAtPosition(y,true);
+	UT_sint32 col = pMaster->getRowOrColumnAtPosition(x,false);
+	fp_CellContainer * pCell = pMaster->getCellAtRowColumn(row,col);
+	if (!pCell)
 	{
-		pC = static_cast<fp_VerticalContainer*>(getNthCon(i));
-		if(x >= pC->getX() && x <  pC->getX() + pC->getWidth() &&
-		   y >=  pC->getY() && y < pC->getY()+ pC->getMaxHeight())
+		col--;
+		while (!pCell && col >= 0)
 		{
-			bFound = true;
+			pCell = pMaster->getCellAtRowColumn(row,col);
+			col--;
+		}
+		if (!pCell)
+		{
+			pCell = static_cast<fp_CellContainer*>(pMaster->getFirstContainer());
 		}
 	}
-	if(bFound)
+	UT_sint32 xCell = x - pCell->getX();
+	UT_sint32 yCell = y - pCell->getY();
+	if (bAboveTable)
 	{
-		pC->mapXYToPosition(x - pC->getX(), y - pC->getY(), pos, bBOL, bEOL,isTOC);
-		return;
-	}
-//
-// No cell directly overlaps. Look first for a column that overlaps and
-// then choose the cell that is closest within that. Otherwise choose
-// the closest cell.
-//
-	fp_VerticalContainer * pCloseX = NULL;
-	fp_VerticalContainer * pCloseTot = NULL;
-	UT_sint32 dclosex = 231456789;
-	UT_sint32 dclosetot = 231456789;
-	UT_sint32 d = 0;
-	for(i=0; (i< count) && !bFound; i++)
-	{
-		pC = static_cast<fp_VerticalContainer*>(getNthCon(i));
-		if(pC->getContainerType() == FP_CONTAINER_TABLE)
+		// If the cell is broken between two pages, we need tomake sure that the y
+		// value points to a line within the good page. 
+		// TODO create a fp_CellContainer version of mapXYToPosition instead of 
+		//      using fp_VerticalContainer::mapXYToPosition
+		fp_Container * pCon = pCell->getFirstContainerInBrokenTable(this);
+		if (pCon && (pCon->getY() + 1 > yCell))
 		{
-			fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pC);
-			if(!pTab->isThisBroken())
-			{
-				pC = static_cast<fp_VerticalContainer *>(pTab->getFirstBrokenTable());
-				if(pC == NULL)
-				{
-					pC = static_cast<fp_VerticalContainer *>(pC);
-				}
-			}
-		}
-		if(x >= pC->getX() && x < pC->getX() + pC->getWidth())
-		{
-			d = y - pC->getY();
-			if(d < 0) 
-			    d = - d;
-			if(d < dclosex)
-			{
-				dclosex = d;
-				pCloseX = pC;
-			}
-		}
-		d = pC->distanceFromPoint(x,y);
-		if(d < dclosetot)
-		{
-			pCloseTot = pC;
-			dclosetot = d;
+			yCell = pCon->getY() + 1;
 		}
 	}
-	if(pCloseX != NULL)
-	{
-		pC = pCloseX;
-	}
-	else
-	{
-		pC = pCloseTot;
-	}
-	UT_return_if_fail( pC != NULL);
-	pC->mapXYToPosition(x - pC->getX(), y  - pC->getY(), pos, bBOL, bEOL,isTOC);
+	pCell->mapXYToPosition(xCell, yCell, pos, bBOL, bEOL,isTOC);
+	return;
 }
+
+
+UT_sint32 fp_TableContainer::getRowOrColumnAtPosition(UT_sint32 y, bool bRow) const
+{
+	UT_sint32 count = (bRow) ? getNumRows() : getNumCols();
+	UT_sint32 k = 0;
+	for (k = 0; k < count; k++)
+	{
+		if (y < getYOfRowOrColumn(k + 1,bRow))
+		{
+			break;
+		}
+	}
+	return (k < count) ? k : (count - 1);
+}
+
 
 void fp_TableContainer::resize(UT_sint32 n_rows, UT_sint32 n_cols)
 {
@@ -6441,7 +6506,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 	}
 }
 
-fp_TableRowColumn * fp_TableContainer::getNthCol(UT_sint32 i)
+fp_TableRowColumn * fp_TableContainer::getNthCol(UT_sint32 i) const
 {
 	UT_ASSERT(i < m_vecColumns.getItemCount());
 	return m_vecColumns.getNthItem(i);
