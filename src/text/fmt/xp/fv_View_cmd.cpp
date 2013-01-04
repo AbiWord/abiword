@@ -907,7 +907,10 @@ bool FV_View::cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType)
 				buf.append(&iComma,1);
 			}
 		}
-	    cmdCharInsert(reinterpret_cast<UT_UCSChar *>(buf.getPointer(0)),buf.getLength());
+		if (buf.getPointer(0))
+		{
+			cmdCharInsert(reinterpret_cast<UT_UCSChar *>(buf.getPointer(0)),buf.getLength());
+		}
 	  }
 	  if (i < numRows - 1)
 	  {
