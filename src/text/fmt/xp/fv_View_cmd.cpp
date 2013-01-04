@@ -1445,51 +1445,43 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 {
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	if(isSelectionEmpty())
-	{
-		return false;
-	}
-	if(isInHdrFtr(getPoint()))
-	{
-		return false;
-	}
-	if(getSelectionMode() != FV_SelectionMode_Single)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(!isSelectionEmpty(), false);
+	UT_return_val_if_fail(!isInHdrFtr(getPoint()), false);
+	UT_return_val_if_fail(getSelectionMode() == FV_SelectionMode_Single, false);
 	UT_GenericVector<fl_BlockLayout *> vecBlocks;
-	getBlocksInSelection(&vecBlocks);
-	fl_BlockLayout * pBL = vecBlocks.getNthItem(0);
-	if(pBL == NULL)
-	{
-		return false;
-	}
-	UT_GrowBuf *  pBuf = new UT_GrowBuf(1024);
+	getBlocksInSelection(&vecBlocks, false);
+	UT_return_val_if_fail(vecBlocks.getItemCount() > 0, false);
+	fl_BlockLayout * pBL = NULL;
 	UT_uint32 numCols = 0;
-	PT_DocPosition posStart = pBL->getPosition(false);
-	PT_DocPosition begPos = posStart;
-	PT_DocPosition endPos = posStart;
-	pBL->getBlockBuf(pBuf);
+	PT_DocPosition posStart = 0;
+	PT_DocPosition begPos = 0;
+	PT_DocPosition endPos = 0;
 	UT_UTF8String sWords;
-	bool bGetNext = true;
-	while(bGetNext)
+	UT_GrowBuf * pBuf = NULL;
+	for (UT_sint32 k = 0; k < vecBlocks.getItemCount(); k++)
 	{
-		bGetNext = pBL->getNextTableElement(pBuf,posStart,begPos,endPos,						sWords,	bIgnoreSpaces);
-		if(begPos != 0)
+		pBL = vecBlocks.getNthItem(k);
+		pBuf = new UT_GrowBuf(1024);
+		pBL->getBlockBuf(pBuf);
+		posStart = pBL->getPosition(false);
+		UT_uint32 count = 0;
+		bool bGetNext = true;
+		while(bGetNext)
 		{
-			numCols++;
-			posStart = endPos+1;
+			bGetNext = pBL->getNextTableElement(pBuf,posStart,begPos,endPos, sWords, bIgnoreSpaces);
+			if(begPos != 0)
+			{
+				count++;
+				posStart = endPos+1;
+			}
 		}
-	}
-	if(numCols == 0)
-	{
-		return false;
+		delete pBuf;
+		numCols = UT_MAX(numCols, count);
 	}
 	UT_uint32 numRows = vecBlocks.getItemCount();
-	if(numRows == 0)
-	{
-		return false;
-	}
+	UT_return_val_if_fail(numCols > 0, false);
+	UT_return_val_if_fail(numRows > 0, false);
+
 	pBL = vecBlocks.getNthItem(numRows-1);
 	PT_DocPosition posTableStart = pBL->getPosition(true) + pBL->getLength();
 
@@ -1515,25 +1507,6 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
 //
-// Handle special case of not putting a table immediately after a section break
-//
-	pf_Frag_Strux* secSDH = NULL;
-	UT_DebugOnly<bool> bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak-1,PTX_Section,&secSDH);
-#if DEBUG
-	PT_DocPosition secPos2 = m_pDoc->getStruxPosition(secSDH);
-	UT_DEBUGMSG(("SEVIOR: SecPos %d pointBreak %d \n",secPos2,pointBreak));
-#endif
-	secSDH = NULL;
-	bres = m_pDoc->getStruxOfTypeFromPosition(pointBreak,PTX_SectionCell,&secSDH);
-	UT_ASSERT(bres);
-#if DEBUG
-	if(secSDH != NULL)
-	{
-		PT_DocPosition secPos = m_pDoc->getStruxPosition(secSDH);
-		UT_DEBUGMSG(("SEVIOR: Cell Pos %d pointBreak %d \n",secPos,pointBreak));	
-	}
-#endif
-	setPoint(pointBreak);
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,NULL));
 //
 // stuff for cell insertion.
@@ -1583,7 +1556,6 @@ bool FV_View::cmdTextToTable(bool bIgnoreSpaces)
 	bool b =m_pDoc->getStruxOfTypeFromPosition(posTableStart,PTX_SectionTable,&sdhTable);
 	UT_return_val_if_fail(b,false);
 	PT_DocPosition posCell = posTableStart;
-	delete pBuf;
 	for(i =0; i< numRows;i++)
 	{
 		pBL = vecBlocks.getNthItem(i);

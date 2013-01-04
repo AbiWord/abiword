@@ -399,7 +399,7 @@ public:
 	bool	isTabListBehindPoint(UT_sint32 & iNumToDelete) const;
 	bool	isTabListAheadPoint(void) const;
 	void	processSelectedBlocks(FL_ListType listType);
-	void	getBlocksInSelection(UT_GenericVector<fl_BlockLayout*> * vBlock) const;
+	void	getBlocksInSelection(UT_GenericVector<fl_BlockLayout*> * vBlock, bool bAllBlocks = true) const;
 	UT_sint32 getNumColumnsInSelection(void) const;
 	UT_sint32 getNumRowsInSelection(void) const;
 	void	getAllBlocksInList(UT_GenericVector<fl_BlockLayout *> * vBlock) const;

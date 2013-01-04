@@ -3737,7 +3737,13 @@ UT_sint32 FV_View::getNumRowsInSelection(void) const
 	return iNumRows;
 }
 
-void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock) const
+/*
+ * Create a vector of all blocks within the selection.
+ * If bAllBlocks is false, the last block is not included if the selection stops right at the beginning
+ * of the block.
+ */
+
+void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock, bool bAllBlocks) const
 {
 	PT_DocPosition startpos = getPoint();
 	PT_DocPosition endpos = startpos;
@@ -3788,7 +3794,10 @@ void FV_View::getBlocksInSelection( UT_GenericVector<fl_BlockLayout*>* vBlock) c
 		{
 			if(pBlock->getContainerType()== FL_CONTAINER_BLOCK)
 			{
-				vBlock->addItem(pBlock);
+				if (bAllBlocks || pBlock->getPosition(true) < endpos - 1)
+				{
+					vBlock->addItem(pBlock);
+				}
 			}
 			pBlock = static_cast<fl_BlockLayout *>(pBlock->getNextBlockInDocument());
 		}
