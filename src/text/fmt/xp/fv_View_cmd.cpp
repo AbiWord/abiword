@@ -831,11 +831,13 @@ bool FV_View::cmdSelectColumn(PT_DocPosition posOfColumn)
  */ 
 bool FV_View::cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType)
 {
-        fl_TableLayout * pTL = getTableAtPos(posSource);
-	if(pTL == NULL)
+	fl_TableLayout * pTL = getTableAtPos(posSource);
+	UT_return_val_if_fail(pTL,false);
+	if (!isSelectionEmpty())
 	{
-	    return false;
+		_clearSelection();
 	}
+
   	pf_Frag_Strux* tableSDH;
 	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posSource,PTX_SectionTable,&tableSDH);
 	UT_return_val_if_fail(bRes, false);
@@ -882,27 +884,27 @@ bool FV_View::cmdTableToText(PT_DocPosition posSource,UT_sint32 iSepType)
 	    UT_GrowBuf buf;
 	    buf.truncate(0);
 	    pCellL->appendTextToBuf(buf);
-	    if(iSepType == 0)
-	    {
-	        buf.append(&iComma,1);
-	    }
-	    else if(iSepType == 1)
-	    {
-		buf.append(&iTab,1);
-	    }
-	    else if(iSepType == 2)
-	    {
-		buf.append(&iTab,1);
-		buf.append(&iComma,1);
-	    }
-	    else
-	    {
-		buf.append(&iTab,1);
-		buf.append(&iComma,1);
-	    }
+		if (j < numCols - 1)
+		{
+			switch (iSepType)
+			{
+			case 0:
+				buf.append(&iComma,1);
+				break;
+			case 1:
+				buf.append(&iTab,1);
+				break;
+			default:
+				buf.append(&iTab,1);
+				buf.append(&iComma,1);
+			}
+		}
 	    cmdCharInsert(reinterpret_cast<UT_UCSChar *>(buf.getPointer(0)),buf.getLength());
 	  }
-	  insertParagraphBreak();
+	  if (i < numRows - 1)
+	  {
+		  insertParagraphBreak();
+	  }
 	}
 	posTable = pTL->getPosition(true) + 2;
 	cmdDeleteTable(posTable, true);
