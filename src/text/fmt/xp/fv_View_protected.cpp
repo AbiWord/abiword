@@ -691,12 +691,9 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 //
 	m_pDoc->allowChangeInsPoint();
 
-
 	// restore updates and clean up dirty lists
 	m_pDoc->enableListUpdates();
 	m_pDoc->updateDirtyLists();
-	_ensureInsertionPointOnScreen();
-
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();

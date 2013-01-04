@@ -8771,7 +8771,8 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	if (applyTo == FORMAT_TABLE_SELECTION)
 	{
 		pf_Frag_Strux* cellSDH;
-		bRet = m_pDoc->getStruxOfTypeFromPosition(posStart+2,PTX_SectionCell,&cellSDH);
+		PT_DocPosition posTemp = ((posTable == posStart) ? posStart + 2 : posStart);
+		bRet = m_pDoc->getStruxOfTypeFromPosition(posTemp,PTX_SectionCell,&cellSDH);
 		if(bRet)
 		{
 			posStart = m_pDoc->getStruxPosition(cellSDH)+1;
@@ -8988,8 +8989,6 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	_ensureInsertionPointOnScreen();
 	clearCursorWait();
 	notifyListeners(AV_CHG_MOTION);
-	_fixInsertionPointCoords();
-	_ensureInsertionPointOnScreen();
 	return bRet;
 }
 
