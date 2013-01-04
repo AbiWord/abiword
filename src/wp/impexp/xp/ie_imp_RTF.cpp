@@ -9846,6 +9846,9 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	// Put the '}' back into the input stream
+	SkipBackChar(ch);
+
 	std::string sPropName;
 	std::string sInputAbiProps;
 	const gchar * attrs[7] = {"dataid",NULL,NULL,NULL,NULL,NULL,NULL};
@@ -10056,6 +10059,9 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	// Put the '}' back into the input stream
+	SkipBackChar(ch);
+
 	UT_UTF8String sPropName;
 	UT_UTF8String sInputAbiProps;
 	const gchar * attrs[7] = {"dataid",NULL,NULL,NULL,NULL};
@@ -10113,8 +10119,6 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 			m_posSavedDocPosition++;
 	}
 
-	// Put the '}' back into the input stream
-	SkipBackChar(ch);
 	return true;
 }
 
@@ -10139,6 +10143,9 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	// Put the '}' back into the input stream
+	SkipBackChar(ch);
+
 	ABI_Paste_Table * pPaste = new ABI_Paste_Table();
 	m_pasteTableStack.push(pPaste);
 	pPaste->m_bHasPastedTableStrux = false;
@@ -10427,6 +10434,9 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	// Put the '}' back into the input stream
+	SkipBackChar(ch);
+
 	ABI_Paste_Table * pPaste = NULL;
 	m_pasteTableStack.viewTop((void**)(&pPaste));
 	if(pPaste == NULL)
@@ -10476,6 +10486,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
  	insertStrux(PTX_SectionCell,attrs,NULL);
 	m_newParaFlagged = true;
 	m_bSectionHasPara = true;
+	
 	return true;
 }
 
@@ -10795,6 +10806,9 @@ bool IE_Imp_RTF::HandleAbiLists()
 	nextChar:	if (!ReadCharFromFile(&ch))
 		return false;
 	}
+	// Put the '}' back into the input stream
+	SkipBackChar(ch);
+
 	//
 	// Increment the list mapping table if necessary
 	//
@@ -10819,8 +10833,6 @@ bool IE_Imp_RTF::HandleAbiLists()
 			m_numLists++;
 		}
 	}
-
-	PopRTFState();
 
 	return true;
 }
