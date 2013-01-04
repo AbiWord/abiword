@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001,2002 Tomas Frydrych
@@ -1611,19 +1612,14 @@ bool pt_PieceTable::_tweakDeleteSpanOnce(PT_DocPosition & dpos1,
 		return false;
 
 	case PTX_Section:
-#if 0
 		// if the previous container is a section, then pf_First
 		// must be the first block in the section.
 		UT_return_val_if_fail ((pf_First->getPrev() == pfsContainer),false);
 		UT_return_val_if_fail ((pf_First->getType() == pf_Frag::PFT_Strux),false);
 		UT_return_val_if_fail (((static_cast<pf_Frag_Strux *>(pf_First))->getStruxType() == PTX_Block),false);
-		// since, we cannot delete the first block in a section, we
-		// secretly translate this into a request to delete the section;
-		// the block we have will then be slurped into the previous
-		// section.
-		dpos1 -= pfsContainer->getLength();
+		// We can delete the first block in a section only if the section then start
+		// with either a new block or the table. We will allow it here.
 		return true;
-#endif
 	case PTX_SectionHdrFtr:
 		// if the previous container is a Header/Footersection, then pf_First
 		// must be the first block or the first Table in the section.
@@ -2232,6 +2228,22 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 	bool bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
 	UT_return_val_if_fail (bFound, false);
 	UT_DEBUGMSG(("deleteComplex span dpos1 %d dpos2 %d pf_First %p pf_First pos %d \n",dpos1,dpos2,pf_First,pf_First->getPos()));
+	pf_Frag_Strux * pfsFirstBlock = NULL;
+	if ((pf_First !=pf_End) && (pf_First->getType() == pf_Frag::PFT_Strux))
+	{
+	    pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux*>(pf_First);
+		if ((pfs->getStruxType() == PTX_Block) && pfs->getPrev() &&
+			(pfs->getPrev()->getType() == pf_Frag::PFT_Strux) &&
+			(static_cast<pf_Frag_Strux*>(pfs->getPrev())->getStruxType() == PTX_Section))
+		{
+			// We are trying to delete the first block of the section. We will keep that for the end
+			pfsFirstBlock = static_cast<pf_Frag_Strux*>(pf_First);
+			dpos1 = dpos1 + 1;
+			bFound = getFragsFromPositions(dpos1,dpos2,&pf_First,&fragOffset_First,&pf_End,&fragOffset_End);
+			UT_return_val_if_fail (bFound, false);
+		}
+	}
+
 	pf_Frag_Strux * pfsContainer = NULL;
 	bool bFoundStrux = _getStruxFromPosition(dpos1,&pfsContainer);
 	UT_return_val_if_fail (bFoundStrux, false);
@@ -3021,6 +3033,14 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 		if (!pf_First)
 			length = 0;
 		fragOffset_First = fragOffsetNewEnd;
+	}
+
+	if (pfsFirstBlock)
+	{
+		UT_DEBUGMSG(("Delete first block of a section\n"));
+		bool bResult = _deleteStruxWithNotify(pfsFirstBlock->getPos(),pfsFirstBlock,
+											  &pfNewEnd,&fragOffsetNewEnd);
+		UT_return_val_if_fail (bResult, false);
 	}
 
 	return true;

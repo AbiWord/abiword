@@ -413,6 +413,13 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
 	{
 		iLow++;
 	}
+	// Check if everything is selected from the beginning of the section to a table.
+	// In that case, we want to delete also the block.
+	if (pBL && !pBL->getPrev() && (pBL->myContainingLayout()->getContainerType() == FL_CONTAINER_DOCSECTION) &&
+		isInTable(iHigh) && (pBL->getPosition(false) == iLow))
+	{
+		iLow--;
+	}
 	//
 	// Handle end effects of table selection.
 	//
