@@ -1401,7 +1401,7 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 
 
 /*!
- * Mve the caret to the next or previous cell in a table. If at either end
+ * Move the caret to the next or previous cell in a table. If at either end
  * insert a new row.
  */
 bool FV_View::cmdAdvanceNextPrevCell(bool bGoNext)
@@ -1410,63 +1410,32 @@ bool FV_View::cmdAdvanceNextPrevCell(bool bGoNext)
 	{
 		return false;
 	}
+
 	pf_Frag_Strux* sdhCell = NULL;
 	pf_Frag_Strux* sdhNextPrevCell = NULL;
-	pf_Frag_Strux* sdhTable = NULL;
-	pf_Frag_Strux* sdhEndTable = NULL;
-	PT_DocPosition posTable = 0;
-	PT_DocPosition posEndTable = 0;
-	bool bRes = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionTable,&sdhTable);
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionCell,&sdhCell);
 	UT_return_val_if_fail(bRes,false);
-	bRes = m_pDoc->getStruxOfTypeFromPosition(getPoint(),PTX_SectionCell,&sdhCell);
-	UT_return_val_if_fail(bRes,false);
-	if(bGoNext)
+	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(m_pDoc->getNthFmtHandle(sdhCell,m_pLayout->getLID()));
+	UT_return_val_if_fail(pCL,false);
+	if (bGoNext && pCL->getNext())
 	{
-		sdhEndTable = m_pDoc->getEndTableStruxFromTableSDH(sdhTable);
-		UT_return_val_if_fail(sdhEndTable,false);
-		posEndTable = m_pDoc->getStruxPosition(sdhEndTable);
-		bRes = m_pDoc->getNextStruxOfType(sdhCell,PTX_SectionCell,&sdhNextPrevCell);
-		PT_DocPosition posNextCell = 0;
-		if(bRes)
-		{
-			posNextCell = m_pDoc->getStruxPosition(sdhNextPrevCell);
-			if(posNextCell > posEndTable)
-			{
-				posNextCell = 0;
-			}
-		}
-		if(posNextCell == 0)
-		{
-			cmdInsertRow(getPoint(),false);
-			return true;
-		}
-		setPoint(posNextCell+2);
-		_fixInsertionPointCoords();
-		_ensureInsertionPointOnScreen();
-		return true;
+		sdhNextPrevCell = pCL->getNext()->getStruxDocHandle();
+		UT_return_val_if_fail(sdhNextPrevCell && (sdhNextPrevCell->getPos() > sdhCell->getPos()),false);
 	}
-	bRes = m_pDoc->getPrevStruxOfType(sdhCell,PTX_SectionCell,&sdhNextPrevCell);
-	PT_DocPosition posPrevCell = 0;
-	if(bRes)
+	else if (!bGoNext && pCL->getPrev())
 	{
-		posPrevCell = m_pDoc->getStruxPosition(sdhNextPrevCell);
-		if(posPrevCell < posTable)
-		{
-			cmdInsertRow(getPoint(),true);
-			return true;
-		}
-		setPoint(posPrevCell+2);
-		_fixInsertionPointCoords();
-		_ensureInsertionPointOnScreen();
-		return true; 
+		sdhNextPrevCell = pCL->getPrev()->getStruxDocHandle();
+		UT_return_val_if_fail(sdhNextPrevCell && (sdhNextPrevCell->getPos() < sdhCell->getPos()),false);
 	}
-	if(posPrevCell == 0)
+	else
 	{
-		cmdInsertRow(getPoint(),true);
-		return true;
+		return cmdInsertRow(getPoint(),!bGoNext);
 	}
 
-	return false;
+	setPoint(sdhNextPrevCell->getPos()+2);
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	return true;
 }
 
 bool FV_View::cmdTextToTable(bool bIgnoreSpaces)

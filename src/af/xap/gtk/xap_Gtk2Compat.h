@@ -56,6 +56,7 @@
 #define GDK_KEY_Right        GDK_Right
 #define GDK_KEY_space        GDK_space
 #define GDK_KEY_Tab          GDK_Tab
+#define GDK_KEY_ISO_Left_Tab GDK_ISO_Left_Tab
 #define GDK_KEY_Up           GDK_Up
 #define GDK_KEY_VoidSymbol   GDK_VoidSymbol
 #endif

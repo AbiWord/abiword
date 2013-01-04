@@ -1159,7 +1159,12 @@ gint XAP_UnixFrameImpl::_fe::key_press_event(GtkWidget* w, GdkEventKey* e)
 
 	// stop emission for keys that would take the focus away from the document widget
 	switch (e->keyval) {
-	case GDK_KEY_Tab: case GDK_KEY_Left: case GDK_KEY_Up: case GDK_KEY_Right: case GDK_KEY_Down: 
+	case GDK_KEY_Tab: 
+	case GDK_KEY_ISO_Left_Tab:
+	case GDK_KEY_Left: 
+	case GDK_KEY_Up: 
+	case GDK_KEY_Right: 
+	case GDK_KEY_Down: 
 		return TRUE;
 		break;
 	}
