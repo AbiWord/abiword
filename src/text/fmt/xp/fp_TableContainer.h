@@ -121,7 +121,7 @@ public:
 	void                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG,bool bDoClear);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
-	fp_TableContainer * getBrokenTable(fp_Container * pCon); // FIXME: see if we can make it const
+	fp_TableContainer * getBrokenTable(fp_Container * pCon) const;
 	fp_VerticalContainer * getColumn(fp_Container *pCon); // FIXME: see if we can make it const
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
 	virtual void		draw(dg_DrawArgs*);

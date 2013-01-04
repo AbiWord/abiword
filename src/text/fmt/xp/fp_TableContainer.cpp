@@ -182,53 +182,26 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 /*!
  * Return the broken table that contains this cell and the given Container
  */
-fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon)
+fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon) const
 {
 	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
-	const fp_CellContainer * pTopCell = this;
-	bool bNest = false;
-	if(pMaster == NULL)
+	if(!pMaster)
+	{
+		return NULL;
+	}
+	fp_TableContainer * pBroke = pMaster->getFirstBrokenTable();
+	if (!pBroke)
 	{
 		return pMaster;
 	}
-	fp_TableContainer * pBroke = pMaster->getFirstBrokenTable();
-	while(pBroke != NULL)
+
+	UT_sint32 yPos = getY() + pCon->getY();
+	while(pBroke && (pBroke->getYBottom() < yPos))
     {
-		if(pTopCell->doesOverlapBrokenTable(pBroke))
-		{
-			if(pCon->getContainerType() == FP_CONTAINER_TABLE)
-			{
-				fp_TableContainer * pT = static_cast<fp_TableContainer *>(pCon);
-				if(!pT->isThisBroken())
-				{
-					fp_TableContainer * pTT = pT->getFirstBrokenTable();
-					if(pTT == NULL)
-					{
-						UT_sint32 iY = pT->getY();
-						UT_DEBUGMSG(("No Broken Table!! \n"));
-						pT = static_cast<fp_TableContainer *>(pT->VBreakAt(0));
-						pT->setY(iY);
-					}
-					else
-					{
-						pT = pTT;
-					}
-				}
-				xxx_UT_DEBUGMSG(("Y of broken table %x is %d yBreak is %d height %d \n",pT,pT->getY(),pT->getYBreak(),pT->getHeight()));
-				bNest = true;
-			}
-			if(pBroke->isInBrokenTable(this,pCon))
-			{
-				if(bNest)
-				{
-					xxx_UT_DEBUGMSG(("Y of Found broken table %x is %d yBreak is %d height %d \n",pBroke,pBroke->getY(),pBroke->getYBreak(),pBroke->getHeight()));
-				}
-				return pBroke;
-			}
-		}
 		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
 	}
-	return pMaster;
+
+	return ((pBroke) ? pBroke : pMaster);
 }
 
 /*!
@@ -239,16 +212,9 @@ fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 	fp_TableContainer * pBroke = getBrokenTable(_pCon);
 	if(pBroke == NULL)
 	{
-		pBroke = static_cast<fp_TableContainer *>(getContainer());
-	}
-	if(pBroke == NULL)
-	{
 		return NULL;
 	}
-	if(isInNestedTable())
-	{
-		xxx_UT_DEBUGMSG(("getColumn in nested table \n"));
-	}
+
 	bool bStop = false;
 	fp_CellContainer * pCell = NULL;
 	fp_Column * pCol = NULL;
@@ -280,7 +246,7 @@ fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 		}
 		else
 		{
-			pCell = static_cast<fp_CellContainer *>(pBroke->getContainer());
+			pCell = static_cast<fp_CellContainer *>(pCon);
 			UT_ASSERT(pCell->getContainerType() == FP_CONTAINER_CELL);
 			pBroke = pCell->getBrokenTable(static_cast<fp_Container *>(pBroke));
 		}
@@ -318,14 +284,7 @@ fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 			pCol = NULL;
 		}
 	}
-	if(isInNestedTable())
-	{
-		xxx_UT_DEBUGMSG(("getColumn in nested table got column %x \n",pCol));
-	}
-	else
-    {
-		xxx_UT_DEBUGMSG(("getColumn in table got column %x \n",pCol));
-	}
+
 	return static_cast<fp_VerticalContainer *>(pCol);
 }
 
@@ -1074,19 +1033,11 @@ PP_PropertyMap::Line fp_CellContainer::getTopStyle (const fl_TableLayout * table
 bool fp_CellContainer::isInNestedTable(void) const
 {
 	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
-	const fp_CellContainer * pTopCell = static_cast<const fp_CellContainer *>(this);
-	UT_sint32 icount = 0;
-	while(pMaster && pMaster->getContainer() && !pMaster->getContainer()->isColumnType())
+	if(pMaster && pMaster->getContainer() && !pMaster->getContainer()->isColumnType())
 	{
-		pTopCell = static_cast<fp_CellContainer *>(pMaster->getContainer());
-		pMaster = static_cast<fp_TableContainer *>(pTopCell->getContainer());
-		icount++;
+		return true;
 	}
-	if(icount < 1)
-	{
-		return false;
-	}
-	return true;
+	return false;
 }
 
 void fp_CellContainer::setBackground (const PP_PropertyMap::Background & style)
@@ -4465,10 +4416,9 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
  	if(iTweak > 0)
  	{
-
 		xxx_UT_DEBUGMSG(("Ybreak of %x set to %d after tweak \n",pBroke,pBroke->getYBreak() - iTweak));
  		pBroke->setYBreakHere(pBroke->getYBreak() - iTweak);
-		xxx_UT_DEBUGMSG(("YBottom set to %d after tweak \n",getYBottom() - iTweak -1));
+		setYBottom(getYBottom() - iTweak);
  	}
 	static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
 	//
