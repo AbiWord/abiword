@@ -13687,25 +13687,21 @@ bool FV_View::isInTable( PT_DocPosition pos) const
 	xxx_UT_DEBUGMSG(("Look in table at pos %d \n",pos));
 	if(m_pDoc->isTableAtPos(pos))
 	{
-		xxx_UT_DEBUGMSG(("As Table pos this char will actuall right before the table %d \n",pos));
-//
-// This could be the start of nested table. If so return true!
-//
-		if(isInTable(pos-1))
+		//
+		// This could be the start of nested table. If so return true!
+		//
+		pf_Frag_Strux* sdhTable = NULL;
+		bool bRes = m_pDoc->getStruxOfTypeFromPosition(pos+1,PTX_SectionTable,&sdhTable);
+		UT_return_val_if_fail(bRes,false);
+		UT_ASSERT(sdhTable && sdhTable->getPos() == pos);
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(m_pDoc->getNthFmtHandle(sdhTable,m_pLayout->getLID()));
+		UT_return_val_if_fail(pTL,false);
+		fp_TableContainer *pTable = static_cast <fp_TableContainer*>(pTL->getFirstContainer());
+		if (pTable && pTable->getContainer() && 
+			(pTable->getContainer()->getContainerType() == FP_CONTAINER_CELL))
 		{
-			fl_TableLayout * pTL = getTableAtPos(pos-1);
-//
-// make sure we're nested not just previous.
-//
-			if(pTL && ((pTL->getPosition(true) + pTL->getLength()-1) > pos))
-			{
-				return true;
-			}
+			return true;
 		}
-//
-// Otherwise return false since this char will actually be right before the
-// table
-//
 		return false;
 	}
 	if(m_pDoc->isCellAtPos(pos))
