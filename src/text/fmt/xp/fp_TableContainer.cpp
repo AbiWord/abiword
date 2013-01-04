@@ -606,89 +606,6 @@ void fp_CellContainer::clearScreen(bool bNoRecursive)
 	}
 }
 
-/*!
- * This method fills the broken table with containers from this cell contained
- * by the broken table and returns the offset to current Ybreak of the 
- * supplied broken
- * table required to wholly contain the first container of this cell in the
- * broken table.
- */
-UT_sint32 fp_CellContainer::tweakBrokenTable(fp_TableContainer * pBroke)
-{
-	UT_sint32 iTop = getY();
-	UT_sint32 iBot2 = iTop + getHeight();
-	UT_sint32 iBreak2 = pBroke->getYBreak();
-	UT_sint32 iBottom2 = pBroke->getYBottom();
-	xxx_UT_DEBUGMSG(("Doing TweakTable on %x iTop %d iBot %d iBreak %d iBottom %d \n",pBroke,iTop,iBot2, iBreak2,iBottom2));
-	if(iBot2 < iBreak2)
-	{
-		return 0;
-	}
-	if(iTop > iBottom2)
-	{
-		return 0;
-	}
-	fp_Container * pCon = NULL;
-	UT_sint32 i = 0;
-	bool bFound = false;
-	bool bStop = false;
-	UT_sint32 iTweak =0;
-	bool bIsMaster = (static_cast<fp_TableContainer *>(pBroke->getPrev()) == pBroke->getMasterTable());
-	fp_TableContainer * pFirst = NULL;
-	if(bIsMaster)
-	{
-		pFirst = pBroke->getMasterTable()->getFirstBrokenTable();
-	}
-	for(i=0; !bStop && (i<countCons()); i++)
-	{
-		pCon = static_cast<fp_Container *>(getNthCon(i));
-		if(pCon->getContainerType() == FP_CONTAINER_TABLE)
-		{
-			continue;
-		}
-		iTop = getY() + pCon->getY();
-		UT_sint32 iBot = iTop + pCon->getHeight();
-		UT_sint32 iBreak = pBroke->getYBreak();
-		UT_sint32 iBottom = pBroke->getYBottom();
-		bool bInBroke = (iBot >= iBreak) && (iBot < iBottom);
-		if(!bFound)
-		{
-
-			if(bInBroke)
-			{
-				bFound = true;
-				iTweak = pBroke->getYBreak() - getY() - pCon->getY();
-				xxx_UT_DEBUGMSG(("Doing TweakTable on %x Tweak %d YBreak %d Cell Y %d Con Y %d \n",pBroke,iTweak,pBroke->getYBreak(),getY(), pCon->getY()));
-				if((i> 0) && (iTweak>0))
-				{
-					pCon = static_cast<fp_Container *>(getNthCon(i-1));
-					if(!bIsMaster && pBroke->getPrev())
-					{
-						xxx_UT_DEBUGMSG(("SetMyBrokenContainer %x \n",pBroke->getPrev()));
-						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pBroke->getPrev()));
-					}
-					else if(bIsMaster)
-					{
-						xxx_UT_DEBUGMSG(("SetMyBrokenContainer %x \n",pFirst));
-						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pFirst));
-					}
-				}
-			}
-		}
-		else
-		{
-			if(!bInBroke)
-			{
-				bStop = true;
-			}
-		}
-	}
-	if(iTweak > 0)
-	{
-		return iTweak;
-	}
-	return 0;
-}
 
 UT_sint32 fp_CellContainer::getSpannedHeight(void)
 {
@@ -791,7 +708,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		lineTop.m_t_linestyle = PP_PropertyMap::linestyle_solid;
 		lineTop.m_color =  pageCol;
 		drawLine (lineTop, bRec.left, bRec.top, bRec.left + bRec.width,  bRec.top,getGraphics()); 
-		if(pBroke && pBroke->getPage() && pBroke->getBrokenTop() > 0)
+		if(pBroke && pBroke->getPage() && pBroke->getBrokenTop())
 		{
 			UT_sint32 col_x,col_y;
 			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
@@ -806,7 +723,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		lineBottom.m_color = pageCol;
 		drawLine (lineBottom, bRec.left, bRec.top + bRec.height, bRec.left + bRec.width , bRec.top + bRec.height,getGraphics());
 		xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
-		if(pBroke && pBroke->getPage() && pBroke->getBrokenBot() >= 0)
+		if(pBroke && pBroke->getPage() && pBroke->getBrokenBottom())
 		{
 			UT_sint32 col_x,col_y;
 			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
@@ -1278,7 +1195,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			bTopScreen = true;
 			if(pBroke != NULL)
 			{
-				pBroke->setBrokenTop(1);
+				pBroke->setBrokenTop(true);
 			}
 		}
 		xxx_UT_DEBUGMSG(("drawlines: After iTop %d iBot = %d  sum %d left %d top %d  \n",iTop,iBot,col_y + pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
@@ -1298,7 +1215,7 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 			{
 				iBot += pBroke->getYBottom() + 1 - pBroke->getYOfRow(getBottomAttach());
 				iBot +=	pBroke->getAdditionalBottomSpace();
-				pBroke->setBrokenBot(1);
+				pBroke->setBrokenBottom(true);
 			}
 			else
 			{
@@ -3159,9 +3076,9 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_iYBreakHere(0),
 	  m_iYBottom(0),
 	  m_iAdditionalBottomSpace(0),
+	  m_bBrokenTop(false),
+	  m_bBrokenBottom(false),
 	  m_bRedrawLines(false),
-	  m_iRepeatedRowNumber(-1),
-	  m_iRepeatedRowHeight(0),
 	  m_iLeftOffset(0),
 	  m_iRightOffset(0),
 	  m_iTopOffset(0),
@@ -3172,8 +3089,6 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_iLastWantedVBreak(-1),
 	  m_iNextWantedVBreak(-1),
 	  m_pFirstBrokenCell(NULL),
-	  m_pLastBrokenCell(NULL),
-	  m_bRecursiveClear(false),
 	  m_iAdditionalMarginAfter(0)
 {
 	if(getSectionLayout())
@@ -3206,11 +3121,9 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_iYBreakHere(0),
 	  m_iYBottom(0),
 	  m_iAdditionalBottomSpace(0),
-	  m_iBrokenTop(0),
-	  m_iBrokenBottom(0),
+	  m_bBrokenTop(false),
+	  m_bBrokenBottom(false),
 	  m_bRedrawLines(false),
-	  m_iRepeatedRowNumber(-1),
-	  m_iRepeatedRowHeight(0),
 	  m_iLeftOffset(0),
 	  m_iRightOffset(0),
 	  m_iTopOffset(0),
@@ -3221,8 +3134,6 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_iLastWantedVBreak(-1),
 	  m_iNextWantedVBreak(-1),
 	  m_pFirstBrokenCell(NULL),
-	  m_pLastBrokenCell(NULL),
-	  m_bRecursiveClear(false),
 	  m_iAdditionalMarginAfter(0)
 {
 }
@@ -3480,40 +3391,6 @@ UT_sint32 fp_TableContainer::getXOfColumn(UT_sint32 col) const
 
 	return iXCol;
  }
-
-
-/*!
- * This method returns the Y Location of the line drawn across the top of
- * broken table.
- * It returns -1 if the table is not broken or it is the first broken table
- * of the chain.
- */
-UT_sint32 fp_TableContainer::getBrokenTop(void)
-{
-	if(getMasterTable() == NULL)
-	{
-		return -1;
-	}
-	else if(getYBreak() == 0)
-	{
-		return -1;
-	}
-	return m_iBrokenTop;
-}
-
-/*!
- * This method returns the Y Location of the line drawn across the Bottom of
- * broken table.
- * It returns -1 if the table is not broken.
- */
-UT_sint32 fp_TableContainer::getBrokenBot(void)
-{
-	if(getMasterTable() == NULL)
-	{
-		return -1;
-	}
-	return m_iBrokenBottom;
-}
 
 
 /*!
@@ -3868,149 +3745,9 @@ bool fp_TableContainer::isThisBroken(void) const
  */
 bool fp_TableContainer::isVBreakable(void)
 {
-	//
-	// Fixme remove this when nested tables break across pages.
-	//
-#if 0
-	if(getContainer() && (getContainer()->getContainerType() == FP_CONTAINER_CELL))
-	{
-		return false;
-	}
-#endif
 	return true;
 }
 
-/*!
- * This method adjusts the m_iYBreak and m_iYBottom variables after a 
- * setY method changes the start position of the top of the table.
- */
-void fp_TableContainer::adjustBrokenTables(void)
-{
-	if(isThisBroken())
-	{
-		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return;
-	}
-	if(getFirstBrokenTable() == NULL)
-	{
-		return;
-	}
-	if(getFirstBrokenTable() == getLastBrokenTable())
-	{
-		return;
-	}
-	// FIXME. Both this code and the code in fp_TOCContainer, somehow leads to bugs. I've clearly found
-	// workarounds to what this is trying to achive. In pricinple this code should make laying out Table's
-	// faster. In practice I suspect it leads to bugs in fb_ColumnBreaker. I'll leave these returns in place
-	// for now, pending removal of the methods.
-	//
-
-	return;
-	fp_TableContainer * pBroke = getFirstBrokenTable();
-	fp_VerticalContainer * pVC = static_cast<fp_VerticalContainer *>(getContainer());
-	UT_sint32 iNewHeight = pVC->getMaxHeight() - getY();	
-	UT_sint32 ishift = iNewHeight - pBroke->getYBottom();
-	UT_sint32 iNewBot = pBroke->getYBottom() + ishift;
-	UT_sint32 iTableHeight = fp_VerticalContainer::getHeight();
-	xxx_UT_DEBUGMSG(("SEVIOR: ishift = %d iNewHeight %d  pBroke->getYBottom() %d \n",ishift,iNewHeight,pBroke->getYBottom()));
-	if(ishift == 0)
-	{
-		return;
-	}
-	if(iNewBot > iTableHeight)
-	{
-		iNewBot = iTableHeight;
-	}
-	pBroke->setYBottom(iNewBot);
-	UT_ASSERT(pBroke->getHeight());
-
-	pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
-	while(pBroke)
-	{
-		UT_sint32 iNewTop = pBroke->getYBreak();
-		iNewBot = pBroke->getYBottom();
-		pBroke->setYBreakHere(iNewTop + ishift);
-		if(pBroke->getNext())
-		{
-			pBroke->setYBottom(iNewBot+ishift);
-			UT_ASSERT(pBroke->getHeight());
-		}
-		else
-		{
-			pBroke->setYBottom(iTableHeight);
-			UT_ASSERT(pBroke->getHeight());
-		}
-		xxx_UT_DEBUGMSG(("SEVIOR: Broken table %x YBreak adjusted to %d Shift is %d height is %d \n",pBroke,iNewTop+ishift,ishift,pBroke->getHeight()));
-		fp_TableContainer * pPrev = static_cast<fp_TableContainer *>(pBroke->getPrev());
-//
-// If the height of the previous plus the height of pBroke offset from
-// the previous position is less that the column height we can delete
-// this broken table. FIXE: This won't work for nested tables.
-//
-		UT_sint32 iMaxHeight = 0;
-		bool bDeleteOK = false;
-		if(pPrev)
-		{
-			iMaxHeight = static_cast<fp_VerticalContainer *>(pPrev->getContainer())->getMaxHeight();
-			xxx_UT_DEBUGMSG(("SEVIOR: sum %d maxheight %d \n",(pPrev->getY() + pPrev->getHeight() + pBroke->getHeight()), iMaxHeight));
-		}
-		if(bDeleteOK && pPrev && (pPrev->getY() + pPrev->getHeight() + pBroke->getHeight() < iMaxHeight))
-		{
-//
-// FIXME: This if should be unnested....
-//
-			if(pPrev == this)
-			{
-				pPrev = getFirstBrokenTable();
-			}
-			xxx_UT_DEBUGMSG(("SEVIOR; In adjust - Deleting table. Max height %d prev Y %d prev Height %d cur Height %d \n",iMaxHeight, pPrev->getY(),pPrev->getHeight(),pBroke->getHeight()));
-//
-// Don't need this table any more. Delete it and all following tables.
-// after adjusting the previous table.
-//
-			pPrev->setYBottom(iTableHeight);
-			UT_ASSERT(pPrev->getHeight());
-			pPrev->setNext( NULL);
-			if(pPrev == getFirstBrokenTable())
-			{
-				setNext(NULL);
-				getFirstBrokenTable()->setYBreakHere(0);
-				UT_ASSERT(getFirstBrokenTable()->getHeight());
-			}
-			setLastBrokenTable(pPrev);
-			xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! 2 last broken table %x deleting %x Master Table %x  \n",getLastBrokenTable(),pBroke,this));
-			xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! 2 get first %x get last broken table %x \n",getFirstBrokenTable(),getLastBrokenTable()));
-			fp_TableContainer * pT = getFirstBrokenTable();
-			UT_sint32 j = 0;
-			while(pT)
-			{
-				xxx_UT_DEBUGMSG(("SEVIOR: Table %d is %x \n",j,pT));
-				j++;
-				pT = static_cast<fp_TableContainer *>(pT->getNext());
-			}
-			while(pBroke)
-			{
-				fp_TableContainer * pNext = static_cast<fp_TableContainer *>(pBroke->getNext());
-				UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
-				if(i >=0)
-				{
-					pBroke->getContainer()->deleteNthCon(i);
-				}
-				else
-				{
-					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-				}
-				xxx_UT_DEBUGMSG(("SEVIOR: Adjust  - Delete Table %x \n",pBroke));
-				delete pBroke;
-				pBroke = pNext;
-			}
-		}
-		else
-		{
-			pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
-		}
-	}
-}
 
 /*!
  * This deletes all the broken tables from this master table.
@@ -4481,27 +4218,6 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	return pBroke;
 }
 
-UT_sint32 fp_TableContainer::tweakBrokenTable(fp_TableContainer * pBroke)
-{
-	fp_TableContainer * pTab = getMasterTable();
-	if(!pTab)
-	{
-		return 0;
-	}
-	UT_sint32 iTweak = 0;
-	fp_CellContainer * pCell = NULL;
-	UT_sint32 i = 0;
-	for(i =0; i<pTab->countCons(); i++)
-	{
-		pCell = static_cast<fp_CellContainer *>(pTab->getNthCon(i));
-		UT_sint32 iTwk = pCell->tweakBrokenTable(pBroke);
-		if(iTwk > iTweak)
-		{
-			iTweak = iTwk;
-		}
-	}
-	return iTweak;
-}
 
 /*!
  * Overload the setY method
@@ -5102,6 +4818,8 @@ void fp_TableContainer::queueResize(void)
 		}
 	}
 }
+
+
 void fp_TableContainer::layout(void)
 {
 	if(isThisBroken())
