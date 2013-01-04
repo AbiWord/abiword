@@ -13742,15 +13742,9 @@ bool FV_View::isInTable( PT_DocPosition pos) const
 	{
 		xxx_UT_DEBUGMSG(("Inside Table cell pos %d this pos %d \n",pCL->getPosition(),pos));
 		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pCL->myContainingLayout());
-		pf_Frag_Strux* sdhTable = pTL->getStruxDocHandle();
-		pf_Frag_Strux* sdhEnd = m_pDoc->getEndTableStruxFromTableSDH(sdhTable);
-		if(sdhEnd != NULL)
+		if (!pTL)
 		{
-			PT_DocPosition posEnd =  m_pDoc->getStruxPosition(sdhEnd);
-			if(posEnd < pos)
-			{
-				return false;
-			}
+			return false;
 		}
 		return true;
 	}
