@@ -989,8 +989,8 @@ protected:
 	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld,
 									  UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
 									  UT_sint32 top, UT_sint32 bot);
-	bool                _insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right,
-									  UT_sint32 top, UT_sint32 bot);
+	bool                _insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, 
+									  UT_sint32 bot, const gchar ** attrsBlock, const gchar ** propsBlock);
 	bool                _changeCellAttach(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right,
 									  UT_sint32 top, UT_sint32 bot);
 

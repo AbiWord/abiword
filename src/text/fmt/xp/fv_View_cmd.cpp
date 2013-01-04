@@ -234,6 +234,14 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 	posCell = m_pDoc->getStruxPosition(cellSDH);
 	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
 	posEndTable = m_pDoc->getStruxPosition(endTableSDH);
+
+	// Get the attributes and properties of the current block. These attributes and properties
+	// will be copied in the new cell.
+	fl_BlockLayout * pBL = getBlockAtPosition(getPoint());
+	const PP_AttrProp * pAP = NULL;
+	m_pDoc->getAttrProp(m_pDoc->getAPIFromSDH(pBL->getStruxDocHandle()), &pAP);
+	UT_return_val_if_fail(pAP, false);
+
 //
 // Got all we need, now set things up to do the insert nicely
 //
@@ -530,7 +538,7 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 	const gchar * atts[4] = {"props",NULL,NULL,NULL};
 	atts[1] = sCellProps.c_str();
 	bRes = m_pDoc->insertStrux(posCell,PTX_SectionCell,atts,NULL);
-	bRes = m_pDoc->insertStrux(posCell+1,PTX_Block);
+	bRes = m_pDoc->insertStrux(posCell+1,PTX_Block,pAP->getAttributes(),pAP->getProperties());
 	posFirstInsert = posCell + 2;
 //
 // Save the cell SDH for later..
@@ -1812,6 +1820,13 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	UT_return_val_if_fail(pTab,false);
 	bool bInsertEnd = (!bBefore && iRight == pTab->getNumCols());
 
+	// Get the attributes and properties of the block containing posCol. These attributes and properties
+	// will be copied in the new cells.
+	fl_BlockLayout * pBL = getBlockAtPosition(posCol);
+	const PP_AttrProp * pAP = NULL;
+	m_pDoc->getAttrProp(m_pDoc->getAPIFromSDH(pBL->getStruxDocHandle()), &pAP);
+	UT_return_val_if_fail(pAP, false);
+
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
 
@@ -1876,7 +1891,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 			iCurLeft = iLeftInsert;
 			for (UT_sint32 k = 0; k < numColsForInsertion; k++)
 			{
-				bRes = _insertCellAt(posCell, iCurLeft, iCurLeft + 1, iRow, iRow + 1);
+				bRes |= _insertCellAt(posCell, iCurLeft, iCurLeft + 1, iRow, iRow + 1, 
+									  pAP->getAttributes(), pAP->getProperties());
 				UT_ASSERT(bRes);
 				posCell += 3;
 				iCurLeft++;
@@ -1897,7 +1913,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 			}
 			iCurRight += numColsForInsertion;
 			posCell = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
-			bRes = _changeCellAttach(posCell+1, iCurLeft, iCurRight, iCurTop, iCurBot);
+			bRes |= _changeCellAttach(posCell+1, iCurLeft, iCurRight, iCurTop, iCurBot);
 			UT_ASSERT(bRes);
 		}
 		pCL = static_cast<fl_CellLayout*>(pCL->getNext());
@@ -1914,7 +1930,8 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		iCurLeft = iLeftInsert;
 		for (UT_sint32 k = 0; k < numColsForInsertion; k++)
 		{
-			bRes = _insertCellAt(posCell, iCurLeft, iCurLeft + 1, iRow, iRow + 1);
+			bRes |= _insertCellAt(posCell, iCurLeft, iCurLeft + 1, iRow, iRow + 1, 
+								  pAP->getAttributes(), pAP->getProperties());
 			UT_ASSERT(bRes);
 			posCell += 3;
 			iCurLeft++;
@@ -1951,7 +1968,7 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_MOTION);
-	return true;
+	return bRes;
 }
 
 /*!
@@ -1995,8 +2012,13 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	UT_return_val_if_fail(pTab,false);
 	UT_sint32 numCols = pTab->getNumCols();
 	UT_sint32 numRows = pTab->getNumRows();
-	fl_CellLayout* pCL = NULL;
-	fp_CellContainer* pCell = NULL;
+
+	// Get the attributes and properties of the block containing posRow. These attributes and properties
+	// will be copied in the new cell. 
+	fl_BlockLayout * pBL = getBlockAtPosition(posRow);
+	const PP_AttrProp * pAP = NULL;
+	m_pDoc->getAttrProp(m_pDoc->getAPIFromSDH(pBL->getStruxDocHandle()), &pAP);
+	UT_return_val_if_fail(pAP, false);
 
 	//
 	// Find the position in the piece table to insert the row.
@@ -2004,6 +2026,8 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	// interferes with the insert cmd and set bComplexInsert to true in that case.
 	// Then create a vector of columns where a new cell should be inserted
 
+	fl_CellLayout* pCL = NULL;
+	fp_CellContainer* pCell = NULL;
 	bool bComplexInsert = false;
 	UT_sint32 iTopInsert = (bBefore ? iTop:iBot);
 	UT_sint32 prevTop = iTopInsert;
@@ -2093,7 +2117,8 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 
 	//
 	// Now insert rows.
-	// 
+	//
+
 	PT_DocPosition posInsert = posCell + 2;
 
 	UT_sint32 j = 0;
@@ -2102,7 +2127,8 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 		std::vector<UT_sint32>::iterator it = vColInsert.begin();
 		for(; it != vColInsert.end(); ++it)
 		{
-			bRes = _insertCellAt(posCell, (*it), (*it)+1, prevTop, prevTop+1);
+			bRes |= _insertCellAt(posCell, (*it), (*it)+1, prevTop, prevTop+1, 
+								 pAP->getAttributes(), pAP->getProperties());
 			UT_ASSERT(bRes);
 			posCell += 3;
 		}
@@ -2122,7 +2148,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 		iCurTop = pCL->getTopAttach() + numRowsForInsertion;
 		iCurBot = pCL->getBottomAttach() + numRowsForInsertion;
 		posCell = m_pDoc->getStruxPosition(pCL->getStruxDocHandle());
-		bRes = _changeCellAttach(posCell+1,iCurLeft,iCurRight,iCurTop,iCurBot);
+		bRes |= _changeCellAttach(posCell+1,iCurLeft,iCurRight,iCurTop,iCurBot);
 		UT_ASSERT(bRes);
 		pCL = static_cast<fl_CellLayout*>(pCL->getNext());
 	}
@@ -2151,7 +2177,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 			iCurRight = pCL->getRightAttach();
 			iCurTop = pCL->getTopAttach();
 			iCurBot = pCL->getBottomAttach() + numRowsForInsertion;
-			bRes = _changeCellAttach(posCell+1,iCurLeft,iCurRight,iCurTop,iCurBot);
+			bRes |= _changeCellAttach(posCell+1,iCurLeft,iCurRight,iCurTop,iCurBot);
 			UT_ASSERT(bRes);
 			k = iCurRight;
 		}
@@ -2185,7 +2211,7 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_MOTION);
-	return true;
+	return bRes;
 }
 
 /*!
@@ -2927,12 +2953,51 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 	}
 
 	setPoint(pointBreak);
+	// Get the current attributes and properties. The user likely does not want the block properties as
+	// the margins and indents might not be right for a much narrower container (the cell).
+	// This is a ugly hack. We will only copy 2 fonts properties, font-family and font-size.
+	const gchar ** props_in = NULL;
+	const gchar * attrsBlock[3] = {"style","Normal",NULL};
+	const gchar * propsBlock[5] = {NULL,NULL,NULL,NULL,NULL};
+	const gchar * propFamily = "font-family";
+	const gchar * propSize = "font-size";
+	const gchar * szFamily = NULL;
+	const gchar * szSize = NULL;
+	const gchar * szNormalFamily = NULL;
+	const gchar * szNormalSize = NULL;
+	getCharFormat(&props_in);
+	if (props_in && props_in[0])
+	{
+		szFamily = UT_getAttribute(propFamily, props_in);
+		szSize = UT_getAttribute(propSize, props_in);
+	}
+	m_pDoc->getStyleProperty(attrsBlock[1],propFamily,szNormalFamily);
+	m_pDoc->getStyleProperty(attrsBlock[1],propSize,szNormalSize);
+	bool bFamily = (szFamily && (!szNormalFamily || (strcmp(szNormalFamily,szFamily) != 0)));
+	bool bSize = (szSize && (!szNormalSize || (strcmp(szNormalSize,szSize) != 0)));
+	if (bFamily && bSize)
+	{
+		propsBlock[0] = propFamily;
+		propsBlock[1] = szFamily;
+		propsBlock[2] = propSize;
+		propsBlock[3] = szSize;
+	}
+	else if (bFamily)
+	{
+		propsBlock[0] = propFamily;
+		propsBlock[1] = szFamily;
+	}
+	else if (bSize)
+	{
+		propsBlock[0] = propSize;
+		propsBlock[1] = szSize;
+	}
+
 	e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionTable,NULL,pPropsArray));
 //
 // stuff for cell insertion.
 //
 	UT_sint32 i,j;
-	const gchar * attrs[3] = {"style","Normal",NULL};
 	const gchar * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	UT_String sRowTop = "top-attach";
 	UT_String sRowBot = "bot-attach";
@@ -2957,7 +3022,7 @@ UT_Error FV_View::cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols, const gch
 			props[7] = sRight.c_str();
 			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_SectionCell,NULL,props));
 			pointBreak = getPoint();
-			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_Block,attrs,NULL));
+			e |= static_cast<UT_sint32>(m_pDoc->insertStrux(getPoint(),PTX_Block,attrsBlock,propsBlock));
 			UT_DEBUGMSG(("SEVIOR: 4  cur point %d \n",getPoint()));
 			if(getPoint() == pointBreak)
 			{

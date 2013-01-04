@@ -5426,6 +5426,16 @@ bool PD_Document::enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const
 	return m_pPieceTable->enumStyles(pStyles);
 }
 
+bool PD_Document::getStyleProperty(const char * szStyleName, const char * szPropertyName, const char *& szPropertyValue)
+{
+	PD_Style * pS;
+	PD_Style ** ppS = &pS;
+	if(!m_pPieceTable->getStyle(szStyleName, ppS))
+		return false;
+
+	return (*ppS)->getProperty(szPropertyName, szPropertyValue);
+}
+
 bool	PD_Document::addStyleProperty(const char * szStyleName, const char * szPropertyName, const char * szPropertyValue)
 {
 	PD_Style * pS;

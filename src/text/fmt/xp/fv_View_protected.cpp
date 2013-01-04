@@ -841,7 +841,8 @@ bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32
 /*!
  * This method inserts a cell at PT_DocPosition with the given left, right, top and bottom attach.
  */
-bool FV_View::_insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
+bool FV_View::_insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot,
+							const gchar ** attrsBlock, const gchar ** propsBlock)
 {
 	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	UT_String sLeft,sRight,sTop,sBot;
@@ -861,7 +862,7 @@ bool FV_View::_insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 ri
 	bool bres = true;
 	bres = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
 	UT_return_val_if_fail(bres,false);
-	bres = m_pDoc->insertStrux(posCell+1,PTX_Block);
+	bres = m_pDoc->insertStrux(posCell+1,PTX_Block,attrsBlock,propsBlock);
 	UT_return_val_if_fail(bres,false);
 	bres = m_pDoc->insertStrux(posCell+2,PTX_EndCell);
 	return bres;
