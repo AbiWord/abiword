@@ -609,30 +609,34 @@ void fl_TableLayout::format(void)
 	}
 	if((!bSim && isDirty()) || bRebuild)
 	{
-		while (pCell)
+		if (isInitialLayoutCompleted())
 		{
-			pCell->format();
-			if(bRebuild)
+			while (pCell)
 			{
-				attachCell(pCell);
+				pCell->format();
+				if(bRebuild)
+				{
+					attachCell(pCell);
+				}
+				pCell = pCell->getNext();
 			}
-			pCell = pCell->getNext();
-		}
-		if((m_iHeightChanged == 1)  && !getDocument()->isDontImmediateLayout())
-		{
-		//
-		// Simple height change due to editting. Short circuit full blown 
-		// layout
-		//
-			bSim = doSimpleChange();
-			if(bSim)
+			if((m_iHeightChanged == 1)  && !getDocument()->isDontImmediateLayout())
 			{
-				m_bIsDirty = false;
+				//
+				// Simple height change due to editting. Short circuit full blown 
+				// layout
+				//
+				bSim = doSimpleChange();
+				if(bSim)
+				{
+					m_bIsDirty = false;
+				}
 			}
+			xxx_UT_DEBUGMSG(("fl_TableLayout: Finished Formatting %x isDirty %d \n",this,isDirty()));
 		}
 
-		xxx_UT_DEBUGMSG(("fl_TableLayout: Finished Formatting %x isDirty %d \n",this,isDirty()));
-		if((m_iHeightChanged !=0) && isDirty() && !getDocument()->isDontImmediateLayout())
+		if((!isInitialLayoutCompleted() || ((m_iHeightChanged !=0) && isDirty())) && 
+		   !getDocument()->isDontImmediateLayout())
 	    {
 			m_bIsDirty = false;
 			xxx_UT_DEBUGMSG(("SEVIOR: Layout pass 1 \n"));
@@ -1881,11 +1885,11 @@ void fl_TableLayout::attachCell(fl_ContainerLayout * pCell)
 	//
 	// Verify the cell layout is in the table.
     //
-	fl_ContainerLayout * pCur = getFirstLayout();
+	fl_ContainerLayout * pCur = getLastLayout();
 	while(pCur && pCur !=  pCell)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: Looking for %x found %x \n",pCell,pCur));
-		pCur = pCur->getNext();
+		pCur = pCur->getPrev();
 	}
 	if(pCur == NULL)
 	{
