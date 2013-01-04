@@ -605,6 +605,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_chg.bDirty = false;
 	m_chg.bSelection = false;
 	m_chg.iColumn = 0;						 // current column number
+	m_chg.pCellLayout = NULL;
 	m_chg.propsChar = NULL;
 	m_chg.propsBlock = NULL;
 	m_chg.propsSection = NULL;
@@ -2838,6 +2839,32 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		else if(pContainer == NULL)
 		{
 			return false;
+		}
+	}
+
+	if (mask & AV_CHG_CELL)
+	{
+		fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
+		fl_ContainerLayout * pCL = pBlock->myContainingLayout();
+		if (pCL && (pCL->getContainerType() == FL_CONTAINER_CELL))
+		{
+			if (pCL != m_chg.pCellLayout)
+			{
+				m_chg.pCellLayout = static_cast<fl_CellLayout*>(pCL);
+			}
+			else
+			{
+				mask ^= AV_CHG_CELL;
+			}
+		}
+		else if (m_chg.pCellLayout)
+		{
+			// Caret just moved out of a table
+			m_chg.pCellLayout = NULL;
+		}
+		else
+		{
+			mask ^= AV_CHG_CELL;
 		}
 	}
 
@@ -6263,13 +6290,17 @@ bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles) const
 	  at the beginning of the selection, load 'em all into a vector, and
 	  then prune any property that collides.
 	*/
-	if((AV_View::getTick() == m_BlockProps.getTick()) && m_BlockProps.isValid())
+	fl_BlockLayout * pBlock = _findBlockAtPosition(getPoint());
+	if((AV_View::getTick() == m_BlockProps.getTick()) && m_BlockProps.isValid() &&
+	   (pBlock == m_BlockProps.getCurrentCL()))
 	{
 		*pProps = m_BlockProps.getCopyOfProps();
 		return true;
 	}
 	m_BlockProps.clearProps();
 	m_BlockProps.setTick(AV_View::getTick());
+	m_BlockProps.setCurrentCL(pBlock);
+
 	PT_DocPosition posStart = getPoint();
 	PT_DocPosition posEnd = posStart;
 
@@ -6282,7 +6313,7 @@ bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles) const
 	}
 
 	// 1. assemble complete set at insertion point
-	fl_BlockLayout* pBlock = _findBlockAtPosition(posStart);
+	pBlock = _findBlockAtPosition(posStart);
 	if(pBlock == NULL)
 	{
 		return false;
@@ -14053,7 +14084,8 @@ void FV_View::rebuildLayout()
 fv_PropCache::fv_PropCache(void):
 	m_iTick(0),
 	m_iNumProps(0),
-	m_pszProps(NULL)
+	m_pszProps(NULL),
+	m_pCurrentCL(NULL)
 {
 }
 
@@ -14070,6 +14102,16 @@ void fv_PropCache::setTick(UT_uint32 iTick)
 UT_uint32 fv_PropCache::getTick(void) const
 {
 	return m_iTick;
+}
+
+void fv_PropCache::setCurrentCL(fl_ContainerLayout* pCL)
+{
+	m_pCurrentCL = pCL;
+}
+
+fl_ContainerLayout* fv_PropCache::getCurrentCL(void) const
+{
+	return m_pCurrentCL;
 }
 
 const gchar ** fv_PropCache::getCopyOfProps(void) const

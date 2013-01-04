@@ -129,6 +129,7 @@ struct fv_ChangeState
 	bool				bDirty;
 	bool				bSelection;
 	UT_uint32			iColumn;
+	fl_CellLayout *     pCellLayout;
 	const gchar **	propsChar;
 	const gchar **	propsBlock;
 	const gchar **	propsSection;
@@ -153,6 +154,8 @@ public:
 	~fv_PropCache(void);
 	UT_uint32         getTick(void) const;
 	void              setTick(UT_uint32 iTick);
+	fl_ContainerLayout * getCurrentCL(void) const;
+	void              setCurrentCL(fl_ContainerLayout* pCL);
 	bool              isValid(void) const;
 	const gchar ** getCopyOfProps(void) const;
 	void              fillProps(UT_uint32 numProps, const gchar ** props);
@@ -161,6 +164,7 @@ private:
 	UT_uint32         m_iTick;
 	UT_uint32         m_iNumProps;
 	gchar **       m_pszProps;
+	fl_ContainerLayout* m_pCurrentCL;
 };
 
 enum FV_BIDI_Order

@@ -297,7 +297,7 @@ bool AP_TopRuler::notify(AV_View * _pView, const AV_ChangeMask mask)
 	// or the margins) or on the block (like the paragraph
 	// indents),or the page then we redraw the ruler.
 
-	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR))
+	if (mask & (AV_CHG_COLUMN | AV_CHG_FMTSECTION | AV_CHG_FMTBLOCK | AV_CHG_HDRFTR | AV_CHG_CELL))
 	{
 	        xxx_UT_DEBUGMSG(("TopRuler redraw from notify \n"));
 	        UT_Rect pClipRect;

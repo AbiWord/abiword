@@ -74,11 +74,12 @@ typedef UT_uint32 AV_ChangeMask;
 #define AV_CHG_BLOCKCHECK	(static_cast<AV_ChangeMask>(0x20000))		// Checking a block in background
 #define AV_CHG_FOCUS	    (static_cast<AV_ChangeMask>(0x40000))		// Change of focus
 #define AV_CHG_MOUSEPOS	    (static_cast<AV_ChangeMask>(0x80000))		// Change of mouse position
+#define AV_CHG_CELL         (static_cast<AV_ChangeMask>(0x100000))		// Change of active cell/caret moved out of table
 #define AV_CHG_ALL			(static_cast<AV_ChangeMask>(0xFFFFFFFF))
 
 #define AV_CHG_SAVE			(static_cast<AV_ChangeMask>(AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_FILENAME))
 #define AV_CHG_TYPING		(static_cast<AV_ChangeMask>(AV_CHG_DO | AV_CHG_DIRTY | AV_CHG_EMPTYSEL | AV_CHG_COLUMN))
-#define AV_CHG_MOTION		(static_cast<AV_ChangeMask>(AV_CHG_EMPTYSEL | AV_CHG_FMTSTYLE | AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION | AV_CHG_FMTCHAR | AV_CHG_COLUMN))
+#define AV_CHG_MOTION		(static_cast<AV_ChangeMask>(AV_CHG_EMPTYSEL | AV_CHG_FMTSTYLE | AV_CHG_FMTBLOCK | AV_CHG_FMTSECTION | AV_CHG_FMTCHAR | AV_CHG_COLUMN | AV_CHG_CELL))
 #define AV_CHG_STYLE_PARA	(static_cast<AV_ChangeMask>(AV_CHG_FMTBLOCK | AV_CHG_FMTCHAR))
 /*
 	Various UI elements (title, toolbar, etc.) need to stay in sync with

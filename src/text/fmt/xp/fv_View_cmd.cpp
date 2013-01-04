@@ -1446,6 +1446,7 @@ bool FV_View::cmdAdvanceNextPrevCell(bool bGoNext)
 	setPoint(sdhNextPrevCell->getPos()+2);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
 	return true;
 }
 
