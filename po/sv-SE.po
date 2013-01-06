@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-12-16 14:49-0500\n"
-"PO-Revision-Date: 2012-12-26 20:46+0200\n"
-"Last-Translator: Per <tucker@algonet.se>\n"
+"PO-Revision-Date: 2013-01-06 03:14+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
@@ -105,7 +105,7 @@ msgstr ""
 "Om du är programmerare är du välkommen att lägga till kod i %s, rad %d\n"
 "och skicka ändringarna som e-post till:\n"
 "\n"
-"x0009;abiword-dev@abisource.com\n"
+"\tabiword-dev@abisource.com\n"
 "\n"
 "I annat fall kanske du kan hjälpa till på annat sätt."
 
@@ -206,7 +206,7 @@ msgstr "&Justering"
 #. DLG_Options_Label_ViewAll
 #: po/tmp/ap_String_Id.h
 msgid "&All"
-msgstr "&Alla tecken"
+msgstr "&Alla"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h
@@ -323,7 +323,7 @@ msgstr "K&opiera"
 #. MENU_LABEL_FMT_STYLE_DEFINE
 #: po/tmp/ap_String_Id.h
 msgid "&Create and Modify Styles"
-msgstr "&Skapa och modifiera"
+msgstr "&Skapa och modifiera formatmallar"
 
 #. DLG_Options_Label_PrefsCurrentScheme
 #: po/tmp/ap_String_Id.h
@@ -527,7 +527,7 @@ msgstr "&Ignorera alla"
 #. MENU_LABEL_FMT_POSIMAGE
 #: po/tmp/ap_String_Id.h
 msgid "&Image"
-msgstr "Ändra storlek på b&ild"
+msgstr "B&ild"
 
 #. MENU_LABEL_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h
@@ -883,7 +883,7 @@ msgstr "&Visa historik"
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
 msgid "&Show Status Bar"
-msgstr "S&tatusrad"
+msgstr "Visa s&tatusrad"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h
@@ -966,7 +966,7 @@ msgstr "&Triplett"
 #. DLG_Field_Types_No_Colon
 #: po/tmp/ap_String_Id.h
 msgid "&Types"
-msgstr "&Typer"
+msgstr "&Kategorier"
 
 #. DLG_Field_Types
 #: po/tmp/ap_String_Id.h
@@ -1010,6 +1010,8 @@ msgstr "&Hel sida"
 msgid "&Whole word"
 msgstr "&Helt ord"
 
+# Inte ett självklart ordval. Funderar på att byta ut "änka/horunge" mot "ensamrader"
+# http://www.sprakradet.se/kapitel1-skrivregler 1.9.7
 #. DLG_Para_PushWidowOrphanControl
 #: po/tmp/ap_String_Id.h
 msgid "&Widow/Orphan control"
@@ -1039,7 +1041,7 @@ msgstr "(Alla revisioner synliga)"
 #. DLG_Spell_NoSuggestions
 #: po/tmp/ap_String_Id.h
 msgid "(no spelling suggestions)"
-msgstr "(Inga stavningsförslag)"
+msgstr "(inga stavningsförslag)"
 
 #. DLG_Para_SpecialNone
 #: po/tmp/ap_String_Id.h
@@ -1056,7 +1058,7 @@ msgstr "1 spalt"
 #. TOOLBAR_LABEL_MIDDLE_SPACE
 #: po/tmp/ap_String_Id.h
 msgid "1.5 Spacing"
-msgstr "1½ rad"
+msgstr "1½ radavständ"
 
 #. DLG_Para_SpacingHalf
 #: po/tmp/ap_String_Id.h
@@ -1072,27 +1074,27 @@ msgstr "1½ radavstånd"
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr "1/3 A4"
+msgstr "⅓ A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr "1/3 A5"
+msgstr "⅓ A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr "1/4 A3"
+msgstr "¼ A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr "1/4 A4"
+msgstr "¼ A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr "1/8 A4"
+msgstr "⅛ A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1674,7 +1676,7 @@ msgstr "Kantlinjer"
 #. DLG_BorderShading_Title
 #: po/tmp/ap_String_Id.h
 msgid "Borders and Shading"
-msgstr "Kantlinjer och f&yllning"
+msgstr "Kantlinjer och fyllning"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATED_TO_SOURCE_FOAFKNOWS
 #. MENU_LABEL_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
@@ -1707,7 +1709,7 @@ msgstr "Undre kantlinje"
 #. STYLE_BOXLIST
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Box List"
-msgstr "Lista punkterad med boxar"
+msgstr "Lista punkterad med fyrkanter"
 
 #. FIELD_Application_BuildId
 #: po/tmp/ap_String_Id.h
@@ -1740,7 +1742,7 @@ msgstr "Punktlista"
 #. TOOLBAR_TOOLTIP_LISTS_BULLETS
 #: po/tmp/ap_String_Id.h
 msgid "Bullets"
-msgstr "Punktlista"
+msgstr "Punkter"
 
 #. MENU_LABEL_FMT_BULLETS
 #: po/tmp/ap_String_Id.h
@@ -1888,7 +1890,7 @@ msgstr "Centrera"
 #. MENU_STATUSLINE_ALIGN_CENTER
 #: po/tmp/ap_String_Id.h
 msgid "Center-align the paragraph"
-msgstr "Centrera aktuellt eller markerade stycken"
+msgstr "Centrera stycket"
 
 #. DLG_Para_AlignCentered
 #: po/tmp/ap_String_Id.h
@@ -1925,7 +1927,7 @@ msgstr "Ändra på nuvarande lista"
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h
 msgid "Change Highlight Color"
-msgstr "Ändra bakgrundsfärg"
+msgstr "Ändra markeringsfärg"
 
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h
@@ -1982,7 +1984,7 @@ msgstr "Ändrar antalet spalter"
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
 msgid "Change the printing options"
-msgstr "Ändra inställningar för dokumentet"
+msgstr "Ändra utskriftsinställningar för dokumentet"
 
 #. MENU_STATUSLINE_FMT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -2045,12 +2047,12 @@ msgstr "Tecken (med blanksteg):"
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h
 msgid "Check &Spelling"
-msgstr "&Stavning"
+msgstr "Kontrollera &stavning"
 
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h
 msgid "Check &grammar as you type"
-msgstr "Kontrollera grammatik automatiskt"
+msgstr "Kontrollera &grammatik automatiskt"
 
 #. MENU_LABEL_HELP_CHECKVER
 #: po/tmp/ap_String_Id.h
@@ -2135,7 +2137,7 @@ msgstr "Ingen bakgrundsfärg"
 #. DLG_Background_ClearHighlight
 #: po/tmp/ap_String_Id.h
 msgid "Clear Highlight Color"
-msgstr "Ingen bakgrundsfärg"
+msgstr "Ingen markeringsfärg"
 
 #. MSG_QueryExit
 #: po/tmp/ap_String_Id.h
@@ -2261,7 +2263,7 @@ msgstr "Innehåll"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Continue previous revision (number %d)"
-msgstr "Fortsätt föregående revision (#%d)"
+msgstr "Fortsätt föregående revision (nummer %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
@@ -2415,7 +2417,7 @@ msgstr "Skapa ett nytt blankt dokument"
 #. TOOLBAR_TOOLTIP_FILE_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create a new document"
-msgstr "Skapar ett nytt tomt dokument"
+msgstr "Skapar ett nytt dokument"
 
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h
@@ -2600,7 +2602,7 @@ msgstr "&Datum och tid"
 #. FIELD_Type_Datetime
 #: po/tmp/ap_String_Id.h
 msgid "Date and Time"
-msgstr "Tid och datum"
+msgstr "Datum och tid"
 
 #. FIELD_DateTime_DOY
 #: po/tmp/ap_String_Id.h
@@ -2926,7 +2928,7 @@ msgstr "Dubbelt"
 #. TOOLBAR_LABEL_DOUBLE_SPACE
 #: po/tmp/ap_String_Id.h
 msgid "Double Spacing"
-msgstr "Dubbelt"
+msgstr "Dubbelt radavstånd"
 
 #. TOOLBAR_STATUSLINE_DOUBLE_SPACE
 #. TOOLBAR_TOOLTIP_DOUBLE_SPACE
@@ -3055,7 +3057,7 @@ msgstr "Tillåt f&ormateringsverktyg"
 #. DLG_Options_Label_CheckEnableSmoothScrolling
 #: po/tmp/ap_String_Id.h
 msgid "Enable Smooth Scrolling"
-msgstr "Använd Smooth Scrolling"
+msgstr "Aktivera mjuk rullning"
 
 #. DLG_BorderShading_Use_Shading
 #: po/tmp/ap_String_Id.h
@@ -3169,7 +3171,7 @@ msgstr "Utför SPARQL på all dokument-RDF..."
 #. MENU_STATUSLINE_TOOLS_SCRIPTS
 #: po/tmp/ap_String_Id.h
 msgid "Execute helper scripts"
-msgstr "Utför skript"
+msgstr "Utför hjälpskript"
 
 #. TOOLBAR_STATUSLINE_SCRIPT_PLAY
 #. TOOLBAR_TOOLTIP_SCRIPT_PLAY
@@ -3210,7 +3212,7 @@ msgstr "Verktygsraden Extra"
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
 msgid "F&ile"
-msgstr "Infoga &fil"
+msgstr "&Fil"
 
 #. MENU_LABEL_FORMAT
 #: po/tmp/ap_String_Id.h
@@ -3220,7 +3222,7 @@ msgstr "&Format"
 #. MENU_LABEL_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h
 msgid "F&ull Screen"
-msgstr "&Helsida"
+msgstr "&Helskärm"
 
 #. DLG_FR_FindLabel
 #: po/tmp/ap_String_Id.h
@@ -3515,7 +3517,7 @@ msgstr "Formatera tabell"
 #. DLG_FormatTOC_Title
 #: po/tmp/ap_String_Id.h
 msgid "Format Table of Contents"
-msgstr "Formatera innehålsförteckning"
+msgstr "Formatera innehållsförteckning"
 
 #. DLG_FormatFrameTitle
 #: po/tmp/ap_String_Id.h
@@ -3558,7 +3560,7 @@ msgstr "Från LaTeX"
 #. TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN
 #: po/tmp/ap_String_Id.h
 msgid "Full Screen"
-msgstr "Helsida"
+msgstr "Helskärm"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
@@ -3629,9 +3631,8 @@ msgid ""
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
 "Sidhuvuden och sidfötter kan bara skapas och ändras i utskriftslayoutläge. \n"
-"  För att gå till detta läge välj Visa och sedan Utskriftslayoutläge i "
-"menyn. \n"
-"  Vill du ändra till utskriftslayoutläge nu?"
+" För att gå till detta läge välj Visa och sedan Utskriftslayoutläge i menyn. "
+" Vill du ändra till utskriftslayoutläge nu?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -3854,7 +3855,7 @@ msgstr "Infogar innehållet i Urklipp"
 #. DLG_DateTime_DateTimeTitle
 #: po/tmp/ap_String_Id.h
 msgid "Insert Date and Time"
-msgstr "Datum och tid"
+msgstr "Infoga datum och tid"
 
 #. MENU_LABEL_TOOLTIP_INSERT_EQUATION
 #: po/tmp/ap_String_Id.h
@@ -3875,7 +3876,7 @@ msgstr "Infoga fält"
 #. TOOLBAR_LABEL_FMT_HYPERLINK
 #: po/tmp/ap_String_Id.h
 msgid "Insert Hyperlink"
-msgstr "Infoga Hyperlänk"
+msgstr "Infoga hyperlänk"
 
 #. TOOLBAR_LABEL_IMG
 #: po/tmp/ap_String_Id.h
@@ -4301,7 +4302,7 @@ msgstr "Nivåavgränsare:"
 #. DLG_Lists_Level
 #: po/tmp/ap_String_Id.h
 msgid "Level:"
-msgstr "Nivåavgränsning:"
+msgstr "Nivå:"
 
 #. DLG_Para_LabelLineSpacing
 #: po/tmp/ap_String_Id.h
@@ -4419,7 +4420,7 @@ msgstr "Hantera insticksmoduler"
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h
 msgid "Margin"
-msgstr "&Marginal"
+msgstr "Marginal"
 
 #. DLG_MarkRevisions_Title
 #: po/tmp/ap_String_Id.h
@@ -4484,7 +4485,7 @@ msgstr "Sammanfoga uppåt"
 #: po/tmp/ap_String_Id.h
 msgid "Merge another document into the active document using revision marks"
 msgstr ""
-"Foga samman ett annat dokument till det aktiva dokumenter m.h.a "
+"Foga samman ett annat dokument till det aktiva dokumentet m.h.a "
 "revisionsmärken"
 
 #. TOOLBAR_LABEL_MERGEBELOW
@@ -4914,7 +4915,7 @@ msgstr "Sid&brytning före"
 #. MENU_LABEL_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h
 msgid "Page Background"
-msgstr "Bakgrund"
+msgstr "Sidbakgrund"
 
 #. BREAK_Page
 #: po/tmp/ap_String_Id.h
@@ -5068,7 +5069,7 @@ msgstr "Placering:"
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
 msgid "Playing with RDF during development"
-msgstr "Leker med RDF under udveckling"
+msgstr "Leker med RDF under utveckling"
 
 #. DLG_Goto_Label_Position
 #. DLG_PageNumbers_Position_No_Colon
@@ -5079,7 +5080,7 @@ msgstr "Placering"
 #. DLG_FormatFrame_SetToColumn
 #: po/tmp/ap_String_Id.h
 msgid "Position to Column"
-msgstr "Positionera till kolumn"
+msgstr "Positionera till spalt"
 
 #. DLG_FormatFrame_SetToPage
 #: po/tmp/ap_String_Id.h
@@ -6126,7 +6127,7 @@ msgstr "Visa dokument efter före&gående revisioner"
 #. TOOLBAR_LABEL_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
 msgid "Show document at final version without revision highlighting"
-msgstr "Visa dukument i slutgiltig version utan revisionsmarkering"
+msgstr "Visa dokument i slutgiltig version utan revisionsmarkering"
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
@@ -6296,7 +6297,7 @@ msgstr "Källa:"
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
 msgid "Space after Column:"
-msgstr "Mellanrum efter kolumn:"
+msgstr "Mellanrum efter spalt:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6791,7 +6792,7 @@ msgid ""
 msgstr ""
 "Flaggan '--print' togs bort i samband med AbiWord 2.8. Du kan uppnå samma "
 "resultat genom att använda AbiWords kommandoradsverktyg för konvertering och "
-"skicka resultatet till en skrivarkö. Ex:  'abiword --to=ps --to-name=fd://1 "
+"skicka resultatet till en skrivarkö. Ex: 'abiword --to=ps --to-name=fd://1 "
 "myfile.txt | lpr'"
 
 #. DLG_PageSetup_ErrBigMargins
@@ -6873,7 +6874,7 @@ msgid ""
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
-"Detta stycke visar ord så som de kan se ut i ditt dokument. För att se text "
+"Detta stycke visar ord så som de kan se ut i ditt dokument.  För att se text "
 "från ditt dokument användas i denna förhandsgranskning placerar du markören "
 "i ett stycke med text i dokumentet och öppnar denna dialogruta."
 
@@ -7064,12 +7065,12 @@ msgstr "Använd glyfformering för hebreiska"
 #. DLG_Options_Label_UI
 #: po/tmp/ap_String_Id.h
 msgid "User Interface"
-msgstr "Språk för användargränssnittet"
+msgstr "Användargränssnitt"
 
 #. DLG_Options_Label_UILang
 #: po/tmp/ap_String_Id.h
 msgid "User Interface Language"
-msgstr "Språk för användargränssnittet"
+msgstr "Språk för användargränssnitt"
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h
@@ -7105,7 +7106,7 @@ msgstr "Visa dokumenthistorik"
 #. MENU_STATUSLINE_VIEW_FULLSCREEN
 #: po/tmp/ap_String_Id.h
 msgid "View the document in full screen mode"
-msgstr "Visa dokumentet som helsida"
+msgstr "Visa dokumentet i helskärmsläge"
 
 #. MENU_STATUSLINE_WINDOW_1
 #. MENU_STATUSLINE_WINDOW_2
@@ -8169,7 +8170,7 @@ msgstr "Fil"
 #: po/tmp/xap_String_Id.h
 #, c-format
 msgid "File already exists.  Overwrite file '%s'?"
-msgstr "Filen '%s' finns redan. Vill du ersätta befintlig fil?"
+msgstr "Filen '%s' finns redan.  Vill du ersätta befintlig fil?"
 
 #. DLG_FOSA_RecordToFileLabel
 #: po/tmp/xap_String_Id.h
@@ -8394,7 +8395,7 @@ msgstr "Dold"
 #. DLG_UFS_BGColorTab
 #: po/tmp/xap_String_Id.h
 msgid "HighLight Color"
-msgstr "Bakgrundsfärg"
+msgstr "Markeringsfärg"
 
 #. LANG_HI_IN
 #: po/tmp/xap_String_Id.h
@@ -8859,7 +8860,7 @@ msgstr "Portugisiska (Portugal)"
 #. DLG_Image_PlaceColumn
 #: po/tmp/xap_String_Id.h
 msgid "Position relative to its Column"
-msgstr "Position relativt dess kolumn"
+msgstr "Position relativt dess spalt"
 
 #. DLG_Image_PlacePage
 #: po/tmp/xap_String_Id.h
@@ -9084,7 +9085,7 @@ msgstr "Språk"
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h
 msgid "Set no Highlight Color"
-msgstr "Ingen bakgrundsfärg"
+msgstr "Ingen markeringsfärg"
 
 #. DLG_UFS_SizeLabel
 #: po/tmp/xap_String_Id.h
@@ -9584,4 +9585,3 @@ msgstr "var orelaterade"
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ingen"
-
