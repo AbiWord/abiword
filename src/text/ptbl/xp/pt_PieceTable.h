@@ -617,8 +617,6 @@ protected:
 
 	bool					_changePointWithNotify(PT_DocPosition dpos);
 	bool                    _checkSkipFootnote(PT_DocPosition dpos1, PT_DocPosition dpos2, pf_Frag * pf_End = NULL) const;
-	bool                    _generateExtraPropList(pf_Frag * pf, const gchar * cStylePara,
-												   const gchar ** & sProps, std::vector <std::string> & vPropNames);
 	// helper methods for the appned and insert*BeforeFrag methods
 	bool					_makeStrux(PTStruxType pts, const gchar ** attributes,
 									   pf_Frag_Strux * &pfs);

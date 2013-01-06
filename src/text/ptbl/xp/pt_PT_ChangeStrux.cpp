@@ -571,6 +571,36 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 	}
 	else
 	{
+		// OK for styles we expand out all defined properties including BasedOn styles	                 }
+		// Then we use these to eliminate any specfic properties in the current strux	 
+		// Then properties in the current strux will resolve to those defined in the	 
+		// style (they exist there) to specifc values in strux (if not overridden by	 
+		// the style) then finally to default value.
+
+		PTChangeFmt ptcs = PTC_RemoveFmt;
+		pf_Frag_Strux * pfsContainer = pfs_First;
+		pf_Frag_Strux * pfsMainBlock = NULL;
+		pf_Frag * pfNewEnd = NULL;
+		UT_uint32 fragOffsetNewEnd;
+		const gchar ** sProps = NULL;
+		const gchar * sOldStyleBlock = NULL;
+		const gchar * sStyleMainBlock = NULL;
+		std::vector <std::string> vPropNames;
+		const gchar * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
+		PD_Style * pStyle = NULL;
+		getDocument()->getStyle(szStyle,&pStyle);
+		UT_return_val_if_fail (pStyle,false);
+		UT_Vector vProps;
+		pStyle->getAllProperties(&vProps,0);
+		UT_uint32 countp = vProps.getItemCount() + 1;
+		sProps = (const gchar **) UT_calloc(countp, sizeof(gchar *));
+		countp--;
+		for (UT_uint32 i = 0; i < countp; i++)
+		{
+			sProps[i] = (const gchar *) vProps.getNthItem(i);
+		}
+		sProps[countp - 1] = NULL;
+
 		// Changing block style should not affect character styles
 		UT_uint32 countAttr = 0;
 		while(attributes[2*countAttr])
@@ -594,16 +624,6 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 				++k;
 			}
 		}
-
-		PTChangeFmt ptcs = PTC_RemoveFmt;
-		pf_Frag_Strux * pfsContainer = pfs_First;
-		pf_Frag_Strux * pfsMainBlock = NULL;
-		pf_Frag * pfNewEnd = NULL;
-		UT_uint32 fragOffsetNewEnd;
-		const gchar ** sProps = NULL;
-		const gchar * sOldStyleBlock = NULL;
-		const gchar * sStyleMainBlock = NULL;
-		std::vector <std::string> vPropNames;
 
 		bool bEndSeen = false;
 		bool bEndSeenMainBlock = false;
@@ -677,10 +697,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_Text:
 			{
-				bool bResult;
-				bResult = _generateExtraPropList(pf,sOldStyleBlock,sProps,vPropNames);
-				UT_return_val_if_fail (bResult, false);
-				bResult = _fmtChangeSpanWithNotify(ptcs,static_cast<pf_Frag_Text *>(pf),
+				bool bResult = _fmtChangeSpanWithNotify(ptcs,static_cast<pf_Frag_Text *>(pf),
 												   0,pf->getPos(),pf->getLength(),attrSpan,sProps,
 												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
 				UT_return_val_if_fail (bResult, false);
@@ -693,10 +710,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_Object:
 			{
-				bool bResult;
-				bResult = _generateExtraPropList(pf,sOldStyleBlock,sProps,vPropNames);
-				UT_return_val_if_fail (bResult, false);
-				bResult = _fmtChangeObjectWithNotify(ptcs,static_cast<pf_Frag_Object *>(pf),
+				bool bResult = _fmtChangeObjectWithNotify(ptcs,static_cast<pf_Frag_Object *>(pf),
 													 0,pf->getPos(),pf->getLength(),attrSpan,sProps,
 													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
 				UT_return_val_if_fail (bResult, false);
@@ -709,10 +723,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_FmtMark:
 			{
-				bool bResult;
-				bResult = _generateExtraPropList(pf,sOldStyleBlock,sProps,vPropNames);
-				UT_return_val_if_fail (bResult, false);
-				bResult = _fmtChangeFmtMarkWithNotify(ptcs,static_cast<pf_Frag_FmtMark *>(pf),
+				bool bResult = _fmtChangeFmtMarkWithNotify(ptcs,static_cast<pf_Frag_FmtMark *>(pf),
 													  pf->getPos(),attrSpan,sProps,
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 				UT_return_val_if_fail (bResult,false);
@@ -725,10 +736,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 
 			pf = pfNewEnd;
 		}
-		if (sProps)
-		{
-			FREEP(sProps);
-		}
+		FREEP(sProps);
 		if (attrSpan)
 		{
 			FREEP(attrSpan);
@@ -806,71 +814,4 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 		const gchar ** pPropsArray = NULL;
 		return changeLastStruxFmtNoUndo(dpos, pst, attrs, pPropsArray, bSkipEmbededSections);
 	}
-}
-
-
-/* This function generate a list of the properties that are defined with the same value in the style and in the
-   props list of a fragment. These properties can be removed from the props list without affecting the document.
-*/
-
-bool pt_PieceTable::_generateExtraPropList(pf_Frag * pf, const gchar * sStyleBlock, 
-										   const gchar ** & sProps, std::vector <std::string> & vPropNames)
-{
-	if (sProps)
-	{
-		FREEP(sProps);
-	}
-	if (!vPropNames.empty())
-	{
-		vPropNames.clear();
-	}
-
-	const PP_AttrProp * pAP = m_varset.getAP(pf->getIndexAP());
-	const gchar * sStyleSpan = NULL;
-	pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,sStyleSpan);
-	UT_uint32 count = pAP->getPropertyCount();
-	sProps = (const gchar **) UT_calloc(2*count + 1, sizeof(gchar *));
-
-	PD_Style * pStyleBlock = NULL;
-	PD_Style * pStyleSpan = NULL;
-	getDocument()->getStyle(sStyleBlock,&pStyleBlock);
-	UT_return_val_if_fail (pStyleBlock,false);
-	if (sStyleSpan)
-	{
-		getDocument()->getStyle(sStyleSpan,&pStyleSpan);
-		UT_return_val_if_fail (pStyleSpan,false);
-	}
-
-	const gchar * szName = NULL;
-	const gchar * szValueFrag = NULL;
-	const gchar * szValueStyle = NULL;
-	bool bDefined;
-	UT_uint32 i = 0;
-	UT_uint32 k = 0;
-	for(i=0; i < count; ++i)
-	{
-		pAP->getNthProperty(i, szName, szValueFrag);
-		if (sStyleSpan)
-		{
-			bDefined = pStyleSpan->getProperty(szName, szValueStyle);
-		}
-		else
-		{
-			bDefined = false;
-		}
-
-		if (!bDefined)
-		{
-			bDefined = pStyleBlock->getProperty(szName, szValueStyle);
-		}
-
-		if (bDefined && (strcmp(szValueFrag,szValueStyle) == 0))
-		{
-			vPropNames.push_back(szName);
-			sProps[k] = vPropNames.back().c_str();
-			k += 2;
-		}
-	}
-	sProps[k] = NULL;
-	return true;
 }
