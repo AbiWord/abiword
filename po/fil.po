@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-08-19 17:18+0200\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2013-01-07 04:20+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: fil\n"
@@ -454,9 +454,8 @@ msgstr ""
 #. DLG_RDF_Editor_Menu_File
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&File"
-msgstr "file"
+msgstr ""
 
 #. DLG_Options_Label_FileExtension
 #: po/tmp/ap_String_Id.h
@@ -711,9 +710,8 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
 #. DLG_Goto_Label_Name
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Name:"
-msgstr "Laro"
+msgstr "&Laro:"
 
 #. MENU_LABEL_FILE_NEW
 #: po/tmp/ap_String_Id.h
@@ -1170,27 +1168,27 @@ msgstr ""
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr ""
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr ""
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr ""
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr ""
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr ""
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1231,57 +1229,57 @@ msgstr ""
 #. DLG_PageFormat_A0
 #: po/tmp/ap_String_Id.h
 msgid "A0"
-msgstr ""
+msgstr "A0"
 
 #. DLG_PageFormat_A1
 #: po/tmp/ap_String_Id.h
 msgid "A1"
-msgstr ""
+msgstr "A1"
 
 #. DLG_PageFormat_A10
 #: po/tmp/ap_String_Id.h
 msgid "A10"
-msgstr ""
+msgstr "A10"
 
 #. DLG_PageFormat_A2
 #: po/tmp/ap_String_Id.h
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #. DLG_PageFormat_A3
 #: po/tmp/ap_String_Id.h
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #. DLG_PageFormat_A4
 #: po/tmp/ap_String_Id.h
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #. DLG_PageFormat_A5
 #: po/tmp/ap_String_Id.h
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #. DLG_PageFormat_A6
 #: po/tmp/ap_String_Id.h
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #. DLG_PageFormat_A7
 #: po/tmp/ap_String_Id.h
 msgid "A7"
-msgstr ""
+msgstr "A7"
 
 #. DLG_PageFormat_A8
 #: po/tmp/ap_String_Id.h
 msgid "A8"
-msgstr ""
+msgstr "A8"
 
 #. DLG_PageFormat_A9
 #: po/tmp/ap_String_Id.h
 msgid "A9"
-msgstr ""
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1329,8 +1327,8 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
@@ -1629,57 +1627,57 @@ msgstr ""
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1855,42 +1853,42 @@ msgstr ""
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
@@ -1900,17 +1898,17 @@ msgstr ""
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -3322,9 +3320,8 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
 #. MENU_LABEL_INSERT_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "F&ile"
-msgstr "file"
+msgstr ""
 
 # (poterminology) /home/sayamindu/test/am/write.po (1)<br /><br />
 # (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)
@@ -3665,7 +3662,7 @@ msgstr "Ayos:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
+msgid "From File (.xml, .mathml)"
 msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
@@ -4899,7 +4896,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Numbered"
-msgstr "&Bilang:"
+msgstr "Bilang"
 
 #. DLG_Lists_Numbered_List
 #. STYLE_NUMBER_LIST
@@ -4927,7 +4924,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Numbers"
-msgstr "&Bilang:"
+msgstr "Bilang"
 
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
@@ -5755,13 +5752,13 @@ msgstr ""
 msgid "Rights"
 msgstr "Kanan"
 
-# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)&lt;br /&gt;<br />
+# (poterminology) /home/sayamindu/test/am/calculate-activity.po (1)<br /><br />
 # (poterminology) /home/sayamindu/test/am/oficina.po (1)
 #. DLG_MetaData_Rights_LBL
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Rights:"
-msgstr "Kanan"
+msgstr "Kanan:"
 
 #. DLG_FormatTable_Apply_To_Row
 #: po/tmp/ap_String_Id.h
@@ -5819,7 +5816,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Sa&ve"
-msgstr "I-save"
+msgstr "I-sa&ve"
 
 #. MENU_LABEL_FILE_EXPORT
 #: po/tmp/ap_String_Id.h
@@ -7207,7 +7204,6 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (2)
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Type:"
 msgstr "Uri:"
 
@@ -7545,7 +7541,6 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Wala"
@@ -7555,7 +7550,6 @@ msgstr "Wala"
 # (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Wala"
@@ -7565,7 +7559,6 @@ msgstr "Wala"
 # (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Wala"
@@ -7581,7 +7574,6 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Wala"
@@ -7591,7 +7583,6 @@ msgstr "Wala"
 # (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Wala"
@@ -8302,7 +8293,6 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/oficina.po (1)
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Effects:"
 msgstr "Epekto:"
 
@@ -8426,9 +8416,8 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/slider-puzzle.po (1)
 #. DLG_UP_File
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "File"
-msgstr "file"
+msgstr ""
 
 #. DLG_OverwriteFile
 #: po/tmp/xap_String_Id.h
@@ -8990,9 +8979,8 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/connect-activity.po (1)
 #. DLG_PLUGIN_MANAGER_NAME
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Name:"
-msgstr "Laro"
+msgstr "Laro:"
 
 #. LANG_NE_NP
 #: po/tmp/xap_String_Id.h
@@ -9856,7 +9844,6 @@ msgstr ""
 # (poterminology) /home/sayamindu/test/am/TamTamEdit.activity.po (1)
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Wala"
