@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-08-21 00:41+0200\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2013-01-07 01:54+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Czech <cs@li.org>\n"
 "Language: cs\n"
@@ -1240,13 +1240,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"Program AbiWord vyžaduje soubor %s.dll\n"
-"Prosíme navštivte stránku "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm a "
-"proveďte instalaci"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -3545,8 +3541,8 @@ msgstr "Formát:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Ze souboru"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3622,7 +3618,6 @@ msgstr "Záhlaví [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -4971,9 +4966,8 @@ msgstr "Nastavení stránky"
 
 #. DLG_Goto_Target_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page:"
-msgstr "Stran:"
+msgstr "Strana:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5781,9 +5775,8 @@ msgstr "Vybrat textový rámec"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select a target bookmark from the list:"
-msgstr "Vyberte cílovou záložku ze seznamu."
+msgstr "Vyberte cílovou záložku ze seznamu:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6978,15 +6971,13 @@ msgstr "Typ"
 
 #. DLG_InsertXMLID_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Type a name for the RDF link:"
 msgstr "Typ a jméno pro RDF odkaz:"
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
-msgstr "Zadejte název pro záložku, nebo vyberte již existující ze seznamu."
+msgstr "Zadejte název pro záložku, nebo vyberte již existující ze seznamu:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7320,49 +7311,42 @@ msgstr "zMěNIT vELIKOST"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
-msgstr "Nic"
+msgstr "Nikdo"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
-msgstr "Nic"
+msgstr "Nikdo"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
-msgstr "Nic"
+msgstr "Nikdo"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Předmět"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
-msgstr "Nic"
+msgstr "Nikdo"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
-msgstr "Nic"
+msgstr "Nikdo"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Předmět"
@@ -7834,9 +7818,8 @@ msgstr "Smazat barvu pozadí"
 
 #. TB_ClearForeground
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clear Foreground"
-msgstr "Smazat barvu pozadí"
+msgstr "Smazat barvu popředí"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
@@ -9596,8 +9579,7 @@ msgstr "neporovnatelné"
 
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
-msgstr "Nic"
+msgstr "Nikdo"
 
