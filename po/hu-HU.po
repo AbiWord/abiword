@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-10-22 05:49+0200\n"
-"Last-Translator: Gábor <kelemeng@ubuntu.com>\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2013-01-07 06:24+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Hungarian <gnome-hu-list at gnome dot org>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
@@ -1243,12 +1243,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"Az AbiWord-nek szüksége van a(z) %s.dll fájlra.\n"
-"Töltse le, és telepítse az alábbi címről:\n"
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -3548,8 +3545,8 @@ msgstr "Formátum:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Fájlból"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
