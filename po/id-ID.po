@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-07-30 07:48+0200\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2013-01-07 07:18+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: id\n"
@@ -182,15 +182,14 @@ msgstr "&Mengenai %s"
 
 #. MENU_LABEL_TOOLS_REVISIONS_ACCEPT_REVISION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Accept revision"
-msgstr "Seleksi"
+msgstr "Terim&a revisi"
 
 #. DLG_Spell_AddToDict
 #. MENU_LABEL_SPELL_ADD
 #: po/tmp/ap_String_Id.h
 msgid "&Add"
-msgstr "Tambahkan"
+msgstr "T&ambah"
 
 #. DLG_PageSetup_Adjust
 #: po/tmp/ap_String_Id.h
@@ -1132,27 +1131,27 @@ msgstr "Spasi"
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr ""
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr ""
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr ""
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr ""
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr ""
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1195,57 +1194,57 @@ msgstr "Selalu sarankan koreksi"
 #. DLG_PageFormat_A0
 #: po/tmp/ap_String_Id.h
 msgid "A0"
-msgstr ""
+msgstr "A0"
 
 #. DLG_PageFormat_A1
 #: po/tmp/ap_String_Id.h
 msgid "A1"
-msgstr ""
+msgstr "A1"
 
 #. DLG_PageFormat_A10
 #: po/tmp/ap_String_Id.h
 msgid "A10"
-msgstr ""
+msgstr "A10"
 
 #. DLG_PageFormat_A2
 #: po/tmp/ap_String_Id.h
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #. DLG_PageFormat_A3
 #: po/tmp/ap_String_Id.h
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #. DLG_PageFormat_A4
 #: po/tmp/ap_String_Id.h
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #. DLG_PageFormat_A5
 #: po/tmp/ap_String_Id.h
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #. DLG_PageFormat_A6
 #: po/tmp/ap_String_Id.h
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #. DLG_PageFormat_A7
 #: po/tmp/ap_String_Id.h
 msgid "A7"
-msgstr ""
+msgstr "A7"
 
 #. DLG_PageFormat_A8
 #: po/tmp/ap_String_Id.h
 msgid "A8"
-msgstr ""
+msgstr "A8"
 
 #. DLG_PageFormat_A9
 #: po/tmp/ap_String_Id.h
 msgid "A9"
-msgstr ""
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1263,7 +1262,7 @@ msgstr "Berkas %s adalah dokumen tidak berlaku"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "AbiWord finished checking the selection."
-msgstr "Menggunakan garis batas atau corak di yang telah diseleksi"
+msgstr "Menggunakan garis batas atau corak di yang telah diseleksi."
 
 #. DLG_FR_FinishedReplace
 #: po/tmp/ap_String_Id.h
@@ -1295,8 +1294,8 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
@@ -1597,7 +1596,7 @@ msgstr "Model-model yang tersedia"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Available Formats:"
-msgstr "&Format tersedia"
+msgstr "Format tersedia:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
@@ -1613,57 +1612,57 @@ msgstr "Dengan:"
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1848,42 +1847,42 @@ msgstr "Ganti"
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
@@ -1893,17 +1892,17 @@ msgstr ""
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -3732,9 +3731,8 @@ msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "From File"
-msgstr "&Gambar"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -4450,7 +4448,7 @@ msgstr "Bahasa"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Language(s)"
-msgstr "Bahasa:"
+msgstr "Bahasa"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4467,7 +4465,7 @@ msgstr "Aturan"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Leader:"
-msgstr "Kepala"
+msgstr "Kepala:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4853,9 +4851,8 @@ msgstr "Kali"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Nama:"
+msgstr "Nama"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
@@ -5006,7 +5003,7 @@ msgstr "Model Baru"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Number of Columns:"
-msgstr "Berapa kolom"
+msgstr "Berapa kolom:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -5051,9 +5048,8 @@ msgstr "Penomoran"
 
 #. DLG_FormatFootnotes_FootnoteRestart
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Numbering:"
-msgstr "Penomoran"
+msgstr "Penomoran:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -5132,9 +5128,8 @@ msgstr "Membuka dokumen ini"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Orientation"
-msgstr "Orientasi..."
+msgstr "Orientasi"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -5360,9 +5355,8 @@ msgstr "Menghapuskan bagian yang dipilih"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Placement:"
-msgstr "&Dokumen"
+msgstr ""
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -5636,9 +5630,8 @@ msgstr ""
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Seleksi:"
+msgstr ""
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -6680,7 +6673,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Space after Column:"
-msgstr "Menyimpan dokumen"
+msgstr "Menyimpan dokumen:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6923,15 +6916,14 @@ msgstr "Name Model:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Style Type:"
-msgstr "Tipe Model"
+msgstr "Tipe Model:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Style for following paragraph:"
-msgstr "Model untuk paragrap berikutnya"
+msgstr "Model untuk paragrap berikutnya:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -7620,12 +7612,12 @@ msgstr "Ada masalah ketika disimpan %s"
 #. MSG_DefaultDirectionChg
 #: po/tmp/ap_String_Id.h
 msgid "You have changed the default direction."
-msgstr "Sudah berubah arah teks default"
+msgstr "Sudah berubah arah teks default."
 
 #. MSG_DirectionModeChg
 #: po/tmp/ap_String_Id.h
 msgid "You have changed the direction mode."
-msgstr "Sudah berubah arah teks"
+msgstr "Sudah berubah arah teks."
 
 #. MSG_HyperlinkNoSelection
 #: po/tmp/ap_String_Id.h
@@ -8038,13 +8030,13 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Available Documents:"
-msgstr "&Format tersedia"
+msgstr "Dokumen tersedia:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Available Languages:"
-msgstr "Model-model yang tersedia"
+msgstr "Bahasa tersedia:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
@@ -8506,9 +8498,8 @@ msgstr ""
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Effects:"
-msgstr "Efek"
+msgstr "Efek:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -9346,7 +9337,7 @@ msgstr "Percobaan si Martin"
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Plugin Details"
-msgstr "Keterangan Plugin:"
+msgstr "Keterangan Plugin"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
