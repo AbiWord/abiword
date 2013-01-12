@@ -179,7 +179,7 @@ Cleanup:
 */
 IE_Imp_Component::IE_Imp_Component(PD_Document * pDocument, char *mime_type)
 	: IE_Imp(pDocument),m_pByteBuf(NULL),
-	m_MimeType (mime_type)
+	m_MimeType (mime_type != NULL? mime_type: "")
 {
 	m_pByteBuf = new UT_ByteBuf;
 
