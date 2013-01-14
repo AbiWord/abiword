@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-08-20 03:03+0200\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2013-01-10 17:35+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: it\n"
@@ -250,7 +250,6 @@ msgstr "&Grassetto"
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Borders and Shading"
 msgstr "Bordi e s&fondo"
 
@@ -387,7 +386,7 @@ msgstr "&Modifica"
 #. MENU_LABEL_RDFANCHOR_EDIT_TRIPLES
 #: po/tmp/ap_String_Id.h
 msgid "&Edit RDF"
-msgstr ""
+msgstr "&Modifica RDF"
 
 #. MENU_LABEL_EDIT_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -463,9 +462,8 @@ msgstr "&Pié di pagina:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Formato"
+msgstr "&Formato"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -484,9 +482,8 @@ msgstr "&Intestazione e pié di pagina"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Header/Footers"
-msgstr "Formatta intestazioni/pié di pagina"
+msgstr "&intestazioni/pié di pagina"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h
@@ -771,9 +768,8 @@ msgstr "&Stampa impaginazione"
 
 #. MENU_LABEL_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Purge History"
-msgstr "Cancella la storia del documento"
+msgstr "&Cancella la storia del documento"
 
 #. MENU_LABEL_RDFANCHOR_QUERY
 #: po/tmp/ap_String_Id.h
@@ -1081,27 +1077,27 @@ msgstr "Interlinea 1.5"
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr ""
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr ""
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr ""
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr ""
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr ""
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1129,7 +1125,6 @@ msgstr "<< Precedente"
 
 #. MSG_Exception
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "A fatal error has just occurred. AbiWord is going to shutdown.\n"
 "The current document has been saved to disc with a \".saved\" extension."
@@ -1145,57 +1140,57 @@ msgstr "&Suggerisci sempre le correzioni"
 #. DLG_PageFormat_A0
 #: po/tmp/ap_String_Id.h
 msgid "A0"
-msgstr ""
+msgstr "A0"
 
 #. DLG_PageFormat_A1
 #: po/tmp/ap_String_Id.h
 msgid "A1"
-msgstr ""
+msgstr "A1"
 
 #. DLG_PageFormat_A10
 #: po/tmp/ap_String_Id.h
 msgid "A10"
-msgstr ""
+msgstr "A10"
 
 #. DLG_PageFormat_A2
 #: po/tmp/ap_String_Id.h
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #. DLG_PageFormat_A3
 #: po/tmp/ap_String_Id.h
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #. DLG_PageFormat_A4
 #: po/tmp/ap_String_Id.h
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #. DLG_PageFormat_A5
 #: po/tmp/ap_String_Id.h
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #. DLG_PageFormat_A6
 #: po/tmp/ap_String_Id.h
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #. DLG_PageFormat_A7
 #: po/tmp/ap_String_Id.h
 msgid "A7"
-msgstr ""
+msgstr "A7"
 
 #. DLG_PageFormat_A8
 #: po/tmp/ap_String_Id.h
 msgid "A8"
-msgstr ""
+msgstr "A8"
 
 #. DLG_PageFormat_A9
 #: po/tmp/ap_String_Id.h
 msgid "A9"
-msgstr ""
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1205,7 +1200,6 @@ msgstr "AM/PM"
 #. MSG_IE_BogusDocument
 #: po/tmp/ap_String_Id.h
 #, c-format
-#, fuzzy
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
 msgstr "Abiword non può aprire %s. Il documento è probabilmente rovinato."
 
@@ -1255,12 +1249,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord ha bisogno del file %s.dll\n"
-"Scaricalo ed installalo da "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1472,9 +1463,8 @@ msgstr "Riprendi la lista precedente"
 #. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Autore:"
+msgstr "Autore"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
@@ -1545,21 +1535,18 @@ msgstr "Unione automatica"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Fields:"
-msgstr "Campi disponibili"
+msgstr "Campi disponibili:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Formats:"
-msgstr "Formati Disponibili"
+msgstr "Formati Disponibili:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Styles:"
-msgstr "Stili disponibili"
+msgstr "Stili disponibili:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1569,57 +1556,57 @@ msgstr "Rie&ntra di:"
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1650,9 +1637,8 @@ msgstr "Basato su:"
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Bo&ttomline"
-msgstr "Linea inferiore"
+msgstr "Linea in&feriore"
 
 #. TOOLBAR_LABEL_FMT_BOLD
 #. TOOLBAR_STATUSLINE_FMT_BOLD
@@ -1770,9 +1756,8 @@ msgstr "Elenchi puntati e &numerati"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Bullets and Numbering"
-msgstr "Elenchi puntati e &numerati"
+msgstr "Elenchi puntati e numerati"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
@@ -1797,42 +1782,42 @@ msgstr "&Riconoscimenti"
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
@@ -1842,17 +1827,17 @@ msgstr ""
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -1881,9 +1866,8 @@ msgstr "Non riesco a stampare"
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Category"
-msgstr "Categoria:"
+msgstr "Categoria"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2198,9 +2182,8 @@ msgstr "colonna"
 
 #. BREAK_Column
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Column Break"
-msgstr "Interruzione di &Colonna"
+msgstr "Interruzione di Colonna"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
@@ -2296,9 +2279,8 @@ msgstr "Continua la revisione precedente (numero %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contributor(s)"
-msgstr "Coautori:"
+msgstr "Coautori"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2312,20 +2294,18 @@ msgstr "Converti il testo selezionato in una tabella"
 
 #. MENU_LABEL_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Convert Table to Text"
-msgstr "Converti da testo a tabella"
+msgstr "Converti da Tabella a Testo"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE
 #: po/tmp/ap_String_Id.h
 msgid "Convert Text to Table"
-msgstr "Converti da testo a tabella"
+msgstr "Converti da Testo a Tabella"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Convert from a Table to Text"
-msgstr "Converti da testo a tabella"
+msgstr "Converti da Tabella a Testo"
 
 #. TOOLBAR_LABEL_EDIT_COPY
 #. TOOLBAR_STATUSLINE_EDIT_COPY
@@ -2469,9 +2449,8 @@ msgstr "Inizia con un documento vuoto"
 
 #. DLG_Styles_StylesTitle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create and Modify Styles"
-msgstr "&Crea e modifica stili"
+msgstr "Crea e modifica stili"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
@@ -2739,9 +2718,8 @@ msgstr "Cancella immagine"
 
 #. MENU_LABEL_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Delete Object"
-msgstr "Cancella oggetto"
+msgstr "Cancella Oggetto"
 
 #. MENU_LABEL_TABLE_DELETEROW
 #: po/tmp/ap_String_Id.h
@@ -3030,7 +3008,6 @@ msgstr "Modifica intestazione"
 
 #. MENU_STATUSLINE_EDIT_LATEXEQUATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit LaTeX Equation"
 msgstr "Modifica equazione in LaTeX"
 
@@ -3110,7 +3087,6 @@ msgstr ""
 
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Enable smart (curly) quotes"
 msgstr "Abilita le smart quotes"
 
@@ -3126,15 +3102,13 @@ msgstr "Riferimento alla nota di chiusura"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Endnote style:"
-msgstr "Stile delle note di chiusura"
+msgstr "Stile delle note di chiusura:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Endnotes"
-msgstr "&Nota di chiusura"
+msgstr "Nota di chiusura"
 
 #. DLG_PageFormat_Envelope6x9
 #: po/tmp/ap_String_Id.h
@@ -3249,9 +3223,8 @@ msgstr "Extra"
 
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Extra Parameters:"
-msgstr "Parametri Extra"
+msgstr "Parametri Extra:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
@@ -3483,21 +3456,18 @@ msgstr "Riferimento alla nota a pié di pagina"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnote style:"
-msgstr "Stile delle note a pié di pagina"
+msgstr "Stile delle note a pié di pagina:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnotes"
-msgstr "Nota a &pié di pagina"
+msgstr "Nota a pié di pagina"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnotes and &Endnotes"
-msgstr "Note a pié di pagina e di chiusura"
+msgstr "Not&e a pié di pagina e di chiusura"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
@@ -3554,9 +3524,8 @@ msgstr "Formatta intestazioni/pié di pagina"
 
 #. MENU_LABEL_FMT_EMBED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Format Ob&ject"
-msgstr "Formato oggetto"
+msgstr "Formato og&getto"
 
 #. TOOLBAR_LABEL_FMTPAINTER
 #: po/tmp/ap_String_Id.h
@@ -3602,12 +3571,11 @@ msgstr "Formato:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Da file"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "From LaTeX"
 msgstr "Da LaTeX"
 
@@ -3639,7 +3607,6 @@ msgstr "Vai a &:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
 msgstr "Vai a"
 
@@ -3682,7 +3649,6 @@ msgstr "Intestazioni [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3856,15 +3822,13 @@ msgstr "Prima lettera maiuscola"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Initial Endnote value:"
-msgstr "Valore iniziale delle note di chiusura"
+msgstr "Valore iniziale delle note di chiusura:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Initial Footnote value:"
-msgstr "Valore iniziale delle note a pié di pagina"
+msgstr "Valore iniziale delle note a pié di pagina:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -4243,9 +4207,8 @@ msgstr "Equazione LaTeX"
 
 #. DLG_Latex_LatexEquation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "LaTeX Equation:"
-msgstr "Equazione LaTeX"
+msgstr "Equazione LaTeX:"
 
 #. DLG_Lists_Indent
 #: po/tmp/ap_String_Id.h
@@ -4270,9 +4233,8 @@ msgstr "Impostazioni lingua"
 
 #. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Language(s)"
-msgstr "Lingua(e):"
+msgstr "Lingua(e)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4509,9 +4471,8 @@ msgstr "Test di Martin"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Max Column size:"
-msgstr "Lunghezza massima colonna"
+msgstr "Lunghezza massima colonna:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4620,9 +4581,8 @@ msgstr "Stili misti"
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Modify Style"
-msgstr "Modifica stili"
+msgstr "Modifica Stili"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h
@@ -4656,9 +4616,8 @@ msgstr "Multipla"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Nome:"
+msgstr "Nome"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
@@ -4806,9 +4765,8 @@ msgstr "Stili della nota"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Number of Columns:"
-msgstr "Numero di colonne"
+msgstr "Numero di colonne:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4851,9 +4809,8 @@ msgstr "Numerazione"
 
 #. DLG_FormatFootnotes_FootnoteRestart
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Numbering:"
-msgstr "Numerazione"
+msgstr "Numerazione:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4928,9 +4885,8 @@ msgstr "Apri questo documento"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Orientation"
-msgstr "Orientamento..."
+msgstr "Orientamento"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4974,9 +4930,8 @@ msgstr "P&roprietà"
 
 #. MENU_LABEL_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "P&urge revisions"
-msgstr "Elimina revisioni"
+msgstr "El&imina revisioni"
 
 #. MENU_LABEL_EDIT_PASTE_SPECIAL
 #: po/tmp/ap_String_Id.h
@@ -5000,9 +4955,8 @@ msgstr "Sfon&do"
 
 #. BREAK_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page Break"
-msgstr "Interruzione di &Pagina"
+msgstr "Interruzione di Pagina"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -5051,9 +5005,8 @@ msgstr "Imposta pagina"
 
 #. DLG_Goto_Target_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page:"
-msgstr "Pagine:"
+msgstr "Pagina:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5146,9 +5099,8 @@ msgstr "Piazza alla fine della sezione"
 
 #. DLG_FormatFootnotes_EndPlacement
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Placement:"
-msgstr "Piazzamento"
+msgstr "Piazzamento:"
 
 #. MENU_LABEL_RDF_ADV_PLAY
 #: po/tmp/ap_String_Id.h
@@ -5342,9 +5294,8 @@ msgstr ""
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "RTL &Document"
-msgstr "&Documento"
+msgstr "&Documento da destra a sinistra"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5353,9 +5304,8 @@ msgstr "&Paragrafo da destra a sinistra"
 
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "RTL &Section"
-msgstr "selezione"
+msgstr "&Sezione da destra a sinistra"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h
@@ -5408,9 +5358,8 @@ msgstr ""
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Relazione:"
+msgstr "Relazione"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5440,31 +5389,26 @@ msgstr "Elimina intestazione"
 
 #. DLG_Styles_RemoveLab
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove Property from Style:"
-msgstr "Rimuovi proprietà dallo stile"
+msgstr "Rimuovi proprietà dallo stile:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove Row as Heading"
 msgstr "Rimuovi riga come intestazione"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove Row as the page Heading"
 msgstr "Rimuovi riga come intestazione di pagina"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove all revision information from the document"
 msgstr "Elimina dal documento tutte le informazioni sulla revisione"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove full document history from the document"
 msgstr "Elimina dal documento tutto lo storico"
 
@@ -5505,7 +5449,6 @@ msgstr "Ripeti riga come intestazione"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Repeat Row as Heading on each new page"
 msgstr "Ripeti riga come intestazione su ogni nuova pagina"
 
@@ -5850,7 +5793,6 @@ msgstr "Seleziona colonna"
 
 #. TOOLBAR_TOOLTIP_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select Font"
 msgstr "Seleziona carattere"
 
@@ -5877,9 +5819,8 @@ msgstr "Seleziona casella di testo"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select a target bookmark from the list:"
-msgstr "Seleziona il segnalibro dalla lista."
+msgstr "Seleziona il segnalibro dalla lista:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6018,7 +5959,6 @@ msgstr "Separa con virgole e tabulazioni"
 
 #. MENU_LABEL_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Separate with tabs"
 msgstr "Separa con tabulazioni"
 
@@ -6072,9 +6012,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Set dominant direction of document to RTL"
-msgstr "Imposta come direzione dominante del paragrafo da destra a sinistra"
+msgstr "Imposta come direzione dominante del documento da destra a sinistra"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h
@@ -6083,9 +6022,8 @@ msgstr "Imposta come direzione dominante del paragrafo da destra a sinistra"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Set dominant direction of section to RTL"
-msgstr "Imposta come direzione dominante del paragrafo da destra a sinistra"
+msgstr "Imposta come direzione dominante del sezione da destra a sinistra"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h
@@ -6094,9 +6032,8 @@ msgstr "Imposta le proprietà degli attributi"
 
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Set new Tab"
-msgstr "Inserisci nuova tabulazione"
+msgstr "Imposta nuova tabulazione"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
@@ -6139,7 +6076,6 @@ msgstr "Definisci i tipi di intestazioni e pié di pagina"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Set this Row as Heading"
 msgstr "Imposta questa riga come intestazione"
 
@@ -6332,9 +6268,8 @@ msgstr "Interlinea singola"
 
 #. DLG_Options_TabLabel_SmartQuotes
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Smart Quotes"
-msgstr "Abilita le smart quotes"
+msgstr "Smart Quotes"
 
 #. MENU_LABEL_TABLE_SORT
 #: po/tmp/ap_String_Id.h
@@ -6403,9 +6338,8 @@ msgstr "Origine:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Space after Column:"
-msgstr "Spazio dopo colonna"
+msgstr "Spazio dopo colonna:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6575,7 +6509,6 @@ msgstr "Inizia una nuova revisione"
 
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Start ne&w revision"
 msgstr "Inizia una &nuova revisione"
 
@@ -6636,15 +6569,13 @@ msgstr "Nome dello stile:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Style Type:"
-msgstr "Tipo di stile"
+msgstr "Tipo di stile:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Style for following paragraph:"
-msgstr "Stile per paragrafo successivo"
+msgstr "Stile per paragrafo successivo:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6976,7 +6907,6 @@ msgstr ""
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "This paragraph represents words as they might appear in your document.  To "
 "see the text from your document used in this preview, position your cursor "
@@ -7090,9 +7020,8 @@ msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
-msgstr "Scrivi il nome del segnalibro o selezionane uno esistente dalla lista."
+msgstr "Scrivi il nome del segnalibro o selezionane uno esistente dalla lista:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7191,7 +7120,6 @@ msgstr "Stili definiti dall'utente"
 
 #. DLG_Tab_Label_Existing
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "User-defined Tabs"
 msgstr "Tabulazioni definite dall'utente"
 
@@ -7433,52 +7361,45 @@ msgstr "iNVERTI mAIUSCOLE mINUSCOLE"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Nessuno"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Nessuno"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Nessuno"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
-msgstr "Oggetto"
+msgstr "Soggetto"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Nessuno"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Nessuno"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
-msgstr "Oggetto"
+msgstr "Soggetto"
 
 #.
 #. * Translatable strings file generated by extract-ui.
@@ -7519,9 +7440,8 @@ msgstr "Larghezza &pagina"
 
 #. DLG_Image_PlacementTabLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "&Placement"
-msgstr "Piazzamento"
+msgstr "&Piazzamento"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h
@@ -7541,15 +7461,13 @@ msgstr "A capo"
 
 #. DLG_UFS_Effects_None
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "(None)"
-msgstr "(nessuno)"
+msgstr "(Nessuno)"
 
 #. LANG_0
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "(no proofing)"
-msgstr "-nessuna-"
+msgstr ""
 
 #. DLG_DocComparison_TestSkipped
 #: po/tmp/xap_String_Id.h
@@ -7624,9 +7542,8 @@ msgstr "Africano"
 
 #. LANG_AK_GH
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Akan"
-msgstr "Africano"
+msgstr ""
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h
@@ -7660,9 +7577,8 @@ msgstr ""
 
 #. LANG_AR
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Arabic"
-msgstr "Lista araba"
+msgstr "Arabo"
 
 #. LANG_AR_EG
 #: po/tmp/xap_String_Id.h
@@ -7731,15 +7647,13 @@ msgstr "Revisione automatica"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Available Documents:"
-msgstr "Documenti disponibili"
+msgstr "Documenti disponibili:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Available Languages:"
-msgstr "Lingue disponibili"
+msgstr "Lingue disponibili:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
@@ -8035,7 +7949,7 @@ msgstr "Copie: "
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Coptic"
-msgstr "Copia"
+msgstr "Copto"
 
 #. LANG_KW_GB
 #: po/tmp/xap_String_Id.h
@@ -8180,9 +8094,8 @@ msgstr "Ora della modifica:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Effects:"
-msgstr "Effetti"
+msgstr "Effetti:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -8211,9 +8124,8 @@ msgstr "Codifica:"
 
 #. STYLE_ENDNOTE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Endnote"
-msgstr "&Nota di chiusura"
+msgstr "Nota di chiusura"
 
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h
@@ -8338,9 +8250,8 @@ msgstr ""
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Footnote"
-msgstr "Nota a &pié di pagina"
+msgstr "Nota a pié di pagina"
 
 #. STYLE_FOOTREFERENCE
 #: po/tmp/xap_String_Id.h
@@ -8935,9 +8846,8 @@ msgstr "Apri File"
 
 #. DLG_FOSA_FileOpenTypeLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Open file as &type:"
-msgstr "Apri file come tipo:"
+msgstr "Apri file come &tipo:"
 
 #. DLG_LISTDOCS_Title
 #: po/tmp/xap_String_Id.h
@@ -8966,9 +8876,8 @@ msgstr "Selezione pagina:"
 
 #. LANG_PS
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Pashto"
-msgstr "Incolla"
+msgstr ""
 
 #. DLG_Password_Password
 #: po/tmp/xap_String_Id.h
@@ -8983,9 +8892,8 @@ msgstr "Puro testo"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Plugin Details"
-msgstr "Dettagli del plugin:"
+msgstr "Dettagli del plugin"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
@@ -9039,9 +8947,8 @@ msgstr "Stampa su File"
 
 #. DLG_FOSA_FilePrintTypeLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Print file as &type:"
-msgstr "Stampa file come tipo:"
+msgstr "Stampa file come &tipo:"
 
 #. DLG_UP_PrintIn
 #: po/tmp/xap_String_Id.h
@@ -9122,7 +9029,6 @@ msgstr ""
 
 #. DLG_FOSA_ReplayFromFileTitle
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Replay Editing from File"
 msgstr "Ripeti modifiche da file"
 
@@ -9184,9 +9090,8 @@ msgstr "Salva impostazioni"
 
 #. DLG_FOSA_FileSaveTypeLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Save file as &type:"
-msgstr "Salva file come tipo:"
+msgstr "Salva file come &tipo:"
 
 #. DLG_UFS_ScriptLabel
 #: po/tmp/xap_String_Id.h
@@ -9196,9 +9101,8 @@ msgstr "Script:"
 
 #. STYLE_DELIM_SECTION
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Section"
-msgstr "Selezione"
+msgstr "Sezione"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
@@ -9519,9 +9423,8 @@ msgstr "Senza titolo%d"
 
 #. DLG_UFS_Effects_UpperCase
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Uppercase"
-msgstr "Lista con lettere maiuscole"
+msgstr "lettere maiuscole"
 
 #. LANG_UR
 #: po/tmp/xap_String_Id.h
@@ -9735,7 +9638,6 @@ msgstr "non correlato"
 
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Nessuno"
