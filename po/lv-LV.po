@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-08-16 16:20+0200\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2013-01-13 18:17+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: lv\n"
@@ -1073,27 +1073,27 @@ msgstr "1.5 rindstarpas"
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr ""
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr ""
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr ""
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr ""
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr ""
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1134,57 +1134,57 @@ msgstr "&Vienmēr ieteikt labojumus"
 #. DLG_PageFormat_A0
 #: po/tmp/ap_String_Id.h
 msgid "A0"
-msgstr ""
+msgstr "A0"
 
 #. DLG_PageFormat_A1
 #: po/tmp/ap_String_Id.h
 msgid "A1"
-msgstr ""
+msgstr "A1"
 
 #. DLG_PageFormat_A10
 #: po/tmp/ap_String_Id.h
 msgid "A10"
-msgstr ""
+msgstr "A10"
 
 #. DLG_PageFormat_A2
 #: po/tmp/ap_String_Id.h
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #. DLG_PageFormat_A3
 #: po/tmp/ap_String_Id.h
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #. DLG_PageFormat_A4
 #: po/tmp/ap_String_Id.h
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #. DLG_PageFormat_A5
 #: po/tmp/ap_String_Id.h
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #. DLG_PageFormat_A6
 #: po/tmp/ap_String_Id.h
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #. DLG_PageFormat_A7
 #: po/tmp/ap_String_Id.h
 msgid "A7"
-msgstr ""
+msgstr "A7"
 
 #. DLG_PageFormat_A8
 #: po/tmp/ap_String_Id.h
 msgid "A8"
-msgstr ""
+msgstr "A8"
 
 #. DLG_PageFormat_A9
 #: po/tmp/ap_String_Id.h
 msgid "A9"
-msgstr ""
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1238,12 +1238,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord ir nepieciešams fails %s.dll\n"
-"Lūdzu lejuplādēt un uzstādīt to no "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1462,9 +1459,8 @@ msgstr ""
 
 #. DLG_Options_Label_AutoSaveUnderline
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Auto &Save"
-msgstr "Automātiskā Saglabāšana"
+msgstr "Automātiskā &Saglabāšana"
 
 #. DLG_Options_Label_AutoSaveCurrent
 #: po/tmp/ap_String_Id.h
@@ -1523,21 +1519,18 @@ msgstr ""
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Fields:"
-msgstr "Pieejamie lauki"
+msgstr "Pieejamie lauki:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Formats:"
-msgstr "Pieejamie formāti"
+msgstr "Pieejamie formāti:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Styles:"
-msgstr "Pieejamie stili"
+msgstr "Pieejamie stili:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1547,57 +1540,57 @@ msgstr "&No:"
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1638,7 +1631,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Bold"
-msgstr "&Treknraksts"
+msgstr "Treknraksts"
 
 #. MENU_LABEL_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h
@@ -1687,7 +1680,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Bottom"
-msgstr "&Apakša"
+msgstr "Apakša"
 
 #. BottomMarginStatus
 #: po/tmp/ap_String_Id.h
@@ -1750,9 +1743,8 @@ msgstr "Aizzīmes un &Numerācija"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Bullets and Numbering"
-msgstr "Aizzīmes un &Numerācija"
+msgstr "Aizzīmes un Numerācija"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
@@ -1777,42 +1769,42 @@ msgstr "&Veidotāji"
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
@@ -1822,17 +1814,17 @@ msgstr ""
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -1862,9 +1854,8 @@ msgstr ""
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Category"
-msgstr "Kategorija:"
+msgstr "Kategorija"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2174,15 +2165,13 @@ msgstr "Krāsa:"
 
 #. DLG_FormatTable_Apply_To_Column
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Column"
-msgstr "&Kolonnu"
+msgstr "Kolonnu"
 
 #. BREAK_Column
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Column Break"
-msgstr "&Kolonnu pārtraukums"
+msgstr "Kolonnu pārtraukums"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
@@ -2274,9 +2263,8 @@ msgstr "Turpināt iepriekšējo revīziju (numur %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contributor(s)"
-msgstr "Atbalstītāji:"
+msgstr "Atbalstītāji"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -2446,9 +2434,8 @@ msgstr "Izveidot jaunu tukšu dokumentu"
 
 #. DLG_Styles_StylesTitle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create and Modify Styles"
-msgstr "&Veidot un mainīt"
+msgstr "Veidot un mainīt"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
@@ -2914,7 +2901,7 @@ msgstr "Dokumenta Īpašības"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Documents"
-msgstr "&Dokumenti"
+msgstr "Dokumenti"
 
 #. DLG_FormatFootnotes_FootRestartNone
 #: po/tmp/ap_String_Id.h
@@ -3093,15 +3080,14 @@ msgstr "Atsauces norāde"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Endnote style:"
-msgstr "Atsauces stils"
+msgstr "Atsauces stils:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Endnotes"
-msgstr "&Atsauce"
+msgstr "Atsauce"
 
 #. DLG_PageFormat_Envelope6x9
 #: po/tmp/ap_String_Id.h
@@ -3215,9 +3201,8 @@ msgstr ""
 
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Extra Parameters:"
-msgstr "Papildus parametri"
+msgstr "Papildus parametri:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
@@ -3449,21 +3434,19 @@ msgstr "Vēres norāde"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnote style:"
-msgstr "Vēres stils"
+msgstr "Vēres stils:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Footnotes"
-msgstr "&Vēre"
+msgstr "Vēre"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnotes and &Endnotes"
-msgstr "Vēres un atsauces"
+msgstr "Vēres un &Atsauces"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
@@ -3569,7 +3552,7 @@ msgstr "Formāts:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
+msgid "From File (.xml, .mathml)"
 msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
@@ -3604,7 +3587,6 @@ msgstr "Iet Uz &Ko:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
 msgstr "Iet Uz"
 
@@ -3647,7 +3629,6 @@ msgstr "Galvene [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3821,15 +3802,13 @@ msgstr "Pirmais lielais"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Initial Endnote value:"
-msgstr "Atsauces sākotnējā vērtība"
+msgstr "Atsauces sākotnējā vērtība:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Initial Footnote value:"
-msgstr "Vēres sākotnējā vērtība"
+msgstr "Vēres sākotnējā vērtība:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -4145,9 +4124,8 @@ msgstr "Neredzamās &Izkārtojuma zīmes"
 #. TOOLBAR_TOOLTIP_FMT_ITALIC
 #. DLG_UFS_StyleItalic
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Italic"
-msgstr "&Kursīvs"
+msgstr "Kursīvs"
 
 #. MENU_STATUSLINE_GOTO_ANNOTATION
 #: po/tmp/ap_String_Id.h
@@ -4233,9 +4211,8 @@ msgstr "Valodas uzstādījumi"
 
 #. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Language(s)"
-msgstr "Valoda(s):"
+msgstr "Valoda(s)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4471,9 +4448,8 @@ msgstr "Martina Tests"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Max Column size:"
-msgstr "Maksimālais kolonnu izmērs"
+msgstr "Maksimālais kolonnu izmērs:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4582,9 +4558,8 @@ msgstr ""
 
 #. DLG_Styles_ModifyTitle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Modify Style"
-msgstr "Modificēt stilus"
+msgstr "Modificēt Stilus"
 
 #. DLG_Styles_Modify
 #: po/tmp/ap_String_Id.h
@@ -4618,9 +4593,8 @@ msgstr "Daudz"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Vārds:"
+msgstr "Vārds"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
@@ -4767,9 +4741,8 @@ msgstr ""
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Number of Columns:"
-msgstr "Kolonnu skaits"
+msgstr "Kolonnu skaits:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4812,9 +4785,8 @@ msgstr "Numerācija"
 
 #. DLG_FormatFootnotes_FootnoteRestart
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Numbering:"
-msgstr "Numerācija"
+msgstr "Numerācija:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4889,9 +4861,8 @@ msgstr "Atvērt šo dokumentu"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Orientation"
-msgstr "Orientācija..."
+msgstr "Orientācija"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -4960,9 +4931,8 @@ msgstr "&Fons"
 
 #. BREAK_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page Break"
-msgstr "&Lappuses pārtraukums"
+msgstr "Lappuses pārtraukums"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -5011,9 +4981,8 @@ msgstr "Lappuses iestatīšana"
 
 #. DLG_Goto_Target_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page:"
-msgstr "Lappuses:"
+msgstr "Lappuse:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5365,9 +5334,8 @@ msgstr ""
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Attiecība:"
+msgstr "Attiecība"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5399,7 +5367,7 @@ msgstr "Noņemt Galveni"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Remove Property from Style:"
-msgstr "Noņemt stila īpašību"
+msgstr "Noņemt stila īpašību:"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_REMOVE
 #: po/tmp/ap_String_Id.h
@@ -5625,7 +5593,7 @@ msgstr "Tiesības:"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Row"
-msgstr "&Rindu"
+msgstr "Rindu"
 
 #. MENU_LABEL_TABLE_INSERT_ROWS_BEFORE
 #: po/tmp/ap_String_Id.h
@@ -5826,9 +5794,8 @@ msgstr ""
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select a target bookmark from the list:"
-msgstr "Izvēlaties mērķa grāmatzīmi no saraksta."
+msgstr "Izvēlaties mērķa grāmatzīmi no saraksta:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6342,9 +6309,8 @@ msgstr "Avots:"
 
 #. DLG_Column_Space_After
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Space after Column:"
-msgstr "Tukšums pēc kolonnas"
+msgstr "Tukšums pēc kolonnas:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6514,9 +6480,8 @@ msgstr "Sākt jaunu revīziju"
 
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Start ne&w revision"
-msgstr "Sākt jaunu revīziju"
+msgstr "Sākt jau&nu revīziju"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
@@ -6536,14 +6501,13 @@ msgstr "Beigt tekošo sarakstu"
 #. MENU_LABEL_FMT_STRIKE
 #: po/tmp/ap_String_Id.h
 msgid "Stri&ke"
-msgstr "Pārsvītrot"
+msgstr "Pārs&vītrot"
 
 #. TOOLBAR_LABEL_FMT_STRIKE
 #. TOOLBAR_STATUSLINE_FMT_STRIKE
 #. TOOLBAR_TOOLTIP_FMT_STRIKE
 #. DLG_UFS_StrikeoutCheck
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Strike"
 msgstr "Pārsvītrot"
 
@@ -6576,15 +6540,14 @@ msgstr "Stila vārds:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Style Type:"
-msgstr "Stila Tips"
+msgstr "Stila Tips:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Style for following paragraph:"
-msgstr "Stils nākamajai rindkopai"
+msgstr "Stils nākamajai rindkopai:"
 
 #. DLG_Styles_ErrBlankName
 #: po/tmp/ap_String_Id.h
@@ -6595,7 +6558,6 @@ msgstr "Stila vārds nevar palikt tukšs"
 #. DLG_Lists_Style
 #. DLG_UFS_StyleLabel
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Style:"
 msgstr "Stils:"
 
@@ -6627,7 +6589,7 @@ msgstr "Subjekts:"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Subscript"
-msgstr "&Apakšraksts"
+msgstr "Apakšraksts"
 
 #. DLG_Spell_Suggestions
 #: po/tmp/ap_String_Id.h
@@ -6694,9 +6656,8 @@ msgstr "&Augšraksts"
 #. TOOLBAR_TOOLTIP_FMT_SUPERSCRIPT
 #. DLG_UFS_SuperScript
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Superscript"
-msgstr "&Augšraksts"
+msgstr "Augšraksts"
 
 #. MENU_LABEL_INSERT_SYMBOL
 #: po/tmp/ap_String_Id.h
@@ -7020,9 +6981,8 @@ msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
-msgstr "Ierakstiet grāmatzīmes vārdu, vai izvēlaties eksistējošu no saraksta."
+msgstr "Ierakstiet grāmatzīmes vārdu, vai izvēlaties eksistējošu no saraksta:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7041,7 +7001,7 @@ msgstr "LIELIEBURTI"
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Underline"
-msgstr "&Pasvītrots"
+msgstr "Pasvītrots"
 
 #. MENU_STATUSLINE_FMT_UNDERLINE
 #: po/tmp/ap_String_Id.h
@@ -7053,7 +7013,7 @@ msgstr "Pasvītrot iezīmēto (pārslēgt)"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Underlines"
-msgstr "&Pasvītrots"
+msgstr "Pasvītrots"
 
 #. TOOLBAR_LABEL_EDIT_UNDO
 #: po/tmp/ap_String_Id.h
@@ -7117,7 +7077,6 @@ msgstr "Lietot Interfeisa valodu"
 
 #. DLG_Stylist_UserStyles
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "User defined Styles"
 msgstr "Lietotāja definētie stili"
 
@@ -7276,7 +7235,7 @@ msgstr "Izmaiņas tiks pazaudētas, ja tās nenoglabāsiet."
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Zoom"
-msgstr "&Mērogs"
+msgstr "Mērogs"
 
 #. MENU_LABEL_VIEW_ZOOM_100
 #: po/tmp/ap_String_Id.h
@@ -7360,49 +7319,42 @@ msgstr "pĀRSLĒGT reģistru"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Nav"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Nav"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Nav"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Subjekts"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Nav"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Nav"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Subjekts"
@@ -7467,7 +7419,6 @@ msgstr ""
 
 #. DLG_UFS_Effects_None
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "(None)"
 msgstr "(nav)"
 
@@ -7650,15 +7601,13 @@ msgstr ""
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Available Documents:"
-msgstr "Pieejamie Dokumenti"
+msgstr "Pieejamie Dokumenti:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Available Languages:"
-msgstr "Pieejamās Valodas"
+msgstr "Pieejamās Valodas:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
@@ -8094,9 +8043,8 @@ msgstr ""
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Effects:"
-msgstr "Efekti"
+msgstr "Efekti:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -8125,9 +8073,8 @@ msgstr "Kodējums:"
 
 #. STYLE_ENDNOTE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Endnote"
-msgstr "&Atsauce"
+msgstr "Atsauce"
 
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h
@@ -8252,9 +8199,8 @@ msgstr ""
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Footnote"
-msgstr "&Vēre"
+msgstr "Vēre"
 
 #. STYLE_FOOTREFERENCE
 #: po/tmp/xap_String_Id.h
@@ -8408,9 +8354,8 @@ msgstr "Virsraksts 3"
 
 #. STYLE_HEADING4
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Heading 4"
-msgstr "Virsraksts 1"
+msgstr "Virsraksts 4"
 
 #. LANG_HE_IL
 #: po/tmp/xap_String_Id.h
@@ -8439,9 +8384,8 @@ msgstr "Augstums:"
 
 #. DLG_IP_Height_Label
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Height: "
-msgstr "Platums: "
+msgstr "Augstums: "
 
 #. DLG_UFS_HiddenCheck
 #: po/tmp/xap_String_Id.h
@@ -8715,7 +8659,6 @@ msgstr ""
 
 #. DLG_UFS_Effects_LowerCase
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Lowercase"
 msgstr "mazie burti"
 
@@ -8891,9 +8834,8 @@ msgstr "Pliks Teksts"
 
 #. DLG_PLUGIN_MANAGER_DETAILS
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Plugin Details"
-msgstr "Iespraudņa Detaļas:"
+msgstr "Iespraudņa Detaļas"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
@@ -9206,7 +9148,6 @@ msgstr ""
 
 #. TB_Font_Symbol
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Symbols"
 msgstr "Simbols"
 
@@ -9634,7 +9575,6 @@ msgstr ""
 
 #. STYLE_NONE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Nav"
