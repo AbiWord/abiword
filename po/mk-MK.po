@@ -1,6 +1,5 @@
 # Macedonian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
 # Copyright by:
 # Zaklina Gjalevska <zaklina@nubsk.edu.mk>, 2004.
 # Zaklina Gjalevska <gjalevska@yahoo.com>, 2004.
@@ -8,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-08-16 16:15+0200\n"
+"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"PO-Revision-Date: 2013-01-25 06:14+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Macedonian <mkde-l10n@list.sourceforge.net>\n"
 "Language: mk\n"
@@ -463,9 +462,8 @@ msgstr "&Подножје:"
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "Формат"
+msgstr "&Формат"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -484,9 +482,8 @@ msgstr "&Заглавие и подножје"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Header/Footers"
-msgstr "Заглавие/Подножје"
+msgstr "&Заглавие/Подножје"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h
@@ -1082,27 +1079,27 @@ msgstr "1.5 проред"
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr ""
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr ""
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr ""
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr ""
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr ""
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1146,57 +1143,57 @@ msgstr "Секогаш предлагај &корекции"
 #. DLG_PageFormat_A0
 #: po/tmp/ap_String_Id.h
 msgid "A0"
-msgstr ""
+msgstr "A0"
 
 #. DLG_PageFormat_A1
 #: po/tmp/ap_String_Id.h
 msgid "A1"
-msgstr ""
+msgstr "A1"
 
 #. DLG_PageFormat_A10
 #: po/tmp/ap_String_Id.h
 msgid "A10"
-msgstr ""
+msgstr "A10"
 
 #. DLG_PageFormat_A2
 #: po/tmp/ap_String_Id.h
 msgid "A2"
-msgstr ""
+msgstr "A2"
 
 #. DLG_PageFormat_A3
 #: po/tmp/ap_String_Id.h
 msgid "A3"
-msgstr ""
+msgstr "A3"
 
 #. DLG_PageFormat_A4
 #: po/tmp/ap_String_Id.h
 msgid "A4"
-msgstr ""
+msgstr "A4"
 
 #. DLG_PageFormat_A5
 #: po/tmp/ap_String_Id.h
 msgid "A5"
-msgstr ""
+msgstr "A5"
 
 #. DLG_PageFormat_A6
 #: po/tmp/ap_String_Id.h
 msgid "A6"
-msgstr ""
+msgstr "A6"
 
 #. DLG_PageFormat_A7
 #: po/tmp/ap_String_Id.h
 msgid "A7"
-msgstr ""
+msgstr "A7"
 
 #. DLG_PageFormat_A8
 #: po/tmp/ap_String_Id.h
 msgid "A8"
-msgstr ""
+msgstr "A8"
 
 #. DLG_PageFormat_A9
 #: po/tmp/ap_String_Id.h
 msgid "A9"
-msgstr ""
+msgstr "A9"
 
 #. FIELD_DateTime_AMPM
 #: po/tmp/ap_String_Id.h
@@ -1252,12 +1249,9 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord има потреба од датотеката %s.dll\n"
-"Ве молиме преземете ја и инсталирајте ја од "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1470,9 +1464,8 @@ msgstr "Прикачи на претходната листа"
 #. FIELD_Document_Creator
 #. DLG_Goto_Column_Author
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Author"
-msgstr "Автор:"
+msgstr "Автор"
 
 #. DLG_MetaData_Author_LBL
 #. DLG_Annotation_Author_LBL
@@ -1543,21 +1536,18 @@ msgstr "Автоматско спојување"
 
 #. DLG_MailMerge_AvailableFields
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Fields:"
-msgstr "Достапни полиња"
+msgstr "Достапни полиња:"
 
 #. DLG_DateTime_AvailableFormats
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Formats:"
-msgstr "Достапни формати"
+msgstr "Достапни формати:"
 
 #. DLG_Styles_Available
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Available Styles:"
-msgstr "Достапни стилови"
+msgstr "Достапни стилови:"
 
 #. DLG_Para_LabelBy
 #: po/tmp/ap_String_Id.h
@@ -1567,57 +1557,57 @@ msgstr "&За:"
 #. DLG_PageFormat_B0
 #: po/tmp/ap_String_Id.h
 msgid "B0"
-msgstr ""
+msgstr "B0"
 
 #. DLG_PageFormat_B1
 #: po/tmp/ap_String_Id.h
 msgid "B1"
-msgstr ""
+msgstr "B1"
 
 #. DLG_PageFormat_B10
 #: po/tmp/ap_String_Id.h
 msgid "B10"
-msgstr ""
+msgstr "B10"
 
 #. DLG_PageFormat_B2
 #: po/tmp/ap_String_Id.h
 msgid "B2"
-msgstr ""
+msgstr "B2"
 
 #. DLG_PageFormat_B3
 #: po/tmp/ap_String_Id.h
 msgid "B3"
-msgstr ""
+msgstr "B3"
 
 #. DLG_PageFormat_B4
 #: po/tmp/ap_String_Id.h
 msgid "B4"
-msgstr ""
+msgstr "B4"
 
 #. DLG_PageFormat_B5
 #: po/tmp/ap_String_Id.h
 msgid "B5"
-msgstr ""
+msgstr "B5"
 
 #. DLG_PageFormat_B6
 #: po/tmp/ap_String_Id.h
 msgid "B6"
-msgstr ""
+msgstr "B6"
 
 #. DLG_PageFormat_B7
 #: po/tmp/ap_String_Id.h
 msgid "B7"
-msgstr ""
+msgstr "B7"
 
 #. DLG_PageFormat_B8
 #: po/tmp/ap_String_Id.h
 msgid "B8"
-msgstr ""
+msgstr "B8"
 
 #. DLG_PageFormat_B9
 #: po/tmp/ap_String_Id.h
 msgid "B9"
-msgstr ""
+msgstr "B9"
 
 #. DLG_FormatFrame_Background
 #. DLG_FormatTable_Background
@@ -1770,9 +1760,8 @@ msgstr "Точки и &нумерирање"
 
 #. DLG_Lists_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Bullets and Numbering"
-msgstr "Точки и &нумерирање"
+msgstr "Точки и нумерирање"
 
 #. DLG_Options_Label_Look
 #: po/tmp/ap_String_Id.h
@@ -1797,42 +1786,42 @@ msgstr "К&редити"
 #. DLG_PageFormat_C0
 #: po/tmp/ap_String_Id.h
 msgid "C0"
-msgstr ""
+msgstr "C0"
 
 #. DLG_PageFormat_C1
 #: po/tmp/ap_String_Id.h
 msgid "C1"
-msgstr ""
+msgstr "C1"
 
 #. DLG_PageFormat_C10
 #: po/tmp/ap_String_Id.h
 msgid "C10"
-msgstr ""
+msgstr "C10"
 
 #. DLG_PageFormat_C2
 #: po/tmp/ap_String_Id.h
 msgid "C2"
-msgstr ""
+msgstr "C2"
 
 #. DLG_PageFormat_C3
 #: po/tmp/ap_String_Id.h
 msgid "C3"
-msgstr ""
+msgstr "C3"
 
 #. DLG_PageFormat_C4
 #: po/tmp/ap_String_Id.h
 msgid "C4"
-msgstr ""
+msgstr "C4"
 
 #. DLG_PageFormat_C5
 #: po/tmp/ap_String_Id.h
 msgid "C5"
-msgstr ""
+msgstr "C5"
 
 #. DLG_PageFormat_C6
 #: po/tmp/ap_String_Id.h
 msgid "C6"
-msgstr ""
+msgstr "C6"
 
 #. DLG_PageFormat_C6C5Envelope
 #: po/tmp/ap_String_Id.h
@@ -1842,17 +1831,17 @@ msgstr ""
 #. DLG_PageFormat_C7
 #: po/tmp/ap_String_Id.h
 msgid "C7"
-msgstr ""
+msgstr "C7"
 
 #. DLG_PageFormat_C8
 #: po/tmp/ap_String_Id.h
 msgid "C8"
-msgstr ""
+msgstr "C8"
 
 #. DLG_PageFormat_C9
 #: po/tmp/ap_String_Id.h
 msgid "C9"
-msgstr ""
+msgstr "C9"
 
 #. MSG_NoBreakInsideTable
 #: po/tmp/ap_String_Id.h
@@ -1881,9 +1870,8 @@ msgstr "Не може да започне работата за печатење
 
 #. FIELD_Document_Type
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Category"
-msgstr "Категорија:"
+msgstr "Категорија"
 
 #. DLG_MetaData_Category_LBL
 #: po/tmp/ap_String_Id.h
@@ -2200,7 +2188,7 @@ msgstr "Колона"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Column Break"
-msgstr "&Прелом на колона"
+msgstr "Прелом на колона"
 
 #. ColumnGapStatus
 #: po/tmp/ap_String_Id.h
@@ -2296,9 +2284,8 @@ msgstr "Продолжи претходна ревизија (број %d)"
 
 #. FIELD_Document_Contributor
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contributor(s)"
-msgstr "Соработник(ци):"
+msgstr "Соработник(ци)"
 
 #. DLG_MetaData_CoAuthor_LBL
 #: po/tmp/ap_String_Id.h
@@ -3132,15 +3119,14 @@ msgstr "Референца на напомената"
 
 #. DLG_FormatFootnotes_EndStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Endnote style:"
-msgstr "Стил на напомената"
+msgstr "Стил на напомената:"
 
 #. DLG_FormatFootnotes_Endnotes
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Endnotes"
-msgstr "&Напомена"
+msgstr "Напомена"
 
 #. DLG_PageFormat_Envelope6x9
 #: po/tmp/ap_String_Id.h
@@ -3256,9 +3242,8 @@ msgstr "Дополнително"
 
 #. DLG_Field_Parameters
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Extra Parameters:"
-msgstr "Дополнителни параметри"
+msgstr "Дополнителни параметри:"
 
 #. DLG_Options_Label_ViewExtraTB
 #: po/tmp/ap_String_Id.h
@@ -3490,9 +3475,8 @@ msgstr "Референца на фуснотата"
 
 #. DLG_FormatFootnotes_FootStyle
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnote style:"
-msgstr "Стил на фуснотата"
+msgstr "Стил на фуснотата:"
 
 #. DLG_FormatFootnotes_Footnotes
 #: po/tmp/ap_String_Id.h
@@ -3502,9 +3486,8 @@ msgstr "&Фуснота"
 
 #. MENU_LABEL_FMT_FOOTNOTES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Footnotes and &Endnotes"
-msgstr "Фусноти и напомени"
+msgstr "Фусноти и &напомени"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_LTR
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
@@ -3610,9 +3593,8 @@ msgstr "Формат:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
-msgid "From File"
-msgstr "&Од датотека"
+msgid "From File (.xml, .mathml)"
+msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -3625,7 +3607,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Full Screen"
-msgstr "&Цел екран"
+msgstr "Цел екран"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
@@ -3647,7 +3629,6 @@ msgstr "Оди &на:"
 
 #. DLG_Goto_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Go to"
 msgstr "Оди на"
 
@@ -3690,7 +3671,6 @@ msgstr "Заглавие [%s]"
 
 #. MSG_CHECK_PRINT_MODE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "Headers and Footers can only be created and edited while in Print View "
 "Mode. \n"
@@ -3856,7 +3836,7 @@ msgstr "Вовлекување"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Indents and Spacing"
-msgstr "&Вовлекување и проред"
+msgstr "Вовлекување и проред"
 
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h
@@ -3865,15 +3845,13 @@ msgstr "Почетни Големи Букви"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Initial Endnote value:"
-msgstr "Почетна вредност на напомената"
+msgstr "Почетна вредност на напомената:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Initial Footnote value:"
-msgstr "Почетна вредност на фуснотата"
+msgstr "Почетна вредност на фуснотата:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -4280,9 +4258,8 @@ msgstr "Поставки на јазикот"
 
 #. FIELD_Document_Language
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Language(s)"
-msgstr "Јазик(ци):"
+msgstr "Јазик(ци)"
 
 #. DLG_MetaData_Languages_LBL
 #: po/tmp/ap_String_Id.h
@@ -4298,7 +4275,7 @@ msgstr "Изглед"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Leader:"
-msgstr "Водач"
+msgstr "Водач:"
 
 #. DLG_Para_AlignLeft
 #. DLG_Tab_Radio_Left
@@ -4401,7 +4378,7 @@ msgstr "Линија над избраниот текст (вклучи/искл
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Line and Page Breaks"
-msgstr "&Прелом на линија и страница"
+msgstr "Прелом на линија и страница"
 
 #. MENU_STATUSLINE_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
@@ -4520,9 +4497,8 @@ msgstr "Мартинсов тест"
 
 #. DLG_Column_Size
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Max Column size:"
-msgstr "Макс. големина на колоната"
+msgstr "Макс. големина на колоната:"
 
 #. TOOLBAR_LABEL_MENU
 #. TOOLBAR_STATUSLINE_MENU
@@ -4668,9 +4644,8 @@ msgstr "Повеќекратен"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_NAME
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_LOCATION_NAME
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Name"
-msgstr "Име:"
+msgstr "Име"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_CONTACT_NAME_HOMEPAGE_PHONE
@@ -4818,9 +4793,8 @@ msgstr "Стилови на забелешката"
 
 #. DLG_Column_Number_Cols
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Number of Columns:"
-msgstr "Број на колони"
+msgstr "Број на колони:"
 
 #. FIELD_Numbers_PagesCount
 #: po/tmp/ap_String_Id.h
@@ -4863,9 +4837,8 @@ msgstr "Нумерирање"
 
 #. DLG_FormatFootnotes_FootnoteRestart
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Numbering:"
-msgstr "Нумерирање"
+msgstr "Нумерирање:"
 
 #. FIELD_Type_Numbers
 #: po/tmp/ap_String_Id.h
@@ -4940,9 +4913,8 @@ msgstr "Отвори го документов"
 
 #. DLG_PageSetup_Orient
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Orientation"
-msgstr "Ориентација..."
+msgstr "Ориентација"
 
 #. DLG_Options_TabLabel_Other
 #: po/tmp/ap_String_Id.h
@@ -5012,9 +4984,8 @@ msgstr "Заднина на страницата"
 
 #. BREAK_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page Break"
-msgstr "&Прелом на страница"
+msgstr "Прелом на страница"
 
 #. MENU_LABEL_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
@@ -5063,9 +5034,8 @@ msgstr "Поставување на страницата"
 
 #. DLG_Goto_Target_Page
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Page:"
-msgstr "Страници:"
+msgstr "Страница:"
 
 #. PageInfoField
 #: po/tmp/ap_String_Id.h
@@ -5426,7 +5396,7 @@ msgstr ""
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Relation"
-msgstr "Врска:"
+msgstr "Врска"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5895,9 +5865,8 @@ msgstr "Селектирај текстуална рамка"
 
 #. DLG_InsertHyperlink_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select a target bookmark from the list:"
-msgstr "Избери означувач на целта од листата."
+msgstr "Избери означувач на целта од листата:"
 
 #. DLG_FormatFrame_SelectImage
 #. DLG_FormatTable_SelectImage
@@ -6424,7 +6393,7 @@ msgstr "Извор:"
 #: po/tmp/ap_String_Id.h
 #, fuzzy
 msgid "Space after Column:"
-msgstr "Проред по колоната"
+msgstr "Проред по колоната:"
 
 #. TOOLBAR_STATUSLINE_PARA_12BEFORE
 #. TOOLBAR_TOOLTIP_PARA_12BEFORE
@@ -6655,9 +6624,8 @@ msgstr "Име на стилот:"
 
 #. DLG_Styles_ModifyType
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Style Type:"
-msgstr "Тип на стилот"
+msgstr "Тип на стилот:"
 
 #. DLG_Styles_ModifyFollowing
 #: po/tmp/ap_String_Id.h
@@ -6995,7 +6963,6 @@ msgstr ""
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "This paragraph represents words as they might appear in your document.  To "
 "see the text from your document used in this preview, position your cursor "
@@ -7109,9 +7076,8 @@ msgstr ""
 
 #. DLG_InsertBookmark_Msg
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
-msgstr "Напиши име за обележувачот или избери постоечко од листата."
+msgstr "Напиши име за обележувачот или избери постоечко од листата:"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7450,49 +7416,42 @@ msgstr "гОЛЕМИ бУКВИ (освен почетните)"
 
 #. DLG_FormatTOC_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_FormatTOC_None"
 msgid "None"
 msgstr "Никој"
 
 #. DLG_Lists_Style_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Style_none"
 msgid "None"
 msgstr "Никој"
 
 #. DLG_Lists_Type_none
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Lists_Type_none"
 msgid "None"
 msgstr "Никој"
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
 msgstr "Тема"
 
 #. DLG_Styles_DefNone
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Styles_DefNone"
 msgid "None"
 msgstr "Никој"
 
 #. DLG_Tab_Radio_None
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_Tab_Radio_None"
 msgid "None"
 msgstr "Никој"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
 msgstr "Тема"
@@ -7640,9 +7599,8 @@ msgstr "Африкаан"
 
 #. LANG_AK_GH
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Akan"
-msgstr "Африкаан"
+msgstr ""
 
 #. LANG_SQ_AL
 #: po/tmp/xap_String_Id.h
@@ -7748,15 +7706,13 @@ msgstr "Авторевизија"
 
 #. DLG_MW_AvailableDocuments
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Available Documents:"
-msgstr "Достапни документи"
+msgstr "Достапни документи:"
 
 #. DLG_ULANG_AvailableLanguages
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Available Languages:"
-msgstr "Достапни јазици"
+msgstr "Достапни јазици:"
 
 #. LANG_AYM_BO
 #: po/tmp/xap_String_Id.h
@@ -8198,9 +8154,8 @@ msgstr "Време за уредување:"
 
 #. DLG_UFS_EffectsFrameLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Effects:"
-msgstr "Ефекти"
+msgstr "Ефекти:"
 
 #. DLG_HTMLOPT_ExpEmbedCSS
 #: po/tmp/xap_String_Id.h
@@ -8229,9 +8184,8 @@ msgstr "Кодирање:"
 
 #. STYLE_ENDNOTE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Endnote"
-msgstr "&Напомена"
+msgstr "Напомена"
 
 #. STYLE_ENDREFERENCE
 #: po/tmp/xap_String_Id.h
@@ -8360,7 +8314,7 @@ msgstr ""
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Footnote"
-msgstr "&Фуснота"
+msgstr "Фуснота"
 
 #. STYLE_FOOTREFERENCE
 #: po/tmp/xap_String_Id.h
@@ -9010,7 +8964,7 @@ msgstr "Обичен текст"
 #: po/tmp/xap_String_Id.h
 #, fuzzy
 msgid "Plugin Details"
-msgstr "Детали на приклучокот:"
+msgstr "Детали на приклучокот"
 
 #. DLG_PLUGIN_MANAGER_LIST
 #: po/tmp/xap_String_Id.h
