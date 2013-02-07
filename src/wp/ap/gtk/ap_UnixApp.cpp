@@ -1286,19 +1286,24 @@ GR_Graphics * AP_UnixApp::newDefaultScreenGraphics() const
 
 int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 {
-    // This is a static function.	
-	
+    // This is a static function.
+
+#if !GLIB_CHECK_VERSION(2,32,0)
 	if (!g_thread_supported ())
-		g_thread_init (NULL);	
-    
+		g_thread_init (NULL);
+#endif
+
     // initialize our application.
 	int exit_status = 0;
 	AP_UnixApp * pMyUnixApp = new AP_UnixApp(szAppName);
 
 #ifdef WITH_CHAMPLAIN
-    gtk_clutter_init (&argc, &argv);
+	ClutterInitError err = gtk_clutter_init (&argc, &argv);
+	if (err != CLUTTER_INIT_SUCCESS) {
+		g_warning("clutter failed %d, get a life.", err);
+	}
 #endif
-    
+
 	/* this brace is here to ensure that our local variables on the stack
 	 * do not outlive the application object by giving them a lower scope
 	 */
