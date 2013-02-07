@@ -27,6 +27,7 @@
 #include "config.h"
 #endif
 
+#include "xap_Gtk2Compat.h"
 #include "ap_Dialog_Options.h"
 
 class XAP_UnixFrame;
@@ -222,7 +223,7 @@ private:
 	static void s_apply_clicked	     (GtkWidget *,         gpointer);
 	static void s_defaults_clicked	     (GtkWidget *,         gpointer);
 	static void s_chooseTransparentColor (GtkWidget *,         gpointer);
-    static void s_real_color_changed(GdkColor & gdkcolor, AP_UnixDialog_Options * dlg);
+    static void s_real_color_changed(GdkRGBA & gdkcolor, AP_UnixDialog_Options * dlg);
 	static void s_color_changed	     (GtkColorSelection *, gpointer);
 	static void s_auto_save_toggled	     (GtkToggleButton *,   gpointer);
 	static void s_checkbutton_toggle     (GtkWidget *,	   gpointer);

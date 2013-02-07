@@ -1,6 +1,6 @@
 /* AbiWord
  * Copyright (C) 2000-2002 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009, 2013 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -54,10 +54,10 @@ static void s_color_changed(GtkWidget * csel,
 {
 	UT_ASSERT(csel && dlg);
   
-	GtkColorSelection * w = GTK_COLOR_SELECTION(csel);
-	GdkColor cur;
+	GtkColorChooser * w = GTK_COLOR_CHOOSER(csel);
+	GdkRGBA cur;
 
-	gtk_color_selection_get_current_color (w, &cur);
+	gtk_color_chooser_get_rgba (w, &cur);
 	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(cur);
 	UT_HashColor hash_color;
 	dlg->setColor (hash_color.setColor(*rgbcolor) + 1); // return with # prefix
@@ -145,9 +145,11 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 	gtk_container_set_border_width (GTK_CONTAINER (vbox), 5);
 	gtk_container_add (GTK_CONTAINER(parent), vbox);
 
-	colorsel = gtk_color_selection_new();
+	colorsel = gtk_color_chooser_widget_new();
+#if !GTK_CHECK_VERSION(3,4,0)
 	gtk_color_selection_set_has_palette (GTK_COLOR_SELECTION (colorsel), TRUE);
-	gtk_color_selection_set_has_opacity_control(GTK_COLOR_SELECTION(colorsel), false);
+#endif
+	gtk_color_chooser_set_use_alpha(GTK_COLOR_CHOOSER(colorsel), false);
 	gtk_widget_show (colorsel);
 	gtk_container_add (GTK_CONTAINER(vbox), colorsel);
 
@@ -157,10 +159,10 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 	{
 		UT_parseColor(pszC,c);
 	}
-	GdkColor *gcolor = UT_UnixRGBColorToGdkColor(c);
+	GdkRGBA *gcolor = UT_UnixRGBColorToGdkRGBA(c);
 
-    gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION ( colorsel ), gcolor);
-	gdk_color_free(gcolor);
+	gtk_color_chooser_set_rgba( GTK_COLOR_CHOOSER ( colorsel ), gcolor);
+	gdk_rgba_free(gcolor);
 
 	m_wColorsel = colorsel;
 //
@@ -212,14 +214,19 @@ void AP_UnixDialog_Background::eventCancel (void)
 void AP_UnixDialog_Background::colorCleared(void)
 {
 	setColor(NULL);
-	GdkColor gcolor;
+	GdkRGBA gcolor;
+#if !GTK_CHECK_VERSION(3,0,0)
 	gcolor.pixel = 0;
 	gcolor.red = 0xffff;
 	gcolor.blue = 0xffff;
 	gcolor.green = 0xffff;
-	gtk_color_selection_set_current_color (GTK_COLOR_SELECTION(m_wColorsel),
-										   &gcolor);
-}	
-	
-
+#else
+	gcolor.red = 1.0;
+	gcolor.blue = 1.0;
+	gcolor.green = 1.0;
+	gcolor.alpha = 1.0;
+#endif
+	gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER(m_wColorsel),
+                                    &gcolor);
+}
 

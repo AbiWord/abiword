@@ -461,7 +461,8 @@ void XAP_UnixDialog_FontChooser::sizeRowChanged(void)
 
 void XAP_UnixDialog_FontChooser::fgColorChanged(void)
 {
-	gtk_color_selection_get_current_color (GTK_COLOR_SELECTION(m_colorSelector), &m_currentFGColor);
+	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER(m_colorSelector),
+							   &m_currentFGColor);
 	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(m_currentFGColor);
 	UT_HashColor hash_color;
 	const char * c = hash_color.setColor(*rgbcolor);
@@ -473,7 +474,8 @@ void XAP_UnixDialog_FontChooser::fgColorChanged(void)
 
 void XAP_UnixDialog_FontChooser::bgColorChanged(void)
 {
-	gtk_color_selection_get_current_color (GTK_COLOR_SELECTION(m_bgcolorSelector), &m_currentBGColor);
+	gtk_color_chooser_get_rgba (GTK_COLOR_CHOOSER(m_bgcolorSelector),
+								&m_currentBGColor);
 	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(m_currentBGColor);
 	UT_HashColor hash_color;
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
@@ -781,9 +783,9 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 //
     gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), hbox1,labelTabColor);
 
-	colorSelector = gtk_color_selection_new ();
+	colorSelector = gtk_color_chooser_widget_new ();
 	gtk_container_set_border_width(GTK_CONTAINER(colorSelector), 6);
-	gtk_color_selection_set_has_opacity_control(GTK_COLOR_SELECTION(colorSelector), FALSE);
+	gtk_color_chooser_set_use_alpha(GTK_COLOR_CHOOSER(colorSelector), FALSE);
 	gtk_widget_show (colorSelector);
 	gtk_box_pack_start (GTK_BOX (hbox1), colorSelector, TRUE, TRUE, 0);
 
@@ -802,9 +804,9 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 //
     gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), vboxBG,labelTabBGColor);
 
-	colorBGSelector = gtk_color_selection_new ();
+	colorBGSelector = gtk_color_chooser_widget_new ();
 	gtk_container_set_border_width(GTK_CONTAINER(colorBGSelector), 6);
-	gtk_color_selection_set_has_opacity_control(GTK_COLOR_SELECTION(colorBGSelector), FALSE);
+	gtk_color_chooser_set_use_alpha(GTK_COLOR_CHOOSER(colorBGSelector), FALSE);
 	gtk_widget_show (colorBGSelector);
 	gtk_box_pack_start (GTK_BOX (vboxBG), colorBGSelector, TRUE, TRUE, 0);
 
@@ -918,12 +920,20 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	// real-time updating of the color so we can refresh our preview
 	// text
 	g_signal_connect(G_OBJECT(colorSelector),
+#if GTK_CHECK_VERSION(3,4,0)
+			 "color-activated",
+#else
 			 "color-changed", //"event",
+#endif
 			 G_CALLBACK(s_color_update),
 			 static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(colorBGSelector),
+#if GTK_CHECK_VERSION(3,4,0)
+			 "color-activated",
+#else
 			 "color-changed", //"event",
+#endif
 			 G_CALLBACK(s_bgcolor_update),
 			 static_cast<gpointer>(this));
 
@@ -1096,10 +1106,10 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_RGBColor c;
 		UT_parseColor(sColor.c_str(), c);
 
-		GdkColor *color = UT_UnixRGBColorToGdkColor(c);
+		GdkRGBA *color = UT_UnixRGBColorToGdkRGBA(c);
 		m_currentFGColor = *color;
-		gdk_color_free(color);
-		gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(m_colorSelector), &m_currentFGColor);
+		gdk_rgba_free(color);
+		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(m_colorSelector), &m_currentFGColor);
 	}
 	else
 	{
@@ -1108,7 +1118,7 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		// the cases except where the user specifically enters -1 for
 		// all Red, Green and Blue attributes manually.  This user
 		// should expect it not to touch the color.  :)
-		gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(m_colorSelector), &m_funkyColor);
+		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(m_colorSelector), &m_funkyColor);
 	}
 
 	// Set color in the color selector
@@ -1118,11 +1128,11 @@ void XAP_UnixDialog_FontChooser::runModal(XAP_Frame * pFrame)
 		UT_RGBColor c;
 		UT_parseColor(sBGCol.c_str(), c);
 
-		GdkColor *color = UT_UnixRGBColorToGdkColor(c);
+		GdkRGBA *color = UT_UnixRGBColorToGdkRGBA(c);
 		m_currentBGColor = *color;
-		gdk_color_free(color);
+		gdk_rgba_free(color);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), FALSE);
-		gtk_color_selection_set_current_color(GTK_COLOR_SELECTION(m_bgcolorSelector), &m_currentBGColor);
+		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(m_bgcolorSelector), &m_currentBGColor);
 	}
 	else
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_checkTransparency), TRUE);

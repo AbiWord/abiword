@@ -1,7 +1,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009, 2013 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -30,6 +30,7 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
+#include "xap_UnixDlg_ColorChooser.h"
 #include "xap_GtkSignalBlocker.h"
 #include "xap_GtkComboBoxHelpers.h"
 
@@ -148,29 +149,15 @@ AP_UnixDialog_FormatFrame__onBorderColorClicked (GtkWidget 		*button,
 	AP_UnixDialog_FormatFrame *dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_val_if_fail (button && dlg, FALSE);
 
-	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
-	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
-	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG (colordlg)));
-	gtk_color_selection_set_has_palette (colorsel, TRUE);
-	
-	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
-	if (result == GTK_RESPONSE_OK) {
-		
-		// update button
-		GtkColorButton *colorbtn = GTK_COLOR_BUTTON (button);
-		GdkColor color;
-		gtk_color_selection_get_current_color (colorsel, &color);
-		gtk_color_button_set_color (colorbtn, &color);
+	std::auto_ptr<UT_RGBColor> color =
+		XAP_UnixDlg_RunColorChooser(GTK_WINDOW (dlg->getWindow ()),
+					    GTK_COLOR_BUTTON(button));
 
-		// update dialog
-		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
-		dlg->setBorderColor (*rgb);
-		DELETEP (rgb);
+	if (color.get()) {
+		dlg->setBorderColor (*color);
 		dlg->event_previewExposed ();
 	}
-		
-	// do not propagate further
-	gtk_widget_destroy (colordlg);
+
 	return TRUE;
 }
 
@@ -191,29 +178,15 @@ AP_UnixDialog_FormatFrame__onBackgroundColorClicked (GtkWidget 		*button,
 	AP_UnixDialog_FormatFrame *dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_val_if_fail (button && dlg, FALSE);
 
-	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
-	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
-	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG (colordlg)));
-	gtk_color_selection_set_has_palette (colorsel, TRUE);
-	
-	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
-	if (result == GTK_RESPONSE_OK) {
-		
-		// update button
-		GtkColorButton *colorbtn = GTK_COLOR_BUTTON (button);
-		GdkColor color;
-		gtk_color_selection_get_current_color (colorsel, &color);
-		gtk_color_button_set_color (colorbtn, &color);
+	std::auto_ptr<UT_RGBColor> color =
+		XAP_UnixDlg_RunColorChooser(GTK_WINDOW (dlg->getWindow ()),
+					    GTK_COLOR_BUTTON(button));
 
-		// update dialog
-		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
-		dlg->setBGColor (*rgb);
-		DELETEP (rgb);
+	if (color.get()) {
+		dlg->setBGColor (*color);
 		dlg->event_previewExposed ();
 	}
-		
-	// do not propagate further
-	gtk_widget_destroy (colordlg);
+
 	return TRUE;
 }
 

@@ -53,6 +53,8 @@ libgtk_la_SOURCES = \
 	xap_UnixDlg_About.h \
 	xap_UnixDlg_ClipArt.cpp \
 	xap_UnixDlg_ClipArt.h \
+	xap_UnixDlg_ColorChooser.h \
+	xap_UnixDlg_ColorChooser.cpp \
 	xap_UnixDlg_DocComparison.cpp \
 	xap_UnixDlg_DocComparison.h \
 	xap_UnixDlg_Encoding.cpp \

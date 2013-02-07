@@ -27,6 +27,7 @@
 #include "ut_unixColor.h"
 
 #include "xap_UnixDialogHelper.h"
+#include "xap_UnixDlg_ColorChooser.h"
 #include "xap_GtkComboBoxHelpers.h"
 #include "xap_GtkSignalBlocker.h"
 
@@ -126,29 +127,15 @@ static gboolean s_on_border_color_clicked (GtkWidget 		*button,
 	AP_UnixDialog_Border_Shading *dlg = static_cast<AP_UnixDialog_Border_Shading *>(data);
 	UT_return_val_if_fail (button && dlg, FALSE);
 
-	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
-	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
-	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG (colordlg)));
-	gtk_color_selection_set_has_palette (colorsel, TRUE);
-	
-	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
-	if (result == GTK_RESPONSE_OK) {
-		
-		// update button
-		GtkColorButton *colorbtn = GTK_COLOR_BUTTON (button);
-		GdkColor color;
-		gtk_color_selection_get_current_color (colorsel, &color);
-		gtk_color_button_set_color (colorbtn, &color);
+	std::auto_ptr<UT_RGBColor> color =
+		XAP_UnixDlg_RunColorChooser(GTK_WINDOW (dlg->getWindow ()),
+					    GTK_COLOR_BUTTON(button));
 
-		// update dialog
-		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
-		dlg->setBorderColor (*rgb);
-		DELETEP (rgb);
+	if (color.get()) {
+		dlg->setBorderColor (*color);
 		dlg->event_previewExposed ();
 	}
-		
-	// do not propagate further
-	gtk_widget_destroy (colordlg);
+
 	return TRUE;
 }
 
@@ -182,29 +169,15 @@ static gboolean s_on_shading_color_clicked (GtkWidget 		*button,
 	AP_UnixDialog_Border_Shading *dlg = static_cast<AP_UnixDialog_Border_Shading *>(data);
 	UT_return_val_if_fail (button && dlg, FALSE);
 
-	GtkWidget *colordlg = gtk_color_selection_dialog_new  ("");
-	gtk_window_set_transient_for (GTK_WINDOW (colordlg), GTK_WINDOW (dlg->getWindow ()));
-	GtkColorSelection *colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG (colordlg)));
-	gtk_color_selection_set_has_palette (colorsel, TRUE);
-	
-	gint result = gtk_dialog_run (GTK_DIALOG (colordlg));
-	if (result == GTK_RESPONSE_OK) {
-		
-		// update button
-		GtkColorButton *colorbtn = GTK_COLOR_BUTTON (button);
-		GdkColor color;
-		gtk_color_selection_get_current_color (colorsel, &color);
-		gtk_color_button_set_color (colorbtn, &color);
+	std::auto_ptr<UT_RGBColor> color =
+		XAP_UnixDlg_RunColorChooser(GTK_WINDOW (dlg->getWindow ()),
+					    GTK_COLOR_BUTTON(button));
 
-		// update dialog
-		UT_RGBColor* rgb = UT_UnixGdkColorToRGBColor (color);
-		dlg->setShadingColor (*rgb);
-		DELETEP (rgb);
+	if (color.get()) {
+		dlg->setShadingColor (*color);
 		dlg->event_previewExposed ();
 	}
-		
-	// do not propagate further
-	gtk_widget_destroy (colordlg);
+
 	return TRUE;
 }
 
@@ -368,18 +341,18 @@ void AP_UnixDialog_Border_Shading::setBorderColorInGUI(UT_RGBColor clr)
 {
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
-	GdkColor* color = UT_UnixRGBColorToGdkColor(clr);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (m_wBorderColorButton), color);
-	gdk_color_free(color);
+	GdkRGBA* color = UT_UnixRGBColorToGdkRGBA(clr);
+	XAP_gtk_color_button_set_rgba (GTK_COLOR_BUTTON (m_wBorderColorButton), color);
+	gdk_rgba_free(color);
 }
 
 void AP_UnixDialog_Border_Shading::setShadingColorInGUI(UT_RGBColor clr)
 {
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
-	GdkColor* color = UT_UnixRGBColorToGdkColor(clr);
-	gtk_color_button_set_color (GTK_COLOR_BUTTON (m_wShadingColorButton), color);
-	gdk_color_free(color);
+	GdkRGBA* color = UT_UnixRGBColorToGdkRGBA(clr);
+	XAP_gtk_color_button_set_rgba (GTK_COLOR_BUTTON (m_wShadingColorButton), color);
+	gdk_rgba_free(color);
 }
 
 void AP_UnixDialog_Border_Shading::setShadingPatternInGUI(UT_UTF8String & sPattern)

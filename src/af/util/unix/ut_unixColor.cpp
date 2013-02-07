@@ -47,4 +47,27 @@ GdkColor* UT_UnixRGBColorToGdkColor(const UT_RGBColor &rgb)
 
 	return gdk_color_copy(&color);
 }
+
+#if GTK_CHECK_VERSION(3,0,0)
+UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkRGBA &color)
+{
+	return new UT_RGBColor(color.red * 255.,
+			       color.green * 255.,
+			       color.blue * 255.);
+}
+
+GdkRGBA* UT_UnixRGBColorToGdkRGBA(const UT_RGBColor &rgb)
+{
+	GdkRGBA color;
+	color.red = (gdouble)(rgb.m_red) / 255.;
+	color.green = (gdouble)(rgb.m_grn) / 255.;
+        color.blue = (gdouble)(rgb.m_blu) /  255.;
+
+	return gdk_rgba_copy(&color);
+}
+
+#endif
+
+
+
 #endif

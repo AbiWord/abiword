@@ -1,5 +1,5 @@
 /* AbiWord
- * Copyright (C) 2011 Hub Figuiere
+ * Copyright (C) 2011-2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -238,6 +238,49 @@ inline GdkDisplay * gdk_window_get_display (GdkWindow *window)
 
 #if !GTK_CHECK_VERSION(3,0,0)
 
+// UGLY
+typedef GdkColor GdkRGBA;
+
+
+inline GtkWidget* gtk_color_chooser_dialog_new(const gchar* title,
+					       GtkWindow* parent)
+{
+  GtkWidget* w = gtk_color_selection_dialog_new (title);
+  if(parent)
+    gtk_window_set_transient_for(GTK_WINDOW(w), parent);
+  return w;
+}
+
+// in Gtk 3 we use GtkRGBA.
+inline void gtk_color_selection_get_current_rgba (GtkColorSelection *colorsel,
+                                                  GdkColor *color)
+{
+  gtk_color_selection_get_current_color(colorsel, color);
+}
+
+inline void gtk_color_selection_set_current_rgba (GtkColorSelection *colorsel,
+                                                  GdkColor *color)
+{
+  gtk_color_selection_set_current_color(colorsel, color);
+}
+
+inline void gdk_rgba_free(GdkColor* color)
+{
+  gdk_color_free(color);
+}
+
+inline void gtk_color_button_set_rgba(GtkColorButton* button,
+				     const GdkColor* color)
+{
+  gtk_color_button_set_color(button, color);
+}
+
+inline void gtk_color_button_get_rgba(GtkColorButton* button,
+				     GdkColor* color)
+{
+  gtk_color_button_get_color(button, color);
+}
+
 inline GtkWidget* gtk_box_new(GtkOrientation orientation, gint spacing)
 {
   if(orientation == GTK_ORIENTATION_VERTICAL) {
@@ -276,11 +319,66 @@ inline void gtk_widget_get_preferred_size(GtkWidget *widget,
 
 #endif
 
+#if !GTK_CHECK_VERSION(3,4,0)
+
+#define GTK_COLOR_CHOOSER GTK_COLOR_SELECTION
+
+typedef GtkColorSelection GtkColorChooserWidget;
+typedef GtkColorSelection GtkColorChooser;
+
+inline GtkWidget* gtk_color_chooser_widget_new()
+{
+  return gtk_color_selection_new();
+}
+
+inline void gtk_color_chooser_set_use_alpha(GtkColorSelection* chooser,
+					    gboolean opacity)
+{
+  gtk_color_selection_set_has_opacity_control(chooser,opacity);
+}
+
+inline void gtk_color_chooser_get_rgba(GtkColorSelection *chooser,
+				       GdkRGBA *color)
+{
+  gtk_color_selection_get_current_rgba (chooser, color);
+}
+
+inline void gtk_color_chooser_set_rgba(GtkColorSelection *chooser,
+				       GdkRGBA *color)
+{
+  gtk_color_selection_set_current_rgba (chooser, color);
+}
+
+#endif
+
 #if GTK_CHECK_VERSION(3,0,0)
 
 typedef GdkWindow GdkDrawable;
 
 #endif
+
+
+// wrapper because gtk_color_button_set_rgba is deprecated.
+inline void XAP_gtk_color_button_set_rgba(GtkColorButton* colorbtn,
+				     const GdkRGBA* color)
+{
+#if GTK_CHECK_VERSION(3,4,0)
+  gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(colorbtn), color);
+#else
+  gtk_color_button_set_rgba (colorbtn, color);
+#endif
+}
+
+// wrapper because gtk_color_button_get_rgba is deprecated.
+inline void XAP_gtk_color_button_get_rgba(GtkColorButton* colorbtn,
+					  GdkRGBA* color)
+{
+#if GTK_CHECK_VERSION(3,4,0)
+  gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(colorbtn), color);
+#else
+  gtk_color_button_get_rgba (colorbtn, color);
+#endif
+}
 
 
 // Now onto the device were the deprecated functions are to be

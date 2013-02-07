@@ -134,7 +134,7 @@ void AP_UnixDialog_Options::runModal ( XAP_Frame * pFrame )
 /// All this color selection code is stolen from the ap_UnixDialog_Background
 /// dialog
 ///
-void AP_UnixDialog_Options::s_real_color_changed(GdkColor & gdkcolor, AP_UnixDialog_Options * dlg)
+void AP_UnixDialog_Options::s_real_color_changed(GdkRGBA & gdkcolor, AP_UnixDialog_Options * dlg)
 {
 
 	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(gdkcolor);
@@ -162,11 +162,9 @@ void AP_UnixDialog_Options::s_color_changed ( GtkColorSelection *csel,
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
     UT_ASSERT ( csel && dlg );
 
-	GdkColor gdkcolor;
-
-	gtk_color_selection_get_current_color(csel, &gdkcolor);
-
-    s_real_color_changed(gdkcolor, dlg);
+	GdkRGBA rgba;
+	gtk_color_selection_get_current_rgba(csel, &rgba);
+    s_real_color_changed(rgba, dlg);
 }
 #endif
 
@@ -226,10 +224,10 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     UT_RGBColor c;
     UT_parseColor ( m_CurrentTransparentColor,c );
-	GdkColor *gcolor = UT_UnixRGBColorToGdkColor(c);
+	GdkRGBA *gcolor = UT_UnixRGBColorToGdkRGBA(c);
 
-    gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION ( colorsel ), gcolor);
-	gdk_color_free(gcolor);
+    gtk_color_selection_set_current_rgba ( GTK_COLOR_SELECTION ( colorsel ), gcolor);
+	gdk_rgba_free(gcolor);
 
     // run into the gtk main loop for this window. If the reponse is 0, the user pressed Defaults.
     // Don't destroy it if he did so.
@@ -238,9 +236,9 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
         strncpy ( m_CurrentTransparentColor,static_cast<const gchar *> ( "ffffff" ),9 );
 
         UT_parseColor ( m_CurrentTransparentColor,c );
-		gcolor = UT_UnixRGBColorToGdkColor(c);
-        gtk_color_selection_set_current_color ( GTK_COLOR_SELECTION ( colorsel ), gcolor );
-		gdk_color_free(gcolor);
+		gcolor = UT_UnixRGBColorToGdkRGBA(c);
+        gtk_color_chooser_set_rgba ( GTK_COLOR_CHOOSER ( colorsel ), gcolor );
+		gdk_rgba_free(gcolor);
     }
 #endif
 //
