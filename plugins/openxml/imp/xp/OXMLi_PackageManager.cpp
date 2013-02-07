@@ -172,7 +172,7 @@ UT_Error OXMLi_PackageManager::parseDocumentEndnotes()
 
 GsfInput* OXMLi_PackageManager::getChildById( GsfInput * parent, const char * id )
 {
-	return gsf_open_pkg_get_rel_by_id(parent, id);
+	return gsf_open_pkg_open_rel_by_id(parent, id, NULL);
 }
 
 GsfInput* OXMLi_PackageManager::getChildByType( GsfInput * parent, OXML_PartType type )
@@ -180,7 +180,7 @@ GsfInput* OXMLi_PackageManager::getChildByType( GsfInput * parent, OXML_PartType
 	const char * fulltype;
 	fulltype = _getFullType(type);
 	UT_return_val_if_fail(fulltype != NULL, NULL);
-	return gsf_open_pkg_get_rel_by_type(parent, fulltype);
+	return gsf_open_pkg_open_rel_by_type(parent, fulltype, NULL);
 }
 
 UT_Error OXMLi_PackageManager::parseChildById( GsfInput * parent, const char * id, OXMLi_StreamListener * pListener)
