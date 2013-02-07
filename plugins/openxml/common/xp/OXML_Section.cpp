@@ -40,9 +40,9 @@ OXML_Section::OXML_Section() :
 	OXML_ObjectWithAttrProp(), 
 	m_id(""), 
 	m_breakType(NEXTPAGE_BREAK),
-	TARGET(0),
 	m_lastParagraph(NULL),
-	b_handledHdrFtr(false)
+	m_target(0),
+	m_handledHdrFtr(false)
 {
 	m_headerIds[0] = NULL; m_headerIds[1] = NULL; m_headerIds[2] = NULL;
 	m_footerIds[0] = NULL; m_footerIds[1] = NULL; m_footerIds[2] = NULL;
@@ -53,7 +53,9 @@ OXML_Section::OXML_Section(const std::string & id) :
 	OXML_ObjectWithAttrProp(), 
 	m_id(id), 
 	m_breakType(NEXTPAGE_BREAK),
-	TARGET(0)
+	m_lastParagraph(NULL),
+	m_target(0),
+	m_handledHdrFtr(false)
 {
 	m_headerIds[0] = NULL; m_headerIds[1] = NULL; m_headerIds[2] = NULL;
 	m_footerIds[0] = NULL; m_footerIds[1] = NULL; m_footerIds[2] = NULL;
@@ -90,7 +92,7 @@ UT_Error OXML_Section::appendElement(OXML_SharedElement obj)
 		return UT_OUTOFMEM;
 	}
 
-	obj->setTarget(TARGET);
+	obj->setTarget(m_target);
 
 	return UT_OK;
 }
@@ -220,12 +222,12 @@ UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter, OXML_Elemen
 
 	if(num && sep)
 	{
-		err = exporter->setColumns(TARGET, num, sep);
+		err = exporter->setColumns(m_target, num, sep);
 		if(err != UT_OK)
 			return err;
 	}
 
-	err = exporter->setContinuousSection(TARGET);
+	err = exporter->setContinuousSection(m_target);
 	if(err != UT_OK)
 		return err;
 
@@ -255,7 +257,7 @@ UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter, OXML_Elemen
 
 	if(marginTop && marginLeft && marginRight && marginBottom)
 	{	
-		err = exporter->setPageMargins(TARGET, marginTop, marginLeft, marginRight, marginBottom);
+		err = exporter->setPageMargins(m_target, marginTop, marginLeft, marginRight, marginBottom);
 		if(err != UT_OK)
 			return err;
 	}
@@ -263,7 +265,7 @@ UT_Error OXML_Section::serializeProperties(IE_Exp_OpenXML* exporter, OXML_Elemen
 	return exporter->finishSectionProperties();
 }
 
-bool OXML_Section::hasFirstPageHdrFtr()
+bool OXML_Section::hasFirstPageHdrFtr() const
 {
 	UT_Error ret = UT_OK;
 
@@ -276,7 +278,7 @@ bool OXML_Section::hasFirstPageHdrFtr()
 	return strstr(headerType, "first");
 }
 
-bool OXML_Section::hasEvenPageHdrFtr()
+bool OXML_Section::hasEvenPageHdrFtr() const
 {
 	UT_Error ret = UT_OK;
 
@@ -287,16 +289,6 @@ bool OXML_Section::hasEvenPageHdrFtr()
 		return false;
 
 	return strstr(headerType, "even");
-}
-
-void OXML_Section::setHandledHdrFtr(bool val)
-{
-	b_handledHdrFtr = val;
-}
-
-bool OXML_Section::getHandledHdrFtr()
-{
-	return b_handledHdrFtr;
 }
 
 /**
@@ -654,7 +646,7 @@ UT_Error OXML_Section::_setReferenceIds()
 
 void OXML_Section::setTarget(int target)
 {
-	TARGET = target;
+	m_target = target;
 }
 
 UT_Error OXML_Section::setPageMargins(const std::string & top, const std::string & left, const std::string & right, const std::string & bottom)

@@ -103,10 +103,12 @@ public:
 	UT_Error addToPTAsEndnote(PD_Document * pDocument);
 
 	void setTarget(int target);
-	bool hasFirstPageHdrFtr();
-	bool hasEvenPageHdrFtr();
-	void setHandledHdrFtr(bool val);
-	bool getHandledHdrFtr();
+	bool hasFirstPageHdrFtr() const;
+	bool hasEvenPageHdrFtr() const;
+	void setHandledHdrFtr(bool val)
+		{ m_handledHdrFtr = val; }
+	bool getHandledHdrFtr() const
+		{ return m_handledHdrFtr; }
 
 	UT_Error setPageMargins(const std::string & top, const std::string & left, const std::string & right, const std::string & bottom);
 
@@ -117,8 +119,8 @@ private:
 	OXML_Element_Paragraph* m_lastParagraph;
 	char * m_headerIds[3];
 	char * m_footerIds[3];
-	int TARGET;
-	bool b_handledHdrFtr;
+	int m_target;
+	bool m_handledHdrFtr;
 
 	UT_Error _setReferenceIds();
 };
