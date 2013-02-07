@@ -150,11 +150,12 @@ public:
 	virtual void	cmdPaste(bool bHonorFormatting = true) = 0;
 	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos) = 0;
 
-	virtual void	setVisualSelectionEnabled(bool bActive)
+	// For touch screen support
+	void	setVisualSelectionEnabled(bool bActive)
 	{
 		m_VisualSelectionActive = bActive;
 	}
-	bool		getVisualSelectionEnabled(void) const
+	bool	getVisualSelectionEnabled(void) const
 	{
 		return m_VisualSelectionActive;
 	}

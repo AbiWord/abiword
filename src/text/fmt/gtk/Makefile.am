@@ -6,18 +6,27 @@ noinst_LTLIBRARIES = libgtk.la
 AM_CPPFLAGS = \
 	$(IMPEXP_CPPFLAGS)
 
-cut_and_paste_code = \
+touch_support = \
+	fv_UnixSelectionHandles.cpp \
+	fv_UnixSelectionHandles.h \
 	gtktexthandle.cpp \
-	gtktexthandleprivate.h
+	gtktexthandleprivate.h \
+	$(NULL)
 
 libgtk_la_SOURCES = \
-	$(cut_and_paste_code) \
 	fv_UnixFrameEdit.cpp \
 	fv_UnixFrameEdit.h \
 	fv_UnixInlineImage.cpp \
 	fv_UnixInlineImage.h \
-	fv_UnixSelectionHandles.cpp \
-	fv_UnixSelectionHandles.h \
 	fv_UnixVisualDrag.cpp \
-	fv_UnixVisualDrag.h
+	fv_UnixVisualDrag.h \
+	$(NULL)
 
+if TOOLKIT_GTK2
+else
+libgtk_la_SOURCES += $(touch_support)
+endif
+
+EXTRA_DIST = \
+	$(touch_support) \
+	$(NULL)

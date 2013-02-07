@@ -47,11 +47,13 @@
 #include "fv_UnixVisualDrag.h"
 #include "fv_UnixFrameEdit.h"
 #include "fv_UnixInlineImage.h"
+#if !defined(TOOLKIT_GTK2)
 #include "fv_UnixSelectionHandles.h"
+#endif
 #else
 #include "fv_VisualDragText.h"
-#include "fv_SelectionHandles.h"
 #endif
+#include "fv_SelectionHandles.h"
 
 #define AUTO_SCROLL_MSECS	100
 #define STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION FV_ViewDoubleBuffering dblBuffObj(this, true, true); dblBuffObj.beginDoubleBuffering();
@@ -1169,7 +1171,7 @@ private:
     int                 m_bubbleBlockerCount;
 	UT_sint32           m_iOldPageCount;
 
-#ifdef TOOLKIT_GTK_ALL
+#if defined(TOOLKIT_GTK_ALL) && !defined(TOOLKIT_GTK2)
 	FV_UnixSelectionHandles m_SelectionHandles;
 #else
 	FV_SelectionHandles m_SelectionHandles;
