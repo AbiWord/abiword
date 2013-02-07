@@ -493,8 +493,10 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	for (i = uids.begin(); i != end; i++)
 		pApp->unRegisterEmbeddable((*i).c_str());
 	uids.clear();
-    pApp->unRegisterEmbeddable(pGOComponentManager->getObjectType());
-    DELETEP(pGOComponentManager);
+	if (pGOComponentManager) {
+		pApp->unRegisterEmbeddable(pGOComponentManager->getObjectType());
+		DELETEP(pGOComponentManager);
+	}
     AbiGOffice_removeFromMenus();
 	go_component_set_default_command_context (NULL);
 	g_object_unref (cc);
