@@ -31,6 +31,7 @@
 #include "ut_assert.h"
 #include "ut_misc.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_units.h"
 #include "ut_debugmsg.h"
 
@@ -823,7 +824,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 	EV_Toolbar_ItemState s = EV_TIS_UseString;
 
 	UT_uint32 iZoom = 0 ;
-	static UT_UTF8String str;
+	static std::string str;
 	
 	switch(pFrame->getZoomType())
 	{
@@ -836,11 +837,11 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_Zoom)
 		break;
 	default:
 	  iZoom = pView->getGraphics()->getZoomPercentage();
-	  UT_UTF8String_sprintf(str, "%d%%", iZoom);
+	  str = UT_std_string_sprintf("%d%%", iZoom);
 	  break;
 	}
 
-	*pszState = str.utf8_str();
+	*pszState = str.c_str();
 
 	return s;
 }

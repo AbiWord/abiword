@@ -68,7 +68,7 @@ void  AP_UnixDialog_WordCount::activate(void)
 	UT_ASSERT (m_windowMain);
 	
 	ConstructWindowName();
-	setWidgetLabel(DIALOG_WID, m_WindowName);
+	setWidgetLabel(DIALOG_WID, std::string(m_WindowName));
 	setCountFromActiveFrame ();
 	updateDialogData();
 	gdk_window_raise (gtk_widget_get_window(m_windowMain));
@@ -135,7 +135,7 @@ void AP_UnixDialog_WordCount::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 	// FIXME put that in XP code
 	UT_ASSERT(m_windowMain);
 	ConstructWindowName();
-	setWidgetLabel(DIALOG_WID, m_WindowName);
+	setWidgetLabel(DIALOG_WID, std::string(m_WindowName));
 	setCountFromActiveFrame();
 	updateDialogData();
 }

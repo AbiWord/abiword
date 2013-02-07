@@ -750,9 +750,9 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Suggest)
 	{
 		// placeholder when no suggestions
 		const XAP_StringSet * pSS = pApp->getStringSet();
-		UT_UTF8String s;
+		std::string s;
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions,s);
-		c = g_strdup(s.utf8_str());
+		c = g_strdup(s.c_str());
 	}
 
 	FREEP(p);

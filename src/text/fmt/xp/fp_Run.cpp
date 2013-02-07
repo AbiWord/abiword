@@ -44,6 +44,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_growbuf.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
@@ -5371,14 +5372,12 @@ bool fp_FieldPageReferenceRun::calculateValue(void)
 	else
 	{
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-		UT_String Msg1;
+		std::string Msg1;
 		pSS->getValue(AP_STRING_ID_FIELD_Error, XAP_App::getApp()->getDefaultEncoding(), Msg1);
 
-		UT_String Msg2;
+		std::string Msg2;
 		pSS->getValue(AP_STRING_ID_MSG_BookmarkNotFound, XAP_App::getApp()->getDefaultEncoding(), Msg2);
-		UT_String format;
-
-		UT_String_sprintf(format, "{%s: %s}", Msg1.c_str(), Msg2.c_str());
+		std::string format = UT_std_string_sprintf("{%s: %s}", Msg1.c_str(), Msg2.c_str());
 		UT_UTF8String_sprintf(szFieldValue, format.c_str(), _getParameter());
 	}
 

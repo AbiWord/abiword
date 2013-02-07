@@ -2485,7 +2485,7 @@ void IE_Exp_HTML_Listener::_insertTOC(PT_AttrPropIndex api)
     ok = pAP->getProperty("toc-heading", szTOCHeading);
     if (!(ok && szTOCHeading))
     {
-       szTOCHeading = fl_TOCLayout::getDefaultHeading().utf8_str();
+       szTOCHeading = fl_TOCLayout::getDefaultHeading().c_str();
     }
     
     std::vector<UT_UTF8String> tocItems;

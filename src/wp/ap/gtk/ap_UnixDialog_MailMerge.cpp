@@ -171,9 +171,9 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_treeview)), GTK_SELECTION_SINGLE);	
 
 	// set the dialog title
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MailMerge_MailMergeTitle,s);
-	abiDialogSetTitle(m_windowMain, "%s", s.utf8_str());
+	abiDialogSetTitle(m_windowMain, "%s", s.c_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	

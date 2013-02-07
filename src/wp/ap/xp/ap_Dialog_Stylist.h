@@ -37,15 +37,15 @@ class ABI_EXPORT Stylist_row
 public:
 	Stylist_row(void);
 	virtual ~Stylist_row(void);
-	void       addStyle(UT_UTF8String & sStyle);
-	void       setRowName(UT_UTF8String & sRowname);
-	void       getRowName(UT_UTF8String & sRowname);
-	UT_sint32  getNumCols(void);
+	void       addStyle(const std::string & sStyle);
+	void       setRowName(const std::string & sRowname);
+	void       getRowName(std::string & sRowname) const;
+	UT_sint32  getNumCols(void) const;
 	bool       findStyle(UT_UTF8String & sStyleName, UT_sint32 & col);
 	bool       getStyle(UT_UTF8String & sStyleName, UT_sint32 col);
 private:
 	UT_GenericVector<UT_UTF8String *> m_vecStyles;
-	UT_UTF8String  m_sRowName;
+	std::string  m_sRowName;
 };
 
 class ABI_EXPORT Stylist_tree
@@ -55,11 +55,11 @@ public:
 	virtual ~Stylist_tree(void);
 	bool             findStyle(UT_UTF8String & sStyleName,UT_sint32 & row, UT_sint32 & col);
 	bool             getStyleAtRowCol(UT_UTF8String & sStyle, UT_sint32 row, UT_sint32 col);
-	UT_sint32        getNumRows(void);
-	UT_sint32        getNumCols(UT_sint32 row);
+	UT_sint32        getNumRows(void) const;
+	UT_sint32        getNumCols(UT_sint32 row) const;
 	void             buildStyles(PD_Document * pDoc);
 	UT_sint32        getNumStyles(void) const;
-	bool             getNameOfRow(UT_UTF8String &sName, UT_sint32 row);
+	bool             getNameOfRow(std::string &sName, UT_sint32 row) const;
 	bool             isHeading(const PD_Style * pStyle, UT_sint32 iDepth=10) const;
 	bool             isList(const PD_Style * pStyle, UT_sint32 iDepth=10) const;
 	bool             isFootnote(const PD_Style * pStyle,UT_sint32 iDepth=10) const;

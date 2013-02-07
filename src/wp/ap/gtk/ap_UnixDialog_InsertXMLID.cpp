@@ -196,9 +196,9 @@ AP_UnixDialog_InsertXMLID::_constructWindowContents(GtkWidget * container )
     
     GtkWidget *label1;
     const XAP_StringSet * pSS = m_pApp->getStringSet();
-    UT_UTF8String s;
+    std::string s;
     pSS->getValueUTF8(msgid,s);
-    label1 = gtk_label_new (s.utf8_str());
+    label1 = gtk_label_new (s.c_str());
     gtk_widget_show (label1);
     gtk_box_pack_start (GTK_BOX (container), label1, FALSE, FALSE, 0);
 
@@ -224,10 +224,10 @@ AP_UnixDialog_InsertXMLID::_constructWindow(void)
     GtkWidget *vbox;
 
     const XAP_StringSet * pSS = m_pApp->getStringSet();
-    UT_UTF8String s;
+    std::string s;
     pSS->getValueUTF8(AP_STRING_ID_DLG_InsertXMLID_Title,s);
   
-    m_window = abiDialogNew("insert RDF link dialog", TRUE, s.utf8_str());
+    m_window = abiDialogNew("insert RDF link dialog", TRUE, s.c_str());
 #if !GTK_CHECK_VERSION(3,0,0)
     gtk_dialog_set_has_separator(GTK_DIALOG(m_window), FALSE);
 #endif

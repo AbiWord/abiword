@@ -602,10 +602,10 @@ static void addToStore(GtkListStore * store, const XAP_StringSet * pSS,
 					   int stringID, int itemID)
 {
 	GtkTreeIter iter;
-	UT_UTF8String s;
-	pSS->getValueUTF8(stringID,s);
+	std::string s;
+	pSS->getValueUTF8(stringID, s);
 	gtk_list_store_append(store, &iter);
-	gtk_list_store_set(store, &iter, 0, s.utf8_str(),
+	gtk_list_store_set(store, &iter, 0, s.c_str(),
 					   1, itemID, -1);
 
 }
@@ -674,7 +674,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkWidget *preview_frame;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_UTF8String s;
+	std::string s;
 	GtkWidget * wNoteBook = NULL;
 
 	vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -689,7 +689,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 // Container for the lists
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_PageProperties,s);
-		GtkWidget * lbPageLists = gtk_label_new(s.utf8_str());
+		GtkWidget * lbPageLists = gtk_label_new(s.c_str());
 		gtk_widget_show(lbPageLists);
 		gtk_notebook_append_page(GTK_NOTEBOOK(wNoteBook),vbox2,lbPageLists);
 
@@ -697,7 +697,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 // Container for Text Folding
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_PageFolding,s);
-		GtkWidget * lbPageFolding = gtk_label_new(s.utf8_str());
+		GtkWidget * lbPageFolding = gtk_label_new(s.c_str());
 		GtkWidget * wFoldingTable = gtk_table_new(7,3,FALSE);
 		gtk_widget_show(lbPageFolding);
 		gtk_widget_show(wFoldingTable);
@@ -733,7 +733,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 // RadioButtons
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel0,s);
 		
-		GtkWidget * wF = gtk_radio_button_new_with_label(NULL, s.utf8_str());
+		GtkWidget * wF = gtk_radio_button_new_with_label(NULL, s.c_str());
 		GSList *wG = gtk_radio_button_get_group(GTK_RADIO_BUTTON(wF));
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"0");
 		ID = g_signal_connect(G_OBJECT(wF),
@@ -746,7 +746,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_vecFoldID.addItem(ID);
 
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel1,s);
-		wF = gtk_radio_button_new_with_label(wG, s.utf8_str());
+		wF = gtk_radio_button_new_with_label(wG, s.c_str());
 		wG = gtk_radio_button_get_group(GTK_RADIO_BUTTON(wF));
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"1");
 		ID = g_signal_connect(G_OBJECT(wF),
@@ -759,7 +759,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_vecFoldID.addItem(ID);
 
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel2,s);
-		wF = gtk_radio_button_new_with_label(wG, s.utf8_str());
+		wF = gtk_radio_button_new_with_label(wG, s.c_str());
 		wG = gtk_radio_button_get_group(GTK_RADIO_BUTTON(wF));
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"2");
 		ID = g_signal_connect(G_OBJECT(wF),
@@ -772,7 +772,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_vecFoldID.addItem(ID);
 
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel3,s);
-		wF = gtk_radio_button_new_with_label(wG, s.utf8_str());
+		wF = gtk_radio_button_new_with_label(wG, s.c_str());
 		wG = gtk_radio_button_get_group(GTK_RADIO_BUTTON(wF));
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"3");
 		ID = g_signal_connect(G_OBJECT(wF),
@@ -785,7 +785,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		m_vecFoldID.addItem(ID);
 
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel4,s);
-		wF = gtk_radio_button_new_with_label(wG, s.utf8_str());
+		wF = gtk_radio_button_new_with_label(wG, s.c_str());
 		g_object_set_data(G_OBJECT(wF),"level",(gpointer)"4");
 		ID = g_signal_connect(G_OBJECT(wF),
 						  "toggled",
@@ -846,32 +846,32 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 					  (GtkAttachOptions) (0), 0, 0);
 	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none,s);
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.utf8_str());
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_bullet,s);
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.utf8_str());
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_numbered,s);
-	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.utf8_str());
+	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.c_str());
 	gtk_combo_box_set_active(GTK_COMBO_BOX(type_om), 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type,s);
-	type_lb = gtk_label_new (s.utf8_str());
+	type_lb = gtk_label_new (s.c_str());
 	gtk_widget_show (type_lb);
 	gtk_table_attach (GTK_TABLE (table1), type_lb, 0, 1, 0, 1,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (type_lb), 0, 0.5);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Style,s);
-	style_lb = gtk_label_new (s.utf8_str());
+	style_lb = gtk_label_new (s.c_str());
 	gtk_widget_show (style_lb);
 	gtk_table_attach (GTK_TABLE (table1), style_lb, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (style_lb), 0, 0.5);
-	
+
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_SetDefault,s);
-	customized_cb = gtk_dialog_add_button (GTK_DIALOG(m_wMainWindow), s.utf8_str(), BUTTON_RESET);
+	customized_cb = gtk_dialog_add_button (GTK_DIALOG(m_wMainWindow), s.c_str(), BUTTON_RESET);
 	GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_REVERT_TO_SAVED, GTK_ICON_SIZE_BUTTON);
-	gtk_button_set_image(GTK_BUTTON(customized_cb), img);      
+	gtk_button_set_image(GTK_BUTTON(customized_cb), img);
 	gtk_widget_show (customized_cb);
 
 	/* todo
@@ -944,42 +944,42 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (label_align_sb), TRUE);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Format,s);
-	format_lb = gtk_label_new (s.utf8_str());
+	format_lb = gtk_label_new (s.c_str());
 	gtk_widget_show (format_lb);
 	gtk_table_attach (GTK_TABLE (table2), format_lb, 0, 1, 0, 1,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (format_lb), 0.0, 0.5);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Font,s);
-	font_lb = gtk_label_new (s.utf8_str());
+	font_lb = gtk_label_new (s.c_str());
 	gtk_widget_show (font_lb);
 	gtk_table_attach (GTK_TABLE (table2), font_lb, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (font_lb), 0.0, 0.5);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_DelimiterString,s);
-	delimiter_lb = gtk_label_new (s.utf8_str());
+	delimiter_lb = gtk_label_new (s.c_str());
 	gtk_widget_show (delimiter_lb);
 	gtk_table_attach (GTK_TABLE (table2), delimiter_lb, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (delimiter_lb), 0.0, 0.5);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start,s);
-	start_at_lb = gtk_label_new (s.utf8_str());
+	start_at_lb = gtk_label_new (s.c_str());
 	gtk_widget_show (start_at_lb);
 	gtk_table_attach (GTK_TABLE (table2), start_at_lb, 0, 1, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (start_at_lb), 0.0, 0.5);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Align,s);
-	text_align_lb = gtk_label_new (s.utf8_str());
+	text_align_lb = gtk_label_new (s.c_str());
 	gtk_widget_show (text_align_lb);
 	gtk_table_attach (GTK_TABLE (table2), text_align_lb, 0, 1, 4, 5,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
 	gtk_misc_set_alignment (GTK_MISC (text_align_lb), 0.0, 0.5);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Indent,s);
-	label_align_lb = gtk_label_new (s.utf8_str());
+	label_align_lb = gtk_label_new (s.c_str());
 	gtk_widget_show (label_align_lb);
 	gtk_table_attach (GTK_TABLE (table2), label_align_lb, 0, 1, 5, 6,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
@@ -990,7 +990,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_widget_show (vbox3);
 	gtk_box_pack_start (GTK_BOX (hbox2), vbox3, TRUE, TRUE, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Preview,s);
-	preview_lb = gtk_label_new (s.utf8_str());
+	preview_lb = gtk_label_new (s.c_str());
 	gtk_widget_show (preview_lb);
 	gtk_box_pack_start (GTK_BOX (vbox3), preview_lb, FALSE, FALSE, 0);
 	gtk_misc_set_alignment (GTK_MISC (preview_lb), 0.0, 0.5);
@@ -1011,20 +1011,20 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		gtk_widget_show (hbox1);
 	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Apply_Current,s);
-	apply_list_rb = gtk_radio_button_new_with_label (action_group, s.utf8_str());
+	apply_list_rb = gtk_radio_button_new_with_label (action_group, s.c_str());
 	action_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (apply_list_rb));
 	if(!isModal())
 		gtk_widget_show (apply_list_rb);
 	gtk_box_pack_start (GTK_BOX (hbox1), apply_list_rb, FALSE, FALSE, 0);
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (apply_list_rb), TRUE);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New,s);
-	start_list_rb = gtk_radio_button_new_with_label (action_group, s.utf8_str());
+	start_list_rb = gtk_radio_button_new_with_label (action_group, s.c_str());
 	action_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (start_list_rb));
 	if(!isModal())
 		gtk_widget_show (start_list_rb);
 	gtk_box_pack_start (GTK_BOX (hbox1), start_list_rb, FALSE, FALSE, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Resume,s);
-	resume_list_rb = gtk_radio_button_new_with_label (action_group, s.utf8_str());
+	resume_list_rb = gtk_radio_button_new_with_label (action_group, s.c_str());
 	action_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (resume_list_rb));
 	if(!isModal())
 		gtk_widget_show (resume_list_rb);
@@ -1169,13 +1169,13 @@ void AP_UnixDialog_Lists::_setRadioButtonLabels(void)
 {
 	//	char *tmp;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	UT_UTF8String s;
+	std::string s;
 	PopulateDialogData();
 	// Button 0 is Start New List, button 2 is resume list
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start_New,s);
-	gtk_label_set_text( GTK_LABEL(m_wStartNew_label), s.utf8_str());
+	gtk_label_set_text( GTK_LABEL(m_wStartNew_label), s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Resume,s);
-	gtk_label_set_text( GTK_LABEL(m_wStartSub_label), s.utf8_str());
+	gtk_label_set_text( GTK_LABEL(m_wStartSub_label), s.c_str());
 }
 
 static void s_destroy_clicked(GtkWidget * /* widget */,

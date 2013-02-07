@@ -105,9 +105,9 @@ GtkWidget * XAP_UnixDialog_Password::_constructWindow ()
 	mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Password"));
 	mTextEntry = GTK_WIDGET(gtk_builder_get_object(builder, "enPassword"));
 
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Password_Title,s);
-	gtk_window_set_title (GTK_WINDOW(mMainWindow), s.utf8_str());
+	gtk_window_set_title (GTK_WINDOW(mMainWindow), s.c_str());
 
 	/* localize labels */
 	localizeLabel (GTK_WIDGET(gtk_builder_get_object(builder, "lbPassword")), pSS, XAP_STRING_ID_DLG_Password_Password);

@@ -383,12 +383,12 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 		LocalizeControl(panel,		pSS, AP_STRING_ID_DLG_Stylist_Title);
 		LocalizeControl(_applyBtn,	pSS, XAP_STRING_ID_DLG_Apply);
 
-		UT_UTF8String label;
+		std::string label;
 		if (pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles, label))
 		{
 			NSArray * columns = [_stylistList tableColumns];
 
-			[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:(label.utf8_str())]];
+			[[[columns objectAtIndex:0] headerCell] setStringValue:[NSString stringWithUTF8String:(label.c_str())]];
 		}
 
 		[_stylistList setDoubleAction:@selector(outlineDoubleAction:)];

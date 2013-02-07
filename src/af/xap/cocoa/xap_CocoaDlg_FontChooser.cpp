@@ -430,15 +430,15 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 		[_fontList setDelegate:self];
 	
 		m_stylesDataSource = [[XAP_StringListDataSource alloc] init];
-		UT_UTF8String label;
+		std::string label;
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleRegular, label);
-		[m_stylesDataSource addCString:label.utf8_str()];
+		[m_stylesDataSource addCString:label.c_str()];
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleItalic, label);
-		[m_stylesDataSource addCString:label.utf8_str()];
+		[m_stylesDataSource addCString:label.c_str()];
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBold, label);
-		[m_stylesDataSource addCString:label.utf8_str()];
+		[m_stylesDataSource addCString:label.c_str()];
 		pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleBoldItalic, label);
-		[m_stylesDataSource addCString:label.utf8_str()];
+		[m_stylesDataSource addCString:label.c_str()];
 		[_styleList setDataSource:m_stylesDataSource];
 		[_styleList setDelegate:self];
 	

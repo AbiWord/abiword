@@ -482,7 +482,7 @@ void /* static*/ XAP_FrameImpl::viewAutoUpdater(UT_Worker *wkr)
 	XAP_FrameImpl *pFrameImpl = static_cast<XAP_FrameImpl *> (wkr->getInstanceData());
 	XAP_App *pApp = XAP_App::getApp();
 	const XAP_StringSet * pSS = pApp->getStringSet();
-	UT_String msg;
+	std::string msg;
 	pSS->getValue(XAP_STRING_ID_MSG_BuildingDoc, pApp->getDefaultEncoding(),msg);
 	pFrameImpl->_setCursor(GR_Graphics::GR_CURSOR_WAIT);
 	AV_View * pView = pFrameImpl->m_pFrame->getCurrentView();
@@ -786,12 +786,12 @@ XAP_Dialog_MessageBox * XAP_Frame::createMessageBox(XAP_String_Id id,
 	if (id > 0) {
 		char * szNewMessage = static_cast<char *>(g_try_malloc(sizeof(char) * 256));
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-		UT_String s;
+		std::string s;
 		pSS->getValue(id, XAP_App::getApp()->getDefaultEncoding(), s);
 		
 		va_list args;		
 		va_start(args, default_answer);		
-		vsprintf(szNewMessage, static_cast<const char*>(s.c_str()), args);
+		vsprintf(szNewMessage, s.c_str(), args);
 		va_end(args);
 
 		pDialog->setMessage("%s", szNewMessage);
@@ -857,9 +857,9 @@ UT_String XAP_Frame::makeBackupName(const char* szExt)
   if (oldName.empty())
   {
       const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	  UT_String sTmp;
-	  pSS->getValue(XAP_STRING_ID_UntitledDocument, XAP_App::getApp()->getDefaultEncoding(), sTmp);
-	  UT_String_sprintf(oldName, sTmp.c_str(), m_iUntitled);
+      std::string sTmp;
+      pSS->getValue(XAP_STRING_ID_UntitledDocument, XAP_App::getApp()->getDefaultEncoding(), sTmp);
+      UT_String_sprintf(oldName, sTmp.c_str(), m_iUntitled);
 
       UT_DEBUGMSG(("Untitled.  We will give it the name [%s]\n", oldName.c_str()));
   }

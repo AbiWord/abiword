@@ -468,15 +468,15 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	combo = GTK_COMBO_BOX(m_wApplyToMenu);
 	XAP_makeGtkComboBoxText(GTK_COMBO_BOX(combo), G_TYPE_NONE);
 	
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Selection,s);
-	XAP_appendComboBoxText(combo, s.utf8_str());
+	XAP_appendComboBoxText(combo, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Row,s);
-	XAP_appendComboBoxText(combo, s.utf8_str());
+	XAP_appendComboBoxText(combo, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Column,s);
-	XAP_appendComboBoxText(combo, s.utf8_str());
+	XAP_appendComboBoxText(combo, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTable_Apply_To_Table,s);
-	XAP_appendComboBoxText(combo, s.utf8_str());
+	XAP_appendComboBoxText(combo, s.c_str());
 
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo), 0);
 

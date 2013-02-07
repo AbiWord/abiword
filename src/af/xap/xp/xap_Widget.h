@@ -21,6 +21,8 @@
 #ifndef __XAP_WIDGET_H__
 #define __XAP_WIDGET_H__
 
+#include <string>
+
 #include "ut_types.h"
 
 class UT_UTF8String;
@@ -67,6 +69,7 @@ public:
 
 	/** set the widget label */
 	virtual void setLabel(const UT_UTF8String &val) = 0;
+	virtual void setLabel(const std::string &val) = 0;
 };
 
 

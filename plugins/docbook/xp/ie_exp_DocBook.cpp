@@ -1849,7 +1849,8 @@ void s_DocBook_Listener::_handleField(const PX_ChangeRecord_Object * pcro, PT_At
 
 void s_DocBook_Listener::_handleTOC(PT_AttrPropIndex api)
 {
-	UT_UTF8String buf(""), content("toc");
+	std::string buf;
+	UT_UTF8String content("toc");
 	const gchar* szValue = 0;
 	const PP_AttrProp * pAP = NULL;
 	bool bHaveProp = m_pDocument->getAttrProp(api,&pAP);
@@ -1863,8 +1864,7 @@ void s_DocBook_Listener::_handleTOC(PT_AttrPropIndex api)
 
 	if(bHaveProp && pAP && pAP->getProperty("toc-heading", szValue)) //user-defined
 	{
-		buf = szValue;
-		buf.escapeXML();
+		buf = UT_escapeXML(szValue ? szValue : "");
 	}
 	else  // get the default
 	{
@@ -1874,7 +1874,7 @@ void s_DocBook_Listener::_handleTOC(PT_AttrPropIndex api)
 	// TODO: populate the TOC
 
 	_tagOpen(TT_TITLE,"title",false);
-	m_pie->write(buf.utf8_str());
+	m_pie->write(buf);
 	_tagClose(TT_TITLE,"title",true,false);
 	_tagOpen(TT_TOC,content,false);
 	_tagClose(TT_TOC,"toc",true,false);

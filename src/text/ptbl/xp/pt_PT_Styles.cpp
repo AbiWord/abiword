@@ -113,7 +113,7 @@ ST_LOCALISED_STYLES stLocalised[] =
 /*
 	Gets a style name and returns its localised name
 */
-void pt_PieceTable::s_getLocalisedStyleName(const char *szStyle, UT_UTF8String &utf8)
+void pt_PieceTable::s_getLocalisedStyleName(const char *szStyle, std::string &utf8)
 {		
   static XAP_App * pApp = XAP_App::getApp();
 

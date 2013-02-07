@@ -64,16 +64,16 @@ AP_Dialog_FormatTOC::AP_Dialog_FormatTOC(XAP_DialogFactory * pDlgFactory, XAP_Di
 	  m_iDetailsLevel(1)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
-	static UT_UTF8String s1, s2, s3, s4;
+	static std::string s1, s2, s3, s4;
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_None, s1);
-	m_vecTABLeadersLabel.addItem(s1.utf8_str());
+	m_vecTABLeadersLabel.addItem(s1.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Dot, s2);
-	m_vecTABLeadersLabel.addItem(s2.utf8_str());
+	m_vecTABLeadersLabel.addItem(s2.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Dash, s3);
-	m_vecTABLeadersLabel.addItem(s3.utf8_str());
+	m_vecTABLeadersLabel.addItem(s3.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Underline, s4);
-	m_vecTABLeadersLabel.addItem(s4.utf8_str());
+	m_vecTABLeadersLabel.addItem(s4.c_str());
 	m_vecTABLeadersProp.addItem("none");
 	m_vecTABLeadersProp.addItem("dot");
 	m_vecTABLeadersProp.addItem("hyphen");
@@ -420,10 +420,10 @@ void AP_Dialog_FormatTOC::fillTOCPropsFromDoc(void)
 	bool bRes = setPropFromDoc("toc-heading");
 	if (!bRes)
 	{
-		UT_UTF8String pszTOCHeading;
+		std::string pszTOCHeading;
 		const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
 		pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, pszTOCHeading);
-		setTOCProperty("toc-heading", pszTOCHeading.utf8_str());
+		setTOCProperty("toc-heading", pszTOCHeading.c_str());
 	}
 	setPropFromDoc("toc-heading-style");
 	setPropFromDoc("toc-id");

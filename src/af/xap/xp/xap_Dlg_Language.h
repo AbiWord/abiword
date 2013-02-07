@@ -31,9 +31,8 @@
 #ifndef UT_TYPES_H
 #include "ut_types.h"
 #endif
-/* #include "ut_Language.h" */
-/* #include "ut_assert.h" */
-/* #include "ut_debugmsg.h" */
+
+#include <string>
 
 #include "xap_Dialog.h"
 
@@ -76,7 +75,9 @@ public:
 	void                            setMakeDocumentDefault(bool b) {m_bDocDefault = b;}
 
 	void                            getDocDefaultLangDescription(UT_UTF8String &s);
+	void                            getDocDefaultLangDescription(std::string &s);
 	void                            getDocDefaultLangCheckboxLabel(UT_UTF8String &s);
+	void                            getDocDefaultLangCheckboxLabel(std::string &s);
 	void                            setDocumentLanguage(const gchar * pLang);
 
 	XAP_Dialog_Language::tAnswer	getAnswer(void) const;
@@ -100,7 +101,7 @@ protected:
 	UT_uint32					    m_iLangCount;
 	bool                            m_bSpellCheck;
 	bool                            m_bDocDefault;
-	UT_UTF8String                   m_docLang;
+	std::string                   m_docLang;
 };
 #endif /* XAP_DIALOG_LANGUAGE_H */
 

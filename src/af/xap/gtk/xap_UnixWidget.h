@@ -63,12 +63,15 @@ public:
 
 	/** set the widget label */
 	virtual void setLabel(const UT_UTF8String &val);
+	virtual void setLabel(const std::string &val);
 
 	void setData(const std::string & data)
 	{
 		m_data = data;
 	}
 private:
+	void setLabelCStr(const char* val);
+
 	GtkWidget *m_widget;
 	// used to store the markup for a GtkLabel
 	std::string m_data;

@@ -34,7 +34,6 @@
 #include "ut_xml.h"
 #include "ut_vector.h"
 #include "ut_string.h"
-#include "ut_string_class.h"
 
 class XAP_App;
 
@@ -73,9 +72,8 @@ public:
 
 	virtual const gchar *	getValue(XAP_String_Id id) const = 0;
 
-	bool getValue(XAP_String_Id id, const char * inEncoding, UT_String &s) const;
+	bool getValue(XAP_String_Id id, const char * inEncoding, std::string &s) const;
 	bool getValueUTF8(XAP_String_Id id, std::string &s) const;
-	bool getValueUTF8(XAP_String_Id id, UT_UTF8String &s) const;
 
 	void setEncoding(const char * inEndcoding);
 	const char * getEncoding() const;
@@ -85,7 +83,7 @@ protected:
 	const gchar *			m_szLanguageName;
 
  private:
-	UT_String m_encoding ;
+	std::string m_encoding ;
 };
 
 //////////////////////////////////////////////////////////////////

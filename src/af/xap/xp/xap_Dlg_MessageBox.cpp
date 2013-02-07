@@ -68,7 +68,7 @@ void XAP_Dialog_MessageBox::setMessage(XAP_String_Id id, ...)
 	const XAP_StringSet * pSS = getApp()->getStringSet();
 
 	m_szMessage = (char *)g_try_malloc(512*sizeof(char));
-	UT_String s;
+	std::string s;
 	pSS->getValue(id, getApp()->getDefaultEncoding(),s);
 	
 	vsprintf(m_szMessage, (char*)s.c_str(), args);
@@ -100,7 +100,7 @@ void XAP_Dialog_MessageBox::setSecondaryMessage(XAP_String_Id id, ...)
 	const XAP_StringSet * pSS = getApp()->getStringSet();
 
 	m_szSecondaryMessage = (char *)g_try_malloc(512*sizeof(char));
-	UT_String s;
+	std::string s;
 	pSS->getValue(id, getApp()->getDefaultEncoding(),s);
 	vsprintf(m_szSecondaryMessage, (char*)s.c_str(), args);
 

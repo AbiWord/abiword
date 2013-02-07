@@ -79,7 +79,7 @@ void SetNSControlLabel (id control, const std::string &label)
  */
 void LocalizeControl (id control, const XAP_StringSet * pSS, XAP_String_Id stringId)
 {
-	UT_UTF8String label;
+	std::string label;
 	pSS->getValueUTF8(stringId, label);
 	SetNSControlLabel(control, label);
 }

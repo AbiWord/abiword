@@ -94,9 +94,9 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
   GtkWidget *dialog1;
   GtkWidget *dialog_vbox1;
   GtkWidget *dialog_action_area1;
-  UT_UTF8String s;
+  std::string s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_MarkRevisions_Title,s);
-  dialog1 = abiDialogNew ( "mark revisions", TRUE, s.utf8_str());
+  dialog1 = abiDialogNew ( "mark revisions", TRUE, s.c_str());
 #if !GTK_CHECK_VERSION(3,0,0)
   gtk_dialog_set_has_separator(GTK_DIALOG(dialog1), FALSE);
 #endif

@@ -312,11 +312,11 @@ static unichar s_remap[224] = {
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	UT_UTF8String sTitle;
+	std::string sTitle;
 
 	if (pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert_SymbolTitle, sTitle))
 		{
-			[[self window] setTitle:[NSString stringWithUTF8String:(sTitle.utf8_str())]];
+			[[self window] setTitle:[NSString stringWithUTF8String:(sTitle.c_str())]];
 		}
 
 	LocalizeControl(oAdd,      pSS, XAP_STRING_ID_DLG_Insert);

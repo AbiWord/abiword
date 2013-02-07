@@ -284,8 +284,9 @@ XAP_Toolbar_Factory::getToolbarNames(void)
 	for (i = 0; i < count; i++) {
 		XAP_Toolbar_Factory_vec * pVec = (XAP_Toolbar_Factory_vec *) m_vecTT.getNthItem(i);
 		XAP_String_Id label =  pVec->getLabelStringID();
-		UT_UTF8String * str = new UT_UTF8String;
-		pSS->getValueUTF8(label,*str);
+		std::string s;
+		pSS->getValueUTF8(label,s);
+		UT_UTF8String * str = new UT_UTF8String(s);
 		m_tbNames.addItem(str);
 	}
 	return m_tbNames;

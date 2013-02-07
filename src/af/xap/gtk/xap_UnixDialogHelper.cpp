@@ -44,6 +44,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "xav_View.h"
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
@@ -611,9 +612,9 @@ void abiDestroyWidget(GtkWidget * me)
 void localizeLabel(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
 	gchar * unixstr = NULL;	// used for conversions
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(id,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
+	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
 	gtk_label_set_text (GTK_LABEL(widget), unixstr);
 	FREEP(unixstr);	
 }
@@ -664,9 +665,9 @@ std::string & convertMnemonics(std::string & s)
  */
 void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(id,s);
-	gchar * newlbl = g_strdup(s.utf8_str());
+	gchar * newlbl = g_strdup(s.c_str());
 	UT_ASSERT(newlbl);
 	convertMnemonics(newlbl);
 	gtk_label_set_text_with_mnemonic (GTK_LABEL(widget), newlbl);
@@ -682,10 +683,10 @@ void localizeLabelUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_S
 void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
 	gchar * unixstr = NULL;	// used for conversions
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(id,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
-	UT_String markupStr(UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), unixstr));
+	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
+	std::string markupStr = UT_std_string_sprintf(gtk_label_get_label (GTK_LABEL(widget)), unixstr);
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
 	FREEP(unixstr);	
 }
@@ -696,9 +697,9 @@ void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Stri
 void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
 	gchar * unixstr = NULL;	// used for conversions
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(id,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
+	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
 	gtk_button_set_label (GTK_BUTTON(widget), unixstr);
 	FREEP(unixstr);	
 }
@@ -709,9 +710,9 @@ void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id
  */
 void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(id,s);
-	gchar * newlbl = g_strdup(s.utf8_str());
+	gchar * newlbl = g_strdup(s.c_str());
 	UT_ASSERT(newlbl);
 	convertMnemonics(newlbl);
 	gtk_button_set_use_underline (GTK_BUTTON(widget), TRUE);
@@ -729,12 +730,12 @@ void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_
  */
 void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(id,s);
-	gchar * newlbl = g_strdup(s.utf8_str());
+	gchar * newlbl = g_strdup(s.c_str());
 	UT_ASSERT(newlbl);
 	convertMnemonics(newlbl);
-	UT_String markupStr(UT_String_sprintf(gtk_button_get_label (GTK_BUTTON(widget)), newlbl));
+	std::string markupStr = UT_std_string_sprintf(gtk_button_get_label (GTK_BUTTON(widget)), newlbl);
 	gtk_button_set_use_underline (GTK_BUTTON(widget), TRUE);
 	gtk_button_set_label (GTK_BUTTON(widget), markupStr.c_str());
 
@@ -752,9 +753,9 @@ void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id i
 {
 //	UT_ASSERT(GTK_IS_MENU(widget));
 	gchar * unixstr = NULL;	// used for conversions
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(id,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.utf8_str());
+	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
 	gtk_menu_set_title (GTK_MENU(widget), unixstr);
 	FREEP(unixstr);	
 }
@@ -765,9 +766,9 @@ void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id i
 void localizeMenuItem(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
 {
 	gchar *unixstr = NULL;
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(id, s);
-	UT_XML_cloneConvAmpersands(unixstr, s.utf8_str());
+	UT_XML_cloneConvAmpersands(unixstr, s.c_str());
 	gtk_menu_item_set_label(GTK_MENU_ITEM(widget), unixstr);
 	FREEP(unixstr);	
 }
@@ -779,7 +780,7 @@ void localizeMenuItem(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_
  */
 void setLabelMarkup(GtkWidget * widget, const gchar * str)
 {
-	UT_String markupStr = UT_String_sprintf(gtk_label_get_label (GTK_LABEL(widget)), str);
+	std::string markupStr = UT_std_string_sprintf(gtk_label_get_label (GTK_LABEL(widget)), str);
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
 }
 

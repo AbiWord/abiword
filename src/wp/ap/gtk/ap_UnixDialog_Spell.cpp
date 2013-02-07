@@ -261,9 +261,9 @@ AP_UnixDialog_Spell::_constructWindow (void)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_SpellTitle,s);
-	gtk_window_set_title (GTK_WINDOW( m_wDialog), s.utf8_str());
+	gtk_window_set_title (GTK_WINDOW( m_wDialog), s.c_str());
 
 	localizeLabelUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "lbNotInDict")), pSS, AP_STRING_ID_DLG_Spell_UnknownWord);
 	localizeLabelUnderline(GTK_WIDGET(gtk_builder_get_object(builder, "lbChangeTo")), pSS, AP_STRING_ID_DLG_Spell_ChangeTo);
@@ -405,12 +405,12 @@ AP_UnixDialog_Spell::_updateWindow (void)
 		gtk_tree_selection_set_mode (selection, GTK_SELECTION_NONE);
 
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
-		UT_UTF8String s;
+		std::string s;
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Spell_NoSuggestions,s);
 
 		gtk_list_store_append (GTK_LIST_STORE (model), &iter);
 		gtk_list_store_set (GTK_LIST_STORE (model), &iter, 
-							COLUMN_SUGGESTION, s.utf8_str (),  
+				    COLUMN_SUGGESTION, s.c_str(),
 							COLUMN_NUMBER, -1,
 							-1);
 

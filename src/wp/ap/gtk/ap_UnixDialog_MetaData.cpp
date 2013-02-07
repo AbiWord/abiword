@@ -153,9 +153,9 @@ GtkWidget * AP_UnixDialog_MetaData::_constructWindow ()
 	m_entryRights = GTK_WIDGET(gtk_builder_get_object(builder, "enRights"));
 	
 	// set the dialog title
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MetaData_Title,s);
-	abiDialogSetTitle(window, "%s", s.utf8_str());
+	abiDialogSetTitle(window, "%s", s.c_str());
 	
 	// localize the strings in our dialog, and set some userdata for some widgets
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, AP_STRING_ID_DLG_MetaData_Title_LBL);

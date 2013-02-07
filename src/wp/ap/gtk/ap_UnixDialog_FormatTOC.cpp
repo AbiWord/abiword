@@ -370,9 +370,9 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 	m_wClose = _getWidget("wClose");
 
 	// set the dialog title
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Title,s);
-	abiDialogSetTitle(m_windowMain, "%s", s.utf8_str());
+	abiDialogSetTitle(m_windowMain, "%s", s.c_str());
 
 // localize notebook tabs
 	localizeLabel(_getWidget( "lbGeneral"), pSS, AP_STRING_ID_DLG_FormatTOC_General);
@@ -418,11 +418,12 @@ GtkWidget * AP_UnixDialog_FormatTOC::_constructWindow(void)
 void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 {
 	AP_Dialog_FormatTOC::setMainLevel(iLevel);
-	UT_UTF8String sVal, sLoc;
+	UT_UTF8String sVal;
+	std::string sLoc;
 	sVal = getTOCPropVal("toc-dest-style",getMainLevel());
 	GtkWidget * pW= _getWidget("wDispStyle");
 	pt_PieceTable::s_getLocalisedStyleName(sVal.utf8_str(), sLoc);
-	gtk_label_set_text(GTK_LABEL(pW), sLoc.utf8_str());
+	gtk_label_set_text(GTK_LABEL(pW), sLoc.c_str());
 
 
 	sVal = getTOCPropVal("toc-has-label",getMainLevel());
@@ -439,7 +440,7 @@ void AP_UnixDialog_FormatTOC::setMainLevel(UT_sint32 iLevel)
 	sVal = getTOCPropVal("toc-source-style",getMainLevel());
 	pW = _getWidget("wFillStyle");
 	pt_PieceTable::s_getLocalisedStyleName(sVal.utf8_str(), sLoc);
-	gtk_label_set_text(GTK_LABEL(pW), sLoc.utf8_str());
+	gtk_label_set_text(GTK_LABEL(pW), sLoc.c_str());
 }
 
 
@@ -520,20 +521,20 @@ void AP_UnixDialog_FormatTOC::setDetailsLevel(UT_sint32 iLevel)
 void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
-	UT_UTF8String s;
+	std::string s;
 
 	GtkComboBox *combo;
 
 	combo = GTK_COMBO_BOX(_getWidget("wLevelOption"));
 	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level1,s);
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), 1);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), 1);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level2,s);
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), 2);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), 2);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level3,s);
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), 3);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), 3);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level4,s);
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), 4);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), 4);
 	gtk_combo_box_set_active(combo, 0);
 
 //////////////////////////////////////////////////////////////////////////////
@@ -541,13 +542,13 @@ void AP_UnixDialog_FormatTOC::_createLevelItems(void)
 	combo = GTK_COMBO_BOX(_getWidget("wDetailsLevel"));
 	XAP_makeGtkComboBoxText(combo, G_TYPE_INT);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level1,s);
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), 1);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), 1);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level2,s);
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), 2);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), 2);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level3,s);
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), 3);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), 3);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_FormatTOC_Level4,s);
-	XAP_appendComboBoxTextAndInt(combo, s.utf8_str(), 4);
+	XAP_appendComboBoxTextAndInt(combo, s.c_str(), 4);
 	gtk_combo_box_set_active(combo, 0);
 }
 
@@ -636,7 +637,8 @@ void  AP_UnixDialog_FormatTOC::event_Apply(void)
  */
 void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 {
-	UT_UTF8String sVal, sLoc;
+	UT_UTF8String sVal;
+	std::string sLoc;
 	sVal = getTOCPropVal("toc-has-heading");
 
 	GtkWidget * pW;
@@ -669,7 +671,7 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 	sVal = getTOCPropVal("toc-heading-style");
 	pW = _getWidget("lbCurrentHeadingStyle");
 	pt_PieceTable::s_getLocalisedStyleName(sVal.utf8_str(), sLoc);
-	gtk_label_set_text(GTK_LABEL(pW), sLoc.utf8_str());
+	gtk_label_set_text(GTK_LABEL(pW), sLoc.c_str());
 	g_object_set_data(G_OBJECT(_getWidget("lbChangeHeadingStyle")),"display-widget",(gpointer)pW);
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-heading-style");
 
@@ -679,7 +681,7 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 	sVal = getTOCPropVal("toc-dest-style",getMainLevel());
 	pW= _getWidget("wDispStyle");
 	pt_PieceTable::s_getLocalisedStyleName(sVal.utf8_str(), sLoc);
-	gtk_label_set_text(GTK_LABEL(pW), sLoc.utf8_str());
+	gtk_label_set_text(GTK_LABEL(pW), sLoc.c_str());
 	g_object_set_data(G_OBJECT(_getWidget("wChangeDisp")),"display-widget",(gpointer)pW);
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-dest-style");
 
@@ -761,7 +763,7 @@ void  AP_UnixDialog_FormatTOC::_fillGUI(void)
 	sVal = getTOCPropVal("toc-source-style",getMainLevel());
 	pW = _getWidget("wFillStyle");
 	pt_PieceTable::s_getLocalisedStyleName(sVal.utf8_str(), sLoc);
-	gtk_label_set_text(GTK_LABEL(pW), sLoc.utf8_str());
+	gtk_label_set_text(GTK_LABEL(pW), sLoc.c_str());
 	g_object_set_data(G_OBJECT(_getWidget("wChangeFill")),"display-widget",(gpointer)pW);
 	g_object_set_data(G_OBJECT(pW),"toc-prop",(gpointer) "toc-source-style");
 

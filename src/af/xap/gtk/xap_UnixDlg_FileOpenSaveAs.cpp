@@ -289,10 +289,10 @@ bool XAP_UnixDialog_FileOpenSaveAs::_run_gtk_main(XAP_Frame * pFrame,
 						IE_ExpSniffer* pSniffer = IE_Exp::snifferForFileType(m_nTypeList[nIndex]);
 						if (pSniffer && !pSniffer->recognizeSuffix(UT_pathSuffix(szDialogFilename).c_str()))
 						{
-							UT_UTF8String msg;
+							std::string msg;
 							const XAP_StringSet * pSS = m_pApp->getStringSet();
 							pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExtensionDoesNotMatch, msg);
-							if (pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_NO) != XAP_Dialog_MessageBox::a_YES)
+							if (pFrame->showMessageBox(msg.c_str(), XAP_Dialog_MessageBox::b_YN, XAP_Dialog_MessageBox::a_NO) != XAP_Dialog_MessageBox::a_YES)
 								goto ContinueLoop;
 						}
 						szFinalPathname = g_strdup(szDialogFilename);
@@ -910,8 +910,9 @@ gint XAP_UnixDialog_FileOpenSaveAs::previewPicture (void)
 								  pSS->getLanguageName());
 	pGr->setFont(fnt);
 
-	UT_UTF8String str;
-	pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_No_Picture_Label, str);
+	std::string s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_No_Picture_Label, s);
+	UT_UTF8String str(s);
 
 	int answer = 0;
 

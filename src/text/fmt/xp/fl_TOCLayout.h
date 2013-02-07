@@ -144,8 +144,8 @@ public:
 	const UT_UTF8String &    getRangeBookmarkName() const {return m_sRangeBookmark;}
 	bool                     verifyBookmarkAssumptions();
 	bool                     fillTOC(void);
-
-	static UT_UTF8String     getDefaultHeading();
+	
+	static std::string       getDefaultHeading();
 	static UT_UTF8String     getDefaultSourceStyle(UT_uint32 iLevel);
 	static UT_UTF8String     getDefaultDestStyle(UT_uint32 iLevel);
 

@@ -185,7 +185,16 @@ UT_Vector* XAP_Dialog_Language::getAvailableDictionaries()
 */
 void XAP_Dialog_Language::getDocDefaultLangCheckboxLabel(UT_UTF8String &s)
 {
-	s.clear();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	UT_return_if_fail(pSS);
+
+	std::string str;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_DefaultLangChkbox, str);
+	s = str;
+}
+
+void XAP_Dialog_Language::getDocDefaultLangCheckboxLabel(std::string &s)
+{
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	UT_return_if_fail(pSS);
 
@@ -197,7 +206,18 @@ void XAP_Dialog_Language::getDocDefaultLangCheckboxLabel(UT_UTF8String &s)
 */
 void XAP_Dialog_Language::getDocDefaultLangDescription(UT_UTF8String & s)
 {
-	s.clear();
+	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+	UT_return_if_fail(pSS);
+
+	std::string str;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_DefaultLangLabel, str);
+	s = str;
+
+	s += m_docLang;
+}
+
+void XAP_Dialog_Language::getDocDefaultLangDescription(std::string & s)
+{
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 	UT_return_if_fail(pSS);
 
@@ -205,6 +225,7 @@ void XAP_Dialog_Language::getDocDefaultLangDescription(UT_UTF8String & s)
 
 	s += m_docLang;
 }
+
 
 /*!
     Initialises the dialogue to the current default lanaguage

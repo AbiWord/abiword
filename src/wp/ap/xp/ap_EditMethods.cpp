@@ -10433,30 +10433,30 @@ UT_return_val_if_fail(pPrefsScheme, false);
 
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
 
-	UT_UTF8String sPageWidth;
+	std::string sPageWidth;
 	pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_PageWidth,sPageWidth);
 	
-	UT_UTF8String sWholePage;
+	std::string sWholePage;
 	pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_WholePage,sWholePage);
 	
-	UT_UTF8String sPercent;
+	std::string sPercent;
 	pSS->getValueUTF8(XAP_STRING_ID_TB_Zoom_Percent,sPercent);
 	
-	if(strcmp(p_zoom, sPageWidth.utf8_str()) == 0)
+	if(strcmp(p_zoom, sPageWidth.c_str()) == 0)
 	{
 		pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const gchar*>("Width"));
 		pFrame->setZoomType(XAP_Frame::z_PAGEWIDTH);
 		iZoom = pView->calculateZoomPercentForPageWidth();
 	}
-	else if(strcmp(p_zoom, sWholePage.utf8_str()) == 0)
+	else if(strcmp(p_zoom, sWholePage.c_str()) == 0)
 	{
 		pFrame->setZoomType(XAP_Frame::z_WHOLEPAGE);
 		pPrefsScheme->setValue(static_cast<const gchar*>(XAP_PREF_KEY_ZoomType),
 						 static_cast<const gchar*>("Page"));
 		iZoom = pView->calculateZoomPercentForWholePage();
 	}
-	else if(strcmp(p_zoom, sPercent.utf8_str()) == 0)
+	else if(strcmp(p_zoom, sPercent.c_str()) == 0)
 	{
 		// invoke the zoom dialog instead for some custom value
 		return EX(dlgZoom);

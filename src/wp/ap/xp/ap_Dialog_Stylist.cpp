@@ -270,7 +270,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 //
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet ();
 	Stylist_row * pStyleRow = new Stylist_row();
-	UT_UTF8String sTmp;
+	std::string sTmp;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_HeadingStyles, sTmp);
 	pStyleRow->setRowName(sTmp);
 	m_vecStyleRows.addItem(pStyleRow);
@@ -282,7 +282,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
-			UT_DEBUGMSG(("Adding heading style %s \n",sTmp.utf8_str()));
+			UT_DEBUGMSG(("Adding heading style %s \n",sTmp.c_str()));
 		}
 	}
 //
@@ -300,7 +300,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
-			UT_DEBUGMSG(("Adding List style %s \n",sTmp.utf8_str()));
+			UT_DEBUGMSG(("Adding List style %s \n",sTmp.c_str()));
 		}
 	}
 //
@@ -318,7 +318,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
-			UT_DEBUGMSG(("Adding Footnote style %s \n",sTmp.utf8_str()));
+			UT_DEBUGMSG(("Adding Footnote style %s \n",sTmp.c_str()));
 		}
 	}
 //
@@ -337,7 +337,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
 			iCount++;
-			UT_DEBUGMSG(("Adding User-defined style %s \n",sTmp.utf8_str()));
+			UT_DEBUGMSG(("Adding User-defined style %s \n",sTmp.c_str()));
 		}
 	}
 	if(iCount > 0)
@@ -363,7 +363,7 @@ void Stylist_tree::buildStyles(PD_Document * pDoc)
 			sTmp = pStyle->getName();
 			pStyleRow->addStyle(sTmp);
 			vecStyles.setNthItem(i,NULL,NULL);
-			UT_DEBUGMSG(("Adding style %s \n",sTmp.utf8_str()));
+			UT_DEBUGMSG(("Adding style %s \n",sTmp.c_str()));
 		}
 	}
 }
@@ -448,7 +448,7 @@ bool Stylist_tree::isUser(const PD_Style * pStyle) const
 /*!
  * Return the number of rows in the tree.
  */
-UT_sint32 Stylist_tree::getNumRows(void)
+UT_sint32 Stylist_tree::getNumRows(void) const
 {
 	return m_vecStyleRows.getItemCount();
 }
@@ -498,7 +498,7 @@ bool  Stylist_tree::getStyleAtRowCol(UT_UTF8String & sStyle,UT_sint32 row, UT_si
  * return the number of columns at the row given.
  * If the row is invalid return 0.  
  */
-UT_sint32 Stylist_tree::getNumCols(UT_sint32 row)
+UT_sint32 Stylist_tree::getNumCols(UT_sint32 row) const
 {
 	if(row > getNumRows() || (row < 0))
 	{
@@ -519,7 +519,7 @@ UT_sint32 Stylist_tree::getNumStyles(void) const
 /*!
  * return the name of the row given. If the row is invalid return false;
  */
-bool Stylist_tree::getNameOfRow(UT_UTF8String &sName, UT_sint32 row)
+bool Stylist_tree::getNameOfRow(std::string &sName, UT_sint32 row) const
 {
 	if(row > getNumRows() || (row<0) )
 	{
@@ -547,23 +547,23 @@ Stylist_row::~Stylist_row(void)
 	UT_VECTOR_PURGEALL(UT_UTF8String *, m_vecStyles);
 }
 
-void Stylist_row::addStyle(UT_UTF8String & sStyle)
+void Stylist_row::addStyle(const std::string & sStyle)
 {
 	UT_UTF8String * psStyle = new UT_UTF8String(sStyle);
 	m_vecStyles.addItem(psStyle);
 }
 
-void Stylist_row::setRowName(UT_UTF8String & sRowName)
+void Stylist_row::setRowName(const std::string & sRowName)
 {
 	m_sRowName = sRowName;
 }
 
-void Stylist_row::getRowName(UT_UTF8String & sRowName)
+void Stylist_row::getRowName(std::string & sRowName) const
 {
 	sRowName = m_sRowName;
 }
 
-UT_sint32 Stylist_row::getNumCols(void)
+UT_sint32 Stylist_row::getNumCols(void) const
 {
 	return m_vecStyles.getItemCount();
 }

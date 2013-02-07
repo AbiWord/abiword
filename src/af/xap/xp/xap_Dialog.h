@@ -110,6 +110,7 @@ public:
 
 	/** set the widget label */
 	void setWidgetLabel(xap_widget_id wid, const UT_UTF8String &val);
+	void setWidgetLabel(xap_widget_id wid, const std::string &val);
 
 	// dialog framework
 

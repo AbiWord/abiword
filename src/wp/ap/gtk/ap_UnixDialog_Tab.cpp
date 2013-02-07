@@ -24,6 +24,7 @@
 
 #include "ut_types.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_units.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
@@ -244,10 +245,10 @@ AP_UnixDialog_Tab::_constructWindow ()
 	m_exUserTabs = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "exUserTabs"));
 
 	// localise	
-	UT_UTF8String s;
+	std::string s;
 	const XAP_StringSet *pSS = m_pApp->getStringSet ();
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_TabTitle, s);
-	gtk_window_set_title (GTK_WINDOW (wDialog), s.utf8_str());	
+	gtk_window_set_title (GTK_WINDOW (wDialog), s.c_str());	
 	
 	localizeLabel (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbDefaultTab")), pSS, AP_STRING_ID_DLG_Tab_Label_DefaultTS);
 	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "lbUserTabs")), pSS, AP_STRING_ID_DLG_Tab_Label_Existing);
@@ -283,31 +284,31 @@ AP_UnixDialog_Tab::_constructWindow ()
 	// placeholder so we stick to the enum's ordering
 	// does not show up in UI
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_NoAlign, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	m_AlignmentMapping[FL_TAB_NONE] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Left, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_LEFT] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Center, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_CENTER] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Right, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_RIGHT] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Decimal, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_DECIMAL] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Bar, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobAlignment), trans);
 	m_AlignmentMapping[FL_TAB_BAR] = trans;
 
@@ -320,22 +321,22 @@ AP_UnixDialog_Tab::_constructWindow ()
 					  0, 0);
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_None, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobLeader), trans);
 	m_LeaderMapping[FL_LEADER_NONE] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Dot, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobLeader), trans);
 	m_LeaderMapping[FL_LEADER_DOT] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Dash, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobLeader), trans);
 	m_LeaderMapping[FL_LEADER_HYPHEN] = trans;
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_Underline, s);
-	UT_XML_cloneNoAmpersands(trans, s.utf8_str ());
+	UT_XML_cloneNoAmpersands(trans, s.c_str());
 	gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (m_cobLeader), trans);
 	m_LeaderMapping[FL_LEADER_UNDERLINE] = trans;
 	
@@ -502,14 +503,14 @@ AP_UnixDialog_Tab::onAddTab ()
  
 	pos = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbDefaultTab));
 	max += pos;
-	UT_UTF8String text = UT_UTF8String_sprintf ("%f%s", max, UT_dimensionName (_getDimension ())); 
-	UT_DEBUGMSG (("onAddTab() '%s' (%f/%f)\n", text.utf8_str(), pos, max));
+	std::string text = UT_std_string_sprintf ("%f%s", max, UT_dimensionName (_getDimension ())); 
+	UT_DEBUGMSG (("onAddTab() '%s' (%f/%f)\n", text.c_str(), pos, max));
  
  	// set defaults
 
 	g_signal_handler_block (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
 	gtk_spin_button_set_value (GTK_SPIN_BUTTON (m_sbPosition), pos);
-	gtk_entry_set_text (GTK_ENTRY (m_sbPosition), text.utf8_str ());
+	gtk_entry_set_text (GTK_ENTRY (m_sbPosition), text.c_str ());
 	g_signal_handler_unblock (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
 	
 	g_signal_handler_block (G_OBJECT (m_cobAlignment), m_hSigAlignmentChanged);

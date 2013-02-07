@@ -168,10 +168,10 @@ void  XAP_Dialog_Insert_Symbol::ConstructWindowName()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	gchar * tmp = NULL;											 
-	UT_UTF8String sTitle;
+	std::string sTitle;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert_SymbolTitle,sTitle);
 
-	UT_XML_cloneNoAmpersands(tmp, sTitle.utf8_str());
+	UT_XML_cloneNoAmpersands(tmp, sTitle.c_str());
         BuildWindowName((char *) m_WindowName,(char*)tmp,sizeof(m_WindowName));
         FREEP(tmp);
 }

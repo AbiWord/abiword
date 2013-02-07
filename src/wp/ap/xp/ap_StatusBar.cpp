@@ -92,9 +92,9 @@ ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
 {
     m_pageNr = 0;
     m_nrPages = 0;
-	UT_UTF8String s;
-	XAP_App::getApp()->getStringSet()->getValueUTF8(AP_STRING_ID_PageInfoField,s);
-	m_szFormat = g_strdup(s.utf8_str());	
+    std::string s;
+    XAP_App::getApp()->getStringSet()->getValueUTF8(AP_STRING_ID_PageInfoField,s);
+    m_szFormat = g_strdup(s.c_str());
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = LEFT;
     UT_UTF8String_sprintf(m_sRepresentativeString,m_szFormat,AP_STATUSBAR_MAX_PAGES,AP_STATUSBAR_MAX_PAGES);

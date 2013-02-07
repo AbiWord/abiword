@@ -61,7 +61,7 @@ const gchar * XAP_StringSet::getLanguageName(void) const
 	return m_szLanguageName;
 }
 
-bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_String &s) const
+bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, std::string &s) const
 {
 	const char * toTranslate = getValue(id);
 
@@ -91,20 +91,7 @@ bool XAP_StringSet::getValue(XAP_String_Id id, const char * inEncoding, UT_Strin
 
 bool XAP_StringSet::getValueUTF8(XAP_String_Id id, std::string & s) const
 {	
-        UT_String s_;
-	bool b = getValue(id, "UTF-8", s_);
-	if (b)
-	        s = s_.c_str();
-	return b;
-}
-
-bool XAP_StringSet::getValueUTF8(XAP_String_Id id, UT_UTF8String & s) const
-{	
-        UT_String s_;
-	bool b = getValue(id, "UTF-8", s_);
-	if (b)
-	        s = s_.c_str();
-	return b;
+	return getValue(id, "UTF-8", s);
 }
 
 void XAP_StringSet::setEncoding(const gchar * inEncoding)

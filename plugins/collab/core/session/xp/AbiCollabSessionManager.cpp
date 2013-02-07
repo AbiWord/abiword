@@ -1172,10 +1172,10 @@ void AbiCollabSessionManager::setDocumentHandles(BuddyPtr pBuddy, const UT_Gener
 		{
 			// this document has no name yet; give it an untitled name
 			const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-			UT_UTF8String sUntitled;
+			std::string sUntitled;
 			pSS->getValueUTF8(XAP_STRING_ID_UntitledDocument, sUntitled);
-			UT_UTF8String_sprintf(sDocumentName, sUntitled.utf8_str(), 0);
-						
+			UT_UTF8String_sprintf(sDocumentName, sUntitled.c_str(), 0);
+
 			// TODO: as should append a number here, but at the moment
 			// XAP_Frame::m_iUntitled is not accessible from here
 		}

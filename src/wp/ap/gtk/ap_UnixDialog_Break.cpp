@@ -111,9 +111,9 @@ GtkWidget * AP_UnixDialog_Break::_constructWindow(void)
 	m_radioGroup = gtk_radio_button_get_group (GTK_RADIO_BUTTON ( GTK_WIDGET(gtk_builder_get_object(builder, "rbPageBreak")) ));
 
 	// set the dialog title
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Break_BreakTitle,s);
-	abiDialogSetTitle(window, "%s", s.utf8_str());
+	abiDialogSetTitle(window, "%s", s.c_str());
 	
 	// localize the strings in our dialog, and set tags for some widgets
 	

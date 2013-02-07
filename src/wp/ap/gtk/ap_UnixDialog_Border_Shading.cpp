@@ -551,15 +551,15 @@ GtkWidget * AP_UnixDialog_Border_Shading::_constructWindow(void)
 	GtkComboBox* combo_style = GTK_COMBO_BOX(m_wBorderStyle);
 	XAP_makeGtkComboBoxText(combo_style, G_TYPE_NONE);
 	
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_None, s);
-	XAP_appendComboBoxText(combo_style, s.utf8_str());
+	XAP_appendComboBoxText(combo_style, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Solid, s);
-	XAP_appendComboBoxText(combo_style, s.utf8_str());
+	XAP_appendComboBoxText(combo_style, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Dotted, s);
-	XAP_appendComboBoxText(combo_style, s.utf8_str());
+	XAP_appendComboBoxText(combo_style, s.c_str());
 	pSS->getValueUTF8(AP_STRING_ID_DLG_BorderShading_Border_Style_Dashed, s);
-	XAP_appendComboBoxText(combo_style, s.utf8_str());
+	XAP_appendComboBoxText(combo_style, s.c_str());
 	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_style), 0);
 
 //

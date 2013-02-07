@@ -435,7 +435,7 @@ void s_WML_Listener::_emitTOC (PT_AttrPropIndex api) {
 	bool bHaveProp = (api ? (m_pDocument->getAttrProp (api, &pAP)) : false);
 	bool bEmitHeading = true;
 	const gchar * szValue = 0;
-	UT_UTF8String tocHeadingUTF8;
+	std::string tocHeadingUTF8;
 
 	_closeSpan();
 	_closeBlock();
@@ -461,7 +461,7 @@ void s_WML_Listener::_emitTOC (PT_AttrPropIndex api) {
 
 		//TODO: query the style properties to determine whether to center the TOC heading
 		m_pie->write("<p>");
-		m_pie->write(tocHeadingUTF8.escapeXML().utf8_str());
+		m_pie->write(UT_escapeXML(tocHeadingUTF8));
 		m_pie->write("</p>\n");
 	}
 

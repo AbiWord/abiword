@@ -52,7 +52,7 @@ AP_Dialog_WordCount::~AP_Dialog_WordCount(void)
 void AP_Dialog_WordCount::localizeDialog(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
-	UT_UTF8String str;
+	std::string str;
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_WordCount_WordCountTitle, str);
 	setWidgetLabel(DIALOG_WID, str); 
@@ -84,7 +84,7 @@ void AP_Dialog_WordCount::updateDialogData(void)
 	setWidgetValueInt(LINES_VAL_WID, m_count.line);
 	setWidgetValueInt(PAGES_VAL_WID, m_count.page);
 
-	setWidgetLabel (TITLE_LBL_WID, getActiveFrame()->getTitle().utf8_str());
+	setWidgetLabel (TITLE_LBL_WID, getActiveFrame()->getTitle());
 }
 
 

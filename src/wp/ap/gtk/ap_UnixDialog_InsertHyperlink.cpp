@@ -132,9 +132,9 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
 
   GtkWidget *label1;
 
-  UT_UTF8String s;
+  std::string s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Msg,s);
-  label1 = gtk_label_new (s.utf8_str());
+  label1 = gtk_label_new (s.c_str());
   gtk_widget_show (label1);
   gtk_box_pack_start (GTK_BOX (vbox2), label1, FALSE, FALSE, 3);
 
@@ -202,9 +202,9 @@ GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)
 
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-  UT_UTF8String s;
+  std::string s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Title,s);
-  m_windowMain = abiDialogNew("insert table dialog", TRUE, s.utf8_str());
+  m_windowMain = abiDialogNew("insert table dialog", TRUE, s.c_str());
 #if !GTK_CHECK_VERSION(3,0,0)
   gtk_dialog_set_has_separator(GTK_DIALOG(m_windowMain), FALSE);
 #endif

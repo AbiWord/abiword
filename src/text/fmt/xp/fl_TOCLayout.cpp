@@ -1529,10 +1529,10 @@ void fl_TOCLayout::format(void)
 	m_bNeedsReformat = false;
 }
 
-UT_UTF8String fl_TOCLayout::getDefaultHeading()
+std::string fl_TOCLayout::getDefaultHeading()
 {
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-	UT_UTF8String sDefaultHeading;
+	std::string sDefaultHeading;
 	pSS->getValueUTF8(AP_STRING_ID_TOC_TocHeading, sDefaultHeading);
 	return sDefaultHeading;
 }

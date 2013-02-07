@@ -76,6 +76,13 @@ void XAP_Dialog::setWidgetLabel(xap_widget_id wid, const UT_UTF8String &val)
 	delete w;
 }
 
+void XAP_Dialog::setWidgetLabel(xap_widget_id wid, const std::string &val)
+{
+	XAP_Widget *w = getWidget(wid);
+	w->setLabel(val);
+	delete w;
+}
+
 void
 XAP_Dialog::maybeClosePopupPreviewBubbles()
 {    

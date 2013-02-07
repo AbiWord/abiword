@@ -333,16 +333,15 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	}
 
 	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph,s);
-	
-	m_previousBlock->setText(s.ucs4_str().ucs4_str());
+	m_previousBlock->setText(UT_UCS4String(s).ucs4_str());
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph,s);
-	m_followingBlock->setText(s.ucs4_str().ucs4_str());
+	m_followingBlock->setText(UT_UCS4String(s).ucs4_str());
 }
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
@@ -390,15 +389,15 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	}
 
 	const XAP_StringSet * pSS = dlg->getApp()->getStringSet();
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph,s);
-	m_previousBlock->setText(s.ucs4_str().ucs4_str());
+	m_previousBlock->setText(UT_UCS4String(s).ucs4_str());
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph,s);
-	m_followingBlock->setText(s.ucs4_str().ucs4_str());
+	m_followingBlock->setText(UT_UCS4String(s).ucs4_str());
 }
 
 AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
@@ -475,15 +474,15 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 	}
 
 	const XAP_StringSet * pSS = dlg->m_pApp->getStringSet();
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewPrevParagraph,s);
-	m_previousBlock->setText(s.ucs4_str().ucs4_str());
+	m_previousBlock->setText(UT_UCS4String(s).ucs4_str());
 
 	// this text came from the current document, passed in as arg
 	m_activeBlock->setText(text);
 	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_PreviewFollowParagraph,s);
-	m_followingBlock->setText(s.ucs4_str().ucs4_str());
+	m_followingBlock->setText(UT_UCS4String(s).ucs4_str());
 }
 
 AP_Preview_Paragraph::~AP_Preview_Paragraph()

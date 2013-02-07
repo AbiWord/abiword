@@ -147,9 +147,9 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
     gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvFormats)), GTK_SELECTION_SINGLE);		
 	
 	// set the dialog title
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_DateTime_DateTimeTitle,s);
-	abiDialogSetTitle(window, "%s", s.utf8_str());
+	abiDialogSetTitle(window, "%s", s.c_str());
 	
 	// localize the strings in our dialog
 	

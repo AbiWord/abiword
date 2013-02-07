@@ -135,9 +135,9 @@ GtkWidget * XAP_UnixDialog_Encoding::_constructWindow(void)
 	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Encoding"));
 	m_listEncodings = GTK_WIDGET(gtk_builder_get_object(builder, "encodingList"));
 
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UENC_EncTitle,s);
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.c_str());
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lblEncoding")), pSS, XAP_STRING_ID_DLG_UENC_EncLabel);
 
 	// add a column to our TreeViews

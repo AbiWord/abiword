@@ -83,9 +83,9 @@ GtkWidget * XAP_UnixDialog_DocComparison::constructWindow(void)
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	m_windowMain = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_DocComparison"));
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_DocComparison_WindowLabel,s);
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.c_str());
   
 	_populateWindowData(builder);
 

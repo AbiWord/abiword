@@ -116,14 +116,14 @@ GtkWidget * XAP_UnixDialog_Language::constructWindow(void)
 	m_lbDefaultLanguage = GTK_WIDGET(gtk_builder_get_object(builder, "lbDefaultLanguage"));
 	m_cbDefaultLanguage = GTK_WIDGET(gtk_builder_get_object(builder, "cbDefaultLanguage"));
 
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_ULANG_LangTitle,s);
-	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.utf8_str());
+	gtk_window_set_title (GTK_WINDOW(m_windowMain), s.c_str());
 	localizeLabelMarkup (GTK_WIDGET(gtk_builder_get_object(builder, "lbAvailableLanguages")), pSS, XAP_STRING_ID_DLG_ULANG_AvailableLanguages);
 	getDocDefaultLangDescription(s);
-	gtk_label_set_text (GTK_LABEL(m_lbDefaultLanguage), s.utf8_str());
+	gtk_label_set_text (GTK_LABEL(m_lbDefaultLanguage), s.c_str());
 	getDocDefaultLangCheckboxLabel(s);
-	gtk_button_set_label (GTK_BUTTON(m_cbDefaultLanguage), s.utf8_str());
+	gtk_button_set_label (GTK_BUTTON(m_cbDefaultLanguage), s.c_str());
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON(m_cbDefaultLanguage), isMakeDocumentDefault());
 
 	// add a column to our TreeViews

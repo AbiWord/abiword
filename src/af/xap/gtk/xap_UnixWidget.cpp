@@ -146,21 +146,31 @@ float XAP_UnixWidget::getValueFloat(void)
 /** set the widget label */
 void XAP_UnixWidget::setLabel(const UT_UTF8String &val)
 {
+	setLabelCStr(val.utf8_str());
+}
+
+void XAP_UnixWidget::setLabel(const std::string &val)
+{
+	setLabelCStr(val.c_str());
+}
+
+void XAP_UnixWidget::setLabelCStr(const char* val)
+{
 	if (GTK_IS_BUTTON(m_widget)) {
-		gtk_button_set_label(GTK_BUTTON(m_widget), val.utf8_str());
+		gtk_button_set_label(GTK_BUTTON(m_widget), val);
 	}
 	else if (GTK_IS_LABEL(m_widget)) {
 		if(!gtk_label_get_use_markup(GTK_LABEL(m_widget))) {
-			gtk_label_set_text(GTK_LABEL(m_widget), val.utf8_str());
+			gtk_label_set_text(GTK_LABEL(m_widget), val);
 		}
 		else {
 			std::string markup = UT_std_string_sprintf(m_data.c_str(), 
-													   val.utf8_str());
+													   val);
 			gtk_label_set_label(GTK_LABEL(m_widget), markup.c_str());
 		}
 	}
 	else if (GTK_IS_WINDOW(m_widget)) {
-		gtk_window_set_title(GTK_WINDOW(m_widget), val.utf8_str());
+		gtk_window_set_title(GTK_WINDOW(m_widget), val);
 	}
 	else {
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);

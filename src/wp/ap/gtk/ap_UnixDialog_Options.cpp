@@ -198,7 +198,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 // Run the Background dialog over the options? No the title is wrong.
 //
     GtkWidget *colorsel;
-    UT_UTF8String s;
+	std::string s;
 
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -210,7 +210,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
     pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
-    abiDialogSetTitle ( dlg, "%s", s.utf8_str() );
+    abiDialogSetTitle ( dlg, "%s", s.c_str() );
 
     colorsel = WID ( "csColorSel" );
 

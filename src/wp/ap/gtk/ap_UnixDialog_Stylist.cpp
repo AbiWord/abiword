@@ -166,7 +166,8 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 	GtkTreeIter child, parent;
 	gboolean itering;
 	gchar *entry;
-	UT_UTF8String sLocCurStyle, sCurStyle = *getCurStyle();
+	std::string sLocCurStyle;
+	UT_UTF8String sCurStyle = *getCurStyle();
 
 	if((getStyleTree() == NULL) || (sCurStyle.size() == 0))
 		updateDialog();
@@ -179,7 +180,7 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 
 	pt_PieceTable::s_getLocalisedStyleName(sCurStyle.utf8_str(), sLocCurStyle);
 
-	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_wStyleList)); 
+	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_wStyleList));
 	itering = gtk_tree_model_get_iter_first(model, &parent);
 
 	while (itering)
@@ -189,24 +190,25 @@ void AP_UnixDialog_Stylist::setStyleInGUI(void)
 			do
 			{
 				gtk_tree_model_get(model, &child, 0, &entry, -1);
-		
-				if (strcmp(sLocCurStyle.utf8_str(), entry) == 0)
+
+				if (sLocCurStyle.c_str() == entry)
 				{
 					itering = FALSE;
 					break;
 				}
-			
+
 				g_free(entry);
-			
+
 			}
 			while (gtk_tree_model_iter_next(model, &child));
 		}
-		
-		if (itering) itering = gtk_tree_model_iter_next(model, &parent);
+
+		if (itering)
+			itering = gtk_tree_model_iter_next(model, &parent);
 	}
 
-	GtkTreePath *gPathFull = gtk_tree_model_get_path(model, &child); 
-	GtkTreePath *gPathRow = gtk_tree_model_get_path(model, &parent); 
+	GtkTreePath *gPathFull = gtk_tree_model_get_path(model, &child);
+	GtkTreePath *gPathRow = gtk_tree_model_get_path(model, &parent);
 	gtk_tree_view_expand_row( GTK_TREE_VIEW(m_wStyleList),gPathRow,TRUE);
 	gtk_tree_view_scroll_to_cell(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE,0.5,0.5);
 	gtk_tree_view_set_cursor(GTK_TREE_VIEW(m_wStyleList),gPathFull,NULL,TRUE);
@@ -319,9 +321,9 @@ GtkWidget * AP_UnixDialog_Stylist::_constructWindow(void)
 	}
 
 	// set the dialog title
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Title,s);
-	abiDialogSetTitle(m_windowMain, "%s", s.utf8_str());
+	abiDialogSetTitle(m_windowMain, "%s", s.c_str());
 
 	g_object_unref(G_OBJECT(builder));
 	
@@ -364,7 +366,7 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	m_wModel = gtk_tree_store_new (3, G_TYPE_STRING, G_TYPE_INT, G_TYPE_INT);
 
 	page = 0;
-	UT_UTF8String sTmp(""), sLoc; 
+	std::string sTmp(""), sLoc;
 	for(row= 0; row < pStyleTree->getNumRows();row++)
 	{
 		gtk_tree_store_append (m_wModel, &iter, NULL);
@@ -377,26 +379,27 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 		{
 			xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
 
-			gtk_tree_store_set (m_wModel, &iter, 0, sTmp.utf8_str(), 1, row,2,0, -1);
+			gtk_tree_store_set (m_wModel, &iter, 0, sTmp.c_str(), 1, row,2,0, -1);
 			for(col =0 ; col < pStyleTree->getNumCols(row); col++)
 			{
 				gtk_tree_store_append (m_wModel, &child_iter, &iter);
-				if(!pStyleTree->getStyleAtRowCol(sTmp,row,col))
+				UT_UTF8String style;
+				if(!pStyleTree->getStyleAtRowCol(style,row,col))
 				{
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				pt_PieceTable::s_getLocalisedStyleName(sTmp.utf8_str(), sLoc);
-				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n", sLoc.utf8_str(), row, col + 1));
-				gtk_tree_store_set(m_wModel, &child_iter, 0, sLoc.utf8_str(), 1, row, 2, col + 1, -1);
+				pt_PieceTable::s_getLocalisedStyleName(sTmp.c_str(), sLoc);
+				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n", sLoc.c_str(), row, col + 1));
+				gtk_tree_store_set(m_wModel, &child_iter, 0, sLoc.c_str(), 1, row, 2, col + 1, -1);
 				page++;
 			}
 		}
 		else
 		{
-			pt_PieceTable::s_getLocalisedStyleName(sTmp.utf8_str(), sLoc);
+			pt_PieceTable::s_getLocalisedStyleName(sTmp.c_str(), sLoc);
 			xxx_UT_DEBUGMSG(("Adding style %s at row %d \n", sLoc.utf8_str(), row));
-			gtk_tree_store_set(m_wModel, &iter, 0, sLoc.utf8_str(), 1, row, 2, 0, -1);
+			gtk_tree_store_set(m_wModel, &iter, 0, sLoc.c_str(), 1, row, 2, 0, -1);
 			page++;
 		}
 	}
@@ -417,10 +420,10 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	m_wRenderer = gtk_cell_renderer_text_new ();
-	UT_UTF8String s;
+	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Stylist_Styles,s);
 	gtk_tree_view_insert_column_with_attributes (GTK_TREE_VIEW (m_wStyleList),
-												 -1, s.utf8_str(),
+												 -1, s.c_str(),
 												 m_wRenderer, "text", 0, NULL); 	
 
 	gtk_tree_view_collapse_all (GTK_TREE_VIEW (m_wStyleList));

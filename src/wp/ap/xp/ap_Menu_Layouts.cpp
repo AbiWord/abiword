@@ -656,12 +656,12 @@ bool  XAP_Menu_Factory::buildMenuLabelSet(const char * szLanguage_)
 	if( !m_pLabelSet )
 	{
 		m_pLabelSet = new EV_Menu_LabelSet(szLanguage,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	
-	    UT_UTF8String s1, s2;
+		std::string s1, s2;
 		#define menuitem(id)                                                         \
 		{                                                                            \
             pSS->getValueUTF8(AP_STRING_ID_MENU_LABEL_##id, s1);                     \
 			pSS->getValueUTF8(AP_STRING_ID_MENU_STATUSLINE_##id, s2);                \
-			m_pLabelSet->setLabel((AP_MENU_ID_##id), s1.utf8_str(), s2.utf8_str() ); \
+			m_pLabelSet->setLabel((AP_MENU_ID_##id), s1.c_str(), s2.c_str() ); \
 	    }
 		#include "ap_Menu_Id_List.h"
 		#undef menuitem
@@ -684,12 +684,12 @@ bool  XAP_Menu_Factory::buildBuiltInMenuLabelSet(EV_Menu_LabelSet *& pLabelSet)
 		m_pBSS = (XAP_StringSet *) pBSS;
 	}
 	pLabelSet = new EV_Menu_LabelSet("en-US",AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);	
-    UT_UTF8String s1, s2;
+	std::string s1, s2;
     #define menuitem(id)                                                       \
 	{                                                                          \
 	    m_pBSS->getValueUTF8(AP_STRING_ID_MENU_LABEL_##id, s1);                \
 		m_pBSS->getValueUTF8(AP_STRING_ID_MENU_STATUSLINE_##id, s2);           \
-		pLabelSet->setLabel( (AP_MENU_ID_##id),	s1.utf8_str(), s2.utf8_str() );\
+		pLabelSet->setLabel( (AP_MENU_ID_##id),	s1.c_str(), s2.c_str() );\
 	}
     #include "ap_Menu_Id_List.h"
     #undef menuitem
@@ -717,12 +717,12 @@ EV_Menu_LabelSet *  XAP_Menu_Factory::CreateMenuLabelSet(const char * szLanguage
 	{
 		m_pLabelSet = new EV_Menu_LabelSet(szLanguage,AP_MENU_ID__BOGUS1__,AP_MENU_ID__BOGUS2__);
 
-		UT_UTF8String s1, s2;
+		std::string s1, s2;
 		#define menuitem(id)                                                          \
 		{                                                                             \
 		    pSS->getValueUTF8(AP_STRING_ID_MENU_LABEL_##id, s1);                      \
 			pSS->getValueUTF8(AP_STRING_ID_MENU_STATUSLINE_##id, s2);                 \
-			m_pLabelSet->setLabel( (AP_MENU_ID_##id), s1.utf8_str(), s2.utf8_str() ); \
+			m_pLabelSet->setLabel( (AP_MENU_ID_##id), s1.c_str(), s2.c_str() ); \
 		}
 			#include "ap_Menu_Id_List.h"
 		#undef menuitem

@@ -84,7 +84,7 @@ public:
 								{ return m_history.getRedo(ppcr); }
 	void                    clearUndo() {m_history.clearHistory();}
 
-	static void		s_getLocalisedStyleName(const char *szStyle, UT_UTF8String &utf8);
+    static void		s_getLocalisedStyleName(const char *szStyle, std::string &utf8);
 	static const char *s_getUnlocalisedStyleName(const char *szLocStyle);
 
 protected:

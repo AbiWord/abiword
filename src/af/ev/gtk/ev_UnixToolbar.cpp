@@ -1076,11 +1076,11 @@ bool EV_UnixToolbar::synthesize(void)
 					else {
 						for (gint m=0; m < items; m++) {
 							const char * sz = v->getNthItem(m);
-							UT_UTF8String sLoc;
+							std::string sLoc;
 							if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE)
 							{
 								pt_PieceTable::s_getLocalisedStyleName(sz, sLoc);
-								sz = sLoc.utf8_str();
+								sz = sLoc.c_str();
 							}
 							gtk_combo_box_text_append_text (GTK_COMBO_BOX_TEXT (combo), sz);
 						}
@@ -1375,9 +1375,9 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 					}
 					else if (wd->m_id == AP_TOOLBAR_ID_FMT_STYLE) {
 #define BUILTIN_INDEX "builtin-index"
-						UT_UTF8String sLoc;
+						std::string sLoc;
 						pt_PieceTable::s_getLocalisedStyleName(szState, sLoc);
-						szState = sLoc.utf8_str();
+						szState = sLoc.c_str();
 						gint idx = GPOINTER_TO_INT(g_object_steal_data(G_OBJECT(combo), BUILTIN_INDEX));
 						if (idx > 0) {
 							gtk_combo_box_text_remove(GTK_COMBO_BOX_TEXT(combo), idx);
@@ -1558,11 +1558,11 @@ bool EV_UnixToolbar::repopulateStyles(void)
 	GtkListStore *list = gtk_list_store_new(1, G_TYPE_STRING);
 
 	for (gint m=0; m < items; m++) {
-		UT_UTF8String sLoc;
+		std::string sLoc;
 		const char * sz = v->getNthItem(m);
 
 		pt_PieceTable::s_getLocalisedStyleName(sz, sLoc);
-		sz = sLoc.utf8_str();
+		sz = sLoc.c_str();
 		gtk_list_store_append(list, &iter);
 		gtk_list_store_set(list, &iter, 0, sz, -1);
 	}

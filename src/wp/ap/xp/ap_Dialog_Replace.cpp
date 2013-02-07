@@ -135,17 +135,17 @@ void  AP_Dialog_Replace::ConstructWindowName(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	gchar * tmp = NULL;
 	// conditionally set title
-	UT_UTF8String s;
+	std::string s;
 	
 	if (m_id == AP_DIALOG_ID_FIND)
 	{
 		pSS->getValueUTF8(AP_STRING_ID_DLG_FR_FindTitle,s);
-		UT_XML_cloneNoAmpersands(tmp, s.utf8_str());
+		UT_XML_cloneNoAmpersands(tmp, s.c_str());
 	}
 	else
 	{
 		pSS->getValueUTF8(AP_STRING_ID_DLG_FR_ReplaceTitle,s);
-		UT_XML_cloneNoAmpersands(tmp, s.utf8_str());	
+		UT_XML_cloneNoAmpersands(tmp, s.c_str());	
 	}
 	BuildWindowName((char *) m_WindowName,(char*)tmp,sizeof(m_WindowName));
 	FREEP(tmp);
