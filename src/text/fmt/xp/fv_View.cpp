@@ -300,6 +300,7 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 		m_bAllowSmartQuoteReplacement(true),
 		m_bubbleBlockerCount(0),
 		m_iOldPageCount(-1),
+		m_SelectionHandles(this, m_Selection),
 		m_pViewDoubleBufferingObject(NULL)
 {
 	if(m_pDoc)
@@ -945,7 +946,6 @@ void FV_View::replaceGraphics(GR_Graphics * pG)
 		reinterpret_cast<AP_FrameData*>(pFrame->getFrameData())->m_pG = pG;
 	m_pLayout->rebuildFromHere(static_cast<fl_DocSectionLayout *>(m_pLayout->getFirstSection()));
 }
-
 
 //-------------------------
 // Visual Drag stuff
@@ -2482,6 +2482,7 @@ void FV_View::focusChange(AV_Focus focus)
 			_setPoint(getPoint());
 		}
 		m_pApp->rememberFocussedFrame(m_pParentData);
+		_updateSelectionHandles();
 		break;
 	case AV_FOCUS_NEARBY:
 		if (isSelectionEmpty() && (getPoint() > 0))
@@ -2498,6 +2499,7 @@ void FV_View::focusChange(AV_Focus focus)
 		}
 		break;
 	case AV_FOCUS_NONE:
+		m_SelectionHandles.hide();
 		if (isSelectionEmpty() && (getPoint() > 0))
 		{
 			m_pG->allCarets()->disable(true);
@@ -7036,6 +7038,13 @@ PT_DocPosition FV_View::getDocPositionFromXY(UT_sint32 xpos, UT_sint32 ypos, boo
 	return iNewPoint;
 }
 
+void FV_View::setVisualSelectionEnabled(bool bActive)
+{
+	if (!bActive)
+		m_SelectionHandles.hide();
+	m_VisualSelectionActive=bActive;
+}
+
 void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 {
 	// Figure out which page we clicked on.
@@ -7096,6 +7105,7 @@ void FV_View::extSelToXY(UT_sint32 xPos, UT_sint32 yPos, bool bDrag)
 	{
 		_extSelToPos(iNewPoint);
 		notifyListeners(AV_CHG_MOTION);
+		_updateSelectionHandles();
 	}
 }
 
@@ -8138,6 +8148,7 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 	_setPoint(pos, bEOL);
 	_ensureInsertionPointOnScreen();
 	setCursorToContext();
+	_updateSelectionHandles();
 	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR ); // Sevior Put this in
 //	notifyListeners(AV_CHG_HDRFTR );
 
@@ -8349,6 +8360,7 @@ void FV_View::setXScrollOffset(UT_sint32 v) ///////////////////////TODO: Fix thi
 	_draw(x1-m_pG->tlu(1), 0, dx2+m_pG->tlu(2), getWindowHeight(), false, true);
 
 	_fixInsertionPointCoords();
+	_updateSelectionHandles();
 }
 
 void FV_View::setYScrollOffset(UT_sint32 v)
@@ -8363,6 +8375,7 @@ void FV_View::setYScrollOffset(UT_sint32 v)
 	m_yScrollOffset = v;
 
 	_fixInsertionPointCoords();
+	_updateSelectionHandles();
 }
 
 void FV_View::draw(int page, dg_DrawArgs* da)
@@ -14476,11 +14489,23 @@ bool FV_View::rtlPages() const
 void
 FV_View::selectRange( PT_DocPosition start, PT_DocPosition end )
 {
-	_clearSelection();
+	PT_DocPosition prev_start, prev_end;
+
+	prev_start = m_Selection.getSelectionLeftAnchor();
+	prev_end = m_Selection.getSelectionRightAnchor();
+
+	if (prev_start == start && prev_end == end)
+		return;
+
+	_clearSelection(false);
 	_setPoint(start);
+	m_Selection.setSelectionLeftAnchor(start);
 	_setSelectionAnchor();
 	setPoint(end);
-	_drawSelection();
+	m_Selection.setSelectionRightAnchor(end);
+
+	_drawBetweenPositions(MIN (prev_start, start), MAX (prev_end, end));
+	_updateSelectionHandles();
 }
 
 void

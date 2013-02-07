@@ -48,6 +48,8 @@ class AP_UnixFrameImpl : public XAP_UnixFrameImpl
 	GtkWidget * getDrawingArea() const {return m_dArea;}
 	static gboolean ap_focus_in_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me);
 	static gboolean ap_focus_out_event (GtkWidget * drawing_area, GdkEventCrossing *event, AP_UnixFrameImpl * me);
+	virtual GtkWidget * getViewWidget(void) const
+	{ return m_dArea; }
 
  protected:
 	friend class AP_UnixFrame;

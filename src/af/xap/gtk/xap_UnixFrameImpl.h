@@ -67,6 +67,8 @@ class XAP_UnixFrameImpl : public XAP_FrameImpl
 	}
 	void resetIMContext ();
 
+	virtual GtkWidget * getViewWidget (void) const = 0;
+
 private:
 	void _setGeometry ();
 

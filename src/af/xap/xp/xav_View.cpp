@@ -34,6 +34,7 @@ AV_View::AV_View(XAP_App * pApp, void* pParentData)
 	m_focus(AV_FOCUS_NONE),
 	m_iTick(0),
 	m_bInsertMode(true),
+	m_VisualSelectionActive(false),
 	m_bIsLayoutFilling(false),
 	m_iWindowHeight(0),
 	m_iWindowWidth(0),

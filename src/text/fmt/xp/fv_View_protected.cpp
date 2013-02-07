@@ -174,7 +174,7 @@ void FV_View::_eraseSelection(void)
 	_clearBetweenPositions(iPos1, iPos2, true);
 }
 
-void FV_View::_clearSelection(void)
+void FV_View::_clearSelection(bool bRedraw)
 {
 	if( isSelectionEmpty() )
 	{
@@ -211,7 +211,8 @@ void FV_View::_clearSelection(void)
 		m_iLowDrawPoint = 0;
 		m_iHighDrawPoint = 0;
 
- 		_drawBetweenPositions(iPos1, iPos2);
+		if (bRedraw)
+			_drawBetweenPositions(iPos1, iPos2);
 	}
 	else
 	{
@@ -235,7 +236,9 @@ void FV_View::_clearSelection(void)
 				{
 					iPos2++;
 				}
-				/*bool bres =*/ _clearBetweenPositions(iPos1, iPos2, true);
+
+				if (bRedraw)
+					/*bool bres =*/ _clearBetweenPositions(iPos1, iPos2, true);
 			}
 		}
 		_resetSelection();
@@ -250,7 +253,8 @@ void FV_View::_clearSelection(void)
 				{
 					iPos2++;
 				}
-				_drawBetweenPositions(iPos1, iPos2);
+				if (bRedraw)
+					_drawBetweenPositions(iPos1, iPos2);
 			}
 		}
 		UT_VECTOR_PURGEALL(PD_DocumentRange *,vecRanges);
@@ -6376,4 +6380,16 @@ void FV_View::_adjustDeletePosition(UT_uint32 &iDocPos, UT_uint32 &iCount)
 
 	// adjust point
 	iDocPos = pos1;
+}
+
+void FV_View::_updateSelectionHandles(void)
+{
+	if (!getVisualSelectionEnabled()){
+		m_SelectionHandles.hide();
+	} else if (isSelectionEmpty()) {
+		m_SelectionHandles.setCursor(getInsPoint());
+	} else {
+		m_SelectionHandles.setSelection(getSelectionLeftAnchor(),
+										getSelectionRightAnchor());
+	}
 }

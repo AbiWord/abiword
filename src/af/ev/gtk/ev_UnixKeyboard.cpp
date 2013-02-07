@@ -79,6 +79,8 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 
 	UT_uint32 charData = e->keyval;
 
+	pView->setVisualSelectionEnabled(false);
+
 	if (e->state & GDK_SHIFT_MASK)
 		state |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)

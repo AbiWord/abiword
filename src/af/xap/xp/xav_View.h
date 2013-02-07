@@ -150,6 +150,15 @@ public:
 	virtual void	cmdPaste(bool bHonorFormatting = true) = 0;
 	virtual void	cmdPasteSelectionAt(UT_sint32 xPos, UT_sint32 yPos) = 0;
 
+	virtual void	setVisualSelectionEnabled(bool bActive)
+	{
+		m_VisualSelectionActive = bActive;
+	}
+	bool		getVisualSelectionEnabled(void) const
+	{
+		return m_VisualSelectionActive;
+	}
+
 //
 // Let subclasses override but this is here to avoid a crash on frame closing.
 // With a selection in place. (Rather than pure virtual.)
@@ -177,6 +186,7 @@ protected:
 	AV_Focus			m_focus;
 	UT_uint32                       m_iTick; // Count changes
 	bool				m_bInsertMode;
+	bool				m_VisualSelectionActive;
 
 	UT_GenericVector<AV_ScrollObj*>	m_scrollListeners;
 	UT_GenericVector<AV_Listener*>	m_vecListeners;

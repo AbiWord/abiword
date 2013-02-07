@@ -104,6 +104,8 @@ libxp_la_SOURCES = \
 	fv_InlineImage.h \
 	fv_Selection.cpp \
 	fv_Selection.h \
+	fv_SelectionHandles.cpp \
+	fv_SelectionHandles.h \
 	fv_View_cmd.cpp \
 	fv_View.cpp \
 	fv_View.h \

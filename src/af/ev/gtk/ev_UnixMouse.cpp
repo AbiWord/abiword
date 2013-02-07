@@ -111,6 +111,9 @@ void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 	EV_EditMouseButton emb = 0;
 	EV_EditMouseOp mop = 0;
 	EV_EditMouseContext emc = 0;
+	GdkDevice *device;
+
+	device = gdk_event_get_source_device((GdkEvent *) e);
 
 	if (e->button == 1)
 		emb = EV_EMB_BUTTON1;
@@ -160,6 +163,12 @@ void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 		UT_ASSERT(pEM);
 		invokeMouseMethod(pView,pEM,static_cast<UT_sint32>(pView->getGraphics()->tluD(e->x)),static_cast<UT_sint32>(pView->getGraphics()->tluD(e->y)));
 		signal(emc|mop|emb|state, static_cast<UT_sint32>(pView->getGraphics()->tluD(e->x)),static_cast<UT_sint32>(pView->getGraphics()->tluD(e->y)));
+
+		if (gdk_device_get_source (device) == GDK_SOURCE_TOUCHSCREEN || getenv ("ABI_TEST_TOUCH")) {
+			pView->setVisualSelectionEnabled(true);
+		} else {
+			pView->setVisualSelectionEnabled(false);
+		}
 		return;
 	case EV_EEMR_INCOMPLETE:
 		// I'm not sure this makes any sense, but we allow it.
@@ -182,7 +191,7 @@ void EV_UnixMouse::mouseMotion(AV_View* pView, GdkEventMotion *e)
 	EV_EditMouseButton emb = 0;
 	EV_EditMouseOp mop;
 	EV_EditMouseContext emc = 0;
-	
+
 	if (e->state & GDK_SHIFT_MASK)
 		ems |= EV_EMS_SHIFT;
 	if (e->state & GDK_CONTROL_MASK)

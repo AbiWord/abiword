@@ -4346,6 +4346,7 @@ void FV_View::cmdCut(void)
 	_ensureInsertionPointOnScreen();
 	notifyListeners(AV_CHG_ALL);
 
+	m_SelectionHandles.hide();
 }
 
 // bToClipboard is true if you want to copy to the CLIPBOARD

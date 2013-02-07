@@ -47,8 +47,10 @@
 #include "fv_UnixVisualDrag.h"
 #include "fv_UnixFrameEdit.h"
 #include "fv_UnixInlineImage.h"
+#include "fv_UnixSelectionHandles.h"
 #else
 #include "fv_VisualDragText.h"
+#include "fv_SelectionHandles.h"
 #endif
 
 #define AUTO_SCROLL_MSECS	100
@@ -241,6 +243,7 @@ class ABI_EXPORT FV_View : public AV_View
 	friend class CellLine;
     friend class FV_View_BubbleBlocker;
 	friend class FV_ViewDoubleBuffering;
+	friend class FV_SelectionHandles;
 public:
 	FV_View(XAP_App*, void*, FL_DocLayout*);
 	virtual ~FV_View();
@@ -270,12 +273,15 @@ public:
 
 	virtual void	draw(const UT_Rect* pRect=static_cast<UT_Rect*>(NULL));
 	virtual void 	drawSelectionBox(UT_Rect & box, bool drawHandles);
+
+	void			setVisualSelectionEnabled(bool bActive);
 private:
 	inline void 	_drawResizeHandle(UT_Rect & box);
     void getCmdInsertRangeVariables( PT_DocPosition& posStart,
                                      PT_DocPosition& posEnd,
                                      fl_BlockLayout*& pBL1,
                                      fl_BlockLayout*& pBL2 );
+	void _updateSelectionHandles (void);
 
 
 public:
@@ -937,7 +943,7 @@ protected:
 									 const gchar ** extra_props = NULL);
 	void				_moveToSelectionEnd(bool bForward);
 	void				_eraseSelection(void);
-	void				_clearSelection(void);
+	void				_clearSelection(bool bRedraw = true);
 	void				_resetSelection(void);
 	void				_setSelectionAnchor(void);
 	void				_deleteSelection(PP_AttrProp *p_AttrProp_Before = NULL,
@@ -1162,6 +1168,12 @@ private:
 														// This allows temporarily disabling smart quotes to allow inserting ANSI quote.
     int                 m_bubbleBlockerCount;
 	UT_sint32           m_iOldPageCount;
+
+#ifdef TOOLKIT_GTK_ALL
+	FV_UnixSelectionHandles m_SelectionHandles;
+#else
+	FV_SelectionHandles m_SelectionHandles;
+#endif
 
 public:
 	bool registerDoubleBufferingObject(FV_ViewDoubleBuffering *obj);
