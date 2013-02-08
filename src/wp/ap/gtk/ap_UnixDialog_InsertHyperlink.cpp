@@ -115,11 +115,11 @@ void AP_UnixDialog_InsertHyperlink::event_OK(void)
 	// get the bookmark name, if any (return cancel if no name given)
 	const gchar * res = gtk_entry_get_text(GTK_ENTRY(m_entry));
 	const gchar * title = gtk_entry_get_text(GTK_ENTRY(m_titleEntry));
-	if(res && *res)	
+	if(res && *res)
 	{
 		setAnswer(AP_Dialog_InsertHyperlink::a_OK);
-		setHyperlink(static_cast<const gchar*>(res));
-		setHyperlinkTitle(static_cast<const gchar*>(title));
+		setHyperlink(res);
+		setHyperlinkTitle(title);
 	}
 	else
 	{
@@ -200,7 +200,6 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   }
 
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
-
 
   pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_TitleLabel, s);
   label2 = gtk_label_new(s.c_str());

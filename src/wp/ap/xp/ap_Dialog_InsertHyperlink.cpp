@@ -24,8 +24,8 @@
 
 AP_Dialog_InsertHyperlink::AP_Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
 					   XAP_Dialog_Id id)
-	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoghyperlink"), 
-	m_answer(a_CANCEL), 
+	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialoghyperlink"),
+	m_answer(a_CANCEL),
 	m_pHyperlink(0),
 	m_pHyperlinkTitle(0)
 {
@@ -34,6 +34,7 @@ AP_Dialog_InsertHyperlink::AP_Dialog_InsertHyperlink(XAP_DialogFactory * pDlgFac
 AP_Dialog_InsertHyperlink::~AP_Dialog_InsertHyperlink(void)
 {
 	DELETEPV(m_pHyperlink);
+	DELETEPV(m_pHyperlinkTitle);
 }
 
 void AP_Dialog_InsertHyperlink::setAnswer(AP_Dialog_InsertHyperlink::tAnswer a)
@@ -60,12 +61,12 @@ const std::string & AP_Dialog_InsertHyperlink::getNthExistingBookmark(UT_uint32 
 
 const gchar * AP_Dialog_InsertHyperlink::getHyperlink() const
 {
-  return (const gchar *)m_pHyperlink;
+  return m_pHyperlink;
 }
 
 const gchar * AP_Dialog_InsertHyperlink::getHyperlinkTitle() const
 {
-    return (const gchar*)m_pHyperlinkTitle;
+    return m_pHyperlinkTitle;
 }
 
 void AP_Dialog_InsertHyperlink::setHyperlink(const gchar * link)

@@ -6170,8 +6170,8 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 	AP_Dialog_InsertHyperlink * pDialog
 		= static_cast<AP_Dialog_InsertHyperlink *>(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTHYPERLINK));
 	UT_return_val_if_fail(pDialog, false);
-	UT_UTF8String sTarget;
-	UT_UTF8String sTitle;
+	std::string sTarget;
+	std::string sTitle;
 	bool bEdit = false;
 	PT_DocPosition pos1 = 0;
 	PT_DocPosition pos2 = 0;
@@ -6219,8 +6219,8 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 //
 // Set the target
 //
-		pDialog->setHyperlink(sTarget.utf8_str());
-		pDialog->setHyperlinkTitle(sTitle.utf8_str());
+		pDialog->setHyperlink(sTarget.c_str());
+		pDialog->setHyperlinkTitle(sTitle.c_str());
 	}
 	pDialog->runModal(pFrame);
 
