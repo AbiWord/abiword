@@ -28,7 +28,6 @@
 // Internal includes
 #include "ODi_ListenerState.h"
 
-class UT_UTF8String;
 
 /**
  * Holds all relevant info contained in the <office:font-face-decls>
@@ -49,7 +48,7 @@ public:
 
     void charData (const gchar* /*pBuffer*/, int /*length*/) {}
 
-    const std::string & getFontFamily(const UT_UTF8String& rStyleName);
+    const std::string & getFontFamily(const std::string& rStyleName);
 
     void clear() {m_fontFamilies.clear();}
 

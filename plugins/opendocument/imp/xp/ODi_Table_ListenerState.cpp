@@ -32,6 +32,7 @@
 
 // AbiWord includes
 #include <pd_Document.h>
+#include <ut_std_string.h>
 
 
 /**
@@ -110,7 +111,7 @@ void ODi_Table_ListenerState::endElement (const gchar* pName,
     
     if (!m_waitingEndElement.empty()) {
         
-        if ( !strcmp(m_waitingEndElement.utf8_str(), pName) ) {
+        if ( !strcmp(m_waitingEndElement.c_str(), pName) ) {
             // Found it. No more wait.
             m_waitingEndElement.clear();
         }
@@ -155,7 +156,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
             rAction.repeatElement();
         } else {
             const gchar* ppAttribs[10];
-            UT_UTF8String props;
+            std::string props;
             const gchar* pVal;
             const ODi_Style_Style* pStyle = NULL;
             
@@ -169,7 +170,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
             if (pStyle != NULL) {
                 if (!pStyle->getBackgroundColor()->empty()) {
                     props += "background-color:";
-                    props += pStyle->getBackgroundColor()->utf8_str();
+                    props += pStyle->getBackgroundColor()->c_str();
                 }
             }
             // Left table pos
@@ -179,7 +180,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
 		        props += "; ";
 		    }
 		    props += "table-column-leftpos:";
-		    props += pStyle->getTableMarginLeft()->utf8_str();
+		    props += pStyle->getTableMarginLeft()->c_str();
 		    
                 }
             }
@@ -191,7 +192,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
 		        props += "; ";
 		    }
 		    props += "table-width:";
-		    props += pStyle->getTableWidth()->utf8_str();
+		    props += pStyle->getTableWidth()->c_str();
 		    
                 }
             }
@@ -204,7 +205,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
 		        props += "; ";
 		    }
 		    props += "table-rel-width:";
-		    props += pStyle->getTableRelWidth()->utf8_str();
+		    props += pStyle->getTableRelWidth()->c_str();
 		    
                 }
             }
@@ -240,7 +241,7 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
             
             if (!props.empty()) {
                 ppAttribs[0] = "props";
-                ppAttribs[1] = props.utf8_str();
+                ppAttribs[1] = props.c_str();
                 ppAttribs[2] = 0; // Signal the end of the array.
                 
                 m_pAbiDocument->appendStrux(PTX_SectionTable, ppAttribs);
@@ -280,7 +281,7 @@ void ODi_Table_ListenerState::_parseRowStart (const gchar** ppAtts,
         UT_sint32 nRowsRepeated = !pNumberRowsRepeated ? 1 : atoi(pNumberRowsRepeated);
         UT_ASSERT_HARMLESS(nRowsRepeated > 0);
 
-        UT_UTF8String rowHeight = "";
+        std::string rowHeight = "";
 
         if (pStyleName != NULL) 
         {
@@ -379,7 +380,7 @@ void ODi_Table_ListenerState::_parseColumnStart (const gchar** ppAtts,
                         m_columnRelWidths += "/";
 		    }
                 }
-                UT_DEBUGMSG(("m_columnRelWidths %s \n",m_columnRelWidths.utf8_str()));
+                UT_DEBUGMSG(("m_columnRelWidths %s \n",m_columnRelWidths.c_str()));
             }
         } 
         else 
@@ -404,13 +405,13 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
         UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() xmlid:%s\n",
                      xmlid ? xmlid : "_undefined_" ));
         
-        UT_UTF8String props;
+        std::string props;
         const gchar* pVal;
         const ODi_Style_Style* pStyle = NULL;
         UT_sint32 colSpan;
         UT_sint32 rowSpan;
         m_col++;
-        UT_UTF8String dataID;
+        std::string dataID;
         
         pVal = UT_getAttribute("table:number-columns-spanned", ppAtts);
         if (pVal) {
@@ -432,7 +433,7 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
         }
         
 
-        props = UT_UTF8String_sprintf(
+        props = UT_std_string_sprintf(
             "top-attach: %d; bot-attach: %d; left-attach: %d; right-attach: %d",
             m_row-1, m_row+(rowSpan-1), m_col-1, m_col + (colSpan-1));
 
@@ -532,23 +533,23 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
             // background color
             if (!pStyle->getBackgroundColor()->empty()) {
                 props += "; background-color:";
-                props += pStyle->getBackgroundColor()->utf8_str();
+                props += pStyle->getBackgroundColor()->c_str();
             }
 
             // background-image
             if(!pStyle->getBackgroundImageID()->empty())
             {
-                dataID = pStyle->getBackgroundImageID()->utf8_str();
+                dataID = pStyle->getBackgroundImageID()->c_str();
             }
 
             // Vertical align
             if (!pStyle->getVerticalAlign()->empty())
             {
-                if (!strcmp(pStyle->getVerticalAlign()->utf8_str(), "top"))
+                if (!strcmp(pStyle->getVerticalAlign()->c_str(), "top"))
                     props += "; vert-align:0";
-                else if (!strcmp(pStyle->getVerticalAlign()->utf8_str(), "middle"))
+                else if (!strcmp(pStyle->getVerticalAlign()->c_str(), "middle"))
                     props += "; vert-align:50";
-                else if (!strcmp(pStyle->getVerticalAlign()->utf8_str(), "bottom"))
+                else if (!strcmp(pStyle->getVerticalAlign()->c_str(), "bottom"))
                     props += "; vert-align:100";
             }
         }
@@ -564,12 +565,12 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
             UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() adding xmlid:%s\n", xmlid ));
         }
         cell_props[idx++] = "props";
-        cell_props[idx++] = props.utf8_str();
-        UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() props:%s\n", props.utf8_str() ));
+        cell_props[idx++] = props.c_str();
+        UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() props:%s\n", props.c_str() ));
         if(dataID.length() > 0)
         {
             cell_props[idx++] = "strux-image-dataid";
-            cell_props[idx++] = dataID.utf8_str();
+            cell_props[idx++] = dataID.c_str();
         }
         cell_props[idx++] = 0;
         m_pAbiDocument->appendStrux(PTX_SectionCell, cell_props);

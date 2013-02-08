@@ -6171,6 +6171,7 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 		= static_cast<AP_Dialog_InsertHyperlink *>(pDialogFactory->requestDialog(AP_DIALOG_ID_INSERTHYPERLINK));
 	UT_return_val_if_fail(pDialog, false);
 	UT_UTF8String sTarget;
+	UT_UTF8String sTitle;
 	bool bEdit = false;
 	PT_DocPosition pos1 = 0;
 	PT_DocPosition pos2 = 0;
@@ -6186,6 +6187,7 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 		}
 		bEdit = true;
 		sTarget = pHRun->getTarget();
+		sTitle = pHRun->getTitle();
 		fl_BlockLayout * pBL = pHRun->getBlock();
 		fp_Run * pRun = NULL;
 		if(pHRun->isStartOfHyperlink())
@@ -6218,6 +6220,7 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 // Set the target
 //
 		pDialog->setHyperlink(sTarget.utf8_str());
+		pDialog->setHyperlinkTitle(sTitle.utf8_str());
 	}
 	pDialog->runModal(pFrame);
 
@@ -6240,13 +6243,15 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 // Select our range
 //
 			pView->cmdSelect(pos1,pos2);
-			pView->cmdInsertHyperlink(pDialog->getHyperlink());
+			pView->cmdInsertHyperlink(pDialog->getHyperlink(),
+				pDialog->getHyperlinkTitle());
 			pView->cmdUnselectSelection();
 			pView->setPoint(posOrig);
 		}
 		else
 		{
-			pView->cmdInsertHyperlink(pDialog->getHyperlink());
+			pView->cmdInsertHyperlink(pDialog->getHyperlink(),
+				pDialog->getHyperlinkTitle());
 		}
 	}
 	else

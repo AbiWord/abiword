@@ -48,7 +48,7 @@ void ODi_FontFaceDecls::startElement (const gchar* pName,
     if (!strcmp(pName, "style:font-face")) {
         const gchar* pStyleName;
         const gchar* pFontFamily;
-        UT_UTF8String fontFamily;
+        std::string fontFamily;
         
         pStyleName = UT_getAttribute("style:name", ppAtts);
         UT_ASSERT(pStyleName);
@@ -63,7 +63,7 @@ void ODi_FontFaceDecls::startElement (const gchar* pName,
             // OpenOffice.org sometimes adds those extra "'" surrounding the
             // font family name if it's composed by more than one word.
             m_fontFamilies[pStyleName] =
-				fontFamily.substr(1, fontFamily.length()-2).utf8_str();
+				fontFamily.substr(1, fontFamily.length()-2).c_str();
         } else {
             m_fontFamilies[pStyleName] = pFontFamily;
         }
@@ -86,6 +86,6 @@ void ODi_FontFaceDecls::endElement (const gchar* pName,
  * Returns the font family of a font face given its style name.
  */
 const std::string & ODi_FontFaceDecls::getFontFamily(
-                                        const UT_UTF8String& rStyleName) {
-    return m_fontFamilies[rStyleName.utf8_str()];
+                                        const std::string& rStyleName) {
+    return m_fontFamilies[rStyleName];
 }

@@ -50,8 +50,8 @@ ODi_Style_Style_Family::~ODi_Style_Style_Family()
 ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
                              ODi_ElementStack& rElementStack,
 			     ODi_Abi_Data & rAbiData,
-                             UT_UTF8String* pReplacementName,
-                             UT_UTF8String* pReplacementDisplayName) {
+                             std::string* pReplacementName,
+                             std::string* pReplacementDisplayName) {
                                 
     ODi_Style_Style* pStyle = NULL;
     bool bOnContentStream;
@@ -66,12 +66,12 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
     if (bOnContentStream) {
         
         if (pReplacementName) {
-            StyleMap::const_iterator iter = m_styles_contentStream.find(pReplacementName->utf8_str());
+            StyleMap::const_iterator iter = m_styles_contentStream.find(pReplacementName->c_str());
 
             if (iter == m_styles_contentStream.end()) {
 	      pStyle = new ODi_Style_Style(rElementStack,rAbiData);
                 
-                m_styles_contentStream.insert(std::make_pair(pReplacementName->utf8_str(),
+                m_styles_contentStream.insert(std::make_pair(pReplacementName->c_str(),
                                                                   pStyle));
                                                    
                 pStyle->setName(*pReplacementName);
@@ -93,12 +93,12 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
     } else {
         
         if (pReplacementName) {
-            StyleMap::const_iterator iter = m_styles.find(pReplacementName->utf8_str());
+            StyleMap::const_iterator iter = m_styles.find(pReplacementName->c_str());
             
             if (iter == m_styles.end()) {
 	      pStyle = new ODi_Style_Style(rElementStack,rAbiData);
                 
-                m_styles.insert(std::make_pair(pReplacementName->utf8_str(), pStyle));
+                m_styles.insert(std::make_pair(pReplacementName->c_str(), pStyle));
                                                    
                 pStyle->setName(*pReplacementName);
                 pStyle->setDisplayName(*pReplacementDisplayName);
@@ -117,13 +117,13 @@ ODi_Style_Style* ODi_Style_Style_Family::addStyle(const gchar** ppAtts,
 
 
     if (pReplacementName != NULL) {
-        UT_UTF8String originalName = pName;
+        std::string originalName = pName;
         
         if (bOnContentStream) {
             m_removedStyleStyles_contentStream[pName]
-				= pReplacementName->utf8_str();
+				= pReplacementName->c_str();
         } else {
-            m_removedStyleStyles[pName] = pReplacementName->utf8_str();
+            m_removedStyleStyles[pName] = pReplacementName->c_str();
         }
 	}
     
@@ -205,8 +205,8 @@ void ODi_Style_Style_Family::buildAbiPropsAttrString(
 
 
 
-void ODi_Style_Style_Family::_reparentStyles(const StyleMap & map, const UT_UTF8String & removedName,
-                                             const UT_UTF8String & replacementName)
+void ODi_Style_Style_Family::_reparentStyles(const StyleMap & map, const std::string & removedName,
+                                             const std::string & replacementName)
 {
     for(StyleMap::const_iterator iter = map.begin(); iter != map.end(); ++iter) {
         
@@ -229,20 +229,20 @@ void ODi_Style_Style_Family::_reparentStyles(const StyleMap & map, const UT_UTF8
 void ODi_Style_Style_Family::removeStyleStyle(ODi_Style_Style* pRemovedStyle,
                                              bool bOnContentStream) 
 {
-    UT_UTF8String replacementName;
+    std::string replacementName;
 
 
     _findSuitableReplacement(replacementName, pRemovedStyle, bOnContentStream);
     
     // Remove the style itself
     if (bOnContentStream) {
-        m_styles_contentStream.erase(pRemovedStyle->getName().utf8_str());
+        m_styles_contentStream.erase(pRemovedStyle->getName().c_str());
             
-        m_removedStyleStyles_contentStream[pRemovedStyle->getName().utf8_str()]
-			= replacementName.utf8_str();
+        m_removedStyleStyles_contentStream[pRemovedStyle->getName().c_str()]
+			= replacementName.c_str();
     } else {
-        m_styles.erase(pRemovedStyle->getName().utf8_str());
-        m_removedStyleStyles[pRemovedStyle->getName().utf8_str()] = replacementName.utf8_str();
+        m_styles.erase(pRemovedStyle->getName().c_str());
+        m_removedStyleStyles[pRemovedStyle->getName().c_str()] = replacementName.c_str();
     }
     
 
@@ -296,7 +296,7 @@ void ODi_Style_Style_Family::defineAbiStyles(PD_Document* pDocument) const
  * @param pRemovedStyle The style that will be removed.
  */
 void ODi_Style_Style_Family::_findSuitableReplacement(
-                                            UT_UTF8String& rReplacementName,
+                                            std::string& rReplacementName,
                                             const ODi_Style_Style* pRemovedStyle,
                                             bool bOnContentStream)
 {
@@ -322,7 +322,7 @@ void ODi_Style_Style_Family::_findSuitableReplacement(
     ODi_Style_Style* pStyle = NULL;
     
     if (bOnContentStream) {
-        StyleMap::const_iterator iter = m_styles_contentStream.find(pRemovedStyle->getParentName().utf8_str());
+        StyleMap::const_iterator iter = m_styles_contentStream.find(pRemovedStyle->getParentName().c_str());
         if(iter !=  m_styles_contentStream.end()) {
             pStyle = iter->second;
         }
@@ -330,7 +330,7 @@ void ODi_Style_Style_Family::_findSuitableReplacement(
 
     if (!pStyle) {
         // Must be a regular style, defined on the Styles stream.
-        StyleMap::const_iterator iter = m_styles.find(pRemovedStyle->getParentName().utf8_str());
+        StyleMap::const_iterator iter = m_styles.find(pRemovedStyle->getParentName().c_str());
         if(iter !=  m_styles.end()) {
             pStyle = iter->second;
         }
@@ -350,11 +350,11 @@ void ODi_Style_Style_Family::_findSuitableReplacement(
         std::string aString;
         // Was this parent already removed?
         if (bOnContentStream) {
-            aString = m_removedStyleStyles_contentStream[pRemovedStyle->getParentName().utf8_str()];
+            aString = m_removedStyleStyles_contentStream[pRemovedStyle->getParentName().c_str()];
         }
         
         if (!pStyle) {
-            aString = m_removedStyleStyles[pRemovedStyle->getParentName().utf8_str()];
+            aString = m_removedStyleStyles[pRemovedStyle->getParentName().c_str()];
         }
         
         if(!aString.empty()) {
@@ -486,17 +486,16 @@ void ODi_Style_Style_Family::_linkStyles(const StyleMap & map, bool onContentStr
         // Link to its parent style, if there is one.
         if (!pStyle->getParentName().empty()) {
             
-            pOtherStyle = getStyle(pStyle->getParentName().utf8_str(),
+            pOtherStyle = getStyle(pStyle->getParentName().c_str(),
                                          onContentStream);
-            
-            UT_ASSERT_HARMLESS(pOtherStyle);
-            
+
             if (pOtherStyle) {
                 pStyle->setParentStylePointer(pOtherStyle);
             } 
             else {
                 // We don't have this style!
                 // Let's pretend that it never existed.
+                UT_ASSERT_HARMLESS(pOtherStyle);
                 pStyle->setParentName(NULL);
             }
         }
@@ -504,17 +503,16 @@ void ODi_Style_Style_Family::_linkStyles(const StyleMap & map, bool onContentStr
         // Link to its next style, if there is one.
         if (!pStyle->getNextStyleName().empty()) {
             
-            pOtherStyle = getStyle(pStyle->getNextStyleName().utf8_str(),
+            pOtherStyle = getStyle(pStyle->getNextStyleName().c_str(),
                                          onContentStream);
-                
-            UT_ASSERT_HARMLESS(pOtherStyle);
-                
+
             if (pOtherStyle) {
                 pStyle->setNextStylePointer(pOtherStyle);
             } 
             else {
                 // We don't have this style!
                 // Let's pretend that it never existed.
+                UT_ASSERT_HARMLESS(pOtherStyle);
                 pStyle->setNextStyleName(NULL);
             }
         }

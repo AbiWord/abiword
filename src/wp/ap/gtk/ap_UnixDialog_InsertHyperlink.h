@@ -65,6 +65,7 @@ public:
 	//GtkWidget * m_comboHyperlink;
 	GtkWidget * m_clist;
 	GtkWidget * m_swindow;
+	GtkWidget * m_titleEntry;
 	gint		m_iRow;
 
 };

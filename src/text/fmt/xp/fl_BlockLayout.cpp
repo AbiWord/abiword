@@ -6130,6 +6130,10 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	{
 		pNewRun = new fp_FieldFileNameRun(this,   blockOffset, 1);
 	}
+	else if(strcmp(pszType, "short_file_name") == 0)
+	{
+		pNewRun = new fp_FieldShortFileNameRun(this,   blockOffset, 1);
+	}
 	else if(strcmp(pszType, "app_ver") == 0)
 	{
 		pNewRun = new fp_FieldBuildVersionRun(this,   blockOffset, 1);
@@ -6181,6 +6185,10 @@ bool	fl_BlockLayout::_doInsertFieldRun(PT_BlockOffset blockOffset, const PX_Chan
 	else if(strcmp(pszType, "meta_date") == 0)
 	  {
 	    pNewRun = new fp_FieldMetaDateRun(this,   blockOffset, 1);
+	  }
+        else if(strcmp(pszType, "meta_date_last_changed") == 0)
+	  {
+	    pNewRun = new fp_FieldMetaDateLastChangedRun(this,   blockOffset, 1);
 	  }
 	else if(strcmp(pszType, "meta_type") == 0)
 	  {

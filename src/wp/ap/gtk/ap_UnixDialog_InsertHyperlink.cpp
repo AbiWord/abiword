@@ -50,13 +50,17 @@ XAP_Dialog * AP_UnixDialog_InsertHyperlink::static_constructor(XAP_DialogFactory
 
 AP_UnixDialog_InsertHyperlink::AP_UnixDialog_InsertHyperlink(XAP_DialogFactory * pDlgFactory,
 										 XAP_Dialog_Id id)
-	: AP_Dialog_InsertHyperlink(pDlgFactory,id)
+	: AP_Dialog_InsertHyperlink(pDlgFactory,id),
+	m_entry(0),
+	m_windowMain(0),
+	// m_comboEntry(0),
+	m_clist(0),
+	m_swindow(0),
+	m_titleEntry(0),
+	m_iRow(-1)
+	
 {
-	m_windowMain = 0;
-	//m_comboEntry = 0;
-	m_clist = 0;
-	m_iRow = -1;
-	m_entry = 0;
+
 }
 
 AP_UnixDialog_InsertHyperlink::~AP_UnixDialog_InsertHyperlink(void)
@@ -110,10 +114,12 @@ void AP_UnixDialog_InsertHyperlink::event_OK(void)
 	UT_ASSERT(m_windowMain);
 	// get the bookmark name, if any (return cancel if no name given)
 	const gchar * res = gtk_entry_get_text(GTK_ENTRY(m_entry));
+	const gchar * title = gtk_entry_get_text(GTK_ENTRY(m_titleEntry));
 	if(res && *res)	
 	{
 		setAnswer(AP_Dialog_InsertHyperlink::a_OK);
 		setHyperlink(static_cast<const gchar*>(res));
+		setHyperlinkTitle(static_cast<const gchar*>(title));
 	}
 	else
 	{
@@ -131,6 +137,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   const XAP_StringSet * pSS = m_pApp->getStringSet();
 
   GtkWidget *label1;
+  GtkWidget *label2;
 
   std::string s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_Msg,s);
@@ -141,7 +148,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   m_entry = gtk_entry_new();
   gtk_box_pack_start (GTK_BOX (vbox2), m_entry, FALSE, FALSE, 0);
   gtk_widget_show(m_entry);
-
+  
   const gchar * hyperlink = getHyperlink();
 
   if (hyperlink && *hyperlink)
@@ -193,6 +200,23 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   }
 
   gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
+
+
+  pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_TitleLabel, s);
+  label2 = gtk_label_new(s.c_str());
+  gtk_widget_show(label2);
+  gtk_box_pack_start(GTK_BOX(vbox2), label2, TRUE, TRUE, 3);
+
+  m_titleEntry = gtk_entry_new();
+  gtk_box_pack_start(GTK_BOX(vbox2), m_titleEntry, FALSE, FALSE, 0);
+  gtk_widget_show(m_titleEntry);
+
+  const gchar * hyperlinkTitle = getHyperlinkTitle();
+
+  if (hyperlinkTitle && *hyperlinkTitle)
+  {
+      gtk_entry_set_text(GTK_ENTRY(m_titleEntry), hyperlinkTitle);
+  }
 }
 
 GtkWidget*  AP_UnixDialog_InsertHyperlink::_constructWindow(void)

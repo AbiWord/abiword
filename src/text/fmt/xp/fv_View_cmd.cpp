@@ -4244,6 +4244,7 @@ UT_Error FV_View::cmdSave(void)
 	// transfer any persistent properties into the doc
 	const gchar ** ppProps = getViewPersistentProps();
 	m_pDoc->setProperties(ppProps);
+	_updateDatesBeforeSave(false);
 	
 	UT_Error tmpVar;
 	tmpVar = m_pDoc->save();
@@ -4259,6 +4260,7 @@ UT_Error FV_View::cmdSaveAs(const char * szFilename, int ieft, bool cpy)
 	// transfer any persistent properties into the doc
 	const gchar ** ppProps = getViewPersistentProps();
 	m_pDoc->setProperties(ppProps);
+	_updateDatesBeforeSave(true);
 
 	UT_Error tmpVar;
 	tmpVar = static_cast<AD_Document*>(m_pDoc)->saveAs(szFilename, ieft, cpy);
@@ -4673,7 +4675,7 @@ fl_AnnotationLayout *FV_View::insertAnnotationDescription(UT_uint32 aID, AP_Dial
 	return pAL;
 }
 
-UT_Error FV_View::cmdInsertHyperlink(const char * szName)
+UT_Error FV_View::cmdInsertHyperlink(const char * szName, const char * szTitle)
 {
 	bool bRet;
 
@@ -4784,8 +4786,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	{
 		return false;
 	}
-	gchar * pAttr[4];
-
+	
 	UT_uint32 target_len = strlen(szName);
 	gchar * target  = new gchar[ target_len+ 2];
 
@@ -4798,12 +4799,36 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 		target[0] =  '#';
 		strncpy(target + 1, static_cast<const gchar*>(szName), target_len + 1);
 	}
+	
+	gchar * title;
+	int attrCount = 0;
+	
+	if (szTitle != NULL)
+	{
+	    UT_uint32 title_len = strlen(szTitle);
+	    title  = new gchar[ title_len + 1];
+	    strncpy(title, static_cast<const gchar*>(szTitle), title_len);
+	    attrCount = 6;
+	} else
+	{
+	    attrCount = 4;
+	    title = NULL;
+	}
+	
+	gchar * pAttr[attrCount];
+	int attr = 0;
 
 	gchar target_l[]  = "xlink:href";
-	pAttr [0] = &target_l[0];
-	pAttr [1] = &target[0];
-	pAttr [2] = 0;
-	pAttr [3] = 0;
+	gchar title_l[] = "xlink:title";
+	pAttr [attr++] = &target_l[0];
+	pAttr [attr++] = &target[0];
+	if ((szTitle != NULL) && (strlen(szTitle) > 0))
+	{
+		pAttr [attr++] = &title_l[0];
+		pAttr [attr++] = &title[0];
+	}
+	pAttr[attr++] = 0;
+	pAttr[attr++] = 0;
 
 	UT_DEBUGMSG(("fv_View::cmdInsertHyperlink: target \"%s\"\n", target));
 
@@ -4832,6 +4857,11 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName)
 	}
 
 	delete [] target;
+	
+	if (szTitle != NULL)
+	{
+		delete [] title;
+	}
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
@@ -6474,3 +6504,24 @@ bool FV_View::cmdFindRevision(bool bNext, UT_sint32 xPos, UT_sint32 yPos)
 	
 	return true;
 }
+
+void FV_View::_updateDatesBeforeSave(bool bOverwriteCreated)
+{
+    time_t now = time(NULL);
+    std::string timeStr = ctime(&now);
+    
+    if (bOverwriteCreated)
+    {
+        m_pDoc->setMetaDataProp(PD_META_KEY_DATE, timeStr);
+    } else
+    {
+        std::string metaValue;
+        if(!m_pDoc->getMetaDataProp(PD_META_KEY_DATE, metaValue))
+        {
+            m_pDoc->setMetaDataProp(PD_META_KEY_DATE, timeStr);
+        }
+    }
+    
+    m_pDoc->setMetaDataProp(PD_META_KEY_DATE_LAST_CHANGED, timeStr);
+}
+

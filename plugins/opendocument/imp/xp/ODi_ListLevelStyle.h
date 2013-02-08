@@ -52,9 +52,9 @@ public:
     UT_uint32 getLevelNumber() const {return m_levelNumber;}
 
     void setAbiListID(UT_uint32 abiListID);
-    const UT_UTF8String* getAbiListID() const {return &m_abiListID;}
+    const std::string* getAbiListID() const {return &m_abiListID;}
 
-    void setAbiListParentID(const UT_UTF8String& rAbiListParentID) {
+    void setAbiListParentID(const std::string& rAbiListParentID) {
         m_abiListParentID = rAbiListParentID;
     }
 
@@ -64,10 +64,10 @@ public:
         m_abiListParentID.assign(pParentID);
     }
 
-    const UT_UTF8String* getTextStyleName() const {return &m_textStyleName;}
+    const std::string* getTextStyleName() const {return &m_textStyleName;}
     void setTextStyle(const ODi_Style_Style* pTextStyle) {m_pTextStyle = pTextStyle;}
 
-    const UT_UTF8String* getAbiListParentID() const {return &m_abiListParentID;}
+    const std::string* getAbiListParentID() const {return &m_abiListParentID;}
 
     /**
      * The AbiWord properties of the list depends on some properties already
@@ -76,67 +76,67 @@ public:
      * @param rProps Will have the properties string appended.
      * @param pStyle Pointer to the paragraph style used on this list paragraph.
      */
-    void getAbiProperties(UT_UTF8String& rProps, const ODi_Style_Style* pStyle = NULL) const;
+    void getAbiProperties(std::string& rProps, const ODi_Style_Style* pStyle = NULL) const;
 
     void defineAbiList(PD_Document* pDocument);
 
     virtual void buildAbiPropsString();
 
-    const UT_UTF8String* getMinLabelDistance() const {return &m_minLabelDistance;}
+    const std::string* getMinLabelDistance() const {return &m_minLabelDistance;}
 
 protected:
 
-    UT_UTF8String m_level;
+    std::string m_level;
     UT_uint32 m_levelNumber;
 
     // The AbiWord list (<l> tag) ID.
-    UT_UTF8String m_abiListID;
+    std::string m_abiListID;
 
     // The AbiWord list (<l> tag) parent id.
-    UT_UTF8String m_abiListParentID;
+    std::string m_abiListParentID;
 
     // The AbiWord list (<l> tag) type.
-    UT_UTF8String m_abiListType;
+    std::string m_abiListType;
 
     // The AbiWord list (<l> tag) start value.
-    UT_UTF8String m_abiListStartValue;
+    std::string m_abiListStartValue;
 
     // The AbiWord list (<l> tag) list delim.
     // It's a printf like string with the list maker format.
-    UT_UTF8String m_abiListListDelim;
+    std::string m_abiListListDelim;
 
     // The AbiWord list (<l> tag) list decimal.
     // It's the level delimiter, usually a ".", "," or "-"
     // Looks like the property name and its real name (the one used on the GUI)
     // don't match.
-    UT_UTF8String m_abiListListDecimal;
+    std::string m_abiListListDecimal;
 
     // The properties of the list, to be used on the "props" attribute of
     // abi paragraphs (<p>) that uses this list level style.
-    UT_UTF8String m_abiProperties;
+    std::string m_abiProperties;
 
 
 
     // text:space-before attribute of <style:list-level-properties>
-    UT_UTF8String m_spaceBefore;
+    std::string m_spaceBefore;
 
     // text:min-label-width attribute of <style:list-level-properties>
-    UT_UTF8String m_minLabelWidth;
+    std::string m_minLabelWidth;
 
     // text:min-label-distance attribute of <style:list-level-properties>
     // The minumum distance between the list label and the list text.
     // Can't be translated to AbiWord easily.
-    UT_UTF8String m_minLabelDistance;
+    std::string m_minLabelDistance;
 
     // fo:text-indent attribute of <style:list-level-properties>
-	UT_UTF8String m_textIndent;
+	std::string m_textIndent;
 
 	// fo:margin-left attribute of <style:list-level-properties>
-	UT_UTF8String m_marginLeft;
+	std::string m_marginLeft;
 
     // text:style-name attribute of <text:list-level-style-*>
     // Maps, indirectly, to the AbiWord "field-font" property.
-    UT_UTF8String m_textStyleName;
+    std::string m_textStyleName;
     const ODi_Style_Style* m_pTextStyle;
 };
 

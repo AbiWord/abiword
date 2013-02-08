@@ -26,9 +26,6 @@
 // Internal includes
 #include "ODi_ListenerState.h"
 
-// AbiWord includes
-#include <ut_string_class.h>
-
 // Internal classes
 class ODi_FontFaceDecls;
 class ODi_Abi_Data;
@@ -65,8 +62,8 @@ public:
     void charData (const gchar* /*pBuffer*/, int /*length*/) {}
 
 
-    const UT_UTF8String& getDisplayName() const {return m_displayName;}
-    void setDisplayName(UT_UTF8String& rDisplayName) {
+    const std::string& getDisplayName() const {return m_displayName;}
+    void setDisplayName(std::string& rDisplayName) {
         m_displayName = rDisplayName;
     }
 
@@ -94,10 +91,10 @@ public:
      * @param appendParentProps If TRUE, it will append all parent props before appending its own props.
      *                          If FALSE, it will append only its own props.
      */
-    void getAbiPropsAttrString(UT_UTF8String& rProps, bool appendParentProps=TRUE) const;
+    void getAbiPropsAttrString(std::string& rProps, bool appendParentProps=TRUE) const;
 
     void setParentStyleName(const gchar* pParentStyleName) {
-        m_parentStyleName = pParentStyleName;
+        m_parentStyleName = pParentStyleName ? pParentStyleName : "";
     }
 
     const ODi_Style_Style* getParent() const {
@@ -113,23 +110,23 @@ public:
     }
 
 
-    const UT_UTF8String& getBreakBefore() const {return m_breakBefore;}
-    const UT_UTF8String& getBreakAfter() const {return m_breakAfter;}
+    const std::string& getBreakBefore() const {return m_breakBefore;}
+    const std::string& getBreakAfter() const {return m_breakAfter;}
 
-    const UT_UTF8String& getName() const {return m_name;}
-    void setName(UT_UTF8String& rName) {
+    const std::string& getName() const {return m_name;}
+    void setName(std::string& rName) {
         m_name = rName;
     }
 
-    const UT_UTF8String& getParentName() const {return m_parentStyleName;}
-    void setParentName(const char* pName) {m_parentStyleName.assign(pName);}
-    void setParentName(const UT_UTF8String& rName) {m_parentStyleName = rName;}
+    const std::string& getParentName() const {return m_parentStyleName;}
+    void setParentName(const char* pName) {if (pName) m_parentStyleName.assign(pName);}
+    void setParentName(const std::string& rName) {m_parentStyleName = rName;}
 
-    inline const UT_UTF8String& getNextStyleName() const {return m_nextStyleName;}
-    inline void setNextStyleName(const char* pName) {m_nextStyleName.assign(pName);}
-    void setNextStyleName(const UT_UTF8String& rName) {m_nextStyleName = rName;}
+    inline const std::string& getNextStyleName() const {return m_nextStyleName;}
+    inline void setNextStyleName(const char* pName) {if (pName) m_nextStyleName.assign(pName);}
+    void setNextStyleName(const std::string& rName) {m_nextStyleName = rName;}
 
-	const UT_UTF8String& getListStyleName() const {return m_listStyleName;}
+	const std::string& getListStyleName() const {return m_listStyleName;}
 
     bool hasProperties() const {
         return !m_listStyleName.empty() ||
@@ -198,54 +195,54 @@ public:
     }
 
     bool isAutomatic() const {return m_bAutomatic;}
-    const UT_UTF8String* getMarginLeft() const {return &m_marginLeft;}
-    const UT_UTF8String* getTextIndent() const {return &m_textIndent;}
-    const UT_UTF8String* getFamily() const {return &m_family;}
-    const UT_UTF8String* getFontName() const {return &m_fontName;}
+    const std::string* getMarginLeft() const {return &m_marginLeft;}
+    const std::string* getTextIndent() const {return &m_textIndent;}
+    const std::string* getFamily() const {return &m_family;}
+    const std::string* getFontName() const {return &m_fontName;}
 
     /**
      * @param local If "true", It returns the plain value of the corresponding
      *              variable. Otherwise, it considers the final value of this
      *              property, taking into account its value on the parent styles.
      */
-    const UT_UTF8String* getWrap(bool local) const;
-    const UT_UTF8String* getHorizPos(bool local) const;
-    const UT_UTF8String* getVerticalPos(bool local) const;
+    const std::string* getWrap(bool local) const;
+    const std::string* getHorizPos(bool local) const;
+    const std::string* getVerticalPos(bool local) const;
 
-    const UT_UTF8String* getBackgroundColor() const;
-    const UT_UTF8String* getBackgroundImageID() const;
+    const std::string* getBackgroundColor() const;
+    const std::string* getBackgroundImageID() const;
 
-    const UT_UTF8String* getColumnWidth() const {return &m_columnWidth;}
-    const UT_UTF8String* getColumnRelWidth() const {return &m_columnRelWidth;}
+    const std::string* getColumnWidth() const {return &m_columnWidth;}
+    const std::string* getColumnRelWidth() const {return &m_columnRelWidth;}
 
-    const UT_UTF8String* getMinRowHeight() const {return &m_minRowHeight;}
-    const UT_UTF8String* getRowHeight() const {return &m_rowHeight;}
+    const std::string* getMinRowHeight() const {return &m_minRowHeight;}
+    const std::string* getRowHeight() const {return &m_rowHeight;}
 
 
-    const UT_UTF8String* getBorderTop_thickness() const {return &m_borderTop_thickness;}
-    const UT_UTF8String* getBorderTop_color() const {return &m_borderTop_color;}
+    const std::string* getBorderTop_thickness() const {return &m_borderTop_thickness;}
+    const std::string* getBorderTop_color() const {return &m_borderTop_color;}
     HAVE_BORDER hasTopBorder() const {return m_haveTopBorder;}
 
-    const UT_UTF8String* getBorderBottom_thickness() const {return &m_borderBottom_thickness;}
-    const UT_UTF8String* getBorderBottom_color() const {return &m_borderBottom_color;}
+    const std::string* getBorderBottom_thickness() const {return &m_borderBottom_thickness;}
+    const std::string* getBorderBottom_color() const {return &m_borderBottom_color;}
     HAVE_BORDER hasBottomBorder() const {return m_haveBottomBorder;}
 
-    const UT_UTF8String* getBorderLeft_thickness() const {return &m_borderLeft_thickness;}
-    const UT_UTF8String* getBorderLeft_color() const {return &m_borderLeft_color;}
+    const std::string* getBorderLeft_thickness() const {return &m_borderLeft_thickness;}
+    const std::string* getBorderLeft_color() const {return &m_borderLeft_color;}
     HAVE_BORDER hasLeftBorder() const {return m_haveLeftBorder;}
 
-    const UT_UTF8String* getBorderRight_thickness() const {return &m_borderRight_thickness;}
-    const UT_UTF8String* getBorderRight_color() const {return &m_borderRight_color;}
+    const std::string* getBorderRight_thickness() const {return &m_borderRight_thickness;}
+    const std::string* getBorderRight_color() const {return &m_borderRight_color;}
     HAVE_BORDER hasRightBorder() const {return m_haveRightBorder;}
 
-    const UT_UTF8String* getMasterPageName() const {return &m_masterPageName;}
+    const std::string* getMasterPageName() const {return &m_masterPageName;}
 
-    const UT_UTF8String* getTableMarginLeft() const {return &m_TableMarginLeft;}
-    const UT_UTF8String* getTableMarginRight() const {return &m_TableMarginRight;}
-    const UT_UTF8String* getTableWidth() const {return &m_TableWidth;}
-    const UT_UTF8String* getTableRelWidth() const {return &m_TableRelWidth;}
+    const std::string* getTableMarginLeft() const {return &m_TableMarginLeft;}
+    const std::string* getTableMarginRight() const {return &m_TableMarginRight;}
+    const std::string* getTableWidth() const {return &m_TableWidth;}
+    const std::string* getTableRelWidth() const {return &m_TableRelWidth;}
 
-    const UT_UTF8String* getVerticalAlign() const {return &m_VerticalAlign;}
+    const std::string* getVerticalAlign() const {return &m_VerticalAlign;}
 private:
 
     // <style:style />
@@ -288,7 +285,7 @@ private:
      * If pString is "none", both rColor and rLenght will be empty and
      * rHaveBorder will be "no"
      */
-    void _stripColorLength(UT_UTF8String& rColor, UT_UTF8String& rLength,
+    void _stripColorLength(std::string& rColor, std::string& rLength,
                            HAVE_BORDER& rHaveBorder,
                            const gchar* pString) const;
 
@@ -309,16 +306,16 @@ private:
     const ODi_Style_Style* m_pParentStyle;
     const ODi_Style_Style* m_pNextStyle;
 
-    UT_UTF8String m_abiPropsAttr;
+    std::string m_abiPropsAttr;
 
 
     // <attribute name="style:name">
-    UT_UTF8String m_name;
+    std::string m_name;
 
     // <attribute name="style:display-name"> (optional)
     // If this attribute is not present, the display name equals the style name.
     // In AbiWord, maps to the "name" attribute.
-    UT_UTF8String m_displayName;
+    std::string m_displayName;
 
     // Maps to the "type" attribute.
     // OpenDocument | AbiWord
@@ -327,19 +324,19 @@ private:
     // "section"    - none (AbiWord don't have section styles)
     //
     // An exception is "graphic" styles. AbiWord don't have then.
-    UT_UTF8String m_family;
+    std::string m_family;
 
     // <attribute name="style:parent-style-name"> (optional)
     // If a parent style is not specified, a default parent style defined by
     // the application is used.
     //
     // In AbiWord, maps to the "basedon" attribute.
-    UT_UTF8String m_parentStyleName;
+    std::string m_parentStyleName;
 
     // <attribute name="style:next-style-name">
     // By default, the current style is used as the next style.
     // In AbiWord, maps to the "followedby" attribute.
-    UT_UTF8String m_nextStyleName;
+    std::string m_nextStyleName;
 
     // <attribute name="style:list-style-name"> (optional)
     //
@@ -348,7 +345,7 @@ private:
     // has no list style specification for any of its parents.
     //
     // Maps to AbiWord, but not directly.
-    UT_UTF8String m_listStyleName;
+    std::string m_listStyleName;
 
     // <attribute name="style:master-page-name"> (optional)
     //
@@ -359,50 +356,50 @@ private:
     // is applied to a paragraph within a table.
     //
     // Maps to AbiWord, but not directly.
-    UT_UTF8String m_masterPageName;
+    std::string m_masterPageName;
 
 
     ////
     // <style:paragraph-properties> attributes
     // These goes inside the Abi "props" attribute
-    UT_UTF8String m_lineHeight;
-    UT_UTF8String m_align;
-    UT_UTF8String m_breakBefore; // fo:break-before
-    UT_UTF8String m_breakAfter; // fo:break-after
-    UT_UTF8String m_widows;
-    UT_UTF8String m_orphans;
-    UT_UTF8String m_marginLeft;
-    UT_UTF8String m_marginRight;
-    UT_UTF8String m_marginTop;
-    UT_UTF8String m_marginBottom;
-    UT_UTF8String m_bgcolor;
-    UT_UTF8String m_keepWithNext;
-    UT_UTF8String m_textIndent; // fo:text-indent
-    UT_UTF8String m_direction; // style:writing-mode
-    UT_UTF8String m_defaultTabInterval; // style:tab-stop-distance
-    UT_UTF8String m_tabStops; // style:tab-stops
+    std::string m_lineHeight;
+    std::string m_align;
+    std::string m_breakBefore; // fo:break-before
+    std::string m_breakAfter; // fo:break-after
+    std::string m_widows;
+    std::string m_orphans;
+    std::string m_marginLeft;
+    std::string m_marginRight;
+    std::string m_marginTop;
+    std::string m_marginBottom;
+    std::string m_bgcolor;
+    std::string m_keepWithNext;
+    std::string m_textIndent; // fo:text-indent
+    std::string m_direction; // style:writing-mode
+    std::string m_defaultTabInterval; // style:tab-stop-distance
+    std::string m_tabStops; // style:tab-stops
 
     ////
     // <style:text-properties />
     // These goes inside the Abi "props" attribute
-    UT_UTF8String m_color;
-    UT_UTF8String m_textDecoration;
-    UT_UTF8String m_textPos;
-    UT_UTF8String m_fontName;
-    UT_UTF8String m_fontSize;
-    UT_UTF8String m_lang;
-    UT_UTF8String m_fontStyle;
-    UT_UTF8String m_fontWeight;
-    UT_UTF8String m_display; //text:display
+    std::string m_color;
+    std::string m_textDecoration;
+    std::string m_textPos;
+    std::string m_fontName;
+    std::string m_fontSize;
+    std::string m_lang;
+    std::string m_fontStyle;
+    std::string m_fontWeight;
+    std::string m_display; //text:display
     std::string m_transform; //fo:text-transform
 
 
     // fo:background-color
     // For <style:table-properties> and <style:table-cell-properties>
-    UT_UTF8String m_backgroundColor;
+    std::string m_backgroundColor;
 
     // <style:bakground-image>
-    UT_UTF8String m_backgroundImageID; // xlink:href
+    std::string m_backgroundImageID; // xlink:href
 
     // For <style:table-properties
     // fo:margin-left
@@ -410,73 +407,73 @@ private:
     // style:width
     // style:rel-width
 
-    UT_UTF8String   m_TableMarginLeft;
-    UT_UTF8String   m_TableMarginRight;
-    UT_UTF8String   m_TableWidth;
-    UT_UTF8String   m_TableRelWidth;
+    std::string   m_TableMarginLeft;
+    std::string   m_TableMarginRight;
+    std::string   m_TableWidth;
+    std::string   m_TableRelWidth;
 
 
     ////
     // <style:section-properties>
     // These goes inside the Abi "props" attribute
-    UT_UTF8String m_columns;
-    UT_UTF8String m_columnGap;
+    std::string m_columns;
+    std::string m_columnGap;
 
     ////
     // <style:graphic-properties>
-    UT_UTF8String m_wrap; // style:wrap
-    UT_UTF8String m_HorizRel; // style:horizontal-rel
-    UT_UTF8String m_HorizPos; // style:horizontal-pos
-    UT_UTF8String m_VerticalPos; // style:vertical-pos
-    UT_UTF8String m_VerticalRel; //  style:vertical-rel
+    std::string m_wrap; // style:wrap
+    std::string m_HorizRel; // style:horizontal-rel
+    std::string m_HorizPos; // style:horizontal-pos
+    std::string m_VerticalPos; // style:vertical-pos
+    std::string m_VerticalRel; //  style:vertical-rel
 
     ////
     // <style:table-column-properties>
     // style:column-width
     // rel-column-width
-    UT_UTF8String m_columnWidth; // style:column-width
-    UT_UTF8String m_columnRelWidth; // style:rel-column-width
+    std::string m_columnWidth; // style:column-width
+    std::string m_columnRelWidth; // style:rel-column-width
 
     ////
     // <style:table-row-properties>
-    UT_UTF8String m_minRowHeight; // style:min-row-height
-    UT_UTF8String m_rowHeight; // style:row-height
+    std::string m_minRowHeight; // style:min-row-height
+    std::string m_rowHeight; // style:row-height
 
 
     ////
     // <style:table-cell-properties>
 
     // style:vertical-align
-    UT_UTF8String m_VerticalAlign;
+    std::string m_VerticalAlign;
 
     // fo:border-top
-    UT_UTF8String m_borderTop_thickness;
-    UT_UTF8String m_borderTop_color;
+    std::string m_borderTop_thickness;
+    std::string m_borderTop_color;
     HAVE_BORDER m_haveTopBorder;
 
     // fo:border-bottom
-    UT_UTF8String m_borderBottom_thickness;
-    UT_UTF8String m_borderBottom_color;
+    std::string m_borderBottom_thickness;
+    std::string m_borderBottom_color;
     HAVE_BORDER m_haveBottomBorder;
 
     // fo:border-left
-    UT_UTF8String m_borderLeft_thickness;
-    UT_UTF8String m_borderLeft_color;
+    std::string m_borderLeft_thickness;
+    std::string m_borderLeft_color;
     HAVE_BORDER m_haveLeftBorder;
 
     // fo:border-right
-    UT_UTF8String m_borderRight_thickness;
-    UT_UTF8String m_borderRight_color;
+    std::string m_borderRight_thickness;
+    std::string m_borderRight_color;
     HAVE_BORDER m_haveRightBorder;
 
     // fo:padding
-    UT_UTF8String m_paddingLeft;
-    UT_UTF8String m_paddingRight;
-    UT_UTF8String m_paddingTop;
-    UT_UTF8String m_paddingBot;
+    std::string m_paddingLeft;
+    std::string m_paddingRight;
+    std::string m_paddingTop;
+    std::string m_paddingBot;
 
     // style:merge-borders
-    UT_UTF8String m_mergeBorders;
+    std::string m_mergeBorders;
 
     ODi_Abi_Data& m_rAbiData;
 

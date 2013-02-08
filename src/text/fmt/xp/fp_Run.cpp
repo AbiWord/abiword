@@ -46,6 +46,7 @@
 #include "ut_string.h"
 #include "ut_std_string.h"
 #include "ut_growbuf.h"
+#include "ut_go_file.h"
 #include "fp_TableContainer.h"
 #include "fl_TableLayout.h"
 #include "fl_FootnoteLayout.h"
@@ -3053,6 +3054,7 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 	: fp_Run(pBL, iOffsetFirst, 1, FPRUN_HYPERLINK)
     , m_bIsStart(false)
     , m_pTarget(NULL)
+    , m_pTitle(NULL)
 {
 	_setLength(1);
 	_setDirty(false);
@@ -3062,13 +3064,15 @@ fp_HyperlinkRun::fp_HyperlinkRun( fl_BlockLayout* pBL,
 	UT_ASSERT((pBL));
 	_setDirection(UT_BIDI_WS);
 
-	_setTargetFromAPAttribute( "xlink:href" );
+	_setTargetFromAPAttribute( "xlink:href");
+	_setTitleFromAPAttribute( "xlink:title");
 }
 
 
 fp_HyperlinkRun::~fp_HyperlinkRun()
 {
 	DELETEPV(m_pTarget);
+	DELETEPV(m_pTitle);
 }
 
 void fp_HyperlinkRun::_lookupProperties(const PP_AttrProp * /*pSpanAP*/,
@@ -3148,7 +3152,7 @@ void fp_HyperlinkRun::_setTargetFromAPAttribute( const gchar* pAttrName )
 	// is to a potentially volatile location
 	if(bFound)
 	{
-        _setTarget( pTarget );
+		_setTarget( pTarget );
 		m_bIsStart = true;
 		//if this is a start of the hyperlink, we set m_pHyperlink to this,
 		//so that when a run gets inserted after this one, its m_pHyperlink is
@@ -3163,6 +3167,20 @@ void fp_HyperlinkRun::_setTargetFromAPAttribute( const gchar* pAttrName )
 	}
 }
 
+void fp_HyperlinkRun::_setTitleFromAPAttribute( const gchar* pAttrName )
+{
+	const PP_AttrProp * pAP = NULL;
+	getSpanAP(pAP);
+	
+	const gchar *pTitle;
+	if (pAP->getAttribute(pAttrName, pTitle))
+	{
+	    _setTitle(pTitle);
+	} else
+	{
+	    m_pTitle = NULL;
+	}
+}
 
 void fp_HyperlinkRun::_setTarget( const gchar * pTarget )
 {
@@ -3170,6 +3188,14 @@ void fp_HyperlinkRun::_setTarget( const gchar * pTarget )
     UT_uint32 iTargetLen = strlen(pTarget);
     m_pTarget = new gchar [iTargetLen + 1];
     strncpy(m_pTarget, pTarget, iTargetLen + 1);
+}
+
+void fp_HyperlinkRun::_setTitle( const gchar * pTitle )
+{
+    DELETEPV(m_pTitle);
+    UT_uint32 iTitleLen = strlen(pTitle);
+    m_pTitle = new gchar [iTitleLen + 1];
+    strncpy(m_pTitle, pTitle, iTitleLen + 1);
 }
 
 
@@ -5007,7 +5033,7 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	}
 	const gchar * footid = NULL;
 	bool bRes = pp->getAttribute("footnote-id", footid);
-
+        
 	if(!bRes || !footid)
 	{
 		UT_DEBUGMSG(("fp_FieldFootnoteRefRun::calculateValue: Missing footnote-id attribute. Probably a malformed file.\n"));
@@ -5015,7 +5041,10 @@ bool fp_FieldFootnoteRefRun::calculateValue(void)
 	}
 	FV_View * pView = _getView();
 	UT_uint32 iPID = atoi(footid);
-	UT_sint32 footnoteNo = pView->getLayout()->getFootnoteVal(iPID);
+        const gchar *szCitation = NULL;
+        bool bHaveCitation = pp->getAttribute("text:note-citation", szCitation);
+	UT_sint32 footnoteNo = bHaveCitation ? 
+            atoi(szCitation) : pView->getLayout()->getFootnoteVal(iPID);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
@@ -5068,7 +5097,10 @@ bool fp_FieldFootnoteAnchorRun::calculateValue(void)
 	}
 	UT_uint32 iPID = atoi(footid);
 	FV_View * pView = _getView();
-	UT_sint32 footnoteNo = pView->getLayout()->getFootnoteVal(iPID);
+        const gchar *szCitation = NULL;
+        bool bHaveCitation = pp->getAttribute("text:note-citation", szCitation);
+	UT_sint32 footnoteNo = bHaveCitation ? 
+            atoi(szCitation) : pView->getLayout()->getFootnoteVal(iPID);
 
 	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
 	sz_ucs_FieldValue[0] = 0;
@@ -5249,6 +5281,36 @@ bool fp_FieldFileNameRun::calculateValue(void)
 
 	//copy in the name or some wierd char instead
 	const char * name = pDoc->getFilename();
+	if (!name)
+		name = "*";
+
+	strncpy (szFieldValue, name, FPFIELD_MAX_LENGTH);
+	szFieldValue[FPFIELD_MAX_LENGTH] = '\0';
+
+	if (getField())
+	  getField()->setValue(static_cast<const gchar*>(szFieldValue));
+
+	UT_UCS4_strcpy_char(sz_ucs_FieldValue, szFieldValue);
+
+	return _setValue(sz_ucs_FieldValue);
+}
+
+fp_FieldShortFileNameRun::fp_FieldShortFileNameRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldRun(pBL, iOffsetFirst, iLen)
+{
+}
+
+bool fp_FieldShortFileNameRun::calculateValue(void)
+{
+	UT_UCSChar sz_ucs_FieldValue[FPFIELD_MAX_LENGTH + 1];
+	sz_ucs_FieldValue[0] = 0;
+
+	char szFieldValue[FPFIELD_MAX_LENGTH + 1];
+
+	PD_Document * pDoc = getBlock()->getDocument();
+	UT_return_val_if_fail(pDoc, false);
+
+	//copy in the name or some wierd char instead
+	const char * name = UT_go_basename_from_uri(pDoc->getFilename());
 	if (!name)
 		name = "*";
 
@@ -5496,6 +5558,10 @@ fp_FieldMetaPublisherRun::fp_FieldMetaPublisherRun(fl_BlockLayout* pBL,UT_uint32
 }
 
 fp_FieldMetaDateRun::fp_FieldMetaDateRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_DATE)
+{
+}
+
+fp_FieldMetaDateLastChangedRun::fp_FieldMetaDateLastChangedRun(fl_BlockLayout* pBL,UT_uint32 iOffsetFirst, UT_uint32 iLen) : fp_FieldMetaRun(pBL, iOffsetFirst, iLen, PD_META_KEY_DATE_LAST_CHANGED)
 {
 }
 

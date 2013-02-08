@@ -6156,12 +6156,30 @@ bool PD_Document::fixListHierarchy(void)
 	}
 	else
 	{
-		for (UT_uint32 i = 0; i < iNumLists; i++)
-		{
-			pAutoNum = m_vecLists.getNthItem(i);
-			pAutoNum->fixHierarchy();
-		}
-		return true;
+            // Some documents may contain empty lists
+            // that appear as a result of importing ODT file which contains
+            // nested lists without paragraphs. To get rid of them we should
+            // delete all lists that are defined but doesn't contain any items
+            std::vector<unsigned int> itemsToRemove;
+            for (UT_uint32 i = 0; i < iNumLists; i++)
+            {
+                    pAutoNum = m_vecLists.getNthItem(i);
+                    if (pAutoNum->getFirstItem() == NULL)
+                    {
+                        itemsToRemove.push_back(i);
+                    } 
+                    else
+                    {
+                        pAutoNum->fixHierarchy();
+                    }
+            }
+            while(!itemsToRemove.empty())
+            {
+                m_vecLists.deleteNthItem(itemsToRemove.back());
+                itemsToRemove.pop_back();
+            }
+	    
+            return true;
 	}
 }
 

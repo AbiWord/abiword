@@ -70,7 +70,7 @@ void ODi_TableOfContent_ListenerState::startElement (const gchar* pName,
 	            }
 	            
 	            props += "toc-heading-style:";
-	            props += pStyle->getDisplayName().utf8_str();
+	            props += pStyle->getDisplayName().c_str();
             }
 
         }
@@ -102,7 +102,7 @@ void ODi_TableOfContent_ListenerState::startElement (const gchar* pName,
                 props += "toc-dest-style";
                 props += pOutlineLevel;
                 props += ":";
-                props += pStyle->getDisplayName().utf8_str();
+                props += pStyle->getDisplayName().c_str();
             }
         }
 

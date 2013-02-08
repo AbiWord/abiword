@@ -41,6 +41,7 @@
 #include "pf_Frag.h"
 #include "ie_exp_RTF.h"
 #include "ut_units.h"
+#include "ut_std_string.h"
 
 // AbiWord includes
 #include <ut_misc.h>
@@ -49,6 +50,7 @@
 
 #include <list>
 #include <sstream>
+
 
 
 #ifdef HAVE_CONFIG_H
@@ -100,7 +102,9 @@ ODi_TextContent_ListenerState::ODi_TextContent_ListenerState (
 		  m_bPendingTextbox(false),
 		  m_bHeadingList(false),
 		  m_prevLevel(0),
-		  m_bContentWritten(false)
+		  m_bContentWritten(false),
+                  m_columnsCount(1),
+                  m_columnIndex(1)
 {
     UT_ASSERT_HARMLESS(m_pAbiDocument);
     UT_ASSERT_HARMLESS(m_pStyles);
@@ -114,7 +118,7 @@ ODi_TextContent_ListenerState::~ODi_TextContent_ListenerState()
 {
     if (m_tablesOfContentProps.getItemCount() > 0) {
         UT_DEBUGMSG(("ERROR ODti: table of content props not empty\n"));
-        UT_VECTOR_PURGEALL(UT_UTF8String*, m_tablesOfContentProps);
+        UT_VECTOR_PURGEALL(std::string*, m_tablesOfContentProps);
     }
 }
 
@@ -151,7 +155,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         const ODi_Style_Style* pStyle = m_pStyles->getSectionStyle(pStyleName,
                                                         m_bOnContentStream);
                                                         
-        UT_UTF8String props = "";
+        std::string props = "";
 
         if (pStyle) {        
             pStyle->getAbiPropsAttrString(props);
@@ -199,9 +203,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             // be at level 1.
             pOutlineLevel = "1";
         }
-        UT_UTF8String sHeadingListName = "BaseHeading";
+        std::string sHeadingListName = "BaseHeading";
         m_listLevel = atoi(pOutlineLevel);
-        m_pCurrentListStyle =  m_pStyles->getList( sHeadingListName.utf8_str());
+        m_pCurrentListStyle =  m_pStyles->getList( sHeadingListName.c_str());
         if(m_pCurrentListStyle && m_pCurrentListStyle->getLevelStyle(m_listLevel)->isVisible())
         {
             xxx_UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
@@ -219,7 +223,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             if (pStyle->getParent() != NULL) {
 
                 m_headingStyles[pOutlineLevel] = 
-					pStyle->getParent()->getDisplayName().utf8_str();
+					pStyle->getParent()->getDisplayName().c_str();
             } else {
                 UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
                 // This is not expected from a well formed file.
@@ -230,7 +234,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             
         } else if (pStyle) {
             m_headingStyles[pOutlineLevel] =
-				pStyle->getDisplayName().utf8_str();
+				pStyle->getDisplayName().c_str();
         }
         
         // It's so big that it deserves its own function.
@@ -318,18 +322,18 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             if (pStyle) {
             
                 const gchar* ppStyAttr[3];
-                UT_UTF8String props;
+                std::string props;
                 
                 if (pStyle->isAutomatic()) {
                     pStyle->getAbiPropsAttrString(props);
                     
                     // It goes "hardcoded"
                     ppStyAttr[0] = "props";
-                    ppStyAttr[1] = props.utf8_str();
+                    ppStyAttr[1] = props.c_str();
                     ppStyAttr[2] = 0;
                 } else {
                     ppStyAttr[0] = "style";
-                    ppStyAttr[1] = pStyle->getDisplayName().utf8_str();
+                    ppStyAttr[1] = pStyle->getDisplayName().c_str();
                     ppStyAttr[2] = 0;                
                 }
                 
@@ -347,12 +351,12 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         
         _flush ();
         
-        UT_UTF8String generatedID;
+        std::string generatedID;
         const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
         if( !xmlid )
         {
-            generatedID = UT_UTF8String_sprintf("%d", m_pAbiDocument->getUID( UT_UniqueId::Annotation ));
-            xmlid = generatedID.utf8_str();
+            generatedID = UT_std_string_sprintf("%d", m_pAbiDocument->getUID( UT_UniqueId::Annotation ));
+            xmlid = generatedID.c_str();
         }
         
         const gchar* pa[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
@@ -441,7 +445,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             !strcmp(pName, "text:description") ||
             !strcmp(pName, "text:keywords") ||
             !strcmp(pName, "text:subject") ||
-            !strcmp(pName, "text:title")) {
+            !strcmp(pName, "text:title") ||
+            !strcmp(pName, "text:modification-date")) {
                 
         _flush ();
 
@@ -454,8 +459,12 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             type = "page_number";
         else if(!strcmp(pName, "text:page-count"))
             type = "page_count";
-        else if(!strcmp(pName, "text:file-name"))
-            type = "file_name";
+        else if(!strcmp(pName, "text:file-name")){
+        	const gchar * pDisplay = UT_getAttribute ("text:display", ppAtts);
+        	if (!strcmp(pDisplay, "name-and-extension"))
+        		type = "short_file_name";
+        	else type = "file_name";
+        }
         else if(!strcmp(pName, "text:paragraph-count"))
             type = "para_count";
         else if(!strcmp(pName, "text:word-count"))
@@ -472,6 +481,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             type = "meta_subject";
         else if(!strcmp(pName, "text:title"))
             type = "meta_title";
+        else if(!strcmp(pName, "text:modification-date"))
+            type = "meta_date_last_changed";
+
 
         const gchar *field_fmt[3];
         field_fmt[0] = "type";
@@ -505,20 +517,16 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         if (m_bPendingAnnotation) {
             _insertAnnotation();
         }
-        
-        if (m_pCurrentListStyle != NULL) {
-            m_listLevel++;
-        } else {
-            const gchar* pVal;
-            
-            pVal = UT_getAttribute("text:style-name", ppAtts);
-            
-            
-            if (pVal && *pVal)
-                m_pCurrentListStyle = m_pStyles->getList(pVal);
-            UT_ASSERT(m_pCurrentListStyle != NULL);
-            
-            m_listLevel = 1;
+        m_listLevel++;
+        if (m_pCurrentListStyle == NULL) {
+			const gchar* pVal;
+
+			pVal = UT_getAttribute("text:style-name", ppAtts);
+
+
+			if (pVal && *pVal)
+				m_pCurrentListStyle = m_pStyles->getList(pVal);
+			UT_ASSERT(m_pCurrentListStyle != NULL);
         }
         
     } else if (!strcmp(pName, "text:list-item")) {
@@ -597,12 +605,12 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  pVal = UT_getAttribute("svg:width", ppAtts);
 	  if(pVal && *pVal)
 	  {
-	      UT_UTF8String_setProperty(m_sProps,"frame-width",pVal);
+	      UT_std_string_setProperty(m_sProps,"frame-width",pVal);
 	  }
 	  pVal = UT_getAttribute("svg:height", ppAtts);
 	  if(pVal && *pVal)
 	  {
-	      UT_UTF8String_setProperty(m_sProps,"frame-height",pVal);
+	      UT_std_string_setProperty(m_sProps,"frame-height",pVal);
 	  }
 	  //
 	  // Get wrapping style
@@ -614,24 +622,24 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	      const ODi_Style_Style* pGraphicStyle = m_pStyles->getGraphicStyle(pStyleName, m_bOnContentStream);
 	      if(pGraphicStyle)
 	      {
-		  const UT_UTF8String* pWrap=NULL;
+		  const std::string* pWrap=NULL;
 		  pWrap = pGraphicStyle->getWrap(false);
 		  if(pWrap)
 		  {
-		      if ( !strcmp(pWrap->utf8_str(), "run-through")) 
+		      if ( !strcmp(pWrap->c_str(), "run-through")) 
 		      {
 			  // Floating wrapping.
 			  m_sProps += "; wrap-mode:above-text";
 		      } 
-		      else if ( !strcmp(pWrap->utf8_str(), "left")) 
+		      else if ( !strcmp(pWrap->c_str(), "left")) 
 		      {
 			  m_sProps += "; wrap-mode:wrapped-to-left";
 		      } 
-		      else if ( !strcmp(pWrap->utf8_str(), "right")) 
+		      else if ( !strcmp(pWrap->c_str(), "right")) 
 		      {
 			  m_sProps += "; wrap-mode:wrapped-to-right";
 		      } 
-		      else if ( !strcmp(pWrap->utf8_str(), "parallel")) 
+		      else if ( !strcmp(pWrap->c_str(), "parallel")) 
 		      {
 			  m_sProps += "; wrap-mode:wrapped-both";
 		      } 
@@ -682,7 +690,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  m_rAbiData.addImageDataItem(dataId, ppAtts);
 	  const gchar* pStyleName;
 	  const ODi_Style_Style* pGraphicStyle;
-	  const UT_UTF8String* pWrap;
+	  const std::string* pWrap;
     
 	  pStyleName = m_rElementStack.getStartTag(0)->getAttributeValue("draw:style-name");
 	  UT_ASSERT(pStyleName);
@@ -692,21 +700,21 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	  {    
 	    pWrap = pGraphicStyle->getWrap(false);
                                                     
-	    if ( !strcmp(pWrap->utf8_str(), "run-through")) 
+	    if ( !strcmp(pWrap->c_str(), "run-through")) 
 	    {
 		// Floating wrapping.
 		m_sProps += "; wrap-mode:above-text";
 		
 	    } 
-	    else if ( !strcmp(pWrap->utf8_str(), "left")) 
+	    else if ( !strcmp(pWrap->c_str(), "left")) 
 	    {
 		m_sProps += "; wrap-mode:wrapped-to-left";
 	    } 
-	    else if ( !strcmp(pWrap->utf8_str(), "right")) 
+	    else if ( !strcmp(pWrap->c_str(), "right")) 
 	    {
 		m_sProps += "; wrap-mode:wrapped-to-right";
 	    } 
-	    else if ( !strcmp(pWrap->utf8_str(), "parallel")) 
+	    else if ( !strcmp(pWrap->c_str(), "parallel")) 
 	    {
 		m_sProps += "; wrap-mode:wrapped-both";
 	    } 
@@ -721,7 +729,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	    // OK lets write this into the document for later use
 	    //
 	  UT_UTF8String sImageId = dataId.c_str();
-	  m_pAbiDocument->addPageReferencedImage(sImageId, m_iPageNum, m_dXpos, m_dYpos, m_sProps.utf8_str());
+	  m_pAbiDocument->addPageReferencedImage(sImageId, m_iPageNum, m_dXpos, m_dYpos, m_sProps.c_str());
 	  
 	  m_bPageReferencePending = false;
 	}
@@ -769,13 +777,18 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         _flush();
         m_bAcceptingText = false;
         
-    } else if (!strcmp(pName, "text:note-body")) {
+    } else if (!strcmp(pName, "text:note-citation")) {  
+        m_bPendingNoteCitation = true;
+        m_bAcceptingText = false;
+    } 
+    else if (!strcmp(pName, "text:note-body")) {
 
-        const gchar* ppAtts2[10];
+        int attrCount = m_bPendingNoteCitation ? 12 : 10;
+        const gchar* ppAtts2[attrCount];
         UT_uint32 id;
         const ODi_NotesConfiguration* pNotesConfig;
         const ODi_Style_Style* pStyle = NULL;
-        const UT_UTF8String* pCitationStyleName = NULL;
+        const std::string* pCitationStyleName = NULL;
         UT_uint8 i;
         bool isFootnote = false;
         const gchar* pNoteClass;
@@ -797,7 +810,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         } else {
             id = m_pAbiDocument->getUID(UT_UniqueId::Endnote);
         }
-        UT_UTF8String_sprintf(m_currentNoteId, "%d", id);
+        m_currentNoteId = UT_std_string_sprintf("%d", id);
         
         pNotesConfig = m_pStyles->getNotesConfiguration(pNoteClass);
         
@@ -805,7 +818,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             pCitationStyleName = pNotesConfig->getCitationStyleName();
             
             if (!pCitationStyleName->empty()) {
-                pStyle = m_pStyles->getTextStyle(pCitationStyleName->utf8_str(),
+                pStyle = m_pStyles->getTextStyle(pCitationStyleName->c_str(),
                             m_bOnContentStream);
             }
         }
@@ -819,13 +832,18 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             ppAtts2[i++] = "endnote_ref";
             ppAtts2[i++] = "endnote-id";
         }
-        ppAtts2[i++] = m_currentNoteId.utf8_str();
+        ppAtts2[i++] = m_currentNoteId.c_str();
         if (pCitationStyleName && (!pCitationStyleName->empty()) && (pStyle != NULL)) {
             ppAtts2[i++] = "style";
-            ppAtts2[i++] = pStyle->getDisplayName().utf8_str();
+            ppAtts2[i++] = pStyle->getDisplayName().c_str();
         }
         ppAtts2[i++] = "props";
         ppAtts2[i++] = "text-position:superscript";
+        if (m_bPendingNoteCitation) {
+            ppAtts2[i++] = "text:note-citation";
+            ppAtts2[i++] = m_noteCitation.c_str();
+            m_bPendingNoteCitation = false;
+        }
         ppAtts2[i] = 0;
         
         UT_DebugOnly<bool> ok;
@@ -837,7 +855,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         } else {
             ppAtts2[0] = "endnote-id";
         }
-        ppAtts2[1] = m_currentNoteId.utf8_str();
+        ppAtts2[1] = m_currentNoteId.c_str();
         ppAtts2[2] = 0;
         
         if (isFootnote) {
@@ -891,7 +909,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 
         if (!m_bPendingAnnotation)
         {
-            UT_UTF8String id;
+            std::string id;
             m_sAnnotationAuthor.clear();
             m_sAnnotationDate.clear();
             m_sAnnotationName.clear();
@@ -902,20 +920,20 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
                 m_openAnnotationNames.insert(s);
             }
             m_iAnnotation = m_pAbiDocument->getUID( UT_UniqueId::Annotation );
-            id = UT_UTF8String_sprintf("%d", m_iAnnotation);
-            UT_UTF8String generatedID;
+            id = UT_std_string_sprintf("%d", m_iAnnotation);
+            std::string generatedID;
             const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
             if( !xmlid )
             {
-                generatedID = UT_UTF8String_sprintf("anno%s", id.utf8_str() );
-                xmlid = generatedID.utf8_str();
+                generatedID = UT_std_string_sprintf("anno%s", id.c_str() );
+                xmlid = generatedID.c_str();
             }
             m_sAnnotationXMLID = xmlid;
             
             const gchar* ppAtts2[9] = { NULL, NULL, NULL, NULL, 
                                         NULL, NULL, NULL, NULL, NULL };
             ppAtts2[0] = PT_ANNOTATION_NUMBER;
-            ppAtts2[1] = id.utf8_str();
+            ppAtts2[1] = id.c_str();
             ppAtts2[2] = PT_XMLID;
             ppAtts2[3] = xmlid;
             if( !m_sAnnotationName.empty() )
@@ -924,7 +942,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
                 ppAtts2[5] = m_sAnnotationName.c_str();
             }
             
-            UT_DEBUGMSG(("open annotation... anno-id:%s xmlid:%s \n", id.utf8_str(), xmlid ));
+            UT_DEBUGMSG(("open annotation... anno-id:%s xmlid:%s \n", id.c_str(), xmlid ));
 
             m_pAbiDocument->appendObject(PTO_Annotation, ppAtts2);
             m_bPendingAnnotation = true;
@@ -944,6 +962,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             m_bAcceptingText = false;
         }
 
+    } else if (!strcmp(pName, "text:soft-page-break")){
+        UT_UCS4Char pageBreak = UCS_FF;
+        m_pAbiDocument->appendStrux(PTX_Block, NULL);
+        m_pAbiDocument->appendSpan (&pageBreak, 1);
     }
     
     m_elementParsingLevel++;
@@ -963,7 +985,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
     if (!strcmp(pName, "text:table-of-content")) {
         
         m_tablesOfContent.addItem( m_pCurrentTOCParser->getTOCStrux() );
-        m_tablesOfContentProps.addItem( new UT_UTF8String(m_pCurrentTOCParser->getProps()) );
+        m_tablesOfContentProps.addItem( new std::string(m_pCurrentTOCParser->getProps().utf8_str()) );
         DELETEP(m_pCurrentTOCParser);
         
     } else if (!strcmp(pName, "text:section" )) {
@@ -1035,7 +1057,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         // So, let's define the heading styles on all Abi TOCs (<toc> struxs).
         _defineAbiTOCHeadingStyles();
         
-        UT_VECTOR_PURGEALL(UT_UTF8String*, m_tablesOfContentProps);
+        UT_VECTOR_PURGEALL(std::string*, m_tablesOfContentProps);
         m_tablesOfContentProps.clear();        
         
         // We can now bring up the postponed parsing (headers/footers and
@@ -1077,6 +1099,8 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         // We were inside a <table:table-cell> element.
         rAction.popState();
         
+    } else if (!strcmp(pName, "text:note-citation")) {  
+        m_bAcceptingText = true;
     } else if (!strcmp(pName, "text:note-body")) {
         UT_DebugOnly<bool> ok = false;
         const gchar* pNoteClass;
@@ -1190,7 +1214,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
 	  //
 	  pExpRtf->copyToBuffer(&docRange,pBuf);
 	  delete pExpRtf;
-	  m_pAbiDocument->addPageReferencedTextbox(*pBuf,m_iPageNum, m_dXpos,m_dYpos,m_sProps.utf8_str());
+	  m_pAbiDocument->addPageReferencedTextbox(*pBuf,m_iPageNum, m_dXpos,m_dYpos,m_sProps.c_str());
 	  delete pBuf;
 	  pf_Frag * pfNext = pfFirst; 
 	  //
@@ -1352,6 +1376,9 @@ void ODi_TextContent_ListenerState::charData (
     {
         m_sAnnotationDate = pBuffer;
     }
+    else if (m_bPendingNoteCitation) {  
+        m_noteCitation = pBuffer;
+    } 
 }
 
 
@@ -1456,13 +1483,13 @@ void ODi_TextContent_ListenerState::_popInlineFmt(void)
  *                        in this section.
  */
 void ODi_TextContent_ListenerState::_insureInSection(
-                                         const UT_UTF8String* pMasterPageName) {
+                                         const std::string* pMasterPageName) {
     
     if (m_inAbiSection && !m_bPendingSection)
         return;
     
     const ODi_StartTag* pStartTag;
-    UT_UTF8String props = "";
+    std::string props = "";
     
     // Now we open an abi <section> according to the OpenDocument parent
     // section, if there is one.
@@ -1498,6 +1525,21 @@ void ODi_TextContent_ListenerState::_insureInSection(
         m_currentODSection = ODI_SECTION_NONE;
     }
     
+    if (!props.empty()){
+        gchar* propsCopy = g_strdup(props.c_str());
+        const gchar** propsArray = UT_splitPropsToArray(propsCopy);
+        const gchar* pColumns = UT_getAttribute("columns", propsArray);
+        
+        if (pColumns != NULL){
+            m_columnsCount = atoi(pColumns);
+            m_columnIndex = 1;
+        } else{
+            m_columnsCount = 1;
+            m_columnIndex = 1;
+        }
+        
+        g_free(propsArray);
+    }
     _openAbiSection(props, pMasterPageName);
 }
 
@@ -1508,11 +1550,11 @@ void ODi_TextContent_ListenerState::_insureInSection(
  * @param pProps The properties of the abi <section> to be opened.
  */
 void ODi_TextContent_ListenerState::_openAbiSection(
-                                         const UT_UTF8String& rProps,
-                                         const UT_UTF8String* pMasterPageName) {
+                                         const std::string& rProps,
+                                         const std::string* pMasterPageName) {
 
-    UT_UTF8String masterPageProps;
-    UT_UTF8String dataID;
+    std::string masterPageProps;
+    std::string dataID;
     bool hasLeftPageMargin = false;
     bool hasRightPageMargin = false;
 
@@ -1520,7 +1562,7 @@ void ODi_TextContent_ListenerState::_openAbiSection(
 
     if (pMasterPageName != NULL && !pMasterPageName->empty()) {
         
-        pMasterPageStyle = m_pStyles->getMasterPageStyle(pMasterPageName->utf8_str());
+        pMasterPageStyle = m_pStyles->getMasterPageStyle(pMasterPageName->c_str());
         
         if (pMasterPageStyle && pMasterPageStyle->getPageLayout()) {
             masterPageProps = pMasterPageStyle->getSectionProps();
@@ -1540,26 +1582,26 @@ void ODi_TextContent_ListenerState::_openAbiSection(
         //
         if(!m_openedFirstAbiSection)
         {
-            UT_UTF8String sProp(""),sWidth(""),sHeight(""),sOri("");
+            std::string sProp(""),sWidth(""),sHeight(""),sOri("");
             bool bValid = true;
 	    
             sProp="page-width";
-            sWidth = UT_UTF8String_getPropVal(masterPageProps,sProp);
+            sWidth = UT_std_string_getPropVal(masterPageProps,sProp);
             if(sWidth.size()==0)
                 bValid = false;
 
             sProp="page-height";
-            sHeight = UT_UTF8String_getPropVal(masterPageProps,sProp);
+            sHeight = UT_std_string_getPropVal(masterPageProps,sProp);
             if(sHeight.size()==0)
                 bValid = false;
 
             sProp="page-orientation";
-            sOri = UT_UTF8String_getPropVal(masterPageProps,sProp);
+            sOri = UT_std_string_getPropVal(masterPageProps,sProp);
             if(sOri.size()==0)
 	            bValid = false;
             if(bValid)
             {
-                UT_UTF8String sUnits = UT_dimensionName(UT_determineDimension(sWidth.utf8_str()));
+                std::string sUnits = UT_dimensionName(UT_determineDimension(sWidth.c_str()));
                 const gchar * atts[13] ={"pagetype","Custom",
                         "orientation",NULL,
                         "width",NULL,
@@ -1567,10 +1609,10 @@ void ODi_TextContent_ListenerState::_openAbiSection(
                         "units",NULL,
                         "page-scale","1.0",
                         NULL};
-                atts[3] = sOri.utf8_str();
-                atts[5] = sWidth.utf8_str();
-                atts[7] = sHeight.utf8_str();
-                atts[9] = sUnits.utf8_str();
+                atts[3] = sOri.c_str();
+                atts[5] = sWidth.c_str();
+                atts[7] = sHeight.c_str();
+                atts[9] = sUnits.c_str();
                 m_pAbiDocument->setPageSizeFromFile(atts);
             }
         }
@@ -1630,7 +1672,7 @@ void ODi_TextContent_ListenerState::_openAbiSection(
     // TODO: What happens if there are duplicated properties on the page layout
     // and on the section?
 
-    UT_UTF8String allProps = masterPageProps;
+    std::string allProps = masterPageProps;
     if (!allProps.empty() && !rProps.empty()) {
         allProps += "; ";
     }
@@ -1639,34 +1681,34 @@ void ODi_TextContent_ListenerState::_openAbiSection(
     const gchar* atts[20];
     UT_uint8 i = 0;
     atts[i++] = "props";
-    atts[i++] = allProps.utf8_str();
+    atts[i++] = allProps.c_str();
  
     if (pMasterPageStyle != NULL) {
         // The standard master page may have headers/footers as well.
         
         if (!pMasterPageStyle->getAWEvenHeaderSectionID().empty()) {
             atts[i++] = "header-even";
-            atts[i++] = pMasterPageStyle->getAWEvenHeaderSectionID().utf8_str();
+            atts[i++] = pMasterPageStyle->getAWEvenHeaderSectionID().c_str();
         }
         
         if (!pMasterPageStyle->getAWHeaderSectionID().empty()) {
             atts[i++] = "header";
-            atts[i++] = pMasterPageStyle->getAWHeaderSectionID().utf8_str();
+            atts[i++] = pMasterPageStyle->getAWHeaderSectionID().c_str();
         }
         
         if (!pMasterPageStyle->getAWEvenFooterSectionID().empty()) {
             atts[i++] = "footer-even";
-            atts[i++] = pMasterPageStyle->getAWEvenFooterSectionID().utf8_str();
+            atts[i++] = pMasterPageStyle->getAWEvenFooterSectionID().c_str();
         }
         
         if (!pMasterPageStyle->getAWFooterSectionID().empty()) {
             atts[i++] = "footer";
-            atts[i++] = pMasterPageStyle->getAWFooterSectionID().utf8_str();
+            atts[i++] = pMasterPageStyle->getAWFooterSectionID().c_str();
         }
 
         if (dataID.length()) {
             atts[i++] = "strux-image-dataid";
-            atts[i++] = dataID.utf8_str();
+            atts[i++] = dataID.c_str();
         }
     }
     
@@ -1725,7 +1767,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         const gchar *ppAtts[50];
         UT_uint8 i;
         gchar listLevel[10];
-        UT_UTF8String props;
+        std::string props;
         const ODi_Style_Style* pStyle;
         m_bContentWritten = false;
         const gchar* xmlid = 0;
@@ -1776,10 +1818,23 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 }
             } else {
                 _insureInSection();
+                UT_UCSChar ucs;
+                if ((m_columnIndex <= m_columnsCount)){
+                    
+                    if((pStyle == NULL) || (pStyle->getBreakBefore().empty()))
+                    {
+                        if ((m_columnIndex > 1)){
+                            ucs = UCS_VTAB;
+                            // Append an empty paragraph with this one char
+                            m_pAbiDocument->appendStrux(PTX_Block, NULL);
+                            m_pAbiDocument->appendSpan (&ucs, 1);
+                        }
+                    }
+                    m_columnIndex++;
+                }
                 
                 // Should we insert a break before this paragraph?
                 if (pStyle != NULL && !pStyle->getBreakBefore().empty()) {
-                    UT_UCSChar ucs;
                     if (pStyle->getBreakBefore() == "page") {
                         ucs = UCS_FF;
                         // Append an empty paragraph with this one char
@@ -1823,12 +1878,12 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 m_prevLevel = m_listLevel;
 		
                 ppAtts[i++] = "listid";
-                ppAtts[i++] = pListLevelStyle->getAbiListID()->utf8_str();
+                ppAtts[i++] = pListLevelStyle->getAbiListID()->c_str();
             
                 // Is this really necessary? Because we already have this info on
                 // the <l> tag.
                 ppAtts[i++] = "parentid";
-                ppAtts[i++] = pListLevelStyle->getAbiListParentID()->utf8_str();
+                ppAtts[i++] = pListLevelStyle->getAbiListParentID()->c_str();
                 xxx_UT_DEBUGMSG(("Level |%s| Listid |%s| Parentid |%s| \n",ppAtts[i-5],ppAtts[i-3],ppAtts[i-1]));
             }
             
@@ -1841,7 +1896,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 } else {
                     // We refer to the style
                     ppAtts[i++] = "style";
-                    ppAtts[i++] = pStyle->getDisplayName().utf8_str();
+                    ppAtts[i++] = pStyle->getDisplayName().c_str();
                 }
             }
 
@@ -1849,7 +1904,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 pListLevelStyle->getAbiProperties(props, pStyle);
                 
                 ppAtts[i++] = "props";
-                ppAtts[i++] = props.utf8_str();
+                ppAtts[i++] = props.c_str();
             }
                 
             ppAtts[i] = 0; // Marks the end of the attributes list.
@@ -1887,11 +1942,11 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                     // just paste its properties.
                     pStyle->getAbiPropsAttrString(props);
                     ppAtts[i++] = "props";
-                    ppAtts[i++] = props.utf8_str();
+                    ppAtts[i++] = props.c_str();
                 } else {
                     // We refer to the style
                     ppAtts[i++] = "style";
-                    ppAtts[i++] = pStyle->getDisplayName().utf8_str();
+                    ppAtts[i++] = pStyle->getDisplayName().c_str();
                 }
             }
             ppAtts[i] = 0; // Marks the end of the attributes list.
@@ -1907,16 +1962,16 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                     // just paste its properties.
                     pStyle->getAbiPropsAttrString(props, FALSE);
                     ppAtts[i++] = "props";
-                    ppAtts[i++] = props.utf8_str();
+                    ppAtts[i++] = props.c_str();
                     
                     if (pStyle->getParent() != NULL) {
                         ppAtts[i++] = "style";
-                        ppAtts[i++] = pStyle->getParent()->getDisplayName().utf8_str();
+                        ppAtts[i++] = pStyle->getParent()->getDisplayName().c_str();
                     }
                 } else {
                     // We refer to the style
                     ppAtts[i++] = "style";
-                    ppAtts[i++] = pStyle->getDisplayName().utf8_str();
+                    ppAtts[i++] = pStyle->getDisplayName().c_str();
                 }
             }
 
@@ -1960,7 +2015,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
                 // Unrecognized note class.
             }
-            ppAtts[3] = m_currentNoteId.utf8_str();
+            ppAtts[3] = m_currentNoteId.c_str();
             ppAtts[4] = 0;
             
             ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts);
@@ -2029,8 +2084,8 @@ void ODi_TextContent_ListenerState::_endParagraphElement (
 void ODi_TextContent_ListenerState::_defineAbiTOCHeadingStyles() {
     UT_uint32 i, j, count;
     pf_Frag_Strux* pTOCStrux;
-    UT_UTF8String str;
-    UT_UTF8String props;
+    std::string str;
+    std::string props;
     std::string styleName;
     
     count = m_tablesOfContent.getItemCount();
@@ -2039,11 +2094,11 @@ void ODi_TextContent_ListenerState::_defineAbiTOCHeadingStyles() {
         props = *(m_tablesOfContentProps[i]);
         
         for (j=1; j<5; j++) {
-            UT_UTF8String_sprintf(str, "%d", j);
-            styleName = m_headingStyles[str.utf8_str()];
+            str = UT_std_string_sprintf("%d", j);
+            styleName = m_headingStyles[str];
 
             if (!styleName.empty()) {
-                UT_UTF8String_sprintf(str, "toc-source-style%d:%s", j,
+                str = UT_std_string_sprintf("toc-source-style%d:%s", j,
                                       styleName.c_str());
                 
                 if (!props.empty()) {
@@ -2056,7 +2111,7 @@ void ODi_TextContent_ListenerState::_defineAbiTOCHeadingStyles() {
 	UT_DebugOnly<bool> ok;
         ok = m_pAbiDocument->changeStruxAttsNoUpdate(
                             pTOCStrux, "props",
-                            props.utf8_str());
+                            props.c_str());
         UT_ASSERT(ok);
     }
 }
@@ -2101,12 +2156,12 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
     UT_return_if_fail(m_bPendingAnnotation);
 
     const gchar* pPropsArray[5] = { NULL, NULL, NULL, NULL, NULL };
-    UT_UTF8String id = UT_UTF8String_sprintf("%d", m_iAnnotation);
-    UT_UTF8String props;
+    std::string id = UT_std_string_sprintf("%d", m_iAnnotation);
+    std::string props;
 
-    UT_DEBUGMSG(("_insertAnnotation() id:%s\n", id.utf8_str() ));
+    UT_DEBUGMSG(("_insertAnnotation() id:%s\n", id.c_str() ));
     pPropsArray[0] = "annotation-id";
-    pPropsArray[1] = id.utf8_str();
+    pPropsArray[1] = id.c_str();
     pPropsArray[2] = PT_PROPS_ATTRIBUTE_NAME;
 
     if (!m_sAnnotationAuthor.empty()) {
@@ -2170,7 +2225,7 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
         
     }
     
-    pPropsArray[3] = props.utf8_str();
+    pPropsArray[3] = props.c_str();
 
     m_pAbiDocument->appendStrux(PTX_SectionAnnotation, pPropsArray);
     m_bPendingAnnotation = false;

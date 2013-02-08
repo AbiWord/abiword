@@ -169,7 +169,7 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     
     // The file name of the picture. e.g.: "Object 1" or "10000201000000D100000108FF0E3707.png" 
     UT_String fileName;
-    
+
     const std::string id = m_href_to_id[pHRef];
     if (!id.empty()) {
         // This object was already added.
@@ -177,7 +177,7 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
         rDataId = id;
         return true;
     }
-        
+
     // Get a new, unique, ID.
     objectID = m_pAbiDocument->getUID(UT_UniqueId::Math);
     UT_String_sprintf(rDataId, "MathLatex%d", objectID);
@@ -185,7 +185,6 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     std::string rLatexId;
     rLatexId.assign("LatexMath");
     rLatexId.append((rDataId.substr(9,rDataId.length()-8)).c_str());
-	  
     // Add this id to the list
     UT_DebugOnly<href_id_map_t::iterator> iter = m_href_to_id
 		.insert(m_href_to_id.begin(),
@@ -200,6 +199,7 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
 
     pObjects_dir =
         GSF_INFILE(gsf_infile_child_by_name(m_pGsfInfile, dirName.c_str()));
+
 
     UT_return_val_if_fail(pObjects_dir, false);
 
@@ -273,8 +273,9 @@ UT_Error ODi_Abi_Data::_loadStream (GsfInfile* oo,
     buf.truncate (0);
     GsfInput * input = gsf_infile_child_by_name(oo, stream);
 
-    if (!input)
-        return UT_ERROR;
+    if (!input){
+    	return UT_ERROR;
+    }
   
     if (gsf_input_size (input) > 0) {
         while ((len = gsf_input_remaining (input)) > 0) {
@@ -296,37 +297,32 @@ UT_Error ODi_Abi_Data::_loadStream (GsfInfile* oo,
  * subdirectory name ("ObjectReplacements") and file name ("Object 1").
  */
 void ODi_Abi_Data::_splitDirectoryAndFileName(const gchar* pHRef, UT_String& dirName, UT_String& fileName) const {
-    UT_String href;
-    UT_String str;
-    int iStart, nChars, i, len;
-    
-    href = pHRef;
-    
-    ////
+    UT_String href = pHRef;
+
+    int iStart;
     // Get the directory name
-    
-    str = href.substr(0, 2);
+    UT_String str = href.substr(0, 2);
     if (str == "./") {
         iStart = 2;
     } else {
         iStart = 0;
     }
 
-    len = href.length();
-    for (i=iStart, nChars=0; i<len; i++) {
+    int nChars = 0;
+    int len = href.length();
+    for (int i = iStart; i < len; i++) {
         if (href[i] == '/') {
             break;
         } else {
             nChars++;
         }
     }
-    
 
     dirName = href.substr(iStart, nChars);
 
     if (nChars == len - 1)
     {
-        fileName = "";    
+        fileName = "";
     }
     else
     {

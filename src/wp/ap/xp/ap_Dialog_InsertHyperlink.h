@@ -44,7 +44,9 @@ public:
 	UT_uint32			getExistingBookmarksCount() const;
 	const std::string & getNthExistingBookmark(UT_uint32 n) const;
 	const gchar *	getHyperlink() const;
+	const gchar *	getHyperlinkTitle() const;
 	void				setHyperlink(const gchar * link);
+	void				setHyperlinkTitle(const gchar * title);
 	void				setDoc(FV_View * pView);
 
 private:
@@ -53,6 +55,7 @@ private:
 
 	AP_Dialog_InsertHyperlink::tAnswer	m_answer;
 	gchar *			m_pHyperlink;
+	gchar *			m_pHyperlinkTitle;
 };
 
 #endif /* AP_DIALOG_TOGGLECASE_H */

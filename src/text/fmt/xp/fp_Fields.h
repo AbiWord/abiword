@@ -36,6 +36,7 @@ _FIELD(DATETIME, AP_STRING_ID_FIELD_DateTime_Custom, datetime_custom)
 
 _FIELDTYPE(APPLICATION, AP_STRING_ID_FIELD_Application)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Filename, file_name)
+_FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_ShortFilename, short_file_name)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_MailMerge, mail_merge)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_Version, app_ver)
 _FIELD(APPLICATION, AP_STRING_ID_FIELD_Application_CompileDate, app_compiledate)
@@ -76,4 +77,5 @@ _FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Description, meta_description)
 _FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Coverage, meta_coverage)
 _FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Rights, meta_rights)
 _FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Date, meta_date)
+_FIELD(DOCUMENT, AP_STRING_ID_FIELD_Document_Date_Last_Changed, meta_date_last_changed)
 

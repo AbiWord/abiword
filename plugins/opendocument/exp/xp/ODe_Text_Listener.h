@@ -126,12 +126,21 @@ public:
     { m_bIgoreFirstTab = b;}
 
 private:
+    void _initDefaultHeadingStyles();
     bool _blockIsPlainParagraph(const PP_AttrProp* pAP) const;
     void _openODListItem(const PP_AttrProp* pAP);
     void _openODParagraph(const PP_AttrProp* pAP);
     void _closeODParagraph();
     void _closeODList();
-
+    void _openParagraphDelayed();
+    
+    const PP_AttrProp* m_delayedAP;
+    ODe_Style_List*    m_delayedListStyle;
+    bool               m_delayedPendingMasterPageStyleChange;
+    bool               m_delayedPageBreak;
+    bool               m_delayedColumnBreak;
+    std::string        m_delayedMasterPageStyleName;
+    UT_uint32          m_delayedSpacesOffset;
 
     bool m_openedODParagraph;
     bool m_openedODSpan;
@@ -149,8 +158,9 @@ private:
     UT_uint8 m_currentListLevel;
     ODe_Style_List* m_pCurrentListStyle;
 
-    bool m_pendingColumnBrake;
-    bool m_pendingPageBrake;
+    bool m_pendingColumnBreak;
+    bool m_pendingPageBreak;
+    bool m_bAfter;
 
     bool m_pendingMasterPageStyleChange;
     UT_UTF8String m_masterPageStyleName;

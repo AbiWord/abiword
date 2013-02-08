@@ -79,6 +79,11 @@ bool fp_FieldTOCNumRun::calculateValue(void)
 	}
 
 	fp_Page * pPage = pLine->getPage();
+        if (pPage == NULL)
+        {
+            UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+            return false;
+        }
 	UT_sint32 iPage = pPage->getFieldPageNumber();
 	bool b_hasSetFieldPageNumber = false;
 	if(iPage < 0)

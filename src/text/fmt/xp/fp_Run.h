@@ -744,7 +744,8 @@ public:
 	virtual FP_HYPERLINK_TYPE getHyperlinkType(void) const { return HYPERLINK_NORMAL;}
 	bool 				isStartOfHyperlink() const {return m_bIsStart;};
 	const gchar * 	getTarget() const {return static_cast<const gchar *>(m_pTarget);};
-
+	const gchar * 	getTitle() const {return static_cast<const gchar *>(m_pTitle);};
+	
 	virtual bool canBreakAfter(void) const;
 	virtual bool canBreakBefore(void) const;
 
@@ -780,11 +781,13 @@ protected:
 	virtual bool _letPointPass(void) const;
 	virtual bool _canContainPoint(void) const;
 	virtual bool _deleteFollowingIfAtInsPoint() const;
-    void _setTarget( const gchar * pTarget );
+	void _setTarget( const gchar * pTarget );
+	void _setTitle( const gchar * pTitle );
 	void _setTargetFromAPAttribute( const gchar* pAttrName );
-
+	void _setTitleFromAPAttribute( const gchar* pAttrName );
 	bool m_bIsStart;
 	gchar *	  	m_pTarget;
+	gchar *		m_pTitle;
 };
 
 
@@ -1152,6 +1155,17 @@ public:
 	fp_FieldFileNameRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
 
 	virtual ~fp_FieldFileNameRun() {}
+
+	virtual bool			calculateValue(void);
+	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
+};
+
+class ABI_EXPORT fp_FieldShortFileNameRun : public fp_FieldRun
+{
+public:
+	fp_FieldShortFileNameRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+
+	virtual ~fp_FieldShortFileNameRun() {}
 
 	virtual bool			calculateValue(void);
 	virtual void			_draw(dg_DrawArgs* pDA) { _defaultDraw(pDA); }
@@ -1558,6 +1572,13 @@ class ABI_EXPORT fp_FieldMetaDateRun : public fp_FieldMetaRun
  public:
   fp_FieldMetaDateRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
   virtual ~fp_FieldMetaDateRun(){}
+};
+
+class ABI_EXPORT fp_FieldMetaDateLastChangedRun : public fp_FieldMetaRun
+{
+ public:
+  fp_FieldMetaDateLastChangedRun(fl_BlockLayout* pBL, UT_uint32 iOffsetFirst, UT_uint32 iLen);
+  virtual ~fp_FieldMetaDateLastChangedRun(){}
 };
 
 class ABI_EXPORT fp_FieldMetaTypeRun : public fp_FieldMetaRun

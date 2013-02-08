@@ -105,9 +105,9 @@ private:
     bool _pushInlineFmt(const gchar** ppAtts);
     void _popInlineFmt(void);
     void _insureInBlock(const gchar ** atts);
-    void _insureInSection(const UT_UTF8String* pMasterPageName = NULL);
-    void _openAbiSection(const UT_UTF8String& rProps,
-                         const UT_UTF8String* pMasterPageName = NULL);
+    void _insureInSection(const std::string* pMasterPageName = NULL);
+    void _openAbiSection(const std::string& rProps,
+                         const std::string* pMasterPageName = NULL);
     void _defineAbiTOCHeadingStyles();
     void _flushPendingParagraphBreak();
     void _insertAnnotation(void);
@@ -121,8 +121,8 @@ private:
     bool m_inAbiSection;
     bool m_openedFirstAbiSection;
     bool m_bPendingSection;
-    UT_UTF8String m_currentPageMarginLeft;
-    UT_UTF8String m_currentPageMarginRight;
+    std::string m_currentPageMarginLeft;
+    std::string m_currentPageMarginRight;
 
     // For some reason AbiWord can't have a page break right before a new section.
     // In AbiWord, if you want to do that you have to first open the new section
@@ -130,7 +130,7 @@ private:
     //
     // That's the only reason for the existence of *pending* paragraph
     // (column or page) breaks.
-    UT_UTF8String m_pendingParagraphBreak;
+    std::string m_pendingParagraphBreak;
 
     enum ODi_CurrentODSection {
         // We're not inside any OpenDocument section.
@@ -165,7 +165,7 @@ private:
      */
     // It's weird, but a document may actually have several TOCs.
     UT_GenericVector<pf_Frag_Strux*> m_tablesOfContent;
-    UT_GenericVector<UT_UTF8String*> m_tablesOfContentProps;
+    UT_GenericVector<std::string*> m_tablesOfContentProps;
     // Maps a heading level with its style name
     // e.g.: "1" -> "Heading_20_1"
     std::map<std::string, std::string> m_headingStyles;
@@ -180,9 +180,11 @@ private:
     UT_uint8 m_listLevel;
     bool m_alreadyDefinedAbiParagraphForList;
 
-    // Stuff for footnotes and endnotes.
+    // Stuff for footnotes and endnotes
+    bool m_bPendingNoteCitation;
     bool m_pendingNoteAnchorInsertion;
-    UT_UTF8String m_currentNoteId;
+    std::string m_currentNoteId;
+    std::string m_noteCitation;
 
     // Annotations
     bool m_bPendingAnnotation;
@@ -204,12 +206,15 @@ private:
     UT_sint32 m_iPageNum;
     double    m_dXpos;
     double    m_dYpos;
-    UT_UTF8String m_sProps;
+    std::string m_sProps;
     ODi_Abi_Data& m_rAbiData;
     bool m_bPendingTextbox;
     bool m_bHeadingList;
     UT_sint32 m_prevLevel;
     bool m_bContentWritten;
+    
+    UT_uint32 m_columnsCount;
+    UT_uint32 m_columnIndex;
 };
 
 #endif //_ODI_TEXTCONTENT_LISTENERSTATE_H_

@@ -34,6 +34,7 @@
 #include <fp_PageSize.h>
 #include <pd_Document.h>
 #include <ut_locale.h>
+#include <ut_std_string.h>
 
 /**
  * 
@@ -123,8 +124,8 @@ void ODi_Style_PageLayout::definePageSizeTag(PD_Document* pDocument) const {
     const gchar* pageAtts[MAX_PAGE_ATTS];
     double pageWidthMmNumeric = 0.0;
     double pageHeightMmNumeric = 0.0;
-    UT_UTF8String pageWidthMm;
-    UT_UTF8String pageHeightMm;
+    std::string pageWidthMm;
+    std::string pageHeightMm;
     UT_LocaleTransactor lt(LC_NUMERIC, "C");
     
     // width and height are rounded to full mm because that's how they are
@@ -133,19 +134,19 @@ void ODi_Style_PageLayout::definePageSizeTag(PD_Document* pDocument) const {
     if (!m_pageWidth.empty()) {
         pageAtts[propCtr++] = "width";
         
-        pageWidthMmNumeric = rint(UT_convertToDimension(m_pageWidth.utf8_str(),
+        pageWidthMmNumeric = rint(UT_convertToDimension(m_pageWidth.c_str(),
                                                         DIM_MM));
-        UT_UTF8String_sprintf(pageWidthMm, "%f", pageWidthMmNumeric);
-        pageAtts[propCtr++] = pageWidthMm.utf8_str();
+        pageWidthMm  = UT_std_string_sprintf("%f", pageWidthMmNumeric);
+        pageAtts[propCtr++] = pageWidthMm.c_str();
     }
 
     if (!m_pageHeight.empty()) {
         pageAtts[propCtr++] = "height";
         
-        pageHeightMmNumeric = rint(UT_convertToDimension(m_pageHeight.utf8_str(),
+        pageHeightMmNumeric = rint(UT_convertToDimension(m_pageHeight.c_str(),
                                                          DIM_MM));
-        UT_UTF8String_sprintf(pageHeightMm, "%f", pageHeightMmNumeric);
-        pageAtts[propCtr++] = pageHeightMm.utf8_str();
+        pageHeightMm = UT_std_string_sprintf("%f", pageHeightMmNumeric);
+        pageAtts[propCtr++] = pageHeightMm.c_str();
     }
 
     pageAtts[propCtr++] = "units";
@@ -153,7 +154,7 @@ void ODi_Style_PageLayout::definePageSizeTag(PD_Document* pDocument) const {
 
     if (!m_printOrientation.empty()) {
         pageAtts[propCtr++] = "orientation";
-        pageAtts[propCtr++] = m_printOrientation.utf8_str();
+        pageAtts[propCtr++] = m_printOrientation.c_str();
     }
 
     pageAtts[propCtr++] = "page-scale";
@@ -169,7 +170,7 @@ void ODi_Style_PageLayout::definePageSizeTag(PD_Document* pDocument) const {
     pDocument->setPageSizeFromFile(pageAtts);
 }
 
-const UT_UTF8String ODi_Style_PageLayout::getSectionProps(bool hasHeader, bool hasFooter) const
+const std::string ODi_Style_PageLayout::getSectionProps(bool hasHeader, bool hasFooter) const
 {
 	return _buildSectionPropsString(hasHeader, hasFooter);
 }
@@ -183,19 +184,19 @@ void ODi_Style_PageLayout::_parseHeaderFooterProperties(const gchar** ppAtts) {
     pVal = UT_getAttribute ("svg:height", ppAtts);
     
     if (m_rElementStack.hasElement("style:header-style")) {
-        m_headerHeight = pVal;
+        m_headerHeight = pVal ? pVal : "";
         
         pVal = UT_getAttribute ("fo:margin-bottom", ppAtts);
         if (pVal) {
-            m_headerMarginBottom = pVal;
+            m_headerMarginBottom = pVal ? pVal : "";
         }
     } else {
         UT_ASSERT(m_rElementStack.hasElement("style:footer-style"));
-        m_footerHeight = pVal;
+        m_footerHeight = pVal ? pVal : "";
         
         pVal = UT_getAttribute ("fo:margin-top", ppAtts);
         if (pVal) {
-            m_footerMarginTop = pVal;
+            m_footerMarginTop = pVal ? pVal : "";
         }
     }
 }
@@ -210,42 +211,42 @@ void ODi_Style_PageLayout::_parsePageLayoutProperties(const gchar** ppAtts) {
     
     pVal = UT_getAttribute ("fo:page-width", ppAtts);
     if (pVal) {
-        m_pageWidth = pVal;
+        m_pageWidth = pVal ? pVal : "";
     }
 
     pVal = UT_getAttribute ("fo:page-height", ppAtts);
     if (pVal) {
-        m_pageHeight = pVal;
+        m_pageHeight = pVal ? pVal : "";
     }
 
     pVal = UT_getAttribute ("style:print-orientation", ppAtts);
     if (pVal) {
-        m_printOrientation = pVal;
+        m_printOrientation = pVal ? pVal : "";
     }
 
     pVal = UT_getAttribute ("fo:margin-left", ppAtts);
     if (pVal) {
-        m_marginLeft = pVal;
+        m_marginLeft = pVal ? pVal : "";
     }
 
     pVal = UT_getAttribute ("fo:margin-top", ppAtts);
     if (pVal) {
-        m_marginTop = pVal;
+        m_marginTop = pVal ? pVal : "";
     }
 
     pVal = UT_getAttribute ("fo:margin-right", ppAtts);
     if (pVal) {
-        m_marginRight = pVal;
+        m_marginRight = pVal ? pVal : "";
     }
 
     pVal = UT_getAttribute ("fo:margin-bottom", ppAtts);
     if (pVal) {
-        m_marginBottom = pVal;
+        m_marginBottom = pVal ? pVal : "";
     }
 
     pVal = UT_getAttribute ("fo:background-color", ppAtts);
     if (pVal) {
-        m_backgroundColor = pVal;
+        m_backgroundColor = pVal ? pVal : "";
     }
 }
 
@@ -278,10 +279,10 @@ void ODi_Style_PageLayout::_parseBackgroundImage(const gchar** ppAtts) {
 /**
  * 
  */
-UT_UTF8String ODi_Style_PageLayout::_buildSectionPropsString(bool hasHeader, bool hasFooter) const {
-    UT_UTF8String sectionProps;
+std::string ODi_Style_PageLayout::_buildSectionPropsString(bool hasHeader, bool hasFooter) const {
+    std::string sectionProps;
     double val;
-    UT_UTF8String str;
+    std::string str;
     UT_LocaleTransactor lt(LC_NUMERIC, "C");
 
         
@@ -322,15 +323,15 @@ UT_UTF8String ODi_Style_PageLayout::_buildSectionPropsString(bool hasHeader, boo
 		//
 		// See http://bugzilla.abisource.com/show_bug.cgi?id=12371 for more details.
 
-        val = UT_convertToDimension(m_marginTop.utf8_str(), DIM_CM);
+        val = UT_convertToDimension(m_marginTop.c_str(), DIM_CM);
         
-		val += UT_convertToDimension(!m_headerHeight.empty() ? m_headerHeight.utf8_str() : "0.5in", DIM_CM);
+		val += UT_convertToDimension(!m_headerHeight.empty() ? m_headerHeight.c_str() : "0.5in", DIM_CM);
         
         if (!m_headerMarginBottom.empty()) {
-            val += UT_convertToDimension(m_headerMarginBottom.utf8_str(), DIM_CM);
+            val += UT_convertToDimension(m_headerMarginBottom.c_str(), DIM_CM);
         }
         
-        UT_UTF8String_sprintf(str, "%fcm", val);
+        str = UT_std_string_sprintf("%fcm", val);
         APPEND_STYLE("page-margin-top", str);
         APPEND_STYLE("page-margin-header", m_marginTop);
     }
@@ -356,15 +357,15 @@ UT_UTF8String ODi_Style_PageLayout::_buildSectionPropsString(bool hasHeader, boo
 		//
 		// See http://bugzilla.abisource.com/show_bug.cgi?id=12371 for more details.
 
-        val = UT_convertToDimension(m_marginBottom.utf8_str(), DIM_CM);
+        val = UT_convertToDimension(m_marginBottom.c_str(), DIM_CM);
         
-		val += UT_convertToDimension(!m_footerHeight.empty() ? m_footerHeight.utf8_str() : "0.5in", DIM_CM);
+		val += UT_convertToDimension(!m_footerHeight.empty() ? m_footerHeight.c_str() : "0.5in", DIM_CM);
         
         if (!m_footerMarginTop.empty()) {
-            val += UT_convertToDimension(m_footerMarginTop.utf8_str(), DIM_CM);
+            val += UT_convertToDimension(m_footerMarginTop.c_str(), DIM_CM);
         }
         
-        UT_UTF8String_sprintf(str, "%fcm", val);
+        str = UT_std_string_sprintf( "%fcm", val);
         APPEND_STYLE("page-margin-bottom", str);
         APPEND_STYLE("page-margin-footer", m_marginBottom);
     }

@@ -33,6 +33,7 @@
 #include <ut_string_class.h>
 #include <ut_units.h>
 #include <ut_locale.h>
+#include <ut_std_string.h>
 
 //External includes
 #include <stdlib.h>
@@ -87,7 +88,7 @@ void ODi_ListLevelStyle::startElement (const gchar* pName,
         }
         else if(bHeading)
 	{
-	    UT_UTF8String sStyleName = "BaseHeading ";
+	    std::string sStyleName = "BaseHeading ";
 	    sStyleName += m_level;
 	    m_textStyleName =  sStyleName;
 	    xxx_UT_DEBUGMSG(("Outline List level Style name %s \n",sStyleName.utf8_str()));
@@ -180,17 +181,17 @@ void ODi_ListLevelStyle::defineAbiList(PD_Document* pDocument) {
     const gchar* ppAttr[13];
     
     ppAttr[0] = "id";
-    ppAttr[1] = m_abiListID.utf8_str();
+    ppAttr[1] = m_abiListID.c_str();
     ppAttr[2] = "parentid";
-    ppAttr[3] = m_abiListParentID.utf8_str();
+    ppAttr[3] = m_abiListParentID.c_str();
     ppAttr[4] = "type";
-    ppAttr[5] = m_abiListType.utf8_str();
+    ppAttr[5] = m_abiListType.c_str();
     ppAttr[6] = "start-value";
-    ppAttr[7] = m_abiListStartValue.utf8_str();
+    ppAttr[7] = m_abiListStartValue.c_str();
     ppAttr[8] = "list-delim";
-    ppAttr[9] = m_abiListListDelim.utf8_str();
+    ppAttr[9] = m_abiListListDelim.c_str();
     ppAttr[10] = "list-decimal";
-    ppAttr[11] = m_abiListListDecimal.utf8_str();
+    ppAttr[11] = m_abiListListDecimal.c_str();
     ppAttr[12] = 0;
     
     pDocument->appendList(ppAttr);
@@ -212,7 +213,7 @@ void ODi_ListLevelStyle::buildAbiPropsString() {
  * @param rProps Will have the properties string appended.
  * @param pStyle Pointer to the paragraph style used on this list paragraph.
  */    
-void ODi_ListLevelStyle::getAbiProperties(UT_UTF8String& rProps,
+void ODi_ListLevelStyle::getAbiProperties(std::string& rProps,
                                          const ODi_Style_Style* pStyle) const {
 
     // Adds the fixed portion of the properties.
@@ -229,8 +230,8 @@ void ODi_ListLevelStyle::getAbiProperties(UT_UTF8String& rProps,
     // 2. The properties of the paragraph's parent style, overridden by
     // 3. The properties of the paragraph style
 
-    UT_UTF8String odMarginLeft;
-    UT_UTF8String odTextIndent;
+    std::string odMarginLeft;
+    std::string odTextIndent;
 
     // 1. The properties of the style denoted by the paragraph's style:list-style-name
     if (pStyle != NULL && !pStyle->getListStyleName().empty())
@@ -242,9 +243,9 @@ void ODi_ListLevelStyle::getAbiProperties(UT_UTF8String& rProps,
     }
 
     // 2. The properties of the paragraph's parent style
-    if (pStyle != NULL && !strcmp(pStyle->getFamily()->utf8_str(), "paragraph")) {
+    if (pStyle != NULL && !strcmp(pStyle->getFamily()->c_str(), "paragraph")) {
         const ODi_Style_Style* pParentStyle = pStyle->getParent();
-        if (pParentStyle != NULL && !strcmp(pParentStyle->getFamily()->utf8_str(), "paragraph")) {
+        if (pParentStyle != NULL && !strcmp(pParentStyle->getFamily()->c_str(), "paragraph")) {
             if (pStyle->getMarginLeft() && !pStyle->getMarginLeft()->empty())
                 odMarginLeft = *(pStyle->getMarginLeft());
             if (pStyle->getTextIndent() && !pStyle->getTextIndent()->empty())
@@ -253,7 +254,7 @@ void ODi_ListLevelStyle::getAbiProperties(UT_UTF8String& rProps,
     }
 
     // 3. The properties of the paragraph style
-    if (pStyle != NULL && !strcmp(pStyle->getFamily()->utf8_str(), "paragraph")) {
+    if (pStyle != NULL && !strcmp(pStyle->getFamily()->c_str(), "paragraph")) {
         if (pStyle->getMarginLeft() && !pStyle->getMarginLeft()->empty())
             odMarginLeft = *(pStyle->getMarginLeft());
         if (pStyle->getTextIndent() && !pStyle->getTextIndent()->empty())
@@ -288,10 +289,10 @@ void ODi_ListLevelStyle::getAbiProperties(UT_UTF8String& rProps,
     gchar buffer[100];
     UT_LocaleTransactor lt(LC_NUMERIC, "C");
     
-    spaceBefore_cm = UT_convertToDimension(m_spaceBefore.utf8_str(), DIM_CM);
-    minLabelWidth_cm = UT_convertToDimension(m_minLabelWidth.utf8_str(), DIM_CM);
-    marginLeft_cm = UT_convertToDimension(odMarginLeft.utf8_str(), DIM_CM);
-    textIndent_cm = UT_convertToDimension(odTextIndent.utf8_str(), DIM_CM);
+    spaceBefore_cm = UT_convertToDimension(m_spaceBefore.c_str(), DIM_CM);
+    minLabelWidth_cm = UT_convertToDimension(m_minLabelWidth.c_str(), DIM_CM);
+    marginLeft_cm = UT_convertToDimension(odMarginLeft.c_str(), DIM_CM);
+    textIndent_cm = UT_convertToDimension(odTextIndent.c_str(), DIM_CM);
    
     double abiMarginLeft = marginLeft_cm + spaceBefore_cm + minLabelWidth_cm;
     sprintf(buffer, "%fcm", abiMarginLeft);
@@ -348,74 +349,74 @@ void ODi_Bullet_ListLevelStyle::startElement(const gchar* pName,
                 switch (ucs4Str[0]) {
                     case 8226: // U+2022 BULLET
                         // Bullet List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", BULLETED_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", BULLETED_LIST);
                         break;
                         
                     case 8211: // U+2013 EN DASH
                     case 8722: // U+2212 MINUS SIGN
                         // Dashed List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", DASHED_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", DASHED_LIST);
                         break;
                         
                     case 9632: // U+25A0 BLACK SQUARE
                         // Square List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", SQUARE_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", SQUARE_LIST);
                         break;
                         
                     case 9650: // U+25B2 BLACK UP-POINTING TRIANGLE
                         // Triangle List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", TRIANGLE_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", TRIANGLE_LIST);
                         break;
                     
                     case 9830: // U+2666 BLACK DIAMOND SUIT
                         // Diamond List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", DIAMOND_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", DIAMOND_LIST);
                         break;
                         
                     case 10035: // U+2733 EIGHT SPOKED ASTERISK
                         // Star List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", STAR_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", STAR_LIST);
                         break;
                         
                     case 10003: // U+2713 CHECK MARK
                         // Tick List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", TICK_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", TICK_LIST);
                         break;
                         
                     case 10066: // U+2752 UPPER RIGHT SHADOWED WHITE SQUARE
                         // Box List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", BOX_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", BOX_LIST);
                         break;
                         
                     case 9758: // U+261E WHITE RIGHT POINTING INDEX
                         // Hand List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", HAND_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", HAND_LIST);
                         break;
                         
                     case 9829: // U+2665 BLACK HEART SUIT
                         // Heart List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", HEART_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", HEART_LIST);
                         break;
                         
                     case 8658: // U+21D2 RIGHTWARDS DOUBLE ARROW
                         // Implies List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", IMPLIES_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", IMPLIES_LIST);
                         break;
                         
                     default:
                         // Bullet List
-                        UT_UTF8String_sprintf(m_abiListType, "%d", BULLETED_LIST);
+                        m_abiListType = UT_std_string_sprintf("%d", BULLETED_LIST);
                 };
                 
             } // if (!ucs4Str.empty())
         } else /* from if (pVal != NULL) */ {
             // Bullet List
-            UT_UTF8String_sprintf(m_abiListType, "%d", BULLETED_LIST);
+            m_abiListType = UT_std_string_sprintf("%d", BULLETED_LIST);
         }
         
     } else if (!strcmp("text:list-level-style-image", pName)) {
         // Force it into a default Bullet List
-        UT_UTF8String_sprintf(m_abiListType, "%d", BULLETED_LIST);
+        m_abiListType = UT_std_string_sprintf("%d", BULLETED_LIST);
     }
 }
 
@@ -432,7 +433,7 @@ void ODi_Bullet_ListLevelStyle::buildAbiPropsString() {
     }
     
     m_abiProperties += "list-style:";
-    switch (atoi(m_abiListType.utf8_str())) {
+    switch (atoi(m_abiListType.c_str())) {
         case BULLETED_LIST:
             m_abiProperties += "Bullet List;";
             break;
@@ -501,7 +502,7 @@ ODi_Numbered_ListLevelStyle::ODi_Numbered_ListLevelStyle(ODi_ElementStack& rElem
     //
     m_abiListListDelim += "%L";
     m_abiListStartValue = "1";
-    UT_UTF8String_sprintf(m_abiListType, "%d", NUMBERED_LIST);
+    m_abiListType = UT_std_string_sprintf( "%d", NUMBERED_LIST);
  }
 
 
@@ -520,7 +521,7 @@ void ODi_Numbered_ListLevelStyle::startElement (const gchar* pName,
                                                 
     if (!strcmp("text:list-level-style-number", pName) || 
 	!strcmp("text:outline-level-style", pName)) {
-        UT_UTF8String prefix, suffix;
+        std::string prefix, suffix;
         xxx_UT_DEBUGMSG(("Doing a numbered list type %s \n",pName));
         pVal = UT_getAttribute ("style:num-format", ppAtts);
         UT_ASSERT_HARMLESS(pVal);
@@ -581,7 +582,7 @@ void ODi_Numbered_ListLevelStyle::buildAbiPropsString() {
     }
     
     m_abiProperties += "; list-style:";
-    switch (atoi(m_abiListType.utf8_str())) {
+    switch (atoi(m_abiListType.c_str())) {
         case NUMBERED_LIST:
             m_abiProperties += "Numbered List";
             break;
@@ -622,28 +623,28 @@ void ODi_Numbered_ListLevelStyle::_setAbiListType(const gchar* pStyleNumFormat) 
 
     if (!pStyleNumFormat) {
         // Use an arbitrary list type.
-        UT_UTF8String_sprintf(m_abiListType, "%d", NUMBERED_LIST);
+        m_abiListType = UT_std_string_sprintf("%d", NUMBERED_LIST);
         
     } else if (!strcmp(pStyleNumFormat, "1")) {
-        UT_UTF8String_sprintf(m_abiListType, "%d", NUMBERED_LIST);
+        m_abiListType = UT_std_string_sprintf("%d", NUMBERED_LIST);
         
     } else if (!strcmp(pStyleNumFormat, "a")) {
-        UT_UTF8String_sprintf(m_abiListType, "%d", LOWERCASE_LIST);
+        m_abiListType = UT_std_string_sprintf("%d", LOWERCASE_LIST);
         
     } else if (!strcmp(pStyleNumFormat, "A")) {
-        UT_UTF8String_sprintf(m_abiListType, "%d", UPPERCASE_LIST);
+        m_abiListType = UT_std_string_sprintf("%d", UPPERCASE_LIST);
         
     } else if (!strcmp(pStyleNumFormat, "i")) {
-        UT_UTF8String_sprintf(m_abiListType, "%d", LOWERROMAN_LIST);
+        m_abiListType = UT_std_string_sprintf("%d", LOWERROMAN_LIST);
         
     } else if (!strcmp(pStyleNumFormat, "I")) {
-        UT_UTF8String_sprintf(m_abiListType, "%d", UPPERROMAN_LIST);
+        m_abiListType = UT_std_string_sprintf("%d", UPPERROMAN_LIST);
         
     } else if (!strcmp(pStyleNumFormat, ODI_LISTLEVELSTYLE_ARABIC)) {
-        UT_UTF8String_sprintf(m_abiListType, "%d", ARABICNUMBERED_LIST);
+        m_abiListType = UT_std_string_sprintf("%d", ARABICNUMBERED_LIST);
         
     } else {
         // Use an arbitrary list type.
-        UT_UTF8String_sprintf(m_abiListType, "%d", NUMBERED_LIST);
+        m_abiListType = UT_std_string_sprintf("%d", NUMBERED_LIST);
     }
 }

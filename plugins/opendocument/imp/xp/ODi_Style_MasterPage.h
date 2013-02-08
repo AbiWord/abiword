@@ -51,7 +51,7 @@ public:
     void charData (const gchar* /*pBuffer*/, int /*length*/) {}
 
 
-    inline const UT_UTF8String& getLayoutName() const {return m_layoutName;}
+    inline const std::string& getLayoutName() const {return m_layoutName;}
 
     inline void setLayoutStylePointer(ODi_Style_PageLayout* pPageLayoutStyle) {
         m_pPageLayoutStyle = pPageLayoutStyle;
@@ -61,49 +61,49 @@ public:
         m_pPageLayoutStyle->definePageSizeTag(pDocument);
     }
 
-    inline const UT_UTF8String getSectionProps() const {
+    inline const std::string getSectionProps() const {
         return m_pPageLayoutStyle->getSectionProps(
 			!m_AW_headerSectionID.empty() || !m_AW_evenHeaderSectionID.empty(),
 			!m_AW_footerSectionID.empty() || !m_AW_evenFooterSectionID.empty());
     }
 
-    inline const UT_UTF8String& getSectionDataID() const {
+    inline const std::string& getSectionDataID() const {
         return m_pPageLayoutStyle->getSectionDataID();
     }
 
-    inline const UT_UTF8String& getName() const {return m_name;}
+    inline const std::string& getName() const {return m_name;}
 
-    inline const UT_UTF8String& getPageLayoutName() const {return m_layoutName;}
+    inline const std::string& getPageLayoutName() const {return m_layoutName;}
 
     inline const ODi_Style_PageLayout* getPageLayout() const {
         return m_pPageLayoutStyle;
     }
 
 
-    const UT_UTF8String& getAWHeaderSectionID() const {return m_AW_headerSectionID;}
-    const UT_UTF8String& getAWFooterSectionID() const {return m_AW_footerSectionID;}
-    const UT_UTF8String& getAWEvenHeaderSectionID() const {return m_AW_evenHeaderSectionID;}
-    const UT_UTF8String& getAWEvenFooterSectionID() const {return m_AW_evenFooterSectionID;}
+    const std::string& getAWHeaderSectionID() const {return m_AW_headerSectionID;}
+    const std::string& getAWFooterSectionID() const {return m_AW_footerSectionID;}
+    const std::string& getAWEvenHeaderSectionID() const {return m_AW_evenHeaderSectionID;}
+    const std::string& getAWEvenFooterSectionID() const {return m_AW_evenFooterSectionID;}
 
 private:
     PD_Document* m_pAbiDocument;
 
     ODi_Style_PageLayout* m_pPageLayoutStyle;
 
-    UT_UTF8String m_name;
-    UT_UTF8String m_layoutName;
+    std::string m_name;
+    std::string m_layoutName;
 
     // The AbiWord header section id
-    UT_UTF8String m_AW_headerSectionID;
+    std::string m_AW_headerSectionID;
 
     // The AbiWord even header section id
-    UT_UTF8String m_AW_evenHeaderSectionID;
+    std::string m_AW_evenHeaderSectionID;
 
     // The AbiWord footer section id
-    UT_UTF8String m_AW_footerSectionID;
+    std::string m_AW_footerSectionID;
 
     // The AbiWord even footer section id
-    UT_UTF8String m_AW_evenFooterSectionID;
+    std::string m_AW_evenFooterSectionID;
 
     // The parsing uses a two-pass approach:
     //

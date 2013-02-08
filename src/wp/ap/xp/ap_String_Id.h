@@ -617,6 +617,7 @@ dcl(FIELD_DateTime_Custom, "Customizable date/time")
 
 dcl(FIELD_Application, "Application")
 dcl(FIELD_Application_Filename, "File Name")
+dcl(FIELD_Application_ShortFilename, "Short File Name")
 dcl(FIELD_Application_Version, "Version")
 dcl(FIELD_Application_BuildId, "Build Id.")
 dcl(FIELD_Application_Options, "Build Options")
@@ -632,6 +633,7 @@ dcl(FIELD_Document_Subject, "Subject")		//xgettext:msgctxt
 dcl(FIELD_Document_Publisher, "Publisher")
 dcl(FIELD_Document_Contributor, "Contributor(s)")
 dcl(FIELD_Document_Date, "Date")
+dcl(FIELD_Document_Date_Last_Changed, "Date Last Changed")
 dcl(FIELD_Document_Type, "Category")
 dcl(FIELD_Document_Language, "Language(s)")
 dcl(FIELD_Document_Coverage, "Coverage")
@@ -896,6 +898,7 @@ dcl(DLG_InsertXMLID_Msg,      "Type a name for the RDF link:")
 
 dcl(DLG_InsertHyperlink_Title, "Insert Hyperlink")
 dcl(DLG_InsertHyperlink_Msg, "Select a target bookmark from the list:")
+dcl(DLG_InsertHyperlink_TitleLabel, "Type a title for the hyperlink")
 
 	/* Mark revisions dialog */
 dcl(DLG_MarkRevisions_Title, "Mark Revisions")

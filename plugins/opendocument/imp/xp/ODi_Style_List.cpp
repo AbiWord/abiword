@@ -129,7 +129,7 @@ void ODi_Style_List::redefine(PD_Document* pDocument, UT_uint32 iLevel)
 {
     UT_uint32 level=0;
     bool foundParent;
-    const UT_UTF8String* pString;
+    const std::string* pString;
     
     // reset the appropriate the id attribute of the <l> tags.
 
@@ -178,7 +178,7 @@ void ODi_Style_List::defineAbiList(PD_Document* pDocument)
 {
     UT_uint32 level;
     bool foundParent;
-    const UT_UTF8String* pString;
+    const std::string* pString;
     
     
     // Each style level of a <text:list-style> corresponds to a different

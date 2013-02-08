@@ -36,6 +36,7 @@
 #include <pd_Document.h>
 #include <ut_math.h>
 #include <ut_locale.h>
+#include <ut_std_string.h>
 
 // External includes
 #include <ctype.h>
@@ -250,7 +251,7 @@ void ODi_Style_Style::_parse_style_paragraphProperties(const gchar** ppProps) {
     
     pVal = UT_getAttribute ("style:line-height-at-least", ppProps);
     if (pVal) {
-        m_lineHeight = UT_UTF8String_sprintf ("%s+", pVal);
+        m_lineHeight = UT_std_string_sprintf ("%s+", pVal);
     }
     
     pVal = UT_getAttribute ("fo:line-height", ppProps);
@@ -260,7 +261,7 @@ void ODi_Style_Style::_parse_style_paragraphProperties(const gchar** ppProps) {
 	    UT_LocaleTransactor lt(LC_NUMERIC, "C");            
 
             sscanf(pVal, "%d%%", &spacing);
-            m_lineHeight = UT_UTF8String_sprintf ("%f",
+            m_lineHeight = UT_std_string_sprintf ("%f",
                                               (double)spacing/100.);
         } else {
             m_lineHeight.assign(pVal);
@@ -289,14 +290,14 @@ void ODi_Style_Style::_parse_style_paragraphProperties(const gchar** ppProps) {
     if (pVal) {
         int widows = 0;
         sscanf(pVal, "%d", &widows);
-        m_widows = UT_UTF8String_sprintf ("%d", widows);
+        m_widows = UT_std_string_sprintf ("%d", widows);
     }    
     
     pVal = UT_getAttribute("fo:orphans", ppProps);
     if (pVal) {
         int orphans = 0;
         sscanf (pVal, "%d", &orphans);
-        m_orphans = UT_UTF8String_sprintf ("%d", orphans);
+        m_orphans = UT_std_string_sprintf ("%d", orphans);
     }
     
     pVal = UT_getAttribute ("fo:margin-left", ppProps);
@@ -450,10 +451,10 @@ void ODi_Style_Style::_parse_style_paragraphProperties(const gchar** ppProps) {
 void ODi_Style_Style::_parse_style_tabStopProperties(const gchar** ppProps) {
     
     const gchar* pVal = NULL;
-    UT_UTF8String type;
-    UT_UTF8String position;
-    UT_UTF8String leaderStyle;
-    UT_UTF8String leaderText;
+    std::string type;
+    std::string position;
+    std::string leaderStyle;
+    std::string leaderText;
     
     pVal = UT_getAttribute("style:type", ppProps);
     if (pVal) {
@@ -514,7 +515,7 @@ void ODi_Style_Style::_parse_style_tabStopProperties(const gchar** ppProps) {
     // NOTE: in ODF, leader text (if present) *always* has a higher priority than 
     // leader styles, even if the text character is not supported.
     if (!leaderText.empty()) {
-        UT_UCS4String leaderTextUCS4 = leaderText.ucs4_str();
+        UT_UCS4String leaderTextUCS4 = leaderText;
         UT_UCS4Char ucs4char = leaderTextUCS4[0];
 
         switch (ucs4char) {
@@ -643,7 +644,7 @@ void ODi_Style_Style::_parse_style_textProperties(const gchar** ppProps) {
             // AbiWord uses "-none-" instead of "none-none";
             m_lang = "-none-";
         } else {
-            m_lang = UT_UTF8String_sprintf ("%s-%s", pVal, pVal2);
+            m_lang = UT_std_string_sprintf ("%s-%s", pVal, pVal2);
         }
     }
     
@@ -705,7 +706,7 @@ void ODi_Style_Style::_parse_style_sectionProperties(const gchar** ppProps) {
         int columns = 0;
         sscanf (pVal, "%d", &columns);
 
-        m_columns = UT_UTF8String_sprintf ("%d", columns);
+        m_columns = UT_std_string_sprintf ("%d", columns);
     }
 }
 
@@ -823,7 +824,7 @@ void ODi_Style_Style::_parse_style_tableColumnProperties(const gchar** ppProps) 
     pVal = UT_getAttribute("style:rel-column-width", ppProps);
     if (pVal) {
         m_columnRelWidth = pVal;
-	UT_DEBUGMSG(("style %p name %s style:rel-column-width found with %s \n",this, m_name.utf8_str(), pVal));
+	UT_DEBUGMSG(("style %p name %s style:rel-column-width found with %s \n",this, m_name.c_str(), pVal));
     }
 }
 
@@ -976,9 +977,9 @@ void ODi_Style_Style::defineAbiStyle(PD_Document* pDocument) {
     bool ok;
     
     pAttr[i++] = "type";
-    if (!strcmp("paragraph", m_family.utf8_str())) {
+    if (!strcmp("paragraph", m_family.c_str())) {
         pAttr[i++] = "P";
-    } else if (!strcmp("text", m_family.utf8_str())) {
+    } else if (!strcmp("text", m_family.c_str())) {
         pAttr[i++] = "C";
     } else {
         // Really shouldn't happen
@@ -987,21 +988,21 @@ void ODi_Style_Style::defineAbiStyle(PD_Document* pDocument) {
     
     // AbiWord uses the display name
     pAttr[i++] = "name";
-    pAttr[i++] = m_displayName.utf8_str();
+    pAttr[i++] = m_displayName.c_str();
     
     if (m_pParentStyle) {
         pAttr[i++] = "basedon";
-        pAttr[i++] = m_pParentStyle->getDisplayName().utf8_str();
+        pAttr[i++] = m_pParentStyle->getDisplayName().c_str();
     }
     
     if (m_pNextStyle) {
         pAttr[i++] = "followedby";
-        pAttr[i++] = m_pNextStyle->getDisplayName().utf8_str();
+        pAttr[i++] = m_pNextStyle->getDisplayName().c_str();
     }
 
 
     pAttr[i++] = "props";
-    pAttr[i++] = m_abiPropsAttr.utf8_str();
+    pAttr[i++] = m_abiPropsAttr.c_str();
     
     pAttr[i] = 0; // Signal the end of the array 
     
@@ -1020,12 +1021,12 @@ void ODi_Style_Style::defineAbiStyle(PD_Document* pDocument) {
 void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls) {
     
     if (!m_fontSize.empty()) {
-        UT_Dimension dim = UT_determineDimension(m_fontSize.utf8_str(), DIM_none);
+        UT_Dimension dim = UT_determineDimension(m_fontSize.c_str(), DIM_none);
         
         if (dim == DIM_PERCENT && !m_pParentStyle) {
             
             UT_DEBUGMSG(("*** [OpenDocument] no parent style to resolve '%s'\n",
-                m_fontSize.utf8_str()));
+                m_fontSize.c_str()));
                 
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
             
@@ -1038,14 +1039,14 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
 	    UT_LocaleTransactor lt(LC_NUMERIC, "C");
             
             if (m_pParentStyle->m_fontSize.size()) {
-                fontSize = atoi(m_pParentStyle->m_fontSize.utf8_str()) *
-                           atoi(m_fontSize.utf8_str()) / 100.0;
+                fontSize = atoi(m_pParentStyle->m_fontSize.c_str()) *
+                           atoi(m_fontSize.c_str()) / 100.0;
             } else {
                 UT_DEBUGMSG(
                     ("*** [OpenDocument] using fallback font-size '%f'\n",
                      fontSize));
             }
-            m_fontSize = UT_UTF8String_sprintf ("%gpt", rint(fontSize));
+            m_fontSize = UT_std_string_sprintf ("%gpt", rint(fontSize));
         }
     }
 
@@ -1070,7 +1071,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("margin-bottom: ", m_marginBottom);
     if(m_bgcolor.size() > 0)
     {
-        UT_UTF8String sPat("1");
+        std::string sPat("1");
         APPEND_STYLE("shading-pattern: ",sPat);
         APPEND_STYLE("shading-foreground-color: ",m_bgcolor);
     }
@@ -1084,7 +1085,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("bot-space: ", m_paddingBot);
     if(m_haveBottomBorder == HAVE_BORDER_YES)
     {
-        UT_UTF8String solid("1");
+        std::string solid("1");
         APPEND_STYLE("bot-style: ", solid);
     }
     APPEND_STYLE("bot-thickness: ", m_borderBottom_thickness);
@@ -1093,7 +1094,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("left-space: ", m_paddingLeft);
     if(m_haveLeftBorder == HAVE_BORDER_YES)
     {
-        UT_UTF8String solid("1");
+        std::string solid("1");
         APPEND_STYLE("left-style: ", solid);
     }
     APPEND_STYLE("left-thickness: ", m_borderLeft_thickness);
@@ -1102,7 +1103,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("right-space: ", m_paddingRight);
     if(m_haveRightBorder == HAVE_BORDER_YES)
     {
-        UT_UTF8String solid("1");
+        std::string solid("1");
         APPEND_STYLE("right-style: ", solid);
     }
     APPEND_STYLE("right-thickness: ", m_borderRight_thickness);
@@ -1111,7 +1112,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("top-space: ", m_paddingTop);
     if(m_haveTopBorder == HAVE_BORDER_YES)
     {
-        UT_UTF8String solid("1");
+        std::string solid("1");
         APPEND_STYLE("top-style: ", solid);
     }
     APPEND_STYLE("top-thickness: ", m_borderTop_thickness);
@@ -1124,7 +1125,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("text-position: ", m_textPos);
     
     if (!m_fontName.empty()) {
-        const std::string & fontFamily = rFontFaceDecls.getFontFamily(m_fontName);
+        const std::string & fontFamily = rFontFaceDecls.getFontFamily(m_fontName.c_str());
         
         UT_ASSERT_HARMLESS(!fontFamily.empty());
         if (!fontFamily.empty()) {
@@ -1138,7 +1139,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
     APPEND_STYLE("font-weight: ", m_fontWeight);
 
     // AbiWord hangs when a paragraph has a "display:none" property
-    if (m_family.length() && !strcmp("text", m_family.utf8_str())) {
+    if (m_family.length() && !strcmp("text", m_family.c_str())) {
         APPEND_STYLE("display: ", m_display);
     }
 
@@ -1157,7 +1158,7 @@ void ODi_Style_Style::buildAbiPropsAttrString(ODi_FontFaceDecls& rFontFaceDecls)
  * @param rProps The string that will have appended to it the properties of this
  *               style.
  */
-void ODi_Style_Style::getAbiPropsAttrString(UT_UTF8String& rProps, bool appendParentProps) const {
+void ODi_Style_Style::getAbiPropsAttrString(std::string& rProps, bool appendParentProps) const {
 
         if (appendParentProps && m_pParentStyle) {
             m_pParentStyle->getAbiPropsAttrString(rProps);
@@ -1179,7 +1180,7 @@ void ODi_Style_Style::getAbiPropsAttrString(UT_UTF8String& rProps, bool appendPa
  *              variable. Otherwise, it considers the final value of this
  *              property, taking into account its value on the parent styles.
  */
-const UT_UTF8String* ODi_Style_Style::getWrap(bool local) const {
+const std::string* ODi_Style_Style::getWrap(bool local) const {
     if (local) {
         return &m_wrap;
     } else {
@@ -1197,7 +1198,7 @@ const UT_UTF8String* ODi_Style_Style::getWrap(bool local) const {
  *              variable. Otherwise, it considers the final value of this
  *              property, taking into account its value on the parent styles.
  */
-const UT_UTF8String* ODi_Style_Style::getHorizPos(bool local) const {
+const std::string* ODi_Style_Style::getHorizPos(bool local) const {
     if (local) {
         return &m_HorizPos;
     } else {
@@ -1215,7 +1216,7 @@ const UT_UTF8String* ODi_Style_Style::getHorizPos(bool local) const {
  *              variable. Otherwise, it considers the final value of this
  *              property, taking into account its value on the parent styles.
  */
-const UT_UTF8String* ODi_Style_Style::getVerticalPos(bool local) const {
+const std::string* ODi_Style_Style::getVerticalPos(bool local) const {
     if (local) {
         return &m_VerticalPos;
     } else {
@@ -1228,7 +1229,7 @@ const UT_UTF8String* ODi_Style_Style::getVerticalPos(bool local) const {
 }
 
 
-const UT_UTF8String* ODi_Style_Style::getBackgroundColor() const
+const std::string* ODi_Style_Style::getBackgroundColor() const
 {
     if (m_backgroundColor.empty() && m_pParentStyle) {
         return m_pParentStyle->getBackgroundColor();
@@ -1238,7 +1239,7 @@ const UT_UTF8String* ODi_Style_Style::getBackgroundColor() const
 }
 
 
-const UT_UTF8String* ODi_Style_Style::getBackgroundImageID() const
+const std::string* ODi_Style_Style::getBackgroundImageID() const
 {
     if (m_backgroundImageID.empty() && m_pParentStyle) {
         return m_pParentStyle->getBackgroundImageID();
@@ -1255,8 +1256,8 @@ const UT_UTF8String* ODi_Style_Style::getBackgroundImageID() const
  * If pString is "none", both rColor and rLenght will be empty and
  * rHaveBorder will be "no"
  */
-void ODi_Style_Style::_stripColorLength(UT_UTF8String& rColor,
-                                  UT_UTF8String& rLength,
+void ODi_Style_Style::_stripColorLength(std::string& rColor,
+                                  std::string& rLength,
                                   ODi_Style_Style::HAVE_BORDER& rHaveBorder,
                                   const gchar* pString) const {
                                         

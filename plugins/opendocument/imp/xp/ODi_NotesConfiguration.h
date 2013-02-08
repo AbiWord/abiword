@@ -44,12 +44,12 @@ public:
 
     void charData (const gchar* /*pBuffer*/, int /*length*/) {}
 
-    const UT_UTF8String* getCitationStyleName() const {return &m_citationStyleName;}
+    const std::string* getCitationStyleName() const {return &m_citationStyleName;}
 
 private:
 
-    UT_UTF8String m_noteClass; // text:note-class
-    UT_UTF8String m_citationStyleName; // text:citation-style-name
+    std::string m_noteClass; // text:note-class
+    std::string m_citationStyleName; // text:citation-style-name
 };
 
 #endif //_ODI_NOTESCONFIGURATION_H_

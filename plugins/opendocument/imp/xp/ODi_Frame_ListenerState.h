@@ -22,6 +22,8 @@
 #ifndef _ODI_FRAME_LISTENERSTATE_H_
 #define _ODI_FRAME_LISTENERSTATE_H_
 
+#include <ut_std_string.h>
+
 // Internal includes
 #include "ODi_ListenerState.h"
 
@@ -75,7 +77,7 @@ private:
      */
     void _drawTextBox (const gchar** ppAtts, ODi_ListenerStateAction& rAction);
 
-    bool _getFrameProperties(UT_UTF8String& rProps, const gchar** ppAtts);
+    bool _getFrameProperties(std::string& rProps, const gchar** ppAtts);
 
 	PD_Document* m_pAbiDocument;
     ODi_Abi_Data& m_rAbiData;

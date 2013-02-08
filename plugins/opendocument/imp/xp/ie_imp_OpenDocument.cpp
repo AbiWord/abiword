@@ -232,7 +232,7 @@ static UT_UTF8String _getPassword (XAP_Frame * pFrame)
       bool bOK = (ans == XAP_Dialog_Password::a_OK);
 
       if (bOK)
-		  password = pDlg->getPassword ();
+		  password = pDlg->getPassword ().utf8_str();
 
       pDialogFactory->releaseDialog(pDlg);
     }
@@ -267,7 +267,7 @@ UT_Error IE_Imp_OpenDocument::_handleManifestStream() {
     if (m_cryptoInfo.size() > 0) {
         // there is at least one entry in the manifest that is encrypted, so
         // ask the user for a password
-        m_sPassword = GetPassword();
+        m_sPassword = GetPassword().utf8_str();
         if (m_sPassword.size() == 0)
             return UT_IE_PROTECTED;
     }
@@ -685,7 +685,7 @@ UT_Error IE_Imp_OpenDocument::_handleStream ( GsfInfile* pGsfInfile,
 #endif
         
         GsfInput* pDecryptedInput = NULL;
-        UT_Error err = ODc_Crypto::decrypt(pInput, (*pos).second, m_sPassword.utf8_str(), &pDecryptedInput);
+        UT_Error err = ODc_Crypto::decrypt(pInput, (*pos).second, m_sPassword.c_str(), &pDecryptedInput);
         g_object_unref (G_OBJECT (pInput));
 		
         if (err != UT_OK) {
