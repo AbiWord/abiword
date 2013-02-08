@@ -27,6 +27,7 @@
 #include "ut_bytebuf.h"
 #include "gr_UnixImage.h"
 #include <librsvg/rsvg.h>
+#include <librsvg/rsvg-cairo.h>
 
 class GR_RSVGVectorImage : public GR_CairoVectorImage {
  public:
