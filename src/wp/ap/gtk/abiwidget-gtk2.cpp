@@ -1334,7 +1334,7 @@ abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const 
 	gsf_output_close(GSF_OUTPUT(sink));
 	guint32 size = gsf_output_size (GSF_OUTPUT(sink));
 	const guint8* ibytes = gsf_output_memory_get_bytes (sink);
-	gchar * szOut = new gchar[size+1];
+	gchar * szOut = g_new (gchar, size+1);
 	memcpy(szOut,ibytes,size);
 	szOut[size] = 0;
 	g_object_unref(G_OBJECT(sink));
@@ -1387,7 +1387,7 @@ abi_widget_get_selection(AbiWidget * w, const gchar * extension_or_mimetype, gin
 		return NULL;
 	pie->copyToBuffer(pDocRange,&buf);
 	guint32 size = buf.getLength();
-	gchar * szOut = new gchar[size+1];
+	gchar * szOut = g_new (gchar, size+1);
 	memcpy(szOut,buf.getPointer(0),size);
 	szOut[size] = 0;
 	g_object_unref(G_OBJECT(sink));
