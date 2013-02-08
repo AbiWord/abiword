@@ -113,3 +113,8 @@ void XAP_CocoaWidget::setLabel(const UT_UTF8String &val)
 {
 	SetNSControlLabel(m_widget, val);
 }
+
+void XAP_CocoaWidget::setLabel(const std::string &val)
+{
+	SetNSControlLabel(m_widget, val);
+}

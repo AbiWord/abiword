@@ -303,7 +303,7 @@ void  AP_CocoaDialog_Stylist::_fillTree(void)
 	[m_items removeAllObjects];
 	UT_DEBUGMSG(("Number of rows of styles in document %d \n",pStyleTree->getNumRows()));
 
-	UT_UTF8String sTmp(""); 
+	std::string sTmp; 
 	for(row= 0; row < pStyleTree->getNumRows();row++)
 	{
 		if(!pStyleTree->getNameOfRow(sTmp,row))
@@ -311,26 +311,27 @@ void  AP_CocoaDialog_Stylist::_fillTree(void)
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 			break;
 		}
-		currentChild = [[[StyleNode alloc] initWithValue:sTmp.utf8_str() row:row andCol:0] autorelease];
+		currentChild = [[[StyleNode alloc] initWithValue:sTmp.c_str() row:row andCol:0] autorelease];
 		if(pStyleTree->getNumCols(row) > 0)
 		{
-			UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
+			UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.c_str(),row));
 
 			[m_items addObject:currentChild];
+			UT_UTF8String sTmp2;
 			for(col =0 ; col < pStyleTree->getNumCols(row); col++)
 			{
-				if(!pStyleTree->getStyleAtRowCol(sTmp,row,col))
+				if(!pStyleTree->getStyleAtRowCol(sTmp2,row,col))
 				{
 					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				[currentChild addChild:[[[StyleNode alloc] initWithValue:sTmp.utf8_str() row:row andCol:col] autorelease]];
-				UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));
+				[currentChild addChild:[[[StyleNode alloc] initWithValue:sTmp2.utf8_str() row:row andCol:col] autorelease]];
+				UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp2.utf8_str(),row,col+1));
 			}
 		}
 		else
 		{
-			UT_DEBUGMSG(("Adding style %s at row %d \n",sTmp.utf8_str(),row));
+			UT_DEBUGMSG(("Adding style %s at row %d \n",sTmp.c_str(),row));
 			[m_items addObject:currentChild];
 		}
 	}

@@ -60,6 +60,7 @@ public:
 
 	/** set the widget label */
 	virtual void setLabel(const UT_UTF8String &val);
+	virtual void setLabel(const std::string &val);
 private:
 	id	m_widget;
 };
