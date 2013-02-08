@@ -27,7 +27,11 @@
 #include "ut_bytebuf.h"
 #include "gr_UnixImage.h"
 #include <librsvg/rsvg.h>
+
+// we need to add this define because of deprecations
+#define __RSVG_RSVG_H_INSIDE__
 #include <librsvg/rsvg-cairo.h>
+#undef __RSVG_RSVG_H_INSIDE__
 
 class GR_RSVGVectorImage : public GR_CairoVectorImage {
  public:
