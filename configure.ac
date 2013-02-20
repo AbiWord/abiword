@@ -1185,6 +1185,7 @@ AC_OUTPUT(
   src/af/xap/gtk/t/Makefile
   src/af/xap/win/Makefile
   src/af/xap/xp/Makefile
+  src/gi-overrides/Makefile
   src/plugins/Makefile
   src/text/Makefile
   src/text/fmt/Makefile

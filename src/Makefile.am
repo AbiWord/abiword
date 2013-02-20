@@ -9,10 +9,15 @@ resources =
 -include $(INTROSPECTION_MAKEFILE)
 INTROSPECTION_GIRS =
 INTROSPECTION_SCANNER_ARGS = \
-	-v --warn-all --accept-unprefixed
+	-v --warn-all --accept-unprefixed \
+	--symbol-prefix=abi --symbol-prefix=libabiword
 INTROSPECTION_COMPILER_ARGS = \
 	--includedir=$(srcdir) \
     --includedir=.
+
+if HAVE_INTROSPECTION
+SUBDIRS += gi-overrides
+endif
 
 if TOOLKIT_COCOA
 main_cpp = $(top_srcdir)/src/wp/main/cocoa/CocoaMain.cpp
@@ -171,7 +176,9 @@ Abi_@ABI_SUB_SERIES@_gir_FILES = \
 	af/xap/gtk/xap_UnixTableWidget.h \
 	af/xap/gtk/xap_UnixTableWidget.cpp \
 	wp/ap/gtk/abiwidget.h \
-	wp/ap/gtk/abiwidget.cpp
+	wp/ap/gtk/abiwidget.cpp \
+	wp/main/gtk/libabiword.h \
+	wp/main/gtk/libabiword.cpp
 
 girdir = $(GIRDIR)
 gir_DATA = $(INTROSPECTION_GIRS)

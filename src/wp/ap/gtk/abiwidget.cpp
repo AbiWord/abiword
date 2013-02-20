@@ -1310,10 +1310,17 @@ s_abi_widget_get_file_type(const char * extension_or_mimetype, const char * cont
 	return ieft;
 }
 
-/*!
- * Extract all the content in the document.
- * Caller must g_free the memory.
- * Number of bytes is returned in iLength
+/**
+ * abi_widget_get_content:
+ * @w: an #AbiWidget
+ * @extension_or_mimetype: content type for the returned selection
+ * @exp_props: (allow-none): export properties
+ * @iLength: (out) (allow-none): length of returned selection, in bytes
+ *
+ * Gets all document contents
+ *
+ * Returns: (transfer full) (array length=iLength): the selection,
+ *          the caller must free the memory through g_free()
  */
 extern "C" gchar *
 abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const char * exp_props, gint * iLength)
@@ -1342,10 +1349,16 @@ abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const 
 	return szOut;
 }
 
-/*!
- * Extract all the content in the selection
- * Caller must g_free the memory.
- * Number of bytes is returned in iLength
+/**
+ * abi_widget_get_selection:
+ * @w: an #AbiWidget
+ * @extension_or_mimetype: content type for the returned selection
+ * @iLength: (out) (allow-none): length of returned selection, in bytes
+ *
+ * Gets the current selection
+ *
+ * Returns: (transfer full) (array length=iLength): the selection,
+ *          the caller must free the memory through g_free()
  */
 extern "C" gchar *
 abi_widget_get_selection(AbiWidget * w, const gchar * extension_or_mimetype, gint * iLength)
@@ -1395,7 +1408,16 @@ abi_widget_get_selection(AbiWidget * w, const gchar * extension_or_mimetype, gin
 	return szOut;
 }
 
-
+/**
+ * abi_widget_get_mouse_pos:
+ * @w: an #AbiWidget
+ * @x: (out): return value for the mouse position in the X axis
+ * @y: (out): return value for the mouse position in the Y axis
+ *
+ * Returns the mouse position relative to @w
+ *
+ * Return value: #TRUE if the mouse position could be retrieved
+ */
 extern "C" gboolean
 abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y)
 {
@@ -2476,7 +2498,7 @@ abi_widget_get_type (void)
 }
 
 /**
- * abi_widget_new
+ * abi_widget_new:
  *
  * Creates a new AbiWord widget using an internal Abiword App
  */
@@ -2492,7 +2514,7 @@ abi_widget_new (void)
 }
 
 /**
- * abi_widget_new_with_file
+ * abi_widget_new_with_file:
  *
  * Creates a new AbiWord widget and tries to load the file
  * This uses an internal Abiword App
@@ -2520,7 +2542,7 @@ abi_widget_get_frame ( AbiWidget * w )
 }
 
 /**
- * abi_widget_invoke()
+ * abi_widget_invoke:
  *
  * Invoke any of abiword's edit methods by name
  *
@@ -2545,7 +2567,7 @@ abi_widget_invoke (AbiWidget * w, const char * mthdName)
 }
 
 /**
- * abi_widget_invoke_ex()
+ * abi_widget_invoke_ex:
  *
  * Invoke any of abiword's edit methods by name
  *
