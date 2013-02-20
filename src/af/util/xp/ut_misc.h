@@ -245,7 +245,7 @@ const gchar ** UT_setPropsToNothing(const gchar ** props);
 
 const gchar ** UT_setPropsToValue(const gchar ** props, const gchar * value);
 
-const gchar ** UT_splitPropsToArray(gchar * props);
+ABI_EXPORT const gchar ** UT_splitPropsToArray(gchar * props);
 
 UT_uint64 UT_hash64(const char * p, UT_uint32 bytelen = 0);
 UT_uint32 UT_hash32(const char * p, UT_uint32 bytelen = 0);
