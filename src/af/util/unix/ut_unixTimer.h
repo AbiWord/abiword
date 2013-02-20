@@ -44,7 +44,8 @@ public:
 	virtual void stop();
 	virtual void start();
 private:
-	UT_sint32 m_iMilliseconds;
+	typedef UT_sint32 millisec_t;
+	millisec_t m_iMilliseconds;
 	UT_uint32 m_iGtkTimerId;
 #ifdef TOOLKIT_COCOA
 	/* these are here for Cocoa timer */

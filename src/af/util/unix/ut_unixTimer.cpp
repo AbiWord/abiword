@@ -86,11 +86,9 @@ UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)
 	*/
 	stop();
 
-	// typeof() is an extension. might break on non gcc. 
-	iMilliseconds = std::min(iMilliseconds, 
-							   static_cast<UT_uint32>(
-								   std::numeric_limits<typeof(m_iMilliseconds)>::max()
-								   ));
+	iMilliseconds = std::min(iMilliseconds, static_cast<UT_uint32>(
+					 std::numeric_limits<millisec_t>::max()
+					 ));
 
 #ifndef TOOLKIT_COCOA
 	m_iGtkTimerId = g_timeout_add_full(0, iMilliseconds, _Timer_Proc, this, NULL);
