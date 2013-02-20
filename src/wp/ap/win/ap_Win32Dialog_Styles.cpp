@@ -280,7 +280,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 		const PD_Style * pcStyle = NULL;
 		int nIndex;
 		UT_Win32LocaleString str;	
-		UT_UTF8String utf8;
+		std::string utf8;
 
 		UT_GenericVector<PD_Style*> * pStyles = NULL;
 		getDoc()->enumStyles(pStyles);
@@ -293,7 +293,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			name = pcStyle->getName();
 			
    			pt_PieceTable::s_getLocalisedStyleName(name, utf8);			
-			pLocalised = utf8.utf8_str();
+			pLocalised = utf8.c_str();
 			
 			nIndex = _win32DialogNewModify.addItemToCombo(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, pLocalised);				
 			_win32DialogNewModify.setComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, 
@@ -368,7 +368,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			szCurrentStyle = m_selectedStyle.c_str();
 			
 			pt_PieceTable::s_getLocalisedStyleName(szCurrentStyle, utf8);						
-			pLocalised = utf8.utf8_str();
+			pLocalised = utf8.c_str();
 		
 			_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_NAME,
                                                   pLocalised);
@@ -420,7 +420,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			{
 
 				pt_PieceTable::s_getLocalisedStyleName(szBasedOn, utf8);
-				pLocalised = utf8.utf8_str();
+				pLocalised = utf8.c_str();
 				str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 				
 				UT_uint32 result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, CB_FINDSTRING, -1,
@@ -441,7 +441,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			if(pFollowedByStyle != NULL)
 			{
 				pt_PieceTable::s_getLocalisedStyleName(szFollowedBy, utf8);		
-				pLocalised = utf8.utf8_str();
+				pLocalised = utf8.c_str();
 				str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 				
 				UT_uint32 result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
@@ -451,7 +451,7 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 			else
 			{
 				pt_PieceTable::s_getLocalisedStyleName(pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent), utf8);		
-				pLocalised = utf8.utf8_str();
+				pLocalised = utf8.c_str();
 				str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 				
 				UT_uint32 result = SendDlgItemMessageW(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, CB_FINDSTRING, -1,
@@ -805,7 +805,7 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 	const char * name = NULL;
 	const char*	pLocalised = NULL;
 	int nIndex;
-	UT_UTF8String utf8;
+	std::string utf8;
 	UT_String str;						 
 
 	size_t nStyles = getDoc()->getStyleCount();
@@ -838,7 +838,7 @@ void AP_Win32Dialog_Styles::_populateCList(void)
 		{
 
 			pt_PieceTable::s_getLocalisedStyleName(*data, utf8);
-			pLocalised = utf8.utf8_str();
+			pLocalised = utf8.c_str();
 			/*str = AP_Win32App::s_fromUTF8ToWinLocale(pLocalised);
 			pLocalised = str.c_str();*/
 			

@@ -1083,7 +1083,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				//bool bString = EV_TIS_ShouldUseString(tis);
 				HWND hwndCombo = _getControlWindow(id);
 				UT_return_val_if_fail(hwndCombo, true);
-				UT_UTF8String utf8;
+				std::string utf8;
 				UT_String str;
 				
 				// NOTE: we always update the control even if !szState
@@ -1100,7 +1100,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 				if (id==AP_TOOLBAR_ID_FMT_STYLE)
 				{
                         pt_PieceTable::s_getLocalisedStyleName(szState, utf8);
-						localised.fromUTF8 (utf8.utf8_str());
+						localised.fromUTF8 (utf8.c_str());
                 }       
                  else
     					localised.fromUTF8 (szState);
@@ -1374,7 +1374,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 // Now make a new one.
 //
 	int	nItem;													    
-	UT_UTF8String utf8;
+	std::string utf8;
 	UT_String str;
 
 	for (UT_sint32 c=0; c < m_vecOrgStylesNames.getItemCount(); c++)	
@@ -1389,7 +1389,7 @@ bool EV_Win32Toolbar::repopulateStyles(void)
 		UT_Win32LocaleString localised;
 		
 		pt_PieceTable::s_getLocalisedStyleName(sz, utf8);
-		localised.fromUTF8 (utf8.utf8_str());
+		localised.fromUTF8 (utf8.c_str());
 		
 		nItem = SendMessageW(hwndCombo, CB_ADDSTRING,(WPARAM)0, (LPARAM)localised.c_str());
 		m_vecOrgStylesNames.addItem (new UT_UTF8String ((char *)v->getNthItem(k)));

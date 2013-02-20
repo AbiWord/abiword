@@ -19,7 +19,7 @@
 
 #include <windows.h>
 
-#include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_Win32LocaleString.h"
@@ -129,9 +129,9 @@ void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
 
 	getStyleTree()->findStyle(sCurStyle,row,col);
 	UT_DEBUGMSG(("After findStyle row %d col %d col \n",row,col));
-	UT_UTF8String sPathFull = UT_UTF8String_sprintf("%d:%d",row,col);
-	UT_UTF8String sPathRow = UT_UTF8String_sprintf("%d",row);
-	UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.utf8_str()));
+	std::string sPathFull = UT_std_string_sprintf("%d:%d",row,col);
+	std::string sPathRow = UT_std_string_sprintf("%d",row);
+	UT_DEBUGMSG(("Full Path string is %s \n",sPathFull.c_str()));
 
 	HWND hTree = GetDlgItem(m_hDlg, AP_RID_DIALOG_STYLIST_TREE_STYLIST);
 	HTREEITEM hitem = NULL;
@@ -263,7 +263,7 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 	tvi.stateMask =0;
 
 	UT_sint32 row, col;
-	UT_UTF8String sTmp(""), str_loc;
+	std::string sTmp, str_loc;
     
     UT_Win32LocaleString str;
 	//int iter = 0; // Unique key for each item in the treeview
@@ -275,10 +275,10 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 			break;
 		}
 		
-		pt_PieceTable::s_getLocalisedStyleName (sTmp.utf8_str(), str_loc);
-		str.fromUTF8(str_loc.utf8_str());
+		pt_PieceTable::s_getLocalisedStyleName (sTmp.c_str(), str_loc);
+		str.fromUTF8(str_loc.c_str());
 
-		xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.utf8_str(),row));
+		xxx_UT_DEBUGMSG(("Adding Heading %s at row %d \n",sTmp.c_str(),row));
 
 		// Insert the item into the treeview
 		tvi.pszText = (LPWSTR)str.c_str();
@@ -300,15 +300,16 @@ void AP_Win32Dialog_Stylist::_fillTree(void)
 		{
 			for(col = 0; col < pStyleTree->getNumCols(row); col++)
 			{
-				if(!pStyleTree->getStyleAtRowCol(sTmp,row,col))
+				UT_UTF8String utf8Tmp;
+				if(!pStyleTree->getStyleAtRowCol(utf8Tmp,row,col))
 				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 					break;
 				}
-				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n",sTmp.utf8_str(),row,col+1));
+				xxx_UT_DEBUGMSG(("Adding style %s at row %d col %d \n",utf8Tmp.utf8_str(),row,col+1));
 
-				pt_PieceTable::s_getLocalisedStyleName (sTmp.utf8_str(), str_loc);
-				str.fromUTF8(str_loc.utf8_str());
+				pt_PieceTable::s_getLocalisedStyleName (utf8Tmp.utf8_str(), str_loc);
+				str.fromUTF8(str_loc.c_str());
 
 				// Insert the item into the treeview
 				tvi.pszText = (LPWSTR)str.c_str();
