@@ -783,8 +783,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     } 
     else if (!strcmp(pName, "text:note-body")) {
 
-        int attrCount = m_bPendingNoteCitation ? 12 : 10;
-        const gchar* ppAtts2[attrCount];
+        // Make sure the ppAtts2 size is correct.
+        const gchar* ppAtts2[12];
+        ppAtts2[10] = ppAtts2[11] = NULL;
         UT_uint32 id;
         const ODi_NotesConfiguration* pNotesConfig;
         const ODi_Style_Style* pStyle = NULL;
