@@ -62,7 +62,7 @@ GdkRGBA* UT_UnixRGBColorToGdkRGBA(const UT_RGBColor &rgb)
 	color.red = (gdouble)(rgb.m_red) / 255.;
 	color.green = (gdouble)(rgb.m_grn) / 255.;
         color.blue = (gdouble)(rgb.m_blu) /  255.;
-
+	color.alpha = 1.;
 	return gdk_rgba_copy(&color);
 }
 
