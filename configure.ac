@@ -1103,6 +1103,7 @@ INTROSPECTION_GENERATE=
 INTROSPECTION_GIRDIR=
 INTROSPECTION_TYPELIBDIR=
 if test "x$found_introspection" = "xyes"; then
+   AM_PATH_PYTHON
    INTROSPECTION_SCANNER=`$PKG_CONFIG --variable=g_ir_scanner gobject-introspection-1.0`
    INTROSPECTION_COMPILER=`$PKG_CONFIG --variable=g_ir_compiler gobject-introspection-1.0`
    INTROSPECTION_GENERATE=`$PKG_CONFIG --variable=g_ir_generate gobject-introspection-1.0`
