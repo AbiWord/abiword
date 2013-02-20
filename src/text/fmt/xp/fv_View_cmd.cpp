@@ -4786,51 +4786,39 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName, const char * szTitle)
 	{
 		return false;
 	}
-	
-	UT_uint32 target_len = strlen(szName);
-	gchar * target  = new gchar[ target_len+ 2];
+
+	std::string target;
 
 	if(UT_go_path_is_uri(szName) || relLink)
 	{
-		strncpy(target, static_cast<const gchar*>(szName), target_len + 1);
+		target = szName;
 	}
 	else
 	{
-		target[0] =  '#';
-		strncpy(target + 1, static_cast<const gchar*>(szName), target_len + 1);
+		target = "#";
+		target += szName;
 	}
-	
-	gchar * title;
-	int attrCount = 0;
-	
-	if (szTitle != NULL)
+
+	std::string title;
+	if (szTitle && *szTitle)
 	{
-	    UT_uint32 title_len = strlen(szTitle);
-	    title  = new gchar[ title_len + 1];
-	    strncpy(title, static_cast<const gchar*>(szTitle), title_len);
-	    attrCount = 6;
-	} else
-	{
-	    attrCount = 4;
-	    title = NULL;
+		title = szTitle;
 	}
-	
-	gchar * pAttr[attrCount];
+
+	const gchar * pAttr[6];
 	int attr = 0;
 
-	gchar target_l[]  = "xlink:href";
-	gchar title_l[] = "xlink:title";
-	pAttr [attr++] = &target_l[0];
-	pAttr [attr++] = &target[0];
-	if ((szTitle != NULL) && (strlen(szTitle) > 0))
+	pAttr [attr++] = "xlink:href";
+	pAttr [attr++] = target.c_str();
+	if (szTitle && *szTitle)
 	{
-		pAttr [attr++] = &title_l[0];
-		pAttr [attr++] = &title[0];
+		pAttr [attr++] = "xlink:title";
+		pAttr [attr++] = title.c_str();
 	}
 	pAttr[attr++] = 0;
 	pAttr[attr++] = 0;
 
-	UT_DEBUGMSG(("fv_View::cmdInsertHyperlink: target \"%s\"\n", target));
+	UT_DEBUGMSG(("fv_View::cmdInsertHyperlink: target \"%s\"\n", target.c_str()));
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -4842,7 +4830,7 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName, const char * szTitle)
 
 	if(bRet)
 	{
-		const gchar ** pAttrs = const_cast<const gchar **>(pAttr);
+		const gchar ** pAttrs = pAttr;
 		const gchar ** pProps = 0;
 		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAttrs, pProps);
 	}
@@ -4854,13 +4842,6 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName, const char * szTitle)
 		// are now shifted, so we need to fix them
 		setPoint(iPointOrig+1);
 		m_Selection.setSelectionAnchor(iAnchorOrig + 1);
-	}
-
-	delete [] target;
-	
-	if (szTitle != NULL)
-	{
-		delete [] title;
 	}
 
 	// Signal piceTable is stable again
@@ -4976,33 +4957,29 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 		}
 	}
 
-	gchar * pAttr[6];
+	const gchar* pAttr[6];
 
-	gchar name_l [] = "name";
-	gchar type_l [] = "type";
-	gchar name[BOOKMARK_NAME_SIZE + 1];
-	strncpy(name, static_cast<const gchar*>(szName), BOOKMARK_NAME_SIZE);
+	char name[BOOKMARK_NAME_SIZE + 1];
+	strncpy(name, szName, BOOKMARK_NAME_SIZE);
 	name[BOOKMARK_NAME_SIZE] = 0;
 
-	gchar type[] = "start";
-	pAttr [0] = &name_l[0];
-	pAttr [1] = &name[0];
-	pAttr [2] = &type_l[0];
-	pAttr [3] = &type[0];
+	pAttr [0] = "name";
+	pAttr [1] = name;
+	pAttr [2] = "type";
+	pAttr [3] = "start";
 	pAttr [4] = 0;
 	pAttr [5] = 0;
 
 	UT_DEBUGMSG(("fv_View::cmdInsertBookmark: szName \"%s\"\n", szName));
 
-	const gchar ** pAttrs = const_cast<const gchar **>(pAttr);
 	const gchar ** pProps = 0;
-	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAttrs, pProps);
+	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAttr, pProps);
 
 	if(bRet)
 	{
-		strncpy(type,static_cast<const gchar*>("end"), 3);
-		type[3] = 0;
-		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAttrs, pProps);
+		// override the type to mark the end.
+		pAttr [3] = "end";
+		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAttr, pProps);
 	}
 
 
