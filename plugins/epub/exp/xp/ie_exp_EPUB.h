@@ -85,14 +85,14 @@ private:
 
     static std::vector<std::string> getFileList(const std::string &directory);
     static void closeNTags(GsfXMLOut* xml, int n);
-    static std::string escapeForId(const UT_UTF8String & src);
+    static std::string escapeForId(const std::string & src);
     static std::string getMimeType(const std::string &uri);
 
     std::string m_baseTempDir;
     std::string m_oebpsDir;
     GsfOutfile* m_root;
     GsfOutput* m_oebps;
-    IE_Exp_HTML *m_pie;
+    IE_Exp_HTML *m_pHmtlExporter;
     // Array with file id`s in linear reading order
     std::vector<std::string> m_opsId;
 

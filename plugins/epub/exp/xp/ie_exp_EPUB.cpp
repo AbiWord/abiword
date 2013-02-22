@@ -25,7 +25,7 @@
 /*****************************************************************************/
 IE_Exp_EPUB::IE_Exp_EPUB(PD_Document * pDocument) :
     IE_Exp(pDocument),
-    m_pie(NULL)
+    m_pHmtlExporter(NULL)
 {
     registerDialogs();
 //FIXME:FIDENCIO: Remove this clause when Cocoa's dialog is implemented
@@ -36,7 +36,7 @@ IE_Exp_EPUB::IE_Exp_EPUB(PD_Document * pDocument) :
 }
 IE_Exp_EPUB::~IE_Exp_EPUB()
 {
-    DELETEP(m_pie);
+    DELETEP(m_pHmtlExporter);
 }
 
 UT_Error IE_Exp_EPUB::_writeDocument()
@@ -194,14 +194,17 @@ UT_Error IE_Exp_EPUB::EPUB2_writeStructure()
     indexPath += "index.xhtml";
 
     // Exporting document to XHTML using HTML export plugin 
-    char *szIndexPath = (char*) g_malloc(strlen(indexPath.c_str()) + 1);
-    strcpy(szIndexPath, indexPath.c_str());
-    m_pie = new IE_Exp_HTML(getDoc());
-    m_pie->suppressDialog(true);
-    m_pie->setProps(
-            "embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:yes;split-document:yes;add-identifiers:yes;");
-    m_pie->writeFile(szIndexPath);
-    g_free(szIndexPath);
+	// We need to setup options for HTML exporter according to current settings of EPUB exporter
+	std::string htmlProps = 
+	UT_std_string_sprintf("embed-css:no;html4:no;use-awml:no;declare-xml:yes;mathml-render-png:%s;split-document:%s;add-identifiers:yes;",
+		m_exp_opt.bRenderMathMLToPNG ? "yes" : "no",
+		m_exp_opt.bSplitDocument ? "yes" : "no");
+
+    m_pHmtlExporter = new IE_Exp_HTML(getDoc());
+    m_pHmtlExporter->suppressDialog(true);
+    m_pHmtlExporter->setProps(htmlProps.c_str());
+    m_pHmtlExporter->writeFile(indexPath.c_str());
+ 
 
     return UT_OK;
 }
@@ -277,29 +280,29 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
 
     // <navMap>
     gsf_xml_out_start_element(ncxXml, "navMap");
-    if (m_pie->getNavigationHelper()->hasTOC())
+    if (m_pHmtlExporter->getNavigationHelper()->hasTOC())
     {
         int lastItemLevel;
-        int curItemLevel;
+        int curItemLevel = 0;
         std::vector<int> tagLevels;
         int tocNum = 0;
         for (int currentItem = 0; 
-            currentItem < m_pie->getNavigationHelper()->getNumTOCEntries(); 
+            currentItem < m_pHmtlExporter->getNavigationHelper()->getNumTOCEntries(); 
             currentItem++)
         {
             lastItemLevel = curItemLevel;
-	    UT_UTF8String itemStr = m_pie->getNavigationHelper()
-                ->getNthTOCEntry(currentItem, &curItemLevel);
+	    std::string itemStr = m_pHmtlExporter->getNavigationHelper()
+			->getNthTOCEntry(currentItem, &curItemLevel).utf8_str();
             PT_DocPosition itemPos;
-            m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
+            m_pHmtlExporter->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
             
-            UT_UTF8String itemFilename;
+            std::string itemFilename;
             if (m_exp_opt.bSplitDocument)
             {
-                itemFilename = m_pie->getNavigationHelper()
-                    ->getFilenameByPosition(itemPos);
+                itemFilename = m_pHmtlExporter->getNavigationHelper()
+					->getFilenameByPosition(itemPos).utf8_str();
 
-                if ((itemFilename == ".xhtml") || itemFilename.length() == 0)
+                if (itemFilename.length() == 0 || (itemFilename[0] ==  '.'))
                 {
                     itemFilename = "index.xhtml";
                 }
@@ -320,7 +323,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
             }
 
             UT_DEBUGMSG(("Item filename %s at pos %d\n", 
-                itemFilename.utf8_str(),itemPos));
+                itemFilename.c_str(),itemPos));
 
             if ((lastItemLevel >= curItemLevel) && (currentItem != 0))
             {
@@ -335,7 +338,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
 
 	    std::string navClass = UT_std_string_sprintf("h%d", curItemLevel);
 	    std::string navId = UT_std_string_sprintf("AbiTOC%d", tocNum);
-	    std::string navSrc = std::string(itemFilename.utf8_str()) + "#" + navId;
+	    std::string navSrc = std::string(itemFilename.c_str()) + "#" + navId;
             gsf_xml_out_start_element(ncxXml, "navPoint");
             gsf_xml_out_add_cstr(ncxXml, "playOrder",
                     UT_std_string_sprintf("%d", currentItem + 1).c_str());
@@ -343,7 +346,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeNavigation()
             gsf_xml_out_add_cstr(ncxXml, "id", navId.c_str());
             gsf_xml_out_start_element(ncxXml, "navLabel");
             gsf_xml_out_start_element(ncxXml, "text");
-            gsf_xml_out_add_cstr(ncxXml, NULL, itemStr.utf8_str());
+            gsf_xml_out_add_cstr(ncxXml, NULL, itemStr.c_str());
             gsf_xml_out_end_element(ncxXml);
             gsf_xml_out_end_element(ncxXml);
             gsf_xml_out_start_element(ncxXml, "content");
@@ -420,7 +423,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
     gsf_xml_out_start_element(navXHTML, "nav");
     gsf_xml_out_add_cstr(navXHTML, "epub:type", "toc");
     gsf_xml_out_add_cstr(navXHTML, "id", "toc");
-    if (m_pie->getNavigationHelper()->hasTOC())
+    if (m_pHmtlExporter->getNavigationHelper()->hasTOC())
     {
         int lastItemLevel;
         int curItemLevel;
@@ -428,21 +431,21 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
         int tocNum = 0;
         bool newList = true;
         for (int currentItem = 0; 
-            currentItem < m_pie->getNavigationHelper()->getNumTOCEntries(); 
+            currentItem < m_pHmtlExporter->getNavigationHelper()->getNumTOCEntries(); 
             currentItem++)
         {
             lastItemLevel = curItemLevel;
-	    UT_UTF8String itemStr = m_pie->getNavigationHelper()
+	    UT_UTF8String itemStr = m_pHmtlExporter->getNavigationHelper()
                 ->getNthTOCEntry(currentItem, &curItemLevel);
             PT_DocPosition itemPos;
-            m_pie->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
+            m_pHmtlExporter->getNavigationHelper()->getNthTOCEntryPos(currentItem, itemPos);
 	    
-            UT_UTF8String itemFilename;
+            std::string itemFilename;
             
             if (m_exp_opt.bSplitDocument)
             {
-                itemFilename = m_pie->getNavigationHelper()
-                    ->getFilenameByPosition(itemPos);
+                itemFilename = m_pHmtlExporter->getNavigationHelper()
+					->getFilenameByPosition(itemPos).utf8_str();
 
                 if ((itemFilename == "") || itemFilename.length() == 0)
                 {
@@ -464,7 +467,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
             }
 
             UT_DEBUGMSG(("Item filename %s at pos %d\n", 
-                itemFilename.utf8_str(),itemPos));
+                itemFilename.c_str(),itemPos));
 
             if ((lastItemLevel >= curItemLevel) && (currentItem != 0))
             {
@@ -492,7 +495,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
 	    std::string navClass = UT_std_string_sprintf("h%d", curItemLevel);
 	    std::string navId = UT_std_string_sprintf("AbiTOC%d",
                     tocNum);
-	    std::string navSrc = std::string(itemFilename.utf8_str()) + "#" + navId;
+	    std::string navSrc = std::string(itemFilename.c_str()) + "#" + navId;
             gsf_xml_out_start_element(navXHTML, "li");
             gsf_xml_out_add_cstr(navXHTML, "class", navClass.c_str());
             gsf_xml_out_add_cstr(navXHTML, "id", navId.c_str());
@@ -548,15 +551,15 @@ UT_Error IE_Exp_EPUB::EPUB3_writeStructure()
     char *szIndexPath = (char*) g_malloc(strlen(indexPath.c_str()) + 1);
     strcpy(szIndexPath, indexPath.c_str());
     IE_Exp_HTML_WriterFactory *pWriterFactory = new IE_Exp_EPUB_EPUB3WriterFactory();
-    m_pie = new IE_Exp_HTML(getDoc());
-    m_pie->setWriterFactory(pWriterFactory);
-    m_pie->suppressDialog(true);
-    m_pie->setProps(
+    m_pHmtlExporter = new IE_Exp_HTML(getDoc());
+    m_pHmtlExporter->setWriterFactory(pWriterFactory);
+    m_pHmtlExporter->suppressDialog(true);
+    m_pHmtlExporter->setProps(
         "embed-css:no;html4:no;use-awml:no;declare-xml:yes;add-identifiers:yes;");
     
-    m_pie->set_SplitDocument(m_exp_opt.bSplitDocument);
-    m_pie->set_MathMLRenderPNG(m_exp_opt.bRenderMathMLToPNG);
-    m_pie->writeFile(szIndexPath);
+    m_pHmtlExporter->set_SplitDocument(m_exp_opt.bSplitDocument);
+    m_pHmtlExporter->set_MathMLRenderPNG(m_exp_opt.bRenderMathMLToPNG);
+    m_pHmtlExporter->writeFile(szIndexPath);
     g_free(szIndexPath);
     DELETEP(pWriterFactory);
     return UT_OK;
@@ -623,10 +626,10 @@ UT_Error IE_Exp_EPUB::package()
 	for (std::vector<std::string>::iterator i = listing.begin(); i
             != listing.end(); i++)
     {
-      std::string idStr = escapeForId(UT_UTF8String(i->c_str()));
+      std::string idStr = escapeForId(*i);
       std::string fullItemPath = m_oebpsDir + G_DIR_SEPARATOR_S + *i;
         gsf_xml_out_start_element(opfXml, "item");
-        if (m_pie->hasMathML((*i)))
+        if (m_pHmtlExporter->hasMathML((*i)))
         {
             gsf_xml_out_add_cstr(opfXml, "mathml", "true");
         }
@@ -779,34 +782,10 @@ void IE_Exp_EPUB::closeNTags(GsfXMLOut* xml, int n)
 
 }
 
-std::string IE_Exp_EPUB::escapeForId(const UT_UTF8String& src)
+std::string IE_Exp_EPUB::escapeForId(const std::string& src)
 {
 
-    std::string result = "";
-
-    UT_UTF8Stringbuf::UTF8Iterator i = src.getIterator();
-    i = i.start();
-
-    if (i.current())
-    {
-        while (true)
-        {
-            const char *pCurrent = i.current();
-
-            if (*pCurrent == 0)
-            {
-                break;
-            }
-
-            if (isalnum(*pCurrent))
-            {
-                result += *pCurrent;
-            }
-
-            i.advance();
-        }
-    }
-    return result;
+    return UT_escapeXML(src);
 }
 
 std::string IE_Exp_EPUB::getMimeType(const std::string &uri)
