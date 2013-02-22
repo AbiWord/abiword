@@ -73,10 +73,17 @@ _fv_text_handle_get_size (FvTextHandle *handle,
 
   priv = handle->priv;
 
+#if GTK_CHECK_VERSION (3, 6, 0)
   gtk_widget_style_get (priv->parent,
                         "text-handle-width", &w,
                         "text-handle-height", &h,
                         NULL);
+#else
+  /* Hardcode default values from GTK+ 3.6 */
+  w = 16;
+  h = 20;
+#endif
+
   if (width)
     *width = w;
 
@@ -389,7 +396,6 @@ fv_text_handle_finalize (GObject *object)
   if (priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_END].window)
     gdk_window_destroy (priv->windows[FV_TEXT_HANDLE_POSITION_SELECTION_END].window);
 
-#if 0
   if (g_signal_handler_is_connected (priv->parent, priv->draw_signal_id))
     g_signal_handler_disconnect (priv->parent, priv->draw_signal_id);
 
@@ -401,9 +407,9 @@ fv_text_handle_finalize (GObject *object)
 
   if (g_signal_handler_is_connected (priv->parent, priv->style_updated_id))
     g_signal_handler_disconnect (priv->parent, priv->style_updated_id);
-#endif
 
   g_object_unref (priv->style_context);
+  g_object_unref (priv->parent);
 
   G_OBJECT_CLASS (_fv_text_handle_parent_class)->finalize (object);
 }
@@ -423,7 +429,7 @@ fv_text_handle_set_property (GObject      *object,
   switch (prop_id)
     {
     case PROP_PARENT:
-      priv->parent = GTK_WIDGET(g_value_get_object (value));
+      priv->parent = GTK_WIDGET(g_value_dup_object (value));
       break;
     case PROP_RELATIVE_TO:
       _fv_text_handle_set_relative_to (handle,
