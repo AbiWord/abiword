@@ -140,25 +140,26 @@ UT_UTF8String IE_Exp_HTML_NavigationHelper::getFilenameByPosition(
 
     if (hasTOC())
     {
-        for (int i = getNumTOCEntries() - 1; i >= m_minTOCIndex; i--)
-        {
-            int currentLevel;
-            getNthTOCEntry(i, &currentLevel);
-            getNthTOCEntryPos(i, posCurrent);
+		PT_DocPosition minTocPosition;
+		getNthTOCEntryPos(0, minTocPosition);
+		if (position >= minTocPosition){
 
-            if (currentLevel == m_minTOCLevel)
-            {
-                if ((i != m_minTOCIndex) && (posCurrent <= position))
-                {
-                    chapterFile = ConvertToClean(getNthTOCEntry(i, NULL)) + m_suffix;
-                    break;
-                }
-                else if ((i == m_minTOCIndex) && (posCurrent >= position))
-                {
-                    break;
-                }
-            }
-        }
+			for (int i = getNumTOCEntries() - 1; i >= m_minTOCIndex; i--)
+			{
+				int currentLevel;
+				getNthTOCEntry(i, &currentLevel);
+				getNthTOCEntryPos(i, posCurrent);
+
+				if (currentLevel == m_minTOCLevel)
+				{
+					if (posCurrent <= position)
+					{
+						chapterFile = ConvertToClean(getNthTOCEntry(i, NULL)) + m_suffix;
+						break;
+					}
+				}
+			}
+		}
     }
 
     UT_DEBUGMSG(("Got filename by position: %s\n", chapterFile.utf8_str()));
