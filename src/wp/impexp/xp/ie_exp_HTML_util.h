@@ -86,7 +86,7 @@ class IE_Exp_HTML_OutputWriter;
 class ABI_EXPORT IE_Exp_HTML_DataExporter{
 public:
     IE_Exp_HTML_DataExporter(PD_Document* pDocument,
-            const UT_UTF8String &baseName);
+            const UT_UTF8String &filename);
     virtual ~IE_Exp_HTML_DataExporter(){}
     /*
      * Saves object with specified dataid to disk and returns relative to index

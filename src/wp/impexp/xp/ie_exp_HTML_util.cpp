@@ -24,6 +24,8 @@
 
 #include "ie_exp_HTML_util.h"
 
+#define SEPARATOR "/"
+
 const char s_DTD_XHTML_AWML[] = "!DOCTYPE html PUBLIC \"-//ABISOURCE//DTD XHTML plus AWML 2.2//EN\" \"http://www.abisource.com/2004/xhtml-awml/xhtml-awml.mod\"";
 
 const char s_DTD_XHTML[] = "!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\"";
@@ -326,17 +328,14 @@ UT_UTF8String getStyleSizeString(const gchar * szWidth, double widthPercentage,
 }
 
 IE_Exp_HTML_DataExporter::IE_Exp_HTML_DataExporter(PD_Document* pDocument,
-            const UT_UTF8String &baseName):
+            const UT_UTF8String &filename):
     m_pDocument(pDocument)
 {
-	char* s = UT_go_basename_from_uri(baseName.utf8_str());
-    m_fileDirectory = s;
+	std::string baseName = UT_go_basename_from_uri(filename.utf8_str());
+	m_fileDirectory = baseName.c_str();
     m_fileDirectory += FILES_DIR_NAME;
-	g_free(s);
 
-	s = UT_go_dirname_from_uri(baseName.utf8_str(), false);
-    m_baseDirectory = s;
-	g_free(s);
+	m_baseDirectory = g_path_get_dirname(filename.utf8_str());
 }
 
 IE_Exp_HTML_FileExporter::IE_Exp_HTML_FileExporter(PD_Document* pDocument, 
@@ -352,9 +351,9 @@ void IE_Exp_HTML_FileExporter::_init()
 {
     if (!m_bInitialized)
     {
-        UT_go_directory_create((m_baseDirectory + G_DIR_SEPARATOR_S +  m_fileDirectory).utf8_str(), 
+        UT_go_directory_create((m_baseDirectory + SEPARATOR +  m_fileDirectory).utf8_str(), 
                                0644, NULL);
-        UT_DEBUGMSG(("\n\nCREATED DIR: %s\n\n",(m_baseDirectory + G_DIR_SEPARATOR_S +  m_fileDirectory).utf8_str()));
+        UT_DEBUGMSG(("\n\nCREATED DIR: %s\n\n",(m_baseDirectory + SEPARATOR +  m_fileDirectory).utf8_str()));
         m_bInitialized = true;
     }
 }
@@ -378,10 +377,10 @@ UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const gchar *szDataId,
         return "";
     }
     
-    pByteBuf->writeToURI((m_baseDirectory + G_DIR_SEPARATOR_S + m_fileDirectory 
-        + G_DIR_SEPARATOR_S + filename).utf8_str());
+    pByteBuf->writeToURI((m_baseDirectory + SEPARATOR + m_fileDirectory 
+        + SEPARATOR + filename).utf8_str());
     
-    return m_fileDirectory + G_DIR_SEPARATOR_S + filename;
+    return m_fileDirectory + SEPARATOR + filename;
 }
 
 UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const UT_UTF8String &name,
@@ -397,11 +396,11 @@ UT_UTF8String IE_Exp_HTML_FileExporter::saveData(const UT_UTF8String &name,
         return i->second;
     }
     UT_UTF8String filePath = m_fileDirectory 
-        + G_DIR_SEPARATOR_S  + name;
+        + SEPARATOR  + name;
     
     GsfOutput* output =  
-        UT_go_file_create((m_baseDirectory + G_DIR_SEPARATOR_S  + 
-        m_fileDirectory + G_DIR_SEPARATOR_S + name).utf8_str(), 
+        UT_go_file_create((m_baseDirectory + SEPARATOR  + 
+        m_fileDirectory + SEPARATOR + name).utf8_str(), 
                              NULL);
     
     gsf_output_write(output, data.byteLength(), reinterpret_cast<const guint8*>(data.utf8_str()));
@@ -436,7 +435,7 @@ UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const gchar *szDataId,
     m_buffer += MULTIPART_FIELD("Content-Type",
                               (mime).c_str());
     m_buffer += MULTIPART_FIELD("Content-Transfer-Encoding", "base64");
-    m_buffer += MULTIPART_FIELD("Content-Location", (m_fileDirectory + G_DIR_SEPARATOR_S + filename).utf8_str());
+    m_buffer += MULTIPART_FIELD("Content-Location", (m_fileDirectory + SEPARATOR + filename).utf8_str());
     
     UT_UTF8String contents;
     encodeDataBase64(szDataId, contents, false);
@@ -447,7 +446,7 @@ UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const gchar *szDataId,
     m_buffer += "--";
     m_buffer += MULTIPART_BOUNDARY;
     
-    return m_fileDirectory + G_DIR_SEPARATOR_S + filename;
+    return m_fileDirectory + SEPARATOR + filename;
 }
 
 UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const UT_UTF8String &name,
@@ -465,7 +464,7 @@ UT_UTF8String IE_Exp_HTML_MultipartExporter::saveData(const UT_UTF8String &name,
     }
     
     UT_UTF8String filePath = m_fileDirectory
-        + G_DIR_SEPARATOR_S + name;
+        + SEPARATOR + name;
     
     m_buffer += MULTIPART_FIELD("Content-Type",
                               (mime).utf8_str());
