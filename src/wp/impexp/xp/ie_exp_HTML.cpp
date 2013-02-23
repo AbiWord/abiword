@@ -41,6 +41,7 @@
 
 #define MYEOL "\n"
 #define MAX_LINE_LEN 200
+#define SEPARATOR "/"
 
 
 IE_Exp_HTML_Sniffer::IE_Exp_HTML_Sniffer()
@@ -102,12 +103,13 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
         m_styleListener(new IE_Exp_HTML_StyleListener(m_style_tree)),
         m_bSuppressDialog(false),
         m_bDefaultWriterFactory(true),
-        m_suffix(""),
-    m_pNavigationHelper(new IE_Exp_HTML_NavigationHelper(getDoc(), getFileName())),
-	m_pWriterFactory( 
-                     new IE_Exp_HTML_DefaultWriterFactory(pDocument,this->m_exp_opt))
+		m_pWriterFactory(new IE_Exp_HTML_DefaultWriterFactory(pDocument,this->m_exp_opt)),
+        m_suffix("")
 {
-    
+  
+	// We can't create navigation helper before a
+	m_pNavigationHelper = NULL;
+
     m_exp_opt.bIs4 = false;
     m_exp_opt.bIsAbiWebDoc = false;
     m_exp_opt.bDeclareXML = true;
@@ -317,6 +319,7 @@ UT_Error IE_Exp_HTML::_doOptions()
 
 UT_Error IE_Exp_HTML::_writeDocument()
 {
+	m_pNavigationHelper = new IE_Exp_HTML_NavigationHelper(getDoc(), getFileName());
     UT_UTF8String basename = UT_go_basename(getFileName());
     m_suffix = strchr(basename.utf8_str(), '.');
     UT_DEBUGMSG(("Determined suffix: %s", m_suffix.utf8_str()));
@@ -648,10 +651,10 @@ void IE_Exp_HTML::_createChapter(PD_DocumentRange* range, const UT_UTF8String &t
 	else
     {
         filename = ConvertToClean(title) + m_suffix;
-		char* s = UT_go_dirname_from_uri(getFileName(), false);
+		char* s = g_path_get_dirname(getFileName());
 		UT_UTF8String outputUri = s;
 		g_free(s);
-        outputUri += G_DIR_SEPARATOR_S + filename;
+        outputUri += SEPARATOR + filename;
         output = UT_go_file_create(outputUri.utf8_str(), NULL);
     }
     IE_Exp_HTML_OutputWriter *pOutputWriter = 
