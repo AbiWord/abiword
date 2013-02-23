@@ -131,9 +131,9 @@ private:
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_UTF8String       m_sLinkCSS;
 	UT_UTF8String       m_sTitle;
+    IE_Exp_HTML_WriterFactory *m_pWriterFactory;
 	// We need to know file suffix to create chapters with the same suffix as the main file
 	UT_UTF8String m_suffix;
-    IE_Exp_HTML_WriterFactory *m_pWriterFactory;
     std::map<UT_UTF8String, bool> m_mathmlFlags;
 	IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
 };
