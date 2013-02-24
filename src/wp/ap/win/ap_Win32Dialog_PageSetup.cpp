@@ -417,7 +417,7 @@ void AP_Win32Dialog_PageSetup_Page::_onInitDialog()
 	// Populate Paper Size combo box
 	for (UT_uint32 i = (UT_uint32)fp_PageSize::_first_predefined_pagesize_; i < (UT_uint32)fp_PageSize::_last_predefined_pagesize_dont_use_; i++)
 	{
-        addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE, fp_PageSize::PredefinedToName( (fp_PageSize::Predefined)i ));
+        addItemToCombo (AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE, pSS->getValue(fp_PageSize::PredefinedToLocalName((fp_PageSize::Predefined) i)));
 	}
 
 	// Populate Units combo box
