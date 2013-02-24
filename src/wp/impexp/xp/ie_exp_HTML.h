@@ -105,36 +105,36 @@ public:
 	inline void			set_MathMLRenderPNG ( bool enable = true) { m_exp_opt.bMathMLRenderPNG = enable; }
 	inline void			set_SplitDocument ( bool enable = true) { m_exp_opt.bSplitDocument = enable; }
 
-	inline UT_UTF8String		getSuffix() const { return m_suffix; }
-        inline IE_Exp_HTML_NavigationHelper *getNavigationHelper() { return m_pNavigationHelper; }
-        void setWriterFactory(IE_Exp_HTML_WriterFactory *pWriterFactory);
+	inline const UT_UTF8String & getSuffix() const { return m_suffix; }
+	inline IE_Exp_HTML_NavigationHelper *getNavigationHelper() { return m_pNavigationHelper; }
+	void setWriterFactory(IE_Exp_HTML_WriterFactory *pWriterFactory);
 
 private:
 	UT_Error            _doOptions ();
-        void _buildStyleTree();
+	void _buildStyleTree();
 
 protected:
 	virtual UT_Error	_writeDocument ();
 	void				_createChapter(PD_DocumentRange *range, const UT_UTF8String &title, bool isIndex);
-        void _createMultipart();
+	void _createMultipart();
 public:
 	virtual UT_Error	_writeDocument (bool bClipBoard, bool bTemplateBody);
-        bool hasMathML(const UT_UTF8String &file);
-        bool hasMathML(const std::string &file);
-		static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& sink);
+	bool hasMathML(const UT_UTF8String &file);
+	bool hasMathML(const std::string &file);
+	static void printStyleTree(PD_Document *pDocument, UT_ByteBuf& sink);
 private:
     // Returns document writer depending on settings
 	IE_Exp_HTML_StyleTree *		m_style_tree;
-        IE_Exp_HTML_StyleListener *m_styleListener;
+	IE_Exp_HTML_StyleListener *m_styleListener;
 	bool			m_bSuppressDialog;
-        bool m_bDefaultWriterFactory;
+	bool m_bDefaultWriterFactory;
 	XAP_Exp_HTMLOptions	m_exp_opt;
 	UT_UTF8String       m_sLinkCSS;
 	UT_UTF8String       m_sTitle;
-    IE_Exp_HTML_WriterFactory *m_pWriterFactory;
+	IE_Exp_HTML_WriterFactory *m_pWriterFactory;
 	// We need to know file suffix to create chapters with the same suffix as the main file
 	UT_UTF8String m_suffix;
-    std::map<UT_UTF8String, bool> m_mathmlFlags;
+	std::map<UT_UTF8String, bool> m_mathmlFlags;
 	IE_Exp_HTML_NavigationHelper *m_pNavigationHelper;
 };
 
