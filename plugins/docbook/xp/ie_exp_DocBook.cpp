@@ -871,7 +871,9 @@ void s_DocBook_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 				sBuf += "<beginpage/>";
 			}
 			else
+			{
 				UT_ASSERT_HARMLESS(UT_TODO);
+			}
 
 			pData++;
 			break;
@@ -893,9 +895,13 @@ void s_DocBook_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 		case UCS_VTAB:					// column break
 		case UCS_LF:					// LF -- representing a Forced-Line-Break
 			if (m_iBlockType == BT_PLAINTEXT)
+			{
 				sBuf += "\n";
+			}
 			else
+			{
 				UT_ASSERT_HARMLESS(UT_TODO); // <br/> isn't valid in docbook
+			}
 			pData++;
 			break;
 

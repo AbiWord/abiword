@@ -414,9 +414,13 @@ void Text_Listener::_genLineBreak(void)
 	for (pWC = wcLineBreak; *pWC; ++pWC)
 	{
 		if (_wctomb(pMB,mbLen,*pWC))
+		{
 			pMB += mbLen;
+		}
 		else
+		{
 		  UT_ASSERT_NOT_REACHED();
+		}
 	}
 
 	m_iLineBreakLen = pMB - m_mbLineBreak;

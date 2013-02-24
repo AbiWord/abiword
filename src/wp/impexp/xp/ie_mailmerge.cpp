@@ -189,7 +189,9 @@ IEMergeType IE_MailMerge::fileTypeForDescription(const char * szDescription)
 				return ieft;
 		}
 		else
+		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 	
 	return ieft;
@@ -257,10 +259,14 @@ const char * IE_MailMerge::suffixesForFileType(IEMergeType ieft)
 	IE_MergeSniffer * pSniffer = snifferForFileType(ieft);
 	
 	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
+	{
 		return szSuffixes;
+	}
 	else
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	
+	}
+
 	// The passed in filetype is invalid.
 	return 0;
 }
@@ -270,14 +276,18 @@ const char * IE_MailMerge::descriptionForFileType(IEMergeType ieft)
 	const char * szDummy;
 	const char * szDescription = 0;
 	IEMergeType ieftDummy;
-	
+
 	IE_MergeSniffer * pSniffer = snifferForFileType(ieft);
-	
+
 	if (pSniffer->getDlgLabels(&szDescription,&szDummy,&ieftDummy))
+	{
 		return szDescription;
+	}
 	else
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-	
+	}
+
 	// The passed in filetype is invalid.
 	return 0;
 }

@@ -128,8 +128,9 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 				t = align_JUSTIFIED;
 			else if (strcmp(sz, "left") == 0)
 				t = align_LEFT;
-			else
+			else {
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			}
 
 			_setMenuItemValue(id_MENU_ALIGNMENT, t, op_INIT);
 		}
@@ -143,8 +144,9 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 				t = check_FALSE;
 			else if (strcmp(sz, "rtl") == 0)
 				t = check_TRUE;
-			else
+			else {
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			}
 
 			_setCheckItemValue(id_CHECK_DOMDIRECTION, t, op_INIT);
 		}

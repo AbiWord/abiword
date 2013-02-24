@@ -773,7 +773,9 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		yoff += col_y;
 	}
 	else
+	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
 }
 
 

@@ -2123,7 +2123,9 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 			UT_DEBUGMSG(("DOM: reverting to default file type: %s (%d)\n", ftype, dflFileType));
 		}
 		else
+		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 	  }
 	else
 	  {

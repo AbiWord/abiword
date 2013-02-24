@@ -104,7 +104,9 @@ void ABI_Collab_Import::_calculateCollisionSeqence(UT_sint32 iIncomingRemoteRev,
 		    }
 		}
 		else
+		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 
 	// now move upward, so we kill off the bottom where changes are from the same document as the incoming cr (you can not collide with your own cr's!)
@@ -260,7 +262,9 @@ bool ABI_Collab_Import::_checkForCollision(const AbstractChangeRecordSessionPack
 					incAdjs.pop_front();
 				}
 				else
+				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+				}
 			}
 
 			UT_DEBUGMSG(("Now: iIncomingStateAdjust: %d\n", iIncomingStateAdjust));

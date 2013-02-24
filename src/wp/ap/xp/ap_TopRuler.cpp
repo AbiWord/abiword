@@ -4800,8 +4800,9 @@ void AP_TopRuler::_displayStatusMessage(XAP_String_Id FormatMessageID)
 	  newXScrollOffset = pRuler->m_xScrollOffset - pRuler->m_pG->tlu(s_tr_AUTOSCROLL_PIXELS);
 	else if (pRuler->m_aScrollDirection == 'R')
 	  newXScrollOffset = pRuler->m_xScrollOffset + pRuler->m_pG->tlu(s_tr_AUTOSCROLL_PIXELS);
-	else
+	else {
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	if (newXScrollOffset >= 0)
 			pRuler->m_pView->sendHorizontalScrollEvent(newXScrollOffset); // YAY it works!!

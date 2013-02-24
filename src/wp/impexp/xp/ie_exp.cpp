@@ -568,7 +568,9 @@ IEFileType IE_Exp::fileTypeForDescription(const char * szDescription)
 				return ieft;
 		}
 		else
+		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+		}
 	}
 
 	return ieft;
@@ -617,9 +619,13 @@ const char * IE_Exp::suffixesForFileType(IEFileType ieft)
 	UT_return_val_if_fail (pSniffer != NULL, 0);
 
 	if (pSniffer->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
+	{
 		return szSuffixes;
+	}
 	else
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	// The passed in filetype is invalid.
 	return 0;
@@ -656,9 +662,13 @@ const char * IE_Exp::descriptionForFileType(IEFileType ieft)
 	IE_ExpSniffer * pSniffer = snifferForFileType(ieft);
 
 	if (pSniffer->getDlgLabels(&szDescription,&szDummy,&ieftDummy))
+	{
 		return szDescription;
+	}
 	else
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	// The passed in filetype is invalid.
 	return 0;

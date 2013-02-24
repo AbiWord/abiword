@@ -103,9 +103,11 @@ public:
     UT_return_val_if_fail(masterName != NULL, (const gchar **)m_pageAtts);
 
     if (strcmp (m_name.c_str(), masterName))
+    {
       // FIXME can there be more than one master-page?
       UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-    
+    }
+
     return (const gchar **)m_pageAtts;
   }
   

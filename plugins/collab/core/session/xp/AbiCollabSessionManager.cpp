@@ -214,11 +214,15 @@ UT_Error AbiCollabSessionManager::deserializeDocument(PD_Document** pDoc, const 
 			res = UT_OK;
         }
 		else
+		{
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		}
 		g_object_unref(G_OBJECT(source));
 	}
 	else
+	{
 		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
 
 	return res;
 }

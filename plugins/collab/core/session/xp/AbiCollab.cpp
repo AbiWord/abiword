@@ -552,7 +552,9 @@ void AbiCollab::initiateSessionTakeover(BuddyPtr pNewMaster)
 	m_mAckedSessionTakeoverBuddies.clear();
 	m_bSessionFlushed = false;
 	if (m_vOutgoingQueue.size() > 0)
+	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+	}
 	m_vOutgoingQueue.clear();
 
 	// send a SessionTakeoverRequest packet to the new master
