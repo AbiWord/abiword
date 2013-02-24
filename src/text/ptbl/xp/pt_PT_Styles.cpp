@@ -334,7 +334,7 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, co
 
 	pStyle = new PD_BuiltinStyle(this, indexAP, szName, bDisplayed);
 	if (pStyle)
-		m_hashStyles.insert(szName, pStyle);
+		m_hashStyles.insert(std::make_pair(szName, pStyle));
 
 	return true;
 }
@@ -386,7 +386,7 @@ bool pt_PieceTable::appendStyle(const gchar ** attributes)
 //
 
 		if (pStyle)
-			m_hashStyles.insert(szName,pStyle);
+			m_hashStyles.insert(std::make_pair(szName,pStyle));
 
 		return true;
 	}
@@ -408,7 +408,7 @@ bool pt_PieceTable::removeStyle (const gchar * szName)
 
 		delete pStyle;
 
-		m_hashStyles.remove (szName, NULL);
+		m_hashStyles.erase(szName);
 		return true;
 	}
 
@@ -419,13 +419,14 @@ bool pt_PieceTable::getStyle(const char * szName, PD_Style ** ppStyle) const
 {
 	//UT_ASSERT(szName && *szName);
 
-	PD_Style * pStyle = m_hashStyles.pick (szName);
-	if (!pStyle)
+	StyleMap::const_iterator iter = m_hashStyles.find(szName);
+	if(iter == m_hashStyles.end()) {
 		return false;
+	}
 
 	if (ppStyle)
 	{
-		*ppStyle = pStyle;
+		*ppStyle = iter->second;
 	}
 
 	return true;
@@ -468,7 +469,8 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 	if (k >= kLimit)
 		return false;
 
-	UT_GenericVector<PD_Style*> * vStyle = m_hashStyles.enumerate() ;
+	UT_GenericVector<PD_Style*> * vStyle = NULL;
+	enumStyles(vStyle);
 	//vStyle->qsort(compareStyleNames);
 
 	PD_Style * pStyle = vStyle->getNthItem(k);
@@ -496,7 +498,12 @@ bool pt_PieceTable::enumStyles(UT_uint32 k,
 */
 bool pt_PieceTable::enumStyles(UT_GenericVector<PD_Style*> *& pStyles) const
 {
-	pStyles = m_hashStyles.enumerate() ;
+	pStyles = new UT_GenericVector<PD_Style*>;
+
+	for(StyleMap::const_iterator iter = m_hashStyles.begin();
+		iter != m_hashStyles.end(); ++iter) {
+		pStyles->addItem(iter->second);
+	}
 
 	return true;
 }

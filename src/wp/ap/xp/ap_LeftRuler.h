@@ -30,6 +30,7 @@
 #include "ut_types.h"
 #include "ut_misc.h"
 #include "ut_units.h"
+#include "ut_hash.h"
 #include "xav_Listener.h"
 
 #include "gr_Graphics.h"

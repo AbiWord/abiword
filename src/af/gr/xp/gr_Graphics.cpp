@@ -34,9 +34,11 @@
 #include "gr_CharWidths.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_units.h"
 #include "ut_sleep.h"
 #include "ut_stack.h"
+#include "ut_std_map.h"
 #include "ut_growbuf.h"
 #include "ut_debugmsg.h"
 #include "ut_OverstrikingChars.h"
@@ -66,7 +68,7 @@ GR_Font::~GR_Font()
   Return the hash key used by the cache to fetch the font
   This method may be overridden to compute it in real time if needed
  */
-const UT_String & GR_Font::hashKey(void) const
+const std::string & GR_Font::hashKey(void) const
 {
 	return m_hashKey;
 }
@@ -246,7 +248,6 @@ GR_Graphics::GR_Graphics()
 	  m_bDoMerge(false),
 	  m_iPrevYOffset(0),
 	  m_iPrevXOffset(0),
-	  m_hashFontCache(19),
 	  m_AllCarets(this,&m_pCaret,&m_vecCarets),
 	  m_bAntiAliasAlways(false)
 {
@@ -264,11 +265,13 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 
 	// NOTE: we currently favor a readable hash key to make debugging easier
 	// TODO: speed things up with a smaller key (the three AP pointers?)
-	UT_String key;
+	std::string key = UT_std_string_sprintf("%s;%s;%s;%s;%s;%s",pszFontFamily, 
+											pszFontStyle, pszFontVariant, 
+											pszFontWeight, pszFontStretch, 
+											pszFontSize);
 
-	UT_String_sprintf(key,"%s;%s;%s;%s;%s;%s",pszFontFamily, pszFontStyle, pszFontVariant, pszFontWeight, pszFontStretch, pszFontSize);
-	GR_Font *pEntry = m_hashFontCache.pick(key.c_str());
-	if (!pEntry)
+	FontCache::const_iterator iter = m_hashFontCache.find(key);
+	if (iter == m_hashFontCache.end())
 	{
 		// TODO -- note that we currently assume font-family to be a single name,
 		// TODO -- not a list.  This is broken.
@@ -282,11 +285,11 @@ GR_Font* GR_Graphics::findFont(const char* pszFontFamily,
 		// add it to the cache
 		
 		if(pFont)
-			m_hashFontCache.insert(key.c_str(), pFont);
+			m_hashFontCache.insert(std::make_pair(key, pFont));
 	}
 	else
 	{
-		pFont = pEntry;
+		pFont = iter->second;
 	}
 	return pFont;
 }
@@ -356,7 +359,7 @@ void GR_Graphics::resumeDrawing(bool token)
 
 void GR_Graphics::_destroyFonts ()
 {
-	m_hashFontCache.purgeData();
+	UT_map_delete_all_second(m_hashFontCache);
 	m_hashFontCache.clear ();
 }
 

@@ -43,6 +43,7 @@
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_Win32OS.h"
 #include "ut_Win32LocaleString.h"
 
@@ -1595,7 +1596,7 @@ GR_Win32Font::GR_Win32Font(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 
 			_updateFontYMetrics(hdc, printHDC);
 
-			UT_String_sprintf(m_hashKey, "%s-%d-%d-%d-%d-%d-%d-%d",
+			m_hashKey = UT_std_string_sprintf("%s-%d-%d-%d-%d-%d-%d-%d",
 							  lpFaceName,
 							  m_tm.tmHeight, m_tm.tmWeight, m_tm.tmItalic, m_tm.tmUnderlined,
 							  m_tm.tmStruckOut,

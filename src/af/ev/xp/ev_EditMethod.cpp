@@ -25,7 +25,6 @@
 #include "ev_EditMethod.h"
 #include "ut_assert.h"
 #include "ut_vector.h"
-#include "ut_hash.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 
@@ -221,10 +220,12 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 
 	// first, see if it's in our hashtable
 	// TODO: should this be class-wide instead of static here?
-	static UT_GenericStringMap<EV_EditMethod *> emHash (m_countStatic);
-	EV_EditMethod * entry = emHash.pick (szName);
-	if (entry)
-	    return entry;
+	static std::map<std::string,EV_EditMethod *> emHash;
+	std::map<std::string,EV_EditMethod *>::const_iterator iter;
+	iter = emHash.find(szName);
+	if (iter != emHash.end())
+		return iter->second;
+
 	// nope, bsearch for it in our private array
 	mthd = static_cast<EV_EditMethod *>(bsearch(szName, 
 					m_arrayStaticEditMethods, 
@@ -236,7 +237,7 @@ EV_EditMethod * EV_EditMethodContainer::findEditMethodByName(const char * szName
 	{
 	    // found it, insert it into our hash table for quicker lookup
 	    // in the future and return
-	    emHash.insert(szName, mthd);
+	    emHash.insert(std::make_pair(szName, mthd));
 	    return mthd;
 	}
 

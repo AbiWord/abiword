@@ -25,6 +25,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_growbuf.h"
+#include "ut_std_map.h"
 #include "pt_PieceTable.h"
 #include "pf_Frag.h"
 #include "pf_Frag_FmtMark.h"
@@ -50,7 +51,6 @@
 pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
   : m_pts(PTS_Create), 
 	m_history(this),
-	m_hashStyles(11), 
 	m_pDocument(pDocument),
     m_atomicGlobCount(0),
 	m_bDoingTheDo(false),
@@ -66,7 +66,7 @@ pt_PieceTable::pt_PieceTable(PD_Document * pDocument)
 pt_PieceTable::~pt_PieceTable()
 {
 	m_fragments.purgeFrags();
-	m_hashStyles.purgeData();
+	UT_map_delete_all_second(m_hashStyles);
 }
 
 void pt_PieceTable::setPieceTableState(PTState pts)

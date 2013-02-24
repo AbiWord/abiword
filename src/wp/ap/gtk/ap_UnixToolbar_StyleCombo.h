@@ -26,7 +26,6 @@
 #include <string>
 
 #include <gtk/gtk.h>
-#include "ut_hash.h"
 #include "xap_Types.h"
 #include "ev_Toolbar_Control.h"
 #include "pd_Document.h"

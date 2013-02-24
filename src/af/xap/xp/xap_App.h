@@ -32,7 +32,6 @@
 #include "ut_types.h"
 #endif
 #include "ut_vector.h"
-#include "ut_hash.h"
 #include "ut_Language.h"
 #include "ut_string_class.h"
 #include "xap_AppImpl.h"
@@ -300,7 +299,8 @@ protected:
 	XAP_Prefs *					m_prefs;		/* populated in AP_<platform>App::initialize() */
 
 	UT_GenericVector<XAP_Frame*>			m_vecFrames;
-	UT_GenericStringMap<UT_GenericVector<XAP_Frame*>*>	m_hashClones;
+	typedef std::map<std::string, UT_GenericVector<XAP_Frame*>*> CloneMap;
+	CloneMap	m_hashClones;
 	XAP_Frame *					m_lastFocussedFrame;
 	XAP_Menu_Factory *              	        m_pMenuFactory;
 	XAP_Toolbar_Factory *				m_pToolbarFactory;

@@ -89,6 +89,7 @@ struct dg_DrawArgs;
 class UT_Worker;
 class UT_Timer;
 class UT_UTF8String;
+class UT_StringPtrMap; // TODO remove.
 
 class AP_TopRulerInfo;
 class AP_LeftRulerInfo;

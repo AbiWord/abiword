@@ -3,6 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002,2003 Tomas Frydrych
+ * Copyright (C) 2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -7007,29 +7008,31 @@ bool PD_Document::areDocumentStylesheetsEqual(const AD_Document &D) const
 {
 	if(D.getType() != ADDOCUMENT_ABIWORD)
 		return false;
-	
+
 	PD_Document &d = (PD_Document &)D;
 	UT_return_val_if_fail(m_pPieceTable || d.m_pPieceTable, false);
 
-	const UT_GenericStringMap<PD_Style*> & hS1 = m_pPieceTable->getAllStyles();
-	const UT_GenericStringMap<PD_Style*> & hS2 = d.m_pPieceTable->getAllStyles();
+	const std::map<std::string,PD_Style*> & hS1 = m_pPieceTable->getAllStyles();
+	const std::map<std::string,PD_Style*> & hS2 = d.m_pPieceTable->getAllStyles();
 
 	if(hS1.size() != hS2.size())
 		return false;
 
 	UT_StringPtrMap hFmtMap;
-	UT_GenericStringMap<PD_Style*>::UT_Cursor c(&hS1);
 
-	const PD_Style * pS1, * pS2;
-	for(pS1 = c.first(); pS1 != NULL; pS1 = c.next())
+	for(std::map<std::string,PD_Style*>::const_iterator iter = hS1.begin();
+		iter != hS1.end(); ++iter)
 	{
-		const UT_String &key = c.key();
+		const PD_Style * pS1, * pS2;
+		const std::string &key = iter->first;
 
-		pS2 = hS2.pick(key);
+		pS1 = iter->second;
 
-		if(!pS2)
+		std::map<std::string,PD_Style*>::const_iterator iter2 = hS2.find(key);
+		if (iter2 == hS2.end())
 			return false;
 
+		pS2 = iter2->second;
 
 		PT_AttrPropIndex ap1 = pS1->getIndexAP();
 		PT_AttrPropIndex ap2 = pS2->getIndexAP();
@@ -7044,9 +7047,8 @@ bool PD_Document::areDocumentStylesheetsEqual(const AD_Document &D) const
 
 		UT_return_val_if_fail(pAP1 && pAP2, false);
 
-		UT_String s;
 		// must print all digits to make this unambigous
-		UT_String_sprintf(s,"%08x%08x", ap1, ap2);
+		std::string s = UT_std_string_sprintf("%08x%08x", ap1, ap2);
 		bool bAreSame = hFmtMap.contains(s,NULL);
 		
 		if(!bAreSame)

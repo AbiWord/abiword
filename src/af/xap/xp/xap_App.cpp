@@ -90,7 +90,6 @@ XAP_App::XAP_App(const char * szAppName)
 	  m_pToolbarActionSet(NULL),
 	  m_pDict(NULL),
 	  m_prefs(NULL),
-	  m_hashClones(5),
 	  m_lastFocussedFrame(NULL),
 	  m_pMenuFactory(NULL),
 	  m_pToolbarFactory(NULL),
@@ -570,11 +569,14 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 	if (pCloneOf)
 	{
 		// locate vector of this frame's clones
-		UT_GenericVector<XAP_Frame*> * pEntry = m_hashClones.pick(pCloneOf->getViewKey());
+		CloneMap::const_iterator iter = m_hashClones.find(pCloneOf->getViewKey());
+		
 		UT_GenericVector<XAP_Frame*> * pvClones = NULL;
 
-		if (pEntry)
+		if (iter != m_hashClones.end())
 		{
+			UT_GenericVector<XAP_Frame*> * pEntry = iter->second;
+
 			// hash table entry already exists
 			pvClones = pEntry;
 
@@ -587,7 +589,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 				pvClones->addItem(pCloneOf);
 
 				// reuse this slot
-				m_hashClones.set(pCloneOf->getViewKey(), pvClones);
+				m_hashClones[pCloneOf->getViewKey()] = pvClones;
 			}
 		}
 		else
@@ -599,7 +601,7 @@ bool XAP_App::rememberFrame(XAP_Frame * pFrame, XAP_Frame * pCloneOf)
 			pvClones->addItem(pCloneOf);
 
 			// add it to the hash table
-			m_hashClones.insert(pCloneOf->getViewKey(), pvClones);
+			m_hashClones.insert(std::make_pair(pCloneOf->getViewKey(), pvClones));
 		}
 
 		pvClones->addItem(pFrame);
@@ -637,12 +639,12 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 	if (pFrame->getViewNumber() > 0)
 	{
 		// locate vector of this frame's clones
-		UT_GenericVector<XAP_Frame*>* pEntry = m_hashClones.pick(pFrame->getViewKey());
-		UT_ASSERT(pEntry);
+		CloneMap::const_iterator iter = m_hashClones.find(pFrame->getViewKey());
+		UT_ASSERT(iter != m_hashClones.end());
 
-		if (pEntry)
+		if (iter != m_hashClones.end())
 		{
-			UT_GenericVector<XAP_Frame*> * pvClones = pEntry;
+			UT_GenericVector<XAP_Frame*> * pvClones = iter->second;
 			UT_return_val_if_fail(pvClones,false);
 
 			// remove this frame from the vector
@@ -669,8 +671,7 @@ bool XAP_App::forgetFrame(XAP_Frame * pFrame)
 				f->updateTitle();
 
 				// remove this entry from hashtable
-				m_hashClones.remove(f->getViewKey(), 
-						    NULL);
+				m_hashClones.erase(f->getViewKey());
 				delete pvClones;
 			}
 			else
@@ -733,8 +734,11 @@ bool XAP_App::getClones(UT_GenericVector<XAP_Frame*> *pvClonesCopy, XAP_Frame * 
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
-
-	UT_GenericVector<XAP_Frame*> * pvClones = m_hashClones.pick(pFrame->getViewKey());
+	CloneMap::const_iterator iter = m_hashClones.find(pFrame->getViewKey());
+	UT_GenericVector<XAP_Frame*> * pvClones = NULL;
+	if (iter != m_hashClones.end()) {
+		pvClones = iter->second;
+	}
 	UT_ASSERT(pvClones);
 
 	return pvClonesCopy->copy(pvClones);
@@ -746,12 +750,12 @@ bool XAP_App::updateClones(XAP_Frame * pFrame)
 	UT_ASSERT(pFrame->getViewNumber() > 0);
 
 	// locate vector of this frame's clones
-	UT_GenericVector<XAP_Frame*>* pEntry = m_hashClones.pick(pFrame->getViewKey());
-	UT_ASSERT_HARMLESS(pEntry);
+	CloneMap::const_iterator iter = m_hashClones.find(pFrame->getViewKey());
+	UT_ASSERT(iter != m_hashClones.end());
 
-	if (pEntry)
+	if (iter != m_hashClones.end())
 	{
-		UT_GenericVector<XAP_Frame*>* pvClones = pEntry;
+		UT_GenericVector<XAP_Frame*>* pvClones = iter->second;
 		UT_return_val_if_fail(pvClones,false);
 
 		UT_uint32 count = pvClones->getItemCount();

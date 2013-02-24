@@ -32,7 +32,6 @@
 #include "gr_Caret.h"
 #include "gr_Transform.h"
 #include "gr_CharWidthsCache.h"
-#include "ut_hash.h"
 #include "ut_vector.h"
 #include "ut_stack.h"
 #include "ut_TextIterator.h"
@@ -81,7 +80,7 @@ typedef enum {
 class ABI_EXPORT GR_Font
 {
 	friend class GR_Graphics;
-	friend class UT_GenericStringMap<GR_Font*>;
+	friend class std::map<std::string, GR_Font*>;
 
  public:
 	// want the destructor public so that the derrived graphics classes can delete font
@@ -107,7 +106,7 @@ class ABI_EXPORT GR_Font
 		That means measuring it for a font size of 120
 	 */
 	virtual UT_sint32 measureUnremappedCharForCache(UT_UCSChar cChar) const = 0;
-	virtual const UT_String & hashKey(void) const;
+	virtual const std::string & hashKey(void) const;
 	UT_sint32 getCharWidthFromCache (UT_UCSChar c) const;
 
 	/*reimplement if you want to instanciate something else */
@@ -144,7 +143,7 @@ class ABI_EXPORT GR_Font
 	  hash key for font cache. Must be initialized in ctor
 	 otherwise override hashKey() method
 	*/
-	mutable UT_String		m_hashKey;
+	mutable std::string		m_hashKey;
 
 	GrFontType               m_eType;
 
@@ -887,7 +886,8 @@ class ABI_EXPORT GR_Graphics
 	UT_sint32        m_iPrevXOffset;
 	GR_Transform     m_Transform;
 
-	UT_GenericStringMap<GR_Font*> m_hashFontCache;
+	typedef std::map<std::string, GR_Font*> FontCache;
+	FontCache  m_hashFontCache;
 
 	static UT_VersionInfo   s_Version;
 	static UT_uint32        s_iInstanceCount;

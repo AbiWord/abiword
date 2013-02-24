@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
- * Copyright (C) 2003 Hubert Figuiere
- *
+ * Copyright (C) 2003, 2013 Hubert Figuiere
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -20,8 +20,10 @@
 #ifndef _GR_CHAR_WIDTHS_CACHE_H__
 #define _GR_CHAR_WIDTHS_CACHE_H__
 
+#include <map>
+#include <string>
+
 #include "ut_types.h"
-#include "ut_hash.h"
 
 class GR_Font;
 class GR_CharWidths;
@@ -53,7 +55,9 @@ public:
 	}
 
 protected:
-	bool addFont (const GR_Font* pFont);
+	typedef std::map<std::string, GR_CharWidths*> FontCache;
+
+	FontCache::iterator addFont (const GR_Font* pFont);
 	/*!
 		Return the char Width for the font
 	 */
@@ -75,7 +79,7 @@ private:
 	/*!
 		The font hash that contains the GR_CharWidths
 	 */
-	UT_GenericStringMap<GR_CharWidths*>*			m_pFontHash;
+	FontCache m_fontHash;
 };
 
 

@@ -26,7 +26,6 @@
 #include <list>
 #include "ut_types.h"
 #include "ut_growbuf.h"
-#include "ut_hash.h"
 #include "ut_stack.h"
 #include "pt_Types.h"
 #include "pp_TableAttrProp.h"
@@ -357,8 +356,8 @@ public:
 									   const char ** pszName, const PD_Style ** ppStyle) const;
 
 	bool                    enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const;
-
-	const UT_GenericStringMap<PD_Style *> & getAllStyles()const {return m_hashStyles;}
+	
+	const std::map<std::string, PD_Style *> & getAllStyles()const {return m_hashStyles;}
 	bool                    isEndFootnote(pf_Frag * pf) const;
 	bool                    isFootnote(pf_Frag * pf) const;
 	bool                    isInsideFootnote(PT_DocPosition dpos, pf_Frag ** pfBegin = NULL) const;
@@ -639,7 +638,8 @@ protected:
 	pt_VarSet				m_varset;
 	px_ChangeHistory		m_history;
 	pf_Fragments			m_fragments;
-	UT_GenericStringMap<PD_Style *> m_hashStyles;
+	typedef std::map<std::string, PD_Style *> StyleMap;
+	StyleMap m_hashStyles;
 
 	struct {
 		PT_AttrPropIndex	m_indexCurrentInlineAP;
