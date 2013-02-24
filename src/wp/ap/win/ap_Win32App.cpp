@@ -1057,8 +1057,10 @@ ReturnTrue:
 int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
 						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
 {
+#if !GLIB_CHECK_VERSION(2,32,0)
 	if (!g_thread_supported ())
-		g_thread_init (NULL);	
+		g_thread_init (NULL);
+#endif
 	
 	bool bShowApp = true;
 	BOOL bInitialized = FALSE; 

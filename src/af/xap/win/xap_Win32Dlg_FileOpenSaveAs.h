@@ -48,14 +48,14 @@ protected:
 
 	void _buildFilterList(UT_String& sFilter);
 private:
-	wchar_t * _getDefaultExtension(UT_uint32 indx);
+	const wchar_t * _getDefaultExtension(UT_uint32 indx);
 	wchar_t m_szDefaultExtension[DEFAULT_EXT_SIZE + 1];
 
 	//
 	// This the new OPENFILENAME struct included in the most
 	// recent Plataforms SDK.
 	//
-	typedef struct OPENFILENAME_WIN50
+	struct OPENFILENAME_WIN50
 	{
 			DWORD         lStructSize;
 			HWND          hwndOwner;

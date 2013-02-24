@@ -71,13 +71,13 @@ public:
 	void        markGUIFont() {m_bGUIFont = true;}
 	bool        isFontGUI() const {return m_bGUIFont;}
 
-	const HDC   getPrimaryHDC() const {return m_hdc;}
-	const HDC   getXHDC() const {return m_xhdc;}
-	const HDC   getYHDC() const {return m_yhdc;}
+	HDC   getPrimaryHDC() const {return m_hdc;}
+	HDC   getXHDC() const {return m_xhdc;}
+	HDC   getYHDC() const {return m_yhdc;}
 
-	void        setPrimaryHDC(const HDC hdc) {m_hdc = hdc;}
-	void        setXHDC(const HDC hdc) {m_xhdc = hdc;}
-	void        setYHDC(const HDC hdc) {m_yhdc = hdc;}
+	void        setPrimaryHDC(HDC hdc) {m_hdc = hdc;}
+	void        setXHDC(HDC hdc) {m_xhdc = hdc;}
+	void        setYHDC(HDC hdc) {m_yhdc = hdc;}
 
 
 	// NB: the font handle is one which was associated with this font when it was

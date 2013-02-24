@@ -43,7 +43,7 @@ class XAP_StringSet;
 class ABI_EXPORT XAP_Win32DialogBase
 {
 public:
-	XAP_Win32DialogBase() : m_tag(magic_tag), m_hDlg(0), m_pDlg(0), m_pSS(0) {}
+	XAP_Win32DialogBase() : m_hDlg(0), m_tag(magic_tag), m_pDlg(0), m_pSS(0) {}
 	// no need for user-defined destructor
     // static functions
 	static bool setWindowText (HWND hWnd, const char* uft8_str);

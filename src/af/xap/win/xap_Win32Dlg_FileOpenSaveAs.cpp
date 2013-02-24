@@ -95,7 +95,7 @@ static bool SuffixInList(const char *haystack, const char *needle)
 
  \param indx -- index into the filter list
  */
-wchar_t * XAP_Win32Dialog_FileOpenSaveAs::_getDefaultExtension(UT_uint32 indx)
+const wchar_t * XAP_Win32Dialog_FileOpenSaveAs::_getDefaultExtension(UT_uint32 indx)
 {
 	static wchar_t abw_sfx[] = L"abw";
     char defaultExtension[DEFAULT_EXT_SIZE + 1];
@@ -553,7 +553,7 @@ UINT CALLBACK XAP_Win32Dialog_FileOpenSaveAs::s_hookSaveAsProc(HWND hDlg, UINT m
 						{
 							UT_DEBUGMSG(("SaveAs filetype changed to %d\n", pNotify->lpOFN->nFilterIndex));
 							pThis = (XAP_Win32Dialog_FileOpenSaveAs*)pNotify->lpOFN->lCustData;
-							wchar_t * ext = pThis->_getDefaultExtension(pNotify->lpOFN->nFilterIndex - 1);
+							const wchar_t * ext = pThis->_getDefaultExtension(pNotify->lpOFN->nFilterIndex - 1);
 							// for some reason the  lpstrFile member of the struct will not be set properly
 							// so we have to retrieve the text directly from the control (I could swear that
 							// this used to work, and have no idea what changed)
