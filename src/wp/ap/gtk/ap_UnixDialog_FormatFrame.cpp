@@ -22,7 +22,7 @@
 #include <gdk/gdk.h>
 #include "ut_locale.h"
 
-#include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_unixColor.h"
@@ -193,7 +193,6 @@ AP_UnixDialog_FormatFrame__onBackgroundColorClicked (GtkWidget 		*button,
 /*****************************************************************/
 
 #define	WIDGET_ID_TAG_KEY "id"
-#define BUFSIZE     64
 
 /*****************************************************************/
 
@@ -351,10 +350,10 @@ void AP_UnixDialog_FormatFrame::event_BorderThicknessChanged(void)
 		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderThickness));
 		double thickness = m_dThickness[history];
 
-		UT_UTF8String sThickness;
+		std::string sThickness;
 		{
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
-			sThickness = UT_UTF8String_sprintf("%fin",thickness);
+			sThickness = UT_std_string_sprintf("%fin",thickness);
 		}
 
 		setBorderThicknessAll(sThickness);

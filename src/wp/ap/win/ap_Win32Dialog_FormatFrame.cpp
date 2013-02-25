@@ -228,7 +228,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	// most time, all the thickness is same for top,right,bottom,left
 
 	int iCurrentIndex = 0 ; 
-	UT_UTF8String currentTickness = getBorderThicknessRight();
+	std::string currentTickness = getBorderThicknessRight();
 	for(i=0; i< FORMAT_FRAME_NUMTHICKNESS; i++)
 	{	
 		if( currentTickness == sThickness[i]) 
@@ -369,11 +369,11 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 
 				if (nSelected != CB_ERR)
 				{
-					UT_LocaleTransactor t(LC_NUMERIC, "C");					
+					UT_LocaleTransactor t(LC_NUMERIC, "C");
 					UT_Win32LocaleString thickness;
 					getComboTextItem(AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, nSelected, thickness);
-					UT_UTF8String thickness_utf8 = thickness.utf8_str ();
-					setBorderThicknessAll(thickness_utf8);					
+					std::string thickness_utf8 = thickness.utf8_str ().utf8_str();
+					setBorderThicknessAll(thickness_utf8);
 					event_previewExposed();
 				}
 			}

@@ -109,10 +109,12 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
       m_pNewHeightCell(NULL),
 	  m_bDoingDestructor(false),
 	  m_iTableWidth(0),
-	  m_iTableHeight(0),
 	  m_dTableRelWidth(0.0),
+	  m_iTableHeight(0),
+	  m_dTableRelHeight(0.0),
+	  m_sTableWidth("0.0pt"),
 	  m_sTableHeight("0.0pt"),
-	  m_sTableWidth("0.0pt")
+	  m_dMaxExtraMargin(0.0)
 {
 	UT_DEBUGMSG(("Created Table Layout %p \n",this));
 	UT_ASSERT(pLayout);

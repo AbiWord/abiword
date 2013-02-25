@@ -5281,7 +5281,7 @@ UT_sint32 fp_TableContainer::getHeight(void) const
 	return iMyHeight;
 }
 
-UT_sint32 fp_TableContainer::getWidth(void)
+UT_sint32 fp_TableContainer::getWidth(void) const
 {
 	UT_sint32 iFullWidth =  fp_VerticalContainer::getWidth();
 	if(!isThisBroken())
@@ -5297,10 +5297,10 @@ UT_sint32 fp_TableContainer::getWidth(void)
 		{
 			return getFirstBrokenTable()->getWidth();
 		}
-		return iFullWidth;
 	}
-	UT_sint32 iMyWidth = m_iRightOffset - m_iLeftOffset;
-	return iMyWidth;
+	return iFullWidth;
+//	UT_sint32 iMyWidth = m_iRightOffset - m_iLeftOffset;
+//	return iMyWidth;
 }
 
 /*!

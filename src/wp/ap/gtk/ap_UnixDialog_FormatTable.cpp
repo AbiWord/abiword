@@ -189,7 +189,6 @@ AP_UnixDialog_FormatTable__onBackgroundColorClicked (GtkWidget 		*button,
 /*****************************************************************/
 
 #define	WIDGET_ID_TAG_KEY "id"
-#define BUFSIZE     64
 
 /*****************************************************************/
 
