@@ -77,7 +77,7 @@ INT_PTR CALLBACK AP_Win32Dialog_EpubExportOptions::s_dlgProc(HWND hWnd, UINT msg
 	return FALSE;
 }
 
-INT_PTR AP_Win32Dialog_EpubExportOptions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+INT_PTR AP_Win32Dialog_EpubExportOptions::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet ();
 	UT_Win32LocaleString str;
@@ -124,7 +124,6 @@ void AP_Win32Dialog_EpubExportOptions::setvalues()
 
 void AP_Win32Dialog_EpubExportOptions::gathervalues()
 {
-	bool v;
 	set_RenderMathMlToPng(IsDlgButtonChecked(m_hDlg,AP_RID_DIALOG_EPUBXOPT_PNGMATHML)==BST_CHECKED);
 	set_SplitDocument(IsDlgButtonChecked(m_hDlg,AP_RID_DIALOG_EPUBXOPT_SPLIT)==BST_CHECKED);
 	if (IsDlgButtonChecked(m_hDlg,AP_RID_DIALOG_EPUBXOPT_EPUB2)==BST_CHECKED)
@@ -132,10 +131,14 @@ void AP_Win32Dialog_EpubExportOptions::gathervalues()
 		/* mandatory for EPUB 2 */
 		set_Epub2(true);
 		set_RenderMathMlToPng(true);
-	} else set_Epub2(false);
+	}
+	else
+	{
+		set_Epub2(false);
+	}
 }
 
-INT_PTR AP_Win32Dialog_EpubExportOptions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+INT_PTR AP_Win32Dialog_EpubExportOptions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	switch (LOWORD(wParam)) {
 		case IDOK:

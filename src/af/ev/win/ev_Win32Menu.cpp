@@ -124,7 +124,7 @@ static const EV_Menu_Bitmap s_bitmaps[] =
 	{AP_MENU_ID_HELP_ABOUT, "Menu_AbiWord_About"},
 	{AP_MENU_ID_HELP_CREDITS, "Menu_AbiWord_Credits"},
 	
-	{0, NULL}
+	{0, ""}
 
 		
 };
@@ -317,7 +317,7 @@ bool EV_Win32Menu::onCommand(AV_View * pView,
 */
 bool EV_Win32Menu::synthesizeMenu(XAP_Frame * pFrame, HMENU menuRoot)
 {	
-	bool bResult;
+	UT_DebugOnly<bool> bResult;
 	
 	const EV_Menu_ActionSet * pMenuActionSet = m_pWin32App->getMenuActionSet();
 	UT_ASSERT(pMenuActionSet);
@@ -481,7 +481,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 	
 
 	UT_uintptr pos = 0;
-	bool bResult;
+	UT_DebugOnly<bool> bResult;
 	UT_Stack stackPos;
 	stackPos.push((void*)pos);
 	UT_Stack stackMenu;
@@ -704,7 +704,7 @@ void EV_Win32Menu::_setBitmapforID (HMENU hMenu, XAP_Menu_Id id, UINT cmd)
 bool EV_Win32Menu::_isAMenuBar(XAP_Menu_Id id, HMENU hMenu)
 {
 	XAP_Menu_Id ids[] = { AP_MENU_ID_FILE, AP_MENU_ID_EDIT, AP_MENU_ID_VIEW,AP_MENU_ID_INSERT,
-		AP_MENU_ID_TOOLS, AP_MENU_ID_WINDOW, AP_MENU_ID_HELP,AP_MENU_ID_TABLE, AP_MENU_ID_FORMAT, NULL};
+		AP_MENU_ID_TOOLS, AP_MENU_ID_WINDOW, AP_MENU_ID_HELP,AP_MENU_ID_TABLE, AP_MENU_ID_FORMAT, 0 };
 
 	for (UT_uint32 i=0; i<(sizeof(ids)/sizeof(XAP_Menu_Id)); i++)
 	{
@@ -883,7 +883,7 @@ void EV_Win32Menu::onDrawItem(HWND /*hwnd*/, WPARAM /*wParam*/, LPARAM lParam)
 		wchar_t* pTmp;
 		
 		wcsncpy (szTmp, item->szText, pTabPos-item->szText);
-		pTmp = szTmp; pTmp+=pTabPos-item->szText; *pTmp=NULL;
+		pTmp = szTmp; pTmp+=pTabPos-item->szText; *pTmp=0;
 		sTextLeft.fromLocale (szTmp);
 		
 		wcscpy (szTmp, pTabPos+1);
@@ -1090,7 +1090,7 @@ bool EV_Win32MenuPopup::synthesizeMenuPopup(XAP_Frame * pFrame)
 	MENUITEMINFOW mii;
 	wchar_t buff[81];
 	memset(buff, 80 * sizeof (wchar_t), L' ');
-	buff[80* sizeof (wchar_t)] = 0;
+	buff[80] = 0;
 	
 	mii.cbSize = sizeof(mii);
 	mii.dwTypeData = buff;

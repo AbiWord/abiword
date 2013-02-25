@@ -366,7 +366,7 @@ LRESULT CALLBACK EV_Win32Toolbar::_ComboWndProc( HWND hWnd, UINT uMessage, WPARA
                 ExtTextOutW(dis->hDC, dis->rcItem.left, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, str.c_str(), str.size(), 0);
 				
 				/*Font example after the name*/
-				wchar_t* szSample = L"AbCdEfGhIj";
+				const wchar_t* szSample = L"AbCdEfGhIj";
                 GetTextExtentPoint32W(dis->hDC, str.c_str(), str.size(), &size);
 				SelectObject (dis->hDC, hFont);
 				ExtTextOutW(dis->hDC, dis->rcItem.left+size.cx+5, dis->rcItem.top, ETO_OPAQUE | ETO_CLIPPED, 0, szSample, wcslen(szSample), 0);
@@ -807,7 +807,7 @@ bool EV_Win32Toolbar::synthesize(void)
 					if (bIcons)
 					{
 						HBITMAP hBitmap;
-						const bool bFoundIcon =
+						UT_DebugOnly<bool> bFoundIcon =
 							XAP_Win32Toolbar_Icons::getBitmapForIcon(m_hwnd,
 																	MY_MAXIMUM_BITMAP_X,
 																	MY_MAXIMUM_BITMAP_Y,
@@ -968,7 +968,7 @@ bool EV_Win32Toolbar::bindListenerToView(AV_View * pView)
 	m_pViewListener = new EV_Win32Toolbar_ViewListener(this,pView);
 	UT_ASSERT(m_pViewListener);
 
-	bool bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
+	UT_DebugOnly<bool> bResult = pView->addListener(static_cast<AV_Listener *>(m_pViewListener),&m_lid);
 	UT_ASSERT(bResult);
 
 	if(pView->isDocumentPresent())
@@ -1107,7 +1107,7 @@ bool EV_Win32Toolbar::_refreshItem(AV_View * pView, const EV_Toolbar_Action * pA
 					
                 int idx = SendMessageW(hwndCombo, CB_FINDSTRINGEXACT, (WPARAM)-1, (LPARAM)localised.c_str());
 				if (idx!=CB_ERR)
-					SendMessageW(hwndCombo, CB_SETCURSEL, idx, NULL);
+					SendMessageW(hwndCombo, CB_SETCURSEL, idx, 0);
 				/*
 				 * If the string didn't exist within the combos list, we handle things differently for
 				 * different combos.

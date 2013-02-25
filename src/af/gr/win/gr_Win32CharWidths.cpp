@@ -78,7 +78,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 					else
 					{
 						ABC abc;
-						int iRes = GetCharABCWidthsW(hdc,k,k,&abc);
+						UT_DebugOnly<int> iRes = GetCharABCWidthsW(hdc,k,k,&abc);
 						UT_ASSERT( iRes );
 						
 
@@ -103,7 +103,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 	{
 		HFONT hFont = (HFONT) GetCurrentObject(hdc, OBJ_FONT);
 		LOGFONTW aLogFont;
-		int iRes = GetObjectW(hFont, sizeof(LOGFONTW), &aLogFont);
+		UT_DebugOnly<int> iRes = GetObjectW(hFont, sizeof(LOGFONTW), &aLogFont);
 		UT_ASSERT(iRes);
 
 		xxx_UT_DEBUGMSG(("gr_Win32Graphics::getCharWidth: extra interchar. spacing %d\n", GetTextCharacterExtra(hdc)));
@@ -121,7 +121,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 				{
 					SIZE Size;
 					char str[sizeof(UT_UCSChar)];
-					int iConverted = WideCharToMultiByte(CP_ACP, NULL, (LPCWSTR) &k, 1,
+					int iConverted = WideCharToMultiByte(CP_ACP, 0, (LPCWSTR) &k, 1,
 														 str, sizeof(str), NULL, NULL);
 					GetTextExtentPoint32A(hdc, str, iConverted, &Size);
 					setWidth(k, Size.cx);
@@ -159,7 +159,7 @@ void GR_Win32CharWidths::setCharWidthsOfRange(HDC hdc, UT_UCSChar c0, UT_UCSChar
 						else
 						{
 							ABC abc;
-							int iRes = GetCharABCWidthsW(hdc,k,k,&abc);
+							iRes = GetCharABCWidthsW(hdc,k,k,&abc);
 
 							// I have commented out the assert below,
 							// because when the function above is called for

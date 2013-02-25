@@ -149,7 +149,7 @@ void ev_Win32Keyboard::remapKeyboard(HKL hKeyboardLayout)
 	
 */
 bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
-									HWND /*hWnd*/, UINT /*iMsg*/, WPARAM nVirtKey, LPARAM keyData)
+				 HWND /*hWnd*/, UINT /*iMsg*/, WPARAM nVirtKey, LPARAM keyData)
 {
 
 	m_bWasAnAbiCommand = false;
@@ -162,6 +162,7 @@ bool ev_Win32Keyboard::onKeyDown(AV_View * pView,
 	int						charLen;
 	UT_UCSChar				charData[2];
 
+	UT_UNUSED(keyData);
 	UT_DEBUGMSG(("WIN32KEY_DEBUG->onKeyDown %x, %x\n", nVirtKey, keyData));
 
 	// ALT key for windows {menus, ... }, ALT+XXX for special chars, etc

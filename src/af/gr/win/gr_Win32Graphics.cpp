@@ -281,7 +281,7 @@ GR_Font* GR_Win32Graphics::getGUIFont(void)
 		// lazily grab this (once)
 		HFONT f = (HFONT) GetStockObject(DEFAULT_GUI_FONT);
 		LOGFONTW lf;
-		int iRes = GetObjectW(f, sizeof(LOGFONTW), &lf);
+		/*int iRes =*/ GetObjectW(f, sizeof(LOGFONTW), &lf);
 		m_pFontGUI = _newFont(lf, 0, m_hdc, m_hdc);
 		UT_ASSERT(m_pFontGUI);
 		DeleteObject(f);
@@ -425,14 +425,14 @@ void GR_Win32Graphics::drawChar(UT_UCSChar Char, UT_sint32 xoff, UT_sint32 yoff)
 	// Reference Microsoft knowledge base:
 	// Q145754 - PRB ExtTextOutW or TextOutW Unicode Text Output Is Blank
 	LOGFONTW lf;
-	int iRes = GetObjectW(m_pFont->getFontHandle(), sizeof(LOGFONTW), &lf);
+	UT_DebugOnly<int> iRes = GetObjectW(m_pFont->getFontHandle(), sizeof(LOGFONTW), &lf);
 	UT_ASSERT(iRes);
 	if (UT_IsWinNT() == false && lf.lfCharSet == SYMBOL_CHARSET)
 	{
 		// Symbol character handling for Win9x
 		char str[sizeof(UT_UCS2Char)];
 
-		int iConverted = WideCharToMultiByte(CP_ACP, NULL,
+		int iConverted = WideCharToMultiByte(CP_ACP, 0,
 			(LPCWSTR) &aChar, 1,
 			str, sizeof(str), NULL, NULL);
 		ExtTextOutA(m_hdc, xoff, yoff, 0, NULL, str, iConverted, NULL);
@@ -525,7 +525,7 @@ void GR_Win32Graphics::drawChars(const UT_UCSChar* pChars,
 	{
 		// Symbol character handling for Win9x
 		char* str = new char[iLength * sizeof(UT_UCS2Char)];
-		int iConverted = WideCharToMultiByte(CP_ACP, NULL,
+		int iConverted = WideCharToMultiByte(CP_ACP, 0,
 			(LPCWSTR) currentChars, iLength,
 			str, iLength * sizeof(UT_UCSChar), NULL, NULL);
 
@@ -1248,7 +1248,7 @@ void GR_Win32Graphics::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDes
 	
 	if (iRes == GDI_ERROR)
 	{
-		DWORD err = GetLastError();
+		UT_DebugOnly<DWORD> err = GetLastError();
 		UT_DEBUGMSG(("StretchDIBits failed with err %d\n", err));
 	}
 }
@@ -1596,7 +1596,7 @@ GR_Win32Font::GR_Win32Font(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 
 			_updateFontYMetrics(hdc, printHDC);
 
-			m_hashKey = UT_std_string_sprintf("%s-%d-%d-%d-%d-%d-%d-%d",
+			m_hashKey = UT_std_string_sprintf("%s-%ld-%ld-%d-%d-%d-%d-%d",
 							  lpFaceName,
 							  m_tm.tmHeight, m_tm.tmWeight, m_tm.tmItalic, m_tm.tmUnderlined,
 							  m_tm.tmStruckOut,
@@ -1979,7 +1979,7 @@ UT_sint32 GR_Win32Font::measureUnRemappedChar(UT_UCSChar c, UT_uint32 * /*height
 void GR_Win32Font::selectFontIntoDC(GR_Graphics * pGr, HDC hdc)
 {
 	HFONT hFont = getDisplayFont(pGr);
-	HGDIOBJ hRet = SelectObject(hdc, hFont);
+	UT_DebugOnly<HGDIOBJ> hRet = SelectObject(hdc, hFont);
 
 	// hate having to do the cast, here
 	UT_ASSERT_HARMLESS( hRet != (void*)GDI_ERROR);
@@ -2461,7 +2461,7 @@ bool GR_Win32Graphics::fixDevMode(HGLOBAL hDevMode)
 		// we are knees deep in crap here ... log it into the users profile, so we have
 		// some debug info to go on
 		UT_String msg;
-		UT_String_sprintf(msg,"DEVMODE too small [%s, needs %d, got %d + %d]",
+		UT_String_sprintf(msg,"DEVMODE too small [%s, needs %ld, got %d + %d]",
 						  (char*)& pDM->dmDeviceName, dwNeeded, pDM->dmSize, pDM->dmDriverExtra);
 		LOG_WIN32_EXCPT(msg.c_str());
 		ClosePrinter(hPrinter);
@@ -2566,10 +2566,12 @@ void GR_Win32Graphics::_DeviceContext_MeasureBitBltCopySpeed(HDC sourceHdc, HDC 
 	QueryPerformanceCounter(&t2);
 	
 	QueryPerformanceFrequency(&freq);
+#if DEBUG
 	double blitSpeed = ((double)(t2.QuadPart - t1.QuadPart)) / ((double)freq.QuadPart);
 
 	UT_DEBUGMSG(("ASFRENT: measured BitBlt speed: %lfs [client rectangle W = %d, H = %d]\n", 
 			blitSpeed, width, height));
+#endif
 }
 
 void GR_Win32Graphics::_DeviceContext_SwitchToBuffer()
