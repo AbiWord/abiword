@@ -1592,7 +1592,7 @@ GR_Win32Font::GR_Win32Font(LOGFONTW & lf, double fPoints, HDC hdc, HDC printHDC)
 			// Setting the m_hashKey 
 			wchar_t lpFaceName[1000];
 			
-			GetTextFaceW(printHDC, 1000*sizeof(wchar_t), lpFaceName );
+			GetTextFaceW(printHDC, 1000, lpFaceName );
 
 			_updateFontYMetrics(hdc, printHDC);
 
