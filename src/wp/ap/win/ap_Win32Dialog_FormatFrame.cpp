@@ -38,6 +38,7 @@
 
 #define BITMAP_WITDH	15
 #define BITMAP_HEIGHT	15
+#define BUFSIZE		64
 
 const char * sThickness[FORMAT_FRAME_NUMTHICKNESS] = {"0.25pt","0.5pt",
 													   "0.75pt","1.0pt",
@@ -161,6 +162,8 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	_DS(FORMATFRAME_BUTTON_SELIMAGE,	DLG_FormatFrame_SelectImage);
 	_DS(FORMATFRAME_BUTTON_NOIMAGE,		DLG_FormatFrame_NoImageBackground);
 	_DS(FORMATFRAME_TEXT_THICKNESS,		DLG_FormatTable_Thickness);
+	_DS(FORMATFRAME_TEXT_HEIGHT,		DLG_FormatTable_Height);
+	_DS(FORMATFRAME_TEXT_WIDTH, 		DLG_FormatTable_Width);
 	_DS(FORMATFRAME_TEXT_IMGBACK,		DLG_FormatFrame_SetImageBackground);
 
 
@@ -191,6 +194,16 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);
+	/* Set the value of TEXT BOX */
+	//init value is current Frame width and height
+	setCurFrameProps();
+	wchar_t 	szValue[BUFSIZE];
+	
+	swprintf(szValue, L"%02.2f", getFrameWidth());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
+
+	swprintf(szValue, L"%02.2f", getFrameHeight());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
 
 	/* Position to radio buttons */
 	if(positionMode() == FL_FRAME_POSITIONED_TO_BLOCK)
@@ -211,10 +224,19 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 
 	/* Combo Values for Thickness */
 	
-	for(i=0; i < FORMAT_FRAME_NUMTHICKNESS ;i++)
-		addItemToCombo (AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, sThickness[i]);
+	// current select index in AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS
+	// most time, all the thickness is same for top,right,bottom,left
 
-	selectComboItem (AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, 0);
+	int iCurrentIndex = 0 ; 
+	UT_UTF8String currentTickness = getBorderThicknessRight();
+	for(i=0; i< FORMAT_FRAME_NUMTHICKNESS; i++)
+	{	
+		if( currentTickness == sThickness[i]) 
+			iCurrentIndex=i;  
+		addItemToCombo (AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, sThickness[i]);
+	}
+
+	selectComboItem (AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, iCurrentIndex);
 
 	centerDialog();
 	return 1; 
@@ -349,14 +371,42 @@ BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 				{
 					UT_LocaleTransactor t(LC_NUMERIC, "C");					
 					UT_Win32LocaleString thickness;
-					UT_UTF8String thickness_utf8 = thickness.utf8_str ();
 					getComboTextItem(AP_RID_DIALOG_FORMATFRAME_COMBO_THICKNESS, nSelected, thickness);
+					UT_UTF8String thickness_utf8 = thickness.utf8_str ();
 					setBorderThicknessAll(thickness_utf8);					
 					event_previewExposed();
 				}
 			}
 			return 1;
 		}
+
+		case AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT:
+			{
+				wchar_t buf[BUFSIZE];
+				if( wNotifyCode == EN_KILLFOCUS )
+				{
+					GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
+					if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getFrameHeight() )
+					{
+						setHeight( _wtoi(buf) );
+					}
+				}				
+				return 1;
+			}
+
+		case AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH:
+			{
+				wchar_t buf[BUFSIZE];
+				if( wNotifyCode == EN_KILLFOCUS )
+				{
+					GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
+					if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getFrameWidth() )
+					{
+						setWidth( _wtoi(buf) );
+					}
+				}			
+				return 1;
+			}
 
 		case AP_RID_DIALOG_FORMATFRAME_BUTTON_SELIMAGE:
 				askForGraphicPathName();
@@ -404,6 +454,15 @@ void AP_Win32Dialog_FormatFrame::setSensitivity(bool /*bSens*/)
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_BMP_RIGHT, getRightToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_BMP_LEFT, getLeftToggled() ? BST_CHECKED: BST_UNCHECKED);	
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATFRAME_CHK_TEXTWRAP, getWrapping()?  BST_CHECKED: BST_UNCHECKED);
+	// Reset the value using the value from Prop vectot
+	initFrameWidthStr();
+	initFrameHeightStr();
+	wchar_t 	szValue[BUFSIZE];
+	swprintf(szValue, L"%02.2f", getFrameWidth());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_WIDTH, szValue);
+
+	swprintf(szValue, L"%02.2f", getFrameHeight());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATFRAME_VAL_HEIGHT, szValue);
 }
 
 void AP_Win32Dialog_FormatFrame::destroy(void) 
@@ -436,7 +495,6 @@ void AP_Win32Dialog_FormatFrame::notifyActiveFrame(XAP_Frame *pFrame)
 		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, (LONG_PTR)static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow());
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
-
 	}
 }
 

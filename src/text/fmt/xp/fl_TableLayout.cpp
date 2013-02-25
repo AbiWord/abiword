@@ -60,6 +60,8 @@
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
 #include "xap_App.h"
+#include "ut_std_string.h"
+#include "ut_locale.h"
 
 static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
 								 const char * color, PP_PropertyMap::Line & line);
@@ -107,7 +109,10 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
       m_pNewHeightCell(NULL),
 	  m_bDoingDestructor(false),
 	  m_iTableWidth(0),
-	  m_dTableRelWidth(0.0)
+	  m_iTableHeight(0),
+	  m_dTableRelWidth(0.0),
+	  m_sTableHeight("0.0pt"),
+	  m_sTableWidth("0.0pt")
 {
 	UT_DEBUGMSG(("Created Table Layout %p \n",this));
 	UT_ASSERT(pLayout);
@@ -163,7 +168,10 @@ void fl_TableLayout::createTableContainer(void)
 	fl_ContainerLayout * pCL = myContainingLayout();
 	fp_Container * pCon = pCL->getLastContainer();
 	UT_sint32 iWidth = 0;
-	if(pCon != NULL)
+	if(m_iTableWidth != 0) {
+        iWidth = m_iTableWidth;
+	}
+	else if(pCon != NULL)
 	{
 		iWidth = pCon->getWidth();
 	}
@@ -216,6 +224,8 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setLineThickness(m_iLineThickness);
 	pTab->setRowHeightType(m_iRowHeightType);
 	pTab->setRowHeight(m_iRowHeight);
+	pTab->setHeight(m_iTableHeight);
+	pTab->setWidth(m_iTableWidth);
 }
 
 
@@ -1166,17 +1176,35 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	{
 		m_bIsHomogeneous = false;
 	}
+
+	const gchar * szRulerUnits;
+	UT_Dimension dim;
+	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
+		dim = UT_determineDimension(szRulerUnits);
+	else
+		dim = DIM_IN;
+
 	const char* pszTableWidth = NULL;
 	const char* pszRelTableWidth = NULL;
 	pSectionAP->getProperty("table-width", (const gchar *&)pszTableWidth);
 	pSectionAP->getProperty("table-rel-width", (const gchar *&)pszRelTableWidth);
+	const char* pszTableHeight = NULL;
+	const char* pszRelTableHeight = NULL;
+	pSectionAP->getProperty("table-height", (const gchar *&)pszTableHeight);
+	pSectionAP->getProperty("table-rel-height", (const gchar *&)pszRelTableHeight);
 	if(pszTableWidth && pszTableWidth[0])
 	{
 		m_iTableWidth = UT_convertToLogicalUnits(pszTableWidth);
+		m_sTableWidth = pszTableWidth;
 	}
 	else
 	{
 		m_iTableWidth = getDocSectionLayout()->getActualColumnWidth();
+		{
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
+		    std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableWidth,DIM_MM));
+		    m_sTableWidth = buf;
+		}
 	}
 	if(pszRelTableWidth && pszRelTableWidth[0])
 	{
@@ -1204,6 +1232,30 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	}
 
 
+	if(pszTableHeight && pszTableHeight[0])
+	{
+		m_iTableHeight = UT_convertToLogicalUnits(pszTableHeight);
+		m_sTableHeight = pszTableHeight;
+	}
+	else
+	{
+		m_iTableHeight = getDocSectionLayout()->getActualColumnHeight();
+		{
+			UT_LocaleTransactor t(LC_NUMERIC, "C");
+		    std::string buf = UT_std_string_sprintf("%.2fpt", UT_convertDimToInches(m_iTableHeight,DIM_MM));
+		    m_sTableHeight = buf;
+		}
+	}
+	if(pszRelTableHeight && pszRelTableHeight[0])
+	{
+		m_iTableHeight = getDocSectionLayout()->getActualColumnHeight();
+		//
+		// Assume the relative table width is in percent
+		//
+		double rel = UT_convertDimensionless(pszRelTableHeight);
+		m_dTableRelHeight = static_cast<double>(m_iTableHeight)*rel/100.;
+		m_iTableHeight = m_dTableRelHeight;
+	}
 
 	const char* pszLeftOffset = NULL;
 	const char* pszTopOffset = NULL;
@@ -1213,13 +1265,6 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty("table-margin-top", (const gchar *&)pszTopOffset);
 	pSectionAP->getProperty("table-margin-right", (const gchar *&)pszRightOffset);
 	pSectionAP->getProperty("table-margin-bottom", (const gchar *&)pszBottomOffset);
-
-	const gchar * szRulerUnits;
-	UT_Dimension dim;
-	if (XAP_App::getApp()->getPrefsValue(AP_PREF_KEY_RulerUnits,&szRulerUnits))
-		dim = UT_determineDimension(szRulerUnits);
-	else
-		dim = DIM_IN;
 
 	UT_String defaultOffset;
 	switch(dim)

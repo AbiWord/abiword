@@ -207,6 +207,11 @@ UT_sint32                    getBottomOffset(void) const;
 	UT_sint32                getNumNestedTables(void) const;
 	void                     incNumNestedTables(void);
 	void                     decNumNestedTables(void);
+	inline const std::string &  tableWidth() const {  return m_sTableWidth; }
+	inline const std::string &  tableHeight() const { return m_sTableHeight; }
+	inline UT_sint32  getTableHeight() const { return m_iTableHeight; }
+	inline UT_sint32  getTableWidth() const { return m_iTableWidth; }
+	
 
 	void                     setEndTableIn(void)
 		{ m_bIsEndTableIn = true;}
@@ -272,6 +277,10 @@ private:
 	bool                   m_bDoingDestructor;
 	UT_sint32              m_iTableWidth;
 	double                 m_dTableRelWidth;
+	UT_sint32              m_iTableHeight;
+	double                 m_dTableRelHeight;
+	std::string           m_sTableWidth;
+	std::string           m_sTableHeight;
 	double                 m_dMaxExtraMargin;
 };
 

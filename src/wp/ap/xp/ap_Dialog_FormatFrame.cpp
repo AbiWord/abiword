@@ -124,7 +124,13 @@ AP_Dialog_FormatFrame::AP_Dialog_FormatFrame(XAP_DialogFactory * pDlgFactory, XA
 	  m_bSensitive(false),
 	  m_bSetWrapping(false),
 	  m_bLineToggled(false),
-	  m_iFramePositionTo(FL_FRAME_POSITIONED_TO_BLOCK)
+	  m_iFramePositionTo(FL_FRAME_POSITIONED_TO_BLOCK),
+	  m_width(1.0f),
+      m_height(1.0f),
+	  m_sWidth("0.00pt"),
+	  m_sHeight("0.00pt"),
+	  m_OldWidth(0),
+	  m_OldHeight(0)
 {
 	if(m_vecProps.getItemCount() > 0)
 		m_vecProps.clear();
@@ -393,11 +399,17 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 		return;
 	}
 
-	PT_DocPosition pos = pView->getPoint();
 
-	if (/* m_bSettingsChanged || */ m_iOldPos == pos) {
+	PT_DocPosition pos = pView->getPoint();
+	fl_FrameLayout * pFL = pView->getFrameLayout();
+	UT_sint32 layout_height = pFL->getFrameHeight();
+	UT_sint32 layout_width = pFL->getFrameWidth();
+
+	if (/* m_bSettingsChanged || */ m_iOldPos == pos 
+		// add the following condition since we need to update when change width and height
+		&& layout_height == m_OldHeight && layout_width == m_OldWidth) {
 		// comparing the actual cell pos would be even better; but who cares :)
-		return;
+		 return;  
 	}
 	m_iOldPos = pos;
 
@@ -430,6 +442,8 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	m_borderThicknessLeft   = 1.0f;
 	m_borderThicknessTop    = 1.0f;
 	m_borderThicknessBottom = 1.0f;
+	m_height = 1.0f;
+	m_width = 1.0f;
 
 	m_sBorderThickness = "1.00pt",
  
@@ -437,6 +451,8 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	m_sBorderThicknessLeft   = "1.00pt";
 	m_sBorderThicknessTop    = "1.00pt";
 	m_sBorderThicknessBottom = "1.00pt";
+	m_sHeight = "1.00pt";
+	m_sWidth = "1.00pt";
 
 	m_backgroundColor = white;
 
@@ -475,6 +491,9 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 					REPLACE_CELL_PROPERTY("left-thickness");
 					REPLACE_CELL_PROPERTY("top-thickness");
 					REPLACE_CELL_PROPERTY("bot-thickness");
+
+					REPLACE_CELL_PROPERTY("frame-height");
+					REPLACE_CELL_PROPERTY("frame-width");
 
 					REPLACE_CELL_PROPERTY("right-color");
 					REPLACE_CELL_PROPERTY("left-color");
@@ -599,7 +618,8 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 	}
 
 	UT_UTF8String thickness;
-
+	/* update thickness properties
+	*/
 	pszStyle = 0;
 	m_vecProps.getProp("right-thickness", pszStyle);
 	if (pszStyle) {
@@ -624,6 +644,25 @@ void AP_Dialog_FormatFrame::setCurFrameProps(void)
 		thickness = pszStyle;
 		setBorderThicknessBottom(thickness);
 	}
+	/* update height&width properties
+	*/
+	UT_UTF8String height;
+	UT_UTF8String width;
+	pszStyle = 0;
+	m_vecProps.getProp("frame-height", pszStyle);
+	if (pszStyle) {
+		height = pszStyle;
+		setHeight(height);
+	}
+	m_OldHeight = layout_height;
+
+	pszStyle = 0;
+	m_vecProps.getProp("frame-width", pszStyle);
+	if (pszStyle) {
+		width = pszStyle;
+		setWidth(width);
+	}
+	m_OldWidth = layout_width;
 
 	/* update wrap properties
 	 */
@@ -912,9 +951,7 @@ static UT_UTF8String s_canonical_thickness (float thickness)
 		sThick = "99.99pt";
 	}
 	else {
-		char buf[16];
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		sprintf(buf, "%.2fpt", thickness);
+        std::string buf = UT_std_string_sprintf("%.2fpt", thickness);
 		sThick = buf;
 	}
 	return sThick;
@@ -935,14 +972,49 @@ static UT_UTF8String s_canonical_thickness (const UT_UTF8String & sThickness, fl
 		sThick = "99.99pt";
 	}
 	else {
-		char buf[16];
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		sprintf(buf, "%.2fpt", thickness);
+        std::string buf = UT_std_string_sprintf("%.2fpt", thickness);
 		sThick = buf;
 	}
 	return sThick;
 }
 
+static UT_UTF8String s_canonical_width_height (float height_width)
+{
+	UT_UTF8String sHeight_width;
+
+	if (height_width < 0.01) {
+		sHeight_width = "0.01pt";
+	}
+	else if (height_width > 9999.99) {
+		sHeight_width = "9999.99pt";
+	}
+	else {
+        std::string buf = UT_std_string_sprintf("%.2fpt", height_width);
+		sHeight_width = buf;
+	}
+	return sHeight_width;
+}
+
+static UT_UTF8String s_canonical_width_height (const UT_UTF8String & sHeight_width, float & height_width)
+{
+	height_width = static_cast<float>(UT_convertToPoints(sHeight_width.utf8_str()));
+
+	UT_UTF8String sHeight_width_new;
+
+	if (height_width < 0.01) {
+		height_width = 0.01f;
+		sHeight_width_new = "0.01pt";
+	}
+	else if (height_width > 9999.99) {
+		height_width = 9999.99f;
+		sHeight_width_new = "99.99pt";
+	}
+	else {
+        std::string buf = UT_std_string_sprintf("%.2fpt", height_width);
+		sHeight_width_new = buf;
+	}
+	return sHeight_width_new;
+}
 void AP_Dialog_FormatFrame::setBorderThicknessRight (const UT_UTF8String & sThick)
 {
 	m_sBorderThicknessRight = s_canonical_thickness(sThick, m_borderThicknessRight);
@@ -1023,6 +1095,54 @@ void AP_Dialog_FormatFrame::setBorderColorAll(UT_RGBColor clr)
 	setBorderColorBottom(clr);
 	
 	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setWidth(UT_uint32 width)
+{
+	setWidth(s_canonical_width_height(width));  
+	m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setHeight(UT_uint32 height)
+{
+	 setHeight(s_canonical_width_height(height)); 
+	 m_bSettingsChanged = true;
+}
+
+void AP_Dialog_FormatFrame::setWidth(const UT_UTF8String & width)
+{
+	m_sWidth = s_canonical_width_height(width, m_width);
+    m_vecProps.addOrReplaceProp("frame-width", m_sWidth.utf8_str());
+    m_bSettingsChanged = true;  
+}
+
+void AP_Dialog_FormatFrame::initFrameWidthStr() 
+{  
+	UT_UTF8String width;
+	const gchar * pszStyle = 0;
+	m_vecProps.getProp("frame-width", pszStyle);
+	if (pszStyle) {
+		width = pszStyle;
+		setWidth(width);
+	}
+}
+
+void AP_Dialog_FormatFrame::initFrameHeightStr() 
+{ 
+	UT_UTF8String height;
+	const gchar * pszStyle = 0;
+	m_vecProps.getProp("frame-height", pszStyle);
+	if (pszStyle) {
+		height = pszStyle;
+		setHeight(height);
+	}
+}
+
+void AP_Dialog_FormatFrame::setHeight(const UT_UTF8String &  height)
+{
+	m_sHeight = s_canonical_width_height(height, m_height);
+	m_vecProps.addOrReplaceProp("frame-height", m_sHeight.utf8_str());
+	m_bSettingsChanged = true;  
 }
 
 void AP_Dialog_FormatFrame::setBorderColorRight (const UT_RGBColor & clr)

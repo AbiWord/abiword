@@ -127,6 +127,10 @@ public:
 	const UT_RGBColor &		backgroundColor () const { return m_backgroundColor; }
 
 	void					setBorderColor (UT_RGBColor clr);
+	void					setWidth(UT_uint32 width);
+	void					setHeight(UT_uint32 height);
+	void					setWidth(const UT_UTF8String &  width);
+	void					setHeight(const UT_UTF8String &  height);
 
 	void					setBorderColorAll (UT_RGBColor clr);
 
@@ -182,6 +186,12 @@ public:
 	float					borderThicknessLeft ()   const { return m_borderThicknessLeft;   }
 	float					borderThicknessTop ()    const { return m_borderThicknessTop;    }
 	float					borderThicknessBottom () const { return m_borderThicknessBottom; }
+	inline float            getFrameWidth() const {  return m_width; }
+	inline float            getFrameHeight() const { return m_height; }
+	inline const UT_UTF8String &  frameWidth() const {  return m_sWidth; }
+	inline const UT_UTF8String &  frameHeight() const { return m_sHeight; }
+	void                    initFrameWidthStr();  
+	void                    initFrameHeightStr();  
 
 	void					setPositionMode (FL_FrameFormatMode mode);
 
@@ -223,6 +233,13 @@ private:
 	UT_UTF8String			m_sBorderThicknessLeft;
 	UT_UTF8String			m_sBorderThicknessTop;
 	UT_UTF8String			m_sBorderThicknessBottom;
+	float                   m_width;
+	float                   m_height;
+	UT_UTF8String			m_sWidth;
+	UT_UTF8String			m_sHeight;
+	//for update
+	UT_sint32			m_OldWidth;
+	UT_sint32			m_OldHeight;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
 

@@ -193,6 +193,7 @@ AP_UnixDialog_FormatFrame__onBackgroundColorClicked (GtkWidget 		*button,
 /*****************************************************************/
 
 #define	WIDGET_ID_TAG_KEY "id"
+#define BUFSIZE     64
 
 /*****************************************************************/
 
@@ -220,7 +221,11 @@ AP_UnixDialog_FormatFrame::AP_UnixDialog_FormatFrame(XAP_DialogFactory * pDlgFac
 	m_wSelectImageButton = NULL;
 	m_wNoImageButton = NULL;
 	m_wBorderThickness = NULL;
+	m_wHeight = NULL;
+	m_wWidth= NULL;
 	m_iBorderThicknessConnect = 0;
+	m_iFrameHeightConnect = 0;
+	m_iFrameWidthConnect = 0;
 	m_wWrapButton = NULL;
 	m_wPosParagraph =  NULL;
 	m_wPosColumn = NULL;
@@ -279,7 +284,18 @@ void AP_UnixDialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 						 static_cast<UT_uint32>(allocation.height));	
 	
 	m_pFormatFramePreview->draw();
-	
+	// Set init Value
+	UT_Dimension dim = DIM_PT;
+	//update height&width
+	setCurFrameProps();
+	float value = getFrameWidth();
+	const gchar *szValue= UT_formatDimensionString (dim, value);
+	gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
+
+	value = getFrameHeight();
+	szValue= UT_formatDimensionString (dim, value);
+	gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
+
 	startUpdater();
 }
 
@@ -344,6 +360,32 @@ void AP_UnixDialog_FormatFrame::event_BorderThicknessChanged(void)
 		setBorderThicknessAll(sThickness);
 		event_previewExposed();
 	}
+}
+
+void AP_UnixDialog_FormatFrame::event_HeightChanged(void)
+{
+    if(m_wHeight)
+    {
+	    gtk_editable_select_region(GTK_EDITABLE(m_wHeight), 0, 0);  
+	    //set Height 
+	    const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wHeight));
+	    if( atoi( buf ) > 0 && atoi(buf) != (signed) getFrameHeight() ){
+		    setHeight( atoi(buf) );
+	    }
+    }
+}
+void AP_UnixDialog_FormatFrame::event_WidthChanged(void)
+{
+    if(m_wWidth)
+    {
+	    gtk_editable_select_region(GTK_EDITABLE(m_wWidth), 0, 0);  
+	    //set Width 
+	    const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wWidth));
+	    if( atoi( buf ) > 0 && atoi(buf) != (signed) getFrameWidth() )
+	    {
+		    setWidth( atoi(buf) );
+	    }
+    }
 }
 
 void AP_UnixDialog_FormatFrame::event_ApplyToChanged(void)
@@ -467,6 +509,10 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorder")), pSS, AP_STRING_ID_DLG_FormatFrame_Borders);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderColor")), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderThickness")), pSS, AP_STRING_ID_DLG_FormatTable_Thickness);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFrameHeight")), pSS, AP_STRING_ID_DLG_FormatTable_Height);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbFrameWidth")), pSS, AP_STRING_ID_DLG_FormatTable_Width);
+	m_wWidth = GTK_WIDGET(gtk_builder_get_object(builder, "entryFrameWidth"));
+	m_wHeight = GTK_WIDGET(gtk_builder_get_object(builder, "entryFrameHeight")); 
 	
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackground")), pSS, AP_STRING_ID_DLG_FormatFrame_Background);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBackgroundColor")), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
@@ -530,6 +576,24 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	g_object_unref(G_OBJECT(builder));
 	
 	return window;
+}
+
+static void s_focus_out_height(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+    UT_UNUSED(event);
+    UT_UNUSED(user_data);
+    AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(user_data);
+    UT_return_if_fail(widget && dlg);
+    dlg->event_HeightChanged();
+}
+
+static void s_focus_out_width(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+{
+    UT_UNUSED(event);
+    UT_UNUSED(user_data);
+    AP_UnixDialog_FormatFrame * dlg = reinterpret_cast<AP_UnixDialog_FormatFrame *>(user_data);
+    UT_return_if_fail(widget && dlg);
+    dlg->event_WidthChanged();
 }
 
 static void s_destroy_clicked(GtkWidget * /* widget */,
@@ -617,6 +681,8 @@ void AP_UnixDialog_FormatFrame::_connectSignals(void)
 							"changed",
 							G_CALLBACK(s_border_thickness),
 							reinterpret_cast<gpointer>(this));
+    m_iFrameWidthConnect = g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
+    m_iFrameHeightConnect = g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
 #if GTK_CHECK_VERSION(3,0,0)

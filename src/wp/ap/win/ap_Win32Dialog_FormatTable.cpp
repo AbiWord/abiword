@@ -36,6 +36,7 @@
 
 #define BITMAP_WITDH	15
 #define BITMAP_HEIGHT	15
+#define BUFSIZE		64
 
 const char * sThicknessTable[FORMAT_TABLE_NUMTHICKNESS] = {"0.25pt","0.5pt",
 													   "0.75pt","1.0pt",
@@ -136,6 +137,8 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	_DS(FORMATTABLE_TEXT_PREVIEW,		DLG_FormatTable_Preview);
 	_DS(FORMATTABLE_TEXT_BORDERS,		DLG_FormatTable_Borders);
 	_DS(FORMATTABLE_TEXT_BORDER, 		DLG_FormatTable_Color);
+	_DS(FORMATTABLE_TEXT_HEIGHT, 		DLG_FormatTable_Height);
+	_DS(FORMATTABLE_TEXT_WIDTH, 		DLG_FormatTable_Width);
 	_DS(FORMATTABLE_TEXT_BACKGROUNDS, 	DLG_FormatTable_Background);
 	_DS(FORMATTABLE_TEXT_APPLYTO,	 	DLG_FormatTable_Apply_To);
 	_DS(FORMATTABLE_BUTTON_SELIMAGE,	DLG_FormatTable_SelectImage);
@@ -186,6 +189,26 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 			
 	selectComboItem (AP_RID_DIALOG_FORMATTABLE_COMBO_APPLYTO, 0);
 
+	/* Set the value of TEXT BOX */
+	wchar_t 	szValue[BUFSIZE];
+
+	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
+	if (!frame) return 1;
+
+	FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
+	fl_BlockLayout * pBL = pView->getCurrentBlock();
+	fl_DocSectionLayout * pTL= pBL->getDocSectionLayout();
+	
+	setCurCellProps();
+	initTableWidthStr();
+	initTableHeightStr();
+	swprintf(szValue, L"%02.2f", getTableWidth());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_VAL_WIDTH, szValue);
+
+	swprintf(szValue, L"%02.2f", getTableHeight());
+	SetDlgItemTextW(m_hDlg, AP_RID_DIALOG_FORMATTABLE_VAL_HEIGHT, szValue);
+
+
 	/* Combo Values for Thickness */	
 	for(i=0; i < FORMAT_TABLE_NUMTHICKNESS ;i++)
 		addItemToCombo (AP_RID_DIALOG_FORMATTABLE_COMBO_THICKNESS, sThicknessTable[i]);
@@ -232,7 +255,36 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lPa
 			toggleLineType(AP_Dialog_FormatTable::toggle_left, bChecked);				
 			event_previewExposed();			
 			return 1;
-		}			 
+		}		
+		case AP_RID_DIALOG_FORMATTABLE_VAL_HEIGHT:
+			{
+				wchar_t buf[BUFSIZE];
+				if( wNotifyCode == EN_KILLFOCUS )
+				{
+					GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
+					if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getTableHeight() )
+					{
+						setHeight( _wtoi(buf) );
+					}
+				}					
+				event_previewExposed();
+				return 1;
+			}
+
+		case AP_RID_DIALOG_FORMATTABLE_VAL_WIDTH:
+			{
+				wchar_t buf[BUFSIZE];
+				if( wNotifyCode == EN_KILLFOCUS )
+				{
+					GetDlgItemTextW( hWnd, wId, buf, BUFSIZE );
+					if( _wtoi( buf ) > 0 && _wtoi(buf) != (signed) getTableWidth() )
+					{
+						setWidth( _wtoi(buf) );
+					}
+				}					
+				event_previewExposed();
+				return 1;
+			}
 		case AP_RID_DIALOG_FORMATTABLE_BTN_BORDERCOLOR:		
 		{	
 			CHOOSECOLORW cc;                

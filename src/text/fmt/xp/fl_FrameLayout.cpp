@@ -101,7 +101,7 @@ fl_FrameLayout::fl_FrameLayout(FL_DocLayout* pLayout,
 	  m_bIsTightWrap(false),
 	  m_iPrefPage(-1),
 	  m_iPrefColumn(0),
-	  m_bExpandHeight(false),
+	  m_bExpandHeight(true),
 	  m_iMinHeight(0),
 	  m_pParentContainer(NULL)
 {
@@ -942,8 +942,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	UT_DEBUGMSG(("PageYpos for frame is %s units %d \n",pszPageYpos,m_iYPage));
 
 
-// Width
-
+// really set Frame width
 	if(!pSectionAP || !pSectionAP->getProperty("frame-width",pszWidth))
 	{
 		m_iWidth = UT_convertToLogicalUnits("1.0in");
@@ -957,8 +956,7 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 		m_iWidth = m_pLayout->getGraphics()->tlu(2);
 	}
 	UT_DEBUGMSG(("Width %s \n",pszWidth));
-// Height
-
+//here really to the Frame height
 	if(!pSectionAP || !pSectionAP->getProperty("frame-height",pszHeight))
 	{
 		m_iHeight = UT_convertToLogicalUnits("1.0in");
@@ -1121,13 +1119,13 @@ void fl_FrameLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 
 	//
 	// Expandable Height
-	//
+	// so that here, m_bExpandHeight = true;
 	if(pSectionAP && pSectionAP->getProperty("frame-expand-height",pszExpandHeight))
 	{
 		m_iMinHeight = m_iHeight;
 		m_bExpandHeight = true;
 	}
-
+    
 	//
 	// left/right aligned
 	//

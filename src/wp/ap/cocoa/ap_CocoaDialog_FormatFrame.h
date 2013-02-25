@@ -50,6 +50,8 @@ public:
 	void					event_ApplyToChanged(void);
 	void 					event_previewExposed(void);
 	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
+	virtual void            setWidthInGUI(UT_UTF8String & sWidth);
+	virtual void            setHeightInGUI(UT_UTF8String & sHeight);
 	virtual void			setSensitivity(bool bSens);
 	virtual void            destroy(void);
 	virtual void            activate(void);
@@ -110,12 +112,16 @@ private:
 	IBOutlet NSForm *			_leftBorderNumberForm;
 	IBOutlet NSForm *			_topBorderNumberForm;
 	IBOutlet NSForm *			_bottomBorderNumberForm;
+	IBOutlet NSFormCell *			_frameHeightField;
+	IBOutlet NSFormCell *			_frameWidthField;
 
 	IBOutlet NSStepper *		_borderStepper;
 	IBOutlet NSStepper *		_rightBorderStepper;
 	IBOutlet NSStepper *		_leftBorderStepper;
 	IBOutlet NSStepper *		_topBorderStepper;
 	IBOutlet NSStepper *		_bottomBorderStepper;
+	IBOutlet NSStepper *		_frameHeightStepper;
+	IBOutlet NSStepper *		_frameWidthStepper;
 
 	IBOutlet NSMenu *			_linestyleMenu;
 	IBOutlet NSMenuItem *		_linestyleNone;
@@ -138,6 +144,10 @@ private:
 - (IBAction)bgColorAction:(id)sender;
 - (IBAction)borderThicknessField:(id)sender;
 - (IBAction)borderThicknessStepper:(id)sender;
+- (IBAction)frameHeightField:(id)sender;
+- (IBAction)frameHeightStepper:(id)sender;
+- (IBAction)frameWidthField:(id)sender;
+- (IBAction)frameWidthStepper:(id)sender;
 - (IBAction)borderColorAction:(id)sender;
 - (IBAction)borderLineStyleAction:(id)sender;
 - (IBAction)bottomBorderAction:(id)sender;
@@ -155,6 +165,8 @@ private:
 - (void)setPositionState:(int)state;
 - (void)setBorderColor:(NSColor *)color;
 - (void)setBackgroundColor:(NSColor *)color;
+- (void)setHeight:(float)height;
+- (void)setWidth:(float)width;
 
 - (void)menuWillActivate:(NSMenu *)menu forButton:(XAP_CocoaToolbarButton *)button;
 - (BOOL)validateMenuItem:(NSMenuItem *)menuItem;
