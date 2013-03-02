@@ -127,11 +127,16 @@ public:
 	XAP_Frame*			getParentFrame();
 	void 				centerDialog();
 	static void			s_centerDialog(HWND hWnd);
-	void				setHandle(HWND hWnd){m_hDlg=hWnd;};
+	static HBITMAP			s_loadBitmap(HWND hWnd, UINT nId,
+						     const char* pName,
+						     int width, int height,
+						     const UT_RGBColor & Color);
+
+	void				setHandle(HWND hWnd){m_hDlg=hWnd;}
 
 private:
 	XAP_Win32Dialog	*			m_pDialog;
-	HWND						m_hDlg;
+	HWND	 					m_hDlg;
 };
 
 

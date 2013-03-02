@@ -165,15 +165,6 @@ int AP_Win32Dialog_Border_Shading::_insertItemToComboboxEx(
 	return static_cast<int>(SendMessageW(hCbx, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&cbei)));
 }
 
-HBITMAP AP_Win32Dialog_Border_Shading::_loadBitmap(HWND hWnd, UINT nId, const char* pName, int width, int height, const UT_RGBColor& color)
-{
-	HBITMAP hBitmap = NULL;
-	
-    XAP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width,height, &color,	pName,	&hBitmap);
-	SendDlgItemMessageW(hWnd,  nId,  BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);	
-	return hBitmap; 
-}
-
 #define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
@@ -201,10 +192,10 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 	setDialogTitle(pSS->getValue(AP_STRING_ID_DLG_BorderShading_Title));
 	
 	/* Load the bitmaps into the dialog box */	
-    m_hBitmapBottom = _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_BOTTOM, "FT_LINEBOTTOM",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
-    m_hBitmapTop	= _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_TOP, "FT_LINETOP",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
-    m_hBitmapRight	= _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_RIGHT, "FT_LINERIGHT",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
-    m_hBitmapLeft	= _loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_LEFT, "FT_LINELEFT",  BITMAP_WITDH, BITMAP_HEIGHT, Color); 
+    m_hBitmapBottom = XAP_Win32DialogHelper::s_loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_BOTTOM, "FT_LINEBOTTOM",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapTop	= XAP_Win32DialogHelper::s_loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_TOP, "FT_LINETOP",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapRight	= XAP_Win32DialogHelper::s_loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_RIGHT, "FT_LINERIGHT",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
+    m_hBitmapLeft	= XAP_Win32DialogHelper::s_loadBitmap(hWnd,AP_RID_DIALOG_BORDERSHADING_BMP_LEFT, "FT_LINELEFT",  BITMAP_WITDH, BITMAP_HEIGHT, Color); 
 	
 	/* Preview*/
 	HWND hwndChild = GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_STATIC_PREVIEW);	
@@ -260,11 +251,11 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 											BORDER_SHADING_NUMOFSTYLES, 
 											0);
 
-	// 8/9/2010 Maleesh - Follow the PP_PropertyMap::TypeLineStyle order.
-	HBITMAP tmp_bmp0 = _loadBitmap(hWnd, 0, "BORDER_STYLE_NONE",	BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
-	HBITMAP tmp_bmp1 = _loadBitmap(hWnd, 0, "BORDER_STYLE_SOLID",	BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
-	HBITMAP tmp_bmp2 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DOTTED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
-	HBITMAP tmp_bmp3 = _loadBitmap(hWnd, 0, "BORDER_STYLE_DASHED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	// Follow the PP_PropertyMap::TypeLineStyle order.
+	HBITMAP tmp_bmp0 = XAP_Win32DialogHelper::s_loadBitmap(hWnd, 0, "BORDER_STYLE_NONE",	BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp1 = XAP_Win32DialogHelper::s_loadBitmap(hWnd, 0, "BORDER_STYLE_SOLID",	BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp2 = XAP_Win32DialogHelper::s_loadBitmap(hWnd, 0, "BORDER_STYLE_DOTTED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
+	HBITMAP tmp_bmp3 = XAP_Win32DialogHelper::s_loadBitmap(hWnd, 0, "BORDER_STYLE_DASHED",  BORDER_STYLE_BITMAP_WIDTH, BORDER_STYLE_BITMAP_HEIGHT, Color); 
 
 	ImageList_Add(hImageList, tmp_bmp0, NULL);
 	ImageList_Add(hImageList, tmp_bmp1, NULL);

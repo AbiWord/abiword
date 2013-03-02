@@ -664,7 +664,7 @@ bool EV_Win32Menu::onInitMenu(XAP_Frame * pFrame, AV_View * pView, HWND /*hWnd*/
 /*
 	Caller should DeleteObject the handle returned	
 */
-HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int width, int height, UT_RGBColor color)
+HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int width, int height, const UT_RGBColor & color)
 {
 	
 	HBITMAP hBitmap = NULL;
@@ -676,11 +676,13 @@ HBITMAP EV_Win32Menu::_loadBitmap(XAP_Menu_Id id, int width, int height, UT_RGBC
 			break;	
 	}
 
-	if (!pBitmaps->id) return hBitmap;
+	if (!pBitmaps->id)
+		return hBitmap;
 
 	if (!color.isTransparent())
 		XAP_Win32Toolbar_Icons::getBitmapForIcon(GetDesktopWindow(), width, height, &color, pBitmaps->szName, &hBitmap);
-	else XAP_Win32Toolbar_Icons::getAlphaBitmapForIcon(GetDesktopWindow(), width, height, pBitmaps->szName, &hBitmap);
+	else
+		XAP_Win32Toolbar_Icons::getAlphaBitmapForIcon(GetDesktopWindow(), width, height, pBitmaps->szName, &hBitmap);
 	
 	return hBitmap; 
 }

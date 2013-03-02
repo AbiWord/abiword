@@ -29,12 +29,13 @@
 #include "xap_App.h"
 #include "xap_Win32App.h"
 #include "xap_Win32DialogHelper.h"
-
+#include "xap_Win32Toolbar_Icons.h"
 #include "ut_Win32LocaleString.h"
 
 
 static void _assertValidDlgHandle(HWND hDlg)
 {
+	UT_DEBUG_ONLY_ARG(hDlg);
 	UT_ASSERT(IsWindow(hDlg));
 }
 
@@ -42,6 +43,7 @@ static void _assertValidDlgHandle(HWND hDlg)
 
 void XAP_Win32DialogHelper::runModal(XAP_Frame * pFrame, XAP_Dialog_Id dialog_id, UT_sint32 resource_id, XAP_Dialog *p_dialog)
 {
+	UT_DEBUG_ONLY_ARG(dialog_id);
 	UT_ASSERT(m_pDialog != NULL);
 
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(p_dialog->getApp());
@@ -50,7 +52,7 @@ void XAP_Win32DialogHelper::runModal(XAP_Frame * pFrame, XAP_Dialog_Id dialog_id
 
 	LPCWSTR lpTemplate = MAKEINTRESOURCEW(resource_id);
 
-	int result = DialogBoxParamW(pWin32App->getInstance(), lpTemplate,
+	UT_DebugOnly<int> result = DialogBoxParamW(pWin32App->getInstance(), lpTemplate,
 								static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 								(DLGPROC)s_dlgProc, (LPARAM)this);
 	UT_ASSERT((result != -1));
@@ -378,4 +380,16 @@ void XAP_Win32DialogHelper::s_centerDialog(HWND hWnd)
 
 	// Move your arse...
 	MoveWindow (hWnd, pt.x, pt.y, nWidth, nHeight, TRUE);
+}
+
+HBITMAP XAP_Win32DialogHelper::s_loadBitmap(HWND hWnd, UINT nId,
+					     const char* pName,
+					     int width, int height,
+					     const UT_RGBColor & color)
+{
+	HBITMAP hBitmap = NULL;
+
+	XAP_Win32Toolbar_Icons::getBitmapForIcon(hWnd, width,height, &color,	pName,	&hBitmap);
+	SendDlgItemMessageW(hWnd,  nId,  BM_SETIMAGE,  IMAGE_BITMAP, (LPARAM) hBitmap);
+	return hBitmap;
 }
