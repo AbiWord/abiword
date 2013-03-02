@@ -72,7 +72,7 @@ void XAP_Win32Dialog_DocComparison::runModal(XAP_Frame * pFrame)
     createModal(pFrame, MAKEINTRESOURCEW(XAP_RID_DIALOG_DOCCOMPARISON));
 }
 
-BOOL XAP_Win32Dialog_DocComparison::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
+BOOL XAP_Win32Dialog_DocComparison::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	// set the window title
 	setDialogTitle (getWindowLabel());	

@@ -207,8 +207,8 @@ public:
  	SET_GATHER			(CustomSmartQuotes,		bool);
 	SET_GATHER			(EnableOverwrite,		bool);
 
-	virtual bool _gatherViewShowToolbar(UT_uint32 t) { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return true;}
-	virtual void _setViewShowToolbar(UT_uint32 row, bool b) {}
+	virtual bool _gatherViewShowToolbar(UT_uint32 /*t*/) { UT_ASSERT(UT_SHOULD_NOT_HAPPEN); return true;}
+	virtual void _setViewShowToolbar(UT_uint32 /*row*/, bool /*b*/) {}
 
 
 	// unimplemented UI-wise. We need dummy implementations to satisfy the XP framework, though

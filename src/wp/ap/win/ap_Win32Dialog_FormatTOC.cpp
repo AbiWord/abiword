@@ -62,7 +62,7 @@ AP_Win32Dialog_FormatTOC::~AP_Win32Dialog_FormatTOC(void)
 
 }
 
-void AP_Win32Dialog_FormatTOC::notifyActiveFrame(XAP_Frame *pFrame)
+void AP_Win32Dialog_FormatTOC::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 {    
 	
 }
@@ -168,15 +168,15 @@ void AP_Win32Dialog_FormatTOC::setStyle(HWND hWnd, int nCtrlID)
 	switch (nCtrlID) 
 	{
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_HEADINGSTYLEVALUE:
-			sProp = static_cast<char *> ("toc-heading-style");
+			sProp = "toc-heading-style";
 			break;
 
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_FILLSTYLEVALUE:
-			sProp = static_cast<char *> ("toc-source-style");
+			sProp = "toc-source-style";
 			break;
 
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_DISPLAYSTYLEVALUE:
-			sProp = static_cast<char *> ("toc-dest-style");
+			sProp = "toc-dest-style";
 			break;
 
 		default:
@@ -261,7 +261,7 @@ XAP_Win32PropertySheet()
 	setCallBack(s_sheetInit);	
 }
 
-int CALLBACK AP_Win32Dialog_FormatTOC_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam)
+int CALLBACK AP_Win32Dialog_FormatTOC_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM /*lParam*/)
 {	
 	if (uMsg==PSCB_INITIALIZED)
 	{	
@@ -279,7 +279,7 @@ void AP_Win32Dialog_FormatTOC_Sheet::_onOK()
 	destroy();
 }
 
-void AP_Win32Dialog_FormatTOC_Sheet::_onInitDialog(HWND hwnd)
+void AP_Win32Dialog_FormatTOC_Sheet::_onInitDialog(HWND /*hwnd*/)
 {	
 	const XAP_StringSet * pSS = getContainer()->getApp()->getStringSet();
 
@@ -376,7 +376,7 @@ void AP_Win32Dialog_FormatTOC_General::_onInitDialog()
 		{AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_FILLSTYLE,		AP_STRING_ID_DLG_FormatTOC_ChangeStyle},
 		{AP_RID_DIALOG_FORMATTOC_GENERAL_TEXT_DISPLAYSTYLE,		AP_STRING_ID_DLG_FormatTOC_DispStyle},
 		{AP_RID_DIALOG_FORMATTOC_GENERAL_BUTTON_DISPLAYSTYLE,	AP_STRING_ID_DLG_FormatTOC_ChangeStyle},
-		{NULL,NULL}
+		{0,0}
 	};
 
 	// Localise the controls
@@ -399,18 +399,17 @@ void AP_Win32Dialog_FormatTOC_General::_onInitDialog()
 }
 
 
-BOOL AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
-	AP_Win32Dialog_FormatTOC*	 pParent=  (AP_Win32Dialog_FormatTOC*)getContainer();	
-	
+//	HWND hWndCtrl = (HWND)lParam;
+
 	switch (wId)
 	{		
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING:
 		{
-			UT_UTF8String sProp = static_cast<char *> ("toc-has-heading");
+			UT_UTF8String sProp = "toc-has-heading";
 			UT_UTF8String sVal = "1";
 
 			if (IsDlgButtonChecked(hWnd, AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASHEADING) != BST_CHECKED)
@@ -461,7 +460,7 @@ BOOL AP_Win32Dialog_FormatTOC_General::_onCommand(HWND hWnd, WPARAM wParam, LPAR
 		case AP_RID_DIALOG_FORMATTOC_GENERAL_CHECK_HASLEVEL:
 		{
 
-			UT_UTF8String sProp = static_cast<char *> ("toc-has-label");
+			UT_UTF8String sProp = "toc-has-label";
 			UT_UTF8String sVal = "1";
 			UT_String sNum =  UT_String_sprintf("%d",getContainer()->getMainLevel());
 
@@ -568,7 +567,7 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 		{AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_TEXT_TABLEADER,		AP_STRING_ID_DLG_FormatTOC_TabLeader},
 		{AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_TEXT_PAGENUMERING,	AP_STRING_ID_DLG_FormatTOC_PageNumbering},
 		{AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_TEXT_IDENT,			AP_STRING_ID_DLG_FormatTOC_Indent},
-		{NULL,NULL}
+		{0, 0}
 	};
 
 	// Localise the controls
@@ -602,7 +601,7 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 
 	/* Now the Page Numbering style */
 	const FootnoteTypeDesc * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
-	UT_UTF8String * sProp = NULL;	
+	UT_UTF8String * sProp;
 	UT_UTF8String  val;
 	
 	sProp = new UT_UTF8String("toc-page-type");		
@@ -640,14 +639,12 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 }
 
 
-BOOL AP_Win32Dialog_FormatTOC_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatTOC_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
-	AP_Win32Dialog_FormatTOC_Layout* pParent=  (AP_Win32Dialog_FormatTOC_Layout*)getContainer();	
-	
-	
+//	HWND hWndCtrl = (HWND)lParam;
+
 	switch (wId)
 	{		
 		case AP_RID_DIALOG_FORMATTOC_LAYOUTDETAILS_COMBO_LEVEL:
@@ -676,7 +673,7 @@ BOOL AP_Win32Dialog_FormatTOC_Layout::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 }
 
 // Spin control notification
-void AP_Win32Dialog_FormatTOC_Layout::_onNotify(LPNMHDR pNMHDR, int iCtrlID)
+void AP_Win32Dialog_FormatTOC_Layout::_onNotify(LPNMHDR pNMHDR, int /*iCtrlID*/)
 {
 
 	if (pNMHDR->code != UDN_DELTAPOS)
@@ -768,12 +765,10 @@ void AP_Win32Dialog_FormatTOC_Layout::saveCtrlsValuesForDetailsLevel ()
 
 	if (nSelected!=CB_ERR) 
 	{	
-		UT_String sNum;		
-
 		const FootnoteTypeDesc * footnoteTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
 		const char * szVal = footnoteTypeList[nSelected].prop;
-		sProp = static_cast<char *> ("toc-page-type");
-		sVal = static_cast<const char *> (szVal);
+		sProp = "toc-page-type";
+		sVal = szVal;
 		
 		sNum = UT_String_sprintf("%d",getContainer()->getDetailsLevel());
 		sProp += sNum.c_str();

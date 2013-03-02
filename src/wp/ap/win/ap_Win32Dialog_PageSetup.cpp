@@ -115,7 +115,7 @@ XAP_Win32PropertySheet()
 /*
 	Sheet window procedure
 */
-int AP_Win32Dialog_PageSetup_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+int AP_Win32Dialog_PageSetup_Sheet::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wID = LOWORD(wParam); 
 	
@@ -139,7 +139,7 @@ int AP_Win32Dialog_PageSetup_Sheet::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	return 1;	// The application did not process the message
 }
 
-INT_PTR CALLBACK AP_Win32Dialog_PageSetup_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM lParam)
+INT_PTR CALLBACK AP_Win32Dialog_PageSetup_Sheet::s_sheetInit(HWND hwnd,  UINT uMsg,  LPARAM /*lParam*/)
 {	
 	if (uMsg==PSCB_INITIALIZED)
 	{	
@@ -212,8 +212,6 @@ void AP_Win32Dialog_PageSetup_Page::doSpinControl(UT_uint32 id, UT_sint32 delta)
 	char buf[BUFSIZE];
 	int updatedData =  0;
 	int pageScale   = ( m_pParent->m_PageSize.getDims() == DIM_MM ) ? 1 : 10;
-	int marginScale = ( m_pParent->getMarginUnits() == DIM_MM ) ? 1 : 10;
-
 	switch( id )
 	{
 	case AP_RID_DIALOG_PAGE_SETUP_SPN_WIDTH:
@@ -263,9 +261,7 @@ BOOL AP_Win32Dialog_PageSetup_Page::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;	
-	AP_Win32Dialog_PageSetup*	 pParent=  (AP_Win32Dialog_PageSetup*)getContainer();	
-	
-	
+
 	switch (wId)
 	{
 	case AP_RID_DIALOG_PAGE_SETUP_LBX_PAPERSIZE:
@@ -526,9 +522,7 @@ BOOL AP_Win32Dialog_PageSetup_Margin::_onCommand(HWND hWnd, WPARAM wParam, LPARA
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
 	HWND hWndCtrl = (HWND)lParam;	
-	AP_Win32Dialog_PageSetup*	 pParent=  (AP_Win32Dialog_PageSetup*)getContainer();	
-	
-	
+
 	switch (wId)
 	{
 	case AP_RID_DIALOG_PAGE_SETUP_LBX_MARGINUNITS:
@@ -684,7 +678,6 @@ INT_PTR CALLBACK AP_Win32Dialog_PageSetup_Margin::s_pageWndProc(HWND hWnd, UINT 
 void AP_Win32Dialog_PageSetup_Margin::doSpinControl(UT_uint32 id, UT_sint32 delta)
 {
 	int updatedData =  0;
-	int pageScale   = ( m_pParent->m_PageSize.getDims() == DIM_MM ) ? 1 : 10;
 	int marginScale = ( m_pParent->getMarginUnits() == DIM_MM ) ? 1 : 10;
 
 	switch( id )

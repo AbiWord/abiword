@@ -33,7 +33,7 @@ public:
 	AP_Win32Dialog_Replace(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id);
 	virtual ~AP_Win32Dialog_Replace(void);
 
-	virtual void			runModal(XAP_Frame * pFrame){};
+	virtual void			runModal(XAP_Frame * /*pFrame*/){};
 	virtual void			runModeless(XAP_Frame * pFrame);
 	virtual void			notifyActiveFrame(XAP_Frame *pFrame);
 	virtual void			notifyCloseFrame(XAP_Frame *pFrame);

@@ -88,7 +88,7 @@ BOOL XAP_Win32Dialog_ListDocuments::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 	// set the column headings
 	HWND h = GetDlgItem(hWnd, XAP_RID_DIALOG_LIST_DOCUMENTS_LIST);
 
-	DWORD dwStyle = GetWindowLongPtrW(h, GWL_STYLE);
+//	DWORD dwStyle = GetWindowLongPtrW(h, GWL_STYLE);
 
 	RECT r;
 	GetWindowRect(h, &r);

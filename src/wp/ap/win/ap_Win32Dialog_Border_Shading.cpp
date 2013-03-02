@@ -98,7 +98,7 @@ void AP_Win32Dialog_Border_Shading::runModeless(XAP_Frame * pFrame)
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
 }
 
-BOOL AP_Win32Dialog_Border_Shading::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Border_Shading::_onDlgMessage(HWND /*hWnd*/, UINT msg, WPARAM /*wParam*/, LPARAM lParam)
 {	
 	if (msg == WM_DRAWITEM)
 	{
@@ -153,7 +153,8 @@ int AP_Win32Dialog_Border_Shading::_insertItemToComboboxEx(
 															INT_PTR index = -1,
 															UINT mask = CBX_ITEM_MASK)
 {
-	COMBOBOXEXITEMW cbei={0};
+	COMBOBOXEXITEMW cbei;
+	memset(&cbei, 0, sizeof(cbei));
 
 	cbei.mask			= mask;
 	cbei.iItem			= index;
@@ -164,7 +165,7 @@ int AP_Win32Dialog_Border_Shading::_insertItemToComboboxEx(
 	return static_cast<int>(SendMessageW(hCbx, CBEM_INSERTITEMW, 0, reinterpret_cast<LPARAM>(&cbei)));
 }
 
-HBITMAP AP_Win32Dialog_Border_Shading::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
+HBITMAP AP_Win32Dialog_Border_Shading::_loadBitmap(HWND hWnd, UINT nId, const char* pName, int width, int height, const UT_RGBColor& color)
 {
 	HBITMAP hBitmap = NULL;
 	
@@ -177,11 +178,9 @@ HBITMAP AP_Win32Dialog_Border_Shading::_loadBitmap(HWND hWnd, UINT nId, char* pN
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 // This handles the WM_INITDIALOG message for the top-level dialog.
-BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {	
 	UT_uint32 w,h, i;
-	RECT rect;
-	int nItem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));	
@@ -283,11 +282,11 @@ BOOL AP_Win32Dialog_Border_Shading::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	return 1; 
 }
 
-BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
+//	HWND hWndCtrl = (HWND)lParam;
 	switch (wId)
 	{		
 		case AP_RID_DIALOG_BORDERSHADING_BMP_BOTTOM:		
@@ -490,7 +489,7 @@ void AP_Win32Dialog_Border_Shading::setShadingOffsetInGUI(UT_UTF8String & sOffse
 	UT_DEBUGMSG(("Maleesh =============== Setup the shading offset in the GUI: %s \n", sOffset.utf8_str()));
 
 	guint closest = _findClosestOffset(sOffset.utf8_str());
-	SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET), CB_SETCURSEL, WPARAM(closest), NULL);
+	SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET), CB_SETCURSEL, WPARAM(closest), 0);
 }
 
 void AP_Win32Dialog_Border_Shading::setBorderColorInGUI(UT_RGBColor clr)
@@ -507,7 +506,7 @@ void AP_Win32Dialog_Border_Shading::setBorderThicknessInGUI(UT_UTF8String & sThi
 	UT_DEBUGMSG(("Maleesh =============== Setup the border thickness in the GUI: %s \n", sThick.utf8_str()));
 
 	guint closest = _findClosestThickness(sThick.utf8_str());
-	SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS), CB_SETCURSEL, WPARAM(closest), NULL);
+	SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS), CB_SETCURSEL, WPARAM(closest), 0);
 }
 
 void AP_Win32Dialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
@@ -515,10 +514,10 @@ void AP_Win32Dialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
 	UT_DEBUGMSG(("Maleesh =============== Setup the border style in the GUI: %s \n", sStyle.utf8_str()));
 
 	PP_PropertyMap::TypeLineStyle style = PP_PropertyMap::linestyle_type(sStyle.utf8_str());
-	guint index = (guint)style - 1;
+	gint index = (gint)style - 1;
 
 	if (index >= 0)
-		SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), CB_SETCURSEL, WPARAM(index), NULL);
+		SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), CB_SETCURSEL, WPARAM(index), 0);
 }
 
 void AP_Win32Dialog_Border_Shading::setShadingEnable(bool enable)
@@ -535,7 +534,7 @@ void AP_Win32Dialog_Border_Shading::setShadingEnable(bool enable)
 	event_previewExposed();	
 }
 
-void AP_Win32Dialog_Border_Shading::setSensitivity(bool bSens)
+void AP_Win32Dialog_Border_Shading::setSensitivity(bool /*bSens*/)
 {
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);

@@ -454,6 +454,7 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		break;
 
 	default:
+		bDialogResult = FALSE;
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}

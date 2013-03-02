@@ -88,7 +88,7 @@ void AP_Win32Dialog_SplitCells::runModeless(XAP_Frame * pFrame)
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_SPLITCELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
-HBITMAP AP_Win32Dialog_SplitCells::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
+HBITMAP AP_Win32Dialog_SplitCells::_loadBitmap(HWND hWnd, UINT nId, const char* pName, int width, int height, const UT_RGBColor & color)
 {
 	HBITMAP hBitmap = NULL;
 	
@@ -101,10 +101,8 @@ HBITMAP AP_Win32Dialog_SplitCells::_loadBitmap(HWND hWnd, UINT nId, char* pName,
 }
 
 // This handles the WM_INITDIALOG message for the top-level dialog.
-BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {	
-	HDC hdc;
-	int x, y;	
 	RECT rect;
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
@@ -127,11 +125,7 @@ BOOL AP_Win32Dialog_SplitCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 
 	// The six items are the same size
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_SPLITCELLS_BMP_LEFT), &rect);			
-		
-	hdc = GetDC(hWnd);
-	x = rect.right - rect.left,
-	y = rect.bottom - rect.top,
-	
+
 	// Load the bitmaps into the dialog box								
     m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_LEFT, "SPLITLEFT",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
 	m_hBitmapRight = _loadBitmap(hWnd,AP_RID_DIALOG_SPLITCELLS_BMP_VERTMID, "SPLITVERTMID", BITMAP_WITDH, BITMAP_HEIGHT, Color);
@@ -204,7 +198,7 @@ void AP_Win32Dialog_SplitCells::notifyActiveFrame(XAP_Frame *pFrame)
 	setAllSensitivities();
 }
 
-BOOL AP_Win32Dialog_SplitCells::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_SplitCells::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 
@@ -265,7 +259,7 @@ void AP_Win32Dialog_SplitCells::destroy(void)
 {
 	finalize();
 
-	int iResult = DestroyWindow( m_hDlg );
+	UT_DebugOnly<int> iResult = DestroyWindow( m_hDlg );
 	UT_ASSERT_HARMLESS((iResult != 0));
 }
 void AP_Win32Dialog_SplitCells::activate(void)

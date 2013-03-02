@@ -101,7 +101,7 @@ STDMETHODIMP XAP_Win32DropTarget::DragOver(DWORD /*grfKeyState*/, POINTL /*point
 {        	
 	*pdwEffect = (m_bSupportedFormat) ? DROPEFFECT_COPY : DROPEFFECT_NONE;			
 	
-	SendMessageW(static_cast<XAP_Win32FrameImpl*>(m_pFrame->getFrameImpl())->getTopLevelWindow(), WM_VSCROLL, SB_LINEDOWN, NULL);
+	SendMessageW(static_cast<XAP_Win32FrameImpl*>(m_pFrame->getFrameImpl())->getTopLevelWindow(), WM_VSCROLL, SB_LINEDOWN, 0);
 
 	return S_OK;
 }
@@ -140,7 +140,7 @@ STDMETHODIMP XAP_Win32DropTarget::Drop (LPDATAOBJECT pDataObj, DWORD /*grfKeySta
 		// We send an event Message Window to the Win32Frame since historicaly
 		// the file loading was processed there
 		if (count) 
-			SendMessageW(static_cast<XAP_Win32FrameImpl*>(m_pFrame->getFrameImpl())->getTopLevelWindow(), WM_DROPFILES, (WPARAM)medium.hGlobal, NULL);
+			SendMessageW(static_cast<XAP_Win32FrameImpl*>(m_pFrame->getFrameImpl())->getTopLevelWindow(), WM_DROPFILES, (WPARAM)medium.hGlobal, 0);
 				
 		ReleaseStgMedium(&medium);	     
 		return S_OK;

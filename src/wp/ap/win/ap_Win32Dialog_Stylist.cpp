@@ -74,17 +74,13 @@ void AP_Win32Dialog_Stylist::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(m_id == AP_DIALOG_ID_STYLIST);
 	m_bIsModal = true;
 
-	// raise the dialog
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);	
-
     createModal (pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_STYLIST));
 }
 
 void AP_Win32Dialog_Stylist::runModeless(XAP_Frame * pFrame)
 {
 	// raise the dialog
-	int iResult;
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
+	UT_DebugOnly<int> iResult;
 	m_bIsModal = false;
 	UT_return_if_fail (m_id == AP_DIALOG_ID_STYLIST);
 	createModeless (pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_STYLIST));
@@ -104,7 +100,7 @@ void  AP_Win32Dialog_Stylist::destroy(void)
 {
 	if (!m_bIsModal)
 	{
-		int iResult = DestroyWindow( m_hDlg );
+		UT_DebugOnly<int> iResult = DestroyWindow( m_hDlg );
 
 		UT_ASSERT_HARMLESS((iResult != 0));
 
@@ -153,7 +149,7 @@ void  AP_Win32Dialog_Stylist::setStyleInGUI(void)
 
 void  AP_Win32Dialog_Stylist::activate(void)
 {
-	int iResult;
+	UT_DebugOnly<int> iResult;
 
 	//// Update the caption
 	//ConstructWindowName();
@@ -176,7 +172,7 @@ void AP_Win32Dialog_Stylist::notifyActiveFrame(XAP_Frame * pFrame)
 #define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_STYLIST_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_STYLIST_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL AP_Win32Dialog_Stylist::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Stylist::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
     //localize Caption
@@ -200,7 +196,7 @@ BOOL AP_Win32Dialog_Stylist::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPar
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL AP_Win32Dialog_Stylist::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Stylist::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 
@@ -344,7 +340,9 @@ BOOL CALLBACK AP_Win32Dialog_Stylist::s_treeProc(HWND hWnd,UINT msg,WPARAM wPara
 	return CallWindowProcW(hTreeProc, hWnd, msg, wParam, lParam);
 }
 
+#ifndef UNICODE
 #define UNICODE
+#endif
 
 BOOL AP_Win32Dialog_Stylist::_styleClicked(void)
 {

@@ -231,7 +231,7 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 			HMONITOR m;
 			MONITORINFO mif;
 			SetRect(&rcWindow,iPosX,iPosY,iPosX+iWidth,iPosY+iHeight);
-			if (m=MonitorFromRect(&rcWindow,MONITOR_DEFAULTTONEAREST)) {;
+			if ((m = MonitorFromRect(&rcWindow, MONITOR_DEFAULTTONEAREST))) {;
 				mif.cbSize=sizeof(MONITORINFO);
 				if (GetMonitorInfoW(m,&mif)) {
 					rcDesktop=mif.rcWork;
@@ -296,7 +296,7 @@ void XAP_Win32FrameImpl::_createTopLevelWindow(void)
 							m_szMenuLayoutName,
 							m_szMenuLabelSetName);
 	UT_return_if_fail(m_pWin32Menu);
-	bool bResult = m_pWin32Menu->synthesizeMenuBar(getFrame());
+	UT_DebugOnly<bool> bResult = m_pWin32Menu->synthesizeMenuBar(getFrame());
 	UT_ASSERT(bResult);
 
 	HMENU oldMenu = GetMenu(m_hwndFrame);

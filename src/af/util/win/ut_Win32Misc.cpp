@@ -47,7 +47,7 @@ void UT_gettimeofday(struct timeval *tv)
     FILETIME ft;
     GetSystemTimeAsFileTime (&ft);
 
-    ULARGE_INTEGER _100ns = {ft.dwLowDateTime,ft.dwHighDateTime};
+    ULARGE_INTEGER _100ns = {{ft.dwLowDateTime,ft.dwHighDateTime}};
 
 #ifndef __GNUC__
     _100ns.QuadPart -= 0x19db1ded53e8000;
@@ -509,7 +509,7 @@ UT_Win32AssertDlg::answer UT_Win32AssertDlg::runModal()
 {
 	LPSTR lpTemplate = MAKEINTRESOURCEA(UT_RID_DIALOG_ASSERT);
 	
-	int result = DialogBoxParamA(GetModuleHandleA(NULL),
+	UT_DebugOnly<int> result = DialogBoxParamA(GetModuleHandleA(NULL),
 								lpTemplate,
 								NULL,
 								(DLGPROC)s_dlgProc,(LPARAM)this);

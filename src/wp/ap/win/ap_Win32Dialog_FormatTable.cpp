@@ -85,7 +85,7 @@ void AP_Win32Dialog_FormatTable::runModeless(XAP_Frame * pFrame)
 	m_pApp->rememberModelessId( sid, (XAP_Dialog_Modeless *) m_pDialog);
 }
 
-BOOL AP_Win32Dialog_FormatTable::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatTable::_onDlgMessage(HWND /*hWnd*/, UINT msg, WPARAM /*wParam*/, LPARAM lParam)
 {	
 	if (msg == WM_DRAWITEM)
 	{
@@ -108,7 +108,7 @@ BOOL AP_Win32Dialog_FormatTable::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wPara
     return FALSE;
 }
 
-HBITMAP AP_Win32Dialog_FormatTable::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
+HBITMAP AP_Win32Dialog_FormatTable::_loadBitmap(HWND hWnd, UINT nId, const char* pName, int width, int height, const UT_RGBColor& color)
 {
 	HBITMAP hBitmap = NULL;
 	
@@ -121,10 +121,9 @@ HBITMAP AP_Win32Dialog_FormatTable::_loadBitmap(HWND hWnd, UINT nId, char* pName
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 // This handles the WM_INITDIALOG message for the top-level dialog.
-BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {	
 	UT_uint32 w,h, i;
-	RECT rect;
 	int nItem;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);
@@ -195,10 +194,6 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
 	if (!frame) return 1;
 
-	FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
-	fl_BlockLayout * pBL = pView->getCurrentBlock();
-	fl_DocSectionLayout * pTL= pBL->getDocSectionLayout();
-	
 	setCurCellProps();
 	initTableWidthStr();
 	initTableHeightStr();
@@ -217,11 +212,11 @@ BOOL AP_Win32Dialog_FormatTable::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM 
 	return 1; 
 }
 
-BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
+//	HWND hWndCtrl = (HWND)lParam;
 	switch (wId)
 	{			
 		case AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM:		
@@ -399,12 +394,12 @@ void AP_Win32Dialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
 	InvalidateRect(GetDlgItem(m_hDlg, AP_RID_DIALOG_FORMATTABLE_BTN_BACKCOLOR), NULL, FALSE);
 }
 
-void AP_Win32Dialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
+void AP_Win32Dialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & /*sThick*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
-void AP_Win32Dialog_FormatTable::setSensitivity(bool bSens)
+void AP_Win32Dialog_FormatTable::setSensitivity(bool /*bSens*/)
 {
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATTABLE_BMP_TOP, getTopToggled() ? BST_CHECKED: BST_UNCHECKED);
 	CheckDlgButton(m_hDlg, AP_RID_DIALOG_FORMATTABLE_BMP_BOTTOM, getBottomToggled() ? BST_CHECKED: BST_UNCHECKED);

@@ -89,7 +89,7 @@ INT_PTR CALLBACK XAP_Win32PropertyPage::s_pageWndProc(HWND hWnd, UINT msg, WPARA
 			pNMHDR = (NMHDR*)lParam;					
 			if (pNMHDR->code==PSN_KILLACTIVE)
 			{
-				XAP_Win32PropertyPage *pThis = (XAP_Win32PropertyPage *)GetWindowLongPtrW(hWnd,DWLP_USER);
+				pThis = (XAP_Win32PropertyPage *)GetWindowLongPtrW(hWnd,DWLP_USER);
 				pThis->_onKillActive();
 			}
 			break;

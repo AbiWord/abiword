@@ -157,7 +157,7 @@ void AP_Win32Dialog_WordCount::notifyActiveFrame(XAP_Frame *pFrame)
 	}
 }
 
-BOOL AP_Win32Dialog_WordCount::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_WordCount::_onDlgMessage(HWND /*hWnd*/, UINT msg, WPARAM wParam, LPARAM /*lParam*/)
 {
 	if (msg != WM_VSCROLL)
 		return FALSE;
@@ -207,7 +207,7 @@ void AP_Win32Dialog_WordCount::_setDlgItemInt(UINT nCtrl, int nValue)
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
 
-BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
+BOOL AP_Win32Dialog_WordCount::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	

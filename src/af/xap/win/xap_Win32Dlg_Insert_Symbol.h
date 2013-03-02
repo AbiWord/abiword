@@ -32,8 +32,7 @@ class XAP_Win32PreviewWidget;
 static UT_UCSChar m_CurrentSymbol = UCS_SPACE;
 static UT_UCSChar m_PreviousSymbol = UCS_SPACE;
 
-static char Symbol_font_selected[32] = "Symbol";
-
+extern char Symbol_font_selected[];
 
 class ABI_EXPORT XAP_Draw_Symbol_sample : public XAP_Preview
 {
@@ -49,6 +48,7 @@ public:
 
 	void	draw(const UT_Rect *clip=NULL)
 		{
+		UT_UNUSED(clip);
 		m_pSymbolDraw->drawarea(m_CurrentSymbol, m_PreviousSymbol);
 		}
 

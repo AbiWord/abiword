@@ -66,7 +66,7 @@ void AP_Win32Dialog_MarkRevisions::runModal(XAP_Frame * pFrame)
 
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_MARK_REVISIONS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_MarkRevisions::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -143,7 +143,7 @@ static int _getRBOffset(HWND hWnd, int nIDFirstButton, int nIDLastButton)
 	return -1;
 }
 
-BOOL AP_Win32Dialog_MarkRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_MarkRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 	HWND h;

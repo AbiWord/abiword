@@ -109,7 +109,7 @@ void AP_Win32Dialog_Lists::runModeless(XAP_Frame * pFrame)
 #define _DS(c,s)       setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)      setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	delete m_pPreviewWidget; m_pPreviewWidget = NULL;
 
@@ -234,7 +234,7 @@ bool AP_Win32Dialog_Lists::isPageLists(void)
 	return true;  //not optimal, but just return true for now to make list folding work
 }
 
-BOOL AP_Win32Dialog_Lists::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Lists::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	const WORD wNotifyCode	= HIWORD(wParam);
 	const WORD wId			= LOWORD(wParam);
@@ -439,7 +439,7 @@ void AP_Win32Dialog_Lists::activate(void)
 
 	clearDirty();
 
-	int iResult = _win32Dialog.showWindow( SW_SHOW );
+	UT_DebugOnly<int> iResult = _win32Dialog.showWindow( SW_SHOW );
 
 	iResult = _win32Dialog.bringWindowToTop();
 

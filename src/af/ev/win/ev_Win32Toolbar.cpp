@@ -1216,9 +1216,9 @@ bool EV_Win32Toolbar::getToolTip(LPARAM lParam)
 void EV_Win32Toolbar::show(void)
 {
 	UT_return_if_fail(m_pWin32Frame);
-	HWND hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
+	UT_DebugOnly<HWND> hRebar = static_cast<XAP_Win32FrameImpl*>(m_pWin32Frame->getFrameImpl())->getToolbarWindow();
 	UT_ASSERT(hRebar);
-	const int iBand = _getBandForHwnd(m_hwnd);
+	UT_DebugOnly<int> iBand = _getBandForHwnd(m_hwnd);
 	UT_ASSERT(iBand < 0);	// It can't already be displayed!
 	_addToRebar();
 

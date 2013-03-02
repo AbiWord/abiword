@@ -88,7 +88,7 @@ BOOL AP_Win32Dialog_ToggleCase::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPAR
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL AP_Win32Dialog_ToggleCase::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_ToggleCase::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 

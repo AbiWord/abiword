@@ -26,7 +26,7 @@
 /*****************************************************************/
 
 #define GWL(hwnd)		(HFONT)GetWindowLongPtrW((hwnd), GWLP_USERDATA)
-#define SWL(hwnd, f)	(HFONT)SetWindowLongPtrW((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
+#define SWL(hwnd, f)	SetWindowLongPtrW((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
 
 /*!
   Spacing between the label text and the line separator part of the 
@@ -86,7 +86,7 @@ static void AdaptSeparatorLength(HWND hwnd, const wchar_t* text, HFONT hFont)
 	{
 		textSize.cx += TEXT_LINE_SPACING;
 	}
-	UT_uint32 lineWidth = controlRect.right - textSize.cx;
+	UT_sint32 lineWidth = controlRect.right - textSize.cx;
 	if(lineWidth < 0)
 	{
 		lineWidth = 0;
@@ -114,10 +114,12 @@ static LRESULT CALLBACK _LabelledSeparatorWndProc(HWND hwnd, UINT iMsg, WPARAM w
 	case WM_CREATE:
 		{
 			CREATESTRUCTW* lpCreate = (CREATESTRUCTW *) lParam;
-			HWND separator = CreateWindowW(L"STATIC", NULL, 
+			UT_DebugOnly<HWND> separator = CreateWindowW(L"STATIC",
+								     NULL,
 				SS_ETCHEDHORZ | WS_CHILD | WS_VISIBLE,
 				0, lpCreate->cy / 2, lpCreate->cx, LINE_HEIGHT,
-				hwnd, (HMENU) IDC_LINE_SEPARATOR, lpCreate->hInstance, NULL);
+				hwnd, (HMENU) IDC_LINE_SEPARATOR,
+				lpCreate->hInstance, NULL);
 			UT_ASSERT_HARMLESS(separator);
 			return 0;
 		}
@@ -172,7 +174,7 @@ bool XAP_Win32LabelledSeparator_RegisterClass(XAP_Win32App * app)
 {
 	WNDCLASSEXW  wndclass;
 	HINSTANCE hinst = app->getInstance();
-	ATOM a;
+	UT_DebugOnly<ATOM> a;
 
 	wndclass.cbSize = sizeof(WNDCLASSEXW);
 	if(GetClassInfoExW(hinst, s_LabelledSeparatorWndClassName, &wndclass))

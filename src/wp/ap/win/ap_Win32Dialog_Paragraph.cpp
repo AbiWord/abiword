@@ -43,7 +43,7 @@
 /*****************************************************************/
 
 #define GWL(hwnd)              (AP_Win32Dialog_Paragraph*)GetWindowLongPtrW((hwnd), DWLP_USER)
-#define SWL(hwnd, d)   (AP_Win32Dialog_Paragraph*)SetWindowLongPtrW((hwnd), DWLP_USER,(LONG_PTR)(d))
+#define SWL(hwnd, d)   SetWindowLongPtrW((hwnd), DWLP_USER,(LONG_PTR)(d))
 
 /*****************************************************************/
 
@@ -121,7 +121,7 @@ void AP_Win32Dialog_Paragraph::runModal(XAP_Frame * pFrame)
 
 	HWND hFrameWnd = pWin32FrameImpl->getTopLevelWindow();
 
-	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
+	UT_DebugOnly<int> result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
 								hFrameWnd,
 								(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT((result != -1));
@@ -228,7 +228,7 @@ BOOL CALLBACK AP_Win32Dialog_Paragraph::s_tabProc(HWND hWnd,UINT msg,WPARAM wPar
 #define _DSX(c,s)	setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 #define _GV(s)		(pSS->getValue(AP_STRING_ID_##s))
 
-BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
@@ -248,7 +248,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 		XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(m_pApp);
 		HINSTANCE hinst = pWin32App->getInstance();
 		DLGTEMPLATE * pTemplate = NULL;
-		HWND w = NULL;
+		UT_DebugOnly<HWND> w;
 
 		tp.pThis = this;
 
@@ -305,7 +305,7 @@ BOOL AP_Win32Dialog_Paragraph::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 #define _SST(c,i)	setDlgItemText(hWnd,AP_RID_DIALOG_##c,_getSpinItemValue(i))
 #define _CDB(c,i)	CheckDlgButton(hWnd,AP_RID_DIALOG_##c,_getCheckItemValue(i))
 
-BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Paragraph::_onInitTab(HWND hWnd, WPARAM /*wParam*/, LPARAM lParam)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 

@@ -252,7 +252,7 @@ void XAP_Win32Slurp::processCommand(HDDEDATA hData)
 	// now do something useful with the command and its parameter
 	if (g_ascii_strcasecmp(command,"open") == 0)
 		{
-			if (!pathname || !*pathname)
+			if (!*pathname)
 			{
 				UT_DEBUGMSG(("No pathname given in DDE Open command.\n"));
 				goto Finished;
@@ -296,9 +296,10 @@ typedef enum { X_Error, X_CreatedKey, X_ExistingKey } XX_Status;
 static XX_Status _fetchKey(HKEY k1, const char * szSubKey, HKEY * pkNew)
 {
 	DWORD dwDisposition;
-	LONG eResult = RegCreateKeyEx(k1,szSubKey,0,"",
-								  REG_OPTION_NON_VOLATILE,KEY_ALL_ACCESS,NULL, 
-								  pkNew, &dwDisposition);
+	LONG eResult = RegCreateKeyEx(k1, szSubKey, 0, NULL,
+				      REG_OPTION_NON_VOLATILE, KEY_ALL_ACCESS,
+				      NULL,
+				      pkNew, &dwDisposition);
 	if (eResult != ERROR_SUCCESS)
 	{
 		UT_DEBUGMSG(("Could not open key [%s]\n",szSubKey));
@@ -378,7 +379,6 @@ void XAP_Win32Slurp::stuffRegistry(const char * szSuffix,
 	sprintf(bufOurFoo,"AbiSuite.%s",szApplicationName);
 	strtok(bufOurFoo," ");				// trim key at first whitespace
 
-	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
 	const gchar *pStr = "%s Document";
 	UT_Win32LocaleString tmpl;
 	char tdbuf[512];

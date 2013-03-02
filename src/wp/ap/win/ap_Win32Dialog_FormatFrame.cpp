@@ -93,7 +93,7 @@ void AP_Win32Dialog_FormatFrame::runModeless(XAP_Frame * pFrame)
 		
 }
 
-BOOL AP_Win32Dialog_FormatFrame::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatFrame::_onDlgMessage(HWND /*hWnd*/, UINT msg, WPARAM /*wParam*/, LPARAM lParam)
 {	
 	if (msg == WM_DRAWITEM)
  	{
@@ -115,7 +115,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onDlgMessage(HWND hWnd, UINT msg, WPARAM wPara
 	return FALSE;
 }
 
-HBITMAP AP_Win32Dialog_FormatFrame::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
+HBITMAP AP_Win32Dialog_FormatFrame::_loadBitmap(HWND hWnd, UINT nId, const char* pName, int width, int height, const UT_RGBColor & color)
 {
 	HBITMAP hBitmap = NULL;
 	
@@ -130,8 +130,8 @@ HBITMAP AP_Win32Dialog_FormatFrame::_loadBitmap(HWND hWnd, UINT nId, char* pName
 // This handles the WM_INITDIALOG message for the top-level dialog.
 BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {	
-	HDC hdc;
-	int x, y;	
+//	HDC hdc;
+//	int x, y;	
 	UT_uint32 w,h;
 	UT_sint32 i = 0;
 	RECT rect;	
@@ -141,9 +141,9 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 	
 	/* The four items are the same size */
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_FORMATFRAME_BMP_BOTTOM), &rect);					
-	hdc = GetDC(hWnd);
-	x = rect.right - rect.left;
-	y = rect.bottom - rect.top;
+//	hdc = GetDC(hWnd);
+//	x = rect.right - rect.left;
+//	y = rect.bottom - rect.top;
 	
 	/* Localise controls*/
 	_DSX(FORMATFRAME_BTN_CANCEL,		DLG_Close);
@@ -243,7 +243,7 @@ BOOL AP_Win32Dialog_FormatFrame::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPA
 }
 
 
-BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_FormatFrame::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);

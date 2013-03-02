@@ -47,7 +47,7 @@ public:
 	virtual void            activate(void);
 	virtual void            notifyActiveFrame(XAP_Frame * pFrame);
 
-	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, char* pName, int width, int height, UT_RGBColor Color);
+	HBITMAP 				_loadBitmap(HWND hWnd,UINT nId, const char* pName, int width, int height, const UT_RGBColor & Color);
 
 protected:
 

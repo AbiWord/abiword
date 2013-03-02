@@ -36,7 +36,7 @@
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-ATOM		    XAP_Win32PreviewWidget::m_atomPreviewWidgetClass = NULL;
+ATOM		    XAP_Win32PreviewWidget::m_atomPreviewWidgetClass = 0;
 UT_uint32	XAP_Win32PreviewWidget::m_iInstanceCount = 0;
 wchar_t		XAP_Win32PreviewWidget::m_bufClassName[100];
 
@@ -92,8 +92,8 @@ XAP_Win32PreviewWidget::~XAP_Win32PreviewWidget(void)
 	m_iInstanceCount--;
 	if(m_iInstanceCount == 0)
 	{
-		m_atomPreviewWidgetClass = NULL;
-		bool bResult = (UnregisterClassW(m_bufClassName,m_pWin32App->getInstance()) == TRUE);
+		m_atomPreviewWidgetClass = 0;
+		UT_DebugOnly<bool> bResult = (UnregisterClassW(m_bufClassName,m_pWin32App->getInstance()) == TRUE);
 		UT_ASSERT_HARMLESS(bResult);
 	}
 
@@ -165,7 +165,7 @@ LRESULT XAP_Win32PreviewWidget::onPaint(HWND hwnd)
 	UT_ASSERT(hwnd == m_hwndPreview);
 
 	PAINTSTRUCT ps;
-	HDC hdc = BeginPaint(hwnd, &ps);
+	/*HDC hdc =*/ BeginPaint(hwnd, &ps);
 
 	if (m_pPreview)
 		m_pPreview->draw();

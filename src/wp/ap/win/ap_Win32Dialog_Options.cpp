@@ -156,7 +156,7 @@ void AP_Win32Dialog_Options::runModal(XAP_Frame * pFrame)
 	
 }	
 
-struct {
+static struct {
 	UT_Dimension  dim;
 	int 		  id;
 } s_aAlignUnit[] =
@@ -390,7 +390,7 @@ UT_Dimension AP_Win32Dialog_Options::_gatherViewRulerUnits(void)
 
 void  AP_Win32Dialog_Options::_setViewRulerUnits(UT_Dimension dim)
 {
-	int n1;
+	unsigned int n1;
 	for( n1 = 0; n1 < SIZE_aAlignUnit; n1++ )
 		if( s_aAlignUnit[n1].dim == dim )
 			break;
@@ -941,7 +941,7 @@ void AP_Win32Dialog_Options_SmartQuotes::_onInitDialog()
 		buf[0] = XAP_EncodingManager::smartQuoteStyles[i].leftQuote;
 		buf[1] = 'O';
 		buf[2] = XAP_EncodingManager::smartQuoteStyles[i].rightQuote;
-		buf[3] = NULL;
+		buf[3] = 0;
 
 		LPWSTR szDisplayString = (LPWSTR) g_ucs4_to_utf16(buf, -1, NULL, NULL, NULL);
 		if(szDisplayString)

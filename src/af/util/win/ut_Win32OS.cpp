@@ -19,6 +19,7 @@
  
 #include <windows.h>
 #include <winspool.h>
+#include "ut_debugmsg.h"
 #include "ut_assert.h"
 #include "ut_locale.h"
 #include "ut_iconv.h"
@@ -35,7 +36,7 @@ OSVERSIONINFOW& UT_GetWinVersion(void)
 	if (!bInitialized)
 	{
 		os.dwOSVersionInfoSize = sizeof(os);
-		BOOL bSuccess = GetVersionExW(&os);
+		UT_DebugOnly<BOOL> bSuccess = GetVersionExW(&os);
 		UT_ASSERT(bSuccess);
 		bInitialized = true;
 	}

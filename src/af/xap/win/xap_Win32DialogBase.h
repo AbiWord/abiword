@@ -58,9 +58,9 @@ protected:
     void notifyCloseFrame(XAP_Frame *pFrame);
 	// Subclasses: override this and use it as your DLGPROC
 	virtual BOOL _onDlgMessage(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual BOOL _onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam) {return FALSE;};
-	virtual BOOL _onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam) {return FALSE;};
-	virtual BOOL _onDeltaPos(NM_UPDOWN * pnmud) {return FALSE;};
+	virtual BOOL _onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/) {return FALSE;};
+	virtual BOOL _onCommand(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/) {return FALSE;};
+	virtual BOOL _onDeltaPos(NM_UPDOWN * /*pnmud*/) {return FALSE;};
 	virtual BOOL _callHelp();
 
 

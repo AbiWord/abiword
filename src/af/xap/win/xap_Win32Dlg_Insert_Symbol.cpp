@@ -40,6 +40,8 @@
 
 /*****************************************************************/
 
+char Symbol_font_selected[32] = "Symbol";
+
 XAP_Dialog * XAP_Win32Dialog_Insert_Symbol::static_constructor(XAP_DialogFactory * pFactory,
 													 XAP_Dialog_Id id)
 {
@@ -96,7 +98,7 @@ void XAP_Win32Dialog_Insert_Symbol::destroy(void)
 
 void XAP_Win32Dialog_Insert_Symbol::activate(void)
 {
-	int iResult;
+	UT_DebugOnly<int> iResult;
 
 	// Update the caption
 	ConstructWindowName();
@@ -132,7 +134,7 @@ void XAP_Win32Dialog_Insert_Symbol::notifyCloseFrame(XAP_Frame *pFrame)
 	UT_return_if_fail(pFrame);
 	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, NULL);
+		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, 0);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
@@ -149,7 +151,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 
 	// *** this is how we add the gc for symbol table ***
 	// attach a new graphics context to the drawing area
-	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
+	UT_DebugOnly<XAP_Win32App *> app = static_cast<XAP_Win32App *> (m_pApp);
 	UT_ASSERT(app);
 
 	HWND hwndChild = GetDlgItem(hWnd, XAP_RID_DIALOG_INSERTSYMBOL_SYMBOLS);
@@ -182,7 +184,7 @@ BOOL XAP_Win32Dialog_Insert_Symbol::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, 
 	
 	m_pSamplePreviewWidget->setPreview(m_DrawSymbolSample);
 
-	XAP_Draw_Symbol * iDrawSymbol = _getCurrentSymbolMap();
+	UT_DebugOnly<XAP_Draw_Symbol *> iDrawSymbol = _getCurrentSymbolMap();
 	UT_ASSERT(iDrawSymbol);
 
 	// Fill the list box with symbol fonts.

@@ -66,7 +66,7 @@ void AP_Win32Dialog_Annotation::runModal(XAP_Frame * pFrame)
 #define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_ANNOTATION_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_ANNOTATION_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL AP_Win32Dialog_Annotation::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
+BOOL AP_Win32Dialog_Annotation::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 

@@ -49,7 +49,7 @@ public:
 	static bool getBitmapForIcon(HWND hwnd,
 									UT_uint32 maxWidth,
 									UT_uint32 maxHeight,
-									UT_RGBColor * pColor,
+									const UT_RGBColor * pColor,
 									const char * szIconName,
 									HBITMAP * pBitmap);
 

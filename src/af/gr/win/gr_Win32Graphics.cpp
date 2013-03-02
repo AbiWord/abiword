@@ -1141,7 +1141,7 @@ void GR_Win32Graphics::setClipRect(const UT_Rect* pRect)
 	// not work for other things.  For now leave code in place.
 	// return;
 
-	int res;
+	UT_DebugOnly<int> res;
 	m_pRect = pRect;
 	if (pRect)
 	{
@@ -1654,12 +1654,12 @@ GR_Win32Font::~GR_Win32Font()
 	// (this whole thing is rather messy)
 
 	DWORD dwObjType;
-	bool bIsDC;
+	bool bIsDC = false;
 
 	if(m_hdc) 
 	{
 		dwObjType = GetObjectType((HGDIOBJ)m_hdc);
-		bIsDC = dwObjType == OBJ_DC || dwObjType == OBJ_MEMDC;
+		bIsDC = (dwObjType == OBJ_DC || dwObjType == OBJ_MEMDC);
 	}
 
 	for (UT_sint32 i = 0; i < m_allocFonts.getItemCount(); ++i)

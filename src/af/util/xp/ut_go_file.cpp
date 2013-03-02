@@ -1751,6 +1751,7 @@ fallback_open_uri(const gchar* url, GError** err)
 #endif
 
 #ifdef G_OS_WIN32
+#undef _
 #include "ut_Win32LocaleString.h"
 #endif
 

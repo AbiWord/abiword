@@ -82,7 +82,7 @@ BOOL AP_Win32Dialog_Styles::_onDlgMessage(HWND hWnd, UINT msg, WPARAM, LPARAM lP
 /*
 	Draws the Format button with an arrow
 */
-void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWND hWnd)
+void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWND /*hWnd*/)
 {
     UINT			uiState    = lpDrawItemStruct->itemState;
     HPEN			hPen;
@@ -94,8 +94,6 @@ void AP_Win32Dialog_Styles::_onDrawButton(LPDRAWITEMSTRUCT lpDrawItemStruct, HWN
 	int 			y;
 	POINT 			p;	
 	const char* 	pText;
-	HWND 			hParent;
-	LONG			lData;
 
 	UT_Win32LocaleString str;
 	
@@ -176,7 +174,7 @@ void AP_Win32Dialog_Styles::runModal(XAP_Frame * pFrame)
 #define _DS(c,s)	setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	setDlgItemText(hWnd, AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);
 	UT_return_val_if_fail (app,0);
@@ -498,11 +496,11 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lPara
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
+//	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{
@@ -662,11 +660,13 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 				m_bisNewStyle = false;
 				XAP_Frame* pFrame = getFrame();			
 				
-				XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(getApp());
 			
 				createModal (pFrame, MAKEINTRESOURCEW(AP_RID_DIALOG_STYLES_NEWMODIFY));				
-				/*LPCWSTR lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_STYLES_NEWMODIFY);				
-											
+				/*
+				XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(getApp());
+
+				LPCWSTR lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_STYLES_NEWMODIFY);
+
 				int result = DialogBoxParamW(pWin32App->getInstance(), lpTemplate,
 									static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 									(DLGPROC)s_dlgProc, (LPARAM)this);*/
@@ -712,7 +712,6 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 		UT_Win32LocaleString str;
 
 	    hWndButton = GetDlgItem(hWnd, AP_RID_DIALOG_STYLES_NEWMODIFY_BTN_TOGGLEITEMS);
-	    XAP_Win32App * app = static_cast<XAP_Win32App *> (m_pApp);		
 		const XAP_StringSet * pSS = m_pApp->getStringSet();
 	    
 		// Get button position
@@ -722,7 +721,6 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 
 	    // Menu creation
 	    hMenu =  CreatePopupMenu();
-		str;
 		for (int i=0; i<5; i++) {
 			str.fromUTF8(pSS->getValue(menu_items[i]));
 			AppendMenuW(hMenu, MF_ENABLED|MF_STRING, i+1, (LPCWSTR)str.c_str());

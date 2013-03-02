@@ -80,7 +80,7 @@ void AP_Win32Dialog_MergeCells::runModeless(XAP_Frame * pFrame)
 #define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_MERGECELLS_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-HBITMAP AP_Win32Dialog_MergeCells::_loadBitmap(HWND hWnd, UINT nId, char* pName, int width, int height, UT_RGBColor color)
+HBITMAP AP_Win32Dialog_MergeCells::_loadBitmap(HWND hWnd, UINT nId, const char* pName, int width, int height, const UT_RGBColor & color)
 {
 	HBITMAP hBitmap = NULL;
 	
@@ -93,10 +93,8 @@ HBITMAP AP_Win32Dialog_MergeCells::_loadBitmap(HWND hWnd, UINT nId, char* pName,
 }
 
 // This handles the WM_INITDIALOG message for the top-level dialog.
-BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {	
-	HDC hdc;
-	int x, y;	
 	RECT rect;
 	DWORD dwColor = GetSysColor(COLOR_BTNFACE);	
 	UT_RGBColor Color(GetRValue(dwColor),GetGValue(dwColor),GetBValue(dwColor));
@@ -116,9 +114,9 @@ BOOL AP_Win32Dialog_MergeCells::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM l
 	// The four items are the same size
 	GetClientRect(GetDlgItem(hWnd, AP_RID_DIALOG_MERGECELLS_BMP_LEFT), &rect);			
 		
-	hdc = GetDC(hWnd);
-	x = rect.right - rect.left,
-	y = rect.bottom - rect.top,
+//	hdc = GetDC(hWnd);
+//	x = rect.right - rect.left,
+//	y = rect.bottom - rect.top,
 	
 	// Load the bitmaps into the dialog box								
     m_hBitmapLeft = _loadBitmap(hWnd,AP_RID_DIALOG_MERGECELLS_BMP_LEFT, "MERGELEFT",  BITMAP_WITDH, BITMAP_HEIGHT, Color);
@@ -183,7 +181,7 @@ void AP_Win32Dialog_MergeCells::notifyActiveFrame(XAP_Frame *pFrame)
 	setAllSensitivities();
 }
 
-BOOL AP_Win32Dialog_MergeCells::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_MergeCells::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 
@@ -234,7 +232,7 @@ void AP_Win32Dialog_MergeCells::destroy(void)
 {
 	finalize();
 
-	int iResult = DestroyWindow( m_hDlg );
+	UT_DebugOnly<int> iResult = DestroyWindow( m_hDlg );
 	UT_ASSERT_HARMLESS((iResult != 0));
 }
 void AP_Win32Dialog_MergeCells::activate(void)

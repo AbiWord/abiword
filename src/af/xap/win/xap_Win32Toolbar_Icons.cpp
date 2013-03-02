@@ -289,7 +289,7 @@ bool XAP_Win32Toolbar_Icons::saveBitmap (const char *szFilename)
 bool XAP_Win32Toolbar_Icons::getBitmapForIcon(HWND /*hwnd*/,
 												UT_uint32 maxWidth,
 												UT_uint32 maxHeight,
-												UT_RGBColor * pColor,
+												const UT_RGBColor * pColor,
 												const char * szIconName,
 												HBITMAP * pBitmap)
 {

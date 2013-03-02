@@ -810,7 +810,7 @@ void EV_Win32Menu::onDrawItem(HWND /*hwnd*/, WPARAM /*wParam*/, LPARAM lParam)
 	LPDRAWITEMSTRUCT lpdis = (LPDRAWITEMSTRUCT) lParam;  
 	EV_Menu_Item*	item = (EV_Menu_Item *) lpdis->itemData;            			           	
     COLORREF crText;    
-    COLORREF crBkgnd;   
+    COLORREF crBkgnd = 0;
 	DWORD dwColor;
 	RECT rect;
 	HBITMAP hBitmap;	

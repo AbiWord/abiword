@@ -49,9 +49,9 @@ UT_Win32Timer::UT_Win32Timer(UT_TimerCallback pCallback, void* pData):
 /*****************************************************************/
 
 VOID CALLBACK Global_Win32TimerProc(HWND /*hwnd*/, 
-									UINT uMsg, 
+									UINT /*uMsg*/,
 									UINT idEvent, 
-									DWORD dwTime)
+									DWORD /*dwTime*/)
 {
 	UT_Timer* pMyTimer = UT_Win32Timer::findWin32Timer(idEvent);
 	UT_ASSERT(pMyTimer);

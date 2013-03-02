@@ -186,7 +186,7 @@ void XAP_Win32Dialog_FontChooser::runModal(XAP_Frame * pFrame)
 		}
 
 		bool bIsSizeValid = ((cf.Flags & CF_NOSIZESEL) == 0);
-		bool bWasSizeValid = !m_sFontSize.empty();
+//		bool bWasSizeValid = !m_sFontSize.empty();
 		char bufSize[10];
 		if (bIsSizeValid)
 			sprintf(bufSize,"%dpt",(cf.iPointSize/10));

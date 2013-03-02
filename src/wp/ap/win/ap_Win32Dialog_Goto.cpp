@@ -87,7 +87,7 @@ void AP_Win32Dialog_Goto::notifyCloseFrame(XAP_Frame *pFrame)
 {
 	if((HWND)GetWindowLongPtrW(m_hWnd, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLongPtrW(m_hWnd, GWLP_HWNDPARENT, NULL);
+		SetWindowLongPtrW(m_hWnd, GWLP_HWNDPARENT, 0);
 		SetWindowPos(m_hWnd, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}

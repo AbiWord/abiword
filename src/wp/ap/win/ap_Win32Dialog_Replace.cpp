@@ -102,7 +102,7 @@ void AP_Win32Dialog_Replace::activate(void)
 
 void AP_Win32Dialog_Replace::destroy(void)
 {
-	int iResult = DestroyWindow( m_hDlg );
+	UT_DebugOnly<int> iResult = DestroyWindow( m_hDlg );
 
 	UT_ASSERT_HARMLESS((iResult != 0));
 
@@ -127,7 +127,7 @@ void AP_Win32Dialog_Replace::notifyCloseFrame(XAP_Frame *pFrame)
 {
 	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, NULL);
+		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, 0);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}
@@ -135,8 +135,6 @@ void AP_Win32Dialog_Replace::notifyCloseFrame(XAP_Frame *pFrame)
 
 void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 {
-	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
-
 	LPCWSTR lpTemplate = NULL;
 	if (m_id == AP_DIALOG_ID_REPLACE)
 		lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_REPLACE);
@@ -165,9 +163,9 @@ void AP_Win32Dialog_Replace::runModeless(XAP_Frame * pFrame)
 void AP_Win32Dialog_Replace::_initButtons(HWND hWnd)
 {
 	HWND hWndEditFind = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_FIND);
-	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
+//	HWND hWndEditReplace = GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_COMBO_REPLACE);
 	DWORD lenFind = GetWindowTextLengthW(hWndEditFind);
-	DWORD lenReplace = GetWindowTextLengthW(hWndEditReplace);
+//	DWORD lenReplace = GetWindowTextLengthW(hWndEditReplace);
 
 	BOOL bEnableFind = (lenFind > 0);
 	EnableWindow(GetDlgItem(hWnd,AP_RID_DIALOG_REPLACE_BTN_FINDNEXT),bEnableFind);
@@ -391,7 +389,6 @@ void AP_Win32Dialog_Replace::_updateList(HWND hWnd, UT_GenericVector<UT_UCS4Char
 {
 	UT_DEBUGMSG(("AP_Win32Dialog_Replace::_updateList\n"));
 	
-	UT_uint32 i = 0;
     UT_Win32LocaleString str;
 	
 	SendMessageW(hWnd, CB_RESETCONTENT, 0,0);		

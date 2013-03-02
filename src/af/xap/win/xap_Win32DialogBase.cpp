@@ -43,7 +43,7 @@ void XAP_Win32DialogBase::createModal(XAP_Frame* pFrame, LPCWSTR dlgTemplate)
 	HWND hFrameWnd = pWin32FrameImpl->getTopLevelWindow();
 
 	// raise the dialog
-	int result = DialogBoxParamW(pWin32App->getInstance(),
+	UT_DebugOnly<int> result = DialogBoxParamW(pWin32App->getInstance(),
 						dlgTemplate,
 						hFrameWnd,
 						(DLGPROC)&XAP_Win32DialogBase::s_dlgProc,
@@ -157,7 +157,7 @@ void XAP_Win32DialogBase::enableControl(UT_sint32 controlId, bool bChecked)
 void XAP_Win32DialogBase::destroyWindow()
 {
 	UT_return_if_fail(IsWindow(m_hDlg));
-	int iResult = DestroyWindow(m_hDlg);
+	UT_DebugOnly<int> iResult = DestroyWindow(m_hDlg);
 	UT_ASSERT_HARMLESS((iResult != 0));
 }
 
@@ -191,7 +191,7 @@ void XAP_Win32DialogBase::notifyCloseFrame(XAP_Frame *pFrame)
 {
 	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, NULL);
+		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, 0);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}

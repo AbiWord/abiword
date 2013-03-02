@@ -136,17 +136,14 @@ void AP_Win32Dialog_MetaData_General::_onInitDialog()
 {				
 	const XAP_StringSet * pSS = getApp()->getStringSet();		
 	
-	struct control_id_string_id {
-		UT_sint32		controlId;
-		XAP_String_Id	stringId;
-	} static const rgMapping[] =
+	static const control_id_string_id rgMapping[] =
 	{
 		{AP_RID_DIALOG_META_GENERAL_TEXT_TITLE,			AP_STRING_ID_DLG_MetaData_Title_LBL},
 		{AP_RID_DIALOG_META_GENERAL_TEXT_SUBJECT,		AP_STRING_ID_DLG_MetaData_Subject_LBL},
 		{AP_RID_DIALOG_META_GENERAL_TEXT_AUTHOR,		AP_STRING_ID_DLG_MetaData_Author_LBL},
 		{AP_RID_DIALOG_META_GENERAL_TEXT_PUBLISHER,		AP_STRING_ID_DLG_MetaData_Publisher_LBL},
 		{AP_RID_DIALOG_META_GENERAL_TEXT_CONTRIBUTOR,	AP_STRING_ID_DLG_MetaData_CoAuthor_LBL},			
-		{NULL,NULL}
+		{0, 0}
 	};		
 	
 	// Localise the controls
@@ -229,17 +226,14 @@ void AP_Win32Dialog_MetaData_Summary::_onInitDialog()
 {		
 	const XAP_StringSet * pSS = getApp()->getStringSet();
 	
-	struct control_id_string_id {
-		UT_sint32		controlId;
-		XAP_String_Id	stringId;
-	} static const rgMapping[] =
+	static const control_id_string_id rgMapping[] =
 	{
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_KEYWORDS,		AP_STRING_ID_DLG_MetaData_Keywords_LBL},
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_LANGUAGE,		AP_STRING_ID_DLG_MetaData_Languages_LBL},			
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_CATEGORY,		AP_STRING_ID_DLG_MetaData_Category_LBL},     
 		{AP_RID_DIALOG_META_SUMMARY_TEXT_DESCRIPTION,	AP_STRING_ID_DLG_MetaData_Description_LBL},     
 		
-		{NULL,NULL}
+		{0, 0}
 	};		
 	
 	// Localise the controls
@@ -314,16 +308,13 @@ void AP_Win32Dialog_MetaData_Permissions::_onInitDialog()
 {				
 	const XAP_StringSet * pSS = getApp()->getStringSet();
 	
-	struct control_id_string_id {
-		UT_sint32		controlId;
-		XAP_String_Id	stringId;
-	} static const rgMapping[] =
+	static const control_id_string_id rgMapping[] =
 	{
 		{AP_RID_DIALOG_META_PERMISSIONS_TEXT_SOURCE,	AP_STRING_ID_DLG_MetaData_Source_LBL},
 		{AP_RID_DIALOG_META_PERMISSIONS_TEXT_RELATION,	AP_STRING_ID_DLG_MetaData_Relation_LBL},
 		{AP_RID_DIALOG_META_PERMISSIONS_TEXT_COVERAGE,	AP_STRING_ID_DLG_MetaData_Coverage_LBL},
 		{AP_RID_DIALOG_META_PERMISSIONS_TEXT_RIGHTS,	AP_STRING_ID_DLG_MetaData_Rights_LBL}, 
-		{NULL,NULL}
+		{0, 0}
 	};		
 	
 	// Localise the controls

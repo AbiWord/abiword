@@ -71,7 +71,7 @@ void AP_Win32Dialog_MailMerge::runModeless(XAP_Frame * pFrame)
 
 
 // This handles the WM_INITDIALOG message for the top-level dialog.
-BOOL AP_Win32Dialog_MailMerge::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_MailMerge::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {		
 	
 	
@@ -92,11 +92,11 @@ BOOL AP_Win32Dialog_MailMerge::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lP
 	return 0; // 0 because we called SetFocus
 }
 
-BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_MailMerge::_onCommand(HWND /*hWnd*/, WPARAM wParam, LPARAM /*lParam*/)
 {
-	WORD wNotifyCode = HIWORD(wParam);
+//	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
+//	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{

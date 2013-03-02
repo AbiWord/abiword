@@ -34,7 +34,7 @@
 
 static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
 	
-#define DeclareDialog(id,cls)	{ id, cls::s_getPersistence(), cls::static_constructor },
+#define DeclareDialog(id,cls)	{ id, cls::s_getPersistence(), cls::static_constructor, false },
 #include "ap_Win32Dialog_All.h"
 #undef DeclareDialog
 	

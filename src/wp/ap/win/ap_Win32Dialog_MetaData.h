@@ -25,23 +25,23 @@
 #include "xap_Win32DialogBase.h"
 
 // localise controls
-typedef struct
+struct control_id_string_id
 {
 	UT_sint32		controlId;
 	XAP_String_Id	stringId;
-} control_id_string_id;
+};
 
-typedef struct
+struct control_text
 {
 	UT_sint32		controlId;
 	const char		*string;
-} control_text;
+};
 
-typedef struct
+struct control_var
 {
 	UT_sint32		controlId;
 	UT_String		*string;
-} control_var;
+};
 
 
 class XAP_Win32Frame;

@@ -83,7 +83,7 @@ void AP_Win32Dialog_New::runModal(XAP_Frame * pFrame)
 #define _DS(c,s)	setDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	setDlgItemText(hWnd,AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	m_hThisDlg = hWnd;
 
@@ -144,7 +144,7 @@ BOOL AP_Win32Dialog_New::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
 }
 
 
-BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 
@@ -200,7 +200,7 @@ BOOL AP_Win32Dialog_New::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
 	}
 }
 
-BOOL AP_Win32Dialog_New::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL AP_Win32Dialog_New::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	return 0;
 }
@@ -306,7 +306,7 @@ void AP_Win32Dialog_New::_setFileName( UT_sint32 nIndex )
 	if( nIndex != LB_ERR )
 	{
 		WCHAR buf[PATH_MAX];
-		int l=SendMessageW(hControl,LB_GETTEXTLEN,nIndex,NULL);
+		int l = SendMessageW(hControl, LB_GETTEXTLEN, nIndex, 0);
 		UT_return_if_fail(l<PATH_MAX);
 
 		_win32Dialog.getListText( AP_RID_DIALOG_NEW_LBX_TEMPLATE, nIndex, (char*)buf );
