@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2012-12-16 14:49-0500\n"
-"PO-Revision-Date: 2013-01-06 03:14+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"PO-Revision-Date: 2013-02-28 21:36+0200\n"
+"Last-Translator: Per <tucker@algonet.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
 "MIME-Version: 1.0\n"
@@ -1058,7 +1058,7 @@ msgstr "1 spalt"
 #. TOOLBAR_LABEL_MIDDLE_SPACE
 #: po/tmp/ap_String_Id.h
 msgid "1.5 Spacing"
-msgstr "1½ radavständ"
+msgstr "1½ radavstånd"
 
 #. DLG_Para_SpacingHalf
 #: po/tmp/ap_String_Id.h
@@ -1071,30 +1071,31 @@ msgstr "1½ rad"
 msgid "1.5 spacing"
 msgstr "1½ radavstånd"
 
+#  Skulle gärna kört med ⅓ här, men just det tecknet är i princip oläsligt i det typsnitt som windowsversionen använder sig av.
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
-msgstr "⅓ A4"
+msgstr "1/3 A4"
 
 #. DLG_PageFormat_1_3_A5
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A5"
-msgstr "⅓ A5"
+msgstr "1/3 A5"
 
 #. DLG_PageFormat_1_4_A3
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A3"
-msgstr "¼ A3"
+msgstr "1/4 A3"
 
 #. DLG_PageFormat_1_4_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/4 A4"
-msgstr "¼ A4"
+msgstr "1/4 A4"
 
 #. DLG_PageFormat_1_8_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/8 A4"
-msgstr "⅛ A4"
+msgstr "1/8 A4"
 
 #. TOOLBAR_LABEL_PARA_12BEFORE
 #: po/tmp/ap_String_Id.h
@@ -1346,10 +1347,11 @@ msgstr "Justering:"
 msgid "All"
 msgstr "Alla"
 
+# Strange wording in original.
 #. MENU_STATUSLINE_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
 msgid "Allow formatting not using styles only"
-msgstr "Tillåt formatering även utan att använda formatmallar"
+msgstr "Tillåt formatering på andra sätt än att använda formatmallar"
 
 #. DLG_Options_Label_CheckWhiteForTransparent
 #: po/tmp/ap_String_Id.h
@@ -1684,7 +1686,7 @@ msgstr "Kantlinjer och fyllning"
 #. MENU_STATUSLINE_RDF_SEMITEM_FIND_RELATED_FOAFKNOWS
 #: po/tmp/ap_String_Id.h
 msgid "Both People Know Each Other"
-msgstr "Båda personerna känner varandra"
+msgstr "Personerna känner varandra"
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
@@ -2047,7 +2049,7 @@ msgstr "Tecken (med blanksteg):"
 #. MENU_LABEL_TOOLS_SPELL
 #: po/tmp/ap_String_Id.h
 msgid "Check &Spelling"
-msgstr "Kontrollera &stavning"
+msgstr "&Stavningskontroll"
 
 #. DLG_Options_Label_GrammarCheck
 #: po/tmp/ap_String_Id.h
@@ -2417,7 +2419,7 @@ msgstr "Skapa ett nytt blankt dokument"
 #. TOOLBAR_TOOLTIP_FILE_NEW
 #: po/tmp/ap_String_Id.h
 msgid "Create a new document"
-msgstr "Skapar ett nytt dokument"
+msgstr "Skapa ett nytt dokument"
 
 #. DLG_NEW_Create
 #: po/tmp/ap_String_Id.h
@@ -3614,7 +3616,7 @@ msgstr "Sidhuvud"
 #. DLG_HdrFtr_HeaderFrame
 #: po/tmp/ap_String_Id.h
 msgid "Header Properties"
-msgstr "Rubrikegenskaper"
+msgstr "Egenskaper för sidhuvud"
 
 #. HeaderStatus
 #: po/tmp/ap_String_Id.h
@@ -4149,7 +4151,7 @@ msgstr "Marginaljustera"
 #. MENU_STATUSLINE_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h
 msgid "Justify the paragraph"
-msgstr "Marginaljustera aktuellt eller markerade stycken"
+msgstr "Marginaljustera stycket"
 
 #. DLG_Para_PushKeepWithNext
 #: po/tmp/ap_String_Id.h
@@ -4262,7 +4264,7 @@ msgstr "Vänsterjustera"
 #. MENU_STATUSLINE_ALIGN_LEFT
 #: po/tmp/ap_String_Id.h
 msgid "Left-align the paragraph"
-msgstr "Vänsterjustera aktuellt eller markerade stycken"
+msgstr "Vänsterjustera stycket"
 
 #. DLG_PageFormat_Legal
 #: po/tmp/ap_String_Id.h
@@ -5143,7 +5145,7 @@ msgstr "Förhandsgranska dokumentet som webbsida"
 #. TOOLBAR_TOOLTIP_FILE_PRINT_PREVIEW
 #: po/tmp/ap_String_Id.h
 msgid "Preview the document before printing"
-msgstr "Förhandsgranska dokumentet vid utskrift"
+msgstr "Förhandsgranska dokumentet före utskrift"
 
 #. DLG_Para_PreviewPrevParagraph
 #: po/tmp/ap_String_Id.h
@@ -5268,7 +5270,7 @@ msgstr "&Stycke höger-till-vänster"
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "RTL &Section"
-msgstr "&Område höger-till-vänster"
+msgstr "&Avsnitt höger-till-vänster"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h
@@ -5316,7 +5318,7 @@ msgstr "Minska eller förstora visningen av dokumentet"
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATED_TO_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Related To Source Semantic Item"
-msgstr "Relaterade till semantiskt käll-element"
+msgstr "Relaterade till semantiskt källelement"
 
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
@@ -5408,12 +5410,12 @@ msgstr "Ta bort föreslagen ändring"
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h
 msgid "Repeat Row as Heading"
-msgstr "Använd rad som rubrik"
+msgstr "Upprepa rad som rubrik"
 
 #. MENU_STATUSLINE_TABLE_HEADING_ROWS_REPEAT
 #: po/tmp/ap_String_Id.h
 msgid "Repeat Row as Heading on each new page"
-msgstr "Använd rad som rubrik på varje ny sida"
+msgstr "Upprepa rad som rubrik på varje ny sida"
 
 #. DLG_FR_ReplaceTitle
 #. DLG_Annotation_Replace_LBL
@@ -5557,7 +5559,7 @@ msgstr "Högerjustera"
 #. MENU_STATUSLINE_ALIGN_RIGHT
 #: po/tmp/ap_String_Id.h
 msgid "Right-align the paragraph"
-msgstr "Högerjustera aktuellt eller markerade stycken"
+msgstr "Högerjustera stycket"
 
 #. DLG_Para_DomDirection
 #: po/tmp/ap_String_Id.h
@@ -5889,7 +5891,7 @@ msgstr "Semantiskt element"
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
 msgid "Sentence case"
-msgstr "Normalt skiftläge"
+msgstr "Stor bokstav efter punkt"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h
@@ -5924,7 +5926,7 @@ msgstr "Avskilj med tabulatorstopp"
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h
 msgid "Set"
-msgstr "Lägg till"
+msgstr "Ange"
 
 #. MENU_LABEL_FMT_LANGUAGE
 #: po/tmp/ap_String_Id.h
@@ -5966,7 +5968,7 @@ msgstr "Välj en bild som bakgrund för din sida"
 #. MENU_STATUSLINE_RDF_SEMITEM_SET_AS_SOURCE
 #: po/tmp/ap_String_Id.h
 msgid "Set as Source Semantic Item"
-msgstr "Ange som semantiskt käll-element"
+msgstr "Ange som semantiskt källelement"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5981,12 +5983,12 @@ msgstr "Ändra dominant riktning på stycke till höger-till-vänster"
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Set dominant direction of section to RTL"
-msgstr "Ändra dominant riktning på område till höger-till-vänster"
+msgstr "Ändra dominant riktning på avsnitt till höger-till-vänster"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h
 msgid "Set meta-data properties"
-msgstr "Information om dokumentet"
+msgstr "Ange information om dokumentet"
 
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h
@@ -6147,7 +6149,7 @@ msgstr "Visa hela listan med dokument"
 #. MENU_STATUSLINE_VIEW_RULER
 #: po/tmp/ap_String_Id.h
 msgid "Show or hide the rulers"
-msgstr "Visar eller döljer linjalen"
+msgstr "Visar eller döljer linjalerna"
 
 #. MENU_STATUSLINE_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
@@ -6170,17 +6172,17 @@ msgstr "Visa revisioner som finns i dokument"
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTERPREV
 #: po/tmp/ap_String_Id.h
 msgid "Show what the document looks like after previous revisions"
-msgstr "Visa hur dokumentet ser uf efter föregående revisioner"
+msgstr "Visa hur dokumentet ser ut efter föregående revisioner"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_AFTER
 #: po/tmp/ap_String_Id.h
 msgid "Show what the document looks like after revisions"
-msgstr "Visa hur dokumentet ser uf efter revisioner"
+msgstr "Visa hur dokumentet ser ut efter revisioner"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_SHOW_BEFORE
 #: po/tmp/ap_String_Id.h
 msgid "Show what the document looks like before revisions"
-msgstr "Visa hur dokumentet ser uf före revisioner"
+msgstr "Visa hur dokumentet ser ut före revisioner"
 
 #. DLG_Options_Label_ViewShowHide
 #: po/tmp/ap_String_Id.h
@@ -6196,7 +6198,7 @@ msgstr "Visa/dölj anteckningar"
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show/hide formatting marks"
-msgstr "Visa/dölj ¶"
+msgstr "Visa/dölj formateringstecken"
 
 #. TB_Simple
 #: po/tmp/ap_String_Id.h
@@ -6237,7 +6239,7 @@ msgstr "So&rtera tabell"
 #. DLG_BorderShading_Border_Style_Solid
 #: po/tmp/ap_String_Id.h
 msgid "Solid line"
-msgstr "Solid linje"
+msgstr "Heldragen linje"
 
 #. MSG_OpenRecovered
 #: po/tmp/ap_String_Id.h
@@ -6623,13 +6625,13 @@ msgstr "Sammanfattning, plats"
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_LOCATION_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Location, Start and End Times"
-msgstr "Sammanfattning, plats, start och sluttid"
+msgstr "Sammanfattning, plats, start- och sluttid"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
 msgid "Summary, Start and End Times"
-msgstr "Sammanfattning, start och sluttid"
+msgstr "Sammanfattning, start- och sluttid"
 
 #. MENU_LABEL_FMT_SUPERSCRIPT
 #: po/tmp/ap_String_Id.h
@@ -6738,12 +6740,12 @@ msgstr "Text"
 #. DLG_FormatTOC_TextAfter
 #: po/tmp/ap_String_Id.h
 msgid "Text &after:"
-msgstr "Text &före:"
+msgstr "Text &efter:"
 
 #. DLG_FormatTOC_TextBefore
 #: po/tmp/ap_String_Id.h
 msgid "Text &before:"
-msgstr "Text &efter:"
+msgstr "Text &före:"
 
 #. DLG_Lists_Align
 #: po/tmp/ap_String_Id.h
@@ -7222,7 +7224,7 @@ msgstr "Du bör välja ett värde mellan 1 och 120 för automatsparningsfrekvens
 #. MSG_ConfirmSaveSecondary
 #: po/tmp/ap_String_Id.h
 msgid "Your changes will be lost if you don't save them."
-msgstr "Dina ändringar kommer att gå förlorade om du inte sparar."
+msgstr "Dina ändringar kommer att gå förlorade om du inte sparar dem."
 
 #. TOOLBAR_LABEL_ZOOM
 #. TOOLBAR_STATUSLINE_ZOOM
@@ -7456,7 +7458,7 @@ msgid ""
 "information is incomplete."
 msgstr ""
 "Abiword kan inte återställa revision %d av dokumentet fullständigt då "
-"versionsinformationen är inkomplett."
+"versionsinformationen är ofullständig."
 
 #. MSG_HistoryNoRestore
 #: po/tmp/xap_String_Id.h
@@ -7652,7 +7654,7 @@ msgstr "Vitryska"
 #. LANG_BE_LATIN
 #: po/tmp/xap_String_Id.h
 msgid "Belarusian, Latin"
-msgstr "Vitryska, Latin"
+msgstr "Vitryska, Latinsk"
 
 #. LANG_BN_IN
 #: po/tmp/xap_String_Id.h
@@ -7748,7 +7750,7 @@ msgstr "Kapitelrubrik"
 #. LANG_CGG
 #: po/tmp/xap_String_Id.h
 msgid "Chiga"
-msgstr "Rukiga"
+msgstr "Chiga/Rukiga"
 
 #. LANG_ZH_HK
 #: po/tmp/xap_String_Id.h
@@ -7843,7 +7845,7 @@ msgstr "Stäng"
 #. DLG_Exit_CloseWithoutSaving
 #: po/tmp/xap_String_Id.h
 msgid "Close &Without Saving"
-msgstr "Avsluta utan att spara"
+msgstr "A&vsluta utan att spara"
 
 #. DLG_UP_Collate
 #: po/tmp/xap_String_Id.h
@@ -7918,7 +7920,7 @@ msgstr "Kunde inte läsa in insticksmodul"
 #. DLG_PLUGIN_MANAGER_COULDNT_UNLOAD
 #: po/tmp/xap_String_Id.h
 msgid "Could not deactivate plugin"
-msgstr "Kunde inte avaktivera insticksmodul"
+msgstr "Kunde inte inaktivera insticksmodul"
 
 #. SPELL_CANTLOAD_DICT
 #: po/tmp/xap_String_Id.h
@@ -7984,12 +7986,12 @@ msgstr "Dari"
 #. DLG_PLUGIN_MANAGER_DEACTIVATE_ALL
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate all plugins"
-msgstr "Avaktivera alla"
+msgstr "Inaktivera alla"
 
 #. DLG_PLUGIN_MANAGER_DEACTIVATE
 #: po/tmp/xap_String_Id.h
 msgid "Deactivate plugin"
-msgstr "Avaktivera"
+msgstr "Inaktivera"
 
 #. DLG_HTMLOPT_ExpDeclareXML
 #: po/tmp/xap_String_Id.h
@@ -8119,7 +8121,7 @@ msgstr "Engelska (UK)"
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h
 msgid "English (US)"
-msgstr "Engelska (US)"
+msgstr "Engelska (USA)"
 
 #. ENC_US_DOS
 #: po/tmp/xap_String_Id.h
@@ -8870,7 +8872,7 @@ msgstr "Position relativt dess sida"
 #. DLG_Image_PlaceParagraph
 #: po/tmp/xap_String_Id.h
 msgid "Position relative to nearest paragraph"
-msgstr "Position relativt närmaste paragraf"
+msgstr "Position relativt närmaste stycke"
 
 #. DLG_Image_Aspect
 #: po/tmp/xap_String_Id.h
@@ -9045,12 +9047,12 @@ msgstr "Skript:"
 #. STYLE_DELIM_SECTION
 #: po/tmp/xap_String_Id.h
 msgid "Section"
-msgstr "Område"
+msgstr "Avsnitt"
 
 #. STYLE_SECTHEADING
 #: po/tmp/xap_String_Id.h
 msgid "Section Heading"
-msgstr "Områdesrubrik"
+msgstr "Avsnittsrubrik"
 
 #. DLG_UENC_EncLabel
 #: po/tmp/xap_String_Id.h
@@ -9075,12 +9077,12 @@ msgstr "Serbiska"
 #. LANG_SR_LATIN
 #: po/tmp/xap_String_Id.h
 msgid "Serbian, Latin"
-msgstr "Serbiska, latin"
+msgstr "Serbiska, latinsk"
 
 #. DLG_ULANG_LangTitle
 #: po/tmp/xap_String_Id.h
 msgid "Set Language"
-msgstr "Språk"
+msgstr "Ange språk"
 
 #. DLG_UFS_TransparencyCheck
 #: po/tmp/xap_String_Id.h
@@ -9311,42 +9313,42 @@ msgstr "Ukrainsk, Macintosh"
 #. ENC_UNIC_UCS_2BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Big Endian"
-msgstr "Unicode UCS-2 Big Endian"
+msgstr "Unicode UCS-2 med rak byteordning"
 
 #. ENC_UNIC_UCS_2LE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-2 Little Endian"
-msgstr "Unicode UCS-2 Little Endian"
+msgstr "Unicode UCS-2 med omvänd byteordning"
 
 #. ENC_UNIC_UCS_4BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-4 Big Endian"
-msgstr "Unicode UCS-4 Big Endian"
+msgstr "Unicode UCS-4 med rak byteordning"
 
 #. ENC_UNIC_UCS_4LE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UCS-4 Little Endian"
-msgstr "Unicode UCS-4 Little Endian"
+msgstr "Unicode UCS-4 med omvänd byteordning"
 
 #. ENC_UNIC_UTF_16BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Big Endian"
-msgstr "Unicode UTF-16 Big Endian"
+msgstr "Unicode UTF-16 med rak byteordning"
 
 #. ENC_UNIC_UTF_16LE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-16 Little Endian"
-msgstr "Unicode UTF-16 Little Endian"
+msgstr "Unicode UTF-16 med omvänd byteordning"
 
 #. ENC_UNIC_UTF_32BE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-32 Big Endian"
-msgstr "Unicode UTF-32 Big Endian"
+msgstr "Unicode UTF-32 med rak byteordning"
 
 #. ENC_UNIC_UTF_32LE
 #: po/tmp/xap_String_Id.h
 msgid "Unicode UTF-32 Little Endian"
-msgstr "Unicode UTF-32 Little Endian"
+msgstr "Unicode UTF-32 med omvänd byteordning"
 
 #. ENC_UNIC_UTF_7
 #: po/tmp/xap_String_Id.h
