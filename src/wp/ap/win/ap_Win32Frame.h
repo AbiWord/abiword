@@ -39,10 +39,9 @@ class ABI_EXPORT AP_Win32Frame : public AP_Frame
 	virtual bool				initialize(XAP_FrameMode frameMode=XAP_NormalFrame);
 	virtual XAP_Frame *			cloneFrame(void);
 
+	virtual void				setStatusMessage(const char * szMsg);
 	virtual void				setXScrollRange(void) {  getAPWin32FrameImpl()->_setXScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
 	virtual void				setYScrollRange(void) {  getAPWin32FrameImpl()->_setYScrollRange(static_cast<AP_FrameData*>(m_pData), m_pView);  }
-
-	virtual void				setStatusMessage(const char * szMsg) {  static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->setStatusMessage(szMsg);  }
 
 	static bool 				RegisterClass(XAP_Win32App * app) {  return AP_Win32FrameImpl::_RegisterClass(app); }
 

@@ -35,6 +35,7 @@
 AP_Win32Frame::AP_Win32Frame() :
 	AP_Frame(new AP_Win32FrameImpl(this))
 {
+	this->m_pData = NULL;
 }
 
 AP_Win32Frame::AP_Win32Frame(AP_Win32Frame * f) :
@@ -53,6 +54,14 @@ XAP_Frame* AP_Win32Frame::cloneFrame(void)
 
 	UT_ASSERT_HARMLESS(pClone);
 	return pClone;
+}
+
+void AP_Win32Frame::setStatusMessage(const char * szMsg) 
+{  
+	if((getFrameMode() == XAP_NormalFrame) && (m_pData))
+	{
+		static_cast<AP_FrameData*>(m_pData)->m_pStatusBar->setStatusMessage(szMsg);  
+	}
 }
 
 bool AP_Win32Frame::initialize(XAP_FrameMode /*frameMode*/)
