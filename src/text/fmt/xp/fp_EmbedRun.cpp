@@ -461,7 +461,7 @@ void fp_EmbedRun::_draw(dg_DrawArgs* pDA)
 	rec.width = getWidth();
 	if(getEmbedManager()->isDefault())
 	{
-	  rec.top -= getAscent();
+	  rec.top -= _getLayoutPropFromObject("ascent");
 	}
 	UT_DEBUGMSG(("Draw Embed object top %d \n",rec.top));
 	getEmbedManager()->render(m_iEmbedUID,rec);
