@@ -523,10 +523,10 @@ UT_sint32 PD_Document::getLastAuthorInt(void) const
  * Add the current documents UUID as the author to the attribute list if 
  * the author attribute is not present.
  * The caller must delete [] the szAttsOut after use.
- * @param storage an UT_String storage for until the properties are copied.
+ * @param storage a std::string storage for until the properties are copied.
  * Returns true if author attribute is present. 
 */
-bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut, UT_String &storage)
+bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut, std::string &storage)
 {
 	// Set Author attribute
 	UT_sint32 icnt =  0;
@@ -569,7 +569,7 @@ bool  PD_Document::addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gcha
 		pp_Author * pA = addAuthor(k);
 		sendAddAuthorCR(pA);
 	}
-	UT_String_sprintf(storage,"%d",getMyAuthorInt());
+	storage = UT_std_string_sprintf("%d",getMyAuthorInt());
 	m_iLastAuthorInt = getMyAuthorInt();
 	szAttsOut[icnt+1] = storage.c_str();
 	xxx_UT_DEBUGMSG(("Attribute %s set to %s \n",szAttsOut[icnt],szAttsOut[icnt+1]));
@@ -1297,7 +1297,7 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 		return false;
 	}
 	const gchar ** szAttsAuthor = NULL;
-	UT_String storage;
+	std::string storage;
 	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
 	bool b = m_pPieceTable->insertObject(dpos, pto, szAttsAuthor, properties);
 	delete [] szAttsAuthor;
@@ -1315,7 +1315,7 @@ bool	PD_Document::insertObject(PT_DocPosition dpos,
 	}
 	pf_Frag_Object * pfo = NULL;
 	const gchar ** szAttsAuthor = NULL;
-	UT_String storage;
+	std::string storage;
 	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
 	bool b = m_pPieceTable->insertObject(dpos, pto, szAttsAuthor, properties, &pfo);
 	delete [] szAttsAuthor;
@@ -1481,7 +1481,7 @@ bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 	bool f;
 	deferNotifications();
 	const gchar ** szAttsAuthor = NULL;
-	UT_String storage;
+	std::string storage;
 	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
 	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,szAttsAuthor,properties);
 	delete [] szAttsAuthor;
@@ -1512,7 +1512,7 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 		return false;
 	}
 	const gchar ** szAttsAuthor = NULL;
-	UT_String storage;
+	std::string storage;
 	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
 	bool b =  m_pPieceTable->insertStrux(dpos,pts,szAttsAuthor,properties,ppfs_ret);
 	delete [] szAttsAuthor;
@@ -2235,7 +2235,7 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 #if DEBUG
 #if 0
 	UT_uint32 ii = 0;
-	UT_String sStr;
+	std::string sStr;
 	for(ii=0; ii<(length -(pStart-pbuf));ii++)
 	{
 		sStr += static_cast<const char>(pStart[ii]);
