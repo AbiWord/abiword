@@ -26,9 +26,7 @@
 
 #include "ut_assert.h"
 #include "ut_string.h"
-#include "ut_std_string.h"
 #include "ut_debugmsg.h"
-#include "ut_locale.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
@@ -53,20 +51,12 @@
 #include "ut_units.h"
 #include "ap_Strings.h"
 
-static std::string s_canonical_width_height (const std::string & sHeight_width, float & height_width);
-static std::string s_canonical_width_height (float height_width);
-
 AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_Modeless(pDlgFactory,id, "interface/dialogformattable"),
 	  m_borderColor(0,0,0),
 	  m_lineStyle(LS_NORMAL),
 	  m_bgFillStyle(NULL),
-	  m_width(1.0f),
-	  m_height(1.0f),
-	  m_sWidth("0.00pt"),
-	  m_sHeight("0.00pt"),
-	  i_OldWidth(0),
-	  i_OldHeight(0),
+	
 	  m_answer(a_OK),
 	  m_pFormatTablePreview(NULL),
 	  m_bSettingsChanged(false),
@@ -364,28 +354,13 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	XAP_Frame *frame = XAP_App::getApp()->getLastFocussedFrame();
 	if (frame) {
 		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
-//		std::string height;
-//		std::string width;
-		fl_BlockLayout * pBL = pView->getCurrentBlock();
-		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pBL->myContainingLayout());
-		fl_ContainerLayout * pCL = pTL->myContainingLayout();
-		fp_Container * pCon = pCL->getLastContainer();
-		UT_sint32 iWidth = 0;
-		UT_sint32 iHeight = 0;
-		if(pCon != NULL)
-		{
-			iWidth = pCon->getWidth();
-			iHeight = pCon->getHeight();
-		}
 
-		//We need update if users change height or width in UI (Drap & Drop)
-		if (m_bSettingsChanged ||
-			( m_iOldPos == pView->getPoint() && i_OldWidth != iWidth && i_OldHeight != iHeight) )
+		if (m_bSettingsChanged || m_iOldPos == pView->getPoint()) 
 		{
-			// comparing the actual cell pos would be even better; but who cares :)
-			return;
+		    //comparing the actual cell pos would be even better; but who cares :)
+		    return;
 		}
-
+		
 		m_iOldPos = pView->getPoint();
 		PT_DocPosition pos = 0;pView->getPoint();
 		if (pView->getSelectionAnchor() > pView->getPoint())
@@ -441,8 +416,8 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		{
 			if(pView->isInTable())
 			{
-				fl_BlockLayout * pBL2 = pView->getCurrentBlock();
-				fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pBL2->myContainingLayout());
+				fl_BlockLayout * pBL = pView->getCurrentBlock();
+				fl_CellLayout * pCell = static_cast<fl_CellLayout *>(pBL->myContainingLayout());
 				if(pCell->getContainerType() != FL_CONTAINER_CELL)
 				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -499,87 +474,12 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 
 		UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
 		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
-		/* update height&width properties
-		*/
-		if(iWidth == 0)
-		{
-			iWidth = pTL->getDocSectionLayout()->getWidth();
-		}
-		if(iHeight == 0)
-		{
-			iHeight = pTL->getDocSectionLayout()->getHeight();			
-		}
-			//restore i_OldWidth & i_OldHeight
-		if(iWidth != 0)
-		{
-			i_OldWidth = iWidth;
-		}
-
-		if(iHeight != 0)
-		{
-			i_OldHeight = iHeight;
-		}
-
-		fl_TableLayout* tl = pView->getTableAtPos(pView->getPoint());
-		std::string strTableHeight = tl->tableHeight();
-		std::string strTableWidth = tl->tableWidth();
-		UT_sint32 i_tableheight = tl->getTableHeight();
-		UT_sint32 i_tablewidth = tl->getTableWidth();
-
-		if( i_tablewidth > 0)
-		{
-			m_vecProps.addOrReplaceProp("table-width", strTableWidth.c_str());
-			setWidth(strTableWidth.c_str());
-		}
-		else
-		{
-			iWidth = UT_convertDimToInches(iWidth, DIM_PT);
-			std::string buf = UT_std_string_sprintf("%dpt", iWidth);
-			m_vecProps.addOrReplaceProp("table-width", buf.c_str());
-			setWidth(buf.c_str());
-		}
-
-		if( i_tableheight > 0)
-		{
-			m_vecProps.addOrReplaceProp("table-height", strTableHeight.c_str());
-			setHeight(strTableHeight.c_str());
-		}
-		else
-		{
-			iHeight = UT_convertDimToInches(iHeight, DIM_PT);
-			std::string buf = UT_std_string_sprintf("%dpt", iHeight);
-			m_vecProps.addOrReplaceProp("table-height", buf.c_str());
-			setHeight(buf.c_str());		
-		}
-
+		
 		// draw the preview with the changed properties
 		if(m_pFormatTablePreview)
 			m_pFormatTablePreview->queueDraw();
 	}
 }
-
-void AP_Dialog_FormatTable::initTableWidthStr()
-{
-	std::string width;
-	const gchar * pszStyle = 0;
-	m_vecProps.getProp("table-width", pszStyle);
-	if (pszStyle) {
-		width = pszStyle;
-		setWidth(width);
-	}
-}
-
-void AP_Dialog_FormatTable::initTableHeightStr()
-{
-	std::string height;
-	const gchar * pszStyle = 0;
-	m_vecProps.getProp("table-height", pszStyle);
-	if (pszStyle) {
-		height = pszStyle;
-		setHeight(height);
-	}
-}
-
 
 void AP_Dialog_FormatTable::setApplyFormatTo(FormatTable applyTo)
 {
@@ -605,10 +505,6 @@ void AP_Dialog_FormatTable::applyChanges()
 	}
 
 	pView->setCellFormat(propsArray, m_ApplyTo,m_pGraphic,m_sImagePath);
-  
-	const char * table_propsArray[5] = {"table-height",m_sHeight.c_str(),"table-width",m_sWidth.c_str(),NULL};
-	pView->setTableFormat(table_propsArray);
-	
 	delete [] propsArray;
 	m_bSettingsChanged = false;
 }
@@ -697,34 +593,6 @@ void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
 	m_bSettingsChanged = true;
 }
 
-void AP_Dialog_FormatTable::setWidth(UT_uint32 width)
-{
-	setWidth(s_canonical_width_height(width));
-	m_bSettingsChanged = true;
-}
-
-void AP_Dialog_FormatTable::setHeight(UT_uint32 height)
-{
-	setHeight(s_canonical_width_height(height));
-	m_bSettingsChanged = true;
-}
-
-void AP_Dialog_FormatTable::setWidth(const std::string & width)
-{
-	m_sWidth = s_canonical_width_height(width, m_width);
-	m_vecProps.addOrReplaceProp("table-width", m_sWidth.c_str());
-
-	m_bSettingsChanged = true;
-}
-
-void AP_Dialog_FormatTable::setHeight(const std::string &  height)
-{
-	m_sHeight = s_canonical_width_height(height, m_height);
-	m_vecProps.addOrReplaceProp("table-height", m_sHeight.c_str());
-
-	m_bSettingsChanged = true;
-}
-
 void AP_Dialog_FormatTable::clearImage(void)
 {
 	DELETEP(m_pGraphic);
@@ -797,6 +665,7 @@ bool AP_Dialog_FormatTable::getLeftToggled()
 {
 	return _getToggleButtonStatus("left-style");
 }
+
 
 guint AP_Dialog_FormatTable::_findClosestThickness(const char *sthickness) const
 {
@@ -1040,42 +909,4 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 		painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
-}
-
-static std::string s_canonical_width_height (float height_width)
-{
-	std::string sHeight_width;
-
-	if (height_width < 0.01) {
-		sHeight_width = "0.01pt";
-	}
-	else if (height_width > 9999.99) {
-		sHeight_width = "9999.99pt";
-	}
-	else {
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		sHeight_width = UT_std_string_sprintf("%.2fpt", height_width);
-	}
-	return sHeight_width;
-}
-
-static std::string s_canonical_width_height (const std::string & sHeight_width, float & height_width)
-{
-	height_width = static_cast<float>(UT_convertToPoints(sHeight_width.c_str()));
-
-	std::string sHeight_width_new;
-
-	if (height_width < 0.01) {
-		height_width = 0.01f;
-		sHeight_width_new = "0.01pt";
-	}
-	else if (height_width > 9999.99) {
-		height_width = 9999.99f;
-		sHeight_width_new = "99.99pt";
-	}
-	else {
-		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		sHeight_width_new = UT_std_string_sprintf("%.2fpt", height_width);
-	}
-	return sHeight_width_new;
 }

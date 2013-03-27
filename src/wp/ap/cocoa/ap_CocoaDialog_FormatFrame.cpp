@@ -25,7 +25,6 @@
 #include "ut_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-#include "ut_locale.h"
 
 #include "gr_CocoaCairoGraphics.h"
 
@@ -109,16 +108,6 @@ void AP_CocoaDialog_FormatFrame::setSensitivity(bool bSens)
 }
 
 void AP_CocoaDialog_FormatFrame::setBorderThicknessInGUI(UT_UTF8String & /*sThick*/)
-{
-	UT_ASSERT_NOT_REACHED();
-}
-
-void AP_CocoaDialog_FormatFrame::setHeightInGUI(UT_UTF8String & /*sHeight*/)
-{
-	UT_ASSERT_NOT_REACHED();
-}
-
-void AP_CocoaDialog_FormatFrame::setWidthInGUI(UT_UTF8String & /*sWidth*/)
 {
 	UT_ASSERT_NOT_REACHED();
 }
@@ -281,14 +270,8 @@ void AP_CocoaDialog_FormatFrame::_populateWindowData(void)
 		[m_dlg setWrapState:(getWrapping() ? NSOnState : NSOffState)];
 
 		[m_dlg setPositionState:((int) positionMode())];
-		setAllSensitivities();
 
-		//init value is current Frame width and height
-		setCurFrameProps();
-		float height = getFrameHeight();
-		float width = getFrameWidth();
-		[m_dlg setHeight:height];
-		[m_dlg setWidth:width];
+		setAllSensitivities();
 	}
 }
 
@@ -377,74 +360,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 		[[self window] makeFirstResponder:_borderNumberForm];
 	}
-}
-
-/* 
- * IBAction: connection with IOutlet
- */
-- (IBAction)frameHeightField:(id)sender;
-{
-    NSStepper * stepper = 0;
-    NSFormCell * field = 0;
-    UT_UTF8String sHeight;
-    float height = 0;
-    stepper   = _frameHeightStepper;
-    field     = _frameHeightField;
-    sHeight = [[field stringValue] UTF8String];
-    height = [field floatValue];
-    _xap->setHeight(height);
-    // update stepper to the same value
-    [stepper setFloatValue:height];
-}
-/* 
- * IBAction: connection with IOutlet
- */
-- (IBAction)frameHeightStepper:(id)sender;
-{
-    NSStepper * stepper = 0;
-    NSFormCell * field = 0;
-    stepper   = _frameHeightStepper;
-    field     = _frameHeightField;
-    UT_UTF8String sHeight;
-    float height= [stepper floatValue];
-    {   
-        UT_LocaleTransactor t(LC_NUMERIC, "C");
-        sHeight = UT_UTF8String_sprintf("%fpt",height);
-    }   
-    _xap->setHeight(height);
-    // update field to the same value
-    [field   setFloatValue:(_xap->getFrameHeight())];
-}
-
-- (IBAction)frameWidthField:(id)sender;
-{
-    NSStepper * stepper = 0;
-    NSFormCell * field = 0;
-    UT_UTF8String sWidth;
-    float width = 0;
-    stepper   = _frameWidthStepper;
-    field     = _frameWidthField;
-    width = [field floatValue];  
-    {   
-        UT_LocaleTransactor t(LC_NUMERIC, "C");
-        sWidth = UT_UTF8String_sprintf("%fpt",width);
-    }   
-    _xap->setWidth(width);
-    // update stepper
-    [stepper setFloatValue:width];
-}
-- (IBAction)frameWidthStepper:(id)sender;
-{
-    NSStepper * stepper = 0;
-    NSFormCell * field = 0;
-    stepper   = _frameWidthStepper;
-    field     = _frameWidthField;
-    UT_UTF8String sWidth;
-    float width= [stepper floatValue];
-    sWidth = [[stepper stringValue] UTF8String];
-    _xap->setWidth(width);
-    // update field
-    [field   setFloatValue:(_xap->getFrameWidth())];
 }
 
 - (IBAction)borderThicknessField:(id)sender
@@ -875,18 +790,6 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 {
 	UT_UNUSED(sender);
 	_xap->setWrapping([_wrapSwitch state] == NSOnState);
-}
-
-- (void)setHeight:(float)height
-{
-    [_frameHeightStepper setIntValue:height];
-    [_frameHeightField setIntValue:height];
-}
-
-- (void)setWidth:(float)width
-{
-    [_frameWidthStepper setIntValue:width];
-    [_frameWidthField setIntValue:width];
 }
 
 - (void)setPositionState:(int)state

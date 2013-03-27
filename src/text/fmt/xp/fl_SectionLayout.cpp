@@ -1117,13 +1117,6 @@ UT_sint32 fl_DocSectionLayout::getWidth(void)
 	return width;
 }
 
-UT_sint32 fl_DocSectionLayout::getHeight(void)
-{
-	UT_sint32 ires = m_pLayout->getGraphics()->getResolution();
-	UT_sint32 height = static_cast<UT_sint32>(ires * m_pLayout->m_docViewPageSize.Height(DIM_IN));
-	return height;
-}
-
 void fl_DocSectionLayout::setHdrFtr(HdrFtrType iType, fl_HdrFtrSectionLayout* pHFSL)
 {
 	if(pHFSL == NULL)

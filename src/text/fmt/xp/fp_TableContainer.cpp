@@ -3982,6 +3982,7 @@ void fp_TableContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
   Delete all broken tables that follows this table. The first broken table
   is kept if the function is called by the master table.
 */
+
 void fp_TableContainer::deleteBrokenAfter(bool bClearFirst)
 {
 	if (!isThisBroken())
@@ -4053,17 +4054,6 @@ void fp_TableContainer::setHeight(UT_sint32 iHeight)
 	}
 
 	fp_VerticalContainer::setHeight(iHeight);
-}
-
-void fp_TableContainer::setWidth(UT_sint32 iWidth)
-{
-	if(!isThisBroken())
-	{
-		xxx_UT_DEBUGMSG(("Unbroken Table Width set to %d from %d \n",iWidth,getWidth()));
-	}
-	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
-	iWidth += (pTL->getLeftOffset() + pTL->getRightOffset());
-	fp_VerticalContainer::setWidth(iWidth);
 }
 
 /*
@@ -4903,6 +4893,7 @@ void fp_TableContainer::setContainer(fp_Container * pContainer)
 		xxx_UT_DEBUGMSG(("Set master table %x container to NULL \n",this));
 		return;
 	}
+	setWidth(pContainer->getWidth());
 }
 
 
@@ -5006,7 +4997,7 @@ void fp_TableContainer::layout(void)
 	alloc.x = getX();
 	alloc.y = getY();
 	alloc.width = getWidth();
-	alloc.height = getHeight();
+	alloc.height = requisition.height;
 	sizeAllocate(&alloc);
 	setToAllocation();
 #if BENCHLAYOUT
@@ -5280,29 +5271,6 @@ UT_sint32 fp_TableContainer::getHeight(void) const
 	UT_sint32 iMyHeight = getYBottom() - getYBreak();
 	return iMyHeight;
 }
-
-UT_sint32 fp_TableContainer::getWidth(void) const
-{
-	UT_sint32 iFullWidth =  fp_VerticalContainer::getWidth();
-	if(!isThisBroken())
-	{
-		//
-		// If this is a master table but it contains broken tables, we actually
-		// want the height of the first broken table. The Master table is the 
-		// one that actually has a relevant Y value in the vertical container.
-		// All other Y offsets from the broken tables are calculated relative to
-		// it.
-		//
-		if(getFirstBrokenTable() != NULL)
-		{
-			return getFirstBrokenTable()->getWidth();
-		}
-	}
-	return iFullWidth;
-//	UT_sint32 iMyWidth = m_iRightOffset - m_iLeftOffset;
-//	return iMyWidth;
-}
-
 /*!
  * Return true if the table contains footnote references
  */

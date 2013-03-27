@@ -1088,7 +1088,6 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 					   "tight-wrap","0",
 					   "frame-rel-width",m_sRelWidth.c_str(),
 					   "frame-min-height",m_sMinHeight.c_str(),
-					   // here we need return a valid value for "frame-expand-height" for enable frame-expand
 					   "frame-expand-height",m_sExpandHeight.c_str(),
 					      NULL,NULL};
 //

@@ -114,18 +114,6 @@ void AP_CocoaDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 	[m_dlg->_thicknessPopup selectItemAtIndex:closest];
 }
 
-void AP_CocoaDialog_FormatTable::setHeightInGUI(UT_UTF8String & /*sHeight*/)
-{
-        UT_ASSERT_NOT_REACHED();
-}
-
-void AP_CocoaDialog_FormatTable::setWidthInGUI(UT_UTF8String & /*sWidth*/)
-{
-        UT_ASSERT_NOT_REACHED();
-}
-
-
-
 void AP_CocoaDialog_FormatTable::event_Close(void)
 {
 	m_answer = AP_Dialog_FormatTable::a_CLOSE;
@@ -211,14 +199,6 @@ void AP_CocoaDialog_FormatTable::notifyActiveFrame(XAP_Frame * /*pFrame*/)
 void AP_CocoaDialog_FormatTable::_populateWindowData(void)
 {
    setAllSensitivities();
-   //init value is current Table width and height
-   setCurCellProps();
-   initTableWidthStr();
-   initTableHeightStr();
-   float height = getTableHeight();
-   float width = getTableWidth();
-   [m_dlg setHeight:height];
-   [m_dlg setWidth:width];
 }
 
 void AP_CocoaDialog_FormatTable::_storeWindowData(void)
@@ -289,69 +269,6 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 	}
 }
 
-- (IBAction)tableHeightField:(id)sender;
-{
-    NSForm * field = 0;
-    NSStepper * stepper = 0;
-    UT_UTF8String sHeight;
-    stepper   = _tableHeightStepper;
-    field     = _tableHeightField;
-    float height = [field floatValue];
-    sHeight = [[field stringValue] UTF8String];
-    // update stepper to the same value
-    // using INT for better display
-    [stepper setIntValue:height];
-    _xap->setHeight(sHeight);
-}
-- (IBAction)tableHeightStepper:(id)sender;
-{
-    NSForm * field = 0;
-    NSStepper * stepper = 0;
-    UT_UTF8String sHeight;
-    float height = 0;
-    stepper   = _tableHeightStepper;
-    field     = _tableHeightField;
-    height = [stepper floatValue];
-    {   
-        UT_LocaleTransactor t(LC_NUMERIC, "C");
-        sHeight = UT_UTF8String_sprintf("%fpt",height);
-    }   
-    _xap->setHeight(sHeight);
-    // update filed
-    [field   setIntValue:height];
-}
-
-- (IBAction)tableWidthField:(id)sender;
-{
-    NSForm * field = 0;
-    NSStepper * stepper = 0;
-    float width = 0;
-    UT_UTF8String sWidth;
-    stepper   = _tableWidthStepper;
-    field     = _tableWidthField;
-    sWidth = [[field stringValue] UTF8String];
-    width = [field floatValue];
-    // update stepper
-    [stepper setIntValue:width];
-    _xap->setWidth(sWidth);
-}
-- (IBAction)tableWidthStepper:(id)sender;
-{
-    NSForm * field = 0;
-    NSStepper * stepper = 0;
-    UT_UTF8String sWidth;
-    float width= 0;
-    stepper   = _tableWidthStepper;
-    field     = _tableWidthField;
-    width  = [stepper floatValue];
-    {   
-        UT_LocaleTransactor t(LC_NUMERIC, "C");
-        sWidth = UT_UTF8String_sprintf("%fpt",width);
-    }   
-    _xap->setWidth(sWidth);
-    // update field
-    [field   setIntValue:width];
-}
 - (IBAction)applyAction:(id)sender
 {
 	UT_UNUSED(sender);
@@ -426,17 +343,7 @@ void AP_CocoaDialog_FormatTable::_storeWindowData(void)
 {
 	return _preview;
 }
-- (void)setHeight:(float)height
-{
-    [_tableHeightStepper setIntValue:height];
-    [_tableHeightField setIntValue:height];
-}
 
-- (void)setWidth:(float)width
-{
-    [_tableWidthStepper setIntValue:width];
-    [_tableWidthField setIntValue:width];
-}
 
 - (void)setSensitivity:(bool)bSens
 {

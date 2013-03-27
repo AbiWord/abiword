@@ -101,10 +101,6 @@ public:
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
 	void								setBorderColor(UT_RGBColor clr);
-	void	      setWidth(UT_uint32 width);
-	void	      setHeight(UT_uint32 height);
-	void	      setWidth(const std::string &  width);
-	void	      setHeight(const std::string &  height);
 	void								setBackgroundColor(UT_RGBColor clr);
 	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;
 	void                                setBorderThickness(UT_UTF8String & sThick);
@@ -124,24 +120,12 @@ public:
 	bool								getLeftToggled();
 	GR_Image *                          getImage(void) { return m_pImage;}
 	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
-	inline float      getTableWidth(void) const { return m_width; }
-	inline float      getTableHeight(void) const { return m_height; }
-	inline const std::string &   getTableWidthStr() const {  return m_sWidth; }
-	inline const std::string &   getTableHeightStr() const { return m_sHeight; }
-	void                    initTableWidthStr();
-	void                    initTableHeightStr();
 
-	UT_RGBColor				m_borderColor;
-	UT_sint32				m_lineStyle;
-	gchar *					m_bgFillStyle;
+	UT_RGBColor							m_borderColor;
+	UT_sint32							m_lineStyle;
+	gchar *							m_bgFillStyle;
 	UT_PropVector                           m_vecProps;
 	UT_UTF8String                           m_sBorderThickness;
-	float                            m_width;
-	float                            m_height;
-	std::string                      m_sWidth;
-	std::string                      m_sHeight;
-	UT_sint32                        i_OldWidth;
-	UT_sint32                        i_OldHeight;
 protected:
 	guint                               _findClosestThickness(const char *) const;
 	AP_Dialog_FormatTable::tAnswer		m_answer;

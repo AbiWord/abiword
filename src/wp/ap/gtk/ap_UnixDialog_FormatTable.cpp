@@ -216,11 +216,7 @@ AP_UnixDialog_FormatTable::AP_UnixDialog_FormatTable(XAP_DialogFactory * pDlgFac
 	m_wSelectImageButton = NULL;
 	m_wNoImageButton = NULL;
 	m_wBorderThickness = NULL;
-	m_wWidth = NULL;
-	m_wHeight = NULL;
 	m_iBorderThicknessConnect = 0;
-	m_iWidthConnect = 0;
-	m_iHeightConnect = 0;
 }
 
 AP_UnixDialog_FormatTable::~AP_UnixDialog_FormatTable(void)
@@ -263,18 +259,6 @@ void AP_UnixDialog_FormatTable::runModeless(XAP_Frame * pFrame)
 						 static_cast<UT_uint32>(allocation.height));	
 	
 	m_pFormatTablePreview->draw();
-	// Set init Value
-		UT_Dimension dim = DIM_PT;
-		setCurCellProps();
-		initTableWidthStr();
-		initTableHeightStr();
-		float value = getTableWidth();
-		const gchar *szValue= UT_formatDimensionString (dim, value);
-		gtk_entry_set_text( GTK_ENTRY(m_wWidth),szValue );
-
-		value = getTableHeight();
-		szValue= UT_formatDimensionString (dim, value);
-		gtk_entry_set_text( GTK_ENTRY(m_wHeight),szValue );
 	
 	startUpdater();
 }
@@ -337,33 +321,6 @@ void AP_UnixDialog_FormatTable::event_BorderThicknessChanged(void)
 		event_previewExposed();
 	}
 }
-void AP_UnixDialog_FormatTable::event_WidthChanged(void)
-{
-		if(m_wWidth)
-		{
-		gtk_editable_select_region(GTK_EDITABLE(m_wWidth), 0, 0);  
-		//set Height & Width 
-		const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wWidth));
-		if( atoi( buf ) > 0 && atoi(buf) != (signed) getTableWidth() )
-		{
-			setWidth( atoi(buf) );
-		}
-	}
-}
-void AP_UnixDialog_FormatTable::event_HeightChanged(void)
-{
-	if(m_wHeight)
-		{
-		gtk_editable_select_region(GTK_EDITABLE(m_wHeight), 0, 0);  
-		//set Height & Width 
-		const char * buf = gtk_entry_get_text(GTK_ENTRY(m_wHeight));
-		if( atoi( buf ) > 0 && atoi(buf) != (signed) getTableHeight() )
-		{
-			setHeight( atoi(buf) );
-		}
-	}
-}
-
 
 void AP_UnixDialog_FormatTable::event_ApplyToChanged(void)
 {
@@ -470,10 +427,7 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 
 	
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSetImageBackground")), pSS, AP_STRING_ID_DLG_FormatTable_SetImageBackground);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableHeight")), pSS, AP_STRING_ID_DLG_FormatTable_Height);
-	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTableWidth")), pSS, AP_STRING_ID_DLG_FormatTable_Width);
-	m_wWidth = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableWidth"));
-	m_wHeight = GTK_WIDGET(gtk_builder_get_object(builder, "entryTableHeight")); 
+	
 
 //	add the buttons for background image to the dialog.
 
@@ -529,28 +483,10 @@ GtkWidget * AP_UnixDialog_FormatTable::_constructWindow(void)
 	// add the apply and ok buttons to the dialog
 	m_wCloseButton = GTK_WIDGET(gtk_builder_get_object(builder, "btClose"));
 	m_wApplyButton = GTK_WIDGET(gtk_builder_get_object(builder, "btApply"));
-
+	
 	g_object_unref(G_OBJECT(builder));
 
 	return window;
-}
-
-static void s_focus_out_height(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-    UT_UNUSED(event);
-    UT_UNUSED(user_data);
-    AP_UnixDialog_FormatTable* dlg = reinterpret_cast<AP_UnixDialog_FormatTable*>(user_data);
-    UT_return_if_fail(widget && dlg);
-    dlg->event_HeightChanged();
-}
-
-static void s_focus_out_width(GtkWidget *widget, GdkEvent *event, gpointer user_data)
-{
-    UT_UNUSED(event);
-    UT_UNUSED(user_data);
-    AP_UnixDialog_FormatTable* dlg = reinterpret_cast<AP_UnixDialog_FormatTable*>(user_data);
-    UT_return_if_fail(widget && dlg);
-    dlg->event_WidthChanged();
 }
 
 static void s_destroy_clicked(GtkWidget * /* widget */,
@@ -646,8 +582,6 @@ void AP_UnixDialog_FormatTable::_connectSignals(void)
 							"changed",
 							G_CALLBACK(s_border_thickness),
 							reinterpret_cast<gpointer>(this));
-	m_iWidthConnect = g_signal_connect(G_OBJECT(m_wWidth), "focus-out-event", G_CALLBACK(s_focus_out_width), static_cast<gpointer>(this));
-	m_iHeightConnect = g_signal_connect(G_OBJECT(m_wHeight), "focus-out-event", G_CALLBACK(s_focus_out_height), static_cast<gpointer>(this));
 }
 
 void AP_UnixDialog_FormatTable::_populateWindowData(void)

@@ -42,8 +42,6 @@ public:
 	void					event_previewExposed(void);
 	void					event_ApplyToChanged(void);
 	void                    event_BorderThicknessChanged(void);
-	void                    event_HeightChanged(void);
-	void                    event_WidthChanged(void);
 	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
 	virtual void			setBackgroundColorInGUI(UT_RGBColor clr);
 	virtual void            setSensitivity(bool bsens);
@@ -76,8 +74,7 @@ protected:
 	GtkWidget * m_wLineRight;
 	GtkWidget * m_wLineTop;
 	GtkWidget * m_wLineBottom;
-	GtkWidget * m_wWidth;
-	GtkWidget * m_wHeight;
+
 	GtkWidget * m_wPreviewArea;
 	GtkWidget * m_wApplyToMenu;
 
@@ -85,8 +82,6 @@ protected:
 	GtkWidget * m_wNoImageButton;
 	GtkWidget * m_wBorderThickness;
 	guint       m_iBorderThicknessConnect;
-	guint       m_iWidthConnect;
-	guint       m_iHeightConnect;
 };
 
 #endif /* AP_UNIXDIALOG_FORMATTABLE_H */

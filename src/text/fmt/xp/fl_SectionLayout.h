@@ -319,7 +319,6 @@ public:
 	fp_Container *      getLastEndnoteContainer(void);
 	void                deleteBrokenTablesFromHere(fl_ContainerLayout * pTL);
 	UT_sint32           getWidth(void);
-	UT_sint32           getHeight(void);
 	UT_sint32           getActualColumnHeight(void);
 	UT_sint32           getActualColumnWidth(void);
 	bool                isCollapsing(void) const
