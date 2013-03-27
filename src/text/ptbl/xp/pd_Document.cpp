@@ -421,7 +421,8 @@ bool PD_Document::sendAddAuthorCR(pp_Author * pAuthor)
 	UT_return_val_if_fail(pAuthor, false);
 	const gchar * szAtts[3] = {PT_DOCPROP_ATTRIBUTE_NAME,"addauthor",NULL};
 	const gchar ** szProps = NULL;
-	_buildAuthorProps(pAuthor, szProps);
+	std::string storage;
+	_buildAuthorProps(pAuthor, szProps, storage);
 	UT_return_val_if_fail(szProps, false);
 	bool b = createAndSendDocPropCR(szAtts,szProps);
 	DELETEPV(szProps);
@@ -433,23 +434,23 @@ bool PD_Document::sendChangeAuthorCR(pp_Author * pAuthor)
 {
 	const gchar * szAtts[3] = {PT_DOCPROP_ATTRIBUTE_NAME,"changeauthor",NULL};
 	const gchar ** szProps = NULL;
-	_buildAuthorProps(pAuthor, szProps);
+	std::string storage;
+	_buildAuthorProps(pAuthor, szProps, storage);
 	UT_return_val_if_fail(szProps, false);
 	bool b = createAndSendDocPropCR(szAtts,szProps);
 	DELETEPV(szProps);
 	return b;
 }
 
-bool PD_Document::_buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps)
+bool PD_Document::_buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps, std::string & storage)
 {
 	const PP_AttrProp * pAP = pAuthor->getAttrProp();
 	UT_uint32 iCnt= pAP->getPropertyCount();
 	szProps = new const gchar * [2*iCnt + 3];
-	static UT_String sVal;
 	UT_DEBUGMSG(("_buildAuthorProps getAuthorInt %d \n",pAuthor->getAuthorInt()));
-	UT_String_sprintf(sVal,"%d",pAuthor->getAuthorInt());
+	storage = UT_std_string_sprintf("%d",pAuthor->getAuthorInt());
 	szProps[0] = "id";
-	szProps[1] = sVal.c_str();
+	szProps[1] = storage.c_str();
 	UT_uint32 i = 0;
 	const gchar * szName = NULL;
 	const gchar * szValue = NULL;
@@ -608,7 +609,7 @@ void PD_Document::setShowAuthors(bool bAuthors)
 bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
 {
 	xxx_UT_DEBUGMSG(("Doing addAuthorAttributeIfBlank PAP \n"));
-	UT_String sNum;
+	std::string sNum;
 	if(getMyAuthorInt() == -1)
 	{
 		UT_sint32 k = findFirstFreeAuthorInt();
@@ -616,7 +617,7 @@ bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
 		pp_Author * pA = addAuthor(k);
 		sendAddAuthorCR(pA);
 	}
-	UT_String_sprintf(sNum,"%d",getMyAuthorInt());
+	sNum = UT_std_string_sprintf("%d",getMyAuthorInt());
 	m_iLastAuthorInt = getMyAuthorInt();
 	if(!p_AttrProp)
 	{
@@ -1354,7 +1355,7 @@ bool PD_Document::insertSpan(PT_DocPosition dpos, const UT_UCSChar * pbuf,
 #if DEBUG
 #if 1
 	UT_uint32 ii = 0;
-	UT_String sStr;
+	std::string sStr;
 	for(ii=0; ii<length;ii++)
 	{
 		sStr += static_cast<const char>(pbuf[ii]);
@@ -6783,7 +6784,7 @@ bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT
 	// * we replace LRO/RLO with our dir-override property
 
 	const gchar * attrs[] = {"props", NULL, NULL};
-	UT_String s;
+	std::string s;
 			
 	bool result = true;
 	const UT_UCS4Char * pStart = pbuf;

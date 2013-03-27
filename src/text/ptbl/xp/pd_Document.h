@@ -298,7 +298,7 @@ public:
  private:
 	bool                    addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut, std::string& storage);
 	bool                    addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp);
-	bool                    _buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps);
+	bool                    _buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps, std::string& storage);
  public:
 	//
 	void					beginUserAtomicGlob(void);
