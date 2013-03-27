@@ -113,7 +113,7 @@ BOOL AP_Win32Dialog_Lists::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*
 {
 	delete m_pPreviewWidget; m_pPreviewWidget = NULL;
 
-	register int i;
+	register unsigned int i;
 
 	m_hThisDlg = hWnd;
 	setbisCustomized(false);
@@ -613,7 +613,7 @@ void AP_Win32Dialog_Lists::_fillTypeList()
 		AP_STRING_ID_DLG_Lists_Type_numbered
 	};
 
-	for (int i = 0; i < G_N_ELEMENTS(rgIDs); ++i)
+	for (unsigned int i = 0; i < G_N_ELEMENTS(rgIDs); ++i)
 	{
 		_win32Dialog.addItemToCombo(AP_RID_DIALOG_LIST_COMBO_TYPE,
 									pSS->getValue(rgIDs[i]));
@@ -733,7 +733,7 @@ void AP_Win32Dialog_Lists::_fillFoldingList()
 		AP_STRING_ID_DLG_Lists_FoldingLevel4
 	};
 
-	for (int i = 0; i < G_N_ELEMENTS(rgIDs); ++i)
+	for (unsigned int i = 0; i < G_N_ELEMENTS(rgIDs); ++i)
 	{
 		_win32Dialog.addItemToCombo(AP_RID_DIALOG_LIST_COMBO_FOLDING,
 									pSS->getValue(rgIDs[i]));
@@ -817,7 +817,7 @@ void AP_Win32Dialog_Lists::_resetCustomValues()
 
 void AP_Win32Dialog_Lists::_enableCustomControls(bool bEnable)
 {
-	for (int i = 0; i < G_N_ELEMENTS(rgCustomIds); ++i)
+	for (unsigned int i = 0; i < G_N_ELEMENTS(rgCustomIds); ++i)
 	{
 		_win32Dialog.enableControl(rgCustomIds[i], bEnable);
 	}
@@ -1057,7 +1057,6 @@ void AP_Win32Dialog_Lists::_selectFont()
 	bool bStrikeOut = false;
 
 	bool bTopLine = false;
-
 	bool bBottomLine = false;
 
 

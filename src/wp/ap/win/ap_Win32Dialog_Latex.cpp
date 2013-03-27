@@ -50,7 +50,7 @@ AP_Win32Dialog_Latex::~AP_Win32Dialog_Latex(void)
 
 void  AP_Win32Dialog_Latex::activate(void)
 {
-	int iResult;	
+	UT_DebugOnly<int> iResult;	
 	
 	ConstructWindowName();
 	setDialogTitle(m_sWindowName.utf8_str());
@@ -114,7 +114,7 @@ void AP_Win32Dialog_Latex::notifyCloseFrame(XAP_Frame *pFrame)
 	UT_return_if_fail(pFrame);
 	if((HWND)GetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT) == static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow())
 	{
-		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, NULL);
+		SetWindowLongPtrW(m_hDlg, GWLP_HWNDPARENT, 0);
 		SetWindowPos(m_hDlg, NULL, 0, 0, 0, 0,
 						SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE | SWP_FRAMECHANGED);
 	}

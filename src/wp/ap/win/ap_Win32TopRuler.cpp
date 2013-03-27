@@ -35,7 +35,7 @@
 /*****************************************************************/
 
 #define GWL(hwnd)		(AP_Win32TopRuler*)GetWindowLongPtrW((hwnd), GWLP_USERDATA)
-#define SWL(hwnd, f)	(AP_Win32TopRuler*)SetWindowLongPtrW((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
+#define SWL(hwnd, f)	SetWindowLongPtrW((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
 
 #define ENSUREP(p)		do { UT_ASSERT_HARMLESS(p); if (!p) goto Cleanup; } while (0)
 
@@ -82,9 +82,9 @@ void AP_Win32TopRuler::setView(AV_View * pView)
 
 bool AP_Win32TopRuler::registerClass(XAP_Win32App * app)
 {
-	ATOM a;
+	UT_DebugOnly<ATOM> a;
 
-    UT_Win32LocaleString str;	
+	UT_Win32LocaleString str;
 	str.fromASCII (app->getApplicationName());
 	
 	// register class for the top ruler

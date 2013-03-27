@@ -1790,9 +1790,9 @@ void s_AbiWord_1_Listener::_handleRevisions(void)
 			bWroteOpenRevisionsSection = true;
 		}
 
-		s = UT_std_string_sprintf("<r id=\"%d\" time-started=\"%lld\" version=\"%d\">",
+		s = UT_std_string_sprintf("<r id=\"%u\" time-started=\"%ld\" version=\"%u\">",
 						  pRev->getId(),
-						  (long long)pRev->getStartTime(),
+						  pRev->getStartTime(),
 						  pRev->getVersion());
 		
 		m_pie->write(s.c_str());

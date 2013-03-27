@@ -63,7 +63,7 @@ void AP_Win32Dialog_InsertBookmark::runModal(XAP_Frame * pFrame)
 #define _DS(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(AP_STRING_ID_##s))
 #define _DSX(c,s)	setDlgItemText(AP_RID_DIALOG_##c,pSS->getValue(XAP_STRING_ID_##s))
 
-BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND /*hWnd*/, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet* pSS = m_pApp->getStringSet();
 
@@ -104,11 +104,11 @@ BOOL AP_Win32Dialog_InsertBookmark::_onInitDialog(HWND hWnd, WPARAM wParam, LPAR
 	return 1;
 }
 
-BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wNotifyCode = HIWORD(wParam);
 	WORD wId = LOWORD(wParam);
-	HWND hWndCtrl = (HWND)lParam;
+//	HWND hWndCtrl = (HWND)lParam;
 
 	switch (wId)
 	{
@@ -159,7 +159,7 @@ BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 								buf,
 								BOOKMARK_SIZE_LIMIT );
 
-                enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_OK, (buf && *buf) ? true : false);
+				enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_OK, *buf ? true : false);
 				enableControl(AP_RID_DIALOG_INSERTBOOKMARK_BTN_DELETE, (getComboItemIndex(AP_RID_DIALOG_INSERTBOOKMARK_CBX_BOOKMARK, buf)!=CB_ERR) ? true : false);
 				return 1;
 			}
@@ -172,7 +172,7 @@ BOOL AP_Win32Dialog_InsertBookmark::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 	}
 }
 
-BOOL AP_Win32Dialog_InsertBookmark::_onDeltaPos(NM_UPDOWN * pnmud)
+BOOL AP_Win32Dialog_InsertBookmark::_onDeltaPos(NM_UPDOWN * /*pnmud*/)
 {
 	return 0;
 }

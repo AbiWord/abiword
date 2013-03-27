@@ -39,12 +39,6 @@
 #include "ap_Win32Dialog_ListRevisions.h"
 #include "xap_Win32LabelledSeparator.h"
 
-#ifdef __MINGW32__
-#define LVM_GETSELECTIONMARK    (LVM_FIRST+66)
-#define ListView_GetSelectionMark(w) (INT)SNDMSG((w),LVM_GETSELECTIONMARK,0,0)
-#endif
-
-
 #include "ap_Win32Resources.rc2"
 #include "xap_Win32DialogHelper.h"
 
@@ -157,7 +151,7 @@ BOOL AP_Win32Dialog_ListRevisions::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, L
 	return 1;							// 1 == we did not call SetFocus()
 }
 
-BOOL AP_Win32Dialog_ListRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM lParam)
+BOOL AP_Win32Dialog_ListRevisions::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam*/)
 {
 	WORD wId = LOWORD(wParam);
 

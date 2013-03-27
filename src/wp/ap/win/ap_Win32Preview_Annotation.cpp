@@ -61,8 +61,6 @@ void AP_Win32Preview_Annotation::_createToolTip(HWND hwndParent)
 {
 	UT_return_if_fail(!m_hToolTip);
 
-	const XAP_StringSet * pSS = m_pApp->getStringSet();
-
 	XAP_Win32App * pWin32App = static_cast<XAP_Win32App *>(XAP_App::getApp());
 	HINSTANCE hinst = pWin32App->getInstance();
 
@@ -86,7 +84,8 @@ void AP_Win32Preview_Annotation::_createToolTip(HWND hwndParent)
 	UT_Win32LocaleString str;
 	str.fromUTF8(getDescription().c_str());
 
-    TOOLINFOW ti = { 0 };
+    TOOLINFOW ti;
+    memset(&ti, 0, sizeof(ti));
     ti.cbSize = sizeof(TOOLINFOW);
     ti.uFlags = TTF_SUBCLASS;
     ti.hwnd = hwndParent;
@@ -141,7 +140,7 @@ void AP_Win32Preview_Annotation::activate(void)
 	// stubbed out
 }
 
-void AP_Win32Preview_Annotation::draw(const UT_Rect *clip)
+void AP_Win32Preview_Annotation::draw(const UT_Rect * /*clip*/)
 {
 	// stubbed out
 }

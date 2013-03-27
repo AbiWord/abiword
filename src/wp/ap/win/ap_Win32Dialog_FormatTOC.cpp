@@ -601,10 +601,8 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 
 	/* Now the Page Numbering style */
 	const FootnoteTypeDesc * vecTypeList = AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList();
-	UT_UTF8String * sProp;
 	UT_UTF8String  val;
 	
-	sProp = new UT_UTF8String("toc-page-type");		
 	for (; vecTypeList->n !=  _FOOTNOTE_TYPE_INVALID; vecTypeList++)
 	{
 		const char * szVal = vecTypeList->label;
@@ -620,9 +618,7 @@ void AP_Win32Dialog_FormatTOC_Layout::_onInitDialog()
 
 	/* Tab Type styles */
 	const UT_GenericVector<const gchar*> * vecLabels = getContainer()->getVecTABLeadersLabel();
-	const UT_GenericVector<const gchar*> * vecProps = getContainer()->getVecTABLeadersProp();
 	UT_sint32 nTypes = vecLabels->getItemCount();
-	sProp = new UT_UTF8String("toc-tab-leader");	
 
 	for(UT_sint32 j=0; j< nTypes; j++)
 	{

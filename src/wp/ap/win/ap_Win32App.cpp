@@ -614,8 +614,7 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
 	UT_return_val_if_fail(m_pClipboard && pszFmt, false);
 	
 	UT_ByteBuf buf;
-	UT_Error status;;
-	UT_Byte b = 0;
+	UT_Error status;
 
 	if(0 == strcmp(AP_CLIPBOARD_TEXTPLAIN_8BIT, pszFmt))
 	{
@@ -627,6 +626,7 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
 			if(status != UT_OK)
 				return false;
 			
+			UT_Byte b = 0;
 			buf.append(&b,1);			// NULL terminate the string
 			m_pClipboard->addData(AP_CLIPBOARD_TEXTPLAIN_8BIT,
 								  (UT_Byte *)buf.getPointer(0),buf.getLength());
@@ -673,7 +673,8 @@ bool AP_Win32App::_copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *
 
 			if(status != UT_OK)
 				return false;
-			
+
+			UT_Byte b = 0;
 			buf.append(&b,1);			// NULL terminate the string
 			m_pClipboard->addData(AP_CLIPBOARD_RTF,(UT_Byte *)buf.getPointer(0),buf.getLength());
 			DELETEP(pExpRtf);
@@ -996,9 +997,13 @@ bool AP_Win32App::_pasteFormatFromClipboard(PD_DocumentRange * pDocRange, const 
 		{
 			const char * szEncoding = 0;
 			if (bWide)
+			{
 				szEncoding = XAP_EncodingManager::get_instance()->getUCS2LEName();
+			}
 			else
+			{
 				; // TODO Get code page using CF_LOCALE
+			}
 			pImp->pasteFromBuffer(pDocRange,pData,iLen,szEncoding);
 			delete pImp;
 		}
@@ -1054,8 +1059,8 @@ ReturnTrue:
 
 /*****************************************************************/
 
-int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance, 
-						 HINSTANCE hPrevInstance, PSTR szCmdLine, int iCmdShow)
+int AP_Win32App::WinMain(const char * szAppName, HINSTANCE hInstance,
+						 HINSTANCE /*hPrevInstance*/, PSTR /*szCmdLine*/, int iCmdShow)
 {
 #if !GLIB_CHECK_VERSION(2,32,0)
 	if (!g_thread_supported ())

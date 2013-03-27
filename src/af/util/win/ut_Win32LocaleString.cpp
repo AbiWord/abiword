@@ -265,8 +265,8 @@ UT_UCS2String UT_UCS2String::substr(size_t iStart, size_t nChars) const
 
 const UT_UCS2Char* UT_UCS2String::ucs2_str() const
 {
-	int size = pimpl->size();
-	char *p = (char*) pimpl->data();
+//	int size = pimpl->size();
+//	char *p = (char*) pimpl->data();
 
 	return pimpl->size() ? pimpl->data() : ucsEmpty;
 }
@@ -329,7 +329,7 @@ UT_UCS4String UT_Win32LocaleString::ucs4_str() const
 	return str;
 }
 
-void UT_Win32LocaleString::fromUCS2 (const UT_UCS2Char * szIn)
+void UT_Win32LocaleString::fromUCS2 (const UT_UCS2Char * /*szIn*/)
 {
 	UT_ASSERT(UT_NOT_IMPLEMENTED);
 }
@@ -357,32 +357,32 @@ void UT_Win32LocaleString::fromUCS4 (const UT_UCS4Char* usc4_in)
 	g_free(pText);
 }
 
-void UT_Win32LocaleString::fromUTF8 (const char* utf8_str)
+void UT_Win32LocaleString::fromUTF8 (const char* utf8str)
 {
 #ifdef DEBUG
-	if (!utf8_str) utf8_str="FIXME: NULL passed to UT_Win32LocaleString::fromUTF8";
+	if (!utf8str) utf8str="FIXME: NULL passed to UT_Win32LocaleString::fromUTF8";
 #endif
-	UT_UCS2Char * pText = (UT_UCS2Char *) UT_convert (utf8_str,
-							  strlen(utf8_str)+1,
+	UT_UCS2Char * pText = (UT_UCS2Char *) UT_convert (utf8str,
+							  strlen(utf8str)+1,
 							  "UTF-8",
 							  "UCS-2LE",
 							  NULL, NULL);
 
 	if (!pText || !*pText) {
-    	pimpl->clear ();
-    	return;
-    }
+		pimpl->clear ();
+		return;
+	}
 
-    pimpl->assign(pText, wcslen((const wchar_t *)pText));
+	pimpl->assign(pText, wcslen((const wchar_t *)pText));
 	g_free(pText);
 }
 
-void UT_Win32LocaleString::fromASCII (const char* szASCII, size_t size)
+void UT_Win32LocaleString::fromASCII (const char* szASCII, size_t sz)
 {
 #ifdef DEBUG
 	if (!szASCII) szASCII="FIXME: NULL passed to UT_Win32LocaleString::fromASCII";
 #endif
-	size_t len = (size == -1) ? strlen(szASCII) : size;
+	size_t len = (sz == -1) ? strlen(szASCII) : sz;
 	UT_UCS2Char * src = new UT_UCS2Char [len + 1];
 	char *p_str = (char *)szASCII;
 	for (UT_uint32 i = 0; i < len; i++)

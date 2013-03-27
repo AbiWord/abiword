@@ -30,6 +30,14 @@
 
 #include <commctrl.h>
 
+// Compat stuff
+
+// newer MINGW32 seems to have that. Just prevent the redefine.
+#if defined(__MINGW32__) && !defined(ListView_GetSelectionMark)
+#define LVM_GETSELECTIONMARK    (LVM_FIRST+66)
+#define ListView_GetSelectionMark(w) (INT)SNDMSG((w),LVM_GETSELECTIONMARK,0,0)
+#endif
+
 /*****************************************************************/
 #include "xap_Frame.h"
 #include "xap_Win32FrameImpl.h"

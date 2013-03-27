@@ -38,12 +38,6 @@
 #include "xap_Win32Dlg_History.h"
 #include "xap_Win32LabelledSeparator.h"
 
-#ifdef __MINGW32__
-#define LVM_GETSELECTIONMARK    (LVM_FIRST+66)
-#define ListView_GetSelectionMark(w) (INT)SNDMSG((w),LVM_GETSELECTIONMARK,0,0)
-#endif
-
-
 #include "xap_Win32Resources.rc2"
 #include "xap_Win32DialogHelper.h"
 

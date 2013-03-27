@@ -78,7 +78,7 @@ void AP_Win32Dialog_Spell::runModal(XAP_Frame * pFrame)
 
 	lpTemplate = MAKEINTRESOURCEW(AP_RID_DIALOG_SPELL);
 
-	int result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
+	UT_DebugOnly<int> result = DialogBoxParamW(pWin32App->getInstance(),lpTemplate,
 						static_cast<XAP_Win32FrameImpl*>(pFrame->getFrameImpl())->getTopLevelWindow(),
 						(DLGPROC)s_dlgProc,(LPARAM)this);
 	UT_ASSERT_HARMLESS((result != -1));
@@ -163,7 +163,6 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 	const UT_UCSChar *p;
 	UT_uint32 len;
 	UT_uint32 sum = 0;
-	char * buf;
 
 	// insert start of sentence
 	SendMessageW(m_hwndSentence, EM_SETSEL, (WPARAM) sum, (LPARAM) sum);
@@ -203,6 +202,7 @@ void AP_Win32Dialog_Spell::_showMisspelledWord(void)
 // FIXME: this is broken - should take iLength characters from p
 // and convert them to char. I.e., first substr p, then
 // convert. But output length is not necessarily related to iLength!
+		//char * buf;
 		//buf = new char [iLength + 1];
 		str.fromUCS4(p);
 		str[iLength]=L'\0';

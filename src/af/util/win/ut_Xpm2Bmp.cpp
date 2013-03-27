@@ -44,6 +44,8 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 	// convert an XPM into a BMP using a DIB.
 	// return true if successful.
 
+	UT_DEBUG_ONLY_ARG(sizeofData);
+
 	UT_ASSERT(pIconData && *pIconData);
 	UT_ASSERT(sizeofData > 0);
 	UT_ASSERT(pBackgroundColor);
@@ -53,7 +55,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 
 	UT_uint32 width, height, xpm_width, xpm_height, nrColors, charsPerPixel;
 	UT_uint32 cut_left, cut_top;
-	UT_uint32 n = sscanf(pIconData[0],"%ld %ld %ld %ld",
+	UT_DebugOnly<UT_uint32> n = sscanf(pIconData[0],"%lu %lu %lu %lu",
 						 &xpm_width,&xpm_height,&nrColors,&charsPerPixel);
 	UT_ASSERT(n == 4);
 	UT_ASSERT(xpm_width > 0);
@@ -120,7 +122,7 @@ bool UT_Xpm2Bmp(UT_uint32 maxWidth,
 			bufSymbol[kPx] = pIconDataPalette[k][kPx];
 		UT_ASSERT(strlen(bufSymbol) == charsPerPixel);
 		
-		UT_uint32 nf = sscanf(&pIconDataPalette[k][charsPerPixel+1]," %s %s",&bufKey,&bufColorValue);
+		UT_DebugOnly<UT_uint32> nf = sscanf(&pIconDataPalette[k][charsPerPixel+1]," %s %s",&bufKey,&bufColorValue);
 		UT_ASSERT(nf == 2);
 		UT_ASSERT(bufKey[0] == 'c' || bufKey[0] == 'g');
 

@@ -84,7 +84,7 @@ bool AP_Win32Toolbar_FontCombo::populate(void)
 }
 
 int CALLBACK AP_Win32Toolbar_FontCombo::_EnumFontsProc(LPLOGFONTW lplf, 
-													  LPTEXTMETRICW lptm,
+						       LPTEXTMETRICW /*lptm*/,
 													  DWORD dwStyle, 
 													  LONG lParam)
 {

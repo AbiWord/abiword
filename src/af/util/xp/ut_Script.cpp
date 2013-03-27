@@ -224,9 +224,13 @@ const char * UT_ScriptLibrary::suffixesForType(UT_ScriptIdType ieft)
 			const char *szDummy;
 			UT_ScriptIdType ieftDummy;
 			if (s->getDlgLabels(&szDummy,&szSuffixes,&ieftDummy))
+			{
 				return szSuffixes;
+			}
 			else
+			{
 				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			}
 		}
     }
   

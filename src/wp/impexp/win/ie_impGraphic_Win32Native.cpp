@@ -53,7 +53,7 @@ static void _write_png( png_structp png_ptr,
   bb->append(data, length);
 }
 
-static void _write_flush(png_structp png_ptr) 
+static void _write_flush(png_structp /*png_ptr*/)
 {
   // Empty Function. 
 }
@@ -61,7 +61,7 @@ static void _write_flush(png_structp png_ptr)
 //
 // Creates a BITMAP file from a handle 
 //
-static void CreateBMPFile(HWND hwnd, UT_ByteBuf & pBB, PBITMAPINFO pbi, 
+static void CreateBMPFile(HWND /*hwnd*/, UT_ByteBuf & pBB, PBITMAPINFO pbi,
 			  HBITMAP hBMP, HDC hDC) 
 { 
   BITMAPFILEHEADER hdr;       // bitmap file-header 
@@ -746,8 +746,8 @@ const IE_SuffixConfidence * IE_ImpGraphicWin32Native_Sniffer::getSuffixConfidenc
 	return IE_ImpGraphicWin32Native_Sniffer__SuffixConfidence;
 }
 
-UT_Confidence_t IE_ImpGraphicWin32Native_Sniffer::recognizeContents (const char * szBuf, 
-																			 UT_uint32 iNumbytes)
+UT_Confidence_t IE_ImpGraphicWin32Native_Sniffer::recognizeContents (const char * /*szBuf*/,
+																	 UT_uint32 /*iNumbytes*/)
 {
     return UT_CONFIDENCE_SOSO;
 }

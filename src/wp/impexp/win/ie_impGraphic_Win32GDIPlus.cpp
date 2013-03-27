@@ -72,7 +72,7 @@ GUID gdip_jpeg_guid = { 0xb96b3cae, 0x0728, 0x11d3, { 0x9d, 0x7b, 0x00, 0x00, 0x
 
 
 /* Globals */
-static ULONG_PTR gdiplusToken = NULL;
+static ULONG_PTR gdiplusToken = 0;
 static HINSTANCE gdipluslib = NULL;
 
 
@@ -204,8 +204,8 @@ initGDIPlus ()
 		return;
 
 	input.GdiplusVersion = 1;
-    input.DebugEventCallback = NULL;
-    input.SuppressBackgroundThread = input.SuppressExternalCodecs = FALSE;
+	input.DebugEventCallback = 0;
+	input.SuppressBackgroundThread = input.SuppressExternalCodecs = FALSE;
 
 	GdiplusStartup (&gdiplusToken, &input, NULL);
 }
@@ -220,10 +220,10 @@ initGDIPlus ()
 bool 
 isGDIPlusAvailable()
 {
-	if (gdiplusToken==NULL)
+	if (gdiplusToken == 0)
 		initGDIPlus();
 			
-	return (gdiplusToken == NULL ? false : true);
+	return (gdiplusToken == 0 ? false : true);
 }
 
 void 

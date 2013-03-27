@@ -53,7 +53,7 @@
 #endif
 
 #define GWL(hwnd)		reinterpret_cast<AP_Win32Frame *>(GetWindowLongPtrW((hwnd), GWLP_USERDATA))
-#define SWL(hwnd, f)	reinterpret_cast<AP_Win32Frame *>(SetWindowLongPtrW((hwnd), GWLP_USERDATA,(LONG_PTR)(f)))
+#define SWL(hwnd, f)	SetWindowLongPtrW((hwnd), GWLP_USERDATA,(LONG_PTR)(f))
 
 // reserve space for static variables
 wchar_t AP_Win32FrameImpl::s_ContainerWndClassName[MAXCNTWNDCLSNMSIZE];
@@ -218,12 +218,12 @@ HWND AP_Win32FrameImpl::_createStatusBarWindow(XAP_Frame *pFrame, HWND hwndParen
 	return _getHwndStatusBar();
 }
 
-void AP_Win32FrameImpl::_refillToolbarsInFrameData() 
+void AP_Win32FrameImpl::_refillToolbarsInFrameData()
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
 
-void AP_Win32FrameImpl::_rebuildToolbar(UT_uint32 ibar)
+void AP_Win32FrameImpl::_rebuildToolbar(UT_uint32 /*ibar*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
@@ -325,7 +325,7 @@ void AP_Win32FrameImpl::_showOrHideStatusbar(void)
 	pFrame->toggleStatusBar(bShowStatusBar);
 }
 
-void AP_Win32FrameImpl::_hideMenuScroll(bool bHideMenuScroll)
+void AP_Win32FrameImpl::_hideMenuScroll(bool /*bHideMenuScroll*/)
 {
 	UT_ASSERT_HARMLESS(UT_NOT_IMPLEMENTED);
 }
@@ -358,11 +358,10 @@ UT_sint32 AP_Win32FrameImpl::_getDocumentAreaHeight(void)
 void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 {
 	RECT r;
-	int cxVScroll, cyHScroll;
+	int cxVScroll;
 
 	GetClientRect(m_hwndContainer,&r);
 	cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
-	cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 
 	// create the top ruler
 	AP_Win32TopRuler * pWin32TopRuler = new AP_Win32TopRuler(pFrame);
@@ -387,10 +386,9 @@ void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 void AP_Win32FrameImpl::_createLeftRuler(XAP_Frame *pFrame)
 {
 	RECT r;
-	int cxVScroll, cyHScroll;
+	int cyHScroll;
 
 	GetClientRect(m_hwndContainer,&r);
-	cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
 	cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
 
 	UT_uint32 yTopRulerHeight = 0;
@@ -521,7 +519,8 @@ void AP_Win32FrameImpl::_setXScrollRange(AP_FrameData * pData, AV_View *pView)
 	const UT_uint32 iWindowWidth = r.right - r.left;
 	const UT_uint32 iWidth = pView->getGraphics()->tdu(pData->m_pDocLayout->getWidth());
 	XAP_Frame::tZoomType tZoom = getFrame()->getZoomType();	
-	SCROLLINFO si = { 0 };
+	SCROLLINFO si;
+	memset(&si, 0, sizeof(si));
 
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
@@ -571,7 +570,8 @@ void AP_Win32FrameImpl::_setYScrollRange(AP_FrameData * pData, AV_View *pView)
 	const UT_uint32 iWindowHeight = r.bottom - r.top;
 	const UT_uint32 iHeight = pView->getGraphics()->tdu(pData->m_pDocLayout->getHeight());
 
-	SCROLLINFO si = { 0 };
+	SCROLLINFO si;
+	memset(&si, 0, sizeof(si));
 
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL | SIF_DISABLENOSCROLL;
@@ -587,9 +587,11 @@ void AP_Win32FrameImpl::_setYScrollRange(AP_FrameData * pData, AV_View *pView)
 // scroll event came in (probably from an EditMethod (like a PageDown
 // or insertData or something).  update the on-screen scrollbar and
 // then warp the document window contents.
-void AP_Win32FrameImpl::_scrollFuncY(UT_sint32 yoff, UT_sint32 ylimit)
+void AP_Win32FrameImpl::_scrollFuncY(UT_sint32 yoff, UT_sint32 /*ylimit*/)
 {
-	SCROLLINFO si = { 0 };
+	SCROLLINFO si;
+	memset(&si, 0, sizeof(si));
+
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 
@@ -602,9 +604,11 @@ void AP_Win32FrameImpl::_scrollFuncY(UT_sint32 yoff, UT_sint32 ylimit)
 	getFrame()->getCurrentView()->setYScrollOffset(pGr->tlu(si.nPos));
 }
 
-void AP_Win32FrameImpl::_scrollFuncX(UT_sint32 xoff, UT_sint32 xlimit)
+void AP_Win32FrameImpl::_scrollFuncX(UT_sint32 xoff, UT_sint32 /*xlimit*/)
 {
-	SCROLLINFO si = { 0 };
+	SCROLLINFO si;
+	memset(&si, 0, sizeof(si));
+
 	si.cbSize = sizeof(si);
 	si.fMask = SIF_ALL;
 
@@ -776,7 +780,7 @@ int AP_Win32FrameImpl::_getMouseWheelLines()
 
 /////////////////////////////////////////////////////////////////////////
 
-void AP_Win32FrameImpl::_startTracking(UT_sint32 x, UT_sint32 y)
+void AP_Win32FrameImpl::_startTracking(UT_sint32 /*x*/, UT_sint32 y)
 {
 	m_startMouseWheelY = y;
 	m_bMouseWheelTrack = true;
@@ -786,13 +790,13 @@ void AP_Win32FrameImpl::_startTracking(UT_sint32 x, UT_sint32 y)
 	SetCapture(m_hwndDocument);
 }
 
-void AP_Win32FrameImpl::_endTracking(UT_sint32 x, UT_sint32 y)
+void AP_Win32FrameImpl::_endTracking(UT_sint32 /*x*/, UT_sint32 /*y*/)
 {
 	m_bMouseWheelTrack = false;
 	ReleaseCapture();
 }
 
-void AP_Win32FrameImpl::_track(UT_sint32 x, UT_sint32 y)
+void AP_Win32FrameImpl::_track(UT_sint32 /*x*/, UT_sint32 y)
 {
 	UT_sint32 Delta = y - m_startMouseWheelY;
 
@@ -811,13 +815,13 @@ void AP_Win32FrameImpl::_track(UT_sint32 x, UT_sint32 y)
 	{
 		int iNewPosition = (m_startScrollPosition - iMin) * (y - rect.top) / (m_startMouseWheelY - rect.top);
 
-		SendMessageW(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), NULL);
+		SendMessageW(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), 0);
 	}
 	else
 	{
 		int iNewPosition = m_startScrollPosition + (iMax - m_startScrollPosition) * (y - m_startMouseWheelY) / (rect.bottom - m_startMouseWheelY);
 
-		SendMessageW(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), NULL);
+		SendMessageW(m_hwndContainer, WM_VSCROLL, MAKEWPARAM(SB_THUMBTRACK, (WORD)iNewPosition), 0);
 	}
 
 }
@@ -860,7 +864,8 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 		{
 			int nScrollCode = (int) LOWORD(wParam); // scroll bar value
 
-			SCROLLINFO si = { 0 };
+			SCROLLINFO si;
+			memset(&si, 0, sizeof(si));
 
 			si.cbSize = sizeof(si);
 			si.fMask = SIF_ALL;
@@ -906,7 +911,8 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 			int nScrollCode = (int) LOWORD(wParam); // scroll bar value
 			int nPos = (int) HIWORD(wParam);  // scroll box position
 
-			SCROLLINFO si = { 0 };
+			SCROLLINFO si;
+			memset(&si, 0, sizeof(si));
 
 			si.cbSize = sizeof(si);
 			si.fMask = SIF_ALL;
@@ -989,7 +995,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 				SendMessageW(hwnd,
 							WM_VSCROLL,
 							MAKELONG(wDir, 0),
-							NULL);
+							0);
 			}
 			else
 			{
@@ -998,7 +1004,8 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 				const int iMove = (iDelta * cWheelLines) / WHEEL_DELTA;
 
 				// Get current scroll position
-				SCROLLINFO si = { 0 };
+				SCROLLINFO si;
+				memset(&si, 0, sizeof(si));
 
 				si.cbSize = sizeof(si);
 				si.fMask = SIF_ALL;
@@ -1016,7 +1023,7 @@ LRESULT CALLBACK AP_Win32FrameImpl::_ContainerWndProc(HWND hwnd, UINT iMsg, WPAR
 					SendMessageW(hwnd,
 							WM_VSCROLL,
 							MAKELONG(SB_THUMBPOSITION, iNewPos),
-							NULL);
+							0);
 				}
 			}
 			return 0;
@@ -1216,13 +1223,12 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 		case WM_SYSCHAR:
 		{
 			UT_DEBUGMSG(("WM_SYSCHAR %d  - %d\n",wParam, lParam));
-			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);	    
 			return UT_DefWindowProc(hwnd,iMsg,wParam,lParam);
 		}
 
 		case WM_CHAR:
 		{
-            bool is_uni = IsWindowUnicode (hwnd);
+//            bool is_uni = IsWindowUnicode (hwnd);
 			UT_DEBUGMSG(("WM_CHAR %d  - %d\n",wParam, lParam));
 			ev_Win32Keyboard *pWin32Keyboard = static_cast<ev_Win32Keyboard *>(fImpl->m_pKeyboard);
 	    
@@ -1308,7 +1314,9 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 				// the following is necessary to make sure that the
 				// window de-scrolls as it gets larger.
 
-				SCROLLINFO si = { 0 };
+				SCROLLINFO si;
+				memset(&si, 0, sizeof(si));
+
 				si.cbSize = sizeof(si);
 				si.fMask = SIF_ALL;
 
@@ -1345,9 +1353,9 @@ LRESULT CALLBACK AP_Win32FrameImpl::_DocumentWndProc(HWND hwnd, UINT iMsg, WPARA
 
 		case WM_TIMER:
 		{
-			TIMERPROC * pfn = (TIMERPROC *)lParam;
+			UT_DebugOnly<TIMERPROC *> pfn = (TIMERPROC *)lParam;
 			UT_ASSERT_HARMLESS( (void *)(pfn) == (void *)(Global_Win32TimerProc) );
-			Global_Win32TimerProc(hwnd,WM_TIMER,(UINT)wParam,NULL);
+			Global_Win32TimerProc(hwnd,WM_TIMER,(UINT)wParam, 0);
 			return 0;
 		}
 
