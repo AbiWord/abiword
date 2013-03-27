@@ -17,6 +17,8 @@
  * 02111-1307, USA.
  */
 
+#include <string>
+
 #include "xap_Module.h"
 #include "xap_App.h"
 #include "xap_Frame.h"
@@ -28,7 +30,6 @@
 #include "ev_Menu_Labels.h"
 #include "ev_EditMethod.h"
 #include "xap_Menu_Layouts.h"
-#include "ut_string_class.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -107,7 +108,7 @@ inline static char * _ucs4ToLatin1(const UT_UCS4Char * text)
 // TODO Can we add a feature to the language dialog to restrict the
 // languages it offers? de en es fr it no pt
 // 
-static bool _getTranslationCode(FV_View * pView, UT_String & langCode)
+static bool _getTranslationCode(FV_View * pView, std::string & langCode)
 {
 	XAP_Frame * pFrame = static_cast <XAP_Frame *>(pView->getParentData());
 	UT_return_val_if_fail(pFrame,false);
@@ -123,7 +124,7 @@ static bool _getTranslationCode(FV_View * pView, UT_String & langCode)
 	XAP_Dialog_Language * pDialog = static_cast<XAP_Dialog_Language *>(pDialogFactory->requestDialog(id));
 	UT_return_val_if_fail(pDialog, false);
 
-	UT_String code;
+	std::string code;
 
 	const gchar ** props_in = NULL;
 	if (pView->getCharFormat(&props_in))
@@ -149,7 +150,7 @@ static bool _getTranslationCode(FV_View * pView, UT_String & langCode)
 		const gchar * s;
 		if (pDialog->getChangedLangProperty(&s))
 	   	{
-			UT_String changedLang = s;
+			std::string changedLang = s;
 			if (changedLang.size() >= 2)
 		   	{
 				changedLang = changedLang.substr(0, 2);
@@ -213,22 +214,22 @@ bool FreeTranslation_invoke(AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
 	FV_View * pView =
 	static_cast <FV_View *>(pFrame->getCurrentView());
 
-	UT_String url("http://www.freetranslation.com");
+	std::string url("http://www.freetranslation.com");
 
 	if (!pView->isSelectionEmpty())
    	{
-		UT_String langCode;
+		std::string langCode;
 		if (_getTranslationCode(pView, langCode))
 	   	{
 			// Now we will figure out what words to translate
 			// We need to get the Latin1 version of the current word.
-	              UT_UCS4Char *ucs4ST;
+			UT_UCS4Char *ucs4ST;
 			pView->getSelectionText(*&ucs4ST);
 			char * translate = _ucs4ToLatin1(ucs4ST);
 
 			// URL encode the string (' ' -> %20, ...)
 			// TODO this is not complete
-			UT_String srcText;
+			std::string srcText;
 
 			for (char *p = translate; p && *p; ++p)
 			{
