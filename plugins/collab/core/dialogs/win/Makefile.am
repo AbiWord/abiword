@@ -25,7 +25,8 @@ libwin_la_SOURCES = \
 
 libwin_la_LIBADD = ap_Win32Res_CollaborationDialogs.lo
 
-ap_Win32Res_CollaborationDialogs.lo: ap_Win32Res_CollaborationDialogs.rc $(libwin_la_OBJECTS)
+COLLAB_RCFLAGS = -I$(srcdir)
+ap_Win32Res_CollaborationDialogs.lo:  $(srcdir)/ap_Win32Res_CollaborationDialogs.rc $(libwin_la_OBJECTS)
 	CPPFLAGS="$(COLLAB_RCFLAGS)" $(top_srcdir)/lt-compile-resource $< $@
 
 EXTRA_DIST = \
