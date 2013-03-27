@@ -35,16 +35,25 @@ public:
 	UT_MutexImpl ()
 		: mMutex ( 0 )
 		{
-			if (!g_thread_supported ()) g_thread_init (NULL);
-
+#if GLIB_CHECK_VERSION(2,32,0)
+			mMutex = &mStaticMutex;
+			g_mutex_init(&mStaticMutex);
+#else
+			if (!g_thread_supported ())
+				g_thread_init (NULL);
 			mMutex = g_mutex_new () ;
 			UT_ASSERT ( mMutex ) ;
+#endif
 		}
 
 	~UT_MutexImpl ()
 		{
+#if GLIB_CHECK_VERSION(2,32,0)
+			g_mutex_clear(&mStaticMutex);
+#else
 			if ( mMutex )
 				g_mutex_free ( mMutex ) ;
+#endif
 		}
 
   void lock ()
@@ -68,6 +77,11 @@ private:
 	UT_MutexImpl (const UT_MutexImpl & other);
 	UT_MutexImpl & operator=(const UT_MutexImpl & other);
 
+// TODO: when we require Glib 2.32 or up, we can remove all that
+// junk and just keep the static mutex.
+#if GLIB_CHECK_VERSION(2,32,0)
+	GMutex mStaticMutex;
+#endif
 	GMutex *mMutex;
 
 	// Damn it, recursive locking is not guaranteed.
