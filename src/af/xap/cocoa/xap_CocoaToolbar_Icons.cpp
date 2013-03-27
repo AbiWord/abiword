@@ -162,7 +162,7 @@ NSString * XAP_CocoaToolbar_Icons::getFilenameForIcon(NSString * iconName)
 	{
 		XAP_CocoaApp * pApp = static_cast<XAP_CocoaApp *>(XAP_App::getApp());
 
-		UT_String path;
+		std::string path;
 
 		if (pApp->findAbiSuiteLibFile(path, [iconName UTF8String], "ToolbarIcons")) // I'd love to do this inside the bundle but Cocoa gets confused if I try
 		{

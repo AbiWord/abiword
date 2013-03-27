@@ -641,20 +641,23 @@ bool PD_Document::addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-static UT_String UT_filenameToUri(const UT_String & rhs) {
+static std::string UT_filenameToUri(const std::string & rhs) {
 	char * uri = UT_go_filename_to_uri (rhs.c_str());
-	UT_String res(uri);
+	if(!uri) {
+		return "";
+	}
+	std::string res(uri);
 	g_free (uri);
 
 	return res;
 }
 
-static void buildTemplateList(UT_String *template_list, const UT_String & base)
+static void buildTemplateList(std::string *template_list, const std::string & base)
 {
 	UT_LocaleInfo locale(UT_LocaleInfo::system());
 
-	UT_UTF8String lang (locale.getLanguage());
-	UT_UTF8String terr (locale.getTerritory());
+	std::string lang (locale.getLanguage());
+	std::string terr (locale.getTerritory());
 
 	/* try *6* combinations of the form:
 	   1) /templates/normal.awt-en_US
@@ -665,39 +668,39 @@ static void buildTemplateList(UT_String *template_list, const UT_String & base)
 	   6) /templates/normal.awt
 	*/
 
-	UT_String user_template_base (XAP_App::getApp()->getUserPrivateDirectory());
+	std::string user_template_base (XAP_App::getApp()->getUserPrivateDirectory());
 #if defined(WIN32)
-	user_template_base += UT_String_sprintf("\\templates\\%s", base.c_str());
+	user_template_base += UT_std_string_sprintf("\\templates\\%s", base.c_str());
 #else
-	user_template_base += UT_String_sprintf("/templates/%s", base.c_str());
+	user_template_base += UT_std_string_sprintf("/templates/%s", base.c_str());
 #endif
-	UT_String global_template_base (XAP_App::getApp()->getAbiSuiteLibDir());
+	std::string global_template_base (XAP_App::getApp()->getAbiSuiteLibDir());
 #if defined(WIN32)
-	global_template_base += UT_String_sprintf("\\templates\\%s", base.c_str());
+	global_template_base += UT_std_string_sprintf("\\templates\\%s", base.c_str());
 #else
-	global_template_base += UT_String_sprintf("/templates/%s", base.c_str());
+	global_template_base += UT_std_string_sprintf("/templates/%s", base.c_str());
 #endif
 
-	template_list[0] = UT_String_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
-	template_list[1] = UT_String_sprintf ("%s-%s", user_template_base.c_str(), lang.utf8_str());
+	template_list[0] = UT_std_string_sprintf ("%s-%s_%s", user_template_base.c_str(), lang.c_str(), terr.c_str());
+	template_list[1] = UT_std_string_sprintf ("%s-%s", user_template_base.c_str(), lang.c_str());
 	template_list[2] = user_template_base;
 
 	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[5],base.c_str(),"templates"))
 		template_list[5] = global_template_base; // always try to load global normal.awt last
 
-	UT_String xbase = base;
+	std::string xbase = base;
 
 	xbase += "-";
-	xbase += lang.utf8_str();
+	xbase += lang;
 
 	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[4],xbase.c_str(),"templates"))
-		template_list[4] = UT_String_sprintf ("%s-%s", global_template_base.c_str(), lang.utf8_str());
+		template_list[4] = UT_std_string_sprintf ("%s-%s", global_template_base.c_str(), lang.c_str());
 
 	xbase += "_";
-	xbase += terr.utf8_str();
+	xbase += terr;
 
 	if (!XAP_App::getApp()->findAbiSuiteLibFile(template_list[3],xbase.c_str(),"templates"))
-		template_list[3] = UT_String_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.utf8_str(), terr.utf8_str());
+		template_list[3] = UT_std_string_sprintf ("%s-%s_%s", global_template_base.c_str(), lang.c_str(), terr.c_str());
 
 	for(int i = 0; i < 6; i++) {
 		template_list[i] = UT_filenameToUri(template_list[i]);
@@ -812,7 +815,7 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
     // m_hDocumentRDF->runMilestone2Test();
     
 	if (bImportStylesFirst) {
-		UT_String template_list[6];
+		std::string template_list[6];
 
 		buildTemplateList (template_list, "normal.awt");
 
@@ -936,7 +939,7 @@ UT_Error PD_Document::createRawDocument(void)
 	m_pPieceTable->setPieceTableState(PTS_Loading);
 
 	{
-		UT_String template_list[6];
+		std::string template_list[6];
 		
 		buildTemplateList (template_list, "normal.awt");
 
@@ -1057,7 +1060,7 @@ UT_Error PD_Document::importStyles(const char * szFilename, int ieft, bool bDocP
 
 UT_Error PD_Document::newDocument(void)
 {
-	UT_String template_list[6];
+	std::string template_list[6];
 
 	buildTemplateList(template_list, "normal.awt");
 

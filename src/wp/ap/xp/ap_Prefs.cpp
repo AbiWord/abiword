@@ -160,7 +160,7 @@ void AP_Prefs::overlaySystemPrefs(void)
 {
 	// read system prefs file and overlay builtin values.
 	const char** items = localeinfo_combinations("system.profile","","-",0);
-	UT_String path;
+	std::string path;
 	while(*items) {
 	    const char * item = *items++;
 #ifdef _MSC_VER

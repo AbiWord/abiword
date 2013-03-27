@@ -55,22 +55,22 @@ class ABI_EXPORT UT_LocaleInfo
   bool hasTerritory () const;
   bool hasEncoding () const;
 
-  UT_UTF8String getLanguage () const;
-  UT_UTF8String getTerritory () const;
-  UT_UTF8String getEncoding () const;
+  const std::string& getLanguage () const;
+  const std::string& getTerritory () const;
+  const std::string& getEncoding () const;
 
-  UT_UTF8String toString () const;
+  std::string toString () const;
 
   bool operator==(const UT_LocaleInfo & rhs) const;
   bool operator!=(const UT_LocaleInfo & rhs) const;
 
  private:
 
-  void init (const UT_String & locale);
+  void init (const std::string & locale);
 
-  UT_UTF8String mLanguage;
-  UT_UTF8String mTerritory;
-  UT_UTF8String mEncoding;
+  std::string mLanguage;
+  std::string mTerritory;
+  std::string mEncoding;
 };
 
 const char* UT_getFallBackStringSetLocale(const char* pLocale);

@@ -41,7 +41,7 @@ UT_Wctomb::UT_Wctomb(const char* to_charset)
 
 UT_Wctomb::UT_Wctomb()
 {
-    cd = UT_iconv_open(UT_LocaleInfo::system().getEncoding().utf8_str(),UCS_INTERNAL);
+    cd = UT_iconv_open(UT_LocaleInfo::system().getEncoding().c_str(),UCS_INTERNAL);
     UT_ASSERT(UT_iconv_isValid(cd));
 }
 

@@ -220,7 +220,7 @@ const char * XAP_CocoaApp::getUserPrivateDirectory()
 	return upd_cache;
 }
 
-bool XAP_CocoaApp::findAbiSuiteBundleFile(UT_String & path, const char * filename, const char * subdir) // checks only bundle
+bool XAP_CocoaApp::findAbiSuiteBundleFile(std::string & path, const char * filename, const char * subdir) // checks only bundle
 {
 	if (!filename)
 	{
@@ -247,7 +247,7 @@ xxx_UT_DEBUGMSG(("XAP_CocoaApp::findAbiSuiteBundleFile(\"%s\",\"%s\",\"%s\")\n",
 	return bFound;
 }
 
-bool XAP_CocoaApp::findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir)
+bool XAP_CocoaApp::findAbiSuiteLibFile(std::string & path, const char * filename, const char * subdir)
 {
 	if (!filename)
 	{
@@ -260,7 +260,7 @@ bool XAP_CocoaApp::findAbiSuiteLibFile(UT_String & path, const char * filename, 
 	return findAbiSuiteBundleFile(path, filename, subdir);
 }
 
-bool XAP_CocoaApp::findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir)
+bool XAP_CocoaApp::findAbiSuiteAppFile(std::string & path, const char * filename, const char * subdir)
 {
 	if (!filename)
 	{

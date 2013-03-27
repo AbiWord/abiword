@@ -62,7 +62,7 @@ bool BarbarismChecker::load(const char * szLang)
 	m_sLang = szLang;
 
 	UT_String fileName;
-	UT_String fullPath;
+	std::string fullPath;
 
 	fileName  = szLang;
 	fileName += "-barbarism.xml";

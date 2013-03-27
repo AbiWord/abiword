@@ -118,7 +118,7 @@ bool UT_LocaleInfo::hasEncoding () const
  * Returns empty string or language. Example languages are
  * "en", "wen", "fr", "es"
  */
-UT_UTF8String UT_LocaleInfo::getLanguage () const
+const std::string& UT_LocaleInfo::getLanguage () const
 {
   return mLanguage;
 }
@@ -127,7 +127,7 @@ UT_UTF8String UT_LocaleInfo::getLanguage () const
  * Returns empty string or territory. Example territories are:
  * "US", "GB", "FR", ...
  */
-UT_UTF8String UT_LocaleInfo::getTerritory () const
+const std::string& UT_LocaleInfo::getTerritory () const
 {
   return mTerritory;
 }
@@ -136,12 +136,12 @@ UT_UTF8String UT_LocaleInfo::getTerritory () const
  * Returns empty string or encoding. Encoding is like "UTF-8" or
  * "ISO-8859-1"
  */
-UT_UTF8String UT_LocaleInfo::getEncoding () const
+const std::string& UT_LocaleInfo::getEncoding () const
 {
   return mEncoding;
 }
 
-void UT_LocaleInfo::init (const UT_String & locale)
+void UT_LocaleInfo::init (const std::string & locale)
 {
   if (locale.size () == 0)
     return;
@@ -192,9 +192,9 @@ void UT_LocaleInfo::init (const UT_String & locale)
  * Turns object back into a string of the form language_TERRITORY.ENCODING
  * (eg): en_US.UTF-8
  */
-UT_UTF8String UT_LocaleInfo::toString () const
+std::string UT_LocaleInfo::toString () const
 {
-  UT_UTF8String ret (mLanguage);
+  std::string ret (mLanguage);
 
   if (hasTerritory ())
     {

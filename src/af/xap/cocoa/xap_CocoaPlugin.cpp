@@ -248,7 +248,7 @@ public:
 	{
 		if ([relativePath length])
 		{
-			UT_String path;
+			std::string path;
 
 			if (pApp->findAbiSuiteLibFile(path, [relativePath UTF8String]))
 			{

@@ -48,7 +48,7 @@ void UT_UCS2_mbtowc::initialize (bool clear)
 }
 
 UT_UCS2_mbtowc::UT_UCS2_mbtowc () :
-  m_converter(new Converter(UT_LocaleInfo::system().getEncoding().utf8_str())),
+  m_converter(new Converter(UT_LocaleInfo::system().getEncoding().c_str())),
   m_bufLen(0)
 {
   // 
@@ -143,7 +143,7 @@ void UT_UCS4_mbtowc::initialize (bool clear)
 }
 
 UT_UCS4_mbtowc::UT_UCS4_mbtowc () :
-  m_converter(new Converter(UT_LocaleInfo::system().getEncoding().utf8_str())),
+  m_converter(new Converter(UT_LocaleInfo::system().getEncoding().c_str())),
   m_bufLen(0)
 {
   // 

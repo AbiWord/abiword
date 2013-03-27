@@ -840,7 +840,7 @@ const char * XAP_App::getAbiSuiteLibDir() const
 	return m_szAbiSuiteLibDir;
 }
 
-bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const char * subdir)
+bool XAP_App::findAbiSuiteLibFile(std::string & path, const char * filename, const char * subdir)
 {
 	if (!filename)
 	{ 
@@ -868,7 +868,7 @@ bool XAP_App::findAbiSuiteLibFile(UT_String & path, const char * filename, const
 	return bFound;
 }
 
-bool XAP_App::findAbiSuiteAppFile(UT_String & path, const char * filename, const char * subdir) 
+bool XAP_App::findAbiSuiteAppFile(std::string & path, const char * filename, const char * subdir) 
 {
 	if (!filename) 
 	{

@@ -1430,7 +1430,7 @@ fetchAttributesFromAbiProps(const PP_AttrProp& rAP) {
                 case FL_TAB_DECIMAL:
                 {
                     UT_LocaleInfo locale(UT_LocaleInfo::system());
-                    UT_LocaleTransactor t(LC_NUMERIC, locale.toString().utf8_str());
+                    UT_LocaleTransactor t(LC_NUMERIC, locale.toString().c_str());
                     
                     // AbiWord always uses the locale-defined decimal point as the
                     // decimal tab character. See fp_Line::_calculateWidthOfRun()
