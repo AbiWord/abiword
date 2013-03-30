@@ -280,6 +280,8 @@ AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCall
 		gtk_tree_selection_get_selected (sel, NULL, &iter)) {
 		gtk_tree_model_get (GTK_TREE_MODEL (list), &iter, 1, &mime_type, -1);
 		GOComponent *component = go_component_new_by_mime_type (mime_type);
+		go_component_set_inline (component, true);
+		go_component_set_use_font_from_app (component, true);
 		g_signal_connect (G_OBJECT (component), "changed",
 								G_CALLBACK (changed_cb), NULL);
 		GtkWindow *win = go_component_edit(component);
@@ -659,6 +661,8 @@ void GOComponentView::loadBuffer(UT_ByteBuf const *sGOComponentData, const char 
 		component = go_component_new_by_mime_type (_mime_type);
 	}
 	UT_return_if_fail (component);
+	go_component_set_inline (component, true);
+	go_component_set_use_font_from_app (component, true);
 	g_signal_connect (G_OBJECT (component), "changed",
 								G_CALLBACK (changed_cb), this);
 	if (component == NULL) {
