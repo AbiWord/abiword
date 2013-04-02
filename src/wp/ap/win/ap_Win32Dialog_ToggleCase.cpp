@@ -69,6 +69,7 @@ void AP_Win32Dialog_ToggleCase::runModal(XAP_Frame * pFrame)
 BOOL AP_Win32Dialog_ToggleCase::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /*lParam*/)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	m_hDlg = hWnd;
 
 	setDialogTitle (pSS->getValue(AP_STRING_ID_DLG_ToggleCase_Title) );
 
