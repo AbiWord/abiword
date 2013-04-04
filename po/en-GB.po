@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
-"PO-Revision-Date: 2012-12-17 02:09+0200\n"
+"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"PO-Revision-Date: 2013-04-04 10:07+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: unknown <email@address>\n"
 "Language: en_GB\n"
@@ -2593,6 +2593,11 @@ msgstr "Dashes"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Date"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr "Date Last Changed"
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -6079,6 +6084,11 @@ msgstr "Shading"
 msgid "Shading color:"
 msgstr "Shading colour:"
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr "Short File Name"
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6392,25 +6402,45 @@ msgstr "Split on Right Side"
 msgid "Split on Top Side"
 msgstr "Split on Top Side"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Split on all delimiters except spaces"
+msgid "Split text at commas"
+msgstr "Split text at commas"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Split on all word delimiters including spaces"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Split text at commas or tabs"
+msgid "Split text at spaces"
+msgstr "Split text at spaces"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Split text at spaces, commas, or tabs"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr "Split text at tabs"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr "Split text with commas as delimiters"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr "Split text with commas, tabs or spaces as delimiters"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr "Split text with spaces as delimiters"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr "Split text with tabs as delimiters"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6986,6 +7016,11 @@ msgstr "Type a name for the RDF link:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Type a name for the bookmark, or select an existing from the list:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr "Type a title for the hyperlink"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8005,6 +8040,11 @@ msgstr "Declare as XML (version 1.0)"
 msgid "Default language: "
 msgstr "Default language: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr "Dhivehi"
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8099,6 +8139,11 @@ msgstr "English (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "English (Canada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr "English (India)"
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9588,3 +9633,331 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "None"
 
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Split on all delimiters except spaces"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Split on all word delimiters including spaces"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Split text at commas or tabs"
+
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from "
+#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+
+#~ msgid "From File"
+#~ msgstr "From File"
+
+#~ msgid "List"
+#~ msgstr "List"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 None"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "&Available formats:"
+#~ msgstr "&Available formats:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Enable smart quotes"
+
+#~ msgid "&Show RDF"
+#~ msgstr "&Show RDF"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "AutoFit behaviour"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Bi-Directional Options"
+
+#~ msgid "Contributor"
+#~ msgstr "Contributer"
+
+#~ msgid "Creator"
+#~ msgstr "Creator"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Default date (w/o time)"
+
+#~ msgid "Execute SPARQL Query for location"
+#~ msgstr "Execute SPARQL Query for location"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Extra parameters:"
+
+#~ msgid "Field Name"
+#~ msgstr "Field Name"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Format Endnotes"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Format Footnotes"
+
+#~ msgid "Insert break"
+#~ msgstr "Insert break"
+
+#~ msgid "Insert field"
+#~ msgstr "Insert field"
+
+#~ msgid "Layout Details"
+#~ msgstr "Layout Details"
+
+#~ msgid "Line"
+#~ msgstr "Line"
+
+#~ msgid "Lists for "
+#~ msgstr "Lists for "
+
+#~ msgid "Page Reference"
+#~ msgstr "Page Reference"
+
+#~ msgid "Paper..."
+#~ msgstr "Paper..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Position Text Box"
+
+#~ msgid "SPARQL &Query"
+#~ msgstr "SPARQL &Query"
+
+#~ msgid "Scale..."
+#~ msgstr "Scale..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Section breaks"
+
+#~ msgid "Stylesheet Settings"
+#~ msgstr "Stylesheet Settings"
+
+#~ msgid "Table size"
+#~ msgstr "Table size"
+
+#~ msgid "&Description"
+#~ msgstr "&Description"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amharic (Ethiopia)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturian (Spain)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aymara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aymara (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "Central Aymara"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Define Image Placement"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Define Text Wrapping"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Dutch (Netherlands)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Flemish (Belgium)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galician (Galego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italian (Italy)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Kazakh (Kazakhstan)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Korean, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latin (Renaissance)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinka (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepali (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Norwegian Bokmal"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Norwegian Nynorsk"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punjabi (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punjabi (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 vowels)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 vowels)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Russian (Russia)"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Set Image Name"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Set Image Size"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Western European, DOS/Windows Code Page 437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Senegal)"
+
+#~ msgid "Bambara"
+#~ msgstr "Bamnankan"
+
+#~ msgid "&Tripel"
+#~ msgstr "&Triple"
+
+#~ msgid "Lat & Long"
+#~ msgstr "Lat & Long"
+
+#~ msgid "Location, Start and End Times"
+#~ msgstr "Location, Start and End Times"
+
+#~ msgid "Name, Nick"
+#~ msgstr "Name, Nick"
+
+#~ msgid "Start and End Times"
+#~ msgstr "Start and End Times"
+
+#~ msgid "Go to..."
+#~ msgstr "Go to..."
+
+#~ msgid "SPARQL Query..."
+#~ msgstr "SPARQL Query..."
+
+#~ msgid "&Format Table"
+#~ msgstr "&Format Table"
+
+#~ msgid "&From File"
+#~ msgstr "&From File"
+
+#~ msgid "Allow Custom Toolbars"
+#~ msgstr "Allow Custom Toolbars"
+
+#~ msgid "Display Help Index"
+#~ msgstr "Display Help Index"
+
+#~ msgid "INS"
+#~ msgstr "INS"
+
+#~ msgid "Insert a picture"
+#~ msgstr "Insert a picture"
+
+#~ msgid "M&erge documents"
+#~ msgstr "M&erge documents"
+
+#~ msgid "OVR"
+#~ msgstr "OVR"
+
+#~ msgid "Show the AbiWord splash screen on application startup"
+#~ msgstr "Show the AbiWord splash screen on application startup"
+
+#~ msgid ""
+#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
+#~ "to merge them, but the result might be meaningless."
+#~ msgstr ""
+#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
+#~ "to merge them, but the result might be meaningless."
+
+#~ msgid "&Autotext"
+#~ msgstr "&Autotext"
+
+#~ msgid "About &Open Source"
+#~ msgstr "About &Open Source"
+
+#~ msgid "Attention:"
+#~ msgstr "Attention:"
+
+#~ msgid "Best regards,"
+#~ msgstr "Yours faithfully,"
+
+#~ msgid "CERTIFIED MAIL"
+#~ msgstr "RECORDED DELIVERY"
+
+#~ msgid "Check &Version"
+#~ msgstr "Check &Version"
+
+#~ msgid "Closing:"
+#~ msgstr "Closing:"
+
+#~ msgid "Dear Mom and Dad,"
+#~ msgstr "Dear Mum and Dad,"
+
+#~ msgid "Display information about Open Source"
+#~ msgstr "Display information about Open Source"
+
+#~ msgid "Display program version number"
+#~ msgstr "Display program version number"
+
+#~ msgid "Email:"
+#~ msgstr "Email:"
+
+#~ msgid "Mail Instructions:"
+#~ msgstr "Mail Instructions:"
+
+#~ msgid "Reference:"
+#~ msgstr "Reference:"
+
+#~ msgid "Respectfully yours,"
+#~ msgstr "Respectfully,"
+
+#~ msgid "Respectfully,"
+#~ msgstr "Take care,"
+
+#~ msgid "Salutation:"
+#~ msgstr "Salutation:"
+
+#~ msgid "Sincerely yours,"
+#~ msgstr "Thank you,"
+
+#~ msgid "Thank you,"
+#~ msgstr "Yours faithfully,"
+
+#~ msgid "Thanks,"
+#~ msgstr "Yours sincerely,"
+
+#~ msgid "Yours truly,"
+#~ msgstr "Yours truly,"
