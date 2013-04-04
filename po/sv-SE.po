@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
-"PO-Revision-Date: 2013-02-28 21:36+0200\n"
+"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"PO-Revision-Date: 2013-04-04 18:34+0200\n"
 "Last-Translator: Per <tucker@algonet.se>\n"
 "Language-Team: Swedish <tp-sv@listor.tp-sv.se>\n"
 "Language: sv\n"
@@ -1071,7 +1071,7 @@ msgstr "1½ rad"
 msgid "1.5 spacing"
 msgstr "1½ radavstånd"
 
-#  Skulle gärna kört med ⅓ här, men just det tecknet är i princip oläsligt i det typsnitt som windowsversionen använder sig av.
+# Skulle gärna kört med ⅓ här, men just det tecknet är i princip oläsligt i det typsnitt som windowsversionen använder sig av.
 #. DLG_PageFormat_1_3_A4
 #: po/tmp/ap_String_Id.h
 msgid "1/3 A4"
@@ -2112,7 +2112,7 @@ msgid ""
 msgstr ""
 "Välj ditt mål till vänster.\n"
 "Om du vill använda \"Gå till\"knappen fyller du bara i nummerfältet med önskat "
-"värde. Du kan använda + och - för att utföra relativ förflyttning. Om du "
+"värde. Du kan använda + och - för att utföra relativ förflyttning.\tOm du "
 "exempelvis skriver \"+2\" och du väljer \"Rad\" kommer \"Gå till\" att gå två "
 "rader nedanför din nuvarande position."
 
@@ -2595,6 +2595,11 @@ msgstr "Streck"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Datum"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr "Datum för senaste ändring"
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5888,6 +5893,7 @@ msgstr "Markering"
 msgid "Semantic Item"
 msgstr "Semantiskt element"
 
+# Ändra skiftläge till ...
 #. DLG_ToggleCase_SentenceCase
 #: po/tmp/ap_String_Id.h
 msgid "Sentence case"
@@ -6079,6 +6085,11 @@ msgstr "Skuggning"
 #: po/tmp/ap_String_Id.h
 msgid "Shading color:"
 msgstr "Skuggningsfärg:"
+
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr "Kort filnamn"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
@@ -6393,25 +6404,46 @@ msgstr "Dela på höger sida"
 msgid "Split on Top Side"
 msgstr "Dela på ovansidan"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Dela vid alla skiljetecken utom mellanslag"
+msgid "Split text at commas"
+msgstr "Dela text vid kommatecken"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Dela vid alla ordavskiljare inklusive mellanslag"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Dela text vid kommatecken eller tabulatorstopp"
+msgid "Split text at spaces"
+msgstr "Dela text vid mellanslag"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Dela text vid mellanslag, kommatecken eller tabulatorstopp"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr "Dela text vid tabulatorstopp"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr "Dela text med kommatecken som avskiljare"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+"Dela text med kommatecken, tabulatorstopp eller mellanslag som avskiljare"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr "Dela text med mellanslag som avskiljare"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr "Dela text med tabulatorstopp som avskiljare"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6984,6 +7016,11 @@ msgstr "Skriv ett namn för RDF-länken:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Ange ett namn för bokmärket, eller välj ett befintligt från listan:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr "Skriv en titel för hyperlänken"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8003,6 +8040,11 @@ msgstr "Ange som XML (version 1.0)"
 msgid "Default language: "
 msgstr "Förvalt språk: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr "Divehi"
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8098,6 +8140,11 @@ msgstr "Engelska (Australien)"
 msgid "English (Canada)"
 msgstr "Engelska (Kanada)"
 
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr "Engelska (Indien)"
+
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
 msgid "English (Ireland)"
@@ -8116,7 +8163,7 @@ msgstr "Engelska (Sydafrika)"
 #. LANG_EN_GB
 #: po/tmp/xap_String_Id.h
 msgid "English (UK)"
-msgstr "Engelska (UK)"
+msgstr "Engelska (Storbritannien)"
 
 #. LANG_EN_US
 #: po/tmp/xap_String_Id.h
@@ -9587,3 +9634,12 @@ msgstr "var orelaterade"
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ingen"
+
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Dela vid alla skiljetecken utom mellanslag"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Dela vid alla ordavskiljare inklusive mellanslag"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Dela text vid kommatecken eller tabulatorstopp"
