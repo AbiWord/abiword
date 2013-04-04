@@ -1,6 +1,5 @@
 # Slovenian translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
 # Copyright by:
 # Andraz Tori <andraz.tori1@guest.arnes.si> 2000.
 # Martin Srebotnjak <miles@filmsi.net> 2006, 2012.
@@ -8,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-09-06 14:41-0400\n"
-"PO-Revision-Date: 2012-09-07 12:05+0200\n"
+"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"PO-Revision-Date: 2013-04-04 21:43+0200\n"
 "Last-Translator: filmsi <miles@filmsi.net>\n"
 "Language-Team: Sugar Labs\n"
 "Language: sl\n"
@@ -1244,12 +1243,12 @@ msgstr ""
 #, c-format
 msgid ""
 "AbiWord needs the file %s.dll\n"
-"Please download and install it from http://www.microsoft.com/msdownload/"
-"platformsdk/sdkupdate/psdkredist.htm"
+"Please download and install it from http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 msgstr ""
-"AbiWord za svoje delovanje potrebuje datoteko %s.dll\n"
-"Prosimo, prenesite in namestite jo s spletne strani "
-"http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+"AbiWord potrebuje datoteko %s.dll\n"
+"Prenesite in namestite jo z naslova http://www.microsoft.com/en-"
+"us/download/details.aspx?id=4237"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -2594,6 +2593,11 @@ msgstr "Črtice"
 msgid "Date"
 msgstr "Datum"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr "Datum zadnje spremembe"
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -3548,8 +3552,8 @@ msgstr "Oblika izpisa:"
 
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
-msgid "From File"
-msgstr "Iz datoteke"
+msgid "From File (.xml, .mathml)"
+msgstr "Iz datoteke (.xml, .mathml)"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -6081,6 +6085,11 @@ msgstr "Senčenje"
 msgid "Shading color:"
 msgstr "Barva senčenja:"
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr "Kratko ime datoteke"
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6394,25 +6403,45 @@ msgstr "Razdeli na desni strani"
 msgid "Split on Top Side"
 msgstr "Razdeli na gornji strani"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Razdeli ob vseh ločilih razen ob presledkih"
+msgid "Split text at commas"
+msgstr "Razdeli besedilo pri vejicah"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Razdeli ob vseh ločilih besed, vključno s presledki"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Razdeli besedilo ob vejicah in tabulatorjih"
+msgid "Split text at spaces"
+msgstr "Razdeli besedilo pri presledkih"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
-msgstr "Razdeli besedilo ob presledkih, vejicah ali tabulatorjih"
+msgstr "Razdeli besedilo pri presledkih, vejicah ali tabulatorjih"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr "Razdeli besedilo pri tabulatorjih"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr "Razdeli besedilo z vejicami kot ločili"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr "Razdeli besedilo z vejicami, tabulatorji ali presledki kot ločili"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr "Razdeli besedilo s presledki kot ločili"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr "Razdeli besedilo s tabulatorji kot ločili"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6986,6 +7015,11 @@ msgstr "Vnesite ime za povezavo RDF:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Vpišite ime zaznamka ali izberite obstoječega iz seznama:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr "Vnesite naslov za hiperpovezavo"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8007,6 +8041,11 @@ msgstr "Deklariraj za XML (različica 1.0)"
 msgid "Default language: "
 msgstr "Privzeti jezik: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr "diveški"
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8101,6 +8140,11 @@ msgstr "angleški (Avstralija)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "angleški (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr "angleški (Indija)"
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9591,3 +9635,269 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Brez"
 
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Razdeli ob vseh ločilih razen ob presledkih"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Razdeli ob vseh ločilih besed, vključno s presledki"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Razdeli besedilo ob vejicah in tabulatorjih"
+
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord za svoje delovanje potrebuje datoteko %s.dll\n"
+#~ "Prosimo, prenesite in namestite jo s spletne strani "
+#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+
+#~ msgid "From File"
+#~ msgstr "Iz datoteke"
+
+#~ msgid "List"
+#~ msgstr "Seznam"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Brez"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Podrobnosti postavitve"
+
+#~ msgid "&Description"
+#~ msgstr "&Opis"
+
+#~ msgid "Contributor"
+#~ msgstr "Avtor prispevka"
+
+#~ msgid "Creator"
+#~ msgstr "Avtor"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Privzeti datum (brez časa)"
+
+#~ msgid "Line"
+#~ msgstr "Vrstico"
+
+#~ msgid "Lists for "
+#~ msgstr "Seznami za "
+
+#~ msgid "Page Reference"
+#~ msgstr "Sklic strani"
+
+#~ msgid "Bambara"
+#~ msgstr "bambarski"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "amharski (Etiopija)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "asturijski (Španija)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "ajmarski (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "ajmarski (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "centralni ajmarski"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "nizozemski (Nizozemska)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "flamski (Belgija)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "galicijski (gallego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "italjanski (Italija)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "kazaški (Kazahstan)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "korejski, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "latinski (renesančni)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "mandinški (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "nepalski (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "norveški Bokmal"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "norveški Nynorsk"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "pundžabski (Gurmukški)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "pundžabski (Šamukški)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "kečuanski (3 samoglasniki)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "kečuanski (5 samoglasnikov)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "ruski (Rusija)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "zahodnoevropski, nabor znakov DOS/Windows-437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "volofski (Senegal)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "&Oblike na voljo:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Vključi pametne navedke"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Vedenje samodejnega prilagajanja"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Dvosmerne možnosti"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Dodatni parametri:"
+
+#~ msgid "Field Name"
+#~ msgstr "Ime polja"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Oblikuj končne opombe"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Oblikuj sprotne opombe"
+
+#~ msgid "Insert break"
+#~ msgstr "Vstavi prelom"
+
+#~ msgid "Insert field"
+#~ msgstr "Vstavi polje"
+
+#~ msgid "Paper..."
+#~ msgstr "Papir..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Postavi okvir z besedilom"
+
+#~ msgid "Scale..."
+#~ msgstr "Povečava..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Prelomi odsekov"
+
+#~ msgid "Table size"
+#~ msgstr "Velikost tabele"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Določite postavitev slike"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Določite oblivanje besedila"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Določi ime slike"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Določi velikost slike"
+
+#~ msgid "&Show RDF"
+#~ msgstr "&Pokaži RDF"
+
+#~ msgid "Execute SPARQL Query for location"
+#~ msgstr "Izvedi poizvedbo SPARQL za mesto"
+
+#~ msgid "SPARQL &Query"
+#~ msgstr "Poizved&ba SPARQL"
+
+#~ msgid "Stylesheet Settings"
+#~ msgstr "Nastavitve predloge"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
+
+#, fuzzy
+#~ msgid "Lat & Long"
+#~ msgstr "Zem. širina in dolžina"
+
+#~ msgid "Location, Start and End Times"
+#~ msgstr "Mesto, čas pričetka in zaključka"
+
+#~ msgid "Start and End Times"
+#~ msgstr "Čas pričetka in zaključka"
+
+#~ msgid "Go to..."
+#~ msgstr "Pojdi na..."
+
+#~ msgid "SPARQL Query..."
+#~ msgstr "Poizvedba SPARQL ..."
+
+#~ msgid "Display Help Index"
+#~ msgstr "Pokaži kazalo pomoči"
+
+#~ msgid "&Format Table"
+#~ msgstr "&Oblikuj tabelo"
+
+#~ msgid "INS"
+#~ msgstr "VRI"
+
+#~ msgid "OVR"
+#~ msgstr "PRE"
+
+#~ msgid "Replace selection with annotation"
+#~ msgstr "Zamenjaj izbor s pripombo"
+
+#~ msgid "Allow Custom Toolbars"
+#~ msgstr "Dovoli orodne vrstice po meri"
+
+#~ msgid "Show the AbiWord splash screen on application startup"
+#~ msgstr "Pokaži začetni zaslon AbiWorda ob zagonu aplikacije"
+
+#~ msgid "M&erge documents"
+#~ msgstr "&Spoji dokumente"
+
+#~ msgid ""
+#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
+#~ "to merge them, but the result might be meaningless."
+#~ msgstr ""
+#~ "Dokumenti, ki jih želite spojiti, niso povezani med seboj. AbiWord jih bo "
+#~ "poskusil spojiti, vendar pa bo rezultat morda neuporaben."
+
+#~ msgid "&From File"
+#~ msgstr "&Iz datoteke"
+
+#~ msgid "Insert a picture"
+#~ msgstr "Vstavi sliko"
