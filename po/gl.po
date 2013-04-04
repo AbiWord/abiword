@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
-"PO-Revision-Date: 2012-12-28 06:38+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"PO-Revision-Date: 2013-04-04 10:49+0200\n"
+"Last-Translator: Miguel Anxo <mbouzada@gmail.com>\n"
 "Language-Team: Proxecto Trasno proxecto@trasno.net\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
@@ -2594,6 +2594,11 @@ msgstr "Guións"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Data"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr "Data do último cambio"
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -6083,6 +6088,11 @@ msgstr "Sombreado"
 msgid "Shading color:"
 msgstr "Cor do sombreado:"
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr "Nome curto de ficheiro"
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6396,25 +6406,45 @@ msgstr "Dividir pola dereita"
 msgid "Split on Top Side"
 msgstr "Dividir pola parte superior"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Dividir en todos os delimitadores agás nos espazos"
+msgid "Split text at commas"
+msgstr "Dividir texto por comas"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Dividir en todos os delimitadores de palabra incluíndo os espazos"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Dividir o texto desde as comas ou tabuladores"
+msgid "Split text at spaces"
+msgstr "Dividir texto por espazos"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Dividir o texto desde os espazos, comas ou tabuladores"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr "Dividir texto por tabulacións"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr "Dividir texto con comas por delimitadores"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr "Dividir texto con comas, tabuladores ou espazos por delimitadores"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr "Dividir texto con espazos por delimitadores"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr "Dividir texto con tabulacións por delimitadores"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6991,6 +7021,11 @@ msgstr "Tipo e nome para a ligazón RDF:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Escriba un nome para o marcador, ou seleccione un da lista:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr "Escriba o título para a hiperligazón"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8012,6 +8047,11 @@ msgstr "Declarar como XML (versión 1.0)"
 msgid "Default language: "
 msgstr "Idioma predeterminado: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr "Divehi"
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8106,6 +8146,11 @@ msgstr "Inglés (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Inglés (Canadá)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr "Inglés (India)"
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9598,3 +9643,204 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ningún"
 
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Dividir en todos os delimitadores agás nos espazos"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Dividir en todos os delimitadores de palabra incluíndo os espazos"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Dividir o texto desde as comas ou tabuladores"
+
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord necesita o ficheiro %s.dll\n"
+#~ "Por favor, descárgueo e instáleo desde "
+#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+
+#~ msgid "From File"
+#~ msgstr "Desde o ficheiro"
+
+#~ msgid "List"
+#~ msgstr "Lista"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Ningún"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Detalles de disposición"
+
+#~ msgid "&Description"
+#~ msgstr "&Descrición"
+
+#~ msgid "Contributor"
+#~ msgstr "Colaborador"
+
+#~ msgid "Creator"
+#~ msgstr "Creador"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Data predefinida (con/sen hora)"
+
+#~ msgid "Line"
+#~ msgstr "Liña"
+
+#~ msgid "Lists for "
+#~ msgstr "Listas para "
+
+#~ msgid "Page Reference"
+#~ msgstr "Referencia da páxina"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhárico (Etiopía)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturiano (España)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aimara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aimara (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "Aimara central"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Holandés (Países Baixos)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Holandés (Bélxica)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Galego"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italiano (Italia)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Casaco (Casaquistán)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Coreano, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latín (renacentista)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinga (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepalí (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Noruegués Bokmal"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Noruegués Nynorsk"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Punxabí (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Punxabí (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 vogais)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 vogais)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Ruso (Rusia)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Europeo occidental, páxina de códigos 437 de DOS/Windows"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Senegal)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "Formatos &dispoñíbeis:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Activar comiñas intelixentes"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Comportamento do axuste automático"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Opcións bidireccionais"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Parámetros adicionais:"
+
+#~ msgid "Field Name"
+#~ msgstr "Nome do campo"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Formato das notas finais"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Formato das notas a rodapé"
+
+#~ msgid "Insert break"
+#~ msgstr "Inserir salto"
+
+#~ msgid "Insert field"
+#~ msgstr "Inserir campo"
+
+#~ msgid "Paper..."
+#~ msgstr "Papel..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Posición da caixa de texto"
+
+#~ msgid "Scale..."
+#~ msgstr "Escala..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Saltos de sección"
+
+#~ msgid "Table size"
+#~ msgstr "Tamaño da táboa"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Definir colocación da imaxe"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Definir axuste de texto"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Estabelecer nome de imaxe"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Estabelecer tamaño de imaxe"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
+
+#~ msgid "Go to..."
+#~ msgstr "Ir a..."
