@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2013-04-04 01:32-0400\n"
-"PO-Revision-Date: 2013-04-04 10:49+0200\n"
+"PO-Revision-Date: 2013-04-04 22:37+0200\n"
 "Last-Translator: Miguel Anxo <mbouzada@gmail.com>\n"
 "Language-Team: Proxecto Trasno proxecto@trasno.net\n"
 "Language: gl\n"
@@ -248,7 +248,7 @@ msgstr "A&ntes:"
 #. MENU_LABEL_FMT_BOLD
 #: po/tmp/ap_String_Id.h
 msgid "&Bold"
-msgstr "&Grosa"
+msgstr "&Negriña"
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h
@@ -1640,7 +1640,7 @@ msgstr "&Liña inferior"
 #. DLG_UFS_StyleBold
 #: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Bold"
-msgstr "Grosa"
+msgstr "Negriña"
 
 #. MENU_LABEL_INSERT_BOOKMARK
 #: po/tmp/ap_String_Id.h
@@ -2618,7 +2618,7 @@ msgstr "Num. de día no ano"
 #. DLG_Options_Btn_Default
 #: po/tmp/ap_String_Id.h
 msgid "De&faults"
-msgstr "&Predefinidos"
+msgstr "&Predeterminados"
 
 #. DLG_Tab_Radio_Decimal
 #: po/tmp/ap_String_Id.h
@@ -2843,7 +2843,7 @@ msgstr "Editar directamente o RDF para todo o documento..."
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
 msgid "Disable all formatting commands, except styles"
-msgstr "Desactivar todas as ordes de formato, excepto os estilos"
+msgstr "Desactivar todas as ordes de formato, agás os estilos"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_DISASSOCIATE
 #: po/tmp/ap_String_Id.h
@@ -4398,7 +4398,7 @@ msgstr "Combinar correo"
 #. MENU_STATUSLINE_FMT_BOLD
 #: po/tmp/ap_String_Id.h
 msgid "Make the selection bold (toggle)"
-msgstr "Facer a selección grosa (cambiar)"
+msgstr "Facer a selección de negriña (cambiar)"
 
 #. MENU_STATUSLINE_FMT_ITALIC
 #: po/tmp/ap_String_Id.h
@@ -7723,7 +7723,7 @@ msgstr "Bokmal"
 #. DLG_UFS_StyleBoldItalic
 #: po/tmp/xap_String_Id.h
 msgid "Bold Italic"
-msgstr "Cursiva grosa"
+msgstr "Cursiva negriña"
 
 #. LANG_BS_BA
 #: po/tmp/xap_String_Id.h
