@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
-"PO-Revision-Date: 2012-12-28 06:43+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"PO-Revision-Date: 2013-04-04 11:51+0200\n"
+"Last-Translator: lite <litekok@gmail.com>\n"
 "Language-Team: unknown <email@address>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
@@ -283,7 +283,7 @@ msgstr "居中(&C)"
 #. DLG_Spell_Change
 #: po/tmp/ap_String_Id.h
 msgid "&Change"
-msgstr "变更(&C)"
+msgstr "修改(&C)"
 
 #. MENU_LABEL_INSERT_CLIPART
 #: po/tmp/ap_String_Id.h
@@ -687,7 +687,7 @@ msgstr "标准布局(&N)"
 #. DLG_Goto_Label_Number
 #: po/tmp/ap_String_Id.h
 msgid "&Number:"
-msgstr "键入页数、行号或书签名称(&N):"
+msgstr "输入页数、行号或书签名称(&N):"
 
 #. DLG_FormatTOC_NumberingType
 #: po/tmp/ap_String_Id.h
@@ -864,7 +864,7 @@ msgstr "保存网页(&S)"
 #. MENU_LABEL_HELP_SEARCH
 #: po/tmp/ap_String_Id.h
 msgid "&Search for Help"
-msgstr "搜寻帮助(&S)"
+msgstr "搜索帮助(&S)"
 
 #. MENU_LABEL_TABLE_SELECT
 #: po/tmp/ap_String_Id.h
@@ -1754,7 +1754,7 @@ msgstr "按钮样式"
 #. MENU_LABEL_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h
 msgid "C&hange Case"
-msgstr "改变大小写(&H)"
+msgstr "修改大小写(&H)"
 
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
@@ -1892,7 +1892,7 @@ msgstr "居中对齐"
 #. DLG_Spell_ChangeTo
 #: po/tmp/ap_String_Id.h
 msgid "Change &to:"
-msgstr "变更至(&T):"
+msgstr "修改至(&T):"
 
 #. DLG_Spell_ChangeAll
 #: po/tmp/ap_String_Id.h
@@ -1902,7 +1902,7 @@ msgstr "全部变更(&L)"
 #. DLG_Background_Title
 #: po/tmp/ap_String_Id.h
 msgid "Change Background Color"
-msgstr "变更背景颜色"
+msgstr "修改背景颜色"
 
 #. DLG_ToggleCase_Title
 #: po/tmp/ap_String_Id.h
@@ -1914,48 +1914,48 @@ msgstr "大小写转换"
 msgid ""
 "Change Current \n"
 "List"
-msgstr "变更目前列表"
+msgstr "修改目前列表"
 
 #. DLG_Background_TitleHighlight
 #: po/tmp/ap_String_Id.h
 msgid "Change Highlight Color"
-msgstr "变更文本背景颜色"
+msgstr "修改文本背景颜色"
 
 #. DLG_FormatTOC_ChangeStyle
 #: po/tmp/ap_String_Id.h
 msgid "Change Style"
-msgstr "改变样式"
+msgstr "修改样式"
 
 #. DLG_Background_TitleFore
 #: po/tmp/ap_String_Id.h
 msgid "Change Text Color"
-msgstr "变更文本颜色"
+msgstr "修改文本颜色"
 
 #. MENU_STATUSLINE_FMT_DIRECTION
 #: po/tmp/ap_String_Id.h
 msgid "Change directional properties of text"
-msgstr "改变文本的方向"
+msgstr "修改文本的方向"
 
 #. TOOLBAR_STATUSLINE_FMT_DOM_DIRECTION
 #. TOOLBAR_TOOLTIP_FMT_DOM_DIRECTION
 #: po/tmp/ap_String_Id.h
 msgid "Change dominant direction of paragraph"
-msgstr "改变段落主方向"
+msgstr "修改段落主方向"
 
 #. MENU_STATUSLINE_FMT_TOGGLECASE
 #: po/tmp/ap_String_Id.h
 msgid "Change the case of the selected text"
-msgstr "改变选中文字的大小写"
+msgstr "修改选中文字的大小写"
 
 #. MENU_STATUSLINE_FMT_FONT
 #: po/tmp/ap_String_Id.h
 msgid "Change the font of the selected text"
-msgstr "改变选中文字的字体"
+msgstr "修改选中文字的字体"
 
 #. MENU_STATUSLINE_FMT_PARAGRAPH
 #: po/tmp/ap_String_Id.h
 msgid "Change the format of the selected paragraph"
-msgstr "改变选中段落的格式"
+msgstr "修改选中段落的格式"
 
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
@@ -1966,22 +1966,22 @@ msgstr "更改表格式"
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
 #: po/tmp/ap_String_Id.h
 msgid "Change the language of the selected text"
-msgstr "改变选中文字的语言"
+msgstr "修改选中文字的语言"
 
 #. MENU_STATUSLINE_FMT_COLUMNS
 #: po/tmp/ap_String_Id.h
 msgid "Change the number of columns"
-msgstr "改变栏数"
+msgstr "修改栏数"
 
 #. MENU_STATUSLINE_FILE_PAGESETUP
 #: po/tmp/ap_String_Id.h
 msgid "Change the printing options"
-msgstr "改变打印选项"
+msgstr "修改打印选项"
 
 #. MENU_STATUSLINE_FMT_FRAME
 #: po/tmp/ap_String_Id.h
 msgid "Change the properties of the Text Box"
-msgstr "改变文本框的属性"
+msgstr "修改文本框的属性"
 
 #. MENU_STATUSLINE_SPELL_SUGGEST_1
 #. MENU_STATUSLINE_SPELL_SUGGEST_2
@@ -1994,17 +1994,17 @@ msgstr "改变文本框的属性"
 #. MENU_STATUSLINE_SPELL_SUGGEST_9
 #: po/tmp/ap_String_Id.h
 msgid "Change to this suggested spelling"
-msgstr "改变为这个建议拼写方式"
+msgstr "修改为这个建议拼写方式"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND
 #: po/tmp/ap_String_Id.h
 msgid "Change your document's page background"
-msgstr "改变文件的页面背景"
+msgstr "修改文件的页面背景"
 
 #. MENU_STATUSLINE_FMT_BACKGROUND_PAGE_COLOR
 #: po/tmp/ap_String_Id.h
 msgid "Change your document's page color"
-msgstr "改变文件的页面颜色"
+msgstr "修改文件的页面颜色"
 
 #. DLG_Styles_ModifyCharacter
 #: po/tmp/ap_String_Id.h
@@ -2517,7 +2517,7 @@ msgstr "可自定义的日期或时间"
 #. DLG_Lists_Customize
 #: po/tmp/ap_String_Id.h
 msgid "Customized List"
-msgstr "自订列表"
+msgstr "自定义列表"
 
 #. TOOLBAR_LABEL_EDIT_CUT
 #. TOOLBAR_STATUSLINE_EDIT_CUT
@@ -2583,6 +2583,11 @@ msgstr "破折号"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "日期"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr "最近更新日期"
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -3779,17 +3784,17 @@ msgstr "缩进与行距"
 #. DLG_ToggleCase_FirstUpperCase
 #: po/tmp/ap_String_Id.h
 msgid "Initial Caps"
-msgstr "小型大写字"
+msgstr "首字母大写"
 
 #. DLG_FormatFootnotes_EndInitialVal
 #: po/tmp/ap_String_Id.h
 msgid "Initial Endnote value:"
-msgstr "最初的尾注值:"
+msgstr "初始尾注值:"
 
 #. DLG_FormatFootnotes_FootInitialVal
 #: po/tmp/ap_String_Id.h
 msgid "Initial Footnote value:"
-msgstr "最初的脚注值:"
+msgstr "初始脚注值:"
 
 #. DLG_Options_Label_InnerQuoteStyle
 #: po/tmp/ap_String_Id.h
@@ -5442,7 +5447,7 @@ msgstr "恢复工具栏的默认布局"
 #. MENU_STATUSLINE_FMT_IMAGE
 #: po/tmp/ap_String_Id.h
 msgid "Resize this image"
-msgstr "改变这个图像的大小"
+msgstr "修改这个图像的大小"
 
 #. DLG_HdrFtr_RestartNumbers
 #: po/tmp/ap_String_Id.h
@@ -5907,7 +5912,7 @@ msgstr "以逗号和制表符分隔"
 #. MENU_LABEL_TABLE_TABLETOTEXTTABS
 #: po/tmp/ap_String_Id.h
 msgid "Separate with tabs"
-msgstr "依制表符分隔"
+msgstr "按制表符分隔"
 
 #. DLG_Tab_Button_Set
 #: po/tmp/ap_String_Id.h
@@ -6060,6 +6065,11 @@ msgstr "底纹"
 #: po/tmp/ap_String_Id.h
 msgid "Shading color:"
 msgstr "底纹颜色："
+
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr "短文件名"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
@@ -6374,25 +6384,45 @@ msgstr "在右边拆分"
 msgid "Split on Top Side"
 msgstr "在顶部拆分"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "拆分所有的边界（除了空格）"
+msgid "Split text at commas"
+msgstr "逗号处分割文本"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "拆分所有的边界（包括空格）"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "在标点处拆分文本"
+msgid "Split text at spaces"
+msgstr "空格处分割文本"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "在标点和空格处拆分文本"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr "tabs处分割文本"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr "逗号作为分隔符来分割文本"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr "逗号，tabs或空格作为分隔符来分割文本"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr "空格作为分隔符来分割文本"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr "tabs作为分隔符来分割文本"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6838,7 +6868,7 @@ msgstr "这项变更要等到您重新启动 AbiWord 或打开新文件后才会
 msgid ""
 "This document contains revisions which are currently hidden from view. "
 "Please see AbiWord documentation for information on working with revisions."
-msgstr "这份文件包含有隐藏的修订。请参阅AbiWord关于处理修订的文档。"
+msgstr "该文件包含有隐藏的修订。请参阅AbiWord关于处理修订的文档。"
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
@@ -6952,6 +6982,11 @@ msgstr "为RDF链接输入一个名称："
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "为书签键入名称，或从列表中选择已有的："
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr "为超链接输入一个标题"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7699,7 +7734,7 @@ msgstr "中欧语系, Windows 代码页 1250"
 #. DLG_Options_Label_LangWithKeyboard
 #: po/tmp/xap_String_Id.h
 msgid "Change Language when changing keyboard"
-msgstr "改变键盘映射时改变语言"
+msgstr "修改键盘映射时改变语言"
 
 #. STYLE_DELIM_CHAPTER
 #: po/tmp/xap_String_Id.h
@@ -7967,6 +8002,11 @@ msgstr "以XML(1.0版)发布"
 msgid "Default language: "
 msgstr "默认语言:"
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr "迪维希语"
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8061,6 +8101,11 @@ msgstr "英文 (澳大利亚)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "英文 (加拿大)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr "英文 (印度)"
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9545,3 +9590,369 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "无"
 
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "拆分所有的边界（除了空格）"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "拆分所有的边界（包括空格）"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "在标点处拆分文本"
+
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord需要文件 %s.dll\n"
+#~ "请从http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm下载"
+#~ "并安装它"
+
+#~ msgid "From File"
+#~ msgstr "从文件"
+
+#~ msgid "List"
+#~ msgstr "样式列表"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 无"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "布局细节"
+
+#~ msgid "&Description"
+#~ msgstr "描述(&D)"
+
+#~ msgid "Contributor"
+#~ msgstr "贡献者"
+
+#~ msgid "Creator"
+#~ msgstr "文档工具"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "预设日期 (不含时间)"
+
+#~ msgid "Line"
+#~ msgstr "行"
+
+#~ msgid "Lists for "
+#~ msgstr "列表 "
+
+#~ msgid "Page Reference"
+#~ msgstr "页码参照"
+
+#~ msgid "Bambara"
+#~ msgstr "班巴拉语"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "阿姆哈拉语 (埃塞俄比亚)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "阿斯图里文 (西班牙)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "艾马拉语 (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "艾马拉语 (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "中艾马拉语"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "荷兰文 (荷兰)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "佛兰德语文 (比利时)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "盖拉文(Galego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "意大利文 (意大利)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "哈萨克斯坦语"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "韩文, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "拉丁文 (文艺复兴)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "曼丁哥语 (塞内加尔)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "尼泊尔语(尼泊尔)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "挪威波克默尔语 (Bokmal)"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "新挪威语"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "旁遮普语(Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "旁遮普语(Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "盖丘亚语 (3 元音)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "盖丘亚语 (5 元音)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "俄文 (俄罗斯)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "西欧, DOS/Windows 编码页 437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "沃洛夫语 (塞内加尔)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "可用格式(&A)"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "启用智能引号(&E)"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "自动调整行为"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "文字左右方向选项"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "额外参数:"
+
+#~ msgid "Field Name"
+#~ msgstr "字段名称"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "设定尾注格式"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "设定脚注格式"
+
+#~ msgid "Insert break"
+#~ msgstr "插入分隔"
+
+#~ msgid "Insert field"
+#~ msgstr "插入字段"
+
+#~ msgid "Paper..."
+#~ msgstr "纸张..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "文本框位置"
+
+#~ msgid "Scale..."
+#~ msgstr "比例缩放..."
+
+#~ msgid "Section breaks"
+#~ msgstr "分节符"
+
+#~ msgid "Table size"
+#~ msgstr "表格大小"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "定义图片位置"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "定义文本换行"
+
+#~ msgid "Set Image Name"
+#~ msgstr "设置图形名称"
+
+#~ msgid "Set Image Size"
+#~ msgstr "设置图形大小"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
+
+#~ msgid "Go to..."
+#~ msgstr "转到..."
+
+#~ msgid "&Format Table"
+#~ msgstr "设定表格格式(&F)"
+
+#~ msgid "Allow Custom Toolbars"
+#~ msgstr "允许自订工具栏"
+
+#~ msgid "Display Help Index"
+#~ msgstr "显示帮助索引"
+
+#~ msgid "INS"
+#~ msgstr "插入"
+
+#~ msgid "OVR"
+#~ msgstr "覆盖"
+
+#~ msgid "M&erge documents"
+#~ msgstr "合并文件(&E)"
+
+#~ msgid "Show the AbiWord splash screen on application startup"
+#~ msgstr "程序启动时显示 AbiWord 欢迎画面"
+
+#~ msgid ""
+#~ "The documents you are trying to merge are unrelated. AbiWord will attempt "
+#~ "to merge them, but the result might be meaningless."
+#~ msgstr ""
+#~ "您尝试合并的文件并不相关. AbiWord将尝试 合并它们，但是结果可能没有意义。"
+
+#~ msgid "&From File"
+#~ msgstr "从文件(&F)"
+
+#~ msgid "Insert a picture"
+#~ msgstr "插入图片"
+
+#~ msgid "Break"
+#~ msgstr "分隔符"
+
+#~ msgid "Field"
+#~ msgstr "功能变量"
+
+#~ msgid "Height in pixels:"
+#~ msgstr "高度 (像素):"
+
+#~ msgid "Width in pixels:"
+#~ msgstr "宽度 (像素):"
+
+#~ msgid "Activate:"
+#~ msgstr "启用:"
+
+#~ msgid "Activate Window"
+#~ msgstr "启用窗口"
+
+#~ msgid "Start with an empty document"
+#~ msgstr "从一个空白文件开始作业"
+
+#~ msgid "Choose a Template"
+#~ msgstr "选择模板"
+
+#~ msgid "Modify Unix Font Path"
+#~ msgstr "修改 Unix字型路径"
+
+#~ msgid "Save visual glyph shapes"
+#~ msgstr "保存可见的字形形状"
+
+#~ msgid "Ignore Internet and &file addresses"
+#~ msgstr "忽略 Internet和文件地址(&F)"
+
+#~ msgid "Show font warning at start up"
+#~ msgstr "开始时显示字型警告"
+
+#~ msgid "Determine correct glyph shapes from context"
+#~ msgstr "依上下文断定正确的字形形状"
+
+#~ msgid "First In Word Uppercase, Rest Lowercase"
+#~ msgstr "词首大写"
+
+#~ msgid "   Font   "
+#~ msgstr "   字型     "
+
+#~ msgid "Strikeout"
+#~ msgstr "删除线"
+
+#~ msgid "Closing:"
+#~ msgstr "结束语:"
+
+#~ msgid "Email:"
+#~ msgstr "电子邮件:"
+
+#~ msgid "Reference:"
+#~ msgstr "附件列:"
+
+#~ msgid "About &Open Source"
+#~ msgstr "关于开放原始码 (&O)"
+
+#~ msgid "About &GNU Free Software"
+#~ msgstr "关于 &GNU 自由软件"
+
+#~ msgid "Check &Version"
+#~ msgstr "检查版本(&V)"
+
+#~ msgid "Help &Index"
+#~ msgstr "帮助索引(&I)"
+
+#~ msgid "&Autotext"
+#~ msgstr "自动图文集(&A)"
+
+#~ msgid "&Bookmark"
+#~ msgstr "书签(&B)"
+
+#~ msgid "&Preferences"
+#~ msgstr "首选项(&P)"
+
+#~ msgid "Show Para&graphs"
+#~ msgstr "显示段落标记(&G)"
+
+#~ msgid "Zoom to &Whole Page"
+#~ msgstr "缩放至整页"
+
+#~ msgid "Zoom to &Page Width"
+#~ msgstr "缩放至页宽"
+
+#~ msgid "We&b"
+#~ msgstr "网页(&B)"
+
+#~ msgid "Save as &web"
+#~ msgstr "另存成网页(&W)"
+
+#~ msgid "&Window"
+#~ msgstr "窗口(&W)"
+
+#~ msgid "&More Windows"
+#~ msgstr "更多的窗口(&M)"
+
+#~ msgid "Left-justify the paragraph"
+#~ msgstr "段落靠左对齐"
+
+#~ msgid "Right-justify the paragraph"
+#~ msgstr "段落靠右对齐"
+
+#~ msgid "Display information about Open Source"
+#~ msgstr "显示关于开放原始码的信息"
+
+#~ msgid "About the GNU project"
+#~ msgstr "关于 GNU 计划"
+
+#~ msgid "Display program version number"
+#~ msgstr "显示程序版本"
+
+#~ msgid "Show or hide the standard toolbar"
+#~ msgstr "显示或隐藏标准工具栏"
+
+#~ msgid "Raise this window"
+#~ msgstr "把这个窗口放在最上面"
+
+#~ msgid "Save changes to %s?"
+#~ msgstr "把变更保存至 %s 吗？"
+
+#~ msgid "AbiWord was not able to add its fonts to the X "
+#~ msgstr "AbiWord 无法把它的字型加进 X "
+
+#~ msgid "Width"
+#~ msgstr "页宽"
