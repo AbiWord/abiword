@@ -3,14 +3,13 @@
 # Copyright by:
 # Francisco Javier F. Serrador <serrador@arrakis.es>, 2003.
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2004, 2005.
-# Chris Leonard <cjl@laptop.org>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
-"PO-Revision-Date: 2012-12-28 06:19+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2013-04-04 01:32-0400\n"
+"PO-Revision-Date: 2013-04-05 00:33+0200\n"
+"Last-Translator: AlanJAS <alanjas@hotmail.com>\n"
 "Language-Team: <es@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -2597,6 +2596,11 @@ msgstr "Guiones"
 msgid "Date"
 msgstr "Fecha"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr "Fecha del último cambio"
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -3633,10 +3637,10 @@ msgid ""
 " To enter this mode choose View then Print Layout from the Menus. \n"
 " Would you like to enter Print Layout mode right now?"
 msgstr ""
-"Los Encabezados y Pies de página sólo pueden crearse y editarse desde "
-"Previsualizar impresión.\n"
-"Para entrar en este modo, elija Diseño de impresión en el Menú.\n"
-"¿Quiere entrar en el modo Diseño de impresión ahora?"
+"Los Encabezados y Pies de página sólo pueden crearse y editarse desde Diseño "
+"de impresión.\n"
+"  Para entrar en este modo, elija Diseño de impresión en el Menú.\n"
+" ¿Quiere entrar en el modo Diseño de impresión ahora?"
 
 #. DLG_Stylist_HeadingStyles
 #: po/tmp/ap_String_Id.h
@@ -6090,6 +6094,11 @@ msgstr "Sombreado"
 msgid "Shading color:"
 msgstr "Color de sombra:"
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr "Nombre corto de archivo"
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6408,25 +6417,45 @@ msgstr "Dividir por la derecha"
 msgid "Split on Top Side"
 msgstr "Dividir por la parte de arriba"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Dividir en todos los delimitadores excepto los espacios"
+msgid "Split text at commas"
+msgstr "Dividir texto en cada coma"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Dividir en todos los delimitadores de palabra incluyendo los espacios"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Dividir el texto en las comas o tabuladores"
+msgid "Split text at spaces"
+msgstr "Dividr el texto en cada espacio"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Dividir el texto en los espacios, comas o tabuladores"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr "Dividr el texto en cada tabulación"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr "Dividir el texto con comas como delimitadores"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr "Dividr el texto con comas, tabuladores o espacios como delimitadores"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr "Dividir el texto con espacios como delimitadores"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr "Dividir el texto con tabuladores como separadores"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -7006,6 +7035,11 @@ msgstr "Escriba un nombre para el enlace RDF:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Escriba un nombre para el marcador, o seleccione uno de la lista:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr "Escriba un título para el hipervínculo"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8027,6 +8061,11 @@ msgstr "Declarar como XML (versión 1.0)"
 msgid "Default language: "
 msgstr "Idioma predeterminado: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr "Divehi"
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8121,6 +8160,11 @@ msgstr "Inglés (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Inglés (Canadá)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr "Inglés (India)"
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9613,3 +9657,220 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Ninguno"
 
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Dividir en todos los delimitadores excepto los espacios"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Dividir en todos los delimitadores de palabra incluyendo los espacios"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Dividir el texto en las comas o tabuladores"
+
+#, c-format
+#~ msgid ""
+#~ "AbiWord needs the file %s.dll\n"
+#~ "Please download and install it from http://www.microsoft.com/msdownload/"
+#~ "platformsdk/sdkupdate/psdkredist.htm"
+#~ msgstr ""
+#~ "AbiWord necesita el archivo %s.dll\n"
+#~ "Por favor, descárguelo e instálelo desde "
+#~ "http://www.microsoft.com/msdownload/platformsdk/sdkupdate/psdkredist.htm"
+
+#~ msgid "From File"
+#~ msgstr "Desde el archivo"
+
+#~ msgid "List"
+#~ msgstr "Lista"
+
+#~ msgid "&1 None"
+#~ msgstr "&1 Ninguno"
+
+#~ msgid "&2 .........."
+#~ msgstr "&2 .........."
+
+#~ msgid "&3 ----------"
+#~ msgstr "&3 ----------"
+
+#~ msgid "&4 __________"
+#~ msgstr "&4 __________"
+
+#~ msgid "Layout Details"
+#~ msgstr "Detalles del disposición"
+
+#~ msgid "&Description"
+#~ msgstr "&Descripción"
+
+#~ msgid "Contributor"
+#~ msgstr "Colaborador"
+
+#~ msgid "Creator"
+#~ msgstr "Creador"
+
+#~ msgid "Default date (w/o time)"
+#~ msgstr "Fecha predeterminada (sin hora)"
+
+#~ msgid "Line"
+#~ msgstr "Línea"
+
+#~ msgid "Lists for "
+#~ msgstr "Listas para "
+
+#~ msgid "Page Reference"
+#~ msgstr "Referencia de página"
+
+#~ msgid "Bambara"
+#~ msgstr "Bambara"
+
+#~ msgid "Amharic (Ethiopia)"
+#~ msgstr "Amhárico (Etiopía)"
+
+#~ msgid "Asturian (Spain)"
+#~ msgstr "Asturiano (España)"
+
+#~ msgid "Aymara (La Paz)"
+#~ msgstr "Aymara (La Paz)"
+
+#~ msgid "Aymara (Oruro)"
+#~ msgstr "Aymara (Oruro)"
+
+#~ msgid "Central Aymara"
+#~ msgstr "Aymara Central"
+
+#~ msgid "Dutch (Netherlands)"
+#~ msgstr "Holandés (Holanda)"
+
+#~ msgid "Flemish (Belgium)"
+#~ msgstr "Flamenco (Bélgica)"
+
+#~ msgid "Galician (Galego)"
+#~ msgstr "Gallego (Galego)"
+
+#~ msgid "Italian (Italy)"
+#~ msgstr "Italiano (Italia)"
+
+#~ msgid "Kazakh (Kazakhstan)"
+#~ msgstr "Kazako (Kazajistán)"
+
+#~ msgid "Korean, Johab"
+#~ msgstr "Coreano, Johab"
+
+#~ msgid "Latin (Renaissance)"
+#~ msgstr "Latín (Renacimiento)"
+
+#~ msgid "Mandinka (Senegal)"
+#~ msgstr "Mandinka (Senegal)"
+
+#~ msgid "Nepali (Nepal)"
+#~ msgstr "Nepalés (Nepal)"
+
+#~ msgid "Norwegian Bokmal"
+#~ msgstr "Noruego Bokmal"
+
+#~ msgid "Norwegian Nynorsk"
+#~ msgstr "Noruego Nynorsk"
+
+#~ msgid "Punjabi (Gurmukhi)"
+#~ msgstr "Penyabi (Gurmukhi)"
+
+#~ msgid "Punjabi (Shahmukhi)"
+#~ msgstr "Penyabi (Shahmukhi)"
+
+#~ msgid "Quechua (3 vowels)"
+#~ msgstr "Quechua (3 vocales)"
+
+#~ msgid "Quechua (5 vowels)"
+#~ msgstr "Quechua (5 vocales)"
+
+#~ msgid "Russian (Russia)"
+#~ msgstr "Ruso (Rusia)"
+
+#~ msgid "Western European, DOS/Windows Code Page 437"
+#~ msgstr "Europeo occidental, página de códigos Windows/DOS 437"
+
+#~ msgid "Wolof (Senegal)"
+#~ msgstr "Wolof (Senegal)"
+
+#~ msgid "&Available formats:"
+#~ msgstr "Formatos &disponibles:"
+
+#~ msgid "&Enable smart quotes"
+#~ msgstr "&Activar comillas inteligentes"
+
+#~ msgid "AutoFit behavior"
+#~ msgstr "Comportamiento del autoajuste"
+
+#~ msgid "Bi-Directional Options"
+#~ msgstr "Opciones bidireccionales"
+
+#~ msgid "Extra parameters:"
+#~ msgstr "Parámetros adicionales:"
+
+#~ msgid "Field Name"
+#~ msgstr "Nombre del campo"
+
+#~ msgid "Format Endnotes"
+#~ msgstr "Formato de notas finales"
+
+#~ msgid "Format Footnotes"
+#~ msgstr "Formato de nota a pie de página"
+
+#~ msgid "Insert break"
+#~ msgstr "Insertar un salto"
+
+#~ msgid "Insert field"
+#~ msgstr "Insertar un campo"
+
+#~ msgid "Paper..."
+#~ msgstr "Papel..."
+
+#~ msgid "Position Text Box"
+#~ msgstr "Posición de la caja de texto"
+
+#~ msgid "Scale..."
+#~ msgstr "Escala..."
+
+#~ msgid "Section breaks"
+#~ msgstr "Saltos de sección"
+
+#~ msgid "Table size"
+#~ msgstr "Tamaño de la tabla"
+
+#~ msgid "Define Image Placement"
+#~ msgstr "Definir emplazamiento de la imágen"
+
+#~ msgid "Define Text Wrapping"
+#~ msgstr "Definir ajuste de texto"
+
+#~ msgid "Set Image Name"
+#~ msgstr "Establecer nombre de la imagen"
+
+#~ msgid "Set Image Size"
+#~ msgstr "Establecer tamaño de la imagen"
+
+#~ msgid "&Show RDF"
+#~ msgstr "Mostrar RDF"
+
+#~ msgid "Unicode UCS-2"
+#~ msgstr "Unicode UCS-2"
+
+#~ msgid "Unicode UCS-4"
+#~ msgstr "Unicode UCS-4"
+
+#~ msgid "Unicode UTF-16"
+#~ msgstr "Unicode UTF-16"
+
+#~ msgid "Unicode UTF-32"
+#~ msgstr "Unicode UTF-32"
+
+#~ msgid "Go to..."
+#~ msgstr "Ir a..."
+
+#~ msgid "Edit Latex Equation"
+#~ msgstr "Editar Ecuación LaTeX"
+
+#~ msgid "Printing Document.."
+#~ msgstr "Imprimiendo Documento..."
+
+#, c-format
+#~ msgid "AbiWord cannot open %s. It appears to be an invalid document"
+#~ msgstr "AbiWord no puede abrir %s. Parece que es un documento inválido"
