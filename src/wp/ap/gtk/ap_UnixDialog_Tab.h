@@ -100,6 +100,7 @@ private:
 	GtkWidget *m_sbPosition;
 	GtkWidget *m_cobAlignment;
 	GtkWidget *m_cobLeader;
+	GtkTreeSelection *m_tsSelection;
 
 	gchar *m_AlignmentMapping[__FL_TAB_MAX];
 	gchar *m_LeaderMapping[__FL_LEADER_MAX];
@@ -108,6 +109,7 @@ private:
 	guint m_hSigPositionChanged;
 	guint m_hSigAlignmentChanged;
 	guint m_hSigLeaderChanged;
+	guint m_hTabSelected;
 };
 
 #endif /* AP_UNIXDIALOG_TAB_H */

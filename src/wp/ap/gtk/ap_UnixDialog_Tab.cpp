@@ -381,8 +381,8 @@ AP_UnixDialog_Tab::_connectSignals (GtkBuilder *builder)
 					  (gpointer)this);
 	
 
-	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW (m_lvTabs));
-    g_signal_connect (selection, 
+    m_tsSelection = gtk_tree_view_get_selection(GTK_TREE_VIEW (m_lvTabs));
+    m_hTabSelected = g_signal_connect (m_tsSelection, 
 					  "changed", 
 					  G_CALLBACK (AP_UnixDialog_Tab__onTabSelected), 
 					  (gpointer)this);
@@ -552,10 +552,14 @@ AP_UnixDialog_Tab::onPositionChanged (double value)
 {
 	UT_Dimension dim = _getDimension ();
 	const gchar *text = UT_formatDimensionString (dim, value);
+	g_signal_handler_block(G_OBJECT (m_sbPosition), m_hSigPositionChanged);
+	g_signal_handler_block(G_OBJECT (m_tsSelection), m_hTabSelected);
 	gtk_entry_set_text (GTK_ENTRY (m_sbPosition), text);
 
 	_event_TabChange ();
 	_event_Update ();
+	g_signal_handler_unblock(G_OBJECT (m_tsSelection), m_hTabSelected);
+	g_signal_handler_unblock(G_OBJECT (m_sbPosition), m_hSigPositionChanged);
 }
 
 //! Validate tab position, apply if ok.
