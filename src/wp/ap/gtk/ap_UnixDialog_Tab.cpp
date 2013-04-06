@@ -28,6 +28,8 @@
 #include "ut_units.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+// FIXME: remove the following when dimensions are localized properly
+#include "ut_locale.h"
 
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
@@ -447,6 +449,7 @@ void
 AP_UnixDialog_Tab::onDefaultTabFocusOut ()
 {
 	const gchar *text = gtk_entry_get_text (GTK_ENTRY (m_sbDefaultTab));
+	UT_LocaleTransactor t(LC_NUMERIC, "C"); // FIXME: remove when we support localized dimensions
 	if (UT_isValidDimensionString (text)) {
 		// set
 		float pos = strtof(text, NULL);
@@ -503,7 +506,7 @@ AP_UnixDialog_Tab::onAddTab ()
  
 	pos = gtk_spin_button_get_value (GTK_SPIN_BUTTON (m_sbDefaultTab));
 	max += pos;
-	std::string text = UT_std_string_sprintf ("%f%s", max, UT_dimensionName (_getDimension ())); 
+	std::string text = UT_formatDimensionString(_getDimension (), max);
 	UT_DEBUGMSG (("onAddTab() '%s' (%f/%f)\n", text.c_str(), pos, max));
  
  	// set defaults
