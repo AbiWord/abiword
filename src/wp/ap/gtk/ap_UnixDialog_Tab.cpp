@@ -570,6 +570,7 @@ void
 AP_UnixDialog_Tab::onPositionFocusOut ()
 {
 	const gchar *text = gtk_entry_get_text (GTK_ENTRY (m_sbPosition));
+	UT_LocaleTransactor t(LC_NUMERIC, "C"); // FIXME: remove when we support localized dimensions
 	if (UT_isValidDimensionString (text)) {
 		// set
 		float pos;
@@ -790,6 +791,7 @@ AP_UnixDialog_Tab::_setTabEdit (const char *pszStr)
 	UT_DEBUGMSG (("ROB: _setTabEdit '%s'\n", pszStr));
 
 	float pos;
+	UT_LocaleTransactor t(LC_NUMERIC, "C"); // FIXME: remove when we support localized dimensions
 	sscanf (pszStr, "%f", &pos);
 
 	g_signal_handler_block (G_OBJECT (m_sbPosition), m_hSigPositionChanged);
