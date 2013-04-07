@@ -373,12 +373,14 @@ void AP_Win32FrameImpl::_createTopRuler(XAP_Frame *pFrame)
 
 	// get the width from the left ruler and stuff it into the top ruler.
 	UT_uint32 xLeftRulerWidth = 0;
+#if 0   // Why? We still want to draw the corner, don't we? Also, the width value is messed when leaving normal mode.
 	if( m_hwndLeftRuler )
 	{
 		AP_Win32LeftRuler * pWin32LeftRuler = NULL;
 		pWin32LeftRuler =  static_cast<AP_Win32LeftRuler *>(static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pLeftRuler);
 		xLeftRulerWidth = pWin32LeftRuler->getWidth();
 	}
+#endif
 	pWin32TopRuler->setOffsetLeftRuler(xLeftRulerWidth);
 }
  

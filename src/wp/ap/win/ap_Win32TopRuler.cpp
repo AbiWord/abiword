@@ -224,6 +224,7 @@ LRESULT CALLBACK AP_Win32TopRuler::_TopRulerWndProc(HWND hwnd, UINT iMsg, WPARAM
 			HDC hdc = BeginPaint(hwnd, &ps);
 			UT_return_val_if_fail(hdc, 0);
 
+			ps.rcPaint.left = 0; // Make sure we draw from the edge of the window
 			UT_Rect r(ps.rcPaint.left,
 					  ps.rcPaint.top,
 					  ps.rcPaint.right-ps.rcPaint.left+1,
