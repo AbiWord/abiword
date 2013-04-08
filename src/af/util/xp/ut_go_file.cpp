@@ -1454,15 +1454,20 @@ UT_go_get_file_permissions (char const *uri)
 	}
 
 	gnome_vfs_file_info_unref (file_info);
-#elif ! defined (G_OS_WIN32)
+#else
+
+#if GLIB_CHECK_VERSION(2,26,0) || defined(G_OS_WIN32)
+	GStatBuf file_stat;
+#else
 	struct stat file_stat;
+#endif
 	char *filename = UT_go_filename_from_uri (uri);
 	int result = filename ? g_stat (filename, &file_stat) : -1;
 
 	g_free (filename);
 	if (result == 0) {
 		file_permissions = g_new0 (UT_GOFilePermissions, 1);
-
+#if ! defined (G_OS_WIN32)
 		/* Owner  Permissions */
 		file_permissions->owner_read    = ((file_stat.st_mode & S_IRUSR) != 0);
 		file_permissions->owner_write   = ((file_stat.st_mode & S_IWUSR) != 0);
@@ -1477,6 +1482,13 @@ UT_go_get_file_permissions (char const *uri)
 		file_permissions->others_read    = ((file_stat.st_mode & S_IROTH) != 0);
 		file_permissions->others_write   = ((file_stat.st_mode & S_IWOTH) != 0);
 		file_permissions->others_execute = ((file_stat.st_mode & S_IXOTH) != 0);
+#else
+		/* Windows */
+		/* Owner  Permissions */
+		file_permissions->owner_read    = ((file_stat.st_mode & S_IREAD) != 0);
+		file_permissions->owner_write   = ((file_stat.st_mode & S_IWRITE) != 0);
+		file_permissions->owner_execute = ((file_stat.st_mode & S_IEXEC) != 0);
+#endif
 	}
 #endif
 	return file_permissions;
