@@ -1697,37 +1697,14 @@ void IE_Exp_RTF::_write_parafmt(const PP_AttrProp * pSpanAP, const PP_AttrProp *
 			_rtf_chardata(static_cast<const char *>(rightDelim),strlen(static_cast<const char *>(rightDelim)));
 			_rtf_close_brace();
 		}
-		else if(lType == BULLETED_LIST)
+		else if(lType >= BULLETED_LIST && lType != NOT_A_LIST)
 		{
 			_rtf_open_brace();
 			_rtf_keyword("pntxtb");
 			_rtf_keyword("bullet");
 			_rtf_close_brace();
 		}
-		else if(lType > BULLETED_LIST)
-		{
-			_rtf_open_brace();
-			_rtf_keyword("pntxtb");
-			const UT_UCSChar * tmp = pAuto->getLabel(sdh);
-			UT_ASSERT_HARMLESS(tmp);
 
-			if(!tmp) // Should not happen, if it does attempt to recover
-			{
-				_rtf_chardata(" ",1);
-			}
-			else
-			{
-				UT_uint32 j,len;
-				len = UT_UCS4_strlen(tmp);
-				write(" ");
-				for(j=0;j < len;j++)
-				{
-					std::string sBullet = UT_std_string_sprintf("\\u%d",(UT_sint32)tmp[j]);
-					write(sBullet.c_str());
-				}
-			}
-			_rtf_close_brace();
-		}
 		_rtf_close_brace();
 	}
 
@@ -2826,9 +2803,10 @@ void IE_Exp_RTF::_output_LevelText(fl_AutoNum * pAuto, UT_uint32 iLevel, UT_UCSC
 	}
 	else
 	{
-		std::string sBullet = UT_std_string_sprintf(" \\u%d",(UT_sint32) bulletsym);
+		_rtf_keyword("'01");
+		std::string sBullet = UT_std_string_sprintf("\\u%d",(UT_sint32) bulletsym);
 		write(sBullet.c_str());
-		write(";");
+		write(" ;");
 		_rtf_close_brace();
 		_rtf_open_brace();
 		_rtf_keyword("levelnumbers");
