@@ -741,6 +741,8 @@ bool IE_Exp_RTF::_write_rtf_header(void)
 		if (langcode)
 			_rtf_keyword("deflang",langcode);
 	}
+	// Default uc value for unicode characters
+	_rtf_keyword("uc",1);
 
 	// write the "font table"....
 
