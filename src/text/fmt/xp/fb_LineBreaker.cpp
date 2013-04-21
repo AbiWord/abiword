@@ -162,7 +162,7 @@ fb_LineBreaker::breakParagraph(fl_BlockLayout* pBlock,
 					else
 					{
 						//m_iWorkingLineWidth -= iTrailingSpace;
-						if(pCurrentRun)
+						if(pCurrentRun && pCurrentRun->getWidth()>0)
 						{
 							xxx_UT_DEBUGMSG(("Break at 2 Trailing Space %d \n",iTrailingSpace));
 							_splitAtNextNonBlank(pCurrentRun);
@@ -641,6 +641,7 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 				pBlock->setLastContainer(pNextLine);
 		}
 
+		UT_sint32 singleTSWidth = 60;
 		fp_Run* pRunToBump = pLine->getLastRun();
 		UT_ASSERT(pRunToBump);
 		xxx_UT_DEBUGMSG(("!!!RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
@@ -648,6 +649,31 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		while (pRunToBump && pLine->getNumRunsInLine() && (pLine->getLastRun() != m_pLastRunToKeep))
 		{
 			UT_ASSERT(pRunToBump->getLine() == pLine);
+			if(pRunToBump->getType() == FPRUN_ENDOFPARAGRAPH)
+			{
+				fp_Run* prevRun = pRunToBump->getPrevRun();
+				if(prevRun && prevRun->findTrailingSpaceDistance())
+				{
+					if(prevRun->findTrailingSpaceDistance() > singleTSWidth)
+					{
+						if(pLine->getFilledWidth() - prevRun->findTrailingSpaceDistance() < m_iMaxLineWidth)
+						{
+							//dont break the line - there are trailing spaces
+							break;
+						}
+					}
+					else if(prevRun->findTrailingSpaceDistance() == singleTSWidth)
+					{
+						if(prevRun->getPrevRun()->findTrailingSpaceDistance())
+						{
+							//dont break the line - new line break is created using white space
+							break;
+						}
+					}
+					//trailing space over
+				}
+			}
+
 			xxx_UT_DEBUGMSG(("RunToBump %x Type %d Offset %d Length %d \n",pRunToBump,pRunToBump->getType(),pRunToBump->getBlockOffset(),pRunToBump->getLength()));
 			if(!pLine->removeRun(pRunToBump))
 			{
@@ -674,7 +700,6 @@ void fb_LineBreaker::_breakTheLineAtLastRunToKeep(fp_Line *pLine,
 		}
 	}
 
-	UT_ASSERT((!m_pLastRunToKeep) || (pLine->getLastRun() == m_pLastRunToKeep));
 #if DEBUG
 	pLine->assertLineListIntegrity();
 	if(pNextLine)
