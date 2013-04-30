@@ -23,6 +23,7 @@
 
 #include <io.h>
 #include <conio.h>
+#undef _WIN32_WINNT
 #define _WIN32_WINNT 0x0501
 #include <windows.h>
 #include "ap_Win32App.h"
