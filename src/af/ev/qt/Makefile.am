@@ -5,20 +5,20 @@ noinst_LTLIBRARIES = libqt.la
 AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
 
-libqt_la_SOURCES = 
-
+libqt_la_SOURCES = \
+	ev_QtKeyboard.cpp \
+	ev_QtKeyboard.h \
+	ev_QtMouse.cpp \
+	ev_QtMouse.h \
+	$(NULL)
 #	ev_UnixFontCombo.cpp \
 #	ev_UnixFontCombo.h \
-#	ev_UnixKeyboard.cpp \
-#	ev_UnixKeyboard.h \
 #	ev_UnixKeysym2ucs.cpp \
 #	ev_UnixKeysym2ucs.h \
 #	ev_UnixMenuBar.h \
 #	ev_UnixMenu.cpp \
 #	ev_UnixMenu.h \
 #	ev_UnixMenuPopup.h \
-#	ev_UnixMouse.cpp \
-#	ev_UnixMouse.h \
 #	ev_UnixToolbar.cpp \
 #	ev_UnixToolbar.h \
 #	ev_UnixToolbar_ViewListener.cpp \

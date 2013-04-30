@@ -34,6 +34,8 @@ public:
 	virtual ~AP_QtFrameImpl();
 	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
 
+	virtual void _createWindow();
+
 protected:
 	virtual void _hideMenuScroll(bool bHideMenuScroll);
 	virtual void _refillToolbarsInFrameData();

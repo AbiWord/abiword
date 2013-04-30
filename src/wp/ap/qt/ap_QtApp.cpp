@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
- * Copyright (C) 2004, 2012 Hubert Figuiere
+ * Copyright (C) 2004, 2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,13 +18,30 @@
  * 02110-1301 USA.
  */
 
-#include "xap_ModuleManager.h"
-#include "ap_Args.h"
-#include "ap_QtApp.h"
-#include "ap_QtFrame.h"
+#include <sys/stat.h>
+#include <sys/types.h>
 
+#include "ut_locale.h"
+#include "ut_files.h"
+#include "ev_EditMethod.h"
+#include "xap_EditMethods.h"
+#include "xap_Menu_ActionSet.h"
+#include "xap_Menu_Layouts.h"
+#include "xap_ModuleManager.h"
+#include "xap_Toolbar_ActionSet.h"
+#include "ap_Strings.h"
+#include "ap_Args.h"
+#include "ap_LoadBindings.h"
 #include "ie_imp.h"
 #include "ie_impexp_Register.h"
+#include "abi-builtin-plugins.h"
+
+#include "fp_Run.h"
+
+#include "ap_QtApp.h"
+#include "ap_QtClipboard.h"
+#include "ap_QtFrame.h"
+#include "ap_QtPrefs.h"
 
 // TODO move this in a compat layer
 
@@ -91,9 +108,134 @@ AP_QtApp::~AP_QtApp()
 
 bool AP_QtApp::initialize(bool has_display)
 {
-#warning TODO
-// refactor stuff
-	return true;
+	// TODO refactor
+
+    const char * szUserPrivateDirectory = getUserPrivateDirectory();
+    bool bVerified = UT_createDirectoryIfNecessary(szUserPrivateDirectory);
+    if (!bVerified)
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+	}
+
+    // COPYPASTA WARNING (ap_Win32App.cpp)
+    // create templates directory
+	std::string sTemplates = szUserPrivateDirectory;
+    sTemplates += "/templates";
+    UT_createDirectoryIfNecessary(sTemplates.c_str());
+
+    // load the preferences.
+
+    m_prefs = new AP_QtPrefs();
+    m_prefs->fullInit();
+
+    //////////////////////////////////////////////////////////////////
+    // load the dialog and message box strings
+    //
+    // (we want to do this as soon as possible so that any errors in
+    // the initialization could be properly localized before being
+    // reported to the user)
+    //////////////////////////////////////////////////////////////////
+
+    {
+		// Loading default string set for untranslated messages
+		AP_BuiltinStringSet * pBuiltinStringSet = new AP_BuiltinStringSet(this, 
+													static_cast<const gchar*>(AP_PREF_DEFAULT_StringSet));
+		UT_ASSERT(pBuiltinStringSet);
+
+		// try loading strings by preference
+		const char * szStringSet = NULL;
+		if (   (getPrefsValue(AP_PREF_KEY_StringSet,
+							  static_cast<const gchar**>(&szStringSet)))
+			   && (szStringSet)
+			   && (*szStringSet)
+			   && (strcmp(szStringSet,AP_PREF_DEFAULT_StringSet) != 0))
+		{
+			m_pStringSet = loadStringsFromDisk(szStringSet, pBuiltinStringSet);
+		}
+
+		// try loading fallback strings for the language, e.g. es-ES for es-AR
+		if (m_pStringSet == NULL)
+		{
+			const char *szFallbackStringSet = UT_getFallBackStringSetLocale(szStringSet);
+			if (szFallbackStringSet)
+				m_pStringSet = loadStringsFromDisk(szFallbackStringSet, pBuiltinStringSet);
+		}
+
+		// load the builtin string set
+		// this is the default
+		if (m_pStringSet == NULL)
+		{
+			m_pStringSet = pBuiltinStringSet;
+		}
+    }
+
+    // now that preferences are established, let the xap init
+	if (has_display) {
+		m_pClipboard = new AP_QtClipboard(this);
+		UT_ASSERT(m_pClipboard);
+
+// GTK		abi_stock_init ();
+    }
+
+    m_pEMC = AP_GetEditMethods();
+    UT_ASSERT(m_pEMC);
+
+    m_pBindingSet = new AP_BindingSet(m_pEMC);
+    UT_ASSERT(m_pBindingSet);
+
+    m_pMenuActionSet = AP_CreateMenuActionSet();
+    UT_ASSERT(m_pMenuActionSet);
+
+    m_pToolbarActionSet = AP_CreateToolbarActionSet();
+    UT_ASSERT(m_pToolbarActionSet);
+
+    if (! AP_App::initialize())
+		return false;
+
+	//////////////////////////////////////////////////////////////////
+	// Initialize the importers/exporters
+	//////////////////////////////////////////////////////////////////
+	IE_ImpExp_RegisterXP ();
+
+    // Now we have the strings loaded we can populate the field names correctly
+    int i;
+
+    for (i = 0; fp_FieldTypes[i].m_Type != FPFIELDTYPE_END; i++)
+      (&fp_FieldTypes[i])->m_Desc = m_pStringSet->getValue(fp_FieldTypes[i].m_DescId);
+
+    for (i = 0; fp_FieldFmts[i].m_Tag != NULL; i++)
+      (&fp_FieldFmts[i])->m_Desc = m_pStringSet->getValue(fp_FieldFmts[i].m_DescId);
+
+    ///////////////////////////////////////////////////////////////////////
+    /// Build a labelset so the plugins can add themselves to something ///
+    ///////////////////////////////////////////////////////////////////////
+
+	const char * szMenuLabelSetName = NULL;
+	if (getPrefsValue( AP_PREF_KEY_StringSet, static_cast<const gchar**>(&szMenuLabelSetName))
+		&& (szMenuLabelSetName) && (*szMenuLabelSetName))
+	{
+		;
+	}
+	else
+		szMenuLabelSetName = AP_PREF_DEFAULT_StringSet;
+
+	getMenuFactory()->buildMenuLabelSet(szMenuLabelSetName);
+
+	abi_register_builtin_plugins();
+
+	bool bLoadPlugins = true;
+	bool bFound = getPrefsValueBool(XAP_PREF_KEY_AutoLoadPlugins,&bLoadPlugins);
+	if(bLoadPlugins || !bFound) {
+//		loadAllPlugins();
+	}
+
+	//
+	// Now all the plugins are loaded we can initialize the clipboard
+	//
+	if(m_pClipboard)
+		m_pClipboard->initialize();
+
+    return true;
 }
 
 /*
@@ -269,4 +411,11 @@ int AP_QtApp::main(const char * szAppName, int argc, char ** argv)
 	delete pMyQtApp;
 	
 	return exit_status;
+}
+
+AP_DiskStringSet * AP_QtApp::loadStringsFromDisk(const char 		   * szStringSet,
+												 AP_BuiltinStringSet * pFallbackStringSet)
+{
+#warning TODO
+	return NULL;
 }

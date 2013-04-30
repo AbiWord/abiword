@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
- * Copyright (C) 2012 Hubert Figuiere
+ * Copyright (C) 2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +17,9 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
+
+#include <QMenuBar>
+#include <QMainWindow>
 
 #include "ap_QtFrame.h"
 #include "ap_QtFrameImpl.h"
@@ -35,9 +38,29 @@ XAP_FrameImpl * AP_QtFrameImpl::createInstance(XAP_Frame *pFrame)
 	return new AP_QtFrameImpl(static_cast<AP_QtFrame*>(pFrame));
 }
 
+void AP_QtFrameImpl::_createWindow()
+{
+	_createTopLevelWindow();
+
+// show?
+
+	if(getFrame()->isMenuScrollHidden())
+	{
+	    _hideMenuScroll(true);
+	}
+}
+
 void AP_QtFrameImpl::_hideMenuScroll(bool bHideMenuScroll)
 {
-#warning TODO implement
+	QWidget* menubar = getTopLevel()->menuBar();
+#warning TODO implement scrollbar
+	QWidget* scrollbar = NULL;
+	if(menubar) {
+		bHideMenuScroll ? menubar->hide() : menubar->show();
+	}
+	if(scrollbar) {
+		bHideMenuScroll ? scrollbar->hide() : scrollbar->show();
+	}
 }
 
 void AP_QtFrameImpl::_refillToolbarsInFrameData()

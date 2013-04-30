@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-/* AbiWord
- * Copyright (C) 2012 Hubert Figuiere
+/* AbiSource Application Framework
+ * Copyright (C) 2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,32 +18,19 @@
  * 02110-1301 USA.
  */
 
-/*****************************************************************/
 
-// get the class definitions
+#ifndef __EV_QTMOUSE_H
+#define __EV_QTMOUSE_H
 
-#include "ap_Dialog_Id.h"
-#include "xap_QtDialogFactory.h"
-#include "ap_QtDialog_All.h"
+#include "ev_Mouse.h"
 
-// fill in the table
+class EV_EditEventMapper;
 
-
-static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
-
-#define DeclareDialog(id,cls,tabbed)	{ id, cls::s_getPersistence(), cls::static_constructor, tabbed },
-#include "ap_QtDialog_All.h"
-#undef DeclareDialog
+class EV_QtMouse
+	: public EV_Mouse
+{
+public:
+        EV_QtMouse(EV_EditEventMapper * pEEM);
 };
 
-
-/*****************************************************************/
-
-XAP_QtDialogFactory::XAP_QtDialogFactory(XAP_App * pApp, XAP_Frame * pFrame)
-	: XAP_DialogFactory(pApp, G_N_ELEMENTS(s_dlg_table), s_dlg_table, pFrame)
-{
-}
-
-XAP_QtDialogFactory::~XAP_QtDialogFactory(void)
-{
-}
+#endif

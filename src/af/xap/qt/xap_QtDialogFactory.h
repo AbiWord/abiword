@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiSource Application Framework
- * Copyright (C) 2012 Hubert Figuiere
+ * Copyright (C) 2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,11 +24,11 @@
 
 #include "xap_DialogFactory.h"
 
-class AP_QtDialogFactory : public XAP_DialogFactory
+class XAP_QtDialogFactory : public XAP_DialogFactory
 {
 public:
-	AP_QtDialogFactory(XAP_App * pApp, XAP_Frame * pFrame = NULL);
-	virtual ~AP_QtDialogFactory(void);
+	XAP_QtDialogFactory(XAP_App * pApp, XAP_Frame * pFrame = NULL);
+	virtual ~XAP_QtDialogFactory(void);
 
 protected:
 };

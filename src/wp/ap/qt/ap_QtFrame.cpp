@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
- * Copyright (C) 2012 Hubert Figuiere
+ * Copyright (C) 2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +19,8 @@
  */
 
 #include "ap_App.h"
+#include "ap_Prefs_SchemeIds.h"
+
 #include "ap_QtFrame.h"
 #include "ap_QtFrameImpl.h"
 
@@ -46,7 +48,28 @@ XAP_Frame*	AP_QtFrame::cloneFrame(void)
 
 bool AP_QtFrame::initialize(XAP_FrameMode frameMode)
 {
-#warning TODO implement
+	AP_QtFrameImpl * pFrameImpl = static_cast<AP_QtFrameImpl *>(getFrameImpl());
+
+	setFrameMode(frameMode);
+	setFrameLocked(false);
+	if (!initFrameData())
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+
+	if (!XAP_Frame::initialize(AP_PREF_KEY_KeyBindings,AP_PREF_DEFAULT_KeyBindings,
+				   AP_PREF_KEY_MenuLayout, AP_PREF_DEFAULT_MenuLayout,
+				   AP_PREF_KEY_StringSet, AP_PREF_KEY_StringSet,
+				   AP_PREF_KEY_ToolbarLayouts, AP_PREF_DEFAULT_ToolbarLayouts,
+				   AP_PREF_KEY_StringSet, AP_PREF_DEFAULT_StringSet))
+	{
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return false;
+	}
+	pFrameImpl->_createWindow();
+
+	return true;
 }
 
 void AP_QtFrame::setXScrollRange(void)

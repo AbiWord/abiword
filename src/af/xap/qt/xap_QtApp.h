@@ -52,7 +52,7 @@ public:
 protected:
 	int exec(); // QApplication Exec.
 
-	AP_QtDialogFactory			m_dialogFactory;
+	XAP_QtDialogFactory			m_dialogFactory;
 	AP_QtToolbar_ControlFactory	m_controlFactory;
 
 	QApplication* m_app;

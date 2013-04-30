@@ -17,12 +17,15 @@ libqt_la_SOURCES = \
 	ap_QtApp.h \
 	ap_QtAppImpl.h \
 	ap_QtAppImpl.cpp \
+	ap_QtClipboard.h \
 	ap_QtDialog_All.h \
 	ap_QtDialogFactory.cpp \
 	ap_QtFrame.h \
 	ap_QtFrame.cpp \
 	ap_QtFrameImpl.h \
 	ap_QtFrameImpl.cpp \
+	ap_QtPrefs.h \
+	ap_QtPrefs.cpp \
 	ap_Qt_TB_CFactory.cpp \
 	ap_QtToolbar_Control_All.h \
 	$(NULL)
@@ -35,7 +38,6 @@ libqt_la_SOURCES = \
 #	ap_DocView.cpp \
 #	ap_DocView.h \
 #	ap_UnixClipboard.cpp \
-#	ap_UnixClipboard.h \
 #	ap_UnixDialog_Annotation.cpp \
 #	ap_UnixDialog_Annotation.h \
 #	ap_UnixDialog_Background.cpp \
@@ -115,8 +117,6 @@ libqt_la_SOURCES = \
 #	ap_UnixDialog_RDFEditor.h \
 #	ap_UnixLeftRuler.cpp \
 #	ap_UnixLeftRuler.h \
-#	ap_UnixPrefs.cpp \
-#	ap_UnixPrefs.h \
 #	ap_UnixPreview_Annotation.cpp \
 #	ap_UnixPreview_Annotation.h \
 #	ap_UnixStatusBar.h \

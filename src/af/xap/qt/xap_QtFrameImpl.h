@@ -23,6 +23,9 @@
 #define XAP_UNIXFRAMEIMPL_H
 
 #include "xap_FrameImpl.h"
+#include "xap_QtDialogFactory.h"
+
+class QMainWindow;
 
 class XAP_QtFrameImpl
 	: public XAP_FrameImpl
@@ -31,6 +34,8 @@ public:
 	XAP_QtFrameImpl(XAP_Frame *pFrame);
 	friend class XAP_Frame;
 	virtual ~XAP_QtFrameImpl();
+
+	virtual void _createTopLevelWindow();
 
 protected:
 	virtual bool _close();
@@ -42,6 +47,8 @@ protected:
 
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
 
+	QMainWindow* getTopLevel() const
+		{ return m_topLevel; }
 	virtual XAP_DialogFactory * _getDialogFactory();
 	virtual EV_Menu * _getMainMenu();
 	virtual EV_Toolbar * _newToolbar(XAP_Frame *pFrame,
@@ -56,6 +63,10 @@ protected:
 	virtual void _rebuildToolbar(UT_uint32 ibar);
 
 	virtual void _setFullScreen(bool changeToFullScreen);
+
+private:
+	XAP_QtDialogFactory        m_dialogFactory;
+	QMainWindow* m_topLevel;
 };
 
 #endif

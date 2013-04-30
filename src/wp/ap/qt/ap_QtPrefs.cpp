@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
- * Copyright (C) 2012 Hubert Figuiere
+ * Copyright (C) 2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,32 +18,21 @@
  * 02110-1301 USA.
  */
 
-/*****************************************************************/
+#include "ap_QtPrefs.h"
 
-// get the class definitions
-
-#include "ap_Dialog_Id.h"
-#include "xap_QtDialogFactory.h"
-#include "ap_QtDialog_All.h"
-
-// fill in the table
-
-
-static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
-
-#define DeclareDialog(id,cls,tabbed)	{ id, cls::s_getPersistence(), cls::static_constructor, tabbed },
-#include "ap_QtDialog_All.h"
-#undef DeclareDialog
-};
-
-
-/*****************************************************************/
-
-XAP_QtDialogFactory::XAP_QtDialogFactory(XAP_App * pApp, XAP_Frame * pFrame)
-	: XAP_DialogFactory(pApp, G_N_ELEMENTS(s_dlg_table), s_dlg_table, pFrame)
+AP_QtPrefs::AP_QtPrefs()
 {
 }
 
-XAP_QtDialogFactory::~XAP_QtDialogFactory(void)
+AP_QtPrefs::~AP_QtPrefs()
 {
+}
+
+void AP_QtPrefs::overlayEnvironmentPrefs(void)
+{
+}
+
+const char *   AP_QtPrefs::_getPrefsPathname(void) const
+{
+	return NULL;
 }

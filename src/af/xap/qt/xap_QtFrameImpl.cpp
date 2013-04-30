@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Application Framework
- * Copyright (C) 2012 Hubert Figuiere
+ * Copyright (C) 2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,15 +18,24 @@
  * 02110-1301 USA.
  */
 
+#include <QMainWindow>
+#include <QGraphicsView>
+
+#include "ev_QtKeyboard.h"
+#include "ev_QtMouse.h"
+#include "xap_QtApp.h"
 #include "xap_QtFrameImpl.h"
 
 XAP_QtFrameImpl::XAP_QtFrameImpl(XAP_Frame *pFrame)
 	: XAP_FrameImpl(pFrame)
+	, m_dialogFactory(XAP_App::getApp(), pFrame)
+	, m_topLevel(NULL)
 {
 }
 
 XAP_QtFrameImpl::~XAP_QtFrameImpl()
 {
+	delete m_topLevel;
 }
 
 bool XAP_QtFrameImpl::_close()
@@ -51,7 +60,16 @@ void XAP_QtFrameImpl::_nullUpdate () const
 
 void XAP_QtFrameImpl::_initialize()
 {
-#warning TODO implement
+	// get a handle to our keyboard binding mechanism
+ 	// and to our mouse binding mechanism.
+ 	EV_EditEventMapper * pEEM = XAP_App::getApp()->getEditEventMapper();
+ 	UT_ASSERT(pEEM);
+
+	m_pKeyboard = new EV_QtKeyboard(pEEM);
+	UT_ASSERT(m_pKeyboard);
+
+	m_pMouse = new EV_QtMouse(pEEM);
+	UT_ASSERT(m_pMouse);
 }
 
 void XAP_QtFrameImpl::_setCursor(GR_Graphics::Cursor cursor)
@@ -61,7 +79,18 @@ void XAP_QtFrameImpl::_setCursor(GR_Graphics::Cursor cursor)
 
 XAP_DialogFactory * XAP_QtFrameImpl::_getDialogFactory()
 {
-#warning TODO implement
+	return &m_dialogFactory;
+}
+
+void XAP_QtFrameImpl::_createTopLevelWindow()
+{
+	if(m_iFrameMode == XAP_NormalFrame) {
+		m_topLevel = new QMainWindow(NULL, 0);
+		m_topLevel->setWindowTitle(XAP_App::getApp()->getApplicationTitleForTitleBar());
+		QGraphicsView* centralWidget = new QGraphicsView(m_topLevel);
+		m_topLevel->setCentralWidget(centralWidget);
+		m_topLevel->show();
+	}
 }
 
 EV_Menu * XAP_QtFrameImpl::_getMainMenu()

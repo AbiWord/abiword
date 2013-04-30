@@ -1,6 +1,6 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
- * Copyright (C) 2012 Hubert Figuiere
+ * Copyright (C) 2013 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,32 +18,22 @@
  * 02110-1301 USA.
  */
 
-/*****************************************************************/
+#ifndef AP_QTPREFS_H
+#define AP_QTPREFS_H
 
-// get the class definitions
+#include "ap_Prefs.h"
 
-#include "ap_Dialog_Id.h"
-#include "xap_QtDialogFactory.h"
-#include "ap_QtDialog_All.h"
+class AP_QtPrefs
+	: public AP_Prefs
+{
+public:
+	AP_QtPrefs();
+	virtual ~AP_QtPrefs();
 
-// fill in the table
+	virtual void                    overlayEnvironmentPrefs(void);
 
-
-static struct XAP_DialogFactory::_dlg_table s_dlg_table[] = {
-
-#define DeclareDialog(id,cls,tabbed)	{ id, cls::s_getPersistence(), cls::static_constructor, tabbed },
-#include "ap_QtDialog_All.h"
-#undef DeclareDialog
+protected:
+	virtual const char *    _getPrefsPathname(void) const;
 };
 
-
-/*****************************************************************/
-
-XAP_QtDialogFactory::XAP_QtDialogFactory(XAP_App * pApp, XAP_Frame * pFrame)
-	: XAP_DialogFactory(pApp, G_N_ELEMENTS(s_dlg_table), s_dlg_table, pFrame)
-{
-}
-
-XAP_QtDialogFactory::~XAP_QtDialogFactory(void)
-{
-}
+#endif /* AP_QTPREFS_H */
