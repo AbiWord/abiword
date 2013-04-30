@@ -1706,3 +1706,13 @@ XAP_App::createUUIDString() const
     return ret;
 }
 
+
+/*!
+  Signal function
+*/
+void XAP_App::signalWrapper(int sig_num)
+{
+    XAP_App *pApp = XAP_App::getApp();
+    pApp->catchSignals(sig_num);
+}
+

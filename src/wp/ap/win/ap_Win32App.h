@@ -113,6 +113,8 @@ public:
 
 	bool handleModelessDialogMessage( MSG * msg );
 
+	virtual void catchSignals(int signum) ABI_NORETURN;
+
 private:
 	bool               _copyFmtToClipboard(PD_DocumentRange * pDocRange, UINT iFmt);
 	bool               _copyFmtToClipboard(PD_DocumentRange * pDocRange, const char *pszFmt);

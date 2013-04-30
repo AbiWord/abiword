@@ -1064,20 +1064,6 @@ bool AP_CocoaApp::doWindowlessArgs(const AP_Args *Args, bool & bSuccess)
 	return openCmdLinePlugins(Args, bSuccess);
 }
 
-/*!
-  This is a global function to call our signal handler.  It needs to
-  be global so that we can pass a function pointer to it to C code
-  that handles signals.  
-  \todo Could this be a static member function?
-  JCA: No, but it can be extern "C" { static void signalWrapper(int) }
-  JCA: (well, there is a way to use a static member function and to remain
-  JCA: correct, but it's a bit cumbersome.)
-*/
-void signalWrapper(int sig_num)
-{
-    AP_CocoaApp *pApp = (AP_CocoaApp *) XAP_App::getApp();
-    pApp->catchSignals(sig_num);
-}
 
 static int s_signal_count = 0;
 
@@ -1092,7 +1078,7 @@ void AP_CocoaApp::catchSignals(int /*sig_num*/)
 {
     // Reset the signal handler 
     // (not that it matters - this is mostly for race conditions)
-    signal(SIGSEGV, signalWrapper);
+    signal(SIGSEGV, &XAP_App::signalWrapper);
     
     s_signal_count = s_signal_count + 1;
     if(s_signal_count > 1)
@@ -1103,20 +1089,9 @@ void AP_CocoaApp::catchSignals(int /*sig_num*/)
     }
     
     UT_DEBUGMSG(("Oh no - we just segfaulted!\n"));
-	
-    UT_sint32 i = 0;
-	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
-    for(;i<m_vecFrames.getItemCount();i++)
-    {
-		AP_CocoaFrame * curFrame = (AP_CocoaFrame*) m_vecFrames[i];
-		UT_continue_if_fail(curFrame);
 
-		if(curFrame->getFilename() == NULL)
-			curFrame->backup(".abw.saved", abiType);
-		else
-			curFrame->backup(".saved", abiType);
-    }
-    
+    saveRecoveryFiles();
+
     fflush(stdout);
     
     // Abort and dump core

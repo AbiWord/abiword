@@ -207,3 +207,26 @@ bool AP_App::doWindowlessArgs (const AP_Args *, bool & /*bSuccess*/)
 	return false;
 }
 
+void AP_App::saveRecoveryFiles()
+{
+	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
+
+	for(UT_sint32 i = 0; i < m_vecFrames.getItemCount(); i++) {
+		XAP_Frame * curFrame = m_vecFrames[i];
+		if(!curFrame) {
+			continue;
+		}
+		try {
+			if (NULL == curFrame->getFilename()) {
+				curFrame->backup(".abw.saved",abiType);
+			}
+			else {
+				curFrame->backup(".saved",abiType);
+			}
+		}
+		catch(...) {
+			// just continue
+		}
+	}
+}
+

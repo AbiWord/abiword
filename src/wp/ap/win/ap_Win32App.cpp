@@ -1235,27 +1235,8 @@ catch (...)
 	{
 		// do nothing
 	}
-	
-	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
-	for (UT_sint32 i = 0; i < pApp->m_vecFrames.getItemCount(); i++)
-	{
-		AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[i];
-		UT_continue_if_fail(curFrame);
 
-		// again, we want to catch any exception thrown while saving individual documents,
-		// in order to run through the whole loop
-		try
-		{
-			if (NULL == curFrame->getFilename())
-				curFrame->backup(".abw.saved", abiType);
-			else
-				curFrame->backup(".saved", abiType);
-		}
-		catch(...)
-		{
-			// do nothing
-		}
-	}	
+	pApp->saveRecoveryFiles();
 
 	// Tell the user was has just happened
 	AP_Win32Frame * curFrame = (AP_Win32Frame*)pApp->m_vecFrames[0];
@@ -1592,4 +1573,12 @@ GR_Graphics * AP_Win32App::newDefaultScreenGraphics() const
 	UT_return_val_if_fail( pFI, NULL );
 
 	return pFI->createDocWndGraphics();
+}
+
+// There is not signal wrapper on Win32. It does its exception handling.
+// Maybe we should move the catch stuff into here.
+// 
+void AP_Win32App::catchSignals(int /*sig_num*/)
+{
+	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 }

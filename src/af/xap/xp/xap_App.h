@@ -280,6 +280,13 @@ public:
 	bool                        getNoGUI() const;
 	void                        setNoGUI( bool v );
 
+	// signal wrapper
+	static void signalWrapper(int sig_num);
+	// catch the signals
+	virtual void catchSignals(int signum) = 0;
+	// Override in AP.
+	virtual void saveRecoveryFiles() = 0;
+
 protected:
 	void						_setAbiSuiteLibDir(const char * sz);
 	virtual const char *				_getKbdLanguage() {return NULL;}
