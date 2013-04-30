@@ -26,4 +26,15 @@
 
 bool progExists(const char* progName);
 
+/*!
+  Creates a directory if the specified one does not yet exist.
+  /param A character string representing the to-be-created directory. 
+  /return True, if the directory already existed, or was successfully
+	created.  False, if the input path was already a file, not a
+	directory, or if the directory was unable to be created.
+  /todo Do domething with error status if the directory couldn't be
+	created? 
+*/
+bool UT_createDirectoryIfNecessary(const char * szDir, bool publicdir = false);
+
 #endif /* UT_FILES_H */

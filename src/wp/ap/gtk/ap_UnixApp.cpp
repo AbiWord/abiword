@@ -53,6 +53,7 @@
 #include "ut_misc.h"
 #include "ut_locale.h"
 #include "ut_sleep.h"
+#include "ut_files.h"
 
 #include "xap_Args.h"
 #include "ap_Args.h"
@@ -179,38 +180,6 @@ AP_UnixApp::~AP_UnixApp(void)
     IE_ImpExp_UnRegisterXP ();
 }
 
-/*!
-  Creates a directory if the specified one does not yet exist.
-  /param A character string representing the to-be-created directory. 
-  /return True, if the directory already existed, or was successfully
-	created.  False, if the input path was already a file, not a
-	directory, or if the directory was unable to be created.
-  /todo Do domething with error status if the directory couldn't be
-	created? 
-*/
-static bool s_createDirectoryIfNecessary(const char * szDir)
-{
-    struct stat statbuf;
-    
-    if (stat(szDir,&statbuf) == 0)								// if it exists
-    {
-		if (S_ISDIR(statbuf.st_mode))							// and is a directory
-			return true;
-
-		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-		return false;
-    }
-#ifdef LOGFILE
-	fprintf(getlogfile(),"New Directory created \n");
-#endif
-   
-    if (mkdir(szDir,0700) == 0)
-		return true;
-    
-    
-    UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-    return false;
-}	
 
 /*!
 * Try loading a string-set.
@@ -339,7 +308,7 @@ AP_UnixApp::loadStringsFromDisk(const char 			* szStringSet,
 bool AP_UnixApp::initialize(bool has_display)
 {
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
-    bool bVerified = s_createDirectoryIfNecessary(szUserPrivateDirectory);
+    bool bVerified = UT_createDirectoryIfNecessary(szUserPrivateDirectory);
     if (!bVerified)
       {
 		  UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -349,7 +318,7 @@ bool AP_UnixApp::initialize(bool has_display)
     // create templates directory
     UT_String sTemplates = szUserPrivateDirectory;
     sTemplates += "/templates";
-    s_createDirectoryIfNecessary(sTemplates.c_str());
+    UT_createDirectoryIfNecessary(sTemplates.c_str());
 
     // load the preferences.
     

@@ -43,6 +43,7 @@
 #include "ut_math.h"
 #include "ut_misc.h"
 #include "ut_png.h"
+#include "ut_files.h"
 
 #include "ut_Script.h"
 
@@ -137,39 +138,6 @@ AP_CocoaApp::~AP_CocoaApp(void)
 }
 
 /*!
-  Creates a directory if the specified one does not yet exist.
-  /param A character string representing the to-be-created directory. 
-  /return True, if the directory already existed, or was successfully
-	created.  False, if the input path was already a file, not a
-	directory, or if the directory was unable to be created.
-  /todo Do domething with error status if the directory couldn't be
-	created? 
-*/
-static bool s_createDirectoryIfNecessary(const char * szDir, bool publicdir = false)
-{
-    struct stat statbuf;
-    
-    if (stat(szDir,&statbuf) == 0)								// if it exists
-    {
-		if (S_ISDIR(statbuf.st_mode))							// and is a directory
-			return true;
-
-		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n",szDir));
-		return false;
-    }
-
-	bool success = true;
-    mode_t old_mask = umask (0);
-    if (mkdir (szDir, publicdir ? 0775 : 0700))
-		{   
-			UT_DEBUGMSG(("Could not create Directory [%s].\n",szDir));
-			success = false;
-		}
-	umask (old_mask);
-	return success;
-}	
-
-/*!
   Initialize the application.  This involves preferences, keybindings,
   toolbars, graphics, spelling and everything else.  
   \return True if successfully initalized, False otherwise. if false
@@ -181,24 +149,24 @@ bool AP_CocoaApp::initialize(void)
 {
 	static const char * suffix = "/Library/Application Support/AbiSuite";
 
-	if (s_createDirectoryIfNecessary(suffix, true)) // let's create some system-level directories also, if we can
+	if (UT_createDirectoryIfNecessary(suffix, true)) // let's create some system-level directories also, if we can
 		{
 			UT_UTF8String path(suffix);
 
 			path += "/dictionary";
-			s_createDirectoryIfNecessary(path.utf8_str(), true);
+			UT_createDirectoryIfNecessary(path.utf8_str(), true);
 
 			path  = suffix;
 			path += "/templates";
-			s_createDirectoryIfNecessary(path.utf8_str(), true);
+			UT_createDirectoryIfNecessary(path.utf8_str(), true);
 
 			path  = suffix;
 			path += "/Plug-ins";
-			s_createDirectoryIfNecessary(path.utf8_str(), true);
+			UT_createDirectoryIfNecessary(path.utf8_str(), true);
 
 			path  = suffix;
 			path += "/math";
-			s_createDirectoryIfNecessary(path.utf8_str(), true);
+			UT_createDirectoryIfNecessary(path.utf8_str(), true);
 		}
 
     const char * szUserPrivateDirectory = getUserPrivateDirectory();
@@ -215,39 +183,39 @@ bool AP_CocoaApp::initialize(void)
 					{
 						UT_UTF8String path(szUserPrivateDirectory, usrprv_length - suffix_length);
 
-						if (s_createDirectoryIfNecessary(path.utf8_str()))
+						if (UT_createDirectoryIfNecessary(path.utf8_str()))
 							{
 								path += "/Library";
-								if (s_createDirectoryIfNecessary(path.utf8_str()))
+								if (UT_createDirectoryIfNecessary(path.utf8_str()))
 									{
 										path += "/Application Support";
-										if (s_createDirectoryIfNecessary(path.utf8_str()))
+										if (UT_createDirectoryIfNecessary(path.utf8_str()))
 											{
 												UT_UTF8String path2(path);
 
 												path2 += "/Enchant";
-												s_createDirectoryIfNecessary(path2.utf8_str());
+												UT_createDirectoryIfNecessary(path2.utf8_str());
 
 												path += "/AbiSuite";
-												if (s_createDirectoryIfNecessary(path.utf8_str()))
+												if (UT_createDirectoryIfNecessary(path.utf8_str()))
 													{
 														bVerified = true;
 
 														path2  = path;
 														path2 += "/dictionary";
-														s_createDirectoryIfNecessary(path2.utf8_str());
+														UT_createDirectoryIfNecessary(path2.utf8_str());
 
 														path2  = path;
 														path2 += "/templates";
-														s_createDirectoryIfNecessary(path2.utf8_str());
+														UT_createDirectoryIfNecessary(path2.utf8_str());
 
 														path2  = path;
 														path2 += "/Plug-ins";
-														s_createDirectoryIfNecessary(path2.utf8_str());
+														UT_createDirectoryIfNecessary(path2.utf8_str());
 
 														path2  = path;
 														path2 += "/math";
-														s_createDirectoryIfNecessary(path2.utf8_str());
+														UT_createDirectoryIfNecessary(path2.utf8_str());
 													}
 											}
 									}

@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998-2000 AbiSource, Inc.
+ * Copyright (c) 2013
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,7 +18,10 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
  * 02110-1301 USA.
  */
- 
+
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "ut_files.h"
 #include "ut_debugmsg.h"
@@ -24,8 +29,6 @@
 #include "ut_string.h"
 #include "ut_misc.h"
 #include "ut_types.h"
-#include "ut_vector.h"
-#include "ut_string_class.h"
 
 /*!
 	If progName is a fully qualified path (i.e. it begins with '/'),
@@ -48,3 +51,40 @@ bool progExists(const char* progName)
   g_free (prog);
   return true;
 }
+
+/*!
+  Creates a directory if the specified one does not yet exist.
+  /param A character string representing the to-be-created directory.
+  /return True, if the directory already existed, or was successfully
+	created.  False, if the input path was already a file, not a
+	directory, or if the directory was unable to be created.
+  /todo Do domething with error status if the directory couldn't be
+	created?
+*/
+bool UT_createDirectoryIfNecessary(const char * szDir, bool publicdir)
+{
+    struct stat statbuf;
+
+    if (stat(szDir,&statbuf) == 0)		// if it exists
+    {
+		if (S_ISDIR(statbuf.st_mode))	// and is a directory
+			return true;
+
+		UT_DEBUGMSG(("Pathname [%s] is not a directory.\n", szDir));
+		return false;
+    }
+#ifdef LOGFILE
+	fprintf(getlogfile(),"New Directory created \n");
+#endif
+
+	bool success = true;
+    mode_t old_mask = umask (0);
+    if (mkdir (szDir, publicdir ? 0775 : 0700))
+	{
+		UT_DEBUGMSG(("Could not create Directory [%s].\n", szDir));
+		success = false;
+	}
+	umask (old_mask);
+	return success;
+}
+
