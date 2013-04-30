@@ -2,7 +2,7 @@
 /*
  * go-file.c :
  *
- * Copyright (C) 2009 Hubert Figuiere <hub@figuiere.net>. 
+ * Copyright (C) 2009, 2013 Hubert Figuiere <hub@figuiere.net>.
  *     Whose contributions are under GPLv2+
  * Copyright (C) 2004 Morten Welinder (terra@gnome.org)
  * Copyright (C) 2003, Red Hat, Inc.
@@ -71,6 +71,11 @@
 // needed for gnome_vfs_url_show()
 #include <libgnomevfs/gnome-vfs-utils.h>
 #endif
+#endif
+
+#ifdef TOOLKIT_QT
+#include <QUrl>
+#include <QDesktopServices>
 #endif
 
 #if defined G_OS_WIN32
@@ -1786,7 +1791,9 @@ UT_go_url_show (gchar const *url)
 	}
 	return NULL;
 #elif TOOLKIT_QT
-#warning TODO for Qt.
+	if(!QDesktopServices::openUrl(QUrl(url, QUrl::TolerantMode))) {
+		;
+	}
 	return NULL;
 #else
 	GError *err = NULL;
