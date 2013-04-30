@@ -24,7 +24,7 @@
 #include "ut_unixColor.h"
 #include "ut_assert.h"
 
-#ifndef TOOLKIT_COCOA
+#if defined(TOOLKIT_GTK) || defined(TOOLKIT_GTK2)
 /*!
 * Convert a GdkColor stuct to abi's UT_RGBColor. 
 * The caller is responsible for freeing the returned object.

@@ -38,6 +38,11 @@ main_cpp = $(top_srcdir)/src/wp/main/gtk/UnixMain.cpp
 opt_libs += $(GOFFICE_BUILTIN_LIBS)
 endif
 
+if TOOLKIT_QT
+libabiword_cpp += $(top_srcdir)/src/wp/main/qt/libabiwordQt.cpp
+main_cpp = $(top_srcdir)/src/wp/main/qt/QtMain.cpp
+endif
+
 if TOOLKIT_WIN
 main_cpp = $(top_srcdir)/src/wp/main/win/Win32Main.cpp
 opt_libs += Win32Resources.lo

@@ -36,6 +36,8 @@
 # include "xap_Win32Features.h"
 #elif defined(TOOLKIT_GTK_ALL)
 # include "xap_UnixFeatures.h"
+#elif defined(TOOLKIT_QT)
+# include "xap_QtFeatures.h"
 #endif
 
 #if defined(EMBEDDED_TARGET)

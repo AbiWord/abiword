@@ -40,6 +40,9 @@ class XAP_Frame;
 #elif defined (EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
   #include "hildon/xap_UnixHildonApp.h"
   #define XAP_App_BaseClass XAP_UnixHildonApp
+#elif defined(TOOLKIT_QT)
+  #include "xap_QtApp.h"
+  #define XAP_App_BaseClass XAP_QtApp
 #else
   #include "xap_UnixApp.h"
   #define XAP_App_BaseClass XAP_UnixApp

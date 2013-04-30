@@ -1785,6 +1785,9 @@ UT_go_url_show (gchar const *url)
 		;
 	}
 	return NULL;
+#elif TOOLKIT_QT
+#warning TODO for Qt.
+	return NULL;
 #else
 	GError *err = NULL;
 #if GTK_CHECK_VERSION(2,14,0)

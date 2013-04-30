@@ -73,6 +73,15 @@ AC_ARG_ENABLE([embedded],
 	abi_cv_embedded_target="no"
 ])
 
+AC_ARG_ENABLE([qt],
+	[AS_HELP_STRING([--enable-qt], [Build using Qt4])],
+[
+	abi_cv_qt="yes"
+],
+[
+	abi_cv_qt="no"
+])
+
 #
 # setting the deps requirement is done further down
 #
@@ -156,10 +165,14 @@ case ${host_os} in
     ;;
   *)
     PLATFORM="unix"
-    if test "x$abi_cv_gtk2" = "xyes"; then
-      TOOLKIT_IS_GTK2="yes"
+    if test "x$abi_cv_qt" = "xyes"; then
+      TOOLKIT="qt"
+    else
+      if test "x$abi_cv_gtk2" = "xyes"; then
+        TOOLKIT_IS_GTK2="yes"
+      fi
+      TOOLKIT="gtk"
     fi
-    TOOLKIT="gtk"
     ;;
 esac
 AC_MSG_RESULT([$PLATFORM / $TOOLKIT])
@@ -723,7 +736,7 @@ fi
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
 
 dnl make that for all.
-if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa"; then
+if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa" -o "$TOOLKIT" = "qt"; then
 	dnl move away
 	AC_DEFINE([WITH_CAIRO], [1], [Using Cairo])
 	WITH_CAIRO=1
@@ -842,6 +855,7 @@ fi
 AM_CONDITIONAL([TOOLKIT_COCOA], test "$TOOLKIT" = "cocoa")
 AM_CONDITIONAL([TOOLKIT_GTK], test "$TOOLKIT" = "gtk")
 AM_CONDITIONAL([TOOLKIT_GTK2], test "$TOOLKIT_IS_GTK2" = "yes")
+AM_CONDITIONAL([TOOLKIT_QT], test "$TOOLKIT" = "qt")
 AM_CONDITIONAL([TOOLKIT_WIN], test "$TOOLKIT" = "win")
 
 if test "$enable_shared" = ""; then
@@ -883,13 +897,15 @@ dnl		enable_shared="no"
 dnl		enable_static="yes"
 dnl	fi
      fi
+elif test "$TOOLKIT" = "qt"; then
+     AC_DEFINE([TOOLKIT_QT], [1], [Build using Qt4])
 fi
 AM_CONDITIONAL([ENABLE_DYNAMIC], test "$enable_shared" = "yes")
 AM_CONDITIONAL([ENABLE_STATIC], test "$enable_static" = "yes")
 
 PKG_CHECK_MODULES(PLUGIN,[$glib_req])
 PLUGIN_CFLAGS="$PLUGIN_CFLAGS "'${WP_CPPFLAGS} -DABI_DLL'
-if test "$TOOLKIT" = "gtk"  && 
+if test "$TOOLKIT" = "gtk"  || test "$TOOLKIT" = "qt" && 
    test "$enable_shared" = "yes"; then
 	# link plugins to work around gcc visibility issue with 
 	# derived classes in dlopened modules
@@ -1165,12 +1181,14 @@ AC_OUTPUT(
   src/af/ev/Makefile
   src/af/ev/cocoa/Makefile
   src/af/ev/gtk/Makefile
+  src/af/ev/qt/Makefile
   src/af/ev/win/bmp/Makefile
   src/af/ev/win/Makefile
   src/af/ev/xp/Makefile
   src/af/gr/Makefile
   src/af/gr/cocoa/Makefile
   src/af/gr/gtk/Makefile
+  src/af/gr/qt/Makefile
   src/af/gr/win/Makefile
   src/af/gr/xp/Makefile
   src/af/tf/Makefile
@@ -1184,6 +1202,7 @@ AC_OUTPUT(
   src/af/xap/cocoa/Makefile
   src/af/xap/gtk/Makefile
   src/af/xap/gtk/t/Makefile
+  src/af/xap/qt/Makefile
   src/af/xap/win/Makefile
   src/af/xap/xp/Makefile
   src/gi-overrides/Makefile
@@ -1202,12 +1221,14 @@ AC_OUTPUT(
   src/wp/ap/gtk/Makefile
   src/wp/ap/gtk/hildon/abiword.desktop
   src/wp/ap/gtk/hildon/com.abisource.abiword.service
+  src/wp/ap/qt/Makefile
   src/wp/ap/win/Makefile
   src/wp/ap/xp/Makefile
   src/wp/ap/xp/ToolbarIcons/Makefile
   src/wp/impexp/Makefile
   src/wp/impexp/cocoa/Makefile
   src/wp/impexp/gtk/Makefile
+  src/wp/impexp/qt/Makefile
   src/wp/impexp/win/Makefile
   src/wp/impexp/xp/Makefile
   src/wp/test/Makefile
