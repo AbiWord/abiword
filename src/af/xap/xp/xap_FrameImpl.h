@@ -58,6 +58,7 @@ public:
 
 	virtual void                notifyViewChanged(AV_View * pView); // default dows nothing
 
+	virtual void _createTopLevelWindow() = 0;
 protected:
 	XAP_FrameImpl(XAP_Frame *pFrame);
 	virtual ~XAP_FrameImpl(void);
