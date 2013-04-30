@@ -23,31 +23,12 @@
 #include "ap_QtApp.h"
 #include "ap_QtFrame.h"
 
+#include "ie_imp.h"
 #include "ie_impexp_Register.h"
 
 // TODO move this in a compat layer
 
 static int s_signal_count = 0;
-
-/*!
-  This is a global function to call our signal handler.  It needs to
-  be global so that we can pass a function pointer to it to C code
-  that handles signals.  
-  \todo Could this be a static member function?
-  JCA: No, but it can be extern "C" { static void signalWrapper(int) }
-  JCA: (well, there is a way to use a static member function and to remain
-  JCA: correct, but it's a bit cumbersome.)
-*/
-void signalWrapper(int sig_num)
-{
-    AP_QtApp *pApp = static_cast<AP_QtApp *>(XAP_App::getApp());
-
-	/* make sure we have application, in case we have been called after
-	 * the application object is gone
-	 */
-	if (pApp)
-		pApp->catchSignals(sig_num);
-}
 
 /*!
   This function actually handles signals.  The most commonly recieved
@@ -60,7 +41,7 @@ void AP_QtApp::catchSignals(int /*sig_num*/)
 {
     // Reset the signal handler 
     // (not that it matters - this is mostly for race conditions)
-    signal(SIGSEGV, signalWrapper);
+    signal(SIGSEGV, &XAP_App::signalWrapper);
 
     s_signal_count = s_signal_count + 1;
     if(s_signal_count > 1)
@@ -87,24 +68,10 @@ void AP_QtApp::catchSignals(int /*sig_num*/)
 	}
 #endif
 
-#warning TODO implement
-
-#if 0 // TODO implement
-    UT_sint32 i = 0;
-	IEFileType abiType = IE_Imp::fileTypeForSuffix(".abw");
-    for(;i<m_vecFrames.getItemCount();i++)
-    {
-		AP_QtFrame * curFrame = const_cast<AP_QtFrame*>(static_cast<const AP_QtFrame*>(m_vecFrames[i]));
-		UT_continue_if_fail(curFrame);
-		if (NULL == curFrame->getFilename())
-		  curFrame->backup(".abw.saved",abiType);
-		else
-		  curFrame->backup(".saved",abiType);
-    }
-#endif
+	saveRecoveryFiles();
 
     fflush(stdout);
- 
+
     // Abort and dump core
     abort();
 }
@@ -244,7 +211,7 @@ int AP_QtApp::main(const char * szAppName, int argc, char ** argv)
 		// Setup signal handlers, primarily for segfault
 		// If we segfaulted before here, we *really* blew it
 		struct sigaction sa;
-		sa.sa_handler = signalWrapper;
+		sa.sa_handler = &XAP_App::signalWrapper;
 
 		sigfillset(&sa.sa_mask);  // We don't want to hear about other signals
 		sigdelset(&sa.sa_mask, SIGABRT); // But we will call abort(), so we can't ignore that

@@ -21,6 +21,8 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
+#include <QApplication>
+
 #include "xap_QtApp.h"
 
 XAP_QtApp::XAP_QtApp(const char* name)
@@ -36,13 +38,12 @@ XAP_QtApp::~XAP_QtApp()
 
 void XAP_QtApp::reallyExit()
 {
-#warning TODO
+	m_app->quit();
 }
 
 int XAP_QtApp::exec()
 {
-#warning TODO
-//	return m_app->exec();
+	return m_app->exec();
 }
 
 // TODO refactor with XAP_UnixApp::makeDirectory()

@@ -126,6 +126,10 @@ gtk_pkgs="
   ${cairo_req}
   ${gtk_req}
 "
+
+# qt4 deps
+qt_pkgs="QtGui   ${cairo_req}"
+
 # cocoa deps
 cocoa_pkgs="$enchant_req $cairo_req"
 
@@ -727,6 +731,8 @@ elif test "$TOOLKIT" = "cocoa"; then
 	deps_pkgs="$deps_pkgs $cocoa_pkgs"
 	SYSTEM_LIBS="-framework Cocoa"
 	AC_CHECK_PROG([CONVERT], [convert], convert, AC_MSG_ERROR(Cannot find ImageMagick convert))
+elif test "$TOOLKIT" = "qt"; then
+        deps_pkgs="$deps_pkgs $qt_pkgs"
 else
 	SYSTEM_CFLAGS=$PNG_CFLAGS
 	SYSTEM_LIBS=$PNG_LIBS
