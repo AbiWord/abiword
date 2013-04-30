@@ -25,7 +25,6 @@
 #include "ut_debugmsg.h"
 #include "xap_App.h"
 #include "ap_UnixPrefs.h"
-#include "ut_string_class.h"
 
 /*****************************************************************/
 
@@ -37,7 +36,7 @@ AP_UnixPrefs::AP_UnixPrefs()
 const char * AP_UnixPrefs::_getPrefsPathname(void) const
 {
 	/* return a pointer to a static buffer */
-	static UT_String buf;
+	static std::string buf;
 
 	if(!buf.empty())
 	  return buf.c_str();
@@ -51,7 +50,7 @@ const char * AP_UnixPrefs::_getPrefsPathname(void) const
 	buf += szFile;
 
 	// migration / legacy
-	XAP_App::getApp()->migrate("/AbiWord.Profile", szFile, buf.c_str());  
+	XAP_App::getApp()->migrate("/AbiWord.Profile", szFile, buf.c_str());
 
 	return buf.c_str();
 }
@@ -99,8 +98,10 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 			lc_ctype = getenv("LANG");
 		}
 	}
-	if (lc_ctype) lc_ctype = g_strdup(lc_ctype);
-	else lc_ctype = g_strdup("en_US");
+	if (lc_ctype)
+		lc_ctype = g_strdup(lc_ctype);
+	else
+		lc_ctype = g_strdup("en_US");
 #endif
 	// locale categories seem to always look like this:
 	// two letter for language (lowcase) _ two letter country code (upcase)
@@ -109,9 +110,9 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 	// en-US, es-ES, pt-PT
 
 	// we'll try this quick conversion
-	if (lc_ctype != NULL && strlen(lc_ctype) >= 5) 
+	if (lc_ctype != NULL && strlen(lc_ctype) >= 5)
 	{
-		char * uscore = strchr(lc_ctype, '_'); 
+		char * uscore = strchr(lc_ctype, '_');
 		if (uscore)
 			*uscore = '-';
 
@@ -120,7 +121,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 		  Temporarily remove modifier field to strip charset.
 		*/
 		if (modifier)
-		  *modifier = '\0'; 
+		  *modifier = '\0';
 
 		char* dot = strrchr(lc_ctype,'.');
 		/*
@@ -129,7 +130,7 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 		  current one (if iconv knows this encoding).
 		 */
 		if (dot)
-			*dot = '\0'; 
+			*dot = '\0';
 
 		if (modifier) {
 			// put modifier (if present) back
@@ -138,18 +139,19 @@ void AP_UnixPrefs::overlayEnvironmentPrefs(void)
 			*modifier = '@';
 			memmove(dest,modifier,strlen(modifier)+1);
 		}
-		
-		szNewLang = lc_ctype;	
+
+		szNewLang = lc_ctype;
 	}
 
 	UT_DEBUGMSG(("Prefs: Using LOCALE info from environment [%s]\n",szNewLang));
 
 
-	m_builtinScheme->setValue((gchar*)AP_PREF_KEY_StringSet,
-				  (gchar*)szNewLang);
+	m_builtinScheme->setValue(AP_PREF_KEY_StringSet,
+				  szNewLang);
 
 	// g_free the language id, if it was allocated
-	if (lc_ctype != NULL) g_free(lc_ctype);
+	if (lc_ctype)
+		g_free(lc_ctype);
 
 	// change back to the previous locale setting
 	// although, we might want to leave it in the user's preferred locale?
