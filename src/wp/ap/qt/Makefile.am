@@ -17,6 +17,14 @@ libqt_la_SOURCES = \
 	ap_QtApp.h \
 	ap_QtAppImpl.h \
 	ap_QtAppImpl.cpp \
+	ap_QtDialog_All.h \
+	ap_QtDialogFactory.cpp \
+	ap_QtFrame.h \
+	ap_QtFrame.cpp \
+	ap_QtFrameImpl.h \
+	ap_QtFrameImpl.cpp \
+	ap_Qt_TB_CFactory.cpp \
+	ap_QtToolbar_Control_All.h \
 	$(NULL)
 
 
@@ -28,7 +36,6 @@ libqt_la_SOURCES = \
 #	ap_DocView.h \
 #	ap_UnixClipboard.cpp \
 #	ap_UnixClipboard.h \
-#	ap_UnixDialog_All.h \
 #	ap_UnixDialog_Annotation.cpp \
 #	ap_UnixDialog_Annotation.h \
 #	ap_UnixDialog_Background.cpp \
@@ -39,7 +46,6 @@ libqt_la_SOURCES = \
 #	ap_UnixDialog_Break.h \
 #	ap_UnixDialog_Columns.cpp \
 #	ap_UnixDialog_Columns.h \
-#	ap_UnixDialogFactory.cpp \
 #	ap_UnixDialog_Field.cpp \
 #	ap_UnixDialog_Field.h \
 #	ap_UnixDialog_FormatFootnotes.cpp \
@@ -107,10 +113,6 @@ libqt_la_SOURCES = \
 #	ap_UnixDialog_RDFQuery.h \
 #	ap_UnixDialog_RDFEditor.cpp \
 #	ap_UnixDialog_RDFEditor.h \
-#	ap_UnixFrame.cpp \
-#	ap_UnixFrame.h \
-#	ap_UnixFrameImpl.cpp \
-#	ap_UnixFrameImpl.h \
 #	ap_UnixLeftRuler.cpp \
 #	ap_UnixLeftRuler.h \
 #	ap_UnixPrefs.cpp \
@@ -120,8 +122,6 @@ libqt_la_SOURCES = \
 #	ap_UnixStatusBar.h \
 #	ap_UnixStockIcons.cpp \
 #	ap_UnixStockIcons.h \
-#	ap_Unix_TB_CFactory.cpp \
-#	ap_UnixToolbar_Control_All.h \
 #	ap_UnixToolbar_FontCombo.cpp \
 #	ap_UnixToolbar_FontCombo.h \
 #	ap_UnixToolbar_SizeCombo.cpp \

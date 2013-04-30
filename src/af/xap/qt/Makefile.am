@@ -15,11 +15,15 @@ libqt_la_SOURCES = \
 	xap_QtApp.cpp \
 	xap_QtAppImpl.cpp \
 	xap_QtAppImpl.h \
+	xap_QtDialogFactory.h \
 	xap_QtEncodingManager.cpp \
 	xap_QtEncodingManager.h \
 	xap_QtFeatures.h \
+	xap_QtFrameImpl.h \
+	xap_QtFrameImpl.cpp \
 	xap_QtModule.h \
 	xap_QtModule.cpp \
+	xap_Qt_TB_CFactory.h \
 	$(NULL)
 
 #	xap_Gtk2Compat.h \
@@ -32,7 +36,6 @@ libqt_la_SOURCES = \
 #	xap_UnixClipboard.h \
 #	xap_UnixCustomWidget.cpp \
 #	xap_UnixCustomWidget.h \
-#	xap_UnixDialogFactory.h \
 #	xap_UnixDialogHelper.cpp \
 #	xap_UnixDialogHelper.h \
 #	xap_UnixDlg_About.cpp \
@@ -73,11 +76,8 @@ libqt_la_SOURCES = \
 #	xap_UnixDlg_Zoom.h \
 #	xap_UnixFontPreview.cpp \
 #	xap_UnixFontPreview.h \
-#	xap_UnixFrameImpl.cpp \
-#	xap_UnixFrameImpl.h \
 #	xap_UnixTableWidget.cpp \
 #	xap_UnixTableWidget.h \
-#	xap_Unix_TB_CFactory.h \
 #	xap_UnixWidget.cpp \
 #	xap_UnixWidget.h
 

@@ -1,18 +1,19 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
-
+#include "ut_types.h"
 #include "ap_App.h"
 
 #ifndef __AP_QT_APP_H__
 #define __AP_QT_APP_H__
 
-class ABI_EXPORT AP_QtApp : public AP_App
+class ABI_EXPORT AP_QtApp
+	: public AP_App
 {
 public:
 	AP_QtApp(const char * szAppName);
 	virtual ~AP_QtApp();
 
-        virtual bool                                    initialize(bool has_display);
+	virtual bool                                    initialize(bool has_display);
 	virtual bool					shutdown(void);
 
 	virtual XAP_Frame *				newFrame(void);
@@ -29,6 +30,11 @@ public:
 
 	static int main (const char * szAppName, int argc, char ** argv);
 
+	void							catchSignals(int sig_num) ABI_NORETURN;
+
+private:
+
+	XAP_StringSet *			m_pStringSet;
 };
 
 #endif
