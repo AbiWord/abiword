@@ -1286,24 +1286,7 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 	}
 	else
 	{
-		size_t pos1,pos2;
-		pos1 = frame.m_abiProps.find("frame-pref-page");
-		if (pos1 != std::string::npos)
-		{
-			pos2 = frame.m_abiProps.find("; ",pos1);
-			if (pos2 != std::string::npos)
-			{
-				sPropString = frame.m_abiProps.substr(0,pos1) + frame.m_abiProps.substr(pos2);
-			}
-			else
-			{
-				sPropString = frame.m_abiProps.substr(0,pos1); 
-			}
-		}
-		else
-		{
-			sPropString = frame.m_abiProps;
-		}
+		sPropString = frame.m_abiProps;
 	}
 	attribs[1] = sPropString.c_str();
 
