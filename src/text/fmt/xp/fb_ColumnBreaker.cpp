@@ -488,7 +488,10 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 					for(i = 0; i < vecFootnotes.getItemCount(); i++)
 					{
 						fp_FootnoteContainer * pFC = vecFootnotes.getNthItem(i);
-						iTheseFootnotes += pFC->getHeight();
+						if (pFC)
+						{
+							iTheseFootnotes += pFC->getHeight();
+						}
 					}
 				}
 				if(_displayAnnotations() && pCurLine->containsAnnotations())
@@ -501,9 +504,12 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 					for(i = 0; i < vecAnnotations.getItemCount(); i++)
 					{
 						fp_AnnotationContainer * pAC = vecAnnotations.getNthItem(i);
-						UT_ASSERT(pAC->getHeight() < iMaxSecCol);
-						iTheseAnnotations += pAC->getHeight();
-					}	
+						if (pAC)
+						{
+							UT_ASSERT(pAC->getHeight() < iMaxSecCol);
+							iTheseAnnotations += pAC->getHeight();
+						}
+					}
 				}
 
 				if (iTheseAnnotations + iTheseFootnotes + pCurLine->getHeight() > iMaxSecCol)
