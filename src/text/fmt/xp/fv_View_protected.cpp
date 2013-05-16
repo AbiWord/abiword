@@ -685,21 +685,31 @@ bool FV_View::_MergeCells( PT_DocPosition posDestination,PT_DocPosition posSourc
  * This method is used to change a parameter of the table to trigger a table
  * rebuild. It also restores all the nice needed for single step undo's
  */
-bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
+bool FV_View::_restoreCellParams(PT_DocPosition posTable, pf_Frag_Strux * tableSDH)
 {
-	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "list-tag";
-	UT_String sLineType;
-	UT_String_sprintf(sLineType,"%d",iLineType);
-	pszTable[1] = sLineType.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
-	m_pDoc->setDontImmediatelyLayout(false);
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	//
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with the property table-wait-index decremented by 1 and removed if it is equal to 0.
+	//
+	fl_TableLayout * pTL = static_cast<fl_TableLayout*>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID()));
+	const char * pszTable[3] = {"table-wait-index",NULL,NULL};
+	UT_String sWaitTag = NULL;
+	if (pTL->getTableWaitIndex() == 1)
+	{
+		m_pDoc->changeStruxFmt(PTC_RemoveFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
+	else
+	{
+		UT_String_sprintf(sWaitTag,"%d", pTL->getTableWaitIndex() - 1);
+		pszTable[1] = sWaitTag.c_str();
+		m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
 
 //
 // OK finish everything off with the various parameters which allow the formatter to
 // be updated.
 //
+	m_pDoc->setDontImmediatelyLayout(false);
 	m_pDoc->allowChangeInsPoint();
 
 	// restore updates and clean up dirty lists
@@ -717,7 +727,7 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
  *  Change the parameters of the table.
  * Return the line type of the table. We'll restore this later.
  */
- UT_sint32 FV_View::_changeCellParams(PT_DocPosition posTable, pf_Frag_Strux* tableSDH)
+bool FV_View::_changeCellParams(PT_DocPosition posTable, pf_Frag_Strux* tableSDH)
 {
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
@@ -728,31 +738,18 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineType)
 	m_pDoc->beginUserAtomicGlob();
 	m_pDoc->setDontImmediatelyLayout(true);
 	m_pDoc->setDontChangeInsPoint();
-//
-// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-// with a bogus line-type property. We'll restore it later.
-//
-	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "list-tag";
-	const char * szLineType = NULL;
-	UT_String sLineType;
-	UT_sint32 iLineType;
-	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szLineType);
-	if(szLineType == NULL || *szLineType == '\0')
-	{
-		iLineType = 0;
-	}
-	else
-	{
-		iLineType = atoi(szLineType);
-		iLineType -= 1;
-	}
-	UT_String_sprintf(sLineType,"%d",iLineType);
-	pszTable[1] = sLineType.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	//
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with property table-wait-index incremented by 1 so that it is set to a value different from 0.
+	//
+	fl_TableLayout * pTL = static_cast<fl_TableLayout*>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID()));
+	const char * pszTable[3] = {"table-wait-index",NULL,NULL};
+	UT_String sWaitTag = NULL;
+	UT_String_sprintf(sWaitTag,"%d",pTL->getTableWaitIndex() + 1);
+	pszTable[1] = sWaitTag.c_str();
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 
-	return iLineType;
+	return true;
 }
 
 /*!

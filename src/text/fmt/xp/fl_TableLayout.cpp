@@ -94,6 +94,7 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
 	  m_bRowsPositionedOnPage(false),
 	  m_bIsDirty(true),
 	  m_bInitialLayoutCompleted(false),
+	  m_iTableWaitIndex(0),
 	  m_iLineThickness(0),
 	  m_iColSpacing(0),
 	  m_iRowSpacing(0),
@@ -536,14 +537,8 @@ void fl_TableLayout::format(void)
 	{
 		return;
 	}
-	if(isHidden() > FP_VISIBLE)
+	if((isHidden() > FP_VISIBLE) || !isTableReadyForLayout())
 	{
-		xxx_UT_DEBUGMSG(("Don't format TABLE coz I'm hidden! \n"));
-		return;
-	}
-	if(!m_bIsEndTableIn)
-	{
-		xxx_UT_DEBUGMSG(("Don't format TABLE coz there is no endtable yet! \n"));
 		return;
 	}
 	m_bRecursiveFormat = true;
@@ -606,31 +601,28 @@ void fl_TableLayout::format(void)
 	}
 	if((!bSim && isDirty()) || bRebuild)
 	{
-		if (isInitialLayoutCompleted())
+		while (pCell)
 		{
-			while (pCell)
+			pCell->format();
+			if(bRebuild)
 			{
-				pCell->format();
-				if(bRebuild)
-				{
-					attachCell(pCell);
-				}
-				pCell = pCell->getNext();
+				attachCell(pCell);
 			}
-			if((m_iHeightChanged == 1)  && !getDocument()->isDontImmediateLayout())
-			{
-				//
-				// Simple height change due to editting. Short circuit full blown 
-				// layout
-				//
-				bSim = doSimpleChange();
-				if(bSim)
-				{
-					m_bIsDirty = false;
-				}
-			}
-			xxx_UT_DEBUGMSG(("fl_TableLayout: Finished Formatting %x isDirty %d \n",this,isDirty()));
+			pCell = pCell->getNext();
 		}
+		if((m_iHeightChanged == 1)  && !getDocument()->isDontImmediateLayout())
+		{
+			//
+			// Simple height change due to editting. Short circuit full blown 
+			// layout
+			//
+			bSim = doSimpleChange();
+			if(bSim)
+			{
+				m_bIsDirty = false;
+			}
+		}
+		xxx_UT_DEBUGMSG(("fl_TableLayout: Finished Formatting %x isDirty %d \n",this,isDirty()));
 
 		if((!isInitialLayoutCompleted() || ((m_iHeightChanged !=0) && isDirty())) && 
 		   !getDocument()->isDontImmediateLayout())
@@ -782,6 +774,11 @@ void fl_TableLayout::updateLayout(bool /*bDoAll*/)
 	}
 }
 
+bool fl_TableLayout::isTableReadyForLayout(void) const
+{
+	return (isEndTableIn() && (getTableWaitIndex() == 0));
+}
+
 void fl_TableLayout::redrawUpdate(void)
 {
 	if(getDocument()->isDontImmediateLayout())
@@ -830,7 +827,6 @@ bool fl_TableLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange *
 	{
 		setAttrPropIndex(pcrxc->getIndexAP());
 	}
-	collapse();
 	updateTable();
 	xxx_UT_DEBUGMSG(("SEVIOR: getNext() %x getPrev() %x \n",getNext(),getPrev()));
 	if(getPrev())
@@ -876,10 +872,14 @@ void fl_TableLayout::updateTable(void)
 
 	lookupProperties();
 
-	// clear all the columns
-    // Assume that all formatting have already been removed via a 
-    // collapse()
-    //
+	// Do not collapse if the table should not be remade right away
+	if (!isTableReadyForLayout())
+	{
+		return;
+	}
+ 
+	// clear all table content
+    collapse();
 
 	/*
 	  TODO to more closely mirror the architecture we're using for BlockLayout, this code
@@ -1681,6 +1681,19 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty ("background-color", pszBackgroundColor);
 	
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
+
+	// table-wait-index is set by FV_View functions to a value different than zero to prevent 
+	// table initialization before the changes are completed.
+	const char * pszWaitIndex = NULL;
+	pSectionAP->getProperty("table-wait-index", (const gchar *&)pszWaitIndex);
+	if(pszWaitIndex && *pszWaitIndex)
+	{
+		m_iTableWaitIndex = atoi(pszWaitIndex);		
+	}
+	else
+	{
+		m_iTableWaitIndex = 0;
+	}
 }
 
 void fl_TableLayout::_lookupMarginProperties(const PP_AttrProp* pSectionAP)
@@ -1838,6 +1851,7 @@ void fl_TableLayout::collapse(void)
 	setFirstContainer(NULL);
 	setLastContainer(NULL);
 	setNeedsReformat(this);
+	m_bInitialLayoutCompleted = false;
 }
 
 bool fl_TableLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
@@ -2296,9 +2310,10 @@ void fl_CellLayout::format(void)
 {
 	if(isHidden() >= FP_HIDDEN_FOLDED)
 	{
-		UT_DEBUGMSG(("Don't format CELL coz I'm hidden! \n"));
+		xxx_UT_DEBUGMSG(("Don't format CELL coz I'm hidden! \n"));
 		return;
 	}
+
 	if(getFirstContainer() == NULL)
 	{
 		getNewContainer(NULL);
@@ -2456,11 +2471,8 @@ bool fl_CellLayout::doclistener_changeStrux(const PX_ChangeRecord_StruxChange * 
 	{
 		setAttrPropIndex(pcrxc->getIndexAP());
 	}
-//	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(myContainingLayout());
 	collapse();
-//	pTL->collapse();
 	_updateCell();
-//	pTL->updateTable(); // may not need this
 	//
 	// Look to see if we're in a HfrFtr section
 	//
@@ -2936,7 +2948,6 @@ bool fl_CellLayout::doclistener_deleteStrux(const PX_ChangeRecord_Strux * pcrx)
 	}
 	myContainingLayout()->remove(this);
 
-//	pTL->updateTable(); // may not need this. FIXME check if we do!
 	delete this;			// TODO whoa!  this construct is VERY dangerous.
 
 	return true;

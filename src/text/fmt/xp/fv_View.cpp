@@ -8818,7 +8818,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 	posStart = (posTable > posStart)?posTable:posStart;
 
 	// Need this to trigger a table update!
-	UT_sint32 iLineType = _changeCellParams(posTable, tableSDH);
+	_changeCellParams(posTable, tableSDH);
 	
 	// The Format Selection case needs some special attention
 	if (applyTo == FORMAT_TABLE_SELECTION)
@@ -9023,9 +9023,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 		}
 	}
 	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-	// with the restored line-type property it has before.
-	iLineType += 1;
-	_restoreCellParams(posTable,iLineType);
+	_restoreCellParams(posTable,tableSDH);
 
 	// Allow table updates
 	m_pDoc->setDontImmediatelyLayout(false);

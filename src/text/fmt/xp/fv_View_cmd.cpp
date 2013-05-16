@@ -234,7 +234,8 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 	posCell = m_pDoc->getStruxPosition(cellSDH);
 	endTableSDH = m_pDoc->getEndTableStruxFromTableSDH(tableSDH);
 	posEndTable = m_pDoc->getStruxPosition(endTableSDH);
-
+	fl_TableLayout * pTL = static_cast<fl_TableLayout*>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID()));
+	UT_return_val_if_fail(pTL, false);
 	// Get the attributes and properties of the current block. These attributes and properties
 	// will be copied in the new cell.
 	fl_BlockLayout * pBL = getBlockAtPosition(getPoint());
@@ -257,29 +258,16 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 		_clearSelection();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
-//
-// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-// with a bogus line-type property. We'll restore it later.
-//
-	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "list-tag";
-	const char * szListTag = NULL;
-	UT_String sListTag;
-	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
-	if(szListTag == NULL || *szListTag == '\0')
-	{
-		iListTag = 0;
-	}
-	else
-	{
-		iListTag = atoi(szListTag);
-		iListTag -= 1;
-	}
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	//
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with property table-wait-index incremented by 1 so that it is set to a value different from 0.
+	//
+	const char * pszTable[3] = {"table-wait-index",NULL,NULL};
+	UT_String sWaitTag = NULL;
+	UT_String_sprintf(sWaitTag,"%d",pTL->getTableWaitIndex() + 1);
+	pszTable[1] = sWaitTag.c_str();
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+
 	UT_sint32 splitLeft,splitRight,splitTop,splitBot;
 	splitLeft = splitRight = 0;
 	UT_sint32 newLeft,newRight,newTop,newBot;
@@ -696,15 +684,20 @@ bool FV_View::cmdSplitCells(AP_CellSplitType iSplitType)
 		}
 	}
 
-//
-// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-// with the restored line-type property it has before.
-//
-	iListTag += 1;
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	//
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with the property table-wait-index decremented by 1 and removed if it is equal to 0.
+	//
+	if (pTL->getTableWaitIndex() == 1)
+	{
+		m_pDoc->changeStruxFmt(PTC_RemoveFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
+	else
+	{
+		UT_String_sprintf(sWaitTag,"%d", pTL->getTableWaitIndex() - 1);
+		pszTable[1] = sWaitTag.c_str();
+		m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
 //
 // OK finish everything off with the various parameters which allow the formatter to
 // be updated.
@@ -963,7 +956,6 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 	UT_sint32 numCols = 0;
 	m_pDoc->getRowsColsFromTableSDH(tableSDH, isShowRevisions(), getRevisionLevel(), &numRows, &numCols);
 	bool bChanged = false;
-	UT_sint32 iLineType = 0;
 
 //
 // Got all we need, now set things up to do the merge nicely
@@ -1024,9 +1016,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 // append onto destination
 				if(!bChanged)
 				{
-					iLineType = _changeCellParams(posTable, tableSDH);
+					bChanged = _changeCellParams(posTable, tableSDH);
 				}
-				bChanged = true;
 				_MergeCells(posDestination,posWork,false);
 				Left = Right;
 			}
@@ -1035,9 +1026,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 //
 			if(!bChanged)
 			{
-				iLineType = _changeCellParams(posTable, tableSDH);
+				bChanged = _changeCellParams(posTable, tableSDH);
 			}
-			bChanged = true;
 			posSource = findCellPosAt(posTable,sTop,sLeft) +1;
 			posDestination = findCellPosAt(posTable,dTop,dLeft) +1;
 			_MergeCells(posDestination,posSource,true);
@@ -1081,9 +1071,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 //
 				if(!bChanged)
 				{
-					iLineType = _changeCellParams(posTable, tableSDH);
+					bChanged = _changeCellParams(posTable, tableSDH);
 				}
-				bChanged = true;
 				_MergeCells(posSource,posWork,false);
 				Left = Right;
 			}
@@ -1092,9 +1081,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 //
 			if(!bChanged)
 			{
-				iLineType = _changeCellParams(posTable, tableSDH);
+				bChanged = _changeCellParams(posTable, tableSDH);
 			}
-			bChanged = true;
 			posSource = findCellPosAt(posTable,sTop,sLeft) +1;
 			posDestination = findCellPosAt(posTable,dTop,dLeft) +1;
 			_MergeCells(posDestination,posSource,true);
@@ -1160,9 +1148,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 //
 				if(!bChanged)
 				{
-					iLineType = _changeCellParams(posTable, tableSDH);
+					bChanged = _changeCellParams(posTable, tableSDH);
 				}
-				bChanged = true;
 				_MergeCells(posSource,posWork,false);
 				UT_ASSERT(Bot > Top);
 				if(Bot <= Top)
@@ -1176,9 +1163,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 //
 			if(!bChanged)
 			{
-				iLineType = _changeCellParams(posTable, tableSDH);
+				bChanged = _changeCellParams(posTable, tableSDH);
 			}
-			bChanged = true;
 			posSource = findCellPosAt(posTable,sTop,sLeft) +1;
 			posDestination = findCellPosAt(posTable,dTop,dLeft) +1;
 			_MergeCells(posDestination,posSource,true);
@@ -1242,9 +1228,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 //
 				if(!bChanged)
 				{
-					iLineType = _changeCellParams(posTable, tableSDH);
+					bChanged = _changeCellParams(posTable, tableSDH);
 				}
-				bChanged = true;
 				_MergeCells(posDestination,posWork,false);
 				Top = Bot;
 			}
@@ -1253,9 +1238,8 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 //
 			if(!bChanged)
 			{
-				iLineType = _changeCellParams(posTable, tableSDH);
+				bChanged = _changeCellParams(posTable, tableSDH);
 			}
-			bChanged = true;
 			posSource = findCellPosAt(posTable,sTop,sLeft) +1;
 			posDestination = findCellPosAt(posTable,dTop,dLeft) +1;
 			_MergeCells(posDestination,posSource,true);
@@ -1402,10 +1386,11 @@ bool FV_View::cmdMergeCells(PT_DocPosition posSource, PT_DocPosition posDestinat
 	}
 //
 // Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-// with the restored line-type property it has before.
 //
-	iLineType += 1;
-	_restoreCellParams(posTable,iLineType);
+	if (bChanged)
+	{
+		_restoreCellParams(posTable, tableSDH);
+	}
 	setPoint(posDestination);
 	_fixInsertionPointCoords();
 	_ensureInsertionPointOnScreen();
@@ -1845,27 +1830,14 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 	m_pDoc->setDontImmediatelyLayout(true);
 	//
 	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-	// with a bogus line-type property. We'll restore it later.
+	// with property table-wait-index incremented by 1 so that it is set to a value different from 0.
 	//
-	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "list-tag";
-	const char * szListTag = NULL;
-	UT_String sListTag;
-	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
-	if(szListTag == NULL || *szListTag == '\0')
-	{
-		iListTag = 0;
-	}
-	else
-	{
-		iListTag = atoi(szListTag);
-		iListTag -= 1;
-	}
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG((" Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	const char * pszTable[3] = {"table-wait-index",NULL,NULL};
+	UT_String sWaitTag = NULL;
+	UT_String_sprintf(sWaitTag,"%d",pTL->getTableWaitIndex() + 1);
+	pszTable[1] = sWaitTag.c_str();
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+
 	//
 	// Loop trough the whole table creating new cells where necessary to add a column.
 	// Also shift the left and right attach of the existing cells to make place for
@@ -1942,16 +1914,20 @@ bool FV_View::cmdInsertCol(PT_DocPosition posCol, bool bBefore)
 		}
 		iRow++;  // this variable is incremented when the cells on a given row have been added.
 	}
-
 	//
 	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-	// with the restored line-type property it has before.
+	// with the property table-wait-index decremented by 1 and removed if it is equal to 0.
 	//
-	iListTag += 1;
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	if (pTL->getTableWaitIndex() == 1)
+	{
+		m_pDoc->changeStruxFmt(PTC_RemoveFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
+	else
+	{
+		UT_String_sprintf(sWaitTag,"%d", pTL->getTableWaitIndex() - 1);
+		pszTable[1] = sWaitTag.c_str();
+		m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
 	//
 	// OK finish everything off with the various parameters which allow the formatter to
 	// be updated.
@@ -2097,26 +2073,12 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 
 	//
 	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-	// with a bogus line-type property. We'll restore it later.
+	// with property table-wait-index incremented by 1 so that it is set to a value different from 0.
 	//
-	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "list-tag";
-	const char * szListTag = NULL;
-	UT_String sListTag;
-	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
-	if(szListTag == NULL || *szListTag == '\0')
-	{
-		iListTag = 0;
-	}
-	else
-	{
-		iListTag = atoi(szListTag);
-		iListTag -= 1;
-	}
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("Sevior: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	const char * pszTable[3] = {"table-wait-index",NULL,NULL};
+	UT_String sWaitTag = NULL;
+	UT_String_sprintf(sWaitTag,"%d",pTL->getTableWaitIndex() + 1);
+	pszTable[1] = sWaitTag.c_str();
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 
 	//
@@ -2189,13 +2151,18 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 
 	//
 	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-	// with the restored line-type property it has before.
+	// with the property table-wait-index decremented by 1 and removed if it is equal to 0.
 	//
-	iListTag += 1;
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	if (pTL->getTableWaitIndex() == 1)
+	{
+		m_pDoc->changeStruxFmt(PTC_RemoveFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
+	else
+	{
+		UT_String_sprintf(sWaitTag,"%d", pTL->getTableWaitIndex() - 1);
+		pszTable[1] = sWaitTag.c_str();
+		m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
 
 	//
 	// OK finish everything off with the various parameters which allow the formatter to
@@ -2235,6 +2202,8 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	UT_return_val_if_fail(bRes, false);
 
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+	fl_TableLayout * pTL = static_cast<fl_TableLayout*>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID()));
+	UT_return_val_if_fail(pTL,false);
 //
 // Now find the number of rows and columns inthis table. This is easiest to
 // get from the table container
@@ -2290,28 +2259,14 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 	       m_FrameEdit.setPointInside();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
-//
-// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-// with a bogus line-type property. We'll restore it later.
-//
-	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "list-tag";
-	const char * szListTag = NULL;
-	UT_String sListTag;
-	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
-	if(szListTag == NULL || *szListTag == '\0')
-	{
-		iListTag = 0;
-	}
-	else
-	{
-		iListTag = atoi(szListTag);
-		iListTag -= 1;
-	}
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	//
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with property table-wait-index incremented by 1 so that it is set to a value different from 0.
+	//
+	const char * pszTable[3] = {"table-wait-index",NULL,NULL};
+	UT_String sWaitTag = NULL;
+	UT_String_sprintf(sWaitTag,"%d",pTL->getTableWaitIndex() + 1);
+	pszTable[1] = sWaitTag.c_str();
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
 // OK loop through all the rows in this column and delete the entries in the specified
@@ -2399,15 +2354,20 @@ bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
 			bEnd = true;
 		}
 	}
-//
-// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-// with the restored line-type property it has before.
-//
-	iListTag += 1;
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	//
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with the property table-wait-index decremented by 1 and removed if it is equal to 0.
+	//
+	if (pTL->getTableWaitIndex() == 1)
+	{
+		m_pDoc->changeStruxFmt(PTC_RemoveFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
+	else
+	{
+		UT_String_sprintf(sWaitTag,"%d", pTL->getTableWaitIndex() - 1);
+		pszTable[1] = sWaitTag.c_str();
+		m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
 //
 // OK finish everything off with the various parameters which allow the formatter to
 // be updated.
@@ -2516,6 +2476,8 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	UT_return_val_if_fail(bRes, false);
 
 	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+	fl_TableLayout * pTL = static_cast<fl_TableLayout*>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID()));
+	UT_return_val_if_fail(pTL,false);
 //
 // Now find the number of rows and columns inthis table. This is easiest to
 // get from the table container
@@ -2566,28 +2528,14 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 	       m_FrameEdit.setPointInside();
 	}
 	m_pDoc->setDontImmediatelyLayout(true);
-//
-// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-// with a bogus line-type property. We'll restore it later.
-//
-	const char * pszTable[3] = {NULL,NULL,NULL};
-	pszTable[0] = "list-tag";
-	const char * szListTag = NULL;
-	UT_String sListTag;
-	UT_sint32 iListTag;
-	m_pDoc->getPropertyFromSDH(tableSDH,isShowRevisions(),getRevisionLevel(),pszTable[0],&szListTag);
-	if(szListTag == NULL || *szListTag == '\0')
-	{
-		iListTag = 0;
-	}
-	else
-	{
-		iListTag = atoi(szListTag);
-		iListTag -= 1;
-	}
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
+	//
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with property table-wait-index incremented by 1 so that it is set to a value different from 0.
+	//
+	const char * pszTable[3] = {"table-wait-index",NULL,NULL};
+	UT_String sWaitTag = NULL;
+	UT_String_sprintf(sWaitTag,"%d",pTL->getTableWaitIndex() + 1);
+	pszTable[1] = sWaitTag.c_str();
 	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
 //
 // OK loop through all the rows in this column and delete the entries in the specified
@@ -2685,15 +2633,20 @@ bool FV_View::cmdDeleteRow(PT_DocPosition posRow)
 			bEnd = true;
 		}
 	}
-//
-// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
-// with the restored line-type property it has before.
-//
-	iListTag += 1;
-	UT_String_sprintf(sListTag,"%d",iListTag);
-	pszTable[1] = sListTag.c_str();
-	UT_DEBUGMSG(("SEVIOR: Doing Table strux change of %s %s \n",pszTable[0],pszTable[1]));
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	//
+	// Now trigger a rebuild of the whole table by sending a changeStrux to the table strux
+	// with the property table-wait-index decremented by 1 and removed if it is equal to 0.
+	//
+	if (pTL->getTableWaitIndex() == 1)
+	{
+		m_pDoc->changeStruxFmt(PTC_RemoveFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
+	else
+	{
+		UT_String_sprintf(sWaitTag,"%d", pTL->getTableWaitIndex() - 1);
+		pszTable[1] = sWaitTag.c_str();
+		m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	}
 //
 // OK finish everything off with the various parameters which allow the formatter to
 // be updated.

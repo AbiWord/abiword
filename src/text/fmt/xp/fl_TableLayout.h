@@ -216,6 +216,9 @@ UT_sint32                    getBottomOffset(void) const;
 	{ return m_bDoingDestructor;}
 	bool                     isInitialLayoutCompleted(void) const
 	{ return m_bInitialLayoutCompleted;}
+	bool                     isTableReadyForLayout(void) const;
+        UT_sint32                getTableWaitIndex(void) const
+	{ return m_iTableWaitIndex;}
 	double                   getMaxExtraMargin(void) const
 	{ return m_dMaxExtraMargin;}
 	void                     setMaxExtraMargin(double margin);
@@ -246,6 +249,7 @@ private:
 	bool                   m_bIsDirty;
 	bool                   m_bDontImmediatelyLayout;
 	bool                   m_bInitialLayoutCompleted;
+	UT_sint32              m_iTableWaitIndex;
 	UT_sint32              m_iLineThickness;
 	UT_sint32              m_iColSpacing;
 	UT_sint32              m_iRowSpacing;

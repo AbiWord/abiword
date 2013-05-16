@@ -807,8 +807,8 @@ public:
 	fp_CellContainer *  getCellAtPos(PT_DocPosition pos) const;
 	PT_DocPosition      findCellPosAt(PT_DocPosition posTable, UT_sint32 row, UT_sint32 col) const;
 	bool                _deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
-	bool                _restoreCellParams(PT_DocPosition posTable, UT_sint32 iLineWidth);
-	UT_sint32           _changeCellParams(PT_DocPosition posTable,pf_Frag_Strux* tableSDH );
+	bool                _restoreCellParams(PT_DocPosition posTable, pf_Frag_Strux* tableSDH);
+	bool                _changeCellParams(PT_DocPosition posTable,pf_Frag_Strux* tableSDH );
 	bool                deleteCellAt(PT_DocPosition posTable,UT_sint32 row, UT_sint32 col);
 	bool                cmdDeleteCell(PT_DocPosition pos);
 	bool                cmdDeleteCol(PT_DocPosition pos);
