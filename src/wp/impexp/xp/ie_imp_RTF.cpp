@@ -2638,8 +2638,9 @@ UT_Error IE_Imp_RTF::_parseText()
 	/* m_stateStack.getDepth() == 0 if the functions PushRTFState and PopRTFState
 	   have been called the same number of times. Each call to PushRTFState on an
 	   opening bracket ("{") should be followed by a call to PopRTFState on the
-	   corresponding closing bracket ("}").*/
-	UT_ASSERT(m_stateStack.getDepth() == 0);
+	   corresponding closing bracket ("}"). This check is done only if the function
+	   has not been called recursively (iRTFStackDepth == 0).*/
+	UT_ASSERT((m_stateStack.getDepth() == 0) || (iRTFStackDepth > 0));
 
 //	UT_DEBUGMSG(("dumping document\n"));
 //	getDoc()->__dump(stderr);
@@ -8876,6 +8877,9 @@ IE_Imp_RTF::s_unEscapeXMLString()
 {
 	std::stringstream ss;
 	unsigned char ch = 0;
+	// Since the star keyword group is between brackets, a new RTF state was generated. Remove it now.
+	// The closing bracket will be ignored.
+	PopRTFState();
 	while(ReadCharFromFile(&ch) && ch != '}')
 	{
 		ss << ch;
@@ -8906,7 +8910,6 @@ bool IE_Imp_RTF::ReadRDFTriples()
 	PD_DocumentRDFMutationHandle m = rdf->createMutation();
 	/*UT_Error e = */loadRDFXML( m, rdfxml );
 	m->commit();
-	PopRTFState();
 	UT_DEBUGMSG(("rdf triples after read of rdf tag size:%ld\n", (long)rdf->size() ));
 	return true;
 }
@@ -9840,14 +9843,15 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	// Since the star keyword group is between brackets, a new RTF state was generated. Remove it now.
+	// The closing bracket will be ignored.
+	PopRTFState();
 	while (ch != '}') // Outer loop
 	{
 		sProps += ch;
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
-	// Put the '}' back into the input stream
-	SkipBackChar(ch);
 
 	std::string sPropName;
 	std::string sInputAbiProps;
@@ -10053,14 +10057,15 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	// Since the star keyword group is between brackets, a new RTF state was generated. Remove it now.
+	// The closing bracket will be ignored.
+	PopRTFState();
 	while (ch != '}') // Outer loop
 	{
 		sProps += ch;
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
-	// Put the '}' back into the input stream
-	SkipBackChar(ch);
 
 	UT_UTF8String sPropName;
 	UT_UTF8String sInputAbiProps;
@@ -10137,14 +10142,15 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	// Since the star keyword group is between brackets, a new RTF state was generated. Remove it now.
+	// The closing bracket will be ignored.
+	PopRTFState();
 	while (ch != '}') // Outer loop
 	{
 		sProps += ch;
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
-	// Put the '}' back into the input stream
-	SkipBackChar(ch);
 
 	ABI_Paste_Table * pPaste = new ABI_Paste_Table();
 	m_pasteTableStack.push(pPaste);
@@ -10428,14 +10434,15 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
+	// Since the star keyword group is between brackets, a new RTF state was generated. Remove it now.
+	// The closing bracket will be ignored.
+	PopRTFState();
 	while (ch != '}') // Outer loop
 	{
 		sProps += ch;
 		if (!ReadCharFromFile(&ch))
 			return false;
 	}
-	// Put the '}' back into the input stream
-	SkipBackChar(ch);
 
 	ABI_Paste_Table * pPaste = NULL;
 	m_pasteTableStack.viewTop((void**)(&pPaste));
@@ -10486,7 +10493,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
  	insertStrux(PTX_SectionCell,attrs,NULL);
 	m_newParaFlagged = true;
 	m_bSectionHasPara = true;
-	
+
 	return true;
 }
 
@@ -10687,6 +10694,9 @@ bool IE_Imp_RTF::HandleAbiLists()
 	if (!ReadCharFromFile(&ch))
 		return false;
 
+	// Since the star keyword group is between brackets, a new RTF state was generated. Remove it now.
+	// The closing bracket will be ignored.
+	PopRTFState();
 	while (ch != '}') // Outer loop
 	{
 		if(ch == '{')  // abiliststyle, abilistdecimal, abilistdelim
@@ -10806,8 +10816,6 @@ bool IE_Imp_RTF::HandleAbiLists()
 	nextChar:	if (!ReadCharFromFile(&ch))
 		return false;
 	}
-	// Put the '}' back into the input stream
-	SkipBackChar(ch);
 
 	//
 	// Increment the list mapping table if necessary
@@ -12441,7 +12449,9 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 		ACT_DATETIME
 	} action = ACT_NONE;
 
-	
+	// Since the metadata group is enclosed between brackets, a new RTF state was generated. Remove it now.
+	// The closing bracket will be ignored.
+	PopRTFState();
 	do {
 		tokenType = NextToken (keyword, &parameter, &paramUsed, MAX_KEYWORD_LEN,false);
 		switch (tokenType) {
@@ -12540,7 +12550,6 @@ bool IE_Imp_RTF::HandleInfoMetaData()
 			break;
 		}
 	} while ((tokenType != RTF_TOKEN_CLOSE_BRACE) || (nested >= 0));
-	PopRTFState();
 	return true;
 }
 
