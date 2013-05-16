@@ -1116,28 +1116,31 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
 	iBot = col_y + m_iBotY + offy;
 }
 /*!
- * Draw background and lines around a cell in a broken table.
+ * Draw background and lines around a cell in a broken table. Return true if lines were drawn, false otherwise.
  */
-void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bool bDoClear)
+bool fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bool bDoClear)
 {
 	xxx_UT_DEBUGMSG(("Doing drawlines for cell %x \n",this));
-	UT_return_if_fail(getPage());
+	UT_return_val_if_fail(getPage(), false);
 
 	if(pBroke == NULL)
 	{
 		pBroke = static_cast<fp_TableContainer *>(getContainer());
 	}
+	UT_return_val_if_fail(pBroke, false);
 	if(pBroke && pBroke->getPage())
 	{
 		if(pG->queryProperties(GR_Graphics::DGP_SCREEN) && !pBroke->getPage()->isOnScreen())
 		{
-			return;
+			return false;
 		}
 	}
 // Lookup table properties to get the line thickness, etc.
 
 	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
-	UT_return_if_fail(pLayout->getContainerType () == FL_CONTAINER_TABLE);
+	UT_return_val_if_fail(pLayout->getContainerType () == FL_CONTAINER_TABLE, false);
+	fp_Page * pPage = pBroke->getPage();
+	UT_return_val_if_fail(pPage, false);
 
 	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
 
@@ -1145,15 +1148,6 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 	PP_PropertyMap::Line lineLeft   = getLeftStyle   (pTableLayout);
 	PP_PropertyMap::Line lineRight  = getRightStyle  (pTableLayout);
 	PP_PropertyMap::Line lineTop    = getTopStyle    (pTableLayout);
-	fp_Page * pPage = pBroke->getPage();
-	
-	if(pPage == NULL)
-	{
-//
-// Can happen while loading.
-//
-		return;
-	}
 	bool bDrawTop = true;
 	bool bDrawBot = true;
 	xxx_UT_DEBUGMSG(("m_iBotY %d \n",m_iBotY));
@@ -1166,169 +1160,140 @@ void fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bo
 	bool bTopScreen = false;
 	bool bBotScreen = false;
 	getScreenPositions(pBroke,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,doClear2 );
-	if(pBroke != NULL)
+	if ((m_iBotY < pBroke->getYBreak()) || (m_iTopY > pBroke->getYBottom()))
 	{
-		if(m_iBotY < pBroke->getYBreak())
-		{
-//
-// Cell is above this page
-//
-			xxx_UT_DEBUGMSG(("Don't drawlines because M-IBotY < pBroke->getYbreak \n",m_iBotY,pBroke->getYBreak()));
-			return;
-		}
-		if(m_iTopY > pBroke->getYBottom())
-		{
-//
-// Cell is below this page
-//
-			xxx_UT_DEBUGMSG(("Don't drawlines because m_iTopY > pBroke->getYBottom \n",m_iTopY, pBroke->getYBottom()));
-			return;
-		}
-		iTop -= pBroke->getYBreak();
-		iBot -= pBroke->getYBreak();
-		xxx_UT_DEBUGMSG(("drawLines: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d left %d top %d \n",iBot,col_y,m_iBotY,pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
-		if(iTop < col_y)
-		{
-			xxx_UT_DEBUGMSG(("iTop < col_y !! iTop %d col_y %d row is %d \n",iTop,col_y,getTopAttach()));
-			iTop = col_y;
-			bDrawTop = true;
-			bTopScreen = true;
-			if(pBroke != NULL)
-			{
-				pBroke->setBrokenTop(true);
-			}
-		}
-		xxx_UT_DEBUGMSG(("drawlines: After iTop %d iBot = %d  sum %d left %d top %d  \n",iTop,iBot,col_y + pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
-		UT_sint32 iColHeight = 0;
-		if(pCol)
-		{
-			iColHeight = pCol->getHeight();
-		}
-		else if(pShadow)
-		{
-			iColHeight = pShadow->getHeight();
-		}
+		// Cell is above or below the page
+		return false;
+	}
 
-		if(iBot > col_y + iColHeight && (!pBroke || pBroke->getNext()))
+	iTop -= pBroke->getYBreak();
+	iBot -= pBroke->getYBreak();
+	xxx_UT_DEBUGMSG(("drawLines: ibot = %d col_y %d m_iBotY %d pCol->getHeight() %d left %d top %d \n",iBot,col_y,m_iBotY,pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
+	if(iTop < col_y)
+	{
+		xxx_UT_DEBUGMSG(("iTop < col_y !! iTop %d col_y %d row is %d \n",iTop,col_y,getTopAttach()));
+		iTop = col_y;
+		bDrawTop = true;
+		bTopScreen = true;
+		if(pBroke != NULL)
 		{
-			if (pBroke)
-			{
-				iBot += pBroke->getYBottom() + 1 - pBroke->getYOfRow(getBottomAttach());
-				iBot +=	pBroke->getAdditionalBottomSpace();
-				pBroke->setBrokenBottom(true);
-			}
-			else
-			{
-				iBot =  col_y + iColHeight;
-			}
-			bDrawBot = true;
-			bBotScreen = true;
-		}
-		//
-		// Now get a rectangle to calculate draw arguments
-		//
-		// This code might eventually replace a lot of the code above but
-		// it needs more testing and tweaking - particularly for nested tables.
-		//
-// 		UT_Rect bRec;
-// 		fp_Page * pLinePage;
-// 		_getBrokenRect(pBroke, pLinePage, bRec);
-// 		if(pLinePage != pPage)
-// 		{
-// 			UT_DEBUGMSG(("Pages don't match! \n"));
-// 			return;
-// 		}
-// 		iLeft = bRec.left;
-// 		iTop = bRec.top;
-// 		iBot = iTop + bRec.height;
-// 		iRight = iLeft + bRec.width;
-		m_bDrawRight = true;
-		UT_sint32 onePix = pG->tlu(1)+1;
-		//
-		// the was put in to fix cairo draws but it makes windows look bad.
-		// Fixme for cairo a different way.
-		//
-		onePix = 0;
-		//
-		// Have to draw white first because drawing is additive
-		//
-		PP_PropertyMap::Line clineBottom = getBottomStyle (pTableLayout);
-		PP_PropertyMap::Line clineLeft   = getLeftStyle   (pTableLayout);
-		PP_PropertyMap::Line clineRight  = getRightStyle  (pTableLayout);
-		PP_PropertyMap::Line clineTop    = getTopStyle    (pTableLayout);
-		
-		UT_RGBColor white(255,255,255);
-		white = *pPage->getFillType().getColor();
-
-		//
-		// Might needs these later
-		//
-		UT_sint32 iextLeft=0;
-		UT_sint32 iextRight=0;
-		UT_sint32 iextTop=0;
-		UT_sint32 iextBot= 0;
-
-		if (m_bDrawLeft)
-		{
-			if(bDoClear)
-			{
-				clineLeft.m_color = white;
-				clineLeft.m_thickness  += 3*onePix;
-				drawLine (clineLeft, iLeft, iTop, iLeft,  iBot,pG);
-			}
-			else
-		    {
-				if(bTopScreen)
-					iextTop = 0;
-				if(bBotScreen)
-					iextBot = 0;
-				drawLine(lineLeft, iLeft, iTop-iextTop, iLeft, iBot+iextBot,pG);
-			}
-		}
-		if(m_bDrawTop || bDrawTop)
-		{
-			if(bDoClear)
-			{
-				clineTop.m_color = white;
-				clineTop.m_thickness  += 3*onePix;
-				drawLine(clineTop, iLeft, iTop, iRight, iTop,pG);
-			}
-			else
-			{
-				drawLine(lineTop, iLeft-iextLeft, iTop, iRight+iextRight, iTop,pG);
-			}
-		}
-		if(m_bDrawRight)
-		{
-			if(bDoClear)
-			{
-				clineRight.m_color = white;
-				clineRight.m_thickness  += 3*onePix;
-				drawLine(clineRight, iRight, iTop, iRight, iBot,pG);
-			}
-			else
-			{
-				if(bTopScreen)
-					iextTop = 0;
-				if(bBotScreen)
-					iextBot = 0;
-				drawLine(lineRight, iRight, iTop-iextTop, iRight, iBot+iextBot,pG);
-			}
-		}
-		if(m_bDrawBot || bDrawBot)
-		{
-			if(bDoClear)
-			{
-				clineBottom.m_color = white;
-				clineBottom.m_thickness  += 3*onePix;
-				drawLine(clineBottom, iLeft, iBot, iRight, iBot,pG);
-			}
-			else
-			{
-				drawLine(lineBottom, iLeft-iextLeft, iBot, iRight+iextRight, iBot,pG);
-			}
+			pBroke->setBrokenTop(true);
 		}
 	}
+	xxx_UT_DEBUGMSG(("drawlines: After iTop %d iBot = %d  sum %d left %d top %d  \n",iTop,iBot,col_y + pCol->getHeight(),m_iLeftAttach,m_iTopAttach));
+	UT_sint32 iColHeight = 0;
+	if(pCol)
+	{
+		iColHeight = pCol->getHeight();
+	}
+	else if(pShadow)
+	{
+		iColHeight = pShadow->getHeight();
+	}
+
+	if(iBot > col_y + iColHeight && (!pBroke || pBroke->getNext()))
+	{
+		if (pBroke)
+		{
+			iBot += pBroke->getYBottom() + 1 - pBroke->getYOfRow(getBottomAttach());
+			iBot +=	pBroke->getAdditionalBottomSpace();
+			pBroke->setBrokenBottom(true);
+		}
+		else
+		{
+			iBot =  col_y + iColHeight;
+		}
+		bDrawBot = true;
+		bBotScreen = true;
+	}
+
+	m_bDrawRight = true;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	//
+	// the was put in to fix cairo draws but it makes windows look bad.
+	// Fixme for cairo a different way.
+	//
+	onePix = 0;
+	//
+	// Have to draw white first because drawing is additive
+	//
+	PP_PropertyMap::Line clineBottom = getBottomStyle (pTableLayout);
+	PP_PropertyMap::Line clineLeft   = getLeftStyle   (pTableLayout);
+	PP_PropertyMap::Line clineRight  = getRightStyle  (pTableLayout);
+	PP_PropertyMap::Line clineTop    = getTopStyle    (pTableLayout);
+
+	UT_RGBColor white(255,255,255);
+	white = *pPage->getFillType().getColor();
+
+	//
+	// Might needs these later
+	//
+	UT_sint32 iextLeft=0;
+	UT_sint32 iextRight=0;
+	UT_sint32 iextTop=0;
+	UT_sint32 iextBot= 0;
+
+	if (m_bDrawLeft)
+	{
+		if(bDoClear)
+		{
+			clineLeft.m_color = white;
+			clineLeft.m_thickness  += 3*onePix;
+			drawLine (clineLeft, iLeft, iTop, iLeft,  iBot,pG);
+		}
+		else
+		{
+			if(bTopScreen)
+				iextTop = 0;
+			if(bBotScreen)
+				iextBot = 0;
+			drawLine(lineLeft, iLeft, iTop-iextTop, iLeft, iBot+iextBot,pG);
+		}
+	}
+	if(m_bDrawTop || bDrawTop)
+	{
+		if(bDoClear)
+		{
+			clineTop.m_color = white;
+			clineTop.m_thickness  += 3*onePix;
+			drawLine(clineTop, iLeft, iTop, iRight, iTop,pG);
+		}
+		else
+		{
+			drawLine(lineTop, iLeft-iextLeft, iTop, iRight+iextRight, iTop,pG);
+		}
+	}
+	if(m_bDrawRight)
+	{
+		if(bDoClear)
+		{
+			clineRight.m_color = white;
+			clineRight.m_thickness  += 3*onePix;
+			drawLine(clineRight, iRight, iTop, iRight, iBot,pG);
+		}
+		else
+		{
+			if(bTopScreen)
+				iextTop = 0;
+			if(bBotScreen)
+				iextBot = 0;
+			drawLine(lineRight, iRight, iTop-iextTop, iRight, iBot+iextBot,pG);
+		}
+	}
+	if(m_bDrawBot || bDrawBot)
+	{
+		if(bDoClear)
+		{
+			clineBottom.m_color = white;
+			clineBottom.m_thickness  += 3*onePix;
+			drawLine(clineBottom, iLeft, iBot, iRight, iBot,pG);
+		}
+		else
+		{
+			drawLine(lineBottom, iLeft-iextLeft, iBot, iRight+iextRight, iBot,pG);
+		}
+	}
+	return true;
 }
 
 /*!
@@ -2431,7 +2396,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	{
 		FV_View * pView = getPage()->getDocLayout()->getView();
 		xxx_UT_DEBUGMSG(("drawBroke: fill rect: Final top %d bot %d  pBroke %x \n",bRec.top,bRec.top + bRec.height,pBroke));
-		UT_ASSERT((bRec.left + bRec.width) < static_cast<UT_sint32>(pView->getWidthPagesInRow(getPage())) );		
+		UT_ASSERT((bRec.left + bRec.width) < static_cast<UT_sint32>(pView->getWidthPagesInRow(getPage())+ pView->getPageViewLeftMargin()) );
 		painter.fillRect(pView->getColorSelBackground(),bRec.left,bRec.top,bRec.width,bRec.height);
 		if(getPage())
 		{

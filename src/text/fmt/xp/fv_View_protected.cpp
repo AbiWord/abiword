@@ -3975,10 +3975,12 @@ bool FV_View::_drawOrClearBetweenPositions(PT_DocPosition iPos1, PT_DocPosition 
 	for(i=0; i< vecTables.getItemCount(); i++)
 	{
  		CellLine * pCellLine = vecTables.getNthItem(i);
-		pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics(),true);
-		pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics(),false);
-		pCellLine->m_pCell->drawLinesAdjacent();
-
+		bool bLineDrawn = pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics(),true);
+		if (bLineDrawn)
+		{
+			bLineDrawn = pCellLine->m_pCell->drawLines(pCellLine->m_pBrokenTable,getGraphics(),false);
+			pCellLine->m_pCell->drawLinesAdjacent();
+		}
 	}
 	for(i=0; i< vecPages.getItemCount(); i++)
 	{

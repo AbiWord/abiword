@@ -119,7 +119,7 @@ public:
 	virtual void		clearScreen(void);
 	void		        clearScreen(bool bNoRecursive);
 	void                getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG,UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot,UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear );
-	void                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG,bool bDoClear);
+	bool                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG,bool bDoClear);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
 	fp_TableContainer * getBrokenTable(fp_Container * pCon) const;
