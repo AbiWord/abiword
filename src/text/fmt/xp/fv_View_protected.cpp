@@ -1507,6 +1507,58 @@ void FV_View::_insertSectionBreak(void)
 	_ensureInsertionPointOnScreen();
 }
 
+
+/*!
+  Calculate the position of the top left corner of a page relative to the application frame.
+ */
+void FV_View::_getPageXandYOffset(const fp_Page* pThePage, UT_sint32& xoff, UT_sint32& yoff, bool bYOnly) const
+{
+	UT_sint32 iPageNumber = m_pLayout->findPage(const_cast<fp_Page*>(pThePage));
+	if(iPageNumber < 0)
+	{
+		if (!bYOnly)
+		{
+			xoff = 0;
+		}
+		yoff = 0;
+		return;
+	}
+
+	UT_sint32 y = getPageViewTopMargin();
+	if ((getViewMode() == VIEW_PRINT) || (getViewMode() == VIEW_PREVIEW))
+	{
+		UT_sint32 iRow = iPageNumber/getNumHorizPages();
+		y += iRow*(getMaxHeight(0) + getPageViewSep());
+	}
+	else
+	{
+		fl_DocSectionLayout * pDSL = getLayout()->getFirstSection();
+		UT_sint32 num = iPageNumber;
+		while(pDSL && num > 0)
+		{
+			fp_Page * pPage = pDSL->getFirstOwnedPage();
+			UT_sint32 height = pPage->getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin() +getPageViewSep();
+			if (num > pDSL->getPageCount())
+			{
+				y += pDSL->getPageCount() * height;
+				num -= pDSL->getPageCount();
+			}
+			else
+			{
+				y += num * height;
+				break;
+			}
+			pDSL = static_cast<fl_DocSectionLayout*>(pDSL->getNext());
+		}
+	}
+
+	yoff = y;
+	if (!bYOnly)
+	{
+		xoff = getWidthPrevPagesInRow(iPageNumber) + getPageViewLeftMargin();
+	}
+}
+
 /*!
  * Return the next line in the document.
  */
@@ -4553,31 +4605,51 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 	{
 		// layout ref
 		pDSL = getLayout() -> getFirstPage() -> getOwningSection();
-	
-		// since all pages have the same width / height, set them here
-		iPageWidth = getLayout() -> getFirstPage() -> getWidth();
-		iPageHeight = getLayout() -> getFirstPage() -> getHeight();
-		if(getViewMode() == VIEW_NORMAL || getViewMode() == VIEW_WEB)
-			iPageHeight = iPageHeight - pDSL -> getTopMargin() - pDSL -> getBottomMargin();
-		
-		// now guess the first visible page number
-		iFirstVisiblePageNumber = 
-			((getYScrollOffset() - getPageViewTopMargin() + getPageViewSep()) /
-			(iPageHeight + getPageViewSep())) * getNumHorizPages();
-	}	
+
+		if(getViewMode() == VIEW_PRINT || getViewMode() == VIEW_PREVIEW)
+		{
+			// since all pages have the same width / height, set them here
+			iPageWidth = getLayout() -> getFirstPage() -> getWidth();
+			iPageHeight = getLayout() -> getFirstPage() -> getHeight();
+			iFirstVisiblePageNumber = ((getYScrollOffset() - getPageViewTopMargin() + getPageViewSep()) /
+									   (iPageHeight + getPageViewSep())) * getNumHorizPages();
+		}
+		else
+		{
+			UT_sint32 yRemaining = getYScrollOffset();
+			// Since the margins are section properties, each section has different page heights in the two other view modes
+			iFirstVisiblePageNumber = 0;
+			while (pDSL)
+			{
+				iPageHeight = pDSL->getFirstOwnedPage()->getHeight() - pDSL -> getTopMargin() - pDSL -> getBottomMargin();
+				iPageWidth = pDSL->getFirstOwnedPage()->getWidth();
+				if (yRemaining < iPageHeight * pDSL->getPageCount())
+				{
+					iFirstVisiblePageNumber += yRemaining/iPageHeight;
+					break;
+				}
+				else
+				{
+					yRemaining -= iPageHeight * pDSL->getPageCount();
+					iFirstVisiblePageNumber += pDSL->getPageCount();
+				}
+				pDSL = static_cast<fl_DocSectionLayout*>(pDSL->getNext());
+			}
+		}
+	}
 
 	/**********************
 	 * STEP 2: Draw pages *
 	 **********************/
-	
-	// enter a double-buffered section 
-	
+
+	// enter a double-buffered section
+
 	UT_RGBColor clrMargin;
 	if (!m_pG->getColor3D(GR_Graphics::CLR3D_BevelDown, clrMargin))
 		clrMargin = getColorMargin();
 	if( !bDirtyRunsOnly && (getViewMode() == VIEW_PRINT) )
 		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
-	
+
 	// start from the first visible page
 	fp_Page *pPage = NULL;
 	if(iFirstVisiblePageNumber >= 0)
@@ -4585,6 +4657,17 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	while(pPage)
 	{
+		pDSL = pPage->getOwningSection();
+		if(getViewMode() == VIEW_PRINT || getViewMode() == VIEW_PREVIEW)
+		{
+			iPageHeight = pPage->getHeight();
+		}
+		else
+		{
+			iPageHeight = pPage->getHeight() - pDSL->getTopMargin() - pDSL->getBottomMargin();
+		}
+		iPageWidth = pPage->getWidth();
+
 		UT_sint32 adjustedTop = 0; // Top line of the page that defines the page's top margin,
 				       // relative to the top of the screen and in layout units
 		UT_sint32 adjustedBottom;

@@ -69,7 +69,6 @@ fp_Page::fp_Page(FL_DocLayout* pLayout,
 	GR_Graphics * pG = pLayout->getGraphics();
 	UT_ASSERT(pG);
 	m_vecColumnLeaders.clear();
-	m_iResolution = pG->getResolution();
 	m_rDamageRect.left = 0;
 	m_rDamageRect.top = 0;
 	m_rDamageRect.width = 0;
@@ -229,12 +228,12 @@ bool fp_Page::isOnScreen(void)
 
 UT_sint32 fp_Page::getWidth(void) const
 {
-	return static_cast<UT_sint32>(m_iResolution * m_pageSize.Width(DIM_IN));
+	return m_pLayout->getDocPageWidth();
 }
 
 UT_sint32 fp_Page::getHeight(void) const
 {
-	return static_cast<UT_sint32>(m_iResolution * m_pageSize.Height(DIM_IN));
+	return m_pLayout->getDocPageHeight();
 }
 
 UT_sint32 fp_Page::getColumnGap(void) const

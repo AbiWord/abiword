@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -311,6 +312,7 @@ public:
 	void                doMarginChangeOnly(void);
 	void                checkAndRemovePages(void);
 	void                addValidPages(void);
+	UT_sint32           getPageCount(void) {return m_iPageCount;}
 	void                setNeedsSectionBreak(bool bSet, fp_Page * pPage );
 	bool                needsSectionBreak(void) const { return m_bNeedsSectionBreak;}
 	void                setFirstEndnoteContainer(fp_EndnoteContainer * pECon);
@@ -369,7 +371,7 @@ private:
 	//! Last column in the section
 	fp_Column*			m_pLastColumn;
 	fp_Page *           m_pFirstOwnedPage;
-
+	UT_sint32           m_iPageCount;
 	bool                m_bNeedsFormat;
 	bool                m_bNeedsRebuild;
 	bool                m_bNeedsSectionBreak;

@@ -945,7 +945,7 @@ fl_DocSectionLayout::fl_DocSectionLayout(FL_DocLayout* pLayout, pf_Frag_Strux* s
 	  m_pFirstColumn(NULL),
 	  m_pLastColumn(NULL),
 	  m_pFirstOwnedPage(NULL),
-
+	  m_iPageCount(0),
 	  m_bNeedsFormat(false),
 	  m_bNeedsRebuild(false),
 	  m_bNeedsSectionBreak(true),
@@ -2845,6 +2845,10 @@ void fl_DocSectionLayout::addOwnedPage(fp_Page* pPage)
 			pHdrFtr->addPage(pPage);
 		}
 	}
+
+	// Keep track of the number of pages in the section
+	m_iPageCount++;
+
 	fl_DocSectionLayout * pDSL = this;
 	while(pDSL != NULL)
 	{
@@ -3033,6 +3037,10 @@ void fl_DocSectionLayout::deleteOwnedPage(fp_Page* pPage, bool bReallyDeleteIt)
 			m_pFirstOwnedPage = NULL;
 		}
 	}
+
+	// Keep track of the number of pages in the section
+	m_iPageCount--;
+
 	fl_DocSectionLayout * pDSL = this;
 	if(!getDocLayout()->isLayoutDeleting() && bReallyDeleteIt)
 	{

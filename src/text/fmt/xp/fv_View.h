@@ -388,8 +388,8 @@ public:
 
 	// TODO some of these functions should move into protected
 
-	void	getPageScreenOffsets(const fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff);
-	void	getPageYOffset(fp_Page* pPage, UT_sint32& yoff)const;
+	void	getPageScreenOffsets(const fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff) const;
+	void	getPageYOffset(const fp_Page* pPage, UT_sint32& yoff) const;
 	virtual UT_sint32 getPageViewLeftMargin(void) const;
 	virtual UT_sint32 getPageViewTopMargin(void) const;
 	virtual UT_sint32 getPageViewSep(void) const;
@@ -921,6 +921,7 @@ protected:
 	void				_moveInsPtNthPage(UT_sint32 n);
 	void				_moveInsPtToPage(fp_Page *page);
 	void				_insertSectionBreak(void);
+	void				_getPageXandYOffset(const fp_Page* pPage, UT_sint32& xoff, UT_sint32& yoff, bool bYOnly) const;
 
 	PT_DocPosition		_getDocPosFromPoint(PT_DocPosition iPoint, FV_DocPos dp, bool bKeepLooking=true) const;
 	PT_DocPosition		_getDocPos(FV_DocPos dp, bool bKeepLooking=true) const;

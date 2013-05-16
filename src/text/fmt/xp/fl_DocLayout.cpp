@@ -62,6 +62,7 @@
 #include "ut_mbtowc.h"
 #include "xap_Frame.h"
 #include "ut_misc.h"
+#include "ut_units.h"
 #include "pf_Frag_Strux.h"
 #include "ie_imp_RTF.h"
 #include "ie_exp_RTF.h"
@@ -126,6 +127,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
     m_bDeletingLayout(false),
     m_bisLayoutFilling(false),
     m_iRedrawCount(0),
+    m_iPageWidth(0),
+    m_iPageHeight(0),
     m_FootnoteType(FOOTNOTE_TYPE_NUMERIC),
     m_iFootnoteVal(1),
     m_bRestartFootSection(false),
@@ -161,7 +164,8 @@ FL_DocLayout::FL_DocLayout(PD_Document* doc, GR_Graphics* pG)
 		m_pRedrawUpdateTimer->set(REDRAW_UPDATE_MSECS);
 		m_pRedrawUpdateTimer->start();
 	}
-	
+
+	_setDocPageDimensions();
 	// TODO the following (both the new() and the addListener() cause
 	// TODO g_try_malloc's to occur.  we are currently inside a constructor
 	// TODO and are not allowed to report failure.
@@ -611,6 +615,7 @@ void FL_DocLayout::fillLayouts(void)
 	setLayoutIsFilling(true);
 	AP_StatusBar * pStatusBar = NULL;
 	m_docViewPageSize = getDocument()->m_docPageSize;
+	_setDocPageDimensions();
 	if(m_pView)
 	{
 		m_pView->setPoint(0);
@@ -2300,6 +2305,7 @@ bool FL_DocLayout::setDocViewPageSize(const PP_AttrProp * pAP)
 	    }
        }
        bool b = m_docViewPageSize.Set(pProps);
+       _setDocPageDimensions();
        if(pView && (pView->getViewMode() != VIEW_WEB))
        {
 	    rebuildFromHere(m_pFirstSection);
@@ -3154,6 +3160,15 @@ void FL_DocLayout::_toggleAutoSmartQuotes(bool bSQ)
 	UT_DEBUGMSG(("FL_DocLayout::_toggleAutoSmartQuotes(%s)\n", bSQ ? "true" : "false" ));
 }
 
+/*!
+Calculate the page height and width in layout unit
+*/
+
+void FL_DocLayout::_setDocPageDimensions(void)
+{
+	m_iPageWidth = UT_convertSizeToLayoutUnits(m_docViewPageSize.Width(DIM_IN),DIM_IN);
+	m_iPageHeight = UT_convertSizeToLayoutUnits(m_docViewPageSize.Height(DIM_IN),DIM_IN);
+}
 
 void FL_DocLayout::setDisplayAnnotations(bool bDisplayAnnotations)
 {

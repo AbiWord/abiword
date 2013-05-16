@@ -234,6 +234,9 @@ public:
 	void 				deleteEmptyColumnsAndPages(void);
 	void 				deleteEmptyPages( bool bDontNotify = false);
 	GR_EmbedManager * getEmbedManager(const char * szEmbedType);
+	UT_sint32       getDocPageHeight(void) const {return m_iPageHeight;}
+	UT_sint32       getDocPageWidth(void) const {return m_iPageWidth;}
+
 // --------------------------------------------------------------------
 // Footnote Methods
 // fl_DocLAyout stores this Vector of footnotes to speed things up and
@@ -395,6 +398,7 @@ protected:
 
 
 	static void			_redrawUpdate(UT_Worker * pTimer);
+	void				_setDocPageDimensions(void);
 
 private:
 	void                _lookupProperties(void);
@@ -434,6 +438,8 @@ private:
 	bool                m_bDeletingLayout;
 	bool                m_bisLayoutFilling;
 	UT_uint32           m_iRedrawCount;
+	UT_sint32           m_iPageWidth;
+	UT_sint32           m_iPageHeight;
 	UT_GenericVector<fl_FootnoteLayout *> m_vecFootnotes;
 	UT_GenericVector<fl_AnnotationLayout *> m_vecAnnotations;
 	UT_GenericVector<fl_EndnoteLayout *> m_vecEndnotes;

@@ -192,7 +192,6 @@ private:
 	fp_Page*			m_pPrev;
 
 	fp_PageSize			m_pageSize;
-	UT_uint32			m_iResolution;	// in points per inch
 
 	bool				m_bNeedsRedraw;
 

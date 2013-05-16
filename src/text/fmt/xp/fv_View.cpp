@@ -8154,102 +8154,24 @@ void FV_View::warpInsPtToXY(UT_sint32 xPos, UT_sint32 yPos, bool bClick = false)
 
 }
 
-void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,
-								   UT_sint32& yoff)
+/*!
+  Calculate the position of the top left corner of a page relative to the screen window.
+ */
+void FV_View::getPageScreenOffsets(const fp_Page* pThePage, UT_sint32& xoff,UT_sint32& yoff) const
 {
-	//const fp_Page* pPage = m_pLayout->getFirstPage();
-	UT_sint32 iPageNumber = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
-	if(iPageNumber < 0)
-	{
-		xoff = 0;
-		yoff = 0;
-		return;
-	}
-	UT_sint32 iRow = iPageNumber/getNumHorizPages();
-	UT_sint32 y = getPageViewTopMargin();
-	//UT_sint32 iPage = m_pLayout->findPage(const_cast<fp_Page *>(pThePage));
-		
-	if(iPageNumber >= static_cast<UT_sint32>(getNumHorizPages()))
-	{
-		for (UT_sint32 i = 0; i < iRow; i++)
-		{
-			y += getMaxHeight(i) + getPageViewSep();
-		}
-	}
-
-//
-// This code will work for different page size but it's slow for big docs
-//
-#if 0
-	while (pPage)
-	{
-		if (pPage == pThePage)
-		{
-			break;
-		}
-		y += pPage->getHeight() + getPageViewSep();
-		fl_DocSectionLayout * pDSL = pPage->getOwningSection();
-		if(getViewMode() != VIEW_PRINT)
-		{
-			y = y - pDSL->getTopMargin() - pDSL->getBottomMargin();
-		}
-		pPage = pPage->getNext();
-	}
-#endif
-	
-	yoff = y - m_yScrollOffset;
-	xoff = getWidthPrevPagesInRow(iPageNumber) + getPageViewLeftMargin() - m_xScrollOffset;
+	_getPageXandYOffset(pThePage, xoff, yoff, false);
+	yoff -= m_yScrollOffset;
+	xoff -= m_xScrollOffset;
 }
 
-void FV_View::getPageYOffset(fp_Page* pThePage, UT_sint32& yoff) const
+
+/*!
+  Calculate the y coordinate of the top left corner of a page relative to the application frame.
+ */
+void FV_View::getPageYOffset(const fp_Page* pThePage, UT_sint32& yoff) const
 {
-	UT_uint32 y = getPageViewTopMargin();
-//
-// Note this code assumes the page size is the same throughout the document.
-//
-	UT_sint32 iPage = m_pLayout->findPage(pThePage);
-	fp_Page* pPage = m_pLayout->getFirstPage();
-	fl_DocSectionLayout * pDSL = pPage->getOwningSection();
-	UT_sint32 iDiff = pPage->getHeight() + getPageViewSep();
-	UT_uint32 iRow = iPage/getNumHorizPages();
-	if(getViewMode() != VIEW_PRINT)
-	{
-		iDiff = iDiff - pDSL->getTopMargin() - pDSL->getBottomMargin();
-	}
-
-	// Causes weirdness -- up arrow key jumps up to the top of the page
-	if(iPage >= (signed)getNumHorizPages())
-	{
-		for (unsigned int i = 0; i < iRow-1; i++) //This is probably slowish...
-		{
-			iDiff += getMaxHeight(iRow) + getPageViewSep();
-		}
-	}
-	else
-	{
-		iDiff = 0;
-	}
-	y += iDiff;
-//
-// This code will work for different page size but it's slow for big docs
-//
-#if 0
-	while (pPage)
-	{
-		if (pPage == pThePage)
-		{
-			break;
-		}
-		y += pPage->getHeight() + getPageViewSep();
-		if(getViewMode() != VIEW_PRINT)
-		{
-			y = y - pDSL->getTopMargin() - pDSL->getBottomMargin();
-		}
-
-		pPage = pPage->getNext();
-	}
-#endif
-	yoff = y;
+	UT_sint32 xoff = 0;
+	_getPageXandYOffset(pThePage, xoff, yoff, true);
 }
 
 
