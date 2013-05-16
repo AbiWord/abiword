@@ -874,13 +874,14 @@ fi
 
 if test "$TOOLKIT" = "win"; then
 	AC_DEFINE([TOOLKIT_WIN], [1], [Build win32 user interface])
-	AC_DEFINE([_WIN32_IE], [0x0501], [minimal comctl.dll v4.70 for toolbars])
-	AC_DEFINE([_WIN32_WINNT], [0x0500], [support collaboration plugin in Windows 2000 or higher])
-	case ${host} in 
+	case ${host} in
 	  *-w64-mingw*)
 		AC_DEFINE([UNICODE], [1], [Build a full unicode AbiWord])
 		;;
 	  *)
+dnl on Mingw32 it is defined.
+		AC_DEFINE([_WIN32_IE], [0x0501], [minimal comctl.dll v4.70 for toolbars])
+		AC_DEFINE([_WIN32_WINNT], [0x0500], [support collaboration plugin in Windows 2000 or higher])
 	  	;;
 	esac
 elif test "$TOOLKIT" = "cocoa"; then
