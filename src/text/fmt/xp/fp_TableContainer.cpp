@@ -3660,24 +3660,24 @@ void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition
 		y = 1;
 		bAboveTable = true;
 	}
-	if (isThisBroken() && y >= getYBottom())
-	{
-		y = getYBottom() - 1;
-	}
-	else if (!isThisBroken() && getFirstBrokenTable() && y >= getFirstBrokenTable()->getYBottom())
-	{
-		y = getFirstBrokenTable()->getYBottom() - 1;
-	}
 
 	fp_TableContainer * pMaster = NULL;
 	if(isThisBroken())
 	{
-		y = y + getYBreak();
 		pMaster = getMasterTable();
+		y = y + getYBreak();
+		if (y >= getYBottom())
+		{
+			y = getYBottom() - 1;
+		}
 	}
 	else
 	{
 		pMaster = this;
+		if (getFirstBrokenTable() && y >= getFirstBrokenTable()->getYBottom())
+		{
+			y = getFirstBrokenTable()->getYBottom() - 1;
+		}
 	}
 
 	if(!pMaster->countCons())
