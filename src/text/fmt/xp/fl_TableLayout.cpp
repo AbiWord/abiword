@@ -210,8 +210,6 @@ void fl_TableLayout::decNumNestedTables(void)
 void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 {
 	pTab->setHomogeneous(m_bIsHomogeneous);
-	UT_sint32 borderWidth = m_iLeftOffset + m_iRightOffset;
-	pTab->setBorderWidth(borderWidth);
 	pTab->setColSpacings(m_iColSpacing);
 	pTab->setRowSpacings(m_iRowSpacing);
 	pTab->setLineThickness(m_iLineThickness);

@@ -405,16 +405,13 @@ fp_Column *         getBrokenColumn(void);
 	void                setColSpacing(UT_sint32 column,UT_sint32 spacing);
 	void                setRowSpacing (UT_sint32 row, UT_sint32  spacing);
 	void                resize(UT_sint32 n_rows, UT_sint32 n_cols);
-	void                setBorderWidth(UT_sint32 i);
-	UT_sint32           getBorderWidth(void) const
-		{ return m_iBorderWidth;}
 	void                setLineThickness(UT_sint32 iLineThickness)
 		{ m_iLineThickness = iLineThickness;}
 	UT_sint32           getLineThickness(void)
 		{ return m_iLineThickness;}
 	void                queueResize(void);
 	UT_sint32           getYOfRowOrColumn(UT_sint32 row, bool bRow) const;
-	UT_sint32           getYOfRow(UT_sint32 row) const;
+	UT_sint32           getYOfRow(UT_sint32 row, bool bBottomOffset = true) const;
 	UT_sint32           getXOfColumn(UT_sint32 col) const;
 	fp_CellContainer *  getCellAtRowColumn(UT_sint32 row, UT_sint32 column) const;
 	fp_CellContainer *  getCellAtRowColumnLinear(UT_sint32 row, UT_sint32 column) const;
@@ -502,7 +499,6 @@ private:
 
 	UT_sint32               m_iRows;
 	UT_sint32               m_iCols;
-	UT_sint32               m_iBorderWidth;
 	bool                    m_bIsHomogeneous;
 
 	std::vector<fp_TableRowColumn *> m_vecRows;

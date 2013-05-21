@@ -2975,94 +2975,13 @@ void fp_CellContainer::getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff) con
  */
 void fp_CellContainer::setLineMarkers(void)
 {
-//
-// Set the boundary markers for line drawing.
-//
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	UT_return_if_fail(pTab);
 
-	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(pTab->getSectionLayout());
-	fp_TableRowColumn *pCol = pTab->getNthCol(getLeftAttach());
-	if(pCol)
-		m_iLeft = getX() - static_cast<UT_sint32>(pCol->spacing);
-
-	if (pTab->getNumCols() == getRightAttach())
-	{
-		m_iRight = getX() + getWidth();
-		m_iRight += static_cast<UT_sint32> (0.5 * static_cast<double>(pTab->getBorderWidth()));		
-	}
-	else
-	{
-		fp_CellContainer * pCell = static_cast<fp_CellContainer*>(getNext());
-		if (!pCell || (pCell->getTopAttach() != getTopAttach()) || (pCell->getLeftAttach() != getRightAttach()))
-		{
-			pCell = pTab->getCellAtRowColumn(getTopAttach(),getRightAttach());
-		}
-
-		if(pCell)
-		{
-			m_iRight = pCell->getX();
-			m_iRight -= static_cast<UT_sint32>(pTab->getNthCol(getRightAttach())->spacing);
-		}
-		else
-		{
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			m_iRight = getX() + getWidth();
-			m_iRight += static_cast<UT_sint32> (0.5 * static_cast<double>(pTab->getBorderWidth()));
-		}
-	}
-
-	m_iTopY = pTab->getYOfRow(getTopAttach());
-	if(getTopAttach() == 0)
-	{
-		m_iTopY -= static_cast<UT_sint32>(0.5 * static_cast<double>(pTab->getBorderWidth()));
-	}
-	else
-	{
-		fp_TableRowColumn *pRow = pTab->getNthRow(getTopAttach());
-		if(pRow)
-		{
-			m_iTopY -= pRow->spacing/2;
-		}
-
-		UT_sint32 cLeft = 0;
-		for(cLeft = getLeftAttach(); cLeft < getRightAttach(); cLeft++)
-		{
-			fp_CellContainer * pCellAtRow = pTab->getCellAtRowColumn(getTopAttach() -1,cLeft);
-			if(pCellAtRow)
-			{
-				pCellAtRow->m_iBotY = m_iTopY;
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
-	xxx_UT_DEBUGMSG(("getBottomAttach %d \n",getBottomAttach()));
-	if(getBottomAttach() <= pTab->getNumRows())
-	{
-		m_iBotY = pTab->getYOfRow(getBottomAttach());
-		if(getBottomAttach() < pTab->getNumRows()) 
-		{
-			fp_TableRowColumn *pRow = pTab->getNthRow(getBottomAttach());
-			if(pRow)
-				m_iBotY += pRow->spacing/2;
-		}
-	}
-	else
-	{
-//
-// Have to cast the MasterTable to a vertical container to get the full height of a broken
-// table. Otherwise we just get height of the first broken table.
-//
-		fp_VerticalContainer * pVert = static_cast<fp_VerticalContainer *>(pTab);
-		m_iBotY = pTab->getYOfRow(0) + pVert->getHeight() -pTL->getBottomOffset() - getGraphics()->tlu(1);
-		m_iBotY -= static_cast<UT_sint32>(2.0 * static_cast<double>(pTab->getBorderWidth()));
-		m_iBotY +=  pTab->getNthRow(pTab->getNumRows()-1)->spacing/2;
-	}
-
-	xxx_UT_DEBUGMSG(("SEVIOR getX %d left %d right %d top %d bot %d \n",getX(),m_iLeft,m_iRight,m_iTopY,m_iBotY));
+	m_iLeft  = pTab->getXOfColumn(getLeftAttach());
+	m_iRight = pTab->getXOfColumn(getRightAttach());
+	m_iTopY  = pTab->getYOfRow(getTopAttach(), false);
+	m_iBotY  = pTab->getYOfRow(getBottomAttach(), false);
 }
 
 void fp_CellContainer::doVertAlign(void)
@@ -3074,10 +2993,10 @@ void fp_CellContainer::doVertAlign(void)
 	// be too deeply buried in code.
 
 	setY( m_MyAllocation.y - (getHeight() * (m_iVertAlign/100.0)) + ((m_iBotY - m_iTopY) * (m_iVertAlign/100.0)) );
-	if( (getY() + getHeight()) > m_MyAllocation.y + (m_iBotY - m_iTopY) - getBotPad() ) // Make sure not to exceed cell's bottom padding
-		setY( m_MyAllocation.y + (m_iBotY - m_iTopY) - getBotPad() - getHeight() );
-	if( getY() < m_MyAllocation.y + getTopPad() ) // Make sure not to exceed cell's top padding
-		setY( m_MyAllocation.y + getTopPad() );
+	if( (getY() + getHeight()) > m_iBotY - getBotPad() ) // Make sure not to exceed cell's bottom padding
+		setY( m_iBotY - getBotPad() - getHeight() );
+	if( getY() < m_iTopY + getTopPad() ) // Make sure not to exceed cell's top padding
+		setY( m_iTopY + getTopPad() );
 }
 
 //---------------------------------------------------------------------
@@ -3092,7 +3011,6 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	: fp_VerticalContainer(FP_CONTAINER_TABLE, pSectionLayout),
 	  m_iRows(0),
 	  m_iCols(0),
-	  m_iBorderWidth(0),
 	  m_bIsHomogeneous(true),
 	  m_iRowSpacing(0),
 	  m_iColSpacing(0),
@@ -3133,7 +3051,6 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	: fp_VerticalContainer(FP_CONTAINER_TABLE, pSectionLayout),
 	  m_iRows(0),
 	  m_iCols(0),
-	  m_iBorderWidth(0),
 	  m_bIsHomogeneous(true),
 	  m_iRowSpacing(0),
 	  m_iColSpacing(0),
@@ -3374,7 +3291,7 @@ UT_sint32 fp_TableContainer::getYOfRowOrColumn(UT_sint32 row, bool bRow) const
 /*!
  * Return the Y location of row number row
  */
-UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row) const
+UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row, bool bBottomOffset) const
 {
 	if (getMasterTable())
 	{
@@ -3396,8 +3313,12 @@ UT_sint32 fp_TableContainer::getYOfRow(UT_sint32 row) const
 	else
 	{
 		pRow = getNthRow(numRows - 1);
-		iYRow = pRow->position + pRow->allocation + getNthRow(numRows -2)->spacing/2;
-		iYRow += m_iBorderWidth;
+		iYRow = pRow->position + pRow->allocation + pRow->spacing;
+		fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+		if (bBottomOffset)
+		{
+			iYRow += pTL->getBottomOffset();
+		}
 	}
 
 	return iYRow;
@@ -3429,7 +3350,7 @@ UT_sint32 fp_TableContainer::getXOfColumn(UT_sint32 col) const
 	else
 	{
 		pCol = getNthCol(numCols - 1);
-		iXCol = pCol->position + pCol->allocation + getNthCol(numCols - 2)->spacing/2;
+		iXCol = pCol->position + pCol->allocation + pCol->spacing;
 	}
 
 	return iXCol;
@@ -4918,16 +4839,6 @@ void fp_TableContainer::setHomogeneous (bool bIsHomogeneous)
   }
 }
 
-void fp_TableContainer::setBorderWidth(UT_sint32 iBorder)
-{
-	if(iBorder == m_iBorderWidth)
-	{
-		return;
-	}
-	m_iBorderWidth = iBorder;
-	queueResize();
-}
-
 void fp_TableContainer::queueResize(void)
 {
 	static_cast<fl_TableLayout *>(getSectionLayout())->setDirty();
@@ -4965,7 +4876,7 @@ void fp_TableContainer::layout(void)
 	static fp_Requisition requisition;
 	static fp_Allocation alloc;
 	sizeRequest(&requisition);
-	setX(m_iBorderWidth);
+	setX(pTL->getLeftOffset());
 	alloc.x = getX();
 	alloc.y = getY();
 	alloc.width = getWidth();
@@ -5047,21 +4958,19 @@ void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
 		return;
 	}
 	UT_sint32 iWidth =0;
-	UT_sint32 iBorderWidth =0;
 	if(isThisBroken())
 	{
 		iWidth = getMasterTable()->getWidth();
-		iBorderWidth = getMasterTable()->m_iBorderWidth;
 	}
 	else
 	{
 		iWidth = getWidth();
-		iBorderWidth = m_iBorderWidth;
 	}
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
+  	    fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
-        UT_sint32 xoffEnd = pDA->xoff +  iWidth + 2 - static_cast<UT_sint32> (iBorderWidth * 2.0);
+        UT_sint32 xoffEnd = pDA->xoff +  iWidth + 2 - pTL->getLeftOffset() - pTL->getRightOffset();
         UT_sint32 yoffEnd = pDA->yoff + getHeight() + 2;
 
 		UT_RGBColor clrShowPara(127,127,127);
@@ -5513,10 +5422,7 @@ void  fp_TableContainer::_size_request_pass3(void)
 	      for (col = child->getLeftAttach(); col < child->getRightAttach(); col++)
 		  {
 			  width += getNthCol(col)->requisition;
-			  if ((col + 1) < child->getRightAttach())
-			  {
-				  width += getNthCol(col)->spacing;
-			  }
+			  width += getNthCol(col)->spacing;
 		  }
 	      
 	      /* If we need to request more space for this child to fill
@@ -5561,13 +5467,11 @@ void  fp_TableContainer::_size_request_pass3(void)
 	       */
 	      if (height < child_requisition.height + child->getTopPad() + child->getBotPad())
 		  {
-			  height = child_requisition.height + child->getTopPad() + child->getBotPad() - height;
-		  
+			  extra = (child_requisition.height + child->getTopPad() + child->getBotPad() - height)/
+				  (child->getBottomAttach() - child->getTopAttach());		  
 			  for (row = child->getTopAttach(); row < child->getBottomAttach(); row++)
 			  {
-				  extra = height / (child->getBottomAttach() - row);
 				  getNthRow(row)->requisition += extra;
-				  height -= extra;
 			  }
 		  }
 	  }
@@ -5802,9 +5706,6 @@ void  fp_TableContainer::_size_allocate_init(void)
 
 void  fp_TableContainer::_size_allocate_pass1(void)
 {
-
-  UT_sint32 real_width;
-  UT_sint32 real_height;
   UT_sint32 width, height;
   UT_sint32 row, col;
   UT_sint32 nexpand;
@@ -5815,12 +5716,9 @@ void  fp_TableContainer::_size_allocate_pass1(void)
    *  then we have to expand any expandable rows and columns
    *  to fill in the extra space.
    */
-  
-  real_width = m_MyAllocation.width - m_iBorderWidth * 2;
-  double dHeight = static_cast<double>(m_MyAllocation.height);
-  double dBorder = static_cast<double>(m_iBorderWidth);
-  real_height = static_cast<UT_sint32> (dHeight - dBorder * 2.0);
-  // real_height =  m_MyAllocation.height;
+  fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+  UT_sint32 real_width = m_MyAllocation.width - pTL->getLeftOffset() - pTL->getRightOffset();
+  UT_sint32 real_height = m_MyAllocation.height - pTL->getTopOffset() - pTL->getBottomOffset();
   
   if (m_bIsHomogeneous)
   {
@@ -5871,7 +5769,7 @@ void  fp_TableContainer::_size_allocate_pass1(void)
 			  nshrink += 1;
 		  }
 	  }
-      for (col = 0; col + 1 < m_iCols; col++)
+      for (col = 0; col < m_iCols; col++)
 	  {
 		  width += getNthCol(col)->spacing;
       }
@@ -5935,8 +5833,6 @@ void  fp_TableContainer::_size_allocate_pass1(void)
 	  nshrink = 0;
 	  for (row = 0; row < m_iRows; row++)
 	  {
-
-
 		  height += getNthRow(row)->requisition;
 		  if (getNthRow(row)->expand)
 		  {
@@ -5947,7 +5843,7 @@ void  fp_TableContainer::_size_allocate_pass1(void)
 			  nshrink += 1;
 		  }
 	  }
-	  for (row = 0; row + 1 < m_iRows; row++)
+	  for (row = 0; row < m_iRows; row++)
 	  {
 		  height += getNthRow(row)->spacing;
 	  }      
@@ -6002,7 +5898,6 @@ void  fp_TableContainer::_size_allocate_pass1(void)
 
 void  fp_TableContainer::_size_allocate_pass2(void)
 {
-	fp_CellContainer  *child;
 	UT_sint32 max_width;
 	UT_sint32 max_height;
 	UT_sint32 x, y;
@@ -6022,15 +5917,15 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 			}
 		}
 	}
-	m_MyAllocation.x = pTL->getLeftColPos() - m_iBorderWidth;
+	m_MyAllocation.x = pTL->getLeftColPos() - pTL->getLeftOffset();
 
-	x = m_MyAllocation.x + m_iBorderWidth;
-	y = m_MyAllocation.y + m_iBorderWidth + pTL->getTopOffset();
+	x = m_MyAllocation.x + pTL->getLeftOffset();
+	y = m_MyAllocation.y + pTL->getTopOffset();
 
 	for (col = 0; col < m_iCols; col++)
 	{
 		fp_TableRowColumn * pCol = getNthCol(col);
-		pCol->position = x - ((col == 0) ? 0 : pCol->spacing/2);
+		pCol->position = x;
 		x += pCol->allocation + pCol->spacing;
 	}
 	UT_sint32 totalWidth = x;
@@ -6038,54 +5933,50 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 	for (row = 0; row < m_iRows; row++)
 	{
 		fp_TableRowColumn * pRow = getNthRow(row);
-		pRow->position = y - ((row == 0) ? 0 : pRow->spacing/2);
+		pRow->position = y;
 		y += pRow->allocation + pRow->spacing;
 	}
 	UT_sint32 totalHeight = y;
 
-	UT_sint32 iTop, iBottom, iLeft, iRight;
-	UT_sint32 xSpacing, ySpacing;
-	child = static_cast<fp_CellContainer *>(getNthCon(0));
-	while (child)
+	fp_CellContainer * pCell = static_cast<fp_CellContainer *>(getNthCon(0));
+	while (pCell)
 	{
-		fp_Requisition child_requisition;
-		child->sizeRequest(&child_requisition);
+		fp_Requisition pCell_requisition;
+		pCell->sizeRequest(&pCell_requisition);
 
-		iLeft = child->getLeftAttach();
-		iRight = child->getRightAttach();
+		UT_sint32 iLeft = pCell->getLeftAttach();
+		UT_sint32 iRight = pCell->getRightAttach();
 		x = getNthCol(iLeft)->position;
-		xSpacing = ((iLeft == 0) ? 0 : getNthCol(iLeft)->spacing/2) + getNthCol(iRight - 1)->spacing/2;
-		max_width = ((iRight < m_iCols) ? getNthCol(iRight)->position : totalWidth) - (x + xSpacing);
-		iTop = child->getTopAttach();
-		iBottom = child->getBottomAttach();
-		y = getNthRow(iTop)->position;
-		ySpacing = ((iTop == 0) ? 0 : getNthRow(iTop)->spacing/2) + getNthRow(iBottom - 1)->spacing/2;
-		max_height = ((iBottom < m_iRows) ? getNthRow(iBottom)->position : totalHeight)- (y + ySpacing);
+		UT_sint32 xspace = getNthCol(iLeft)->spacing;
+		max_width = ((iRight < m_iCols) ? (getNthCol(iRight)->position) : totalWidth) - (x + xspace); 
+		if (pCell->getXfill())
+		{
+			allocation.width = UT_MAX (1, max_width - static_cast<UT_sint32>(pCell->getLeftPad()) - pCell->getRightPad());
+		}
+		else
+		{
+			allocation.width = pCell_requisition.width;
+		}
+		allocation.x = x + pCell->getLeftPad() + xspace/2;
 
-		if (child->getXfill())
+		UT_sint32 iTop = pCell->getTopAttach();
+		UT_sint32 iBottom = pCell->getBottomAttach();
+		y = getNthRow(iTop)->position;
+		UT_sint32 yspace = getNthRow(iTop)->spacing;
+		max_height = ((iBottom < m_iRows) ? (getNthRow(iBottom)->position) : totalHeight) - (y + yspace);
+		if (pCell->getYfill())
 		{
-			allocation.width = UT_MAX (1, max_width - static_cast<UT_sint32>(child->getLeftPad()) - child->getRightPad());
-			allocation.x = x + (max_width - allocation.width) / 2;
+			allocation.height = UT_MAX (1, max_height - static_cast<UT_sint32>(pCell->getTopPad()) - pCell->getBotPad());
 		}
 		else
 		{
-			allocation.width = child_requisition.width;
-			allocation.x = x + (max_width - allocation.width) / 2;
+			allocation.height = pCell_requisition.height;
 		}
-		// fixme sevior look here!!!
-		if (child->getYfill())
-		{
-			allocation.height = UT_MAX (1, max_height - static_cast<UT_sint32>(child->getTopPad()) - child->getBotPad());
-			allocation.y = y;
-		}
-		else
-		{
-			allocation.height = child_requisition.height;
-			allocation.y = y;
-		}
+		allocation.y = y + pCell->getTopPad() + yspace/2;
+
 		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!: max_height = %d width =%d \n",max_height,allocation.width));
-		child->sizeAllocate( &allocation);
-		child = static_cast<fp_CellContainer *>(child->getNext());
+		pCell->sizeAllocate( &allocation);
+		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 }
 
@@ -6146,13 +6037,9 @@ void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 		  iNewReq -= pRow->spacing;
 	  }
 	  pRow->requisition = iNewReq;
-	  pRequisition->height += getNthRow(row)->requisition;
-	  if (row < m_iRows - 1)
-	  {
-		  pRequisition->height += pRow->spacing;
-	  }
+	  pRequisition->height += pRow->requisition + pRow->spacing;
   }
-  pRequisition->height += 2 * m_iBorderWidth;
+  pRequisition->height += pTL->getTopOffset() + pTL->getBottomOffset();
   xxx_UT_DEBUGMSG(("SEVIOR: requisition height %d \n", pRequisition->height));
 }
 
@@ -6163,12 +6050,12 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 	m_MyAllocation.x = pAllocation->x;
 	m_MyAllocation.y = pAllocation->y;
 	m_MyAllocation.y = 0;
-	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height is %d \n", pAllocation->height));
+	UT_DEBUGMSG(("SEVIOR: Initial allocation height is %d \n", pAllocation->height));
 	
 	_size_allocate_init ();
-	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height 1 is %d \n", m_MyAllocation.height));
+	UT_DEBUGMSG(("SEVIOR: Initial allocation height 1 is %d \n", m_MyAllocation.height));
 	_size_allocate_pass1 ();
-	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height 2 is %d \n", m_MyAllocation.height));
+	UT_DEBUGMSG(("SEVIOR: Initial allocation height 2 is %d \n", m_MyAllocation.height));
 	_size_allocate_pass2 ();
-	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height 3 is %d \n", m_MyAllocation.height));
+	UT_DEBUGMSG(("SEVIOR: Initial allocation height 3 is %d \n", m_MyAllocation.height));
 }
