@@ -9392,7 +9392,7 @@ void FV_View::getTopRulerInfo(PT_DocPosition pos,AP_TopRulerInfo * pInfo)
 			{
 				pInfo->m_iCurCell = iCellCount;
 			}
-			UT_sint32 ioff_x = 0;
+			UT_sint32 ioff_x = pTab->getX();
 			fp_Container * pCon = static_cast<fp_Container*>(pTab->getContainer());
 			while(pCon && !pCon->isColumnType())
 			{
