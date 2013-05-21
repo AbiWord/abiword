@@ -54,6 +54,7 @@
 #include <stdio.h>
 #endif
 
+#include <vector>
 #include "ut_misc.h"
 #include "ut_types.h"
 #include "ut_vector.h"
@@ -73,6 +74,7 @@ class ABI_EXPORT fp_TableRowColumn
 public:
 	fp_TableRowColumn(UT_sint32 defaultSpacing = 0);
 	virtual ~fp_TableRowColumn(void);
+	static bool comparePosition(UT_sint32 y, fp_TableRowColumn * pRow);
 	UT_sint32 requisition;
 	UT_sint32 allocation;
 	UT_sint32 spacing;
@@ -464,8 +466,8 @@ fp_Column *         getBrokenColumn(void);
 		{ m_bRedrawLines = true;}
 	bool                doRedrawLines(void) const
 		{ return m_bRedrawLines;}
-	fp_TableRowColumn *     getNthCol(UT_sint32 i) const;
-	fp_TableRowColumn *     getNthRow(UT_sint32 i) const;
+	fp_TableRowColumn *     getNthCol(UT_uint32 i) const;
+	fp_TableRowColumn *     getNthRow(UT_uint32 i) const;
 	bool                    containsNestedTables(void);
 	void setRowHeightType(FL_RowHeightType iType)
 		{
@@ -503,8 +505,8 @@ private:
 	UT_sint32               m_iBorderWidth;
 	bool                    m_bIsHomogeneous;
 
-	UT_GenericVector<fp_TableRowColumn *> m_vecRows;
-	UT_GenericVector<fp_TableRowColumn *> m_vecColumns;
+	std::vector<fp_TableRowColumn *> m_vecRows;
+	std::vector<fp_TableRowColumn *> m_vecColumns;
 
 // Local size request and allocation.
 
