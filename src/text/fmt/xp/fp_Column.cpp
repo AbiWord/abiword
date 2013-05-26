@@ -1186,53 +1186,93 @@ void fp_VerticalContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosit
 		return;
 	}
 
-
 	fp_ContainerObject* pContainer = NULL;
-	int i = 0;
-	// Find first container that contains the point. First has its lower level below the desired Y
-	// position. Note that X-positions are completely ignored here.
-	UT_sint32 iHeight = 0;
-	do
-	{
-		pContainer = static_cast<fp_ContainerObject*>(getNthCon(i++));
-		iHeight = pContainer->getHeight();
-		xxx_UT_DEBUGMSG(("SEVIOR: IN column looking at x %d y %d height %d \n",pContainer->getX(),pContainer->getY(),iHeight));
-	} while ((i < count)
-			 && (y > (pContainer->getY() + iHeight)));
-	// Undo the postincrement.
-	i--;
-	// Now check if the position is actually between the found container
-	// and the line before it (ignore check on the top-most line).
-	UT_sint32 iUHeight =0;
-	if (i > 0 && y < pContainer->getY())
-	{
-		fp_ContainerObject* pContainerUpper = static_cast<fp_ContainerObject*>(getNthCon(i-1));
-		iUHeight = pContainer->getHeight();
 
-		// Be careful with the signedness here - bug 172 leared us a
-		// lesson!
-
-		// Now pick the line that is closest to the point - or the
-		// upper if it's a stalemate.
-		if ((pContainer->getY() - y) >= (y - (pContainerUpper->getY() + static_cast<UT_sint32>(iUHeight))))
+	if (getContainerType() == FP_CONTAINER_CELL)
+	{
+		fp_CellContainer * pCell = static_cast<fp_CellContainer *>(this);
+		UT_sint32 i = 0;
+		while((i < count - 1) && (getNthCon(i)->getY() < y))
 		{
-			pContainer = pContainerUpper;
+			i++;
+		}
+
+		if((i == 0) && (x < getX()) && (pCell->getLeftAttach() == 0))
+		{
+			fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
+			pos = pCL->getPosition(true)+2;
+			bBOL = true;
+			bEOL = false;
+			return;
+	    }
+
+		if ((i == 0) || (getNthCon(i)->getY() <= y))
+		{
+			pContainer = getNthCon(i);
+		}
+		else
+		{
+			fp_ContainerObject * pContainerAbove = getNthCon(i - 1);
+			fp_ContainerObject * pContainerBelow = getNthCon(i);
+
+			if (pContainerAbove->getY() + pContainerAbove->getHeight() < y)
+			{
+				pContainer = pContainerAbove;
+			}
+			else
+			{
+				// y falls between two containers. Check if the containers are in two different broken tables.
+				// If this is the case, choose the container in the same table as y. Else choose the container
+				// closest to y.
+				fp_TableContainer * pBrokeAbove = pCell->getBrokenTable(static_cast<fp_Container*>(pContainerAbove));
+				fp_TableContainer * pBrokeBelow = pCell->getBrokenTable(static_cast<fp_Container*>(pContainerBelow));
+				if (pBrokeAbove != pBrokeBelow)
+				{
+					pContainer = ((y + getY() < pBrokeAbove->getYBottom()) ? pContainerAbove : pContainerBelow);
+				}
+				else
+				{
+					UT_sint32 disAbove = y - pContainerAbove->getY() - pContainerAbove->getHeight();
+					UT_sint32 disBelow = pContainerBelow->getY() - y;
+					pContainer = ((disAbove <= disBelow) ? pContainerAbove : pContainerBelow);
+				}
+			}
 		}
 	}
-	if(getContainerType() == FP_CONTAINER_CELL && (i == 0))
+	else
 	{
-	    fp_CellContainer *pCellCon = static_cast<fp_CellContainer *>(this);
-	    if((x < getX()) && (pCellCon->getLeftAttach() == 0) )
-	    {
-		fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
-		pos = pCL->getPosition(true)+2;
-		bBOL = true;
-		bEOL = false;
-		//		if((pCellCon->getTopAttach() == 0))
-		//  pos--;
-		return;
-	    } 
+		UT_sint32 i = 0;
+		// Find first container that contains the point. First has its lower level below the desired Y
+		// position. Note that X-positions are completely ignored here.
+		UT_sint32 iHeight = 0;
+		do
+		{
+			pContainer = static_cast<fp_ContainerObject*>(getNthCon(i++));
+			iHeight = pContainer->getHeight();
+			xxx_UT_DEBUGMSG(("SEVIOR: IN column looking at x %d y %d height %d \n",pContainer->getX(),pContainer->getY(),iHeight));
+		} while ((i < count) && (y > (pContainer->getY() + iHeight)));
+		// Undo the postincrement.
+		i--;
+		// Now check if the position is actually between the found container
+		// and the line before it (ignore check on the top-most line).
+		UT_sint32 iUHeight =0;
+		if (i > 0 && y < pContainer->getY())
+		{
+			fp_ContainerObject* pContainerUpper = static_cast<fp_ContainerObject*>(getNthCon(i-1));
+			iUHeight = pContainer->getHeight();
+
+			// Be careful with the signedness here - bug 172 leared us a
+			// lesson!
+
+			// Now pick the line that is closest to the point - or the
+			// upper if it's a stalemate.
+			if ((pContainer->getY() - y) >= (y - (pContainerUpper->getY() + static_cast<UT_sint32>(iUHeight))))
+			{
+				pContainer = pContainerUpper;
+			}
+		}
 	}
+
 	if(pContainer->getContainerType() == FP_CONTAINER_TABLE)
 	{
 		xxx_UT_DEBUGMSG(("SEVIOR: Looking in a table \n"));

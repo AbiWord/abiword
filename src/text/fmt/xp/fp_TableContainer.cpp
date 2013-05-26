@@ -3575,11 +3575,9 @@ UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
 void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool & isTOC)
 {
-	bool bAboveTable = false;
 	if (y <= 0)
 	{
 		y = 1;
-		bAboveTable = true;
 	}
 
 	fp_TableContainer * pMaster = NULL;
@@ -3629,18 +3627,6 @@ void fp_TableContainer::mapXYToPosition(UT_sint32 x, UT_sint32 y, PT_DocPosition
 	}
 	UT_sint32 xCell = x - pCell->getX();
 	UT_sint32 yCell = y - pCell->getY();
-	if (bAboveTable)
-	{
-		// If the cell is broken between two pages, we need tomake sure that the y
-		// value points to a line within the good page. 
-		// TODO create a fp_CellContainer version of mapXYToPosition instead of 
-		//      using fp_VerticalContainer::mapXYToPosition
-		fp_Container * pCon = pCell->getFirstContainerInBrokenTable(this);
-		if (pCon && (pCon->getY() + 1 > yCell))
-		{
-			yCell = pCon->getY() + 1;
-		}
-	}
 	pCell->mapXYToPosition(xCell, yCell, pos, bBOL, bEOL,isTOC);
 	return;
 }
@@ -6050,12 +6036,12 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 	m_MyAllocation.x = pAllocation->x;
 	m_MyAllocation.y = pAllocation->y;
 	m_MyAllocation.y = 0;
-	UT_DEBUGMSG(("SEVIOR: Initial allocation height is %d \n", pAllocation->height));
+	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height is %d \n", pAllocation->height));
 	
 	_size_allocate_init ();
-	UT_DEBUGMSG(("SEVIOR: Initial allocation height 1 is %d \n", m_MyAllocation.height));
+	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height 1 is %d \n", m_MyAllocation.height));
 	_size_allocate_pass1 ();
-	UT_DEBUGMSG(("SEVIOR: Initial allocation height 2 is %d \n", m_MyAllocation.height));
+	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height 2 is %d \n", m_MyAllocation.height));
 	_size_allocate_pass2 ();
-	UT_DEBUGMSG(("SEVIOR: Initial allocation height 3 is %d \n", m_MyAllocation.height));
+	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height 3 is %d \n", m_MyAllocation.height));
 }
