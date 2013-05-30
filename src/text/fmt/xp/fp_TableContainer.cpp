@@ -659,7 +659,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	{
 		return;
 	}
-	if(pBroke->getPage() && !pBroke->getPage()->isOnScreen())
+	if(!pBroke->getPage() || !pBroke->getPage()->isOnScreen())
 	{
 		return;
 	}
@@ -732,12 +732,15 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 		xxx_UT_DEBUGMSG(("_Clear: pBroke %x \n",pBroke));
 		if(pBroke && pBroke->getPage() && pBroke->getBrokenBottom())
 		{
-			UT_sint32 col_x,col_y;
 			fp_Column * pCol = static_cast<fp_Column *>(pBroke->getBrokenColumn());
-			pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
-			UT_sint32 bot = col_y + pCol->getHeight();
-			xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
-			drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
+			if (pCol)
+			{
+				UT_sint32 col_x,col_y;
+				pBroke->getPage()->getScreenOffsets(pCol, col_x,col_y);
+				UT_sint32 bot = col_y + pCol->getHeight();
+				xxx_UT_DEBUGMSG(("_clear: Clear broken bottom %d \n",bot));
+				drawLine (lineBottom, bRec.left, bot, bRec.left + bRec.width,  bot,getGraphics());
+			}
 		}
 		getGraphics()->setLineWidth(1 );
 		xxx_UT_DEBUGMSG(("_clear: BRec.top %d  Brec.height %d \n",bRec.top,bRec.height));
@@ -3925,16 +3928,6 @@ void fp_TableContainer::deleteBrokenAfter(bool bClearFirst)
 	}
 }
 
-void fp_TableContainer::setHeight(UT_sint32 iHeight)
-{
-	if(!isThisBroken())
-	{
-		xxx_UT_DEBUGMSG(("Unbroken Table Height set to %d from %d \n",iHeight,getHeight()));
-	}
-
-	fp_VerticalContainer::setHeight(iHeight);
-}
-
 /*
  * Return the margin before the table. Note that TopOffset (set by the property table-margin-top)
  * is not considered a margin, but as a gap at the top of the table (it is included in the height of
@@ -4043,33 +4036,28 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	fp_TableContainer * pBroke = NULL;
 	if(!isThisBroken() && getLastBrokenTable() == NULL)
 	{
-		if(getFirstBrokenTable() != NULL)
-		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			return NULL;
-		}
+		UT_return_val_if_fail(getFirstBrokenTable() == NULL, NULL);
 		pBroke = new fp_TableContainer(getSectionLayout(),this);
-		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!!! Frist broken table %x \n",pBroke));
+		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!!! First broken table %x \n",pBroke));
 		pBroke->setYBreakHere(vpos);
 		pBroke->setYBottom(getTotalTableHeight());
 		setFirstBrokenTable(pBroke);
 		setLastBrokenTable(pBroke);
 		pBroke->setContainer(getContainer());
-		static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
-		static_cast<fp_VerticalContainer *>(pBroke)->setY(getY());
+		pBroke->setHeight(pBroke->getHeight());
+		pBroke->setY(getY());
 		pBroke->breakCellsAt(vpos);
 		return pBroke;
 	}
 //
 // Now do the case of breaking a Master table.
 //
+	UT_return_val_if_fail(vpos > 0, NULL);
 	if(getMasterTable() == NULL)
 	{
 		return getLastBrokenTable()->VBreakAt(vpos);
 	}
 	pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
-	getMasterTable()->setLastBrokenTable(pBroke);
-
 	UT_sint32 iTotalHeight = getTotalTableHeight();
 	UT_sint32 iNewYBreak = vpos + getYBreak();
 	if(getContainer() && getContainer()->getContainerType() == FP_CONTAINER_CELL)
@@ -4079,13 +4067,8 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 			return NULL;
 		}
 		iNewYBreak = m_iNextWantedVBreak + getYBreak();
-		UT_ASSERT(iNewYBreak > 0);
 	}
-	if (iNewYBreak >= iTotalHeight)
-	{
-		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-		return NULL;
-	}
+	UT_return_val_if_fail(iNewYBreak < iTotalHeight, NULL);
 
 //
 // vpos is relative to the container that contains this height but we need
@@ -4094,6 +4077,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	pBroke->setYBreakHere(iNewYBreak);
 	setYBottom(iNewYBreak -1);
 	pBroke->setYBottom(iTotalHeight);
+	pBroke->setHeight(pBroke->getHeight());
 	UT_ASSERT(getHeight() > 0);
 	UT_ASSERT(pBroke->getHeight() > 0);
 
@@ -4104,58 +4088,41 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 // ie terminated by NULL's in the getNext getPrev list. The second
 // broken table points and is pointed to by the Master table
 // 
-	pBroke->setPrev(this);
-	fp_Container * pUpCon = NULL;
-	UT_sint32 i = -1;
+
+	fp_TableContainer * pThisTable = this;
 	if(getMasterTable()->getFirstBrokenTable() == this)
 	{
-		pUpCon = getMasterTable()->getContainer();
-  		pBroke->setPrev(getMasterTable());
-  		pBroke->setNext(NULL);
   		getMasterTable()->setNext(pBroke);
-		setNext(pBroke);
-		if (pUpCon)
-		{
-			i = pUpCon->findCon(getMasterTable());
-		}
+		pThisTable = getMasterTable();
 	}
-	else
+	setNext(pBroke);
+	pBroke->setPrev(pThisTable);
+	pBroke->setNext(NULL);
+	getMasterTable()->setLastBrokenTable(pBroke);
+
+	// TODO TODO TODO : This part should only be needed for nested tables as the insertion of
+	// containers inside columns should be left to fb_ColumnBreaker::_break. However,
+	// not inserting the broken table inside a column causes crashes in fp_CellContainer::clear.
+	// This function needs to be revised before limiting the following code to nested tables.
+	fp_Container * pUpCon = pThisTable->getContainer();
+	if (pUpCon)
 	{
-		pBroke->setNext(NULL);
-  		setNext(pBroke);
-		if(getYBreak() == 0 )
+		pBroke->setContainer(pUpCon);
+		UT_sint32 i = pUpCon->findCon(pThisTable);
+		UT_ASSERT(i >= 0);
+		if (i >= 0)
 		{
-			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-			pUpCon = getMasterTable()->getContainer();
-			if (pUpCon)
+			if (i < pUpCon->countCons() - 1)
 			{
-				i = pUpCon->findCon(getMasterTable());
+				pUpCon->insertConAt(pBroke,i+1);
 			}
-		}
-		else
-		{
-			pUpCon = getContainer();
-			if (pUpCon)
+			else
 			{
-				i = pUpCon->findCon(this);
+				pUpCon->addCon(pBroke);
 			}
 		}
 	}
 
-	if((i >=0) && (i < pUpCon->countCons() - 1))
-	{
-		pUpCon->insertConAt(pBroke,i+1);
-	}
-	else if((i >= 0) && (i == pUpCon->countCons() -1))
-	{
-		pUpCon->addCon(pBroke);
-	}
-	else
-	{
-		UT_DEBUGMSG(("Breaking a table that is not yet inserted\n"));
-	}
-	pBroke->setContainer(pUpCon);
-	static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
 	//
 	// The cells are broken relative to the top of the table 
 	//

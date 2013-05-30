@@ -1672,7 +1672,7 @@ void fp_Line::clearScreen(void)
 	}
 	xxx_UT_DEBUGMSG(("fp_Line: Doing regular full clearscreen %x \n",this));
 	UT_sint32 count = m_vecRuns.getItemCount();
-	if(getPage() && !getPage()->isOnScreen())
+	if(!getPage() || !getPage()->isOnScreen())
 	{
 		return;
 	}
