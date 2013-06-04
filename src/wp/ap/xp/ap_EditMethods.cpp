@@ -10983,7 +10983,7 @@ Defun1(rdfQuery)
 }
 
 
-static bool s_doRDFEditorDlg( FV_View * pView, XAP_Dialog_Id id, AP_Dialog_RDFEditor*& dialogret, bool restrict )
+static bool s_doRDFEditorDlg( FV_View * pView, XAP_Dialog_Id id, AP_Dialog_RDFEditor*& dialogret, bool rstrct )
 {
 	UT_return_val_if_fail(pView, false);
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
@@ -11003,7 +11003,7 @@ static bool s_doRDFEditorDlg( FV_View * pView, XAP_Dialog_Id id, AP_Dialog_RDFEd
 	UT_return_val_if_fail(pDialog, false);
 	dialogret = pDialog;
 
-	pDialog->hideRestrictionXMLID( !restrict );
+	pDialog->hideRestrictionXMLID( !rstrct );
 	
 	
 	if(pDialog->isRunning() == true)
