@@ -191,8 +191,12 @@ fi
 
 if test "$enable_collab_backend_tcp" = "yes" || \
    test "$enable_collab_backend_service" = "yes"; then
-	COLLAB_LIBS="$COLLAB_LIBS -lgcrypt -lpthread"
+	COLLAB_LIBS="$COLLAB_LIBS -lgcrypt"
+	if test "$TOOLKIT" != "win"; then
+		COLLAB_LIBS="$COLLAB_LIBS -lpthread"
+	fi
 fi
+
 
 test "$enable_collab" = "auto" && PLUGINS="$PLUGINS collab"
 
