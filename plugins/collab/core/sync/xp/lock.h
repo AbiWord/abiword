@@ -19,7 +19,7 @@
 #ifndef __ABICOLLAB_LOCK__
 #define __ABICOLLAB_LOCK__
 
-#ifndef WIN32
+#ifndef _WIN32
 #include <pthread.h>
 #endif
 
@@ -35,7 +35,7 @@ friend class scoped_lock;
 public:
 	mutex()
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		repr = CreateMutex(0, FALSE, 0);
 #else
 		pthread_mutex_init(&repr, NULL);
@@ -44,7 +44,7 @@ public:
 
 	~mutex()
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		CloseHandle(repr);
 #else
 		pthread_mutex_destroy(&repr);
@@ -56,7 +56,7 @@ private:
 	mutex( const mutex& );
 	const mutex& operator=( const mutex& );
 
-#ifdef WIN32
+#ifdef _WIN32
 	HANDLE repr;
 #else
 	pthread_mutex_t repr;
@@ -69,7 +69,7 @@ public:
 	scoped_lock(mutex& mutex)
 		: m_mutex(mutex)
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		WaitForSingleObject(m_mutex.repr, INFINITE);
 #else
 		pthread_mutex_lock(&m_mutex.repr);
@@ -78,7 +78,7 @@ public:
 
 	~scoped_lock()
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		ReleaseMutex(m_mutex.repr);
 #else
 		pthread_mutex_unlock(&m_mutex.repr);
