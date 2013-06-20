@@ -25,6 +25,7 @@
 #include <stdio.h>
 #endif
 
+#include <vector>
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
