@@ -223,6 +223,10 @@ UT_sint32                    getBottomOffset(void) const;
 	double                   getMaxExtraMargin(void) const
 	{ return m_dMaxExtraMargin;}
 	void                     setMaxExtraMargin(double margin);
+	 
+    //Table Header
+ 	const std::vector<UT_sint32> & getHeaderRowNos() const { return m_vHeaderRowNumber; }
+    bool isHeaderSet() const { return m_bIsHeaderSet; }
 
 protected:
 	virtual void		        _lookupProperties(const PP_AttrProp* pSectionAP);
@@ -278,6 +282,10 @@ private:
 	UT_sint32              m_iTableWidth;
 	double                 m_dTableRelWidth;
 	double                 m_dMaxExtraMargin;
+
+    //Table Header
+ 	std::vector<UT_sint32> m_vHeaderRowNumber;
+ 	bool 		           m_bIsHeaderSet;
 };
 
 

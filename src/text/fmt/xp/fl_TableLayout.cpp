@@ -108,7 +108,8 @@ fl_TableLayout::fl_TableLayout(FL_DocLayout* pLayout, pf_Frag_Strux* sdh,
       m_pNewHeightCell(NULL),
 	  m_bDoingDestructor(false),
 	  m_iTableWidth(0),
-	  m_dTableRelWidth(0.0)
+	  m_dTableRelWidth(0.0),
+	  m_bIsHeaderSet(false)
 {
 	UT_DEBUGMSG(("Created Table Layout %p \n",this));
 	UT_ASSERT(pLayout);
@@ -215,6 +216,10 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setLineThickness(m_iLineThickness);
 	pTab->setRowHeightType(m_iRowHeightType);
 	pTab->setRowHeight(m_iRowHeight);
+	if(isHeaderSet())
+ 	{
+ 		//set the header propority
+ 	}
 }
 
 
@@ -1679,6 +1684,30 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	pSectionAP->getProperty ("background-color", pszBackgroundColor);
 	
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
+	
+	//Table header
+	char * pszTableHeader = NULL;
+ 
+ 	pSectionAP->getProperty("header",(const gchar *&)pszTableHeader);
+ 
+ 	char *pszTableHeaderRows;
+ 
+ 	if(pszTableHeader != NULL)
+ 	{
+ 		pszTableHeaderRows = strtok(pszTableHeader,",");
+ 		m_vHeaderRowNumber.clear();
+ 		m_vHeaderRowNumber.push_back(atoi(pszTableHeaderRows));
+ 		while(pszTableHeaderRows != NULL)
+ 		{
+ 			pszTableHeaderRows = strtok(NULL,",");
+ 			if(pszTableHeaderRows != NULL)
+ 			{
+ 				m_vHeaderRowNumber.push_back(atoi(pszTableHeaderRows));
+ 			}
+ 		}
+ 		xxx_UT_DEBUGMSG(("\n\n\n\n%d\n\n",m_vHeaderRowNumber.size()));
+ 		m_bIsHeaderSet = true;
+ 	}
 
 	// table-wait-index is set by FV_View functions to a value different than zero to prevent 
 	// table initialization before the changes are completed.
@@ -3136,3 +3165,4 @@ static void s_border_properties_cell (const char * border_color,
 		line.m_thickness = static_cast<UT_sint32>(thickness / UT_PAPER_UNITS_PER_INCH);
 	}
 }
+
