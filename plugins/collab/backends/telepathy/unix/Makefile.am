@@ -10,6 +10,7 @@ AM_CPPFLAGS = \
 libunix_la_SOURCES = \
 	TelepathyChatroom.cpp \
 	TelepathyChatroom.h \
+	TelepathyBuddy.h \
 	DTubeBuddy.h \
 	TelepathyUnixAccountHandler.cpp \
 	TelepathyUnixAccountHandler.h
