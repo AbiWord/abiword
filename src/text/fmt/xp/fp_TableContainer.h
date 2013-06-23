@@ -97,6 +97,7 @@ class fp_Page;
 class PP_AttrProp;
 class GR_Graphics;
 class fp_TableContainer;
+class fp_TableHeader;
 struct dg_DrawArgs;
 struct fp_Sliver;
 
@@ -116,6 +117,8 @@ public:
 	{ m_bIsSelected = false;
 	  m_bLinesDrawn = true;
 	}
+ 	bool 			    isInsideBrokenTable(fp_TableContainer *pBroke) const;
+ 	bool 			    partiallyInsideBrokenTable(fp_TableContainer *) const;
 	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke) const;
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
@@ -258,7 +261,78 @@ public:
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
-
+ 	void 			setHeaderCell(bool bHeader)
+ 	{ 	m_bHeaderCell = bHeader; }
+ 	bool isHeaderCell(void) const
+	{
+		return m_bHeaderCell;
+	}
+	fp_TableHeader * getHeaderPointer(void) const
+	{
+		return m_pHeader;
+	}
+	void setHeaderPointer(fp_TableHeader * pHeader)
+	{
+		m_pHeader = pHeader;
+	}
+	void setiTopY(UT_sint32 iTopY)
+	{
+		m_iTopY = iTopY;
+	}
+	void setiBotY(UT_sint32 iBotY)
+	{
+		m_iBotY = iBotY;
+	}
+	UT_sint32 getiTopY() const
+	{
+		return m_iTopY;
+	}
+	UT_sint32 getiBotY() const
+	{
+		return m_iBotY;
+	}
+ 
+	bool isToBeShifted(void) const
+	{
+		return m_bIsToBeDisplaced;
+	}
+	void setToBeShifted(bool bShift)
+	{
+		m_bIsToBeDisplaced = bShift;
+	}
+	void setShiftHeight(UT_sint32 iShift)
+	{
+		m_iShiftHeight = iShift;
+	}
+	UT_sint32 getBrokenTableNumber()
+	{
+		return m_iBrokenTableNumber;
+	}
+	void drawHeaderCell(dg_DrawArgs *,UT_sint32,UT_sint32 &,UT_sint32 &,UT_sint32,UT_sint32 &);
+	void setPos(UT_sint32 i)
+	{
+		m_iCellPos=i;
+	}
+	UT_sint32 getPos() const
+	{
+		return m_iCellPos;
+	}
+	void incCount() 
+	{
+		m_iHeaderIncCount++;
+	}
+	void setCountToZero()
+	{
+		m_iHeaderIncCount=0;
+	}
+	UT_sint32 getCount() const
+	{
+		return m_iHeaderIncCount;
+	}
+	void setBrokenCell(bool bBroken)
+	{
+		m_bIsBrokenCell=bBroken;
+	}
 private:
 
 	void                _clear(fp_TableContainer * pBroke);
@@ -347,10 +421,22 @@ private:
 	bool                   m_bDirty;
 
 	bool                   m_bIsRepeated;
+	bool 		           m_bHeaderCell;
 
 // Vertical alignment property
 
 	UT_sint32	m_iVertAlign;
+	fp_TableHeader*    m_pHeader;
+ 
+ 	UT_sint32 	       m_iShiftHeight;
+ 	bool 		       m_bIsToBeDisplaced;
+ 	UT_sint32 	       m_iBrokenTableNumber;
+ 	UT_sint32 	       m_iCellPos;
+ 	UT_sint32 	       m_iHeaderIncCount;
+ 	UT_sint32 	       m_iHeaderTop;
+ 	UT_sint32 	       m_iHeaderBot;
+ 	bool 		       m_bIsBrokenCell;
+ 	fp_TableContainer* m_pBroke;
 };
 
 class ABI_EXPORT fp_TableContainer : public fp_VerticalContainer
@@ -544,3 +630,4 @@ private:
 };
 
 #endif /* TABLECONTAINER_H */
+
