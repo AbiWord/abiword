@@ -568,6 +568,37 @@ fp_Column *         getBrokenColumn(void);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
+
+//The following functions are associated with table header.
+	fp_TableHeader * getHeaderObject() const
+	{ 
+		return m_pTableHeader; 
+	}
+	void 	identifyHeaderRows(const std::vector<UT_sint32>& ); 
+	void 	setHeader(bool bHeader)
+	{
+		m_bHeader = bHeader;
+	}
+	bool isThisHeader(void) const
+	{
+		return m_bHeader;
+	}
+	bool isHeaderSet(void) const
+	{
+		return static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet();
+	}
+	bool isCellPositionChanged() const
+	{
+		return m_bCellPositionChanged;
+	}
+	void changeCellPositions(UT_sint32,bool);
+	UT_sint32 countBrokenTables();
+	UT_sint32 getBrokenTablePosition();
+	void tweakFirstRowAlone(UT_sint32);
+	fp_CellContainer *getFirstShiftedCell() const
+	{
+		return m_pFirstShiftedCell;
+	}
 private:
 	void                    _size_request_init(void);
 	void                    _size_request_pass1(void);
@@ -627,7 +658,52 @@ private:
 
 	fp_CellContainer *  m_pFirstBrokenCell;
 	UT_sint32           m_iAdditionalMarginAfter;
+
+	fp_TableHeader * m_pTableHeader;
+	bool m_bHeader;
+	bool m_bCellPositionChanged;
+
+	fp_CellContainer * m_pFirstShiftedCell;
+	fp_CellContainer * m_pLastShiftedCell;
+	UT_sint32 m_iFirstShiftedCellPos;
+	UT_sint32 m_iLastShiftedCellPos;
+
+	UT_sint32 m_iLastCellHeight;
 };
+
+class fp_TableHeader : public fp_TableContainer
+{
+public:
+	fp_TableHeader(fl_SectionLayout *,fp_TableContainer *);
+	
+	UT_sint32 getHeaderHeight(void) const
+	{ 	return m_iHeaderHeight; }
+	const std::vector<UT_sint32> & getHeaderRowNos(void) const
+	{ 	return m_vHeaderRowNumber; }
+	
+	void createLocalListOfHeaderRows(const std::vector<UT_sint32>&);
+	void calculateHeaderHeight(void);
+	void headerDraw(dg_DrawArgs *);
+	void markCellsForHeader(void);
+	UT_sint32 getActualRowHeight(UT_sint32 iRowNumber);
+	void cacheCells(fp_TableContainer *);
+	void assignPositions(UT_sint32, UT_sint32);
+	fp_ContainerObject * getNthCell(UT_sint32);
+	~fp_TableHeader();
+
+	std::vector<fp_CellContainer *> m_vecCells;
+private:
+	std::vector<UT_sint32> m_vHeaderRowNumber;
+	fp_TableContainer *pTabMaster;
+	UT_sint32 m_iHeaderHeight;
+	fp_CellContainer *m_pFirstCachedCell;
+	fp_CellContainer *m_pLastCachedCell;
+	UT_sint32 m_iTopOfHeader;
+	UT_sint32 m_iBottomOfHeader;
+	UT_sint32 m_iTotalNoOfCells;
+	UT_sint32 m_iRowNumber;
+};
+
 
 #endif /* TABLECONTAINER_H */
 

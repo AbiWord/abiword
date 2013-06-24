@@ -1037,4 +1037,3 @@ void fp_TOCContainer::layout(void)
 	setHeight(iY);
 	deleteBrokenTOCs(true);
 }
-
