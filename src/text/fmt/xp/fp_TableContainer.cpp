@@ -135,7 +135,16 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_bIsSelected(false),
 	  m_bDirty(true),
 	  m_bIsRepeated(false),
-	  m_iVertAlign(0)
+	  m_iVertAlign(0),
+	  m_bHeaderCell(false),
+	  m_pHeader(NULL),
+	  m_bIsToBeDisplaced(false),
+	  m_iCellPos(0),
+	  m_iHeaderIncCount(0),
+	  m_iHeaderTop(-1),
+	  m_iHeaderBot(-1),
+	  m_bIsBrokenCell(false),
+	  m_pBroke(NULL)
 {
 }
 
@@ -185,6 +194,31 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 	UT_ASSERT(pSL->getContainerType() == FL_CONTAINER_TABLE);
 	static_cast<fl_TableLayout *>(pSL)->setDirty();
 	static_cast<fl_TableLayout *>(pSL)->setHeightChanged(this);
+}
+
+bool fp_CellContainer::partiallyInsideBrokenTable(fp_TableContainer *pBroke) const
+{
+	UT_sint32 iCellTop = getiTopY();
+	UT_sint32 iCellBot = getiBotY();
+	UT_sint32 iYBreak = pBroke->getYBreak();
+
+	if(iCellTop <= iYBreak)
+	{
+		if(iCellBot >= iYBreak) 
+		{
+			xxx_UT_DEBUGMSG(("I found this cell is broken %d\n",m_iCellPos));
+			return true;
+		}
+	}
+	return false;
+}
+bool fp_CellContainer::isInsideBrokenTable(fp_TableContainer *pBroke) const
+{
+	if((getY()>=pBroke->getYBreak())&&(getY()+getHeight()<=pBroke->getYBottom()))
+	{
+		return true;
+	}
+	return false;
 }
 
 /*!
@@ -6018,3 +6052,437 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 	_size_allocate_pass2 ();
 	xxx_UT_DEBUGMSG(("SEVIOR: Initial allocation height 3 is %d \n", m_MyAllocation.height));
 }
+
+/*!
+Function created for debugging purpose.
+*/
+UT_sint32 fp_TableContainer::countBrokenTables()
+{
+	fp_TableContainer *pMaster = NULL;
+	if(isThisBroken())
+	{
+		pMaster = getMasterTable();
+	}
+	else
+	{
+		pMaster=this;
+	}
+	UT_sint32 count=0;
+	fp_TableContainer *pCon = pMaster->getFirstBrokenTable();
+	if(pCon && pCon->getPrev() != NULL)
+	{
+		//count++;
+	}
+	while(pCon)
+	{
+		count++;
+		pCon=static_cast<fp_TableContainer*>(pCon->getNext());
+	}
+	return count;
+}
+
+/*!
+Function created for debugging purpose.
+*/
+UT_sint32 fp_TableContainer::getBrokenTablePosition()
+{
+	fp_TableContainer *pMaster = NULL;
+	if(isThisBroken())
+	{
+		pMaster = getMasterTable();
+	}
+	else
+	{
+		pMaster=this;
+	}
+	UT_sint32 pos=0;
+	fp_TableContainer *pTab=pMaster->getFirstBrokenTable();
+	while(pTab)
+	{
+		if(pTab->isThisHeader())
+		{
+			pTab=static_cast<fp_TableContainer *>(pTab->getNext());
+			continue;
+		}
+		pos++;
+		if(this == pTab)
+			break;
+		pTab=static_cast<fp_TableContainer *>(pTab->getNext());
+	}
+	return pos;
+}
+
+/*!
+Moves the cells downwards to acccomodate the header.
+It is also called from destructor to move the cells back to their original positions(solely to make the table editable).
+*/
+void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
+{
+	fp_TableContainer *pMaster=NULL;
+	if(isThisBroken())
+		pMaster = getMasterTable();
+	else
+		pMaster=this;
+ 	
+	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
+	UT_sint32 iCount=0;
+
+	if(bBack)
+	{
+		pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
+		while(pCell)
+		{
+			UT_sint32 iShift1 = (iShift*pCell->getCount());
+			iCount++;
+			xxx_UT_DEBUGMSG(("Shifting backward %d by %d\n",iCount,pCell->getCount()));
+			pCell->_setY(pCell->getY() - iShift1);
+			pCell->setiTopY(pCell->getiTopY() - iShift1);
+			pCell->setiBotY(pCell->getiBotY() - iShift1);
+			pCell->setCountToZero();
+			pCell=static_cast<fp_CellContainer *>(pCell->getNext());
+		}
+		return;
+	}
+	pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
+	bool bEnd=false;
+	while(pCell)
+	{
+		iCount++;
+		pCell->setPos(iCount);
+		if(bEnd || pCell->isInsideBrokenTable(this))
+		{
+			bEnd=true;
+			xxx_UT_DEBUGMSG(("inside %d\n",iCount));
+			if(m_pFirstShiftedCell == NULL)
+			{
+				m_pFirstShiftedCell=pCell;
+				m_iFirstShiftedCellPos=iCount;
+			}
+			xxx_UT_DEBUGMSG(("Shifting forward %d\n",iCount));
+			pCell->setY(pCell->getY() + iShift);
+			pCell->setiTopY(pCell->getiTopY() + iShift);
+			pCell->setiBotY(pCell->getiBotY() + iShift);
+			pCell->setToBeShifted(true);
+			pCell->incCount();
+			m_pLastShiftedCell=pCell;
+			m_iLastShiftedCellPos=iCount;
+			xxx_UT_DEBUGMSG(("New Y %d shift %d for cell %d pTab %p\n",pCell->getY(),iShift,iCount,this));
+		}
+		
+
+		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+
+//To find the end position of the table. This is set as the YBottom of pBroke in VBreakAt() function.
+	pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(iCount-1));
+	if(pCell)
+	{
+		UT_sint32 iY=pCell->getY();
+		xxx_UT_DEBUGMSG(("iY %d\n",iY));
+		iY+=pCell->getHeight();
+		m_iLastCellHeight=iY+100;
+	}
+	xxx_UT_DEBUGMSG(("Last cell yBot %d and iCount %d and %p\n",m_iLastCellHeight,iCount,pMaster->getNthCon(iCount-1)));
+}
+
+void fp_TableContainer::tweakFirstRowAlone(UT_sint32 iTweakHeight)
+{
+	fp_TableContainer *pMaster=getMasterTable();
+	UT_sint32 iNumCols=pMaster->getNumCols();
+
+	fp_CellContainer *pCell=static_cast<fp_CellContainer *>(pMaster->getNthCon(m_iFirstShiftedCellPos-6));
+	
+	UT_sint32 iCount=0;
+	while(pCell && iNumCols)
+	{
+		iNumCols--;
+		iCount++;
+		pCell->setY(pCell->getY() + iTweakHeight);
+		pCell->setiTopY(pCell->getiTopY() + iTweakHeight);
+		pCell->setiBotY(pCell->getiBotY() + iTweakHeight);
+		pCell->incCount();
+		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+	UT_DEBUGMSG(("The total no of shifted cells %d\n",iCount));
+}
+
+
+/*!
+ \This function draws a header cell. 
+ \Args: iPrevHeight -> Gives the YPosition of the previous cell. Intially set to the start of header YPosition
+ \iMaxBot -> Gives the maximum YBot of the current row.
+ \iLeftMost -> Gives the XPos of the first cell in a row.
+ \iPrevBot -> Gives the YBot of the previous row. Primarily useful in multi-row headers.
+ \iTempColOffset -> Used to determine the right border of each cell.
+ */
+void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_sint32 &iMaxBot,UT_sint32 &iLeftMost,UT_sint32 iPrevBot,UT_sint32 &iTempColOffset)
+{
+	GR_Graphics * pG=pDA->pG;
+
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+
+	const UT_Rect * pClipRect = pDA->pG->getClipRect();
+	UT_sint32 iTop,iBot,iLeft,iRight;
+	UT_sint32 ytop,ybot;
+	UT_sint32 imax = static_cast<UT_sint32>((static_cast<UT_uint32>(1<<29)) - 1);
+
+	GR_Painter painter(pG);
+	fp_Column *pCol = NULL;
+	fp_ShadowContainer *pShadow = NULL;
+	UT_sint32 col_y=0;
+	bool bClear=false;
+	fp_TableContainer *pNext=static_cast<fp_TableContainer *>(getHeaderPointer()->getNext());
+	getScreenPositions(pNext,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bClear);
+
+	if(pClipRect)
+	{
+	       ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
+	       ytop = pClipRect->top;
+	       ybot = ybot + ytop + pG->tlu(1);
+	}
+	else
+	{
+	       ytop = 0;
+	       ybot = imax;
+	}
+
+	dg_DrawArgs da=*pDA;
+	da.yoff+=iPrevHeight;
+	da.xoff+=getX();
+	iTop=iPrevBot;
+	xxx_UT_DEBUGMSG(("Height of cell is %d\n",getHeight()));
+	for(int i=0;i<countCons();i++)
+	{
+	       fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
+
+	       da.xoff += pCon->getX();
+	       if(da.yoff >=ytop && da.yoff <= ybot)
+	       {
+		       xxx_UT_DEBUGMSG(("da.yoff is %d for cell %d height %d\n",da.yoff,m_iCellPos,pCon->getHeight()));
+		       pCon->draw(&da);
+	       }
+	}
+
+	iBot=da.yoff;
+
+	if(iBot > iMaxBot)
+	{
+		iMaxBot=iBot;
+	}
+	UT_sint32 iNoColumns=pTab->getNumCols();
+	if(((m_iCellPos%iNoColumns)==1)||(iNoColumns==1))
+	{
+		iLeftMost=iLeft;
+	}
+	
+	bool bDrawBot = ((m_iCellPos%iNoColumns)==0);
+	xxx_UT_DEBUGMSG(("iTop %d and iBot %d\n",iTop,iBot));
+
+	painter.drawLine(iLeft,iTop,iRight,iTop);
+	iTempColOffset=iLeft;
+	if(bDrawBot)
+	{
+		painter.drawLine(iLeftMost,iMaxBot,iRight,iMaxBot);
+		painter.drawLine(iRight,iTop,iRight,iMaxBot);
+	}
+}
+
+/*! 
+ \Used to determine which cells form the header.
+ \The caching done here is eventually replaced in the cacheCells() function.
+ */
+void fp_TableHeader::markCellsForHeader(void)
+{
+	int i,noOfColumns=pTabMaster->getNumCols();
+	const std::vector<UT_sint32> & headerRowNum =  m_vHeaderRowNumber;
+	std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
+	if(headerRowNum.empty())
+	{
+		UT_DEBUGMSG(("There are no header rows!!!\n"));
+	}
+	for(;itr != headerRowNum.end() ; ++itr)
+	{
+		for(i=0;i<noOfColumns;i++)
+		{
+			fp_CellContainer *pCell = pTabMaster->getCellAtRowColumn(*itr-1,i);
+			xxx_UT_DEBUGMSG(("Marking cell at row %d and column for header%d\n",*itr,i));
+			pCell->setHeaderCell(true);
+			if(m_pFirstCachedCell == NULL)
+			{
+				m_pFirstCachedCell=pCell;
+			}
+			m_pLastCachedCell = pCell;
+		}
+	}
+}
+
+/*!
+ \Returns the actual row height. The getRowHeight() in fp_TableContainer class cannot be used to determine the row height.
+ */
+UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
+{
+	UT_sint32 iRowHeight=0;
+	iRowHeight = (pTabMaster->getNthRow(iRowNumber)->allocation) + (pTabMaster->getNthRow(iRowNumber)->spacing);
+	return iRowHeight;
+}
+
+fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContainer *pTableContainer)
+	:  fp_TableContainer(pSectionLayout,pTableContainer),
+	   m_iHeaderHeight(0),
+	   m_pFirstCachedCell(NULL),
+	   m_pLastCachedCell(NULL),
+	   m_iTopOfHeader(-1),
+       m_iBottomOfHeader(-1),
+       m_iTotalNoOfCells(0),
+       m_iRowNumber(-1)
+{
+	pTabMaster = pTableContainer;
+}
+
+fp_TableHeader::~fp_TableHeader()
+{
+	m_pFirstCachedCell = NULL;
+	m_pLastCachedCell = NULL;
+}
+
+void fp_TableHeader::createLocalListOfHeaderRows(const std::vector<UT_sint32> & vecHeaderRows)
+{
+	m_vHeaderRowNumber = vecHeaderRows;
+}
+
+/*!
+ \Used to calcuate the header height. 
+ \It also sets the local m_iHeaderHeight variable.
+ */
+void fp_TableHeader::calculateHeaderHeight(void)
+{
+	if(!m_vHeaderRowNumber.empty())
+	{
+		m_iHeaderHeight = 0;
+		std::vector<UT_sint32>::const_iterator itr = m_vHeaderRowNumber.begin();
+		for(;itr != m_vHeaderRowNumber.end() ; ++itr)
+		{
+			xxx_UT_DEBUGMSG(("The height of %d row is %d\n",(*itr),getActualRowHeight((*itr)-1)));
+			m_iHeaderHeight += getActualRowHeight(*itr - 1);
+		}
+		UT_DEBUGMSG(("The header height is %d \n",m_iHeaderHeight));
+	}
+}
+
+fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
+{
+	if(iPos >= m_iTotalNoOfCells)
+		return NULL;
+	return m_vecCells[iPos];
+}
+
+/*!
+ \Makes a draw call for each header cell.
+ \The lines around header are partially drawn here and partially in the drawHeaderCell() function. This means colors for each cell border is "not possible".
+ */
+//FIXME: The lines around header should be drawn like the one available in fp_CellContainer::drawLines() function. Fix this.
+void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
+{
+	fp_TableContainer *pMaster = pTabMaster;
+	fp_CellContainer *pCell = NULL;
+
+	if(m_pFirstCachedCell == NULL)
+	{
+	       cacheCells(pMaster);
+	}
+	pCell=pMaster->getCellAtRowColumn(m_iRowNumber-1,0);
+	m_pFirstCachedCell=pCell;
+	dg_DrawArgs da=*pDA;
+
+//This is to avoid the short gap between the header and the rest of the table
+	da.yoff+=170;
+	//fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
+
+	UT_sint32 iCount=0,iNoColumns=pMaster->getNumCols();
+	UT_sint32 iHeightCount=0,iPrevHeight=0,iMaxBot=0,iLeftMost=0,iPrevBot=da.yoff;
+	UT_sint32 *iColOffsets = new UT_sint32[iNoColumns];
+
+	while(pCell)
+	{
+	       pCell->setHeaderPointer(this);
+	       iCount++;
+	       UT_sint32 iModNumber=(iCount%iNoColumns);
+	       UT_sint32 iTempColOffset=0;
+	       if(iModNumber==1 && iCount!=1)
+	       {
+		       iHeightCount++;
+		       UT_sint32 i=iCount-iNoColumns,iHeight,iTemp=0;
+		       while(i<=iNoColumns)
+		       {
+			       fp_CellContainer *pPrevCell=static_cast<fp_CellContainer *>(getNthCell(i-1));
+			       iHeight=pPrevCell->getHeight();
+			       if(iHeight > iTemp)
+			       {
+				       iTemp=iHeight;
+			       }
+			       i++;
+		       }
+		       iPrevHeight+=iTemp;
+		       iPrevBot=iMaxBot;
+		       iMaxBot=0;
+	       }
+	       pCell->drawHeaderCell(&da,iPrevHeight,iMaxBot,iLeftMost,iPrevBot,iTempColOffset);
+	       iColOffsets[iCount]=iTempColOffset;
+	       pCell = static_cast<fp_CellContainer *>(getNthCell(iCount));
+	}
+
+	GR_Graphics * pG=pDA->pG;
+	GR_Painter painter(pG);
+	UT_sint32 i=1;
+	while(i<=iNoColumns)
+	{
+		xxx_UT_DEBUGMSG(("iColOffsets %d %d\n",iColOffsets[i],i));
+		painter.drawLine(iColOffsets[i],da.yoff,iColOffsets[i],iMaxBot);
+		i++;
+	}
+
+}
+
+/*!
+ \Used to cache the cells for the header. What I do here as caching is push all the header cells into a vector. m_iRowNumber variable identifies the first row
+ \that forms the header. So if three rows, say 1,5 and 10 are to be set as header, m_iRowNumber will be 1. When drawing I will use the m_iRowNumber variable to
+ \get the first cell in the vector. From there on, to get the subsequent cells, the getNthCell is used/
+ */
+void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
+{
+	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
+	UT_sint32 iRowNumber=1,i=0,iCols=pMaster->getNumCols();
+	m_iTotalNoOfCells=0;
+	m_vecCells.clear();
+	while(pCell)
+	{
+	       i++;
+	       if(i==iCols)
+	       {
+		       i=0;
+		       iRowNumber++;
+	       }
+	       if(pCell->isHeaderCell())
+	       {
+		       m_pLastCachedCell=pCell;
+		       m_vecCells.push_back(pCell);
+		       m_iTotalNoOfCells++;
+		       if(m_iRowNumber==-1)
+		       {
+			       m_iRowNumber=iRowNumber;
+		       }
+	       }
+	       pCell=static_cast<fp_CellContainer *>(pCell->getNext());
+	}
+	if(iCols==1)
+	{
+		m_iRowNumber--;
+	}
+}
+
+void fp_TableHeader::assignPositions(UT_sint32 iTop,UT_sint32 iBottom)
+{
+	m_iTopOfHeader=iTop;
+	m_iBottomOfHeader=iBottom;
+}
+	
