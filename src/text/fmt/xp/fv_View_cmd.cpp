@@ -2186,6 +2186,14 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
 }
 
 /*!
+ * insert header row
+ */
+bool FV_View::cmdInsertHeaderRow(PT_DocPosition posRow)
+{
+	return true;
+}
+
+/*!
  * Delete the column containing the position posCol
  */
 bool FV_View::cmdDeleteCol(PT_DocPosition posCol)
@@ -6454,4 +6462,5 @@ void FV_View::_updateDatesBeforeSave(bool bOverwriteCreated)
     
     m_pDoc->setMetaDataProp(PD_META_KEY_DATE_LAST_CHANGED, timeStr);
 }
+
 

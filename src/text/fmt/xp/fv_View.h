@@ -816,6 +816,7 @@ public:
 	bool                cmdDeleteTable(PT_DocPosition pos, bool bDontNotify=false);
 	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
+	bool 		        cmdInsertHeaderRow(PT_DocPosition posTable);
 	bool                cmdSplitCells(AP_CellSplitType iSplitType);
 	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
 	bool                cmdAutoFitTable(void);
@@ -1188,3 +1189,4 @@ private:
 };
 
 #endif /* FV_VIEW_H */
+
