@@ -712,7 +712,13 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 			return;
 		}
 	}
-	UT_return_if_fail(pCon);
+	if (!pCon)
+	{
+		// Can happen during loading
+		xoff = 0;
+		yoff = 0;
+		return;
+	}
 	UT_sint32 col_x =0;
 	UT_sint32 col_y =0;
 	xoff = my_xoff + pOrig->getX();
@@ -2554,3 +2560,4 @@ void fp_HdrFtrContainer::draw(dg_DrawArgs* /*pDA*/)
 {
 
 }
+

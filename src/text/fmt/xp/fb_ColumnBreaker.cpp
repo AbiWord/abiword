@@ -225,6 +225,23 @@ fp_Page * fb_ColumnBreaker::_getLastValidPage(void)
   return pFoundPage;
 }
 
+//If a table is like this,
+//  ===|===|===|===|=== <-- YBreak. Offset of the Master Table Container. 
+//  ===|===|===|===|===      
+//  ===|===|===|===|===    Page One.
+//  ===|===|===|===|===    First broken Table Container. The offset of this container from the master table is 0 always.
+//  ===|===|===|===|===
+//  ===|===|===|===|=== <-- this is the YBottom
+//  ====================================== Page Break
+//  ===|===|===|===|=== <-- YBreak. Offset of the second broken Table Container from Master Table.
+//  ===|===|===|===|===
+//  ===|===|===|===|===
+//  ===|===|===|===|===    Page Two.
+//  ===|===|===|===|===    Second broken Table Container.
+//  ===|===|===|===|===
+//  ===|===|===|===|=== <-- YBottom.
+//
+//  Table Container height = YBottom - YBreak.
 
 UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 {
@@ -391,6 +408,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 			bEquivColumnBreak = true;
 		}
 		UT_sint32 iWorkingColHeight = 0;
+		UT_sint32 iHeaderAdjust = 0;
 
 		fp_Container* pCurContainer = pFirstContainerToKeep;
 
@@ -521,6 +539,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 					iTheseAnnotations = 0;
 				}
 				iWorkingColHeight += iTheseFootnotes + iTheseAnnotations;
+				iHeaderAdjust += iTheseFootnotes + iTheseAnnotations;;
 			}
 			if (pCurContainer && pCurContainer->getContainerType() == FP_CONTAINER_TABLE)
 			{
@@ -1454,3 +1473,4 @@ fp_Container * fb_ColumnBreaker::_getNext(fp_Container * pCon)
 
 	return pNext;
 }
+
