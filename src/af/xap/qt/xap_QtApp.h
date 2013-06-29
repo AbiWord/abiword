@@ -52,10 +52,16 @@ public:
 protected:
 	int exec(); // QApplication Exec.
 
+	void							_setAbiSuiteLibDir();
+
 	XAP_QtDialogFactory			m_dialogFactory;
 	AP_QtToolbar_ControlFactory	m_controlFactory;
 
 	QApplication* m_app;
+
+private:
+	int m_qtArgc;
+	const char* m_qtArgv;
 };
 
 #endif
