@@ -379,11 +379,11 @@ public:
 	static EV_EditMethod_Fn formatTable;
 	static EV_EditMethod_Fn autoFitTable;
 
-        static EV_EditMethod_Fn repeatThisRow;
-        static EV_EditMethod_Fn removeThisRowRepeat;
-        static EV_EditMethod_Fn tableToTextCommas;
-        static EV_EditMethod_Fn tableToTextTabs;
-        static EV_EditMethod_Fn tableToTextCommasTabs;
+    static EV_EditMethod_Fn repeatThisRow;
+    static EV_EditMethod_Fn removeThisRowRepeat;
+    static EV_EditMethod_Fn tableToTextCommas;
+    static EV_EditMethod_Fn tableToTextTabs;
+    static EV_EditMethod_Fn tableToTextCommasTabs;
 
 	static EV_EditMethod_Fn replaceChar;
 
@@ -16136,7 +16136,7 @@ Defun1(dlgFormatFrame)
 
 	AP_Dialog_FormatFrame * pDialog
 		= static_cast<AP_Dialog_FormatFrame *>(pDialogFactory->requestDialog(AP_DIALOG_ID_FORMAT_FRAME));
-UT_return_val_if_fail(pDialog, false);
+    UT_return_val_if_fail(pDialog, false);
 	if(pDialog->isRunning() == true)
 	{
 		pDialog->activate();
@@ -16322,14 +16322,31 @@ Defun(btn0VisualText)
 	return true;
 }
 
-Defun0(repeatThisRow)
+Defun1(repeatThisRow)
 {
 	CHECK_FRAME;
-//	ABIWORD_VIEW;
+ 	ABIWORD_VIEW;
+ 	UT_return_val_if_fail(pView, false);
+ 	PT_DocPosition insPoint;
+ 	PT_DocPosition insAnchor;
+ 	if(pView->isSelectionEmpty())
+ 	{
+ 		insPoint = pView->getPoint();
+ 	}
+ 	else
+ 	{
+ 		insPoint = pView->getPoint();
+ 		insAnchor = pView->getSelectionAnchor();
+ 		if(insAnchor < insPoint)
+ 		{
+ 			insPoint = insAnchor;
+ 		}
+ 	}
+ 	pView->cmdInsertHeaderRow(insPoint); // is before
 	return true;
 }
 
-Defun0(removeThisRowRepeat)
+Defun1(removeThisRowRepeat)
 {
 	CHECK_FRAME;
 //	ABIWORD_VIEW;
@@ -16440,3 +16457,4 @@ Defun1(rdfPlay)
     return true;
 }
 #endif
+

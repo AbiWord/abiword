@@ -3199,6 +3199,11 @@ bool fp_TableContainer::containsNestedTables(void)
 	return (pTL->getNumNestedTables() > 0);
 }
 
+void 	fp_TableContainer::identifyHeaderRows(const std::vector<UT_sint32>& )
+{
+
+}
+
 fp_TableContainer * fp_TableContainer::getFirstBrokenTable(void) const
 {
 	if(isThisBroken())
@@ -6208,12 +6213,13 @@ void fp_TableContainer::tweakFirstRowAlone(UT_sint32 iTweakHeight)
 
 
 /*!
- \This function draws a header cell. 
- \Args: iPrevHeight -> Gives the YPosition of the previous cell. Intially set to the start of header YPosition
- \iMaxBot -> Gives the maximum YBot of the current row.
- \iLeftMost -> Gives the XPos of the first cell in a row.
- \iPrevBot -> Gives the YBot of the previous row. Primarily useful in multi-row headers.
- \iTempColOffset -> Used to determine the right border of each cell.
+This function draws a header cell. 
+Args: 
+    iPrevHeight -> Gives the YPosition of the previous cell. Intially set to the start of header YPosition
+    iMaxBot -> Gives the maximum YBot of the current row.
+    LeftMost -> Gives the XPos of the first cell in a row.
+    iPrevBot -> Gives the YBot of the previous row. Primarily useful in multi-row headers.
+    iTempColOffset -> Used to determine the right border of each cell.
  */
 void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_sint32 &iMaxBot,UT_sint32 &iLeftMost,UT_sint32 iPrevBot,UT_sint32 &iTempColOffset)
 {
