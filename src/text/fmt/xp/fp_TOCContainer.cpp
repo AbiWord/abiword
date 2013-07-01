@@ -676,7 +676,6 @@ UT_sint32 fp_TOCContainer::getHeight(void) const
 /*
   Return the height of the complete TOC as if it was not broken
 */
-
 UT_sint32 fp_TOCContainer::getTotalTOCHeight(void) const
 {
 	if (getMasterTOC())

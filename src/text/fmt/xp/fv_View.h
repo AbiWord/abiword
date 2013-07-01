@@ -817,6 +817,7 @@ public:
 	bool                cmdInsertRow(PT_DocPosition posTable, bool bBfore);
 	bool                cmdInsertCol(PT_DocPosition posTable, bool bBefore);
 	bool 		        cmdInsertHeaderRow(PT_DocPosition posTable);
+	bool 		        cmdRemoveHeaderRow(PT_DocPosition posTable);
 	bool                cmdSplitCells(AP_CellSplitType iSplitType);
 	bool                cmdSelectColumn(PT_DocPosition posOfColumn);
 	bool                cmdAutoFitTable(void);

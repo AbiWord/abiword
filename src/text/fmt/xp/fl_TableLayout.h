@@ -224,8 +224,8 @@ UT_sint32                    getBottomOffset(void) const;
 	{ return m_dMaxExtraMargin;}
 	void                     setMaxExtraMargin(double margin);
 	 
-    //Table Header
- 	const std::vector<UT_sint32> & getHeaderRowNos() const { return m_vHeaderRowNumber; }
+ 	//Table Header
+ 	const std::vector<UT_sint32>& getHeaderRowNos() const { return m_vHeaderRowNumber; }
     bool isHeaderSet() const { return m_bIsHeaderSet; }
 
 protected:
@@ -283,7 +283,7 @@ private:
 	double                 m_dTableRelWidth;
 	double                 m_dMaxExtraMargin;
 
-    //Table Header
+ 	//Table Header
  	std::vector<UT_sint32> m_vHeaderRowNumber;
  	bool 		           m_bIsHeaderSet;
 };

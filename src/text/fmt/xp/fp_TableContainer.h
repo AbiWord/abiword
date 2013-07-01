@@ -117,8 +117,8 @@ public:
 	{ m_bIsSelected = false;
 	  m_bLinesDrawn = true;
 	}
- 	bool 			    isInsideBrokenTable(fp_TableContainer *pBroke) const;
- 	bool 			    partiallyInsideBrokenTable(fp_TableContainer *) const;
+ 	bool                isInsideBrokenTable(fp_TableContainer *pBroke) const;
+ 	bool                partiallyInsideBrokenTable(fp_TableContainer *) const;
 	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke) const;
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
@@ -257,7 +257,8 @@ public:
 	bool                containsNestedTables(void);
 	bool                isRepeated(void) const;
 	void                setVertAlign(UT_sint32 i) { m_iVertAlign = i; }
-	void doVertAlign(void);
+	void                doVertAlign(void);
+	void drawHeaderCell(dg_DrawArgs *,UT_sint32,UT_sint32 &,UT_sint32 &,UT_sint32,UT_sint32 &);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
@@ -308,7 +309,6 @@ public:
 	{
 		return m_iBrokenTableNumber;
 	}
-	void drawHeaderCell(dg_DrawArgs *,UT_sint32,UT_sint32 &,UT_sint32 &,UT_sint32,UT_sint32 &);
 	void setPos(UT_sint32 i)
 	{
 		m_iCellPos=i;
@@ -421,7 +421,7 @@ private:
 	bool                   m_bDirty;
 
 	bool                   m_bIsRepeated;
-	bool 		           m_bHeaderCell;
+	bool                   m_bHeaderCell;
 
 // Vertical alignment property
 
@@ -659,6 +659,7 @@ private:
 	fp_CellContainer *  m_pFirstBrokenCell;
 	UT_sint32           m_iAdditionalMarginAfter;
 
+//the following variables are associated with header.
 	fp_TableHeader * m_pTableHeader;
 	bool m_bHeader;
 	bool m_bCellPositionChanged;
@@ -675,6 +676,7 @@ class fp_TableHeader : public fp_TableContainer
 {
 public:
 	fp_TableHeader(fl_SectionLayout *,fp_TableContainer *);
+	~fp_TableHeader();
 	
 	UT_sint32 getHeaderHeight(void) const
 	{ 	return m_iHeaderHeight; }
@@ -689,10 +691,9 @@ public:
 	void cacheCells(fp_TableContainer *);
 	void assignPositions(UT_sint32, UT_sint32);
 	fp_ContainerObject * getNthCell(UT_sint32);
-	~fp_TableHeader();
 
-	std::vector<fp_CellContainer *> m_vecCells;
 private:
+	std::vector<fp_CellContainer *> m_vecCells;
 	std::vector<UT_sint32> m_vHeaderRowNumber;
 	fp_TableContainer *pTabMaster;
 	UT_sint32 m_iHeaderHeight;

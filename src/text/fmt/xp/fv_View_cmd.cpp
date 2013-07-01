@@ -2190,6 +2190,16 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
  */
 bool FV_View::cmdInsertHeaderRow(PT_DocPosition posRow)
 {
+	//TODO: insert header row
+	return true;
+}
+
+/*!
+ * remove header row
+ */
+bool FV_View::cmdRemoveHeaderRow(PT_DocPosition posRow)
+{
+	//TODO: remove header row
 	return true;
 }
 
