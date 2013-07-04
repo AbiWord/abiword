@@ -16349,7 +16349,24 @@ Defun1(repeatThisRow)
 Defun1(removeThisRowRepeat)
 {
 	CHECK_FRAME;
-//	ABIWORD_VIEW;
+ 	ABIWORD_VIEW;
+ 	UT_return_val_if_fail(pView, false);
+ 	PT_DocPosition insPoint;
+ 	PT_DocPosition insAnchor;
+ 	if(pView->isSelectionEmpty())
+ 	{
+ 		insPoint = pView->getPoint();
+ 	}
+ 	else
+ 	{
+ 		insPoint = pView->getPoint();
+ 		insAnchor = pView->getSelectionAnchor();
+ 		if(insAnchor < insPoint)
+ 		{
+ 			insPoint = insAnchor;
+ 		}
+ 	}
+	pView->cmdRemoveHeaderRow(insPoint); // is before
 	return true;
 }
 

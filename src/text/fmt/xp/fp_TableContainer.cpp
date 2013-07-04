@@ -5286,6 +5286,16 @@ bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Conta
  */
 void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
+	//It is actually a nice idea to fire the headerDraw() from this function rather than from fp_TableContainer::draw(). 
+    //The da.yoff value is properly set to the top of page(where the header should be drawn) in this function.
+    //Calculation of da.yoff in headerDraw(), if it is fired from fp_TableContainer::draw() is complex.
+ 	fp_TableContainer *pPrevious = static_cast<fp_TableContainer *>(getPrev());
+ 	if(pPrevious && pPrevious->isThisHeader())
+ 	{
+ 		fp_TableHeader *pHeader = static_cast<fp_TableHeader *>(pPrevious);
+ 		pHeader->headerDraw(pDA);
+ 	}
+	
 	xxx_UT_DEBUGMSG(("Drawing %d table in broken chain yoff %ld \n",getBrokenDraw(),pDA->yoff));
 	xxx_UT_DEBUGMSG(("SEVIOR: _brokenDraw table %p getYBreak %d getYBottom %d \n",this, getYBreak(),getYBottom()));
 	UT_sint32 iCountCells = 0;
@@ -6059,8 +6069,8 @@ void fp_TableContainer::sizeAllocate(fp_Allocation * pAllocation)
 }
 
 /*!
-Function created for debugging purpose.
-*/
+ * Function created for debugging purpose.
+ */
 UT_sint32 fp_TableContainer::countBrokenTables()
 {
 	fp_TableContainer *pMaster = NULL;
@@ -6087,8 +6097,8 @@ UT_sint32 fp_TableContainer::countBrokenTables()
 }
 
 /*!
-Function created for debugging purpose.
-*/
+ * Function created for debugging purpose.
+ */
 UT_sint32 fp_TableContainer::getBrokenTablePosition()
 {
 	fp_TableContainer *pMaster = NULL;
@@ -6118,9 +6128,9 @@ UT_sint32 fp_TableContainer::getBrokenTablePosition()
 }
 
 /*!
-Moves the cells downwards to acccomodate the header.
-It is also called from destructor to move the cells back to their original positions(solely to make the table editable).
-*/
+ * Moves the cells downwards to acccomodate the header.
+ * It is also called from destructor to move the cells back to their original positions(solely to make the table editable).
+ */
 void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 {
 	fp_TableContainer *pMaster=NULL;
@@ -6178,7 +6188,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 
-//To find the end position of the table. This is set as the YBottom of pBroke in VBreakAt() function.
+    //To find the end position of the table. This is set as the YBottom of pBroke in VBreakAt() function.
 	pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(iCount-1));
 	if(pCell)
 	{
@@ -6213,8 +6223,8 @@ void fp_TableContainer::tweakFirstRowAlone(UT_sint32 iTweakHeight)
 
 
 /*!
-This function draws a header cell. 
-Args: 
+ * This function draws a header cell. 
+ * Args: 
     iPrevHeight -> Gives the YPosition of the previous cell. Intially set to the start of header YPosition
     iMaxBot -> Gives the maximum YBot of the current row.
     LeftMost -> Gives the XPos of the first cell in a row.
@@ -6294,8 +6304,8 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 }
 
 /*! 
- \Used to determine which cells form the header.
- \The caching done here is eventually replaced in the cacheCells() function.
+ * Used to determine which cells form the header.
+ * The caching done here is eventually replaced in the cacheCells() function.
  */
 void fp_TableHeader::markCellsForHeader(void)
 {
@@ -6323,7 +6333,7 @@ void fp_TableHeader::markCellsForHeader(void)
 }
 
 /*!
- \Returns the actual row height. The getRowHeight() in fp_TableContainer class cannot be used to determine the row height.
+ * Returns the actual row height. The getRowHeight() in fp_TableContainer class cannot be used to determine the row height.
  */
 UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
 {
@@ -6357,8 +6367,8 @@ void fp_TableHeader::createLocalListOfHeaderRows(const std::vector<UT_sint32> & 
 }
 
 /*!
- \Used to calcuate the header height. 
- \It also sets the local m_iHeaderHeight variable.
+ * Used to calcuate the header height. 
+ * It also sets the local m_iHeaderHeight variable.
  */
 void fp_TableHeader::calculateHeaderHeight(void)
 {
@@ -6383,8 +6393,8 @@ fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
 }
 
 /*!
- \Makes a draw call for each header cell.
- \The lines around header are partially drawn here and partially in the drawHeaderCell() function. This means colors for each cell border is "not possible".
+ * Makes a draw call for each header cell.
+ * The lines around header are partially drawn here and partially in the drawHeaderCell() function. This means colors for each cell border is "not possible".
  */
 //FIXME: The lines around header should be drawn like the one available in fp_CellContainer::drawLines() function. Fix this.
 void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
@@ -6400,7 +6410,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	m_pFirstCachedCell=pCell;
 	dg_DrawArgs da=*pDA;
 
-//This is to avoid the short gap between the header and the rest of the table
+    //This is to avoid the short gap between the header and the rest of the table
 	da.yoff+=170;
 	//fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
 
@@ -6450,9 +6460,11 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 }
 
 /*!
- \Used to cache the cells for the header. What I do here as caching is push all the header cells into a vector. m_iRowNumber variable identifies the first row
- \that forms the header. So if three rows, say 1,5 and 10 are to be set as header, m_iRowNumber will be 1. When drawing I will use the m_iRowNumber variable to
- \get the first cell in the vector. From there on, to get the subsequent cells, the getNthCell is used/
+ * Used to cache the cells for the header. What I do here as caching is push all the header cells into a vector. 
+ * m_iRowNumber variable identifies the first row
+ * that forms the header. So if three rows, say 1,5 and 10 are to be set as header, 
+ * m_iRowNumber will be 1. When drawing I will use the m_iRowNumber variable to
+ * get the first cell in the vector. From there on, to get the subsequent cells, the getNthCell is used
  */
 void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
 {
@@ -6491,4 +6503,4 @@ void fp_TableHeader::assignPositions(UT_sint32 iTop,UT_sint32 iBottom)
 	m_iTopOfHeader=iTop;
 	m_iBottomOfHeader=iBottom;
 }
-	
+
