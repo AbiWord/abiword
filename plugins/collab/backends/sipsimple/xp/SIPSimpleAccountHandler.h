@@ -20,11 +20,6 @@
 #define __SIPSIMPLEACCOUNTHANDLER__
 
 #include <string>
-#include <vector>
-#include <map>
-
-using std::string;
-using std::map;
 
 #include <account/xp/AccountHandler.h>
 #include "ut_string_class.h"

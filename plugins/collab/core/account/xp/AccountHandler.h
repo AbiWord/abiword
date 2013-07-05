@@ -37,10 +37,6 @@
 
 class AbiCollab;
 
-using std::string;
-using std::map;
-using std::vector;
-
 typedef enum _ConnectResult
 {
 	CONNECT_SUCCESS = 0,
@@ -53,7 +49,7 @@ typedef enum _ConnectResult
 
 typedef AccountHandler* (*AccountHandlerConstructor)();
 
-typedef map<string, string> PropertyMap;
+typedef std::map<std::string, std::string> PropertyMap;
 
 class ProtocolErrorPacket : public Packet
 {
@@ -86,10 +82,10 @@ public:
 	virtual UT_UTF8String					getDescription() = 0;
 	virtual UT_UTF8String					getDisplayType() = 0;
 
-	void									addProperty(const string& key, const string& value)
+	void									addProperty(const std::string& key, const std::string& value)
 		{ m_properties[key] = value; }
-	bool									hasProperty(const string& key);
-	const string							getProperty(const string& key);
+	bool									hasProperty(const std::string& key);
+	const std::string							getProperty(const std::string& key);
 	PropertyMap&							getProperties()
 		{ return m_properties; }
 

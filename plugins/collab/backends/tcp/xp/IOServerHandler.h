@@ -30,8 +30,6 @@
 
 class TCPAccountHandler;
 
-using asio::ip::tcp;
-
 class IOServerHandler
 {
 public:
@@ -45,7 +43,7 @@ public:
 		m_ef(ef)
 	{
  		UT_DEBUGMSG(("IOServerHandler()\n"));
- 		m_pAcceptor = new tcp::acceptor(io_service, tcp::endpoint(tcp::v4(), port));
+ 		m_pAcceptor = new asio::ip::tcp::acceptor(io_service, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), port));
 	}
 
 	virtual ~IOServerHandler()

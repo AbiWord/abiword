@@ -398,7 +398,7 @@ bool ABI_Collab_Import::_shouldIgnore(BuddyPtr pCollaborator)
 		UT_DEBUGMSG(("This session is locally controlled, check if we are waiting for a revert ack from buddy: %s\n", pCollaborator->getDescription().utf8_str()));
 		// see if we are waiting for a revert ack packet from this collaborator;
 		// if we do, then just drop all packets on the floor until we see it
-		for (vector<std::pair<BuddyPtr, UT_sint32> >::iterator it = m_revertSet.begin(); it != m_revertSet.end(); it++)
+		for (std::vector<std::pair<BuddyPtr, UT_sint32> >::iterator it = m_revertSet.begin(); it != m_revertSet.end(); it++)
 		{
 			if ((*it).first == pCollaborator)
 			{
@@ -597,7 +597,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 				UT_DEBUGMSG(("RevertAck packet seen on import for rev: %d\n", static_cast<const RevertAckSessionPacket*>(&packet)->getRev()));
 
 				// remove this collaborator from our revert ack list; he can play again...
-				for (vector<std::pair<BuddyPtr, UT_sint32> >::iterator it = m_revertSet.begin(); it != m_revertSet.end(); it++)
+				for (std::vector<std::pair<BuddyPtr, UT_sint32> >::iterator it = m_revertSet.begin(); it != m_revertSet.end(); it++)
 				{
 					if ((*it).first == pCollaborator)
 					{

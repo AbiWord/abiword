@@ -34,8 +34,6 @@
 
 class AP_Dialog_GenericProgress;
 
-using realm::protocolv1::PacketPtr;
-
 struct PendingDocumentProperties
 {
 	PendingDocumentProperties(AP_Dialog_GenericProgress* pDlg_,
@@ -90,7 +88,7 @@ public:
 		{ return m_pDoc; }
 	void								setDocument(PD_Document* pDoc)
 		{ m_pDoc = pDoc; }
-	SynchronizedQueue<PacketPtr>&		queue()
+	SynchronizedQueue<realm::protocolv1::PacketPtr>&		queue()
 		{ return m_packet_queue; }
 	asio::ip::tcp::socket&				socket()
 		{ return m_socket; }
@@ -119,9 +117,9 @@ private:
 												std::size_t bytes_transferred,
 												boost::shared_ptr<std::string> msg_ptr);
 
-	void								_complete_packet(PacketPtr packet_ptr);
+	void								_complete_packet(realm::protocolv1::PacketPtr packet_ptr);
 	void								_complete(const asio::error_code& e, std::size_t bytes_transferred,
-												PacketPtr packet_ptr);
+												realm::protocolv1::PacketPtr packet_ptr);
 
 	asio::io_service					m_io_service;
 	std::string							m_ca_file;
@@ -138,7 +136,7 @@ private:
 	std::string							m_session_id;
 	PD_Document*						m_pDoc;
 	realm::GrowBuffer					m_buf;
-	SynchronizedQueue<PacketPtr>		m_packet_queue;
+	SynchronizedQueue<realm::protocolv1::PacketPtr>		m_packet_queue;
 	boost::function<void (boost::shared_ptr<RealmConnection>)> m_sig;
 	std::vector<RealmBuddyPtr>			m_buddies;
 

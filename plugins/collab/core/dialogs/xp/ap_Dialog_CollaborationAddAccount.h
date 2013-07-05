@@ -19,16 +19,11 @@
 #ifndef AP_DIALOG_COLLABORATIONADDACCOUNT_H
 #define AP_DIALOG_COLLABORATIONADDACCOUNT_H
 
-#include <map>
-#include <string>
 #include "ut_types.h"
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
 #include "ut_vector.h"
-
-using std::map;
-using std::string;
 
 class AccountHandler;
 
