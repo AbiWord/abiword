@@ -29,8 +29,6 @@
 
 class AccountHandler;
 
-using std::vector;
-
 class Buddy
 {
 public:
@@ -72,7 +70,7 @@ public:
 	 */
 	virtual const DocTreeItem*		getDocTreeItems() const = 0;
 	void							addDocHandle(DocHandle* pDocHandle);
-	const vector<DocHandle*>&		getDocHandles() const
+	const std::vector<DocHandle*>&		getDocHandles() const
 		{ return m_docHandles; }
 	DocHandle*						getDocHandle(const UT_UTF8String& sSessionId) const
 	{
@@ -105,7 +103,7 @@ public:
 private:
 	AccountHandler*				m_handler;
 	UT_UTF8String				m_descriptor;
-	vector<DocHandle*>			m_docHandles;
+	std::vector<DocHandle*>			m_docHandles;
 	bool						m_volatile;
 };
 

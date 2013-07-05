@@ -73,7 +73,7 @@ DiskSessionRecorder::~DiskSessionRecorder()
 	destroy();
 }
 
-bool DiskSessionRecorder::getPackets(const std::string& filename, bool& bLocallyControlled, vector<RecordedPacket*>& packets)
+bool DiskSessionRecorder::getPackets(const std::string& filename, bool& bLocallyControlled, std::vector<RecordedPacket*>& packets)
 {
 	// open file
 	GsfInput* in = UT_go_file_open(filename.c_str(), NULL);
@@ -164,14 +164,14 @@ bool DiskSessionRecorder::getPackets(const std::string& filename, bool& bLocally
 bool DiskSessionRecorder::dumpSession(const std::string& filename)
 {
 	bool bLocallyControlled;
-	vector<RecordedPacket*> packets;
+	std::vector<RecordedPacket*> packets;
 
 	if (DiskSessionRecorder::getPackets(filename, bLocallyControlled, packets))
 	{
 		UT_DEBUGMSG(("Session is %s\n",bLocallyControlled?"locally controlled":"not locally controlled"));
 		
 		UT_uint32 packetCounter = 0;
-		for (vector<RecordedPacket*>::const_iterator cit = packets.begin(); cit != packets.end(); cit++)
+		for (std::vector<RecordedPacket*>::const_iterator cit = packets.begin(); cit != packets.end(); cit++)
 		{
 			const RecordedPacket* rp = *cit;
 			

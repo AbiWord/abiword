@@ -22,11 +22,6 @@
 #define __XMPPACCOUNTHANDLER__
 
 #include <string>
-#include <vector>
-#include <map>
-
-using std::string;
-using std::map;
 
 #include <loudmouth/loudmouth.h>
 #include <libxml/tree.h>

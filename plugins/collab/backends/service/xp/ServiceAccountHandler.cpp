@@ -25,6 +25,7 @@
 #ifndef WIN32
 #include <unistd.h>
 #endif
+#include <string>
 #include <boost/bind.hpp>
 #include <boost/shared_ptr.hpp>
 #include <libxml/parser.h>
@@ -193,11 +194,11 @@ UT_UTF8String ServiceAccountHandler::getShareHint(PD_Document* pDoc)
 	// TODO: we should really have a nice web url for this, but until we do,
 	// we'll poke in the SOAP uri to find it.
 	std::string server = getProperty("uri");
-	string::size_type proto_pos = server.find("://", 0);
-	if (proto_pos != string::npos)
+	std::string::size_type proto_pos = server.find("://", 0);
+	if (proto_pos != std::string::npos)
 	{
-		string::size_type slash_pos = server.find("/", proto_pos + 3);
-		if (slash_pos != string::npos)
+		std::string::size_type slash_pos = server.find("/", proto_pos + 3);
+		if (slash_pos != std::string::npos)
 			server = server.substr(0, slash_pos + 1);
 	}
 	return UT_UTF8String_sprintf("Your document will automatically be uploaded\nto %s", server.c_str());

@@ -31,12 +31,12 @@
 #include "pp_Author.h"
 #include <set>
 
-bool AccountHandler::hasProperty(const string& key)
+bool AccountHandler::hasProperty(const std::string& key)
 {
 	return m_properties.find(key) != m_properties.end();
 }
 
-const string AccountHandler::getProperty(const string& key)
+const std::string AccountHandler::getProperty(const std::string& key)
 { 
 	PropertyMap::iterator pos = m_properties.find(key);
 	if (pos != m_properties.end())

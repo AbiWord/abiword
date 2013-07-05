@@ -122,7 +122,7 @@ ConnectResult TCPAccountHandler::connect()
 
 			bool connected = false;
 			boost::shared_ptr<Session> session_ptr(new Session(m_io_service, boost::bind(&TCPAccountHandler::handleEvent, this, _1)));
-			while (iterator != tcp::resolver::iterator())
+			while (iterator != asio::ip::tcp::resolver::iterator())
 			{
 				try
 				{

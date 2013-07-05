@@ -361,7 +361,7 @@ void RealmConnection::_message(const asio::error_code& e, std::size_t /*bytes_tr
 		return;
 	}	
 	UT_DEBUGMSG(("Constructing packet of type: 0x%x\n", (*msg_ptr)[0]));
-	PacketPtr packet_ptr = realm::protocolv1::Packet::construct(static_cast<rpv1::packet_type>((*msg_ptr)[0]));
+	realm::protocolv1::PacketPtr packet_ptr = realm::protocolv1::Packet::construct(static_cast<rpv1::packet_type>((*msg_ptr)[0]));
 	if (!packet_ptr) {
 		UT_DEBUGMSG(("Error constructing packet for type 0x%x\n", (*msg_ptr)[0]));
 		return;
@@ -369,7 +369,7 @@ void RealmConnection::_message(const asio::error_code& e, std::size_t /*bytes_tr
 	_complete_packet(packet_ptr);
 }
 
-void RealmConnection::_complete_packet(PacketPtr packet_ptr)
+void RealmConnection::_complete_packet(realm::protocolv1::PacketPtr packet_ptr)
 {
 	UT_DEBUGMSG(("RealmConnection::_complete_packet()\n"));
 	int bytes_needed = packet_ptr->complete(m_buf.data(), m_buf.size());
@@ -398,7 +398,7 @@ void RealmConnection::_complete_packet(PacketPtr packet_ptr)
 	}
 }
 
-void RealmConnection::_complete(const asio::error_code& e, std::size_t bytes_transferred, PacketPtr packet_ptr)
+void RealmConnection::_complete(const asio::error_code& e, std::size_t bytes_transferred, realm::protocolv1::PacketPtr packet_ptr)
 {
 	UT_DEBUGMSG(("RealmConnection::_complete()\n"));
 	if (e)
