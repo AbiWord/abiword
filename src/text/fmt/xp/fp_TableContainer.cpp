@@ -2451,7 +2451,14 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 //
 // Only draw the lines in the clipping region.
 //
-
+ 	
+ 	if(m_bIsBrokenCell)
+ 	{
+ 		if(pBroke->getYBottom() >= getiBotY())
+ 		{
+ 			m_pBroke=pBroke;
+  		}
+ 	}
 	xxx_UT_DEBUGMSG(("number containers %d \n",countCons()));
 	UT_sint32 iLastDraw = 0;
 	for ( i = 0; (i< countCons() && !bStop); i++)
@@ -2553,10 +2560,17 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		m_bDirty = false;
 		getSectionLayout()->clearNeedsRedraw();
 	}
-	drawLines(pBroke,pG,true);
-	drawLines(pBroke,pG,false);
-	pTab2->setRedrawLines();
-    _drawBoundaries(pDA,pBroke);
+	if(m_iCellPos !=200)
+	{
+		drawLines(pBroke,pG,true);
+		drawLines(pBroke,pG,false);
+		pTab2->setRedrawLines();
+		_drawBoundaries(pDA,pBroke);
+	}
+	else
+	{
+		drawLines(pBroke,pG,false);
+	}
 }
 
 /*!
@@ -3067,7 +3081,15 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout)
 	  m_iLastWantedVBreak(-1),
 	  m_iNextWantedVBreak(-1),
 	  m_pFirstBrokenCell(NULL),
-	  m_iAdditionalMarginAfter(0)
+	  m_iAdditionalMarginAfter(0),
+      //A Header object is created only for the master table. 
+	  //This eliminates the trouble of keeping track of the object. Simon's initial suggestion.
+	  m_pTableHeader(NULL),
+      m_bHeader(false),
+	  m_bCellPositionChanged(false),
+	  m_pFirstShiftedCell(NULL),
+	  m_pLastShiftedCell(NULL),
+	  m_iLastCellHeight(0)
 {
 	if(getSectionLayout())
 	{
@@ -3107,7 +3129,15 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 	  m_iLastWantedVBreak(-1),
 	  m_iNextWantedVBreak(-1),
 	  m_pFirstBrokenCell(NULL),
-	  m_iAdditionalMarginAfter(0)
+	  m_iAdditionalMarginAfter(0),
+      //A Header object is created only for the master table. 
+	  //This eliminates the trouble of keeping track of the object. Simon's initial suggestion.
+	  m_pTableHeader(NULL),
+      m_bHeader(false),
+	  m_bCellPositionChanged(false),
+	  m_pFirstShiftedCell(NULL),
+	  m_pLastShiftedCell(NULL),
+	  m_iLastCellHeight(0)
 {
 }
 
@@ -4073,6 +4103,27 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 // Do the case of creating the first broken table from the master table.
 // 
 	fp_TableContainer * pBroke = NULL;
+	UT_DEBUGMSG(("VBreak at %d\n",vpos));
+ 	xxx_UT_DEBUGMSG(("VBreak for %x first\n %d",this,countBrokenTables()));
+ 	fp_TableHeader *pHeader = NULL;
+ 	fp_TableHeader *pTabHeader  = NULL;
+ 	if((getMasterTable() && getMasterTable()->getHeaderObject()))
+ 	{
+ 		pTabHeader = getMasterTable()->getHeaderObject();
+ 		pTabHeader->calculateHeaderHeight();
+ 		pTabHeader->markCellsForHeader();
+ 	}
+ 	else if(m_pTableHeader != NULL)
+ 	{
+ 		pTabHeader = m_pTableHeader;
+  		pTabHeader->calculateHeaderHeight();
+ 		pTabHeader->markCellsForHeader();
+ 	}
+    //	fl_TableLayout *pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+ 	if(m_bHeader)
+ 	{
+ 		return static_cast<fp_ContainerObject *>(this);
+ 	}
 	if(!isThisBroken() && getLastBrokenTable() == NULL)
 	{
 		UT_return_val_if_fail(getFirstBrokenTable() == NULL, NULL);
@@ -4080,12 +4131,14 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		xxx_UT_DEBUGMSG(("SEVIOR:!!!!!!! First broken table %x \n",pBroke));
 		pBroke->setYBreakHere(vpos);
 		pBroke->setYBottom(getTotalTableHeight());
+		UT_DEBUGMSG(("The height of pBroke is %d \n",pBroke->getHeight()));
 		setFirstBrokenTable(pBroke);
 		setLastBrokenTable(pBroke);
 		pBroke->setContainer(getContainer());
 		pBroke->setHeight(pBroke->getHeight());
 		pBroke->setY(getY());
 		pBroke->breakCellsAt(vpos);
+		UT_DEBUGMSG(("pBroke is for %p\n",pBroke));
 		return pBroke;
 	}
 //
@@ -6503,4 +6556,5 @@ void fp_TableHeader::assignPositions(UT_sint32 iTop,UT_sint32 iBottom)
 	m_iTopOfHeader=iTop;
 	m_iBottomOfHeader=iBottom;
 }
+
 
