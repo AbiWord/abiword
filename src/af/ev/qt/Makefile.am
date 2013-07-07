@@ -10,6 +10,10 @@ libqt_la_SOURCES = \
 	ev_QtKeyboard.h \
 	ev_QtMouse.cpp \
 	ev_QtMouse.h \
+	ev_QtMenu.cpp \
+	ev_QtMenu.h \
+	ev_QtMenuBar.cpp \
+	ev_QtMenuBar.h \
 	$(NULL)
 #	ev_UnixFontCombo.cpp \
 #	ev_UnixFontCombo.h \

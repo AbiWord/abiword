@@ -20,22 +20,26 @@
 
 #include <QMainWindow>
 #include <QGraphicsView>
+#include <QMenuBar>
 
 #include "ev_QtKeyboard.h"
 #include "ev_QtMouse.h"
 #include "xap_QtApp.h"
 #include "xap_QtFrameImpl.h"
+#include "ev_QtMenuBar.h"
 
 XAP_QtFrameImpl::XAP_QtFrameImpl(XAP_Frame *pFrame)
 	: XAP_FrameImpl(pFrame)
 	, m_dialogFactory(XAP_App::getApp(), pFrame)
 	, m_topLevel(NULL)
+	, m_pQtMenuBar(NULL)
 {
 }
 
 XAP_QtFrameImpl::~XAP_QtFrameImpl()
 {
 	delete m_topLevel;
+	delete m_pQtMenuBar;
 }
 
 bool XAP_QtFrameImpl::_close()
@@ -89,6 +93,15 @@ void XAP_QtFrameImpl::_createTopLevelWindow()
 		m_topLevel->setWindowTitle(XAP_App::getApp()->getApplicationTitleForTitleBar());
 		QGraphicsView* centralWidget = new QGraphicsView(m_topLevel);
 		m_topLevel->setCentralWidget(centralWidget);
+		m_topLevel->show();
+	}
+
+	if (m_iFrameMode != XAP_NoMenusWindowLess) {
+		// synthesize a menu from the info in our base class.
+		m_pQtMenuBar = new EV_QtMenuBar(static_cast<XAP_QtApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
+										 m_szMenuLabelSetName);
+		UT_return_if_fail(m_pQtMenuBar);
+		m_topLevel->setMenuBar(m_pQtMenuBar->getMenuBar());
 		m_topLevel->show();
 	}
 }

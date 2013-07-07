@@ -26,6 +26,7 @@
 #include "xap_QtDialogFactory.h"
 
 class QMainWindow;
+class EV_QtMenuBar;
 
 class XAP_QtFrameImpl
 	: public XAP_FrameImpl
@@ -38,6 +39,8 @@ public:
 	virtual void _createTopLevelWindow();
 
 protected:
+	EV_QtMenuBar *	    m_pQtMenuBar;
+
 	virtual bool _close();
 	virtual bool _raise();
 	virtual bool _show();
