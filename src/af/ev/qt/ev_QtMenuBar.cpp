@@ -27,11 +27,12 @@ EV_QtMenuBar::EV_QtMenuBar(XAP_QtApp * pQtApp,
 							   const char * szMenuLabelSetName)
 	: EV_QtMenu(pQtApp, pFrame, szMenuLayoutName, szMenuLabelSetName)
 {
+	m_QMenuBar = new QMenuBar();
 }
 
 EV_QtMenuBar::~EV_QtMenuBar()
 {
-	
+	delete m_QMenuBar;
 }
 
 void  EV_QtMenuBar::destroy(void)

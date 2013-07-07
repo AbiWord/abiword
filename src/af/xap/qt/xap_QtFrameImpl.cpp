@@ -38,8 +38,8 @@ XAP_QtFrameImpl::XAP_QtFrameImpl(XAP_Frame *pFrame)
 
 XAP_QtFrameImpl::~XAP_QtFrameImpl()
 {
-	delete m_topLevel;
 	delete m_pQtMenuBar;
+	delete m_topLevel;
 }
 
 bool XAP_QtFrameImpl::_close()

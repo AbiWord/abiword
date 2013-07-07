@@ -71,7 +71,6 @@ private:
 											bool isPopup,
 											const char *szLabelName,
 											const char *szMnemonicName);
-	std::vector<void *>           m_vecCallbacks;
 };
 
 #endif /* EV_QTMENU_H */

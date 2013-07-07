@@ -29,11 +29,7 @@ EV_QtMenu::EV_QtMenu(XAP_QtApp * pQtApp,
 						 const char * szMenuLabelSetName)
 	: EV_Menu(pQtApp, pQtApp->getEditMethodContainer(), szMenuLayoutName, szMenuLabelSetName),
 	  m_pQtApp(pQtApp),
-	  m_pFrame(pFrame),
-	  // there are 189 callbacks at the moment. This is a large vector, but we do not want
-	  // it to grow too fast (it has the lifespan of the application, and so we do not
-	  // want too much empty space in it)
-	  m_vecCallbacks(189)
+	  m_pFrame(pFrame)
 {
 }
 
