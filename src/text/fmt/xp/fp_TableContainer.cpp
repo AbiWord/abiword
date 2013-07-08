@@ -3241,9 +3241,13 @@ bool fp_TableContainer::containsNestedTables(void)
 	return (pTL->getNumNestedTables() > 0);
 }
 
-void 	fp_TableContainer::identifyHeaderRows(const std::vector<UT_sint32>& )
+void fp_TableContainer::identifyHeaderRows(const std::vector<UT_sint32>& vecHeaderRows)
 {
-
+ 	if(m_pTableHeader != NULL)
+ 	{
+ 		m_pTableHeader = new fp_TableHeader(getSectionLayout(),this);
+ 	}
+ 	m_pTableHeader->createLocalListOfHeaderRows(vecHeaderRows);
 }
 
 fp_TableContainer * fp_TableContainer::getFirstBrokenTable(void) const
@@ -4977,10 +4981,17 @@ void fp_TableContainer::setToAllocation(void)
 		pCon = static_cast<fp_CellContainer *>(pCon->getNext());
 	}
 	pCon = static_cast<fp_CellContainer *>(getNthCon(0));
+
+	if(isHeaderSet())
+ 	{
+ 		if(m_pTableHeader)
+ 			m_pTableHeader->calculateHeaderHeight();
+ 	}
+
 	while(pCon)
 	{
-		pCon->setLineMarkers();
 		pCon->doVertAlign();
+		pCon->setLineMarkers();
 		pCon = static_cast<fp_CellContainer *>(pCon->getNext());
 	}
 	setYBottom(getTotalTableHeight());
@@ -5165,7 +5176,7 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 	}
 	else if(getFirstBrokenTable() != NULL)
 	{
-		getFirstBrokenTable()->draw( pDA);
+		getFirstBrokenTable()->draw(pDA);
 		return;
 	}
 	fp_Container * pCell = static_cast<fp_Container *>(getNthCon(0));
