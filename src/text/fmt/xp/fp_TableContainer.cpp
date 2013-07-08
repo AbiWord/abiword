@@ -3150,6 +3150,14 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
  */
 fp_TableContainer::~fp_TableContainer()
 {
+	UT_DEBUGMSG(("Destructor called for %p\n",this));
+	if(isThisBroken() && !isThisHeader() && getMasterTable()->isHeaderSet())
+	{
+		if(m_bCellPositionChanged && getMasterTable()->countCons())
+		{
+			changeCellPositions(getMasterTable()->getHeaderObject()->getHeaderHeight(),true);
+		}
+	}
 	UT_std_vector_purgeall(m_vecRows);
 	UT_std_vector_purgeall(m_vecColumns);
 	clearCons();
@@ -3161,6 +3169,10 @@ fp_TableContainer::~fp_TableContainer()
 	setContainer(NULL);
 	setPrev(NULL);
 	setNext(NULL);
+	if(getMasterTable() && m_pTableHeader!=NULL)
+	{
+		DELETEP(m_pTableHeader);
+	}
 	m_pMasterTable = NULL;
 }
 
