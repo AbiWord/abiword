@@ -1043,7 +1043,7 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
 		return;
 	}
 
-	pPage = pBroke->getPage(); 
+	//pPage = pBroke->getPage(); -->redundant code
 	if(getContainer()->getContainerType() == FP_CONTAINER_FRAME)
 	{
 		fp_FrameContainer * pFC = static_cast<fp_FrameContainer *>(getContainer());
@@ -1164,7 +1164,7 @@ void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics
  */
 bool fp_CellContainer::drawLines(fp_TableContainer * pBroke,GR_Graphics * pG, bool bDoClear)
 {
-	xxx_UT_DEBUGMSG(("Doing drawlines for cell %x \n",this));
+	xxx_UT_DEBUGMSG(("Doing drawlines for cell %x in page %d \n",this,getPage()->getPageNumber()));
 	UT_return_val_if_fail(getPage(), false);
 
 	if(pBroke == NULL)
@@ -1981,6 +1981,11 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 
 	m_bDrawLeft = true;
 
+	if(isHeaderCell())
+	{
+		m_bDrawLeft = m_bDrawBot = m_bDrawTop = m_bDrawRight = true;
+	}
+
 	UT_sint32 count = countCons();
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 ytop,ybot;
@@ -1990,7 +1995,7 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	{
 		ybot = UT_MAX(pClipRect->height,_getMaxContainerHeight());
 		ytop = pClipRect->top;
-        ybot += ytop + 1;
+		ybot += ytop + 1;
 		xxx_UT_DEBUGMSG(("SEVIOR: clip top %d clip bot %d \n",ytop,ybot));
 	}
 	else
@@ -2039,8 +2044,8 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 		m_bDirty = false;
 	}
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
-		drawLines(NULL,pG,true);
-	drawLines(NULL,pG,false);
+		drawLines(static_cast<fp_TableContainer *>(getHeaderPointer()),pG,true);
+	drawLines(static_cast<fp_TableContainer *>(getHeaderPointer()),pG,false);
 	pTab->setRedrawLines();
     _drawBoundaries(pDA,NULL);
 }
@@ -2317,6 +2322,11 @@ bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke) const
 {
 	UT_sint32 nextRow = m_iBottomAttach;
 	UT_sint32 yCellBot = 0;
+	if(pBroke->getMasterTable() == NULL)
+ 	{
+		return false;
+	}
+
 	if(nextRow <= pBroke->getMasterTable()->getNumRows())
 	{
 		yCellBot = pBroke->getMasterTable()->getYOfRow(nextRow);
@@ -2352,7 +2362,17 @@ bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke) const
 void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 								  fp_TableContainer * pBroke)
 {
+	if(partiallyInsideBrokenTable(pBroke))
+	{
+		setBrokenCell(true);
+	}
+	if(m_pBroke == pBroke)
+	{
+		pDA->yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
+	}
+
 	GR_Graphics * pG = pDA->pG;
+	m_bDrawTop = false;
 	m_bDrawLeft = false;
 	m_bDrawTop = false;
 	fp_TableContainer * pTab2 = NULL;
