@@ -3243,7 +3243,7 @@ bool fp_TableContainer::containsNestedTables(void)
 
 void fp_TableContainer::identifyHeaderRows(const std::vector<UT_sint32>& vecHeaderRows)
 {
- 	if(m_pTableHeader != NULL)
+ 	if(m_pTableHeader == NULL)
  	{
  		m_pTableHeader = new fp_TableHeader(getSectionLayout(),this);
  	}
