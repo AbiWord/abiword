@@ -4186,6 +4186,106 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		return getLastBrokenTable()->VBreakAt(vpos);
 	}
 	pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
+	
+	xxx_UT_DEBUGMSG(("VBreak for %x 3\n",this));
+	if(static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet())
+	{
+		pHeader = new fp_TableHeader(getSectionLayout(),getMasterTable());
+		//static_cast<fp_VerticalContainer *>(pHeader)->setHeight(pTabHeader->getHeaderHeight());
+		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
+		getMasterTable()->setLastBrokenTable(pBroke);
+		pBroke->setYBreakHere(getYBreak() + vpos);
+		//pBroke->setYBottom(getMasterTable()->getYBottom());
+		UT_DEBUGMSG(("pTabHeader's height %d\n",pTabHeader->getHeaderHeight()));
+		
+		setYBottom(getYBreak() + vpos -1);
+		UT_ASSERT(getHeight() >0);
+		UT_sint32 i = -1;
+		
+		pHeader->setPrev(this);
+		pHeader->setNext(pBroke);
+		pBroke->setPrev(pHeader);
+		fp_Container * pUpCon = NULL;
+		if(getMasterTable()->getFirstBrokenTable() == this)
+		{
+			pUpCon = getMasterTable()->getContainer();
+ 
+			pHeader->setPrev(getMasterTable());
+			pHeader->setNext(pBroke);
+
+  			pBroke->setPrev(pHeader);
+  			pBroke->setNext(NULL);
+
+	  		getMasterTable()->setNext(pHeader);
+			setNext(pHeader);
+			if (pUpCon)
+			{
+				i = pUpCon->findCon(getMasterTable());
+			}
+		}
+		else
+		{
+			pBroke->setNext(NULL);
+	  		setNext(pHeader);
+			if(getYBreak() == 0 )
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				pUpCon = getMasterTable()->getContainer();
+				if (pUpCon)
+				{
+					i = pUpCon->findCon(getMasterTable());
+				}
+			}
+			else
+			{
+				pUpCon = getContainer();
+				if (pUpCon)
+				{
+					i = pUpCon->findCon(this);
+				}
+			}
+		}
+
+		if((i >=0) && (i < pUpCon->countCons() - 1))
+		{
+			pUpCon->insertConAt(pHeader,i+1);
+			pUpCon->insertConAt(pBroke,i+1);
+		}
+		else if((i >= 0) && (i == pUpCon->countCons() -1))
+		{
+			pUpCon->addCon(pHeader);
+			pUpCon->addCon(pBroke);
+		}
+		else
+		{
+			UT_DEBUGMSG(("Breaking a table that is not yet inserted\n"));
+		}
+		pHeader->setContainer(pUpCon);
+		pBroke->setContainer(pUpCon);
+
+		UT_sint32 iHeaderHeight=pTabHeader->getHeaderHeight();
+		pBroke->setYBottom(getMasterTable()->getYOfRow(getMasterTable()->getNumRows()) + iHeaderHeight); 
+		pBroke->changeCellPositions(iHeaderHeight,false);
+		if(pBroke->m_iLastCellHeight > 0)
+			pBroke->setYBottom(pBroke->m_iLastCellHeight);
+
+		UT_sint32 iPos=getBrokenTablePosition();
+		if(iPos==2)
+		{
+			UT_DEBUGMSG(("iPos %d\n",iPos));
+			pBroke->tweakFirstRowAlone(iHeaderHeight);
+		}
+		UT_ASSERT(pBroke->getHeight() > 0);
+		//
+		// The cells are broken relative to the top of the table 
+		//
+		breakCellsAt(getYBottom());
+		pHeader->setHeader(true);
+
+		pBroke->m_bCellPositionChanged = true;
+		return pBroke;
+    } 
+
 	UT_sint32 iTotalHeight = getTotalTableHeight();
 	UT_sint32 iNewYBreak = vpos + getYBreak();
 	if(getContainer() && getContainer()->getContainerType() == FP_CONTAINER_CELL)
