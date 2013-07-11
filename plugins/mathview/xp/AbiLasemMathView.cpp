@@ -16,6 +16,7 @@
 #include "pp_AttrProp.h"
 #include "ut_mbtowc.h"
 #include "gr_Painter.h"
+#include "gr_CairoGraphics.h"
 #include "xad_Document.h"
 #include "xap_Module.h"
 #include "ap_App.h"
@@ -413,9 +414,9 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	// we own storage for pNewFile and must free it.
 	FREEP(pNewFile);
 
-	UT_DEBUGMSG(("fileInsertMathML: loading [%s]\n",sNewFile.utf8_str()));
+	UT_DEBUGMSG(("YAYfileInsertMathML: loading [%s]\n",sNewFile.utf8_str()));
    
-	IE_Imp_MathML * pImpMathML = NULL; //new IE_Imp_MathML(pDoc, pMathManager->EntityTable());
+	IE_Imp_MathML * pImpMathML = new IE_Imp_MathML(pDoc, pMathManager->EntityTable());
 	UT_Error errorCode = pImpMathML->importFile(sNewFile.utf8_str());
 
 	if (errorCode != UT_OK)
@@ -510,8 +511,8 @@ GR_LasemMathManager::GR_LasemMathManager(GR_Graphics* pG)
 
 GR_LasemMathManager::~GR_LasemMathManager()
 { 
-     UT_VECTOR_PURGEALL(GR_AbiMathItems *,m_vecItems);
-     UT_VECTOR_SPARSEPURGEALL(LasemMathView *,GR_LasemMathManager);
+     //UT_VECTOR_PURGEALL(GR_AbiMathItems*,m_vecItems);
+     //UT_VECTOR_SPARSEPURGEALL(LasemMathView*,GR_LasemMathManager);
 }
 
 GR_EmbedManager * GR_LasemMathManager::create(GR_Graphics * pG)
@@ -521,7 +522,7 @@ GR_EmbedManager * GR_LasemMathManager::create(GR_Graphics * pG)
 
 const char * GR_LasemMathManager::getObjectType(void) const
 {
-  return "Mathml";
+  return "mathml";
 }
 LasemMathView * GR_LasemMathManager::last_created_view = NULL;
 
@@ -633,7 +634,7 @@ void GR_LasemMathManager::loadEmbedData(UT_sint32 uid)
   }
  UT_return_if_fail(bFoundDataID);
  UT_return_if_fail(pszDataID);
-  UT_DEBUGMSG(("Mathml string is... \n %s \n",sMathML.utf8_str()));
+  UT_DEBUGMSG(("The Mathml string is... \n %s \n",sMathML.utf8_str()));
   _loadMathMl(uid, sMathML);
 }
 
@@ -667,7 +668,8 @@ void GR_LasemMathManager::setColor(G_GNUC_UNUSED UT_sint32 uid, G_GNUC_UNUSED UT
 bool GR_LasemMathManager::setFont(UT_sint32 uid, const GR_Font * pFont)
 {
 	LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
-	return pLasemMathView->setFont (pFont);
+	pLasemMathView->setFont (pFont);
+	return true;
 }
 
 void GR_LasemMathManager::render(UT_sint32 uid, UT_Rect & rec)
@@ -734,23 +736,10 @@ void LasemMathView::render(UT_Rect & rec)
 	cairo_t *cr = pUGG->getCairo ();
 	UT_sint32 _width = pUGG->tdu(rec.width);
 	UT_sint32 _height = pUGG->tdu(rec.height);
-	UT_sint32 x = pUGG->tdu(rec.left);
-	UT_sint32 y = pUGG->tdu(rec.top)-pUGG->tdu(rec.height);
 	UT_sint32 zoom = pUGG->getZoomPercentage ();
 	UT_sint32 real_width = _width * 100 / zoom;
 	UT_sint32 real_height = _height * 100 / zoom;
-//	if (rec.width != width || rec.height != height)
-//	{
-//		width = rec.width;
-//		height = rec.height;
-//		gog_graph_set_size (m_Graph, real_width, real_height);
-//	}
-//	cairo_save (cr);
-//	cairo_translate (cr, x, y);
-//	gog_renderer_render_to_cairo (m_Renderer, cr, _width, _height);
-//	cairo_new_path (cr); // just in case a path has not been ended
-//	cairo_restore (cr);
-    lasem_render(cr, real_width, real_height)
+   	lasem_render(cr, real_width, real_height);
 	pUGG->endPaint();
 }
 
@@ -773,11 +762,10 @@ void LasemMathView::render(UT_Rect & rec)
  void LasemMathView :: setFont(const GR_Font * pFont)
  {      
         char *szFontName;
-        GR_Font::FontFamilyEnum *pff;
-        GR_Font::FontPitchEnum *pfp; 
-        bool *pbTrueType;
-        GR_Font::s_getGenericFontProperties (szFontName, pff, pfp,pbTrueType);
-        PangoFontDescription *desc = pango_font_description_from_string (g_value_get_string (szFontName));
+        GR_Font::s_getGenericFontProperties (szFontName,NULL,NULL,NULL);
+        PangoFontDescription *desc = pango_font_description_from_string (szFontName);
         lasem_set_font(desc);
 	pango_font_description_free (desc);
+	
  }
+

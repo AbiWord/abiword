@@ -7,9 +7,11 @@
 #include "gr_Graphics.h"
 #include "ut_types.h"
 #include "ut_vector.h"
+
 #include <goffice/goffice.h>
 #include <lsmdom.h>
 
+#include "ie_imp_MathML.h"
 
 class GR_Graphics;
 class PD_Document;
@@ -36,7 +38,7 @@ public:
     virtual void           initialize(void);
     virtual UT_sint32      makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID) ;
     virtual void           setColor(UT_sint32 uid, UT_RGBColor c);
-    virtual void           setFont(UT_sint32 uid, const GR_Font * pFont);
+    virtual bool           setFont(UT_sint32 uid, const GR_Font * pFont);
     virtual UT_sint32      getWidth(UT_sint32 uid);
     virtual UT_sint32      getAscent(UT_sint32 uid) ;
     virtual UT_sint32      getDescent(UT_sint32 uid) ;
@@ -55,7 +57,7 @@ public:
 	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
 	static void 			buildContextualMenu ();
 	static void 			removeContextualMenu ();
-
+	const IE_Imp_MathML_EntityTable & EntityTable() const { return m_EntityTable; }
 	static LasemMathView * last_created_view;
 
 private:
@@ -66,6 +68,7 @@ private:
     UT_GenericVector<LasemMathView *>        m_vecLasemMathView;
     UT_GenericVector<GR_AbiMathItems *>    m_vecItems;
     PD_Document *                          m_pDoc;
+    IE_Imp_MathML_EntityTable              m_EntityTable;
 };
 
 class LasemMathView
@@ -110,6 +113,6 @@ private:
 
 
 
-bool AbiLasem_Create(AV_View* v, EV_EditMethodCallData *d);
+//bool AbiLasem_Create(AV_View* v, EV_EditMethodCallData *d);
 
 #endif // __gr_AbiLasemMathManager_h__

@@ -1,5 +1,5 @@
 
-mathview_pkgs='mathview-frontend-libxml2 >= 0.7.5'
+mathview_pkgs='lasem-0.4 >= 0.4.1'
 mathview_deps="no"
 
 # test hashmap availablity
