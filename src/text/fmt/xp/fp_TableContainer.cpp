@@ -4186,7 +4186,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		return getLastBrokenTable()->VBreakAt(vpos);
 	}
 	pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
-	
+
 	xxx_UT_DEBUGMSG(("VBreak for %x 3\n",this));
 	if(static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet())
 	{
@@ -4197,11 +4197,11 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		pBroke->setYBreakHere(getYBreak() + vpos);
 		//pBroke->setYBottom(getMasterTable()->getYBottom());
 		UT_DEBUGMSG(("pTabHeader's height %d\n",pTabHeader->getHeaderHeight()));
-		
+
 		setYBottom(getYBreak() + vpos -1);
 		UT_ASSERT(getHeight() >0);
 		UT_sint32 i = -1;
-		
+
 		pHeader->setPrev(this);
 		pHeader->setNext(pBroke);
 		pBroke->setPrev(pHeader);
@@ -4284,7 +4284,96 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 
 		pBroke->m_bCellPositionChanged = true;
 		return pBroke;
-    } 
+	} else {
+		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
+		getMasterTable()->setLastBrokenTable(pBroke);
+
+		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!!!  New broken table %x \n",getLastBrokenTable()));
+
+		//
+		// vpos is relative to the container that contains this height but we need
+		// to add in the height above it.
+		//
+		pBroke->setYBreakHere(getYBreak()+vpos);
+		pBroke->setYBottom(getMasterTable()->getYOfRow(getMasterTable()->getNumRows()));
+		UT_DEBUGMSG(("The height of the broken table is %d\n",pBroke->getHeight()));
+		setYBottom(getYBreak() + vpos -1);
+		UT_ASSERT(getHeight() >0);
+		xxx_UT_DEBUGMSG(("SEVIOR????????: YBreak %d YBottom  %d Height of broken table %d \n",pBroke->getYBreak(),pBroke->getYBottom(),pBroke->getHeight()));
+		xxx_UT_DEBUGMSG(("SEVIOR????????: Previous table YBreak %d YBottom  %d Height of broken table %d \n",getYBreak(),getYBottom(),getHeight()));
+		UT_ASSERT(pBroke->getHeight() > 0);
+		UT_sint32 i = -1;
+		//
+		// The structure of table linked list is as follows.
+		// NULL <= Master <==> Next <==> Next => NULL
+		//          first 
+		// ie terminated by NULL's in the getNext getPrev list. The second
+		// broken table points and is pointed to by the Master table
+		// 
+		pBroke->setPrev(this);
+		fp_Container * pUpCon = NULL;
+		if(getMasterTable()->getFirstBrokenTable() == this)
+		{
+			pUpCon = getMasterTable()->getContainer();
+
+			pBroke->setPrev(getMasterTable());
+			pBroke->setNext(NULL);
+			getMasterTable()->setNext(pBroke);
+			setNext(pBroke);
+			if (pUpCon)
+			{
+
+				i = pUpCon->findCon(getMasterTable());
+			}
+
+		}
+		else
+		{
+			pBroke->setNext(NULL);
+			setNext(pBroke);
+			if(getYBreak() == 0 )
+			{
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				pUpCon = getMasterTable()->getContainer();
+				if (pUpCon)
+				{
+					i = pUpCon->findCon(getMasterTable());
+				}
+			}
+			else
+			{
+				pUpCon = getContainer();
+				if (pUpCon)
+				{
+					i = pUpCon->findCon(this);
+				}
+			}
+		}
+
+		if((i >=0) && (i < pUpCon->countCons() - 1))
+ 		{
+			pUpCon->insertConAt(pBroke,i+2);
+ 		}
+		else if((i >= 0) && (i == pUpCon->countCons() -1))
+		{
+			pUpCon->addCon(pBroke);
+		}
+ 		else
+ 		{
+			UT_DEBUGMSG(("Breaking a table that is not yet inserted\n"));
+ 		}
+		pBroke->setContainer(pUpCon);
+		//
+		// Now deal with issues from a container overlapping the top of the
+		// of the new broken table.
+		//
+		static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
+		//
+		// The cells are broken relative to the top of the table 
+		//
+		breakCellsAt(getYBottom());
+		return pBroke;
+	}
 
 	UT_sint32 iTotalHeight = getTotalTableHeight();
 	UT_sint32 iNewYBreak = vpos + getYBreak();
@@ -6178,7 +6267,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 		}
 		allocation.y = y + pCell->getTopPad() + yspace/2;
 
-		xxx_UT_DEBUGMSG(("SEVIOR!!!!!!: max_height = %d width =%d \n",max_height,allocation.width));
+		xxx_UT_DEBUGMSG(("SEVIOR: max_height = %d width =%d \n",max_height,allocation.width));
 		pCell->sizeAllocate( &allocation);
 		pCell = static_cast<fp_CellContainer *>(pCell->getNext());
 	}
