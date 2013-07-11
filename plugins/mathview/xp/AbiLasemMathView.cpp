@@ -60,6 +60,7 @@
 #include "ut_files.h"
 #endif
 
+#include "itex2MML.h"
 
 static GR_LasemMathManager * pMathManager = NULL; // single plug-in instance of GR_MathManager
 
@@ -497,6 +498,7 @@ AbiMathView_LatexInsert(AV_View* v, EV_EditMethodCallData* /*d*/)
 
  GR_AbiMathItems::~GR_AbiMathItems(void)
 {
+
 }
 
 
@@ -511,8 +513,7 @@ GR_LasemMathManager::GR_LasemMathManager(GR_Graphics* pG)
 
 GR_LasemMathManager::~GR_LasemMathManager()
 { 
-     //UT_VECTOR_PURGEALL(GR_AbiMathItems*,m_vecItems);
-     //UT_VECTOR_SPARSEPURGEALL(LasemMathView*,GR_LasemMathManager);
+     UT_VECTOR_PURGEALL(GR_AbiMathItems *, m_vecItems);     
 }
 
 GR_EmbedManager * GR_LasemMathManager::create(GR_Graphics * pG)
@@ -538,11 +539,22 @@ UT_sint32  GR_LasemMathManager::_makeLasemMathView()
      return m_vecLasemMathView.getItemCount()-1;
 }
 
-void GR_LasemMathManager::_loadMathMl(UT_sint32 uid, UT_UTF8String& sMathmlBuf)
+void GR_LasemMathManager::_loadMathMl(UT_sint32 uid, UT_UTF8String& sMathBuf)
 {
-  LasemMathView * pMathView = m_vecLasemMathView.getNthItem(uid);
-  UT_return_if_fail(pMathView);
-  pMathView->loadBuffer(sMathmlBuf);
+  LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
+  UT_return_if_fail(pLasemMathView);
+  UT_DEBUGMSG(("loading |%s| \n",sMathBuf.utf8_str()));
+  pLasemMathView->loadBuffer(sMathBuf);
+/*	if(sMathBuf)
+	{
+		UT_DEBUGMSG(("Attempt to load |%s| \n failed \n",sMathBuf.utf8_str()));
+
+		UT_UTF8String sFailed = "<math xmlns='http://www.w3.org/1998/Math/MathML' display='inline'><merror><mtext>";
+		sFailed += "failed"; // TODO: need a better message!
+		sFailed += "</mtext></merror></math>";
+		pLasemMathView->loadBuffer(sFailed);
+	}
+*/
 }
 
 UT_sint32 GR_LasemMathManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, G_GNUC_UNUSED const char * szDataID)
@@ -700,6 +712,99 @@ void GR_LasemMathManager::updateData(UT_sint32 uid, UT_sint32 api)
 	pItem->m_iAPI = api;
 }
 
+bool GR_LasemMathManager::isDefault()
+{
+    return false;
+}
+
+bool GR_LasemMathManager::isEdittable(G_GNUC_UNUSED UT_sint32 uid)
+{
+    return true;
+}
+
+bool GR_LasemMathManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED UT_ByteBuf & From, G_GNUC_UNUSED UT_ByteBuf & To)
+{
+  	XAP_App * pApp = XAP_App::getApp();
+	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
+
+	if (iConType != 0)
+	{
+		return false;
+	}
+
+	/* add a pair of enclosing brackets \[ \] */
+	UT_UTF8String sLatex;
+	UT_UCS4_mbtowc myWC;
+	sLatex += "\\[";
+	sLatex.appendBuf(From, myWC);
+	sLatex += "\\]";
+
+	char * mathml = lsm_itex_to_mathml(sLatex.utf8_str(), sLatex.size());
+	
+	if (!mathml)
+	{
+		pFrame->showMessageBox("itex2MML failed to convert the LaTeX equation into MathML, sorry!\n", // TODO: fix message
+			XAP_Dialog_MessageBox::b_O, 
+			XAP_Dialog_MessageBox::a_OK);
+		return false;
+	}
+
+	UT_UTF8String sMathML(mathml);
+	lsm_itex_free_mathml_buffer(mathml);
+
+	if (sMathML.size() == 0)
+	{
+	  UT_UTF8String sErrMessage = "itex2MML conversion from LaTex equation resulted in zero-length MathML!\n"; // TODO: fix message
+		//sErrMessage += sLatex;
+		sErrMessage += "\n";
+		// sErrMessage += FullLine;
+		pFrame->showMessageBox(sErrMessage.utf8_str(),
+				XAP_Dialog_MessageBox::b_O,
+				XAP_Dialog_MessageBox::a_OK);
+		return false;
+	}
+
+	UT_DEBUGMSG(("Input MathML %s \n", sMathML.utf8_str()));
+
+	return EntityTable().convert(sMathML.utf8_str(), sMathML.size(), To);
+}
+
+char * GR_LasemMathManager :: lsm_itex_to_mathml (const char *itex, int size)
+{
+       char *mathml;
+
+       if (itex == NULL)
+               return NULL;
+
+       if (size < 0)
+               size = strlen (itex);
+
+       mathml = itex2MML_parse (itex, size);
+       if (mathml == NULL)
+               return NULL;
+
+       if (mathml[0] == '\0') {
+               itex2MML_free_string (mathml);
+               return NULL;
+       }
+
+       return mathml;
+}
+
+void GR_LasemMathManager :: lsm_itex_free_mathml_buffer (char *mathml)
+{
+       if (mathml == NULL)
+               return;
+
+       itex2MML_free_string (mathml);
+}
+
+
+void GR_LasemMathManager::setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize)
+{
+
+}
+
 LasemMathView::LasemMathView(GR_LasemMathManager * pMathMan): m_pMathMan(pMathMan)
 {
 		width = height = 0;
@@ -722,6 +827,11 @@ LasemMathView::~LasemMathView(void)
 {
         if (m_Image)
 		delete m_Image;
+}
+
+void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
+{
+	itex =  g_strdup(sMathml.utf8_str());
 }
 
 void LasemMathView::render(UT_Rect & rec)
@@ -769,3 +879,53 @@ void LasemMathView::render(UT_Rect & rec)
 	
  }
 
+ABI_PLUGIN_DECLARE(AbiMathView)
+
+// -----------------------------------------------------------------------
+//
+//      Abiword Plugin Interface 
+//
+// -----------------------------------------------------------------------
+  
+ABI_FAR_CALL
+int abi_plugin_register (XAP_ModuleInfo * mi)
+{
+	mi->name = "AbiMathView";
+	mi->desc = "The plugin allows AbiWord to import MathML documents";
+	mi->version = ABI_VERSION_STRING;
+	mi->author = "Martin Sevior <msevior@physics.unimelb.edu.au>";
+	mi->usage = "No Usage";
+    
+	// Add to AbiWord's plugin listeners
+	XAP_App * pApp = XAP_App::getApp();	
+	pMathManager = new GR_LasemMathManager(NULL);
+	pApp->registerEmbeddable(pMathManager);
+
+	// Add to AbiWord's menus
+	AbiMathView_addToMenus();
+     
+	return 1;
+}
+
+ABI_FAR_CALL
+int abi_plugin_unregister (XAP_ModuleInfo * mi)
+{
+	mi->name = 0;
+	mi->desc = 0;
+	mi->version = 0;
+	mi->author = 0;
+	mi->usage = 0;
+
+	XAP_App * pApp = XAP_App::getApp();
+	pApp->unRegisterEmbeddable(pMathManager->getObjectType());
+	DELETEP(pMathManager);
+	AbiMathView_removeFromMenus();
+
+	return 1;
+}
+
+ABI_FAR_CALL
+int abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32 /*release*/)
+{
+	return 1; 
+}

@@ -51,19 +51,19 @@ public:
     virtual bool           isDefault(void);
     virtual bool           modify(UT_sint32 uid);
     virtual bool           convert(UT_uint32 iConv, UT_ByteBuf & From, UT_ByteBuf & To);
-	virtual void		   updateData(UT_sint32 uid, UT_sint32 api);
-
+    virtual void           updateData(UT_sint32 uid, UT_sint32 api);
     virtual bool           isEdittable(UT_sint32 uid);
 	virtual void		   setRun (UT_sint32 uid, fp_Run * run);
-	static void 			buildContextualMenu ();
-	static void 			removeContextualMenu ();
-	const IE_Imp_MathML_EntityTable & EntityTable() const { return m_EntityTable; }
-	static LasemMathView * last_created_view;
+    const IE_Imp_MathML_EntityTable & EntityTable() const { return m_EntityTable; }
+    
+    static LasemMathView * last_created_view;
 
 private:
     UT_sint32                              _makeLasemMathView(void);
     void                                    _loadMathMl(UT_sint32 uid, UT_UTF8String & sGOChartBuf);
     UT_sint32                              _getNextUID(void);
+    char *                                 lsm_itex_to_mathml (const char *itex, int size);
+    void                                   lsm_itex_free_mathml_buffer (char *mathml);
     UT_sint32                              m_CurrentUID;
     UT_GenericVector<LasemMathView *>        m_vecLasemMathView;
     UT_GenericVector<GR_AbiMathItems *>    m_vecItems;
@@ -77,9 +77,9 @@ public:
 	LasemMathView(GR_LasemMathManager  * pMathMan);
 	virtual ~LasemMathView(void);
 	void render(UT_Rect & rec);
-    void setFont(const GR_Font * pFont); 
-    void setColor(UT_RGBColor c);
-    void setItex(char * itex); 
+  	void setFont(const GR_Font * pFont); 
+	void setColor(UT_RGBColor c);
+   	void setItex(char * itex); 
 	void loadBuffer(UT_UTF8String & sMathml);
 	void modify(void);
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
@@ -91,7 +91,7 @@ public:
 private:
 	GR_LasemMathManager  * m_pMathMan;
 
-    char *itex;
+    	char *itex;
 	char *font;
 	char *color;
 	
@@ -107,12 +107,7 @@ private:
         
         void lasem_render(cairo_t *cr, double width, double height);
         bool lasem_set_font(PangoFontDescription const *desc);
-        char * lsm_itex_to_mathml (const char *itex, int size);
-        void lsm_itex_free_mathml_buffer (char *mathml);
+        
 };
-
-
-
-//bool AbiLasem_Create(AV_View* v, EV_EditMethodCallData *d);
 
 #endif // __gr_AbiLasemMathManager_h__
