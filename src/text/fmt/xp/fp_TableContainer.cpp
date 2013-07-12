@@ -5572,8 +5572,8 @@ bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Conta
 void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
 	//It is actually a nice idea to fire the headerDraw() from this function rather than from fp_TableContainer::draw(). 
-    //The da.yoff value is properly set to the top of page(where the header should be drawn) in this function.
-    //Calculation of da.yoff in headerDraw(), if it is fired from fp_TableContainer::draw() is complex.
+	//The da.yoff value is properly set to the top of page(where the header should be drawn) in this function.
+	//Calculation of da.yoff in headerDraw(), if it is fired from fp_TableContainer::draw() is complex.
  	fp_TableContainer *pPrevious = static_cast<fp_TableContainer *>(getPrev());
  	if(pPrevious && pPrevious->isThisHeader())
  	{
@@ -6633,9 +6633,9 @@ fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContai
 	   m_pFirstCachedCell(NULL),
 	   m_pLastCachedCell(NULL),
 	   m_iTopOfHeader(-1),
-       m_iBottomOfHeader(-1),
-       m_iTotalNoOfCells(0),
-       m_iRowNumber(-1)
+	   m_iBottomOfHeader(-1),
+	   m_iTotalNoOfCells(0),
+	   m_iRowNumber(-1)
 {
 	pTabMaster = pTableContainer;
 }

@@ -151,7 +151,7 @@ void fp_TOCContainer::clearScreen(void)
 		return;
 	}
 	fp_Container * pCon = NULL;
-	UT_sint32 i = 0;
+	UT_sint32 i = -1;
 	for(i=0; i< countCons(); i++)
 	{
 		pCon = static_cast<fp_Container *>(getNthCon(i));

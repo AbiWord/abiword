@@ -3934,7 +3934,7 @@ Defun1(insertClipart)
 
 	XAP_Dialog_ClipArt * pDialog
 		= static_cast<XAP_Dialog_ClipArt *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_CLIPART));
-UT_return_val_if_fail(pDialog, false);
+	UT_return_val_if_fail(pDialog, false);
 	// set the initial directory
 	UT_String dir(pApp->getAbiSuiteLibDir());
 	dir += "/clipart/";
