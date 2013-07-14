@@ -36,6 +36,8 @@ public:
 	friend class XAP_Frame;
 	virtual ~XAP_QtFrameImpl();
 
+	QMainWindow* getTopLevel() const
+		{ return m_topLevel; }
 	virtual void _createTopLevelWindow();
 
 protected:
@@ -50,8 +52,6 @@ protected:
 
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
 
-	QMainWindow* getTopLevel() const
-		{ return m_topLevel; }
 	virtual XAP_DialogFactory * _getDialogFactory();
 	virtual EV_Menu * _getMainMenu();
 	virtual EV_Toolbar * _newToolbar(XAP_Frame *pFrame,

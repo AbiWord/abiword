@@ -19,7 +19,11 @@
  * 02110-1301 USA.
  */
 
+#include <QMainWindow>
+
 #include "ev_QtMenuBar.h"
+#include "xap_Frame.h"
+#include "xap_QtFrameImpl.h"
 
 EV_QtMenuBar::EV_QtMenuBar(XAP_QtApp * pQtApp,
 							   XAP_Frame * pFrame,
@@ -27,7 +31,6 @@ EV_QtMenuBar::EV_QtMenuBar(XAP_QtApp * pQtApp,
 							   const char * szMenuLabelSetName)
 	: EV_QtMenu(pQtApp, pFrame, szMenuLayoutName, szMenuLabelSetName)
 {
-	m_QMenuBar = new QMenuBar();
 }
 
 EV_QtMenuBar::~EV_QtMenuBar()
@@ -42,7 +45,11 @@ void  EV_QtMenuBar::destroy(void)
 
 bool EV_QtMenuBar::synthesizeMenuBar()
 {
-	//TODO
+	QMainWindow * wTopLevel = static_cast<XAP_QtFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevel();
+	m_QMenuBar = new QMenuBar();
+	wTopLevel->setMenuBar(m_QMenuBar);
+	synthesizeMenu(m_QMenuBar, false);
+	wTopLevel->show();
 	return true;
 }
 

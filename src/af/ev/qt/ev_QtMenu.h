@@ -22,14 +22,12 @@
 #ifndef EV_QTMENU_H
 #define EV_QTMENU_H
 
-#include "ut_types.h"
-#include "ut_vector.h"
-#include "xap_Types.h"
-#include "ev_Menu.h"
-
-#include <QMenu>
-#include <QWidget>
+#include <QMenuBar>
 #include <QVector>
+#include <QObject>
+#include <QAction>
+
+#include "ev_Menu.h"
 
 class AV_View;
 class XAP_QtApp;
@@ -47,14 +45,14 @@ public:
 		    const char * szMenuLabelSetName);
 	virtual ~EV_QtMenu();
 
-	bool				synthesizeMenu(QMenu * menuRoot, bool isPopup);
+	bool				synthesizeMenu(QMenuBar * menuRoot, bool isPopup);
 	bool				menuEvent(XAP_Menu_Id id);
 	virtual bool		refreshMenu(AV_View * pView) = 0;
 
  	XAP_Frame * 	getFrame();
 
 protected:
-	bool				_refreshMenu(AV_View * pView, QMenu * menuRoot);
+	bool				_refreshMenu(AV_View * pView, QMenuBar * menuRoot);
 	bool				_isItemPresent(XAP_Menu_Id id) const;
 	virtual bool		_doAddMenuItem(UT_uint32 layout_pos);
 
@@ -63,14 +61,9 @@ protected: // FIXME! These variables should be private.
 	XAP_Frame *  	m_pFrame;
 
 	// actual QT menu widgets
-	QVector<QWidget*> m_vecMenuWidgets;
+	QVector<QObject*> m_vecMenuWidgets;
 private:
-        QMenu * s_createNormalMenuEntry(const XAP_Menu_Id id,
-											bool isCheckable,
-											bool isRadio,
-											bool isPopup,
-											const char *szLabelName,
-											const char *szMnemonicName);
+
 };
 
 #endif /* EV_QTMENU_H */

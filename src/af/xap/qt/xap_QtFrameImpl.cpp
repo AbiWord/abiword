@@ -101,8 +101,9 @@ void XAP_QtFrameImpl::_createTopLevelWindow()
 		m_pQtMenuBar = new EV_QtMenuBar(static_cast<XAP_QtApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
 										 m_szMenuLabelSetName);
 		UT_return_if_fail(m_pQtMenuBar);
-		m_topLevel->setMenuBar(m_pQtMenuBar->getMenuBar());
-		m_topLevel->show();
+		UT_DebugOnly<bool> bResult;
+		bResult = m_pQtMenuBar->synthesizeMenuBar();
+		UT_ASSERT(bResult);
 	}
 }
 

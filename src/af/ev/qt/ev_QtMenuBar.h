@@ -22,9 +22,9 @@
 #ifndef EV_QTMENUBAR_H
 #define EV_QTMENUBAR_H
 
-#include "ev_QtMenu.h"
-
 #include <QMenuBar>
+
+#include "ev_QtMenu.h"
 
 class AV_View;
 class XAP_QtApp;
