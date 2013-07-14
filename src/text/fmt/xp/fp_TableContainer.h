@@ -258,7 +258,7 @@ public:
 	bool                isRepeated(void) const;
 	void                setVertAlign(UT_sint32 i) { m_iVertAlign = i; }
 	void                doVertAlign(void);
-	void drawHeaderCell(dg_DrawArgs *,UT_sint32,UT_sint32 &,UT_sint32 &,UT_sint32,UT_sint32 &);
+	void                drawHeaderCell(dg_DrawArgs *,UT_sint32,UT_sint32 &,UT_sint32 &,UT_sint32,UT_sint32 &);
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif

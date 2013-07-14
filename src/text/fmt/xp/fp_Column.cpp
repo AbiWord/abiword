@@ -713,6 +713,8 @@ void fp_VerticalContainer::getScreenOffsets(fp_ContainerObject* pContainer,
 		}
 	}
 
+	UT_return_if_fail(pCon);
+	
 	UT_sint32 col_x =0;
 	UT_sint32 col_y =0;
 	xoff = my_xoff + pOrig->getX();
