@@ -538,6 +538,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 					iTheseFootnotes = iMaxSecCol - pCurLine->getHeight() - 1;
 					iTheseAnnotations = 0;
 				}
+				xxx_UT_DEBUGMSG(("got footnote iTheseFootnotes value: %d\n", iTheseFootnotes));
 				iWorkingColHeight += iTheseFootnotes + iTheseAnnotations;
 				iHeaderAdjust += iTheseFootnotes + iTheseAnnotations;;
 			}
@@ -589,6 +590,24 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 				if(pOffendingContainer == NULL)
 				{
 					break;
+				} 
+				else if (pOffendingContainer->isVBreakable())
+				{
+					xxx_UT_DEBUGMSG(("fb_ColumnBreak 1 Broken Container num %d \n",
+						(static_cast<fp_TableContainer *>(pOffendingContainer))->getBrokenNumber()));
+					if(pOffendingContainer && ((pOffendingContainer->getContainerType() == FP_CONTAINER_TABLE) ||
+						(pOffendingContainer->getContainerType() == FP_CONTAINER_TOC)))
+					{
+
+						//
+						// Can't break the table or the TOC; so bump it to next column.
+						//
+						pCurContainer = pOffendingContainer;
+						pLastContainerToKeep = pOffendingContainer->getPrevContainerInSection();
+						UT_DEBUGMSG(("Can't break table or TOC. pOffendingContainer %p pLastContainerToKeep %p\n",
+							pCurContainer,pLastContainerToKeep));
+						break;
+					}
 				}
 
 				if (pOffendingContainer == pFirstContainerToKeep)

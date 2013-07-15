@@ -2044,7 +2044,9 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 		m_bDirty = false;
 	}
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
+	{
 		drawLines(static_cast<fp_TableContainer *>(getHeaderPointer()),pG,true);
+	}
 	drawLines(static_cast<fp_TableContainer *>(getHeaderPointer()),pG,false);
 	pTab->setRedrawLines();
     _drawBoundaries(pDA,NULL);
@@ -2374,8 +2376,8 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	GR_Graphics * pG = pDA->pG;
 	m_bDrawTop = false;
 	m_bDrawLeft = false;
-	m_bDrawTop = false;
 	fp_TableContainer * pTab2 = NULL;
+	xxx_UT_DEBUGMSG(("The Y of this cell %x is %d table Y is %d address %x master %x\n",this,getY(), getContainer()->getY(), getContainer(), pBroke->getMasterTable())); 
 	if(pBroke && pBroke->isThisBroken())
 	{
 		pTab2 = pBroke->getMasterTable();
@@ -2580,7 +2582,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 		m_bDirty = false;
 		getSectionLayout()->clearNeedsRedraw();
 	}
-	if(m_iCellPos !=200)
+	if(m_iCellPos != 200)
 	{
 		drawLines(pBroke,pG,true);
 		drawLines(pBroke,pG,false);
