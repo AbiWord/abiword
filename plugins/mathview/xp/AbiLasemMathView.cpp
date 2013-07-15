@@ -807,7 +807,7 @@ void GR_LasemMathManager::setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize)
 
 LasemMathView::LasemMathView(GR_LasemMathManager * pMathMan): m_pMathMan(pMathMan)
 {
-		width = height = 0;
+	width = height = 0;
         ascent = descent = 0;
         
         font = NULL;
@@ -825,13 +825,13 @@ LasemMathView::LasemMathView(GR_LasemMathManager * pMathMan): m_pMathMan(pMathMa
 
 LasemMathView::~LasemMathView(void)
 {
-        if (m_Image)
-		delete m_Image;
+       
 }
 
 void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 {
 	itex =  g_strdup(sMathml.utf8_str());
+        lasem_set_data();
 }
 
 void LasemMathView::render(UT_Rect & rec)
@@ -851,6 +851,21 @@ void LasemMathView::render(UT_Rect & rec)
 	UT_sint32 real_height = _height * 100 / zoom;
    	lasem_render(cr, real_width, real_height);
 	pUGG->endPaint();
+}
+
+UT_ByteBuf *LasemMathView::getSnapShot ()
+{
+	UT_return_val_if_fail (mathml, NULL);
+	int height = ascent + descent;
+	if (height == 0 || (int) width == 0)
+		return NULL;
+	size_t length;
+	const UT_Byte *buf = reinterpret_cast <const UT_Byte*> (go_component_get_snapshot (component, GO_SNAPSHOT_SVG, &length));
+	if (!buf || !length)
+		return NULL;
+	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	pBuf->append (buf, length);
+	return pBuf;
 }
 
  void LasemMathView :: lasem_render (cairo_t *cr, double width, double height)
@@ -878,6 +893,95 @@ void LasemMathView::render(UT_Rect & rec)
 	pango_font_description_free (desc);
 	
  }
+ 
+void LasemMathView :: setColor(UT_RGBColor c)
+{
+        UT_HashColor *pHashColor;
+        color = g_strdup(pHashColor->setColor(c));
+       // lsm_dom_element_set_attribute (style_element, "mathcolor", color);
+}
+
+void LasemMathView :: lasem_set_data()
+{
+	LsmDomView *view;
+	double width, height, baseline;
+	LsmDomNodeList *list;
+	LsmDomNode *node;
+	unsigned i, max;
+
+	g_object_unref (mathml);
+	math_element = NULL;
+	style_element = NULL;
+	char * value = itex2MML_parse (itex, strlen(itex));
+	if(value ==NULL)
+		return;
+        mathml = lsm_mathml_document_new_from_itex(value,strlen(itex),NULL);
+	g_free(value);
+	if (mathml == NULL)
+		return;
+	math_element = LSM_DOM_NODE (lsm_dom_document_get_document_element (mathml));
+	list = lsm_dom_node_get_child_nodes (math_element);
+	max = lsm_dom_node_list_get_length (list);
+	for (i = 0; i < max; i++) {
+		node = lsm_dom_node_list_get_item (list, i);
+		if (!strcmp (lsm_dom_node_get_node_name (node), "mstyle"))
+			style_element = node;
+		}
+	
+	view = lsm_dom_document_create_view (mathml);
+	lsm_dom_view_get_size (view, &width, &height, &baseline);
+	this->width = width / 72.;
+	this->height = height / 72.;
+	this->ascent = baseline / 72.;
+	this->descent = this->height - this->ascent;
+}
+
+
+
+void LasemMathView :: lasem_set_font(const PangoFontDescription * desc)
+{
+	if (desc != NULL) 
+        {
+		LsmDomElement *style_element;
+		LsmDomView *view;
+		char *value;
+		double width, height, baseline;
+
+		g_free (font);
+		font = pango_font_description_to_string (desc);
+		if (this->style_element == NULL) {
+			this->style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
+			lsm_dom_node_append_child (math_element, this->style_element);
+			/* FIXME: put all document children into the mstyle element */
+		}
+		style_element = LSM_DOM_ELEMENT (this->style_element);
+		if (pango_font_description_get_weight (desc) >= PANGO_WEIGHT_BOLD) {
+			if (pango_font_description_get_style (desc) == PANGO_STYLE_NORMAL)
+				lsm_dom_element_set_attribute (style_element, "mathvariant", "bold");
+			else
+				lsm_dom_element_set_attribute (style_element, "mathvariant", "bold-italic");
+		} else {
+			if (pango_font_description_get_style (desc) == PANGO_STYLE_NORMAL)
+				lsm_dom_element_set_attribute (style_element, "mathvariant", "normal");
+			else
+				lsm_dom_element_set_attribute (style_element, "mathvariant", "italic");
+		}
+
+		lsm_dom_element_set_attribute (style_element, "mathfamily",
+					       pango_font_description_get_family (desc));
+
+		value = g_strdup_printf ("%gpt", pango_units_to_double (
+				pango_font_description_get_size (desc)));
+		lsm_dom_element_set_attribute (style_element, "mathsize", value);
+		g_free (value);
+		view = lsm_dom_document_create_view (mathml);
+		lsm_dom_view_get_size (view, &width, &height, &baseline);
+		this->width = width / 72.;
+		this->height = height / 72.;
+		this->ascent = baseline / 72.;
+		this->descent = this->height - this->ascent;
+	}
+}
 
 ABI_PLUGIN_DECLARE(AbiMathView)
 

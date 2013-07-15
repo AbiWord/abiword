@@ -9,7 +9,9 @@
 #include "ut_vector.h"
 
 #include <goffice/goffice.h>
+//#include <lsmmathml.h>
 #include <lsmdom.h>
+
 
 #include "ie_imp_MathML.h"
 
@@ -88,6 +90,8 @@ public:
 	UT_ByteBuf *exportToSVG (); //
 	UT_sint32 getWidth() {return width;}
 	UT_sint32 getHeight() {return height;}
+        UT_sint32 getAscent() {return ascent;}
+        UT_sint32 getDescent(){return descent;}
 private:
 	GR_LasemMathManager  * m_pMathMan;
 
@@ -99,14 +103,14 @@ private:
 	LsmDomNode *math_element;
 	LsmDomNode *style_element;
 	
-    GR_Image *m_Image;
 	UT_sint32 width, height, ascent, descent;
 	fp_Run *m_pRun;
 	
     //GtkWidget *m_Guru;
         
         void lasem_render(cairo_t *cr, double width, double height);
-        bool lasem_set_font(PangoFontDescription const *desc);
+        void lasem_set_font(const PangoFontDescription  *desc);
+        void lasem_set_data();
         
 };
 
