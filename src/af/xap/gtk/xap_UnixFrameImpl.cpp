@@ -1236,8 +1236,11 @@ gint XAP_UnixFrameImpl::_fe::expose(GtkWidget * w, GdkEventExpose* pExposeEvent)
 		rClip.height = pGr->tlu(pExposeEvent->area.height)+1;
 #if GTK_CHECK_VERSION(3,0,0)
 		static_cast<GR_CairoGraphics *>(pGr)->setCairo(cr);
-#endif
 		pView->draw(&rClip);
+		static_cast<GR_CairoGraphics *>(pGr)->setCairo(NULL);
+#else
+		pView->draw(&rClip);
+#endif
 	}
 	return FALSE;
 }
