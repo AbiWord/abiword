@@ -4139,7 +4139,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 
 //
 // Do the case of creating the first broken table from the master table.
-// 
+//
 	fp_TableContainer * pBroke = NULL;
 	UT_DEBUGMSG(("VBreak at %d\n",vpos));
  	xxx_UT_DEBUGMSG(("VBreak for %x first\n %d",this,countBrokenTables()));
@@ -4187,20 +4187,20 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	{
 		return getLastBrokenTable()->VBreakAt(vpos);
 	}
-	pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
 
 	xxx_UT_DEBUGMSG(("VBreak for %x 3\n",this));
 	if(static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet())
 	{
 		pHeader = new fp_TableHeader(getSectionLayout(),getMasterTable());
 		//static_cast<fp_VerticalContainer *>(pHeader)->setHeight(pTabHeader->getHeaderHeight());
+		
 		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
 		getMasterTable()->setLastBrokenTable(pBroke);
 		pBroke->setYBreakHere(getYBreak() + vpos);
-		//pBroke->setYBottom(getMasterTable()->getYBottom());
 		UT_DEBUGMSG(("pTabHeader's height %d\n",pTabHeader->getHeaderHeight()));
 
 		setYBottom(getYBreak() + vpos -1);
+
 		UT_ASSERT(getHeight() >0);
 		UT_sint32 i = -1;
 
@@ -4278,6 +4278,21 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 			pBroke->tweakFirstRowAlone(iHeaderHeight);
 		}
 		UT_ASSERT(pBroke->getHeight() > 0);
+		//
+		// Now deal with issues from a container overlapping the top of the
+		// of the new broken table.
+		//
+		UT_sint32 iTweak = tweakBrokenTable(pBroke);
+		xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
+	 	if(iTweak > 0)
+ 		{
+
+			xxx_UT_DEBUGMSG(("Ybreak of %x set to %d after tweak \n",pBroke,pBroke->getYBreak() - iTweak));
+ 			pBroke->setYBreakHere(pBroke->getYBreak() - iTweak);
+			xxx_UT_DEBUGMSG(("YBottom set to %d after tweak \n",getYBottom() - iTweak -1));
+	 	}
+		static_cast<fp_VerticalContainer *>(pHeader)->setHeight(static_cast<fp_TableContainer *>(pHeader)->getHeight());
+		static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
 		//
 		// The cells are broken relative to the top of the table 
 		//
@@ -4449,6 +4464,28 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	return pBroke;
 }
 
+UT_sint32 fp_TableContainer::tweakBrokenTable(fp_TableContainer * pBroke)
+{
+	fp_TableContainer * pTab = getMasterTable();
+	if(!pTab)
+	{
+		return 0;
+	}
+	UT_sint32 iTweak = 0;
+	fp_CellContainer * pCell = NULL;
+	UT_sint32 i = 0;
+	//pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
+	for(i =0; i<pTab->countCons(); i++)
+	{
+		pCell = static_cast<fp_CellContainer *>(pTab->getNthCon(i));
+		UT_sint32 iTwk = pCell->tweakBrokenTable(pBroke);
+		if(iTwk > iTweak)
+		{
+			iTweak = iTwk;
+		}
+	}
+	return iTweak;
+}
 
 /*!
  * Overload the setY method
