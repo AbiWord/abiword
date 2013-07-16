@@ -559,59 +559,57 @@ void GR_LasemMathManager::_loadMathMl(UT_sint32 uid, UT_UTF8String& sMathBuf)
 
 UT_sint32 GR_LasemMathManager::makeEmbedView(AD_Document * pDoc, UT_uint32 api, G_GNUC_UNUSED const char * szDataID)
 {
-  if(m_pDoc == NULL)
-  {
-    m_pDoc = static_cast<PD_Document *>(pDoc);
-  }
-  else
-  {
-    UT_ASSERT(m_pDoc == static_cast<PD_Document *>(pDoc));
-  }
-  UT_sint32 iNew = _makeLasemMathView();
-  GR_AbiMathItems * pItem = new GR_AbiMathItems();
-  pItem->m_iAPI = api;
-  pItem->m_bHasSnapshot = false;
-  m_vecItems.addItem(pItem);
-  UT_ASSERT(m_vecItems.getItemCount() == (iNew+1));
-  return iNew;
+        if(m_pDoc == NULL)
+        {
+          m_pDoc = static_cast<PD_Document *>(pDoc);
+        }
+        else
+        {
+          UT_ASSERT(m_pDoc == static_cast<PD_Document *>(pDoc));
+        }
+        UT_sint32 iNew = _makeLasemMathView();
+        GR_AbiMathItems * pItem = new GR_AbiMathItems();
+        pItem->m_iAPI = api;
+        pItem->m_bHasSnapshot = false;
+        m_vecItems.addItem(pItem);
+        UT_ASSERT(m_vecItems.getItemCount() == (iNew+1));
+        return iNew;
 }
 
 void GR_LasemMathManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & rec)
 {
-  if(!getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN))
-    {
-      return;
-    }
-  GR_AbiMathItems * pItem = m_vecItems.getNthItem(uid);
-  UT_return_if_fail(pItem);  
-  //LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
-  const PP_AttrProp * pSpanAP = NULL;
-  PT_AttrPropIndex api = pItem->m_iAPI;
-  bool bHaveProp = m_pDoc->getAttrProp(api, &pSpanAP);
-  UT_return_if_fail(bHaveProp);
-  const char * pszDataID = NULL;
-  pSpanAP->getAttribute("dataid", pszDataID);
-  UT_ByteBuf *pBuf;
-  UT_UTF8String sID = "snapshot-svg-";
-  sID += pszDataID;
-  if(pItem->m_bHasSnapshot)
-    {
-      m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
-    }
-  else
-    {
-      const std::string mimetypeSVG = "image/svg";
-      m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mimetypeSVG,NULL);
-      pItem->m_bHasSnapshot = true;
-    }
-  delete pBuf;
+	GR_AbiMathItems * pItem = m_vecItems.getNthItem(uid);
+	UT_return_if_fail(pItem);  
+	LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
+	const PP_AttrProp * pSpanAP = NULL;
+	PT_AttrPropIndex api = pItem->m_iAPI;
+	/* bool b = */ m_pDoc->getAttrProp(api, &pSpanAP);
+	const char * pszDataID = NULL;
+	pSpanAP->getAttribute("dataid", pszDataID);
+	UT_ByteBuf *pBuf = NULL;
+	std::string mime_type;
+	if ((pBuf = pLasemMathView->getSnapShot()))
+	  {
+		UT_UTF8String sID = "snapshot-svg-";
+		sID += pszDataID;
+		if(pItem->m_bHasSnapshot)
+		  {
+			m_pDoc->replaceDataItem(sID.utf8_str(),reinterpret_cast< const UT_ByteBuf *>(pBuf));
+		  }
+		else
+		  {
+			m_pDoc->createDataItem(sID.utf8_str(),false,reinterpret_cast< const UT_ByteBuf *>(pBuf),mime_type,NULL);
+			pItem->m_bHasSnapshot = true;
+		  }
+		delete pBuf;
+	  }
 }
 
 bool GR_LasemMathManager::modify(UT_sint32 uid)
 {
-  LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
-  pLasemMathView->modify();
-  return false;
+        LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
+        pLasemMathView->modify();
+        return false;
 }
 
 void GR_LasemMathManager::initializeEmbedView(G_GNUC_UNUSED UT_sint32 uid)
@@ -876,7 +874,8 @@ void LasemMathView::render(UT_Rect & rec)
 	//LsmDomView *view;
 	if (mathml == NULL || height == 0 || width == 0)
 		return;
-	zoom = MAX (_width / width, _height / height) / 72.;
+	zoom = MAX (_width*1.0 / width, _height*1.0 / height) / 72.;
+        zoom *= UT_LAYOUT_RESOLUTION;
 	cairo_save (cr);
 	cairo_scale (cr,zoom, zoom);
 	view = lsm_dom_document_create_view (mathml);
