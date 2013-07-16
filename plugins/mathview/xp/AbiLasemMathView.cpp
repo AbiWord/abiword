@@ -899,46 +899,25 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 	return pBuf;
 }
 
-static cairo_status_t
-gsf_output_from_cairo (struct write_state *state, unsigned char *data, unsigned int length)
+
+cairo_status_t abi_CairoWrite(UT_ByteBuf * buf, unsigned char * data, unsigned int length)
 {
-	if (gsf_output_write (state->output, length, data)) {
-		state->length += length;
-		return CAIRO_STATUS_SUCCESS;
-	} else
-		return CAIRO_STATUS_WRITE_ERROR;
+	return (buf->append (static_cast<UT_Byte*>(data), static_cast<UT_uint32>(length)))?
+			CAIRO_STATUS_SUCCESS: CAIRO_STATUS_WRITE_ERROR;
 }
 
 
 void const * LasemMathView :: buildSnapShot()
 {
-        cairo_surface_t *surface;
-	cairo_t *cr;
-	cairo_status_t status;
-	struct write_state state;
-        char *data;
-
-	state.output = gsf_output_memory_new ();
-	state.length = 0;
-
-	surface = cairo_svg_surface_create_for_stream (
-                                     (cairo_write_func_t) gsf_output_from_cairo,
-                                     &state,
-                                     width * 72,
-                                     height * 72);
-	cr = cairo_create (surface);
-	lsm_dom_view_render (view, cr, width * 72, height * 72);
+        UT_return_val_if_fail (mathml, NULL);
+	UT_ByteBuf *pBuf = new UT_ByteBuf ();
+	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
+										pBuf, width * 72, height * 72);
+	cairo_t *cr = cairo_create (surface);
 	cairo_surface_destroy (surface);
-	status = cairo_status (cr);
+	lsm_dom_view_render (view, cr, width * 72, height * 72);
 	cairo_destroy (cr);
-	if (status == CAIRO_STATUS_SUCCESS && state.length > 0) 
-        {
-		data = g_new (char, state.length);
-		memcpy(data, gsf_output_memory_get_bytes ((GsfOutputMemory *) state.output), state.length);
-	}
-	g_object_unref (state.output);
-	return data;
-
+	return pBuf;
 }
 
  void LasemMathView :: setFont(const GR_Font * pFont)
