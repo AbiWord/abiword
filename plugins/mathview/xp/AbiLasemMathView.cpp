@@ -584,7 +584,7 @@ void GR_LasemMathManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & re
     }
   GR_AbiMathItems * pItem = m_vecItems.getNthItem(uid);
   UT_return_if_fail(pItem);  
-  LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
+  //LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
   const PP_AttrProp * pSpanAP = NULL;
   PT_AttrPropIndex api = pItem->m_iAPI;
   bool bHaveProp = m_pDoc->getAttrProp(api, &pSpanAP);
@@ -662,7 +662,7 @@ UT_sint32 GR_LasemMathManager::getAscent(G_GNUC_UNUSED UT_sint32 uid)
 {
   LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
   UT_return_val_if_fail (pLasemMathView, 0);
-  return pLasemMathView->getHeight();
+  return pLasemMathView->getAscent();
 }
 
 
@@ -686,17 +686,16 @@ bool GR_LasemMathManager::setFont(UT_sint32 uid, const GR_Font * pFont)
 
 void GR_LasemMathManager::render(UT_sint32 uid, UT_Rect & rec)
 {
-  // FIXME write code
-  LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
-  UT_return_if_fail(pLasemMathView);
-  pLasemMathView->render(rec);
+        LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
+        UT_return_if_fail(pLasemMathView);
+        pLasemMathView->render(rec);
 }
 
 void GR_LasemMathManager::releaseEmbedView(UT_sint32 uid)
 {
-  LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
-  delete pLasemMathView;
-  m_vecLasemMathView.setNthItem(uid,NULL,NULL); //NULL it out so we don't affect the other uid's
+       LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
+       delete pLasemMathView;
+       m_vecLasemMathView.setNthItem(uid,NULL,NULL); //NULL it out so we don't affect the other uid's
 }
 
 void GR_LasemMathManager::setRun(UT_sint32 uid, fp_Run *pRun)
@@ -714,12 +713,12 @@ void GR_LasemMathManager::updateData(UT_sint32 uid, UT_sint32 api)
 
 bool GR_LasemMathManager::isDefault()
 {
-    return false;
+        return false;
 }
 
 bool GR_LasemMathManager::isEdittable(G_GNUC_UNUSED UT_sint32 uid)
 {
-    return true;
+        return true;
 }
 
 bool GR_LasemMathManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSED UT_ByteBuf & From, G_GNUC_UNUSED UT_ByteBuf & To)
@@ -800,7 +799,7 @@ void GR_LasemMathManager :: lsm_itex_free_mathml_buffer (char *mathml)
 }
 
 
-void GR_LasemMathManager::setDefaultFontSize(UT_sint32 uid, UT_sint32 iSize)
+void GR_LasemMathManager::setDefaultFontSize(G_GNUC_UNUSED UT_sint32 uid, G_GNUC_UNUSED UT_sint32 iSize)
 {
 
 }
@@ -830,8 +829,32 @@ LasemMathView::~LasemMathView(void)
 
 void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 {
-	itex =  g_strdup(sMathml.utf8_str());
-        lasem_set_data();
+	double _width, _height, _baseline;
+	LsmDomNodeList *list;
+	LsmDomNode *node;
+	unsigned i, max;
+
+	g_object_unref (mathml);
+	math_element = NULL;
+	style_element = NULL;
+        mathml = lsm_dom_document_new_from_memory(sMathml.utf8_str(),sMathml.length(),NULL);
+	if (mathml == NULL)
+		return;
+	math_element = LSM_DOM_NODE (lsm_dom_document_get_document_element (mathml));
+	list = lsm_dom_node_get_child_nodes (math_element);
+	max = lsm_dom_node_list_get_length (list);
+	for (i = 0; i < max; i++) {
+		node = lsm_dom_node_list_get_item (list, i);
+		if (!strcmp (lsm_dom_node_get_node_name (node), "mstyle"))
+			style_element = node;
+		}
+	
+	view = lsm_dom_document_create_view (mathml);
+	lsm_dom_view_get_size (view, &_width, &_height, &_baseline);
+        this->width = (UT_sint32) rint (_width / 72. * UT_LAYOUT_RESOLUTION);
+        this->height = (UT_sint32) rint (_height / 72. * UT_LAYOUT_RESOLUTION);
+        this->ascent = (UT_sint32) rint (_baseline / 72. * UT_LAYOUT_RESOLUTION);
+	this->descent = this->height - this->ascent;
 }
 
 void LasemMathView::render(UT_Rect & rec)
@@ -846,21 +869,30 @@ void LasemMathView::render(UT_Rect & rec)
 	cairo_t *cr = pUGG->getCairo ();
 	UT_sint32 _width = pUGG->tdu(rec.width);
 	UT_sint32 _height = pUGG->tdu(rec.height);
-	UT_sint32 zoom = pUGG->getZoomPercentage ();
-	UT_sint32 real_width = _width * 100 / zoom;
-	UT_sint32 real_height = _height * 100 / zoom;
-   	lasem_render(cr, real_width, real_height);
+//	UT_sint32 zoom = pUGG->getZoomPercentage ();
+//	UT_sint32 real_width = _width * 100 / zoom;
+//	UT_sint32 real_height = _height * 100 / zoom;
+	double zoom;
+	//LsmDomView *view;
+	if (mathml == NULL || height == 0 || width == 0)
+		return;
+	zoom = MAX (_width / width, _height / height) / 72.;
+	cairo_save (cr);
+	cairo_scale (cr,zoom, zoom);
+	view = lsm_dom_document_create_view (mathml);
+	lsm_dom_view_render (view, cr, 0., 0.);
+	cairo_restore (cr);
 	pUGG->endPaint();
 }
 
 UT_ByteBuf *LasemMathView::getSnapShot ()
 {
 	UT_return_val_if_fail (mathml, NULL);
-	int height = ascent + descent;
-	if (height == 0 || (int) width == 0)
+	int _height = ascent + descent;
+	if (_height == 0 || (int) width == 0)
 		return NULL;
 	size_t length;
-	const UT_Byte *buf = reinterpret_cast <const UT_Byte*> (go_component_get_snapshot (component, GO_SNAPSHOT_SVG, &length));
+	const UT_Byte *buf = reinterpret_cast <const UT_Byte*> (buildSnapShot());
 	if (!buf || !length)
 		return NULL;
 	UT_ByteBuf *pBuf = new UT_ByteBuf ();
@@ -868,119 +900,102 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 	return pBuf;
 }
 
- void LasemMathView :: lasem_render (cairo_t *cr, double width, double height)
+static cairo_status_t
+gsf_output_from_cairo (struct write_state *state, unsigned char *data, unsigned int length)
 {
-	double zoom;
-	LsmDomView *view;
+	if (gsf_output_write (state->output, length, data)) {
+		state->length += length;
+		return CAIRO_STATUS_SUCCESS;
+	} else
+		return CAIRO_STATUS_WRITE_ERROR;
+}
 
-	if (mathml == NULL || this->height == 0 || this->width == 0)
-		return;
-	zoom = MAX (width / this->width, height / this->height) / 72.;
-	cairo_save (cr);
-	cairo_scale (cr,zoom, zoom);
-	view = lsm_dom_document_create_view (mathml);
-	lsm_dom_view_render (view, cr, 0., 0.);
-	g_object_unref (view);
-	cairo_restore (cr);
+
+void const * LasemMathView :: buildSnapShot()
+{
+        cairo_surface_t *surface;
+	cairo_t *cr;
+	cairo_status_t status;
+	struct write_state state;
+        char *data;
+
+	state.output = gsf_output_memory_new ();
+	state.length = 0;
+
+	surface = cairo_svg_surface_create_for_stream (
+                                     (cairo_write_func_t) gsf_output_from_cairo,
+                                     &state,
+                                     width * 72,
+                                     height * 72);
+	cr = cairo_create (surface);
+	lsm_dom_view_render (view, cr, width * 72, height * 72);
+	cairo_surface_destroy (surface);
+	status = cairo_status (cr);
+	cairo_destroy (cr);
+	if (status == CAIRO_STATUS_SUCCESS && state.length > 0) 
+        {
+		data = g_new (char, state.length);
+		memcpy(data, gsf_output_memory_get_bytes ((GsfOutputMemory *) state.output), state.length);
+	}
+	g_object_unref (state.output);
+	return data;
+
 }
 
  void LasemMathView :: setFont(const GR_Font * pFont)
  {      
-        char *szFontName;
-        GR_Font::s_getGenericFontProperties (szFontName,NULL,NULL,NULL);
-        PangoFontDescription *desc = pango_font_description_from_string (szFontName);
-        lasem_set_font(desc);
-	pango_font_description_free (desc);
-	
+        UT_return_if_fail(pFont);
+	const GR_PangoFont *pPF = dynamic_cast<const GR_PangoFont *>(pFont);
+	UT_return_if_fail(pPF);      
+        if (pPF->getPangoDescription()!= NULL) 
+        {
+		LsmDomElement *_style_element;
+		//LsmDomView *view;
+		char *value;
+		double _width, _height, _baseline;
+
+		g_free (font);
+		font = pango_font_description_to_string (pPF->getPangoDescription());
+		if (style_element == NULL) {
+			style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
+			lsm_dom_node_append_child (math_element, style_element);
+			/* FIXME: put all document children into the mstyle element */
+		}
+		_style_element = LSM_DOM_ELEMENT (style_element);
+		if (pango_font_description_get_weight (pPF->getPangoDescription()) >= PANGO_WEIGHT_BOLD) {
+			if (pango_font_description_get_style (pPF->getPangoDescription()) == PANGO_STYLE_NORMAL)
+				lsm_dom_element_set_attribute (_style_element, "mathvariant", "bold");
+			else
+				lsm_dom_element_set_attribute (_style_element, "mathvariant", "bold-italic");
+		} else {
+			if (pango_font_description_get_style (pPF->getPangoDescription()) == PANGO_STYLE_NORMAL)
+				lsm_dom_element_set_attribute (_style_element, "mathvariant", "normal");
+			else
+				lsm_dom_element_set_attribute (_style_element, "mathvariant", "italic");
+		}
+
+		lsm_dom_element_set_attribute (_style_element, "mathfamily",
+					       pango_font_description_get_family (pPF->getPangoDescription()));
+
+		value = g_strdup_printf ("%gpt", pango_units_to_double (
+				pango_font_description_get_size (pPF->getPangoDescription())));
+		lsm_dom_element_set_attribute (_style_element, "mathsize", value);
+		g_free (value);
+		view = lsm_dom_document_create_view (mathml);
+		lsm_dom_view_get_size (view, &_width, &_height, &_baseline);
+                width = (UT_sint32) rint (_width / 72. * UT_LAYOUT_RESOLUTION);
+                height = (UT_sint32) rint (_height / 72. * UT_LAYOUT_RESOLUTION);
+                ascent = (UT_sint32) rint (_baseline / 72. * UT_LAYOUT_RESOLUTION);
+		descent = height - ascent;
+	}
+		
  }
  
 void LasemMathView :: setColor(UT_RGBColor c)
 {
-        UT_HashColor *pHashColor;
-        color = g_strdup(pHashColor->setColor(c));
-       // lsm_dom_element_set_attribute (style_element, "mathcolor", color);
-}
-
-void LasemMathView :: lasem_set_data()
-{
-	LsmDomView *view;
-	double width, height, baseline;
-	LsmDomNodeList *list;
-	LsmDomNode *node;
-	unsigned i, max;
-
-	g_object_unref (mathml);
-	math_element = NULL;
-	style_element = NULL;
-	char * value = itex2MML_parse (itex, strlen(itex));
-	if(value ==NULL)
-		return;
-        mathml = lsm_mathml_document_new_from_itex(value,strlen(itex),NULL);
-	g_free(value);
-	if (mathml == NULL)
-		return;
-	math_element = LSM_DOM_NODE (lsm_dom_document_get_document_element (mathml));
-	list = lsm_dom_node_get_child_nodes (math_element);
-	max = lsm_dom_node_list_get_length (list);
-	for (i = 0; i < max; i++) {
-		node = lsm_dom_node_list_get_item (list, i);
-		if (!strcmp (lsm_dom_node_get_node_name (node), "mstyle"))
-			style_element = node;
-		}
-	
-	view = lsm_dom_document_create_view (mathml);
-	lsm_dom_view_get_size (view, &width, &height, &baseline);
-	this->width = width / 72.;
-	this->height = height / 72.;
-	this->ascent = baseline / 72.;
-	this->descent = this->height - this->ascent;
-}
-
-
-
-void LasemMathView :: lasem_set_font(const PangoFontDescription * desc)
-{
-	if (desc != NULL) 
-        {
-		LsmDomElement *style_element;
-		LsmDomView *view;
-		char *value;
-		double width, height, baseline;
-
-		g_free (font);
-		font = pango_font_description_to_string (desc);
-		if (this->style_element == NULL) {
-			this->style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
-			lsm_dom_node_append_child (math_element, this->style_element);
-			/* FIXME: put all document children into the mstyle element */
-		}
-		style_element = LSM_DOM_ELEMENT (this->style_element);
-		if (pango_font_description_get_weight (desc) >= PANGO_WEIGHT_BOLD) {
-			if (pango_font_description_get_style (desc) == PANGO_STYLE_NORMAL)
-				lsm_dom_element_set_attribute (style_element, "mathvariant", "bold");
-			else
-				lsm_dom_element_set_attribute (style_element, "mathvariant", "bold-italic");
-		} else {
-			if (pango_font_description_get_style (desc) == PANGO_STYLE_NORMAL)
-				lsm_dom_element_set_attribute (style_element, "mathvariant", "normal");
-			else
-				lsm_dom_element_set_attribute (style_element, "mathvariant", "italic");
-		}
-
-		lsm_dom_element_set_attribute (style_element, "mathfamily",
-					       pango_font_description_get_family (desc));
-
-		value = g_strdup_printf ("%gpt", pango_units_to_double (
-				pango_font_description_get_size (desc)));
-		lsm_dom_element_set_attribute (style_element, "mathsize", value);
-		g_free (value);
-		view = lsm_dom_document_create_view (mathml);
-		lsm_dom_view_get_size (view, &width, &height, &baseline);
-		this->width = width / 72.;
-		this->height = height / 72.;
-		this->ascent = baseline / 72.;
-		this->descent = this->height - this->ascent;
-	}
+       //UT_HashColor *pHashColor;
+       //color = g_strdup(pHashColor->setColor(c));
+       //lsm_dom_element_set_attribute (style_element, "mathcolor", color);
 }
 
 ABI_PLUGIN_DECLARE(AbiMathView)

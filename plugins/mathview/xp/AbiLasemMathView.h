@@ -6,10 +6,14 @@
 #include "gr_EmbedManager.h"
 #include "gr_Graphics.h"
 #include "ut_types.h"
+#include "ut_math.h"
 #include "ut_vector.h"
 
+
 #include <goffice/goffice.h>
-//#include <lsmmathml.h>
+#include <gsf/gsf-input.h>
+#include <gsf/gsf-output-memory.h>
+#include <cairo-svg.h>
 #include <lsmdom.h>
 
 
@@ -20,6 +24,12 @@ class PD_Document;
 class AD_Document;
 class LasemMathView;
 class GR_AbiMathItems;
+
+struct write_state {
+	size_t length;
+	GsfOutput *output;
+};
+
 
 class GR_AbiMathItems
 {
@@ -88,6 +98,7 @@ public:
 	fp_Run *getRun () {return m_pRun;}
 	//void SetGuru (GtkWidget *guru) {m_Guru = guru;}
 	UT_ByteBuf *exportToSVG (); //
+        UT_ByteBuf *getSnapShot ();
 	UT_sint32 getWidth() {return width;}
 	UT_sint32 getHeight() {return height;}
         UT_sint32 getAscent() {return ascent;}
@@ -99,18 +110,17 @@ private:
 	char *font;
 	char *color;
 	
-    LsmDomDocument *mathml;
+        LsmDomDocument *mathml;
 	LsmDomNode *math_element;
 	LsmDomNode *style_element;
 	
+        LsmDomView *view;
+        
 	UT_sint32 width, height, ascent, descent;
 	fp_Run *m_pRun;
 	
     //GtkWidget *m_Guru;
-        
-        void lasem_render(cairo_t *cr, double width, double height);
-        void lasem_set_font(const PangoFontDescription  *desc);
-        void lasem_set_data();
+        void const * buildSnapShot();
         
 };
 
