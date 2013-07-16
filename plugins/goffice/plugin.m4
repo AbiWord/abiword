@@ -1,6 +1,6 @@
 
 goffice_req=
-for ver in 0.80 ; do
+for ver in 0.10 ; do
   if test "x$goffice_req" = x; then
     if pkg-config --exists libgoffice-$ver; then
       goffice_req=libgoffice-$ver
@@ -8,7 +8,7 @@ for ver in 0.80 ; do
   fi
 done
 if test "x$goffice_req" = x; then
-  goffice_req=libgoffice-0.80
+  goffice_req=libgoffice-0.10
 fi
 
 goffice_pkgs="$goffice_req >= 0.10.2"
