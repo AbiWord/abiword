@@ -415,7 +415,7 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	// we own storage for pNewFile and must free it.
 	FREEP(pNewFile);
 
-	UT_DEBUGMSG(("YAYfileInsertMathML: loading [%s]\n",sNewFile.utf8_str()));
+	UT_DEBUGMSG(("fileInsertMathML: loading [%s]\n",sNewFile.utf8_str()));
    
 	IE_Imp_MathML * pImpMathML = new IE_Imp_MathML(pDoc, pMathManager->EntityTable());
 	UT_Error errorCode = pImpMathML->importFile(sNewFile.utf8_str());
@@ -972,9 +972,18 @@ void const * LasemMathView :: buildSnapShot()
  
 void LasemMathView :: setColor(UT_RGBColor c)
 {
-       //UT_HashColor *pHashColor;
-       //color = g_strdup(pHashColor->setColor(c));
-       //lsm_dom_element_set_attribute (style_element, "mathcolor", color);
+	UT_HashColor pHashColor;
+	color = g_strdup(pHashColor.setColor(c));	
+	LsmDomElement *_style_element;
+	if (style_element == NULL) 
+	{
+		style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
+		lsm_dom_node_append_child (math_element, style_element);
+		/* FIXME: put all document children into the mstyle element */
+	}
+	_style_element = LSM_DOM_ELEMENT (style_element);
+      
+       lsm_dom_element_set_attribute (_style_element, "mathcolor", color);
 }
 
 ABI_PLUGIN_DECLARE(AbiMathView)
