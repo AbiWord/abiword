@@ -877,6 +877,7 @@ void LasemMathView::render(UT_Rect & rec)
 	zoom = MAX (_width*1.0 / width, _height*1.0 / height) / 72.;
         zoom *= UT_LAYOUT_RESOLUTION;
 	cairo_save (cr);
+        cairo_translate (cr, pUGG->tdu(rec.left), pUGG->tdu(rec.top - ascent));
 	cairo_scale (cr,zoom, zoom);
 	view = lsm_dom_document_create_view (mathml);
 	lsm_dom_view_render (view, cr, 0., 0.);
