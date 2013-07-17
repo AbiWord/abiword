@@ -4384,11 +4384,20 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		// Now deal with issues from a container overlapping the top of the
 		// of the new broken table.
 		//
+		UT_sint32 iTweak = tweakBrokenTable(pBroke);
+		xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
+ 		if(iTweak > 0)
+ 		{
+	
+			xxx_UT_DEBUGMSG(("Ybreak of %x set to %d after tweak \n",pBroke,pBroke->getYBreak() - iTweak));
+ 			pBroke->setYBreakHere(pBroke->getYBreak() - iTweak);
+			xxx_UT_DEBUGMSG(("YBottom set to %d after tweak \n",getYBottom() - iTweak -1));
+ 		}
 		static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
 		//
 		// The cells are broken relative to the top of the table 
 		//
-		breakCellsAt(getYBottom());
+		breakCellsAt(getYBottom() - iTweak);
 		return pBroke;
 	}
 
@@ -4518,9 +4527,14 @@ void fp_TableContainer::setY(UT_sint32 i)
 		return;
 	}
 	clearScreen();
-
+//
+// FIXME: Do I need to force another breakSection or will happen 
+// automatically?
+//
 	xxx_UT_DEBUGMSG(("Set Reformat 1 now from table %x in TableLayout %x \n",this,getSectionLayout()));
+//	getSectionLayout()->setNeedsReformat(getSectionLayout());
 	fp_VerticalContainer::setY(i);
+	adjustBrokenTables();
 }
 
 
