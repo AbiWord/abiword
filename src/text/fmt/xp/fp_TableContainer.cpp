@@ -2136,6 +2136,138 @@ void fp_CellContainer::draw(fp_Line * pLine)
 }
 
 /*!
+ * This method adjusts the m_iYBreak and m_iYBottom variables after a 
+ * setY method changes the start position of the top of the table.
+ */
+void fp_TableContainer::adjustBrokenTables(void)
+{
+	if(isThisBroken())
+	{
+		//		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return;
+	}
+	if(getFirstBrokenTable() == NULL)
+	{
+		return;
+	}
+	if(getFirstBrokenTable() == getLastBrokenTable())
+	{
+		return;
+	}
+	// FIXME: [joeHe] Both this code and the code in fp_TOCContainer, somehow leads to bugs. I've clearly found
+	// workarounds to what this is trying to achive. In pricinple this code should make laying out Table's
+	// faster. In practice I suspect it leads to bugs in fb_ColumnBreaker. I'll leave these returns in place
+	// for now, pending removal of the methods.
+	//
+
+	return;
+	fp_TableContainer * pBroke = getFirstBrokenTable();
+	fp_VerticalContainer * pVC = static_cast<fp_VerticalContainer *>(getContainer());
+	UT_sint32 iNewHeight = pVC->getMaxHeight() - getY();	
+	UT_sint32 ishift = iNewHeight - pBroke->getYBottom();
+	UT_sint32 iNewBot = pBroke->getYBottom() + ishift;
+	UT_sint32 iTableHeight = fp_VerticalContainer::getHeight();
+	xxx_UT_DEBUGMSG(("SEVIOR: ishift = %d iNewHeight %d  pBroke->getYBottom() %d \n",ishift,iNewHeight,pBroke->getYBottom()));
+	if(ishift == 0)
+	{
+		return;
+	}
+	if(iNewBot > iTableHeight)
+	{
+		iNewBot = iTableHeight;
+	}
+	pBroke->setYBottom(iNewBot);
+	UT_ASSERT(pBroke->getHeight());
+
+	pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
+	while(pBroke)
+	{
+		UT_sint32 iNewTop = pBroke->getYBreak();
+		iNewBot = pBroke->getYBottom();
+		pBroke->setYBreakHere(iNewTop + ishift);
+		if(pBroke->getNext())
+		{
+			pBroke->setYBottom(iNewBot+ishift);
+			UT_ASSERT(pBroke->getHeight());
+		}
+		else
+		{
+			pBroke->setYBottom(iTableHeight);
+			UT_ASSERT(pBroke->getHeight());
+		}
+		xxx_UT_DEBUGMSG(("SEVIOR: Broken table %x YBreak adjusted to %d Shift is %d height is %d \n",pBroke,iNewTop+ishift,ishift,pBroke->getHeight()));
+		fp_TableContainer * pPrev = static_cast<fp_TableContainer *>(pBroke->getPrev());
+//
+// If the height of the previous plus the height of pBroke offset from
+// the previous position is less that the column height we can delete
+// this broken table. FIXE: This won't work for nested tables.
+//
+		UT_sint32 iMaxHeight = 0;
+		bool bDeleteOK = false;
+		if(pPrev)
+		{
+			iMaxHeight = static_cast<fp_VerticalContainer *>(pPrev->getContainer())->getMaxHeight();
+			xxx_UT_DEBUGMSG(("SEVIOR: sum %d maxheight %d \n",(pPrev->getY() + pPrev->getHeight() + pBroke->getHeight()), iMaxHeight));
+		}
+		if(bDeleteOK && pPrev && (pPrev->getY() + pPrev->getHeight() + pBroke->getHeight() < iMaxHeight))
+		{
+//
+// FIXME: This if should be unnested....
+//
+			if(pPrev == this)
+			{
+				pPrev = getFirstBrokenTable();
+			}
+			xxx_UT_DEBUGMSG(("SEVIOR; In adjust - Deleting table. Max height %d prev Y %d prev Height %d cur Height %d \n",iMaxHeight, pPrev->getY(),pPrev->getHeight(),pBroke->getHeight()));
+//
+// Don't need this table any more. Delete it and all following tables.
+// after adjusting the previous table.
+//
+			pPrev->setYBottom(iTableHeight);
+			UT_ASSERT(pPrev->getHeight());
+			pPrev->setNext( NULL);
+			if(pPrev == getFirstBrokenTable())
+			{
+				setNext(NULL);
+				getFirstBrokenTable()->setYBreakHere(0);
+				UT_ASSERT(getFirstBrokenTable()->getHeight());
+			}
+			setLastBrokenTable(pPrev);
+			xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! 2 last broken table %x deleting %x Master Table %x  \n",getLastBrokenTable(),pBroke,this));
+			xxx_UT_DEBUGMSG(("SEVIOR!!!!!!!!!!! 2 get first %x get last broken table %x \n",getFirstBrokenTable(),getLastBrokenTable()));
+			fp_TableContainer * pT = getFirstBrokenTable();
+			UT_sint32 j = 0;
+			while(pT)
+			{
+				xxx_UT_DEBUGMSG(("SEVIOR: Table %d is %x \n",j,pT));
+				j++;
+				pT = static_cast<fp_TableContainer *>(pT->getNext());
+			}
+			while(pBroke)
+			{
+				fp_TableContainer * pNext = static_cast<fp_TableContainer *>(pBroke->getNext());
+				UT_sint32 i = pBroke->getContainer()->findCon(pBroke);
+				if(i >=0)
+				{
+					pBroke->getContainer()->deleteNthCon(i);
+				}
+				else
+				{
+					UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				}
+				xxx_UT_DEBUGMSG(("SEVIOR: Adjust  - Delete Table %x \n",pBroke));
+				delete pBroke;
+				pBroke = pNext;
+			}
+		}
+		else
+		{
+			pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
+		}
+	}
+}
+
+/*!
  * Deletes any broken tables in this cell.
  */
 void fp_CellContainer::deleteBrokenTables(bool bClearFirst)

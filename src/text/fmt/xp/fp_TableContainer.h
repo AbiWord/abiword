@@ -162,6 +162,7 @@ public:
 	UT_sint32           getSpannedHeight(void);
 	void                setLineMarkers(void);
 	void                deleteBrokenTables(bool bClearFirst=true);
+	void                adjustBrokenTables();
 	void                deleteBrokenAfter(bool bClearFirst,UT_sint32 iOldBottom);
 	bool                containsFootnoteReference(fp_TableContainer * pBroke = NULL) const;
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots, fp_TableContainer * pBroke = NULL);
