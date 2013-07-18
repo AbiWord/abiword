@@ -196,9 +196,14 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 						G_CALLBACK(s_color_cleared),
 						(gpointer) this);
 	}
-	g_signal_connect (G_OBJECT(colorsel), "color-activated",
-							G_CALLBACK(s_color_changed),
-						(gpointer) this);
+	g_signal_connect (G_OBJECT(colorsel),
+#if GTK_CHECK_VERSION(3,4,0)
+			  "color-activated",
+#else
+			  "color-changed",
+#endif
+			  G_CALLBACK(s_color_changed),
+			  (gpointer) this);
 }
 
 void AP_UnixDialog_Background::eventOk (void)
