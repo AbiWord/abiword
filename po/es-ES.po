@@ -3,13 +3,14 @@
 # Copyright by:
 # Francisco Javier F. Serrador <serrador@arrakis.es>, 2003.
 # Francisco Javier F. Serrador <serrador@cvs.gnome.org>, 2004, 2005.
+# Chris Leonard <cjl@laptop.org>, 2011.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
 "POT-Creation-Date: 2013-04-04 01:32-0400\n"
-"PO-Revision-Date: 2013-04-05 00:33+0200\n"
-"Last-Translator: AlanJAS <alanjas@hotmail.com>\n"
+"PO-Revision-Date: 2013-07-16 08:44+0200\n"
+"Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: <es@li.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -232,7 +233,7 @@ msgstr "&Autorevisión ortográfica"
 #. MENU_LABEL_TABLE_AUTOFIT
 #: po/tmp/ap_String_Id.h
 msgid "&Autofit Table"
-msgstr "&Auto-ajustar tabla"
+msgstr "&Autoajustar tabla"
 
 #. DLG_Options_Label_PrefsAutoSave
 #: po/tmp/ap_String_Id.h
@@ -3456,33 +3457,33 @@ msgstr "Notas a pie y notas &finales"
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_LTR
 #: po/tmp/ap_String_Id.h
 msgid "Force LTR direction of text"
-msgstr "Forzar dirección I-->D del texto"
+msgstr "Forzar dirección IAD del texto"
 
 #. TOOLBAR_STATUSLINE_FMT_DIR_OVERRIDE_RTL
 #. TOOLBAR_TOOLTIP_FMT_DIR_OVERRIDE_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Force RTL direction of text"
-msgstr "Forzar dirección D-->I del texto"
+msgstr "Forzar dirección DAI del texto"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_LTR
 #: po/tmp/ap_String_Id.h
 msgid "Force left-to-right direction of text"
-msgstr "Forzar dirección izquierda-derecha del texto"
+msgstr "Forzar dirección izquierda-a-derecha (IAD) del texto"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DO_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Force right-to-left direction of text"
-msgstr "Forzar dirección derecha-izquierda del texto"
+msgstr "Forzar dirección derecha-a-izquierda (DAI) del texto"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_LTR
 #: po/tmp/ap_String_Id.h
 msgid "Force text LTR"
-msgstr "Forzar texto I-->D"
+msgstr "Forzar texto IAD"
 
 #. TOOLBAR_LABEL_FMT_DIR_OVERRIDE_RTL
 #: po/tmp/ap_String_Id.h
 msgid "Force text RTL"
-msgstr "Forzar texto D-->I"
+msgstr "Forzar texto DAI"
 
 #. DLG_Styles_ModifyFormat
 #. TB_Format
@@ -4063,12 +4064,12 @@ msgstr "Insertar un hiperenlace"
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h
 msgid "Insert left-to-right direction marker (LRM)"
-msgstr "Inserta un marcador de dirección izquierda-a-derecha (I-->D)"
+msgstr "Inserta un marcador de dirección izquierda-a-derecha (IAD)"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_RLM
 #: po/tmp/ap_String_Id.h
 msgid "Insert right-to-left direction marker (RLM)"
-msgstr "Inserta un marcador de dirección derecha-a-izquierda (D-->I)"
+msgstr "Inserta un marcador de dirección derecha-a-izquierda (DAI)"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
@@ -5271,17 +5272,17 @@ msgstr "Hoja de estilo RDF"
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "RTL &Document"
-msgstr "&Documento D-->I"
+msgstr "&Documento DAI"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "RTL &Paragraph"
-msgstr "&Párrafo D-->I"
+msgstr "&Párrafo DAI"
 
 #. MENU_LABEL_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h
 msgid "RTL &Section"
-msgstr "&Sección D-->I"
+msgstr "&Sección DAI"
 
 #. DLG_FR_ReplaceWithLabel
 #: po/tmp/ap_String_Id.h
@@ -7108,7 +7109,7 @@ msgstr "Lista romana en mayúsculas"
 #. DLG_Column_RtlOrder
 #: po/tmp/ap_String_Id.h
 msgid "Use RTL Order"
-msgstr "Usar orden D-->I"
+msgstr "Usar orden DAI"
 
 #. DLG_Options_Label_CustomSmartQuotes
 #: po/tmp/ap_String_Id.h
