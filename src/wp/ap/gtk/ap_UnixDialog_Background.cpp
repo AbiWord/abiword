@@ -196,7 +196,7 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 						G_CALLBACK(s_color_cleared),
 						(gpointer) this);
 	}
-	g_signal_connect (G_OBJECT(colorsel), "color-changed",
+	g_signal_connect (G_OBJECT(colorsel), "color-activated",
 							G_CALLBACK(s_color_changed),
 						(gpointer) this);
 }
