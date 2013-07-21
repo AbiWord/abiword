@@ -14,6 +14,8 @@ libqt_la_SOURCES = \
 	ev_QtMenu.h \
 	ev_QtMenuBar.cpp \
 	ev_QtMenuBar.h \
+	ev_QtToolbar.cpp \
+	ev_QtToolbar.h \
 	$(NULL)
 #	ev_UnixFontCombo.cpp \
 #	ev_UnixFontCombo.h \

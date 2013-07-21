@@ -27,6 +27,7 @@
 #include "xap_QtApp.h"
 #include "xap_QtFrameImpl.h"
 #include "ev_QtMenuBar.h"
+#include "ev_QtToolbar.h"
 
 XAP_QtFrameImpl::XAP_QtFrameImpl(XAP_Frame *pFrame)
 	: XAP_FrameImpl(pFrame)
@@ -105,6 +106,15 @@ void XAP_QtFrameImpl::_createTopLevelWindow()
 		bResult = m_pQtMenuBar->synthesizeMenuBar();
 		UT_ASSERT(bResult);
 	}
+
+	/* If refactoring the toolbars code, please make sure that toolbars
+	 * are created AFTER the main menu bar has been synthesized, otherwise
+	 * the embedded build will stop working
+	 */
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		_createToolbars();
+	}
 }
 
 EV_Menu * XAP_QtFrameImpl::_getMainMenu()
@@ -116,7 +126,9 @@ EV_Toolbar * XAP_QtFrameImpl::_newToolbar(XAP_Frame *pFrame,
 					  const char *szLayout,
 					  const char *szLanguage)
 {
-#warning TODO implement
+	EV_QtToolbar *pToolbar = NULL;
+	pToolbar = new EV_QtToolbar(static_cast<XAP_QtApp *>(XAP_App::getApp()), pFrame, szLayout, szLanguage);
+	return pToolbar;
 }
 
 bool XAP_QtFrameImpl::_runModalContextMenu(AV_View * pView, const char * szMenuName,
