@@ -70,11 +70,11 @@ public:
 	virtual void hide(void);
 
 	XAP_FontPreview *				m_pFontPreview;
-	gint							m_pFontPreviewPositionX;
+	gint						m_pFontPreviewPositionX;
 protected:
-	virtual Qt::ToolButtonStyle 	getStyle(void);
-	virtual bool 					getDetachable(void) { return true; }
-	virtual void 					setDetachable(gboolean /*detachable*/) { /* only the GNOME version does that ATM */ }
+	virtual Qt::ToolButtonStyle			getStyle(void);
+	virtual bool					getDetachable(void) { return true; }
+	virtual void					setDetachable(gboolean /*detachable*/) { /* only the GNOME version does that ATM */ }
 
 	virtual QBoxLayout*				_getContainer();
 
@@ -82,12 +82,12 @@ protected:
 
 	XAP_QtApp *						m_pQtApp;
 	XAP_Frame *						m_pFrame;
-	AV_ListenerId					m_lid;	/* view listener id */
+	AV_ListenerId						m_lid;	/* view listener id */
 
-	QEvent *                        m_eEvent;
+	QEvent *						m_eEvent;
 	QToolBar *						m_wToolbar;
-	QWidget *	 					m_wHandleBox;
-	std::vector<_wd*>				m_vecToolbarWidgets;
+	QWidget *						m_wHandleBox;
+	std::vector<_wd*>					m_vecToolbarWidgets;
 };
 
 #endif /* EV_QTTOOLBAR_H */

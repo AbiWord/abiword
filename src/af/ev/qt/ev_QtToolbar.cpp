@@ -171,7 +171,7 @@ bool EV_QtToolbar::synthesize(void)
 						{
 							// TODO Some table implementation
 							const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-				            std::string s;
+							std::string s;								            
 							pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable, s);
 							QString str = s.c_str();
 							QPushButton *item = new QPushButton(str);
@@ -216,7 +216,7 @@ bool EV_QtToolbar::synthesize(void)
 						{
 							// TODO Some icon implementation
 							const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-				            std::string sClear;
+							std::string sClear;
 							pSS->getValueUTF8(XAP_STRING_ID_TB_ClearForeground,sClear);	
 							combo = new QComboBox();
 							QString str = sClear.c_str();		
@@ -226,7 +226,7 @@ bool EV_QtToolbar::synthesize(void)
 						{
 							// TODO Some icon implementation
 							const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-				            std::string sClear;
+							std::string sClear;
 							pSS->getValueUTF8(XAP_STRING_ID_TB_ClearForeground,sClear);	
 							combo = new QComboBox();
 							QString str = sClear.c_str();		
