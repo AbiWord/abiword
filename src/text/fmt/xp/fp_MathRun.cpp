@@ -76,7 +76,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const gchar * pszFontSize = NULL;
 	pSpanAP->getProperty("font-size", pszFontSize);
 	xxx_UT_DEBUGMSG(("Font-size %s \n",pszFontSize));
-
+	bool bFontChanged = false;
 // Load this into MathView
 
 	// LUCA: chunk of code moved up here from the bottom of the method
@@ -121,6 +121,7 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	{
 	  xxx_UT_DEBUGMSG(("!!!!Font is set here... %x \n",pFont));
 		_setFont(pFont);
+		bFontChanged = true;
 	}
 	if(pG == NULL)
 	  pG = getGraphics();
@@ -138,10 +139,13 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  m_iMathUID = getMathManager()->makeEmbedView(pDoc,m_iIndexAP,m_pszDataID);
 	  UT_DEBUGMSG((" MathRun %p UID is %d \n",this,m_iMathUID));
 	  getMathManager()->initializeEmbedView(m_iMathUID);
+	  getMathManager()->setRun (m_iMathUID, this);
 	  getMathManager()->loadEmbedData(m_iMathUID);
 	}
 	UT_sint32 iFSize = atoi(pszSize);
 	getMathManager()->setDefaultFontSize(m_iMathUID,iFSize);
+	if (bFontChanged)
+		getMathManager()->setFont(m_iMathUID,pFont);
 	if(getMathManager()->isDefault())
 	{
 	  iWidth = _getLayoutPropFromObject("width");
@@ -560,3 +564,4 @@ bool fp_MathRun::_updatePropValuesIfNeeded(void)
     }
   return false;
 }
+
