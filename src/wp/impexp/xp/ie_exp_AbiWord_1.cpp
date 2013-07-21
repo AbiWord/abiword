@@ -594,7 +594,7 @@ void s_AbiWord_1_Listener::_openTag(const char * szPrefix, const char * szSuffix
 			tag.clear();
 			tag = "<image dataid=";
 			tag += "\"";
-			tag += "snapshot-png-";
+			tag += "snapshot-svg-";
 			tag += szPropVal;
 			tag += "\"";
 			tag += " ";
@@ -949,11 +949,11 @@ bool s_AbiWord_1_Listener::populate(fl_ContainerLayout* /*sfh*/,
 					{
 						UT_DEBUGMSG(("resource name #%s# recorded \n",image_name));
 						m_pUsedImages.insert(image_name);
-						UT_UTF8String * sPNGname = new UT_UTF8String("snapshot-png-");
-						m_vecSnapNames.addItem(sPNGname);
-						*sPNGname += image_name;
-						UT_DEBUGMSG(("resource name #%s# recorded \n",sPNGname->utf8_str()));
-						m_pUsedImages.insert(sPNGname->utf8_str());
+						UT_UTF8String * sSVGname = new UT_UTF8String("snapshot-svg-");
+						m_vecSnapNames.addItem(sSVGname);
+						*sSVGname += image_name;
+						UT_DEBUGMSG(("resource name #%s# recorded \n",sSVGname->utf8_str()));
+						m_pUsedImages.insert(sSVGname->utf8_str());
 					}
 					const gchar* latex_name = getObjectKey(api, static_cast<const gchar*>("latexid"));
 					if(latex_name)
@@ -1895,3 +1895,4 @@ void s_AbiWord_1_Listener::_handleAuthors(void)
 	}
 	m_pie->write("</authors>\n");
 }
+
