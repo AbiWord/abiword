@@ -5563,8 +5563,17 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 //			return;
 		}
 	}
+
+	if(isThisHeader())
+	{
+ 		UT_DEBUGMSG(("Drawing a header here %d\n",pDA->yoff));
+ 		fp_TableHeader *pHeader = static_cast<fp_TableHeader *>(this);
+ 		pHeader->headerDraw(pDA);
+ 	}
+	 
 	if(isThisBroken())
 	{
+		UT_ASSERT(getNext());
 		_brokenDraw(pDA);
 		return;
 	}
@@ -5756,9 +5765,9 @@ bool fp_TableContainer::isInBrokenTable(const fp_CellContainer * pCell, fp_Conta
  */
 void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 {
-	//It is actually a nice idea to fire the headerDraw() from this function rather than from fp_TableContainer::draw(). 
-	//The da.yoff value is properly set to the top of page(where the header should be drawn) in this function.
-	//Calculation of da.yoff in headerDraw(), if it is fired from fp_TableContainer::draw() is complex.
+ 	//It is actually a nice idea to fire the headerDraw() from this function rather than from fp_TableContainer::draw(). 
+ 	//The da.yoff value is properly set to the top of page(where the header should be drawn) in this function.
+ 	//Calculation of da.yoff in headerDraw(), if it is fired from fp_TableContainer::draw() is complex.
  	fp_TableContainer *pPrevious = static_cast<fp_TableContainer *>(getPrev());
  	if(pPrevious && pPrevious->isThisHeader())
  	{
@@ -5808,7 +5817,6 @@ void fp_TableContainer::_brokenDraw(dg_DrawArgs* pDA)
 
 void fp_TableContainer::_drawBrokenBoundaries(dg_DrawArgs* pDA)
 {
-
 	UT_ASSERT(getPage());
 	if(!pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
@@ -6974,4 +6982,11 @@ void fp_TableHeader::assignPositions(UT_sint32 iTop,UT_sint32 iBottom)
 	m_iBottomOfHeader=iBottom;
 }
 
+/*!
+ * Returns true if this is a broken table
+ */
+bool fp_TableContainer::isThisBroken(void) const
+{
+	return m_bIsBroken;
+}
 
