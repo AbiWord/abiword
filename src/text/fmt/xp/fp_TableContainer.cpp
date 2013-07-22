@@ -2270,7 +2270,7 @@ void fp_TableContainer::adjustBrokenTables(void)
 /*!
  * Deletes any broken tables in this cell.
  */
-void fp_CellContainer::deleteBrokenTables(bool bClearFirst)
+void fp_CellContainer::deleteBrokenTables(bool bClearFirst, bool bRecurseUp)
 {
 	if(!containsNestedTables())
 	{
@@ -2294,7 +2294,6 @@ void fp_CellContainer::deleteBrokenTables(bool bClearFirst)
 		pCL = pCL->getNext();
 	}
 }
-
 
 void fp_CellContainer::deleteBrokenAfter(bool bClearFirst,UT_sint32 iOldBottom)
 {
@@ -3062,6 +3061,90 @@ void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
 	m_MyAllocation.height = pAllocate->height;
 	m_MyAllocation.x = pAllocate->x;
 	m_MyAllocation.y = pAllocate->y;
+}
+
+/*!
+ * This method fills the broken table with containers from this cell contained
+ * by the broken table and returns the offset to current Ybreak of the 
+ * supplied broken
+ * table required to wholly contain the first container of this cell in the
+ * broken table.
+ */
+UT_sint32 fp_CellContainer::tweakBrokenTable(fp_TableContainer * pBroke)
+{
+	UT_sint32 iTop = getY();
+	UT_sint32 iBot2 = iTop + getHeight();
+	UT_sint32 iBreak2 = pBroke->getYBreak();
+	UT_sint32 iBottom2 = pBroke->getYBottom();
+	xxx_UT_DEBUGMSG(("Doing TweakTable on %x iTop %d iBot %d iBreak %d iBottom %d \n",pBroke,iTop,iBot2, iBreak2,iBottom2));
+	if(iBot2 < iBreak2)
+	{
+		return 0;
+	}
+	if(iTop > iBottom2)
+	{
+		return 0;
+	}
+	fp_Container * pCon = NULL;
+	UT_sint32 i = 0;
+	bool bFound = false;
+	bool bStop = false;
+	UT_sint32 iTweak =0;
+	bool bIsMaster = (static_cast<fp_TableContainer *>(pBroke->getPrev()) == pBroke->getMasterTable());
+	fp_TableContainer * pFirst = NULL;
+	if(bIsMaster)
+	{
+		pFirst = pBroke->getMasterTable()->getFirstBrokenTable();
+	}
+	for(i=0; !bStop && (i<countCons()); i++)
+	{
+		pCon = static_cast<fp_Container *>(getNthCon(i));
+		if(pCon->getContainerType() == FP_CONTAINER_TABLE)
+		{
+			continue;
+		}
+		iTop = getY() + pCon->getY();
+		UT_sint32 iBot = iTop + pCon->getHeight();
+		UT_sint32 iBreak = pBroke->getYBreak();
+		UT_sint32 iBottom = pBroke->getYBottom();
+		bool bInBroke = (iBot >= iBreak) && (iBot < iBottom);
+		if(!bFound)
+		{
+
+			if(bInBroke)
+			{
+				bFound = true;
+				iTweak = pBroke->getYBreak() - getY() - pCon->getY();
+				xxx_UT_DEBUGMSG(("Doing TweakTable on %x Tweak %d YBreak %d Cell Y %d Con Y %d \n",pBroke,iTweak,pBroke->getYBreak(),getY(), pCon->getY()));
+				if((i> 0) && (iTweak>0))
+				{
+					pCon = static_cast<fp_Container *>(getNthCon(i-1));
+					if(!bIsMaster && pBroke->getPrev())
+					{
+						xxx_UT_DEBUGMSG(("SetMyBrokenContainer %x \n",pBroke->getPrev()));
+						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pBroke->getPrev()));
+					}
+					else if(bIsMaster)
+					{
+						xxx_UT_DEBUGMSG(("SetMyBrokenContainer %x \n",pFirst));
+						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pFirst));
+					}
+				}
+			}
+		}
+		else
+		{
+			if(!bInBroke)
+			{
+				bStop = true;
+			}
+		}
+	}
+	if(iTweak > 0)
+	{
+		return iTweak;
+	}
+	return 0;
 }
 
 void fp_CellContainer::layout(void)
@@ -6980,13 +7063,5 @@ void fp_TableHeader::assignPositions(UT_sint32 iTop,UT_sint32 iBottom)
 {
 	m_iTopOfHeader=iTop;
 	m_iBottomOfHeader=iBottom;
-}
-
-/*!
- * Returns true if this is a broken table
- */
-bool fp_TableContainer::isThisBroken(void) const
-{
-	return m_bIsBroken;
 }
 

@@ -161,10 +161,10 @@ public:
 	UT_sint32           getCellY(fp_Line * pLine) const;
 	UT_sint32           getSpannedHeight(void);
 	void                setLineMarkers(void);
-	void                deleteBrokenTables(bool bClearFirst=true);
 	void                adjustBrokenTables();
-	bool                isThisBroken();
+	void                deleteBrokenTables(bool bClearFirst, bool bRecurseUp = true);
 	void                deleteBrokenAfter(bool bClearFirst,UT_sint32 iOldBottom);
+	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
 	bool                containsFootnoteReference(fp_TableContainer * pBroke = NULL) const;
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots, fp_TableContainer * pBroke = NULL);
 	bool                containsAnnotations(fp_TableContainer * pBroke = NULL) const;
@@ -530,6 +530,7 @@ fp_Column *         getBrokenColumn(void);
 	void                setFirstBrokenTable(fp_TableContainer * pBroke);
 	void                setLastBrokenTable(fp_TableContainer * pBroke);
 	void                deleteBrokenTables(bool bClearFirst, bool bRecurseUp = true);
+	void                adjustBrokenTables(void);
 	UT_sint32           getAdditionalBottomSpace(void) const
 		{ return m_iAdditionalBottomSpace;}
 	void                setAdditionalBottomSpace(UT_sint32 space)
