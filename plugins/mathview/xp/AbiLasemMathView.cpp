@@ -669,7 +669,7 @@ UT_sint32 GR_LasemMathManager::getDescent(G_GNUC_UNUSED UT_sint32 uid)
   return 0;
 }
 
-void GR_LasemMathManager::setColor(G_GNUC_UNUSED UT_sint32 uid, G_GNUC_UNUSED UT_RGBColor c)
+void GR_LasemMathManager::setColor(G_GNUC_UNUSED UT_sint32 uid, G_GNUC_UNUSED const UT_RGBColor& c)
 {
 	LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
 	return pLasemMathView->setColor (c);
@@ -923,6 +923,7 @@ void const * LasemMathView :: buildSnapShot()
 
  void LasemMathView :: setFont(const GR_Font * pFont)
  {      
+	UT_DEBUGMSG(("Entering SetFont..\n"));
         UT_return_if_fail(pFont);
 	const GR_PangoFont *pPF = dynamic_cast<const GR_PangoFont *>(pFont);
 	UT_return_if_fail(pPF);      
@@ -939,6 +940,23 @@ void const * LasemMathView :: buildSnapShot()
 			style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
 			lsm_dom_node_append_child (math_element, style_element);
 			/* FIXME: put all document children into the mstyle element */
+		}
+		LsmDomNode *child;
+		while(lsm_dom_node_has_child_nodes(math_element))
+		{	
+			child = lsm_dom_node_get_first_child(math_element);
+			lsm_dom_node_remove_child(math_element, child);
+			lsm_dom_node_append_child(style_element, child);
+		}
+		if(mathml)	
+		{
+			lsm_dom_node_append_child(LSM_DOM_NODE(mathml), style_element);
+		}
+		else
+		{		
+			mathml = lsm_dom_implementation_create_document(NULL, "math");
+			lsm_dom_node_append_child(LSM_DOM_NODE(mathml), math_element);
+			lsm_dom_node_append_child(math_element, style_element);		
 		}
 		_style_element = LSM_DOM_ELEMENT (style_element);
 		if (pango_font_description_get_weight (pPF->getPangoDescription()) >= PANGO_WEIGHT_BOLD) {
@@ -967,11 +985,12 @@ void const * LasemMathView :: buildSnapShot()
                 ascent = (UT_sint32) rint (_baseline / 72. * UT_LAYOUT_RESOLUTION);
 		descent = height - ascent;
 	}
-		
+	UT_DEBUGMSG(("font : %s \n",font));	
  }
  
-void LasemMathView :: setColor(UT_RGBColor c)
+void LasemMathView :: setColor(const UT_RGBColor& c)
 {
+	UT_DEBUGMSG(("Entering SetColor..\n"));
 	UT_HashColor pHashColor;
 	color = g_strdup(pHashColor.setColor(c));	
 	LsmDomElement *_style_element;
