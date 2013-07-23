@@ -898,10 +898,10 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 	
 	UT_ByteBuf *pBuf = new UT_ByteBuf ();
 	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
-										pBuf, width * 72, height * 72);
+										pBuf, width * 72./UT_LAYOUT_RESOLUTION, height * 72./UT_LAYOUT_RESOLUTION);
 	cairo_t *cr = cairo_create (surface);
 	cairo_surface_destroy (surface);
-	lsm_dom_view_render (view, cr, width * 72, height * 72);
+	lsm_dom_view_render (view, cr, 0., 0.);
 	cairo_destroy (cr);
 	length = (size_t)pBuf->getLength();
 	
