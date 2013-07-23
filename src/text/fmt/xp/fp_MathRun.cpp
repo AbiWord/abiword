@@ -144,6 +144,10 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	UT_sint32 iFSize = atoi(pszSize);
 	getMathManager()->setDefaultFontSize(m_iMathUID,iFSize);
 	getMathManager()->setFont(m_iMathUID,pFont);
+	PD_Document * pDoc = getBlock()->getDocument();
+	const PP_PropertyTypeColor *p_color = static_cast<const PP_PropertyTypeColor *>(PP_evalPropertyType("color",pSpanAP,pBlockAP,pSectionAP, Property_type_color, pDoc, true));
+	getMathManager()->setColor(m_iMathUID, p_color->getColor());
+	
 	if(getMathManager()->isDefault())
 	{
 	  iWidth = _getLayoutPropFromObject("width");
