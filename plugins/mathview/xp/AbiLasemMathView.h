@@ -120,7 +120,6 @@ private:
 	fp_Run *m_pRun;
 	
     //GtkWidget *m_Guru;
-        void const * buildSnapShot();
         
 };
 

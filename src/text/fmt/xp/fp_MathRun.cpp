@@ -434,7 +434,7 @@ void fp_MathRun::_draw(dg_DrawArgs* pDA)
 	{
 	  Fill(getGraphics(),pDA->xoff, pDA->yoff - getLine()->getAscent(), getWidth(), iLineHeight);
 	}
-	getMathManager()->setColor(m_iMathUID,getFGColor());
+	//getMathManager()->setColor(m_iMathUID,getFGColor());
 	UT_Rect rec;
 	rec.left = pDA->xoff;
 	rec.top = pDA->yoff;

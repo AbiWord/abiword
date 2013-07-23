@@ -828,10 +828,7 @@ LasemMathView::~LasemMathView(void)
 void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 {
 	double _width, _height, _baseline;
-	LsmDomNodeList *list;
-	LsmDomNode *node;
-	unsigned i, max;
-
+	
 	g_object_unref (mathml);
 	math_element = NULL;
 	style_element = NULL;
@@ -839,28 +836,14 @@ void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 	if (mathml == NULL)
 		return;
 	math_element = LSM_DOM_NODE (lsm_dom_document_get_document_element (mathml));
-	list = lsm_dom_node_get_child_nodes (math_element);
-	max = lsm_dom_node_list_get_length (list);
-	for (i = 0; i < max; i++) {
-		node = lsm_dom_node_list_get_item (list, i);
-		if (!strcmp (lsm_dom_node_get_node_name (node), "mstyle"))
-			style_element = node;
-		}
-	if (style_element == NULL)
-		{
-			if(mathml== NULL)
-				mathml = lsm_dom_implementation_create_document(NULL, "math");
-			style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
-			//lsm_dom_node_append_child (math_element, style_element);
-			LsmDomNode *child;			
-			while(child = lsm_dom_node_get_first_child(math_element))
-			{	
-				lsm_dom_node_remove_child(math_element, child);
-				lsm_dom_node_append_child(style_element, child);
-			}
-			lsm_dom_node_append_child(math_element, style_element);
-			/* FIXME: put all document children into the mstyle element */
-		}		
+	style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
+	LsmDomNode *child;			
+	while(child = lsm_dom_node_get_first_child(math_element))
+	{	
+		lsm_dom_node_remove_child(math_element, child);
+		lsm_dom_node_append_child(style_element, child);
+	}
+	lsm_dom_node_append_child(math_element, style_element);
 	view = lsm_dom_document_create_view (mathml);
 	lsm_dom_view_get_size (view, &_width, &_height, &_baseline);
         this->width = (UT_sint32) rint (_width / 72. * UT_LAYOUT_RESOLUTION);
@@ -899,6 +882,12 @@ void LasemMathView::render(UT_Rect & rec)
 	pUGG->endPaint();
 }
 
+cairo_status_t abi_CairoWrite(UT_ByteBuf * buf, unsigned char * data, unsigned int length)
+{
+	return (buf->append (static_cast<UT_Byte*>(data), static_cast<UT_uint32>(length)))?
+			CAIRO_STATUS_SUCCESS: CAIRO_STATUS_WRITE_ERROR;
+}
+
 UT_ByteBuf *LasemMathView::getSnapShot ()
 {
 	UT_return_val_if_fail (mathml, NULL);
@@ -906,25 +895,7 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 	if (_height == 0 || (int) width == 0)
 		return NULL;
 	size_t length;
-	const UT_Byte *buf = reinterpret_cast <const UT_Byte*> (buildSnapShot());
-	if (!buf || !length)
-		return NULL;
-	UT_ByteBuf *pBuf = new UT_ByteBuf ();
-	pBuf->append (buf, length);
-	return pBuf;
-}
-
-
-cairo_status_t abi_CairoWrite(UT_ByteBuf * buf, unsigned char * data, unsigned int length)
-{
-	return (buf->append (static_cast<UT_Byte*>(data), static_cast<UT_uint32>(length)))?
-			CAIRO_STATUS_SUCCESS: CAIRO_STATUS_WRITE_ERROR;
-}
-
-
-void const * LasemMathView :: buildSnapShot()
-{
-        UT_return_val_if_fail (mathml, NULL);
+	
 	UT_ByteBuf *pBuf = new UT_ByteBuf ();
 	cairo_surface_t *surface = cairo_svg_surface_create_for_stream (reinterpret_cast<cairo_write_func_t>(abi_CairoWrite),
 										pBuf, width * 72, height * 72);
@@ -932,7 +903,14 @@ void const * LasemMathView :: buildSnapShot()
 	cairo_surface_destroy (surface);
 	lsm_dom_view_render (view, cr, width * 72, height * 72);
 	cairo_destroy (cr);
-	return pBuf;
+	length = (size_t)pBuf->getLength();
+	
+	const UT_Byte *buf = reinterpret_cast <const UT_Byte*> (pBuf);
+	if (!buf || !length)
+		return NULL;
+	UT_ByteBuf *pSVGBuf = new UT_ByteBuf ();
+	pSVGBuf->append (buf, (int)length);
+	return pSVGBuf;
 }
 
  void LasemMathView :: setFont(const GR_Font * pFont)
@@ -985,17 +963,14 @@ void LasemMathView :: setColor(const UT_RGBColor& c)
 {
 	UT_DEBUGMSG(("Entering SetColor..\n"));
 	UT_HashColor pHashColor;
-	color = g_strdup(pHashColor.setColor(c));	
+	color = g_strdup(pHashColor.setColor(c));
+	
 	LsmDomElement *_style_element;
-	if (style_element == NULL) 
-	{
-		style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
-		lsm_dom_node_append_child (math_element, style_element);
-		/* FIXME: put all document children into the mstyle element */
-	}
 	_style_element = LSM_DOM_ELEMENT (style_element);
       
        lsm_dom_element_set_attribute (_style_element, "mathcolor", color);
+	view = lsm_dom_document_create_view (mathml);
+	UT_DEBUGMSG(("color : %s \n",color));
 }
 
 ABI_PLUGIN_DECLARE(AbiMathView)
