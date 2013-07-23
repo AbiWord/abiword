@@ -846,7 +846,21 @@ void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 		if (!strcmp (lsm_dom_node_get_node_name (node), "mstyle"))
 			style_element = node;
 		}
-	
+	if (style_element == NULL)
+		{
+			if(mathml== NULL)
+				mathml = lsm_dom_implementation_create_document(NULL, "math");
+			style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
+			//lsm_dom_node_append_child (math_element, style_element);
+			LsmDomNode *child;			
+			while(child = lsm_dom_node_get_first_child(math_element))
+			{	
+				lsm_dom_node_remove_child(math_element, child);
+				lsm_dom_node_append_child(style_element, child);
+			}
+			lsm_dom_node_append_child(math_element, style_element);
+			/* FIXME: put all document children into the mstyle element */
+		}		
 	view = lsm_dom_document_create_view (mathml);
 	lsm_dom_view_get_size (view, &_width, &_height, &_baseline);
         this->width = (UT_sint32) rint (_width / 72. * UT_LAYOUT_RESOLUTION);
@@ -936,20 +950,7 @@ void const * LasemMathView :: buildSnapShot()
 
 		g_free (font);
 		font = pango_font_description_to_string (pPF->getPangoDescription());
-		if (style_element == NULL) {
-			if(mathml== NULL)
-				mathml = lsm_dom_implementation_create_document(NULL, "math");
-			style_element = LSM_DOM_NODE (lsm_dom_document_create_element (mathml, "mstyle"));
-			//lsm_dom_node_append_child (math_element, style_element);
-			/* FIXME: put all document children into the mstyle element */
-		}		
-		LsmDomNode *child;
-		while(child = lsm_dom_node_get_first_child(math_element))
-		{	
-			lsm_dom_node_remove_child(math_element, child);
-			lsm_dom_node_append_child(style_element, child);
-		}
-		lsm_dom_node_append_child(math_element, style_element);
+		
 		_style_element = LSM_DOM_ELEMENT (style_element);
 		if (pango_font_description_get_weight (pPF->getPangoDescription()) >= PANGO_WEIGHT_BOLD) {
 			if (pango_font_description_get_style (pPF->getPangoDescription()) == PANGO_STYLE_NORMAL)
