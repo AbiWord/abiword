@@ -498,7 +498,6 @@ AbiMathView_LatexInsert(AV_View* v, EV_EditMethodCallData* /*d*/)
 
  GR_AbiMathItems::~GR_AbiMathItems(void)
 {
-
 }
 
 
@@ -666,7 +665,9 @@ UT_sint32 GR_LasemMathManager::getAscent(G_GNUC_UNUSED UT_sint32 uid)
 
 UT_sint32 GR_LasemMathManager::getDescent(G_GNUC_UNUSED UT_sint32 uid)
 {
-  return 0;
+  LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
+  UT_return_val_if_fail (pLasemMathView, 0);
+  return pLasemMathView->getDescent();
 }
 
 void GR_LasemMathManager::setColor(G_GNUC_UNUSED UT_sint32 uid, G_GNUC_UNUSED const UT_RGBColor& c)
@@ -817,12 +818,14 @@ LasemMathView::LasemMathView(GR_LasemMathManager * pMathMan): m_pMathMan(pMathMa
 
         lsm_dom_node_append_child(LSM_DOM_NODE(mathml), math_element);
         lsm_dom_node_append_child(math_element, style_element);
-	
 }
 
 LasemMathView::~LasemMathView(void)
 {
-       
+	if(mathml!=NULL)
+		g_object_unref(mathml);		
+	if(view!=NULL)
+		g_object_unref(view);
 }
 
 void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
@@ -830,6 +833,8 @@ void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 	double _width, _height, _baseline;
 	
 	g_object_unref (mathml);
+	//if(view!=NULL)	
+	//	g_object_unref (view);
 	math_element = NULL;
 	style_element = NULL;
         mathml = lsm_dom_document_new_from_memory(sMathml.utf8_str(),sMathml.length(),NULL);
@@ -864,11 +869,7 @@ void LasemMathView::render(UT_Rect & rec)
 	cairo_t *cr = pUGG->getCairo ();
 	UT_sint32 _width = pUGG->tdu(rec.width);
 	UT_sint32 _height = pUGG->tdu(rec.height);
-//	UT_sint32 zoom = pUGG->getZoomPercentage ();
-//	UT_sint32 real_width = _width * 100 / zoom;
-//	UT_sint32 real_height = _height * 100 / zoom;
 	double zoom;
-	//LsmDomView *view;
 	if (mathml == NULL || height == 0 || width == 0)
 		return;
 	zoom = MAX (_width*1.0 / width, _height*1.0 / height) / 72.;
@@ -922,7 +923,6 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
         if (pPF->getPangoDescription()!= NULL) 
         {
 		LsmDomElement *_style_element;
-		//LsmDomView *view;
 		char *value;
 		double _width, _height, _baseline;
 
