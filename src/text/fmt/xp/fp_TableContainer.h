@@ -161,7 +161,6 @@ public:
 	UT_sint32           getCellY(fp_Line * pLine) const;
 	UT_sint32           getSpannedHeight(void);
 	void                setLineMarkers(void);
-	void                adjustBrokenTables();
 	void                deleteBrokenTables(bool bClearFirst, bool bRecurseUp = true);
 	void                deleteBrokenAfter(bool bClearFirst,UT_sint32 iOldBottom);
 	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
@@ -530,7 +529,6 @@ fp_Column *         getBrokenColumn(void);
 	void                setFirstBrokenTable(fp_TableContainer * pBroke);
 	void                setLastBrokenTable(fp_TableContainer * pBroke);
 	void                deleteBrokenTables(bool bClearFirst, bool bRecurseUp = true);
-	void                adjustBrokenTables(void);
 	UT_sint32           getAdditionalBottomSpace(void) const
 		{ return m_iAdditionalBottomSpace;}
 	void                setAdditionalBottomSpace(UT_sint32 space)
