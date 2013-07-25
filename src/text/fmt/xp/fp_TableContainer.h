@@ -163,7 +163,6 @@ public:
 	void                setLineMarkers(void);
 	void                deleteBrokenTables(bool bClearFirst, bool bRecurseUp = true);
 	void                deleteBrokenAfter(bool bClearFirst,UT_sint32 iOldBottom);
-	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
 	bool                containsFootnoteReference(fp_TableContainer * pBroke = NULL) const;
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots, fp_TableContainer * pBroke = NULL);
 	bool                containsAnnotations(fp_TableContainer * pBroke = NULL) const;
@@ -490,7 +489,6 @@ fp_Column *         getBrokenColumn(void);
 	void                setRowSpacings ( UT_sint32 spacing);
 	void                setColSpacing(UT_sint32 column,UT_sint32 spacing);
 	void                setRowSpacing (UT_sint32 row, UT_sint32  spacing);
-	UT_sint32           tweakBrokenTable(fp_TableContainer * pBroke);
 	void                resize(UT_sint32 n_rows, UT_sint32 n_cols);
 	void                setLineThickness(UT_sint32 iLineThickness)
 		{ m_iLineThickness = iLineThickness;}

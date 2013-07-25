@@ -2931,90 +2931,6 @@ void fp_CellContainer::sizeAllocate(fp_Allocation * pAllocate)
 	m_MyAllocation.y = pAllocate->y;
 }
 
-/*!
- * This method fills the broken table with containers from this cell contained
- * by the broken table and returns the offset to current Ybreak of the 
- * supplied broken
- * table required to wholly contain the first container of this cell in the
- * broken table.
- */
-UT_sint32 fp_CellContainer::tweakBrokenTable(fp_TableContainer * pBroke)
-{
-	UT_sint32 iTop = getY();
-	UT_sint32 iBot2 = iTop + getHeight();
-	UT_sint32 iBreak2 = pBroke->getYBreak();
-	UT_sint32 iBottom2 = pBroke->getYBottom();
-	xxx_UT_DEBUGMSG(("Doing TweakTable on %x iTop %d iBot %d iBreak %d iBottom %d \n",pBroke,iTop,iBot2, iBreak2,iBottom2));
-	if(iBot2 < iBreak2)
-	{
-		return 0;
-	}
-	if(iTop > iBottom2)
-	{
-		return 0;
-	}
-	fp_Container * pCon = NULL;
-	UT_sint32 i = 0;
-	bool bFound = false;
-	bool bStop = false;
-	UT_sint32 iTweak =0;
-	bool bIsMaster = (static_cast<fp_TableContainer *>(pBroke->getPrev()) == pBroke->getMasterTable());
-	fp_TableContainer * pFirst = NULL;
-	if(bIsMaster)
-	{
-		pFirst = pBroke->getMasterTable()->getFirstBrokenTable();
-	}
-	for(i=0; !bStop && (i<countCons()); i++)
-	{
-		pCon = static_cast<fp_Container *>(getNthCon(i));
-		if(pCon->getContainerType() == FP_CONTAINER_TABLE)
-		{
-			continue;
-		}
-		iTop = getY() + pCon->getY();
-		UT_sint32 iBot = iTop + pCon->getHeight();
-		UT_sint32 iBreak = pBroke->getYBreak();
-		UT_sint32 iBottom = pBroke->getYBottom();
-		bool bInBroke = (iBot >= iBreak) && (iBot < iBottom);
-		if(!bFound)
-		{
-
-			if(bInBroke)
-			{
-				bFound = true;
-				iTweak = pBroke->getYBreak() - getY() - pCon->getY();
-				xxx_UT_DEBUGMSG(("Doing TweakTable on %x Tweak %d YBreak %d Cell Y %d Con Y %d \n",pBroke,iTweak,pBroke->getYBreak(),getY(), pCon->getY()));
-				if((i> 0) && (iTweak>0))
-				{
-					pCon = static_cast<fp_Container *>(getNthCon(i-1));
-					if(!bIsMaster && pBroke->getPrev())
-					{
-						xxx_UT_DEBUGMSG(("SetMyBrokenContainer %x \n",pBroke->getPrev()));
-						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pBroke->getPrev()));
-					}
-					else if(bIsMaster)
-					{
-						xxx_UT_DEBUGMSG(("SetMyBrokenContainer %x \n",pFirst));
-						pCon->setMyBrokenContainer(static_cast<fp_Container *>(pFirst));
-					}
-				}
-			}
-		}
-		else
-		{
-			if(!bInBroke)
-			{
-				bStop = true;
-			}
-		}
-	}
-	if(iTweak > 0)
-	{
-		return iTweak;
-	}
-	return 0;
-}
-
 void fp_CellContainer::layout(void)
 {
 	_setMaxContainerHeight(0);
@@ -4365,7 +4281,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		// Now deal with issues from a container overlapping the top of the
 		// of the new broken table.
 		//
-		UT_sint32 iTweak = tweakBrokenTable(pBroke);
+		UT_sint32 iTweak = wantVBreakAt(iHeaderHeight);
 		xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
 	 	if(iTweak > 0)
  		{
@@ -4467,7 +4383,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		// Now deal with issues from a container overlapping the top of the
 		// of the new broken table.
 		//
-		UT_sint32 iTweak = tweakBrokenTable(pBroke);
+		UT_sint32 iTweak = wantVBreakAt(vpos);
 		xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
  		if(iTweak > 0)
  		{
@@ -4554,29 +4470,6 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	//
 	breakCellsAt(getYBottom());
 	return pBroke;
-}
-
-UT_sint32 fp_TableContainer::tweakBrokenTable(fp_TableContainer * pBroke)
-{
-	fp_TableContainer * pTab = getMasterTable();
-	if(!pTab)
-	{
-		return 0;
-	}
-	UT_sint32 iTweak = 0;
-	fp_CellContainer * pCell = NULL;
-	UT_sint32 i = 0;
-	//pTableLayout = static_cast<fl_TableLayout *>(getMasterTable()->getSectionLayout());
-	for(i =0; i<pTab->countCons(); i++)
-	{
-		pCell = static_cast<fp_CellContainer *>(pTab->getNthCon(i));
-		UT_sint32 iTwk = pCell->tweakBrokenTable(pBroke);
-		if(iTwk > iTweak)
-		{
-			iTweak = iTwk;
-		}
-	}
-	return iTweak;
 }
 
 /*!
