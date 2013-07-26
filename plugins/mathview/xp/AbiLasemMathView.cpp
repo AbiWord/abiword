@@ -812,12 +812,8 @@ LasemMathView::LasemMathView(GR_LasemMathManager * pMathMan): m_pMathMan(pMathMa
         color = NULL;
         itex = NULL;
         
+	view=NULL;
         mathml = lsm_dom_implementation_create_document(NULL, "math");
-        math_element = LSM_DOM_NODE(lsm_dom_document_create_element(mathml, "math"));
-        style_element = LSM_DOM_NODE(lsm_dom_document_create_element(mathml, "mstyle"));
-
-        lsm_dom_node_append_child(LSM_DOM_NODE(mathml), math_element);
-        lsm_dom_node_append_child(math_element, style_element);
 }
 
 LasemMathView::~LasemMathView(void)
@@ -833,8 +829,8 @@ void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 	double _width, _height, _baseline;
 	
 	g_object_unref (mathml);
-	//if(view!=NULL)	
-	//	g_object_unref (view);
+	if(view!=NULL)	
+		g_object_unref (view);
 	math_element = NULL;
 	style_element = NULL;
         mathml = lsm_dom_document_new_from_memory(sMathml.utf8_str(),sMathml.length(),NULL);
