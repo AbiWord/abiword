@@ -4277,19 +4277,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 			pBroke->tweakFirstRowAlone(iHeaderHeight);
 		}
 		UT_ASSERT(pBroke->getHeight() > 0);
-		//
-		// Now deal with issues from a container overlapping the top of the
-		// of the new broken table.
-		//
-		UT_sint32 iTweak = wantVBreakAt(iHeaderHeight);
-		xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
-	 	if(iTweak > 0)
- 		{
 
-			xxx_UT_DEBUGMSG(("Ybreak of %x set to %d after tweak \n",pBroke,pBroke->getYBreak() - iTweak));
- 			pBroke->setYBreakHere(pBroke->getYBreak() - iTweak);
-			xxx_UT_DEBUGMSG(("YBottom set to %d after tweak \n",getYBottom() - iTweak -1));
-	 	}
 		static_cast<fp_VerticalContainer *>(pHeader)->setHeight(static_cast<fp_TableContainer *>(pHeader)->getHeight());
 		static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
 		//
@@ -4379,24 +4367,11 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 			UT_DEBUGMSG(("Breaking a table that is not yet inserted\n"));
  		}
 		pBroke->setContainer(pUpCon);
-		//
-		// Now deal with issues from a container overlapping the top of the
-		// of the new broken table.
-		//
-		UT_sint32 iTweak = wantVBreakAt(vpos);
-		xxx_UT_DEBUGMSG(("BrakeTable: Tweak Result is %d !!!!!!!!!!!\n",iTweak));
- 		if(iTweak > 0)
- 		{
-	
-			xxx_UT_DEBUGMSG(("Ybreak of %x set to %d after tweak \n",pBroke,pBroke->getYBreak() - iTweak));
- 			pBroke->setYBreakHere(pBroke->getYBreak() - iTweak);
-			xxx_UT_DEBUGMSG(("YBottom set to %d after tweak \n",getYBottom() - iTweak -1));
- 		}
 		static_cast<fp_VerticalContainer *>(pBroke)->setHeight(pBroke->getHeight());
 		//
 		// The cells are broken relative to the top of the table 
 		//
-		breakCellsAt(getYBottom() - iTweak);
+		breakCellsAt(getYBottom());
 		return pBroke;
 	}
 
