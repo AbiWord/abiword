@@ -42,7 +42,7 @@ bool convertMathMLtoLaTeX(const UT_UTF8String & sMathML, UT_UTF8String & sLaTeX)
     if (!cur)
     {
 	UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
-	path += "/xsltml/mmltex.xsl";
+	path += "/xsltml/mmltex-mod.xsl";
 			
 	cur = xsltParseStylesheetFile((const xmlChar *)(path.utf8_str()));
 	if (!cur)
