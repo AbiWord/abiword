@@ -202,7 +202,75 @@ bool EV_QtToolbar::synthesize(void)
 					}
 					case EV_TBIT_ComboBox:
 					{
-						// TODO Coming in the next patch
+						EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
+						UT_ASSERT(pControl);
+
+						QComboBox *combo;
+						bool isFontCombo = false;
+						if(id == AP_TOOLBAR_ID_FMT_SIZE) 
+						{
+							combo = new QComboBox();
+						}
+						else if(id == AP_TOOLBAR_ID_FMT_FONT)
+						{
+							isFontCombo = true;
+							combo = new QFontComboBox();
+							QString str = "AbiFontCombo";
+							combo->setAccessibleName(str); 
+						}
+						else if(id == AP_TOOLBAR_ID_ZOOM) 
+						{
+							combo = new QComboBox();
+							QString str = "AbiZoomCombo";
+							combo->setAccessibleName(str); 
+						}
+						else if(id == AP_TOOLBAR_ID_FMT_STYLE) 
+						{
+							combo = new QComboBox();
+							QString str = "AbiStyleCombo";
+							combo->setAccessibleName(str); 
+						}
+						else
+						{
+							UT_ASSERT(0);
+						}
+
+						// populate it
+						if (pControl) 
+						{
+							pControl->populate();
+							const UT_GenericVector<const char*> * v = pControl->getContents();
+							UT_ASSERT(v);
+							gint items = v->getItemCount();	
+							if (isFontCombo) 
+							{
+								for (gint m=0; m < items; m++) 
+								{
+									QString str = v->getNthItem(m);
+									combo->addItem(str);
+								}	
+							}
+							else
+							{
+								for (gint m=0; m < items; m++) 
+								{
+									const char * sz = v->getNthItem(m);
+									std::string sLoc;
+									if (id == AP_TOOLBAR_ID_FMT_STYLE)
+									{
+										pt_PieceTable::s_getLocalisedStyleName(sz, sLoc);
+										sz = sLoc.c_str();
+									}
+									QString str = sz;
+									combo->addItem(str);
+								}	
+							}
+						}
+
+						m_wToolbar->addWidget(combo);
+
+						// for now, we never repopulate, so can just toss it
+						DELETEP(pControl);
 						break;
 					}
 					case EV_TBIT_ColorFore:

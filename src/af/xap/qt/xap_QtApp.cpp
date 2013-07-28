@@ -30,6 +30,7 @@
 XAP_QtApp::XAP_QtApp(const char* name)
 	: XAP_App(name)
 	, m_dialogFactory(this)
+	, m_controlFactory()
 	, m_qtArgc(1)
 	, m_qtArgv(name)
 {
