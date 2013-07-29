@@ -214,8 +214,9 @@ bool fp_CellContainer::partiallyInsideBrokenTable(fp_TableContainer *pBroke) con
 }
 bool fp_CellContainer::isInsideBrokenTable(fp_TableContainer *pBroke) const
 {
-	if((getY()>=pBroke->getYBreak())&&(getY()+getHeight()<=pBroke->getYBottom()))
-	{
+	if((getY() >= pBroke->getYBreak())
+		&& (getY()+getHeight() <= pBroke->getYBottom())
+	){
 		return true;
 	}
 	return false;
@@ -229,6 +230,7 @@ fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon) const
 	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
 	if(!pMaster)
 	{
+		xxx_UT_DEBUGMSG("pMaster is NULL in getBrokenTable for fp_Container:%x \n", pCon);
 		return NULL;
 	}
 	fp_TableContainer * pBroke = pMaster->getFirstBrokenTable();
@@ -240,6 +242,7 @@ fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon) const
 	UT_sint32 yPos = getY() + pCon->getY() + 1;
 	while(pBroke && (pBroke->getYBottom() < yPos))
     {
+		xxx_UT_DEBUGMSG("YBottom of pBroke %x is smaller then yPos %d \n",pBroke, yPos);
 		pBroke = static_cast<fp_TableContainer *>(pBroke->getNext());
 	}
 
@@ -254,6 +257,7 @@ fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 	fp_TableContainer * pBroke = getBrokenTable(_pCon);
 	if(pBroke == NULL)
 	{
+		xxx_UT_DEBUGMSG("pBroke is NULL in getColumn for fp_Container:%x \n", _pCon);
 		return NULL;
 	}
 
@@ -309,7 +313,7 @@ fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 			return NULL;
 		}
 	}
-	//	UT_ASSERT(pCol->getContainerType() != FP_CONTAINER_CELL);
+
 	if(pCol && pCol->getContainerType() == FP_CONTAINER_CELL)
 	{
 		fp_Container * pCon = static_cast<fp_Container *>(pCol);
@@ -563,7 +567,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 		iTop -= ydiff;
 		iBot -= ydiff;
 	}
-	xxx_UT_DEBUGMSG(("_getBrokenRect Returned Top %d height = %d \n",iTop,iBot-iTop));
+	xxx_UT_DEBUGMSG(("_getBrokenRect Returned Top %d height = %d \n", iTop, iBot-iTop));
 	bRec = UT_Rect(iLeft,iTop,iRight-iLeft,iBot-iTop);
 }
 
@@ -617,8 +621,10 @@ void fp_CellContainer::clearScreen(bool bNoRecursive)
 			}
 		}
 	//}
-		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
-		m_bDirty = true;
+
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	m_bDirty = true;
+
 	if(pTab)
 	{
 		fp_TableContainer * pBroke = pTab->getFirstBrokenTable();
@@ -1720,6 +1726,7 @@ fp_TableContainer * fp_CellContainer::getTopmostTable() const
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return NULL;
 }
+
 /*!
  * Return true if the segment of the cell within a broken table pBroke contains a footnote references
  */
@@ -5367,27 +5374,20 @@ void fp_TableContainer::draw(dg_DrawArgs* pDA)
 //
 // Don't draw if the table is still being constructed.
 //
-	xxx_UT_DEBUGMSG(("TablecONTAINER enter draw table yoff %ld \n",pDA->yoff));
+	xxx_UT_DEBUGMSG(("Table CONTAINER enter draw table yoff %ld \n",pDA->yoff));
 	if(getSectionLayout()->getDocument()->isDontImmediateLayout())
 	{
-		xxx_UT_DEBUGMSG(("TablecONTAINER leave draw dont immediately layout \n"));
+		xxx_UT_DEBUGMSG(("Table CONTAINER leave draw dont immediately layout \n"));
 		return;
 	}
 	if(pDA->bDirtyRunsOnly)
 	{
 		if(getSectionLayout() && !getSectionLayout()->needsRedraw())
 		{
-			xxx_UT_DEBUGMSG(("TablecONTAINER leave draw section does not want redraw \n"));
+			xxx_UT_DEBUGMSG(("Table CONTAINER leave draw section does not want redraw \n"));
 //			return;
 		}
 	}
-
-	if(isThisHeader())
-	{
- 		UT_DEBUGMSG(("Drawing a header here %d\n",pDA->yoff));
- 		fp_TableHeader *pHeader = static_cast<fp_TableHeader *>(this);
- 		pHeader->headerDraw(pDA);
- 	}
 	 
 	if(isThisBroken())
 	{
