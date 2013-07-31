@@ -5669,7 +5669,7 @@ void fp_TableContainer::_drawBrokenBoundaries(dg_DrawArgs* pDA)
 void  fp_TableContainer::_size_request_pass2(void)
 {
   UT_sint32 max_width;
-   UT_sint32 col;
+  UT_sint32 col;
   
   if (m_bIsHomogeneous)
   {
@@ -6220,6 +6220,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 				getNthCol(col)->allocation += 2 * getNthCol(col)->spacing;
 			}
 		}
+		  xxx_UT_DEBUGMSG(("Sevior: table %x column %d set to width %d spacing %d pColProp width %d \n",this,col,getNthCol(col)->allocation,getNthCol(col)->spacing,pColProp->m_iColWidth));
 	}
 	m_MyAllocation.x = pTL->getLeftColPos() - pTL->getLeftOffset();
 
@@ -6299,6 +6300,7 @@ fp_TableRowColumn * fp_TableContainer::getNthRow(UT_uint32 i) const
 
 void fp_TableContainer::sizeRequest(fp_Requisition * pRequisition)
 {
+  xxx_UT_DEBUGMSG(("Doing size request on %x \n",pRequisition));
   UT_sint32 row, col;
   
   pRequisition->width = 0;
@@ -6523,7 +6525,7 @@ void fp_TableContainer::tweakFirstRowAlone(UT_sint32 iTweakHeight)
  * Args: 
     iPrevHeight -> Gives the YPosition of the previous cell. Intially set to the start of header YPosition
     iMaxBot -> Gives the maximum YBot of the current row.
-    LeftMost -> Gives the XPos of the first cell in a row.
+    iLeftMost -> Gives the XPos of the first cell in a row.
     iPrevBot -> Gives the YBot of the previous row. Primarily useful in multi-row headers.
     iTempColOffset -> Used to determine the right border of each cell.
  */
@@ -6599,6 +6601,31 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 	}
 }
 
+/********************************* Begin of fp_TableHeader implementation *********/
+fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContainer *pTableContainer)
+	:  fp_TableContainer(pSectionLayout,pTableContainer),
+	   m_iHeaderHeight(0),
+	   m_pFirstCachedCell(NULL),
+	   m_pLastCachedCell(NULL),
+	   m_iTopOfHeader(-1),
+	   m_iBottomOfHeader(-1),
+	   m_iTotalNoOfCells(0),
+	   m_iRowNumber(-1)
+{
+	pTabMaster = pTableContainer;
+}
+
+fp_TableHeader::~fp_TableHeader()
+{
+	m_pFirstCachedCell = NULL;
+	m_pLastCachedCell = NULL;
+}
+
+void fp_TableHeader::createLocalListOfHeaderRows(const std::vector<UT_sint32> & vecHeaderRows)
+{
+	m_vHeaderRowNumber = vecHeaderRows;
+}
+
 /*! 
  * Used to determine which cells form the header.
  * The caching done here is eventually replaced in the cacheCells() function.
@@ -6636,30 +6663,6 @@ UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
 	UT_sint32 iRowHeight=0;
 	iRowHeight = (pTabMaster->getNthRow(iRowNumber)->allocation) + (pTabMaster->getNthRow(iRowNumber)->spacing);
 	return iRowHeight;
-}
-
-fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContainer *pTableContainer)
-	:  fp_TableContainer(pSectionLayout,pTableContainer),
-	   m_iHeaderHeight(0),
-	   m_pFirstCachedCell(NULL),
-	   m_pLastCachedCell(NULL),
-	   m_iTopOfHeader(-1),
-	   m_iBottomOfHeader(-1),
-	   m_iTotalNoOfCells(0),
-	   m_iRowNumber(-1)
-{
-	pTabMaster = pTableContainer;
-}
-
-fp_TableHeader::~fp_TableHeader()
-{
-	m_pFirstCachedCell = NULL;
-	m_pLastCachedCell = NULL;
-}
-
-void fp_TableHeader::createLocalListOfHeaderRows(const std::vector<UT_sint32> & vecHeaderRows)
-{
-	m_vHeaderRowNumber = vecHeaderRows;
 }
 
 /*!
