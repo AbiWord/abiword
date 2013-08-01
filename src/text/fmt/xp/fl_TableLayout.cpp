@@ -218,7 +218,7 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setRowHeight(m_iRowHeight);
 	if(isHeaderSet())
  	{
- 		pTab->identifyHeaderRows(getHeaderRowNos());
+ 		pTab->identifyHeaderRows(getHeaderRowNum());
  	}
 }
 

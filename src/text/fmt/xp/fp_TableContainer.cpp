@@ -2376,7 +2376,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	}
 	if(m_pBroke == pBroke)
 	{
-		pDA->yoff += pBroke->getMasterTable()->getHeaderObject()->getHeaderHeight();
+		pDA->yoff += pBroke->getMasterTable()->getHeader()->getHeaderHeight();
 	}
 
 	GR_Graphics * pG = pDA->pG;
@@ -3183,7 +3183,7 @@ fp_TableContainer::~fp_TableContainer()
 	{
 		if(m_bCellPositionChanged && getMasterTable()->countCons())
 		{
-			changeCellPositions(getMasterTable()->getHeaderObject()->getHeaderHeight(),true);
+			changeCellPositions(getMasterTable()->getHeader()->getHeaderHeight(),true);
 		}
 	}
 	UT_std_vector_purgeall(m_vecRows);
@@ -4151,9 +4151,9 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
  	xxx_UT_DEBUGMSG(("VBreak for %x first\n %d",this,countBrokenTables()));
  	fp_TableHeader *pHeader = NULL;
  	fp_TableHeader *pTabHeader  = NULL;
- 	if((getMasterTable() && getMasterTable()->getHeaderObject()))
+ 	if((getMasterTable() && getMasterTable()->getHeader()))
  	{
- 		pTabHeader = getMasterTable()->getHeaderObject();
+ 		pTabHeader = getMasterTable()->getHeader();
  		pTabHeader->calculateHeaderHeight();
  		pTabHeader->markCellsForHeader();
  	}
@@ -4291,7 +4291,7 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 		// The cells are broken relative to the top of the table 
 		//
 		breakCellsAt(getYBottom());
-		pHeader->setHeader(true);
+		pHeader->setHeaderFlag(true);
 
 		pBroke->m_bCellPositionChanged = true;
 		return pBroke;
@@ -5261,15 +5261,17 @@ void  fp_TableContainer::_drawBoundaries(dg_DrawArgs* pDA)
 	}
     if(getPage()->getDocLayout()->getView()->getShowPara() && getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN)){
   	    fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
+		UT_sint32 iBorderWidth = pTL->getLeftOffset() - pTL->getRightOffset();
+
         UT_sint32 xoffBegin = pDA->xoff - 1;
         UT_sint32 yoffBegin = pDA->yoff - 1;
-        UT_sint32 xoffEnd = pDA->xoff +  iWidth + 2 - pTL->getLeftOffset() - pTL->getRightOffset();
+        UT_sint32 xoffEnd = pDA->xoff +  iWidth + 2 - iBorderWidth;
         UT_sint32 yoffEnd = pDA->yoff + getHeight() + 2;
 
 		UT_RGBColor clrShowPara(127,127,127);
 		getGraphics()->setColor(clrShowPara);
 		xxx_UT_DEBUGMSG(("SEVIOR: Table Top (getY()) = %d \n",getY()));
-		xxx_UT_DEBUGMSG(("SEVIOR: Table boundaries xleft %d xright %d ytop %d ybot %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd));
+		xxx_UT_DEBUGMSG(("SEVIOR: Table boundaries xleft %d xright %d ytop %d ybot %d iBorderWidth  %d \n",xoffBegin,xoffEnd,yoffBegin,yoffEnd,iBorderWidth));
 
 		GR_Painter painter (getGraphics());
 
@@ -6612,7 +6614,7 @@ fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContai
 	   m_iTotalNoOfCells(0),
 	   m_iRowNumber(-1)
 {
-	pTabMaster = pTableContainer;
+	m_pTabMaster = pTableContainer;
 }
 
 fp_TableHeader::~fp_TableHeader()
@@ -6632,7 +6634,7 @@ void fp_TableHeader::createLocalListOfHeaderRows(const std::vector<UT_sint32> & 
  */
 void fp_TableHeader::markCellsForHeader(void)
 {
-	int i,noOfColumns=pTabMaster->getNumCols();
+	int i,noOfColumns= m_pTabMaster->getNumCols();
 	const std::vector<UT_sint32> & headerRowNum =  m_vHeaderRowNumber;
 	std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
 	if(headerRowNum.empty())
@@ -6643,7 +6645,7 @@ void fp_TableHeader::markCellsForHeader(void)
 	{
 		for(i=0;i<noOfColumns;i++)
 		{
-			fp_CellContainer *pCell = pTabMaster->getCellAtRowColumn(*itr-1,i);
+			fp_CellContainer *pCell = m_pTabMaster->getCellAtRowColumn(*itr-1,i);
 			xxx_UT_DEBUGMSG(("Marking cell at row %d and column for header%d\n",*itr,i));
 			pCell->setHeaderCell(true);
 			if(m_pFirstCachedCell == NULL)
@@ -6661,7 +6663,7 @@ void fp_TableHeader::markCellsForHeader(void)
 UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
 {
 	UT_sint32 iRowHeight=0;
-	iRowHeight = (pTabMaster->getNthRow(iRowNumber)->allocation) + (pTabMaster->getNthRow(iRowNumber)->spacing);
+	iRowHeight = (m_pTabMaster->getNthRow(iRowNumber)->allocation) + (m_pTabMaster->getNthRow(iRowNumber)->spacing);
 	return iRowHeight;
 }
 
@@ -6698,7 +6700,7 @@ fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
 //FIXME: The lines around header should be drawn like the one available in fp_CellContainer::drawLines() function. Fix this.
 void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 {
-	fp_TableContainer *pMaster = pTabMaster;
+	fp_TableContainer *pMaster = m_pTabMaster;
 	fp_CellContainer *pCell = NULL;
 
 	if(m_pFirstCachedCell == NULL)
