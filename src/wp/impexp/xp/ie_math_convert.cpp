@@ -42,7 +42,7 @@ bool convertMathMLtoLaTeX(const UT_UTF8String & sMathML, UT_UTF8String & sLaTeX)
     if (!cur)
     {
 	UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
-	path += "/xsltml/mmltex-mod.xsl";
+	path += "/xsltml/mmltex.xsl";
 			
 	cur = xsltParseStylesheetFile((const xmlChar *)(path.utf8_str()));
 	if (!cur)
@@ -83,6 +83,59 @@ bool convertMathMLtoLaTeX(const UT_UTF8String & sMathML, UT_UTF8String & sLaTeX)
     return true;
 }
 
+bool convertMathMLtoITeX(const UT_UTF8String & sMathML, UT_UTF8String & sITeX)
+{
+    //static xsltStylesheet *cur = NULL;
+    xmlDocPtr doc, res;
+    xmlChar * pItex = NULL;
+    int len;
+
+    if (sMathML.empty())
+        // Nothing has failed, but we have nothing to do anyway
+	return false;
+    if (!cur)
+    {
+	UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
+	path += "/xsltml/mmltex-mod.xsl";
+			
+	cur = xsltParseStylesheetFile((const xmlChar *)(path.utf8_str()));
+	if (!cur)
+	{
+            UT_DEBUGMSG(("convertMathMLtoITeX: Parsing stylesheet failed\n"));
+	    return false;
+	}
+    }
+	
+    // bad bad bad, apparently on MacOS X, the system libxml2 take a non-const here.
+    doc = xmlParseDoc((xmlChar*)(sMathML.utf8_str()));
+    if (!doc)
+    {
+        xxx_UT_DEBUGMSG(("convertMathMLtoITeX: Parsing MathML document failed\n"));
+	return false;
+    }	
+	
+    res = xsltApplyStylesheet(cur, doc, NULL);
+    if (!res)
+    {
+        xxx_UT_DEBUGMSG(("convertMathMLtoITeX: Applying stylesheet failed\n"));
+	xmlFreeDoc(doc);
+	return false;
+    }
+	
+    if (xsltSaveResultToString(&pItex, &len, res, cur) != 0)
+    {
+	xmlFreeDoc(res);
+	xmlFreeDoc(doc);
+	return false;
+    }
+    
+    sITeX.assign((const char*)pItex, len);
+	
+    g_free(pItex);
+    xmlFreeDoc(res);
+    xmlFreeDoc(doc);
+    return true;
+}
 // Function to convert the generated LaTeX to the equation form acceptable in the editor
 
 bool convertLaTeXtoEqn(const UT_UTF8String & sLaTeX,UT_UTF8String & eqnLaTeX)

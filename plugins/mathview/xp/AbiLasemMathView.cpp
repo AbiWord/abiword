@@ -431,7 +431,7 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	UT_UTF8String PbLatex;
 	UT_UTF8String Pbitex;
 
-	if(convertMathMLtoLaTeX(PbMathml, PbLatex) && convertLaTeXtoEqn(PbLatex,Pbitex))
+	if(convertMathMLtoITeX(PbMathml, PbLatex) && convertLaTeXtoEqn(PbLatex,Pbitex))
 	{
 		// Conversion of MathML to LaTeX and the Equation Form suceeds
 		pView->cmdInsertLatexMath(Pbitex,PbMathml);

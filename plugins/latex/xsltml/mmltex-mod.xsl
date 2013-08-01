@@ -16,7 +16,7 @@
 <xsl:include href="glayout.xsl"/>
 <xsl:include href="scripts.xsl"/>
 <xsl:include href="tables.xsl"/>
-<xsl:include href="entities-mod.xsl"/>
+<xsl:include href="entities.xsl"/>
 <xsl:include href="cmarkup.xsl"/>
 
 <xsl:strip-space elements="m:*"/>

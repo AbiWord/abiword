@@ -30,6 +30,8 @@
 
 ABI_EXPORT bool convertMathMLtoLaTeX(const UT_UTF8String & sMathML, UT_UTF8String & sLaTeX);
 
+ABI_EXPORT bool convertMathMLtoITeX(const UT_UTF8String & sMathML, UT_UTF8String & sITeX);
+
 ABI_EXPORT bool convertLaTeXtoEqn(const UT_UTF8String & sLaTeX,UT_UTF8String & eqnLaTeX);
 
 ABI_EXPORT bool convertOMMLtoMathML(const std::string & pOMML, std::string & pMathML);
