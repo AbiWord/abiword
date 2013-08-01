@@ -570,12 +570,12 @@ fp_Column *         getBrokenColumn(void);
 #endif
 
 //The following functions are associated with table header.
-	fp_TableHeader * getHeaderObject() const
+	fp_TableHeader * getHeader() const
 	{ 
 		return m_pTableHeader; 
 	}
 	void 	identifyHeaderRows(const std::vector<UT_sint32>& ); 
-	void 	setHeader(bool bHeader)
+	void 	setHeaderFlag(bool bHeader)
 	{
 		m_bHeader = bHeader;
 	}
@@ -680,7 +680,7 @@ public:
 	
 	UT_sint32 getHeaderHeight(void) const
 	{ 	return m_iHeaderHeight; }
-	const std::vector<UT_sint32> & getHeaderRowNos(void) const
+	const std::vector<UT_sint32> & getHeaderRowNum(void) const
 	{ 	return m_vHeaderRowNumber; }
 	
 	void createLocalListOfHeaderRows(const std::vector<UT_sint32>&);
@@ -694,15 +694,15 @@ public:
 
 private:
 	std::vector<fp_CellContainer *> m_vecCells;
-	std::vector<UT_sint32> m_vHeaderRowNumber;
-	fp_TableContainer *pTabMaster;
-	UT_sint32 m_iHeaderHeight;
-	fp_CellContainer *m_pFirstCachedCell;
-	fp_CellContainer *m_pLastCachedCell;
-	UT_sint32 m_iTopOfHeader;
-	UT_sint32 m_iBottomOfHeader;
-	UT_sint32 m_iTotalNoOfCells;
-	UT_sint32 m_iRowNumber;
+	std::vector<UT_sint32>          m_vHeaderRowNumber;
+	fp_TableContainer *             m_pTabMaster;
+	UT_sint32                       m_iHeaderHeight;
+	fp_CellContainer *              m_pFirstCachedCell;
+	fp_CellContainer *              m_pLastCachedCell;
+	UT_sint32                       m_iTopOfHeader;
+	UT_sint32                       m_iBottomOfHeader;
+	UT_sint32                       m_iTotalNoOfCells;
+	UT_sint32                       m_iRowNumber;
 };
 
 
