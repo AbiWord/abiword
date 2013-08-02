@@ -680,10 +680,10 @@ public:
 	
 	UT_sint32 getHeaderHeight(void) const
 	{ 	return m_iHeaderHeight; }
-	const std::vector<UT_sint32> & getHeaderRowNum(void) const
-	{ 	return m_vHeaderRowNumber; }
+	const std::vector<UT_sint32> & getHeaderRowNums(void) const
+	{ 	return m_vHeaderRowNums; }
 	
-	void createLocalListOfHeaderRows(const std::vector<UT_sint32>&);
+	void setHeaderRowsNumVector(const std::vector<UT_sint32>&);
 	void calculateHeaderHeight(void);
 	void headerDraw(dg_DrawArgs *);
 	void markCellsForHeader(void);
@@ -694,7 +694,7 @@ public:
 
 private:
 	std::vector<fp_CellContainer *> m_vecCells;
-	std::vector<UT_sint32>          m_vHeaderRowNumber;
+	std::vector<UT_sint32>          m_vHeaderRowNums;
 	fp_TableContainer *             m_pTabMaster;
 	UT_sint32                       m_iHeaderHeight;
 	fp_CellContainer *              m_pFirstCachedCell;

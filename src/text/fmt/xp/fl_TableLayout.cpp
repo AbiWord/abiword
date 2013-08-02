@@ -218,7 +218,7 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setRowHeight(m_iRowHeight);
 	if(isHeaderSet())
  	{
- 		pTab->identifyHeaderRows(getHeaderRowNum());
+ 		pTab->identifyHeaderRows(getHeaderRowNums());
  	}
 }
 
@@ -1695,17 +1695,17 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
  	if(pszTableHeader != NULL)
  	{
  		pszTableHeaderRows = strtok(pszTableHeader,",");
- 		m_vHeaderRowNumber.clear();
- 		m_vHeaderRowNumber.push_back(atoi(pszTableHeaderRows));
+ 		m_vHeaderRowNums.clear();
+ 		m_vHeaderRowNums.push_back(atoi(pszTableHeaderRows));
  		while(pszTableHeaderRows != NULL)
  		{
  			pszTableHeaderRows = strtok(NULL,",");
  			if(pszTableHeaderRows != NULL)
  			{
- 				m_vHeaderRowNumber.push_back(atoi(pszTableHeaderRows));
+ 				m_vHeaderRowNums.push_back(atoi(pszTableHeaderRows));
  			}
  		}
- 		xxx_UT_DEBUGMSG(("\n\n\n\n%d\n\n",m_vHeaderRowNumber.size()));
+ 		xxx_UT_DEBUGMSG(("\n\n\n\n%d\n\n",m_vHeaderRowNums.size()));
  		m_bIsHeaderSet = true;
  	}
 

@@ -3275,7 +3275,7 @@ void fp_TableContainer::identifyHeaderRows(const std::vector<UT_sint32>& vecHead
  	{
  		m_pTableHeader = new fp_TableHeader(getSectionLayout(),this);
  	}
- 	m_pTableHeader->createLocalListOfHeaderRows(vecHeaderRows);
+ 	m_pTableHeader->setHeaderRowsNumVector(vecHeaderRows);
 }
 
 fp_TableContainer * fp_TableContainer::getFirstBrokenTable(void) const
@@ -6623,9 +6623,9 @@ fp_TableHeader::~fp_TableHeader()
 	m_pLastCachedCell = NULL;
 }
 
-void fp_TableHeader::createLocalListOfHeaderRows(const std::vector<UT_sint32> & vecHeaderRows)
+void fp_TableHeader::setHeaderRowsNumVector(const std::vector<UT_sint32> & vecHeaderRowsNum)
 {
-	m_vHeaderRowNumber = vecHeaderRows;
+	m_vHeaderRowNums = vecHeaderRowsNum;
 }
 
 /*! 
@@ -6635,7 +6635,7 @@ void fp_TableHeader::createLocalListOfHeaderRows(const std::vector<UT_sint32> & 
 void fp_TableHeader::markCellsForHeader(void)
 {
 	int i,noOfColumns= m_pTabMaster->getNumCols();
-	const std::vector<UT_sint32> & headerRowNum =  m_vHeaderRowNumber;
+	const std::vector<UT_sint32> & headerRowNum =  m_vHeaderRowNums;
 	std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
 	if(headerRowNum.empty())
 	{
@@ -6673,11 +6673,11 @@ UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
  */
 void fp_TableHeader::calculateHeaderHeight(void)
 {
-	if(!m_vHeaderRowNumber.empty())
+	if(!m_vHeaderRowNums.empty())
 	{
 		m_iHeaderHeight = 0;
-		std::vector<UT_sint32>::const_iterator itr = m_vHeaderRowNumber.begin();
-		for(;itr != m_vHeaderRowNumber.end() ; ++itr)
+		std::vector<UT_sint32>::const_iterator itr = m_vHeaderRowNums.begin();
+		for(;itr != m_vHeaderRowNums.end() ; ++itr)
 		{
 			xxx_UT_DEBUGMSG(("The height of %d row is %d\n",(*itr),getActualRowHeight((*itr)-1)));
 			m_iHeaderHeight += getActualRowHeight(*itr - 1);
