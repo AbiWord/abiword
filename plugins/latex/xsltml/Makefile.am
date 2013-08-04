@@ -1,8 +1,10 @@
 EXTRA_DIST = \
 	cmarkup.xsl \
 	entities.xsl \
+	entities-mod.xsl \
 	glayout.xsl \
 	mmltex.xsl \
+	mmltex-mod.xsl \
 	scripts.xsl \
 	tables.xsl \
 	tokens.xsl \
