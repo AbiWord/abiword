@@ -701,7 +701,7 @@ private:
 	fp_CellContainer *              m_pLastCachedCell;
 	UT_sint32                       m_iTopOfHeader;
 	UT_sint32                       m_iBottomOfHeader;
-	UT_sint32                       m_iTotalNoOfCells;
+	UT_sint32                       m_iTotalNumOfCells;
 	UT_sint32                       m_iRowNumber;
 };
 

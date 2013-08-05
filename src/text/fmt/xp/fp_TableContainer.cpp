@@ -6611,7 +6611,7 @@ fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContai
 	   m_pLastCachedCell(NULL),
 	   m_iTopOfHeader(-1),
 	   m_iBottomOfHeader(-1),
-	   m_iTotalNoOfCells(0),
+	   m_iTotalNumOfCells(0),
 	   m_iRowNumber(-1)
 {
 	m_pTabMaster = pTableContainer;
@@ -6634,16 +6634,17 @@ void fp_TableHeader::setHeaderRowsNumVector(const std::vector<UT_sint32> & vecHe
  */
 void fp_TableHeader::markCellsForHeader(void)
 {
-	int i,noOfColumns= m_pTabMaster->getNumCols();
-	const std::vector<UT_sint32> & headerRowNum =  m_vHeaderRowNums;
-	std::vector<UT_sint32>::const_iterator itr = headerRowNum.begin();
-	if(headerRowNum.empty())
+	int i,numOfColumns= m_pTabMaster->getNumCols();
+	const std::vector<UT_sint32> & headerRowNums =  m_vHeaderRowNums;
+	if(headerRowNums.empty())
 	{
 		UT_DEBUGMSG(("There are no header rows!!!\n"));
+		return;
 	}
-	for(;itr != headerRowNum.end() ; ++itr)
+	std::vector<UT_sint32>::const_iterator itr = headerRowNums.begin();
+	for(;itr != headerRowNums.end() ; ++itr)
 	{
-		for(i=0;i<noOfColumns;i++)
+		for(i=0;i<numOfColumns;i++)
 		{
 			fp_CellContainer *pCell = m_pTabMaster->getCellAtRowColumn(*itr-1,i);
 			xxx_UT_DEBUGMSG(("Marking cell at row %d and column for header%d\n",*itr,i));
@@ -6663,7 +6664,13 @@ void fp_TableHeader::markCellsForHeader(void)
 UT_sint32 fp_TableHeader::getActualRowHeight(UT_sint32 iRowNumber)
 {
 	UT_sint32 iRowHeight=0;
-	iRowHeight = (m_pTabMaster->getNthRow(iRowNumber)->allocation) + (m_pTabMaster->getNthRow(iRowNumber)->spacing);
+	fp_TableRowColumn * pRow = m_pTabMaster->getNthRow(iRowNumber);
+	if(NULL== pRow)
+	{
+		xxx_UT_DEBUGMSG(("There are no header in this rows:%d\n!!!\n",iRowNumber));
+		return 0;
+	}
+	iRowHeight = (pRow->allocation) + (pRow->spacing);
 	return iRowHeight;
 }
 
@@ -6684,11 +6691,12 @@ void fp_TableHeader::calculateHeaderHeight(void)
 		}
 		UT_DEBUGMSG(("The header height is %d \n",m_iHeaderHeight));
 	}
+	UT_DEBUGMSG(("There is not header in calculateHeaderHeight\n"));
 }
 
 fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
 {
-	if(iPos >= m_iTotalNoOfCells)
+	if(iPos >= m_iTotalNumOfCells)
 		return NULL;
 	return m_vecCells[iPos];
 }
@@ -6700,6 +6708,7 @@ fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
 //FIXME: The lines around header should be drawn like the one available in fp_CellContainer::drawLines() function. Fix this.
 void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 {
+	UT_ASSERT(NULL!=m_pTabMaster);
 	fp_TableContainer *pMaster = m_pTabMaster;
 	fp_CellContainer *pCell = NULL;
 
@@ -6708,28 +6717,27 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	       cacheCells(pMaster);
 	}
 	pCell=pMaster->getCellAtRowColumn(m_iRowNumber-1,0);
-	m_pFirstCachedCell=pCell;
 	dg_DrawArgs da=*pDA;
 
     //This is to avoid the short gap between the header and the rest of the table
 	da.yoff+=170;
 	//fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
 
-	UT_sint32 iCount=0,iNoColumns=pMaster->getNumCols();
+	UT_sint32 iCount=0,iNumColumns=pMaster->getNumCols();
 	UT_sint32 iHeightCount=0,iPrevHeight=0,iMaxBot=0,iLeftMost=0,iPrevBot=da.yoff;
-	UT_sint32 *iColOffsets = new UT_sint32[iNoColumns];
+	UT_sint32 *iColOffsets = new UT_sint32[iNumColumns];
 
 	while(pCell)
 	{
 	       pCell->setHeaderPointer(this);
 	       iCount++;
-	       UT_sint32 iModNumber=(iCount%iNoColumns);
+	       UT_sint32 iModNumber=(iCount%iNumColumns);
 	       UT_sint32 iTempColOffset=0;
 	       if(iModNumber==1 && iCount!=1)
 	       {
 		       iHeightCount++;
-		       UT_sint32 i=iCount-iNoColumns,iHeight,iTemp=0;
-		       while(i<=iNoColumns)
+		       UT_sint32 i=iCount-iNumColumns,iHeight,iTemp=0;
+		       while(i<=iNumColumns)
 		       {
 			       fp_CellContainer *pPrevCell=static_cast<fp_CellContainer *>(getNthCell(i-1));
 			       iHeight=pPrevCell->getHeight();
@@ -6751,7 +6759,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	GR_Graphics * pG=pDA->pG;
 	GR_Painter painter(pG);
 	UT_sint32 i=1;
-	while(i<=iNoColumns)
+	while(i<=iNumColumns)
 	{
 		xxx_UT_DEBUGMSG(("iColOffsets %d %d\n",iColOffsets[i],i));
 		painter.drawLine(iColOffsets[i],da.yoff,iColOffsets[i],iMaxBot);
@@ -6771,7 +6779,7 @@ void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
 {
 	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
 	UT_sint32 iRowNumber=1,i=0,iCols=pMaster->getNumCols();
-	m_iTotalNoOfCells=0;
+	m_iTotalNumOfCells=0;
 	m_vecCells.clear();
 	while(pCell)
 	{
@@ -6785,7 +6793,7 @@ void fp_TableHeader::cacheCells(fp_TableContainer *pMaster)
 	       {
 		       m_pLastCachedCell=pCell;
 		       m_vecCells.push_back(pCell);
-		       m_iTotalNoOfCells++;
+		       m_iTotalNumOfCells++;
 		       if(m_iRowNumber==-1)
 		       {
 			       m_iRowNumber=iRowNumber;
