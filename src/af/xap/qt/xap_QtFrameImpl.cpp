@@ -19,7 +19,6 @@
  */
 
 #include <QMainWindow>
-#include <QGraphicsView>
 #include <QMenuBar>
 
 #include "ev_QtKeyboard.h"
@@ -92,9 +91,7 @@ void XAP_QtFrameImpl::_createTopLevelWindow()
 	if(m_iFrameMode == XAP_NormalFrame) {
 		m_topLevel = new QMainWindow(NULL, 0);
 		m_topLevel->setWindowTitle(XAP_App::getApp()->getApplicationTitleForTitleBar());
-		QGraphicsView* centralWidget = new QGraphicsView(m_topLevel);
-		m_topLevel->setCentralWidget(centralWidget);
-		m_topLevel->show();
+		m_topLevel->showMaximized();
 	}
 
 	if (m_iFrameMode != XAP_NoMenusWindowLess) {
@@ -114,6 +111,24 @@ void XAP_QtFrameImpl::_createTopLevelWindow()
 	if(m_iFrameMode == XAP_NormalFrame)
 	{
 		_createToolbars();
+	}
+
+	// Let the app-specific frame code create the contents of
+	// the child area of the window (between the toolbars and
+	// the status bar).
+	m_wSunkenBox = _createDocumentWindow();
+	m_topLevel->setCentralWidget(m_wSunkenBox);
+
+	m_wStatusBar = NULL;
+
+#ifdef ENABLE_STATUSBAR
+	if(m_iFrameMode == XAP_NormalFrame)
+		m_wStatusBar = _createStatusBarWindow();
+#endif
+
+	if (m_wStatusBar)
+	{
+		m_topLevel->setStatusBar(m_wStatusBar);
 	}
 }
 

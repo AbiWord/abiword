@@ -36,6 +36,8 @@ libqt_la_SOURCES = \
 	ap_QtToolbar_FontCombo.h \
 	ap_QtToolbar_StyleCombo.cpp \
 	ap_QtToolbar_StyleCombo.h \
+	ap_QtStatusBar.cpp \
+	ap_QtStatusBar.h \
 	$(NULL)
 
 

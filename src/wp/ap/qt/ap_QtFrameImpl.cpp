@@ -20,9 +20,12 @@
 
 #include <QMenuBar>
 #include <QMainWindow>
+#include <QTextDocument>
 
 #include "ap_QtFrame.h"
 #include "ap_QtFrameImpl.h"
+#include "ap_QtStatusBar.h"
+#include "ap_FrameData.h"
 
 AP_QtFrameImpl::AP_QtFrameImpl(AP_QtFrame *pQtFrame)
 	: XAP_QtFrameImpl(pQtFrame)
@@ -48,6 +51,34 @@ void AP_QtFrameImpl::_createWindow()
 	{
 	    _hideMenuScroll(true);
 	}
+}
+
+QTextEdit * AP_QtFrameImpl::_createDocumentWindow()
+{
+	XAP_Frame* pFrame = getFrame();
+	bool bShowRulers = static_cast<AP_FrameData*>(pFrame->getFrameData())->m_bShowRuler;
+	// TODO Rulers 
+
+	m_wSunkenBox = new QTextEdit();
+	QTextDocument *document = new QTextDocument();
+	m_wSunkenBox->setDocument(document);
+	m_wSunkenBox->setFrameShadow(QTextEdit::Sunken);
+	return m_wSunkenBox;
+}
+
+QStatusBar * AP_QtFrameImpl::_createStatusBarWindow()
+{
+#ifdef ENABLE_STATUSBAR
+	XAP_Frame* pFrame = getFrame();
+	AP_QtStatusBar * pQtStatusBar = new AP_QtStatusBar(pFrame);
+	UT_ASSERT(pQtStatusBar);
+
+	static_cast<AP_FrameData *>(pFrame->getFrameData())->m_pStatusBar = pQtStatusBar;
+	
+	return pQtStatusBar->createWidget();
+#else
+	return NULL;
+#endif
 }
 
 void AP_QtFrameImpl::_hideMenuScroll(bool bHideMenuScroll)

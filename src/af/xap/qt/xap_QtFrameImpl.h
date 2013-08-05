@@ -19,8 +19,11 @@
  */
 
 
-#ifndef XAP_UNIXFRAMEIMPL_H
-#define XAP_UNIXFRAMEIMPL_H
+#ifndef XAP_QTFRAMEIMPL_H
+#define XAP_QTFRAMEIMPL_H
+
+#include <QTextEdit>
+#include <QStatusBar>
 
 #include "xap_FrameImpl.h"
 #include "xap_QtDialogFactory.h"
@@ -41,7 +44,9 @@ public:
 	virtual void _createTopLevelWindow();
 
 protected:
-	EV_QtMenuBar *	    m_pQtMenuBar;
+	EV_QtMenuBar *		m_pQtMenuBar;
+	QTextEdit *		m_wSunkenBox;
+	QStatusBar *		m_wStatusBar;
 
 	virtual bool _close();
 	virtual bool _raise();
@@ -49,6 +54,9 @@ protected:
 
 	virtual void _nullUpdate () const; // a virtual member function in xap_Frame
 	virtual void _initialize();
+
+	virtual QTextEdit * _createDocumentWindow() = 0;
+	virtual QStatusBar * _createStatusBarWindow() = 0;
 
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
 
