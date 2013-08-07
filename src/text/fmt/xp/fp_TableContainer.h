@@ -276,19 +276,19 @@ public:
 	{
 		m_pHeader = pHeader;
 	}
-	void setiTopY(UT_sint32 iTopY)
+	void setTopY(UT_sint32 iTopY)
 	{
 		m_iTopY = iTopY;
 	}
-	void setiBotY(UT_sint32 iBotY)
+	void setBotY(UT_sint32 iBotY)
 	{
 		m_iBotY = iBotY;
 	}
-	UT_sint32 getiTopY() const
+	UT_sint32 getTopY() const
 	{
 		return m_iTopY;
 	}
-	UT_sint32 getiBotY() const
+	UT_sint32 getBotY() const
 	{
 		return m_iBotY;
 	}
@@ -309,25 +309,25 @@ public:
 	{
 		return m_iBrokenTableNumber;
 	}
-	void setPos(UT_sint32 i)
+	void setCellPos(UT_sint32 i)
 	{
 		m_iCellPos=i;
 	}
-	UT_sint32 getPos() const
+	UT_sint32 getCellPos() const
 	{
 		return m_iCellPos;
 	}
-	void incCount() 
+	void incHeaderCount() 
 	{
-		m_iHeaderIncCount++;
+		m_iHeaderCount++;
 	}
 	void setCountToZero()
 	{
-		m_iHeaderIncCount=0;
+		m_iHeaderCount=0;
 	}
 	UT_sint32 getCount() const
 	{
-		return m_iHeaderIncCount;
+		return m_iHeaderCount;
 	}
 	void setBrokenCell(bool bBroken)
 	{
@@ -432,7 +432,7 @@ private:
  	bool 		       m_bIsToBeDisplaced;
  	UT_sint32 	       m_iBrokenTableNumber;
  	UT_sint32 	       m_iCellPos;
- 	UT_sint32 	       m_iHeaderIncCount;
+ 	UT_sint32 	       m_iHeaderCount;
  	UT_sint32 	       m_iHeaderTop;
  	UT_sint32 	       m_iHeaderBot;
  	bool 		       m_bIsBrokenCell;

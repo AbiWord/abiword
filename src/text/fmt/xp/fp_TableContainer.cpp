@@ -140,7 +140,7 @@ fp_CellContainer::fp_CellContainer(fl_SectionLayout* pSectionLayout)
 	  m_pHeader(NULL),
 	  m_bIsToBeDisplaced(false),
 	  m_iCellPos(0),
-	  m_iHeaderIncCount(0),
+	  m_iHeaderCount(0),
 	  m_iHeaderTop(-1),
 	  m_iHeaderBot(-1),
 	  m_bIsBrokenCell(false),
@@ -198,8 +198,8 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 
 bool fp_CellContainer::partiallyInsideBrokenTable(fp_TableContainer *pBroke) const
 {
-	UT_sint32 iCellTop = getiTopY();
-	UT_sint32 iCellBot = getiBotY();
+	UT_sint32 iCellTop = getTopY();
+	UT_sint32 iCellBot = getBotY();
 	UT_sint32 iYBreak = pBroke->getYBreak();
 
 	if(iCellTop <= iYBreak)
@@ -2482,7 +2482,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
  	
  	if(m_bIsBrokenCell)
  	{
- 		if(pBroke->getYBottom() >= getiBotY())
+ 		if(pBroke->getYBottom() >= getBotY())
  		{
  			m_pBroke=pBroke;
   		}
@@ -6451,8 +6451,8 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 			iCount++;
 			xxx_UT_DEBUGMSG(("Shifting backward %d by %d\n",iCount,pCell->getCount()));
 			pCell->_setY(pCell->getY() - iShift1);
-			pCell->setiTopY(pCell->getiTopY() - iShift1);
-			pCell->setiBotY(pCell->getiBotY() - iShift1);
+			pCell->setTopY(pCell->getTopY() - iShift1);
+			pCell->setBotY(pCell->getBotY() - iShift1);
 			pCell->setCountToZero();
 			pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 		}
@@ -6463,7 +6463,7 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 	while(pCell)
 	{
 		iCount++;
-		pCell->setPos(iCount);
+		pCell->setCellPos(iCount);
 		if(bEnd || pCell->isInsideBrokenTable(this))
 		{
 			bEnd=true;
@@ -6475,10 +6475,10 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 			}
 			xxx_UT_DEBUGMSG(("Shifting forward %d\n",iCount));
 			pCell->setY(pCell->getY() + iShift);
-			pCell->setiTopY(pCell->getiTopY() + iShift);
-			pCell->setiBotY(pCell->getiBotY() + iShift);
+			pCell->setTopY(pCell->getTopY() + iShift);
+			pCell->setBotY(pCell->getBotY() + iShift);
 			pCell->setToBeShifted(true);
-			pCell->incCount();
+			pCell->incHeaderCount();
 			m_pLastShiftedCell=pCell;
 			m_iLastShiftedCellPos=iCount;
 			xxx_UT_DEBUGMSG(("New Y %d shift %d for cell %d pTab %p\n",pCell->getY(),iShift,iCount,this));
@@ -6513,9 +6513,9 @@ void fp_TableContainer::tweakFirstRowAlone(UT_sint32 iTweakHeight)
 		iNumCols--;
 		iCount++;
 		pCell->setY(pCell->getY() + iTweakHeight);
-		pCell->setiTopY(pCell->getiTopY() + iTweakHeight);
-		pCell->setiBotY(pCell->getiBotY() + iTweakHeight);
-		pCell->incCount();
+		pCell->setTopY(pCell->getTopY() + iTweakHeight);
+		pCell->setBotY(pCell->getBotY() + iTweakHeight);
+		pCell->incHeaderCount();
 		pCell=static_cast<fp_CellContainer *>(pCell->getNext());
 	}
 	UT_DEBUGMSG(("The total no of shifted cells %d\n",iCount));

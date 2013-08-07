@@ -1686,7 +1686,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
 	
 	//Table header
-	char * pszTableHeader = NULL;
+	char pszTableHeader[1024];
  
  	pSectionAP->getProperty("header",(const gchar *&)pszTableHeader);
  
@@ -1706,7 +1706,9 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
  			}
  		}
  		xxx_UT_DEBUGMSG(("\n\n\n\n%d\n\n",m_vHeaderRowNums.size()));
- 		m_bIsHeaderSet = true;
+		//only when m_vHeaderRowNums.size() > 0 that m_bIsHeaderSet = true
+		if(m_vHeaderRowNums.size()>0)
+ 		    m_bIsHeaderSet = true;
  	}
 
 	// table-wait-index is set by FV_View functions to a value different than zero to prevent 
