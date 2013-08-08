@@ -1686,7 +1686,7 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
 	
 	//Table header
-	char pszTableHeader[1024];
+	char * pszTableHeader = NULL;;
  
  	pSectionAP->getProperty("header",(const gchar *&)pszTableHeader);
  
