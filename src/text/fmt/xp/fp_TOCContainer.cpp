@@ -452,10 +452,16 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 //
 // Now do the case of breaking a Master TOC.
 //
+	if(getContainer() == NULL)
+	{
+		return NULL;
+	}
+
 	if(getMasterTOC() == NULL)
 	{
 		return getLastBrokenTOC()->VBreakAt(vpos);
 	}
+
 	UT_sint32 iTotalHeight = getTotalTOCHeight();
 	if (vpos >= iTotalHeight)
 	{
@@ -531,7 +537,8 @@ fp_ContainerObject * fp_TOCContainer::VBreakAt(UT_sint32 vpos)
 	}
 	else
 	{
-		UT_DEBUGMSG(("Breaking a TOC that is not yet inserted\n"));
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+		return NULL;
 	}
 	pBroke->setContainer(pUpCon);
 	//
