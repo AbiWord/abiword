@@ -25,6 +25,7 @@
 #include <QComboBox>
 #include <QFontComboBox>
 #include <QMainWindow>
+#include <QPixmap>
 
 #include <string.h>
 #include <stdlib.h>
@@ -52,6 +53,7 @@
 #include "ut_string_class.h"
 #include "pt_PieceTable.h"
 #include "ap_Toolbar_Id.h"
+#include "ap_QtStockIcons.h"
 
 EV_QtToolbar::EV_QtToolbar(XAP_QtApp   *pQtApp, 
 						XAP_Frame 	*pFrame, 
@@ -158,23 +160,27 @@ bool EV_QtToolbar::synthesize(void)
 				{
 					case EV_TBIT_PushButton:
 					{
-
 						UT_ASSERT(g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon")!=0);
 						if(pAction->getToolbarId() != AP_TOOLBAR_ID_INSERT_TABLE)
 						{
-							// TODO Handle icon here
-							QString str = pLabel->getToolbarLabel();
-							QPushButton *item = new QPushButton(str);
+							const char *icon_name = pLabel->getIconName();
+							QPixmap		pixmap;
+							pixmap = abi_pixmap_from_toolbar_id (icon_name);
+							QIcon icon(pixmap);
+
+							QString str = "";
+							QPushButton *item = new QPushButton(icon, str);
 							m_wToolbar->addWidget(item);
 						}
 						else
 						{
-							// TODO Some table implementation
-							const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-							std::string s;								            
-							pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable, s);
-							QString str = s.c_str();
-							QPushButton *item = new QPushButton(str);
+							const char *icon_name = pLabel->getIconName();
+							QPixmap		pixmap;
+							pixmap = abi_pixmap_from_toolbar_id (icon_name);
+							QIcon icon(pixmap);
+
+							QString str = "";
+							QPushButton *item = new QPushButton(icon, str);
 							m_wToolbar->addWidget(item);
 						}
 
@@ -184,10 +190,13 @@ bool EV_QtToolbar::synthesize(void)
 					case EV_TBIT_GroupButton:
 					{
 						UT_ASSERT(g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon")!=0);
+						const char *icon_name = pLabel->getIconName();
+						QPixmap		pixmap;
+						pixmap = abi_pixmap_from_toolbar_id (icon_name);
+						QIcon icon(pixmap);					
 
-						// TODO Some image implementation
-						QString str = pLabel->getToolbarLabel();
-						QPushButton *item = new QPushButton(str);
+						QString str = "";
+						QPushButton *item = new QPushButton(icon, str);
 						item->setCheckable(true);
 						m_wToolbar->addWidget(item);
 						break;

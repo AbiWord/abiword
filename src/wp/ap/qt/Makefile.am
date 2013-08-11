@@ -38,6 +38,8 @@ libqt_la_SOURCES = \
 	ap_QtToolbar_StyleCombo.h \
 	ap_QtStatusBar.cpp \
 	ap_QtStatusBar.h \
+	ap_QtStockIcons.cpp \
+	ap_QtStockIcons.h \
 	$(NULL)
 
 
