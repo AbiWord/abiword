@@ -333,4 +333,6 @@ abi_pixmap_from_toolbar_id (const char *toolbar_id)
 
 	// Should never reach here
 	UT_ASSERT(0);
+	QPixmap pixbuf(0, 0);
+	return pixbuf;
 }

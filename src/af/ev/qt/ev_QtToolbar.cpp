@@ -166,22 +166,26 @@ bool EV_QtToolbar::synthesize(void)
 							const char *icon_name = pLabel->getIconName();
 							QPixmap		pixmap;
 							pixmap = abi_pixmap_from_toolbar_id (icon_name);
-							QIcon icon(pixmap);
-
-							QString str = "";
-							QPushButton *item = new QPushButton(icon, str);
-							m_wToolbar->addWidget(item);
+							if(!pixmap.isNull())
+							{
+								QIcon icon(pixmap);
+								QString str = "";
+								QPushButton *item = new QPushButton(icon, str);
+								m_wToolbar->addWidget(item);
+							}
 						}
 						else
 						{
 							const char *icon_name = pLabel->getIconName();
 							QPixmap		pixmap;
 							pixmap = abi_pixmap_from_toolbar_id (icon_name);
-							QIcon icon(pixmap);
-
-							QString str = "";
-							QPushButton *item = new QPushButton(icon, str);
-							m_wToolbar->addWidget(item);
+							if(!pixmap.isNull())
+							{
+								QIcon icon(pixmap);
+								QString str = "";
+								QPushButton *item = new QPushButton(icon, str);
+								m_wToolbar->addWidget(item);
+							}
 						}
 
 						break;
@@ -193,12 +197,14 @@ bool EV_QtToolbar::synthesize(void)
 						const char *icon_name = pLabel->getIconName();
 						QPixmap		pixmap;
 						pixmap = abi_pixmap_from_toolbar_id (icon_name);
-						QIcon icon(pixmap);					
-
-						QString str = "";
-						QPushButton *item = new QPushButton(icon, str);
-						item->setCheckable(true);
-						m_wToolbar->addWidget(item);
+						if(!pixmap.isNull())
+						{
+							QIcon icon(pixmap);					
+							QString str = "";
+							QPushButton *item = new QPushButton(icon, str);
+							item->setCheckable(true);
+							m_wToolbar->addWidget(item);
+						}
 						break;
 					}
 					case EV_TBIT_EditText:
