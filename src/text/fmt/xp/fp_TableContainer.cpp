@@ -6544,6 +6544,19 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 	GR_Graphics * pG=pDA->pG;
 
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
+	
+// Lookup table properties to get the line thickness, etc.
+	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
+	UT_ASSERT(pLayout->getContainerType () != FL_CONTAINER_TABLE);
+	fp_Page * pPage = pTab->getPage();
+	UT_ASSERT(pPage);
+
+	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
+	
+	PP_PropertyMap::Line lineBottom = this->getBottomStyle (pTableLayout);
+	PP_PropertyMap::Line lineLeft   = this->getLeftStyle   (pTableLayout);
+	PP_PropertyMap::Line lineRight  = this->getRightStyle  (pTableLayout);
+	PP_PropertyMap::Line lineTop    = this->getTopStyle    (pTableLayout);
 
 	const UT_Rect * pClipRect = pDA->pG->getClipRect();
 	UT_sint32 iTop,iBot,iLeft,iRight;
@@ -6602,12 +6615,12 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 	bool bDrawBot = ((m_iCellPos%iNoColumns)==0);
 	xxx_UT_DEBUGMSG(("iTop %d and iBot %d\n",iTop,iBot));
 
-	painter.drawLine(iLeft,iTop,iRight,iTop);
+	drawLine(lineTop, iLeft,iTop,iRight,iTop,pG);
 	iTempColOffset=iLeft;
 	if(bDrawBot)
 	{
-		painter.drawLine(iLeftMost,iMaxBot,iRight,iMaxBot);
-		painter.drawLine(iRight,iTop,iRight,iMaxBot);
+		drawLine(lineBottom, iLeftMost,iMaxBot,iRight,iMaxBot,pG);
+		drawLine(lineBottom, iLeftMost,iMaxBot,iRight,iMaxBot,pG);
 	}
 }
 
@@ -6719,6 +6732,15 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	UT_ASSERT(NULL!=m_pTabMaster);
 	fp_TableContainer *pMaster = m_pTabMaster;
 	fp_CellContainer *pCell = NULL;
+	
+	if(pMaster && pMaster->getPage())
+	{
+		if(pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN) && !pMaster->getPage()->isOnScreen())
+		{
+			xxx_UT_DEBUGMSG(("pMaster is not On Screen \n",m_iBotY));
+			return;
+		}
+	}
 
 	if(m_pFirstCachedCell == NULL)
 	{
@@ -6726,10 +6748,6 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	}
 	pCell=pMaster->getCellAtRowColumn(m_iRowNumber-1,0);
 	dg_DrawArgs da=*pDA;
-
-    //This is to avoid the short gap between the header and the rest of the table
-	da.yoff+=170;
-	//fp_CellContainer *pStopCell = static_cast<fp_CellContainer *>(m_pLastCachedCell->getNext());
 
 	UT_sint32 iCount=0,iNumColumns=pMaster->getNumCols();
 	UT_sint32 iHeightCount=0,iPrevHeight=0,iMaxBot=0,iLeftMost=0,iPrevBot=da.yoff;
@@ -6759,7 +6777,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 		       iPrevBot=iMaxBot;
 		       iMaxBot=0;
 	       }
-	       pCell->drawHeaderCell(&da,iPrevHeight,iMaxBot,iLeftMost,iPrevBot,iTempColOffset);
+	       pCell->drawHeaderCell(pDA,iPrevHeight,iMaxBot,iLeftMost,iPrevBot,iTempColOffset);
 	       iColOffsets[iCount]=iTempColOffset;
 	       pCell = static_cast<fp_CellContainer *>(getNthCell(iCount));
 	}
