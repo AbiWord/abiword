@@ -4222,6 +4222,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 	const gchar * pszBgStyle = NULL;
 	const gchar * pszBgColor = NULL;
 	const gchar * pszBackgroundColor = NULL;
+	const gchar * pszTableHeader = NULL;
 
 	pSectionAP->getProperty ("bg-style",         pszBgStyle);
 	if (pszBgStyle && *pszBgStyle)
@@ -4247,6 +4248,17 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 	sProp = "table-sdh";
 	UT_String_sprintf(sPropVal,"%p",m_Table.getTableSDH());
 	UT_String_setProperty(sTableProps,sProp,sPropVal);
+
+	/* table header
+	 */
+	pSectionAP->getProperty ("header", pszTableHeader);
+	if (pszTableHeader && *pszTableHeader)
+	{
+		sProp = "table-header";
+		sPropVal= pszTableHeader;
+		UT_String_setProperty(sTableProps,sProp,sPropVal);
+	}
+
 	if(sTableProps.size() == 0)
 	{
 		sTableProps += " ";
