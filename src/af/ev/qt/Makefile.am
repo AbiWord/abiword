@@ -1,9 +1,15 @@
 
+include ${top_srcdir}/moc.mk
+
 noinst_LTLIBRARIES = libqt.la
 
 # TODO: refactor so we can get away using only AF_CPPFLAGS here
 AM_CPPFLAGS = \
 	$(WP_CPPFLAGS)
+
+$(libqt_la_OBJECTS) : \
+	moc_ev_QtMenuSlot.cpp \
+	$(NULL)
 
 libqt_la_SOURCES = \
 	ev_QtKeyboard.cpp \
@@ -16,6 +22,8 @@ libqt_la_SOURCES = \
 	ev_QtMenuBar.h \
 	ev_QtToolbar.cpp \
 	ev_QtToolbar.h \
+	ev_QtMenuSlot.cpp \
+	ev_QtMenuSlot.h \
 	$(NULL)
 #	ev_UnixFontCombo.cpp \
 #	ev_UnixFontCombo.h \

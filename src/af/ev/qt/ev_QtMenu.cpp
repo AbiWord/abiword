@@ -28,12 +28,15 @@
 #include <QIcon>
 
 #include "ev_QtMenu.h"
+#include "ev_QtMenuSlot.h"
 #include "xap_Frame.h"
 #include "xap_QtApp.h"
 #include "ev_Menu_Layouts.h"
 #include "ev_Menu_Actions.h"
 #include "ev_Menu_Labels.h"
 #include "ev_EditEventMapper.h"
+
+/*****************************************************************/
 
 // remove the first '&' character
 static void _ev_convert(char * bufResult,
@@ -138,6 +141,8 @@ static const char ** _ev_GetLabelName(XAP_QtApp * pQtApp,
 	return data;
 }
 
+/*****************************************************************/
+
 EV_QtMenu::EV_QtMenu(XAP_QtApp * pQtApp, 
 						 XAP_Frame *pFrame, 
 						 const char * szMenuLayoutName,
@@ -150,7 +155,6 @@ EV_QtMenu::EV_QtMenu(XAP_QtApp * pQtApp,
 
 EV_QtMenu::~EV_QtMenu()
 {
-	m_vecMenuWidgets.clear();
 }
 
 XAP_Frame * EV_QtMenu::getFrame()
@@ -160,7 +164,28 @@ XAP_Frame * EV_QtMenu::getFrame()
 
 bool EV_QtMenu::menuEvent(XAP_Menu_Id id)
 {
-	//TODO
+	// user selected something from the menu.
+	// invoke the appropriate function.
+	// return true if handled.
+
+	const EV_Menu_ActionSet * pMenuActionSet = m_pQtApp->getMenuActionSet();
+	UT_return_val_if_fail(pMenuActionSet, false);
+
+	const EV_Menu_Action * pAction = pMenuActionSet->getAction(id);
+	UT_return_val_if_fail(pAction, false);
+
+	const char * szMethodName = pAction->getMethodName();
+	if (!szMethodName)
+		return false;
+	
+	const EV_EditMethodContainer * pEMC = m_pQtApp->getEditMethodContainer();
+	UT_return_val_if_fail(pEMC, false);
+
+	EV_EditMethod * pEM = pEMC->findEditMethodByName(szMethodName);
+	UT_ASSERT(pEM);						// make sure it's bound to something
+
+	UT_String script_name(pAction->getScriptName());
+	invokeMenuMethod(m_pFrame->getCurrentView(), pEM, script_name);
 	return true;
 }
 
@@ -264,6 +289,17 @@ bool EV_QtMenu::synthesizeMenu(QMenuBar * menuRoot, bool isPopup)
 					// There is always one menubar
 					if(wParent != menuRoot)
 					{
+						EV_QtMenuSlot * obj = new EV_QtMenuSlot(this, id);
+						m_vecMenuSlots.push_front(obj);
+						if (pAction->isCheckable() || pAction->isRadio())
+						{
+							QObject::connect(w, SIGNAL(toggled(bool)), obj, SLOT(onToggle(bool)));
+						}
+						else
+						{
+							QObject::connect(w, SIGNAL(triggered()), obj, SLOT(onTrigger()));
+						}
+						
 						static_cast<QMenu *>(wParent)->addAction(w);
 					}
 					else

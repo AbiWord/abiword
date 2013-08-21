@@ -33,6 +33,7 @@ class AV_View;
 class XAP_QtApp;
 class XAP_QtFrameImpl;
 class XAP_Frame;
+class EV_QtMenuSlot;
 
 /*****************************************************************/
 
@@ -62,8 +63,8 @@ protected: // FIXME! These variables should be private.
 
 	// actual QT menu widgets
 	QVector<QObject*> m_vecMenuWidgets;
-private:
-
+	// menu slot classes
+	QVector<EV_QtMenuSlot*> m_vecMenuSlots;
 };
 
 #endif /* EV_QTMENU_H */
