@@ -4251,7 +4251,7 @@ void s_RTF_ListenerWriteDoc::_fillTableProps(PT_AttrPropIndex api, UT_String & s
 
 	/* table header
 	 */
-	pSectionAP->getProperty ("header", pszTableHeader);
+	pSectionAP->getProperty ("table-header", pszTableHeader);
 	if (pszTableHeader && *pszTableHeader)
 	{
 		sProp = "table-header";

@@ -201,6 +201,7 @@ static PP_Property _props[] =
 	{ "table-max-extra-margin","0.05",            false, NULL, PP_LEVEL_TABLE},
 	{ "table-row-props",       "",                false, NULL, PP_LEVEL_TABLE},
 	{ "table-row-spacing",     "0.01in",           false, NULL, PP_LEVEL_TABLE},
+	{ "table-header",          "0",             false, NULL, PP_LEVEL_TABLE},
 	{ "tabstops",              "",                false, NULL, PP_LEVEL_BLOCK},
 	{ "text-align",            text_align,	      true,  NULL, PP_LEVEL_BLOCK},
 	{ "text-decoration",       "none",            true,  NULL, PP_LEVEL_CHAR},

@@ -159,6 +159,7 @@ static const char * AbiPropertyName[PP_PropertyMap::abi__count] = {
 	"table-row-props",
 	"table-row-spacing",
 	"table-width",
+	"table-header",
 	"tabstops",
 	"text-align",
 	"text-decoration",

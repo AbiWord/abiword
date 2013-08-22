@@ -188,6 +188,7 @@ public:
 		abi_table_row_props,
 		abi_table_row_spacing,
 		abi_table_width,
+		abi_table_header,
 		abi_tabstops,
 		abi_text_align,
 		abi_text_decoration,
