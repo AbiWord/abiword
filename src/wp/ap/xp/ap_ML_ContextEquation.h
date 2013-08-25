@@ -29,6 +29,7 @@
 BeginLayout(ContextMath,EV_EMC_MATH)
 	BeginPopupMenu()
 		MenuItem(AP_MENU_ID_EDIT_LATEXEQUATION)
+		MenuItem(AP_MENU_ID_EDIT_LATEXEQUATION_ADVANCED)
 		Separator()
 		MenuItem(AP_MENU_ID_EDIT_CUT)
 		MenuItem(AP_MENU_ID_EDIT_COPY)

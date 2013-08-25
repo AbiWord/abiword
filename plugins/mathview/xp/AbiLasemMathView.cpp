@@ -814,6 +814,8 @@ LasemMathView::LasemMathView(GR_LasemMathManager * pMathMan): m_pMathMan(pMathMa
         
 	view=NULL;
         mathml = lsm_dom_implementation_create_document(NULL, "math");
+
+	m_Guru = NULL;
 }
 
 LasemMathView::~LasemMathView(void)
@@ -822,6 +824,8 @@ LasemMathView::~LasemMathView(void)
 		g_object_unref(mathml);		
 	if(view!=NULL)
 		g_object_unref(view);
+	if (m_Guru)
+		gtk_widget_destroy (m_Guru);
 }
 
 void LasemMathView::loadBuffer(UT_UTF8String & sMathml)

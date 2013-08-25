@@ -96,7 +96,7 @@ public:
 	void modify(void);
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
 	fp_Run *getRun () {return m_pRun;}
-	//void SetGuru (GtkWidget *guru) {m_Guru = guru;}
+	void SetGuru (GtkWidget *guru) {m_Guru = guru;}
 	UT_ByteBuf *exportToSVG (); //
         UT_ByteBuf *getSnapShot ();
 	UT_sint32 getWidth() {return width;}
@@ -119,7 +119,7 @@ private:
 	UT_sint32 width, height, ascent, descent;
 	fp_Run *m_pRun;
 	
-    //GtkWidget *m_Guru;
+    	GtkWidget *m_Guru;
         
 };
 

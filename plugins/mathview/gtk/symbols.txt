@@ -1,7 +1,7 @@
 GREEK
-\u03B1;|\\alpha;
-\u03B2;|\\beta;
-\u03B3;|\\gamma;
+\u03B1;|\alpha;
+\u03B2;|\beta;
+\u03B3;|\gamma;
 MATH
 \u2248;|\approx;
-\u2235;|\\because;
+\u2235;|\because;

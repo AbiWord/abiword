@@ -119,6 +119,7 @@
 #include "fv_FrameEdit.h"
 #include "fl_FootnoteLayout.h"
 #include "gr_EmbedManager.h"
+//#include "gr_LasemMathManager.h"
 #include "fp_MathRun.h"
 #include "ut_mbtowc.h"
 #include "fp_EmbedRun.h"
@@ -253,7 +254,7 @@ public:
 	static EV_EditMethod_Fn contextMisspellText;
 #endif
 	static EV_EditMethod_Fn contextEmbedLayout;
-
+	//static EV_EditMethod_Fn contextMathLayout;
 #ifdef ENABLE_SPELL
 	static EV_EditMethod_Fn spellSuggest_1;
 	static EV_EditMethod_Fn spellSuggest_2;
@@ -276,6 +277,7 @@ public:
 	static EV_EditMethod_Fn editLatexAtPos;
 	static EV_EditMethod_Fn editLatexEquation;
 	static EV_EditMethod_Fn editEmbed;
+	static EV_EditMethod_Fn editMath;
 
 	static EV_EditMethod_Fn extSelToXY;
 	static EV_EditMethod_Fn extSelLeft;
@@ -832,6 +834,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 	EV_EditMethod(NF(colorBackTB), _D_, ""),
 	EV_EditMethod(NF(colorForeTB), _D_, ""),
 	EV_EditMethod(NF(contextEmbedLayout), 		0,	""),
+//	EV_EditMethod(NF(contextMathLayout), 		0,	""),
 	EV_EditMethod(NF(contextFrame), 		0,	""),
 	EV_EditMethod(NF(contextHyperlink), 		0,	""),
 	EV_EditMethod(NF(contextImage), 0, ""),
@@ -937,6 +940,7 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	EV_EditMethod(NF(editAnnotation),		0,	""),
 	EV_EditMethod(NF(editEmbed),			0,	""),
+	EV_EditMethod(NF(editMath),			0,	""),
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
 	EV_EditMethod(NF(editLatexAtPos),		0,	""),
@@ -5557,6 +5561,58 @@ Defun1(editEmbed)
 			      GR_EmbedManager * pEmbed = pEmbedRun->getEmbedManager();
 			      UT_sint32 uid = pEmbedRun->getUID();
 			      pEmbed->modify(uid);
+			}
+		}
+	}
+
+	return true;
+}
+
+Defun1(editMath)
+{
+	CHECK_FRAME;
+	ABIWORD_VIEW;
+	UT_DEBUGMSG(("Select and Edit a Math Object \n"));
+	UT_return_val_if_fail (pView, false);
+        PT_DocPosition posL = pView->getPoint();
+	PT_DocPosition posH = pView->getSelectionAnchor();
+	PT_DocPosition posTemp = 0;
+	if(posH < posL)
+	{
+	     posTemp = posL;
+	     posL = posH;
+	     posH = posTemp;
+	}
+	if(posL == posH)
+	{
+	     posH = posL+1;
+	     pView->cmdSelect(posL,posH);
+	}
+	fl_BlockLayout * pBlock = pView->getBlockAtPosition(posL);
+	if(pBlock)
+	{
+		UT_sint32 x1,x2,y1,y2,iHeight;
+		bool bEOL = false;
+		bool bDir = false;
+		
+		fp_Run * pRun = NULL;
+		
+		pRun = pBlock->findPointCoords(posL,bEOL,x1,y1,x2,y2,iHeight,bDir);
+		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
+		{
+			pRun = pRun->getNextRun();
+		}
+		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
+		{
+			// Set the cursor context to image selected.
+		  UT_DEBUGMSG(("Found a Math Object \n"));
+			if(pRun->getType() == FPRUN_MATH)
+			{
+			      fp_MathRun * pMathRun = static_cast<fp_MathRun *>(pRun);
+			      UT_DEBUGMSG(("About to edit the object \n"));
+			      GR_EmbedManager * pMath = pMathRun->getMathManager();
+			      UT_sint32 uid = pMathRun->getUID();
+			      pMath->modify(uid);
 			}
 		}
 	}

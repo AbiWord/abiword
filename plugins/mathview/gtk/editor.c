@@ -86,7 +86,7 @@ void load_list(GPtrArray *list)
    	 	while(fgets(line,sizeof line,file)!= NULL) 
    	 	{	
 			copy = g_strdup(line);
-			toks = strsep(&copy,"|");
+			toks = strsep(&copy,";");
 			
 			if(is_new_category(line))
 				current = get_category(line);
@@ -106,7 +106,7 @@ void load_list(GPtrArray *list)
 			
 				gtk_widget_set_size_request(s->button, 30, 30);
 				g_ptr_array_add(list, s);
-}
+			}
   	 	}
 
   		fclose(file);
