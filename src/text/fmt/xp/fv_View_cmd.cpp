@@ -2190,7 +2190,40 @@ bool FV_View::cmdInsertRow(PT_DocPosition posRow, bool bBefore)
  */
 bool FV_View::cmdInsertHeaderRow(PT_DocPosition posRow)
 {
-	//TODO: insert header row
+	
+	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
+
+	pf_Frag_Strux* cellSDH,*tableSDH,*endTableSDH,*endCellSDH;
+	PT_DocPosition posTable,posCell2;
+	UT_sint32 iLeft,iRight,iTop,iBot;
+	getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
+
+	bool bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionCell,&cellSDH);
+	bRes = m_pDoc->getStruxOfTypeFromPosition(posRow,PTX_SectionTable,&tableSDH);
+	UT_return_val_if_fail(bRes, false);
+
+	posTable = m_pDoc->getStruxPosition(tableSDH) + 1;
+	fl_TableLayout * pTL = static_cast<fl_TableLayout*>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID()));
+	UT_return_val_if_fail(pTL,false);
+//
+// Now find the number of rows and columns in this table. This is easiest to
+// get from the table container
+//
+	fl_TableLayout * pTabL = getTableAtPos(posRow);
+	if(pTabL == NULL)
+	{
+	    pTabL = getTableAtPos(posRow+1);
+	    if(pTabL == NULL)
+	    {
+		pTabL = getTableAtPos(posRow+2);
+		UT_return_val_if_fail(pTabL, false);
+	    }
+	}
+	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTabL->getFirstContainer());
+	UT_return_val_if_fail(pTab, false);
+	UT_sint32 numCols = pTab->getNumCols();
+
+	//TODO: add header row
 	return true;
 }
 
