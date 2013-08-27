@@ -867,18 +867,17 @@ void LasemMathView::render(UT_Rect & rec)
 	GR_CairoGraphics *pUGG = static_cast<GR_CairoGraphics*>(m_pMathMan->getGraphics());
 	pUGG->beginPaint();
 	cairo_t *cr = pUGG->getCairo ();
-	UT_sint32 _width = pUGG->tdu(rec.width);
-	UT_sint32 _height = pUGG->tdu(rec.height);
+	UT_sint32 _width = pUGG->tdu(rec.width * UT_LAYOUT_RESOLUTION);
 	double zoom;
 	if (mathml == NULL || height == 0 || width == 0)
 		return;
-	zoom = MAX (_width*1.0 / width, _height*1.0 / height) / 72.;
-        zoom *= UT_LAYOUT_RESOLUTION;
+	zoom = _width / width / 72.;
 	cairo_save (cr);
-        cairo_translate (cr, pUGG->tdu(rec.left), pUGG->tdu(rec.top - ascent));
+	cairo_translate (cr, pUGG->tdu(rec.left), pUGG->tdu(rec.top - ascent));
 	cairo_scale (cr,zoom, zoom);
 	view = lsm_dom_document_create_view (mathml);
 	lsm_dom_view_render (view, cr, 0., 0.);
+	cairo_new_path (cr);
 	cairo_restore (cr);
 	pUGG->endPaint();
 }
