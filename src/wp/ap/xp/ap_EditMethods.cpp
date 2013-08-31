@@ -940,11 +940,11 @@ static EV_EditMethod s_arrayEditMethods[] =
 
 	EV_EditMethod(NF(editAnnotation),		0,	""),
 	EV_EditMethod(NF(editEmbed),			0,	""),
-	EV_EditMethod(NF(editMath),			0,	""),
 	EV_EditMethod(NF(editFooter),			0,	""),
 	EV_EditMethod(NF(editHeader),			0,	""),
 	EV_EditMethod(NF(editLatexAtPos),		0,	""),
 	EV_EditMethod(NF(editLatexEquation),	0,	""),
+	EV_EditMethod(NF(editMath),				0,	""),
 	EV_EditMethod(NF(endDrag),				0,	""),
 	EV_EditMethod(NF(endDragHline),			0,	""),
 	EV_EditMethod(NF(endDragVline),			0,	""),
