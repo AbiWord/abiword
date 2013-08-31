@@ -34,6 +34,8 @@
 #include "config.h"
 #endif
 
+#   include "xap_QtDlg_FileOpenSaveAs.h"
+
 #if 0 // TODO
 #   include "xap_QtDlg_About.h"
 #   include "xap_QtDlg_ClipArt.h"
@@ -107,6 +109,21 @@
 #endif // TODO
 
 #else
+
+	DeclareDialog(XAP_DIALOG_ID_FILE_OPEN,		XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_FILE_SAVEAS,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_FILE_SAVE_IMAGE,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_FILE_IMPORT,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_FILE_EXPORT,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_FILE,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+#ifdef ENABLE_PRINT
+	DeclareDialog(XAP_DIALOG_ID_PRINTTOFILE,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+#endif
+	DeclareDialog(XAP_DIALOG_ID_RECORDTOFILE,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_REPLAYFROMFILE,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_INSERT_PICTURE,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_INSERTMATHML,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
+	DeclareDialog(XAP_DIALOG_ID_INSERTOBJECT,	XAP_QtDialog_FileOpenSaveAs, 		FALSE)
 
 #if 0 // TODO implement
 DeclareDialog(XAP_DIALOG_ID_FONT, XAP_QtDialog_FontChooser, FALSE)
