@@ -690,6 +690,7 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	UT_sint32 activeItemIndex = -1;
 	
 	// add list items
+	if (m_szSuffixes)
 	{
 		UT_ASSERT(g_strv_length((gchar **) m_szSuffixes) == g_strv_length((gchar **) m_szDescriptions));
 		
