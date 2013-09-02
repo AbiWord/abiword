@@ -2228,6 +2228,19 @@ bool FV_View::cmdInsertHeaderRow(PT_DocPosition posRow)
 		vecHeaderRows.push_back(index);
 	}
 	pTab->identifyHeaderRows(vecHeaderRows);
+    
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+	m_pDoc->endUserAtomicGlob();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
+
 	return true;
 }
 
@@ -2275,6 +2288,19 @@ bool FV_View::cmdRemoveHeaderRow(PT_DocPosition posRow)
 
 	std::vector<UT_sint32> vecHeaderRows;
 	pTab->identifyHeaderRows(vecHeaderRows);
+    
+	// Signal PieceTable Changes have finished
+	_restorePieceTableState();
+	_generalUpdate();
+	m_pDoc->endUserAtomicGlob();
+
+	// restore updates and clean up dirty lists
+	m_pDoc->enableListUpdates();
+	m_pDoc->updateDirtyLists();
+	_fixInsertionPointCoords();
+	_ensureInsertionPointOnScreen();
+	notifyListeners(AV_CHG_MOTION);
+
 	return true;
 }
 
