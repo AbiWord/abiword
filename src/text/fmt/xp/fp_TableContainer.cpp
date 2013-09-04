@@ -3290,6 +3290,15 @@ void fp_TableContainer::identifyHeaderRows(const std::vector<UT_sint32>& vecHead
  	m_pTableHeader->setHeaderRowsNumVector(vecHeaderRows);
 }
 
+void fp_TableContainer::removeHeaderRows()
+{
+ 	if(m_pTableHeader == NULL)
+ 	{
+ 		m_pTableHeader = new fp_TableHeader(getSectionLayout(),this);
+ 	}
+ 	m_pTableHeader->removeHeaderRowsNumVector();
+}
+
 fp_TableContainer * fp_TableContainer::getFirstBrokenTable(void) const
 {
 	if(isThisBroken())
@@ -6647,6 +6656,14 @@ fp_TableHeader::~fp_TableHeader()
 void fp_TableHeader::setHeaderRowsNumVector(const std::vector<UT_sint32> & vecHeaderRowsNum)
 {
 	m_vHeaderRowNums = vecHeaderRowsNum;
+}
+
+
+void fp_TableHeader::removeHeaderRowsNumVector()
+{
+	if(m_vHeaderRowNums.size()>0) {
+		m_vHeaderRowNums.clear();
+	}
 }
 
 /*! 

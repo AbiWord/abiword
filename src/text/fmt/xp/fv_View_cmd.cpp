@@ -2193,8 +2193,8 @@ bool FV_View::cmdInsertHeaderRow(PT_DocPosition posRow)
 	
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	pf_Frag_Strux* cellSDH,*tableSDH,*endTableSDH,*endCellSDH;
-	PT_DocPosition posTable,posCell2;
+	pf_Frag_Strux* cellSDH,*tableSDH;
+	PT_DocPosition posTable;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
 
@@ -2252,8 +2252,8 @@ bool FV_View::cmdRemoveHeaderRow(PT_DocPosition posRow)
 	
 	STD_DOUBLE_BUFFERING_FOR_THIS_FUNCTION
 
-	pf_Frag_Strux* cellSDH,*tableSDH,*endTableSDH,*endCellSDH;
-	PT_DocPosition posTable,posCell2;
+	pf_Frag_Strux* cellSDH,*tableSDH;
+	PT_DocPosition posTable;
 	UT_sint32 iLeft,iRight,iTop,iBot;
 	getCellParams(posRow, &iLeft, &iRight,&iTop,&iBot);
 
@@ -2280,14 +2280,12 @@ bool FV_View::cmdRemoveHeaderRow(PT_DocPosition posRow)
 	}
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTabL->getFirstContainer());
 	UT_return_val_if_fail(pTab, false);
-	UT_sint32 numCols = pTab->getNumCols();
 
 	if(pTab->getHeader() == NULL) {
 		return false;
 	}
 
-	std::vector<UT_sint32> vecHeaderRows;
-	pTab->identifyHeaderRows(vecHeaderRows);
+	pTab->removeHeaderRows();
     
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();

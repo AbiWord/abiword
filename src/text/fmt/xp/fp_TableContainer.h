@@ -425,7 +425,7 @@ private:
 
 // Vertical alignment property
 
-	UT_sint32	m_iVertAlign;
+	UT_sint32	       m_iVertAlign;
 	fp_TableHeader*    m_pHeader;
  
  	UT_sint32 	       m_iShiftHeight;
@@ -575,6 +575,7 @@ fp_Column *         getBrokenColumn(void);
 		return m_pTableHeader; 
 	}
 	void 	identifyHeaderRows(const std::vector<UT_sint32>& ); 
+	void 	removeHeaderRows(); 
 	void 	setHeaderFlag(bool bHeader)
 	{
 		m_bHeader = bHeader;
@@ -682,8 +683,9 @@ public:
 	{ 	return m_iHeaderHeight; }
 	const std::vector<UT_sint32> & getHeaderRowNums(void) const
 	{ 	return m_vHeaderRowNums; }
-	
+
 	void setHeaderRowsNumVector(const std::vector<UT_sint32>&);
+	void removeHeaderRowsNumVector();
 	void calculateHeaderHeight(void);
 	void headerDraw(dg_DrawArgs *);
 	void markCellsForHeader(void);
