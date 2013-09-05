@@ -25,6 +25,10 @@
 #include <QPixmap>
 #include <QWidget>
 #include <QMainWindow>
+#include <QFileDialog>
+#include <QString>
+#include <QStringList>
+#include <QtDebug>
 
 #include "xap_Dlg_FileOpenSaveAs.h"
 #include "xap_Strings.h"
@@ -62,6 +66,7 @@ protected:
 	bool 					_askOverwrite_YesNo(XAP_Frame * pFrame,
 												const char * fileName);
 
+	QFileDialog * 			m_fileDialog;
 	QWidget * 			m_preview;
 private:
 	bool				m_bSave;

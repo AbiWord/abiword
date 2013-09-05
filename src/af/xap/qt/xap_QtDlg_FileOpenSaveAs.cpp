@@ -122,6 +122,125 @@ void XAP_QtDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
 	//TODO
 	UT_DEBUGMSG (("SERHAT: runModal\n"));
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
+	std::string szTitle;
+	std::string szFileTypeLabel;
+
+	switch (m_id)
+	{
+		case XAP_DIALOG_ID_INSERT_PICTURE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_IP_Title, szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel, szFileTypeLabel);
+				m_bSave = false;    
+				break;
+			}
+		case XAP_DIALOG_ID_FILE_OPEN:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_OpenTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel,szFileTypeLabel);
+				m_bSave = false;
+				break;
+			}
+		case XAP_DIALOG_ID_FILE_IMPORT:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ImportTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel,szFileTypeLabel);
+				m_bSave = false;
+				break;
+			}
+		case XAP_DIALOG_ID_INSERTMATHML:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertMath,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileInsertMath,szFileTypeLabel);
+				m_bSave = false;
+				break;
+			}
+		case XAP_DIALOG_ID_INSERTOBJECT:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertObject,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileInsertObject,szFileTypeLabel);
+				m_bSave = false;
+				break;
+			}
+		case XAP_DIALOG_ID_INSERT_FILE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_InsertTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileOpenTypeLabel,szFileTypeLabel);
+				m_bSave = false;
+				break;
+			}
+		case XAP_DIALOG_ID_FILE_SAVEAS:
+		case XAP_DIALOG_ID_FILE_SAVE_IMAGE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_SaveAsTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel,szFileTypeLabel);
+				m_bSave = true;
+				break;
+			}
+		case XAP_DIALOG_ID_FILE_EXPORT:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ExportTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FileSaveTypeLabel,szFileTypeLabel);
+				m_bSave = true;
+				break;
+			}
+		case XAP_DIALOG_ID_PRINTTOFILE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_PrintToFileTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_FilePrintTypeLabel,szFileTypeLabel);
+				m_bSave = true;
+				break;
+			}
+		case XAP_DIALOG_ID_RECORDTOFILE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_RecordToFileTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_RecordToFileLabel,szFileTypeLabel);
+				m_bSave = true;
+				break;
+			}
+		case XAP_DIALOG_ID_REPLAYFROMFILE:
+			{
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ReplayFromFileTitle,szTitle);
+				pSS->getValueUTF8(XAP_STRING_ID_DLG_FOSA_ReplayFromFileLabel,szFileTypeLabel);
+				m_bSave = false;
+				break;
+			}
+		default:
+			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+			m_bSave = false;
+			break;
+	}
+
+	// Get the QWindow of the parent frame
+	XAP_QtFrameImpl * pQtFrameImpl = static_cast<XAP_QtFrameImpl *>(pFrame->getFrameImpl());
+	QMainWindow * parent = pQtFrameImpl->getTopLevel();
+
+	QString str = szTitle.c_str();
+	m_fileDialog = new QFileDialog(parent, str);
+	if(m_bSave)
+	{
+		m_fileDialog->setAcceptMode(QFileDialog::AcceptSave);
+		m_fileDialog->setFileMode(QFileDialog::AnyFile);
+	}
+	else
+	{
+		m_fileDialog->setAcceptMode(QFileDialog::AcceptOpen);
+		m_fileDialog->setFileMode(QFileDialog::ExistingFile);
+	}
+
+	QStringList fileNames;
+	if(m_fileDialog->exec())
+	{
+		fileNames = m_fileDialog->selectedFiles();
+	}
+
+	if(fileNames.size() != 1)
+	{
+		return;
+	}
+
+	qDebug() << "DEBUG: SERHAT: file path/name" << fileNames.at(0);
 }
 
 gint XAP_QtDialog_FileOpenSaveAs::previewPicture (void)
