@@ -92,6 +92,8 @@ libgtk_la_SOURCES = \
 	ap_UnixDialog_InsertTable.h \
 	ap_UnixDialog_Latex.cpp \
 	ap_UnixDialog_Latex.h \
+	ap_UnixDialog_Latex_Advanced.cpp \
+	ap_UnixDialog_Latex_Advanced.h \
 	ap_UnixDialog_ListRevisions.cpp \
 	ap_UnixDialog_ListRevisions.h \
 	ap_UnixDialog_Lists.cpp \

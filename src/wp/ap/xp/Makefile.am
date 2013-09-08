@@ -121,6 +121,8 @@ libxp_la_SOURCES = \
 	ap_Dialog_InsertTable.h \
 	ap_Dialog_Latex.cpp \
 	ap_Dialog_Latex.h \
+	ap_Dialog_Latex_Advanced.cpp \
+	ap_Dialog_Latex_Advanced.h \
 	ap_Dialog_ListRevisions.cpp \
 	ap_Dialog_ListRevisions.h \
 	ap_Dialog_Lists.cpp \

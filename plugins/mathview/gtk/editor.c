@@ -18,8 +18,62 @@ typedef struct
 	GtkTextBuffer *buffer;
 	struct SymbolButton *s;
 }data;
-
+GtkWidget *view;
 data d;
+void update ()
+{
+	gchar* curItex = NULL;
+gchar * sz = NULL;
+	GtkTextBuffer * buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (view));
+	GtkTextIter startIter,endIter;
+	gtk_text_buffer_get_start_iter  (buffer,&startIter);
+	gtk_text_buffer_get_end_iter    (buffer,&endIter);
+	curItex = gtk_text_buffer_get_text   (buffer,&startIter,&endIter,TRUE); 
+
+	GString *itex;
+	char *itex_iter;
+	char *prev_char = '\0';
+	size_t size_utf8;
+	unsigned int i;
+	int n_unclosed_braces = 0;
+	int j;
+	gboolean add_dash = FALSE;
+
+	if (curItex != NULL && !g_utf8_validate (curItex, -1, NULL)) {
+		g_free (curItex);
+		curItex = NULL;
+	}
+
+	if (curItex != NULL) {
+		size_utf8 = g_utf8_strlen (curItex, -1);
+
+		if (size_utf8 > 0) {
+			for (i = 0, itex_iter = curItex;
+			     i < size_utf8;
+			     i++, itex_iter = g_utf8_next_char (itex_iter)) {
+				if (*itex_iter != ' ') {
+					if (*itex_iter == '{' && (prev_char == NULL || *prev_char != '\\'))
+						n_unclosed_braces++;
+					else if (*itex_iter == '}' && (prev_char != NULL || *prev_char != '\\'))
+						n_unclosed_braces--;
+				}
+
+				prev_char = itex_iter;
+			}
+			
+		}
+	}
+
+	itex = g_string_new (curItex);
+	for (j = 0; j < n_unclosed_braces; j++)
+		g_string_append_c (itex, '}');
+
+	//update buffer
+
+	g_string_free (itex, TRUE);
+}
+
+
 void insert_into_doc(GtkWidget *widget, gpointer view)
 {
 
@@ -33,7 +87,9 @@ void set_data(GtkWidget *widget, gpointer d1)
 
 void insert_symbol(GtkWidget *widget, data *d)
 {
+	update();
 	gtk_text_buffer_insert_at_cursor(d->buffer,d->s->itex,-1);
+	
 }
 
 void close_window(GtkWidget *widget)
@@ -117,6 +173,9 @@ void load_list(GPtrArray *list)
   	}
 }
 
+GtkTextBuffer *buffer;
+  	GtkTextIter start, end;
+  	GtkTextIter iter;
 
 int main(int argc, char** argv) 
 {
