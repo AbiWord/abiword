@@ -212,11 +212,12 @@ bool fp_CellContainer::partiallyInsideBrokenTable(fp_TableContainer *pBroke) con
 	}
 	return false;
 }
+
 bool fp_CellContainer::isInsideBrokenTable(fp_TableContainer *pBroke) const
 {
 	if((getY() >= pBroke->getYBreak())
-		&& (getY()+getHeight() <= pBroke->getYBottom())
-	){
+		&& (getY()+getHeight() <= pBroke->getYBottom()))
+	{
 		return true;
 	}
 	return false;
@@ -6243,7 +6244,7 @@ void  fp_TableContainer::_size_allocate_pass2(void)
 				getNthCol(col)->allocation += 2 * getNthCol(col)->spacing;
 			}
 		}
-		  xxx_UT_DEBUGMSG(("Sevior: table %x column %d set to width %d spacing %d pColProp width %d \n",this,col,getNthCol(col)->allocation,getNthCol(col)->spacing,pColProp->m_iColWidth));
+		xxx_UT_DEBUGMSG(("Sevior: table %x column %d set to width %d spacing %d pColProp width %d \n",this,col,getNthCol(col)->allocation,getNthCol(col)->spacing,pColProp->m_iColWidth));
 	}
 	m_MyAllocation.x = pTL->getLeftColPos() - pTL->getLeftOffset();
 
@@ -6438,7 +6439,9 @@ UT_sint32 fp_TableContainer::getBrokenTablePosition()
 		}
 		pos++;
 		if(this == pTab)
+		{
 			break;
+		}
 		pTab=static_cast<fp_TableContainer *>(pTab->getNext());
 	}
 	return pos;
@@ -6452,10 +6455,13 @@ void fp_TableContainer::changeCellPositions(UT_sint32 iShift,bool bBack)
 {
 	fp_TableContainer *pMaster=NULL;
 	if(isThisBroken())
+	{
 		pMaster = getMasterTable();
-	else
+	} else
+	{
 		pMaster=this;
- 	
+	}
+
 	fp_CellContainer *pCell = static_cast<fp_CellContainer *>(pMaster->getNthCon(0));
 	UT_sint32 iCount=0;
 
@@ -6661,7 +6667,8 @@ void fp_TableHeader::setHeaderRowsNumVector(const std::vector<UT_sint32> & vecHe
 
 void fp_TableHeader::removeHeaderRowsNumVector()
 {
-	if(m_vHeaderRowNums.size()>0) {
+	if(m_vHeaderRowNums.size()>0) 
+	{
 		m_vHeaderRowNums.clear();
 	}
 }

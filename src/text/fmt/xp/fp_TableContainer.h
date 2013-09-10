@@ -168,21 +168,21 @@ public:
 	bool                containsAnnotations(fp_TableContainer * pBroke = NULL) const;
 	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns, fp_TableContainer * pBroke = NULL);
 	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff) const;
-   UT_sint32           getLeftAttach(void) const
+        UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
-    UT_sint32           getRightAttach(void) const
+	UT_sint32           getRightAttach(void) const
 		{ return m_iRightAttach;}
-    UT_sint32           getTopAttach(void) const
+	UT_sint32           getTopAttach(void) const
 		{ return m_iTopAttach;}
-    UT_sint32           getBottomAttach(void) const
+	UT_sint32           getBottomAttach(void) const
 		{ return m_iBottomAttach;}
-    void                setLeftAttach(UT_sint32 i)
+	void                setLeftAttach(UT_sint32 i)
 		{ m_iLeftAttach = i;}
-    void                setRightAttach(UT_sint32 i)
+	void                setRightAttach(UT_sint32 i)
 		{ m_iRightAttach = i;}
-    void                setTopAttach(UT_sint32 i)
+	void                setTopAttach(UT_sint32 i)
 		{ m_iTopAttach = i;}
-    void                setBottomAttach(UT_sint32 i)
+        void                setBottomAttach(UT_sint32 i)
 		{ m_iBottomAttach = i;}
 	void                setToAllocation(void);
 	UT_sint32           getLeftPad(void) const
@@ -448,7 +448,7 @@ public:
 
 	void                sizeRequest(fp_Requisition * pRequest);
 	void                sizeAllocate(fp_Allocation * pAllocate);
-    virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y,
+	virtual void        mapXYToPosition(UT_sint32 x, UT_sint32 y,
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual fp_Page *   getPage(void);
@@ -464,7 +464,7 @@ public:
 	virtual UT_sint32   getMarginAfter(void) const;
 	void                setAdditionalMargin(UT_sint32 iMarg)
 	{m_iAdditionalMarginAfter = iMarg;}
-fp_Column *         getBrokenColumn(void);
+	fp_Column *         getBrokenColumn(void);
 	void                drawLines();
 	bool                containsFootnoteReference(void);
 	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
@@ -606,8 +606,8 @@ private:
 	void                    _size_request_pass2(void);
 	void                    _size_request_pass3(void);
 
-    void                    _size_allocate_init(void);
-    void                    _size_allocate_pass1(void);
+	void                    _size_allocate_init(void);
+	void                    _size_allocate_pass1(void);
 	void                    _size_allocate_pass2(void);
 	UT_uint32 				_getBottomOfLastContainer(void) const;
 	void					_drawBoundaries(dg_DrawArgs* pDA);
