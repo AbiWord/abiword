@@ -23,7 +23,7 @@ data d;
 void update ()
 {
 	gchar* curItex = NULL;
-gchar * sz = NULL;
+	gchar * sz = NULL;
 	GtkTextBuffer * buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (view));
 	GtkTextIter startIter,endIter;
 	gtk_text_buffer_get_start_iter  (buffer,&startIter);
@@ -34,8 +34,7 @@ gchar * sz = NULL;
 	char *itex_iter;
 	char *prev_char = '\0';
 	size_t size_utf8;
-	unsigned int i;
-	int n_unclosed_braces = 0;
+	unsigned int i, n_unclosed_braces =0;
 	int j;
 	gboolean add_dash = FALSE;
 
@@ -67,8 +66,10 @@ gchar * sz = NULL;
 	itex = g_string_new (curItex);
 	for (j = 0; j < n_unclosed_braces; j++)
 		g_string_append_c (itex, '}');
-
-	//update buffer
+	
+	//UT_UTF8String sLatex;
+	GtkTextBuffer * buffer2 = gtk_text_view_get_buffer (GTK_TEXT_VIEW (view));
+	gtk_text_buffer_set_text (buffer2, itex, -1);
 
 	g_string_free (itex, TRUE);
 }
@@ -180,7 +181,7 @@ GtkTextBuffer *buffer;
 int main(int argc, char** argv) 
 {
 
-	GtkWidget *view;
+	//GtkWidget *view;
 	GtkWidget *window;
 	GtkWidget *frame;
 	GtkWidget *latex_label;

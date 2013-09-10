@@ -5598,11 +5598,11 @@ Defun1(editMath)
 		fp_Run * pRun = NULL;
 		
 		pRun = pBlock->findPointCoords(posL,bEOL,x1,y1,x2,y2,iHeight,bDir);
-		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_EMBED)))
+		while(pRun && ((pRun->getType() != FPRUN_IMAGE) && (pRun->getType() != FPRUN_MATH)))
 		{
 			pRun = pRun->getNextRun();
 		}
-		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_EMBED))))
+		if(pRun && ((pRun->getType() == FPRUN_IMAGE) || ((pRun->getType() == FPRUN_MATH))))
 		{
 			// Set the cursor context to image selected.
 		  UT_DEBUGMSG(("Found a Math Object \n"));

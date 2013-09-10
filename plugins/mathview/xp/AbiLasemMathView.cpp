@@ -958,6 +958,10 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 	UT_DEBUGMSG(("font : %s \n",font));	
  }
  
+void LasemMathView:: modify()
+{
+	UT_DEBUGMSG(("Modify..."));
+}
 void LasemMathView :: setColor(const UT_RGBColor& c)
 {
 	UT_DEBUGMSG(("Entering SetColor..\n"));
