@@ -318,7 +318,7 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 
 	// load the dialog from the UI file
 #if GTK_CHECK_VERSION(3,0,0)
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex.ui");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex_Advanced.ui");
 #else
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex-2.ui");
 #endif

@@ -234,6 +234,7 @@ uifiles_gtk3 = ap_UnixDialog_Annotation.ui \
 	ap_UnixDialog_Tab.ui	\
 	ap_UnixDialog_WordCount.ui \
 	ap_UnixDialog_Latex.ui \
+	ap_UnixDialog_Latex_Advanced.ui \	
 	ap_UnixDialog_RDFQuery.ui \
 	ap_UnixDialog_RDFEditor.ui \
 	pd_RDFContact.ui \

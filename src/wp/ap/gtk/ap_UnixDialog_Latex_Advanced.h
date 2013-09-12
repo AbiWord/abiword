@@ -73,7 +73,7 @@ protected:
 	data d;
 
 	// pointers to widgets we need
-
+	
 	GtkWidget * m_wClose;
 	GtkWidget * m_wInsert;
 	GtkWidget * m_wText;
