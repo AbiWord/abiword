@@ -3295,7 +3295,7 @@ void fp_TableContainer::removeHeaderRows()
 {
  	if(m_pTableHeader == NULL)
  	{
- 		m_pTableHeader = new fp_TableHeader(getSectionLayout(),this);
+ 		return;
  	}
  	m_pTableHeader->removeHeaderRowsNumVector();
 }
@@ -6667,10 +6667,7 @@ void fp_TableHeader::setHeaderRowsNumVector(const std::vector<UT_sint32> & vecHe
 
 void fp_TableHeader::removeHeaderRowsNumVector()
 {
-	if(m_vHeaderRowNums.size()>0) 
-	{
-		m_vHeaderRowNums.clear();
-	}
+	m_vHeaderRowNums.clear();
 }
 
 /*! 
@@ -6741,8 +6738,10 @@ void fp_TableHeader::calculateHeaderHeight(void)
 
 fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
 {
-	if(iPos >= m_iTotalNumOfCells)
+	if(iPos >= m_iTotalNumOfCells) 
+	{
 		return NULL;
+	}
 	return m_vecCells[iPos];
 }
 
@@ -6776,6 +6775,18 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	UT_sint32 iCount=0,iNumColumns=pMaster->getNumCols();
 	UT_sint32 iHeightCount=0,iPrevHeight=0,iMaxBot=0,iLeftMost=0,iPrevBot=da.yoff;
 	UT_sint32 *iColOffsets = new UT_sint32[iNumColumns];
+	
+// Lookup table properties to get the line thickness, etc.
+
+	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
+	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE != false);
+
+	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
+
+	PP_PropertyMap::Line lineBottom = pTableLayout->getBottomStyle();
+	PP_PropertyMap::Line lineLeft   = pTableLayout->getLeftStyle();
+	PP_PropertyMap::Line lineRight  = pTableLayout->getRightStyle();
+	PP_PropertyMap::Line lineTop    = pTableLayout->getTopStyle();
 
 	while(pCell)
 	{

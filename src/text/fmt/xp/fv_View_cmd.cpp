@@ -2281,12 +2281,8 @@ bool FV_View::cmdRemoveHeaderRow(PT_DocPosition posRow)
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pTabL->getFirstContainer());
 	UT_return_val_if_fail(pTab, false);
 
-	if(pTab->getHeader() == NULL) {
-		return false;
-	}
-
 	pTab->removeHeaderRows();
-    
+  
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 	_generalUpdate();

@@ -16342,7 +16342,7 @@ Defun1(repeatThisRow)
  			insPoint = insAnchor;
  		}
  	}
- 	pView->cmdInsertHeaderRow(insPoint); // is before
+ 	pView->cmdInsertHeaderRow(insPoint);
 	return true;
 }
 
@@ -16366,7 +16366,7 @@ Defun1(removeThisRowRepeat)
  			insPoint = insAnchor;
  		}
  	}
-	pView->cmdRemoveHeaderRow(insPoint); // is before
+	pView->cmdRemoveHeaderRow(insPoint);
 	return true;
 }
 
