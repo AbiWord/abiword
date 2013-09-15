@@ -60,6 +60,7 @@
 #include "fg_GraphicRaster.h"
 #include "fg_GraphicVector.h"
 #include "xap_App.h"
+#include <algorithm>
 
 static void s_border_properties (const char * border_color, const char * border_style, const char * border_width,
 								 const char * color, PP_PropertyMap::Line & line);
@@ -218,7 +219,7 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setRowHeight(m_iRowHeight);
 	if(isHeaderSet())
  	{
- 		pTab->identifyHeaderRows(getHeaderRowNums());
+ 		pTab->setHeaderRows(getHeaderRowNums());
  	}
 }
 
@@ -1686,29 +1687,32 @@ void fl_TableLayout::_lookupProperties(const PP_AttrProp* pSectionAP)
 	s_background_properties (pszBgStyle, pszBgColor, pszBackgroundColor, m_background);
 	
 	//Table header
-	char * pszTableHeader = NULL;;
+	char *pszTableHeader = NULL;
+ 	char *pszTableHeaderRows;
  
  	pSectionAP->getProperty("header",(const gchar *&)pszTableHeader);
  
- 	char *pszTableHeaderRows;
- 
  	if(pszTableHeader != NULL)
  	{
- 		pszTableHeaderRows = strtok(pszTableHeader,",");
  		m_vHeaderRowNums.clear();
- 		m_vHeaderRowNums.push_back(atoi(pszTableHeaderRows));
+ 		pszTableHeaderRows = strtok(pszTableHeader,",");
  		while(pszTableHeaderRows != NULL)
  		{
- 			pszTableHeaderRows = strtok(NULL,",");
- 			if(pszTableHeaderRows != NULL)
+			int rowNum = atoi(pszTableHeaderRows);
+			//to remove the duplicate numbers
+			std::vector<UT_sint32>::iterator result = find(m_vHeaderRowNums.begin(), m_vHeaderRowNums.end(), rowNum);
+ 			if(result != m_vHeaderRowNums.end())
  			{
  				m_vHeaderRowNums.push_back(atoi(pszTableHeaderRows));
  			}
+ 			pszTableHeaderRows = strtok(NULL,",");
  		}
  		xxx_UT_DEBUGMSG(("\n\n\n\n%d\n\n",m_vHeaderRowNums.size()));
 		//only when m_vHeaderRowNums.size() > 0 that m_bIsHeaderSet = true
-		if(m_vHeaderRowNums.size()>0)
+		if(m_vHeaderRowNums.size()>0) 
+		{
  		    m_bIsHeaderSet = true;
+		}
  	}
 
 	// table-wait-index is set by FV_View functions to a value different than zero to prevent 

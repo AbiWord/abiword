@@ -2390,6 +2390,9 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	{
 		setBrokenCell(true);
 	}
+	
+	//This code will execute only if there is a header. 
+	//It is concerned with moving the downwards cells broken across pages.
 	if(m_pBroke == pBroke && pBroke->getMasterTable()->getHeader())
 	{
 		pDA->yoff += pBroke->getMasterTable()->getHeader()->getHeaderHeight();
@@ -3192,6 +3195,9 @@ fp_TableContainer::fp_TableContainer(fl_SectionLayout* pSectionLayout, fp_TableC
 fp_TableContainer::~fp_TableContainer()
 {
 	UT_DEBUGMSG(("Destructor called for %p\n",this));
+	
+	//This code(inside the if{}) will execute only if there is a header. 
+	//It is concerned to change Cell Positions
 	if(isThisBroken() && !isThisHeader() && getMasterTable()->isHeaderSet())
 	{
 		if(m_bCellPositionChanged && getMasterTable()->countCons() && getMasterTable()->getHeader())
@@ -3204,9 +3210,7 @@ fp_TableContainer::~fp_TableContainer()
 	clearCons();
 	deleteBrokenTables(false,false);
 	xxx_UT_DEBUGMSG(("SEVIOR: deleting table %x \n",this));
-//
-// For debugging...
-//
+
 	setContainer(NULL);
 	setPrev(NULL);
 	setNext(NULL);
@@ -3282,7 +3286,7 @@ bool fp_TableContainer::containsNestedTables(void)
 	return (pTL->getNumNestedTables() > 0);
 }
 
-void fp_TableContainer::identifyHeaderRows(const std::vector<UT_sint32>& vecHeaderRows)
+void fp_TableContainer::setHeaderRows(const std::vector<UT_sint32>& vecHeaderRows)
 {
  	if(m_pTableHeader == NULL)
  	{
@@ -6764,6 +6768,8 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 			return;
 		}
 	}
+	fp_Page * pPage = pMaster->getPage();
+	UT_ASSERT(pPage);
 
 	if(m_pFirstCachedCell == NULL)
 	{
@@ -6820,10 +6826,27 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	GR_Graphics * pG=pDA->pG;
 	GR_Painter painter(pG);
 	UT_sint32 i=1;
+	UT_sint32 onePix = pG->tlu(1)+1;
+	//
+	// the was put in to fix cairo draws but it makes windows look bad.
+	// Fixme for cairo a different way.
+	//
+	onePix = 0;
+
+	UT_RGBColor white(255,255,255);
+	white = *pPage->getFillType().getColor();
 	while(i<=iNumColumns)
 	{
+		
+	    if ((da.yoff < pMaster->getYBreak()) || (iMaxBot > pMaster->getYBottom()))
+	    {
+		    // Cell is above or below the page
+		    continue;
+	    }
+		lineBottom.m_color = white;
+		lineBottom.m_thickness  += 3*onePix;
 		xxx_UT_DEBUGMSG(("iColOffsets %d %d\n",iColOffsets[i],i));
-		painter.drawLine(iColOffsets[i],da.yoff,iColOffsets[i],iMaxBot);
+		drawLine(lineBottom,iColOffsets[i],da.yoff,iColOffsets[i],iMaxBot,pDA->pG);
 		i++;
 	}
 

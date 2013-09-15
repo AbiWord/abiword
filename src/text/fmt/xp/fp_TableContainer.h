@@ -574,7 +574,7 @@ public:
 	{ 
 		return m_pTableHeader; 
 	}
-	void 	identifyHeaderRows(const std::vector<UT_sint32>& ); 
+	void 	setHeaderRows(const std::vector<UT_sint32>& ); 
 	void 	removeHeaderRows(); 
 	void 	setHeaderFlag(bool bHeader)
 	{

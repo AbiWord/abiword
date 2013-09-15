@@ -2227,7 +2227,7 @@ bool FV_View::cmdInsertHeaderRow(PT_DocPosition posRow)
 	for(int index=0;index<numCols;++index){
 		vecHeaderRows.push_back(index);
 	}
-	pTab->identifyHeaderRows(vecHeaderRows);
+	pTab->setHeaderRows(vecHeaderRows);
     
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
