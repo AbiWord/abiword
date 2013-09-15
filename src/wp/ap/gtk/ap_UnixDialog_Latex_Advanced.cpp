@@ -19,6 +19,8 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <gtk/gtk.h>
+#include <glib.h>
 
 #include "ut_string.h"
 #include "ut_assert.h"
@@ -170,7 +172,7 @@ void load_list(GPtrArray *list)
    	 	while(fgets(line,sizeof line,file)!= NULL) 
    	 	{	
 			copy = g_strdup(line);
-			toks = strsep(&copy,";");
+			toks = (char**)strsep(&copy,";");
 			
 			if(is_new_category(line))
 				current = get_category(line);
@@ -183,7 +185,7 @@ void load_list(GPtrArray *list)
 			
 				gchar *label_name = g_strdup((gchar*)toks);
 				toks++;
-				toks=strsep(&toks,";");
+				toks=(char**)strsep((char**)&toks,";");
 				s->button = gtk_button_new_with_label(label_name);			
 				s->itex = g_strdup((gchar*)toks);						
 				s->cat = current;
@@ -341,6 +343,47 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 	ConstructWindowName();
 	gtk_window_set_title (GTK_WINDOW(m_windowMain), m_sWindowName.utf8_str());
 
+	GPtrArray *list =  g_ptr_array_new ();  
+	//Load entities
+	load_list(list);
+
+	GtkWidget* notebook = GTK_WIDGET(gtk_builder_get_object(builder, "wNoteBook"));
+	//GtkWidget* label, grid;
+	int j=0,pos=0;
+	Category prev=GREEK;
+	GtkWidget* label = gtk_label_new (category_heading(prev));
+	GtkWidget* grid = gtk_grid_new();
+	for(j=0;j<5;j++)
+	{
+		struct SymbolButton *s = (SymbolButton*) g_ptr_array_index(list,j);
+		if(s->cat!=prev)
+		{	
+			//display the current grid
+			label = gtk_label_new (category_heading(prev));
+			gtk_widget_show (grid);
+			gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);			
+			//New category elements in new grid/page			
+			grid = gtk_grid_new();
+			prev = s->cat;
+			pos=0;
+		}
+		gtk_widget_set_size_request(s->button, 30, 30);
+		gtk_grid_attach(GTK_GRID (grid),s->button,pos++,0,1,1);
+	}	
+	//display last category
+	label = gtk_label_new (category_heading(prev));
+	gtk_widget_show (grid);
+	gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);			
+
+
+	gint i;
+	for(i=0;i<5;i++)
+	{
+		struct SymbolButton *s = (SymbolButton *)g_ptr_array_index(list,i);
+		//g_signal_connect(s->button, "clicked", G_CALLBACK(set_data), s);
+		//g_signal_connect(s->button, "clicked", G_CALLBACK(insert_symbol), &d);
+	}
+
 	g_signal_connect(G_OBJECT(m_windowMain), "delete_event",
 					   G_CALLBACK(s_delete_clicked),
 					   reinterpret_cast<gpointer>(this));
@@ -355,7 +398,7 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 					   G_CALLBACK(s_insert_clicked),
 					   reinterpret_cast<gpointer>(this));
 
-	gtk_widget_show_all (m_windowMain);
+	//gtk_widget_show_all (m_windowMain);
 
 	g_object_unref(G_OBJECT(builder));
 }
