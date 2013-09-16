@@ -259,8 +259,8 @@ int main(int argc, char** argv)
 			//display the current grid
 			label = gtk_label_new (category_heading(prev));
 			gtk_widget_show (grid);
-			gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);			
-			//New category elements in new grid/page			
+			gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);
+			//New category elements in new grid/page
 			grid = gtk_grid_new();
 			prev = s->cat;
 			pos=0;
@@ -271,7 +271,7 @@ int main(int argc, char** argv)
 	//display last category
 	label = gtk_label_new (category_heading(prev));
 	gtk_widget_show (grid);
-	gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);			
+	gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);
 
 	gtk_widget_show_all(window);
 

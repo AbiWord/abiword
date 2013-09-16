@@ -172,7 +172,7 @@ void load_list(GPtrArray *list)
    	 	while(fgets(line,sizeof line,file)!= NULL) 
    	 	{	
 			copy = g_strdup(line);
-			toks = (char**)strsep(&copy,";");
+			toks = (char**) strsep(&copy,";");
 			
 			if(is_new_category(line))
 				current = get_category(line);
@@ -313,7 +313,10 @@ bool AP_UnixDialog_Latex_Advanced::getLatexFromGUI(void)
 
 
 /*****************************************************************/
-
+GtkWidget*	AP_UnixDialog_Latex_Advanced::getDialog()
+{
+	return m_windowMain;
+}
 void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 {	
 	const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();

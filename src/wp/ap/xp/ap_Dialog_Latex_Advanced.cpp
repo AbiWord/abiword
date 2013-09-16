@@ -102,7 +102,7 @@ void    AP_Dialog_Latex_Advanced::setActiveFrame(XAP_Frame * /*pFrame*/)
 
 void  AP_Dialog_Latex_Advanced::fillLatex(UT_UTF8String & sLatex)
 {
-        setLatex(sLatex);
+    setLatex(sLatex);
 	setLatexInGUI();
 }
 

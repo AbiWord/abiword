@@ -44,6 +44,9 @@
 #include "xap_Dlg_MessageBox.h"
 #include "ap_Strings.h"
 #include "ap_Dialog_Latex.h"
+#include "ap_Dialog_Latex_Advanced.h"
+#include "ap_UnixDialog_Latex_Advanced.h"
+
 #include "ut_mbtowc.h"
 #include "ap_Menu_Id.h"
 #include "ie_math_convert.h"
@@ -961,6 +964,28 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 void LasemMathView:: modify()
 {
 	UT_DEBUGMSG(("Modify..."));
+	//XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	//pFrame->raise();
+
+	XAP_DialogFactory * pDialogFactory
+	  = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
+
+	AP_UnixDialog_Latex_Advanced * pDialog 
+		= static_cast<AP_UnixDialog_Latex_Advanced *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX_ADVANCED));
+	//UT_return_val_if_fail(pDialog, false);
+
+	if (pDialog->isRunning())
+	{
+		pDialog->activate();
+	}
+	else
+	{
+		GtkWidget * editor_dialog = pDialog->getDialog();
+		gtk_widget_show_all (editor_dialog);
+	}
+
+	//return true;
+
 }
 void LasemMathView :: setColor(const UT_RGBColor& c)
 {
