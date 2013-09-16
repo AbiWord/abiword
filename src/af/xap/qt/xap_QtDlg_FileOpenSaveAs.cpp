@@ -120,8 +120,6 @@ void XAP_QtDialog_FileOpenSaveAs::onDeleteCancel()
 
 void XAP_QtDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 {
-	//TODO
-	UT_DEBUGMSG (("SERHAT: runModal\n"));
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	std::string szTitle;
 	std::string szFileTypeLabel;
@@ -237,10 +235,14 @@ void XAP_QtDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 	if(fileNames.size() != 1)
 	{
+		m_answer = a_CANCEL;
 		return;
 	}
 
-	qDebug() << "DEBUG: SERHAT: file path/name" << fileNames.at(0);
+	m_answer = a_OK;
+	FREEP(m_szFinalPathname);
+	m_szFinalPathname = g_strdup(fileNames.at(0).toLocal8Bit().data());
+	UT_DEBUGMSG(("SERHAT: file path/name [%s] \n", m_szFinalPathname));	
 }
 
 gint XAP_QtDialog_FileOpenSaveAs::previewPicture (void)
