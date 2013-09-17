@@ -964,8 +964,8 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 void LasemMathView:: modify()
 {
 	UT_DEBUGMSG(("Modify..."));
-	//XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
-	//pFrame->raise();
+	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
+	pFrame->raise();
 
 	XAP_DialogFactory * pDialogFactory
 	  = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
@@ -980,8 +980,9 @@ void LasemMathView:: modify()
 	}
 	else
 	{
-		GtkWidget * editor_dialog = pDialog->getDialog();
-		gtk_widget_show_all (editor_dialog);
+		//GtkWidget * editor_dialog = pDialog->getDialog();
+		//gtk_widget_show_all (editor_dialog);
+		 pDialog->runModeless(pFrame);
 	}
 
 	//return true;

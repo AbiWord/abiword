@@ -1,3 +1,4 @@
+
 /* AbiWord
  * Copyright (C) 2005 Martin Sevior
  * 
@@ -315,6 +316,8 @@ bool AP_UnixDialog_Latex_Advanced::getLatexFromGUI(void)
 /*****************************************************************/
 GtkWidget*	AP_UnixDialog_Latex_Advanced::getDialog()
 {
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex_Advanced.ui");
+	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Latex"));
 	return m_windowMain;
 }
 void AP_UnixDialog_Latex_Advanced::constructDialog(void)
@@ -325,7 +328,7 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 #if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex_Advanced.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex-2.ui");
+	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex_Advanced.ui");
 #endif
 
         // Update our member variables with the important widgets that
