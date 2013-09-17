@@ -328,7 +328,7 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 #if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex_Advanced.ui");
 #else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Latex_Advanced.ui");
+	GtkBuilder* builder = newDialogBuilder("AP_UnixDialog_Latex_Advanced-2.ui");
 #endif
 
         // Update our member variables with the important widgets that
