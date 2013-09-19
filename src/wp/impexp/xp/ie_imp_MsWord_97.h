@@ -296,6 +296,7 @@ private:
 	int			m_iCurrentCell;					//
 	bool		m_bRowOpen;						// row strux open ?
 	bool		m_bCellOpen;					// cell strux open ?
+	int         m_iTableHeaderNum;
 	UT_NumberVector	m_vecColumnSpansForCurrentRow;	// placeholder for horizontal cell spans
 	UT_GenericVector<MsColSpan *>	m_vecColumnWidths;
 	UT_GenericVector<emObject*>   m_vecEmObjects;               // Objects between cell

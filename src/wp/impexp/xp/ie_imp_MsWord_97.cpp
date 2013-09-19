@@ -2825,6 +2825,9 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 // Fill Column positions
 //
 			  UT_sint32 i= 0;
+			  //the right value should be read from "table-header" properity
+			  //now it equals to nocellbounds to a default value
+			  m_iTableHeaderNum = ps->nocellbounds;
 			  for(i=0;i < ps->nocellbounds; i++) 
 			  {
 				  if(ps->cellbounds)
@@ -4597,6 +4600,7 @@ void IE_Imp_MsWord_97::_table_open ()
   //  _appendStrux(PTX_Block, NULL); // Don't need/want this after 27/3/2005
   _appendStrux(PTX_SectionTable, NULL);
   m_vecColumnWidths.clear();
+  m_iTableHeaderNum = 0;
   m_bRowOpen = false;
   m_bCellOpen = false;
   m_bInPara = false;
@@ -4855,6 +4859,9 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct * /*ps*/, const PAP *ap
   {
 	  props += "table-col-spacing:0.03in";
   }
+
+  props += UT_String_sprintf("table-header:%d;", m_iTableHeaderNum);
+
   // apply properties 
   PT_DocPosition posEnd =0;
   getDoc()->getBounds(true,posEnd); // clean frags!
