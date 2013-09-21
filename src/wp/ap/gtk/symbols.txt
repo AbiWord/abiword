@@ -1,0 +1,11 @@
+GREEK
+\u03B1;|\alpha;
+\u03B2;|\beta;
+\u03B3;|\gamma;
+MATH
+\u03B1;|\alpha;
+\u03B2;|\beta;
+\u03B3;|\gamma;
+OTHERS
+\u2248;|\approx;
+\u2235;|\because;

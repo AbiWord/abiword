@@ -36,6 +36,7 @@
 #include "ap_UnixDialog_Latex_Advanced.h"
 #include "xap_Dlg_MessageBox.h"
 
+data d;
 
 static gboolean s_delete_clicked(GtkWidget * /*widget*/, GdkEvent * /*event*/, AP_UnixDialog_Latex_Advanced * dlg)
 {
@@ -62,7 +63,7 @@ static void s_insert_clicked(GtkWidget * /*widget*/,AP_UnixDialog_Latex_Advanced
 	dlg->event_Insert();
 }
 
-void AP_UnixDialog_Latex_Advanced::set_data(GtkWidget /**widget*/, gpointer d1)
+static void s_set_data(GtkWidget * /**widget*/, gpointer d1)
 {
 	d.s = (SymbolButton *)d1;
 }
@@ -122,9 +123,9 @@ void AP_UnixDialog_Latex_Advanced::update ()
 }
 
 
-void AP_UnixDialog_Latex_Advanced ::insert_symbol(GtkWidget* /*widget*/)
+static void insert_symbol(GtkWidget * /*widget*/, gpointer d1)
 {
-	update();
+	//update();
 	gtk_text_buffer_insert_at_cursor(d.buffer,d.s->itex,-1);//directly access buffer
 	
 }
@@ -154,7 +155,7 @@ Category get_category(gchar* line)
 
 char *category_heading(Category c)
 {
-    char *headings[] = {"Greek Letters","Math symbols","Others" };
+    char *headings[] = {"Greek","Math","Others" };
     return headings[c];
 }
 
@@ -190,7 +191,6 @@ void load_list(GPtrArray *list)
 				s->button = gtk_button_new_with_label(label_name);			
 				s->itex = g_strdup((gchar*)toks);						
 				s->cat = current;
-			
 				gtk_widget_set_size_request(s->button, 30, 30);
 				g_ptr_array_add(list, s);
 			}
@@ -338,6 +338,10 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 	m_wInsert =  GTK_WIDGET(gtk_builder_get_object(builder, "wInsert"));
 	m_wText = GTK_WIDGET(gtk_builder_get_object(builder, "wTextView"));
 
+	d.buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_wText));
+	d.view = m_wText; 
+	//d.buffer = buffer;
+
 	// localize the strings in our dialog, and set tags for some widgets
 
 	localizeButtonUnderline(m_wInsert, pSS, AP_STRING_ID_DLG_InsertButton);
@@ -359,15 +363,17 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 	Category prev=GREEK;
 	GtkWidget* label = gtk_label_new (category_heading(prev));
 	GtkWidget* grid = gtk_grid_new();
-	for(j=0;j<5;j++)
+	for(j=0;j<8;j++)
 	{
 		struct SymbolButton *s = (SymbolButton*) g_ptr_array_index(list,j);
 		if(s->cat!=prev)
 		{	
 			//display the current grid
 			label = gtk_label_new (category_heading(prev));
+			UT_DEBUGMSG((s->itex));
 			gtk_widget_show (grid);
-			gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);			
+			gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);	
+			//UT_DEBUGMSG((category_heading(prev)));		
 			//New category elements in new grid/page			
 			grid = gtk_grid_new();
 			prev = s->cat;
@@ -375,19 +381,19 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 		}
 		gtk_widget_set_size_request(s->button, 30, 30);
 		gtk_grid_attach(GTK_GRID (grid),s->button,pos++,0,1,1);
-	}	
+	}
 	//display last category
 	label = gtk_label_new (category_heading(prev));
 	gtk_widget_show (grid);
 	gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);			
-
-
+	UT_DEBUGMSG(("prev"));
+	UT_DEBUGMSG((category_heading(prev)));
 	gint i;
 	for(i=0;i<5;i++)
 	{
 		struct SymbolButton *s = (SymbolButton *)g_ptr_array_index(list,i);
-		//g_signal_connect(s->button, "clicked", G_CALLBACK(set_data), s);
-		//g_signal_connect(s->button, "clicked", G_CALLBACK(insert_symbol), &d);
+		g_signal_connect(G_OBJECT(s->button), "clicked", G_CALLBACK(s_set_data), reinterpret_cast<gpointer>(s));
+		g_signal_connect(G_OBJECT(s->button), "clicked", G_CALLBACK(insert_symbol), reinterpret_cast<gpointer>(&d));
 	}
 
 	g_signal_connect(G_OBJECT(m_windowMain), "delete_event",
@@ -404,7 +410,7 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 					   G_CALLBACK(s_insert_clicked),
 					   reinterpret_cast<gpointer>(this));
 
-	//gtk_widget_show_all (m_windowMain);
+	gtk_widget_show_all (m_windowMain);
 
 	g_object_unref(G_OBJECT(builder));
 }
