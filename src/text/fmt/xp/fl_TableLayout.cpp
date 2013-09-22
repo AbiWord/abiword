@@ -219,7 +219,7 @@ void fl_TableLayout::setTableContainerProperties(fp_TableContainer * pTab)
 	pTab->setRowHeight(m_iRowHeight);
 	if(isHeaderSet())
  	{
- 		pTab->setHeaderRows(getHeaderRowNums());
+ 		pTab->setHeaderRows(getHeaderRowNumVector());
  	}
 }
 
