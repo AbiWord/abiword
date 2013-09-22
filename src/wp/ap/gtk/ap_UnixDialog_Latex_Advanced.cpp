@@ -68,37 +68,42 @@ static void s_set_data(GtkWidget * /**widget*/, gpointer d1)
 	d.s = (SymbolButton *)d1;
 }
 
-void AP_UnixDialog_Latex_Advanced::update ()
+static void update ()
 {
-	gchar* curItex = NULL;
-	gchar * sz = NULL;
-	GtkTextBuffer * buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_wText));
-	GtkTextIter startIter,endIter;
-	gtk_text_buffer_get_start_iter  (buffer,&startIter);
-	gtk_text_buffer_get_end_iter    (buffer,&endIter);
-	curItex = gtk_text_buffer_get_text   (buffer,&startIter,&endIter,TRUE); 
-
+	//GogEquation *equation = GOG_EQUATION (obj);
 	GString *itex;
 	char *itex_iter;
 	char *prev_char = '\0';
 	size_t size_utf8;
-	unsigned int i, n_unclosed_braces =0;
+	unsigned int i;
+	int n_unclosed_braces = 0;
 	int j;
 	gboolean add_dash = FALSE;
 
-	if (curItex != NULL && !g_utf8_validate (curItex, -1, NULL)) {
-		g_free (curItex);
-		curItex = NULL;
+	gchar * sz = NULL;
+	GtkTextBuffer * buffer = d.buffer;//gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_wText));
+	GtkTextIter startIter,endIter;
+	gtk_text_buffer_get_start_iter  (buffer,&startIter);
+	gtk_text_buffer_get_end_iter    (buffer,&endIter);
+	sz = gtk_text_buffer_get_text   (buffer,&startIter,&endIter,TRUE);
+
+
+	if (sz != NULL && !g_utf8_validate (sz, -1, NULL)) 
+	{
+		g_free (sz);
+		sz = NULL;
 	}
 
-	if (curItex != NULL) {
-		size_utf8 = g_utf8_strlen (curItex, -1);
+	if (sz != NULL) 
+	{
+		size_utf8 = g_utf8_strlen (sz, -1);
 
-		if (size_utf8 > 0) {
-			for (i = 0, itex_iter = curItex;
-			     i < size_utf8;
-			     i++, itex_iter = g_utf8_next_char (itex_iter)) {
-				if (*itex_iter != ' ') {
+		if (size_utf8 > 0) 
+		{
+			for (i = 0, itex_iter = sz; i < size_utf8; i++, itex_iter = g_utf8_next_char (itex_iter)) 
+			{
+				if (*itex_iter != ' ') 
+				{
 					if (*itex_iter == '{' && (prev_char == NULL || *prev_char != '\\'))
 						n_unclosed_braces++;
 					else if (*itex_iter == '}' && (prev_char != NULL || *prev_char != '\\'))
@@ -107,17 +112,23 @@ void AP_UnixDialog_Latex_Advanced::update ()
 
 				prev_char = itex_iter;
 			}
-			
+			if (prev_char != NULL && (*prev_char == '^' || *prev_char == '_'))
+				add_dash = TRUE;
+
 		}
 	}
 
-	itex = g_string_new (curItex);
+	itex = g_string_new (sz);
+	if (add_dash)
+		g_string_append_c (itex, '-');
 	for (j = 0; j < n_unclosed_braces; j++)
 		g_string_append_c (itex, '}');
-	
-	//UT_UTF8String sLatex;
-	GtkTextBuffer * buffer2 = gtk_text_view_get_buffer (GTK_TEXT_VIEW (m_wText));
-	gtk_text_buffer_set_text (buffer2,  (gchar*)itex, -1);
+
+	printf("%s\n",itex->str);
+	gtk_text_buffer_set_text(buffer,itex->str,-1);
+//	lsm_dom_element_set_attribute (LSM_DOM_ELEMENT (equation->style_element), "displaystyle",
+//				       equation->inline_mode ? "false" : "true");
+//	lsm_dom_node_set_node_value (equation->itex_string, itex->str);
 
 	g_string_free (itex, TRUE);
 }
@@ -125,7 +136,7 @@ void AP_UnixDialog_Latex_Advanced::update ()
 
 static void insert_symbol(GtkWidget * /*widget*/, gpointer d1)
 {
-	//update();
+	update();
 	gtk_text_buffer_insert_at_cursor(d.buffer,d.s->itex,-1);//directly access buffer
 	
 }
