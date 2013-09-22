@@ -68,7 +68,9 @@ static void s_set_data(GtkWidget * /**widget*/, gpointer d1)
 	d.s = (SymbolButton *)d1;
 }
 
-static void update ()
+int flag =0;
+
+static void updateText ()
 {
 	//GogEquation *equation = GOG_EQUATION (obj);
 	GString *itex;
@@ -131,12 +133,20 @@ static void update ()
 //	lsm_dom_node_set_node_value (equation->itex_string, itex->str);
 
 	g_string_free (itex, TRUE);
+	flag =0;
 }
 
-
+static void update (GtkTextBuffer * /*textbuffer*/, gpointer user_data)
+{
+	if(flag==0)
+	{
+		flag=1;
+		updateText();
+	}
+}
 static void insert_symbol(GtkWidget * /*widget*/, gpointer d1)
 {
-	update();
+	//update();
 	gtk_text_buffer_insert_at_cursor(d.buffer,d.s->itex,-1);//directly access buffer
 	
 }
@@ -173,11 +183,14 @@ char *category_heading(Category c)
 
 void load_list(GPtrArray *list)
 {
+	UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
+	path += "/xsltml/symbols.txt";
+
 	char filename[] = "symbols.txt";
 	char ** toks;
 	const char delim[] = ";";
   	Category current=OTHER;
-	FILE *file = fopen ( filename, "r" );
+	FILE *file = fopen ( path.utf8_str(), "r" );
 	 if (file != NULL) 
   	 {
    	 	char line [1000];
@@ -206,7 +219,7 @@ void load_list(GPtrArray *list)
 				g_ptr_array_add(list, s);
 			}
   	 	}
-
+  	 	UT_DEBUGMSG(("Entities Loaded\n"));
   		fclose(file);
   	}
   	else
@@ -381,7 +394,7 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 		{	
 			//display the current grid
 			label = gtk_label_new (category_heading(prev));
-			UT_DEBUGMSG((s->itex));
+			
 			gtk_widget_show (grid);
 			gtk_notebook_append_page (GTK_NOTEBOOK (notebook), grid, label);	
 			//UT_DEBUGMSG((category_heading(prev)));		
@@ -400,7 +413,7 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 	UT_DEBUGMSG(("prev"));
 	UT_DEBUGMSG((category_heading(prev)));
 	gint i;
-	for(i=0;i<5;i++)
+	for(i=0;i<8;i++)
 	{
 		struct SymbolButton *s = (SymbolButton *)g_ptr_array_index(list,i);
 		g_signal_connect(G_OBJECT(s->button), "clicked", G_CALLBACK(s_set_data), reinterpret_cast<gpointer>(s));
@@ -420,6 +433,11 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 	g_signal_connect(G_OBJECT(m_wInsert), "clicked",
 					   G_CALLBACK(s_insert_clicked),
 					   reinterpret_cast<gpointer>(this));
+
+	g_signal_connect(d.buffer, "end-user-action",
+					   G_CALLBACK(update),
+					   NULL);
+
 
 	gtk_widget_show_all (m_windowMain);
 

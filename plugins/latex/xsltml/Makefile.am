@@ -6,6 +6,7 @@ EXTRA_DIST = \
 	mmltex.xsl \
 	mmltex-mod.xsl \
 	scripts.xsl \
+	symbols.txt
 	tables.xsl \
 	tokens.xsl \
 	README

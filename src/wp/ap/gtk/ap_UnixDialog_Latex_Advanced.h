@@ -68,10 +68,6 @@ public:
 
 protected:
 	virtual void constructDialog(void);
-	//void set_data(GtkWidget /**widget*/, gpointer d1);
-	//void insert_symbol(GtkWidget *widget);
-	void update();	
-
 	// pointers to widgets we need
 	
 	GtkWidget * m_wClose;
