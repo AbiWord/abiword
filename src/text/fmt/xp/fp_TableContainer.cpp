@@ -2135,11 +2135,11 @@ void fp_CellContainer::draw(fp_Line * pLine)
 	//It is concerned with moving the downwards cells broken across pages.
 	if(m_bIsBrokenCell)
 	{
-		if(m_pBroke == pBroke && pBroke->getMasterTable()->getHeader())
+		if(m_pBroke == pBroke && pBroke->getMasterTable() && pBroke->getMasterTable()->getHeader())
 		{
 			UT_sint32 iHeaderHeight=pBroke->getMasterTable()->getHeader()->getHeaderHeight();
-			xxx_UT_DEBUGMSG(("iTop %d iBot %d pBroke %p iHeaderHeight %d\n",iTop,iBot,pBroke,iHeaderHeight));
 			yoff += iHeaderHeight;
+			xxx_UT_DEBUGMSG(("iTop %d iBot %d pBroke %p iHeaderHeight %d yoff %d \n",iTop,iBot,pBroke,iHeaderHeight,yoff));
 		}
 	}
 
@@ -2393,7 +2393,7 @@ void fp_CellContainer::drawBroken(dg_DrawArgs* pDA,
 	
 	//This code will execute only if there is a header. 
 	//It is concerned with moving the downwards cells broken across pages.
-	if(m_pBroke == pBroke && pBroke->getMasterTable()->getHeader())
+	if(m_pBroke == pBroke && pBroke->getMasterTable() && pBroke->getMasterTable()->getHeader())
 	{
 		pDA->yoff += pBroke->getMasterTable()->getHeader()->getHeaderHeight();
 	}
@@ -3198,7 +3198,8 @@ fp_TableContainer::~fp_TableContainer()
 	
 	//This code(inside the if{}) will execute only if there is a header. 
 	//It is concerned to change Cell Positions
-	if(isThisBroken() && !isThisHeader() && getMasterTable()->isHeaderSet())
+	if(getMasterTable() && isThisBroken() 
+        && !isThisHeader() && getMasterTable()->isHeaderSet())
 	{
 		if(m_bCellPositionChanged && getMasterTable()->countCons() && getMasterTable()->getHeader())
 		{
@@ -3214,11 +3215,11 @@ fp_TableContainer::~fp_TableContainer()
 	setContainer(NULL);
 	setPrev(NULL);
 	setNext(NULL);
-	if(getMasterTable() && m_pTableHeader!=NULL)
+	if(m_pTableHeader!=NULL)
 	{
 		DELETEP(m_pTableHeader);
+	    m_pMasterTable = NULL;
 	}
-	m_pMasterTable = NULL;
 }
 
 fp_Column * fp_TableContainer::getBrokenColumn(void)
@@ -3297,11 +3298,10 @@ void fp_TableContainer::setHeaderRows(const std::vector<UT_sint32>& vecHeaderRow
 
 void fp_TableContainer::removeHeaderRows()
 {
- 	if(m_pTableHeader == NULL)
+ 	if(m_pTableHeader != NULL)
  	{
- 		return;
+ 		m_pTableHeader->removeHeaderRowsNumVector();
  	}
- 	m_pTableHeader->removeHeaderRowsNumVector();
 }
 
 fp_TableContainer * fp_TableContainer::getFirstBrokenTable(void) const
@@ -4177,18 +4177,18 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
  	xxx_UT_DEBUGMSG(("VBreak for %x first\n %d",this,countBrokenTables()));
  	fp_TableHeader *pHeader = NULL;
  	fp_TableHeader *pTabHeader  = NULL;
- 	if((getMasterTable() && getMasterTable()->getHeader()))
+    //firstly, we set pTabHeader using getMasterTable()->getHeader()
+ 	if(getMasterTable() && getMasterTable()->getHeader())
  	{
  		pTabHeader = getMasterTable()->getHeader();
- 		pTabHeader->calculateHeaderHeight();
- 		pTabHeader->markCellsForHeader();
  	}
  	else if(m_pTableHeader != NULL)
  	{
  		pTabHeader = m_pTableHeader;
-  		pTabHeader->calculateHeaderHeight();
- 		pTabHeader->markCellsForHeader();
  	}
+  	pTabHeader->calculateHeaderHeight();
+    pTabHeader->markCellsForHeader();
+    
     //	fl_TableLayout *pTL = static_cast<fl_TableLayout *>(getSectionLayout());
  	if(m_bHeader)
  	{
@@ -4224,7 +4224,6 @@ fp_ContainerObject * fp_TableContainer::VBreakAt(UT_sint32 vpos)
 	if(static_cast<fl_TableLayout *>(getSectionLayout())->isHeaderSet())
 	{
 		pHeader = new fp_TableHeader(getSectionLayout(),getMasterTable());
-		//static_cast<fp_VerticalContainer *>(pHeader)->setHeight(pTabHeader->getHeaderHeight());
 		
 		pBroke = new fp_TableContainer(getSectionLayout(),getMasterTable());
 		getMasterTable()->setLastBrokenTable(pBroke);
@@ -5227,10 +5226,9 @@ void fp_TableContainer::setToAllocation(void)
 	}
 	pCon = static_cast<fp_CellContainer *>(getNthCon(0));
 
-	if(isHeaderSet())
+	if(isHeaderSet() && m_pTableHeader)
  	{
- 		if(m_pTableHeader)
- 			m_pTableHeader->calculateHeaderHeight();
+ 		m_pTableHeader->calculateHeaderHeight();
  	}
 
 	while(pCon)
@@ -6612,7 +6610,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 	       fp_Container *pCon=static_cast<fp_Container *>(getNthCon(i));
 
 	       da.xoff += pCon->getX();
-	       if(da.yoff >=ytop && da.yoff <= ybot)
+	       if(da.yoff >= ytop && da.yoff <= ybot)
 	       {
 		       xxx_UT_DEBUGMSG(("da.yoff is %d for cell %d height %d\n",da.yoff,m_iCellPos,pCon->getHeight()));
 		       pCon->draw(&da);
@@ -6644,6 +6642,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 }
 
 /********************************* Begin of fp_TableHeader implementation *********/
+
 fp_TableHeader::fp_TableHeader(fl_SectionLayout * pSectionLayout, fp_TableContainer *pTableContainer)
 	:  fp_TableContainer(pSectionLayout,pTableContainer),
 	   m_iHeaderHeight(0),
@@ -6740,20 +6739,23 @@ void fp_TableHeader::calculateHeaderHeight(void)
 	UT_DEBUGMSG(("There is not header in calculateHeaderHeight\n"));
 }
 
-fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iPos)
+
+/*!
+ * Used to return the cell on the specified index
+ */
+fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iIndex)
 {
-	if(iPos >= m_iTotalNumOfCells) 
+	if(iIndex >= m_iTotalNumOfCells) 
 	{
 		return NULL;
 	}
-	return m_vecCells[iPos];
+	return m_vecCells[iIndex];
 }
 
 /*!
  * Makes a draw call for each header cell.
  * The lines around header are partially drawn here and partially in the drawHeaderCell() function. This means colors for each cell border is "not possible".
  */
-//FIXME: The lines around header should be drawn like the one available in fp_CellContainer::drawLines() function. Fix this.
 void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 {
 	UT_ASSERT(NULL!=m_pTabMaster);
@@ -6773,7 +6775,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 
 	if(m_pFirstCachedCell == NULL)
 	{
-	       cacheCells(pMaster);
+	    cacheCells(pMaster);
 	}
 	pCell=pMaster->getCellAtRowColumn(m_iRowNumber-1,0);
 	dg_DrawArgs da=*pDA;
@@ -6784,8 +6786,8 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	
 // Lookup table properties to get the line thickness, etc.
 
-	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout ();
-	UT_ASSERT(pLayout->getContainerType () == FL_CONTAINER_TABLE != false);
+	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout();
+	UT_ASSERT((pLayout->getContainerType() == FL_CONTAINER_TABLE) != false);
 
 	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
 
@@ -6827,11 +6829,6 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	GR_Painter painter(pG);
 	UT_sint32 i=1;
 	UT_sint32 onePix = pG->tlu(1)+1;
-	//
-	// the was put in to fix cairo draws but it makes windows look bad.
-	// Fixme for cairo a different way.
-	//
-	onePix = 0;
 
 	UT_RGBColor white(255,255,255);
 	white = *pPage->getFillType().getColor();
@@ -6843,6 +6840,8 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 		    // Cell is above or below the page
 		    continue;
 	    }
+		lineTop.m_color = white;
+		lineTop.m_thickness  += 3*onePix;
 		lineBottom.m_color = white;
 		lineBottom.m_thickness  += 3*onePix;
 		xxx_UT_DEBUGMSG(("iColOffsets %d %d\n",iColOffsets[i],i));

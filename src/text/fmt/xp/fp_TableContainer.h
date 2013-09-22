@@ -681,11 +681,12 @@ public:
 	
 	UT_sint32 getHeaderHeight(void) const
 	{ 	return m_iHeaderHeight; }
-	const std::vector<UT_sint32> & getHeaderRowNums(void) const
+	const std::vector<UT_sint32> & getHeaderRowNumVector(void) const
 	{ 	return m_vHeaderRowNums; }
 
 	void setHeaderRowsNumVector(const std::vector<UT_sint32>&);
 	void removeHeaderRowsNumVector();
+
 	void calculateHeaderHeight(void);
 	void headerDraw(dg_DrawArgs *);
 	void markCellsForHeader(void);
