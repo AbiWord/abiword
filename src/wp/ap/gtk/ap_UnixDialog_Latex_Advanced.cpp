@@ -72,7 +72,6 @@ int flag =0;
 
 static void updateText ()
 {
-	//GogEquation *equation = GOG_EQUATION (obj);
 	GString *itex;
 	char *itex_iter;
 	char *prev_char = '\0';
@@ -88,6 +87,13 @@ static void updateText ()
 	gtk_text_buffer_get_start_iter  (buffer,&startIter);
 	gtk_text_buffer_get_end_iter    (buffer,&endIter);
 	sz = gtk_text_buffer_get_text   (buffer,&startIter,&endIter,TRUE);
+
+
+	GtkTextMark *  initialPos = gtk_text_buffer_get_insert(buffer);
+	UT_DEBUGMSG(("Got initial pos\n"));
+	GtkTextIter * temp;
+	gtk_text_buffer_get_iter_at_mark (buffer, temp ,initialPos);
+	UT_DEBUGMSG(("Got temp\n"));
 
 
 	if (sz != NULL && !g_utf8_validate (sz, -1, NULL)) 
@@ -128,11 +134,10 @@ static void updateText ()
 
 	printf("%s\n",itex->str);
 	gtk_text_buffer_set_text(buffer,itex->str,-1);
-//	lsm_dom_element_set_attribute (LSM_DOM_ELEMENT (equation->style_element), "displaystyle",
-//				       equation->inline_mode ? "false" : "true");
-//	lsm_dom_node_set_node_value (equation->itex_string, itex->str);
 
 	g_string_free (itex, TRUE);
+	gtk_text_buffer_move_mark(buffer, initialPos, temp);
+	UT_DEBUGMSG(("Moved mark\n"));
 	flag =0;
 }
 
@@ -156,6 +161,10 @@ gboolean is_new_category(gchar* line)
 		return TRUE;
 	if(strncmp(line,"MATH",4)==0)
 		return TRUE;
+	if(strncmp(line,"OPERATORS",9)==0)
+		return TRUE;
+	if(strncmp(line,"ARROWS",6)==0)
+		return TRUE;
 	if(strncmp(line,"OTHER",5)==0)
 		return TRUE;
 	else
@@ -168,6 +177,10 @@ Category get_category(gchar* line)
 		return GREEK;
 	if(strncmp(line,"MATH",4)==0)
 		return MATH;
+	if(strncmp(line,"OPERATORS",9)==0)
+		return OPERATORS;
+	if(strncmp(line,"ARROWS",6)==0)
+		return ARROWS;
 	if(strncmp(line,"OTHER",5)==0)
 		return OTHER;
 	else
@@ -176,7 +189,7 @@ Category get_category(gchar* line)
 
 char *category_heading(Category c)
 {
-    char *headings[] = {"Greek","Math","Others" };
+    char *headings[] = {"Greek","Math","Operators","Arrows","Others" };
     return headings[c];
 }
 
@@ -186,9 +199,8 @@ void load_list(GPtrArray *list)
 	UT_UTF8String path(XAP_App::getApp()->getAbiSuiteLibDir());
 	path += "/xsltml/symbols.txt";
 
-	char filename[] = "symbols.txt";
 	char ** toks;
-	const char delim[] = ";";
+
   	Category current=OTHER;
 	FILE *file = fopen ( path.utf8_str(), "r" );
 	 if (file != NULL) 
@@ -199,21 +211,17 @@ void load_list(GPtrArray *list)
    	 	{	
 			copy = g_strdup(line);
 			toks = (char**) strsep(&copy,";");
-			
+
 			if(is_new_category(line))
 				current = get_category(line);
 			else
 			{
 				struct SymbolButton *s = g_new0(struct SymbolButton, 1);
-						
-				//gchar* a = "\u2135";
-				//printf("%s %s Test : %d\n",a,toks, strncmp(a,toks,1));
-			
-				gchar *label_name = g_strdup((gchar*)toks);
-				toks++;
-				toks=(char**)strsep((char**)&toks,";");
+				s->itex = g_strdup((gchar*)toks);
+
+				gchar *label_name = g_strdup((gchar*)copy);
 				s->button = gtk_button_new_with_label(label_name);			
-				s->itex = g_strdup((gchar*)toks);						
+										
 				s->cat = current;
 				gtk_widget_set_size_request(s->button, 30, 30);
 				g_ptr_array_add(list, s);
@@ -224,7 +232,7 @@ void load_list(GPtrArray *list)
   	}
   	else
   	{
-   		 perror(filename);
+   		 perror(path.utf8_str());
   	}
 }
 
@@ -387,7 +395,7 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 	Category prev=GREEK;
 	GtkWidget* label = gtk_label_new (category_heading(prev));
 	GtkWidget* grid = gtk_grid_new();
-	for(j=0;j<8;j++)
+	for(j=0;j<224;j++)
 	{
 		struct SymbolButton *s = (SymbolButton*) g_ptr_array_index(list,j);
 		if(s->cat!=prev)
@@ -404,7 +412,8 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 			pos=0;
 		}
 		gtk_widget_set_size_request(s->button, 30, 30);
-		gtk_grid_attach(GTK_GRID (grid),s->button,pos++,0,1,1);
+		gtk_grid_attach(GTK_GRID (grid),s->button,(pos)%15,pos/15,1,1);
+		pos++;
 	}
 	//display last category
 	label = gtk_label_new (category_heading(prev));
@@ -413,7 +422,7 @@ void AP_UnixDialog_Latex_Advanced::constructDialog(void)
 	UT_DEBUGMSG(("prev"));
 	UT_DEBUGMSG((category_heading(prev)));
 	gint i;
-	for(i=0;i<8;i++)
+	for(i=0;i<224;i++)
 	{
 		struct SymbolButton *s = (SymbolButton *)g_ptr_array_index(list,i);
 		g_signal_connect(G_OBJECT(s->button), "clicked", G_CALLBACK(s_set_data), reinterpret_cast<gpointer>(s));

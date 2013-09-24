@@ -25,7 +25,7 @@
 class XAP_UnixFrame;
 
 /*****************************************************************/
-typedef enum {GREEK,MATH,OTHER} Category; //to be expanded
+typedef enum {GREEK,MATH,OPERATORS,ARROWS,OTHER} Category; //to be expanded
 
 struct SymbolButton
 {
