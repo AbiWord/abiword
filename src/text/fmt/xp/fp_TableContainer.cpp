@@ -1991,8 +1991,6 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	if(isHeaderCell())
 	{
 		m_bDrawLeft = m_bDrawTop = m_bDrawRight = true;
-		//for table header, we don't draw it bot
-		m_bDrawBot = false;
 	}
 
 	UT_sint32 count = countCons();
@@ -2054,9 +2052,9 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	}
 	if(pG->queryProperties(GR_Graphics::DGP_SCREEN))
 	{
-		drawLines(static_cast<fp_TableContainer *>(getHeaderPointer()),pG,true);
+		drawLines(static_cast<fp_TableContainer *>(getHeader()),pG,true);
 	}
-	drawLines(static_cast<fp_TableContainer *>(getHeaderPointer()),pG,false);
+	drawLines(static_cast<fp_TableContainer *>(getHeader()),pG,false);
 	pTab->setRedrawLines();
     _drawBoundaries(pDA,NULL);
 }
@@ -6585,7 +6583,7 @@ void fp_CellContainer::drawHeaderCell(dg_DrawArgs *pDA,UT_sint32 iPrevHeight,UT_
 	fp_ShadowContainer *pShadow = NULL;
 	UT_sint32 col_y=0;
 	bool bClear=false;
-	fp_TableContainer *pNext=static_cast<fp_TableContainer *>(getHeaderPointer()->getNext());
+	fp_TableContainer *pNext=static_cast<fp_TableContainer *>(getHeader()->getNext());
 	getScreenPositions(pNext,pG,iLeft,iRight,iTop,iBot,col_y,pCol,pShadow,bClear);
 
 	if(pClipRect)
@@ -6693,7 +6691,7 @@ void fp_TableHeader::markCellsForHeader(void)
 		{
 			fp_CellContainer *pCell = m_pTabMaster->getCellAtRowColumn(*itr-1,i);
 			xxx_UT_DEBUGMSG(("Marking cell at row %d and column for header%d\n",*itr,i));
-			pCell->setHeaderCell(true);
+			pCell->setHeaderCellFlag(true);
 			if(m_pFirstCachedCell == NULL)
 			{
 				m_pFirstCachedCell=pCell;
@@ -6701,6 +6699,7 @@ void fp_TableHeader::markCellsForHeader(void)
 			m_pLastCachedCell = pCell;
 		}
 	}
+
 }
 
 /*!
@@ -6735,6 +6734,7 @@ void fp_TableHeader::calculateHeaderHeight(void)
 			m_iHeaderHeight += getActualRowHeight(*itr - 1);
 		}
 		UT_DEBUGMSG(("The header height is %d \n",m_iHeaderHeight));
+		return;
 	}
 	UT_DEBUGMSG(("There is not header in calculateHeaderHeight\n"));
 }
@@ -6747,6 +6747,7 @@ fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iIndex)
 {
 	if(iIndex >= m_iTotalNumOfCells) 
 	{
+	    UT_DEBUGMSG(("index is bigger then total number of cells\n"));
 		return NULL;
 	}
 	return m_vecCells[iIndex];
@@ -6758,20 +6759,22 @@ fp_ContainerObject * fp_TableHeader::getNthCell(UT_sint32 iIndex)
  */
 void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 {
-	UT_ASSERT(NULL!=m_pTabMaster);
+	UT_ASSERT(NULL != m_pTabMaster);
+
 	fp_TableContainer *pMaster = m_pTabMaster;
 	fp_CellContainer *pCell = NULL;
+
+	fp_Page * pPage = pMaster->getPage();
+	UT_ASSERT(pPage);
 	
 	if(pMaster && pMaster->getPage())
 	{
 		if(pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN) && !pMaster->getPage()->isOnScreen())
 		{
-			xxx_UT_DEBUGMSG(("pMaster is not On Screen \n",m_iBotY));
+			xxx_UT_DEBUGMSG(("pMaster is not On Screen \n"));
 			return;
 		}
 	}
-	fp_Page * pPage = pMaster->getPage();
-	UT_ASSERT(pPage);
 
 	if(m_pFirstCachedCell == NULL)
 	{
@@ -6787,7 +6790,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 // Lookup table properties to get the line thickness, etc.
 
 	fl_ContainerLayout * pLayout = getSectionLayout()->myContainingLayout();
-	UT_ASSERT((pLayout->getContainerType() == FL_CONTAINER_TABLE) != false);
+	UT_ASSERT(pLayout->getContainerType () != FL_CONTAINER_TABLE);
 
 	fl_TableLayout * pTableLayout = static_cast<fl_TableLayout *>(pLayout);
 
@@ -6798,7 +6801,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 
 	while(pCell)
 	{
-	       pCell->setHeaderPointer(this);
+	       pCell->setHeader(this);
 	       iCount++;
 	       UT_sint32 iModNumber=(iCount%iNumColumns);
 	       UT_sint32 iTempColOffset=0;
@@ -6830,8 +6833,8 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	UT_sint32 i=1;
 	UT_sint32 onePix = pG->tlu(1)+1;
 
-	UT_RGBColor white(255,255,255);
-	white = *pPage->getFillType().getColor();
+	UT_RGBColor color(255,255,255);
+	color = *pPage->getFillType().getColor();
 	while(i<=iNumColumns)
 	{
 		
@@ -6840,12 +6843,12 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 		    // Cell is above or below the page
 		    continue;
 	    }
-		lineTop.m_color = white;
+		lineTop.m_color = color;
 		lineTop.m_thickness  += 3*onePix;
-		lineBottom.m_color = white;
+		lineBottom.m_color = color;
 		lineBottom.m_thickness  += 3*onePix;
 		xxx_UT_DEBUGMSG(("iColOffsets %d %d\n",iColOffsets[i],i));
-		drawLine(lineBottom,iColOffsets[i],da.yoff,iColOffsets[i],iMaxBot,pDA->pG);
+		drawLine(lineBottom,iColOffsets[i],da.yoff,iColOffsets[i],iMaxBot,pDA->pG);	
 		i++;
 	}
 

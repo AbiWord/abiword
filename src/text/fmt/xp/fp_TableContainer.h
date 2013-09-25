@@ -262,17 +262,19 @@ public:
 #ifdef FMT_TEST
 	void				__dump(FILE * fp) const;
 #endif
- 	void 			setHeaderCell(bool bHeader)
- 	{ 	m_bHeaderCell = bHeader; }
+ 	void 			setHeaderCellFlag(bool bHeader)
+ 	{ 	
+		m_bHeaderCell = bHeader; 
+	}
  	bool isHeaderCell(void) const
 	{
 		return m_bHeaderCell;
 	}
-	fp_TableHeader * getHeaderPointer(void) const
+	fp_TableHeader * getHeader(void) const
 	{
 		return m_pHeader;
 	}
-	void setHeaderPointer(fp_TableHeader * pHeader)
+	void setHeader(fp_TableHeader * pHeader)
 	{
 		m_pHeader = pHeader;
 	}
