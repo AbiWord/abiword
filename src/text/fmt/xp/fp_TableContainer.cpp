@@ -730,7 +730,7 @@ void fp_CellContainer::_clear(fp_TableContainer * pBroke)
 	//
 	// This fix makes win32 look bad. FIXME fix this later
 	//
-	onePix = 0.0;
+	onePix = 0;
 	if((bRec.top + bRec.height) < 0)
 	{
 		return;
@@ -1991,6 +1991,8 @@ void fp_CellContainer::draw(dg_DrawArgs* pDA)
 	if(isHeaderCell())
 	{
 		m_bDrawLeft = m_bDrawTop = m_bDrawRight = true;
+		//for table header, we don't draw its bottom
+		m_bDrawBot = false;
 	}
 
 	UT_sint32 count = countCons();
@@ -6771,7 +6773,7 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	{
 		if(pDA->pG->queryProperties(GR_Graphics::DGP_SCREEN) && !pMaster->getPage()->isOnScreen())
 		{
-			xxx_UT_DEBUGMSG(("pMaster is not On Screen \n"));
+			xxx_UT_DEBUGMSG(("pMaster is not On Screen %d\n", m_iBotY));
 			return;
 		}
 	}
@@ -6845,10 +6847,8 @@ void fp_TableHeader::headerDraw(dg_DrawArgs* pDA)
 	    }
 		lineTop.m_color = color;
 		lineTop.m_thickness  += 3*onePix;
-		lineBottom.m_color = color;
-		lineBottom.m_thickness  += 3*onePix;
 		xxx_UT_DEBUGMSG(("iColOffsets %d %d\n",iColOffsets[i],i));
-		drawLine(lineBottom,iColOffsets[i],da.yoff,iColOffsets[i],iMaxBot,pDA->pG);	
+		drawLine(lineTop,iColOffsets[i],da.yoff,iColOffsets[i],iMaxBot,pDA->pG);	
 		i++;
 	}
 
