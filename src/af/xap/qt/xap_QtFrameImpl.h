@@ -19,13 +19,17 @@
  */
 
 
-#ifndef XAP_UNIXFRAMEIMPL_H
-#define XAP_UNIXFRAMEIMPL_H
+#ifndef XAP_QTFRAMEIMPL_H
+#define XAP_QTFRAMEIMPL_H
+
+#include <QTextEdit>
+#include <QStatusBar>
 
 #include "xap_FrameImpl.h"
 #include "xap_QtDialogFactory.h"
 
 class QMainWindow;
+class EV_QtMenuBar;
 
 class XAP_QtFrameImpl
 	: public XAP_FrameImpl
@@ -35,9 +39,15 @@ public:
 	friend class XAP_Frame;
 	virtual ~XAP_QtFrameImpl();
 
+	QMainWindow* getTopLevel() const
+		{ return m_topLevel; }
 	virtual void _createTopLevelWindow();
 
 protected:
+	EV_QtMenuBar *		m_pQtMenuBar;
+	QTextEdit *		m_wSunkenBox;
+	QStatusBar *		m_wStatusBar;
+
 	virtual bool _close();
 	virtual bool _raise();
 	virtual bool _show();
@@ -45,10 +55,11 @@ protected:
 	virtual void _nullUpdate () const; // a virtual member function in xap_Frame
 	virtual void _initialize();
 
+	virtual QTextEdit * _createDocumentWindow() = 0;
+	virtual QStatusBar * _createStatusBarWindow() = 0;
+
 	virtual void _setCursor(GR_Graphics::Cursor cursor);
 
-	QMainWindow* getTopLevel() const
-		{ return m_topLevel; }
 	virtual XAP_DialogFactory * _getDialogFactory();
 	virtual EV_Menu * _getMainMenu();
 	virtual EV_Toolbar * _newToolbar(XAP_Frame *pFrame,

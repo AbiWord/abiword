@@ -28,6 +28,18 @@ libqt_la_SOURCES = \
 	ap_QtPrefs.cpp \
 	ap_Qt_TB_CFactory.cpp \
 	ap_QtToolbar_Control_All.h \
+	ap_QtToolbar_ZoomCombo.cpp \
+	ap_QtToolbar_ZoomCombo.h \
+	ap_QtToolbar_SizeCombo.cpp \
+	ap_QtToolbar_SizeCombo.h \
+	ap_QtToolbar_FontCombo.cpp \
+	ap_QtToolbar_FontCombo.h \
+	ap_QtToolbar_StyleCombo.cpp \
+	ap_QtToolbar_StyleCombo.h \
+	ap_QtStatusBar.cpp \
+	ap_QtStatusBar.h \
+	ap_QtStockIcons.cpp \
+	ap_QtStockIcons.h \
 	$(NULL)
 
 

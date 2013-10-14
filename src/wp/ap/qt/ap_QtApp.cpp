@@ -419,3 +419,19 @@ AP_DiskStringSet * AP_QtApp::loadStringsFromDisk(const char 		   * szStringSet,
 #warning TODO
 	return NULL;
 }
+
+/*!
+ * A callback for AP_Args's doWindowlessArgs call which handles
+ * platform-specific windowless args.
+ */
+bool AP_QtApp::doWindowlessArgs(const AP_Args * /*Args*/, bool & bSuccess)
+{
+	bSuccess = true;
+
+	//
+	// TODO: Implement this later!
+	//
+
+	return bSuccess;
+}
+

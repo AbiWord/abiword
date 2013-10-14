@@ -50,6 +50,8 @@ public:
 
 	virtual void					cacheCurrentSelection(AV_View *);
 
+	virtual bool 					doWindowlessArgs (const AP_Args *, bool & bSuccess);
+
 	static int main (const char * szAppName, int argc, char ** argv);
 
 	void							catchSignals(int sig_num) ABI_NORETURN;

@@ -23,6 +23,7 @@
 
 #include "ap_QtFrame.h"
 #include "ap_QtFrameImpl.h"
+#include "gr_QtGraphics.h"
 
 AP_QtFrame::AP_QtFrame()
 	: AP_Frame(new AP_QtFrameImpl(this))
@@ -99,7 +100,15 @@ void AP_QtFrame::toggleLeftRuler(bool bRulerOn)
 
 bool AP_QtFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 {
-#warning TODO implement
+	AP_QtFrameImpl * pImpl = static_cast<AP_QtFrameImpl *>(getFrameImpl());
+	UT_ASSERT(pImpl);
+
+	GR_QtAllocInfo ai(false, false, false);
+	pG = (GR_QtGraphics*) XAP_App::getApp()->newGraphics(GRID_QT, ai);
+
+	pG->setZoomPercentage(iZoom);
+
+	return true;
 }
 
 void AP_QtFrame::_bindToolbars(AV_View *pView)
@@ -120,6 +129,7 @@ bool AP_QtFrame::_createScrollBarListeners(AV_View * pView,
 										   AV_ListenerId &lidScrollbarViewListener)
 {
 #warning TODO implement
+	return true;
 }
 
 UT_sint32 AP_QtFrame::_getDocumentAreaWidth()

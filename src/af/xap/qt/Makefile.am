@@ -24,6 +24,8 @@ libqt_la_SOURCES = \
 	xap_QtModule.h \
 	xap_QtModule.cpp \
 	xap_Qt_TB_CFactory.h \
+	xap_QtDlg_FileOpenSaveAs.cpp \
+	xap_QtDlg_FileOpenSaveAs.h \
 	$(NULL)
 
 #	xap_Gtk2Compat.h \

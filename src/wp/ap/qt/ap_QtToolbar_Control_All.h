@@ -31,22 +31,18 @@
 
 #define AP_QTTOOLBAR_CONTROL_ALL_H
 
-#if 0 // TODO
 #include "ap_QtToolbar_StyleCombo.h"
 #include "ap_QtToolbar_FontCombo.h"
 #include "ap_QtToolbar_SizeCombo.h"
 #include "ap_QtToolbar_ZoomCombo.h"
 	// ... add new controls here ...
-#endif
 
 #else
 
-#if 0 // TODO
 Declare_Control(AP_TOOLBAR_ID_FMT_STYLE, AP_QtToolbar_StyleCombo)
 Declare_Control(AP_TOOLBAR_ID_FMT_FONT,  AP_QtToolbar_FontCombo)
 Declare_Control(AP_TOOLBAR_ID_FMT_SIZE,  AP_QtToolbar_SizeCombo)
 Declare_Control(AP_TOOLBAR_ID_ZOOM,      AP_QtToolbar_ZoomCombo)
-#endif
 // ... also add new controls here ...
 
 #endif

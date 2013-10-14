@@ -1,49 +1,48 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-/* AbiWord
- * Copyright (C) 2012 Hubert Figuiere
- *
+
+/* 
+ * Copyright (C) 2013 Serhat Kiyak <serhatkiyak91@gmail.com>
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
  * 02110-1301 USA.
  */
 
+#ifndef EV_QTMENUSLOT_H
+#define EV_QTMENUSLOT_H
 
-#ifndef __AP_QT_FRAME_IMPL_H_
-#define __AP_QT_FRAME_IMPL_H_
+#include <QObject>
 
-#include <QTextEdit>
-#include <QStatusBar>
+#include "ev_Menu.h"
 
-#include "xap_QtFrameImpl.h"
+class EV_QtMenu;
 
-class AP_QtFrame;
+class EV_QtMenuSlot : public QObject				
+{				
+	Q_OBJECT
 
-class AP_QtFrameImpl
-  : public XAP_QtFrameImpl
-{
-public:
-	AP_QtFrameImpl(AP_QtFrame *pQtFrame);
-	virtual ~AP_QtFrameImpl();
-	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
+	public:
+		EV_QtMenuSlot(EV_QtMenu * pQtMenu, XAP_Menu_Id id);
+		~EV_QtMenuSlot();
 
-	virtual void _createWindow();
-	virtual QTextEdit * _createDocumentWindow();
-	virtual QStatusBar * _createStatusBarWindow();
+	private slots:												
+		void onTrigger();
+		void onToggle(bool checked);
 
-protected:
-	virtual void _hideMenuScroll(bool bHideMenuScroll);
-	virtual void _refillToolbarsInFrameData();
+	private:
+		EV_QtMenu *		m_pQtMenu;
+		XAP_Menu_Id		m_id;
 };
 
-#endif
+#endif /* EV_QTMENUSLOT_H */

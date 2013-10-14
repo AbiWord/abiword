@@ -23,13 +23,39 @@
 
 #include <QApplication>
 
+#include "ut_uuid.h"
 #include "xap_QtApp.h"
+#include "gr_QtGraphics.h"
 
 XAP_QtApp::XAP_QtApp(const char* name)
 	: XAP_App(name)
 	, m_dialogFactory(this)
-	, m_app(NULL)
+	, m_controlFactory()
+	, m_qtArgc(1)
+	, m_qtArgv(name)
 {
+	// create an instance of UT_UUIDGenerator or appropriate derrived class
+	_setUUIDGenerator(new UT_UUIDGenerator());
+
+	_setAbiSuiteLibDir();
+
+	// register graphics allocator
+	GR_GraphicsFactory * pGF = getGraphicsFactory();
+	UT_ASSERT( pGF );
+
+	if(pGF)
+	{
+		bool bSuccess;
+		bSuccess = pGF->registerClass(GR_QtGraphics::graphicsAllocator,
+									   GR_QtGraphics::graphicsDescriptor,
+									   GR_QtGraphics::s_getClassId());
+
+		// we are in deep trouble if this did not succeed
+		UT_ASSERT( bSuccess );
+		pGF->registerAsDefault(GR_QtGraphics::s_getClassId(), true);
+
+		m_app = new QApplication((int&) m_qtArgc, (char**) &m_qtArgv, 0); 
+	}
 }
 
 XAP_QtApp::~XAP_QtApp()
@@ -93,4 +119,39 @@ const char * XAP_QtApp::getUserPrivateDirectory()
     }
 
 	return buf;
+}
+
+// TODO refactor with XAP_UnixApp::_setAbiSuiteLibDir()
+void XAP_QtApp::_setAbiSuiteLibDir()
+{
+	// FIXME: this code sucks hard
+
+	char * buf = NULL;
+	
+	// see if ABIWORD_DATADIR was set in the environment
+	const char * sz = getenv("ABIWORD_DATADIR");
+	if (sz && *sz)
+	{
+		int len = strlen(sz);
+		buf = (gchar *)g_malloc(len+1);
+		strcpy(buf,sz);
+		char * p = buf;
+		if ( (p[0]=='"') && (p[len-1]=='"') )
+		{
+			// trim leading and trailing DQUOTES
+			p[len-1]=0;
+			p++;
+			len -= 2;
+		}
+		if (p[len-1]=='/')				// trim trailing slash
+			p[len-1] = 0;
+		XAP_App::_setAbiSuiteLibDir(p);
+		g_free(buf);
+		return;
+	}
+
+	// otherwise, use the hard-coded value
+	XAP_App::_setAbiSuiteLibDir(getAbiSuiteHome());
+
+	return;
 }

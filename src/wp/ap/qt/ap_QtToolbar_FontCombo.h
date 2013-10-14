@@ -1,49 +1,45 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiWord
- * Copyright (C) 2012 Hubert Figuiere
- *
+ * Copyright (C) 2004-2006 Tomas Frydrych <dr.tomas@yahoo.co.uk>
+ * Copyright (C) 2009 Hubert Figuiere
+ * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- *
+ * 
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
  * 02110-1301 USA.
  */
 
+#ifndef AP_QTTOOLBAR_FONTCOMBO_H
+#define AP_QTTOOLBAR_FONTCOMBO_H
 
-#ifndef __AP_QT_FRAME_IMPL_H_
-#define __AP_QT_FRAME_IMPL_H_
+#include <glib.h>
+#include "xap_Types.h"
+#include "ev_QtToolbar.h"
+#include "ev_Toolbar_Control.h"
+class EV_Toolbar;
 
-#include <QTextEdit>
-#include <QStatusBar>
-
-#include "xap_QtFrameImpl.h"
-
-class AP_QtFrame;
-
-class AP_QtFrameImpl
-  : public XAP_QtFrameImpl
+class AP_QtToolbar_FontCombo : public EV_Toolbar_Control
 {
 public:
-	AP_QtFrameImpl(AP_QtFrame *pQtFrame);
-	virtual ~AP_QtFrameImpl();
-	virtual XAP_FrameImpl * createInstance(XAP_Frame *pFrame);
+	AP_QtToolbar_FontCombo(EV_Toolbar * pToolbar, XAP_Toolbar_Id id);
+	virtual ~AP_QtToolbar_FontCombo(void);
 
-	virtual void _createWindow();
-	virtual QTextEdit * _createDocumentWindow();
-	virtual QStatusBar * _createStatusBarWindow();
+	static EV_Toolbar_Control * 	static_constructor(EV_Toolbar *, XAP_Toolbar_Id id);
+
+	virtual bool					populate(void);
 
 protected:
-	virtual void _hideMenuScroll(bool bHideMenuScroll);
-	virtual void _refillToolbarsInFrameData();
+
 };
 
-#endif
+#endif /* AP_QTTOOLBAR_FONTCOMBO_H */

@@ -19,22 +19,26 @@
  */
 
 #include <QMainWindow>
-#include <QGraphicsView>
+#include <QMenuBar>
 
 #include "ev_QtKeyboard.h"
 #include "ev_QtMouse.h"
 #include "xap_QtApp.h"
 #include "xap_QtFrameImpl.h"
+#include "ev_QtMenuBar.h"
+#include "ev_QtToolbar.h"
 
 XAP_QtFrameImpl::XAP_QtFrameImpl(XAP_Frame *pFrame)
 	: XAP_FrameImpl(pFrame)
 	, m_dialogFactory(XAP_App::getApp(), pFrame)
 	, m_topLevel(NULL)
+	, m_pQtMenuBar(NULL)
 {
 }
 
 XAP_QtFrameImpl::~XAP_QtFrameImpl()
 {
+	delete m_pQtMenuBar;
 	delete m_topLevel;
 }
 
@@ -87,9 +91,44 @@ void XAP_QtFrameImpl::_createTopLevelWindow()
 	if(m_iFrameMode == XAP_NormalFrame) {
 		m_topLevel = new QMainWindow(NULL, 0);
 		m_topLevel->setWindowTitle(XAP_App::getApp()->getApplicationTitleForTitleBar());
-		QGraphicsView* centralWidget = new QGraphicsView(m_topLevel);
-		m_topLevel->setCentralWidget(centralWidget);
-		m_topLevel->show();
+		m_topLevel->showMaximized();
+	}
+
+	if (m_iFrameMode != XAP_NoMenusWindowLess) {
+		// synthesize a menu from the info in our base class.
+		m_pQtMenuBar = new EV_QtMenuBar(static_cast<XAP_QtApp*>(XAP_App::getApp()), getFrame(), m_szMenuLayoutName,
+										 m_szMenuLabelSetName);
+		UT_return_if_fail(m_pQtMenuBar);
+		UT_DebugOnly<bool> bResult;
+		bResult = m_pQtMenuBar->synthesizeMenuBar();
+		UT_ASSERT(bResult);
+	}
+
+	/* If refactoring the toolbars code, please make sure that toolbars
+	 * are created AFTER the main menu bar has been synthesized, otherwise
+	 * the embedded build will stop working
+	 */
+	if(m_iFrameMode == XAP_NormalFrame)
+	{
+		_createToolbars();
+	}
+
+	// Let the app-specific frame code create the contents of
+	// the child area of the window (between the toolbars and
+	// the status bar).
+	m_wSunkenBox = _createDocumentWindow();
+	m_topLevel->setCentralWidget(m_wSunkenBox);
+
+	m_wStatusBar = NULL;
+
+#ifdef ENABLE_STATUSBAR
+	if(m_iFrameMode == XAP_NormalFrame)
+		m_wStatusBar = _createStatusBarWindow();
+#endif
+
+	if (m_wStatusBar)
+	{
+		m_topLevel->setStatusBar(m_wStatusBar);
 	}
 }
 
@@ -102,7 +141,9 @@ EV_Toolbar * XAP_QtFrameImpl::_newToolbar(XAP_Frame *pFrame,
 					  const char *szLayout,
 					  const char *szLanguage)
 {
-#warning TODO implement
+	EV_QtToolbar *pToolbar = NULL;
+	pToolbar = new EV_QtToolbar(static_cast<XAP_QtApp *>(XAP_App::getApp()), pFrame, szLayout, szLanguage);
+	return pToolbar;
 }
 
 bool XAP_QtFrameImpl::_runModalContextMenu(AV_View * pView, const char * szMenuName,
