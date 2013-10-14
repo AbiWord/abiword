@@ -546,6 +546,10 @@ AC_ARG_WITH([champlain],
 	[AS_HELP_STRING([--with-champlain], [use champlain to display maps])],
 	,[with_champlain="check"])
 
+if test "$TOOLKIT" = "qt"; then
+    with_champlain=no
+fi
+
 if test "x$with_champlain" != "xno"; then
     PKG_CHECK_MODULES(CHAMPLAIN, [ $champlain_req ],,
     [if test "x$with_champlain" = "xyes"; then
