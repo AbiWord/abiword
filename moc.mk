@@ -1,5 +1,5 @@
 moc_%.cpp : %.h
-	moc $< -o $@
+	$(MOC) $< -o $@
 
 clean-moc-extra:
 	rm -vf moc_*.cpp

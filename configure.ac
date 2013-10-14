@@ -753,6 +753,11 @@ if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa" -o "$TOOLKIT" = "qt"; then
 fi
 AM_CONDITIONAL([WITH_CAIRO], test "$WITH_CAIRO" = "1")
 
+MOC=moc
+if test "$TOOLKIT" = qt; then
+   MOC=`pkg-config Qt --variable=moc`
+fi
+AC_SUBST([MOC])
 
 AC_SUBST([DEPS_CFLAGS])
 if test "$abi_cv_gio" = "yes"; then
