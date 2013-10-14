@@ -76,18 +76,20 @@ Qt::ToolButtonStyle EV_QtToolbar::getStyle(void)
 	const gchar * szValue = NULL;
 	m_pQtApp->getPrefsValue(XAP_PREF_KEY_ToolbarAppearance,&szValue);
 	UT_ASSERT((szValue) && (*szValue));
-	
+
 	Qt::ToolButtonStyle style = Qt::ToolButtonIconOnly;
 	if (g_ascii_strcasecmp(szValue,"text")==0)
 		style = Qt::ToolButtonTextOnly;
 	else if (g_ascii_strcasecmp(szValue,"both")==0)
 		style = Qt::ToolButtonTextBesideIcon;
 
-	return style;	
+	return style;
 }
 
 QBoxLayout* EV_QtToolbar::_getContainer()
 {
+#pragma warning TODO
+	return NULL;
 }
 
 bool EV_QtToolbar::toolbarEvent(_wd 				* wd,

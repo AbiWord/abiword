@@ -31,8 +31,8 @@
 XAP_QtFrameImpl::XAP_QtFrameImpl(XAP_Frame *pFrame)
 	: XAP_FrameImpl(pFrame)
 	, m_dialogFactory(XAP_App::getApp(), pFrame)
-	, m_topLevel(NULL)
 	, m_pQtMenuBar(NULL)
+	, m_topLevel(NULL)
 {
 }
 

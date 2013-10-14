@@ -247,13 +247,19 @@ void XAP_QtDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 gint XAP_QtDialog_FileOpenSaveAs::previewPicture (void)
 {
+	// TODO
+	return 0;
 }
 
 QPixmap *  XAP_QtDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
 {
+	// TODO
+	return NULL;
 }
 
 QPixmap *  XAP_QtDialog_FileOpenSaveAs::pixmapForByteBuf (UT_ByteBuf * pBB)
 {
+	// TODO
+	return NULL;
 }
 
