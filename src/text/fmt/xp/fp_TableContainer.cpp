@@ -93,7 +93,7 @@ fp_TableRowColumn::~fp_TableRowColumn(void)
 {
 }
 
-bool fp_TableRowColumn::comparePosition(UT_sint32 y, fp_TableRowColumn * pRow)
+bool fp_TableRowColumn::comparePosition(UT_sint32 y, const fp_TableRowColumn * pRow)
 {
 	return (y < pRow->position);
 }
@@ -3646,12 +3646,14 @@ UT_sint32 fp_TableContainer::getRowOrColumnAtPosition(UT_sint32 y, bool bRow) co
 	std::vector<fp_TableRowColumn *>::const_iterator it;
 	if (bRow)
 	{
-		it = std::upper_bound(m_vecRows.begin(),m_vecRows.end(),y,fp_TableRowColumn::comparePosition);
+		it = std::upper_bound(m_vecRows.begin(), m_vecRows.end(),
+							  y, fp_TableRowColumn::comparePosition);
 		k = it - m_vecRows.begin();
 	}
 	else
 	{
-		it = std::upper_bound(m_vecColumns.begin(),m_vecColumns.end(),y,fp_TableRowColumn::comparePosition);
+		it = std::upper_bound(m_vecColumns.begin(), m_vecColumns.end(),
+							  y, fp_TableRowColumn::comparePosition);
 		k = it - m_vecColumns.begin();
 	}
 

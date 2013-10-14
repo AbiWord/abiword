@@ -74,7 +74,7 @@ class ABI_EXPORT fp_TableRowColumn
 public:
 	fp_TableRowColumn(UT_sint32 defaultSpacing = 0);
 	virtual ~fp_TableRowColumn(void);
-	static bool comparePosition(UT_sint32 y, fp_TableRowColumn * pRow);
+	static bool comparePosition(UT_sint32 y, const fp_TableRowColumn * pRow);
 	UT_sint32 requisition;
 	UT_sint32 allocation;
 	UT_sint32 spacing;
