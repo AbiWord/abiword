@@ -131,17 +131,8 @@ libqt_la_SOURCES = \
 #	ap_UnixLeftRuler.h \
 #	ap_UnixPreview_Annotation.cpp \
 #	ap_UnixPreview_Annotation.h \
-#	ap_UnixStatusBar.h \
 #	ap_UnixStockIcons.cpp \
 #	ap_UnixStockIcons.h \
-#	ap_UnixToolbar_FontCombo.cpp \
-#	ap_UnixToolbar_FontCombo.h \
-#	ap_UnixToolbar_SizeCombo.cpp \
-#	ap_UnixToolbar_SizeCombo.h \
-#	ap_UnixToolbar_StyleCombo.cpp \
-#	ap_UnixToolbar_StyleCombo.h \
-#	ap_UnixToolbar_ZoomCombo.cpp \
-#	ap_UnixToolbar_ZoomCombo.h \
 #	ap_UnixTopRuler.cpp \
 #	ap_UnixTopRuler.h \
 #	ap_UnixViewListener.cpp \

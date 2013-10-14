@@ -29,12 +29,7 @@ libqt_la_SOURCES = \
 #	ev_UnixFontCombo.h \
 #	ev_UnixKeysym2ucs.cpp \
 #	ev_UnixKeysym2ucs.h \
-#	ev_UnixMenuBar.h \
-#	ev_UnixMenu.cpp \
-#	ev_UnixMenu.h \
 #	ev_UnixMenuPopup.h \
-#	ev_UnixToolbar.cpp \
-#	ev_UnixToolbar.h \
 #	ev_UnixToolbar_ViewListener.cpp \
 #	ev_UnixToolbar_ViewListener.h
 
