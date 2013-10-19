@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"> 
-<assemblyIdentity version="2.9.4.0" processorArchitecture="x86" name="AbiWord" 
+<assemblyIdentity version="3.0.99" processorArchitecture="x86" name="AbiWord" 
 type="win32" /> 
 <dependency> 
 <dependentAssembly> 
