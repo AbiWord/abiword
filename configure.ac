@@ -25,13 +25,14 @@ AM_MAINTAINER_MODE([enable])
 # versions requested.
 #
 GTK_VERSION_REQ=3.0.8
-GTK2_VERSION_REQ=2.12.0
 
-AC_ARG_WITH([gtk2], 
-	[AS_HELP_STRING([--with-gtk2], [use Gtk library version 2.x])], 
-[
-	abi_cv_gtk2="$withval"
-])
+dnl GTK2_VERSION_REQ=2.12.0
+dnl
+dnl AC_ARG_WITH([gtk2],
+dnl 	[AS_HELP_STRING([--with-gtk2], [use Gtk library version 2.x])],
+dnl [
+dnl 	abi_cv_gtk2="$withval"
+dnl ])
 
 
 # This check MUST be done early.
@@ -52,23 +53,24 @@ AC_ARG_ENABLE([embedded],
 [
 	abi_cv_embedded_platform="$enableval"
 	case "$enableval" in
-	hildon) 
-		abi_cv_embedded_target=EMBEDDED_TARGET_HILDON 
+	hildon)
+		abi_cv_embedded_target=EMBEDDED_TARGET_HILDON
+		AC_MSG_ERROR([Hildon is deprecated. See http://bugzilla.abisource.com/show_bug.cgi?id=13568])
 		GTK2_VERSION_REQ=2.12.0
 		;;
 	poky)
 		abi_cv_embedded_target=EMBEDDED_TARGET_POKY ;;
 	generic)
 		abi_cv_embedded_target=EMBEDDED_TARGET_GENERIC ;;
-	yes)	
+	yes)
 		abi_cv_embedded_target=EMBEDDED_TARGET_GENERIC 
 		abi_cv_embedded_platform="generic" ;;
 	no)
 		;;
-	*) 
+	*)
 		AC_MSG_ERROR(bad value $enableval for --enable-embedded) ;;
 	esac
-],[	
+],[
 	abi_cv_embedded_platform="no"
 	abi_cv_embedded_target="no"
 ])
