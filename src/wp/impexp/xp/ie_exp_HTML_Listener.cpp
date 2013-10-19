@@ -2232,12 +2232,18 @@ void IE_Exp_HTML_Listener::_openList(PT_AttrPropIndex api, bool recursiveCall)
                 _openList(api, true);
             }
         }
-        
-    }else
+    }
+    else
     {
-        const gchar* szListStyle;
+        const gchar* szListStyle = NULL;
         pAP->getProperty("list-style", szListStyle);
-        bool isOrdered = g_ascii_strcasecmp(szListStyle, "Bullet List") != 0;
+        bool isOrdered = szListStyle
+			&& (g_ascii_strcasecmp(szListStyle, "Bullet List") != 0);
+#ifdef DEBUG
+        if(!szListStyle) {
+            UT_DEBUGMSG(("***BUG*** szListStyle is NULL - http://bugzilla.abisource.com/show_bug.cgi?id=13564\n"));
+        }
+#endif
         ListInfo info;
         if (iCurrentLevel == 0)
         {
