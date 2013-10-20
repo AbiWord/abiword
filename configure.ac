@@ -1226,6 +1226,9 @@ AC_OUTPUT(
   user/wp/clipart/Makefile
   user/wp/dictionary/Makefile
   user/wp/templates/Makefile
+  tools/Makefile
+  tools/cdump/Makefile
+  tools/cdump/xp/Makefile
 )
 
 AC_OUTPUT(
