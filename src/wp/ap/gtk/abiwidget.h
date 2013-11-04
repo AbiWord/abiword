@@ -428,6 +428,9 @@ G_BEGIN_DECLS
   gboolean abi_widget_edit_header (AbiWidget * w);
   gboolean abi_widget_edit_footer (AbiWidget * w);
 
+  /* rulers methods */
+  void abi_widget_toggle_rulers(AbiWidget * abi, gboolean visible);
+
   /* table functions */
   gboolean abi_widget_insert_table(AbiWidget * w, gint32 rows, gint32 cols);
   gboolean abi_widget_get_mouse_pos(AbiWidget * w, gint32 * x, gint32 * y);
