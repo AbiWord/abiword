@@ -1550,6 +1550,14 @@ abi_widget_set_style(AbiWidget * w, gchar * szName)
 	return res;
 }
 
+extern "C" void
+abi_widget_toggle_rulers(AbiWidget * abi, gboolean visible)
+{
+	AP_UnixFrame * pFrame = (AP_UnixFrame *) abi->priv->m_pFrame;
+	if(pFrame != NULL)
+	    pFrame->toggleRuler(visible);
+}
+
 extern "C" gboolean
 abi_widget_insert_table(AbiWidget * abi, gint32 rows, gint32 cols)
 {
