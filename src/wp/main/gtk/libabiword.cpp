@@ -30,8 +30,8 @@ static AP_UnixApp *_abiword_app = NULL;
 
 /**
  * libabiword_init:
- * @argc: (inout): argument count
- * @argv: (array length=argc) (inout) (allow-none): Commandline arguments
+ * @argc: argument count
+ * @argv: (array length=argc): Commandline arguments
  *
  * Initializes libabiword
  */
