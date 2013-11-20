@@ -93,7 +93,7 @@ public:
 	void setColor(const UT_RGBColor& c);
    	void setItex(char * itex); 
 	void loadBuffer(UT_UTF8String & sMathml);
-	void modify(void);
+	void modify(UT_UTF8String & sItex);
 	void SetRun (fp_Run *pRun) {m_pRun = pRun;}
 	fp_Run *getRun () {return m_pRun;}
 	void SetGuru (GtkWidget *guru) {m_Guru = guru;}

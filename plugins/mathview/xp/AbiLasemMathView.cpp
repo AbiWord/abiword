@@ -609,9 +609,32 @@ void GR_LasemMathManager::makeSnapShot(UT_sint32 uid, G_GNUC_UNUSED UT_Rect & re
 
 bool GR_LasemMathManager::modify(UT_sint32 uid)
 {
-        LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
-        pLasemMathView->modify();
-        return false;
+  LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
+  UT_return_val_if_fail(pLasemMathView, false);
+  const PP_AttrProp * pSpanAP = NULL;
+  GR_AbiMathItems * pItem = m_vecItems.getNthItem(uid);
+  UT_return_val_if_fail(pItem, true);  
+  PT_AttrPropIndex api = pItem->m_iAPI;
+  bool bHaveProp = m_pDoc->getAttrProp(api, &pSpanAP);
+  UT_return_val_if_fail(bHaveProp, false);
+  const char * pszDataID = NULL;
+  bool bFoundDataID = pSpanAP->getAttribute("latexid", pszDataID);
+  UT_UTF8String sItex;
+  if (bFoundDataID && pszDataID)
+  {
+       const UT_ByteBuf * pByteBuf = NULL;
+       bFoundDataID = m_pDoc->getDataItemDataByName(pszDataID, 
+						    const_cast<const UT_ByteBuf **>(&pByteBuf),
+						    NULL, NULL);
+       if (bFoundDataID)
+       {
+            UT_UCS4_mbtowc myWC;
+            sItex.appendBuf( *pByteBuf, myWC);
+       }
+  }
+  xxx_UT_DEBUGMSG(("The ITEX string is... \n %s \n",sItex.utf8_str()));
+  pLasemMathView->modify(sItex);
+  return false;
 }
 
 void GR_LasemMathManager::initializeEmbedView(G_GNUC_UNUSED UT_sint32 uid)
@@ -961,7 +984,7 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 	UT_DEBUGMSG(("font : %s \n",font));	
  }
  
-void LasemMathView:: modify()
+void LasemMathView:: modify(UT_UTF8String & sItex)
 {
 	UT_DEBUGMSG(("Modify..."));
 	XAP_Frame * pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -970,9 +993,9 @@ void LasemMathView:: modify()
 	XAP_DialogFactory * pDialogFactory
 	  = static_cast<XAP_DialogFactory *>(XAP_App::getApp()->getDialogFactory());
 
-	AP_UnixDialog_Latex_Advanced * pDialog 
-		= static_cast<AP_UnixDialog_Latex_Advanced *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX_ADVANCED));
-	//UT_return_val_if_fail(pDialog, false);
+	AP_Dialog_Latex * pDialog 
+		= static_cast<AP_Dialog_Latex *>(pDialogFactory->requestDialog(AP_DIALOG_ID_LATEX_ADVANCED));
+	UT_return_if_fail(pDialog);
 
 	if (pDialog->isRunning())
 	{
@@ -980,14 +1003,11 @@ void LasemMathView:: modify()
 	}
 	else
 	{
-		//GtkWidget * editor_dialog = pDialog->getDialog();
-		//gtk_widget_show_all (editor_dialog);
 		 pDialog->runModeless(pFrame);
 	}
-
-	//return true;
-
+	pDialog->fillLatex(sItex);
 }
+
 void LasemMathView :: setColor(const UT_RGBColor& c)
 {
 	UT_DEBUGMSG(("Entering SetColor..\n"));
