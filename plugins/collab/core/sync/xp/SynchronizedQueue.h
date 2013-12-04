@@ -22,6 +22,7 @@
 #include <deque>
 #include <boost/bind.hpp>
 #include <boost/function.hpp>
+#include <boost/noncopyable.hpp>
 #include <sync/xp/lock.h>
 #include <sync/xp/Synchronizer.h>
 
