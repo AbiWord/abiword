@@ -311,7 +311,7 @@ GDict_addToMenus()
   
   // We have to add our EditMethod to the application's EditMethodList
   // so that the application will know what callback to call when a call
-  // to "AiksaurusABI_invoke" is received.
+  // to "GDict_invoke" is received.
   pEMC->addEditMethod(myEditMethod);
   
   
