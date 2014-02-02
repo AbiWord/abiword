@@ -116,7 +116,7 @@ private:
 	
         LsmDomView *view;
         
-	UT_sint32 width, height, ascent, descent;
+	UT_sint32 width, height, ascent, descent, m_y;
 	fp_Run *m_pRun;
 	
     	GtkWidget *m_Guru;

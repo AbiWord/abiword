@@ -856,11 +856,9 @@ LasemMathView::~LasemMathView(void)
 
 void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 {
-	double _width, _height, _baseline;
-	
-	g_object_unref (mathml);
-	if(view!=NULL)	
-		g_object_unref (view);
+	g_object_unref(mathml);
+	if (view != NULL)	
+		g_object_unref(view);
 	math_element = NULL;
 	style_element = NULL;
         mathml = lsm_dom_document_new_from_memory(sMathml.utf8_str(),sMathml.length(),NULL);
@@ -876,11 +874,6 @@ void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 	}
 	lsm_dom_node_append_child(math_element, style_element);
 	view = lsm_dom_document_create_view (mathml);
-	lsm_dom_view_get_size (view, &_width, &_height, &_baseline);
-        this->width = (UT_sint32) rint (_width / 72. * UT_LAYOUT_RESOLUTION);
-        this->height = (UT_sint32) rint (_height / 72. * UT_LAYOUT_RESOLUTION);
-        this->ascent = (UT_sint32) rint (_baseline / 72. * UT_LAYOUT_RESOLUTION);
-	this->descent = this->height - this->ascent;
 }
 
 void LasemMathView::render(UT_Rect & rec)
@@ -892,7 +885,7 @@ void LasemMathView::render(UT_Rect & rec)
 	}
 	GR_CairoGraphics *pUGG = static_cast<GR_CairoGraphics*>(m_pMathMan->getGraphics());
 	pUGG->beginPaint();
-	cairo_t *cr = pUGG->getCairo ();
+	cairo_t *cr = pUGG->getCairo();
 	UT_sint32 _width = pUGG->tdu(rec.width * UT_LAYOUT_RESOLUTION);
 	double zoom;
 	if (mathml == NULL || height == 0 || width == 0)
@@ -902,7 +895,7 @@ void LasemMathView::render(UT_Rect & rec)
 	cairo_translate (cr, pUGG->tdu(rec.left), pUGG->tdu(rec.top - ascent));
 	cairo_scale (cr,zoom, zoom);
 	view = lsm_dom_document_create_view (mathml);
-	lsm_dom_view_render (view, cr, 0., 0.);
+	lsm_dom_view_render (view, cr, 0., m_y * 72. / UT_LAYOUT_RESOLUTION);
 	cairo_new_path (cr);
 	cairo_restore (cr);
 	pUGG->endPaint();
@@ -927,7 +920,7 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 										pBuf, width * 72./UT_LAYOUT_RESOLUTION, height * 72./UT_LAYOUT_RESOLUTION);
 	cairo_t *cr = cairo_create (surface);
 	cairo_surface_destroy (surface);
-	lsm_dom_view_render (view, cr, 0., 0.);
+	lsm_dom_view_render (view, cr, 0., m_y * 72. / UT_LAYOUT_RESOLUTION);
 	cairo_destroy (cr);
 	length = (size_t)pBuf->getLength();
 	
@@ -945,40 +938,50 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
         UT_return_if_fail(pFont);
 	const GR_PangoFont *pPF = dynamic_cast<const GR_PangoFont *>(pFont);
 	UT_return_if_fail(pPF);      
-        if (pPF->getPangoDescription()!= NULL) 
-        {
+    if (pPF->getPangoDescription()!= NULL) 
+    {
 		LsmDomElement *_style_element;
 		char *value;
 		double _width, _height, _baseline;
 
 		g_free (font);
-		font = pango_font_description_to_string (pPF->getPangoDescription());
-		
-		_style_element = LSM_DOM_ELEMENT (style_element);
-		if (pango_font_description_get_weight (pPF->getPangoDescription()) >= PANGO_WEIGHT_BOLD) {
-			if (pango_font_description_get_style (pPF->getPangoDescription()) == PANGO_STYLE_NORMAL)
-				lsm_dom_element_set_attribute (_style_element, "mathvariant", "bold");
+		font = pango_font_description_to_string(pPF->getPangoDescription());
+	
+		_style_element = LSM_DOM_ELEMENT(style_element);
+		if (pango_font_description_get_weight(pPF->getPangoDescription()) >= PANGO_WEIGHT_BOLD)
+		{
+			if (pango_font_description_get_style(pPF->getPangoDescription()) == PANGO_STYLE_NORMAL)
+				lsm_dom_element_set_attribute(_style_element, "mathvariant", "bold");
 			else
-				lsm_dom_element_set_attribute (_style_element, "mathvariant", "bold-italic");
-		} else {
-			if (pango_font_description_get_style (pPF->getPangoDescription()) == PANGO_STYLE_NORMAL)
-				lsm_dom_element_set_attribute (_style_element, "mathvariant", "normal");
+				lsm_dom_element_set_attribute(_style_element, "mathvariant", "bold-italic");
+		}
+		else
+		{
+			if (pango_font_description_get_style(pPF->getPangoDescription()) == PANGO_STYLE_NORMAL)
+				lsm_dom_element_set_attribute(_style_element, "mathvariant", "normal");
 			else
-				lsm_dom_element_set_attribute (_style_element, "mathvariant", "italic");
+				lsm_dom_element_set_attribute(_style_element, "mathvariant", "italic");
 		}
 
-		lsm_dom_element_set_attribute (_style_element, "mathfamily",
-					       pango_font_description_get_family (pPF->getPangoDescription()));
+		lsm_dom_element_set_attribute(_style_element, "mathfamily",
+						   pango_font_description_get_family(pPF->getPangoDescription()));
 
-		value = g_strdup_printf ("%gpt", pango_units_to_double (
-				pango_font_description_get_size (pPF->getPangoDescription())));
-		lsm_dom_element_set_attribute (_style_element, "mathsize", value);
-		g_free (value);
-		view = lsm_dom_document_create_view (mathml);
-		lsm_dom_view_get_size (view, &_width, &_height, &_baseline);
-                width = (UT_sint32) rint (_width / 72. * UT_LAYOUT_RESOLUTION);
-                height = (UT_sint32) rint (_height / 72. * UT_LAYOUT_RESOLUTION);
-                ascent = (UT_sint32) rint (_baseline / 72. * UT_LAYOUT_RESOLUTION);
+		value = g_strdup_printf("%gpt", pango_units_to_double (
+				pango_font_description_get_size(pPF->getPangoDescription())));
+		lsm_dom_element_set_attribute(_style_element, "mathsize", value);
+		g_free(value);
+		view = lsm_dom_document_create_view(mathml);
+		lsm_dom_view_get_size(view, &_width, &_height, &_baseline);
+		// lasem returns the ink measures, so we need to adjust the height
+		PangoLayout *pl = view->measure_pango_layout;
+		pango_layout_set_font_description(pl, (pPF->getPangoDescription()));
+		pango_layout_set_text(pl, "lj", 2);
+		PangoRectangle log, ink;
+		pango_layout_get_extents(pl, &ink, &log);
+        width = (UT_sint32) rint(_width / 72. * UT_LAYOUT_RESOLUTION);
+        height = (UT_sint32) rint((_height + pango_units_to_double(log.height - ink.height)) / 72. * UT_LAYOUT_RESOLUTION);
+ 		m_y = (UT_sint32) rint(pango_units_to_double(ink.y) / 72. * UT_LAYOUT_RESOLUTION);
+       ascent = (UT_sint32) rint((_baseline) / 72. * UT_LAYOUT_RESOLUTION) + m_y;
 		descent = height - ascent;
 	}
 	UT_DEBUGMSG(("font : %s \n",font));	
