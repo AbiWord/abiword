@@ -22,6 +22,7 @@
 #include <boost/function.hpp>
 #include <boost/bind.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/noncopyable.hpp>
 #include <deque>
 #include <sync/xp/lock.h>
 #include <sync/xp/Synchronizer.h>
