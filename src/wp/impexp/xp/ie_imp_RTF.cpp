@@ -1468,14 +1468,14 @@ IE_Imp_RTF::IE_Imp_RTF(PD_Document * pDocument)
 	m_newParaFlagged(false),
 	m_newSectionFlagged(false),
 	m_cbBin(0),
-	m_currentHdrID(-1),
-	m_currentFtrID(-1),
-	m_currentHdrEvenID(-1),
-	m_currentFtrEvenID(-1),
-	m_currentHdrFirstID(-1),
-	m_currentFtrFirstID(-1),
-	m_currentHdrLastID(-1),
-	m_currentFtrLastID(-1),
+	m_currentHdrID(0),
+	m_currentFtrID(0),
+	m_currentHdrEvenID(0),
+	m_currentFtrEvenID(0),
+	m_currentHdrFirstID(0),
+	m_currentFtrFirstID(0),
+	m_currentHdrLastID(0),
+	m_currentFtrLastID(0),
 	m_numLists(0),
 	m_pImportFile(NULL),
 	m_pPasteBuffer(NULL),
@@ -2714,14 +2714,14 @@ UT_Error IE_Imp_RTF::_parseFile(GsfInput* fp)
 
 	m_currentRTFState.m_internalState = RTFStateStore::risNorm;
 	m_currentRTFState.m_destinationState = RTFStateStore::rdsNorm;
-	m_currentHdrID = -1;
-	m_currentFtrID = -1;
-	m_currentHdrEvenID = -1;
-	m_currentFtrEvenID = -1;
-	m_currentHdrFirstID = -1;
-	m_currentFtrFirstID = -1;
-	m_currentHdrLastID = -1;
-	m_currentFtrLastID = -1;
+	m_currentHdrID = 0;
+	m_currentFtrID = 0;
+	m_currentHdrEvenID = 0;
+	m_currentFtrEvenID = 0;
+	m_currentHdrFirstID = 0;
+	m_currentFtrFirstID = 0;
+	m_currentHdrLastID = 0;
+	m_currentFtrLastID = 0;
 #if 0
 	if(m_pImportFile && UT_OK != _isBidiDocument())
 		return UT_ERROR;
@@ -7984,7 +7984,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	propsArray[0] = pProps;
 	propsArray[1] = propBuffer.c_str();
 	paramIndex = 2;
-	if (m_currentHdrID >= 0)
+	if (m_currentHdrID != 0)
 	{
 		UT_DEBUGMSG (("Applying header\n"));
 		propsArray [paramIndex] = "header";
@@ -7993,7 +7993,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szHdrID.c_str();
 		paramIndex++;
 	}
-	if (m_currentHdrEvenID >= 0)
+	if (m_currentHdrEvenID != 0)
 	{
 		UT_DEBUGMSG (("Applying header even\n"));
 		propsArray [paramIndex] = "header-even";
@@ -8002,7 +8002,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szHdrEvenID.c_str();
 		paramIndex++;
 	}
-	if (m_currentHdrFirstID >= 0)
+	if (m_currentHdrFirstID != 0)
 	{
 		UT_DEBUGMSG (("Applying header first\n"));
 		propsArray [paramIndex] = "header-first";
@@ -8011,7 +8011,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szHdrFirstID.c_str();
 		paramIndex++;
 	}
-	if (m_currentHdrLastID >= 0)
+	if (m_currentHdrLastID != 0)
 	{
 		UT_DEBUGMSG (("Applying header last\n"));
 		propsArray [paramIndex] = "header-last";
@@ -8020,7 +8020,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szHdrLastID.c_str();
 		paramIndex++;
 	}
-	if (m_currentFtrID >= 0)
+	if (m_currentFtrID != 0)
 	{
 		UT_DEBUGMSG (("Applying footer\n"));
 		propsArray [paramIndex] = "footer";
@@ -8029,7 +8029,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szFtrID.c_str();
 		paramIndex++;
 	}
-	if (m_currentFtrEvenID >= 0)
+	if (m_currentFtrEvenID != 0)
 	{
 		UT_DEBUGMSG (("Applying footer even\n"));
 		propsArray [paramIndex] = "footer-even";
@@ -8038,7 +8038,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szFtrEvenID.c_str();
 		paramIndex++;
 	}
-	if (m_currentFtrFirstID >= 0)
+	if (m_currentFtrFirstID != 0)
 	{
 		UT_DEBUGMSG (("Applying footer first\n"));
 		propsArray [paramIndex] = "footer-first";
@@ -8047,7 +8047,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 		propsArray [paramIndex] = szFtrFirstID.c_str();
 		paramIndex++;
 	}
-	if (m_currentFtrLastID >= 0)
+	if (m_currentFtrLastID != 0)
 	{
 		UT_DEBUGMSG (("Applying footer last\n"));
 		propsArray [paramIndex] = "footer-last";

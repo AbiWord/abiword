@@ -887,14 +887,14 @@ private:
 	// they are defined and sections inherit them from the previous
 	// this is not part of section properties, they are not reset by \sectd
 	// TODO: handle \titlepg and \facingpg cases.
-	UT_sint32       m_currentHdrID;     // these are numbers.
-	UT_sint32       m_currentFtrID;
-	UT_sint32       m_currentHdrEvenID;     // these are numbers.
-	UT_sint32       m_currentFtrEvenID;
-	UT_sint32       m_currentHdrFirstID;     // these are numbers.
-	UT_sint32       m_currentFtrFirstID;
-	UT_sint32       m_currentHdrLastID;     // these are numbers.
-	UT_sint32       m_currentFtrLastID;
+	UT_uint32       m_currentHdrID;     // these are numbers.
+	UT_uint32       m_currentFtrID;
+	UT_uint32       m_currentHdrEvenID;     // these are numbers.
+	UT_uint32       m_currentFtrEvenID;
+	UT_uint32       m_currentHdrFirstID;     // these are numbers.
+	UT_uint32       m_currentFtrFirstID;
+	UT_uint32       m_currentHdrLastID;     // these are numbers.
+	UT_uint32       m_currentFtrLastID;
 
 
 	UT_Stack m_stateStack;
