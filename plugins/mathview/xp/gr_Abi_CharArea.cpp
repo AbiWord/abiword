@@ -31,6 +31,7 @@ GR_Abi_CharArea::GR_Abi_CharArea(GR_Graphics* graphics, GR_Font* f, const scaled
 		      GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->getFontAscent()),
 		      GR_Abi_RenderingContext::fromAbiLayoutUnits(graphics->getFontDescent()));
 #else
+printf("char is %x\n",c);
   UT_ASSERT(f);
   UT_Rect glyphRect;
   graphics->setFont(m_pFont);

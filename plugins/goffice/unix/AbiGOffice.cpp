@@ -401,6 +401,8 @@ std::list<std::string> uids;
 static void
 register_mime_cb (char const *mime_type, XAP_App * pApp)
 {
+	if (!strcmp (mime_type, "application/mathml+xml"))
+		return;
 	std::string uid = std::string("GOComponent//") + mime_type;
 	uids.push_front (uid);
 	pApp->registerEmbeddable(pGOComponentManager, uid.c_str());

@@ -264,7 +264,9 @@ AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCall
 	gchar const *mime_type;
 	while (l) {
 		mime_type = (gchar const *) l->data;
-		if (go_components_get_priority (mime_type) >= GO_MIME_PRIORITY_PARTIAL) {
+		if (strcmp(mime_type, "application/mathml+xml")
+		    && go_components_get_priority(mime_type) >= GO_MIME_PRIORITY_PARTIAL)
+		{
 			gtk_list_store_append (list, &iter);
 			gtk_list_store_set (list, &iter,
 					  0, go_mime_type_get_description (mime_type),
