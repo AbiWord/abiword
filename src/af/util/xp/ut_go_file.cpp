@@ -835,10 +835,10 @@ UT_go_url_resolve_relative (const char *ref_uri, const char *rel_uri)
 #if defined(GOFFICE_WITH_GNOME)
 	uri = gnome_vfs_uri_make_full_from_relative (ref_uri, rel_uri);
 #else
-	g_return_val_if_fail (ref_uri != NULL, NULL);
 	g_return_val_if_fail (rel_uri != NULL, NULL);
 
 	if (is_uri_relative (rel_uri)) {
+		g_return_val_if_fail (ref_uri != NULL, NULL);
 		uri = make_full_uri_from_relative (ref_uri, 
 						   rel_uri);
 	} else {
