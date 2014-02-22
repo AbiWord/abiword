@@ -520,7 +520,7 @@ void GR_UnixCairoGraphics::_beginPaint()
 		{
 			UT_ASSERT(ev->type == GDK_EXPOSE || ev->type == GDK_DAMAGE);
 			if (ev->type == GDK_EXPOSE || ev->type == GDK_DAMAGE)
-				UT_ASSERT(ev->expose.window == m_pWin);
+				UT_ASSERT(ev->expose.window == m_pWin || ev->expose.window == gdk_window_get_effective_parent (m_pWin));
 		}
 	}
 #endif

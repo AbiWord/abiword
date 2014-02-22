@@ -38,23 +38,12 @@ void XAP_UnixCustomWidget::queueDraw(const UT_Rect *clip)
 	}
 }
 
-#if GTK_CHECK_VERSION(3,0,0)
 void XAP_UnixCustomWidget::_fe::draw(XAP_UnixCustomWidget *self, cairo_t *cr)
-#else
-void XAP_UnixCustomWidget::_fe::expose(XAP_UnixCustomWidget *self, GdkEventExpose *ev)
-#endif
 {
-#if GTK_CHECK_VERSION(3,0,0)
-	GdkEventExpose *ev = reinterpret_cast<GdkEventExpose *>(gtk_get_current_event());
-#endif
-	UT_Rect r(
-			ev->area.x,
-			ev->area.y,
-			ev->area.width,
-			ev->area.height
-		);
-#if GTK_CHECK_VERSION(3,0,0)
 	self->m_cr = cr;
-#endif
+	double x1, y1, x2, y2;
+	cairo_clip_extents(cr, &x1, &y1, &x2, &y2);
+
+	UT_Rect r(x1, y1, x2 - x1, y2 - y1);
 	self->draw(&r);
 }
