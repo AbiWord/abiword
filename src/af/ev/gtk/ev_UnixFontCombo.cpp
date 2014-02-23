@@ -112,7 +112,7 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 					cell_area, expose_area, flags);
 #endif
 
-	if ((GTK_CELL_RENDERER_PRELIT | GTK_CELL_RENDERER_PRELIT) & flags) {
+	if (GTK_CELL_RENDERER_PRELIT & flags) {
 
 		/* only fire prelight event if popup is open */
 		if (!gtk_widget_is_ancestor (widget, self->parent_widget)) {
