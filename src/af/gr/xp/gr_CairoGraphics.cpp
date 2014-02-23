@@ -1977,9 +1977,10 @@ void GR_CairoGraphics::justify(GR_RenderInfo & ri)
 			// LTR run, the glyphs and the text are in the same order,
 			// and logical offsets are increasing
 			UT_sint32 iOffset = RI.m_pLogOffsets[i++];
-		
-			while (RI.m_pLogOffsets[i] == iOffset && i < iGlyphCount)
+
+			while (i < iGlyphCount && (RI.m_pLogOffsets[i] == iOffset)) {
 				++i;
+			}
 
 			if (i >= iGlyphCount)
 				break;

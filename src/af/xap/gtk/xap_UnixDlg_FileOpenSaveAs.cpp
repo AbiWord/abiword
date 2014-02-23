@@ -1038,8 +1038,9 @@ GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
 	// Find dimension line to start with.
 	//
 	UT_sint32 length = static_cast<UT_sint32>(pBB->getLength());
-	for(k =0; (*(pBC+k) != '"') &&( k < length); k++)
-		;
+	for(k =0; ( k < length) && (*(pBC+k) != '"'); k++) {
+
+	}
 
 	if(k >= length)
 	{
@@ -1048,8 +1049,9 @@ GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
 
 	k++;
 	iBase = k;
-	for( ; (*(pBC+k) != '"') && (k < length); k++)
-		;
+	for( ; (k < length) && (*(pBC+k) != '"') ; k++) {
+
+	}
 	if(k >= length)
 	{
 		return NULL;
@@ -1070,7 +1072,7 @@ GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
 	//
 	// Now loop through all the lines until we get to "}" outside the
 	// '"'
-	while((*(pBC+k) != '}')  && (k < length) )
+	while((k < length) && (*(pBC+k) != '}'))
 	{
 		k++;
 
@@ -1084,7 +1086,9 @@ GdkPixbuf *  XAP_UnixDialog_FileOpenSaveAs::_loadXPM(UT_ByteBuf * pBB)
 			//
 			k++;
 			iBase = k;
-			for( ; (*(pBC+k) != '"') && (k < length); k++) {}
+			for( ; (k < length) && (*(pBC+k) != '"'); k++) {
+
+			}
 			if(k >= length)
 			{
 				return NULL;
