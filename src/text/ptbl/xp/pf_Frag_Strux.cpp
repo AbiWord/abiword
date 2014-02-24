@@ -55,7 +55,7 @@ PTStruxType pf_Frag_Strux::getStruxType(void) const
 
 fl_ContainerLayout* pf_Frag_Strux::getFmtHandle(PL_ListenerId lid) const
 {
-	if (m_vecFmtHandle.size() == 0) return 0;
+	if (m_vecFmtHandle.size() <= static_cast<int>(lid)) return 0;
 	return m_vecFmtHandle.getNthItem(lid);
 }
 
