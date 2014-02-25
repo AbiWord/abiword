@@ -1319,8 +1319,8 @@ s_abi_widget_get_file_type(const char * extension_or_mimetype, const char * cont
  *
  * Gets all document contents
  *
- * Returns: (transfer full) (array length=iLength): the selection,
- *          the caller must free the memory through g_free()
+ * Returns: (transfer full): the selection, the caller must free the memory
+ *          through g_free()
  */
 extern "C" gchar *
 abi_widget_get_content(AbiWidget * w, const char * extension_or_mimetype, const char * exp_props, gint * iLength)
