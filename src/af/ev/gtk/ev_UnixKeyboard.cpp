@@ -87,17 +87,20 @@ bool ev_UnixKeyboard::keyPressEvent(AV_View* pView, GdkEventKey* e)
 	{
 		state |= EV_EMS_CONTROL;
 
-		// Gdk does us the favour of working out a translated keyvalue for us,
-		// but with the Ctrl keys, we do not want that -- see bug 9545
-		Display * display = GDK_DISPLAY_XDISPLAY(gdk_window_get_display(e->window));
-		KeySym sym = XkbKeycodeToKeysym(display,
-						e->hardware_keycode,
-						e->state & GDK_SHIFT_MASK ? 1 : 0, 0);
-		xxx_UT_DEBUGMSG(("ev_UnixKeyboard::keyPressEvent: keyval %d, hardware_keycode %d\n"
-					 "                                sym: 0x%x\n",
-					 e->keyval, e->hardware_keycode, sym));
+		if (!s_isVirtualKeyCode(charData))
+		{
+			// Gdk does us the favour of working out a translated keyvalue for us,
+			// but with the Ctrl keys, we do not want that -- see bug 9545
+			Display * display = GDK_DISPLAY_XDISPLAY(gdk_window_get_display(e->window));
+			KeySym sym = XkbKeycodeToKeysym(display,
+							e->hardware_keycode,
+							e->state & GDK_SHIFT_MASK ? 1 : 0, 0);
+			xxx_UT_DEBUGMSG(("ev_UnixKeyboard::keyPressEvent: keyval %d, hardware_keycode %d\n"
+						 "                                sym: 0x%x\n",
+						 e->keyval, e->hardware_keycode, sym));
 
-		charData = sym;
+			charData = sym;
+		}
 	}
 	if (e->state & (s_alt_mask))
 		state |= EV_EMS_ALT;
