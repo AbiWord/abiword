@@ -2329,13 +2329,13 @@ void fp_TabRun::_drawArrow(UT_uint32 iLeft,UT_uint32 iTop,UT_uint32 iWidth, UT_u
     if(static_cast<UT_sint32>(iMaxWidth - cur_linewidth * 4) > 0) 
     {
         if(getVisDirection() == UT_BIDI_LTR)
-	{
-	    painter.fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
-	}
-	else
-	{
-	    painter.fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
-	}
+		{
+			painter.fillRect(clrShowPara,iLeft + ixGap,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+		}
+		else
+		{
+			painter.fillRect(clrShowPara,iLeft + ixGap + cur_linewidth * 4,iyAxis - cur_linewidth / 2,iMaxWidth - cur_linewidth * 4,cur_linewidth);
+		}
     }
 #undef NPOINTS
 }
@@ -2381,9 +2381,9 @@ void fp_TabRun::_draw(dg_DrawArgs* pDA)
 	
 	GR_Painter painter(pG);
 
-	if ( isInSelectedTOC() ||
+	if (getGraphics()->queryProperties(GR_Graphics::DGP_SCREEN) && (isInSelectedTOC() ||
 	    /* pView->getFocus()!=AV_FOCUS_NONE && */
-		 ((iSel1 <= iRunBase)	&& (iSel2 > iRunBase))		)
+		 ((iSel1 <= iRunBase)	&& (iSel2 > iRunBase)))		)
 	{
 		painter.fillRect(_getView()->getColorSelBackground(), /*pDA->xoff*/DA_xoff, iFillTop, getWidth(), iFillHeight2);
         if(pView->getShowPara()){
