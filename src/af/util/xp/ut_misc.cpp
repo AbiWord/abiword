@@ -393,11 +393,10 @@ UT_GenericVector<UT_String*> * simpleSplit (const UT_String & str, char separato
  */
 UT_uint32 UT_HeadingDepth(const char * szHeadingName)
 {
-	UT_String sz;
+	std::string sz;
 	UT_uint32 i = 0;
 	bool bFound = false;
-	bool bStop = false;
-	for(i=0; i< strlen(szHeadingName) && !bStop ; i++)
+	for(i=0; i < strlen(szHeadingName) ; i++)
 	{
 		if(szHeadingName[i] >= '0' && szHeadingName[i] <= '9')
 		{
@@ -406,7 +405,6 @@ UT_uint32 UT_HeadingDepth(const char * szHeadingName)
 		}
 		else if(bFound)
 		{
-			bStop = true;
 			break;
 		}
 	}

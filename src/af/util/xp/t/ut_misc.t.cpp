@@ -1,5 +1,5 @@
-/* AbiSource Application Framework
- * Copyright (C) 2011-2014 Hubert Figuiere
+/* AbiWord
+ * Copyright (C) 2014 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,14 +17,22 @@
  * 02110-1301 USA.
  */
 
-#include "src/af/util/xp/t/ut_bytebuf.t.cpp"
-#include "src/af/util/xp/t/ut_types.t.cpp"
-#include "src/af/util/xp/t/ut_locale.t.cpp"
-#include "src/af/util/xp/t/ut_misc.t.cpp"
-#include "src/af/util/xp/t/ut_vector.t.cpp"
-#include "src/af/util/xp/t/ut_string.t.cpp"
-#include "src/af/util/xp/t/ut_std_string.t.cpp"
-#include "src/af/util/xp/t/ut_string_class.t.cpp"
-#include "src/text/ptbl/xp/t/pf_Fragments.t.cpp"
-#include "src/text/ptbl/xp/t/pt_PieceTable.t.cpp"
-#include "src/text/ptbl/xp/t/pp_PropertyMap.t.cpp"
+
+#include "tf_test.h"
+#include "ut_misc.h"
+
+TFTEST_MAIN("UT_HeadingDepth")
+{
+  UT_uint32 depth;
+  depth = UT_HeadingDepth("Heading 1");
+  TFPASS(depth == 1);
+
+  depth = UT_HeadingDepth("Normal");
+  TFPASS(depth == 0);
+
+  depth = UT_HeadingDepth("Heading 10");
+  TFPASS(depth == 10);
+
+  depth = UT_HeadingDepth("Numbered Heading 5");
+  TFPASS(depth == 5);
+}
