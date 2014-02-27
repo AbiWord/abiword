@@ -495,7 +495,7 @@ AM_CONDITIONAL([WITH_REDLAND], test "$abi_cv_redland" = "yes")
 AM_CONDITIONAL([HAVE_REDLAND], test "$abi_cv_redland" = "yes")
 
 
-evolution_data_server_req='libebook-1.2 libecal-1.2'
+evolution_data_server_req='libebook-1.2 >= 3.6 libecal-1.2'
 AC_ARG_WITH([evolution_data_server], 
 	[AS_HELP_STRING([--with-evolution-data-server], [Use Evolution Data Server to get at contact and calendar information])], 
 [
