@@ -24,6 +24,7 @@
 #include "ut_types.h"
 #include "ut_string_class.h"
 #include "ut_misc.h"
+#include "ut_vector.h"
 
 class GR_Graphics;
 class UT_ByteBuf;

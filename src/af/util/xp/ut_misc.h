@@ -32,14 +32,10 @@
 #include "ut_types.h"
 #endif
 
-#ifndef UTVECTOR_H
-#include "ut_vector.h"
-#endif
-
 #include <string>
+#include <vector>
 
 class UT_Rect;
-class UT_String;
 class PP_AttrProp;
 
 
@@ -106,8 +102,7 @@ ABI_EXPORT gchar ** UT_cloneAndDecodeAttributes (const gchar ** attrs);
 UT_sint32 signedHiWord(UT_uint32 dw);
 UT_sint32 signedLoWord(UT_uint32 dw);
 
-UT_GenericVector<UT_String*> * simpleSplit (const UT_String & str, char separator = ' ',
-						 size_t max = 0 /* 0 == full split */);
+std::vector<std::string> * simpleSplit (const std::string & str, char separator = ' ');
 
 UT_uint32 UT_HeadingDepth(const char * szHeadName);
 

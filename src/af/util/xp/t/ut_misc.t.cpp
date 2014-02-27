@@ -17,6 +17,7 @@
  * 02110-1301 USA.
  */
 
+#include <vector>
 
 #include "tf_test.h"
 #include "ut_misc.h"
@@ -37,6 +38,32 @@ TFTEST_MAIN("UT_HeadingDepth")
   TFPASS(depth == 5);
 }
 
+TFTEST_MAIN("simpleSplit")
+{
+  std::vector<std::string>* split;
+
+  split = simpleSplit("/usr/bin/abiword", '/');
+
+  TFPASS(split != NULL);
+
+  TFPASS(split->size() == 3);
+  TFPASS((*split)[0] == "usr");
+  TFPASS((*split)[1] == "bin");
+  TFPASS((*split)[2] == "abiword");
+
+
+  delete split;
+
+  split = simpleSplit("usr bin abiword");
+  TFPASS(split != NULL);
+
+  TFPASS(split->size() == 3);
+  TFPASS((*split)[0] == "usr");
+  TFPASS((*split)[1] == "bin");
+  TFPASS((*split)[2] == "abiword");
+
+  delete split;
+}
 
 TFTEST_MAIN("UT_VersionInfo")
 {
@@ -64,3 +91,4 @@ TFTEST_MAIN("UT_VersionInfo")
 
   TFPASS(verString == "1.2.3.5");
 }
+

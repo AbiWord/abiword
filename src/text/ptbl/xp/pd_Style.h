@@ -24,6 +24,7 @@
 #define PD_STYLE_H
 
 #include "ut_types.h"
+#include "ut_vector.h"
 #include "pt_Types.h"
 #include "ut_xml.h"
 #include "pp_Property.h"

@@ -24,7 +24,6 @@
 #include <ctype.h>
 #include <glib.h>
 
-#include "ut_vector.h"
 #include "ut_string_class.h"
 #include "ut_types.h"
 #include "ut_misc.h"
@@ -357,32 +356,27 @@ UT_sint32 signedHiWord(UT_uint32 dw)
 //////////////////////////////////////////////////////////////////
 
 /*!
- * simplesplit splits the referring string along the character 'separator', 
- * removing the separator character, and placing the resulting strings in a 
- * UT_Vector. If 'max' is specified, this is done max times - the max + 1
- * string in the vector will contain the remainder of the original string 
- * (str).
+ * simplesplit splits the referring string along the character 'separator',
+ * removing the separator character, and placing the resulting strings in a
+ * vector.
  */
-UT_GenericVector<UT_String*> * simpleSplit (const UT_String & str, char separator,
-						 size_t max)
+std::vector<std::string> * simpleSplit (const std::string & str, char separator)
 {
-	UT_GenericVector<UT_String*> * utvResult = new UT_GenericVector<UT_String*>();
-	UT_String* utsEntry;
+	std::vector<std::string> * utvResult = new std::vector<std::string>();
 	UT_uint32 start = 0;
 
-	for(size_t j = 0; (max == 0 || j < max) && start < str.size(); j++)
+	for(size_t j = 0; start < str.size(); j++)
 	{
-		utsEntry = new UT_String;
+		std::string utsEntry;
 
-		for (; (str[start] != separator || j == max - 1) && start < str.size(); start++)
-			*utsEntry += str[start];
-
+		for (; (str[start] != separator) && start < str.size(); start++) {
+			utsEntry += str[start];
+		}
 		start++;						// skipping over the separator character
 										// itself
-		if (utsEntry->empty())
-			delete utsEntry;
-		else
-			utvResult->addItem(utsEntry);
+		if (!utsEntry.empty()) {
+			utvResult->push_back(utsEntry);
+		}
 	}
 
 	return utvResult;

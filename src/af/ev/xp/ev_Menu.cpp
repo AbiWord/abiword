@@ -24,6 +24,8 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <string>
+
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_misc.h"
@@ -69,9 +71,9 @@ XAP_Menu_Id
 EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 {
 	UT_DEBUGMSG(("Adding path %s.\n", path.c_str()));
-	UT_GenericVector<UT_String*> *names = simpleSplit(path, '/');
+	std::vector<std::string> *names = simpleSplit(path.c_str(), '/');
 //	EV_Menu_ActionSet *pMenuActionSet = getApp()->getMenuActionSet();
-	const UT_String *label;
+	std::string label;
 	UT_uint32 last_pos = 1;
 	XAP_Menu_Id last_index = 0;
 	XAP_Menu_Id index = 0;
@@ -85,8 +87,8 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 	for (size_t i = 0; i < end; ++i)
 	{
 		label = (*names)[i];
-		UT_ASSERT(label);
-		index = EV_searchMenuLabel(m_pMenuLabelSet, *label);
+		UT_ASSERT(!label.empty());
+		index = EV_searchMenuLabel(m_pMenuLabelSet, label);
 
 		// Here we should create end - i submenus
 		if (index == 0)
@@ -98,10 +100,10 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 			for (size_t j = i; j < end; ++j)
 			{
 				label = (*names)[j];
-				UT_ASSERT(label);
+				UT_ASSERT(!label.empty());
 				index = m_pMenuLayout->addLayoutItem(++lpos, EV_MLF_BeginSubMenu);
 //				pMenuActionSet->addAction(action);
-				m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, label->c_str(), description.c_str()));
+				m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, label.c_str(), description.c_str()));
 				_doAddMenuItem(lpos);
 			}
 
@@ -127,8 +129,8 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 	// and now we create the menu item
 	index = m_pMenuLayout->addLayoutItem(last_pos, EV_MLF_Normal);
 //	pMenuActionSet->addAction(new EV_Menu_Action(index, false, false, false, "scriptPlay", NULL, NULL));
-	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, names->back()->c_str(),
-												names->back()->c_str()));
+	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, names->back().c_str(),
+												names->back().c_str()));
 
 	if (!_doAddMenuItem(last_pos))
 	{
