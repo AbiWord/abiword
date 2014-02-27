@@ -40,7 +40,6 @@
 
 class UT_Rect;
 class UT_String;
-class UT_UTF8String;
 class PP_AttrProp;
 
 
@@ -186,10 +185,16 @@ class ABI_EXPORT UT_VersionInfo
 {
   public:
 	UT_VersionInfo(UT_uint32 maj, UT_uint32 min, UT_uint32 mic, UT_uint32 nan)
-		: m_iMajor(maj), m_iMinor(min), m_iMicro(mic), m_iNano(nan) {};
+		: m_iMajor(maj), m_iMinor(min), m_iMicro(mic), m_iNano(nan)
+	{
+		makeVersString();
+	}
 
 	UT_VersionInfo()
-		: m_iMajor(0), m_iMinor(0), m_iMicro(0), m_iNano(0) {};
+		: m_iMajor(0), m_iMinor(0), m_iMicro(0), m_iNano(0)
+	{
+		makeVersString();
+        }
 
 	UT_uint32 getMajor() const {return m_iMajor;}
 	UT_uint32 getMinor() const {return m_iMinor;}
@@ -197,7 +202,13 @@ class ABI_EXPORT UT_VersionInfo
 	UT_uint32 getNano()  const {return m_iNano;}
 
 	void set(UT_uint32 maj, UT_uint32 min, UT_uint32 mic, UT_uint32 nan)
-    	{m_iMajor = maj; m_iMinor = min; m_iMicro = mic; m_iNano = nan;}
+	{
+		m_iMajor = maj;
+		m_iMinor = min;
+		m_iMicro = mic;
+		m_iNano = nan;
+		makeVersString();
+	}
 
 	bool operator > (const UT_VersionInfo &v) const
 	    {
@@ -224,14 +235,20 @@ class ABI_EXPORT UT_VersionInfo
 			return false;
 	    }
 
-	const UT_UTF8String & getString() const;
+	const std::string & getString() const
+	{
+		return m_versString;
+	}
 
 
   private:
+        void makeVersString();
+
 	UT_uint32 m_iMajor;
 	UT_uint32 m_iMinor;
 	UT_uint32 m_iMicro;
 	UT_uint32 m_iNano;
+	std::string m_versString;
 };
 
 /*

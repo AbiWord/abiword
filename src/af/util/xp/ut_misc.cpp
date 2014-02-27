@@ -30,6 +30,7 @@
 #include "ut_misc.h"
 #include "ut_assert.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_go_file.h"
 #include "ut_debugmsg.h"
 
@@ -504,14 +505,12 @@ bool UT_parseBool (const char * param, bool dfl)
 	return dfl;
 }
 
-const UT_UTF8String & UT_VersionInfo::getString() const
+void UT_VersionInfo::makeVersString()
 {
-	static UT_UTF8String vers = UT_UTF8String_sprintf("%d.%d.%d.%d", 
-													  m_iMajor, m_iMinor, 
-													  m_iMicro, m_iNano);
-	return vers;
+	m_versString = UT_std_string_sprintf("%d.%d.%d.%d",
+					     m_iMajor, m_iMinor,
+					     m_iMicro, m_iNano);
 }
-
 
 const gchar ** UT_setPropsToNothing(const gchar ** props)
 {
