@@ -1884,7 +1884,7 @@ PD_RDFContact::className() const
 
 #ifdef WITH_EVOLUTION_DATA_SERVER
 extern "C" {
-  #include <libebook/e-book.h>
+  #include <libebook/libebook.h>
 };
 
 static std::string get( EVCard* c, const char* v )
