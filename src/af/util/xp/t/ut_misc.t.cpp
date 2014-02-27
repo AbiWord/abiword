@@ -36,3 +36,31 @@ TFTEST_MAIN("UT_HeadingDepth")
   depth = UT_HeadingDepth("Numbered Heading 5");
   TFPASS(depth == 5);
 }
+
+
+TFTEST_MAIN("UT_VersionInfo")
+{
+  UT_VersionInfo v1(1,2,3,4);
+  std::string verString = v1.getString();
+
+  TFPASS(verString == "1.2.3.4");
+  TFPASS(v1.getMajor() == 1);
+  TFPASS(v1.getMinor() == 2);
+  TFPASS(v1.getMicro() == 3);
+  TFPASS(v1.getNano() == 4);
+
+  UT_VersionInfo v2;
+
+  verString = v2.getString();
+  TFPASS(verString == "0.0.0.0");
+
+  TFPASS(v1 > v2);
+  TFFAIL(v2 > v1);
+
+  v2.set(1,2,3,5);
+
+  TFPASS(v2 > v1);
+  verString = v2.getString();
+
+  TFPASS(verString == "1.2.3.5");
+}
