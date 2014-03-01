@@ -207,14 +207,14 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         m_listLevel = atoi(pOutlineLevel);
         m_pCurrentListStyle =  m_pStyles->getList( sHeadingListName.c_str());
         if(m_pCurrentListStyle)
-		{
-			ODi_ListLevelStyle *pLevelStyle = m_pCurrentListStyle->getLevelStyle(m_listLevel);
-			if (pLevelStyle && pLevelStyle->isVisible())
-		    {
-		        xxx_UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
-		        m_bHeadingList = true;
-		    }
-		}
+        {
+            ODi_ListLevelStyle *pLevelStyle = m_pCurrentListStyle->getLevelStyle(m_listLevel);
+            if (pLevelStyle && pLevelStyle->isVisible())
+            {
+                xxx_UT_DEBUGMSG(("Found %s ! outline level %s \n",sHeadingListName.utf8_str(),pOutlineLevel));
+                m_bHeadingList = true;
+            }
+        }
 
         pStyleName = UT_getAttribute("text:style-name", ppAtts);
         if (pStyleName) 
