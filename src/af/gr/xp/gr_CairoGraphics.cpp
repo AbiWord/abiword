@@ -940,7 +940,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	GR_PangoFont     * pFont = (GR_PangoFont *) si.m_pFont;;
 	PangoFontDescription * pfd;
 	
-	if (pPangoFontOrig)
+	if (PANGO_IS_FONT(pPangoFontOrig))
 	{
 		pfd = pango_font_describe (pPangoFontOrig);
 		double dSize = (double)PANGO_SCALE * pFont->getPointSize();
@@ -1222,7 +1222,7 @@ PangoFont *  GR_CairoGraphics::_adjustedLayoutPangoFont (GR_PangoFont * pFont, P
 {
 	UT_return_val_if_fail(pFont, NULL);
 	
-	if (!pf)
+	if (!PANGO_IS_FONT(pf))
 		return pFont->getPangoLayoutFont();
 
 	/*

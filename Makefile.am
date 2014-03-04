@@ -1,27 +1,14 @@
 
 ACLOCAL_AMFLAGS = -I .
 
-DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins po user tools
+DIST_SUBDIRS = src plugins po user tools
 
-if WITH_GOFFICE_BUILTIN
-
-if TOOLKIT_GTK2
-SUBDIRS = goffice-bits2
-else
-SUBDIRS = goffice-bits
-endif
-
-else 
-SUBDIRS =
-endif
-SUBDIRS += src plugins po user
+SUBDIRS = src plugins po user
 
 if TOOLKIT_GTK_ALL
 
-if !EMBEDDED_HILDON
 desktopdir = $(datadir)/applications
 desktop_DATA = abiword.desktop
-endif
 
 mimedir = @ABIWORD_DATADIR@/mime-info
 mime_DATA = abiword.keys

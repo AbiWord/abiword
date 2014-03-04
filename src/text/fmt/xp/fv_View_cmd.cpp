@@ -5477,7 +5477,7 @@ UT_Error FV_View::cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, U
  * It leaves the Object selected so it can be altered as needed.
  */
 bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
-						   UT_UTF8String & sMath)
+						   UT_UTF8String & sMath, bool compact)
 {
   //
   // First create the Data Items
@@ -5551,6 +5551,9 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	  }
 	  g_free(props);
 	}
+	sProp = "display";
+	sVal = (compact)? "inline": "block";
+	UT_UTF8String_setProperty(sNewProps,sProp,sVal);
 	atts[5] = sNewProps.utf8_str();
 	m_pDoc->insertObject(pos,PTO_Math,atts,NULL);
 

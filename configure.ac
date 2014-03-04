@@ -38,26 +38,20 @@ dnl ])
 # This check MUST be done early.
 #
 # We define EMBEDDED_TARGET to a numerical value so that we can do like
-# #if EMBEDDED_TARGET = EMBEDDED_TARGET_HILDON
+# #if EMBEDDED_TARGET = EMBEDDED_TARGET_POKY
 #
 # The following have to be defined unconditionally, because we want 
 # EMBEDDED_TARGET to be undefined if not building for embedded so that we 
 # can use #ifdef and #ifndef on it (two undefined symbols will return 
 # true if tested for equality in #if construct)
 AC_DEFINE([EMBEDDED_TARGET_GENERIC], [1], [Generic embedded platform])
-AC_DEFINE([EMBEDDED_TARGET_HILDON],  [2], [Hildon embedded platform])
 AC_DEFINE([EMBEDDED_TARGET_POKY],    [3], [Poky embedded platform])
 
 AC_ARG_ENABLE([embedded],
-	[AS_HELP_STRING([--enable-embedded], [=generic|hildon|poky, (Gtk+ only), build for embedded platform])],
+	[AS_HELP_STRING([--enable-embedded], [=generic|poky, (Gtk+ only), build for embedded platform])],
 [
 	abi_cv_embedded_platform="$enableval"
 	case "$enableval" in
-	hildon)
-		abi_cv_embedded_target=EMBEDDED_TARGET_HILDON
-		AC_MSG_ERROR([Hildon is deprecated. See http://bugzilla.abisource.com/show_bug.cgi?id=13568])
-		GTK2_VERSION_REQ=2.12.0
-		;;
 	poky)
 		abi_cv_embedded_target=EMBEDDED_TARGET_POKY ;;
 	generic)
@@ -94,11 +88,13 @@ glib_req='glib-2.0 >= 2.6.0 gthread-2.0 >= 2.6.0 gobject-2.0 >= 2.6.0'
 gsf_req='libgsf-1 >= 1.14.18'
 gsf_gio_req='libgsf-1 >= 1.14.9'
 wv_req='wv-1.0 >= 1.2.0'
+goffice_req='libgoffice-0.10 >= 0.10.12'
 xslt_req='libxslt'
 xp_pkgs="
   ${fribidi_req}
   ${glib_req}
   ${gsf_req}
+  ${goffice_req}
   ${wv_req}
   ${xslt_req}
 "
@@ -106,9 +102,7 @@ xp_pkgs="
 # optional deps
 enchant_req='enchant >= 1.2.0'
 gio_req='gio-2.0'
-goffice_req='libgoffice-0.10 >= 0.10.0'
 
-hildon_pkgs='hildon-1 hildon-fm-2 dbus-1 libosso'
 dnl libosso-gsf-1'
 # placeholder for accumulated optional deps
 opt_pkgs=''
@@ -342,14 +336,6 @@ AC_ARG_ENABLE([templates],
 	abi_cv_templates="no"
 ])
 
-#
-# deferred from the "enable-embedded"
-#
-if test "$abi_cv_embedded_platform" = "hildon"; then
-	opt_pkgs="$opt_pkgs $hildon_pkgs"
-fi
-
-
 AC_ARG_ENABLE([debug], 
 	[AS_HELP_STRING([--enable-debug], [Enable debugging functionality, verbose terminal output])], 
 [
@@ -403,39 +389,6 @@ AC_ARG_WITH([gio],
 
 if test "$abi_cv_gio" = "yes"; then
 	opt_pkgs="$opt_pkgs $gio_req"
-fi
-
-AC_ARG_WITH([goffice], 
-	[AS_HELP_STRING([--with-goffice], [(Gtk+ only) use goffice library])], 
-[
-	abi_cv_goffice="$withval"
-],[
-	# use goffice if detected
-	if test "$TOOLKIT" = "gtk"; then
-	PKG_CHECK_EXISTS([ $goffice_req ],
-	[
-		abi_cv_goffice="yes"
-	], [
-		abi_cv_goffice="no"
-	])
-	fi
-])
-
-GOFFICE_BUILTIN_CPPFLAGS=
-GOFFICE_BUILTIN_LIBS=
-if test "$TOOLKIT_IS_GTK2" = "yes"; then
-	GOFFICE_BUILTIN_CPPFLAGS='-I${top_srcdir}/goffice-bits2'
-	GOFFICE_BUILTIN_LIBS='${top_builddir}/goffice-bits2/libgoffice.la'
-	AC_SUBST(GOFFICE_BUILTIN_CPPFLAGS)
-	AC_SUBST(GOFFICE_BUILTIN_LIBS)
-elif test "$PLATFORM" = "unix" && \
-   test "$abi_cv_goffice" = "yes"; then
-	opt_pkgs="$opt_pkgs $goffice_req"
-else
-	GOFFICE_BUILTIN_CPPFLAGS='-I${top_srcdir}/goffice-bits'
-	GOFFICE_BUILTIN_LIBS='${top_builddir}/goffice-bits/libgoffice.la'
-	AC_SUBST(GOFFICE_BUILTIN_CPPFLAGS)
-	AC_SUBST(GOFFICE_BUILTIN_LIBS)
 fi
 
 AC_ARG_WITH([darwinports],
@@ -869,7 +822,6 @@ AC_SUBST(ABIWORD_PLUGINSDIR, "${ABIWORD_LIBDIR}/plugins")
 fi
 
 # maybe just switch on TOOLKIT instead of the fancy TARGET defines
-# also for embedded, e.g. hildon would set TOOLKIT_GTK and TOOLKIT_HILDON
 AM_CONDITIONAL([TOOLKIT_COCOA], test "$TOOLKIT" = "cocoa")
 AM_CONDITIONAL([TOOLKIT_GTK], test "$TOOLKIT" = "gtk")
 AM_CONDITIONAL([TOOLKIT_GTK2], test "$TOOLKIT_IS_GTK2" = "yes")
@@ -967,7 +919,6 @@ AM_CONDITIONAL([ENABLE_STATUSBAR], test "$abi_cv_statusbar" = "yes")
 if test "$abi_cv_embedded_target" != "no"; then
 	AC_DEFINE_UNQUOTED(EMBEDDED_TARGET, $abi_cv_embedded_target, [Whether we are building for embedded device])
 fi
-AM_CONDITIONAL(EMBEDDED_HILDON, test "$abi_cv_embedded_target" = "EMBEDDED_TARGET_HILDON")
 
 if test "$abi_cv_emacs_keybinding" = "yes"; then
 	AC_DEFINE([ENABLE_EMACS_KEYBINDING], [1], [Define to enable include emacs-compatible keyboard commands])
@@ -1192,8 +1143,6 @@ AM_CONDITIONAL(HAVE_INTROSPECTION, test "x$found_introspection" = "xyes")
 AC_OUTPUT(
   libabiword.pc
   Makefile
-  goffice-bits/Makefile
-  goffice-bits2/Makefile
   po/Makefile
   src/Makefile
   src/af/Makefile
@@ -1238,8 +1187,6 @@ AC_OUTPUT(
   src/wp/ap/Makefile
   src/wp/ap/cocoa/Makefile
   src/wp/ap/gtk/Makefile
-  src/wp/ap/gtk/hildon/abiword.desktop
-  src/wp/ap/gtk/hildon/com.abisource.abiword.service
   src/wp/ap/qt/Makefile
   src/wp/ap/win/Makefile
   src/wp/ap/xp/Makefile
@@ -1297,7 +1244,6 @@ Optional features:
 Optional dependencies:
   gio			${abi_cv_gio}
   gsf-gio               ${abi_cv_gsf_gio}
-  goffice               ${abi_cv_goffice}
   redland               ${abi_cv_redland}
   evolution_data_server ${abi_cv_evolution_data_server}
   libical               ${abi_cv_libical}

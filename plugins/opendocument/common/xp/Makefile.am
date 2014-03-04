@@ -1,3 +1,4 @@
+AUTOMAKE_OPTIONS = subdir-objects
 
 noinst_LTLIBRARIES = libxp.la
 

@@ -55,6 +55,7 @@ protected:
 
 	AP_Dialog_Latex::tAnswer  m_answer;
 	UT_UTF8String             m_sWindowName;
+	bool                      m_compact;
 private:
 	UT_UTF8String m_sLatex;
 	UT_UTF8String m_sMathML;

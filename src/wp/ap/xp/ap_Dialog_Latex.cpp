@@ -42,6 +42,7 @@ AP_Dialog_Latex::AP_Dialog_Latex(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id 
 	: XAP_Dialog_Modeless(pDlgFactory,id)
 {
 	m_answer = a_OK;
+	m_compact = false;
 }
 
 AP_Dialog_Latex::~AP_Dialog_Latex(void)
@@ -110,5 +111,5 @@ void AP_Dialog_Latex::insertIntoDoc(void)
 {
 	XAP_Frame * pFrame = getActiveFrame();
 	FV_View * pView = static_cast<FV_View *>(pFrame->getCurrentView());
-	pView->cmdInsertLatexMath(m_sLatex,m_sMathML);
+	pView->cmdInsertLatexMath(m_sLatex,m_sMathML, m_compact);
 }

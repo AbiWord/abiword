@@ -213,7 +213,8 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
         return false;
     }
 
-    // check to ensure that we're seeing math. this can probably be made smarter.
+#if 0
+	// check to ensure that we're seeing math. this can probably be made smarter.
     // changed the math_header to include the simple math tag, as DOC_TYPE has become obsolete
     static const char math_header[] = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<math";
 
@@ -228,7 +229,17 @@ bool ODi_Abi_Data::addObjectDataItem(UT_String& rDataId, const gchar** ppAtts, i
     	delete object_buf;
         return false;
     }
-
+#endif
+	char *content_type = g_content_type_guess(NULL, object_buf->getPointer(0),
+	                                          object_buf->getLength(), NULL);
+	char *mime_type = NULL;
+	if (content_type)
+	{
+		mime_type = g_content_type_get_mime_type(content_type);
+		g_free(content_type);
+	}
+	UT_DEBUGMSG(("Object Mime Type is %s\n", mime_type));
+	g_free(mime_type);
     //
     // Create the data item.
     //

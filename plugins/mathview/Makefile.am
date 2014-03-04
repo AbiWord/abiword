@@ -1,11 +1,10 @@
 
-SUBDIRS = data itex2mml xp
+SUBDIRS = xp
 
 plugindir = $(ABIWORD_PLUGINSDIR)
 plugin_LTLIBRARIES = mathview.la
 
 mathview_la_LIBADD = \
-	itex2mml/libitex2mml.la \
 	xp/libxp.la \
 	$(MATHVIEW_LIBS)
 

@@ -149,7 +149,7 @@ const char *pt_PieceTable::s_getUnlocalisedStyleName (const char *szLocStyle)
 
 bool pt_PieceTable::_loadBuiltinStyles(void)
 {
-	static XAP_App *pApp = XAP_App::getApp();
+	XAP_App *pApp = XAP_App::getApp();
 	const XAP_StringSet *pSS = pApp->getStringSet();
 	/* 	
 		!!! if adding or removing properties to the list_fmt, you have to make also changes to

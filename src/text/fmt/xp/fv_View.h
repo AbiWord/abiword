@@ -317,7 +317,7 @@ public:
 	bool	        cmdDeleteEmbed(fp_Run * pRun);
 
 	bool                    cmdInsertLatexMath(UT_UTF8String & sLatex,
-						   UT_UTF8String & sMath);
+						   UT_UTF8String & sMath, bool compact);
 
 	UT_Error		cmdInsertTOC(void);
 	UT_Error		cmdHyperlinkStatusBar(UT_sint32 xPos, UT_sint32 yPos);

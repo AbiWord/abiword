@@ -1,3 +1,4 @@
+#AUTOMAKE_OPTIONS = subdir-objects
 
 SUBDIRS = af plugins text wp
 

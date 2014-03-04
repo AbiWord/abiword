@@ -10,38 +10,11 @@ AM_CPPFLAGS = 						\
 	-DICONDIR="\"$(ABIWORD_ICONDIR)\"" \
         $(CHAMPLAIN_CFLAGS)
 
-
-# source and ui files for Hildon
-hildon_src = hildon/ap_UnixHildonFrameImpl.cpp \
-       hildon/ap_UnixHildonFrameImpl.h
-hildon_ui = hildon/ap_UnixHildonDialog_HdrFtr.ui \
-       hildon/ap_UnixHildonDialog_Options.ui
-
 spell_src = ap_UnixDialog_Spell.cpp
 
-# these are alternate file for a plain Gtk build.
-spell_ui_gtk2 = ap_UnixDialog_Spell-2.ui
-altgtk_ui_gtk2 = ap_UnixDialog_Options-2.ui \
-	ap_UnixDialog_HdrFtr-2.ui \
-	ap_UnixDialog_Options_ColorSel-2.ui \
-	$(NULL)
-
 spell_ui_gtk3 = ap_UnixDialog_Spell.ui
-altgtk_ui_gtk3 = ap_UnixDialog_Options.ui \
-	ap_UnixDialog_HdrFtr.ui \
-	ap_UnixDialog_Options_ColorSel.ui \
-	$(NULL)
 
 statusbar_src = ap_UnixStatusBar.cpp
-
-abiwidget_src_gtk2 = abiwidget-gtk2.cpp \
-	abiwidget-gtk2.h \
-	$(NULL)
-
-abiwidget_src_gtk3 = abiwidget.cpp \
-	abiwidget.h \
-	$(NULL)
-
 
 libgtk_la_SOURCES = \
 	GTKCommon.h \
@@ -169,48 +142,14 @@ libgtk_la_SOURCES = \
 	ap_RDFSemanticItemFactoryGTK.h \
 	ap_RDFSemanticItemFactoryGTK.cpp \
 	ap_RDFSemanticItemGTKInjected.h \
-	ap_RDFSemanticItemGTKInjected.cpp
-
-if TOOLKIT_GTK2
-libgtk_la_SOURCES += $(abiwidget_src_gtk2)
-else
-libgtk_la_SOURCES += $(abiwidget_src_gtk3)
-endif
+	ap_RDFSemanticItemGTKInjected.cpp \
+    abiwidget.cpp \
+	abiwidget.h \
+	$(NULL)
 
 uidir=$(ABIWORD_UIDIR)
 
-uifiles_gtk2 = ap_UnixDialog_Annotation-2.ui \
-	ap_UnixDialog_Border_Shading-2.ui \
-	ap_UnixDialog_Break-2.ui \
-	ap_UnixDialog_Field-2.ui \
-	ap_UnixDialog_FormatTOC-2.ui \
-	ap_UnixDialog_FormatFootnotes-2.ui \
-	ap_UnixDialog_FormatTable-2.ui \
-	ap_UnixDialog_FormatFrame-2.ui \
-	ap_UnixDialog_Goto-2.ui \
-	ap_UnixDialog_InsertTable-2.ui \
-	ap_UnixDialog_Insert_DateTime-2.ui \
-	ap_UnixDialog_MailMerge-2.ui \
-	ap_UnixDialog_MetaData-2.ui \
-	ap_UnixDialog_PageNumbers-2.ui	\
-	ap_UnixDialog_PageSetup-2.ui \
-	ap_UnixDialog_Replace-2.ui \
-	ap_UnixDialog_New-2.ui \
-	ap_UnixDialog_Styles-2.ui \
-	ap_UnixDialog_Stylist-2.ui \
-	ap_UnixDialog_Tab-2.ui	\
-	ap_UnixDialog_WordCount-2.ui \
-	ap_UnixDialog_Latex-2.ui \
-	ap_UnixDialog_RDFQuery-2.ui \
-	ap_UnixDialog_RDFEditor-2.ui \
-	pd_RDFContact-2.ui \
-	pd_RDFInsertReference-2.ui \
-	pd_RDFEvent-2.ui \
-	pd_RDFLocation-2.ui \
-	ap_UnixDialog_SemanticStylesheets-2.ui \
-	$(NULL)
-
-uifiles_gtk3 = ap_UnixDialog_Annotation.ui \
+ui_DATA = ap_UnixDialog_Annotation.ui \
 	ap_UnixDialog_Border_Shading.ui \
 	ap_UnixDialog_Break.ui \
 	ap_UnixDialog_Field.ui \
@@ -219,10 +158,13 @@ uifiles_gtk3 = ap_UnixDialog_Annotation.ui \
 	ap_UnixDialog_FormatTable.ui \
 	ap_UnixDialog_FormatFrame.ui \
 	ap_UnixDialog_Goto.ui \
+	ap_UnixDialog_HdrFtr.ui \
 	ap_UnixDialog_InsertTable.ui \
 	ap_UnixDialog_Insert_DateTime.ui \
 	ap_UnixDialog_MailMerge.ui \
 	ap_UnixDialog_MetaData.ui \
+    ap_UnixDialog_Options.ui \
+	ap_UnixDialog_Options_ColorSel.ui \
 	ap_UnixDialog_PageNumbers.ui	\
 	ap_UnixDialog_PageSetup.ui \
 	ap_UnixDialog_Replace.ui \
@@ -241,38 +183,20 @@ uifiles_gtk3 = ap_UnixDialog_Annotation.ui \
 	ap_UnixDialog_SemanticStylesheets.ui \
 	$(NULL)
 
-if TOOLKIT_GTK2
-ui_DATA = $(uifiles_gtk2)
-else
-ui_DATA = $(uifiles_gtk3)
-endif
-
 # list all conditional source files here so they end up in the dist tarball
 conditional_src = \
-	$(hildon_src) \
 	$(spell_src) \
 	$(statusbar_src) \
-	$(abiwidget_src_gtk2) \
-	$(abiwidget_src_gtk3) \
 	$(NULL)
 
 conditional_ui = \
-	$(altgtk_ui_gtk2) \
-	$(altgtk_ui_gtk3) \
-	$(spell_ui_gtk2) \
 	$(spell_ui_gtk3) \
-	$(uifiles_gtk2) \
-	$(uifiles_gtk3) \
 	$(NULL)
 
 if ENABLE_SPELL
-libgtk_la_SOURCES += $(spell_src)
 
-if TOOLKIT_GTK2
-ui_DATA += $(spell_ui_gtk2)
-else
+libgtk_la_SOURCES += $(spell_src)
 ui_DATA += $(spell_ui_gtk3)
-endif
 
 endif
 
@@ -280,35 +204,8 @@ if ENABLE_STATUSBAR
 libgtk_la_SOURCES += $(statusbar_src)
 endif
 
-if EMBEDDED_HILDON
-
-libgtk_la_SOURCES += $(hildon_src)
-ui_DATA += $(hildon_ui)
-
-hildondesktopdir = @datadir@/applications/hildon
-hildondesktop_DATA = hildon/abiword.desktop
-
-hildondbusdir = @datadir@/dbus-1/services
-hildondbus_DATA = hildon/com.abisource.abiword.service
-
-hildonicondir = @datadir@/pixmaps
-hildonicon_DATA = hildon/qgn_list_abiword.png
-
-else
-
-if TOOLKIT_GTK2
-ui_DATA += $(altgtk_ui_gtk2)
-else
-ui_DATA += $(altgtk_ui_gtk3)
-endif
-
-endif
-
 EXTRA_DIST = \
 	$(conditional_src) \
 	$(conditional_ui) \
-	hildon/qgn_list_abiword.png \
-	hildon/com.abisource.abiword.service.in \
-	hildon/abiword.desktop.in \
 	$(NULL)
 

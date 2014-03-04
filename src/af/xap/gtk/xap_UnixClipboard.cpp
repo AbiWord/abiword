@@ -314,7 +314,7 @@ bool XAP_UnixClipboard::_getDataFromServer(T_AllowGet tFrom, const char** format
 	for(int atomCounter = 0; formatList[atomCounter]; atomCounter++)
 		atoms.addItem(gdk_atom_intern(formatList[atomCounter],FALSE));
 	
-	int len = atoms.size () ;
+	int len = atoms.size () ;	
 	
 	//	for(int i = 0; i < len && !rval; i++)
 	for(int i = 0; i < len; i++)

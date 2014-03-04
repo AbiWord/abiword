@@ -19,7 +19,7 @@
 
 #include $(top_srcdir)/includes.mk
 
-INCLUDES = $(top_srcdir)/.
+AM_CPPFLAGS = $(top_srcdir)/.
 
 EXTRA_DIST = \
         main.cpp \

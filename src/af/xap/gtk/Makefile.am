@@ -10,27 +10,6 @@ AM_CPPFLAGS = \
 	-I$(top_srcdir)/src/wp/ap/xp \
 	-DICONDIR="\"$(ABIWORD_ICONDIR)\""
 
-hildon_src = hildon/xap_UnixHildonApp.cpp \
-       hildon/xap_UnixHildonApp.h \
-       hildon/xap_UnixHildonDlg_FontChooser.cpp    \
-       hildon/xap_UnixHildonDlg_FontChooser.h  \
-       $(NULL)
-hildon_ui = hildon/xap_UnixHildonDlg_Image.ui \
-       $(NULL)
-altgtk_src = xap_UnixDlg_FontChooser.cpp \
-	xap_UnixDlg_FontChooser.h \
-	$(NULL)
-
-altgtk_ui_gtk2 = xap_UnixDlg_Image-2.ui \
-	$(NULL)
-altgtk_ui_gtk3 = xap_UnixDlg_Image.ui \
-	$(NULL)
-
-# list all conditional source files here so they end up in the dist tarball
-conditional_src = $(hildon_src) $(altgtk_src)
-
-conditional_ui = $(hildon_ui) $(altgtk_ui_gtk2) $(altgtk_ui_gtk3)
-
 libgtk_la_SOURCES = \
 	xap_Gtk2Compat.h \
 	xap_GtkObjectHolder.h \
@@ -61,7 +40,9 @@ libgtk_la_SOURCES = \
 	xap_UnixDlg_Encoding.h \
 	xap_UnixDlg_FileOpenSaveAs.cpp \
 	xap_UnixDlg_FileOpenSaveAs.h \
-	xap_UnixDlg_History.cpp \
+	xap_UnixDlg_FontChooser.cpp \
+	xap_UnixDlg_FontChooser.h \
+    xap_UnixDlg_History.cpp \
 	xap_UnixDlg_History.h \
 	xap_UnixDlg_HTMLOptions.cpp \
 	xap_UnixDlg_HTMLOptions.h \
@@ -105,20 +86,9 @@ libgtk_la_SOURCES = \
 
 uidir=$(ABIWORD_UIDIR)
 
-ui_gtk2 = \
-	xap_UnixDlg_Encoding-2.ui \
-	xap_UnixDlg_Language-2.ui \
-	xap_UnixDlg_Password-2.ui \
-	xap_UnixDlg_PluginManager-2.ui \
-	xap_UnixDlg_WindowMore-2.ui \
-	xap_UnixDlg_Zoom-2.ui \
-	xap_UnixDlg_History-2.ui \
-	xap_UnixDlg_DocComparison-2.ui \
-	xap_UnixDlg_ListDocuments-2.ui \
-	$(NULL)
-
-ui_gtk3 = \
+ui_DATA =  \
 	xap_UnixDlg_Encoding.ui \
+	xap_UnixDlg_Image.ui \
 	xap_UnixDlg_Language.ui \
 	xap_UnixDlg_Password.ui \
 	xap_UnixDlg_PluginManager.ui \
@@ -129,30 +99,4 @@ ui_gtk3 = \
 	xap_UnixDlg_ListDocuments.ui \
 	$(NULL)
 
-if TOOLKIT_GTK2
-ui_DATA = $(ui_gtk2)
-else
-ui_DATA = $(ui_gtk3)
-endif
-
-if EMBEDDED_HILDON
-libgtk_la_SOURCES += $(hildon_src)
-ui_DATA += $(hildon_ui)
-else
-
 libgtk_la_SOURCES += $(altgtk_src)
-
-if TOOLKIT_GTK2
-ui_DATA += $(altgtk_ui_gtk2)
-else
-ui_DATA += $(altgtk_ui_gtk3)
-endif
-
-endif
-
-EXTRA_DIST = \
-	$(conditional_src) \
-	$(conditional_ui) \
-	$(ui_gtk2) \
-	$(ui_gtk3)
-
