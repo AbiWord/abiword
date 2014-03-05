@@ -1,6 +1,0 @@
-
-This directory contains some code from the goffice library.
-When adding stuff maintain goffice's directory structure so switching 
-between this builtin and the system version doesn't break.
-
-- Rob
