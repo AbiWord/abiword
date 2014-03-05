@@ -86,8 +86,8 @@
  * 	Emmanuel Pacaud <emmanuel@gnome.org>
  */
 
-extern char * itex2MML_parse (const char * buffer, unsigned long length);
-extern void   itex2MML_free_string (char * str);
+extern "C" char * itex2MML_parse (const char * buffer, unsigned long length);
+extern "C" void   itex2MML_free_string (char * str);
 
 static char *
 lsm_itex_to_mathml (const char *itex, int size)
