@@ -88,7 +88,7 @@ glib_req='glib-2.0 >= 2.6.0 gthread-2.0 >= 2.6.0 gobject-2.0 >= 2.6.0'
 gsf_req='libgsf-1 >= 1.14.18'
 gsf_gio_req='libgsf-1 >= 1.14.9'
 wv_req='wv-1.0 >= 1.2.0'
-goffice_req='libgoffice-0.10 >= 0.10.12'
+goffice_req='libgoffice-0.10 >= 0.10.0'
 xslt_req='libxslt'
 xp_pkgs="
   ${fribidi_req}

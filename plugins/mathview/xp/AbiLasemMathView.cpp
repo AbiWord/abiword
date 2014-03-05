@@ -62,7 +62,65 @@
 #include "ut_files.h"
 #endif
 
-#include "itex2MML.h"
+#ifndef HAVE_LSM_ITEX_TO_MATHML
+/* Lasem - SVG and Mathml library
+ *
+ * Copyright © 2013 Emmanuel Pacaud
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General
+ * Public License along with this library; if not, write to the
+ * Free Software Foundation, Inc., 59 Temple Place, Suite 330,
+ * Boston, MA 02111-1307, USA.
+ *
+ * Author:
+ * 	Emmanuel Pacaud <emmanuel@gnome.org>
+ */
+
+extern char * itex2MML_parse (const char * buffer, unsigned long length);
+extern void   itex2MML_free_string (char * str);
+
+static char *
+lsm_itex_to_mathml (const char *itex, int size)
+{
+	char *mathml;
+
+	if (itex == NULL)
+		return NULL;
+
+	if (size < 0)
+		size = strlen (itex);
+
+	mathml = itex2MML_parse (itex, size);
+	if (mathml == NULL)
+		return NULL;
+
+	if (mathml[0] == '\0') {
+		itex2MML_free_string (mathml);
+		return NULL;
+	}
+
+	return mathml;
+}
+
+static void
+lsm_itex_free_mathml_buffer (char *mathml)
+{
+	if (mathml == NULL)
+		return;
+
+	itex2MML_free_string (mathml);
+}
+#endif
 
 static GR_LasemMathManager * pMathManager = NULL; // single plug-in instance of GR_MathManager
 
@@ -762,37 +820,6 @@ bool GR_LasemMathManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSE
 
 	return EntityTable().convert(sMathML.utf8_str(), sMathML.size(), To);
 }
-
-char * GR_LasemMathManager :: lsm_itex_to_mathml (const char *itex, int size)
-{
-       char *mathml;
-
-       if (itex == NULL)
-               return NULL;
-
-       if (size < 0)
-               size = strlen (itex);
-
-       mathml = itex2MML_parse (itex, size);
-       if (mathml == NULL)
-               return NULL;
-
-       if (mathml[0] == '\0') {
-               itex2MML_free_string (mathml);
-               return NULL;
-       }
-
-       return mathml;
-}
-
-void GR_LasemMathManager :: lsm_itex_free_mathml_buffer (char *mathml)
-{
-       if (mathml == NULL)
-               return;
-
-       itex2MML_free_string (mathml);
-}
-
 
 void GR_LasemMathManager::setDefaultFontSize(G_GNUC_UNUSED UT_sint32 uid, G_GNUC_UNUSED UT_sint32 iSize)
 {

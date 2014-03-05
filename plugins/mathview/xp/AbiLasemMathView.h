@@ -73,8 +73,6 @@ private:
 	UT_sint32                              _makeLasemMathView(void);
 	void                                    _loadMathMl(UT_sint32 uid, UT_UTF8String & sGOChartBuf);
 	UT_sint32                              _getNextUID(void);
-	char *                                 lsm_itex_to_mathml (const char *itex, int size);
-	void                                   lsm_itex_free_mathml_buffer (char *mathml);
 	UT_sint32                              m_CurrentUID;
 	UT_GenericVector<LasemMathView *>        m_vecLasemMathView;
 	UT_GenericVector<GR_AbiMathItems *>    m_vecItems;
