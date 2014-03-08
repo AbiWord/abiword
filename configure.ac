@@ -695,7 +695,7 @@ elif test "$TOOLKIT" = "qt"; then
         deps_pkgs="$deps_pkgs $qt_pkgs"
 else
 	SYSTEM_CFLAGS=$PNG_CFLAGS
-	SYSTEM_LIBS=$PNG_LIBS
+	SYSTEM_LIBS="$PNG_LIBS -ljpeg"
 	deps_pkgs="$deps_pkgs $gtk_pkgs x11"
 fi
 
