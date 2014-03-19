@@ -3,12 +3,12 @@
 
 #include "Meaning.h"
 #include "Display.h"
-#include <cctype>  
+#include <cctype>
 using namespace std;
 
-namespace AiksaurusGTK_impl 
+namespace AiksaurusGTK_impl
 {
-    
+
     static void ucwords(string& str) throw()
     {
         bool ws = true;
@@ -16,7 +16,7 @@ namespace AiksaurusGTK_impl
         {
             if (isspace(str[i]))
                 ws = true;
-                
+
             else if (ws)
             {
                 str[i] = toupper(str[i]);
@@ -25,14 +25,14 @@ namespace AiksaurusGTK_impl
         }
     }
 
-    Meaning::Meaning(const string& title, vector<string>& words, Display& display) 
+    Meaning::Meaning(const string& title, vector<string>& words, Display& display)
     throw(bad_alloc)
         : d_title(title), d_words(words), d_display(display), d_lists(4), d_models(4)
     {
         d_masterLayout = gtk_event_box_new();
-        
+
         ucwords(d_title);
-        
+
         gtk_widget_set_name(d_masterLayout, "ybg");
 
         d_mainLayout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -58,7 +58,7 @@ namespace AiksaurusGTK_impl
             gtk_widget_set_name(d_lists[i], "wbg");  // <-- this one!!
             gtk_box_pack_start( GTK_BOX(d_subLayout), d_lists[i], 1, 1, 0 );
             g_signal_connect(
-                G_OBJECT(gtk_tree_view_get_selection(GTK_TREE_VIEW(d_lists[i]))), "changed", 
+                G_OBJECT(gtk_tree_view_get_selection(GTK_TREE_VIEW(d_lists[i]))), "changed",
                 G_CALLBACK(_wordclick), this
             );
         }
@@ -67,27 +67,27 @@ namespace AiksaurusGTK_impl
         int q = n / 4;
         int r = n % 4;
         int stop1, stop2, stop3;
-        
+
         switch(r)
         {
             case 0:
                 stop1 = q;
                 stop2 = stop1 + q;
                 stop3 = stop2 + q;
-                break;    
-                
+                break;
+
             case 1:
                 stop1 = q + 1;
                 stop2 = stop1 + q;
                 stop3 = stop2 + q;
                 break;
-                
+
             case 2:
                 stop1 = q + 1;
                 stop2 = stop1 + (q + 1);
                 stop3 = stop2 + q;
                 break;
-                
+
             default: // r = 3
                 stop1 = q + 1;
                 stop2 = stop1 + (q + 1);
@@ -123,12 +123,12 @@ namespace AiksaurusGTK_impl
             gtk_list_store_append(d_models[3], &iter);
 			gtk_list_store_set (d_models[3], &iter, 0, const_cast<char**>(&str), -1);
         }
-        
+
     }
 
     Meaning::~Meaning() throw()
     {
-    
+
     }
 
     GtkWidget* Meaning::getLayout() throw()
@@ -149,7 +149,7 @@ namespace AiksaurusGTK_impl
 		GtkTreeIter iter;
 		if (gtk_tree_selection_get_selected (sel, &model, &iter))
 		{
-            char* text;    
+            char* text;
             gtk_tree_model_get (model, 0, &text, -1);
 		    GdkEvent *e = gtk_get_current_event ();
             m->d_display._handleClick((e->type == GDK_2BUTTON_PRESS), text);

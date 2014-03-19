@@ -32,30 +32,30 @@ namespace AiksaurusGTK_impl
 {
     class DialogImpl : public DialogMediator
     {
-        private: 
+        private:
             GtkWidget* d_window_ptr;
             GtkWidget* d_layout_ptr;
             Toolbar* d_toolbar_ptr;
             Display* d_display_ptr;
             Replacebar* d_replacebar_ptr;
-            
+
             std::string d_replacement;
             std::string d_title;
             std::string d_initialMessage;
             bool d_showreplacebar;
-            
+
             static gint _closeDialog(GtkWidget *w, GdkEventAny *e, gpointer data);
             void _init();
-           
+
         public:
             DialogImpl();
             virtual ~DialogImpl();
-            
+
             const char* runThesaurus(const char* word) throw();
             void setTitle(const char* title) throw();
             void setReplacebar(bool replacebar) throw();
             void setInitialMessage(const char* message) throw(std::bad_alloc);
-            
+
             void eventCancel() throw();
             void eventReplace(const char* replacement) throw();
             void eventSelectWord(const char* word) throw();
@@ -64,41 +64,41 @@ namespace AiksaurusGTK_impl
 
 
     DialogImpl::DialogImpl()
-        : d_window_ptr(0), 
+        : d_window_ptr(0),
           d_title("Aiksaurus"),
           d_showreplacebar(true)
     {
-    
+
     }
 
-          
+
     DialogImpl::~DialogImpl()
     {
 
     }
- 
+
 
     void DialogImpl::setReplacebar(bool replacebar) throw()
     {
         d_showreplacebar = replacebar;
     }
 
-    
+
     void DialogImpl::setInitialMessage(const char* message) throw(std::bad_alloc)
     {
         d_initialMessage = message;
     }
-    
-    
-    gint DialogImpl::_closeDialog(GtkWidget *w, GdkEventAny *e, gpointer data)
+
+
+    gint DialogImpl::_closeDialog(GtkWidget *, GdkEventAny *, gpointer data)
     {
         DialogImpl* di = static_cast<DialogImpl*>(data);
         di->d_window_ptr = 0;
         gtk_main_quit();
         return 0;
     }
-    
-          
+
+
     void DialogImpl::_init()
     {
         if (d_window_ptr)
@@ -110,7 +110,7 @@ namespace AiksaurusGTK_impl
         {
             d_window_ptr = gtk_dialog_new();
             gtk_widget_realize(d_window_ptr);
-            
+
             d_layout_ptr = gtk_dialog_get_content_area (GTK_DIALOG(d_window_ptr));
 
             d_toolbar_ptr = new Toolbar(*this, d_window_ptr);
@@ -124,7 +124,7 @@ namespace AiksaurusGTK_impl
             gtk_box_pack_start(
                 GTK_BOX(d_layout_ptr), d_display_ptr->getDisplay(), 1, 1, 0
             );
-            
+
             if (d_showreplacebar)
             {
                 d_replacebar_ptr = new Replacebar(*this);
@@ -136,38 +136,38 @@ namespace AiksaurusGTK_impl
             {
                 d_replacebar_ptr = 0;
             }
-            
+
             //gtk_container_add(GTK_CONTAINER(d_window_ptr), d_layout_ptr);
 
             gtk_window_set_title(GTK_WINDOW(d_window_ptr), d_title.c_str());
 
             g_signal_connect(
-                G_OBJECT(d_window_ptr), "delete_event", 
+                G_OBJECT(d_window_ptr), "delete_event",
                 G_CALLBACK(_closeDialog), this
             );
         }
     }
-    
-       
+
+
     const char* DialogImpl::runThesaurus(const char* word) throw()
     {
         try {
-            
+
             _init();
-           
+
             if (word)
                eventSearch(word);
 
             else if (d_initialMessage != "")
                 d_display_ptr->showMessage(d_initialMessage.c_str());
-           
+
             gtk_widget_show_all(d_window_ptr);
             gtk_window_set_modal(GTK_WINDOW(d_window_ptr), true);
 
             gtk_main();
-    
+
             if (d_window_ptr)
-            {    
+            {
                 gtk_window_set_modal(GTK_WINDOW(d_window_ptr), false);
                 gtk_widget_hide(d_window_ptr);
             }
@@ -175,11 +175,11 @@ namespace AiksaurusGTK_impl
         catch(...) {
             std::cerr << "[AiksaurusGTK] runThesaurus() error, ignoring." << std::endl;
         }
-      
+
         return ((d_replacement == "") ? (word) : (d_replacement.c_str()));
     }
 
-    
+
     void DialogImpl::setTitle(const char* word) throw()
     {
         try {
@@ -189,14 +189,14 @@ namespace AiksaurusGTK_impl
             std::cerr << "[AiksaurusGTK] DialogImpl::setTitle() error, ignoring." << std::endl;
         }
     }
-    
-    
+
+
     void DialogImpl::eventCancel() throw()
     {
         gtk_main_quit();
     }
-   
-    
+
+
     void DialogImpl::eventReplace(const char* replacement) throw()
     {
         try {
@@ -207,15 +207,15 @@ namespace AiksaurusGTK_impl
         }
         gtk_main_quit();
     }
-   
-    
+
+
     void DialogImpl::eventSelectWord(const char* word) throw()
     {
         if (d_replacebar_ptr)
             d_replacebar_ptr->setText(word);
     }
-   
-    
+
+
     void DialogImpl::eventSearch(const char* word) throw()
     {
         try {
@@ -223,11 +223,11 @@ namespace AiksaurusGTK_impl
 
             if (w == "")
                 d_display_ptr->showMessage(d_initialMessage.c_str());
-           
+
             else {
                 d_toolbar_ptr->search(w.c_str());
                 d_display_ptr->search(w.c_str());
-   
+
                 if (d_replacebar_ptr)
                     d_replacebar_ptr->setText(w.c_str());
             }
@@ -238,44 +238,44 @@ namespace AiksaurusGTK_impl
         }
     }
 
-    
-    AiksaurusGTK::AiksaurusGTK() 
+
+    AiksaurusGTK::AiksaurusGTK()
         : d_impl_ptr(new DialogImpl())
     {
-        
+
     }
 
 
-    AiksaurusGTK::~AiksaurusGTK() 
+    AiksaurusGTK::~AiksaurusGTK()
     {
         delete d_impl_ptr;
     }
 
-    
-    void AiksaurusGTK::setTitle(const char* title) 
+
+    void AiksaurusGTK::setTitle(const char* title)
     {
         d_impl_ptr->setTitle(title);
     }
-    
 
-    void AiksaurusGTK::hideReplacebar() 
+
+    void AiksaurusGTK::hideReplacebar()
     {
         d_impl_ptr->setReplacebar(false);
     }
-    
+
 
     void AiksaurusGTK::showReplacebar()
     {
         d_impl_ptr->setReplacebar(true);
     }
 
-    
+
     void AiksaurusGTK::setInitialMessage(const char* message)
     {
         d_impl_ptr->setInitialMessage(message);
     }
-    
-        
+
+
     const char* AiksaurusGTK::runThesaurus(const char* word)
     {
         return d_impl_ptr->runThesaurus(word);

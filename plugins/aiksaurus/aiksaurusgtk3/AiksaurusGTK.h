@@ -29,19 +29,19 @@ namespace AiksaurusGTK_impl
         private:
             AiksaurusGTK(const AiksaurusGTK& rhs);
             AiksaurusGTK& operator=(const AiksaurusGTK& rhs);
-            
+
             DialogImpl* d_impl_ptr;
-            
+
         public:
             AiksaurusGTK();
             ~AiksaurusGTK();
-            
+
             void setTitle(const char* title);
-           
-            void setInitialMessage(const char* message); 
+
+            void setInitialMessage(const char* message);
             void showReplacebar();
             void hideReplacebar();
-            
+
             const char* runThesaurus(const char* word);
     };
 }

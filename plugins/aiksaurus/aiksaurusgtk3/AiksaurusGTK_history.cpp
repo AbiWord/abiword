@@ -28,7 +28,7 @@
 	#include <iostream>
 	using namespace std;
 #endif
-	
+
 //////////////////////////////////////////////////////////////////////////
 //                                                                      //
 //   Creation and Destruction                                           //
@@ -59,14 +59,14 @@ AiksaurusGTK_history::tip_forward() const
 {
 	static const char* forward = "Forward";
 	static const char* forwardto = "Forward to ";
-	
+
 	const char* nextone = d_forward.look_front();
 
 	if (!nextone)
 	{
 		return forward;
 	}
-	
+
 	if (d_forward_tip_ptr)
 		delete[] d_forward_tip_ptr;
 
@@ -80,39 +80,39 @@ AiksaurusGTK_history::tip_back() const
 {
 	static const char* back = "Back";
 	static const char* backto = "Back to ";
-	
+
 	const char* backone = d_back.look_front();
 
 	if (!backone)
 	{
 		return back;
 	}
-	
+
 	if (d_back_tip_ptr)
 	{
 		delete[] d_back_tip_ptr;
 		d_back_tip_ptr = 0;
 	}
-	
+
 	d_back_tip_ptr = AiksaurusGTK_strConcat(backto, backone);
 
 	return d_back_tip_ptr;
 }
 
 
-void 
+void
 AiksaurusGTK_history::search(const char* str)
 {
 	// eliminate all entries which are in forward.
 	d_forward.clear();
-	
+
 	// push current entry to top of back.
 	if (d_current_ptr != NULL)
 	{
 		d_back.push_front(d_current_ptr);
 		delete[] d_current_ptr;
 	}
-	
+
 	// make current element mirror str.
 	d_current_ptr = AiksaurusGTK_strCopy(str);
 }
@@ -124,17 +124,17 @@ AiksaurusGTK_history::move_back()
 	// make sure there is something to go back to before continuing.
 	if (!d_back.size())
 		return;
-		
+
 	// make current element become first element of forward.
 	d_forward.push_front(d_current_ptr);
 
     while (d_forward.size() > 200)
         d_forward.pop_back();
-    
+
 	// make first element of back become current.
 	delete[] d_current_ptr;
 	d_current_ptr = AiksaurusGTK_strCopy(d_back.look_front());
-	
+
 	// pop first element of back
 	d_back.pop_front();
 }
@@ -152,11 +152,11 @@ AiksaurusGTK_history::move_forward()
 
     while (d_back.size() > 200)
         d_back.pop_back();
-    
+
 	// make first element of forward become current.
 	delete[] d_current_ptr;
 	d_current_ptr = AiksaurusGTK_strCopy(d_forward.look_front());
-	
+
 	// pop first element of forward.
 	d_forward.pop_front();
 }
@@ -169,7 +169,7 @@ AiksaurusGTK_history::move_back_to(GList* element)
     for(GList* itor = const_cast<GList*>(d_back.list()); itor != NULL; itor = itor->next)
     {
         ++back_steps;
-        
+
         if (itor == element)
         {
             for(int i = 0;i < back_steps;++i)
@@ -178,7 +178,7 @@ AiksaurusGTK_history::move_back_to(GList* element)
             return;
         }
     }
-    
+
     #ifndef NDEBUG
     cout << "AiksaurusGTK_history::move_back_to(" << element << ")\n"
          << "Warning: element is not in back list, and it should be.\n";
@@ -203,7 +203,7 @@ AiksaurusGTK_history::move_forward_to(GList* element)
             return;
         }
     }
-    
+
     #ifndef NDEBUG
     cout << "AiksaurusGTK_history::move_forward_to(" << element << ")\n"
          << "Warning: element is not in forward list, and it should be.\n";
@@ -212,21 +212,21 @@ AiksaurusGTK_history::move_forward_to(GList* element)
 }
 
 
-unsigned int 
+unsigned int
 AiksaurusGTK_history::size_back() const
 {
 	return d_back.size();
 }
 
 
-unsigned int 
+unsigned int
 AiksaurusGTK_history::size_forward() const
 {
 	return d_forward.size();
 }
 
 
-const char* 
+const char*
 AiksaurusGTK_history::current() const
 {
 	return d_current_ptr;

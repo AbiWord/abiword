@@ -26,17 +26,17 @@
 // AiksaurusGTK_strEquals
 // ----------------------
 //   Returns true if lhs == rhs, false otherwise.
-//   
+//
 bool AiksaurusGTK_strEquals(const char* lhs, const char* rhs);
 
 
 //
 // AiksaurusGTK_strCopy
 // --------------------
-//   Creates a copy of the string str.  This copy must be 
+//   Creates a copy of the string str.  This copy must be
 //   delete[]'d by the caller, so use this function carefully.
 //   Returns NULL on memory alloc error.
-//   
+//
 char* AiksaurusGTK_strCopy(const char* str);
 
 
@@ -47,7 +47,7 @@ char* AiksaurusGTK_strCopy(const char* str);
 //   must be delete[]'d by the caller, so use this function
 //   carefully.
 //   Returns NULL on memory alloc error.
-//   
+//
 char* AiksaurusGTK_strConcat(const char* a, const char* b);
 
 

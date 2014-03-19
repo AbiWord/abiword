@@ -27,13 +27,13 @@ namespace AiksaurusGTK_impl
     {
         private:
             const char* d_description;
-           
+
         public:
-            
+
             Exception(const char* description) throw()
                 : d_description(description) { }
-            
-            const char* getDescription() const throw() 
+
+            const char* getDescription() const throw()
                 { return d_description; }
 
             static const char* CANNOT_ALLOCATE_MEMORY;

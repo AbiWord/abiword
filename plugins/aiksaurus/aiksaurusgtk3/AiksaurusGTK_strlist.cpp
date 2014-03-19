@@ -39,7 +39,7 @@ AiksaurusGTK_strlist::AiksaurusGTK_strlist()
 
 AiksaurusGTK_strlist::~AiksaurusGTK_strlist()
 {
-	clear();	
+	clear();
 }
 
 
@@ -50,14 +50,14 @@ AiksaurusGTK_strlist::~AiksaurusGTK_strlist()
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
-const GList* 
+const GList*
 AiksaurusGTK_strlist::list() const
 {
 	return d_front_ptr;
 }
 
 
-unsigned int 
+unsigned int
 AiksaurusGTK_strlist::size() const
 {
 	return d_size;
@@ -76,7 +76,7 @@ AiksaurusGTK_strlist::look_back() const
 const char*
 AiksaurusGTK_strlist::look_front() const
 {
-	return (d_front_ptr) 
+	return (d_front_ptr)
 		? (static_cast<char*>(d_front_ptr->data))
 		: (static_cast<char*>(NULL));
 }
@@ -89,7 +89,7 @@ AiksaurusGTK_strlist::look_front() const
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
-GList* 
+GList*
 AiksaurusGTK_strlist::create_node(const char* str) const
 {
 	char* x = AiksaurusGTK_strCopy(str);
@@ -100,20 +100,20 @@ AiksaurusGTK_strlist::create_node(const char* str) const
 }
 
 
-void 
+void
 AiksaurusGTK_strlist::free_data(GList* node) const
 {
 	delete[] static_cast<char*>(node->data);
 }
 
 
-void 
+void
 AiksaurusGTK_strlist::remove_node(GList* node)
 {
 	// get pointers to the nodes we need to join.
 	GList* node_next = node->next;
 	GList* node_prev = node->prev;
-	
+
 	// if this is in the middle, we need to reassign both pointers.
 	if ((node != d_front_ptr) && (node != d_back_ptr))
 	{
@@ -121,41 +121,41 @@ AiksaurusGTK_strlist::remove_node(GList* node)
 		node_prev->next = node_next;
 	}
 
-	
+
 	// else if front of list, we want to reassign front to be
 	// the new front.
 	if (node == d_front_ptr)
 	{
 		d_front_ptr = node_next;
-	
+
 		if (node_next)
 			node_next->prev = static_cast<GList*>(NULL);
 	}
 
-	
+
 	// similarly, if back of list, we want to reassign
 	// back to be the new back.
 	if (node == d_back_ptr)
 	{
 		d_back_ptr = node_prev;
-		
+
 		if (node_prev)
 			node_prev->next = static_cast<GList*>(NULL);
 	}
-	
-	
+
+
 	// delete the node itself.
 	free_data(node);
 	node->prev = node->next = static_cast<GList*>(NULL);
 	g_list_free(node);
-	
-	
+
+
 	// mark that we have deleted the node by reducing our size by one.
 	d_size--;
 }
 
 
-void 
+void
 AiksaurusGTK_strlist::clear()
 {
 	for(GList* iterator = d_front_ptr; iterator != static_cast<GList*>(NULL); iterator = iterator->next)
@@ -176,12 +176,12 @@ AiksaurusGTK_strlist::clear()
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
-void 
+void
 AiksaurusGTK_strlist::push_front(const char* str)
 {
 	// create new node from string.
 	GList* node = create_node(str);
-	
+
 	// if nodes exist, prepend node to begin of list.
 	if (d_front_ptr)
 	{
@@ -194,13 +194,13 @@ AiksaurusGTK_strlist::push_front(const char* str)
 	else
 	{
 		d_front_ptr = d_back_ptr = node;
-	}	
+	}
 
 	// we have now added a node, so increase size by 1.
 	d_size++;
 }
 
-void 
+void
 AiksaurusGTK_strlist::push_back(const char* str)
 {
 	// create new node from string.
@@ -231,18 +231,18 @@ void
 AiksaurusGTK_strlist::pop_front()
 {
 	// first ensure that we have elements.  if not, nothing to do.
-	if (!d_front_ptr) 
+	if (!d_front_ptr)
 		return;
-	
+
 	remove_node(d_front_ptr);
 }
 
 
-void 
+void
 AiksaurusGTK_strlist::pop_back()
 {
 	// first ensure that we have elements.  if not, nothing to do.
-	if (!d_back_ptr) 
+	if (!d_back_ptr)
 		return;
 
 	remove_node(d_back_ptr);

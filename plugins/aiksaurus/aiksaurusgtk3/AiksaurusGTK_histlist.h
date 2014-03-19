@@ -30,11 +30,11 @@ class AiksaurusGTK_histlist
 
 		AiksaurusGTK_strlist* d_list_ptr;
 		unsigned int d_maxElements;
-		
+
 		// Prevent copying and assignment.
 		AiksaurusGTK_histlist(const AiksaurusGTK_histlist& rhs);
 		const AiksaurusGTK_histlist& operator=(const AiksaurusGTK_histlist& rhs);
-		
+
 	public:
 
 		AiksaurusGTK_histlist(unsigned int maxElements);
@@ -42,7 +42,7 @@ class AiksaurusGTK_histlist
 
 		void addItem(const char* str);
 
-		const GList* list() const;	
+		const GList* list() const;
 
 		#ifndef NDEBUG
 		void debug();

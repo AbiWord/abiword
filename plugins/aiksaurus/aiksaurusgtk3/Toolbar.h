@@ -28,7 +28,7 @@
 
 class AiksaurusGTK_picbutton;
 
-namespace AiksaurusGTK_impl 
+namespace AiksaurusGTK_impl
 {
 
     class DialogMediator;
@@ -61,15 +61,15 @@ namespace AiksaurusGTK_impl
 
             static void _backClicked(GtkWidget* w, gpointer data) throw();
             static void _backMenuClicked(GList* element, gpointer data) throw();
-            
+
             static void _forwardClicked(GtkWidget* w, gpointer data) throw();
-            static void _forwardMenuClicked(GList* element, gpointer data) throw(); 
+            static void _forwardMenuClicked(GList* element, gpointer data) throw();
 
             static void _searchBarChanged(GtkWidget* w, gpointer data) throw();
             static void _searchBarShow(GtkWidget* w, gpointer data) throw();
             static void _searchBarHide(GtkWidget* w, gpointer data) throw();
-            static void _searchBarActivate(GtkWidget* w, gpointer d) throw(); 
-            
+            static void _searchBarActivate(GtkWidget* w, gpointer d) throw();
+
             static void _searchClicked(GtkWidget* w, gpointer data) throw();
 
         public:

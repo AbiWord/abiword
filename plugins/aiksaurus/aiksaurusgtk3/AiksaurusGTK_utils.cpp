@@ -32,13 +32,13 @@ bool AiksaurusGTK_strEquals(const char* lhs, const char* rhs)
 {
 	if ((!lhs) || (!rhs))
 		return (lhs == rhs);
-	
+
 	register int i = 0;
 	while(lhs[i] != '\0')
 	{
 		if (rhs[i] != lhs[i])
 			return false;
-		
+
 		++i;
 	}
 
@@ -47,18 +47,18 @@ bool AiksaurusGTK_strEquals(const char* lhs, const char* rhs)
 
 
 char* AiksaurusGTK_strCopy(const char* str)
-{	
+{
 	char* ret;
-	
+
 	if (!str)
 	{
 		ret = new(std::nothrow) char[1];
-		
+
 		if (!ret)
 			return ret;
-		
+
 		ret[0] = '\0';
-		
+
 	}
 
 	else
@@ -66,10 +66,10 @@ char* AiksaurusGTK_strCopy(const char* str)
 		const int len = strlen(str);
 
 		ret = new(std::nothrow) char[len+1];
-	
+
 		if (!ret)
 			return ret;
-		
+
 		for(register int i = 0;i < len;++i)
 		{
 			ret[i] = str[i];
@@ -93,19 +93,19 @@ char* AiksaurusGTK_strConcat(const char* a, const char* b)
 		return ret;
 
 	register int i = 0;
-	
+
 	while(i < len_a)
 	{
 		ret[i] = a[i];
 		++i;
 	}
-	
+
 	while(i < len_b + len_a)
 	{
 		ret[i] = b[i - len_a];
 		++i;
 	}
-	
+
 	ret[len_a + len_b] = '\0';
 
 	return ret;

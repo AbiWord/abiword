@@ -26,7 +26,7 @@
 class AiksaurusGTK_history
 {
 	private:
-		
+
 		AiksaurusGTK_strlist d_back;
 		AiksaurusGTK_strlist d_forward;
 
@@ -36,34 +36,34 @@ class AiksaurusGTK_history
 		char* d_current_ptr;
 
         int d_maxentries;
-        
+
 		mutable char* d_forward_tip_ptr;
 		mutable char* d_back_tip_ptr;
-		
+
 	public:
 
 		AiksaurusGTK_history();
 		~AiksaurusGTK_history();
 
 		void search(const char* str);
-		
+
 		void move_back();
 		void move_forward();
 
         void move_back_to(GList* element);
         void move_forward_to(GList* element);
-        
+
 		const char* tip_back() const;
 		const char* tip_forward() const;
-		
+
 		const char* current() const;
-		
+
 		unsigned int size_back() const;
 		unsigned int size_forward() const;
-	
+
 		const AiksaurusGTK_strlist& list_back() const;
 		const AiksaurusGTK_strlist& list_forward() const;
-		
+
 		#ifndef NDEBUG
 		void debug();
 		#endif

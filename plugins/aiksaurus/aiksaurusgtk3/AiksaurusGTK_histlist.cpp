@@ -43,7 +43,7 @@ AiksaurusGTK_histlist::~AiksaurusGTK_histlist()
 void AiksaurusGTK_histlist::addItem(const char* str)
 {
 	d_list_ptr->remove_first(str);
-	
+
 	d_list_ptr->push_front(str);
 
 	if (d_list_ptr->size() > d_maxElements)
