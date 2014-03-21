@@ -1,6 +1,6 @@
 
 aiksaurus_pkgs="aiksaurus-1.0"
-# aiksaurus_gtk_pkgs="gaiksaurus-1.0"
+aiksaurus_gtk_pkgs="aiksaurusgtk3-1.0"
 aiksaurus_deps="no"
 
 if test "$enable_aiksaurus" != ""; then
@@ -17,12 +17,23 @@ fi
 if test "$enable_aiksaurus" = "yes" || \
    test "$aiksaurus_deps" = "yes"; then
 
+use_builtin_aiksaurus_gtk="no"
+if test "$TOOLKIT" = "gtk"; then
+PKG_CHECK_EXISTS([ $aiksaurus_gtk_pkgs ], 
+[
+  aiksaurus_pkgs="$aiksaurus_pkgs $aiksaurus_gtk_pkgs"
+], [use_builtin_aiksaurus_gtk="yes"])
+fi
+
+AM_CONDITIONAL([WITH_BUILTIN_AIKSAURUS_GTK],[ test "x$use_builtin_aiksaurus_gtk" = "xyes" ])
+
 if test "$enable_aiksaurus_builtin" = "yes"; then
 AC_MSG_ERROR([aiksaurus plugin: static linking not supported])
 fi
 
 PKG_CHECK_MODULES(AIKSAURUS,[ $aiksaurus_pkgs ])
 
+  
 test "$enable_aiksaurus" = "auto" && PLUGINS="$PLUGINS aiksaurus"
 
 AIKSAURUS_CFLAGS="$AIKSAURUS_CFLAGS "'${PLUGIN_CFLAGS}'

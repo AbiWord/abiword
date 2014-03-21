@@ -27,9 +27,9 @@ using namespace std;
 // AiksaurusGTK_menudata class
 // ---------------------------
 //   This is a hack job that allows us to pass more info through
-//   the gtk callback functions.  
+//   the gtk callback functions.
 //
-//   See the comments in the menu functions below for an explanation of why 
+//   See the comments in the menu functions below for an explanation of why
 //   this is here and what it is used for.
 //
 class AiksaurusGTK_menudata
@@ -57,8 +57,6 @@ class AiksaurusGTK_menudata
 AiksaurusGTK_picbutton::AiksaurusGTK_picbutton(GtkWidget *window, const char* stock)
 {
 	d_window_ptr = window;
-	d_style_ptr = gtk_widget_get_style(window);
-
 
     // Initialize with no menu stuff at all.
 	d_hasmenu = false;
@@ -74,12 +72,12 @@ AiksaurusGTK_picbutton::AiksaurusGTK_picbutton(GtkWidget *window, const char* st
 
 	d_button_ptr = gtk_button_new();
 	gtk_widget_show(d_button_ptr);
-	gtk_widget_set_can_focus (d_button_ptr, false); 
-	
-	d_pixmap_ptr = gtk_image_new_from_stock(stock,GTK_ICON_SIZE_SMALL_TOOLBAR);
+	gtk_widget_set_can_focus (d_button_ptr, false);
+
+	d_pixmap_ptr = gtk_image_new_from_icon_name(stock,GTK_ICON_SIZE_SMALL_TOOLBAR);
 
 	gtk_widget_show(d_pixmap_ptr);
-	
+
 	gtk_container_add(
 		GTK_CONTAINER(d_button_ptr),
 		d_pixmap_ptr
@@ -110,12 +108,12 @@ AiksaurusGTK_picbutton::~AiksaurusGTK_picbutton()
 {
     // TO DO: what if this is null?
     gtk_widget_destroy(d_menu_ptr);
-    
+
     if (d_menu_data_ptr != NULL)
         delete[] d_menu_data_ptr;
 }
 
-GtkWidget* 
+GtkWidget*
 AiksaurusGTK_picbutton::getButton()
 {
 	return d_button_ptr;
@@ -266,7 +264,7 @@ void
 AiksaurusGTK_picbutton::popMenu()
 {
 	d_menushowing = true;
-	
+
     gtk_menu_popup(
 		GTK_MENU(d_menu_ptr),
 		NULL,
@@ -281,7 +279,7 @@ AiksaurusGTK_picbutton::popMenu()
 
 //
 // popupFunction: invoked by gtk_menu_popup in popMenu().
-//   Calculates the coordinates for the popup menu to appear at. 
+//   Calculates the coordinates for the popup menu to appear at.
 //
 void
 AiksaurusGTK_picbutton::popupFunction(int* x, int* y)
@@ -304,13 +302,13 @@ AiksaurusGTK_picbutton::selectionDone()
 }
 
 
-// 
+//
 // cbMenuActivate: invoked when menu option is clicked.
 //  gpointer is a pointer-to-AiksaurusGTK_menudata (implemented at top of file).
 //  just call menuActivate on the correct picbutton.
 //
-void 
-AiksaurusGTK_picbutton::cbMenuActivate(GtkMenuItem* item, gpointer data)
+void
+AiksaurusGTK_picbutton::cbMenuActivate(GtkMenuItem*, gpointer data)
 {
     static_cast<AiksaurusGTK_menudata*>(data)->d_picbutton_ptr->menuActivate(data);
 }
@@ -319,7 +317,7 @@ AiksaurusGTK_picbutton::cbMenuActivate(GtkMenuItem* item, gpointer data)
 // menuActivate: invoked by cbMenuActivate
 //  gpointer is pointer-to-AiksaurusGTK_menudata (implemented at top of file).
 //  call a callback function of the form
-//     void callback(GList* entry, gpointer data) 
+//     void callback(GList* entry, gpointer data)
 //  where 'data' is user-data send to addMenu function.
 //
 typedef void (*AikCallbackFn)(gpointer, gpointer);
@@ -335,7 +333,7 @@ AiksaurusGTK_picbutton::menuActivate(gpointer item)
 }
 
 
-// 
+//
 // addMenu function: invoked by user.
 //   add a menu button to the picbutton and prepare for running a menu.
 //
@@ -438,7 +436,7 @@ AiksaurusGTK_picbutton::updateMenuOptions()
             if (i >= d_numVisible)
                 break;
         }
-        
+
         d_menu_data_ptr[i].d_picbutton_ptr = this;
         d_menu_data_ptr[i].d_glist_ptr = itor;
 
@@ -469,27 +467,27 @@ AiksaurusGTK_picbutton::updateMenuOptions()
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
-void AiksaurusGTK_picbutton::cbHover(GtkWidget* w, gpointer data)
+void AiksaurusGTK_picbutton::cbHover(GtkWidget*, gpointer data)
 {
 	static_cast<AiksaurusGTK_picbutton*>(data)->hover();
 }
 
-void AiksaurusGTK_picbutton::cbUnhover(GtkWidget* w, gpointer data)
+void AiksaurusGTK_picbutton::cbUnhover(GtkWidget*, gpointer data)
 {
 	static_cast<AiksaurusGTK_picbutton*>(data)->unhover();
 }
 
-void AiksaurusGTK_picbutton::cbPopMenu(GtkWidget* w, gpointer data)
+void AiksaurusGTK_picbutton::cbPopMenu(GtkWidget*, gpointer data)
 {
 	static_cast<AiksaurusGTK_picbutton*>(data)->popMenu();
 }
 
-void AiksaurusGTK_picbutton::cbPopupFunction(GtkMenu* menu, int* x, int* y, gboolean* notUsedBool, gpointer data)
+void AiksaurusGTK_picbutton::cbPopupFunction(GtkMenu*, int* x, int* y, gboolean*, gpointer data)
 {
 	static_cast<AiksaurusGTK_picbutton*>(data)->popupFunction(x, y);
 }
 
-void AiksaurusGTK_picbutton::cbSelectionDone(GtkMenuShell* menushell, gpointer data)
+void AiksaurusGTK_picbutton::cbSelectionDone(GtkMenuShell*, gpointer data)
 {
 	static_cast<AiksaurusGTK_picbutton*>(data)->selectionDone();
 }

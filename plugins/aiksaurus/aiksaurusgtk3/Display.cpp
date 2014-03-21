@@ -33,37 +33,34 @@ namespace AiksaurusGTK_impl
         : d_mediator(mediator)
     {
         // ensure that styles are set up.
-        _initResources(); 
+ //       _initResources();
 
-        // create our scrollbar. we'll wrap this around all of our 
+        // create our scrollbar. we'll wrap this around all of our
         // meanings to create a really nice look.  We'll also set up
         // an initial size (the usize call) so that it won't start
-        // out all squnched together.  
+        // out all squnched together.
         d_scroller = gtk_scrolled_window_new(0, 0);
         gtk_widget_set_size_request(d_scroller, 360, 240);
         gtk_scrolled_window_set_policy(
-            GTK_SCROLLED_WINDOW(d_scroller), 
+            GTK_SCROLLED_WINDOW(d_scroller),
             GTK_POLICY_NEVER,       // no horizontal scrollbar.
             GTK_POLICY_AUTOMATIC    // auto vertical scrollbar
         );
-        
+
         // our main scrolling widget will be an event box with a white
         // background.  this way, when the window is larger than all the
-        // meanings, we don't get a big ugly gray blob at the bottom. 
-        // we must use an event box rather than setting d_layout to 
-        // white because boxes are transparent and you can't set a 
+        // meanings, we don't get a big ugly gray blob at the bottom.
+        // we must use an event box rather than setting d_layout to
+        // white because boxes are transparent and you can't set a
         // background color on them.
         d_white = gtk_event_box_new();
         gtk_widget_set_name(d_white, "wbg");
-        gtk_scrolled_window_add_with_viewport(
-            GTK_SCROLLED_WINDOW(d_scroller),
-            d_white
-        );
+        gtk_container_add(GTK_CONTAINER(d_scroller), d_white);
 
         d_layout = 0;
     }
 
-    
+
     Display::~Display() throw()
     {
         for(int i = 0;i < static_cast<int>(d_meanings.size());++i)
@@ -72,7 +69,7 @@ namespace AiksaurusGTK_impl
         }
     }
 
-    
+
     void Display::_createMeaning(const string& title, vector<string>& words)
         throw(std::bad_alloc)
     {
@@ -80,15 +77,15 @@ namespace AiksaurusGTK_impl
         d_meanings.push_back(mean);
         gtk_box_pack_start(GTK_BOX(d_layout), mean->getLayout(), 0, 0, 0);
     }
-   
-    
+
+
     void Display::_resetDisplay() throw()
     {
         // Recreate our layout widget.
         if (d_layout)
             gtk_container_remove(GTK_CONTAINER(d_white), d_layout);
 
-        d_layout = gtk_vbox_new(false, 0);
+        d_layout = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
         gtk_container_add(GTK_CONTAINER(d_white), d_layout);
 
         // Clear out meanings.
@@ -98,16 +95,16 @@ namespace AiksaurusGTK_impl
         }
         d_meanings.clear();
     }
-       
+
     void Display::_displayResults(const char* word) throw(Exception, std::bad_alloc)
     {
         _checkThesaurus();
-        
+
         string title;
         vector<string> words;
-        
+
         int meaning, prev_meaning = -1;
-        for(const char* r = d_thesaurus.next(meaning); 
+        for(const char* r = d_thesaurus.next(meaning);
             r[0]; r = d_thesaurus.next(meaning))
         {
             _checkThesaurus();
@@ -123,7 +120,7 @@ namespace AiksaurusGTK_impl
 
                 string option1(r);
                 string option2(d_thesaurus.next(meaning));
-                title = strcasecmp(option1.c_str(), word) 
+                title = strcasecmp(option1.c_str(), word)
                     ? (option1) : (option2);
 
                 r = d_thesaurus.next(meaning);
@@ -135,9 +132,9 @@ namespace AiksaurusGTK_impl
 
         _createMeaning(title, words);
     }
-   
 
-    
+
+
     void Display::_checkThesaurus() throw(Exception)
     {
         if (d_thesaurus.error()[0])
@@ -146,13 +143,13 @@ namespace AiksaurusGTK_impl
             /*
             GtkWidget* err = gtk_label_new(d_thesaurus.error());
             gtk_label_set_justify(GTK_LABEL(err), GTK_JUSTIFY_LEFT);
-            gtk_box_pack_start(GTK_BOX(d_layout), err, 0, 0, 0);  
+            gtk_box_pack_start(GTK_BOX(d_layout), err, 0, 0, 0);
             gtk_widget_show_all(d_layout);
             */
             throw Exception(d_thesaurus.error());
         }
     }
-    
+
     void Display::_displayAlternatives()
         throw(Exception, std::bad_alloc)
     {
@@ -166,8 +163,8 @@ namespace AiksaurusGTK_impl
 
         _createMeaning("No Synonyms Known.  Nearby words:", words);
     }
-    
-   
+
+
     void Display::showMessage(const char* message) throw()
     {
         _resetDisplay();
@@ -176,10 +173,10 @@ namespace AiksaurusGTK_impl
         gtk_box_pack_start(GTK_BOX(d_layout), label, 1, 1, 0);
         gtk_widget_show_all(d_layout);
     }
-    
+
     void Display::search(const char* word) throw(std::bad_alloc)
     {
-        try 
+        try
         {
             _resetDisplay();
             _checkThesaurus();
@@ -188,7 +185,7 @@ namespace AiksaurusGTK_impl
                 _displayResults(word);
             else
                 _displayAlternatives();
-        
+
             gtk_widget_show_all(d_layout);
         }
         catch(Exception& e)
@@ -208,7 +205,7 @@ namespace AiksaurusGTK_impl
             d_mediator.eventSelectWord(str.c_str());
     }
 
-    
+
     void Display::_handleSelection(GtkWidget* list) throw()
     {
         for(int i = 0;i < static_cast<int>(d_meanings.size());++i)
@@ -217,21 +214,22 @@ namespace AiksaurusGTK_impl
         }
     }
 
-    
+
     GtkWidget* Display::getDisplay() throw()
     {
         return d_scroller;
     }
 
-    
+
     const Aiksaurus& Display::getThesaurus() const throw()
     {
         return d_thesaurus;
     }
 
 
-    //
-    // We use GTK styles to get the nice colors for our display.  
+#if 0
+	//
+    // We use GTK styles to get the nice colors for our display.
     // To do this, we have to set up a resource first so that the
     // styles mean what we want them to mean.
     //
@@ -243,7 +241,7 @@ namespace AiksaurusGTK_impl
         done = true;
 
         // Resource string to control colors and fonts of display pane.
-        const char* rcstring = 
+        const char* rcstring =
             "style \"white_background\" {\n"
             "   bg[NORMAL] = \"#ffffff\" \n"
             "}\n"
@@ -259,7 +257,8 @@ namespace AiksaurusGTK_impl
             "widget \"*mst\" style \"meaningset_title\"\n";
 
         // Parse this resource string.
-        gtk_rc_parse_string(rcstring);  
+        gtk_rc_parse_string(rcstring);
     }
+#endif
 
 }

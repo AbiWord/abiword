@@ -8,7 +8,7 @@
 #include <new>
 #include "Exception.h"
 
-namespace AiksaurusGTK_impl 
+namespace AiksaurusGTK_impl
 {
     class DialogMediator;
     class Meaning;
@@ -21,7 +21,7 @@ namespace AiksaurusGTK_impl
             Display& operator=(const Display& rhs);
 
             DialogMediator& d_mediator;
-        
+
             Aiksaurus d_thesaurus;
             GtkWidget* d_scroller;
             GtkWidget* d_white;
@@ -30,23 +30,23 @@ namespace AiksaurusGTK_impl
 
             void _handleSelection(GtkWidget* list) throw();
             void _handleClick(bool isDoubleClick, const char* text) throw(std::bad_alloc);
-        
+
             void _resetDisplay() throw();
-            
-            void _createMeaning(const std::string& title, std::vector<std::string>& words) 
+
+            void _createMeaning(const std::string& title, std::vector<std::string>& words)
                 throw(std::bad_alloc);
-            
+
             void _displayResults(const char* word) throw(Exception, std::bad_alloc);
             void _displayAlternatives() throw(Exception, std::bad_alloc);
-            
+
             void _checkThesaurus() throw(Exception);
-            
-            static void _initResources() throw();
+
+//            static void _initResources() throw();
 
         public:
             Display(DialogMediator& parent) throw();
             ~Display() throw();
-        
+
             const Aiksaurus& getThesaurus() const throw();
             GtkWidget* getDisplay() throw();
 

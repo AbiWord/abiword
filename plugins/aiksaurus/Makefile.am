@@ -1,8 +1,12 @@
 SUBDIRS =
 
 if TOOLKIT_GTK
+
+if WITH_BUILTIN_AIKSAURUS_GTK
 SUBDIRS += aiksaurusgtk3
 platform_lib = aiksaurusgtk3/libAiksaurusGtk3.la
+endif
+
 endif
 
 DIST_SUBDIRS = win aiksaurusgtk3 xp

@@ -22,82 +22,82 @@
 #include "DialogMediator.h"
 #include <gdk/gdkkeysyms.h>
 
-namespace AiksaurusGTK_impl 
+namespace AiksaurusGTK_impl
 {
 
     Replacebar::Replacebar(DialogMediator& mediator) throw()
         : d_mediator(mediator)
     {
         // Build GUI widgets.
-	    d_replacebar_ptr = gtk_hbox_new(false, 4);
+	    d_replacebar_ptr = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
     	d_replacewith_label_ptr = gtk_label_new("  Replace with:");
 	    d_replacewith_ptr = gtk_entry_new();
-    	d_replacebutton_hold_ptr = gtk_hbox_new(true, 4);
+    	d_replacebutton_hold_ptr = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 4);
 	    d_replacebutton_ptr = gtk_button_new_with_label("  Replace  ");
         d_cancelbutton_ptr = gtk_button_new_with_label("Cancel");
-        
+
         // Add them to the main hbox.
         gtk_box_pack_start(GTK_BOX(d_replacebar_ptr), d_replacewith_label_ptr, 0, 0, 0);
         gtk_box_pack_start(GTK_BOX(d_replacebar_ptr), d_replacewith_ptr, 0, 0, 2);
 	    gtk_box_pack_end(GTK_BOX(d_replacebar_ptr),	d_replacebutton_hold_ptr, 0, 0, 5);
     	gtk_box_pack_start(GTK_BOX(d_replacebutton_hold_ptr), d_replacebutton_ptr, 0, 0, 0);
         gtk_box_pack_start(GTK_BOX(d_replacebutton_hold_ptr), d_cancelbutton_ptr, 1, 1, 0);
-   
-        // Connect relevant signals. 
+
+        // Connect relevant signals.
         g_signal_connect(
             G_OBJECT(d_replacewith_ptr), "key-press-event",
-	    	G_CALLBACK(_keyPressed), this	
+	    	G_CALLBACK(_keyPressed), this
     	);
 	    g_signal_connect(
     		G_OBJECT(d_replacebutton_ptr), "clicked",
-    		G_CALLBACK(_replaceClicked), this	
+    		G_CALLBACK(_replaceClicked), this
     	);
 	    g_signal_connect(
-            G_OBJECT(d_cancelbutton_ptr), "clicked", 
-            G_CALLBACK(_cancelClicked), this	
+            G_OBJECT(d_cancelbutton_ptr), "clicked",
+            G_CALLBACK(_cancelClicked), this
     	);
     }
 
-    
+
     Replacebar::~Replacebar() throw()
     {
 
     }
 
-    void Replacebar::_cancelClicked(GtkWidget* w, gpointer data)
+    void Replacebar::_cancelClicked(GtkWidget*, gpointer data)
     {
         Replacebar* rb = static_cast<Replacebar*>(data);
         rb->d_mediator.eventCancel();
     }
 
-    
-    void Replacebar::_replaceClicked(GtkWidget* w, gpointer data)
-    {   
+
+    void Replacebar::_replaceClicked(GtkWidget*, gpointer data)
+    {
         Replacebar* rb = static_cast<Replacebar*>(data);
         rb->d_mediator.eventReplace( rb->getText() );
     }
 
-    
+
     void Replacebar::_keyPressed(GtkWidget* w, GdkEventKey* k, gpointer data)
     {
         if (k->keyval == GDK_KEY_Return)
             _replaceClicked(w, data);
     }
 
-    
+
     GtkWidget* Replacebar::getReplacebar() throw()
     {
         return d_replacebar_ptr;
     }
-    
-    
+
+
     const char* Replacebar::getText() const throw()
     {
         return gtk_entry_get_text(GTK_ENTRY(d_replacewith_ptr));
     }
 
-    
-    void Replacebar::setText(const char* word) throw() 
+
+    void Replacebar::setText(const char* word) throw()
     {
         gtk_entry_set_text(GTK_ENTRY(d_replacewith_ptr), word);
     }

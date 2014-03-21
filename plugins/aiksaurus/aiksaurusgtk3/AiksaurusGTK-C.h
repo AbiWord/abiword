@@ -30,14 +30,14 @@ extern "C" {
 
     void AiksaurusGTK_setTitle(const char* title);
     void AiksaurusGTK_setInitialMessage(const char* message);
-      
+
     void AiksaurusGTK_showReplacebar();
     void AiksaurusGTK_hideReplacebar();
 
     const char* AiksaurusGTK_runThesaurus(const char* word);
 
-#if defined (__cplusplus)    
+#if defined (__cplusplus)
 }
 #endif
 
-#endif 
+#endif
