@@ -53,6 +53,15 @@ bool ODe_ThumbnailsWriter::writeThumbnails(PD_Document* /*pDoc*/, GsfOutfile* oo
 	}
 
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
+    // not sure we have a frame e.g. when running abiword -t odt myfile.abw
+    if (!pFrame)
+    {
+        gsf_output_close(thumbnail);
+        gsf_output_close(thumbnailsDir);
+        /* return true because it's better to export a file without thumbnails
+         * than no file at all */
+        return true;
+    }
     FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
 
     GR_Graphics* pVG = pView->getGraphics();
