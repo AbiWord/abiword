@@ -60,11 +60,14 @@ FV_UnixSelectionHandles::FV_UnixSelectionHandles(FV_View *view, FV_Selection sel
 		XAP_UnixFrameImpl * pFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
 		GtkWidget * pWidget = pFrameImpl->getViewWidget();
 
-		m_text_handle = _fv_text_handle_new (pWidget);
-		_fv_text_handle_set_relative_to (m_text_handle,
-						 gtk_widget_get_window (pWidget));
-		g_signal_connect (m_text_handle, "handle-dragged",
-				  G_CALLBACK(handle_dragged_cb), this);
+		if (pWidget)
+		{
+			m_text_handle = _fv_text_handle_new (pWidget);
+			_fv_text_handle_set_relative_to (m_text_handle,
+							 gtk_widget_get_window (pWidget));
+			g_signal_connect (m_text_handle, "handle-dragged",
+					  G_CALLBACK(handle_dragged_cb), this);
+		}
 	}
 }
 
