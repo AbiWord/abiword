@@ -6181,6 +6181,7 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 	pDialog->setDoc(pView);
 	if(pView->isSelectionEmpty())
 	{
+		const char *buf;
 		fp_HyperlinkRun * pHRun = static_cast<fp_HyperlinkRun *>(pView->getHyperLinkRun(pView->getPoint()));
 		if(pHRun == NULL)
 		{
@@ -6188,8 +6189,12 @@ static bool s_doHyperlinkDlg(FV_View * pView)
 			return false;
 		}
 		bEdit = true;
-		sTarget = pHRun->getTarget();
-		sTitle = pHRun->getTitle();
+		buf = pHRun->getTarget();
+		if (buf != NULL)
+			sTarget = buf;
+		buf = pHRun->getTitle();
+		if (buf != NULL)
+			sTitle = buf;
 		fl_BlockLayout * pBL = pHRun->getBlock();
 		fp_Run * pRun = NULL;
 		if(pHRun->isStartOfHyperlink())
