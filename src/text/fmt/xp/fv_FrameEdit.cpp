@@ -1262,7 +1262,6 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		}
 		m_pView->notifyListeners(AV_CHG_HDRFTR);
 		m_pView->_fixInsertionPointCoords();
-		m_pView->_ensureInsertionPointOnScreen();
 //
 // If this was a drag following the initial click, wrap it in a 
 // endUserAtomicGlob so it undo's in a single click.
@@ -1286,6 +1285,8 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 			m_pFrameContainer = static_cast<fp_FrameContainer *>(m_pFrameLayout->getFirstContainer());
 		drawFrame(true);
 		m_bFirstDragDone = false;
+		// This must be done after painting because it will finish the cairo surface, see #13622
+		m_pView->_ensureInsertionPointOnScreen();
 	}
 	m_bFirstDragDone = false;
 }
