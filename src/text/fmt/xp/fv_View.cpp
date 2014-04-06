@@ -8766,7 +8766,6 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 				posEnd = posEndTable -1;
 			}
 			// Do the actual change
-			bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionCell);	
 			UT_GenericVector<fl_BlockLayout*> vBlock;
 			getBlocksInSelection(&vBlock);
 			fl_ContainerLayout * pCL = NULL;
@@ -8778,19 +8777,21 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 				pCL = pBL->myContainingLayout();
 				if(pCL->getContainerType() == FL_CONTAINER_CELL)
 				{
+					PT_DocPosition pos = pBL->getPosition();
+					if (pos >= posStart && pos <= posEnd)
+						bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,properties,PTX_SectionCell);	
 					if(static_cast<fl_CellLayout *>(pCL) != pCell)
 					{
 						if(pFG != NULL)
 						{
 							pCell = static_cast<fl_CellLayout *>(pCL);
-							pFG->insertAtStrux(m_pDoc,72,pBL->getPosition(),
-										   PTX_SectionCell,sDataID.c_str());
+							pFG->insertAtStrux(m_pDoc,72,pos,PTX_SectionCell,sDataID.c_str());
 						}
 						else
 						{
 							const gchar * attributes[3] = {
 							PT_STRUX_IMAGE_DATAID,NULL,NULL};
-							bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pBL->getPosition(),pBL->getPosition(),attributes,NULL,PTX_SectionCell);	
+							bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pos,pos,attributes,NULL,PTX_SectionCell);	
 						}
 					}
 				}
