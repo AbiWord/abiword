@@ -5726,7 +5726,32 @@ bool FV_View::setBlockFormat(const gchar * properties[])
 		}
 	}
 
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
+
+	// We need to know if the selection is inside a table, because in that
+	// case, not all blocks can be selected
+	pf_Frag_Strux *tstart, *tend;
+	if (m_pDoc->getStruxOfTypeFromPosition(posStart,PTX_SectionTable,&tstart)
+	    && m_pDoc->getStruxOfTypeFromPosition(posEnd,PTX_SectionTable,&tend)
+	    && tstart == tend)
+	{
+		bRet = false;
+		UT_GenericVector<fl_BlockLayout*> vBlock;
+		getBlocksInSelection(&vBlock);
+		fl_ContainerLayout * pCL = NULL;
+		UT_sint32 i =0;
+		for(i=0; i<vBlock.getItemCount();i++)
+		{
+			fl_BlockLayout * pBL = vBlock.getNthItem(i);
+			pCL = pBL->myContainingLayout();
+			if(pCL->getContainerType() == FL_CONTAINER_CELL)
+			{
+				PT_DocPosition pos = pBL->getPosition();
+				bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,properties,PTX_Block);	
+			}
+		}
+	}
+	else
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
