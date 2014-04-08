@@ -26,6 +26,11 @@
 #include "ev_EditBits.h"
 #include "gr_Graphics.h"
 
+typedef enum
+{
+	ABI_DISPLAY_BLOCK,
+	ABI_DISPLAY_INLINE
+} AbiDisplayMode;
 class GR_Graphics;
 class GR_Image;
 class UT_ByteBuf;
@@ -87,6 +92,7 @@ public:
 	virtual EV_EditMouseContext		getContextualMenu(void) const
 		{ return EV_EMC_EMBED; }
 	virtual bool           setFont(UT_sint32 uid, const GR_Font * pFont);
+	virtual void           setDisplayMode(UT_sint32 uid, AbiDisplayMode mode);
 
 private:
     GR_Graphics *               m_pG;

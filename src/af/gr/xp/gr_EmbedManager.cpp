@@ -501,3 +501,7 @@ bool GR_EmbedManager::setFont(UT_sint32 /*uid*/, const GR_Font * /*pFont*/)
 {
 	return false;
 }
+
+void GR_EmbedManager::setDisplayMode(UT_sint32 /*uid*/, AbiDisplayMode /*mode*/)
+{
+}

@@ -4728,8 +4728,9 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 	}
 	pMathRun = static_cast<fp_MathRun *>(pRun);
 	const PP_AttrProp * pSpanAP = pMathRun->getSpanAP();
-	const gchar * pszLatexID = NULL;
+	const gchar * pszLatexID = NULL, *pszDisplayMode = NULL;
 	pSpanAP->getAttribute("latexid",pszLatexID);
+	pSpanAP->getProperty("display",pszDisplayMode);
 	if(pszLatexID == NULL || *pszLatexID == 0)
 	{
 		return false;
@@ -4760,11 +4761,15 @@ static bool dlgEditLatexEquation(AV_View *pAV_View, EV_EditMethodCallData * /*pC
 	if(pDialog->isRunning())
 	{
 		pDialog->activate();
+		pDialog->setDisplayMode((pszDisplayMode && !strcmp(pszDisplayMode, "inline"))?
+		                        ABI_DISPLAY_INLINE: ABI_DISPLAY_BLOCK);
 		pDialog->fillLatex(sLatex);
 	}
 	else if(bStartDlg)
 	{
 		pDialog->runModeless(pFrame);
+		pDialog->setDisplayMode((pszDisplayMode && !strcmp(pszDisplayMode, "inline"))?
+		                        ABI_DISPLAY_INLINE: ABI_DISPLAY_BLOCK);
 		pDialog->fillLatex(sLatex);
 	}
 	else

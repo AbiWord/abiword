@@ -76,6 +76,8 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	const gchar * pszFontSize = NULL;
 	pSpanAP->getProperty("font-size", pszFontSize);
 	xxx_UT_DEBUGMSG(("Font-size %s \n",pszFontSize));
+	const char *pszDisplayMode = NULL;
+	pSpanAP->getProperty("display",pszDisplayMode);
 
 // Load this into MathView
 
@@ -141,6 +143,9 @@ void fp_MathRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 	  getMathManager()->setRun (m_iMathUID, this);
 	  getMathManager()->loadEmbedData(m_iMathUID);
 	}
+	m_pMathManager->setDisplayMode(m_iMathUID,
+	                               (pszDisplayMode && !strcmp(pszDisplayMode, "inline"))?
+	                                 ABI_DISPLAY_INLINE: ABI_DISPLAY_BLOCK);
 	UT_sint32 iFSize = atoi(pszSize);
 	getMathManager()->setDefaultFontSize(m_iMathUID,iFSize);
 	getMathManager()->setFont(m_iMathUID,pFont);

@@ -25,6 +25,7 @@
 #include "xav_View.h"
 #include "ut_string_class.h"
 #include "fv_View.h"
+#include "gr_EmbedManager.h"
 
 
 class XAP_Frame;
@@ -49,8 +50,10 @@ public:
 	void            setMathML(UT_UTF8String & sMathML)
 	  { m_sMathML = sMathML;}
 	void            insertIntoDoc(void);
-        void            ConstructWindowName(void);
-        void            setActiveFrame(XAP_Frame *pFrame);
+	void            ConstructWindowName(void);
+	void            setActiveFrame(XAP_Frame *pFrame);
+	void            setDisplayMode (AbiDisplayMode mode)
+	  { m_compact = mode == ABI_DISPLAY_INLINE; }
 protected:
 
 	AP_Dialog_Latex::tAnswer  m_answer;

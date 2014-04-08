@@ -961,12 +961,14 @@ if test "$abi_cv_gio" = "yes"; then
 	AC_DEFINE([WITH_GIO], [1], [Define if using GIO])
 fi
 
-if test "$abi_cv_goffice" = "yes"; then
-	AC_DEFINE([WITH_GOFFICE], [1], [Define if using goffice])
-fi
+dnl remove the following lines when we request goffice >= 0.10.12
+SAVE_LIBS=$LIBS
+LIBS=`pkg-config --libs libgoffice-0.10`
+AC_CHECK_FUNCS(go_math_editor_new)
+LIBS=$SAVE_LIBS
+unset SAVE_LIBS
+
 AM_CONDITIONAL([TOOLKIT_GTK_ALL], test "$TOOLKIT" = "gtk")
-AM_CONDITIONAL([WITH_GOFFICE_BUILTIN], test "$TOOLKIT" = "gtk" && test "$abi_cv_goffice" != "yes")
-AC_SUBST([GOFFICE_BUILTIN_LIBS])
 
 ALL_PLUGINS_="\
   m4_n([plugin_list])"
@@ -989,7 +991,13 @@ else
 	if test "$abi_cv_disable_default_plugins" != "yes"; then
 		PLUGINS="$default_plugins"
 	fi
-	PLUGINS="$PLUGINS $abi_cv_plugins"
+	for i in $abi_cv_plugins; do
+		if test -d "plugins/$i"; then 
+			PLUGINS="$PLUGINS $i"
+		else
+			AC_MSG_WARN([Plugin $i does not exist.])
+		fi
+	done
 
 	# which plugins to enable
 	# this creates variables like "enable_wordperfect=yes"

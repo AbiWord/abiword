@@ -737,6 +737,12 @@ bool GR_LasemMathManager::setFont(UT_sint32 uid, const GR_Font * pFont)
 	return true;
 }
 
+void GR_LasemMathManager::setDisplayMode(UT_sint32 uid, AbiDisplayMode mode)
+{
+	LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
+	pLasemMathView->setDisplayMode (mode);
+}
+
 void GR_LasemMathManager::render(UT_sint32 uid, UT_Rect & rec)
 {
         LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
@@ -779,7 +785,7 @@ bool GR_LasemMathManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSE
   	XAP_App * pApp = XAP_App::getApp();
 	XAP_Frame * pFrame = pApp->getLastFocussedFrame();
 
-	if (iConType != 0)
+	if (iConType != 0 && iConType != 1)
 	{
 		return false;
 	}
@@ -787,9 +793,9 @@ bool GR_LasemMathManager::convert(G_GNUC_UNUSED UT_uint32 iConType, G_GNUC_UNUSE
 	/* add a pair of enclosing brackets \[ \] */
 	UT_UTF8String sLatex;
 	UT_UCS4_mbtowc myWC;
-	sLatex += "\\[";
+	sLatex += (iConType)? "$": "\\[";
 	sLatex.appendBuf(From, myWC);
-	sLatex += "\\]";
+	sLatex += (iConType)? "$": "\\]";
 
 	char * mathml = lsm_itex_to_mathml(sLatex.utf8_str(), sLatex.size());
 	
@@ -984,7 +990,7 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 	UT_DEBUGMSG(("font : %s \n",font));	
  }
 
-void LasemMathView :: setColor(const UT_RGBColor& c)
+void LasemMathView::setColor(const UT_RGBColor& c)
 {
 	UT_DEBUGMSG(("Entering SetColor..\n"));
 	UT_HashColor pHashColor;
@@ -996,6 +1002,13 @@ void LasemMathView :: setColor(const UT_RGBColor& c)
        lsm_dom_element_set_attribute (_style_element, "mathcolor", color);
 	view = lsm_dom_document_create_view (mathml);
 	UT_DEBUGMSG(("color : %s \n",color));
+}
+
+void LasemMathView::setDisplayMode(AbiDisplayMode mode)
+{
+	compact = mode == ABI_DISPLAY_INLINE;
+	lsm_dom_element_set_attribute (LSM_DOM_ELEMENT (style_element), "displaystyle",
+				       compact? "false" : "true");
 }
 
 ABI_PLUGIN_DECLARE(AbiMathView)

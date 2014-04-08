@@ -72,7 +72,7 @@ bool AP_Dialog_Latex::convertLatexToMathML(void)
 		return false;
 	}
 
-	if (pEmbed->convert(0,From,To))
+	if (pEmbed->convert(m_compact? 1: 0,From,To))
 	{
 		m_sMathML.clear();
 		UT_UCS4_mbtowc myWC;

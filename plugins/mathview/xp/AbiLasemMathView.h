@@ -51,6 +51,7 @@ public:
 	virtual UT_sint32      makeEmbedView(AD_Document * pDoc, UT_uint32  api, const char * szDataID) ;
 	virtual void           setColor(UT_sint32 uid, const UT_RGBColor& c);
 	virtual bool           setFont(UT_sint32 uid, const GR_Font * pFont);
+	virtual void           setDisplayMode(UT_sint32 uid, AbiDisplayMode mode);
 	virtual UT_sint32      getWidth(UT_sint32 uid);
 	virtual UT_sint32      getAscent(UT_sint32 uid) ;
 	virtual UT_sint32      getDescent(UT_sint32 uid) ;
@@ -88,6 +89,7 @@ public:
 	void render(UT_Rect & rec);
 	void setFont(const GR_Font * pFont); 
 	void setColor(const UT_RGBColor& c);
+	void setDisplayMode(AbiDisplayMode mode);
 	void setItex(char * itex); 
 	void loadBuffer(UT_UTF8String & sMathml);
 	void SetRun(fp_Run *pRun) {m_pRun = pRun;}
@@ -105,6 +107,7 @@ private:
 	char *itex;
 	char *font;
 	char *color;
+	bool compact;
 	
 	LsmDomDocument *mathml;
 	LsmDomNode *math_element;
