@@ -25,8 +25,6 @@ PKG_CHECK_EXISTS([ $aiksaurus_gtk_pkgs ],
 ], [use_builtin_aiksaurus_gtk="yes"])
 fi
 
-AM_CONDITIONAL([WITH_BUILTIN_AIKSAURUS_GTK],[ test "x$use_builtin_aiksaurus_gtk" = "xyes" ])
-
 if test "$enable_aiksaurus_builtin" = "yes"; then
 AC_MSG_ERROR([aiksaurus plugin: static linking not supported])
 fi
@@ -40,6 +38,8 @@ AIKSAURUS_CFLAGS="$AIKSAURUS_CFLAGS "'${PLUGIN_CFLAGS}'
 AIKSAURUS_LIBS="$AIKSAURUS_LIBS "'${PLUGIN_LIBS}'
 
 fi
+
+AM_CONDITIONAL([WITH_BUILTIN_AIKSAURUS_GTK],[ test "x$use_builtin_aiksaurus_gtk" = "xyes" ])
 
 AC_SUBST([AIKSAURUS_CFLAGS])
 AC_SUBST([AIKSAURUS_LIBS])
