@@ -1003,7 +1003,13 @@ else
 	if test "$abi_cv_disable_default_plugins" != "yes"; then
 		PLUGINS="$default_plugins"
 	fi
-	PLUGINS="$PLUGINS $abi_cv_plugins"
+	for i in $abi_cv_plugins; do
+		if test -d "plugins/$i"; then 
+			PLUGINS="$PLUGINS $i"
+		else
+			AC_MSG_WARN([Plugin $i does not exist.])
+		fi
+	done
 
 	# which plugins to enable
 	# this creates variables like "enable_wordperfect=yes"
