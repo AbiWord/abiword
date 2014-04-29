@@ -529,7 +529,7 @@ msgstr "&Ignora-les totes"
 #. MENU_LABEL_FMT_POSIMAGE
 #: po/tmp/ap_String_Id.h
 msgid "&Image"
-msgstr "Formata la &imatge"
+msgstr "&Imatge"
 
 #. MENU_LABEL_FILE_IMPORTSTYLES
 #: po/tmp/ap_String_Id.h
@@ -5423,7 +5423,7 @@ msgstr "Elimina del document la capçalera d'aquesta pàgina"
 #. MENU_STATUSLINE_EDIT_CUTIMAGE
 #: po/tmp/ap_String_Id.h
 msgid "Remove the Image and save a copy on the clipboard"
-msgstr "Elimina la imatge i desa'n una copia al porta-retalls"
+msgstr "Elimina la imatge i desa'n una còpia al porta-retalls"
 
 #. MENU_STATUSLINE_EDIT_DELETEIMAGE
 #: po/tmp/ap_String_Id.h
@@ -6068,7 +6068,7 @@ msgstr "Defineix el tipus de les notes al peu i les notes finals"
 #. MENU_STATUSLINE_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
 msgid "Set the types of Headers and Footers"
-msgstr "Defineix els tipus de les capçalera i els peus de pàgina"
+msgstr "Defineix els tipus de les capçaleres i els peus de pàgina"
 
 #. MENU_LABEL_TABLE_HEADING_ROWS_REPEAT_THIS
 #: po/tmp/ap_String_Id.h
