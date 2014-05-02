@@ -153,6 +153,18 @@ void IE_Exp_AbiWord_1::_setupFile()
 	const std::string & prop = (getProperty ("compress"));
 	if (!prop.empty())
 		m_bIsCompressed = UT_parseBool(prop.c_str (), m_bIsCompressed);
+	bool forceCompression = false;
+	if (!m_bIsCompressed)
+	{
+		// check if file name suggests compression
+		const char *name = getFileName();
+		int length = name? strlen(name): 0;
+		if ((length > 5 && !strcmp(name + length - 5, ".zabw")) ||
+		     (length > 7 && !strcmp(name + length - 7, ".abw.gz")))
+		{
+		     forceCompression = m_bIsCompressed = true;
+		}
+	}
 	
 	if (m_bIsCompressed)
 	{
@@ -163,6 +175,8 @@ void IE_Exp_AbiWord_1::_setupFile()
 	{
 		m_output = 0;
 	}
+	if (forceCompression)
+		m_bIsCompressed = false;
 }
 
 static void close_gsf_handle(GsfOutput * output)

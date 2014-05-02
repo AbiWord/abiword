@@ -50,6 +50,9 @@ static void s_color_cleared(GtkWidget * /*btn*/, AP_UnixDialog_Background * dlg)
 }
 
 static void s_color_changed(GtkWidget * csel,
+#if GTK_CHECK_VERSION(3,4,0)
+                GdkRGBA *,
+#endif
 			    AP_UnixDialog_Background * dlg)
 {
 	UT_ASSERT(csel && dlg);
