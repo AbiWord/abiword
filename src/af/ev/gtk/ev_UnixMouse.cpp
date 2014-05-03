@@ -307,7 +307,7 @@ void EV_UnixMouse::mouseScroll(AV_View* pView, GdkEventScroll *e)
 
 	emc = pView->getMouseContext(static_cast<UT_sint32>(pView->getGraphics()->tluD(e->x)),static_cast<UT_sint32>(pView->getGraphics()->tluD(e->y)));
 	
-	m_clickState = mop;					// remember which type of click
+	m_clickState = 0;					// do NOT remember which type of click, see #13635
 	m_contextState = emc;				// remember context of click
 	
 	result = m_pEEM->Mouse(emc|mop|emb|state, &pEM);
