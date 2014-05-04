@@ -2635,7 +2635,7 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 							UT_sint32 j=0;
 							UT_sint32 k=0;
 							bool b_sectionFound = false;
-							for(j=0;j<pPageFinal->countColumnLeaders() || b_sectionFound;j++)
+							for(j=0;j<pPageFinal->countColumnLeaders() && !b_sectionFound;j++)
 							{
 								if (pPageFinal->getNthColumnLeader(j)->getDocSectionLayout()==pSection)
 								{
@@ -2692,14 +2692,17 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 							pPage = pDL->getNthPage(iPrefPage);
 						}
 					}
-					if (numColumns > iPrefColumn)
+					if (pPage) // pPage might be NULL
 					{
-						pCol = pPage->getNthColumn(iPrefColumn,pSection);
-					}
-					else
-					{
-						pCol = pPage->getNthColumn(numColumns-1,pSection);
-						b_PrefColumnChanged = true;
+						if (numColumns > iPrefColumn)
+						{
+							pCol = pPage->getNthColumn(iPrefColumn,pSection);
+						}
+						else
+						{
+							pCol = pPage->getNthColumn(numColumns-1,pSection);
+							b_PrefColumnChanged = true;
+						}
 					}
 				}
 				else
@@ -2801,7 +2804,8 @@ bool fl_BlockLayout::setFramesOnPage(fp_Line * pLastLine)
 					}
 				}
 
-				UT_return_val_if_fail(pCol,false);
+				if (pCol == NULL) // this may happen if pPage is NULL
+					return false;
 				pFrameCon->setX(pFrame->getFrameXColpos()+pCol->getX());
 				pFrameCon->setY(pFrame->getFrameYColpos()+pCol->getY());
 				UT_return_val_if_fail(pPage,false);
