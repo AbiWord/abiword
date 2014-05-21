@@ -90,14 +90,14 @@ extern "C" char * itex2MML_parse (const char * buffer, unsigned long length);
 extern "C" void   itex2MML_free_string (char * str);
 
 static char *
-lsm_itex_to_mathml (const char *itex, int size)
+lsm_itex_to_mathml (const char *itex, gsize size)
 {
 	char *mathml;
 
 	if (itex == NULL)
 		return NULL;
 
-	if (size < 0)
+	if (size < 1)
 		size = strlen (itex);
 
 	mathml = itex2MML_parse (itex, size);
