@@ -1,6 +1,6 @@
 
-wordperfect_pkgs="libwpg-0.2 >= 0.2.0 libwpd-0.9 >= 0.9.0 libwpd-stream-0.9 >= 0.9.0 $gsf_req"
-wordperfect_wps_pkgs='libwps-0.2 >= 0.1.0'
+wordperfect_pkgs="libwpg-0.3 librevenge-0.0 $gsf_req"
+wordperfect_wps_pkgs='libwps-0.3'
 wordperfect_deps="no"
 
 WORDPERFECT_CFLAGS=

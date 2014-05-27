@@ -31,26 +31,29 @@
 #include <gsf/gsf-input-memory.h>
 #include <gsf/gsf-input-stdio.h>
 #include <gsf/gsf-infile-msole.h>
-#include <libwpd-stream/libwpd-stream.h>
+#include <librevenge-stream/librevenge-stream.h>
 #include "xap_Module.h"
 
 using libwpg::WPGraphics;
 
 ABI_PLUGIN_DECLARE("WPG")
 
-class AbiWordPerfectGraphicsInputStream : public WPXInputStream
+class AbiWordPerfectGraphicsInputStream : public librevenge::RVNGInputStream
 {
 public:
 	AbiWordPerfectGraphicsInputStream(GsfInput *input);
 	~AbiWordPerfectGraphicsInputStream();
 
-	virtual bool isOLEStream();
-	virtual WPXInputStream * getDocumentOLEStream();
-	virtual WPXInputStream * getDocumentOLEStream(const char * name);
+	virtual bool isStructured();
+	virtual unsigned int subStreamCount() { return 0; }
+	virtual const char* subStreamName(unsigned int) { return 0;}
+	bool existsSubStream(const char*) { return false; }
+	virtual librevenge::RVNGInputStream* getSubStreamByName(const char*);
+	virtual librevenge::RVNGInputStream* getSubStreamById(unsigned int) { return 0; }
 	virtual const unsigned char *read(unsigned long numBytes, unsigned long &numBytesRead);
-	virtual int seek(long offset, WPX_SEEK_TYPE seekType);
+	virtual int seek(long offset, librevenge::RVNG_SEEK_TYPE seekType);
 	virtual long tell();
-	virtual bool atEOS();
+	virtual bool isEnd();
 
 private:
 
@@ -59,7 +62,7 @@ private:
 };
 
 AbiWordPerfectGraphicsInputStream::AbiWordPerfectGraphicsInputStream(GsfInput *input) :
-	WPXInputStream(),
+	librevenge::RVNGInputStream(),
 	m_input(input),
 	m_ole(NULL)
 {
@@ -86,23 +89,26 @@ const unsigned char * AbiWordPerfectGraphicsInputStream::read(unsigned long numB
 	return buf;
 }
 
-int AbiWordPerfectGraphicsInputStream::seek(long offset, WPX_SEEK_TYPE seekType) 
+int AbiWordPerfectGraphicsInputStream::seek(long offset, librevenge::RVNG_SEEK_TYPE seekType) 
 {
 	GSeekType gsfSeekType = G_SEEK_SET;
 	switch(seekType)
 	{
-	case WPX_SEEK_CUR:
+	case librevenge::RVNG_SEEK_CUR:
 		gsfSeekType = G_SEEK_CUR;
 		break;
-	case WPX_SEEK_SET:
+	case librevenge::RVNG_SEEK_SET:
 		gsfSeekType = G_SEEK_SET;
+		break;
+	case librevenge::RVNG_SEEK_END:
+		gsfSeekType = G_SEEK_END;
 		break;
 	}
 
 	return gsf_input_seek(m_input, offset, gsfSeekType);
 }
 
-bool AbiWordPerfectGraphicsInputStream::isOLEStream()
+bool AbiWordPerfectGraphicsInputStream::isStructured()
 {
 	if (!m_ole)
 		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, NULL)); 
@@ -113,14 +119,9 @@ bool AbiWordPerfectGraphicsInputStream::isOLEStream()
 	return false;
 }
 
-WPXInputStream * AbiWordPerfectGraphicsInputStream::getDocumentOLEStream()
+librevenge::RVNGInputStream * AbiWordPerfectGraphicsInputStream::getSubStreamByName(const char * name)
 {
-	return getDocumentOLEStream("PerfectOffice_MAIN");
-}
-
-WPXInputStream * AbiWordPerfectGraphicsInputStream::getDocumentOLEStream(const char * name)
-{
-	WPXInputStream *documentStream = NULL;
+	librevenge::RVNGInputStream *documentStream = NULL;
 	
 	if (!m_ole)
 		m_ole = GSF_INFILE(gsf_infile_msole_new (m_input, NULL)); 
@@ -143,7 +144,7 @@ long AbiWordPerfectGraphicsInputStream::tell()
 	return gsf_input_tell(m_input);
 }
 
-bool AbiWordPerfectGraphicsInputStream::atEOS()
+bool AbiWordPerfectGraphicsInputStream::isEnd()
 {
 	return gsf_input_eof(m_input);
 }
@@ -244,14 +245,24 @@ UT_Error IE_Imp_WordPerfectGraphics_Sniffer::constructImporter(IE_ImpGraphic **p
 UT_Error IE_Imp_WordPerfectGraphics::importGraphic(GsfInput *input, FG_Graphic **ppfg)
 {
 	AbiWordPerfectGraphicsInputStream gsfInput(input);
-	WPXString svgOutput;
-	if (WPGraphics::generateSVG(&gsfInput, svgOutput))
+	librevenge::RVNGString svgOutput;
+	librevenge::RVNGStringVector vec;
+	librevenge::RVNGSVGDrawingGenerator generator(vec, "");
+
+	if (!libwpg::WPGraphics::parse(&gsfInput, &generator) || vec.empty() || vec[0].empty())
 	{
-		GsfInput * svgInput = gsf_input_memory_new((const guint8*)svgOutput.cstr(), svgOutput.len(), false);
-		UT_Error result = IE_ImpGraphic::loadGraphic(svgInput, IE_ImpGraphic::fileTypeForSuffix(".svg"), ppfg);
-		g_object_unref(svgInput);
-		return result;
+		return UT_ERROR;
 	}
-	return UT_ERROR;
+
+	svgOutput.append("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>\n");
+	svgOutput.append("<!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\"");
+	svgOutput.append(" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\">\n");
+	svgOutput.append(vec[0]);
+	svgOutput.append("\n");
+
+	GsfInput * svgInput = gsf_input_memory_new((const guint8*)svgOutput.cstr(), svgOutput.len(), false);
+	UT_Error result = IE_ImpGraphic::loadGraphic(svgInput, IE_ImpGraphic::fileTypeForSuffix(".svg"), ppfg);
+	g_object_unref(svgInput);
+	return result;
 }
 
