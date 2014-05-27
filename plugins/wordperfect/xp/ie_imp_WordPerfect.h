@@ -106,27 +106,27 @@ public:
 	virtual void startDocument(const librevenge::RVNGPropertyList &propList);
 	virtual void endDocument();
 
-	virtual void defineEmbeddedFont(const librevenge::RVNGPropertyList &propList);
+	virtual void defineEmbeddedFont(const librevenge::RVNGPropertyList & /* propList */) {}
 
-	virtual void definePageStyle(const librevenge::RVNGPropertyList &);
+	virtual void definePageStyle(const librevenge::RVNGPropertyList &) {}
 	virtual void openPageSpan(const librevenge::RVNGPropertyList &propList);
-	virtual void closePageSpan();
+	virtual void closePageSpan() {}
 	virtual void openHeader(const librevenge::RVNGPropertyList &propList);
 	virtual void closeHeader();
 	virtual void openFooter(const librevenge::RVNGPropertyList &propList);
 	virtual void closeFooter();
 
-	virtual void defineSectionStyle(const librevenge::RVNGPropertyList &);
+	virtual void defineSectionStyle(const librevenge::RVNGPropertyList &) {}
 	virtual void openSection(const librevenge::RVNGPropertyList &propList);
-	virtual void closeSection();
+	virtual void closeSection() {}
 
-	virtual void defineParagraphStyle(const librevenge::RVNGPropertyList &);
+	virtual void defineParagraphStyle(const librevenge::RVNGPropertyList &) {}
 	virtual void openParagraph(const librevenge::RVNGPropertyList &propList);
-	virtual void closeParagraph();
+	virtual void closeParagraph() {}
 
-	virtual void defineCharacterStyle(const librevenge::RVNGPropertyList &);
+	virtual void defineCharacterStyle(const librevenge::RVNGPropertyList &) {}
 	virtual void openSpan(const librevenge::RVNGPropertyList &propList);
-	virtual void closeSpan();
+	virtual void closeSpan() {}
 
 	virtual void openLink(const librevenge::RVNGPropertyList & /* propList */) {}
 	virtual void closeLink() {}
@@ -135,14 +135,14 @@ public:
 	virtual void insertText(const librevenge::RVNGString &text);
 	virtual void insertSpace();
 	virtual void insertLineBreak();
-	virtual void insertField(const librevenge::RVNGPropertyList &propList);
+	virtual void insertField(const librevenge::RVNGPropertyList & /* propList */) {}
 
 	virtual void openOrderedListLevel(const librevenge::RVNGPropertyList &propList);
 	virtual void openUnorderedListLevel(const librevenge::RVNGPropertyList &propList);
 	virtual void closeOrderedListLevel();
 	virtual void closeUnorderedListLevel();
 	virtual void openListElement(const librevenge::RVNGPropertyList &propList);
-	virtual void closeListElement();
+	virtual void closeListElement() {}
 
 	virtual void openFootnote(const librevenge::RVNGPropertyList &propList);
 	virtual void closeFootnote();
@@ -155,9 +155,9 @@ public:
 
 	virtual void openTable(const librevenge::RVNGPropertyList &propList);
 	virtual void openTableRow(const librevenge::RVNGPropertyList &propList);
-	virtual void closeTableRow();
+	virtual void closeTableRow() {}
 	virtual void openTableCell(const librevenge::RVNGPropertyList &propList);
-	virtual void closeTableCell();
+	virtual void closeTableCell() {}
 	virtual void insertCoveredTableCell(const librevenge::RVNGPropertyList & /* propList */) {}
 	virtual void closeTable();
 

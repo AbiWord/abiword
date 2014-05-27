@@ -24,7 +24,6 @@
  */
 
 #include "ie_imp_WordPerfect.h"
-#include "ie_exp_WordPerfect.h"
 #include "xap_Module.h"
 
 #define IE_MIMETYPE_WP_51			"application/wordperfect5.1"

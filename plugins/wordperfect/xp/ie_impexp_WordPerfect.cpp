@@ -86,7 +86,6 @@ int abi_plugin_unregister (XAP_ModuleInfo * mi)
 	mi->usage   = 0;
 
 	UT_ASSERT (m_ImpSniffer);
-	UT_ASSERT (m_ExpSniffer);
 
 	IE_Imp::unregisterImporter (m_ImpSniffer);
 	delete m_ImpSniffer;

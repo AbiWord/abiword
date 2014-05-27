@@ -761,6 +761,15 @@ void IE_Imp_WordPerfect::insertText(const librevenge::RVNGString &text)
 	}
 }
 
+void IE_Imp_WordPerfect::insertSpace()
+{
+	if (m_bHdrFtrOpenCount) return; // HACK
+	UT_DEBUGMSG(("AbiWordPerfect: insertSpace\n"));
+
+	UT_UCS4Char ucs = UCS_SPACE;
+	X_CheckDocumentError(appendSpan(&ucs,1));	
+}
+
 void IE_Imp_WordPerfect::insertLineBreak()
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
