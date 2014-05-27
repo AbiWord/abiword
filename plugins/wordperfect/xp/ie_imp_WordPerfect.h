@@ -128,8 +128,8 @@ public:
 	virtual void openSpan(const librevenge::RVNGPropertyList &propList);
 	virtual void closeSpan();
 
-	virtual void openLink(const librevenge::RVNGPropertyList &propList);
-	virtual void closeLink();
+	virtual void openLink(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void closeLink() {}
 
 	virtual void insertTab();
 	virtual void insertText(const librevenge::RVNGString &text);
@@ -148,35 +148,35 @@ public:
 	virtual void closeFootnote();
 	virtual void openEndnote(const librevenge::RVNGPropertyList &propList);
 	virtual void closeEndnote();
-	virtual void openComment(const librevenge::RVNGPropertyList &propList);
-	virtual void closeComment();
-	virtual void openTextBox(const librevenge::RVNGPropertyList &propList);
-	virtual void closeTextBox();
+	virtual void openComment(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void closeComment() {}
+	virtual void openTextBox(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void closeTextBox() {}
 
 	virtual void openTable(const librevenge::RVNGPropertyList &propList);
 	virtual void openTableRow(const librevenge::RVNGPropertyList &propList);
 	virtual void closeTableRow();
 	virtual void openTableCell(const librevenge::RVNGPropertyList &propList);
 	virtual void closeTableCell();
-	virtual void insertCoveredTableCell(const librevenge::RVNGPropertyList &propList);
+	virtual void insertCoveredTableCell(const librevenge::RVNGPropertyList & /* propList */) {}
 	virtual void closeTable();
 
-	virtual void openFrame(const librevenge::RVNGPropertyList &propList);
-	virtual void closeFrame();
+	virtual void openFrame(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void closeFrame() {}
 
-	virtual void openGroup(const librevenge::RVNGPropertyList &propList);
-	virtual void closeGroup();
+	virtual void openGroup(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void closeGroup() {}
 
-	virtual void defineGraphicStyle(const librevenge::RVNGPropertyList &propList);
-	virtual void drawRectangle(const librevenge::RVNGPropertyList &propList);
-	virtual void drawEllipse(const librevenge::RVNGPropertyList &propList);
-	virtual void drawPolygon(const librevenge::RVNGPropertyList &propList);
-	virtual void drawPolyline(const librevenge::RVNGPropertyList &propList);
-	virtual void drawPath(const librevenge::RVNGPropertyList &propList);
-	virtual void drawConnector(const librevenge::RVNGPropertyList &propList);
+	virtual void defineGraphicStyle(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void drawRectangle(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void drawEllipse(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void drawPolygon(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void drawPolyline(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void drawPath(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void drawConnector(const librevenge::RVNGPropertyList & /* propList */) {}
 
-	virtual void insertBinaryObject(const librevenge::RVNGPropertyList &propList);
-	virtual void insertEquation(const librevenge::RVNGPropertyList &propList);
+	virtual void insertBinaryObject(const librevenge::RVNGPropertyList & /* propList */) {}
+	virtual void insertEquation(const librevenge::RVNGPropertyList & /* propList */) {}
 
 protected:
 	virtual UT_Error _loadFile(GsfInput * input);

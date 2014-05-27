@@ -1,5 +1,5 @@
 
-wpg_pkgs="$gsf_req libwpg-0.3 librevenge-0.0"
+wpg_pkgs="libwpg-0.3 librevenge-0.0 $gsf_req"
 wpg_deps="no"
 
 if test "$enable_wpg" != ""; then

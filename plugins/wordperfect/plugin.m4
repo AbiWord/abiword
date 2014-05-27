@@ -1,5 +1,5 @@
 
-wordperfect_pkgs="libwpg-0.3 librevenge-0.0 $gsf_req"
+wordperfect_pkgs="libwpd-0.10 librevenge-0.0 $gsf_req"
 wordperfect_wps_pkgs='libwps-0.3'
 wordperfect_deps="no"
 
@@ -29,7 +29,7 @@ wp_deps_pkgs="$wordperfect_pkgs"
 
 PKG_CHECK_EXISTS([ $wordperfect_wps_pkgs ],
 [
-	wp_deps_pkgs="$wp_deps_pkgs $wordperfect_wps_pkgs"
+	wp_deps_pkgs="$wordperfect_wps_pkgs $wp_deps_pkgs"
 	WPS_DEFINE=" -DHAVE_LIBWPS"
 ])
 
