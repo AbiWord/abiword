@@ -1,5 +1,5 @@
 
-wordperfect_pkgs="libwpd-0.10 librevenge-0.0 $gsf_req"
+wordperfect_pkgs="libwpd-0.10 $gsf_req"
 wordperfect_wps_pkgs='libwps-0.3'
 wordperfect_deps="no"
 
