@@ -3833,6 +3833,8 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 			isXML = false;
 			
 			instr = strtok(0, " \\{}");
+			if (instr == NULL)  // ignore empty hyperlinks
+				break;
 			const gchar *new_atts[3];
 
 			new_atts[0] = "xlink:href";
