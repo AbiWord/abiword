@@ -167,7 +167,10 @@ XAP_UnixDialog_FontChooser::~XAP_UnixDialog_FontChooser(void)
 /*****************************************************************/
 
 static gint s_color_update(GtkWidget * /* widget */,
-			   XAP_UnixDialog_FontChooser * dlg)
+#if GTK_CHECK_VERSION(3,4,0)
+                           GdkRGBA * /* color */,
+#endif
+                           XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_return_val_if_fail(dlg,FALSE);
 	dlg->fgColorChanged();
@@ -175,6 +178,9 @@ static gint s_color_update(GtkWidget * /* widget */,
 }
 
 static gint s_bgcolor_update(GtkWidget * /* widget */,
+#if GTK_CHECK_VERSION(3,4,0)
+                           GdkRGBA * /* color */,
+#endif
 						   XAP_UnixDialog_FontChooser * dlg)
 {
 	UT_return_val_if_fail(dlg,FALSE);
