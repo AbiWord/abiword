@@ -968,9 +968,8 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         }
 
     } else if (!strcmp(pName, "text:soft-page-break")){
-        UT_UCS4Char pageBreak = UCS_FF;
-        m_pAbiDocument->appendStrux(PTX_Block, NULL);
-        m_pAbiDocument->appendSpan (&pageBreak, 1);
+        // soft page breaks are NOT manual page breaks, we must ignore them,
+        // see http://bugzilla.abisource.com/show_bug.cgi?id=13661
     }
     
     m_elementParsingLevel++;
