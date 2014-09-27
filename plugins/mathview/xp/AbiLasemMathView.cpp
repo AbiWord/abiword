@@ -604,7 +604,7 @@ void GR_LasemMathManager::_loadMathMl(UT_sint32 uid, UT_UTF8String& sMathBuf)
 {
   LasemMathView * pLasemMathView = m_vecLasemMathView.getNthItem(uid);
   UT_return_if_fail(pLasemMathView);
-  UT_DEBUGMSG(("loading |%s| \n",sMathBuf.utf8_str()));
+  xxx_UT_DEBUGMSG(("loading |%s| \n",sMathBuf.utf8_str()));
   pLasemMathView->loadBuffer(sMathBuf);
 /*	if(sMathBuf)
 	{
@@ -835,14 +835,14 @@ void GR_LasemMathManager::setDefaultFontSize(G_GNUC_UNUSED UT_sint32 uid, G_GNUC
 LasemMathView::LasemMathView(GR_LasemMathManager * pMathMan): m_pMathMan(pMathMan)
 {
 	width = height = 0;
-        ascent = descent = 0;
-        
-        font = NULL;
-        color = NULL;
-        itex = NULL;
+	ascent = descent = 0;
+
+	font = NULL;
+	color = NULL;
+	itex = NULL;
         
 	view=NULL;
-        mathml = lsm_dom_implementation_create_document(NULL, "math");
+	mathml = lsm_dom_implementation_create_document(NULL, "math");
 
 	m_Guru = NULL;
 }
@@ -859,12 +859,13 @@ LasemMathView::~LasemMathView(void)
 
 void LasemMathView::loadBuffer(UT_UTF8String & sMathml)
 {
-	g_object_unref(mathml);
+	if (mathml)
+		g_object_unref(mathml);
 	if (view != NULL)	
 		g_object_unref(view);
 	math_element = NULL;
 	style_element = NULL;
-        mathml = lsm_dom_document_new_from_memory(sMathml.utf8_str(),sMathml.length(),NULL);
+	mathml = lsm_dom_document_new_from_memory(sMathml.utf8_str(),sMathml.length(),NULL);
 	if (mathml == NULL)
 		return;
 	math_element = LSM_DOM_NODE (lsm_dom_document_get_document_element (mathml));
@@ -938,7 +939,7 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
  void LasemMathView :: setFont(const GR_Font * pFont)
  {      
 	UT_DEBUGMSG(("Entering SetFont..\n"));
-        UT_return_if_fail(pFont);
+    UT_return_if_fail(pFont && mathml);
 	const GR_PangoFont *pPF = dynamic_cast<const GR_PangoFont *>(pFont);
 	UT_return_if_fail(pPF);      
     if (pPF->getPangoDescription()!= NULL) 
@@ -993,6 +994,7 @@ UT_ByteBuf *LasemMathView::getSnapShot ()
 void LasemMathView::setColor(const UT_RGBColor& c)
 {
 	UT_DEBUGMSG(("Entering SetColor..\n"));
+	UT_return_if_fail (mathml);
 	UT_HashColor pHashColor;
 	color = g_strdup(pHashColor.setColor(c));
 	
@@ -1006,6 +1008,7 @@ void LasemMathView::setColor(const UT_RGBColor& c)
 
 void LasemMathView::setDisplayMode(AbiDisplayMode mode)
 {
+	UT_return_if_fail (mathml);
 	compact = mode == ABI_DISPLAY_INLINE;
 	lsm_dom_element_set_attribute (LSM_DOM_ELEMENT (style_element), "displaystyle",
 				       compact? "false" : "true");
