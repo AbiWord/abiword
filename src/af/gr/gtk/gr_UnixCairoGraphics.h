@@ -88,9 +88,6 @@ public:
 	virtual GR_Image *  genImageFromRectangle(const UT_Rect & r);
 
 	void				init3dColors(GtkWidget* w);
-#if !GTK_CHECK_VERSION(3,0,0)
-	void                init3dColors(GtkStyle* pStyle);
-#endif
 	void				initWidget(GtkWidget *widget);
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 
