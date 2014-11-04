@@ -40,7 +40,6 @@
 typedef long ssize_t;
 typedef int pid_t;
 #endif
-#include <gcrypt.h>
 #include <gnutls/gnutls.h>
 #include <gnutls/x509.h>
 
