@@ -158,11 +158,19 @@ void GR_UnixCairoGraphics::initWidget(GtkWidget* widget)
 #if GTK_CHECK_VERSION(3,0,0)
 #define COLOR_MIX 0.67   //COLOR_MIX should be between 0 and 1
 #define SQUARE(A) (A)*(A)
-void GR_UnixCairoGraphics::init3dColors(GtkWidget* w)
+void GR_UnixCairoGraphics::init3dColors(GtkWidget* /*w*/)
 {
-	GtkStyleContext* pCtxt = gtk_widget_get_style_context(w);
+	GtkStyleContext* pCtxt = gtk_style_context_new();
+	GtkWidgetPath *path = gtk_widget_path_new();
+	gtk_widget_path_append_type(path, GTK_TYPE_TEXT_VIEW);
+	gtk_style_context_set_path(pCtxt, path);
+	gtk_widget_path_free(path);
+
 	GdkRGBA rgba1, rgba2, rgba_;
 	bool bUseThemeColors = true;
+
+	gtk_style_context_save(pCtxt);
+	gtk_style_context_add_class(pCtxt, GTK_STYLE_CLASS_BUTTON);
 
 	gtk_style_context_get_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba1);
 	gtk_style_context_get_background_color (pCtxt, GTK_STATE_FLAG_NORMAL, &rgba2);
@@ -179,7 +187,7 @@ void GR_UnixCairoGraphics::init3dColors(GtkWidget* w)
 		rgba2.red = 1.;
 		rgba2.green = 1.;
 		rgba2.blue = 1.;
-	} 
+	}
 	m_3dColors[CLR3D_Foreground] = _convertGdkRGBA(rgba1);
 	m_3dColors[CLR3D_Background] = _convertGdkRGBA(rgba2);
 	rgba_.alpha = 1.;   // we don't really care, abiword does not use transparency
@@ -187,16 +195,21 @@ void GR_UnixCairoGraphics::init3dColors(GtkWidget* w)
 	rgba_.green = rgba1.green*COLOR_MIX + rgba2.green*(1.-COLOR_MIX);
 	rgba_.blue = rgba1.blue*COLOR_MIX + rgba2.blue*(1.-COLOR_MIX);
 	m_3dColors[CLR3D_BevelUp]    = _convertGdkRGBA(rgba_);
+
 	rgba_.red = rgba1.red*(1.-COLOR_MIX) + rgba2.red*COLOR_MIX;
 	rgba_.green = rgba1.green*(1.-COLOR_MIX) + rgba2.green*COLOR_MIX;
 	rgba_.blue = rgba1.blue*(1.-COLOR_MIX) + rgba2.blue*COLOR_MIX;
 	m_3dColors[CLR3D_BevelDown]  = _convertGdkRGBA(rgba_);
+
 	if (bUseThemeColors)
 	{
 		gtk_style_context_get_background_color (pCtxt, GTK_STATE_FLAG_PRELIGHT, &rgba2);
 	}
-	m_3dColors[CLR3D_Highlight]  = _convertGdkRGBA(rgba2);
+	gtk_style_context_restore(pCtxt);
+	m_3dColors[CLR3D_Highlight]	= _convertGdkRGBA(rgba2);
 	m_bHave3DColors = true;
+
+	g_object_unref(pCtxt);
 }
 #undef COLOR_MIX
 #undef SQUARE
@@ -228,7 +241,9 @@ GR_Font * GR_UnixCairoGraphics::getGUIFont(void)
 		gtk_widget_path_append_type (path, GTK_TYPE_WINDOW);
 		gtk_style_context_set_path(tempCtxt, path);
 		gtk_widget_path_free(path);
-		const char *guiFontName = pango_font_description_get_family(gtk_style_context_get_font(tempCtxt, GTK_STATE_FLAG_NORMAL));
+		const PangoFontDescription* fontDesc;
+		gtk_style_context_get(tempCtxt, GTK_STATE_FLAG_NORMAL, "font", &fontDesc, NULL);
+		const char *guiFontName = pango_font_description_get_family(fontDesc);
 #else
 		GtkStyle *tempStyle = gtk_style_new();
 		const char *guiFontName = pango_font_description_get_family(tempStyle->font_desc);
