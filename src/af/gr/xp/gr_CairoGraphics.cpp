@@ -443,7 +443,7 @@ GR_CairoGraphics::~GR_CairoGraphics()
 	xxx_UT_DEBUGMSG(("Deleting UnixPangoGraphics %x \n",this));
 
 	// free m_vSaveRect & m_vSaveRectBuf elements
-	UT_std_vector_purgeall(m_vSaveRect);
+	UT_std_vector_sparsepurgeall(m_vSaveRect);
 	UT_std_vector_freeall(m_vSaveRectBuf, cairo_surface_destroy);
 
 	cairo_destroy(m_cr);

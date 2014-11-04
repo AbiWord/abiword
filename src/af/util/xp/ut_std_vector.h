@@ -25,13 +25,25 @@
 
 #include "ut_assert.h"
 
+// TODO I'm sure we can template the sparse out of it.
+template <class V>
+void UT_std_vector_sparsepurgeall(V & v)
+{
+	for(typename V::iterator iter = v.begin();iter != v.end(); ++iter) {
+		if(*iter) {
+			delete *iter;
+        }
+	}
+}
+
 template <class V>
 void UT_std_vector_purgeall(V & v)
 {
 	for(typename V::iterator iter = v.begin();iter != v.end(); ++iter) {
 		UT_ASSERT_HARMLESS(*iter);
-		if(*iter)
+		if(*iter) {
 			delete *iter;
+        }
 	}
 }
 
@@ -39,8 +51,9 @@ template <class V, typename F>
 void UT_std_vector_freeall(V & v, F free_func = g_free)
 {
 	for(typename V::iterator iter = v.begin();iter != v.end(); ++iter) {
-		if(*iter)
+		if(*iter) {
 			free_func(*iter);
+        }
 	}
 }
 
