@@ -93,7 +93,6 @@ dcl(DLG_NEW_Tab1_FAX1,			"Create a fax")
 dcl(DLG_InsertButton,			"&Insert")
 dcl(DLG_CloseButton,			"&Close")
 dcl(DLG_ApplyButton,			"&Apply")
-dcl(DLG_HelpButton,			    "&Help")
 
 /* Tab Types - the order here must be consistent with the
    order in fl_BlockLayout.h*/

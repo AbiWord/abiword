@@ -52,6 +52,7 @@
 #include "xap_UnixDialogHelper.h"
 #include "xap_Dialog.h"
 #include "xap_Gtk2Compat.h"
+#include "xap_Strings.h"
 
 /*****************************************************************/
 /*****************************************************************/
@@ -304,8 +305,9 @@ static gint nonmodal_keypress_cb ( GtkWidget * /*wid*/, GdkEventKey * event,
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 static void help_button_cb (GObject * /*button*/, XAP_Dialog * pDlg)
 {
-  if (pDlg)
-    sDoHelp (pDlg);
+    if (pDlg) {
+        sDoHelp (pDlg);
+    }
 }
 #endif
 
@@ -316,33 +318,24 @@ static void sAddHelpButton (GtkDialog * me, XAP_Dialog * pDlg)
     UT_UNUSED(pDlg);
 #else
   // prevent help button from being added twice
-  gint has_button = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (me), "has-help-button"));
+    gint has_button = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (me), "has-help-button"));
 
-  if (has_button)
-	  return;
+    if (has_button)
+        return;
 
-  if (pDlg && pDlg->getHelpUrl().size () > 0) {
+    if (pDlg && pDlg->getHelpUrl().size () > 0) {
 
-#ifdef HAVE_SDI
-    GtkWidget * image = gtk_image_new_from_stock(GTK_STOCK_HELP, GTK_ICON_SIZE_BUTTON);
-	GtkWidget * button = gtk_button_new();
-	gtk_container_add(GTK_CONTAINER(button), image);
-	GtkWidget * alignment = gtk_alignment_new (0, 0.5, 0, 0);
-	gtk_container_add (GTK_CONTAINER(alignment), button);
-#else
-	GtkWidget * alignment = gtk_button_new_from_stock (GTK_STOCK_HELP);
-	GtkWidget * button = alignment;
-#endif
-    gtk_box_pack_start(GTK_BOX(gtk_dialog_get_action_area(me)),
-		       alignment, FALSE, FALSE, 0);
-    gtk_button_box_set_child_secondary (GTK_BUTTON_BOX(gtk_dialog_get_action_area(me)),
-					alignment, TRUE);
-    g_signal_connect (G_OBJECT (button), "clicked",
-		      G_CALLBACK(help_button_cb), pDlg);
-    gtk_widget_show_all (alignment);
+        std::string s;
+        const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
+        pSS->getValueUTF8(XAP_STRING_ID_DLG_HelpButton, s);
 
-    g_object_set_data (G_OBJECT (me), "has-help-button", GINT_TO_POINTER (1));
-  }
+        GtkWidget * button = gtk_dialog_add_button(me,
+                                                   convertMnemonics(s).c_str(),
+                                                   GTK_RESPONSE_HELP);
+        g_signal_connect (G_OBJECT (button), "clicked",
+                          G_CALLBACK(help_button_cb), pDlg);
+        g_object_set_data (G_OBJECT (me), "has-help-button", GINT_TO_POINTER (1));
+    }
 #endif
 }
 
@@ -392,7 +385,7 @@ void abiSetupModalDialog(GtkDialog * dialog, XAP_Frame *pFrame, XAP_Dialog * pDl
 	// connect F1 to the help subsystem
 	g_signal_connect (G_OBJECT(popup), "key-press-event",
 					  G_CALLBACK(modal_keypress_cb), pDlg);
-	
+
 	// set the default response
 	sAddHelpButton (GTK_DIALOG (popup), pDlg);
 
@@ -404,14 +397,18 @@ gint abiRunModalDialog(GtkDialog * me, bool destroyDialog, AtkRole role)
 {
 	atk_object_set_role (gtk_widget_get_accessible (GTK_WIDGET (me)), role);
 
-  // now run the dialog
-  gint result = gtk_dialog_run ( me ) ;
-  
-  // destroy the dialog
-  if ( destroyDialog )
-    abiDestroyWidget ( GTK_WIDGET ( me ) );
-  
-  return result ;
+    // now run the dialog
+    gint result = GTK_RESPONSE_NONE;
+    while((result = gtk_dialog_run ( me )) == GTK_RESPONSE_HELP) {
+
+    }
+
+    // destroy the dialog
+    if ( destroyDialog ) {
+        abiDestroyWidget ( GTK_WIDGET ( me ) );
+    }
+
+    return result ;
 }
 
 /*!
@@ -745,19 +742,6 @@ void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Str
 		gtk_label_set_use_markup (GTK_LABEL(button_child), TRUE);
 
 	FREEP(newlbl);	
-}
-/*!
- * Localizes the label of a Menu widget given the string id
- */
-void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id)
-{
-//	UT_ASSERT(GTK_IS_MENU(widget));
-	gchar * unixstr = NULL;	// used for conversions
-	std::string s;
-	pSS->getValueUTF8(id,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	gtk_menu_set_title (GTK_MENU(widget), unixstr);
-	FREEP(unixstr);	
 }
 
 /*!

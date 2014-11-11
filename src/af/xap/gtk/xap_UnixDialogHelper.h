@@ -110,7 +110,6 @@ void localizeLabelMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_Stri
 void localizeButton(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void localizeButtonUnderline(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void localizeButtonMarkup(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
-void localizeMenu(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void localizeMenuItem(GtkWidget * widget, const XAP_StringSet * pSS, XAP_String_Id id);
 void setLabelMarkup(GtkWidget * widget, const gchar * str);
 
