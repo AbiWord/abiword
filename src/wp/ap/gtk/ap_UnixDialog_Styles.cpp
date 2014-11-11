@@ -293,10 +293,10 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 	GtkAllocation allocation;
 	gtk_widget_get_allocation(m_wParaPreviewArea, &allocation);
 	_createParaPreviewFromGC(m_pParaPreviewWidget,
-				 static_cast<UT_uint32>(allocation.width), 
+				 static_cast<UT_uint32>(allocation.width),
 				 static_cast<UT_uint32>(allocation.height));
-	
-	
+
+
 	UT_ASSERT(m_wCharPreviewArea && gtk_widget_get_window(m_wCharPreviewArea));
 
 	// make a new Unix GC
@@ -311,7 +311,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	gtk_widget_get_allocation(m_wCharPreviewArea, &allocation);
 	_createCharPreviewFromGC(m_pCharPreviewWidget,
-				 static_cast<UT_uint32>(allocation.width), 
+				 static_cast<UT_uint32>(allocation.width),
 				 static_cast<UT_uint32>(allocation.height));
 
 	// Populate the window's data items
@@ -319,35 +319,27 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wParaPreviewArea),
-#if GTK_CHECK_VERSION(3,0,0)
 			 "draw",
-#else
-			 "expose_event",
-#endif
 			 G_CALLBACK(s_paraPreview_draw),
 			 reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wCharPreviewArea),
-#if GTK_CHECK_VERSION(3,0,0)
 			 "draw",
-#else
-			 "expose_event",
-#endif
 			 G_CALLBACK(s_charPreview_draw),
 			 reinterpret_cast<gpointer>(this));
-	
+
 	// connect the select_row signal to the clist
 	g_signal_connect (G_OBJECT (gtk_tree_view_get_selection(GTK_TREE_VIEW(m_tvStyles))), "changed",
 			  G_CALLBACK (s_tvStyles_selection_changed), reinterpret_cast<gpointer>(this));
-	
+
 	// main loop for the dialog
 	gint response;
 	while(true)
-    {
+	{
 		response = abiRunModalDialog(GTK_DIALOG(m_windowMain), false);
-	    if (response == GTK_RESPONSE_APPLY)
+		if (response == GTK_RESPONSE_APPLY)
 			event_Apply();
-	    else
+		else
 		{
 			event_Close();
 			break; // exit the loop
@@ -356,7 +348,7 @@ void AP_UnixDialog_Styles::runModal(XAP_Frame * pFrame)
 
 	DELETEP (m_pParaPreviewWidget);
 	DELETEP (m_pCharPreviewWidget);
-	
+
 	abiDestroyWidget(m_windowMain);
 }
 
@@ -486,11 +478,7 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
 	// load the dialog from the UI file
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Styles.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Styles-2.ui");
-#endif
 
 	GtkWidget *window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Styles"));
 	std::string s;
@@ -733,9 +721,6 @@ GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)
 	modifyDialog = abiDialogNew("modify style dialog", TRUE, title.c_str());
 	gtk_container_set_border_width (GTK_CONTAINER (modifyDialog), 5);
 	gtk_window_set_resizable(GTK_WINDOW(modifyDialog), FALSE);
-#if !GTK_CHECK_VERSION(3,0,0)
-	gtk_dialog_set_has_separator(GTK_DIALOG(modifyDialog), FALSE);
-#endif	  	
 
 	_constructModifyDialogContents(gtk_dialog_get_content_area(GTK_DIALOG (modifyDialog)));
 
@@ -1069,11 +1054,7 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 					   reinterpret_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_wModifyDrawingArea),
-#if GTK_CHECK_VERSION(3,0,0)
 			 "draw",
-#else
-			 "expose_event",
-#endif
 			 G_CALLBACK(s_modifyPreview_draw),
 			 reinterpret_cast<gpointer>(this));
 
@@ -1087,17 +1068,17 @@ void AP_UnixDialog_Styles::_connectModifySignals(void)
 					   G_CALLBACK(s_style_name),
 					   static_cast<gpointer>(this));
 
-	g_signal_connect(G_OBJECT(m_wBasedOnEntry), 
+	g_signal_connect(G_OBJECT(m_wBasedOnEntry),
 					   "changed",
 					   G_CALLBACK(s_basedon),
 					   static_cast<gpointer>(this));
 
-	g_signal_connect(G_OBJECT(m_wFollowingEntry), 
+	g_signal_connect(G_OBJECT(m_wFollowingEntry),
 					   "changed",
 					   G_CALLBACK(s_followedby),
 					   static_cast<gpointer>(this));
 
-	g_signal_connect(G_OBJECT(m_wStyleTypeEntry), 
+	g_signal_connect(G_OBJECT(m_wStyleTypeEntry),
 					   "changed",
 					   G_CALLBACK(s_styletype),
 					   static_cast<gpointer>(this));
@@ -1114,7 +1095,7 @@ bool AP_UnixDialog_Styles::event_Modify_OK(void)
       const XAP_StringSet * pSS = m_pApp->getStringSet ();
       std::string s;
       pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrBlankName,s);
-	  
+
       getFrame()->showMessageBox (s.c_str(),
 				  XAP_Dialog_MessageBox::b_O,
 				  XAP_Dialog_MessageBox::a_OK);
@@ -1138,7 +1119,7 @@ void AP_UnixDialog_Styles::new_styleName(void)
 	std::string s;
 	std::string s1;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_DefNone,s);
-	
+
 	if(psz && strcmp(psz,s.c_str())== 0)
 	{
 		// TODO: do a real error dialog
@@ -1201,9 +1182,9 @@ void AP_UnixDialog_Styles::event_basedOn(void)
 	const XAP_StringSet *pSS = m_pApp->getStringSet();
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY( m_wBasedOnEntry));
 	if (strcmp(psz, pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone)) == 0)
-		psz = "None";    
+		psz = "None";
 	else
-		psz = pt_PieceTable::s_getUnlocalisedStyleName(psz);	
+		psz = pt_PieceTable::s_getUnlocalisedStyleName(psz);
 	g_snprintf(static_cast<gchar *>(m_basedonName),40,"%s",psz);
 	addOrReplaceVecAttribs("basedon",getBasedonName());
 	updateCurrentStyle();
@@ -1218,9 +1199,9 @@ void AP_UnixDialog_Styles::event_followedBy(void)
 	const XAP_StringSet *pSS = m_pApp->getStringSet();
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wFollowingEntry));
 	if (strcmp(psz, pSS->getValue(AP_STRING_ID_DLG_Styles_DefCurrent)) == 0)
-		psz = "Current Settings";    
+		psz = "Current Settings";
 	else
-		psz = pt_PieceTable::s_getUnlocalisedStyleName(psz);	
+		psz = pt_PieceTable::s_getUnlocalisedStyleName(psz);
 	g_snprintf(static_cast<gchar *>(m_followedbyName),40,"%s",psz);
 	addOrReplaceVecAttribs("followedby",getFollowedbyName());
 }
@@ -1233,7 +1214,7 @@ void AP_UnixDialog_Styles::event_styleType(void)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	std::string s;
-	
+
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wStyleTypeEntry));
 	g_snprintf(static_cast<gchar *>(m_styleType),40,"%s",psz);
 	const gchar * pszSt = "P";
@@ -1268,9 +1249,9 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 //
 // populate the dialog with useful info
 //
-    if(!_populateModify())
+	if(!_populateModify())
 	{
-	  abiDestroyWidget(m_wModifyDialog);
+		abiDestroyWidget(m_wModifyDialog);
 		return;
 	}
 
@@ -1282,7 +1263,7 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 	GR_UnixCairoAllocInfo ai(gtk_widget_get_window(m_wModifyDrawingArea));
 	m_pAbiPreviewWidget =
 	    (GR_CairoGraphics*) XAP_App::getApp()->newGraphics(ai);
-	
+
 	// let the widget materialize
 
 	GtkAllocation allocation;
@@ -1290,25 +1271,24 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 	_createAbiPreviewFromGC(m_pAbiPreviewWidget,
 				static_cast<UT_uint32>(allocation.width),
 				static_cast<UT_uint32>(allocation.height));
-	
 	_populateAbiPreview(isNew());
 
 	bool inputValid;
-	do 
+	do
 	{
 		switch(abiRunModalDialog(GTK_DIALOG(m_wModifyDialog), false))
 		{
 			case BUTTON_MODIFY_OK:
-				inputValid = event_Modify_OK(); 
+				inputValid = event_Modify_OK();
 				break;
 			default:
-				event_Modify_Cancel(); 
+				event_Modify_Cancel();
 				inputValid = true;
 				break ;
-		}		
+		}
 	} while (!inputValid);
-	
-	if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog)) 
+
+	if(m_wModifyDialog && GTK_IS_WIDGET(m_wModifyDialog))
 	{
 //
 // Free the old glists
@@ -1316,11 +1296,11 @@ void  AP_UnixDialog_Styles::modifyRunModal(void)
 		m_gbasedOnStyles.clear();
 		m_gfollowedByStyles.clear();
 		m_gStyleType.clear();
-	    gtk_widget_destroy(m_wModifyDialog);
+		gtk_widget_destroy(m_wModifyDialog);
 	}
 //
 // Have to delete this now since the destructor is not run till later
-//	
+//
 	destroyAbiPreview();
 	DELETEP(m_pAbiPreviewWidget);
 }
@@ -1338,7 +1318,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 
 	if(szCurrentStyle)
 		getDoc()->getStyle(szCurrentStyle, &pStyle);
-	
+
 	if (!pStyle)
 	{
 		// TODO: error message - nothing selected
@@ -1355,14 +1335,14 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 		std::string s;
 		pSS->getValueUTF8 (AP_STRING_ID_DLG_Styles_ErrStyleBuiltin,s);
 		const gchar * msg = s.c_str();
-		
+
 		getFrame()->showMessageBox (static_cast<const char *>(msg),
 									XAP_Dialog_MessageBox::b_O,
 									XAP_Dialog_MessageBox::a_OK);
 		return;
-	}	
+	}
 #endif
-	
+
 #if HIDE_MAIN_DIALOG
 //
 // Hide the old window
@@ -1373,7 +1353,7 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 // fill the data structures needed for the Modify dialog
 //
 	setIsNew(false);
-	
+
 	modifyRunModal();
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
@@ -1387,10 +1367,10 @@ void AP_UnixDialog_Styles::event_ModifyClicked(void)
 // Do other stuff
 //
 	}
-//  
+//
 // Restore the values in the main dialog
 //
-	
+
 #if HIDE_MAIN_DIALOG
 //
 // Reveal main window again
@@ -1431,7 +1411,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 //
 	const char * szCurrentStyle = NULL;
 	std::string s;
-	
+
 	if(!isNew())
 	{
 		szCurrentStyle= getCurrentStyle();
@@ -1512,7 +1492,7 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 	m_gbasedOnStyles.push_back(pSS->getValue(AP_STRING_ID_DLG_Styles_DefNone));
 	m_gStyleType.push_back(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph));
 	m_gStyleType.push_back(pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter));
- 
+
 //
 // Set the popdown list
 //
