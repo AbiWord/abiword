@@ -601,16 +601,24 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	m_FC = GTK_FILE_CHOOSER( hildon_file_chooser_dialog_new(GTK_WINDOW(parent),
 							(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE))
 							);
-#else	
-	m_FC = GTK_FILE_CHOOSER( gtk_file_chooser_dialog_new (szTitle.c_str(),
-									GTK_WINDOW(parent),
-									(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
-									GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-									(m_bSave ? GTK_STOCK_SAVE : GTK_STOCK_OPEN), GTK_RESPONSE_ACCEPT,
-									(gchar*)NULL)
-							);
-#endif	
-    
+#else
+	std::string cancel, validate;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, cancel);
+	pSS->getValueUTF8(m_bSave ?
+					  XAP_STRING_ID_DLG_Save :
+					  XAP_STRING_ID_DLG_Open, validate);
+
+	m_FC = GTK_FILE_CHOOSER(
+		gtk_file_chooser_dialog_new (szTitle.c_str(),
+									 GTK_WINDOW(parent),
+									 (!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE),
+									 cancel.c_str(), GTK_RESPONSE_CANCEL,
+									 convertMnemonics(validate).c_str(),
+									 GTK_RESPONSE_ACCEPT,
+									 (gchar*)NULL)
+		);
+#endif
+
 	gtk_file_chooser_set_local_only(m_FC, FALSE);
 
 	abiSetupModalDialog(GTK_DIALOG(m_FC), pFrame, this, GTK_RESPONSE_ACCEPT);

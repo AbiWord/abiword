@@ -103,6 +103,8 @@ dcl(DLG_Merge, 				    "Merge")
 dcl(DLG_Show, 				    "Show")
 dcl(DLG_Restore,			    "Restore")
 dcl(DLG_HelpButton,			    "&Help")
+dcl(DLG_Save,					"Sa&ve")
+dcl(DLG_Open,					"&Open")
 
 /* Units */
 dcl(DLG_Unit_inch,				"inch")

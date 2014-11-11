@@ -640,9 +640,7 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 	abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_CLOSE);
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert, s);
 	tmp = abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_INSERT);
-	GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
-	gtk_button_set_image(GTK_BUTTON(tmp), img);      
-	
+
 	_connectSignals ();
 
 	return m_windowMain;
