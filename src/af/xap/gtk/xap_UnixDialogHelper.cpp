@@ -501,22 +501,22 @@ GtkWidget * abiDialogNew(const char * role, gboolean resizable)
  */
 GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * title, ...)
 {
-  GtkWidget * dlg = abiDialogNew(role, resizable);
-  
-  if ( title != NULL && strlen ( title ) )
-  {
-    UT_String titleStr ( "" ) ;
+    GtkWidget * dlg = abiDialogNew(role, resizable);
 
-    va_list args;
-    va_start (args, title);
-    UT_String_vprintf (titleStr, title, args);
-    va_end (args);
+    if(title && *title)
+    {
+        std::string titleStr;
 
-    // create the title
-    gtk_window_set_title ( GTK_WINDOW(dlg), titleStr.c_str() ) ;
-  }
+        va_list args;
+        va_start (args, title);
+        titleStr = UT_std_string_vprintf(titleStr, title, args);
+        va_end (args);
 
-  return dlg ;
+        // create the title
+        gtk_window_set_title(GTK_WINDOW(dlg), titleStr.c_str()) ;
+    }
+
+    return dlg ;
 }
 
 /*!
