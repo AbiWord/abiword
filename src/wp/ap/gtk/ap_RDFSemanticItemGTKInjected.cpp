@@ -473,8 +473,6 @@ public:
         // localization
         GtkWidget *ok = GTK_WIDGET(gtk_builder_get_object(builder, "ok"));
         localizeButton(ok, pSS, AP_STRING_ID_DLG_RDF_SemanticItemInsert_Ok);
-        GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
-        gtk_button_set_image(GTK_BUTTON(ok), img);      
 
         // window title and icon
         pSS->getValueUTF8(AP_STRING_ID_DLG_RDF_SemanticItemInsert_Title, text);
@@ -489,7 +487,7 @@ public:
             gtk_tree_view_set_model (GTK_TREE_VIEW (tv), GTK_TREE_MODEL (store));
             g_object_unref (G_OBJECT (store));
         }
-    
+
         GtkTreeModel *model = gtk_tree_view_get_model (GTK_TREE_VIEW (tv));
 
         GtkTreeViewColumn *column = NULL;
@@ -501,7 +499,7 @@ public:
                                                      NULL);
         column = gtk_tree_view_get_column (GTK_TREE_VIEW (tv), COLUMN_REFDLG_NAME );
         gtk_tree_view_column_set_sort_column_id (column, COLUMN_REFDLG_NAME );
-    
+
         PD_RDFContacts l = rdf->getContacts();
         GtkTreeIter giter;
         GtkTreeIter parentiter;
