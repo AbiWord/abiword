@@ -186,7 +186,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
   //gtk_box_pack_start (GTK_BOX (vbox2), m_blist, FALSE, FALSE, 0);
 
   m_pBookmarks.clear();
-	
+
   for (int i = 0; i < static_cast<int>(getExistingBookmarksCount()); i++) {
     m_pBookmarks.push_back(getNthExistingBookmark(i));
   }
@@ -199,7 +199,7 @@ void AP_UnixDialog_InsertHyperlink::_constructWindowContents ( GtkWidget * vbox2
 		  gtk_list_store_set(store, &iter, 0, m_pBookmarks[i].c_str(), -1);
   }
 
-  gtk_scrolled_window_add_with_viewport(GTK_SCROLLED_WINDOW(m_swindow),m_clist);
+  gtk_container_add(GTK_CONTAINER(m_swindow), m_clist);
 
   pSS->getValueUTF8(AP_STRING_ID_DLG_InsertHyperlink_TitleLabel, s);
   label2 = gtk_label_new(s.c_str());
