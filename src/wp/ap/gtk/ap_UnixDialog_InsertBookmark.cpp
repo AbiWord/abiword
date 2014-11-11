@@ -199,12 +199,12 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
 
   _constructWindowContents ( vbox );
 
-  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-  abiAddStockButton(GTK_DIALOG(m_windowMain), GTK_STOCK_DELETE, BUTTON_DELETE);
-  m_buttonInsert = abiAddButton(GTK_DIALOG(m_windowMain), "", BUTTON_INSERT);
-  localizeButtonUnderline (m_buttonInsert, pSS, AP_STRING_ID_DLG_InsertButton);
-  GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
-  gtk_button_set_image(GTK_BUTTON(m_buttonInsert), img);      
+  pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+  abiAddButton(GTK_DIALOG(m_windowMain), s, BUTTON_CANCEL);
+  pSS->getValueUTF8(XAP_STRING_ID_DLG_Delete, s);
+  abiAddButton(GTK_DIALOG(m_windowMain), s, BUTTON_DELETE);
+  pSS->getValueUTF8(AP_STRING_ID_DLG_InsertButton, s);
+  m_buttonInsert = abiAddButton(GTK_DIALOG(m_windowMain), s, BUTTON_INSERT);
 
   gtk_widget_grab_focus (m_comboBookmark);
 

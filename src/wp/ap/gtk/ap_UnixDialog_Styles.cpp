@@ -1005,9 +1005,14 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
 	GtkWidget *cancelButton;
 	GtkWidget *FormatMenu;
 	GtkWidget *shortCutButton = 0;
+	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-	cancelButton = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_CANCEL, BUTTON_MODIFY_CANCEL);	
-	buttonOK = abiAddStockButton(GTK_DIALOG(m_wModifyDialog), GTK_STOCK_OK, BUTTON_MODIFY_OK);
+	cancelButton = abiAddButton(GTK_DIALOG(m_wModifyDialog),
+                                    pSS->getValue(XAP_STRING_ID_DLG_Cancel),
+                                    BUTTON_MODIFY_CANCEL);
+	buttonOK = abiAddButton(GTK_DIALOG(m_wModifyDialog),
+                                pSS->getValue(XAP_STRING_ID_DLG_OK),
+                                BUTTON_MODIFY_OK);
 
 	FormatMenu = gtk_combo_box_text_new();
 	gtk_widget_show (FormatMenu);
@@ -1026,7 +1031,6 @@ void   AP_UnixDialog_Styles::_constructGnomeModifyButtons( GtkWidget * dialog_ac
 	m_wModifyCancel = cancelButton;
 	m_wFormatMenu = FormatMenu;
 	m_wModifyShortCutKey = shortCutButton;
-	
 }
 
 

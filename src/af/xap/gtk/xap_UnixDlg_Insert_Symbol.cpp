@@ -635,9 +635,11 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 	gtk_widget_show_all (hbox);
 
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CLOSE, BUTTON_CLOSE);
-	tmp = abiAddButton (GTK_DIALOG(m_windowMain), "&Insert" /* not used */, BUTTON_INSERT);
-	localizeButtonUnderline (tmp, pSS, XAP_STRING_ID_DLG_Insert);
+	std::string s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Close, s);
+	abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_CLOSE);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Insert, s);
+	tmp = abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_INSERT);
 	GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
 	gtk_button_set_image(GTK_BUTTON(tmp), img);      
 	

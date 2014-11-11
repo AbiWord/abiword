@@ -173,17 +173,17 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindow(void)
 	GtkWidget * vboxMain;
 	GtkWidget * windowMergeCells;
 	ConstructWindowName();
+	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+
 	windowMergeCells = abiDialogNew ( "merge cell dialog", TRUE, static_cast<char *>(m_WindowName));
 	gtk_window_set_position(GTK_WINDOW(windowMergeCells), GTK_WIN_POS_MOUSE);
-#if !GTK_CHECK_VERSION(3,0,0)
-	gtk_dialog_set_has_separator(GTK_DIALOG(windowMergeCells), FALSE);
-#endif
-	
 	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowMergeCells));
-	gtk_container_set_border_width (GTK_CONTAINER (vboxMain), 10);	
+	gtk_container_set_border_width(GTK_CONTAINER (vboxMain), 10);
 	_constructWindowContents();
 	gtk_box_pack_start (GTK_BOX (vboxMain), m_wContents, FALSE, FALSE, 0);
-	abiAddStockButton ( GTK_DIALOG(windowMergeCells), GTK_STOCK_CLOSE, BUTTON_CLOSE ) ;
+	abiAddButton(GTK_DIALOG(windowMergeCells),
+			  pSS->getValue(XAP_STRING_ID_DLG_Close),
+			  BUTTON_CLOSE);
 
 	// Update member variables with the important widgets that
 	// might need to be queried or altered later.
@@ -198,7 +198,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	GtkWidget *wContents;
 
 	wContents = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-    gtk_widget_show (wContents);
+	gtk_widget_show (wContents);
 	GtkWidget *frame1;
 	GtkWidget *table1;
 	GtkWidget *wlMergeLeft;

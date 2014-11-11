@@ -360,14 +360,14 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 
 	windowContents = _constructWindowContents(windowParagraph);
 	gtk_box_pack_start (GTK_BOX (vboxMain), windowContents, FALSE, TRUE, 5);
-	buttonCancel = abiAddStockButton(GTK_DIALOG(windowParagraph), GTK_STOCK_CANCEL, BUTTON_CANCEL);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+	buttonCancel = abiAddButton(GTK_DIALOG(windowParagraph), s, BUTTON_CANCEL);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_ButtonTabs,s);
-	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
-	buttonTabs = abiAddButton (GTK_DIALOG(windowParagraph), unixstr, BUTTON_TABS);
+	buttonTabs = abiAddButton (GTK_DIALOG(windowParagraph), s, BUTTON_TABS);
 	GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_GOTO_LAST, GTK_ICON_SIZE_BUTTON);
-	gtk_button_set_image(GTK_BUTTON(buttonTabs), img);      
-	FREEP(unixstr);
-	buttonOK = abiAddStockButton(GTK_DIALOG(windowParagraph), GTK_STOCK_OK, BUTTON_OK);
+	gtk_button_set_image(GTK_BUTTON(buttonTabs), img);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
+	buttonOK = abiAddButton(GTK_DIALOG(windowParagraph), s, BUTTON_OK);
 
 	m_windowMain = windowParagraph;
 

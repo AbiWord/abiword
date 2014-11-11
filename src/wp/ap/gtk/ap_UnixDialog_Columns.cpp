@@ -544,8 +544,10 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 
 	_constructWindowContents(gtk_dialog_get_content_area(GTK_DIALOG(windowColumns)));
 
-	abiAddStockButton ( GTK_DIALOG(windowColumns), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-	abiAddStockButton ( GTK_DIALOG(windowColumns), GTK_STOCK_OK, BUTTON_OK ) ;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+	abiAddButton(GTK_DIALOG(windowColumns), s, BUTTON_CANCEL);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
+	abiAddButton(GTK_DIALOG(windowColumns), s, BUTTON_OK);
 
 	_connectsignals();
 	return windowColumns;

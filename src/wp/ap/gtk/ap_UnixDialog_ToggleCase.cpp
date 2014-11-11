@@ -97,8 +97,10 @@ GtkWidget * AP_UnixDialog_ToggleCase::_constructWindow (void)
   gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area(GTK_DIALOG(windowMain))), vbox);
   _constructWindowContents(vbox);
 
-  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-  abiAddStockButton(GTK_DIALOG(windowMain), GTK_STOCK_OK, BUTTON_OK);
+  pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+  abiAddButton(GTK_DIALOG(windowMain), s, BUTTON_CANCEL);
+  pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
+  abiAddButton(GTK_DIALOG(windowMain), s, BUTTON_OK);
 
   return windowMain;
 }

@@ -678,8 +678,11 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
 	}
 
-	abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-	abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_OK, BUTTON_OK);
+	std::string s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+	abiAddButton(GTK_DIALOG(m_window), s, BUTTON_CANCEL);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
+	abiAddButton(GTK_DIALOG(m_window), s, BUTTON_OK);
 	_connectSignals ();
 
 	return m_window;

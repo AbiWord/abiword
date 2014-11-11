@@ -131,13 +131,10 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
 {
   GtkWidget *ap_UnixDialog_ListRevisions;
   GtkWidget *vbDialog;
-  GtkWidget *aaDialog;
-	
-  ap_UnixDialog_ListRevisions = abiDialogNew ( "list revisions dialog", TRUE, getTitle());	
-#if !GTK_CHECK_VERSION(3,0,0)
-  gtk_dialog_set_has_separator(GTK_DIALOG(ap_UnixDialog_ListRevisions), FALSE);
-#endif
-	
+
+  const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+  ap_UnixDialog_ListRevisions = abiDialogNew ( "list revisions dialog", TRUE, getTitle());
+
   gtk_window_set_modal (GTK_WINDOW (ap_UnixDialog_ListRevisions), TRUE);
   gtk_window_set_default_size ( GTK_WINDOW(ap_UnixDialog_ListRevisions), 800, 450 ) ;
 
@@ -145,13 +142,12 @@ GtkWidget * AP_UnixDialog_ListRevisions::constructWindow ()
   gtk_widget_show (vbDialog);
   gtk_container_set_border_width (GTK_CONTAINER (vbDialog), 5);
 
-  aaDialog = gtk_dialog_get_action_area(GTK_DIALOG(ap_UnixDialog_ListRevisions));
-  gtk_widget_show (aaDialog);
-
   constructWindowContents ( vbDialog ) ;
 
-  abiAddStockButton ( GTK_DIALOG(ap_UnixDialog_ListRevisions), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-  abiAddStockButton ( GTK_DIALOG(ap_UnixDialog_ListRevisions), GTK_STOCK_OK, BUTTON_OK ) ;
+  abiAddButton(GTK_DIALOG(ap_UnixDialog_ListRevisions),
+               pSS->getValue(XAP_STRING_ID_DLG_Cancel), BUTTON_CANCEL);
+  abiAddButton(GTK_DIALOG(ap_UnixDialog_ListRevisions),
+               pSS->getValue(XAP_STRING_ID_DLG_OK), BUTTON_OK);
 
   return ap_UnixDialog_ListRevisions;
 }

@@ -131,11 +131,13 @@ GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
 
 	gtk_window_set_resizable (GTK_WINDOW (dlg), false);
 
-	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
-	abiAddStockButton ( GTK_DIALOG(dlg), GTK_STOCK_OK, BUTTON_OK ) ;
-  
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+	abiAddButton (GTK_DIALOG(dlg), s, BUTTON_CANCEL ) ;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
+	abiAddButton (GTK_DIALOG(dlg), s, BUTTON_OK ) ;
+
 	_constructWindowContents (gtk_dialog_get_content_area(GTK_DIALOG(dlg)));
-	
+
 	return dlg;
 }
 

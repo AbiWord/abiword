@@ -142,13 +142,16 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 	gtk_dialog_set_has_separator(GTK_DIALOG(this->dlg), FALSE);
 #endif
 	gtk_window_set_default_size (GTK_WINDOW (this->dlg), 640, 480);
-	abiAddStockButton(GTK_DIALOG(this->dlg), GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
-	abiAddStockButton(GTK_DIALOG(this->dlg), GTK_STOCK_OK, GTK_RESPONSE_OK);
+	abiAddButton(GTK_DIALOG(this->dlg),
+                 pSS->getValue(XAP_STRING_ID_DLG_Cancel),
+                 GTK_RESPONSE_CANCEL);
+	abiAddButton(GTK_DIALOG(this->dlg),
+                 pSS->getValue(XAP_STRING_ID_DLG_OK), GTK_RESPONSE_OK);
 	connectFocus(GTK_WIDGET(this->dlg), pFrame);
 
 	GtkWidget *vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 10);
 	gtk_box_pack_start(GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(this->dlg))), vbox, TRUE,TRUE,0);
-	
+
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_CLIPART_Loading, s);
 	this->progress = gtk_progress_bar_new ();
 	gtk_progress_bar_set_text (GTK_PROGRESS_BAR (this->progress), s.c_str());
@@ -166,7 +169,7 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 	this->icon_view = gtk_icon_view_new ();
 	gtk_icon_view_set_text_column (GTK_ICON_VIEW (this->icon_view), COL_DISPLAY_NAME);
 	gtk_icon_view_set_pixbuf_column (GTK_ICON_VIEW (this->icon_view), COL_PIXBUF);
-	gtk_icon_view_set_column_spacing (GTK_ICON_VIEW (this->icon_view), 0); 
+	gtk_icon_view_set_column_spacing (GTK_ICON_VIEW (this->icon_view), 0);
 	gtk_icon_view_set_row_spacing (GTK_ICON_VIEW (this->icon_view), 0);
 	gtk_icon_view_set_columns (GTK_ICON_VIEW (this->icon_view), -1);
 	gtk_container_add (GTK_CONTAINER (scroll), this->icon_view);
@@ -179,7 +182,7 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 	g_idle_add ((GSourceFunc) fill_store, this);
 
 	switch (abiRunModalDialog(GTK_DIALOG(this->dlg), pFrame, this, GTK_RESPONSE_CANCEL, false)) {
-	case GTK_RESPONSE_OK:		
+	case GTK_RESPONSE_OK:
 		list = gtk_icon_view_get_selected_items (GTK_ICON_VIEW (this->icon_view));
 		if (list && list->data) {
 			gchar *graphic = NULL;
@@ -199,7 +202,7 @@ void XAP_UnixDialog_ClipArt::runModal(XAP_Frame * pFrame)
 			}
 			else {
 				setAnswer (XAP_Dialog_ClipArt::a_CANCEL);
-			}			
+			}
 			g_list_foreach (list, (void (*)(void*, void*)) gtk_tree_path_free, NULL);
 			g_list_free (list);
 		}

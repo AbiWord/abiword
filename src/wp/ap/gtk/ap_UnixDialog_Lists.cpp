@@ -581,15 +581,21 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow(void)
 	gtk_widget_show (contents);
 	gtk_box_pack_start (GTK_BOX (vbox1), contents, FALSE, TRUE, 0);
 
+	const XAP_StringSet* pSS = XAP_App::getApp()->getStringSet();
+	std::string s;
 	if(!isModal())
 	{
-		m_wClose = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_CLOSE, BUTTON_CLOSE ) ;
-		m_wApply = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_APPLY, BUTTON_APPLY ) ;
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_Close, s);
+		m_wClose = abiAddButton ( GTK_DIALOG(m_wMainWindow), s, BUTTON_CLOSE ) ;
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_Apply, s);
+		m_wApply = abiAddButton ( GTK_DIALOG(m_wMainWindow), s, BUTTON_APPLY ) ;
 	}
 	else
 	{
-		m_wApply = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_OK, BUTTON_OK ) ;
-		m_wClose = abiAddStockButton ( GTK_DIALOG(m_wMainWindow), GTK_STOCK_CANCEL, BUTTON_CANCEL ) ;
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
+		m_wApply = abiAddButton ( GTK_DIALOG(m_wMainWindow), s, BUTTON_OK ) ;
+		pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+		m_wClose = abiAddButton ( GTK_DIALOG(m_wMainWindow), s, BUTTON_CANCEL ) ;
 	}
 
 	gtk_widget_grab_default (m_wClose);

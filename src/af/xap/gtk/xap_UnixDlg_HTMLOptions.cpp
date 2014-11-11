@@ -19,6 +19,7 @@
  * 02110-1301 USA.
  */
 
+#include <string>
 #include "xap_Frame.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixDlg_HTMLOptions.h"
@@ -263,8 +264,6 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 
 	const char * title   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpTitle));
 	const char * label   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpLabel));
-	const char * save    = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpSave));
-	const char * restore = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpRestore));
 
 	const char * Is4         = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpIs4));
 	const char * AbiWebDoc   = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpAbiWebDoc));
@@ -381,11 +380,16 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 
 	refreshStates ();
 
-	abiAddStockButton (GTK_DIALOG(m_windowMain), save,    BUTTON_SAVE_SETTINGS);
-	abiAddStockButton (GTK_DIALOG(m_windowMain), restore, BUTTON_RESTORE_SETTINGS);
+	std::string s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_HTMLOPT_ExpSave, s);
+	abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_SAVE_SETTINGS);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_HTMLOPT_ExpRestore, s);
+	abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_RESTORE_SETTINGS);
 
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_OK,     BUTTON_OK);
-  
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+	abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_CANCEL);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
+	abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_OK);
+
 	return m_windowMain;
 }

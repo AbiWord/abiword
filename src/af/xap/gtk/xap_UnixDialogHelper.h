@@ -89,10 +89,7 @@ gint abiRunModalDialog(GtkDialog * me, XAP_Frame *pFrame, XAP_Dialog * pDlg, gin
 void abiSetupModelessDialog(GtkDialog * me, XAP_Frame * pFrame, XAP_Dialog * pDlg, gint dfl_id, bool abi_modeless = true, AtkRole role = ATK_ROLE_DIALOG);
 void abiDestroyWidget(GtkWidget * me);
 
-GtkWidget* abiAddStockButton (GtkDialog * me, const gchar * btn_id,
-			      gint response_id) ;
-GtkWidget* abiAddButton(GtkDialog * me, const gchar * btn_id,
-			gint response_id);
+GtkWidget* abiAddButton(GtkDialog * me, std::string label, gint response_id);
 
 GtkWidget * abiDialogNew(const char * role, gboolean resizable = FALSE);
 GtkWidget * abiDialogNew(const char * role, gboolean resizable, const char * title, ...);

@@ -97,9 +97,6 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
   std::string s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_MarkRevisions_Title,s);
   dialog1 = abiDialogNew ( "mark revisions", TRUE, s.c_str());
-#if !GTK_CHECK_VERSION(3,0,0)
-  gtk_dialog_set_has_separator(GTK_DIALOG(dialog1), FALSE);
-#endif
 
   dialog_vbox1 = gtk_dialog_get_content_area(GTK_DIALOG (dialog1));
   gtk_widget_show (dialog_vbox1);
@@ -110,13 +107,13 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
 
   constructWindowContents ( dialog_vbox1 ) ;
 
-  
-  abiAddStockButton ( GTK_DIALOG(dialog1), GTK_STOCK_CANCEL, BUTTON_CANCEL );
-  w = abiAddStockButton ( GTK_DIALOG(dialog1),
-                          GTK_STOCK_OK, BUTTON_OK );
+  abiAddButton(GTK_DIALOG(dialog1), pSS->getValue(XAP_STRING_ID_DLG_Cancel),
+               BUTTON_CANCEL);
+  w = abiAddButton(GTK_DIALOG(dialog1),
+                   pSS->getValue(XAP_STRING_ID_DLG_OK), BUTTON_OK);
   mButtonOK = w;
   abiSetActivateOnWidgetToActivateButton( mComment, mButtonOK );
-	
+
   return dialog1;
 }
 

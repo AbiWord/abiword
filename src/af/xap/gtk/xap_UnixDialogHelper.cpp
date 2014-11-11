@@ -559,35 +559,18 @@ void abiDialogSetTitle(GtkWidget * dlg, const char * title, ...)
   }
 }
 
-
-/*!
- * Add this stock button to the dialog and make it sensitive
- */
-GtkWidget * abiAddStockButton (GtkDialog * me, const gchar * btn_id,
-			       gint response_id)
-{
-	UT_return_val_if_fail(me, NULL);
-	UT_return_val_if_fail(btn_id, NULL);
-	
-	GtkWidget * wid = gtk_dialog_add_button(me, btn_id, response_id);
-	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
-
-	return wid;
-}
-
 /*!
  * Add this locale-sensitive button to the dialog and
  * make it sensitive
  */
-GtkWidget* abiAddButton(GtkDialog * me, const gchar * btn_id,
+GtkWidget* abiAddButton(GtkDialog * me, std::string label,
 			gint response_id)
 {
 	UT_return_val_if_fail(me, NULL);
-	UT_return_val_if_fail(btn_id, NULL);
 
-	// todo: possibly make me locale sensitive -> UTF-8
-
-	GtkWidget * wid = gtk_dialog_add_button(me, btn_id, response_id);
+	// label is UTF-8.
+	GtkWidget * wid = gtk_dialog_add_button(me, convertMnemonics(label).c_str(),
+                                            response_id);
 	gtk_dialog_set_response_sensitive(me, response_id, TRUE);
 
 	return wid ;

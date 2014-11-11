@@ -176,8 +176,6 @@ GtkWidget * AP_UnixDialog_EpubExportOptions::_constructWindow ()
 
 	const char * title   = "EPUB Export Options";
 	const char * label   = "Select EPUB export options:";
-	const char * save    = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpSave));
-	const char * restore = static_cast<const char *>(pSS->getValue (XAP_STRING_ID_DLG_HTMLOPT_ExpRestore));
 
 	const char * Epub2              = "EPUB 2.0.1";
 	const char * SplitDocument      = "Split document";
@@ -238,14 +236,18 @@ GtkWidget * AP_UnixDialog_EpubExportOptions::_constructWindow ()
         g_signal_connect(G_OBJECT(m_wRenderMathMlToPng), "toggled",
                          G_CALLBACK(s_RenderMathMlToPng), static_cast<gpointer> (this));
     }
-    
+
 	refreshStates ();
 
-	abiAddStockButton (GTK_DIALOG(m_windowMain), save,    BUTTON_SAVE_SETTINGS);
-	abiAddStockButton (GTK_DIALOG(m_windowMain), restore, BUTTON_RESTORE_SETTINGS);
+	std::string s;
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_HTMLOPT_ExpSave, s);
+	abiAddButton (GTK_DIALOG(m_windowMain), s,    BUTTON_SAVE_SETTINGS);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_HTMLOPT_ExpRestore, s);
+	abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_RESTORE_SETTINGS);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+	abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_CANCEL);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
+	abiAddButton (GTK_DIALOG(m_windowMain), s, BUTTON_OK);
 
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-	abiAddStockButton (GTK_DIALOG(m_windowMain), GTK_STOCK_OK,     BUTTON_OK);
-  
 	return m_windowMain;
 }

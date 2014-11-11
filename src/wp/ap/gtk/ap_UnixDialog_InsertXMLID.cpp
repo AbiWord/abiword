@@ -240,12 +240,12 @@ AP_UnixDialog_InsertXMLID::_constructWindow(void)
 
     _constructWindowContents ( vbox );
 
-    abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_CANCEL, BUTTON_CANCEL);
-    abiAddStockButton(GTK_DIALOG(m_window), GTK_STOCK_DELETE, BUTTON_DELETE);
-    m_btInsert = abiAddButton(GTK_DIALOG(m_window), "", BUTTON_INSERT);
-    localizeButtonUnderline (m_btInsert, pSS, AP_STRING_ID_DLG_InsertButton);
-    GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_OK, GTK_ICON_SIZE_BUTTON);
-    gtk_button_set_image(GTK_BUTTON(m_btInsert), img);      
+    pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, s);
+    abiAddButton(GTK_DIALOG(m_window), s, BUTTON_CANCEL);
+    pSS->getValueUTF8(XAP_STRING_ID_DLG_Delete, s);
+    abiAddButton(GTK_DIALOG(m_window), s, BUTTON_DELETE);
+    pSS->getValueUTF8(AP_STRING_ID_DLG_InsertButton, s);
+    m_btInsert = abiAddButton(GTK_DIALOG(m_window), s, BUTTON_INSERT);
 
     gtk_widget_grab_focus (m_combo);
 
