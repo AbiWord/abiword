@@ -64,7 +64,7 @@ class AP_UnixDialog_ListRevisions: public AP_Dialog_ListRevisions
 	void unselect_Row () ;
 
 	GtkWidget* m_mainWindow;
-    GtkWidget* m_treeModel;
+	GtkListStore* m_treeModel;
 
     enum
     {

@@ -184,15 +184,10 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   gtk_container_add (GTK_CONTAINER (vbContent), swExistingRevisions);
   gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (swExistingRevisions), GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
 
-  GtkListStore * list_store = gtk_list_store_new(4,
-                                                 G_TYPE_UINT,
-                                                 G_TYPE_STRING, 
-												 G_TYPE_STRING,
-                                                 G_TYPE_LONG );
-  m_treeModel = GTK_WIDGET(list_store);
-  
+  m_treeModel = gtk_list_store_new(4, G_TYPE_UINT, G_TYPE_STRING,
+                                   G_TYPE_STRING, G_TYPE_LONG );
 
-  clExistingRevisions = gtk_tree_view_new_with_model (GTK_TREE_MODEL(list_store));
+  clExistingRevisions = gtk_tree_view_new_with_model (GTK_TREE_MODEL(m_treeModel));
   gtk_widget_show (clExistingRevisions);
   gtk_container_add (GTK_CONTAINER (swExistingRevisions), clExistingRevisions);
 
@@ -231,7 +226,7 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
 
 
   
-//  g_object_freeze_notify(G_OBJECT(list_store));
+//  g_object_freeze_notify(G_OBJECT(m_treeModel));
 
   UT_uint32 itemCnt = getItemCount () ;
 
@@ -240,22 +235,22 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   GtkTreeIter iter;
   for ( UT_uint32 i = 0; i < itemCnt; i++ )
   {
-    gchar buf [ 35 ] ;
-	
-    sprintf (buf, "%d", getNthItemId(i));
-	gtk_list_store_append(list_store, &iter);
+    char buf [ 35 ] ;
 
-	gchar * txt = getNthItemText(i, true);
-	gchar * itemtime = g_locale_to_utf8(getNthItemTime(i), -1, NULL, NULL, NULL);
-	gtk_list_store_set(list_store, &iter, 
-					   COL_REVID,         getNthItemId(i), 
-					   COL_DATE_STRING,   itemtime?itemtime:"",
-					   COL_COMMENT,       txt,
+    g_snprintf(buf, 35, "%d", getNthItemId(i));
+    gtk_list_store_append(m_treeModel, &iter);
+
+    gchar * txt = getNthItemText(i, true);
+    gchar * itemtime = g_locale_to_utf8(getNthItemTime(i), -1, NULL, NULL, NULL);
+    gtk_list_store_set(m_treeModel, &iter,
+                       COL_REVID,         getNthItemId(i),
+                       COL_DATE_STRING,   itemtime?itemtime:"",
+                       COL_COMMENT,       txt,
                        COL_DATE_AS_TIMET, getNthItemTimeT(i),
-					   -1);
-	g_free(itemtime);
-
+                       -1);
     UT_DEBUGMSG(("appending revision %s : %s, %s\n", itemtime, buf, txt));
+
+    g_free(itemtime);
 
     FREEP(txt);
   }
@@ -273,7 +268,6 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
 		   G_CALLBACK(row_activated_cb),
 		   static_cast<gpointer>(this));
 
-  gtk_tree_sortable_set_sort_column_id( GTK_TREE_SORTABLE(list_store),
+  gtk_tree_sortable_set_sort_column_id( GTK_TREE_SORTABLE(m_treeModel),
                                         3, GTK_SORT_DESCENDING );
-  
 }
