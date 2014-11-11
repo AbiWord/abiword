@@ -772,46 +772,34 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	dialog_vbox1 = container;
 	gtk_widget_show (dialog_vbox1);
 
-	OverallVbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_show (OverallVbox);
-	gtk_box_pack_start (GTK_BOX (dialog_vbox1), OverallVbox, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (OverallVbox), 5);
+	OverallVbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+	gtk_widget_show(OverallVbox);
+	gtk_box_pack_start(GTK_BOX(dialog_vbox1), OverallVbox, TRUE, TRUE, 0);
+	gtk_container_set_border_width(GTK_CONTAINER(OverallVbox), 5);
 
-	comboTable = gtk_table_new (6,2, FALSE);
-	gtk_widget_show (comboTable);
-	gtk_box_pack_start (GTK_BOX (OverallVbox), comboTable, FALSE, FALSE, 2);
-	gtk_container_set_border_width (GTK_CONTAINER (comboTable), 2);
-	gtk_table_set_col_spacings (GTK_TABLE (comboTable), 2);
+	comboTable = gtk_grid_new ();
+	gtk_widget_set_hexpand (comboTable, TRUE);
+	gtk_widget_show(comboTable);
+	gtk_box_pack_start(GTK_BOX(OverallVbox), comboTable, TRUE, TRUE, 2);
+	gtk_container_set_border_width(GTK_CONTAINER(comboTable), 2);
+	gtk_grid_set_column_spacing(GTK_GRID(comboTable), 2);
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyName,s);
 	nameLabel = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                                     "xalign", 0.0, "yalign", 0.5,
                                     "justify", GTK_JUSTIFY_LEFT,
-                                    "xpad", 2, "ypad", 2, NULL);
+                                    "xpad", 2, "ypad", 2, "hexpand", TRUE, NULL);
 	gtk_widget_show (nameLabel);
-	gtk_table_attach (GTK_TABLE (comboTable), nameLabel, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID (comboTable), nameLabel, 0, 0, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyType,s);
 	styleTypeLabel = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
                                         "xalign", 0.0, "yalign", 0.5,
                                         "justify", GTK_JUSTIFY_LEFT,
-                                        "xpad", 2, "ypad", 2, NULL);
+                                        "xpad", 2, "ypad", 2, "hexpand", TRUE, NULL);
 	gtk_widget_show (styleTypeLabel);
-	gtk_table_attach (GTK_TABLE (comboTable), styleTypeLabel, 1, 2, 0, 1,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-
-	GtkWidget *spacer = gtk_label_new(" ");
-	gtk_widget_show(spacer);
-	gtk_table_attach (GTK_TABLE (comboTable), spacer, 0, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_table_attach (GTK_TABLE (comboTable), spacer, 0, 2, 5, 6,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (comboTable), styleTypeLabel, 1, 0, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyBasedOn,s);
 	basedOnLabel = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
@@ -819,41 +807,31 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
                                        "justify", GTK_JUSTIFY_LEFT,
                                        "xpad", 2, "ypad", 2, NULL);
 	gtk_widget_show (basedOnLabel);
-	gtk_table_attach (GTK_TABLE (comboTable), basedOnLabel, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (comboTable), basedOnLabel, 0, 2, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFollowing,s);
 	followingLabel = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                                          "xalign", 0.0, "yalign", 0.5,
                                          "xpad", 2, "ypad", 2, NULL);
 	gtk_widget_show (followingLabel);
-	gtk_table_attach (GTK_TABLE (comboTable), followingLabel, 1, 2, 3, 4,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (comboTable), followingLabel, 1, 2, 1, 1);
 
 	styleNameEntry = gtk_entry_new ();
 	gtk_widget_show (styleNameEntry);
-	gtk_table_attach (GTK_TABLE (comboTable), styleNameEntry, 0, 1, 1, 2,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 4);
+	gtk_grid_attach (GTK_GRID (comboTable), styleNameEntry, 0, 1, 1, 1);
 	gtk_widget_set_size_request (styleNameEntry, 158, -1);
 
 	basedOnCombo = gtk_combo_box_text_new_with_entry ();
 	gtk_widget_show (basedOnCombo);
-	gtk_table_attach (GTK_TABLE (comboTable), basedOnCombo, 0, 1, 4, 5,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 4);
+	gtk_grid_attach (GTK_GRID (comboTable), basedOnCombo, 0, 3, 1, 1);
 		
 	basedOnEntry = gtk_bin_get_child(GTK_BIN(basedOnCombo));
 	gtk_widget_show (basedOnEntry);
 	gtk_widget_set_size_request (basedOnEntry, 158, -1);
 
-	followingCombo = gtk_combo_box_text_new_with_entry ();
-	gtk_widget_show (followingCombo);
-	gtk_table_attach (GTK_TABLE (comboTable), followingCombo, 1, 2, 4, 5,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 4);
+	followingCombo = gtk_combo_box_text_new_with_entry();
+	gtk_widget_show(followingCombo);
+	gtk_grid_attach(GTK_GRID(comboTable), followingCombo, 1, 3, 1, 1);
 
 	followingEntry = gtk_bin_get_child(GTK_BIN(followingCombo));
 	gtk_widget_show (followingEntry);
@@ -865,9 +843,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	{
 		styleTypeCombo = gtk_combo_box_text_new_with_entry();
 		gtk_widget_show (styleTypeCombo);
-		gtk_table_attach (GTK_TABLE (comboTable), styleTypeCombo, 1, 2, 1, 2,
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						  (GtkAttachOptions) (0), 0, 4);
+		gtk_grid_attach (GTK_GRID (comboTable), styleTypeCombo, 1, 1, 1, 1);
 
 		styleTypeEntry = gtk_bin_get_child(GTK_BIN(styleTypeCombo));
 		gtk_widget_show (styleTypeEntry);
@@ -877,9 +853,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	{
 		styleTypeEntry = gtk_entry_new ();
 		gtk_widget_show (styleTypeEntry);
-		gtk_table_attach (GTK_TABLE (comboTable), styleTypeEntry, 1, 2, 1, 2,
-						  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						  (GtkAttachOptions) (0), 0, 4);
+		gtk_grid_attach (GTK_GRID (comboTable), styleTypeEntry, 1, 1, 1, 1);
 		gtk_widget_set_size_request (styleTypeEntry, 158, -1);
 	}
 
@@ -919,9 +893,10 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_widget_show (descriptionFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), descriptionFrame, FALSE, FALSE, 0);
 
-	DescriptionText = gtk_widget_new (GTK_TYPE_FRAME,
+	DescriptionText = gtk_widget_new (GTK_TYPE_LABEL,
 					  "xpad", 0, "ypad", 6,
 					  "wrap", TRUE,
+					  "max-width-chars", 64,
 					  NULL);
 	gtk_widget_show (DescriptionText);
 	gtk_container_add (GTK_CONTAINER (descriptionFrame), DescriptionText);
@@ -929,7 +904,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 //
 // Code to choose properties to be removed from the current style.
 //
-	GtkWidget * deleteRow = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,2);
+	GtkWidget * deleteRow = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 2);
 	gtk_widget_show (deleteRow);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), deleteRow, TRUE, TRUE, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (deleteRow), 2);
@@ -941,6 +916,12 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	GtkListStore * store = gtk_list_store_new(1, G_TYPE_STRING);
 	deletePropCombo = gtk_combo_box_new_with_model_and_entry(GTK_TREE_MODEL(store));
+	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(deletePropCombo), renderer, TRUE);
+	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(deletePropCombo), renderer,
+	                               "text", 0,
+	                               NULL);
+	gtk_combo_box_set_entry_text_column(GTK_COMBO_BOX(deletePropCombo), 0);
 	gtk_widget_show (deletePropCombo);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropCombo, TRUE, TRUE, 0);
 
