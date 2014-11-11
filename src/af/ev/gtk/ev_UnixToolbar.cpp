@@ -143,26 +143,27 @@ toolbar_append_item (GtkToolbar *toolbar,
  * Append a GtkToolButton to the toolbar.
  */
 static GtkWidget *
-toolbar_append_button (GtkToolbar 	*toolbar, 
-					   const gchar	*icon_name, 
-					   const gchar	*label, 
+toolbar_append_button (GtkToolbar 	*toolbar,
+					   const gchar	*icon_name,
+					   const gchar	*label,
 					   const gchar  *tooltip,
-					   const gchar  *private_text, 
-					   GCallback	 handler, 
-					   gpointer		 data, 
+					   const gchar  *private_text,
+					   GCallback	 handler,
+					   gpointer		 data,
 					   gulong		*handler_id)
 {
 	GtkToolItem *item;
+	GtkWidget *icon;
 	gchar		*stock_id;
 
 	stock_id = abi_stock_from_toolbar_id (icon_name);
-	item = gtk_tool_button_new_from_stock (stock_id);
+	icon = gtk_image_new_from_icon_name (stock_id, GTK_ICON_SIZE_LARGE_TOOLBAR);
+	item = gtk_tool_button_new (icon, label);
 	g_free (stock_id);
 	stock_id = NULL;
-	gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), label);
 	*handler_id = g_signal_connect (G_OBJECT (item), "clicked", handler, data);
 
-	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
+	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item),
 											  tooltip, private_text, TRUE,
 											  NULL, NULL, NULL);
 }
@@ -171,27 +172,30 @@ toolbar_append_button (GtkToolbar 	*toolbar,
  * Append a GtkToggleToolButton to the toolbar.
  */
 static GtkWidget *
-toolbar_append_toggle (GtkToolbar 	*toolbar, 
-					   const gchar	*icon_name, 
-					   const gchar	*label, 
+toolbar_append_toggle (GtkToolbar 	*toolbar,
+					   const gchar	*icon_name,
+					   const gchar	*label,
 					   const gchar  *tooltip,
-					   const gchar  *private_text, 
-					   GCallback	 handler, 
-					   gpointer		 data, 
+					   const gchar  *private_text,
+					   GCallback	 handler,
+					   gpointer		 data,
 					   gboolean		 show,
 					   gulong		*handler_id)
 {
 	GtkToolItem *item;
+	GtkWidget *icon;
 	gchar		*stock_id;
 
 	stock_id = abi_stock_from_toolbar_id (icon_name);
-	item = gtk_toggle_tool_button_new_from_stock (stock_id);
+	icon = gtk_image_new_from_icon_name (stock_id, GTK_ICON_SIZE_LARGE_TOOLBAR);
+	item = gtk_toggle_tool_button_new ();
+	gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(item), icon);
+	gtk_tool_button_set_label(GTK_TOOL_BUTTON(item), label);
 	g_free (stock_id);
 	stock_id = NULL;
-	gtk_tool_button_set_label (GTK_TOOL_BUTTON (item), label);
 	*handler_id = g_signal_connect (G_OBJECT (item), "toggled", handler, data);
 
-	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
+	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item),
 											  tooltip, private_text, show,
 											  NULL, NULL, NULL);
 }
@@ -946,7 +950,9 @@ bool EV_UnixToolbar::synthesize(void)
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
-				GtkImage * dragimage = (GtkImage*)gtk_image_new_from_stock(ABIWORD_INSERT_TABLE, GTK_ICON_SIZE_DND);
+				GtkImage * dragimage
+					= (GtkImage*)gtk_image_new_from_icon_name(ABIWORD_INSERT_TABLE,
+															  GTK_ICON_SIZE_DND);
 				g_object_ref_sink(dragimage);
 				setDragIcon(wwd, dragimage);  // does not take ownership
 				g_object_unref(dragimage);
@@ -980,7 +986,9 @@ bool EV_UnixToolbar::synthesize(void)
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
 				gchar *stock_id = abi_stock_from_toolbar_id(pLabel->getIconName());
-				GtkImage *dragimage = (GtkImage*)gtk_image_new_from_stock(stock_id, GTK_ICON_SIZE_DND);
+				GtkImage *dragimage
+					= (GtkImage*)gtk_image_new_from_icon_name(stock_id,
+															  GTK_ICON_SIZE_DND);
 				g_object_ref_sink(dragimage);
 				setDragIcon(wwd, dragimage); // does not take dragimage ownership
 				g_object_unref(dragimage);
@@ -1118,37 +1126,47 @@ bool EV_UnixToolbar::synthesize(void)
 
 					action_name = "dlgColorPickerFore";
 					stock_id = ABIWORD_COLOR_FORE;
-					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_FORE, 
-													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
+					pixbuf
+						= gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
+												   ABIWORD_COLOR_FORE,
+												   GTK_ICON_SIZE_LARGE_TOOLBAR,
+												   GTK_ICON_LOOKUP_USE_BUILTIN,
+												   NULL);
 					cg = go_color_group_fetch ("fore_color_group", m_wToolbar);
 					combo = go_combo_color_new (pixbuf, sClear.c_str(), 0, cg);
 
-				    wd->m_widget = combo;
-				    g_signal_connect (G_OBJECT (combo), "color-changed",
+					wd->m_widget = combo;
+					g_signal_connect (G_OBJECT (combo), "color-changed",
 									  G_CALLBACK (s_fore_color_changed), wd);
 				}
 				else {
 					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-                    std::string sClear;
+					std::string sClear;
 					pSS->getValueUTF8(XAP_STRING_ID_TB_ClearBackground,sClear);
 
 					action_name = "dlgColorPickerBack";
 					stock_id = ABIWORD_COLOR_BACK;
-					pixbuf = gtk_widget_render_icon (m_wToolbar, ABIWORD_COLOR_BACK, 
-													 GTK_ICON_SIZE_LARGE_TOOLBAR, NULL);
+					pixbuf
+						= gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
+												   ABIWORD_COLOR_BACK,
+												   GTK_ICON_SIZE_LARGE_TOOLBAR,
+												   GTK_ICON_LOOKUP_USE_BUILTIN,
+												   NULL);
 					cg = go_color_group_fetch ("back_color_group", m_wToolbar);
 					combo = go_combo_color_new (pixbuf, sClear.c_str(), 0, cg);
 
-				    wd->m_widget = combo;
-				    g_signal_connect (G_OBJECT (combo), "color-changed",
+					wd->m_widget = combo;
+					g_signal_connect (G_OBJECT (combo), "color-changed",
 									  G_CALLBACK (s_back_color_changed), wd);
 				}
 				go_combo_box_set_relief (GO_COMBO_BOX (combo), GTK_RELIEF_NONE);
 				go_combo_color_set_instant_apply (GO_COMBO_COLOR (combo), TRUE);
-				g_object_unref (G_OBJECT (pixbuf));
+				if (pixbuf) {
+					g_object_unref (G_OBJECT (pixbuf));
+				}
 
 				toolbar_append_item (GTK_TOOLBAR(m_wToolbar), combo, szToolTip,
-									 static_cast<const char *>(NULL), 
+									 static_cast<const char *>(NULL),
 									 TRUE, action_name, stock_id, wd);
 
 				//

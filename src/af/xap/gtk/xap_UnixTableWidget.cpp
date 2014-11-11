@@ -596,22 +596,17 @@ register_stock_icon(void)
 	if (!registered)
 	{
 		GdkPixbuf *pixbuf;
-		GtkIconFactory *factory;
 
 		static GtkStockItem items[] = {
 			{ (gchar*)"abi-table-widget",
 			  (gchar*)"_Table",
 			  static_cast<GdkModifierType>(0), 0, NULL }
 		};
-      
+
 		registered = TRUE;
 
 		/* Register our stock items */
 		gtk_stock_add (items, G_N_ELEMENTS (items));
-      
-		/* Add our custom icon factory to the list of defaults */
-		factory = gtk_icon_factory_new ();
-		gtk_icon_factory_add_default (factory);
 
 		// Must be C cast
 		pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)widget_tb_insert_table_xpm);
@@ -619,20 +614,18 @@ register_stock_icon(void)
 		/* Register icon to accompany stock item */
 		if (pixbuf != NULL)
 		{
-			GtkIconSet *icon_set;
-          
-			icon_set = gtk_icon_set_new_from_pixbuf (pixbuf);
-			gtk_icon_factory_add (factory, "abi-table-widget", icon_set);
-			gtk_icon_set_unref (icon_set);
+			gint w, h;
+			w = gdk_pixbuf_get_width(pixbuf);
+			h = gdk_pixbuf_get_height(pixbuf);
+			gtk_icon_theme_add_builtin_icon("abi-table-widget",
+							std::max(w,h),
+							pixbuf);
 			g_object_unref (G_OBJECT (pixbuf));
 		}
 		else
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
-				
-		/* Drop our reference to the factory, GTK will hold a reference. */
-		g_object_unref (G_OBJECT (factory));
 	}
 }
 
@@ -726,7 +719,7 @@ abi_table_init (AbiTable* table)
 	if (gtk_stock_lookup ("abi-table-widget", &table->stock_item))
 	{
 		table->label = gtk_label_new_with_mnemonic(table->stock_item.label);
-		table->icon = gtk_image_new_from_stock ("abi-table-widget", GTK_ICON_SIZE_LARGE_TOOLBAR);
+		table->icon = gtk_image_new_from_icon_name("abi-table-widget", GTK_ICON_SIZE_LARGE_TOOLBAR);
 		gtk_widget_show(table->icon);
 		gtk_widget_show(table->label);
 		g_object_ref_sink(table->label);

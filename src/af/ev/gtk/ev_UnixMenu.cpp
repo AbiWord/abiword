@@ -1098,32 +1098,18 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 	UT_return_val_if_fail(!(isCheckable && isRadio), NULL);
 
 	if ( isCheckable )
-	  {
+	{
 		  w = gtk_check_menu_item_new_with_mnemonic(buf);
-	  }	
+	}
 	else if ( isRadio )
-	  {
-		  w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
-	  }
+	{
+		w = gtk_radio_menu_item_new_with_mnemonic (NULL, buf);
+	}
 	else
-	  {
-		  const char * stock_id = abi_stock_from_menu_id(id);
-		  if (stock_id != NULL)
-		    {
-			    // if this is not a checkable menu item, then we'll create an image menu item, if a stock item is available
-			    w = gtk_image_menu_item_new_from_stock(stock_id, NULL);
-			    // reset the label to what we want it to be
-			    GtkWidget * child = gtk_bin_get_child(GTK_BIN(w));
-			    UT_ASSERT(child);
-			    gtk_label_set_text_with_mnemonic(GTK_LABEL(child), buf);
-		    }
-		  else
-		    {
-			    // else create a normal menu item
-			    w = gtk_menu_item_new_with_mnemonic(buf);
-		    }
-	  }
-	
+	{
+		// else create a normal menu item
+		w = gtk_menu_item_new_with_mnemonic(buf);
+	}
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
     UT_UNUSED(szMnemonicName);
     UT_UNUSED(isPopup);
