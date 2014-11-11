@@ -52,11 +52,11 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 
 	vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
-	
+
 	// host a session (we should really use a GtkAction for this)
 	server_button = gtk_radio_button_new_with_label(NULL, "Accept incoming connections");
 	gtk_box_pack_start(GTK_BOX(vbox), server_button, TRUE, TRUE, 0);
-	
+
 	// join a session
 	client_button = gtk_radio_button_new_with_label_from_widget(GTK_RADIO_BUTTON(server_button), "Connect to a server");
 	gtk_box_pack_start(GTK_BOX(vbox), client_button, TRUE, TRUE, 0);
@@ -69,50 +69,52 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_widget_set_size_request(spacer, 12, -1);
 	gtk_table_attach_defaults(GTK_TABLE(table), spacer, 0, 1, 0, 1);
 
-	// host	
-	GtkWidget* server_label = gtk_label_new("Address:");
-	gtk_misc_set_alignment(GTK_MISC(server_label), 0, 0.5);
+	// host
+	GtkWidget* server_label = gtk_widget_new(GTK_TYPE_LABEL,
+                                                 "label", "Address:",
+                                                 "xalign", 0.0, "yalign", 0.5,
+                                                 NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), server_label, 1, 2, 0, 1);
 	server_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), server_entry, 2, 3, 0, 1);
 	gtk_widget_set_sensitive(server_entry, false);
-	gtk_entry_set_activates_default(GTK_ENTRY(server_entry), true);	
+	gtk_entry_set_activates_default(GTK_ENTRY(server_entry), true);
 
 	gtk_box_pack_start(GTK_BOX(vbox), table, TRUE, TRUE, 0);
-	
+
 	// port
 	GtkWidget* portHBox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-	GtkWidget* port_label = gtk_label_new("Port:");
-	gtk_misc_set_alignment(GTK_MISC(port_label), 0, 0.5);
-	gtk_box_pack_start(GTK_BOX(portHBox), port_label, false, false, 0);	
+	GtkWidget* port_label = gtk_widget_new(GTK_TYPE_LABEL, "label", "Port:",
+                                               "xalign", 0.0, "yalign", 0.5,
+                                               NULL);
+	gtk_box_pack_start(GTK_BOX(portHBox), port_label, false, false, 0);
 	port_button = gtk_spin_button_new_with_range(1, 65536, 1);
 	gtk_box_pack_start(GTK_BOX(portHBox), port_button, false, false, 0);
 	gtk_box_pack_start(GTK_BOX(vbox), portHBox, false, false, 0);
-	
+
 	// allow-all
 	allow_all_button = gtk_check_button_new_with_label("Automatically grant buddies access to shared documents");
 	gtk_box_pack_start(GTK_BOX(vbox), allow_all_button, TRUE, TRUE, 0);
-	
+
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label("Connect on application startup");
 	gtk_box_pack_start(GTK_BOX(vbox), autoconnect_button, TRUE, TRUE, 0);
-	
+
 	gtk_box_pack_start(GTK_BOX(parent), vbox, FALSE, FALSE, 0);
 	gtk_widget_show_all(GTK_WIDGET(parent));
-	
+
 	// attach some signals
 	g_signal_connect(G_OBJECT(server_button),
 							"toggled",
 							G_CALLBACK(s_group_changed),
 							static_cast<gpointer>(this));
-	
 }
 
 void TCPUnixAccountHandler::removeDialogWidgets(void* pEmbeddingParent)
 {
 	UT_DEBUGMSG(("TCPAccountHandler::removeDialogWidgets()\n"));
 	UT_return_if_fail(pEmbeddingParent);
-	
+
 	// this will conveniently destroy all contained widgets as well
 	if (vbox && GTK_IS_WIDGET(vbox))
 		gtk_widget_destroy(vbox);

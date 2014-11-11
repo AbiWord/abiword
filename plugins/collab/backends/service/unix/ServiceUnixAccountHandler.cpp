@@ -49,17 +49,21 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	table = gtk_table_new(2, 2, FALSE);
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
 
-	// username	
-	GtkWidget* username_label = gtk_label_new("E-mail address:");
-	gtk_misc_set_alignment(GTK_MISC(username_label), 0, 0.5);
+	// username
+	GtkWidget* username_label
+          = gtk_widget_new(GTK_TYPE_LABEL, "label", "E-mail address:",
+                           "xalign", 0.0, "yalign", 0.5,
+                           NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), username_label, 0, 1, 0, 1);
 	username_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), username_entry, 1, 2, 0, 1);
 	gtk_entry_set_activates_default(GTK_ENTRY(username_entry), true);
 
 	// password
-	GtkWidget* password_label = gtk_label_new("Password:");
-	gtk_misc_set_alignment(GTK_MISC(password_label), 0, 0.5);
+	GtkWidget* password_label
+          = gtk_widget_new(GTK_TYPE_LABEL, "label", "Password:",
+                           "xalign", 0.0, "yalign", 0.5,
+                           NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), password_label, 0, 1, 1, 2);
 	password_entry = gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(password_entry), false);
@@ -73,11 +77,13 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	// register
 	register_button = gtk_link_button_new_with_label (SERVICE_REGISTRATION_URL, "Get a free abicollab.net account");
 	gtk_table_attach_defaults(GTK_TABLE(table), register_button, 0, 2, 3, 4);
-	
+
 #ifdef DEBUG
-	// uri	
-	GtkWidget* uri_label = gtk_label_new("WebApp SOAP url:");
-	gtk_misc_set_alignment(GTK_MISC(uri_label), 0, 0.5);
+	// uri
+	GtkWidget* uri_label
+          = gtk_widget_new(GTK_TYPE_LABEL, "label", "WebApp SOAP url:",
+                           "xalign", 0.0, "yalign", 0.5,
+                           NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), uri_label, 0, 1, 4, 5);
 	uri_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), uri_entry, 1, 2, 4, 5);
@@ -90,7 +96,7 @@ void ServiceUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	verify_realm_host_button = gtk_check_button_new_with_label ("Verify Realm hostname");
 	gtk_table_attach_defaults(GTK_TABLE(table), verify_realm_host_button, 0, 2, 6, 7);
 #endif
-	
+
 	gtk_box_pack_start(GTK_BOX(parent), table, FALSE, TRUE, 0);
 	gtk_widget_show_all(GTK_WIDGET(parent));
 }

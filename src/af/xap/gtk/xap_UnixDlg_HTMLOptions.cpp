@@ -282,7 +282,8 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 	 */
 	m_windowMain = abiDialogNew ("HTML export options dialog", true, title);
 
-	if (m_windowMain == NULL) return NULL;
+	if (m_windowMain == NULL)
+		return NULL;
 
 	/* This is the top level organization widget, which packs things vertically
 	 */
@@ -290,15 +291,17 @@ GtkWidget * XAP_UnixDialog_HTMLOptions::_constructWindow ()
 
 	/* The top item in the vbox is a simple label
 	 */
-	GtkWidget * labelActivate = gtk_label_new (label);
+	GtkWidget * labelActivate = gtk_widget_new(GTK_TYPE_LABEL,
+											   "label", label,
+											   "xalign", 0.0,  "yalign", 0.0,
+											   "xpad", 10, "ypad", 5,
+											   "justify", GTK_JUSTIFY_LEFT,
+											   NULL);
 	if (labelActivate)
-		{
-			gtk_widget_show (labelActivate);
-			gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
-			gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);
-			gtk_misc_set_alignment (GTK_MISC (labelActivate), 0, 0);
-			gtk_misc_set_padding (GTK_MISC (labelActivate), 10, 5);
-		}
+	{
+		gtk_widget_show (labelActivate);
+		gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
+	}
 
 	m_wIs4 = gtk_check_button_new_with_label (Is4);
 	if (m_wIs4)

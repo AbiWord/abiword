@@ -153,7 +153,13 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 
 			// align
 			if (pf_TextInfo->getAlignmentMethod() == LEFT) {
-				gtk_misc_set_alignment(GTK_MISC(pStatusBarElementLabel), 0.0, 0.0);
+				GValue val = G_VALUE_INIT;
+				g_value_init(&val, G_TYPE_FLOAT);
+				g_value_set_float(&val, 0.0);
+				g_object_set_property(G_OBJECT(pStatusBarElementLabel),
+						"xalign", &val);
+				g_object_set_property(G_OBJECT(pStatusBarElementLabel),
+						"yalign", &val);
 			}
 
 			// size and place

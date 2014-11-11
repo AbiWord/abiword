@@ -800,25 +800,25 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyName,s);
-	nameLabel = gtk_label_new ( s.c_str());
+	nameLabel = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                                    "xalign", 0.0, "yalign", 0.5,
+                                    "justify", GTK_JUSTIFY_LEFT,
+                                    "xpad", 2, "ypad", 2, NULL);
 	gtk_widget_show (nameLabel);
 	gtk_table_attach (GTK_TABLE (comboTable), nameLabel, 0, 1, 0, 1,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (nameLabel), 0, 0.5);
-	gtk_label_set_justify (GTK_LABEL (nameLabel), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_padding (GTK_MISC (nameLabel), 2, 2);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyType,s);
-	styleTypeLabel = gtk_label_new ( s.c_str());
+	styleTypeLabel = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
+                                        "xalign", 0.0, "yalign", 0.5,
+                                        "justify", GTK_JUSTIFY_LEFT,
+                                        "xpad", 2, "ypad", 2, NULL);
 	gtk_widget_show (styleTypeLabel);
 	gtk_table_attach (GTK_TABLE (comboTable), styleTypeLabel, 1, 2, 0, 1,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (styleTypeLabel), 0, 0.5);
-	gtk_label_set_justify (GTK_LABEL (styleTypeLabel), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_padding (GTK_MISC (styleTypeLabel), 2, 2);
-	
+
 	GtkWidget *spacer = gtk_label_new(" ");
 	gtk_widget_show(spacer);
 	gtk_table_attach (GTK_TABLE (comboTable), spacer, 0, 2, 2, 3,
@@ -829,23 +829,23 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 					  (GtkAttachOptions) (0), 0, 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyBasedOn,s);
-	basedOnLabel = gtk_label_new (s.c_str() );
+	basedOnLabel = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                                       "xalign", 0.0, "yalign", 0.5,
+                                       "justify", GTK_JUSTIFY_LEFT,
+                                       "xpad", 2, "ypad", 2, NULL);
 	gtk_widget_show (basedOnLabel);
 	gtk_table_attach (GTK_TABLE (comboTable), basedOnLabel, 0, 1, 3, 4,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (basedOnLabel), 0, 0.5);
-	gtk_label_set_justify (GTK_LABEL (basedOnLabel), GTK_JUSTIFY_LEFT);
-	gtk_misc_set_padding (GTK_MISC (basedOnLabel), 2, 2);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyFollowing,s);
-	followingLabel = gtk_label_new (s.c_str());
+	followingLabel = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                                         "xalign", 0.0, "yalign", 0.5,
+                                         "xpad", 2, "ypad", 2, NULL);
 	gtk_widget_show (followingLabel);
 	gtk_table_attach (GTK_TABLE (comboTable), followingLabel, 1, 2, 3, 4,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (followingLabel), 0, 0.5);
-	gtk_misc_set_padding (GTK_MISC (followingLabel), 2, 2);
 
 	styleNameEntry = gtk_entry_new ();
 	gtk_widget_show (styleNameEntry);
@@ -926,18 +926,20 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	GtkWidget *lbDescrFrame = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(lbDescrFrame), s.c_str());
 	gtk_widget_show(lbDescrFrame);
-	GtkWidget *descriptionFrame = gtk_frame_new(NULL);
-	gtk_frame_set_label_widget(GTK_FRAME(descriptionFrame), lbDescrFrame);
-	gtk_frame_set_shadow_type(GTK_FRAME(descriptionFrame), GTK_SHADOW_NONE);
+	GtkWidget *descriptionFrame
+	  = gtk_widget_new(GTK_TYPE_FRAME,
+			   "label-widget", lbDescrFrame,
+			   "shadow-type", GTK_SHADOW_NONE,
+			   "border-width", 5, NULL);
 	gtk_widget_show (descriptionFrame);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), descriptionFrame, FALSE, FALSE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (descriptionFrame), 5);
 
-	DescriptionText = gtk_label_new (NULL);
-	gtk_misc_set_padding(GTK_MISC(DescriptionText), 0, 6);
+	DescriptionText = gtk_widget_new (GTK_TYPE_FRAME,
+					  "xpad", 0, "ypad", 6,
+					  "wrap", TRUE,
+					  NULL);
 	gtk_widget_show (DescriptionText);
 	gtk_container_add (GTK_CONTAINER (descriptionFrame), DescriptionText);
-	gtk_label_set_line_wrap (GTK_LABEL (DescriptionText), TRUE);
 	gtk_widget_set_size_request(DescriptionText, 438, -1);
 //
 // Code to choose properties to be removed from the current style.
@@ -957,7 +959,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	gtk_widget_show (deletePropCombo);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropCombo, TRUE, TRUE, 0);
 
-    deletePropEntry = gtk_bin_get_child(GTK_BIN(deletePropCombo));
+	deletePropEntry = gtk_bin_get_child(GTK_BIN(deletePropCombo));
 	gtk_widget_show (deletePropEntry);
 	gtk_widget_set_size_request (deletePropEntry, 158, -1);
 
@@ -965,7 +967,6 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 	deletePropButton = gtk_button_new_with_label(s.c_str());
 	gtk_widget_show(deletePropButton);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropButton, TRUE, TRUE, 0);
-		
 
 	checkBoxRow = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
 	gtk_box_pack_start (GTK_BOX (OverallVbox), checkBoxRow, TRUE, TRUE, 0);

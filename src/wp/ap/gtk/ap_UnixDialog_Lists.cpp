@@ -707,8 +707,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 // Left Spacing Here
 
-		GtkWidget * lbLeftSpacer = gtk_label_new("");
-		gtk_misc_set_padding(GTK_MISC(lbLeftSpacer),8,0);
+		GtkWidget * lbLeftSpacer = gtk_widget_new(GTK_TYPE_LABEL,
+                                                  "xpad", 8, "ypad", 0, NULL);
 		gtk_table_attach(GTK_TABLE(wFoldingTable),lbLeftSpacer,0,1,0,7,GTK_SHRINK,GTK_FILL,0,0);
 		gtk_widget_show(lbLeftSpacer);
 
@@ -722,8 +722,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 // Mid Left Spacing Here
 
-		GtkWidget * lbMidLeftSpacer = gtk_label_new("");
-		gtk_misc_set_padding(GTK_MISC(lbMidLeftSpacer),8,0);
+		GtkWidget * lbMidLeftSpacer = gtk_widget_new(GTK_TYPE_LABEL,
+                                                  "xpad", 8, "ypad", 0, NULL);
 		gtk_table_attach(GTK_TABLE(wFoldingTable),lbMidLeftSpacer,1,2,1,7,GTK_SHRINK,GTK_FILL,0,0);
 		gtk_widget_show(lbMidLeftSpacer);
 
@@ -854,19 +854,21 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_combo_box_set_active(GTK_COMBO_BOX(type_om), 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type,s);
-	type_lb = gtk_label_new (s.c_str());
+	type_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                              "xalign", 0.0, "yalign", 0.5,
+                              NULL);
 	gtk_widget_show (type_lb);
 	gtk_table_attach (GTK_TABLE (table1), type_lb, 0, 1, 0, 1,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (type_lb), 0, 0.5);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Style,s);
-	style_lb = gtk_label_new (s.c_str());
+	style_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                               "xalign", 0.0, "yalign", 0.5,
+                               NULL);
 	gtk_widget_show (style_lb);
 	gtk_table_attach (GTK_TABLE (table1), style_lb, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (style_lb), 0, 0.5);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_SetDefault,s);
 	customized_cb = gtk_dialog_add_button (GTK_DIALOG(m_wMainWindow), s.c_str(), BUTTON_RESET);
@@ -944,56 +946,68 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (label_align_sb), TRUE);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Format,s);
-	format_lb = gtk_label_new (s.c_str());
+	format_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                              "xalign", 0.0, "yalign", 0.5,
+                              NULL);
 	gtk_widget_show (format_lb);
 	gtk_table_attach (GTK_TABLE (table2), format_lb, 0, 1, 0, 1,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (format_lb), 0.0, 0.5);
+
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Font,s);
-	font_lb = gtk_label_new (s.c_str());
+	font_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                              "xalign", 0.0, "yalign", 0.5,
+                              NULL);
 	gtk_widget_show (font_lb);
 	gtk_table_attach (GTK_TABLE (table2), font_lb, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (font_lb), 0.0, 0.5);
+
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_DelimiterString,s);
-	delimiter_lb = gtk_label_new (s.c_str());
+	delimiter_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                              "xalign", 0.0, "yalign", 0.5,
+                              NULL);
 	gtk_widget_show (delimiter_lb);
 	gtk_table_attach (GTK_TABLE (table2), delimiter_lb, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (delimiter_lb), 0.0, 0.5);
+
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start,s);
-	start_at_lb = gtk_label_new (s.c_str());
+	start_at_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                              "xalign", 0.0, "yalign", 0.5,
+                              NULL);
 	gtk_widget_show (start_at_lb);
 	gtk_table_attach (GTK_TABLE (table2), start_at_lb, 0, 1, 3, 4,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (start_at_lb), 0.0, 0.5);
+
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Align,s);
-	text_align_lb = gtk_label_new (s.c_str());
+	text_align_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                              "xalign", 0.0, "yalign", 0.5,
+                              NULL);
 	gtk_widget_show (text_align_lb);
 	gtk_table_attach (GTK_TABLE (table2), text_align_lb, 0, 1, 4, 5,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (text_align_lb), 0.0, 0.5);
+
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Indent,s);
-	label_align_lb = gtk_label_new (s.c_str());
+	label_align_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                              "xalign", 0.0, "yalign", 0.5,
+                              NULL);
 	gtk_widget_show (label_align_lb);
 	gtk_table_attach (GTK_TABLE (table2), label_align_lb, 0, 1, 5, 6,
 					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (label_align_lb), 0.0, 0.5);
 
 	vbox3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (vbox3);
 	gtk_box_pack_start (GTK_BOX (hbox2), vbox3, TRUE, TRUE, 0);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Preview,s);
-	preview_lb = gtk_label_new (s.c_str());
+	preview_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+                              "xalign", 0.0, "yalign", 0.5,
+                              NULL);
 	gtk_widget_show (preview_lb);
 	gtk_box_pack_start (GTK_BOX (vbox3), preview_lb, FALSE, FALSE, 0);
-	gtk_misc_set_alignment (GTK_MISC (preview_lb), 0.0, 0.5);
 
 	preview_frame = gtk_frame_new (NULL);
 	gtk_widget_show (preview_frame);

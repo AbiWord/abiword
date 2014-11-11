@@ -224,35 +224,35 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Left,s);
-	wlMergeLeft = gtk_label_new (s.c_str());
+	wlMergeLeft = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
+                                     "xalign", 0.0, "yalign", 0.5, NULL);
 	gtk_widget_show (wlMergeLeft);
 	gtk_table_attach (GTK_TABLE (table1), wlMergeLeft, 0, 1, 0, 1,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (wlMergeLeft), 0, 0.5);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Right,s);
-	wlMergeRight = gtk_label_new (s.c_str());
+	wlMergeRight = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
+                                      "xalign", 0, "yalign", 0.5, NULL);
 	gtk_widget_show (wlMergeRight);
 	gtk_table_attach (GTK_TABLE (table1), wlMergeRight, 0, 1, 1, 2,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (wlMergeRight), 0, 0.5);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Above,s);
-	wlMergeAbove = gtk_label_new (s.c_str());
+	wlMergeAbove = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
+                                      "xalign", 0.0, "yalign", 0.5, NULL);
 	gtk_widget_show (wlMergeAbove);
 	gtk_table_attach (GTK_TABLE (table1), wlMergeAbove, 0, 1, 2, 3,
 					  (GtkAttachOptions) (GTK_FILL),
 					  (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (wlMergeAbove), 0, 0.5);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Below,s);
-	wlMergeBelow = gtk_label_new (s.c_str());
+	wlMergeBelow = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
+                                      "xalign", 0.0, "yalign", 0.5, NULL);
 	gtk_widget_show (wlMergeBelow);
 	gtk_table_attach (GTK_TABLE (table1), wlMergeBelow, 0, 1, 3, 4,
                     (GtkAttachOptions) (GTK_FILL),
                     (GtkAttachOptions) (0), 0, 0);
-	gtk_misc_set_alignment (GTK_MISC (wlMergeBelow), 0, 0.5);
 
 	wMergeLeft = gtk_button_new();
 	gtk_widget_show (wMergeLeft);

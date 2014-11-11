@@ -44,55 +44,63 @@ void XMPPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 
 	table = gtk_table_new(6, 2, FALSE);
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
-	
-	// username	
-	GtkWidget* username_label = gtk_label_new("Username:");
-	gtk_misc_set_alignment(GTK_MISC(username_label), 0, 0.5);
+
+	// username
+	GtkWidget* username_label = gtk_widget_new(GTK_TYPE_LABEL,
+                                                   "label", "Username:",
+                                                   "xalign", 0.0, "yalign", 0.5,
+                                                   NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), username_label, 0, 1, 0, 1);
 	username_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), username_entry, 1, 2, 0, 1);
-	gtk_entry_set_activates_default(GTK_ENTRY(username_entry), true);	
+	gtk_entry_set_activates_default(GTK_ENTRY(username_entry), true);
 
 	// password
-	GtkWidget* password_label = gtk_label_new("Password:");
-	gtk_misc_set_alignment(GTK_MISC(password_label), 0, 0.5);
+	GtkWidget* password_label = gtk_widget_new(GTK_TYPE_LABEL,
+                                                   "label", "Password:",
+                                                   "xalign", 0.0, "yalign", 0.5,
+                                                   NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), password_label, 0, 1, 1, 2);
 	password_entry = gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(password_entry), false);
 	gtk_table_attach_defaults(GTK_TABLE(table), password_entry, 1, 2, 1, 2);
-	gtk_entry_set_activates_default(GTK_ENTRY(password_entry), true);	
+	gtk_entry_set_activates_default(GTK_ENTRY(password_entry), true);
 
 	// server
-	GtkWidget* server_label = gtk_label_new("Server:");
-	gtk_misc_set_alignment(GTK_MISC(server_label), 0, 0.5);
+	GtkWidget* server_label = gtk_widget_new(GTK_TYPE_LABEL,
+                                                "label", "Server:",
+                                                 "xalign", 0.0, "yalign", 0.5,
+                                                 NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), server_label, 0, 1, 2, 3);
 	server_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), server_entry, 1, 2, 2, 3);
-	gtk_entry_set_activates_default(GTK_ENTRY(server_entry), true);	
+	gtk_entry_set_activates_default(GTK_ENTRY(server_entry), true);
 
 	// port
-	GtkWidget* port_label = gtk_label_new("Port:");
-	gtk_misc_set_alignment(GTK_MISC(port_label), 0, 0.5);
+	GtkWidget* port_label = gtk_widget_new(GTK_TYPE_LABEL,
+                                               "label", "Port:",
+                                               "xalign", 0.0, "yalign", 0.5,
+                                               NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), port_label, 0, 1, 3, 4);
 	port_entry = gtk_entry_new(); // TODO: should be a numerical entry
 	gtk_table_attach_defaults(GTK_TABLE(table), port_entry, 1, 2, 3, 4);
-	gtk_entry_set_activates_default(GTK_ENTRY(port_entry), true);	
-	
+	gtk_entry_set_activates_default(GTK_ENTRY(port_entry), true);
+
 	// Encryption
 	starttls_button = gtk_check_button_new_with_label("Use StartTLS Encryption");
 	gtk_table_attach_defaults(GTK_TABLE(table), starttls_button, 0, 2, 4, 5);
 	if (!lm_ssl_is_supported())
 		gtk_widget_set_sensitive(starttls_button, FALSE);
-	
+
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
 	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 5, 6);
-	
+
 	gtk_box_pack_start(GTK_BOX(parent), table, false, TRUE, 0);
 	gtk_widget_show_all(GTK_WIDGET(parent));
-	
+
 	// some convenient default values
-	gtk_entry_set_text(GTK_ENTRY(port_entry), "5222");	
+	gtk_entry_set_text(GTK_ENTRY(port_entry), "5222");
 }
 
 void XMPPUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/)

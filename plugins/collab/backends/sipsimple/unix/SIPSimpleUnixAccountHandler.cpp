@@ -41,37 +41,43 @@ void SIPSimpleUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 
 	table = gtk_table_new(4, 2, FALSE);
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
-	
-	// username	
-	GtkWidget* address_label = gtk_label_new("SIP address:");
-	gtk_misc_set_alignment(GTK_MISC(address_label), 0, 0.5);
+
+	// username
+	GtkWidget* address_label = gtk_widget_new(GTK_TYPE_LABEL,
+                                                  "label", "SIP address:",
+                                                  "xalign", 0.0, "yalign", 0.5,
+                                                  NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), address_label, 0, 1, 0, 1);
 	address_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), address_entry, 1, 2, 0, 1);
-	gtk_entry_set_activates_default(GTK_ENTRY(address_entry), true);	
+	gtk_entry_set_activates_default(GTK_ENTRY(address_entry), true);
 
 	// password
-	GtkWidget* password_label = gtk_label_new("Password:");
-	gtk_misc_set_alignment(GTK_MISC(password_label), 0, 0.5);
+	GtkWidget* password_label = gtk_widget_new(GTK_TYPE_LABEL,
+                                                   "label", "Password:",
+                                                   "xalign", 0.0, "yalign", 0.5,
+                                                   NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), password_label, 0, 1, 1, 2);
 	password_entry = gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(password_entry), false);
 	gtk_table_attach_defaults(GTK_TABLE(table), password_entry, 1, 2, 1, 2);
-	gtk_entry_set_activates_default(GTK_ENTRY(password_entry), true);	
+	gtk_entry_set_activates_default(GTK_ENTRY(password_entry), true);
 
 	// outbound proxy
-	GtkWidget* proxy_label = gtk_label_new("Outbound proxy:");
-	gtk_misc_set_alignment(GTK_MISC(proxy_label), 0, 0.5);
+	GtkWidget* proxy_label = gtk_widget_new(GTK_TYPE_LABEL,
+                                                "label", "Outbound proxy:",
+                                                "xalign", 0.0, "yalign", 0.5,
+                                                NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), proxy_label, 0, 1, 2, 3);
 	proxy_entry = gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(proxy_entry), false);
 	gtk_table_attach_defaults(GTK_TABLE(table), proxy_entry, 1, 2, 2, 3);
-	gtk_entry_set_activates_default(GTK_ENTRY(proxy_entry), true);	
+	gtk_entry_set_activates_default(GTK_ENTRY(proxy_entry), true);
 
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
 	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 3, 4);
-	
+
 	gtk_box_pack_start(GTK_BOX(parent), table, false, TRUE, 0);
 	gtk_widget_show_all(GTK_WIDGET(parent));
 }
@@ -79,7 +85,7 @@ void SIPSimpleUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 void SIPSimpleUnixAccountHandler::removeDialogWidgets(void* /*pEmbeddingParent*/)
 {
 	UT_DEBUGMSG(("SIPSimpleUnixAccountHandler::removeDialogWidgets\n"));
-	
+
 	// this will conveniently destroy all contained widgets as well
 	if (table && GTK_IS_WIDGET(table))
 		gtk_widget_destroy(table);

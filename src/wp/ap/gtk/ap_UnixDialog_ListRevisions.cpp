@@ -168,13 +168,15 @@ void AP_UnixDialog_ListRevisions::constructWindowContents ( GtkWidget * vbDialog
   gtk_container_add (GTK_CONTAINER (vbDialog), vbContent);
   gtk_container_set_border_width (GTK_CONTAINER (vbContent), 5);
 
-  lbExistingRevisions = gtk_label_new (NULL);
   std::string s("<b>");
   s += getLabel1();
   s += "</b>";
-  gtk_label_set_markup(GTK_LABEL(lbExistingRevisions), s.c_str());
+  lbExistingRevisions = gtk_widget_new (GTK_TYPE_LABEL,
+                                        "label", s.c_str(),
+                                        "use-markup", TRUE,
+                                        "xalign", 0.0, "yalign", 0.5,
+                                        NULL);
   gtk_widget_show (lbExistingRevisions);
-  gtk_misc_set_alignment (GTK_MISC (lbExistingRevisions), 0.0, 0.5);
   gtk_box_pack_start (GTK_BOX (vbContent), lbExistingRevisions, FALSE, FALSE, 0);
 
   swExistingRevisions = gtk_scrolled_window_new (NULL, NULL);

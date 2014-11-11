@@ -197,26 +197,28 @@ GtkWidget * AP_UnixDialog_EpubExportOptions::_constructWindow ()
 
 	/* The top item in the vbox is a simple label
 	 */
-	GtkWidget * labelActivate = gtk_label_new (label);
+	GtkWidget * labelActivate = gtk_widget_new (GTK_TYPE_LABEL,
+						    "label", label,
+						    "justify", GTK_JUSTIFY_LEFT,
+						    "xalign", 0.0, "yalign", 0.0,
+						    "xpad", 10, "ypad", 5,
+						    NULL);
 	if (labelActivate)
-		{
-			gtk_widget_show (labelActivate);
-			gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
-			gtk_label_set_justify (GTK_LABEL (labelActivate), GTK_JUSTIFY_LEFT);
-			gtk_misc_set_alignment (GTK_MISC (labelActivate), 0, 0);
-			gtk_misc_set_padding (GTK_MISC (labelActivate), 10, 5);
-		}
+	{
+		gtk_widget_show (labelActivate);
+		gtk_box_pack_start (GTK_BOX (vboxMain), labelActivate, FALSE, TRUE, 0);
+	}
 
 	m_wEpub2 = gtk_check_button_new_with_label (Epub2);
-	if (m_wEpub2) 
-    {
-        gtk_container_set_border_width(GTK_CONTAINER(m_wEpub2), 5);
-        gtk_widget_show(m_wEpub2);
-        gtk_box_pack_start(GTK_BOX(vboxMain), m_wEpub2, TRUE, TRUE, 0);
-        g_signal_connect(G_OBJECT(m_wEpub2), "toggled",
+	if (m_wEpub2)
+	{
+		gtk_container_set_border_width(GTK_CONTAINER(m_wEpub2), 5);
+		gtk_widget_show(m_wEpub2);
+		gtk_box_pack_start(GTK_BOX(vboxMain), m_wEpub2, TRUE, TRUE, 0);
+	        g_signal_connect(G_OBJECT(m_wEpub2), "toggled",
                          G_CALLBACK(s_Epub2), static_cast<gpointer> (this));
-    }
-    
+	}
+
 	m_wSplitDocument = gtk_check_button_new_with_label (SplitDocument);
 	if (m_wSplitDocument)
     {

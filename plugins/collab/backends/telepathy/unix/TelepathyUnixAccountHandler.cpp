@@ -308,8 +308,11 @@ void TelepathyAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
 
 	// Jabber conference server
-	GtkWidget* conference_label = gtk_label_new("Jabber conference server:");
-	gtk_misc_set_alignment(GTK_MISC(conference_label), 0, 0.5);
+	GtkWidget* conference_label
+          = gtk_widget_new(GTK_TYPE_LABEL,
+                           "label", "Jabber conference server:",
+                           "xalign", 0.0, "yalign", 0.5,
+                           NULL);
 	gtk_table_attach_defaults(GTK_TABLE(table), conference_label, 0, 1, 0, 1);
 	conference_entry = gtk_entry_new();
 	gtk_table_attach_defaults(GTK_TABLE(table), conference_entry, 1, 2, 0, 1);
