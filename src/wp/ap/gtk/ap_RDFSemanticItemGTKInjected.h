@@ -20,10 +20,14 @@
 #ifndef AP_RDFSEMANTICITEMGTKINJECTED_H
 #define AP_RDFSEMANTICITEMGTKINJECTED_H
 
+#include <gtk/gtk.h>
+
 #include "pd_DocumentRDF.h"
 #include "ut_std_string.h"
 #include "xap_Dialog_Id.h"
 #include "xap_App.h"
+#include "xap_UnixDialogHelper.h"
+#include "xap_Strings.h"
 
 #define G_OBJECT_SEMITEM "G_OBJECT_SEMITEM"
 #define G_OBJECT_SEMITEM_LIST "G_OBJECT_SEMITEM_LIST"
@@ -81,10 +85,13 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
     {
         UT_DEBUGMSG(("showEditorWindow(INJECTED) name:%s linksubj:%s\n",
                      c->name().c_str(), c->linkingSubject().toString().c_str() ));
+        XAP_StringSet* pSS = XAP_App::getApp()->getStringSet();
+        std::string s;
+        pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
         GtkWidget* d = gtk_dialog_new_with_buttons ("Message",
                                                     0,
                                                     GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                    GTK_STOCK_OK,
+                                                    convertMnemonics(s).c_str(),
                                                     GTK_RESPONSE_NONE,
                                                     NULL);
         GtkWidget* w = GTK_WIDGET(c->createEditor());
@@ -96,7 +103,12 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
         /*                         G_OBJECT_SEMITEM, */
         /*                         new struct G_OBJECT_SEMITEM( c ), */
         /*                         GDestroyNotify_G_OBJECT_SEMITEM ); */
-        gtk_widget_reparent( w, GTK_WIDGET( gtk_dialog_get_content_area( GTK_DIALOG (d))));
+        // reparent widget. Make sure to hold a temp reference on the widget.
+        g_object_ref(w);
+        GtkWidget* container = gtk_widget_get_parent(w);
+        gtk_container_remove(GTK_CONTAINER(container), w);
+        gtk_container_add(GTK_CONTAINER(gtk_dialog_get_content_area( GTK_DIALOG (d))), w);
+        g_object_unref(w);
 
         g_signal_connect (G_OBJECT(d), "response",  G_CALLBACK(OnSemItemEdited), c.get() );
         gtk_widget_show_all (d);
@@ -106,10 +118,13 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
     {
         UT_DEBUGMSG(("showEditorWindow() list... sz:%ld\n", cl.size() ));
 
+        XAP_StringSet* pSS = XAP_App::getApp()->getStringSet();
+        std::string s;
+        pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
         GtkWidget* d = gtk_dialog_new_with_buttons ("Message",
                                                     0,
                                                     GTK_DIALOG_DESTROY_WITH_PARENT,
-                                                    GTK_STOCK_OK,
+                                                    convertMnemonics(s).c_str(),
                                                     GTK_RESPONSE_NONE,
                                                     NULL);
         GtkNotebook* notebook = GTK_NOTEBOOK(gtk_notebook_new());
@@ -131,7 +146,11 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
             std::string label = c->getDisplayLabel();
             GtkWidget* container = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
             gtk_notebook_append_page( notebook, container, gtk_label_new( label.c_str() ));
-            gtk_widget_reparent( w, GTK_WIDGET( container));
+            GtkWidget *oldContainer = gtk_widget_get_parent(w);
+            g_object_ref(w);
+            gtk_container_remove(GTK_CONTAINER(oldContainer), w);
+            gtk_container_add(GTK_CONTAINER(container), w);
+            g_object_unref(w);
         }
         g_object_set_data_full( G_OBJECT(d),
                                 G_OBJECT_SEMITEM_LIST,
