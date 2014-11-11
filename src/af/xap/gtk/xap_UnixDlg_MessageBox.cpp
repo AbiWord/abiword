@@ -32,6 +32,7 @@
 #include "ut_assert.h"
 #include "ut_vector.h"
 #include "ut_debugmsg.h"
+#include "ut_std_string.h"
 #include "xap_Gtk2Compat.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixDlg_MessageBox.h"
@@ -63,164 +64,158 @@ XAP_UnixDialog_MessageBox::~XAP_UnixDialog_MessageBox(void)
 
 void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
 {
-	XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
-	UT_return_if_fail(pUnixFrameImpl);
+    XAP_UnixFrameImpl * pUnixFrameImpl = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl());
+    UT_return_if_fail(pUnixFrameImpl);
 
-	XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(XAP_App::getApp());
-	UT_return_if_fail(pApp);
+    XAP_UnixApp * pApp = static_cast<XAP_UnixApp *>(XAP_App::getApp());
+    UT_return_if_fail(pApp);
 
-	GtkWidget * message = 0;	// initialize to prevent compiler warning
-	GtkWindow * toplevel;
+    GtkWidget * message = 0;	// initialize to prevent compiler warning
+    GtkWindow * toplevel;
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	toplevel = GTK_WINDOW(gtk_widget_get_parent (pUnixFrameImpl->getTopLevelWindow()));
+    toplevel = GTK_WINDOW(gtk_widget_get_parent (pUnixFrameImpl->getTopLevelWindow()));
 #else
-	toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());
-#endif	
-
-	int dflFlags = 
-#if !GTK_CHECK_VERSION(3,0,0)
-	                          GTK_DIALOG_NO_SEPARATOR |
+    toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());
 #endif
-	                          GTK_DIALOG_MODAL;
-	
-	int dflResponse = GTK_RESPONSE_OK;
 
-	switch (m_buttons)
+    int dflFlags = GTK_DIALOG_MODAL;
+    int dflResponse = GTK_RESPONSE_OK;
+
+    switch (m_buttons)
+    {
+    case b_O:
+	// just put up an information box
+	message = gtk_message_dialog_new ( toplevel, GTK_DIALOG_MODAL,
+					   GTK_MESSAGE_INFO,
+					   GTK_BUTTONS_OK,
+					   "%s",
+					   m_szMessage ) ;
+
+	break;
+
+    case b_YN:
+	// YES - NO - most certainly a question
+	message = gtk_message_dialog_new ( toplevel, GTK_DIALOG_MODAL,
+					   GTK_MESSAGE_QUESTION,
+					   GTK_BUTTONS_YES_NO,
+					   "%s",
+					   m_szMessage ) ;
+	if(m_defaultAnswer == XAP_Dialog_MessageBox::a_YES)
 	{
-		case b_O:
-	        // just put up an information box
-			message = gtk_message_dialog_new ( toplevel, GTK_DIALOG_MODAL,
-							   GTK_MESSAGE_INFO,
-							   GTK_BUTTONS_OK,
-							   "%s",
-							   m_szMessage ) ;
+	    gtk_dialog_set_default_response (GTK_DIALOG(message),
+					     GTK_RESPONSE_YES);
+	}
+	else
+	{
+	    gtk_dialog_set_default_response (GTK_DIALOG(message),
+					     GTK_RESPONSE_NO);
+	}
+	break;
 
-			break;
-
-		case b_YN:
-			// YES - NO - most certainly a question
-			message = gtk_message_dialog_new ( toplevel, GTK_DIALOG_MODAL,
-							   GTK_MESSAGE_QUESTION,
-							   GTK_BUTTONS_YES_NO,
-							   "%s",
-							   m_szMessage ) ;
-			if(m_defaultAnswer == XAP_Dialog_MessageBox::a_YES)
-			{
-			    gtk_dialog_set_default_response (GTK_DIALOG(message),
-							 GTK_RESPONSE_YES);
-			}
-			else
-		        {
-			    gtk_dialog_set_default_response (GTK_DIALOG(message),
-							 GTK_RESPONSE_NO);
-			}
-			break;
-
-		case b_YNC:
-        {
-			// YES - NO - CANCEL
-			// this is only used for saving files.
+    case b_YNC:
+    {
+	// YES - NO - CANCEL
+	// this is only used for saving files.
 #ifndef EMBEDDED_TARGET
-            std::string s;
-            UT_String labelText;
-            const XAP_StringSet * pSS = pApp->getStringSet ();
+	std::string no, cancel, save;
+	std::string labelText;
+	const XAP_StringSet * pSS = pApp->getStringSet ();
 
-			pSS->getValueUTF8(XAP_STRING_ID_DLG_Exit_CloseWithoutSaving,s);
-            char * tmp_str = g_strdup(s.c_str());
-			convertMnemonics(tmp_str);
-			message = gtk_dialog_new_with_buttons("",
-							      toplevel,
-							      static_cast<GtkDialogFlags>(dflFlags),
-							      NULL, NULL);
-			GtkWidget *button_no = gtk_dialog_add_button(GTK_DIALOG(message), tmp_str, GTK_RESPONSE_NO);
-			GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_DELETE, GTK_ICON_SIZE_BUTTON);
-			gtk_button_set_image(GTK_BUTTON(button_no), img);      
-			gtk_dialog_add_buttons(GTK_DIALOG(message), 
-							       GTK_STOCK_CANCEL, 
-							       GTK_RESPONSE_CANCEL, 
-							       GTK_STOCK_SAVE, 
-							       GTK_RESPONSE_YES,
-							       NULL);
+	message = gtk_dialog_new_with_buttons("",
+					      toplevel,
+					      static_cast<GtkDialogFlags>(dflFlags),
+					      NULL, NULL);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Exit_CloseWithoutSaving, no);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, cancel);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Save, save);
+	gtk_dialog_add_buttons(GTK_DIALOG(message),
+			       convertMnemonics(no).c_str(),
+			       GTK_RESPONSE_NO,
+			       convertMnemonics(cancel).c_str(),
+			       GTK_RESPONSE_CANCEL,
+			       convertMnemonics(save).c_str(),
+			       GTK_RESPONSE_YES,
+			       NULL);
 
-			dflResponse = GTK_RESPONSE_YES;
-			FREEP(tmp_str);
-			
-            GtkWidget * label = gtk_label_new(NULL);
-            const char * separator;
-			if (m_szSecondaryMessage == NULL)
-				separator = "";
-			else
-				separator = "\n\n";
-			
-            gchar     * msg = g_markup_escape_text (m_szMessage, -1);
-			labelText = UT_String_sprintf(labelText, "<span weight=\"bold\" size=\"larger\">%s</span>%s%s", 
-										  msg, separator, m_szSecondaryMessage);
-			g_free (msg); msg = NULL;
-			
-			gtk_label_set_markup(GTK_LABEL(label), labelText.c_str());
+	dflResponse = GTK_RESPONSE_YES;
 
-            GtkWidget * hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
-  
-			gtk_box_pack_start (GTK_BOX (hbox), 
-					    gtk_image_new_from_stock(GTK_STOCK_DIALOG_WARNING, 
-								     GTK_ICON_SIZE_DIALOG),
-					    FALSE, FALSE, 0);
-			
-			gtk_box_pack_start (GTK_BOX (hbox), label,
-					    TRUE, TRUE, 0);
+	GtkWidget * label = gtk_label_new(NULL);
+	const char * separator;
+	separator = m_szSecondaryMessage ? "\n\n" : "";
 
-			GtkBox *content_area = GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(message)));
-			gtk_box_pack_start (content_area, hbox, FALSE, FALSE, 0);
+	gchar     * msg = g_markup_escape_text (m_szMessage, -1);
+	labelText = UT_std_string_sprintf(
+	    "<span weight=\"bold\" size=\"larger\">%s</span>%s%s",
+	    msg, separator, m_szSecondaryMessage);
+	g_free (msg); msg = NULL;
 
-			gtk_box_set_spacing(content_area, 12);
-			gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
-			gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-			
-			gtk_widget_show_all (hbox);
+	gtk_label_set_markup(GTK_LABEL(label), labelText.c_str());
+
+	GtkWidget * hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 12);
+
+	gtk_box_pack_start (GTK_BOX (hbox),
+			    gtk_image_new_from_icon_name("dialog-warning",
+							 GTK_ICON_SIZE_DIALOG),
+			    FALSE, FALSE, 0);
+
+	gtk_box_pack_start (GTK_BOX (hbox), label,
+			    TRUE, TRUE, 0);
+
+	GtkBox *content_area = GTK_BOX (gtk_dialog_get_content_area(GTK_DIALOG(message)));
+	gtk_box_pack_start (content_area, hbox, FALSE, FALSE, 0);
+
+	gtk_box_set_spacing(content_area, 12);
+	gtk_container_set_border_width(GTK_CONTAINER(hbox), 6);
+	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
+
+	gtk_widget_show_all (hbox);
 
 #else
-			message = gtk_message_dialog_new (toplevel, 
-							  static_cast<GtkDialogFlags>(dflFlags),
-							  GTK_MESSAGE_QUESTION,
-							  GTK_BUTTONS_NONE,
-							  "%s",
-							  m_szMessage);
-			
-			gtk_dialog_add_buttons(GTK_DIALOG(message),
-					       GTK_STOCK_NO,
-					       GTK_RESPONSE_NO,
-					       GTK_STOCK_CANCEL, 
-					       GTK_RESPONSE_CANCEL, 
-					       GTK_STOCK_YES, 
-					       GTK_RESPONSE_YES,
-					       NULL);
+	message = gtk_message_dialog_new (toplevel,
+					  static_cast<GtkDialogFlags>(dflFlags),
+					  GTK_MESSAGE_QUESTION,
+					  GTK_BUTTONS_NONE,
+					  "%s",
+					  m_szMessage);
+
+	gtk_dialog_add_buttons(GTK_DIALOG(message),
+			       GTK_STOCK_NO,
+			       GTK_RESPONSE_NO,
+			       GTK_STOCK_CANCEL,
+			       GTK_RESPONSE_CANCEL,
+			       GTK_STOCK_YES,
+			       GTK_RESPONSE_YES,
+			       NULL);
 #endif
-  			gtk_dialog_set_default_response (GTK_DIALOG(message),
-							 GTK_RESPONSE_CANCEL);
-			
-			break;
-        }
-		default:
-			UT_ASSERT_NOT_REACHED();
-	}
+	gtk_dialog_set_default_response (GTK_DIALOG(message),
+					 GTK_RESPONSE_CANCEL);
 
-	// set the title to '', as per GNOME HIG, Section 3, Alerts
-	gtk_window_set_title (GTK_WINDOW(message), "");
+	break;
+    }
+    default:
+	UT_ASSERT_NOT_REACHED();
+    }
 
-	UT_ASSERT(message);
+    // set the title to '', as per GNOME HIG, Section 3, Alerts
+    gtk_window_set_title (GTK_WINDOW(message), "");
 
-	switch ( abiRunModalDialog ( GTK_DIALOG(message), pFrame,
-								 this, dflResponse, true, ATK_ROLE_ALERT ) )
-	{
-		case GTK_RESPONSE_OK:
-			m_answer = XAP_Dialog_MessageBox::a_OK; break;
-		case GTK_RESPONSE_YES:
-			m_answer = XAP_Dialog_MessageBox::a_YES; break;
-		case GTK_RESPONSE_NO:
-			m_answer = XAP_Dialog_MessageBox::a_NO; break;
-		case GTK_RESPONSE_CANCEL:
-		default:
-			m_answer = XAP_Dialog_MessageBox::a_CANCEL; break;
-	}
+    UT_ASSERT(message);
+
+    switch ( abiRunModalDialog ( GTK_DIALOG(message), pFrame,
+				 this, dflResponse, true, ATK_ROLE_ALERT ) )
+    {
+    case GTK_RESPONSE_OK:
+	m_answer = XAP_Dialog_MessageBox::a_OK;
+	break;
+    case GTK_RESPONSE_YES:
+	m_answer = XAP_Dialog_MessageBox::a_YES;
+	break;
+    case GTK_RESPONSE_NO:
+	m_answer = XAP_Dialog_MessageBox::a_NO;
+	break;
+    case GTK_RESPONSE_CANCEL:
+    default:
+	m_answer = XAP_Dialog_MessageBox::a_CANCEL; break;
+    }
 }
