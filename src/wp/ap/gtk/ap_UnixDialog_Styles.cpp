@@ -935,6 +935,7 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	DescriptionText = gtk_label_new (NULL);
 	gtk_misc_set_padding(GTK_MISC(DescriptionText), 0, 6);
+	gtk_label_set_max_width_chars(GTK_LABEL(DescriptionText), 64);
 	gtk_widget_show (DescriptionText);
 	gtk_container_add (GTK_CONTAINER (descriptionFrame), DescriptionText);
 	gtk_label_set_line_wrap (GTK_LABEL (DescriptionText), TRUE);
@@ -954,6 +955,9 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	GtkListStore * store = gtk_list_store_new(1, G_TYPE_STRING);
 	deletePropCombo = gtk_combo_box_new_with_model_and_entry(GTK_TREE_MODEL(store));
+#if GTK_CHECK_VERSION(2,24,0)
+	gtk_combo_box_set_entry_text_column(GTK_COMBO_BOX(deletePropCombo), 0);
+#endif
 	gtk_widget_show (deletePropCombo);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropCombo, TRUE, TRUE, 0);
 
