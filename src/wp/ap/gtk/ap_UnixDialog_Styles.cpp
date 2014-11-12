@@ -916,11 +916,6 @@ void  AP_UnixDialog_Styles::_constructModifyDialogContents(GtkWidget * container
 
 	GtkListStore * store = gtk_list_store_new(1, G_TYPE_STRING);
 	deletePropCombo = gtk_combo_box_new_with_model_and_entry(GTK_TREE_MODEL(store));
-	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-	gtk_cell_layout_pack_start(GTK_CELL_LAYOUT(deletePropCombo), renderer, TRUE);
-	gtk_cell_layout_set_attributes(GTK_CELL_LAYOUT(deletePropCombo), renderer,
-	                               "text", 0,
-	                               NULL);
 	gtk_combo_box_set_entry_text_column(GTK_COMBO_BOX(deletePropCombo), 0);
 	gtk_widget_show (deletePropCombo);
 	gtk_box_pack_start (GTK_BOX (deleteRow), deletePropCombo, TRUE, TRUE, 0);
