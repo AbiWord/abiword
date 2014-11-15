@@ -602,8 +602,7 @@ class ABI_EXPORT GR_Graphics
 #define COUNT_3D_COLORS 5
 
 	virtual void      setColor3D(GR_Color3D c) = 0;
-	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/)
-	{ return false; }
+	virtual bool      getColor3D(GR_Color3D /*name*/, UT_RGBColor & /*color*/) = 0;
 
 	const GR_Transform & getTransform() const {return m_Transform;}
 
