@@ -938,7 +938,6 @@ bool EV_UnixToolbar::synthesize(void)
 					toolbar_append_item (GTK_TOOLBAR (m_wToolbar), abi_table, 
 										 s.c_str(), NULL, TRUE, NULL, NULL, NULL);
 					gtk_widget_show_all(abi_table);
-					gtk_widget_hide(ABITABLE_WIDGET(abi_table)->label);
 					wd->m_widget = abi_table;
 				}
 				GtkWidget * wwd = wd->m_widget;

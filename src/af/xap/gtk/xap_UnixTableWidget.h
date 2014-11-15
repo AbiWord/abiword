@@ -41,10 +41,7 @@ typedef struct _AbiTable
 	GtkButton button;
 
 	/*<private>*/
-	GtkStockItem stock_item;
-
 	GtkWidget* button_box;
-	GtkWidget* label;
 	GtkWidget* icon;
 
 	GtkWindow* window;
@@ -52,10 +49,6 @@ typedef struct _AbiTable
 	GtkDrawingArea* area;
 	GtkLabel* window_label;
 	GSList* handlers;
-
-#if !GTK_CHECK_VERSION(3,0,0)
-	GdkGC* selected_gc;
-#endif
 
 	guint selected_rows;
 	guint selected_cols;
@@ -93,10 +86,6 @@ void	   abi_table_get_max_size   (const AbiTable* abi_table, guint* rows, guint*
 
 	/* Sets the labels */
 	void abi_table_set_labels(AbiTable* abi_table, const gchar * szTable, const gchar * szCancel);
-
-	/* Returns the label widget */
-
-	GtkWidget * abi_table_get_label(AbiTable* abi_table);
 
 	/* Sets the table icon to the gtk_image cast as GtkWidget */
 

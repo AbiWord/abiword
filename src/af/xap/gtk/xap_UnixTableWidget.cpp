@@ -384,9 +384,9 @@ on_button_release_event (GtkWidget *, GdkEventButton *ev, gpointer user_data)
 		if (-ev->y < size.height && ev->x < size.width)
 			return TRUE;
 	}
-	
+
 	emit_selected(table);
-	
+
 	return TRUE;
 }
 
@@ -645,11 +645,6 @@ abi_table_dispose (GObject *instance)
 	AbiTable* self = ABITABLE_WIDGET(instance);
 
 // For some reason I get an alert
-	if(self->label) {
-		g_object_unref(self->label);
-		self->label = NULL;
-	}
-
 	if(self->szTable) {
 		g_free(self->szTable);
 		self->szTable = NULL;
@@ -659,7 +654,7 @@ abi_table_dispose (GObject *instance)
 		self->szCancel = NULL;
 	}
 
-	G_OBJECT_CLASS (abi_table_parent_class)->dispose (instance);	
+	G_OBJECT_CLASS (abi_table_parent_class)->dispose (instance);   
 }
 
 static void
@@ -716,40 +711,17 @@ abi_table_init (AbiTable* table)
 	abi_table_resize(table);
 
 	table->icon = NULL;
-	if (gtk_stock_lookup ("abi-table-widget", &table->stock_item))
-	{
-		table->label = gtk_label_new_with_mnemonic(table->stock_item.label);
-		table->icon = gtk_image_new_from_icon_name("abi-table-widget", GTK_ICON_SIZE_LARGE_TOOLBAR);
-		gtk_widget_show(table->icon);
-		gtk_widget_show(table->label);
-		g_object_ref_sink(table->label);
-		//
-		// We actually never want this label in toolbar
-		//		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
-		gtk_box_pack_end(GTK_BOX(table->button_box), table->icon, FALSE, FALSE, 0);
-		UT_DEBUGMSG(("abi-table icon loaded %p !\n",table->icon));
-	}
-	else
-	{
-		/* it should not happen... */
-		UT_DEBUGMSG(("abi-table icon did not load !\n"));
-		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		table->label = gtk_label_new_with_mnemonic("_Table");
-		g_object_ref_sink(table->label);
-		//		gtk_box_pack_end(GTK_BOX(table->button_box), table->label, FALSE, FALSE, 0);
-	}
+	table->icon = gtk_image_new_from_icon_name("abi-table-widget", GTK_ICON_SIZE_LARGE_TOOLBAR);
+	gtk_widget_show(table->icon);
+	gtk_box_pack_end(GTK_BOX(table->button_box), table->icon, FALSE, FALSE, 0);
+	UT_DEBUGMSG(("abi-table icon loaded %p !\n",table->icon));
 
 	gtk_container_add(GTK_CONTAINER(table), GTK_WIDGET(table->button_box));
 
 	g_signal_connect(G_OBJECT(table), "pressed",
 			 G_CALLBACK(on_pressed), static_cast<gpointer>(table));
-#if GTK_CHECK_VERSION(3,0,0)
 	g_signal_connect(G_OBJECT(table->area), "draw",
 			 G_CALLBACK(on_drawing_area_event), static_cast<gpointer>(table));
-#else
-	g_signal_connect(G_OBJECT(table->area), "expose_event",
-			 G_CALLBACK(on_drawing_area_event), static_cast<gpointer>(table));
-#endif
 	g_signal_connect(G_OBJECT(table->area), "motion_notify_event",
 			 G_CALLBACK(on_motion_notify_event), static_cast<gpointer>(table));
 	g_signal_connect(G_OBJECT(table->area), "button_release_event",
@@ -807,13 +779,3 @@ abi_table_new (void)
 	return GTK_WIDGET (g_object_new (abi_table_get_type (), NULL));
 }
 
-/**
- * abi_table_get_label:
- * @abi_table: #AbiTable
- *
- * Returns: (transfer none): the label widget.
- */
- GtkWidget* abi_table_get_label(AbiTable* abi_table)
-{
-	return abi_table->label;
-}
