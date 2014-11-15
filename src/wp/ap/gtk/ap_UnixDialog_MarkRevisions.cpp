@@ -93,17 +93,12 @@ GtkWidget * AP_UnixDialog_MarkRevisions::constructWindow ()
   GtkWidget* w = 0;
   GtkWidget *dialog1;
   GtkWidget *dialog_vbox1;
-  GtkWidget *dialog_action_area1;
   std::string s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_MarkRevisions_Title,s);
   dialog1 = abiDialogNew ( "mark revisions", TRUE, s.c_str());
 
   dialog_vbox1 = gtk_dialog_get_content_area(GTK_DIALOG (dialog1));
   gtk_widget_show (dialog_vbox1);
-
-  dialog_action_area1 = gtk_dialog_get_action_area(GTK_DIALOG (dialog1));
-  gtk_widget_show (dialog_action_area1);
-  gtk_container_set_border_width (GTK_CONTAINER (dialog_action_area1), 10);
 
   constructWindowContents ( dialog_vbox1 ) ;
 
