@@ -1165,6 +1165,7 @@ AC_OUTPUT(
   Makefile
   goffice-bits/Makefile
   goffice-bits2/Makefile
+  icons/Makefile
   po/Makefile
   src/Makefile
   src/af/Makefile
