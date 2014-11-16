@@ -35,6 +35,7 @@
 #include "xap_Dlg_MessageBox.h"
 #include "xap_Frame.h"
 #include "xap_UnixFrameImpl.h"
+#include "xap_UnixDialogHelper.h"
 #include "AbiGOComponent.h"
 #include "ie_imp_GOComponent.h"
 #include "AbiGOffice.h"
@@ -245,10 +246,15 @@ AbiGOComponent_Create (G_GNUC_UNUSED AV_View* v, G_GNUC_UNUSED EV_EditMethodCall
 {
     XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	XAP_UnixFrameImpl *pFrameImpl = static_cast<XAP_UnixFrameImpl*>(pFrame->getFrameImpl());
+	std::string cancel, ok;
+	const XAP_StringSet *pSS = XAP_App::getApp()->getStringSet();
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, cancel);
+	pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, ok);
 	GtkDialog *dialog = GTK_DIALOG (gtk_dialog_new_with_buttons ("New Object",
 		GTK_WINDOW(pFrameImpl->getTopLevelWindow()),
 		(GtkDialogFlags) (GTK_DIALOG_MODAL | GTK_DIALOG_DESTROY_WITH_PARENT),
-		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL, GTK_STOCK_OK, GTK_RESPONSE_OK, NULL));
+		convertMnemonics(cancel).c_str(), GTK_RESPONSE_CANCEL,
+		convertMnemonics(ok).c_str(), GTK_RESPONSE_OK, NULL));
 	GtkListStore *list = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_STRING);
 	GtkWidget *w = gtk_tree_view_new_with_model (GTK_TREE_MODEL (list));
 	g_signal_connect_swapped(w, "button-press-event", G_CALLBACK(button_press_cb), dialog);
