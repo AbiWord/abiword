@@ -48,11 +48,11 @@ static void s_color_cleared(GtkWidget * /*btn*/, AP_UnixDialog_Background * dlg)
 	dlg->colorCleared();
 }
 
-static void s_color_changed(GtkWidget * csel,
+static void s_color_changed(GtkWidget * /*csel*/,
                             GdkRGBA *color,
 			    AP_UnixDialog_Background * dlg)
 {
-	UT_ASSERT(csel && dlg);
+	UT_ASSERT(dlg);
 
 	UT_RGBColor * rgbcolor = UT_UnixGdkColorToRGBColor(*color);
 	UT_HashColor hash_color;
@@ -89,14 +89,17 @@ void AP_UnixDialog_Background::runModal(XAP_Frame * pFrame)
 	UT_return_if_fail(mainWindow);
 	m_dlg = mainWindow;
 
-	switch ( abiRunModalDialog ( GTK_DIALOG(m_dlg), pFrame, this,
-								 BUTTON_OK, true ) )
+	switch (abiRunModalDialog(GTK_DIALOG(m_dlg), pFrame, this,
+				  BUTTON_OK, false))
 	{
 		case BUTTON_OK:
-			eventOk () ; break;
+			eventOk();
+			break;
 		default:
-			eventCancel(); break ;
+			eventCancel();
 	}
+        abiDestroyWidget(mainWindow);
+        m_dlg = NULL;
 }
 
 GtkWidget * AP_UnixDialog_Background::_constructWindow (void)
@@ -196,6 +199,9 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 
 void AP_UnixDialog_Background::eventOk (void)
 {
+	GdkRGBA color;
+	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(m_wColorsel), &color);
+	s_color_changed(m_wColorsel, &color, this);
 	setAnswer (a_OK);
 }
 
