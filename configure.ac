@@ -578,7 +578,7 @@ AM_CONDITIONAL([HAVE_CHAMPLAIN], test "$abi_cv_champlain" = "yes")
 
 
 AC_ARG_WITH([icondir],
-	[AS_HELP_STRING([--with-icondir=DIR], [install icon in DIR instead of PREFIX/share/icons/hicolor/48x48/apps])],
+	[AS_HELP_STRING([--with-icondir=DIR], [install icon in DIR instead of PREFIX/share/icons/THEME/SIZE/apps])],
 [
 	abi_cv_icondir="$withval"
 ])
@@ -587,9 +587,9 @@ if test "$abi_cv_icondir" = "" -o \
         "$abi_cv_icondir" = "no"; then
 	abi_cv_prefix="$prefix"
 	test "$abi_cv_prefix" = "NONE" && abi_cv_prefix="$ac_default_prefix"  
-	abi_cv_icondir="${abi_cv_prefix}/share/icons/hicolor/48x48/apps"
+	abi_cv_icondir="${abi_cv_prefix}/share/icons"
 fi
-AC_SUBST(ABIWORD_ICONDIR, "$abi_cv_icondir") 	     
+AC_SUBST(ABIWORD_ICONDIR, "$abi_cv_icondir")
 
 
 #
@@ -1151,6 +1151,7 @@ AM_CONDITIONAL(HAVE_INTROSPECTION, test "x$found_introspection" = "xyes")
 AC_OUTPUT(
   libabiword.pc
   Makefile
+  icons/Makefile
   po/Makefile
   src/Makefile
   src/af/Makefile

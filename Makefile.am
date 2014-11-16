@@ -3,7 +3,7 @@ ACLOCAL_AMFLAGS = -I .
 
 DIST_SUBDIRS = src plugins po user tools
 
-SUBDIRS = src plugins po user
+SUBDIRS = src plugins po user icons
 
 if TOOLKIT_GTK_ALL
 
@@ -25,9 +25,6 @@ DISTCHECK_CONFIGURE_FLAGS = \
 	--with-gir-dir=\$${datadir}/gir-1.0 \
 	--with-typelib-dir=\$${libdir}/girepository-1.0
 endif
-
-icondir= $(ABIWORD_ICONDIR)
-icon_DATA = abiword.png
 
 EXTRA_DIST = \
 	AUTHORS \
