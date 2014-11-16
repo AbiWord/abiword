@@ -18,13 +18,13 @@ dnl build but the embedded build just use pregenerated one (with a different ver
 AM_MAINTAINER_MODE([enable])
 
 #
-# Dependency requirements 
+# Dependency requirements
 #
 
 #
 # versions requested.
 #
-GTK_VERSION_REQ=3.0.8
+GTK_VERSION_REQ=3.4.0
 
 dnl GTK2_VERSION_REQ=2.12.0
 dnl
