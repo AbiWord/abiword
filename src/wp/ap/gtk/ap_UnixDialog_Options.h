@@ -224,7 +224,7 @@ private:
 	static void s_defaults_clicked	     (GtkWidget *,         gpointer);
 	static void s_chooseTransparentColor (GtkWidget *,         gpointer);
     static void s_real_color_changed(GdkRGBA & gdkcolor, AP_UnixDialog_Options * dlg);
-	static void s_color_changed	     (GtkColorSelection *, gpointer);
+	static void s_color_changed	     (GtkColorChooser *, GdkRGBA*, gpointer);
 	static void s_auto_save_toggled	     (GtkToggleButton *,   gpointer);
 	static void s_checkbutton_toggle     (GtkWidget *,	   gpointer);
 	static gint s_menu_item_activate     (GtkWidget *,	   gpointer);

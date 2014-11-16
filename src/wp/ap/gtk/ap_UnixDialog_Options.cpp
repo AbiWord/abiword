@@ -156,15 +156,15 @@ void AP_UnixDialog_Options::s_real_color_changed(GdkRGBA & gdkcolor, AP_UnixDial
 }
 
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
-void AP_UnixDialog_Options::s_color_changed ( GtkColorSelection *csel,
+void AP_UnixDialog_Options::s_color_changed ( GtkColorChooser *csel,
+                                              GdkRGBA         *color,
                                               gpointer data )
 {
     AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
     UT_ASSERT ( csel && dlg );
 
-	GdkRGBA rgba;
-	gtk_color_selection_get_current_rgba(csel, &rgba);
-    s_real_color_changed(rgba, dlg);
+    UT_DEBUGMSG(("s_color_changed\n"));
+    s_real_color_changed(*color, dlg);
 }
 #endif
 
@@ -202,11 +202,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
     const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-#if GTK_CHECK_VERSION(3,0,0)
     GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel.ui");
-#else
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel-2.ui");
-#endif
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
     pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
@@ -218,7 +214,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
     // the main dialog, because we'll need this for sensitivity toggling
     m_buttonColSel_Defaults = WID ( "btnDefaults" );
 
-    g_signal_connect ( G_OBJECT ( colorsel ), "color-changed",
+    g_signal_connect ( G_OBJECT ( colorsel ), "color-activated",
                        G_CALLBACK ( s_color_changed ),
                        static_cast<gpointer> ( this ) );
 
@@ -226,20 +222,25 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
     UT_parseColor ( m_CurrentTransparentColor,c );
 	GdkRGBA *gcolor = UT_UnixRGBColorToGdkRGBA(c);
 
-    gtk_color_selection_set_current_rgba ( GTK_COLOR_SELECTION ( colorsel ), gcolor);
+    gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(colorsel), gcolor);
 	gdk_rgba_free(gcolor);
 
     // run into the gtk main loop for this window. If the reponse is 0, the user pressed Defaults.
     // Don't destroy it if he did so.
-    while ( !abiRunModalDialog ( GTK_DIALOG ( dlg ), m_pFrame, this, GTK_RESPONSE_OK, FALSE ) ) {
+    while (!abiRunModalDialog(GTK_DIALOG(dlg), m_pFrame, this,
+                                          GTK_RESPONSE_OK, FALSE)) {
         // Answer was 0, so reset color to default
-        strncpy ( m_CurrentTransparentColor,static_cast<const gchar *> ( "ffffff" ),9 );
+        strncpy(m_CurrentTransparentColor, "ffffff", 9);
 
-        UT_parseColor ( m_CurrentTransparentColor,c );
-		gcolor = UT_UnixRGBColorToGdkRGBA(c);
-        gtk_color_chooser_set_rgba ( GTK_COLOR_CHOOSER ( colorsel ), gcolor );
-		gdk_rgba_free(gcolor);
+        UT_parseColor (m_CurrentTransparentColor, c);
+        gcolor = UT_UnixRGBColorToGdkRGBA(c);
+        gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(colorsel), gcolor);
+        gdk_rgba_free(gcolor);
     }
+
+    GdkRGBA cc;
+    gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(colorsel), &cc);
+    s_real_color_changed(cc, this);
 #endif
 //
 // Finish up here after a close or window delete signal.
@@ -515,11 +516,7 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
     dialogFileName = "ap_UnixHildonDialog_Options.ui";
 #else
-#if GTK_CHECK_VERSION(3,0,0)
     dialogFileName = "ap_UnixDialog_Options.ui";
-#else
-    dialogFileName = "ap_UnixDialog_Options-2.ui";	
-#endif
 #endif
 
     GtkBuilder * builder = newDialogBuilder(dialogFileName);

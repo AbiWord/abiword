@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.18.3 -->
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="3.4"/>
   <object class="GtkDialog" id="ap_UnixDialog_Options_ColorSel">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="title" translatable="yes">ap_UnixDialog_Options_ColorSel</property>
     <property name="resizable">False</property>
-    <property name="type_hint">dialog</property>
     <property name="window_position">center-on-parent</property>
+    <property name="type_hint">dialog</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="vbox1">
         <property name="visible">True</property>
@@ -23,11 +24,11 @@
             <child>
               <object class="GtkButton" id="btnDefaults">
                 <property name="label">gtk-revert-to-saved</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -39,11 +40,11 @@
             <child>
               <object class="GtkButton" id="button1">
                 <property name="label">gtk-close</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">False</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -61,14 +62,14 @@
           </packing>
         </child>
         <child>
-          <object class="GtkColorSelection" id="csColorSel">
+          <object class="GtkColorChooserWidget" id="csColorSel">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="border_width">5</property>
-            <property name="has_palette">True</property>
+            <property name="orientation">vertical</property>
           </object>
           <packing>
-            <property name="expand">True</property>
+            <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
