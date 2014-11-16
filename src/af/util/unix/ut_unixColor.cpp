@@ -25,30 +25,7 @@
 #include "ut_assert.h"
 
 #if defined(TOOLKIT_GTK) || defined(TOOLKIT_GTK2)
-/*!
-* Convert a GdkColor stuct to abi's UT_RGBColor. 
-* The caller is responsible for freeing the returned object.
-*/
-UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkColor &color) 
-{
-	return new UT_RGBColor(color.red >> 8, color.green >> 8, color.blue >> 8);
-}
 
-/*!
-* Convert an instance of abi's UT_RGBColor to a GdkColor stuct. 
-* The caller is responsible for freeing the returned object.
-*/
-GdkColor* UT_UnixRGBColorToGdkColor(const UT_RGBColor &rgb) 
-{
-	GdkColor color;
-	color.red = (guint16) (rgb.m_red * 256);
-	color.green = (guint16) (rgb.m_grn * 256);
-	color.blue = (guint16) (rgb.m_blu * 256);
-
-	return gdk_color_copy(&color);
-}
-
-#if GTK_CHECK_VERSION(3,0,0)
 UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkRGBA &color)
 {
 	return new UT_RGBColor(color.red * 255.,
@@ -65,9 +42,5 @@ GdkRGBA* UT_UnixRGBColorToGdkRGBA(const UT_RGBColor &rgb)
 	color.alpha = 1.;
 	return gdk_rgba_copy(&color);
 }
-
-#endif
-
-
 
 #endif

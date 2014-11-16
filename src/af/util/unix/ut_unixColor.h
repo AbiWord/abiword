@@ -34,16 +34,8 @@
 #include "ut_color.h"
 #endif
 
-UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkColor &color);
-GdkColor* UT_UnixRGBColorToGdkColor(const UT_RGBColor &rgb);
-
-#if GTK_CHECK_VERSION(3,0,0)
 UT_RGBColor* UT_UnixGdkColorToRGBColor(const GdkRGBA &color);
 GdkRGBA* UT_UnixRGBColorToGdkRGBA(const UT_RGBColor &rgb);
-#else
-// fallback for non gtk3
-#define UT_UnixRGBColorToGdkRGBA UT_UnixRGBColorToGdkColor
-#endif
 
 #endif
 
