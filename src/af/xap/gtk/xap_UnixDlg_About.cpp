@@ -71,7 +71,7 @@ void XAP_UnixDialog_About::runModal(XAP_Frame * /*pFrame*/)
 	// TODO Rob: use the more fancy "sidebar.png" logo, just like win32
 	if (!logo) {
 		std::string str (ICONDIR);
-		str += "/abiword.png";
+		str += "/hicolor/48x48/apps/abiword.png";
 		logo = gdk_pixbuf_new_from_file (str.c_str(), NULL); // ignore errors
 	}
 

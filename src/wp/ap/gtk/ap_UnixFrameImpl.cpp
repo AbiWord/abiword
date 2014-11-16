@@ -382,36 +382,58 @@ void AP_UnixFrameImpl::_setWindowIcon()
 {
 	// attach program icon to window
 	GtkWidget * window = getTopLevelWindow();
+	GdkPixbuf* icon = NULL;
 
+#if 0 // we don't need to use the theme.
 	GtkIconTheme * theme = gtk_icon_theme_get_default();
-	GdkPixbuf * icon = gtk_icon_theme_load_icon(theme, "abiword", 48, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
+	icon = gtk_icon_theme_load_icon(theme, "abiword", 48, GTK_ICON_LOOKUP_USE_BUILTIN, NULL);
 	if (icon)
 	{
 		gtk_window_set_icon (GTK_WINDOW (window), icon);
 		g_object_unref (G_OBJECT(icon));
 		return;
 	}
-
+#endif
 	// Hmm, we can't load the icon from the theme. This happens when we are
 	// are installed in a custom prefix, so let's try to load the icon manually.
-
 	GError* error = NULL;
-	std::string icon_path = std::string(ICONDIR) + G_DIR_SEPARATOR_S + "abiword.png";
-	icon = gdk_pixbuf_new_from_file(icon_path.c_str(), &error);
-	if (icon)
+	static const char* s_icon_sizes[] = {
+		"16x16",
+		"22x22",
+		"32x32",
+		"48x48",
+		"256x256",
+		"512x512",
+		NULL
+	};
+
+	const char** currentSize = s_icon_sizes;
+	GList* iconList = NULL;
+	while(*currentSize)
 	{
-		gtk_window_set_icon (GTK_WINDOW (window), icon);
-		g_object_unref (G_OBJECT(icon));	
-	}
-	else
-	{
+		std::string icon_path = std::string(ICONDIR) + "/hicolor/"
+			+ *currentSize + "/apps/abiword.png";
+		icon = gdk_pixbuf_new_from_file(icon_path.c_str(), &error);
+		if (icon)
+		{
+			iconList = g_list_append(iconList, icon);
+		}
 		if (error)
 		{
-			g_warning("Unable to load AbiWord icon: %s\n", error ? error->message : "(null)");
-			g_error_free(error);
+			g_warning("Unable to load AbiWord icon %s: %s\n",
+				  icon_path.c_str(),
+				  error ? error->message : "(null)");
+			if (error)
+			{
+				g_error_free(error);
+			}
 		}
-		else
-			g_warning("Unable to load AbiWord icon %s\n", icon_path.c_str());
+		currentSize++;
+	}
+	if (iconList)
+	{
+		gtk_window_set_icon_list(GTK_WINDOW(window), iconList);
+		g_list_free_full(iconList, &g_object_unref);
 	}
 }
 
