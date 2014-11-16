@@ -157,14 +157,21 @@ void AP_UnixDialog_Options::s_real_color_changed(GdkRGBA & gdkcolor, AP_UnixDial
 
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 void AP_UnixDialog_Options::s_color_changed ( GtkColorSelection *csel,
-                                              gpointer data )
+#if GTK_CHECK_VERSION(3,4,0)
+                                              GdkRGBA *rgba,
+#endif
+											  gpointer data )
 {
-    AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
-    UT_ASSERT ( csel && dlg );
+	AP_UnixDialog_Options * dlg = static_cast<AP_UnixDialog_Options *> ( data );
+	UT_ASSERT ( csel && dlg );
 
+#if GTK_CHECK_VERSION(3,4,0)
+	s_real_color_changed(*rgba, dlg);
+#else
 	GdkRGBA rgba;
 	gtk_color_selection_get_current_rgba(csel, &rgba);
-    s_real_color_changed(rgba, dlg);
+	s_real_color_changed(rgba, dlg);
+#endif
 }
 #endif
 
@@ -218,7 +225,12 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
     // the main dialog, because we'll need this for sensitivity toggling
     m_buttonColSel_Defaults = WID ( "btnDefaults" );
 
-    g_signal_connect ( G_OBJECT ( colorsel ), "color-changed",
+    g_signal_connect ( G_OBJECT ( colorsel ),
+#if GTK_CHECK_VERSION(3,4,0)
+                       "color-activated",
+#else
+                       "color-changed",
+#endif
                        G_CALLBACK ( s_color_changed ),
                        static_cast<gpointer> ( this ) );
 
@@ -226,7 +238,7 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
     UT_parseColor ( m_CurrentTransparentColor,c );
 	GdkRGBA *gcolor = UT_UnixRGBColorToGdkRGBA(c);
 
-    gtk_color_selection_set_current_rgba ( GTK_COLOR_SELECTION ( colorsel ), gcolor);
+    gtk_color_chooser_set_rgba ( GTK_COLOR_CHOOSER ( colorsel ), gcolor);
 	gdk_rgba_free(gcolor);
 
     // run into the gtk main loop for this window. If the reponse is 0, the user pressed Defaults.
@@ -240,6 +252,10 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
         gtk_color_chooser_set_rgba ( GTK_COLOR_CHOOSER ( colorsel ), gcolor );
 		gdk_rgba_free(gcolor);
     }
+
+    GdkRGBA cc;
+    gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(colorsel), &cc);
+    s_real_color_changed(cc, this);
 #endif
 //
 // Finish up here after a close or window delete signal.

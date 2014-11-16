@@ -214,9 +214,11 @@ void AP_UnixDialog_Background::_constructWindowContents (GtkWidget * parent)
 
 void AP_UnixDialog_Background::eventOk (void)
 {
+#if GTK_CHECK_VERSION(3,4,0)
 	GdkRGBA color;
 	gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(m_wColorsel), &color);
 	s_color_changed(m_wColorsel, &color, this);
+#endif
 	setAnswer (a_OK);
 }
 
