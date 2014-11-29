@@ -53,10 +53,8 @@
 #endif
 #include <stdio.h>
 
-#if HAVE_GSF_GIO
-#  include <gsf/gsf-input-gio.h>
-#  include <gsf/gsf-output-gio.h>
-#endif
+#include <gsf/gsf-input-gio.h>
+#include <gsf/gsf-output-gio.h>
 
 #ifdef TOOLKIT_GTK_ALL
 #include <gdk/gdk.h>
@@ -929,7 +927,7 @@ UT_go_shell_arg_to_uri (const char *arg)
 		return res;
 	}
 
-#if HAVE_GSF_GIO
+#if !defined(WITH_GSF_INPUT_HTTP)
 	{
 		GFile *f = g_file_new_for_commandline_arg (arg);
 		char *uri = g_file_get_uri (f);
@@ -940,7 +938,7 @@ UT_go_shell_arg_to_uri (const char *arg)
 			return uri2;
 		}
 	}
-#elif defined(WITH_GSF_INPUT_HTTP)
+#else
 	{
 		if (g_ascii_strncasecmp (arg, "http://", strlen ("http://")) == 0) {
 			return UT_go_url_simplify (arg);
@@ -964,20 +962,9 @@ UT_go_basename_from_uri (const char *uri)
 {
 	char *res;
 
-#if HAVE_GSF_GIO
 	GFile *f = g_file_new_for_uri (uri);
 	char *basename = g_file_get_basename (f);
 	g_object_unref (G_OBJECT (f));
-#else
-	char *uri_basename = g_path_get_basename (uri);
-	char *fake_uri = g_strconcat ("file:///", uri_basename, NULL);
-	char *filename = UT_go_filename_from_uri (fake_uri);
-	char *basename = filename ? g_path_get_basename (filename) : NULL;
-	g_free (uri_basename);
-	g_free (fake_uri);
-	g_free (filename);
-
-#endif
 
 	res = basename ? g_filename_display_name (basename) : NULL;
 	g_free (basename);
@@ -1024,29 +1011,11 @@ UT_go_dirname_from_uri (const char *uri, gboolean brief)
 gboolean 
 UT_go_directory_create (char const *uri, int mode, GError **error)
 {
-#if HAVE_GSF_GIO
 	GFile *f = g_file_new_for_uri (uri);
 	gboolean res = g_file_make_directory (f, NULL, error);
 	g_object_unref (G_OBJECT (f));
 	UT_UNUSED(mode);
 	return res;
-#else
-	char *filename;
-	if(error) {
-		*error = NULL;
-	}
-
-	filename = UT_go_filename_from_uri (uri);
-	if (filename) {
-		int result;
-
-		result = g_mkdir(filename, mode);
-		g_free (filename);
-		return (result == 0);
-	}
-
-	return FALSE;
-#endif
 }
 
 /* ------------------------------------------------------------------------- */
@@ -1129,12 +1098,8 @@ UT_go_file_open_impl (char const *uri, GError **err)
 
 	if (!strncmp (uri, "http://", 7) || !strncmp (uri, "https://", 8))
 		return gsf_input_http_new (uri, err);
-#if HAVE_GSF_GIO
+
 	return gsf_input_gio_new_for_uri (uri, err);
-#endif
-	g_set_error (err, gsf_input_error (), 0,
-		     "Invalid or non-supported URI");
-	return NULL;
 }
 
 /**
@@ -1204,13 +1169,7 @@ UT_go_file_create_impl (char const *uri, GError **err)
 		return gsf_output_proxy_create(result, uri, err);
 	}
 
-#if HAVE_GSF_GIO
 	return gsf_output_proxy_create(gsf_output_gio_new_for_uri (uri, err), uri, err);
-#else
-	g_set_error (err, gsf_output_error_id (), 0,
-		     "Invalid or non-supported URI");
-	return NULL;
-#endif
 }
 
 GsfOutput *
@@ -1242,21 +1201,12 @@ UT_go_file_remove (char const *uri, GError ** err)
 	}
 
 
-#if HAVE_GSF_GIO
 
-	{
-		GFile *f = g_file_new_for_uri (uri);
-		gboolean res = g_file_delete (f, NULL, err);
-		g_object_unref (G_OBJECT (f));
+	GFile *f = g_file_new_for_uri (uri);
+	gboolean res = g_file_delete (f, NULL, err);
+	g_object_unref (G_OBJECT (f));
 
-		return res;
-	}
-
-#else
-	g_set_error (err, gsf_output_error_id (), 0,
-		     "Invalid or non-supported URI");
-	return FALSE;
-#endif
+	return res;
 }
 
 /* ------------------------------------------------------------------------- */
@@ -1312,25 +1262,10 @@ UT_go_file_split_urls (const char *data)
 gboolean
 UT_go_file_exists (char const *uri)
 {
-#if HAVE_GSF_GIO
 	GFile *f = g_file_new_for_uri (uri);
 	gboolean res = g_file_query_exists (f, NULL);
 	g_object_unref (G_OBJECT (f));
 	return res;
-#else
-
-#if GLIB_CHECK_VERSION(2,26,0) || defined(G_OS_WIN32)
-	GStatBuf file_stat;
-#else
-	struct stat file_stat;
-#endif
-	char *filename = UT_go_filename_from_uri (uri);
-	int result = filename ? g_stat (filename, &file_stat) : -1;
-
-	g_free (filename);
-
-	return result == 0;
-#endif
 }
 
 UT_GOFilePermissions *
@@ -1653,7 +1588,6 @@ UT_go_url_check_extension (gchar const *uri,
 gchar *
 UT_go_get_mime_type (gchar const *uri)
 {
-#if HAVE_GSF_GIO
 	gboolean content_type_uncertain = FALSE;
 	char *content_type = g_content_type_guess (uri, NULL, 0, &content_type_uncertain);
 	if (content_type) {
@@ -1665,30 +1599,6 @@ UT_go_get_mime_type (gchar const *uri)
 	}
 
 	return g_strdup ("application/octet-stream");
-
-#elif 0 /* defined(G_OS_WIN32) */
-	LPWSTR wuri, mime_type;
-
-	wuri = g_utf8_to_utf16 (uri, -1, NULL, NULL, NULL);
-	if (wuri &&
-	    FindMimeFromData (NULL, wuri, NULL, 0, NULL, 0, &mime_type, 0) == NOERROR)
-	{
-		g_free (wuri);
-		return g_utf16_to_utf8 (mime_type, -1, NULL, NULL, NULL);
-	}
-
-	g_free (wuri);
-
-	/* We try to determine mime using FindMimeFromData().
-	 * However, we are not sure whether the functions will know about
-	 * the necessary mime types. In the worst wase we fall back to
-	 * "text/plain"
-	 */
-	return g_strdup ("text/plain");
-#else
-	UT_UNUSED(uri);
-	return g_strdup ("application/octet-stream");
-#endif
 }
 
 gchar

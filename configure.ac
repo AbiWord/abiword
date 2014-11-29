@@ -86,7 +86,6 @@ AC_ARG_ENABLE([qt],
 fribidi_req='fribidi >= 0.10.4'
 glib_req='glib-2.0 >= 2.6.0 gthread-2.0 >= 2.6.0 gobject-2.0 >= 2.6.0'
 gsf_req='libgsf-1 >= 1.14.18'
-gsf_gio_req='libgsf-1 >= 1.14.9'
 wv_req='wv-1.0 >= 1.2.0'
 goffice_req='libgoffice-0.10 >= 0.10.0'
 xslt_req='libxslt'
@@ -693,15 +692,6 @@ fi
 AC_SUBST([MOC])
 
 AC_SUBST([DEPS_CFLAGS])
-if test "$abi_cv_gio" = "yes"; then
-	PKG_CHECK_MODULES(GSFGI, [$gsf_gio_req], [abi_cv_gsf_gio=yes], 
-                 [abi_cv_gsf_gio=no])
-	if test "$abi_cv_gsf_gio" = "yes" ; then
-		AC_DEFINE([HAVE_GSF_GIO], [1], [GSF has GIO support])
-	fi
-else
-	abi_cv_gsf_gio=no
-fi
 
 DEPS_LIBS="$SYSTEM_LIBS $DEPS_LIBS"
 AC_SUBST([DEPS_LIBS])
@@ -1225,7 +1215,6 @@ Optional features:
 
 Optional dependencies:
   gio			${abi_cv_gio}
-  gsf-gio               ${abi_cv_gsf_gio}
   redland               ${abi_cv_redland}
   evolution_data_server ${abi_cv_evolution_data_server}
   libical               ${abi_cv_libical}
