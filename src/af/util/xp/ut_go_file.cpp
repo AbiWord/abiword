@@ -2,7 +2,7 @@
 /*
  * go-file.c :
  *
- * Copyright (C) 2009, 2013 Hubert Figuiere <hub@figuiere.net>.
+ * Copyright (C) 2009, 2013-2014 Hubert Figuiere <hub@figuiere.net>.
  *     Whose contributions are under GPLv2+
  * Copyright (C) 2004 Morten Welinder (terra@gnome.org)
  * Copyright (C) 2003, Red Hat, Inc.
@@ -56,21 +56,11 @@
 #if HAVE_GSF_GIO
 #  include <gsf/gsf-input-gio.h>
 #  include <gsf/gsf-output-gio.h>
-#elif defined(WITH_GNOMEVFS)
-#  define GOFFICE_WITH_GNOME
-#  include <libgnomevfs/gnome-vfs-mime-utils.h>
-#  include <libgnomevfs/gnome-vfs-mime-handlers.h>
-#  include <gsf-gnome/gsf-input-gnomevfs.h>
-#  include <gsf-gnome/gsf-output-gnomevfs.h>
 #endif
 
 #ifdef TOOLKIT_GTK_ALL
 #include <gdk/gdk.h>
 #include <gtk/gtk.h>
-#if defined(WITH_GNOMEVFS)
-// needed for gnome_vfs_url_show()
-#include <libgnomevfs/gnome-vfs-utils.h>
-#endif
 #endif
 
 #ifdef TOOLKIT_QT
@@ -369,11 +359,7 @@ gboolean UT_go_path_is_path (const char * path)
 char *
 UT_go_filename_from_uri (const char *uri)
 {
-#if defined(GOFFICE_WITH_GNOME)
-	return gnome_vfs_get_local_path_from_uri (uri);
-#else
 	return g_filename_from_uri (uri, NULL, NULL);
-#endif
 }
 
 /*
@@ -388,11 +374,7 @@ UT_go_filename_to_uri (const char *filename)
 
 	simp = UT_go_filename_simplify (filename, UT_GO_DOTDOT_TEST, TRUE);
 
-#if defined(GOFFICE_WITH_GNOME)
-	uri = gnome_vfs_get_uri_from_local_path (simp);
-#else
 	uri = g_filename_to_uri (simp, NULL, NULL);
-#endif
 	g_free (simp);
 	return uri;
 }
@@ -593,9 +575,6 @@ UT_go_url_simplify (const char *uri)
 
 	return simp;
 }
-
-
-#ifndef GOFFICE_WITH_GNOME
 
 /* code borrowed from gnome-vfs' gnome-vfs-uri.c */
 
@@ -822,8 +801,6 @@ make_full_uri_from_relative (const char *base_uri, const char *uri)
 	return result;
 }
 
-#endif
-
 /*
  * More or less the same as gnome_vfs_uri_make_full_from_relative.
  */
@@ -832,9 +809,6 @@ UT_go_url_resolve_relative (const char *ref_uri, const char *rel_uri)
 {
 	char *simp, *uri;
 
-#if defined(GOFFICE_WITH_GNOME)
-	uri = gnome_vfs_uri_make_full_from_relative (ref_uri, rel_uri);
-#else
 	g_return_val_if_fail (rel_uri != NULL, NULL);
 
 	if (is_uri_relative (rel_uri)) {
@@ -844,7 +818,6 @@ UT_go_url_resolve_relative (const char *ref_uri, const char *rel_uri)
 	} else {
 		uri = g_strdup (rel_uri);
 	}
-#endif
 
 	simp = UT_go_url_simplify (uri);
 	g_free (uri);
@@ -967,18 +940,6 @@ UT_go_shell_arg_to_uri (const char *arg)
 			return uri2;
 		}
 	}
-#elif defined(GOFFICE_WITH_GNOME)
-	{
-		/*
-		 * oink://     --> NULL
-		 * http://     --> "http" URI
-		 */
-		GnomeVFSURI *uri = gnome_vfs_uri_new (arg);
-		if (uri) {
-			gnome_vfs_uri_unref (uri);
-			return UT_go_url_simplify (arg);
-		}
-	}
 #elif defined(WITH_GSF_INPUT_HTTP)
 	{
 		if (g_ascii_strncasecmp (arg, "http://", strlen ("http://")) == 0) {
@@ -1007,10 +968,6 @@ UT_go_basename_from_uri (const char *uri)
 	GFile *f = g_file_new_for_uri (uri);
 	char *basename = g_file_get_basename (f);
 	g_object_unref (G_OBJECT (f));
-#elif defined(GOFFICE_WITH_GNOME)
-	char *raw_uri = gnome_vfs_unescape_string (uri, G_DIR_SEPARATOR_S);
-	char *basename = raw_uri ? g_path_get_basename (raw_uri) : NULL;
-	g_free (raw_uri);
 #else
 	char *uri_basename = g_path_get_basename (uri);
 	char *fake_uri = g_strconcat ("file:///", uri_basename, NULL);
@@ -1040,11 +997,6 @@ UT_go_dirname_from_uri (const char *uri, gboolean brief)
 {
 	char *dirname_utf8, *dirname;
 
-#if defined(GOFFICE_WITH_GNOME)
-	char *raw_uri = gnome_vfs_unescape_string (uri, G_DIR_SEPARATOR_S);
-	dirname = raw_uri ? g_path_get_dirname (raw_uri) : NULL;
-	g_free (raw_uri);
-#else
 	char *uri_dirname = g_path_get_dirname (uri);
 	dirname = uri_dirname ? UT_go_filename_from_uri (uri_dirname) : NULL;
 	if(uri_dirname) {
@@ -1055,7 +1007,6 @@ UT_go_dirname_from_uri (const char *uri, gboolean brief)
 		g_free (dirname);
 	}
 	dirname = uri_dirname;
-#endif
 
 	if (brief && dirname &&
 	    g_ascii_strncasecmp (dirname, "file:///", 8) == 0) {
@@ -1079,18 +1030,6 @@ UT_go_directory_create (char const *uri, int mode, GError **error)
 	g_object_unref (G_OBJECT (f));
 	UT_UNUSED(mode);
 	return res;
-#elif defined(GOFFICE_WITH_GNOME)
-	GnomeVFSResult vfs_result;
-
-	vfs_result = gnome_vfs_make_directory (uri, mode);
-	if(vfs_result != GNOME_VFS_OK) {
-		g_set_error (error, gsf_output_error_id (), (gint) vfs_result,
-			     gnome_vfs_result_to_string (vfs_result));
-
-		return FALSE;
-	}
-
-	return TRUE;
 #else
 	char *filename;
 	if(error) {
@@ -1192,8 +1131,6 @@ UT_go_file_open_impl (char const *uri, GError **err)
 		return gsf_input_http_new (uri, err);
 #if HAVE_GSF_GIO
 	return gsf_input_gio_new_for_uri (uri, err);
-#elif defined(GOFFICE_WITH_GNOME)
-	return gsf_input_gnomevfs_new (uri, err);
 #endif
 	g_set_error (err, gsf_input_error (), 0,
 		     "Invalid or non-supported URI");
@@ -1269,8 +1206,6 @@ UT_go_file_create_impl (char const *uri, GError **err)
 
 #if HAVE_GSF_GIO
 	return gsf_output_proxy_create(gsf_output_gio_new_for_uri (uri, err), uri, err);
-#elif defined(GOFFICE_WITH_GNOME)
-	return gsf_output_gnomevfs_new (uri, err);
 #else
 	g_set_error (err, gsf_output_error_id (), 0,
 		     "Invalid or non-supported URI");
@@ -1317,9 +1252,6 @@ UT_go_file_remove (char const *uri, GError ** err)
 		return res;
 	}
 
-#elif defined(GOFFICE_WITH_GNOME)
-	UT_UNUSED(err);
-	return (gnome_vfs_unlink (uri) == GNOME_VFS_OK);
 #else
 	g_set_error (err, gsf_output_error_id (), 0,
 		     "Invalid or non-supported URI");
@@ -1385,15 +1317,6 @@ UT_go_file_exists (char const *uri)
 	gboolean res = g_file_query_exists (f, NULL);
 	g_object_unref (G_OBJECT (f));
 	return res;
-#elif defined (GOFFICE_WITH_GNOME)
-	GnomeVFSURI *vfs_uri = gnome_vfs_uri_new (uri);
-	if (vfs_uri) {
-		gboolean exists = gnome_vfs_uri_exists (vfs_uri);
-		gnome_vfs_uri_unref (vfs_uri);
-		return exists;
-	}
-
-	return FALSE;
 #else
 
 #if GLIB_CHECK_VERSION(2,26,0) || defined(G_OS_WIN32)
@@ -1414,37 +1337,6 @@ UT_GOFilePermissions *
 UT_go_get_file_permissions (char const *uri)
 {
 	UT_GOFilePermissions * file_permissions = NULL;
-
-#if defined (GOFFICE_WITH_GNOME)
-	GnomeVFSFileInfo *file_info;
-	GnomeVFSResult result;
-
-        file_info = gnome_vfs_file_info_new ();
-        result = gnome_vfs_get_file_info (uri, file_info,
-					  (GnomeVFSFileInfoOptions)(GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS |
-								    GNOME_VFS_FILE_INFO_FOLLOW_LINKS));
-
-        if (result == GNOME_VFS_OK) {
-		file_permissions = g_new0 (UT_GOFilePermissions, 1);
-
-		/* Owner  Permissions */
-		file_permissions->owner_read    = ((file_info->permissions & GNOME_VFS_PERM_USER_READ) != 0);
-		file_permissions->owner_write   = ((file_info->permissions & GNOME_VFS_PERM_USER_WRITE) != 0);
-		file_permissions->owner_execute = ((file_info->permissions & GNOME_VFS_PERM_USER_EXEC) != 0);
-
-		/* Group  Permissions */
-		file_permissions->group_read    = ((file_info->permissions & GNOME_VFS_PERM_GROUP_READ) != 0);
-		file_permissions->group_write   = ((file_info->permissions & GNOME_VFS_PERM_GROUP_WRITE) != 0);
-		file_permissions->group_execute = ((file_info->permissions & GNOME_VFS_PERM_GROUP_EXEC) != 0);
-
-		/* Others Permissions */
-		file_permissions->others_read    = ((file_info->permissions & GNOME_VFS_PERM_OTHER_READ) != 0);
-		file_permissions->others_write   = ((file_info->permissions & GNOME_VFS_PERM_OTHER_WRITE) != 0);
-		file_permissions->others_execute = ((file_info->permissions & GNOME_VFS_PERM_OTHER_EXEC) != 0);
-	}
-
-	gnome_vfs_file_info_unref (file_info);
-#else
 
 #if GLIB_CHECK_VERSION(2,26,0) || defined(G_OS_WIN32)
 	GStatBuf file_stat;
@@ -1480,60 +1372,13 @@ UT_go_get_file_permissions (char const *uri)
 		file_permissions->owner_execute = ((file_stat.st_mode & S_IEXEC) != 0);
 #endif
 	}
-#endif
 	return file_permissions;
 }
 
 void
 UT_go_set_file_permissions (char const *uri, UT_GOFilePermissions * file_permissions)
 {
-#if defined (GOFFICE_WITH_GNOME)
-	GnomeVFSFileInfo *file_info;
-	GnomeVFSResult result;
-
-        file_info = gnome_vfs_file_info_new ();
-	file_info->permissions = (GnomeVFSFilePermissions)0;
-
-	/* Set owner permissions */
-	if (file_permissions->owner_read == TRUE)
-		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_USER_READ);
-
-	if (file_permissions->owner_write == TRUE)
-		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_USER_WRITE);
-
-	if (file_permissions->owner_execute == TRUE)
-		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_USER_EXEC);
-
-	/* Set group permissions */
-	if (file_permissions->group_read == TRUE)
-		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_GROUP_READ);
-
-	if (file_permissions->group_write == TRUE)
-		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_GROUP_WRITE);
-
-	if (file_permissions->group_execute == TRUE)
-		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_GROUP_EXEC);
-
-	/* Set others permissions */
-	if (file_permissions->others_read == TRUE)
-		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_OTHER_READ);
-
-	if (file_permissions->others_write == TRUE)
-		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_OTHER_WRITE);
-
-	if (file_permissions->others_execute == TRUE)
-		file_info->permissions = (GnomeVFSFilePermissions)(file_info->permissions | GNOME_VFS_PERM_OTHER_EXEC);
-
-	result = gnome_vfs_set_file_info (uri, file_info,
-					  (GnomeVFSSetFileInfoMask) (GNOME_VFS_FILE_INFO_GET_ACCESS_RIGHTS |
-								    GNOME_VFS_FILE_INFO_FOLLOW_LINKS |
-								    GNOME_VFS_SET_FILE_INFO_PERMISSIONS));
-
-	if (result != GNOME_VFS_OK)
-		g_warning ("Error setting permissions for '%s'.", uri);
-
-	gnome_vfs_file_info_unref (file_info);
-#elif ! defined (G_OS_WIN32)
+#if ! defined (G_OS_WIN32)
 	mode_t permissions = 0;
 	int result;
 	char *filename;
@@ -1594,31 +1439,6 @@ UT_go_file_get_date (char const *uri, UT_GOFileDateType type)
 {
 	time_t tm = -1;
 
-#if defined(GOFFICE_WITH_GNOME)
-	GnomeVFSFileInfo *file_info;
-
-	GnomeVFSResult result;
-
-        file_info = gnome_vfs_file_info_new ();
-        result = gnome_vfs_get_file_info (uri, file_info,
-                                          GNOME_VFS_FILE_INFO_FOLLOW_LINKS);
-
-        if (result == GNOME_VFS_OK) {
-		switch (type) {
-			case UT_GO_FILE_DATE_TYPE_ACCESSED:
-				tm = file_info->atime;
-				break;
-			case UT_GO_FILE_DATE_TYPE_MODIFIED:
-				tm = file_info->mtime;
-				break;
-			case UT_GO_FILE_DATE_TYPE_CHANGED:
-				tm = file_info->ctime;
-				break;
-		}
-	}
-
-	gnome_vfs_file_info_unref (file_info);
-#else
 #if GLIB_CHECK_VERSION(2,26,0) || defined(G_OS_WIN32)
 	GStatBuf file_stat;
 #else
@@ -1641,7 +1461,6 @@ UT_go_file_get_date (char const *uri, UT_GOFileDateType type)
 				break;
 		}
 	}
-#endif
 
 	return tm;
 }
@@ -1782,18 +1601,10 @@ UT_go_url_show (gchar const *url)
 	return NULL;
 #else
 	GError *err = NULL;
-#if GTK_CHECK_VERSION(2,14,0)
 	if(!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &err)) {
 		fallback_open_uri(url, &err);
 	}
 	return err;
-#elif defined(WITH_GNOMEVFS)
-	gnome_vfs_url_show (url);
-	return err;
-#else
-	fallback_open_uri(url, &err);
-	return err;
-#endif
 #endif
 }
 
@@ -1855,8 +1666,6 @@ UT_go_get_mime_type (gchar const *uri)
 
 	return g_strdup ("application/octet-stream");
 
-#elif defined(GOFFICE_WITH_GNOME)
-	return gnome_vfs_get_mime_type (uri);
 #elif 0 /* defined(G_OS_WIN32) */
 	LPWSTR wuri, mime_type;
 
@@ -1885,9 +1694,7 @@ UT_go_get_mime_type (gchar const *uri)
 gchar
 *UT_go_get_mime_type_for_data	(gconstpointer data, int data_size)
 {
-#if defined(GOFFICE_WITH_GNOME)
-	return g_strdup (gnome_vfs_get_mime_type_for_data (data, data_size));
-#elif 0 /* defined G_OS_WIN32 */
+#if 0 /* defined G_OS_WIN32 */
 	LPWSTR mime_type;
 
 	if (FindMimeFromData (NULL, NULL, (LPVOID)data, (DWORD)data_size, NULL, 0, &mime_type, 0) == NOERROR)
@@ -1911,11 +1718,7 @@ gchar
 gchar const
 *UT_go_mime_type_get_description	(gchar const *mime_type)
 {
-#if defined(GOFFICE_WITH_GNOME)
-	return gnome_vfs_mime_get_description (mime_type);
-#else
 	return mime_type;
-#endif
 }
 
 /* ------------------------------------------------------------------------- */

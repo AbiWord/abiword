@@ -349,29 +349,6 @@ AC_ARG_ENABLE([debug],
 #
 # Optional packages
 #
-if test "x$abi_cv_gtk2" = "xyes"; then
-AC_ARG_WITH([gnomevfs], 	 
-         [AS_HELP_STRING([--with-gnomevfs], [(Gtk+-2 only) use gnome-vfs library])], 	 
-	[ 	 
-	        abi_cv_gnomevfs="$withval" 	 
-	],[ 	 
-	        # use gnomevfs if detected 	 
-	        if test "$TOOLKIT_IS_GTK2" = "yes"; then 	 
-	                PKG_CHECK_EXISTS([ $gnomevfs_req ], 	 
-	                [ 	 
-	                        abi_cv_gnomevfs="yes" 	 
-	                ], [ 	 
-	                        abi_cv_gnomevfs="no" 	 
-	                ]) 	 
-	        else 	 
-	                abi_cv_gnomevfs="no" 	 
-	        fi 	 
-	]) 	 
- 	 
-	if test "$abi_cv_gnomevfs" = "yes"; then 	 
-	        opt_pkgs="$opt_pkgs $gnomevfs_req" 	 
-	fi 	 
-fi
 
 AC_ARG_WITH([gio], 
 	[AS_HELP_STRING([--with-gio], [use GIO library])], 
@@ -953,10 +930,6 @@ AM_PATH_LIBGCRYPT( 1.4.5,
 		   ] )
 AM_CONDITIONAL(HAVE_GCRYPT, test "$abi_cv_gcrypt" = "yes")
 
-if test "$abi_cv_gnomevfs" = "yes"; then 	 
-    AC_DEFINE([WITH_GNOMEVFS], [1], [Define if using gnome-vfs]) 	 
-fi 	 
-	
 if test "$abi_cv_gio" = "yes"; then
 	AC_DEFINE([WITH_GIO], [1], [Define if using GIO])
 fi

@@ -63,10 +63,6 @@
 #include "gr_UnixPangoPixmapGraphics.h"
 #endif
 
-#ifdef WITH_GNOMEVFS
-  #include <libgnomevfs/gnome-vfs.h>
-#endif
-
 #include "gr_CairoNullGraphics.h"
 static CairoNull_Graphics * nullgraphics = NULL;
 
@@ -171,10 +167,6 @@ bool XAP_UnixApp::initialize(const char * szKeyBindingsKey, const char * szKeyBi
 	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);
 
 	libgoffice_init();
-
-#ifdef WITH_GNOMEVFS
-	gnome_vfs_init();
-#endif
 
 	// do any thing we need here...
 
