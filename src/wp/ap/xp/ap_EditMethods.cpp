@@ -8891,7 +8891,8 @@ UT_return_val_if_fail(pDialog, false);
 		//
 		FL_DocLayout * pDocLayout = NULL;
 		FV_View * pPrintView = NULL;
-		if(!pGraphics->canQuickPrint())
+		bool canQuickPrint = pGraphics->canQuickPrint();
+		if(!canQuickPrint)
 		{
 				pDocLayout = new FL_DocLayout(doc,pGraphics);
 				pPrintView = new FV_View(XAP_App::getApp(),0,pDocLayout);
@@ -8934,11 +8935,11 @@ UT_return_val_if_fail(pDialog, false);
 		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 				iWidth,  iHeight, nToPage, nFromPage);
 
-		if(!pGraphics->canQuickPrint())
-		 {
-			 delete pDocLayout;
-			 delete pPrintView;
-		 }
+		if(!canQuickPrint)
+		{
+			delete pDocLayout;
+			delete pPrintView;
+		}
 		else
 		{
 			if(bHideFmtMarks)
