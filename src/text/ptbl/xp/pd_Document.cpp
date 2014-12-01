@@ -7331,7 +7331,7 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 						// the whole thing to NULL
 						if(i == 0)
 						{
-							delete ppAttr2;
+							delete [] ppAttr2;
 							ppAttr2 = NULL;
 						}
 						else
@@ -7377,8 +7377,8 @@ bool PD_Document::_acceptRejectRevision(bool bReject, UT_uint32 iStart, UT_uint3
 				for(i = 0; i < iAttrCount; ++i)
 					g_free((gchar*)ppAttr2[i]);
 
-				delete ppProps;
-				delete ppAttr2;
+				delete [] ppProps;
+				delete [] ppAttr2;
 
 				return bRet;
 

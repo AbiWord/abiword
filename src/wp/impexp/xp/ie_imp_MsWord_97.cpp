@@ -4355,12 +4355,12 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 		unsigned long uncomprLen, comprLen;
 		comprLen = size;
 		uncomprLen = b->blip.metafile.m_cb;
-		Bytef *uncompr = new Bytef[uncomprLen];    
+		Bytef *uncompr = new Bytef[uncomprLen];
 		int err = uncompress (uncompr, &uncomprLen, reinterpret_cast<const unsigned char *>(data), comprLen);
 		if (err != Z_OK)
 		{
 			UT_DEBUGMSG(("Could not uncompress image\n"));
-			DELETEP(uncompr);
+			DELETEPV(uncompr);
 			goto Cleanup;
 		}
 		pictData.append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
@@ -4498,16 +4498,16 @@ UT_Error IE_Imp_MsWord_97::_handlePositionedImage (Blip * b, UT_String & sImageN
     unsigned long uncomprLen, comprLen;
     comprLen = size;
     uncomprLen = b->blip.metafile.m_cb;
-    Bytef *uncompr = new Bytef[uncomprLen];    
+    Bytef *uncompr = new Bytef[uncomprLen];
     int err = uncompress (uncompr, &uncomprLen, reinterpret_cast<const unsigned char *>(data), comprLen);
     if (err != Z_OK)
-      {
-	UT_DEBUGMSG(("Could not uncompress image\n"));
-        DELETEP(uncompr);
-	goto Cleanup;
-      }
-      pictData.append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
-      DELETEPV(uncompr);
+    {
+        UT_DEBUGMSG(("Could not uncompress image\n"));
+        DELETEPV(uncompr);
+        goto Cleanup;
+    }
+    pictData.append(reinterpret_cast<const UT_Byte*>(uncompr), uncomprLen);
+    DELETEPV(uncompr);
   }
   else
   {
