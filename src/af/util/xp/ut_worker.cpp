@@ -86,8 +86,9 @@ void* UT_Worker::getInstanceData() const
 void UT_Worker::fire()
 {
   UT_ASSERT(m_pCallback);
-	
-  m_pCallback(this);
+  if (m_pCallback) {
+    m_pCallback(this);
+  }
 }
 
 /****************************************************************************/
