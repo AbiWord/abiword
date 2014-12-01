@@ -2266,8 +2266,8 @@ void s_DocBook_Listener::_handleDataItems(void)
 			
 			UT_UTF8String_sprintf(fname, "%s_data", m_pie->getFileName());
 			/* int result = */
-			UT_go_directory_create(fname.utf8_str(), 0750, NULL);
-			
+			UT_go_directory_create(fname.utf8_str(), NULL);
+
 			if (mimeType == "image/svg+xml")
 				UT_UTF8String_sprintf(fname, "%s/%s_%d.svg", fname.utf8_str(), szName, loc);
 			else if (mimeType == "application/mathml+xml")

@@ -770,7 +770,7 @@ UT_Error IE_Exp::writeBufferToFile(const UT_ByteBuf * pByteBuf,
                                    const std::string & imagedir,
                                    const std::string & filename)
 {
-    UT_go_directory_create(imagedir.c_str(), 0750, NULL);
+    UT_go_directory_create(imagedir.c_str(), NULL);
 
     std::string path = imagedir + "/" + filename;
 

@@ -204,7 +204,7 @@ UT_Error IE_Imp_EPUB::uncompress()
     m_tmpDir += G_DIR_SEPARATOR_S;
     m_tmpDir += getDoc()->getDocUUIDString();
 
-    if (!UT_go_directory_create(m_tmpDir.c_str(), 0644, NULL))
+    if (!UT_go_directory_create(m_tmpDir.c_str(), NULL))
     {
         UT_DEBUGMSG(("Can`t create temporary directory\n"));
         return UT_ERROR;
@@ -327,7 +327,7 @@ GsfOutput* IE_Imp_EPUB::createFileByPath(const char* path)
         bool fileExists = UT_go_file_exists(uri);
         if (!fileExists && (components[current] != NULL))
         {
-            UT_go_directory_create(uri, 0644, NULL);
+            UT_go_directory_create(uri, NULL);
         }
         else
         {

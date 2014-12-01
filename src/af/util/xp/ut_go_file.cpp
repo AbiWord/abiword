@@ -1008,13 +1008,12 @@ UT_go_dirname_from_uri (const char *uri, gboolean brief)
 }
 
 
-gboolean 
-UT_go_directory_create (char const *uri, int mode, GError **error)
+gboolean
+UT_go_directory_create (char const *uri, GError **error)
 {
 	GFile *f = g_file_new_for_uri (uri);
 	gboolean res = g_file_make_directory (f, NULL, error);
 	g_object_unref (G_OBJECT (f));
-	UT_UNUSED(mode);
 	return res;
 }
 

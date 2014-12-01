@@ -72,7 +72,7 @@ ABI_EXPORT char *UT_go_url_make_relative (const char *uri, const char *ref_uri);
 ABI_EXPORT char *UT_go_shell_arg_to_uri (const char *arg);
 ABI_EXPORT char *UT_go_basename_from_uri (const char *uri);
 ABI_EXPORT char *UT_go_dirname_from_uri (const char *uri, gboolean brief);
-ABI_EXPORT gboolean UT_go_directory_create (char const *uri, int mode, GError **err);
+ABI_EXPORT gboolean UT_go_directory_create (char const *uri, GError **err);
 
 ABI_EXPORT GsfInput  *UT_go_file_open		(char const *uri, GError **err);
 ABI_EXPORT GsfOutput *UT_go_file_create	(char const *uri, GError **err);

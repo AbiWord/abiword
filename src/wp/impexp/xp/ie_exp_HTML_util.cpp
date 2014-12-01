@@ -351,8 +351,8 @@ void IE_Exp_HTML_FileExporter::_init()
 {
     if (!m_bInitialized)
     {
-        UT_go_directory_create((m_baseDirectory + SEPARATOR +  m_fileDirectory).utf8_str(), 
-                               0644, NULL);
+        UT_go_directory_create((m_baseDirectory + SEPARATOR +  m_fileDirectory).utf8_str(),
+                               NULL);
         UT_DEBUGMSG(("\n\nCREATED DIR: %s\n\n",(m_baseDirectory + SEPARATOR +  m_fileDirectory).utf8_str()));
         m_bInitialized = true;
     }

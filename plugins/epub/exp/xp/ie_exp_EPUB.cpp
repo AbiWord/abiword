@@ -83,7 +83,7 @@ UT_Error IE_Exp_EPUB::_writeDocument()
     // We should delete any previous temporary data for this document to prevent
     // odd files appearing in the container
     UT_go_file_remove(m_baseTempDir.c_str(), NULL);
-    UT_go_directory_create(m_baseTempDir.c_str(), 0644, NULL);
+    UT_go_directory_create(m_baseTempDir.c_str(), NULL);
 
     if (writeContainer() != UT_OK)
     {
@@ -188,7 +188,7 @@ UT_Error IE_Exp_EPUB::EPUB2_writeStructure()
     m_oebpsDir = m_baseTempDir + G_DIR_SEPARATOR_S;
     m_oebpsDir += "OEBPS";
 
-    UT_go_directory_create(m_oebpsDir.c_str(), 0644, NULL);
+    UT_go_directory_create(m_oebpsDir.c_str(), NULL);
 
     std::string indexPath = m_oebpsDir + G_DIR_SEPARATOR_S;
     indexPath += "index.xhtml";
@@ -542,7 +542,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeStructure()
     m_oebpsDir = m_baseTempDir + G_DIR_SEPARATOR_S;
     m_oebpsDir += "OEBPS";
 
-    UT_go_directory_create(m_oebpsDir.c_str(), 0644, NULL);
+    UT_go_directory_create(m_oebpsDir.c_str(), NULL);
 
     std::string indexPath = m_oebpsDir + G_DIR_SEPARATOR_S;
     indexPath += "index.xhtml";
