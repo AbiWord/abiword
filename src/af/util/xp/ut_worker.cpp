@@ -135,19 +135,18 @@ UT_Worker * UT_WorkerFactory::static_constructor ( UT_WorkerCallback cb,
   {
       tmp = UT_Idle::static_constructor ( cb, data );
       outMode = IDLE;
-  } 
+  }
   else
 #endif
-    
-	  if ( mode & TIMER )
-      {
-		  tmp = UT_Timer::static_constructor ( cb, data );
-		  outMode = TIMER;
-      }
+  if ( mode & TIMER )
+  {
+    tmp = UT_Timer::static_constructor ( cb, data );
+    outMode = TIMER;
+  }
   else
   {
       UT_DEBUGMSG(("UNKNOWN MODE: %d\n", mode));
-      mode = NONE;
+      outMode = NONE;
   }
 
 
