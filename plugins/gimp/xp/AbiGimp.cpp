@@ -350,6 +350,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 #endif
 	off_t size;
 	struct stat myFileStat;
+	UT_uint32 icount = 0;
 	int ok = stat(szTmp.c_str(),&myFileStat);
 	time_t mod_time = myFileStat.st_mtime;
 	if(ok < 0)
@@ -361,7 +362,6 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 // Lock out the GUI in AbiWord
 //
 	ev_EditMethod_invoke(lockGUI,d);
-	UT_uint32 icount;
 
 #ifndef WIN32
 	while (pid != waitpid (pid, &status, WNOHANG)) 
@@ -383,7 +383,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 					size = myFileStat.st_size;
 					UT_usleep(100000); // wait 100 milliseconds
 					ok = stat(szTmp.c_str(),&myFileStat);
-					while(size > 0 && size != myFileStat.st_size)
+					while((ok == 0) && (size > 0) && size != myFileStat.st_size)
 					{
 						size = myFileStat.st_size;
 						ok = stat(szTmp.c_str(),&myFileStat);
@@ -437,7 +437,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 //
 // Now delete the tempfile
 //
-	ok = unlink(szTmp.c_str());
+	/*ok =*/ unlink(szTmp.c_str());
 //
 // UnLock the GUI in AbiWord
 //
@@ -450,7 +450,7 @@ AbiGimp_invoke(AV_View* /*v*/, EV_EditMethodCallData *d)
 // Something went wrong.
 //
  Cleanup: 
-	ok = unlink(szTmp.c_str());
+    /*ok =*/ unlink(szTmp.c_str());
 //
 // UnLock the GUI in AbiWord
 //
