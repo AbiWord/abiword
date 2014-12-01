@@ -375,6 +375,7 @@ UT_Error IE_Imp_MSWrite::parse_file ()
 	if (gsf_input_seek(mFile, 0x80, G_SEEK_SET))
 	{
 		UT_WARNINGMSG(("parse_file: Can't seek data!\n"));
+		free(thetext);
 		return UT_ERROR;
 	}
 

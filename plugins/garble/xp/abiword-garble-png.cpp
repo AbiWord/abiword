@@ -91,29 +91,32 @@ bool abiword_document::garble_png( void*& data, size_t& size ) {
 		garble_image_line( reinterpret_cast<char*>( dib[i] ), rowbytes );
 	}
 
+	bool result = false;
 	{
 		// write it back
 		png_structp png_ptrw = png_create_write_struct( PNG_LIBPNG_VER_STRING, NULL, NULL, NULL );
-		if (!png_ptrw)
-			return false;
-		png_infop info_ptrw = png_create_info_struct( png_ptrw );
-		png_set_IHDR( png_ptrw, info_ptrw, width, height, bit_depth, color_type, interlace_type, compression_type, filter_type );
-		string newdata;
-		png_set_write_fn( png_ptrw, (void*)&newdata, &_png_write, NULL );
-		png_write_info( png_ptrw, info_ptrw );
-		png_write_image( png_ptrw, dib );
-		png_write_end( png_ptrw, NULL );
-		png_destroy_write_struct( &png_ptrw, NULL );
+		if (png_ptrw)
+		{
+			png_infop info_ptrw = png_create_info_struct( png_ptrw );
+			png_set_IHDR( png_ptrw, info_ptrw, width, height, bit_depth, color_type, interlace_type, compression_type, filter_type );
+			string newdata;
+			png_set_write_fn( png_ptrw, (void*)&newdata, &_png_write, NULL );
+			png_write_info( png_ptrw, info_ptrw );
+			png_write_image( png_ptrw, dib );
+			png_write_end( png_ptrw, NULL );
+			png_destroy_write_struct( &png_ptrw, NULL );
 
-		free(data);
-		size = newdata.size();
-		data = malloc( size );
-		memcpy( data, &newdata[0], size );
+			free(data);
+			size = newdata.size();
+			data = malloc( size );
+			memcpy( data, &newdata[0], size );
+			result = true;
+		}
 	}
 
 	// cleanup
 	for (size_t i=0; i<height; i++)
 		free( dib[i] );
 	free( dib );
-	return true;
+	return result;
 }
