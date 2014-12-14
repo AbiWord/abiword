@@ -403,7 +403,6 @@ void AP_UnixFrameImpl::_setWindowIcon()
 		"32x32",
 		"48x48",
 		"256x256",
-		"512x512",
 		NULL
 	};
 
@@ -418,7 +417,7 @@ void AP_UnixFrameImpl::_setWindowIcon()
 		{
 			iconList = g_list_append(iconList, icon);
 		}
-		if (error)
+		else
 		{
 			g_warning("Unable to load AbiWord icon %s: %s\n",
 				  icon_path.c_str(),
