@@ -211,15 +211,20 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 
 #if GTK_CHECK_VERSION(3,0,0)
     GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel.ui");
+    GtkWidget* vbox = WID("vbox1");
+    colorsel = gtk_color_chooser_widget_new();
+    gtk_container_set_border_width(GTK_CONTAINER(colorsel), 5);
+    gtk_widget_set_can_focus(colorsel, TRUE);
+    gtk_box_pack_start(GTK_BOX(vbox), colorsel, TRUE, TRUE, 0);
+    gtk_widget_show(colorsel);
 #else
     GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options_ColorSel-2.ui");
+    colorsel = WID ( "csColorSel" );
 #endif
 
     dlg = WID ( "ap_UnixDialog_Options_ColorSel" );
     pSS->getValueUTF8 ( AP_STRING_ID_DLG_Options_Label_ChooseForTransparent, s );
     abiDialogSetTitle ( dlg, "%s", s.c_str() );
-
-    colorsel = WID ( "csColorSel" );
 
     // quiet hacky. Fetch defaults button from colsel GtkBuilder UI file and store it inside
     // the main dialog, because we'll need this for sensitivity toggling
