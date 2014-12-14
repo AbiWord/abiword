@@ -1058,6 +1058,7 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 		}
 			
 	}
+	gtk_widget_grab_focus(w);
 	return 1;
 }
 
