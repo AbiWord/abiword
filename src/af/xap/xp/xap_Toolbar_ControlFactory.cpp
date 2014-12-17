@@ -60,7 +60,9 @@ EV_Toolbar_Control * XAP_Toolbar_ControlFactory::getControl(EV_Toolbar * pToolba
 	UT_uint32 index;
 	EV_Toolbar_Control * pControl = NULL;
 	
-	_find_ControlInTable(id,&index);
+	if (!_find_ControlInTable(id,&index)) {
+		return NULL;
+	}
 
 	// create a fresh Toolbar_Control object and return it -- no strings attached.
 	
