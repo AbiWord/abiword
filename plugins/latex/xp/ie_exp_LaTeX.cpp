@@ -609,16 +609,17 @@ void s_LaTeX_Listener::_openParagraph(PT_AttrPropIndex api)
 		{
 			int indent = 0;
 			bool bNewList = false;
-			const gchar * szIndent, * szLeft, * szListStyle = NULL;
+			const gchar * szIndent, * szLeft, * szListStyle;
+			szIndent = szLeft = szListStyle = NULL;
 			FL_ListType this_list_type = NOT_A_LIST;
 			pAP->getProperty("list-style", szListStyle);
 			
 			if(szListStyle)
 			{
-			    if (0 == strcmp(szListStyle, "Numbered List") )
-				this_list_type = NUMBERED_LIST;
-			    else if (0 == strcmp(szListStyle, "Bullet List") )
-				this_list_type = BULLETED_LIST;
+				if (0 == strcmp(szListStyle, "Numbered List") )
+					this_list_type = NUMBERED_LIST;
+				else if (0 == strcmp(szListStyle, "Bullet List") )
+					this_list_type = BULLETED_LIST;
 			}
 			
 			if (this_list_type == NOT_A_LIST)
