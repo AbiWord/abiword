@@ -37,8 +37,13 @@ bool read_wri_struct (wri_struct *w, GsfInput *f)
 	// first we need to calculate the size
 	i = size = 0;
 
-	while (w[i].name) size += w[i++].size;
+	while (w[i].name) {
+		size += w[i++].size;
+	}
 
+	if (size == 0) {
+		return false;
+	}
 	// got the size, read the blob
 	blob = static_cast<unsigned char *>(malloc(size));
 
