@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RELEASE="2.9.3"
+RELEASE="3.0.1"
 SVNUSER="hub"
 
 mkdir abiword-release-dir-$RELEASE
