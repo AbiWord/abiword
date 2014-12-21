@@ -5,7 +5,11 @@ RELEASE="3.0.1"
 RELEASE_DIR="abiword-release-dir-$RELEASE"
 
 # check for a svn checkout
-svn info > /dev/null 2>&1 || echo "Must be in a SVN checkout"
+svn info > /dev/null 2>&1 
+if [ $? -ne 0 ] ; then
+	echo "Must be in a SVN checkout" 
+	exit 1
+fi
 
 if [ -d "$RELEASE_DIR" ] ; then
 	echo "Unclean release. Directory $RELEASE_DIR exists."
