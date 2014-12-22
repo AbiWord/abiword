@@ -1,7 +1,7 @@
 
 ACLOCAL_AMFLAGS = -I .
 
-DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins po user tools
+DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins po user icons tools
 
 if WITH_GOFFICE_BUILTIN
 
@@ -33,8 +33,10 @@ dist_man1_MANS = abiword.1
 endif
 
 if TOOLKIT_GTK
+# we disable introspection for distcheck as it fails because of
+# installation needing sudo
 DISTCHECK_CONFIGURE_FLAGS = \
-	--enable-introspection=auto \
+	--enable-introspection=no \
 	--with-gir-dir=\$${datadir}/gir-1.0 \
 	--with-typelib-dir=\$${libdir}/girepository-1.0
 endif
