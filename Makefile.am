@@ -1,7 +1,7 @@
 
 ACLOCAL_AMFLAGS = -I .
 
-DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins po user tools
+DIST_SUBDIRS = goffice-bits goffice-bits2 src plugins po user icons tools
 
 if WITH_GOFFICE_BUILTIN
 
