@@ -33,8 +33,10 @@ dist_man1_MANS = abiword.1
 endif
 
 if TOOLKIT_GTK
+# we disable introspection for distcheck as it fails because of
+# installation needing sudo
 DISTCHECK_CONFIGURE_FLAGS = \
-	--enable-introspection=auto \
+	--enable-introspection=no \
 	--with-gir-dir=\$${datadir}/gir-1.0 \
 	--with-typelib-dir=\$${libdir}/girepository-1.0
 endif
