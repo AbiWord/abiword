@@ -5319,6 +5319,7 @@ void s_RTF_ListenerWriteDoc::_writeImageInRTF(const PX_ChangeRecord_Object * pcr
 			// get the width/height of the image from the image itself.
 
 			UT_sint32 iImageWidth, iImageHeight;
+			iImageWidth = iImageHeight = 0;
 
 			if(mimetype == "image/png") {
 				m_pie->_rtf_keyword("pngblip");

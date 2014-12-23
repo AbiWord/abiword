@@ -2212,8 +2212,8 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 									   PT_DocPosition & origPos2,
 									   UT_Stack * stDelayStruxDelete)
 {
-	pf_Frag * pfNewEnd;
-	UT_uint32 fragOffsetNewEnd;
+	pf_Frag * pfNewEnd = NULL;
+	UT_uint32 fragOffsetNewEnd = 0;
 	bool bPrevWasCell = false;
 	bool bPrevWasEndTable = false;
 	bool bPrevWasFrame = false;
@@ -3050,8 +3050,8 @@ bool pt_PieceTable::_deleteComplexSpan(PT_DocPosition & origPos1,
 bool pt_PieceTable::_deleteComplexSpan_norec(PT_DocPosition dpos1,
 											 PT_DocPosition dpos2)
 {
-	pf_Frag * pfNewEnd;
-	UT_uint32 fragOffsetNewEnd;
+	pf_Frag * pfNewEnd = NULL;
+	UT_uint32 fragOffsetNewEnd = 0;
 
 	pf_Frag * pf_First;
 	pf_Frag * pf_End;

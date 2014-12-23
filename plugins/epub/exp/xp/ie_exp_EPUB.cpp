@@ -426,7 +426,7 @@ UT_Error IE_Exp_EPUB::EPUB3_writeNavigation()
     if (m_pHmtlExporter->getNavigationHelper()->hasTOC())
     {
         int lastItemLevel;
-        int curItemLevel;
+        int curItemLevel = 0;
         std::vector<int> tagLevels;
         int tocNum = 0;
         bool newList = true;
