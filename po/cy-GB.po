@@ -1,6 +1,6 @@
 # Cymraeg (Welsh) translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Rhoslyn Prys <rhoslyn.prys@meddal.org.uk>, 2003.
 # Rhoslyn Prys <post@meddal.com>, 2007.
@@ -8,17 +8,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
-"PO-Revision-Date: 2012-12-28 07:08+0200\n"
-"Last-Translator: Chris <cjl@laptop.org>\n"
+"POT-Creation-Date: 2014-11-20 05:15+0100\n"
+"PO-Revision-Date: 2014-11-20 14:14-0000\n"
+"Last-Translator: Rhoslyn Prys <rprys@yahoo.com>\n"
 "Language-Team: Cymraeg\n"
-"Language: cy\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: cy\n"
 "Plural-Forms: nplurals=4; plural=(n==1) ? 0 : (n==2) ? 1 : (n != 8 && n != "
 "11) ? 2 : 3;\n"
-"X-Generator: Pootle 2.0.5\n"
+"X-Generator: Poedit 1.6.10\n"
 "X-Project-Style: default\n"
 
 #.
@@ -350,7 +350,7 @@ msgstr "&Dileu'r anodiad"
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h
 msgid "&Delete hyperlink"
-msgstr "Dileu &hypergyswllt"
+msgstr "Dileu &hyperddolen"
 
 #. DLG_Options_Btn_CustomDict
 #: po/tmp/ap_String_Id.h
@@ -402,7 +402,7 @@ msgstr "&Golygu anodiad"
 #. MENU_LABEL_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
 msgid "&Edit hyperlink"
-msgstr "Golygu hypergyswllt"
+msgstr "Golygu hyperddolen"
 
 #. DLG_Options_Label_EnableOverwrite
 #: po/tmp/ap_String_Id.h
@@ -502,9 +502,9 @@ msgstr "&Pennyn:"
 msgid "&Height:"
 msgstr "&Uchder:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Cymorth"
 
@@ -522,7 +522,7 @@ msgstr "A&mlygu geiriau wedi eu camsillafu"
 #. MENU_LABEL_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
 msgid "&Hyperlink"
-msgstr "&Hypergyswllt"
+msgstr "&Hyperddolen"
 
 #. DLG_Spell_Ignore
 #: po/tmp/ap_String_Id.h
@@ -584,7 +584,7 @@ msgstr "&Neidio i anodiadau"
 #. MENU_LABEL_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h
 msgid "&Jump to hyperlink"
-msgstr "&Neidio i hypergyswllt"
+msgstr "&Neidio i hyperddolen"
 
 #. MENU_LABEL_ALIGN_JUSTIFY
 #: po/tmp/ap_String_Id.h
@@ -716,7 +716,8 @@ msgid "&Odd page"
 msgstr "&Tudalen Odrif"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Agor"
 
@@ -1218,7 +1219,7 @@ msgstr "Bore/Prynhawn"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "AbiWord cannot open %s. It appears to be an invalid document."
-msgstr "Mae Abiword yn methu agor %s. Mae'n ymddangos fel dogfen annilys."
+msgstr "Nid yw Abiword yn gallu agor %s. Mae'n edrych fel dogfen annilys."
 
 #. MSG_SpellSelectionDone
 #: po/tmp/ap_String_Id.h
@@ -1230,7 +1231,8 @@ msgstr "Mae Abiword wedi gorffen gwirio."
 #, c-format
 msgid ""
 "AbiWord has finished its search of the document and has made %d replacements."
-msgstr "Mae Abiword wedi gorffen chwilio'r ddogfen ac mae wedi gwneud %d newid."
+msgstr ""
+"Mae Abiword wedi gorffen chwilio'r ddogfen ac mae wedi gwneud %d newid."
 
 #. DLG_FR_FinishedFind
 #: po/tmp/ap_String_Id.h
@@ -1265,6 +1267,9 @@ msgid ""
 "Please download and install it from http://www.microsoft.com/en-us/download/"
 "details.aspx?id=4237"
 msgstr ""
+"Mae angen ffeil %s.dll ar Abiword\n"
+"Llwythwch y ffeil i lawr a'i gosod o http://www.microsoft.com/en-us/download/"
+"details.aspx?id=4237"
 
 #. MENU_LABEL_HELP_ABOUT_GNOMEOFFICE
 #: po/tmp/ap_String_Id.h
@@ -1673,7 +1678,7 @@ msgstr "Nod Tudalen"
 #: po/tmp/ap_String_Id.h
 #, c-format
 msgid "Bookmark \"%s\" was not found in this document."
-msgstr "Ni chafwyd nod tudalen\"%s\" yn y ddogfen hon."
+msgstr "Nid yw nod tudalen\"%s\" yn y ddogfen hon."
 
 #. DLG_FormatFrame_Border_Color
 #. DLG_FormatTable_Border_Color
@@ -1783,7 +1788,7 @@ msgstr "N&ewid Maint"
 #. MENU_LABEL_EDIT_COPY_HYPERLINK_LOCATION
 #: po/tmp/ap_String_Id.h
 msgid "C&opy hyperlink location"
-msgstr "Copïo lleoliad hypergyswllt"
+msgstr "Copïo lleoliad hyperddolen"
 
 #. MENU_LABEL_HELP_CREDITS
 #: po/tmp/ap_String_Id.h
@@ -2132,8 +2137,8 @@ msgstr ""
 "Dewiswch eich targed ar yr ochr chwith.\n"
 "Os ydych am ddefnyddio'r botwm \"Mynd i\", yna llanwch y Cofnod Rhif gyda'ch "
 "rhif.   Medrwch ddefnyddio + a - i'w newid.\t H.y., os ydych am ysgrifennu "
-"\"+2\" a dewis \"Llinell\", bydd \"Mynd i\" yn mynd â chi 2 linell o dan eich "
-"safle presennol."
+"\"+2\" a dewis \"Llinell\", bydd \"Mynd i\" yn mynd â chi 2 linell o dan "
+"eich safle presennol."
 
 #. MENU_LABEL_EDIT_CLEAR
 #: po/tmp/ap_String_Id.h
@@ -2620,6 +2625,11 @@ msgstr "Llinellau Torredig"
 msgid "Date"
 msgstr "Dyddiad"
 
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr "Dyddiad Newidiwyd Diwethaf"
+
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
 msgid "Date and &Time"
@@ -2773,7 +2783,7 @@ msgstr "Dileu colofn"
 #. MENU_STATUSLINE_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h
 msgid "Delete hyperlink"
-msgstr "Dileu hypergyswllt"
+msgstr "Dileu hyperddolen"
 
 #. TOOLBAR_LABEL_DELETE_ROW
 #: po/tmp/ap_String_Id.h
@@ -3080,7 +3090,7 @@ msgstr "Golygu'r eitem Semanteg"
 #. TB_Embedded
 #: po/tmp/ap_String_Id.h
 msgid "Embedded"
-msgstr "Mewnosodwyd"
+msgstr "Mewnblanwyd"
 
 #. MENU_LABEL_VIEW_LOCKSTYLES
 #: po/tmp/ap_String_Id.h
@@ -3573,7 +3583,7 @@ msgstr "Fformatio'r ddelwedd"
 #. MENU_STATUSLINE_FMT_STYLIST
 #: po/tmp/ap_String_Id.h
 msgid "Format your document using styles"
-msgstr "Fformatio eich dogfengan ddefnyddio arddulliau"
+msgstr "Fformatio eich dogfen gan ddefnyddio arddulliau"
 
 #. DLG_Lists_Format
 #. DLG_DocComparison_Fmt
@@ -3584,7 +3594,7 @@ msgstr "Fformatio:"
 #. MENU_LABEL_INSERT_EQUATION_FILE
 #: po/tmp/ap_String_Id.h
 msgid "From File (.xml, .mathml)"
-msgstr ""
+msgstr "O Ffeil (.xml, .mathml)"
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
@@ -4089,7 +4099,7 @@ msgstr "Mewnosod clipgelf"
 #. MENU_STATUSLINE_INSERT_HYPERLINK
 #: po/tmp/ap_String_Id.h
 msgid "Insert hyperlink"
-msgstr "Mewnosod hypergyswllt"
+msgstr "Mewnosod hyperddolen"
 
 #. MENU_STATUSLINE_INSERT_DIRECTIONMARKER_LRM
 #: po/tmp/ap_String_Id.h
@@ -4169,7 +4179,7 @@ msgstr "Neidio i anodiad"
 #. MENU_STATUSLINE_INSERT_GOTO_HYPERLINK
 #: po/tmp/ap_String_Id.h
 msgid "Jump to hyperlink"
-msgstr "&Neidio i hypergyswllt"
+msgstr "&Neidio i hyperddolen"
 
 #. DLG_Para_AlignJustified
 #: po/tmp/ap_String_Id.h
@@ -4456,7 +4466,7 @@ msgstr "Rheoli anodiadau yn y ddogfen"
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h
 msgid "Manage plugins"
-msgstr "Rheoli atodynnau"
+msgstr "Rheoli ategynnau"
 
 #. DLG_PageSetup_Margin
 #: po/tmp/ap_String_Id.h
@@ -4493,12 +4503,12 @@ msgstr "Dewislen"
 #. DLG_MergeCells_Above
 #: po/tmp/ap_String_Id.h
 msgid "Merge Above"
-msgstr "Uno a'r Uchod"
+msgstr "Uno i'r Uchod"
 
 #. DLG_MergeCells_Below
 #: po/tmp/ap_String_Id.h
 msgid "Merge Below"
-msgstr "Uno a'r Isod"
+msgstr "Uno i'r Isod"
 
 #. DLG_MergeCellsTitle
 #. DLG_MergeCells_Frame
@@ -4510,17 +4520,17 @@ msgstr "Uno Celloedd"
 #. DLG_MergeCells_Left
 #: po/tmp/ap_String_Id.h
 msgid "Merge Left"
-msgstr "Uno a'r Chwith"
+msgstr "Uno i'r Chwith"
 
 #. DLG_MergeCells_Right
 #: po/tmp/ap_String_Id.h
 msgid "Merge Right"
-msgstr "Uno a'r Dde"
+msgstr "Uno i'r Dde"
 
 #. TOOLBAR_LABEL_MERGEABOVE
 #: po/tmp/ap_String_Id.h
 msgid "Merge above"
-msgstr "Uno a'r uchod"
+msgstr "Uno i'r uchod"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_MERGE_DOCUMENTS
 #: po/tmp/ap_String_Id.h
@@ -4530,7 +4540,7 @@ msgstr "Uno dogfen arall i'r ddogfen weithredol gan ddefnyddio marciau cywiro"
 #. TOOLBAR_LABEL_MERGEBELOW
 #: po/tmp/ap_String_Id.h
 msgid "Merge below"
-msgstr "Uno a'r isod"
+msgstr "Uno i'r isod"
 
 #. TOOLBAR_LABEL_MERGE_CELLS
 #. TOOLBAR_STATUSLINE_MERGE_CELLS
@@ -5451,7 +5461,7 @@ msgstr "Tynnu'r Ddelwedd o'r Ddogfen"
 #. MENU_STATUSLINE_EDIT_DELETEFRAME
 #: po/tmp/ap_String_Id.h
 msgid "Remove the Text Box from the Document"
-msgstr "Tynnu'r Blwxh Testun o'r Ddogfen"
+msgstr "Tynnu'r Blwch Testun o'r Ddogfen"
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_REJECT_REVISION
 #: po/tmp/ap_String_Id.h
@@ -5499,7 +5509,7 @@ msgstr "Cofnodi &Gwall"
 #. MENU_STATUSLINE_HELP_REPORT_BUG
 #: po/tmp/ap_String_Id.h
 msgid "Report a bug and help AbiWord become a better product"
-msgstr "Cofnodi gwall a chynorthwyo AbiWord i ddod yn well cynnyrch"
+msgstr "Cofnodi gwall a chynorthwyo AbiWord i fod yn well cynnyrch"
 
 #. MENU_STATUSLINE_VIEW_DEFAULT_TB_LAYOUT
 #: po/tmp/ap_String_Id.h
@@ -5676,7 +5686,8 @@ msgid "SPARQL Query"
 msgstr "Ymholiad SPARQL"
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "Ca&dw"
 
@@ -5914,7 +5925,8 @@ msgstr "Dewis ddarnau o'r ddogfen sydd wedi eu cynnwys yn yr adolygiad nesaf"
 #. TOOLBAR_TOOLTIP_REVISIONS_FIND_PREV
 #: po/tmp/ap_String_Id.h
 msgid "Select the parts of the document contained in the previous revision"
-msgstr "Dewis ddarnau o'r ddogfen sydd wedi eu cynnwys yn yr adolygiad diwethaf"
+msgstr ""
+"Dewis ddarnau o'r ddogfen sydd wedi eu cynnwys yn yr adolygiad diwethaf"
 
 #. MENU_LABEL_RDFANCHOR_SELECTTHISREFTOSEMITEM
 #. MENU_STATUSLINE_RDFANCHOR_SELECTTHISREFTOSEMITEM
@@ -5953,7 +5965,7 @@ msgstr "Llythrennu brawddeg"
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMAS
 #: po/tmp/ap_String_Id.h
 msgid "Separate table items with commas"
-msgstr "Gwahannu eitemau tabl gyda c"
+msgstr "Gwahannu eitemau tabl gydag atalnod"
 
 #. MENU_STATUSLINE_TABLE_TABLETOTEXTCOMMASTABS
 #: po/tmp/ap_String_Id.h
@@ -6079,8 +6091,7 @@ msgstr ""
 "Gosod y ddalen steil rhagosodedig ar gyfer gwrthrychau Semanteg yn y ddogfen "
 "hon. Bydd gwrthrychau RDF yn defnyddio'r ddalen steil hon yn awtomatig. "
 "Mae'r botymau yn caniatáu i chi osod y ddalen steil ar gyfer yr holl "
-"wrthrychau semanteg cyfredol yn y ddalen steil ragosodedig newydd yn "
-"ogystal."
+"wrthrychau semanteg cyfredol yn y ddalen steil ragosodedig newydd yn ogystal."
 
 #. MENU_STATUSLINE_FMT_TABLEOFCONTENTS
 #: po/tmp/ap_String_Id.h
@@ -6138,6 +6149,11 @@ msgstr "Cysgodi"
 #: po/tmp/ap_String_Id.h
 msgid "Shading color:"
 msgstr "Lliw cysgodi:"
+
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr "Enw Byr y Ffeil"
 
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
@@ -6452,25 +6468,45 @@ msgstr "Hollt ar yr Ochr Dde"
 msgid "Split on Top Side"
 msgstr "Hollt ar yr Ochr Brig"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
-msgstr "Hollti ar bob diffinydd heblaw bylchau"
+msgid "Split text at commas"
+msgstr "Hollti'r testun wrth yr atalnod"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr "Hollti ar bob diffinydd gair gan gynnwys bylchau"
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
-msgstr "Hollti testun at fwlch, atalnod neu dab"
+msgid "Split text at spaces"
+msgstr "Hollti'r testun wrth y bylchau"
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
 msgstr "Hollti testun at fwlch, atalnod neu dab"
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr "Hollti'r testun wrth y tabiau"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr "Hollti'r testun gydag atalnodau fel amffinydd"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr "Hollti'r testun gydag atalnodau, tabiau neu fylchau fel amffinydd"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr "Hollti'r testun gyda bylchau fel amffinydd"
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
+msgstr "Hollti'r testun gyda thabiau fel amffinydd"
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
 #. TOOLBAR_TOOLTIP_SPLIT_CELLS
@@ -6884,8 +6920,7 @@ msgid ""
 "The text to which the hyperlink is to be attached must be within a single "
 "paragraph."
 msgstr ""
-"Bydd y testun fydd wedi ei gysylltu â'r hypergyswllt o fewn paragraff "
-"unigol."
+"Bydd y testun fydd wedi ei gysylltu â'r hypergyswllt o fewn paragraff unigol."
 
 #. FIELD_DateTime_Wkday
 #: po/tmp/ap_String_Id.h
@@ -7049,6 +7084,11 @@ msgstr "Rhowch enw i'r ddolen RDF:"
 #: po/tmp/ap_String_Id.h
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Teipiwch enw ar gyfer y nod tudalen, neu dewiswch un o'r rhestr:"
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr "Teipiwch deitl ar gyfer yr hyperddolen"
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -8073,6 +8113,11 @@ msgstr "Cyhoeddi fel XML (fersiwn 1.0)"
 msgid "Default language: "
 msgstr "Iaith rhagosodedig: "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr "Dhivehi"
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8168,6 +8213,11 @@ msgstr "Saesneg (Awstralia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "Saesneg (Canada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr "Saesneg (India)"
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9665,3 +9715,11 @@ msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "Dim"
 
+#~ msgid "Split on all delimiters except spaces"
+#~ msgstr "Hollti ar bob diffinydd heblaw bylchau"
+
+#~ msgid "Split on all word delimiters including spaces"
+#~ msgstr "Hollti ar bob diffinydd gair gan gynnwys bylchau"
+
+#~ msgid "Split text at commas or tabs"
+#~ msgstr "Hollti testun at fwlch, atalnod neu dab"
