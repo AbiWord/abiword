@@ -66,7 +66,6 @@ ODe_Text_Listener::ODe_Text_Listener(ODe_Styles& rStyles,
                         m_openedODParagraph(false),
                         m_openedODSpan(false),
                         m_isFirstCharOnParagraph(true),
-                        m_isHeadingParagraph(false),
                         m_openedODTextboxFrame(false),
                         m_openedODNote(false),
                         m_bIgoreFirstTab(false),
@@ -179,13 +178,6 @@ void ODe_Text_Listener::openBlock(const PP_AttrProp* pAP,
  * 
  */
 void ODe_Text_Listener::closeBlock() {
-    if (m_openedODParagraph) {
-        if (m_isHeadingParagraph) {
-            ODe_writeUTF8String(m_pParagraphContent, "</text:h>\n");
-        } else {
-            ODe_writeUTF8String(m_pParagraphContent, "</text:p>\n");
-        }
-    }
 }
 
 
@@ -1549,7 +1541,7 @@ void ODe_Text_Listener::_openParagraphDelayed(){
     
     if (styleName.empty()) {
         output += "<text:p>";
-        m_isHeadingParagraph = false;
+        ODe_writeUTF8String(m_pParagraphContent, "</text:h>\n");
     } else {
         UT_uint8 outlineLevel = 0;
         
@@ -1578,11 +1570,10 @@ void ODe_Text_Listener::_openParagraphDelayed(){
             {
                 appendAttribute( output, "xml:id", xmlid );
             }
-            m_isHeadingParagraph = true;
             output += " >";            
+            ODe_writeUTF8String(m_pParagraphContent, "</text:h>\n");
         } else {
             // It's a regular paragraph.
-            m_isHeadingParagraph = false;
             escape = styleName;
             output += "<text:p text:style-name=\"";
             output += ODe_Style_Style::convertStyleToNCName(escape).escapeXML();
@@ -1593,9 +1584,10 @@ void ODe_Text_Listener::_openParagraphDelayed(){
                 appendAttribute( output, "xml:id", xmlid );
             }
             output += ">";
+            ODe_writeUTF8String(m_pParagraphContent, "</text:p>\n");puts("ok2");
         }
     }
-    
+
     ////
     // Write output string to file and update related variables.
     ODe_writeUTF8String(m_pTextOutput, output);

@@ -145,7 +145,6 @@ private:
     bool m_openedODParagraph;
     bool m_openedODSpan;
     bool m_isFirstCharOnParagraph;
-    bool m_isHeadingParagraph;
     bool m_openedODTextboxFrame;
     bool m_openedODNote;
     bool m_bIgoreFirstTab;
