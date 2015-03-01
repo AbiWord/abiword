@@ -1584,7 +1584,7 @@ void ODe_Text_Listener::_openParagraphDelayed(){
                 appendAttribute( output, "xml:id", xmlid );
             }
             output += ">";
-            ODe_writeUTF8String(m_pParagraphContent, "</text:p>\n");puts("ok2");
+            ODe_writeUTF8String(m_pParagraphContent, "</text:p>\n");
         }
     }
 
