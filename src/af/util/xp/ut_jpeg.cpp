@@ -97,12 +97,12 @@ static void _jpegInitSource (j_decompress_ptr cinfo)
 static boolean _jpegFillInputBuffer (j_decompress_ptr cinfo)
 {
 	bytebuf_jpeg_source_ptr src = reinterpret_cast<bytebuf_jpeg_source_ptr>(cinfo->src);
-	
+
 	// WARNING ! this assumes that the ByteBuf will NOT change during JPEG reading.
 	src->pub.next_input_byte = src->sourceBuf->getPointer (src->pos);
 	src->pub.bytes_in_buffer = src->sourceBuf->getLength ();
-	
-	return TRUE;
+
+	return 1; // boolean is a libjpeg type that is an int.
 }
 
 /*
