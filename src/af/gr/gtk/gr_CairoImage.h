@@ -57,6 +57,7 @@ class GR_RSVGVectorImage : public GR_CairoVectorImage {
   void createSurface(cairo_t* cairo);
   void createImageSurface();
   void renderToSurface(cairo_surface_t* surf);
+  void renderToCairo(cairo_t *cr);
 
   UT_ByteBuf m_data;
   RsvgDimensionData m_size;

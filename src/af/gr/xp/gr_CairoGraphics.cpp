@@ -2562,20 +2562,22 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 	cairo_save(m_cr);
 	_resetClip();
 
+
+	if(!getAntiAliasAlways() && queryProperties(GR_Graphics::DGP_PAPER ))
+		cairo_set_antialias(m_cr,CAIRO_ANTIALIAS_NONE);
 	cairo_translate(m_cr, idx, idy);
 
 	if (pImg->getType() == GR_Image::GRT_Raster) {
 		static_cast<GR_CairoRasterImage*>(pImg)->cairoSetSource(m_cr);
+
+		cairo_pattern_t *pattern = cairo_get_source(m_cr);
+		cairo_pattern_set_extend(pattern, CAIRO_EXTEND_NONE);
+		cairo_paint(m_cr);
 	} else if (pImg->getType() == GR_Image::GRT_Vector) {
-		static_cast<GR_CairoVectorImage*>(pImg)->cairoSetSource(m_cr);
+		/* for some obscure reason, using cairoSetSource() with an svg image
+			sometimes fails when printing, see 13533 */
+		static_cast<GR_CairoVectorImage*>(pImg)->renderToCairo(m_cr);
 	}
-
-	if(!getAntiAliasAlways() && queryProperties(GR_Graphics::DGP_PAPER ))
-		cairo_set_antialias(m_cr,CAIRO_ANTIALIAS_NONE);
-
-	cairo_pattern_t *pattern = cairo_get_source(m_cr);
-	cairo_pattern_set_extend(pattern, CAIRO_EXTEND_NONE);
-	cairo_paint(m_cr);
 
 	cairo_restore(m_cr);
 }
