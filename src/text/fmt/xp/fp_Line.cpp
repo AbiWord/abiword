@@ -1065,10 +1065,15 @@ UT_sint32 fp_Line::getFilledWidth(void)
 	UT_sint32 width = getLeftThick();
 	UT_sint32 count = m_vecRuns.getItemCount();
 	UT_sint32 i = 0;
+	UT_sint32 incr;
 	for(i=0;i<count;i++)
 	{
 		fp_Run * pRun = m_vecRuns.getNthItem(i);
-		width += pRun->getWidth();
+		width += (incr = pRun->getWidth());
+		/* return the largest possible value if there is an obvious overflow.
+		 * See 13709 */
+		if (incr < 0 || width < 0)
+			return G_MAXINT32;
 	}
 	return width;
 }

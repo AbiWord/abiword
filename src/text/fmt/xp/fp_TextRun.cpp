@@ -1013,7 +1013,7 @@ bool fp_TextRun::canMergeWithNext(void)
 		!getLine() ||
 		getNextRun()->getType() != FPRUN_TEXT ||
 		!getNextRun()->getLine() ||
-		getLength()+ getNextRun()->getLength() > 32000) // sanity check, see bug 8542
+		getLength()+ getNextRun()->getLength() > 16000) // sanity check, see bugs 8542 and 13709
 	{
 		if(getNextRun()->getType() == FPRUN_FMTMARK)
 		{
