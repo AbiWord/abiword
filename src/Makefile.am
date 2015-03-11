@@ -36,7 +36,6 @@ endif
 if TOOLKIT_GTK_ALL
 libabiword_cpp += $(top_srcdir)/src/wp/main/gtk/libabiword.cpp
 main_cpp = $(top_srcdir)/src/wp/main/gtk/UnixMain.cpp
-opt_libs += $(GOFFICE_BUILTIN_LIBS)
 endif
 
 if TOOLKIT_QT
