@@ -75,6 +75,7 @@ class GR_CairoVectorImage
 {
 public:
 	virtual void cairoSetSource(cairo_t *) = 0;
+	virtual void renderToCairo(cairo_t*) = 0;
 };
 
 /** An abstract Cairo image */
