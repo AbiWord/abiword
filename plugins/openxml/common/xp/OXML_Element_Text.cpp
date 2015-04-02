@@ -70,7 +70,7 @@ const char * OXML_Element_Text::getText()
 	if(getType() == LIST)
 	{
 		const char* pStr = m_pString->utf8_str();
-		if(pStr && (strlen(pStr) > 0) && (pStr[0] == '\t'))
+		if(pStr && (*pStr == '\t'))
 			return pStr+1; //get rid of the initial tab
 	}
 	return m_pString->utf8_str();
