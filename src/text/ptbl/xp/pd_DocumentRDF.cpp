@@ -545,11 +545,6 @@ std::string PD_URI::toString() const
     return m_value;
 }
 
-int PD_URI::length() const
-{
-    return m_value.length();
-}
-
 /**
  * Only very basic tests for validity are performed. The
  * main use of this method is to detect default constructed
@@ -576,7 +571,7 @@ bool PD_URI::operator<(const PD_URI& b) const
 }
 
 PD_URI
-PD_URI::prefixedToURI( PD_RDFModelHandle model ) const
+PD_URI::prefixedToURI( const PD_RDFModelHandle & model ) const
 {
     PD_URI ret( model->prefixedToURI( toString() ));
     return ret;
@@ -616,12 +611,12 @@ bool PD_URI::write( std::ostream& ss ) const
     return true;
 }
 
-bool operator<( std::pair< PD_URI, PD_URI > a, PD_URI b)
+bool operator<(const std::pair< PD_URI, PD_URI > & a, const PD_URI & b)
 {
     return a.first.toString() < b.toString();
 }
 
-bool operator<( PD_URI a, std::pair< PD_URI, PD_URI > b )
+bool operator<(const PD_URI &a, const std::pair< PD_URI, PD_URI > & b )
 {
     return a.toString() < b.first.toString();
 }

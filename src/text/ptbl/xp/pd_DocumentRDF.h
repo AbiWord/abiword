@@ -64,7 +64,10 @@ class ABI_EXPORT PD_URI
     PD_URI( const std::string& v = "" );
     virtual ~PD_URI() {}
     virtual std::string toString() const;
-    int  length() const;
+    int  length() const
+    {
+        return m_value.length();
+    }
     bool isValid() const;
     bool operator==(const PD_URI& b) const;
     bool operator==(const std::string& b) const;
@@ -73,7 +76,7 @@ class ABI_EXPORT PD_URI
     virtual bool read( std::istream& ss );
     virtual bool write( std::ostream& ss ) const;
 
-    PD_URI prefixedToURI( PD_RDFModelHandle model ) const;
+    PD_URI prefixedToURI(const PD_RDFModelHandle & model) const;
 
     bool empty() const        { return m_value.empty(); }
     const char* c_str() const { return m_value.c_str(); }
