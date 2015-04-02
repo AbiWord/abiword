@@ -570,6 +570,11 @@ bool PD_URI::operator==(const std::string& b) const
     return m_value == b;
 }
 
+bool PD_URI::operator<(const PD_URI& b) const
+{
+    return m_value < b.m_value;
+}
+
 PD_URI
 PD_URI::prefixedToURI( PD_RDFModelHandle model ) const
 {
@@ -609,11 +614,6 @@ bool PD_URI::write( std::ostream& ss ) const
     ss << version << " " << numParts << " ";
     ss << createLengthPrefixedString(m_value) << " ";
     return true;
-}
-
-bool operator<( PD_URI a, PD_URI b)
-{
-    return a.toString() < b.toString();
 }
 
 bool operator<( std::pair< PD_URI, PD_URI > a, PD_URI b)
