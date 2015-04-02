@@ -714,6 +714,8 @@ class ABI_EXPORT GR_Graphics
 								   UT_sint32& x2, UT_sint32& y2,
 								   UT_sint32& height, bool& bDirection) const VIRTUAL_SFX;
 
+	// FIXME: this method should return a larger integer (or a floating point number)
+	// because it might overflow in some cases, see bug 13709
 	virtual UT_sint32 getTextWidth(GR_RenderInfo & ri) VIRTUAL_SFX;
 
 	// should be overriden by any classes implemented as plugins

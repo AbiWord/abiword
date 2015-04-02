@@ -5479,10 +5479,11 @@ bool	fl_BlockLayout::_doInsertTextSpan(PT_BlockOffset blockOffset, UT_uint32 len
 
 		// because of bug 8542 we do not allow runs longer than 32000 chars, so
 		// if it is longer, just split it (we do not care where we split it,
-		// this is a contingency measure only)
+		// this is a contingency measure only). Lowered to 16000 because of
+		// bug 13709.
 		while(iRunLength)
 		{
-			UT_uint32 iRunSegment = UT_MIN(iRunLength, 32000);
+			UT_uint32 iRunSegment = UT_MIN(iRunLength, 16000);
 			
 			fp_TextRun* pNewRun = new fp_TextRun(this, blockOffset + iRunOffset, iRunSegment);
 			iRunOffset += iRunSegment;
