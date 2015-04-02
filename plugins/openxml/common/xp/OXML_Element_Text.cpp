@@ -41,13 +41,15 @@ OXML_Element_Text::~OXML_Element_Text()
 }
 
 OXML_Element_Text::OXML_Element_Text(const gchar * text, int length) :
-	OXML_Element("", T_TAG, SPAN)
+	OXML_Element("", T_TAG, SPAN),
+	m_pString(NULL)
 {
 	setText(text, length);
 }
 
 void OXML_Element_Text::setText(const gchar * text, int /*length*/)
 {
+	DELETEP(m_pString);
 	try {
 		std::string str(text);
 		m_pString = new UT_UCS4String(str);
