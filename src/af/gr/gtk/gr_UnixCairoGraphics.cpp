@@ -360,8 +360,9 @@ void GR_UnixCairoGraphics::setCursor(GR_Graphics::Cursor c)
 		cursor_number = GDK_DRAPED_BOX;
 		break;
 	}
-	xxx_UT_DEBUGMSG(("cursor set to %d  gdk %d \n",c,cursor_number));
-	GdkCursor * cursor = gdk_cursor_new(cursor_number);
+	xxx_UT_DEBUGMSG(("cursor set to %d	gdk %d \n",c,cursor_number));
+	GdkCursor * cursor = gdk_cursor_new_for_display(
+		gdk_window_get_display(m_pWin), cursor_number);
 	gdk_window_set_cursor(m_pWin, cursor);
 	g_object_unref(cursor);
 }

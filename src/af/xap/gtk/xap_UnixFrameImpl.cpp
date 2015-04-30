@@ -1444,7 +1444,8 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 		break;
 	}
 	xxx_UT_DEBUGMSG(("Set cursor number in Frame %d to %d \n",c,cursor_number));
-	GdkCursor * cursor = gdk_cursor_new(cursor_number);
+	GdkCursor * cursor = gdk_cursor_new_for_display(
+		gtk_widget_get_display(getTopLevelWindow()), cursor_number);
 	gdk_window_set_cursor(gtk_widget_get_window(getTopLevelWindow()), cursor);
 	gdk_window_set_cursor(gtk_widget_get_window(getVBoxWidget()), cursor);
 
