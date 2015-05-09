@@ -967,7 +967,10 @@ UT_sint32 fp_Page::getAvailableHeightForColumn(const fp_Column * pColumn) const
 		UT_sint32 k = 0;
 		for (k = 0; k < iLeader; k++)
 		{
-			if (pDSLFoot == getNthColumnLeader(i)->getDocSectionLayout())
+			pCurLeader = getNthColumnLeader(i);
+			if (pCurLeader == NULL)
+				continue;
+			if (pDSLFoot == pCurLeader->getDocSectionLayout())
 			{
 				avail -= pFC->getHeight();
 				break;
