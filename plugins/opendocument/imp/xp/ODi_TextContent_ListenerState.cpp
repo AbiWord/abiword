@@ -240,7 +240,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             m_headingStyles[pOutlineLevel] =
 				pStyle->getDisplayName().c_str();
         }
-        
+
         // It's so big that it deserves its own function.
         m_alreadyDefinedAbiParagraphForList = false;
         _startParagraphElement(pName, ppAtts, rAction);
@@ -1890,13 +1890,17 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 ppAtts[i++] = pListLevelStyle->getAbiListParentID()->c_str();
                 xxx_UT_DEBUGMSG(("Level |%s| Listid |%s| Parentid |%s| \n",ppAtts[i-5],ppAtts[i-3],ppAtts[i-1]));
             }
-            
+
             if (pStyle!=NULL) {
                 if (pStyle->isAutomatic()) {
                     // Automatic styles are not defined on the document, so, we
                     // just paste its properties.
                     pStyle->getAbiPropsAttrString(props);
-                    
+
+                    // but we need to add the style forr the outline level
+                    // see #13706
+                    ppAtts[i++] = "style";
+                    ppAtts[i++] = m_headingStyles[listLevel].c_str();
                 } else {
                     // We refer to the style
                     ppAtts[i++] = "style";
