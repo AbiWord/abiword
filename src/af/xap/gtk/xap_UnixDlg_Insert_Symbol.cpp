@@ -795,12 +795,12 @@ void XAP_UnixDialog_Insert_Symbol::_setScrolledWindow (void)
         UT_return_if_fail(iDrawSymbol);
 	UT_return_if_fail(m_vadjust);
 
-	UT_uint32 rows = iDrawSymbol->getSymbolRows () + 1;
-	rows = (rows <= 7? 1: rows - 7);
+	UT_uint32 rows = iDrawSymbol->getSymbolRows ();
+	rows = (rows <= 7? 1: rows);
 	gtk_adjustment_set_lower(m_vadjust, 0);
 	gtk_adjustment_set_upper(m_vadjust, gdouble (rows));
-	gtk_adjustment_set_page_size(m_vadjust, 1 + rows / 7);
-	gtk_adjustment_set_page_increment(m_vadjust, 1);
+	gtk_adjustment_set_page_size(m_vadjust, 7);
+	gtk_adjustment_set_page_increment(m_vadjust, 7);
 	gtk_adjustment_set_step_increment(m_vadjust, 1);
 	gtk_adjustment_set_value(m_vadjust, 0);
 }
