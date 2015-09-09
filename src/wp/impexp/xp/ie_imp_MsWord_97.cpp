@@ -291,6 +291,8 @@ static char * s_convert_to_utf8 (const wvParseStruct *ps, const char *s)
 	// so we must ensure it is UTF-8. This is time consuming. :-(
 	// If it is UTF-8 we just g_strdup() it.
 	// See bug 13229.
+	if (s == NULL)
+		return NULL;
 	if(g_utf8_validate(s, -1, NULL)) {
 		return g_strdup(s);
 	}
