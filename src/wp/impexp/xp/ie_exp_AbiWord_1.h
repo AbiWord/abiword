@@ -21,7 +21,7 @@
 #ifndef IE_EXP_ABIWORD_1_H
 #define IE_EXP_ABIWORD_1_H
 
-#include "ie_exp.h"
+#include "ie_exp_XML.h"
 #include "pl_Listener.h"
 class PD_Document;
 class s_AbiWord_1_Listener;
@@ -46,7 +46,7 @@ public:
 										IE_Exp ** ppie);
 };
 
-class ABI_EXPORT IE_Exp_AbiWord_1 : public IE_Exp
+class ABI_EXPORT IE_Exp_AbiWord_1 : public IE_Exp_XML
 {
 public:
 	IE_Exp_AbiWord_1(PD_Document * pDocument, bool isTemplate = false, bool isCompressed = false);
@@ -54,15 +54,11 @@ public:
 
 protected:
 	virtual UT_Error	_writeDocument(void);
-	void                    _setupFile(void);
-	virtual UT_uint32	_writeBytes(const UT_Byte * pBytes, UT_uint32 length);
 
 private:
 	bool m_bIsTemplate;
 	bool m_bIsCompressed;
 	s_AbiWord_1_Listener *	m_pListener;
-
-	GsfOutput * m_output;
 };
 
 #endif /* IE_EXP_ABIWORD_1_H */

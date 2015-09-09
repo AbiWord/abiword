@@ -36,6 +36,8 @@ libxp_la_SOURCES = \
 	ie_exp_RTF_listenerWriteDoc.h \
 	ie_exp_Text.cpp \
 	ie_exp_Text.h \
+	ie_exp_XML.cpp \
+	ie_exp_XML.h \
 	ie_FileInfo.cpp \
 	ie_FileInfo.h \
 	ie_imp_AbiWord_1.cpp \
