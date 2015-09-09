@@ -39,6 +39,7 @@
 */
 /********************************************************************************/
 
+#include "config.h"
 #include "xap_App.h"
 #include "ut_locale.h"
 #include "ut_string_class.h"
@@ -87,7 +88,9 @@ bool LinkGrammarWrap::parseSentence(PieceOfText * pT)
   parse_options_set_min_null_count(m_Opts, 0);
   parse_options_set_max_null_count(m_Opts, 0);
   parse_options_set_islands_ok(m_Opts, 0);
+#ifndef HAVE_LINK_GRAMMAR_51
   parse_options_set_panic_mode(m_Opts, TRUE);
+#endif
   parse_options_reset_resources(m_Opts);
   UT_sint32 num_linkages = sentence_parse(sent, m_Opts);
   bool res =  (num_linkages >= 1);
