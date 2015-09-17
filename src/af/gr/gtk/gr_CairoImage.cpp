@@ -178,6 +178,7 @@ void GR_RSVGVectorImage::renderToSurface(cairo_surface_t* surf) {
 void GR_RSVGVectorImage::renderToCairo(cairo_t* cr) {
 	cairo_scale(cr, m_scaleX, m_scaleY);
 	rsvg_handle_render_cairo(m_svg, cr);
+	cairo_new_path(cr);
 }
 
 void GR_RSVGVectorImage::createImageSurface() {

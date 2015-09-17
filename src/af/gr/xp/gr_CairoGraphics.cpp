@@ -2577,7 +2577,6 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 		/* for some obscure reason, using cairoSetSource() with an svg image
 			sometimes fails when printing, see 13533 */
 		static_cast<GR_CairoVectorImage*>(pImg)->renderToCairo(m_cr);
-		cairo_new_path(m_cr);
 	}
 
 	cairo_restore(m_cr);
