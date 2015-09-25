@@ -191,10 +191,11 @@ bool UT_JPEG_getRGBData(const UT_ByteBuf* pBB, UT_Byte* pDest, UT_sint32 iDestRo
 
 	jpeg_read_header(&cinfo, TRUE);
 	jpeg_start_decompress(&cinfo);
-    
+
 	int row_stride = cinfo.output_width * cinfo.output_components;
-	
-	JSAMPARRAY buffer = (*cinfo.mem->alloc_sarray)
+
+	/* JSAMPARRAY buffer = */
+	(*cinfo.mem->alloc_sarray)
 			((j_common_ptr) &cinfo, JPOOL_IMAGE, row_stride, 1);
 
 	UT_Byte* pCYMK = NULL;

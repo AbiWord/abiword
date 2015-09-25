@@ -4348,7 +4348,7 @@ void PD_DocumentRDF::runPlay()
         // {
         //     c->showEditorWindow( c );
         // }
-        
+
     }
 
     PD_RDFEvents el = getEvents();
@@ -4363,15 +4363,14 @@ void PD_DocumentRDF::runPlay()
             e->showEditorWindow( e );
         }
     }
-    
-        
+
+
     return;
-    
-    
+
+
     UT_DebugOnly<int> count = 0;
-    typedef PD_RDFModelIterator iterator;
     dump( "whole model", begin(), end() );
-    
+
     UT_DEBUGMSG(("runPlay() triple count:%d\n", (int)count ));
     UT_DEBUGMSG(("runPlay()\n\n"));
 

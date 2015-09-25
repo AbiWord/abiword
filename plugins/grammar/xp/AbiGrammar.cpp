@@ -103,12 +103,10 @@ virtual bool notify(AV_View * pAView, const AV_ChangeMask mask, void * pPrivateD
 		  m_pBlock = reinterpret_cast<fl_BlockLayout *>(pPrivateData);
 		  m_pDoc = m_pView->getDocument();
 		  UT_UTF8String sText;
-		  const char * pText = NULL;
 		  m_pBlock->appendUTF8String(sText);
-		  if (sText.byteLength()==0) 
+		  if (sText.byteLength() == 0) {
 		    return true;
-		  pText =  sText.utf8_str();
-		  //printf("I've been notified!! Text is |%s|\n", pText );
+		  }
 		  m_GrammarCheck.CheckBlock(m_pBlock);
 		  return true;
 		}

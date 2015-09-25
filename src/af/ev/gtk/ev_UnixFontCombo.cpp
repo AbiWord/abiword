@@ -357,7 +357,6 @@ abi_font_combo_class_init (AbiFontComboClass *klass)
 
 	abi_font_combo_parent_class = (GtkComboBoxClass*) g_type_class_ref (GTK_TYPE_COMBO_BOX);
 
-	g_object_class = (GObjectClass *) klass;
 	g_object_class->dispose = abi_font_combo_dispose;
 	g_object_class->finalize = abi_font_combo_finalize;
 
