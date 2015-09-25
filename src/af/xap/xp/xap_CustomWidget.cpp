@@ -33,11 +33,14 @@ void XAP_CustomWidgetLU::queueDrawLU(const UT_Rect *clip)
 {
 	GR_Graphics *gr = getGraphics();
 	UT_ASSERT(gr);
+	if (!gr) {
+		return;
+	}
 
-	if (clip == NULL)
+	if (clip == NULL) {
 		queueDraw();
-	else
-	{
+	}
+	else {
 		UT_Rect r(
 				gr->tdu(clip->left),
 				gr->tdu(clip->top),

@@ -152,16 +152,21 @@ static gint s_preview_exposed(GtkWidget * /* widget */,
 			      gpointer ptr)
 #endif
 {
-        XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
+	XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
 	UT_ASSERT(dlg);
-	dlg->previewPicture();
+	if (dlg) {
+		dlg->previewPicture();
+	}
 	return FALSE;
 }
 
 static void s_filetypechanged(GtkWidget * w, gpointer p)
 {
 	XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *>(p);
-	dlg->fileTypeChanged(w);
+	UT_ASSERT(dlg);
+	if (dlg) {
+		dlg->fileTypeChanged(w);
+	}
 }
 
 static gint

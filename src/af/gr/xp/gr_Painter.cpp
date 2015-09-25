@@ -32,10 +32,12 @@ GR_Painter::GR_Painter (GR_Graphics * pGr, bool bDisableCarets)
 {
 	UT_ASSERT (m_pGr);
 
-	if (m_bCaretsDisabled)
-		m_pGr->disableAllCarets();
-
-	m_pGr->beginPaint ();
+	if (m_pGr) {
+		if (m_bCaretsDisabled) {
+			m_pGr->disableAllCarets();
+		}
+		m_pGr->beginPaint ();
+	}
 }
 
 GR_Painter::~GR_Painter ()

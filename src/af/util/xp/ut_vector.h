@@ -372,7 +372,9 @@ const T UT_GenericVector<T>::getFirstItem() const
 {
 	UT_ASSERT_HARMLESS(m_iCount > 0);
 	UT_ASSERT_HARMLESS(m_pEntries);
-
+	if (!m_pEntries) {
+		return T();
+	}
 	return m_pEntries[0];
 }
 
@@ -452,6 +454,10 @@ bool UT_GenericVector<T>::copy(const UT_GenericVector<T> *pVec)
 {
 	clear();
 
+	if (!pVec) {
+		return false;
+	}
+
 	for (UT_sint32 i=0; i < pVec->m_iCount; i++)
 	{
 		UT_sint32 err;
@@ -461,7 +467,7 @@ bool UT_GenericVector<T>::copy(const UT_GenericVector<T> *pVec)
 			return (err ? true : false);
 	}
 
-	return 0;
+	return false;
 }
 
 template <class T>

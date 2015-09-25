@@ -2450,7 +2450,7 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
     {
 		UT_sint32 i = 0;
 		UT_DEBUGMSG(("pagesize docprop received \n"));
-		const gchar * szP = pProps[i];
+		const gchar * szP = pProps ? pProps[i] : NULL;
 		while(szP != NULL)
 		{
 			UT_DEBUGMSG(("property %s value %s \n",pProps[i],pProps[i+1]));
@@ -2463,7 +2463,7 @@ bool PD_Document::changeDocPropeties(const gchar ** pAtts,const gchar ** pProps)
     {
 		UT_sint32 i = 0;
 		UT_DEBUGMSG(("metadata docprop received \n"));
-		const gchar * szName = pProps[i];
+		const gchar * szName = pProps ? pProps[i] : NULL;
 		while(szName != NULL)
 		{
 			szValue = pProps[i+1];
@@ -4533,8 +4533,6 @@ const PP_AttrProp * PD_Document::explodeRevisions(PP_RevisionAttr *& pRevisions,
 
 			// we need to loop through subsequent revisions,
 			// working out the their cumulative effect
-			i = 1;
-			
 			for(i = 1; i <= iMyMaxId; i++)
 			{
 				pRev = pRevisions->getRevisionWithId(i,iMinId);

@@ -2556,6 +2556,10 @@ void GR_CairoGraphics::drawImage(GR_Image* pImg,
 	_setProps();
 	UT_ASSERT(pImg);
 
+	if (!pImg) {
+		return;
+	}
+
 	double idx = _tdudX(xDest);
 	double idy = _tdudY(yDest);
 

@@ -66,10 +66,11 @@ static int _Timer_Proc(void *p)
 	UT_ASSERT(pTimer);
 
 	xxx_UT_DEBUGMSG(("ut_unixTimer.cpp:  timer fired\n"));
-	
-	pTimer->fire();
-
-	return true;
+	if (pTimer) {
+		pTimer->fire();
+		return true;
+	}
+	return 0;
 }
 
 UT_sint32 UT_UNIXTimer::set(UT_uint32 iMilliseconds)

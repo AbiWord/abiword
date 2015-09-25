@@ -196,8 +196,10 @@ SpellManager::~SpellManager ()
 {
 	UT_GenericVector<void const *> *pVec = m_map.enumerate();
 	UT_ASSERT(pVec);
-	UT_VECTOR_PURGEALL (SpellCheckerClass *, (*pVec));
-	DELETEP(pVec);
+	if (pVec) {
+		UT_VECTOR_PURGEALL (SpellCheckerClass *, (*pVec));
+		DELETEP(pVec);
+	}
 }
 
 /*!
