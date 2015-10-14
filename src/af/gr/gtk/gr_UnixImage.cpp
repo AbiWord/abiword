@@ -27,6 +27,64 @@
 #include "ut_string_class.h"
 #include <gdk-pixbuf/gdk-pixbuf-loader.h>
 
+/* quick implementation of cropped images, thecrop rectangle should go 
+ * to GR_Image in next versions. */
+class GR_UnixCroppedImage: public GR_UnixImage
+{
+public:
+	GR_UnixCroppedImage(const char* pszName);
+	GR_UnixCroppedImage(const char* pszName, GdkPixbuf * pPixbuf);
+
+	virtual void cairoSetSource(cairo_t *);
+	void crop(double left, double top, double right, double bottom);
+private:
+	 double m_CropLeft, m_CropRight, m_CropTop, m_CropBottom;
+};
+
+GR_UnixCroppedImage::GR_UnixCroppedImage(const char* pszName):
+	GR_UnixImage(pszName),
+	m_CropLeft(0.),
+	m_CropRight(0.),
+	m_CropTop(0.),
+	m_CropBottom(0.)
+{
+}
+
+GR_UnixCroppedImage::GR_UnixCroppedImage(const char* pszName, GdkPixbuf * pPixbuf):
+	GR_UnixImage(pszName, pPixbuf),
+	m_CropLeft(0.),
+	m_CropRight(0.),
+	m_CropTop(0.),
+	m_CropBottom(0.)
+{
+}
+
+void GR_UnixCroppedImage::cairoSetSource(cairo_t *cr)
+{
+	GdkPixbuf const *image = getData();
+	UT_return_if_fail(image);
+	double w, h;
+	w = gdk_pixbuf_get_width(image);
+	h = gdk_pixbuf_get_height(image);
+	double scaleX = (double)getDisplayWidth() / w / (1 - m_CropLeft - m_CropRight);
+	double scaleY = (double)getDisplayHeight() / h / (1 - m_CropTop - m_CropBottom);
+	cairo_scale(cr, scaleX, scaleY);
+	cairo_rectangle(cr, 0., 0.,
+	                (1 - m_CropLeft - m_CropRight) * w,
+	                (1 - m_CropTop - m_CropBottom) * h);
+	cairo_clip(cr);
+	gdk_cairo_set_source_pixbuf(cr, image, -m_CropLeft * w,
+	                            -m_CropTop * h);
+}
+
+void GR_UnixCroppedImage::crop(double left, double top, double right, double bottom)
+{
+	m_CropLeft = left;
+	m_CropTop = top;
+	m_CropRight = right;
+	m_CropBottom = bottom;
+}
+
 /*!
  * From Martin. I spent a LOT of time in class tracking down terrible
  * Memory leaks because the only way to delete a pixbuf from memory
@@ -103,19 +161,20 @@ GR_UnixImage *GR_UnixImage::makeSubimage(const std::string & name,
 {
     if(m_image == NULL)
 	    return NULL;
-	GR_UnixImage * pImage = new GR_UnixImage(name.c_str());
+	GR_UnixCroppedImage * pImage = new GR_UnixCroppedImage(name.c_str());
 
-    pImage->m_image = gdk_pixbuf_new_subpixbuf(m_image,x,y,width,height);
-//
-//  gdk_pixbuf_new_subpixbuf shares pixels with the original pixbuf and
-//  so puts a reference on m_image.
+    pImage->m_image = gdk_pixbuf_copy(m_image);
+	if (pImage->m_image == NULL)
+	{
+		delete pImage;
+		return NULL;
+	}
+	pImage->setDisplaySize (getDisplayWidth(), getDisplayHeight());
 
-	g_object_unref(G_OBJECT(m_image));
-	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
-//
-// Make a copy so we don't have to worry about ref counting the orginal.
-//
-	pImage->m_image = gdk_pixbuf_copy(pImage->m_image);
+	pImage->crop((double)x / (double)getDisplayWidth(),
+	             (double)y / (double)getDisplayHeight(),
+	             1. - ((double)x + width) / getDisplayWidth(),
+	             1. - ((double)y + height) / getDisplayHeight());
     return pImage;
 }
 
@@ -249,15 +308,7 @@ void GR_UnixImage::scale (UT_sint32 iDisplayWidth,
 	if (iDisplayWidth <= 0 || iDisplayHeight <= 0)
 		return;
 
-	GdkPixbuf * image = 0;
-
-	image = gdk_pixbuf_scale_simple (m_image, iDisplayWidth, 
-					 iDisplayHeight, GDK_INTERP_BILINEAR);
-	//	UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
-	g_object_unref(G_OBJECT(m_image));
-	m_image = image;
 	setDisplaySize (iDisplayWidth, iDisplayHeight);
-	// UT_ASSERT(G_OBJECT(m_image)->ref_count == 1);
 }
 
 /*!
