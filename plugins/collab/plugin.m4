@@ -7,7 +7,9 @@ else
 collab_xmpp_req="loudmouth-1.0 >= 1.3.2 gtk+-3.0"
 fi
 collab_sugar_req="dbus-glib-1 >= 0.70"
-collab_service_req="libsoup-2.4 gnutls"
+dnl gnutls over 3.3.x has removed API we use.
+dnl when we fix this, remove the version check
+collab_service_req="libsoup-2.4 gnutls < 3.4"
 collab_pkgs="$collab_req" 	# accumulate required packages
 
 AC_ARG_ENABLE([collab-backend-fake], 
