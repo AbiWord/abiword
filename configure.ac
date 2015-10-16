@@ -840,7 +840,8 @@ fi
 # maybe just switch on TOOLKIT instead of the fancy TARGET defines
 # also for embedded, e.g. hildon would set TOOLKIT_GTK and TOOLKIT_HILDON
 AM_CONDITIONAL([TOOLKIT_COCOA], test "$TOOLKIT" = "cocoa")
-AM_CONDITIONAL([TOOLKIT_GTK], test "$TOOLKIT" = "gtk")
+AM_CONDITIONAL([TOOLKIT_GTK_ALL], test "$TOOLKIT" = "gtk")
+AM_CONDITIONAL([TOOLKIT_GTK], test "$TOOLKIT" = "gtk" -a "$TOOLKIT_IS_GTK2" = "no")
 AM_CONDITIONAL([TOOLKIT_GTK2], test "$TOOLKIT_IS_GTK2" = "yes")
 AM_CONDITIONAL([TOOLKIT_WIN], test "$TOOLKIT" = "win")
 
