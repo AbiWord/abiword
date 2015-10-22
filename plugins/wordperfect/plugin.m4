@@ -1,6 +1,6 @@
 
 wordperfect_pkgs="libwpd-0.10 $gsf_req"
-wordperfect_wps_pkgs='libwps-0.3'
+wordperfect_wps_pkgs='libwps-0.4'
 wordperfect_deps="no"
 
 WORDPERFECT_CFLAGS=

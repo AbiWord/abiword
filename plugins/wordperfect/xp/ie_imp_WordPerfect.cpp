@@ -1349,7 +1349,7 @@ protected:
     virtual UT_Error _loadFile(GsfInput * input)
 	{
 		AbiWordperfectInputStream gsfInput(input);
-		libwps::WPSResult error = libwps::WPSDocument::parse(&gsfInput, static_cast<librevenge::RVNGTextInterface *>(this));
+		libwps::WPSResult error = libwps::WPSDocument::parse(&gsfInput, static_cast<librevenge::RVNGTextInterface *>(this), NULL, NULL);
 
 		if (error != libwps::WPS_OK)
 			{
@@ -1388,8 +1388,10 @@ UT_Confidence_t IE_Imp_MSWorks_Sniffer::recognizeContents (GsfInput * input)
 {
 	AbiWordperfectInputStream gsfInput(input);
 
+	libwps::WPSCreator creator;
 	libwps::WPSKind kind;
-	libwps::WPSConfidence confidence = libwps::WPSDocument::isFileFormatSupported(&gsfInput, kind);
+	bool needEncoding;
+	libwps::WPSConfidence confidence = libwps::WPSDocument::isFileFormatSupported(&gsfInput, kind, creator, needEncoding);
 	
 	if (kind != libwps::WPS_TEXT)
 		confidence = libwps::WPS_CONFIDENCE_NONE;
