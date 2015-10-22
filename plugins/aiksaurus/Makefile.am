@@ -32,3 +32,8 @@ aiksaurus_la_LDFLAGS = \
 
 aiksaurus_la_SOURCES = 
 
+nodist_EXTRA_aiksaurus_la_SOURCES = dummy.cpp
+
+EXTRA_DIST = \
+	plugin.m4
+
