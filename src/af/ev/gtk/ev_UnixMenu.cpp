@@ -79,8 +79,13 @@ public:									// we create...
 	{
 	}
 
-	static void s_onActivate(GtkWidget * /* widget */, gpointer callback_data)
+	static void s_onActivate(GtkWidget * widget, gpointer callback_data)
 	{
+		// Do not do anything when a radio menu item is unchecked, see bug
+		// 13734
+		if (GTK_IS_RADIO_MENU_ITEM(widget) && !gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget)))
+			return;
+
 		// this is a static callback method and does not have a 'this' pointer.
 		// map the user_data into an object and dispatch the event.
 
