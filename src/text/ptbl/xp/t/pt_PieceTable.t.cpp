@@ -25,6 +25,7 @@
 #include "pd_Document.h"
 #include "pf_Frag_Strux_Block.h"
 
+#define TFSUITE "core.text.ptbl.piecetable"
 
 // FIXME write real test
 TFTEST_MAIN("pt_PieceTable")

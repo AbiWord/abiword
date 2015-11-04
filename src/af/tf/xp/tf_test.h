@@ -35,6 +35,7 @@
 class TF_Test
 {
     typedef void MainFunc();
+    const char *m_suite;
     const char *descr, *idstr;
     MainFunc *main;
     TF_Test *next;
@@ -45,8 +46,11 @@ class TF_Test
     static void alarm_handler(int sig);
 
 public:
-    TF_Test(const char *_descr, const char *_idstr, MainFunc *_main);
+    TF_Test(const char *_suite, const char *_descr,
+            const char *_idstr, MainFunc *_main);
+    static int run(const char * const *prefixes, const char * suite);
     static int run_all(const char * const *prefixes = NULL);
+    static int run_suite(const char * suite);
     static void start(const char *file, int line, const char *condstr);
     static void check(bool cond);
     static inline bool start_check(const char *file, int line,
@@ -67,11 +71,13 @@ public:
 #define TFFAIL(cond) \
     TF_Test::start_check(__FILE__, __LINE__, "NOT(" #cond ")", !(cond))
 
-#define TFTEST_MAIN3(descr, ff, ll) \
+#define TFTEST_MAIN3(suite, descr, ff, ll)       \
     static void _tftest_main_##ll(); \
-    static TF_Test _tftest_##ll(descr, ff, _tftest_main_##ll); \
+    static TF_Test _tftest_##ll(suite, descr, ff, _tftest_main_##ll);    \
     static void _tftest_main_##ll()
-#define TFTEST_MAIN2(descr, ff, ll) TFTEST_MAIN3(descr, ff, ll)
-#define TFTEST_MAIN(descr) TFTEST_MAIN2(descr, __FILE__, __COUNTER__)
+#define TFTEST_MAIN2(suite, descr, ff, ll) \
+    TFTEST_MAIN3(suite, descr, ff, ll)
+#define TFTEST_MAIN(descr) \
+    TFTEST_MAIN2(TFSUITE, descr, __FILE__, __COUNTER__)
 
 #endif

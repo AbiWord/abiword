@@ -5,6 +5,7 @@
 #include "ut_string_class.h"
 #include "ut_std_string.h"
 
+#define TFSUITE "core.af.util.stdstring"
 
 TFTEST_MAIN("xml_string")
 {

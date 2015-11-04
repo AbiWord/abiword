@@ -22,6 +22,8 @@
 #include "tf_test.h"
 #include "ut_misc.h"
 
+#define TFSUITE "core.af.util.misc"
+
 TFTEST_MAIN("UT_HeadingDepth")
 {
   UT_uint32 depth;

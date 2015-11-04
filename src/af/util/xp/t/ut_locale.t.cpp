@@ -25,6 +25,7 @@
 
 #include "ut_locale.h"
 
+#define TFSUITE "core.af.util.locale"
 
 TFTEST_MAIN("UT_LocaleTransactor")
 {

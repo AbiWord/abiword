@@ -25,7 +25,7 @@
 #include "pf_Fragments.h"
 #include "pf_Frag.h"
 
-
+#define TFSUITE "core.text.ptbl.fragments"
 
 TFTEST_MAIN("pf_Fragments")
 {

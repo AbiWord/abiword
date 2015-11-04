@@ -7,8 +7,7 @@
 #include "tf_test.h"
 #include "ut_bytebuf.h"
 
-
-
+#define TFSUITE "core.af.util.bytebuf"
 
 TFTEST_MAIN("UT_ByteBuf")
 {

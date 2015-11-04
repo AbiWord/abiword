@@ -21,7 +21,7 @@
 #include "tf_test.h"
 #include "ut_vector.h"
 
-
+#define TFSUITE "core.af.util.vector"
 
 TFTEST_MAIN("UT_GenericVector basics")
 {

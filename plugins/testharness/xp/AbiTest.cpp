@@ -148,8 +148,20 @@ AbiTest::~AbiTest()
 
 int AbiTest::doTests(std::vector<std::string> *testList)
 {
-  // XXX use the testList
-  int retval = TF_Test::run_all();
+  int retval;
+  if (!testList || testList->empty()) {
+    retval = TF_Test::run_all();
+  }
+  else {
+    retval = 0;
+    for (std::vector<std::string>::const_iterator iter = testList->begin();
+         iter != testList->end(); iter++) {
+      int retval2 = TF_Test::run_suite(iter->c_str());
+      if (!retval) {
+        retval = retval2;
+      }
+    }
+  }
 
   return retval;
 }

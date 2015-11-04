@@ -27,7 +27,7 @@
  */
 
 #include "tf_test.h"
-//#include "config.h"
+
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
@@ -63,8 +63,8 @@ static int memleaks()
     VALGRIND_DO_LEAK_CHECK;
     VALGRIND_COUNT_LEAKS(leaked, dubious, reachable, suppressed);
     printf("memleaks: sure:%d dubious:%d reachable:%d suppress:%d\n",
-	   leaked, dubious, reachable, suppressed);
-    
+       leaked, dubious, reachable, suppressed);
+
     // dubious+reachable are normally non-zero because of globals...
     // return leaked+dubious+reachable;
     return leaked;
@@ -79,25 +79,27 @@ time_t TF_Test::start_time;
 void TF_Test::alarm_handler(int)
 {
     printf("\n! TF_Test  Current test took longer than %d seconds!  FAILED\n",
-	   MAX_TEST_TIME);
+       MAX_TEST_TIME);
     abort();
 }
 
 
-TF_Test::TF_Test(const char *_descr, const char *_idstr, MainFunc *_main)
+TF_Test::TF_Test(const char *_suite, const char *_descr,
+                 const char *_idstr, MainFunc *_main)
+    : m_suite(_suite)
+    , descr(_descr)
+    , main(_main)
+    , next(NULL)
 {
     const char *cptr = strrchr(_idstr, '/');
     if (cptr)
-	idstr = cptr+1;
+        idstr = cptr+1;
     else
-	idstr = _idstr;
-    descr = _descr;
-    main = _main;
-    next = NULL;
+        idstr = _idstr;
     if (first)
-	last->next = this;
+        last->next = this;
     else
-	first = this;
+        first = this;
     last = this;
 }
 
@@ -106,74 +108,87 @@ static bool prefix_match(const char *s, const char * const *prefixes)
 {
     for (const char * const *prefix = prefixes; prefix && *prefix; prefix++)
     {
-	if (!strncasecmp(s, *prefix, strlen(*prefix)))
-	    return true;
+        if (!strncasecmp(s, *prefix, strlen(*prefix)))
+            return true;
     }
     return false;
 }
 
 
-int TF_Test::run_all(const char * const *prefixes)
+int TF_Test::run(const char * const *prefixes, const char *suite)
 {
     int old_valgrind_errs = 0, new_valgrind_errs;
     int old_valgrind_leaks = 0, new_valgrind_leaks;
-    
+
     signal(SIGALRM, alarm_handler);
     // signal(SIGALRM, SIG_IGN);
     alarm(MAX_TEST_TIME);
     start_time = time(NULL);
-    
+
     fails = runs = 0;
     for (TF_Test *cur = first; cur; cur = cur->next)
     {
-	if (!prefixes
-	    || prefix_match(cur->idstr, prefixes)
-	    || prefix_match(cur->descr, prefixes))
-	{
-	    printf("Testing \"%s\" in %s:\n", cur->descr, cur->idstr);
-	    cur->main();
-	    
-	    new_valgrind_errs = memerrs();
-	    TFPASS(new_valgrind_errs == old_valgrind_errs);
-	    old_valgrind_errs = new_valgrind_errs;
-	    
-	    new_valgrind_leaks = memleaks();
-	    TFPASS(new_valgrind_leaks == old_valgrind_leaks);
-	    old_valgrind_leaks = new_valgrind_leaks;
-	    
-	    printf("\n");
-	}
+        if ((!prefixes
+            || prefix_match(cur->idstr, prefixes)
+            || prefix_match(cur->descr, prefixes))
+            && (!suite || strcmp(cur->m_suite, suite) == 0))
+        {
+            printf("%s: Testing \"%s\" in %s:\n", cur->m_suite, cur->descr,
+                   cur->idstr);
+            cur->main();
+
+            new_valgrind_errs = memerrs();
+            TFPASS(new_valgrind_errs == old_valgrind_errs);
+            old_valgrind_errs = new_valgrind_errs;
+
+            new_valgrind_leaks = memleaks();
+            TFPASS(new_valgrind_leaks == old_valgrind_leaks);
+            old_valgrind_leaks = new_valgrind_leaks;
+
+            printf("\n");
+        }
     }
-    
+
     if (prefixes && *prefixes)
-	printf("TF_Test: WARNING: only ran tests starting with "
-	       "specifed prefix(es).\n");
+        printf("TF_Test: WARNING: only ran tests starting with "
+               "specifed prefix(es).\n");
+    else if (suite)
+        printf("TF_Test: WARNING: only ran suite %s\n", suite);
     else
-	printf("TF_Test: ran all tests.\n");
+        printf("TF_Test: ran all tests.\n");
     printf("TF_Test: %d test%s, %d failure%s.\n",
-	   runs, runs==1 ? "" : "s",
-	   fails, fails==1 ? "": "s");
-    
+           runs, runs==1 ? "" : "s",
+           fails, fails==1 ? "": "s");
+
     return fails != 0;
 }
 
+int TF_Test::run_all(const char * const *prefixes)
+{
+    return run(prefixes, NULL);
+}
+
+int TF_Test::run_suite(const char *suite)
+{
+    return run(NULL, suite);
+}
 
 void TF_Test::start(const char *file, int line, const char *condstr)
 {
     // strip path from filename
     const char *file2 = strrchr(file, '/');
     if (!file2)
-	file2 = file;
+        file2 = file;
     else
-	file2++;
-    
+        file2++;
+
     char *condstr2 = g_strdup(condstr), *cptr;
     for (cptr = condstr2; *cptr; cptr++)
     {
-	if (!isprint((unsigned char)*cptr))
-	    *cptr = '!';
+        if (!isprint((unsigned char)*cptr))
+            *cptr = '!';
     }
-    
+
     printf("! %s:%-5d %-40s ", file2, line, condstr2);
     fflush(stdout);
 
@@ -184,41 +199,44 @@ void TF_Test::start(const char *file, int line, const char *condstr)
 void TF_Test::check(bool cond)
 {
     alarm(MAX_TEST_TIME); // restart per-test timeout
-    if (!start_time) start_time = time(NULL);
-    
+    if (!start_time)
+        start_time = time(NULL);
+
     if (time(NULL) - start_time > MAX_TOTAL_TIME)
     {
-	printf("\n! TF_Test   Total run time exceeded %d seconds!  FAILED\n",
-	       MAX_TOTAL_TIME);
-	abort();
+        printf("\n! TF_Test   Total run time exceeded %d seconds!  FAILED\n",
+               MAX_TOTAL_TIME);
+        abort();
     }
-    
+
     runs++;
-    
+
     if (cond)
-	printf("ok\n");
+        printf("ok\n");
     else
     {
-	printf("FAILED\n");
-	fails++;
+        printf("FAILED\n");
+        fails++;
     }
     fflush(stdout);
 }
 
 
 bool TF_Test::start_check_eq(const char *file, int line,
-			    const char *a, const char *b)
+                const char *a, const char *b)
 {
-    if (!a) a = "";
-    if (!b) b = "";
-    
+    if (!a)
+        a = "";
+    if (!b)
+        b = "";
+
     size_t len = strlen(a) + strlen(b) + 8 + 1;
     char *str = new char[len];
-    sprintf(str, "[%s] == [%s]", a, b);
-    
+    snprintf(str, len, "[%s] == [%s]", a, b);
+
     start(file, line, str);
     delete[] str;
-    
+
     bool cond = !strcmp(a, b);
     check(cond);
     return cond;
@@ -229,11 +247,11 @@ bool TF_Test::start_check_eq(const char *file, int line, int a, int b)
 {
     size_t len = 128 + 128 + 8 + 1;
     char *str = new char[len];
-    sprintf(str, "%d == %d", a, b);
-    
+    snprintf(str, len, "%d == %d", a, b);
+
     start(file, line, str);
     delete[] str;
-    
+
     bool cond = (a == b);
     check(cond);
     return cond;

@@ -27,7 +27,7 @@
 #include "tf_test.h"
 #include "pp_PropertyMap.h"
 
-
+#define TFSUITE "core.text.ptbl.propertymap"
 
 TFTEST_MAIN("pp_PropertyMap")
 {

@@ -1,11 +1,8 @@
 
-
-
 #include "tf_test.h"
 #include "ut_string_class.h"
 
-
-
+#define TFSUITE "core.af.util.stringclass"
 
 TFTEST_MAIN("UT_String")
 {
