@@ -179,7 +179,7 @@ bool AP_App::openCmdLinePlugins(const AP_Args * Args, bool &bSuccess)
 // Execute the plugin, then quit
 //
 		UT_String *sCommandLine = Args->getPluginOptions();
-		ev_EditMethod_invoke(pInvoke, *sCommandLine);
+		bSuccess = ev_EditMethod_invoke(pInvoke, *sCommandLine);
 		delete sCommandLine;
 		return false;
 	}
