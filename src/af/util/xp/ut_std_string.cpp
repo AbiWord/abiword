@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009-2015 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@
 #include "ut_assert.h"
 #include "ut_std_string.h"
 #include "ut_string.h"
+#include "ut_debugmsg.h"
 
 #include <iostream>
 #include <sstream>
@@ -105,6 +106,24 @@ std::string UT_std_string_sprintf(const char * inFormat, ...)
     return outStr;
 }
 
+std::string UT_std_string_unicode(const UT_UCS4Char * unicode,
+                                  UT_uint32 len)
+{
+    if (unicode == NULL || len == 0) {
+        return std::string();
+    }
+
+    GError *error = NULL;
+    gchar * utf8 = g_ucs4_to_utf8(unicode, len, NULL, NULL, &error);
+    if (!utf8) {
+        UT_DEBUGMSG(("Error converting UCS4 to UTF8: %s\n", error->message));
+        g_error_free(error);
+        return std::string();
+    }
+    std::string s = utf8;
+    g_free(utf8);
+    return s;
+}
 
 bool ends_with( const std::string& s, const std::string& ending )
 {

@@ -1,6 +1,6 @@
 /* AbiSource Program Utilities
  * Copyright (C) 1998,1999 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009-2015 Hubert Figuiere
  * Copyright (C) 2011 Ben Martin
  *
  * This program is free software; you can redistribute it and/or
@@ -41,6 +41,15 @@ ABI_EXPORT std::string& UT_std_string_vprintf (std::string & inStr,
 ABI_EXPORT std::string UT_std_string_sprintf(const char * inFormat, ...)
     ABI_PRINTF_FORMAT(1,2);
 
+
+/**
+ * Create a string form a Unicode stream. Will be UTF8 encoded.
+ * @param unicode the Unicode UCS4 string. Can't be NULL
+ * @param len the length of the Unicode UCS4 string. Must match the length.
+ * @return the std::string. Empty string if an invalid parameter or error.
+ */
+ABI_EXPORT std::string UT_std_string_unicode(const UT_UCS4Char * unicode,
+                                             UT_uint32 len);
 /**
  * true if fullstring starts with exactly prefix.
  */

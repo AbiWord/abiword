@@ -20,6 +20,29 @@ TFTEST_MAIN("xml_string")
   TFPASS(s2 == utf8.escapeXML());
 }
 
+TFTEST_MAIN("string utilities")
+{
+  UT_UCS4Char uni[] = {
+    'P', 'e', 'e', 'k', 'a', 'b', 'o', 'o', 0
+  };
+
+  TFPASS(UT_std_string_unicode(NULL, 8).empty());
+  TFPASS(UT_std_string_unicode(uni, 0).empty());
+  std::string unistring = UT_std_string_unicode(uni, 8);
+  TFPASS(unistring == "Peekaboo");
+
+  TFPASS(starts_with(unistring, "Pee"));
+  TFPASS(!starts_with(unistring, "Foo"));
+  TFPASS(ends_with(unistring, "boo"));
+  TFPASS(!ends_with(unistring, "Foo"));
+
+  std::string r;
+  r = replace_all(unistring, 'e', 'i');
+  TFPASS(r == "Piikaboo");
+  r = replace_all(unistring, "boo", "chu");
+  TFPASS(r == "Peekachu");
+}
+
 
 TFTEST_MAIN("PropVal")
 {
