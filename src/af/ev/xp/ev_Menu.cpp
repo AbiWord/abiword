@@ -28,6 +28,7 @@
 
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
+#include "ut_std_string.h"
 #include "ut_misc.h"
 #include "ev_Menu.h"
 #include "ev_EditMethod.h"
@@ -71,22 +72,22 @@ XAP_Menu_Id
 EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 {
 	UT_DEBUGMSG(("Adding path %s.\n", path.c_str()));
-	std::vector<std::string> *names = simpleSplit(path.c_str(), '/');
+	std::vector<std::string> names = UT_simpleSplit(path.c_str(), '/');
 //	EV_Menu_ActionSet *pMenuActionSet = getApp()->getMenuActionSet();
 	std::string label;
 	UT_uint32 last_pos = 1;
 	XAP_Menu_Id last_index = 0;
 	XAP_Menu_Id index = 0;
-	UT_ASSERT(names);
+	UT_ASSERT(!names.empty());
 	UT_ASSERT(m_pMenuLabelSet);
 //	UT_ASSERT(pMenuActionSet);
 
 	// if need, we create submenus
 	UT_DEBUGMSG(("Gonna create submenus...\n"));
-	size_t end = names->size() - 1;
+	size_t end = names.size() - 1;
 	for (size_t i = 0; i < end; ++i)
 	{
-		label = (*names)[i];
+		label = names[i];
 		UT_ASSERT(!label.empty());
 		index = EV_searchMenuLabel(m_pMenuLabelSet, label);
 
@@ -99,7 +100,7 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 			// and now we add the new submenus
 			for (size_t j = i; j < end; ++j)
 			{
-				label = (*names)[j];
+				label = names[j];
 				UT_ASSERT(!label.empty());
 				index = m_pMenuLayout->addLayoutItem(++lpos, EV_MLF_BeginSubMenu);
 //				pMenuActionSet->addAction(action);
@@ -129,8 +130,8 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 	// and now we create the menu item
 	index = m_pMenuLayout->addLayoutItem(last_pos, EV_MLF_Normal);
 //	pMenuActionSet->addAction(new EV_Menu_Action(index, false, false, false, "scriptPlay", NULL, NULL));
-	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, names->back().c_str(),
-												names->back().c_str()));
+	m_pMenuLabelSet->addLabel(new EV_Menu_Label(index, names.back().c_str(),
+												names.back().c_str()));
 
 	if (!_doAddMenuItem(last_pos))
 	{
@@ -142,7 +143,6 @@ EV_Menu::addMenuItem(const UT_String &path, const UT_String& description)
 #endif
 	}
 
-	delete names;
 	return index;
 }
 

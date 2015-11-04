@@ -33,7 +33,6 @@
 #endif
 
 #include <string>
-#include <vector>
 
 class UT_Rect;
 class PP_AttrProp;
@@ -101,8 +100,6 @@ ABI_EXPORT gchar ** UT_cloneAndDecodeAttributes (const gchar ** attrs);
 
 UT_sint32 signedHiWord(UT_uint32 dw);
 UT_sint32 signedLoWord(UT_uint32 dw);
-
-std::vector<std::string> * simpleSplit (const std::string & str, char separator = ' ');
 
 UT_uint32 UT_HeadingDepth(const char * szHeadName);
 

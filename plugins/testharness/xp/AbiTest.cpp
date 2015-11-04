@@ -25,7 +25,6 @@
 #endif
 
 #include "ut_std_string.h"
-#include "ut_misc.h"
 
 #include "xap_App.h"
 #include "xap_Module.h"
@@ -130,10 +129,9 @@ AbiTest_invoke (AV_View * /*v*/, EV_EditMethodCallData * d)
 
   std::string params = UT_std_string_unicode(d->m_pData, d->m_dataLength);
   UT_DEBUGMSG(("AbiTest call data: %s\n", params.c_str()));
-  std::vector<std::string> *testList = simpleSplit(params, ' ');
+  std::vector<std::string> testList = UT_simpleSplit(params, ' ');
 
   int retval = myTests.doTests(testList);
-  delete testList;
   return retval == 0;
 }
 
@@ -146,16 +144,16 @@ AbiTest::~AbiTest()
 {
 }
 
-int AbiTest::doTests(std::vector<std::string> *testList)
+int AbiTest::doTests(const std::vector<std::string> & testList)
 {
   int retval;
-  if (!testList || testList->empty()) {
+  if (testList.empty()) {
     retval = TF_Test::run_all();
   }
   else {
     retval = 0;
-    for (std::vector<std::string>::const_iterator iter = testList->begin();
-         iter != testList->end(); iter++) {
+    for (std::vector<std::string>::const_iterator iter = testList.begin();
+         iter != testList.end(); iter++) {
       int retval2 = TF_Test::run_suite(iter->c_str());
       if (!retval) {
         retval = retval2;

@@ -24,6 +24,7 @@
 #define __UT_STD_STRING_H__
 
 #include <string>
+#include <vector>
 
 #include "ut_types.h"
 
@@ -62,6 +63,8 @@ ABI_EXPORT std::string replace_all( const std::string& s,
 
 ABI_EXPORT std::string UT_XML_cloneNoAmpersands( const std::string& szSource );
 
+ABI_EXPORT std::vector<std::string> UT_simpleSplit(const std::string & str,
+                                                   char separator = ' ');
 
 
 /*!

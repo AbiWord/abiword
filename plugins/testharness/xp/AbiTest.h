@@ -30,7 +30,7 @@ class AbiTest
 public:
   AbiTest();
   virtual ~AbiTest();
-  int doTests(std::vector<std::string> *testList);
+  int doTests(const std::vector<std::string> &testList);
 };
 
 #endif /* PLUGIN_ABITEST_H */

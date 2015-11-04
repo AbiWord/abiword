@@ -356,33 +356,6 @@ UT_sint32 signedHiWord(UT_uint32 dw)
 //////////////////////////////////////////////////////////////////
 
 /*!
- * simplesplit splits the referring string along the character 'separator',
- * removing the separator character, and placing the resulting strings in a
- * vector.
- */
-std::vector<std::string> * simpleSplit (const std::string & str, char separator)
-{
-	std::vector<std::string> * utvResult = new std::vector<std::string>();
-	UT_uint32 start = 0;
-
-	for(size_t j = 0; start < str.size(); j++)
-	{
-		std::string utsEntry;
-
-		for (; (str[start] != separator) && start < str.size(); start++) {
-			utsEntry += str[start];
-		}
-		start++;						// skipping over the separator character
-										// itself
-		if (!utsEntry.empty()) {
-			utvResult->push_back(utsEntry);
-		}
-	}
-
-	return utvResult;
-}
-
-/*!
  * Strips off the first numeric part of string and returns it as a uint32.
  * ie. "Numbered Heading 5" would return 5.
  */

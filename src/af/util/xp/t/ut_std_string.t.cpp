@@ -44,6 +44,31 @@ TFTEST_MAIN("string utilities")
   TFPASS(r == "Peekachu");
 }
 
+TFTEST_MAIN("simpleSplit")
+{
+  {
+    std::vector<std::string> split;
+    split = UT_simpleSplit("/usr/bin/abiword", '/');
+    TFPASS(!split.empty());
+
+    TFPASS(split.size() == 3);
+    TFPASS(split[0] == "usr");
+    TFPASS(split[1] == "bin");
+    TFPASS(split[2] == "abiword");
+  }
+
+  {
+    std::vector<std::string> split;
+    split = UT_simpleSplit("usr bin abiword");
+    TFPASS(!split.empty());
+
+    TFPASS(split.size() == 3);
+    TFPASS(split[0] == "usr");
+    TFPASS(split[1] == "bin");
+    TFPASS(split[2] == "abiword");
+  }
+}
+
 
 TFTEST_MAIN("PropVal")
 {

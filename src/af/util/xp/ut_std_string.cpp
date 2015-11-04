@@ -186,6 +186,33 @@ std::string UT_XML_cloneNoAmpersands( const std::string& src )
     return ret;
 }
 
+/*!
+ * simplesplit splits the referring string along the character 'separator',
+ * removing the separator character, and placing the resulting strings in a
+ * vector.
+ */
+std::vector<std::string> UT_simpleSplit (const std::string & str, char separator)
+{
+	std::vector<std::string> v;
+	UT_uint32 start = 0;
+
+	for(size_t j = 0; start < str.size(); j++)
+	{
+		std::string utsEntry;
+
+		for (; (str[start] != separator) && start < str.size(); start++) {
+			utsEntry += str[start];
+		}
+		start++;						// skipping over the separator character
+										// itself
+		if (!utsEntry.empty()) {
+			v.push_back(utsEntry);
+		}
+	}
+
+	return v;
+}
+
 
 /*!
  * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
