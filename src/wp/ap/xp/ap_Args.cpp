@@ -182,6 +182,7 @@ UT_String * AP_Args::getPluginOptions() const
 	while (m_sPluginArgs[i]) {
 		(*opts) += m_sPluginArgs[i];
 		(*opts) += " ";
+		i++;
 	}
 
 	return opts;
