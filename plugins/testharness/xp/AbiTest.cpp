@@ -24,6 +24,9 @@
 #define abi_plugin_supports_version abipgn_abitest_supports_version
 #endif
 
+#include "ut_std_string.h"
+#include "ut_misc.h"
+
 #include "xap_App.h"
 #include "xap_Module.h"
 #include "ev_EditMethod.h"
@@ -121,12 +124,16 @@ abi_plugin_supports_version (UT_uint32 /*major*/, UT_uint32 /*minor*/, UT_uint32
 
 /**   This is the function that we actually run the test suite. */
 static bool
-AbiTest_invoke (AV_View * /*v*/, EV_EditMethodCallData * /*d*/)
+AbiTest_invoke (AV_View * /*v*/, EV_EditMethodCallData * d)
 {
   AbiTest myTests;
 
-  int retval = myTests.doTests();
+  std::string params = UT_std_string_unicode(d->m_pData, d->m_dataLength);
+  UT_DEBUGMSG(("AbiTest call data: %s\n", params.c_str()));
+  std::vector<std::string> *testList = simpleSplit(params, ' ');
 
+  int retval = myTests.doTests(testList);
+  delete testList;
   return retval == 0;
 }
 
@@ -139,8 +146,9 @@ AbiTest::~AbiTest()
 {
 }
 
-int AbiTest::doTests()
+int AbiTest::doTests(std::vector<std::string> *testList)
 {
+  // XXX use the testList
   int retval = TF_Test::run_all();
 
   return retval;

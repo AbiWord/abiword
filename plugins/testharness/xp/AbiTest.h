@@ -21,13 +21,16 @@
 #ifndef PLUGIN_ABITEST_H
 #define PLUGIN_ABITEST_H
 
+#include <string>
+#include <vector>
+
 
 class AbiTest
 {
 public:
   AbiTest();
   virtual ~AbiTest();
-  int doTests();
+  int doTests(std::vector<std::string> *testList);
 };
 
 #endif /* PLUGIN_ABITEST_H */
