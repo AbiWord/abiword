@@ -1,5 +1,5 @@
 
-check_LTLIBRARIES = libxp.la
+noinst_LTLIBRARIES = libxp.la
 
 AM_CPPFLAGS = \
 	$(AF_CPPFLAGS)

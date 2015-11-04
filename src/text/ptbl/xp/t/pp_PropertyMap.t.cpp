@@ -31,7 +31,6 @@
 
 TFTEST_MAIN("pp_PropertyMap")
 {
-	PP_PropertyMap map;
 	
 	TFPASS(strcmp(PP_PropertyMap::abi_property_name(PP_PropertyMap::abi_field_color), "field-color") == 0);
 

@@ -1,7 +1,7 @@
 
 SUBDIRS = xp
 
-check_LTLIBRARIES = libtf.la
+noinst_LTLIBRARIES = libtf.la
 
 libtf_la_LIBADD = xp/libxp.la
 

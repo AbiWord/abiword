@@ -1,0 +1,10 @@
+This is the test harness for AbiWord.
+
+The plugin has no dependency beside AbiWord itself.
+
+To run it:
+
+abiword --plugin AbiTest 
+
+
+This will run the whole test suite.

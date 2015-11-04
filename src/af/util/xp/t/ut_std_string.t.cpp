@@ -1,4 +1,7 @@
 
+#include <stdio.h>
+
+#include "tf_test.h"
 #include "ut_string_class.h"
 #include "ut_std_string.h"
 
@@ -6,7 +9,7 @@
 TFTEST_MAIN("xml_string")
 {
   std::string s = "<foobar = & \">";
-  
+
   std::string s2 = UT_escapeXML(s);
   TFPASS(!s2.empty());
   printf("%s\n", s2.c_str());
