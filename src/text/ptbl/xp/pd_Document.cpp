@@ -207,8 +207,6 @@ PD_Document::PD_Document()
 #ifdef PT_TEST
 	m_pDoc = this;
 #endif
-	UT_UTF8String sDoc;
-	getOrigDocUUID()->toString(sDoc);
 
 	const gchar *name = g_get_real_name();
 	if(strcmp(name, "Unknown") == 0)
@@ -6435,14 +6433,14 @@ bool PD_Document::setAttrProp(const gchar ** ppAttr)
 		// if there is a default language in the preferences, set it
 		UT_LocaleInfo locale;
 
-		UT_UTF8String lang(locale.getLanguage());
+		std::string lang(locale.getLanguage());
 		if (locale.getTerritory().size()) {
 			lang += "-";
 			lang += locale.getTerritory();
 		}
 
 		props[0] = "lang";
-		props[1] = lang.utf8_str();
+		props[1] = lang.c_str();
 		props[2] = 0;
 		bRet = setProperties(props);
 
@@ -8524,7 +8522,7 @@ PD_XMLIDCreator::createUniqueXMLID( const std::string& desiredID, bool deepCopyR
 
     UT_DEBUGMSG(("createUniqueXMLID() xmlid is in use! desired:%s\n", desiredID.c_str() ));
 	UT_UUID* uuido = XAP_App::getApp()->getUUIDGenerator()->createUUID();
-    UT_UTF8String uuid;
+	std::string uuid;
 	uuido->toString(uuid);
     delete uuido;
 
@@ -8546,7 +8544,7 @@ PD_XMLIDCreator::createUniqueXMLID( const std::string& desiredID, bool deepCopyR
     }
     
     std::stringstream ss;
-    ss << "x-" << trimmedID << "-" << uuid.utf8_str();
+    ss << "x-" << trimmedID << "-" << uuid;
     std::string xmlid = ss.str();
     m_cache.insert( xmlid );
     UT_DEBUGMSG(("createUniqueXMLID() xmlid is in use! updated:%s\n", xmlid.c_str() ));
