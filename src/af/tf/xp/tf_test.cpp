@@ -83,6 +83,10 @@ void TF_Test::alarm_handler(int)
     abort();
 }
 
+void TF_Test::pulse()
+{
+    alarm(MAX_TEST_TIME);
+}
 
 TF_Test::TF_Test(const char *_suite, const char *_descr,
                  const char *_idstr, MainFunc *_main)

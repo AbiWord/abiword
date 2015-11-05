@@ -115,13 +115,13 @@ bool PX_ChangeRecord::isFromThisDoc(void) const
     return false;
   std::string sDoc;
   m_pDoc->getOrigDocUUID()->toString(sDoc);
-  static char s[37];
+  char s[37];
 
   if(!UT_UUID::toStringFromBinary(s, sizeof(s), m_MyDocUUID))
 		return false;
   xxx_UT_DEBUGMSG(("Orig UUID %s \n",sDoc.c_str()));
   xxx_UT_DEBUGMSG(("CR Doc UUID %s \n",s));
-  bool b=  (strcmp(sDoc.c_str(),s) == 0);
+  bool b = (sDoc == s);
   xxx_UT_DEBUGMSG((" bool %d \n",b));
   return b;
 }

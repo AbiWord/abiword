@@ -16,6 +16,7 @@ libxp_la_SOURCES = \
 	$(top_srcdir)/src/af/util/xp/t/ut_types.t.cpp \
 	$(top_srcdir)/src/af/util/xp/t/ut_vector.t.cpp \
 	$(top_srcdir)/src/af/util/xp/t/ut_string.t.cpp \
+	$(top_srcdir)/src/af/util/xp/t/ut_uuid.t.cpp \
 	$(top_srcdir)/src/af/util/xp/t/ut_locale.t.cpp \
 	$(top_srcdir)/src/text/ptbl/xp/t/pt_PieceTable.t.cpp \
 	$(top_srcdir)/src/text/ptbl/xp/t/pp_PropertyMap.t.cpp \

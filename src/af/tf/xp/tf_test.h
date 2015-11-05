@@ -59,6 +59,8 @@ public:
     static bool start_check_eq(const char *file, int line,
 			       const char *a, const char *b);
     static bool start_check_eq(const char *file, int line, int a, int b);
+    /** send a pulse to reset the alarm */
+    static void pulse();
 };
 
 

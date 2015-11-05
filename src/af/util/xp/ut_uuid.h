@@ -79,6 +79,8 @@ class UT_UUIDGenerator;
 class ABI_EXPORT UT_UUID
 {
   public:
+        friend void UT_UUIDGenerator__test(UT_UUIDGenerator*);
+  public:
 	/*
 	   All constructors are protected; instances of UT_UUID will be
 	   created through UT_UUIDGenerator declared below.
@@ -105,8 +107,8 @@ class ABI_EXPORT UT_UUID
 
 	/* translate internal state into string representation; do not change
 	   internal state */
-	bool            toString(UT_UTF8String & to) const;
-    std::string&    toString( std::string& to ) const;
+	bool		toString(UT_UTF8String & to) const;
+	std::string&	toString( std::string& to ) const;
 
 	/* get the binary representation of the uuid */
 	bool            toBinary(struct uuid &u) const;
@@ -206,9 +208,6 @@ class ABI_EXPORT UT_UUIDGenerator
 	UT_UUIDGenerator()
 		:m_pUUID(NULL)
 	{
-#if defined(UT_UUID_HASH_TEST) && defined(DEBUG)
-		__test();
-#endif
 	};
 
 	virtual ~UT_UUIDGenerator(){if(m_pUUID) delete m_pUUID;};
@@ -225,10 +224,8 @@ class ABI_EXPORT UT_UUIDGenerator
 	UT_uint32 getNewUUID32();
 	UT_uint64 getNewUUID64();
 
-#if defined(UT_UUID_HASH_TEST) && defined(DEBUG)
   public:
-void	                __test();
-#endif
+        friend void UT_UUIDGenerator__test(UT_UUIDGenerator*);
 
   private:
 

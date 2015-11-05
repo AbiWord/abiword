@@ -7,5 +7,6 @@ EXTRA_DIST = \
 	ut_string.t.cpp \
 	ut_string_class.t.cpp \
 	ut_types.t.cpp \
+	ut_uuid.t.cpp \
 	ut_vector.t.cpp
 
