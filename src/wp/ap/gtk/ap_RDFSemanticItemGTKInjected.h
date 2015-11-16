@@ -85,7 +85,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
     {
         UT_DEBUGMSG(("showEditorWindow(INJECTED) name:%s linksubj:%s\n",
                      c->name().c_str(), c->linkingSubject().toString().c_str() ));
-        XAP_StringSet* pSS = XAP_App::getApp()->getStringSet();
+        const XAP_StringSet* pSS = XAP_App::getApp()->getStringSet();
         std::string s;
         pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
         GtkWidget* d = gtk_dialog_new_with_buttons ("Message",
@@ -118,7 +118,7 @@ class ABI_EXPORT AP_RDFSemanticItemGTKInjected : public ParentClass
     {
         UT_DEBUGMSG(("showEditorWindow() list... sz:%ld\n", cl.size() ));
 
-        XAP_StringSet* pSS = XAP_App::getApp()->getStringSet();
+        const XAP_StringSet* pSS = XAP_App::getApp()->getStringSet();
         std::string s;
         pSS->getValueUTF8(XAP_STRING_ID_DLG_OK, s);
         GtkWidget* d = gtk_dialog_new_with_buttons ("Message",
