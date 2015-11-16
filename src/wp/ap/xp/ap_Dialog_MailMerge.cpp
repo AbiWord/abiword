@@ -36,7 +36,6 @@ AP_Dialog_MailMerge::AP_Dialog_MailMerge(XAP_DialogFactory * pDlgFactory,
 
 AP_Dialog_MailMerge::~AP_Dialog_MailMerge(void)
 {
-	UT_VECTOR_PURGEALL(UT_UTF8String*, m_vecFields);
 }
 
 void AP_Dialog_MailMerge::setMergeField(const UT_UTF8String & name)
@@ -54,15 +53,15 @@ void AP_Dialog_MailMerge::init ()
 	UT_return_if_fail(m_pFrame);
 
 	PD_Document * pDoc = static_cast<PD_Document*>(m_pFrame->getCurrentDoc());
-	UT_UTF8String link (pDoc->getMailMergeLink());
+	std::string link = pDoc->getMailMergeLink();
 
 	if (link.size()) {
 		
 		IE_MailMerge * pie = NULL;
-		UT_Error errorCode = IE_MailMerge::constructMerger(link.utf8_str(), IEMT_Unknown, &pie);
+		UT_Error errorCode = IE_MailMerge::constructMerger(link.c_str(), IEMT_Unknown, &pie);
 		if (!errorCode && pie)
 		{
-			pie->getHeaders (link.utf8_str(), m_vecFields);
+			pie->getHeaders (link.c_str(), m_vecFields);
 			DELETEP(pie);
 			setFieldList();
 		}
@@ -71,7 +70,6 @@ void AP_Dialog_MailMerge::init ()
 
 void AP_Dialog_MailMerge::eventOpen ()
 {
-	UT_VECTOR_PURGEALL(UT_UTF8String*, m_vecFields);
 	m_vecFields.clear();
 
 	UT_return_if_fail(m_pFrame);

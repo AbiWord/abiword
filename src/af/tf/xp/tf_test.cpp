@@ -261,3 +261,15 @@ bool TF_Test::start_check_eq(const char *file, int line, int a, int b)
     return cond;
 }
 
+/** get the test src dir. ABI_TEST_SRC_DIR or top_srcdir */
+const char* TF_Test::get_test_src_dir()
+{
+    const char* dir = getenv("ABI_TEST_SRC_DIR");
+    if (!dir) {
+        dir = getenv("top_srcdir");
+    }
+    if (!dir) {
+        return ".";
+    }
+    return dir;
+}

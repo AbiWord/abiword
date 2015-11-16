@@ -20,18 +20,21 @@
  */
 
 #include "ie_mailmerge.h"
-#include "ut_vector.h"
-#include "ut_string_class.h"
 #include "ut_misc.h"
-
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
-
 #include "ut_go_file.h"
+#include "ut_std_vector.h"
+#include "pd_Document.h"
+
 #include <gsf/gsf-input.h>
 
-static const UT_uint32 merge_size_guess = 3;
-static UT_GenericVector<IE_MergeSniffer *> m_sniffers (merge_size_guess);
+static std::vector<IE_MergeSniffer *> s_sniffers;
+
+std::vector<IE_MergeSniffer *> & IE_MailMerge::getSniffers()
+{
+    return s_sniffers;
+}
 
 /************************************************************************/
 /************************************************************************/
@@ -58,27 +61,22 @@ bool IE_MailMerge::fireMergeSet ()
 	
 	pDoc = m_pListener->getMergeDocument ();
 	if (pDoc) {
-		UT_GenericStringMap<UT_UTF8String *>::UT_Cursor _hc1(&m_map);
-		for (const UT_UTF8String * _hval1 = _hc1.first(); _hc1.is_valid(); _hval1 = _hc1.next() )
-		{ 
-			if (_hval1)
-				pDoc->setMailMergeField (_hc1.key(), *_hval1);
-			else
-				pDoc->setMailMergeField (_hc1.key(), "");
+		std::map<std::string, std::string>::const_iterator iter;
+		for(iter = m_map.begin(); iter != m_map.end(); ++iter) {
+			pDoc->setMailMergeField (iter->first, iter->second);
 		}
 	}
 	
 	bool bret = m_pListener->fireUpdate ();
-	m_map.purgeData();
+	m_map.clear();
 	
 	return bret;
 }
 
-void IE_MailMerge::addMergePair (const UT_UTF8String & key,
-								 const UT_UTF8String & value)
+void IE_MailMerge::addMergePair (const std::string & key,
+								 const std::string & value)
 {
-	UT_UTF8String * ptrvalue = new UT_UTF8String ( value ) ;
-	m_map.set ( key.utf8_str(), ptrvalue ) ;
+	m_map[key] = value;
 }
 
 void IE_MailMerge::setListener (IE_MailMerge_Listener * listener)
@@ -98,15 +96,16 @@ IEMergeType IE_MailMerge::fileTypeForContents(const char * szBuf,
 	
 	IEMergeType best = IEMT_Unknown;
 	UT_Confidence_t   best_confidence = UT_CONFIDENCE_ZILCH;
-	
-	for (UT_uint32 k=0; k < nrElements; k++)
+
+	for (std::vector<IE_MergeSniffer *>::const_iterator iter = s_sniffers.begin();
+         iter != s_sniffers.end(); ++iter)
 	{
-		IE_MergeSniffer * s = m_sniffers.getNthItem (k);
+		IE_MergeSniffer * s = *iter;
 		UT_Confidence_t confidence = s->recognizeContents(szBuf, iNumbytes);
 		if ((confidence > 0) && ((IEMT_Unknown == best) || (confidence >= best_confidence)))
 		{
 			best_confidence = confidence;
-			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
+			for (UT_uint32 a = 0; a < nrElements; a++)
 		    {
 				if (s->supportsFileType((IEMergeType) (a+1)))
 				{
@@ -127,7 +126,7 @@ IEMergeType IE_MailMerge::fileTypeForContents(const char * szBuf,
 
 IEMergeType IE_MailMerge::fileTypeForSuffix(const char * szSuffix)
 {
-	if (!szSuffix)
+	if (!szSuffix || !*szSuffix)
 		return IEMT_Unknown;
 	
 	IEMergeType best = IEMT_Unknown;
@@ -140,13 +139,13 @@ IEMergeType IE_MailMerge::fileTypeForSuffix(const char * szSuffix)
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_MergeSniffer * s = m_sniffers.getNthItem(k);
+		IE_MergeSniffer * s = s_sniffers.at(k);
 		
 		UT_Confidence_t confidence = s->recognizeSuffix(szSuffix);
 		if ((confidence > 0) && ((IEMT_Unknown == best) || (confidence >= best_confidence)))
 		{
 			best_confidence = confidence;
-			for (UT_sint32 a = 0; a < static_cast<int>(nrElements); a++)
+			for (UT_uint32 a = 0; a < nrElements; a++)
 			{
 				if (s->supportsFileType(static_cast<IEMergeType>(a+1)))
 				{
@@ -178,7 +177,7 @@ IEMergeType IE_MailMerge::fileTypeForDescription(const char * szDescription)
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_MergeSniffer * pSniffer = m_sniffers.getNthItem(k);
+		IE_MergeSniffer * pSniffer = s_sniffers.at(k);
 		
 		const char * szDummy;
 		const char * szDescription2 = 0;
@@ -203,7 +202,7 @@ IEMergeType IE_MailMerge::fileTypeForSuffixes(const char * suffixList)
 	if (!suffixList)
 		return ieft;
 	
-	UT_String utSuffix (suffixList);
+	std::string utSuffix (suffixList);
 	const size_t len = strlen(suffixList);
 	size_t i = 0;
 	
@@ -211,21 +210,21 @@ IEMergeType IE_MailMerge::fileTypeForSuffixes(const char * suffixList)
 	{
 		while (i < len && suffixList[i] != '.')
 			i++;
-		
+
 		// will never have all-space extension
-		
+
 		const size_t start = i;
 		while (i < len && suffixList[i] != ';')
 			i++;
-		
+
 		if (i <= len) {
-			UT_String suffix (utSuffix.substr(start, i-start).c_str());
+			std::string suffix (utSuffix.substr(start, i-start));
 			UT_DEBUGMSG(("DOM: suffix: %s\n", suffix.c_str()));
-			
+
 			ieft = fileTypeForSuffix (suffix.c_str());
 			if (ieft != IEMT_Unknown || i == len)
 				return ieft;
-			
+
 			i++;
 		}
 	}
@@ -241,7 +240,7 @@ IE_MergeSniffer * IE_MailMerge::snifferForFileType(IEMergeType ieft)
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_MergeSniffer * s = m_sniffers.getNthItem(k);
+		IE_MergeSniffer * s = s_sniffers.at(k);
 		if (s->supportsFileType(ieft))
 			return s;
 	}
@@ -335,7 +334,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 		
 		for (UT_uint32 k=0; k < nrElements; k++)
 		{
-		    IE_MergeSniffer * s = m_sniffers.getNthItem (k);
+		    IE_MergeSniffer * s = s_sniffers.at(k);
 
 		    UT_Confidence_t content_confidence = UT_CONFIDENCE_ZILCH;
 		    UT_Confidence_t suffix_confidence = UT_CONFIDENCE_ZILCH;
@@ -374,7 +373,7 @@ UT_Error IE_MailMerge::constructMerger(const char * szFilename,
 	
 	for (UT_uint32 k=0; k < nrElements; k++)
 	{
-		IE_MergeSniffer * s = m_sniffers.getNthItem (k);
+		IE_MergeSniffer * s = s_sniffers.at(k);
 		if (s->supportsFileType(ieft))
 			return s->constructMerger(ppie);
 	}
@@ -390,7 +389,7 @@ bool IE_MailMerge::enumerateDlgLabels(UT_uint32 ndx,
 	UT_uint32 nrElements = getMergerCount();
 	if (ndx < nrElements)
     {
-		IE_MergeSniffer * s = m_sniffers.getNthItem (ndx);
+		IE_MergeSniffer * s = s_sniffers.at(ndx);
 		return s->getDlgLabels(pszDesc,pszSuffixList,ft);
     }
 	
@@ -399,51 +398,20 @@ bool IE_MailMerge::enumerateDlgLabels(UT_uint32 ndx,
 
 UT_uint32 IE_MailMerge::getMergerCount(void)
 {
-	return m_sniffers.size();
+	return s_sniffers.size();
 }
 
 void IE_MailMerge::registerMerger (IE_MergeSniffer * s)
 {
-	UT_sint32 ndx = 0;
-	UT_Error err = m_sniffers.addItem (s, &ndx);
-	
-	UT_return_if_fail(err == UT_OK);
-	
-	s->setFileType(ndx+1);
-}
+	s_sniffers.push_back(s);
 
-void IE_MailMerge::unregisterMerger (IE_MergeSniffer * s)
-{
-	UT_uint32 ndx = s->getFileType(); // 1:1 mapping
-	
-	UT_return_if_fail(ndx > 0);
-	
-	m_sniffers.deleteNthItem (ndx-1);
-	
-	// Refactor the indexes
-	IE_MergeSniffer * pSniffer = 0;
-	UT_uint32 size  = m_sniffers.size();
-	UT_uint32 i     = 0;
-	for(i = ndx-1; i < size; i++)
-    {
-		pSniffer = m_sniffers.getNthItem(i);
-		if (pSniffer)
-			pSniffer->setFileType(i+1);
-    }
+	s->setFileType(s_sniffers.size());
 }
 
 void IE_MailMerge::unregisterAllMergers ()
 {
-	IE_MergeSniffer * pSniffer = 0;
-	UT_uint32 size = m_sniffers.size();
-	
-	for (UT_uint32 i = 0; i < size; i++)
-    {
-		pSniffer = m_sniffers.getNthItem(i);
-		DELETEP(pSniffer);
-	}
-
-	m_sniffers.clear();
+    UT_std_vector_purgeall(s_sniffers);
+    s_sniffers.clear();
 }
 
 /************************************************************************/
@@ -501,8 +469,8 @@ public:
 	virtual void charData (const gchar * buffer, int length)
 		{
 			if (buffer && length && mAcceptingText && mLooping) {
-				UT_String buf(buffer, length);
-				mCharData += buf.c_str();
+				std::string buf(buffer, length);
+				mCharData += buf;
 			}
 		}
 
@@ -517,7 +485,7 @@ public:
 			return default_xml.parse (sFile.c_str());
 		}
 	
-	virtual UT_Error getHeaders (const char * szFilename, UT_Vector & out_vec) {
+	virtual UT_Error getHeaders (const char * szFilename, std::vector<std::string> & out_vec) {
 		UT_XML default_xml;
 		
 		m_vecHeaders = &out_vec;
@@ -531,18 +499,18 @@ public:
 
 private:
 	
-	void addOrReplaceVecProp (const UT_UTF8String & str) {
-		UT_sint32 iCount = m_vecHeaders->getItemCount();
+	void addOrReplaceVecProp (const std::string & str) {
+		UT_sint32 iCount = m_vecHeaders->size();
 		
 		UT_sint32 i = 0;
 		for(i=0; i < iCount ; i ++)
 		{
-			UT_UTF8String * prop = (UT_UTF8String*)m_vecHeaders->getNthItem(i);
-			if (*prop == str)
+			const std::string & prop = m_vecHeaders->at(i);
+			if (prop == str)
 				return;
 		}
 
-		m_vecHeaders->addItem (new UT_UTF8String (str));
+		m_vecHeaders->push_back (str);
 	}
 
 	void convertURI(std::string &sFile, const char *szURI)
@@ -561,12 +529,12 @@ private:
 		}
 	}
 
-	UT_UTF8String mKey;
-	UT_UTF8String mCharData;
+	std::string mKey;
+	std::string mCharData;
 	bool mAcceptingText;
 	bool mLooping;
 
-	UT_Vector * m_vecHeaders;
+	std::vector<std::string> * m_vecHeaders;
 };
 
 class ABI_EXPORT IE_XMLMerge_Sniffer : public IE_MergeSniffer
@@ -620,8 +588,6 @@ public:
 	
 	virtual ~IE_MailMerge_Delimiter_Listener()
 		{
-			UT_VECTOR_PURGEALL(UT_UTF8String*, m_headers);
-			UT_VECTOR_PURGEALL(UT_UTF8String*, m_items);
 		}
 
 	UT_Error mergeFile(const char * szFilename, bool justHeaders) 
@@ -638,9 +604,7 @@ public:
 		  if (!fp)
 		    return UT_ERROR;
 		  
-		  UT_VECTOR_PURGEALL(UT_UTF8String *, m_headers);
 		  m_headers.clear();
-		  UT_VECTOR_PURGEALL(UT_UTF8String *, m_items);
 		  m_items.clear();
 		  
 		  // line 1 == Headings/titles
@@ -709,16 +673,12 @@ public:
 	  return mergeFile(szFilename, false);
 	}
 
-	virtual UT_Error getHeaders (const char * szFilename, UT_Vector & out_vec) {
-	  UT_VECTOR_PURGEALL(UT_UTF8String *, out_vec);
+	virtual UT_Error getHeaders (const char * szFilename, std::vector<std::string> & out_vec) {
 	  out_vec.clear();
 	  UT_Error err = mergeFile(szFilename, true);
 
 	  if (err == UT_OK) {
-		for (UT_sint32 i = 0; i < m_headers.size(); i++) {
-			UT_UTF8String * clone = new UT_UTF8String (*(UT_UTF8String *)m_headers[i]);
-			out_vec.addItem (clone);
-		}
+		  out_vec.insert(out_vec.begin(), m_headers.begin(), m_headers.end());
 	  }
 
 	  return err;
@@ -728,11 +688,11 @@ private:
 	
 	void defineItem (const UT_ByteBuf & item, bool isHeader)
 		{
-			UT_UTF8String * dup = new UT_UTF8String ((const char *)item.getPointer(0), item.getLength());
+			std::string dup((const char *)item.getPointer(0), item.getLength());
 			if (isHeader)
-				m_headers.addItem (dup);
+				m_headers.push_back (dup);
 			else
-				m_items.addItem(dup);
+				m_items.push_back(dup);
 		}
 
 	bool fire ()
@@ -742,23 +702,22 @@ private:
 				return false;
 			}
 
-			for (UT_sint32 i = 0; i < m_headers.size (); i++) {
-				UT_UTF8String * key, * val;
+			for (std::size_t i = 0; i < m_headers.size (); i++) {
+				std::string key, val;
 
-				key = m_headers.getNthItem(i);
-				val = m_items.getNthItem(i);
+				key = m_headers.at(i);
+				val = m_items.at(i);
 
-				addMergePair (*key, *val);
+				addMergePair (key, val);
 			}
 
-			UT_VECTOR_PURGEALL(UT_UTF8String*, m_items);
 			m_items.clear ();
 
 			return fireMergeSet ();
 		}
 
-	UT_GenericVector<UT_UTF8String *> m_headers;
-	UT_GenericVector<UT_UTF8String *> m_items;
+	std::vector<std::string> m_headers;
+	std::vector<std::string> m_items;
 
 	char m_delim;
 	bool mLooping;
@@ -769,10 +728,10 @@ class ABI_EXPORT IE_Delimiter_Sniffer : public IE_MergeSniffer
 	
 public:
 	
-	IE_Delimiter_Sniffer(const UT_UTF8String & desc,
-						 const UT_UTF8String & suffix,
-						 char delim): 
-		m_desc(desc), m_suffix (suffix), m_delim(delim)
+	IE_Delimiter_Sniffer(const std::string & desc,
+						 const std::string & suffix,
+						 char delim)
+		: m_desc(desc), m_suffix (suffix), m_delim(delim)
 		{}
 
 	virtual ~IE_Delimiter_Sniffer (){}
@@ -790,14 +749,14 @@ public:
 	
 	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) {
 	  // skip over "*"
-		return (!g_ascii_strcasecmp (szSuffix, (m_suffix.utf8_str() + 1)) ? UT_CONFIDENCE_PERFECT : UT_CONFIDENCE_POOR);
+		return (!g_ascii_strcasecmp (szSuffix, (m_suffix.c_str() + 1)) ? UT_CONFIDENCE_PERFECT : UT_CONFIDENCE_POOR);
 	}
 
 	virtual bool getDlgLabels (const char ** szDesc,
 							   const char ** szSuffixList,
 							   IEMergeType * ft){
-		*szDesc = m_desc.utf8_str();
-		*szSuffixList = m_suffix.utf8_str();
+		*szDesc = m_desc.c_str();
+		*szSuffixList = m_suffix.c_str();
 		*ft = getFileType();
 
 		return true;
@@ -809,8 +768,8 @@ public:
 	}
 	
 private:
-	UT_UTF8String m_desc;
-	UT_UTF8String m_suffix;
+	std::string m_desc;
+	std::string m_suffix;
 	char m_delim;
 };
 

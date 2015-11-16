@@ -701,11 +701,10 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	 * dialog doesn't reflect the current document's fields but rather some internal set of
 	 * fields, which is confusing if you are trying to work with muliple mail merge sources.
 	 */
-	// map UT_String=>UT_UTF8String*
 
-	UT_UTF8String	getMailMergeField(const UT_String & key) const;
-	bool			mailMergeFieldExists(const UT_String & key) const;
-	void			setMailMergeField(const UT_String & key, const UT_UTF8String & value);
+	std::string 	getMailMergeField(const std::string & key) const;
+	bool			mailMergeFieldExists(const std::string & key) const;
+	void			setMailMergeField(const std::string & key, const std::string & value);
 
 	void			clearMailMergeMap();
 
@@ -713,8 +712,8 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 		m_mailMergeLink = file;
 	}
 
-	const UT_UTF8String &							getMailMergeLink() const { return m_mailMergeLink; }
-	const UT_GenericStringMap<UT_UTF8String *> &	getMailMergeMap() const  { return m_mailMergeMap; }
+	const std::string & 							getMailMergeLink() const { return m_mailMergeLink; }
+	const std::map<std::string, std::string> &	getMailMergeMap() const  { return m_mailMergeMap; }
 
 	void invalidateCache(void);
 
@@ -866,12 +865,11 @@ private:
 	PT_AttrPropIndex        m_indexAP;
 	bool                    m_bDontImmediatelyLayout;
 
-	// mapping UT_String=>UT_UTF8String pointer
-	UT_GenericStringMap<UT_UTF8String*>  m_mailMergeMap;
+	std::map<std::string, std::string>  m_mailMergeMap;
 
 	UT_UCS4Char             m_iLastDirMarker;
 
-	UT_UTF8String           m_mailMergeLink;
+	std::string             m_mailMergeLink;
 
 	// these are for use with the export*VisDirection functions
 	const fl_BlockLayout *  m_pVDBl;

@@ -1,4 +1,5 @@
-/* AbiWord
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* Abiword
  * Copyright (C) 2003 Dom Lachowicz
  *
  * This program is free software; you can redistribute it and/or
@@ -20,14 +21,17 @@
 #ifndef IE_MAILMERGE_H
 #define IE_MAILMERGE_H
 
+#include <map>
+#include <string>
+#include <vector>
+
 #include "ut_types.h"
-#include "ut_hash.h"
-#include "pd_Document.h"
 
 typedef UT_sint32 IEMergeType;
 #define IEMT_Unknown ((IEMergeType)-1)
 
 class IE_MailMerge;
+class PD_Document;
 
 class ABI_EXPORT IE_MergeSniffer
 {
@@ -58,11 +62,13 @@ public:
 	virtual UT_Confidence_t recognizeSuffix (const char * szSuffix) = 0;
 
 	virtual bool getDlgLabels (const char ** szDesc,
-							   const char ** szSuffixList,
-							   IEMergeType * ft) = 0;
+	                           const char ** szSuffixList,
+	                           IEMergeType * ft) = 0;
 
 	virtual UT_Error constructMerger (IE_MailMerge ** ppie) = 0;
 
+	// test helper.
+	friend class IE_MergeSniffer_TH;
 protected:
 
 	IE_MergeSniffer() {}
@@ -78,6 +84,8 @@ class ABI_EXPORT IE_MailMerge
 {
 
 public:
+	// Test helper
+	friend class IE_MailMerge_TH;
 
 	virtual ~IE_MailMerge ();
 
@@ -87,10 +95,10 @@ public:
 	// with it.
 
 	virtual UT_Error	mergeFile(const char * szFilename) = 0;
-	virtual UT_Error getHeaders (const char * szFilename, UT_Vector & out_vec) = 0;
+	virtual UT_Error getHeaders (const char * szFilename, std::vector<std::string> & out_vec) = 0;
 
 	static IEMergeType	fileTypeForContents(const char * szBuf,
-											UT_uint32 iNumbytes);
+	                                            UT_uint32 iNumbytes);
 
 	static IEMergeType	fileTypeForSuffix(const char * szSuffix);
 	static IEMergeType	fileTypeForDescription(const char * szSuffix);
@@ -102,18 +110,17 @@ public:
 	static const char * descriptionForFileType(IEMergeType ieft);
 
 	static UT_Error	constructMerger(const char * szFilename,
-									IEMergeType ieft,
-									IE_MailMerge ** ppie,
-									IEMergeType * pieft = NULL);
+	                                IEMergeType ieft,
+	                                IE_MailMerge ** ppie,
+	                                IEMergeType * pieft = NULL);
 
 	static bool	    enumerateDlgLabels(UT_uint32 ndx,
-									   const char ** pszDesc,
-									   const char ** pszSuffixList,
-									   IEMergeType * ft);
+	                                       const char ** pszDesc,
+	                                       const char ** pszSuffixList,
+	                                       IEMergeType * ft);
 
 	static UT_uint32	getMergerCount(void);
 	static void registerMerger (IE_MergeSniffer * sniffer);
-	static void unregisterMerger (IE_MergeSniffer * sniffer);
 	static void unregisterAllMergers ();
 
 	class ABI_EXPORT IE_MailMerge_Listener
@@ -135,20 +142,23 @@ public:
 
 	void setListener (IE_MailMerge_Listener * listener);
 
-	const UT_GenericStringMap<UT_UTF8String *> & getCurrentMapping() const { return m_map; }
+	const std::map<std::string, std::string> & getCurrentMapping() const
+	{ return m_map; }
 
 protected:
 
 	IE_MailMerge ();
 
 	bool fireMergeSet ();
-	void addMergePair (const UT_UTF8String & key,
-					   const UT_UTF8String & value);
+	void addMergePair (const std::string & key,
+			   const std::string & value);
 
 private:
 
+	static std::vector<IE_MergeSniffer *> & getSniffers();
+
 	IE_MailMerge_Listener * m_pListener;
-	UT_GenericStringMap<UT_UTF8String *> m_map;
+	std::map<std::string, std::string> m_map;
 };
 
 void IE_MailMerge_RegisterXP ();

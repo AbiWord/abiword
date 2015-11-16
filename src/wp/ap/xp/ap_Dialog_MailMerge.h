@@ -54,7 +54,7 @@ protected:
 	void addClicked();
 
 	XAP_Frame * m_pFrame;
-	UT_Vector m_vecFields;
+	std::vector<std::string> m_vecFields;
 
 private:
 	UT_UTF8String m_mergeField;

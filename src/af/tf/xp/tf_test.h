@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 
 /* AbiWord
- * Copyright (c) 2004,2005 Hubert Figuiere
+ * Copyright (c) 2004-2015 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@
 
 #include <time.h>
 
+#include "ut_types.h"
+
 class TF_Test
 {
     typedef void MainFunc();
@@ -43,8 +45,7 @@ class TF_Test
     static int fails, runs;
     static time_t start_time;
 
-    static void alarm_handler(int sig);
-
+    static void alarm_handler(int sig) ABI_NORETURN;
 public:
     TF_Test(const char *_suite, const char *_descr,
             const char *_idstr, MainFunc *_main);
@@ -61,6 +62,10 @@ public:
     static bool start_check_eq(const char *file, int line, int a, int b);
     /** send a pulse to reset the alarm */
     static void pulse();
+    /** get the test src dir. If env ABI_TEST_SRC_DIR is unset,
+     * it will return "."
+     */
+    static const char* get_test_src_dir();
 };
 
 

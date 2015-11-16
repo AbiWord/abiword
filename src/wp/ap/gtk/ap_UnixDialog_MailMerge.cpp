@@ -221,7 +221,6 @@ void AP_UnixDialog_MailMerge::setFieldList()
 	
 	GtkTreeIter iter;
 	
-	UT_UTF8String * str;
 	GtkTreeViewColumn * column;
 	GtkListStore * model;
 
@@ -233,13 +232,13 @@ void AP_UnixDialog_MailMerge::setFieldList()
 	}
 	
  	// build a list of all items
-    for (i = 0; i < m_vecFields.size(); i++)
+	for (i = 0; i < m_vecFields.size(); i++)
 	{
-		str = (UT_UTF8String*)m_vecFields[i];
+		const std::string & str = m_vecFields[i];
 
 		// Add a new row to the model
 		gtk_list_store_append (model, &iter);
-		gtk_list_store_set (model, &iter, 0, str->utf8_str(), 1, i, -1);
+		gtk_list_store_set (model, &iter, 0, str.c_str(), 1, i, -1);
 	}
 	
 	gtk_tree_view_set_model(GTK_TREE_VIEW(m_treeview), 
@@ -252,6 +251,6 @@ void AP_UnixDialog_MailMerge::setFieldList()
 
 void AP_UnixDialog_MailMerge::fieldClicked(UT_uint32 index)
 {
-	UT_UTF8String * str = (UT_UTF8String*)m_vecFields[index];
-	gtk_entry_set_text (GTK_ENTRY(m_entry), str->utf8_str());
+	const std::string & str = m_vecFields[index];
+	gtk_entry_set_text (GTK_ENTRY(m_entry), str.c_str());
 }

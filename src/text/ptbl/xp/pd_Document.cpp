@@ -237,8 +237,6 @@ PD_Document::~PD_Document()
 	_destroyDataItemData();
 
 	UT_VECTOR_PURGEALL(fl_AutoNum*, m_vecLists);
-	m_mailMergeMap.purgeData();
-	//UT_HASH_PURGEDATA(UT_UTF8String*, &m_mailMergeMap, delete) ;
 
 	UT_VECTOR_PURGEALL(pp_Author *, m_vecAuthors);
 	UT_VECTOR_PURGEALL(ImagePage *, m_pPendingImagePage);
@@ -303,28 +301,24 @@ bool PD_Document::getAnnotationProp (const std::string & /*key*/, std::string & 
 }
 
 
-UT_UTF8String PD_Document::getMailMergeField(const UT_String & key) const
+std::string PD_Document::getMailMergeField(const std::string & key) const
 {
-  const UT_UTF8String * val = m_mailMergeMap.pick ( key );
-  if (val)
-    return *val;
-  return "";
+	std::map<std::string, std::string>::const_iterator iter = m_mailMergeMap.find(key);
+	if(iter != m_mailMergeMap.end()) {
+		return iter->second;
+	}
+	return "";
 }
 
-bool PD_Document::mailMergeFieldExists(const UT_String & key) const
+bool PD_Document::mailMergeFieldExists(const std::string & key) const
 {
-    const UT_UTF8String * val = m_mailMergeMap.pick ( key );
-    return (val != NULL);
+	return (m_mailMergeMap.find(key) != m_mailMergeMap.end());
 }
 
-void PD_Document::setMailMergeField(const UT_String & key,
-									const UT_UTF8String & value)
+void PD_Document::setMailMergeField(const std::string & key,
+									const std::string & value)
 {
-	UT_UTF8String * old = m_mailMergeMap.pick ( key );
-	DELETEP(old);
-
-	UT_UTF8String * ptrvalue = new UT_UTF8String ( value ) ;
-	m_mailMergeMap.set ( key, ptrvalue ) ;
+	m_mailMergeMap[key] = value;
 }
 
 void PD_Document::clearMailMergeMap()

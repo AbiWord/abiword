@@ -188,10 +188,10 @@ void AP_Win32Dialog_MailMerge::setFieldList()
  	// build a list of all items
     for (UT_sint32 i = 0; i < m_vecFields.size(); i++)
 	{
-		UT_continue_if_fail(m_vecFields[i]);
+		UT_continue_if_fail(!m_vecFields[i].empty());
 		
 		UT_Win32LocaleString str;
-		str.fromUTF8(((UT_UTF8String*)m_vecFields[i])->utf8_str());
+		str.fromUTF8(m_vecFields[i].c_str());
 		
 		SendMessageW(GetDlgItem(m_hDlg, AP_RID_DIALOG_MAILMERGE_LISTBOX), LB_ADDSTRING,
 			0, (LPARAM)str.ucs2_str());
