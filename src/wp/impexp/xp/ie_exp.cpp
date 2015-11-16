@@ -179,7 +179,7 @@ void IE_Exp::unregisterAllExporters ()
 IE_Exp::IE_Exp(PD_Document * pDocument, UT_Confidence_t fidelity)
 	: m_error(false), m_pDocument(pDocument),
 	  m_pDocRange (0), m_pByteBuf(0),
-	  m_szFileName(0), m_fp(0), m_bOwnsFp(false), m_fidelity(fidelity),
+	  m_fp(0), m_bOwnsFp(false), m_fidelity(fidelity),
 	  m_fieldUpdater(0)
 {
 	m_pDocument->invalidateCache();
@@ -191,7 +191,6 @@ IE_Exp::~IE_Exp()
 		_closeFile();
 
 	DELETEP(m_fieldUpdater);
-	g_free(m_szFileName);
 }
 
 /*****************************************************************/
@@ -224,9 +223,7 @@ GsfOutput* IE_Exp::openFile(const char * szFilename)
 	UT_return_val_if_fail(!m_fp, NULL);
 	UT_return_val_if_fail(szFilename, NULL);
 
-	g_free(m_szFileName);
-	m_szFileName = g_new(char, strlen(szFilename) + 1);
-	strcpy(m_szFileName, szFilename);
+	m_szFileName = szFilename;
 
 	GsfOutput* file = _openFile(szFilename);
 	if (file) {
@@ -263,11 +260,10 @@ bool IE_Exp::_closeFile(void)
 		g_object_unref(G_OBJECT(m_fp));
 		m_fp = 0;
 
-		if (!res)
-			{
-				// then remove the unwritten file
-				(void)UT_go_file_remove (m_szFileName, NULL);
-			}
+		if (!res) {
+			// then remove the unwritten file
+			(void)UT_go_file_remove (m_szFileName.c_str(), NULL);
+		}
 
 		return (res == TRUE);
 	}
@@ -281,9 +277,9 @@ void IE_Exp::_abortFile(void)
 	if (m_fp)
     {
         _closeFile();
-		
+
         // then remove the unwanted file
-        (void)UT_go_file_remove (m_szFileName, NULL);
+        (void)UT_go_file_remove (m_szFileName.c_str(), NULL);
     }
 }
 
@@ -307,8 +303,7 @@ UT_Error IE_Exp::writeFile(GsfOutput * fp)
 
 	m_fp = fp;
 
-	g_free(m_szFileName);
-	m_szFileName = g_strdup(gsf_output_name (fp));
+	m_szFileName = gsf_output_name(fp);
 	return _writeDocument();
 }
 
@@ -788,4 +783,14 @@ UT_Error IE_Exp::writeBufferToFile(const UT_ByteBuf * pByteBuf,
         return UT_ERROR;
     }
     return UT_OK;
+}
+
+std::string IE_Exp::getProperty (const std::string & key) const
+{
+	std::map<std::string, std::string>::const_iterator iter
+		= m_props_map.find(key);
+	if (iter == m_props_map.end()) {
+		return "";
+	}
+	return iter->second;
 }

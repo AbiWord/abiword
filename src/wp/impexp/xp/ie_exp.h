@@ -142,7 +142,8 @@ public:
 	    write ( inStr.c_str(), inStr.size() ) ;
 	  }
 
-	virtual char *          getFileName(void) {return m_szFileName;}
+	virtual const char *          getFileName(void) const
+		{ return m_szFileName.c_str(); }
 
 	UT_Confidence_t getFidelity () const {
 		return m_fidelity;
@@ -185,7 +186,7 @@ protected:
 	PD_Document * getDoc() const;
 	PD_DocumentRange * getDocRange() const;
 	/** Return the file pointer, for convenience */
-	GsfOutput*          getFp()
+	GsfOutput*          getFp() const
 		{
 			return m_fp;
 		}
@@ -193,19 +194,17 @@ protected:
 	bool				m_error;
 	void               _setByteBuf(UT_ByteBuf * pBuf)
 	{ m_pByteBuf = pBuf;}
-	UT_ByteBuf *       _getByteBuf(void)
+	UT_ByteBuf *       _getByteBuf(void) const
 	{ return m_pByteBuf;}
 
 public:
-	const std::string & getProperty (const std::string & key) {
-		return m_props_map[key];
-	}
+	std::string getProperty (const std::string & key) const;
 
 private:
 	PD_Document *		m_pDocument;
 	PD_DocumentRange *	m_pDocRange;
 	UT_ByteBuf *		m_pByteBuf;
-	char *                  m_szFileName;
+	std::string         m_szFileName;
 	GsfOutput *				m_fp;
 	bool                m_bOwnsFp;
 
