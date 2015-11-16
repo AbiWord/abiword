@@ -23,6 +23,8 @@
 #ifndef AP_COCOADIALOG_MAILMERGE_H
 #define AP_COCOADIALOG_MAILMERGE_H
 
+#include <string>
+
 #import <Cocoa/Cocoa.h>
 
 #include "xap_CocoaDialog_Utilities.h"
@@ -57,16 +59,17 @@ public:
 	{
 		return m_vecFields.size();
 	}
-	const UT_UTF8String & field(UT_uint32 index)
+	const std::string & field(UT_uint32 index)
 	{
-		return (*((const UT_UTF8String *) m_vecFields[index]));
+		return m_vecFields[index];
 	}
 
 protected:
 	AP_CocoaDialog_MailMerge_Controller *	m_dlg;
 };
 
-@interface AP_CocoaDialog_MailMerge_Controller : NSWindowController <XAP_CocoaDialogProtocol>
+@interface AP_CocoaDialog_MailMerge_Controller
+	: NSWindowController <XAP_CocoaDialogProtocol, NSTableViewDataSource, NSTableViewDelegate>
 {
 	IBOutlet NSTextField *	oAvailableFields;
 

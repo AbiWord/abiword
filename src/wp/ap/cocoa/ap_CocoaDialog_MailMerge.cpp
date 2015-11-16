@@ -229,7 +229,7 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 
 			for (UT_uint32 i = 0; i < count; i++)
 				{
-					[m_AvailableFields addObject:[NSString stringWithUTF8String:(_xap->field(i).utf8_str())]];
+					[m_AvailableFields addObject:[NSString stringWithUTF8String:_xap->field(i).c_str()]];
 				}
 			[oFieldsTable reloadData];
 		}

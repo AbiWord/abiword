@@ -74,7 +74,7 @@ public:
 	}
 	virtual bool fireUpdate()
 	{
-		const UT_GenericStringMap<UT_UTF8String *> & map = m_Importer->getCurrentMapping();
+		const std::map<std::string, std::string> & map = m_Importer->getCurrentMapping();
 
 		NSMutableArray * fieldArray = (NSMutableArray *) [m_DataSet objectAtIndex:0];
 
@@ -86,9 +86,10 @@ public:
 			{
 				NSString * field_name = (NSString *) [fieldArray objectAtIndex:i];
 
-				if (UT_UTF8String * value = map.pick([field_name UTF8String]))
+				std::map<std::string, std::string>::const_iterator iter = map.find([field_name UTF8String]);
+				if (iter != map.end())
 					{
-						[valueArray addObject:[NSString stringWithUTF8String:(value->utf8_str())]];
+						[valueArray addObject:[NSString stringWithUTF8String:(iter->second.c_str())]];
 					}
 				else
 					{
@@ -608,7 +609,7 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 	NSMutableArray * dataset = [NSMutableArray arrayWithCapacity:32];
 
-	UT_Vector vecFields;
+	std::vector<std::string> vecFields;
 
 	IE_MailMerge * pie = 0;
 	UT_Error errorCode = IE_MailMerge::constructMerger([path UTF8String], IEMT_Unknown, &pie);
@@ -622,12 +623,10 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 					for (UT_sint32 i = 0; i < count; i++)
 						{
-							const UT_UTF8String * field = (const UT_UTF8String *) vecFields[i];
-							[fieldArray addObject:[NSString stringWithUTF8String:(field->utf8_str())]];
+							const std::string & field = vecFields[i];
+							[fieldArray addObject:[NSString stringWithUTF8String:field.c_str()]];
 						}
 					[dataset addObject:fieldArray];
-
-					UT_VECTOR_PURGEALL(UT_UTF8String *, vecFields);
 
 					XAP_Cocoa_MailMerge_Listener listener(pie, dataset);
 
@@ -759,9 +758,9 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 	if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
 		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
 			{
-				UT_UTF8String link = pDoc->getMailMergeLink();
-				if (link.size())
-					path = [NSString stringWithUTF8String:(link.utf8_str())];
+				const std::string & link = pDoc->getMailMergeLink();
+				if (!link.empty())
+					path = [NSString stringWithUTF8String:(link.c_str())];
 			}
 
 	return path;
@@ -803,15 +802,14 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 	if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
 		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
 			{
-				const UT_GenericStringMap<UT_UTF8String *> & map = pDoc->getMailMergeMap();
+				const std::map<std::string, std::string> & map = pDoc->getMailMergeMap();
 
-				UT_GenericStringMap<UT_UTF8String *>::UT_Cursor cursor(&map);
+				std::string val = 0;
 
-				UT_UTF8String * val = 0;
-
-				for (val = cursor.first(); cursor.is_valid(); val = cursor.next())
+				for (std::map<std::string, std::string>::const_iterator iter = map.begin();
+					iter != map.end(); ++iter)
 					{
-						[fieldArray addObject:[NSString stringWithUTF8String:(cursor.key().c_str())]];
+						[fieldArray addObject:[NSString stringWithUTF8String:(iter->first.c_str())]];
 					}
 			}
 	return fieldArray;
@@ -822,8 +820,8 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 	if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
 		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
 			{
-				UT_UTF8String empty;
-				UT_String key;
+				std::string empty;
+				std::string key;
 
 				pDoc->clearMailMergeMap();
 
@@ -831,7 +829,7 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 				for (unsigned i = 0; i < count; i++)
 					{
-						NSString * field_name = (NSString *) [field_array objectAtIndex:i];
+						NSString * field_name = [field_array objectAtIndex:i];
 						key = [field_name UTF8String];
 						pDoc->setMailMergeField(key, empty);
 					}
@@ -856,23 +854,20 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 	if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
 		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
 			{
-				const UT_GenericStringMap<UT_UTF8String *> & map = pDoc->getMailMergeMap();
+				const std::map<std::string, std::string> & map = pDoc->getMailMergeMap();
 
-				UT_GenericStringMap<UT_UTF8String *>::UT_Cursor cursor(&map);
+				std::string new_value;
 
-				UT_UTF8String * val = 0;
-
-				UT_UTF8String new_value;
-
-				for (val = cursor.first(); cursor.is_valid(); val = cursor.next())
+				for (std::map<std::string, std::string>::const_iterator iter = map.begin();
+					iter != map.end(); ++iter)
 					{
-						NSString * value = (NSString *) [value_dictionary objectForKey:[NSString stringWithUTF8String:(cursor.key().c_str())]];
+						NSString * value = [value_dictionary objectForKey:[NSString stringWithUTF8String:(iter->first.c_str())]];
 						if (value)
 							new_value = [value UTF8String];
 						else
 							new_value = "";
 
-						pDoc->setMailMergeField(cursor.key(), new_value);
+						pDoc->setMailMergeField(iter->first, new_value);
 					}
 
 				s_updateMailMergeFields(m_pFrame, pDoc);
