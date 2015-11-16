@@ -171,7 +171,7 @@
 	//[_cursor setOnMouseEntered:YES];
 }
 
-- (void)setCursor:(NSCursor*)cursor;
+- (void)setCursor:(NSCursor*)cursor
 {
 	[_cursor release];
 	_cursor = [cursor retain];

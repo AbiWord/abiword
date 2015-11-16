@@ -547,7 +547,7 @@ void XAP_CocoaDialog_FontChooser::_deleteGC(void)
 	}
 }
 
-- (XAP_CocoaNSView*)preview;
+- (XAP_CocoaNSView*)preview
 {
 	return _preview;
 }

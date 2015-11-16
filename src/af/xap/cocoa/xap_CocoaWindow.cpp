@@ -126,7 +126,7 @@ void XAP_CocoaWindow::_init (WindowStyle ws)
 		break;
 	}
 	m_window = [[NSWindow alloc] initWithContentRect:m_frame styleMask:m_styleMask backing:m_backingType defer:YES];
-	UT_ASSERT (m_window);;
+	UT_ASSERT(m_window);
 	
 	m_controller = [[XAP_CocoaWindowDelegate alloc] initWithWindow:m_window withXAPWindow:this];
 	[m_window setDelegate:m_controller];

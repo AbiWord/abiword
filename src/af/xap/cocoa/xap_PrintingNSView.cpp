@@ -33,7 +33,7 @@
 	[super dealloc];
 }
 
-- (void)setPrintingDelegate:(XAP_PrintingDelegate*)delegate;
+- (void)setPrintingDelegate:(XAP_PrintingDelegate*)delegate
 {
 	DELETEP(_printingDelegate);
 	_printingDelegate = delegate;

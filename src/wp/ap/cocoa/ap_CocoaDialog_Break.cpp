@@ -177,7 +177,7 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 }
 
 
-- (IBAction)insertAction:(id)sender;
+- (IBAction)insertAction:(id)sender
 {
 	if(sender == m_insertRadioBtns) {
 		[m_sectionBreakBtns deselectAllCells];

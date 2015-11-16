@@ -921,7 +921,7 @@ void   AP_CocoaDialog_Styles::event_ModifyTabs()
 	[_descriptionData setStringValue:desc];
 }
 
-- (BOOL)control:(NSControl *)control textShouldBeginEditing:(NSText *)editor;
+- (BOOL)control:(NSControl *)control textShouldBeginEditing:(NSText *)editor
 {
 	UT_UNUSED(editor);
 	if(control == _availStylesList) {

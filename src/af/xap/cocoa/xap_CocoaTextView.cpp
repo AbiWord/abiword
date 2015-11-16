@@ -103,37 +103,37 @@
 	[self invokeEditMethod:"delEOL"];
 }
 
-- (void)moveForward:(id)sender;
+- (void)moveForward:(id)sender
 {
 	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtRight"];
 }
 
-- (void)moveRight:(id)sender;
+- (void)moveRight:(id)sender
 {
 	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtRight"];
 }
 
-- (void)moveBackward:(id)sender;
+- (void)moveBackward:(id)sender
 {
 	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtLeft"];
 }
 
-- (void)moveLeft:(id)sender;
+- (void)moveLeft:(id)sender
 {
 	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtLeft"];
 }
 
-- (void)moveUp:(id)sender;
+- (void)moveUp:(id)sender
 {
 	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtPrevLine"];
 }
 
-- (void)moveDown:(id)sender;
+- (void)moveDown:(id)sender
 {
 	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtNextLine"];
@@ -219,12 +219,12 @@
 	[self invokeEditMethod:"extSelBOD"];
 }
 
-- (void)pageDown:(id)sender;
+- (void)pageDown:(id)sender
 {
 	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtNextScreen"];
 }
-- (void)pageUp:(id)sender;
+- (void)pageUp:(id)sender
 {
 	UT_UNUSED(sender);
 	[self invokeEditMethod:"warpInsPtPrevScreen"];
