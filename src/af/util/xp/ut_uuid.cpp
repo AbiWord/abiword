@@ -530,7 +530,7 @@ bool UT_UUID::operator >(const UT_UUID &u) const
 UT_UUID & UT_UUID::operator = (const UT_UUID &u)
 {
 	m_uuid = u.m_uuid;
-	m_bIsValid = m_bIsValid;
+	m_bIsValid = u.m_bIsValid;
 	return *this;
 }
 
