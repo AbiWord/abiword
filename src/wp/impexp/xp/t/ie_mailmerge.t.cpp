@@ -41,9 +41,8 @@ static const char *DATA_FILE =
 
 TFTEST_MAIN("IE Mail merger")
 {
-  std::string data_file = "file://";
-  data_file += TF_Test::get_test_src_dir();
-  data_file += DATA_FILE;
+  std::string data_file;
+  TFPASS(TF_Test::ensure_test_data(DATA_FILE, data_file));
 
   IE_MailMerge *pie = 0;
   UT_Error err = IE_MailMerge::constructMerger(data_file.c_str(),

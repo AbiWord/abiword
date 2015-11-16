@@ -32,6 +32,8 @@
 
 #include <time.h>
 
+#include <string>
+
 #include "ut_types.h"
 
 class TF_Test
@@ -66,6 +68,7 @@ public:
      * it will return "."
      */
     static const char* get_test_src_dir();
+    static bool ensure_test_data(const char* file, std::string & path);
 };
 
 

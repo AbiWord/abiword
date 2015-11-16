@@ -37,6 +37,7 @@
 #include <cstdlib>
 
 #include <glib.h>
+#include <gio/gio.h>
 
 #ifdef HAVE_VALGRIND_MEMCHECK_H
 # include <valgrind/memcheck.h>
@@ -273,3 +274,23 @@ const char* TF_Test::get_test_src_dir()
     }
     return dir;
 }
+
+/** ensure the test data file exists
+ * @param file the base filaname
+ * @param [out] path the full path of the data file
+ * @return true if the file exists.
+ */
+bool TF_Test::ensure_test_data(const char* file, std::string & path)
+{
+    path = "file://";
+    path += TF_Test::get_test_src_dir();
+    path += file;
+
+    bool exists = false;
+    GFile *f = g_file_new_for_uri(path.c_str());
+    exists = g_file_query_exists(f, NULL);
+    g_object_unref(f);
+
+    return exists;
+}
+
