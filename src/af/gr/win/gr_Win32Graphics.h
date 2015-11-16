@@ -252,6 +252,8 @@ public:
 	virtual void			handleSetCursorMessage(void);
 
 	virtual void			setColor3D(GR_Color3D c);
+	virtual bool			getColor3D(GR_Color3D, UT_RGBColor &)
+	{ return false; }
 	void					init3dColors(void);
 	virtual void			fillRect(GR_Color3D c,
 									 UT_sint32 x, UT_sint32 y,
