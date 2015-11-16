@@ -2779,7 +2779,7 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 			}
 
 		PangoFontMap *fontmap = pango_cairo_font_map_get_default();
-		PangoContext *context = pango_font_map_create_context(PANGO_FONT_MAP(fontmap));
+		PangoContext *context = pango_font_map_create_context(fontmap);
 		if (fontmap && context)
 			{
 				PangoFont *font = pango_font_map_load_font(fontmap, context, d);
@@ -2790,8 +2790,11 @@ const char* GR_Graphics::findNearestFont(const char* pszFontFamily,
 						pango_font_description_free(new_desc);
 						g_object_unref(font);
 					}
-				g_object_unref(G_OBJECT (context)), context = NULL;
 			}
+		if (context) {
+			g_object_unref(G_OBJECT (context));
+			context = NULL;
+		}
 
 		pango_font_description_free(d);
 	}
