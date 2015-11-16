@@ -19,7 +19,7 @@
  */
 
 #ifndef AP_UNIXDIALOG_FORMATTOC_H
-#define AP_UNIXDIALOG_FORMATOC_H
+#define AP_UNIXDIALOG_FORMATTOC_H
 
 #include "ap_Dialog_FormatTOC.h"
 
