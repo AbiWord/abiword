@@ -27,8 +27,8 @@
 
 #include "ut_unixTimer.h"
 
-NSLock* UT_UNIXTimer::s_timerMutex;
-NSMutableDictionary* UT_UNIXTimer::s_timerIds = nil;;
+id UT_UNIXTimer::s_timerMutex;
+id UT_UNIXTimer::s_timerIds;
 int UT_UNIXTimer::s_lastTimerId = 1;
 
 @interface XAP_TimerInvocation: NSInvocation {

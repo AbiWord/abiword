@@ -85,11 +85,11 @@ public:
 	void         modifyRunModal(void);
 	void         event_modifySheetDidEnd(int code);
 	void         setIsNew(bool _isNew) {m_bIsNew = _isNew;}
-	const bool   isNew(void) const { return m_bIsNew;}
-	gchar *   getNewStyleName(void) const {return (gchar *) m_newStyleName;}
-	gchar *   getBasedonName(void) const {return (gchar *) m_basedonName;}
-	gchar *   getFollowedbyName(void) const {return (gchar *) m_followedbyName;}
-	gchar *   getStyleType(void) const {return (gchar *) m_styleType;}
+	bool   isNew(void) const { return m_bIsNew;}
+	const gchar *   getNewStyleName(void) const {return m_newStyleName;}
+	const gchar *   getBasedonName(void) const {return m_basedonName;}
+	const gchar *   getFollowedbyName(void) const {return m_followedbyName;}
+	const gchar *   getStyleType(void) const {return m_styleType;}
 
 private:
 	void				_populateWindowData(void);

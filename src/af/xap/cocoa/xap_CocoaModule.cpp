@@ -115,7 +115,7 @@ bool XAP_CocoaModule::getErrorMsg (char **dest) const
 /**
  * return > 0 for directory entries ending in ".so"
  */
-static int s_Abi_only (struct dirent *d)
+static int s_Abi_only (const struct dirent *d)
 {
     const char *name = d->d_name;
 

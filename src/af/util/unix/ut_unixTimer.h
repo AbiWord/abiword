@@ -29,8 +29,7 @@
 #include "ut_timer.h"
 
 #ifdef TOOLKIT_COCOA
-typedef struct NSMutableDictionary;
-typedef struct NSLock;
+#include <objc/objc.h>
 #endif
 
 
@@ -49,8 +48,8 @@ private:
 	UT_uint32 m_iGtkTimerId;
 #ifdef TOOLKIT_COCOA
 	/* these are here for Cocoa timer */
-	static NSLock* s_timerMutex;
-	static NSMutableDictionary* s_timerIds;
+	static id s_timerMutex;
+	static id s_timerIds;
 	static int s_lastTimerId;
 
 	friend void _checkLock(void);
