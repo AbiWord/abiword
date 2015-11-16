@@ -22,13 +22,14 @@
 
 /******************************************************************
 
-These are convience classes designed to make the export of table easier.
-In particular ie_Table makes it easy to track nested tables and moving between
-cells. To use, call the methods OpenTable(api)  and OpenCell(api) on encountering a 
-PTX_SectionTable or PTX_SectionCell strux.
+These are convience classes designed to make the export of table
+easier.  In particular ie_Table makes it easy to track nested tables
+and moving between cells. To use, call the methods openTable(api) and
+openCell(api) on encountering a PTX_SectionTable or PTX_SectionCell
+strux.
 
-Call the methods CloseTable() and CloseCell() on encountering a PTX_EndTable
-and PTX_EndCell strux. 
+Call the methods closeTable() and closeCell() on encountering a PTX_EndTable
+and PTX_EndCell strux.
 
 You can access all the properties of the current cell in the
 current table via ie_Table::get* methods.
@@ -42,7 +43,7 @@ current table via ie_Table::get* methods.
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
-#include "ut_string_class.h"
+#include "ut_std_string.h"
 #include "ut_units.h"
 
 #include "pd_Document.h"
@@ -121,7 +122,7 @@ void ie_PartTable::setCellJustOpenned(bool b)
 	m_bIsCellJustOpenned = b;
 }
 
-bool ie_PartTable::isCellJustOpenned(void)
+bool ie_PartTable::isCellJustOpenned(void) const
 {
 	return m_bIsCellJustOpenned;
 }
@@ -152,7 +153,7 @@ void ie_PartTable::setTableApi(pf_Frag_Strux* sdh, PT_AttrPropIndex iApi)
 /*!
  * Number of rows in the table.
  */
-UT_sint32 ie_PartTable::getNumRows(void)
+UT_sint32 ie_PartTable::getNumRows(void) const
 {
 	return m_iNumRows;
 }
@@ -160,7 +161,7 @@ UT_sint32 ie_PartTable::getNumRows(void)
 /*!
  * Number of columns in the Table.
  */
-UT_sint32 ie_PartTable::getNumCols(void)
+UT_sint32 ie_PartTable::getNumCols(void) const
 {
 	return m_iNumCols;
 }
@@ -168,7 +169,7 @@ UT_sint32 ie_PartTable::getNumCols(void)
 /*!
  * The left attach column of the current cell in the current Table.
  */
-UT_sint32 ie_PartTable::getLeft(void)
+UT_sint32 ie_PartTable::getLeft(void) const
 {
 	return m_iLeft;
 }
@@ -176,7 +177,7 @@ UT_sint32 ie_PartTable::getLeft(void)
 /*!
  * The right attach column of the current cell in the current Table.
  */
-UT_sint32 ie_PartTable::getRight(void)
+UT_sint32 ie_PartTable::getRight(void) const
 {
 	return m_iRight;
 }
@@ -185,7 +186,7 @@ UT_sint32 ie_PartTable::getRight(void)
 /*!
  * The top attach row of the current cell in the current Table.
  */
-UT_sint32 ie_PartTable::getTop(void)
+UT_sint32 ie_PartTable::getTop(void) const
 {
 	return m_iTop;
 }
@@ -194,7 +195,7 @@ UT_sint32 ie_PartTable::getTop(void)
 /*!
  * The bot attach row of the current cell in the current Table.
  */
-UT_sint32 ie_PartTable::getBot(void)
+UT_sint32 ie_PartTable::getBot(void) const
 {
 	return m_iBot;
 }
@@ -270,7 +271,7 @@ void ie_PartTable::setCellApi(PT_AttrPropIndex iApi)
 /*!
  * Return the value of the property named *pProp of the current Table.
  */
-const char * ie_PartTable::getTableProp(const char * pProp)
+const char * ie_PartTable::getTableProp(const char * pProp) const
 {
 	const gchar * szVal = NULL;
 	if(m_TableAttProp == NULL)
@@ -286,7 +287,7 @@ const char * ie_PartTable::getTableProp(const char * pProp)
 /*!
  * Return the value of the property named *pProp of the current cell.
  */
-const char * ie_PartTable::getCellProp(const char * pProp)
+const char * ie_PartTable::getCellProp(const char * pProp) const
 {
 	const gchar * szVal = NULL;
 	if(m_CellAttProp == NULL)
@@ -329,14 +330,22 @@ ie_Table::ie_Table(void) :
  */
 ie_Table::~ie_Table(void)
 {
-	while(m_sLastTable.size() > 1)
+	_clearLastTables();
+}
+
+/*!
+ * Clean up the stack
+ * Must be safe to call from the dtor
+ */
+void ie_Table::_clearLastTables()
+{
+	while(!m_sLastTable.empty())
 	{
 		ie_PartTable * pPT = m_sLastTable.top();
 		m_sLastTable.pop();
 		delete pPT;
 	}
 }
-
 /*!
  * Set pointer to the document. Clear out all previous table info
  */
@@ -344,18 +353,13 @@ void ie_Table::setDoc(PD_Document * pDoc)
 {
 	m_pDoc = pDoc;
 	m_sdhLastCell = NULL;
-	while(m_sLastTable.size() > 1)
-	{
-		ie_PartTable * pPT = m_sLastTable.top();
-		m_sLastTable.pop();
-		delete pPT;
-	}
+	_clearLastTables();
 }
 
 /*!
  * a table strux has been been found. Push it and it's api onto the stack.
  */
-void ie_Table::OpenTable(pf_Frag_Strux* tableSDH, PT_AttrPropIndex iApi)
+void ie_Table::openTable(pf_Frag_Strux* tableSDH, PT_AttrPropIndex iApi)
 {
 	ie_PartTable * pPT = new ie_PartTable(m_pDoc);
 	m_sdhLastCell = NULL;
@@ -366,7 +370,7 @@ void ie_Table::OpenTable(pf_Frag_Strux* tableSDH, PT_AttrPropIndex iApi)
 /*!
  * A cell strux has been found. Update all info with this api.
  */ 
-void ie_Table::OpenCell(PT_AttrPropIndex iApi)
+void ie_Table::openCell(PT_AttrPropIndex iApi)
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_if_fail(pPT != NULL);
@@ -384,12 +388,12 @@ void ie_Table::OpenCell(PT_AttrPropIndex iApi)
 	}
 }
 
-bool ie_Table::isNewRow(void)
+bool ie_Table::isNewRow(void) const
 {
 	return m_bNewRow;
 }
 
-bool ie_Table::isCellJustOpenned(void)
+bool ie_Table::isCellJustOpenned(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	return pPT->isCellJustOpenned();
@@ -417,7 +421,7 @@ pf_Frag_Strux* ie_Table::getTableSDH(void)
 /*!
  * Signal close of cell from endCell strux
  */
-void ie_Table::CloseCell(void)
+void ie_Table::closeCell(void)
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	pPT->setCellApi(0);
@@ -427,7 +431,7 @@ void ie_Table::CloseCell(void)
 /*!
  * pop the stack on this endTable strux.
  */
-void ie_Table::CloseTable(void)
+void ie_Table::closeTable(void)
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	m_sLastTable.pop();
@@ -439,7 +443,7 @@ void ie_Table::CloseTable(void)
  * The returns the Right attached column of the previous cell. We
  * needs to get vertically merged cells at the right edge of a table.
  */
-UT_sint32 ie_Table::getPrevNumRightMostVMerged(void)
+UT_sint32 ie_Table::getPrevNumRightMostVMerged(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	xxx_UT_DEBUGMSG(("PrevRight %d curRight %d \n",pPT->getPrevRight(),pPT->getRight()));
@@ -451,7 +455,7 @@ UT_sint32 ie_Table::getPrevNumRightMostVMerged(void)
 /*!
  * This returns the current row counter
  */
-UT_sint32 ie_Table::getCurRow(void)
+UT_sint32 ie_Table::getCurRow(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT != NULL, 0);
@@ -472,7 +476,7 @@ void ie_Table::incCurRow(void)
 /*!
  * Convience function to get the left attach of the current cell.
  */
-UT_sint32 ie_Table::getLeft(void)
+UT_sint32 ie_Table::getLeft(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
@@ -483,7 +487,7 @@ UT_sint32 ie_Table::getLeft(void)
 /*!
  * Convience function to get the right attach of the current cell.
  */
-UT_sint32 ie_Table::getRight(void)
+UT_sint32 ie_Table::getRight(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
@@ -494,7 +498,7 @@ UT_sint32 ie_Table::getRight(void)
 /*!
  * Convience function to get the top attach of the current cell.
  */
-UT_sint32 ie_Table::getTop(void)
+UT_sint32 ie_Table::getTop(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
@@ -504,7 +508,7 @@ UT_sint32 ie_Table::getTop(void)
 /*!
  * Convience function to get the bottom attach of the current cell.
  */
-UT_sint32 ie_Table::getBot(void)
+UT_sint32 ie_Table::getBot(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
@@ -514,7 +518,7 @@ UT_sint32 ie_Table::getBot(void)
 /*!
  * Convience function to get the current number of rows in table.
  */
-UT_sint32 ie_Table::getNumRows(void)
+UT_sint32 ie_Table::getNumRows(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
@@ -526,7 +530,7 @@ UT_sint32 ie_Table::getNumRows(void)
 /*!
  * Convience function to get the current number of columns in table.
  */
-UT_sint32 ie_Table::getNumCols(void)
+UT_sint32 ie_Table::getNumCols(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
@@ -538,7 +542,7 @@ UT_sint32 ie_Table::getNumCols(void)
  * RTF expects an unnested table to have a nest depth of 0. Since we push NULL
  * at the start we have to subtract this from the depth calculation.
  */
-UT_sint32 ie_Table::getNestDepth(void)
+UT_sint32 ie_Table::getNestDepth(void) const
 {
 	return m_sLastTable.size() - 1;
 }
@@ -547,7 +551,7 @@ UT_sint32 ie_Table::getNestDepth(void)
 /*!
  * Return the api of the current Table.
  */
- PT_AttrPropIndex ie_Table::getTableAPI(void)
+ PT_AttrPropIndex ie_Table::getTableAPI(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
@@ -557,7 +561,7 @@ UT_sint32 ie_Table::getNestDepth(void)
 /*!
  * Return the api of the current Cell.
  */
- PT_AttrPropIndex ie_Table::getCellAPI(void)
+ PT_AttrPropIndex ie_Table::getCellAPI(void) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
@@ -568,7 +572,7 @@ UT_sint32 ie_Table::getNestDepth(void)
 /*!
  * Return the value of the property named *pProp of the current Table.
  */
-const char * ie_Table::getTableProp(const char * pProp)
+const char * ie_Table::getTableProp(const char * pProp) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,NULL);
@@ -579,7 +583,7 @@ const char * ie_Table::getTableProp(const char * pProp)
 /*!
  * Return the value of the property named *pProp of the current Cell.
  */
-const char * ie_Table::getCellProp(const char * pProp)
+const char * ie_Table::getCellProp(const char * pProp) const
 {
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,NULL);
@@ -659,7 +663,7 @@ void ie_imp_cell::setCellX(UT_sint32 cellx)
 /*!
  * Get the cellX value for the cell.
  */
-UT_sint32 ie_imp_cell::getCellX(void)
+UT_sint32 ie_imp_cell::getCellX(void) const
 {
 	return m_iCellX;
 }
@@ -678,13 +682,13 @@ void ie_imp_cell::setCellLeft(ie_imp_cell * pImpCell)
 void ie_imp_cell::setLeft(UT_sint32 iLeft)
 {
 	m_iLeft = iLeft;
-	setProp("left-attach", UT_String_sprintf("%d",iLeft));
+	setProp("left-attach", UT_std_string_sprintf("%d",iLeft));
 }
 
 /*!
  * Get the left attach for the cell
  */
-UT_sint32 ie_imp_cell::getLeft(void)
+UT_sint32 ie_imp_cell::getLeft(void) const
 {
 	return m_iLeft;
 }
@@ -695,14 +699,13 @@ UT_sint32 ie_imp_cell::getLeft(void)
 void ie_imp_cell::setRight(UT_sint32 iRight)
 {
 	m_iRight = iRight;
-	UT_String spRight("right-attach");
-	setProp("right-attach", UT_String_sprintf("%d",iRight));
+	setProp("right-attach", UT_std_string_sprintf("%d",iRight));
 }
 
 /*!
  * Get the right attach for the cell
  */
-UT_sint32 ie_imp_cell::getRight(void)
+UT_sint32 ie_imp_cell::getRight(void) const
 {
 	return m_iRight;
 }
@@ -713,13 +716,13 @@ UT_sint32 ie_imp_cell::getRight(void)
 void ie_imp_cell::setTop(UT_sint32 iTop)
 {
 	m_iTop = iTop;
-	setProp("top-attach", UT_String_sprintf("%d",iTop));
+	setProp("top-attach", UT_std_string_sprintf("%d",iTop));
 }
 
 /*!
  * Get the top attach for the cell
  */
-UT_sint32 ie_imp_cell::getTop(void)
+UT_sint32 ie_imp_cell::getTop(void) const
 {
 	return m_iTop;
 }
@@ -730,13 +733,13 @@ UT_sint32 ie_imp_cell::getTop(void)
 void ie_imp_cell::setBot(UT_sint32 iBot)
 {
 	m_iBot = iBot;
-	setProp("bot-attach", UT_String_sprintf("%d",iBot));
+	setProp("bot-attach", UT_std_string_sprintf("%d",iBot));
 }
 
 /*!
  * Get the bottom attach for the cell
  */
-UT_sint32 ie_imp_cell::getBot(void)
+UT_sint32 ie_imp_cell::getBot(void) const
 {
 	return m_iBot;
 }
@@ -744,7 +747,7 @@ UT_sint32 ie_imp_cell::getBot(void)
 /*!
  * Get the cell SDH for this cell.
  */
-pf_Frag_Strux* ie_imp_cell::getCellSDH(void)
+pf_Frag_Strux* ie_imp_cell::getCellSDH(void) const
 {
 	return m_cellSDH;
 }
@@ -762,7 +765,7 @@ void ie_imp_cell::setCellSDH(pf_Frag_Strux* cellSDH)
  * return false if no cellSDH is present.
  * true otherwise
  */
-bool ie_imp_cell::writeCellPropsInDoc(void)
+bool ie_imp_cell::writeCellPropsInDoc(void) const
 {
 	if(m_cellSDH == NULL)
 	{
@@ -776,7 +779,7 @@ bool ie_imp_cell::writeCellPropsInDoc(void)
 /*!
  * Return a pointer to the import cell class above this one.
  */
-ie_imp_cell * ie_imp_cell::getCellAbove(void)
+ie_imp_cell * ie_imp_cell::getCellAbove(void) const
 {
 	return NULL;
 }
@@ -784,7 +787,7 @@ ie_imp_cell * ie_imp_cell::getCellAbove(void)
 /*!
  * Return a pointer to the import cell class below this one.
  */
-ie_imp_cell * ie_imp_cell::getCellBelow(void)
+ie_imp_cell * ie_imp_cell::getCellBelow(void) const
 {
 	return NULL;
 }
@@ -792,7 +795,7 @@ ie_imp_cell * ie_imp_cell::getCellBelow(void)
 /*!
  * Return a pointer to the import cell class right of this one.
  */
-ie_imp_cell * ie_imp_cell::getCellRight(void)
+ie_imp_cell * ie_imp_cell::getCellRight(void) const
 {
 	return NULL;
 }
@@ -800,7 +803,7 @@ ie_imp_cell * ie_imp_cell::getCellRight(void)
 /*!
  * Return a pointer to the import cell class left of this one.
  */
-ie_imp_cell * ie_imp_cell::getCellLeft(void)
+ie_imp_cell * ie_imp_cell::getCellLeft(void) const
 {
 	return m_pCellLeft;
 }
@@ -808,36 +811,36 @@ ie_imp_cell * ie_imp_cell::getCellLeft(void)
 /*!
  * set a property of this cell.
  */
-void ie_imp_cell::setProp(const UT_String & psProp, const UT_String & psVal)
+void ie_imp_cell::setProp(const std::string & psProp, const std::string & psVal)
 {
-	UT_String_setProperty(m_sCellProps, psProp, psVal);
+	UT_std_string_setProperty(m_sCellProps, psProp, psVal);
 }
 
 /*!
  * Add a list of properties to the cell definition. The definition is the
  * standard prop:value; pair
  */
-void ie_imp_cell::addPropString(const UT_String & sPropString)
+void ie_imp_cell::addPropString(const std::string & sPropString)
 {
-	UT_String_addPropertyString(m_sCellProps, sPropString);
-
+	UT_std_string_addPropertyString(m_sCellProps, sPropString);
 }
+
 /*!
  * set a property of this cell.
  */
 void ie_imp_cell::setProp(const char * szProp, const char * szVal)
 {
-	UT_String psProp = szProp;
-	UT_String psVal = szVal;
-	UT_String_setProperty(m_sCellProps, psProp, psVal);
+	std::string psProp = szProp;
+	std::string psVal = szVal;
+	UT_std_string_setProperty(m_sCellProps, psProp, psVal);
 }
 
 /*!
  * Return the value of a property of this cell. This should be deleted when you've finished with it.
  */
-UT_String ie_imp_cell::getPropVal(const UT_String & psProp)
+std::string ie_imp_cell::getPropVal(const std::string & psProp) const
 {
-	return UT_String_getPropVal(m_sCellProps, psProp);
+	return UT_std_string_getPropVal(m_sCellProps, psProp);
 }
 
 /*!
@@ -857,10 +860,10 @@ void ie_imp_cell::copyCell(ie_imp_cell * pCell)
 /*!
  * Return the value of a property of this cell. This should be deleted when you've finished with it.
  */
-UT_String ie_imp_cell::getPropVal(const char * szProp)
+std::string ie_imp_cell::getPropVal(const char * szProp) const
 {
-	UT_String psProp = szProp;
-	return UT_String_getPropVal(m_sCellProps, psProp);
+	std::string psProp = szProp;
+	return UT_std_string_getPropVal(m_sCellProps, psProp);
 }
 
 /*!
@@ -919,7 +922,7 @@ UT_sint32 ie_imp_table::OpenCell(void)
  * Returns a vector of pointers to cells on the requested row.
  * pVec should be empty initially.
  */
-bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_GenericVector<ie_imp_cell*> * pVec)
+bool ie_imp_table::getVecOfCellsOnRow(UT_sint32 row, UT_GenericVector<ie_imp_cell*> * pVec) const
 {
 	UT_sint32 i = 0;
 	ie_imp_cell * pCell = NULL;
@@ -1131,7 +1134,7 @@ void ie_imp_table::setCellX(UT_sint32 cellx)
 /*!
  * Return this tables SDH
  */
-pf_Frag_Strux* ie_imp_table::getTableSDH(void)
+pf_Frag_Strux* ie_imp_table::getTableSDH(void) const
 {
 	return m_tableSDH;
 }
@@ -1151,7 +1154,7 @@ void ie_imp_table::setTableSDH(pf_Frag_Strux* sdh)
 void ie_imp_table::writeTablePropsInDoc(void)
 {
 	UT_return_if_fail(m_tableSDH);
-	UT_String colwidths;
+	std::string colwidths;
 	UT_sint32 i=0;
 /*
 	table-column-props:1.2in/3.0in/1.3in/;
@@ -1171,12 +1174,12 @@ void ie_imp_table::writeTablePropsInDoc(void)
    OK start by looking up table-col-spacing and table-column-leftpos. The defaults for
    these if undefined are 0.05in and 0.0in respectively.
 */
-	UT_String sColSpace = getPropVal("table-col-spacing");
+	std::string sColSpace = getPropVal("table-col-spacing");
 	if(sColSpace.size() == 0)
 	{
 		sColSpace = "0.02in";
 	}
-	UT_String sLeftPos = getPropVal("table-column-leftpos");
+	std::string sLeftPos = getPropVal("table-column-leftpos");
 	if(sLeftPos.size()==0)
 	{
 		sLeftPos = "0.0in";
@@ -1191,7 +1194,7 @@ void ie_imp_table::writeTablePropsInDoc(void)
 //
 // Now build the table-col-width string.
 //
-		UT_String sColWidth;
+		std::string sColWidth;
 		sColWidth.clear();
 		for(i=0; i< m_vecCellX.getItemCount(); i++)
 		{
@@ -1200,7 +1203,7 @@ void ie_imp_table::writeTablePropsInDoc(void)
 			UT_sint32 iDiffCellx = iCellx - iPrev;
 			double dCellx = static_cast<double>(iDiffCellx)/1440.0 -dColSpace;
 			iPrev = iCellx;
-			UT_String sWidth = UT_formatDimensionString(DIM_IN,dCellx,NULL);
+			std::string sWidth = UT_formatDimensionString(DIM_IN,dCellx,NULL);
 			sColWidth += sWidth;
 			sColWidth += "/";
 		}
@@ -1289,18 +1292,19 @@ void ie_imp_table::writeAllCellPropsInDoc(void)
 /*!
  * Set a property in the table properties string.
  */
-void ie_imp_table::setProp(const UT_String & psProp, const UT_String & psVal)
+void ie_imp_table::setProp(const std::string & psProp,
+						   const std::string & psVal)
 {
-	UT_String_setProperty(m_sTableProps, psProp, psVal);
+	UT_std_string_setProperty(m_sTableProps, psProp, psVal);
 }
 
 /*!
  * Return the value of a property of this table. 
  * This should be deleted when you've finished with it.
  */
-UT_String ie_imp_table::getPropVal(const UT_String & psProp)
+std::string ie_imp_table::getPropVal(const std::string & psProp) const
 {
-	return UT_String_getPropVal(m_sTableProps, psProp);
+	return UT_std_string_getPropVal(m_sTableProps, psProp);
 }
 
 
@@ -1309,25 +1313,25 @@ UT_String ie_imp_table::getPropVal(const UT_String & psProp)
  */
 void ie_imp_table::setProp(const char * szProp, const char * szVal)
 {
-	UT_String psProp = szProp;
-	UT_String psVal = szVal;
-	UT_String_setProperty(m_sTableProps, psProp, psVal);
+	std::string psProp = szProp;
+	std::string psVal = szVal;
+	UT_std_string_setProperty(m_sTableProps, psProp, psVal);
 }
 
 /*!
  * Return the value of a property of this table. 
  * This should be deleted when you've finished with it.
  */
-UT_String ie_imp_table::getPropVal(const char * szProp)
+std::string ie_imp_table::getPropVal(const char * szProp) const
 {
-	UT_String psProp = szProp; 
-	return UT_String_getPropVal(m_sTableProps, psProp);
+	std::string psProp = szProp;
+	return UT_std_string_getPropVal(m_sTableProps, psProp);
 }
 
 /*!
  * Set a property in the current cell properties string.
  */
-void ie_imp_table::setCellProp(const UT_String & psProp, const UT_String & psVal)
+void ie_imp_table::setCellProp(const std::string & psProp, const std::string & psVal)
 {
 	UT_return_if_fail(m_pCurImpCell);
 	m_pCurImpCell->setProp(psProp, psVal);
@@ -1337,7 +1341,7 @@ void ie_imp_table::setCellProp(const UT_String & psProp, const UT_String & psVal
  * Return the value of a property of the current cell. 
  * This should be deleted when you've finished with it.
  */
-UT_String ie_imp_table::getCellPropVal(const UT_String & psProp)
+std::string ie_imp_table::getCellPropVal(const std::string & psProp) const
 {
 	UT_return_val_if_fail(m_pCurImpCell,"");
 	return m_pCurImpCell->getPropVal(psProp);
@@ -1346,7 +1350,7 @@ UT_String ie_imp_table::getCellPropVal(const UT_String & psProp)
 /*!
  * Return a pointer to the current cell
  */
-ie_imp_cell * ie_imp_table::getCurCell(void)
+ie_imp_cell * ie_imp_table::getCurCell(void) const
 {
 	return m_pCurImpCell;
 }
@@ -1395,7 +1399,7 @@ void ie_imp_table::_buildCellXVector(void)
 /*!
  * Returns column number plus 1 of the cell.
  */
-UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
+UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell) const
 {
 	UT_sint32 cellx = pImpCell->getCellX();
 	UT_sint32 i =0;
@@ -1423,7 +1427,7 @@ UT_sint32 ie_imp_table::getColNumber(ie_imp_cell * pImpCell)
 	return -1;
 }
 
-ie_imp_cell *  ie_imp_table::getCellAtRowColX(UT_sint32 iRow,UT_sint32 cellX)
+ie_imp_cell *  ie_imp_table::getCellAtRowColX(UT_sint32 iRow,UT_sint32 cellX) const
 {
 	UT_sint32 i = 0;
 	ie_imp_cell * pCell = NULL;
@@ -1557,7 +1561,7 @@ void ie_imp_table::buildTableStructure(void)
 /*!
  * Return the number of rows in the table
  */
-UT_sint32  ie_imp_table::getNumRows(void)
+UT_sint32  ie_imp_table::getNumRows(void) const
 {
 	UT_sint32 numrows = 0;
 	UT_sint32 i =0;
@@ -1784,7 +1788,7 @@ void ie_imp_table::appendRow(UT_GenericVector<ie_imp_cell*>* pVecRowOfCells)
  * This method scans the vector of cell looking for the nth cell on the current row
  * Return null if cell is not present.
 */
-ie_imp_cell * ie_imp_table::getNthCellOnRow(UT_sint32 iCell)
+ie_imp_cell * ie_imp_table::getNthCellOnRow(UT_sint32 iCell) const
 {
 	ie_imp_cell * pFoundCell = NULL;
 	ie_imp_cell * pCell = NULL;
@@ -1878,7 +1882,7 @@ void ie_imp_table_control::CloseCell(void)
 	pT->CloseCell();
 }
 
-ie_imp_table *  ie_imp_table_control::getTable(void)
+ie_imp_table *  ie_imp_table_control::getTable(void) const
 {
 	ie_imp_table * pT = m_sLastTable.top();
 	return pT;
@@ -1981,10 +1985,10 @@ CellHelper::CellHelper () :
 	// 
 }
 
-void CellHelper::setProp(const char * szProp, const UT_String sVal)
+void CellHelper::setProp(const char * szProp, const std::string & sVal)
 {
-	UT_String psProp = szProp;
-	UT_String_setProperty(m_sCellProps, psProp, sVal);
+	std::string psProp = szProp;
+	UT_std_string_setProperty(m_sCellProps, psProp, sVal);
 }
 
 
@@ -2048,7 +2052,7 @@ bool IE_Imp_TableHelper::tableStart (void)
 		{
 			const gchar * atts[3] = {NULL,NULL,NULL};
 			atts[0] = "props";
-			atts[1] = m_style.utf8_str();
+			atts[1] = m_style.c_str();
 			if (!getDoc()->appendStrux (PTX_SectionTable,atts))
 				return false;
 		}
@@ -2069,7 +2073,7 @@ bool IE_Imp_TableHelper::tableStart (void)
 		{
 			const gchar * atts[3] = {NULL,NULL,NULL};
 			atts[0] = "props";
-			atts[1] = m_style.utf8_str();
+			atts[1] = m_style.c_str();
 			getDoc()->insertStruxBeforeFrag(pf,PTX_SectionTable,atts);
 		}
 		getDoc()->insertStruxBeforeFrag(pf,PTX_EndTable,NULL);
@@ -2383,10 +2387,10 @@ bool IE_Imp_TableHelper::tdEnd(void)
 			
 		}
 		
-	m_current->setProp("top-attach", UT_String_sprintf("%d",m_current->m_top));
-	m_current->setProp("bot-attach", UT_String_sprintf("%d",m_current->m_bottom));
-	m_current->setProp("left-attach", UT_String_sprintf("%d",m_current->m_left));
-	m_current->setProp("right-attach", UT_String_sprintf("%d",m_current->m_right));
+	m_current->setProp("top-attach", UT_std_string_sprintf("%d",m_current->m_top));
+	m_current->setProp("bot-attach", UT_std_string_sprintf("%d",m_current->m_bottom));
+	m_current->setProp("left-attach", UT_std_string_sprintf("%d",m_current->m_left));
+	m_current->setProp("right-attach", UT_std_string_sprintf("%d",m_current->m_right));
 
 	const gchar * atts[3] = {"props",NULL,NULL};
 	atts[1] = m_current->m_sCellProps.c_str();
@@ -2501,7 +2505,7 @@ bool IE_Imp_TableHelper::Inline (const UT_UCSChar * ucs4_str, UT_sint32 length)
 #if DEBUG
 #if 0
 	UT_uint32 ii = 0;
-	UT_String sStr;
+	std::string sStr;
 	for(ii=0; ii<(length);ii++)
 	{
 		sStr += static_cast<const char>(ucs4_str[ii]);

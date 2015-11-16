@@ -2038,7 +2038,7 @@ bool s_DocBook_Listener::populateStrux(pf_Frag_Strux* sdh,
 			return true;
 		}
 
-        case PTX_SectionEndnote:
+		case PTX_SectionEndnote:
 		{
 			// don't do anything - handled in _handleField()
 			m_bInNote = true;
@@ -2070,7 +2070,7 @@ bool s_DocBook_Listener::populateStrux(pf_Frag_Strux* sdh,
 			if(m_iTableDepth <= 2)
 			{
 				_closeParagraph();
-				mTableHelper.OpenTable(sdh,pcr->getIndexAP()) ;
+				mTableHelper.openTable(sdh,pcr->getIndexAP()) ;
 				_openTable(pcr->getIndexAP());
 			}
 			return true;
@@ -2093,7 +2093,7 @@ bool s_DocBook_Listener::populateStrux(pf_Frag_Strux* sdh,
 				if(m_pDocument->getStruxPosition(nextTable) < m_pDocument->getStruxPosition(nextCell)) //nested table
 				{
 					_closeParagraph();
-					mTableHelper.OpenCell(pcr->getIndexAP());
+					mTableHelper.openCell(pcr->getIndexAP());
 					m_iNestedTable = 0;  //pending, so don't allow any writing
 					return true;
 				}
@@ -2103,7 +2103,7 @@ bool s_DocBook_Listener::populateStrux(pf_Frag_Strux* sdh,
 			{
 				// regular cell
 				_closeParagraph();
-				mTableHelper.OpenCell(pcr->getIndexAP());
+				mTableHelper.openCell(pcr->getIndexAP());
 				_openCell();
 			}
 			return true;
@@ -2120,7 +2120,7 @@ bool s_DocBook_Listener::populateStrux(pf_Frag_Strux* sdh,
 			_closeParagraph();
 			_closeRow();
 			_closeTable();
-			mTableHelper.CloseTable();
+			mTableHelper.closeTable();
 
 			if(m_iNestedTable != 2) //don't allow any content after an </entrytbl>
 				m_iNestedTable = -1;
@@ -2134,7 +2134,7 @@ bool s_DocBook_Listener::populateStrux(pf_Frag_Strux* sdh,
 
 			_closeParagraph();
 			_closeCell();
-			mTableHelper.CloseCell();
+			mTableHelper.closeCell();
 			return true;
 		}
 

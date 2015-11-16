@@ -3499,7 +3499,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 	UT_sint32 iOldRight = m_iRight;
 	xxx_UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
 	PT_AttrPropIndex prevAPI = api;
-	m_Table.OpenCell(api);
+	m_Table.openCell(api);
 	bool bNewRow = false;
 	xxx_UT_DEBUGMSG(("iOldRow %d newTop %d \n",iOldRow,m_Table.getTop()));
 	if(	(m_Table.getLeft() < iOldRight) || m_bNewTable)
@@ -3553,9 +3553,9 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 			}
 			else
 			{
-				m_Table.OpenCell(prevAPI);
+				m_Table.openCell(prevAPI);
 				_newRow();
-				m_Table.OpenCell(api);
+				m_Table.openCell(api);
 				m_pie->_rtf_keyword("nestrow");
 			}
 			if(m_Table.getNestDepth() > 1)
@@ -3570,7 +3570,7 @@ void s_RTF_ListenerWriteDoc::_open_cell(PT_AttrPropIndex api)
 // reset api. It may have been screwed in _newRow
 //
 	xxx_UT_DEBUGMSG(("Setting cell API 1 NOW!!!!!!!!!!!!!!!!! %d \n",api));
-	m_Table.OpenCell(api);
+	m_Table.openCell(api);
 	if(bNewRow)
 	{
 //
@@ -4262,11 +4262,11 @@ void s_RTF_ListenerWriteDoc::_open_table(PT_AttrPropIndex api,bool bIsCell)
 		bool b = m_pDocument->getStruxOfTypeFromPosition(posCell,PTX_SectionTable,&sdhTable);
 		UT_return_if_fail(b);
 		api = m_pDocument->getAPIFromSDH(sdhTable);
-		m_Table.OpenTable(sdhTable,api);
+		m_Table.openTable(sdhTable,api);
 	}
 	else
 	{
-		m_Table.OpenTable(m_sdh,api);
+		m_Table.openTable(m_sdh,api);
 	}
 	m_bNewTable = true;
 	m_iLeft = -1;
@@ -4307,7 +4307,7 @@ void s_RTF_ListenerWriteDoc::_close_cell(void)
 	m_pie->_rtf_keyword("abiendcell");
 	m_pie->_rtf_close_brace();
 
-	m_Table.CloseCell();
+	m_Table.closeCell();
 }
 
 void s_RTF_ListenerWriteDoc::_close_table(void)
@@ -4338,7 +4338,7 @@ void s_RTF_ListenerWriteDoc::_close_table(void)
 	{
 		m_pie->_rtf_close_brace();
 	}
-	m_Table.CloseTable();
+	m_Table.closeTable();
 	if(m_Table.getNestDepth() < 1)
 	{
 		m_iCurRow = -1;

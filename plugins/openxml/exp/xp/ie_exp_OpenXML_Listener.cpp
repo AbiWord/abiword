@@ -784,7 +784,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 					}
 				}
 			}
-			tableHelper.OpenTable(sdh, pcr->getIndexAP());
+			tableHelper.openTable(sdh, pcr->getIndexAP());
 
 			bool tableInTable = !m_tableStack.empty();
 			m_tableStack.push(table);
@@ -814,7 +814,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 			if(!m_rowStack.empty())
 				row = m_rowStack.top();
 
-			tableHelper.OpenCell(api);
+			tableHelper.openCell(api);
 			UT_sint32 left = tableHelper.getLeft();
 			UT_sint32 right = tableHelper.getRight();
 			UT_sint32 top = tableHelper.getTop();
@@ -1019,7 +1019,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 		}
 		case PTX_EndCell:
 		{
-			tableHelper.CloseCell();
+			tableHelper.closeCell();
 			if(m_cellStack.empty())
 				return false;
 
@@ -1028,7 +1028,7 @@ bool IE_Exp_OpenXML_Listener::populateStrux(pf_Frag_Strux* sdh, const PX_ChangeR
 		}
 		case PTX_EndTable:
 		{
-			tableHelper.CloseTable();
+			tableHelper.closeTable();
 			if(m_tableStack.empty())
 				return false;
 

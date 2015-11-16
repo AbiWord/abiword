@@ -74,6 +74,8 @@ ABI_EXPORT std::string UT_std_string_getPropVal(const std::string & sPropertyStr
 ABI_EXPORT void UT_std_string_removeProperty(std::string & sPropertyString, const std::string & sProp);
 ABI_EXPORT void UT_std_string_setProperty(std::string & sPropertyString, const std::string &sProp, const std::string & sVal);
 
+ABI_EXPORT void UT_std_string_addPropertyString(std::string & sPropertyString, const std::string &sNewProp);
+
 
 ABI_EXPORT const std::string StreamToString( std::istream& iss );
 ABI_EXPORT std::string toTimeString( time_t TT );

@@ -341,7 +341,7 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
         _closeBlock();
         _closeHeading();
         _closeLists();
-		m_tableHelper.OpenTable(sdh, api);
+		m_tableHelper.openTable(sdh, api);
         _openTable(api);
         m_bFirstRow = true;
     }
@@ -358,7 +358,7 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
         _closeHeading();
         _closeLists();
 
-        m_tableHelper.OpenCell(api);
+        m_tableHelper.openCell(api);
         if (m_bFirstRow || m_tableHelper.isNewRow())
         {
             if (m_bFirstRow)
@@ -464,7 +464,7 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
         _closeLists();
         _closeRow();
         _closeTable();
-        m_tableHelper.CloseTable();
+        m_tableHelper.closeTable();
     }
         break;
 
@@ -479,7 +479,7 @@ bool IE_Exp_HTML_Listener::populateStrux(pf_Frag_Strux* sdh,
         _closeLists();
         _closeCell();
 
-        m_tableHelper.CloseCell();
+        m_tableHelper.closeCell();
     }
         break;
 

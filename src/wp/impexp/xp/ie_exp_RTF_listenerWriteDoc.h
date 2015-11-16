@@ -28,7 +28,6 @@
 #include <list>
 #include <string>
 
-class ie_Table;
 class PX_ChangeRecord_Object;
 
 /******************************************************************

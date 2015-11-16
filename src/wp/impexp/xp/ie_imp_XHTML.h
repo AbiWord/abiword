@@ -134,7 +134,7 @@ private:
 	bool        m_bFirstBlock;
 	bool		m_bInMath;
 	UT_ByteBuf* m_pMathBB;
-	UT_UTF8String m_Title;
+	std::string m_Title;
 };
 
 #endif /* IE_IMP_XHTML_H */

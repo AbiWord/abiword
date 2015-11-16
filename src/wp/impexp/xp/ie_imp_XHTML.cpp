@@ -33,7 +33,7 @@
 #include "ut_path.h"
 #include "ut_misc.h"
 #include "ut_string.h"
-#include "ut_string_class.h"
+#include "ut_std_string.h"
 
 #include "fg_GraphicRaster.h"
 #include "ie_imp_PasteListener.h"
@@ -491,9 +491,8 @@ static void s_append_font_size (UT_UTF8String & style, const char * size)
 				}
 			else
 				{
-					UT_String pt_size;
-					UT_String_sprintf(pt_size, "%2dpt", sz);
-					style += pt_size.c_str ();
+					std::string pt_size = UT_std_string_sprintf("%2dpt", sz);
+					style += pt_size;
 				}
 		}
 }
@@ -918,21 +917,25 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		UT_DEBUGMSG(("Font tag encountered\n"));
 		{
 			UT_UTF8String style;
-			
+
 			const gchar * p_val = 0;
 
 			p_val = _getXMLPropValue (static_cast<const gchar *>("color"), atts);
-			if (p_val) s_append_color (style, p_val, "color");
+			if (p_val)
+				s_append_color (style, p_val, "color");
 
 			p_val = _getXMLPropValue (static_cast<const gchar *>("background"), atts);
-			if (p_val) s_append_color (style, p_val, "bgcolor");
+			if (p_val)
+				s_append_color (style, p_val, "bgcolor");
 
 			p_val = _getXMLPropValue (static_cast<const gchar *>("size"), atts);
-			if (p_val) s_append_font_size (style, p_val);
-			
+			if (p_val)
+				s_append_font_size (style, p_val);
+
 			p_val = _getXMLPropValue (static_cast<const gchar *>("face"), atts);
-			if (p_val) s_append_font_family (style, p_val);
-			
+			if (p_val)
+				s_append_font_family (style, p_val);
+
 			// UT_String_sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color.c_str(), bgcolor.c_str(), face.c_str(), size.c_str());
 			UT_DEBUGMSG(("Font properties: %s\n", style.utf8_str()));
 
@@ -1042,9 +1045,9 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		const gchar** listAtts;
 		listAtts = (tokenIndex == TT_OL ? ol_atts : ul_atts);
 
-		UT_String szListID, szParentID;
-		UT_String_sprintf(szListID, "%u", m_iNewListID);
-		UT_String_sprintf(szParentID, "%u", *parentID);
+		std::string szListID, szParentID;
+		szListID = UT_std_string_sprintf("%u", m_iNewListID);
+		szListID = UT_std_string_sprintf("%u", *parentID);
 
 		const int IDpos = 1;
 		const int parentIDpos = 3;
@@ -1077,14 +1080,14 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			/* assign the appropriate list ID, parent ID, and level
 			   to this list item's attributes */
 
-			UT_String szListID, szParentID, szLevel, szMarginLeft;
-			UT_String_sprintf(szListID, "%u", thisID);
-			UT_String_sprintf(szParentID, "%u", *parentID);
-			UT_String_sprintf(szLevel, "%u", m_utsParents.getDepth());
+			std::string szListID, szParentID, szLevel, szMarginLeft;
+			szListID = UT_std_string_sprintf("%u", thisID);
+			szParentID = UT_std_string_sprintf("%u", *parentID);
+			szLevel = UT_std_string_sprintf("%u", m_utsParents.getDepth());
 
 			{
 				UT_LocaleTransactor t(LC_NUMERIC, "C");
-				UT_String_sprintf(szMarginLeft, " margin-left: %.2fin", 
+				szMarginLeft = UT_std_string_sprintf(" margin-left: %.2fin",
 								  m_utsParents.getDepth() * 0.5);
 			}
 
@@ -1093,7 +1096,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			const int parentIDpos = 5;
 			const int propsPos = 7;
 
-			UT_String props = listAtts[propsPos];
+			std::string props = listAtts[propsPos];
 			props += szMarginLeft;
 
 			listAtts[LevelPos] = szLevel.c_str();
@@ -1276,37 +1279,39 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 				UT_Dimension units = UT_determineDimension (szWidth, DIM_PX);
 				double d = UT_convertDimensionless (szWidth);
 				float width = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
-				UT_String tmp;
+				std::string tmp;
 
 				{
 					UT_LocaleTransactor t(LC_NUMERIC, "C");
-					UT_String_sprintf (tmp, "%gin", width);
+					tmp = UT_std_string_sprintf ("%gin", width);
 				}
 
 				if (!tmp.empty ())
-					{
-						if (utf8val.byteLength ()) utf8val += "; ";
-						utf8val += "width:";
-						utf8val += tmp.c_str ();
-					}
+				{
+					if (utf8val.byteLength ())
+						utf8val += "; ";
+					utf8val += "width:";
+					utf8val += tmp;
+				}
 			}
 		if (szHeight && (strstr (utf8val.utf8_str (), "height") == 0))
 			{
 				UT_Dimension units = UT_determineDimension (szHeight, DIM_PX);
 				double d = UT_convertDimensionless (szHeight);
 				float height = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
-				UT_String tmp;
+				std::string tmp;
 
 				{
 					UT_LocaleTransactor t(LC_NUMERIC, "C");
-					UT_String_sprintf (tmp, "%gin", height);
+					tmp = UT_std_string_sprintf ("%gin", height);
 				}
 
 				if (!tmp.empty ())
 					{
-						if (utf8val.byteLength ()) utf8val += "; ";
+						if (utf8val.byteLength ())
+							utf8val += "; ";
 						utf8val += "height:";
-						utf8val += tmp.c_str ();
+						utf8val += tmp;
 					}
 			}
 		if ((strstr (utf8val.utf8_str (), "width")  == 0) ||
@@ -1323,15 +1328,15 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 					float rat = height/width;
 					float fwidth = UT_convertToInches(szWidth);
 					height = rat*fwidth;
-					UT_String tmp;
+					std::string tmp;
 					{
 						UT_LocaleTransactor t(LC_NUMERIC, "C");
-						UT_String_sprintf (tmp, "%gin", height);
+						tmp = UT_std_string_sprintf ("%gin", height);
 					}
-					if (utf8val.byteLength ()) 
+					if (utf8val.byteLength ())
 						utf8val += "; ";
 					utf8val += "height:";
-					utf8val += tmp.c_str ();
+					utf8val += tmp;
 					goto got_string;
 				}
 #endif
@@ -1350,21 +1355,21 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 					width = width * rat;
 					height = 8.0;
 				}
-			UT_String tmp;
+			std::string tmp;
 			{
 				UT_LocaleTransactor t(LC_NUMERIC, "C");
-				UT_String_sprintf (tmp, "width:%gin; height:%gin", width, height);
+				tmp = UT_std_string_sprintf ("width:%gin; height:%gin", width, height);
 			}
 
-			utf8val = tmp.c_str ();
+			utf8val = tmp;
 		}
 #if 0
 		got_string:
 #endif
 		const gchar * api_atts[9];
 
-		UT_String dataid;
-		UT_String_sprintf (dataid, "image%u", static_cast<unsigned int>(m_iNewImage++));
+		std::string dataid;
+		dataid = UT_std_string_sprintf ("image%u", static_cast<unsigned int>(m_iNewImage++));
 
 		sz1 = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
 		X_CheckError(sz1);
@@ -1768,7 +1773,7 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 
 			if (!isPasting ())
 				{
-					getDoc()->setMetaDataProp(PD_META_KEY_TITLE, m_Title.utf8_str());
+					getDoc()->setMetaDataProp(PD_META_KEY_TITLE, m_Title);
 					m_Title.clear();
 				}
 		}
@@ -2222,13 +2227,13 @@ bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<const gchar*>* pVecAttribute
 	else
 		{
 			const gchar * attributes[3] = {"props",NULL,NULL};
-			UT_String sPropString("");
+			std::string sPropString;
 			UT_sint32 i = 0;
 			for(i=0; i< pVecAttributes->getItemCount(); i +=2)
 				{
-					UT_String sProp = pVecAttributes->getNthItem(i);
-					UT_String sVal = pVecAttributes->getNthItem(i);
-					UT_String_setProperty(sPropString,sProp,sVal);
+					std::string sProp = pVecAttributes->getNthItem(i);
+					std::string sVal = pVecAttributes->getNthItem(i+1);
+					UT_std_string_setProperty(sPropString,sProp,sVal);
 				}
 			attributes[1] = sPropString.c_str();
 			return m_TableHelperStack->InlineFormat(attributes);
@@ -2747,11 +2752,11 @@ static void s_props_append (UT_UTF8String & props, UT_uint32 css_mask,
 					UT_Dimension units = UT_determineDimension (value, DIM_PX);
 					double d = UT_convertDimensionless (value);
 					float dim = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
-					UT_String tmp;
+					std::string tmp;
 
 					{
 						UT_LocaleTransactor t(LC_NUMERIC, "C");
-						UT_String_sprintf (tmp, "%gin", dim);
+						tmp = UT_std_string_sprintf ("%gin", dim);
 					}
 
 					if (!tmp.empty ())

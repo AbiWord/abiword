@@ -281,6 +281,64 @@ std::string UT_std_string_getPropVal(const std::string & sPropertyString, const 
 
 /*!
  * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
+ * Add aother propety string, updating previously defined properties with
+ * values in the new string.
+ */
+void UT_std_string_addPropertyString(std::string & sPropertyString,
+									 const std::string & sNewProp)
+{
+	UT_sint32 iSize = static_cast<UT_sint32>(sNewProp.size());
+	UT_sint32 iBase = 0;
+	std::string sProp;
+	std::string sVal;
+	std::string sSubStr;
+	const char * szWork = NULL;
+	const char * szLoc = NULL;
+	while(iBase < iSize)
+	{
+		bool bBreakAtEnd = false;
+		sSubStr = sNewProp.substr(iBase, iSize - iBase);
+		szWork = sSubStr.c_str();
+		szLoc = strstr(szWork,":");
+		if(szLoc)
+		{
+			sProp = sNewProp.substr(iBase, szLoc - szWork);
+		}
+		else
+		{
+			break;
+		}
+		iBase += szLoc-szWork+1;
+		sSubStr = sNewProp.substr(iBase, iSize - iBase);
+		szWork = sSubStr.c_str();
+		szLoc = strstr(szWork,";");
+		if(szLoc)
+		{
+			sVal = sNewProp.substr(iBase, szLoc - szWork);
+			iBase += szLoc-szWork+1;
+		}
+		else
+		{
+			sVal = sNewProp.substr(iBase, iSize - iBase);
+			bBreakAtEnd = true;
+		}
+		if((sProp.size() > 0) && (sVal.size() > 0))
+		{
+			UT_std_string_setProperty(sPropertyString, sProp, sVal);
+		}
+		else
+		{
+			break;
+		}
+		if(bBreakAtEnd)
+		{
+			break;
+		}
+	}
+}
+
+/*!
+ * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"
  * Add the property sProp with value sVal to the string of properties. If the property is already present, replace the 
  * old value with the new value.
  */

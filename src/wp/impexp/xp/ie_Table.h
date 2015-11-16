@@ -24,6 +24,8 @@
 #define IE_TABLES
 
 #include <stack>
+#include <string>
+
 #include "pd_Document.h"
 #include "pt_Types.h"
 #include "ut_wctomb.h"
@@ -42,23 +44,23 @@ class ABI_EXPORT ie_PartTable
 	void             setDoc(PD_Document * pDoc);
 	void             setTableApi(pf_Frag_Strux* sdh,PT_AttrPropIndex iApi);
 	void             setCellApi(PT_AttrPropIndex iApi);
-	UT_sint32        getLeft(void);
-	UT_sint32        getRight(void);
-	UT_sint32        getPrevRight(void) {return m_iPrevRight;}
-	UT_sint32        getTop(void);
-	UT_sint32        getBot(void);
-	const char *     getTableProp(const char * pPropName);
-	const char *     getCellProp(const char * pPropName);
+	UT_sint32        getLeft(void) const;
+	UT_sint32        getRight(void) const;
+	UT_sint32        getPrevRight(void) const {return m_iPrevRight;}
+	UT_sint32        getTop(void) const;
+	UT_sint32        getBot(void) const;
+	const char *     getTableProp(const char * pPropName) const;
+	const char *     getCellProp(const char * pPropName) const;
 	PT_AttrPropIndex getTableAPI(void) const {return m_apiTable;}
 	PT_AttrPropIndex getCellAPI(void) const { return m_apiCell;}
-	UT_sint32        getNumRows(void);
-	UT_sint32        getNumCols(void);
+	UT_sint32        getNumRows(void) const;
+	UT_sint32        getNumCols(void) const;
 	UT_sint32        getCurRow(void) const { return m_iCurRow;}
 	void             incCurRow(void) { m_iCurRow++;}
-	pf_Frag_Strux* getTableSDH(void)
+	pf_Frag_Strux* getTableSDH(void) const
 		{ return m_TableSDH;}
 	void             setCellJustOpenned(bool b);
-	bool             isCellJustOpenned(void);
+	bool             isCellJustOpenned(void) const;
  private:
 	void                  _setRowsCols(void);
 	void                  _clearAll(void);
@@ -91,34 +93,35 @@ class ABI_EXPORT ie_Table
 	ie_Table(void);
 	virtual ~ie_Table(void);
 	void             setDoc(PD_Document * pDoc);
-	void             OpenTable(pf_Frag_Strux* tableSDH, PT_AttrPropIndex iApi);
-	void             OpenCell(PT_AttrPropIndex iApi);
-	void             CloseTable(void);
-	void             CloseCell(void);
-    bool             isNewRow(void);
-	UT_sint32        getLeft(void);
-	UT_sint32        getRight(void);
-	UT_sint32        getTop(void);
-	UT_sint32        getBot(void);
-	UT_sint32        getNumRows(void);
-	UT_sint32        getNumCols(void);
-	const char *     getTableProp(const char * pPropName);
-	const char *     getCellProp(const char * pPropName);
-	UT_sint32        getNestDepth(void);
+	void             openTable(pf_Frag_Strux* tableSDH, PT_AttrPropIndex iApi);
+	void             openCell(PT_AttrPropIndex iApi);
+	void             closeTable(void);
+	void             closeCell(void);
+    bool             isNewRow(void) const;
+	UT_sint32        getLeft(void) const;
+	UT_sint32        getRight(void) const;
+	UT_sint32        getTop(void) const;
+	UT_sint32        getBot(void) const;
+	UT_sint32        getNumRows(void) const;
+	UT_sint32        getNumCols(void) const;
+	const char *     getTableProp(const char * pPropName) const;
+	const char *     getCellProp(const char * pPropName) const;
+	UT_sint32        getNestDepth(void) const;
 	void             setCellRowCol(UT_sint32 row, UT_sint32 col);
 	pf_Frag_Strux* getTableSDH(void);
 	void             setCellJustOpenned(bool b);
-	bool             isCellJustOpenned(void);
-	PT_AttrPropIndex getTableAPI(void);
-	PT_AttrPropIndex getCellAPI(void);
-	UT_sint32        getPrevNumRightMostVMerged(void);
-	UT_sint32        getCurRow(void);
+	bool             isCellJustOpenned(void) const;
+	PT_AttrPropIndex getTableAPI(void) const;
+	PT_AttrPropIndex getCellAPI(void) const;
+	UT_sint32        getPrevNumRightMostVMerged(void) const;
+	UT_sint32        getCurRow(void) const;
 	void             incCurRow(void);
  private:
-	PD_Document *     m_pDoc;
+	void             _clearLastTables();
+	PD_Document *    m_pDoc;
 	std::stack<ie_PartTable*> m_sLastTable;
-	bool              m_bNewRow;
-	pf_Frag_Strux*  m_sdhLastCell;
+	bool             m_bNewRow;
+	pf_Frag_Strux*   m_sdhLastCell;
 };
 
 
@@ -129,29 +132,30 @@ class ABI_EXPORT ie_imp_cell
 				ie_imp_cell * pImpCell, UT_sint32 iRow);
 	virtual          ~ie_imp_cell(void);
 	void             setCellX(UT_sint32 cellx);
-	UT_sint32        getCellX(void);
+	UT_sint32        getCellX(void) const;
 	void             setCellLeft(ie_imp_cell * pImpCell);
 	void             setLeft(UT_sint32 iLeft);
-	UT_sint32        getLeft(void);
+	UT_sint32        getLeft(void) const;
 	void             setRight(UT_sint32 iRight);
-	UT_sint32        getRight(void);
+	UT_sint32        getRight(void) const;
 	void             setTop(UT_sint32 iTop);
-	UT_sint32        getTop(void);
+	UT_sint32        getTop(void) const;
 	void             setBot(UT_sint32 iBot);
-	UT_sint32        getBot(void);
-	pf_Frag_Strux* getCellSDH(void);
+	UT_sint32        getBot(void) const;
+	pf_Frag_Strux* getCellSDH(void) const;
 	void             setCellSDH(pf_Frag_Strux* cellSDH);
-	bool             writeCellPropsInDoc(void);
-	ie_imp_cell *    getCellAbove(void);
-	ie_imp_cell *    getCellBelow(void);
-	ie_imp_cell *    getCellLeft(void);
-	ie_imp_cell *    getCellRight(void);
-	void             addPropString(const UT_String & sPropString);
-	void             setProp(const UT_String & psProp, const UT_String & psVal);
-	UT_String        getPropVal(const UT_String & psProp);
+	bool             writeCellPropsInDoc(void) const;
+	ie_imp_cell *    getCellAbove(void) const;
+	ie_imp_cell *    getCellBelow(void) const;
+	ie_imp_cell *    getCellLeft(void) const;
+	ie_imp_cell *    getCellRight(void) const;
+	void             addPropString(const std::string & sPropString);
+	void             setProp(const std::string & psProp,
+							 const std::string & psVal);
+	std::string      getPropVal(const std::string & psProp) const;
 	void             setProp(const char * szProp, const char * szVal);
-	UT_String        getPropVal(const char * szProp);
-	UT_sint32        getRow(void) { return m_iRow;}
+	std::string        getPropVal(const char * szProp) const;
+	UT_sint32        getRow(void) const { return m_iRow;}
 	void             setMergeAbove(bool bAbove) { m_bMergeAbove = bAbove;}
 	void             setMergeRight(bool bRight) {m_bMergeRight = bRight;}
 	void             setMergeLeft(bool bLeft) {m_bMergeLeft = bLeft;}
@@ -181,7 +185,7 @@ class ABI_EXPORT ie_imp_cell
 	bool                  m_bMergeLeft;
 	bool                  m_bFirstVertical;
 	bool                  m_bFirstHori;
-	UT_String             m_sCellProps;
+	std::string           m_sCellProps;
 };
 
 
@@ -193,45 +197,47 @@ class ABI_EXPORT ie_imp_table
 	UT_sint32           OpenCell(void);
 	UT_sint32           NewRow(void);
 	void                setCellRowNthCell(UT_sint32 row, UT_sint32 col);
-	ie_imp_cell *       getNthCellOnRow(UT_sint32 iCell);
+	ie_imp_cell *       getNthCellOnRow(UT_sint32 iCell) const;
 	void                setCellX(UT_sint32 cellx);
-	pf_Frag_Strux*   getTableSDH(void);
+	pf_Frag_Strux*   getTableSDH(void) const;
 	void                setTableSDH(pf_Frag_Strux* cellSDH);
 	void                writeTablePropsInDoc(void);
 	void                writeAllCellPropsInDoc(void);
-	void                setProp(const UT_String & psProp, const UT_String & psVal);
+	void                setProp(const std::string & psProp,
+								const std::string & psVal);
 	void                setProp(const char *szProp, const char *  szVal);
-	UT_String           getPropVal(const UT_String & psProp);
-	UT_String           getPropVal(const char * szProp);
-	UT_String           getCellPropVal(const UT_String & psProp);
-	void                setCellProp(const UT_String & psProp, const UT_String & psVal);
-	ie_imp_cell *       getCurCell(void);
+	std::string         getPropVal(const std::string & psProp) const;
+	std::string         getPropVal(const char * szProp) const;
+	std::string         getCellPropVal(const std::string & psProp) const;
+	void                setCellProp(const std::string & psProp,
+									const std::string & psVal);
+	ie_imp_cell *       getCurCell(void) const;
 	void                setNthCellOnThisRow(UT_sint32 iCell);
 	void                buildTableStructure(void);
 	void                setAutoFit(bool bVal) {m_bAutoFit = bVal;}
-	bool                isAutoFit(void) { return m_bAutoFit;}
-	bool                isNewRow(void) { return m_bNewRow;}
-	UT_sint32           getColNumber(ie_imp_cell * pImpCell);
-	ie_imp_cell *       getCellAtRowColX(UT_sint32 newRow,UT_sint32 cellX);
+	bool                isAutoFit(void) const { return m_bAutoFit;}
+	bool                isNewRow(void) const { return m_bNewRow;}
+	UT_sint32           getColNumber(ie_imp_cell * pImpCell) const;
+	ie_imp_cell *       getCellAtRowColX(UT_sint32 newRow,UT_sint32 cellX) const;
 	void                CloseCell(void);
-	bool                wasTableUsed(void) { return m_bTableUsed;}
+	bool                wasTableUsed(void) const { return m_bTableUsed;}
 	void                setCell( ie_imp_cell * pCell) { m_pCurImpCell = pCell;}
-	UT_sint32           getRow(void) { return m_iRowCounter;}
+	UT_sint32           getRow(void) const { return m_iRowCounter;}
 	void                removeExtraneousCells(void);
 	void                removeOnThisCellRow(ie_imp_cell * pCell);
 	void                removeCurrentRow(void);
 	void                deleteRow(UT_sint32 row);
-	UT_sint32           getNumRows(void);
+	UT_sint32           getNumRows(void) const;
 	void                setPosOnRow(UT_sint32 posOnRow) { m_iPosOnRow = posOnRow;}
-	UT_sint32           getPosOnRow(void) { return m_iPosOnRow;}
+	UT_sint32           getPosOnRow(void) const { return m_iPosOnRow;}
 	void                setCellXOnRow(UT_sint32 cellxOnRow) { m_iCellXOnRow = cellxOnRow;}
-	UT_sint32           getCellXOnRow(void) { return m_iCellXOnRow;}
+	UT_sint32           getCellXOnRow(void) const { return m_iCellXOnRow;}
 	void                incPosOnRow(void) { m_iPosOnRow++;}
 	void                incCellXOnRow(void) { m_iCellXOnRow++;}
-	bool                getVecOfCellsOnRow(UT_sint32 row, UT_GenericVector<ie_imp_cell*> * pVec);
+	bool                getVecOfCellsOnRow(UT_sint32 row, UT_GenericVector<ie_imp_cell*> * pVec) const;
 	bool                removeRow(UT_sint32 row);
 	void                appendRow(UT_GenericVector<ie_imp_cell*>* pVecRowOfCells);
-	bool                doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2,bool bIsLast = false);
+	static bool                doCellXMatch(UT_sint32 iCellX1, UT_sint32 iCellX2,bool bIsLast = false);
  private:
 	void                _buildCellXVector(void);
 	void                _removeAllStruxes(void);
@@ -239,7 +245,7 @@ class ABI_EXPORT ie_imp_table
 	pf_Frag_Strux*   m_tableSDH;
 	ie_imp_cell *       m_pCurImpCell;
 	UT_sint32           m_iRowCounter;
-	UT_String           m_sTableProps;
+	std::string           m_sTableProps;
 	bool                m_bAutoFit;
 	bool                m_bNewRow;
 	bool                m_bTableUsed;
@@ -260,7 +266,7 @@ public:
 	UT_sint32           OpenCell(void);
 	void                CloseTable(void);
 	void                CloseCell(void);
-	ie_imp_table *      getTable(void);
+	ie_imp_table *      getTable(void) const;
 	bool                NewRow(void);
 	void                SaveRowInfo(void);
 	void                RemoveRowInfo(void);
@@ -284,8 +290,8 @@ class ABI_EXPORT CellHelper
 {
 public:
 	CellHelper ();
-	void setProp(const char * szProp, const UT_String sVal);
-	UT_UTF8String		m_style;
+	void setProp(const char * szProp, const std::string& sVal);
+	std::string		m_style;
 
 		/* cell frag/strux
 		 */
@@ -303,7 +309,7 @@ public:
 
 	CellHelper *		m_next;
 	TableZone           m_tzone;
-	UT_String           m_sCellProps;
+	std::string           m_sCellProps;
 	bool	isVirtual () const { return (m_next != 0); }
 };
 
@@ -352,9 +358,9 @@ private:
 
 	PD_Document *		m_pDocument;
 
-	UT_UTF8String		m_style_table;
-	UT_UTF8String		m_style_tzone; // thead,tfoot,tbody
-	UT_UTF8String		m_style; // tr
+	std::string		m_style_table;
+	std::string		m_style_tzone; // thead,tfoot,tbody
+	std::string		m_style; // tr
 
 	/* cell frag/strux
 	 */

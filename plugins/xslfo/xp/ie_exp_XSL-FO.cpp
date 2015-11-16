@@ -1136,7 +1136,7 @@ bool s_XSL_FO_Listener::populateStrux(pf_Frag_Strux* sdh,
 
 	case PTX_SectionTable:
 	{
-		mTableHelper.OpenTable(sdh,api);
+		mTableHelper.openTable(sdh,api);
 		_closeBlock();
 		_openTable(api);
 		return true;
@@ -1144,7 +1144,7 @@ bool s_XSL_FO_Listener::populateStrux(pf_Frag_Strux* sdh,
 
 	case PTX_SectionCell:
 	{
-		mTableHelper.OpenCell(api);
+		mTableHelper.openCell(api);
 		_closeBlock();
 		_popListToDepth(0);
 		_openCell(api);
@@ -1156,7 +1156,7 @@ bool s_XSL_FO_Listener::populateStrux(pf_Frag_Strux* sdh,
 		_closeBlock();
 		_popListToDepth(0);
 		_closeTable();
-		mTableHelper.CloseTable();
+		mTableHelper.closeTable();
 		return true;
 	}
 
@@ -1164,7 +1164,7 @@ bool s_XSL_FO_Listener::populateStrux(pf_Frag_Strux* sdh,
 	{
 		_closeBlock();
 		_closeCell();
-		mTableHelper.CloseCell();
+		mTableHelper.closeCell();
 		return true;
 	}
 

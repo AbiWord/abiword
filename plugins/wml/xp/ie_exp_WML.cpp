@@ -626,7 +626,7 @@ bool s_WML_Listener::populateStrux(pf_Frag_Strux* sdh,
 		{
 		    _closeSpan();
 		    _closeBlock();
-		    mTableHelper.OpenTable(sdh,pcr->getIndexAP());
+		    mTableHelper.openTable(sdh,pcr->getIndexAP());
 		    _openTable(pcr->getIndexAP());
 		}
 	    return true;
@@ -639,7 +639,7 @@ bool s_WML_Listener::populateStrux(pf_Frag_Strux* sdh,
 		{
 		    _closeBlock();
 		    _closeTable();
-	    	mTableHelper.CloseTable();
+		    mTableHelper.closeTable();
 		}
 	    return true;
 	}
@@ -648,9 +648,9 @@ bool s_WML_Listener::populateStrux(pf_Frag_Strux* sdh,
 	{
 		if(m_iTableDepth == 1)
 		{
-		    mTableHelper.OpenCell(pcr->getIndexAP()) ;
+		    mTableHelper.openCell(pcr->getIndexAP()) ;
 		    _closeSpan();
-	    	_closeBlock();
+		    _closeBlock();
 		    _openCell();
 		}
 	    return true;
@@ -662,7 +662,7 @@ bool s_WML_Listener::populateStrux(pf_Frag_Strux* sdh,
 		{
 		    _closeBlock();
 		    _closeCell();
-	    	mTableHelper.CloseCell();
+		    mTableHelper.closeCell();
 		}
 	    return true;
 	}

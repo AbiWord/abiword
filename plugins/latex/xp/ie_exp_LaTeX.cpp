@@ -225,30 +225,30 @@ public:
 
 		switch (pcrx->getStruxType())
 		{
-		    case PTX_SectionEndnote:
-		    case PTX_EndEndnote:
+		case PTX_SectionEndnote:
+		case PTX_EndEndnote:
 			m_hasEndnotes = true;
 			break;
-		    case PTX_SectionTable:
-		    {
-			m_pTableHelper->OpenTable(sdh, pcr->getIndexAP());
+		case PTX_SectionTable:
+		{
+			m_pTableHelper->openTable(sdh, pcr->getIndexAP());
 			m_hasTable = true;
 			break;
-		    }
-		    case PTX_EndTable:
-		    {
-			m_pTableHelper->CloseTable();
+		}
+		case PTX_EndTable:
+		{
+			m_pTableHelper->closeTable();
 			break;
-		    }
-		    case PTX_SectionCell:
-			m_pTableHelper->OpenCell(pcr->getIndexAP());
+		}
+		case PTX_SectionCell:
+			m_pTableHelper->openCell(pcr->getIndexAP());
 			if(m_pTableHelper->getBot() - m_pTableHelper->getTop() >1)
-			    this->m_hasMultiRow = true;
+				this->m_hasMultiRow = true;
 			break;
-		    case PTX_EndCell:
-			m_pTableHelper->CloseCell();
+		case PTX_EndCell:
+			m_pTableHelper->closeCell();
 			break;
-		    default:
+		default:
 			break;
 		}
 
@@ -501,7 +501,7 @@ void s_LaTeX_Listener::_closeBlock(void)
 
 void s_LaTeX_Listener::_openCell(PT_AttrPropIndex api)
 {
-	this->m_pTableHelper->OpenCell(api);
+	this->m_pTableHelper->openCell(api);
 	m_CellLeft = this->m_pTableHelper->getLeft();
 	m_CellTop = this->m_pTableHelper->getTop();
 	m_CellRight = this->m_pTableHelper->getRight();
@@ -1122,7 +1122,7 @@ void s_LaTeX_Listener::_closeCell(void)
 	if (m_CellRight - m_CellLeft >1)
 	    m_pie->write("}");
 	m_bInCell = false;
-	this->m_pTableHelper->CloseCell();
+	this->m_pTableHelper->closeCell();
 	if(m_CellRight == m_TableWidth)
 	{
 	    m_ExpectedLeft = 0;
@@ -1805,7 +1805,7 @@ bool s_LaTeX_Listener::populateStrux(pf_Frag_Strux* sdh,
 
 	case PTX_SectionTable:
 	{
-		m_pTableHelper->OpenTable(sdh, pcr->getIndexAP());
+		m_pTableHelper->openTable(sdh, pcr->getIndexAP());
 		m_TableWidth = m_pTableHelper->getNumCols();
 		_openTable(pcr->getIndexAP());
 		return true;
@@ -1814,7 +1814,7 @@ bool s_LaTeX_Listener::populateStrux(pf_Frag_Strux* sdh,
 	case PTX_EndTable:
 	{
 		_closeTable();
-		m_pTableHelper->CloseTable();
+		m_pTableHelper->closeTable();
 		return true;
 	}
 
