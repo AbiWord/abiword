@@ -369,9 +369,10 @@ void ie_Table::openTable(pf_Frag_Strux* tableSDH, PT_AttrPropIndex iApi)
 
 /*!
  * A cell strux has been found. Update all info with this api.
- */ 
+ */
 void ie_Table::openCell(PT_AttrPropIndex iApi)
 {
+	UT_return_if_fail(!m_sLastTable.empty());
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_if_fail(pPT != NULL);
 
@@ -395,12 +396,14 @@ bool ie_Table::isNewRow(void) const
 
 bool ie_Table::isCellJustOpenned(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), false);
 	ie_PartTable * pPT = m_sLastTable.top();
 	return pPT->isCellJustOpenned();
 }
 
 void ie_Table::setCellJustOpenned(bool b)
 {
+	UT_return_if_fail(!m_sLastTable.empty());
 	ie_PartTable * pPT = m_sLastTable.top();
 	pPT->setCellJustOpenned(b);
 }
@@ -410,6 +413,7 @@ void ie_Table::setCellJustOpenned(bool b)
  */
 pf_Frag_Strux* ie_Table::getTableSDH(void)
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), NULL);
 	ie_PartTable * pPT = m_sLastTable.top();
 	if(pPT)
 	{
@@ -423,6 +427,7 @@ pf_Frag_Strux* ie_Table::getTableSDH(void)
  */
 void ie_Table::closeCell(void)
 {
+	UT_return_if_fail(!m_sLastTable.empty());
 	ie_PartTable * pPT = m_sLastTable.top();
 	pPT->setCellApi(0);
 }
@@ -433,6 +438,7 @@ void ie_Table::closeCell(void)
  */
 void ie_Table::closeTable(void)
 {
+	UT_return_if_fail(!m_sLastTable.empty());
 	ie_PartTable * pPT = m_sLastTable.top();
 	m_sLastTable.pop();
 	delete pPT;
@@ -445,6 +451,7 @@ void ie_Table::closeTable(void)
  */
 UT_sint32 ie_Table::getPrevNumRightMostVMerged(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	xxx_UT_DEBUGMSG(("PrevRight %d curRight %d \n",pPT->getPrevRight(),pPT->getRight()));
 	UT_sint32 num = pPT->getNumCols() - pPT->getPrevRight();
@@ -457,6 +464,7 @@ UT_sint32 ie_Table::getPrevNumRightMostVMerged(void) const
  */
 UT_sint32 ie_Table::getCurRow(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT != NULL, 0);
 
@@ -468,6 +476,7 @@ UT_sint32 ie_Table::getCurRow(void) const
  */
 void ie_Table::incCurRow(void)
 {
+	UT_return_if_fail(!m_sLastTable.empty());
 	ie_PartTable * pPT = m_sLastTable.top();
 	pPT->incCurRow();
 }
@@ -478,6 +487,7 @@ void ie_Table::incCurRow(void)
  */
 UT_sint32 ie_Table::getLeft(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getLeft();
@@ -489,6 +499,7 @@ UT_sint32 ie_Table::getLeft(void) const
  */
 UT_sint32 ie_Table::getRight(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getRight();
@@ -500,6 +511,7 @@ UT_sint32 ie_Table::getRight(void) const
  */
 UT_sint32 ie_Table::getTop(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getTop();
@@ -510,6 +522,7 @@ UT_sint32 ie_Table::getTop(void) const
  */
 UT_sint32 ie_Table::getBot(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getBot();
@@ -520,6 +533,7 @@ UT_sint32 ie_Table::getBot(void) const
  */
 UT_sint32 ie_Table::getNumRows(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getNumRows();
@@ -532,6 +546,7 @@ UT_sint32 ie_Table::getNumRows(void) const
  */
 UT_sint32 ie_Table::getNumCols(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getNumCols();
@@ -544,6 +559,7 @@ UT_sint32 ie_Table::getNumCols(void) const
  */
 UT_sint32 ie_Table::getNestDepth(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	return m_sLastTable.size() - 1;
 }
 
@@ -551,8 +567,9 @@ UT_sint32 ie_Table::getNestDepth(void) const
 /*!
  * Return the api of the current Table.
  */
- PT_AttrPropIndex ie_Table::getTableAPI(void) const
+PT_AttrPropIndex ie_Table::getTableAPI(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getTableAPI();
@@ -563,6 +580,7 @@ UT_sint32 ie_Table::getNestDepth(void) const
  */
  PT_AttrPropIndex ie_Table::getCellAPI(void) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,0);
 	return pPT->getCellAPI();
@@ -574,6 +592,7 @@ UT_sint32 ie_Table::getNestDepth(void) const
  */
 const char * ie_Table::getTableProp(const char * pProp) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,NULL);
 	return pPT->getTableProp(pProp);
@@ -585,6 +604,7 @@ const char * ie_Table::getTableProp(const char * pProp) const
  */
 const char * ie_Table::getCellProp(const char * pProp) const
 {
+	UT_return_val_if_fail(!m_sLastTable.empty(), 0);
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_val_if_fail(pPT,NULL);
 	return pPT->getCellProp(pProp);
@@ -595,6 +615,7 @@ const char * ie_Table::getCellProp(const char * pProp) const
 */
 void ie_Table::setCellRowCol(UT_sint32 row, UT_sint32 col)
 {
+	UT_return_if_fail(!m_sLastTable.empty());
 	ie_PartTable * pPT = m_sLastTable.top();
 	UT_return_if_fail(pPT);
 	pf_Frag_Strux* sdhStart = m_sdhLastCell;
