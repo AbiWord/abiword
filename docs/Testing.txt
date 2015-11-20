@@ -30,3 +30,15 @@ Test are *.t.cpp files. Usually in a t subdirector of what they are
 testing. They are built and linked directly into the plugin.
 
 When they are run from the AbiTest harness all the basics are setup.
+
+Each test source must define ````TFSUITE```` to a string that will
+name the test. Example:
+
+    #define TFSUITE "core.wp.impexp.table"
+
+This is the id that can be passed at runtime to select test to run.
+Like:
+
+    $ abiword --plugin=AbiTest -E core.wp.impexp.table
+
+This will only the test(s) in that suite.
