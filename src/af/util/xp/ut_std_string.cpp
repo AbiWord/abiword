@@ -485,9 +485,10 @@ time_t parseTimeString( const std::string& stddatestr )
     formats.push_back( "%y %b %d %H:%M:%S" );
     formats.push_back( "%y %b %d %H:%M" );
 
-    for( formats_t::iterator iter = formats.begin(); iter != formats.end(); ++iter )
+    for( formats_t::const_iterator iter = formats.begin();
+         iter != formats.end(); ++iter )
     {
-        std::string format = *iter;
+        const std::string & format = *iter;
         struct tm tm;
         memset( &tm, 0, sizeof(struct tm));
         const char* rc = UT_strptime( datestr, format.c_str(), &tm );
