@@ -39,7 +39,7 @@
 #include "ap_TopRuler.h"
 #include "pd_Style.h"
 #include "ap_Dialog_Styles.h"
-#include "ut_string_class.h"
+#include "ut_std_string.h"
 
 #include "ap_Strings.h"
 #include "ap_Dialog_Id.h"
@@ -87,11 +87,11 @@ AP_Dialog_Styles::tAnswer AP_Dialog_Styles::getAnswer(void) const
  * This method adds the key,value pair pszProp,pszVal to the Vector of
  * all properties of the current style.
  * If the Property already exists it's value is replaced with pszVal
-\param const gchar * pszProp the property name
-\param const gchar * pszVal the value of this property.
+ * \param const gchar * pszProp the property name. Will be strdupped.
+ * \param const gchar * pszVal the value of this property. Will be strdupped.
 */
 void AP_Dialog_Styles::addOrReplaceVecProp(const gchar * pszProp,
-												 const gchar * pszVal)
+					   const gchar * pszVal)
 {
 	UT_sint32 iCount = m_vecAllProps.getItemCount();
 	if(iCount <= 0)
@@ -442,12 +442,10 @@ void AP_Dialog_Styles::ModifyLang(void)
 
 	if (bOK)
 	{
-		static gchar lang[50];
 		const gchar * s;
 
 		pDialog->getChangedLangProperty(&s);
-		sprintf(lang,"%s",s);
-		addOrReplaceVecProp("lang", lang);
+		addOrReplaceVecProp("lang", s);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -596,8 +594,7 @@ void AP_Dialog_Styles::ModifyFont(void)
 
 		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline || bChangedTopline || bChangedBottomline)
 		{
-			UT_String decors;
-			static gchar s[50];
+			std::string decors;
 			decors.clear();
 			if(bUnderline)
 				decors += "underline ";
@@ -611,8 +608,7 @@ void AP_Dialog_Styles::ModifyFont(void)
 				decors += "bottomline ";
 			if(!bUnderline && !bStrikeOut && !bOverline && !bTopline && !bBottomline)
 				decors = "none";
-			sprintf(s,"%s",decors.c_str());
-			addOrReplaceVecProp("text-decoration", s);
+			addOrReplaceVecProp("text-decoration", decors);
 		}
 /*
 		if(bChangedDirection)
@@ -635,11 +631,10 @@ void AP_Dialog_Styles::ModifyFont(void)
 void AP_Dialog_Styles::_tabCallback(const char *szTabStops,
 									const char *szDflTabStop)
 {
-	// TODO: fix mem leaks
 	if (szTabStops)
-		addOrReplaceVecProp("tabstops", g_strdup(szTabStops));
+		addOrReplaceVecProp("tabstops", szTabStops);
 	if (szDflTabStop)
-		addOrReplaceVecProp("default-tab-interval", g_strdup(szDflTabStop));
+		addOrReplaceVecProp("default-tab-interval", szDflTabStop);
 }
 
 /*!
@@ -778,45 +773,45 @@ void AP_Dialog_Styles::ModifyLists(void)
 		{
 			m_ListProps[0] = getVecVal(vo,"list-style");
 			UT_DEBUGMSG(("SEVIOR: list-style %s \n",m_ListProps[0].c_str()));
-			addOrReplaceVecProp("list-style",m_ListProps[0].c_str());
+			addOrReplaceVecProp("list-style",m_ListProps[0]);
 		}
 		if(getVecVal(vo,"start-value"))
 		{
 			m_ListProps[1] = getVecVal(vo,"start-value");
 			UT_DEBUGMSG(("SEVIOR: start-value %s \n",m_ListProps[1].c_str()));
-			addOrReplaceVecProp("start-value",m_ListProps[1].c_str());
+			addOrReplaceVecProp("start-value",m_ListProps[1]);
 		}
 		if(getVecVal(vo,"list-delim"))
 		{
 			m_ListProps[2] = getVecVal(vo,"list-delim");
 			UT_DEBUGMSG(("SEVIOR: list-delim %s \n",m_ListProps[2].c_str()));
-			addOrReplaceVecProp("list-delim",m_ListProps[2].c_str());
+			addOrReplaceVecProp("list-delim",m_ListProps[2]);
 		}
 		if(getVecVal(vo,"margin-left"))
 		{
 			m_ListProps[3] = getVecVal(vo,"margin-left");
-			addOrReplaceVecProp("margin-left",m_ListProps[3].c_str());
+			addOrReplaceVecProp("margin-left",m_ListProps[3]);
 		}
 		if(getVecVal(vo,"field-font"))
 		{
 			m_ListProps[4] = getVecVal(vo,"field-font");
-			addOrReplaceVecProp("field-font",m_ListProps[4].c_str());
+			addOrReplaceVecProp("field-font",m_ListProps[4]);
 		}
 		if(getVecVal(vo,"list-decimal"))
 		{
 			m_ListProps[5] = getVecVal(vo,"list-decimal");
-			addOrReplaceVecProp("list-decimal",m_ListProps[5].c_str());
+			addOrReplaceVecProp("list-decimal",m_ListProps[5]);
 		}
 		if(getVecVal(vo,"text-indent"))
 		{
 			m_ListProps[6] = getVecVal(vo,"text-indent");
-			addOrReplaceVecProp("text-indent",m_ListProps[6].c_str());
+			addOrReplaceVecProp("text-indent",m_ListProps[6]);
 		}
 		// TODO: Why is field-font here twice?
 		if(getVecVal(vo,"field-font"))
 		{
 			m_ListProps[7] = getVecVal(vo,"field-font");
-			addOrReplaceVecProp("field-font",m_ListProps[7].c_str());
+			addOrReplaceVecProp("field-font",m_ListProps[7]);
 		}
 //
 // Whew we're done!
@@ -967,7 +962,7 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 //
 	setModifyDescription (m_curStyleDesc.c_str());
 	const char * szBasedon = getAttsVal("basedon");
-	UT_String fullProps("");
+	std::string fullProps;
 	PD_Style * pBasedon = NULL;
 	if(szBasedon && m_pDoc->getStyle(szBasedon,&pBasedon))
 	{
@@ -975,17 +970,16 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 		pBasedon->getAllProperties(&vecProps,0);
 		for(i=0; i<vecProps.getItemCount(); i+=2)
 		{
-			UT_String sProp = (const gchar *) vecProps.getNthItem(i);
-			UT_String sVal = (const gchar *) vecProps.getNthItem(i+1);
-			UT_String_setProperty(fullProps,sProp,sVal);
+			std::string sProp = (const char*)vecProps.getNthItem(i);
+			std::string sVal = (const char*)vecProps.getNthItem(i+1);
+			UT_std_string_setProperty(fullProps,sProp,sVal);
 		}
 	}
 //
 // Overwrite any basedon props with the current setting of this style
 //
-	UT_String_addPropertyString(fullProps,m_curStyleDesc);
+	UT_std_string_addPropertyString(fullProps, m_curStyleDesc);
 
-				
 	if( pStyle == NULL)
 	{
 		const gchar * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",
@@ -994,7 +988,7 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 									 "followedby",getAttsVal("followedby"),
 									 "props",fullProps.c_str(),
 									 NULL,NULL};
-		
+
 		getLDoc()->appendStyle(attrib);
 	}
 	else
@@ -1204,7 +1198,7 @@ void AP_Dialog_Styles::_createParaPreviewFromGC(GR_Graphics * gc,
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_return_if_fail (pSS);
-	
+
 	UT_UCS4String str(pSS->getValue(AP_STRING_ID_DLG_Styles_LBL_TxtMsg));
 
 	m_pParaPreview = new AP_Preview_Paragraph(gc, str.ucs4_str(), static_cast<XAP_Dialog*>(this));
@@ -1222,7 +1216,7 @@ void AP_Dialog_Styles::_createCharPreviewFromGC(GR_Graphics * gc,
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	UT_return_if_fail (pSS);
-	
+
 //
 // Set the Background color for the preview.
 //

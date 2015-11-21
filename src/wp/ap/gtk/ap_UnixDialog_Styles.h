@@ -179,7 +179,7 @@ protected:
 private:
 	bool m_bIsNew;
 	bool m_bBlockModifySignal;
-	UT_UTF8String m_sNewStyleName;
+	std::string m_sNewStyleName;
 };
 
 #endif /* AP_UnixDialog_Styles_H */

@@ -432,13 +432,13 @@ void AP_UnixDialog_Styles::event_NewClicked(void)
 	if(m_answer == AP_Dialog_Styles::a_OK)
 	{
 		m_sNewStyleName = getNewStyleName();
-		createNewStyle(m_sNewStyleName.utf8_str());
+		createNewStyle(m_sNewStyleName.c_str());
 		_populateCList();
 	}
 }
 
 void AP_UnixDialog_Styles::event_SelectionChanged(GtkTreeSelection * selection)
-{	
+{
 	GtkTreeView *tree = gtk_tree_selection_get_tree_view(selection);
 	GtkTreeModel *model = gtk_tree_view_get_model(tree);
 	GList *list = gtk_tree_selection_get_selected_rows(selection, &model);
@@ -454,19 +454,21 @@ void AP_UnixDialog_Styles::event_ListClicked(const char * which)
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	std::string s;
-	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_InUse,s);
-	
-	if (!strcmp(which, s.c_str()))
+	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_InUse, s);
+
+	if (s == which)
+	{
 		m_whichType = USED_STYLES;
+	}
 	else
 	{
-		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined,s);
-		if (!strcmp(which, s.c_str()))
+		pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_LBL_UserDefined, s);
+		if (s == which)
 			m_whichType = USER_STYLES;
 		else
 			m_whichType = ALL_STYLES;
 	}
-	
+
 	// force a refresh of everything
 	_populateWindowData();
 }
@@ -490,7 +492,7 @@ GtkWidget * AP_UnixDialog_Styles::_constructWindow(void)
 	
 	// treeview
 	m_tvStyles = GTK_WIDGET(gtk_builder_get_object(builder, "tvStyles"));
-	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvStyles)), GTK_SELECTION_SINGLE);	
+	gtk_tree_selection_set_mode (gtk_tree_view_get_selection (GTK_TREE_VIEW (m_tvStyles)), GTK_SELECTION_SINGLE);
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbList")), pSS, AP_STRING_ID_DLG_Styles_List);
 
@@ -591,7 +593,7 @@ void AP_UnixDialog_Styles::_connectSignals(void) const
 void AP_UnixDialog_Styles::_populateCList(void)
 {
 	const PD_Style * pStyle;
-	const gchar *org_name, *loc_name;
+	const gchar *org_name;
 
 	size_t nStyles = getDoc()->getStyleCount();
 	xxx_UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
@@ -627,20 +629,20 @@ void AP_UnixDialog_Styles::_populateCList(void)
 			continue;
 
 		org_name = pStyle->getName();
-		
+
 		std::string sLoc;
 		pt_PieceTable::s_getLocalisedStyleName(org_name, sLoc);
-		loc_name = sLoc.c_str();
 
-		if ((m_whichType == ALL_STYLES) || 
+		if ((m_whichType == ALL_STYLES) ||
 			(m_whichType == USED_STYLES && pStyle->isUsed()) ||
 			(m_whichType == USER_STYLES && pStyle->isUserDefined()) ||
-			(!strcmp(m_sNewStyleName.utf8_str(), loc_name))) /* show newly created style anyways */
+			(m_sNewStyleName == sLoc)) /* show newly created style anyways */
 		{
 			gtk_list_store_append(m_listStyles, &iter);
-			gtk_list_store_set(m_listStyles, &iter, 0, loc_name, 1, org_name, -1);
-			
-			if (!strcmp(m_sNewStyleName.utf8_str(), loc_name)) {
+			gtk_list_store_set(m_listStyles, &iter, 0, sLoc.c_str(),
+					   1, org_name, -1);
+
+			if (m_sNewStyleName == sLoc) {
 				pHighlightIter = iter;
 				highlight = true;
 			}
@@ -683,7 +685,7 @@ void AP_UnixDialog_Styles::setDescription(const char * desc) const
 
 const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
 {
-	static UT_UTF8String sStyleBuf;
+	static std::string sStyleBuf;
 
 	UT_ASSERT(m_tvStyles);
 
@@ -691,18 +693,18 @@ const char * AP_UnixDialog_Styles::getCurrentStyle (void) const
 		return NULL;
 
 	gchar * style = NULL;
-	
+
 	GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW(m_tvStyles));
 	GtkTreeIter iter;
 	gtk_tree_model_get_iter(model, &iter, m_selectedStyle);
 	gtk_tree_model_get(model, &iter, 1, &style, -1);
-	
+
 	if (!style)
 		return NULL;
 
 	sStyleBuf = style;
 	g_free(style);
-	return sStyleBuf.utf8_str();
+	return sStyleBuf.c_str();
 }
 
 GtkWidget *  AP_UnixDialog_Styles::_constructModifyDialog(void)

@@ -28,8 +28,8 @@
 #include "xap_Dialog.h"
 #include "fv_View.h"
 #include "xap_Dlg_FontChooser.h"
-#include "ut_string_class.h"
 #include "ap_Preview_Abi.h"
+
 class XAP_Frame;
 
 #include "xap_Preview.h"
@@ -73,6 +73,12 @@ class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void destroyAbiPreview(void);
 	void removeVecProp(const gchar * pszProp);
 	void addOrReplaceVecProp(const gchar * pszProp,  const gchar * pszVal);
+	/* helper version with std::string */
+	void addOrReplaceVecProp(const gchar * pszProp,
+				 const std::string &szVal)
+	{
+		addOrReplaceVecProp(pszProp, szVal.c_str());
+	}
 	void addOrReplaceVecAttribs(const gchar * pszProp,  const gchar * pszVal);
 	void fillVecWithProps(const gchar * szStyle, bool bReplaceAttributes);
 	void fillVecFromCurrentPoint(void);
@@ -105,7 +111,7 @@ protected:
 	AP_Dialog_Styles::tAnswer	  m_answer;
 	PD_Style *                    m_pCurStyle;
 	char *                        m_pszCurStyleName;
-    UT_String                     m_curStyleDesc;
+	std::string                       m_curStyleDesc;
 	AP_Preview_Paragraph  *		  m_pParaPreview;
 	XAP_Preview_FontPreview *	  m_pCharPreview;
 	AP_Preview_Abi *	          m_pAbiPreview;
@@ -120,7 +126,7 @@ private:
 	PT_DocPosition                m_posFocus;
 	PT_DocPosition                m_posAfter;
 	PropMap                       m_mapCharProps;
-	UT_String                     m_ListProps[8];
+	std::string                   m_ListProps[8];
 };
 
 #endif /* AP_Dialog_Styles_H */
