@@ -32,6 +32,7 @@
 
 #include "ut_string_class.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_bytebuf.h"
 #include "ut_units.h"
 #include "ut_math.h"
@@ -2104,10 +2105,9 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					{
 					  atts[0] = "props";
 					}
-					UT_String sProp;
-					UT_String sProps;
-					UT_String sVal;
-					sProps.clear();
+					std::string sProp;
+					std::string sProps;
+					std::string sVal;
 					sProps = "frame-type:";
 					if(isTextBox)
 					{
@@ -2140,42 +2140,26 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					{
 						sVal = "wrapped-both; ";
 					}
-       					if(fspa->fBelowText == 1 && fspa->wr == 3)
-				        {
-					     UT_DEBUGMSG(("Set Below Text \n"));
-					     sVal = "below-text; ";
+					if(fspa->fBelowText == 1 && fspa->wr == 3)
+					{
+						UT_DEBUGMSG(("Set Below Text \n"));
+						sVal = "below-text; ";
 					}
 					sProps += sVal;
-					sProps += "xpos:";
-					UT_String_sprintf(sVal,"%f",dLeft);
-					sVal += "in; ";
 
-					sProps += sVal;
-					sProps += "ypos:";
-					UT_String_sprintf(sVal,"%f",dTop);
-					sVal += "in; ";
+					sProps += UT_std_string_sprintf("xpos:%fin; ", dLeft);
+					sProps += UT_std_string_sprintf("ypos:%fin; ", dTop);
+					sProps += UT_std_string_sprintf("frame-col-xpos:%fin; ",
+													dLeft);
+					sProps += UT_std_string_sprintf("frame-col-ypos:%fin; ",
+													dTop);
 
-					sProps += sVal;
-					sProps += "frame-col-xpos:";
-					UT_String_sprintf(sVal,"%f",dLeft);
-					sVal += "in; ";
-
-					sProps += sVal;
-					sProps += "frame-col-ypos:";
-					UT_String_sprintf(sVal,"%f",dTop);
-					sVal += "in; ";
-					sProps += sVal;
-
-					sProps += "frame-width:";
-					UT_String_sprintf(sVal,"%f",dRight-dLeft);
-					sVal += "in; ";
-					sProps += sVal;
+					sProps += UT_std_string_sprintf("frame-width:%fin; ",
+													dRight-dLeft);
 
 					UT_DEBUGMSG(("Inserting Frame of width %s \n",sVal.c_str()));
-					sProps += "frame-height:";
-					UT_String_sprintf(sVal,"%f",dBottom-dTop);
-					sVal += "in";
-					sProps += sVal;
+					sProps += UT_std_string_sprintf("frame-height:%fin",
+													dBottom-dTop);
 //
 // Turn off the borders.
 //
@@ -2183,13 +2167,13 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					{
 					  sProp = "top-style";
 					  sVal = "none";
-					  UT_String_setProperty(sProps,sProp,sVal);
+					  UT_std_string_setProperty(sProps, sProp, sVal);
 					  sProp = "right-style";
-					  UT_String_setProperty(sProps,sProp,sVal);
+					  UT_std_string_setProperty(sProps, sProp, sVal);
 					  sProp = "left-style";
-					  UT_String_setProperty(sProps,sProp,sVal);
+					  UT_std_string_setProperty(sProps, sProp, sVal);
 					  sProp = "bot-style";
-					  UT_String_setProperty(sProps,sProp,sVal);
+					  UT_std_string_setProperty(sProps, sProp, sVal);
 					}
 					if(bPositionObject)
 					{
