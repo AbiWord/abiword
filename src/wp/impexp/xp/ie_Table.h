@@ -108,7 +108,7 @@ class ABI_EXPORT ie_Table
 	const char *     getCellProp(const char * pPropName) const;
 	UT_sint32        getNestDepth(void) const;
 	void             setCellRowCol(UT_sint32 row, UT_sint32 col);
-	pf_Frag_Strux* getTableSDH(void);
+	pf_Frag_Strux*   getTableSDH(void) const;
 	void             setCellJustOpenned(bool b);
 	bool             isCellJustOpenned(void) const;
 	PT_AttrPropIndex getTableAPI(void) const;
@@ -339,10 +339,10 @@ public:
 	bool	           Object (PTObjectType pto, const gchar ** attributes);
     void               padAllRowsWithCells(UT_GenericVector<CellHelper *> & vecCells,UT_sint32 extra);
 	void               padRowWithCells(UT_GenericVector<CellHelper *> & vecCells,UT_sint32 row, UT_sint32 extra);
-	CellHelper *       getCellAtRowCol(UT_GenericVector<CellHelper *> & vecCells, UT_sint32 row, UT_sint32 col);
+	CellHelper *       getCellAtRowCol(UT_GenericVector<CellHelper *> & vecCells, UT_sint32 row, UT_sint32 col) const;
     bool               setCaptionOn(void);
 	bool               setCaptionOff(void);
-	bool               tdEnd(void);
+	bool               tdEnd(void) const;
 
 	pf_Frag_Strux *	    getInsertionPoint () const { return m_pfsInsertionPoint; }
 
@@ -354,7 +354,7 @@ private:
 	 */
 	bool	trEnd ();
 	void	trClean ();
-	bool	tdPending ();
+	bool	tdPending () const;
 
 	PD_Document *		m_pDocument;
 
@@ -406,11 +406,11 @@ public:
 	bool					tableStart (PD_Document * pDocument, const char * style);
 	bool					tableEnd ();
 
-	bool					theadStart (const char * style);
-	bool					tfootStart (const char * style);
-	bool					tbodyStart (const char * style = 0);
-	bool					trStart (const char * style);
-	bool					tdStart (UT_sint32 rowspan, UT_sint32 colspan, const char * style);
+	bool					theadStart (const char * style) const;
+	bool					tfootStart (const char * style) const;
+	bool					tbodyStart (const char * style = 0) const;
+	bool					trStart (const char * style) const;
+	bool					tdStart (UT_sint32 rowspan, UT_sint32 colspan, const char * style) const;
 
 	/* append/insert methods
 	 */
@@ -423,7 +423,7 @@ public:
 	bool					Object (PTObjectType pto, const gchar ** attributes);
 	bool                    setCaptionOn(void);
 	bool                    setCaptionOff(void);
-	bool                    tdEnd(void);
+	bool                    tdEnd(void) const;
 private:
 	PD_Document *			m_pDocument;
 

@@ -411,7 +411,7 @@ void ie_Table::setCellJustOpenned(bool b)
 /*!
  * Return the current table SDH for debugging purposes.
  */
-pf_Frag_Strux* ie_Table::getTableSDH(void)
+pf_Frag_Strux* ie_Table::getTableSDH(void) const
 {
 	UT_return_val_if_fail(!m_sLastTable.empty(), NULL);
 	ie_PartTable * pPT = m_sLastTable.top();
@@ -2317,7 +2317,7 @@ void IE_Imp_TableHelper::padRowWithCells(UT_GenericVector<CellHelper *>& vecCell
  * Get a cellHelper at the specified row and column. Return NULL if none found.
  * Optimized to find or not find cells near the end of the specifed vector.
  */
-CellHelper * IE_Imp_TableHelper::getCellAtRowCol(UT_GenericVector<CellHelper *> & vecCells, UT_sint32 row, UT_sint32 col)
+CellHelper * IE_Imp_TableHelper::getCellAtRowCol(UT_GenericVector<CellHelper *> & vecCells, UT_sint32 row, UT_sint32 col) const
 {
 	CellHelper * pCell = NULL;
 	UT_sint32 i =0;
@@ -2343,7 +2343,7 @@ CellHelper * IE_Imp_TableHelper::getCellAtRowCol(UT_GenericVector<CellHelper *> 
 /*!
  * Handle </td> tag. In there is no content, write a blank block
  */
-bool IE_Imp_TableHelper::tdEnd(void)
+bool IE_Imp_TableHelper::tdEnd(void) const
 {
 	if(m_bBlockInsertedForCell)
 		{
@@ -2464,7 +2464,7 @@ bool IE_Imp_TableHelper::tdEnd(void)
 }
 
 
-bool IE_Imp_TableHelper::tdPending ()
+bool IE_Imp_TableHelper::tdPending() const
 {
 	// create any cells that are still awaiting creation
 	return true;
@@ -2705,7 +2705,7 @@ IE_Imp_TableHelper * IE_Imp_TableHelperStack::top(void) const
 	return m_stack[m_count];
 }
 
-bool IE_Imp_TableHelperStack::tableEnd ()
+bool IE_Imp_TableHelperStack::tableEnd()
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th == 0)
@@ -2720,7 +2720,7 @@ bool IE_Imp_TableHelperStack::tableEnd ()
 	return okay;
 }
 
-bool IE_Imp_TableHelperStack::theadStart (const char * style)
+bool IE_Imp_TableHelperStack::theadStart (const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th == 0)
@@ -2729,7 +2729,7 @@ bool IE_Imp_TableHelperStack::theadStart (const char * style)
 	return th->theadStart (style);
 }
 
-bool IE_Imp_TableHelperStack::tfootStart (const char * style)
+bool IE_Imp_TableHelperStack::tfootStart (const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th == 0)
@@ -2738,7 +2738,7 @@ bool IE_Imp_TableHelperStack::tfootStart (const char * style)
 	return th->tfootStart (style);
 }
 
-bool IE_Imp_TableHelperStack::tbodyStart (const char * style)
+bool IE_Imp_TableHelperStack::tbodyStart (const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th == 0)
@@ -2747,7 +2747,7 @@ bool IE_Imp_TableHelperStack::tbodyStart (const char * style)
 	return th->tbodyStart (style);
 }
 
-bool IE_Imp_TableHelperStack::trStart (const char * style)
+bool IE_Imp_TableHelperStack::trStart (const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th == 0)
@@ -2756,7 +2756,7 @@ bool IE_Imp_TableHelperStack::trStart (const char * style)
 	return th->trStart (style);
 }
 
-bool IE_Imp_TableHelperStack::tdStart (UT_sint32 rowspan, UT_sint32 colspan, const char * style)
+bool IE_Imp_TableHelperStack::tdStart (UT_sint32 rowspan, UT_sint32 colspan, const char * style) const
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th == 0)
@@ -2766,7 +2766,7 @@ bool IE_Imp_TableHelperStack::tdStart (UT_sint32 rowspan, UT_sint32 colspan, con
 }
 
 
-bool IE_Imp_TableHelperStack::tdEnd (void)
+bool IE_Imp_TableHelperStack::tdEnd (void) const
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th == 0)
