@@ -190,8 +190,6 @@ void AP_UnixDialog_CollaborationAccounts::_populateWindowData()
 	GtkTreeSelection *sel;
 	_setModel(_constructModel());
 	
-	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (m_wAccountsTree), true);
-
 	// get the current selection
 	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wAccountsTree));
 	gtk_tree_selection_set_mode (sel, GTK_SELECTION_BROWSE);

@@ -410,7 +410,6 @@ void  AP_UnixDialog_Stylist::_fillTree(void)
 	gtk_tree_sortable_set_sort_column_id(sort, 0, GTK_SORT_ASCENDING);     
 	m_wStyleList = gtk_tree_view_new_with_model (GTK_TREE_MODEL (sort));
 	g_object_unref (G_OBJECT (m_wModel));
-	gtk_tree_view_set_rules_hint (GTK_TREE_VIEW (m_wStyleList), true);
 
 	// get the current selection
 	sel = gtk_tree_view_get_selection (GTK_TREE_VIEW (m_wStyleList));
