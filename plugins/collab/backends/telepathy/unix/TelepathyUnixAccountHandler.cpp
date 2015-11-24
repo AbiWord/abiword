@@ -304,7 +304,12 @@ void TelepathyAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	UT_DEBUGMSG(("TelepathyAccountHandler::embedDialogWidgets()\n"));
 	UT_return_if_fail(pEmbeddingParent);
 
-	table = gtk_table_new(2, 2, FALSE);
+	table = gtk_grid_new();
+	g_object_set(G_OBJECT(table),
+	             "row-spacing", 6,
+	             "column-spacing", 12,
+	             "hexpand", true,
+	             NULL);
 	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
 
 	// Jabber conference server
@@ -313,14 +318,15 @@ void TelepathyAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
                            "label", "Jabber conference server:",
                            "xalign", 0.0, "yalign", 0.5,
                            NULL);
-	gtk_table_attach_defaults(GTK_TABLE(table), conference_label, 0, 1, 0, 1);
+	gtk_grid_attach(GTK_GRID(table), conference_label, 0, 0, 1, 1);
 	conference_entry = gtk_entry_new();
-	gtk_table_attach_defaults(GTK_TABLE(table), conference_entry, 1, 2, 0, 1);
+	gtk_widget_set_hexpand(conference_entry, true);
+	gtk_grid_attach(GTK_GRID(table), conference_entry, 1, 0, 1, 1);
 	gtk_entry_set_activates_default(GTK_ENTRY(conference_entry), true);
 
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
-	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 1, 2);
+	gtk_grid_attach(GTK_GRID(table), autoconnect_button, 0, 1, 2, 1);
 
 	gtk_box_pack_start(GTK_BOX(parent), table, FALSE, TRUE, 0);
 	gtk_widget_show_all(GTK_WIDGET(parent));

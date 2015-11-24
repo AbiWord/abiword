@@ -39,17 +39,22 @@ void SIPSimpleUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 {
 	UT_return_if_fail(pEmbeddingParent);
 
-	table = gtk_table_new(4, 2, FALSE);
-	GtkVBox* parent = (GtkVBox*)pEmbeddingParent;
+	table = gtk_grid_new();
+	g_object_set(G_OBJECT(table),
+	             "row-spacing", 6,
+	             "column-spacing", 12,
+	             "hexpand", true,
+	             NULL);
+	GtkBox* parent = (GtkBox*)pEmbeddingParent;
 
 	// username
 	GtkWidget* address_label = gtk_widget_new(GTK_TYPE_LABEL,
                                                   "label", "SIP address:",
                                                   "xalign", 0.0, "yalign", 0.5,
                                                   NULL);
-	gtk_table_attach_defaults(GTK_TABLE(table), address_label, 0, 1, 0, 1);
+	gtk_grid_attach(GTK_GRID(table), address_label, 0, 0, 1, 1);
 	address_entry = gtk_entry_new();
-	gtk_table_attach_defaults(GTK_TABLE(table), address_entry, 1, 2, 0, 1);
+	gtk_grid_attach(GTK_GRID(table), address_entry, 1, 0, 1, 1);
 	gtk_entry_set_activates_default(GTK_ENTRY(address_entry), true);
 
 	// password
@@ -57,10 +62,10 @@ void SIPSimpleUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
                                                    "label", "Password:",
                                                    "xalign", 0.0, "yalign", 0.5,
                                                    NULL);
-	gtk_table_attach_defaults(GTK_TABLE(table), password_label, 0, 1, 1, 2);
+	gtk_grid_attach(GTK_GRID(table), password_label, 0, 1, 1, 1);
 	password_entry = gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(password_entry), false);
-	gtk_table_attach_defaults(GTK_TABLE(table), password_entry, 1, 2, 1, 2);
+	gtk_grid_attach(GTK_GRID(table), password_entry, 1, 1, 1, 1);
 	gtk_entry_set_activates_default(GTK_ENTRY(password_entry), true);
 
 	// outbound proxy
@@ -68,15 +73,16 @@ void SIPSimpleUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
                                                 "label", "Outbound proxy:",
                                                 "xalign", 0.0, "yalign", 0.5,
                                                 NULL);
-	gtk_table_attach_defaults(GTK_TABLE(table), proxy_label, 0, 1, 2, 3);
+	gtk_grid_attach(GTK_GRID(table), proxy_label, 0, 2, 1, 1);
 	proxy_entry = gtk_entry_new();
 	gtk_entry_set_visibility(GTK_ENTRY(proxy_entry), false);
-	gtk_table_attach_defaults(GTK_TABLE(table), proxy_entry, 1, 2, 2, 3);
+	gtk_grid_attach(GTK_GRID(table), proxy_entry, 1, 2, 1, 1);
 	gtk_entry_set_activates_default(GTK_ENTRY(proxy_entry), true);
 
 	// autoconnect
 	autoconnect_button = gtk_check_button_new_with_label ("Connect on application startup");
-	gtk_table_attach_defaults(GTK_TABLE(table), autoconnect_button, 0, 2, 3, 4);
+	gtk_widget_set_hexpand(autoconnect_button, true);
+	gtk_grid_attach(GTK_GRID(table), autoconnect_button, 0, 3, 2, 1);
 
 	gtk_box_pack_start(GTK_BOX(parent), table, false, TRUE, 0);
 	gtk_widget_show_all(GTK_WIDGET(parent));

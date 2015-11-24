@@ -62,21 +62,25 @@ void TCPUnixAccountHandler::embedDialogWidgets(void* pEmbeddingParent)
 	gtk_box_pack_start(GTK_BOX(vbox), client_button, TRUE, TRUE, 0);
 
 	// add a table to hold the server and port options
-	GtkWidget* table = gtk_table_new(1, 3, FALSE);
+	GtkWidget* table = gtk_grid_new();
+	g_object_set(G_OBJECT(table),
+	             "row-spacing", 6,
+	             "column-spacing", 12,
+	             "hexpand", true,
+	             NULL);
 
 	// spacer
-	GtkWidget* spacer = gtk_label_new("");
-	gtk_widget_set_size_request(spacer, 12, -1);
-	gtk_table_attach_defaults(GTK_TABLE(table), spacer, 0, 1, 0, 1);
 
 	// host
 	GtkWidget* server_label = gtk_widget_new(GTK_TYPE_LABEL,
                                                  "label", "Address:",
                                                  "xalign", 0.0, "yalign", 0.5,
+	                                     	     "margin-start", 24,
                                                  NULL);
-	gtk_table_attach_defaults(GTK_TABLE(table), server_label, 1, 2, 0, 1);
+	gtk_grid_attach(GTK_GRID(table), server_label, 0, 0, 1, 1);
 	server_entry = gtk_entry_new();
-	gtk_table_attach_defaults(GTK_TABLE(table), server_entry, 2, 3, 0, 1);
+	gtk_widget_set_hexpand(server_entry, true);
+	gtk_grid_attach(GTK_GRID(table), server_entry, 2, 0, 1, 1);
 	gtk_widget_set_sensitive(server_entry, false);
 	gtk_entry_set_activates_default(GTK_ENTRY(server_entry), true);
 
