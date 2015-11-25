@@ -11266,8 +11266,8 @@ Defun1(setPosImage)
 	}
 	pView->cmdSelect(pos,pos+1);
 	fp_ImageRun * pImageRun = static_cast<fp_ImageRun *>(pRun);
-	UT_String sWidth;
-	UT_String sHeight;
+	std::string sWidth;
+	std::string sHeight;
 	double d = static_cast<double>(pRun->getWidth())/static_cast<double>(UT_LAYOUT_RESOLUTION);
 	sWidth =  UT_formatDimensionedValue(d,"in", NULL);
 	d = static_cast<double>(pRun->getHeight())/static_cast<double>(UT_LAYOUT_RESOLUTION);
@@ -11277,39 +11277,39 @@ Defun1(setPosImage)
 
 	const char * dataID = pImageRun->getDataId();
 	const PP_AttrProp * pImageAP = pImageRun->getSpanAP();
-	UT_String sFrameProps;
-	UT_String sProp;
-	UT_String sVal;
+	std::string sFrameProps;
+	std::string sProp;
+	std::string sVal;
 	sProp = "frame-type";
 	sVal = "image";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Turn off the borders.
 //
 	sProp = "top-style";
 	sVal = "none";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sProp = "right-style";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sProp = "left-style";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sProp = "bot-style";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Set width/Height
 //
 	sProp = "frame-width";
-	sVal = sWidth;	   
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	sVal = sWidth;
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	sProp = "frame-height";
 	sVal = sHeight;
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	double xpos = 0.0;
 	double ypos= 0.0;
- 
+
 	sProp = "position-to";
 	sVal = "page-above-text";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	if(pView->isHdrFtrEdit() || pView->isInHdrFtr(pos))
 	{
 		pView->clearHdrFtrEdit();
@@ -11324,21 +11324,21 @@ Defun1(setPosImage)
 	ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 	sProp = "frame-page-ypos";
 	sVal = UT_formatDimensionedValue(ypos,"in", NULL);
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	UT_sint32 ix = pRun->getX() + pLine->getColumn()->getX() + pLine->getX();
 	xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 	sProp = "frame-page-xpos";
 	sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-	UT_String_setProperty(sFrameProps,sProp,sVal);
-	UT_String_sprintf(sVal,"%d",pLine->getPage()->getPageNumber());
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
+	sVal = UT_std_string_sprintf("%d", pLine->getPage()->getPageNumber());
 	sProp = "frame-pref-page";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Wrapped Mode
 //
 	sProp = "wrap-mode";
 	sVal = "wrapped-both";
-	UT_String_setProperty(sFrameProps,sProp,sVal);
+	UT_std_string_setProperty(sFrameProps, sProp, sVal);
 	//
 	// Now the alt and title
 	//
@@ -11801,8 +11801,8 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 
 	  XAP_Dialog_Image::tAnswer ans = pDialog->getAnswer();
 	  bool bOK = (ans == XAP_Dialog_Image::a_OK);
-	  UT_String sWidth;
-	  UT_String sHeight;
+	  std::string sWidth;
+	  std::string sHeight;
 	  if (bOK)
 	  {
 		  WRAPPING_TYPE newWrap = pDialog->getWrapping();
@@ -11842,41 +11842,41 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 //
 			  fp_Line * pLine = pRun->getLine();
 
-			  UT_String sFrameProps;
-			  UT_String sProp;
-			  UT_String sVal;
+			  std::string sFrameProps;
+			  std::string sProp;
+			  std::string sVal;
 			  sProp = "frame-type";
 			  sVal = "image";
-			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Turn off the borders.
 //
 			  sProp = "top-style";
 			  sVal = "none";
-			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  sProp = "right-style";
-			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  sProp = "left-style";
-			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  sProp = "bot-style";
-			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Set width/Height
 //
 			  sProp = "frame-width";
-			  sVal = sWidth;	   
-			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  sVal = sWidth;
+			  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  sProp = "frame-height";
 			  sVal = sHeight;
-			  UT_String_setProperty(sFrameProps,sProp,sVal);
+			  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  double xpos = 0.0;
 			  double ypos= 0.0;
- 
+
 			  sProp = "position-to";
 			  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
 			  {
 				  sVal = "block-above-text";
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Now calculate the Y offset to the paragraph
 //
@@ -11887,12 +11887,12 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 				  ypos = static_cast<double>(yBlockOff)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 				  sProp = "ypos";
 				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  }
 			  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
 			  {
 				  sVal = "column-above-text";
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Now calculate the Y offset to the Column
 //
@@ -11900,12 +11900,12 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 				  ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 				  sProp = "frame-col-ypos";
 				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  }
 			  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
 			  {
 				  sVal = "page-above-text";
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 //
 // Now calculate the Y offset to the Page
 //
@@ -11918,7 +11918,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 				  ypos = static_cast<double>(yLine)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 				  sProp = "frame-page-ypos";
 				  sVal = UT_formatDimensionedValue(ypos,"in", NULL);
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  }
 //
 // Now set the wrapping type and the x-offset
@@ -11927,7 +11927,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 			  {
 				  sProp = "wrap-mode";
 				  sVal = "wrapped-to-left";
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  UT_sint32 ix = 0;
 				  iWidth = UT_convertToLogicalUnits(sWidth.c_str());
 				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
@@ -11937,7 +11937,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
 				  {
@@ -11946,7 +11946,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-col-xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
 				  {
@@ -11955,35 +11955,35 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-page-xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 			  }
 			  else if(pDialog->getWrapping() == WRAP_NONE)
 			  {
 				  sProp = "wrap-mode";
 				  sVal = "above-text";
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  UT_sint32 ix = 0;
 				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-col-xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-page-xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 
 			  }
@@ -11991,35 +11991,35 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 			  {
 				  sProp = "wrap-mode";
 				  sVal = "wrapped-to-right";
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  UT_sint32 ix = 0;
 				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-col-xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
 				  {
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-page-xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 			  }
 			  else if(pDialog->getWrapping() == WRAP_TEXTBOTH)
 			  {
 				  sProp = "wrap-mode";
 				  sVal = "wrapped-both";
-				  UT_String_setProperty(sFrameProps,sProp,sVal);
+				  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  UT_sint32 ix = pRun->getX();
 				  if(pDialog->getPositionTo() == POSITION_TO_PARAGRAPH)
 				  {
@@ -12027,7 +12027,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_COLUMN)
 				  {
@@ -12035,7 +12035,7 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-col-xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 				  else if(pDialog->getPositionTo() == POSITION_TO_PAGE)
 				  {
@@ -12044,20 +12044,20 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 					  xpos =  static_cast<double>(ix)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					  sProp = "frame-page-xpos";
 					  sVal = UT_formatDimensionedValue(xpos,"in", NULL);
-					  UT_String_setProperty(sFrameProps,sProp,sVal);
+					  UT_std_string_setProperty(sFrameProps, sProp, sVal);
 				  }
 			  }
 			  if(pDialog->isTightWrap())
 			  {
 			    sProp = "tight-wrap";
 			    sVal = "1";
-			    UT_String_setProperty(sFrameProps,sProp,sVal);
+			    UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  }
 			  else
 			  {
 			    sProp = "tight-wrap";
 			    sVal = "0";
-			    UT_String_setProperty(sFrameProps,sProp,sVal);
+			    UT_std_string_setProperty(sFrameProps, sProp, sVal);
 			  }
 //
 // Now define the Frame attributes strux
