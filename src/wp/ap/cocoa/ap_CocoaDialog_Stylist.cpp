@@ -410,7 +410,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 	[_stylistList reloadData];
 }
 
-- (void)selectStyleNode:(StyleNode *)childNode childOf:(StyleNode *)parentNode;
+- (void)selectStyleNode:(StyleNode *)childNode childOf:(StyleNode *)parentNode
 {
 	[_stylistList expandItem:parentNode];
 
