@@ -176,11 +176,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_PageNumbers_Title,s);
 	abiDialogSetTitle(window, "%s", s.c_str());
 
-	// disable double buffering on our preview
-	gtk_widget_set_double_buffered(m_previewArea, FALSE);  
-	
 	// localize the strings in our dialog, and set some userdata for some widgets
-
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbPosition")), pSS, AP_STRING_ID_DLG_PageNumbers_Position_No_Colon);
 	
 	GtkWidget * radioHeader = GTK_WIDGET(gtk_builder_get_object(builder, "rbHeader"));

@@ -462,7 +462,7 @@ void GR_UnixCairoGraphics::_beginPaint()
 		m_CairoCreated = true;
 	}
 
-#ifndef NDEBUG
+#if 0 /* ndef NDEBUG */  // XXX figure why this is needed in debug
 	/* should only be called inside an expose event, messes up
 	 * double-buffering and all sorts of other GTK assumptions otherwise
 	 * we make this extra effort here to track down old wrong code

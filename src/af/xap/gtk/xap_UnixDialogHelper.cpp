@@ -762,7 +762,6 @@ GtkWidget *createDrawingArea ()
   GtkWidget *area;
   
   area = gtk_drawing_area_new ();
-  gtk_widget_set_double_buffered(area, FALSE);
 
   return area;
 }

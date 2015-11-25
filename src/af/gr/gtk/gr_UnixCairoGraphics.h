@@ -35,7 +35,8 @@ public:
 		m_win(win)
 		{}
 	GR_UnixCairoAllocInfo(GtkWidget *widget)
-		: GR_CairoAllocInfo(false, false, gtk_widget_get_double_buffered(widget)),
+        // double buffering is default in Gtk
+		: GR_CairoAllocInfo(false, false, true),
 		  m_win(gtk_widget_get_window(GTK_WIDGET(widget)))
 	{}
 

@@ -454,12 +454,8 @@ GtkWidget * AP_UnixDialog_FormatFrame::_constructWindow(void)
 	// set the dialog title
 	ConstructWindowName();
 	abiDialogSetTitle(window, "%s", m_WindowName);
-	
-	// disable double buffering on our preview
-	gtk_widget_set_double_buffered(m_wPreviewArea, FALSE); 	
-	
+
 	// localize the strings in our dialog, and set tags for some widgets
-	
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorder")), pSS, AP_STRING_ID_DLG_FormatFrame_Borders);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderColor")), pSS, AP_STRING_ID_DLG_FormatFrame_Color);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbBorderThickness")), pSS, AP_STRING_ID_DLG_FormatTable_Thickness);
