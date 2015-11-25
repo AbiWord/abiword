@@ -381,26 +381,6 @@ const char * XAP_Win32App::getUserPrivateDirectory(void)
 	return buf;
 }
 
-static void s_buildDirName(const UT_Vector& vDirComponents, UT_uint32 iComponentsNeeded, char* pDirBuf)
-{
-	UT_ASSERT(iComponentsNeeded <= static_cast<UT_uint32>(vDirComponents.getItemCount()));
-
-	if(iComponentsNeeded == 0)
-	{
-		strcpy(pDirBuf, "\\");
-		return;
-	}
-
-	UT_uint32 i = 0;
-	strcpy(pDirBuf, (const char*) vDirComponents.getNthItem(i++));
-
-	while(--iComponentsNeeded)
-	{
-		strcat(pDirBuf, "\\");
-		strcat(pDirBuf, (const char*) vDirComponents.getNthItem(i++));
-	}
-}
-
 void XAP_Win32App::_setAbiSuiteLibDir(void)
 {
 	char *utf8;

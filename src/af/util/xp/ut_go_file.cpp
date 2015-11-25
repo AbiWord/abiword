@@ -1298,7 +1298,7 @@ UT_go_set_file_permissions (char const *uri, UT_GOFilePermissions * file_permiss
 		permissions |= S_IXOTH;
 
 	filename = UT_go_filename_from_uri (uri);
-	
+
 #ifdef HAVE_G_CHMOD
 	result = g_chmod (filename, permissions);
 #else
@@ -1309,6 +1309,10 @@ UT_go_set_file_permissions (char const *uri, UT_GOFilePermissions * file_permiss
 
 	if (result != 0)
 		g_warning ("Error setting permissions for %s.", uri);
+#else
+	// Win32 - shall we put an assert here?
+	UT_UNUSED(uri);
+	UT_UNUSED(file_permissions);
 #endif
 }
 
