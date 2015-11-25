@@ -131,11 +131,7 @@ GtkWidget * XAP_UnixDialog_WindowMore::_constructWindow(void)
 	GtkTreeViewColumn *column;
 	
 	// load the dialog from the UI file
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_WindowMore.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_WindowMore-2.ui");
-#endif
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

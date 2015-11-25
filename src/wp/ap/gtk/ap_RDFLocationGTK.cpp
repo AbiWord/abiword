@@ -81,11 +81,7 @@ AP_RDFLocationGTK::createEditor()
 {
     UT_DEBUGMSG(("AP_RDFLocationGTK::createEditor()\n" ));
     
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("pd_RDFLocation.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("pd_RDFLocation-2.ui");
-#endif
     UT_DEBUGMSG(("createEditor(loc)\n"));
 
 #ifdef WITH_CHAMPLAIN

@@ -106,11 +106,7 @@ GtkWidget * AP_UnixDialog_InsertTable::_constructWindow(void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-#if GTK_CHECK_VERSION(3,0,0)	
 	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_InsertTable.ui");
-#else
-	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_InsertTable-2.ui");
-#endif
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_InsertTable"));

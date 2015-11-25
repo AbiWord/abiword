@@ -155,11 +155,7 @@ GtkWidget * AP_UnixDialog_MailMerge::_constructWindow(void)
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
 	// load the dialog from the UI file
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MailMerge.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_MailMerge-2.ui");
-#endif
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

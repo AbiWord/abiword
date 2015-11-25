@@ -219,11 +219,7 @@ XAP_Widget *AP_UnixDialog_WordCount::getWidget(xap_widget_id wid)
 
 void AP_UnixDialog_WordCount::constructDialog(void)
 {	
-#if GTK_CHECK_VERSION(3,0,0)
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_WordCount.ui");
-#else
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_WordCount-2.ui");
-#endif
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_WordCount.ui");
 
 	m_windowMain   = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_WordCount"));
 	m_labelWCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbWordsVal"));
@@ -235,7 +231,7 @@ void AP_UnixDialog_WordCount::constructDialog(void)
 	m_labelPgCount = GTK_WIDGET(gtk_builder_get_object(builder, "lbPagesVal"));
 	m_labelTitle   = GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle"));
 	if(gtk_label_get_use_markup(GTK_LABEL(m_labelTitle))) {
-	  m_labelTitleMarkupFormat = gtk_label_get_label(GTK_LABEL(m_labelTitle));
+		m_labelTitleMarkupFormat = gtk_label_get_label(GTK_LABEL(m_labelTitle));
 	}
 
 	m_labelLabelWCount  = GTK_WIDGET(gtk_builder_get_object(builder, "lbWords"));

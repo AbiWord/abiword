@@ -502,11 +502,7 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
     ui_file = "xap_UnixHildonDlg_Image.ui";
 #else
-#if GTK_CHECK_VERSION(3,0,0)
     ui_file = "xap_UnixDlg_Image.ui";
-#else
-    ui_file = "xap_UnixDlg_Image-2.ui";
-#endif
 #endif
 
     GtkBuilder * builder = newDialogBuilder(ui_file);

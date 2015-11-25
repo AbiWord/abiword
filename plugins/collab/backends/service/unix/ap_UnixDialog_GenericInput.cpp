@@ -80,11 +80,7 @@ GtkWidget * AP_UnixDialog_GenericInput::_constructWindow(void)
 	GtkWidget* window;
 	
 	// load the dialog from the UI file
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_GenericInput.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_GenericInput-2.ui");
-#endif
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

@@ -25,14 +25,6 @@ libunix_la_SOURCES = \
 
 uidir=$(ABIWORD_UIDIR)
 
-ui_gtk2 = \
-	ap_UnixDialog_CollaborationAccounts-2.ui \
-	ap_UnixDialog_CollaborationAddAccount-2.ui \
-	ap_UnixDialog_CollaborationAddBuddy-2.ui \
-	ap_UnixDialog_CollaborationEditAccount-2.ui \
-	ap_UnixDialog_CollaborationJoin-2.ui \
-	ap_UnixDialog_CollaborationShare-2.ui
-
 ui_gtk3 = \
 	ap_UnixDialog_CollaborationAccounts.ui \
 	ap_UnixDialog_CollaborationAddAccount.ui \
@@ -41,12 +33,8 @@ ui_gtk3 = \
 	ap_UnixDialog_CollaborationJoin.ui \
 	ap_UnixDialog_CollaborationShare.ui
 
-if TOOLKIT_GTK2
-ui_DATA = $(ui_gtk2)
-else
 ui_DATA = $(ui_gtk3)
-endif
 
 EXTRA_DIST = \
-        $(ui_gtk2) $(ui_gtk3)
+        $(ui_gtk3)
 

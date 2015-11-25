@@ -132,11 +132,7 @@ GtkWidget * AP_UnixDialog_Insert_DateTime::_constructWindow(void)
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;	
 	
-#if GTK_CHECK_VERSION(3,0,0)
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Insert_DateTime.ui");
-#else
-    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Insert_DateTime-2.ui");
-#endif
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Insert_DateTime.ui");
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

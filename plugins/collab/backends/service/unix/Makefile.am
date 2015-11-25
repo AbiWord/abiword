@@ -18,19 +18,11 @@ libunix_la_SOURCES = \
 
 uidir=$(ABIWORD_UIDIR)
 
-ui_gtk2 = \
-	ap_UnixDialog_GenericInput-2.ui \
-	ap_UnixDialog_GenericProgress-2.ui
-
 ui_gtk3 = \
 	ap_UnixDialog_GenericInput.ui \
 	ap_UnixDialog_GenericProgress.ui
 
-if TOOLKIT_GTK2
-ui_DATA = $(ui_gtk2)
-else
 ui_DATA = $(ui_gtk3)
-endif
 
 EXTRA_DIST = \
-	$(ui_gtk2) $(ui_gtk3)
+	$(ui_gtk3)

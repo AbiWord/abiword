@@ -61,11 +61,7 @@ static const char* Ots_MenuTooltip = "Summarize your document or selected text";
 static int getSummaryPercent(void)
 {
   // load the dialog from the UI file
-#if GTK_CHECK_VERSION(3,0,0)
-      GtkBuilder* builder = newDialogBuilder("ots.ui");
-#else
-      GtkBuilder* builder = newDialogBuilder("ots-2.ui");
-#endif
+  GtkBuilder* builder = newDialogBuilder("ots.ui");
   
   GtkWidget * window = GTK_WIDGET(gtk_builder_get_object(builder, "otsDlg"));
   GtkWidget * spin = GTK_WIDGET(gtk_builder_get_object(builder, "summarySpin"));

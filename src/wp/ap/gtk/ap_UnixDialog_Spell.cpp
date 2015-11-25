@@ -251,11 +251,7 @@ GtkWidget *
 AP_UnixDialog_Spell::_constructWindow (void)
 {
 	// load the dialog from the UI file
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Spell.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("ap_UnixDialog_Spell-2.ui");
-#endif
 
 	m_wDialog = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_Spell"));
 

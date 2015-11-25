@@ -34,11 +34,7 @@ AP_RDFEventGTK::~AP_RDFEventGTK()
 void*
 AP_RDFEventGTK::createEditor()
 {
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("pd_RDFEvent.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("pd_RDFEvent-2.ui");
-#endif
     UT_DEBUGMSG(("createEditor()\n"));
     
 	m_mainWidget = GTK_WIDGET(gtk_builder_get_object(builder, "mainWidget"));

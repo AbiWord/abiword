@@ -45,11 +45,7 @@
 /*****************************************************************/
 
 static gint s_preview_draw(GtkWidget * /*w*/,
-#if GTK_CHECK_VERSION(3,0,0)
 			   cairo_t * /*cr*/,
-#else
-			   GdkEventExpose*,
-#endif
 			   AP_UnixDialog_PageNumbers * dlg)
 {
 	UT_ASSERT(dlg);
@@ -168,11 +164,7 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	GtkWidget * window;	
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers.ui");
-#else
-	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_PageNumbers-2.ui");
-#endif
 
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later

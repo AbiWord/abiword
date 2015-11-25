@@ -127,11 +127,7 @@ GtkWidget * XAP_UnixDialog_ListDocuments::_constructWindow(void)
 	GtkWidget *w;
 	
 	// load the dialog from the UI file
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_ListDocuments.ui");
-#else
-	GtkBuilder* builder = newDialogBuilder("xap_UnixDlg_ListDocuments-2.ui");
-#endif
 	
 	// Update our member variables with the important widgets that 
 	// might need to be queried or altered later
