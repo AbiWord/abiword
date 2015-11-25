@@ -117,33 +117,12 @@ static void s_check_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 
-#if !GTK_CHECK_VERSION(3,0,0)
-static gboolean do_update(gpointer p)
-{
-//
-// FIXME!!! Could get nasty crash if the dlg is destroyed while 
-// a redraw is pending....
-//
-	AP_UnixDialog_Paragraph * dlg = (AP_UnixDialog_Paragraph *) p;
-	dlg->event_PreviewAreaExposed();
-	return FALSE;
-}
-#endif
-
 static gint s_preview_draw(GtkWidget * /* widget */,
-#if GTK_CHECK_VERSION(3,0,0)
 			   cairo_t * /* cr */,
-#else
-			   GdkEventExpose * /* pExposeEvent */,
-#endif
 			   AP_UnixDialog_Paragraph * dlg)
 {
 	UT_ASSERT(dlg);
-#if GTK_CHECK_VERSION(3,0,0)
 	dlg->event_PreviewAreaExposed();
-#else
-	g_idle_add((GSourceFunc) do_update,(gpointer) dlg);
-#endif
 	return TRUE;
 }
 #endif
@@ -350,9 +329,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindow(void)
 	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
 	windowParagraph = abiDialogNew("paragraph dialog", TRUE, unixstr);
 	gtk_window_set_position(GTK_WINDOW(windowParagraph), GTK_WIN_POS_CENTER_ON_PARENT);
-#if !GTK_CHECK_VERSION(3,0,0)
-	gtk_dialog_set_has_separator(GTK_DIALOG(windowParagraph), FALSE);
-#endif
 	FREEP(unixstr);
 
 	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowParagraph));
@@ -1020,11 +996,7 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 #if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	// the expose event off the preview
 	g_signal_connect(G_OBJECT(m_drawingareaPreview),
-#if GTK_CHECK_VERSION(3,0,0)
 			 "draw",
-#else
-			 "expose_event",
-#endif
 			 G_CALLBACK(s_preview_draw),
 			 (gpointer) this);
 #endif

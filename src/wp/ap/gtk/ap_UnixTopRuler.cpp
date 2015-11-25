@@ -39,9 +39,6 @@
 
 static void
 ruler_style_context_changed (GtkWidget 			* /*w*/, 
-#if !GTK_CHECK_VERSION(3,0,0)
-					 GtkStyle 			* /*previous_style*/,
-#endif
 					 AP_UnixTopRuler 	*ruler)
 {
 	ruler->_ruler_style_context_changed();
@@ -57,11 +54,7 @@ AP_UnixTopRuler::AP_UnixTopRuler(XAP_Frame * pFrame)
 	// change ruler color on theme change
 	GtkWidget * toplevel = static_cast<XAP_UnixFrameImpl *>(pFrame->getFrameImpl())->getTopLevelWindow();
 	m_iStyleID = g_signal_connect_after (G_OBJECT(toplevel),
-#if GTK_CHECK_VERSION(3,0,0)
 							  "style-updated",
-#else
-							  "style-set",
-#endif
 							  G_CALLBACK(ruler_style_context_changed),
 							  static_cast<gpointer>(this));
 }
@@ -97,13 +90,8 @@ GtkWidget * AP_UnixTopRuler::createWidget(void)
 													GDK_KEY_PRESS_MASK |
 													GDK_KEY_RELEASE_MASK));
 
-#if GTK_CHECK_VERSION(3,0,0)
 	g_signal_connect_swapped(G_OBJECT(m_wTopRuler), "draw",
 					   G_CALLBACK(XAP_UnixCustomWidget::_fe::draw), static_cast<XAP_UnixCustomWidget *>(this));
-#else
-	g_signal_connect_swapped(G_OBJECT(m_wTopRuler), "expose_event",
-					   G_CALLBACK(XAP_UnixCustomWidget::_fe::expose), static_cast<XAP_UnixCustomWidget *>(this));
-#endif
 
 	g_signal_connect_swapped(G_OBJECT(m_wTopRuler), "realize",
 					   G_CALLBACK(_fe::realize), this);
@@ -133,15 +121,9 @@ void AP_UnixTopRuler::setView(AV_View * pView)
 	UT_ASSERT(gtk_widget_get_realized(m_wTopRuler));
 
 	m_pG->setZoomPercentage(pView->getGraphics()->getZoomPercentage());
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkWidget * w = gtk_entry_new();
 	((GR_UnixCairoGraphics*)m_pG)->init3dColors(w);
 	gtk_widget_destroy(w);
-#else
-	GtkWidget * ruler = gtk_hruler_new ();
-	((GR_UnixCairoGraphics*)m_pG)->init3dColors(get_ensured_style(ruler));
-	//abiDestroyWidget (ruler);
-#endif
 }
 
 void AP_UnixTopRuler::getWidgetPosition(gint * x, gint * y)

@@ -228,10 +228,6 @@ AP_UnixDialog_InsertXMLID::_constructWindow(void)
     pSS->getValueUTF8(AP_STRING_ID_DLG_InsertXMLID_Title,s);
   
     m_window = abiDialogNew("insert RDF link dialog", TRUE, s.c_str());
-#if !GTK_CHECK_VERSION(3,0,0)
-    gtk_dialog_set_has_separator(GTK_DIALOG(m_window), FALSE);
-#endif
-
   
     vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
     gtk_widget_show (vbox);

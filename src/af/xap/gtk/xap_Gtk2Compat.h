@@ -26,47 +26,11 @@
 
 #include <gtk/gtk.h>
 
-#if !GTK_CHECK_VERSION(3,0,0)
-#include <gdk/gdkkeysyms.h>
-#endif
-
 // keynames
-#if GTK_CHECK_VERSION(2,22,0)
 #include <gdk/gdkkeysyms-compat.h>
-#else
-#define GDK_KEY_3270_Enter   GDK_3270_Enter
-#define GDK_KEY_BackSpace    GDK_BackSpace
-#define GDK_KEY_Delete       GDK_Delete
-#define GDK_KEY_Down         GDK_Down
-#define GDK_KEY_Escape       GDK_Escape
-#define GDK_KEY_F1           GDK_F1
-#define GDK_KEY_Help         GDK_Help
-#define GDK_KEY_ISO_Enter    GDK_ISO_Enter
-#define GDK_KEY_KP_0         GDK_KP_0
-#define GDK_KEY_KP_9         GDK_KP_9
-#define GDK_KEY_KP_Down      GDK_KP_Down
-#define GDK_KEY_KP_Enter     GDK_KP_Enter
-#define GDK_KEY_KP_Escape    GDK_KP_Escape
-#define GDK_KEY_KP_Left      GDK_KP_Left
-#define GDK_KEY_KP_Right     GDK_KP_Right
-#define GDK_KEY_KP_Space     GDK_KP_Space
-#define GDK_KEY_KP_Up        GDK_KP_Up
-#define GDK_KEY_Left         GDK_Left
-#define GDK_KEY_Return       GDK_Return
-#define GDK_KEY_Right        GDK_Right
-#define GDK_KEY_space        GDK_space
-#define GDK_KEY_Tab          GDK_Tab
-#define GDK_KEY_ISO_Left_Tab GDK_ISO_Left_Tab
-#define GDK_KEY_Up           GDK_Up
-#define GDK_KEY_VoidSymbol   GDK_VoidSymbol
-#endif
 
-
-#if GTK_CHECK_VERSION(3,0,0)
 
 typedef GdkWindow GdkDrawable;
-
-#endif
 
 
 // wrapper because gtk_color_button_set_rgba is deprecated.

@@ -324,11 +324,7 @@ static void  s_scroll_event(GtkWidget * /*widget*/, GdkEventScroll * event, XAP_
 	dlg->Scroll_Event (static_cast <int> (event->direction));
 }
 
-#if GTK_CHECK_VERSION(3,0,0)
 static gboolean s_sym_SymbolMap_draw(GtkWidget * /*widget*/, cairo_t * /*cr*/, XAP_UnixDialog_Insert_Symbol * dlg)
-#else
-static gboolean s_sym_SymbolMap_draw(GtkWidget * /*widget*/, GdkEvent * /*cr*/, XAP_UnixDialog_Insert_Symbol * dlg)
-#endif
 {
 	dlg->SymbolMap_exposed();
 	return FALSE;
@@ -341,11 +337,7 @@ static gboolean s_size_request(GtkWidget *, GtkAllocation* req, XAP_UnixDialog_I
 }
 
 
-#if GTK_CHECK_VERSION(3,0,0)
 static gboolean s_Symbolarea_draw(GtkWidget * , cairo_t * , XAP_UnixDialog_Insert_Symbol * dlg)
-#else
-static gboolean s_Symbolarea_draw(GtkWidget * , GdkEvent * , XAP_UnixDialog_Insert_Symbol * dlg)
-#endif
 {
 	dlg->Symbolarea_exposed();
 	return FALSE;
@@ -591,9 +583,6 @@ GtkWidget * XAP_UnixDialog_Insert_Symbol::_constructWindow(void)
 
 	m_windowMain = abiDialogNew ("insert symbol dialog", TRUE, m_WindowName);
 	gtk_window_set_position(GTK_WINDOW(m_windowMain), GTK_WIN_POS_MOUSE);
-#if !GTK_CHECK_VERSION(3,0,0)
-	gtk_dialog_set_has_separator(GTK_DIALOG(m_windowMain), FALSE);
-#endif	
 
 	// Now put in a Vbox to hold our 3 widgets (Font Selector, Symbol Table
 	// and OK -Selected Symbol- Cancel
@@ -759,20 +748,12 @@ void XAP_UnixDialog_Insert_Symbol::_connectSignals (void)
 	
 	// the expose event of the m_SymbolMap
 	g_signal_connect(G_OBJECT(m_SymbolMap),
-#if GTK_CHECK_VERSION(3,0,0)
 					 "draw",
-#else
-					 "expose_event",
-#endif
 					 G_CALLBACK(s_sym_SymbolMap_draw),
 					 static_cast<gpointer>(this));
 
 	g_signal_connect(G_OBJECT(m_areaCurrentSym),
-#if GTK_CHECK_VERSION(3,0,0)
 					 "draw",
-#else
-					 "expose_event",
-#endif
 					   G_CALLBACK(s_Symbolarea_draw),
 					   static_cast<gpointer>(this));
         // VScrollbar events

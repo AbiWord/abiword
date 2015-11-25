@@ -572,9 +572,6 @@ GtkWidget * AP_UnixDialog_Lists::_constructWindow(void)
 
 	ConstructWindowName();
 	m_wMainWindow = abiDialogNew ( "list dialog", TRUE, getWindowName() );	
-#if !GTK_CHECK_VERSION(3,0,0)
-	gtk_dialog_set_has_separator(GTK_DIALOG(m_wMainWindow), FALSE);
-#endif
 	vbox1 = gtk_dialog_get_content_area(GTK_DIALOG(m_wMainWindow));
 
 	contents = _constructWindowContents();
@@ -1254,11 +1251,7 @@ void AP_UnixDialog_Lists::_connectSignals(void)
 					    this);
 	// the expose event of the preview
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
-#if GTK_CHECK_VERSION(3,0,0)
 					   "draw",
-#else
-					   "expose_event",
-#endif
 					   G_CALLBACK(s_preview_draw),
 					   static_cast<gpointer>(this));
 	g_signal_connect(G_OBJECT(m_wMainWindow),

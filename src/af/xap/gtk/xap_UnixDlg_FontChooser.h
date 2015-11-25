@@ -104,15 +104,9 @@ protected:
 
 	// parent frame
 	XAP_Frame *			m_pFrame;
-#if GTK_CHECK_VERSION(3,0,0)
 	GdkRGBA m_currentFGColor;
 	GdkRGBA m_currentBGColor;
 	GdkRGBA m_funkyColor;
-#else
-	GdkColor m_currentFGColor;
-	GdkColor m_currentBGColor;
-	GdkColor m_funkyColor;
-#endif
 	bool m_currentBGColorTransparent;
 };
 

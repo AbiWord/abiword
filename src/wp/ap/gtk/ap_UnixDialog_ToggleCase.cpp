@@ -87,9 +87,6 @@ GtkWidget * AP_UnixDialog_ToggleCase::_constructWindow (void)
   std::string s;
   pSS->getValueUTF8(AP_STRING_ID_DLG_ToggleCase_Title,s);
   GtkWidget * windowMain = abiDialogNew("toggle case dialog", TRUE, s.c_str());
-#if !GTK_CHECK_VERSION(3,0,0)
-  gtk_dialog_set_has_separator(GTK_DIALOG(windowMain), FALSE);
-#endif
 
   GtkWidget *vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 2);
   gtk_widget_show(vbox);

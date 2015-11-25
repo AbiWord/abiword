@@ -197,11 +197,7 @@ abi_table_get_max_size (const AbiTable* abi_table, guint* rows, guint* cols)
 }
 
 static gboolean
-#if GTK_CHECK_VERSION(3,0,0)
 on_drawing_area_event (GtkWidget *area, cairo_t *cr, gpointer user_data)
-#else
-on_drawing_area_event (GtkWidget *area, GdkEventExpose *, gpointer user_data)
-#endif
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
 	guint i;
@@ -212,7 +208,6 @@ on_drawing_area_event (GtkWidget *area, GdkEventExpose *, gpointer user_data)
 	guint y;
 	
 	// TODO: use gtk_paint_box, gtk_paint_line
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkStyleContext *ctxt;
 	GdkRGBA fg, bgn, bgs;
 	ctxt = gtk_widget_get_style_context(area);
@@ -220,19 +215,10 @@ on_drawing_area_event (GtkWidget *area, GdkEventExpose *, gpointer user_data)
 	gtk_style_context_get_background_color(ctxt, GTK_STATE_FLAG_NORMAL, &bgn);
 	gtk_style_context_get_background_color(ctxt, GTK_STATE_FLAG_SELECTED, &bgs);
 	cairo_set_line_width(cr, 1.0);
-#else
-	gdk_draw_rectangle (area->window,
-			    area->style->bg_gc[GTK_STATE_NORMAL],
-			    TRUE,
-			    0, 0,
-			    area->allocation.width,
-			    area->allocation.height);
-#endif
 	for (i = 0; i < table->total_rows; ++i) {
 		for (j = 0; j < table->total_cols; ++j) {
 			cells_to_pixels(j, i, &x, &y);
 
-#if GTK_CHECK_VERSION(3,0,0)
 			cairo_rectangle(cr, x, y, cell_width + 1, cell_height + 1);
 			if (i < selected_rows && j < selected_cols) {
 				cairo_set_source_rgba(cr, bgs.red, bgs.green, bgs.blue, bgs.alpha);
@@ -245,55 +231,6 @@ on_drawing_area_event (GtkWidget *area, GdkEventExpose *, gpointer user_data)
 			cairo_rectangle(cr, x - .5, y - .5, cell_width + .5, cell_height + .5);
 			cairo_set_source_rgba(cr, fg.red, fg.green, fg.blue, fg.alpha);
 			cairo_stroke(cr);
-#else
-			gdk_draw_rectangle (area->window,
-					    area->style->dark_gc[GTK_STATE_NORMAL],
-					    FALSE,
-					    x - 1, y - 1,
-					    cell_width + 1,
-					    cell_height + 1);
-			if (i < selected_rows && j < selected_cols) {
-				gdk_draw_rectangle (area->window,
-						    table->selected_gc,
-						    TRUE,
-						    x, y,
-						    cell_width,
-						    cell_height);
-			}
-			else {
-				gdk_draw_rectangle (area->window,
-						    area->style->white_gc,
-						    TRUE,
-						    x, y,
-						    cell_width,
-						    cell_height);
-			}
-			/* black border line */
-			gdk_draw_line (area->window,
-				       area->style->black_gc,
-				       area->allocation.width - 1, 0, area->allocation.width - 1, area->allocation.height - 1);
-			gdk_draw_line (area->window,
-				       area->style->black_gc,
-				       area->allocation.width - 1, area->allocation.height - 1, 0, area->allocation.height - 1);
-			
-			/* dark border line */
-			gdk_draw_line (area->window,
-				       area->style->dark_gc[GTK_STATE_NORMAL],
-				       area->allocation.width - 2, 1, area->allocation.width - 2,
-				       area->allocation.height - 2);
-			gdk_draw_line (area->window,
-				       area->style->dark_gc[GTK_STATE_NORMAL],
-				       area->allocation.width - 2, area->allocation.height - 2, 1,
-				       area->allocation.height - 2);
-			
-			/* ligth border line */
-			gdk_draw_line (area->window,
-				       area->style->light_gc[GTK_STATE_NORMAL],
-				       0, 0, area->allocation.width - 3, 0);
-			gdk_draw_line (area->window,
-				       area->style->light_gc[GTK_STATE_NORMAL],
-				       0, 0, 0, area->allocation.height - 2);
-#endif
 		}
 	}
 
@@ -464,13 +401,6 @@ on_pressed(GtkButton* button, gpointer user_data)
 	 */
 	popup_grab_on_window (gtk_widget_get_window(GTK_WIDGET(table->area)),
 			      gtk_get_current_event_time ());
-#if !GTK_CHECK_VERSION(3,0,0)
-	GdkColor selected_color = (GTK_WIDGET (button))->style->base[GTK_STATE_SELECTED];
-
-	/* leak */
-	table->selected_gc = gdk_gc_new(GTK_WIDGET(button)->window);
-	gdk_gc_set_rgb_fg_color(table->selected_gc, &selected_color);
-#endif
 }
 
 gboolean

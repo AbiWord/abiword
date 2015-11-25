@@ -751,41 +751,6 @@ void setLabelMarkup(GtkWidget * widget, const gchar * str)
 	gtk_label_set_markup (GTK_LABEL(widget), markupStr.c_str());
 }
 
-#if !GTK_CHECK_VERSION(3,0,0)
-/*!
- * For a parented/displayed widget, this will just return
- * gtk_widget_ensure_style(w). For a non-displayed widgets,
- * This will return a valid GtkStyle for that widget
- */
-GtkStyle *
-get_ensured_style (GtkWidget * w)
-{
-	GtkStyle  * style = NULL;
-	GtkWidget * hidden_window = NULL;
-
-	if (w->parent == NULL)
-	{
-		hidden_window = gtk_window_new (GTK_WINDOW_TOPLEVEL);
-		gtk_container_add (GTK_CONTAINER (hidden_window), w);
-	}
-
-	gtk_widget_ensure_style (w);
-	gtk_widget_realize (w);
-
-	style = gtk_widget_get_style (w);
-	UT_ASSERT(style);
-
-	if (hidden_window)
-	{
-		// now we destroy the hidden window
-		gtk_container_remove (GTK_CONTAINER(hidden_window), w);
-		gtk_widget_destroy (hidden_window);
-	}
-
-	return style;
-}
-#endif
-
 /*!
  * Creates a new GdkDrawingArea with the proper colormap and visual
  * This returns a single-buffered widget.

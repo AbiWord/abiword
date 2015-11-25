@@ -122,9 +122,6 @@
 #include "ap_Preview_Abi.h"
 #include "xap_UnixDialogHelper.h"
 #include "gr_UnixCairoGraphics.h"
-#if !GTK_CHECK_VERSION(3,0,0)
-#include "gr_UnixPangoPixmapGraphics.h"
-#endif
 #include "ie_exp_DocRangeListener.h"
 
 #ifdef GTK_WIN_POS_CENTER_ALWAYS
@@ -1154,7 +1151,6 @@ bool AP_UnixApp::getCurrentSelection(const char** formatList,
     return true;
 }
 
-#if GTK_CHECK_VERSION(3,0,0)
 bool AP_UnixApp::makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight)
 {
 	cairo_surface_t *surface = cairo_image_surface_create (CAIRO_FORMAT_RGB24, iWidth, iHeight);
@@ -1190,44 +1186,6 @@ bool AP_UnixApp::makePngPreview(const char * pszInFile, const char * pszPNGFile,
 	DELETEP(pPrevAbi); // This deletes pNewDoc
 	return true;
 }
-#else
-bool AP_UnixApp::makePngPreview(const char * pszInFile, const char * pszPNGFile, UT_sint32 iWidth, UT_sint32 iHeight)
-{
-	GdkPixmap*  pPixmap = gdk_pixmap_new(NULL,iWidth,iHeight,24);
-
-	GR_UnixPixmapAllocInfo ai(pPixmap);
-
-	GR_UnixPangoPixmapGraphics * pG = (GR_UnixPangoPixmapGraphics*) GR_UnixPangoPixmapGraphics::graphicsAllocator(ai);
-
-	UT_Error error = UT_OK;
-	PD_Document * pNewDoc = new PD_Document();
-	error = pNewDoc->readFromFile(pszInFile,IEFT_Unknown, NULL);
-
-	if (error != UT_OK) 
-	{
-		return false;
-	}
-	AP_Preview_Abi * pPrevAbi = new AP_Preview_Abi(pG,iWidth,iHeight,NULL, PREVIEW_ZOOMED,pNewDoc);
-	dg_DrawArgs da;
-	memset(&da, 0, sizeof(da));
-	da.pG = pG;
-	GR_Painter * pPaint = new GR_Painter(pG);
-	pPaint->clearArea(0,0,pG->tlu(iWidth),pG->tlu(iHeight));
-	pPrevAbi->getView()->draw(0, &da);
-	UT_Rect r;
-	r.left = 0;
-	r.top = 0;
-	r.width = pG->tlu(iWidth);
-	r.height = pG->tlu(iHeight);
-	GR_Image * pImage = pPaint->genImageFromRectangle(r);
-	DELETEP(pPaint);
-	static_cast<GR_UnixImage *>(pImage)->saveToPNG( pszPNGFile);
-	DELETEP(pImage);
-	DELETEP(pG);
-	DELETEP(pPrevAbi); // This deletes pNewDoc
-	return true;
-}
-#endif
 
 /*****************************************************************/
 /*****************************************************************/

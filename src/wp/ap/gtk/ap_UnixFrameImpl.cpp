@@ -180,9 +180,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	m_hScroll = gtk_scrollbar_new(GTK_ORIENTATION_HORIZONTAL, m_pHadj);
 	g_object_set_data(G_OBJECT(m_pHadj), "user_data", this);
 	g_object_set_data(G_OBJECT(m_hScroll), "user_data", this);
-#if GTK_CHECK_VERSION(3,0,0)
 	gtk_widget_set_hexpand(m_hScroll, TRUE);
-#endif
 
 	m_iHScrollSignal = g_signal_connect(G_OBJECT(m_pHadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::hScrollChanged), NULL);
 
@@ -190,9 +188,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	m_vScroll = gtk_scrollbar_new(GTK_ORIENTATION_VERTICAL, m_pVadj);
 	g_object_set_data(G_OBJECT(m_pVadj), "user_data", this);
 	g_object_set_data(G_OBJECT(m_vScroll), "user_data", this);
-#if GTK_CHECK_VERSION(3,0,0)
 	gtk_widget_set_vexpand(m_vScroll, TRUE);
-#endif
 
 	m_iVScrollSignal = g_signal_connect(G_OBJECT(m_pVadj), "value_changed", G_CALLBACK(XAP_UnixFrameImpl::_fe::vScrollChanged), NULL);
 
@@ -202,9 +198,7 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 
 	// create a drawing area in the for our document window.
 	m_dArea = ap_DocView_new();
-#if GTK_CHECK_VERSION(3,0,0)
 	g_object_set(G_OBJECT(m_dArea), "expand", TRUE, NULL);
-#endif
 	g_object_set_data(G_OBJECT(m_dArea), "user_data", this);
 	UT_DEBUGMSG(("!!! drawing area m_dArea created! %p for %p \n",m_dArea,this));
 	gtk_widget_set_can_focus(m_dArea, true);	// allow it to be focussed
@@ -220,13 +214,8 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 						    GDK_LEAVE_NOTIFY_MASK |
 						    GDK_SCROLL_MASK));
 	gtk_widget_set_double_buffered(GTK_WIDGET(m_dArea), FALSE);
-#if GTK_CHECK_VERSION(3,0,0)
 	g_signal_connect(G_OBJECT(m_dArea), "draw",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::draw), NULL);
-#else
-	g_signal_connect(G_OBJECT(m_dArea), "expose_event",
-					   G_CALLBACK(XAP_UnixFrameImpl::_fe::expose), NULL);
-#endif
 
 	g_signal_connect(G_OBJECT(m_dArea), "key_press_event",
 					   G_CALLBACK(XAP_UnixFrameImpl::_fe::key_press_event), NULL);
@@ -262,12 +251,8 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 
 	// create a table for scroll bars, rulers, and drawing area
 
-#if GTK_CHECK_VERSION(3,0,0)
 	m_grid = gtk_grid_new();
 	g_object_set(G_OBJECT(m_grid), "expand", TRUE, NULL);
-#else
-	m_grid = gtk_table_new(2, 1, FALSE); //was 1,1
-#endif
 	g_object_set_data(G_OBJECT(m_grid),"user_data", this);
 
 	// NOTE:  in order to display w/ and w/o rulers, gtk needs two tables to
@@ -282,7 +267,6 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 		
 	// scroll bars
 	
-#if GTK_CHECK_VERSION(3,0,0)
 	gtk_grid_attach(GTK_GRID(m_grid), m_hScroll, 0, 1, 1, 1);
 
 	gtk_grid_attach(GTK_GRID(m_grid), m_vScroll, 1, 0, 1, 1);
@@ -306,49 +290,6 @@ GtkWidget * AP_UnixFrameImpl::_createDocumentWindow()
 	{
 		gtk_grid_attach(GTK_GRID(m_innergrid), m_dArea,   1, 1, 1, 1); 
 	}
-#else
-	gtk_table_attach(GTK_TABLE(m_grid), m_hScroll, 0, 1, 1, 2,
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
-					 0, 0);
-
-	gtk_table_attach(GTK_TABLE(m_grid), m_vScroll, 1, 2, 0, 1,
-					 (GtkAttachOptions) (GTK_FILL), // was just GTK_FILL
-					 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					 0, 0);
- 
- 
- 	// arrange the widgets within our inner table.
-	m_innergrid = gtk_table_new(2,2,FALSE);
-	gtk_table_attach( GTK_TABLE(m_grid), m_innergrid, 0, 1, 0, 1,
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 0, 0); 
-	if ( bShowRulers )
-	{
-		gtk_table_attach(GTK_TABLE(m_innergrid), m_topRuler, 0, 2, 0, 1,
-						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions)(GTK_FILL),
-						 0, 0);
-		if (m_leftRuler)
-			gtk_table_attach(GTK_TABLE(m_innergrid), m_leftRuler, 0, 1, 1, 2,
-							 (GtkAttachOptions)(GTK_FILL),
-							 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-							 0, 0);
-
-		gtk_table_attach(GTK_TABLE(m_innergrid), m_dArea,   1, 2, 1, 2,
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 0, 0); 
-	}
-	else	// no rulers
-	{
-		gtk_table_attach(GTK_TABLE(m_innergrid), m_dArea,   1, 2, 1, 2,
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-						 0, 0); 
-	}
-#endif
 	// create a 3d box and put the table in it, so that we
 	// get a sunken in look.
 	m_wSunkenBox = gtk_frame_new(NULL);
@@ -508,15 +449,10 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
 
     UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
     // owen says that any widget should be ok, not just text widgets
-#if GTK_CHECK_VERSION(3,0,0)
     GtkStyleContext *pCtxt = gtk_widget_get_style_context(m_dArea);
     GdkRGBA rgba;
     gtk_style_context_get_background_color(pCtxt, GTK_STATE_FLAG_SELECTED, &rgba);
     return UT_RGBColor (rgba.red * 255, rgba.green * 255, rgba.blue * 255);
-#else
-    GdkColor clr = m_dArea->style->base[GTK_STATE_SELECTED];
-    return UT_RGBColor (clr.red >> 8, clr.green >> 8, clr.blue >> 8);
-#endif
 }
 
 UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
@@ -524,7 +460,6 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
   UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
   
   // owen says that any widget should be ok, not just text widgets
-#if GTK_CHECK_VERSION(3,0,0)
   GtkStateFlags state;
   
   // our text widget has focus
@@ -537,16 +472,4 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
   GdkRGBA rgba;
   gtk_style_context_get_color(pCtxt, state, &rgba);
   return UT_RGBColor (rgba.red * 255, rgba.green * 255, rgba.blue * 255);
-#else  
-  gint state;
-  
-  // our text widget has focus
-  if (GTK_WIDGET_HAS_FOCUS(m_dArea))
-    state = GTK_STATE_SELECTED;
-  else
-    state = GTK_STATE_ACTIVE;
-  
-  GdkColor clr = m_dArea->style->text[state];
-  return UT_RGBColor (clr.red >> 8, clr.green >> 8, clr.blue >> 8);
-#endif
 }

@@ -99,15 +99,6 @@ static const char *getStylesheetName( const ssList_t *ssList, const gchar *trans
     return ssList[i].stylesheet;
 }
 
-#if !GTK_CHECK_VERSION(3,0,0)
-const gchar* gtk_combo_box_get_active_id( GtkComboBox* combo_box )
-{
-    g_free(s_id);
-    s_id = gtk_combo_box_get_active_text(combo_box);
-    return s_id;
-}
-#endif
-
 void GDestroyNotify_GObjectSemItem(gpointer data)
 {
     ap_GObjectSemItem* obj = (ap_GObjectSemItem*)data;

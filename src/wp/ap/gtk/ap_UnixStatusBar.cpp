@@ -188,9 +188,6 @@ GtkWidget * AP_UnixStatusBar::createWidget(void)
 			gtk_box_pack_start(GTK_BOX(m_wStatusBar), pStatusBarElement, TRUE, TRUE, 0);
 			GtkWidget *  pProgress= gtk_progress_bar_new();
 			gtk_container_add(GTK_CONTAINER(pStatusBarElement),pProgress);
-#if !GTK_CHECK_VERSION(3,0,0)
-			gtk_progress_bar_set_orientation(GTK_PROGRESS_BAR(pProgress),GTK_PROGRESS_LEFT_TO_RIGHT);
-#endif
 			gtk_progress_bar_set_pulse_step (GTK_PROGRESS_BAR(pProgress),0.01);
 
 			gtk_progress_bar_set_fraction (GTK_PROGRESS_BAR(pProgress),0.0);

@@ -33,16 +33,10 @@ protected:
 	class _fe
 	{
 	public:
-#if GTK_CHECK_VERSION(3,0,0)
 		static void draw(XAP_UnixCustomWidget *self, cairo_t *cr);
-#else
-		static void expose(XAP_UnixCustomWidget *self, GdkEventExpose *ev);
-#endif
 	};
 	friend class _fe;
-#if GTK_CHECK_VERSION(3,0,0)
 	cairo_t *m_cr;
-#endif
 };
 
 #endif

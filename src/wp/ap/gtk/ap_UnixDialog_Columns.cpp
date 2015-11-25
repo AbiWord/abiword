@@ -538,9 +538,6 @@ GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
 	
 	windowColumns = abiDialogNew ( "column dialog", TRUE, s.c_str() ) ;
 	gtk_window_set_resizable(GTK_WINDOW(windowColumns), FALSE);
-#if !GTK_CHECK_VERSION(3,0,0)
-	gtk_dialog_set_has_separator(GTK_DIALOG(windowColumns), FALSE);
-#endif	  	
 
 	_constructWindowContents(gtk_dialog_get_content_area(GTK_DIALOG(windowColumns)));
 
@@ -874,21 +871,13 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 #else
 	g_signal_connect(G_OBJECT(m_wpreviewArea),
-#if GTK_CHECK_VERSION(3,0,0)
 			 "draw",
-#else
-			 "expose_event",
-#endif
 			 G_CALLBACK(s_preview_draw),
 			 reinterpret_cast<gpointer>(this));
 #endif
 	
 	g_signal_connect_after(G_OBJECT(m_windowMain),
-#if GTK_CHECK_VERSION(3,0,0)
 			       "draw",
-#else
-			       "expose_event",
-#endif
 			       G_CALLBACK(s_window_draw),
 			       reinterpret_cast<gpointer>(this));
 }

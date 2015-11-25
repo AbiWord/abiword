@@ -111,11 +111,9 @@ void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 	EV_EditMouseButton emb = 0;
 	EV_EditMouseOp mop = 0;
 	EV_EditMouseContext emc = 0;
-#if GTK_CHECK_VERSION(3,0,0)
 	GdkDevice *device;
 
 	device = gdk_event_get_source_device((GdkEvent *) e);
-#endif
 	if (e->button == 1)
 		emb = EV_EMB_BUTTON1;
 	else if (e->button == 2)
@@ -165,12 +163,9 @@ void EV_UnixMouse::mouseClick(AV_View* pView, GdkEventButton* e)
 		invokeMouseMethod(pView,pEM,static_cast<UT_sint32>(pView->getGraphics()->tluD(e->x)),static_cast<UT_sint32>(pView->getGraphics()->tluD(e->y)));
 		signal(emc|mop|emb|state, static_cast<UT_sint32>(pView->getGraphics()->tluD(e->x)),static_cast<UT_sint32>(pView->getGraphics()->tluD(e->y)));
 
-#if GTK_CHECK_VERSION(3,0,0)
 		if (gdk_device_get_source (device) == GDK_SOURCE_TOUCHSCREEN || getenv ("ABI_TEST_TOUCH")) {
 			pView->setVisualSelectionEnabled(true);
-		} else
-#endif
-		{
+		} else {
 			pView->setVisualSelectionEnabled(false);
 		}
 		return;

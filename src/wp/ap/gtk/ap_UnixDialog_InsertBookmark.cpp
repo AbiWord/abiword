@@ -187,10 +187,6 @@ GtkWidget*  AP_UnixDialog_InsertBookmark::_constructWindow(void)
   pSS->getValueUTF8(AP_STRING_ID_DLG_InsertBookmark_Title,s);
   
   m_windowMain = abiDialogNew("insert bookmark dialog", TRUE, s.c_str());
-#if !GTK_CHECK_VERSION(3,0,0)
-  gtk_dialog_set_has_separator(GTK_DIALOG(m_windowMain), FALSE);
-#endif
-
   
   vbox = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
   gtk_widget_show (vbox);

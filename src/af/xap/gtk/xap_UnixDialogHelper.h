@@ -76,10 +76,6 @@ void messageBoxOK(const char * message);
 // Centers a GTK window inside a parent window
 void centerDialog(GtkWidget * parent, GtkWidget * child, bool set_transient_for = true);
 
-#if !GTK_CHECK_VERSION(3,0,0)
-GtkStyle * get_ensured_style (GtkWidget * w);
-#endif
-
 // creates a GtkDrawingArea, and pushes/pops correct visual and colormap
 GtkWidget *createDrawingArea ();
 

@@ -400,16 +400,8 @@ void AP_UnixFrame::toggleTopRuler(bool bRulerOn)
 		pFrameImpl->m_topRuler = pUnixTopRuler->createWidget();
 
 		// attach everything
-#if GTK_CHECK_VERSION(3,0,0)
 		gtk_grid_attach(GTK_GRID(pFrameImpl->m_innergrid), 
 				 pFrameImpl->m_topRuler, 0, 0, 2, 1);
-#else
-		gtk_table_attach(GTK_TABLE(pFrameImpl->m_innergrid), 
-						 pFrameImpl->m_topRuler, 0, 2, 0, 1, 
-						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-						 (GtkAttachOptions)(GTK_FILL),
-						 0, 0);
-#endif
 
 		static_cast<AP_TopRuler *>(pUnixTopRuler)->setView(m_pView,iZoom);
 
@@ -462,16 +454,8 @@ void AP_UnixFrame::toggleLeftRuler(bool bRulerOn)
 		pFrameData->m_pLeftRuler = pUnixLeftRuler;		
 		pFrameImpl->m_leftRuler = pUnixLeftRuler->createWidget();
 
-#if GTK_CHECK_VERSION(3,0,0)
 		gtk_grid_attach(GTK_GRID(pFrameImpl->m_innergrid), 
 				 pFrameImpl->m_leftRuler, 0, 1, 1, 1);
-#else
-		gtk_table_attach(GTK_TABLE(pFrameImpl->m_innergrid), 
-						 pFrameImpl->m_leftRuler, 0, 1, 1, 2,
-						 (GtkAttachOptions)(GTK_FILL),
-						 (GtkAttachOptions)(GTK_EXPAND | GTK_FILL),
-						 0,0);
-#endif
 		static_cast<AP_LeftRuler *>(pUnixLeftRuler)->setView(m_pView,iZoom);
 		setYScrollRange();
 	}
@@ -535,13 +519,9 @@ bool AP_UnixFrame::_createViewGraphics(GR_Graphics *& pG, UT_uint32 iZoom)
 
 	GtkWidget *widget = GTK_WIDGET(static_cast<AP_UnixFrameImpl *>(getFrameImpl())->m_dArea);
 	GR_UnixCairoGraphics *pUnixGraphics = static_cast<GR_UnixCairoGraphics *>(pG);
-#if GTK_CHECK_VERSION(3,0,0)
 	GtkWidget * w = gtk_entry_new();
 	pUnixGraphics->init3dColors(w);
 	gtk_widget_destroy(w);
-#else
-	pUnixGraphics->init3dColors(widget);
-#endif
 	pUnixGraphics->initWidget(widget);
 
 	ENSUREP_RF(pG);

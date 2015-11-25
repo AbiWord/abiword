@@ -214,11 +214,7 @@ static void s_select_row_size(GtkTreeSelection * /* widget */, XAP_UnixDialog_Fo
 }
 
 static gboolean s_drawing_area_draw(GtkWidget * w,
-#if GTK_CHECK_VERSION(3,0,0)
 								  cairo_t * /* pExposeEvent */)
-#else
-								  GdkEventExpose * /* pExposeEvent */)
-#endif
 {
 	XAP_UnixDialog_FontChooser * dlg = 
 		(XAP_UnixDialog_FontChooser *)g_object_get_data(G_OBJECT(w), "user-data");
@@ -503,9 +499,6 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontTitle,s);
 	windowFontSelection = abiDialogNew ( "font dialog", TRUE, s.c_str() ) ;
 	gtk_window_set_position(GTK_WINDOW(windowFontSelection), GTK_WIN_POS_CENTER_ON_PARENT);
-#if !GTK_CHECK_VERSION(3,0,0)
-	gtk_dialog_set_has_separator(GTK_DIALOG(windowFontSelection), FALSE);
-#endif
 
 	vboxOuter = gtk_dialog_get_content_area(GTK_DIALOG(windowFontSelection));
 
@@ -840,13 +833,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 
 	entryArea = createDrawingArea ();
 	gtk_widget_set_events(entryArea, GDK_EXPOSURE_MASK);
-#if GTK_CHECK_VERSION(3,0,0)
 	g_signal_connect(G_OBJECT(entryArea), "draw",
 					   G_CALLBACK(s_drawing_area_draw), NULL);
-#else
-	g_signal_connect(G_OBJECT(entryArea), "expose_event",
-					   G_CALLBACK(s_drawing_area_draw), NULL);
-#endif
 	gtk_widget_set_size_request (entryArea, -1, PREVIEW_BOX_HEIGHT_PIXELS);
 	gtk_widget_show (entryArea);
 	gtk_container_add (GTK_CONTAINER (frame4), entryArea);

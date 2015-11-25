@@ -223,13 +223,8 @@ GtkWidget * AP_UnixDialog_PageNumbers::_constructWindow (void)
 	g_signal_connect(G_OBJECT(radioRight),  "clicked", G_CALLBACK(s_alignment_changed), static_cast<gpointer>(this));
 
 	// the expose event off the preview
-#if GTK_CHECK_VERSION(3,0,0)
 	g_signal_connect(G_OBJECT(m_previewArea), "draw", G_CALLBACK(s_preview_draw), 
 			 static_cast<gpointer>(this));
-#else
-	g_signal_connect(G_OBJECT(m_previewArea), "expose_event", G_CALLBACK(s_preview_draw), 
-			 static_cast<gpointer>(this));
-#endif
 
 	g_object_unref(G_OBJECT(builder));
 

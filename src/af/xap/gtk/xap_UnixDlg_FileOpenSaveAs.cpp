@@ -142,15 +142,9 @@ static void s_delete_clicked(GtkWidget 	* /*widget*/,
 	gtk_main_quit();
 }
 
-#if GTK_CHECK_VERSION(3,0,0)
 static gint s_preview_draw(GtkWidget * /* widget */,
 			      cairo_t * /* cr */,
 			      gpointer ptr)
-#else
-static gint s_preview_exposed(GtkWidget * /* widget */,
-						   GdkEventExpose*,
-			      gpointer ptr)
-#endif
 {
 	XAP_UnixDialog_FileOpenSaveAs * dlg = static_cast<XAP_UnixDialog_FileOpenSaveAs *> (ptr);
 	UT_ASSERT(dlg);
@@ -657,13 +651,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		g_signal_connect (m_FC, "update_preview",
 								G_CALLBACK (file_selection_changed), static_cast<gpointer>(this));
 		
-#if GTK_CHECK_VERSION(3,0,0)
 		g_signal_connect (preview, "draw",
 								G_CALLBACK (s_preview_draw), static_cast<gpointer>(this));
-#else
-		g_signal_connect (preview, "expose_event",
-								G_CALLBACK (s_preview_exposed), static_cast<gpointer>(this));
-#endif
 	}
 
 #if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON

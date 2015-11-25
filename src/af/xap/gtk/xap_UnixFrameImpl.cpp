@@ -1454,11 +1454,7 @@ void XAP_UnixFrameImpl::_setCursor(GR_Graphics::Cursor c)
 	if (m_wStatusBar)
 		gdk_window_set_cursor(gtk_widget_get_window(m_wStatusBar), cursor);
 
-#if GTK_CHECK_VERSION(3,0,0)
 	g_object_unref(cursor);
-#else
-	gdk_cursor_unref(cursor);
-#endif
 }
 
 UT_sint32 XAP_UnixFrameImpl::_setInputMode(const char * szName)

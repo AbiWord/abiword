@@ -649,11 +649,7 @@ void AP_UnixDialog_Border_Shading::_connectSignals(void)
 							reinterpret_cast<gpointer>(this));
 						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
-#if GTK_CHECK_VERSION(3,0,0)
 							"draw",
-#else
-							"expose_event",
-#endif
 							G_CALLBACK(s_preview_draw),
 							reinterpret_cast<gpointer>(this));
 

@@ -43,13 +43,8 @@ struct _AbiCellRendererFont {
 struct _AbiCellRendererFontClass {
 	GtkCellRendererTextClass parent;
 
-#if GTK_CHECK_VERSION(3,0,0)
 	void (* popup_position) (GtkCellRenderer *cell, 
 				 cairo_rectangle_int_t	 *position);
-#else
-	void (* popup_position) (GtkCellRenderer *cell, 
-				 GdkRectangle	 *position);
-#endif
 	void (* prelight_popup) (GtkCellRenderer *cell, 
 				 const gchar 	 *text);
 	void (* render_closed)  (GtkCellRenderer *cell);
@@ -75,7 +70,6 @@ static guint cell_renderer_font_signals[RENDERER_LAST_SIGNAL] = { 0 };
 
 static GtkCellRendererTextClass *abi_cell_renderer_font_parent_class = NULL;
 
-#if GTK_CHECK_VERSION(3,0,0)
 void
 abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 			       cairo_t              *cr,
@@ -83,16 +77,6 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 			       const GdkRectangle         *background_area,
 			       const GdkRectangle         *cell_area,
 			       GtkCellRendererState  flags)
-#else
-void
-abi_cell_renderer_font_render (GtkCellRenderer      *cell,
-			       GdkDrawable          *window,
-			       GtkWidget            *widget,
-			       GdkRectangle         *background_area,
-			       GdkRectangle         *cell_area,
-			       GdkRectangle         *expose_area,
-			       GtkCellRendererState  flags)
-#endif
 {
 	AbiCellRendererFont	*self;
 	GtkTreeModel		*model;
@@ -102,15 +86,9 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 	self = ABI_CELL_RENDERER_FONT (cell);
 	text = NULL;
 
-#if GTK_CHECK_VERSION(3,0,0)
 	GTK_CELL_RENDERER_CLASS (abi_cell_renderer_font_parent_class)->render (
 					cell, cr, widget, background_area, 
 					cell_area,flags);
-#else
-	GTK_CELL_RENDERER_CLASS (abi_cell_renderer_font_parent_class)->render (
-					cell, window, widget, background_area, 
-					cell_area, expose_area, flags);
-#endif
 
 	if (GTK_CELL_RENDERER_PRELIT & flags) {
 
@@ -119,15 +97,12 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 
 			if (!self->is_popped_up) {
 				gint x, y;
-#if GTK_CHECK_VERSION(3,0,0)
 				GtkAllocation allocation;
 				cairo_rectangle_int_t area;
-#endif
 
 				/* open_popup (self->parent_widget); */
 				self->is_popped_up = TRUE;
 
-#if GTK_CHECK_VERSION(3,0,0)
 				gdk_window_get_origin(gtk_widget_get_window(widget), &x, &y);
 				gtk_widget_get_allocation(widget, &allocation);
 				area.x = background_area->x + x + allocation.width;
@@ -137,14 +112,6 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 				g_signal_emit (G_OBJECT (cell), 
 					       cell_renderer_font_signals[RENDERER_POPUP_OPENED],
 					       0, &area);
-#else
-				gdk_window_get_origin(widget->window, &x, &y);
-				background_area->x += x + widget->allocation.width;
-				background_area->y += y;
-				g_signal_emit (G_OBJECT (cell), 
-					       cell_renderer_font_signals[RENDERER_POPUP_OPENED],
-					       0, background_area);
-#endif
 			}
 
 			g_object_get (G_OBJECT (cell), 
@@ -179,14 +146,6 @@ abi_cell_renderer_font_render (GtkCellRenderer      *cell,
 	}
 }
 
-#if !GTK_CHECK_VERSION(3,0,0)
-static void
-abi_cell_renderer_font_instance_destroy (GtkObject *instance)
-{
-	GTK_OBJECT_CLASS (abi_cell_renderer_font_parent_class)->destroy (instance);
-}
-#endif
-
 static void
 abi_cell_renderer_font_instance_init (AbiCellRendererFont *self)
 {
@@ -200,10 +159,6 @@ abi_cell_renderer_font_class_init (AbiCellRendererFontClass *klass)
 
 	abi_cell_renderer_font_parent_class = (GtkCellRendererTextClass*) g_type_class_ref (GTK_TYPE_CELL_RENDERER_TEXT);
 
-#if !GTK_CHECK_VERSION(3,0,0)
-	GtkObjectClass *gtk_object_class = GTK_OBJECT_CLASS (klass);
-	gtk_object_class->destroy = abi_cell_renderer_font_instance_destroy;
-#endif
 	cell_renderer_class->render = abi_cell_renderer_font_render;
 
 	cell_renderer_font_signals[RENDERER_POPUP_OPENED] =
@@ -288,11 +243,7 @@ static GtkComboBoxClass *abi_font_combo_parent_class = NULL;
 
 static void
 renderer_popup_opened_cb (AbiFontCombo		*self, 
-#if GTK_CHECK_VERSION(3,0,0)
 			  cairo_rectangle_int_t	*position, 
-#else
-			  GdkRectangle		*position,
-#endif
 			  GtkCellRenderer 	* /*renderer*/)
 {
 	g_signal_emit (G_OBJECT (self), font_combo_signals[POPUP_OPENED],
