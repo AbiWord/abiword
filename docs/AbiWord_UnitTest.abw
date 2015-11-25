@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE abiword PUBLIC "-//ABISOURCE//DTD AWML 1.0 Strict//EN" "http://www.abisource.com/awml.dtd">
-<abiword template="false" styles="unlocked" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:svg="http://www.w3.org/2000/svg" xmlns:dc="http://purl.org/dc/elements/1.1/" fileformat="1.0" xmlns:math="http://www.w3.org/1998/Math/MathML" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" version="0.99.2" xml:space="preserve" props="dom-dir:ltr; document-footnote-restart-section:0; document-endnote-type:numeric; document-endnote-place-enddoc:1; document-endnote-initial:1; lang:en-US; document-endnote-restart-section:0; document-footnote-restart-page:0; document-footnote-type:numeric; document-footnote-initial:1; document-endnote-place-endsection:0">
+<abiword template="false" xmlns:ct="http://www.abisource.com/changetracking.dtd" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:math="http://www.w3.org/1998/Math/MathML" xid-max="59" xmlns:dc="http://purl.org/dc/elements/1.1/" styles="unlocked" fileformat="1.0" xmlns:svg="http://www.w3.org/2000/svg" xmlns:awml="http://www.abisource.com/awml.dtd" xmlns="http://www.abisource.com/awml.dtd" xmlns:xlink="http://www.w3.org/1999/xlink" version="0.99.2" xml:space="preserve" props="dom-dir:ltr; document-footnote-restart-section:0; document-endnote-type:numeric; document-endnote-place-enddoc:1; document-endnote-initial:1; lang:en-US; document-endnote-restart-section:0; document-footnote-restart-page:0; document-footnote-type:numeric; document-footnote-initial:1; document-endnote-place-endsection:0">
 <!-- ======================================================================== -->
 <!-- This file is an AbiWord document.                                        -->
 <!-- AbiWord is a free, Open Source word processor.                           -->
@@ -9,57 +9,76 @@
 <!-- ======================================================================== -->
 
 <metadata>
-<m key="dc.format">application/x-abiword</m>
+<m key="abiword.date_last_changed">Wed Nov 25 18:21:52 2015
+</m>
 <m key="abiword.generator">AbiWord</m>
+<m key="dc.date">Wed Nov 25 15:47:12 2015
+</m>
+<m key="dc.format">application/x-abiword</m>
 </metadata>
-<history version="18" edit-time="10427" last-saved="1104528920" uid="982fb50a-5b5b-11d9-94a7-de5c71344ba4">
-<version id="18" started="1104518788" uid="df19ed10-5b73-11d9-94a7-de5c71344ba4" auto="0"/>
+<rdf>
+</rdf>
+<history version="22" edit-time="19817" last-saved="1448493712" uid="982fb50a-5b5b-11d9-94a7-de5c71344ba4">
+<version id="18" started="1104518788" uid="df19ed10-5b73-11d9-94a7-de5c71344ba4" auto="0" top-xid="0"/>
+<version id="22" started="1448484432" uid="4fb5352a-93cb-11e5-91f1-f9d0614b0aa1" auto="0" top-xid="41"/>
 </history>
 <styles>
-<s followedby="Current Settings" name="Normal" type="P" props="font-weight:normal; font-family:Bitstream Vera Serif; margin-top:14pt; font-style:normal; margin-left:0pt; lang:en-US; dom-dir:ltr; font-variant:normal; text-indent:0in; margin-bottom:14pt; text-decoration:none; bgcolor:transparent; margin-right:0pt; color:000000; font-size:12pt; line-height:1.0; text-align:left; widows:2; font-stretch:normal"/>
-<s type="P" name="Heading 1" basedon="Normal" followedby="Normal" props="keep-with-next:1; margin-top:22pt; font-weight:bold; margin-bottom:3pt; font-family:Arial; font-size:17pt"/>
-<s type="P" name="Heading 2" basedon="Normal" followedby="Normal" props="keep-with-next:1; margin-top:22pt; font-weight:bold; margin-bottom:3pt; font-family:Arial; font-size:14pt"/>
-<s followedby="Current Settings" name="source code" basedon="Normal" type="P" props="text-indent:0in; orphans:2; margin-top:0pt; margin-left:0.3937in; list-decimal:.; line-height:1.0; keep-with-next:no; lang:en-US; text-align:left; list-style:None; keep-together:no; color:000000; dom-dir:ltr; margin-bottom:0pt; font-weight:normal; text-decoration:none; default-tab-interval:0.5000in; bgcolor:transparent; start-value:1; font-stretch:normal; font-variant:normal; font-size:12pt; margin-right:0pt; font-style:normal; widows:2; tabstops:0.5906in/L0,0.7874in/L0,0.9843in/L0,1.1811in/L0; list-delim:%L; font-family:Bitstream Vera Sans Mono"/>
+<s followedby="Current Settings" name="Normal" type="P" props="text-indent:0in; margin-top:14pt; margin-left:0pt; font-stretch:normal; line-height:1.0; text-align:left; bgcolor:transparent; lang:en-US; dom-dir:ltr; margin-bottom:14pt; text-decoration:none; font-weight:normal; font-variant:normal; color:000000; text-position:normal; font-size:12pt; margin-right:0pt; font-style:normal; widows:2; font-family:Bitstream Vera Serif"/>
+<s type="P" name="Heading 1" basedon="Normal" followedby="Normal" props="font-size:17pt; margin-top:22pt; font-weight:bold; margin-bottom:3pt; font-family:Arial; keep-with-next:1"/>
+<s type="P" name="Heading 2" basedon="Normal" followedby="Normal" props="font-size:14pt; margin-top:22pt; font-weight:bold; margin-bottom:3pt; font-family:Arial; keep-with-next:1"/>
+<s followedby="Current Settings" name="source code" basedon="Normal" type="P" props="default-tab-interval:0.5000in; text-indent:0in; orphans:2; margin-top:0pt; margin-left:0.3937in; list-decimal:.; line-height:1.0; keep-with-next:no; text-align:left; list-style:None; keep-together:no; lang:en-US; dom-dir:ltr; margin-bottom:0pt; font-weight:normal; text-decoration:none; bgcolor:transparent; color:000000; font-stretch:normal; font-style:normal; font-variant:normal; font-size:12pt; margin-right:0pt; start-value:1; widows:2; tabstops:0.5906in/L0,0.7874in/L0,0.9843in/L0,1.1811in/L0; font-family:Bitstream Vera Sans Mono; list-delim:%L"/>
 <s type="C" name="Footnote Reference" basedon="None" followedby="Current Settings" props="text-position:superscript; font-size:10pt"/>
 <s type="C" name="Footnote Text" basedon="Normal" followedby="Current Settings" props="text-position:normal; font-size:10pt"/>
 </styles>
 <pagesize pagetype="Letter" orientation="portrait" width="8.500000" height="11.000000" units="in" page-scale="1.000000"/>
-<section props="page-margin-footer:0.5in; page-margin-header:0.5in">
-<p style="Normal" props="text-align:center"><c props="font-weight:bold; font-size:24pt">Writing Unit Tests for AbiWord</c></p>
-<p style="Normal" props="text-align:center">Hubert Figuière &lt;hfiguiere@teaser.fr&gt;</p>
-<p style="Normal" props="text-align:center">December 31st 2004</p>
-<p style="Normal"></p>
-<p style="Heading 1">Introduction</p>
-<p style="Normal">Unit testing has been a proven to test functionnality of individual elements of a software. The lack of unit testing in AbiWord has been plagging us with various breakage all along the development cycle of AbiWord. </p>
-<p style="Normal">This document will explain de unit test framework in place, when to write such a test, how to write them and how to use it.</p>
-<p style="Normal">Since unit test framework scope is single piece of code, it should not be considered the only way to test. It comes as the first step. Mainly, regression testing will be covered later as they remain to be developped, and are seriously in need for it.</p>
-<p style="Heading 1">When to write tests ?</p>
-<p style="Normal">Ideally each class and function should have a unit test written for. You should write a unit test when you write a new class, a new method for a class, a new function or find a lack in the current unit testing. The other case is when you fix a bug with a strange corner case that you can reproduce with a simple test.</p>
-<p style="Heading 1">The Testing framework</p>
-<p style="Normal">A new subtree <c props="font-family:Bitstream Vera Sans Mono">abi/src/af/tf/</c> appeared. It contains all the testing framework. Currently only unit testing, but I expect regression tests helpers to come over.</p>
-<p style="Normal">It is based on the WvTest class found in the WvStreams LGPL library. Initial version will probably be a simple rip-off of that code, but with time, will be improved to fill into the whole Abi framework.</p>
-<p style="Normal">This framework provide the core infrastructure for running the test, simplifying at most the work needed for people to write tests.</p>
-<p style="Heading 2">How to write tests</p>
-<p style="Normal">Find the source file where the code to test is. There should be a directory <c props="font-family:Bitstream Vera Sans Mono">t</c> that contains all the tests. The unit tests will be by convention in <c props="font-family:Bitstream Vera Sans Mono">t/my_source.t.cpp</c>.</p>
-<p style="Normal">Here is the skeleton of the test file:</p>
-<p style="source code">#include "tf_test.h"</p>
-<p style="source code">#include "my_source.h"</p>
-<p style="source code"></p>
-<p style="source code">TFTEST_MAIN("test decription")</p>
-<p style="source code">{</p>
-<p style="source code">	my_class c;</p>
-<p style="source code">	TFPASS(c.foo());</p>
-<p style="source code">	TFFAIL(c.has_error());</p>
-<p style="source code">}</p>
-<p style="Normal">TFTEST_MAIN() macro is a unit test. TFPASS() macro test for true condition. TFFAIL() macro test for false condition. They both cause a test failure.</p>
-<p style="Normal">If you created the file, don't forget to add it to the <c props="font-family:Bitstream Vera Sans Mono">t/GNUmakefile.am</c> to have it compiled. That is all, the test framework handles everything else.</p>
-<p style="Normal">If the test  comes from a bugzilla issue, please mention the bug # in the test description.</p>
-<p style="Heading 2">Running the tests</p>
-<p style="Normal" props="text-align:left; dom-dir:ltr">The test binary is <c props="font-family:Bitstream Vera Sans Mono">src/wp/test/xp/AbiWord-test</c>. Just run it.</p>
-<p style="Heading 1">Other alternatives</p>
-<p style="Normal" props="text-align:left; dom-dir:ltr">We could have used cxxtest<field footnote-id="0" type="footnote_ref" style="Footnote Reference"></field><foot footnote-id="0">
-<p footnote-id="0" style="Footnote Text"><field footnote-id="0" type="footnote_anchor" style="Footnote Text" props="text-position:superscript"></field><c footnote-id="0"> cxxtest: </c><a xlink:href="http://cxxtest.sourceforge.net/"><c footnote-id="0">http://cxxtest.sourceforge.net/</c></a></p>
+<section xid="1" props="page-margin-footer:0.5in; page-margin-header:0.5in">
+<p style="Normal" xid="2" props="text-align:center"><c props="font-weight:bold; font-size:24pt">Writing Unit Tests for AbiWord</c><c props="font-weight:bold; font-size:24pt"></c></p>
+<p style="Normal" xid="3" props="text-align:center">Hubert Figuière &lt;<c>hub</c>@<c>figuiere.net</c>&gt;</p>
+<p style="Normal" xid="4" props="text-align:center">November 25th 2015</p>
+<p style="Normal" xid="5"><c></c></p>
+<p style="Heading 1" xid="6">Introduction</p>
+<p style="Normal" xid="7">Unit testing has been a proven to test functionality of individual elements of a software. The lack of unit testing in AbiWord has been plaguing us with various breakage all along the development cycle of AbiWord. </p>
+<p style="Normal" xid="8">This document will explain the unit test framework in place, when to write such a test, how to write them and how to use it.</p>
+<p style="Normal" xid="9">Since unit test framework scope is single piece of code, it should not be considered the only way to test. It comes as the first step. Mainly, regression testing will be covered later as they remain to be developed, and are seriously in need for it.</p>
+<p style="Heading 1" xid="10">When to write tests ?</p>
+<p style="Normal" xid="11">Ideally each class and function should have a unit test written for. You should write a unit test when you write a new class, a new method for a class, a new function or find a lack in the current unit testing. The other case is when you fix a bug with a strange corner case that you can reproduce with a simple test.</p>
+<p style="Heading 1" xid="12">The Testing framework</p>
+<p style="Normal" xid="13">A new subtree <c props="font-family:Bitstream Vera Sans Mono">abi/src/af/tf/</c><c props="font-family:Bitstream Vera Sans Mono"></c> appeared. It contains all the testing framework. Currently only unit testing, but I expect regression tests helpers to come over.</p>
+<p style="Normal" xid="14">It is based on the WvTest class found in the WvStreams LGPL library. Initial version will probably be a simple rip-off of that code, but with time, will be improved to fill into the whole Abi framework.</p>
+<p style="Normal" xid="15">This framework provide the core infrastructure for running the test, simplifying at most the work needed for people to write tests.</p>
+<p style="Heading 2" xid="16">How to write tests</p>
+<p style="Normal" xid="17">Find the source file where the code to test is. There should be a directory <c props="font-family:Bitstream Vera Sans Mono">t</c><c props="font-family:Bitstream Vera Sans Mono"></c> that contains all the tests. The unit tests will be by convention in <c props="font-family:Bitstream Vera Sans Mono">t/my_source.t.cpp</c>.</p>
+<p style="Normal" xid="18">Here is the skeleton of the test file:</p>
+<p style="source code" xid="19">#include "tf_test.h"</p>
+<p style="source code" xid="20">#include "my_source.h"</p>
+<p style="source code" xid="21" props="text-align:left; dom-dir:ltr"><c></c></p>
+<p style="source code" xid="52" props="text-align:left; dom-dir:ltr"><c></c>#define TFSUITE "core.wp.mytest"</p>
+<p style="source code" xid="51" props="text-align:left; dom-dir:ltr"><c></c></p>
+<p style="source code" xid="22">TFTEST_MAIN("test decription")</p>
+<p style="source code" xid="23">{</p>
+<p style="source code" xid="24">	my_class c;</p>
+<p style="source code" xid="25">	TFPASS(c.foo());</p>
+<p style="source code" xid="26">	TFFAIL(c.has_error());</p>
+<p style="source code" xid="27">}</p>
+<p style="Normal" xid="28"><c props="font-family:Bitstream Vera Sans Mono">TFSUITE</c> must be defined. It is the test suite name. This is the id you'll pass on the command line to run just this suite. (see below)</p>
+<p style="Normal" xid="53"><c></c><c props="font-family:Bitstream Vera Sans Mono">TFTEST_MAIN()</c> macro is a unit test. <c props="font-family:Bitstream Vera Sans Mono">TFPASS()</c> macro test for true condition. <c props="font-family:Bitstream Vera Sans Mono">TFFAIL()</c> macro test for false condition. They both cause a test failure.</p>
+<p style="Normal" xid="29">If you created the file, don't forget to add it to the <c props="font-family:Bitstream Vera Sans Mono">t/GNUmakefile.am</c><c props="font-family:Bitstream Vera Sans Mono"></c> to have it compiled. That is all, the test framework handles everything else.</p>
+<p style="Normal" xid="30">If the test  comes from a bugzilla issue, please mention the bug # in the test description.</p>
+<p style="Heading 2" xid="43">The test harness</p>
+<p style="Normal" xid="44">The test harness is an AbiWord plugin. This is where all the testing framework and the tests are linked in. It load link back to AbiWord executable (or libabiword) like any other plugin.</p>
+<p style="Normal" xid="56" props="text-align:left; dom-dir:ltr">Its code is in `<c props="font-family:Bitstream Vera Sans Mono">plugins/testharness/xp</c>`</p>
+<p style="Heading 2" xid="31">Running the tests</p>
+<p style="Normal" xid="32" props="text-align:left; dom-dir:ltr">The tests are run through the test harness.</p>
+<p style="Normal" xid="45" props="text-align:left; dom-dir:ltr">To run it:</p>
+<p style="source code" xid="46"><c></c>$ abiword --plugin=AbiTest</p>
+<p style="Normal" xid="49" props="text-align:left; dom-dir:ltr">In case of test failure, `abiword` will return a non-zero code.</p>
+<p style="Normal" xid="50" props="text-align:left; dom-dir:ltr">To run just a test suite, pass the test suite name:</p>
+<p style="source code" xid="54">$ abiword --plugin=AbiTest -E core.wp.impexp.table</p>
+<p style="Normal" xid="55" props="text-align:left; dom-dir:ltr">This allow testing specific areas more quickly. It is however recommended to run all the test before thinking it is all right.</p>
+<p style="Heading 1" xid="33">Other alternatives</p>
+<p style="Normal" xid="34" props="text-align:left; dom-dir:ltr">We could have used cxxtest<field footnote-id="0" type="footnote_ref" style="Footnote Reference" xid="35"></field><foot footnote-id="0" xid="36">
+<p footnote-id="0" style="Footnote Text" xid="37"><field footnote-id="0" type="footnote_anchor" style="Footnote Text" xid="38" props="text-position:superscript"></field><c footnote-id="0"> cxxtest: </c><c footnote-id="0"></c><a xlink:href="http://cxxtest.sourceforge.net/" xid="39"><c footnote-id="0">http://cxxtest.sourceforge.net/</c></a></p>
 </foot> but one of the major issues is that it requires some Perl preprocessing and that it does everything in the header, make compilation time a real pain.</p>
-<p style="Normal" props="text-align:left; dom-dir:ltr"></p>
+<p style="Normal" xid="41" props="text-align:left; dom-dir:ltr"></p>
 </section>
 </abiword>
