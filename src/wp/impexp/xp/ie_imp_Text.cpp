@@ -270,9 +270,9 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 				UT_String props("dom-dir:");
 				
 				if(UT_BIDI_IS_RTL(type))
-					props += "rtl";
+					props += "rtl;text-align:right";
 				else
-					props += "ltr";
+					props += "ltr;text-align:left";
 
 				propsArray[1] = props.c_str();
 				
