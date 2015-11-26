@@ -180,10 +180,9 @@ void XAP_Draw_Symbol::setFontToGC(GR_Graphics *p_gc, UT_uint32 MaxWidthAllowable
 
 			PointSize = LowerPointSize + (UpperPointSize - LowerPointSize) / 2;
 		}
-		if (!PointSize)
+		if (PointSize < 10)
 		{
-			UT_ASSERT (PointSize);
-			break;
+			PointSize = 10; // don't allow a too small font, see #13723
 	 	}
 
 	}
@@ -272,6 +271,8 @@ void XAP_Draw_Symbol::draw(const UT_Rect *clip)
 
 			if(w != GR_CW_ABSENT)
 			{
+				if ((unsigned) w > tmpw)
+					w = tmpw;
 				x = (pos % 32) * tmpw + (tmpw - w) / 2;
 				y = pos / 32 * tmph;
 			
@@ -398,7 +399,7 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 
 	if(w1 != GR_CW_ABSENT)
 	{
-		x = (m_drawareaWidth - w1) / 2;
+		x = (m_drawareaWidth > (unsigned) w1)? (m_drawareaWidth - w1) / 2: 0;
 		y = (m_drawareaHeight - h1) / 2;
 		areaPainter.drawChars(&c, 0, 1, x, y);
 	}
@@ -434,7 +435,7 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 
 	if(wp != GR_CW_ABSENT)
 	{
-		painter.drawChars(&p, 0, 1, px + (tmpw - wp) / 2, py);
+		painter.drawChars(&p, 0, 1, px + ((tmpw > (unsigned) wp)? (tmpw - wp) / 2: 0), py);
 	}
 	
 	// Redraw only the white box boundaries
@@ -450,7 +451,7 @@ void XAP_Draw_Symbol::drawarea(UT_UCSChar c, UT_UCSChar p)
 	painter.fillRect(colour, cx + m_areagc->tlu(1), cy + m_areagc->tlu(1), tmpw - m_areagc->tlu(1), tmph - m_areagc->tlu(1));
 	if(wc != GR_CW_ABSENT)
 	{
-		painter.drawChars(&c, 0, 1, cx + (tmpw - wc) / 2, cy);
+		painter.drawChars(&c, 0, 1, cx + ((tmpw > (unsigned) wc)? (tmpw - wc) / 2: 0), cy);
 	}
 }
 

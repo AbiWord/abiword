@@ -1297,8 +1297,8 @@ void XAP_UnixFrameImpl::_fe::destroy(GtkWidget * /*widget*/, gpointer /*data*/)
 
 void XAP_UnixFrameImpl::_nullUpdate() const
 {
-   	for (UT_uint32 i = 0; (i < 5) && gtk_events_pending(); i++)
-		gtk_main_iteration ();
+//   	for (UT_uint32 i = 0; (i < 5) && gtk_events_pending(); i++)
+//		gtk_main_iteration ();
 }
 
 void XAP_UnixFrameImpl::_initialize()

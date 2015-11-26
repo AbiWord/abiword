@@ -267,14 +267,11 @@ AP_UnixDialog_Tab::_constructWindow ()
 	gtk_spin_button_set_digits (GTK_SPIN_BUTTON (m_sbPosition), UT_getDimensionPrecisicion (m_dim));
  	// FIXME set max that fits on page gtk_spin_button_set_range (GTK_SPIN_BUTTON (m_sbPosition),	0, ...);
 
-	GtkWidget *tblNew = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "tblNew"));
+	GtkWidget *grNew = GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "grNew"));
 
 	m_cobAlignment = gtk_combo_box_text_new ();
 	gtk_widget_show (m_cobAlignment);
-	gtk_table_attach (GTK_TABLE (tblNew), m_cobAlignment, 
-					  1, 2, 1, 2,
-					  (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), GTK_EXPAND, 
-					  0, 0);
+	gtk_grid_attach(GTK_GRID(grNew), m_cobAlignment, 1, 1, 1, 1);
 
 
 	gchar *trans = NULL;
@@ -313,10 +310,7 @@ AP_UnixDialog_Tab::_constructWindow ()
 
 	m_cobLeader = gtk_combo_box_text_new ();
 	gtk_widget_show (m_cobLeader);
-	gtk_table_attach (GTK_TABLE (tblNew), m_cobLeader, 
-					  1, 2, 2, 3,
-					  (GtkAttachOptions)(GTK_EXPAND | GTK_FILL), GTK_EXPAND, 
-					  0, 0);
+	gtk_grid_attach(GTK_GRID(grNew), m_cobLeader, 1, 2, 1, 1);
 
 	pSS->getValueUTF8 (AP_STRING_ID_DLG_Tab_Radio_None, s);
 	UT_XML_cloneNoAmpersands(trans, s.c_str());
@@ -868,6 +862,6 @@ AP_UnixDialog_Tab::_controlEnable (tControl id,
 	// en/dis able tab modification buttons with delete button
 	// if we can delete we can also modify
 	if (id == id_BUTTON_CLEAR) {
-		gtk_widget_set_sensitive (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "tblNew")), value);
+		gtk_widget_set_sensitive (GTK_WIDGET(gtk_builder_get_object(m_pBuilder, "grNew")), value);
 	}
 }

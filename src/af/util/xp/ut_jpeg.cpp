@@ -102,7 +102,7 @@ static boolean _jpegFillInputBuffer (j_decompress_ptr cinfo)
 	src->pub.next_input_byte = src->sourceBuf->getPointer (src->pos);
 	src->pub.bytes_in_buffer = src->sourceBuf->getLength ();
 
-	return 1; // boolean is a libjpeg type that is an int.
+	return static_cast<boolean>(true);
 }
 
 /*

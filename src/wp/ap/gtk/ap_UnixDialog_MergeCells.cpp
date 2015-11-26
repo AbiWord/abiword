@@ -177,6 +177,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindow(void)
 
 	windowMergeCells = abiDialogNew ( "merge cell dialog", TRUE, static_cast<char *>(m_WindowName));
 	gtk_window_set_position(GTK_WINDOW(windowMergeCells), GTK_WIN_POS_MOUSE);
+	gtk_window_set_resizable(GTK_WINDOW(windowMergeCells), false);
 	vboxMain = gtk_dialog_get_content_area(GTK_DIALOG(windowMergeCells));
 	gtk_container_set_border_width(GTK_CONTAINER (vboxMain), 10);
 	_constructWindowContents();
@@ -200,7 +201,7 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	wContents = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_show (wContents);
 	GtkWidget *frame1;
-	GtkWidget *table1;
+	GtkWidget *grid1;
 	GtkWidget *wlMergeLeft;
 	GtkWidget *wlMergeRight;
 	GtkWidget *wlMergeAbove;
@@ -217,75 +218,62 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	gtk_container_set_border_width (GTK_CONTAINER (frame1), 3);
 	gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
 
-	table1 = gtk_table_new (4, 2, FALSE);
-	gtk_widget_show (table1);
-	gtk_container_add (GTK_CONTAINER (frame1), table1);
-	gtk_table_set_col_spacings (GTK_TABLE (table1), 2);
+	grid1 = gtk_grid_new();
+	gtk_widget_show(grid1);
+	gtk_container_add(GTK_CONTAINER(frame1),grid1);
+	g_object_set (G_OBJECT (grid1),
+	              "row-spacing", 6,
+	              "column-spacing", 12,
+	              NULL);
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Left,s);
 	wlMergeLeft = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
                                      "xalign", 0.0, "yalign", 0.5, NULL);
 	gtk_widget_show (wlMergeLeft);
-	gtk_table_attach (GTK_TABLE (table1), wlMergeLeft, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID(grid1), wlMergeLeft, 0, 0, 1, 1);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Right,s);
 	wlMergeRight = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
                                       "xalign", 0, "yalign", 0.5, NULL);
 	gtk_widget_show (wlMergeRight);
-	gtk_table_attach (GTK_TABLE (table1), wlMergeRight, 0, 1, 1, 2,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID(grid1), wlMergeRight, 0, 1, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Above,s);
 	wlMergeAbove = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
                                       "xalign", 0.0, "yalign", 0.5, NULL);
 	gtk_widget_show (wlMergeAbove);
-	gtk_table_attach (GTK_TABLE (table1), wlMergeAbove, 0, 1, 2, 3,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID(grid1), wlMergeAbove, 0, 2, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Below,s);
 	wlMergeBelow = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
                                       "xalign", 0.0, "yalign", 0.5, NULL);
 	gtk_widget_show (wlMergeBelow);
-	gtk_table_attach (GTK_TABLE (table1), wlMergeBelow, 0, 1, 3, 4,
-                    (GtkAttachOptions) (GTK_FILL),
-                    (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID(grid1), wlMergeBelow, 0, 3, 1, 1);
 
 	wMergeLeft = gtk_button_new();
 	gtk_widget_show (wMergeLeft);
 	label_button_with_abi_pixmap(wMergeLeft, "tb_MergeLeft_xpm");
 
-	gtk_table_attach (GTK_TABLE (table1), wMergeLeft, 1, 2, 0, 1,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 3, 0);
+	gtk_grid_attach(GTK_GRID(grid1), wMergeLeft, 1, 0, 1, 1);
 
 
 	wMergeRight = gtk_button_new();
 	gtk_widget_show (wMergeRight);
 	label_button_with_abi_pixmap(wMergeRight, "tb_MergeRight_xpm");
-	gtk_table_attach (GTK_TABLE (table1), wMergeRight, 1, 2, 1, 2,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 3, 0);
+	gtk_grid_attach(GTK_GRID(grid1), wMergeRight, 1, 1, 1, 1);
 
 	wMergeAbove = gtk_button_new();
 	gtk_widget_show (wMergeAbove);
 	label_button_with_abi_pixmap(wMergeAbove, "tb_MergeAbove_xpm");
 
-	gtk_table_attach (GTK_TABLE (table1), wMergeAbove, 1, 2, 2, 3,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 3, 0);
+	gtk_grid_attach(GTK_GRID(grid1), wMergeAbove, 1, 2, 1, 1);
 
 
 	wMergeBelow = gtk_button_new();
 	gtk_widget_show (wMergeBelow);
 	label_button_with_abi_pixmap(wMergeBelow, "tb_MergeBelow_xpm");
 
-	gtk_table_attach (GTK_TABLE (table1), wMergeBelow, 1, 2, 3, 4,
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-                    (GtkAttachOptions) (GTK_EXPAND | GTK_FILL), 3, 0);
+	gtk_grid_attach(GTK_GRID(grid1), wMergeBelow, 1, 3, 1, 1);
 
 	m_wMergeLeft = wMergeLeft;
 	m_wMergeRight = wMergeRight;

@@ -46,7 +46,7 @@
 // static helper functions
 
 static GtkWidget *
-create_pixmap (G_GNUC_UNUSED GtkWidget *w, const char **data)
+create_pixmap (const char **data)
 {
 	GtkWidget *pixmap;
 	GdkPixbuf *pixbuf = gdk_pixbuf_new_from_xpm_data(data);
@@ -214,7 +214,7 @@ void AP_UnixDialog_PageSetup::event_LandscapeChanged(void)
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (m_radioPageLandscape)))
 	{
 		gtk_widget_destroy(customPreview);
-		customPreview = create_pixmap (m_PageHbox, orient_horizontal_xpm);
+		customPreview = create_pixmap (orient_horizontal_xpm);
 		gtk_widget_show (customPreview);
 		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
 		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
@@ -222,7 +222,7 @@ void AP_UnixDialog_PageSetup::event_LandscapeChanged(void)
 	else
 	{
 		gtk_widget_destroy(customPreview);
-		customPreview = create_pixmap (m_PageHbox, orient_vertical_xpm);
+		customPreview = create_pixmap (orient_vertical_xpm);
 		gtk_widget_show (customPreview);
 		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
 		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
@@ -561,7 +561,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	m_spinMarginHeader = _getWidget("wHeaderSpin");
 	m_spinMarginFooter = _getWidget("wFooterSpin");
 
-	m_MarginHbox = _getWidget("hbox15");
+	m_MarginHbox = _getWidget("grMargin");
 	m_PageHbox = _getWidget("hbox16");
 
 	/* required for translations */
@@ -650,16 +650,16 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
     XAP_comboBoxSetActiveFromIntCol(combo, 1, last_margin_unit);
 
 	/* add margin XPM image to the margin window */
-	customPreview = create_pixmap (m_MarginHbox, margin_xpm);
+	customPreview = create_pixmap (margin_xpm);
 	gtk_widget_show (customPreview);
-	gtk_box_pack_start (GTK_BOX (m_MarginHbox), customPreview, FALSE, FALSE, 0);
+	gtk_grid_attach (GTK_GRID (m_MarginHbox), customPreview, 2, 0, 1, 8);
 
 	/* add correct page XPM image to the page window */
 	if (getPageOrientation () == PORTRAIT)
 	{
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioPagePortrait), TRUE);
 
-		customPreview = create_pixmap (m_PageHbox, orient_vertical_xpm);
+		customPreview = create_pixmap (orient_vertical_xpm);
 		gtk_widget_show (customPreview);
 		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
 		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);
@@ -668,7 +668,7 @@ GtkWidget * AP_UnixDialog_PageSetup::_constructWindow (void)
 	{
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (m_radioPageLandscape), TRUE);
 
-		customPreview = create_pixmap (m_PageHbox, orient_horizontal_xpm);
+		customPreview = create_pixmap (orient_horizontal_xpm);
 		gtk_widget_show (customPreview);
 		gtk_box_pack_start (GTK_BOX (m_PageHbox), customPreview, FALSE, FALSE, 0);
 		gtk_box_reorder_child (GTK_BOX (m_PageHbox), customPreview, 0);

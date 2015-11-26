@@ -334,6 +334,7 @@ void s_AbiWord_1_Listener::_openSpan(PT_AttrPropIndex apiSpan)
 		_closeSpan();
 	}
 
+UT_DEBUGMSG(("apiSpan=%d\n",apiSpan));
 	if (!apiSpan)				// don't write tag for empty A/P
 		return;
 
