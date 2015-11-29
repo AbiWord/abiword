@@ -639,17 +639,16 @@ void AP_UnixDialog_Lists::_fillFontMenu(GtkListStore* store)
 
 GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 {
-	GtkWidget *vbox2;
-	GtkWidget *hbox2;
-	GtkWidget *vbox4;
-	GtkWidget *table1;
+	GtkWidget *list_grid;
+	GtkWidget *grid1;
+	GtkWidget *grid2;
+	GtkWidget *grid3;
+	GtkWidget *hbox1;
 	GtkWidget *style_om;
 	GtkWidget *type_om;
 	GtkWidget *type_lb;
 	GtkWidget *style_lb;
 	GtkWidget *customized_cb;
-	GtkWidget *frame1;
-	GtkWidget *table2;
 	GtkComboBox *font_om;
 	GtkListStore *font_om_menu;
 	GtkWidget *format_en;
@@ -666,22 +665,24 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	GtkWidget *start_at_lb;
 	GtkWidget *text_align_lb;
 	GtkWidget *label_align_lb;
-	GtkWidget *vbox3;
 	GtkWidget *preview_lb;
-	GtkWidget *hbox1;
 	GSList *action_group = NULL;
 	GtkWidget *start_list_rb;
 	GtkWidget *apply_list_rb;
 	GtkWidget *resume_list_rb;
 	GtkWidget *preview_area;
-	GtkWidget *preview_frame;
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	std::string s;
 	GtkWidget * wNoteBook = NULL;
 
-	vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_show (vbox2);
+	list_grid = gtk_grid_new();
+	g_object_set(G_OBJECT(list_grid),
+		         "row-spacing", 6,
+	             "column-spacing", 12,
+	             "border-width", 12,
+	             NULL);
+	gtk_widget_show(list_grid);
 	if(!isModal())
 	{
 
@@ -694,44 +695,33 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_PageProperties,s);
 		GtkWidget * lbPageLists = gtk_label_new(s.c_str());
 		gtk_widget_show(lbPageLists);
-		gtk_notebook_append_page(GTK_NOTEBOOK(wNoteBook),vbox2,lbPageLists);
+		gtk_notebook_append_page(GTK_NOTEBOOK(wNoteBook),list_grid,lbPageLists);
 
-		m_iPageLists = gtk_notebook_page_num(GTK_NOTEBOOK(wNoteBook),vbox2);
+		m_iPageLists = gtk_notebook_page_num(GTK_NOTEBOOK(wNoteBook),list_grid);
 
 // Container for Text Folding
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_PageFolding,s);
 		GtkWidget * lbPageFolding = gtk_label_new(s.c_str());
-		GtkWidget * wFoldingTable = gtk_table_new(7,3,FALSE);
+		GtkWidget * wFoldingGrid = gtk_grid_new();
+		g_object_set(G_OBJECT(wFoldingGrid),
+			         "row-spacing", 6,
+		             "column-spacing", 12,
+		             "border-width", 12,
+		             NULL);
 		gtk_widget_show(lbPageFolding);
-		gtk_widget_show(wFoldingTable);
-		gtk_notebook_append_page(GTK_NOTEBOOK(wNoteBook),wFoldingTable,lbPageFolding);
+		gtk_widget_show(wFoldingGrid);
+		gtk_notebook_append_page(GTK_NOTEBOOK(wNoteBook),wFoldingGrid,lbPageFolding);
 
-		m_iPageFold = gtk_notebook_page_num(GTK_NOTEBOOK(wNoteBook),wFoldingTable);
-
-// Left Spacing Here
-
-		GtkWidget * lbLeftSpacer = gtk_widget_new(GTK_TYPE_LABEL,
-                                                  "xpad", 8, "ypad", 0, NULL);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),lbLeftSpacer,0,1,0,7,GTK_SHRINK,GTK_FILL,0,0);
-		gtk_widget_show(lbLeftSpacer);
+		m_iPageFold = gtk_notebook_page_num(GTK_NOTEBOOK(wNoteBook),wFoldingGrid);
 
 // Bold markup
 		GtkWidget * lbFoldHeading = gtk_label_new("<b>%s</b>");
 		gtk_label_set_use_markup(GTK_LABEL(lbFoldHeading),TRUE);
 
 		localizeLabelMarkup(lbFoldHeading,pSS,AP_STRING_ID_DLG_Lists_FoldingLevelexp);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),lbFoldHeading,1,3,0,1,GTK_FILL,GTK_FILL,0,16);
+		gtk_grid_attach(GTK_GRID(wFoldingGrid), lbFoldHeading, 0, 0, 2, 1);
 		gtk_widget_show(lbFoldHeading);
 
-// Mid Left Spacing Here
-
-		GtkWidget * lbMidLeftSpacer = gtk_widget_new(GTK_TYPE_LABEL,
-                                                  "xpad", 8, "ypad", 0, NULL);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),lbMidLeftSpacer,1,2,1,7,GTK_SHRINK,GTK_FILL,0,0);
-		gtk_widget_show(lbMidLeftSpacer);
-
-		m_vecFoldCheck.clear();
-		m_vecFoldID.clear();
 		UT_uint32 ID =0;
 // RadioButtons
 		pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_FoldingLevel0,s);
@@ -743,7 +733,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,2,3,GTK_FILL,GTK_FILL,0,6);
+		gtk_grid_attach(GTK_GRID(wFoldingGrid), wF, 0, 1, 1, 1);
+		gtk_widget_set_margin_start (wF, 18);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
@@ -756,7 +747,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,3,4,GTK_FILL,GTK_FILL,0,6);
+		gtk_grid_attach(GTK_GRID(wFoldingGrid), wF, 0, 2, 1, 1);
+		gtk_widget_set_margin_start (wF, 18);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
@@ -769,7 +761,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,4,5,GTK_FILL,GTK_FILL,0,6);
+		gtk_grid_attach(GTK_GRID(wFoldingGrid), wF, 0, 3, 1, 1);
+		gtk_widget_set_margin_start (wF, 18);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
@@ -782,7 +775,8 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,5,6,GTK_FILL,GTK_FILL,0,6);
+		gtk_grid_attach(GTK_GRID(wFoldingGrid), wF, 0, 4, 1, 1);
+		gtk_widget_set_margin_start (wF, 18);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
@@ -794,36 +788,29 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 						  "toggled",
 						 G_CALLBACK(s_FoldCheck_changed),
 						 (gpointer) this);
-		gtk_table_attach(GTK_TABLE(wFoldingTable),wF,2,3,6,7,GTK_FILL,GTK_FILL,0,6);
+		gtk_grid_attach(GTK_GRID(wFoldingGrid), wF, 0, 5, 1, 1);
+		gtk_widget_set_margin_start (wF, 18);
 		gtk_widget_show(wF);
 		m_vecFoldCheck.addItem(wF);
 		m_vecFoldID.addItem(ID);
-		gtk_widget_show(wFoldingTable);
+		gtk_widget_show(wFoldingGrid);
 
 		gtk_notebook_set_current_page(GTK_NOTEBOOK(wNoteBook),m_iPageLists);
 	}
 
 // List Page
-	gtk_container_set_border_width (GTK_CONTAINER (vbox2), 8);
 
-	hbox2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 8);
-	gtk_widget_show (hbox2);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox2, TRUE, TRUE, 0);
-
-	vbox4 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 4);
-	gtk_widget_show (vbox4);
-	gtk_box_pack_start (GTK_BOX (hbox2), vbox4, FALSE, TRUE, 0);
-
-	table1 = gtk_table_new (3, 2, FALSE);
-	gtk_widget_show (table1);
-	gtk_box_pack_start (GTK_BOX (vbox4), table1, FALSE, TRUE, 0);
-	gtk_table_set_row_spacings (GTK_TABLE (table1), 4);
+	grid1 = gtk_grid_new();
+	g_object_set(G_OBJECT(grid1),
+	             "row-spacing", 6,
+	             "column-spacing", 12,
+	             NULL);
+	gtk_widget_show(grid1);
+	gtk_grid_attach(GTK_GRID(list_grid), grid1, 0, 0, 1, 1);
 
 	style_om = gtk_combo_box_text_new();
 	gtk_widget_show (style_om);
-	gtk_table_attach (GTK_TABLE (table1), style_om, 1, 2, 1, 2,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID(grid1), style_om, 1, 1, 1, 1);
 
 	m_wListStyleNone_menu = gtk_list_store_new(2, G_TYPE_STRING, 
 											   G_TYPE_INT);
@@ -844,9 +831,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 	type_om = gtk_combo_box_text_new();
 	gtk_widget_show (type_om);
-	gtk_table_attach (GTK_TABLE (table1), type_om, 1, 2, 0, 1,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID(grid1), type_om, 1, 0, 1, 1);
 	
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Type_none,s);
 	gtk_combo_box_text_append_text(GTK_COMBO_BOX_TEXT(type_om), s.c_str());
@@ -861,17 +846,13 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
                               "xalign", 0.0, "yalign", 0.5,
                               NULL);
 	gtk_widget_show (type_lb);
-	gtk_table_attach (GTK_TABLE (table1), type_lb, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID(grid1), type_lb, 0, 0, 1, 1);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Style,s);
 	style_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                                "xalign", 0.0, "yalign", 0.5,
                                NULL);
 	gtk_widget_show (style_lb);
-	gtk_table_attach (GTK_TABLE (table1), style_lb, 0, 1, 1, 2,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID(grid1), style_lb, 0, 1, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_SetDefault,s);
 	customized_cb = gtk_dialog_add_button (GTK_DIALOG(m_wMainWindow), s.c_str(), BUTTON_RESET);
@@ -880,23 +861,18 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	gtk_widget_show (customized_cb);
 
 	/* todo
-	gtk_table_attach (GTK_TABLE (table1), customized_cb, 0, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_SHRINK),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach(GTK_GRID(grid1), customized_cb, 0, 2, 1, 1);
 	*/
-	
-	frame1 = gtk_frame_new (NULL);
-	gtk_frame_set_shadow_type(GTK_FRAME(frame1), GTK_SHADOW_NONE);
-	//gtk_widget_show (frame1);
-	gtk_box_pack_start (GTK_BOX (vbox4), frame1, TRUE, TRUE, 0);
 
-	table2 = gtk_table_new (6, 2, FALSE);
-	gtk_widget_show (table2);
-	gtk_container_add (GTK_CONTAINER (frame1), table2);
-	gtk_container_set_border_width (GTK_CONTAINER (table2), 4);
-	gtk_widget_set_sensitive (table2, TRUE);
-	gtk_table_set_row_spacings (GTK_TABLE (table2), 4);
-	gtk_table_set_col_spacings (GTK_TABLE (table2), 4);
+	grid2 = gtk_grid_new();
+	g_object_set(G_OBJECT(grid2),
+	             "row-spacing", 6,
+	             "column-spacing", 12,
+	             "margin-top", 12,
+	             NULL);
+	gtk_widget_show(grid2);
+	gtk_grid_attach(GTK_GRID(list_grid), grid2, 0, 1, 1, 1);
+	gtk_widget_set_sensitive (grid2, TRUE);
 
 	font_om_menu = gtk_list_store_new (2, G_TYPE_STRING, G_TYPE_INT);
 	_fillFontMenu(font_om_menu);
@@ -904,47 +880,34 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	font_om = GTK_COMBO_BOX(gtk_combo_box_text_new());
 	gtk_combo_box_set_model(font_om, GTK_TREE_MODEL(font_om_menu));
 	gtk_widget_show (GTK_WIDGET(font_om));
-	gtk_table_attach (GTK_TABLE (table2), GTK_WIDGET(font_om), 1, 2, 1, 2,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), GTK_WIDGET(font_om), 1, 1, 1, 1);
 
 	format_en = gtk_entry_new ();
 	gtk_entry_set_max_length(GTK_ENTRY(format_en), 20);
 	gtk_widget_show (format_en);
-	gtk_table_attach (GTK_TABLE (table2), format_en, 1, 2, 0, 1,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
-	gtk_entry_set_text (GTK_ENTRY (format_en), "%L");
+	gtk_grid_attach (GTK_GRID (grid2), format_en, 1, 0, 1, 1);
 
 	decimal_en = gtk_entry_new ();
 	gtk_widget_show (decimal_en);
-	gtk_table_attach (GTK_TABLE (table2), decimal_en, 1, 2, 2, 3,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), decimal_en, 1, 2, 1, 1);
 	gtk_entry_set_text (GTK_ENTRY (format_en), "");
 
 	start_sb_adj = (GtkAdjustment*)gtk_adjustment_new (1, 0, G_MAXINT32, 1, 10, 10);
 	start_sb = gtk_spin_button_new (GTK_ADJUSTMENT (start_sb_adj), 1, 0);
 	gtk_widget_show (start_sb);
-	gtk_table_attach (GTK_TABLE (table2), start_sb, 1, 2, 3, 4,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), start_sb, 1, 3, 1, 1);
 
 	text_align_sb_adj = (GtkAdjustment*)gtk_adjustment_new (0.25, 0, 10, 0.01, 0.2, 1);
 	text_align_sb = gtk_spin_button_new (GTK_ADJUSTMENT (text_align_sb_adj), 0.05, 2);
 	gtk_widget_show (text_align_sb);
-	gtk_table_attach (GTK_TABLE (table2), text_align_sb, 1, 2, 4, 5,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), text_align_sb, 1, 4, 1, 1);
 	gtk_spin_button_set_snap_to_ticks (GTK_SPIN_BUTTON (text_align_sb), TRUE);
 	gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (text_align_sb), TRUE);
 
 	label_align_sb_adj = (GtkAdjustment*)gtk_adjustment_new (0, 0, 10, 0.01, 0.2, 1);
 	label_align_sb = gtk_spin_button_new (GTK_ADJUSTMENT (label_align_sb_adj), 0.05, 2);
 	gtk_widget_show (label_align_sb);
-	gtk_table_attach (GTK_TABLE (table2), label_align_sb, 1, 2, 5, 6,
-					  (GtkAttachOptions) (GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), label_align_sb, 1, 5, 1, 1);
 	gtk_spin_button_set_snap_to_ticks (GTK_SPIN_BUTTON (label_align_sb), TRUE);
 	gtk_spin_button_set_wrap (GTK_SPIN_BUTTON (label_align_sb), TRUE);
 
@@ -953,80 +916,63 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
                               "xalign", 0.0, "yalign", 0.5,
                               NULL);
 	gtk_widget_show (format_lb);
-	gtk_table_attach (GTK_TABLE (table2), format_lb, 0, 1, 0, 1,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), format_lb, 0, 0, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Font,s);
 	font_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
                               NULL);
 	gtk_widget_show (font_lb);
-	gtk_table_attach (GTK_TABLE (table2), font_lb, 0, 1, 1, 2,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), font_lb, 0, 1, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_DelimiterString,s);
 	delimiter_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
                               NULL);
 	gtk_widget_show (delimiter_lb);
-	gtk_table_attach (GTK_TABLE (table2), delimiter_lb, 0, 1, 2, 3,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), delimiter_lb, 0, 2, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Start,s);
 	start_at_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
                               NULL);
 	gtk_widget_show (start_at_lb);
-	gtk_table_attach (GTK_TABLE (table2), start_at_lb, 0, 1, 3, 4,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), start_at_lb, 0, 3, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Align,s);
 	text_align_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
                               NULL);
 	gtk_widget_show (text_align_lb);
-	gtk_table_attach (GTK_TABLE (table2), text_align_lb, 0, 1, 4, 5,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), text_align_lb, 0, 4, 1, 1);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Indent,s);
 	label_align_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
                               NULL);
 	gtk_widget_show (label_align_lb);
-	gtk_table_attach (GTK_TABLE (table2), label_align_lb, 0, 1, 5, 6,
-					  (GtkAttachOptions) (GTK_EXPAND | GTK_FILL),
-					  (GtkAttachOptions) (0), 0, 0);
+	gtk_grid_attach (GTK_GRID (grid2), label_align_lb, 0, 5, 1, 1);
 
-	vbox3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_show (vbox3);
-	gtk_box_pack_start (GTK_BOX (hbox2), vbox3, TRUE, TRUE, 0);
+	grid3 = gtk_grid_new();
+	gtk_widget_show(grid3);
+	gtk_grid_attach(GTK_GRID(list_grid), grid3, 1, 0, 1, 2);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Preview,s);
-	preview_lb = gtk_widget_new (GTK_TYPE_LABEL, "label", s.c_str(),
+	preview_lb = gtk_widget_new(GTK_TYPE_LABEL, "label", s.c_str(),
                               "xalign", 0.0, "yalign", 0.5,
                               NULL);
-	gtk_widget_show (preview_lb);
-	gtk_box_pack_start (GTK_BOX (vbox3), preview_lb, FALSE, FALSE, 0);
-
-	preview_frame = gtk_frame_new (NULL);
-	gtk_widget_show (preview_frame);
-	gtk_box_pack_start (GTK_BOX (vbox3), preview_frame, TRUE, TRUE, 0);
-	gtk_container_set_border_width (GTK_CONTAINER (preview_frame), 3);
-	gtk_frame_set_shadow_type (GTK_FRAME (preview_frame), GTK_SHADOW_NONE);
+	gtk_widget_show(preview_lb);
+	gtk_grid_attach(GTK_GRID(grid3), preview_lb, 0, 0, 1, 1);
 
 	preview_area = createDrawingArea ();
-	gtk_widget_set_size_request (preview_area,180,225);
+	gtk_widget_set_size_request (preview_area, 180, 225);
+	gtk_widget_set_margin_start (preview_area, 18);
 	gtk_widget_show (preview_area);
-	gtk_container_add (GTK_CONTAINER (preview_frame), preview_area);
+	gtk_grid_attach(GTK_GRID(grid3), preview_area, 0, 1, 1, 1);
 
 	hbox1 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 16);
 	if(!isModal())
 		gtk_widget_show (hbox1);
-	gtk_box_pack_start (GTK_BOX (vbox2), hbox1, FALSE, FALSE, 0);
+	gtk_grid_attach(GTK_GRID(list_grid), hbox1, 0, 2, 2, 1);
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_Apply_Current,s);
 	apply_list_rb = gtk_radio_button_new_with_label (action_group, s.c_str());
 	action_group = gtk_radio_button_get_group (GTK_RADIO_BUTTON (apply_list_rb));
@@ -1050,7 +996,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 	// Save useful widgets in member variables
 	if(isModal())
 	{
-		m_wContents = vbox2;
+		m_wContents = list_grid;
 	}
 	else
 	{
@@ -1074,9 +1020,9 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 	m_wFontOptions = font_om;
 	m_wFontOptions_menu = font_om_menu;
-	m_wCustomFrame = frame1;
+	m_wCustomFrame = grid2;
 	m_wCustomLabel = customized_cb;
-	m_wCustomTable = table2;
+	m_wCustomTable = grid2;
 	m_wListStyleBox = GTK_COMBO_BOX(style_om);
 	m_wListTypeBox = GTK_COMBO_BOX(type_om);
 	m_wListType_menu = m_wListStyleNumbered_menu;

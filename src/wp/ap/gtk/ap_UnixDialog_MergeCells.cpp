@@ -221,10 +221,10 @@ GtkWidget * AP_UnixDialog_MergeCells::_constructWindowContents(void)
 	grid1 = gtk_grid_new();
 	gtk_widget_show(grid1);
 	gtk_container_add(GTK_CONTAINER(frame1),grid1);
-	g_object_set (G_OBJECT (grid1),
-	              "row-spacing", 6,
-	              "column-spacing", 12,
-	              NULL);
+	g_object_set(G_OBJECT(grid1),
+	             "row-spacing", 6,
+	             "column-spacing", 12,
+	             NULL);
 
 	std::string s;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_MergeCells_Left,s);

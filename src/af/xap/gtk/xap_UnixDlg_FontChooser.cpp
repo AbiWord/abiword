@@ -515,7 +515,7 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindow(void)
 
 // GtkBuilder generated dialog, using fixed widgets to closely match
 // the Windows layout, with some changes for color selector
-GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *parent)
+GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *)
 {
 	GtkTreeSelection *selection;
 	GtkWidget *vboxMain;
@@ -524,8 +524,8 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	GtkWidget *labelStyle;
 	GtkWidget *listFonts;
 	GtkWidget *labelSize;
-	GtkWidget *frameEffects;
-	GtkWidget *tblEffectRows;
+	GtkWidget *lblEffects;
+	GtkWidget *grEffectRows;
 	GtkWidget *checkbuttonStrikeout;
 	GtkWidget *checkbuttonUnderline;
 	GtkWidget *checkbuttonOverline;
@@ -556,23 +556,18 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	gtk_box_pack_start (GTK_BOX (vboxMain), notebookMain, 1, 1, 0);
 	gtk_container_set_border_width (GTK_CONTAINER (notebookMain), 8);
 
-	GtkWidget *window1 = parent;
-	GtkWidget *table1;
-	GtkWidget *vbox1;
-
+	GtkWidget *grid1;
 	GtkWidget *scrolledwindow1;
-	GtkWidget *vbox2;
 	GtkWidget *scrolledwindow2;
-	GtkWidget *vbox3;
 	GtkWidget *scrolledwindow3;
-	GtkWidget *vboxmisc;
 //  	GtkWidget *hboxForEncoding;
-	table1 = gtk_table_new (2, 3, FALSE);
-	gtk_widget_set_name (table1, "table1");
-	g_object_ref (G_OBJECT(table1));
-	g_object_set_data_full (G_OBJECT (window1), "table1", table1,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
-	gtk_widget_show (table1);
+	grid1 = gtk_grid_new();
+	g_object_set(G_OBJECT(grid1),
+	             "row-spacing", 6,
+	             "column-spacing", 12,
+	             "border-width", 12,
+	             NULL);
+	gtk_widget_show(grid1);
 
 	std::string s;
 	// Label for first page of the notebook
@@ -582,191 +577,103 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 //
 // Make first page of the notebook
 //
-	gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), table1,labelTabFont);
-
-	vbox1 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_set_name (vbox1, "vbox1");
-	g_object_ref (G_OBJECT(vbox1));
-	g_object_set_data_full (G_OBJECT (window1), "vbox1", vbox1,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
-	gtk_widget_show (vbox1);
-	gtk_table_attach (GTK_TABLE (table1), vbox1, 0, 1, 0, 2,
-					  static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_EXPAND | GTK_FILL), 0, 0);
+	gtk_notebook_append_page(GTK_NOTEBOOK(notebookMain), grid1, labelTabFont);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_FontLabel,s);
 	labelFont = gtk_label_new (s.c_str());
-	gtk_widget_set_name (labelFont, "labelFont");
-	g_object_ref (labelFont);
-	g_object_set_data_full (G_OBJECT (window1), "labelFont", labelFont,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
-	gtk_widget_show (labelFont);
-	gtk_box_pack_start (GTK_BOX (vbox1), labelFont, FALSE, FALSE, 6);
+	gtk_widget_set_halign(labelFont, GTK_ALIGN_CENTER);
+	gtk_widget_show(labelFont);
+	gtk_grid_attach(GTK_GRID(grid1), labelFont, 0, 0, 1, 1);
 
-	scrolledwindow1 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_name (scrolledwindow1, "scrolledwindow1");
-	g_object_ref (scrolledwindow1);
-	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow1", scrolledwindow1,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
+	scrolledwindow1 = gtk_scrolled_window_new(NULL, NULL);
 	gtk_widget_show (scrolledwindow1);
-	gtk_box_pack_start (GTK_BOX (vbox1), scrolledwindow1, TRUE, TRUE, 0);
+	gtk_grid_attach(GTK_GRID(grid1), scrolledwindow1, 0, 1, 1, 3);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow1), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow1), 3);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwindow1), GTK_SHADOW_IN);
 
 	listFonts = createFontTabTreeView();
-	gtk_widget_set_name (listFonts, "listFonts");
-	g_object_ref (listFonts);
-	g_object_set_data_full (G_OBJECT (window1), "listFonts", listFonts,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (listFonts);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow1), listFonts);
 
-	vbox2 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_set_name (vbox2, "vbox2");
-	g_object_ref (vbox2);
-	g_object_set_data_full (G_OBJECT (window1), "vbox2", vbox2,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
-	gtk_widget_show (vbox2);
-	gtk_table_attach (GTK_TABLE (table1), vbox2, 1, 2, 0, 1,
-					  static_cast<GtkAttachOptions>(GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
-
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StyleLabel,s);
 	labelStyle = gtk_label_new (s.c_str());
-	gtk_widget_set_name (labelStyle, "labelStyle");
-	g_object_ref (labelStyle);
-	g_object_set_data_full (G_OBJECT (window1), "labelStyle", labelStyle,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
+	gtk_widget_set_halign(labelStyle, GTK_ALIGN_CENTER);
 	gtk_widget_show (labelStyle);
-	gtk_box_pack_start (GTK_BOX (vbox2), labelStyle, FALSE, FALSE, 6);
+	gtk_grid_attach(GTK_GRID(grid1), labelStyle, 1, 0, 1, 1);
 
 	scrolledwindow2 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_name (scrolledwindow2, "scrolledwindow2");
-	g_object_ref (scrolledwindow2);
-	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow2", scrolledwindow2,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (scrolledwindow2);
-	gtk_box_pack_start (GTK_BOX (vbox2), scrolledwindow2, TRUE, TRUE, 0);
+	gtk_grid_attach(GTK_GRID(grid1), scrolledwindow2, 1, 1, 1, 1);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow2), GTK_POLICY_NEVER, GTK_POLICY_NEVER);
-	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow2), 3);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwindow2), GTK_SHADOW_IN);
 
 	listStyles = createFontTabTreeView();
 	gtk_widget_set_name (listStyles, "listStyles");
-	g_object_ref (listStyles);
-	g_object_set_data_full (G_OBJECT (window1), "listStyles", listStyles,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (listStyles);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow2), listStyles);
 
-	vbox3 = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_set_name (vbox3, "vbox3");
-	g_object_ref (vbox3);
-	g_object_set_data_full (G_OBJECT (window1), "vbox3", vbox3,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
-	gtk_widget_show (vbox3);
-	gtk_table_attach (GTK_TABLE (table1), vbox3, 2, 3, 0, 1,
-					  static_cast<GtkAttachOptions>(GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
-
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SizeLabel,s);
 	labelSize = gtk_label_new (s.c_str());
-	gtk_widget_set_name (labelSize, "labelSize");
-	g_object_ref (labelSize);
-	g_object_set_data_full (G_OBJECT (window1), "labelSize", labelSize,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
+	gtk_widget_set_halign(labelSize, GTK_ALIGN_CENTER);
 	gtk_widget_show (labelSize);
-	gtk_box_pack_start (GTK_BOX (vbox3), labelSize, FALSE, FALSE, 6);
+	gtk_grid_attach(GTK_GRID(grid1), labelSize, 2, 0, 1, 1);
 
 	scrolledwindow3 = gtk_scrolled_window_new (NULL, NULL);
-	gtk_widget_set_name (scrolledwindow3, "scrolledwindow3");
-	g_object_ref (scrolledwindow3);
-	g_object_set_data_full (G_OBJECT (window1), "scrolledwindow3", scrolledwindow3,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (scrolledwindow3);
-	gtk_box_pack_start (GTK_BOX (vbox3), scrolledwindow3, TRUE, TRUE, 0);
+	gtk_grid_attach(GTK_GRID(grid1), scrolledwindow3, 2, 1, 1, 1);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolledwindow3), GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
-	gtk_container_set_border_width (GTK_CONTAINER (scrolledwindow3), 3);
-	gtk_scrolled_window_set_shadow_type(GTK_SCROLLED_WINDOW(scrolledwindow3), GTK_SHADOW_IN);
 
 	listSizes = createFontTabTreeView();
-	gtk_widget_set_name (listSizes, "listSizes");
-	g_object_ref (listSizes);
-	g_object_set_data_full (G_OBJECT (window1), "listSizes", listSizes,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
 	gtk_widget_show (listSizes);
 	gtk_container_add (GTK_CONTAINER (scrolledwindow3), listSizes);
 
-	vboxmisc = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_set_name (vboxmisc, "vboxmisc");
-	g_object_ref (vboxmisc);
-	g_object_set_data_full (G_OBJECT (window1), "vboxmisc", vboxmisc,
-							  reinterpret_cast<GDestroyNotify>(g_object_unref));
-	gtk_widget_show (vboxmisc);
-	gtk_table_attach (GTK_TABLE (table1), vboxmisc, 1, 3, 1, 2,
-					  static_cast<GtkAttachOptions>(GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
+	grEffectRows = gtk_grid_new();
+	g_object_set(G_OBJECT(grEffectRows),
+	             "row-spacing", 6,
+	             "column-spacing", 12,
+	             "margin-top", 12,
+	             NULL);
+	gtk_widget_show (grEffectRows);
 
+	gtk_grid_attach(GTK_GRID(grid1), grEffectRows, 1, 2, 2, 1);
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_EffectsFrameLabel,s);
-	frameEffects = gtk_frame_new (s.c_str());
-	gtk_frame_set_shadow_type(GTK_FRAME(frameEffects), GTK_SHADOW_NONE);
-	gtk_widget_show (frameEffects);
-	gtk_box_pack_start(GTK_BOX (vboxmisc), frameEffects, 0,0, 6);
-
-	tblEffectRows = gtk_table_new(2, 4, FALSE);
-	gtk_widget_show (tblEffectRows);
-	gtk_container_add (GTK_CONTAINER (frameEffects), tblEffectRows);
+	s = std::string("<b>") + s + "</b>";
+	lblEffects = gtk_label_new (s.c_str());
+	g_object_set(lblEffects, "use-markup", true, "xalign", 0., NULL);
+	gtk_widget_show(lblEffects);
+	gtk_grid_attach(GTK_GRID(grEffectRows), lblEffects, 0, 0, 4, 1);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_StrikeoutCheck,s);
 	checkbuttonStrikeout = gtk_check_button_new_with_label (s.c_str());
-	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonStrikeout), 5);
+	gtk_widget_set_margin_start(checkbuttonStrikeout, 18);
 	gtk_widget_show (checkbuttonStrikeout);
-	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonStrikeout, 0, 1, 0, 1,
-					  static_cast<GtkAttachOptions>(GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
+	gtk_grid_attach(GTK_GRID(grEffectRows), checkbuttonStrikeout, 0, 1, 1, 1);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_UnderlineCheck,s);
 	checkbuttonUnderline = gtk_check_button_new_with_label (s.c_str());
-	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonUnderline), 5);
 	gtk_widget_show (checkbuttonUnderline);
-	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonUnderline, 1, 2, 0, 1,
-					  static_cast<GtkAttachOptions>(GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
+	gtk_grid_attach(GTK_GRID(grEffectRows), checkbuttonUnderline, 1, 1, 1, 1);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_OverlineCheck,s);
 	checkbuttonOverline = gtk_check_button_new_with_label (s.c_str());
-	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonOverline), 5);
 	gtk_widget_show (checkbuttonOverline);
-	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonOverline, 2, 3, 0, 1,
-					  static_cast<GtkAttachOptions>(GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
+	gtk_grid_attach(GTK_GRID(grEffectRows), checkbuttonOverline, 2, 1, 1, 1);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_HiddenCheck,s);
 	checkbuttonHidden = gtk_check_button_new_with_label (s.c_str());
-	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonHidden), 5);
 	gtk_widget_show (checkbuttonHidden);
-	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonHidden, 3, 4, 0, 1,
-					  static_cast<GtkAttachOptions>(GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
+	gtk_grid_attach(GTK_GRID(grEffectRows), checkbuttonHidden, 3, 1, 1, 1);
 
 	/* subscript/superscript */
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SubScript,s);
 	checkbuttonSubscript = gtk_check_button_new_with_label (s.c_str());
-	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonSubscript), 5);
+	gtk_widget_set_margin_start(checkbuttonSubscript, 18);
 	gtk_widget_show (checkbuttonSubscript);
-	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonSubscript, 0, 1, 1, 2,
-					  static_cast<GtkAttachOptions>(GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
+	gtk_grid_attach(GTK_GRID(grEffectRows), checkbuttonSubscript, 0, 2, 1, 1);
 
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_UFS_SuperScript,s);
 	checkbuttonSuperscript = gtk_check_button_new_with_label (s.c_str());
-	gtk_container_set_border_width (GTK_CONTAINER (checkbuttonSuperscript), 5);
 	gtk_widget_show (checkbuttonSuperscript);
-	gtk_table_attach(GTK_TABLE(tblEffectRows), checkbuttonSuperscript, 1, 2, 1, 2,
-					  static_cast<GtkAttachOptions>(GTK_FILL),
-					  static_cast<GtkAttachOptions>(GTK_FILL), 0, 0);
+	gtk_grid_attach(GTK_GRID(grEffectRows), checkbuttonSuperscript, 1, 2, 1, 1);
 
 	/* Notebook page for ForeGround Color Selector */
 
@@ -941,11 +848,11 @@ GtkWidget * XAP_UnixDialog_FontChooser::constructWindowContents(GtkWidget *paren
 	// font -> syle -> size -> other options ...
 	GList* focusList = NULL;
 
-	focusList = g_list_append(focusList, vbox1);
-	focusList = g_list_append(focusList, vbox2);
-	focusList = g_list_append(focusList, vbox3);
-	focusList = g_list_append(focusList, vboxmisc);
-	gtk_container_set_focus_chain(GTK_CONTAINER(table1), focusList);
+	focusList = g_list_append(focusList, scrolledwindow1);
+	focusList = g_list_append(focusList, scrolledwindow2);
+	focusList = g_list_append(focusList, scrolledwindow3);
+	focusList = g_list_append(focusList, grEffectRows);
+	gtk_container_set_focus_chain(GTK_CONTAINER(grid1), focusList);
 	g_list_free(focusList);
 	gtk_widget_grab_focus(scrolledwindow1);
 
