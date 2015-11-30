@@ -673,7 +673,6 @@ EV_UnixToolbar::EV_UnixToolbar(XAP_UnixApp 	*pUnixApp,
 	m_pViewListener(NULL),
 	m_eEvent(NULL),
 	m_wToolbar(NULL),
-	m_wHandleBox(NULL),
 	m_wHSizeGroup(NULL),
 	m_wVSizeGroup(NULL)
 {}
@@ -766,7 +765,7 @@ UT_sint32 EV_UnixToolbar::destroy(void)
 	bool bFound = false;
 	for( list = gtk_container_get_children(wBox); !bFound && list; list = list->next)
 	{
-		if(GTK_WIDGET (list->data) == m_wHandleBox)
+		if(GTK_WIDGET (list->data) == m_wToolbar)
 		{
 			bFound = true;
 			break;
@@ -787,7 +786,7 @@ UT_sint32 EV_UnixToolbar::destroy(void)
 //
 // Finally destroy the old toolbar widget
 //
-	gtk_widget_destroy(m_wHandleBox);
+	gtk_widget_destroy(m_wToolbar);
 	return pos;
 }
 
@@ -806,13 +805,13 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
     UT_UNUSED(oldpos);
 #else
 	GtkBox * wBox = _getContainer();
-	gtk_box_reorder_child(wBox, m_wHandleBox, oldpos);
+	gtk_box_reorder_child(wBox, m_wToolbar, oldpos);
 //
 // bind  view listener
 //
 	AV_View * pView = getFrame()->getCurrentView();
 	bindListenerToView(pView);
-#endif	
+#endif
 }
 
 static void setDragIcon(GtkWidget * wwd, GtkImage * img)
@@ -861,18 +860,16 @@ bool EV_UnixToolbar::synthesize(void)
 
 	XAP_Toolbar_ControlFactory * pFactory = m_pUnixApp->getControlFactory();
 	UT_ASSERT(pFactory);
-	
+
 	UT_uint32 nrLabelItemsInLayout = m_pToolbarLayout->getLayoutItemCount();
 	UT_ASSERT(nrLabelItemsInLayout > 0);
 
-	m_wHandleBox = gtk_alignment_new(0, 0, 1, 1);
-	
 	m_wToolbar = gtk_toolbar_new();
 	UT_ASSERT(m_wToolbar);
 
 	GtkToolbarStyle style = getStyle();
 	gtk_toolbar_set_style(GTK_TOOLBAR(m_wToolbar), style );
-	
+
 //	gtk_toolbar_set_tooltips(GTK_TOOLBAR(m_wToolbar), TRUE);
 	gtk_toolbar_set_show_arrow(GTK_TOOLBAR(m_wToolbar), TRUE);
 
@@ -1014,7 +1011,6 @@ bool EV_UnixToolbar::synthesize(void)
 
 				GtkWidget *combo;
 				const gchar *proxy_action_name;
-				const gchar *proxy_action_stock = NULL;
 				if (wd->m_id == AP_TOOLBAR_ID_FMT_SIZE) {
 					combo = gtk_combo_box_text_new_with_entry();
 					GtkEntry *entry = GTK_ENTRY(gtk_bin_get_child(GTK_BIN(combo)));
@@ -1046,7 +1042,6 @@ bool EV_UnixToolbar::synthesize(void)
 					// gtk_widget_set_size_request (combo, 0, -1);
 					// gtk_size_group_add_widget (m_wHSizeGroup, combo);
 					proxy_action_name = "dlgFont";
-					proxy_action_stock = GTK_STOCK_SELECT_FONT;
 				}
 				else if (wd->m_id == AP_TOOLBAR_ID_ZOOM) {
 					combo = gtk_combo_box_text_new();
@@ -1093,14 +1088,13 @@ bool EV_UnixToolbar::synthesize(void)
 						}
 					}
 				}
- 
+
 				gtk_size_group_add_widget (m_wVSizeGroup, combo);
+                gtk_widget_set_valign(combo, GTK_ALIGN_CENTER);
 				gtk_widget_show(combo);
-				GtkWidget *alignment = gtk_alignment_new (0, 0.5, 1, 0);
-				gtk_container_add (GTK_CONTAINER (alignment), combo);
-				toolbar_append_item (GTK_TOOLBAR (m_wToolbar), alignment,
+				toolbar_append_item (GTK_TOOLBAR (m_wToolbar), combo,
 									 szToolTip, static_cast<const char *>(NULL), 
-									 TRUE, proxy_action_name, proxy_action_stock, wd);
+									 TRUE, proxy_action_name, NULL, wd);
 				wd->m_widget = combo;
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
@@ -1254,11 +1248,8 @@ bool EV_UnixToolbar::synthesize(void)
 	// show the complete thing
 	gtk_widget_show(m_wToolbar);
 
-	// pack it in a handle box
-	gtk_container_add(GTK_CONTAINER(m_wHandleBox), m_wToolbar);
 	// put it in the vbox
-	gtk_widget_show(m_wHandleBox);
-	gtk_box_pack_start(wBox, m_wHandleBox, FALSE, FALSE, 0);
+	gtk_box_pack_start(wBox, m_wToolbar, FALSE, FALSE, 0);
 
 	setDetachable(getDetachable());
 #endif /* HAVE_HILDON */
@@ -1481,17 +1472,7 @@ XAP_Frame * EV_UnixToolbar::getFrame(void)
 void EV_UnixToolbar::show(void)
 {
 	if (m_wToolbar) {
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 		gtk_widget_show (m_wToolbar);
-#else
-		GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
-		gtk_widget_show(m_wHandleBox);
-		gtk_widget_show (gtk_widget_get_parent (m_wToolbar));
-		if (getDetachable()) {
-			gtk_widget_show(widget);
-
-		}		
-#endif	
 	}
 }
 
@@ -1499,18 +1480,7 @@ void EV_UnixToolbar::hide(void)
 {
 
 	if (m_wToolbar) {
-
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
 		gtk_widget_hide (m_wToolbar);
-#else
-		GtkWidget *widget = gtk_bin_get_child(GTK_BIN(m_wHandleBox));
-		gtk_widget_hide(m_wHandleBox);
-		gtk_widget_hide (gtk_widget_get_parent(m_wToolbar));
-		if (getDetachable()) {
-			gtk_widget_hide(widget);
-		}		
-#endif 	
-
 	}
 	EV_Toolbar::hide();
 }
