@@ -86,24 +86,18 @@
 
 class _wd;
 
-static void s_proxy_activated(GtkAction * action, _wd * wd);
+static void s_proxy_activated(GtkMenuItem * , _wd * wd);
 
 static const GtkTargetEntry s_AbiTBTargets[] = {{(gchar*)"abi-toolbars",0,0}};
 
-/*!
- * Append a widget to the toolbar, 
- * wrap it in a GtkToolItem if it isn't one already.
- */
 static GtkWidget *
-toolbar_append_item (GtkToolbar *toolbar, 
-					 GtkWidget  *widget,
-					 const char *text,
-					 const char *private_text, 
-					 gboolean	 show,
-					 /* for the proxy action */
-					 const char	*action_name,
-					 const char	*stock_id,
-					 gpointer	 data)
+toolbar_append_item_with_proxy (GtkToolbar *toolbar,
+                                GtkWidget	*widget,
+                                const char *text,
+                                gboolean	 show,
+                                /* for the proxy action */
+                                const char     *action_name,
+                                gpointer        data)
 {
 	GtkToolItem *tool_item;
 
@@ -121,14 +115,13 @@ toolbar_append_item (GtkToolbar *toolbar,
 		gtk_container_add (GTK_CONTAINER (box), widget);
 		gtk_tool_item_set_tooltip_text(tool_item, text);
 		if (action_name && data) {
-			GtkAction	*proxy_action;
-			GtkWidget 	*menu_item;
-			proxy_action = gtk_action_new (action_name, text, private_text, stock_id);
-			g_signal_connect (proxy_action, "activate", 
+			GtkWidget	*menu_item;
+            menu_item = gtk_menu_item_new_with_label(text);
+			g_object_set_data(G_OBJECT(menu_item),
+							  "abi_action", (gpointer)action_name);
+			g_signal_connect (menu_item, "activate",
 							  G_CALLBACK (s_proxy_activated), data);
-			menu_item = gtk_action_create_menu_item (proxy_action);
 			gtk_tool_item_set_proxy_menu_item (tool_item, text, menu_item);
-			g_object_unref (G_OBJECT (proxy_action));
 		}
 	}
 	gtk_toolbar_insert (toolbar, tool_item, -1);
@@ -140,6 +133,20 @@ toolbar_append_item (GtkToolbar *toolbar,
 }
 
 /*!
+ * Append a widget to the toolbar,
+ * wrap it in a GtkToolItem if it isn't one already.
+ */
+static GtkWidget *
+toolbar_append_item (GtkToolbar *toolbar,
+					 GtkWidget  *widget,
+					 const char *text,
+					 gboolean	 show)
+{
+	return toolbar_append_item_with_proxy(toolbar, widget, text,
+                                          show, NULL, NULL);
+}
+
+/*!
  * Append a GtkToolButton to the toolbar.
  */
 static GtkWidget *
@@ -147,7 +154,6 @@ toolbar_append_button (GtkToolbar 	*toolbar,
 					   const gchar	*icon_name,
 					   const gchar	*label,
 					   const gchar  *tooltip,
-					   const gchar  *private_text,
 					   GCallback	 handler,
 					   gpointer		 data,
 					   gulong		*handler_id)
@@ -164,8 +170,7 @@ toolbar_append_button (GtkToolbar 	*toolbar,
 	*handler_id = g_signal_connect (G_OBJECT (item), "clicked", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item),
-											  tooltip, private_text, TRUE,
-											  NULL, NULL, NULL);
+											  tooltip, TRUE);
 }
 
 /*!
@@ -176,7 +181,6 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 					   const gchar	*icon_name,
 					   const gchar	*label,
 					   const gchar  *tooltip,
-					   const gchar  *private_text,
 					   GCallback	 handler,
 					   gpointer		 data,
 					   gboolean		 show,
@@ -196,8 +200,7 @@ toolbar_append_toggle (GtkToolbar 	*toolbar,
 	*handler_id = g_signal_connect (G_OBJECT (item), "toggled", handler, data);
 
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item),
-											  tooltip, private_text, show,
-											  NULL, NULL, NULL);
+											  tooltip, show);
 }
 
 #ifdef ENABLE_MENUBUTTON
@@ -249,8 +252,7 @@ toolbar_append_menubutton (GtkToolbar 	*toolbar,
 	}
 	
 	return (GtkWidget *) toolbar_append_item (toolbar, GTK_WIDGET (item), 
-											  tooltip, private_text, TRUE,
-											  NULL, NULL, NULL);
+											  tooltip, TRUE);
 }
 #endif
 
@@ -646,9 +648,11 @@ s_back_color_changed (GOComboColor 	* /*cc*/,
 	wd->m_pUnixToolbar->toolbarEvent(wd, str.ucs4_str().ucs4_str(), str.size());
 }
 
-static void s_proxy_activated(GtkAction * action, _wd * wd)
+static void s_proxy_activated(GtkMenuItem * item, _wd * wd)
 {
-		const gchar * editMethod = gtk_action_get_name(action);
+		const gchar * editMethod =
+			(const gchar *)g_object_get_data(G_OBJECT(item),
+											 "abi_action");
 		XAP_UnixApp * pUnixApp = wd->m_pUnixToolbar->getApp();
 		const EV_EditMethodContainer * pEMC = pUnixApp->getEditMethodContainer();
 		UT_return_if_fail(pEMC);
@@ -906,7 +910,7 @@ bool EV_UnixToolbar::synthesize(void)
 				if(pAction->getToolbarId() != AP_TOOLBAR_ID_INSERT_TABLE)
 				{
 					wd->m_widget = toolbar_append_button (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
-												    	  pLabel->getToolbarLabel(), szToolTip, NULL, 
+														  pLabel->getToolbarLabel(), szToolTip,
 														  (GCallback) _wd::s_callback, (gpointer) wd, 
 														  &(wd->m_handlerId));
 				}
@@ -933,7 +937,7 @@ bool EV_UnixToolbar::synthesize(void)
                     std::string s;
 					pSS->getValueUTF8(XAP_STRING_ID_TB_InsertNewTable, s);
 					toolbar_append_item (GTK_TOOLBAR (m_wToolbar), abi_table, 
-										 s.c_str(), NULL, TRUE, NULL, NULL, NULL);
+										 s.c_str(), TRUE);
 					gtk_widget_show_all(abi_table);
 					wd->m_widget = abi_table;
 				}
@@ -968,7 +972,7 @@ bool EV_UnixToolbar::synthesize(void)
 
 					gboolean bShow = TRUE;
 					wd->m_widget = toolbar_append_toggle (GTK_TOOLBAR (m_wToolbar), pLabel->getIconName(),
-												    	  pLabel->getToolbarLabel(), szToolTip, NULL, 
+														  pLabel->getToolbarLabel(), szToolTip,
 														  (GCallback) _wd::s_callback, (gpointer) wd, 
 														  bShow, &(wd->m_handlerId));
 					//
@@ -1000,10 +1004,10 @@ bool EV_UnixToolbar::synthesize(void)
 
 			case EV_TBIT_EditText:
 				break;
-					
+
 			case EV_TBIT_DropDown:
 				break;
-					
+
 			case EV_TBIT_ComboBox:
 			{
 				EV_Toolbar_Control * pControl = pFactory->getControl(this, id);
@@ -1090,11 +1094,11 @@ bool EV_UnixToolbar::synthesize(void)
 				}
 
 				gtk_size_group_add_widget (m_wVSizeGroup, combo);
-                gtk_widget_set_valign(combo, GTK_ALIGN_CENTER);
+				gtk_widget_set_valign(combo, GTK_ALIGN_CENTER);
 				gtk_widget_show(combo);
-				toolbar_append_item (GTK_TOOLBAR (m_wToolbar), combo,
-									 szToolTip, static_cast<const char *>(NULL), 
-									 TRUE, proxy_action_name, NULL, wd);
+				toolbar_append_item_with_proxy (GTK_TOOLBAR (m_wToolbar), combo,
+												szToolTip, TRUE,
+												proxy_action_name, wd);
 				wd->m_widget = combo;
 				// for now, we never repopulate, so can just toss it
 				DELETEP(pControl);
@@ -1105,20 +1109,18 @@ bool EV_UnixToolbar::synthesize(void)
 			case EV_TBIT_ColorBack:
 			{
 				GdkPixbuf 		*pixbuf;
-			    GtkWidget 		*combo;
+				GtkWidget		*combo;
 				GOColorGroup 	*cg;
 				const gchar		*action_name;
-				const gchar		*stock_id;
 
 				UT_ASSERT (g_ascii_strcasecmp(pLabel->getIconName(),"NoIcon") != 0);
 
 			    if (pAction->getItemType() == EV_TBIT_ColorFore) {
 					const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-                    std::string sClear;
+					std::string sClear;
 					pSS->getValueUTF8(XAP_STRING_ID_TB_ClearForeground,sClear);
 
 					action_name = "dlgColorPickerFore";
-					stock_id = ABIWORD_COLOR_FORE;
 					pixbuf
 						= gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
 												   ABIWORD_COLOR_FORE,
@@ -1138,7 +1140,6 @@ bool EV_UnixToolbar::synthesize(void)
 					pSS->getValueUTF8(XAP_STRING_ID_TB_ClearBackground,sClear);
 
 					action_name = "dlgColorPickerBack";
-					stock_id = ABIWORD_COLOR_BACK;
 					pixbuf
 						= gtk_icon_theme_load_icon(gtk_icon_theme_get_default(),
 												   ABIWORD_COLOR_BACK,
@@ -1158,9 +1159,9 @@ bool EV_UnixToolbar::synthesize(void)
 					g_object_unref (G_OBJECT (pixbuf));
 				}
 
-				toolbar_append_item (GTK_TOOLBAR(m_wToolbar), combo, szToolTip,
-									 static_cast<const char *>(NULL),
-									 TRUE, action_name, stock_id, wd);
+				toolbar_append_item_with_proxy (GTK_TOOLBAR(m_wToolbar), combo,
+												szToolTip,
+												TRUE, action_name, wd);
 
 				//
 				// Add in a right drag method
