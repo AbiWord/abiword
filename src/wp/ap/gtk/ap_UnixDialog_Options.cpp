@@ -51,15 +51,6 @@
 
 #include "ap_UnixDialog_Options.h"
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-// we need the extern "C" for Chinook.
-extern "C" {
-#include <hildon/hildon-color-chooser-dialog.h>
-}
-// FIXME this should be more global
-#define _DISABLE_GRAMMAR
-#endif
-
 #if !defined(ENABLE_SPELL) && !defined(_DISABLE_GRAMMAR)
 #define _DISABLE_GRAMMAR
 #endif
@@ -155,7 +146,6 @@ void AP_UnixDialog_Options::s_real_color_changed(GdkRGBA & gdkcolor, AP_UnixDial
     s_control_changed ( dlg->m_pushbuttonNewTransparentColor, dlg );
 }
 
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 void AP_UnixDialog_Options::s_color_changed ( GtkColorChooser *csel,
                                               GdkRGBA         *color,
                                               gpointer data )
@@ -166,34 +156,12 @@ void AP_UnixDialog_Options::s_color_changed ( GtkColorChooser *csel,
     UT_DEBUGMSG(("s_color_changed\n"));
     s_real_color_changed(*color, dlg);
 }
-#endif
 
 
 void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
 {
     GtkWidget *dlg;
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    dlg = hildon_color_chooser_dialog_new ();
-
-    
-    UT_RGBColor c;
-    UT_parseColor ( m_CurrentTransparentColor,c );
-	GdkColor *gcolor = UT_UnixRGBColorToGdkColor(c);
-
-    hildon_color_chooser_dialog_set_color((HildonColorChooserDialog*)dlg, 
-                                          gcolor);
-	gdk_color_free(gcolor);
-
-    if(abiRunModalDialog ((GtkDialog*)(dlg), m_pFrame, this, 
-                          GTK_RESPONSE_OK, FALSE ) == GTK_RESPONSE_OK) {
-
-        GdkColor gdkc;
-        hildon_color_chooser_dialog_get_color((HildonColorChooserDialog*)dlg, 
-                                              &gdkc);
-        s_real_color_changed(gdkc, this);
-    }
-#else
 //
 // Run the Background dialog over the options? No the title is wrong.
 //
@@ -241,15 +209,12 @@ void AP_UnixDialog_Options::event_ChooseTransparentColor ( void )
     GdkRGBA cc;
     gtk_color_chooser_get_rgba(GTK_COLOR_CHOOSER(colorsel), &cc);
     s_real_color_changed(cc, this);
-#endif
 //
 // Finish up here after a close or window delete signal.
 //
     abiDestroyWidget ( dlg );
 
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	g_object_unref((GObject*)(builder));
-#endif
 }
 
 void AP_UnixDialog_Options::addPage ( const XAP_NotebookDialog::Page *page )
@@ -327,11 +292,9 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     localizeButtonUnderline ( m_checkbuttonEnableOverwrite, pSS,
                               AP_STRING_ID_DLG_Options_Label_EnableOverwrite );    
 
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
     // Application Startup
     tmp = WID ( "lblApplicationStartup" );
     localizeLabelMarkup ( tmp, pSS, AP_STRING_ID_DLG_Options_Label_AppStartup );
-#endif
 
     m_checkbuttonAutoLoadPlugins = WID ( "chkAutoLoadPlugins" );
     localizeButtonUnderline ( m_checkbuttonAutoLoadPlugins, pSS,
@@ -422,7 +385,6 @@ void AP_UnixDialog_Options::_constructWindowContents ( GtkBuilder * builder )
     localizeButtonUnderline ( m_checkbuttonSpellMainOnly, pSS,
                               AP_STRING_ID_DLG_Options_Label_SpellMainOnly );
 
-// FIXME: for now we hardcode Hildon embedded as "no grammar"
 #ifdef _DISABLE_GRAMMAR
     // remove anything related to grammar.
     tmp = WID ( "tableGrammar" );
@@ -510,16 +472,8 @@ GtkWidget* AP_UnixDialog_Options::_constructWindow ()
 {
     GtkWidget *mainWindow;
     const XAP_StringSet * pSS = m_pApp->getStringSet();
-    const char *dialogFileName;
 
-    // get the path where our UI file is located
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    dialogFileName = "ap_UnixHildonDialog_Options.ui";
-#else
-    dialogFileName = "ap_UnixDialog_Options.ui";
-#endif
-
-    GtkBuilder * builder = newDialogBuilder(dialogFileName);
+    GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_Options.ui");
 
     // Update member variables with the important widgets that
     // might need to be queried or altered later.

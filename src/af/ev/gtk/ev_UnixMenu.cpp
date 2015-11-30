@@ -57,9 +57,6 @@
 #include "ap_Menu_Id.h"
 // hack, icons are in wp
 #include "ap_UnixStockIcons.h"
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include <hildon/hildon-window.h>
-#endif
 
 #define ACTIVATE_ACCEL "activate"
 #define ACCEL_FLAGS (GtkAccelFlags)(GTK_ACCEL_LOCKED)
@@ -343,12 +340,11 @@ bool EV_UnixMenu::menuEvent(XAP_Menu_Id id)
 	return true;
 }
 
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 static guint _ev_get_underlined_char(const char * szString)
 {
 
 	UT_ASSERT(szString);
-	
+
 	// return the keycode right after the underline
 	const UT_UCS4String str(szString);
 	for (UT_uint32 i = 0; i + 1 < str.length(); )
@@ -359,7 +355,6 @@ static guint _ev_get_underlined_char(const char * szString)
 
 	return GDK_KEY_VoidSymbol;
 }
-#endif
 
 static void _ev_strip_underline(char * bufResult,
 								const char * szString)
@@ -519,15 +514,11 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				// If the underlined character conflicts with ANY accelerator
 				// in the keyboard layer, don't do the underline construction,
 				// but instead make a label with no underlines (and no accelerators).
-				
+
 				// get the underlined value from the candidate label
 				guint keyCode;
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-				keyCode = GDK_VoidSymbol;
-#else
 				keyCode = _ev_get_underlined_char(buf);
-#endif
-				
+
 				// GTK triggers the menu accelerators off of MOD1 ***without
 				// regard to what XK_ keysym is bound to it.  therefore, if
 				// MOD1 is bound to XK_Alt_{L,R}, we do the following.
@@ -662,9 +653,6 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 		}
 	}
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
-
 	// make sure our last item on the stack is the one we started with
 	GtkWidget * wDbg = stack.top();
 	stack.pop();
@@ -683,8 +671,6 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 		gtk_window_add_accel_group(GTK_WINDOW(gtk_widget_get_parent(static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow())), m_accelGroup);
 	}
 	gtk_accel_group_lock(m_accelGroup);
-	
-#endif
 
 	return true;
 }
@@ -979,11 +965,7 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 {
 
 	// Just create, don't show the menu bar yet.  It is later added and shown
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON /* in hildon sdk you have get menu_bar from mainWidonw */
-	GtkWidget * wWidget = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
-	m_wMenuBar = gtk_menu_new ();
-    hildon_window_set_menu (HILDON_WINDOW (wWidget), GTK_MENU (m_wMenuBar));
-#elif defined (ENABLE_MENUBUTTON)
+#if defined (ENABLE_MENUBUTTON)
 	m_wMenuBar = gtk_menu_new ();
 #else
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
@@ -996,7 +978,7 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 #ifdef EMBEDDED_TARGET
 #else
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wMenuBar, FALSE, TRUE, 0);
-#endif	
+#endif
 
 	return true;
 }
@@ -1004,7 +986,6 @@ bool EV_UnixMenuBar::synthesizeMenuBar()
 
 bool EV_UnixMenuBar::rebuildMenuBar()
 {
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	GtkWidget * wVBox = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getVBoxWidget();
 
 	// Just create, don't show the menu bar yet.  It is later added
@@ -1022,7 +1003,7 @@ bool EV_UnixMenuBar::rebuildMenuBar()
 
 	gtk_box_pack_start(GTK_BOX(wVBox), m_wMenuBar, FALSE, TRUE, 0);
 	gtk_box_reorder_child(GTK_BOX(wVBox), m_wMenuBar, 0);
-#endif
+
 	return true;
 }
 
@@ -1115,10 +1096,6 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 		// else create a normal menu item
 		w = gtk_menu_item_new_with_mnemonic(buf);
 	}
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    UT_UNUSED(szMnemonicName);
-    UT_UNUSED(isPopup);
-#else
 	if (szMnemonicName && *szMnemonicName && !isPopup)
 	  {
 		  guint accelKey = 0;
@@ -1130,8 +1107,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 			gtk_widget_add_accelerator (w, "activate", m_accelGroup, accelKey, acMods, GTK_ACCEL_VISIBLE);
 		  }
 	  }
-#endif	  
-	
+
 	UT_return_val_if_fail(w, NULL);
 	gtk_widget_show(w);
 	

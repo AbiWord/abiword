@@ -497,16 +497,9 @@ void XAP_UnixDialog_Image::_connectSignals (void)
 GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 {
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
-	const char * ui_file;
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    ui_file = "xap_UnixHildonDlg_Image.ui";
-#else
-    ui_file = "xap_UnixDlg_Image.ui";
-#endif
+	GtkBuilder * builder = newDialogBuilder("xap_UnixDlg_Image.ui");
 
-    GtkBuilder * builder = newDialogBuilder(ui_file);
-	
 	mMainWindow = GTK_WIDGET(gtk_builder_get_object(builder, "xap_UnixDlg_Image"));
 	m_wHeightSpin = GTK_WIDGET(gtk_builder_get_object(builder, "sbHeight"));
 	m_wHeightEntry = GTK_WIDGET(gtk_builder_get_object(builder, "edHeight"));
@@ -523,27 +516,24 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_oHeightSpin_adj = (GtkAdjustment*)gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
    	gtk_widget_set_size_request(m_wHeightSpin,14,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wHeightSpin), GTK_ADJUSTMENT(m_oHeightSpin_adj));
-	
+
 	m_oWidthSpin_adj = (GtkAdjustment*)gtk_adjustment_new( 1,-2000, 2000, 1, 1, 10);
 	gtk_widget_set_size_request(m_wWidthSpin,14,-1);  
 	gtk_spin_button_set_adjustment (GTK_SPIN_BUTTON(m_wWidthSpin), GTK_ADJUSTMENT(m_oWidthSpin_adj));
-	
-    std::string s;
+
+	std::string s;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Image_Title,s);
 	abiDialogSetTitle(mMainWindow, "%s", s.c_str());
 
-    localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescTab")), pSS, XAP_STRING_ID_DLG_Image_DescTabLabel);
-    localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbWrapTab")), pSS, XAP_STRING_ID_DLG_Image_WrapTabLabel);
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbPlacementTab")), pSS, XAP_STRING_ID_DLG_Image_PlacementTabLabel);
-#endif
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbDescTab")), pSS, XAP_STRING_ID_DLG_Image_DescTabLabel);
+	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbWrapTab")), pSS, XAP_STRING_ID_DLG_Image_WrapTabLabel);
 
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbSize")), pSS, XAP_STRING_ID_DLG_Image_ImageSize);
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbImageDescription")), pSS, XAP_STRING_ID_DLG_Image_ImageDesc);
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbTextWrapping")), pSS, XAP_STRING_ID_DLG_Image_TextWrapping);
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbImagePlacement")), pSS, XAP_STRING_ID_DLG_Image_Placement);
 	localizeLabelMarkup(GTK_WIDGET(gtk_builder_get_object(builder, "lbWrapType")), pSS, XAP_STRING_ID_DLG_Image_WrapType);
-	
+
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbHeight")), pSS, XAP_STRING_ID_DLG_Image_Height);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbWidth")), pSS, XAP_STRING_ID_DLG_Image_Width);
 	localizeLabel(GTK_WIDGET(gtk_builder_get_object(builder, "lbTitle")), pSS, XAP_STRING_ID_DLG_Image_LblTitle);

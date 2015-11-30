@@ -72,10 +72,6 @@
 #include "ev_UnixMenuBar.h"
 #endif
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include <hildon/hildon-window.h>
-#endif
-
 #define PROP_HANDLER_ID "handler-id"
 
 #ifndef UINT_RGBA_R
@@ -805,9 +801,6 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
   // the frame.
   //
     synthesize();
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    UT_UNUSED(oldpos);
-#else
 	GtkBox * wBox = _getContainer();
 	gtk_box_reorder_child(wBox, m_wToolbar, oldpos);
 //
@@ -815,7 +808,6 @@ void EV_UnixToolbar::rebuildToolbar(UT_sint32 oldpos)
 //
 	AV_View * pView = getFrame()->getCurrentView();
 	bindListenerToView(pView);
-#endif
 }
 
 static void setDragIcon(GtkWidget * wwd, GtkImage * img)
@@ -945,8 +937,6 @@ bool EV_UnixToolbar::synthesize(void)
 				g_object_set_data(G_OBJECT(wwd),
 									"wd_pointer",
 									wd);
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 				gtk_drag_source_set(wwd,GDK_BUTTON3_MASK,
 									s_AbiTBTargets,1,
 									GDK_ACTION_COPY);
@@ -961,7 +951,6 @@ bool EV_UnixToolbar::synthesize(void)
 									GDK_ACTION_COPY);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_begin",G_CALLBACK(_wd::s_drag_begin), wd);
 				g_signal_connect(G_OBJECT(wd->m_widget),"drag_drop",G_CALLBACK(_wd::s_drag_drop), wd);
-#endif				
 			}
 			break;
 
@@ -1238,12 +1227,6 @@ bool EV_UnixToolbar::synthesize(void)
 		}
 	}
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	GtkWidget * wTLW = static_cast<XAP_UnixFrameImpl *>(m_pFrame->getFrameImpl())->getTopLevelWindow();
-	hildon_window_add_toolbar (HILDON_WINDOW (wTLW), GTK_TOOLBAR (m_wToolbar));
-	gtk_widget_show_all(m_wToolbar);
-	gtk_widget_show_all(wTLW);
-#else
 	GtkBox * wBox = _getContainer();
 
 	// show the complete thing
@@ -1253,9 +1236,7 @@ bool EV_UnixToolbar::synthesize(void)
 	gtk_box_pack_start(wBox, m_wToolbar, FALSE, FALSE, 0);
 
 	setDetachable(getDetachable());
-#endif /* HAVE_HILDON */
 
-	
 	return true;
 }
 

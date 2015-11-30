@@ -79,11 +79,6 @@
 #include "ev_GnomeToolbar.h"
 #endif
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include "hildon/xap_UnixHildonApp.h"
-#endif
-
-
 enum {
 	TARGET_DOCUMENT, // 0, to sync with gtk_drag_dest_add_text_target's default info value
  	TARGET_IMAGE,
@@ -793,22 +788,6 @@ gint XAP_UnixFrameImpl::_fe::button_press_event(GtkWidget * w, GdkEventButton * 
 
 	pUnixFrameImpl->resetIMContext ();
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	/* UGLY HACK -- for some reason in the OS2006 release of maemo the VKB
-	 * does not pop up automatically as it used to and we have to bring it up
-	 * ourselves; since this function is static we cannot make it virtual, and
-	 * adding an additional handler for the button_press_event does not work
-	 * for some reason (even after changing the return value from there to 0)
-	 */
-	if (e->button == 1)
-	{
-		UT_DEBUGMSG(("Hildon button_press_event: pFrameImpl 0x%p\n",
-                     pUnixFrameImpl));
-
-		hildon_gtk_im_context_show(pUnixFrameImpl->getIMContext());
-	}
-#endif
-
 	if (pView)
 		pUnixMouse->mouseClick(pView,e);
 	return 1;
@@ -1032,8 +1011,6 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 // -- MES
 //
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
         GtkWindow * pWin = NULL;
 		if(pFrame->getFrameMode() == XAP_NormalFrame) {
 			pWin = GTK_WINDOW(pUnixFrameImpl->m_wTopLevelWindow);
@@ -1048,7 +1025,6 @@ gint XAP_UnixFrameImpl::_fe::configure_event(GtkWidget* w, GdkEventConfigure *e)
 				pApp->setGeometry(e->x,e->y,gwidth,gheight,flags);
 			}
 		}
-#endif
 
 		// Dynamic Zoom Implementation
 

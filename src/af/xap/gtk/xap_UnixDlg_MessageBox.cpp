@@ -73,11 +73,7 @@ void XAP_UnixDialog_MessageBox::runModal(XAP_Frame * pFrame)
     GtkWidget * message = 0;	// initialize to prevent compiler warning
     GtkWindow * toplevel;
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-    toplevel = GTK_WINDOW(gtk_widget_get_parent (pUnixFrameImpl->getTopLevelWindow()));
-#else
     toplevel = GTK_WINDOW(pUnixFrameImpl->getTopLevelWindow());
-#endif
 
     int dflFlags = GTK_DIALOG_MODAL;
     int dflResponse = GTK_RESPONSE_OK;

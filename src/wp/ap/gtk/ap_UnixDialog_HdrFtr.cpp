@@ -177,16 +177,9 @@ GtkWidget * AP_UnixDialog_HdrFtr::_constructWindow (void)
 	GtkWidget * window;
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 
-    const char * uiFileName;
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	uiFileName = "ap_UnixHildonDialog_HdrFtr.ui";
-#else
-	uiFileName = "ap_UnixDialog_HdrFtr.ui";
-#endif
+	GtkBuilder * builder = newDialogBuilder("ap_UnixDialog_HdrFtr.ui");
 
-	GtkBuilder * builder = newDialogBuilder(uiFileName);
-
-	// Update our member variables with the important widgets that 
+	// Update our member variables with the important widgets that
 	// might need to be queried or altered later
 	window = GTK_WIDGET(gtk_builder_get_object(builder, "ap_UnixDialog_HdrFtr"));
 	m_wHdrFtrCheck[HdrEven] = GTK_WIDGET(gtk_builder_get_object(builder, "cbHeaderFacingPages"));

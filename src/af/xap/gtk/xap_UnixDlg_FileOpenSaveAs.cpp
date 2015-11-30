@@ -66,11 +66,6 @@
 #include "gr_UnixCairoGraphics.h"
 #include "ut_bytebuf.h"
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#include <hildon/hildon-file-chooser-dialog.h>
-#endif
-
-
 #include <sys/stat.h>
 
 #include "../../../wp/impexp/xp/ie_types.h"
@@ -596,11 +591,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
         parent = gtk_widget_get_toplevel (parent);
 	}
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	m_FC = GTK_FILE_CHOOSER( hildon_file_chooser_dialog_new(GTK_WINDOW(parent),
-							(!m_bSave ? GTK_FILE_CHOOSER_ACTION_OPEN : GTK_FILE_CHOOSER_ACTION_SAVE))
-							);
-#else
 	std::string cancel, validate;
 	pSS->getValueUTF8(XAP_STRING_ID_DLG_Cancel, cancel);
 	pSS->getValueUTF8(m_bSave ?
@@ -616,7 +606,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 									 GTK_RESPONSE_ACCEPT,
 									 (gchar*)NULL)
 		);
-#endif
 
 	gtk_file_chooser_set_local_only(m_FC, FALSE);
 
@@ -655,11 +644,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 								G_CALLBACK (s_preview_draw), static_cast<gpointer>(this));
 	}
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	filetypes_pulldown = gtk_combo_box_new();
-	gtk_widget_show(filetypes_pulldown);
-	GtkWidget * pulldown_hbox = filetypes_pulldown;
-#else
 	// hbox for our pulldown menu (GTK does its pulldown this way */
 	GtkWidget * pulldown_hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 15);
 	gtk_widget_show(pulldown_hbox);
@@ -679,7 +663,6 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	gtk_widget_show(filetypes_pulldown);
 	gtk_box_pack_end(GTK_BOX(pulldown_hbox), filetypes_pulldown, TRUE, TRUE, 0);
     gtk_label_set_mnemonic_widget(GTK_LABEL(filetypes_label), filetypes_pulldown);
-#endif
 	//
 	// add the filters to the dropdown list
 	//
@@ -732,13 +715,8 @@ void XAP_UnixDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	{ 
 		gtk_combo_box_set_active(combo, 0);
 	}
-	
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	hildon_file_chooser_dialog_add_extra ((HildonFileChooserDialog*)m_FC,
-                                          pulldown_hbox);
-#else
+
 	gtk_file_chooser_set_extra_widget (GTK_FILE_CHOOSER(m_FC), pulldown_hbox);
-#endif
 
 	// connect the signals for OK and CANCEL and the requisite clean-close signals
 	g_signal_connect(G_OBJECT(m_FC),

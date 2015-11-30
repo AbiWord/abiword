@@ -127,10 +127,6 @@ protected:
 
 	virtual void dragText();
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	// need to be able to get at this from XAP_UnixHildonApp
-  public:
-#endif
 	static void _imCommit_cb(GtkIMContext *imc, const gchar* text, gpointer data);
 	static void _imPreeditStart_cb (GtkIMContext *context, gpointer data);
 	static void _imPreeditChanged_cb (GtkIMContext *context, gpointer data);

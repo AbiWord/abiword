@@ -145,14 +145,11 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XA
 	m_windowMain = NULL;
 
 	m_wlineBetween = NULL;
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	m_wtoggleOne = NULL;
 	m_wtoggleTwo = NULL;
 	m_wpreviewArea = NULL;
 	m_pPreviewWidget = NULL;
 	m_wtoggleThree = NULL;
-#endif
 	m_wSpin = NULL;
 	m_spinHandlerID = 0;
 	m_windowMain = NULL;
@@ -162,20 +159,16 @@ AP_UnixDialog_Columns::AP_UnixDialog_Columns(XAP_DialogFactory * pDlgFactory, XA
 	m_iMaxColumnHeight = 0;
 	m_iMaxColumnHeightID = 0;
 	m_wMaxColumnHeightSpin = NULL;
-    m_checkOrder = NULL;
+	m_checkOrder = NULL;
 }
 
 AP_UnixDialog_Columns::~AP_UnixDialog_Columns(void)
 {
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	DELETEP (m_pPreviewWidget);
-#endif
 }
 
 /*****************************************************************/
 
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 static void s_one_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_if_fail(widget && dlg);
@@ -194,7 +187,6 @@ static void s_three_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 	UT_return_if_fail(widget && dlg);
 	dlg->event_Toggle(3);
 }
-#endif
 
 static void s_spin_changed(GtkWidget * widget, AP_UnixDialog_Columns *dlg)
 {
@@ -237,23 +229,17 @@ static void s_line_clicked(GtkWidget * widget, AP_UnixDialog_Columns * dlg)
 	dlg->checkLineBetween();
 }
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 static gboolean s_preview_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
 	dlg->event_previewExposed();
 	return FALSE;
 }
-#endif
 
 static gboolean s_window_draw(GtkWidget * widget, gpointer /* data */, AP_UnixDialog_Columns * dlg)
 {
 	UT_return_val_if_fail(widget && dlg, FALSE);
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	dlg->event_previewExposed();
-#endif
 	return FALSE;
 }
 
@@ -293,9 +279,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 		XAP_GtkSignalBlocker b(G_OBJECT(m_wMaxColumnHeightEntry), m_iMaxColumnHeightID);
 		gtk_entry_set_text( GTK_ENTRY(m_wMaxColumnHeightEntry),getHeightString() );
 	}
-	
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
+
 	// *** this is how we add the gc for Column Preview ***
 	// attach a new graphics context to the drawing area
 	UT_return_if_fail(m_wpreviewArea && gtk_widget_get_window(m_wpreviewArea));
@@ -305,8 +289,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	GR_UnixCairoAllocInfo ai(m_wpreviewArea);
 	m_pPreviewWidget =
 	    (GR_UnixCairoGraphics*) XAP_App::getApp()->newGraphics(ai);
-	
-	
+
 	// Todo: we need a good widget to query with a probable
 	// Todo: non-white (i.e. gray, or a similar bgcolor as our parent widget)
 	// Todo: background. This should be fine
@@ -319,8 +302,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 	_createPreviewFromGC(m_pPreviewWidget,
 						 (UT_uint32) alloc.width,
 						 (UT_uint32) alloc.height);
-#endif 	
-	
+
 	setLineBetween(getLineBetween());
 	if(getLineBetween()==true)
 	{
@@ -344,10 +326,7 @@ void AP_UnixDialog_Columns::runModal(XAP_Frame * pFrame)
 												 GTK_TOGGLE_BUTTON(m_checkOrder)));
 
 	_storeWindowData();
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	DELETEP (m_pPreviewWidget);
-#endif
 
 	abiDestroyWidget(mainWindow);
 }
@@ -403,8 +382,6 @@ void AP_UnixDialog_Columns::readSpin(void)
 		event_Toggle(val);
 		return;
 	}
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	{
 		XAP_GtkSignalBlocker b1(G_OBJECT(m_wtoggleOne), m_oneHandlerID);
 		XAP_GtkSignalBlocker b2(G_OBJECT(m_wtoggleTwo), m_twoHandlerID);
@@ -414,7 +391,6 @@ void AP_UnixDialog_Columns::readSpin(void)
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleTwo),FALSE);
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wtoggleThree),FALSE);
 	}
-#endif
 	setColumns( val );
 	m_pColumnsPreview->draw();
 }
@@ -422,23 +398,18 @@ void AP_UnixDialog_Columns::readSpin(void)
 void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 {
 	checkLineBetween();
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	g_signal_handler_block(G_OBJECT(m_wtoggleOne),
 							 m_oneHandlerID);
 	g_signal_handler_block(G_OBJECT(m_wtoggleTwo),
 							 m_twoHandlerID);
 	g_signal_handler_block(G_OBJECT(m_wtoggleThree),
 							 m_threeHandlerID);
-#endif
 	{
 		// DOM: TODO: rewrite me
 		XAP_GtkSignalBlocker b(G_OBJECT(m_wSpin),
 						   m_spinHandlerID);
 		gtk_spin_button_set_value( GTK_SPIN_BUTTON(m_wSpin), (gfloat) icolumns);
 	}
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	switch (icolumns)
 	{
 	case 1:
@@ -467,12 +438,8 @@ void AP_UnixDialog_Columns::event_Toggle( UT_uint32 icolumns)
 							   m_twoHandlerID);
 	g_signal_handler_unblock(G_OBJECT(m_wtoggleThree),
 							   m_threeHandlerID);
-#endif
 	setColumns( icolumns );
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	m_pColumnsPreview->draw();
-#endif
 }
 
 
@@ -516,14 +483,12 @@ void AP_UnixDialog_Columns::event_Cancel(void)
 	m_answer = AP_Dialog_Columns::a_CANCEL;
 }
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 void AP_UnixDialog_Columns::event_previewExposed(void)
 {
         if(m_pColumnsPreview)
 	       m_pColumnsPreview->draw();
 }
-#endif
+
 /*****************************************************************/
 
 GtkWidget * AP_UnixDialog_Columns::_constructWindow(void)
@@ -568,7 +533,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 
 	const XAP_StringSet * pSS = m_pApp->getStringSet();
 	std::string s;
-	
+
 	GtkWidget *grid = gtk_grid_new();
 	g_object_set(G_OBJECT(grid),
 	             "row-spacing", 6,
@@ -584,7 +549,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	gtk_label_set_markup(GTK_LABEL(lbColFrame), s.c_str());
 	gtk_widget_show(lbColFrame);
 	gtk_grid_attach(GTK_GRID(grid), lbColFrame, 0, 0, 2, 1);
-	
+
 	wToggleOne = gtk_toggle_button_new();
 	gtk_widget_show(wToggleOne );
         label_button_with_abi_pixmap(wToggleOne, "tb_1column_xpm");
@@ -662,7 +627,6 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 //////////////////////////////////////////////////////
 // Line Between
 /////////////////////////////////////////////////////
-	
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Column_Line_Between,s);
 	wLineBtween = gtk_check_button_new_with_label (s.c_str());
@@ -743,13 +707,10 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	// might need to be queried or altered later.
 
 	m_wlineBetween = wLineBtween;
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	m_wtoggleOne = wToggleOne;
 	m_wtoggleTwo = wToggleTwo;
 	m_wtoggleThree = wToggleThree;
 	m_wpreviewArea = wPreviewArea;
-#endif
 	m_wSpin = Spinbutton;
 	m_windowMain = windowColumns;
 	m_wSpaceAfterSpin = SpinAfter_dum;
@@ -766,8 +727,6 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 {
 
 	// the control buttons
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	m_oneHandlerID = g_signal_connect(G_OBJECT(m_wtoggleOne),
 					   "clicked",
 					   G_CALLBACK(s_one_clicked),
@@ -784,7 +743,6 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 					   reinterpret_cast<gpointer>(this));
 
 
-#endif
 	m_spinHandlerID = g_signal_connect(G_OBJECT(m_wSpin),
 					   "changed",
 					   G_CALLBACK(s_spin_changed),
@@ -819,14 +777,11 @@ void AP_UnixDialog_Columns::_connectsignals(void)
 					   reinterpret_cast<gpointer>(this));
 
 	// the expose event of the preview
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	g_signal_connect(G_OBJECT(m_wpreviewArea),
 			 "draw",
 			 G_CALLBACK(s_preview_draw),
 			 reinterpret_cast<gpointer>(this));
-#endif
-	
+
 	g_signal_connect_after(G_OBJECT(m_windowMain),
 			       "draw",
 			       G_CALLBACK(s_window_draw),

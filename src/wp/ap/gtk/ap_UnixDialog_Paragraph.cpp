@@ -115,8 +115,6 @@ static void s_check_toggled(GtkWidget * widget, AP_UnixDialog_Paragraph * dlg)
 	dlg->event_CheckToggled(widget);
 }
 
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
-
 static gint s_preview_draw(GtkWidget * /* widget */,
 			   cairo_t * /* cr */,
 			   AP_UnixDialog_Paragraph * dlg)
@@ -125,7 +123,6 @@ static gint s_preview_draw(GtkWidget * /* widget */,
 	dlg->event_PreviewAreaExposed();
 	return TRUE;
 }
-#endif
 
 /*****************************************************************/
 
@@ -147,8 +144,6 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// Show the top level dialog,
 	gtk_widget_show(mainWindow);
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	// *** this is how we add the gc ***
 	{
 		// attach a new graphics context to the drawing area
@@ -170,7 +165,6 @@ void AP_UnixDialog_Paragraph::runModal(XAP_Frame * pFrame)
 	// sync all controls once to get started
 	// HACK: the first arg gets ignored
 	_syncControls(id_MENU_ALIGNMENT, true);
-#endif
 
 	bool tabs;
 	do {
@@ -301,11 +295,8 @@ void AP_UnixDialog_Paragraph::event_CheckToggled(GtkWidget * widget)
 
 void AP_UnixDialog_Paragraph::event_PreviewAreaExposed(void)
 {
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#else
 	if (m_paragraphPreview)
 		m_paragraphPreview->draw();
-#endif	
 }
 
 /*****************************************************************/
@@ -530,13 +521,8 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_LabelSpecial,s);
 	UT_XML_cloneNoAmpersands(unixstr, s.c_str());
 	labelSpecial = gtk_widget_new (GTK_TYPE_LABEL, "label", unixstr,
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-                                       "xalign", 1.0, "yalign", 0.5,
-                                       "justify", GTK_JUSTIFY_RIGHT,
-#else
                                        "xalign", 0.0, "yalign", 0.5,
                                        "justify", GTK_JUSTIFY_LEFT,
-#endif
                                        NULL);
 	FREEP(unixstr);
 	gtk_widget_show (labelSpecial);
@@ -546,12 +532,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	XAP_makeGtkComboBoxText(listSpecial, G_TYPE_INT);
 	/**/ g_object_set_data(G_OBJECT(listSpecial), WIDGET_ID_TAG, (gpointer) id_MENU_SPECIAL_INDENT);
 	gtk_widget_show (GTK_WIDGET(listSpecial));
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	gtk_grid_attach(GTK_GRID(boxSpacing), (GtkWidget*)listSpecial, 3, 2, 1, 1);
-#else
 	gtk_grid_attach(GTK_GRID(boxSpacing), (GtkWidget*)listSpecial, 2, 3, 1, 1);
-
-#endif
 	XAP_appendComboBoxTextAndInt(listSpecial, " ", 0);
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Para_SpecialNone,s);
@@ -577,7 +558,6 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	/**/ g_object_set_data(G_OBJECT(spinbuttonBy), WIDGET_ID_TAG, (gpointer) id_SPIN_SPECIAL_INDENT);
 	gtk_widget_show (spinbuttonBy);
 	gtk_grid_attach(GTK_GRID(boxSpacing), spinbuttonBy, 3, 3, 1, 1);
-
 
 	hboxSpacing = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 5);
 	gtk_widget_show (hboxSpacing);
@@ -678,7 +658,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 	gtk_widget_show (spinbuttonAfter);
 	gtk_widget_show (labelLineSpacing);
 	gtk_widget_show (GTK_WIDGET(listLineSpacing));
-	gtk_widget_show (labelAt);	
+	gtk_widget_show (labelAt);
 	gtk_widget_show (spinbuttonAt);
 
 	// The "Line and Page Breaks" page
@@ -840,11 +820,7 @@ GtkWidget * AP_UnixDialog_Paragraph::_constructWindowContents(GtkWidget *windowM
 //	m_spinbuttonAt_adj = spinbuttonAt_adj;
 	m_spinbuttonAt = spinbuttonAt;
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	m_drawingareaPreview = NULL;
-#else
 	m_drawingareaPreview = drawingareaPreview;
-#endif 
 
 	m_checkbuttonWidowOrphan = checkbuttonWidowOrphan;
 	m_checkbuttonKeepLines = checkbuttonKeepLines;
@@ -913,13 +889,11 @@ void AP_UnixDialog_Paragraph::_connectCallbackSignals(void)
 	g_signal_connect(G_OBJECT(m_checkbuttonDomDirection), "toggled",
 					   G_CALLBACK(s_check_toggled), (gpointer) this);
 
-#if !defined(EMBEDDED_TARGET) || EMBEDDED_TARGET != EMBEDDED_TARGET_HILDON
 	// the expose event off the preview
 	g_signal_connect(G_OBJECT(m_drawingareaPreview),
 			 "draw",
 			 G_CALLBACK(s_preview_draw),
 			 (gpointer) this);
-#endif
 }
 
 void AP_UnixDialog_Paragraph::_populateWindowData(void)

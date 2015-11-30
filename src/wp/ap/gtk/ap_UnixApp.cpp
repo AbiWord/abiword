@@ -1308,10 +1308,6 @@ int AP_UnixApp::main(const char * szAppName, int argc, char ** argv)
 
 			if (pMyUnixApp->openCmdLineFiles(&Args))
 			{
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-				s_bInitDone = true;
-				pMyUnixApp->processStartupQueue();
-#endif
 				// turn over control to gtk
 				gtk_main();
 			}

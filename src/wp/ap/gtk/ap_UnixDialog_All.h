@@ -110,19 +110,11 @@
 #include "ap_UnixDialog_RDFEditor.h"
 
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-#   include "hildon/xap_UnixHildonDlg_FontChooser.h"
-#else
 #   include "xap_UnixDlg_FontChooser.h"
-#endif
 
 #else
 
-#if defined(EMBEDDED_TARGET) && EMBEDDED_TARGET == EMBEDDED_TARGET_HILDON
-	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixHildonDialog_FontChooser, 	FALSE)
-#else
 	DeclareDialog(XAP_DIALOG_ID_FONT,			XAP_UnixDialog_FontChooser, 		FALSE)
-#endif
 
 	DeclareDialog(XAP_DIALOG_ID_ABOUT,			XAP_UnixDialog_About, 				FALSE)
 	DeclareDialog(XAP_DIALOG_ID_CLIPART,		XAP_UnixDialog_ClipArt,				FALSE)
