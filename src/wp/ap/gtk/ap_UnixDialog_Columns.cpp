@@ -538,7 +538,7 @@ void AP_UnixDialog_Columns::_constructWindowContents(GtkWidget * windowColumns)
 	g_object_set(G_OBJECT(grid),
 	             "row-spacing", 6,
 	             "column-spacing", 12,
-	             "boder-width", 5,
+	             "border-width", 5,
 	             NULL);
 	gtk_widget_show (grid);
 	gtk_box_pack_start(GTK_BOX (windowColumns), grid, FALSE, FALSE, 6);
