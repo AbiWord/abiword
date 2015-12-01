@@ -31,7 +31,8 @@
 class XAP_CocoaFrame;
 class AP_CocoaDialog_New;
 
-@interface AP_CocoaDialog_NewController :  NSWindowController <XAP_CocoaDialogProtocol>
+@interface AP_CocoaDialog_NewController
+	: NSWindowController <XAP_CocoaDialogProtocol, NSTableViewDelegate>
 {
 	IBOutlet NSButton *		_cancelBtn;
 	IBOutlet NSButton *		_chooseFileBtn;

@@ -68,7 +68,8 @@ class XAP_CocoaModule;
 - (XAP_CocoaPlugin *)plugin;
 @end
 
-@interface XAP_CocoaDlg_PluginManagerController : NSWindowController <XAP_CocoaDialogProtocol>
+@interface XAP_CocoaDlg_PluginManagerController
+    : NSWindowController <XAP_CocoaDialogProtocol, NSTableViewDelegate, NSTableViewDataSource>
 {
 	IBOutlet NSButton *		oInstallBtn;
 	IBOutlet NSButton *		oCloseBtn;

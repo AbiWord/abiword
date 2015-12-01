@@ -48,7 +48,8 @@ private:
 
 
 
-@interface XAP_CocoaDialog_HistoryController : NSWindowController <XAP_CocoaDialogProtocol>
+@interface XAP_CocoaDialog_HistoryController
+    : NSWindowController <XAP_CocoaDialogProtocol, NSTableViewDataSource>
 {
     IBOutlet NSButton *_cancelBtn;
     IBOutlet NSTextField *_createdData;

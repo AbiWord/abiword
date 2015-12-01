@@ -26,14 +26,6 @@
 
 static float s_ToolbarHeight = 0.0;
 
-@interface XAP_CocoaWindowDelegate : NSWindowController
-{
-	XAP_CocoaWindow * m_window;
-}
-- (id)initWithWindow:(NSWindow *)window withXAPWindow:(XAP_CocoaWindow *)xap;
-- (void)windowDidResize:(NSNotification *)aNotification;
-@end
-
 @implementation XAP_CocoaWindowDelegate
 
 - (id)initWithWindow:(NSWindow *)window withXAPWindow:(XAP_CocoaWindow *)xap

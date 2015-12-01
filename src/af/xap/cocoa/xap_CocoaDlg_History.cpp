@@ -120,7 +120,8 @@ void XAP_CocoaDialog_History::event_Cancel()
 
 static void addCol(NSTableView *table, XAP_CocoaDialog_History* xap, int idx)
 {
-	NSTableColumn *col = [[NSTableColumn alloc] initWithIdentifier:[NSNumber numberWithLong:idx]];
+	NSTableColumn *col = [[NSTableColumn alloc] 
+		initWithIdentifier:[[NSNumber numberWithLong:idx] stringValue]];
 	[col setEditable:NO];
 	[[col headerCell] setTitle:[NSString stringWithUTF8String:xap->getListHeader(idx)]];
 	[table addTableColumn:col];

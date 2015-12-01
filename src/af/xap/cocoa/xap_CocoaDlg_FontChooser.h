@@ -35,7 +35,8 @@
 class GR_CocoaGraphics;
 class XAP_CocoaDialog_FontChooser;
 
-@interface XAP_CocoaDialog_FontChooserController : NSWindowController <XAP_CocoaDialogProtocol>
+@interface XAP_CocoaDialog_FontChooserController 
+    : NSWindowController <XAP_CocoaDialogProtocol, NSTableViewDelegate>
 {
 	IBOutlet NSTableView *		_fontList;
 	IBOutlet NSTableView *		_styleList;

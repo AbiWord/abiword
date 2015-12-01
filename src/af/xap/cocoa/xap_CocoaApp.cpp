@@ -116,10 +116,6 @@ const char * XAP_CocoaApp::getDefaultEncoding () const
 
 bool XAP_CocoaApp::initialize(const char * szKeyBindingsKey, const char * szKeyBindingsDefaultValue)
 {
-	if (!g_thread_supported ()) {
-		g_thread_init(NULL);
-	}
-
 	// let our base class do it's thing.
 	
 	XAP_App::initialize(szKeyBindingsKey, szKeyBindingsDefaultValue);

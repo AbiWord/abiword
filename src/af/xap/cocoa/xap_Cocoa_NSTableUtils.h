@@ -20,7 +20,9 @@
 #import <Cocoa/Cocoa.h>
 
 
-@interface XAP_StringListDataSource : NSObject {
+@interface XAP_StringListDataSource
+	: NSObject <NSTableViewDataSource, NSComboBoxDataSource>
+{
 	NSMutableArray*		_array;
 }
 

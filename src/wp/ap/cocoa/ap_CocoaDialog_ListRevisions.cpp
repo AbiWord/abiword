@@ -43,7 +43,7 @@ static const NSString * REVID_COL_ID = @"revid";
 static const NSString * DATE_COL_ID = @"date";
 static const NSString * COMMENT_COL_ID = @"comment";
 
-@interface AP_ListRevisions_DataSource : NSObject {
+@interface AP_ListRevisions_DataSource : NSObject<NSTableViewDataSource> {
 	NSMutableArray*		_array;
 }
 - (id)init;

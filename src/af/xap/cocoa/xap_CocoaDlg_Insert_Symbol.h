@@ -35,7 +35,8 @@ class XAP_CocoaDialog_Insert_Symbol;
 
 /*****************************************************************/
 
-@interface XAP_CocoaDlg_Insert_SymbolController : NSWindowController <XAP_CocoaDialogProtocol>
+@interface XAP_CocoaDlg_Insert_SymbolController
+: NSWindowController <XAP_CocoaDialogProtocol, NSTableViewDelegate, NSTableViewDataSource>
 {
 	IBOutlet NSButton *			oAdd;
 	IBOutlet NSButton *			oPreview;

@@ -32,6 +32,17 @@
 #include "ut_types.h"
 #endif
 
+class XAP_CocoaWindow;
+
+@interface XAP_CocoaWindowDelegate
+	: NSWindowController<NSWindowDelegate>
+{
+	XAP_CocoaWindow * m_window;
+}
+- (id)initWithWindow:(NSWindow *)window withXAPWindow:(XAP_CocoaWindow *)xap;
+- (void)windowDidResize:(NSNotification *)aNotification;
+@end
+
 class XAP_CocoaWindow
 {
 public:
@@ -73,7 +84,7 @@ protected:
 	unsigned int			m_styleMask;
 
 	NSBackingStoreType		m_backingType;
-	NSWindowController *	m_controller;
+	XAP_CocoaWindowDelegate *	m_controller;
 	NSWindow *				m_window;
 	bool					m_isToolbar;
 	NSRect					m_frame;

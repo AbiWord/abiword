@@ -44,7 +44,8 @@
 
 #include "ap_CocoaDialog_Styles.h"
 
-@interface AP_CocoaDialog_StylesController : NSWindowController <XAP_CocoaDialogProtocol>
+@interface AP_CocoaDialog_StylesController
+    : NSWindowController <XAP_CocoaDialogProtocol, NSTableViewDelegate>
 {
 @public
     IBOutlet NSButton *_applyBtn;

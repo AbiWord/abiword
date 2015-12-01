@@ -83,7 +83,8 @@ private:
 - (void)sync;
 @end
 
-@interface XAP_PaletteProperties_DataSource : NSObject
+@interface XAP_PaletteProperties_DataSource
+	: NSObject<NSOutlineViewDataSource, NSOutlineViewDelegate>
 {
 	NSOutlineView *		m_OutlineView;
 	NSMutableArray *	m_PropertyLevels;
@@ -118,7 +119,7 @@ private:
 - (void)setPreviewString:(NSString *)previewString;
 @end
 
-@interface XAP_CocoaToolPalette : NSWindowController
+@interface XAP_CocoaToolPalette : NSWindowController<NSWindowDelegate>
 {
 	struct XAP_CocoaToolRef *			m_ToolChest;
 

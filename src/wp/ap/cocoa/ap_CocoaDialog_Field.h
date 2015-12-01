@@ -58,7 +58,8 @@ private:
 
 
 
-@interface AP_CocoaDialog_FieldController : NSWindowController <XAP_CocoaDialogProtocol>
+@interface AP_CocoaDialog_FieldController
+    : NSWindowController <XAP_CocoaDialogProtocol, NSTableViewDelegate>
 {
     IBOutlet NSButton *_cancelBtn;
     IBOutlet NSTextField *_extraParamData;
@@ -68,7 +69,7 @@ private:
     IBOutlet NSButton *_okBtn;
     IBOutlet NSTextField *_typesLabel;
     IBOutlet NSTableView *_typesList;
-	AP_CocoaDialog_Field *_xap;
+    AP_CocoaDialog_Field *_xap;
 }
 - (int)selectedType;
 - (int)selectedField;
