@@ -86,7 +86,6 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
   	GtkWidget * m_wWidthEntry;
 	GtkWidget * m_wTitleEntry;
 	GtkWidget * m_wDescriptionEntry;
-	GtkWidget * m_wPlaceTable;
 	GtkWidget * m_wrbInLine;
 	GtkWidget * m_wrbNone;
 	GtkWidget * m_wrbWrappedRight;
@@ -97,7 +96,6 @@ class XAP_UnixDialog_Image: public XAP_Dialog_Image
 	GtkWidget * m_wrbPlacePage;
 	GtkWidget * m_wrbSquareWrap;
 	GtkWidget * m_wrbTightWrap;
-	GtkWidget * m_wWrapTable;
 
 
 

@@ -101,8 +101,6 @@ void XAP_UnixDialog_Image::wrappingChanged(void)
 	if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wrbInLine)))
 	{
 		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceParagraph),TRUE);
-		gtk_widget_set_sensitive(m_wPlaceTable,FALSE);
-		gtk_widget_set_sensitive(m_wWrapTable,FALSE);
 		gtk_widget_set_sensitive(m_wrbPlaceParagraph,FALSE);
 		gtk_widget_set_sensitive(m_wrbPlaceColumn,FALSE);
 		gtk_widget_set_sensitive(m_wrbPlacePage,FALSE);
@@ -111,8 +109,6 @@ void XAP_UnixDialog_Image::wrappingChanged(void)
 
 		return;
 	}
-	gtk_widget_set_sensitive(m_wPlaceTable,TRUE);
-	gtk_widget_set_sensitive(m_wWrapTable,TRUE);
 	gtk_widget_set_sensitive(m_wrbPlaceParagraph,TRUE);
 	gtk_widget_set_sensitive(m_wrbPlaceColumn,TRUE);
 	gtk_widget_set_sensitive(m_wrbPlacePage,TRUE);
@@ -373,8 +369,6 @@ void XAP_UnixDialog_Image::setPositionToGUI()
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceParagraph),FALSE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlaceColumn),FALSE);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wrbPlacePage),FALSE);
-    gtk_widget_set_sensitive(m_wPlaceTable,FALSE);
-    gtk_widget_set_sensitive(m_wWrapTable,FALSE);
     gtk_widget_set_sensitive(m_wrbPlaceParagraph,FALSE);
     gtk_widget_set_sensitive(m_wrbPlaceColumn,FALSE);
     gtk_widget_set_sensitive(m_wrbPlacePage,FALSE);
@@ -552,7 +546,6 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap")), pSS, XAP_STRING_ID_DLG_Image_SquareWrap);
 	localizeButton(GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap")), pSS, XAP_STRING_ID_DLG_Image_TightWrap);
 
-	m_wPlaceTable = GTK_WIDGET(gtk_builder_get_object(builder, "tbPlacement"));
 	m_wrbInLine = GTK_WIDGET(gtk_builder_get_object(builder, "rbInLine"));
 	m_wrbNone = GTK_WIDGET(gtk_builder_get_object(builder, "rbNone"));
 	m_wrbWrappedRight = GTK_WIDGET(gtk_builder_get_object(builder, "rbWrappedRight"));
@@ -563,7 +556,6 @@ GtkWidget * XAP_UnixDialog_Image::_constructWindow ()
 	m_wrbPlaceColumn = GTK_WIDGET(gtk_builder_get_object(builder, "rbPlaceColumn"));
 	m_wrbPlacePage = GTK_WIDGET(gtk_builder_get_object(builder, "rbPlacePage"));
 
-	m_wWrapTable = GTK_WIDGET(gtk_builder_get_object(builder, "tbWrapTable"));
 	m_wrbSquareWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbSquareWrap"));
 	m_wrbTightWrap = GTK_WIDGET(gtk_builder_get_object(builder, "rbTightWrap"));
 
