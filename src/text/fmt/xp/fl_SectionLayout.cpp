@@ -2568,20 +2568,20 @@ void fl_DocSectionLayout::deleteBrokenTablesFromHere(fl_ContainerLayout * pTL)
 
 fl_DocSectionLayout* fl_DocSectionLayout::getNextDocSection(void) const
 {
-	fl_DocSectionLayout * pSL = static_cast<fl_DocSectionLayout *>(getNext());
+	fl_SectionLayout * pSL = static_cast<fl_SectionLayout*>(getNext());
 	if(pSL != NULL && pSL->getType()== FL_SECTION_DOC)
-		return pSL;
+		return static_cast<fl_DocSectionLayout*>(pSL);
 	return NULL;
 }
 
 fl_DocSectionLayout* fl_DocSectionLayout::getPrevDocSection(void) const
 {
-	fl_DocSectionLayout * pSL = static_cast<fl_DocSectionLayout *>(getPrev());
+	fl_SectionLayout * pSL = static_cast<fl_SectionLayout*>(getPrev());
 	while(pSL != NULL && pSL->getType()!= FL_SECTION_DOC)
 	{
-		pSL = static_cast<fl_DocSectionLayout *>(pSL->getPrev());
+		pSL = static_cast<fl_SectionLayout*>(pSL->getPrev());
 	}
-	return pSL;
+	return static_cast<fl_DocSectionLayout*>(pSL);
 }
 
 void fl_DocSectionLayout::collapse(void)

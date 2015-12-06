@@ -2753,7 +2753,7 @@ bool PD_Document::verifySectionID(const gchar * pszId)
 		     pf_Frag_Strux * pfSec = static_cast<pf_Frag_Strux *>(currentFrag);
 		     if(pfSec->getStruxType() == PTX_Section)
 		     {
-				 indexAP = static_cast<pf_Frag_Text *>(currentFrag)->getIndexAP();
+				 indexAP = currentFrag->getIndexAP();
 				 const PP_AttrProp * pAP = NULL;
 				 m_pPieceTable->getAttrProp(indexAP,&pAP);
 				 UT_return_val_if_fail (pAP,false);
@@ -4979,9 +4979,9 @@ pf_Frag * PD_Document::getFragFromPosition(PT_DocPosition docPos) const
 bool PD_Document::getNextStruxOfType(pf_Frag_Strux* sdh,PTStruxType pts,
 					pf_Frag_Strux* * nextsdh)
 {
-	pf_Frag_Strux * pfs = sdh;
+	pf_Frag * pfs = sdh;
 	UT_return_val_if_fail (pfs, false);
-	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
+	pfs = pfs->getNext();
 	UT_sint32 iNest = 0;
 	for (pf_Frag * pf=pfs; (pf); pf=pf->getNext())
 		if (pf->getType() == pf_Frag::PFT_Strux)
