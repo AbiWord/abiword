@@ -596,7 +596,7 @@ random_r__ (struct UT_random_data *buf, UT_sint32 *result)
       UT_sint32 *end_ptr = buf->end_ptr;
       UT_sint32 val;
 
-      val = *fptr += *rptr;
+      val = *fptr += static_cast<long>(*rptr);
       /* Chucking least random bit.  */
       *result = (val >> 1) & 0x7fffffff;
       ++fptr;

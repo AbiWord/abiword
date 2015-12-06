@@ -1121,7 +1121,7 @@ void fp_VerticalContainer::draw(dg_DrawArgs* pDA)
 			bInTOC = !(iTOCBot < ytop || da.yoff > ybot);
 		}
 
-		UT_sint32 sumHeight = pContainer->getHeight() + (ybot-ytop);
+		UT_sint32 sumHeight = static_cast<long>(pContainer->getHeight()) + (ybot-ytop);
 		UT_sint32 totDiff;
 		if(da.yoff < ytop)
 			totDiff = ybot - da.yoff;

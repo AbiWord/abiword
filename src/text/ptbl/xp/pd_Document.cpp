@@ -4936,9 +4936,9 @@ bool PD_Document::getPrevStruxOfType(pf_Frag_Strux* sdh,PTStruxType pts,
 bool PD_Document::getNextStrux(pf_Frag_Strux* sdh,
 							   pf_Frag_Strux* * nextsdh)
 {
-	pf_Frag_Strux * pfs = sdh;
+	pf_Frag * pfs = sdh;
 	UT_return_val_if_fail (pfs, false);
-	pfs = static_cast<pf_Frag_Strux *>(pfs->getNext());
+	pfs = static_cast<pf_Frag *>(pfs->getNext());
 	UT_sint32 iEmbedDepth = 0;
 	for (pf_Frag * pf=pfs; (pf); pf=pf->getNext())
 	{

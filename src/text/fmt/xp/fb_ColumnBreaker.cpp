@@ -830,7 +830,7 @@ UT_sint32 fb_ColumnBreaker::_breakSection(fp_Page * pStartPage)
 //
 		xxx_UT_DEBUGMSG(("Doing column fill now pCurContainer %x pFirstContainer %x \n",pCurContainer,pFirstContainerToKeep));
 		pCurContainer = pFirstContainerToKeep;
-		fp_TableContainer * pTab = static_cast<fp_TableContainer *>(pFirstContainerToKeep);
+		fp_Container * pTab = pFirstContainerToKeep;
 		UT_UNUSED(pTab); // only for debug.
 		UT_sint32 conPos = 0;
 		while (pCurContainer)

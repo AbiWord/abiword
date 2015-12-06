@@ -205,7 +205,8 @@ void UT_GenericVector<T>::clear()
 	}
 
 	m_iCount = 0;
-	memset(m_pEntries, 0, m_iSpace * sizeof(T));
+	if (m_iSpace > 0)
+		memset(m_pEntries, 0, m_iSpace * sizeof(T));
 }
 
 
