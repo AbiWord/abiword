@@ -178,10 +178,17 @@ EV_Toolbar_ActionSet * AP_CreateToolbarActionSet(void)
 	_s(AP_TOOLBAR_ID_MERGE_CELLS, EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table);
 	_s(AP_TOOLBAR_ID_SPLIT_CELLS, EV_TBIT_PushButton, "splitCells", AV_CHG_ALL, ap_ToolbarGetState_TableMerged);
 
-	_s(AP_TOOLBAR_ID_MERGELEFT,  EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table); // FIXME
-	_s(AP_TOOLBAR_ID_MERGERIGHT, EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table); // FIXME
-	_s(AP_TOOLBAR_ID_MERGEABOVE, EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table); // FIXME
-	_s(AP_TOOLBAR_ID_MERGEBELOW, EV_TBIT_PushButton, "mergeCells", AV_CHG_ALL, ap_ToolbarGetState_Table); // FIXME
+	_s(AP_TOOLBAR_ID_MERGELEFT,  EV_TBIT_PushButton, "mergeCellsLeft", AV_CHG_ALL, ap_ToolbarGetState_Table);
+	_s(AP_TOOLBAR_ID_MERGERIGHT, EV_TBIT_PushButton, "mergeCellsRight", AV_CHG_ALL, ap_ToolbarGetState_Table);
+	_s(AP_TOOLBAR_ID_MERGEABOVE, EV_TBIT_PushButton, "mergeCellsAbove", AV_CHG_ALL, ap_ToolbarGetState_Table);
+	_s(AP_TOOLBAR_ID_MERGEBELOW, EV_TBIT_PushButton, "mergeCellsBelow", AV_CHG_ALL, ap_ToolbarGetState_Table);
+
+	_s(AP_TOOLBAR_ID_SPLITABOVE, EV_TBIT_PushButton, "oTB_SplitAbove", AV_CHG_ALL, ap_ToolbarGetState_TableMerged);
+	_s(AP_TOOLBAR_ID_SPLITBELOW, EV_TBIT_PushButton, "splitCellsBelow", AV_CHG_ALL, ap_ToolbarGetState_TableMerged);
+	_s(AP_TOOLBAR_ID_SPLITHORIMID, EV_TBIT_PushButton, "splitCellsHoriMid", AV_CHG_ALL, ap_ToolbarGetState_TableMerged);
+	_s(AP_TOOLBAR_ID_SPLITLEFT,  EV_TBIT_PushButton, "splitCellsLeft", AV_CHG_ALL, ap_ToolbarGetState_TableMerged);
+	_s(AP_TOOLBAR_ID_SPLITRIGHT, EV_TBIT_PushButton, "splitCellsRight", AV_CHG_ALL, ap_ToolbarGetState_TableMerged);
+	_s(AP_TOOLBAR_ID_SPLITVERTMID, EV_TBIT_PushButton, "splitCellsVertMid", AV_CHG_ALL, ap_ToolbarGetState_TableMerged);
 
 	_s(AP_TOOLBAR_ID_REVISIONS_NEW,        EV_TBIT_PushButton,		"revisionNew",    AV_CHG_NONE, NULL );
 	_s(AP_TOOLBAR_ID_REVISIONS_SELECT,     EV_TBIT_PushButton,		"revisionSelect", AV_CHG_ALL, ap_ToolbarGetState_HasRevisions );
