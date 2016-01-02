@@ -330,10 +330,14 @@ XAP_Dialog_FontChooser::tAnswer XAP_Dialog_FontChooser::getAnswer(void) const
 
 bool XAP_Dialog_FontChooser::getChangedFontFamily(const gchar ** pszFontFamily) const
 {
-	bool bchanged = didPropChange(m_sFontFamily,getVal("font-family"));
+	// we used to return the c_str of getVal() but this returns the internals of
+	// a local variable which is destroyed on exit, so we need a static buffer
+	static std::string newVal;
+	newVal = getVal("font-family");
+	bool bchanged = didPropChange(m_sFontFamily, newVal);
 	bool useVal = (bchanged && !m_bChangedFontFamily);
 	if (pszFontFamily && useVal)
-		*pszFontFamily = getVal("font-family").c_str();
+		*pszFontFamily = newVal.c_str();
 	else if(pszFontFamily)
 		*pszFontFamily = m_sFontFamily.c_str();
 	return bchanged;
