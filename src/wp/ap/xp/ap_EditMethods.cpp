@@ -7909,50 +7909,49 @@ UT_return_val_if_fail(pDialog, false);
 
 	if (bOK)
 	{
-		UT_uint32  k = 0;
-		const gchar * props_out[21];
-		const gchar * s;
+		std::vector<std::string> props_out;
+		std::string s;
 
-		if (pDialog->getChangedFontFamily(&s))
+		if (pDialog->getChangedFontFamily(s))
 		{
-			props_out[k++] = "font-family";
-			props_out[k++] = s;
+			props_out.push_back("font-family");
+			props_out.push_back(s);
 		}
 
-		if (pDialog->getChangedTextTransform(&s))
+		if (pDialog->getChangedTextTransform(s))
 		{
-			props_out[k++] = "text-transform";
-			props_out[k++] = s;
+			props_out.push_back("text-transform");
+			props_out.push_back(s);
 		}
 
-		if (pDialog->getChangedFontSize(&s))
+		if (pDialog->getChangedFontSize(s))
 		{
-			props_out[k++] = "font-size";
-			props_out[k++] = s;
+			props_out.push_back("font-size");
+			props_out.push_back(s);
 		}
 
-		if (pDialog->getChangedFontWeight(&s))
+		if (pDialog->getChangedFontWeight(s))
 		{
-			props_out[k++] = "font-weight";
-			props_out[k++] = s;
+			props_out.push_back("font-weight");
+			props_out.push_back(s);
 		}
 
-		if (pDialog->getChangedFontStyle(&s))
+		if (pDialog->getChangedFontStyle(s))
 		{
-			props_out[k++] = "font-style";
-			props_out[k++] = s;
+			props_out.push_back("font-style");
+			props_out.push_back(s);
 		}
 
-		if (pDialog->getChangedColor(&s))
+		if (pDialog->getChangedColor(s))
 		{
-			props_out[k++] = "color";
-			props_out[k++] = s;
+			props_out.push_back("color");
+			props_out.push_back(s);
 		}
 
-		if (pDialog->getChangedBGColor(&s))
+		if (pDialog->getChangedBGColor(s))
 		{
-			props_out[k++] = "bgcolor";
-			props_out[k++] = s;
+			props_out.push_back("bgcolor");
+			props_out.push_back(s);
 		}
 
 		bool bUnderline = false;
@@ -7965,11 +7964,9 @@ UT_return_val_if_fail(pDialog, false);
 		bool bChangedTopline = pDialog->getChangedTopline(&bTopline);
 		bool bBottomline = false;
 		bool bChangedBottomline = pDialog->getChangedBottomline(&bBottomline);
-		UT_String decors;
-		static gchar sstr[50];
+		std::string decors;
 		if (bChangedUnderline || bChangedStrikeOut || bChangedOverline || bChangedTopline || bChangedBottomline)
 		{
-			decors.clear();
 			if(bUnderline)
 				decors += "underline ";
 			if(bStrikeOut)
@@ -7982,9 +7979,8 @@ UT_return_val_if_fail(pDialog, false);
 				decors += "bottomline ";
 			if(!bUnderline && !bStrikeOut && !bOverline && !bTopline && !bBottomline)
 				decors = "none";
-			sprintf(sstr,"%s",decors.c_str());
-			props_out[k++] = "text-decoration";
-			props_out[k++] = static_cast<const gchar *>(sstr);
+			props_out.push_back("text-decoration");
+			props_out.push_back(decors);
 		}
 
 		bool bHidden = false;
@@ -7994,17 +7990,16 @@ UT_return_val_if_fail(pDialog, false);
 		{
 			if(bHidden)
 			{
-				props_out[k++] = "display";
-				props_out[k++] = "none";
-				
+				props_out.push_back("display");
+				props_out.push_back("none");
 			}
 			else
 			{
-				props_out[k++] = "display";
-				props_out[k++] ="inline";
+				props_out.push_back("display");
+				props_out.push_back("inline");
 			}
 		}
-		
+
 		bool bSuperScript = false;
 		bool bChangedSuperScript = pDialog->getChangedSuperScript(&bSuperScript);
 
@@ -8012,17 +8007,16 @@ UT_return_val_if_fail(pDialog, false);
 		{
 			if(bSuperScript)
 			{
-				props_out[k++] = "text-position";
-				props_out[k++] = "superscript";
-				
+				props_out.push_back("text-position");
+				props_out.push_back("superscript");
 			}
 			else
 			{
-				props_out[k++] = "text-position";
-				props_out[k++] = "";
+				props_out.push_back("text-position");
+				props_out.push_back("");
 			}
 		}
-		
+
 		bool bSubScript = false;
 		bool bChangedSubScript = pDialog->getChangedSubScript(&bSubScript);
 
@@ -8032,24 +8026,20 @@ UT_return_val_if_fail(pDialog, false);
 			{
 				if(bSubScript)
 				{
-					props_out[k++] = "text-position";
-					props_out[k++] = "subscript";
-				
+					props_out.push_back("text-position");
+					props_out.push_back("subscript");
 				}
 				else
 				{
-					props_out[k++] = "text-position";
-					props_out[k++] = "";
+					props_out.push_back("text-position");
+					props_out.push_back("");
 				}
 			}
 		}
 
-		props_out[k] = 0;						// put null after last pair.
-		UT_return_val_if_fail (k < G_N_ELEMENTS(props_out), false);
-		for(UT_uint32 i = 0; i<k; i= i+2 )
-			UT_DEBUGMSG(("SEVIOR: Props = %s: Values = %s \n",props_out[i],props_out[i+1]));
-		if (k > 0)								// if something changed
+		if (!props_out.empty()) {				// if something changed
 			pView->setCharFormat(props_out);
+		}
 	}
 
 	pDialogFactory->releaseDialog(pDialog);

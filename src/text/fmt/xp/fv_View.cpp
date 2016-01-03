@@ -4719,6 +4719,23 @@ bool FV_View::getStyle(const gchar ** style) const
 	return true;
 }
 
+// TODO: merge this the and other override to not iterate twice.
+bool FV_View::setCharFormat(const std::vector<std::string>& properties)
+{
+	size_t len = properties.size();
+	const gchar** props = (const gchar**)calloc(len + 1, sizeof (gchar*));
+	const gchar** current = props;
+	for(std::vector<std::string>::const_iterator iter = properties.begin();
+		iter != properties.end(); ++iter) {
+		*current = iter->c_str();
+		current++;
+	}
+	props[len] = NULL;
+	bool ret = setCharFormat(props, NULL);
+	free(props);
+	return ret;
+}
+
 bool FV_View::setCharFormat(const gchar * properties[], const gchar * attribs[])
 {
 	bool bRet = false;

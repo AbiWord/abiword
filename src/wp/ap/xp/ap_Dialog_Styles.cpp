@@ -545,34 +545,34 @@ void AP_Dialog_Styles::ModifyFont(void)
 
 	if (bOK)
 	{
-		const gchar * s1;
+		std::string s1;
 
-		if (pDialog->getChangedFontFamily(&s1))
+		if (pDialog->getChangedFontFamily(s1))
 		{
 			addOrReplaceVecProp("font-family", s1);
 		}
 
-		if (pDialog->getChangedFontSize(&s1))
+		if (pDialog->getChangedFontSize(s1))
 		{
 			addOrReplaceVecProp("font-size", s1);
 		}
 
-		if (pDialog->getChangedFontWeight(&s1))
+		if (pDialog->getChangedFontWeight(s1))
 		{
 			addOrReplaceVecProp("font-weight", s1);
 		}
 
-		if (pDialog->getChangedFontStyle(&s1))
+		if (pDialog->getChangedFontStyle(s1))
 		{
 			addOrReplaceVecProp("font-style", s1);
 		}
 
-		if (pDialog->getChangedColor(&s1))
+		if (pDialog->getChangedColor(s1))
 		{
 			addOrReplaceVecProp("color", s1);
 		}
 
-		if (pDialog->getChangedBGColor(&s1))
+		if (pDialog->getChangedBGColor(s1))
 		{
 			addOrReplaceVecProp("bgcolor", s1);
 		}

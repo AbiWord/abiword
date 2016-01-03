@@ -26,6 +26,7 @@
 #endif
 
 #include <string>
+#include <vector>
 
 #include "xap_Features.h"
 #include "ut_types.h"
@@ -443,6 +444,7 @@ public:
 	// - end
 
 	bool	setCharFormat(const gchar * properties[], const gchar * attribs[] = NULL);
+	bool	setCharFormat(const std::vector<std::string>& properties);
 	bool	resetCharFormat(bool bAll);
 	bool	getCharFormat(const gchar *** properties,bool bExpandStyles=true) const;
 	bool	getCharFormat(const gchar *** properties,bool bExpandStyles, PT_DocPosition posStart) const;

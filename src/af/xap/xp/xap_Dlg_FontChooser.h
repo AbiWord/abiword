@@ -68,7 +68,7 @@ public:
 														const std::string & pszVal);
 	void                            event_previewExposed(const UT_UCSChar * pszChars);
 	void                            event_previewClear(void);
-	const std::string&              getVal(const std::string & sProp) const;
+	std::string                     getVal(const std::string & sProp) const;
 	void                            setAllPropsFromVec(const UT_Vector & vProps);
 
 	void							setGraphicsContext(GR_Graphics * pGraphics);
@@ -93,13 +93,13 @@ public:
 	// they changed it or not.  this value is a static string in
 	// the dialog and must be valid only until the dialog is released.
 	bool                            didPropChange(const std::string & v1, const std::string & v2) const;
-	bool							getChangedTextTransform(const gchar ** pszTextTransform) const;
-	bool							getChangedFontFamily(const gchar ** pszFontFamily) const;
-	bool							getChangedFontSize(const gchar ** pszFontSize) const;
-	bool							getChangedFontWeight(const gchar ** pszFontWeight) const;
-	bool							getChangedFontStyle(const gchar ** pszFontStyle) const;
-	bool							getChangedColor(const gchar ** pszColor) const;
-	bool							getChangedBGColor(const gchar ** pszColor) const;
+	bool							getChangedTextTransform(std::string&) const;
+	bool							getChangedFontFamily(std::string&) const;
+	bool							getChangedFontSize(std::string&) const;
+	bool							getChangedFontWeight(std::string&) const;
+	bool							getChangedFontStyle(std::string&) const;
+	bool							getChangedColor(std::string&) const;
+	bool							getChangedBGColor(std::string&) const;
 	bool							getChangedUnderline(bool * pbUnderline) const;
 	bool							getChangedOverline(bool * pbOverline) const;
 	bool							getChangedStrikeOut(bool * pbStrikeOut) const;
