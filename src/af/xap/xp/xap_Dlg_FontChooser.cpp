@@ -1,6 +1,6 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009-2016 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -24,7 +24,6 @@
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "xap_Dlg_FontChooser.h"
-#include "ut_string_class.h"
 #include "gr_Graphics.h"
 #include "gr_Painter.h"
 
@@ -129,7 +128,7 @@ void XAP_Dialog_FontChooser::event_previewExposed(const UT_UCSChar * pszChars)
 		m_pFontPreview->setDrawString(pszChars);
 	}
 	m_pFontPreview->draw();
-	
+
 	FREEP(pszNew);
 }
 
@@ -143,11 +142,8 @@ void XAP_Dialog_FontChooser::event_previewClear(void)
 }
 
 /*!
- * This method returns a std::string of the const char * value associated with the
- * the property szProp. Stolen from ap_Dialog_Lists.
- * It assumes properties and values are stored the array like this:
- * vecProp(n)   :   vecProp(n+1)
- * "property"   :   "value"
+ * This method returns a std::string of the value associated with the
+ * the property sProp.
  */
 std::string XAP_Dialog_FontChooser::getVal(const std::string & sProp) const
 {
@@ -159,14 +155,14 @@ std::string XAP_Dialog_FontChooser::getVal(const std::string & sProp) const
 }
 
 /*!
- * This method sets all the local properties from a vector of pointers
- * to const gchar * strings of Property - Value pairs.
+ * This method sets all the local properties from a vector of string
+ * Property - Value pairs.
  * This method wipes out all the old values and clears all the bools
  * assciated with them.
  */
-void XAP_Dialog_FontChooser::setAllPropsFromVec(const UT_Vector & vProps)
+void XAP_Dialog_FontChooser::setAllPropsFromVec(const std::vector<std::string> & vProps)
 {
-	UT_sint32 remCount = vProps.getItemCount();
+	UT_sint32 remCount = vProps.size();
 	if(remCount <= 0)
 		return;
 	// BAD BAD, we have wrong count
@@ -178,8 +174,8 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(const UT_Vector & vProps)
 	UT_sint32 i = 0;
 	for(i=0; i< remCount; i+=2)
 	{
-		m_mapProps.insert(std::make_pair((const char*)vProps.getNthItem(i), 
-										 (const char*)vProps.getNthItem(i+1)));
+		m_mapProps.insert(std::make_pair(vProps[i],
+                                                 vProps[i+1]));
 	}
 //
 // Do the Text decorations
@@ -192,11 +188,11 @@ void XAP_Dialog_FontChooser::setAllPropsFromVec(const UT_Vector & vProps)
 	m_bBottomline = (NULL != strstr(sDecor.c_str(),"bottomline"));
 
 	const std::string sDisplay = getVal("display");
-	m_bHidden = !strcmp(sDisplay.c_str(),"none");
-	
+	m_bHidden = sDisplay != "none";
+
 	const std::string sPosition = getVal("text-position");
-	m_bSuperScript = strcmp(sPosition.c_str(),"superscript")==0;
-	m_bSubScript = strcmp(sPosition.c_str(),"subscript")==0;
+	m_bSuperScript = sPosition == "superscript";
+	m_bSubScript = sPosition == "subscript";
 }
 
 void XAP_Dialog_FontChooser::setFontFamily(const std::string& sFontFamily)
@@ -255,7 +251,6 @@ void XAP_Dialog_FontChooser::setSuperScript(bool bSuperScript)
 		addOrReplaceVecProp("text-position",empty);
 	}
 	m_bSuperScript = bSuperScript;
-	
 }
 
 void XAP_Dialog_FontChooser::setSubScript(bool bSubScript)
@@ -272,7 +267,6 @@ void XAP_Dialog_FontChooser::setSubScript(bool bSubScript)
 		addOrReplaceVecProp("text-position",empty);
 	}
 	m_bSubScript = bSubScript;
-	
 }
 
 void XAP_Dialog_FontChooser::setHidden(bool bHidden)
@@ -501,14 +495,6 @@ XAP_Preview_FontPreview::~XAP_Preview_FontPreview()
 {
 }
 
-/*!
- * This method assigns a pointer to a
- *  vector with Char * strings of span-level properties
- * The vector has const gchar * string in the order
- * (n) Property (n+1) Value
- *
- * This code stolen from ap_Dialog_Lists.cpp
- */
 void XAP_Preview_FontPreview::setVecProperties( const XAP_Dialog_FontChooser::PropMap * vFontProps)
 {
 	m_mapProps = vFontProps;
@@ -518,7 +504,7 @@ void XAP_Preview_FontPreview::setVecProperties( const XAP_Dialog_FontChooser::Pr
  * This method returns a pointer to the const char * value associated with the
  * the property szProp. Stolen from ap_Dialog_Lists.
  */
-const std::string XAP_Preview_FontPreview::getVal(const std::string & sProp)
+std::string XAP_Preview_FontPreview::getVal(const std::string & sProp) const
 {
 	XAP_Dialog_FontChooser::PropMap::const_iterator iter = m_mapProps->find(sProp);
 	if(iter == m_mapProps->end()) {
@@ -563,7 +549,7 @@ void XAP_Preview_FontPreview::draw(const UT_Rect *clip)
 		UT_parseColor(sFGColor.c_str(),FGcolor);
 	UT_RGBColor BGcolor(m_clrBackground);
 	const std::string sBGColor = getVal("bgcolor");
-	if(!sBGColor.empty() && strcmp(sBGColor.c_str(),"transparent") != 0)
+	if(!sBGColor.empty() && sBGColor != "transparent")
 		UT_parseColor(sBGColor.c_str(),BGcolor);
 //
 // Get the font and bold/italic- ness
@@ -606,12 +592,12 @@ void XAP_Preview_FontPreview::draw(const UT_Rect *clip)
 		return;
 	}
 
-	m_gc->setFont(m_pFont);		
+	m_gc->setFont(m_pFont);
 
 	m_iAscent = m_gc->getFontAscent(m_pFont);
 	m_iDescent = m_gc->getFontDescent(m_pFont);
 	m_iHeight = m_gc->getFontHeight(m_pFont);
-	
+
 //
 // Clear the screen!
 //

@@ -33,6 +33,7 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "ut_string.h"
 
@@ -59,7 +60,7 @@ public:
 
 	void setDrawString (const UT_UCSChar * str);
 
-	const UT_UCSChar * getDrawString ()
+	const UT_UCSChar * getDrawString () const
 	  {
 	    return m_drawString;
 	  }
@@ -69,7 +70,7 @@ public:
 	void                            event_previewExposed(const UT_UCSChar * pszChars);
 	void                            event_previewClear(void);
 	std::string                     getVal(const std::string & sProp) const;
-	void                            setAllPropsFromVec(const UT_Vector & vProps);
+	void                            setAllPropsFromVec(const std::vector<std::string> & vProps);
 
 	void							setGraphicsContext(GR_Graphics * pGraphics);
 	void							setFontFamily(const std::string& sFontFamily);
@@ -161,7 +162,7 @@ public:
 	explicit XAP_Preview_FontPreview(GR_Graphics * gc, const gchar * pszClrBackgound);
 	virtual ~XAP_Preview_FontPreview(void);
 	void setVecProperties( const XAP_Dialog_FontChooser::PropMap * vFontProps);
-	const std::string getVal(const std::string &);
+	std::string getVal(const std::string &) const;
 	void draw(const UT_Rect *clip=NULL);
 	void setDrawString( const UT_UCSChar * pszChars) {m_pszChars = pszChars;}
 	void clearScreen(void);
