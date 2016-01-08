@@ -595,9 +595,13 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 		UT_uint32 countp = vProps.getItemCount() + 1;
 		sProps = (const gchar **) UT_calloc(countp, sizeof(gchar *));
 		countp--;
+		vPropNames.resize(countp);
 		for (UT_uint32 i = 0; i < countp; i++)
 		{
-			sProps[i] = (const gchar *) vProps.getNthItem(i);
+			// we need to make a copy of the properties names, because they might
+			// be destroyed before we are done, see bug #13752, comment #1
+			vPropNames[i] = (const gchar *) vProps.getNthItem(i);
+			sProps[i] = vPropNames[i].c_str();
 		}
 		sProps[countp - 1] = NULL;
 
