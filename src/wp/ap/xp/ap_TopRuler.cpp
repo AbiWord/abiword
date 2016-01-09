@@ -1095,6 +1095,7 @@ UT_sint32 AP_TopRuler::_findTabStop(AP_TopRulerInfo * pInfo,
 			return i;
 	}
 
+	anchor = 0; // to avoid an uninitialized value in isMouseOverTab()
 	return tr_TABINDEX_NONE;
 }
 
