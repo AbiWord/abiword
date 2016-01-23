@@ -616,7 +616,7 @@ AC_LANG_POP
 #
 
 # We need libpng
-for l in libpng libpng14 libpng12; do
+for l in libpng libpng16 libpng14 libpng12; do
   AC_MSG_CHECKING(for $l)
   if $PKG_CONFIG --exists $l ; then
     AC_MSG_RESULT(yes)
