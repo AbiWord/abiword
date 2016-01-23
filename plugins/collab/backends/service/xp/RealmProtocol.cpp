@@ -6,8 +6,8 @@ namespace protocolv1 {
 
 #define MAX_PACKET_DATA_SIZE 64*1024*1024
 		
-#define RPV1_PACKET_NONEXISTENT -2
-#define RPV1_PACKET_VARIABLE -1
+#define RPV1_PACKET_NONEXISTENT uint32_t(-2)
+#define RPV1_PACKET_VARIABLE uint32_t(-1)
 	
 static uint32_t body_size[6] = {
 	RPV1_PACKET_NONEXISTENT, /* 0: reserved */

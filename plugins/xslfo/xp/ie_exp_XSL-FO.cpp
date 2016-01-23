@@ -1451,7 +1451,7 @@ void s_XSL_FO_Listener::_openSection(PT_AttrPropIndex api)
 	{ \
 		UT_UTF8String esc = szValue; \
 		esc.escapeXML(); \
-		buf += " "x"=\""; \
+		buf += " " x"=\""; \
 		buf += esc.utf8_str(); \
 		buf += "\""; \
 	}
