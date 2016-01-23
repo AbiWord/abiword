@@ -1330,7 +1330,7 @@ void s_LaTeX_Listener::_outputData(const UT_UCSChar * data, UT_uint32 length)
 	m_pie->write(sBuf.c_str(),sBuf.size());
 }
 
-#define SUB(a,who) case a: subst = "\\(\\"who"\\)"; return true;
+#define SUB(a,who) case a: subst = "\\(\\" who"\\)"; return true;
 #define SUBd(a,who) case a: subst = who; return true;
 static bool _convertLettersToSymbols(char c, const char *& subst)
 {

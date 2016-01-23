@@ -163,7 +163,7 @@ namespace soup_soa {
 	
 	static bool _invoke(const std::string& /*url*/, const soa::method_invocation& /*mi*/, SoaSoupSession& sess, std::string& result) {
 		if (!sess.m_session || !sess.m_msg )
-			return soa::GenericPtr();
+			return false;
 
 		guint status = soup_session_send_message (sess.m_session, sess.m_msg);
 		if (!(SOUP_STATUS_IS_SUCCESSFUL (status) ||
