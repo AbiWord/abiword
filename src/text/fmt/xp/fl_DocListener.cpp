@@ -1350,7 +1350,7 @@ bool fl_DocListener::change(fl_ContainerLayout* sfh,
 			// Tomas, June 7, 2003
 			
 			chgMask = AV_CHG_FMTBLOCK | AV_CHG_FMTCHAR;
-			fl_SectionLayout * pCL = static_cast<fl_SectionLayout *>(pL2);
+			fl_BlockLayout * pCL = static_cast<fl_BlockLayout *>(pL2);
 			fl_SectionLayout* pCLSL = pCL->getSectionLayout();
 			if(pCLSL->getType() == FL_SECTION_SHADOW)
 			{
