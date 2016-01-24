@@ -73,6 +73,13 @@ class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	void destroyAbiPreview(void);
 	void removeVecProp(const gchar * pszProp);
 	void addOrReplaceVecProp(const gchar * pszProp,  const gchar * pszVal);
+        /* helper version with std::string */
+        void addOrReplaceVecProp(const gchar * pszProp,
+                                 const std::string &szVal)
+        {
+                addOrReplaceVecProp(pszProp, szVal.c_str());
+        }
+
 	void addOrReplaceVecAttribs(const gchar * pszProp,  const gchar * pszVal);
 	void fillVecWithProps(const gchar * szStyle, bool bReplaceAttributes);
 	void fillVecFromCurrentPoint(void);
