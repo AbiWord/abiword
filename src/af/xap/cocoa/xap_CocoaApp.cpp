@@ -192,7 +192,7 @@ void XAP_CocoaApp::getGeometry(int * x, int * y, UT_uint32 * width,
 	*flags = m_geometry.flags;
 }
 
-const char * XAP_CocoaApp::getUserPrivateDirectory()
+const char * XAP_CocoaApp::getUserPrivateDirectory() const
 {
 	static const char * szAbiDir = "Library/Application Support/AbiSuite";
 	

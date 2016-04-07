@@ -46,7 +46,7 @@ public:
 	{ return &m_dialogFactory; }
 	virtual XAP_Toolbar_ControlFactory *	getControlFactory()
 	{ return &m_controlFactory; }
-	virtual const char *					getUserPrivateDirectory();
+	virtual const char *					getUserPrivateDirectory() const;
 	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 
 protected:

@@ -207,70 +207,60 @@ void XAP_UnixApp::getWinGeometry(int * x, int * y, UT_uint32 * width,
 }
 
 // This should be removed at some time.
-void XAP_UnixApp::migrate (const char *oldName, const char *newName, const char *path) const
+void XAP_UnixApp::migrate(const char *oldName,
+                          const char *newName, const char *path) const
 {
-	if (path && newName && oldName && (*oldName == '/'))
-	{
-		char *old = new char[strlen(path) - strlen(newName) + strlen(oldName)];
-     
-		if (old)
-		{
-			size_t len = strrchr(path, '/') - path;       
-			strncpy(old, path, len);
-			old[len] = 0;
-			strcat(old, oldName);
+    if (path && newName && oldName && (*oldName == '/')) {
 
-			if (g_access(old, F_OK) == 0) 
-			{
-				UT_WARNINGMSG(("Renaming: %s -> %s\n", old, path));
-				g_rename(old, path);
-			}
-                     
-			delete[] old;
-		}         
-	}
+        const char* end = strrchr(path, '/');
+        if (!end) {
+            UT_WARNINGMSG(("invalid path '%s', '/' not found", path));
+            return;
+        }
+
+        std::string old(path, end);
+        old += oldName;
+
+        if (g_access(old.c_str(), F_OK) == 0) {
+            UT_WARNINGMSG(("Renaming: %s -> %s\n", old.c_str(), path));
+            g_rename(old.c_str(), path);
+        }
+    }
 }
- 
-const char * XAP_UnixApp::getUserPrivateDirectory()
+
+const char * XAP_UnixApp::getUserPrivateDirectory() const
 {
-	/* return a pointer to a static buffer */
-    static char *buf = NULL;
+    /* return a pointer to a static buffer */
+    static std::string private_dir;
 
-    if (buf == NULL)
-    {
-		const char * szAbiDir = "abiword";
-		const char * szCfgDir = ".config";
+    if (private_dir.empty()) {
+        const char * szAbiDir = "abiword";
+        const char * szCfgDir = ".config";
 
-		const char * szXDG = getenv("XDG_CONFIG_HOME");
-		if (!szXDG || !*szXDG) {
-			const char * szHome = getenv("HOME");
-			if (!szHome || !*szHome)
-				szHome = "./";
+        const char * szXDG = getenv("XDG_CONFIG_HOME");
+        if (!szXDG || !*szXDG) {
+            const char * szHome = getenv("HOME");
+            if (!szHome || !*szHome)
+                szHome = "./";
 
-			buf = new char[strlen(szHome)+strlen(szCfgDir)+strlen(szAbiDir)+4];
+            private_dir = szHome;
+            if (szHome[strlen(szHome)-1] != '/') {
+                private_dir.push_back('/');
+            }
+            private_dir += szCfgDir;
+        } else {
+            private_dir = szXDG;
+        }
 
-			strcpy(buf, szHome);
-			if (buf[strlen(buf)-1] != '/')
-				strcat(buf, "/");
-			strcat(buf, szCfgDir);
-		} else {
-			buf = new char[strlen(szXDG)+strlen(szAbiDir)+4];
-			strcpy(buf, szXDG);
-		}
+        private_dir += '/';
+        private_dir += szAbiDir;
 
-		strcat(buf, "/");
-		strcat(buf, szAbiDir);
-
-#ifdef PATH_MAX
-        if (strlen(buf) >= PATH_MAX)
-            DELETEPV(buf);
-#endif
-
-		// migration / legacy
-		migrate("/AbiSuite", szAbiDir, buf); 
+        // migration / legacy
+        // XXX shouldn't that be /.AbiSuite ?
+        migrate("/AbiSuite", szAbiDir, private_dir.c_str());
     }
 
-	return buf;
+    return private_dir.c_str();
 }
 
 

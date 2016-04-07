@@ -238,7 +238,7 @@ static bool isWriteable(LPWSTR lpPath)
 	return result;
 }
 
-const char * XAP_Win32App::getUserPrivateDirectory(void)
+const char * XAP_Win32App::getUserPrivateDirectory(void) const
 {
 	/* return a pointer to a static buffer */
 

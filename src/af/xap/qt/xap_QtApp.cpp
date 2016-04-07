@@ -79,7 +79,7 @@ UT_sint32 XAP_QtApp::makeDirectory(const char * szPath, const UT_sint32 mode ) c
 }
 
 // TODO refactor with XAP_UnixApp::getUserPrivateDirectory()
-const char * XAP_QtApp::getUserPrivateDirectory()
+const char * XAP_QtApp::getUserPrivateDirectory() const
 {
 	/* return a pointer to a static buffer */
     static char *buf = NULL;

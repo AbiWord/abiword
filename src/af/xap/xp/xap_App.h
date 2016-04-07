@@ -178,7 +178,7 @@ public:
 
 	virtual const XAP_StringSet *			getStringSet() const = 0;
 	virtual void						migrate(const char *oldName, const char *newName, const char *path) const;
-	virtual const char *				getUserPrivateDirectory() = 0;
+	virtual const char *				getUserPrivateDirectory() const = 0;
 	virtual const char *				getAbiSuiteLibDir() const;
 	virtual const char *				getAbiSuiteAppDir() const = 0;
 	virtual bool					findAbiSuiteLibFile(std::string & path, const char * filename, const char * subdir = 0);

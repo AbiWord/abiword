@@ -65,7 +65,7 @@ public:
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool, bool) = 0;
 	virtual bool							canPasteFromClipboard(void) = 0;
 	virtual void							cacheCurrentSelection(AV_View *) = 0;
-	virtual const char *					getUserPrivateDirectory(void);
+	virtual const char *					getUserPrivateDirectory(void) const;
 
 	virtual HICON							getIcon(void) = 0;
 	virtual HICON							getSmallIcon(void) = 0;

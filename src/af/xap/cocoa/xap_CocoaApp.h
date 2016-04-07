@@ -65,7 +65,7 @@ public:
 	virtual void							copyToClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard = true) = 0;
 	virtual void							pasteFromClipboard(PD_DocumentRange * pDocRange, bool bUseClipboard, bool bHonorFormatting = true) = 0;
 	virtual bool							canPasteFromClipboard() = 0;
-	virtual const char *					getUserPrivateDirectory();
+	virtual const char *					getUserPrivateDirectory() const;
 	virtual bool							findAbiSuiteBundleFile(std::string & path, const char * filename, const char * subdir = 0); // checks only bundle
 	virtual bool							findAbiSuiteLibFile(std::string & path, const char * filename, const char * subdir = 0);
 	virtual bool							findAbiSuiteAppFile(std::string & path, const char * filename, const char * subdir = 0); // doesn't check user-dir
