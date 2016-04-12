@@ -138,6 +138,7 @@ win_pkgs="$enchant_req"
 
 AC_PROG_CC
 AC_PROG_CXX
+AX_CXX_COMPILE_STDCXX_11(noext,mandatory)
 #AC_PROG_OBJC
 AC_PROG_INSTALL
 # For libtool 1.5.x compatability (AC_PROG_LIBTOOL is deprecated version of LT_INIT)
