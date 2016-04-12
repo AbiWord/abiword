@@ -47,12 +47,16 @@ public:
 	fl_Layout(PTStruxType type, pf_Frag_Strux* sdh);
 	virtual ~fl_Layout();
 
-	pf_Frag_Strux*               getStruxDocHandle(void) const;
-	pf_Frag_Strux*               getEndStruxDocHandle(void) const;
-	void                         setEndStruxDocHandle(pf_Frag_Strux * pfs);	
-	PTStruxType			getType(void) const;
+	pf_Frag_Strux*		     getStruxDocHandle(void) const
+		{ return m_sdh; }
+	pf_Frag_Strux*		     getEndStruxDocHandle(void) const
+		{ return m_endSdh; }
+	void                         setEndStruxDocHandle(pf_Frag_Strux * pfs);
+	PTStruxType			getType(void) const
+		{ return m_type; }
 	void                setType(PTStruxType type);
-	PT_AttrPropIndex 	getAttrPropIndex(void) const;
+	PT_AttrPropIndex	getAttrPropIndex(void) const
+		{ return m_apIndex; }
 	void				setAttrPropIndex(PT_AttrPropIndex apIndex);
 
 	bool				getAttrProp(const PP_AttrProp ** ppAP, PP_RevisionAttr ** pRevisions,

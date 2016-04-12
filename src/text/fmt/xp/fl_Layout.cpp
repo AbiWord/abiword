@@ -51,37 +51,15 @@ fl_Layout::~fl_Layout()
 {
 }
 
-pf_Frag_Strux* fl_Layout::getStruxDocHandle(void) const
-{
-	return m_sdh;
-}
-
-
-pf_Frag_Strux* fl_Layout::getEndStruxDocHandle(void) const
-{
-    return m_endSdh;
-}
-
 void fl_Layout::setEndStruxDocHandle(pf_Frag_Strux* pfs)
 {
     UT_ASSERT(!m_endSdh);
     m_endSdh = pfs;
 }
 
-PTStruxType	fl_Layout::getType(void) const
-{
-	return m_type;
-}
-
-
 void fl_Layout::setType(PTStruxType type)
 {
 	m_type = type;
-}
-
-PT_AttrPropIndex fl_Layout::getAttrPropIndex(void) const
-{
-	return m_apIndex;
 }
 
 void fl_Layout::setAttrPropIndex(PT_AttrPropIndex apIndex)
