@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -48,20 +48,17 @@
 
 AP_Dialog_Tab::AP_Dialog_Tab(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_NonPersistent(pDlgFactory,id, "interface/dialogtabs"),
-	  m_answer(a_OK), 
+	  m_answer(a_OK),
 	  m_pFrame(0),
 	  m_dim(DIM_IN),
-	  m_pszTabStops(0),
-	  m_pCallbackFn(0), 
+	  m_pCallbackFn(0),
 	  m_closure(0)
 {
-  m_pszTabStops = new char [1]; m_pszTabStops[0] = 0;
 }
 
 AP_Dialog_Tab::~AP_Dialog_Tab(void)
 {
-  DELETEPV(m_pszTabStops);
-  UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
+	UT_VECTOR_PURGEALL(fl_TabStop *, m_tabInfo);
 }
 
 void AP_Dialog_Tab::setSaveCallback (TabSaveCallBack pCb, void * closure)
@@ -82,7 +79,7 @@ void AP_Dialog_Tab::_storeWindowData()
 	FV_View *pView = (FV_View *)m_pFrame->getCurrentView();
 	UT_return_if_fail (pView && m_pCallbackFn);
 
-	(*m_pCallbackFn)(this, pView, m_pszTabStops, _gatherDefaultTabStop(), m_closure);
+	(*m_pCallbackFn)(this, pView, m_pszTabStops.c_str(), _gatherDefaultTabStop(), m_closure);
 }
 
 void AP_Dialog_Tab::_populateWindowData(void)
@@ -110,8 +107,7 @@ void AP_Dialog_Tab::_populateWindowData(void)
 				));
 
 	// save the tab string
-	m_pszTabStops = new char[strlen(rulerInfo.m_pszTabStops) + 1];
-	strcpy(m_pszTabStops, rulerInfo.m_pszTabStops);
+	m_pszTabStops = rulerInfo.m_pszTabStops;
 
 	int iTab;
 	fl_TabStop		*pTabInfo;
@@ -151,7 +147,7 @@ void AP_Dialog_Tab::_populateWindowData(void)
 		}
 
 	}
-
+	FREEP(propsBlock);
 	// enable/disable controls
 	_initEnableControls();
 }
@@ -255,24 +251,17 @@ void AP_Dialog_Tab::_event_Set(void)
 	}
 
 	// Add tab to list.
-
-	int NewOffset = strlen(m_pszTabStops);
-	char *p_temp = new char[NewOffset + 1 + strlen(cbuffer) + 1];
-	strcpy(p_temp, m_pszTabStops);
-	if(m_pszTabStops[0] != 0)
-	{
-		strcat(p_temp, ",");
+	if (!m_pszTabStops.empty()) {
+		m_pszTabStops += ",";
 	}
-	strcat(p_temp, cbuffer);
-	delete [] m_pszTabStops;
-	m_pszTabStops = p_temp;
+	m_pszTabStops += cbuffer;
 
 	UT_return_if_fail (m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
 	FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
 	UT_return_if_fail(pView);
-	
-	buildTabStops(m_pszTabStops, m_tabInfo);
+
+	buildTabStops(m_pszTabStops.c_str(), m_tabInfo);
 
 	_setTabList(m_tabInfo.getItemCount());
 
@@ -354,23 +343,17 @@ void AP_Dialog_Tab::_event_Update(void)
 	}
 
 	// Add tab to list.
-	int NewOffset = strlen(m_pszTabStops);
-	char *p_temp = new char[NewOffset + 1 + strlen(cbuffer) + 1];
-	strcpy(p_temp, m_pszTabStops);
-	if(m_pszTabStops[0] != 0)
-	{
-		strcat(p_temp, ",");
+	if (!m_pszTabStops.empty()) {
+		m_pszTabStops += ",";
 	}
-	strcat(p_temp, cbuffer);
-	delete [] m_pszTabStops;
-	m_pszTabStops = p_temp;
+	m_pszTabStops += cbuffer;
 
 	UT_return_if_fail (m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
 	FV_View *pView = static_cast<FV_View *>(m_pFrame->getCurrentView());
 	UT_return_if_fail(pView);
-	
-	buildTabStops(m_pszTabStops, m_tabInfo);
+
+	buildTabStops(m_pszTabStops.c_str(), m_tabInfo);
 
 	_setTabList(m_tabInfo.getItemCount());
 
@@ -409,7 +392,7 @@ void AP_Dialog_Tab::_event_Clear(void)
 
 		UT_return_if_fail(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
-		buildTabStops(m_pszTabStops, m_tabInfo);
+		buildTabStops(m_pszTabStops.c_str(), m_tabInfo);
 
 		_setTabList(m_tabInfo.getItemCount());
 
@@ -434,10 +417,9 @@ void AP_Dialog_Tab::_event_ClearAll(void)
 
 	UT_return_if_fail(m_pFrame); // needs to be set from runModal for some of the event_'s to work
 
-	delete [] m_pszTabStops;
-	m_pszTabStops = new char [1]; m_pszTabStops[0] = 0;
+	m_pszTabStops.clear();
 
-	buildTabStops(m_pszTabStops, m_tabInfo);
+	buildTabStops(m_pszTabStops.c_str(), m_tabInfo);
 
 	_clearList();
 
@@ -657,13 +639,8 @@ void AP_Dialog_Tab::_deleteTabFromTabString(fl_TabStop *pTabInfo)
 		}
 	}
 
-
-
-	memmove(m_pszTabStops + Offset, 
-				m_pszTabStops + Offset + Tab_data_size,
-				strlen(m_pszTabStops) - (Offset + Tab_data_size));
-
-	m_pszTabStops[strlen(m_pszTabStops) - Tab_data_size] = 0;
+	auto iter = m_pszTabStops.begin() + Offset;
+	m_pszTabStops.erase(iter, iter + Tab_data_size);
 }
 
 #define SPIN_INCR_IN	0.1

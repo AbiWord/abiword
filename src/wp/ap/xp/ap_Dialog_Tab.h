@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (c) 2016 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -121,7 +123,7 @@ class ABI_EXPORT AP_Dialog_Tab : public XAP_Dialog_NonPersistent
 	XAP_Frame *			m_pFrame;
 	UT_Dimension		m_dim;
 
-	char *		m_pszTabStops;	// from rulerInfo
+	std::string		m_pszTabStops;	// from rulerInfo
 	UT_GenericVector<fl_TabStop*>	m_tabInfo;		// list of fl_TabStop *
 
 	// AP level handlers
