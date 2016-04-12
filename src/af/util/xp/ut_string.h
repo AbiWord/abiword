@@ -171,7 +171,7 @@ ABI_EXPORT char *UT_strptime (const char *buf, const char *format, struct tm *tm
 }
 
 
-#ifdef WIN32
+#ifdef _WIN32
 #define snprintf _snprintf
 
 #define _(String) (String)

@@ -32,7 +32,7 @@
 
    example (win32)
 
-   #ifdef WIN32
+   #ifdef _WIN32
    #  include "ap_Win32Features.h"
    #endif
 */

@@ -236,7 +236,7 @@ UT_Error IE_Exp_Text::_writeDocument(void)
 	// TODO Should use a finer-grain technique than IsWinNT() since Win98 supports unicode clipboard.
 	if (getDocRange())
 	{
-#ifdef WIN32
+#ifdef _WIN32
 		if (UT_IsWinNT())
 			_setEncoding(XAP_EncodingManager::get_instance()->getNativeUnicodeEncodingName());
 #endif
@@ -323,7 +323,7 @@ void IE_Exp_Text::_setEncoding(const char *szEncoding)
 	{
 		m_bIs16Bit = true;
 		m_bBigEndian = false;
-#ifdef WIN32
+#ifdef _WIN32
 		m_bUseBOM = true;
 #else
 		m_bUseBOM = false;
@@ -334,7 +334,7 @@ void IE_Exp_Text::_setEncoding(const char *szEncoding)
 	{
 		m_bIs16Bit = true;
 		m_bBigEndian = true;
-#ifdef WIN32
+#ifdef _WIN32
 		m_bUseBOM = true;
 #else
 		m_bUseBOM = false;
@@ -405,7 +405,7 @@ void Text_Listener::_genLineBreak(void)
 	int mbLen = 0;
 
 	// TODO Old Mac should use "\r".  Mac OSX should Use U+2028 or U+2029.
-#ifdef WIN32
+#ifdef _WIN32
 	static const UT_UCSChar wcLineBreak[3] = {'\r', '\n', 0};
 #else
 	static const UT_UCSChar wcLineBreak[3] = {'\n', 0, 0};

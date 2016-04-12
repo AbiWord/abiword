@@ -29,7 +29,7 @@
 
 /* This MUST compile with plain C */
 
-#if defined(WIN32) /* && !defined(__MINGW32__) */
+#if defined(_WIN32) /* && !defined(__MINGW32__) */
   #define ABI_PLUGIN_EXPORT __declspec(dllexport)
   #ifdef ABI_DLL
      /* we are building an AbiWord plugin and want to use something declared in a library */

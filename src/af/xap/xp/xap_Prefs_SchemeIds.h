@@ -83,7 +83,7 @@
 #define XAP_PREF_DEFAULT_AutoSaveFilePeriod 			"5" 						/* Auto save files by default */
 
 #define XAP_PREF_KEY_AutoSaveFileExt					"AutoSaveFileExt"
-#ifdef WIN32
+#ifdef _WIN32
 #define XAP_PREF_DEFAULT_AutoSaveFileExt			".bak"
 #else
 #define XAP_PREF_DEFAULT_AutoSaveFileExt			".bak~"

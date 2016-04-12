@@ -42,7 +42,7 @@
 
 #define __UT_WARNING "warning: " UT_WARNING "\n"
 
-#if defined(WIN32)
+#if defined(_WIN32)
 #pragma message (__UT_WARNING)
 
 /*

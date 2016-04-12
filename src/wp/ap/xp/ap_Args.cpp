@@ -100,7 +100,7 @@ void AP_Args::addOptions(GOptionGroup *options)
 	g_option_context_add_group (m_context, options);
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 
 static inline char xdec(const char *s)
 {
@@ -149,7 +149,7 @@ void AP_Args::parseOptions()
 		g_error_free (err); err = NULL;
 		return;
 	}
-#ifdef WIN32
+#ifdef _WIN32
 	// otherwise, decode arguments
 	const char **arr;
 	arr=m_sFiles;

@@ -22,7 +22,7 @@
 
 #include <ctype.h>
 
-#ifdef WIN32
+#ifdef _WIN32
 #ifdef _MSC_VER
 #  include <winsock.h> // this is where timeval should be ...
 #else
@@ -658,7 +658,7 @@ UT_uint64 UT_UUID::hash64() const
 {
 #if 0
 	// see comments in hash32()
-#if defined(WIN32) && !defined(__GNUC__)	
+#if defined(_WIN32) && !defined(__GNUC__)	
 	static UT_uint64 hval = 0xcbf29ce484222325; // value FNV1_64_INIT;
 #else
 	static UT_uint64 hval = 0xcbf29ce484222325LL; // value FNV1_64_INIT;
@@ -671,7 +671,7 @@ UT_uint64 UT_UUID::hash64() const
 	for(UT_uint32 i = 0; i < sizeof(m_uuid); ++i)
 	{
 		/* multiply by the 64 bit FNV magic prime mod 2^64 */
-#if defined(WIN32) && !defined(__GNUC__)	
+#if defined(_WIN32) && !defined(__GNUC__)	
 		hval *= 0x100000001b3;
 #else
 		hval *= 0x100000001b3LL;

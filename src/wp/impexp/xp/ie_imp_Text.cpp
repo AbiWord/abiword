@@ -971,7 +971,7 @@ void IE_Imp_Text::_setEncoding(const char *szEncoding)
 	{
 		m_bIs16Bit = true;
 		m_bBigEndian = false;
-#ifdef WIN32
+#ifdef _WIN32
 		m_bUseBOM = true;
 #else
 		m_bUseBOM = false;
@@ -981,7 +981,7 @@ void IE_Imp_Text::_setEncoding(const char *szEncoding)
 	{
 		m_bIs16Bit = true;
 		m_bBigEndian = true;
-#ifdef WIN32
+#ifdef _WIN32
 		m_bUseBOM = true;
 #else
 		m_bUseBOM = false;

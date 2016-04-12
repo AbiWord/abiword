@@ -13848,7 +13848,7 @@ Defun1(scriptPlay)
 	char * scriptName = UT_go_filename_from_uri(pNewFile.c_str());
 	UT_return_val_if_fail (scriptName != NULL, false);
 
-#ifdef WIN32
+#ifdef _WIN32
 	// we need to add quotes to the script name _after_ the UT_go_filename_from_uri() call above;
 	// if not, it will return NULL and the script won't play.
 
@@ -13895,7 +13895,7 @@ Defun(executeScript)
 	char * scriptName = UT_go_filename_from_uri (pCallData->getScriptName().c_str());
 	UT_return_val_if_fail (scriptName != NULL, false);
 
-#ifdef WIN32
+#ifdef _WIN32
 	// we need to add quotes to the script name _after_ the UT_go_filename_from_uri() call above;
 	// if not, it will return NULL and the script won't execute.
 

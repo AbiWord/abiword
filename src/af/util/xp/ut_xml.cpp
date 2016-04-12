@@ -22,7 +22,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#ifdef WIN32
+#ifdef _WIN32
 #include <windows.h>
 #endif
 
@@ -46,7 +46,7 @@ DefaultReader::~DefaultReader ()
 
 bool DefaultReader::openFile (const char * szFilename)
 {
-#ifdef WIN32
+#ifdef _WIN32
 	WCHAR wFilename[MAX_PATH];
 	MultiByteToWideChar(CP_UTF8,0,szFilename,-1,wFilename,MAX_PATH);
 	in = _wfopen (wFilename, L"r");

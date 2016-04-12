@@ -78,7 +78,7 @@
 #include <stdlib.h>
 #include <time.h>
 
-#ifdef WIN32
+#ifdef _WIN32
   #ifndef S_ISDIR
   #define S_ISDIR(m) (((m) & _S_IFMT ) == _S_IFDIR)
   #endif

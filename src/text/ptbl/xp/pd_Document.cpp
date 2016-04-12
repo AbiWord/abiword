@@ -662,13 +662,13 @@ static void buildTemplateList(std::string *template_list, const std::string & ba
 	*/
 
 	std::string user_template_base (XAP_App::getApp()->getUserPrivateDirectory());
-#if defined(WIN32)
+#if defined(_WIN32)
 	user_template_base += UT_std_string_sprintf("\\templates\\%s", base.c_str());
 #else
 	user_template_base += UT_std_string_sprintf("/templates/%s", base.c_str());
 #endif
 	std::string global_template_base (XAP_App::getApp()->getAbiSuiteLibDir());
-#if defined(WIN32)
+#if defined(_WIN32)
 	global_template_base += UT_std_string_sprintf("\\templates\\%s", base.c_str());
 #else
 	global_template_base += UT_std_string_sprintf("/templates/%s", base.c_str());

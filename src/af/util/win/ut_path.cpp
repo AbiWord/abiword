@@ -52,7 +52,7 @@ bool UT_directoryExists(const char* dir)
 {
 	struct _stat buf;
 
-#ifdef WIN32
+#ifdef _WIN32
 	WCHAR wFilename[MAX_PATH];
 	MultiByteToWideChar(CP_UTF8,0,dir,-1,wFilename,MAX_PATH);
 	if( _wstat( wFilename , &buf ) != -1 ) 
@@ -69,7 +69,7 @@ bool UT_isRegularFile(const char* filename)
 {
 	struct _stat buf;
 
-#ifdef WIN32
+#ifdef _WIN32
 	WCHAR wFilename[MAX_PATH];
 	MultiByteToWideChar(CP_UTF8,0,filename,-1,wFilename,MAX_PATH);
 	if( _wstat( wFilename , &buf ) != -1 ) 

@@ -34,7 +34,7 @@ XAP_Args::XAP_Args(int argc, char ** argv)
 	m_szBuf = NULL;
 }
 
-#ifdef WIN32
+#ifdef _WIN32
 
 char *XX_encode(const char *str)
 {
@@ -87,7 +87,7 @@ XAP_Args::XAP_Args(const char * szCmdLine)
 	//
 	//    WHITE ({T1|T2|T3}WHITE)* [WHITE]
 	
-#ifdef WIN32
+#ifdef _WIN32
 	// glib on Windows assumes that command line is in ANSI codepage
 	m_szBuf = XX_encode(szCmdLine);
 #else

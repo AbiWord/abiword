@@ -31,7 +31,7 @@
 #include "ut_growbuf.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
-#ifdef WIN32
+#ifdef _WIN32
 #include <ut_Win32LocaleString.h>
 #endif
 #include "ut_go_file.h"
@@ -1269,7 +1269,7 @@ bool XAP_Prefs::savePrefsFile(void)
 	bool bResult = false;			// assume failure
 	const char * szFilename;
 	FILE * fp = NULL;
-#ifdef WIN32
+#ifdef _WIN32
 	UT_Win32LocaleString str;
 #endif
 
@@ -1280,7 +1280,7 @@ bool XAP_Prefs::savePrefsFile(void)
 		goto Cleanup;
 	}
 
-#ifdef WIN32
+#ifdef _WIN32
 	// TODO: something more elegant
 	str.fromUTF8(szFilename);
 	fp = _wfopen(str.c_str(), L"w");

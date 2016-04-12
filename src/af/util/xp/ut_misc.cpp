@@ -596,7 +596,7 @@ const gchar ** UT_splitPropsToArray(gchar * pProps)
 }
 
 
-#if defined(WIN32) && !defined(__GNUC__)	
+#if defined(_WIN32) && !defined(__GNUC__)	
 #   define MYZERO 0
 #else
 #   define MYZERO 0LL
