@@ -8,3 +8,6 @@ abiword --plugin AbiTest
 
 
 This will run the whole test suite.
+
+
+See docs/Testing.txt from the top-level directory for more details.

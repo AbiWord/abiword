@@ -23,11 +23,21 @@ To run it:
 
 In case of test failure, `abiword` will return a non-zero code.
 
+Test data files
+---------------
+
+Ensure either ````ABI_TEST_SRC_DIR```` or ````top_srcdir```` is set to
+the top of the source dir.
+
 Individual tests
 ----------------
 
 Test are *.t.cpp files. Usually in a t subdirector of what they are
 testing. They are built and linked directly into the plugin.
+To add such a file make sure that:
+- the 't' directory is in ````DIST_SUBDIR````
+- the test source file is in ````EXTRA_DIST````
+- the test source file is in ````plugins/testharness/xp/Makefile.am````
 
 When they are run from the AbiTest harness all the basics are setup.
 
