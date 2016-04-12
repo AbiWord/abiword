@@ -37,10 +37,11 @@
 #include <stdio.h>
 
 #ifdef DEBUG
-typedef enum {  UT_Test_SystemError=-1,
-				UT_Test_Fail=0,
-				UT_Test_Pass=1
-} UT_TestStatus;
+enum UT_TestStatus {
+  UT_Test_SystemError = -1,
+  UT_Test_Fail = 0,
+  UT_Test_Pass = 1
+};
 
 const char * UT_TestStatus_GetMessage(UT_TestStatus status);
 #endif /* UT_DEBUG */

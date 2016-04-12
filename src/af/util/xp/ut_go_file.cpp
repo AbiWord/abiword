@@ -1316,11 +1316,11 @@ UT_go_set_file_permissions (char const *uri, UT_GOFilePermissions * file_permiss
 #endif
 }
 
-typedef enum {
+enum UT_GOFileDateType {
 	UT_GO_FILE_DATE_TYPE_ACCESSED = 0,
 	UT_GO_FILE_DATE_TYPE_MODIFIED,
 	UT_GO_FILE_DATE_TYPE_CHANGED
-} UT_GOFileDateType;
+};
 
 static time_t
 UT_go_file_get_date (char const *uri, UT_GOFileDateType type)

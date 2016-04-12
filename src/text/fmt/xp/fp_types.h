@@ -20,48 +20,49 @@
 #ifndef FP_TYPES_H
 #define FP_TYPES_H
 
-typedef enum
+enum FL_ListType
 {
-	NUMBERED_LIST = 0,
-	LOWERCASE_LIST = 1,
-	UPPERCASE_LIST = 2,
-	LOWERROMAN_LIST = 3,
-	UPPERROMAN_LIST = 4,
-	// any new numbered lists should be added below OTHER_NUMBERED_LISTS
-	BULLETED_LIST = 5,
-	DASHED_LIST = 6,
-	SQUARE_LIST = 7,
-	TRIANGLE_LIST = 8,
-	DIAMOND_LIST = 9,
-	STAR_LIST = 10,
-	IMPLIES_LIST = 11,
-	TICK_LIST = 12,
-	BOX_LIST = 13,
-	HAND_LIST = 14,
-	HEART_LIST = 15,
-	ARROWHEAD_LIST = 16,
-	// add new bulleted lists here, and increase LAST_BULLETED_LIST accordingly
-	// any new numbered lists should be added below OTHER_NUMBERED_LISTS
+  NUMBERED_LIST = 0,
+  LOWERCASE_LIST = 1,
+  UPPERCASE_LIST = 2,
+  LOWERROMAN_LIST = 3,
+  UPPERROMAN_LIST = 4,
+  // any new numbered lists should be added below OTHER_NUMBERED_LISTS
+  BULLETED_LIST = 5,
+  DASHED_LIST = 6,
+  SQUARE_LIST = 7,
+  TRIANGLE_LIST = 8,
+  DIAMOND_LIST = 9,
+  STAR_LIST = 10,
+  IMPLIES_LIST = 11,
+  TICK_LIST = 12,
+  BOX_LIST = 13,
+  HAND_LIST = 14,
+  HEART_LIST = 15,
+  ARROWHEAD_LIST = 16,
+  // add new bulleted lists here, and increase LAST_BULLETED_LIST accordingly
+  // any new numbered lists should be added below OTHER_NUMBERED_LISTS
 
-	//could not just add the extra numbered lists above the bulletted one, since that would break compatibility
-	LAST_BULLETED_LIST = 17,
-	OTHER_NUMBERED_LISTS = 0x7f,
-	ARABICNUMBERED_LIST = 0x80,
-	HEBREW_LIST = 0x81,
-	NOT_A_LIST = 0xff
-} FL_ListType;
+  // could not just add the extra numbered lists above the bulletted one,
+  // since that would break compatibility
+  LAST_BULLETED_LIST = 17,
+  OTHER_NUMBERED_LISTS = 0x7f,
+  ARABICNUMBERED_LIST = 0x80,
+  HEBREW_LIST = 0x81,
+  NOT_A_LIST = 0xff
+};
 
-typedef enum _FVDocPos
+enum FV_DocPos
 {
-	FV_DOCPOS_BOB, FV_DOCPOS_EOB,	// block
-	FV_DOCPOS_BOD, FV_DOCPOS_EOD,	// document
-	FV_DOCPOS_BOP, FV_DOCPOS_EOP,	// page
-	FV_DOCPOS_BOL, FV_DOCPOS_EOL,	// line
-	FV_DOCPOS_BOS, FV_DOCPOS_EOS,	// sentence
-	FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT // word
-} FV_DocPos;
+  FV_DOCPOS_BOB, FV_DOCPOS_EOB,	// block
+  FV_DOCPOS_BOD, FV_DOCPOS_EOD,	// document
+  FV_DOCPOS_BOP, FV_DOCPOS_EOP,	// page
+  FV_DOCPOS_BOL, FV_DOCPOS_EOL,	// line
+  FV_DOCPOS_BOS, FV_DOCPOS_EOS,	// sentence
+  FV_DOCPOS_BOW, FV_DOCPOS_EOW_MOVE, FV_DOCPOS_EOW_SELECT // word
+};
 
-typedef enum _ToggleCase
+enum ToggleCase
 {
   CASE_SENTENCE,
   CASE_LOWER,
@@ -70,33 +71,33 @@ typedef enum _ToggleCase
   CASE_TOGGLE,
   CASE_FIRST_CAPITAL,
   CASE_ROTATE
-} ToggleCase;
+};
 
-typedef enum _FormatTable
+enum FormatTable
 {
-	FORMAT_TABLE_SELECTION,
-	FORMAT_TABLE_ROW,
-	FORMAT_TABLE_COLUMN,
-	FORMAT_TABLE_TABLE
-} FormatTable;
+  FORMAT_TABLE_SELECTION,
+  FORMAT_TABLE_ROW,
+  FORMAT_TABLE_COLUMN,
+  FORMAT_TABLE_TABLE
+};
 
-typedef enum
+enum  BreakSectionType
 {
-	BreakSectionContinuous,
-	BreakSectionNextPage,
-	BreakSectionEvenPage,
-	BreakSectionOddPage
-} BreakSectionType;
+  BreakSectionContinuous,
+  BreakSectionNextPage,
+  BreakSectionEvenPage,
+  BreakSectionOddPage
+};
 
-typedef enum
+enum ViewMode
 {
   VIEW_PRINT,
   VIEW_NORMAL,
   VIEW_WEB,
   VIEW_PREVIEW
-} ViewMode;
+};
 
-typedef enum
+enum PreViewMode
 {
   PREVIEW_NONE,
   PREVIEW_ZOOMED,
@@ -105,7 +106,7 @@ typedef enum
   PREVIEW_ZOOMED_SCROLL,
   PREVIEW_ADJUSTED_PAGE_SCROLL,
   PREVIEW_CLIPPED_SCROLL
-} PreViewMode;
+};
 
 
 #endif /* FP_TYPES_H */

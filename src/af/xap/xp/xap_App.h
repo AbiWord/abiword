@@ -218,7 +218,11 @@ public:
 	XAP_Menu_Factory *				getMenuFactory(void) const { return m_pMenuFactory; }
 	XAP_Toolbar_Factory *				getToolbarFactory(void) const { return m_pToolbarFactory; }
 
-	typedef enum {BIDI_SUPPORT_NONE, BIDI_SUPPORT_GUI, BIDI_SUPPORT_FULL} BidiSupportType;
+	enum BidiSupportType {
+		BIDI_SUPPORT_NONE,
+		BIDI_SUPPORT_GUI,
+		BIDI_SUPPORT_FULL
+	};
 
 	virtual BidiSupportType				theOSHasBidiSupport() const {return BIDI_SUPPORT_NONE;}
 	void						setEnableSmoothScrolling(bool b);

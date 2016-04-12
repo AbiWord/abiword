@@ -42,14 +42,14 @@ class UT_UTF8String;
 
 
 /* UUID Variant definitions */
-typedef enum
+enum UT_UUIDVariant
 {
 	UT_UUID_VARIANT_NCS = 0,
 	UT_UUID_VARIANT_DCE = 1,
 	UT_UUID_VARIANT_MICROSOFT = 2,
 	UT_UUID_VARIANT_OTHER = 3,
 	UT_UUID_VARIANT_ERROR = 0xffffffff
-} UT_UUIDVariant;
+};
 
 struct uuid
 {

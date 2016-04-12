@@ -51,11 +51,11 @@ struct _UT_GOFilePermissions {
 	gboolean others_execute;
 };
 
-typedef enum {
+enum UT_GODotDot {
 	UT_GO_DOTDOT_SYNTACTIC,    /* Assume no symlinks.  */
 	UT_GO_DOTDOT_TEST,         /* Check.  */
 	UT_GO_DOTDOT_LEAVE         /* Leave alone.  */
-} UT_GODotDot;
+};
 
 ABI_EXPORT gboolean UT_go_path_is_uri (const char * path);
 ABI_EXPORT gboolean UT_go_path_is_path (const char * path);

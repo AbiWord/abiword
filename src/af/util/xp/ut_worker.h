@@ -42,9 +42,11 @@ typedef void (*UT_WorkerCallback)(UT_Worker* pWorker);
 class ABI_EXPORT UT_WorkerFactory
 {
  public:
-  typedef enum { NONE   = 0x00,
-		 IDLE   = 0x01,
-		 TIMER  = 0x02 } ConstructMode;
+  enum ConstructMode {
+    NONE   = 0x00,
+    IDLE   = 0x01,
+    TIMER  = 0x02
+  };
 
   //CAN_USE_THREAD   = 0x04
 

@@ -38,7 +38,17 @@ G_BEGIN_DECLS
 
 #define UT_INT_MAX 2147483647
 
-typedef enum _ut_dimension { DIM_IN, DIM_CM, DIM_MM, DIM_PI, DIM_PT, DIM_PX, DIM_PERCENT, DIM_STAR, DIM_none } UT_Dimension;
+enum UT_Dimension {
+  DIM_IN,
+  DIM_CM,
+  DIM_MM,
+  DIM_PI,
+  DIM_PT,
+  DIM_PX,
+  DIM_PERCENT,
+  DIM_STAR,
+  DIM_none
+};
 
 /*
  *	DIM_IN := inches

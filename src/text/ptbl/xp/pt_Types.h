@@ -71,7 +71,7 @@ public:
 };
 
 //! PTStruxType tells the sub-type of a FragStrux.
-typedef enum _PTStruxType
+enum PTStruxType
 {
 	PTX_Section = 0,       	// 0 -- maker sure that we can cast into uint
 	PTX_Block,           	// 1
@@ -93,11 +93,11 @@ typedef enum _PTStruxType
         PTX_EndFrame,
 	PTX_EndTOC,
 	PTX_StruxDummy
-} PTStruxType;
+};
 
 //! PTObjectType tells the sub-type of an FragObject.
 
-typedef enum _PTObjectType
+enum PTObjectType
 {
     PTO_Image = 0,
     PTO_Field,
@@ -107,26 +107,28 @@ typedef enum _PTObjectType
     PTO_Embed,
     PTO_Annotation,
     PTO_RDFAnchor
-} PTObjectType;
+};
 
 //! PieceTable states
-typedef enum _PTState { PTS_Create=0, PTS_Loading=1, PTS_Editing=2 } PTState;
+enum PTState { PTS_Create=0, PTS_Loading=1, PTS_Editing=2 };
 //! ChangeFormat types
-typedef enum _PTChangeFmt
-  { PTC_AddFmt=0,
-    PTC_RemoveFmt=1,
-    PTC_AddStyle=2,
-    PTC_SetFmt=3,
-    PTC_SetExactly=4} PTChangeFmt;
+enum PTChangeFmt
+{
+  PTC_AddFmt = 0,
+  PTC_RemoveFmt = 1,
+  PTC_AddStyle = 2,
+  PTC_SetFmt = 3,
+  PTC_SetExactly = 4
+};
 
-typedef enum _PLListenerType
+enum PLListenerType
 {
 	PTL_UNKNOWN,
 	PTL_DocLayout,
 	PTL_CollabExport,
 	PTL_CollabServiceExport
 	/* add more types here ONLY as necessary */
-} PLListenerType;
+};
 
 //! ID of a listener - this is its location in m_vecListeners
 typedef UT_uint32 PL_ListenerId;

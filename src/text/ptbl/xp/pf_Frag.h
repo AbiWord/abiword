@@ -49,27 +49,38 @@ class ABI_EXPORT pf_Frag
 {
   friend class            pf_Fragments;
 public:
-	typedef enum _PFType { PFT_Text = 0, PFT_Object, PFT_Strux, PFT_EndOfDoc, PFT_FmtMark } PFType;
+	enum PFType {
+		PFT_Text = 0,
+		PFT_Object,
+		PFT_Strux,
+		PFT_EndOfDoc,
+		PFT_FmtMark
+	};
 
 	pf_Frag(pt_PieceTable * pPT, PFType type, UT_uint32 length);
 	virtual ~pf_Frag();
 
-	inline PFType			getType(void) const		{ return m_type; }
+	PFType			getType(void) const
+		{ return m_type; }
 	pf_Frag *                       getNext(void) const;
 	pf_Frag *                       getPrev(void) const;
 	pf_Frag_Strux*          getNextStrux(PTStruxType t) const;
-    pf_Frag_Strux*          tryDownCastStrux(PTStruxType t) const;
+	pf_Frag_Strux*          tryDownCastStrux(PTStruxType t) const;
 
-	inline UT_uint32		getLength(void) const	{ return m_length; }
-	inline void                     zero(void)
-	{ m_length = 0;}
+	UT_uint32		getLength(void) const
+		{ return m_length; }
+	void                     zero(void)
+		{ m_length = 0;}
 
-	pt_PieceTable *			getPieceTable(void) const { return m_pPieceTable;}
+	pt_PieceTable *			getPieceTable(void) const
+		{ return m_pPieceTable;}
 	fd_Field *				getField(void) const;
 	PT_DocPosition          getPos(void) const;
 	void                    lengthChanged(UT_sint32 delta);
-	PT_DocPosition          getLeftTreeLength(void) const   { return m_leftTreeLength; }
-	void                    setLeftTreeLength(PT_DocPosition length) const { m_leftTreeLength = length;}
+	PT_DocPosition          getLeftTreeLength(void) const
+		{ return m_leftTreeLength; }
+	void                    setLeftTreeLength(PT_DocPosition length) const
+		{ m_leftTreeLength = length;}
 
 	/* We need the following function to accumulate left tree length */
 	void                    accLeftTreeLength(PT_DocPosition length);

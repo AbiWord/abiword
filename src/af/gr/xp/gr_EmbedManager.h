@@ -26,11 +26,12 @@
 #include "ev_EditBits.h"
 #include "gr_Graphics.h"
 
-typedef enum
+enum AbiDisplayMode
 {
 	ABI_DISPLAY_BLOCK,
 	ABI_DISPLAY_INLINE
-} AbiDisplayMode;
+};
+
 class GR_Graphics;
 class GR_Image;
 class UT_ByteBuf;

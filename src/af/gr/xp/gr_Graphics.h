@@ -69,13 +69,13 @@ class GR_Graphics;
 class GR_Painter;
 class GR_Caret;
 
-typedef enum {
+enum GrFontType {
 	GR_FONT_UNSET=0,
 	GR_FONT_UNIX,
 	GR_FONT_UNIX_PANGO,
 	GR_FONT_WIN32,
 	GR_FONT_WIN32_USP
-} GrFontType;
+};
 
 class ABI_EXPORT GR_Font
 {
@@ -88,9 +88,9 @@ class ABI_EXPORT GR_Font
  	virtual ~GR_Font();
 
 
-	typedef enum { FF_Unknown = 0, FF_Roman, FF_Swiss, FF_Modern,
-				   FF_Script, FF_Decorative, FF_Technical, FF_BiDi, FF_Last } FontFamilyEnum;
-	typedef enum { FP_Unknown = 0, FP_Fixed, FP_Variable } FontPitchEnum;
+	enum FontFamilyEnum { FF_Unknown = 0, FF_Roman, FF_Swiss, FF_Modern,
+				   FF_Script, FF_Decorative, FF_Technical, FF_BiDi, FF_Last };
+	enum FontPitchEnum { FP_Unknown = 0, FP_Fixed, FP_Variable };
 
 	// The following is actually implemented in platform code.
 	// It is primarily used to characterize fonts for RTF export.
@@ -500,29 +500,29 @@ class ABI_EXPORT GR_Graphics
 							 UT_sint32 width,
 							 UT_sint32 height) = 0;
 
-	typedef enum { DGP_SCREEN, DGP_PAPER, DGP_OPAQUEOVERLAY } Properties;
+	enum Properties { DGP_SCREEN, DGP_PAPER, DGP_OPAQUEOVERLAY };
 
-	typedef enum
-	  {
-	    JOIN_MITER,
-	    JOIN_ROUND,
-	    JOIN_BEVEL
-	  } JoinStyle ;
+	enum JoinStyle
+	{
+		JOIN_MITER,
+		JOIN_ROUND,
+		JOIN_BEVEL
+	};
 
-	typedef enum
-	  {
-	    CAP_BUTT,
-	    CAP_ROUND,
-	    CAP_PROJECTING
-	  } CapStyle ;
+	enum CapStyle
+	{
+		CAP_BUTT,
+		CAP_ROUND,
+		CAP_PROJECTING
+	};
 
-	typedef enum
-	  {
-	    LINE_SOLID,
-	    LINE_ON_OFF_DASH,
-	    LINE_DOUBLE_DASH,
+	enum LineStyle
+	{
+		LINE_SOLID,
+		LINE_ON_OFF_DASH,
+		LINE_DOUBLE_DASH,
 		LINE_DOTTED
-	  } LineStyle ;
+	};
 
 	virtual void setLineProperties ( double inWidthPixels,
 					 JoinStyle inJoinStyle = JOIN_MITER,
@@ -546,43 +546,45 @@ class ABI_EXPORT GR_Graphics
 
 	/* specific color space support */
 
-	typedef enum { GR_COLORSPACE_COLOR,
-				   GR_COLORSPACE_GRAYSCALE,
-				   GR_COLORSPACE_BW
-	} ColorSpace;
+	enum ColorSpace {
+		GR_COLORSPACE_COLOR,
+		GR_COLORSPACE_GRAYSCALE,
+		GR_COLORSPACE_BW
+	};
 
 	virtual void      setColorSpace(GR_Graphics::ColorSpace c) = 0;
 	virtual GR_Graphics::ColorSpace getColorSpace(void) const = 0;
 
 	/* multiple cursor support */
 
-	typedef enum { GR_CURSOR_INVALID=0,
-				   GR_CURSOR_DEFAULT,
-				   GR_CURSOR_IBEAM,
-				   GR_CURSOR_RIGHTARROW,
-				   GR_CURSOR_IMAGE,
-				   GR_CURSOR_IMAGESIZE_NW,
-				   GR_CURSOR_IMAGESIZE_N,
-				   GR_CURSOR_IMAGESIZE_NE,
-				   GR_CURSOR_IMAGESIZE_E,
-				   GR_CURSOR_IMAGESIZE_SE,
-				   GR_CURSOR_IMAGESIZE_S,
-				   GR_CURSOR_IMAGESIZE_SW,
-				   GR_CURSOR_IMAGESIZE_W,
-				   GR_CURSOR_LEFTRIGHT,
-				   GR_CURSOR_UPDOWN,
-				   GR_CURSOR_EXCHANGE,
-				   GR_CURSOR_GRAB,
-				   GR_CURSOR_LINK,
-				   GR_CURSOR_WAIT,
-				   GR_CURSOR_LEFTARROW,
-				   GR_CURSOR_VLINE_DRAG,
-				   GR_CURSOR_HLINE_DRAG,
-				   GR_CURSOR_CROSSHAIR,
-		                   GR_CURSOR_DOWNARROW,
-		                   GR_CURSOR_DRAGTEXT,
-		                   GR_CURSOR_COPYTEXT
-	} Cursor;
+	enum Cursor {
+		GR_CURSOR_INVALID = 0,
+		GR_CURSOR_DEFAULT,
+		GR_CURSOR_IBEAM,
+		GR_CURSOR_RIGHTARROW,
+		GR_CURSOR_IMAGE,
+		GR_CURSOR_IMAGESIZE_NW,
+		GR_CURSOR_IMAGESIZE_N,
+		GR_CURSOR_IMAGESIZE_NE,
+		GR_CURSOR_IMAGESIZE_E,
+		GR_CURSOR_IMAGESIZE_SE,
+		GR_CURSOR_IMAGESIZE_S,
+		GR_CURSOR_IMAGESIZE_SW,
+		GR_CURSOR_IMAGESIZE_W,
+		GR_CURSOR_LEFTRIGHT,
+		GR_CURSOR_UPDOWN,
+		GR_CURSOR_EXCHANGE,
+		GR_CURSOR_GRAB,
+		GR_CURSOR_LINK,
+		GR_CURSOR_WAIT,
+		GR_CURSOR_LEFTARROW,
+		GR_CURSOR_VLINE_DRAG,
+		GR_CURSOR_HLINE_DRAG,
+		GR_CURSOR_CROSSHAIR,
+		GR_CURSOR_DOWNARROW,
+		GR_CURSOR_DRAGTEXT,
+		GR_CURSOR_COPYTEXT
+	};
 
 	virtual void      setCursor(GR_Graphics::Cursor c) = 0;
 	virtual GR_Graphics::Cursor getCursor(void) const = 0;
@@ -593,12 +595,13 @@ class ABI_EXPORT GR_Graphics
 	inline void       setPortrait (bool b) {m_bIsPortrait = b;}
 	inline bool       isPortrait (void) const {return m_bIsPortrait;}
 
-	typedef enum { CLR3D_Foreground=0,				/* color of text/foreground on a 3d object */
-				   CLR3D_Background=1,				/* color of face/background on a 3d object */
-				   CLR3D_BevelUp=2,					/* color of bevel-up  */
-				   CLR3D_BevelDown=3,				/* color of bevel-down */
-				   CLR3D_Highlight=4				/* color half-way between up and down */
-	} GR_Color3D;
+	enum GR_Color3D {
+		CLR3D_Foreground = 0,				/* color of text/foreground on a 3d object */
+		CLR3D_Background = 1,				/* color of face/background on a 3d object */
+		CLR3D_BevelUp = 2,					/* color of bevel-up  */
+		CLR3D_BevelDown = 3,				/* color of bevel-down */
+		CLR3D_Highlight = 4				/* color half-way between up and down */
+	};
 #define COUNT_3D_COLORS 5
 
 	virtual void      setColor3D(GR_Color3D c) = 0;
@@ -862,10 +865,10 @@ class ABI_EXPORT GR_Graphics
 	bool m_bDoubleBufferingActive;
 	bool m_bDrawingSuspended;
 
-	typedef enum {
+	enum DeviceContextSwitchType {
 		SWITCHED_TO_BUFFER = 0,
 		DRAWING_SUSPENDED
-	} DeviceContextSwitchType;
+	};
 
 	UT_NumberStack m_DCSwitchManagementStack;
 
