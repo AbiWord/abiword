@@ -1112,22 +1112,22 @@ void AP_Win32Dialog_Lists::_selectFont()
 		return;
 	}
 
-	const gchar* pszFont;
+	std::string szFont;
 
 
-	if (pDialog->getChangedFontFamily(&pszFont))
+	if (pDialog->getChangedFontFamily(szFont))
 
 /*
 
-		|| pDialog->getChangedFontSize(&pszFont)
+		|| pDialog->getChangedFontSize(szFont)
 
-		|| pDialog->getChangedFontWeight(&pszFont)
+		|| pDialog->getChangedFontWeight(szFont)
 
-		|| pDialog->getChangedFontStyle(&pszFont)
+		|| pDialog->getChangedFontStyle(szFont)
 
-		|| pDialog->getChangedBGColor(&pszFont)
+		|| pDialog->getChangedBGColor(szFont)
 
-		|| pDialog->getChangedColor(&pszFont)
+		|| pDialog->getChangedColor(szFont)
 
 		|| pDialog->getChangedUnderline(&bUnderline)
 
@@ -1145,7 +1145,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 	{
 
 		setDirty();
-		copyCharToFont(pszFont);
+		copyCharToFont(szFont);
 		_previewExposed();
 
 		_enableControls();

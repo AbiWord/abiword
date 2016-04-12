@@ -26,6 +26,8 @@
  * Part of an automated testing framework.  See wvtest.h.
  */
 
+#ifndef _WIN32
+
 #include "tf_test.h"
 
 #include <stdio.h>
@@ -294,3 +296,4 @@ bool TF_Test::ensure_test_data(const char* file, std::string & path)
     return exists;
 }
 
+#endif /* _WIN32 */

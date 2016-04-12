@@ -303,7 +303,7 @@ BOOL AP_Win32Dialog_FormatTable::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*l
 			if (nSelected!=CB_ERR)			
 				nData  = SendMessageW(hCombo, CB_GETITEMDATA, nSelected, 0);
 
-			setApplyFormatTo((_FormatTable) nData);
+			setApplyFormatTo((FormatTable) nData);
 
 			m_answer = AP_Dialog_FormatTable::a_OK;
 			applyChanges();			

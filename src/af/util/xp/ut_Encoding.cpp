@@ -65,7 +65,7 @@
 static const gchar * enc_armscii[]	= {"ARMSCII-8",0};
 static const gchar * enc_big5[]	= {"BIG5","BIG-5","BIG-FIVE","BIGFIVE","CN-BIG5",0};
 static const gchar * enc_big5hkscs[]	= {"BIG5-HKSCS","BIG5HKSCS",0};
-#ifdef WIN32 /* DOS/Win32 console encodings, peer iconv supports, others may not */
+#ifdef _WIN32 /* DOS/Win32 console encodings, peer iconv supports, others may not */
 static const gchar * enc_cp437[]	= {"C437","IBM437","437",0};
 static const gchar * enc_cp850[]	= {"C850","IBM850","850",0};
 #endif

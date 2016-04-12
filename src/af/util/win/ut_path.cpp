@@ -25,7 +25,7 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#ifndef WIN32
+#ifndef _WIN32
 #error This is Win32 include file!
 #endif
 #include <windows.h>
