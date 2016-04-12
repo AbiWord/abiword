@@ -97,7 +97,6 @@ public:
 
 	void							setTimeOfLastEvent(NSTimeInterval eventTime);
 	NSTimeInterval					getTimeOfLastEvent() const { return m_eventTime; };
-	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
     virtual BidiSupportType         theOSHasBidiSupport() const;
 	EV_CocoaMenuBar*				getCocoaMenuBar(void) const { return m_pCocoaMenu; };
 	XAP_Frame * 					_getFrontFrame(void);

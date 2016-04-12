@@ -169,11 +169,6 @@ void XAP_UnixApp::reallyExit()
 	gtk_main_quit();
 }
 
-UT_sint32 XAP_UnixApp::makeDirectory(const char * szPath, const UT_sint32 mode ) const
-{ 
-  return mkdir(szPath, mode); 
-}
-
 XAP_DialogFactory * XAP_UnixApp::getDialogFactory()
 {
 	return &m_dialogFactory;

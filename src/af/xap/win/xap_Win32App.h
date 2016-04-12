@@ -73,7 +73,6 @@ public:
 	virtual UT_Error						fileOpen(XAP_Frame * pFrame, const char * pNewFile) = 0;
 
 	void									enableAllTopLevelWindows(bool);
-	virtual UT_sint32					makeDirectory(const char * szPath, const UT_sint32 mode ) const;
 	virtual UT_sint32 				setupWindowFromPrefs(UT_sint32 iCmdShow, HWND hwndFrame);
     virtual XAP_App::BidiSupportType        theOSHasBidiSupport() const {return m_eBidiOS;}
 

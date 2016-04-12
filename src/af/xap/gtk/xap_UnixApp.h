@@ -104,7 +104,6 @@ public:
 
 	void							setTimeOfLastEvent(UT_uint32 eventTime);
 	UT_uint32	   					getTimeOfLastEvent() const { return m_eventTime; };
-	virtual UT_sint32				makeDirectory(const char * szPath, const UT_sint32 mode ) const;
     virtual XAP_App::BidiSupportType  theOSHasBidiSupport() const {return BIDI_SUPPORT_GUI;}
     char **                          getTmpFile(void)
 	{ return &m_szTmpFile;}

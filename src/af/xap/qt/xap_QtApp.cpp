@@ -72,12 +72,6 @@ int XAP_QtApp::exec()
 	return m_app->exec();
 }
 
-// TODO refactor with XAP_UnixApp::makeDirectory()
-UT_sint32 XAP_QtApp::makeDirectory(const char * szPath, const UT_sint32 mode ) const
-{
-	return mkdir(szPath, mode);
-}
-
 // TODO refactor with XAP_UnixApp::getUserPrivateDirectory()
 const char * XAP_QtApp::getUserPrivateDirectory() const
 {

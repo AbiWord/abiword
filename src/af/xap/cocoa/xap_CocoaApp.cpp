@@ -150,11 +150,6 @@ void XAP_CocoaApp::notifyFrameCountChange()
 	XAP_App::notifyFrameCountChange();
 }
 
-UT_sint32 XAP_CocoaApp::makeDirectory(const char * szPath, const UT_sint32 mode ) const
-{ 
-	return mkdir(szPath, mode); 
-}
-
 XAP_App::BidiSupportType XAP_CocoaApp::theOSHasBidiSupport() const 
 {
 	return BIDI_SUPPORT_FULL;
