@@ -135,7 +135,7 @@ class ABI_EXPORT GR_Itemization
 	UT_sint32       getItemCount() const {return m_vOffsets.getItemCount();}
 	UT_sint32       getNthOffset(UT_sint32 i) const {return m_vOffsets.getNthItem(i);}
 	GR_ScriptType   getNthType(UT_sint32 i) const
-	                   {return ((GR_Item*)m_vItems.getNthItem(i))->getType();}
+	                   {return m_vItems.getNthItem(i)->getType();}
 
 	UT_uint32       getNthLength(UT_sint32 i)
 	                   {
@@ -143,12 +143,12 @@ class ABI_EXPORT GR_Itemization
 						  return m_vOffsets.getNthItem(i+1) - m_vOffsets.getNthItem(i);
 					   }
 
-	GR_Item *       getNthItem(UT_sint32 i) const {return (GR_Item *)m_vItems.getNthItem(i);}
+	GR_Item *       getNthItem(UT_sint32 i) const {return m_vItems.getNthItem(i);}
 
-	void            addItem(UT_sint32 offset, const GR_Item *item)
+	void            addItem(UT_sint32 offset, GR_Item *item)
 	                    { m_vOffsets.addItem(offset); m_vItems.addItem(item);}
 
-	void            insertItem(UT_sint32 indx, UT_sint32 offset, const GR_Item *item)
+	void            insertItem(UT_sint32 indx, UT_sint32 offset, GR_Item *item)
 	                    { m_vOffsets.insertItemAt(offset, indx); m_vItems.insertItemAt(item,indx);}
 
 	void            clear();
@@ -170,7 +170,7 @@ class ABI_EXPORT GR_Itemization
 
   private:
 	UT_NumberVector m_vOffsets;
-	UT_Vector       m_vItems;
+	UT_GenericVector<GR_Item*>  m_vItems;
 
 	UT_uint32       m_iEmbedingLevel;
 	UT_BidiCharType m_iDirOverride;

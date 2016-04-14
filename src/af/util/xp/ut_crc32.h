@@ -23,7 +23,7 @@ public:
         UT_uint32 DigestSize() const {return DIGESTSIZE;}
 
         void UpdateByte(unsigned char b) {m_crc = m_tab[CRC32_INDEX(m_crc) ^ b] ^ CRC32_SHIFTED(m_crc);}
-        unsigned char GetCrcByte(UT_uint32 i) const {return ((unsigned char *)&(m_crc))[i];}
+        unsigned char GetCrcByte(UT_uint32 i) const {return ((const unsigned char *)&(m_crc))[i];}
         UT_uint32 GetCRC32(void) const { return m_crc;}
 private:
         void Reset() {m_crc = CRC32_NEGL;}

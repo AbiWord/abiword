@@ -65,7 +65,7 @@
 				{
 					_lt * plt = new _lt;
 					*plt = orig->m_lt[k];
-					m_Vec_lt.addItem((void *) plt);
+					m_Vec_lt.addItem(plt);
 				}
 			};
 		~_vectt()
@@ -78,15 +78,15 @@
 			};
 		_lt * getNth_lt(UT_uint32 n)
 			{
-				return (_lt *) m_Vec_lt.getNthItem(n);
+				return m_Vec_lt.getNthItem(n);
 			};
-		void insertItemAt(void * p, XAP_Menu_Id id)
+		void insertItemAt(_lt * p, XAP_Menu_Id id)
 			{
 				UT_sint32 i = 0;
 				bool bFound = false;
 				for(i=0; i< m_Vec_lt.getItemCount() && !bFound; i++)
 				{
-					_lt * plt = (_lt *) m_Vec_lt.getNthItem(i);
+					_lt * plt = m_Vec_lt.getNthItem(i);
 					if(plt->m_id == id)
 					{
 						if((i+1) == m_Vec_lt.getItemCount())
@@ -102,13 +102,13 @@
 				}
 				UT_ASSERT_HARMLESS(bFound);
 			};
-		void insertItemBefore(void * p, XAP_Menu_Id id)
+		void insertItemBefore(_lt * p, XAP_Menu_Id id)
 			{
 				UT_sint32 i = 0;
 				bool bFound = false;
 				for(i=0; i< m_Vec_lt.getItemCount() && !bFound; i++)
 				{
-					_lt * plt = (_lt *) m_Vec_lt.getNthItem(i);
+					_lt * plt = m_Vec_lt.getNthItem(i);
 					if(plt->m_id == id)
 					{
 						if((i+1) == m_Vec_lt.getItemCount())
@@ -130,7 +130,7 @@
 				bool bFound = false;
 				for(i=0; i< m_Vec_lt.getItemCount() && !bFound; i++)
 				{
-					_lt * plt = (_lt *) m_Vec_lt.getNthItem(i);
+					_lt * plt = m_Vec_lt.getNthItem(i);
 					if(plt->m_id == id)
 					{
 						m_Vec_lt.deleteNthItem(i);
@@ -142,14 +142,14 @@
 			};
 		void setNthIDFlags(UT_uint32 n, XAP_Menu_Id id,EV_Menu_LayoutFlags flags)
 			{
-				_lt * plt = (_lt *) m_Vec_lt.getNthItem(n);
+				_lt * plt = m_Vec_lt.getNthItem(n);
 				plt->m_flags = flags;
 				plt->m_id = id;
 			};
 		const char *				m_name;
 		EV_EditMouseContext			m_emc;
 	private:
-		UT_Vector   				m_Vec_lt;
+		UT_GenericVector<_lt*>		m_Vec_lt;
 	};
 
 
@@ -239,7 +239,7 @@ XAP_Menu_Factory::XAP_Menu_Factory(XAP_App * pApp) :
 	for (k=0; k<G_N_ELEMENTS(s_ttTable); k++)
 	{
 		_vectt * pVectt = new _vectt(&s_ttTable[k]);
-		m_vecTT.addItem((void *) pVectt);
+		m_vecTT.addItem(pVectt);
 	}
 	m_pEnglishLabelSet = NULL;
 	m_pBSS = NULL;
@@ -265,7 +265,7 @@ XAP_Menu_Id XAP_Menu_Factory::getNewID(void)
 	UT_uint32 j =0;
 	for(i=0; i < m_vecTT.getItemCount(); i++)
 	{
-		_vectt * pTT = (_vectt *) m_vecTT.getNthItem(i);
+		_vectt * pTT = m_vecTT.getNthItem(i);
 		if (pTT == NULL)
 			continue;
 		for(j=0; j < pTT->getNrEntries(); j++)
@@ -288,7 +288,7 @@ EV_Menu_Layout * XAP_Menu_Factory::CreateMenuLayout(const char * szName)
 
 	for (UT_sint32 k=0; k< m_vecTT.getItemCount(); k++)
 	{
-		_vectt * pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		_vectt * pVectt = m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
 		if (g_ascii_strcasecmp(szName,pVectt->m_name)==0)
@@ -316,7 +316,7 @@ const char * XAP_Menu_Factory::FindContextMenu(EV_EditMouseContext emc)
 
 	for (UT_sint32 k=0; k< m_vecTT.getItemCount(); k++)
 	{
-		_vectt * pVectt = (_vectt *) m_vecTT.getNthItem(k);
+		_vectt * pVectt = m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
 		UT_DEBUGMSG(("Look menu %s id %x requested %x  \n",pVectt->m_name,pVectt->m_emc,emc));
@@ -340,7 +340,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
-		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		pVectt = m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
 		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
@@ -364,7 +364,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	_lt * plt = new _lt;
 	plt->m_id = newID;
 	plt->m_flags = flags;
-	pVectt->insertItemAt((void *) plt, afterID);
+	pVectt->insertItemAt(plt, afterID);
 	return (XAP_Menu_Id) newID;
 }
 
@@ -380,7 +380,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
-		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		pVectt = m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
 		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
@@ -423,7 +423,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuAfter(const char * szMenu,
 	_lt * plt = new _lt;
 	plt->m_id = newID;
 	plt->m_flags = flags;
-	pVectt->insertItemAt((void *) plt, afterID);
+	pVectt->insertItemAt(plt, afterID);
 	return (XAP_Menu_Id) newID;
 }
 
@@ -438,7 +438,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
-		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		pVectt = m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
 		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
@@ -464,11 +464,11 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	plt->m_flags = flags;
 	if(beforeID > 0)
 	{
-	  pVectt->insertItemBefore((void *) plt, beforeID);
+	  pVectt->insertItemBefore(plt, beforeID);
 	}
 	else
 	{
-	  pVectt->insertItemAt((void *) plt, beforeID);
+	  pVectt->insertItemAt(plt, beforeID);
 	}
 	return (XAP_Menu_Id) newID;
 }
@@ -484,7 +484,7 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
-		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		pVectt = m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
 		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
@@ -535,11 +535,11 @@ XAP_Menu_Id XAP_Menu_Factory::addNewMenuBefore(const char * szMenu,
 	plt->m_flags = flags;
 	if(beforeID > 0)
 	{
-	  pVectt->insertItemBefore((void *) plt, beforeID);
+	  pVectt->insertItemBefore(plt, beforeID);
 	}
 	else
 	{
-	  pVectt->insertItemAt((void *) plt, beforeID);
+	  pVectt->insertItemAt(plt, beforeID);
 	}
 	return (XAP_Menu_Id) newID;
 }
@@ -558,7 +558,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
-		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		pVectt = m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
 		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
@@ -586,7 +586,7 @@ XAP_Menu_Id XAP_Menu_Factory::removeMenuItem(const char * szMenu,
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
-		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		pVectt = m_vecTT.getNthItem(k);
 		if (pVectt == NULL)
 			continue;
 		bFoundMenu = (g_ascii_strcasecmp(szMenu,pVectt->m_name)==0);
@@ -631,7 +631,7 @@ void XAP_Menu_Factory::resetMenusToDefault(void)
 	for (k=0; k<G_N_ELEMENTS(s_ttTable); k++)
 	{
 		_vectt * pVectt = new _vectt(&s_ttTable[k]);
-		m_vecTT.addItem((void *) pVectt);
+		m_vecTT.addItem(pVectt);
 	}
 }
 
@@ -794,7 +794,7 @@ EV_EditMouseContext XAP_Menu_Factory::createContextMenu(const char * szMenu)
 	_vectt * pVectt = new _vectt(&newtt);
 	if (newtt.m_emc == m_NextContext)
 	{
-		m_vecTT.addItem((void *) pVectt);
+		m_vecTT.addItem(pVectt);
 		m_NextContext++;
 	}
 	else
@@ -809,7 +809,7 @@ void XAP_Menu_Factory::removeContextMenu(EV_EditMouseContext menuID)
 	_vectt * pVectt = NULL;
 	for (k=0; (k< m_vecTT.getItemCount()) && !bFoundMenu; k++)
 	{
-		pVectt = (_vectt *)m_vecTT.getNthItem(k);
+		pVectt = m_vecTT.getNthItem(k);
     if (pVectt == NULL)
 			continue;
 		bFoundMenu = (pVectt->m_emc==menuID);

@@ -37,6 +37,8 @@ class XAP_Frame;
 class EV_UnixMenu : public EV_Menu
 {
 public:
+	class _wd;
+
 	EV_UnixMenu(XAP_UnixApp * pUnixApp,
 		    XAP_Frame * pFrame,
 		    const char * szMenuLayoutName,
@@ -71,7 +73,7 @@ private:
 											bool isPopup,
 											const char *szLabelName,
 											const char *szMnemonicName);
-	UT_Vector           m_vecCallbacks;
+	UT_GenericVector<_wd*>           m_vecCallbacks;
 };
 
 #endif /* EV_UNIXMENU_H */

@@ -18,6 +18,7 @@
  */
 
 #include "ut_uuid.h"
+#include "ut_std_string.h"
 
 #include "xap_Dlg_DocComparison.h"
 #include "xad_Document.h"
@@ -109,40 +110,16 @@ const char * XAP_Dialog_DocComparison::getFrame2Label() const
 	return m_pSS->getValue(XAP_STRING_ID_DLG_DocComparison_Results);
 }
 
-static char * s_makePath(const char * pPath)
-{
-	if(!pPath)
-		return NULL;
-	
-	UT_uint32 iPathLen = strlen(pPath);
-	UT_String s;
-	
-	if(iPathLen < 60)
-	{
-		UT_String_sprintf(s, "%s", pPath);
-	}
-	else
-	{
-		char * pP1 = g_strdup(pPath);
-		pP1[6] = 0;
-		const char * pP2 = pPath + iPathLen - 50;
-		UT_String_sprintf(s, "%s ... %s", pP1, pP2);
-		FREEP(pP1);
-	}
-				
-	return g_strdup(s.c_str());
-}
-
 char * XAP_Dialog_DocComparison::getPath1() const
 {
 	UT_return_val_if_fail(m_pDoc1, NULL);
-	return s_makePath(m_pDoc1->getFilename());
+	return g_strdup(UT_ellipsisPath(m_pDoc1->getFilename(), 60, 50).c_str());
 }
 
 char * XAP_Dialog_DocComparison::getPath2() const
 {
 	UT_return_val_if_fail(m_pDoc2, NULL);
-	return s_makePath(m_pDoc2->getFilename());
+	return g_strdup(UT_ellipsisPath(m_pDoc2->getFilename(), 60, 50).c_str());
 }
 
 

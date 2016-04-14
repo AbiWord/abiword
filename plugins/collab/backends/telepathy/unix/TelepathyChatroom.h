@@ -80,7 +80,7 @@ public:
 	void setSessionId(const UT_UTF8String& sSessionId)
 		{ m_sSessionId = sSessionId; }
 
-	UT_UTF8String getDocName();
+	std::string getDocName();
 
 	void queue(const std::string& dbusName, const std::string& packet);
 

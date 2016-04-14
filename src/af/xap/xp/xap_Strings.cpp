@@ -311,20 +311,18 @@ bool XAP_DiskStringSet::setValue(const gchar * szId, const gchar * szString)
 	if (!szId || !*szId || !szString || !*szString)
 		return true;
 
-	 		
-	gchar const* id;
- 	
- 	// Build a hash table the first time that the function is called
+	gchar *id;
+	// Build a hash table the first time that the function is called
  	if (m_hash.size() == 0) {
  		UT_uint32 k, kLimit = G_N_ELEMENTS(s_map);
- 		
-		for (k=0; k<kLimit; k++) { 			
+
+		for (k=0; k<kLimit; k++) {
  			id = g_ascii_strdown (s_map[k].szName, -1);
  			m_hash[ std::string(id) ] = k + 1;
  			FREEP(id);
  		}
- 	} 	
- 	
+	}
+
  	id = g_ascii_strdown (szId, -1); 	
 	std::map<std::string, UT_uint32>::iterator  iter = m_hash.find( id );
  	FREEP(id);

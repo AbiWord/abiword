@@ -48,7 +48,7 @@ public:
 protected:
 	_ClipboardItem*			_findFormatItem(const char*);
 
-	UT_Vector				m_vecData;
+	UT_GenericVector<_ClipboardItem*> m_vecData;
 };
 
 #endif /* XAP_FAKECLIPBOARD_H */

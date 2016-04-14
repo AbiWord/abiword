@@ -72,7 +72,7 @@ bool XAP_InputModes::setCurrentMap(const char * szName)
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (g_ascii_strcasecmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
+		if (g_ascii_strcasecmp(szName, m_vecNames.getNthItem(k)) == 0)
 		{
 			m_indexCurrentEventMap = k;
 			return true;
@@ -83,12 +83,12 @@ bool XAP_InputModes::setCurrentMap(const char * szName)
 
 EV_EditEventMapper * XAP_InputModes::getCurrentMap(void) const
 {
-	return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(m_indexCurrentEventMap));
+	return m_vecEventMaps.getNthItem(m_indexCurrentEventMap);
 }
 
 const char * XAP_InputModes::getCurrentMapName(void) const
 {
-	return reinterpret_cast<const char *>(m_vecNames.getNthItem(m_indexCurrentEventMap));
+	return m_vecNames.getNthItem(m_indexCurrentEventMap);
 }
 
 EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
@@ -97,8 +97,8 @@ EV_EditEventMapper * XAP_InputModes::getMapByName(const char * szName) const
 	UT_uint32 k;
 
 	for (k=0; k<kLimit; k++)
-		if (g_ascii_strcasecmp(szName,reinterpret_cast<const char *>(m_vecNames.getNthItem(k))) == 0)
-			return static_cast<EV_EditEventMapper *>(m_vecEventMaps.getNthItem(k));
+		if (g_ascii_strcasecmp(szName, m_vecNames.getNthItem(k)) == 0)
+			return m_vecEventMaps.getNthItem(k);
 
 	return NULL;
 }

@@ -97,15 +97,15 @@ Defun_EV_GetMenuItemComputedLabel_Fn(ap_GetLabel_Toolbar)
 	UT_ASSERT_HARMLESS(id <= AP_MENU_ID_VIEW_TB_4);
 
 	UT_sint32 ndx = (id - AP_MENU_ID_VIEW_TB_1);
-	const UT_Vector & vec = pApp->getToolbarFactory()->getToolbarNames();
+	const UT_GenericVector<UT_UTF8String*> & vec = pApp->getToolbarFactory()->getToolbarNames();
 
 
 	if (ndx < vec.getItemCount())
 	{
 		const char * szFormat = pLabel->getMenuLabel();
-		static char buf[128];	
-		
-		const char * szRecent = reinterpret_cast<const UT_UTF8String*>(vec.getNthItem(ndx))->utf8_str();
+		static char buf[128];
+
+		const char * szRecent = vec.getNthItem(ndx)->utf8_str();
 
 		snprintf(buf,sizeof(buf),szFormat,szRecent);
 		return buf;
@@ -1415,7 +1415,7 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_History)
 	UT_return_val_if_fail( pDoc, EV_MIS_Gray );
 
 	// disable for documents that have not been saved yet
-	if(!pDoc->getFilename())
+	if(pDoc->getFilename().empty())
 		return EV_MIS_Gray;
 	
     return EV_MIS_ZERO;

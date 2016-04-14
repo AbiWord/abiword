@@ -231,7 +231,7 @@ void fl_Squiggles::updatePOBs(UT_sint32 iFirstOffset, UT_sint32 iShift)
 	UT_sint32 i =0;
 	for(i=0; i< m_vecSquiggles.getItemCount(); i++)
 	{
-		fl_PartOfBlock * pPOB = (fl_PartOfBlock *) m_vecSquiggles.getNthItem(i);
+		fl_PartOfBlock * pPOB = m_vecSquiggles.getNthItem(i);
 		if(pPOB->getOffset() >= iFirstOffset)
 		{
 			pPOB->setOffset(pPOB->getOffset() + iShift);

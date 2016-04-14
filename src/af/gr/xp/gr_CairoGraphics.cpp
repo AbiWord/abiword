@@ -752,7 +752,8 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 						  si.m_pItem->getClassId() == GRRI_CAIRO_PANGO &&
 						  si.m_pFont, false);
 	
-	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)si.m_pItem;
+	const GR_CairoPangoItem * pItem =
+		static_cast<const GR_CairoPangoItem *>(si.m_pItem);
 
 	PangoFontset * pfs = NULL;
 	PangoFont    * pFontSubst = NULL;
@@ -792,7 +793,8 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 		//			 RI->m_iShapingAllocNo,
 		//			 si.m_pFont->getAllocNumber()));
 			
-		GR_PangoFont * pFont = (GR_PangoFont*)si.m_pFont;
+		const GR_PangoFont * pFont =
+			static_cast<const GR_PangoFont*>(si.m_pFont);
 
 		pfs = pango_font_map_load_fontset (getFontMap(),
 										   getContext(),
@@ -937,7 +939,7 @@ bool GR_CairoGraphics::shape(GR_ShapingInfo & si, GR_RenderInfo *& ri)
 	UT_LocaleTransactor t(LC_NUMERIC, "C");
 	UT_String              s;
 	PangoFont            * pPangoFontOrig = pItem->m_pi->analysis.font;
-	GR_PangoFont     * pFont = (GR_PangoFont *) si.m_pFont;;
+	const GR_PangoFont * pFont = static_cast<const GR_PangoFont *>(si.m_pFont);
 	PangoFontDescription * pfd;
 	
 	if (PANGO_IS_FONT(pPangoFontOrig))
@@ -1019,13 +1021,15 @@ UT_sint32 GR_CairoGraphics::getTextWidth(GR_RenderInfo & ri)
 	xxx_UT_DEBUGMSG(("GR_CairoGraphics::getTextWidth\n"));
 	UT_return_val_if_fail(ri.getType() == GRRI_CAIRO_PANGO, 0);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
-	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)RI.m_pItem;
-	
+	const GR_CairoPangoItem * pItem =
+		static_cast<const GR_CairoPangoItem *>(RI.m_pItem);
+
 	UT_return_val_if_fail( RI.m_pGlyphs && RI.m_pLogOffsets && pItem, 0 );
-	
-	GR_PangoFont * pFont = (GR_PangoFont *) RI.m_pFont;
+
+	const GR_PangoFont * pFont =
+		static_cast<const GR_PangoFont *>(RI.m_pFont);
 	UT_return_val_if_fail( pFont, 0 );
-	
+
 	//
 	// Actually want the layout font here
 	//
@@ -1175,7 +1179,7 @@ void GR_CairoGraphics::prepareToRenderChars(GR_RenderInfo & ri)
  * pf is the PangoFont that we are actually using (possibly a different,
  * substituted font).
  */
-PangoFont *  GR_CairoGraphics::_adjustedPangoFont (GR_PangoFont * pFont, PangoFont * pf)
+PangoFont *  GR_CairoGraphics::_adjustedPangoFont (const GR_PangoFont * pFont, PangoFont * pf)
 {
 	UT_return_val_if_fail(pFont, NULL);
 	
@@ -1218,7 +1222,7 @@ PangoFont *  GR_CairoGraphics::_adjustedPangoFont (GR_PangoFont * pFont, PangoFo
  * pf is the PangoFont that we are actually using (possibly a different,
  * substituted font).
  */
-PangoFont *  GR_CairoGraphics::_adjustedLayoutPangoFont (GR_PangoFont * pFont, PangoFont * pf)
+PangoFont *  GR_CairoGraphics::_adjustedLayoutPangoFont (const GR_PangoFont * pFont, PangoFont * pf)
 {
 	UT_return_val_if_fail(pFont, NULL);
 	
@@ -1264,8 +1268,9 @@ void GR_CairoGraphics::renderChars(GR_RenderInfo & ri)
 		return;
 	UT_return_if_fail(ri.getType() == GRRI_CAIRO_PANGO);
 	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
-	GR_PangoFont * pFont = (GR_PangoFont *)RI.m_pFont;
-	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)RI.m_pItem;
+	const GR_PangoFont * pFont = static_cast<const GR_PangoFont *>(RI.m_pFont);
+	const GR_CairoPangoItem * pItem =
+		static_cast<const GR_CairoPangoItem *>(RI.m_pItem);
 	UT_return_if_fail(pItem && pFont && pFont->getPangoFont());
 	xxx_UT_DEBUGMSG(("GR_CairoGraphics::renderChars length %d \n",
 					 RI.m_iLength));
@@ -1616,7 +1621,8 @@ bool GR_CairoGraphics::_scriptBreak(GR_PangoRenderInfo &ri)
 {
 	UT_return_val_if_fail(ri.m_pText && ri.m_pGlyphs && ri.m_pItem, false);
 
-	GR_CairoPangoItem * pItem = (GR_CairoPangoItem*)ri.m_pItem;
+	const GR_CairoPangoItem * pItem =
+		static_cast<const GR_CairoPangoItem*>(ri.m_pItem);
 
 	// fill the static buffer with UTF8 text
 	UT_return_val_if_fail(ri.getUTF8Text(), false);
@@ -1852,7 +1858,7 @@ UT_sint32 GR_CairoGraphics::resetJustification(GR_RenderInfo & ri,
 UT_sint32 GR_CairoGraphics::countJustificationPoints(const GR_RenderInfo & ri) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_CAIRO_PANGO, 0);
-	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &)ri;
+	const GR_PangoRenderInfo & RI = static_cast<const GR_PangoRenderInfo &>(ri);
 
 	UT_return_val_if_fail(RI.m_pText, 0);
 	UT_TextIterator & text = *RI.m_pText;
@@ -2057,8 +2063,9 @@ UT_uint32 GR_CairoGraphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 x,
 											 UT_sint32 /*y*/) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_CAIRO_PANGO, 0);
-	GR_PangoRenderInfo & RI = (GR_PangoRenderInfo &) ri;
-	GR_CairoPangoItem * pItem = (GR_CairoPangoItem *)RI.m_pItem;
+	const GR_PangoRenderInfo & RI = static_cast<const GR_PangoRenderInfo &>(ri);
+	const GR_CairoPangoItem * pItem =
+		static_cast<const GR_CairoPangoItem *>(RI.m_pItem);
 	UT_return_val_if_fail(pItem, 0);
 
 	// TODO: this is very inefficient: to cache or not to cache ?

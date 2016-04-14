@@ -367,8 +367,8 @@ public:
 	void         _setIsSymbol(bool b) {m_bIsSymbol = b;}
 	void         _setIsDingbat(bool b) {m_bIsDingbat = b;}
 
-	PangoFont *  _adjustedPangoFont (GR_PangoFont * pFont, PangoFont * pf);
-	PangoFont *  _adjustedLayoutPangoFont (GR_PangoFont * pFont, PangoFont * pf);
+	PangoFont *  _adjustedPangoFont (const GR_PangoFont * pFont, PangoFont * pf);
+	PangoFont *  _adjustedLayoutPangoFont (const GR_PangoFont * pFont, PangoFont * pf);
 
 	double            _tdudX(UT_sint32 layoutUnits) const;
 	double            _tdudY(UT_sint32 layoutUnits) const;

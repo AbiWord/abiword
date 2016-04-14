@@ -86,7 +86,7 @@ c_lb::c_lb(c_lb * pc_lb)
 c_lb::~c_lb(void)
 {
 
-    FREEP(m_name);
+    g_free(m_name);
     DELETEP (m_pebm);
 }
 

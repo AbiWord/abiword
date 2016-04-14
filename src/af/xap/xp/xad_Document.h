@@ -134,10 +134,10 @@ public:
 
 	XAP_ResourceManager &	resourceManager () const { return *m_pResourceManager; }
 
-	const char *			getFilename(void) const;
+	const std::string     & getFilename(void) const;
 	const std::string     & getPrintFilename(void) const;
 	void                    setPrintFilename(const std::string & sFile);
-	void                    clearFilename(void) {_setFilename(NULL); forceDirty();}
+	void                    clearFilename(void) {_setFilename(""); forceDirty();}
 	// TODO - this should be returning IEFileType,
 	// but that's AP stuff, so it's not here
 
@@ -282,8 +282,8 @@ public:
 
 	bool                purgeAllRevisions(AV_View * pView);
 	bool                isOrigUUID(void) const;
-	void                setFilename(char * name)
-	{_setFilename(name);}
+	void                setFilename(const char * name)
+	{ _setFilename(name); }
 	virtual UT_uint32   getXID() const = 0;
 	virtual UT_uint32   getTopXID() const = 0;
 
@@ -294,7 +294,8 @@ public:
 
 	void            _purgeRevisionTable();
 	void            _adjustHistoryOnSave();
-	void			_setFilename(char * name) {FREEP(m_szFilename); m_szFilename = name;}
+	void			_setFilename(const char * name)
+		{ if (name) m_szFilename = name; else m_szFilename.clear(); }
 	void            _setForceDirty(bool b) {m_bForcedDirty = b;}
 	void            _setPieceTableChanging(bool b) {m_bPieceTableChanging = b;}
 	void            _setMarkRevisions(bool bMark) {m_bMarkRevisions = bMark;}
@@ -310,7 +311,7 @@ private:
 	XAP_ResourceManager *	m_pResourceManager;
 
 	int				m_iRefCount;
-	const char *	m_szFilename;
+	std::string		m_szFilename;
 	UT_String		m_szEncodingName;
 
 	bool			m_bPieceTableChanging;

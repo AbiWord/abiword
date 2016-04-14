@@ -41,7 +41,7 @@ virtual	~fl_Squiggles(void);
 
 	fl_PartOfBlock*			get(UT_sint32 iOffset) const;
 	inline fl_PartOfBlock*	getNth(UT_sint32 n) const
-		{ return (fl_PartOfBlock *) m_vecSquiggles.getNthItem(n); }
+		{ return m_vecSquiggles.getNthItem(n); }
 
 	void					clear(fl_PartOfBlock* pPOB);
 
@@ -88,7 +88,7 @@ private:
 	inline UT_sint32		_getCount(void) const
 		{ return m_vecSquiggles.getItemCount(); }
 
-	UT_Vector			m_vecSquiggles;
+	UT_GenericVector<fl_PartOfBlock*>	m_vecSquiggles;
 	fl_BlockLayout*			m_pOwner;
 	FL_SQUIGGLE_TYPE                m_iSquiggleType;
 };

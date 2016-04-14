@@ -1146,6 +1146,7 @@ AC_OUTPUT(
   src/af/xap/qt/Makefile
   src/af/xap/win/Makefile
   src/af/xap/xp/Makefile
+  src/af/xap/xp/t/Makefile
   src/gi-overrides/Makefile
   src/plugins/Makefile
   src/text/Makefile

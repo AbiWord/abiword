@@ -75,7 +75,7 @@ public:
 
 	double getScale(void) const { return m_scale; }
 	UT_Dimension getDims(void) const { return m_unit; }
-	inline char * getPredefinedName (void) const { return m_predefined; }
+	inline const char * getPredefinedName (void) const { return m_predefined; }
 
 	static bool	IsPredefinedName(const char* szPageSizeName);
 	static Predefined NameToPredefined(const char *name);
@@ -83,7 +83,7 @@ public:
 	static int PredefinedToLocalName(Predefined preDef);
 
 private:
-	char * m_predefined;
+	const char * m_predefined;
 
 	double m_iWidth;
 	double m_iHeight;

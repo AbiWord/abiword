@@ -18,7 +18,7 @@
  */
 
 #include "ut_uuid.h"
-
+#include "ut_std_string.h"
 #include "xap_Dlg_History.h"
 #include "xad_Document.h"
 #include "xap_App.h"
@@ -81,27 +81,8 @@ char * XAP_Dialog_History::getHeaderValue(UT_uint32 indx) const
 	switch(indx)
 	{
 		case 0:
-			{
-				const char * pPath = m_pDoc->getFilename();
-				UT_return_val_if_fail(pPath, NULL);
-				UT_uint32 iPathLen = strlen(pPath);
+			return g_strdup(UT_ellipsisPath(m_pDoc->getFilename(), 45, 35).c_str());
 
-				if(iPathLen < 45)
-				{
-					UT_String_sprintf(S, "%s", pPath);
-				}
-				else
-				{
-					char * pP1 = g_strdup(pPath);
-					pP1[6] = 0;
-					const char * pP2 = pPath + iPathLen - 35;
-					UT_String_sprintf(S, "%s ... %s", pP1, pP2);
-					FREEP(pP1);
-				}
-				
-				return g_strdup(S.c_str());
-			}
-			
 		case 1:
 			UT_String_sprintf(S,"%d",m_pDoc->getDocVersion());
 			return g_strdup(S.c_str());

@@ -63,7 +63,7 @@
 
 /*****************************************************************/
 
-class _wd								// a private little class to help
+class EV_UnixMenu::_wd								// a private little class to help
 {										// us remember all the widgets that
 public:									// we create...
 	_wd(EV_UnixMenu * pUnixMenu, XAP_Menu_Id id)
@@ -498,7 +498,7 @@ bool EV_UnixMenu::synthesizeMenu(GtkWidget * wMenuRoot, bool isPopup)
 				// create callback info data for action handling
 				_wd * wd = new _wd(this, id);
 				UT_ASSERT(wd);
-				m_vecCallbacks.addItem(static_cast<void *>(wd));
+				m_vecCallbacks.addItem(wd);
 
 				// find parent menu item
 				GtkWidget * wParent = stack.top();
@@ -1050,7 +1050,7 @@ bool EV_UnixMenuPopup::synthesizeMenuPopup()
 					   G_CALLBACK(_wd::s_onInitMenu), wd);
 	g_signal_connect(G_OBJECT(m_wMenuPopup), "unmap",
 					   G_CALLBACK(_wd::s_onDestroyPopupMenu), wd);
-	m_vecCallbacks.addItem(static_cast<void *>(wd));
+	m_vecCallbacks.addItem(wd);
 	synthesizeMenu(m_wMenuPopup, true);
 
 	return true;
@@ -1116,7 +1116,7 @@ GtkWidget * EV_UnixMenu::s_createNormalMenuEntry(int 		id,
 	// create callback info data for action handling
 	_wd * wd = new _wd(this, id);
 	UT_ASSERT(wd);
-	m_vecCallbacks.addItem(static_cast<void *>(wd));
+	m_vecCallbacks.addItem(wd);
 	// connect callbacks
 	g_signal_connect(G_OBJECT(w), "activate", G_CALLBACK(_wd::s_onActivate), wd);
 	g_object_set_data(G_OBJECT(w), "wd", wd);

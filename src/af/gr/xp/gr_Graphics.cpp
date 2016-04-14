@@ -1390,7 +1390,7 @@ UT_sint32 GR_Graphics::resetJustification(GR_RenderInfo & ri, bool /* bPermanent
 UT_sint32 GR_Graphics::countJustificationPoints(const GR_RenderInfo & ri) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
-	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
+	const GR_XPRenderInfo & RI = static_cast<const GR_XPRenderInfo &>(ri);
 
 	UT_return_val_if_fail(RI.m_pChars, 0);
 
@@ -1404,7 +1404,7 @@ UT_sint32 GR_Graphics::countJustificationPoints(const GR_RenderInfo & ri) const
 			bNonBlank = true;
 			continue;
 		}
-		
+
 		// only count this space if this is not last run, or if we
 		// have found something other than spaces
 		if(!ri.m_bLastOnLine || bNonBlank)
@@ -1433,7 +1433,7 @@ UT_sint32 GR_Graphics::countJustificationPoints(const GR_RenderInfo & ri) const
 void GR_Graphics::justify(GR_RenderInfo & ri)
 {
 	UT_return_if_fail(ri.getType() == GRRI_XP);
-	GR_XPRenderInfo & RI = (GR_XPRenderInfo &)ri;
+	GR_XPRenderInfo & RI = static_cast<GR_XPRenderInfo &>(ri);
 
 	UT_return_if_fail(RI.m_pChars && RI.m_pWidths);
 
@@ -1487,7 +1487,7 @@ UT_uint32 GR_Graphics::XYToPosition(const GR_RenderInfo & ri, UT_sint32 /*x*/,
 									UT_sint32 /*y*/) const
 {
 	UT_return_val_if_fail(ri.getType() == GRRI_XP, 0);
-	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
+	const GR_XPRenderInfo & RI = static_cast<const GR_XPRenderInfo &>(ri);
 	UT_return_val_if_fail(RI.m_pWidths, 0);
 
 	UT_return_val_if_fail(UT_NOT_IMPLEMENTED,0 );
@@ -1500,9 +1500,9 @@ void GR_Graphics::positionToXY(const GR_RenderInfo & ri,
 							   UT_sint32& /*height*/, bool& /*bDirection*/) const
 {
 	UT_return_if_fail(ri.getType() == GRRI_XP);
-	GR_XPRenderInfo & RI = (GR_XPRenderInfo &) ri;
+	const GR_XPRenderInfo & RI = static_cast<const GR_XPRenderInfo &>(ri);
 	UT_return_if_fail(RI.m_pWidths);
-	
+
 	UT_return_if_fail(UT_NOT_IMPLEMENTED);
 }
 

@@ -564,7 +564,7 @@ AD_Document * XAP_Frame::getCurrentDoc(void) const
 const char * XAP_Frame::getFilename(void) const
 {
 	if (m_pDoc == NULL) return NULL;
-	return m_pDoc->getFilename();
+	return m_pDoc->getFilename().c_str();
 }
 
 bool XAP_Frame::isDirty(void) const
@@ -851,7 +851,7 @@ XAP_Dialog_MessageBox::tAnswer XAP_Frame::showMessageBox(const char * szMessage,
 UT_String XAP_Frame::makeBackupName(const char* szExt)
 {
   UT_String ext(szExt ? szExt : m_stAutoSaveExt.c_str());
-  UT_String oldName(m_pDoc->getFilename() ? m_pDoc->getFilename() : "");
+  UT_String oldName(m_pDoc->getFilename());
   UT_String backupName;
   UT_DEBUGMSG(("In make Backup name. Old Name is (%s) \n",oldName.c_str()));
   if (oldName.empty())

@@ -1641,8 +1641,8 @@ const char * xap_encoding_manager_get_language_iso_name(void)
 
 static int s_compare_unichar_cats(const void * pC, const void *puc)
 {
-	UT_UCS4Char c = *((UT_UCS4Char*)pC);
-	SCatRange * pUC = (SCatRange*) puc;
+	UT_UCS4Char c = *((const UT_UCS4Char*)pC);
+	const SCatRange * pUC = (const SCatRange*) puc;
 
 	if(c < pUC->start)
 		return -1;

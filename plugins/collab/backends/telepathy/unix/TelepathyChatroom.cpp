@@ -77,7 +77,7 @@ group_call_add_members_cb(TpChannel* chan,
 		UT_return_if_fail(pHandler);
 
 		GHashTable* params = tp_asv_new (
-				"title", G_TYPE_STRING, pChatroom->getDocName().utf8_str(),
+				"title", G_TYPE_STRING, pChatroom->getDocName().c_str(),
 				NULL);
 
 		// offer this tube to every participant in the room
@@ -460,10 +460,10 @@ void TelepathyChatroom::removeBuddy(TpHandle handle)
 	UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 }
 
-UT_UTF8String TelepathyChatroom::getDocName()
+std::string TelepathyChatroom::getDocName()
 {
 	UT_return_val_if_fail(m_pDoc, "");
-	UT_UTF8String docName = m_pDoc->getFilename();
+        std::string docName = m_pDoc->getFilename();
 	if (docName == "")
 		return "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
 	return docName;
@@ -578,7 +578,7 @@ bool TelepathyChatroom::offerTube()
 	m_pending_invitees.clear();
 
 	// create the welcome string
-	UT_UTF8String sWelcomeMsg = UT_UTF8String_sprintf("A document called '%s' has been shared with you", getDocName().utf8_str());
+	UT_UTF8String sWelcomeMsg = UT_UTF8String_sprintf("A document called '%s' has been shared with you", getDocName().c_str());
 
 	UT_DEBUGMSG(("Inviting members to the room...\n"));
 	tp_cli_channel_interface_group_call_add_members(

@@ -332,7 +332,7 @@ void fp_PageSize::Set(Predefined preDef, UT_Dimension u)
 		m_iWidth        = UT_convertDimensions(size.w, size.u, FUND);
 		m_iHeight       = UT_convertDimensions(size.h, size.u, FUND);
 	}
-	m_predefined = (char*)(pagesizes [preDef].name);
+	m_predefined = pagesizes [preDef].name;
 }
 
 /*!

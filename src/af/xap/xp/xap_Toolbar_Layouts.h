@@ -58,9 +58,9 @@ public:
   UT_uint32 getNrEntries(void);
   void add_lt(XAP_Toolbar_Factory_lt * plt);
   XAP_Toolbar_Factory_lt * getNth_lt(UT_uint32 i);
-  void insertLastItem(void * p);
-  void insertItemBefore(void * p, XAP_Toolbar_Id id);
-  void insertItemAfter(void * p, XAP_Toolbar_Id id);
+  void insertLastItem(XAP_Toolbar_Factory_lt * p);
+  void insertItemBefore(XAP_Toolbar_Factory_lt * p, XAP_Toolbar_Id id);
+  void insertItemAfter(XAP_Toolbar_Factory_lt * p, XAP_Toolbar_Id id);
   bool removeToolbarId(XAP_Toolbar_Id id);
   const char * getToolbarName(void);
   XAP_String_Id getLabelStringID(void);
@@ -69,7 +69,7 @@ private:
   UT_String m_name;
   XAP_String_Id m_label;
   const gchar*			m_prefKey;
-  UT_Vector m_Vec_lt;
+  UT_GenericVector<XAP_Toolbar_Factory_lt *> m_Vec_lt;
 };
 
 class ABI_EXPORT XAP_Toolbar_Factory
@@ -93,13 +93,13 @@ public:
 									XAP_Toolbar_Id nukeId);
     bool             saveToolbarsInCurrentScheme(void);
     bool             restoreToolbarsFromCurrentScheme(void);
-	const UT_Vector & 	getToolbarNames(void);
+	const UT_GenericVector<UT_UTF8String*> & 	getToolbarNames(void);
 	UT_uint32			countToolbars(void) const;
 	const gchar*		prefKeyForToolbar(UT_uint32 t) const;
 private:
-  UT_Vector m_vecTT;
+  UT_GenericVector<XAP_Toolbar_Factory_vec*> m_vecTT;
   XAP_App * m_pApp;
-  UT_Vector m_tbNames;
+  UT_GenericVector<UT_UTF8String*> m_tbNames;
 };
 
 

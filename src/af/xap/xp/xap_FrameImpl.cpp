@@ -108,10 +108,10 @@ bool XAP_FrameImpl::_updateTitle()
 
 	std::string s;
 	UT_GOFilePermissions *perm = NULL;
-	const gchar *szURI = m_pFrame->m_pDoc->getFilename();
+	const std::string & szURI = m_pFrame->m_pDoc->getFilename();
 
-	if (szURI && *szURI)
-		perm = UT_go_get_file_permissions(szURI);
+	if (!szURI.empty())
+		perm = UT_go_get_file_permissions(szURI.c_str());
 
 	/* first try to use the metadata title as our title */
 	std::string title;
@@ -137,9 +137,9 @@ bool XAP_FrameImpl::_updateTitle()
 	
 	/* that failed. let's use the filename instead */
 
-	if (szURI && *szURI) 
+	if (!szURI.empty())
 	{
-		gchar *szName = UT_go_basename_from_uri (szURI);
+		gchar *szName = UT_go_basename_from_uri (szURI.c_str());
 		UT_UTF8String sUntruncatedString(szName);
 		FREEP(szName);
 

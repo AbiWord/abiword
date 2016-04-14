@@ -377,8 +377,8 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 				// set more document properties
 				jsre.m_iRev = pDoc->getCRNumber();
 				jsre.m_sDocumentId = pDoc->getDocUUIDString();
-				if (pDoc->getFilename())
-					jsre.m_sDocumentName = UT_go_basename_from_uri(pDoc->getFilename());
+				if (!pDoc->getFilename().empty())
+					jsre.m_sDocumentName = UT_go_basename_from_uri(pDoc->getFilename().c_str());
 				
 				// send to buddy!
 				send(&jsre, buddy);
@@ -440,8 +440,8 @@ void AccountHandler::_handlePacket(Packet* packet, BuddyPtr buddy)
 
                     // determine name
 					UT_UTF8String documentBaseName;
-					if (pDoc->getFilename())
-						documentBaseName = UT_go_basename_from_uri(pDoc->getFilename());
+					if (!pDoc->getFilename().empty())
+						documentBaseName = UT_go_basename_from_uri(pDoc->getFilename().c_str());
 					// set session info
 					gsre.m_Sessions[ pSession->getSessionId() ] = documentBaseName;
 				}

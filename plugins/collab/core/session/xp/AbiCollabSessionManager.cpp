@@ -1013,7 +1013,7 @@ void AbiCollabSessionManager::removeBuddy(BuddyPtr pBuddy, bool graceful)
 			if (pSession->isController(pBuddy))
 			{
 				UT_DEBUGMSG(("This buddy controlled a session, destroying the session...\n"));
-				UT_UTF8String docName = pSession->getDocument()->getFilename();
+				std::string docName = pSession->getDocument()->getFilename();
 				if (docName == "")
 					docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
 				destroySession(pSession);
@@ -1023,7 +1023,7 @@ void AbiCollabSessionManager::removeBuddy(BuddyPtr pBuddy, bool graceful)
 					UT_continue_if_fail(pFrame);
 					// TODO: make this localizable
 					UT_UTF8String msg;
-					UT_UTF8String_sprintf(msg, "You've been disconnected from buddy %s. The collaboration session for document %s has been stopped.", pBuddy->getDescription().utf8_str(), docName.utf8_str()); 
+					UT_UTF8String_sprintf(msg, "You've been disconnected from buddy %s. The collaboration session for document %s has been stopped.", pBuddy->getDescription().utf8_str(), docName.c_str());
 					pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 				}
 			}
@@ -1353,7 +1353,7 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 			{
 				if (!isLocallyControlled(pSession->getDocument()))
 				{
-					UT_UTF8String docName = pSession->getDocument()->getFilename();
+					std::string docName = pSession->getDocument()->getFilename();
 					if (docName == "")
 						docName = "Untitled"; // TODO: fetch the title from the frame somehow (which frame?) - MARCM
 					
@@ -1372,7 +1372,7 @@ bool AbiCollabSessionManager::processPacket(AccountHandler& /*handler*/, Packet*
 					UT_return_val_if_fail(pFrame, true);
 					UT_UTF8String msg;
 					// TODO: make this localizable
-					UT_UTF8String_sprintf(msg, "Document %s is not being shared anymore by buddy %s. You are disconnected from the collaboration session.", docName.utf8_str(), buddy->getDescription().utf8_str()); 
+					UT_UTF8String_sprintf(msg, "Document %s is not being shared anymore by buddy %s. You are disconnected from the collaboration session.", docName.c_str(), buddy->getDescription().utf8_str());
 					pFrame->showMessageBox(msg.utf8_str(), XAP_Dialog_MessageBox::b_O, XAP_Dialog_MessageBox::a_OK);
 				}
 				else
@@ -1487,7 +1487,7 @@ bool AbiCollabSessionManager::_setupFrame(XAP_Frame** pFrame, PD_Document* pDoc)
 	PD_Document * pFrameDoc = static_cast<PD_Document *>(pCurFrame->getCurrentDoc());
 	if (pFrameDoc != pDoc)
 	{
-		if (!pFrameDoc || (!pFrameDoc->getFilename() && !pFrameDoc->isDirty() && !isInSession(pFrameDoc)))
+		if (!pFrameDoc || (pFrameDoc->getFilename().empty() && !pFrameDoc->isDirty() && !isInSession(pFrameDoc)))
 		{
 			// we can replace the document in this frame safely, as it is 
 			// brand new, and doesn't have any contents yet

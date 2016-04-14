@@ -836,8 +836,8 @@ UT_Error PD_Document::_importFile(GsfInput * input, int ieft,
 			errorCode = IE_Imp::loadFile(this, input, static_cast<IEFileType>(ieft), impProps, &m_lastOpenedType);
 			_syncFileTypes(false);
 
-			if (!getFilename())
-				_setFilename(g_strdup(szFilename));
+			if (getFilename().empty())
+				_setFilename(szFilename);
 		}
 
 	if (!UT_IS_IE_SUCCESS(errorCode))
@@ -1153,10 +1153,9 @@ UT_Error PD_Document::_saveAs(const char * szFilename, int ieft, bool cpy,
 	{
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
-	    char * szFilenameCopy = NULL;
-	    if (!(szFilenameCopy = g_strdup(szFilename)))
+	    if (!szFilename)
 			return UT_SAVE_OTHERERROR;
-	    _setFilename(szFilenameCopy);
+	    _setFilename(szFilename);
 	    _setClean(); // only mark as clean if we're saving under a new name
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
@@ -1213,10 +1212,9 @@ UT_Error PD_Document::_saveAs(GsfOutput *output, int ieft, bool cpy, const char 
 	{
 	    // no file name currently set - make this filename the filename
 	    // stored for the doc
-	    char * szFilenameCopy = NULL;
-	    if (!(szFilenameCopy = g_strdup(szFilename)))
+	    if (!szFilename)
 			return UT_SAVE_OTHERERROR;
-	    _setFilename(szFilenameCopy);
+	    _setFilename(szFilename);
 	    _setClean(); // only mark as clean if we're saving under a new name
 		signalListeners(PD_SIGNAL_DOCNAME_CHANGED);	
 	}
@@ -1229,7 +1227,7 @@ UT_Error PD_Document::_saveAs(GsfOutput *output, int ieft, bool cpy, const char 
 
 UT_Error PD_Document::_save(void)
 {
-	if (!getFilename() || !*getFilename())
+	if (getFilename().empty())
 		return UT_SAVE_NAMEERROR;
 	if (m_lastSavedAsType == IEFT_Unknown)
 		return UT_EXTENSIONERROR;
@@ -1237,7 +1235,8 @@ UT_Error PD_Document::_save(void)
 	IE_Exp * pie = NULL;
 	UT_Error errorCode;
 
-	errorCode = IE_Exp::constructExporter(this,getFilename(),m_lastSavedAsType,&pie);
+	errorCode = IE_Exp::constructExporter(this, getFilename().c_str(),
+                                          m_lastSavedAsType, &pie);
 	if (errorCode)
 	{
 		UT_DEBUGMSG(("PD_Document::Save -- could not construct exporter\n"));
@@ -1251,7 +1250,7 @@ UT_Error PD_Document::_save(void)
 	// see if revisions table is still needed ...
 	purgeRevisionTable();
 	
-	errorCode = pie->writeFile(getFilename());
+	errorCode = pie->writeFile(getFilename().c_str());
 	delete pie;
 	if (errorCode)
 	{

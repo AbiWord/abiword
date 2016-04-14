@@ -610,8 +610,8 @@ void AbiCollab::startRecording( SessionRecorderInterface* pRecorder )
 		else
 			jsre.m_iRev = m_pDoc->getCRNumber();
 		jsre.m_sDocumentId = m_pDoc->getDocUUIDString();
-		if (m_pDoc->getFilename())
-			jsre.m_sDocumentName = UT_go_basename_from_uri(m_pDoc->getFilename());
+		if (!m_pDoc->getFilename().empty())
+			jsre.m_sDocumentName = UT_go_basename_from_uri(m_pDoc->getFilename().c_str());
 				
 		// store pointer
 		m_pRecorder = pRecorder;

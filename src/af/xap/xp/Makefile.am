@@ -1,4 +1,6 @@
 
+DIST_SUBDIRS = t
+
 noinst_LTLIBRARIES = libxp.la
 
 AM_CPPFLAGS = \

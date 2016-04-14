@@ -5280,11 +5280,12 @@ bool fp_FieldFileNameRun::calculateValue(void)
 	UT_return_val_if_fail(pDoc, false);
 
 	//copy in the name or some wierd char instead
-	const char * name = pDoc->getFilename();
-	if (!name)
+	std::string name = pDoc->getFilename();
+	if (name.empty()) {
 		name = "*";
+	}
 
-	strncpy (szFieldValue, name, FPFIELD_MAX_LENGTH);
+	strncpy (szFieldValue, name.c_str(), FPFIELD_MAX_LENGTH);
 	szFieldValue[FPFIELD_MAX_LENGTH] = '\0';
 
 	if (getField())
@@ -5310,7 +5311,7 @@ bool fp_FieldShortFileNameRun::calculateValue(void)
 	UT_return_val_if_fail(pDoc, false);
 
 	//copy in the name or some wierd char instead
-	const char * name = UT_go_basename_from_uri(pDoc->getFilename());
+	const char * name = UT_go_basename_from_uri(pDoc->getFilename().c_str());
 	if (!name)
 		name = "*";
 

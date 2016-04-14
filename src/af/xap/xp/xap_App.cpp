@@ -1478,10 +1478,10 @@ bool XAP_App::saveState(bool bQuit)
 		}
 		
 			
-		const char * file = pDoc->getFilename();
-		if(file && strlen(file) < XAP_SD_FILENAME_LENGTH)
+		const std::string & file = pDoc->getFilename();
+		if(!file.empty() && file.size() < XAP_SD_FILENAME_LENGTH)
 		{
-			strncpy(sd.filenames[j], file, XAP_SD_FILENAME_LENGTH);
+			strncpy(sd.filenames[j], file.c_str(), XAP_SD_FILENAME_LENGTH);
 
 			AV_View * pView = pFrame->getCurrentView();
 			if(pView)

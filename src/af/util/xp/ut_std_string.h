@@ -67,6 +67,11 @@ ABI_EXPORT std::vector<std::string> UT_simpleSplit(const std::string & str,
                                                    char separator = ' ');
 
 
+/**
+ * Shorten a %path with ellispis of over %maxlen. Then keep the last %cut chars
+ */
+ABI_EXPORT std::string UT_ellipsisPath(const std::string & path, size_t maxlen, size_t cut);
+
 /*!
  * Some functions to add/subtract and extract std::string properties from a std::string of properties.
  */

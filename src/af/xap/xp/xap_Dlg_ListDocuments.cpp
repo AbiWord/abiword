@@ -94,7 +94,7 @@ const char * XAP_Dialog_ListDocuments::_getNthDocumentName(UT_sint32 n) const
 	if(!pDoc)
 		return NULL;
 
-	return pDoc->getFilename();
+	return pDoc->getFilename().c_str();
 }
 
 void XAP_Dialog_ListDocuments::setIncludeActiveDoc(bool b)

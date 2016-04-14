@@ -3,7 +3,8 @@
 /* AbiSource Application Framework
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (C) 2004 Tomas Frydrych <tomasfrydrych@yahoo.co.uk>
- * 
+ * Copyright (C) 2016 Hubert Figuiere <hub@figuiere.net>
+ *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -25,6 +26,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_hash.h"
 #include "ut_vector.h"
 #include "ut_uuid.h"
@@ -53,7 +55,6 @@ AD_Document::AD_Document() :
 	m_pResourceManager(0),
 #endif
 	m_iRefCount(1),
-	m_szFilename(NULL),
 	m_szEncodingName(""), // Should this have a default? UTF-8, perhaps?
     m_bPieceTableChanging(false),
 	m_lastSavedTime(0),
@@ -117,9 +118,6 @@ AD_Document::~AD_Document()
 
 	UT_VECTOR_PURGEALL(AD_VersionData*, m_vHistory);
 	UT_VECTOR_PURGEALL(AD_Revision*, m_vRevisions);
-
-	if (m_szFilename)
-		g_free(const_cast<void *>(static_cast<const void *>(m_szFilename)));
 
 	DELETEP(m_pUUID);
 	DELETEP(m_pOrigUUID);
@@ -229,7 +227,7 @@ void AD_Document::unref(void)
 	}
 }
 
-const char * AD_Document::getFilename(void) const
+const std::string & AD_Document::getFilename(void) const
 {
 	return m_szFilename;
 }
@@ -1028,9 +1026,10 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 	
 	if(isDirty())
 	{
-		if(pFrame->showMessageBox(XAP_STRING_ID_MSG_HistoryConfirmSave, 
-								  XAP_Dialog_MessageBox::b_YN, 
-								  XAP_Dialog_MessageBox::a_YES, getFilename())
+		if(pFrame->showMessageBox(XAP_STRING_ID_MSG_HistoryConfirmSave,
+								  XAP_Dialog_MessageBox::b_YN,
+								  XAP_Dialog_MessageBox::a_YES,
+								  getFilename().c_str())
 		   == XAP_Dialog_MessageBox::a_NO)
 		{
 			return false;
@@ -1043,37 +1042,27 @@ bool AD_Document::_restoreVersion(XAP_Frame * pFrame, UT_uint32 iVersion)
 	// create unique new name
 	UT_uint32 i = 0;
 
-	const char * pPath = g_strdup(getFilename());
-	UT_return_val_if_fail(pPath, false);
-	
-	char * pDot = (char *)strrchr(pPath,'.');
-	if(pDot)
-	{
-		*pDot = 0;
-		pDot++;
+	std::string path = getFilename();
+	std::string extension;
+
+	size_t ndot = path.find_last_of('.');
+	if(ndot != std::string::npos) {
+		extension = path.substr(ndot+1);
+		path.resize(ndot);
 	}
 
-	UT_String s1, s2;
-	
-	do
-	{
+	std::string s1;
+
+	do {
 		i++;
-		
-		UT_String_sprintf(s2, "_version_%d-%d", iVersion, i);
-	
-		s1 = pPath;
-		s1 += s2;
 
-		if(pDot && *pDot)
-		{
-			s1 += ".";
-			s1 += pDot;
+		s1 = path + UT_std_string_sprintf("_version_%d-%d", iVersion, i);
+
+		if(!extension.empty()) {
+			s1 += "." + extension;
 		}
-	
-	}
-	while(UT_isRegularFile(s1.c_str()));
 
-	FREEP(pPath);
+	} while(UT_isRegularFile(s1.c_str()));
 
 	m_bDoNotAdjustHistory = true;
 	saveAs(s1.c_str(), getLastSavedAsType());
@@ -1324,9 +1313,10 @@ bool AD_Document::purgeAllRevisions(AV_View * pView)
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());	
 	UT_return_val_if_fail( pFrame, false );
 	
-	if(pFrame->showMessageBox(XAP_STRING_ID_MSG_NoUndo, 
-							  XAP_Dialog_MessageBox::b_YN, 
-							  XAP_Dialog_MessageBox::a_YES, getFilename())
+	if(pFrame->showMessageBox(XAP_STRING_ID_MSG_NoUndo,
+							  XAP_Dialog_MessageBox::b_YN,
+							  XAP_Dialog_MessageBox::a_YES,
+							  getFilename().c_str())
 	   == XAP_Dialog_MessageBox::a_NO)
 	{
 		return false;

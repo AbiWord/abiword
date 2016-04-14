@@ -63,7 +63,7 @@ protected:
 	bool				_parseUTF8(void);
 	void				_outputUTF8(const UT_UCSChar * data, UT_uint32 length);
 
-	const char *		m_szFilename;
+	char *		m_szFilename;
 
 	bool				m_bDirty;
 	UT_GenericStringMap<UT_UCSChar *>	    m_hashWords;

@@ -464,10 +464,10 @@ UT_Error IE_Exp_HTML::_writeDocument()
         {
             if (bToken)
             {
-                const gchar * fname = getDoc()->getFilename();
-                if (fname)
+                std::string fname = getDoc()->getFilename();
+                if (!fname.empty())
                 {
-                    const gchar * base = UT_basename(fname);
+                    const gchar * base = UT_basename(fname.c_str());
                     UT_uint32 iNameLen = strlen(base);
 
                     const gchar * dot = strrchr(base, '.');

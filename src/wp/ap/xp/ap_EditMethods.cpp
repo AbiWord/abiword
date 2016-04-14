@@ -8826,9 +8826,9 @@ UT_return_val_if_fail(pDialog, false);
 
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getNonDecoratedTitle());
-	pDialog->setDocumentPathname((doc->getFilename())
-				     ? doc->getFilename()
-				     : pFrame->getNonDecoratedTitle());
+	pDialog->setDocumentPathname((!doc->getFilename().empty())
+								 ? doc->getFilename().c_str()
+								 : pFrame->getNonDecoratedTitle());
 	pDialog->setEnablePageRangeButton(true,1,pLayout->countPages());
 	pDialog->setEnablePrintSelection(false);	// TODO change this when we know how to do it.
 	pDialog->setEnablePrintToFile(true);
@@ -8913,7 +8913,7 @@ UT_return_val_if_fail(pDialog, false);
 		UT_sint32 iWidth = pDocLayout->getWidth();
 		UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
 
-		const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
+		const char *pDocName = ((!doc->getFilename().empty()) ? doc->getFilename().c_str() : pFrame->getNonDecoratedTitle());
 		s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 				iWidth,  iHeight, nToPage, nFromPage);
 
@@ -8973,9 +8973,9 @@ static bool s_doPrintPreview(FV_View * pView)
 
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getNonDecoratedTitle());
-	pDialog->setDocumentPathname((doc->getFilename())
-					 ? doc->getFilename()
-					 : pFrame->getNonDecoratedTitle());
+	pDialog->setDocumentPathname((!doc->getFilename().empty())
+								 ? doc->getFilename().c_str()
+								 : pFrame->getNonDecoratedTitle());
 
 	pDialog->runModal(pFrame);
 
@@ -9032,7 +9032,7 @@ static bool s_doPrintPreview(FV_View * pView)
 	UT_sint32 iWidth = pDocLayout->getWidth();
 	UT_sint32 iHeight = pDocLayout->getHeight() / pDocLayout->countPages();
 
-	const char *pDocName = ((doc->getFilename()) ? doc->getFilename() : pFrame->getNonDecoratedTitle());
+	const char *pDocName = ((!doc->getFilename().empty()) ? doc->getFilename().c_str() : pFrame->getNonDecoratedTitle());
 
 	s_actuallyPrint(doc, pGraphics, pPrintView, pDocName, nCopies, bCollate,
 					iWidth,  iHeight, nToPage, nFromPage);
@@ -15597,7 +15597,8 @@ static PD_Document * s_doListDocuments(XAP_Frame * pFrame, bool bExcludeCurrent,
 		if(!pD)
 			UT_DEBUGMSG(("DIALOG LIST DOCUMENTS: no document\n"));
 		else
-			UT_DEBUGMSG(("DIALOG LIST DOCUMENTS: %s\n", pD->getFilename()));
+			UT_DEBUGMSG(("DIALOG LIST DOCUMENTS: %s\n",
+						 pD->getFilename().c_str()));
 #endif
 	}
 

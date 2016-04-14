@@ -31,6 +31,8 @@ class EV_Menu_LabelSet;
 class XAP_App;
 class XAP_StringSet;
 
+class _vectt;
+
 class ABI_EXPORT XAP_Menu_Factory
 {
 public:
@@ -85,7 +87,7 @@ public:
 
 private:
 
-  mutable UT_Vector m_vecTT;
+  UT_GenericVector<_vectt *> m_vecTT;
   XAP_App * m_pApp;
   EV_Menu_LabelSet * m_pLabelSet;
   EV_Menu_LabelSet * m_pEnglishLabelSet;

@@ -1,7 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2009-2015 Hubert Figuiere
+ * Copyright (C) 2009-2016 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -213,6 +213,23 @@ std::vector<std::string> UT_simpleSplit (const std::string & str, char separator
 	return v;
 }
 
+std::string
+UT_ellipsisPath(const std::string & path, size_t maxlen, size_t cut)
+{
+    if(path.empty())
+        return NULL;
+
+	UT_uint32 iPathLen = path.size();
+	std::string s;
+
+	if(iPathLen < maxlen) {
+		s = path;
+	} else {
+		s = path.substr(0, 6) + " ... " + path.substr(iPathLen - cut);
+	}
+
+	return s;
+}
 
 /*!
  * Assuming a string of standard abiword properties eg. "fred:nerk; table-width:1.0in; table-height:10.in"

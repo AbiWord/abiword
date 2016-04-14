@@ -85,7 +85,7 @@ class ABI_EXPORT c_lb
   c_lb(	bool bCycle,	const char * name, ap_LoadBindings_pFn fn, EV_EditBindingMap * pebm);
   ~c_lb(void);
 	bool						m_bCanCycle;	// visible to CycleInputMode
-	const char *				m_name;
+	char *					m_name;
 	ap_LoadBindings_pFn			m_fn;
 	EV_EditBindingMap *			m_pebm;			// must be deleted
 };

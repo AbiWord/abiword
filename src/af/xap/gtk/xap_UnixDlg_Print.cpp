@@ -219,8 +219,8 @@ void XAP_UnixDialog_Print::setupPrint()
 	
 	if(sURI.empty())
 	{
-        const char * filename = m_pView->getDocument()->getFilename();
-        if(filename) {
+        const std::string & filename = m_pView->getDocument()->getFilename();
+        if(!filename.empty()) {
             sURI = filename;
             UT_addOrReplacePathSuffix(sURI, ".pdf");
         }
@@ -243,7 +243,7 @@ void XAP_UnixDialog_Print::setupPrint()
 	
 	m_pPageSetup = gtk_page_setup_new();
 
-	char * pszName = m_pView->getPageSize().getPredefinedName();
+	const char * pszName = m_pView->getPageSize().getPredefinedName();
 	bool isPredefined = false;
 	const char * pszGtkName = NULL;
 	if(pszName == NULL)

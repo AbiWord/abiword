@@ -76,7 +76,7 @@ bool XAP_FakeClipboard::clearClipboard(void)
 	UT_sint32 iCount = m_vecData.getItemCount();
 	for (int i=0; i<iCount; i++)
 	{
-		_ClipboardItem* pItem = (_ClipboardItem*) m_vecData.getNthItem(i);
+		_ClipboardItem* pItem = m_vecData.getNthItem(i);
 		DELETEP(pItem);
 	}
 
@@ -109,7 +109,7 @@ _ClipboardItem* XAP_FakeClipboard::_findFormatItem(const char* format)
 
 	for (UT_uint32 i=0; i<iCount; i++)
 	{
-		_ClipboardItem* pItem = (_ClipboardItem*) m_vecData.getNthItem(i);
+		_ClipboardItem* pItem = m_vecData.getNthItem(i);
 		if (g_ascii_strcasecmp(format, pItem->m_szFormat) == 0)
 			return pItem;
 	}
