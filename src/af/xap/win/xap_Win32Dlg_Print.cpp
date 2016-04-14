@@ -127,8 +127,7 @@ XAP_Win32Dialog_Print::XAP_Win32Dialog_Print(XAP_DialogFactory * pDlgFactory,
 {
 	m_pPersistPrintDlg = (PRINTDLGW *)UT_calloc(1,sizeof(PRINTDLGW));
 	UT_return_if_fail(m_pPersistPrintDlg);
-	
-	memset(m_pPersistPrintDlg,0,sizeof(m_pPersistPrintDlg));
+
 	m_pPersistPrintDlg->lStructSize = sizeof(*m_pPersistPrintDlg);
 }
 
