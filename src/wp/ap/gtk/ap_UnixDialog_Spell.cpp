@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998,1999 AbiSource, Inc.
  * Copyright (C) 2005 Robert Staudinger <robsta@stereolyzer.net>
@@ -429,12 +430,14 @@ AP_UnixDialog_Spell::_updateWindow (void)
 								COLUMN_SUGGESTION, suggest,  
 								COLUMN_NUMBER, i,
 								-1);
+			FREEP(suggest);
 		}
 		// put the first suggestion in the entry
 		suggest = (gchar*) _convertToMB((UT_UCSChar*)m_Suggestions->getNthItem(0));
 		g_signal_handler_block(G_OBJECT(m_eChange), m_replaceHandlerID);
 		gtk_entry_set_text(GTK_ENTRY(m_eChange), suggest);
-		g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);      
+		g_signal_handler_unblock(G_OBJECT(m_eChange), m_replaceHandlerID);
+		FREEP(suggest);
 	}
 
 	gtk_tree_view_set_model (GTK_TREE_VIEW (m_lvSuggestions), model);

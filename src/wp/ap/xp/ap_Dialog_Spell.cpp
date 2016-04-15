@@ -251,7 +251,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 					UT_return_val_if_fail (m_Suggestions, false);
 
 					// get suggestions from spelling engine
-					const UT_GenericVector<UT_UCSChar*> *cpvEngineSuggestions;
+					const UT_GenericVector<UT_UCSChar*> *cpvEngineSuggestions = nullptr;
 
 					if (checker->checkWord(m_pWord, m_iWordLength) == SpellChecker::LOOKUP_FAILED)
 					{
@@ -264,7 +264,7 @@ bool AP_Dialog_Spell::nextMisspelledWord(void)
 							m_Suggestions->addItem(sug);
 						}
 					}
-
+					delete cpvEngineSuggestions;
 				   // add suggestions from user's AbiWord file
 				   pApp->suggestWord(m_Suggestions, m_pWord, m_iWordLength);
 
