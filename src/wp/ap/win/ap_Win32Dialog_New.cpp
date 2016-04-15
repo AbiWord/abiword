@@ -259,15 +259,15 @@ void AP_Win32Dialog_New::_doChoose()
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
+		const std::string resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty())
 		{
 			// update the entry box
-			char *pFilename = UT_go_filename_from_uri(szResultPathname);
+			char *pFilename = UT_go_filename_from_uri(resultPathname.c_str());
 			_win32Dialog.setControlText( AP_RID_DIALOG_NEW_EBX_EXISTING, 
 			                             pFilename);
 			FREEP(pFilename);
-			setFileName (szResultPathname);
+			setFileName (resultPathname.c_str());
 		}
 	}
 }

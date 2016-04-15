@@ -765,12 +765,11 @@ bool s_abicollab_viewrecord(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname) 
+		const std::string & resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty())
 		{
-			std::string filename = szResultPathname;
-			UT_DEBUGMSG(("filename = '%s'\n", filename.c_str()));
-			DiskSessionRecorder::dumpSession( filename );
+			UT_DEBUGMSG(("filename = '%s'\n", resultPathname.c_str()));
+			DiskSessionRecorder::dumpSession(resultPathname);
 		} 
 		else 
 		{

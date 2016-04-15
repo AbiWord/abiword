@@ -150,10 +150,11 @@ static bool s_AskForGOComponentPathname(XAP_Frame * pFrame,
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		UT_DEBUGMSG(("OBJECT Path Name selected = %s \n",szResultPathname));
-		if (szResultPathname && *szResultPathname)
-			*ppPathname = g_strdup(szResultPathname);
+		const std::string & resultPathname = pDialog->getPathname();
+		UT_DEBUGMSG(("OBJECT Path Name selected = %s \n", resultPathname.c_str()));
+		if (!resultPathname.empty()) {
+			*ppPathname = g_strdup(resultPathname.c_str());
+		}
 
 		UT_sint32 type = pDialog->getFileType();
 

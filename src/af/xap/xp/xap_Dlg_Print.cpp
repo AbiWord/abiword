@@ -269,14 +269,15 @@ bool XAP_Dialog_Print::_getPrintToFilePathname(XAP_Frame * pFrame,
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
 	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
 
-	if (bOK)
-		m_szPrintToFilePathname = g_strdup(pDialog->getPathname());       
+	if (bOK) {
+		m_szPrintToFilePathname = g_strdup(pDialog->getPathname().c_str());
+	}
 
 	FREEP(szDescList);
 	FREEP(szSuffixList);
 	FREEP(nTypeList);
 
 	pDialogFactory->releaseDialog(pDialog);
-	
+
 	return bOK;
 }

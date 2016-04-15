@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -49,10 +50,10 @@ public:
 
 	typedef enum { a_VOID, a_OK, a_CANCEL }	tAnswer;
 
-	void								setCurrentPathname(const char * szPathname);
+	void							setCurrentPathname(const std::string & pathname);
 	void								setSuggestFilename(bool);
 	XAP_Dialog_FileOpenSaveAs::tAnswer	getAnswer(void) const;
-	const char *						getPathname(void) const;
+	const std::string &					getPathname(void) const;
 
 	// the caller supplies three lists of equal length of descriptions for menu
 	// labels, suffixes if the platform dialog uses them for filters, and
@@ -74,9 +75,9 @@ public:
     void setAppendDefaultSuffixFunctor( m_appendDefaultSuffixFunctor_t f );
 
   protected:
-	char *								m_szPersistPathname;
-	char *								m_szInitialPathname;
-	char *								m_szFinalPathname;
+	std::string					m_persistPathname;
+	std::string					m_initialPathname;
+	std::string					m_finalPathname;
 
 	const char **						m_szDescriptions;
 	const char ** 						m_szSuffixes;

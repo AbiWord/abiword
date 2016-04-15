@@ -203,10 +203,10 @@ void XAP_Win32Dialog_PluginManager::event_Load()
 	
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
+		const std::string & resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty())
 		{
-			if( activatePlugin(szResultPathname) )
+			if( activatePlugin(resultPathname.c_str()) )
 			{
 				// worked!
 				refreshPluginList();

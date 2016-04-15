@@ -84,7 +84,7 @@ public:
                              const std::string ext = "" );
     bool run( XAP_Frame * pFrame = 0 );
 
-    std::string getPath();
+    const std::string & getPath() const;
     IEFileType getType();
 
 

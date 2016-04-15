@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -58,9 +59,6 @@
 
 XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFactory, XAP_Dialog_Id id)
 	: XAP_Dialog_AppPersistent(pDlgFactory,id, "interface/dialogopenlinux"),
-	  m_szPersistPathname(NULL),
-	  m_szInitialPathname(NULL),
-	  m_szFinalPathname(NULL),
 	  m_szDescriptions(NULL),
 	  m_szSuffixes(NULL),
 	  m_nTypeList(NULL),
@@ -71,27 +69,23 @@ XAP_Dialog_FileOpenSaveAs::XAP_Dialog_FileOpenSaveAs(XAP_DialogFactory * pDlgFac
       m_appendDefaultSuffixFunctor( getAppendDefaultSuffixFunctorUsing_IE_Exp_preferredSuffixForFileType() )
 
 {
-  const gchar * savedir = 0;
-  if (getApp()->getPrefsValue(XAP_PREF_KEY_DefaultSaveDirectory, &savedir) && strlen(savedir))
-    {
-      m_szPersistPathname = g_strdup(savedir);
-    }
+	const gchar * savedir = nullptr;
+	if (getApp()->getPrefsValue(XAP_PREF_KEY_DefaultSaveDirectory, &savedir) && strlen(savedir)) {
+		m_persistPathname = savedir;
+	}
 }
 
 XAP_Dialog_FileOpenSaveAs::~XAP_Dialog_FileOpenSaveAs(void)
 {
 	UT_ASSERT(!m_bInUse);
-	FREEP(m_szPersistPathname);
-	FREEP(m_szInitialPathname);
-	FREEP(m_szFinalPathname);
 }
 
 void XAP_Dialog_FileOpenSaveAs::useStart(void)
 {
 	XAP_Dialog_AppPersistent::useStart();
-	
-	FREEP(m_szInitialPathname);
-	FREEP(m_szFinalPathname);
+
+	m_initialPathname.clear();
+	m_finalPathname.clear();
 	m_answer = a_VOID;
 	m_bSuggestName = false;
 }
@@ -100,23 +94,20 @@ void XAP_Dialog_FileOpenSaveAs::useEnd(void)
 {
 	XAP_Dialog_AppPersistent::useEnd();
 
-	FREEP(m_szInitialPathname);
+	m_initialPathname.clear();
 	if (m_answer == a_OK)
 	{
-		FREEP(m_szPersistPathname);
-		m_szPersistPathname = m_szFinalPathname;
-		m_szFinalPathname = NULL;
+		m_persistPathname = std::move(m_finalPathname);
+		m_finalPathname.clear();
 	}
 }
 
-void XAP_Dialog_FileOpenSaveAs::setCurrentPathname(const char * szPathname)
+void XAP_Dialog_FileOpenSaveAs::setCurrentPathname(const std::string & pathname)
 {
 	// this lets us know the pathname of the document
 	// in the frame from which we were invoked.
 
-	FREEP(m_szInitialPathname);
-	if (szPathname && *szPathname)
-		m_szInitialPathname = g_strdup(szPathname);
+	m_initialPathname = pathname;
 }
 
 void XAP_Dialog_FileOpenSaveAs::setSuggestFilename(bool bSuggestName)
@@ -131,13 +122,13 @@ XAP_Dialog_FileOpenSaveAs::tAnswer XAP_Dialog_FileOpenSaveAs::getAnswer(void) co
 	return m_answer;
 }
 
-const char * XAP_Dialog_FileOpenSaveAs::getPathname(void) const
+const std::string & XAP_Dialog_FileOpenSaveAs::getPathname(void) const
 {
 	// give our caller a temporary string (valid until the next
 	// use of this dialog) containing the pathname the user
 	// chose.
 
-	return m_szFinalPathname;
+	return m_finalPathname;
 }
 
 void XAP_Dialog_FileOpenSaveAs::setFileTypeList(const char ** szDescriptions,

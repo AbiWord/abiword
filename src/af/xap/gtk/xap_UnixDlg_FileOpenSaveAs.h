@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
@@ -65,7 +65,7 @@ private:
 	bool				m_bSave;
 protected:
 	XAP_Frame *			m_pFrame;
-	char * 					m_szFinalPathnameCandidate;
+	std::string			m_finalPathnameCandidate;
 private:
 	GtkWidget *         m_wFileTypes_PullDown;
 

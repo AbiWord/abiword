@@ -356,8 +356,8 @@ UT_runDialog_AskForPathname::setDefaultFiletype( const std::string desc,
 }
 
 
-std::string
-UT_runDialog_AskForPathname::getPath()
+const std::string &
+UT_runDialog_AskForPathname::getPath() const
 {
     return m_pathname;
 }
@@ -507,9 +507,10 @@ UT_runDialog_AskForPathname::run( XAP_Frame * pFrame )
     
     if (bOK)
     {
-        const char * szResultPathname = pDialog->getPathname();
-        if (szResultPathname && *szResultPathname)
-            m_pathname = szResultPathname;
+        const std::string & resultPathname = pDialog->getPathname();
+        if (!resultPathname.empty()) {
+            m_pathname = resultPathname;
+        }
 
         UT_sint32 type = pDialog->getFileType();
 

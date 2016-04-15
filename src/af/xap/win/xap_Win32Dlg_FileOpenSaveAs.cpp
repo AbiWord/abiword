@@ -278,14 +278,14 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	// use the persistence info and/or the suggested filename
 	// to properly seed the dialog.
 
-	if (!m_szInitialPathname || !*m_szInitialPathname)
+	if (m_initialPathname.empty())
 	{
 		// the caller did not supply initial pathname
 		// (or supplied an empty one).	see if we have
 		// some persistent info.
 
 		UT_ASSERT(!m_bSuggestName);
-		if (m_szPersistPathname)
+		if (!m_persistPathname.empty())
 		{
 			// we have a pathname from a previous use,
 			// extract the directory portion and start
@@ -293,8 +293,8 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 
 			// use directory(m_szPersistPathname)
 
-            UT_Win32LocaleString path;
-			path.fromUTF8 (m_szPersistPathname);
+			UT_Win32LocaleString path;
+			path.fromUTF8 (m_persistPathname.c_str());
 
 			wcscpy(szDir,path.c_str());
 			wchar_t * pLastSlash = wcsrchr(szDir, L'/');
@@ -320,12 +320,12 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 		// it.	either way, we need to cut the pathname into two
 		// parts -- directory and file -- for the common dlg.
 
-        UT_Win32LocaleString uri;
-		const char * szURI = g_filename_from_uri(m_szInitialPathname, NULL, NULL);
+		UT_Win32LocaleString uri;
+		const char * szURI = g_filename_from_uri(m_initialPathname.c_str(), NULL, NULL);
 		if(!szURI)
-			szURI = g_strdup(m_szInitialPathname);
+			szURI = g_strdup(m_initialPathname.c_str());
 
-        uri.fromUTF8 (szURI);
+		uri.fromUTF8 (szURI);
 
 		wcscpy(szDir,uri.c_str());
 		wchar_t * pLastSlash = wcsrchr(szDir, L'\\');
@@ -486,32 +486,21 @@ void XAP_Win32Dialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 			
 			UT_ASSERT(!suffix.empty());
 
-			UT_uint32 length = strlen(sfile.utf8_str().utf8_str()) + suffix.size() + 1;
-			m_szFinalPathname = (char *)UT_calloc(length,sizeof(char));
-			if (m_szFinalPathname)
-			{
-				char * p = m_szFinalPathname;
-
-				strcpy(p,sfile.utf8_str().utf8_str());
-				strcat(p,suffix.c_str());
-			}
+			m_finalPathname = sfile.utf8_str().utf8_str();
+			m_finalPathname += suffix;
 		}
 		else
 		{
 			char *uri = UT_go_filename_to_uri(sfile.utf8_str().utf8_str());
 			if(uri)
 			{
-				if(!(m_szFinalPathname = g_strdup(uri)))
-				{
-					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-					m_szFinalPathname = NULL;
-				}
+				m_finalPathname = uri;
 				FREEP(uri);
 			}
 			else
 			{
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-				m_szFinalPathname = NULL;
+				m_finalPathname.clear();
 			}
 		}
 

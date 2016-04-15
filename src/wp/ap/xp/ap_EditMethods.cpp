@@ -2142,9 +2142,10 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
-			*ppPathname = g_strdup(szResultPathname);
+		const std::string & resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty()) {
+			*ppPathname = g_strdup(resultPathname.c_str());
+		}
 
 		UT_sint32 type = pDialog->getFileType();
 		dflFileType = type;
@@ -2246,9 +2247,10 @@ static bool s_AskForGraphicPathname(XAP_Frame * pFrame,
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
-			*ppPathname = g_strdup(szResultPathname);
+		const std::string & resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty()) {
+			*ppPathname = g_strdup(resultPathname.c_str());
+		}
 
 		UT_sint32 type = pDialog->getFileType();
 
@@ -2962,11 +2964,10 @@ Defun1(fileSaveImage)
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
-		{
+		const std::string resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty()) {
 			FV_View * pView = static_cast<FV_View *>(pAV_View);
-			pView->saveSelectedImage (szResultPathname);
+			pView->saveSelectedImage (resultPathname.c_str());
 		}
 	}
 
@@ -3035,13 +3036,12 @@ Defun1(fileSaveEmbed)
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
-		{
+		const std::string & resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty()) {
 			const UT_ByteBuf *Buf;
 			pView->getDocument()->getDataItemDataByName(pRun->getDataID(), &Buf, NULL, NULL);
 			if (Buf)
-				Buf->writeToURI(szResultPathname);
+				Buf->writeToURI(resultPathname.c_str());
 		}
 	}
 
@@ -13673,11 +13673,10 @@ static bool s_AskForScriptName(XAP_Frame * pFrame,
 
 	if (bOK)
 	{
-		const char* szResultPathname = pDialog->getPathname();
+		const std::string & resultPathname = pDialog->getPathname();
 
-		if (szResultPathname && *szResultPathname)
-		{
-			stPathname += szResultPathname;
+		if (!resultPathname.empty()) {
+			stPathname += resultPathname;
 		}
 
 		UT_sint32 type = pDialog->getFileType();

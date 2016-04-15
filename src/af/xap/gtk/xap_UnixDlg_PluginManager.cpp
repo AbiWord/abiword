@@ -186,18 +186,13 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 	XAP_Dialog_FileOpenSaveAs::tAnswer ans = pDialog->getAnswer();
 	bool bOK = (ans == XAP_Dialog_FileOpenSaveAs::a_OK);
 	
-	if (bOK)
-    {
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
-		{
-			if (activatePlugin (szResultPathname))
-			{
+	if (bOK) {
+		const std::string & resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty()) {
+			if (activatePlugin (resultPathname.c_str())) {
 				// worked!
 				_updatePluginList ();
-			}
-			else
-			{
+			} else {
 				// error message
 				_errorMessage (m_pFrame, 
 							   XAP_STRING_ID_DLG_PLUGIN_MANAGER_COULDNT_LOAD);

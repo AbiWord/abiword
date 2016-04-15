@@ -186,10 +186,9 @@ void AP_UnixDialog_New::event_ToggleOpenExisting ()
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
-		{
-			setFileName (szResultPathname);
+		const std::string & resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty()) {
+			setFileName (resultPathname.c_str());
 		}
 
 		// open file from filecooser without extra click
