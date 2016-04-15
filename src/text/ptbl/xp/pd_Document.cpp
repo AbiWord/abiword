@@ -24,6 +24,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <memory>
+
 #include "ut_types.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
@@ -5075,7 +5078,6 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
                                  PD_DataItemHandle* ppHandle)
 {
 	PD_DataItemHandle pPair = NULL;
-    UT_ByteBuf * pNew = NULL;
 
 	UT_return_val_if_fail (pByteBuf, false);
 
@@ -5084,35 +5086,33 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
 	if (getDataItemDataByName(szName,NULL,NULL,NULL) == true)
     {
         UT_DEBUGMSG(("Data item %s already exists! \n",szName));
-        goto Failed;
+		return false;
     }
 	// set the actual DataItem's data using the contents of the ByteBuf.
 	// we must copy it if we want to keep it.  bBase64 is TRUE if the
 	// data is Base64 encoded.
 
-	pNew = new UT_ByteBuf();
-	if (!pNew) {
-		goto Failed;
-    }
+	std::unique_ptr<UT_ByteBuf> pNew(new UT_ByteBuf());
 
 	if (bBase64)
 	{
-		if (!UT_Base64Decode(pNew,pByteBuf))
-			goto Failed;
+		if (!UT_Base64Decode(pNew.get(), pByteBuf)) {
+			return false;
+		}
 	}
 	else
 	{
-		if (!pNew->ins(0,pByteBuf->getPointer(0),pByteBuf->getLength()))
-			goto Failed;
+		if (!pNew->ins(0,pByteBuf->getPointer(0),pByteBuf->getLength())) {
+			return false;
+		}
 	}
 
 	pPair = new _dataItemPair();
-	if (!pPair)
-	{
-		goto Failed;
+	if (!pPair) {
+		return false;
 	}
 
-	pPair->pBuf = pNew;
+	pPair->pBuf = pNew.release();
 	pPair->pToken = g_strdup(mime_type.c_str());
 	m_hashDataItems.insert(std::make_pair(szName, pPair));
 
@@ -5134,14 +5134,6 @@ bool PD_Document::createDataItem(const char * szName, bool bBase64,
 		delete pcr;
 	}
 	return true;
-
-Failed:
-	if (pNew)
-	{
-		delete pNew;
-	}
-
-	return false;
 }
 
 /*!
