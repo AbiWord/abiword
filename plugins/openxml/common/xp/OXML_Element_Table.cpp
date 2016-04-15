@@ -57,7 +57,7 @@ UT_Error OXML_Element_Table::serialize(IE_Exp_OpenXML* exporter)
 	OXML_ElementVector children = getChildren();
 	for (i = 0; i < children.size(); i++)
 	{
-		OXML_Element_Row* r = static_cast<OXML_Element_Row*>(get_pointer(children[i]));
+		OXML_Element_Row* r = static_cast<OXML_Element_Row*>(children[i].get());
 		r->setRowNumber(i);
 	}
 
@@ -407,7 +407,7 @@ void OXML_Element_Table::addMissingCell(unsigned int rowNumber, OXML_Element_Cel
 	OXML_ElementVector children = getChildren();
 	for (i = 0; i < children.size(); i++)
 	{
-		OXML_Element_Row* r = static_cast<OXML_Element_Row*>(get_pointer(children[i]));
+		OXML_Element_Row* r = static_cast<OXML_Element_Row*>(children[i].get());
 		if(i == rowNumber)
 		{
 			r->addMissingCell(cell);
@@ -418,5 +418,5 @@ void OXML_Element_Table::addMissingCell(unsigned int rowNumber, OXML_Element_Cel
 
 void OXML_Element_Table::applyStyle(OXML_SharedStyle style)
 {
-	inheritProperties(get_pointer(style));
+	inheritProperties(style.get());
 }

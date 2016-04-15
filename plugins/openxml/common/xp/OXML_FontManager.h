@@ -28,8 +28,8 @@
 
 // External includes
 #include <map>
+#include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
 
 /* \class OXML_FontManager
  * \brief This class handles all the font-related activities.
@@ -61,7 +61,7 @@ private:
 	OXML_RangeToScriptMap m_minor_rts;
 };
 
-typedef boost::shared_ptr<OXML_FontManager> OXML_SharedFontManager;
+typedef std::shared_ptr<OXML_FontManager> OXML_SharedFontManager;
 
 #endif //_OXML_FONTMANAGER_H_
 

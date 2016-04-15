@@ -38,13 +38,13 @@
 // External includes
 #include <string>
 #include <vector>
+#include <memory>
 #include <map>
-#include <boost/shared_ptr.hpp>
 
 class OXML_Element;
 class IE_Exp_OpenXML;
 
-typedef boost::shared_ptr<OXML_Element> OXML_SharedElement;
+typedef std::shared_ptr<OXML_Element> OXML_SharedElement;
 typedef std::vector<OXML_SharedElement> OXML_ElementVector;
 
 /* \class OXML_Element

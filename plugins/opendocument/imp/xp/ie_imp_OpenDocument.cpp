@@ -22,6 +22,8 @@
  */
 
 
+#include <memory>
+
 // Class definition include
 #include "ie_imp_OpenDocument.h"
 
@@ -47,7 +49,6 @@
 #include <gsf/gsf-infile-zip.h>
 #include <gsf/gsf-input-memory.h>
 
-#include <boost/shared_array.hpp>
 
 #ifdef HAVE_CONFIG_H
 #include "config.h"
@@ -455,7 +456,7 @@ UT_Error IE_Imp_OpenDocument::_loadRDFFromFile ( GsfInput* pInput,
         // get a shared buffer back, but doing so seems to
         // return a non-null terminated buffer, so we make a
         // smart_ptr to an array an explicitly nul-terminate it.
-        boost::shared_array<char> data( new char[sz+1] );
+        std::unique_ptr<char> data( new char[sz+1] );
         data[sz] = '\0';
         gsf_input_read ( pInput, sz, (guint8*)data.get() );
         if( sz && !data )

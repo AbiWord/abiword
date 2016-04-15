@@ -32,8 +32,8 @@
 #include <pd_Document.h>
 
 // External includes
+#include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
 
 class IE_Exp_OpenXML;
 
@@ -73,7 +73,7 @@ private:
 	std::string m_followedby;
 };
 
-typedef boost::shared_ptr<OXML_Style> OXML_SharedStyle;
+typedef std::shared_ptr<OXML_Style> OXML_SharedStyle;
 
 #endif //_OXML_STYLE_H_
 

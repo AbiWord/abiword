@@ -75,7 +75,7 @@ UT_Error OXML_Element_Row::serializeChildren(IE_Exp_OpenXML* exporter)
 	OXML_ElementVector::size_type i;
 	for(i=0; i < children.size(); i++)
 	{
-		cell = static_cast<OXML_Element_Cell*>(get_pointer(children[i]));
+		cell = static_cast<OXML_Element_Cell*>(children[i].get());
 		
 		//go through missing cells and serialize the correct ones
 		std::vector<OXML_Element_Cell*>::const_iterator it;

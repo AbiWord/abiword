@@ -29,7 +29,7 @@
 // External includes
 #include <string>
 #include <map>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 /* \class OXML_Theme
  * \brief This class holds all the information contained in a document's Theme part.
@@ -58,7 +58,7 @@ private:
 	OXML_FontScheme m_minorFontScheme;
 };
 
-typedef boost::shared_ptr<OXML_Theme> OXML_SharedTheme;
+typedef std::shared_ptr<OXML_Theme> OXML_SharedTheme;
 
 #endif //_OXML_THEME_H_
 

@@ -33,8 +33,8 @@
 #include <fl_AutoNum.h>
 
 // External includes
+#include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
 
 //bullet characters
 #define BULLET "&#8226;"
@@ -88,7 +88,7 @@ private:
 	FL_ListType type;
 };
 
-typedef boost::shared_ptr<OXML_List> OXML_SharedList;
+typedef std::shared_ptr<OXML_List> OXML_SharedList;
 
 #endif //_OXML_LIST_H_
 

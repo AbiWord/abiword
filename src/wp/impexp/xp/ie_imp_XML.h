@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <string>
 #include <map>
+#include <memory>
 
 #include "ut_xml.h"
 
@@ -37,9 +38,8 @@
 
 class PD_Document;
 
-#include <boost/shared_ptr.hpp>
 class PD_DocumentRDFMutation;
-typedef boost::shared_ptr<PD_DocumentRDFMutation> PD_DocumentRDFMutationHandle;
+typedef std::shared_ptr<PD_DocumentRDFMutation> PD_DocumentRDFMutationHandle;
 
 
 struct ABI_EXPORT xmlToIdMapping {

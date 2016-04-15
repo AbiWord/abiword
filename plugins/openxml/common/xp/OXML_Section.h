@@ -36,13 +36,13 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <boost/shared_ptr.hpp>
+#include <memory>
 
 class OXML_Section;
 class OXML_Element_Paragraph;
 class IE_Exp_OpenXML;
 
-typedef boost::shared_ptr<OXML_Section> OXML_SharedSection;
+typedef std::shared_ptr<OXML_Section> OXML_SharedSection;
 
 /* \class OXML_Section
  * \brief This class represents a single section in the OpenXML data model.

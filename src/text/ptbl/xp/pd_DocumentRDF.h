@@ -25,11 +25,11 @@
 #include <string>
 #include <list>
 #include <map>
+#include <memory>
 #include <set>
 #include "ut_types.h"
 #include "pt_Types.h"
 
-#include <boost/shared_ptr.hpp>
 
 class PD_Document;
 class pt_PieceTable;
@@ -41,11 +41,11 @@ class PD_RDFSemanticItem;
 class FV_View;
 
 class   PD_DocumentRDFMutation;
-typedef boost::shared_ptr<PD_DocumentRDFMutation> PD_DocumentRDFMutationHandle;
+typedef std::shared_ptr<PD_DocumentRDFMutation> PD_DocumentRDFMutationHandle;
 class   PD_RDFModel;
-typedef boost::shared_ptr<PD_RDFModel> PD_RDFModelHandle;
+typedef std::shared_ptr<PD_RDFModel> PD_RDFModelHandle;
 class   PD_DocumentRDF;
-typedef boost::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
+typedef std::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
 
 
 /**
@@ -317,22 +317,22 @@ class ABI_EXPORT PD_RDFModel
 };
 
 class   PD_RDFSemanticItem;
-typedef boost::shared_ptr<PD_RDFSemanticItem> PD_RDFSemanticItemHandle;
+typedef std::shared_ptr<PD_RDFSemanticItem> PD_RDFSemanticItemHandle;
 typedef std::list< PD_RDFSemanticItemHandle > PD_RDFSemanticItems;
 class   PD_RDFContact;
-typedef boost::shared_ptr<PD_RDFContact >     PD_RDFContactHandle;
+typedef std::shared_ptr<PD_RDFContact >     PD_RDFContactHandle;
 typedef std::list< PD_RDFContactHandle      > PD_RDFContacts;
 class   PD_RDFEvent;
-typedef boost::shared_ptr<PD_RDFEvent >       PD_RDFEventHandle;
+typedef std::shared_ptr<PD_RDFEvent >       PD_RDFEventHandle;
 typedef std::list< PD_RDFEventHandle      >   PD_RDFEvents;
 class   PD_RDFLocation;
-typedef boost::shared_ptr<PD_RDFLocation >       PD_RDFLocationHandle;
+typedef std::shared_ptr<PD_RDFLocation >       PD_RDFLocationHandle;
 typedef std::list< PD_RDFLocationHandle      >   PD_RDFLocations;
 class   PD_RDFSemanticStylesheet;
-typedef boost::shared_ptr<PD_RDFSemanticStylesheet > PD_RDFSemanticStylesheetHandle;
+typedef std::shared_ptr<PD_RDFSemanticStylesheet > PD_RDFSemanticStylesheetHandle;
 typedef std::list< PD_RDFSemanticStylesheetHandle  > PD_RDFSemanticStylesheets;
 class   PD_RDFSemanticItemViewSite;
-typedef boost::shared_ptr<PD_RDFSemanticItemViewSite> PD_RDFSemanticItemViewSiteHandle;
+typedef std::shared_ptr<PD_RDFSemanticItemViewSite> PD_RDFSemanticItemViewSiteHandle;
 typedef std::list< PD_RDFSemanticItemViewSiteHandle > PD_RDFSemanticItemViewSites;
 
 // semantic stylesheets

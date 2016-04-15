@@ -25,16 +25,16 @@
 #include <string>
 #include <list>
 #include <map>
+#include <memory>
 #include <set>
 #include "ut_types.h"
 #include "pt_Types.h"
 
 #include "pd_DocumentRDF.h"
-#include <boost/shared_ptr.hpp>
 
 
 class   PD_RDFQuery;
-typedef boost::shared_ptr<PD_RDFQuery> PD_RDFQueryHandle;
+typedef std::shared_ptr<PD_RDFQuery> PD_RDFQueryHandle;
 
 typedef std::list< std::map< std::string, std::string > > PD_ResultBindings_t;
 /**

@@ -47,6 +47,7 @@
 #include <gsf/gsf-output.h>
 
 #include <list>
+#include <memory>
 
 class UT_ByteBuf;
 class UT_GrowBuf;
@@ -70,8 +71,7 @@ class PD_DocumentRDF;
 class AP_StatusBar;
 class PL_ListenerCoupleCloser;
 
-#include <boost/shared_ptr.hpp>
-typedef boost::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
+typedef std::shared_ptr<PD_DocumentRDF> PD_DocumentRDFHandle;
 
 #ifdef PT_TEST
 #include "ut_test.h"
@@ -224,7 +224,7 @@ class ABI_EXPORT PD_XMLIDCreator
     ~PD_XMLIDCreator();
     std::string createUniqueXMLID( const std::string& desiredID, bool deepCopyRDF = false );
 };
-typedef boost::shared_ptr<PD_XMLIDCreator> PD_XMLIDCreatorHandle;
+typedef std::shared_ptr<PD_XMLIDCreator> PD_XMLIDCreatorHandle;
 
 
 /*!

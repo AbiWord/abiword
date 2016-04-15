@@ -24,8 +24,8 @@
 #ifndef _OXML_IMAGE_H_
 #define _OXML_IMAGE_H_
 
+#include <memory>
 #include <string>
-#include <boost/shared_ptr.hpp>
 
 #include "ut_types.h"
 #include "pd_Document.h"
@@ -66,7 +66,7 @@ private:
 	const FG_Graphic * m_graphic;
 };
 
-typedef boost::shared_ptr<OXML_Image> OXML_SharedImage;
+typedef std::shared_ptr<OXML_Image> OXML_SharedImage;
 
 #endif //_OXML_IMAGE_H_
 
