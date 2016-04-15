@@ -20,16 +20,14 @@
  * 02110-1301 USA.
  */
 
-//External includes
-#include <boost/lexical_cast.hpp>
-
 // Class definition include
 #include <OXML_Element_Cell.h>
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_string.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_std_string.h"
+#include "ut_string.h"
+#include "pd_Document.h"
 
 OXML_Element_Cell::OXML_Element_Cell(const std::string & id, OXML_Element_Table* tbl, OXML_Element_Row* rw,
 									 UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bottom) : 
@@ -276,10 +274,10 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 		return UT_OK;
 
 	//add props:bot-attach, left-attach, right-attach, top-attach
-	std::string sTop = boost::lexical_cast<std::string>(m_iTop);
-	std::string sBottom = boost::lexical_cast<std::string>(m_iBottom);
-	std::string sLeft = boost::lexical_cast<std::string>(m_iLeft);
-	std::string sRight = boost::lexical_cast<std::string>(m_iRight);
+	std::string sTop = UT_std_string_sprintf("%d", m_iTop);
+	std::string sBottom = UT_std_string_sprintf("%d", m_iBottom);
+	std::string sLeft = UT_std_string_sprintf("%d", m_iLeft);
+	std::string sRight = UT_std_string_sprintf("%d", m_iRight);
 
 	ret = setProperty("top-attach", sTop);
 	if(ret != UT_OK)

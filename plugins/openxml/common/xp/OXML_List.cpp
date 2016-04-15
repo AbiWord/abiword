@@ -20,9 +20,6 @@
  * 02110-1301 USA.
  */
 
-//External includes
-#include <boost/lexical_cast.hpp>
-
 // Class definition include
 #include <OXML_List.h>
 
@@ -31,9 +28,10 @@
 #include <OXML_Document.h>
 
 // AbiWord includes
-#include <ut_types.h>
-#include <ut_misc.h>
-#include <pd_Document.h>
+#include "ut_types.h"
+#include "ut_misc.h"
+#include "ut_std_string.h"
+#include "pd_Document.h"
 
 OXML_List::OXML_List() : 
 	OXML_ObjectWithAttrProp(),
@@ -424,11 +422,11 @@ UT_Error OXML_List::addToPT(PD_Document * pDocument)
 
 	const gchar* ppAttr[13];
 
-	std::string listId = boost::lexical_cast<std::string>(id);
-	std::string parentListId = boost::lexical_cast<std::string>(parentId);
-	std::string listType = boost::lexical_cast<std::string>(type);
-	std::string listStartVal = boost::lexical_cast<std::string>(startValue);
-	std::string listDelim("%L."); 
+	std::string listId = UT_std_string_sprintf("%u", id);
+	std::string parentListId = UT_std_string_sprintf("%u", parentId);
+	std::string listType = UT_std_string_sprintf("%u", type);
+	std::string listStartVal = UT_std_string_sprintf("%u", startValue);
+	std::string listDelim("%L.");
 	std::string listDecimal(".");
 	if(decimal.compare(""))
 		listDecimal = decimal;
