@@ -375,7 +375,7 @@ XAP_Dialog_MessageBox::tAnswer s_CouldNotLoadFileMessage(XAP_Frame * pFrame, con
 }
 
 static bool s_AskForMathMLPathname(XAP_Frame * pFrame,
-					   char ** ppPathname)
+					   std::string &ppPathname)
 {
 	// raise the file-open dialog for inserting a MathML equation.
 	// return a_OK or a_CANCEL depending on which button
@@ -386,8 +386,7 @@ static bool s_AskForMathMLPathname(XAP_Frame * pFrame,
 
 	UT_DEBUGMSG(("s_AskForMathMLPathname: frame %p\n", pFrame));
 
-	UT_return_val_if_fail (ppPathname, false);
-	*ppPathname = NULL;
+	ppPathname = "";
 
 	pFrame->raise();
 
@@ -398,7 +397,7 @@ static bool s_AskForMathMLPathname(XAP_Frame * pFrame,
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERTMATHML));
 	UT_return_val_if_fail (pDialog, false);
 
-	pDialog->setCurrentPathname(NULL);
+	pDialog->setCurrentPathname("");
 	pDialog->setSuggestFilename(false);
 
 	/* 
@@ -414,10 +413,8 @@ static bool s_AskForMathMLPathname(XAP_Frame * pFrame,
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		UT_DEBUGMSG(("MATHML Path Name selected = %s \n",szResultPathname));
-		if (szResultPathname && *szResultPathname)
-			*ppPathname = g_strdup(szResultPathname);
+		ppPathname = pDialog->getPathname();
+		UT_DEBUGMSG(("MATHML Path Name selected = %s \n",ppPathname.c_str()));
 
 		UT_sint32 type = pDialog->getFileType();
 
@@ -460,29 +457,25 @@ AbiMathView_FileInsert(AV_View* /*v*/, EV_EditMethodCallData* /*d*/)
 	XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
 	FV_View* pView = static_cast<FV_View*>(pFrame->getCurrentView());
 	PD_Document * pDoc = static_cast<PD_Document *>(pFrame->getCurrentDoc());
-	char* pNewFile = NULL;
+	std::string sNewFile;
 
 
-	bool bOK = s_AskForMathMLPathname(pFrame,&pNewFile);
+	bool bOK = s_AskForMathMLPathname(pFrame,sNewFile);
 	
-	if (!bOK || !pNewFile)
+	if (!bOK || sNewFile.empty())
 	{
-		UT_DEBUGMSG(("ARRG! bOK = %d pNewFile = %s \n",bOK,pNewFile));
+		UT_DEBUGMSG(("ARRG! bOK = %d sNewFile = %s \n",bOK,sNewFile.c_str()));
 		return false;
 	}
-	UT_UTF8String sNewFile = pNewFile;
 
-	// we own storage for pNewFile and must free it.
-	FREEP(pNewFile);
-
-	UT_DEBUGMSG(("fileInsertMathML: loading [%s]\n",sNewFile.utf8_str()));
+	UT_DEBUGMSG(("fileInsertMathML: loading [%s]\n",sNewFile.c_str()));
    
 	IE_Imp_MathML * pImpMathML = new IE_Imp_MathML(pDoc, pMathManager->EntityTable());
-	UT_Error errorCode = pImpMathML->importFile(sNewFile.utf8_str());
+	UT_Error errorCode = pImpMathML->importFile(sNewFile.c_str());
 
 	if (errorCode != UT_OK)
 	{
-		s_CouldNotLoadFileMessage(pFrame, sNewFile.utf8_str(), errorCode);
+		s_CouldNotLoadFileMessage(pFrame, sNewFile.c_str(), errorCode);
 		DELETEP(pImpMathML);
 		return false;
 	}
