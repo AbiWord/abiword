@@ -149,7 +149,7 @@ AP_UnixDialog_FormatFrame__onBorderColorClicked (GtkWidget 		*button,
 	AP_UnixDialog_FormatFrame *dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_val_if_fail (button && dlg, FALSE);
 
-	std::auto_ptr<UT_RGBColor> color =
+	std::unique_ptr<UT_RGBColor> color =
 		XAP_UnixDlg_RunColorChooser(GTK_WINDOW (dlg->getWindow ()),
 					    GTK_COLOR_BUTTON(button));
 
@@ -178,7 +178,7 @@ AP_UnixDialog_FormatFrame__onBackgroundColorClicked (GtkWidget 		*button,
 	AP_UnixDialog_FormatFrame *dlg = static_cast<AP_UnixDialog_FormatFrame *>(data);
 	UT_return_val_if_fail (button && dlg, FALSE);
 
-	std::auto_ptr<UT_RGBColor> color =
+	std::unique_ptr<UT_RGBColor> color =
 		XAP_UnixDlg_RunColorChooser(GTK_WINDOW (dlg->getWindow ()),
 					    GTK_COLOR_BUTTON(button));
 

@@ -127,7 +127,7 @@ static gboolean s_on_border_color_clicked (GtkWidget 		*button,
 	AP_UnixDialog_Border_Shading *dlg = static_cast<AP_UnixDialog_Border_Shading *>(data);
 	UT_return_val_if_fail (button && dlg, FALSE);
 
-	std::auto_ptr<UT_RGBColor> color =
+	std::unique_ptr<UT_RGBColor> color =
 		XAP_UnixDlg_RunColorChooser(GTK_WINDOW (dlg->getWindow ()),
 					    GTK_COLOR_BUTTON(button));
 
@@ -169,7 +169,7 @@ static gboolean s_on_shading_color_clicked (GtkWidget 		*button,
 	AP_UnixDialog_Border_Shading *dlg = static_cast<AP_UnixDialog_Border_Shading *>(data);
 	UT_return_val_if_fail (button && dlg, FALSE);
 
-	std::auto_ptr<UT_RGBColor> color =
+	std::unique_ptr<UT_RGBColor> color =
 		XAP_UnixDlg_RunColorChooser(GTK_WINDOW (dlg->getWindow ()),
 					    GTK_COLOR_BUTTON(button));
 

@@ -21,7 +21,7 @@
 #include "xap_Gtk2Compat.h"
 
 
-std::auto_ptr<UT_RGBColor> XAP_UnixDlg_RunColorChooser(GtkWindow* parent,
+std::unique_ptr<UT_RGBColor> XAP_UnixDlg_RunColorChooser(GtkWindow* parent,
 						       GtkColorButton* colorbtn)
 {
 	GtkWidget *colordlg = gtk_color_chooser_dialog_new  ("", parent);

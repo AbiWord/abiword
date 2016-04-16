@@ -27,9 +27,9 @@
 
 
 // TODO I'm sure we can make this XP. currently only Gtk
-// The use of auto_ptr<> is only meant to ensure the deletion
+// The use of unique_ptr<> is only meant to ensure the deletion
 // out of scope when returning.
-std::auto_ptr<UT_RGBColor> XAP_UnixDlg_RunColorChooser(GtkWindow* parent,
+std::unique_ptr<UT_RGBColor> XAP_UnixDlg_RunColorChooser(GtkWindow* parent,
 						       GtkColorButton* colorBtn);
 
 #endif
