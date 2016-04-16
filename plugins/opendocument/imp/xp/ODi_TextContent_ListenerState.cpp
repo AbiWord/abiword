@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 /* AbiSource
  * 
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
@@ -297,15 +298,15 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
 	m_bContentWritten = true; 
 
     } else if (!strcmp(pName, "text:table-of-content")) {
-        
+
         _flush ();
-        _insureInBlock(NULL);
-        
+        _insureInBlock(PP_NOPROPS);
+
         UT_ASSERT(m_pCurrentTOCParser == NULL);
-        
+
         m_pCurrentTOCParser = new ODi_TableOfContent_ListenerState(
             m_pAbiDocument, m_pStyles, m_rElementStack);
-            
+
         rAction.pushState(m_pCurrentTOCParser, false);
 
     } else if (!strcmp(pName, "text:span")) {
@@ -324,26 +325,24 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             pStyle = m_pStyles->getTextStyle(pStyleName, m_bOnContentStream);
             
             if (pStyle) {
-            
-                const gchar* ppStyAttr[3];
+
+                PP_PropertyVector ppStyAttr(2);
                 std::string props;
-                
+
                 if (pStyle->isAutomatic()) {
                     pStyle->getAbiPropsAttrString(props);
-                    
+
                     // It goes "hardcoded"
                     ppStyAttr[0] = "props";
-                    ppStyAttr[1] = props.c_str();
-                    ppStyAttr[2] = 0;
+                    ppStyAttr[1] = props;
                 } else {
                     ppStyAttr[0] = "style";
-                    ppStyAttr[1] = pStyle->getDisplayName().c_str();
-                    ppStyAttr[2] = 0;                
+                    ppStyAttr[1] = pStyle->getDisplayName();
                 }
                 
                 _pushInlineFmt(ppStyAttr);
                 UT_DebugOnly<bool> ok;
-                ok = m_pAbiDocument->appendFmt(&m_vecInlineFmt);
+                ok = m_pAbiDocument->appendFmt(m_vecInlineFmt);
                 UT_ASSERT(ok);
                 
             } else {
@@ -352,9 +351,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
         }
 
     } else if (!strcmp(pName, "text:meta")) {
-        
+
         _flush ();
-        
+
         std::string generatedID;
         const gchar* xmlid = UT_getAttribute("xml:id", ppAtts);
         if( !xmlid )
@@ -362,17 +361,16 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             generatedID = UT_std_string_sprintf("%d", m_pAbiDocument->getUID( UT_UniqueId::Annotation ));
             xmlid = generatedID.c_str();
         }
-        
-        const gchar* pa[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-        pa[0] = PT_XMLID;
-        pa[1] = xmlid;
-        // sanity check
-        pa[2] = "this-is-an-rdf-anchor";
-        pa[3] = "yes";
-        
+
+        const PP_PropertyVector pa = {
+          PT_XMLID, xmlid,
+          // sanity check
+          "this-is-an-rdf-anchor", "yes"
+        };
+
         m_pAbiDocument->appendObject( PTO_RDFAnchor, pa );
         xmlidStackForTextMeta.push_back( xmlid );
-        
+
     } else if (!strcmp(pName, "text:line-break")) {
         
         m_charData += UCS_LF;
@@ -381,10 +379,9 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     } else if (!strcmp(pName, "text:a")) {
         
         _flush();
-        const gchar * xlink_atts[3];
-        xlink_atts[0] = "xlink:href";
-        xlink_atts[1] = UT_getAttribute("xlink:href", ppAtts);
-        xlink_atts[2] = 0;
+        const PP_PropertyVector xlink_atts = {
+            "xlink:href", UT_getAttribute("xlink:href", ppAtts)
+        };
         m_pAbiDocument->appendObject(PTO_Hyperlink, xlink_atts);
         
     } else if (!strcmp(pName, "text:bookmark")) {
@@ -451,7 +448,7 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             !strcmp(pName, "text:subject") ||
             !strcmp(pName, "text:title") ||
             !strcmp(pName, "text:modification-date")) {
-                
+
         _flush ();
 
         const gchar * type = "";
@@ -489,13 +486,12 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             type = "meta_date_last_changed";
 
 
-        const gchar *field_fmt[3];
-        field_fmt[0] = "type";
-        field_fmt[1] = type;
-        field_fmt[2] = 0;
-        m_pAbiDocument->appendObject(PTO_Field, (const gchar**)field_fmt);
+        PP_PropertyVector field_fmt = {
+            "type", type
+        };
+        m_pAbiDocument->appendObject(PTO_Field, field_fmt);
         m_bAcceptingText = false;
-        
+
     } else if (!strcmp(pName, "text:tracked-changes")){
 		 UT_DEBUGMSG(("Ignoring text:tracked-changes \n"));
 		 rAction.ignoreElement(-1);
@@ -788,13 +784,10 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
     else if (!strcmp(pName, "text:note-body")) {
 
         // Make sure the ppAtts2 size is correct.
-        const gchar* ppAtts2[12];
-        ppAtts2[10] = ppAtts2[11] = NULL;
         UT_uint32 id;
         const ODi_NotesConfiguration* pNotesConfig;
         const ODi_Style_Style* pStyle = NULL;
         const std::string* pCitationStyleName = NULL;
-        UT_uint8 i;
         bool isFootnote = false;
         const gchar* pNoteClass;
         
@@ -828,48 +821,48 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
             }
         }
 
-        i = 0;
-        ppAtts2[i++] = "type";
+        PP_PropertyVector ppAtts2;
+        ppAtts2.push_back("type");
         if (isFootnote) {
-            ppAtts2[i++] = "footnote_ref";
-            ppAtts2[i++] = "footnote-id";
+            ppAtts2.push_back("footnote_ref");
+            ppAtts2.push_back("footnote-id");
         } else {
-            ppAtts2[i++] = "endnote_ref";
-            ppAtts2[i++] = "endnote-id";
+            ppAtts2.push_back("endnote_ref");
+            ppAtts2.push_back("endnote-id");
         }
-        ppAtts2[i++] = m_currentNoteId.c_str();
+        ppAtts2.push_back(m_currentNoteId);
         if (pCitationStyleName && (!pCitationStyleName->empty()) && (pStyle != NULL)) {
-            ppAtts2[i++] = "style";
-            ppAtts2[i++] = pStyle->getDisplayName().c_str();
+            ppAtts2.push_back("style");
+            ppAtts2.push_back(pStyle->getDisplayName());
         }
-        ppAtts2[i++] = "props";
-        ppAtts2[i++] = "text-position:superscript";
+        ppAtts2.push_back("props");
+        ppAtts2.push_back("text-position:superscript");
         if (m_bPendingNoteCitation) {
-            ppAtts2[i++] = "text:note-citation";
-            ppAtts2[i++] = m_noteCitation.c_str();
+            ppAtts2.push_back("text:note-citation");
+            ppAtts2.push_back(m_noteCitation);
             m_bPendingNoteCitation = false;
         }
-        ppAtts2[i] = 0;
-        
+
         UT_DebugOnly<bool> ok;
         ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts2);
         UT_ASSERT(ok);
-        
+
+        // new props
+        ppAtts2.resize(2);
         if (isFootnote) {
             ppAtts2[0] = "footnote-id";
         } else {
             ppAtts2[0] = "endnote-id";
         }
         ppAtts2[1] = m_currentNoteId.c_str();
-        ppAtts2[2] = 0;
-        
+
         if (isFootnote) {
             ok = m_pAbiDocument->appendStrux(PTX_SectionFootnote, ppAtts2);
         } else {
             ok = m_pAbiDocument->appendStrux(PTX_SectionEndnote, ppAtts2);
         }
         UT_ASSERT(ok);
-        
+
         m_pendingNoteAnchorInsertion = true;
 
     }
@@ -889,20 +882,19 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
                 _insertAnnotation();
                 m_bPendingAnnotation = false;
             }
-            
+
             _flush ();
             _popInlineFmt();
-            m_pAbiDocument->appendFmt(&m_vecInlineFmt);
-            
-            const gchar* pa[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-            pa[0] = "name";
-            pa[1] = name;
-            m_pAbiDocument->appendObject( PTO_Annotation, pa );
+            m_pAbiDocument->appendFmt(m_vecInlineFmt);
+
+            const PP_PropertyVector pa = {
+                "name", name
+            };
+            m_pAbiDocument->appendObject(PTO_Annotation, pa);
             m_bAcceptingText = true;
 
             UT_DEBUGMSG(("found annotation-end... name:%s m_bAcceptingText:%d m_bPendingAnnotation:%d\n",
                          name, m_bAcceptingText, m_bPendingAnnotation ));
-            
         }
     }
     else if (!strcmp(pName, "office:annotation"))
@@ -934,19 +926,17 @@ void ODi_TextContent_ListenerState::startElement (const gchar* pName,
                 xmlid = generatedID.c_str();
             }
             m_sAnnotationXMLID = xmlid;
-            
-            const gchar* ppAtts2[9] = { NULL, NULL, NULL, NULL, 
-                                        NULL, NULL, NULL, NULL, NULL };
-            ppAtts2[0] = PT_ANNOTATION_NUMBER;
-            ppAtts2[1] = id.c_str();
-            ppAtts2[2] = PT_XMLID;
-            ppAtts2[3] = xmlid;
+
+            PP_PropertyVector ppAtts2 = {
+                PT_ANNOTATION_NUMBER, id,
+                PT_XMLID, xmlid
+            };
             if( !m_sAnnotationName.empty() )
             {
-                ppAtts2[4] = PT_NAME_ATTRIBUTE_NAME;
-                ppAtts2[5] = m_sAnnotationName.c_str();
+                ppAtts2.push_back(PT_NAME_ATTRIBUTE_NAME);
+                ppAtts2.push_back(m_sAnnotationName);
             }
-            
+
             UT_DEBUGMSG(("open annotation... anno-id:%s xmlid:%s \n", id.c_str(), xmlid ));
 
             m_pAbiDocument->appendObject(PTO_Annotation, ppAtts2);
@@ -1008,31 +998,28 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         
         _flush ();
         _popInlineFmt();
-        m_pAbiDocument->appendFmt(&m_vecInlineFmt);
+        m_pAbiDocument->appendFmt(m_vecInlineFmt);
 
     } else if (!strcmp(pName, "text:meta")) {
-        
+
         _flush ();
 
         std::string xmlid = xmlidStackForTextMeta.back();
         xmlidStackForTextMeta.pop_back();
-        
-        const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-        ppAtts[0] = PT_XMLID;
-        ppAtts[1] = xmlid.c_str();
-        // sanity check
-        ppAtts[2] = "this-is-an-rdf-anchor";
-        ppAtts[3] = "yes";
-        ppAtts[4] = PT_RDF_END;
-        ppAtts[5] = "yes";
-        
+
+        const PP_PropertyVector ppAtts = {
+            PT_XMLID, xmlid,
+            // sanity check
+            "this-is-an-rdf-anchor", "yes",
+            PT_RDF_END, "yes"
+        };
         m_pAbiDocument->appendObject( PTO_RDFAnchor, ppAtts );
-        
+
     } else if (!strcmp(pName, "text:a")) {
-        
+
         _flush ();
-        m_pAbiDocument->appendObject(PTO_Hyperlink, NULL);
-        
+        m_pAbiDocument->appendObject(PTO_Hyperlink, PP_NOPROPS);
+
     } else if (!strcmp(pName, "text:date") ||
         !strcmp(pName, "text:time") ||
         !strcmp(pName, "text:page-number") ||
@@ -1113,9 +1100,9 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         UT_ASSERT_HARMLESS(pNoteClass != NULL);
         
         if (pNoteClass && !strcmp(pNoteClass, "footnote")) {
-            ok = m_pAbiDocument->appendStrux(PTX_EndFootnote, NULL);
+            ok = m_pAbiDocument->appendStrux(PTX_EndFootnote, PP_NOPROPS);
         } else if (pNoteClass && !strcmp(pNoteClass, "endnote")) {
-            ok = m_pAbiDocument->appendStrux(PTX_EndEndnote, NULL);
+            ok = m_pAbiDocument->appendStrux(PTX_EndEndnote, PP_NOPROPS);
         } else {
             UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
             // Unrecognized note class.
@@ -1155,7 +1142,7 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         pPropsArray[1] = id.c_str();
 #endif
         
-        m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL );
+        m_pAbiDocument->appendStrux(PTX_EndAnnotation, PP_NOPROPS );
         //
         // MIQ: If there is no annotation name or there is no matching annotation-end
         // XML element then we assume it is a single point in document range.
@@ -1163,21 +1150,21 @@ void ODi_TextContent_ListenerState::endElement (const gchar* pName,
         if( m_sAnnotationName.empty()
             || !m_rAbiData.m_rangedAnnotationNames.count(m_sAnnotationName) )
         {
-//            m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL);
-            m_pAbiDocument->appendObject(PTO_Annotation, NULL);
+//            m_pAbiDocument->appendStrux(PTX_EndAnnotation, PP_NOPROPS);
+            m_pAbiDocument->appendObject(PTO_Annotation, PP_NOPROPS);
         }
         else
         {
 	    UT_DebugOnly<bool> ok = false;
 //            _pushInlineFmt(ppStyAttr);
-            ok = m_pAbiDocument->appendFmt(&m_vecInlineFmt);
+            ok = m_pAbiDocument->appendFmt(m_vecInlineFmt);
             UT_ASSERT(ok);
         }
         m_bAcceptingText = true;
 
 
-        // m_pAbiDocument->appendStrux(PTX_EndAnnotation, NULL);
-        // m_pAbiDocument->appendObject(PTO_Annotation, NULL);
+        // m_pAbiDocument->appendStrux(PTX_EndAnnotation, PP_NOPROPS);
+        // m_pAbiDocument->appendObject(PTO_Annotation, PP_NOPROPS);
         // m_bAcceptingText = true;
         
     } else if (!strcmp(pName, "dc:creator")) {
@@ -1395,18 +1382,15 @@ void ODi_TextContent_ListenerState::_insertBookmark (const gchar* pName,
 {
     UT_return_if_fail(pName && pType);
 
-    int idx = 0;
-    const gchar* pPropsArray[10];
-    pPropsArray[idx++] = (gchar *)"name";
-    pPropsArray[idx++] = pName;
-    pPropsArray[idx++] = (gchar *)"type";
-    pPropsArray[idx++] = pType;
+    PP_PropertyVector pPropsArray = {
+        "name", pName,
+        "type", pType
+    };
     if( xmlid && strlen(xmlid) )
     {
-        pPropsArray[idx++] = PT_XMLID;
-        pPropsArray[idx++] = xmlid;
+        pPropsArray.push_back(PT_XMLID);
+        pPropsArray.push_back(xmlid);
     }
-    pPropsArray[idx++] = 0;
     m_pAbiDocument->appendObject (PTO_Bookmark, pPropsArray);
 }
 
@@ -1426,30 +1410,18 @@ void ODi_TextContent_ListenerState::_flush ()
 
 
 /**
- * 
+ *
  */
-bool ODi_TextContent_ListenerState::_pushInlineFmt(const gchar ** atts)
+bool ODi_TextContent_ListenerState::_pushInlineFmt(const PP_PropertyVector & atts)
 {
-    UT_uint32 start = m_vecInlineFmt.getItemCount()+1;
-    UT_uint32 k;
-    gchar* p;
-    
-    for (k=0; (atts[k]); k++)
-    {
-        if (!(p = g_strdup(atts[k]))) {
-            return false;
-        }
-        
-        if (m_vecInlineFmt.addItem(p)!=0) {
-            return false;
-        }
-        
-    }
-    
+    UT_uint32 start = m_vecInlineFmt.size() + 1;
+
+    m_vecInlineFmt.insert(m_vecInlineFmt.end(), atts.begin(), atts.end());
+
     if (!m_stackFmtStartIndex.push(start)) {
         return false;
     }
-        
+
     return true;
 }
 
@@ -1460,21 +1432,12 @@ bool ODi_TextContent_ListenerState::_pushInlineFmt(const gchar ** atts)
 void ODi_TextContent_ListenerState::_popInlineFmt(void)
 {
     UT_sint32 start;
-    
+
     if (!m_stackFmtStartIndex.pop(&start))
         return;
-        
-    UT_sint32 k;
-    UT_uint32 end = m_vecInlineFmt.getItemCount();
-    const gchar* p;
-    
-    for (k=end; k>=start; k--) {
-        
-        p = (const gchar *)m_vecInlineFmt.getNthItem(k-1);
-        m_vecInlineFmt.deleteNthItem(k-1);
-        
-        FREEP(p);
-    }
+
+    m_vecInlineFmt.erase(m_vecInlineFmt.begin() + (start - 1),
+                           m_vecInlineFmt.end());
 }
 
 
@@ -1681,50 +1644,46 @@ void ODi_TextContent_ListenerState::_openAbiSection(
         allProps += "; ";
     }
     allProps += rProps;
-    
-    const gchar* atts[20];
-    UT_uint8 i = 0;
-    atts[i++] = "props";
-    atts[i++] = allProps.c_str();
- 
+
+    PP_PropertyVector atts = {
+        "props", allProps
+    };
     if (pMasterPageStyle != NULL) {
         // The standard master page may have headers/footers as well.
-        
+
         if (!pMasterPageStyle->getAWEvenHeaderSectionID().empty()) {
-            atts[i++] = "header-even";
-            atts[i++] = pMasterPageStyle->getAWEvenHeaderSectionID().c_str();
+            atts.push_back("header-even");
+            atts.push_back(pMasterPageStyle->getAWEvenHeaderSectionID());
         }
-        
+
         if (!pMasterPageStyle->getAWHeaderSectionID().empty()) {
-            atts[i++] = "header";
-            atts[i++] = pMasterPageStyle->getAWHeaderSectionID().c_str();
+            atts.push_back("header");
+            atts.push_back(pMasterPageStyle->getAWHeaderSectionID());
         }
-        
+
         if (!pMasterPageStyle->getAWEvenFooterSectionID().empty()) {
-            atts[i++] = "footer-even";
-            atts[i++] = pMasterPageStyle->getAWEvenFooterSectionID().c_str();
+            atts.push_back("footer-even");
+            atts.push_back(pMasterPageStyle->getAWEvenFooterSectionID());
         }
-        
+
         if (!pMasterPageStyle->getAWFooterSectionID().empty()) {
-            atts[i++] = "footer";
-            atts[i++] = pMasterPageStyle->getAWFooterSectionID().c_str();
+            atts.push_back("footer");
+            atts.push_back(pMasterPageStyle->getAWFooterSectionID());
         }
 
         if (dataID.length()) {
-            atts[i++] = "strux-image-dataid";
-            atts[i++] = dataID.c_str();
+            atts.push_back("strux-image-dataid");
+            atts.push_back(dataID.c_str());
         }
     }
-    
-    atts[i] = 0; // No more attributes.
 
 // Bug 12716 - this cause an stack overflow
 // Reverting it seems to no cause bug 10627 to fail anymore
 //    if(m_inAbiSection && !m_bOpenedBlock) {
 //        _insureInBlock(NULL); //see Bug 10627 - hang on empty <section>
 //    }
-   
-    m_pAbiDocument->appendStrux(PTX_Section, (const gchar**)atts);    
+
+    m_pAbiDocument->appendStrux(PTX_Section, atts);
 	m_bPendingSection = false;
     m_bOpenedBlock = false;
 
@@ -1744,7 +1703,7 @@ void ODi_TextContent_ListenerState::_openAbiSection(
 /**
  * 
  */
-void ODi_TextContent_ListenerState::_insureInBlock(const gchar ** atts)
+void ODi_TextContent_ListenerState::_insureInBlock(const PP_PropertyVector & atts)
 {
     if (m_bAcceptingText)
         return;
@@ -1752,7 +1711,7 @@ void ODi_TextContent_ListenerState::_insureInBlock(const gchar ** atts)
     _insureInSection();
 
     if (!m_bAcceptingText) {
-        m_pAbiDocument->appendStrux(PTX_Block, (const gchar**)atts);    
+        m_pAbiDocument->appendStrux(PTX_Block, atts);
         m_bOpenedBlock = true;
         m_bAcceptingText = true;
     }
@@ -1768,8 +1727,6 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
 {
         bool bIsListParagraph = m_bHeadingList ;
         const gchar* pStyleName;
-        const gchar *ppAtts[50];
-        UT_uint8 i;
         gchar listLevel[10];
         std::string props;
         const ODi_Style_Style* pStyle;
@@ -1815,7 +1772,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                     
                     // Append an empty paragraph with this one char
                     UT_UCSChar ucs = UCS_FF;
-                    m_pAbiDocument->appendStrux(PTX_Block, NULL);
+                    m_pAbiDocument->appendStrux(PTX_Block, PP_NOPROPS);
                     m_pAbiDocument->appendSpan (&ucs, 1);
                     m_bOpenedBlock = true;
                     m_bContentWritten = false;
@@ -1830,7 +1787,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                         if ((m_columnIndex > 1)){
                             ucs = UCS_VTAB;
                             // Append an empty paragraph with this one char
-                            m_pAbiDocument->appendStrux(PTX_Block, NULL);
+                            m_pAbiDocument->appendStrux(PTX_Block, PP_NOPROPS);
                             m_pAbiDocument->appendSpan (&ucs, 1);
                         }
                     }
@@ -1842,14 +1799,14 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                     if (pStyle->getBreakBefore() == "page") {
                         ucs = UCS_FF;
                         // Append an empty paragraph with this one char
-                        m_pAbiDocument->appendStrux(PTX_Block, NULL);
+                        m_pAbiDocument->appendStrux(PTX_Block, PP_NOPROPS);
                         m_pAbiDocument->appendSpan (&ucs, 1);
                         m_bOpenedBlock = true;
                         m_bContentWritten = false;
                     } else if (pStyle->getBreakBefore() == "column") {
                         ucs = UCS_VTAB;
                         // Append an empty paragraph with this one char
-                        m_pAbiDocument->appendStrux(PTX_Block, NULL);
+                        m_pAbiDocument->appendStrux(PTX_Block, PP_NOPROPS);
                         m_pAbiDocument->appendSpan (&ucs, 1);
                         m_bOpenedBlock = true;
                         m_bContentWritten = false;
@@ -1860,7 +1817,6 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
         }
         
 	UT_DebugOnly<bool> ok;
-        i = 0;
         if (bIsListParagraph && !m_alreadyDefinedAbiParagraphForList) {
             ODi_ListLevelStyle* pListLevelStyle = NULL;
             
@@ -1868,11 +1824,12 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             if (m_pCurrentListStyle) {
                 pListLevelStyle = m_pCurrentListStyle->getLevelStyle(m_listLevel);
             }
-            
+
             sprintf(listLevel, "%u", m_listLevel);
-            
-            ppAtts[i++] = "level";
-            ppAtts[i++] = listLevel;
+
+            PP_PropertyVector ppAtts;
+            ppAtts.push_back("level");
+            ppAtts.push_back(listLevel);
             if (pListLevelStyle && pListLevelStyle->getAbiListID() && pListLevelStyle->getAbiListParentID())
 	        {
 	            if(m_listLevel < m_prevLevel)
@@ -1881,13 +1838,13 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
 		        }
                 m_prevLevel = m_listLevel;
 		
-                ppAtts[i++] = "listid";
-                ppAtts[i++] = pListLevelStyle->getAbiListID()->c_str();
+                ppAtts.push_back("listid");
+                ppAtts.push_back(*pListLevelStyle->getAbiListID());
             
                 // Is this really necessary? Because we already have this info on
                 // the <l> tag.
-                ppAtts[i++] = "parentid";
-                ppAtts[i++] = pListLevelStyle->getAbiListParentID()->c_str();
+                ppAtts.push_back("parentid");
+                ppAtts.push_back(*pListLevelStyle->getAbiListParentID());
                 xxx_UT_DEBUGMSG(("Level |%s| Listid |%s| Parentid |%s| \n",ppAtts[i-5],ppAtts[i-3],ppAtts[i-1]));
             }
 
@@ -1899,32 +1856,30 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
 
                     // but we need to add the style forr the outline level
                     // see #13706
-                    ppAtts[i++] = "style";
-                    ppAtts[i++] = m_headingStyles[listLevel].c_str();
+                    ppAtts.push_back("style");
+                    ppAtts.push_back(m_headingStyles[listLevel]);
                 } else {
                     // We refer to the style
-                    ppAtts[i++] = "style";
-                    ppAtts[i++] = pStyle->getDisplayName().c_str();
+                    ppAtts.push_back("style");
+                    ppAtts.push_back(pStyle->getDisplayName());
                 }
             }
 
             if (pListLevelStyle) {
                 pListLevelStyle->getAbiProperties(props, pStyle);
                 
-                ppAtts[i++] = "props";
-                ppAtts[i++] = props.c_str();
+                ppAtts.push_back("props");
+                ppAtts.push_back(props);
             }
                 
-            ppAtts[i] = 0; // Marks the end of the attributes list.
-            ok = m_pAbiDocument->appendStrux(PTX_Block,
-                                             (const gchar**)ppAtts);
+            ok = m_pAbiDocument->appendStrux(PTX_Block, ppAtts);
             UT_ASSERT(ok);
             m_bOpenedBlock = true;
 
-            ppAtts[0] = "type";
-            ppAtts[1] = "list_label";
-            ppAtts[2] = 0;
-            ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts);
+            const PP_PropertyVector ppAtts2 = {
+                "type", "list_label"
+            };
+            ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts2);
             UT_ASSERT(ok);
             m_bContentWritten = true;
             
@@ -1939,58 +1894,58 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             // OpenDocument supports multiples paragraphs on a single list item,
             // But AbiWord works differently. So, we will put a <br/> instead
             // of adding a new paragraph.
-            
+
             UT_UCSChar ucs = UCS_LF;
             m_pAbiDocument->appendSpan(&ucs,1);
                m_bContentWritten = true;
 
-            if (pStyle!=NULL) { 
+            PP_PropertyVector ppAtts;
+            if (pStyle!=NULL) {
                 if (pStyle->isAutomatic()) {
                     // Automatic styles are not defined on the document, so, we
                     // just paste its properties.
                     pStyle->getAbiPropsAttrString(props);
-                    ppAtts[i++] = "props";
-                    ppAtts[i++] = props.c_str();
+                    ppAtts.push_back("props");
+                    ppAtts.push_back(props);
                 } else {
                     // We refer to the style
-                    ppAtts[i++] = "style";
-                    ppAtts[i++] = pStyle->getDisplayName().c_str();
+                    ppAtts.push_back("style");
+                    ppAtts.push_back(pStyle->getDisplayName());
                 }
             }
-            ppAtts[i] = 0; // Marks the end of the attributes list.
-            
+
             ok = m_pAbiDocument->appendFmt(ppAtts);
             UT_ASSERT(ok);
 
         } else {
-            
+
+            PP_PropertyVector ppAtts;
             if (pStyle != NULL) {
                 if (pStyle->isAutomatic()) {
                     // Automatic styles are not defined on the document, so, we
                     // just paste its properties.
                     pStyle->getAbiPropsAttrString(props, FALSE);
-                    ppAtts[i++] = "props";
-                    ppAtts[i++] = props.c_str();
-                    
+                    ppAtts.push_back("props");
+                    ppAtts.push_back(props);
+
                     if (pStyle->getParent() != NULL) {
-                        ppAtts[i++] = "style";
-                        ppAtts[i++] = pStyle->getParent()->getDisplayName().c_str();
+                        ppAtts.push_back("style");
+                        ppAtts.push_back(pStyle->getParent()->getDisplayName());
                     }
                 } else {
                     // We refer to the style
-                    ppAtts[i++] = "style";
-                    ppAtts[i++] = pStyle->getDisplayName().c_str();
+                    ppAtts.push_back("style");
+                    ppAtts.push_back(pStyle->getDisplayName());
                 }
             }
 
             if( xmlid )
             {
-                ppAtts[i++] = PT_XMLID;
-                ppAtts[i++] = xmlid;
+                ppAtts.push_back(PT_XMLID);
+                ppAtts.push_back(xmlid);
             }
-            
-            ppAtts[i] = 0; // Marks the end of the attributes list.
-            m_pAbiDocument->appendStrux(PTX_Block, (const gchar**)ppAtts);
+
+            m_pAbiDocument->appendStrux(PTX_Block, ppAtts);
             m_bOpenedBlock = true;
         }
 
@@ -2001,18 +1956,18 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
             m_pendingNoteAnchorInsertion = false;
 
             UT_return_if_fail(!m_currentNoteId.empty());
-            
+
             const gchar* pNoteClass;
             const ODi_StartTag* pStartTag;
-        
+
             pStartTag = m_rElementStack.getClosestElement("text:note", 1);
             UT_return_if_fail (pStartTag != NULL);
-            
+
             pNoteClass = pStartTag->getAttributeValue("text:note-class");
-                                
+
             UT_return_if_fail(pNoteClass != NULL);
-            
-            ppAtts[0] = "type";
+
+            PP_PropertyVector ppAtts = { "type", "", "", "" };
             if (!strcmp(pNoteClass, "footnote")) {
                 ppAtts[1] = "footnote_anchor";
                 ppAtts[2] = "footnote-id";
@@ -2023,9 +1978,8 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
                 UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
                 // Unrecognized note class.
             }
-            ppAtts[3] = m_currentNoteId.c_str();
-            ppAtts[4] = 0;
-            
+            ppAtts[3] = m_currentNoteId;
+
             ok = m_pAbiDocument->appendObject(PTO_Field, ppAtts);
 	        //
 	        // Now insert the tab after the anchor
@@ -2033,7 +1987,7 @@ void ODi_TextContent_ListenerState::_startParagraphElement (const gchar* /*pName
 	        UT_UCSChar ucs = UCS_TAB;
 	        m_pAbiDocument->appendSpan (&ucs, 1);
 	        m_bContentWritten = true;
-                UT_ASSERT(ok);           
+            UT_ASSERT(ok);
         }
 }
 
@@ -2137,13 +2091,13 @@ void ODi_TextContent_ListenerState::_flushPendingParagraphBreak() {
     if (!m_pendingParagraphBreak.empty()) {
         
         if (m_pendingParagraphBreak == "page") {
-            m_pAbiDocument->appendStrux(PTX_Block, NULL);
+            m_pAbiDocument->appendStrux(PTX_Block, PP_NOPROPS);
             UT_UCSChar ucs = UCS_FF;
             m_pAbiDocument->appendSpan (&ucs, 1);
             m_bOpenedBlock = true;
             m_bContentWritten = false;
         } else if (m_pendingParagraphBreak == "column") {
-            m_pAbiDocument->appendStrux(PTX_Block, NULL);
+            m_pAbiDocument->appendStrux(PTX_Block, PP_NOPROPS);
             UT_UCSChar ucs = UCS_VTAB;
             m_pAbiDocument->appendSpan (&ucs, 1);
             m_bOpenedBlock = true;
@@ -2163,14 +2117,10 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
 
     UT_return_if_fail(m_bPendingAnnotation);
 
-    const gchar* pPropsArray[5] = { NULL, NULL, NULL, NULL, NULL };
     std::string id = UT_std_string_sprintf("%d", m_iAnnotation);
     std::string props;
 
     UT_DEBUGMSG(("_insertAnnotation() id:%s\n", id.c_str() ));
-    pPropsArray[0] = "annotation-id";
-    pPropsArray[1] = id.c_str();
-    pPropsArray[2] = PT_PROPS_ATTRIBUTE_NAME;
 
     if (!m_sAnnotationAuthor.empty()) {
         props = "annotation-author: ";
@@ -2225,15 +2175,20 @@ void ODi_TextContent_ListenerState::_insertAnnotation() {
 
             // DEBUG
             UT_DEBUGMSG(("title:%s\n", title.c_str() ));
+#if DEBUG
             for( std::map< std::string, std::string >::iterator x = d.begin(); x != d.end(); ++x )
             {
                 UT_DEBUGMSG(("first:%s sec:%s\n", x->first.c_str(), x->second.c_str() ));
             }
+#endif
         }
-        
+
     }
-    
-    pPropsArray[3] = props.c_str();
+
+    const PP_PropertyVector pPropsArray = {
+        "annotation-id", id,
+        PT_PROPS_ATTRIBUTE_NAME, props
+    };
 
     m_pAbiDocument->appendStrux(PTX_SectionAnnotation, pPropsArray);
     m_bPendingAnnotation = false;

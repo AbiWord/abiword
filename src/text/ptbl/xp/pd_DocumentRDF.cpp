@@ -5256,10 +5256,10 @@ PD_DocumentRDFMutation::PD_DocumentRDFMutation( PD_DocumentRDF* rdf )
     , m_handlingAbiCollabNotification( false )
     , m_pAP( 0 )
 {
-    m_pAP = m_rdf->getAP()->cloneWithReplacements( 0, 0, false );
+    m_pAP = m_rdf->getAP()->cloneWithReplacements(PP_NOPROPS, PP_NOPROPS, false);
     m_crRemoveAP = new PP_AttrProp();
     m_crAddAP    = new PP_AttrProp();
-    
+
     UT_DEBUGMSG(("PD_DocumentRDF::ctor() this:%p rdf:%p\n", this, m_rdf));
 }
 

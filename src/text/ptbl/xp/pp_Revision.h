@@ -60,8 +60,8 @@ class ABI_EXPORT PP_Revision: public PP_AttrProp
 
 	PP_Revision(UT_uint32 Id,
 				PP_RevisionType eType,
-				const gchar ** props,
-				const gchar ** attrs);
+				const std::vector<std::string> & props,
+				const std::vector<std::string> & attrs);
 
 	virtual ~PP_Revision(){};
 
@@ -75,7 +75,7 @@ class ABI_EXPORT PP_Revision: public PP_AttrProp
 	const gchar * getAttrsString() const;
 
 	// this is intentionally not virtual (no need for that)
-	bool	setAttributes(const gchar ** attributes);
+	bool	setAttributes(const std::vector<std::string> & attributes);
 
 	bool operator == (const PP_Revision &op2) const;
 
@@ -139,7 +139,9 @@ class ABI_EXPORT PP_RevisionAttr
 	PP_RevisionAttr(const gchar * r);
 
 
-	PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType, const gchar ** pAttrs, const gchar ** pProps);
+	PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType,
+                        const PP_PropertyVector & attrs,
+                        const PP_PropertyVector & props);
 
 	~PP_RevisionAttr();
 
@@ -147,9 +149,9 @@ class ABI_EXPORT PP_RevisionAttr
 	void                  setRevision(std::string&  r);
 
 	void                  addRevision(UT_uint32 iId,
-									  PP_RevisionType eType,
-									  const gchar ** pAttrs,
-									  const gchar ** pProps);
+                                          PP_RevisionType eType,
+                                          const PP_PropertyVector & pAttrs,
+                                          const PP_PropertyVector & pProps);
 	void                  addRevision(UT_uint32 iId, PP_RevisionType eType );
     // No ownership of the given revision is taken.
     void                  addRevision( const PP_Revision* r );

@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -41,8 +42,8 @@
 
 bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 													PT_DocPosition dpos,
-													const gchar ** attributes,
-													const gchar ** properties)
+													const PP_PropertyVector & attributes,
+													const PP_PropertyVector & properties)
 {
 	UT_return_val_if_fail (m_pts==PTS_Editing, false);
 
@@ -80,16 +81,16 @@ bool pt_PieceTable::_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 			fo = pf->getLength();
 		}
 	}
-	
+
 	PT_AttrPropIndex indexOldAP = _chooseIndexAP(pf,fo);
 	PT_AttrPropIndex indexNewAP;
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, attributes, properties, &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
 		return true;
-	
+
 	pf_Frag_Strux * pfs = NULL;
 	bool bFoundStrux = false;
 	//
@@ -302,7 +303,7 @@ bool pt_PieceTable::purgeFmtMarks()
 
 bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark * pffm,
 												   PT_DocPosition dpos, 
-												   const gchar ** attributes, const gchar ** properties,
+												   const PP_PropertyVector & attributes, const PP_PropertyVector & properties,
 												   pf_Frag_Strux * pfs,
 												   pf_Frag ** ppfNewEnd, UT_uint32 * pfragOffsetNewEnd)
 {
@@ -314,7 +315,7 @@ bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pffm->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, attributes, properties, &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -325,7 +326,7 @@ bool pt_PieceTable::_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark
 	}
 
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pffm);
-	
+
 	// we do this before the actual change because various fields that
 	// we need may be blown away during the change.  we then notify all
 	// listeners of the change.

@@ -231,13 +231,13 @@ private:
 	bool        _findNextENoteSection();
 	bool        _shouldUseInsert()const;
 	bool        _ensureInBlock();
-	bool        _appendStrux(PTStruxType pts, const gchar ** attributes);
-	bool        _appendObject(PTObjectType pto, const gchar ** attributes);
+	bool        _appendStrux(PTStruxType pts, const PP_PropertyVector & attributes);
+	bool        _appendObject(PTObjectType pto, const PP_PropertyVector & attributes);
 	bool        _appendSpan(const UT_UCSChar * p, UT_uint32 length);
-	bool        _appendStruxHdrFtr(PTStruxType pts, const gchar ** attributes);
-	bool        _appendObjectHdrFtr(PTObjectType pto, const gchar ** attributes);
+	bool        _appendStruxHdrFtr(PTStruxType pts, const PP_PropertyVector & attributes);
+	bool        _appendObjectHdrFtr(PTObjectType pto, const PP_PropertyVector & attributes);
 	bool        _appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length);
-	bool		_appendFmt(const gchar ** attributes);
+	bool		_appendFmt(const PP_PropertyVector & attributes);
 	void        _handleHeaders(const wvParseStruct *ps);
 	bool        _handleHeadersText(UT_uint32 iPos, bool bDoBlockIns);
 	bool        _insertHeaderSection(bool bDoBlockIns);

@@ -1,6 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (c) 2001,2002 Tomas Frydrych
+ * Copyright (c) 2001, 2002 Tomas Frydrych
+ * Copyright (c) 2016 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -42,99 +44,38 @@
 
 /// This is the sole explicit constructor of class PP_AttrProp.
 PP_AttrProp::PP_AttrProp()
+	: m_bIsReadOnly(false)
+	, m_checkSum(0)
+	, m_index(0)
+	, m_iRevisedIndex(0xffffffff)
+	, m_bRevisionHidden(false)
 {
-	m_pAttributes = NULL;
-	m_pProperties = NULL;
-	m_szProperties = NULL;
-	m_bIsReadOnly = false;
-	m_checkSum = 0;
-	xxx_UT_DEBUGMSG(("creating pp_AttrProp %x \n",this));
-
-	m_iRevisedIndex = 0xffffffff;
-	m_bRevisionHidden = false;
 }
 
 /// This is the sole explicit destructor of class PP_AttrProp.
 PP_AttrProp::~PP_AttrProp()
 {
-	xxx_UT_DEBUGMSG(("deleting pp_AttrProp %x \n",this));
-	if (m_pAttributes)
-	{
-		UT_GenericStringMap<gchar*>::UT_Cursor c1(m_pAttributes);
-
-		const gchar * s = c1.first();
-
-		while (true) {
-			FREEP(s);
-
-			if (!c1.is_valid())
-				break;
-
-			s = c1.next();
-		}
-
-		delete m_pAttributes;
-		m_pAttributes = NULL;
-	}
-
 	// delete any PP_Property_types;
-
-	if(m_pProperties)
-	{
-		UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
-		const PropertyPair * entry = NULL;
-
-		for (entry = c.first(); c.is_valid(); entry = c.next())
-		{
-			if(entry)
-			{
-				// hack. don't do it.
-				gchar* tmp = (gchar*)entry->first;
-				FREEP(tmp);
-				if (entry->second) 
-				{
-					delete entry->second;
-				}
-				delete entry;
-			}
-		}
-
-		delete m_pProperties;
-		m_pProperties = NULL;
-	}
-	if(m_szProperties)
-	{
-		delete [] m_szProperties;
-	}
-	m_szProperties = NULL;
+	std::for_each(m_properties.begin(), m_properties.end(),
+				  [](properties_t::value_type & value) {
+					  delete value.second.second;
+				  });
 }
 
 /*!
  * Returns the number of properties in this PP_AttrProp.
- *
- * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid items
- * stored in the hash -- always check the return value of getNthProperty()
  */
 size_t PP_AttrProp::getPropertyCount (void) const
 {
-	if(!m_pProperties)
-		return 0;
-	else
-		return m_pProperties->size();
+	return m_properties.size();
 }
 
 /*!
  * Returns the number of attributes in this PP_AttrProp.
- *
- * BE WEARY, BE VERY WEARY, the count can be greater than the number of valid items
- * stored in the hash -- always check the return value of getNthAttribute()
  */
 size_t PP_AttrProp::getAttributeCount (void) const
 {
-	if(!m_pAttributes)
-		return 0;
-	else
-		return m_pAttributes->size();
+	return m_attributes.size();
 }
 
 
@@ -160,20 +101,17 @@ bool	PP_AttrProp::setAttributes(const gchar ** attributes)
 }
 
 /*!
- * Sets attributes as given in the UT_Vector of strings, read as
+ * Sets attributes as given in the PP_PropertyVector, read as
  * (attribute, value) pairs.
  *
- * \param attributes A UT_Vector of strings, read in (attribute, value) form.
+ * \param attributes A PP_PropertyVector, read in (attribute, value) form.
  */
-bool PP_AttrProp::setAttributes(const UT_GenericVector<const gchar*> * pVector)
+bool PP_AttrProp::setAttributes(const PP_PropertyVector & attributes)
 {
-	UT_uint32 kLimit = pVector->getItemCount();
-	for (UT_uint32 k=0; k+1<kLimit; k+=2)
-	{
-		const gchar * pName = pVector->getNthItem(k);
-		const gchar * pValue = pVector->getNthItem(k+1);
-		if (!setAttribute(pName,pValue))
+	for (auto iter = attributes.cbegin(); iter != attributes.cend(); iter += 2) {
+		if (!setAttribute(iter->c_str(), (iter + 1)->c_str())) {
 			return false;
+		}
 	}
 	return true;
 }
@@ -198,24 +136,21 @@ bool	PP_AttrProp::setProperties(const gchar ** properties)
 }
 
 /*!
- * Sets properties as given in the UT_Vector of strings, read as
+ * Sets properties as given in the PP_PropertyVector, read as
  * (property, value) pairs.
  *
- * \param pVector A UT_Vector of strings, read in (properties, value) form.
+ * \param pVector A PP_PropertyVector, read in (properties, value) form.
  */
-bool PP_AttrProp::setProperties(const UT_GenericVector<gchar*> * pVector)
+bool PP_AttrProp::setProperties(const PP_PropertyVector & properties)
 {
-	UT_uint32 kLimit = pVector->getItemCount();
-	for (UT_uint32 k=0; k+1<kLimit; k+=2)
-	{
-		const gchar * pName = pVector->getNthItem(k);
-		const gchar * pValue = pVector->getNthItem(k+1);
-		if (!setProperty(pName,pValue))
+	for (auto iter = properties.cbegin(); iter != properties.cend();
+		 iter += 2) {
+		if (!setProperty(iter->c_str(), (iter + 1)->c_str())) {
 			return false;
+		}
 	}
 	return true;
 }
-
 
 /*!
  * Sets given attribute in this PP_AttrProp bundle.
@@ -233,7 +168,7 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 	if (0 == strcmp(szName, PT_PROPS_ATTRIBUTE_NAME) && *szValue)	// PROPS -- cut value up into properties
 	{
 		char * pOrig = NULL;
-		
+
 		if (!(pOrig = g_strdup(szValue)))
 		{
 			UT_DEBUGMSG(("setAttribute: g_strdup() failed on [%s]\n",szValue));
@@ -309,16 +244,6 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 			url.decodeURL();
 			szValue = url.utf8_str();
 		}
-		
-		if (!m_pAttributes)
-		{
-			m_pAttributes = new UT_GenericStringMap<gchar*>(5);
-			if (!m_pAttributes)
-			{
-				UT_DEBUGMSG(("setAttribute: could not allocate hash table.\n"));
-				return false;
-			}
-		}
 
 		// make sure we store attribute names in lowercase
 		UT_ASSERT_HARMLESS(sizeof(char) == sizeof(gchar));
@@ -332,24 +257,9 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 		if(!UT_isValidXML(szDupValue))
 			UT_validXML(szDupValue);
 
-		const char * pEntry = m_pAttributes->pick(copy);
+		m_attributes[copy] = szDupValue;
 
-		if(pEntry)
-		{
-			// attribute exists, replace it
-			FREEP(pEntry);
-			m_pAttributes->set(copy, szDupValue);
-		}
-		else
-		{
-			bool bRet = m_pAttributes->insert(copy, szDupValue);
-			UT_ASSERT_HARMLESS( bRet );
-			if(!bRet)
-			{
-				FREEP(szDupValue);
-			}
-		}
-		
+		FREEP(szDupValue);
 		FREEP(copy);
 
 		return true;
@@ -366,22 +276,12 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
 {
 	UT_return_val_if_fail( szName, false );
-	
-	if (!m_pProperties)
-	{
-		m_pProperties = new UT_GenericStringMap<PropertyPair*>(5);
-		if (!m_pProperties)
-		{
-			UT_DEBUGMSG(("setProperty: could not allocate hash table.\n"));
-			return false;
-		}
-	}
 
 	// if szValue == NULL or *szValue == 0, indicates absent property.
 	// We have to set it empty, otherwise the code that changes
 	// properties has no way of knowing that this property is not to
 	// be present
-	// 
+	//
 	//bool bRemove = (!szValue || !*szValue);
 
 	// get rid of any chars invalid in xml
@@ -395,47 +295,40 @@ bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
 
 		szName = szName2;
 	}
-	
+
 	char * szValue2 = szValue ? g_strdup(szValue) : NULL;
 	UT_return_val_if_fail( szName && (szValue2 || !szValue), false);
 
 	// get rid of any illegal chars we might have been given in the value
 	if(!UT_isValidXML(szValue2))
 		UT_validXML(szValue2);
-	
-	const PropertyPair * pEntry = m_pProperties->pick(szName);
-	if (pEntry)
+
+	auto iter = m_properties.find(szName);
+	if (iter != m_properties.end())
 	{
-		const PropertyPair* p = pEntry;
-
-		// hack. don't do it.
-		gchar* tmp = (gchar*)p->first;
+		// XXX this will leak.
 		UT_return_val_if_fail (!m_bIsReadOnly, false);
-		if(strcmp(szName,"line-height") == 0)
-		{
-			UT_DEBUGMSG(("Found line-height, Old value %s new value is %s \n",tmp,szValue));
-		}
+		PropertyPair & p = iter->second;
 
-		FREEP(tmp);
-		if (p->second) 
+
+		if (p.second)
 		{
-			delete p->second;
+			delete p.second;
 		}
-		delete p;
-		m_pProperties->set(szName, 
-				   new PropertyPair(szValue2, 
-						    (const PP_PropertyType*)NULL));
+		p.first = szValue2;
+		p.second = NULL;
 	}
 	else
 	{
-		m_pProperties->insert(szName, 
-				      new PropertyPair(szValue2, 
-						       (const PP_PropertyType*)NULL));
+		m_properties[szName] =
+			std::make_pair(std::string(szValue2),
+						   static_cast<const PP_PropertyType *>(NULL));
 	}
 
 	// g_free the name duplicate if necessary
+	FREEP(szValue2);
 	FREEP(szName2);
-	
+
 	return true;
 }
 
@@ -451,30 +344,28 @@ bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
 */
 bool	PP_AttrProp::getNthAttribute(int ndx, const gchar *& szName, const gchar *& szValue) const
 {
-	if (!m_pAttributes)
+	if (m_attributes.empty())
 		return false;
-	if (static_cast<UT_uint32>(ndx) >= m_pAttributes->size())
+	if (static_cast<size_t>(ndx) >= m_attributes.size())
 	{
 		// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN ); -- do not assert, some code in
 		// while loops relies on this
 		return false;
 	}
-	
-	int i = 0;
-	UT_GenericStringMap<gchar*>::UT_Cursor c(m_pAttributes);
-	const gchar * val = NULL;
 
-	for (val = c.first(); (c.is_valid() && (i < ndx)); val = c.next(), i++)
-	{
-	  // noop
+	int i = 0;
+	attributes_t::const_iterator iter;
+	for (iter = m_attributes.cbegin(); iter != m_attributes.cend() && i < ndx;
+		 ++iter, ++i) {
+		// XXX this loop should be eliminated
 	}
 
-	if ((i == ndx) && c.is_valid())
-	  {
-	    szName = c.key().c_str();
-	    szValue = val;
+	if ((i == ndx) && iter != m_attributes.cend())
+	{
+	    szName = iter->first.c_str();
+	    szValue = iter->second.c_str();
 	    return true;
-	  }
+	}
 	return false;
 }
 
@@ -490,31 +381,28 @@ bool	PP_AttrProp::getNthAttribute(int ndx, const gchar *& szName, const gchar *&
 */
 bool	PP_AttrProp::getNthProperty(int ndx, const gchar *& szName, const gchar *& szValue) const
 {
-	if (!m_pProperties)
+	if (m_properties.empty()) {
 		return false;
+	}
 
- 	if (static_cast<UT_uint32>(ndx) >= m_pProperties->size())
-	{
+	if (static_cast<size_t>(ndx) >= m_properties.size()) {
 		// UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN ); -- do not assert, some code in
 		// while loops relies on this
   		return false;
 	}
-	
- 	int i = 0;
-	UT_GenericStringMap<PropertyPair*>::UT_Cursor c(m_pProperties);
- 	const PropertyPair * val = NULL;
 
-	for (val = c.first(); (c.is_valid() && (i < ndx)); val = c.next(), i++)
- 	{
-	  // noop
- 	}
+	int i = 0;
+	properties_t::const_iterator iter;
+	for (iter = m_properties.cbegin(); iter != m_properties.cend() && i < ndx;
+	     ++iter, ++i) {
+		// noop
+	}
 
-	if ( (i == ndx) && c.is_valid())
- 		{
-		  szName = c.key().c_str();
-		  szValue = val->first;
-		  return true;
- 		}
+	if ((i == ndx) && iter != m_properties.cend()) {
+		szName = iter->first.c_str();
+		szValue = iter->second.first.c_str();
+		return true;
+	}
 	return false;
 }
 
@@ -530,68 +418,68 @@ bool	PP_AttrProp::getNthProperty(int ndx, const gchar *& szName, const gchar *& 
 */
 bool PP_AttrProp::getProperty(const gchar * szName, const gchar *& szValue) const
 {
-	if (!m_pProperties)
+	if (m_properties.empty()) {
 		return false;
-	const PropertyPair * pEntry = m_pProperties->pick(szName);
-
-	if (!pEntry)
+	}
+	auto iter = m_properties.find(szName);
+	if (iter == m_properties.end()) {
 		return false;
+	}
 
-	szValue = pEntry->first;
+	szValue = iter->second.first.c_str();
 	return true;
 }
-/*! This method retrieves the entirety of [this] AP's "props", and returns it as an array of
-	 gchar * pairs (name and value).
 
-    WARNING: Do not g_free this memory. It's cached here.
-*/
-const gchar ** PP_AttrProp::getProperties () const
+
+PP_PropertyVector PP_AttrProp::getAttributes () const
 {
-	if(!m_pProperties)
-		return NULL;
-	if(m_szProperties != NULL)
-	{
-		return m_szProperties;
+	PP_PropertyVector attributes;
+	for (auto iter = m_attributes.cbegin(); iter != m_attributes.cend();
+		 ++iter) {
+		attributes.push_back(iter->first);
+		attributes.push_back(iter->second);
 	}
-	UT_uint32 iPropsCount = m_pProperties->size();
-	m_szProperties = new const gchar * [iPropsCount*2+2];
 
-	const gchar ** pList = m_pProperties->list();
-	UT_uint32 i = 0;
+	return attributes;
+}
 
-	
-	// where the values should be, we actually have pointers to PropertyPair;
-	for(i = 1; i < iPropsCount * 2; i += 2)
-	{
-		PropertyPair * pP = (PropertyPair *) pList[i];
-		m_szProperties[i-1] = pList[i-1];
-		m_szProperties[i] = pP->first;
+/*! This method retrieves the entirety of [this] AP's "props", and
+ *  returns it as a PP_PropertyVector
+ */
+PP_PropertyVector PP_AttrProp::getProperties () const
+{
+	PP_PropertyVector properties;
+
+	if(m_properties.empty()) {
+		return properties;
 	}
-	m_szProperties[i-1] = NULL;
-	m_szProperties[i] = NULL;
-	return m_szProperties;
+
+	for (auto iter = m_properties.cbegin(); iter != m_properties.cend();
+		 ++iter) {
+		properties.push_back(iter->first);
+		properties.push_back(iter->second.first);
+	}
+	return properties;
 }
 
 /*! (?)TODO: PLEASE DOCUMENT ME!
 */
 const PP_PropertyType *PP_AttrProp::getPropertyType(const gchar * szName, tProperty_type Type) const
 {
-	if (!m_pProperties)
+	if (m_properties.empty()) {
 		return NULL;
-
-	const PropertyPair * pEntry = m_pProperties->pick(szName);
-	if (!pEntry)
-		return NULL;
-
-	if(!pEntry->second)
-	{
-		m_pProperties->set(szName, new PropertyPair(pEntry->first,
-				    PP_PropertyType::createPropertyType(Type,pEntry->first)));
-		delete pEntry;
-		pEntry = m_pProperties->pick(szName);
 	}
 
-	return pEntry->second;
+	properties_t::const_iterator iter = m_properties.find(szName);
+	if (iter == m_properties.end()) {
+		return NULL;
+	}
+
+	// XXX this used to be mutable. Not sure what's the point.
+	/*iter->second.second =*/
+	return PP_PropertyType::createPropertyType(Type, iter->second.first.c_str());
+
+	//return pp.second;
 }
 
 /*! This method finds the attribute indicated by name
@@ -606,15 +494,15 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const gchar * szName, tPrope
 */
 bool PP_AttrProp::getAttribute(const gchar * szName, const gchar *& szValue) const
 {
-	if (!m_pAttributes)
+	if (m_attributes.empty())
 		return false;
 
-	const gchar * pEntry = m_pAttributes->pick(szName);
-	if (!pEntry)
+	auto iter = m_attributes.find(szName);
+	if (iter == m_attributes.end()) {
 		return false;
+	}
 
-	szValue = pEntry;
-
+	szValue = iter->second.c_str();
 
 	xxx_UT_DEBUGMSG(("SEVIOR: getAttribute Found value %s \n",szValue));
 
@@ -634,10 +522,7 @@ bool PP_AttrProp::getAttribute(const gchar * szName, const gchar *& szValue) con
 */
 bool PP_AttrProp::hasProperties(void) const
 {
-	if (!m_pProperties)
-		return false;
-
-	return (m_pProperties->size() > 0);
+	return !m_properties.empty();
 }
 
 /// Returns whether or not the AP has any attributes.
@@ -651,10 +536,7 @@ bool PP_AttrProp::hasProperties(void) const
 */
 bool PP_AttrProp::hasAttributes(void) const
 {
-	if (!m_pAttributes)
-		return false;
-
-	return (m_pAttributes->size() > 0);
+	return !m_attributes.empty();
 }
 
 /// Returns whether or not the given attributes and properties are identically present in [this] AP.
@@ -664,19 +546,19 @@ bool PP_AttrProp::hasAttributes(void) const
 	 returned.
 	 \return A bool indicating (directly) both presence and equality.
 */
-bool PP_AttrProp::areAlreadyPresent(const gchar ** attributes, const gchar ** properties) const
+bool PP_AttrProp::areAlreadyPresent(const PP_PropertyVector & attributes,
+									const PP_PropertyVector & properties) const
 {
-	if (attributes && *attributes)
-	{
-		const gchar ** p = attributes;
-		while (*p)
-		{
+	if (!attributes.empty()) {
+
+		for (auto iter = attributes.cbegin(); iter != attributes.cend();
+			 iter += 2) {
 			/*
 			    It seems that we also want empty strings for attributes,
 				at least for the 'param' attribute which goes with fields.
 				Is this bogus too? -PL
 
-				Yes. 
+				Yes.
 				We use empty strings and NULL in values to indicate that the
 				attribute/property should be absent. Sometimes these values filter down
 				here, so we need to handle this. TF
@@ -687,29 +569,32 @@ bool PP_AttrProp::areAlreadyPresent(const gchar ** attributes, const gchar ** pr
 			// that attribute to be absent, not present
 			const gchar * szValue = NULL;
 
-			if((!p[1] || !*p[1]) && getAttribute(p[0],szValue) && szValue && *szValue)
+			if((iter + 1)->empty() && getAttribute(*iter, szValue)
+			   && szValue && *szValue) {
 				return false;
-			// the 'props' attribute has to be handled separatedly, since it is not
-			// returned using getAttribute() (it is not stored as attribute)
-			else if((!p[1] || !*p[1]) && !strcmp(p[0],"props") && hasProperties())
-				return false;
-			else if(p[1] && *p[1])
-			{
-				if (!getAttribute(p[0],szValue))
-					return false;		// item not present
-				if (strcmp(p[1],szValue)!=0)
-					return false;		// item has different value
 			}
-					
-			p += 2;
+			// the 'props' attribute has to be handled separatedly,
+			// since it is not returned using getAttribute() (it is
+			// not stored as attribute)
+			else if((iter + 1)->empty() && (*iter != "props")
+					&& hasProperties()) {
+				return false;
+			} else if(!(iter + 1)->empty()) {
+				if (!getAttribute(*iter, szValue)) {
+					return false;		// item not present
+				}
+				if (*(iter + 1) != szValue) {
+					return false;		// item has different value
+				}
+			}
+
 		}
 	}
 
-	if (properties && *properties)
-	{
-		const gchar ** p = properties;
-		while (*p)
-		{
+	if (!properties.empty()) {
+
+		for (auto iter = properties.cbegin(); iter != properties.cend();
+			 iter += 2) {
 			/*
 				Jeff, I weakened the following assert because we
 				*want* to represent no tabstops as an empty string.
@@ -725,17 +610,18 @@ bool PP_AttrProp::areAlreadyPresent(const gchar ** attributes, const gchar ** pr
 			// that attribute to be absent, not present
 			const gchar * szValue = NULL;
 
-			if((!p[1] || !*p[1]) && getProperty(p[0],szValue) && szValue && *szValue)
+			if(!(iter + 1)->empty() && getProperty(*iter, szValue)
+			   && szValue && *szValue) {
 				return false;
-			else if(p[1] && p[1])
-			{
-				if (!getProperty(p[0],szValue))
+			} else if(!(iter + 1)->empty())	{
+				if (!getProperty(*iter, szValue)) {
 					return false;		// item not present
-				if (strcmp(p[1],szValue)!=0)
+				}
+				if (*(iter + 1) != szValue) {
 					return false;		// item has different value
+				}
 			}
-			
-			p += 2;
+
 		}
 	}
 
@@ -748,44 +634,34 @@ bool PP_AttrProp::areAlreadyPresent(const gchar ** attributes, const gchar ** pr
 	 regardless of whether or not any other of the given names are present.
 	 \return A bool that's TRUE if any of the given attr. or prop. names is present, false otherwise.
 */
-bool PP_AttrProp::areAnyOfTheseNamesPresent(const gchar ** attributes, const gchar ** properties) const
+bool PP_AttrProp::areAnyOfTheseNamesPresent(const PP_PropertyVector & attributes,
+											const PP_PropertyVector & properties) const
 {
-	// TODO consider using the fact that we are now (Dec 12 1998) using
-	// TODO alpha-hash-table rather than just a hash-table to optimize
-	// TODO these loops somewhat.
+	for (auto iter = attributes.cbegin(); iter != attributes.cend(); iter += 2) {
 
-	if (attributes && *attributes)
-	{
-		const gchar ** p = attributes;
-		while (*p)
-		{
-			const gchar * szValue = NULL;
-			if (getAttribute(p[0],szValue))
-				return true;
-			p += 2;						// skip over value
+		const gchar * szValue = NULL;
+		if (getAttribute(*iter, szValue)) {
+			return true;
 		}
 	}
 
-	if (properties && *properties)
-	{
-		const gchar ** p = properties;
-		while (*p)
-		{
-			const gchar * szValue = NULL;
-			if (getProperty(p[0],szValue))
-				return true;
-			p += 2;						// skip over value
+	for (auto iter = properties.cbegin(); iter != properties.cend(); iter += 2) {
+
+		const gchar * szValue = NULL;
+		if (getProperty(*iter, szValue)) {
+			return true;
 		}
 	}
 
 	return false;					// didn't find any
 }
 
-/*! Checks to see if the given AP is identical to itself ([this]).  It also contains
-	 some useful points of instrumentation for benchmarking table and usage characteristics.
-	 \return TRUE, if and only if we match the AP given, false otherwise.
-*/
-bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
+/*! Checks to see if the given AP is identical to itself ([this]).  It
+ *  also contains some useful points of instrumentation for
+ *  benchmarking table and usage characteristics.
+ *  \return TRUE, if and only if we match the AP given, false otherwise.
+ */
+bool PP_AttrProp::isExactMatch(const PP_AttrProp & pMatch) const
 {
 	// The counters below are used in testing to profile call and chksum characteristics,
 	// including collision rates.
@@ -799,79 +675,57 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 	s_Calls++;
 #endif
 
-	UT_return_val_if_fail (pMatch, false);
 	//
 	// Why is this here? Nothing is being changed?
 	//	UT_return_val_if_fail (m_bIsReadOnly && pMatch->m_bIsReadOnly, false);
-	if (m_checkSum != pMatch->m_checkSum)
+	if (m_checkSum != pMatch.m_checkSum) {
 		return false;
+	}
 
 #ifdef PT_TEST
 	s_PassedCheckSum++;
 #endif
 
-	UT_uint32 countMyAttrs = ((m_pAttributes) ? m_pAttributes->size() : 0);
-	UT_uint32 countMatchAttrs = ((pMatch->m_pAttributes) ? pMatch->m_pAttributes->size() : 0);
-	if (countMyAttrs != countMatchAttrs)
+	UT_uint32 countMyAttrs = m_attributes.size();
+	UT_uint32 countMatchAttrs = pMatch.m_attributes.size();
+	if (countMyAttrs != countMatchAttrs) {
 		return false;
-
-	UT_uint32 countMyProps = ((m_pProperties) ? m_pProperties->size() : 0);
-	UT_uint32 countMatchProps = ((pMatch->m_pProperties) ? pMatch->m_pProperties->size() : 0);
-	if (countMyProps != countMatchProps)
-		return false;
-
-	if (countMyAttrs != 0)
-	{
-		UT_GenericStringMap<gchar*>::UT_Cursor ca1(m_pAttributes);
-		UT_GenericStringMap<gchar*>::UT_Cursor ca2(pMatch->m_pAttributes);
-
-		const gchar * v1 = ca1.first();
-		const gchar * v2 = ca2.first();
-
-		do
-		{
-			const gchar *l1 = ca1.key().c_str();
-			const gchar *l2 = ca2.key().c_str();
-
-			if (strcmp(l1, l2) != 0)
-				return false;
-
-			l1 = v1;
-			l2 = v2;
-
-			if (strcmp(l1,l2) != 0)
-				return false;
-
-			v1 = ca1.next();
-			v2 = ca2.next();
-		} while (ca1.is_valid() && ca2.is_valid());
 	}
 
-	if (countMyProps > 0)
-	{
-		UT_GenericStringMap<PropertyPair*>::UT_Cursor cp1(m_pProperties);
-		UT_GenericStringMap<PropertyPair*>::UT_Cursor cp2(pMatch->m_pProperties);
+	UT_uint32 countMyProps = m_properties.size();
+	UT_uint32 countMatchProps = pMatch.m_properties.size();
+	if (countMyProps != countMatchProps) {
+		return false;
+	}
 
-		const PropertyPair* v1 = cp1.first();
-		const PropertyPair* v2 = cp2.first();
+	if (countMyAttrs != 0) {
+		auto ca1 = m_attributes.cbegin();
+		auto ca2 = pMatch.m_attributes.cbegin();
 
-		do
-		{
-			const gchar *l1 = cp1.key().c_str();
-			const gchar *l2 = cp2.key().c_str();
-
-			if (strcmp(l1, l2) != 0)
+		do {
+			if (*ca1 != *ca2) {
 				return false;
+			}
+			++ca1;
+			++ca2;
+		} while(ca1 != m_attributes.cend() && ca2 != pMatch.m_attributes.cend());
+	}
 
-			l1 = v1->first;
-			l2 = v2->first;
+	if (countMyProps > 0) {
 
-			if (strcmp(l1,l2) != 0)
+		auto cp1 = m_properties.cbegin();
+		auto cp2 = pMatch.m_properties.cbegin();
+
+		do {
+			if (cp1->first != cp2->first) {
 				return false;
-
-			v1 = cp1.next();
-			v2 = cp2.next();
-		} while (cp1.is_valid() && cp2.is_valid());
+			}
+			if (cp1->second.first != cp2->second.first) {
+				return false;
+			}
+			++cp1;
+			++cp2;
+		} while(cp1 != m_properties.cend() && cp2 != pMatch.m_properties.cend());
 
 	#ifdef PT_TEST
 		s_Matches++;
@@ -885,8 +739,8 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp * pMatch) const
 /*! Create a new AttrProp with exactly the attributes/properties given.
   \return NULL on failure, the newly-created PP_AttrProp.
 */
-PP_AttrProp * PP_AttrProp::createExactly(const gchar ** attributes,
-					 const gchar ** properties) const
+PP_AttrProp * PP_AttrProp::createExactly(const PP_PropertyVector & attributes,
+					 const PP_PropertyVector & properties) const
 {
 	// first, create a new AttrProp using just the values given.
 
@@ -905,8 +759,8 @@ Failed:
 /*! Create a new AttrProp based upon the given one, adding or replacing the items given.
 	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
 */
-PP_AttrProp * PP_AttrProp::cloneWithReplacements(const gchar ** attributes,
-												 const gchar ** properties,
+PP_AttrProp * PP_AttrProp::cloneWithReplacements(const PP_PropertyVector & attributes,
+												 const PP_PropertyVector & properties,
 												 bool bClearProps) const
 {
 	bool bIgnoreProps = false; // see below
@@ -985,60 +839,41 @@ Failed:
 /// This function will remove all properties that are set to ""
 void PP_AttrProp::_clearEmptyProperties()
 {
-	if(!m_pProperties)
+	if(m_properties.empty()) {
 		return;
+	}
+	UT_return_if_fail (!m_bIsReadOnly);
 
-	UT_GenericStringMap<PropertyPair*>::UT_Cursor _hc1(m_pProperties);
-	PropertyPair * pEntry;
-
-	for ( pEntry  = _hc1.first(); _hc1.is_valid(); pEntry = _hc1.next())
-	{
-		if (pEntry)
-		{
-			const PropertyPair* p = pEntry;
-
-			const char *s = p->first;
-			if(s == NULL || *s == 0)
-			{
-
-				gchar* tmp = const_cast<gchar*>(p->first);
-				UT_return_if_fail (!m_bIsReadOnly);
-				FREEP(tmp);
-				m_pProperties->remove(_hc1.key(),pEntry);
-				if (p->second) 
-				{
-					delete p->second;
-				}
-				delete p;
-
-			}
+	for(auto iter = m_properties.begin(); iter != m_properties.end(); ) {
+		if (iter->second.first.empty()) {
+			iter = m_properties.erase(iter);
+		} else {
+			++iter;
 		}
 	}
 }
 
-/// This method clears both empty attributes and empty properties from [this] AP.
+/// This method clears both empty attributes and empty properties from
+/// [this] AP.
 void PP_AttrProp::prune()
 {
 	_clearEmptyAttributes();
 	_clearEmptyProperties();
 }
 
-/// This function will remove all attributes that are equal to "" (*<gchar *> == NULL)
+/// This function will remove all attributes that are equal to ""
 void PP_AttrProp::_clearEmptyAttributes()
 {
-	if(!m_pAttributes)
+	if(m_attributes.empty()) {
 		return;
+	}
+	UT_return_if_fail (!m_bIsReadOnly);
 
-	UT_GenericStringMap<gchar*>::UT_Cursor _hc1(m_pAttributes);
-	gchar * pEntry;
-
-	for ( pEntry  = _hc1.first(); _hc1.is_valid(); pEntry = _hc1.next())
-	{
-		if (pEntry && !*pEntry)
-		{
-			UT_return_if_fail (!m_bIsReadOnly);
-			m_pAttributes->remove(_hc1.key(),pEntry);
-			FREEP(pEntry);
+	for (auto iter = m_attributes.begin(); iter != m_attributes.end(); ) {
+		if (iter->second.empty()) {
+			iter = m_attributes.erase(iter);
+		} else {
+			++iter;
 		}
 	}
 }
@@ -1049,8 +884,8 @@ void PP_AttrProp::_clearEmptyAttributes()
 	 to the value given.
 	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
 */
-PP_AttrProp * PP_AttrProp::cloneWithElimination(const gchar ** attributes,
-												const gchar ** properties) const
+PP_AttrProp * PP_AttrProp::cloneWithElimination(const PP_PropertyVector & attributes,
+												const PP_PropertyVector & properties) const
 {
 
 	// first, create an empty AttrProp.
@@ -1068,22 +903,20 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const gchar ** attributes,
 		// for each attribute in the old set, add it to the
 		// new set only if it is not present in the given array.
 
-		if (attributes && *attributes)
-		{
-			const gchar ** p = attributes;
-			while (*p)
-			{
-				UT_return_val_if_fail (strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0, NULL); // cannot handle PROPS here
-				if (strcmp(n,p[0])==0)		// found it, so we don't put it in the result.
-					goto DoNotIncludeAttribute;
-				p += 2;								// skip over value
+		for (PP_PropertyVector::const_iterator iter = attributes.begin();
+			 iter != attributes.end(); iter += 2) {
+
+			UT_return_val_if_fail (*iter != PT_PROPS_ATTRIBUTE_NAME, NULL); // cannot handle PROPS here
+			if (*iter == n) {		// found it, so we don't put it in the result.
+				goto DoNotIncludeAttribute;
 			}
 		}
 
 		// we didn't find it in the given array, add it to the new set.
 
-		if (!papNew->setAttribute(n,v))
+		if (!papNew->setAttribute(n,v)) {
 			goto Failed;
+		}
 
 	DoNotIncludeAttribute:
 		;
@@ -1095,14 +928,10 @@ PP_AttrProp * PP_AttrProp::cloneWithElimination(const gchar ** attributes,
 		// for each property in the old set, add it to the
 		// new set only if it is not present in the given array.
 
-		if (properties && *properties)
-		{
-			const gchar ** p = properties;
-			while (*p)
-			{
-				if (strcmp(n,p[0])==0)		// found it, so we don't put it in the result.
-					goto DoNotIncludeProperty;
-				p += 2;
+		for (auto iter = properties.begin(); iter != properties.end();
+			 iter += 2) {
+			if (*iter == n) {		// found it, so we don't put it in the result.
+				goto DoNotIncludeProperty;
 			}
 		}
 
@@ -1140,8 +969,8 @@ void PP_AttrProp::markReadOnly(void)
 	 their value is equal to the value given.
 	 \return NULL on failure, the newly-created PP_AttrProp clone otherwise.
 */
-PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const gchar ** attributes,
-												const gchar ** properties) const
+PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const PP_PropertyVector & attributes,
+												const PP_PropertyVector & properties) const
 {
 	// first, create an empty AttrProp.
 	PP_AttrProp * papNew = new PP_AttrProp();
@@ -1158,17 +987,13 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const gchar ** attributes
 		// for each attribute in the old set, add it to the
 		// new set only if it is not present in the given array.
 
-		if (attributes && *attributes)
-		{
-			const gchar ** p = attributes;
-			while (*p)
-			{
-				if(strcmp(p[0],PT_PROPS_ATTRIBUTE_NAME)!=0)
-					goto DoNotIncludeAttribute; // cannot handle PROPS here
-				if (strcmp(n,p[0])==0 && strcmp(n,p[1])==0)		// found it, so we don't put it in the result.
-					goto DoNotIncludeAttribute;
-				p += 2;								// skip over value
-			}
+		for (auto iter = attributes.begin(); iter != attributes.end();
+			 iter += 2) {
+			if (*iter != PT_PROPS_ATTRIBUTE_NAME)
+				goto DoNotIncludeAttribute; // cannot handle PROPS here
+			// XXX should it be n and v ?
+			if (*iter == n && *(iter + 1) == n)		// found it, so we don't put it in the result.
+				goto DoNotIncludeAttribute;
 		}
 
 		// we didn't find it in the given array, add it to the new set.
@@ -1186,14 +1011,11 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const gchar ** attributes
 		// for each property in the old set, add it to the
 		// new set only if it is not present in the given array.
 
-		if (properties && *properties)
-		{
-			const gchar ** p = properties;
-			while (*p)
-			{
-				if (strcmp(n,p[0])==0 && strcmp(n,p[1])==0)		// found it, so we don't put it in the result.
-					goto DoNotIncludeProperty;
-				p += 2;
+		for (auto iter = properties.begin(); iter != properties.end();
+			 iter += 2) {
+			// XXX should it be n and v ?
+			if (*iter == n && *(iter + 1) == n) {		// found it, so we don't put it in the result.
+				goto DoNotIncludeProperty;
 			}
 		}
 
@@ -1215,23 +1037,23 @@ Failed:
 
 /*! (?)TODO: PLEASE DOCUMENT ME!
 */
-static UT_uint32 hashcodeBytesAP(UT_uint32 init, const void * pv, UT_uint32 cb)
+static UT_uint32 hashcodeBytesAP(UT_uint32 init, const char * pv, UT_uint32 cb)
 {
  	// modified from ut_string_class.cpp's hashcode() which got it from glib
  	UT_uint32 h = init;
- 	const unsigned char * pb = static_cast<const unsigned char *>(pv);
- 
+	const unsigned char * pb = reinterpret_cast<const unsigned char *>(pv);
+
  	if (cb)
  	{
  		// for AP data, limit hash to consume at most 8 bytes
  		if (cb > 8) { cb = 8; }
- 
+
  		for (; cb != 0; pb += 1, cb -= 1)
  		{
  			h = (h << 5) - h + *pb;
  		}
  	}
- 	
+
  	return h;
 }
 
@@ -1242,70 +1064,60 @@ static UT_uint32 hashcodeBytesAP(UT_uint32 init, const void * pv, UT_uint32 cb)
 void PP_AttrProp::_computeCheckSum(void)
 {
 	m_checkSum = 0;
- 
- 	if (!m_pAttributes && !m_pProperties)
-  		return;
- 
+
+	if (m_attributes.empty() && m_properties.empty()) {
+		return;
+	}
+
 	const gchar *s1, *s2;
- 	UT_uint32	cch = 0;
- 	gchar	*rgch;
-    
+	UT_uint32	cch = 0;
+	gchar	*rgch;
+
 	rgch = NULL;
- 	if (m_pAttributes)
-  	{
- 		UT_GenericStringMap<gchar*>::UT_Cursor c1(m_pAttributes);
- 		const gchar *val = c1.first();
- 
- 		while (val != NULL)
- 		{
- 			s1 = c1.key().c_str();
- 			s2 = val;
-  
- 			cch = strlen(s1);
-  
- 			m_checkSum = hashcodeBytesAP(m_checkSum, s1, cch);
- 
- 			cch = strlen(s2);
+	if (!m_attributes.empty()) {
+		auto iter = m_attributes.begin();
+
+		while (iter != m_attributes.end()) {
+			s1 = iter->first.c_str();
+			s2 = iter->second.c_str();
+
+			cch = iter->first.size();
+
+			m_checkSum = hashcodeBytesAP(m_checkSum, s1, cch);
+
+			cch = iter->second.size();
 
 			rgch = g_ascii_strdown(s2, 9);
 			rgch[8] = '\0';
- 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
+			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
 			g_free (rgch); rgch = NULL;
 
- 			if (!c1.is_valid())
- 				break;
- 			val = c1.next();
- 		}
- 	}
- 
- 	if (m_pProperties)
-  	{
- 		UT_GenericStringMap<PropertyPair*>::UT_Cursor c2(m_pProperties);
- 		const PropertyPair *val;
- 
- 		val = c2.first();
- 		while (val != NULL)
- 		{
- 			s1 = c2.key().c_str(); 
- 			cch = strlen(s1);
+			++iter;
+		}
+	}
+
+	if (!m_properties.empty()) {
+		auto iter = m_properties.begin();
+
+		while (iter != m_properties.end()) {
+
+			s1 = iter->first.c_str();
+			cch = iter->first.size();
 			rgch = g_ascii_strdown(s1, 9);
 			rgch[8] = '\0';
- 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
+			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
 			g_free (rgch); rgch = NULL;
-  
- 			s2 = val->first;
- 			cch = strlen(s2);
+
+			s2 = iter->second.first.c_str();
+			cch = iter->second.first.size();
 			rgch = g_ascii_strdown(s2, 9);
 			rgch[8] = '\0';
- 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
+			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
 			g_free (rgch); rgch = NULL;
- 
- 			if (!c2.is_valid())
- 				break;
- 			val = c2.next();
- 		}
+
+			++iter;
+		}
 	}
-	return;
 }
 
 /*! This is an accessor method that gets the checksum of [this] AP, by which we speed
@@ -1317,34 +1129,31 @@ void PP_AttrProp::_computeCheckSum(void)
 */
 UT_uint32 PP_AttrProp::getCheckSum(void) const
 {
-  //
-  // Why is this assert present? This is harmless.
-  //	UT_ASSERT_HARMLESS(m_bIsReadOnly);
 	return m_checkSum;
 }
 
-void PP_AttrProp::operator = (const PP_AttrProp &Other)
+void PP_AttrProp::operator=(const PP_AttrProp &other)
 {
-	UT_uint32 countMyAttrs = ((Other.m_pAttributes) ? Other.m_pAttributes->size() : 0);
+	size_t countMyAttrs = other.m_attributes.size();
 
-	UT_uint32 Index;
-	for(Index = 0; Index < countMyAttrs; Index++)
+	UT_uint32 index;
+	for(index = 0; index < countMyAttrs; index++)
 	{
 		const gchar * szName;
 		const gchar * szValue;
-		if(Other.getNthAttribute(Index, szName, szValue))
+		if(other.getNthAttribute(index, szName, szValue))
 		{
 			setAttribute(szName, szValue);
 		}
 	}
 
-	UT_uint32 countMyProps = ((Other.m_pProperties) ? Other.m_pProperties->size() : 0);
+	UT_uint32 countMyProps = other.m_properties.size();
 
-	for(Index = 0; Index < countMyProps; Index++)
+	for(index = 0; index < countMyProps; index++)
 	{
 		const gchar * szName;
 		const gchar * szValue;
-		if(Other.getNthProperty(Index, szName, szValue))
+		if(other.getNthProperty(index, szName, szValue))
 		{
 			setProperty(szName, szValue);
 		}
@@ -1360,11 +1169,6 @@ UT_uint32 PP_AttrProp::getIndex(void) const
 void PP_AttrProp::setIndex(UT_uint32 i)
 {
 	m_index = i;
-	if(m_szProperties)
-	{
-		delete [] m_szProperties;
-	}
-	m_szProperties = NULL;
 }
 
 /*! This method checks if [this] AP and the given AP are functionally equivalent.
@@ -1381,14 +1185,14 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 {
 	if(!pAP2)
 		return false;
-	
-	if(   getAttributeCount() != pAP2->getAttributeCount()
+
+	if(getAttributeCount() != pAP2->getAttributeCount()
 	   || getPropertyCount()  != pAP2->getPropertyCount())
 		return false;
-	
+
 	UT_uint32 i;
 	const gchar * pName, * pValue, * pValue2;
-	
+
 	for(i =  0; i < getAttributeCount(); ++i)
 	{
 		UT_return_val_if_fail(getNthAttribute(i,pName,pValue),false);
@@ -1435,73 +1239,61 @@ bool PP_AttrProp::isEquivalent(const PP_AttrProp * pAP2) const
 	 attributes and properties which only virtually comprise another AP.
 	 \retval TRUE if equivalent (regardless of order) to given Attrs and Props, FALSE otherwise.
 */
-bool PP_AttrProp::isEquivalent(const gchar ** attrs, const gchar ** props) const
+bool PP_AttrProp::isEquivalent(const PP_PropertyVector & attrs,
+							   const PP_PropertyVector & props) const
 {
-	UT_uint32 iAttrsCount  = 0;
-	UT_uint32 iPropsCount = 0;
+	size_t iAttrsCount = attrs.size() / 2;
+	size_t iPropsCount = props.size() / 2;
 
-	const gchar ** p = attrs;
-
-	while(p && *p)
-	{
-		iAttrsCount++;
-		p += 2;
-	}
-	
-	p = props;
-
-	while(p && *p)
-	{
-		iPropsCount++;
-		p += 2;
-	}
-
-	
-	if(   getAttributeCount() != iAttrsCount
-	   || getPropertyCount()  != iPropsCount)
+	if(getAttributeCount() != iAttrsCount
+	   || getPropertyCount()  != iPropsCount) {
 		return false;
-	
+	}
+
 	UT_uint32 i;
-	const gchar * pName, * pValue, * pValue2;
-	
+	std::string name, value;
+	const gchar * pValue2;
+
 	for(i =  0; i < getAttributeCount(); ++i)
 	{
-		pName = attrs[2*i];
-		pValue = attrs[2*i + 1];
+		name = attrs[2*i];
+		value = attrs[2*i + 1];
 
-		if(!getAttribute(pName,pValue2))
+		if(!getAttribute(name.c_str(), pValue2)) {
 			return false;
+		}
 
 		// ignore property attribute
-		if(0 == strcmp(pValue, PT_PROPS_ATTRIBUTE_NAME))
+		if(value == PT_PROPS_ATTRIBUTE_NAME) {
 			continue;
+		}
 
 		// handle revision attribute correctly
-		if(0 == strcmp(pValue, PT_REVISION_ATTRIBUTE_NAME))
-		{
+		if(value == PT_REVISION_ATTRIBUTE_NAME) {
 			// requires special treatment
-			PP_RevisionAttr r1(pValue);
-			PP_RevisionAttr r2 (pValue2);
+			PP_RevisionAttr r1(value.c_str());
+			PP_RevisionAttr r2(pValue2);
 
-			if(!(r1 == r2))
-			{
+			if(!(r1 == r2))	{
 				return false;
 			}
-		}
-		else if(0 != strcmp(pValue,pValue2))
+		} else if(value != pValue2) {
 			return false;
+		}
 	}
 
 	for(i =  0; i < getPropertyCount(); ++i)
 	{
-		pName = props[2*i];
-		pValue = props[2*i + 1];
+		name = props[2 * i];
+		value = props[2 * i + 1];
 
-		if(!getProperty(pName,pValue2))
+		if(!getProperty(name.c_str(), pValue2)) {
 			return false;
+		}
 
-		if(0 != strcmp(pValue,pValue2))
+		if(value != pValue2) {
 			return false;
+		}
 	}
 
 	return true;
@@ -1612,4 +1404,113 @@ void PP_AttrProp::miniDump(const PD_Document * pDoc) const
 #else
 	UT_UNUSED(pDoc);
 #endif
+}
+
+
+// XXX remove the extra loop
+PP_PropertyVector PP_std_setPropsToNothing(const gchar ** props)
+{
+	PP_PropertyVector props2;
+
+	if(!props)
+		return props2;
+
+	UT_uint32 iCount  = 0;
+
+	while(props[iCount])
+		iCount += 2;
+
+	props2.reserve(iCount);
+
+	UT_uint32 i;
+	for(i = 0; i < iCount; i += 2)
+	{
+          props2.push_back(props[i]);
+          props2.push_back("");          // was NULL...
+	}
+
+	return props2;
+}
+
+PP_PropertyVector PP_std_setPropsToNothing(const PP_PropertyVector & props)
+{
+	PP_PropertyVector props2;
+
+	if(props.empty())
+		return props2;
+
+	for(auto iter = props.cbegin(); iter != props.cend(); iter += 2)
+	{
+          props2.push_back(*iter);
+          props2.push_back("");
+	}
+
+	return props2;
+}
+
+// XXX remove the extra loop
+PP_PropertyVector PP_std_copyProps(const gchar ** props)
+{
+	PP_PropertyVector props2;
+
+	if(!props)
+		return props2;
+
+	UT_uint32 iCount  = 0;
+
+	while(props[iCount]) {
+		iCount += 2;
+	}
+
+	props2.reserve(iCount);
+
+	UT_uint32 i;
+	for(i = 0; i < iCount; i += 2)
+	{
+		props2.push_back(props[i]);
+		const char *value = props[i + 1];
+		props2.push_back(value ? value : "");
+	}
+
+	return props2;
+}
+
+PP_PropertyVector PP_std_setPropsToValue(const gchar ** props,
+										 const gchar * value)
+{
+	PP_PropertyVector out;
+
+	std::string svalue = value ? value : "";
+	const gchar **current = props;
+
+	while(*current) {
+		out.push_back(*current);
+		current++;
+		out.push_back(svalue);
+		current++;
+	}
+
+	return out;
+}
+
+
+bool PP_hasAttribute(const char* name, const PP_PropertyVector & atts)
+{
+	for (auto iter = atts.cbegin(); iter != atts.cend(); iter += 2) {
+		if (*iter == name) {
+			return true;
+		}
+	}
+	return false;
+}
+
+
+std::string PP_getAttribute(const char* name, const PP_PropertyVector & atts)
+{
+	for (auto iter = atts.cbegin(); iter != atts.cend(); iter += 2) {
+		if (*iter == name) {
+			return *(iter + 1);
+		}
+	}
+	return "";
 }

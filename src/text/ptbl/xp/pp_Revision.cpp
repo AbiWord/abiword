@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 /* AbiWord
  * Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
  *
@@ -119,18 +120,19 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar * prop
 	}
 }
 
-PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar ** props, const gchar ** attrs):
-	m_iID(Id), m_eType(eType), m_bDirty(true)
+PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType,
+                         const PP_PropertyVector & props,
+                         const PP_PropertyVector & attrs)
+	: m_iID(Id)
+        , m_eType(eType)
+        , m_bDirty(true)
 {
-	if(!props && !attrs)
-		return;
-
-	if(props)
+	if(!props.empty())
 	{
 		setProperties(props);
 	}
 
-	if(attrs)
+	if(!attrs.empty())
 	{
 		setAttributes(attrs);
 	}
@@ -140,11 +142,11 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType, const gchar ** pro
     Sets attributes taking care of any nested revision attribute (which needs to be parsed
     and combined with the current AP set.
 */
-bool PP_Revision::setAttributes(const gchar ** attributes)
+bool PP_Revision::setAttributes(const PP_PropertyVector & attributes)
 {
 	if(!PP_AttrProp::setAttributes(attributes))
 		return false;
-	
+
 	return _handleNestedRevAttr();
 }
 
@@ -386,9 +388,10 @@ PP_RevisionAttr::PP_RevisionAttr(const gchar * r):
 
 /*! create class instance from a single revision data */
 PP_RevisionAttr::PP_RevisionAttr(UT_uint32 iId, PP_RevisionType eType,
-								 const gchar ** pAttrs, const gchar ** pProps)
+                                 const PP_PropertyVector & attrs,
+                                 const PP_PropertyVector & props)
 {
-	PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, pProps, pAttrs);
+	PP_Revision * pRevision = new PP_Revision((UT_uint32)iId, eType, props, attrs);
 	m_vRev.addItem((void*)pRevision);
 }
 
@@ -897,7 +900,8 @@ bool PP_RevisionAttr::isVisible(UT_uint32 id) const
     is already present in this attribute.
 */
 void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
-								  const gchar ** pAttrs, const gchar ** pProps)
+                                  const PP_PropertyVector & pAttrs,
+                                  const PP_PropertyVector & pProps)
 {
 	UT_sint32 i;
 
@@ -1036,9 +1040,7 @@ void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType,
  */
 void PP_RevisionAttr::addRevision(UT_uint32 iId, PP_RevisionType eType )
 {
-    const gchar ** pAttrs = 0;
-    const gchar ** pProps = 0;
-    addRevision( iId, eType, pAttrs, pProps );
+    addRevision( iId, eType, PP_NOPROPS, PP_NOPROPS );
 }
 
 
@@ -1070,11 +1072,10 @@ void PP_RevisionAttr::mergeAttr( UT_uint32 iId, PP_RevisionType t,
                                  const gchar* pzName, const gchar* pzValue )
 {
     PP_RevisionAttr ra;
-    const gchar* ppAtts[10];
-    ppAtts[0] = pzName;
-    ppAtts[1] = pzValue;
-    ppAtts[2] = 0;
-    ra.addRevision(iId,t,ppAtts,NULL);
+    const PP_PropertyVector ppAtts = {
+        pzName, pzValue
+    };
+    ra.addRevision(iId, t, ppAtts, PP_NOPROPS);
 
     mergeAll( ra );
 }

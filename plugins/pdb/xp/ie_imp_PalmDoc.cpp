@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -171,7 +171,7 @@ IE_Imp_PalmDoc::IE_Imp_PalmDoc(PD_Document * pDocument)
 
 UT_Error IE_Imp_PalmDoc::_writeHeader(GsfInput * /* m_pdfp */)
 {
-	X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
+	X_ReturnNoMemIfError(appendStrux(PTX_Section, PP_NOPROPS));
 	return UT_OK;
 }
 
@@ -196,7 +196,7 @@ UT_Error IE_Imp_PalmDoc::_parseFile(GsfInput * pdfp)
 		UT_DEBUGMSG(("This is not a DOC file!\n"));
 
 		// Create an empty paragraph.
-		X_ReturnNoMemIfError(appendStrux(PTX_Block, NULL));
+		X_ReturnNoMemIfError(appendStrux(PTX_Block, PP_NOPROPS));
 		return UT_OK;
 	}
 
@@ -270,7 +270,7 @@ UT_Error IE_Imp_PalmDoc::_parseFile(GsfInput * pdfp)
 		
 				// start a paragraph and emit any text that we
 				// have accumulated.
-				X_ReturnNoMemIfError(appendStrux(PTX_Block, NULL));
+				X_ReturnNoMemIfError(appendStrux(PTX_Block, PP_NOPROPS));
 				bEmptyFile = false;
 				if (gbBlock.getLength() > 0)
 				{
@@ -294,7 +294,7 @@ UT_Error IE_Imp_PalmDoc::_parseFile(GsfInput * pdfp)
 		// if we have text left over (without final CR/LF),
 		// or if we read an empty file,
 		// create a paragraph and emit the text now.
-		X_ReturnNoMemIfError(appendStrux(PTX_Block, NULL));
+		X_ReturnNoMemIfError(appendStrux(PTX_Block, PP_NOPROPS));
 		if (gbBlock.getLength() > 0)
 			X_ReturnNoMemIfError(appendSpan(reinterpret_cast<const UT_UCSChar *>(gbBlock.getPointer(0)), gbBlock.getLength()));
 	}

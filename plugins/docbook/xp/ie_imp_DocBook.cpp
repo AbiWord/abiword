@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -388,7 +388,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		/* starts the document */
 		X_VerifyParseState(_PS_Init);
 		m_parseState = _PS_Doc;
-		X_CheckError(appendStrux(PTX_Section,static_cast<const gchar **>(NULL)));
+		X_CheckError(appendStrux(PTX_Section, PP_NOPROPS));
 
 		m_iSectionDepth = 0;	/* not in a section, nor a chapter */
 
@@ -439,7 +439,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 
 		if(!strcmp(p_val,"abi-frame"))
 		{
-			X_CheckError(appendStrux(PTX_SectionFrame, NULL));
+			X_CheckError(appendStrux(PTX_SectionFrame, PP_NOPROPS));
 
 			m_iTitleDepth--;
 			m_bInFrame = true;
@@ -743,7 +743,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		{
 			m_parseState = _PS_Block;
 
-			X_CheckError(appendStrux(PTX_Block, NULL));
+			X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 
 			m_iBlockDepth++;
 		}
@@ -791,7 +791,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 			style_att[8] = num;
 		}
 
-		X_CheckError(appendStrux(PTX_Block, NULL));
+		X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 		buf[0] = PT_STYLE_ATTRIBUTE_NAME;
 		buf[1] = g_strdup(style_att);
 		X_CheckError(appendFmt(const_cast<const gchar **>(buf)));
@@ -846,7 +846,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		buf[1] = "Block Text";
 		buf[2] = NULL;
 
-		X_CheckError(appendStrux(PTX_Block, NULL));
+		X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 		X_CheckError(appendFmt(const_cast<const gchar **>(buf)));
 		break;
 	}
@@ -856,12 +856,10 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_parseState = _PS_Block;
 		m_iBlockDepth++;
 
-		const gchar *buf[3];
-		buf[0] = PT_STYLE_ATTRIBUTE_NAME;
-		buf[1] = "Plain Text";
-		buf[2] = NULL;
-
-		X_CheckError(appendStrux(PTX_Block, const_cast<const gchar **>(buf)));
+		const PP_PropertyVector buf = {
+			PT_STYLE_ATTRIBUTE_NAME, "Plain Text"
+		};
+		X_CheckError(appendStrux(PTX_Block, buf));
 		m_bWhiteSignificant = true;
 		break;
 	}
@@ -873,27 +871,22 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		const gchar *p_val = NULL;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("role"), atts);
 
-		const gchar *buf[7];
-		buf[0] = NULL;
-		buf[1] = NULL;
-		buf[2] = NULL;
-		buf[3] = NULL;
-		buf[4] = NULL;
-		buf[5] = NULL;
-		buf[6] = NULL;
-
 		if(p_val)
 		{
 			if(!strcmp(p_val, "strong"))
 			{
-				buf[0] = PT_PROPS_ATTRIBUTE_NAME;
-				buf[1] = "font-weight:bold";
-				X_CheckError(_pushInlineFmt(const_cast<const gchar **>(buf)));
-				X_CheckError(appendFmt(&m_vecInlineFmt));
+				const PP_PropertyVector attr = {
+					PT_PROPS_ATTRIBUTE_NAME, "font-weight:bold"
+				};
+				X_CheckError(_pushInlineFmt(attr));
+				X_CheckError(appendFmt(m_vecInlineFmt));
 				m_bWroteBold = true;
 			}
 			else  //possible field
 			{
+				PP_PropertyVector attr = {
+					PT_TYPE_ATTRIBUTE_NAME, p_val
+				};
 				if(!strcmp(p_val, "footnote_ref"))
 				{
 					break; //handled with TT_FOOTNOTEREF
@@ -901,20 +894,17 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 				else if(!strcmp(p_val, "footnote_anchor"))
 				{
 					X_CheckError(m_bInNote);
-					UT_UTF8String noteID;
-					UT_UTF8String_sprintf(noteID,"%i",m_iNoteID);
+					std::string noteID = UT_std_string_sprintf("%i", m_iNoteID);
 
-					buf[2] = "footnote-id";
-					buf[3] = (gchar*)g_strdup(noteID.utf8_str());
-					buf[4] = PT_PROPS_ATTRIBUTE_NAME;
-					buf[5] = "text-position:superscript";
+					attr.resize(6);
+					attr[2] = "footnote-id";
+					attr[3] = noteID;
+					attr[4] = PT_PROPS_ATTRIBUTE_NAME;
+					attr[5] = "text-position:superscript";
 				}
-				buf[0] = PT_TYPE_ATTRIBUTE_NAME;
-				buf[1] = (gchar*)p_val;
 
-				X_CheckError(appendObject(PTO_Field,const_cast<const gchar **>(buf)));
+				X_CheckError(appendObject(PTO_Field, attr));
 				m_parseState = _PS_Field;
-				FREEP(buf[3]);
 			}
 		}
 
@@ -927,37 +917,36 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	{
 		X_VerifyParseState(_PS_Block);
 
-		const gchar *buf[3];
-		buf[0] = PT_PROPS_ATTRIBUTE_NAME;
-		buf[1] = NULL;
-		buf[2] = NULL;
-
+		const char *props = "";
 		switch(tokenIndex)
 		{
-			case TT_EMPHASIS: 
-				buf[1] = "font-style:italic";
+			case TT_EMPHASIS:
+				props = "font-style:italic";
 				break;
-			case TT_SUPERSCRIPT: 
-				buf[1] = "text-position:superscript";
+			case TT_SUPERSCRIPT:
+				props = "text-position:superscript";
 				break;
-			case TT_SUBSCRIPT: 
-				buf[1] = "text-position:subscript";
-			    break;
+			case TT_SUBSCRIPT:
+				props = "text-position:subscript";
+				break;
 			default:
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				break;
 		}
-		
-		X_CheckError(_pushInlineFmt(const_cast<const gchar **>(buf)));
-		X_CheckError(appendFmt(&m_vecInlineFmt));
+
+		PP_PropertyVector attr = {
+			PT_PROPS_ATTRIBUTE_NAME, props
+		};
+		X_CheckError(_pushInlineFmt(attr));
+		X_CheckError(appendFmt(m_vecInlineFmt));
 		break;
 	}
 
 	case TT_TITLE:
 	{
-		X_CheckError ((m_parseState == _PS_Doc) || (m_parseState == _PS_Sec) || 
-			(m_parseState == _PS_MetaData) || (m_parseState == _PS_Block) || 
-			(m_parseState == _PS_DataSec) || (m_parseState == _PS_Init) || 
+		X_CheckError ((m_parseState == _PS_Doc) || (m_parseState == _PS_Sec) ||
+			(m_parseState == _PS_MetaData) || (m_parseState == _PS_Block) ||
+			(m_parseState == _PS_DataSec) || (m_parseState == _PS_Init) ||
 			(m_parseState == _PS_Table) || (m_parseState == _PS_ListSec));
 
 		m_bTitleAdded = false;
@@ -1029,19 +1018,17 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		break;
 	}
 
-	case TT_ULINK:  //an external link
+	case TT_ULINK:	//an external link
 	{
-		const gchar *buf[3];
-		buf[2] = NULL;
-
 		const gchar *p_val = NULL;
-		p_val = _getXMLPropValue(static_cast<const gchar *>("url"), atts);
+		p_val = _getXMLPropValue("url", atts);
 
 		if(p_val)
 		{
-			buf[0] = "xlink:href";
-			buf[1] = (gchar*)p_val;
-			X_CheckError(appendObject(PTO_Hyperlink, const_cast<const gchar **>(buf)));
+			PP_PropertyVector attr = {
+				"xlink:href", p_val
+			};
+			X_CheckError(appendObject(PTO_Hyperlink, attr));
 		}
 		else
 		{
@@ -1050,23 +1037,21 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 
 		break;
 	}
-	
+
 	case TT_LINK:  //an internal link
 	{
-		const gchar *buf[3];
-		buf[2] = NULL;
-
 		const gchar *p_val = NULL;
-		p_val = _getXMLPropValue(static_cast<const gchar *>("linkend"), atts);
+		p_val = _getXMLPropValue("linkend", atts);
 
 		if(p_val)
 		{
-			UT_UTF8String link = "#";
+			std::string link = "#";
 			link += p_val;
 
-			buf[0] = "xlink:href";
-			buf[1] = (gchar*)link.utf8_str();
-			X_CheckError(appendObject(PTO_Hyperlink, const_cast<const gchar **>(buf)));
+			PP_PropertyVector attr = {
+				"xlink:href", link
+			};
+			X_CheckError(appendObject(PTO_Hyperlink, attr));
 		}
 		else
 		{
@@ -1086,21 +1071,19 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	case TT_BOOKMARK:
 	{
 		X_VerifyParseState(_PS_Block);
-		const gchar *buf[5];
-		buf[4] = NULL;
 
 		const gchar *p_val = NULL;
-		p_val = _getXMLPropValue(static_cast<const gchar *>("id"), atts);
+		p_val = _getXMLPropValue("id", atts);
 
 		if(p_val)
 		{
-			buf[0] = PT_TYPE_ATTRIBUTE_NAME;
-			buf[1] = "start";
-			buf[2] = PT_NAME_ATTRIBUTE_NAME;
-			buf[3] = (gchar*)p_val;
-			X_CheckError(appendObject(PTO_Bookmark, const_cast<const gchar **>(buf)));
-			buf[1] = "end";
-			X_CheckError(appendObject(PTO_Bookmark, const_cast<const gchar **>(buf)));
+			PP_PropertyVector attr = {
+				PT_TYPE_ATTRIBUTE_NAME, "start",
+				PT_NAME_ATTRIBUTE_NAME, p_val
+			};
+			X_CheckError(appendObject(PTO_Bookmark, attr));
+			attr[1] = "end";
+			X_CheckError(appendObject(PTO_Bookmark, attr));
 		}
 		else
 		{
@@ -1116,9 +1099,6 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_bInNote = true;
 		m_iFootnotes++;
 
-		const gchar *buf[3];
-		UT_UTF8String noteID;
-
 		if(m_iNoteID == -1)
 		{
 			UT_UTF8String id;
@@ -1126,25 +1106,18 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 			m_iNoteID = m_iFootnotes;
 			UT_UTF8String_sprintf(id,"%i",m_iNoteID);
 
-			const gchar *ref[7];
-			ref[0] = PT_TYPE_ATTRIBUTE_NAME;
-			ref[1] = "footnote_ref";
-			ref[2] = "footnote-id";
-			ref[3] = (gchar*)g_strdup(id.utf8_str());
-			ref[4] = PT_PROPS_ATTRIBUTE_NAME;
-			ref[5] = "text-position:superscript";
-			ref[6] = NULL;
-			X_CheckError(appendObject(PTO_Field,const_cast<const gchar **>(ref)));
-			FREEP(ref[3]);
+			const PP_PropertyVector attr = {
+				PT_TYPE_ATTRIBUTE_NAME, "footnote_ref",
+				"footnote-id", id.utf8_str(),
+				PT_PROPS_ATTRIBUTE_NAME, "text-position:superscript"
+			};
+			X_CheckError(appendObject(PTO_Field, attr));
 		}
 
-		UT_UTF8String_sprintf(noteID,"%i",m_iNoteID);
-		buf[0] = "footnote-id";
-		buf[1] = (gchar*)g_strdup(noteID.utf8_str());
-		buf[2] = NULL;
-
-		X_CheckError(appendStrux(PTX_SectionFootnote,const_cast<const gchar **>(buf)));
-		FREEP(buf[1]);
+		const PP_PropertyVector attr = {
+			"footnote-id", UT_std_string_sprintf("%i", m_iNoteID)
+		};
+		X_CheckError(appendStrux(PTX_SectionFootnote, attr));
 
 		break;
 	}
@@ -1153,15 +1126,6 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Field) || (m_parseState == _PS_Cell));
 		m_parseState = _PS_Field;
-
-		const gchar *buf[7];
-		buf[0] = PT_TYPE_ATTRIBUTE_NAME;
-		buf[1] = "footnote_ref";
-		buf[2] = NULL;
-		buf[3] = NULL;
-		buf[4] = NULL;
-		buf[5] = NULL;
-		buf[6] = NULL;
 
 		const gchar *p_val = NULL;
 		p_val = _getXMLPropValue(static_cast<const gchar *>("linkend"), atts);
@@ -1177,13 +1141,12 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 				p_val = "-1";
 			}
 			m_iNoteID = atoi(p_val);
-
-			buf[2] = "footnote-id";
-			buf[3] = (gchar*)p_val;
-			buf[4] = PT_PROPS_ATTRIBUTE_NAME;
-			buf[5] = "text-position:superscript";
-			buf[6] = NULL;
-			X_CheckError(appendObject(PTO_Field,const_cast<const gchar **>(buf)));
+			const PP_PropertyVector attr = {
+				PT_TYPE_ATTRIBUTE_NAME, "footnote_ref",
+				"footnote-id", p_val,
+				PT_PROPS_ATTRIBUTE_NAME, "text-position:superscript"
+			};
+			X_CheckError(appendObject(PTO_Field, attr));
 		}
 		else
 		{
@@ -1199,7 +1162,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		X_VerifyParseState(_PS_Sec);
 		requireBlock();
 
-		X_CheckError(appendStrux(PTX_SectionTOC, NULL));
+		X_CheckError(appendStrux(PTX_SectionTOC, PP_NOPROPS));
 
 		m_bInTOC = true;
 		break;
@@ -1267,7 +1230,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		X_CheckError((m_parseState == _PS_Sec) || (m_parseState == _PS_List));
 		m_parseState = _PS_Table;
 		//X_CheckError(m_TableHelperStack->OpenTable (getDoc(),static_cast<const char *>(NULL)));
-		X_CheckError(appendStrux(PTX_SectionTable, NULL));
+		X_CheckError(appendStrux(PTX_SectionTable, PP_NOPROPS));
 
 		m_bInTable = true;
 
@@ -1280,7 +1243,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 		m_parseState = _PS_Cell;
 
 		//TODO: use the table helper
-		X_CheckError(appendStrux(PTX_SectionCell, NULL));
+		X_CheckError(appendStrux(PTX_SectionCell, PP_NOPROPS));
 
 		break;
 	}
@@ -1288,10 +1251,10 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	case TT_ENTRYTBL: //nested table
 	{
 		X_VerifyParseState(_PS_Table);
-		X_CheckError(appendStrux(PTX_SectionCell,static_cast<const gchar **>(NULL)));
+		X_CheckError(appendStrux(PTX_SectionCell, PP_NOPROPS));
 		requireBlock();
 
-		X_CheckError(appendStrux(PTX_SectionTable, NULL));
+		X_CheckError(appendStrux(PTX_SectionTable, PP_NOPROPS));
 
 		m_parseState = _PS_Table; //requireBlock() will reset this
 		break;
@@ -1375,7 +1338,7 @@ void IE_Imp_DocBook::startElement(const gchar *name,
 	case TT_AREA:
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_DataSec));
-		break;		
+		break;
 	}
 
 	case TT_AREASET:
@@ -1584,7 +1547,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 
 		if(m_bInFrame)
 		{
-			X_CheckError(appendStrux(PTX_EndFrame,NULL));
+			X_CheckError(appendStrux(PTX_EndFrame, PP_NOPROPS));
 			m_bInFrame = false;
 		}
 		else if(m_bInTOC)
@@ -1862,7 +1825,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 
 		X_CheckDocument(_getInlineDepth()==0);
 		_popInlineFmt();
-		X_CheckError(appendFmt(&m_vecInlineFmt));
+		X_CheckError(appendFmt(m_vecInlineFmt));
 
 		break;
 	}
@@ -1877,7 +1840,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 
 		X_CheckDocument(_getInlineDepth()==0);
 		_popInlineFmt();
-		X_CheckError(appendFmt(&m_vecInlineFmt));
+		X_CheckError(appendFmt(m_vecInlineFmt));
 
 		break;
 	}
@@ -1956,7 +1919,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 			m_bWroteBold = false;
 			X_CheckDocument(_getInlineDepth()>0);
 		    _popInlineFmt();
-			X_CheckError(appendFmt(&m_vecInlineFmt));
+			X_CheckError(appendFmt(m_vecInlineFmt));
 		}
 
 		break;
@@ -1971,7 +1934,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
-		X_CheckError(appendFmt(&m_vecInlineFmt));
+		X_CheckError(appendFmt(m_vecInlineFmt));
 
 		break;
 	}
@@ -2013,7 +1976,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 	case TT_EMAIL: // an email address
 	{
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Hyperlink, NULL));
+		X_CheckError(appendObject(PTO_Hyperlink, PP_NOPROPS));
 		break;
 	}
 
@@ -2028,7 +1991,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 	    /* end of the link */
 	  {
 	    UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
-		X_CheckError(appendObject(PTO_Hyperlink, NULL));
+		X_CheckError(appendObject(PTO_Hyperlink, PP_NOPROPS));
 	  }
 		break;
 
@@ -2072,7 +2035,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 	case TT_FOOTNOTE:
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Cell));
-		X_CheckError(appendStrux(PTX_EndFootnote,static_cast<const gchar **>(NULL)));
+		X_CheckError(appendStrux(PTX_EndFootnote, PP_NOPROPS));
 
 		if(m_bInTable)
 			m_parseState = _PS_Cell;
@@ -2108,8 +2071,8 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 		}
 
 		X_VerifyParseState(_PS_Sec);
-		X_CheckError(appendStrux(PTX_EndTOC,static_cast<const gchar **>(NULL)));
-		X_CheckError(appendStrux(PTX_Block,static_cast<const gchar **>(NULL)));
+		X_CheckError(appendStrux(PTX_EndTOC, PP_NOPROPS));
+		X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 		break;
 	}
 
@@ -2164,7 +2127,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 	case TT_TABLE:
 	{
 		X_VerifyParseState(_PS_Table);
-		X_CheckError(appendStrux(PTX_EndTable,static_cast<const gchar **>(NULL)));
+		X_CheckError(appendStrux(PTX_EndTable, PP_NOPROPS));
 
 		if(m_bRequiredBlock)
 		{
@@ -2191,7 +2154,7 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 		}
 
 		X_VerifyParseState(_PS_Cell);
-		X_CheckError(appendStrux(PTX_EndCell,NULL));
+		X_CheckError(appendStrux(PTX_EndCell, PP_NOPROPS));
 		m_parseState = _PS_Table;
 
 		break;
@@ -2200,8 +2163,8 @@ void IE_Imp_DocBook::endElement(const gchar *name)
 	case TT_ENTRYTBL: //nested table
 	{
 		X_VerifyParseState(_PS_Table);
-		X_CheckError(appendStrux(PTX_EndTable,NULL));
-		X_CheckError(appendStrux(PTX_EndCell,NULL));
+		X_CheckError(appendStrux(PTX_EndTable, PP_NOPROPS));
+		X_CheckError(appendStrux(PTX_EndCell, PP_NOPROPS));
 
 		if(m_bRequiredBlock)
 		{
@@ -2610,15 +2573,12 @@ void IE_Imp_DocBook::charData(const gchar *s, int len)
 	{
 		if(tagTop() == TT_EMAIL)
 		{
-			const gchar *buf[3];
-			buf[2] = NULL;
-
-			UT_UTF8String link = "mailto:";
+			std::string link = "mailto:";
 			link += s;
-
-			buf[0] = "xlink:href";
-			buf[1] = (gchar*)link.utf8_str();
-			X_CheckError(appendObject(PTO_Hyperlink, const_cast<const gchar **>(buf)));
+			const PP_PropertyVector attr = {
+				"xlink:href", link
+			};
+			X_CheckError(appendObject(PTO_Hyperlink, attr));
 		}
 	}
 
@@ -2816,22 +2776,21 @@ void IE_Imp_DocBook :: createTitle (void)
 	if(buf[1] == NULL) //preventive code for appendStrux() below
 		buf[0] = NULL;
 
-	X_CheckError(appendStrux(PTX_Block, const_cast<const gchar **>(buf)));
+	X_CheckError(appendStrux(PTX_Block, PP_std_copyProps(buf)));
 	if (m_bMustNumber)
 	{
 		/* adds field */
-		const gchar * buf2 [3];
-		buf2[0] = PT_TYPE_ATTRIBUTE_NAME;
-		buf2[1] = "list_label";
-		buf2[2] = NULL;
+		PP_PropertyVector attr = {
+			PT_TYPE_ATTRIBUTE_NAME, "list_label"
+		};
 
-		X_CheckError ( appendObject (PTO_Field, const_cast<const gchar **>(buf2)));
-		X_CheckError ( appendFmt (const_cast<const gchar **>(buf2)));
+		X_CheckError ( appendObject (PTO_Field, attr));
+		X_CheckError ( appendFmt (attr));
 		UT_UCSChar ucs = UCS_TAB;
 		appendSpan(&ucs,1);
 		_popInlineFmt();
 	}
-	X_CheckError ( appendFmt (static_cast<const gchar **>(NULL)));
+	X_CheckError ( appendFmt (PP_NOPROPS));
 
 	m_bMustAddTitle = false;
 	m_bTitleAdded = true;
@@ -2928,12 +2887,6 @@ void IE_Imp_DocBook::createImage(const char *name, const gchar **atts)
 	X_CheckError (getDoc()->createDataItem (dataid.c_str(), false, pBB, 
                                             pfg->getMimeType(), NULL));
 
-	const gchar *buf[5];
-	buf[0] = "dataid";
-	buf[1] = (gchar*)dataid.c_str();
-	buf[2] = NULL;
-	buf[4] = NULL;
-
 	UT_UTF8String props;
 	const gchar *p_val = NULL;
 
@@ -2956,13 +2909,17 @@ void IE_Imp_DocBook::createImage(const char *name, const gchar **atts)
 		props+= p_val;
 	}
 
+	PP_PropertyVector attr = {
+		"dataid", dataid
+	};
+
 	if(props.length())
 	{
-		buf[2] = PT_PROPS_ATTRIBUTE_NAME;
-		buf[3] = (gchar*)props.utf8_str();
+		attr.push_back(PT_PROPS_ATTRIBUTE_NAME);
+		attr.push_back(props.utf8_str());
 	}
 
-	X_CheckError(appendObject(PTO_Image, const_cast<const gchar **>(buf)));
+	X_CheckError(appendObject(PTO_Image, attr));
 	DELETEP(pfg);
 }
 /*****************************************************************************/
@@ -2981,7 +2938,7 @@ void IE_Imp_DocBook::requireBlock(void)
 	if(!m_iBlockDepth)
 	{
 		m_iBlockDepth = 1;
-		X_CheckError(appendStrux(PTX_Block,static_cast<const gchar **>(NULL)));
+		X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 
 		if(m_parseState == _PS_Cell)
 			m_bWroteEntryPara = true;

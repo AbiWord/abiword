@@ -85,12 +85,10 @@ UT_Error OXML_Element_Bookmark::addToPT(PD_Document* pDocument)
 {
 	UT_Error err = UT_OK;
 
-	const gchar *field_fmt[5];
-	field_fmt[0] = "type";
-	field_fmt[1] = m_type.c_str();
-	field_fmt[2] = "name";
-	field_fmt[3] = m_name.c_str();
-	field_fmt[4] = 0;
+	const PP_PropertyVector field_fmt = {
+		"type", m_type,
+		"name", m_name,
+	};
 
 	if(!pDocument->appendObject(PTO_Bookmark, field_fmt))
 		return UT_ERROR;

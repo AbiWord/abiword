@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -55,8 +55,8 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 	if(bAddChangeRec && m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
-		const gchar ** ppRevAttrib = NULL;
-		const gchar ** ppRevProps  = NULL;
+		PP_PropertyVector ppRevAttrib;
+		PP_PropertyVector ppRevProps;
 
 		pf_Frag * pf = NULL;
 		PT_BlockOffset fragOffset = 0;
@@ -67,11 +67,11 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 			pf = pf->getPrev();
 
 		UT_return_val_if_fail( pf, false );
-		
+
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
 
-		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps, 0, 0);
-		
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps, PP_NOPROPS, PP_NOPROPS);
+
 		//return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
 		return _realInsertSpan(dpos, p, length, ppRevAttrib, ppRevProps, pField, bAddChangeRec);
 	}
@@ -81,14 +81,11 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		// that the text does not get inserted with a leftover
 		// revision attribute (e.g., if we are inserting it next to
 		// revisioned text
-		const gchar name[] = "revision";
-		const gchar * ppRevAttrib[5];
-		ppRevAttrib[0] = name;
-		ppRevAttrib[1] = NULL;
-		ppRevAttrib[2] = NULL;
-		ppRevAttrib[3] = NULL;
-		ppRevAttrib[4] = NULL;
-		
+		const char* name = "revision";
+		PP_PropertyVector ppRevAttrib = {
+			name, "",
+		};
+
 		const gchar * pRevision = NULL;
 
 		// first retrive the fmt we have (_realChangeSpanFmt()) is
@@ -102,32 +99,31 @@ bool pt_PieceTable::insertSpan(PT_DocPosition dpos,
 		const PP_AttrProp * pAP;
 		if(_getSpanAttrPropHelper(pf1, &pAP))
 		{
-		        const gchar * szStyleNameVal = NULL;
-		        pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,szStyleNameVal);
+			const gchar * szStyleNameVal = NULL;
+			pAP->getAttribute(PT_STYLE_ATTRIBUTE_NAME,szStyleNameVal);
 			if(!pAP->getAttribute(name, pRevision))
 			{
-			    return _realInsertSpan(dpos, p, length,NULL , NULL, pField, bAddChangeRec);
+				return _realInsertSpan(dpos, p, length, PP_NOPROPS, PP_NOPROPS, pField, bAddChangeRec);
 			}
 			if(szStyleNameVal != NULL)
 			{
-			        ppRevAttrib[2] = PT_STYLE_ATTRIBUTE_NAME;;
-				ppRevAttrib[3] = szStyleNameVal;
-			  
+				ppRevAttrib.push_back(PT_STYLE_ATTRIBUTE_NAME);
+				ppRevAttrib.push_back(szStyleNameVal);
 			}
 			//if(!_realChangeSpanFmt(PTC_RemoveFmt, dpos, dpos+length, ppRevAttrib,NULL))
 			//	return false;
-			return _realInsertSpan(dpos, p, length, ppRevAttrib, NULL, pField, bAddChangeRec);
+			return _realInsertSpan(dpos, p, length, ppRevAttrib, PP_NOPROPS, pField, bAddChangeRec);
 		}
 		else
 		{
 			// no AP, this is probably OK
 			UT_DEBUGMSG(("pt_PieceTable::insertSpan: no AP\n"));
-			return _realInsertSpan(dpos, p, length, NULL, NULL, pField, bAddChangeRec);
+			return _realInsertSpan(dpos, p, length, PP_NOPROPS, PP_NOPROPS, pField, bAddChangeRec);
 		}
 	}
 	else
 	{
-		return _realInsertSpan(dpos, p, length, NULL, NULL, pField, bAddChangeRec);
+		return _realInsertSpan(dpos, p, length, PP_NOPROPS, PP_NOPROPS, pField, bAddChangeRec);
 	}
 }
 
@@ -362,8 +358,8 @@ bool pt_PieceTable::_lastUndoIsThisFmtMark(PT_DocPosition dpos)
 bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 									const UT_UCSChar * p,
 									UT_uint32 length,
-									const gchar ** attributes,
-									const gchar ** properties,
+									const PP_PropertyVector & attributes,
+									const PP_PropertyVector & properties,
 									fd_Field * pField,
 									bool bAddChangeRec)
 {
@@ -510,28 +506,28 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 			indexAP = _chooseIndexAP(pf,fragOffset);
 			// PLAM: This is the list of field attrs that should not inherit
 			// PLAM: to the span following a field.
-			const gchar * pFieldAttrs[12];
-			pFieldAttrs[0] = "type";  pFieldAttrs[1] = NULL;
-			pFieldAttrs[2] = "param"; pFieldAttrs[3] = NULL;
-			pFieldAttrs[4] = "name";  pFieldAttrs[5] = NULL;
-			pFieldAttrs[6] = "endnote-id"; pFieldAttrs[7] = NULL;
-			pFieldAttrs[8] = NULL;   pFieldAttrs[9] = NULL;
-			pFieldAttrs[10] = NULL;   pFieldAttrs[11] = NULL;
-			
+			PP_PropertyVector pFieldAttrs = {
+				"type", "",
+				"param", "",
+				"name", "",
+				"endnote-id", ""
+			};
+
 			const PP_AttrProp * pAP = NULL;
-			
+
 			if (!getAttrProp(indexAP, &pAP))
 				return false;
-			
-			if (pAP->areAnyOfTheseNamesPresent(pFieldAttrs, NULL))
+
+			if (pAP->areAnyOfTheseNamesPresent(pFieldAttrs, PP_NOPROPS))
 			{
 				// We do not want to inherit a char style from a field.
-				pFieldAttrs[8] = "style";
-				PP_AttrProp * pAPNew = pAP->cloneWithElimination(pFieldAttrs, NULL);
+				pFieldAttrs.push_back("style");
+				pFieldAttrs.push_back("");
+				PP_AttrProp * pAPNew = pAP->cloneWithElimination(pFieldAttrs, PP_NOPROPS);
 				if (!pAPNew)
 					return false;
 				pAPNew->markReadOnly();
-				
+
 				if (!m_varset.addIfUniqueAP(pAPNew, &indexAP))
 					return false;
 			}
@@ -552,12 +548,12 @@ bool pt_PieceTable::_realInsertSpan(PT_DocPosition dpos,
 	PT_BlockOffset blockOffset = _computeBlockOffset(pfs,pf) + fragOffset;
 	PX_ChangeRecord_Span * pcr = NULL;
 
-	if(attributes || properties)
+	if(!attributes.empty() || !properties.empty())
 	{
 		// we need to add the attrs and props passed to us ...
 		PT_AttrPropIndex indexNewAP;
 		bool bMerged;
-		bMerged = m_varset.mergeAP(PTC_AddFmt,indexAP,attributes,properties,&indexNewAP,getDocument());
+		bMerged = m_varset.mergeAP(PTC_AddFmt, indexAP, attributes, properties, &indexNewAP, getDocument());
 		UT_ASSERT_HARMLESS( bMerged );
 
 		if(bMerged)

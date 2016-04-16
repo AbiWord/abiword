@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -513,6 +513,32 @@ void PD_Document::setMyAuthorInt(UT_sint32 i)
 UT_sint32 PD_Document::getLastAuthorInt(void) const
 {
 	return m_iLastAuthorInt;
+}
+
+bool PD_Document:: addAuthorAttributeIfBlank(PP_PropertyVector & atts)
+{
+	// Set Author attribute
+	std::string author = PP_getAttribute(PT_AUTHOR_NAME, atts);
+	bool bFound = !author.empty();
+	if (bFound) {
+		m_iLastAuthorInt = atoi(author.c_str());
+		return true;
+	}
+	if(getMyAuthorInt() == -1)
+	{
+		UT_sint32 k = findFirstFreeAuthorInt();
+		setMyAuthorInt(k);
+		m_iLastAuthorInt = k;
+		pp_Author * pA = addAuthor(k);
+		sendAddAuthorCR(pA);
+	}
+
+	author = UT_std_string_sprintf("%d",getMyAuthorInt());
+	m_iLastAuthorInt = getMyAuthorInt();
+	atts.push_back(PT_AUTHOR_NAME);
+	atts.push_back(author);
+
+	return false;
 }
 
 /*!
@@ -1073,8 +1099,8 @@ UT_Error PD_Document::newDocument(void)
 			m_pPieceTable->setPieceTableState(PTS_Loading);
 
 			// add just enough structure to empty document so we can edit
-			appendStrux(PTX_Section,NULL);
-			appendStrux(PTX_Block, NULL);
+			appendStrux(PTX_Section, PP_NOPROPS);
+			appendStrux(PTX_Block, PP_NOPROPS);
 
 			// set standard document properties, such as dtd, lang,
 			// dom-dir, etc. (some of the code that used to be here is
@@ -1284,18 +1310,16 @@ void PD_Document::_setClean(void)
 
 bool	PD_Document::insertObject(PT_DocPosition dpos,
 								  PTObjectType pto,
-								  const gchar ** attributes,
-								  const gchar ** properties)
+								  const PP_PropertyVector & attributes,
+								  const PP_PropertyVector & properties)
 {
 	if(isDoingTheDo())
 	{
 		return false;
 	}
-	const gchar ** szAttsAuthor = NULL;
-	std::string storage;
-	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
-	bool b = m_pPieceTable->insertObject(dpos, pto, szAttsAuthor, properties);
-	delete [] szAttsAuthor;
+	PP_PropertyVector newattrs(attributes);
+	addAuthorAttributeIfBlank(newattrs);
+	bool b = m_pPieceTable->insertObject(dpos, pto, newattrs, properties);
 	return b;
 }
 
@@ -1463,6 +1487,7 @@ bool PD_Document::deleteSpan(PT_DocPosition dpos1,
 	return m_pPieceTable->deleteSpanWithTable(dpos1, dpos2, p_AttrProp_Before,iRealDeleteCount, bDeleteTableStruxes );
 }
 
+// XXX remove this one.
 bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 								PT_DocPosition dpos1,
 								PT_DocPosition dpos2,
@@ -1478,13 +1503,32 @@ bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
 	const gchar ** szAttsAuthor = NULL;
 	std::string storage;
 	addAuthorAttributeIfBlank(attributes,szAttsAuthor,storage);
-	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,szAttsAuthor,properties);
+	f = m_pPieceTable->changeSpanFmt(ptc,dpos1,dpos2,
+                                     PP_std_copyProps(szAttsAuthor),
+                                     PP_std_copyProps(properties));
 	delete [] szAttsAuthor;
 	processDeferredNotifications();
 	return f;
 }
 
-
+bool PD_Document::changeSpanFmt(PTChangeFmt ptc,
+								PT_DocPosition dpos1,
+								PT_DocPosition dpos2,
+								const PP_PropertyVector & attributes,
+								const PP_PropertyVector & properties)
+{
+	if(isDoingTheDo())
+	{
+		return false;
+	}
+	bool f;
+	deferNotifications();
+	PP_PropertyVector attsAuthor =	attributes;
+	addAuthorAttributeIfBlank(attsAuthor);
+	f = m_pPieceTable->changeSpanFmt(ptc, dpos1, dpos2, attsAuthor, properties);
+	processDeferredNotifications();
+	return f;
+}
 
 bool PD_Document::insertStrux(PT_DocPosition dpos,
 							  PTStruxType pts, pf_Frag_Strux ** ppfs_ret)
@@ -1514,6 +1558,41 @@ bool PD_Document::insertStrux(PT_DocPosition dpos,
 	return b;
 }
 
+bool PD_Document::insertStrux(PT_DocPosition dpos, PTStruxType pts,
+							  const PP_PropertyVector & attributes,
+							  const PP_PropertyVector & properties,
+							  pf_Frag_Strux ** ppfs_ret)
+{
+	if(isDoingTheDo())
+	{
+		return false;
+	}
+
+	PP_PropertyVector attr(attributes);
+	addAuthorAttributeIfBlank(attr);
+
+	const gchar ** pattributes = new const gchar*[attr.size() + 1];
+	const gchar ** current = pattributes;
+	for (auto iter = attr.cbegin(); iter != attr.cend(); ++iter) {
+		*current = iter->c_str();
+		++current;
+	}
+	*current = NULL;
+
+
+	const gchar ** pproperties = new const gchar*[properties.size() + 1];
+	current = pproperties;
+	for (auto iter = properties.cbegin(); iter != properties.cend(); ++iter) {
+		*current = iter->c_str();
+		++current;
+	}
+	*current = NULL;
+
+	bool b =  m_pPieceTable->insertStrux(dpos,pts,pattributes,pproperties,ppfs_ret);
+	delete [] pattributes;
+	delete [] pproperties;
+	return b;
+}
 
 /*!
  * This method deletes the HdrFtr strux pointed to by sdh
@@ -1592,7 +1671,7 @@ bool  PD_Document::deleteFmtMark( PT_DocPosition dpos)
 //////////////////////////////////////////////////////////////////
 //////////////////////////////////////////////////////////////////
 
-bool PD_Document::appendStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
+bool PD_Document::appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
@@ -1671,24 +1750,24 @@ bool PD_Document::repairDoc(void)
 	pf = m_pPieceTable->getFragments().getFirst();
 	if(!pf)
 	{
-		appendStrux(PTX_Section, NULL);
-		appendStrux(PTX_Block,NULL);
+		appendStrux(PTX_Section, PP_NOPROPS);
+		appendStrux(PTX_Block, PP_NOPROPS);
 		return true;
-	} 
+	}
 	// Now check if the document starts with a section
 	pf = m_pPieceTable->getFragments().getFirst();
 	if(pf->getType() != pf_Frag::PFT_Strux)
 	{
-		insertStruxBeforeFrag(pf, PTX_Section,NULL);
-		insertStruxBeforeFrag(pf, PTX_Block,NULL);
+		insertStruxBeforeFrag(pf, PTX_Section, PP_NOPROPS);
+		insertStruxBeforeFrag(pf, PTX_Block, PP_NOPROPS);
 		bRepaired = true;
 	}
 	pf = m_pPieceTable->getFragments().getFirst();
 	pfs = static_cast<pf_Frag_Strux *>(pf);
 	if(pfs->getStruxType() != PTX_Section)
 	{
-		insertStruxBeforeFrag(pf, PTX_Section,NULL);
-		insertStruxBeforeFrag(pf, PTX_Block,NULL);
+		insertStruxBeforeFrag(pf, PTX_Section, PP_NOPROPS);
+		insertStruxBeforeFrag(pf, PTX_Block, PP_NOPROPS);
 		bRepaired = true;
 	}
 
@@ -1705,11 +1784,11 @@ bool PD_Document::repairDoc(void)
 			{
 				pf_Frag * pfNext = pf->getNext();
 				if(pfNext && ((pfNext->getType() ==  pf_Frag::PFT_Text) || (pfNext->getType() ==  pf_Frag::PFT_Object) || (pfNext->getType() ==  pf_Frag::PFT_FmtMark)))
-				{  
+				{
 					//
 					// Insert a block afterwards!
 					//
-					insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+					insertStruxBeforeFrag(pfNext, PTX_Block, PP_NOPROPS);
 					bRepaired = true;
 				}
 				else if(pfNext && (pfs->getStruxType() == PTX_SectionCell) && (pfNext->getType() == pf_Frag::PFT_Strux) )
@@ -1720,7 +1799,7 @@ bool PD_Document::repairDoc(void)
 					//
 					// Insert a block afterwards!
 					//
-						insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+						insertStruxBeforeFrag(pfNext, PTX_Block, PP_NOPROPS);
 						bRepaired = true;
 					}
 				}
@@ -1731,7 +1810,7 @@ bool PD_Document::repairDoc(void)
 					//
 					// Insert a block afterwards!
 					//
-						insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+						insertStruxBeforeFrag(pfNext, PTX_Block, PP_NOPROPS);
 						bRepaired = true;
 					}
 					else
@@ -1742,7 +1821,7 @@ bool PD_Document::repairDoc(void)
 							//
 							// Insert a block afterwards!
 							//
-							insertStruxBeforeFrag(pfNext, PTX_Block,NULL);
+							insertStruxBeforeFrag(pfNext, PTX_Block, PP_NOPROPS);
 							bRepaired = true;
 						}
 						
@@ -1750,7 +1829,7 @@ bool PD_Document::repairDoc(void)
 				}
 				else if(pfs->getStruxType() == PTX_EndTable && pfNext == NULL)
 				{
-					appendStrux(PTX_Block, NULL);
+					appendStrux(PTX_Block, PP_NOPROPS);
 				}
 			}
 		}
@@ -1847,14 +1926,14 @@ bool PD_Document::repairDoc(void)
 		pf_Frag * pfsNext = pfs->getNext();
 		if (!pfsNext)
 		{
-			appendStrux(PTX_Block,NULL);
+			appendStrux(PTX_Block, PP_NOPROPS);
 			bRepaired = true;
 		}
 		else if ((pfsNext->getType() == pf_Frag::PFT_Strux) &&
 				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() != PTX_Block) &&
 				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() != PTX_SectionTable))
 		{
-			insertStruxBeforeFrag(pfsNext, PTX_Block,NULL);
+			insertStruxBeforeFrag(pfsNext, PTX_Block, PP_NOPROPS);
 			bRepaired = true;
 		}
 	}
@@ -1865,14 +1944,14 @@ bool PD_Document::repairDoc(void)
 		pf_Frag * pfsNext = pfs->getNext();
 		if (!pfsNext)
 		{
-			appendStrux(PTX_Block,NULL);
+			appendStrux(PTX_Block, PP_NOPROPS);
 			bRepaired = true;
 		}
 		else if ((pfsNext->getType() == pf_Frag::PFT_Strux) &&
 				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() != PTX_Block) &&
 				 (static_cast<pf_Frag_Strux *>(pfsNext)->getStruxType() != PTX_SectionTable))
 		{
-			insertStruxBeforeFrag(pfsNext, PTX_Block,NULL);
+			insertStruxBeforeFrag(pfsNext, PTX_Block, PP_NOPROPS);
 			bRepaired = true;
 		}
 	}
@@ -1899,7 +1978,7 @@ bool PD_Document::repairDoc(void)
 		else if(!bGotBlock && (pf->getType() !=  pf_Frag::PFT_EndOfDoc))
 		{
 			// BUG! Content not in a block. Insert one now
-			insertStruxBeforeFrag(pf, PTX_Block,NULL);
+			insertStruxBeforeFrag(pf, PTX_Block, PP_NOPROPS);
 			bGotBlock = true;
 			bRepaired = true;
 		}
@@ -2144,14 +2223,14 @@ bool PD_Document::appendFmt(const gchar ** attributes)
 	return m_pPieceTable->appendFmt(attributes);
 }
 
-bool PD_Document::appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes)
+bool PD_Document::appendFmt(const PP_PropertyVector & vecAttributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 	checkForSuspect();
 
 	// can only be used while loading the document
 
-	return m_pPieceTable->appendFmt(pVecAttributes);
+	return m_pPieceTable->appendFmt(vecAttributes);
 }
 
 bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
@@ -2244,7 +2323,7 @@ bool PD_Document::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 	return result;
 }
 
-bool PD_Document::appendObject(PTObjectType pto, const gchar ** attributes)
+bool PD_Document::appendObject(PTObjectType pto, const PP_PropertyVector & attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 	checkForSuspect();
@@ -3953,7 +4032,7 @@ bool PD_Document::removeStyle(const gchar * pszName)
 	return true;
 }
 
-bool PD_Document::appendStyle(const gchar ** attributes)
+bool PD_Document::appendStyle(const PP_PropertyVector & attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
@@ -6232,7 +6311,7 @@ bool PD_Document::convertPercentToInches(const char * szPercent, UT_UTF8String &
 bool PD_Document:: setPageSizeFromFile(const gchar ** attributes)
 {
 
-	bool b =  m_docPageSize.Set(attributes);
+	bool b =  m_docPageSize.Set(PP_std_copyProps(attributes));
 	UT_DEBUGMSG(("SetPageSize m_bLoading %d \n",m_bLoading));
 	if(!m_bLoading)
 	{
@@ -6540,7 +6619,8 @@ bool PD_Document::setAttrProp(const gchar ** ppAttr)
 			m_pPieceTable->setXIDThreshold(iXID);
 		}
 		
-		bRet = VARSET.mergeAP(PTC_AddFmt, m_indexAP, ppAttr, NULL, &m_indexAP, this);
+		bRet = VARSET.mergeAP(PTC_AddFmt, m_indexAP, PP_std_copyProps(ppAttr),
+                              PP_NOPROPS, &m_indexAP, this);
 	}
 	
 	return bRet;
@@ -6548,13 +6628,13 @@ bool PD_Document::setAttrProp(const gchar ** ppAttr)
 
 bool PD_Document::setAttributes(const gchar ** ppAttr)
 {
-	return VARSET.mergeAP(PTC_AddFmt, m_indexAP, ppAttr, NULL, &m_indexAP, this);
+	return VARSET.mergeAP(PTC_AddFmt, m_indexAP, PP_std_copyProps(ppAttr), PP_NOPROPS, &m_indexAP, this);
 }
 
 
 bool PD_Document::setProperties(const gchar ** ppProps)
 {
-	return VARSET.mergeAP(PTC_AddFmt, m_indexAP, NULL, ppProps, &m_indexAP, this);
+	return VARSET.mergeAP(PTC_AddFmt, m_indexAP, PP_NOPROPS, PP_std_copyProps(ppProps), &m_indexAP, this);
 }
 
 #undef VARSET
@@ -6719,7 +6799,8 @@ bool PD_Document::_exportFindVisDirectionRunAtPos(PT_DocPosition pos)
 }
 
 bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-										const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
+										const PP_PropertyVector & attributes,
+										pf_Frag_Strux ** ppfs_ret)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 
@@ -6735,7 +6816,7 @@ bool PD_Document::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 			{
 				m_vecSuspectFrags.addItem(pPrevFrag);
 			}
-		} 
+		}
 	}
 	updateStatus();
 	return m_pPieceTable->insertStruxBeforeFrag(pF,pts,attributes,ppfs_ret);
@@ -6828,7 +6909,7 @@ bool PD_Document::insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * pbuf, UT
 }
 
 bool PD_Document::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
-										 const gchar ** attributes)
+										 const PP_PropertyVector & attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 	if(pF->getType() == pf_Frag::PFT_Strux)
@@ -6896,7 +6977,7 @@ PT_AttrPropIndex  PD_Document::getAPIFromSOH(pf_Frag_Object* odh)
 	return pfo->getIndexAP();
 }	
 
-bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes)
+bool PD_Document::insertFmtMarkBeforeFrag(pf_Frag * pF, const PP_PropertyVector & attributes)
 {
 	UT_return_val_if_fail (m_pPieceTable, false);
 

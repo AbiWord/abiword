@@ -154,8 +154,8 @@ void OXMLi_ListenerState_Styles::endElement (OXMLi_EndElementRequest * rqst)
 			   nameMatches(rqst->pName, NS_W_KEY, "tcPr")) {
 		//Retrieve the formatting collected by the Common listener state.
 		OXML_SharedElement dummy = rqst->stck->top();
-		const gchar ** props = dummy->getProperties();
-		if (props != NULL) {
+		PP_PropertyVector props = dummy->getProperties();
+		if (!props.empty()) {
 			//Pass the retrieved properties to a new style object
 			UT_return_if_fail(_error_if_fail(UT_OK == m_pCurrentStyle->appendProperties(props)));
 		}

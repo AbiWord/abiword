@@ -1262,25 +1262,22 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 	}
 	bFound = pAP->getAttribute("title",szTitle);
 	bFound = pAP->getAttribute("alt",szDescription);
-	UT_String sProps;
-	sProps += "width:";
+	std::string sProps = "width:";
 	sProps += szWidth;
 	sProps += "; height:";
 	sProps += szHeight;
-	const gchar*	attributes[] = {
-		PT_IMAGE_DATAID, NULL,
-		PT_IMAGE_TITLE,NULL,
-		PT_IMAGE_DESCRIPTION,NULL,
-		PT_PROPS_ATTRIBUTE_NAME, NULL,
-	   	NULL, NULL};
+
 	if(szTitle ==  0)
 		szTitle = "";
 	if(szDescription == 0)
 		szDescription = "";
-	attributes[1] = szDataID;
-	attributes[3] = szTitle;
-	attributes[5] = szDescription;
-	attributes[7] = sProps.c_str();
+
+	const PP_PropertyVector attributes = {
+		PT_IMAGE_DATAID, szDataID,
+		PT_IMAGE_TITLE, szTitle,
+		PT_IMAGE_DESCRIPTION, szDescription,
+		PT_PROPS_ATTRIBUTE_NAME, sProps
+	};
 	if(pFrame->getPosition(true) < pos)
 	{
 		pos -= 2;
@@ -1304,7 +1301,7 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 		setPoint(pos);
 		pos = getPoint();
 	}
-	m_pDoc->insertObject(pos, PTO_Image, attributes, NULL);
+	m_pDoc->insertObject(pos, PTO_Image, attributes, PP_NOPROPS);
 	_restorePieceTableState();
 	m_pDoc->endUserAtomicGlob();
 	_updateInsertionPoint();
@@ -2282,7 +2279,7 @@ void FV_View::toggleCase (ToggleCase c)
 				bResult = m_pDoc->insertSpan(low, pTemp, iLen, pSpanAPNow);
 				UT_ASSERT_HARMLESS( bResult );
 
-				if(pSpanAPNow->getAttributes() || pSpanAPNow->getProperties())
+				if(!pSpanAPNow->getAttributes().empty() || !pSpanAPNow->getProperties().empty())
 				{
 					bResult &= m_pDoc->changeSpanFmt(PTC_SetFmt,low,low+iLen,
 													 pSpanAPNow->getAttributes(),pSpanAPNow->getProperties());
@@ -4031,7 +4028,7 @@ void FV_View::insertParagraphBreaknoListUpdate(void)
 	_ensureInsertionPointOnScreen();
 }
 
-bool FV_View::appendStyle(const gchar ** style)
+bool FV_View::appendStyle(const PP_PropertyVector & style)
 {
 	return m_pDoc->appendStyle(style);
 }
@@ -4720,19 +4717,37 @@ bool FV_View::getStyle(const gchar ** style) const
 }
 
 // TODO: merge this the and other override to not iterate twice.
-bool FV_View::setCharFormat(const std::vector<std::string>& properties)
+bool FV_View::setCharFormat(const PP_PropertyVector & properties,
+							const PP_PropertyVector & attributes)
 {
-	size_t len = properties.size();
-	const gchar** props = (const gchar**)calloc(len + 1, sizeof (gchar*));
-	const gchar** current = props;
-	for(std::vector<std::string>::const_iterator iter = properties.begin();
-		iter != properties.end(); ++iter) {
-		*current = iter->c_str();
-		current++;
+	size_t len = 0;
+	const gchar** props = nullptr;
+	if (!properties.empty()) {
+		len = properties.size();
+		props = (const gchar**)calloc(len + 1, sizeof (gchar*));
+		const gchar** current = props;
+		for(auto iter = properties.cbegin(); iter != properties.cend(); ++iter) {
+			*current = iter->c_str();
+			current++;
+		}
+		props[len] = NULL;
 	}
-	props[len] = NULL;
-	bool ret = setCharFormat(props, NULL);
+
+	const gchar** attrs = nullptr;
+	if (!attributes.empty()) {
+		len = attributes.size();
+		attrs = (const gchar**)calloc(len + 1, sizeof (gchar*));
+		const gchar** current = attrs;
+		for(auto iter = attributes.cbegin(); iter != attributes.cend(); ++iter) {
+			*current = iter->c_str();
+			current++;
+		}
+		attrs[len] = NULL;
+	}
+
+	bool ret = setCharFormat(props, attrs);
 	free(props);
+	free(attrs);
 	return ret;
 }
 
@@ -5923,9 +5938,8 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const gchar ** atts)
 // Insert a page number with the correct formatting.
 //
 
-	const gchar* f_attributes[] = {
-		"type", "page_number",
-		NULL, NULL
+	const PP_PropertyVector f_attributes = {
+		"type", "page_number"
 	};
 	pBL = pHFSL->getNextBlockInDocument();
 	pos = pBL->getPosition();
@@ -5949,7 +5963,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const gchar ** atts)
 	// Insert the page_number field with the requested attributes at the top
 	// of the header/footer.
 
-	bRet = m_pDoc->insertObject(pos, PTO_Field, f_attributes, NULL);
+	bRet = m_pDoc->insertObject(pos, PTO_Field, f_attributes, PP_NOPROPS);
 	m_pDoc->endUserAtomicGlob();
 
 	if(bInsertFromHdrFtr)
@@ -12931,13 +12945,10 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	{
 		return false;
 	}
-	const gchar * pAttr[4];
-	pAttr[0] = PT_ANNOTATION_NUMBER;
-	std::string sNum;
-	sNum = UT_std_string_sprintf("%d",iAnnotation);
-	pAttr[1] = sNum.c_str();
-	pAttr[2] = 0;
-	pAttr[3] = 0;
+	std::string sNum = UT_std_string_sprintf("%d",iAnnotation);
+	const PP_PropertyVector pAttr = {
+		PT_ANNOTATION_NUMBER, sNum
+	};
 	//
 	// First set up a glob
 	//
@@ -12959,11 +12970,10 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	// Now insert the annotation end run, so that we can use it as a stop
 	// after inserting the start run when marking the runs in between
 	// as a hyperlink
-	bool bRet = m_pDoc->insertObject(posEnd, PTO_Annotation, NULL, NULL);
+	bool bRet = m_pDoc->insertObject(posEnd, PTO_Annotation, PP_NOPROPS, PP_NOPROPS);
 	if(bRet)
 	{
-		const gchar ** pProps = 0;
-		bRet = m_pDoc->insertObject(posStart, PTO_Annotation, pAttr, pProps);
+		bRet = m_pDoc->insertObject(posStart, PTO_Annotation, pAttr, PP_NOPROPS);
 	}
 
 	//
@@ -13414,10 +13424,8 @@ bool FV_View::insertPageNum(const gchar ** props, HdrFtrType hfType)
 	  Warning: this code assumes that _insertFooter() leaves the insertion
 	  point in a place where it can write the page_num field.
 	*/
-
-	const gchar* f_attributes[] = {
-		"type", "page_number",
-		NULL, NULL
+	PP_PropertyVector  f_attributes = {
+		"type", "page_number"
 	};
 
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
@@ -13438,7 +13446,7 @@ bool FV_View::insertPageNum(const gchar ** props, HdrFtrType hfType)
 
 	// Insert the page_number field
 
-	bResult = m_pDoc->insertObject(getPoint(), PTO_Field, f_attributes, NULL);
+	bResult = m_pDoc->insertObject(getPoint(), PTO_Field, f_attributes, PP_NOPROPS);
 
 	moveInsPtTo(oldPos);	// Get back to where you once belonged.
 

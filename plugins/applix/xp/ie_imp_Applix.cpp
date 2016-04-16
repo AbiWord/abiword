@@ -186,8 +186,8 @@ IE_Imp_Applix::IE_Imp_Applix(PD_Document * pDocument)
 
 UT_Error IE_Imp_Applix::_writeHeader(GsfInput * /* fp */)
 {
-	X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
-	X_ReturnNoMemIfError(appendStrux(PTX_Block, NULL));
+	X_ReturnNoMemIfError(appendStrux(PTX_Section, PP_NOPROPS));
+	X_ReturnNoMemIfError(appendStrux(PTX_Block, PP_NOPROPS));
 
 	return UT_OK;
 }
@@ -686,7 +686,7 @@ void IE_Imp_Applix::_applixNewPara (const char* /*buf*/, size_t /*len*/)
 	}
 	
 	xxx_UT_DEBUGMSG(("applix: new para\n"));
-	appendStrux (PTX_Block, NULL);
+	appendStrux (PTX_Block, PP_NOPROPS);
 }
 
 

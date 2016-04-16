@@ -112,7 +112,7 @@ UT_Error OXML_Document::addStyle(const std::string & id, const std::string & nam
 		UT_DEBUGMSG(("Object creation failed!\n"));
 		return UT_OUTOFMEM;
 	}
-	obj->setAttributes(attributes);
+	obj->setAttributes(PP_std_copyProps(attributes));
 	return addStyle(obj);
 }
 

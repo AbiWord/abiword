@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
@@ -763,21 +763,14 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 {
 	const gchar ** atts =
 		(const gchar **)UT_cloneAndDecodeAttributes (attributes);
-	
+
 	int failLine;
 	failLine = 0;
 	UT_DEBUGMSG(("startElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 	UT_ASSERT(m_error == 0);
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
 	                                                // this just avoids all the processing if there is an error
-#define NEW_ATTR_SZ 3
- 	const gchar *new_atts[NEW_ATTR_SZ];
-	gchar * sz1;
-	sz1 = NULL;
 
-	for(int i = 0; i < NEW_ATTR_SZ; i++)
-	  new_atts[i] = NULL;
-#undef NEW_ATTR_SZ
 	UT_uint16 *parentID;
 
 	UT_uint32 tokenIndex;
@@ -1067,8 +1060,6 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			m_parseState =  _PS_Sec;
 		X_CheckError (requireSection ());
 
-		gchar *sz;
-
 		if (m_listType != L_NONE)
 		{
 			UT_uint16 thisID = m_iListID;
@@ -1106,23 +1097,18 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			const gchar* temp = static_cast<const gchar*>(listAtts[propsPos]);
 			listAtts[propsPos] = props.c_str();
 
-			X_CheckError(appendStrux(PTX_Block, listAtts));
+			X_CheckError(appendStrux(PTX_Block, PP_std_copyProps(listAtts)));
 			m_parseState = _PS_Block;
 			m_bFirstBlock = true;
 			listAtts[propsPos] = temp;
 
 			// append a field
-			sz = g_strdup("type");
-			new_atts[0] = sz;
-			sz = g_strdup("list_label");
-			new_atts[1] = sz;
+			const PP_PropertyVector new_atts = {
+				"type", "list_label"
+			};
 			X_CheckError(appendObject(PTO_Field, new_atts));
 
 			// append the character run
-			sz = g_strdup("type");
-			new_atts[0] = sz;
-			sz = g_strdup("list_label");
-			new_atts[1] = sz;
 			X_CheckError(appendFmt(new_atts));
 
 			/* warn XML charData() handler of new block, but insert a tab first
@@ -1166,11 +1152,9 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		if( p_val )
 		{
 			X_CheckError(requireBlock ());
-		    sz1 = g_strdup("xlink:href");
-		    new_atts[0] = sz1;
-	    	sz1 = NULL;
-		    sz1 = g_strdup(p_val);
-		    new_atts[1] = sz1;
+			const PP_PropertyVector new_atts = {
+				"xlink:href", p_val
+			};
 			X_CheckError(appendObject(PTO_Hyperlink,new_atts));
 		}
 		else
@@ -1181,37 +1165,24 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			{
 				X_CheckError(requireBlock ());
 
-				UT_sint32 i;
- 				const gchar *bm_new_atts[5];
-				for( i = 0; i < 5; i++) bm_new_atts[i] = NULL;
-			    sz1 = g_strdup("type");
-				bm_new_atts[0] = sz1; 
-			    sz1 = g_strdup("start");
-				bm_new_atts[1] = sz1;
-			    sz1 = g_strdup("name");
-			    bm_new_atts[2] = sz1;
-		    	sz1 = g_strdup(p_val);
 				m_szBookMarkName = g_strdup(p_val);
-			    bm_new_atts[3] = sz1;
+
 				if (m_szBookMarkName)
 				{
-					X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
+					PP_PropertyVector bm_new_atts = {
+						"type", "start",
+						"name", p_val
+					};
+					X_CheckError(appendObject(PTO_Bookmark, bm_new_atts));
 				}
-				else for (i = 0; i < 4; i++) FREEP(bm_new_atts[i]);
 
 				if (m_szBookMarkName && (m_parseState == _PS_Sec))
 				{
-					for(i = 0; i < 5; i++) 
-						bm_new_atts[i] = NULL;
-					sz1 = g_strdup("type");
-					bm_new_atts[0] = sz1; 
-					sz1 = g_strdup("end");
-					bm_new_atts[1] = sz1;
-					sz1 = g_strdup("name");
-					bm_new_atts[2] = sz1;
-					sz1 = g_strdup(m_szBookMarkName);
-					bm_new_atts[3] = sz1;
-					X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
+					PP_PropertyVector bm_new_atts = {
+						"type", "end",
+						"name", m_szBookMarkName
+					};
+					X_CheckError(appendObject(PTO_Bookmark, bm_new_atts));
 
 					FREEP(m_szBookMarkName);
 				}
@@ -1366,41 +1337,14 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 #if 0
 		got_string:
 #endif
-		const gchar * api_atts[9];
+		std::string dataid = UT_std_string_sprintf ("image%u", static_cast<unsigned int>(m_iNewImage++));
 
-		std::string dataid;
-		dataid = UT_std_string_sprintf ("image%u", static_cast<unsigned int>(m_iNewImage++));
-
-		sz1 = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
-		X_CheckError(sz1);
-		api_atts[0] = sz1;
-		sz1 = g_strdup(utf8val.utf8_str ());
-		X_CheckError(sz1);
-		api_atts[1] = sz1;
-		sz1 = g_strdup("dataid");
-		X_CheckError(sz1);
-		api_atts[2] = sz1;
-		sz1 = g_strdup(dataid.c_str ());
-		X_CheckError(sz1);
-		api_atts[3] = sz1;
-
-		sz1 = g_strdup("title");
-		X_CheckError(sz1);
-		api_atts[4] = sz1;
-		sz1 = g_strdup(szTitle == NULL ? "" : szTitle);
-		X_CheckError(sz1);
-		api_atts[5] = sz1;
-
-		sz1 = g_strdup("alt");
-		X_CheckError(sz1);
-		api_atts[6] = sz1;
-		sz1 = g_strdup(szAlt == NULL ? "" : szAlt);
-		X_CheckError(sz1);
-		api_atts[7] = sz1;
-		sz1 = NULL;
-
-		api_atts[8] = NULL;
-
+		const PP_PropertyVector api_atts = {
+			PT_PROPS_ATTRIBUTE_NAME, utf8val.utf8_str(),
+			"dataid", dataid,
+			"title", szTitle == NULL ? "" : szTitle,
+			"alt", szAlt == NULL ? "" : szAlt
+		};
 		if (m_parseState == _PS_Sec)
 			{
 				X_CheckError(requireBlock ());
@@ -1539,7 +1483,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		// <ruby> text.  The <rp> text will not be rendered but should
 		// be retained so it can be exported.
 		X_CheckError(requireBlock ());
-		X_CheckError(appendFmt(new_atts));
+		X_CheckError(appendFmt(PP_NOPROPS));
 		goto cleanup;
 
 	case TT_MATH:
@@ -1583,9 +1527,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 void IE_Imp_XHTML::endElement(const gchar *name)
 {
 	int failLine = 0;
-	const gchar *atts[3];
 	UT_uint32 uid;
-	UT_UTF8String sUID;
 
 	UT_DEBUGMSG(("endElement: %s, parseState: %u, listType: %u\n", name, m_parseState, m_listType));
 	X_EatIfAlreadyError();				// xml parser keeps running until buffer consumed
@@ -1703,7 +1645,7 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 		_popInlineFmt ();
 		if (m_parseState == _PS_Block)
 			{
-				X_CheckError(appendFmt(&m_vecInlineFmt));
+				X_CheckError(appendFmt(m_vecInlineFmt));
 			}
 		return;
 
@@ -1713,7 +1655,7 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		_popInlineFmt();
-		appendFmt(&m_vecInlineFmt);
+		appendFmt(m_vecInlineFmt);
 		return;
 
 	case TT_BR:						// not a container, so we don't pop stack
@@ -1782,23 +1724,11 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 	case TT_A:
 		if( m_szBookMarkName )
 		{
-			UT_sint32 i;
-			gchar * sz = NULL;
-			const gchar *bm_new_atts[5];
-			for(i = 0; i < 5; i++) bm_new_atts[i] = NULL;
-		    sz = g_strdup("type");
-			bm_new_atts[0] = sz; 
-    		sz = NULL;
-		    sz = g_strdup("end");
-			bm_new_atts[1] = sz;
-    		sz = NULL;
-		    sz = g_strdup("name");
-		    bm_new_atts[2] = sz;
-    		sz = NULL;
-	    	sz = g_strdup(m_szBookMarkName);
-		    bm_new_atts[3] = sz;
-			X_CheckError(appendObject(PTO_Bookmark,bm_new_atts));
-			for(i = 0; i < 5; i++) FREEP(bm_new_atts[i]);
+			const PP_PropertyVector bm_new_atts = {
+				"type", "end",
+				"name", m_szBookMarkName
+			};
+			X_CheckError(appendObject(PTO_Bookmark, bm_new_atts));
 			FREEP(m_szBookMarkName);
 		}
 		else if (m_parseState == _PS_Block)
@@ -1806,7 +1736,7 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 			/* if (m_parseState == _PS_Sec) then this is an anchor outside
 			 * of a block, not a hyperlink (see TT_A in startElement)
 			 */
- 			X_CheckError(appendObject(PTO_Hyperlink,0));
+ 			X_CheckError(appendObject(PTO_Hyperlink, PP_NOPROPS));
 		}
 		return;
 
@@ -1829,10 +1759,11 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()==0);
 		//_popInlineFmt();
-		X_CheckError(appendFmt(&m_vecInlineFmt));
+		X_CheckError(appendFmt(m_vecInlineFmt));
 		return;
 
 	case TT_MATH:
+	{
 		X_VerifyParseState(_PS_Block);
 
 		UT_return_if_fail(m_pMathBB && m_bInMath);
@@ -1841,20 +1772,20 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 		// Create the data item
 
 		uid = getDoc()->getUID(UT_UniqueId::Math);
-		UT_UTF8String_sprintf(sUID,"MathLatex%d",uid);
-		X_CheckError(getDoc()->createDataItem(sUID.utf8_str(), false, m_pMathBB, "", NULL));
+		std::string sUID = UT_std_string_sprintf("MathLatex%d",uid);
+		X_CheckError(getDoc()->createDataItem(sUID.c_str(), false, m_pMathBB, "", NULL));
 
-		atts[0] = "dataid";
-		atts[1] = sUID.utf8_str();
-		atts[2] = NULL;
+		PP_PropertyVector new_atts = {
+			"dataid", sUID
+		};
 
-		X_CheckError(appendObject(PTO_Math, atts));
+		X_CheckError(appendObject(PTO_Math, new_atts));
 
 		DELETEP(m_pMathBB);
 		m_bInMath = false;
 
 		return;
-
+	}
 	case TT_OTHER:
 	default:
 	  	UT_DEBUGMSG(("Unknown end tag [%s]\n",name));
@@ -2008,30 +1939,12 @@ bool IE_Imp_XHTML::pushInline (const char * props)
 {
 	if (!requireBlock ()) return false;
 
-	const gchar * api_atts[3];
+	const PP_PropertyVector api_atts = {
+		PT_PROPS_ATTRIBUTE_NAME, props
+	};
 
-	gchar * sz = NULL;
-
-	sz = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
-	if (sz == NULL)
-		{
-			UT_return_val_if_fail(0,false);
-		}
-	api_atts[0] = sz;
-
-	sz = NULL;
-
-	sz = g_strdup(props);
-	if (sz == NULL)
-		{
-			UT_return_val_if_fail(0,false);
-		}
-	api_atts[1] = sz;
-
-	api_atts[2] = NULL;
-
-	_pushInlineFmt (api_atts);
-	return appendFmt (&m_vecInlineFmt);
+	_pushInlineFmt(api_atts);
+	return appendFmt(m_vecInlineFmt);
 }
 
 bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, const char * align)
@@ -2066,59 +1979,24 @@ bool IE_Imp_XHTML::newBlock (const char * style_name, const char * css_style, co
 	UT_UTF8String utf8val = s_parseCSStyle (style, CSS_MASK_BLOCK);
 	UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 
-	const gchar * api_atts[5];
+	PP_PropertyVector api_atts = {
+		PT_STYLE_ATTRIBUTE_NAME, style_name
+	};
 
-	api_atts[2] = NULL;
-	api_atts[4] = NULL;
-
-	gchar * sz = NULL;
-
-	sz = g_strdup(PT_STYLE_ATTRIBUTE_NAME);
-	if (sz == NULL)
-		{
+	if (utf8val.byteLength()) {
+			api_atts.push_back(PT_PROPS_ATTRIBUTE_NAME);
+			api_atts.push_back(utf8val.utf8_str());
+	}
+	if (!appendStrux (PTX_Block, api_atts))	{
 			UT_return_val_if_fail(0,false);
-		}
-	api_atts[0] = sz;
-
-	sz = NULL;
-
-	sz = g_strdup(style_name);
-	if (sz == NULL)
-		{
-			UT_return_val_if_fail(0,false);
-		}
-	api_atts[1] = sz;
-
-	if (utf8val.byteLength ())
-		{
-			sz = NULL;
-
-			sz = g_strdup(PT_PROPS_ATTRIBUTE_NAME);
-			if (sz == NULL)
-				{
-					UT_return_val_if_fail(0,false);
-				}
-			api_atts[2] = sz;
-
-			sz = NULL;
-
-			sz = g_strdup(utf8val.utf8_str ());
-			if (sz == NULL)
-				{
-					UT_return_val_if_fail(0,false);
-				}
-			api_atts[3] = sz;
-		}
-	if (!appendStrux (PTX_Block, api_atts))
-		{
-			UT_return_val_if_fail(0,false);
-		}
+	}
 	m_bFirstBlock = true;
 	m_parseState = _PS_Block;
 
 	_data_NewBlock (); // warn XML charData() handler that a new block is beginning
 
-	while (_getInlineDepth()) _popInlineFmt ();
+	while (_getInlineDepth())
+		_popInlineFmt ();
 
 	utf8val = s_parseCSStyle (style, CSS_MASK_INLINE);
 	UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
@@ -2141,7 +2019,7 @@ bool IE_Imp_XHTML::requireSection ()
 {
 	if (m_parseState == _PS_Sec) return true;
 
-	if (!appendStrux (PTX_Section,NULL))
+	if (!appendStrux (PTX_Section, PP_NOPROPS))
 		{
 			UT_return_val_if_fail(0,false);
 		}
@@ -2151,7 +2029,7 @@ bool IE_Imp_XHTML::requireSection ()
 	return true;
 }
 
-bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const gchar ** attributes)
+bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const PP_PropertyVector & attributes)
 {
 	UT_DEBUGMSG(("XHTML Import - appendStruxStrux type %d document %p \n",pts,getDoc()));
 	if(pts == PTX_Section)
@@ -2165,24 +2043,24 @@ bool IE_Imp_XHTML::appendStrux(PTStruxType pts, const gchar ** attributes)
 	}
 	if(!bInTable())
 		{
-			return getDoc()->appendStrux(pts,attributes);
+			return getDoc()->appendStrux(pts, attributes);
 		}
 	else
 		{
-			return m_TableHelperStack->Block(pts,attributes);
+			return m_TableHelperStack->Block(pts, attributes);
 		}
 	return true;
 }
 
-bool IE_Imp_XHTML::appendFmt( const gchar ** attributes)
+bool IE_Imp_XHTML::appendFmt(const PP_PropertyVector & attributes)
 {
 	if(!m_addedPTXSection)
 		{
-			appendStrux(PTX_Section,NULL);
+			appendStrux(PTX_Section, PP_NOPROPS);
 		}
 	if(!m_bFirstBlock)
 		{
-			appendStrux(PTX_Block,NULL);
+			appendStrux(PTX_Block, PP_NOPROPS);
 		}
 	if(!bInTable())
 		{
@@ -2195,61 +2073,15 @@ bool IE_Imp_XHTML::appendFmt( const gchar ** attributes)
 	return true;
 }
 
-bool IE_Imp_XHTML::appendFmt(const UT_GenericVector<const gchar*>* pVecAttributes)
-{
-	if(!m_addedPTXSection)
-		{
-			appendStrux(PTX_Section,NULL);
-		}
-	if(!m_bFirstBlock)
-		{
-			appendStrux(PTX_Block,NULL);
-		}
-	if(!bInTable())
-		{
-			if(pVecAttributes->getItemCount() >= 2)
-			{
-				const gchar * pszProp = pVecAttributes->getNthItem(0);
-				const gchar * pszVal = pVecAttributes->getNthItem(1);
-				if(strcmp(pszProp,"props") == 0 && strlen(pszVal) == 0)
-				{
-					// FIXME: this is butt ugly !!!!
-					const_cast<UT_GenericVector<const gchar*>*>(pVecAttributes)->deleteNthItem(0);
-					const_cast<UT_GenericVector<const gchar*>*>(pVecAttributes)->deleteNthItem(0);
-				}
-				if(pVecAttributes->getItemCount() == 0)
-				{
-					return true;
-				}
-			}
-			return getDoc()->appendFmt(pVecAttributes);
-		}
-	else
-		{
-			const gchar * attributes[3] = {"props",NULL,NULL};
-			std::string sPropString;
-			UT_sint32 i = 0;
-			for(i=0; i< pVecAttributes->getItemCount(); i +=2)
-				{
-					std::string sProp = pVecAttributes->getNthItem(i);
-					std::string sVal = pVecAttributes->getNthItem(i+1);
-					UT_std_string_setProperty(sPropString,sProp,sVal);
-				}
-			attributes[1] = sPropString.c_str();
-			return m_TableHelperStack->InlineFormat(attributes);
-		}
-	return true;
-}
-
 bool IE_Imp_XHTML::appendSpan(const UT_UCSChar * p, UT_uint32 length)
 {
 	if(!m_addedPTXSection)
 		{
-			appendStrux(PTX_Section,NULL);
+			appendStrux(PTX_Section, PP_NOPROPS);
 		}
 	if(!m_bFirstBlock)
 		{
-			appendStrux(PTX_Block,NULL);
+			appendStrux(PTX_Block, PP_NOPROPS);
 		}
 
 	if(!bInTable())
@@ -2265,15 +2097,15 @@ bool IE_Imp_XHTML::appendSpan(const UT_UCSChar * p, UT_uint32 length)
 }
 
 
-bool IE_Imp_XHTML::appendObject(PTObjectType pto, const gchar ** attributes)
+bool IE_Imp_XHTML::appendObject(PTObjectType pto, const PP_PropertyVector & attributes)
 {
 	if(!m_addedPTXSection)
 		{
-			appendStrux(PTX_Section,NULL);
+			appendStrux(PTX_Section, PP_NOPROPS);
 		}
 	if(!m_bFirstBlock)
 		{
-			appendStrux(PTX_Block,NULL);
+			appendStrux(PTX_Block, PP_NOPROPS);
 		}
 	if(!bInTable())
 		{
@@ -2281,7 +2113,7 @@ bool IE_Imp_XHTML::appendObject(PTObjectType pto, const gchar ** attributes)
 		}
 	else
 		{
-			return m_TableHelperStack->Object(pto,attributes);
+			return m_TableHelperStack->Object(pto, attributes);
 		}
 	return true;
 }

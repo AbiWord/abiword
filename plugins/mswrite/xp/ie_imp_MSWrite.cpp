@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2001 Sean Young <sean@mess.org>
  * Copyright (C) 2001 Hubert Figuiere
@@ -54,6 +55,7 @@ typedef unsigned __int32 uint32_t;
 #include "ut_debugmsg.h"
 #include "ut_locale.h"
 #include "ut_types.h"
+#include "ut_std_string.h"
 #include "xap_Module.h"
 
 #ifdef ABI_PLUGIN_BUILTIN
@@ -648,20 +650,13 @@ bool IE_Imp_MSWrite::read_sep ()
 		properties += tmp;
 	}
 
-	const gchar *attributes[11];
-
-	attributes[0] = PT_PROPS_ATTRIBUTE_NAME;
-	attributes[1] = properties.c_str();
-	attributes[2] = PT_HEADERFIRST_ATTRIBUTE_NAME;
-	attributes[3] = "0";
-	attributes[4] = PT_HEADER_ATTRIBUTE_NAME;
-	attributes[5] = "1";
-	attributes[6] = PT_FOOTERFIRST_ATTRIBUTE_NAME;
-	attributes[7] = "2";
-	attributes[8] = PT_FOOTER_ATTRIBUTE_NAME;
-	attributes[9] = "3";
-	attributes[10] = NULL;
-
+	const PP_PropertyVector attributes = {
+		PT_PROPS_ATTRIBUTE_NAME, properties.c_str(),
+		PT_HEADERFIRST_ATTRIBUTE_NAME, "0",
+		PT_HEADER_ATTRIBUTE_NAME, "1",
+		PT_FOOTERFIRST_ATTRIBUTE_NAME, "2",
+		PT_FOOTER_ATTRIBUTE_NAME, "3"
+	};
 	appendStrux(PTX_Section, attributes);
 
 	return true;
@@ -852,12 +847,9 @@ bool IE_Imp_MSWrite::read_pap (pap_t process)
 				// new attributes, only if there was a line feed or FPROPs have changed
 				if (lf || strcmp(properties.c_str(), lastprops.c_str()) != 0)
 				{
-					const gchar *attributes[3];
-
-					attributes[0] = PT_PROPS_ATTRIBUTE_NAME;
-					attributes[1] = properties.c_str();
-					attributes[2] = NULL;
-
+					const PP_PropertyVector attributes = {
+						PT_PROPS_ATTRIBUTE_NAME, properties.c_str()
+					};
 					appendStrux(PTX_Block, attributes);
 
 					lastprops = properties;
@@ -1003,16 +995,14 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 				// new attributes, only if there was text
 				if (mText.size() > 0)
 				{
-					const gchar *attributes[5];
 					const UT_UCS4Char *text = mText.ucs4_str(), *p = text;
 					size_t txtLen;
 
 					UT_DEBUGMSG(("         Conv: %s\n", mText.utf8_str()));
 
-					attributes[0] = PT_PROPS_ATTRIBUTE_NAME;
-					attributes[1] = properties.c_str();
-					attributes[2] = NULL;
-
+					PP_PropertyVector attributes = {
+						PT_PROPS_ATTRIBUTE_NAME, properties.c_str()
+					};
 					appendFmt(attributes);
 
 					// check for page number (should only be in header or footer)
@@ -1022,10 +1012,8 @@ bool IE_Imp_MSWrite::read_txt (int from, int to)
 					{
 						if (p - text) appendSpan(text, p - text);
 
-						attributes[2] = PT_TYPE_ATTRIBUTE_NAME;
-						attributes[3] = "page_number";
-						attributes[4] = NULL;
-
+						attributes.push_back(PT_TYPE_ATTRIBUTE_NAME);
+						attributes.push_back("page_number");
 						appendObject(PTO_Field, attributes);
 
 						txtLen = mText.size() - (p - text) - 1;
@@ -1670,8 +1658,7 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 		else
 		{
 			int dxaOffset, dxaSize, dyaSize, mx, my;
-			const gchar *attributes[5];
-			UT_String properties, id;
+			std::string properties, id;
 			UT_LocaleTransactor lt(LC_NUMERIC, "C");
 
 			dxaOffset = wri_struct_value(write_pic, "dxaOffset");
@@ -1680,13 +1667,11 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 			if (dxaOffset)
 			{
-				UT_String_sprintf(properties, "margin-left:%.4fin",
+				properties = UT_std_string_sprintf("margin-left:%.4fin",
 				                              static_cast<float>(dxaOffset) / 1440.0);
-
-				attributes[0] = PT_PROPS_ATTRIBUTE_NAME;
-				attributes[1] = properties.c_str();
-				attributes[2] = NULL;
-
+				const PP_PropertyVector attributes = {
+					PT_PROPS_ATTRIBUTE_NAME, properties
+				};
 				appendStrux(PTX_Block, attributes);
 			}
 
@@ -1710,22 +1695,21 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 				dyaSize = (bmH < 0 ? -bmH : bmH) * 15;
 			}
 
-			UT_String_sprintf(properties, "width:%.4fin; height:%.4fin",
+			properties = UT_std_string_sprintf("width:%.4fin; height:%.4fin",
 			                              static_cast<float>(mx) / 1000.0 *
 			                              static_cast<float>(dxaSize) / 1440.0,
 			                              static_cast<float>(my) / 1000.0 *
 			                              static_cast<float>(dyaSize) / 1440.0);
 
-			UT_String_sprintf(id, "image%u", ++pic_nr);
+			id = UT_std_string_sprintf("image%u", ++pic_nr);
 			UT_DEBUGMSG(("    Image #%02d\n", pic_nr));
 
-			attributes[0] = PT_PROPS_ATTRIBUTE_NAME;
-			attributes[1] = properties.c_str();
-			attributes[2] = "dataid";
-			attributes[3] = id.c_str();
-			attributes[4] = NULL;
-
+			const PP_PropertyVector attributes = {
+				PT_PROPS_ATTRIBUTE_NAME, properties,
+				"dataid", id
+			};
 			appendObject(PTO_Image, attributes);
+
 			getDoc()->createDataItem(id.c_str(), false, graphic->getBuffer(), graphic->getMimeType(), NULL);
 		}
 	}
@@ -1745,11 +1729,10 @@ bool IE_Imp_MSWrite::read_pic (int from, int size)
 
 void IE_Imp_MSWrite::_append_hdrftr (hdrftr_t which)
 {
-	const gchar *attributes[5];
-
-	attributes[0] = PT_ID_ATTRIBUTE_NAME;
-	attributes[2] = PT_TYPE_ATTRIBUTE_NAME;
-	attributes[4] = NULL;
+	PP_PropertyVector attributes = {
+		PT_ID_ATTRIBUTE_NAME, "",
+		PT_TYPE_ATTRIBUTE_NAME, ""
+	};
 
 	switch (which)
 	{

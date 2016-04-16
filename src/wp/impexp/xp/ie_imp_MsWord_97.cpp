@@ -1245,7 +1245,7 @@ void IE_Imp_MsWord_97::_flush ()
 	{
 	  // append a blank default section - assume it works
 	  UT_DEBUGMSG(("#TF: _flush: appending default section\n"));
-	  _appendStrux(PTX_Section, NULL);
+	  _appendStrux(PTX_Section, PP_NOPROPS);
 	  m_bInSect = true;
 	  m_nSections++;
 	}
@@ -1261,7 +1261,7 @@ void IE_Imp_MsWord_97::_flush ()
   {
 	  // append a blank defaul paragraph - assume it works
 	  UT_DEBUGMSG(("#TF: _flush: appending default block\n"));
-	  _appendStrux(PTX_Block, NULL);
+	  _appendStrux(PTX_Block, PP_NOPROPS);
 	  m_bInPara = true;
 	  emObject * pObject = NULL;
 	  if(m_vecEmObjects.getItemCount() > 0)
@@ -1270,14 +1270,12 @@ void IE_Imp_MsWord_97::_flush ()
 		  for(i=0;i< m_vecEmObjects.getItemCount(); i++)
 		  {
 			  pObject = m_vecEmObjects.getNthItem(i);
-			  const gchar* propsArray[5];
 			  if(pObject->objType == PTO_Bookmark)
 			  {
-				  propsArray[0] = static_cast<const gchar *>("name");
-				  propsArray[1] = static_cast<const gchar *>(pObject->props1.c_str());
-				  propsArray[2] = static_cast<const gchar *>("type");
-				  propsArray[3] = static_cast<const gchar *>(pObject->props2.c_str());
-				  propsArray[4] = static_cast<const gchar *>(NULL);
+				  PP_PropertyVector propsArray = {
+					  "name", pObject->props1.c_str(),
+					  "type", pObject->props2.c_str()
+				  };
 				  _appendObject (PTO_Bookmark, propsArray);
 			  }
 			  else
@@ -1337,22 +1335,15 @@ void IE_Imp_MsWord_97::_flush ()
 		  
 		  prop_ltr += "dir-override:ltr";
 		  prop_rtl += "dir-override:rtl";
-	
-		  const gchar rev[] ="revision";
 
-		  const gchar* propsArray[5];
-		  propsArray[0] = pProps;
-		  propsArray[1] = prop_basic.c_str();
-		  propsArray[2] = NULL;
-		  propsArray[3] = NULL;
-		  propsArray[4] = NULL;
-
-		  UT_uint32 iEmptyAttrib = 2;
+		  PP_PropertyVector propsArray = {
+			  pProps, prop_basic.c_str()
+		  };
 
 		  if(m_charRevs.size())
 		  {
-			  propsArray[iEmptyAttrib++] = &rev[0];
-			  propsArray[iEmptyAttrib++] = m_charRevs.c_str();
+			  propsArray.push_back("revision");
+			  propsArray.push_back(m_charRevs.c_str());
 		  }
 		  
 		  const UT_UCS4Char * p;
@@ -1376,8 +1367,7 @@ void IE_Imp_MsWord_97::_flush ()
 			  {
 				  cNextType = UT_BIDI_UNSET;
 			  }
-		
-		
+
 			  if(UT_BIDI_IS_NEUTRAL(cType))
 			  {
 				  if(m_bLTRCharContext
@@ -1389,7 +1379,7 @@ void IE_Imp_MsWord_97::_flush ()
 						  p = pStart + iLast;
 						  if(!_appendFmt(propsArray))
 							  return;
-					
+
 						  if(!_appendSpan(p, i - iLast))
 							  return;
 					  }
@@ -1682,16 +1672,10 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 	this->_flush();
 	bool error = false;
 
-	const gchar* propsArray[5];
-	propsArray[0] = static_cast<const gchar *>("name");
-	propsArray[1] = static_cast<const gchar *>(bm->name);
-	propsArray[2] = static_cast<const gchar *>("type");
-	propsArray[4] = 0;
-
-	if(bm->start)
-		propsArray[3] = static_cast<const gchar *>("start");
-	else
-		propsArray[3] = static_cast<const gchar *>("end");
+	PP_PropertyVector propsArray = {
+		"name", bm->name,
+		"type", bm->start ? "start" : "end"
+	};
 
 	if(m_bInTable && !m_bCellOpen)
 	{
@@ -1716,12 +1700,12 @@ bool IE_Imp_MsWord_97::_insertBookmark(bookmark * bm)
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 			if(pfs->getStruxType() != PTX_Block)
 			{
-				getDoc()->appendStrux(PTX_Block, NULL);
+				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			}
 		}
 		else if( pf == NULL)
 		{
-			getDoc()->appendStrux(PTX_Block, NULL);
+			getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 		}
 
 		if (!_appendObject (PTO_Bookmark, propsArray))
@@ -2183,8 +2167,9 @@ int IE_Imp_MsWord_97::_specCharProc (wvParseStruct *ps, U16 eachchar, CHP *achp)
 					{
 					  atts[1] = sProps.c_str();
 					}
-					_appendStrux(PTX_SectionFrame,atts);
-					_appendStrux(PTX_EndFrame,atts);
+					PP_PropertyVector vatts = PP_std_copyProps(atts);
+					_appendStrux(PTX_SectionFrame, vatts);
+					_appendStrux(PTX_EndFrame, vatts);
 					if(isTextBox)
 					{
 					  textboxPos * pPos = new textboxPos;
@@ -2626,7 +2611,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
 	UT_return_val_if_fail(iOff <= sizeof(propsArray), 1);
 	
 
-	if (!_appendStrux(PTX_Section, static_cast<const gchar **>(&propsArray[0])))
+	if (!_appendStrux(PTX_Section, PP_std_copyProps(&propsArray[0])))
 	{
 		UT_DEBUGMSG (("DOM: error appending section props!\n"));
 		return 1;
@@ -2652,7 +2637,7 @@ int IE_Imp_MsWord_97::_beginSect (wvParseStruct * /*ps*/, UT_uint32 /*tag*/,
 	if (m_nSections > 1) // don't apply on the 1st page
 	{
 		// new sections always need a block
-		if (!_appendStrux(PTX_Block, static_cast<const gchar **>(NULL)))
+		if (!_appendStrux(PTX_Block, PP_NOPROPS))
 		{
 			UT_DEBUGMSG (("DOM: error appending new block\n"));
 			return 1;
@@ -2709,7 +2694,7 @@ int IE_Imp_MsWord_97::_endSect (wvParseStruct * /* ps */ , UT_uint32  /* tag */ 
 
 	// we never appended a paragraph inside of this section. we're naughty. correct that here.
 	if (!m_bInPara  && !m_bInTextboxes)
-		_appendStrux(PTX_Block, NULL);
+		_appendStrux(PTX_Block, PP_NOPROPS);
 
 	// if there is a pending page break it belongs to the section and
 	// is to be removed, we just need to set the tracker to false
@@ -2925,7 +2910,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 		// TOOD: when it is handled properly the code needs to be
 		// moved into _generateParaProps()
 		UT_DEBUGMSG(("_beginPara: appending default block\n"));
-		_appendStrux(PTX_Block, NULL);
+		_appendStrux(PTX_Block, PP_NOPROPS);
 		UT_UCSChar ucs = UCS_FF;
 		_appendSpan(&ucs,1);
 	}
@@ -3195,7 +3180,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 	{
 		// check for should-be-impossible case
 		UT_ASSERT_NOT_REACHED();
-		_appendStrux(PTX_Section, NULL);
+		_appendStrux(PTX_Section, PP_NOPROPS);
 		m_bInSect = true ;
 	}
 
@@ -3203,7 +3188,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 	{
 		xxx_UT_DEBUGMSG(("_beginPara: pos %d [text ends %d]\n", ps->currentcp, m_iFootnotesStart));
 		
-		if (!_appendStrux(PTX_Block, static_cast<const gchar **>(&propsArray[0])))
+		if (!_appendStrux(PTX_Block, PP_std_copyProps(&propsArray[0])))
 		{
 			UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
 			return 1;
@@ -3214,26 +3199,25 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 	if (myListId > 0 && !bDoNotInsertStrux)
 	  {
 		// TODO: honor more props
-		const gchar *list_field_fmt[5];
-		list_field_fmt[0] = "type";
-		list_field_fmt[1] = "list_label";
-		list_field_fmt[2] = "props";
-		list_field_fmt[3] = "text-decoration:none";
-		list_field_fmt[4] = 0;
-		_appendObject(PTO_Field, static_cast<const gchar**>(&list_field_fmt[0]));
+		PP_PropertyVector list_field_fmt = {
+			"type", "list_label",
+			"props", "text-decoration:none",
+		};
+		_appendObject(PTO_Field, list_field_fmt);
 		m_bInPara = true;
 
+		PP_PropertyVector attribs = {
+			"props", "text-decoration:none"
+		};
 		// the character following the list label - 0=tab, 1=space, 2=none
 		if(apap->linfo.ixchFollow == 0) // tab
 		{
-		        const gchar* attribs[3] = {"props","text-decoration:none",NULL};
 			getDoc()->appendFmt(attribs);
 			UT_UCSChar tab = UCS_TAB;
 			_appendSpan(&tab, 1);
 		}
 		else if(apap->linfo.ixchFollow == 1) // space
 		{
-		        const gchar* attribs[3] = {"props","text-decoration:none",NULL};
 			getDoc()->appendFmt(attribs);
 			UT_UCSChar space = UCS_SPACE;
 			_appendSpan(&space, 1);
@@ -3431,20 +3415,20 @@ int IE_Imp_MsWord_97::_beginChar (wvParseStruct *ps, UT_uint32 /*tag*/,
 	if(!m_bInSect && !bDoNotAppendFmt)
 	{
 		UT_ASSERT_NOT_REACHED();
-		_appendStrux(PTX_Section, NULL);
+		_appendStrux(PTX_Section, PP_NOPROPS);
 		m_bInSect = true ;
 	}
 
 	if(!m_bInPara && !bDoNotAppendFmt)
 	{
 		UT_ASSERT_NOT_REACHED();
-		_appendStrux(PTX_Block, NULL);
+		_appendStrux(PTX_Block, PP_NOPROPS);
 		m_bInPara = true ;
 	}
 
 	if(!bDoNotAppendFmt)
 	{
-		if (!_appendFmt(static_cast<const gchar **>(&propsArray[0])))
+		if (!_appendFmt(PP_std_copyProps(propsArray)))
 		{
 			UT_DEBUGMSG(("DOM: error appending character formatting\n"));
 			return 1;
@@ -3646,12 +3630,10 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 /*iDocPosition*
 		{
 		    case F_MERGEFIELD:
 			{
-				const gchar* atts[5];
-				atts[0] = "type";
-				atts[1] = "mail_merge";
-				atts[2] = "param";
-				atts[3] = 0;
-				atts[4] = 0;
+				PP_PropertyVector atts = {
+					"type", "mail_merge",
+					"param"
+				};
 
 				token = strtok (NULL, "\"\" ");
 
@@ -3678,11 +3660,11 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 /*iDocPosition*
 						a++;
 					}
 
-				atts[3] = param.utf8_str();
+				atts.push_back(param.utf8_str());
 
-				if (!_appendObject (PTO_Field, static_cast<const gchar**>(&atts[0])))
+				if (!_appendObject (PTO_Field, atts))
 					{
-						UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1]));
+						UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1].c_str()));
 					}
 			}
 			break;
@@ -3708,11 +3690,11 @@ bool IE_Imp_MsWord_97::_handleFieldEnd (char *command, UT_uint32 /*iDocPosition*
 
 					if(!m_bInPara)
 					{
-						_appendStrux(PTX_Block, NULL);
+						_appendStrux(PTX_Block, PP_NOPROPS);
 						m_bInPara = true ;
 					}
 
-					_appendObject(PTO_Hyperlink,NULL);
+					_appendObject(PTO_Hyperlink, PP_NOPROPS);
 					m_bInLink = false;
 					break;
 				}
@@ -4058,18 +4040,18 @@ bool IE_Imp_MsWord_97::_insertTOC(field *f)
 			sProps.assign(c, strlen(c)-1);
 		}
 	}
-	
+
 	attrs[1] = sProps.utf8_str();
 
 	if(!m_bInPara)
 	{
-		_appendStrux(PTX_Block, NULL);
+		_appendStrux(PTX_Block, PP_NOPROPS);
 		m_bInPara = true ;
 	}
-	
-	_appendStrux(PTX_SectionTOC, attrs);
-	_appendStrux(PTX_EndTOC, NULL);
-	
+
+	_appendStrux(PTX_SectionTOC, PP_std_copyProps(attrs));
+	_appendStrux(PTX_EndTOC, PP_NOPROPS);
+
  finish:
 	FREEP(command);
 	return bRet;
@@ -4091,12 +4073,9 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 	
 	xxx_UT_DEBUGMSG(("DOM: handleCommandField '%s'\n", command));
 
-	const gchar* atts[5];
-	atts[0] = "type";
-	atts[1] = 0;
-	atts[2] = 0;
-	atts[3] = 0;
-	atts[4] = 0;
+	PP_PropertyVector atts = {
+		"type"
+	};
 
 	if (*command != 0x13)
 	{
@@ -4121,57 +4100,55 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 		{
 			case F_EDITTIME:
 			case F_TIME:
-				atts[1] = "time";
+				atts.push_back("time");
 				break;
 
 			case F_DateTimePicture:
 				//seems similar to a creation date
-				atts[1] = "meta_date";
+				atts.push_back("meta_date");
 				break;
 
 			case F_DATE:
-				atts[1] = "date";
+				atts.push_back("date");
 				break;
 
 			case F_PAGE:
-				atts[1] = "page_number";
+				atts.push_back("page_number");
 				break;
 
 			case F_NUMCHARS:
-				atts[1] = "char_count";
+				atts.push_back("char_count");
 				break;
 
 			case F_NUMPAGES:
-				atts[1] = "page_count";
+				atts.push_back("page_count");
 				break;
 
 			case F_NUMWORDS:
-				atts[1] = "word_count";
+				atts.push_back("word_count");
 				break;
 
 			case F_FILENAME:
-				atts[1] = "file_name";
+				atts.push_back("file_name");
 				break;
 
 			case F_PAGEREF:
 				token = strtok (NULL, "\"\" ");
-				atts[1] = "page_ref";
-				atts[2] = "param";
+				atts.push_back("page_ref");
+				atts.push_back("param");
 				if(token)
-					atts[3] = static_cast<const gchar *>(token);
+					atts.push_back(token);
 				else
-					atts[3] = "no_bookmark_given";
+					atts.push_back("no_bookmark_given");
 				break;
 
 			case F_HYPERLINK:
 				{
-					const gchar *new_atts[3];
 					token = strtok (NULL, "\"\" ");
 
 					if(token) {
 					  // hyperlink or hyperlink to bookmark
-					  new_atts[0] = "xlink:href";
-					  UT_String href;
+					  std::string href;
 					  if ( !strcmp(token, "\\l") )
 					    {
 					      token = strtok (NULL, "\"\" ");
@@ -4180,25 +4157,26 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 					    }
 					  else
 					    {
-					      href = token;
+						  href = token;
 					    }
-					  new_atts[1] = href.c_str();
-					  new_atts[2] = 0;
+					  PP_PropertyVector new_atts = {
+						  "xlink:href", href
+					  };
 					  this->_flush();
-					  
+
 					  if(!m_bInPara)
 					    {
-					      _appendStrux(PTX_Block, NULL);
+					      _appendStrux(PTX_Block, PP_NOPROPS);
 					      m_bInPara = true ;
 					    }
 
 					  if(m_bInLink)
 					    {
 					      UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-					      _appendObject(PTO_Hyperlink, NULL);
+					      _appendObject(PTO_Hyperlink, PP_NOPROPS);
 					      m_bInLink = false;
 					    }
-					  
+
 					  _appendObject(PTO_Hyperlink, new_atts);
 					  m_bInLink = true;
 					}
@@ -4222,13 +4200,13 @@ bool IE_Imp_MsWord_97::_handleCommandField (char *command)
 
 		if(!m_bInPara)
 		{
-			_appendStrux(PTX_Block, NULL);
+			_appendStrux(PTX_Block, PP_NOPROPS);
 			m_bInPara = true ;
 		}
 
-		if (!_appendObject (PTO_Field, static_cast<const gchar**>(&atts[0])))
+		if (!_appendObject (PTO_Field, atts))
 		{
-			UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1]));
+			UT_DEBUGMSG(("Dom: couldn't append field (type = '%s')\n", atts[1].c_str()));
 		}
 
 		token = strtok(NULL, "\t, ");
@@ -4302,8 +4280,8 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 	UT_Error error		= UT_OK;
 	const UT_ByteBuf * buf		= 0;
 
-	UT_String propBuffer;
-	UT_String propsName;
+	std::string propBuffer;
+	std::string propsName;
 
 	// suck the data into the ByteBuffer
 
@@ -4386,7 +4364,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 
 	{
 		UT_LocaleTransactor t(LC_NUMERIC, "C");
-		UT_String_sprintf(propBuffer, "width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
+		propBuffer = UT_std_string_sprintf("width:%fin; height:%fin; cropt:%fin; cropb:%fin; cropl:%fin; cropr:%fin",
 						  static_cast<double>(width) / static_cast<double>(1440),
 						  static_cast<double>(height) / static_cast<double>(1440),
 						  static_cast<double>(cropt) / static_cast<double>(1440),
@@ -4395,14 +4373,7 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 						  static_cast<double>(cropr) / static_cast<double>(1440));
 	}
 
-	UT_String_sprintf(propsName, "%d", getDoc()->getUID(UT_UniqueId::Image));
-
-	const gchar* propsArray[5];
-	propsArray[0] = "props";
-	propsArray[1] = propBuffer.c_str();
-	propsArray[2] = "dataid";
-	propsArray[3] = propsName.c_str();
-	propsArray[4] = 0;
+	propsName = UT_std_string_sprintf("%d", getDoc()->getUID(UT_UniqueId::Image));
 
 	if (!_ensureInBlock())
 	{
@@ -4411,13 +4382,18 @@ UT_Error IE_Imp_MsWord_97::_handleImage (Blip * b, long width, long height, long
 		goto Cleanup;
 	}
 
-	if (!_appendObject (PTO_Image, propsArray))
 	{
-		UT_DEBUGMSG (("Could not create append object\n"));
-		error = UT_ERROR;
-		goto Cleanup;
-	}
+		PP_PropertyVector propsArray = {
+			"props", propBuffer,
+			"dataid", propsName
+		};
 
+		if (!_appendObject (PTO_Image, propsArray)) {
+			UT_DEBUGMSG (("Could not create append object\n"));
+			error = UT_ERROR;
+			goto Cleanup;
+		}
+	}
 	if (!getDoc()->createDataItem(propsName.c_str(), false,
 								  buf, pFG->getMimeType(), NULL))
 	{
@@ -4581,7 +4557,7 @@ void IE_Imp_MsWord_97::_table_open ()
   m_iCurrentCell = 0;
 
   //  _appendStrux(PTX_Block, NULL); // Don't need/want this after 27/3/2005
-  _appendStrux(PTX_SectionTable, NULL);
+  _appendStrux(PTX_SectionTable, PP_NOPROPS);
   m_vecColumnWidths.clear();
   m_bRowOpen = false;
   m_bCellOpen = false;
@@ -4848,7 +4824,7 @@ void IE_Imp_MsWord_97::_table_close (const wvParseStruct * /*ps*/, const PAP *ap
   getDoc()->changeStruxAttsNoUpdate(sdh,"props",props.c_str());
 
   // end-of-table
-  _appendStrux(PTX_EndTable, NULL);
+  _appendStrux(PTX_EndTable, PP_NOPROPS);
   m_bInPara = false ;
 
   UT_DEBUGMSG(("\n</TABLE>\n"));
@@ -5045,7 +5021,7 @@ void IE_Imp_MsWord_97::_cell_open (const wvParseStruct *ps, const PAP *apap)
   propsArray[1] = propBuffer.c_str();
 
   // do_insert:
-  _appendStrux(PTX_SectionCell, propsArray);
+  _appendStrux(PTX_SectionCell, PP_std_copyProps(propsArray));
   m_bInPara = false;
   m_iCurrentCell++;
   m_iLeft = m_iRight;
@@ -5061,7 +5037,7 @@ void IE_Imp_MsWord_97::_cell_close ()
     return;
 
   m_bCellOpen = false;
-  _appendStrux(PTX_EndCell, NULL);
+  _appendStrux(PTX_EndCell, PP_NOPROPS);
   m_bInPara = false ;
 
   xxx_UT_DEBUGMSG(("</CELL>"));
@@ -5531,7 +5507,7 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 		}
 		else
 		{
-			getDoc()->appendStyle(attribs);
+			getDoc()->appendStyle(PP_std_copyProps(attribs));
 		}
 
 		FREEP(s);
@@ -5991,28 +5967,23 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 	this->_flush();
 
 	bool res = true;
-	const gchar * attribsS[3] ={"footnote-id",NULL,NULL};
-	const gchar* attribsR[9] = {"type", "footnote_ref", "footnote-id",
-								   NULL, NULL, NULL, NULL, NULL, NULL};
-	UT_uint32 iOffR = 3;
 
-	UT_String footpid;
-	UT_String_sprintf(footpid,"%i",f->pid);
-	attribsS[1] = footpid.c_str();
+	std::string footpid = UT_std_string_sprintf("%i", f->pid);
+	const PP_PropertyVector attribsS = { "footnote-id", footpid };
 
 	// for attribsR we need to set props and style in order to
 	// preserve any formating set by a previous call to _beginChar()
-	attribsR[iOffR++] = footpid.c_str();
-	attribsR[iOffR++] = "props";
-	attribsR[iOffR++] = m_charProps.c_str();
+	PP_PropertyVector attribsR = {
+		"type", "footnote_ref",
+		"footnote-id", footpid,
+		"props", m_charProps.c_str()
+	};
 	if(!m_charStyle.empty())
 	{
-		attribsR[iOffR++] = "style";
-		attribsR[iOffR++] = m_charStyle.c_str();
+		attribsR.push_back("style");
+		attribsR.push_back(m_charStyle.c_str());
 	}
-		
-	UT_return_val_if_fail( iOffR <= sizeof(attribsR)/sizeof(gchar*), false );
-	
+
 	if(f->type)
 	{
 		// auto-generated reference -- insert a field
@@ -6027,17 +5998,17 @@ bool IE_Imp_MsWord_97::_insertFootnote(const footnote * f, UT_UCS4Char c)
 		// after we have inserted the footnote section
 		res &= _appendSpan(&c,1);
 	}
-	
+
 	_appendStrux(PTX_SectionFootnote,attribsS);
-	_appendStrux(PTX_EndFootnote,NULL);
+	_appendStrux(PTX_EndFootnote, PP_NOPROPS);
 
 	if(!f->type)
 	{
 		// set the formatting to whatever it was, in case the footnote
 		// marker is longer than one character
-		_appendFmt(&attribsR[0]);
+		_appendFmt(attribsR);
 	}
-	
+
 	return res;
 }
 
@@ -6049,25 +6020,19 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 	this->_flush();
 
 	bool res = true;
-	const gchar * attribsS[3] ={"endnote-id",NULL,NULL};
-	const gchar* attribsR[9] = {"type", "endnote_ref", "endnote-id",
-								   NULL, NULL, NULL, NULL, NULL, NULL};
-	UT_uint32 iOffR = 3;
 
-	UT_String footpid;
-	UT_String_sprintf(footpid,"%i",f->pid);
-	attribsS[1] = footpid.c_str();
-
+	std::string footpid = UT_std_string_sprintf("%i", f->pid);
+	const PP_PropertyVector attribsS = {
+		"endnote-id", footpid
+	};
 	// for attribsR we need to set props and style in order to
 	// preserve any formating set by a previous call to _beginChar()
-	attribsR[iOffR++] = footpid.c_str();
-	attribsR[iOffR++] = "props";
-	attribsR[iOffR++] = m_charProps.c_str();
-	attribsR[iOffR++] = "style";
-	attribsR[iOffR++] = m_charStyle.c_str();
-		
-	UT_return_val_if_fail(iOffR <= sizeof(attribsR)/sizeof(gchar*), false);
-	
+	const PP_PropertyVector attribsR = {
+		"type", "endnote_ref", "endnote-id", footpid,
+		"props", m_charProps.c_str(),
+		"style", m_charStyle.c_str()
+	};
+
 	if(f->type)
 	{
 		// auto-generated reference -- insert a field
@@ -6082,17 +6047,17 @@ bool IE_Imp_MsWord_97::_insertEndnote(const footnote * f, UT_UCS4Char c)
 		// after we have inserted the footnote section
 		res &= _appendSpan(&c,1);
 	}
-	
+
 	_appendStrux(PTX_SectionEndnote,attribsS);
-	_appendStrux(PTX_EndEndnote,NULL);
+	_appendStrux(PTX_EndEndnote, PP_NOPROPS);
 
 	if(!f->type)
 	{
 		// set the formatting to whatever it was, in case the footnote
 		// marker is longer than one character
-		_appendFmt(&attribsR[0]);
+		_appendFmt(attribsR);
 	}
-	
+
 	return res;
 }
 
@@ -6161,26 +6126,21 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		// if this is the first character in a footnote, insert the reference
 		if(iDocPosition == m_pFootnotes[m_iNextFNote].txt_pos)
 		{
-			const gchar* attribsA[] = {"type", "footnote_anchor",
-										   "footnote-id", NULL,
-										   "props",       NULL,
-										   "style",       NULL,
-										   NULL};
-			
-			const gchar * attribsB[] = {"props", NULL,
-											"style", NULL,
-											NULL};
+			std::string footpid =
+				UT_std_string_sprintf("%i", m_pFootnotes[m_iNextFNote].pid);
+			const PP_PropertyVector attribsA = {
+				"type", "footnote_anchor",
+				"footnote-id", footpid,
+				"props",       m_charProps.c_str(),
+				"style",       m_charStyle.c_str()
+			};
 
-			UT_String footpid;
-			UT_String_sprintf(footpid,"%i",m_pFootnotes[m_iNextFNote].pid);
-			attribsA[3] = footpid.c_str();
-			attribsA[5] = m_charProps.c_str();
-			attribsA[7] = m_charStyle.c_str();
+			const PP_PropertyVector attribsB = {
+				"props", m_paraProps.c_str(),
+				"style", m_paraStyle.c_str()
+			};
 
-			attribsB[1] = m_paraProps.c_str();
-			attribsB[3] = m_paraStyle.c_str();
-
-			_appendStrux(PTX_Block,attribsB);
+			_appendStrux(PTX_Block, attribsB);
 			m_bInPara = true;
 
 			if(m_pFootnotes[m_iNextFNote].type)
@@ -6190,7 +6150,7 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 			}
 			return true;
 		}
-		
+
 		// do not return !!!
 		xxx_UT_DEBUGMSG(("In footnote %d, on pos %d\n", m_iNextFNote, iDocPosition));
 	}
@@ -6236,26 +6196,22 @@ bool IE_Imp_MsWord_97::_handleNotesText(UT_uint32 iDocPosition)
 		// if this is the first character in an endnote, insert the anchor
 		if( m_iNextENote < m_iEndnotesCount && iDocPosition == m_pEndnotes[m_iNextENote].txt_pos)
 		{
-			const gchar * attribsA[] = {"type", "endnote_anchor",
-										   "endnote-id", NULL,
-										   "props",       NULL,
-										   "style",       NULL,
-										   NULL};
-			
-			const gchar * attribsB[] = {"props", NULL,
-										   "style", NULL,
-										   NULL};
+			std::string footpid =
+				UT_std_string_sprintf("%i", m_pEndnotes[m_iNextENote].pid);
 
-			UT_String footpid;
-			UT_String_sprintf(footpid,"%i",m_pEndnotes[m_iNextENote].pid);
-			attribsA[3] = footpid.c_str();
-			attribsA[5] = m_charProps.c_str();
-			attribsA[7] = m_charStyle.c_str();
+			const PP_PropertyVector attribsA = {
+				"type", "endnote_anchor",
+				"endnote-id", footpid,
+				"props", m_charProps.c_str(),
+				"style", m_charStyle.c_str()
+			};
 
-			attribsB[1] = m_paraProps.c_str();
-			attribsB[3] = m_paraStyle.c_str();
-			
-			_appendStrux(PTX_Block,attribsB);
+			const PP_PropertyVector attribsB = {
+				"props", m_paraProps.c_str(),
+				"style", m_paraStyle.c_str()
+			};
+
+			_appendStrux(PTX_Block, attribsB);
 			m_bInPara = true;
 
 			if(m_pEndnotes[m_iNextENote].type)
@@ -6494,20 +6450,20 @@ bool IE_Imp_MsWord_97::_ensureInBlock()
       pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
       if(pfs->getStruxType() != PTX_Block)
       {
-        bret = _appendStrux(PTX_Block, NULL);
+        bret = _appendStrux(PTX_Block, PP_NOPROPS);
 	if (bret) m_bInPara = true;
       }
     }
     else if( pf == NULL)
     {
-      bret = _appendStrux(PTX_Block, NULL);
+      bret = _appendStrux(PTX_Block, PP_NOPROPS);
       if (bret) m_bInPara = true;
     }
 
     return bret;
 }
- 
-bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const gchar ** attributes)
+
+bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const PP_PropertyVector & attributes)
 {
 	if(pts == PTX_SectionFrame)
 	{
@@ -6551,18 +6507,18 @@ bool IE_Imp_MsWord_97::_appendStrux(PTStruxType pts, const gchar ** attributes)
 			pf_Frag_Strux * pfs = static_cast<pf_Frag_Strux *>(pf);
 			if(pfs->getStruxType() != PTX_Block)
 			{
-				getDoc()->appendStrux(PTX_Block, NULL);
+				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			}
 		}
 		else if( pf == NULL)
 		{
-			getDoc()->appendStrux(PTX_Block, NULL);
+			getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 		}
 	}
 	return getDoc()->appendStrux(pts, attributes);
 }
 
-bool IE_Imp_MsWord_97::_appendObject(PTObjectType pto, const gchar ** attributes)
+bool IE_Imp_MsWord_97::_appendObject(PTObjectType pto, const PP_PropertyVector & attributes)
 {
 	if(m_bInHeaders)
 	{
@@ -6578,7 +6534,7 @@ bool IE_Imp_MsWord_97::_appendObject(PTObjectType pto, const gchar ** attributes
 	}
 	if(!m_bInPara)
 	{
-	  _appendStrux(PTX_Block, NULL);
+	  _appendStrux(PTX_Block, PP_NOPROPS);
 	  m_bInPara = true;
 	}
 	return getDoc()->appendObject(pto, attributes);
@@ -6601,7 +6557,7 @@ bool IE_Imp_MsWord_97::_appendSpan(const UT_UCSChar * p, UT_uint32 length)
 	return getDoc()->appendSpan(p, length);
 }
 
-bool IE_Imp_MsWord_97::_appendFmt(const gchar ** attributes)
+bool IE_Imp_MsWord_97::_appendFmt(const PP_PropertyVector & attributes)
 {
 	// no special processing required, this only changes m_loading in
 	// the PT
@@ -6617,7 +6573,7 @@ bool IE_Imp_MsWord_97::_appendFmt(const gchar ** attributes)
     each shared header as we go using the info stored in the current
     header's d struct.
 */
-bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const gchar ** attributes)
+bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const PP_PropertyVector & attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
 	UT_return_val_if_fail(m_iCurrentHeader < m_iHeadersCount,false);
@@ -6646,28 +6602,28 @@ bool IE_Imp_MsWord_97::_appendStruxHdrFtr(PTStruxType pts, const gchar ** attrib
 	return bRet;
 }
 
-bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const gchar ** attributes)
+bool IE_Imp_MsWord_97::_appendObjectHdrFtr(PTObjectType pto, const PP_PropertyVector & attributes)
 {
 	UT_return_val_if_fail(m_bInHeaders,false);
 	UT_return_val_if_fail(m_iCurrentHeader < m_iHeadersCount,false);
 
 	bool bRet = true;
-	
+
 	for(UT_sint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.frag.getItemCount(); i++)
 	{
 		pf_Frag * pF = (pf_Frag*) m_pHeaders[m_iCurrentHeader].d.frag.getNthItem(i);
 		UT_return_val_if_fail(pF,false);
 		if(!m_bInPara)
 		{
-			bRet &= getDoc()->insertStruxBeforeFrag(pF, PTX_Block, NULL);
+			bRet &= getDoc()->insertStruxBeforeFrag(pF, PTX_Block, PP_NOPROPS);
 		}
 		bRet &= getDoc()->insertObjectBeforeFrag(pF, pto, attributes);
 	}
 	if(!m_bInPara)
 	{
 		m_bInPara = true;
-		bRet &= getDoc()->appendStrux(PTX_Block, NULL);
-	}	
+		bRet &= getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
+	}
 	bRet &= getDoc()->appendObject(pto, attributes);
 	return bRet;
 }
@@ -6685,7 +6641,7 @@ bool IE_Imp_MsWord_97::_appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length)
 		UT_return_val_if_fail(pF,false);
 		if(!m_bInPara)
 		{
-			bRet &= getDoc()->insertStruxBeforeFrag(pF, PTX_Block, NULL);
+			bRet &= getDoc()->insertStruxBeforeFrag(pF, PTX_Block, PP_NOPROPS);
 		}
 
 		bRet &= getDoc()->insertSpanBeforeFrag(pF, p, length);
@@ -6693,7 +6649,7 @@ bool IE_Imp_MsWord_97::_appendSpanHdrFtr(const UT_UCSChar * p, UT_uint32 length)
 	if(!m_bInPara)
 	{
 		m_bInPara = true;
-		bRet &= getDoc()->appendStrux(PTX_Block, NULL);
+		bRet &= getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 	}	
 	bRet &= getDoc()->appendSpan(p, length);
 	return bRet;
@@ -6894,51 +6850,43 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 	// we need to be able to insert some 0-length headers
 	if(m_pHeaders[m_iCurrentHeader].type != HF_Unsupported /*&& m_pHeaders[m_iCurrentHeader].len > 2*/)
 	{
-		UT_uint32 iOff = 0;
-		const gchar * attribsB[] = {NULL, NULL,
-									   NULL, NULL,
-									   NULL};
 		if(m_iCurrentHeader == m_iLastAppendedHeader)
 		{
 			return false;
 		}
 		m_iLastAppendedHeader = m_iCurrentHeader;
+		PP_PropertyVector attribsB;
 		if(m_paraProps.size())
 		{
-			attribsB[iOff++] = "props";
-			attribsB[iOff++] = m_paraProps.c_str();
+			attribsB.push_back("props");
+			attribsB.push_back(m_paraProps.c_str());
 		}
-					
 		if(m_paraStyle.size())
 		{
-			attribsB[iOff++] = "style";
-			attribsB[iOff++] = m_paraStyle.c_str();
+			attribsB.push_back("style");
+			attribsB.push_back(m_paraStyle.c_str());
 		}
-					
-		const gchar * attribsC[] = {NULL, NULL,
+
+		PP_PropertyVector attribsC = {NULL, NULL,
 									   NULL, NULL,
 									   NULL};
-		iOff = 0;
 		if(m_charProps.size())
 		{
-			attribsC[iOff++] = "props";
-			attribsC[iOff++] = m_charProps.c_str();
+			attribsC.push_back("props");
+			attribsC.push_back(m_charProps.c_str());
 		}
-					
 		if(m_charStyle.size())
 		{
-			attribsC[iOff++] = "style";
-			attribsC[iOff++] = m_charStyle.c_str();
+			attribsC.push_back("style");
+			attribsC.push_back(m_charStyle.c_str());
 		}
-					
-		const gchar * attribsS[] = {"type", NULL,
-									   "id",   NULL,
-									   NULL};
-					
-		UT_String id;
-		UT_String_sprintf(id,"%d",m_pHeaders[m_iCurrentHeader].pid);
-		attribsS[3] = id.c_str();
-		UT_DEBUGMSG(("Appending Current Header %d pid %s \n",m_iCurrentHeader,id.c_str()));		
+
+		std::string id = UT_std_string_sprintf("%d", m_pHeaders[m_iCurrentHeader].pid);
+		PP_PropertyVector attribsS = {
+			"type", "",
+			"id",  id
+		};
+		UT_DEBUGMSG(("Appending Current Header %d pid %s \n",m_iCurrentHeader,id.c_str()));
 		switch(m_pHeaders[m_iCurrentHeader].type)
 		{
 			case HF_HeaderEven:
@@ -6962,12 +6910,12 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 			default:
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
-					
-		// we use the document methods, not the importer methods intentionally 
+
+		// we use the document methods, not the importer methods intentionally
 		UT_DEBUGMSG(("Direct Appending HdrFtr in MSWord_import \n"));
 		if(!m_bInPara)
 		{
-			getDoc()->appendStrux(PTX_Block, NULL);
+			getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			m_bInPara = true;
 		}
 		getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
@@ -6980,7 +6928,7 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 			m_bInPara = true;
 			_appendFmt(attribsC);
 		}
-					
+
 		// now we insert the same for any derivative headers
 		// ...
 		for (UT_sint32 i = 0; i < m_pHeaders[m_iCurrentHeader].d.hdr.getItemCount(); i++)
@@ -6988,17 +6936,17 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 			header * pH = (header*)m_pHeaders[m_iCurrentHeader].d.hdr.getNthItem(i);
 			UT_return_val_if_fail(pH, true);
 
-			// skip any unsupported headers (we set the type to unsupported when we find
-			// out that it is not used by the section to which it belongs)
-						
+			// skip any unsupported headers (we set the type to
+			// unsupported when we find out that it is not used by the
+			// section to which it belongs)
 			if(pH->type == HF_Unsupported)
 			{
 				continue;
 			}
-						
-			UT_String_sprintf(id,"%d",pH->pid);
-			attribsS[3] = id.c_str();
-						
+
+			id = UT_std_string_sprintf("%d", pH->pid);
+			attribsS[3] = id;
+
 			switch(pH->type)
 			{
 				case HF_HeaderEven:
@@ -7023,7 +6971,7 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 					UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 			}
 			UT_DEBUGMSG(("Appending Dirivative HdrFtr in MSWord_import \n"));
-					
+
 			getDoc()->appendStrux(PTX_SectionHdrFtr, attribsS);
 			m_bInHeaders = true;
 
@@ -7031,19 +6979,19 @@ bool IE_Imp_MsWord_97::_insertHeaderSection(bool bDoBlockIns)
 			// later ...
 			pf_Frag * pF = getDoc()->getLastFrag();
 			UT_return_val_if_fail(pF && pF->getType() == pf_Frag::PFT_Strux, true);
-						
+
 			pf_Frag_Strux * pFS = (pf_Frag_Strux*)pF;
 			UT_return_val_if_fail(pFS->getStruxType() == PTX_SectionHdrFtr, true);
-						
+
 			m_pHeaders[m_iCurrentHeader].d.frag.addItem((void*)pF);
-						
+
 			if(bDoBlockIns)
 			{
 				getDoc()->appendStrux(PTX_Block, attribsB);
 				getDoc()->appendFmt(attribsC);
-			}						
+			}
 		}
-					
+
 		return true;
 	}
 	else

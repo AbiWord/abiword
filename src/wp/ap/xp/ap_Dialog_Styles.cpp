@@ -982,12 +982,11 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 
 	if( pStyle == NULL)
 	{
-		const gchar * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",
-									 PT_TYPE_ATTRIBUTE_NAME,"P",
-									 "basedon",getAttsVal("basedon"),
-									 "followedby",getAttsVal("followedby"),
-									 "props",fullProps.c_str(),
-									 NULL,NULL};
+		PP_PropertyVector attrib = { PT_NAME_ATTRIBUTE_NAME, "tmp",
+					     PT_TYPE_ATTRIBUTE_NAME, "P",
+					     "basedon", getAttsVal("basedon"),
+					     "followedby", getAttsVal("followedby"),
+					     "props",fullProps };
 
 		getLDoc()->appendStyle(attrib);
 	}
@@ -1013,6 +1012,7 @@ bool AP_Dialog_Styles::createNewStyle(const gchar * szName)
 {
 	UT_DEBUGMSG(("DOM: new style %s\n", szName));
 
+	// XXX figure out whu props isn't used.
 	const gchar ** props = NULL;
 	UT_uint32 i = 0;
 	if(m_vecAllProps.getItemCount() <= 0)
@@ -1059,7 +1059,13 @@ bool AP_Dialog_Styles::createNewStyle(const gchar * szName)
 //
 // Assemble the attributes we need for this new style
 //
-	const gchar * attrib[] = {PT_NAME_ATTRIBUTE_NAME,szName,PT_TYPE_ATTRIBUTE_NAME,getAttsVal(PT_TYPE_ATTRIBUTE_NAME),"basedon",getAttsVal("basedon"),"followedby",getAttsVal("followedby"),"props",m_curStyleDesc.c_str(),NULL,NULL};
+	const PP_PropertyVector attrib = {
+		PT_NAME_ATTRIBUTE_NAME, szName,
+		PT_TYPE_ATTRIBUTE_NAME, getAttsVal(PT_TYPE_ATTRIBUTE_NAME),
+		"basedon", getAttsVal("basedon"),
+		"followedby", getAttsVal("followedby"),
+		"props", m_curStyleDesc
+	};
 	bool bres = getDoc()->appendStyle(attrib);
 	FREEP(props);
 	return bres;
@@ -1430,12 +1436,13 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	{
 		if(strlen(m_curStyleDesc.c_str()) == 0)
 			m_curStyleDesc += "font-style:normal";
-		const gchar * attrib[] = {PT_NAME_ATTRIBUTE_NAME,"tmp",
-									 PT_TYPE_ATTRIBUTE_NAME,"P",
-									 "basedon","None",
-									 "followedby","Current Settings",
-									 "props",m_curStyleDesc.c_str(),
-									 NULL,NULL};
+		PP_PropertyVector attrib = {
+			PT_NAME_ATTRIBUTE_NAME, "tmp",
+			PT_TYPE_ATTRIBUTE_NAME, "P",
+			"basedon", "None",
+			"followedby", "Current Settings",
+			"props", m_curStyleDesc,
+		};
 		if(!isNew)
 		{
 			attrib[3] = getAttsVal(PT_TYPE_ATTRIBUTE_NAME);

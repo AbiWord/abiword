@@ -444,7 +444,8 @@ public:
 	// - end
 
 	bool	setCharFormat(const gchar * properties[], const gchar * attribs[] = NULL);
-	bool	setCharFormat(const std::vector<std::string>& properties);
+	bool	setCharFormat(const PP_PropertyVector & properties,
+                          const PP_PropertyVector & attribs = PP_NOPROPS);
 	bool	resetCharFormat(bool bAll);
 	bool	getCharFormat(const gchar *** properties,bool bExpandStyles=true) const;
 	bool	getCharFormat(const gchar *** properties,bool bExpandStyles, PT_DocPosition posStart) const;
@@ -453,7 +454,7 @@ public:
 	bool	setStyleAtPos(const gchar * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
 	bool    isNumberedHeadingHere(fl_BlockLayout * pBlock) const;
 	bool	getStyle(const gchar ** style) const;
-	bool appendStyle(const gchar ** style);
+	bool appendStyle(const PP_PropertyVector & style);
 
 	UT_uint32		getCurrentPageNumber(void) const;
 
@@ -1006,8 +1007,10 @@ protected:
 	bool                _changeCellTo(PT_DocPosition posTable,UT_sint32 rowOld,
 									  UT_sint32 colOld, UT_sint32 left, UT_sint32 right,
 									  UT_sint32 top, UT_sint32 bot);
-	bool                _insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, 
-									  UT_sint32 bot, const gchar ** attrsBlock, const gchar ** propsBlock);
+	bool                _insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top,
+									  UT_sint32 bot,
+									  const PP_PropertyVector & attrsBlock,
+									  const PP_PropertyVector & propsBlock);
 	bool                _changeCellAttach(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right,
 									  UT_sint32 top, UT_sint32 bot);
 

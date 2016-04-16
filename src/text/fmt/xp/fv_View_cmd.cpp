@@ -35,6 +35,7 @@
 #include "ut_go_file.h"
 #include "ut_growbuf.h"
 #include "ut_misc.h"
+#include "ut_std_string.h"
 #include "ut_string.h"
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
@@ -4752,24 +4753,14 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName, const char * szTitle)
 		target += szName;
 	}
 
-	std::string title;
+	PP_PropertyVector pAttr = {
+		"xlink:href", target
+	};
 	if (szTitle && *szTitle)
 	{
-		title = szTitle;
+		pAttr.push_back("xlink:title");
+		pAttr.push_back(szTitle);
 	}
-
-	const gchar * pAttr[6];
-	int attr = 0;
-
-	pAttr [attr++] = "xlink:href";
-	pAttr [attr++] = target.c_str();
-	if (szTitle && *szTitle)
-	{
-		pAttr [attr++] = "xlink:title";
-		pAttr [attr++] = title.c_str();
-	}
-	pAttr[attr++] = 0;
-	pAttr[attr++] = 0;
 
 	UT_DEBUGMSG(("fv_View::cmdInsertHyperlink: target \"%s\"\n", target.c_str()));
 
@@ -4779,13 +4770,11 @@ UT_Error FV_View::cmdInsertHyperlink(const char * szName, const char * szTitle)
 	// we first insert the end run, so that we can use it as a stop
 	// after inserting the start run when marking the runs in between
 	// as a hyperlink
-	bRet = m_pDoc->insertObject(posEnd, PTO_Hyperlink, NULL, NULL);
+	bRet = m_pDoc->insertObject(posEnd, PTO_Hyperlink, PP_NOPROPS, PP_NOPROPS);
 
 	if(bRet)
 	{
-		const gchar ** pAttrs = pAttr;
-		const gchar ** pProps = 0;
-		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAttrs, pProps);
+		bRet = m_pDoc->insertObject(posStart, PTO_Hyperlink, pAttr, PP_NOPROPS);
 	}
 
 	if(bRet)
@@ -4910,29 +4899,25 @@ UT_Error FV_View::cmdInsertBookmark(const char * szName)
 		}
 	}
 
-	const gchar* pAttr[6];
 
 	char name[BOOKMARK_NAME_SIZE + 1];
 	strncpy(name, szName, BOOKMARK_NAME_SIZE);
 	name[BOOKMARK_NAME_SIZE] = 0;
 
-	pAttr [0] = "name";
-	pAttr [1] = name;
-	pAttr [2] = "type";
-	pAttr [3] = "start";
-	pAttr [4] = 0;
-	pAttr [5] = 0;
+	PP_PropertyVector pAttr = {
+		"name",	name,
+		"type",	"start"
+	};
 
 	UT_DEBUGMSG(("fv_View::cmdInsertBookmark: szName \"%s\"\n", szName));
 
-	const gchar ** pProps = 0;
-	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAttr, pProps);
+	bRet = m_pDoc->insertObject(posStart, PTO_Bookmark, pAttr, PP_NOPROPS);
 
 	if(bRet)
 	{
 		// override the type to mark the end.
 		pAttr [3] = "end";
-		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAttr, pProps);
+		bRet = m_pDoc->insertObject(posEnd, PTO_Bookmark, pAttr, PP_NOPROPS);
 	}
 
 
@@ -5004,28 +4989,27 @@ FV_View::cmdInsertXMLID( const std::string& xmlid )
 		}
 	}
 
-	const gchar* pa[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-	pa[0] = PT_XMLID;
-	pa[1] = xmlid.c_str();
-	// sanity check
-	pa[2] = "this-is-an-rdf-anchor";
-	pa[3] = "yes";
+	PP_PropertyVector pa = {
+		PT_XMLID, xmlid,
+		// sanity check
+		"this-is-an-rdf-anchor", "yes"
+	};
 
 	UT_DEBUGMSG(("fv_View::cmdInsertXMLID: inserting xmlid:%s at posStart:%d posEnd:%d\n",
 				 xmlid.c_str(), posStart, posEnd ));
-	
-	const gchar ** pAttrs = const_cast<const gchar **>(pa);
-	const gchar ** pProps = 0;
-	bool bRet = m_pDoc->insertObject(posStart, PTO_RDFAnchor, pAttrs, pProps);
-	if(bRet)
-	{
-        pa[4] = PT_RDF_END;
-        pa[5] = "yes";
-		bRet = m_pDoc->insertObject(posEnd, PTO_RDFAnchor, pAttrs, pProps);
+
+	bool bRet = m_pDoc->insertObject(posStart, PTO_RDFAnchor, pa, PP_NOPROPS);
+	if(bRet) {
+		pa.push_back(PT_RDF_END);
+		pa.push_back("yes");
+		bRet = m_pDoc->insertObject(posEnd, PTO_RDFAnchor, pa, PP_NOPROPS);
 	}
-	
-	if( bRet )  ret = UT_OK;
-	else   		ret = UT_ERROR;
+
+	if(bRet) {
+		ret = UT_OK;
+	} else {
+		ret = UT_ERROR;
+	}
 
 	// Signal piceTable is stable again
 	_restorePieceTableState();
@@ -5506,16 +5490,20 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	latexBuf.ins(0,reinterpret_cast<const UT_Byte *>(sLatex.utf8_str()),static_cast<UT_uint32>(sLatex.size()));
 	m_pDoc->createDataItem(sMathName.utf8_str(),false,&mathBuf,"",NULL);
 	m_pDoc->createDataItem(sLatexName.utf8_str(),false,&latexBuf,"",NULL);
+
 	// OK Insert the MathML Object
-	const gchar * atts[9]={"dataid",NULL,"latexid",NULL,"props",NULL,NULL,NULL,NULL};
-	atts[1] = static_cast<const gchar *>(sMathName.utf8_str());
-	atts[3] = static_cast<const gchar *>(sLatexName.utf8_str());
+	PP_PropertyVector atts = {
+		"dataid", sMathName.utf8_str(),
+		"latexid", sLatexName.utf8_str(),
+		"props", ""
+	};
+
 	const gchar *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
 	{
-		atts[6] = PT_STYLE_ATTRIBUTE_NAME;
-		atts[7] = cur_style;
+		atts.push_back(PT_STYLE_ATTRIBUTE_NAME);
+		atts.push_back(cur_style);
 	}
 
 	bool bDidGlob = false;
@@ -5536,9 +5524,10 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	        getCharFormat(&props,false,pos);
 	}
 	pos = getPoint();
-	UT_UTF8String sNewProps;
-	UT_UTF8String sProp;
-	UT_UTF8String sVal;
+
+	std::string sNewProps;
+	std::string sProp;
+	std::string sVal;
 	UT_sint32 i = 0;
 	if(props)
 	{
@@ -5546,16 +5535,16 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	  {
 	    sProp = props[i];
 	    sVal = props[i+1];
-	    UT_UTF8String_setProperty(sNewProps,sProp,sVal);
-	    i +=2;
+	    UT_std_string_setProperty(sNewProps, sProp, sVal);
+	    i += 2;
 	  }
 	  g_free(props);
 	}
 	sProp = "display";
-	sVal = (compact)? "inline": "block";
-	UT_UTF8String_setProperty(sNewProps,sProp,sVal);
-	atts[5] = sNewProps.utf8_str();
-	m_pDoc->insertObject(pos,PTO_Math,atts,NULL);
+	sVal = (compact) ? "inline": "block";
+	UT_std_string_setProperty(sNewProps, sProp, sVal);
+	atts[5] = sNewProps;
+	m_pDoc->insertObject(pos, PTO_Math, atts, PP_NOPROPS);
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
@@ -5575,14 +5564,16 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
 {
 	UT_DebugOnly<PT_DocPosition> posDebug = pos;
 	UT_DEBUGMSG(("Insert Math Object at %d name %s \n",(PT_DocPosition)posDebug,szUID));
-	const gchar * atts[5]={"dataid",NULL,NULL,NULL,NULL};
-	atts[1] = szUID;
+
+	PP_PropertyVector atts = {
+		"dataid", szUID
+	};
 	const gchar *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
 	{
-		atts[2] = PT_STYLE_ATTRIBUTE_NAME;
-		atts[3] = cur_style;
+		atts.push_back(PT_STYLE_ATTRIBUTE_NAME);
+		atts.push_back(cur_style);
 	}
 	bool bDidGlob = false;
 	const gchar ** props = NULL;
@@ -5598,7 +5589,7 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
 	}
 	_makePointLegal();
 	getCharFormat(&props,false,getPoint());
-	m_pDoc->insertObject(getPoint(),PTO_Math,atts,props);
+	m_pDoc->insertObject(getPoint(), PTO_Math, atts, PP_std_copyProps(props));
 
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
@@ -5622,18 +5613,20 @@ bool FV_View::cmdInsertMathML(const char * szUID,PT_DocPosition pos)
  */
 bool FV_View::cmdInsertEmbed(const UT_ByteBuf * pBuf,PT_DocPosition pos,const char * szMime,const char * szProps)
 {
-
-	const gchar * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
-	UT_UTF8String sUID="obj-", s;
+	std::string sUID = "obj-", s;
 	UT_UUID *uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
 	uuid->toString(s);
 	sUID += s;
-	atts[1] = sUID.utf8_str();
+
+	PP_PropertyVector atts = {
+		"dataid", sUID,
+		"props", ""
+	};
 	const gchar *cur_style = NULL;
 	UT_String sBuf(reinterpret_cast<const char *>(pBuf->getPointer(0)),pBuf->getLength());
 	UT_DEBUGMSG(("Chart text is... \n %s \n",sBuf.c_str()));
-	bool result = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf, szMime, NULL);
+	bool result = m_pDoc->createDataItem(sUID.c_str(),false,pBuf, szMime, NULL);
 	if(!result)
 	{
 	    return result;
@@ -5641,8 +5634,8 @@ bool FV_View::cmdInsertEmbed(const UT_ByteBuf * pBuf,PT_DocPosition pos,const ch
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
 	{
-		atts[4] = PT_STYLE_ATTRIBUTE_NAME;
-		atts[5] = cur_style;
+		atts.push_back(PT_STYLE_ATTRIBUTE_NAME);
+		atts.push_back(cur_style);
 	}
 	bool bDidGlob = false;
 	const gchar ** props = NULL;
@@ -5659,9 +5652,9 @@ bool FV_View::cmdInsertEmbed(const UT_ByteBuf * pBuf,PT_DocPosition pos,const ch
 		pos = getPoint();
 	}
 	getCharFormat(&props,false,pos);
-	UT_UTF8String sFullProps;
-	UT_UTF8String sProp,sVal;
-	UT_UTF8String sProps;
+	std::string sFullProps;
+	std::string sProp, sVal;
+	std::string sProps;
 	UT_sint32 i = 0;
 	if(props)
 	{
@@ -5669,16 +5662,16 @@ bool FV_View::cmdInsertEmbed(const UT_ByteBuf * pBuf,PT_DocPosition pos,const ch
 	  {
 	    sProp = props[i];
 	    sVal = props[i+1];
-	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
+	    UT_std_string_setProperty(sFullProps, sProp, sVal);
 	  }
 	  g_free(props);
 	}
 	sProps = szProps;
-	UT_DEBUGMSG(("Supplied props %s \n",sProps.utf8_str()));
-	UT_UTF8String_addPropertyString(sFullProps,sProps);
-	UT_DEBUGMSG(("Property String at Update Object is %s \n",sFullProps.utf8_str()));
-	atts[3]=sFullProps.utf8_str();
-	m_pDoc->insertObject(pos,PTO_Embed,atts,NULL);
+	UT_DEBUGMSG(("Supplied props %s \n", sProps.c_str()));
+	UT_std_string_addPropertyString(sFullProps, sProps);
+	UT_DEBUGMSG(("Property String at Update Object is %s \n", sFullProps.c_str()));
+	atts[3] = sFullProps;
+	m_pDoc->insertObject(pos, PTO_Embed, atts, PP_NOPROPS);
 	if (bDidGlob)
 		m_pDoc->endUserAtomicGlob();
 
@@ -5737,21 +5730,26 @@ bool FV_View::cmdUpdateEmbed(const UT_ByteBuf * pBuf, const char * szMime, const
 	{
 	  return false;
 	}
-	const gchar * atts[7]={"dataid",NULL,"props",NULL,NULL,NULL,NULL};
-	UT_UTF8String sUID="obj-", s;
+
+	std::string sUID="obj-", s;
 	UT_UUID *uuid = m_pDoc->getNewUUID();
 	UT_return_val_if_fail(uuid != NULL, false);
 	uuid->toString(s);
 	sUID += s;
-	atts[1] = sUID.utf8_str();
-	bool bres = m_pDoc->createDataItem(sUID.utf8_str(),false,pBuf, szMime, NULL);
+	PP_PropertyVector atts = {
+		"dataid", sUID,
+		"props", ""
+	};
+
+	bool bres = m_pDoc->createDataItem(sUID.c_str(),false,pBuf, szMime, NULL);
 	UT_return_val_if_fail(bres,false)
+
 	const gchar *cur_style = NULL;
 	getStyle(&cur_style);
 	if((cur_style != NULL) && (*cur_style) && (strcmp(cur_style,"None") != 0))
 	{
-		atts[4] = PT_STYLE_ATTRIBUTE_NAME;
-		atts[5] = cur_style;
+		atts.push_back(PT_STYLE_ATTRIBUTE_NAME);
+		atts.push_back(cur_style);
 	}
 	const gchar ** props = NULL;
 
@@ -5759,9 +5757,9 @@ bool FV_View::cmdUpdateEmbed(const UT_ByteBuf * pBuf, const char * szMime, const
 	_saveAndNotifyPieceTableChange();
 	m_pDoc->beginUserAtomicGlob();
 	getCharFormat(&props,false,pos1);
-	UT_UTF8String sFullProps;
-	UT_UTF8String sProp,sVal;
-	UT_UTF8String sProps;
+	std::string sFullProps;
+	std::string sProp, sVal;
+	std::string sProps;
 	sProps = szProps;
 	UT_sint32 i = 0;
 	if(props)
@@ -5770,17 +5768,18 @@ bool FV_View::cmdUpdateEmbed(const UT_ByteBuf * pBuf, const char * szMime, const
 	  {
 	    sProp = props[i];
 	    sVal = props[i+1];
-	    UT_DEBUGMSG(("Update Embed Prop %s val %s \n",props[i],props[i+1]));
-	    UT_UTF8String_setProperty(sFullProps,sProp,sVal);
+	    UT_DEBUGMSG(("Update Embed Prop %s val %s \n", props[i], props[i+1]));
+	    UT_std_string_setProperty(sFullProps, sProp, sVal);
 	  }
 	  g_free(props);
-	}	
-	UT_DEBUGMSG(("Supplied props %s \n",sProps.utf8_str()));
-	UT_UTF8String_addPropertyString(sFullProps,sProps);
-	atts[3]=sFullProps.utf8_str();
-	UT_DEBUGMSG(("Property String at Update Object is %s \n",atts[3]));
+	}
+	UT_DEBUGMSG(("Supplied props %s \n", sProps.c_str()));
+	UT_std_string_addPropertyString(sFullProps, sProps);
+	atts[3] = sFullProps;
+	UT_DEBUGMSG(("Property String at Update Object is %s \n",
+				 sFullProps.c_str()));
 	_deleteSelection();
-	m_pDoc->insertObject(pos1,PTO_Embed,atts,NULL);
+	m_pDoc->insertObject(pos1, PTO_Embed, atts, PP_NOPROPS);
 	m_pDoc->endUserAtomicGlob();
 
 	_generalUpdate();

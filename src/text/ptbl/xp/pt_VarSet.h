@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -37,7 +38,7 @@ public:
 	void					setPieceTableState(PTState pts);
 	bool					appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
 	bool					storeAP(const gchar ** attributes, PT_AttrPropIndex * papi);
-	bool					storeAP(const UT_GenericVector<const gchar*>* pVecAttributes, PT_AttrPropIndex * papi);
+	bool					storeAP(const PP_PropertyVector & vecAttributes, PT_AttrPropIndex * papi);
 	inline const UT_UCSChar *getPointer(PT_BufIndex bi) const {  return (UT_UCSChar *)m_buffer[_varsetFromBufIndex(bi)].getPointer(_subscriptFromBufIndex(bi)); }
 	inline PT_BufIndex		getBufIndex(PT_BufIndex bi, UT_uint32 offset) const
 	{     return _makeBufIndex(_varsetFromBufIndex(bi),
@@ -50,8 +51,10 @@ public:
 		return m_tableAttrProp[_varsetFromAPIndex(api)].getAP(_subscriptFromAPIndex(api));
 	}
 	bool					mergeAP(PTChangeFmt ptc,PT_AttrPropIndex apiOld,
-									const gchar ** attributes, const gchar ** properties,
-									PT_AttrPropIndex * papiNew, PD_Document * pDoc);
+									const PP_PropertyVector & attributes,
+									const PP_PropertyVector & properties,
+									PT_AttrPropIndex * papiNew,
+									PD_Document * pDoc);
 	bool					addIfUniqueAP(PP_AttrProp * pAP, PT_AttrPropIndex * papi);
     bool                 overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
 

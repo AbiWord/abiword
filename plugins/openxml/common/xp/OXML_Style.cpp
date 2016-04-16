@@ -339,8 +339,10 @@ UT_Error OXML_Style::addToPT(PD_Document * pDocument)
 	}
 
 
-	const gchar ** atts = getAttributesWithProps();
-	if (atts != NULL) ret = pDocument->appendStyle(atts) ? UT_OK : UT_ERROR;
+	const PP_PropertyVector atts = getAttributesWithProps();
+	if (!atts.empty()) {
+		ret = pDocument->appendStyle(atts) ? UT_OK : UT_ERROR;
+	}
 	if(ret != UT_OK)
 	{
 		UT_ASSERT_HARMLESS(ret == UT_OK);

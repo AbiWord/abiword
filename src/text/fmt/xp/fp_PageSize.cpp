@@ -237,75 +237,83 @@ fp_PageSize& fp_PageSize::operator=(const fp_PageSize& rhs)
 /*!
  * Set all pagesize parameters via const gchar attributes
  */
-bool fp_PageSize::Set(const gchar ** attributes)
+bool fp_PageSize::Set(const PP_PropertyVector & attributes)
 {
-	const gchar * szPageSize=NULL, * szOrientation=NULL, * szWidth=NULL, * szHeight=NULL, * szUnits=NULL, * szPageScale=NULL;
-	double width=0.0;
-	double height=0.0;
-	double scale =1.0;
+	std::string szPageSize;
+	std::string szOrientation;
+	std::string szWidth;
+	std::string szHeight;
+	std::string szUnits;
+	std::string szPageScale;
+	double width = 0.0;
+	double height = 0.0;
+	double scale = 1.0;
 	UT_Dimension u = DIM_IN;
 
-	for (const gchar ** a = attributes; (*a); a++)
-	{
-	  UT_DEBUGMSG(("PageSize  -prop %s value %s \n",a[0],a[1]));
-		if (strcmp(a[0],"pagetype") == 0)
-		        szPageSize = a[1];
-		else if (strcmp(a[0], "orientation") == 0)
-			szOrientation = a[1];
-		else if (strcmp(a[0], "width") == 0)
-			szWidth = a[1];
-		else if (strcmp(a[0], "height") == 0)
-			szHeight = a[1];
-		else if (strcmp(a[0], "units") == 0)
-			szUnits = a[1];
-		else if (strcmp(a[0], "page-scale") == 0)
-			szPageScale = a[1];
-		a++;
+	for (auto iter = attributes.cbegin(); iter != attributes.cend();
+             iter += 2)	{
+		auto & prop = *iter;
+                auto & value = *(iter + 1);
+		UT_DEBUGMSG(("PageSize	-prop %s value %s \n", prop.c_str(),
+                             value.c_str()));
+		if (prop == "pagetype")
+			szPageSize = value;
+		else if (prop == "orientation")
+			szOrientation = value;
+		else if (prop == "width")
+			szWidth = value;
+		else if (prop == "height")
+			szHeight = value;
+		else if (prop == "units")
+			szUnits = value;
+		else if (prop == "page-scale")
+			szPageScale = value;
 	}
-	if(!szPageSize)
+	if (szPageSize.empty() || szOrientation.empty())
 		return false;
-	if(!szOrientation)
-		return false;
-	Set(static_cast<const char *>(szPageSize));
 
-	if( szWidth && szHeight && szUnits && szPageScale)
-	  {
-		if(g_ascii_strcasecmp(szPageSize,"Custom") == 0)
-		  {
-		    width = UT_convertDimensionless(szWidth);
-		    height = UT_convertDimensionless(szHeight);
-		    if(strcmp(szUnits,"cm") == 0)
-		      u = DIM_CM;
-		    else if(strcmp(szUnits,"mm") == 0)
-		      u = DIM_MM;
-		    else if(strcmp(szUnits,"inch") == 0)
-		      u = DIM_IN;
-		    Set(width,height,u);
-		  }
+	Set(szPageSize.c_str());
 
-		scale =  UT_convertDimensionless(szPageScale);
+	if (!szWidth.empty() && !szHeight.empty() && !szUnits.empty()
+	    && !szPageScale.empty())
+	{
+		if(g_ascii_strcasecmp(szPageSize.c_str(),"Custom") == 0)
+		{
+			width = UT_convertDimensionless(szWidth.c_str());
+			height = UT_convertDimensionless(szHeight.c_str());
+			if(szUnits == "cm")
+				u = DIM_CM;
+			else if(szUnits == "mm")
+				u = DIM_MM;
+			else if(szUnits == "inch")
+				u = DIM_IN;
+			Set(width, height, u);
+		}
+
+		scale =	 UT_convertDimensionless(szPageScale.c_str());
 		setScale(scale);
-	  }
+	}
 
 	// set portrait by default
 	setPortrait();
-	if( g_ascii_strcasecmp(szOrientation,"landscape") == 0 )
+	if( g_ascii_strcasecmp(szOrientation.c_str(), "landscape") == 0 )
 	{
 		// Note: setting landscape causes the width and height to be swapped
-		if (szWidth && szHeight && szUnits) // just setting a custom width or height should be allowed imo, but I'm lazy - MARCM
+		if (!szWidth.empty() && !szHeight.empty() && !szUnits.empty())
+		// just setting a custom width or height should be allowed imo, but I'm lazy - MARCM
 		{
-			width = UT_convertDimensionless(szWidth);
-			height = UT_convertDimensionless(szHeight);
-			if(strcmp(szUnits,"cm") == 0)
+			width = UT_convertDimensionless(szWidth.c_str());
+			height = UT_convertDimensionless(szHeight.c_str());
+			if(szUnits == "cm")
 				u = DIM_CM;
-			else if(strcmp(szUnits,"mm") == 0)
+			else if(szUnits == "mm")
 				u = DIM_MM;
-			else if(strcmp(szUnits,"inch") == 0)
+			else if(szUnits == "inch")
 				u = DIM_IN;
 			setLandscape();
 			Set(height,width,u);
 		}
-		else  
+		else
 		{
 			Set(m_iHeight, m_iWidth, FUND);
 		}

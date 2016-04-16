@@ -1188,8 +1188,8 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
                 UT_DEBUGMSG(("ODTCT: deleteSpan(revisions) DONE adding, revs:%s\n", Revisions.getXMLstring() ));
             }
 #endif
-            
-			Revisions.addRevision(iId,PP_REVISION_DELETION,NULL,NULL);
+
+			Revisions.addRevision(iId, PP_REVISION_DELETION, PP_NOPROPS, PP_NOPROPS);
             // UT_DEBUGMSG(("ODTCT: deleteSpan(revisions) 2...\n" ));
 			const gchar * ppRevAttrib[3];
 			ppRevAttrib[0] = name;
@@ -1204,7 +1204,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				case pf_Frag::PFT_Object:
 				case pf_Frag::PFT_Text:
                     // UT_DEBUGMSG(("ODTCT: deleteSpan(revisions) addfmt dpos1:%d dposEnd:%d\n", dpos1, dposEnd ));
-					if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL,true))
+					if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, PP_std_copyProps(ppRevAttrib),PP_NOPROPS,true))
 						return false;
 
 
@@ -1352,12 +1352,16 @@ bool pt_PieceTable::_fixHdrFtrReferences(const gchar * pszHdrType, const gchar *
 							}
 							else
 							{
-								// we have a section that references this header in
-								// previous revision and has no changes in the current
-								// revision, so we need to add a new revisions in which
-								// the header is not referenced
-								const gchar * pAttrs [3] = {pszHdrType, pszHdrId, NULL};
-								Revisions.addRevision(iId, PP_REVISION_FMT_CHANGE, pAttrs, NULL);
+								// we have a section that references
+								// this header in previous revision
+								// and has no changes in the current
+								// revision, so we need to add a new
+								// revisions in which the header is
+								// not referenced
+								const PP_PropertyVector attrs = {
+									pszHdrType, pszHdrId
+								};
+								Revisions.addRevision(iId, PP_REVISION_FMT_CHANGE, attrs, PP_NOPROPS);
 							}
 						}
 

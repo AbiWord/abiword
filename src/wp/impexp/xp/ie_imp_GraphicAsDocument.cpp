@@ -49,8 +49,8 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
 
    	UT_DEBUGMSG(("trying to open an image as a document...\n"));
    
-	if (!getDoc()->appendStrux(PTX_Section, NULL) ||
-	    !getDoc()->appendStrux(PTX_Block, NULL))
+	if (!getDoc()->appendStrux(PTX_Section, PP_NOPROPS) ||
+	    !getDoc()->appendStrux(PTX_Block, PP_NOPROPS))
      		return UT_IE_NOMEMORY;
    
    	FG_Graphic* pFG;
@@ -62,10 +62,9 @@ UT_Error IE_Imp_GraphicAsDocument::_loadFile(GsfInput * input)
    	const UT_ByteBuf * buf;
     buf = pFG->getBuffer();
 
-   	const gchar* propsArray[3];
-   	propsArray[0] = "dataid";
-   	propsArray[1] = "image_0";
-   	propsArray[2] = NULL;
+   	const PP_PropertyVector propsArray = {
+          "dataid", "image_0"
+        };
    
    	if (!getDoc()->appendObject(PTO_Image, propsArray)) {
 	   delete pFG;

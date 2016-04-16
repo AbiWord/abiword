@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 2001-2002 Dom Lachowicz
@@ -311,7 +311,7 @@ void IE_Imp_WML::startElement(const gchar *name,
 		
 		// Keep this appendStrux() call here to support files with more
 		// than one <card>
-		X_CheckError(appendStrux(PTX_Section,static_cast<const gchar **>(NULL)));
+		X_CheckError(appendStrux(PTX_Section, PP_NOPROPS));
 		m_bOpenedSection = true;
 		return;
 	}
@@ -390,12 +390,11 @@ void IE_Imp_WML::startElement(const gchar *name,
 		m_parseState = _PS_Block;
 
 		const gchar *p_val = NULL;
-		const gchar *buf[3];
 		bool left = false;
 
-		buf[0] = "props";
-		buf[1] = NULL;
-		buf[2] = NULL;
+		PP_PropertyVector attr = {
+			"props", ""
+		};
 
 		p_val = static_cast<const gchar*>(_getXMLPropValue("align", atts));
 		if(!p_val || !atts)
@@ -407,11 +406,11 @@ void IE_Imp_WML::startElement(const gchar *name,
 		{
 			if(!strcmp(p_val, "center"))
 			{
-				buf[1] = "text-align:center";
+				attr[1] = "text-align:center";
 			}
 			else if(!strcmp(p_val, "right"))
 			{
-				buf[1] = "text-align:right";
+				attr[1] = "text-align:right";
 			}
 			else
 			{
@@ -419,18 +418,18 @@ void IE_Imp_WML::startElement(const gchar *name,
 			}
 		}
 
-		X_CheckError(appendStrux(PTX_Block, (left ? NULL : const_cast<const gchar **>(buf))));
+		X_CheckError(appendStrux(PTX_Block, (left ? PP_NOPROPS : attr)));
 		m_bOpenedBlock = true;
 		return;
 	}
-		
+
 	case TT_IMAGE:
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Cell) || (m_parseState == _PS_Sec));
 
 		if(m_parseState == _PS_Sec)
 		{
-			X_CheckError(appendStrux(PTX_Block,NULL));
+			X_CheckError(appendStrux(PTX_Block,PP_NOPROPS));
 			m_bOpenedBlock = true;
 		}
 
@@ -465,23 +464,21 @@ void IE_Imp_WML::startElement(const gchar *name,
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Cell));
 
-		const gchar **p_atts;
-		const gchar *buf[3];
-		buf[0] = "props";
-		buf[1] = NULL;
-	    buf[2] = NULL;
+		PP_PropertyVector attr = {
+			"props", ""
+		};
 
 	    switch(tokenIndex)
 		{
 			case TT_ITALIC:
 			{
-				buf[1] = "font-style:italic";
+				attr[1] = "font-style:italic";
 				break;
 			}
 
-			case TT_UNDERLINE: 
+			case TT_UNDERLINE:
 			{
-				buf[1] = "text-decoration:underline";
+				attr[1] = "text-decoration:underline";
 				break;
 			}
 
@@ -489,19 +486,19 @@ void IE_Imp_WML::startElement(const gchar *name,
 			case TT_STRONG:
 			case TT_EMPHASIS:
 			{
-				buf[1] = "font-weight:bold";
+				attr[1] = "font-weight:bold";
 				break;
 			}
 
 			case TT_BIG:
 			{
-				buf[1] = "text-position:superscript";
+				attr[1] = "text-position:superscript";
 				break;
 			}
 
 			case TT_SMALL:
 			{
-				buf[1] = "text-position:subscript";
+				attr[1] = "text-position:subscript";
 				break;
 			}
 
@@ -513,9 +510,8 @@ void IE_Imp_WML::startElement(const gchar *name,
 			}
 		}
 
-		p_atts = buf;
-		X_CheckError(_pushInlineFmt(p_atts));
-		X_CheckError(appendFmt(&m_vecInlineFmt));
+		X_CheckError(_pushInlineFmt(attr));
+		X_CheckError(appendFmt(m_vecInlineFmt));
 		return;
 	}
 
@@ -547,21 +543,19 @@ void IE_Imp_WML::startElement(const gchar *name,
 	case TT_ANCHOR:
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Cell));
-		const gchar *buf[5];
-		buf[4] = NULL;
 
 		const gchar *p_val = NULL;
 		p_val = _getXMLPropValue("id", atts);
 
 		if(p_val)
 		{
-			buf[0] = PT_TYPE_ATTRIBUTE_NAME;
-			buf[1] = "start";
-			buf[2] = PT_NAME_ATTRIBUTE_NAME;
-			buf[3] = p_val;
-			X_CheckError(appendObject(PTO_Bookmark, buf));
-			buf[1] = "end";
-			X_CheckError(appendObject(PTO_Bookmark, buf));
+			PP_PropertyVector attr = {
+				PT_TYPE_ATTRIBUTE_NAME,	"start",
+				PT_NAME_ATTRIBUTE_NAME,	p_val
+			};
+			X_CheckError(appendObject(PTO_Bookmark, attr));
+			attr[1] = "end";
+			X_CheckError(appendObject(PTO_Bookmark, attr));
 		}
 		return;
 	}
@@ -570,17 +564,15 @@ void IE_Imp_WML::startElement(const gchar *name,
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Cell));
 
-		const gchar *buf[3];
-		buf[2] = NULL;
-
 		const gchar *p_val = NULL;
 		p_val = _getXMLPropValue("href", atts);
 
 		if(p_val)
 		{
-			buf[0] = "xlink:href";
-			buf[1] = p_val;
-			X_CheckError(appendObject(PTO_Hyperlink, buf));
+			PP_PropertyVector attr = {
+				"xlink:href", p_val
+			};
+			X_CheckError(appendObject(PTO_Hyperlink, attr));
 		}
 		else //href is required, bail out
 		{
@@ -631,8 +623,8 @@ void IE_Imp_WML::endElement(const gchar *name)
 
 		if(!m_bOpenedSection)
 		{
-			X_CheckError(appendStrux(PTX_Section, NULL));
-			X_CheckError(appendStrux(PTX_Block, NULL));
+			X_CheckError(appendStrux(PTX_Section, PP_NOPROPS));
+			X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 		}
 
 		m_parseState = _PS_Init;
@@ -645,7 +637,7 @@ void IE_Imp_WML::endElement(const gchar *name)
 		m_parseState = _PS_Doc;
 
 		if(!m_bOpenedBlock)
-			X_CheckError(appendStrux(PTX_Block, NULL));
+			X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 
 		m_bOpenedBlock = false;
 
@@ -703,7 +695,7 @@ void IE_Imp_WML::endElement(const gchar *name)
 		X_CheckDocument(_getInlineDepth()>0);
 
 		_popInlineFmt();
-		X_CheckError(appendFmt(&m_vecInlineFmt));
+		X_CheckError(appendFmt(m_vecInlineFmt));
 
 		return;
 	}
@@ -743,7 +735,7 @@ void IE_Imp_WML::endElement(const gchar *name)
 	case TT_LINK:
 	{
 		X_CheckError((m_parseState == _PS_Block) || (m_parseState == _PS_Cell));
-		X_CheckError(appendObject(PTO_Hyperlink, NULL));
+		X_CheckError(appendObject(PTO_Hyperlink, PP_NOPROPS));
 		return;
 	}
 
@@ -799,15 +791,6 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 
 	X_CheckError (getDoc()->createDataItem (dataid.utf8_str(), false, pBB, pfg->getMimeType(), NULL));
 
-	const gchar *buf[7];
-	buf[0] = "dataid";
-	buf[1] = dataid.utf8_str();
-	buf[2] = "alt";
-	buf[3] = alt.utf8_str();
-	buf[4] = NULL;
-	buf[5] = NULL;
-	buf[6] = NULL;
-
 	UT_UTF8String props;
 
 	p_val = _getXMLPropValue("height", atts);
@@ -839,14 +822,17 @@ void IE_Imp_WML::createImage(const char *name, const gchar **atts)
 		props+= p_val;
 	}
 
-
+	PP_PropertyVector attr = {
+		"dataid", dataid.utf8_str(),
+		"alt", alt.utf8_str(),
+	};
 	if(props.length())
 	{
-		buf[4] = PT_PROPS_ATTRIBUTE_NAME;
-		buf[5] = props.utf8_str();
+		attr.push_back(PT_PROPS_ATTRIBUTE_NAME);
+		attr.push_back(props.utf8_str());
 	}
 
-	X_CheckError(appendObject(PTO_Image, const_cast<const gchar **>(buf)));
+	X_CheckError(appendObject(PTO_Image, attr));
 	DELETEP(pfg);
 }
 

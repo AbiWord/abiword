@@ -828,12 +828,12 @@ void OXMLi_ListenerState_Common::endElement (OXMLi_EndElementRequest * rqst)
 			OXML_SharedSection sect = rqst->sect_stck->top();
 			UT_return_if_fail(_error_if_fail(sect.get() != NULL));
 			OXML_SharedElement dummy = rqst->stck->top();
-			const gchar ** atts = dummy->getAttributes();
-			if (atts != NULL) {
+			PP_PropertyVector atts = dummy->getAttributes();
+			if (!atts.empty()) {
 				UT_return_if_fail(_error_if_fail(UT_OK == sect->appendAttributes(atts)));
 			}
 			atts = dummy->getProperties();
-			if (atts != NULL) {
+			if (!atts.empty()) {
 				UT_return_if_fail(_error_if_fail(UT_OK == sect->appendProperties(atts)));
 			}
 			rqst->stck->pop();

@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 /* AbiSource
  * 
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
@@ -123,7 +124,7 @@ void ODi_Table_ListenerState::endElement (const gchar* pName,
             if (m_onFirstPass) {
                 m_onFirstPass = false;
             } else {
-                m_pAbiDocument->appendStrux(PTX_EndTable, NULL);
+                m_pAbiDocument->appendStrux(PTX_EndTable, PP_NOPROPS);
                 rAction.popState();
             }
         } else {
@@ -137,7 +138,7 @@ void ODi_Table_ListenerState::endElement (const gchar* pName,
         if (m_onFirstPass) {
             // Do nothing.
         } else{
-            m_pAbiDocument->appendStrux(PTX_EndCell,NULL);
+            m_pAbiDocument->appendStrux(PTX_EndCell, PP_NOPROPS);
         }
     }
     
@@ -155,7 +156,6 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
         if (m_onFirstPass) {
             rAction.repeatElement();
         } else {
-            const gchar* ppAttribs[10];
             std::string props;
             const gchar* pVal;
             const ODi_Style_Style* pStyle = NULL;
@@ -229,27 +229,24 @@ void ODi_Table_ListenerState::_parseTableStart(const gchar** ppAtts,
                 props += "table-rel-column-props:";
                 props += m_columnRelWidths;
             }
-            
+
             // Row heights
             if (!props.empty()) {
                 props += "; ";
             }
             props += "table-row-heights:";
             props += m_rowHeights;
-            
-	    
-            
+
             if (!props.empty()) {
-                ppAttribs[0] = "props";
-                ppAttribs[1] = props.c_str();
-                ppAttribs[2] = 0; // Signal the end of the array.
-                
+                PP_PropertyVector ppAttribs = {
+                    "props", props
+                };
+
                 m_pAbiDocument->appendStrux(PTX_SectionTable, ppAttribs);
             } else {
-                m_pAbiDocument->appendStrux(PTX_SectionTable, NULL);
+                m_pAbiDocument->appendStrux(PTX_SectionTable, PP_NOPROPS);
             }
-            
-            
+
             // Initialize cell variables.
             m_row = 0;
             m_col = 0;
@@ -554,25 +551,23 @@ void ODi_Table_ListenerState::_parseCellStart (const gchar** ppAtts,
             }
         }
 
-        int idx = 0;
-        const gchar *cell_props[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+        PP_PropertyVector cell_props;
         if( xmlid )
         {
-            cell_props[idx++] = PT_XMLID;
-            cell_props[idx++] = xmlid;
+            cell_props.push_back(PT_XMLID);
+            cell_props.push_back(xmlid);
             props += "; xmlid:";
             props += xmlid;
             UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() adding xmlid:%s\n", xmlid ));
         }
-        cell_props[idx++] = "props";
-        cell_props[idx++] = props.c_str();
+        cell_props.push_back("props");
+        cell_props.push_back(props);
         UT_DEBUGMSG(("ODi_Table_ListenerState::_parseCellStart() props:%s\n", props.c_str() ));
         if(dataID.length() > 0)
         {
-            cell_props[idx++] = "strux-image-dataid";
-            cell_props[idx++] = dataID.c_str();
+            cell_props.push_back("strux-image-dataid");
+            cell_props.push_back(dataID);
         }
-        cell_props[idx++] = 0;
         m_pAbiDocument->appendStrux(PTX_SectionCell, cell_props);
 
         // Now parse the cell text content.

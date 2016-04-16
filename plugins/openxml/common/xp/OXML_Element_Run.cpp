@@ -204,8 +204,8 @@ UT_Error OXML_Element_Run::addToPT(PD_Document * pDocument)
 
 	UT_Error ret = UT_OK;
 
-	const gchar ** atts = getAttributesWithProps();
-	if (atts != NULL) {
+	PP_PropertyVector atts = getAttributesWithProps();
+	if (!atts.empty()) {
 		//We open the formatting tag
 		ret = pDocument->appendFmt(atts) ? UT_OK : UT_ERROR;
 		if(ret != UT_OK)
@@ -222,9 +222,9 @@ UT_Error OXML_Element_Run::addToPT(PD_Document * pDocument)
 		return ret;
 	}
 
-	if (atts != NULL) {
+	if (!atts.empty()) {
 		//We close the formatting tag
-		ret = pDocument->appendFmt((const gchar **)NULL) ? UT_OK : UT_ERROR;
+		ret = pDocument->appendFmt(PP_NOPROPS) ? UT_OK : UT_ERROR;
 		UT_return_val_if_fail(ret == UT_OK, ret);
 	}
 	return ret;

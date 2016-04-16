@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (c) 2016 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,10 +23,10 @@
 #ifndef PP_ATTRPROP_H
 #define PP_ATTRPROP_H
 
+#include <map>
 #include <utility>
 
 #include "ut_types.h"
-#include "ut_hash.h"
 #include "ut_vector.h"
 #include "ut_xml.h"
 #include "pp_Property.h"
@@ -77,6 +79,11 @@ class ABI_EXPORT PP_RevisionState
 class ABI_EXPORT PP_AttrProp
 {
 public:
+	typedef std::pair<std::string, const PP_PropertyType *> PropertyPair;
+
+	typedef std::map<std::string, std::string> attributes_t;
+	typedef std::map<std::string, PropertyPair> properties_t;
+
 	PP_AttrProp();
 	virtual ~PP_AttrProp();
 
@@ -86,12 +93,13 @@ public:
 	// terminated by a null name.
 
 	bool	setAttributes(const gchar ** attributes);
-	bool    setAttributes(const UT_GenericVector<const gchar*> * pVector);
+	// XXX remove this one.
+	bool    setAttributes(const PP_PropertyVector & attributes);
 	bool	setProperties(const gchar ** properties);
-	bool	setProperties(const UT_GenericVector<gchar*> * pVector);
+	bool	setProperties(const PP_PropertyVector & properties);
 
-	const gchar ** getAttributes () const { return m_pAttributes ? m_pAttributes->list () : 0; }
-	const gchar ** getProperties () const;
+	PP_PropertyVector getAttributes () const;
+	PP_PropertyVector getProperties () const;
 
 	bool	setAttribute(const gchar * szName, const gchar * szValue);
 	bool	setProperty(const gchar * szName, const gchar * szValue);
@@ -100,29 +108,40 @@ public:
 	bool	getNthProperty(int ndx, const gchar *& szName, const gchar *& szValue) const;
 
 	bool getAttribute(const gchar * szName, const gchar *& szValue) const;
+	bool getAttribute(const std::string& name, const gchar *& szValue) const {
+		return getAttribute(name.c_str(), szValue);
+	}
 	bool getProperty(const gchar * szName, const gchar *& szValue) const;
+	bool getProperty(const std::string & name, const gchar *& szValue) const {
+		return getProperty(name.c_str(), szValue);
+	}
+	// This require non-const this.
 	const PP_PropertyType *getPropertyType(const gchar * szName, tProperty_type Type) const;
 
 	bool hasProperties(void) const;
 	bool hasAttributes(void) const;
 	size_t getPropertyCount (void) const;
 	size_t getAttributeCount (void) const;
-	bool areAlreadyPresent(const gchar ** attributes, const gchar ** properties) const;
-	bool areAnyOfTheseNamesPresent(const gchar ** attributes, const gchar ** properties) const;
-	bool isExactMatch(const PP_AttrProp * pMatch) const;
+	bool areAlreadyPresent(const PP_PropertyVector & attributes,
+						   const PP_PropertyVector & properties) const;
+	bool areAnyOfTheseNamesPresent(const PP_PropertyVector & attributes,
+								   const PP_PropertyVector & properties) const;
+	bool isExactMatch(const PP_AttrProp & pMatch) const;
 	bool isEquivalent(const PP_AttrProp * pAP2) const;
-	bool isEquivalent(const gchar ** attrs, const gchar ** props) const;
+	bool isEquivalent(const PP_PropertyVector & attrs,
+					  const PP_PropertyVector & props) const;
 
-	PP_AttrProp * createExactly(const gchar ** attributes,
-				    const gchar ** properties) const;
+	PP_AttrProp * createExactly(const PP_PropertyVector & attributes,
+				    const PP_PropertyVector & properties) const;
 
-	PP_AttrProp * cloneWithReplacements(const gchar ** attributes,
-										const gchar ** properties,
+
+	PP_AttrProp * cloneWithReplacements(const PP_PropertyVector & attributes,
+										const PP_PropertyVector & properties,
 										bool bClearProps) const;
-	PP_AttrProp * cloneWithElimination(const gchar ** attributes,
-									   const gchar ** properties) const;
-	PP_AttrProp * cloneWithEliminationIfEqual(const gchar ** attributes,
-									   const gchar ** properties) const;
+	PP_AttrProp * cloneWithElimination(const PP_PropertyVector & attributes,
+									   const PP_PropertyVector & properties) const;
+	PP_AttrProp * cloneWithEliminationIfEqual(const PP_PropertyVector & attributes,
+											  const PP_PropertyVector & properties) const;
 
 	void markReadOnly(void);
 	UT_uint32 getCheckSum(void) const;
@@ -157,20 +176,35 @@ protected:
 	void _clearEmptyProperties();
 	void _clearEmptyAttributes();
 
-
-	typedef std::pair<const gchar*,const PP_PropertyType *> PropertyPair;
-
-	UT_GenericStringMap<gchar*> * m_pAttributes; // of gchar*
-	UT_GenericStringMap<PropertyPair*> * m_pProperties; // of PropertyPair
+	attributes_t m_attributes;
+	properties_t m_properties;
 
 	bool				m_bIsReadOnly;
 	UT_uint32			m_checkSum;
 	UT_uint32			m_index;	//$HACK
-	mutable const gchar **   m_szProperties;
 
 	mutable PT_AttrPropIndex    m_iRevisedIndex;
 	mutable PP_RevisionState    m_RevisionState;
 	mutable bool                m_bRevisionHidden;
 };
+
+
+/*
+ * Safe version of UT_setPropsToNothing. Deleted values are "".
+ */
+PP_PropertyVector PP_std_setPropsToNothing(const gchar ** props);
+PP_PropertyVector PP_std_setPropsToNothing(const PP_PropertyVector & props);
+// just copy to a std. Long term, remove this
+// XXX remove this
+PP_PropertyVector PP_std_copyProps(const gchar ** props);
+// safe version of UT_setPropsToValue.
+PP_PropertyVector PP_std_setPropsToValue(const gchar ** props,
+										 const gchar * value);
+// XXX ineficient
+/// Tell if the attribute name is in the vector.
+bool PP_hasAttribute(const char* name, const PP_PropertyVector & atts);
+
+// XXX ineficient
+std::string PP_getAttribute(const char* name, const PP_PropertyVector & atts);
 
 #endif /* PP_ATTRPROP_H */

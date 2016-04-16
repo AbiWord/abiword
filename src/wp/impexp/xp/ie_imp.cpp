@@ -91,13 +91,13 @@ bool IE_Imp::isClipboard () const
 	return m_isPaste;
 }
 
-bool IE_Imp::appendStrux (PTStruxType pts, const gchar ** attributes)
+bool IE_Imp::appendStrux (PTStruxType pts, const PP_PropertyVector & attributes)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendStrux (pts, attributes);
 	else
 		{
-			bool bRes = m_pDocument->insertStrux (m_dpos, pts, attributes, NULL);
+			bool bRes = m_pDocument->insertStrux (m_dpos, pts, attributes, PP_NOPROPS);
 			m_dpos++;
 			return bRes;
 		}
@@ -147,8 +147,8 @@ bool IE_Imp::appendSpan (const UT_UCSChar * p, UT_uint32 length)
 		}
 }
 
-bool IE_Imp::appendObject (PTObjectType pto, const gchar ** attribs,
-						   const gchar ** props)
+bool IE_Imp::appendObject (PTObjectType pto, const PP_PropertyVector & attribs,
+						   const PP_PropertyVector & props)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendObject (pto, attribs);
@@ -160,39 +160,19 @@ bool IE_Imp::appendObject (PTObjectType pto, const gchar ** attribs,
 		}
 }
 
-bool IE_Imp::appendFmt(const gchar ** attributes)
+bool IE_Imp::appendFmt(const PP_PropertyVector & vecAttributes)
 {
 	bool bRes;
 
 	if (!m_isPaste) {
-		bRes = m_pDocument->appendFmt (attributes);
+		bRes = m_pDocument->appendFmt (vecAttributes);
 		// m_pDocument->appendFmtMark();
 	}
 	else {
 		bRes = m_pDocument->changeSpanFmt(PTC_AddFmt,
 										  m_dpos, m_dpos,
-										  attributes, NULL);
-	}
-
-	return bRes;
-}
-
-bool IE_Imp::appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes)
-{
-	bool bRes;
-
-	if (!m_isPaste) {
-		bRes = m_pDocument->appendFmt (pVecAttributes);
-		// m_pDocument->appendFmtMark();
-	}
-	else {
-		const gchar ** attributes;
-
-		attributes = (const gchar **)pVecAttributes->getNthItem(0);
-
-		bRes = m_pDocument->changeSpanFmt(PTC_AddFmt,
-										  m_dpos, m_dpos,
-										  attributes, NULL);
+										  vecAttributes,
+										  PP_NOPROPS);
 	}
 
 	return bRes;

@@ -431,19 +431,12 @@ UT_uint32 IE_Imp_XML::_getInlineDepth(void) const
 	return m_nstackFmtStartIndex.getDepth();
 }
 
-bool IE_Imp_XML::_pushInlineFmt(const gchar ** atts)
+bool IE_Imp_XML::_pushInlineFmt(const PP_PropertyVector & atts)
 {
-	UT_uint32 start = m_vecInlineFmt.getItemCount()+1;
-	UT_uint32 k;
+	UT_uint32 start = m_vecInlineFmt.size() + 1;
 
-	for (k=0; (atts[k]); k++)
-	{
-		gchar * p;
-		if (!(p = g_strdup(atts[k])))
-			return false;
-		if (m_vecInlineFmt.addItem(p)!=0)
-			return false;
-	}
+	m_vecInlineFmt.insert(m_vecInlineFmt.end(),
+						  atts.begin(), atts.end());
 	if (!m_nstackFmtStartIndex.push(start))
 		return false;
 	return true;
@@ -454,16 +447,9 @@ void IE_Imp_XML::_popInlineFmt(void)
 	UT_sint32 start;
 	if (!m_nstackFmtStartIndex.pop(&start))
 		return;
-	UT_uint32 k;
-	UT_uint32 end = m_vecInlineFmt.getItemCount();
-	for (k = end; k >= (UT_uint32)start; k--)
-	{
-		const gchar * p = m_vecInlineFmt.getNthItem(k-1);
-		m_vecInlineFmt.deleteNthItem(k-1);
-		// FIXME: let's pray that nobody assigned a literal to this.
-		if (p)
-			g_free(const_cast<void *>(static_cast<const void *>(p)));
-	}
+
+	m_vecInlineFmt.erase(m_vecInlineFmt.begin() + (start - 1),
+						 m_vecInlineFmt.end());
 }
 
 const gchar * IE_Imp_XML::_getXMLPropValue(const gchar *name,

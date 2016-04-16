@@ -52,6 +52,8 @@ class pf_Frag_Strux;
 
 #include <list>
 
+#include "pp_Property.h"
+
 /**
  * It parses the regular content of a text document. It is used to parse the
  * document text body itself (<office:text>) and the contents of headers
@@ -102,9 +104,9 @@ private:
                                  ODi_ListenerStateAction& rAction);
     void _endParagraphElement (const gchar* pName,
                                ODi_ListenerStateAction& rAction);
-    bool _pushInlineFmt(const gchar** ppAtts);
+    bool _pushInlineFmt(const PP_PropertyVector & ppAtts);
     void _popInlineFmt(void);
-    void _insureInBlock(const gchar ** atts);
+    void _insureInBlock(const PP_PropertyVector & atts);
     void _insureInSection(const std::string* pMasterPageName = NULL);
     void _openAbiSection(const std::string& rProps,
                          const std::string* pMasterPageName = NULL);
@@ -148,7 +150,7 @@ private:
         ODI_SECTION_UNDEFINED
     } m_currentODSection;
 
-    UT_GenericVector<const gchar*> m_vecInlineFmt;
+    PP_PropertyVector m_vecInlineFmt;
     UT_NumberStack m_stackFmtStartIndex;
 
     UT_sint8 m_elementParsingLevel;

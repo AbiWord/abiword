@@ -1159,7 +1159,7 @@ fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayo
 	const PP_AttrProp* pFrameAP = NULL;
 	PP_AttrProp * pUpdatedFrameAP = NULL;
 	pFL->getAP(pFrameAP);
-	pUpdatedFrameAP = pFrameAP->cloneWithReplacements(attributes,properties,false);
+	pUpdatedFrameAP = pFrameAP->cloneWithReplacements(PP_std_copyProps(attributes), PP_std_copyProps(properties), false);
 
 	// Copy the frame content to clipboard
 	bool isTextBox = (pFL->getFrameType() < FL_FRAME_WRAPPER_IMAGE);
@@ -2277,7 +2277,7 @@ const GR_Font* FL_DocLayout::findFont(const PP_AttrProp * pSpanAP,
  */
 bool FL_DocLayout::setDocViewPageSize(const PP_AttrProp * pAP)
 {
-       const gchar ** pProps = pAP->getProperties();
+       PP_PropertyVector pProps = pAP->getProperties();
        FV_View * pView = getView();
        XAP_Frame * pFrame = NULL;
        UT_sint32 iZoom = 100;

@@ -79,76 +79,84 @@ UT_Error OXML_ObjectWithAttrProp::getProperty(const gchar * szName, const gchar 
 	return (szValue && *szValue) ? UT_OK : UT_ERROR;
 }
 
-UT_Error OXML_ObjectWithAttrProp::setAttributes(const gchar ** attributes)
+UT_Error OXML_ObjectWithAttrProp::setAttributes(const PP_PropertyVector & attributes)
 {
 	return m_pAttributes->setAttributes(attributes) ? UT_OK : UT_ERROR;
 }
 
-UT_Error OXML_ObjectWithAttrProp::setProperties(const gchar ** properties)
+UT_Error OXML_ObjectWithAttrProp::setProperties(const PP_PropertyVector & properties)
 {
 	return m_pAttributes->setProperties(properties) ? UT_OK : UT_ERROR;
 }
 
-UT_Error OXML_ObjectWithAttrProp::appendAttributes(const gchar ** attributes)
+UT_Error OXML_ObjectWithAttrProp::appendAttributes(const PP_PropertyVector & attributes)
 {
-	UT_return_val_if_fail(attributes != NULL, UT_ERROR);
+	UT_return_val_if_fail(!attributes.empty(), UT_ERROR);
 	UT_Error ret;
-	for (UT_uint32 i = 0; attributes[i] != NULL; i += 2) {
-		ret = setAttribute(attributes[i], attributes[i+1]);
-		if (ret != UT_OK) return ret;
+	for (auto iter = attributes.cbegin(); iter != attributes.end(); iter += 2) {
+
+		ret = setAttribute(iter->c_str(), (iter + 1)->c_str());
+		if (ret != UT_OK) {
+			return ret;
+		}
 	}
 	return UT_OK;
 }
 
-UT_Error OXML_ObjectWithAttrProp::appendProperties(const gchar ** properties)
+UT_Error OXML_ObjectWithAttrProp::appendProperties(const PP_PropertyVector & properties)
 {
-	UT_return_val_if_fail(properties != NULL, UT_ERROR);
+	UT_return_val_if_fail(!properties.empty(), UT_ERROR);
 	UT_Error ret;
-	for (UT_uint32 i = 0; properties[i] != NULL; i += 2) {
-		ret = setProperty(properties[i], properties[i+1]);
-		if (ret != UT_OK) return ret;
+	for (auto iter = properties.cbegin(); iter != properties.end(); iter += 2) {
+		ret = setProperty(iter->c_str(), (iter + 1)->c_str());
+		if (ret != UT_OK) {
+			return ret;
+		}
 	}
 	return UT_OK;
 }
 
-const gchar ** OXML_ObjectWithAttrProp::getAttributes() const
+PP_PropertyVector OXML_ObjectWithAttrProp::getAttributes() const
 {
 	return m_pAttributes->getAttributes();
 }
 
-const gchar ** OXML_ObjectWithAttrProp::getProperties() const
+PP_PropertyVector OXML_ObjectWithAttrProp::getProperties() const
 {
 	return m_pAttributes->getProperties();
 }
 
-const gchar ** OXML_ObjectWithAttrProp::getAttributesWithProps()
+PP_PropertyVector OXML_ObjectWithAttrProp::getAttributesWithProps()
 {
 	std::string propstring = _generatePropsString();
 	if (propstring.empty())
-        return getAttributes();
+		return getAttributes();
 
 	// Use fakeprops here to avoid overwriting props attribute if already exists
-	UT_return_val_if_fail(UT_OK == setAttribute("fakeprops", propstring.c_str()), NULL);
-	const gchar ** atts = getAttributes();
-	for (UT_uint32 i = 0; atts && (atts[i] != NULL); i += 2) {
-		if (!strcmp(atts[i], "fakeprops"))
-			atts[i] = PT_PROPS_ATTRIBUTE_NAME;
+	UT_return_val_if_fail(UT_OK == setAttribute("fakeprops", propstring.c_str()), PP_PropertyVector());
+	PP_PropertyVector atts = getAttributes();
+	for (auto iter = atts.begin(); iter != atts.end(); iter += 2) {
+		if (*iter == "fakeprops") {
+			*iter = PT_PROPS_ATTRIBUTE_NAME;
+		}
 	}
 	return atts;
 }
 
 std::string OXML_ObjectWithAttrProp::_generatePropsString() const
 {
-	const gchar ** props = getProperties();
-	if (props == NULL) 
-        return "";
+	PP_PropertyVector props = getProperties();
+	if (props.empty()) {
+		return "";
+	}
 	std::string fmt_props;
 
-	for (UT_uint32 i = 0; props[i] != NULL; i += 2) {
-		fmt_props += props[i];
-		fmt_props += ":";
-		fmt_props += props[i+1];
-		fmt_props += ";";
+	for (PP_PropertyVector::const_iterator iter = props.begin();
+		 iter != props.end(); ++iter) {
+
+		fmt_props += *iter + ":";
+		++iter;
+		fmt_props += *iter + ";";
 	}
 	fmt_props.resize(fmt_props.length() - 1); //Shave off the last semicolon, appendFmt doesn't like it
 	return fmt_props;

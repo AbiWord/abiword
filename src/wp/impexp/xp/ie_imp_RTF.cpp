@@ -1700,10 +1700,10 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 		UT_DebugOnly<bool> ok =true;
 		if(!bUseInsertNotAppend())
 		{
-			if(m_bNoteIsFNote)  
-				getDoc()->appendStrux(PTX_EndFootnote,NULL);
+			if(m_bNoteIsFNote)
+				getDoc()->appendStrux(PTX_EndFootnote, PP_NOPROPS);
 			else
-				getDoc()->appendStrux(PTX_EndEndnote,NULL);
+				getDoc()->appendStrux(PTX_EndEndnote, PP_NOPROPS);
 				
 		}
 		else
@@ -1730,9 +1730,9 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 	{
 			UT_DEBUGMSG(("Append block 6 \n"));
 
-			getDoc()->appendStrux(PTX_Block,NULL);
+			getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 	}
-	getDoc()->appendStrux(PTX_SectionTable,NULL);
+	getDoc()->appendStrux(PTX_SectionTable, PP_NOPROPS);
 	UT_DEBUGMSG(("SEVIOR: Appending Table strux to doc nestdepth %d \n", m_TableControl.getNestDepth()));
 	UT_ASSERT( m_TableControl.getNestDepth() < 2);
 	PT_DocPosition posEnd=0;
@@ -1746,7 +1746,7 @@ void IE_Imp_RTF::OpenTable(bool bDontFlush)
 		FlushCellProps();
 		ResetCellAttributes();
 	}
-	getDoc()->appendStrux(PTX_SectionCell,NULL);
+	getDoc()->appendStrux(PTX_SectionCell, PP_NOPROPS);
 	getDoc()->getBounds(true,posEnd); // clean frags!
 	sdh = getDoc()->getLastStruxOfType(PTX_SectionCell);
 	getCell()->setCellSDH(sdh);
@@ -1808,7 +1808,6 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 				std::string sCellProps;
 				std::string sVal;
 				std::string sDum;
-				const gchar * attrs[3] = {"props",NULL,NULL};
 				for(i = pPaste->m_iCurRightCell; i<pPaste->m_iMaxRightCell; i++)
 				{
 					sCellProps.clear();
@@ -1822,19 +1821,21 @@ void IE_Imp_RTF::closePastedTableIfNeeded(void)
 					UT_std_string_setProperty(sCellProps,sDum,sTop);
 					sDum = "bot-attach";
 					UT_std_string_setProperty(sCellProps,sDum,sBot);
-					
-					attrs[1] = sCellProps.c_str();
-					insertStrux(PTX_SectionCell,attrs,NULL);
-					
+
+					PP_PropertyVector attrs = {
+						"props", sCellProps
+					};
+					insertStrux(PTX_SectionCell, attrs, PP_NOPROPS);
+
 					insertStrux(PTX_Block);
-					
+
 					insertStrux(PTX_EndCell);
 				}
 				if(pPaste->m_bHasPastedTableStrux)
 				{
 					insertStrux(PTX_EndTable);
-					
-					insertStrux(PTX_Block); 
+
+					insertStrux(PTX_Block);
 				}
 			}
 			else
@@ -1938,7 +1939,7 @@ void IE_Imp_RTF::CloseTable(bool bForce /* = false */)
 		m_TableControl.CloseTable();
 		if(m_lastCellSDH == NULL)
 		{
-			getDoc()->appendStrux(PTX_EndTable,NULL);
+			getDoc()->appendStrux(PTX_EndTable, PP_NOPROPS);
 			m_bEndTableOpen = true;
 		}
 		m_lastCellSDH = NULL;
@@ -2019,7 +2020,7 @@ void IE_Imp_RTF::HandleCell(void)
 	{
 	    UT_DEBUGMSG(("Append block 7 \n"));
 
-		getDoc()->appendStrux(PTX_Block,NULL);
+		getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 	}
 	else
 	{
@@ -2062,7 +2063,7 @@ void IE_Imp_RTF::HandleCell(void)
 		getTable()->incPosOnRow();
 		FlushStoredChars();		
 		xxx_UT_DEBUGMSG(("SEVIOR: Non posonrow %d \n",getTable()->getPosOnRow()));
-		getDoc()->appendStrux(PTX_EndCell,NULL);
+		getDoc()->appendStrux(PTX_EndCell, PP_NOPROPS);
 //
 // Look to see if this is just has a cell/endCell with no content. If so
 // repair it.
@@ -2076,7 +2077,7 @@ void IE_Imp_RTF::HandleCell(void)
 			getDoc()->insertFmtMarkBeforeFrag(const_cast<pf_Frag *>(pf));
 		}
 		getTable()->CloseCell();
-		getDoc()->appendStrux(PTX_SectionCell,NULL);
+		getDoc()->appendStrux(PTX_SectionCell, PP_NOPROPS);
 		m_lastCellSDH = getDoc()->getLastStruxOfType(PTX_SectionCell);
 	}
 	else
@@ -2340,15 +2341,9 @@ void IE_Imp_RTF::HandleNote(void)
 		// inserting the footnote strux
 		FlushStoredChars(true);
 	}
-	
-	m_iDepthAtFootnote = m_stateStack.getDepth();
-	const gchar * attribs[3] ={"footnote-id",NULL,NULL};
 
-	if(!m_bNoteIsFNote)
-	{
-		attribs[0] = "endnote-id";
-	}
-	
+	m_iDepthAtFootnote = m_stateStack.getDepth();
+
 	std::string footpid;
 	if(m_bNoteIsFNote)
 	{
@@ -2358,27 +2353,30 @@ void IE_Imp_RTF::HandleNote(void)
 	{
 	    footpid = UT_std_string_sprintf("%i",m_iLastEndnoteId);
 	}
-	attribs[1] = footpid.c_str();
+	PP_PropertyVector attribs = {
+		m_bNoteIsFNote ? "footnote-id" : "endnote-id",
+		footpid
+	};
 	UT_DEBUGMSG(("Note Strux ID = %s \n", footpid.c_str()));
 	UT_DEBUGMSG(("ie_imp_RTF: Handle Footnote now \n"));
 
 	if(!bUseInsertNotAppend())
 	{
 		if(m_bNoteIsFNote)
-			getDoc()->appendStrux(PTX_SectionFootnote,attribs);
+			getDoc()->appendStrux(PTX_SectionFootnote, attribs);
 		else
-			getDoc()->appendStrux(PTX_SectionEndnote,attribs);
-			
+			getDoc()->appendStrux(PTX_SectionEndnote, attribs);
+
 		UT_DEBUGMSG(("Append block 8 \n"));
-		getDoc()->appendStrux(PTX_Block,NULL);
+		getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 	}
 	else
 	{
 		if(m_bNoteIsFNote)
-			insertStrux(PTX_SectionFootnote,attribs,NULL);
+			insertStrux(PTX_SectionFootnote, attribs, PP_NOPROPS);
 		else
-			insertStrux(PTX_SectionEndnote,attribs,NULL);
-			
+			insertStrux(PTX_SectionEndnote, attribs, PP_NOPROPS);
+
 		UT_DEBUGMSG((" Insert Block at 7 \n"));
 		markPasteBlock();
 		insertStrux(PTX_Block);
@@ -2449,8 +2447,8 @@ void IE_Imp_RTF::HandleAnnotation(void)
 		FlushStoredChars();
 		if(!m_pDelayedFrag)
 			m_pDelayedFrag = doc->getLastFrag();
-		doc->insertStruxBeforeFrag(m_pDelayedFrag,PTX_SectionAnnotation,ann_attrs);
-		doc->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+		doc->insertStruxBeforeFrag(m_pDelayedFrag, PTX_SectionAnnotation, PP_std_copyProps(ann_attrs));
+		doc->insertStruxBeforeFrag(m_pDelayedFrag, PTX_Block, PP_NOPROPS);
 	}
 	else
 	{
@@ -2458,7 +2456,7 @@ void IE_Imp_RTF::HandleAnnotation(void)
 		xxx_UT_DEBUGMSG(("Initial Saved doc Postion %d \n",	m_posSavedDocPosition));
 		m_dposPaste = m_pAnnotation->m_Annpos+1;
 		xxx_UT_DEBUGMSG((" Insert Annotation m_dposPaste %d \n",m_dposPaste));
-		insertStrux(PTX_SectionAnnotation,ann_attrs,pszAnn);
+		insertStrux(PTX_SectionAnnotation, PP_std_copyProps(ann_attrs), PP_std_copyProps(pszAnn));
 		UT_DEBUGMSG((" Insert Block at 7 \n"));
 		markPasteBlock();
 		insertStrux(PTX_Block);
@@ -2940,11 +2938,11 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 				UT_DEBUGMSG(("Append block 10 \n"));
 				if(m_pDelayedFrag)
 				{
-					getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+					getDoc()->insertStruxBeforeFrag(m_pDelayedFrag, PTX_Block, PP_NOPROPS);
 				}
 				else
 				{
-					getDoc()->appendStrux(PTX_Block,NULL);
+					getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 				}
 			}
 			m_bSectionHasPara = true;
@@ -2957,11 +2955,11 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 
 			if(m_pDelayedFrag)
 			{
-				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag, PTX_Block, PP_NOPROPS);
 			}
 			else
 			{
-				getDoc()->appendStrux(PTX_Block,NULL);
+				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			}
 			m_bSectionHasPara = true;
 			m_bEndTableOpen = false;
@@ -2974,10 +2972,9 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 		if(!bUseInsertNotAppend())
 		{
 			if(m_bNoteIsFNote)
-				getDoc()->appendStrux(PTX_EndFootnote,NULL);
+				getDoc()->appendStrux(PTX_EndFootnote, PP_NOPROPS);
 			else
-				getDoc()->appendStrux(PTX_EndEndnote,NULL);
-				
+				getDoc()->appendStrux(PTX_EndEndnote, PP_NOPROPS);
 		}
 		else
 		{
@@ -3004,8 +3001,7 @@ bool IE_Imp_RTF::FlushStoredChars(bool forceInsertPara)
 			if(!bUseInsertNotAppend())
 			{
 				FlushStoredChars();
-				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_EndAnnotation,NULL);
-					
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_EndAnnotation,PP_NOPROPS);
 			}
 			else
 			{
@@ -3669,7 +3665,7 @@ bool IE_Imp_RTF::HandleField()
 	{
 		FlushStoredChars(true);
 
-		if (!bUseInsertNotAppend()) 
+		if (!bUseInsertNotAppend())
 		{
 			if(m_bCellBlank || m_bEndTableOpen)
 			{
@@ -3677,23 +3673,25 @@ bool IE_Imp_RTF::HandleField()
 
 				if(m_pDelayedFrag)
 				{
-					getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+					getDoc()->insertStruxBeforeFrag(m_pDelayedFrag, PTX_Block, PP_NOPROPS);
 				}
 				else
 				{
-					getDoc()->appendStrux(PTX_Block,NULL);
-				}	
+					getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
+				}
 			m_bCellBlank = false;
 				m_bEndTableOpen = false;
 			}
-			getDoc()->appendObject(PTO_Hyperlink, NULL);
+			getDoc()->appendObject(PTO_Hyperlink, PP_NOPROPS);
 		}
-		else 
+		else
 		{
 			if(m_iHyperlinkOpen ==1)
 			{
-				const gchar * props[] = {"list-tag","dummy",NULL};
-				getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, props, NULL);
+				const PP_PropertyVector props = {
+					"list-tag", "dummy"
+				};
+				getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, props, PP_NOPROPS);
 				m_dposPaste++;
 			}
 			else
@@ -3835,9 +3833,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 			instr = strtok(0, " \\{}");
 			if (instr == NULL)  // ignore empty hyperlinks
 				break;
-			const gchar *new_atts[3];
 
-			new_atts[0] = "xlink:href";
 			std::string href;
 			if ( !strcmp(instr, "l") )
 			{
@@ -3870,7 +3866,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 				// absolute one
 				full_href = m_hyperlinkBase;
 				const char * s2 = full_href.c_str();
-				
+
 				if(*s != '/' && s2[strlen(s2)-1] != '/')
 				{
 					full_href += '/';
@@ -3884,12 +3880,13 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 				{
 					full_href += s;
 				}
-				
+
 				s = full_href.c_str();
 			}
-			
-			new_atts[1] = s;
-			new_atts[2] = 0;
+
+			const PP_PropertyVector new_atts = {
+				"xlink:href", s
+			};
 
 			FlushStoredChars(true);
 
@@ -3902,11 +3899,11 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 
 					if(m_pDelayedFrag)
 					{
-						getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+						getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,PP_NOPROPS);
 					}
 					else
 					{
-						getDoc()->appendStrux(PTX_Block,NULL);
+						getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 					}
 					m_bCellBlank = false;
 					m_bEndTableOpen = false;
@@ -3917,7 +3914,7 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 			{
 				if(getDoc()->isInsertHyperLinkValid(m_dposPaste))
 				{
-						getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, new_atts, NULL);
+						getDoc()->insertObject(m_dposPaste, PTO_Hyperlink, new_atts, PP_NOPROPS);
 						m_dposPaste++;
 				}
 				else
@@ -3993,20 +3990,18 @@ gchar *IE_Imp_RTF::_parseFldinstBlock (UT_ByteBuf & _buf, gchar *xmlField, bool 
 		if (strcmp (instr, "TEXTMETA") == 0)
 		{
 			std::string xmlid = "";
-			const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
 
 			UT_DEBUGMSG (("RTF: RDF opening text meta with original xmlid:%s\n", xmlid.c_str() ));
 			PD_XMLIDCreatorHandle xidc = m_XMLIDCreatorHandle;
 			xmlid = xidc->createUniqueXMLID( xmlid );
 			UT_DEBUGMSG (("RTF: RDF opening text meta with updated  xmlid:%s\n", xmlid.c_str() ));
 
-			ppAtts[0] = PT_XMLID;
-			ppAtts[1] = xmlid.c_str();
-			// sanity check
-			ppAtts[2] = "this-is-an-rdf-anchor";
-			ppAtts[3] = "yes";
-//			ppAtts[4] = PT_RDF_END;
-//			ppAtts[5] = "yes";
+			const PP_PropertyVector ppAtts = {
+				PT_XMLID, xmlid,
+				// sanity check
+				"this-is-an-rdf-anchor", "yes"
+			};
+//			PT_RDF_END, "yes"
 
 			getDoc()->appendObject(PTO_RDFAnchor, ppAtts);
 			m_iRDFAnchorOpen++;
@@ -6107,10 +6102,12 @@ void IE_Imp_RTF::StartAnnotation()
 		m_pAnnotation = new ABI_RTF_Annotation();
 	UT_DEBUGMSG(("created m_pAnnotation %p \n",m_pAnnotation));
 	m_pAnnotation->m_iAnnNumber = ABI_RTF_Annotation::newNumber();
-	std::string sAnnNum;
-	sAnnNum = UT_std_string_sprintf("%d",m_pAnnotation->m_iAnnNumber);
-	const gchar * attr[3] = {PT_ANNOTATION_NUMBER,NULL,NULL};
-	attr[1] = sAnnNum.c_str();
+
+	PP_PropertyVector attr = {
+		PT_ANNOTATION_NUMBER,
+		UT_std_string_sprintf("%d",m_pAnnotation->m_iAnnNumber)
+	};
+
 	UT_DEBUGMSG(("Handling atrfstart number %d \n",m_pAnnotation->m_iAnnNumber));
 	if(!bUseInsertNotAppend())
 	{
@@ -6125,7 +6122,6 @@ void IE_Imp_RTF::StartAnnotation()
 	else
 	{
 		m_pAnnotation->m_Annpos = m_dposPaste;
-		
 	}
 }
 
@@ -6145,21 +6141,22 @@ void IE_Imp_RTF::EndAnnotation()
 	//	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	//	return false;
 	//}
-	std::string sAnnNum;
-	sAnnNum = UT_std_string_sprintf("%d",m_pAnnotation->m_iAnnNumber);
-	const gchar * attr[3] = {PT_ANNOTATION_NUMBER,NULL,NULL};
-	attr[1] = sAnnNum.c_str();
+
+	PP_PropertyVector attr = {
+		PT_ANNOTATION_NUMBER,
+		UT_std_string_sprintf("%d",m_pAnnotation->m_iAnnNumber)
+	};
 	UT_DEBUGMSG(("found annotation end id %d  \n",m_pAnnotation->m_iAnnNumber));
-	
+
 	if(!bUseInsertNotAppend())
 	{
 		FlushStoredChars();
-		getDoc()->appendObject(PTO_Annotation, NULL);
+		getDoc()->appendObject(PTO_Annotation, PP_NOPROPS);
 	}
 	else
 	{
 		UT_DEBUGMSG(("Pasting EndAnnotation at %d  \n",m_dposPaste));
-		bool bRet = getDoc()->insertObject(m_dposPaste, PTO_Annotation, NULL,NULL);
+		bool bRet = getDoc()->insertObject(m_dposPaste, PTO_Annotation, PP_NOPROPS, PP_NOPROPS);
 		
 		if(bRet)
 		{
@@ -6169,7 +6166,7 @@ void IE_Imp_RTF::EndAnnotation()
 			m_dposPaste++;
 			UT_DEBUGMSG(("Pasting Begin Annotation at %d dposPaste %d saved pos %d \n",m_pAnnotation->m_Annpos,m_dposPaste,m_posSavedDocPosition));
 			
-			bRet = getDoc()->insertObject(m_pAnnotation->m_Annpos, PTO_Annotation, attr, NULL);
+			bRet = getDoc()->insertObject(m_pAnnotation->m_Annpos, PTO_Annotation, attr, PP_NOPROPS);
 			if(m_posSavedDocPosition >m_dposPaste )
 				m_posSavedDocPosition++;
 			m_dposPaste++;
@@ -6475,7 +6472,7 @@ bool IE_Imp_RTF::_appendSpan()
 						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
 						if(m_pDelayedFrag)
 						{
-							    if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+								if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag, PP_std_copyProps(propsArray)))
 									return false;
 								UT_DEBUGMSG(("Appending span before %p \n",m_pDelayedFrag));
 								if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p, i- iLast))
@@ -6504,7 +6501,7 @@ bool IE_Imp_RTF::_appendSpan()
 						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
 						if(m_pDelayedFrag)
 						{
-							    if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+								if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag, PP_std_copyProps(propsArray)))
 									return false;
 								if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p,i - iLast))
 									return false;
@@ -6535,7 +6532,7 @@ bool IE_Imp_RTF::_appendSpan()
 						p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
 						if(m_pDelayedFrag)
 						{
-							    if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+								if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag, PP_std_copyProps(propsArray)))
 									return false;
 								if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p,i - iLast))
 									return false;
@@ -6575,7 +6572,7 @@ bool IE_Imp_RTF::_appendSpan()
 			p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(iLast));
 			if(m_pDelayedFrag)
 			{
-				if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+				if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag, PP_std_copyProps(propsArray)))
 					return false;
 				if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p,iLen - iLast))
 				   return false;
@@ -6596,7 +6593,7 @@ bool IE_Imp_RTF::_appendSpan()
 		p = reinterpret_cast<UT_UCS4Char*>(m_gbBlock.getPointer(0));
 		if(m_pDelayedFrag)
 		{
-			if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag,propsArray))
+			if(!getDoc()->insertFmtMarkBeforeFrag(m_pDelayedFrag, PP_std_copyProps(propsArray)))
 				return false;
 			if(!getDoc()->insertSpanBeforeFrag(m_pDelayedFrag,p,iLen))
 			   return false;
@@ -6858,29 +6855,23 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		std::string propBuffer;
 		buildCharacterProps(propBuffer);
 
-		const gchar* propsArray[7];
-		propsArray[0] = pProps;
-		propsArray[1] = propBuffer.c_str();
-		propsArray[2] = NULL;
-		propsArray[3] = NULL;
-		propsArray[4] = NULL;
-		propsArray[5] = NULL;
-		propsArray[6] = NULL;
-		UT_uint32 iPos = 2;
+		PP_PropertyVector propsArray = {
+			pProps, propBuffer
+		};
 
 		if(m_currentRTFState.m_charProps.m_styleNumber >= 0
 		   && static_cast<UT_uint32>(m_currentRTFState.m_charProps.m_styleNumber) < m_styleTable.size())
 		{
-			propsArray[iPos++] = pStyle;
-			propsArray[iPos++] = m_styleTable[m_currentRTFState.m_charProps.m_styleNumber].c_str();
+			propsArray.push_back(pStyle);
+			propsArray.push_back(m_styleTable[m_currentRTFState.m_charProps.m_styleNumber]);
 		}
 
 		if(m_currentRTFState.m_revAttr.size())
 		{
-			propsArray[iPos++] = "revision";
-			propsArray[iPos++] = m_currentRTFState.m_revAttr.utf8_str();
+			propsArray.push_back("revision");
+			propsArray.push_back(m_currentRTFState.m_revAttr.utf8_str());
 		}
-		
+
 		if (!bUseInsertNotAppend())	// if we are reading from a file or parsing headers and footers
 		{
 			if(m_pDelayedFrag)
@@ -6900,7 +6891,7 @@ bool IE_Imp_RTF::ApplyCharacterAttributes()
 		{
 			ok = getDoc()->changeSpanFmt(PTC_SetFmt,
 												m_dposPaste,m_dposPaste,
-												propsArray,NULL);
+												propsArray, PP_NOPROPS);
 		}
 		return ok;
 	}
@@ -7633,11 +7624,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			bool bret = false;
 			if(m_pDelayedFrag)
 			{
-				bret = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,attribs1);
+				bret = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag, PTX_Block,PP_std_copyProps(attribs1));
 			}
 			else
 			{
-				bret = getDoc()->appendStrux(PTX_Block, attribs1);
+				bret = getDoc()->appendStrux(PTX_Block, PP_std_copyProps(attribs1));
 			}
 			m_bEndTableOpen = false;
 			m_bCellBlank = false;
@@ -7647,16 +7638,13 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			//
 			// Insert a list-label field??
 			//
-			const gchar* fielddef[5];
-			fielddef[0] ="type";
-			fielddef[1] = "list_label";
-			fielddef[2] = NULL;
-			fielddef[3] = NULL;
-			fielddef[4] = NULL;
+			PP_PropertyVector fielddef = {
+				"type", "list_label"
+			};
 			if(bWord97List)
 			{
-					fielddef[2] = "props";
-					fielddef[3] = "text-decoration:none";
+				fielddef.push_back("props");
+				fielddef.push_back("text-decoration:none");
 			}
 			bret =   getDoc()->appendObject(PTO_Field,fielddef);
 			UT_UCSChar cTab = UCS_TAB;
@@ -7665,7 +7653,9 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 //
 			if(bWord97List)
 			{
-					const gchar* attribs[3] = {"props","text-decoration:none",NULL};
+					const PP_PropertyVector attribs = {
+						"props", "text-decoration:none"
+					};
 					getDoc()->appendFmt(attribs);
 			}
 			getDoc()->appendSpan(&cTab,1);
@@ -7677,11 +7667,11 @@ bool IE_Imp_RTF::ApplyParagraphAttributes(bool bDontInsert)
 			bool ok = false;
 			if(m_pDelayedFrag)
 			{
-				ok = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,attribs1);
+				ok = getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block, PP_std_copyProps(attribs1));
 			}
 			else
 			{
-				ok = getDoc()->appendStrux(PTX_Block, attribs1);
+				ok = getDoc()->appendStrux(PTX_Block, PP_std_copyProps(attribs1));
 			}
 			m_newParaFlagged = false;
 			m_bSectionHasPara = true;
@@ -8070,7 +8060,7 @@ bool IE_Imp_RTF::ApplySectionAttributes()
 	if (!bUseInsertNotAppend()) // if we are reading a file or parsing a header and footer
 	{
 		UT_DEBUGMSG(("Appending Section strux now \n"));
-		return getDoc()->appendStrux(PTX_Section, propsArray);
+		return getDoc()->appendStrux(PTX_Section, PP_std_copyProps(propsArray));
 	}
 	else
 	{
@@ -9855,27 +9845,28 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 			return false;
 	}
 
-	std::string sPropName;
-	std::string sInputAbiProps;
-	const gchar * attrs[7] = {"dataid",NULL,NULL,NULL,NULL,NULL,NULL};
-	sPropName = "dataid";
+	std::string sPropName = "dataid";
 	std::string sDataIDVal = UT_std_string_getPropVal(sProps,sPropName);
-	attrs[1] = sDataIDVal.c_str();
-	UT_std_string_removeProperty(sProps,sPropName);
+	UT_std_string_removeProperty(sProps, sPropName);
 	sPropName ="latexid";
 	std::string sLatexIDVal = UT_std_string_getPropVal(sProps,sPropName);
-	if(sLatexIDVal.size() > 0)
+
+	PP_PropertyVector attrs = {
+		sPropName, sDataIDVal,
+		"", ""
+	};
+	if(!sLatexIDVal.empty())
 	{
 		UT_std_string_removeProperty(sProps,sPropName);
 		attrs[2] = "latexid";
-		attrs[3] =  sLatexIDVal.c_str();
-		attrs[4]= "props";
-		attrs[5] = sProps.c_str();
+		attrs[3] =  sLatexIDVal;
+		attrs.push_back("props");
+		attrs.push_back(sProps);
 	}
 	else
 	{
 		attrs[2] = "props";
-		attrs[3] = sProps.c_str();
+		attrs[3] = sProps;
 	}
 	getDoc()->getUID(UT_UniqueId::Image); // Increment the image uid counter
 	//
@@ -9891,11 +9882,11 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 			UT_DEBUGMSG(("Append block 5 \n"));
 			if(m_pDelayedFrag)
 			{
-				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag, PTX_Block, PP_NOPROPS);
 			}
 			else
 			{
-				getDoc()->appendStrux(PTX_Block,NULL);
+				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			}
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
@@ -9923,7 +9914,7 @@ bool IE_Imp_RTF::HandleAbiMathml(void)
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 			return true;
 		}
-		getDoc()->insertObject(m_dposPaste, PTO_Math, attrs, NULL);
+		getDoc()->insertObject(m_dposPaste, PTO_Math, attrs, PP_NOPROPS);
 		m_dposPaste++;
 		if(m_posSavedDocPosition > 0)
 			m_posSavedDocPosition++;
@@ -10050,7 +10041,7 @@ bool IE_Imp_RTF::CreateDataItemfromStream(void)
 /////////////////////////////////////////////////////////////////////////
 bool IE_Imp_RTF::HandleAbiEmbed(void)
 {
-	UT_UTF8String sProps;
+	std::string sProps;
 	unsigned char ch;
 	if (!ReadCharFromFile(&ch))
 		return false;
@@ -10069,15 +10060,13 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 			return false;
 	}
 
-	UT_UTF8String sPropName;
-	UT_UTF8String sInputAbiProps;
-	const gchar * attrs[7] = {"dataid",NULL,NULL,NULL,NULL};
-	sPropName = "dataid";
-	UT_UTF8String sDataIDVal = UT_UTF8String_getPropVal(sProps,sPropName);
-	attrs[1] = sDataIDVal.utf8_str();
-	UT_UTF8String_removeProperty(sProps,sPropName);
-	attrs[2]= "props";
-	attrs[3] = sProps.utf8_str();
+	std::string sPropName = "dataid";
+	std::string sDataIDVal = UT_std_string_getPropVal(sProps, sPropName);
+	UT_std_string_removeProperty(sProps,sPropName);
+	PP_PropertyVector attrs = {
+		sPropName, sDataIDVal,
+		"props", sProps
+	};
 	bool ok = FlushStoredChars(true);
 	UT_return_val_if_fail (ok, false);
 	if (!bUseInsertNotAppend() || m_bAppendAnyway)
@@ -10088,11 +10077,11 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 			UT_DEBUGMSG(("Append block 5 \n"));
 			if(m_pDelayedFrag)
 			{
-				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block, PP_NOPROPS);
 			}
 			else
 			{
-				getDoc()->appendStrux(PTX_Block,NULL);
+				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			}
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
@@ -10120,7 +10109,7 @@ bool IE_Imp_RTF::HandleAbiEmbed(void)
 			m_currentRTFState.m_destinationState = RTFStateStore::rdsSkip;
 			return true;
 		}
-		getDoc()->insertObject(m_dposPaste, PTO_Embed, attrs, NULL);
+		getDoc()->insertObject(m_dposPaste, PTO_Embed, attrs, PP_NOPROPS);
 		m_dposPaste++;
 		if(m_posSavedDocPosition > 0)
 			m_posSavedDocPosition++;
@@ -10270,10 +10259,11 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 //
 	std::string sProp = "table-sdh";	
 	UT_std_string_removeProperty(sProps,sProp);
-	const gchar * attrs[3] = {"props",NULL,NULL};
 	if(! bIsPasteIntoSame)
 	{
-		attrs[1] = sProps.c_str();
+		const PP_PropertyVector attrs = {
+			"props", sProps
+		};
 //
 // insert a block to terminate the text before this if needed,
 //
@@ -10293,8 +10283,8 @@ bool IE_Imp_RTF::HandleAbiTable(void)
 // Insert the table strux at the same spot. This will make the table link correctly in the
 // middle of the broken text.
 		pPaste->m_bHasPastedTableStrux = true;
-		insertStrux(PTX_SectionTable,attrs,NULL);
-	}	
+		insertStrux(PTX_SectionTable, attrs, PP_NOPROPS);
+	}
 	return true;
 }
 
@@ -10490,9 +10480,10 @@ bool IE_Imp_RTF::HandleAbiCell(void)
 		pPaste->m_iCurTopCell = iMyTop;
 	}
 	UT_DEBUGMSG(("RTF_Import: Pos %d Paste: Cell props are: %s \n",m_dposPaste,sProps.c_str()));
-	const gchar * attrs[3] = {"props",NULL,NULL};
-	attrs[1] = sProps.c_str();
- 	insertStrux(PTX_SectionCell,attrs,NULL);
+	const PP_PropertyVector attrs = {
+		"props", sProps
+	};
+	insertStrux(PTX_SectionCell, attrs, PP_NOPROPS);
 	m_newParaFlagged = true;
 	m_bSectionHasPara = true;
 
@@ -10505,7 +10496,7 @@ bool IE_Imp_RTF::HandleAbiCell(void)
  * Insert into a hyperlink means the m_dposPate is additionally incremented
  * to handle the extra end hyperlink run.
  */
-bool IE_Imp_RTF::insertStrux(PTStruxType pts , const gchar ** attrs, const gchar ** props)
+bool IE_Imp_RTF::insertStrux(PTStruxType pts , const PP_PropertyVector & attrs, const PP_PropertyVector & props)
 {
 	bool bInHyperlink = false;
 	bool bDoExtraBlock = false;
@@ -10681,7 +10672,6 @@ bool IE_Imp_RTF::insertStrux(PTStruxType pts , const gchar ** attrs, const gchar
 	return res;
 }
 
-		
 
 //////////////////////////////////////////////////////////////////////////////
 // AbiList table reader
@@ -11204,23 +11194,22 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 	/* read the bookmark name. It is PCDATA hence we are likely to find non ASCII data.*/
 	HandlePCData(bookmarkName);
 
-	const gchar * props [5];
-	props [0] = "type";
+	PP_PropertyVector props = {
+		"type", ""
+		"name", bookmarkName.utf8_str()
+	};
 	switch (type) {
 	case RBT_START:
-		props [1] = "start";
+		props[1] = "start";
 		break;
 	case RBT_END:
-		props [1] = "end";
+		props[1] = "end";
 		break;
 	default:
 		UT_ASSERT_NOT_REACHED();
-		props [1] = NULL;
+		props[1] = "";
 		break;
 	}
-	props [2] = "name";
-	props [3] = bookmarkName.utf8_str();
-	props [4] = NULL;
 	UT_DEBUGMSG(("SEVIOR: Appending Object 3 m_bCellBlank %d m_bEndTableOpen %d \n",m_bCellBlank,m_bEndTableOpen));
 	if(m_bCellBlank || m_bEndTableOpen || !m_bSectionHasPara)
 	{
@@ -11230,15 +11219,15 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 			ApplySectionAttributes();
 			m_newSectionFlagged = false;
 		}
-		if(!bUseInsertNotAppend()) 
+		if(!bUseInsertNotAppend())
 		{
 			if(m_pDelayedFrag)
 			{
-				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag, PTX_Block, PP_NOPROPS);
 			}
 			else
 			{
-				getDoc()->appendStrux(PTX_Block,NULL);
+				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			}
 		}
 		else
@@ -11270,7 +11259,7 @@ bool IE_Imp_RTF::HandleBookmark (RTFBookmarkType type)
 			markPasteBlock();
 			insertStrux(PTX_Block);
 		}
-		getDoc()->insertObject(m_dposPaste, PTO_Bookmark, props, NULL);
+		getDoc()->insertObject(m_dposPaste, PTO_Bookmark, props, PP_NOPROPS);
 		m_dposPaste++;
 		if(m_posSavedDocPosition > 0)
 			m_posSavedDocPosition++;
@@ -11303,13 +11292,11 @@ bool IE_Imp_RTF::HandleRDFAnchor (RTFBookmarkType type)
 		m_rdfAnchorCloseXMLIDs.erase( xmlid );
 	}
 	UT_DEBUGMSG(("HandleRDFAnchor() of type %d updated  xmlid:%s\n", type, xmlid.c_str()));
-	
-	const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-	int ppIdx = 0;
-	ppAtts[ppIdx++] = PT_XMLID;
-	ppAtts[ppIdx++] = xmlid.c_str();
-	ppAtts[ppIdx++] = "this-is-an-rdf-anchor";
-	ppAtts[ppIdx++] = "yes";
+
+	PP_PropertyVector ppAtts = {
+		PT_XMLID, xmlid,
+		"this-is-an-rdf-anchor", "yes"
+	};
 	switch (type)
 	{
 		case RBT_START:
@@ -11317,8 +11304,8 @@ bool IE_Imp_RTF::HandleRDFAnchor (RTFBookmarkType type)
 			break;
 		case RBT_END:
 			m_iRDFAnchorOpen++;
-			ppAtts[ppIdx++] = PT_RDF_END;
-			ppAtts[ppIdx++] = "yes";
+			ppAtts.push_back(PT_RDF_END);
+			ppAtts.push_back("yes");
 			break;
 	}
 	
@@ -11340,7 +11327,7 @@ bool IE_Imp_RTF::HandleRDFAnchor (RTFBookmarkType type)
 			markPasteBlock();
 			insertStrux(PTX_Block);
 		}
-		getDoc()->insertObject(m_dposPaste, PTO_RDFAnchor, ppAtts, NULL);
+		getDoc()->insertObject(m_dposPaste, PTO_RDFAnchor, ppAtts, PP_NOPROPS);
 		m_dposPaste++;
 		if(m_posSavedDocPosition > 0)
 			m_posSavedDocPosition++;
@@ -11391,7 +11378,6 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		m_lenPasteBuffer = header->m_buf.getLength ();
 		m_pCurrentCharInPasteBuffer = m_pPasteBuffer;
 		m_dposPaste = FV_DOCPOS_EOD;
-		const gchar* propsArray[9];
 		std::string hdrftrID;
 		switch (header->m_type)
 		{
@@ -11432,15 +11418,12 @@ void IE_Imp_RTF::_appendHdrFtr ()
 		}
 		UT_DEBUGMSG (("id is %s\n", tempBuffer.c_str()));
 		hdrftrID = tempBuffer;
-		propsArray[0] = "type";
-		propsArray[1] = szType;
-		propsArray[2] = "id";
-		propsArray[3] = tempBuffer.c_str();
-		propsArray[4] = "listid";
-		propsArray[5] = "0";
-		propsArray[6] = "parentid";
-		propsArray[7] = "0";
-		propsArray[8] = NULL;
+		const PP_PropertyVector propsArray = {
+			"type", szType,
+			"id", tempBuffer,
+			"listid", "0",
+			"parentid", "0"
+		};
 
 		if(!getDoc()->verifySectionID(hdrftrID.c_str()))
 		{
@@ -11448,10 +11431,10 @@ void IE_Imp_RTF::_appendHdrFtr ()
 			getDoc()->changeStruxAttsNoUpdate(sdh,szType,hdrftrID.c_str());
 		}
 		getDoc()->appendStrux (PTX_SectionHdrFtr, propsArray);
-		propsArray[0] = NULL;
 		// actually it appears that we have to append a block for some cases.
 		UT_DEBUGMSG(("Append block 4 with props \n"));
 #if 0 //#TF
+		propsArray[0] = NULL;
 		getDoc()->appendStrux(PTX_Block, propsArray);
 #endif
 		// tell that we are parsing headers and footers
@@ -11471,7 +11454,7 @@ void IE_Imp_RTF::_appendHdrFtr ()
 bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 {
 	bool ok;
-	const gchar** propsArray = NULL;
+	PP_PropertyVector propsArray;
 	std::string propBuffer;
 	buildCharacterProps(propBuffer);
 
@@ -11490,45 +11473,32 @@ bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 	}
 	if(pszAttribs == NULL)
 	{
-		propsArray = static_cast<const gchar **>(UT_calloc(7, sizeof(gchar *)));		
+		propsArray.resize(6);
 		propsArray [0] = "type";
 		propsArray [1] = xmlField;
 		propsArray [2] = "props";
-		propsArray [3] = propBuffer.c_str();
+		propsArray [3] = propBuffer;
 		propsArray [4] = pStyle;
-		propsArray [5] = styleName.c_str();
-		propsArray [6] = NULL;
+		propsArray [5] = styleName;
 	}
 	else
 	{
-		UT_uint32 isize =0;
-		while(pszAttribs[isize] != NULL)
-		{
-			isize++;
-		}
-		propsArray = static_cast<const gchar **>(UT_calloc(7+isize, sizeof(gchar *)));
-
-		UT_uint32 iEmptyAttrib = 4;
+		propsArray.resize(pStyle ? 6 : 4);
 		propsArray [0] = "type";
 		propsArray [1] = xmlField;
 		propsArray [2] = "props";
-		propsArray [3] = propBuffer.c_str();
-		propsArray [4] = NULL;
-		propsArray [5] = NULL;
-
+		propsArray [3] = propBuffer;
 		if(pStyle)
 		{
-			propsArray[iEmptyAttrib++] = pStyle;
-			propsArray[iEmptyAttrib++] = styleName.c_str();
+			propsArray[4] = pStyle;
+			propsArray[5] = styleName;
 		}
-		
-		
-		UT_uint32 i = 0;
-		for(i=0; i< isize;i++)
+
+		// XXX performance
+		for(UT_uint32 i = 0; pszAttribs[i]; i++)
 		{
-			propsArray[iEmptyAttrib+i] = pszAttribs[i];
+			propsArray.push_back(pszAttribs[i]);
 		}
-		propsArray[iEmptyAttrib+isize] = NULL;
 	}
 	// TODO get text props to apply them to the field
 	ok = FlushStoredChars (true);
@@ -11541,11 +11511,11 @@ bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 			UT_DEBUGMSG(("Append block 5 \n"));
 			if(m_pDelayedFrag)
 			{
-				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block,NULL);
+				getDoc()->insertStruxBeforeFrag(m_pDelayedFrag,PTX_Block, PP_NOPROPS);
 			}
 			else
 			{
-				getDoc()->appendStrux(PTX_Block,NULL);
+				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 			}
 			m_bCellBlank = false;
 			m_bEndTableOpen = false;
@@ -11598,12 +11568,12 @@ bool IE_Imp_RTF::_appendField (const gchar *xmlField, const gchar ** pszAttribs)
 			m_bMovedPos = true;
 			m_dposPaste = newPos;
 		}
-		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, NULL);
+		getDoc()->insertObject(m_dposPaste, PTO_Field, propsArray, PP_NOPROPS);
 		m_dposPaste++;
 		if(m_posSavedDocPosition > 0)
 			m_posSavedDocPosition++;
 	}
-	g_free(propsArray);
+
 	m_bFieldRecognized = true;
 	return ok;
 }
@@ -12126,7 +12096,7 @@ bool IE_Imp_RTF::HandleStyleDefinition(void)
 			}
 			else
 			{
-				getDoc()->appendStyle(attribs);
+				getDoc()->appendStyle(PP_std_copyProps(attribs));
 			}
 		}
 		

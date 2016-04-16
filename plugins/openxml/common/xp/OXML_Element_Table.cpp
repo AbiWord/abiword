@@ -312,15 +312,15 @@ UT_Error OXML_Element_Table::addToPT(PD_Document * pDocument)
 		}
 	}
 
-	const gchar ** atts = getAttributesWithProps();
+	const PP_PropertyVector atts = getAttributesWithProps();
 	if(!pDocument->appendStrux(PTX_SectionTable, atts))
 		return UT_ERROR;
-	
+
 	ret = addChildrenToPT(pDocument);
 	if(ret != UT_OK)
 		return ret;
-	
-	if(!pDocument->appendStrux(PTX_EndTable,NULL))
+
+	if(!pDocument->appendStrux(PTX_EndTable, PP_NOPROPS))
 		return UT_ERROR;
 
 	return ret;

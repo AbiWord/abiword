@@ -354,7 +354,7 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 			return ret;	
 	}
 
-	const gchar** cell_props = getAttributesWithProps();
+	const PP_PropertyVector cell_props = getAttributesWithProps();
 
 	if(!pDocument->appendStrux(PTX_SectionCell, cell_props))
 		return UT_ERROR;
@@ -363,9 +363,9 @@ UT_Error OXML_Element_Cell::addToPT(PD_Document * pDocument)
 	if(ret != UT_OK)
 		return ret;
 
-	if(!pDocument->appendStrux(PTX_EndCell,NULL))
+	if(!pDocument->appendStrux(PTX_EndCell, PP_NOPROPS))
 		return UT_ERROR;
-	
+
 	return ret;
 }
 

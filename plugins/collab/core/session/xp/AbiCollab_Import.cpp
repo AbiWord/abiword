@@ -747,15 +747,15 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 					{
 						const Object_ChangeRecordSessionPacket* ocrsp = static_cast<const Object_ChangeRecordSessionPacket*>( crp );
 						PTObjectType pto = ocrsp->getObjectType();
-						gchar** szAtts = ocrsp->getAtts();
-						gchar** szProps = ocrsp->getProps();
-						
+						const gchar** szAtts = const_cast<const gchar**>(ocrsp->getAtts());
+						const gchar** szProps = const_cast<const gchar**>(ocrsp->getProps());
 						if((szProps == NULL) && (szAtts == NULL))
 						{
 							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 							return false;
 						}
-						m_pDoc->insertObject(pos, pto, const_cast<const gchar**>( szAtts ), const_cast<const gchar**>( szProps ) );
+						m_pDoc->insertObject(pos, pto, PP_std_copyProps(szAtts),
+                                             PP_std_copyProps(szProps));
 						break;
 					}
 					case PX_ChangeRecord::PXT_DeleteObject:

@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
@@ -22,6 +22,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include "ut_std_string.h"
 
 #include "ie_imp_OPML.h"
 #include "ie_types.h"
@@ -265,7 +267,7 @@ void IE_Imp_OPML::startElement(const gchar *name, const gchar **atts)
 			m_parseState = _PS_Doc;
 			// append the section here (rather than the TT_SECTION case) in case
 			// the file is lacking a body element
-			X_CheckError(appendStrux(PTX_Section, NULL));
+			X_CheckError(appendStrux(PTX_Section, PP_NOPROPS));
 			return;
 		}
 
@@ -326,11 +328,10 @@ void IE_Imp_OPML::startElement(const gchar *name, const gchar **atts)
 
 				if(url) // insert a hyperlink
 				{
-					const gchar *link[3];
-					link[0] = "xlink:href";
-					link[1] = url;
-					link[2] = NULL;
-					X_CheckError(appendObject(PTO_Hyperlink, const_cast<const gchar **>(link)));
+					PP_PropertyVector attr = {
+						"xlink:href", url
+					};
+					X_CheckError(appendObject(PTO_Hyperlink, attr));
 				}
 
 				UT_UCS4String span = text;
@@ -338,7 +339,7 @@ void IE_Imp_OPML::startElement(const gchar *name, const gchar **atts)
 
 				if(url)
 				{
-					X_CheckError(appendObject(PTO_Hyperlink, NULL));
+					X_CheckError(appendObject(PTO_Hyperlink, PP_NOPROPS));
 				}
 			}
 			return;
@@ -368,7 +369,7 @@ void IE_Imp_OPML::endElement(const gchar *name)
 			X_VerifyParseState(_PS_Doc);
 
 			if(!m_bOpenedBlock)
-				X_CheckError(appendStrux(PTX_Block, NULL));
+				X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 
 			m_parseState = _PS_Init;
 			return;
@@ -439,63 +440,54 @@ void IE_Imp_OPML::_createBullet(void)
 		_createList();
 	}
 
-	const gchar *buf[11];
-	buf[0] = PT_STYLE_ATTRIBUTE_NAME;
-	buf[1] = "Bullet List";
-	buf[2] = PT_LEVEL_ATTRIBUTE_NAME;
-	buf[10] = NULL;
-
-	UT_String val;
+	std::string val;
 
 	if(m_utvLists[m_iOutlineDepth - 1])
-		UT_String_sprintf (val, "%d", m_utvLists[m_iOutlineDepth - 1]->getLevel());
+		val = UT_std_string_sprintf ("%d", m_utvLists[m_iOutlineDepth - 1]->getLevel());
 	else
 		val = "1";
 
-	buf[3] = (gchar *)g_strdup(val.c_str());
-	buf[4] = PT_LISTID_ATTRIBUTE_NAME;
+	PP_PropertyVector attr = {
+		PT_STYLE_ATTRIBUTE_NAME, "Bullet List",
+		PT_LEVEL_ATTRIBUTE_NAME, val,
+		PT_LISTID_ATTRIBUTE_NAME, "",
+		PT_PARENTID_ATTRIBUTE_NAME, "",
+		PT_PROPS_ATTRIBUTE_NAME, ""
+	};
 
 	if(m_utvLists[m_iOutlineDepth - 1])
-		UT_String_sprintf (val, "%d", m_utvLists[m_iOutlineDepth - 1]->getID());
+		val = UT_std_string_sprintf ("%d", m_utvLists[m_iOutlineDepth - 1]->getID());
 	else
-		UT_String_sprintf (val, "%d", ++m_iCurListID);
+		val = UT_std_string_sprintf ("%d", ++m_iCurListID);
 
-	buf[5] = (gchar *)g_strdup(val.c_str());
-	buf[6] = PT_PARENTID_ATTRIBUTE_NAME;
+	attr[5] = val;
 
 	if(m_utvLists[m_iOutlineDepth - 1])
-		UT_String_sprintf (val, "%d", m_utvLists[m_iOutlineDepth - 1]->getParentID());
+		val = UT_std_string_sprintf ("%d", m_utvLists[m_iOutlineDepth - 1]->getParentID());
 	else
 		val = "0";
 
-	buf[7] = (gchar *)g_strdup(val.c_str());
-	buf[8] = PT_PROPS_ATTRIBUTE_NAME;
+	attr[7] = val;
 
 	val = "start-value:0; list-style:Bullet List;";
-	val += UT_String_sprintf(" margin-left:%fin", (m_iOutlineDepth * 0.5)); //set the indent
+	val += UT_std_string_sprintf(" margin-left:%fin", (m_iOutlineDepth * 0.5)); //set the indent
 
-	buf[9] = (gchar *)g_strdup(val.c_str());
+	attr[9] = val;
 
-	X_CheckError(appendStrux(PTX_Block, const_cast<const gchar **>(buf)));
+	X_CheckError(appendStrux(PTX_Block, attr));
 	m_bOpenedBlock = true;
 
 	// add the list label
-	const gchar * buf2 [3];
-	buf2[0] = PT_TYPE_ATTRIBUTE_NAME;
-	buf2[1] = "list_label";
-	buf2[2] = NULL;
+	PP_PropertyVector attr2 = {
+		PT_TYPE_ATTRIBUTE_NAME, "list_label"
+	};
 
-	X_CheckError(appendObject (PTO_Field, const_cast<const gchar **>(buf2)));
-	X_CheckError(appendFmt (const_cast<const gchar **>(buf2)));
+	X_CheckError(appendObject (PTO_Field, attr2));
+	X_CheckError(appendFmt (attr2));
 	UT_UCSChar ucs = UCS_TAB;
 	appendSpan(&ucs,1);
 	_popInlineFmt();
-	X_CheckError(appendFmt (static_cast<const gchar **>(NULL)));
-
-	FREEP(buf[3]);
-	FREEP(buf[5]);
-	FREEP(buf[7]);
-	FREEP(buf[9]);
+	X_CheckError(appendFmt (PP_NOPROPS));
 }
 
 void IE_Imp_OPML::_createList(void)

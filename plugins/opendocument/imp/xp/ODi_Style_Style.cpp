@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 /* AbiSource
  * 
  * Copyright (C) 2002 Dom Lachowicz <cinamod@hotmail.com>
@@ -972,40 +973,37 @@ void ODi_Style_Style::defineAbiStyle(PD_Document* pDocument) {
      *           ...
      *           a[n] = 0 (NULL character)
      */
-    const gchar* pAttr[11];
-    UT_uint32 i = 0;
     bool ok;
-    
-    pAttr[i++] = "type";
+
+    PP_PropertyVector pAttr;
+    pAttr.push_back("type");
     if (!strcmp("paragraph", m_family.c_str())) {
-        pAttr[i++] = "P";
+        pAttr.push_back("P");
     } else if (!strcmp("text", m_family.c_str())) {
-        pAttr[i++] = "C";
+        pAttr.push_back("C");
     } else {
         // Really shouldn't happen
         UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
     }
-    
+
     // AbiWord uses the display name
-    pAttr[i++] = "name";
-    pAttr[i++] = m_displayName.c_str();
-    
+    pAttr.push_back("name");
+    pAttr.push_back(m_displayName);
+
     if (m_pParentStyle) {
-        pAttr[i++] = "basedon";
-        pAttr[i++] = m_pParentStyle->getDisplayName().c_str();
+        pAttr.push_back("basedon");
+        pAttr.push_back(m_pParentStyle->getDisplayName());
     }
-    
+
     if (m_pNextStyle) {
-        pAttr[i++] = "followedby";
-        pAttr[i++] = m_pNextStyle->getDisplayName().c_str();
+        pAttr.push_back("followedby");
+        pAttr.push_back(m_pNextStyle->getDisplayName());
     }
 
 
-    pAttr[i++] = "props";
-    pAttr[i++] = m_abiPropsAttr.c_str();
-    
-    pAttr[i] = 0; // Signal the end of the array 
-    
+    pAttr.push_back("props");
+    pAttr.push_back(m_abiPropsAttr.c_str());
+
     ok = pDocument->appendStyle(pAttr);
     UT_ASSERT_HARMLESS(ok);
 }

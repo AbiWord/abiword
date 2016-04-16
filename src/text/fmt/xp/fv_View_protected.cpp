@@ -850,7 +850,7 @@ bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32
  * This method inserts a cell at PT_DocPosition with the given left, right, top and bottom attach.
  */
 bool FV_View::_insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot,
-							const gchar ** attrsBlock, const gchar ** propsBlock)
+							const PP_PropertyVector & attrsBlock, const PP_PropertyVector & propsBlock)
 {
 	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
 	UT_String sLeft,sRight,sTop,sBot;

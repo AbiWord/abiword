@@ -59,8 +59,8 @@ bool  IE_Imp_PasteListener::populate(fl_ContainerLayout* /* sfh */,
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
 	const PP_AttrProp* pAP = NULL;
 	UT_DEBUGMSG(("SEVIOR: Doing Populate Section in PasteListener \n"));
-	const char ** atts = NULL;
-	const char ** props = NULL;
+	PP_PropertyVector atts;
+	PP_PropertyVector props;
 	if (m_pSourceDoc->getAttrProp(indexAP, &pAP) && pAP)
 	{
 		atts = pAP->getAttributes();
@@ -119,8 +119,8 @@ bool  IE_Imp_PasteListener::populateStrux(pf_Frag_Strux* sdh,
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
 	const PP_AttrProp* pAP = NULL;
 	UT_DEBUGMSG(("SEVIOR: Doing Populate Strux in PasteListener \n"));
-	const char ** atts = NULL;
-	const char ** props = NULL;
+	PP_PropertyVector atts;
+	PP_PropertyVector props;
 	if (m_pSourceDoc->getAttrProp(indexAP, &pAP) && pAP)
 	{
 		atts = pAP->getAttributes();

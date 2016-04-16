@@ -301,10 +301,11 @@ bool PD_Style::addProperty(const gchar * szName, const gchar * szValue)
 		return false;
 	else
 	{
-		const gchar * pProps[4] = {NULL,NULL,NULL,NULL};
-		pProps[0] = szName;
-		pProps[1] = szValue;
-		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(NULL, pProps, false);
+		const PP_PropertyVector pProps = {
+			szName, szValue
+		};
+		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(PP_NOPROPS,
+                                                          pProps, false);
 		pNewAP->markReadOnly();
 		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
 	}
@@ -325,7 +326,9 @@ bool PD_Style::addProperties(const gchar ** pProperties)
 		return false;
 	else
 	{
-		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(NULL, pProperties, false);
+		PP_AttrProp * pNewAP =
+			pAP->cloneWithReplacements(PP_NOPROPS, PP_std_copyProps(pProperties),
+									   false);
 		pNewAP->markReadOnly();
 		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
 	}
@@ -356,13 +359,14 @@ bool PD_Style::addAttributes(const gchar ** pAtts)
 		return false;
 	else
 	{
-		if(pAP->areAlreadyPresent(pAtts,NULL))
+		PP_PropertyVector atts = PP_std_copyProps(pAtts);
+		if(pAP->areAlreadyPresent(atts, PP_NOPROPS))
 		{
 			return true;
 		}
-		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(pAtts, NULL, false);
+		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(atts, PP_NOPROPS, false);
 		UT_return_val_if_fail( pNewAP, false );
-		
+
 		pNewAP->markReadOnly();
 		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
 	}

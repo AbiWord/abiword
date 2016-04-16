@@ -204,14 +204,17 @@ public:
 	void setClipboard (PT_DocPosition dpos);
 	bool isClipboard () const;
 
-	virtual bool appendStrux (PTStruxType pts, const gchar ** attributes);
+	virtual bool appendStrux (PTStruxType pts, const PP_PropertyVector & attributes);
 	virtual bool appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes);
 	virtual bool appendSpan (const UT_UCSChar * p, UT_uint32 length);
 	virtual bool appendSpan ( const std::string& s );
-	virtual bool appendObject (PTObjectType pto, const gchar ** attribs,
-					   const gchar ** props = NULL);
-	virtual bool appendFmt(const gchar ** attributes);
-	virtual bool appendFmt(const UT_GenericVector<const gchar*>* pVecAttributes);
+	virtual bool appendObject (PTObjectType pto,
+                               const PP_PropertyVector & attribs,
+                               const PP_PropertyVector & props = PP_PropertyVector());
+    // XXX remove
+	bool appendFmt(const gchar ** attributes)
+		{ return appendFmt(PP_std_copyProps(attributes)); }
+	virtual bool appendFmt(const PP_PropertyVector & pVecAttributes);
 
 	virtual UT_Error _loadFile (GsfInput * input) = 0;
 

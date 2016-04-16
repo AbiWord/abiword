@@ -281,18 +281,18 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 
 	}
 
-	const gchar ** atts = getAttributesWithProps();
+	const PP_PropertyVector atts = getAttributesWithProps();
 
-	if (atts != NULL) {
+	if (!atts.empty()) {
 		ret = pDocument->appendStrux(PTX_Block, atts) ? UT_OK : UT_ERROR;
 		if(ret != UT_OK) {
 			UT_ASSERT_HARMLESS(ret == UT_OK);
 			return ret;
 		}
 	} else {
-		ret = pDocument->appendStrux(PTX_Block, NULL) ? UT_OK : UT_ERROR;
+		ret = pDocument->appendStrux(PTX_Block, PP_NOPROPS) ? UT_OK : UT_ERROR;
 	}
-		
+
 
 	if(pListId && pListLevel)
 	{
@@ -300,17 +300,17 @@ UT_Error OXML_Element_Paragraph::addToPT(PD_Document * pDocument)
 		if(ret != UT_OK)
 			return ret;
 
-		const gchar ** ppAttr = getAttributesWithProps();
-    
+		const PP_PropertyVector ppAttr = getAttributesWithProps();
+
 		if(!pDocument->appendObject(PTO_Field, ppAttr))
 			return ret;
 
 		pDocument->appendFmt(ppAttr);
-	
+
 		UT_UCS4String string = "\t";
 		pDocument->appendSpan(string.ucs4_str(), string.size());
 	}
-	
+
 	return addChildrenToPT(pDocument);
 }
 

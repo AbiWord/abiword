@@ -123,7 +123,7 @@ UT_Error OXML_Element_TextBox::addToPT(PD_Document* pDocument)
 	if(ret != UT_OK)
 		return ret;
 
-	const gchar ** attr = this->getAttributesWithProps();
+	const PP_PropertyVector attr = this->getAttributesWithProps();
 	ret = pDocument->appendStrux(PTX_SectionFrame, attr) ? UT_OK : UT_ERROR;
 	if(ret != UT_OK)
 		return ret;
@@ -132,7 +132,7 @@ UT_Error OXML_Element_TextBox::addToPT(PD_Document* pDocument)
 	if(ret != UT_OK)
 		return ret;
 
-	ret = pDocument->appendStrux(PTX_EndFrame, NULL) ? UT_OK : UT_ERROR;
+	ret = pDocument->appendStrux(PTX_EndFrame, PP_NOPROPS) ? UT_OK : UT_ERROR;
 	return ret;
 }
 

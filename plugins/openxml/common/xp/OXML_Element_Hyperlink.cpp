@@ -86,11 +86,9 @@ UT_Error OXML_Element_Hyperlink::addToPT(PD_Document* pDocument)
 {
 	UT_Error err = UT_OK;
 
-	const gchar *field_fmt[3];
-	field_fmt[0] = "xlink:href";
-	field_fmt[1] = m_target.c_str();
-	field_fmt[2] = 0;
-
+	const PP_PropertyVector field_fmt = {
+		"xlink:href", m_target
+	};
 	if(!pDocument->appendObject(PTO_Hyperlink, field_fmt))
 		return UT_ERROR;
 
@@ -98,7 +96,7 @@ UT_Error OXML_Element_Hyperlink::addToPT(PD_Document* pDocument)
 	if(err != UT_OK)
 		return err;
 
-	if(!pDocument->appendObject(PTO_Hyperlink, NULL))
+	if(!pDocument->appendObject(PTO_Hyperlink, PP_NOPROPS))
 		return UT_ERROR;
 
 	return UT_OK;

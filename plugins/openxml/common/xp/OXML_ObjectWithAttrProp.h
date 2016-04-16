@@ -41,12 +41,12 @@ public:
 	UT_Error setProperty(const std::string & szName, const std::string & szValue);
 	UT_Error getAttribute(const gchar * szName, const gchar *& szValue) const;
 	UT_Error getProperty(const gchar * szName, const gchar *& szValue) const;
-	UT_Error setAttributes(const gchar ** attributes);
-	UT_Error setProperties(const gchar ** properties);
-	UT_Error appendAttributes(const gchar ** attributes);
-	UT_Error appendProperties(const gchar ** properties);
-	const gchar ** getAttributes() const;
-	const gchar ** getProperties() const;
+	UT_Error setAttributes(const PP_PropertyVector & attributes);
+	UT_Error setProperties(const PP_PropertyVector & properties);
+	UT_Error appendAttributes(const PP_PropertyVector & attributes);
+	UT_Error appendProperties(const PP_PropertyVector & properties);
+	PP_PropertyVector getAttributes() const;
+	PP_PropertyVector getProperties() const;
 
 	UT_Error inheritProperties(OXML_ObjectWithAttrProp* parent);
 
@@ -55,7 +55,7 @@ public:
  	 *  format.  This string is used as the value of a new attribute whose key is defined by PP_PROPS_ATTRIBUTE_NAME.
 	 	\return A list of all the object's attributes and with a new attribute containing all the properties.
 	*/
-	const gchar ** getAttributesWithProps();
+	PP_PropertyVector getAttributesWithProps();
 
 	bool getNthProperty(int i, const gchar* & szName, const gchar* & szValue);
 	size_t getPropertyCount();

@@ -92,11 +92,10 @@ UT_Error OXML_Element_Math::addToPT(PD_Document * pDocument)
         pDocument->createDataItem(lID.c_str(), false, &latexBuf, "", NULL);
     }
    
-    const gchar *atts[5] = { NULL, NULL, NULL, NULL, NULL };
-    atts[0] = PT_IMAGE_DATAID;
-    atts[1] = static_cast<const gchar *>(mID.c_str());
-    atts[2] = static_cast<const gchar *>("latexid");
-    atts[3] = static_cast<const gchar *>(lID.c_str());
+    const PP_PropertyVector atts = {
+      PT_IMAGE_DATAID, mID,
+      "latexid", lID
+    };
     if(!pDocument->appendObject(PTO_Math, atts))
         return UT_ERROR;
 

@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -131,12 +132,12 @@ bool pt_VarSet::storeAP(const gchar ** attributes, PT_AttrPropIndex * papi)
 		pTemp->markReadOnly();
 		return addIfUniqueAP(pTemp,papi);
 	}
-	
+
 	delete pTemp;
 	return false;
 }
 
-bool pt_VarSet::storeAP(const UT_GenericVector<const gchar*>* pVecAttributes, PT_AttrPropIndex * papi)
+bool pt_VarSet::storeAP(const PP_PropertyVector & vecAttributes, PT_AttrPropIndex * papi)
 {
 	if (!m_bInitialized)
 		if (!_finishConstruction())
@@ -144,8 +145,8 @@ bool pt_VarSet::storeAP(const UT_GenericVector<const gchar*>* pVecAttributes, PT
 
 	// create an AP for this set of attributes -- iff unique.
 	// return the index for the new one (or the one we found).
-	
-	if (!pVecAttributes || pVecAttributes->getItemCount()==0)
+
+	if (vecAttributes.empty())
 	{
 		// we preloaded the zeroth cell (of both tables)
 		// with empty attributes.  return index back to
@@ -164,8 +165,8 @@ bool pt_VarSet::storeAP(const UT_GenericVector<const gchar*>* pVecAttributes, PT
 	PP_AttrProp * pTemp = new PP_AttrProp();
 	if (!pTemp)
 		return false;
-	
-	if (pTemp->setAttributes(pVecAttributes))
+
+	if (pTemp->setAttributes(vecAttributes))
 	{
 		pTemp->markReadOnly();
 		return addIfUniqueAP(pTemp,papi);
@@ -181,8 +182,9 @@ bool pt_VarSet::isContiguous(PT_BufIndex bi, UT_uint32 length, PT_BufIndex bi2) 
 }
 
 bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
-						   const gchar ** attributes, const gchar ** properties,
-						   PT_AttrPropIndex * papiNew,PD_Document * pDoc)
+						const PP_PropertyVector & attributes,
+						const PP_PropertyVector & properties,
+						PT_AttrPropIndex * papiNew, PD_Document * pDoc)
 {
 	// merge the given attr/props with set referenced by apiOld
 	// under the operator ptc giving a new set to be returned in
@@ -305,125 +307,95 @@ bool pt_VarSet::mergeAP(PTChangeFmt ptc, PT_AttrPropIndex apiOld,
 				UT_DEBUGMSG(("old style is a list style\n"));
 				// OK, old style is a list, is the new style?
 				// (the following function cares not whether we are dealing
-				//  with attributes or properties)
-				const gchar * pNewStyle = NULL;
-
-				if(properties)
-					pNewStyle = UT_getAttribute("list-style", properties);
-				
-				// we do not care about the value, just about whether it is there
-				if(!pNewStyle)
+				//	with attributes or properties)
+				bool has_style = PP_hasAttribute("list-style", properties);
+				if(has_style)
 				{
 					UT_DEBUGMSG(("new style is not a list style\n"));
-					
-					const gchar * pListAttrs[8];
-					pListAttrs[0] = "listid";
-					pListAttrs[1] = NULL;
-					pListAttrs[2] = "parentid";
-					pListAttrs[3] = NULL;
-					pListAttrs[4] = "level";
-					pListAttrs[5] = NULL;
-					pListAttrs[6] = NULL;
-					pListAttrs[7] = NULL;
+
+					PP_PropertyVector listAttrs = {
+						"listid", "",
+						"parentid", "",
+						"level", ""
+					};
 
 					// we also need to explicitely clear the list formating
 					// properties, since their values are not necessarily part
 					// of the style definition, so that cloneWithEliminationIfEqual
 					// which we call later will not get rid off them
-					const gchar * pListProps[20];
-					pListProps[0] =  "start-value";
-					pListProps[1] =  NULL;
-					pListProps[2] =  "list-style";
-					pListProps[3] =  NULL;
-					pListProps[4] =  "margin-left";
-					pListProps[5] =  NULL;
-					pListProps[6] =  "text-indent";
-					pListProps[7] =  NULL;
-					pListProps[8] =  "field-color";
-					pListProps[9] =  NULL;
-					pListProps[10]=  "list-delim";
-					pListProps[11] =  NULL;
-					pListProps[12]=  "field-font";
-					pListProps[13] =  NULL;
-					pListProps[14]=  "list-decimal";
-					pListProps[15] =  NULL;
-					pListProps[16] =  "list-tag";
-					pListProps[17] =  NULL;
-					pListProps[18] =  NULL;
-					pListProps[19] =  NULL;
-					
-					pNew1 = papOld->cloneWithElimination((const gchar **)&pListAttrs, (const gchar **)&pListProps);
+					PP_PropertyVector listProps = {
+						"start-value", "",
+						"list-style", "",
+						"margin-left", "",
+						"text-indent", "",
+						"field-color", "",
+						"list-delim", "",
+						"field-font", "",
+						"list-decimal", "",
+						"list-tag", ""
+					};
+
+					pNew1 = papOld->cloneWithElimination(listAttrs, listProps);
 				}
 			}
-			
+
 			UT_Vector vProps, vAttribs;
-		
+
 			pStyle->getAllProperties(&vProps,0);
-		
-			const gchar ** sProps = NULL;
-			UT_uint32 countp = vProps.getItemCount() + 1;
-			sProps = new const gchar*[countp];
-			countp--;
+
+			PP_PropertyVector sProps;
+			UT_uint32 countp = vProps.getItemCount();
 			UT_uint32 i;
-			for(i=0; i<countp; i++)
-			{
-				sProps[i] = (const gchar *) vProps.getNthItem(i);
+			for(i = 0; i < countp; i++)	{
+				sProps.push_back((const gchar *)vProps.getNthItem(i));
 			}
-			sProps[i] = NULL;
-		
-			
+
 			pStyle->getAllAttributes(&vAttribs,0);
-			
-			const gchar ** sAttribs = NULL;
-			countp = vAttribs.getItemCount() + 1;
-			sAttribs = new const gchar*[countp];
-			countp--;
-			
-			for(i=0; i<countp; i++)
-			{
-				sAttribs[i] = (const gchar *) vAttribs.getNthItem(i);
+
+			PP_PropertyVector sAttribs;
+			countp = vAttribs.getItemCount();
+
+			for(i = 0; i < countp; i++) {
+				sAttribs.push_back((const char *)vAttribs.getNthItem(i));
 			}
-			sAttribs[i] = NULL;
-		
+
 			PP_AttrProp * pNew0;
-			
-			if(pNew1)
-			{
+
+			if(pNew1) {
 				pNew0 = pNew1->cloneWithEliminationIfEqual(sAttribs,sProps);
 				delete pNew1;
-			}
-			else
+			} else {
 			 	pNew0 = papOld->cloneWithEliminationIfEqual(sAttribs,sProps);
-			 	
-			delete [] sProps;
-			delete [] sAttribs;
-			
-			if (!pNew0)
-				return false;
+			}
 
-			pNew1 = pNew0->cloneWithReplacements(attributes,NULL, false);
-			delete pNew0;
-			if (!pNew1)
+			if (!pNew0) {
 				return false;
+			}
+
+			pNew1 = pNew0->cloneWithReplacements(attributes, PP_NOPROPS, false);
+			delete pNew0;
+			if (!pNew1) {
+				return false;
+			}
 		}
 		else
 		{
-			pNew1 = papOld->cloneWithReplacements(attributes,NULL, false);
+			pNew1 = papOld->cloneWithReplacements(attributes, PP_NOPROPS, false);
 			if (!pNew1)
 				return false;
 		
 		}
 		
-		PP_AttrProp * pNew = pNew1->cloneWithElimination(NULL,properties);
+		PP_AttrProp * pNew = pNew1->cloneWithElimination(PP_NOPROPS, properties);
 		delete pNew1;
 		if (!pNew)
 			return false;
 					
 #else
-			PP_AttrProp * pNew1 = papOld->cloneWithReplacements(attributes,NULL, false);
+			PP_AttrProp * pNew1 = papOld->cloneWithReplacements(attributes, PP_NOPROPS,	false);
 			if (!pNew1)
 				return false;
-			PP_AttrProp * pNew = pNew1->cloneWithElimination(NULL,properties);
+			PP_AttrProp * pNew = pNew1->cloneWithElimination(PP_NOPROPS, properties);
 			delete pNew1;
 			if (!pNew)
 				return false;

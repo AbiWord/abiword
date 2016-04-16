@@ -43,23 +43,23 @@
 /****************************************************************/
 /****************************************************************/
 
-bool pt_PieceTable::appendStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
+bool pt_PieceTable::appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	pf_Frag_Strux * pfs = NULL;
 	if(!_makeStrux(pts, attributes, pfs) || !pfs)
 		return false;
 
-	if(attributes)
+	if(!attributes.empty())
 	{
-		const gchar * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		std::string pXID = PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
-		if(pXID && *pXID)
+		if(!pXID.empty())
 		{
-			iXID = atoi(pXID);
+			iXID = atoi(pXID.c_str());
 			pfs->setXID(iXID);
 		}
 	}
-	
+
 	pf_Frag * pfPrev = m_fragments.getLast();
 	bool bDoInsertFmt = false;
 	if(pfPrev != NULL && pfPrev->getType() == pf_Frag::PFT_Strux)
@@ -72,7 +72,7 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const gchar ** attributes, pf_F
 	}
 	m_fragments.appendFrag(pfs);
 	// insert frag in the embedded_strux list if needed
-	if ((pts == PTX_EndFootnote) || (pts == PTX_EndEndnote) || (pts == PTX_EndAnnotation)) 
+	if ((pts == PTX_EndFootnote) || (pts == PTX_EndEndnote) || (pts == PTX_EndAnnotation))
 	{
 		_insertNoteInEmbeddedStruxList(pfs);
 	}
@@ -258,18 +258,18 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const gchar ** attribute
 	pf_Frag * pf = m_fragments.getLast();
 
 	UT_return_val_if_fail ( pf, false );
-	
+
 	pf = _findLastStruxOfType(pf, pst, bSkipEmbededSections);
-	
+
 	UT_return_val_if_fail( pf, false );
-	
+
 	PT_AttrPropIndex currentAP = pf->getIndexAP();
 
 	const PP_AttrProp * pOldAP;
     if(!getAttrProp(currentAP,&pOldAP))
 		return false;
 
-	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attributes,props,false);
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(PP_std_copyProps(attributes), PP_std_copyProps(props), false);
 	pNewAP->markReadOnly();
 
 	PT_AttrPropIndex indexAP;
@@ -335,7 +335,7 @@ bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attribute
     if(!getAttrProp(currentAP,&pOldAP))
 		return false;
 
-	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attributes,NULL,true);
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(PP_std_copyProps(attributes), PP_NOPROPS, true);
 	pNewAP->markReadOnly();
 
 	PT_AttrPropIndex indexAP;
@@ -369,7 +369,7 @@ bool pt_PieceTable::appendFmt(const gchar ** attributes)
 	return true;
 }
 
-bool pt_PieceTable::appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes)
+bool pt_PieceTable::appendFmt(const PP_PropertyVector & vecAttributes)
 {
 	// can only be used while loading the document
 	UT_return_val_if_fail (m_pts==PTS_Loading, false);
@@ -377,7 +377,7 @@ bool pt_PieceTable::appendFmt(const UT_GenericVector<const gchar*> * pVecAttribu
 	// Only a strux can be appended to an empty document
 	UT_return_val_if_fail (NULL != m_fragments.getFirst(),false);
 
-	if (!m_varset.storeAP(pVecAttributes,&loading.m_indexCurrentInlineAP))
+	if (!m_varset.storeAP(vecAttributes, &loading.m_indexCurrentInlineAP))
 		return false;
 
 	return true;
@@ -430,23 +430,24 @@ bool pt_PieceTable::appendSpan(const UT_UCSChar * pbuf, UT_uint32 length)
 	return true;
 }
 
-bool pt_PieceTable::appendObject(PTObjectType pto, const gchar ** attributes)
+bool pt_PieceTable::appendObject(PTObjectType pto, const PP_PropertyVector & attributes)
 {
 	pf_Frag_Object * pfo = NULL;
 	if(!_makeObject(pto,attributes,pfo) || !pfo)
 		return false;
 
-	if(attributes)
+	if(!attributes.empty())
 	{
-		const gchar * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		const std::string & pXID =
+			PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
-		if(pXID && *pXID)
+		if(!pXID.empty())
 		{
-			iXID = atoi(pXID);
+			iXID = atoi(pXID.c_str());
 			pfo->setXID(iXID);
 		}
 	}
-	
+
 	m_fragments.appendFrag(pfo);
 	return true;
 }
@@ -462,7 +463,7 @@ bool pt_PieceTable::appendFmtMark(void)
 }
 
 bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-										  const gchar ** attributes, pf_Frag_Strux ** ppfs_ret)
+										  const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret)
 {
 	UT_return_val_if_fail(pF , false);
 
@@ -470,22 +471,22 @@ bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 	if(!_makeStrux(pts, attributes, pfs) || !pfs)
 		return false;
 
-	if(attributes)
+	if(!attributes.empty())
 	{
-		const gchar * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		std::string pXID = PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
-		if(pXID && *pXID)
+		if(!pXID.empty())
 		{
-			iXID = atoi(pXID);
+			iXID = atoi(pXID.c_str());
 			pfs->setXID(iXID);
 		}
 	}
-	
+
 	m_fragments.insertFragBefore(pF, pfs);
 	if (ppfs_ret)
 		*ppfs_ret = pfs;
 	// insert frag in the embedded_strux list if needed
-	if ((pts == PTX_EndFootnote) || (pts == PTX_EndEndnote) || (pts == PTX_EndAnnotation)) 
+	if ((pts == PTX_EndFootnote) || (pts == PTX_EndEndnote) || (pts == PTX_EndAnnotation))
 	{
 		_insertNoteInEmbeddedStruxList(pfs);
 	}
@@ -556,26 +557,26 @@ bool pt_PieceTable::insertSpanBeforeFrag(pf_Frag * pf, const UT_UCSChar * p, UT_
 }
 
 bool pt_PieceTable::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
-										   const gchar ** attributes)
+										   const PP_PropertyVector & attributes)
 {
 	// cannot insert before first fragment
 	UT_return_val_if_fail(pF && pF->getPrev() && pF != m_fragments.getFirst(), false);
 
 	pf_Frag_Object * pfo = NULL;
-	if(!_makeObject(pto,attributes,pfo) || !pfo)
+	if(!_makeObject(pto, attributes, pfo) || !pfo)
 		return false;
 
-	if(attributes)
+	if(!attributes.empty())
 	{
-		const gchar * pXID = UT_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		std::string pXID = PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
-		if(pXID && *pXID)
+		if(!pXID.empty())
 		{
-			iXID = atoi(pXID);
+			iXID = atoi(pXID.c_str());
 			pfo->setXID(iXID);
 		}
 	}
-	
+
 	m_fragments.insertFragBefore(pF, pfo);
 	return true;
 }
@@ -594,7 +595,7 @@ bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF)
 }
 
 
-bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes)
+bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF, const PP_PropertyVector & attributes)
 {
 	// cannot insert before first fragment
 	UT_return_val_if_fail(pF && pF->getPrev() && pF != m_fragments.getFirst(), false);
@@ -607,7 +608,7 @@ bool pt_PieceTable::insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attribu
 	return true;
 }
 
-bool pt_PieceTable::_makeStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux * &pfs)
+bool pt_PieceTable::_makeStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux * &pfs)
 {
 	// create a new structure fragment at the current end of the document.
 	// this function can only be called while loading the document.
@@ -623,19 +624,19 @@ bool pt_PieceTable::_makeStrux(PTStruxType pts, const gchar ** attributes, pf_Fr
 	// OK we've got to interogate attributes to determine what sort of section strux
 	// we have.
 	//
-	if((pts == PTX_Section) && (attributes != NULL))
+	if((pts == PTX_Section) && (!attributes.empty()))
 	{
-		const char * szStruxType = UT_getAttribute("type",attributes);
-		if(szStruxType)
+		const std::string & struxType = PP_getAttribute("type", attributes);
+		if(!struxType.empty())
 		{
-			if(strcmp(szStruxType,"header") == 0 ||
-			   strcmp(szStruxType,"footer") == 0 ||
-			   strcmp(szStruxType,"header-even") == 0 ||
-			   strcmp(szStruxType,"footer-even") == 0 ||
-			   strcmp(szStruxType,"header-first") == 0 ||
-			   strcmp(szStruxType,"footer-first") == 0 ||
-			   strcmp(szStruxType,"header-last") == 0 ||
-			   strcmp(szStruxType,"footer-last") == 0)
+			if(struxType == "header" ||
+			   struxType == "footer" ||
+			   struxType == "header-even" ||
+			   struxType == "footer-even" ||
+			   struxType == "header-first" ||
+			   struxType == "footer-first" ||
+			   struxType == "header-last" ||
+			   struxType == "footer-last")
 			{
 				pts = PTX_SectionHdrFtr;
 			}
@@ -648,7 +649,7 @@ bool pt_PieceTable::_makeStrux(PTStruxType pts, const gchar ** attributes, pf_Fr
 }
 
 
-bool pt_PieceTable::_makeObject(PTObjectType pto, const gchar ** attributes, pf_Frag_Object * &pfo)
+bool pt_PieceTable::_makeObject(PTObjectType pto, const PP_PropertyVector & attributes, pf_Frag_Object * &pfo)
 {
 	// create a new object fragment at the current end of the document.
 	// this function can only be called while loading the document.
@@ -685,14 +686,14 @@ bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff)
 }
 
 
-bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff, const gchar ** attributes)
+bool pt_PieceTable::_makeFmtMark(pf_Frag_FmtMark * &pff, const PP_PropertyVector & attributes)
 {
 	// this function can only be called while loading the document.
 	UT_return_val_if_fail (m_pts==PTS_Loading,false);
 
 	// Only a strux can be appended to an empty document
 	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
-	if(attributes == NULL)
+	if(attributes.empty())
 		{
 			return _makeFmtMark(pff);
 		}

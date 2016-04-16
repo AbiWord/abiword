@@ -74,8 +74,7 @@ public:
 		{
 			return PTL_UNKNOWN;
 		}
-	void  assembleAtts(const char ** inAtts, const char ** inProps, const char **& outAtts);
-        void freeAtts(const char *** allAtts);
+	static void  assembleAtts(const PP_PropertyVector & inAtts, const PP_PropertyVector & inProps, PP_PropertyVector & outAtts);
 
 private:
 	PD_Document *     getDoc(void) const;

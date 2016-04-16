@@ -228,7 +228,7 @@ IE_Imp_ClarisWorks::IE_Imp_ClarisWorks(PD_Document * pDocument)
 
 UT_Error IE_Imp_ClarisWorks::_writeHeader(GsfInput * /* fp */)
 {
-    X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
+    X_ReturnNoMemIfError(appendStrux(PTX_Section, PP_NOPROPS));
     
     return UT_OK;
 }
@@ -288,7 +288,7 @@ UT_Error IE_Imp_ClarisWorks::_parseFile(GsfInput * fp)
            
            // start a paragraph and emit any text that we
            // have accumulated.
-           X_ReturnNoMemIfError(appendStrux(PTX_Block, NULL));
+           X_ReturnNoMemIfError(appendStrux(PTX_Block, PP_NOPROPS));
            bEmptyFile = false;
            if (gbBlock.getLength() > 0)
            {
@@ -316,7 +316,7 @@ UT_Error IE_Imp_ClarisWorks::_parseFile(GsfInput * fp)
        // if we have text left over (without final CR/LF),
        // or if we read an empty file,
        // create a paragraph and emit the text now.
-       X_ReturnNoMemIfError(appendStrux(PTX_Block, NULL));
+       X_ReturnNoMemIfError(appendStrux(PTX_Block, PP_NOPROPS));
        if (gbBlock.getLength() > 0)
            X_ReturnNoMemIfError(appendSpan(reinterpret_cast<const UT_UCSChar *>(gbBlock.getPointer(0)), gbBlock.getLength()));
    }

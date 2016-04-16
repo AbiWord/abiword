@@ -99,16 +99,16 @@ UT_Error IE_Imp_Hancom::_loadFile(GsfInput * input) {
 
   UT_DEBUGMSG(("HANCOM: Text successfully converted.\n"));
 
-  if (!appendStrux(PTX_Section, NULL)) {
+  if (!appendStrux(PTX_Section, PP_NOPROPS)) {
     FREEP(text);
     return UT_IE_NOMEMORY;
   }
-  
-  if (!appendStrux(PTX_Block, NULL)) {
+
+  if (!appendStrux(PTX_Block, PP_NOPROPS)) {
     FREEP(text);
     return UT_IE_NOMEMORY;
   }
-  
+
   if (!appendSpan(text, length/4)) {
     FREEP(text);
     return UT_IE_NOMEMORY;

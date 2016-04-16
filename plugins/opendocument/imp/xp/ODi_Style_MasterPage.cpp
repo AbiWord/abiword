@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 /* AbiSource Program Utilities
  * 
  * Copyright (C) 2005 Daniel d'Andrada T. de Carvalho
@@ -93,10 +94,11 @@ void ODi_Style_MasterPage::startElement(const gchar* pName,
             }
             
         } else if (m_parsingState == ODI_POSTPONED_SECOND_PASS) {
-            const gchar* ppSecAttr[5];
-            ppSecAttr[0] = "id";
-            ppSecAttr[2] = "type";
-            
+            PP_PropertyVector ppSecAttr = {
+                "id", ""
+                "type", ""
+            };
+
             if (m_AW_evenHeaderSectionID.empty()) {
                 ppSecAttr[1] = m_AW_headerSectionID.c_str();
                 ppSecAttr[3] = "header";
@@ -104,9 +106,7 @@ void ODi_Style_MasterPage::startElement(const gchar* pName,
                 ppSecAttr[1] = m_AW_evenHeaderSectionID.c_str();
                 ppSecAttr[3] = "header-even";
             }
-            
-            ppSecAttr[4] = 0;
-            
+
             m_pAbiDocument->appendStrux(PTX_Section, ppSecAttr);
             
             rAction.pushState("TextContent");
@@ -130,22 +130,21 @@ void ODi_Style_MasterPage::startElement(const gchar* pName,
             }
             
         } else if (m_parsingState == ODI_POSTPONED_SECOND_PASS) {
-            const gchar* ppSecAttr[5];
-            ppSecAttr[0] = "id";
-            ppSecAttr[2] = "type";
-            
+            PP_PropertyVector ppSecAttr = {
+                "id", "",
+                "type", ""
+            };
+
             if (m_AW_evenFooterSectionID.empty()) {
-                ppSecAttr[1] = m_AW_footerSectionID.c_str();
+                ppSecAttr[1] = m_AW_footerSectionID;
                 ppSecAttr[3] = "footer";
             } else {
-                ppSecAttr[1] = m_AW_evenFooterSectionID.c_str();
+                ppSecAttr[1] = m_AW_evenFooterSectionID;
                 ppSecAttr[3] = "footer-even";
             }
-            
-            ppSecAttr[4] = 0;
-            
+
             m_pAbiDocument->appendStrux(PTX_Section, ppSecAttr);
-            
+
             rAction.pushState("TextContent");
         } else {
             UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -167,13 +166,11 @@ void ODi_Style_MasterPage::startElement(const gchar* pName,
             m_AW_headerSectionID = buffer;
             
         } else if (m_parsingState == ODI_POSTPONED_SECOND_PASS) {
-            const gchar* ppSecAttr[5];
-            ppSecAttr[0] = "id";
-            ppSecAttr[1] = m_AW_headerSectionID.c_str();
-            ppSecAttr[2] = "type";
-            ppSecAttr[3] = "header";
-            ppSecAttr[4] = 0;
-            
+            PP_PropertyVector ppSecAttr = {
+                "id", m_AW_headerSectionID,
+                "type", "header"
+            };
+
             m_pAbiDocument->appendStrux(PTX_Section, ppSecAttr);
             
             rAction.pushState("TextContent");
@@ -197,15 +194,12 @@ void ODi_Style_MasterPage::startElement(const gchar* pName,
             m_AW_footerSectionID = buffer;
             
         } else if (m_parsingState == ODI_POSTPONED_SECOND_PASS) {
-            const gchar* ppSecAttr[5];
-            ppSecAttr[0] = "id";
-            ppSecAttr[1] = m_AW_footerSectionID.c_str();
-            ppSecAttr[2] = "type";
-            ppSecAttr[3] = "footer";
-            ppSecAttr[4] = 0;
-            
+            PP_PropertyVector ppSecAttr = {
+                "id", m_AW_footerSectionID,
+                "type", "footer"
+            };
             m_pAbiDocument->appendStrux(PTX_Section, ppSecAttr);
-            
+
             rAction.pushState("TextContent");
         } else {
             UT_ASSERT(UT_SHOULD_NOT_HAPPEN);

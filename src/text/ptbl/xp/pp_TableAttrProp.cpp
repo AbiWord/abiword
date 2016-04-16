@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -143,7 +144,7 @@ bool pp_TableAttrProp::createAP(const gchar ** attributes,
 	return true;
 }
 
-bool pp_TableAttrProp::createAP(const UT_GenericVector<const gchar*> * pVector,
+bool pp_TableAttrProp::createAP(const PP_PropertyVector & pVector,
 								   UT_sint32 * pSubscript)
 {
 	UT_sint32 subscript;
@@ -154,11 +155,11 @@ bool pp_TableAttrProp::createAP(const UT_GenericVector<const gchar*> * pVector,
 	UT_return_val_if_fail (pAP, false);
 	if (!pAP->setAttributes(pVector))
 		return false;
-	
+
 	pAP->markReadOnly();
 
 	m_vecTableSorted.addItemSorted(pAP,compareAP);
-	
+
 	*pSubscript = subscript;
 	return true;
 }
@@ -189,7 +190,7 @@ bool pp_TableAttrProp::findMatch(const PP_AttrProp * pMatch,
  		{
  			break;
  		}
-  		if (pMatch->isExactMatch(pK))
+		if (pMatch->isExactMatch(*pK))
   		{
  			// Need to return an index of the element in the MAIN
  			// vector table

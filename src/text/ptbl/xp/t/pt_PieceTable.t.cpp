@@ -38,7 +38,9 @@ TFTEST_MAIN("pt_PieceTable")
 	// we need to set the state to loading.
 	pt.setPieceTableState(PTS_Loading);
 
-	const char * attrs[] = { "foo", "bar", NULL };
+	const PP_PropertyVector attrs = {
+		"foo", "bar"
+	};
 
 	pf_Frag_Strux *frag = NULL;
 	TFPASS(pt.appendStrux(PTX_Block, attrs, &frag));

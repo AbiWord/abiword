@@ -23,6 +23,7 @@
 #include "pd_Document.h"
 #include "gr_Graphics.h"
 #include "ut_units.h"
+#include "ut_std_string.h"
 #include "fl_BlockLayout.h"
 #include "fp_Line.h"
 #include "fp_Run.h"
@@ -1047,22 +1048,22 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	    }
 	  }
 	  m_bDoingCopy = false;
-	  UT_String sProps;
-	  UT_String sProp;
-	  UT_String sVal;
+	  std::string sProps;
+	  std::string sProp;
+	  std::string sVal;
 	  bool bFound = m_pImageAP->getProperty("width",szWidth);
 	  if(bFound)
 	  {
 	    sProp = "width";
 	    sVal = szWidth;
-	    UT_String_setProperty(sProps,sProp,sVal);
+	    UT_std_string_setProperty(sProps,sProp,sVal);
 	  }
 	  bFound = m_pImageAP->getProperty("height",szHeight);
 	  if(bFound)
 	  {
 	    sProp = "height";
 	    sVal = szHeight;
-	    UT_String_setProperty(sProps,sProp,sVal);
+	    UT_std_string_setProperty(sProps,sProp,sVal);
 	  }
 	  bFound = m_pImageAP->getAttribute("title",szTitle);
 	  if(!bFound)
@@ -1074,38 +1075,33 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 	  {
 	    szDescription = "";
 	  }
-	  const gchar*	attributes[] = {
-	    "dataid", NULL,
-	    PT_PROPS_ATTRIBUTE_NAME, NULL,
-	    PT_IMAGE_TITLE,NULL,
-	    PT_IMAGE_DESCRIPTION,NULL,
-	    NULL,NULL};
-	  attributes[1] = szDataID;
-	  attributes[5] = szTitle;
-	  attributes[7] = szDescription;
+	  PP_PropertyVector attributes = {
+              "dataid", szDataID
+	  };
 	  if(m_bIsEmbedded)
 	  {
 	      sProp="embed-type";
 	      sVal = szEmbed;
-	      UT_String_setProperty(sProps,sProp,sVal);
+	      UT_std_string_setProperty(sProps, sProp, sVal);
 	  }
-	  if(sProps.size() > 0)
+	  if(!sProps.empty())
 	  {
-	    attributes[3] = sProps.c_str();
-	  }
-	  else
-	  {
-	    attributes[2] = NULL;
+	      attributes.push_back(PT_PROPS_ATTRIBUTE_NAME);
+	      attributes.push_back(sProps);
+	      attributes.push_back(PT_IMAGE_TITLE);
+	      attributes.push_back(szTitle);
+	      attributes.push_back(PT_IMAGE_DESCRIPTION);
+	      attributes.push_back(szDescription);
 	  }
 	  m_pView->_saveAndNotifyPieceTableChange();
 	  UT_DEBUGMSG(("Doing Insert Image at %d \n",m_pView->getPoint()));
 	  if(!m_bIsEmbedded)
 	  {
-	    getDoc()->insertObject(m_pView->getPoint(), PTO_Image, attributes, NULL);
+	    getDoc()->insertObject(m_pView->getPoint(), PTO_Image, attributes, PP_NOPROPS);
 	  }
 	  else
 	  {
-	    getDoc()->insertObject(m_pView->getPoint(), PTO_Embed, attributes, NULL);
+	    getDoc()->insertObject(m_pView->getPoint(), PTO_Embed, attributes, PP_NOPROPS);
 	  }
 	  m_pView->_restorePieceTableState();
 	  m_pView->_updateInsertionPoint();

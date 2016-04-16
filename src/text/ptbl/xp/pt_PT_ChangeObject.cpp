@@ -42,7 +42,7 @@ bool pt_PieceTable::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object *
 {
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
-	bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	bool bMerged = m_varset.mergeAP(ptc,indexOldAP, PP_std_copyProps(attributes), PP_std_copyProps(properties), &indexNewAP,getDocument());
 	UT_UNUSED(bMerged);
 	UT_ASSERT_HARMLESS(bMerged);
 
@@ -57,14 +57,14 @@ bool pt_PieceTable::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object *
 }
 
 bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
-											   pf_Frag_Object * pfo, UT_uint32 fragOffset,
-											   PT_DocPosition dpos,
-											   UT_uint32 length,
-											   const gchar ** attributes,
-											   const gchar ** properties,
-											   pf_Frag_Strux * pfs,
-											   pf_Frag ** ppfNewEnd,
-											   UT_uint32 * pfragOffsetNewEnd,
+                                               pf_Frag_Object * pfo, UT_uint32 fragOffset,
+                                               PT_DocPosition dpos,
+                                               UT_uint32 length,
+                                               const PP_PropertyVector & attributes,
+                                               const PP_PropertyVector & properties,
+                                               pf_Frag_Strux * pfs,
+                                               pf_Frag ** ppfNewEnd,
+                                               UT_uint32 * pfragOffsetNewEnd,
 											   bool bRevisionDelete)
 {
 	// apply a span-level change to the given object.
@@ -72,10 +72,10 @@ bool pt_PieceTable::_fmtChangeObjectWithNotify(PTChangeFmt ptc,
 
 	UT_return_val_if_fail (length == pfo->getLength(), false);
 	UT_return_val_if_fail (fragOffset == 0, false);
-	
+
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
-	bool bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	bool bMerged = m_varset.mergeAP(ptc, indexOldAP, attributes, properties, &indexNewAP, getDocument());
 	UT_UNUSED(bMerged);
 	UT_ASSERT_HARMLESS(bMerged);
 

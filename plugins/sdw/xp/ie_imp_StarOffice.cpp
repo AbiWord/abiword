@@ -655,7 +655,7 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 
 		gsf_off_t size = gsf_input_size(mDocStream);
 
-		if (!appendStrux(PTX_Section, NULL))
+		if (!appendStrux(PTX_Section, PP_NOPROPS))
 			return UT_IE_NOMEMORY;
 
 		UT_DEBUGMSG(("SDW: Attempting to load DocHdr...\n"));
@@ -792,14 +792,12 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 										return UT_IE_BOGUSDOCUMENT;
 								}
 
-								static const gchar* attributes[3] = {
+								PP_PropertyVector attributes = {
 									"props",
-									NULL,
-									NULL
+									pAttrs.c_str()
 								};
-								attributes[1] = const_cast<gchar*>(reinterpret_cast<const gchar*>(pAttrs.c_str()));
 								// first, insert the paragraph
-								if (!appendStrux(PTX_Block, (const gchar**)attributes))
+								if (!appendStrux(PTX_Block, attributes))
 									return UT_IE_NOMEMORY;
 
 								UT_String pca(attrs); // character attributes for the whole paragraph
@@ -835,9 +833,9 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 											doInsert = true;
 									}
 									if (doInsert || i == (len - 1)) {
-										attributes[1] = const_cast<gchar*>(reinterpret_cast<const gchar*>(attrs.c_str()));
-										UT_DEBUGMSG(("SDW: Going to appendFmt with %s\n", attributes[1]));
-										if (!appendFmt((const gchar **) attributes))
+										attributes[1] = attrs.c_str();
+										UT_DEBUGMSG(("SDW: Going to appendFmt with %s\n", attributes[1].c_str()));
+										if (!appendFmt(attributes))
 											return UT_IE_NOMEMORY; /* leave cast alone! */
 										UT_DEBUGMSG(("SDW: About to insert %u-%u\n", lastInsPos, i));
 										size_t spanLen = i - lastInsPos;

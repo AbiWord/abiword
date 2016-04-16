@@ -577,13 +577,10 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 
 	if(fieldType == fd_Field::FD_Footnote_Ref)
 	{
-		const gchar *field_fmt[5];
-		field_fmt[0] = "type";
-		field_fmt[1] = format;
-		field_fmt[2] = "footnote-id";
-		field_fmt[3] = getId().c_str();
-		field_fmt[4] = 0;
-
+		const PP_PropertyVector field_fmt = {
+			"type",	format,
+			"footnote-id", getId()
+		};
 		if(!pDocument->appendObject(PTO_Field, field_fmt))
 			return UT_ERROR;
 
@@ -599,12 +596,10 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 	}
 	else if(fieldType == fd_Field::FD_Endnote_Ref)
 	{
-		const gchar *field_fmt[5];
-		field_fmt[0] = "type";
-		field_fmt[1] = format;
-		field_fmt[2] = "endnote-id";
-		field_fmt[3] = getId().c_str();
-		field_fmt[4] = 0;
+		const PP_PropertyVector field_fmt = {
+			"type", format,
+			"endnote-id", getId()
+		};
 
 		if(!pDocument->appendObject(PTO_Field, field_fmt))
 			return UT_ERROR;
@@ -622,22 +617,19 @@ UT_Error OXML_Element_Field::addToPT(PD_Document * pDocument)
 	}	
 	else if(fieldType == fd_Field::FD_MailMerge)
 	{
-		const gchar *field_fmt[5];
-		field_fmt[0] = "type";
-		field_fmt[1] = format;
-		field_fmt[2] = "param";
-		field_fmt[3] = fieldValue.c_str();
-		field_fmt[4] = 0;
+		const PP_PropertyVector field_fmt = {
+			"type",	format,
+			"param", fieldValue
+		};
 
 		if(!pDocument->appendObject(PTO_Field, field_fmt))
 			return UT_ERROR;
 	}
 	else
 	{
-		const gchar *field_fmt[3];
-		field_fmt[0] = "type";
-		field_fmt[1] = format;
-		field_fmt[2] = 0;
+		const PP_PropertyVector field_fmt = {
+			"type", format
+		};
 
 		if(!pDocument->appendObject(PTO_Field, field_fmt))
 			return UT_ERROR;

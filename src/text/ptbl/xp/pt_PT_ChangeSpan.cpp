@@ -50,8 +50,8 @@
 bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 									 PT_DocPosition dpos1,
 									 PT_DocPosition dpos2,
-									 const gchar ** attributes,
-								  const gchar ** properties)
+									 const PP_PropertyVector & attributes,
+								  const PP_PropertyVector & properties)
 {
 	// if dpos1 == dpos2 we are inserting a fmt mark; this must be chanelled throught
 	// the non-revision branch ...
@@ -88,7 +88,7 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			{
 				pAP->getAttribute(name, pRevision);
 			}
-			
+
 			PP_RevisionAttr Revisions(pRevision);
 
 
@@ -96,31 +96,28 @@ bool pt_PieceTable::changeSpanFmt(PTChangeFmt ptc,
 			// have to add these props (the removal is indicated by their emptiness)
 			// as we cannot rely on callers to set these correctly, we have to emtpy
 			// them ourselves
-			const gchar ** attrs = attributes;
-			const gchar ** props = properties;
-							
+			PP_PropertyVector attrs;
+			PP_PropertyVector props;
+
 			if(ptc == PTC_RemoveFmt)
 			{
-				attrs = UT_setPropsToNothing(attributes);
-				props = UT_setPropsToNothing(properties);
+				attrs = PP_std_setPropsToNothing(attributes);
+				props = PP_std_setPropsToNothing(properties);
+			} else {
+				attrs = attributes;
+				props = properties;
 			}
-			
-			Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,attrs,props);
 
-			if(attrs != attributes)
-				delete[] attrs;
-							
-			if(props != properties)
-				delete[] props;
-			
-			const gchar * ppRevAttrib[3];
-			ppRevAttrib[0] = name;
-			ppRevAttrib[1] = Revisions.getXMLstring();
-			ppRevAttrib[2] = NULL;
+			Revisions.addRevision(m_pDocument->getRevisionId(),
+								  PP_REVISION_FMT_CHANGE, attrs, props);
+
+			const PP_PropertyVector ppRevAttrib = {
+				name, Revisions.getXMLstring()
+			};
 
 			PT_DocPosition dposEnd = UT_MIN(dpos2,dpos1 + pf1->getLength());
 
-			if(!_realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib,NULL, false))
+			if(!_realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib, PP_NOPROPS, false))
 				return false;
 
 			dpos1 = dposEnd;
@@ -330,8 +327,8 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 											 pf_Frag_Text * pft, UT_uint32 fragOffset,
 											 PT_DocPosition dpos,
 											 UT_uint32 length,
-											 const gchar ** attributes,
-											 const gchar ** properties,
+											 const PP_PropertyVector & attributes,
+											 const PP_PropertyVector & properties,
 											 pf_Frag_Strux * pfs,
 											 pf_Frag ** ppfNewEnd,
 											 UT_uint32 * pfragOffsetNewEnd,
@@ -352,7 +349,7 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pft->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	if(attributes && properties && (attributes[0] == NULL) && (properties[0] == NULL))
+	if(attributes.empty() && properties.empty())
 	{
 	    //
 	    // Clear out all attributes/properties and set to the first index
@@ -405,8 +402,8 @@ bool pt_PieceTable::_fmtChangeSpanWithNotify(PTChangeFmt ptc,
 bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 									   PT_DocPosition dpos1,
 									   PT_DocPosition dpos2,
-									   const gchar ** attributes,
-									   const gchar ** properties,
+									   const PP_PropertyVector & attributes,
+									   const PP_PropertyVector & properties,
 									   bool bRevisionDelete)
 {
 	// apply a span-level formatting change to the given region.
@@ -428,8 +425,7 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 // Deal with addStyle
 //
 	bool bApplyStyle = (PTC_AddStyle == ptc);
-	const gchar ** sProps = NULL;
-	const gchar ** lProps = properties;
+	PP_PropertyVector lProps = properties;
 	if(bApplyStyle)
 	{
 //
@@ -439,28 +435,27 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 // style (they exist there) to specifc values in strux (if not overridden by
 // the style) then finally to default value.
 //
-		const gchar * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
+		const std::string szStyle = PP_getAttribute(PT_STYLE_ATTRIBUTE_NAME,
+												attributes);
 		PD_Style * pStyle = NULL;
-		UT_return_val_if_fail (szStyle,false);
-		getDocument()->getStyle(szStyle,&pStyle);
+		UT_return_val_if_fail (!szStyle.empty(),false);
+		getDocument()->getStyle(szStyle.c_str(),&pStyle);
 		UT_return_val_if_fail (pStyle,false);
 		UT_Vector vProps;
 //
 // Get the vector of properties
 //
 		pStyle->getAllProperties(&vProps,0);
+		PP_PropertyVector sProps;
 //
-// Finally make the const gchar * array of properties
+// Finally make the PropertyVector
 //
-		UT_uint32 countp = vProps.getItemCount() + 1;
-		sProps = (const gchar **) UT_calloc(countp, sizeof(gchar *));
-		countp--;
+		UT_uint32 countp = vProps.getItemCount();
 		UT_uint32 i;
 		for(i=0; i<countp; i++)
 		{
-			sProps[i] = (const gchar *) vProps.getNthItem(i);
+			sProps.push_back((const gchar *)vProps.getNthItem(i));
 		}
-		sProps[i] = NULL;
 		lProps = sProps;
 	}
 	if (dpos1 == dpos2) 		// if length of change is zero, then we have a toggle format.
@@ -476,10 +471,6 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 			UT_DEBUGMSG(("Setting persistance of change to false\n"));
 			pcr->setPersistance(false);
 			m_history.setSavePosition(m_history.getSavePosition()+1);
-		}
-		if(bApplyStyle)
-		{
-			FREEP(sProps);
 		}
 		return bRes;
 	}
@@ -553,10 +544,6 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 		default:
 			UT_DEBUGMSG(("fragment type: %d\n",pf_First->getType()));
 			UT_ASSERT_HARMLESS(0);
-			if(bApplyStyle)
-			{
-				FREEP(sProps);
-			}
 			return false;
 
 		case pf_Frag::PFT_Strux:
@@ -685,10 +672,6 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 		if (!pf_First)
 			length = 0;
 		fragOffset_First = fragOffsetNewEnd;
-	}
-	if(bApplyStyle)
-	{
-		FREEP(sProps);
 	}
 
 	if (!bSimple)

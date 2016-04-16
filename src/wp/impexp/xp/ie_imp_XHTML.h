@@ -92,11 +92,10 @@ public:
 										UT_uint32 lenData,
 										const char * szEncoding = 0);
 
-	virtual bool  appendStrux(PTStruxType pts, const gchar ** attributes);
-	virtual bool  appendFmt( const gchar ** attributes);
-	virtual bool  appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes);
+	virtual bool  appendStrux(PTStruxType pts, const PP_PropertyVector & attributes);
+	virtual bool  appendFmt(const PP_PropertyVector & vecAttributes);
 	virtual bool  appendSpan(const UT_UCSChar * p, UT_uint32 length);
-	virtual bool  appendObject(PTObjectType pto, const gchar ** attributes);
+	virtual bool  appendObject(PTObjectType pto, const PP_PropertyVector & attributes);
 
 
 protected:

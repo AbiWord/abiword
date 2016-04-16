@@ -42,6 +42,7 @@
 #include "ut_string_class.h"
 #include "ut_misc.h"
 #include "px_ChangeRecord.h"
+#include "pp_Property.h"
 
 #include <gsf/gsf-input.h>
 #include <gsf/gsf-output.h>
@@ -297,6 +298,7 @@ public:
 	UT_sint32               findFirstFreeAuthorInt(void) const;
  private:
 	bool                    addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut, std::string& storage);
+	bool                    addAuthorAttributeIfBlank(PP_PropertyVector & atts);
 	bool                    addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp);
 	bool                    _buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps, std::string& storage);
  public:
@@ -309,8 +311,8 @@ public:
 PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const gchar ** attributes,
-										 const gchar ** properties);
+										 const PP_PropertyVector & attributes,
+										 const PP_PropertyVector & properties);
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
 										 const gchar ** attributes,
@@ -338,6 +340,11 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 										  PT_DocPosition dpos2,
 										  const gchar ** attributes,
 										  const gchar ** properties);
+	bool					changeSpanFmt(PTChangeFmt ptc,
+										  PT_DocPosition dpos1,
+										  PT_DocPosition dpos2,
+										  const PP_PropertyVector & attributes,
+										  const PP_PropertyVector & properties);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts, pf_Frag_Strux ** ppfs_ret = 0);
@@ -352,7 +359,12 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
 										  const gchar ** attributes,
-										  const gchar ** properties, pf_Frag_Strux ** ppfs_ret = 0);
+										  const gchar ** properties, pf_Frag_Strux ** ppfs_ret = NULL);
+	bool					insertStrux(PT_DocPosition dpos,
+										PTStruxType pts,
+										const PP_PropertyVector & attributes,
+										const PP_PropertyVector & properties,
+										pf_Frag_Strux ** ppfs_ret = NULL);
 
 	void                    deleteHdrFtrStrux(pf_Frag_Strux* sdh);
 
@@ -393,26 +405,26 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 
-	bool					appendStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
+	bool					appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes);
 	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar ** props,
 											   bool bSkipEmbededSections);
 	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar * props,
 											   bool bSkipEmbededSections);
 	bool					appendFmt(const gchar ** attributes);
-	bool					appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes);
+	bool					appendFmt(const PP_PropertyVector & vecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
-	bool					appendObject(PTObjectType pto, const gchar ** attributes);
+	bool					appendObject(PTObjectType pto, const PP_PropertyVector & attributes);
 	bool					appendFmtMark(void);
-	bool					appendStyle(const gchar ** attributes);
+	bool					appendStyle(const PP_PropertyVector & attributes);
 	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux* sdh,const gchar ** attributes);
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-												  const gchar ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
+												  const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
 	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
-												   const gchar ** attributes);
+												   const PP_PropertyVector & attributes);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
-	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes);
+	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const PP_PropertyVector & attributes);
 
 	pf_Frag *               findFragOfType(pf_Frag::PFType iType, UT_sint32 iSubtype = -1,
 										   pf_Frag * pfStart = NULL) const;

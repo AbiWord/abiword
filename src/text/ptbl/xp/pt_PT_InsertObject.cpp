@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -44,8 +45,8 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 	if(m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
-		const gchar ** ppRevAttrs  = NULL;
-		const gchar ** ppRevProps  = NULL;
+		PP_PropertyVector ppRevAttrs;
+		PP_PropertyVector ppRevProps;
 
 		pf_Frag * pf = NULL;
 		PT_BlockOffset fragOffset = 0;
@@ -56,65 +57,44 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 			pf = pf->getPrev();
 
 		UT_return_val_if_fail( pf, false );
-		
+
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
 		//UT_uint32 length = pf->getLength();
-		
+
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
-									ppRevAttrs, ppRevProps, NULL, NULL);
+									ppRevAttrs, ppRevProps,
+									PP_PropertyVector(), PP_PropertyVector());
 
-		// count original attributes and the revision-inherited
-		// attributes and add them to the revision attribute
-		UT_uint32 iAttrCount = 0;
-		for (; attributes && attributes[iAttrCount]; iAttrCount+=2){}
 
-		UT_uint32 iRevAttrCount = 0;
-		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount+=2){}
+		PP_PropertyVector ppRevAttrib = PP_std_copyProps(attributes);
+		ppRevAttrib.insert(ppRevAttrib.end(), ppRevAttrs.begin(),
+						   ppRevAttrs.end());
 
-		const gchar ** ppRevAttrib = NULL;
-		if(iAttrCount + iRevAttrCount > 0)
-		{
-			ppRevAttrib = new const gchar * [iAttrCount + iRevAttrCount + 1];
-			UT_return_val_if_fail( ppRevAttrib, false );
-
-			UT_uint32 i = 0;
-			for (i = 0; i < iAttrCount; ++i)
-			{
-				ppRevAttrib[i] = attributes[i];
-			}
-
-			for (; i < iRevAttrCount + iAttrCount; ++i)
-			{
-				ppRevAttrib[i] = ppRevAttrs[i - iAttrCount];
-			}
-		
-			ppRevAttrib[i]   = NULL;
-		}
-		
 		//return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length,
 		//ppRevAttrib, ppRevProps);
 		// NB: objects are not supposed to have props, and so do not
 		//inherit props ...
-		bool bRet =  _realInsertObject(dpos, pto, ppRevAttrib, /*ppRevProps*/properties, ppfo);
-		delete [] ppRevAttrib;
+		bool bRet =  _realInsertObject(dpos, pto, ppRevAttrib,
+									   PP_std_copyProps(properties), ppfo);
 		return bRet;
 	}
 	else
 	{
-		return _realInsertObject(dpos, pto, attributes, properties, ppfo);
+		return _realInsertObject(dpos, pto, PP_std_copyProps(attributes),
+								 PP_std_copyProps(properties), ppfo);
 	}
 }
 
 bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 								 PTObjectType pto,
-								 const gchar ** attributes,
-								 const gchar ** properties )
+								 const PP_PropertyVector & attributes,
+								 const PP_PropertyVector & properties )
 {
 	if(m_pDocument->isMarkRevisions())
 	{
 		PP_RevisionAttr Revisions(NULL);
-		const gchar ** ppRevAttrs = NULL;
-		const gchar ** ppRevProps  = NULL;
+		PP_PropertyVector ppRevAttrs;
+		PP_PropertyVector ppRevProps;
 
 		pf_Frag * pf = NULL;
 		PT_BlockOffset fragOffset = 0;
@@ -125,45 +105,18 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 			pf = pf->getPrev();
 
 		UT_return_val_if_fail( pf, false );
-		
+
 		PT_AttrPropIndex indexAP = pf->getIndexAP();
 		//UT_uint32 length = pf->getLength();
 
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
 									ppRevAttrs, ppRevProps, attributes, properties);
-		
-		// count original attributes and the revision-inherited attributes and add them to the revision attribute
-		UT_uint32 iAttrCount = 0;
-		for (; attributes && attributes[iAttrCount]; iAttrCount+=2){}
 
-		UT_uint32 iRevAttrCount = 0;
-		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount+=2){}
-
-		const gchar ** ppRevAttrib = NULL;
-		if(iAttrCount + iRevAttrCount > 0)
-		{
-			ppRevAttrib = new const gchar * [iAttrCount + iRevAttrCount + 1];
-			UT_return_val_if_fail( ppRevAttrib, false );
-
-			UT_uint32 i = 0;
-			for (i = 0; i < iAttrCount; ++i)
-			{
-				ppRevAttrib[i] = attributes[i];
-			}
-
-			for (; i < iRevAttrCount + iAttrCount; ++i)
-			{
-				ppRevAttrib[i] = ppRevAttrs[i - iAttrCount];
-			}
-		
-			ppRevAttrib[i]   = NULL;
-		}
-
+		ppRevAttrs.insert(ppRevAttrs.end(), attributes.begin(), attributes.end());
 		// return _realChangeSpanFmt(PTC_AddFmt, dpos, dpos + length, ppRevAttrib, ppRevProps);
 		// NB: objects are not supposed to have props, and so do not
 		//inherit props ...
-		bool bRet = _realInsertObject(dpos, pto, ppRevAttrib, /*ppRevProps*/properties);
-		delete [] ppRevAttrib;
+		bool bRet = _realInsertObject(dpos, pto, ppRevAttrs, properties);
 		return bRet;
 	}
 	else
@@ -173,11 +126,12 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 }
 
 bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
-									PTObjectType pto,
-									const gchar ** attributes,
-									const gchar ** properties,  pf_Frag_Object ** ppfo)
+									  PTObjectType pto,
+									  const PP_PropertyVector & attributes,
+									  const PP_PropertyVector & properties,
+									  pf_Frag_Object ** ppfo)
 {
-	UT_ASSERT_HARMLESS((pto == PTO_Math) || (pto == PTO_Embed) || (properties == NULL));
+	UT_ASSERT_HARMLESS((pto == PTO_Math) || (pto == PTO_Embed) || (properties.empty()));
 
 	// dpos == 1 seems to be generally bad. - plam
 	// I'm curious about how often it happens.  Please mail me if it does!
@@ -236,8 +190,8 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 
 bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 									PTObjectType pto,
-									const gchar ** attributes,
-									const gchar ** properties )
+									const PP_PropertyVector & attributes,
+									const PP_PropertyVector & properties )
 {
 
 	// dpos == 1 seems to be generally bad. - plam
@@ -251,40 +205,31 @@ bool pt_PieceTable::_realInsertObject(PT_DocPosition dpos,
 	UT_return_val_if_fail (m_pts==PTS_Editing,false);
 
 	// store the attributes and properties and get an index to them.
-	UT_UTF8String sProps;
-	UT_sint32 i = 0;
-	sProps.clear();
-	if(properties != NULL)
+	std::string sProps;
+	if(!properties.empty())
 	{
-	    for(i=0;(properties[i] != NULL);i+=2)
+	    for(PP_PropertyVector::const_iterator iter = properties.begin();
+			iter != properties.end(); ++iter)
 	    {
-		UT_DEBUGMSG(("Object: szProps = |%s| \n",properties[i]));
-		sProps +=properties[i];
-		sProps += ":";
-		sProps += properties[i+1];
-		if(properties[i+2] != NULL)
-		{
-		    sProps += ";";
-		}
+	        UT_DEBUGMSG(("Object: szProps = |%s| \n",iter->c_str()));
+	        sProps += *iter + ":";
+	        ++iter;
+	        sProps += *iter;
+	        if(iter + 1 != properties.end())
+	        {
+	            sProps += ";";
+	        }
 	    }
 	}
-	UT_GenericVector<const gchar*>  Atts;
-	Atts.clear();
-	if(attributes)
-	{
-		for(i=0; attributes[i] != 0; i++)
-		{
-		    Atts.addItem(attributes[i]);
-		}
-	}
-	if(sProps.size() > 0)
-	{
-	    Atts.addItem("props");
-	    Atts.addItem(sProps.utf8_str());
+	PP_PropertyVector atts(attributes);
+	if (!sProps.empty())	{
+	    atts.push_back("props");
+	    atts.push_back(sProps);
 	}
 	PT_AttrPropIndex indexAP;
-	if (!m_varset.storeAP(&Atts,&indexAP))
+	if (!m_varset.storeAP(atts, &indexAP)) {
 		return false;
+	}
 
 	// get the fragment at the given document position.
 

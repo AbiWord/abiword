@@ -242,18 +242,12 @@ bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
 
-		const gchar* propsArray[5];
-		propsArray[0] = static_cast<const gchar *>("dataid");
-		propsArray[1] = static_cast<const gchar *>(image_name);
-		if (resize1)
-		{
-			propsArray[2] = static_cast<const gchar *>("props");
-			propsArray[3] = propBuffer.c_str();
-			propsArray[4] = NULL;
-		}
-		else
-		{
-			propsArray[2] = NULL;
+		PP_PropertyVector propsArray(resize1 ? 4 : 2);
+		propsArray[0] = "dataid";
+		propsArray[1] = image_name;
+		if (resize1) {
+			propsArray[2] = "props";
+			propsArray[3] = propBuffer;
 		}
 		if(!isStruxImage())
 		{
@@ -262,7 +256,7 @@ bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 			{
 				xxx_UT_DEBUGMSG(("Append block 13 \n"));
 
-				getDoc()->appendStrux(PTX_Block,NULL);
+				getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 				m_bCellBlank = false;
 				m_bEndTableOpen = false;
 			}
@@ -366,23 +360,17 @@ bool IE_Imp_RTF::InsertImage (const FG_Graphic *pFG, const char * image_name,
 			UT_DEBUGMSG (("props are %s\n", propBuffer.c_str()));
 		}
 
-		const gchar* propsArray[5];
-		propsArray[0] = static_cast<const gchar *>("dataid");
-		propsArray[1] = static_cast<const gchar *>(szName.c_str());
-		if (resize)
-		{
-			propsArray[2] = static_cast<const gchar *>("props");
-			propsArray[3] = propBuffer.c_str();
-			propsArray[4] = NULL;
-		}
-		else
-		{
-			propsArray[2] = NULL;
+		PP_PropertyVector propsArray(resize ? 4 : 2);
+		propsArray[0] = "dataid";
+		propsArray[1] = szName;
+		if (resize)	{
+			propsArray[2] = "props";
+			propsArray[3] = propBuffer;
 		}
 		m_sImageName = szName.c_str();
 		if(!isStruxImage())
 		{
-			getDoc()->insertObject(m_dposPaste, PTO_Image, propsArray, NULL);
+			getDoc()->insertObject(m_dposPaste, PTO_Image, propsArray, PP_NOPROPS);
 			m_dposPaste++;
 		}
 	}
@@ -974,7 +962,7 @@ IE_Imp_ShpGroupParser::~IE_Imp_ShpGroupParser()
 		}
 		else
 		{
-			m_ieRTF->getDoc()->appendStrux(PTX_Block, NULL);
+			m_ieRTF->getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 		}
 	}
 	if(!m_ieRTF->isFrameIn())
@@ -1129,7 +1117,7 @@ void IE_Imp_RTF::HandleShape(void)
 			}
 				
 		}
-		getDoc()->appendStrux(PTX_EndFrame, NULL);
+		getDoc()->appendStrux(PTX_EndFrame, PP_NOPROPS);
 		m_newParaFlagged = false;
 	}
 	else 
@@ -1150,11 +1138,13 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 
 // OK Assemble the attributes/properties for the Frame
 
-	const gchar * attribs[5] = {"props",NULL,NULL,NULL,NULL};
+	PP_PropertyVector attribs = {
+		"props", ""
+	};
 	if(isStruxImage())
 	{
-		attribs[2] = PT_STRUX_IMAGE_DATAID;
-		attribs[3] = m_sImageName.utf8_str();
+		attribs.push_back(PT_STRUX_IMAGE_DATAID);
+		attribs.push_back(m_sImageName.utf8_str());
 	}
 
 	std::string sPropString;
@@ -1288,16 +1278,16 @@ void IE_Imp_RTF::addFrame(RTFProps_FrameProps & frame)
 	{
 		sPropString = frame.m_abiProps;
 	}
-	attribs[1] = sPropString.c_str();
+	attribs[1] = sPropString;
 
 	UT_DEBUGMSG(("Start Frame\n"));
 	if(!bUseInsertNotAppend())
 	{
-		getDoc()->appendStrux(PTX_SectionFrame,attribs);
+		getDoc()->appendStrux(PTX_SectionFrame, attribs);
 	}
 	else
 	{
-		insertStrux(PTX_SectionFrame,attribs,NULL);
+		insertStrux(PTX_SectionFrame, attribs, PP_NOPROPS);
 	}
 	m_bFrameStruxIn = true;
 }

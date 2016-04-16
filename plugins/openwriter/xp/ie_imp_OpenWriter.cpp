@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 2; c-basic-offset: 2; indent-tabs-mode: nil -*- */
 
 /* AbiSource Program Utilities
  * Copyright (C) 2002-2003 Dom Lachowicz <cinamod@hotmail.com>
@@ -1136,7 +1136,7 @@ public:
 
 	// must be last
 	atts[propCtr] = 0;
-	getDocument()->appendStyle(atts);
+	getDocument()->appendStyle(PP_std_copyProps(atts));
       }
 
       m_name.clear ();
@@ -1207,7 +1207,7 @@ private:
 
   UT_UTF8String m_curStyleName;
 
-  UT_GenericVector<const gchar*>	m_vecInlineFmt;
+  PP_PropertyVector	m_vecInlineFmt;
   UT_NumberStack		m_stackFmtStartIndex;
   const OpenWriter_StylesStream_Listener * m_pSSListener;
 
@@ -1296,7 +1296,7 @@ public:
 	}
 	  
 	_pushInlineFmt(props);
-	getDocument()->appendFmt(&m_vecInlineFmt);
+	getDocument()->appendFmt(m_vecInlineFmt);
       }
     else if (!strcmp(name, "text:line-break"))
       {
@@ -1345,12 +1345,11 @@ public:
       }
     else if (!strcmp(name, "text:a"))
       {
-	_flush();
-	const gchar * xlink_atts[3];
-	xlink_atts[0] = "xlink:href";
-	xlink_atts[1] = UT_getAttribute("xlink:href", atts);
-	xlink_atts[2] = 0;
-	getDocument()->appendObject(PTO_Hyperlink, xlink_atts);
+        _flush();
+        const PP_PropertyVector xlink_atts = {
+          "xlink:href", UT_getAttribute("xlink:href", atts)
+        };
+        getDocument()->appendObject(PTO_Hyperlink, xlink_atts);
       }
     else if (!strcmp(name, "text:bookmark"))
     {
@@ -1400,8 +1399,8 @@ public:
       _flush ();
       _insureInBlock(NULL);
       
-      getDocument()->appendStrux(PTX_SectionTOC, NULL);
-      getDocument()->appendStrux(PTX_EndTOC, NULL);
+      getDocument()->appendStrux(PTX_SectionTOC, PP_NOPROPS);
+      getDocument()->appendStrux(PTX_EndTOC, PP_NOPROPS);
 
       m_bInTOC = true;
     }
@@ -1473,11 +1472,10 @@ public:
       else if(!strcmp(name, "text:title"))
 	type = "meta_title";
 
-      const gchar *field_fmt[3];
-      field_fmt[0] = "type";
-      field_fmt[1] = type;
-      field_fmt[2] = 0;
-      getDocument()->appendObject(PTO_Field, (const gchar**)field_fmt);
+      const PP_PropertyVector field_fmt = {
+        "type", type
+      };
+      getDocument()->appendObject(PTO_Field, field_fmt);
       m_bAcceptingText = false;
     }
   }
@@ -1497,7 +1495,7 @@ public:
       {
 	_flush ();
 	_popInlineFmt();
-	getDocument()->appendFmt(&m_vecInlineFmt);
+	getDocument()->appendFmt(m_vecInlineFmt);
       }
     else if (!strcmp(name, "text:ordered-list") || !strcmp(name, "text:unordered-list"))
       {
@@ -1505,7 +1503,7 @@ public:
     else if (!strcmp(name, "text:a"))
       {
 	_flush ();
-	getDocument()->appendObject(PTO_Hyperlink, NULL);
+	getDocument()->appendObject(PTO_Hyperlink, PP_NOPROPS);
       }
     else if (!strcmp(name, "text:table-of-content")) {
       m_bInTOC = false;
@@ -1609,17 +1607,15 @@ private:
     //
     // This next bit of code will set up our properties based on the image attributes
     //
-    
-    UT_String_sprintf(propBuffer, "width:%s; height:%s", width, height);    
+
+    UT_String_sprintf(propBuffer, "width:%s; height:%s", width, height);
     UT_String_sprintf(propsName, "image%d", m_imgCnt);
 
-    const gchar* propsArray[5];
-    propsArray[0] = (gchar *)"props";
-    propsArray[1] = (gchar *)propBuffer.c_str();
-    propsArray[2] = (gchar *)"dataid";
-    propsArray[3] = (gchar *)propsName.c_str();
-    propsArray[4] = 0;
-    
+    PP_PropertyVector propsArray = {
+      "props", propBuffer.c_str(),
+      "dataid", propsName.c_str()
+    };
+
     if (!getDocument()->appendObject (PTO_Image, propsArray))
       {
 		  return;
@@ -1641,12 +1637,12 @@ private:
     _insureInSection(NULL);
 
     if (!m_bAcceptingText) {
-      getDocument()->appendStrux(PTX_Block, (const gchar**)atts);	
+      getDocument()->appendStrux(PTX_Block, PP_std_copyProps(atts));
       m_bAcceptingText = true;
     }
   }
 
-  void _insureInSection(const gchar * props) 
+  void _insureInSection(const gchar * props)
   {
     if (m_bInSection)
       return;
@@ -1654,11 +1650,10 @@ private:
     UT_String allProps(props);
     allProps += m_pSSListener->getSectionProps();
 
-    const gchar * atts[3];
-    atts[0] = "props";
-    atts[1] = allProps.c_str();
-    atts[2] = 0;
-    getDocument()->appendStrux(PTX_Section, (const gchar**)atts);	
+    const PP_PropertyVector atts = {
+      "props", allProps.c_str()
+    };
+    getDocument()->appendStrux(PTX_Section, atts);
 
     m_bInSection = true;
     m_bAcceptingText = false;
@@ -1668,12 +1663,9 @@ private:
     {
 	UT_return_if_fail(name && type);
 
-	const gchar* propsArray[5];
-	propsArray[0] = (gchar *)"name";
-	propsArray[1] = name;
-	propsArray[2] = (gchar *)"type";
-	propsArray[3] = type;
-	propsArray[4] = 0;
+	const PP_PropertyVector propsArray = {
+		"name",	name,	"type",	type
+	};
 	getDocument()->appendObject (PTO_Bookmark, propsArray);
     }
 
@@ -1688,7 +1680,7 @@ private:
 
   void _openTable (const gchar ** /*props*/)
   {
-    getDocument()->appendStrux(PTX_SectionTable,NULL);
+    getDocument()->appendStrux(PTX_SectionTable,PP_NOPROPS);
   }
 
   void _openColumn (const gchar ** /*props*/)
@@ -1703,23 +1695,20 @@ private:
 
   void _openCell (const gchar ** /*props*/)
   {
-    UT_String attach;
-
-    attach = UT_String_sprintf("left-attach: %d; top-attach: %d; right-attach: %d; bot-attach: %d", m_cel, m_row-1, m_cel+1, m_row);
+    std::string attach = UT_std_string_sprintf("left-attach: %d; top-attach: %d; right-attach: %d; bot-attach: %d", m_cel, m_row-1, m_cel+1, m_row);
 
     m_cel++;
 
-    const gchar *cell_props[3];
-    cell_props[0] = "props";
-    cell_props[1] = attach.c_str();
-    cell_props[2] = 0;
-    
+    const PP_PropertyVector cell_props = {
+      "props", attach
+    };
+
     getDocument()->appendStrux(PTX_SectionCell,cell_props);
   }
 
   void _closeTable ()
   {
-    getDocument()->appendStrux(PTX_EndTable, NULL);
+    getDocument()->appendStrux(PTX_EndTable, PP_NOPROPS);
 
     m_row = m_cel = m_col = 0;
   }
@@ -1736,7 +1725,7 @@ private:
 
   void _closeCell ()
   {
-    getDocument()->appendStrux(PTX_EndCell,NULL);
+    getDocument()->appendStrux(PTX_EndCell,PP_NOPROPS);
   }
   
   void _defineSimpleStyle (const gchar **props)
@@ -1758,16 +1747,12 @@ private:
 
   bool _pushInlineFmt(const gchar ** atts)
   {
-    UT_uint32 start = m_vecInlineFmt.getItemCount()+1;
+    UT_uint32 start = m_vecInlineFmt.size() + 1;
     UT_uint32 k;
     
     for (k=0; (atts[k]); k++)
       {
-	gchar * p;
-	if (!(p = g_strdup(atts[k])))
-	  return false;
-	if (m_vecInlineFmt.addItem(p)!=0)
-	  return false;
+          m_vecInlineFmt.push_back(atts[k]);
       }
     if (!m_stackFmtStartIndex.push(start))
       return false;
@@ -1779,15 +1764,9 @@ private:
     UT_sint32 start;
     if (!m_stackFmtStartIndex.pop(&start))
       return;
-    UT_sint32 k;
-    UT_uint32 end = m_vecInlineFmt.getItemCount();
-    for (k=end; k>=start; k--)
-      {
-	const gchar * p = (const gchar *)m_vecInlineFmt.getNthItem(k-1);
-	m_vecInlineFmt.deleteNthItem(k-1);
-	if (p)
-	  g_free((void *)p);
-      }
+
+    m_vecInlineFmt.erase(m_vecInlineFmt.begin() + (start - 1),
+                         m_vecInlineFmt.end());
   }
   
 };

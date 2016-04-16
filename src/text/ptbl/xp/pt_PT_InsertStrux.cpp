@@ -57,17 +57,13 @@
 */
 bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
 												PP_RevisionType eType,
-												const gchar ** & ppRevAttrib,
-												const gchar ** & ppRevProps,
-												const gchar **   ppAttrib,
-												const gchar **   ppProps)
+												PP_PropertyVector & ppRevAttrib,
+												PP_PropertyVector & ppRevProps,
+												const PP_PropertyVector & ppAttrib,
+												const PP_PropertyVector & ppProps)
 {
-	// foolproofing
-	ppRevAttrib = NULL;
-	ppRevProps = NULL;
-	
 	UT_return_val_if_fail(m_pDocument->isMarkRevisions(),false );
-	
+
 	const PP_AttrProp * pRevisedAP = NULL;
 	const PP_AttrProp * pAP = NULL;
 	getAttrProp(indexAP, &pAP);
@@ -96,7 +92,7 @@ bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_
 				PP_RevisionAttr Revisions2(NULL);
 
 				// now add the revision attribute
-				Revisions2.addRevision(m_pDocument->getRevisionId(),eType,ppAttrib,ppProps);
+				Revisions2.addRevision(m_pDocument->getRevisionId(), eType, ppAttrib, ppProps);
 				const_cast<PP_AttrProp*>(pRevisedAP)->setAttribute(name, Revisions2.getXMLstring());
 			}
 			
@@ -107,7 +103,7 @@ bool pt_PieceTable::_translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_
 	{
 		// there was either no pAP or no pRev, just add the current revision ...
 		// we need to create a rev. instance in Revisions
-		Revisions.addRevision(m_pDocument->getRevisionId(),eType,ppAttrib,ppProps);
+		Revisions.addRevision(m_pDocument->getRevisionId(), eType, ppAttrib, ppProps);
 		pRevisedAP = Revisions.getLastRevision();
 		UT_return_val_if_fail( pRevisedAP, false );
 
@@ -152,17 +148,17 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		}
 
 		PP_RevisionAttr Revisions(NULL);
-		const gchar ** ppRevAttrib = NULL;
-		const gchar ** ppRevProps  = NULL;
-
-		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION, ppRevAttrib, ppRevProps, 0, 0);
+		PP_PropertyVector ppRevAttrib;
+		PP_PropertyVector ppRevProps;
+		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
+                                    ppRevAttrib, ppRevProps, PP_NOPROPS, PP_NOPROPS);
 
 		//return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,ppRevProps,pts);
-		return _realInsertStrux(dpos,pts,ppRevAttrib,ppRevProps,ppfs_ret);
+		return _realInsertStrux(dpos, pts, ppRevAttrib, ppRevProps, ppfs_ret);
 	}
 	else
 	{
-		return _realInsertStrux(dpos,pts,0,0,ppfs_ret);
+		return _realInsertStrux(dpos, pts, PP_NOPROPS, PP_NOPROPS, ppfs_ret);
 	}
 }
 
@@ -180,7 +176,7 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		pf_Frag_Strux * pfsContainer = NULL;
 		bool bFoundContainer = _getStruxFromPosition(dpos,&pfsContainer); // the orig. strux
 		UT_return_val_if_fail(bFoundContainer, false);
-	
+
 		if(isEndFootnote(pfsContainer))
 		{
 			bFoundContainer = _getStruxFromFragSkip(pfsContainer,&pfsContainer);
@@ -194,48 +190,22 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		}
 
 		PP_RevisionAttr Revisions(NULL);
-		const gchar ** ppRevAttrs = NULL;
-		const gchar ** ppRevProps  = NULL;
+		PP_PropertyVector ppRevAttrs;
+		PP_PropertyVector ppRevProps;
 
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
-									ppRevAttrs, ppRevProps, NULL, NULL);
+									ppRevAttrs, ppRevProps, PP_NOPROPS, PP_NOPROPS);
 
-		// count original attributes and the revision-inherited attributes
-		// and add them to the revision attribute
-		UT_uint32 iAttrCount = 0;
-		for (; attributes && attributes[iAttrCount]; iAttrCount+=2){}
+		PP_PropertyVector ppRevAttrib = PP_std_copyProps(attributes);
+		ppRevAttrib.insert(ppRevAttrib.end(), ppRevAttrs.begin(), ppRevAttrs.end());
 
-		UT_uint32 iRevAttrCount = 0;
-		for (; ppRevAttrs && ppRevAttrs[iRevAttrCount]; iRevAttrCount+=2){}
-
-		const gchar ** ppRevAttrib = NULL;
-		if(iAttrCount + iRevAttrCount > 0)
-		{
-			ppRevAttrib = new const gchar * [iAttrCount + iRevAttrCount + 1];
-			UT_return_val_if_fail( ppRevAttrib, false );
-
-			UT_uint32 i = 0;
-			for (i = 0; i < iAttrCount; ++i)
-			{
-				ppRevAttrib[i] = attributes[i];
-			}
-
-			for (; i < iRevAttrCount + iAttrCount; ++i)
-			{
-				ppRevAttrib[i] = ppRevAttrs[i - iAttrCount];
-			}
-		
-			ppRevAttrib[i]   = NULL;
-		}
-		
 		//return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,NULL,pts);
-		bool bRet = _realInsertStrux(dpos,pts,ppRevAttrib,properties,ppfs_ret);
-		delete [] ppRevAttrib;
+		bool bRet = _realInsertStrux(dpos, pts, ppRevAttrib, PP_std_copyProps(properties), ppfs_ret);
 		return bRet;
 	}
 	else
 	{
-		return _realInsertStrux(dpos,pts,attributes,properties,ppfs_ret);
+		return _realInsertStrux(dpos, pts, PP_std_copyProps(attributes), PP_std_copyProps(properties), ppfs_ret);
 	}
 }
 
@@ -450,8 +420,8 @@ void pt_PieceTable::_insertStrux(pf_Frag * pf,
 
 bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 									 PTStruxType pts,
-									 const gchar ** attributes,
-									 const gchar ** properties,
+									 const PP_PropertyVector & attributes,
+									 const PP_PropertyVector & properties,
 									 pf_Frag_Strux ** ppfs_ret)
 {
 	// insert a new structure fragment at the given document position.
@@ -533,7 +503,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		//
 		// OK now insert a new end of hyperlink at pf
 		//
-		insertObject(dpos, PTO_Hyperlink,NULL,NULL);
+		insertObject(dpos, PTO_Hyperlink, PP_NOPROPS, PP_NOPROPS);
 		dpos++;
 		if(posEnd > 0)
 		{
@@ -550,17 +520,17 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		}
 		bFoundFrag = getFragFromPosition(dpos,&pf,&fragOffset);
 		UT_return_val_if_fail (bFoundFrag, false);
-	}	
+	}
 
 //
 // If desired, merge in the specified attributes/properties. This
 // enables cells to inherit the properties of the block from which
 // they were inserted.
 //
-	if (attributes || properties)
+	if (!attributes.empty() || !properties.empty())
 	{
 		PT_AttrPropIndex pAPIold = indexAP;
-		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,attributes,properties,&indexAP,getDocument());
+		bool bMerged = m_varset.mergeAP(PTC_AddFmt, pAPIold, attributes, properties, &indexAP, getDocument());
         UT_UNUSED(bMerged);
 		UT_ASSERT_HARMLESS(bMerged);
 	}
@@ -570,7 +540,7 @@ bool pt_PieceTable::_realInsertStrux(PT_DocPosition dpos,
 		return false;
 
 	pfsNew->setXID(getXID());
-	
+
 	// when inserting paragraphs, we try to remember the current
 	// span formatting active at the insertion point and add a
 	// FmtMark immediately after the block.  this way, if the

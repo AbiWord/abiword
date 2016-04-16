@@ -120,7 +120,7 @@ IE_Imp_MIF::IE_Imp_MIF(PD_Document * pDocument)
 
 UT_Error IE_Imp_MIF::_writeHeader(GsfInput * /* fp */)
 {
-	X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
+	X_ReturnNoMemIfError(appendStrux(PTX_Section, PP_NOPROPS));
 
 	return UT_OK;
 }

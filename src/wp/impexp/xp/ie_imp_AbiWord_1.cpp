@@ -181,9 +181,9 @@ IE_Imp_AbiWord_1::~IE_Imp_AbiWord_1()
 	if(!getLoadStylesOnly()	)
 	{
 		if ( !m_bWroteSection )
-			X_CheckError(appendStrux(PTX_Section,NULL));
+			X_CheckError(appendStrux(PTX_Section, PP_NOPROPS));
 		if ( !m_bWroteParagraph )
-			X_CheckError(appendStrux(PTX_Block,NULL));
+			X_CheckError(appendStrux(PTX_Block, PP_NOPROPS));
 	}
 	
   if (m_refMap)
@@ -374,7 +374,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		{
 		    m_parseState = _PS_Sec;
 		    m_bWroteSection = true;
-		    X_CheckError(appendStrux(PTX_Section,atts));
+		    X_CheckError(appendStrux(PTX_Section, PP_std_copyProps(atts)));
 		    goto cleanup;
 		}
 		else
@@ -390,7 +390,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 				getDoc()->changeStruxAttsNoUpdate(sdh,pszType,pszId);
 				m_parseState = _PS_Sec;
 				m_bWroteSection = true;
-				X_CheckError(appendStrux(PTX_Section,atts));
+				X_CheckError(appendStrux(PTX_Section, PP_std_copyProps(atts)));
 				goto cleanup;
 			}
 			m_error = UT_IE_SKIPINVALID;
@@ -419,7 +419,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			UT_ASSERT(bOK);
 		}
 
-		X_CheckError(appendStrux(PTX_SectionFootnote,atts));
+		X_CheckError(appendStrux(PTX_SectionFootnote, PP_std_copyProps(atts)));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
 		goto cleanup;
 	}
@@ -442,7 +442,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			bOK = getDoc()->setMinUID(UT_UniqueId::Annotation, id+1);
 			UT_ASSERT(bOK);
 		}
-		X_CheckError(appendStrux(PTX_SectionAnnotation,atts));
+		X_CheckError(appendStrux(PTX_SectionAnnotation, PP_std_copyProps(atts)));
 		UT_DEBUGMSG(("FInished Append Annotation strux \n"));
 		goto cleanup;
 	}
@@ -467,7 +467,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		// Don't check for id of the endnote strux. It should match the
 		// id of the endnote reference.
 
-		X_CheckError(appendStrux(PTX_SectionEndnote,atts));
+		X_CheckError(appendStrux(PTX_SectionEndnote, PP_std_copyProps(atts)));
 		xxx_UT_DEBUGMSG(("Finished Append Endnote strux \n"));
 		goto cleanup;
 	}
@@ -477,7 +477,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_SectionTOC,atts));
+		X_CheckError(appendStrux(PTX_SectionTOC, PP_std_copyProps(atts)));
 		UT_DEBUGMSG(("Finished Append TOC strux \n"));
 		goto cleanup;
 	}
@@ -505,7 +505,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			}
 		}
-		X_CheckError(appendStrux(PTX_Block,atts));
+		X_CheckError(appendStrux(PTX_Block, PP_std_copyProps(atts)));
 		m_iInlineStart = getOperationCount();
 		goto cleanup;
 	}
@@ -523,10 +523,10 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		}
 		
 		
-		X_CheckError(_pushInlineFmt(atts));
+		X_CheckError(_pushInlineFmt(PP_std_copyProps(atts)));
 
 		if(!isClipboard())
-			X_CheckError(appendFmt(&m_vecInlineFmt));
+			X_CheckError(appendFmt(m_vecInlineFmt));
 
 		m_iInlineStart++;
 		goto cleanup;
@@ -558,14 +558,14 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		// Remove this assert because the image object MUST have already
 		// defined the correct ID.
 		//
-		X_CheckError(appendObject(PTO_Image,atts));
+		X_CheckError(appendObject(PTO_Image, PP_std_copyProps(atts)));
 #endif
 		goto cleanup;
 	}
 	case TT_MATH:
 	{
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Math,atts));
+		X_CheckError(appendObject(PTO_Math, PP_std_copyProps(atts)));
 		m_iImageId++;
 		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		m_bInMath = true;
@@ -574,7 +574,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 	case TT_EMBED:
 	{
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Embed,atts));
+		X_CheckError(appendObject(PTO_Embed, PP_std_copyProps(atts)));
 		
 		m_iImageId++;
 		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
@@ -596,21 +596,14 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
                 xmlid = xmlidMapForBookmarks[nameAttr];
                 xmlidMapForBookmarks.erase(nameAttr);
             }
-            int idx = 0;
-            const gchar* pp[60];
-            for( ; atts[idx] && idx < 50; idx++ )
-            {
-                pp[idx] = atts[idx];
-            }
-            
-            pp[idx++] = PT_XMLID;
-            pp[idx++] = xmlid.c_str();
-            pp[idx++] = 0;
-            X_CheckError(appendObject(PTO_Bookmark,pp));
+            PP_PropertyVector pp = PP_std_copyProps(atts);
+            pp.push_back(PT_XMLID);
+            pp.push_back(xmlid);
+            X_CheckError(appendObject(PTO_Bookmark, pp));
         }
         else
         {
-            X_CheckError(appendObject(PTO_Bookmark,atts));
+            X_CheckError(appendObject(PTO_Bookmark, PP_std_copyProps(atts)));
             const gchar* nameAttr  = UT_getAttribute("name", atts);
             const gchar* xmlid = UT_getAttribute("xml:id", atts);
             if( name && xmlid )
@@ -625,7 +618,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 	case TT_TEXTMETA:
     {
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_RDFAnchor,atts));
+		X_CheckError(appendObject(PTO_RDFAnchor, PP_std_copyProps(atts)));
         const gchar* xmlid = UT_getAttribute("xml:id", atts);
         if( !xmlid )
             xmlid = "";
@@ -635,19 +628,19 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
     
 	case TT_HYPERLINK:
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Hyperlink,atts));
+		X_CheckError(appendObject(PTO_Hyperlink, PP_std_copyProps(atts)));
 		goto cleanup;
 
 	case TT_ANN:
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Annotation,atts));
+		X_CheckError(appendObject(PTO_Annotation, PP_std_copyProps(atts)));
 		goto cleanup;
 
 	case TT_FIELD:
 	{
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Field;
-		X_CheckError(appendObject(PTO_Field,atts));
+		X_CheckError(appendObject(PTO_Field, PP_std_copyProps(atts)));
 		goto cleanup;
 	}
 
@@ -754,7 +747,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		}
 		else
 		{
-			X_CheckError(getDoc()->appendStyle(atts));
+			X_CheckError(getDoc()->appendStyle(PP_std_copyProps(atts)));
 		}
 		goto cleanup;
 	}
@@ -1010,19 +1003,19 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 	case TT_TABLE:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_SectionTable,atts));
+		X_CheckError(appendStrux(PTX_SectionTable, PP_std_copyProps(atts)));
 		goto cleanup;
 
 	case TT_CELL:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_SectionCell,atts));
+		X_CheckError(appendStrux(PTX_SectionCell, PP_std_copyProps(atts)));
 		goto cleanup;
 
 	case TT_FRAME:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_SectionFrame,atts));
+		X_CheckError(appendStrux(PTX_SectionFrame, PP_std_copyProps(atts)));
 		goto cleanup;
 
 	case TT_OTHER:
@@ -1080,21 +1073,21 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 
 	case TT_FOOTNOTE:
 		X_VerifyParseState(_PS_Sec);
-		X_CheckError(appendStrux(PTX_EndFootnote,NULL));
+		X_CheckError(appendStrux(PTX_EndFootnote, PP_NOPROPS));
 		xxx_UT_DEBUGMSG(("FInished Append End footnote strux \n"));
 		m_parseState = _PS_Block;
 		return;
 
 	case TT_ANNOTATE:
 		X_VerifyParseState(_PS_Sec);
-		X_CheckError(appendStrux(PTX_EndAnnotation,NULL));
+		X_CheckError(appendStrux(PTX_EndAnnotation, PP_NOPROPS));
 		UT_DEBUGMSG(("FInished Append End annotation strux \n"));
 		m_parseState = _PS_Block;
 		return;
 
 	case TT_ENDNOTE:
 		X_VerifyParseState(_PS_Sec);
-		X_CheckError(appendStrux(PTX_EndEndnote,NULL));
+		X_CheckError(appendStrux(PTX_EndEndnote, PP_NOPROPS));
 		xxx_UT_DEBUGMSG(("Finished Append End Endnote strux \n"));
 		m_parseState = _PS_Block;
 		return;
@@ -1103,26 +1096,26 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 	case TT_TOC:
 		X_VerifyParseState(_PS_Sec);
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_EndTOC,NULL));
+		X_CheckError(appendStrux(PTX_EndTOC, PP_NOPROPS));
 		UT_DEBUGMSG(("Finished Append End TOC strux \n"));
 		return;
 
 	case TT_TABLE:
 		X_VerifyParseState(_PS_Sec);
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_EndTable,NULL));
+		X_CheckError(appendStrux(PTX_EndTable, PP_NOPROPS));
 		return;
 
 	case TT_CELL:
 		X_VerifyParseState(_PS_Sec);
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_EndCell,NULL));
+		X_CheckError(appendStrux(PTX_EndCell, PP_NOPROPS));
 		return;
 
 	case TT_FRAME:
 		X_VerifyParseState(_PS_Sec);
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_EndFrame,NULL));
+		X_CheckError(appendStrux(PTX_EndFrame, PP_NOPROPS));
 		return;
 
 	case TT_BLOCK:
@@ -1146,7 +1139,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		_popInlineFmt();
 
 		if(!isClipboard())
-			X_CheckError(appendFmt(&m_vecInlineFmt));
+			X_CheckError(appendFmt(m_vecInlineFmt));
 		return;
 
 	case TT_IMAGE:						// not a container, so we don't pop stack
@@ -1177,19 +1170,16 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
     {
         std::string xmlid = xmlidStackForTextMeta.back();
         xmlidStackForTextMeta.pop_back();
-        
+
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 
-        const gchar* ppAtts[10] = { NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL };
-        ppAtts[0] = PT_XMLID;
-        ppAtts[1] = xmlid.c_str();
-        // sanity check
-        ppAtts[2] = "this-is-an-rdf-anchor";
-        ppAtts[3] = "yes";
-        ppAtts[4] = PT_RDF_END;
-        ppAtts[5] = "yes";
-        
+        PP_PropertyVector ppAtts = {
+            PT_XMLID, xmlid,
+            // sanity check
+            "this-is-an-rdf-anchor", "yes",
+            PT_RDF_END, "yes"
+        };
 		X_CheckError(appendObject(PTO_RDFAnchor,ppAtts));
 		return;
     }
@@ -1198,7 +1188,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
 		X_VerifyParseState(_PS_Block);
 		// we append another Hyperlink Object, but with no attributes
-		X_CheckError(appendObject(PTO_Hyperlink,NULL));
+		X_CheckError(appendObject(PTO_Hyperlink, PP_NOPROPS));
 		return;
 
 	case TT_ANN:						// not a container, so we don't pop stack
@@ -1206,7 +1196,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		X_VerifyParseState(_PS_Block);
 		UT_DEBUGMSG(("End of annotation region \n"));
 		// we append another Hyperlink Object, but with no attributes
-		X_CheckError(appendObject(PTO_Annotation,NULL));
+		X_CheckError(appendObject(PTO_Annotation, PP_NOPROPS));
 		return;
 
 		return;

@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 2001 AbiSource, Inc.
@@ -38,6 +38,7 @@
 #include <gsf/gsf-input-stdio.h>
 
 #include "ut_types.h"
+#include "ut_std_string.h"
 #include "ut_string.h"
 #include "ut_string_class.h"
 #include "ut_units.h"
@@ -620,13 +621,11 @@ void IE_Imp_WordPerfect::openParagraph(const librevenge::RVNGPropertyList &propL
 		}
 	}
 
-	
 
 	UT_DEBUGMSG(("AbiWordPerfect: Appending paragraph properties: %s\n", propBuffer.c_str()));
-	const gchar* propsArray[3];
-	propsArray[0] = "props";
-	propsArray[1] = propBuffer.c_str();
-	propsArray[2] = NULL;
+	const PP_PropertyVector propsArray = {
+		"props", propBuffer.c_str()
+	};
 	X_CheckDocumentError(appendStrux(PTX_Block, propsArray));
 	m_bRequireBlock = false;
 
@@ -635,7 +634,7 @@ void IE_Imp_WordPerfect::openParagraph(const librevenge::RVNGPropertyList &propL
 		if (strcmp(propList["fo:break-before"]->getStr().cstr(), "page") == 0)
 		{
 			UT_UCS4Char ucs = UCS_FF;
-			X_CheckDocumentError(appendSpan(&ucs,1));			
+			X_CheckDocumentError(appendSpan(&ucs,1));
 		}
 		else if (strcmp(propList["fo:break-before"]->getStr().cstr(), "column") == 0)
 		{
@@ -962,22 +961,21 @@ void IE_Imp_WordPerfect::openListElement(const librevenge::RVNGPropertyList &pro
 	listAttribs[attribsCount++] = PT_PROPS_ATTRIBUTE_NAME;
 	listAttribs[attribsCount++] = propBuffer.c_str();
 	listAttribs[attribsCount++] = NULL;
-	
-	X_CheckDocumentError(appendStrux(PTX_Block, listAttribs));
+
+	X_CheckDocumentError(appendStrux(PTX_Block, PP_std_copyProps(listAttribs)));
 	m_bRequireBlock = false;
-	
+
 	// hang text off of a list label
 	getDoc()->appendFmtMark();
 	UT_DEBUGMSG(("WordPerfect: LISTS - Appended a list tag def'n (character props)\n"));
-	
+
 	// append a list field label
-	const gchar* fielddef[5];
-	fielddef[0] ="type";
-	fielddef[1] = "list_label";
-	fielddef[2] = NULL;
+	PP_PropertyVector fielddef = {
+		"type", "list_label"
+	};
 	X_CheckDocumentError(appendObject(PTO_Field,fielddef));
 	UT_DEBUGMSG(("WordPerfect: LISTS - Appended a field def'n\n"));
-	
+
 	// insert a tab
 	UT_UCS4Char ucs = UCS_TAB;
 	X_CheckDocumentError(appendSpan(&ucs,1));
@@ -989,88 +987,65 @@ void IE_Imp_WordPerfect::openFootnote(const librevenge::RVNGPropertyList & /*pro
 
 	if (!m_bInSection)
 	{
-		X_CheckDocumentError(appendStrux(PTX_Section, NULL));
-		X_CheckDocumentError(appendStrux(PTX_Block,NULL));
+		X_CheckDocumentError(appendStrux(PTX_Section, PP_NOPROPS));
+		X_CheckDocumentError(appendStrux(PTX_Block,PP_NOPROPS));
 		m_bInSection = true;
 	}
 
-	const gchar** propsArray = NULL;
-	
-	UT_String footnoteId;
-	UT_String_sprintf(footnoteId,"%i",UT_rand());	
-	
-	propsArray = static_cast<const gchar **>(UT_calloc(7, sizeof(gchar *)));
-	propsArray [0] = "type";
-	propsArray [1] = "footnote_ref";
-	propsArray [2] = "footnote-id";
-	propsArray [3] = footnoteId.c_str();
-	propsArray [4] = NULL;
-	propsArray [5] = NULL;
-	propsArray [6] = NULL;
+	std::string footnoteId = UT_std_string_sprintf("%i", UT_rand());
+
+	PP_PropertyVector propsArray = {
+		"type",	"footnote_ref",
+		"footnote-id", footnoteId
+	};
 	X_CheckDocumentError(appendObject(PTO_Field, propsArray));
 
-	const gchar * attribs[3] ={"footnote-id", footnoteId.c_str(), NULL};
-	X_CheckDocumentError(appendStrux(PTX_SectionFootnote,attribs));
-	
-	X_CheckDocumentError(appendStrux(PTX_Block,NULL));
+	const PP_PropertyVector attribs = {
+		"footnote-id", footnoteId
+	};
+	X_CheckDocumentError(appendStrux(PTX_SectionFootnote, attribs));
+
+	X_CheckDocumentError(appendStrux(PTX_Block, PP_NOPROPS));
 	m_bRequireBlock = false;
 
-	propsArray = static_cast<const gchar **>(UT_calloc(7, sizeof(gchar *)));
-	propsArray [0] = "type";
-	propsArray [1] = "footnote_anchor";
-	propsArray [2] = "footnote-id";
-	propsArray [3] = footnoteId.c_str();
-	propsArray [4] = NULL;
-	propsArray [5] = NULL;
-	propsArray [6] = NULL;
+	// just change the type.
+	propsArray[1] = "footnote_anchor";
 	X_CheckDocumentError(appendObject(PTO_Field, propsArray));
 }
 
 void IE_Imp_WordPerfect::closeFootnote()
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
-	X_CheckDocumentError(appendStrux(PTX_EndFootnote,NULL));
+	X_CheckDocumentError(appendStrux(PTX_EndFootnote,PP_NOPROPS));
 }
 
 void IE_Imp_WordPerfect::openEndnote(const librevenge::RVNGPropertyList & /*propList*/)
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
-	const gchar** propsArray = NULL;
-	
-	UT_String endnoteId;
-	UT_String_sprintf(endnoteId,"%i",UT_rand());	
-	
-	propsArray = static_cast<const gchar **>(UT_calloc(7, sizeof(gchar *)));
-	propsArray [0] = "type";
-	propsArray [1] = "endnote_ref";
-	propsArray [2] = "endnote-id";
-	propsArray [3] = endnoteId.c_str();
-	propsArray [4] = NULL;
-	propsArray [5] = NULL;
-	propsArray [6] = NULL;
+	std::string endnoteId = UT_std_string_sprintf("%i", UT_rand());
+
+	PP_PropertyVector propsArray = {
+		"type",	"endnote_ref",
+		"endnote-id", endnoteId
+	};
 	X_CheckDocumentError(appendObject(PTO_Field, propsArray));
 
-	const gchar * attribs[3] ={"endnote-id", endnoteId.c_str(), NULL};
-	X_CheckDocumentError(appendStrux(PTX_SectionEndnote,attribs));
-	
-	X_CheckDocumentError(appendStrux(PTX_Block,NULL));
+	const PP_PropertyVector attribs = {
+		"endnote-id", endnoteId
+	};
+	X_CheckDocumentError(appendStrux(PTX_SectionEndnote, attribs));
+
+	X_CheckDocumentError(appendStrux(PTX_Block, PP_NOPROPS));
 	m_bRequireBlock = false;
 
-	propsArray = static_cast<const gchar **>(UT_calloc(7, sizeof(gchar *)));
-	propsArray [0] = "type";
 	propsArray [1] = "endnote_anchor";
-	propsArray [2] = "endnote-id";
-	propsArray [3] = endnoteId.c_str();
-	propsArray [4] = NULL;
-	propsArray [5] = NULL;
-	propsArray [6] = NULL;
 	X_CheckDocumentError(appendObject(PTO_Field, propsArray));
 }
 
 void IE_Imp_WordPerfect::closeEndnote()
 {
 	if (m_bHdrFtrOpenCount) return; // HACK
-	X_CheckDocumentError(appendStrux(PTX_EndEndnote,NULL));
+	X_CheckDocumentError(appendStrux(PTX_EndEndnote, PP_NOPROPS));
 }
 
 void IE_Imp_WordPerfect::openTable(const librevenge::RVNGPropertyList &propList)
@@ -1112,11 +1087,9 @@ void IE_Imp_WordPerfect::openTable(const librevenge::RVNGPropertyList &propList)
 		}
 	}
 
-	const gchar* propsArray[3];
-	propsArray[0] = "props";
-	propsArray[1] = propBuffer.c_str();
-	propsArray[2] = NULL;
-
+	const PP_PropertyVector propsArray = {
+		"props", propBuffer.c_str()
+	};
 	X_CheckDocumentError(appendStrux(PTX_SectionTable, propsArray));
 }
 
@@ -1125,10 +1098,10 @@ void IE_Imp_WordPerfect::openTableRow(const librevenge::RVNGPropertyList & /*pro
 	if (m_bHdrFtrOpenCount) return; // HACK
 	UT_DEBUGMSG(("AbiWordPerfect: openRow\n"));
 	if (m_bInCell)
-	{		
-		X_CheckDocumentError(appendStrux(PTX_EndCell, NULL));
+	{
+		X_CheckDocumentError(appendStrux(PTX_EndCell, PP_NOPROPS));
 	}
-	
+
 	m_bInCell = false;
 }
 
@@ -1148,7 +1121,7 @@ void IE_Imp_WordPerfect::openTableCell(const librevenge::RVNGPropertyList &propL
 	UT_DEBUGMSG(("AbiWordPerfect: openCell(col: %d, row: %d, colSpan: %d, rowSpan: %d\n", col, row, colSpan, rowSpan));
 	if (m_bInCell)
 	{
-		X_CheckDocumentError(appendStrux(PTX_EndCell, NULL));
+		X_CheckDocumentError(appendStrux(PTX_EndCell, PP_NOPROPS));
 	}
 	
 	UT_String propBuffer;
@@ -1187,11 +1160,10 @@ void IE_Imp_WordPerfect::openTableCell(const librevenge::RVNGPropertyList &propL
 	
 	UT_DEBUGMSG(("AbiWordPerfect: Inserting a Cell definition: %s\n", propBuffer.c_str()));
 	
-	const gchar* propsArray[3];
-	propsArray[0] = "props";
-	propsArray[1] = propBuffer.c_str();
-	propsArray[2] = NULL;
-	
+	const PP_PropertyVector propsArray = {
+		"props", propBuffer.c_str()
+	};
+
 	X_CheckDocumentError(appendStrux(PTX_SectionCell, propsArray));
 	m_bInCell = true;
 }
@@ -1203,15 +1175,15 @@ void IE_Imp_WordPerfect::closeTable()
 	
 	if (m_bInCell)
 	{
-		X_CheckDocumentError(appendStrux(PTX_EndCell, NULL));
+		X_CheckDocumentError(appendStrux(PTX_EndCell, PP_NOPROPS));
 	}
-	X_CheckDocumentError(appendStrux(PTX_EndTable, NULL));
+	X_CheckDocumentError(appendStrux(PTX_EndTable, PP_NOPROPS));
 	m_bInCell = false;
 	
 	// we need to open a new paragraph after a table, since libwpd does NOT do it
 	// FIXME: NEED TO PASS THE CURRENT PROPERTIES INSTEAD OF NULL
 	// NOTE: THIS SUCKS.........
-	X_CheckDocumentError(appendStrux(PTX_Block, NULL));
+	X_CheckDocumentError(appendStrux(PTX_Block, PP_NOPROPS));
 	m_bRequireBlock = false;
 }
 
@@ -1225,20 +1197,19 @@ UT_Error IE_Imp_WordPerfect::_appendSection(int numColumns, const float marginLe
 
 	if(m_bInSection && m_bRequireBlock) // AbiWord will hang on an empty <section>
 	{
-		X_CheckDocumentError(appendStrux(PTX_Block,NULL));
+		X_CheckDocumentError(appendStrux(PTX_Block,PP_NOPROPS));
 	}
-	
-	const gchar * propsArray[3];
-	propsArray[0] = "props";
-	propsArray[1] = myProps.c_str();
-	propsArray[2] = NULL ;
+
+	const PP_PropertyVector propsArray = {
+		"props", myProps.c_str()
+	};
 	X_CheckDocumentError(appendStrux(PTX_Section, propsArray));
-	
+
 	m_bInSection = true;
 	m_bRequireBlock = true;
 
 	m_bSectionChanged = false;
-	
+
 	return UT_OK;
 }
 

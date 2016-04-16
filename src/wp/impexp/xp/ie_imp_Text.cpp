@@ -202,17 +202,16 @@ bool IE_Imp_Text::_insertBlock()
 	if (isClipboard ()) // intentional - don't append style
 						// information
 	{		
-		ret = appendStrux(PTX_Block, NULL);
+		ret = appendStrux(PTX_Block, PP_NOPROPS);
 	}
 	else
 	{
 	    // text gets applied in the Normal style
-	    const gchar * propsArray[3];
-	    propsArray[0] = "style";
-	    propsArray[1] = "Normal";
-	    propsArray[2] = 0;
+	    const PP_PropertyVector propsArray = {
+	        "style", "Normal"
+	    };
 
-	    ret = appendStrux(PTX_Block, static_cast<const gchar **>(&propsArray[0]));
+	    ret = appendStrux(PTX_Block, propsArray);
 	}
 	if(!isPasting())
 	{
@@ -788,19 +787,18 @@ UT_Error IE_Imp_Text::_constructStream(ImportStream *& pStream, GsfInput * fp)
 UT_Error IE_Imp_Text::_writeHeader(GsfInput * /* fp */)
 {
 	// text gets applied in the Normal style
-	const gchar * propsArray[3];
-	propsArray[0] = "style";
-	propsArray[1] = "Normal";
-	propsArray[2] = 0;
+	const PP_PropertyVector propsArray = {
+		"style", "Normal"
+	};
 
-	X_ReturnNoMemIfError(appendStrux(PTX_Section, NULL));
-	X_ReturnNoMemIfError(appendStrux(PTX_Block, static_cast<const gchar**>(&propsArray[0])));
+	X_ReturnNoMemIfError(appendStrux(PTX_Section, PP_NOPROPS));
+	X_ReturnNoMemIfError(appendStrux(PTX_Block, propsArray));
 
 	pf_Frag * pf = getDoc()->getPieceTable()->getFragments().getLast();
 	UT_return_val_if_fail( pf->getType() == pf_Frag::PFT_Strux, UT_ERROR);
 	m_pBlock = (pf_Frag_Strux *) pf;
 	UT_return_val_if_fail( m_pBlock->getStruxType() == PTX_Block, UT_ERROR );
-  
+
 	return UT_OK;
 }
 

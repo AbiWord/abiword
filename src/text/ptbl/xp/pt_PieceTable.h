@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -89,19 +89,20 @@ public:
 protected:
 	bool					_realInsertObject(PT_DocPosition dpos,
 											  PTObjectType pto,
-											  const gchar ** attributes,
-											  const gchar ** properties);
+											  const PP_PropertyVector & attributes,
+											  const PP_PropertyVector & properties);
 
 	bool					_realInsertObject(PT_DocPosition dpos,
 											  PTObjectType pto,
-											  const gchar ** attributes,
-											  const gchar ** properties, pf_Frag_Object ** ppfo );
+											  const PP_PropertyVector & attributes,
+											  const PP_PropertyVector & properties,
+											  pf_Frag_Object ** ppfo );
 
 	bool					_realInsertSpan(PT_DocPosition dpos,
 											const UT_UCSChar * p,
 											UT_uint32 length,
-											const gchar ** attributes,
-											const gchar ** properties,
+											const PP_PropertyVector & attributes,
+											const PP_PropertyVector & properties,
 											fd_Field * pField = NULL,
 											bool bAddChangeRec = true);
 
@@ -125,14 +126,14 @@ protected:
 	bool					_realChangeSpanFmt(PTChangeFmt ptc,
 											   PT_DocPosition dpos1,
 											   PT_DocPosition dpos2,
-											   const gchar ** attributes,
-											   const gchar ** properties,
+											   const PP_PropertyVector & attributes,
+											   const PP_PropertyVector & properties,
 											   bool bRevisionDelete);
 
 	bool					_realInsertStrux(PT_DocPosition dpos,
 											 PTStruxType pts,
-											 const gchar ** attributes,
-											 const gchar ** properties,
+											 const PP_PropertyVector & attributes,
+											 const PP_PropertyVector & properties,
 											 pf_Frag_Strux ** ppfs_ret);
 
 	bool					_realChangeStruxFmt(PTChangeFmt ptc,
@@ -157,8 +158,8 @@ protected:
 public:
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const gchar ** attributes,
-										 const gchar ** properties);
+										 const PP_PropertyVector & attributes,
+										 const PP_PropertyVector & properties);
 
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
@@ -211,8 +212,8 @@ public:
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,
-										  const gchar ** attributes,
-										  const gchar ** properties);
+										  const PP_PropertyVector & attributes,
+										  const PP_PropertyVector & properties);
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
@@ -271,7 +272,7 @@ public:
 	// the document.
 
 	PD_Document *			getDocument(void);
-	bool					appendStrux(PTStruxType pts, const gchar ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
+	bool					appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes);
 	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar ** props,
 											   bool bSkipEmbededSections);
@@ -279,19 +280,20 @@ public:
 											   bool bSkipEmbededSections);
 
 	bool					appendFmt(const gchar ** attributes);
-	bool					appendFmt(const UT_GenericVector<const gchar*> * pVecAttributes);
+	bool					appendFmt(const PP_PropertyVector & vecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
-	bool					appendObject(PTObjectType pto, const gchar ** attributes);
+	bool					appendObject(PTObjectType pto, const PP_PropertyVector & attributes);
 	bool					appendFmtMark(void);
-	bool					appendStyle(const gchar ** attributes);
+	bool					appendStyle(const PP_PropertyVector & attributes);
 
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
-												  const gchar ** attributes, pf_Frag_Strux ** ppfs_ret = 0);
+												  const PP_PropertyVector & attributes,
+                                                  pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
 	bool					insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
-												   const gchar ** attributes);
+												   const PP_PropertyVector & attributes);
 	bool					insertFmtMarkBeforeFrag(pf_Frag * pF);
-	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const gchar ** attributes);
+	bool					insertFmtMarkBeforeFrag(pf_Frag * pF, const PP_PropertyVector & attributes);
 
 	bool					removeStyle(const gchar * name);
 	size_t					getStyleCount(void) const;
@@ -547,8 +549,8 @@ protected:
 													 pf_Frag_Text * pft, UT_uint32 fragOffset,
 													 PT_DocPosition dpos,
 													 UT_uint32 length,
-													 const gchar ** attributes,
-													 const gchar ** properties,
+													 const PP_PropertyVector & attributes,
+													 const PP_PropertyVector & properties,
 													 pf_Frag_Strux * pfs,
 													 pf_Frag ** ppfNewEnd,
 													 UT_uint32 * pfragOffsetNewEnd,
@@ -563,8 +565,8 @@ protected:
 													   pf_Frag_Object * pfo, UT_uint32 fragOffset,
 													   PT_DocPosition dpos,
 													   UT_uint32 length,
-													   const gchar ** attributes,
-													   const gchar ** properties,
+													   const PP_PropertyVector & attributes,
+													   const PP_PropertyVector & properties,
 													   pf_Frag_Strux * pfs,
 													   pf_Frag ** ppfNewEnd,
 													   UT_uint32 * pfragOffsetNewEnd,
@@ -585,8 +587,8 @@ protected:
 
 	bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 														 PT_DocPosition dpos,
-														 const gchar ** attributes,
-														 const gchar ** properties);
+														 const PP_PropertyVector & attributes,
+														 const PP_PropertyVector & properties);
 	bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 														 PT_DocPosition dpos,
 														 PP_AttrProp *p_AttrProp);
@@ -601,7 +603,8 @@ protected:
 										   pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_fmtChangeFmtMarkWithNotify(PTChangeFmt ptc, pf_Frag_FmtMark * pffm,
 														PT_DocPosition dpos,
-														const gchar ** attributes, const gchar ** properties,
+														const PP_PropertyVector & attributes,
+														const PP_PropertyVector & properties,
 														pf_Frag_Strux * pfs,
 														pf_Frag ** ppfEnd, UT_uint32 * pfragOffsetEnd);
 	bool					_fmtChangeFmtMark(pf_Frag_FmtMark * pffm,
@@ -617,21 +620,21 @@ protected:
 	bool					_changePointWithNotify(PT_DocPosition dpos);
 	bool                    _checkSkipFootnote(PT_DocPosition dpos1, PT_DocPosition dpos2, pf_Frag * pf_End = NULL) const;
 	// helper methods for the appned and insert*BeforeFrag methods
-	bool					_makeStrux(PTStruxType pts, const gchar ** attributes,
+	bool					_makeStrux(PTStruxType pts, const PP_PropertyVector & attributes,
 									   pf_Frag_Strux * &pfs);
-	bool					_makeObject(PTObjectType pto, const gchar ** attributes,
+	bool					_makeObject(PTObjectType pto, const PP_PropertyVector & attributes,
 										pf_Frag_Object * &pfo);
 	bool					_makeFmtMark(pf_Frag_FmtMark * &pff);
-	bool                    _makeFmtMark(pf_Frag_FmtMark * &pff, const gchar ** attributes);
+	bool                    _makeFmtMark(pf_Frag_FmtMark * &pff, const PP_PropertyVector & attributes);
 	UT_sint32               _getNextChangeRecordNumber(void)
 	{ return m_iCurCRNumber++;}
 	// implemented in pt_PT_InsertStrux.cpp
 	bool                    _translateRevisionAttribute(PP_RevisionAttr & Revisions, PT_AttrPropIndex indexAP,
 														PP_RevisionType eType,
-														const gchar ** & ppRevAttrib,
-														const gchar ** & ppRevProps,
-														const gchar **   ppAttrib,
-														const gchar **   ppProps);
+														PP_PropertyVector & ppRevAttrib,
+														PP_PropertyVector & ppRevProps,
+														const PP_PropertyVector & ppAttrib,
+														const PP_PropertyVector & ppProps);
 	bool                    _insertNoteInEmbeddedStruxList(pf_Frag_Strux * pfsNew);
 
 	PTState					m_pts;		/* are we loading or editing */

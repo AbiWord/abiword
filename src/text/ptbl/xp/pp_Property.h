@@ -24,6 +24,9 @@
 #ifndef PP_PROPERTY_H
 #define PP_PROPERTY_H
 
+#include <string>
+#include <vector>
+
 // make sure we don't get caught in a BASEDON loop
 #define pp_BASEDON_DEPTH_LIMIT	10
 
@@ -35,6 +38,13 @@
 
 class PP_AttrProp;
 class PD_Document;
+
+/// A basic container of properties vector.
+/// This replaces the gchar**
+typedef std::vector<std::string> PP_PropertyVector;
+
+/// An empty immutable poperty vector
+extern const PP_PropertyVector PP_NOPROPS;
 
 // PP_Property captures knowledge of the various CSS properties,
 // such as their initial/default values and whether they are

@@ -147,7 +147,7 @@ UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 			return ret;
 	}
 
-	const gchar ** atts = getAttributesWithProps();
+	const PP_PropertyVector atts = getAttributesWithProps();
 
 	if(bInline)
 	{
@@ -164,7 +164,7 @@ UT_Error OXML_Element_Image::addToPT(PD_Document * pDocument)
 		if(ret != UT_OK)
 			return ret;
 
-		ret = pDocument->appendStrux(PTX_EndFrame, NULL) ? UT_OK : UT_ERROR;
+		ret = pDocument->appendStrux(PTX_EndFrame, PP_NOPROPS) ? UT_OK : UT_ERROR;
 		if(ret != UT_OK)
 			return ret;
 	}

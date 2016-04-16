@@ -340,7 +340,7 @@ bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, co
 }
 
 
-bool pt_PieceTable::appendStyle(const gchar ** attributes)
+bool pt_PieceTable::appendStyle(const PP_PropertyVector & attributes)
 {
 	// this function can only be called while loading the document.
   //UT_ASSERT(m_pts==PTS_Loading);
@@ -354,21 +354,21 @@ bool pt_PieceTable::appendStyle(const gchar ** attributes)
 	// verify unique name
 
 	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(gchar));
-	const char * szName = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME, attributes);
-	if (!szName || !*szName)
+	std::string name = PP_getAttribute(PT_NAME_ATTRIBUTE_NAME, attributes);
+	if (name.empty())
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		return true;		// silently ignore unnamed styles
 	}
 	PD_Style * pStyle = NULL;
-	if (getStyle(szName,&pStyle) == true)
+	if (getStyle(name.c_str(), &pStyle) == true)
 	{
 		// duplicate name
 		UT_return_val_if_fail (pStyle, false);
 		if (pStyle->isUserDefined())
 		{
 			// already loaded, ignore redefinition
-			UT_DEBUGMSG(("appendStyle[%s]: duplicate definition ignored\n", szName));
+			UT_DEBUGMSG(("appendStyle[%s]: duplicate definition ignored\n", name.c_str()));
 			return true;
 		}
 
@@ -378,15 +378,11 @@ bool pt_PieceTable::appendStyle(const gchar ** attributes)
 	else
 	{
 		// this is a new name
-		pStyle = new PD_Style(this, indexAP, szName);
+		pStyle = new PD_Style(this, indexAP, name.c_str());
 
-//
-// TODO: Learn how to use Dom's AbiObject instead of this hack.
-// Rob asks, as AbiObject is no more, is this still a hack?
-//
-
-		if (pStyle)
-			m_hashStyles.insert(std::make_pair(szName,pStyle));
+		if (pStyle) {
+			m_hashStyles.insert(std::make_pair(name, pStyle));
+        }
 
 		return true;
 	}

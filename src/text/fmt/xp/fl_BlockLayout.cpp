@@ -11191,11 +11191,11 @@ void fl_BlockLayout::_createListLabel(void)
 	m_pDoc->changeSpanFmt(PTC_AddFmt,getPosition(),getPosition(),NULL,const_cast<const gchar **>(tagatt));
 #endif
 
-	const gchar* attributes[] = {
-		"type","list_label",
-		NULL, NULL
+	const PP_PropertyVector attributes = {
+		"type",	"list_label"
 	};
-	UT_DebugOnly<bool> bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, NULL);
+
+	UT_DebugOnly<bool> bResult = m_pDoc->insertObject(getPosition(), PTO_Field, attributes, PP_NOPROPS);
 	UT_ASSERT(bResult);
 	PT_DocPosition diff = 1;
 	if(m_pDoc->isDoingPaste() == false)

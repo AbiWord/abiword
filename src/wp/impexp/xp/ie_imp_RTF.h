@@ -669,7 +669,7 @@ private:
 public:
 	bool TranslateKeywordID(RTF_KEYWORD_ID keywordID,
 							UT_sint32 param, bool fParam);
-	bool insertStrux(PTStruxType pts , const gchar ** attrs=NULL, const gchar ** props=NULL);
+	bool insertStrux(PTStruxType pts, const PP_PropertyVector & attrs = PP_NOPROPS, const PP_PropertyVector & props = PP_NOPROPS);
 
 	/*  Parser stuff */
 	bool StandardKeywordParser(IE_Imp_RTFGroupParser *parser);

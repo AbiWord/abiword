@@ -74,7 +74,7 @@ bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
 
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, PP_std_copyProps(attributes), PP_std_copyProps(properties), &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -167,32 +167,31 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 							// them ourselves
 							PTChangeFmt revPtc = ptc;
 							PP_RevisionAttr Revisions(pRevision);
-							const gchar ** attrs = attributes;
-							const gchar ** props = properties;
-							
+							PP_PropertyVector attrs;
+							PP_PropertyVector props;
+
 							if(ptc == PTC_RemoveFmt)
 							{
 								revPtc = PTC_AddFmt;
 
-								// used to set these to NULL, but that causes difficulties
-								// for attributes, because the attribute value gets stored
-								// directly in the hash and the hash considers NULL values
-								// invalid, so we are not able to retrieve them (and any
-								// associated names
-								attrs = UT_setPropsToValue(attributes, "-/-");
-								props = UT_setPropsToValue(properties, "-/-");
+								// used to set these to NULL, but that
+								// causes difficulties for attributes,
+								// because the attribute value gets
+								// stored directly in the hash and the
+								// hash considers NULL values invalid,
+								// so we are not able to retrieve them
+								// (and any associated names
+								attrs = PP_std_setPropsToValue(attributes, "-/-");
+								props = PP_std_setPropsToValue(properties, "-/-");
 
+							} else {
+								attrs = PP_std_copyProps(attributes);
+								props = PP_std_copyProps(properties);
 							}
-							
-							Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,
-												  attrs,props);
 
-							if(attrs != attributes)
-								delete[] attrs;
-							
-							if(props != properties)
-								delete[] props;
-							
+							Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,
+												  attrs, props);
+
 							const gchar * ppRevAttrib[3];
 							ppRevAttrib[0] = name;
 							ppRevAttrib[1] = Revisions.getXMLstring();
@@ -227,7 +226,7 @@ bool pt_PieceTable::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux * p
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, PP_std_copyProps(attributes), PP_NOPROPS, &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -259,7 +258,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, PP_std_copyProps(attributes), PP_std_copyProps(properties), &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -306,7 +305,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
    
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc,indexOldAP,attributes,properties,&indexNewAP,getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, PP_std_copyProps(attributes), PP_std_copyProps(properties), &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -357,7 +356,7 @@ bool pt_PieceTable::_realChangeStruxForLists(pf_Frag_Strux* sdh,
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP( PTC_AddFmt ,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
+	bMerged = m_varset.mergeAP(PTC_AddFmt, indexOldAP, PP_std_copyProps(attributes), PP_NOPROPS, &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -402,7 +401,7 @@ bool pt_PieceTable::_realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP( PTC_AddFmt ,indexOldAP,attributes,NULL,&indexNewAP,getDocument());
+	bMerged = m_varset.mergeAP(PTC_AddFmt, indexOldAP, PP_std_copyProps(attributes), PP_NOPROPS, &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -702,7 +701,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_Text:
 			{
 				bool bResult = _fmtChangeSpanWithNotify(ptcs,static_cast<pf_Frag_Text *>(pf),
-												   0,pf->getPos(),pf->getLength(),attrSpan,sProps,
+												   0,pf->getPos(),pf->getLength(), PP_std_copyProps(attrSpan), PP_std_copyProps(sProps),
 												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
 				UT_return_val_if_fail (bResult, false);
 				if ((fragOffsetNewEnd > 0) && pfNewEnd->getNext())
@@ -715,7 +714,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_Object:
 			{
 				bool bResult = _fmtChangeObjectWithNotify(ptcs,static_cast<pf_Frag_Object *>(pf),
-													 0,pf->getPos(),pf->getLength(),attrSpan,sProps,
+													 0,pf->getPos(),pf->getLength(),PP_std_copyProps(attrSpan),PP_std_copyProps(sProps),
 													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
 				UT_return_val_if_fail (bResult, false);
 				if ((fragOffsetNewEnd > 0) && pfNewEnd->getNext())
@@ -728,7 +727,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_FmtMark:
 			{
 				bool bResult = _fmtChangeFmtMarkWithNotify(ptcs,static_cast<pf_Frag_FmtMark *>(pf),
-													  pf->getPos(),attrSpan,sProps,
+													  pf->getPos(),PP_std_copyProps(attrSpan), PP_std_copyProps(sProps),
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 				UT_return_val_if_fail (bResult,false);
 			}
@@ -770,10 +769,10 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 	PT_AttrPropIndex currentAP = pf->getIndexAP();
 
 	const PP_AttrProp * pOldAP;
-        if(!getAttrProp(currentAP,&pOldAP))
+	if(!getAttrProp(currentAP,&pOldAP))
 		return false;
 
-	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attrs,props,false);
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(PP_std_copyProps(attrs),PP_std_copyProps(props), false);
 	UT_return_val_if_fail(pNewAP, false);
 	pNewAP->markReadOnly();
 

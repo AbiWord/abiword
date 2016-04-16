@@ -275,9 +275,9 @@ bool pt_PieceTable::insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pt
 //
 	PT_AttrPropIndex indexAP = pfs->getIndexAP();
 	if(attributes)
-	{		
+	{
 		PT_AttrPropIndex pAPIold = indexAP;
-		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,attributes,NULL,&indexAP,getDocument());
+		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,PP_std_copyProps(attributes), PP_NOPROPS, &indexAP,getDocument());
 		UT_UNUSED(bMerged);
 		UT_ASSERT_HARMLESS(bMerged);
 	}

@@ -22,6 +22,7 @@
 
 #include "ut_types.h"
 #include "ut_units.h"
+#include "pp_AttrProp.h"
 
 #if _MSC_VER
 #pragma warning(disable: 4522) // multiple assignment operators specified
@@ -65,7 +66,7 @@ public:
 	void Set(const char *name, UT_Dimension u = DIM_none);
 	void Set(double w, double h, UT_Dimension u = DIM_none);
 	void Set(UT_Dimension u) { m_unit = u; }
-	bool Set(const gchar ** attributes);
+	bool Set(const PP_PropertyVector & attributes);
 	inline void setScale( double scale) { m_scale = scale; }
 	void setPortrait(void);
 	void setLandscape(void);

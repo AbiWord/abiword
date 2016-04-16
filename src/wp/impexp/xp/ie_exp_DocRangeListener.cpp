@@ -32,6 +32,8 @@
 #include "ie_exp_DocRangeListener.h"
 #include "pd_Style.h"
 #include "ut_string_class.h"
+#include "ut_std_string.h"
+
 #include <string.h>
 #include <glib.h>
 
@@ -74,102 +76,54 @@ IE_Exp_DocRangeListener::IE_Exp_DocRangeListener(PD_DocumentRange * pDocRange, P
      {
           PD_Style * pStyle = VecStyles.getNthItem(i);
           PT_AttrPropIndex iAP = pStyle->getIndexAP();
-          const char ** atts = NULL;
+          PP_PropertyVector atts;
           const PP_AttrProp* pAP = NULL;
           if (m_pSourceDoc->getAttrProp(iAP, &pAP) && pAP)
           {
 		atts = pAP->getAttributes();
-	  } 
-	  getDoc()->appendStyle(atts);
+          }
+          getDoc()->appendStyle(atts);
      }
 }
 
 /*!
- * outAtts must be freed after use.
- */	
-void  IE_Exp_DocRangeListener::assembleAtts(const char ** inAtts, const char ** inProps, const char **& sAtts)
+ */
+void  IE_Exp_DocRangeListener::assembleAtts(const PP_PropertyVector & inAtts,
+                                            const PP_PropertyVector & inProps,
+                                            PP_PropertyVector & sAtts)
 {
-  const char * szKey = NULL;
-  const char * szVal = NULL;
   UT_sint32 i= 0;
-  UT_UTF8String sAllProps;
-  UT_UTF8String sProp;
-  UT_UTF8String sVal;
+  std::string sAllProps;
+  std::string sProp;
+  std::string sVal;
   bool bHasProps = false;
-  UT_GenericVector<const char *> vecAtts;
-  while(inAtts && inAtts[i])
-  {
-    szKey = inAtts[i++];
-    szVal = inAtts[i++];
-    xxx_UT_DEBUGMSG((" attribute %d key %s val %s \n",i-2,szKey,szVal));
-    vecAtts.addItem(szKey);
-    vecAtts.addItem(szVal);
-    if(g_strcmp0(szKey,"props") == 0)
-    {
-	bHasProps = true;
-    }
-  }
+  bHasProps = PP_hasAttribute("props", inAtts);
+
   UT_sint32 attsCount = i;
   UT_sint32 propsCount = 0;
   if(!bHasProps)
   {
     i= 0;
-    while(inProps && inProps[i])
-    {
+    for (auto iter = inProps.cbegin();
+         iter != inProps.cend(); iter += 2, i += 2) {
         xxx_UT_DEBUGMSG((" Prip %d prop %s val %s \n",i,inProps[i],inProps[i+1]));
-	sProp = inProps[i++];
-	sVal = inProps[i++];
-	UT_UTF8String_setProperty(sAllProps,sProp,sVal);
-    }	
+	sProp = *iter;
+	sVal = *(iter + 1);
+	UT_std_string_setProperty(sAllProps,sProp,sVal);
+    }
     propsCount = i;
   }
-  //UT_sint32 iSpace = 0;
-  if(bHasProps || (propsCount == 0))
+
+  if((attsCount == 0) && (propsCount == 0))
   {
-    sAtts = new const char*[attsCount+1];
-    //iSpace = attsCount+1;
-  }
-  else if(propsCount > 0)
-  {
-     sAtts = new const char*[attsCount+3];
-     //iSpace = attsCount+1;
-  }
-  else if((attsCount == 0) && (propsCount == 0))
-  {
-    sAtts = NULL;
+    sAtts.clear();
     return;
   }
 
   //UT_DEBUGMSG(("iSpace count %d \n",iSpace));
-  for(i=0; i<vecAtts.getItemCount();i++)
-  {
-    szVal = vecAtts.getNthItem(i);
-    xxx_UT_DEBUGMSG((" attribute %d val %s \n",i,szVal));
-     sAtts[i] = g_strdup(szVal);
-  }
-  if(bHasProps ||(propsCount == 0) )
-  {
-      sAtts[i] = NULL;
-      return;
-  }
-  sAtts[i++] = g_strdup("props");
-  sAtts[i++] = g_strdup(sAllProps.utf8_str());
-  sAtts[i++] = NULL;
-  return;
-}
- 
-void  IE_Exp_DocRangeListener::freeAtts(const char *** allAtts)
-{
-  const gchar ** sAtts = *allAtts;
-  if(sAtts == NULL)
-    return;
-  UT_sint32 i=0;
-  while(sAtts[i])
-  {
-      delete [] (sAtts[i]);
-      i++;
-  }
-  delete [] sAtts;
+  sAtts = inAtts;
+  sAtts.push_back("props");
+  sAtts.push_back(sAllProps);
 }
 
 bool  IE_Exp_DocRangeListener::populate(fl_ContainerLayout* /* sfh */,
@@ -177,19 +131,19 @@ bool  IE_Exp_DocRangeListener::populate(fl_ContainerLayout* /* sfh */,
 {
 	if(!m_bFirstSection)
 	{
-	     getDoc()->appendStrux(PTX_Section,NULL);
+	     getDoc()->appendStrux(PTX_Section, PP_NOPROPS);
 	     m_bFirstSection = true;
 	}
 	if(!m_bFirstBlock)
 	{
-	     getDoc()->appendStrux(PTX_Block,NULL);
+	     getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 	     m_bFirstBlock = true;
 	}
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
 	const PP_AttrProp* pAP = NULL;
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate in PasteListener indexAP %d \n",indexAP));
-	const char ** atts = NULL;
-	const char ** props = NULL;
+	PP_PropertyVector atts;
+	PP_PropertyVector props;
 	if (m_pSourceDoc->getAttrProp(indexAP, &pAP) && pAP)
 	{
 		atts = pAP->getAttributes();
@@ -199,11 +153,11 @@ bool  IE_Exp_DocRangeListener::populate(fl_ContainerLayout* /* sfh */,
 	{
 		return false;
 	}
-	const char ** allAtts= NULL;
+	PP_PropertyVector allAtts;
 	assembleAtts(atts, props, allAtts);
 	bool bAppendFmt = (m_iLastAP != indexAP);
 	m_iLastAP = indexAP;
-    
+
 	UT_DEBUGMSG(("MIQ: Doing Populate in PasteListener indexAP %d pcr.type:%d \n",
                  indexAP, pcr->getType() ));
 	switch (pcr->getType())
@@ -220,7 +174,6 @@ bool  IE_Exp_DocRangeListener::populate(fl_ContainerLayout* /* sfh */,
 		    getDoc()->appendFmt(allAtts);
 		}
 		getDoc()->appendSpan(pChars,len);
-		freeAtts(&allAtts);
 		return true;
 	}
 
@@ -228,7 +181,6 @@ bool  IE_Exp_DocRangeListener::populate(fl_ContainerLayout* /* sfh */,
 	{
 		const PX_ChangeRecord_Object * pcro = static_cast<const PX_ChangeRecord_Object *>(pcr);
 		getDoc()->appendObject(pcro->getObjectType(),allAtts);
-		freeAtts(&allAtts);
 		return true;
 	}
 
@@ -236,7 +188,6 @@ bool  IE_Exp_DocRangeListener::populate(fl_ContainerLayout* /* sfh */,
 	{
 		xxx_UT_DEBUGMSG(("Insert FmtMark index AP %d \n",indexAP));
 	        getDoc()->appendFmt(allAtts);
-		freeAtts(&allAtts);
 		return true;
 	}
 	default:
@@ -259,8 +210,8 @@ bool  IE_Exp_DocRangeListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 	PT_AttrPropIndex indexAP = pcr->getIndexAP();
 	const PP_AttrProp* pAP = NULL;
 	xxx_UT_DEBUGMSG(("SEVIOR: Doing Populate Strux in PasteListener \n"));
-	const char ** atts = NULL;
-	const char ** props = NULL;
+	PP_PropertyVector atts;
+	PP_PropertyVector props;
 	if (m_pSourceDoc->getAttrProp(indexAP, &pAP) && pAP)
 	{
 		atts = pAP->getAttributes();
@@ -270,7 +221,7 @@ bool  IE_Exp_DocRangeListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 	{
 		return false;
 	}
-	const char ** allAtts= NULL;
+	PP_PropertyVector allAtts;
 	assembleAtts(atts, props, allAtts);
 	if((pcrx->getStruxType()== PTX_Section) && !m_bFirstSection)
 	{
@@ -282,16 +233,15 @@ bool  IE_Exp_DocRangeListener::populateStrux(pf_Frag_Strux* /*sdh*/,
 	}
 	if(!m_bFirstSection && pcrx->getStruxType() != PTX_Section)
 	{
-	     getDoc()->appendStrux(PTX_Section,NULL);
+	     getDoc()->appendStrux(PTX_Section, PP_NOPROPS);
 	     m_bFirstSection = true;
 	}
 	if(!m_bFirstBlock && (pcrx->getStruxType() != PTX_Section) && (pcrx->getStruxType() != PTX_Block))
 	{
-	     getDoc()->appendStrux(PTX_Block,NULL);
+	     getDoc()->appendStrux(PTX_Block, PP_NOPROPS);
 	     m_bFirstBlock = true;
 	}
-	getDoc()->appendStrux(pcrx->getStruxType(),allAtts);
-	freeAtts(&allAtts);
+	getDoc()->appendStrux(pcrx->getStruxType(), allAtts);
 	return true;
 }
 

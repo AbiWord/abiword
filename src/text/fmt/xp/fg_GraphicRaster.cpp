@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord -- Embedded graphics for layout
  * Copyright (C) 1999 Matt Kimball
  * Copyright (C) 2009 Hubert Figuiere
@@ -341,20 +342,18 @@ UT_Error FG_GraphicRaster::insertIntoDocument(PD_Document* pDoc, UT_uint32 res,
 	/*
 	  Insert the object into the document.
 	*/
-    std::string szProps;
+	std::string szProps;
 
 	szProps += "width:";
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iWidth)/res, "3.2");
 	szProps += "; height:";
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/res, "3.2");
 
-	const gchar*	attributes[] = {
+	const PP_PropertyVector attributes = {
 		"dataid", szName,
-		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
-	   	NULL, NULL
+		PT_PROPS_ATTRIBUTE_NAME, szProps
 	};
-
-	pDoc->insertObject(iPos, PTO_Image, attributes, NULL);
+	pDoc->insertObject(iPos, PTO_Image, attributes, PP_NOPROPS);
 
 	// TODO: better error checking in this function
 	return UT_OK;

@@ -472,7 +472,6 @@ UT_Error OXML_Section::serializeEndnote(IE_Exp_OpenXML* exporter)
 UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
-	const gchar ** attr = NULL;
 
 	if (pDocument == NULL)
 		return UT_ERROR;
@@ -481,7 +480,7 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
 	//Appending section
-	attr = this->getAttributesWithProps();
+	PP_PropertyVector attr = this->getAttributesWithProps();
 	ret = pDocument->appendStrux(PTX_Section, attr) ? UT_OK : UT_ERROR;
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
@@ -505,25 +504,20 @@ UT_Error OXML_Section::addToPT(PD_Document * pDocument)
 UT_Error OXML_Section::addToPTAsFootnote(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
-	const gchar *attr[3];
-	attr[0] = "footnote-id";
-	attr[1] = m_id.c_str();
-	attr[2] = 0;
+	const PP_PropertyVector attr = { "footnote-id", m_id };
 
 	ret = pDocument->appendStrux(PTX_SectionFootnote, attr) ? UT_OK : UT_ERROR;
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
-	const gchar *field_fmt[5];
-	field_fmt[0] = "type";
-	field_fmt[1] = "footnote_anchor";
-	field_fmt[2] = "footnote-id";
-	field_fmt[3] = m_id.c_str();
-	field_fmt[4] = 0;
+	const PP_PropertyVector field_fmt = {
+		"type", "footnote_anchor",
+		"footnote-id", m_id
+	};
 
 	if(!pDocument->appendObject(PTO_Field, field_fmt))
 		return UT_ERROR;
 
-	OXML_ElementVector::size_type i;	
+	OXML_ElementVector::size_type i;
 	i = 0;
 
 	if(m_children[0].get() && ((m_children[0].get())->getTag() == P_TAG))
@@ -540,31 +534,26 @@ UT_Error OXML_Section::addToPTAsFootnote(PD_Document * pDocument)
 		UT_return_val_if_fail(ret == UT_OK, ret);
 	}
 
-	return pDocument->appendStrux(PTX_EndFootnote, NULL) ? UT_OK : UT_ERROR;
+	return pDocument->appendStrux(PTX_EndFootnote, PP_NOPROPS) ? UT_OK : UT_ERROR;
 }
 
 UT_Error OXML_Section::addToPTAsEndnote(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
-	const gchar *attr[3];
-	attr[0] = "endnote-id";
-	attr[1] = m_id.c_str();
-	attr[2] = 0;
+	const PP_PropertyVector attr = { "endnote-id", m_id };
 
 	ret = pDocument->appendStrux(PTX_SectionEndnote, attr) ? UT_OK : UT_ERROR;
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
-	const gchar *field_fmt[5];
-	field_fmt[0] = "type";
-	field_fmt[1] = "endnote_anchor";
-	field_fmt[2] = "endnote-id";
-	field_fmt[3] = m_id.c_str();
-	field_fmt[4] = 0;
+	const PP_PropertyVector field_fmt = {
+		"type", "endnote_anchor",
+		"endnote-id", m_id
+	};
 
 	if(!pDocument->appendObject(PTO_Field, field_fmt))
 		return UT_ERROR;
 
-	OXML_ElementVector::size_type i;	
+	OXML_ElementVector::size_type i;
 	i = 0;
 
 	if(m_children[0].get() && ((m_children[0].get())->getTag() == P_TAG))
@@ -581,13 +570,13 @@ UT_Error OXML_Section::addToPTAsEndnote(PD_Document * pDocument)
 		UT_return_val_if_fail(ret == UT_OK, ret);
 	}
 
-	return pDocument->appendStrux(PTX_EndEndnote, NULL) ? UT_OK : UT_ERROR;
+	return pDocument->appendStrux(PTX_EndEndnote, PP_NOPROPS) ? UT_OK : UT_ERROR;
 }
 
 UT_Error OXML_Section::addToPTAsHdrFtr(PD_Document * pDocument)
 {
 	UT_Error ret = UT_OK;
-	const gchar ** attr = this->getAttributes();
+	const PP_PropertyVector attr = this->getAttributes();
 	ret = pDocument->appendStrux(PTX_SectionHdrFtr, attr) ? UT_OK : UT_ERROR;
 	UT_return_val_if_fail(ret == UT_OK, ret);
 
