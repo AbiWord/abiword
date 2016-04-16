@@ -240,9 +240,8 @@ void XAP_QtDialog_FileOpenSaveAs::runModal(XAP_Frame * pFrame)
 	}
 
 	m_answer = a_OK;
-	FREEP(m_szFinalPathname);
-	m_szFinalPathname = g_strdup(fileNames.at(0).toLocal8Bit().data());
-	UT_DEBUGMSG(("SERHAT: file path/name [%s] \n", m_szFinalPathname));	
+	m_finalPathname = fileNames.at(0).toLocal8Bit().data();
+	UT_DEBUGMSG(("SERHAT: file path/name [%s] \n", m_finalPathname.c_str()));
 }
 
 gint XAP_QtDialog_FileOpenSaveAs::previewPicture (void)
