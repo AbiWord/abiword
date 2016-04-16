@@ -23,6 +23,8 @@
 #ifndef PD_STYLE_H
 #define PD_STYLE_H
 
+#include <memory>
+
 #include "ut_types.h"
 #include "ut_vector.h"
 #include "pt_Types.h"
@@ -44,7 +46,7 @@ public:
 	bool						setIndexAP(PT_AttrPropIndex indexAP);
 
 	bool					getProperty(const gchar * szName, const gchar *& szValue) const;
-	const PP_PropertyType *	getPropertyType(const gchar * szName, tProperty_type Type) const;
+	std::unique_ptr<PP_PropertyType>	getPropertyType(const gchar * szName, tProperty_type Type) const;
 	bool					getAttribute(const gchar * szName, const gchar *& szValue) const;
 	bool					getPropertyExpand(const gchar * szName, const gchar *& szValue) const;
 	bool					getAttributeExpand(const gchar * szName, const gchar *& szValue) const;

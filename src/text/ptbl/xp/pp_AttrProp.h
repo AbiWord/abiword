@@ -24,6 +24,7 @@
 #define PP_ATTRPROP_H
 
 #include <map>
+#include <memory>
 #include <utility>
 
 #include "ut_types.h"
@@ -79,10 +80,8 @@ class ABI_EXPORT PP_RevisionState
 class ABI_EXPORT PP_AttrProp
 {
 public:
-	typedef std::pair<std::string, const PP_PropertyType *> PropertyPair;
-
 	typedef std::map<std::string, std::string> attributes_t;
-	typedef std::map<std::string, PropertyPair> properties_t;
+	typedef std::map<std::string, std::string> properties_t;
 
 	PP_AttrProp();
 	virtual ~PP_AttrProp();
@@ -115,8 +114,7 @@ public:
 	bool getProperty(const std::string & name, const gchar *& szValue) const {
 		return getProperty(name.c_str(), szValue);
 	}
-	// This require non-const this.
-	const PP_PropertyType *getPropertyType(const gchar * szName, tProperty_type Type) const;
+	std::unique_ptr<PP_PropertyType> getPropertyType(const gchar * szName, tProperty_type Type) const;
 
 	bool hasProperties(void) const;
 	bool hasAttributes(void) const;

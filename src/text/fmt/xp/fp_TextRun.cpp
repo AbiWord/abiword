@@ -148,7 +148,8 @@ void fp_TextRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 
 	PD_Document * pDoc = getBlock()->getDocument();
 
-	const PP_PropertyTypeColor *p_color = static_cast<const PP_PropertyTypeColor *>(PP_evalPropertyType("color",pSpanAP,pBlockAP,pSectionAP, Property_type_color, pDoc, true));
+	auto prop = PP_evalPropertyType("color",pSpanAP,pBlockAP,pSectionAP, Property_type_color, pDoc, true);
+	const PP_PropertyTypeColor *p_color = static_cast<const PP_PropertyTypeColor *>(prop.get());
 	UT_ASSERT(p_color);
 	_setColorFG(p_color->getColor());
 

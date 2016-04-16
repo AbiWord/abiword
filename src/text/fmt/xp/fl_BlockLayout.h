@@ -160,7 +160,7 @@ public:
 	}
 
 	const char* getProperty(const gchar * pszName, bool bExpandStyles = true) const;
-	const PP_PropertyType * getPropertyType(const gchar * szName,
+	std::unique_ptr<PP_PropertyType> getPropertyType(const gchar * szName,
 											tProperty_type Type, bool bExpandStyles = true) const;
 	void setAlignment(UT_uint32 iAlignCmd);
 	UT_sint32       getLength(void) const;

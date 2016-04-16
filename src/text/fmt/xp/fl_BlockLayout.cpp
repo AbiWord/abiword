@@ -505,10 +505,9 @@ void fl_BlockLayout::_lookupMarginProperties(const PP_AttrProp* pBlockAP)
 	for (UT_uint32 iRg = 0; iRg < G_N_ELEMENTS(rgProps); ++iRg)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
-		const PP_PropertyTypeSize * pProp =
-			static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const gchar*>(mai.szProp),
-																	 Property_type_size));
-		
+		auto prop = getPropertyType(mai.szProp,	Property_type_size);
+		// XXX ugly cast. fix this.
+		const PP_PropertyTypeSize* pProp = static_cast<PP_PropertyTypeSize*>(prop.get());
 		*mai.pVar	= UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
@@ -743,12 +742,14 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 		
 	}
 	{
-		const PP_PropertyTypeInt *pOrphans = static_cast<const PP_PropertyTypeInt *>(getPropertyType("orphans", Property_type_int));
+		auto orphans = getPropertyType("orphans", Property_type_int);
+		const PP_PropertyTypeInt *pOrphans = static_cast<const PP_PropertyTypeInt *>(orphans.get());
 		UT_ASSERT_HARMLESS(pOrphans);
 		if(pOrphans)
 			m_iOrphansProperty = pOrphans->getValue();
 
-		const PP_PropertyTypeInt *pWidows = static_cast<const PP_PropertyTypeInt *>(getPropertyType("widows", Property_type_int));
+		auto widows = getPropertyType("widows", Property_type_int);
+		const PP_PropertyTypeInt *pWidows = static_cast<const PP_PropertyTypeInt *>(widows.get());
 		UT_ASSERT_HARMLESS(pWidows);
 		if(pWidows)
 			m_iWidowsProperty = pWidows->getValue();
@@ -810,7 +811,8 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 	for (UT_uint32 iRg = 0; iRg < G_N_ELEMENTS(rgProps); ++iRg)
 	{
 		const MarginAndIndent_t& mai = rgProps[iRg];
-		const PP_PropertyTypeSize * pProp = static_cast<const PP_PropertyTypeSize *>(getPropertyType(static_cast<const gchar*>(mai.szProp), Property_type_size));
+		auto prop = getPropertyType(mai.szProp, Property_type_size);
+		const PP_PropertyTypeSize * pProp = static_cast<const PP_PropertyTypeSize *>(prop.get());
 		*mai.pVar	= UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 		xxx_UT_DEBUGMSG(("para prop %s layout size %d \n",mai.szProp,*mai.pVar));
 	}
@@ -896,7 +898,8 @@ void fl_BlockLayout::_lookupProperties(const PP_AttrProp* pBlockAP)
 				 pG->getZoomPercentage()));
 #endif
 
-	const PP_PropertyTypeSize * pProp = static_cast<const PP_PropertyTypeSize *>(getPropertyType("default-tab-interval", Property_type_size));
+	auto prop = getPropertyType("default-tab-interval", Property_type_size);
+	const PP_PropertyTypeSize * pProp = static_cast<const PP_PropertyTypeSize *>(prop.get());
 	// TODO: this should probably change the stored property instead
 	m_iDefaultTabInterval = UT_convertSizeToLayoutUnits(pProp->getValue(), pProp->getDim());
 	if (!m_iDefaultTabInterval)
@@ -4417,7 +4420,7 @@ UT_sint32 fl_BlockLayout::getLength() const
 	return length;
 }
 
-const PP_PropertyType * fl_BlockLayout::getPropertyType(const gchar * pszName, tProperty_type Type, bool bExpandStyles) const
+std::unique_ptr<PP_PropertyType> fl_BlockLayout::getPropertyType(const gchar * pszName, tProperty_type Type, bool bExpandStyles) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;

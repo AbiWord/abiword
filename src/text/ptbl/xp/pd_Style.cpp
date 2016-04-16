@@ -187,12 +187,12 @@ bool PD_Style::_getAttributeExpand(const gchar * szName, const gchar *& szValue,
 	return false;
 }
 
-const PP_PropertyType *	PD_Style::getPropertyType(const gchar * szName, tProperty_type Type) const
+std::unique_ptr<PP_PropertyType> PD_Style::getPropertyType(const gchar * szName, tProperty_type Type) const
 {
 	const PP_AttrProp * pAP = NULL;
 	
 	if (!m_pPT->getAttrProp(m_indexAP, &pAP))
-		return NULL;
+		return std::unique_ptr<PP_PropertyType>();
 	else
 		return pAP->getPropertyType(szName, Type);
 }

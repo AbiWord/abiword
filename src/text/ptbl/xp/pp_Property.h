@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
@@ -24,6 +24,7 @@
 #ifndef PP_PROPERTY_H
 #define PP_PROPERTY_H
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -67,7 +68,7 @@ public:
 public:
 	virtual tProperty_type getType() const = 0;
 
-	static PP_PropertyType *createPropertyType(tProperty_type Type, const gchar *p_init);
+	static std::unique_ptr<PP_PropertyType> createPropertyType(tProperty_type Type, const gchar *p_init);
 };
 
 class ABI_EXPORT PP_PropertyTypeBool : public PP_PropertyType
@@ -158,13 +159,12 @@ public:
 	const gchar *			m_pszName;
 	const gchar *			m_pszInitial;
 	bool				m_bInherit;
-	PP_PropertyType *	m_pProperty;
 	tPropLevel          m_iLevel;
 	~PP_Property();
 
 	inline const gchar *	getName() const {return m_pszName;}
 	inline const gchar *	getInitial() const {return m_pszInitial;}
-	const PP_PropertyType *	getInitialType (tProperty_type Type) const;
+	std::unique_ptr<PP_PropertyType>	getInitialType (tProperty_type Type) const;
 	inline bool				canInherit() const {return m_bInherit;}
 	inline tPropLevel       getLevel() const {return m_iLevel;}
 };
@@ -183,7 +183,7 @@ ABI_EXPORT const gchar * PP_evalProperty(const gchar * pszName,
 								 bool bExpandStyles=false);
 
 
-ABI_EXPORT const PP_PropertyType * PP_evalPropertyType(const gchar * pszName,
+ABI_EXPORT std::unique_ptr<PP_PropertyType> PP_evalPropertyType(const gchar * pszName,
 								 const PP_AttrProp * pSpanAttrProp,
 								 const PP_AttrProp * pBlockAttrProp,
 								 const PP_AttrProp * pSectionAttrProp,

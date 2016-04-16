@@ -55,11 +55,6 @@ PP_AttrProp::PP_AttrProp()
 /// This is the sole explicit destructor of class PP_AttrProp.
 PP_AttrProp::~PP_AttrProp()
 {
-	// delete any PP_Property_types;
-	std::for_each(m_properties.begin(), m_properties.end(),
-				  [](properties_t::value_type & value) {
-					  delete value.second.second;
-				  });
 }
 
 /*!
@@ -308,21 +303,12 @@ bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
 	{
 		// XXX this will leak.
 		UT_return_val_if_fail (!m_bIsReadOnly, false);
-		PropertyPair & p = iter->second;
 
-
-		if (p.second)
-		{
-			delete p.second;
-		}
-		p.first = szValue2;
-		p.second = NULL;
+		iter->second = szValue2;
 	}
 	else
 	{
-		m_properties[szName] =
-			std::make_pair(std::string(szValue2),
-						   static_cast<const PP_PropertyType *>(NULL));
+		m_properties[szName] = szValue2;
 	}
 
 	// g_free the name duplicate if necessary
@@ -400,7 +386,7 @@ bool	PP_AttrProp::getNthProperty(int ndx, const gchar *& szName, const gchar *& 
 
 	if ((i == ndx) && iter != m_properties.cend()) {
 		szName = iter->first.c_str();
-		szValue = iter->second.first.c_str();
+		szValue = iter->second.c_str();
 		return true;
 	}
 	return false;
@@ -426,7 +412,7 @@ bool PP_AttrProp::getProperty(const gchar * szName, const gchar *& szValue) cons
 		return false;
 	}
 
-	szValue = iter->second.first.c_str();
+	szValue = iter->second.c_str();
 	return true;
 }
 
@@ -457,14 +443,14 @@ PP_PropertyVector PP_AttrProp::getProperties () const
 	for (auto iter = m_properties.cbegin(); iter != m_properties.cend();
 		 ++iter) {
 		properties.push_back(iter->first);
-		properties.push_back(iter->second.first);
+		properties.push_back(iter->second);
 	}
 	return properties;
 }
 
 /*! (?)TODO: PLEASE DOCUMENT ME!
 */
-const PP_PropertyType *PP_AttrProp::getPropertyType(const gchar * szName, tProperty_type Type) const
+std::unique_ptr<PP_PropertyType> PP_AttrProp::getPropertyType(const gchar * szName, tProperty_type Type) const
 {
 	if (m_properties.empty()) {
 		return NULL;
@@ -475,11 +461,7 @@ const PP_PropertyType *PP_AttrProp::getPropertyType(const gchar * szName, tPrope
 		return NULL;
 	}
 
-	// XXX this used to be mutable. Not sure what's the point.
-	/*iter->second.second =*/
-	return PP_PropertyType::createPropertyType(Type, iter->second.first.c_str());
-
-	//return pp.second;
+	return std::unique_ptr<PP_PropertyType>(PP_PropertyType::createPropertyType(Type, iter->second.c_str()));
 }
 
 /*! This method finds the attribute indicated by name
@@ -717,10 +699,7 @@ bool PP_AttrProp::isExactMatch(const PP_AttrProp & pMatch) const
 		auto cp2 = pMatch.m_properties.cbegin();
 
 		do {
-			if (cp1->first != cp2->first) {
-				return false;
-			}
-			if (cp1->second.first != cp2->second.first) {
+			if (*cp1 != *cp2) {
 				return false;
 			}
 			++cp1;
@@ -845,7 +824,7 @@ void PP_AttrProp::_clearEmptyProperties()
 	UT_return_if_fail (!m_bIsReadOnly);
 
 	for(auto iter = m_properties.begin(); iter != m_properties.end(); ) {
-		if (iter->second.first.empty()) {
+		if (iter->second.empty()) {
 			iter = m_properties.erase(iter);
 		} else {
 			++iter;
@@ -1108,8 +1087,8 @@ void PP_AttrProp::_computeCheckSum(void)
 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
 			g_free (rgch); rgch = NULL;
 
-			s2 = iter->second.first.c_str();
-			cch = iter->second.first.size();
+			s2 = iter->second.c_str();
+			cch = iter->second.size();
 			rgch = g_ascii_strdown(s2, 9);
 			rgch[8] = '\0';
 			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
