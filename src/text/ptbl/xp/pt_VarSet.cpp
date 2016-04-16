@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (c) 2016 Hubert Figuière
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -93,47 +94,6 @@ bool pt_VarSet::overwriteBuf(UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * 
 	}
 
 	UT_DEBUGMSG(("could not overwriteBuf\n"));
-	return false;
-}
-
-
-
-bool pt_VarSet::storeAP(const gchar ** attributes, PT_AttrPropIndex * papi)
-{
-	if (!m_bInitialized)
-		if (!_finishConstruction())
-			return false;
-
-	// create an AP for this set of attributes -- iff unique.
-	// return the index for the new one (or the one we found).
-
-	if (!attributes || !*attributes)
-	{
-		// we preloaded the zeroth cell (of both tables)
-		// with empty attributes.  return index back to
-		// the first table.
-		*papi = _makeAPIndex(0,0);
-		return true;
-	}
-
-	// This is a bit expensive, but it can't be helped.
-	// We synthesize a (possibly temporary) AP to organize
-	// and store the values given in the args.  We then use
-	// it to find one that matches it.  If we find it, we
-	// destroy the one we just created.  Otherwise, we add
-	// the new one to the correct table and return it.
-
-	PP_AttrProp * pTemp = new PP_AttrProp();
-	if (!pTemp)
-		return false;
-
-	if (pTemp->setAttributes(attributes))
-	{
-		pTemp->markReadOnly();
-		return addIfUniqueAP(pTemp,papi);
-	}
-
-	delete pTemp;
 	return false;
 }
 

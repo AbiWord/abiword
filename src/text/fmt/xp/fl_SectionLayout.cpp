@@ -1285,7 +1285,9 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 	}
 	const char * pProps = pDSL->m_sHdrFtrChangeProps.c_str();
 	UT_DEBUGMSG(("Header/Footer change props %s \n",pProps));
-	const gchar * pszAtts[4] = {"props",pProps,NULL,NULL};
+	PP_PropertyVector atts = {
+		"props", pProps
+	};
 	pDoc->notifyPieceTableChangeStart();
 	FV_View * pView =  pDSL->m_pLayout->getView();
 	pf_Frag_Strux* sdh = pDSL->getStruxDocHandle();
@@ -1302,7 +1304,7 @@ void fl_DocSectionLayout::_HdrFtrChangeCallback(UT_Worker * pWorker)
 		iPage = pDSL->m_pLayout->findPage(pShadow->getPage());
 	}
 	pDoc->setMarginChangeOnly( true);
-	pDoc->changeStruxFmtNoUndo(PTC_AddFmt,sdh,pszAtts,NULL);
+	pDoc->changeStruxFmtNoUndo(PTC_AddFmt, sdh, atts, PP_NOPROPS);
 	pDoc->setMarginChangeOnly(false);
 //
 // Stop the resizer and delete and clear it's pointer. It's job is done now.

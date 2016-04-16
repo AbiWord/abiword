@@ -330,13 +330,12 @@ UT_Error FG_GraphicVector::insertAtStrux(PD_Document* pDoc,
 	szProps += "; height:";
 	szProps += UT_convertInchesToDimensionString(DIM_IN, static_cast<double>(m_iHeight)/res, "3.2");
 
-	const gchar*	attributes[] = {
+	PP_PropertyVector attributes = {
 		PT_STRUX_IMAGE_DATAID, szName,
-		PT_PROPS_ATTRIBUTE_NAME, szProps.c_str(),
-	   	NULL, NULL
+		PT_PROPS_ATTRIBUTE_NAME, szProps
 	};
 
-	pDoc->changeStruxFmt(PTC_AddFmt,iPos,iPos,attributes,NULL,iStruxType);
+	pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attributes, PP_NOPROPS, iStruxType);
 
 
 	// TODO: better error checking in this function

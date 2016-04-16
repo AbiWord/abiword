@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -66,15 +66,15 @@ bool pt_PieceTable::changeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
  */
 bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
 										 pf_Frag_Strux * pfs,
-										 const gchar ** attributes,
-										 const gchar ** properties)
+										 const PP_PropertyVector & attributes,
+										 const PP_PropertyVector & properties)
 {
 	PT_AttrPropIndex indexNewAP;
 	PTStruxType pts = pfs->getStruxType();
 
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc, indexOldAP, PP_std_copyProps(attributes), PP_std_copyProps(properties), &indexNewAP, getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, attributes, properties, &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -105,8 +105,8 @@ bool pt_PieceTable::changeStruxFmtNoUndo(PTChangeFmt ptc,
 bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 								   PT_DocPosition dpos1,
 								   PT_DocPosition dpos2,
-								   const gchar ** attributes,
-								   const gchar ** properties,
+								   const PP_PropertyVector & attributes,
+								   const PP_PropertyVector & properties,
 								   PTStruxType pts)
 {
 	bool bDoAll = (pts == PTX_StruxDummy);
@@ -185,18 +185,16 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 								props = PP_std_setPropsToValue(properties, "-/-");
 
 							} else {
-								attrs = PP_std_copyProps(attributes);
-								props = PP_std_copyProps(properties);
+								attrs = attributes;
+								props = properties;
 							}
 
-							Revisions.addRevision(m_pDocument->getRevisionId(),PP_REVISION_FMT_CHANGE,
-												  attrs, props);
+							Revisions.addRevision(m_pDocument->getRevisionId(), PP_REVISION_FMT_CHANGE, attrs, props);
 
-							const gchar * ppRevAttrib[3];
-							ppRevAttrib[0] = name;
-							ppRevAttrib[1] = Revisions.getXMLstring();
-							ppRevAttrib[2] = NULL;
-							bResult = _fmtChangeStruxWithNotify(revPtc,pfs,ppRevAttrib,NULL,false);
+							const PP_PropertyVector ppRevAttrib = {
+								name, Revisions.getXMLstring()
+							};
+							bResult = _fmtChangeStruxWithNotify(revPtc, pfs, ppRevAttrib, PP_NOPROPS,false);
 							UT_return_val_if_fail (bResult,false);
 						}
 						if (pfs == pfs_End)
@@ -221,12 +219,12 @@ bool pt_PieceTable::changeStruxFmt(PTChangeFmt ptc,
 		return _realChangeStruxFmt(ptc, dpos1, dpos2, attributes, properties, pts, false);
 }
 
-bool pt_PieceTable::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux * pfs, const gchar ** attributes)
+bool pt_PieceTable::changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux * pfs, const PP_PropertyVector & attributes)
 {
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc, indexOldAP, PP_std_copyProps(attributes), PP_NOPROPS, &indexNewAP, getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, attributes, PP_NOPROPS, &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -249,8 +247,8 @@ bool pt_PieceTable::_fmtChangeStrux(pf_Frag_Strux * pfs,
 
 bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 											  pf_Frag_Strux * pfs,
-											  const gchar ** attributes,
-											  const gchar ** properties,
+											  const PP_PropertyVector & attributes,
+											  const PP_PropertyVector & properties,
 											  bool bRevisionDelete)
 {
 	PT_AttrPropIndex indexNewAP;
@@ -258,7 +256,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc, indexOldAP, PP_std_copyProps(attributes), PP_std_copyProps(properties), &indexNewAP, getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, attributes, properties, &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -295,8 +293,8 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
  */
 bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 											  pf_Frag_Strux * pfs,
-											  const gchar ** attributes,
-											  const gchar ** properties,
+											  const PP_PropertyVector & attributes,
+											  const PP_PropertyVector & properties,
 											  bool bDoAll,
 											  bool bRevisionDelete)
 {
@@ -305,7 +303,7 @@ bool pt_PieceTable::_fmtChangeStruxWithNotify(PTChangeFmt ptc,
    
 	PT_AttrPropIndex indexOldAP = pfs->getIndexAP();
 	UT_DebugOnly<bool> bMerged;
-	bMerged = m_varset.mergeAP(ptc, indexOldAP, PP_std_copyProps(attributes), PP_std_copyProps(properties), &indexNewAP, getDocument());
+	bMerged = m_varset.mergeAP(ptc, indexOldAP, attributes, properties, &indexNewAP, getDocument());
 	UT_ASSERT_HARMLESS(bMerged);
 	xxx_UT_DEBUGMSG(("Merging atts/props oldindex=%d , newindex =%d \n",indexOldAP,indexNewAP));
 	if (indexOldAP == indexNewAP)		// the requested change will have no effect on this fragment.
@@ -418,8 +416,8 @@ bool pt_PieceTable::_realChangeSectionAttsNoUpdate(pf_Frag_Strux * pfs,
 bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 										PT_DocPosition dpos1,
 										PT_DocPosition dpos2,
-										const gchar ** attributes,
-										const gchar ** properties,
+										const PP_PropertyVector & attributes,
+										const PP_PropertyVector & properties,
 										PTStruxType pts,
 										bool bRevisionDelete)
 {
@@ -429,8 +427,8 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 
 	UT_return_val_if_fail (dpos1 <= dpos2, false);
 	bool bHaveAttributes, bHaveProperties;
-	bHaveAttributes = (attributes && *attributes);
-	bHaveProperties = (properties && *properties);
+	bHaveAttributes = (!attributes.empty());
+	bHaveProperties = (!properties.empty());
 	UT_return_val_if_fail (bHaveAttributes || bHaveProperties,false); // must have something to do
 
 	pf_Frag_Strux * pfs_First;
@@ -581,53 +579,31 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 		pf_Frag_Strux * pfsMainBlock = NULL;
 		pf_Frag * pfNewEnd = NULL;
 		UT_uint32 fragOffsetNewEnd;
-		const gchar ** sProps = NULL;
+		PP_PropertyVector sProps;
 		const gchar * sOldStyleBlock = NULL;
 		const gchar * sStyleMainBlock = NULL;
 		std::vector <std::string> vPropNames;
-		const gchar * szStyle = UT_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
+		std::string szStyle = PP_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
 		PD_Style * pStyle = NULL;
-		getDocument()->getStyle(szStyle,&pStyle);
+		getDocument()->getStyle(szStyle.c_str(), &pStyle);
 		UT_return_val_if_fail (pStyle,false);
 		UT_Vector vProps;
 		pStyle->getAllProperties(&vProps,0);
-		UT_uint32 countp = vProps.getItemCount() + 1;
-		sProps = (const gchar **) UT_calloc(countp, sizeof(gchar *));
-		countp--;
-		vPropNames.resize(countp);
+		UT_uint32 countp = vProps.getItemCount();
 		for (UT_uint32 i = 0; i < countp; i++)
 		{
-			// we need to make a copy of the properties names, because they might
-			// be destroyed before we are done, see bug #13752, comment #1
-			vPropNames[i] = (const gchar *) vProps.getNthItem(i);
-			sProps[i] = vPropNames[i].c_str();
+			sProps.push_back((const gchar *)vProps.getNthItem(i));
 		}
-		sProps[countp - 1] = NULL;
 
 		// Changing block style should not affect character styles
-		UT_uint32 countAttr = 0;
-		while(attributes[2*countAttr])
-		{
-			countAttr ++;
-		}
-
-		const gchar ** attrSpan = NULL;
-		if (countAttr > 1)
-		{
-			attrSpan = (const gchar **) UT_calloc(2*countAttr + 1, sizeof(gchar *));
-			UT_uint32 i = 0;
-			UT_uint32 k = 0;
-			for(i = 0;i < 2*countAttr + 1;++i)
-			{
-				if (strcmp(attributes[i],PT_STYLE_ATTRIBUTE_NAME) == 0)
-				{
-					i += 2;
-				}
-				attrSpan[k] = attributes[i];
-				++k;
+		PP_PropertyVector attrSpan = attributes;
+		for(auto iter = attrSpan.begin(); iter != attrSpan.end();
+			iter += 2) {
+			if (*iter == PT_STYLE_ATTRIBUTE_NAME) {
+				attrSpan.erase(iter, iter + 2);
+				break;
 			}
 		}
-
 		bool bEndSeen = false;
 		bool bEndSeenMainBlock = false;
 
@@ -701,7 +677,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_Text:
 			{
 				bool bResult = _fmtChangeSpanWithNotify(ptcs,static_cast<pf_Frag_Text *>(pf),
-												   0,pf->getPos(),pf->getLength(), PP_std_copyProps(attrSpan), PP_std_copyProps(sProps),
+												   0,pf->getPos(),pf->getLength(), attrSpan, sProps,
 												   pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
 				UT_return_val_if_fail (bResult, false);
 				if ((fragOffsetNewEnd > 0) && pfNewEnd->getNext())
@@ -713,9 +689,9 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 
 			case pf_Frag::PFT_Object:
 			{
-				bool bResult = _fmtChangeObjectWithNotify(ptcs,static_cast<pf_Frag_Object *>(pf),
-													 0,pf->getPos(),pf->getLength(),PP_std_copyProps(attrSpan),PP_std_copyProps(sProps),
-													 pfsContainer,&pfNewEnd,&fragOffsetNewEnd,bRevisionDelete);
+				bool bResult = _fmtChangeObjectWithNotify(ptcs, static_cast<pf_Frag_Object *>(pf),
+													 0, pf->getPos(), pf->getLength(), attrSpan, sProps,
+													 pfsContainer, &pfNewEnd, &fragOffsetNewEnd, bRevisionDelete);
 				UT_return_val_if_fail (bResult, false);
 				if ((fragOffsetNewEnd > 0) && pfNewEnd->getNext())
 				{
@@ -727,7 +703,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 			case pf_Frag::PFT_FmtMark:
 			{
 				bool bResult = _fmtChangeFmtMarkWithNotify(ptcs,static_cast<pf_Frag_FmtMark *>(pf),
-													  pf->getPos(),PP_std_copyProps(attrSpan), PP_std_copyProps(sProps),
+													  pf->getPos(), attrSpan, sProps,
 													  pfsContainer,&pfNewEnd,&fragOffsetNewEnd);
 				UT_return_val_if_fail (bResult,false);
 			}
@@ -739,11 +715,6 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 
 			pf = pfNewEnd;
 		}
-		FREEP(sProps);
-		if (attrSpan)
-		{
-			FREEP(attrSpan);
-		}
 	}
 
 	if (!bSimple)
@@ -753,7 +724,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 }
 
 bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pst,
-											 const gchar ** attrs, const gchar ** props,
+											 const PP_PropertyVector & attrs, const PP_PropertyVector & props,
 											 bool bSkipEmbededSections)
 {
 	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
@@ -772,7 +743,7 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 	if(!getAttrProp(currentAP,&pOldAP))
 		return false;
 
-	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(PP_std_copyProps(attrs),PP_std_copyProps(props), false);
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attrs, props, false);
 	UT_return_val_if_fail(pNewAP, false);
 	pNewAP->markReadOnly();
 
@@ -788,33 +759,34 @@ bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType ps
 
 	
 bool pt_PieceTable::changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pst,
-											 const gchar ** attrs, const gchar * props,
+											 const PP_PropertyVector & attrs, const std::string & props,
 											 bool bSkipEmbededSections)
 {
-	if(props && *props)
+	// XXX appendListStruxFmtNoUndo() has a lot of code in common.... refactor.
+	if(!props.empty())
 	{
 		// we parse the xml props string into separate field by simply duplicating it and then
 		// replacing ; and : with '0';
-	
-		// foolproofing
-		if(*props == ';')
-			props++;
-		
-		char * pProps = g_strdup(props);
 
-		const gchar ** pPropsArray = UT_splitPropsToArray(pProps);
+		// foolproofing
+		const char *pProps = props.c_str();
+		if(*pProps == ';')
+			pProps++;
+
+		char * pProps2 = g_strdup(pProps);
+
+		const gchar ** pPropsArray = UT_splitPropsToArray(pProps2);
 		UT_return_val_if_fail( pPropsArray, false );
-		
-		bool bRet = changeLastStruxFmtNoUndo(dpos, pst, attrs, pPropsArray, bSkipEmbededSections);
+
+		bool bRet = changeLastStruxFmtNoUndo(dpos, pst, attrs, PP_std_copyProps(pPropsArray), bSkipEmbededSections);
 
 		delete [] pPropsArray;
-		FREEP(pProps);
+		FREEP(pProps2);
 
 		return bRet;
 	}
 	else
 	{
-		const gchar ** pPropsArray = NULL;
-		return changeLastStruxFmtNoUndo(dpos, pst, attrs, pPropsArray, bSkipEmbededSections);
+		return changeLastStruxFmtNoUndo(dpos, pst, attrs, PP_NOPROPS, bSkipEmbededSections);
 	}
 }

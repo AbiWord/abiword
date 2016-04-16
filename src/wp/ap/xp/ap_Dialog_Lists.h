@@ -96,8 +96,9 @@ public:
 	bool						isLastOnLevel(void);
 	gchar *					getListStyleString( UT_uint32 iListType);
 	UT_uint32					decodeListType(char * listformat);
-	UT_sint32					findVecItem(UT_GenericVector<const gchar*> * v, char * key);
 	UT_sint32					findVecItem(UT_GenericVector<const gchar*> * v, const char * key);
+        /// XXX this should be moved out of here.
+	static UT_sint32				findVecItem(const PP_PropertyVector & v, const char * key);
 	void						fillUncustomizedValues(void);
 	UT_uint32					getID(void);
 	UT_uint32					getStoredID(void) { return m_iID;}

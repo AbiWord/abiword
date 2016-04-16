@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * 
@@ -38,11 +39,11 @@
 /****************************************************************/
 /****************************************************************/
 
-bool pt_PieceTable::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object * pfo, const gchar ** attributes, const gchar ** properties)
+bool pt_PieceTable::changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object * pfo, const PP_PropertyVector & attributes, const PP_PropertyVector & properties)
 {
 	PT_AttrPropIndex indexNewAP;
 	PT_AttrPropIndex indexOldAP = pfo->getIndexAP();
-	bool bMerged = m_varset.mergeAP(ptc,indexOldAP, PP_std_copyProps(attributes), PP_std_copyProps(properties), &indexNewAP,getDocument());
+	bool bMerged = m_varset.mergeAP(ptc,indexOldAP, attributes, properties, &indexNewAP,getDocument());
 	UT_UNUSED(bMerged);
 	UT_ASSERT_HARMLESS(bMerged);
 

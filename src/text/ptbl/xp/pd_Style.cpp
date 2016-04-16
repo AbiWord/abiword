@@ -318,7 +318,7 @@ bool PD_Style::addProperty(const gchar * szName, const gchar * szValue)
  * replaced.
 \param const gchar ** pProperties string of properties
 */
-bool PD_Style::addProperties(const gchar ** pProperties)
+bool PD_Style::addProperties(const PP_PropertyVector & pProperties)
 {
 	const PP_AttrProp * pAP = NULL;
 	bool bres= true;
@@ -327,8 +327,7 @@ bool PD_Style::addProperties(const gchar ** pProperties)
 	else
 	{
 		PP_AttrProp * pNewAP =
-			pAP->cloneWithReplacements(PP_NOPROPS, PP_std_copyProps(pProperties),
-									   false);
+			pAP->cloneWithReplacements(PP_NOPROPS, pProperties, false);
 		pNewAP->markReadOnly();
 		bres =	m_pPT->getVarSet().addIfUniqueAP(pNewAP, &m_indexAP);
 	}
@@ -337,21 +336,21 @@ bool PD_Style::addProperties(const gchar ** pProperties)
 
 /*!
  * This method replaces the previous set of attributes/properties with
- * a new one defined in pAtts. It is imperitive that updateDocForStyleChange
+ * a new one defined in %atts. It is imperitive that updateDocForStyleChange
  * be called after this method.
- \param const gchar ** pAtts list of attributes with an extended properties
+ * \param atts list of attributes with an extended properties
  *                        string
  */
-bool PD_Style::setAllAttributes(const gchar ** pAtts)
+bool PD_Style::setAllAttributes(const PP_PropertyVector & atts)
 {
-	bool bres =	m_pPT->getVarSet().storeAP(pAtts, &m_indexAP);
+	bool bres =	m_pPT->getVarSet().storeAP(atts, &m_indexAP);
 	m_pFollowedBy = NULL;
 	m_pBasedOn = NULL;
 	return bres;
 }
 
 
-bool PD_Style::addAttributes(const gchar ** pAtts)
+bool PD_Style::addAttributes(const PP_PropertyVector & pAtts)
 {
 	const PP_AttrProp * pAP = NULL;
 	bool bres = false;
@@ -359,12 +358,11 @@ bool PD_Style::addAttributes(const gchar ** pAtts)
 		return false;
 	else
 	{
-		PP_PropertyVector atts = PP_std_copyProps(pAtts);
-		if(pAP->areAlreadyPresent(atts, PP_NOPROPS))
+		if(pAP->areAlreadyPresent(pAtts, PP_NOPROPS))
 		{
 			return true;
 		}
-		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(atts, PP_NOPROPS, false);
+		PP_AttrProp * pNewAP = pAP->cloneWithReplacements(pAtts, PP_NOPROPS, false);
 		UT_return_val_if_fail( pNewAP, false );
 
 		pNewAP->markReadOnly();

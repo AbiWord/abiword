@@ -2,6 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
+ * Copyright (C) 2016 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -106,6 +107,23 @@
 // add 0.1 inch for a left border to click in for showBorder
 
 #define FRAME_MARGIN 144
+
+/****************************************************************/
+
+fv_ChangeState::fv_ChangeState()
+        : bUndo(false)
+        , bRedo(false)
+        , bDirty(false)
+        , bSelection(false)
+        , iColumn(0)
+        , pCellLayout(nullptr)
+{
+}
+
+fv_ChangeState::~fv_ChangeState()
+{
+}
+
 /****************************************************************/
 
 class ABI_EXPORT _fmtPair
@@ -548,29 +566,23 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 #ifndef BIDI_RTL_DOMINANT
 	if(m_bDefaultDirectionRtl)
 	{
-		//const gchar bidi_dir_name[] = "dir"; ###TF
-		const gchar bidi_dir_value[] = "rtl";
-		const gchar bidi_domdir_name[] = "dom-dir";
-		const gchar bidi_align_name[] = "text-align";
-		const gchar bidi_align_value[] = "right";
+		const PP_PropertyVector bidi_props = {
+			"dom-dir", "rtl",
+			"text-align", "right"
+		};
 
-		const gchar * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
-
-		m_pDoc->addStyleProperties(static_cast<const gchar*>("Normal"), static_cast<const gchar**>(&bidi_props[0]));
+		m_pDoc->addStyleProperties("Normal", bidi_props);
 		PP_resetInitialBiDiValues("rtl");
 	}
 #else
 	if(!m_bDefaultDirectionRtl)
 	{
-		//const gchar bidi_dir_name[] = "dir";  ###TF
-		const gchar bidi_dir_value[] = "ltr";
-		const gchar bidi_domdir_name[] = "dom-dir";
-		const gchar bidi_align_name[] = "text-align";
-		const gchar bidi_align_value[] = "left";
+		const PP_PropertyVector bidi_props = {
+			"dom-dir", "ltr",
+			"text-align", "left"
+		};
 
-		const gchar * bidi_props[5]= {/*bidi_dir_name, bidi_dir_value, */bidi_domdir_name, bidi_dir_value, bidi_align_name, bidi_align_value,0};
-
-		m_pDoc->addStyleProperties(static_cast<const gchar*>("Normal"), static_cast<const gchar**>(bidi_props));
+		m_pDoc->addStyleProperties("Normal", bidi_props);
 		PP_resetInitialBiDiValues("ltr");
 	}
 #endif
@@ -600,16 +612,6 @@ FV_View::FV_View(XAP_App * pApp, void* pParentData, FL_DocLayout* pLayout)
 	m_bShowRevisions = m_pDoc->isShowRevisions();
 	m_iViewRevision =  m_pDoc->getShowRevisionId();
 	
-	// initialize change cache
-	m_chg.bUndo = false;
-	m_chg.bRedo = false;
-	m_chg.bDirty = false;
-	m_chg.bSelection = false;
-	m_chg.iColumn = 0;						 // current column number
-	m_chg.pCellLayout = NULL;
-	m_chg.propsChar = NULL;
-	m_chg.propsBlock = NULL;
-	m_chg.propsSection = NULL;
 
 	pLayout->setView(this);
 
@@ -681,9 +683,6 @@ FV_View::~FV_View()
 	FREEP(m_sFind);
 	FREEP(m_sReplace);
 
-	FREEP(m_chg.propsChar);
-	FREEP(m_chg.propsBlock);
-	FREEP(m_chg.propsSection);
 	DELETEP(m_pLocalBuf);
 	UT_VECTOR_PURGEALL(fv_CaretProps *,m_vecCarets);
 }
@@ -1168,10 +1167,10 @@ void FV_View::btn1Frame(UT_sint32 x, UT_sint32 y)
 	m_FrameEdit.mouseLeftPress(x,y);
 }
 
-void FV_View::setFrameFormat(const gchar * properties[])
+void FV_View::setFrameFormat(const PP_PropertyVector & properties)
 {
 	std::string dataID;
-	setFrameFormat(properties,NULL,dataID);
+	setFrameFormat(properties, NULL, dataID);
 }
 
 /*!
@@ -1313,7 +1312,7 @@ bool FV_View::convertPositionedToInLine(fl_FrameLayout * pFrame)
 /*!
  * This method converts an image located position pos to a positioned object.
  */
-void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attributes)
+void FV_View::convertInLineToPositioned(PT_DocPosition pos, const PP_PropertyVector & attributes)
 {
 
 	fl_BlockLayout * pBlock = getBlockAtPosition(pos);
@@ -1368,7 +1367,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 	UT_ASSERT((pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_HDRFTR) 
 		  && (pBL->myContainingLayout()->getContainerType() != FL_CONTAINER_SHADOW));
 	pos = pBL->getPosition();
-	m_pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
+	m_pDoc->insertStrux(pos, PTX_SectionFrame, attributes, PP_NOPROPS, &pfFrame);
 	PT_DocPosition posFrame = pfFrame->getPos();
 	m_pDoc->insertStrux(posFrame+1,PTX_EndFrame);
 	insertParaBreakIfNeededAtPos(posFrame+2);
@@ -1386,7 +1385,7 @@ void FV_View::convertInLineToPositioned(PT_DocPosition pos,const gchar ** attrib
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 }
 
-void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG, 
+void FV_View::setFrameFormat(const PP_PropertyVector & properties, FG_Graphic * pFG,
 							 const std::string & sDataID, fl_BlockLayout * pNewBL)
 {
 	setCursorWait();
@@ -1429,25 +1428,26 @@ void FV_View::setFrameFormat(const gchar * properties[], FG_Graphic * pFG,
 	}
 	else
 	{
-		const gchar * attributes[3] = {
-			PT_STRUX_IMAGE_DATAID,NULL,NULL};
-		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,posStart,
-														 posStart,attributes,NULL,PTX_SectionFrame);	
+		const PP_PropertyVector attributes = {
+			PT_STRUX_IMAGE_DATAID, ""
+		};
+		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, posStart,
+														 posStart, attributes, PP_NOPROPS, PTX_SectionFrame);
 		UT_ASSERT(bRet);
 	}
 
 	if(pNewBL && (pFrame->getParentContainer() != pNewBL))
 	{
 		UT_DEBUGMSG(("BEGIN RELOCATION\n"));
-		getLayout()->relocateFrame(pFrame,pNewBL,NULL,properties);
+		getLayout()->relocateFrame(pFrame, pNewBL, PP_NOPROPS, properties);
 	}
 	else
-	{ 
+	{
 		UT_DEBUGMSG(("BEGIN CHANGE\n"));
 		//posStart = pFrame->getPosition(true)+1;
 		//PT_DocPosition posEnd = posStart;
-		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
-														 properties,PTX_SectionFrame);
+		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posEnd, PP_NOPROPS,
+														 properties, PTX_SectionFrame);
 		UT_ASSERT(bRet);
 	}
 
@@ -1468,7 +1468,7 @@ bool FV_View::getFrameStrings_view(UT_sint32 x, UT_sint32 y,fv_FrameStrings & Fr
 
 
 
-void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[], fl_BlockLayout *pNewBL)
+void FV_View::setFrameFormat(const PP_PropertyVector & attribs, const PP_PropertyVector & properties, fl_BlockLayout *pNewBL)
 {
 	setCursorWait();
 	//
@@ -1489,14 +1489,14 @@ void FV_View::setFrameFormat(const gchar * attribs[], const gchar * properties[]
 
 	if(pNewBL && (pFrame->getParentContainer() != pNewBL))
 	{
-		getLayout()->relocateFrame(pFrame,pNewBL,attribs,properties);
+		getLayout()->relocateFrame(pFrame, pNewBL, attribs, properties);
 	}
 	else
-	{ 
+	{
 		PT_DocPosition posStart = pFrame->getPosition(true)+1;
 		PT_DocPosition posEnd = posStart;
-		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,
-														 attribs,properties,PTX_SectionFrame);
+		UT_DebugOnly<bool> bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posEnd,
+														 attribs, properties, PTX_SectionFrame);
 		UT_ASSERT(bRet);
 	}
 	// Signal PieceTable Changes have finished
@@ -2440,11 +2440,9 @@ void FV_View::setPaperColor(const gchar* clr)
 {
 	UT_DEBUGMSG(("DOM: color is: %s\n", clr));
 
-	const gchar * props[3];
-	props[0] = "background-color";
-	props[1] = clr;
-	props[2] = 0;
-
+	const PP_PropertyVector props = {
+		"background-color", clr
+	};
 	setSectionFormat(props);
 	// update the screen
 	_draw(0, 0, getWindowWidth(), getWindowHeight(), false, false);
@@ -2596,26 +2594,21 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		  The following brute-force solution works, but is atrociously
 		  expensive, so we should avoid using it whenever feasible.
 		*/
-		const gchar ** propsBlock = NULL;
-		getBlockFormat(&propsBlock);
+		PP_PropertyVector propsBlock;
+		getBlockFormat(propsBlock);
 
 		bool bMatch = false;
 
-		if (propsBlock && m_chg.propsBlock)
+		if (!propsBlock.empty() && !m_chg.propsBlock.empty()
+			&& (propsBlock.size() == m_chg.propsBlock.size()))
 		{
 			bMatch = true;
 
-			int i=0;
+			std::size_t i = 0;
 
-			while (bMatch)
+			while (bMatch && i < propsBlock.size())
 			{
-				if (!propsBlock[i] || !m_chg.propsBlock[i])
-				{
-					bMatch = (propsBlock[i] == m_chg.propsBlock[i]);
-					break;
-				}
-
-				if (strcmp(propsBlock[i], m_chg.propsBlock[i]))
+				if (propsBlock[i] == m_chg.propsBlock[i])
 				{
 					bMatch = false;
 					break;
@@ -2627,12 +2620,10 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 
 		if (!bMatch)
 		{
-			FREEP(m_chg.propsBlock);
-			m_chg.propsBlock = propsBlock;
+			m_chg.propsBlock = std::move(propsBlock);
 		}
 		else
 		{
-			FREEP(propsBlock);
 			mask ^= AV_CHG_FMTBLOCK;
 		}
 	}
@@ -2645,26 +2636,21 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 
 		  TODO: devise special case logic for (at minimum) char motion
 		*/
-		const gchar ** propsChar = NULL;
-		getCharFormat(&propsChar);
+		PP_PropertyVector propsChar;
+		getCharFormat(propsChar);
 
 		bool bMatch = false;
 
-		if (propsChar && m_chg.propsChar)
+		if (!propsChar.empty() && !m_chg.propsChar.empty()
+			&& (propsChar.size() == m_chg.propsChar.size()))
 		{
 			bMatch = true;
 
-			int i=0;
+			std::size_t i = 0;
 
-			while (bMatch)
+			while (bMatch && i < propsChar.size())
 			{
-				if (!propsChar[i] || !m_chg.propsChar[i])
-				{
-					bMatch = (propsChar[i] == m_chg.propsChar[i]);
-					break;
-				}
-
-				if (strcmp(propsChar[i], m_chg.propsChar[i]))
+				if (propsChar[i] != m_chg.propsChar[i])
 				{
 					bMatch = false;
 					break;
@@ -2676,12 +2662,10 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 
 		if (!bMatch)
 		{
-			FREEP(m_chg.propsChar);
-			m_chg.propsChar = propsChar;
+			m_chg.propsChar = std::move(propsChar);
 		}
 		else
 		{
-			FREEP(propsChar);
 			mask ^= AV_CHG_FMTCHAR;
 		}
 	}
@@ -2692,26 +2676,21 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 		  The following brute-force solution works, but is atrociously
 		  expensive, so we should avoid using it whenever feasible.
 		*/
-		const gchar ** propsSection = NULL;
-		getSectionFormat(&propsSection);
+		PP_PropertyVector propsSection;
+		getSectionFormat(propsSection);
 
 		bool bMatch = false;
 
-		if (propsSection && m_chg.propsSection)
+		if (!propsSection.empty() && !m_chg.propsSection.empty()
+			&& propsSection.size() == propsSection.size())
 		{
 			bMatch = true;
 
-			int i=0;
+			std::size_t i = 0;
 
-			while (bMatch)
+			while (bMatch && i < propsSection.size())
 			{
-				if (!propsSection[i] || !m_chg.propsSection[i])
-				{
-					bMatch = (propsSection[i] == m_chg.propsSection[i]);
-					break;
-				}
-
-				if (strcmp(propsSection[i], m_chg.propsSection[i]))
+				if (propsSection[i] != m_chg.propsSection[i])
 				{
 					bMatch = false;
 					break;
@@ -2723,12 +2702,10 @@ bool FV_View::notifyListeners(const AV_ChangeMask hint)
 
 		if (!bMatch)
 		{
-			FREEP(m_chg.propsSection);
-			m_chg.propsSection = propsSection;
+			m_chg.propsSection = std::move(propsSection);
 		}
 		else
 		{
-			FREEP(propsSection);
 			mask ^= AV_CHG_FMTSECTION;
 		}
 	}
@@ -3088,10 +3065,11 @@ bool FV_View::setTOCProps(PT_DocPosition pos, const char * szProps)
 
 	// Signal PieceTable Change
 	_saveAndNotifyPieceTableChange();
-	const gchar * atts[3] ={"props",NULL,NULL};
-	atts[1] = szProps;
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,atts,NULL,PTX_SectionTOC);
-	
+	const PP_PropertyVector atts = {
+		"props", szProps
+	};
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, pos, pos, atts, PP_NOPROPS, PTX_SectionTOC);
+
 	// Signal piceTable is stable again
 	_restorePieceTableState();
 	_generalUpdate();
@@ -3518,48 +3496,27 @@ void FV_View::processSelectedBlocks(FL_ListType listType)
 		fl_BlockLayout * pBlock =  vListBlocks.getNthItem(i);
 		PT_DocPosition posBlock = pBlock->getPosition();
 
-		const gchar * pListAttrs[10];
-		pListAttrs[0] = "listid";
-		pListAttrs[1] = NULL;
-		pListAttrs[2] = "parentid";
-		pListAttrs[3] = NULL;
-		pListAttrs[4] = "level";
-		pListAttrs[5] = NULL;
-		pListAttrs[6] = NULL;
-		pListAttrs[7] = NULL;
-		pListAttrs[8] = NULL;
-		pListAttrs[9] = NULL;
-			
+		const PP_PropertyVector pListAttrs = {
+			"listid", "",
+			"parentid", "",
+			"level", "",
+		};
+
 		// we also need to explicitely clear the list formating
 		// properties, since their values are not necessarily part
 		// of the style definition, so that cloneWithEliminationIfEqual
 		// which we call later will not get rid off them
-		const gchar * pListProps[20];
-		pListProps[0] =  "start-value";
-		pListProps[1] =  NULL;
-		pListProps[2] =  "list-style";
-		pListProps[3] =  NULL;
-			
-		if(pBlock->getDominantDirection() == UT_BIDI_RTL)
-			pListProps[4] =  "margin-right";
-		else
-			pListProps[4] =  "margin-left";
-		
-		pListProps[5] =  NULL;
-		pListProps[6] =  "text-indent";
-		pListProps[7] =  NULL;
-		pListProps[8] =  "field-color";
-		pListProps[9] =  NULL;
-		pListProps[10]=  "list-delim";
-		pListProps[11] =  NULL;
-		pListProps[12]=  "field-font";
-		pListProps[13] =  NULL;
-		pListProps[14]=  "list-decimal";
-		pListProps[15] =  NULL;
-		pListProps[16] =  "list-tag";
-		pListProps[17] =  NULL;
-		pListProps[18] =  NULL;
-		pListProps[19] =  NULL;
+		const PP_PropertyVector pListProps = {
+			"start-value", "",
+			"list-style", "",
+			(pBlock->getDominantDirection() == UT_BIDI_RTL) ? "margin-right" : "margin-left", ""
+			"text-indent", "",
+			"field-color", "",
+			"list-delim", "",
+			"field-font", "",
+			"list-decimal", ""
+			"list-tag", ""
+		};
 //
 // Remove all the list related properties
 //
@@ -4163,8 +4120,6 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 	getBlocksInSelection( &vBlock);
 	setScreenUpdateOnGeneralUpdate( false);
 	bool bCharStyle = pStyle->isCharStyle();
-	const gchar * attribs[] = { PT_STYLE_ATTRIBUTE_NAME, 0, 0 };
-	attribs[1] = style;
 //
 // Need this to adjust the start and end positions of the style change.
 //
@@ -4235,6 +4190,10 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 			}
 		}
 	}
+	const PP_PropertyVector attribs = {
+		PT_STYLE_ATTRIBUTE_NAME, style
+	};
+
 	bool bHasNumberedHeading = false;
 	const gchar * pszCurStyle = style;
 	PD_Style * pCurStyle = pStyle;
@@ -4244,7 +4203,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 		_clearIfAtFmtMark(getPoint());	// TODO is this correct ?
 		_eraseSelection();
 		UT_DEBUGMSG(("Applying Character style: start %d, end %d\n", posStart, posEnd));
-		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL);
+		bRet = m_pDoc->changeSpanFmt(PTC_AddStyle, posStart, posEnd, attribs, PP_NOPROPS);
 		goto finish_up;
 	}
 	else
@@ -4257,7 +4216,7 @@ bool FV_View::setStyleAtPos(const gchar * style, PT_DocPosition posStart1, PT_Do
 
 		// PLAM this is the only place that PTC_AddStyle is used.
 		// NB: clear explicit props at both block and char levels
-		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle,posStart,posEnd,attribs,NULL,PTX_Block);
+		bRet = m_pDoc->changeStruxFmt(PTC_AddStyle, posStart, posEnd, attribs, PP_NOPROPS, PTX_Block);
 	}
 //
 // Do the list elements processing
@@ -4716,42 +4675,7 @@ bool FV_View::getStyle(const gchar ** style) const
 	return true;
 }
 
-// TODO: merge this the and other override to not iterate twice.
-bool FV_View::setCharFormat(const PP_PropertyVector & properties,
-							const PP_PropertyVector & attributes)
-{
-	size_t len = 0;
-	const gchar** props = nullptr;
-	if (!properties.empty()) {
-		len = properties.size();
-		props = (const gchar**)calloc(len + 1, sizeof (gchar*));
-		const gchar** current = props;
-		for(auto iter = properties.cbegin(); iter != properties.cend(); ++iter) {
-			*current = iter->c_str();
-			current++;
-		}
-		props[len] = NULL;
-	}
-
-	const gchar** attrs = nullptr;
-	if (!attributes.empty()) {
-		len = attributes.size();
-		attrs = (const gchar**)calloc(len + 1, sizeof (gchar*));
-		const gchar** current = attrs;
-		for(auto iter = attributes.cbegin(); iter != attributes.cend(); ++iter) {
-			*current = iter->c_str();
-			current++;
-		}
-		attrs[len] = NULL;
-	}
-
-	bool ret = setCharFormat(props, attrs);
-	free(props);
-	free(attrs);
-	return ret;
-}
-
-bool FV_View::setCharFormat(const gchar * properties[], const gchar * attribs[])
+bool FV_View::setCharFormat(const PP_PropertyVector & properties, const PP_PropertyVector & attribs)
 {
 	bool bRet = false;
 
@@ -4787,7 +4711,7 @@ bool FV_View::setCharFormat(const gchar * properties[], const gchar * attribs[])
 				{
 					posEnd= posStart;
 				}
-				bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,posStart,posEnd,attribs,properties);
+				bRet = m_pDoc->changeSpanFmt(PTC_AddFmt, posStart, posEnd, attribs, properties);
 			}
 
 			// Signal piceTable is stable again
@@ -4880,8 +4804,11 @@ bool FV_View::resetCharFormat(bool bAll)
 	// first we reset everything ...
 	// we have to do this, because setCharFormat() calls are cumulative (it uses
 	// PTC_AddFmt)
-	const gchar * attrs_out[5] = {"props","","style","",NULL};	
-	bool bRet = setCharFormat(NULL,attrs_out);
+	const PP_PropertyVector attrs_out = {
+		"props", "",
+		"style", ""
+	};
+	bool bRet = setCharFormat(PP_NOPROPS, attrs_out);
 
 	// now if we have something to set, we do so ...
 	if(AP.hasAttributes() || AP.hasProperties())
@@ -5235,12 +5162,12 @@ bool FV_View::queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue,
 	return okay;
 }
 
-bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles) const
+bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles) const
 {
-	return getCharFormat(pProps,bExpandStyles,0);
+	return getCharFormat(props, bExpandStyles, 0);
 }
 
-bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles, PT_DocPosition posStart) const
+bool FV_View::getCharFormat(PP_PropertyVector & props, bool bExpandStyles, PT_DocPosition posStart) const
 {
 	const PP_AttrProp * pSpanAP = NULL;
 	const PP_AttrProp * pBlockAP = NULL;
@@ -5257,20 +5184,9 @@ bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles, PT_DocPo
 	{
 		return false;
 	}
-//
-// fixme
-#if 0
-	// NOTE: caller must g_free this, but not the referenced contents
-	const gchar ** tprops = static_cast<const gchar **>(UT_calloc(3, sizeof(gchar *)));
-	UT_DEBUGMSG(("charFormat \n"));
-	tprops[0] = "fred";
-	tprops[1] = "1";
-	tprops[2] = NULL;
-	*pProps = tprops;
-#endif
 	if((AV_View::getTick() == m_CharProps.getTick()) && m_CharProps.isValid())
 	{
-		*pProps = m_CharProps.getCopyOfProps();
+		props = m_CharProps.getProps();
 		return true;
 	}
 	m_CharProps.clearProps();
@@ -5337,10 +5253,10 @@ bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles, PT_DocPo
 		// We want to return NULL here, because that makes it clear to the caller that the props are
 		// not valid; in any case to return sometimes a dynamically allocated array and sometimes a
 		// statically allocated one is not a good idea
-		// 
+		//
 		// static const char * pszTmp[2] = {NULL,NULL};
-		
-		*pProps = NULL;
+
+		props = PP_NOPROPS;
 		return false;
 	}
 	UT_uint32 blockPosition = pBlock->getPosition();
@@ -5471,32 +5387,20 @@ bool FV_View::getCharFormat(const gchar *** pProps, bool bExpandStyles, PT_DocPo
 	}
 
 	// 3. export whatever's left
-	UT_uint32 count = v.getItemCount()*2 + 1;
-
-	// NOTE: caller must g_free this, but not the referenced contents
-	const gchar ** props = static_cast<const gchar **>(UT_calloc(count, sizeof(gchar *)));
-	if (!props)
-		return false;
-
-	const gchar ** p = props;
 	i = v.getItemCount();
-	UT_uint32 numProps = count;
 	while (i > 0)
 	{
 		f = v.getNthItem(i-1);
 		i--;
 
-		p[0] = f->m_prop;
-		p[1] = f->m_val;
-		p += 2;
+		props.push_back(f->m_prop);
+		props.push_back(f->m_val);
 
 	}
-	p[0] = NULL;
 
 	UT_VECTOR_PURGEALL(_fmtPair *,v);
 
-	*pProps = props;
-	m_CharProps.fillProps(numProps,props);
+	m_CharProps.fillProps(props);
 	return true;
 }
 
@@ -5585,19 +5489,21 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 		getAllBlocksInList(&v);
 	else
 		getBlocksInSelection(&v);
-	const gchar * props[] = {NULL,"0.0in",NULL,NULL};
-	const gchar ind_left [] = "margin-left";
-	const gchar ind_right[] = "margin-right";
+
+	PP_PropertyVector props = {
+		"", "0.0in"
+	};
+
 	const gchar * indent;
-	
 	for(i = 0; i<v.getItemCount();i++)
 	{
 		pBlock = v.getNthItem(i);
-		if(pBlock->getDominantDirection() == UT_BIDI_RTL)
-			indent = ind_right;
-		else
-			indent = ind_left;
-		
+		if(pBlock->getDominantDirection() == UT_BIDI_RTL) {
+			indent = "margin-right";
+		} else {
+			indent = "margin-left";
+		}
+
 		szAlign = pBlock->getProperty(indent);
 		dim = UT_determineDimension(szAlign.c_str());
 		fAlign = static_cast<double>(UT_convertToInches(szAlign.c_str()));
@@ -5620,7 +5526,7 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh)+fl_BLOCK_STRUX_OFFSET;
 		props[0] = indent;
 		props[1] = static_cast<const gchar *>(szNewAlign.c_str());
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, PP_NOPROPS, props, PTX_Block);
 	}
 	//
 	// Moved outside the loop. Speeds things up and seems OK.
@@ -5636,11 +5542,11 @@ bool FV_View::setBlockIndents(bool doLists, double indentChange, double page_siz
 	return bRet;
 }
 
-bool FV_View::removeStruxAttrProps(PT_DocPosition ipos1, 
-								   PT_DocPosition ipos2, 
+bool FV_View::removeStruxAttrProps(PT_DocPosition ipos1,
+								   PT_DocPosition ipos2,
 								   PTStruxType iStrux,
-								   const gchar * attributes[] ,
-								   const gchar * properties[])
+								   const PP_PropertyVector & attributes,
+								   const PP_PropertyVector & properties)
 {
 	bool bRet;
 
@@ -5679,7 +5585,7 @@ bool FV_View::isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux)
 	return true;
 }
 
-bool FV_View::setBlockFormat(const gchar * properties[])
+bool FV_View::setBlockFormat(const PP_PropertyVector & properties)
 {
 	bool bRet;
 
@@ -5715,20 +5621,12 @@ bool FV_View::setBlockFormat(const gchar * properties[])
 	bool bDomDirChange = false;
 	UT_BidiCharType iDomDir = UT_BIDI_LTR;
 
-	const gchar ** p  = properties;
-
-	while(*p)
-	{
-		if(!strcmp(*p,"dom-dir"))
-		{
-			bDomDirChange = true;
-			if(!strcmp(*(p+1), "rtl"))
-			{
-				iDomDir = UT_BIDI_RTL;
-			}
-			break;
+	std::string rtl = PP_getAttribute("dom-dir", properties);
+	if (!rtl.empty()) {
+		bDomDirChange = true;
+		if (rtl == "rtl") {
+			iDomDir = UT_BIDI_RTL;
 		}
-		p += 2;
 	}
 
 	if(bDomDirChange)
@@ -5778,18 +5676,18 @@ bool FV_View::setBlockFormat(const gchar * properties[])
 			if(pCL->getContainerType() == FL_CONTAINER_CELL)
 			{
 				PT_DocPosition pos = pBL->getPosition();
-				bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,properties,PTX_Block);	
+				bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, pos, pos, PP_NOPROPS, properties,PTX_Block);
 			}
 		}
 	}
 	else
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Block);
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posEnd, PP_NOPROPS, properties, PTX_Block);
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
 
 	_generalUpdate();
-	
+
 	notifyListeners(AV_CHG_MOTION | AV_CHG_ALL);
 
 	_fixInsertionPointCoords();
@@ -5801,9 +5699,9 @@ bool FV_View::setBlockFormat(const gchar * properties[])
 /*!
  * Collapse text to the level specified over the range of text given.
  */
-bool FV_View::setCollapsedRange(PT_DocPosition posLow, 
+bool FV_View::setCollapsedRange(PT_DocPosition posLow,
 								PT_DocPosition posHigh,
-								const gchar * properties[])
+								const PP_PropertyVector & properties)
 {
 	bool bRet;
 
@@ -5812,7 +5710,7 @@ bool FV_View::setCollapsedRange(PT_DocPosition posLow,
 
 	_clearIfAtFmtMark(getPoint());
 
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posLow,posHigh,NULL,properties);
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posLow, posHigh, PP_NOPROPS, properties);
 
 
 	// Signal PieceTable Changes have finished
@@ -5833,12 +5731,12 @@ bool FV_View::setCollapsedRange(PT_DocPosition posLow,
  * 3. If a footer with no page number exists a new paragraph containg the
  * page number will be inserted at the top of the container.
  *
-\param bIsFooter true if the user wants a pagenumber in a footer.
-\param const  gchar ** atts	const string describing left , center or right
+ * \param bIsFooter true if the user wants a pagenumber in a footer.
+ * \param atts %PP_PropertyVector describing left , center or right
  * justification.
  */
 
-bool FV_View::processPageNumber(HdrFtrType hfType, const gchar ** atts)
+bool FV_View::processPageNumber(HdrFtrType hfType, const PP_PropertyVector & atts)
 {
 //
 // Quick hack to stop a segfault if a user tries to insert a header from
@@ -5920,7 +5818,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const gchar ** atts)
 	{
 		pos = pBL->getPosition();
 
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,atts,PTX_Block);
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, pos, pos, PP_NOPROPS, atts, PTX_Block);
 
 		if(bInsertFromHdrFtr)
 		{
@@ -5958,7 +5856,7 @@ bool FV_View::processPageNumber(HdrFtrType hfType, const gchar ** atts)
 	//
 	// Set the formatting of the paragraph to the Users request
 	//
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,atts,PTX_Block);
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, pos, pos, PP_NOPROPS, atts, PTX_Block);
 
 	// Insert the page_number field with the requested attributes at the top
 	// of the header/footer.
@@ -5991,7 +5889,6 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 {
 	UT_sint32 i=0;
 	gchar pszStart[80],pszAlign[20],pszIndent[20];
-	UT_GenericVector<const gchar*> va,vp;
 	UT_GenericVector<pf_Frag_Strux*> vb;
 	pf_Frag_Strux* sdh2 = pAuto->getNthBlock(i);
 	m_pDoc->beginUserAtomicGlob();
@@ -6030,10 +5927,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 		return;
 	}
 
-	gchar * style = getCurrentBlock()->getListStyleString(lType);
-//
-// This is depeciated..
-	va.addItem( PT_STYLE_ATTRIBUTE_NAME);	va.addItem( style);
+	const gchar * style = getCurrentBlock()->getListStyleString(lType);
 
 	pAuto->setListType(lType);
 	sprintf(pszStart, "%i" , startv);
@@ -6045,45 +5939,34 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 					UT_convertInchesToDimensionString(DIM_IN, Indent, 0),
 					sizeof(pszIndent));
 
-	vp.addItem( "start-value");	vp.addItem( pszStart);
-	vp.addItem( "margin-left");	vp.addItem( pszAlign);
-	vp.addItem( "text-indent");	vp.addItem( pszIndent);
-	vp.addItem( "list-style"); 	vp.addItem( style);
+	PP_PropertyVector props = {
+		"start-value", pszStart,
+		"margin-left", pszAlign,
+		"text-indent", pszIndent,
+		"list-style", style
+	};
 	pAuto->setStartValue(startv);
 	if(pszDelim != NULL)
 	{
-		vp.addItem( "list-delim"); vp.addItem( pszDelim);
+		props.push_back( "list-delim");
+		props.push_back( pszDelim);
 		pAuto->setDelim(pszDelim);
 	}
 	if(pszDecimal != NULL)
 	{
-		vp.addItem( "list-decimal"); vp.addItem( pszDecimal);
+		props.push_back( "list-decimal");
+		props.push_back( pszDecimal);
 		pAuto->setDecimal(pszDecimal);
 	}
 	if(pszFont != NULL)
 	{
-		vp.addItem( "field-font"); vp.addItem( pszFont);
+		props.push_back( "field-font");
+		props.push_back( pszFont);
 	}
-	//
-	// Assemble the List attributes
-	//
-	UT_uint32 counta = va.getItemCount() + 1;
-	const gchar ** attribs = static_cast<const gchar **>(UT_calloc(counta, sizeof(gchar *)));
-	for(i=0; i<va.getItemCount();i++)
-	{
-		attribs[i] = va.getNthItem(i);
-	}
-	attribs[i] = static_cast<gchar *>(NULL);
+
 	//
 	// Now assemble the list properties
 	//
-	UT_uint32 countp = vp.getItemCount() + 1;
-	const gchar ** props = static_cast<const gchar **>(UT_calloc(countp, sizeof(gchar *)));
-	for(i=0; i<vp.getItemCount();i++)
-	{
-		props[i] = vp.getNthItem(i);
-	}
-	props[i] = static_cast<gchar *>(NULL);
 
 	i = 0;
 	sdh2 = pAuto->getNthBlock(i);
@@ -6091,8 +5974,7 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	{
 		PT_DocPosition iPos = m_pDoc->getStruxPosition(sdh2)+fl_BLOCK_STRUX_OFFSET;
 		UT_DebugOnly<bool> bRet;
-//		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, attribs, props, PTX_Block);
-		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, NULL, props, PTX_Block);
+		bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, iPos, iPos, PP_NOPROPS, props, PTX_Block);
 		UT_ASSERT(bRet);
 		i++;
 		sdh2 = pAuto->getNthBlock(i);
@@ -6107,12 +5989,10 @@ void FV_View::changeListStyle(	fl_AutoNum* pAuto,
 	m_pDoc->updateDirtyLists();
 	m_pDoc->endUserAtomicGlob();
 	_ensureInsertionPointOnScreen();
-	FREEP(attribs);
-	FREEP(props);
 }
 
 
-bool FV_View::getSectionFormat(const gchar ***pProps) const
+bool FV_View::getSectionFormat(PP_PropertyVector & props) const
 {
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;
@@ -6136,7 +6016,7 @@ bool FV_View::getSectionFormat(const gchar ***pProps) const
 	if((AV_View::getTick() == m_SecProps.getTick()) && b)
 	{
 		xxx_UT_DEBUGMSG(("GOt a valid cache for section props \n"));
-		*pProps = m_SecProps.getCopyOfProps();
+		props = m_SecProps.getProps();
 		return true;
 	}
 	m_SecProps.clearProps();
@@ -6241,31 +6121,20 @@ bool FV_View::getSectionFormat(const gchar ***pProps) const
 	}
 
 	// 3. export whatever's left
-	UT_uint32 count = v.getItemCount()*2 + 1;
-
-	// NOTE: caller must g_free this, but not the referenced contents
-	const gchar ** props = static_cast<const gchar **>(UT_calloc(count, sizeof(gchar *)));
-	if (!props)
-		return false;
-
-	const gchar ** p = props;
+	props.clear();
 
 	i = v.getItemCount();
-	UT_uint32 numProps = count;
 	while (i > 0)
 	{
 		f = v.getNthItem(i-1);
 		i--;
 
-		p[0] = f->m_prop;
-		p[1] = f->m_val;
-		p += 2;
+		props.push_back(f->m_prop);
+		props.push_back(f->m_val);
 	}
-	p[0] = NULL;
 	UT_VECTOR_PURGEALL(_fmtPair *,v);
 
-	*pProps = props;
-	m_SecProps.fillProps(numProps,props);
+	m_SecProps.fillProps(props);
 	b = m_SecProps.isValid();
 	UT_ASSERT(b);
 
@@ -6319,7 +6188,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const
 	return true;
 }
 
-bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles) const
+bool FV_View::getBlockFormat(PP_PropertyVector & props,bool bExpandStyles) const
 {
 	const PP_AttrProp * pBlockAP = NULL;
 	const PP_AttrProp * pSectionAP = NULL;	// TODO do we care about section-level inheritance?
@@ -6330,7 +6199,7 @@ bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles) const
 //
 // fixme
 
-	*pProps = NULL;
+	props.clear();
 
 	if(getLayout()->getFirstSection() == NULL)
 	{
@@ -6352,7 +6221,7 @@ bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles) const
 	if((AV_View::getTick() == m_BlockProps.getTick()) && m_BlockProps.isValid() &&
 	   (pBlock == m_BlockProps.getCurrentCL()))
 	{
-		*pProps = m_BlockProps.getCopyOfProps();
+		props = m_BlockProps.getProps();
 		return true;
 	}
 	m_BlockProps.clearProps();
@@ -6449,31 +6318,18 @@ bool FV_View::getBlockFormat(const gchar *** pProps,bool bExpandStyles) const
 	}
 
 	// 3. export whatever's left
-	UT_sint32 count = v.getItemCount()*2 + 1;
-
-	// NOTE: caller must g_free this, but not the referenced contents
-	const gchar ** props = static_cast<const gchar **>(UT_calloc(count, sizeof(gchar *)));
-	if (!props)
-		return false;
-
-	const gchar ** p = props;
-
 	i = v.getItemCount();
-	UT_sint32 numProps = count;
 	while (i > 0)
 	{
 		f = v.getNthItem(i-1);
 		i--;
 
-		p[0] = f->m_prop;
-		p[1] = f->m_val;
-		p += 2;
+		props.push_back(f->m_prop);
+		props.push_back(f->m_val);
 	}
-	p[0] = NULL;
 	UT_VECTOR_PURGEALL(_fmtPair *,v);
 
-	*pProps = props;
-	m_BlockProps.fillProps(numProps,props);
+	m_BlockProps.fillProps(props);
 
 	return true;
 }
@@ -8092,17 +7948,16 @@ void FV_View::insertSymbol(UT_UCSChar c, const gchar * symfont)
 	// We have to determine the current font so we can put it back after
 	// Inserting the Symbol
 
-	const gchar ** props_in = NULL;
-	const gchar * currentfont;
-	getCharFormat(&props_in);
-	currentfont = UT_getAttribute("font-family",props_in);
-	g_free(props_in);
-
-	if(strstr(symfont,currentfont) == NULL)
+	PP_PropertyVector props_in;
+	getCharFormat(props_in);
+	std::string currentfont = PP_getAttribute("font-family",props_in);
+	std::string ssymfont = symfont;
+	if(ssymfont.find(currentfont) == std::string::npos)
 	{
 		// Set the font
-		const gchar* properties[] = { "font-family", 0, 0 };
-		properties[1] = symfont ;
+		PP_PropertyVector properties = {
+			"font-family", ssymfont
+		};
 		setCharFormat(properties);
 
 		// Insert the character
@@ -8750,7 +8605,7 @@ bool FV_View::getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sin
  \param applyTo the range to apply the changes to
  \return True if the operation was succesful, false otherwise
  */
-bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID)
+bool FV_View::setCellFormat(const PP_PropertyVector & properties, FormatTable applyTo, FG_Graphic * pFG,UT_String & sDataID)
 {
 	bool bRet;
 	setCursorWait();
@@ -8835,7 +8690,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 				{
 					PT_DocPosition pos = pBL->getPosition();
 					if (pos >= posStart && pos <= posEnd)
-						bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,pos,pos,NULL,properties,PTX_SectionCell);	
+						bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, pos, pos, PP_NOPROPS, properties, PTX_SectionCell);
 					if(static_cast<fl_CellLayout *>(pCL) != pCell)
 					{
 						if(pFG != NULL)
@@ -8845,9 +8700,10 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 						}
 						else
 						{
-							const gchar * attributes[3] = {
-							PT_STRUX_IMAGE_DATAID,NULL,NULL};
-							bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,pos,pos,attributes,NULL,PTX_SectionCell);	
+							const PP_PropertyVector attributes = {
+								PT_STRUX_IMAGE_DATAID, "",
+							};
+							bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, pos, pos, attributes, PP_NOPROPS, PTX_SectionCell);
 						}
 					}
 				}
@@ -8888,7 +8744,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 				{
 					// Do the actual change
 					posStart = m_pDoc->getStruxPosition(cellSDH)+1;
-					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
+					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posStart,PP_NOPROPS, properties, PTX_SectionCell);
 					if(pFG != NULL)
 					{
 						pFG->insertAtStrux(m_pDoc,72,posStart,
@@ -8896,9 +8752,10 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 					}
 					else
 					{
-						const gchar * attributes[3] = {
-							PT_STRUX_IMAGE_DATAID,NULL,NULL};
-						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, posStart, posStart, attributes, NULL, PTX_SectionCell);	
+						const PP_PropertyVector attributes = {
+							PT_STRUX_IMAGE_DATAID, ""
+						};
+						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt, posStart, posStart, attributes, PP_NOPROPS, PTX_SectionCell);
 					}
 				}
 				else
@@ -8976,7 +8833,7 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 				{
 					// Do the actual change
 					posStart = m_pDoc->getStruxPosition(cellSDH)+1;
-					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,properties,PTX_SectionCell);
+					bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posStart, PP_NOPROPS, properties, PTX_SectionCell);
 					if(pFG != NULL)
 					{
 						pFG->insertAtStrux(m_pDoc,72,posStart,
@@ -8984,14 +8841,15 @@ bool FV_View::setCellFormat(const gchar * properties[], FormatTable applyTo, FG_
 					}
 					else
 					{
-						const gchar * attributes[3] = {
-							PT_STRUX_IMAGE_DATAID,NULL,NULL};
+						const PP_PropertyVector attributes = {
+							PT_STRUX_IMAGE_DATAID, ""
+						};
 						bRet = m_pDoc->changeStruxFmt(PTC_RemoveFmt,
 													  posStart,
 													  posStart,
 													  attributes,
-													  NULL,
-													  PTX_SectionCell);	
+													  PP_NOPROPS,
+													  PTX_SectionCell);
 					}
 				}
 				else
@@ -9046,13 +8904,13 @@ bool FV_View::getCellProperty(PT_DocPosition posCell, const gchar * szPropName, 
 	}
 }
 
-bool FV_View::setTableFormat(const gchar * properties[])
+bool FV_View::setTableFormat(const PP_PropertyVector & properties)
 {
 	PT_DocPosition pos = getPoint();
 	return setTableFormat(pos, properties);
 }
 
-bool FV_View::setTableFormat(PT_DocPosition pos, const gchar * properties[])
+bool FV_View::setTableFormat(PT_DocPosition pos, const PP_PropertyVector & properties)
 {
 	bool bRet;
 
@@ -9086,7 +8944,7 @@ bool FV_View::setTableFormat(PT_DocPosition pos, const gchar * properties[])
 	}
 	posStart = m_pDoc->getStruxPosition(tableSDH) +1 ;
 	posEnd = posStart+1;
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_SectionTable);
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posEnd, PP_NOPROPS, properties, PTX_SectionTable);
 
 	// Signal PieceTable Changes have finished
 	_restorePieceTableState();
@@ -9098,7 +8956,7 @@ bool FV_View::setTableFormat(PT_DocPosition pos, const gchar * properties[])
 	return bRet;
 }
 
-bool FV_View::setSectionFormat(const gchar * properties[])
+bool FV_View::setSectionFormat(const PP_PropertyVector & properties)
 {
 	bool bRet;
 	setCursorWait();
@@ -9130,7 +8988,7 @@ bool FV_View::setSectionFormat(const gchar * properties[])
 		}
 	}
 
-	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,properties,PTX_Section);
+	bRet = m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posEnd, PP_NOPROPS, properties, PTX_Section);
 
 	_generalUpdate();
 
@@ -11614,9 +11472,8 @@ bool FV_View::insertParaBreakIfNeededAtPos(PT_DocPosition pos)
 void FV_View::createThisHdrFtr(HdrFtrType hfType, bool bSkipPTSaves)
 {
 	setCursorWait();
-	const gchar* block_props[] = {
-		"text-align", "left",
-		NULL, NULL
+	const PP_PropertyVector block_props = {
+		"text-align", "left"
 	};
 	if(!isSelectionEmpty())
 	{
@@ -12047,9 +11904,8 @@ bool FV_View::getEditableBounds(bool isEnd, PT_DocPosition &posEOD, bool bOverid
 
 void FV_View::insertHeaderFooter(HdrFtrType hfType)
 {
-	const gchar* block_props[] = {
-		"text-align", "left",
-		NULL, NULL
+	const PP_PropertyVector block_props = {
+		"text-align", "left"
 	};
 	if(!isSelectionEmpty())
 	{
@@ -12116,7 +11972,7 @@ void FV_View::insertHeaderFooter(HdrFtrType hfType)
 	notifyListeners(AV_CHG_MOTION | AV_CHG_HDRFTR );
 }
 
-bool FV_View::insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL)
+bool FV_View::insertHeaderFooter(const PP_PropertyVector & props, HdrFtrType hfType, fl_DocSectionLayout * pDSL)
 {
 //	UT_ASSERT(hfType == FL_HDRFTR_HEADER || hfType == FL_HDRFTR_FOOTER);
 
@@ -12126,7 +11982,7 @@ bool FV_View::insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_Doc
 	  This provides NO undo stuff.	Do it yourself.
 	*/
 
-	UT_String szString;
+	std::string szString;
 	if(hfType == FL_HDRFTR_HEADER)
 	{
 		szString = "header";
@@ -12160,31 +12016,21 @@ bool FV_View::insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_Doc
 		szString = "footer-last";
 	}
 
-	static gchar sid[15];
-
 	UT_return_val_if_fail(m_pDoc,false);
 	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
-	sprintf(sid, "%i", id);
 
-	const gchar* sec_attributes1[] = {
-		"type", szString.c_str(),
-		"id",sid,"listid","0","parentid","0",
-		NULL, NULL
+	std::string sid = UT_std_string_sprintf("%i", id);
+
+	const PP_PropertyVector sec_attributes1 = {
+		"type", szString,
+		"id", sid,
+		"listid", "0",
+		"parentid", "0"
 	};
 
-	const gchar* sec_attributes2[] = {
-		szString.c_str(), sid,
-		NULL, NULL
+	const PP_PropertyVector sec_attributes2 = {
+		szString, sid
 	};
-
-
-	const gchar* block_props[] = {
-		"text-align", "center",
-		NULL, NULL
-	};
-
-	if(!props)
-		props = block_props; // use the defaults
 
 //
 // Find the section that owns this page.
@@ -12204,18 +12050,19 @@ bool FV_View::insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_Doc
 
 	// change the section to point to the footer which doesn't exist yet.
 
-	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, NULL, PTX_Section);
+	m_pDoc->changeStruxFmt(PTC_AddFmt, posSec, posSec, sec_attributes2, PP_NOPROPS, PTX_Section);
 	PT_DocPosition iPos = _getDocPos(FV_DOCPOS_EOD);
 	_setPoint(iPos); // Move to the end, where we will create the header/footer
 
 
 // insert the Header/Footer
 	PT_DocPosition posBlock = getPoint() +1;
-	m_pDoc->insertStrux(getPoint(), PTX_SectionHdrFtr,sec_attributes1, NULL);
+	m_pDoc->insertStrux(getPoint(), PTX_SectionHdrFtr, sec_attributes1, PP_NOPROPS);
 
 // Now the block strux for the content
 
-	m_pDoc->insertStrux(posBlock, PTX_Block,NULL, props);
+	m_pDoc->insertStrux(posBlock, PTX_Block, PP_NOPROPS,
+						props.empty() ? PP_PropertyVector({ "text-align", "center" }) : props);
 	setPoint(posBlock+1);
 // OK it's in!
  	m_pDoc->signalListeners(PD_SIGNAL_REFORMAT_LAYOUT);
@@ -12735,19 +12582,16 @@ bool FV_View::setAnnotationText(UT_uint32 iAnnotation, const std::string & sText
 	//
 	// Set the annotation properties
 	//
-	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-	pszAnn[0] = "annotation-author";
-	pszAnn[1] = sAuthor.c_str();
-	pszAnn[2] = "annotation-title";
-	pszAnn[3] = sTitle.c_str();
-	pszAnn[4] = "annotation-date";
+	PP_PropertyVector propsAnn = {
+		"annotation-author", sAuthor,
+		"annotation-title", sTitle,
+		"annotation-date", ""
+	};
 	GDate  gDate;
 	g_date_set_time_t (&gDate, time (NULL));
-	std::string sDate;
-	sDate = UT_std_string_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
-	pszAnn[5] = sDate.c_str();
+	propsAnn[5] = UT_std_string_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
 	xxx_UT_DEBUGMSG((" Set Author %s Title %s posStart %d \n", sAuthor.c_str(),sTitle.c_str(),posStart));
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posStart,posStart,NULL,pszAnn,PTX_SectionAnnotation);
+	m_pDoc->changeStruxFmt(PTC_AddFmt, posStart, posStart, PP_NOPROPS, propsAnn, PTX_SectionAnnotation);
 
 	m_pDoc->endUserAtomicGlob();
 
@@ -12783,10 +12627,10 @@ bool FV_View::setAnnotationTitle(UT_uint32 iAnnotation, const std::string & sTit
 		return false;
 	pf_Frag_Strux* sdhAnn = pAL->getStruxDocHandle();
 	PT_DocPosition posAnn = m_pDoc->getStruxPosition(sdhAnn);
-	const char * pszAnn[3] = {NULL,NULL,NULL};
-	pszAnn[0] = "annotation-title";
-	pszAnn[1] = sTitle.c_str();
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posAnn,posAnn,NULL,pszAnn,PTX_SectionAnnotation);
+	const PP_PropertyVector propsAnn = {
+		"annotation-title", sTitle
+	};
+	m_pDoc->changeStruxFmt(PTC_AddFmt, posAnn, posAnn, PP_NOPROPS, propsAnn, PTX_SectionAnnotation);
 	return true;
 }
 std::string FV_View::getAnnotationAuthor(UT_uint32 iAnnotation) const
@@ -12812,10 +12656,10 @@ bool FV_View::setAnnotationAuthor(UT_uint32 iAnnotation, const std::string  & sA
 		return false;
 	pf_Frag_Strux* sdhAnn = pAL->getStruxDocHandle();
 	PT_DocPosition posAnn = m_pDoc->getStruxPosition(sdhAnn);
-	const char * pszAnn[3] = {NULL,NULL,NULL};
-	pszAnn[0] = "annotation-author";
-	pszAnn[1] = sAuthor.c_str();
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posAnn,posAnn,NULL,pszAnn,PTX_SectionAnnotation);
+	const PP_PropertyVector propsAnn = {
+		"annotation-author", sAuthor
+	};
+	m_pDoc->changeStruxFmt(PTC_AddFmt, posAnn, posAnn, PP_NOPROPS, propsAnn, PTX_SectionAnnotation);
 	return true;
 }
 
@@ -12945,7 +12789,7 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	{
 		return false;
 	}
-	std::string sNum = UT_std_string_sprintf("%d",iAnnotation);
+	std::string sNum = UT_std_string_sprintf("%d", iAnnotation);
 	const PP_PropertyVector pAttr = {
 		PT_ANNOTATION_NUMBER, sNum
 	};
@@ -12980,34 +12824,26 @@ bool FV_View::insertAnnotation(UT_sint32 iAnnotation,
 	// We insert the annotations struxes right after the annotation start
 	//
 	PT_DocPosition posAnnotation = posStart+1;
-	const gchar* ann_attrs[4];
-	ann_attrs[0] = "annotation-id";
-	ann_attrs[1] = sNum.c_str();
-	ann_attrs[2] = 0;
-	ann_attrs[3] = 0;
-	const char * pszAnn[7] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-	pszAnn[0] = "annotation-author";
-	pszAnn[1] = sAuthor.c_str();
-	pszAnn[2] = "annotation-title";
-	pszAnn[3] = sTitle.c_str();
-	pszAnn[4] = "annotation-date";
+	PP_PropertyVector ann_attrs = {
+		"annotation-id", sNum
+	};
 	GDate gDate;
 	g_date_set_time_t (&gDate, time (NULL));
-	std::string sDate;
-	sDate = UT_std_string_sprintf("%d-%d-%d",gDate.month,gDate.day,gDate.year);
-	pszAnn[5] = sDate.c_str();
-	const gchar* block_atts[] = {PT_STYLE_ATTRIBUTE_NAME,
-				  "Normal",
-				  NULL,
-				  NULL
+	PP_PropertyVector propsAnn = {
+		"annotation-author", sAuthor,
+		"annotation-title", sTitle,
+		"annotation-date", UT_std_string_sprintf("%d-%d-%d", gDate.month, gDate.day, gDate.year)
+	};
+	PP_PropertyVector block_atts = {
+		PT_STYLE_ATTRIBUTE_NAME, "Normal"
 	};
 	//
 	//
 	// OK now insert the Annotation struxes
 	//
-	m_pDoc->insertStrux(posAnnotation,PTX_SectionAnnotation,ann_attrs,pszAnn);
- 	m_pDoc->insertStrux(posAnnotation+1,PTX_Block,block_atts,NULL);
-	m_pDoc->insertStrux(posAnnotation+2,PTX_EndAnnotation,NULL,NULL);
+	m_pDoc->insertStrux(posAnnotation, PTX_SectionAnnotation, ann_attrs, propsAnn);
+	m_pDoc->insertStrux(posAnnotation + 1, PTX_Block, block_atts, PP_NOPROPS);
+	m_pDoc->insertStrux(posAnnotation + 2, PTX_EndAnnotation, PP_NOPROPS, PP_NOPROPS);
 	//
 	// OK now Insert the text into the annotation strux
 	//
@@ -13173,16 +13009,6 @@ bool FV_View::insertFootnote(bool bFootnote)
 	UT_uint32 pid = m_pDoc->getUID(bFootnote ? UT_UniqueId::Footnote : UT_UniqueId::Endnote);
 	footpid = UT_std_string_sprintf("%d",pid);
 
-	const gchar* attrs[] = {
-		"footnote-id", footpid.c_str(),
-		NULL, NULL,
-		NULL, NULL
-	};
-	if(!bFootnote)
-	{
-		attrs[0] = "endnote-id";
-	}
-
 	/*	Apply the character style at insertion point and insert the
 		Footnote reference. */
 
@@ -13192,12 +13018,14 @@ bool FV_View::insertFootnote(bool bFootnote)
 	PT_DocPosition FanchEnd;
 
 	PT_DocPosition dpFT = 0;
-	const gchar * dumProps[3] = {"list-tag","123",NULL};
+	const PP_PropertyVector dumProps = {
+		"list-tag","123"
+	};
 	PT_DocPosition dpBody = getPoint();
 //
 // This does a rebuild of the affected paragraph
 //
-	m_pDoc->changeStruxFmt(PTC_AddFmt,dpBody,dpBody,NULL,dumProps,PTX_Block);
+	m_pDoc->changeStruxFmt(PTC_AddFmt, dpBody, dpBody, PP_NOPROPS, dumProps, PTX_Block);
 	if (!insertFootnoteSection(bFootnote,footpid.c_str()))
 	{
 		m_pDoc->endUserAtomicGlob();
@@ -13208,22 +13036,24 @@ bool FV_View::insertFootnote(bool bFootnote)
 	_setPoint(dpBody);
 	FrefStart = dpBody;
 	UT_DebugOnly<bool> bRet = false;
+	PP_PropertyVector attrs = {
+		bFootnote ? "footnote-id" : "endnote-id", footpid,
+		"style", ""
+	};
+
 	if(bFootnote)
 	{
-		attrs[2] = "style";
 		attrs[3] = "Footnote Reference";
-		if (_insertField("footnote_ref", attrs)==false)
+		if (_insertField("footnote_ref", attrs) == false)
 			return false;
 	}
 	else
 	{
-		attrs[2] = "style";
 		attrs[3] = "Endnote Reference";
-		if (_insertField("endnote_ref", attrs)==false)
+		if (_insertField("endnote_ref", attrs) == false)
 			return false;
 	}
-	attrs[2] = NULL;
-	attrs[3] = NULL;
+	attrs.resize(2);
 	fl_BlockLayout * pBL;
 
 //
@@ -13253,12 +13083,11 @@ bool FV_View::insertFootnote(bool bFootnote)
 //
 // Place a format mark before the field so we can select the field.
 //
-	const gchar * propListTag[] = {"list-tag",NULL,NULL};
-	static gchar sid[15];
 	UT_uint32 id = m_pDoc->getUID(UT_UniqueId::HeaderFtr);
-	sprintf(sid, "%i", id);
-	propListTag[1] = sid;
-	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt,FanchStart,FanchStart,NULL,propListTag);
+	const PP_PropertyVector propListTag = {
+		"list-tag", UT_std_string_sprintf("%i", id)
+	};
+	bRet = m_pDoc->changeSpanFmt(PTC_AddFmt, FanchStart, FanchStart, PP_NOPROPS, propListTag);
 
 	FanchEnd = FanchStart+1;
 	UT_DEBUGMSG(("insertFootnote: Inserting space after anchor field \n"));
@@ -13310,8 +13139,8 @@ bool FV_View::insertFootnote(bool bFootnote)
 //
 // This does a rebuild of the affected paragraph
 //
-	m_pDoc->changeStruxFmt(PTC_RemoveFmt,dpBody,dpBody,NULL,dumProps,PTX_Block);
-	setScreenUpdateOnGeneralUpdate( true);
+	m_pDoc->changeStruxFmt(PTC_RemoveFmt, dpBody, dpBody, PP_NOPROPS, dumProps, PTX_Block);
+	setScreenUpdateOnGeneralUpdate(true);
 	_restorePieceTableState(); // clean up remaining measures
 	_updateInsertionPoint();
 	_generalUpdate();
@@ -13328,24 +13157,14 @@ bool FV_View::insertFootnote(bool bFootnote)
 
 bool FV_View::insertFootnoteSection(bool bFootnote,const gchar * enpid)
 {
-	const gchar* block_attrs[] = {
-		"footnote-id", enpid,
-		NULL, NULL
+	PP_PropertyVector block_attrs = {
+		bFootnote ? "footnote-id" : "endnote-id", enpid
 	};
-	if(!bFootnote)
-	{
-		block_attrs[0] = "endnote-id";
-	}
-	const gchar* block_attrs2[] = {
-		"footnote-id", enpid,
-		"style", "Footnote", // xxx 'Footnote Body'
-		NULL, NULL
+	PP_PropertyVector block_attrs2 = {
+		bFootnote ? "footnote-id" : "endnote-id", enpid,
+		"style", bFootnote ? "Footnote" : "Endnote" // xxx 'Footnote Body'
 	};
-	if(!bFootnote)
-	{
-		block_attrs2[0] = "endnote-id";
-		block_attrs2[3] = "Endnote";
-	}
+
 	m_pDoc->beginUserAtomicGlob(); // Begin the big undo block
 
 	// Signal PieceTable Changes have Started
@@ -13371,25 +13190,25 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const gchar * enpid)
 	UT_DEBUGMSG(("insertFootnoteSection: about to insert footnote section at %d\n",pointBreak));
 	if(bFootnote)
 	{
-		e |= m_pDoc->insertStrux(pointBreak,PTX_SectionFootnote,block_attrs,NULL);
+		e |= m_pDoc->insertStrux(pointBreak, PTX_SectionFootnote, block_attrs, PP_NOPROPS);
 	}
 	else
 	{
-		e |= m_pDoc->insertStrux(pointBreak,PTX_SectionEndnote,block_attrs,NULL);
+		e |= m_pDoc->insertStrux(pointBreak, PTX_SectionEndnote, block_attrs, PP_NOPROPS);
 	}
 
 	pointFootnote = pointBreak+1;
 	UT_DEBUGMSG(("insertFootnoteSection: about to insert block for footnote section at %d \n",pointFootnote));
- 	e |= m_pDoc->insertStrux(pointFootnote,PTX_Block,block_attrs2,NULL);
+	e |= m_pDoc->insertStrux(pointFootnote, PTX_Block, block_attrs2, PP_NOPROPS);
 	pointFootnote++;
 	UT_DEBUGMSG(("insertFootnoteSection: about to insert end footnote at %d \n",pointFootnote));
 	if(bFootnote)
 	{
-		e |= m_pDoc->insertStrux(pointFootnote,PTX_EndFootnote,block_attrs,NULL);
+		e |= m_pDoc->insertStrux(pointFootnote, PTX_EndFootnote, block_attrs, PP_NOPROPS);
 	}
 	else
 	{
-		e |= m_pDoc->insertStrux(pointFootnote,PTX_EndEndnote,block_attrs,NULL);
+		e |= m_pDoc->insertStrux(pointFootnote, PTX_EndEndnote, block_attrs, PP_NOPROPS);
 	}
     pointFootnote++;
 	_setPoint(pointFootnote);
@@ -13413,7 +13232,7 @@ bool FV_View::insertFootnoteSection(bool bFootnote,const gchar * enpid)
 	return e;
 }
 
-bool FV_View::insertPageNum(const gchar ** props, HdrFtrType hfType)
+bool FV_View::insertPageNum(const PP_PropertyVector & props, HdrFtrType hfType)
 {
 
 	/*
@@ -14004,19 +13823,18 @@ bool FV_View::isImageSelected(void) const
 SpellChecker * FV_View::getDictForSelection () const
 {
 	SpellChecker * checker = NULL;
-	const char * szLang = NULL;
+	std::string lang;
 
-	const gchar ** props_in = NULL;
-	if (getCharFormat(&props_in))
+	PP_PropertyVector props_in;
+	if (getCharFormat(props_in))
 	{
-		szLang = UT_getAttribute("lang", props_in);
-		FREEP(props_in);
+		lang = PP_getAttribute("lang", props_in);
 	}
 
-	if (szLang)
+	if (!lang.empty())
 	{
 		// we get smart and request the proper dictionary
-		checker = SpellManager::instance().requestDictionary(szLang);
+		checker = SpellManager::instance().requestDictionary(lang.c_str());
 	}
 	else
 	{
@@ -14035,28 +13853,20 @@ SpellChecker * FV_View::getDictForSelection () const
    view, etc, or whether the document should be layout in visual or
    logical order
 
-   the returned pointer is to a static variable, so use it or loose it
 */
-const gchar ** FV_View::getViewPersistentProps() const
+PP_PropertyVector FV_View::getViewPersistentProps() const
 {
-	const UT_uint32 iMax = 3;
-	static const gchar * pProps[iMax];
-	UT_uint32 i = 0;
-
+	PP_PropertyVector pProps;
 	if(m_eBidiOrder == FV_Order_Logical_LTR)
 	{
-		pProps[i++] = "dom-dir";
-		pProps[i++] = "logical-ltr";
+		pProps.push_back("dom-dir");
+		pProps.push_back("logical-ltr");
 	}
 	else if(m_eBidiOrder == FV_Order_Logical_RTL)
 	{
-		pProps[i++] = "dom-dir";
-		pProps[i++] = "logical-rtl";
+		pProps.push_back("dom-dir");
+		pProps.push_back("logical-rtl");
 	}
-	
-	UT_ASSERT( i < iMax );
-    pProps[i] = NULL;
-
 	return pProps;
 }
 
@@ -14067,8 +13877,6 @@ void FV_View::rebuildLayout()
 
 fv_PropCache::fv_PropCache(void):
 	m_iTick(0),
-	m_iNumProps(0),
-	m_pszProps(NULL),
 	m_pCurrentCL(NULL)
 {
 }
@@ -14098,60 +13906,14 @@ fl_ContainerLayout* fv_PropCache::getCurrentCL(void) const
 	return m_pCurrentCL;
 }
 
-const gchar ** fv_PropCache::getCopyOfProps(void) const
+void fv_PropCache::fillProps(const PP_PropertyVector & props)
 {
-	const gchar ** props = static_cast<const gchar **>(UT_calloc(m_iNumProps+1, sizeof(gchar *))); 
-	UT_uint32 i =0;
-	const gchar ** p = props;
-	for(i =0; i< m_iNumProps;i++)
-	{
-		p[i] = m_pszProps[i];
-		xxx_UT_DEBUGMSG((" copy i %d m_pszProps[i] %x m_pszProps %s props %x props %s\n",i,m_pszProps[i],m_pszProps[i],props[i],props[i]));
-	}
-	p[m_iNumProps] = NULL;
-	xxx_UT_DEBUGMSG(("getCopy: props %x m_pszProps %x \n",props,m_pszProps));
-	UT_ASSERT(NULL != m_pszProps);
-	return props;
+	m_props = props;
 }
-
-void fv_PropCache::fillProps(UT_uint32 numProps, const gchar ** props)
-{
-	m_iNumProps = numProps;
-	m_pszProps = static_cast<gchar **>(UT_calloc(m_iNumProps, sizeof(gchar *))); 
-	UT_uint32 i = 0;
-	xxx_UT_DEBUGMSG(("m_pszProps %x props %x ",m_pszProps,props));
-	for(i =0; i< m_iNumProps && (props[i] != NULL);i++)
-	{
-		if(props[i] != NULL)
-		{
-			m_pszProps[i] = const_cast<gchar *>(props[i]);
-			xxx_UT_DEBUGMSG((" i %d m_pszProps[i] %x m_pszProps %s \n",i,m_pszProps[i],m_pszProps[i]));
-		}
-		else
-		{
-			m_pszProps[i] = NULL;
-		}
-	}
-	UT_ASSERT(NULL != m_pszProps);
-}
-
-bool fv_PropCache::isValid(void) const
-{
-	bool b = ((m_iNumProps > 0) && (NULL != m_pszProps));
-	if(m_iNumProps > 0)
-	{
-		UT_ASSERT(NULL != m_pszProps);
-	}
-	xxx_UT_DEBUGMSG(("Numprops %d m_pszProps %x \n",m_iNumProps,m_pszProps));
-	return b;
-}	
 
 void fv_PropCache::clearProps(void)
 {
-	xxx_UT_DEBUGMSG(("clearing props NumProps %d m_pszProps %x \n",m_iNumProps,m_pszProps));
-	FREEP(m_pszProps);
-	m_iNumProps = 0;
-	xxx_UT_DEBUGMSG(("clearing props numProps %d \n",m_iNumProps));
+	m_props.clear();
 }
 
 /*!

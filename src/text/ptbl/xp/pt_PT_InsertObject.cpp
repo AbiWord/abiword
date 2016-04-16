@@ -39,8 +39,8 @@
 /*****************************************************************/
 bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 								 PTObjectType pto,
-								 const gchar ** attributes,
-								 const gchar ** properties,  pf_Frag_Object ** ppfo)
+								 const PP_PropertyVector & attributes,
+								 const PP_PropertyVector & properties, pf_Frag_Object ** ppfo)
 {
 	if(m_pDocument->isMarkRevisions())
 	{
@@ -63,10 +63,10 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
 									ppRevAttrs, ppRevProps,
-									PP_PropertyVector(), PP_PropertyVector());
+									PP_NOPROPS, PP_NOPROPS);
 
 
-		PP_PropertyVector ppRevAttrib = PP_std_copyProps(attributes);
+		PP_PropertyVector ppRevAttrib = attributes;
 		ppRevAttrib.insert(ppRevAttrib.end(), ppRevAttrs.begin(),
 						   ppRevAttrs.end());
 
@@ -74,14 +74,11 @@ bool pt_PieceTable::insertObject(PT_DocPosition dpos,
 		//ppRevAttrib, ppRevProps);
 		// NB: objects are not supposed to have props, and so do not
 		//inherit props ...
-		bool bRet =  _realInsertObject(dpos, pto, ppRevAttrib,
-									   PP_std_copyProps(properties), ppfo);
-		return bRet;
+		return _realInsertObject(dpos, pto, ppRevAttrib, properties, ppfo);
 	}
 	else
 	{
-		return _realInsertObject(dpos, pto, PP_std_copyProps(attributes),
-								 PP_std_copyProps(properties), ppfo);
+		return _realInsertObject(dpos, pto, attributes, properties, ppfo);
 	}
 }
 

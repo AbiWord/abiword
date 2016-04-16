@@ -126,18 +126,17 @@ static bool _getTranslationCode(FV_View * pView, std::string & langCode)
 
 	std::string code;
 
-	const gchar ** props_in = NULL;
-	if (pView->getCharFormat(&props_in))
+	PP_PropertyVector props_in;
+	if (pView->getCharFormat(props_in))
    	{
-		code = UT_getAttribute("lang", props_in);
+		code = PP_getAttribute("lang", props_in);
 		if (code.size() >= 2)
 	   	{
 			code = code.substr(0, 2);
 			code += '_';
 		}
 
-		pDialog->setLanguageProperty(UT_getAttribute("lang", props_in));
-		FREEP(props_in);
+		pDialog->setLanguageProperty(PP_getAttribute("lang", props_in).c_str());
 	}
 	// run the dialog 
 	pDialog->runModal(pFrame);

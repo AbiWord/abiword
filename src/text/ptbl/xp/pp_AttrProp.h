@@ -91,10 +91,7 @@ public:
 	// even cells; values are in the odd.  the list is
 	// terminated by a null name.
 
-	bool	setAttributes(const gchar ** attributes);
-	// XXX remove this one.
 	bool    setAttributes(const PP_PropertyVector & attributes);
-	bool	setProperties(const gchar ** properties);
 	bool	setProperties(const PP_PropertyVector & properties);
 
 	PP_PropertyVector getAttributes () const;
@@ -190,11 +187,13 @@ protected:
 /*
  * Safe version of UT_setPropsToNothing. Deleted values are "".
  */
-PP_PropertyVector PP_std_setPropsToNothing(const gchar ** props);
 PP_PropertyVector PP_std_setPropsToNothing(const PP_PropertyVector & props);
 // just copy to a std. Long term, remove this
 // XXX remove this
 PP_PropertyVector PP_std_copyProps(const gchar ** props);
+// safe version of UT_setPropsToValue.
+PP_PropertyVector PP_std_setPropsToValue(const PP_PropertyVector & props,
+										 const gchar * value);
 // safe version of UT_setPropsToValue.
 PP_PropertyVector PP_std_setPropsToValue(const gchar ** props,
 										 const gchar * value);
@@ -204,5 +203,10 @@ bool PP_hasAttribute(const char* name, const PP_PropertyVector & atts);
 
 // XXX ineficient
 std::string PP_getAttribute(const char* name, const PP_PropertyVector & atts);
+
+// XXX ineficient
+/// Set the attribute %name to %value if it exists
+/// \retval Return true is the property was set.
+bool PP_setAttribute(const char* name, const std::string & value, PP_PropertyVector & atts);
 
 #endif /* PP_ATTRPROP_H */

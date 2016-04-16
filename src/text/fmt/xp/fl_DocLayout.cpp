@@ -843,12 +843,12 @@ bool FL_DocLayout::loadPendingObjects(void)
 	  //
 	  // Now define the Frame attributes strux
 	  //
-		const gchar * attributes[5] = {PT_STRUX_IMAGE_DATAID,
-					  NULL,"props",NULL,NULL};
-		attributes[1] = sID.utf8_str();
-		attributes[3] = allProps.utf8_str();
+		PP_PropertyVector attributes = {
+			PT_STRUX_IMAGE_DATAID, sID.utf8_str(),
+			"props", allProps.utf8_str()
+		};
 		pf_Frag_Strux * pfFrame = NULL;
-		pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
+		pDoc->insertStrux(pos, PTX_SectionFrame, attributes, PP_NOPROPS, &pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
 		pDoc->insertStrux(posFrame+1,PTX_EndFrame);
 		pView->insertParaBreakIfNeededAtPos(posFrame+2);
@@ -860,7 +860,6 @@ bool FL_DocLayout::loadPendingObjects(void)
 		{
 		    pDSL->format();
 		    pDSL = pDSL->getNextDocSection();
-		    
 		}
 		//
 		// Get Next ImagePage
@@ -882,7 +881,7 @@ bool FL_DocLayout::loadPendingObjects(void)
 	        continue;
 
 	    // Props neeed for the Text box
-		
+
 	    sProp="frame-type";
 	    sVal="textbox";
 	    UT_UTF8String_setProperty(allProps,sProp,sVal);
@@ -890,10 +889,11 @@ bool FL_DocLayout::loadPendingObjects(void)
 	  //
 	  // Now define the Frame attributes strux
 	  //
-	    const gchar * attributes[3] = {"props",NULL,NULL};
-	    attributes[1] = allProps.utf8_str();
+	    PP_PropertyVector attributes = {
+			"props", allProps.utf8_str()
+		};
 	    pf_Frag_Strux * pfFrame = NULL;
-	    pDoc->insertStrux(pos,PTX_SectionFrame,attributes,NULL,&pfFrame);
+	    pDoc->insertStrux(pos, PTX_SectionFrame, attributes, PP_NOPROPS, &pfFrame);
 	    PT_DocPosition posFrame = pfFrame->getPos();
 	    pDoc->insertStrux(posFrame+1,PTX_EndFrame);
 	    pDoc->insertStrux(posFrame+1,PTX_Block);
@@ -1149,7 +1149,7 @@ void FL_DocLayout::setFramePageNumbers(UT_sint32 iStartPage)
  * The function returns the pointer to the new frame layout. 
  */
 fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayout * newBlock, 
-											  const gchar** attributes, const gchar **properties)
+											  const PP_PropertyVector & attributes, const PP_PropertyVector & properties)
 {
 	if(m_pDoc->isDoingTheDo())
 	{
@@ -1159,7 +1159,7 @@ fl_FrameLayout * FL_DocLayout:: relocateFrame(fl_FrameLayout * pFL, fl_BlockLayo
 	const PP_AttrProp* pFrameAP = NULL;
 	PP_AttrProp * pUpdatedFrameAP = NULL;
 	pFL->getAP(pFrameAP);
-	pUpdatedFrameAP = pFrameAP->cloneWithReplacements(PP_std_copyProps(attributes), PP_std_copyProps(properties), false);
+	pUpdatedFrameAP = pFrameAP->cloneWithReplacements(attributes, properties, false);
 
 	// Copy the frame content to clipboard
 	bool isTextBox = (pFL->getFrameType() < FL_FRAME_WRAPPER_IMAGE);
@@ -4687,18 +4687,16 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 			// 2nd - Not using custom quotes, look up doc lang
 			if (!bOK2 || !bUseCustomQuotes)
 			{
-				const char * pszLang = NULL;
-				const gchar ** props_in = NULL;
-				if (m_pView->getCharFormat(&props_in))
+				std::string lang;
+				PP_PropertyVector props_in;
+				if (m_pView->getCharFormat(props_in))
 				{
-					pszLang = UT_getAttribute("lang", props_in);
-					FREEP(props_in);
+					lang = PP_getAttribute("lang", props_in);
 				}
 
-				if (pszLang && *pszLang)
+				if (!lang.empty())
 				{
-					const XAP_LangInfo* found = XAP_EncodingManager::findLangInfoByLocale(pszLang);
-				
+					const XAP_LangInfo* found = XAP_EncodingManager::findLangInfoByLocale(lang.c_str());
 					if (found)
 					{
 						nOuterQuoteStyleIndex = found->outerQuoteIdx;

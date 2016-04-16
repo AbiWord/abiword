@@ -261,20 +261,17 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 				m_bBlockDirectionPending = false;
 
 				// set 'dom-dir' property of the block ...
-				const gchar * propsArray[3];
-				propsArray[0] = "props";
-				propsArray[1] = NULL;
-				propsArray[2] = NULL;
 
-				UT_String props("dom-dir:");
-				
+				std::string props("dom-dir:");
+
 				if(UT_BIDI_IS_RTL(type))
 					props += "rtl;text-align:right";
 				else
 					props += "ltr;text-align:left";
 
-				propsArray[1] = props.c_str();
-				
+				const PP_PropertyVector propsArray = {
+					"props", props
+				};
 				// we need to modify the existing formatting ...
 				if(m_pBlock == NULL)
 				{
@@ -284,8 +281,8 @@ bool IE_Imp_Text::_insertSpan(UT_GrowBuf &b)
 						m_pBlock = sdh;
 					}
 				}
-				appendStruxFmt(m_pBlock, static_cast<const gchar **>(&propsArray[0]));
-			
+				appendStruxFmt(m_pBlock, propsArray);
+
 				// if this is the first data in the block and the first
 				// character is LRM or RLM followed by a strong character,
 				// then we will remove it

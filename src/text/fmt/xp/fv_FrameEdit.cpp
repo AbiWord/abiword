@@ -1,5 +1,7 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (c) 2003 Martin Sevior <msevior@physics.unimelb.edu.au>
+ * Copyright (c) 2016 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1066,30 +1068,31 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		//				 Recommend to do whatever is done for thickness, which must also have a default set but not
 		//				 reverted to on every change.
 		// TODO: if(pAP->getProperty("*-thickness", somePropHolder)) sLeftThickness = gchar_strdup(somePropHolder); else sLeftThickness = "1px";
-		const gchar * props[48] = {"frame-type","textbox",
-					      "wrap-mode","wrapped-both",
-					      "position-to","column-above-text",
-					      "xpos",FrameStrings.sXpos.c_str(),
-					      "ypos",FrameStrings.sYpos.c_str(),
-					      "frame-width",FrameStrings.sWidth.c_str(),
-					      "frame-height",FrameStrings.sHeight.c_str(),
-					      "frame-col-xpos",FrameStrings.sColXpos.c_str(),
-					      "frame-col-ypos",FrameStrings.sColYpos.c_str(),
-					      "frame-page-xpos",FrameStrings.sPageXpos.c_str(),
-					      "frame-page-ypos",FrameStrings.sPageYpos.c_str(),
-					   "frame-pref-page",FrameStrings.sPrefPage.c_str(),
-					   "frame-pref-column",FrameStrings.sPrefColumn.c_str(),
-					      "background-color", "ffffff",
-						  "left-style","1",
-						  "right-style","1",
-						  "top-style","1",
-						  "bot-style","1",
-						  "bg-style","1",
-					   "tight-wrap","0",
-					   "frame-rel-width",m_sRelWidth.c_str(),
-					   "frame-min-height",m_sMinHeight.c_str(),
-					   "frame-expand-height",m_sExpandHeight.c_str(),
-					      NULL,NULL};
+		PP_PropertyVector props = {
+			"frame-type", "textbox",
+			"wrap-mode", "wrapped-both",
+			"position-to", "column-above-text",
+			"xpos", FrameStrings.sXpos.c_str(),
+			"ypos", FrameStrings.sYpos.c_str(),
+			"frame-width", FrameStrings.sWidth.c_str(),
+			"frame-height", FrameStrings.sHeight.c_str(),
+			"frame-col-xpos", FrameStrings.sColXpos.c_str(),
+			"frame-col-ypos", FrameStrings.sColYpos.c_str(),
+			"frame-page-xpos", FrameStrings.sPageXpos.c_str(),
+			"frame-page-ypos", FrameStrings.sPageYpos.c_str(),
+			"frame-pref-page", FrameStrings.sPrefPage.c_str(),
+			"frame-pref-column", FrameStrings.sPrefColumn.c_str(),
+			"background-color", "ffffff",
+			"left-style", "1",
+			"right-style", "1",
+			"top-style", "1",
+			"bot-style", "1",
+			"bg-style", "1",
+			"tight-wrap", "0",
+			"frame-rel-width", m_sRelWidth.c_str(),
+			"frame-min-height", m_sMinHeight.c_str(),
+			"frame-expand-height", m_sExpandHeight.c_str(),
+		};
 //
 // This should place the the frame strux immediately after the block containing
 // position posXY.
@@ -1098,7 +1101,7 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		const PP_AttrProp* pBlockAP = NULL;
 		pCloseBL->getAP(pBlockAP);
 		posAtXY = pCloseBL->getPosition();
-		getDoc()->insertStrux(posAtXY,PTX_SectionFrame,NULL,props,&pfFrame);
+		getDoc()->insertStrux(posAtXY, PTX_SectionFrame, PP_NOPROPS, props, &pfFrame);
 		PT_DocPosition posFrame = pfFrame->getPos();
 		PT_DocPosition posEOD= 0;
 		m_pView->getEditableBounds(true,posEOD);
@@ -1215,17 +1218,18 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 				&pCloseBL,&pPage);
 		posAtXY = pCloseBL->getPosition();
 
-		const gchar * props[] = {"xpos",FrameStrings.sXpos.c_str(),
-					 "ypos",FrameStrings.sYpos.c_str(),
-					 "frame-col-xpos",FrameStrings.sColXpos.c_str(),
-					 "frame-col-ypos",FrameStrings.sColYpos.c_str(),
-					 "frame-page-xpos",FrameStrings.sPageXpos.c_str(),
-					 "frame-page-ypos",FrameStrings.sPageYpos.c_str(),
-					 "frame-pref-page",FrameStrings.sPrefPage.c_str(),
-					 "frame-pref-column",FrameStrings.sPrefColumn.c_str(),
-					  "frame-width",FrameStrings.sWidth.c_str(),
-					 "frame-height",FrameStrings.sHeight.c_str(),
-					 NULL};
+		const PP_PropertyVector props = {
+			"xpos", FrameStrings.sXpos.c_str(),
+			"ypos", FrameStrings.sYpos.c_str(),
+			"frame-col-xpos", FrameStrings.sColXpos.c_str(),
+			"frame-col-ypos", FrameStrings.sColYpos.c_str(),
+			"frame-page-xpos", FrameStrings.sPageXpos.c_str(),
+			"frame-page-ypos", FrameStrings.sPageYpos.c_str(),
+			"frame-pref-page", FrameStrings.sPrefPage.c_str(),
+			"frame-pref-column", FrameStrings.sPrefColumn.c_str(),
+			"frame-width", FrameStrings.sWidth.c_str(),
+			"frame-height", FrameStrings.sHeight.c_str()
+		};
 		// Signal PieceTable Change
 		m_pView->_saveAndNotifyPieceTableChange();
 		getDoc()->disableListUpdates();
@@ -1237,13 +1241,13 @@ void FV_FrameEdit::mouseRelease(UT_sint32 x, UT_sint32 y)
 		{
 		    PT_DocPosition posStart = pFL->getPosition(true)+1;
 		    PT_DocPosition posEnd = posStart;
-		    UT_DebugOnly<bool> bRet = getDoc()->changeStruxFmt(PTC_AddFmt,posStart,posEnd,NULL,
-								       props,PTX_SectionFrame);
+		    UT_DebugOnly<bool> bRet = getDoc()->changeStruxFmt(PTC_AddFmt, posStart, posEnd, PP_NOPROPS,
+								       props, PTX_SectionFrame);
 		    UT_ASSERT(bRet);
 		}
 		else
 		{
-		    pFL = getLayout()->relocateFrame(pFL,pCloseBL,NULL,props);
+			pFL = getLayout()->relocateFrame(pFL, pCloseBL, PP_NOPROPS, props);
 		}
 
         // Finish up with the usual stuff

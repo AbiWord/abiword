@@ -103,7 +103,7 @@ bool IE_Imp::appendStrux (PTStruxType pts, const PP_PropertyVector & attributes)
 		}
 }
 
-bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
+bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const PP_PropertyVector & attributes)
 {
 	if (!m_isPaste)
 		return m_pDocument->appendStruxFmt(pfs, attributes);
@@ -111,16 +111,16 @@ bool IE_Imp::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
 	{
 		bool bRes;
 
-		if (pfs == NULL) 
+		if (pfs == NULL)
 		{
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 			bRes = false;
-		} 
-		else 
+		}
+		else
 		{
 			bRes = m_pDocument->changeStruxFmt(PTC_AddFmt,
 											   m_dpos, m_dpos,
-											   attributes, NULL,
+											   attributes, PP_NOPROPS,
 											   PTX_Block);
 		}
 		return bRes;

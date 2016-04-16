@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -3631,17 +3631,18 @@ void fp_ImageRun::_lookupProperties(const PP_AttrProp * pSpanAP,
 			if(iH < maxH)
 				maxH = iH;
 		}
-		const char * pProps[5] = {"width",NULL,"height",NULL,NULL};
 		m_sCachedWidthProp = UT_formatDimensionString(DIM_IN,static_cast<double>(maxW)/UT_LAYOUT_RESOLUTION);
-		m_sCachedHeightProp =UT_formatDimensionString(DIM_IN,static_cast<double>(maxH)/UT_LAYOUT_RESOLUTION);
-		pProps[1] = m_sCachedWidthProp.c_str();
-		pProps[3] = m_sCachedHeightProp.c_str();
+		m_sCachedHeightProp = UT_formatDimensionString(DIM_IN,static_cast<double>(maxH)/UT_LAYOUT_RESOLUTION);
+		PP_PropertyVector props = {
+			"width", m_sCachedWidthProp.c_str(),
+			"height", m_sCachedHeightProp.c_str()
+		};
 		if(!pG->queryProperties(GR_Graphics::DGP_PAPER))
 		{
 			//
 			// Change the properties in the document
 			//
-			getBlock()->getDocument()->changeObjectFormatNoUpdate(PTC_AddFmt,m_OH,NULL,pProps);
+			getBlock()->getDocument()->changeObjectFormatNoUpdate(PTC_AddFmt, m_OH, PP_NOPROPS, props);
 			//
 			// update the span Attribute/Propperties with this
 			//

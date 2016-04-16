@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2004 Hubert Figuiere
@@ -400,8 +401,6 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 		return;
 	}
 
-	const gchar * properties[3];
-
 	bool hdrftr = pView1->isHdrFtrEdit();
 
 	fl_HdrFtrShadow * pShadow = pView1->getEditShadow();
@@ -436,13 +435,14 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 		
 	case DW_TOPMARGIN:
 		{
-			UT_String sHeights;
 			UT_DEBUGMSG(("Release TOP Margin 1 \n"));
+			UT_String sHeights;
 			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME) && !pView1->isInFrame(pView1->getPoint()))
 			{
 				dyrel = tick.scalePixelDistanceToUnits(m_draggingCenter - yAbsTop);
 				UT_DEBUGMSG(("Release TOP Margin 1 Column \n"));
 
+				PP_PropertyVector properties(2);
 				if (!hdrftr)
 					properties[0] = "page-margin-top";
 				else
@@ -458,7 +458,6 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 				}
 				sHeights = pG->invertDimension(tick.dimType,dyrel);
 				properties[1] = sHeights.c_str();
-				properties[2] = NULL;
 				pView1->setSectionFormat(properties);
 			}
 			else
@@ -510,9 +509,10 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 					UT_String sHeight("");
 					double dHeight = static_cast<double>(iHeight)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
-					const gchar * props[6] = {"ypos",sYpos.c_str(),
-						"frame-height",sHeight.c_str(),
-						NULL,NULL};
+					const PP_PropertyVector props = {
+						"ypos", sYpos.c_str(),
+						"frame-height",sHeight.c_str()
+					};
 					pView->setFrameFormat(props);
 				}
 				else
@@ -556,6 +556,7 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 			if(!(m_infoCache.m_mode == AP_LeftRulerInfo::TRI_MODE_FRAME) && !pView1->isInFrame(pView1->getPoint()))
 			{
 
+				PP_PropertyVector properties(2);
 				dyrel = tick.scalePixelDistanceToUnits(yEnd - m_draggingCenter);
 				if (!hdrftr)
 					properties[0] = "page-margin-bottom";
@@ -574,7 +575,6 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 				}
 				UT_String sHeights = pG->invertDimension(tick.dimType,dyrel);
 				properties[1] = sHeights.c_str();
-				properties[2] = NULL;
 				pView1->setSectionFormat(properties);
 			}
 			else
@@ -610,8 +610,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 					UT_String sHeight("");
 					double dHeight = static_cast<double>(iHeight)/static_cast<double>(UT_LAYOUT_RESOLUTION);
 					sHeight = UT_formatDimensionedValue(dHeight,"in", NULL);
-					const gchar * props[4] = {"frame-height",sHeight.c_str(),
-								NULL,NULL};
+					const PP_PropertyVector props = {
+						"frame-height",sHeight.c_str()
+					};
 					pView->setFrameFormat(props);
 				}
 				else
@@ -752,7 +753,9 @@ void AP_LeftRuler::mouseRelease(EV_EditModifierState /*ems*/, EV_EditMouseButton
 				}
 			}
 			xxx_UT_DEBUGMSG(("cell marker string is %s \n",sHeights.c_str()));
-			const char * props[3] = {"table-row-heights",sHeights.c_str(),NULL};
+			const PP_PropertyVector props = {
+				"table-row-heights", sHeights.c_str()
+			};
 			if(!pView1->getDragTableLine())
 			{
 				pView1->setTableFormat(props);

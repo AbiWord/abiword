@@ -37,13 +37,13 @@
 // Styles represent named collections of formatting properties.
 
 #define _s(name, displayed, type, base, follow, props)	\
-	do { const gchar * a[] = {						\
+	do { const PP_PropertyVector a = {					\
 			PT_NAME_ATTRIBUTE_NAME, name,				\
 			PT_TYPE_ATTRIBUTE_NAME, type,				\
 			PT_BASEDON_ATTRIBUTE_NAME, base,			\
 			PT_FOLLOWEDBY_ATTRIBUTE_NAME, follow,		\
-			PT_PROPS_ATTRIBUTE_NAME, props,				\
-			0};											\
+			PT_PROPS_ATTRIBUTE_NAME, props				\
+			};											\
 		if (!_createBuiltinStyle(name, displayed, a))	\
 			goto Failed;								\
 	} while(0)
@@ -318,7 +318,7 @@ Failed:
 	return false;
 }
 
-bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, const gchar ** attributes)
+bool pt_PieceTable::_createBuiltinStyle(const char * szName, bool bDisplayed, const  PP_PropertyVector & attributes)
 {
 	// this function can only be called before loading the document.
 	UT_return_val_if_fail (m_pts==PTS_Create, false);

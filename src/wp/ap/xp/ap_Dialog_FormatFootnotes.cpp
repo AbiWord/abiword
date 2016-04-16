@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2003 Martin Sevior
  * 
@@ -16,6 +17,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
  * 02110-1301 USA.
  */
+
+#include "ut_std_string.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_DialogFactory.h"
@@ -189,18 +192,7 @@ void  AP_Dialog_FormatFootnotes::setInitialValues(void)
 
 void AP_Dialog_FormatFootnotes::updateDocWithValues(void)
 {
-	UT_String sFootType;
-	UT_String sEndType;
-	const gchar * pProps[19] = {"document-footnote-type",NULL,
-								  "document-footnote-initial",NULL,
-								  "document-footnote-restart-section",NULL,
-								  "document-footnote-restart-page",NULL,
-								  "document-endnote-type",NULL,
-								  "document-endnote-initial",NULL,
-								  "document-endnote-restart-section",NULL,
-								  "document-endnote-place-endsection",NULL,
-								  "document-endnote-place-enddoc",NULL,
-								  NULL};
+	std::string sFootType;
 	switch (m_iFootnoteType)
 	{
 	case FOOTNOTE_TYPE_NUMERIC:
@@ -249,26 +241,8 @@ void AP_Dialog_FormatFootnotes::updateDocWithValues(void)
 		sFootType = "numeric-square-brackets";
 		break;
 	}
-	pProps[1] = sFootType.c_str();
-	UT_String sFootInitial;
-	UT_String_sprintf(sFootInitial,"%d",m_iFootnoteVal);
-	pProps[3] = sFootInitial.c_str();
-	if(m_bRestartFootSection)
-	{
-		pProps[5] = "1";
-	}
-	else
-	{
-		pProps[5] = "0";
-	}
-	if(m_bRestartFootPage)
-	{
-		pProps[7] = "1";
-	}
-	else
-	{
-		pProps[7] = "0";
-	}
+
+	std::string sEndType;
 	switch (m_iEndnoteType)
 	{
 	case FOOTNOTE_TYPE_NUMERIC:
@@ -317,40 +291,25 @@ void AP_Dialog_FormatFootnotes::updateDocWithValues(void)
 		sEndType = "numeric-square-brackets";
 		break;
 	}
-	pProps[9] = sEndType.c_str();
-	UT_String sEndInitial;
-	UT_String_sprintf(sEndInitial,"%d",m_iEndnoteVal);
-	pProps[11] = sEndInitial.c_str();
-	if(m_bRestartEndSection)
-	{
-		pProps[13] = "1";
-	}
-	else
-	{
-		pProps[13] = "0";
-	}
-	if(m_bPlaceAtSecEnd)
-	{
-		pProps[15] = "1";
-	}
-	else
-	{
-		pProps[15] = "0";
-	}
-	if(m_bPlaceAtDocEnd)
-	{
-		pProps[17] = "1";
-	}
-	else
-	{
-		pProps[17] = "0";
-	}
+
+	PP_PropertyVector pProps = {
+		"document-footnote-type", sFootType,
+		"document-footnote-initial", UT_std_string_sprintf("%d", m_iFootnoteVal),
+		"document-footnote-restart-section", m_bRestartFootSection ? "1" : "0",
+		"document-footnote-restart-page", m_bRestartFootPage ? "1" : "0",
+		"document-endnote-type", sEndType,
+		"document-endnote-initial", UT_std_string_sprintf("%d", m_iEndnoteVal),
+		"document-endnote-restart-section", m_bRestartEndSection ? "1" : "0",
+		"document-endnote-place-endsection", m_bPlaceAtSecEnd ? "1" : "0",
+		"document-endnote-place-enddoc", m_bPlaceAtDocEnd ? "1" : "0"
+	};
+
 	m_pDoc->setProperties(pProps);
 	m_pDoc->signalListeners(PD_SIGNAL_DOCPROPS_CHANGED_REBUILD);
-}	
+}
 
 
-const FootnoteTypeDesc* 
+const FootnoteTypeDesc*
 AP_Dialog_FormatFootnotes::getFootnoteTypeLabelList(void)
 {
 	return s_FootnoteTypeDesc;

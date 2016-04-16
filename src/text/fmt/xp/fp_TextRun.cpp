@@ -2985,20 +2985,16 @@ void fp_TextRun::setDirOverride(UT_BidiCharType dir)
 	if(dir ==  static_cast<UT_BidiCharType>(UT_BIDI_UNSET) || dir ==  static_cast<UT_BidiCharType>(m_iDirOverride))
 		return;
 
-	const gchar * prop[] = {NULL, NULL, 0};
-	const gchar direction[] = "dir-override";
-	const gchar rtl[] = "rtl";
-	const gchar ltr[] = "ltr";
-
-	prop[0] = static_cast<const gchar*>(&direction[0]);
-
+	PP_PropertyVector prop = {
+		"dir-override", ""
+	};
 	switch(dir)
 	{
 		case UT_BIDI_LTR:
-			prop[1] = static_cast<const gchar*>(&ltr[0]);
+			prop[1] = "ltr";
 			break;
 		case UT_BIDI_RTL:
-			prop[1] = static_cast<const gchar*>(&rtl[0]);
+			prop[1] = "rtl";
 			break;
 		default:
 			UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
@@ -3007,9 +3003,9 @@ void fp_TextRun::setDirOverride(UT_BidiCharType dir)
 	m_iDirOverride = dir;
 
 	UT_uint32 offset = getBlock()->getPosition() + getBlockOffset();
-	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + getLength(),NULL,prop);
+	getBlock()->getDocument()->changeSpanFmt(PTC_AddFmt,offset,offset + getLength(), PP_NOPROPS, prop);
 
-	UT_DEBUGMSG(("fp_TextRun::setDirOverride: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1]));
+	UT_DEBUGMSG(("fp_TextRun::setDirOverride: offset=%d, len=%d, dir=\"%s\"\n", offset,getLength(),prop[1].c_str()));
 }
 
 /*! A word of explanaiton of the break*AtDirBoundaries() functions.

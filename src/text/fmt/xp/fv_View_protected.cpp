@@ -34,6 +34,7 @@
 #include "ut_growbuf.h"
 #include "ut_misc.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_bytebuf.h"
 #include "ut_timer.h"
 #include "ut_types.h"
@@ -512,14 +513,16 @@ void FV_View::_deleteSelection(PP_AttrProp *p_AttrProp_Before, bool bNoUpdate,
 	pBL = getCurrentBlock();
 	if(pBL && (pBL->getNextBlockInDocument() == NULL) && (pBL->getPrevBlockInDocument() == NULL))
 	{
-	     if(pBL->isHidden() == FP_HIDDEN_TEXT)
-	     {
-	          const char * props[3] = {"display",NULL,NULL};
-	          PT_DocPosition pos = pBL->getPosition();
-		  PT_DocPosition posEnd = pos + pBL->getLength() -1;
-	          m_pDoc->changeStruxFmt(PTC_RemoveFmt,pos,posEnd,NULL,props,PTX_Block);
-		  m_pDoc->changeSpanFmt(PTC_RemoveFmt,pos,posEnd,NULL,props);
-	     }
+		 if(pBL->isHidden() == FP_HIDDEN_TEXT)
+		 {
+			  const PP_PropertyVector props = {
+				  "display", ""
+			  };
+			  PT_DocPosition pos = pBL->getPosition();
+			  PT_DocPosition posEnd = pos + pBL->getLength() -1;
+			  m_pDoc->changeStruxFmt(PTC_RemoveFmt, pos, posEnd, PP_NOPROPS, props, PTX_Block);
+			  m_pDoc->changeSpanFmt(PTC_RemoveFmt, pos, posEnd, PP_NOPROPS, props);
+		 }
 	}
 //
 // Stop any lists remaining if we've deleted their list fields
@@ -692,17 +695,17 @@ bool FV_View::_restoreCellParams(PT_DocPosition posTable, pf_Frag_Strux * tableS
 	// with the property table-wait-index decremented by 1 and removed if it is equal to 0.
 	//
 	fl_TableLayout * pTL = static_cast<fl_TableLayout*>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID()));
-	const char * pszTable[3] = {"table-wait-index",NULL,NULL};
-	UT_String sWaitTag = NULL;
+	PP_PropertyVector propsTable = {
+		"table-wait-index", ""
+	};
 	if (pTL->getTableWaitIndex() == 1)
 	{
-		m_pDoc->changeStruxFmt(PTC_RemoveFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+		m_pDoc->changeStruxFmt(PTC_RemoveFmt, posTable, posTable, PP_NOPROPS, propsTable, PTX_SectionTable);
 	}
 	else
 	{
-		UT_String_sprintf(sWaitTag,"%d", pTL->getTableWaitIndex() - 1);
-		pszTable[1] = sWaitTag.c_str();
-		m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+		propsTable[1] =	UT_std_string_sprintf("%d", pTL->getTableWaitIndex() - 1);
+		m_pDoc->changeStruxFmt(PTC_AddFmt, posTable, posTable, PP_NOPROPS, propsTable, PTX_SectionTable);
 	}
 
 //
@@ -743,11 +746,10 @@ bool FV_View::_changeCellParams(PT_DocPosition posTable, pf_Frag_Strux* tableSDH
 	// with property table-wait-index incremented by 1 so that it is set to a value different from 0.
 	//
 	fl_TableLayout * pTL = static_cast<fl_TableLayout*>(m_pDoc->getNthFmtHandle(tableSDH,m_pLayout->getLID()));
-	const char * pszTable[3] = {"table-wait-index",NULL,NULL};
-	UT_String sWaitTag = NULL;
-	UT_String_sprintf(sWaitTag,"%d",pTL->getTableWaitIndex() + 1);
-	pszTable[1] = sWaitTag.c_str();
-	m_pDoc->changeStruxFmt(PTC_AddFmt,posTable,posTable,NULL,pszTable,PTX_SectionTable);
+	PP_PropertyVector propsTable = {
+		"table-wait-index", UT_std_string_sprintf("%d", pTL->getTableWaitIndex() + 1)
+	};
+	m_pDoc->changeStruxFmt(PTC_AddFmt, posTable, posTable, PP_NOPROPS, propsTable, PTX_SectionTable);
 
 	return true;
 }
@@ -819,20 +821,12 @@ bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32
 	{
 		return false;
 	}
-	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-	UT_String sLeft,sRight,sTop,sBot;
-	props[0] = "left-attach";
-	UT_String_sprintf(sLeft,"%d",left);
-	props[1] = sLeft.c_str();
-	props[2] = "right-attach";
-	UT_String_sprintf(sRight,"%d",right);
-	props[3] = sRight.c_str();
-	props[4] = "top-attach";
-	UT_String_sprintf(sTop,"%d",top);
-	props[5] = sTop.c_str();
-	props[6] = "bot-attach";
-	UT_String_sprintf(sBot,"%d",bot);
-	props[7] = sBot.c_str();
+	const PP_PropertyVector props = {
+		"left-attach", UT_std_string_sprintf("%d", left),
+		"right-attach", UT_std_string_sprintf("%d", right),
+		"top-attach", UT_std_string_sprintf("%d", top),
+		"bot-attach", UT_std_string_sprintf("%d", bot)
+	};
 
 //
 // Here we trust that the calling routine will do all the begin/end globbing and other
@@ -840,7 +834,7 @@ bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32
 // Here we just change
 //
 
-	bool bres = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,NULL,props,PTX_SectionCell);
+	bool bres = m_pDoc->changeStruxFmt(PTC_AddFmt, posCell, posCell, PP_NOPROPS, props, PTX_SectionCell);
 
 	return bres;
 }
@@ -852,23 +846,15 @@ bool FV_View::_changeCellTo(PT_DocPosition posTable, UT_sint32 rowold, UT_sint32
 bool FV_View::_insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot,
 							const PP_PropertyVector & attrsBlock, const PP_PropertyVector & propsBlock)
 {
-	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-	UT_String sLeft,sRight,sTop,sBot;
-	props[0] = "left-attach";
-	UT_String_sprintf(sLeft,"%d",left);
-	props[1] = sLeft.c_str();
-	props[2] = "right-attach";
-	UT_String_sprintf(sRight,"%d",right);
-	props[3] = sRight.c_str();
-	props[4] = "top-attach";
-	UT_String_sprintf(sTop,"%d",top);
-	props[5] = sTop.c_str();
-	props[6] = "bot-attach";
-	UT_String_sprintf(sBot,"%d",bot);
-	props[7] = sBot.c_str();
+	const PP_PropertyVector props = {
+		"left-attach", UT_std_string_sprintf("%d", left),
+		"right-attach", UT_std_string_sprintf("%d", right),
+		"top-attach", UT_std_string_sprintf("%d", top),
+		"bot-attach", UT_std_string_sprintf("%d", bot)
+	};
 
 	bool bres = true;
-	bres = m_pDoc->insertStrux(posCell,PTX_SectionCell,NULL,props);
+	bres = m_pDoc->insertStrux(posCell, PTX_SectionCell, PP_NOPROPS, props);
 	UT_return_val_if_fail(bres,false);
 	bres = m_pDoc->insertStrux(posCell+1,PTX_Block,attrsBlock,propsBlock);
 	UT_return_val_if_fail(bres,false);
@@ -882,22 +868,14 @@ bool FV_View::_insertCellAt(PT_DocPosition posCell, UT_sint32 left, UT_sint32 ri
  */
 bool FV_View::_changeCellAttach(PT_DocPosition posCell, UT_sint32 left, UT_sint32 right, UT_sint32 top, UT_sint32 bot)
 {
-	const char * props[9] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-	UT_String sLeft,sRight,sTop,sBot;
-	props[0] = "left-attach";
-	UT_String_sprintf(sLeft,"%d",left);
-	props[1] = sLeft.c_str();
-	props[2] = "right-attach";
-	UT_String_sprintf(sRight,"%d",right);
-	props[3] = sRight.c_str();
-	props[4] = "top-attach";
-	UT_String_sprintf(sTop,"%d",top);
-	props[5] = sTop.c_str();
-	props[6] = "bot-attach";
-	UT_String_sprintf(sBot,"%d",bot);
-	props[7] = sBot.c_str();
+	const PP_PropertyVector props = {
+		"left-attach", UT_std_string_sprintf("%d", left),
+		"right-attach", UT_std_string_sprintf("%d", right),
+		"top-attach", UT_std_string_sprintf("%d", top),
+		"bot-attach", UT_std_string_sprintf("%d", bot)
+	};
 
-	bool bres = m_pDoc->changeStruxFmt(PTC_AddFmt,posCell,posCell,NULL,props,PTX_SectionCell);
+	bool bres = m_pDoc->changeStruxFmt(PTC_AddFmt, posCell, posCell, PP_NOPROPS, props, PTX_SectionCell);
 	return bres;
 }
 
@@ -1454,9 +1432,8 @@ void FV_View::_insertSectionBreak(void)
 	UT_GenericVector<fl_HdrFtrSectionLayout *> vecPrevHdrFtr;
 	pPrevDSL->getVecOfHdrFtrs( &vecPrevHdrFtr);
 	UT_sint32 i =0;
-	const gchar* block_props[] = {
-		"text-align", "left",
-		NULL, NULL
+	const PP_PropertyVector block_props = {
+		"text-align", "left"
 	};
 	HdrFtrType hfType;
 	fl_HdrFtrSectionLayout * pHdrFtrSrc = NULL;
@@ -3294,12 +3271,11 @@ FV_View::_findGetPrevBlockBuffer(fl_BlockLayout** pBlock,
 	return bufferSegment;
 }
 
-bool FV_View::_insertField(const char* szName, 
-						   const gchar ** extra_attrs, 
-						   const gchar ** extra_props)
+bool FV_View::_insertField(const char* szName,
+						   const PP_PropertyVector & extra_attrs,
+						   const PP_PropertyVector & extra_props)
 {
 	bool bResult = false;
-	int attrCount = 0;
 	if(szName && ((strcmp(szName,"sum_rows") == 0) || (strcmp(szName,"sum_cols") == 0)))
 	{
 	     if(!isInTable())
@@ -3307,23 +3283,10 @@ bool FV_View::_insertField(const char* szName,
 	          return false;
 	     }
 	}
-	while (extra_attrs && extra_attrs[attrCount] != NULL)
-	{
-		attrCount++;
-	}
 
-	const gchar ** attributes = new const gchar*[attrCount+4];
-
-	int i = 0;
-	while (extra_attrs && extra_attrs[i] != NULL)
-	{
-		attributes[i] = extra_attrs[i];
-		i++;
-	}
-	attributes[i++] = "type";
-	attributes[i++] = szName;
-	attributes[i++] = NULL;
-	attributes[i++] = NULL;
+	PP_PropertyVector attributes = extra_attrs;
+	attributes.push_back("type");
+	attributes.push_back(szName);
 
 
 	fd_Field * pField = NULL;
@@ -3337,7 +3300,7 @@ bool FV_View::_insertField(const char* szName,
 		{
 			_makePointLegal();
 		}
-		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props,&pField);
+		bResult = m_pDoc->insertObject(getPoint(), PTO_Field, attributes, extra_props, &pField);
 		if(pField != NULL)
 		{
 			pField->update();
@@ -3362,10 +3325,9 @@ bool FV_View::_insertField(const char* szName,
 		}
 	}
 
-	delete [] attributes;
 	return bResult;
 }
- 
+
 bool
 FV_View::_findReplaceReverse(UT_uint32* pPrefix, bool& bDoneEntireDocument, bool bNoUpdate)
 {
@@ -5821,23 +5783,22 @@ UT_UCSChar * FV_View::_lookupSuggestion(fl_BlockLayout* pBL,
 		}
 
 		// get language code for misspelled word
-		const char * szLang = NULL;
+		std::string lang;
 
-		const gchar ** props_in = NULL;
+		PP_PropertyVector props_in;
 
-		if (getCharFormat(&props_in))
+		if (getCharFormat(props_in))
 		{
-			szLang = UT_getAttribute("lang", props_in);
-			FREEP(props_in);
+			lang = PP_getAttribute("lang", props_in);
 		}
 
 		// get spellchecker engine for language code
 		SpellChecker * checker = NULL;
 
-		if (szLang)
+		if (!lang.empty())
 		{
 			// we get smart and request the proper dictionary
-			checker = SpellManager::instance().requestDictionary(szLang);
+			checker = SpellManager::instance().requestDictionary(lang.c_str());
 		}
 		else
 		{
@@ -6160,11 +6121,11 @@ void FV_View::_fixInsertionPointAfterRevision()
 		PT_DocPosition posStart = getPoint();
 		PT_DocPosition posEnd = posStart;
 
-		const gchar rev[] = "revision";
-		const gchar val[] = "";
-		const gchar * attr[3] = {rev,val,NULL};
+		PP_PropertyVector attr = {
+			"revision", ""
+		};
 
-		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt,posStart,posEnd,attr,NULL);
+		bRet = m_pDoc->changeSpanFmt(PTC_RemoveFmt, posStart, posEnd, attr, PP_NOPROPS);
 		UT_ASSERT(bRet);
 
 		// Signal piceTable is stable again

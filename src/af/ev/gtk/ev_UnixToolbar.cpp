@@ -359,11 +359,12 @@ public:									// we create...
 		}
 	};
 
+    // XXX I'm sure this doesn't belong here
 	static void s_new_table(GtkWidget * /*table*/, int rows, int cols, gpointer* user_data)
 	{
 		// this is a static callback method and does not have a 'this' pointer.
 		// map the user_data into an object and dispatch the event.
-	
+
 		_wd * wd = reinterpret_cast<_wd *>(user_data);
 		UT_return_if_fail(wd);
 		GdkEvent * event = gtk_get_current_event();
@@ -371,7 +372,7 @@ public:									// we create...
 		if (!wd->m_blockSignal && (rows > 0) && (cols > 0))
 		{
 			FV_View * pView = static_cast<FV_View *>(wd->m_pUnixToolbar->getFrame()->getCurrentView());
-			pView->cmdInsertTable(rows,cols,NULL);
+			pView->cmdInsertTable(rows, cols, PP_NOPROPS);
 		}
 	}
 

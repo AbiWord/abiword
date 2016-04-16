@@ -1961,7 +1961,7 @@ bool ie_imp_table_control::NewRow(void)
 	if(bFound)
 	{
 		sdhCell = pCell->getCellSDH();
-		m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_EndTable,NULL);
+		m_pDoc->insertStruxNoUpdateBefore(sdhCell, PTX_EndTable, PP_NOPROPS);
 		bAuto = getTable()->isAutoFit();
 		CloseTable();
 	}
@@ -1976,7 +1976,7 @@ bool ie_imp_table_control::NewRow(void)
 //
 // Now create a new table with the old last row and the first new row.
 //
-	m_pDoc->insertStruxNoUpdateBefore(sdhCell,PTX_SectionTable,NULL);
+	m_pDoc->insertStruxNoUpdateBefore(sdhCell, PTX_SectionTable, PP_NOPROPS);
 	OpenTable();
 	getTable()->setAutoFit(bAuto);
 	getTable()->appendRow(&vecRow);
@@ -2488,7 +2488,7 @@ bool IE_Imp_TableHelper::Block (PTStruxType /*pts*/, const PP_PropertyVector & a
 	return true;
 }
 
-bool IE_Imp_TableHelper::BlockFormat (const gchar ** attributes)
+bool IE_Imp_TableHelper::BlockFormat (const PP_PropertyVector & attributes)
 {
 	if(!m_bBlockInsertedForCell)
 		{
@@ -2505,7 +2505,7 @@ bool IE_Imp_TableHelper::BlockFormat (const gchar ** attributes)
 		}
 	pf_Frag_Strux* sdh = pfs;
 	getDoc()->getPrevStruxOfType(pfs,PTX_Block,&sdh);
-	getDoc()->changeStruxFormatNoUpdate(PTC_AddFmt,sdh,attributes);
+	getDoc()->changeStruxFormatNoUpdate(PTC_AddFmt, sdh, attributes);
 	return true;
 }
 
@@ -2787,7 +2787,7 @@ bool IE_Imp_TableHelperStack::Block (PTStruxType pts, const PP_PropertyVector & 
 	return false;
 }
 
-bool IE_Imp_TableHelperStack::BlockFormat (const gchar ** attributes)
+bool IE_Imp_TableHelperStack::BlockFormat (const PP_PropertyVector & attributes)
 {
 	IE_Imp_TableHelper * th = top ();
 	if (th)

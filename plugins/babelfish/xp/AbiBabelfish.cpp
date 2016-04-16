@@ -127,13 +127,13 @@ static bool _getTranslationCode (FV_View * pView, UT_String & langCode)
     = static_cast<XAP_Dialog_Language *>(pDialogFactory->requestDialog(id));
   UT_return_val_if_fail(pDialog,false);
 
-  UT_String code ("en-US");
+  std::string code ("en-US");
   
-  const gchar ** props_in = NULL;
-  if (pView->getCharFormat(&props_in))
+  PP_PropertyVector props_in;
+  if (pView->getCharFormat(props_in))
     {
-      const gchar * xml_code = UT_getAttribute("lang", props_in);
-      if ( xml_code )
+      std::string xml_code = PP_getAttribute("lang", props_in);
+      if (!xml_code.empty())
 	{
 	  code = xml_code ;
 	  if ( code.size() >= 2 )
@@ -143,8 +143,7 @@ static bool _getTranslationCode (FV_View * pView, UT_String & langCode)
 	    }
 	}
       
-      pDialog->setLanguageProperty(UT_getAttribute("lang", props_in));
-      FREEP(props_in);
+      pDialog->setLanguageProperty(PP_getAttribute("lang", props_in).c_str());
     }
   
   // run the dialog  
@@ -158,7 +157,7 @@ static bool _getTranslationCode (FV_View * pView, UT_String & langCode)
       const gchar * s;
       if (pDialog->getChangedLangProperty(&s))
 	{
-	  UT_String changedLang = s;
+	  std::string changedLang = s;
 	  if (changedLang.size() >= 2)
 	    {
 	      code += changedLang.substr(0, 2);

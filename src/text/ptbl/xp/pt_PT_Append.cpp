@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -244,7 +244,7 @@ pf_Frag_Strux* pt_PieceTable::_findLastStruxOfType( pf_Frag * pfStart,
     when searching for <p> if bSkipEmbededSections == true the paragraph before <footnote>
     will be modified
 */
-bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const gchar ** attributes, const gchar ** props,
+bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const PP_PropertyVector & attributes, const PP_PropertyVector & props,
 									   bool bSkipEmbededSections)
 {
 	// can only be used while loading the document
@@ -269,7 +269,7 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const gchar ** attribute
     if(!getAttrProp(currentAP,&pOldAP))
 		return false;
 
-	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(PP_std_copyProps(attributes), PP_std_copyProps(props), false);
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attributes, props, false);
 	pNewAP->markReadOnly();
 
 	PT_AttrPropIndex indexAP;
@@ -283,41 +283,42 @@ bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const gchar ** attribute
 
 /*!
     As above, but props represented by a single XML string
-    
 */
-bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const gchar ** attributes, const gchar * props,
+bool pt_PieceTable::appendLastStruxFmt(PTStruxType pst, const PP_PropertyVector & attributes, const std::string & props,
 									   bool bSkipEmbededSections)
 {
-	if(props && *props)
+	// XXX there is a lot in common with changeLastStruxFmt()
+	if(!props.empty())
 	{
 		// we parse the xml props string into separate field by simply duplicating it and then
 		// replacing ; and : with '0';
-	
-		// foolproofing
-		if(*props == ';')
-			props++;
-		
-		char * pProps = g_strdup(props);
 
-		const gchar ** pPropsArray = UT_splitPropsToArray(pProps);
+		// foolproofing
+		// pProps belong to the std::string.
+		const char* pProps = props.c_str();
+		if(*pProps == ';')
+			pProps++;
+
+		char * pProps2 = g_strdup(pProps);
+
+		const gchar ** pPropsArray = UT_splitPropsToArray(pProps2);
 		UT_return_val_if_fail( pPropsArray, false );
-		
-		bool bRet = appendLastStruxFmt(pst, attributes, pPropsArray, bSkipEmbededSections);
+
+		bool bRet = appendLastStruxFmt(pst, attributes, PP_std_copyProps(pPropsArray), bSkipEmbededSections);
 
 		delete [] pPropsArray;
-		FREEP(pProps);
+		FREEP(pProps2);
 
 		return bRet;
 	}
 	else
 	{
-		const gchar ** pPropsArray = NULL;
-		return appendLastStruxFmt(pst, attributes, pPropsArray, bSkipEmbededSections);
+		return appendLastStruxFmt(pst, attributes, PP_NOPROPS, bSkipEmbededSections);
 	}
 }
 
 /*! changes formatting of a strux while loading document */
-bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes)
+bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const PP_PropertyVector & attributes)
 {
 	// can only be used while loading the document
 	UT_return_val_if_fail (m_pts==PTS_Loading,false);
@@ -335,7 +336,7 @@ bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attribute
     if(!getAttrProp(currentAP,&pOldAP))
 		return false;
 
-	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(PP_std_copyProps(attributes), PP_NOPROPS, true);
+	PP_AttrProp * pNewAP = pOldAP->cloneWithReplacements(attributes, PP_NOPROPS, true);
 	pNewAP->markReadOnly();
 
 	PT_AttrPropIndex indexAP;
@@ -347,28 +348,6 @@ bool pt_PieceTable::appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attribute
 	return true;
 }
 
-bool pt_PieceTable::appendFmt(const gchar ** attributes)
-{
-	// can only be used while loading the document
-	UT_return_val_if_fail (m_pts==PTS_Loading, false);
-
-	// Only a strux can be appended to an empty document
-	UT_return_val_if_fail (NULL != m_fragments.getFirst(), false);
-
-	// create a new Attribute/Property structure in the table
-	// and set the current index to it.  the next span of text
-	// (in this block) that comes in will then be set to these
-	// attributes/properties.  becase we are loading, we do not
-	// create a Fragment or a ChangeRecord.  (Formatting changes
-	// are implicit at this point in time.)
-
-
-	if (!m_varset.storeAP(attributes,&loading.m_indexCurrentInlineAP))
-		return false;
-
-	return true;
-}
-
 bool pt_PieceTable::appendFmt(const PP_PropertyVector & vecAttributes)
 {
 	// can only be used while loading the document
@@ -376,6 +355,13 @@ bool pt_PieceTable::appendFmt(const PP_PropertyVector & vecAttributes)
 
 	// Only a strux can be appended to an empty document
 	UT_return_val_if_fail (NULL != m_fragments.getFirst(),false);
+
+	// create a new Attribute/Property structure in the table
+	// and set the current index to it.  the next span of text
+	// (in this block) that comes in will then be set to these
+	// attributes/properties.  becase we are loading, we do not
+	// create a Fragment or a ChangeRecord.  (Formatting changes
+	// are implicit at this point in time.)
 
 	if (!m_varset.storeAP(vecAttributes, &loading.m_indexCurrentInlineAP))
 		return false;

@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
@@ -71,8 +71,6 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 
 	m_dim = bHasRulerUnits ? UT_determineDimension(szRulerUnits) : DIM_IN;
 
-	m_pageLeftMargin = NULL;
-	m_pageRightMargin = NULL;
 
 	_addPropertyItem (id_MENU_ALIGNMENT,		sControlData(align_UNDEF));
 	_addPropertyItem (id_SPIN_LEFT_INDENT,		sControlData());
@@ -94,39 +92,35 @@ AP_Dialog_Paragraph::AP_Dialog_Paragraph(XAP_DialogFactory* pDlgFactory, XAP_Dia
 
 AP_Dialog_Paragraph::~AP_Dialog_Paragraph(void)
 {
-	FREEP(m_pageLeftMargin);
-	FREEP(m_pageRightMargin);
-
 	DELETEP(m_paragraphPreview);
 
 	UT_VECTOR_PURGEALL(sControlData *, m_vecProperties);
 }
 
-bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
+bool AP_Dialog_Paragraph::setDialogData(const PP_PropertyVector & pProps)
 {
-	UT_return_val_if_fail (pProps, false);
+	UT_return_val_if_fail (!pProps.empty(), false);
 
 	// NOTICE : When setting values, this function always calls
 	// NOTICE : _set[thing]ItemValue() with the bToggleDirty flag
 	// NOTICE : set to false, because these are the "un-dirty"
 	// NOTICE : values.
 
-	if (pProps[0])
 	{
-		const gchar * sz;
+		std::string sz;
 
-		sz = UT_getAttribute("text-align", pProps);
-		if (sz)
+		sz = PP_getAttribute("text-align", pProps);
+		if (!sz.empty())
 		{
 			tAlignState t = align_LEFT;
 
-			if (strcmp(sz, "center") == 0)
+			if (sz == "center")
 				t = align_CENTERED;
-			else if (strcmp(sz, "right") == 0)
+			else if (sz == "right")
 				t = align_RIGHT;
-			else if (strcmp(sz, "justify") == 0)
+			else if (sz == "justify")
 				t = align_JUSTIFIED;
-			else if (strcmp(sz, "left") == 0)
+			else if (sz == "left")
 				t = align_LEFT;
 			else {
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -135,14 +129,14 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 			_setMenuItemValue(id_MENU_ALIGNMENT, t, op_INIT);
 		}
 
-		sz = UT_getAttribute("dom-dir", pProps);
-		if (sz)
+		sz = PP_getAttribute("dom-dir", pProps);
+		if (!sz.empty())
 		{
 			tCheckState t = check_FALSE;
 
-			if (strcmp(sz, "ltr") == 0)
+			if (sz == "ltr")
 				t = check_FALSE;
-			else if (strcmp(sz, "rtl") == 0)
+			else if (sz == "rtl")
 				t = check_TRUE;
 			else {
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
@@ -151,16 +145,16 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 			_setCheckItemValue(id_CHECK_DOMDIRECTION, t, op_INIT);
 		}
 
-		sz = UT_getAttribute("margin-left", pProps);
-		if (sz)
-			_setSpinItemValue(id_SPIN_LEFT_INDENT, sz, op_INIT);
+		sz = PP_getAttribute("margin-left", pProps);
+		if (!sz.empty())
+			_setSpinItemValue(id_SPIN_LEFT_INDENT, sz.c_str(), op_INIT);
 
-		sz = UT_getAttribute("margin-right", pProps);
-		if (sz)
-			_setSpinItemValue(id_SPIN_RIGHT_INDENT, sz, op_INIT);
+		sz = PP_getAttribute("margin-right", pProps);
+		if (!sz.empty())
+			_setSpinItemValue(id_SPIN_RIGHT_INDENT, sz.c_str(), op_INIT);
 
-		sz = UT_getAttribute("text-indent", pProps);
-		if (sz)
+		sz = PP_getAttribute("text-indent", pProps);
+		if (!sz.empty())
 		{
 			// NOTE : Calling UT_convertDimensionless() _discards_ all
 			// NOTE : unit system information.  IFF all units are
@@ -168,12 +162,13 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 			// NOTE : the comparisons be valid.  For now this should be
 			// NOTE : valid.
 
-			if (UT_convertDimensionless(sz) > (double) 0)
+			double f = UT_convertDimensionless(sz.c_str());
+			if (f > (double) 0)
 			{
 				// if text-indent is greater than margin-left, we have a "first line" case
 				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_FIRSTLINE, op_INIT);
 			}
-			else if (UT_convertDimensionless(sz) < (double) 0)
+			else if (f < (double) 0)
 			{
 				// if text-indent is less than margin-left, we have a "hanging" case
 				_setMenuItemValue(id_MENU_SPECIAL_INDENT, indent_HANGING, op_INIT);
@@ -188,64 +183,57 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 			// if spacing is "NONE".  Must flip the sign (strip minus)
 			// to give illusion of Word's definitions of indent/margin.
 
-			const gchar * newSz = sz;
+			std::string newSz;
 
-			if (sz[0] == '-')
-				newSz++;
+			if (sz[0] == '-') {
+				newSz = sz.substr(1);
+			} else {
+				newSz = sz;
+			}
 
-			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, newSz, op_INIT);
+			_setSpinItemValue(id_SPIN_SPECIAL_INDENT, newSz.c_str(), op_INIT);
 		}
 
-		sz = UT_getAttribute("line-height", pProps);
-		if (sz)
+		sz = PP_getAttribute("line-height", pProps);
+		if (!sz.empty())
 		{
-			UT_uint32 nLen = strlen(sz);
-			if (nLen > 0)
+			std::size_t idx = sz.find('+');
+			if ((idx != std::string::npos) && (idx + 1 < sz.size()))
 			{
-				const char * pPlusFound = strrchr(sz, '+');
-				if (pPlusFound && *(pPlusFound + 1) == 0)
-				{
-					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ATLEAST, op_INIT);
+				_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ATLEAST, op_INIT);
 
-					// need to strip off that plus
-					int posPlus = pPlusFound - (char*) sz;
-					UT_return_val_if_fail (posPlus>=0, false);
-					UT_return_val_if_fail (posPlus<100, false);
+				// need to strip off that plus
 
-					char pTmp[100];
-					strcpy(pTmp, sz);
-					pTmp[posPlus] = 0;
-
-					_setSpinItemValue(id_SPIN_SPECIAL_SPACING, (gchar*)pTmp, op_INIT);
-				}
-				else
-				{
-					if(UT_hasDimensionComponent(sz))
-						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_EXACTLY, op_INIT);
+				std::string val = sz.substr(0, idx);
+				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, val.c_str(), op_INIT);
+			}
+			else
+			{
+				if(UT_hasDimensionComponent(sz.c_str()))
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_EXACTLY, op_INIT);
 					//see Bug 10086 for fabs() usage
-					else if((strcmp("1.0", sz) == 0) || (fabs(UT_convertDimensionless(sz) - (double) 1.0) < 1.0e-7))
-						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_SINGLE, op_INIT);
-					else if((strcmp("1.5", sz) == 0) || (fabs(UT_convertDimensionless(sz) - (double) 1.5) < 1.0e-7))
-						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ONEANDHALF, op_INIT);
-					else if((strcmp("2.0", sz) == 0) || (fabs(UT_convertDimensionless(sz) - (double) 2.0) < 1.0e-7))
-						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_DOUBLE, op_INIT);
-					else
-						_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, op_INIT);
+				else if((sz == "1.0") || (fabs(UT_convertDimensionless(sz.c_str()) - (double) 1.0) < 1.0e-7))
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_SINGLE, op_INIT);
+				else if((sz == "1.5") || (fabs(UT_convertDimensionless(sz.c_str()) - (double) 1.5) < 1.0e-7))
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ONEANDHALF, op_INIT);
+				else if((sz == "2.0") || (fabs(UT_convertDimensionless(sz.c_str()) - (double) 2.0) < 1.0e-7))
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_DOUBLE, op_INIT);
+				else
+					_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_MULTIPLE, op_INIT);
 
-					// set the spin contents regardless of menu content; platforms will
-					// enable or disable the spin item for varying states of menu
-					_setSpinItemValue(id_SPIN_SPECIAL_SPACING, sz, op_INIT);
-				}
+				// set the spin contents regardless of menu content; platforms will
+				// enable or disable the spin item for varying states of menu
+				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, sz.c_str(), op_INIT);
 			}
 		}
 
-		sz = UT_getAttribute("margin-top", pProps);
-		if (sz)
-			_setSpinItemValue(id_SPIN_BEFORE_SPACING, sz, op_INIT);
+		sz = PP_getAttribute("margin-top", pProps);
+		if (!sz.empty())
+			_setSpinItemValue(id_SPIN_BEFORE_SPACING, sz.c_str(), op_INIT);
 
-		sz = UT_getAttribute("margin-bottom", pProps);
-		if (sz)
-			_setSpinItemValue(id_SPIN_AFTER_SPACING, sz, op_INIT);
+		sz = PP_getAttribute("margin-bottom", pProps);
+		if (!sz.empty())
+			_setSpinItemValue(id_SPIN_AFTER_SPACING, sz.c_str(), op_INIT);
 
 		{
 			// NOTE : "orphans" and "widows" hold a number specifying the number
@@ -261,15 +249,15 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 
 			double orphans = 0, widows = 0;
 
-			sz = UT_getAttribute("orphans", pProps);
-			if (sz)
-				orphans = UT_convertDimensionless(sz);
+			sz = PP_getAttribute("orphans", pProps);
+			if (!sz.empty())
+				orphans = UT_convertDimensionless(sz.c_str());
 			else
 				bNoOrphans = true;
 
-			sz = UT_getAttribute("widows", pProps);
-			if (sz)
-				widows = UT_convertDimensionless(sz);
+			sz = PP_getAttribute("widows", pProps);
+			if (!sz.empty())
+				widows = UT_convertDimensionless(sz.c_str());
 			else
 				bNoWidows = true;
 
@@ -281,10 +269,10 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 				_setCheckItemValue(id_CHECK_WIDOW_ORPHAN, check_FALSE, op_INIT);
 		}
 
-		sz = UT_getAttribute("keep-together", pProps);
-		if (sz)
+		sz = PP_getAttribute("keep-together", pProps);
+		if (!sz.empty())
 		{
-			if (strcmp(sz, "yes") == 0)
+			if (sz == "yes")
 				_setCheckItemValue(id_CHECK_KEEP_LINES, check_TRUE, op_INIT);
 			else
 				_setCheckItemValue(id_CHECK_KEEP_LINES, check_FALSE, op_INIT);
@@ -292,10 +280,10 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 		else
 			_setCheckItemValue(id_CHECK_KEEP_LINES, check_INDETERMINATE, op_INIT);
 
-		sz = UT_getAttribute("keep-with-next", pProps);
-		if (sz)
+		sz = PP_getAttribute("keep-with-next", pProps);
+		if (!sz.empty())
 		{
-			if (strcmp(sz, "yes") == 0)
+			if (sz == "yes")
 				_setCheckItemValue(id_CHECK_KEEP_NEXT, check_TRUE, op_INIT);
 			else
 				_setCheckItemValue(id_CHECK_KEEP_NEXT, check_FALSE, op_INIT);
@@ -304,24 +292,24 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 			_setCheckItemValue(id_CHECK_KEEP_NEXT, check_INDETERMINATE, op_INIT);
 
 		// these are not like the others, they set fields on this, not dialogData.
-		sz = UT_getAttribute("page-margin-left", pProps);
-		if (sz)
+		sz = PP_getAttribute("page-margin-left", pProps);
+		if (!sz.empty())
 		{
-			m_pageLeftMargin = g_strdup(sz);
+			m_pageLeftMargin = sz;
 		}
 		else
 		{
-		  	m_pageLeftMargin = g_strdup(PP_lookupProperty("page-margin-left")->getInitial());
+			m_pageLeftMargin = PP_lookupProperty("page-margin-left")->getInitial();
 		}
 
-		sz = UT_getAttribute("page-margin-right", pProps);
-		if (sz)
+		sz = PP_getAttribute("page-margin-right", pProps);
+		if (!sz.empty())
 		{
-			m_pageRightMargin = g_strdup(sz);
+			m_pageRightMargin = sz;
 		}
 		else
 		{
-		  	m_pageRightMargin = g_strdup(PP_lookupProperty("page-margin-right")->getInitial());
+			m_pageRightMargin = PP_lookupProperty("page-margin-right")->getInitial();
 		}
 
 		// TODO : add these to PP_Property (pp_Property.cpp) !!!
@@ -336,88 +324,57 @@ bool AP_Dialog_Paragraph::setDialogData(const gchar ** pProps)
 	return true;
 }
 
-// This function returns a pointer to newly allocated memory, which contains
-// pointers to newly allocated memory.  The caller must g_free both dimensions
-// of this structure (use the FREEP() macro, we use UT_calloc() to allocate it).
-// This function does not g_free any memory pointed to by its argument before
-// writing into it.
-
-#define ALLOC_PROP_PAIR(p)									\
-        do {                								\
-            p = (propPair *) UT_calloc(1, sizeof(propPair));	\
-            if (!p) return false;						\
-        } while (0)											\
-
-bool AP_Dialog_Paragraph::getDialogData(const gchar **& pProps)
+bool AP_Dialog_Paragraph::getDialogData(PP_PropertyVector & pProps)
 {
-	UT_Vector v;
-
-	struct propPair
-	{
-		gchar * prop;
-		gchar * val;
-	};
-
-	propPair * p;
+	// ensure it is empty first.
+	pProps.clear();
 
 	// only do this if the control has a proper value
 	if (_wasChanged(id_MENU_ALIGNMENT)  && _getMenuItemValue(id_MENU_ALIGNMENT))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("text-align");
-
+		const char* val = nullptr;
 		switch (_getMenuItemValue(id_MENU_ALIGNMENT))
 		{
 			case align_LEFT:
-				p->val = g_strdup("left");
+				val = "left";
 				break;
 			case align_CENTERED:
-				p->val = g_strdup("center");
+				val = "center";
 				break;
 			case align_RIGHT:
-				p->val = g_strdup("right");
+				val = "right";
 				break;
 			case align_JUSTIFIED:
-				p->val = g_strdup("justify");
+				val = "justify";
 				break;
 			default:
 				UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
-		v.addItem(p);
+		if (val) {
+			pProps.push_back("text-align");
+			pProps.push_back(val);
+		}
 	}
 
 
 	if (_wasChanged(id_CHECK_DOMDIRECTION))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("dom-dir");
-
-		if (_getCheckItemValue(id_CHECK_DOMDIRECTION) == check_TRUE)
-			p->val = g_strdup("rtl");
-		else
-			p->val = g_strdup("ltr");
-
-		v.addItem(p);
-
+		pProps.push_back("dom-dir");
+		pProps.push_back(_getCheckItemValue(id_CHECK_DOMDIRECTION) == check_TRUE
+						 ? "rtl" : "ltr");
 	}
 
 
 	if (_wasChanged(id_SPIN_LEFT_INDENT))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("margin-left");
-		p->val = g_strdup(_getSpinItemValue(id_SPIN_LEFT_INDENT));
-
-		v.addItem(p);
+		pProps.push_back("margin-left");
+		pProps.push_back(_getSpinItemValue(id_SPIN_LEFT_INDENT));
 	}
 
 	if (_wasChanged(id_SPIN_RIGHT_INDENT))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("margin-right");
-		p->val = g_strdup(_getSpinItemValue(id_SPIN_RIGHT_INDENT));
-
-		v.addItem(p);
+		pProps.push_back("margin-right");
+		pProps.push_back(_getSpinItemValue(id_SPIN_RIGHT_INDENT));
 	}
 
 	// TODO : The logic here might not be bulletproof.  If the user triggers
@@ -429,15 +386,14 @@ bool AP_Dialog_Paragraph::getDialogData(const gchar **& pProps)
 	if (_getMenuItemValue(id_MENU_SPECIAL_INDENT) &&
 		(_wasChanged(id_MENU_SPECIAL_INDENT) || _wasChanged(id_SPIN_SPECIAL_INDENT)))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("text-indent");
+		pProps.push_back("text-indent");
 
 		tIndentState i = (tIndentState) _getMenuItemValue(id_MENU_SPECIAL_INDENT);
 
 		if (i == indent_NONE)
-			p->val = g_strdup(UT_convertInchesToDimensionString(m_dim, 0));
+			pProps.push_back(UT_convertInchesToDimensionString(m_dim, 0));
 		else if (i == indent_FIRSTLINE)
-			p->val = g_strdup(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
+			pProps.push_back(_getSpinItemValue(id_SPIN_SPECIAL_INDENT));
 		else if (i == indent_HANGING)
 		{
 			// we have to flip the sign for "hanging" indents to a negative quantity for
@@ -453,28 +409,20 @@ bool AP_Dialog_Paragraph::getDialogData(const gchar **& pProps)
 			val = val * (double) -1;
 
 			// store the reconstructed
-			p->val = g_strdup(UT_convertInchesToDimensionString(dim, val));
+			pProps.push_back(UT_convertInchesToDimensionString(dim, val));
 		}
-
-		v.addItem(p);
 	}
 
 	if (_wasChanged(id_SPIN_BEFORE_SPACING))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("margin-top");
-		p->val = g_strdup(_getSpinItemValue(id_SPIN_BEFORE_SPACING));
-
-		v.addItem(p);
+		pProps.push_back("margin-top");
+		pProps.push_back(_getSpinItemValue(id_SPIN_BEFORE_SPACING));
 	}
 
 	if (_wasChanged(id_SPIN_AFTER_SPACING))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("margin-bottom");
-		p->val = g_strdup(_getSpinItemValue(id_SPIN_AFTER_SPACING));
-
-		v.addItem(p);
+		pProps.push_back("margin-bottom");
+		pProps.push_back(_getSpinItemValue(id_SPIN_AFTER_SPACING));
 	}
 
 	// TODO : The logic here might not be bulletproof.  If the user triggers
@@ -486,52 +434,43 @@ bool AP_Dialog_Paragraph::getDialogData(const gchar **& pProps)
 	if(_getMenuItemValue(id_MENU_SPECIAL_SPACING) &&
 		 (_wasChanged(id_MENU_SPECIAL_SPACING) || _wasChanged(id_SPIN_SPECIAL_SPACING)))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("line-height");
+		pProps.push_back("line-height");
 
 		// normal spacings (single, 1.5, double) are just simple numbers.
 		// "at least" needs a "+" at the end of the number (no units).
 		// "exactly" simply has units.
 		// "multiple" has no units.
 
-		gchar * pTmp = NULL;
 		const gchar * pString = _getSpinItemValue(id_SPIN_SPECIAL_SPACING);
-		UT_uint32 nSize = 0;
 
 		switch(_getMenuItemValue(id_MENU_SPECIAL_SPACING))
 		{
 		case spacing_SINGLE:
-			p->val = g_strdup("1.0");
+			pProps.push_back("1.0");
 			break;
 		case spacing_ONEANDHALF:
-			p->val = g_strdup("1.5");
+			pProps.push_back("1.5");
 			break;
 		case spacing_DOUBLE:
-			p->val = g_strdup("2.0");
+			pProps.push_back("2.0");
 			break;
-		case spacing_ATLEAST:
-			nSize = strlen(pString);
-			pTmp = (gchar *) UT_calloc(nSize + 2, sizeof(gchar));
-			UT_return_val_if_fail (pTmp, false);
-
-			strncpy(pTmp, pString, nSize);
+		case spacing_ATLEAST: {
+			std::string value = pString;
 			// stick a '+' at the end
-			pTmp[nSize] = '+';
-			p->val = g_strdup(pTmp);
-			FREEP(pTmp);
+			value += '+';
+			pProps.push_back(value);
 			break;
-
+		}
 		case spacing_EXACTLY:
 			// fallthrough
 		case spacing_MULTIPLE:
 			// both these cases either do or don't have units associated with them.
 			// the platform dialog code takes care of that.
-			p->val = g_strdup(pString);
+			pProps.push_back(pString);
 			break;
 		default:
 			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 		}
-		v.addItem(p);
 	}
 
 	// NOTE : "orphans" and "widows" hold a number specifying the number
@@ -547,54 +486,46 @@ bool AP_Dialog_Paragraph::getDialogData(const gchar **& pProps)
 		// TODO : changed
 
 		{
-			ALLOC_PROP_PAIR(p);
-			p->prop = g_strdup("orphans");
+			pProps.push_back("orphans");
 
-			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE)
-				p->val = g_strdup("2");
-			else
-				p->val = g_strdup("0");
-
-			v.addItem(p);
+			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE) {
+				pProps.push_back("2");
+			} else {
+				pProps.push_back("0");
+			}
 		}
 
 		{
-			ALLOC_PROP_PAIR(p);
-			p->prop = g_strdup("widows");
+			pProps.push_back("widows");
 
-			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE)
-				p->val = g_strdup("2");
-			else
-				p->val = g_strdup("0");
-
-			v.addItem(p);
+			if (_getCheckItemValue(id_CHECK_WIDOW_ORPHAN) == check_TRUE) {
+				pProps.push_back("2");
+			} else {
+				pProps.push_back("0");
+			}
 		}
 	}
 
 	if (_wasChanged(id_CHECK_KEEP_LINES))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("keep-together");
+		pProps.push_back("keep-together");
 
-		if (_getCheckItemValue(id_CHECK_KEEP_LINES) == check_TRUE)
-			p->val = g_strdup("yes");
-		else
-			p->val = g_strdup("no");
-
-		v.addItem(p);
+		if (_getCheckItemValue(id_CHECK_KEEP_LINES) == check_TRUE) {
+			pProps.push_back("yes");
+		} else {
+			pProps.push_back("no");
+		}
 	}
 
 	if (_wasChanged(id_CHECK_KEEP_NEXT))
 	{
-		ALLOC_PROP_PAIR(p);
-		p->prop = g_strdup("keep-with-next");
+		pProps.push_back("keep-with-next");
 
-		if (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE)
-			p->val = g_strdup("yes");
-		else
-			p->val = g_strdup("no");
-
-		v.addItem(p);
+		if (_getCheckItemValue(id_CHECK_KEEP_NEXT) == check_TRUE) {
+			pProps.push_back("yes");
+		} else {
+			pProps.push_back("no");
+		}
 	}
 
 	// TODO : add these to PP_Property (pp_Property.cpp) !!!
@@ -603,35 +534,6 @@ bool AP_Dialog_Paragraph::getDialogData(const gchar **& pProps)
 	  m_suppressLineNumbers;
 	  m_noHyphenate;
 	*/
-
-	// export everything in the array
-	UT_uint32 count = v.getItemCount()*2 + 1;
-
-	const gchar ** newprops = (const gchar **) UT_calloc(count, sizeof(gchar *));
-	if (!newprops)
-		return false;
-
-	const gchar ** newitem = newprops;
-
-	UT_uint32 i = v.getItemCount();
-
-	while (i > 0)
-	{
-		p = (propPair *) v.getNthItem(i-1);
-		i--;
-
-		newitem[0] = p->prop;
-		newitem[1] = p->val;
-		newitem += 2;
-	}
-
-	// DO purge the vector's CONTENTS, which are just propPair structs
-	UT_VECTOR_FREEALL(propPair *, v);
-
-	// DO NOT purge the propPair's CONTENTS, because they will be pointed to
-	// by the pointers we just copied into memory typed (gchar **)
-
-	pProps = newprops;
 
 	return true;
 }
@@ -1007,7 +909,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool /*bAll  = false *
 		// cannot go past left page margin.
 		// TODO : is there a minimum text width?
 
-		double leftPageMargin = UT_convertToDimension(m_pageLeftMargin, m_dim);
+		double leftPageMargin = UT_convertToDimension(m_pageLeftMargin.c_str(), m_dim);
 		double rightIndent = UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim);
 
 		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_LEFT_INDENT), m_dim) >
@@ -1033,7 +935,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool /*bAll  = false *
 		// need to check the limits
 		// cannot go past right page margin.
 
-		double rightPageMargin = UT_convertToDimension(m_pageRightMargin, m_dim);
+		double rightPageMargin = UT_convertToDimension(m_pageRightMargin.c_str(), m_dim);
 		double leftIndent = UT_convertToDimension(_getSpinItemValue(id_SPIN_LEFT_INDENT), m_dim);
 
 		if(-UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim) >
@@ -1137,7 +1039,7 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool /*bAll  = false *
 		double effectiveLeftMargin = leftIndent + (UT_convertToDimension
 		  (_getSpinItemValue(id_SPIN_SPECIAL_INDENT), m_dim) * sign);
 
-		double leftPageMargin = UT_convertToDimension(m_pageLeftMargin, m_dim);
+		double leftPageMargin = UT_convertToDimension(m_pageLeftMargin.c_str(), m_dim);
 		double rightIndent = UT_convertToDimension(_getSpinItemValue(id_SPIN_RIGHT_INDENT), m_dim);
 
 		if(-effectiveLeftMargin > leftPageMargin)
@@ -1222,10 +1124,9 @@ void AP_Dialog_Paragraph::_syncControls(tControl changed, bool /*bAll  = false *
 					 " defaulting to LTR\n"));
 		iDir = UT_BIDI_LTR;
 	}
-	
-		
-	m_paragraphPreview->setFormat(m_pageLeftMargin,
-									m_pageRightMargin,
+
+	m_paragraphPreview->setFormat(m_pageLeftMargin.c_str(),
+									m_pageRightMargin.c_str(),
 									(AP_Dialog_Paragraph::tAlignState) _getMenuItemValue(id_MENU_ALIGNMENT),
 									_getSpinItemValue(id_SPIN_SPECIAL_INDENT),
 									(AP_Dialog_Paragraph::tIndentState) _getMenuItemValue(id_MENU_SPECIAL_INDENT),

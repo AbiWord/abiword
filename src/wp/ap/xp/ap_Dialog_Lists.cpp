@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -24,6 +25,7 @@
 #include "ap_Features.h"
 
 #include "ut_assert.h"
+#include "ut_std_string.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 #include "ap_Dialog_Lists.h"
@@ -253,9 +255,6 @@ void AP_Dialog_Lists::Apply(void)
 //
 	        m_bFoldingLevelChanged = false;
 		fl_AutoNum * pAuto = getBlock()->getAutoNum();
-		const gchar * props[5] = {"text-folded",NULL,"text-folded-id",NULL,NULL};
-		UT_UTF8String sStr = UT_UTF8String_sprintf("%d",getCurrentFold());
-		props[1] = sStr.utf8_str();
 		UT_uint32 ID = 0;
 		if(!pAuto)
 		{
@@ -265,8 +264,10 @@ void AP_Dialog_Lists::Apply(void)
 		{
 		        ID = pAuto->getID();
 		}
-		UT_UTF8String sID = UT_UTF8String_sprintf("%d",ID);
-		props[3] = sID.utf8_str();
+		const PP_PropertyVector props = {
+                  "text-folded", UT_std_string_sprintf("%d",getCurrentFold()),
+                  "text-folded-id", UT_std_string_sprintf("%d",ID)
+                };
 		PT_DocPosition posLow = 0;
 		PT_DocPosition posHigh = 0;
 		if(getView()->isSelectionEmpty() && pAuto)
@@ -536,12 +537,12 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 {
 	// if we can get the current font, we will use it where appropriate
 	// the "NULL" string does not work too well on Windows in numbered lists
-	const gchar** props_in = NULL;
-	const gchar * font_family = NULL;
-	if (getView()->getCharFormat(&props_in))
-		font_family = UT_getAttribute("font-family", props_in);
-	if (!font_family)
-		font_family =(const gchar *) "NULL";
+	PP_PropertyVector props_in;
+	std::string font_family;
+	if (getView()->getCharFormat(props_in))
+		font_family = PP_getAttribute("font-family", props_in);
+	if (font_family.empty())
+		font_family = "NULL";
 
 	if(m_NewListType == NOT_A_LIST)
 	{
@@ -580,7 +581,7 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	else if( m_NewListType == UPPERCASE_LIST)
 	{
 		m_pszFont = font_family;
-	    m_pszDecimal = ".";
+		m_pszDecimal = ".";
 		m_iStartValue = 1;
 		m_pszDelim = "%L)";
 	}
@@ -615,9 +616,6 @@ void  AP_Dialog_Lists::fillUncustomizedValues(void)
 	{
 		m_pszFont = "NULL";
 	}
-
-	if(props_in)
-		g_free(props_in);
 }
 
 /*!
@@ -814,7 +812,7 @@ void AP_Dialog_Lists::fillDialogFromVector( UT_GenericVector<const gchar*> * vp)
  */
 void AP_Dialog_Lists::fillDialogFromBlock(void)
 {
-	UT_GenericVector<const gchar*> va,vp;
+	PP_PropertyVector va,vp;
 
 	if (getBlock()->getPreviousList() != NULL)
 	{
@@ -824,8 +822,8 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	{
 		m_previousListExistsAtPoint = false;
 	}
-	getBlock()->getListAttributesVector( &va);
-	getBlock()->getListPropertyVector( &vp);
+	getBlock()->getListAttributesVector(va);
+	getBlock()->getListPropertyVector(vp);
 
 //
 // First get the fold level.
@@ -846,32 +844,32 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	// First do properties.
 	//
 	UT_sint32 i;
-	if(vp.getItemCount() > 0)
+	if(!vp.empty())
 	{
-		i = findVecItem(&vp,"start-value");
+		i = findVecItem(vp,"start-value");
 		if(i >= 0)
 		{
-			m_iStartValue = atoi(vp.getNthItem(i+1));
+			m_iStartValue = atoi(vp[i + 1].c_str());
 		}
 		else
 		{
 			m_iStartValue = 1;
 		}
 
-		i = findVecItem(&vp,"margin-left");
+		i = findVecItem(vp,"margin-left");
 		if(i>=0)
 		{
-			m_fAlign = (float)UT_convertToInches(vp.getNthItem(i+1));
+			m_fAlign = (float)UT_convertToInches(vp[i + 1].c_str());
 		}
 		else
 		{
 			m_fAlign = (float)LIST_DEFAULT_INDENT;
 		}
 
-		i = findVecItem(&vp,"text-indent");
+		i = findVecItem(vp,"text-indent");
 		if(i >= 0)
 		{
-			m_fIndent = (float)UT_convertToInches(vp.getNthItem(i+1));
+			m_fIndent = (float)UT_convertToInches(vp[i + 1].c_str());
 		}
 		else
 		{
@@ -883,14 +881,14 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 // the paraprops then the defaults. The value for fl_AutoNum is what ends up in
 // the users doc.
 //
-		i = findVecItem(&vp,"list-delim");
+		i = findVecItem(vp,"list-delim");
 		if(getAutoNum())
 		{
 			m_pszDelim = getAutoNum()->getDelim();
 		}
 		else if(i >=0 )
 		{
-			m_pszDelim = vp.getNthItem(i+1);
+			m_pszDelim = vp[i + 1];
 		}
 		else
 		{
@@ -903,33 +901,33 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 // the paraprops then the defaults. The value for fl_AutoNum is what ends up in
 // the users doc.
 //
-		i = findVecItem(&vp,"list-decimal");
+		i = findVecItem(vp,"list-decimal");
 		if(getAutoNum())
 		{
 			m_pszDecimal = getAutoNum()->getDecimal();
 		}
 		else if( i>= 0)
 		{
-			m_pszDecimal = vp.getNthItem(i+1);
+			m_pszDecimal = vp[i + 1];
 		}
 		else
 		{
 			m_pszDecimal = ".";
 		}
 
-		i = findVecItem(&vp,"field-font");
+		i = findVecItem(vp,"field-font");
 		if( i>= 0)
 		{
-			m_pszFont = vp.getNthItem(i+1);
+			m_pszFont = vp[i + 1];
 		}
 		else
 		{
 			m_pszFont = "NULL";
 		}
-		i = findVecItem(&vp,"list-style");
+		i = findVecItem(vp,"list-style");
 		if( i>= 0)
 		{
-			m_DocListType = getBlock()->getListTypeFromStyle(vp.getNthItem(i+1));
+			m_DocListType = getBlock()->getListTypeFromStyle(vp[i + 1].c_str());
 		}
 		else
 		{
@@ -939,9 +937,9 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	//
 	// Now Do the Attributes first
 	//
-	if(va.getItemCount()>0)
+	if(!va.empty())
 	{
-//  		i = findVecItem(&va,PT_STYLE_ATTRIBUTE_NAME);
+//  		i = findVecItem(&a,PT_STYLE_ATTRIBUTE_NAME);
 //  		if( i>= 0)
 //  		{
 //  			m_DocListType = getBlock()->getListTypeFromStyle( (const gchar *) va.getNthItem(i+1));
@@ -951,10 +949,10 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 //  			m_DocListType = NUMBERED_LIST;
 //  		}
 
-		i = findVecItem(&va,"level");
+		i = findVecItem(va,"level");
 		if( i>= 0)
 		{
-			m_iLevel = atoi(va.getNthItem(i+1));
+			m_iLevel = atoi(va[i + 1].c_str());
 		}
 		else
 		{
@@ -965,7 +963,7 @@ void AP_Dialog_Lists::fillDialogFromBlock(void)
 	{
 		m_iID = getAutoNum()->getID();
 		m_DocListType = getAutoNum()->getType();
-	    m_pszDecimal = getAutoNum()->getDecimal();
+		m_pszDecimal = getAutoNum()->getDecimal();
 	}
 	else
 	{
@@ -1029,16 +1027,6 @@ UT_uint32 AP_Dialog_Lists::getID(void)
  * This method returns the index to the value corresponding to the
  * key in this props vector
  */
-UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const gchar*> * v, char * key)
-{
-	const char* const_key = key;
-	return findVecItem( v, const_key);
-}
-
-/*!
- * This method returns the index to the value corresponding to the
- * key in this props vector
- */
 UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const gchar*> * v, const char * key)
 {
 	UT_sint32 i = v->getItemCount();
@@ -1056,6 +1044,20 @@ UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const gchar*> * v, cons
 		return j;
 	else
 		return -1;
+}
+
+UT_sint32 AP_Dialog_Lists::findVecItem(const PP_PropertyVector & v, const char * key)
+{
+	if (v.empty()) {
+		return -1;
+	}
+	size_t i = 0;
+	for(auto iter = v.cbegin(); iter != v.cend(); iter += 2, i += 2) {
+		if (*iter == key) {
+			break;
+		}
+	}
+	return static_cast<UT_sint32>(i);
 }
 
 bool AP_Dialog_Lists::isLastOnLevel(void)

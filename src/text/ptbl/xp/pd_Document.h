@@ -1,8 +1,9 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
+ * Copyright (c) 2016 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -297,17 +298,16 @@ public:
 	bool                    sendChangeAuthorCR(pp_Author * pAuthor);
 	UT_sint32               findFirstFreeAuthorInt(void) const;
  private:
-	bool                    addAuthorAttributeIfBlank(const gchar ** szAttsIn, const gchar **& szAttsOut, std::string& storage);
 	bool                    addAuthorAttributeIfBlank(PP_PropertyVector & atts);
 	bool                    addAuthorAttributeIfBlank( PP_AttrProp *&p_AttrProp);
-	bool                    _buildAuthorProps(pp_Author * pAuthor, const gchar **& szProps, std::string& storage);
+	bool                    _buildAuthorProps(pp_Author * pAuthor, PP_PropertyVector & props);
  public:
 	//
 	void					beginUserAtomicGlob(void);
 	void					endUserAtomicGlob(void);
 	void                    setMarginChangeOnly(bool b);
 	bool                    isMarginChangeOnly(void) const;
-	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Object* odh,const gchar ** attributes,const gchar ** properties );
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Object* odh, const PP_PropertyVector & attributes,const PP_PropertyVector & properties );
 PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
@@ -315,8 +315,8 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 										 const PP_PropertyVector & properties);
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const gchar ** attributes,
-										 const gchar ** properties, fd_Field ** pField );
+										 const PP_PropertyVector & attributes,
+										 const PP_PropertyVector & properties, fd_Field ** pField );
 
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
@@ -338,11 +338,6 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					changeSpanFmt(PTChangeFmt ptc,
 										  PT_DocPosition dpos1,
 										  PT_DocPosition dpos2,
-										  const gchar ** attributes,
-										  const gchar ** properties);
-	bool					changeSpanFmt(PTChangeFmt ptc,
-										  PT_DocPosition dpos1,
-										  PT_DocPosition dpos2,
 										  const PP_PropertyVector & attributes,
 										  const PP_PropertyVector & properties);
 
@@ -353,13 +348,11 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 										bool bRecordChange);
 
 	bool                    createAndSendCR(PT_DocPosition dpos,UT_sint32 iType,bool bsave,UT_Byte iGlob);
+	// XXX PP_PropertyVector is not visible in xad_Document
 	virtual bool            createAndSendDocPropCR( const gchar ** pAtts,const gchar ** pProps );
-	bool                    changeDocPropeties(const gchar ** szAtts, const gchar ** pProps);
+	bool                    createAndSendDocPropCR(const PP_PropertyVector & pAtts,const PP_PropertyVector & pProps);
+	bool                    changeDocPropeties(const PP_PropertyVector & szAtts, const PP_PropertyVector & pProps);
 
-	bool					insertStrux(PT_DocPosition dpos,
-										PTStruxType pts,
-										  const gchar ** attributes,
-										  const gchar ** properties, pf_Frag_Strux ** ppfs_ret = NULL);
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
 										const PP_PropertyVector & attributes,
@@ -371,21 +364,21 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
-										   const gchar ** attributes,
-										   const gchar ** properties,
+										   const PP_PropertyVector & attributes,
+										   const PP_PropertyVector & properties,
 										   PTStruxType pts);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
-										   const gchar ** attributes,
-										   const gchar ** properties);
+										   const PP_PropertyVector & attributes,
+										   const PP_PropertyVector & properties);
 
 
 	bool					changeStruxFmtNoUndo(PTChangeFmt ptc,
 										   pf_Frag_Strux* sdh,
-										   const gchar ** attributes,
-										   const gchar ** properties);
+										   const PP_PropertyVector & attributes,
+										   const PP_PropertyVector & properties);
 
 	bool					changeStruxForLists(pf_Frag_Strux* sdh,
 												const char * pszParentID);
@@ -395,29 +388,28 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 										  PP_AttrProp *p_AttrProp);
 
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const gchar ** attrs, const gchar ** props,
+													 const PP_PropertyVector & attrs, const PP_PropertyVector & props,
 													 bool bSkipEmbededSections);
 
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const gchar ** attrs, const gchar * props,
+													 const PP_PropertyVector & attrs, const std::string & props,
 													 bool bSkipEmbededSections);
 
 	// the append- and insertBeforeFrag methods are only available while importing
 	// the document.
 
 	bool					appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = 0);
-	bool					appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes);
-	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar ** props,
+	bool					appendStruxFmt(pf_Frag_Strux * pfs, const PP_PropertyVector & attributes);
+	bool                    appendLastStruxFmt(PTStruxType pts, const PP_PropertyVector & attrs, const PP_PropertyVector & props,
 											   bool bSkipEmbededSections);
-	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar * props,
+	bool                    appendLastStruxFmt(PTStruxType pts, const PP_PropertyVector & attrs, const std::string & props,
 											   bool bSkipEmbededSections);
-	bool					appendFmt(const gchar ** attributes);
 	bool					appendFmt(const PP_PropertyVector & vecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const PP_PropertyVector & attributes);
 	bool					appendFmtMark(void);
 	bool					appendStyle(const PP_PropertyVector & attributes);
-	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc ,pf_Frag_Strux* sdh,const gchar ** attributes);
+	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux* sdh, const PP_PropertyVector & attributes);
 	bool					insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 												  const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = 0);
 	bool					insertSpanBeforeFrag(pf_Frag * pF, const UT_UCSChar * p, UT_uint32 length);
@@ -516,7 +508,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool                    changeStruxAttsNoUpdate(pf_Frag_Strux* sdh, const char * attr, const char * attvalue);
 	bool                    deleteStruxNoUpdate(pf_Frag_Strux* sdh);
 	bool                    deleteFragNoUpdate(pf_Frag * pf);
-	bool                    insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pts,const gchar ** attributes );
+	bool                    insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pts, const PP_PropertyVector & attributes );
 	bool                    isStruxBeforeThis(pf_Frag_Strux* sdh,  PTStruxType pts);
 
 	// the function below does exactly what the name says -- returns the AP index; in revisions mode
@@ -541,9 +533,9 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool                    enumStyles(UT_GenericVector<PD_Style*> * & pStyles) const;
 	bool					getStyleProperty(const gchar * szStyleName, const gchar * szPropertyName, const gchar *& szPropertyValue);
 	bool					addStyleProperty(const gchar * szStyleName, const gchar * szPropertyName, const gchar * szPropertyValue);
-	bool					addStyleProperties(const gchar * szStyleName, const gchar ** pProperties);
-	bool	                setAllStyleAttributes(const gchar * szStyleName, const gchar ** pAttribs);
-	bool	                addStyleAttributes(const gchar * szStyleName, const gchar ** pAttribs);
+	bool					addStyleProperties(const gchar * szStyleName, const PP_PropertyVector & pProperties);
+	bool	                setAllStyleAttributes(const gchar * szStyleName, const PP_PropertyVector & pAttribs);
+	bool	                addStyleAttributes(const gchar * szStyleName, const PP_PropertyVector & pAttribs);
 
     pf_Frag_Strux*       findPreviousStyleStrux(const gchar * szStyle, PT_DocPosition pos);
     pf_Frag_Strux*       findForwardStyleStrux(const gchar * szStyle, PT_DocPosition pos);
@@ -630,7 +622,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 
 	// PageSize functions
 	bool                    convertPercentToInches(const char * szPercent, UT_UTF8String & sInches);
-	bool					setPageSizeFromFile(const gchar ** attributes);
+	bool					setPageSizeFromFile(const PP_PropertyVector & attributes);
 	const	fp_PageSize	*	getPageSize(void) const
 	{ return & m_docPageSize;}
 	fp_PageSize             m_docPageSize; // Move this to private later
@@ -697,9 +689,9 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	// document-level property handling functions
 	const PP_AttrProp *     getAttrProp() const;
 	PT_AttrPropIndex        getAttrPropIndex() const {return m_indexAP;}
-	bool                    setAttrProp(const gchar ** ppAttr);
-	bool                    setAttributes(const gchar ** ppAttr);
-	bool                    setProperties(const gchar ** ppProps);
+	bool                    setAttrProp(const PP_PropertyVector & ppAttr);
+	bool                    setAttributes(const PP_PropertyVector & ppAttr);
+	bool                    setProperties(const PP_PropertyVector & ppProps);
 	void                     setDontImmediatelyLayout(bool b)
 		{ m_bDontImmediatelyLayout = b;}
 	bool                     isDontImmediateLayout(void) const
@@ -852,6 +844,8 @@ private:
 	bool                    _exportInitVisDirection(PT_DocPosition pos);
 	bool                    _exportFindVisDirectionRunAtPos(PT_DocPosition pos);
 
+	bool                    _sendAuthorCR(const char *attrName,
+                                          pp_Author *pAuthor);
 private:
 	bool					m_ballowListUpdates;
 	pt_PieceTable *			m_pPieceTable;

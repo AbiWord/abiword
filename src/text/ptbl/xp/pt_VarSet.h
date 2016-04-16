@@ -1,6 +1,7 @@
 /* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
+ * Copyright (c) 2016 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,7 +38,6 @@ public:
 
 	void					setPieceTableState(PTState pts);
 	bool					appendBuf(const UT_UCSChar * pBuf, UT_uint32 length, PT_BufIndex * pbi);
-	bool					storeAP(const gchar ** attributes, PT_AttrPropIndex * papi);
 	bool					storeAP(const PP_PropertyVector & vecAttributes, PT_AttrPropIndex * papi);
 	inline const UT_UCSChar *getPointer(PT_BufIndex bi) const {  return (UT_UCSChar *)m_buffer[_varsetFromBufIndex(bi)].getPointer(_subscriptFromBufIndex(bi)); }
 	inline PT_BufIndex		getBufIndex(PT_BufIndex bi, UT_uint32 offset) const

@@ -143,7 +143,7 @@ UT_sint32 pt_PieceTable::calcDocsize(void)
 	return size;
 }
 
-bool pt_PieceTable::createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps)
+bool pt_PieceTable::createAndSendDocPropCR( const PP_PropertyVector & pAtts, const PP_PropertyVector & pProps)
 {
 	PT_AttrPropIndex indexAP = 0;
 	PP_AttrProp * pAP = new PP_AttrProp();
@@ -266,7 +266,7 @@ bool pt_PieceTable::deleteFmtMark(PT_DocPosition dpos)
  * a change record and should only be used under exceptional circumstances to 
  * repair the piecetable during loading. It was necessary to import RTF tables.
  */
-bool pt_PieceTable::insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pts,const gchar ** attributes )
+bool pt_PieceTable::insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pts, const PP_PropertyVector & attributes )
 {
 	const pf_Frag_Strux * pfs = sdh;
 	UT_DEBUGMSG(("SEVIOR: Inserting strux of type %d no update %p \n",pts,sdh));
@@ -274,10 +274,9 @@ bool pt_PieceTable::insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pt
 // Create an indexAP
 //
 	PT_AttrPropIndex indexAP = pfs->getIndexAP();
-	if(attributes)
-	{
+	if(!attributes.empty())	{
 		PT_AttrPropIndex pAPIold = indexAP;
-		bool bMerged = m_varset.mergeAP(PTC_AddFmt,pAPIold,PP_std_copyProps(attributes), PP_NOPROPS, &indexAP,getDocument());
+		bool bMerged = m_varset.mergeAP(PTC_AddFmt, pAPIold, attributes, PP_NOPROPS, &indexAP, getDocument());
 		UT_UNUSED(bMerged);
 		UT_ASSERT_HARMLESS(bMerged);
 	}

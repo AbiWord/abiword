@@ -43,8 +43,8 @@ public:
 								  UT_sint32 * pSubscript);
 	bool					createAP(UT_sint32 * pSubscript);
 
-	bool					createAP(const gchar ** attributes,
-									 const gchar ** properties,
+	bool					createAP(const PP_PropertyVector & attributes,
+									 const PP_PropertyVector & properties,
 									 UT_sint32 * pSubscript);
 
 	bool					createAP(const PP_PropertyVector & pVector,

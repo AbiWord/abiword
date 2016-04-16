@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -426,8 +427,8 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														 m_gc,
 														 AP_Dialog_Paragraph::align_LEFT,
 														 m_fontHeight);
-		m_previousBlock->setFormat(dlg->m_pageLeftMargin,
-									dlg->m_pageRightMargin,
+		m_previousBlock->setFormat(dlg->m_pageLeftMargin.c_str(),
+								   dlg->m_pageRightMargin.c_str(),
 									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
 									NULL,
 									AP_Dialog_Paragraph::indent_NONE,
@@ -442,8 +443,8 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 													   AP_Dialog_Paragraph::align_LEFT,
 													   m_fontHeight);
 		// read these from the dialog's members
-		m_activeBlock->setFormat(dlg->m_pageLeftMargin,
-									dlg->m_pageRightMargin,
+		m_activeBlock->setFormat(dlg->m_pageLeftMargin.c_str(),
+								 dlg->m_pageRightMargin.c_str(),
 									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
 									dlg->_getSpinItemValue(AP_Dialog_Paragraph::id_SPIN_SPECIAL_INDENT),
 									(AP_Dialog_Paragraph::tIndentState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_SPECIAL_INDENT),
@@ -464,8 +465,8 @@ AP_Preview_Paragraph::AP_Preview_Paragraph(GR_Graphics * gc,
 														  m_gc,
 														  AP_Dialog_Paragraph::align_LEFT,
 														  m_fontHeight);
-		m_followingBlock->setFormat(dlg->m_pageLeftMargin,
-									dlg->m_pageRightMargin,
+		m_followingBlock->setFormat(dlg->m_pageLeftMargin.c_str(),
+									dlg->m_pageRightMargin.c_str(),
 									(AP_Dialog_Paragraph::tAlignState) dlg->_getMenuItemValue(AP_Dialog_Paragraph::id_MENU_ALIGNMENT),
 									NULL,
 									AP_Dialog_Paragraph::indent_NONE,

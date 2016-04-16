@@ -128,26 +128,23 @@ void AP_Dialog_Tab::_populateWindowData(void)
 	_setTabList(m_tabInfo.getItemCount());
 	_setAlignment(FL_TAB_LEFT);
 
-	const gchar ** propsBlock = NULL;
-	pView->getBlockFormat(&propsBlock);
+	PP_PropertyVector propsBlock;
+	pView->getBlockFormat(propsBlock);
 
 	_setDefaultTabStop((const gchar *)"0");
 
-	if (propsBlock[0])
+	if (!propsBlock.empty())
 	{
-		const gchar * sz;
-		
-		sz = UT_getAttribute("default-tab-interval", propsBlock);
+		std::string sz = PP_getAttribute("default-tab-interval", propsBlock);
 
-		if(sz)
+		if(!sz.empty())
 		{
-			double inches = UT_convertToInches(sz);
+			double inches = UT_convertToInches(sz.c_str());
 
 			_setDefaultTabStop((const gchar *)UT_convertInchesToDimensionString(m_dim, inches));
 		}
 
 	}
-	FREEP(propsBlock);
 	// enable/disable controls
 	_initEnableControls();
 }

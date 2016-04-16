@@ -1216,7 +1216,7 @@ UT_Error IE_Imp_MsWord_97::_loadFile(GsfInput * fp)
 
   // need to init doc props
   if(!getLoadStylesOnly())
-	  getDoc()->setAttrProp(NULL);
+	  getDoc()->setAttrProp(PP_NOPROPS);
   
   _handleMetaData(&ps);
   wvText(&ps);
@@ -5501,7 +5501,7 @@ void IE_Imp_MsWord_97::_handleStyleSheet(const wvParseStruct *ps)
 		if(getDoc()->getStyle(pSTD->xstzName, &pStyle))
 		{
 			xxx_UT_DEBUGMSG(("Redefining style %s\n", pSTD->xstzName));
-			pStyle->addAttributes(attribs);
+			pStyle->addAttributes(PP_std_copyProps(attribs));
 			pStyle->getBasedOn();
 			pStyle->getFollowedBy();
 		}
@@ -5677,11 +5677,12 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 		}
 
 		// next, deal footnote formatting matters
-		const gchar * props[] = {"document-footnote-type",            NULL,
-									"document-footnote-initial",         NULL,
-									"document-footnote-restart-section", NULL,
-									"document-footnote-restart-page",    NULL,
-		                            NULL};
+		PP_PropertyVector props = {
+			"document-footnote-type",            "",
+			"document-footnote-initial", UT_std_string_sprintf("%d", ps->dop.nFtn),
+			"document-footnote-restart-section", "",
+			"document-footnote-restart-page",    "",
+		};
 
 		switch(ps->dop.rncFtn)
 		{
@@ -5700,10 +5701,6 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 			default:
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
-
-		UT_String number;
-		UT_String_sprintf(number, "%d", ps->dop.nFtn);
-		props[3] = number.c_str();
 
 		switch(ps->dop.nfcFtnRef)
 		{
@@ -5727,10 +5724,10 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				props[1] = "";
 				break;
 		}
-		
-		getDoc()->setProperties(&props[0]);
+
+		getDoc()->setProperties(props);
 	}
-	
+
 	if(ps->fib.lcbPlcfendTxt)
 	{
 		m_iEndnotesCount  = ps->fib.lcbPlcfendTxt/4 - 2;
@@ -5777,13 +5774,14 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 			wvFree(pPLCF_txt);
 		}
 		// next, deal endnote formatting matters
-		const gchar * props[] = {"document-endnote-type",            NULL,
-									"document-endnote-initial",         NULL,
-									"document-endnote-restart-section", NULL,
-									"document-endnote-restart-page",    NULL,
-									"document-endnote-place-endsection",NULL,
-									"document-endnote-place-enddoc",    NULL,
-		                            NULL};
+		PP_PropertyVector props = {
+			"document-endnote-type",            "",
+			"document-endnote-initial", UT_std_string_sprintf("%d", ps->dop.nEdn),
+			"document-endnote-restart-section", "",
+			"document-endnote-restart-page",    "",
+			"document-endnote-place-endsection","",
+			"document-endnote-place-enddoc",    "",
+		};
 
 		switch(ps->dop.rncEdn)
 		{
@@ -5803,10 +5801,6 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 			default:
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
 		}
-
-		UT_String number;
-		UT_String_sprintf(number, "%d", ps->dop.nEdn);
-		props[3] = number.c_str();
 
 		switch(ps->dop.nfcEdnRef)
 		{
@@ -5828,7 +5822,6 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 
 			default:
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
-				
 		}
 
 		switch(ps->dop.epc)
@@ -5843,10 +5836,9 @@ void IE_Imp_MsWord_97::_handleNotes(const wvParseStruct *ps)
 				break;
 			default:
 				UT_ASSERT_HARMLESS(UT_NOT_REACHED);
-				
 		}
-				
-		getDoc()->setProperties(&props[0]);
+
+		getDoc()->setProperties(props);
 	}
 }
 

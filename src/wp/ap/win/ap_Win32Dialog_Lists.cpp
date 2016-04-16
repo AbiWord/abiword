@@ -1048,7 +1048,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 		return;
 	}
 
-	const gchar** props_in = NULL;
+	PP_PropertyVector props_in;
 
 	bool bUnderline = false;
 
@@ -1060,21 +1060,15 @@ void AP_Win32Dialog_Lists::_selectFont()
 	bool bBottomLine = false;
 
 
-	if (pView->getCharFormat(&props_in))
+	if (pView->getCharFormat(props_in))
 	{
 		// stuff font properties into the dialog.
 
-		const gchar *szFontFamily = UT_getAttribute("font-family", props_in);
-		const gchar *szFontSize = UT_getAttribute("font-size", props_in);
-		const gchar *szFontWeight = UT_getAttribute("font-weight", props_in);
-		const gchar *szFontStyle = UT_getAttribute("font-style", props_in);
-		const gchar *szColor = UT_getAttribute("color", props_in);
-
-		const std::string sFontFamily = (szFontFamily ? szFontFamily : "");
-		const std::string sFontSize = (szFontSize ? szFontSize : "");
-		const std::string sFontWeight = (szFontWeight ? szFontWeight : "");
-		const std::string sFontStyle = (szFontStyle ? szFontStyle : "");
-		const std::string sColor = (szColor ? szColor : "");
+		std::string sFontFamily = PP_getAttribute("font-family", props_in);
+		std::string sFontSize = PP_getAttribute("font-size", props_in);
+		std::string sFontWeight = PP_getAttribute("font-weight", props_in);
+		std::string sFontStyle = PP_getAttribute("font-style", props_in);
+		std::string sColor = PP_getAttribute("color", props_in);
 
 		pDialog->setFontFamily(sFontFamily);
 		pDialog->setFontSize(sFontSize);
@@ -1087,20 +1081,18 @@ void AP_Win32Dialog_Lists::_selectFont()
 		// worry about initializing a combo box with a choice
 		// (and because they are all stuck under one CSS attribute).
 
-		const gchar * s = UT_getAttribute("text-decoration", props_in);
-		if (s)
+                std::string s = PP_getAttribute("text-decoration", props_in);
+		if (!s.empty())
 		{
-			bUnderline = (strstr(s, "underline") != NULL);
-			bOverline = (strstr(s, "overline") != NULL);
-			bStrikeOut = (strstr(s, "line-through") != NULL);
+			bUnderline = s.find("underline") != std::string::npos;
+			bOverline = s.find("overline") != std::string::npos;
+			bStrikeOut = s.find("line-through") != std::string::npos;
 
-			bTopLine = (strstr(s, "topline") != NULL);
+			bTopLine = s.find("topline") != std::string::npos;
 
-			bBottomLine = (strstr(s, "bottomline") != NULL);
+			bBottomLine = s.find("bottomline") != std::string::npos;
 		}
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,false,false);
-
-		g_free(props_in);
 	}
 
 	pDialog->setGraphicsContext(pView->getGraphics());

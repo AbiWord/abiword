@@ -517,16 +517,10 @@ s_AbiWord_1_Listener::s_AbiWord_1_Listener(PD_Document * pDocument,
 	m_pie->setDocType ("<!DOCTYPE abiword PUBLIC \"-//ABISOURCE//DTD AWML 1.0 Strict//EN\" \"http://www.abisource.com/awml.dtd\">\n");
 
 	// we want to update the XID counter and the template status
-	UT_String s;
-	UT_String_sprintf(s, "%d", pDocument->getTopXID());
-	
-	const gchar *attr[5];
-	attr[0] = "template";
-	attr[1] = m_bIsTemplate ? "true" : "false";
-	attr[2] = "xid-max";
-	attr[3] = s.c_str();
-	attr[4] = NULL;
-	
+	const PP_PropertyVector attr = {
+		"template", m_bIsTemplate ? "true" : "false",
+		"xid-max", UT_std_string_sprintf("%d", pDocument->getTopXID())
+	};
 	pDocument->setAttributes(attr);
 
 	_openTag("abiword", true, pDocument->getAttrPropIndex(),false,0);

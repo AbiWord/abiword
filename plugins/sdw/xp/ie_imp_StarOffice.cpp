@@ -28,6 +28,7 @@
 #include <gsf/gsf-infile-msole.h>
 
 #include "ut_types.h"
+#include "ut_std_string.h"
 #include "ut_string.h"
 #include "ut_iconv.h"
 #include "ut_vector.h"
@@ -887,18 +888,12 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 									UT_DEBUGMSG(("SDW: orient %u bin %u format %u width %u height %u\n", orient, paperBin, paperFormat, width, height));
 									// rest of the data is ignored, seems to be printer specific anyway.
 									// Use A4, Portrait by default
-									const char* attributes[] = {
-										"pagetype", // A4/Letter/...
-										"a4",
-										"orientation",
-										"portrait",
-										"width",
-										"210",
-										"height",
-										"297",
-										"units",
-										"mm",
-										NULL
+									PP_PropertyVector attributes = {
+										"pagetype", "a4", // A4/Letter/...
+										"orientation", "portrait",
+										"width", "210",
+										"height", "297",
+										"units", "mm"
 									};
 									const char* sdwPaperToAbi[] = {
 										"A3",
@@ -911,20 +906,19 @@ UT_Error IE_Imp_StarOffice::_loadFile(GsfInput * input)
 										"Tabloid/Ledger",
 										"Custom"
 									};
-									if (paperFormat < sizeof(sdwPaperToAbi)/sizeof(*sdwPaperToAbi))
+									if (paperFormat < sizeof(sdwPaperToAbi)/sizeof(*sdwPaperToAbi)) {
 										attributes[1] = sdwPaperToAbi[paperFormat];
+                                    }
 									const char* sdwOrientToAbi[] = {
 										"portrait",
 										"landscape"
 									};
-									if (orient < sizeof(sdwOrientToAbi)/sizeof(*sdwOrientToAbi))
+									if (orient < sizeof(sdwOrientToAbi)/sizeof(*sdwOrientToAbi)) {
 										attributes[3] = sdwOrientToAbi[orient];
-									UT_String hstr, wstr;
-									UT_String_sprintf(hstr, "%f", static_cast<double>(height)/100);
-									UT_String_sprintf(wstr, "%f", static_cast<double>(width)/100);
-									attributes[5] = wstr.c_str();
-									attributes[7] = hstr.c_str();
-									
+                                    }
+									attributes[5] = UT_std_string_sprintf("%f", static_cast<double>(width)/100);
+									attributes[7] = UT_std_string_sprintf("%f", static_cast<double>(height)/100);
+
 									getDoc()->setPageSizeFromFile(attributes);
 								}
 								break;

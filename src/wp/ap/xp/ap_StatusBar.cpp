@@ -285,15 +285,12 @@ void ap_sbf_Language::notify(AV_View * pavView, const AV_ChangeMask /*mask*/)
     // TODO do we want our own bit for language change?
     //if (mask & (AV_CHG_INSERTMODE))
     {
-	const char * szLang = NULL;
-
-	const gchar ** props_in = NULL;
-	if (pavView && static_cast<FV_View *>(pavView)->getCharFormat(&props_in))
+	PP_PropertyVector props_in;
+	if (pavView && static_cast<FV_View *>(pavView)->getCharFormat(props_in))
 	{
-	    szLang = UT_getAttribute("lang", props_in);
-	    FREEP(props_in);
+	    std::string lang = PP_getAttribute("lang", props_in);
 
-	    m_sBuf = szLang;
+	    m_sBuf = lang;
 	}
 
 	if (getListener())

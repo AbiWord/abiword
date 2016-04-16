@@ -1549,7 +1549,7 @@ void ODi_TextContent_ListenerState::_openAbiSection(
         //
         if(!m_openedFirstAbiSection)
         {
-            std::string sProp(""),sWidth(""),sHeight(""),sOri("");
+            std::string sProp, sWidth, sHeight, sOri;
             bool bValid = true;
 	    
             sProp="page-width";
@@ -1566,20 +1566,16 @@ void ODi_TextContent_ListenerState::_openAbiSection(
             sOri = UT_std_string_getPropVal(masterPageProps,sProp);
             if(sOri.size()==0)
 	            bValid = false;
-            if(bValid)
-            {
-                std::string sUnits = UT_dimensionName(UT_determineDimension(sWidth.c_str()));
-                const gchar * atts[13] ={"pagetype","Custom",
-                        "orientation",NULL,
-                        "width",NULL,
-                        "height",NULL,
-                        "units",NULL,
-                        "page-scale","1.0",
-                        NULL};
-                atts[3] = sOri.c_str();
-                atts[5] = sWidth.c_str();
-                atts[7] = sHeight.c_str();
-                atts[9] = sUnits.c_str();
+
+            if (bValid) {
+                const PP_PropertyVector atts = {
+                    "pagetype", "Custom",
+                    "orientation", sOri,
+                    "width", sWidth,
+                    "height", sHeight,
+                    "units", UT_dimensionName(UT_determineDimension(sWidth.c_str())),
+                    "page-scale","1.0"
+                };
                 m_pAbiDocument->setPageSizeFromFile(atts);
             }
         }

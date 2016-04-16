@@ -1,7 +1,8 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (c) 2001,2002 Tomas Frydrych
+ * Copyright (C) 2016 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -130,15 +131,18 @@ typedef enum _AP_JumpTarget
 
 struct fv_ChangeState
 {
+	fv_ChangeState();
+	~fv_ChangeState();
+
 	bool				bUndo;
 	bool				bRedo;
 	bool				bDirty;
 	bool				bSelection;
 	UT_uint32			iColumn;
 	fl_CellLayout *     pCellLayout;
-	const gchar **	propsChar;
-	const gchar **	propsBlock;
-	const gchar **	propsSection;
+	PP_PropertyVector	propsChar;
+	PP_PropertyVector	propsBlock;
+	PP_PropertyVector	propsSection;
 };
 
 struct FV_DocCount
@@ -161,15 +165,18 @@ public:
 	UT_uint32         getTick(void) const;
 	void              setTick(UT_uint32 iTick);
 	fl_ContainerLayout * getCurrentCL(void) const;
-	void              setCurrentCL(fl_ContainerLayout* pCL);
-	bool              isValid(void) const;
-	const gchar ** getCopyOfProps(void) const;
-	void              fillProps(UT_uint32 numProps, const gchar ** props);
+	void			  setCurrentCL(fl_ContainerLayout* pCL);
+	bool			  isValid(void) const {
+		return !m_props.empty();
+	}
+	const PP_PropertyVector & getProps() const {
+		return m_props;
+	}
+	void              fillProps(const PP_PropertyVector & props);
 	void              clearProps(void);
 private:
 	UT_uint32         m_iTick;
-	UT_uint32         m_iNumProps;
-	gchar **       m_pszProps;
+	PP_PropertyVector   m_props;
 	fl_ContainerLayout* m_pCurrentCL;
 };
 
@@ -301,7 +308,7 @@ public:
 	virtual UT_Error	cmdSaveAs(const char * szFilename, int ieft);
 	virtual UT_Error		cmdSaveAs(const char * szFilename, int ieft, bool cpy);
 
-	UT_Error		cmdInsertField(const char* szName, const gchar ** extra_attrs = NULL, const gchar ** extra_props = NULL);
+	UT_Error		cmdInsertField(const char* szName, const PP_PropertyVector & extra_attrs = PP_NOPROPS, const PP_PropertyVector & extra_props = PP_NOPROPS);
 	UT_Error		cmdInsertBookmark(const char* szName);
 	UT_Error		cmdDeleteBookmark(const char* szName);
 	UT_Error		cmdInsertHyperlink(const char* szName, const char* szTitle = NULL);
@@ -395,17 +402,17 @@ public:
 	virtual UT_sint32 getPageViewTopMargin(void) const;
 	virtual UT_sint32 getPageViewSep(void) const;
 
-	bool	setSectionFormat(const gchar * properties[]);
-	bool	getSectionFormat(const gchar *** properties) const;
+	bool	setSectionFormat(const PP_PropertyVector & properties);
+	bool	getSectionFormat(PP_PropertyVector & properties) const;
 
 	bool	setBlockIndents(bool doLists, double indentChange, double page_size);
-	bool    setCollapsedRange(PT_DocPosition posLow,PT_DocPosition posHigh, const gchar * properties[]);
-	bool	setBlockFormat(const gchar * properties[]);
-	bool	getBlockFormat(const gchar *** properties,bool bExpandStyles=true) const;
-	bool    removeStruxAttrProps(PT_DocPosition ipos1, PT_DocPosition ipos2, PTStruxType iStrux,const gchar * attributes[] ,const gchar * properties[]);
+	bool    setCollapsedRange(PT_DocPosition posLow,PT_DocPosition posHigh, const PP_PropertyVector & properties);
+	bool	setBlockFormat(const PP_PropertyVector & properties);
+	bool	getBlockFormat(PP_PropertyVector & properties, bool bExpandStyles=true) const;
+	bool    removeStruxAttrProps(PT_DocPosition ipos1, PT_DocPosition ipos2, PTStruxType iStrux, const PP_PropertyVector & attributes, const PP_PropertyVector & properties);
 	bool    isImageAtStrux(PT_DocPosition ipos1, PTStruxType iStrux);
 
-	bool	processPageNumber(HdrFtrType hfType, const gchar ** atts);
+	bool	processPageNumber(HdrFtrType hfType, const PP_PropertyVector & atts);
 
 #ifdef ENABLE_SPELL
 	bool	isTextMisspelled()const ;
@@ -443,12 +450,11 @@ public:
 	bool	queryCharFormat(const gchar * szProperty, UT_UTF8String & szValue, bool & bExplicitlyDefined, PT_DocPosition position) const;
 	// - end
 
-	bool	setCharFormat(const gchar * properties[], const gchar * attribs[] = NULL);
 	bool	setCharFormat(const PP_PropertyVector & properties,
                           const PP_PropertyVector & attribs = PP_NOPROPS);
 	bool	resetCharFormat(bool bAll);
-	bool	getCharFormat(const gchar *** properties,bool bExpandStyles=true) const;
-	bool	getCharFormat(const gchar *** properties,bool bExpandStyles, PT_DocPosition posStart) const;
+	bool	getCharFormat(PP_PropertyVector & properties, bool bExpandStyles = true) const;
+	bool	getCharFormat(PP_PropertyVector & properties, bool bExpandStyles, PT_DocPosition posStart) const;
 	fl_BlockLayout * getBlockFromSDH(pf_Frag_Strux* sdh);
 	bool	setStyle(const gchar * style, bool bDontGeneralUpdate=false);
 	bool	setStyleAtPos(const gchar * style, PT_DocPosition posStart, PT_DocPosition posEnd, bool bDontGeneralUpdate=false);
@@ -557,15 +563,15 @@ public:
 	void            activateFrame(void);
 	fl_FrameLayout * getFrameLayout(PT_DocPosition pos) const;
 	fl_FrameLayout * getFrameLayout(void) const;
-	void            setFrameFormat(const gchar ** props);
-	void            setFrameFormat(const gchar ** attribs, const gchar ** props,
+	void            setFrameFormat(const PP_PropertyVector & props);
+	void            setFrameFormat(const PP_PropertyVector & attribs, const PP_PropertyVector & props,
 								   fl_BlockLayout * pNewBL = NULL);
-	void            setFrameFormat(const gchar ** props,FG_Graphic * pFG, const std::string & dataID,
+	void            setFrameFormat(const PP_PropertyVector & props, FG_Graphic * pFG, const std::string & dataID,
 								   fl_BlockLayout * pNewBL = NULL);
 	bool            getFrameStrings_view(UT_sint32 x, UT_sint32 y,fv_FrameStrings & FrameStrings,
 										 fl_BlockLayout ** pCloseBL,fp_Page ** ppPage);
 	void            convertInLineToPositioned(PT_DocPosition pos,
-											const gchar ** attribs);
+											const PP_PropertyVector & attribs);
 
 	bool            convertPositionedToInLine(fl_FrameLayout * pFrame);
 	UT_Error        cmdInsertPositionedGraphic(FG_Graphic* pFG,UT_sint32 mouseX, UT_sint32 mouseY);
@@ -603,7 +609,7 @@ public:
 	void				markSavedPositionAsNeeded(void);
 	bool				needSavedPosition(void) const;
 	void				insertHeaderFooter(HdrFtrType hfType);
-	bool				insertHeaderFooter(const gchar ** props, HdrFtrType hfType, fl_DocSectionLayout * pDSL=NULL);
+	bool				insertHeaderFooter(const PP_PropertyVector & props, HdrFtrType hfType, fl_DocSectionLayout * pDSL=NULL);
 
 	void				cmdEditHeader(void);
 	void				cmdEditFooter(void);
@@ -740,7 +746,7 @@ public:
 
 // -----------------------
 
-	bool				insertPageNum(const gchar ** props, HdrFtrType hfType);
+	bool				insertPageNum(const PP_PropertyVector & props, HdrFtrType hfType);
 	virtual void        setPoint(UT_uint32 pt);
 	void                ensureInsertionPointOnScreen(void);
     void                removeCaret(const std::string& sCaretID);
@@ -830,14 +836,14 @@ public:
 									  UT_sint32 *iRight,UT_sint32 *iTop, UT_sint32 *iBot) const;
 	bool				getCellLineStyle(PT_DocPosition posCell, UT_sint32 * pLeft, UT_sint32 * pRight,
 										 UT_sint32 * pTop, UT_sint32 * pBot) const;
-	bool				setCellFormat(const gchar * properties[], FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
+	bool				setCellFormat(const PP_PropertyVector & properties, FormatTable applyTo, FG_Graphic * pFG, UT_String & sDataID);
 	bool				getCellProperty(PT_DocPosition pos, const gchar * szPropName, gchar * &szPropValue) const;
-	bool	            setTableFormat(const gchar * properties[]);
-	bool	            setTableFormat(PT_DocPosition pos,const gchar * properties[]);
+	bool	            setTableFormat(const PP_PropertyVector & properties);
+	bool	            setTableFormat(PT_DocPosition pos,const PP_PropertyVector & properties);
 	bool                getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const;
 
 	UT_Error            cmdInsertTable(UT_sint32 numRows, UT_sint32 numCols,
-									   const gchar * pPropsArray[]);
+									   const PP_PropertyVector & pPropsArray);
 	void				_generalUpdate(void);
 
 	UT_RGBColor			getColorShowPara(void) const { return m_colorShowPara; }
@@ -887,7 +893,7 @@ public:
 		                { return m_pLeftRuler;}
 
 
-	const gchar **   getViewPersistentProps() const;
+	PP_PropertyVector   getViewPersistentProps() const;
 	FV_BIDI_Order	    getBidiOrder()const {return m_eBidiOrder;}
 	void                setBidiOrder(FV_BIDI_Order o) {m_eBidiOrder = o;}
 
@@ -947,8 +953,8 @@ protected:
 									  UT_sint32& xClick,
 									  UT_sint32& yClick) const;
 	bool                _insertField(const char* szName,
-									 const gchar ** extra_attrs = NULL,
-									 const gchar ** extra_props = NULL);
+									 const PP_PropertyVector & extra_attrs = PP_NOPROPS,
+									 const PP_PropertyVector & extra_props = PP_NOPROPS);
 	void				_moveToSelectionEnd(bool bForward);
 	void				_eraseSelection(void);
 	void				_clearSelection(bool bRedraw = true);

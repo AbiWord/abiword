@@ -597,38 +597,34 @@ UT_Error OXML_Document::addToPT(PD_Document * pDocument)
 
 UT_Error OXML_Document::applyPageProps(PD_Document* pDocument)
 {
-	const gchar* pageAtts[13];
-	int index = 0;
+	PP_PropertyVector pageAtts = {
+        "units",    "in",
+        "page-scale", "1.0"
+    };
 
 	if(m_pageOrientation.empty())
 		m_pageOrientation = "portrait";
 
 	if(!m_pageWidth.empty())
 	{
-		pageAtts[index++] = "width";
-		pageAtts[index++] = m_pageWidth.c_str();
+		pageAtts.push_back("width");
+		pageAtts.push_back(m_pageWidth);
 	}
 	if(!m_pageHeight.empty())
 	{
-		pageAtts[index++] = "height";
-		pageAtts[index++] = m_pageHeight.c_str();
+		pageAtts.push_back("height");
+		pageAtts.push_back(m_pageHeight);
 	}
 	if(!m_pageOrientation.empty())
 	{
-		pageAtts[index++] = "orientation";
-		pageAtts[index++] = m_pageOrientation.c_str();
+		pageAtts.push_back("orientation");
+		pageAtts.push_back(m_pageOrientation);
 	}
-	pageAtts[index++] = "units";
-	pageAtts[index++] = "in";
-	pageAtts[index++] = "page-scale";
-	pageAtts[index++] = "1.0";
 
 	fp_PageSize ps(UT_convertDimensionless(m_pageWidth.c_str()), UT_convertDimensionless(m_pageHeight.c_str()), DIM_IN);
-	pageAtts[index++] = "pagetype";
-	pageAtts[index++] = ps.getPredefinedName();
+	pageAtts.push_back("pagetype");
+	pageAtts.push_back(ps.getPredefinedName());
 
-	pageAtts[index] = 0; // To signal the end of the array
-   
 	return pDocument->setPageSizeFromFile(pageAtts) ? UT_OK : UT_ERROR;
 }
 

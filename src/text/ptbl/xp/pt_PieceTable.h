@@ -139,8 +139,8 @@ protected:
 	bool					_realChangeStruxFmt(PTChangeFmt ptc,
 												PT_DocPosition dpos1,
 												PT_DocPosition dpos2,
-												const gchar ** attributes,
-												const gchar ** properties,
+												const PP_PropertyVector & attributes,
+												const PP_PropertyVector & properties,
 												PTStruxType pts,
 												bool bRevisionDelete);
 
@@ -163,8 +163,8 @@ public:
 
 	bool					insertObject(PT_DocPosition dpos,
 										 PTObjectType pto,
-										 const gchar ** attributes,
-										 const gchar ** properties, pf_Frag_Object ** ppfo );
+										 const PP_PropertyVector & attributes,
+										 const PP_PropertyVector & properties, pf_Frag_Object ** ppfo );
 
 	bool					insertSpan(PT_DocPosition dpos,
 									   const UT_UCSChar * p,
@@ -197,7 +197,7 @@ public:
 	bool                    createAndSendCR(PT_DocPosition  dpos,
 											UT_sint32 iType,bool bSave, UT_Byte iGlob);
 
-	bool                    createAndSendDocPropCR( const gchar ** pAtts, const gchar ** pProps);
+	bool                    createAndSendDocPropCR(const PP_PropertyVector & pAtts, const PP_PropertyVector & pProps);
 
 	bool					deleteSpanWithTable(PT_DocPosition dpos1,
 												PT_DocPosition dpos2,
@@ -221,27 +221,27 @@ public:
 
 	bool					insertStrux(PT_DocPosition dpos,
 										PTStruxType pts,
-										const gchar ** attributes,
-										const gchar ** properties,
+										const PP_PropertyVector & attributes,
+										const PP_PropertyVector & properties,
 										pf_Frag_Strux ** ppfs_ret = 0
 										);
 
 	bool					changeStruxFmt(PTChangeFmt ptc,
 										   PT_DocPosition dpos1,
 										   PT_DocPosition dpos2,
-										   const gchar ** attributes,
-										   const gchar ** properties,
+										   const PP_PropertyVector & attributes,
+										   const PP_PropertyVector & properties,
 										   PTStruxType pts=PTX_StruxDummy);
 
 
 	bool					changeStruxFmtNoUndo(PTChangeFmt ptc,
 										   pf_Frag_Strux * pfs,
-										   const gchar ** attributes,
-										   const gchar ** properties);
+										   const PP_PropertyVector & attributes,
+										   const PP_PropertyVector & properties);
 
-	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux * pfs,const gchar ** attributes);
+	bool                    changeStruxFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Strux * pfs, const PP_PropertyVector & attributes);
 
-	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Object * pfo,const gchar ** attributes,const gchar ** properties);
+	bool                    changeObjectFormatNoUpdate(PTChangeFmt ptc, pf_Frag_Object * pfo, const PP_PropertyVector & attributes, const PP_PropertyVector & properties);
 
 	bool                    changeStruxForLists(pf_Frag_Strux* sdh,
 												const char * pszParentID);
@@ -249,13 +249,13 @@ public:
 	bool                    deleteStruxNoUpdate(pf_Frag_Strux* sdh);
 	bool                    deleteFragNoUpdate(pf_Frag * pf);
 	bool                    deleteStruxWithNotify(pf_Frag_Strux* sdh);
-	bool                    insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pts,const gchar ** attributes );
+	bool                    insertStruxNoUpdateBefore(pf_Frag_Strux* sdh, PTStruxType pts, const PP_PropertyVector & attributes );
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const gchar ** attrs, const gchar ** props,
+													 const PP_PropertyVector & attrs, const PP_PropertyVector & props,
 													 bool bSkipEmbededSections);
 
 	bool                    changeLastStruxFmtNoUndo(PT_DocPosition dpos, PTStruxType pts,
-													 const gchar ** attrs, const gchar * props,
+													 const PP_PropertyVector & attrs, const std::string & props,
 													 bool bSkipEmbededSections);
 
 
@@ -273,13 +273,12 @@ public:
 
 	PD_Document *			getDocument(void);
 	bool					appendStrux(PTStruxType pts, const PP_PropertyVector & attributes, pf_Frag_Strux ** ppfs_ret = 0);
-	bool					appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes);
-	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar ** props,
+	bool					appendStruxFmt(pf_Frag_Strux * pfs, const PP_PropertyVector & attributes);
+	bool                    appendLastStruxFmt(PTStruxType pts, const PP_PropertyVector & attrs, const PP_PropertyVector & props,
 											   bool bSkipEmbededSections);
-	bool                    appendLastStruxFmt(PTStruxType pts, const gchar ** attrs, const gchar * props,
+	bool                    appendLastStruxFmt(PTStruxType pts, const PP_PropertyVector & attrs, const std::string & props,
 											   bool bSkipEmbededSections);
 
-	bool					appendFmt(const gchar ** attributes);
 	bool					appendFmt(const PP_PropertyVector & vecAttributes);
 	bool					appendSpan(const UT_UCSChar * p, UT_uint32 length);
 	bool					appendObject(PTObjectType pto, const PP_PropertyVector & attributes);
@@ -530,14 +529,14 @@ protected:
 
 	bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
-													  const gchar ** attributes,
-													  const gchar ** properties,
+													  const PP_PropertyVector & attributes,
+													  const PP_PropertyVector & properties,
 													  bool bRevisionDelete);
 
 	bool					_fmtChangeStruxWithNotify(PTChangeFmt ptc,
 													  pf_Frag_Strux * pfs,
-													  const gchar ** attributes,
-													  const gchar ** properties,
+													  const PP_PropertyVector & attributes,
+													  const PP_PropertyVector & properties,
 													  bool bDoAll,
 													  bool bRevisionDelete);
 
@@ -583,7 +582,7 @@ protected:
 	UT_uint32				_computeBlockOffset(pf_Frag_Strux * pfs,pf_Frag * pfTarget) const;
 
 	bool					_loadBuiltinStyles(void);
-	bool					_createBuiltinStyle(const char * szName, bool bDisplayed, const gchar ** attributes);
+	bool					_createBuiltinStyle(const char * szName, bool bDisplayed, const PP_PropertyVector & attributes);
 
 	bool					_insertFmtMarkFragWithNotify(PTChangeFmt ptc,
 														 PT_DocPosition dpos,

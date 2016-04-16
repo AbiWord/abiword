@@ -331,7 +331,7 @@ public:
 	/* append/insert methods
 	 */
 	bool	           Block (PTStruxType pts, const PP_PropertyVector & attributes);
-	bool	           BlockFormat (const gchar ** attributes);
+	bool	           BlockFormat (const PP_PropertyVector & attributes);
 
 	bool	           Inline (const UT_UCSChar * ucs4_str, UT_sint32 length);
 	bool	           InlineFormat (const PP_PropertyVector & attributes);
@@ -415,7 +415,7 @@ public:
 	/* append/insert methods
 	 */
 	bool					Block (PTStruxType pts, const PP_PropertyVector & attributes);
-	bool					BlockFormat (const gchar ** attributes);
+	bool					BlockFormat (const PP_PropertyVector & attributes);
 
 	bool					Inline (const UT_UCSChar * ucs4_str, UT_sint32 length);
 	bool					InlineFormat (const PP_PropertyVector & attributes);

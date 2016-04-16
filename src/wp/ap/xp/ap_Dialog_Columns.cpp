@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -167,11 +168,11 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 
 	m_pView = static_cast<FV_View *>(pFrame->getCurrentView());
 	m_pDoc = m_pView->getDocument();
-	const gchar ** pszSecProps = NULL;
-	m_pView->getSectionFormat(&pszSecProps);
+	PP_PropertyVector pszSecProps;
+	m_pView->getSectionFormat(pszSecProps);
 
-	_convertToPreferredUnits( pFrame, static_cast<const gchar *>(UT_getAttribute("section-space-after",pszSecProps)), pszAfter);
-	_convertToPreferredUnits( pFrame, static_cast<const gchar *>(UT_getAttribute("section-max-column-height",pszSecProps)), pszMaxHeight);
+	_convertToPreferredUnits( pFrame, PP_getAttribute("section-space-after",pszSecProps).c_str(), pszAfter);
+	_convertToPreferredUnits( pFrame, PP_getAttribute("section-max-column-height",pszSecProps).c_str(), pszMaxHeight);
 
 	if(*pszAfter)
 	{
@@ -182,27 +183,26 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 		UT_DEBUGMSG(("SEVIOR: Initial Height string = %s \n",pszMaxHeight));
 		m_HeightString = pszMaxHeight;
 	}
-	const gchar * pszMarginTop = UT_getAttribute("page-margin-top",pszSecProps);
-	const gchar * pszMarginBottom =  UT_getAttribute("page-margin-bottom",pszSecProps);
-	const gchar * pszMarginLeft =  UT_getAttribute("page-margin-left",pszSecProps);
-	const gchar * pszMarginRight =  UT_getAttribute("page-margin-right",pszSecProps);
-	if(pszMarginTop && *pszMarginTop)
+	std::string pszMarginTop = PP_getAttribute("page-margin-top",pszSecProps);
+	std::string pszMarginBottom =  PP_getAttribute("page-margin-bottom",pszSecProps);
+	std::string pszMarginLeft =  PP_getAttribute("page-margin-left",pszSecProps);
+	std::string pszMarginRight =  PP_getAttribute("page-margin-right",pszSecProps);
+	if(pszMarginTop.empty())
 	{
-		m_dMarginTop = UT_convertToInches(pszMarginTop);
+		m_dMarginTop = UT_convertToInches(pszMarginTop.c_str());
 	}
-	if(pszMarginBottom && *pszMarginBottom)
+	if(pszMarginBottom.empty())
 	{
-		m_dMarginBottom = UT_convertToInches(pszMarginBottom);
+		m_dMarginBottom = UT_convertToInches(pszMarginBottom.c_str());
 	}
-	if(pszMarginLeft && *pszMarginLeft)
+	if(pszMarginLeft.empty())
 	{
-		m_dMarginLeft = UT_convertToInches(pszMarginLeft);
+		m_dMarginLeft = UT_convertToInches(pszMarginLeft.c_str());
 	}
-	if(pszMarginRight && *pszMarginRight)
+	if(pszMarginRight.empty())
 	{
-		m_dMarginRight = UT_convertToInches(pszMarginRight);
+		m_dMarginRight = UT_convertToInches(pszMarginRight.c_str());
 	}
-	FREEP(pszSecProps);
 }
 
 /*!

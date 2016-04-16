@@ -1029,7 +1029,7 @@ public:
     else if (!strcmp (name, "style:master-page")) {
       const gchar * masterName = UT_getAttribute("style:page-master-name", atts);
       const gchar ** pageAtts = m_ooPageStyle.getAbiPageAtts(masterName);
-      getDocument()->setPageSizeFromFile(pageAtts);
+      getDocument()->setPageSizeFromFile(PP_std_copyProps(pageAtts));
     }
     else if (!strcmp (name, "style:style")) {
       const gchar * attr = NULL;

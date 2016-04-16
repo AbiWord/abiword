@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -1076,29 +1076,27 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	if (prop && val)
 	{
 		// get current font info from pView
-		const gchar ** props_in = NULL;
-		const gchar * sz;
+		PP_PropertyVector props_in;
+		std::string sz;
 
-		if (!pView->getCharFormat(&props_in))
+		if (!pView->getCharFormat(props_in))
 			return s;
 
-		sz = UT_getAttribute(prop, props_in);
-		if (sz)
+		sz = PP_getAttribute(prop, props_in);
+		if (!sz.empty())
 		{
 			if (bMultiple)
 			{
 				// some properties have multiple values
-				if (strstr(sz, val))
+				if (sz.find(val) != std::string::npos)
 					s = EV_MIS_Toggled;
 			}
 			else
 			{
-				if (0 == strcmp(sz, val))
+				if (sz == val)
 					s = EV_MIS_Toggled;
 			}
 		}
-
-		g_free(props_in);
 	}
 
 
@@ -1150,17 +1148,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 	if (prop && val)
 	{
 		// get current font info from pView
-		const gchar ** props_in = NULL;
-		const gchar * sz;
+		PP_PropertyVector props_in;
+		std::string sz;
 
-		if (!pView->getBlockFormat(&props_in))
+		if (!pView->getBlockFormat(props_in))
 			return s;
 
-		sz = UT_getAttribute(prop, props_in);
-		if (sz && (0 == strcmp(sz, val)))
+		sz = PP_getAttribute(prop, props_in);
+		if (sz == val)
 			s = EV_MIS_Toggled;
-
-		g_free(props_in);
 	}
 
 	return s;
@@ -1241,17 +1237,15 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SectFmt)
 	if (prop && val)
 	{
 		// get current font info from pView
-		const gchar ** props_in = NULL;
-		const gchar * sz;
+		PP_PropertyVector props_in;
+		std::string sz;
 
-		if (!pView->getSectionFormat(&props_in))
+		if (!pView->getSectionFormat(props_in))
 			return s;
 
-		sz = UT_getAttribute(prop, props_in);
-		if (sz && (0 == strcmp(sz, val)))
+		sz = PP_getAttribute(prop, props_in);
+		if (sz == val)
 			s = EV_MIS_Toggled;
-
-		g_free(props_in);
 	}
 
 	return s;

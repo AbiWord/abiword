@@ -75,27 +75,6 @@ size_t PP_AttrProp::getAttributeCount (void) const
 
 
 /*!
- * Sets attributes as given in the NULL-terminated input array
- * of (attribute, value) pairs.
- *
- * \param attributes An array of strings, read in (attribute, value) form.
- */
-bool	PP_AttrProp::setAttributes(const gchar ** attributes)
-{
-	if (!attributes)
-		return true;
-
-	const gchar ** pp = attributes;
-	while (*pp)
-	{
-		if (!setAttribute(pp[0],pp[1]))
-			return false;
-		pp += 2;
-	}
-	return true;
-}
-
-/*!
  * Sets attributes as given in the PP_PropertyVector, read as
  * (attribute, value) pairs.
  *
@@ -107,25 +86,6 @@ bool PP_AttrProp::setAttributes(const PP_PropertyVector & attributes)
 		if (!setAttribute(iter->c_str(), (iter + 1)->c_str())) {
 			return false;
 		}
-	}
-	return true;
-}
-
-/*!
- * Sets attributes as given in the NULL-terminated input array
- * of (attribute, value) pairs.
- */
-bool	PP_AttrProp::setProperties(const gchar ** properties)
-{
-	if (!properties)
-		return true;
-
-	const gchar ** pp = properties;
-	while (*pp)
-	{
-		if (!setProperty(pp[0],pp[1]))
-			return false;
-		pp += 2;
 	}
 	return true;
 }
@@ -1385,32 +1345,6 @@ void PP_AttrProp::miniDump(const PD_Document * pDoc) const
 #endif
 }
 
-
-// XXX remove the extra loop
-PP_PropertyVector PP_std_setPropsToNothing(const gchar ** props)
-{
-	PP_PropertyVector props2;
-
-	if(!props)
-		return props2;
-
-	UT_uint32 iCount  = 0;
-
-	while(props[iCount])
-		iCount += 2;
-
-	props2.reserve(iCount);
-
-	UT_uint32 i;
-	for(i = 0; i < iCount; i += 2)
-	{
-          props2.push_back(props[i]);
-          props2.push_back("");          // was NULL...
-	}
-
-	return props2;
-}
-
 PP_PropertyVector PP_std_setPropsToNothing(const PP_PropertyVector & props)
 {
 	PP_PropertyVector props2;
@@ -1454,6 +1388,22 @@ PP_PropertyVector PP_std_copyProps(const gchar ** props)
 	return props2;
 }
 
+PP_PropertyVector PP_std_setPropsToValue(const PP_PropertyVector & props,
+										 const gchar * value)
+{
+	PP_PropertyVector out;
+
+	std::string svalue = value ? value : "";
+
+	for(auto iter = props.cbegin(); iter != props.cend(); ++iter) {
+		out.push_back(*iter);
+		++iter;
+		out.push_back(svalue);
+	}
+
+	return out;
+}
+
 PP_PropertyVector PP_std_setPropsToValue(const gchar ** props,
 										 const gchar * value)
 {
@@ -1472,7 +1422,6 @@ PP_PropertyVector PP_std_setPropsToValue(const gchar ** props,
 	return out;
 }
 
-
 bool PP_hasAttribute(const char* name, const PP_PropertyVector & atts)
 {
 	for (auto iter = atts.cbegin(); iter != atts.cend(); iter += 2) {
@@ -1483,7 +1432,6 @@ bool PP_hasAttribute(const char* name, const PP_PropertyVector & atts)
 	return false;
 }
 
-
 std::string PP_getAttribute(const char* name, const PP_PropertyVector & atts)
 {
 	for (auto iter = atts.cbegin(); iter != atts.cend(); iter += 2) {
@@ -1492,4 +1440,16 @@ std::string PP_getAttribute(const char* name, const PP_PropertyVector & atts)
 		}
 	}
 	return "";
+}
+
+bool PP_setAttribute(const char* name, const std::string & value, PP_PropertyVector & atts)
+{
+	bool changed = false;
+	for (auto iter = atts.begin(); iter != atts.end(); iter += 2) {
+		if (*iter == name) {
+			*(iter + 1) = value;
+			changed = true;
+		}
+	}
+	return changed;
 }

@@ -1014,7 +1014,7 @@ class ABI_EXPORT PD_DocumentRDF : public PD_RDFModel
     virtual PD_DocumentRDFMutationHandle createMutation();
 
 
-    void handleCollabEvent( gchar** szAtts, gchar** szProps );
+    void handleCollabEvent(const gchar** szAtts, const gchar** szProps );
 
     PD_RDFModelHandle getRDFAtPosition( PT_DocPosition pos );
     PD_RDFModelHandle getRDFForID( const std::string& xmlid );
@@ -1183,7 +1183,7 @@ class ABI_EXPORT PD_DocumentRDFMutation
   public:
 
     virtual ~PD_DocumentRDFMutation();
-    virtual void handleCollabEvent( gchar** szAtts, gchar** szProps );
+    virtual void handleCollabEvent(const gchar** szAtts, const gchar** szProps );
 
     /**
      * @return false of the triple could not be added.

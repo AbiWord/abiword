@@ -355,7 +355,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 		if(!isClipboard() && (!getLoadStylesOnly() || getLoadDocProps()))
 		{
-		  X_CheckError(getDoc()->setAttrProp(atts));
+			X_CheckError(getDoc()->setAttrProp(PP_std_copyProps(atts)));
 		}
 		goto cleanup;
 
@@ -741,7 +741,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		PD_Style * pStyle = NULL;
 		if(getDoc()->getStyle(szName, &pStyle))
 		{
-			X_CheckError(pStyle->addAttributes(atts));
+			X_CheckError(pStyle->addAttributes(PP_std_copyProps(atts)));
 			pStyle->getBasedOn();
 			pStyle->getFollowedBy();
 		}
@@ -847,10 +847,10 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		const gchar * szProps = UT_getAttribute(PT_PROPS_ATTRIBUTE_NAME,atts);
 		if(szProps)
 		{
-			const gchar * szExtraAtts[3] = {PT_PROPS_ATTRIBUTE_NAME,
-											szProps,
-											NULL};
-			pPA->setAttributes(szExtraAtts);
+			const PP_PropertyVector extraAtts = {
+				PT_PROPS_ATTRIBUTE_NAME, szProps,
+			};
+			pPA->setAttributes(extraAtts);
 		}
 		goto cleanup;
 	}
@@ -949,7 +949,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 	case TT_PAGESIZE:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_PageSize;
-		X_CheckError(getDoc()->setPageSizeFromFile(atts));
+		X_CheckError(getDoc()->setPageSizeFromFile(PP_std_copyProps(atts)));
 		m_bDocHasPageSize = true;
 		goto cleanup;
 

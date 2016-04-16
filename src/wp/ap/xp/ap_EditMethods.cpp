@@ -2,7 +2,7 @@
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * Copyright (C) 2001 Tomas Frydrych
- * Copyright (C) 2004 Hubert Figuiere
+ * Copyright (C) 2004-2016 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -7697,12 +7697,11 @@ static bool s_doLangDlg(FV_View * pView)
 	XAP_Dialog_Language * pDialog
 		= static_cast<XAP_Dialog_Language *>(pDialogFactory->requestDialog(id));
 	UT_return_val_if_fail(pDialog, false);
-	
-	const gchar ** props_in = NULL;
-	if (pView->getCharFormat(&props_in))
+
+	PP_PropertyVector props_in;
+	if (pView->getCharFormat(props_in))
 	{
-		pDialog->setLanguageProperty(UT_getAttribute("lang", props_in));
-		FREEP(props_in);
+		pDialog->setLanguageProperty(PP_getAttribute("lang", props_in).c_str());
 	}
 
 	PD_Document * pDoc = pView->getDocument();
@@ -7735,18 +7734,15 @@ static bool s_doLangDlg(FV_View * pView)
 	{
 		//UT_DEBUGMSG(("pressed OK\n"));
 		UT_uint32 k = 0;
-		const gchar * props_out[3];
+		PP_PropertyVector props_out;
 		const gchar * s = NULL;
 
 		bool bChange = pDialog->getChangedLangProperty(&s);
-		
 		if (s)
 		{
-			props_out[k++] = "lang";
-			props_out[k++] = s;
+			props_out.push_back("lang");
+			props_out.push_back(s);
 		}
-
-		props_out[k] = 0;						// put null after last pair.
 
 		if(k > 0 && bChange)								// if something changed
 			pView->setCharFormat(props_out);
@@ -7795,8 +7791,8 @@ UT_return_val_if_fail(pDialog, false);
 
 	// get current font info from pView
 
-	const gchar ** props_in = NULL;
-	if (pView->getCharFormat(&props_in))
+	PP_PropertyVector props_in;
+	if (pView->getCharFormat(props_in))
 	{
 		// stuff font properties into the dialog.
 		// for a/p which are constant across the selection (always
@@ -7804,21 +7800,13 @@ UT_return_val_if_fail(pDialog, false);
 		// which change across the selection, we ask the dialog not
 		// to set the field (by passing "").
 
-		const gchar *szFontFamily = UT_getAttribute("font-family", props_in);
-		const gchar *szTextTransform = UT_getAttribute("text-transform", props_in);
-		const gchar *szFontSize = UT_getAttribute("font-size", props_in);
-		const gchar *szFontWeight = UT_getAttribute("font-weight", props_in);
-		const gchar *szFontStyle = UT_getAttribute("font-style", props_in);
-		const gchar *szColor = UT_getAttribute("color", props_in);
-		const gchar *szBGColor = UT_getAttribute("bgcolor", props_in);
-
-		const std::string sFontFamily = (szFontFamily ? szFontFamily : "");
-		const std::string sTextTransform = (szTextTransform ? szTextTransform : "");
-		const std::string sFontSize = (szFontSize ? szFontSize : "");
-		const std::string sFontWeight = (szFontWeight ? szFontWeight : "");
-		const std::string sFontStyle = (szFontStyle ? szFontStyle : "");
-		const std::string sColor = (szColor ? szColor : "");
-		const std::string sBGColor = (szBGColor ? szBGColor : "");
+		std::string sFontFamily = PP_getAttribute("font-family", props_in);
+		std::string sTextTransform = PP_getAttribute("text-transform", props_in);
+		std::string sFontSize = PP_getAttribute("font-size", props_in);
+		std::string sFontWeight = PP_getAttribute("font-weight", props_in);
+		std::string sFontStyle = PP_getAttribute("font-style", props_in);
+		std::string sColor = PP_getAttribute("color", props_in);
+		std::string sBGColor = PP_getAttribute("bgcolor", props_in);
 
 		pDialog->setFontFamily(sFontFamily);
 		pDialog->setTextTransform(sTextTransform);
@@ -7827,7 +7815,7 @@ UT_return_val_if_fail(pDialog, false);
 		pDialog->setFontStyle(sFontStyle);
 		pDialog->setColor(sColor);
 		pDialog->setBGColor(sBGColor);
-	   
+
 //
 // Set the background color for the preview
 //
@@ -7848,42 +7836,40 @@ UT_return_val_if_fail(pDialog, false);
 		bool bTopLine = false;
 		bool bBottomLine = false;
 
-		const gchar * s = UT_getAttribute("text-decoration", props_in);
-		if (s)
+		std::string s = PP_getAttribute("text-decoration", props_in);
+		if (!s.empty())
 		{
-			bUnderline = (strstr(s, "underline") != NULL);
-			bOverline = (strstr(s, "overline") != NULL);
-			bStrikeOut = (strstr(s, "line-through") != NULL);
-			bTopLine = (strstr(s, "topline") != NULL);
-			bBottomLine = (strstr(s, "bottomline") != NULL);
+			bUnderline = (s.find("underline") != std::string::npos);
+			bOverline = (s.find("overline") != std::string::npos);
+			bStrikeOut = (s.find("line-through") != std::string::npos);
+			bTopLine = (s.find("topline") != std::string::npos);
+			bBottomLine = (s.find("bottomline") != std::string::npos);
 		}
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopLine,bBottomLine);
 
 		bool bHidden = false;
-		const gchar * h = UT_getAttribute("display", props_in);
-		if(h)
+		std::string h = PP_getAttribute("display", props_in);
+		if(!h.empty())
 		{
-			bHidden = (strstr(h, "none") != NULL);
+			bHidden = (h.find("none") != std::string::npos);
 		}
 		pDialog->setHidden(bHidden);
-		
+
 		bool bSuperScript = false;
-		h = UT_getAttribute("text-position", props_in);
-		if(h)
+		h = PP_getAttribute("text-position", props_in);
+		if(!h.empty())
 		{
-			bSuperScript = (strstr(h, "superscript") != NULL);
+			bSuperScript = (h.find("superscript") != std::string::npos);
 		}
 		pDialog->setSuperScript(bSuperScript);
-		
+
 		bool bSubScript = false;
-		h = UT_getAttribute("text-position", props_in);
-		if(h)
+		h = PP_getAttribute("text-position", props_in);
+		if(!h.empty())
 		{
-			bSubScript = (strstr(h, "subscript") != NULL);
+			bSubScript = (h.find("subscript") != std::string::npos);
 		}
 		pDialog->setSubScript(bSubScript);
-
-		FREEP(props_in);
 	}
 
 	if(!pView->isSelectionEmpty())
@@ -7909,7 +7895,7 @@ UT_return_val_if_fail(pDialog, false);
 
 	if (bOK)
 	{
-		std::vector<std::string> props_out;
+		PP_PropertyVector props_out;
 		std::string s;
 
 		if (pDialog->getChangedFontFamily(s))
@@ -8052,13 +8038,12 @@ s_TabSaveCallBack (AP_Dialog_Tab * /*pDlg*/, FV_View * pView,
 				   const char * szTabStops, const char * szDflTabStop,
 				   void * /*closure*/)
 {
-  UT_return_if_fail(szTabStops && szDflTabStop);
+	UT_return_if_fail(szTabStops && szDflTabStop);
 
-	const gchar * properties[3];
-	properties[0] = "tabstops";
-	properties[1] = szTabStops;
-	properties[2] = 0;
-	UT_DEBUGMSG(("AP_Dialog_Tab: Tab Stop [%s]\n",properties[1]));
+	PP_PropertyVector properties = {
+		"tabstops", szTabStops ? szTabStops : ""
+	};
+	UT_DEBUGMSG(("AP_Dialog_Tab: Tab Stop [%s]\n",properties[1].c_str()));
 	if(szTabStops && *szTabStops)
 	{
 		pView->setBlockFormat(properties);
@@ -8070,10 +8055,9 @@ s_TabSaveCallBack (AP_Dialog_Tab * /*pDlg*/, FV_View * pView,
 	}
 
 	properties[0] = "default-tab-interval";
-	properties[1] = szDflTabStop;
-	properties[2] = 0;
-	UT_return_if_fail (properties[1]);
-	UT_DEBUGMSG(("AP_Dialog_Tab: Default Tab Stop [%s]\n",properties[1]));
+	properties[1] = szDflTabStop ? szDflTabStop : "";
+	UT_return_if_fail (szDflTabStop);
+	UT_DEBUGMSG(("AP_Dialog_Tab: Default Tab Stop [%s]\n",properties[1].c_str()));
 
 	pView->setBlockFormat(properties);
 }
@@ -8138,16 +8122,14 @@ static bool s_doParagraphDlg(FV_View * pView)
 
 	AP_Dialog_Paragraph * pDialog
 		= static_cast<AP_Dialog_Paragraph *>(pDialogFactory->requestDialog(AP_DIALOG_ID_PARAGRAPH));
-UT_return_val_if_fail(pDialog, false);
-	const gchar ** props = NULL;
+	UT_return_val_if_fail(pDialog, false);
+	PP_PropertyVector props;
 
-	if (!pView->getBlockFormat(&props))
+	if (!pView->getBlockFormat(props))
 		return false;
 
 	if (!pDialog->setDialogData(props))
 		return false;
-
-	FREEP(props);
 
 	// let's steal the width from getTopRulerInfo.
 	AP_TopRulerInfo info;
@@ -8162,36 +8144,15 @@ UT_return_val_if_fail(pDialog, false);
 	// get the dialog answer
 	AP_Dialog_Paragraph::tAnswer answer = pDialog->getAnswer();
 
-	const gchar ** propitem = NULL;
-
 	switch (answer)
 	{
 	case AP_Dialog_Paragraph::a_OK:
 
-		// getDialogData() returns us gchar ** data we have to g_free
 		pDialog->getDialogData(props);
-		UT_return_val_if_fail (props, false);
 
 		// set properties back to document
-		if (props && props[0])
+		if (!props.empty())
 			pView->setBlockFormat(props);
-
-		// we have to loop through the props pairs, freeing each string
-		// referenced, then freeing the pointers themselves
-		if (props)
-		{
-			propitem = props;
-
-			while (propitem[0] && propitem[1])
-			{
-				FREEP(propitem[0]);
-				FREEP(propitem[1]);
-				propitem += 2;
-			}
-		}
-
-		// now g_free props
-		FREEP(props);
 
 		break;
 
@@ -8265,7 +8226,6 @@ Defun(language)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView, false);
-	const gchar * properties[] = { "lang", NULL, 0};
 
 	char lang[10];
 	UT_return_val_if_fail(pCallData->m_dataLength < sizeof(lang),false);
@@ -8274,8 +8234,10 @@ Defun(language)
 	for(i = 0; i < pCallData->m_dataLength; i++)
 		lang[i] = static_cast<char>(pCallData->m_pData[i]);
 	lang[i] = 0;
-	
-	properties[1] = static_cast<const gchar *>(&lang[0]);
+
+	PP_PropertyVector properties = {
+		"lang", lang
+	};
 	pView->setCharFormat(properties);
 	return true;
 }
@@ -8298,13 +8260,14 @@ Defun(fontFamily)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	
+
 	UT_return_val_if_fail(pView, false);
-	const gchar * properties[] = { "font-family", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
-	properties[1] = reinterpret_cast<const gchar *>(utf8.utf8_str());
+	const PP_PropertyVector properties = {
+		"font-family", utf8.utf8_str()
+	};
 	pView->setCharFormat(properties);
-	
+
 	return true;
 }
 
@@ -8313,17 +8276,18 @@ Defun(fontSize)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	UT_return_val_if_fail(pView, false);	
-	const gchar * properties[] = { "font-size", NULL, 0};
-	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);	
-	const gchar * sz = reinterpret_cast<const gchar *>(utf8.utf8_str());
+	UT_return_val_if_fail(pView, false);
+	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
+	const gchar * sz = utf8.utf8_str();
 
 	if (sz && *sz)
 	{
-		UT_String buf (sz);
+		std::string buf(sz);
 		buf += "pt";
 
-		properties[1] = static_cast<const gchar *>(buf.c_str());
+		PP_PropertyVector properties = {
+			"font-size", buf
+		};
 		pView->setCharFormat(properties);
 	}
 	return true;
@@ -8332,20 +8296,18 @@ Defun(fontSize)
 static bool _fontSizeChange(FV_View * pView, bool bIncrease)
 {
 	UT_return_val_if_fail(pView, false);
-	const gchar ** span_props = NULL;
-	const gchar * properties[] = { "font-size", NULL, 0};
-	
-	pView->getCharFormat(&span_props);
-	UT_return_val_if_fail(span_props, false);
-	
-	const gchar * s = UT_getAttribute("font-size", span_props);
+	PP_PropertyVector span_props;
 
-	if(!s)
+	pView->getCharFormat(span_props);
+	UT_return_val_if_fail(!span_props.empty(), false);
+
+	std::string s = PP_getAttribute("font-size", span_props);
+
+	if(s.empty())
 		return false;
 
-	double dPoints = UT_convertToPoints(s);
-	FREEP(span_props);
-	
+	double dPoints = UT_convertToPoints(s.c_str());
+
 #define PT_INC_SMALL  1.0
 #define PT_INC_MEDIUM 2.0
 #define PT_INC_LARGE  4.0
@@ -8383,7 +8345,9 @@ static bool _fontSizeChange(FV_View * pView, bool bIncrease)
 	if(!sz || !*sz)
 		return false;
 
-	properties[1] = sz;
+	PP_PropertyVector properties = {
+		"font-size", sz
+	};
 	pView->setCharFormat(properties);
 
 	return true;
@@ -8506,8 +8470,8 @@ Defun1(formatPainter)
   // taken care of in ap_Toolbar_Functions.cpp::ap_ToolbarGetState_Clipboard
 
   UT_return_val_if_fail(pView, false);
-  const gchar ** block_properties = 0;
-  const gchar ** span_properties  = 0;
+  PP_PropertyVector block_properties;
+  PP_PropertyVector span_properties;
 
   // get the current document's selected range
   PD_DocumentRange range;
@@ -8531,12 +8495,12 @@ Defun1(formatPainter)
 
   // get the paragraph and span/character formatting properties of
   // the clipboard selection
-  if (!pPasteView.getBlockFormat(&block_properties))
+  if (!pPasteView.getBlockFormat(block_properties))
     {
       UT_DEBUGMSG(("DOM: No block attributes in the new paragraph!\n"));
     }
 
-  if (!pPasteView.getCharFormat(&span_properties))
+  if (!pPasteView.getCharFormat(span_properties))
     {
       UT_DEBUGMSG(("DOM: No span attributes in the new paragraph!\n"));
     }
@@ -8545,13 +8509,11 @@ Defun1(formatPainter)
   pView->cmdSelect (range.m_pos1, range.m_pos2) ;
 
   // set the current selection's properties to what's on the clipboard
-  if ( block_properties )
+  if (!block_properties.empty())
     pView->setBlockFormat (block_properties);
-  if ( span_properties )
+  if (!span_properties.empty())
     pView->setCharFormat (span_properties);
 
-  FREEP(block_properties);
-  FREEP(span_properties);
   DELETEP(pDocLayout);
   UNREFP(pNewDoc);
 
@@ -8571,84 +8533,65 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * props_out[] =	{ NULL, NULL, 0};
 
 	// get current font info from pView
-	const gchar ** props_in = NULL;
-	const gchar * s;
+	PP_PropertyVector props_in;
 
 	if (isSpan)
 	{
-		if (!pView->getCharFormat(&props_in))
+		if (!pView->getCharFormat(props_in))
 		return false;
 	}
 	else // isBlock
 	{
-		if (!pView->getBlockFormat(&props_in))
+		if (!pView->getBlockFormat(props_in))
 		return false;
 	}
 
-	props_out[0] = prop;
-	props_out[1] = vOn; 	// be optimistic
+	PP_PropertyVector props_out = {
+		prop, vOn
+	};
 
-	gchar * buf = NULL;
-
-	s = UT_getAttribute(prop, props_in);
-	if (s)
+	std::string s = PP_getAttribute(prop, props_in);
+	if (!s.empty())
 	{
 		if (bMultiple)
 		{
 			// some properties have multiple values
-			const gchar*	p = strstr(s, vOn);
+			std::size_t	n = s.find(vOn);
 
-			if (p)
+			if (n != std::string::npos)
 			{
 				// yep...
-				if (strstr(s, vOff))
+				if (s.find(vOff) != std::string::npos)
 				{
 					UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 				}
 
 				// ... take it out
-				int len = strlen(s);
-				buf = static_cast<gchar *>(UT_calloc(len, sizeof(gchar)));
+				std::string buf(s.cbegin(), s.cbegin() + n);
+				buf += s.substr(n + strlen(vOn));
 
-				strncpy(buf, s, p - s);
-				strcat(buf, s + (p - s) + strlen(vOn));
-
-				// now see if anything's left
-				gchar * q  = g_strdup(buf);
-
-				if (q && strtok(q, " "))
+				if (buf.find(' ') != std::string::npos)
 					props_out[1] = buf; 	// yep, use it
 				else
 					props_out[1] = vOff;	// nope, clear it
-
-				g_free(q);
 			}
 			else
 			{
 				// nope...
-				if (g_ascii_strcasecmp(s, vOff))
+				if (g_ascii_strcasecmp(s.c_str(), vOff))
 				{
-					// ...put it in by appending to current contents
-					int len = strlen(s) + strlen(vOn) + 2;
-					buf = static_cast<gchar *>(UT_calloc(len, sizeof(gchar)));
-
-					strcpy(buf, s);
-					strcat(buf, " ");
-					strcat(buf, vOn);
-					props_out[1] = buf;
+					props_out[1] = s + " " + vOn;
 				}
 			}
 		}
 		else
 		{
-			if (0 == g_ascii_strcasecmp(s, vOn))
+			if (0 == g_ascii_strcasecmp(s.c_str(), vOn))
 				props_out[1] = vOff;
 		}
 	}
-	FREEP(props_in);
 
 
 	// set it either way
@@ -8658,7 +8601,6 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 	else // isBlock
 	  pView->setBlockFormat(props_out);
 
-	FREEP(buf);
 	return true;
 }
 
@@ -9452,13 +9394,13 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	// Set the second page of info
 	// All the page and header/footer margins
 	//
-	const gchar ** props_in = NULL;
-	const char* pszLeftMargin = NULL;
-	const char* pszTopMargin = NULL;
-	const char* pszRightMargin = NULL;
-	const char* pszBottomMargin = NULL;
-	const char* pszFooterMargin = NULL;
-	const char* pszHeaderMargin = NULL;
+	PP_PropertyVector props_in;
+	std::string pszLeftMargin;
+	std::string pszTopMargin;
+	std::string pszRightMargin;
+	std::string pszBottomMargin;
+	std::string pszFooterMargin;
+	std::string pszHeaderMargin;
 	double dLeftMargin = 1.0;
 	double dRightMargin=1.0;
 	double dTopMargin = 1.0;
@@ -9466,46 +9408,46 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	double dFooterMargin= 0.0;
 	double dHeaderMargin = 0.0;
 
-	bool bResult = pView->getSectionFormat(&props_in);
+	bool bResult = pView->getSectionFormat(props_in);
 	if (!bResult)
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 	}
-	if(props_in && props_in[0])
+	if(!props_in.empty())
 	{
-		pszLeftMargin = UT_getAttribute("page-margin-left", props_in);
-		if(pszLeftMargin)
+		pszLeftMargin = PP_getAttribute("page-margin-left", props_in);
+		if(!pszLeftMargin.empty())
 		{
-			dLeftMargin = UT_convertToInches(pszLeftMargin);
+			dLeftMargin = UT_convertToInches(pszLeftMargin.c_str());
 		}
 
-		pszRightMargin = UT_getAttribute("page-margin-right", props_in);
-		if(pszRightMargin)
+		pszRightMargin = PP_getAttribute("page-margin-right", props_in);
+		if(!pszRightMargin.empty())
 		{
-			dRightMargin = UT_convertToInches(pszRightMargin);
+			dRightMargin = UT_convertToInches(pszRightMargin.c_str());
 		}
 
-		pszTopMargin = UT_getAttribute("page-margin-top", props_in);
-		if(pszTopMargin)
+		pszTopMargin = PP_getAttribute("page-margin-top", props_in);
+		if(!pszTopMargin.empty())
 		{
-			dTopMargin = UT_convertToInches(pszTopMargin);
+			dTopMargin = UT_convertToInches(pszTopMargin.c_str());
 		}
 
-		pszBottomMargin = UT_getAttribute("page-margin-bottom", props_in);
-		if(pszBottomMargin)
+		pszBottomMargin = PP_getAttribute("page-margin-bottom", props_in);
+		if(!pszBottomMargin.empty())
 		{
-			dBottomMargin = UT_convertToInches(pszBottomMargin);
+			dBottomMargin = UT_convertToInches(pszBottomMargin.c_str());
 		}
 
-		pszFooterMargin = UT_getAttribute("page-margin-footer", props_in);
-		if(pszFooterMargin)
-			dFooterMargin = UT_convertToInches(pszFooterMargin);
+		pszFooterMargin = PP_getAttribute("page-margin-footer", props_in);
+		if(!pszFooterMargin.empty())
+			dFooterMargin = UT_convertToInches(pszFooterMargin.c_str());
 
-		pszHeaderMargin = UT_getAttribute("page-margin-header", props_in);
-		if(pszHeaderMargin)
-			dHeaderMargin = UT_convertToInches(pszHeaderMargin);
+		pszHeaderMargin = PP_getAttribute("page-margin-header", props_in);
+		if(!pszHeaderMargin.empty())
+			dHeaderMargin = UT_convertToInches(pszHeaderMargin.c_str());
 	}
-	FREEP(props_in);
+
 	orig_margu = pDialog->getMarginUnits();
 	if(orig_margu == DIM_MM)
 	{
@@ -9568,38 +9510,29 @@ static bool s_doPageSetupDlg (FV_View * pView)
 		//
 		// Set the new Page Stuff
 		//
-		const gchar * szAttr[14] = {"pagetype",NULL,
-									"orientation",NULL,
-									"width",NULL,
-									"height",NULL,
-									"units",NULL,
-									"page-scale",NULL,
-									NULL,NULL};
 		UT_UTF8String sType,sOri,sWidth,sHeight,sUnits,sScale;
 		sType = pSize.getPredefinedName();
 		sUnits = UT_dimensionName(final_ut);
 		sWidth = UT_formatDimensionString(final_ut,final_wid);
 		sHeight = UT_formatDimensionString(final_ut,final_ht);
 		sScale = UT_formatDimensionString(DIM_none,final_scale);
-		bool p = (final_ori == AP_Dialog_PageSetup::PORTRAIT);
-		if(p)
-			sOri = "portrait";
-		else
-			sOri = "landscape";
-		szAttr[1] = sType.utf8_str();
-		szAttr[3] = sOri.utf8_str();
-		szAttr[5] = sWidth.utf8_str();
-		szAttr[7] = sHeight.utf8_str();
-		szAttr[9] = sUnits.utf8_str();
-		szAttr[11] = sScale.utf8_str();
-#ifdef DEBUG
+		const PP_PropertyVector attr = {
+			"pagetype", sType.utf8_str(),
+			"orientation", (final_ori == AP_Dialog_PageSetup::PORTRAIT) ?
+			"portrait" : "landscape",
+			"width", sWidth.utf8_str(),
+			"height", sHeight.utf8_str(),
+			"units", sUnits.utf8_str(),
+			"page-scale", sScale.utf8_str()
+		};
+#if 0 //def DEBUG
 		for (const gchar ** a = szAttr; (*a); a++)
 			{
 				UT_DEBUGMSG(("apEditMethods attrib %s value %s \n",a[0],a[1]));
 				a++;
 			}
 #endif
-		pDoc->setPageSizeFromFile(szAttr);
+		pDoc->setPageSizeFromFile(attr);
 	}
 
 	// I am not entirely sure about this; perhaps the units should only be modifiable
@@ -9650,52 +9583,37 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 	// Convert them into const char strings and change the section format
 	//
-	UT_GenericVector<const gchar*> v;
+	PP_PropertyVector props;
 	//szLeftMargin = UT_convertInchesToDimensionString(docMargUnits,dLeftMargin);
 	szLeftMargin = UT_formatDimensionString(final_margu,dLeftMargin);
-	v.addItem("page-margin-left");
-	v.addItem(szLeftMargin.c_str());
+	props.push_back("page-margin-left");
+	props.push_back(szLeftMargin.c_str());
 
 	//szRightMargin = UT_convertInchesToDimensionString(docMargUnits,dRightMargin);
 	szRightMargin = UT_formatDimensionString(final_margu,dRightMargin);
-	v.addItem("page-margin-right");
-	v.addItem(szRightMargin.c_str());
+	props.push_back("page-margin-right");
+	props.push_back(szRightMargin.c_str());
 
 	//szTopMargin = UT_convertInchesToDimensionString(docMargUnits,dTopMargin);
 	szTopMargin = UT_formatDimensionString(final_margu,dTopMargin);
-	v.addItem("page-margin-top");
-	v.addItem(szTopMargin.c_str());
+	props.push_back("page-margin-top");
+	props.push_back(szTopMargin.c_str());
 
 	//szBottomMargin = UT_convertInchesToDimensionString(docMargUnits,dBottomMargin);
 	szBottomMargin = UT_formatDimensionString(final_margu,dBottomMargin);
-	v.addItem("page-margin-bottom");
-	v.addItem(szBottomMargin.c_str());
+	props.push_back("page-margin-bottom");
+	props.push_back(szBottomMargin.c_str());
 
 	//szFooterMargin = UT_convertInchesToDimensionString(docMargUnits,dFooterMargin);
 	szFooterMargin = UT_formatDimensionString(final_margu,dFooterMargin);
-	v.addItem("page-margin-footer");
-	v.addItem(szFooterMargin.c_str());
+	props.push_back("page-margin-footer");
+	props.push_back(szFooterMargin.c_str());
 
 	//szHeaderMargin = UT_convertInchesToDimensionString(docMargUnits,dHeaderMargin);
 	szHeaderMargin = UT_formatDimensionString(final_margu,dHeaderMargin);
-	v.addItem("page-margin-header");
-	v.addItem(szHeaderMargin.c_str());
+	props.push_back("page-margin-header");
+	props.push_back(szHeaderMargin.c_str());
 
-	UT_uint32 countv = v.getItemCount() + 1;
-	const gchar ** props = static_cast<const gchar **>(UT_calloc(countv, sizeof(gchar *)));
-	if(!props)
-	{
-		UT_ASSERT_HARMLESS(props);
-		DELETEP(pDialog);
-		return false;
-	}
-
-	UT_sint32 i;
-	for(i=0; i<v.getItemCount();i++)
-	{
-		props[i] = v.getNthItem(i);
-	}
-	props[i] = static_cast<gchar *>(NULL);
 	if(ppView->isHdrFtrEdit())
 	{
 		ppView->clearHdrFtrEdit();
@@ -9707,7 +9625,6 @@ static bool s_doPageSetupDlg (FV_View * pView)
 	//
 
 	ppView->setSectionFormat(props);
-	FREEP(props);
 	delete pDialog;
 	return true;
 }
@@ -10549,20 +10466,6 @@ static bool s_doInsertPageNumbers(FV_View * pView)
 {
 	UT_return_val_if_fail(pView,false);
 
-	const gchar * right_attributes [] = {
-	  "text-align", "right", NULL, NULL
-	};
-
-	const gchar * left_attributes [] = {
-	  "text-align", "left", NULL, NULL
-	};
-
-	const gchar * center_attributes [] = {
-	  "text-align", "center", NULL, NULL
-	};
-
-	const gchar ** atts = NULL;
-
 	XAP_Frame * pFrame = static_cast<XAP_Frame *> ( pView->getParentData());
 	UT_return_val_if_fail(pFrame, false);
 
@@ -10581,12 +10484,23 @@ UT_return_val_if_fail(pDialog, false);
 		pDialogFactory->releaseDialog(pDialog);
 		return true;
 	}
+	PP_PropertyVector atts = {
+		"text-align", ""
+	};
 	switch (pDialog->getAlignment())
 	{
-		case AP_Dialog_PageNumbers::id_RALIGN : atts = right_attributes; break;
-		case AP_Dialog_PageNumbers::id_LALIGN : atts = left_attributes; break;
-		case AP_Dialog_PageNumbers::id_CALIGN : atts = center_attributes; break;
-		default: UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN); break;
+		case AP_Dialog_PageNumbers::id_RALIGN :
+			atts[1] = "right";
+			break;
+		case AP_Dialog_PageNumbers::id_LALIGN :
+			atts[1] = "left";
+			break;
+		case AP_Dialog_PageNumbers::id_CALIGN :
+			atts[1] = "center";
+			break;
+		default:
+			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
+			break;
 	}
 	pView->processPageNumber(pDialog->isFooter() ?
 								  FL_HDRFTR_FOOTER : FL_HDRFTR_HEADER,
@@ -10621,14 +10535,13 @@ UT_return_val_if_fail(pDialog, false);
 	if (pDialog->getAnswer() == AP_Dialog_Field::a_OK)
 	{
 		const gchar * pParam = pDialog->getParameter();
-		const gchar * pAttr[3];
-		const gchar param_name[] = "param";
-		pAttr[0] = static_cast<const gchar *>(&param_name[0]);
-		pAttr[1] = pParam;
-		pAttr[2] = 0;
 
-		if(pParam)
-			pView->cmdInsertField(pDialog->GetFieldFormat(),static_cast<const gchar **>(&pAttr[0]));
+		if(pParam) {
+			PP_PropertyVector pAttr = {
+				"param", pParam
+			};
+			pView->cmdInsertField(pDialog->GetFieldFormat(), pAttr);
+		}
 		else
 			pView->cmdInsertField(pDialog->GetFieldFormat());
 	}
@@ -11334,15 +11247,12 @@ Defun1(setPosImage)
 //
 // Now define the Frame attributes strux
 //
-	const gchar * attributes[] = {PT_STRUX_IMAGE_DATAID,NULL,
-								  PT_PROPS_ATTRIBUTE_NAME, NULL,
-								  PT_IMAGE_TITLE,NULL,
-								  PT_IMAGE_DESCRIPTION,NULL,
-								  NULL,NULL};
-	attributes[1] = dataID;
-	attributes[3] = sFrameProps.c_str();
-	attributes[5] = szTitle;
-	attributes[7] = szDescription;
+	const PP_PropertyVector attributes = {
+		PT_STRUX_IMAGE_DATAID, dataID,
+		PT_PROPS_ATTRIBUTE_NAME, sFrameProps.c_str(),
+		PT_IMAGE_TITLE, szTitle,
+		PT_IMAGE_DESCRIPTION, szDescription
+	};
 //
 // This deletes the inline image and places a positioned image in it's place
 // It deals with the undo/general update issues.
@@ -11494,17 +11404,18 @@ Defun1(dlgFmtPosImage)
 	sWidth = pDialog->getWidthString();
 	sHeight = pDialog->getHeightString();
 	UT_DEBUGMSG(("Width %s Height %s \n",sWidth.c_str(),sHeight.c_str()));
-	const gchar * attribs[] = {"title", NULL, "alt", NULL, 0};
-	attribs[1] = pDialog->getTitle().utf8_str();
-	attribs[3] = pDialog->getDescription().utf8_str();
-
+	PP_PropertyVector attribs = {
+		"title", pDialog->getTitle().utf8_str(),
+		"alt", pDialog->getDescription().utf8_str()
+	};
 
 	if(pDialog->getWrapping() == WRAP_INLINE)
 	{
-		const gchar * properties[] = {"width", NULL, "height", NULL, 0};
-		properties[1] = sWidth.c_str();
-		properties[3] = sHeight.c_str();
-		
+		const PP_PropertyVector properties = {
+			"width", sWidth.c_str(),
+			"height", sHeight.c_str()
+		};
+
 		pView->convertPositionedToInLine(pPosObj);
 		pView->setCharFormat(properties, attribs);
 		pView->updateScreen();
@@ -11514,16 +11425,14 @@ Defun1(dlgFmtPosImage)
 	{
 	  POSITION_TO newFormatMode = pDialog->getPositionTo(); 
 	  WRAPPING_TYPE newWrapMode = pDialog->getWrapping();
-	  const gchar * properties[] = {"frame-width", NULL, 
-									"frame-height", NULL, 
-									"wrap-mode",NULL,
-									"position-to",NULL,
-									"tight-wrap",NULL,
-									NULL,NULL,NULL,NULL,
-									NULL,NULL,NULL};
+	  PP_PropertyVector properties = {
+		  "frame-width", sWidth.c_str(),
+		  "frame-height", sHeight.c_str(),
+		  "wrap-mode", "",
+		  "position-to", "",
+		  "tight-wrap", pDialog->isTightWrap() ? "1" : "0",
+	  };
 
-	  properties[1] = sWidth.c_str();
-	  properties[3] = sHeight.c_str();
 	  if(newWrapMode == WRAP_TEXTRIGHT)
 	  {
 	    properties[5] = "wrapped-to-right";
@@ -11553,14 +11462,6 @@ Defun1(dlgFmtPosImage)
 	  {
 	    properties[7] = "page-above-text";
 	  }
-	  if(pDialog->isTightWrap())
-	  {
-        properties[9] = "1";
-	  }
-	  else
-	  {
-	    properties[9] = "0";
-	  }
 
 	  fp_FrameContainer * pFrameC = static_cast<fp_FrameContainer *>(pPosObj->getFirstContainer());
 	  fv_FrameStrings FrameStrings;
@@ -11581,26 +11482,26 @@ Defun1(dlgFmtPosImage)
 		  UT_DEBUGMSG(("Position of frame: X %d\t Y %d\n",iXposPage,iYposPage));
 		  if (newFormatMode == POSITION_TO_PARAGRAPH)
 		  {
-			  properties[10] = "xpos";
-			  properties[11] = FrameStrings.sXpos.c_str();
-			  properties[12] = "ypos";
-			  properties[13] = FrameStrings.sYpos.c_str();
+			  properties.push_back("xpos");
+			  properties.push_back(FrameStrings.sXpos.c_str());
+			  properties.push_back("ypos");
+			  properties.push_back(FrameStrings.sYpos.c_str());
 		  }
 		  else if (newFormatMode == POSITION_TO_COLUMN)
 		  {
-			  properties[10] = "frame-col-xpos";
-			  properties[11] = FrameStrings.sColXpos.c_str();
-			  properties[12] = "frame-col-ypos";
-			  properties[13] = FrameStrings.sColYpos.c_str();
-			  properties[14] = "frame-pref-column";
-			  properties[15] = FrameStrings.sPrefColumn.c_str();
+			  properties.push_back("frame-col-xpos");
+			  properties.push_back(FrameStrings.sColXpos.c_str());
+			  properties.push_back("frame-col-ypos");
+			  properties.push_back(FrameStrings.sColYpos.c_str());
+			  properties.push_back("frame-pref-column");
+			  properties.push_back(FrameStrings.sPrefColumn.c_str());
 		  }
 		  else if (newFormatMode == POSITION_TO_PAGE)
 		  {
-			  properties[10] = "frame-page-xpos";
-			  properties[11] = FrameStrings.sPageXpos.c_str();
-			  properties[12] = "frame-page-ypos";
-			  properties[13] = FrameStrings.sPageYpos.c_str();
+			  properties.push_back("frame-page-xpos");
+			  properties.push_back(FrameStrings.sPageXpos.c_str());
+			  properties.push_back("frame-page-ypos");
+			  properties.push_back(FrameStrings.sPageYpos.c_str());
 		  }
 	  }
 
@@ -11694,18 +11595,18 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 	}
 
     pView->cmdSelect(pos,pos+1);
-	const gchar ** props_in = NULL;
+	PP_PropertyVector props_in;
 
 	const PP_AttrProp * pAP = 0;
 	pView->getAttributes (&pAP);
 	pDialog->setInHdrFtr(bInHdrFtr);
 	  
-	if (pView->getCharFormat(&props_in))
+	if (pView->getCharFormat(props_in))
 	{
 	  // stuff properties into the dialog.
 
-	  const gchar* szWidth = UT_getAttribute("width", props_in);
-	  const gchar* szHeight = UT_getAttribute("height", props_in);
+	  std::string szWidth = PP_getAttribute("width", props_in);
+	  std::string szHeight = PP_getAttribute("height", props_in);
 
 	  const gchar* szTitle = 0;
 	  const gchar* szDescription = 0;
@@ -11723,8 +11624,8 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 	  }
 
 	  double width = 0., height = 0.;
-	  if(szWidth)
-		  width = UT_convertToInches(szWidth);
+	  if(!szWidth.empty())
+		  width = UT_convertToInches(szWidth.c_str());
 	  if (width < 0.0001)
 	  {
 		  iWidth = 0;
@@ -11736,13 +11637,12 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 		  else
 		  {
 			  UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			  FREEP(props_in);
 			  return false;
 		  }
 		  width = iWidth*72.0/UT_LAYOUT_RESOLUTION;
 		  }
-	  if(szHeight)
-	      height = UT_convertToInches(szHeight);
+	  if(!szHeight.empty())
+	      height = UT_convertToInches(szHeight.c_str());
 	  if (height < 0.0001)
 	  {
 		  iHeight = 0;
@@ -11754,7 +11654,6 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 		  else
 		  {
 			  UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-			  FREEP(props_in);
 			  return false;
 		  }
 		  height = iHeight*72.0/UT_LAYOUT_RESOLUTION;
@@ -11771,7 +11670,6 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 	  }
 	  pDialog->setWidth( UT_convertInchesToDimensionString(dim,width));
 	  pDialog->setHeight( UT_convertInchesToDimensionString(dim,height));
-	  FREEP(props_in);
 
 	  WRAPPING_TYPE oldWrap = WRAP_INLINE;
 	  pDialog->runModal(pFrame);
@@ -11787,19 +11685,20 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 		  sWidth = pDialog->getWidthString();
 		  sHeight = pDialog->getHeightString();
 		  UT_DEBUGMSG(("Width %s Height %s \n",sWidth.c_str(),sHeight.c_str()));
-		  const gchar * properties[] = {"width", NULL, "height", NULL, 0};
 		  // TODO: set format
 
 		  if((newWrap == WRAP_INLINE) && (oldWrap == WRAP_INLINE))
 		  {
 			  UT_DEBUGMSG(("DOM: nw:%s nh:%s\n", sWidth.c_str(), sHeight.c_str()));
-			  
-			  properties[1] = sWidth.c_str();
-			  properties[3] = sHeight.c_str();
+			  const PP_PropertyVector properties = {
+				  "width", sWidth,
+				  "height", sHeight
+			  };
 
-			  const gchar * attribs[] = {"title", NULL, "alt", NULL, 0};
-			  attribs[1] = pDialog->getTitle().utf8_str();
-			  attribs[3] = pDialog->getDescription().utf8_str();
+			  const PP_PropertyVector attribs = {
+				  "title", pDialog->getTitle().utf8_str(),
+				  "alt", pDialog->getDescription().utf8_str()
+			  };
 
 			  pView->setCharFormat(properties, attribs);
 			  pView->updateScreen();
@@ -12039,14 +11938,12 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 //
 // Now define the Frame attributes strux
 //
-			  const gchar * attributes[9] = {PT_STRUX_IMAGE_DATAID,
-											 NULL,"props",NULL,"title",NULL,"alt",NULL,NULL};
-
-			  attributes[1] = dataID;
-			  attributes[3] = sFrameProps.c_str();
-			  attributes[5] = pDialog->getTitle().utf8_str();
-			  attributes[7] = pDialog->getDescription().utf8_str();
-
+			  const PP_PropertyVector attributes = {
+				  PT_STRUX_IMAGE_DATAID, dataID,
+				  "props", sFrameProps.c_str(),
+				  "title", pDialog->getTitle().utf8_str(),
+				  "alt", pDialog->getDescription().utf8_str()
+			  };
 //
 // This deletes the inline image and places a positioned image in it's place
 // It deals with the undo/general update issues.
@@ -12133,10 +12030,10 @@ UT_return_val_if_fail(pDialog, false);
 	bool bSpaceAfter = false;
 	bool bMaxHeight = false;
 
-	const gchar ** props_in = NULL;
-	const gchar * sz = NULL;
+	PP_PropertyVector props_in;
+	std::string sz;
 
-	bool bResult = pView->getSectionFormat(&props_in);
+	bool bResult = pView->getSectionFormat(props_in);
 
 	if (!bResult)
 	{
@@ -12144,12 +12041,10 @@ UT_return_val_if_fail(pDialog, false);
 	}
 
 	// NB: maybe *no* properties are consistent across the selection
-	if (props_in && props_in[0])
-		sz = UT_getAttribute("columns", props_in);
-
-	if (sz)
+	sz = PP_getAttribute("columns", props_in);
+	if (!sz.empty())
 	{
-		iColumns = atoi(sz);
+		iColumns = atoi(sz.c_str());
 	}
 
 	if ( iColumns > 1 )
@@ -12157,38 +12052,16 @@ UT_return_val_if_fail(pDialog, false);
 		EX(viewPrintLayout);
 	}
 
-	if (props_in && props_in[0])
-		sz = UT_getAttribute("column-line", props_in);
-
-	if (sz)
-	{
-		if(strcmp(sz, "on") == 0)
-		{
-			bLineBetween = true;
-		}
-	}
+	bLineBetween = (PP_getAttribute("column-line", props_in) == "on");
 
 	UT_uint32 iOrder = 0;
-	if (props_in && props_in[0])
-		sz = UT_getAttribute("dom-dir", props_in);
-	if (sz)
-		iOrder = strcmp(sz, "ltr") ? 1 : 0;
+	iOrder = PP_getAttribute("dom-dir", props_in) != "ltr" ? 1 : 0;
 
 	pDialog->setColumnOrder(iOrder);
 
-	if(props_in && props_in[0])
-	{
-		sz = UT_getAttribute("section-space-after",props_in);
-		if(sz && *sz)
-		{
-			bSpaceAfter = true;
-		}
-		sz = UT_getAttribute("section-max-column-height",props_in);
-		if(sz && *sz)
-		{
-			bMaxHeight = true;
-		}
-	}
+	bSpaceAfter = !PP_getAttribute("section-space-after", props_in).empty();
+	bMaxHeight = !PP_getAttribute("section-max-column-height", props_in).empty();
+
 	pDialog->setColumns(iColumns);
 	pDialog->setLineBetween(bLineBetween);
 	pDialog->runModal(pFrame);
@@ -12200,66 +12073,41 @@ UT_return_val_if_fail(pDialog, false);
 	{
 		// Set the columns property.
 
-		char buf[4];
-		sprintf(buf, "%i", pDialog->getColumns());
-		char buf2[4];
-		if(pDialog->getLineBetween())
-		{
-			strcpy(buf2, "on");
-		}
-		else
-		{
-			strcpy(buf2, "off");
-		}
 		bMaxHeight = bMaxHeight || pDialog->isMaxHeightChanged();
 		bSpaceAfter = bSpaceAfter || pDialog->isSpaceAfterChanged();
 
-		char buf3[4];
-		char buf4[6];
+		const char *buf3;
+		const char *buf4;
 		if(pDialog->getColumnOrder())
 		{
-			strcpy(buf3, "rtl");
-			strcpy(buf4, "right");
+			buf3 = "rtl";
+			buf4 = "right";
 		}
 		else
 		{
-			strcpy(buf3, "ltr");
-			strcpy(buf4, "left");
+			buf3 = "ltr";
+			buf4 = "left";
 		}
-		const gchar * properties[] = { "columns", buf, "column-line", buf2, "dom-dir", buf3, "text-align", buf4, 0};
+		PP_PropertyVector props = {
+			"columns", UT_std_string_sprintf("%i", pDialog->getColumns()),
+			"column-line", pDialog->getLineBetween() ? "on" : "off",
+			"dom-dir", buf3,
+			"text-align", buf4
+		};
 
-		UT_sint32 num_in_props = sizeof(properties)/sizeof(gchar *);
-		UT_sint32 num_out_props = num_in_props;
-		if(bMaxHeight)
-		{
-			num_out_props += 2;
-		}
 		if(bSpaceAfter)
 		{
-			num_out_props += 2;
-		}
-		const gchar ** props = static_cast<const gchar **>(UT_calloc(num_out_props,sizeof(gchar *)));
-		UT_sint32 i = 0;
-		for(i = 0; i < num_in_props-1; i++)
-		{
-			props[i] = properties[i];
-		}
-		if(bSpaceAfter)
-		{
-			props[i++] = "section-space-after";
-			props[i++] = pDialog->getSpaceAfterString();
+			props.push_back("section-space-after");
+			props.push_back(pDialog->getSpaceAfterString());
 		}
 		if(bMaxHeight)
 		{
-			props[i++] = "section-max-column-height";
-			props[i++] = pDialog->getHeightString();
+			props.push_back("section-max-column-height");
+			props.push_back(pDialog->getHeightString());
 		}
-		props[i] = NULL;
 		pView->setSectionFormat(props);
-		FREEP(props);
 	}
 
-	FREEP(props_in);
 	pDialogFactory->releaseDialog(pDialog);
 
 	return bOK;
@@ -12492,22 +12340,19 @@ UT_return_val_if_fail(pDialog, false);
 	{
 		if (pDialog->getColumnType() == AP_Dialog_InsertTable::b_FIXEDSIZE)
 		{
-			UT_String tmp;
-			UT_String propBuffer;
+			std::string propBuffer;
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
-			for (UT_uint32 i = 0; i<pDialog->getNumCols(); i++)
-			{
-				UT_String_sprintf(tmp, "%fin/", pDialog->getColumnWidth());
-				propBuffer += tmp;
+			for (UT_uint32 i = 0; i < pDialog->getNumCols(); i++)	{
+				propBuffer += UT_std_string_sprintf("%fin/",
+													pDialog->getColumnWidth());
 			}
-			const gchar * propsArray[3];
-			propsArray[0] = "table-column-props";
-			propsArray[1] = propBuffer.c_str();
-			propsArray[2] = NULL;
-			pView->cmdInsertTable(pDialog->getNumRows(),pDialog->getNumCols(),propsArray);
+			const PP_PropertyVector propsArray = {
+				"table-column-props", propBuffer,
+			};
+			pView->cmdInsertTable(pDialog->getNumRows(), pDialog->getNumCols(), propsArray);
 		} else
 		{
-			pView->cmdInsertTable(pDialog->getNumRows(),pDialog->getNumCols(),NULL);
+			pView->cmdInsertTable(pDialog->getNumRows(), pDialog->getNumCols(), PP_NOPROPS);
 		}
 	}
 
@@ -12589,8 +12434,10 @@ Defun1(insertSumRows)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	const gchar * atts[3]={"param","",NULL};
-	pView->cmdInsertField("sum_rows",atts,NULL);
+	PP_PropertyVector atts = {
+		"param", ""
+	};
+	pView->cmdInsertField("sum_rows", atts, PP_NOPROPS);
 	return true;
 }
 
@@ -12599,8 +12446,10 @@ Defun1(insertSumCols)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 	UT_return_val_if_fail(pView,false);
-	const gchar * atts[3]={"param","",NULL};
-	pView->cmdInsertField("sum_cols",atts,NULL);
+	PP_PropertyVector atts = {
+		"param", ""
+	};
+	pView->cmdInsertField("sum_cols", atts, PP_NOPROPS);
 	return true;
 }
 
@@ -12680,59 +12529,37 @@ void s_getPageMargins(FV_View * pView,
 					  double &page_margin_top,
 					  double &page_margin_bottom)
 {
-  UT_return_if_fail(pView);
-  // get current char properties from pView
-  const gchar * prop = NULL;
-  const gchar ** props_in = NULL;
-  const gchar * sz = NULL;
+	UT_return_if_fail(pView);
+	// get current char properties from pView
+	const gchar * prop = NULL;
+	std::string sz;
 
-	{
-		pView->getBlockFormat(&props_in);
-		prop = "margin-left";
-		sz = UT_getAttribute(prop, props_in);
-		margin_left = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
+	PP_PropertyVector props_in;
+	pView->getBlockFormat(props_in);
 
-	{
-		pView->getBlockFormat(&props_in);
-		prop = "margin-right";
-		sz = UT_getAttribute(prop, props_in);
-		margin_right = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
+	prop = "margin-left";
+	sz = PP_getAttribute(prop, props_in);
+	margin_left = UT_convertToInches(sz.c_str());
 
-	{
-		prop = "page-margin-left";
-		pView->getSectionFormat(&props_in);
-		sz = UT_getAttribute(prop, props_in);
-		page_margin_left = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
+	prop = "margin-right";
+	sz = PP_getAttribute(prop, props_in);
+	margin_right = UT_convertToInches(sz.c_str());
 
-	{
-		prop = "page-margin-right";
-		pView->getSectionFormat(&props_in);
-		sz = UT_getAttribute(prop, props_in);
-		page_margin_right = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
+	prop = "page-margin-left";
+	sz = PP_getAttribute(prop, props_in);
+	page_margin_left = UT_convertToInches(sz.c_str());
 
-	{
-		prop = "page-margin-top";
-		pView->getSectionFormat(&props_in);
-		sz = UT_getAttribute(prop, props_in);
-		page_margin_top	 = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
+	prop = "page-margin-right";
+	sz = PP_getAttribute(prop, props_in);
+	page_margin_right = UT_convertToInches(sz.c_str());
 
-	{
-		prop = "page-margin-bottom";
-		pView->getSectionFormat(&props_in);
-		sz = UT_getAttribute(prop, props_in);
-		page_margin_bottom = UT_convertToInches(sz);
-		FREEP(props_in);
-	}
+	prop = "page-margin-top";
+	sz = PP_getAttribute(prop, props_in);
+	page_margin_top	 = UT_convertToInches(sz.c_str());
+
+	prop = "page-margin-bottom";
+	sz = PP_getAttribute(prop, props_in);
+	page_margin_bottom = UT_convertToInches(sz.c_str());
 }
 
 // MSWord defines this to 1/2 an inch, so we do too
@@ -12838,49 +12665,28 @@ Defun1(toggleDomDirection)
 
 	UT_return_val_if_fail(pView,false);
 
-	const gchar * properties[] = { "dom-dir", NULL, "text-align", NULL, 0};
-	const gchar drtl[]	= "rtl";
-	const gchar dltr[]	= "ltr";
-	const gchar aright[] = "right";
-	const gchar aleft[]	= "left";
-	gchar cur_alignment[10];
+	const char* aright = "right";
+	const char* aleft  = "left";
 
 	fl_BlockLayout * pBl = pView->getCurrentBlock();
 	UT_return_val_if_fail( pBl, false );
 
-	strncpy(cur_alignment,pBl->getProperty("text-align"),sizeof(cur_alignment)-1);
-	cur_alignment[sizeof(cur_alignment)-1] = '\0';
+	std::string cur_alignment = pBl->getProperty("text-align");
 
-	properties[3] = static_cast<gchar *>(&cur_alignment[0]);
-
-
-	if(pBl->getDominantDirection()== UT_BIDI_RTL)
-	{
-		properties[1] = static_cast<const gchar *>(&dltr[0]);
-		/*
-		//the last run in the block is the FmtMark, and we need
-		//to reset its direction
-		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(UT_BIDI_LTR);
-		*/
-	}
-	else
-	{
-		properties[1] = static_cast<const gchar *>(&drtl[0]);
-		/*
-		static_cast<fp_Line *>(static_cast<fl_BlockLayout *>(pBl)->getLastContainer())->getLastRun()->setDirection(UT_BIDI_RTL);
-		*/
-	}
-
+	PP_PropertyVector properties = {
+		"dom-dir", pBl->getDominantDirection() == UT_BIDI_RTL ? "ltr" : "rtl",
+		"text-align", cur_alignment
+	};
 	// if the paragraph is was aligned either left or right, then
 	// toggle the alignment as well; if it was anything else
 	// i.e., justfied or centered, then leave it
-	if(!strcmp(properties[3],aleft))
+	if(cur_alignment == aleft)
 	{
-		properties[3] = static_cast<const gchar *>(&aright[0]);
+		properties[3] = aright;
 	}
-	else if(!strcmp(properties[3],aright))
+	else if(cur_alignment == aright)
 	{
-		properties[3] = static_cast<const gchar *>(&aleft[0]);
+		properties[3] = aleft;
 
 	}
 
@@ -12897,25 +12703,16 @@ Defun1(toggleDomDirectionSect)
 
 	UT_return_val_if_fail(pView,false);
 
-	const gchar * properties[] = { "dom-dir", NULL, 0};
-	const gchar drtl[]	= "rtl";
-	const gchar dltr[]	= "ltr";
-
 	fl_BlockLayout * pBl = pView->getCurrentBlock();
 	UT_return_val_if_fail( pBl, false );
 
 	fl_DocSectionLayout * pSL = pBl->getDocSectionLayout();
 	UT_return_val_if_fail( pSL, false );
-	
-	if(pSL->getColumnOrder())
-	{
-		properties[1] = static_cast<const gchar *>(&dltr[0]);
-	}
-	else
-	{
-		properties[1] = static_cast<const gchar *>(&drtl[0]);
-	}
 
+	const PP_PropertyVector properties = {
+		"dom-dir",
+		pSL->getColumnOrder() ? "ltr" : "rtl"
+	};
 	pView->setSectionFormat(properties);
 
 	return true;
@@ -12933,22 +12730,14 @@ Defun1(toggleDomDirectionDoc)
 	const PP_AttrProp * pAP = pDoc->getAttrProp();
 	UT_return_val_if_fail( pAP, false );
 
-	const gchar * properties[] = { "dom-dir", NULL, 0};
-	const gchar drtl[]	= "rtl";
-	const gchar dltr[]	= "ltr";
 	const gchar * szValue;
-	
-	UT_return_val_if_fail(pAP->getProperty(properties[0], szValue), false);
-	
-	if(!strcmp(szValue, drtl))
-	{
-		properties[1] = static_cast<const gchar *>(&dltr[0]);
-	}
-	else
-	{
-		properties[1] = static_cast<const gchar *>(&drtl[0]);
-	}
 
+	UT_return_val_if_fail(pAP->getProperty("dom-dir", szValue), false);
+
+	const char* drtl = "rtl";
+	const PP_PropertyVector properties = {
+		"dom-dir", !strcmp(szValue, drtl) ? "ltr" : drtl
+	};
 	UT_return_val_if_fail(pDoc->setProperties(properties), false);
 
 	return true;
@@ -12976,11 +12765,13 @@ Defun(colorForeTB)
 {
 	CHECK_FRAME;
 	ABIWORD_VIEW;
-	
+
 	UT_return_val_if_fail(pView,false);
-	const gchar * properties[] = { "color", NULL, 0};
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
-	properties[1] = reinterpret_cast<const gchar *>(utf8.utf8_str());
+
+	const PP_PropertyVector properties = {
+		"color", utf8.utf8_str()
+	};
 	pView->setCharFormat(properties);
 
 	return true;
@@ -12991,10 +12782,12 @@ Defun(colorBackTB)
 	CHECK_FRAME;
 	ABIWORD_VIEW;
 
-	UT_return_val_if_fail(pView,false);	
-	const gchar * properties[] = { "bgcolor", NULL, 0};
+	UT_return_val_if_fail(pView,false);
 	UT_UTF8String utf8(pCallData->m_pData, pCallData->m_dataLength);
-	properties[1] = reinterpret_cast<const gchar *>(utf8.utf8_str());
+
+	const PP_PropertyVector properties = {
+		"bgcolor", utf8.utf8_str()
+	};
 	pView->setCharFormat(properties);
 
 	return true;
@@ -13025,7 +12818,9 @@ Defun1(alignLeft)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * properties[] = { "text-align", "left", 0};
+	const PP_PropertyVector properties = {
+		"text-align", "left"
+	};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -13039,7 +12834,9 @@ Defun1(alignCenter)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * properties[] = { "text-align", "center", 0};
+	const PP_PropertyVector properties = {
+		"text-align", "center"
+	};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -13053,7 +12850,9 @@ Defun1(alignRight)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * properties[] = { "text-align", "right", 0};
+	const PP_PropertyVector properties = {
+		"text-align", "right"
+	};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -13067,7 +12866,9 @@ Defun1(alignJustify)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * properties[] = { "text-align", "justify", 0};
+	const PP_PropertyVector properties = {
+		"text-align", "justify"
+	};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -13114,7 +12915,9 @@ Defun1(sectColumns1)
 	if(pView->isHdrFtrEdit())
 		return false;
 
-	const gchar * properties[] = { "columns", "1", 0};
+	const PP_PropertyVector properties = {
+		"columns", "1"
+	};
 	pView->setSectionFormat(properties);
 	return true;
 }
@@ -13127,7 +12930,9 @@ Defun1(sectColumns2)
 	if(pView->isHdrFtrEdit())
 		return false;
 
-	const gchar * properties[] = { "columns", "2", 0};
+	const PP_PropertyVector properties = {
+		"columns", "2"
+	};
 	pView->setSectionFormat(properties);
 	return true;
 }
@@ -13139,7 +12944,9 @@ Defun1(sectColumns3)
 	UT_return_val_if_fail(pView,false);
 	if(pView->isHdrFtrEdit())
 		return false;
-	const gchar * properties[] = { "columns", "3", 0};
+	const PP_PropertyVector properties = {
+		"columns", "3"
+	};
 	pView->setSectionFormat(properties);
 	return true;
 }
@@ -13153,7 +12960,9 @@ Defun1(paraBefore0)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * properties[] = { "margin-top", "0pt", 0};
+	const PP_PropertyVector properties = {
+		"margin-top", "0pt"
+	};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -13167,7 +12976,9 @@ Defun1(paraBefore12)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * properties[] = { "margin-top", "12pt", 0};
+	const PP_PropertyVector properties = {
+		"margin-top", "12pt"
+	};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -13181,7 +12992,9 @@ Defun1(singleSpace)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * properties[] = { "line-height", "1.0", 0};
+	const PP_PropertyVector properties = {
+		"line-height", "1.0"
+	};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -13195,7 +13008,9 @@ Defun1(middleSpace)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * properties[] = { "line-height", "1.5", 0};
+	const PP_PropertyVector properties = {
+		"line-height", "1.5"
+	};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -13209,7 +13024,9 @@ Defun1(doubleSpace)
 	if (pView->getDocument()->areStylesLocked())
 		return true;
 
-	const gchar * properties[] = { "line-height", "2.0", 0};
+	const PP_PropertyVector properties = {
+		"line-height", "2.0"
+	};
 	pView->setBlockFormat(properties);
 	return true;
 }
@@ -13944,10 +13761,10 @@ Defun1(dlgColorPickerFore)
 UT_return_val_if_fail(pDialog, false);//
 // Set the color in the dialog to the current Color
 //
-	const gchar ** propsChar = NULL;
-	pView->getCharFormat(&propsChar);
-	const gchar * pszChar = UT_getAttribute("color",propsChar);
-	pDialog->setColor(pszChar);
+	PP_PropertyVector propsChar;
+	pView->getCharFormat(propsChar);
+	std::string pszChar = PP_getAttribute("color",propsChar);
+	pDialog->setColor(pszChar.c_str());
 //
 // Set the dialog to Foreground Color Mode.
 //
@@ -13961,12 +13778,12 @@ UT_return_val_if_fail(pDialog, false);//
 	if (bOK)
 	{
 		const gchar * clr = pDialog->getColor();
-		const gchar * properties[] = { "color", NULL, 0};
-		properties[1] = clr;
+		const PP_PropertyVector properties = {
+			"color", clr ? clr : ""
+		};
 		pView->setCharFormat(properties);
 	}
 	pDialogFactory->releaseDialog(pDialog);
-	FREEP(propsChar);
 	return bOK;
 }
 
@@ -13990,10 +13807,10 @@ Defun1(dlgColorPickerBack)
 UT_return_val_if_fail(pDialog, false);//
 // Set the color in the dialog to the current Color
 //
-	const gchar ** propsChar = NULL;
-	pView->getCharFormat(&propsChar);
-	const gchar * pszChar = UT_getAttribute("bgcolor",propsChar);
-	pDialog->setColor(pszChar);
+	PP_PropertyVector propsChar;
+	pView->getCharFormat(propsChar);
+	std::string pszChar = PP_getAttribute("bgcolor", propsChar);
+	pDialog->setColor(pszChar.c_str());
 //
 // Set the dialog to Highlight Color Mode.
 //
@@ -14007,11 +13824,11 @@ UT_return_val_if_fail(pDialog, false);//
 	if (bOK)
 	{
 		const gchar * clr = pDialog->getColor();
-		const gchar * properties[] = { "bgcolor", NULL, 0};
-		properties[1] = clr;
+		const PP_PropertyVector properties = {
+			"bgcolor", clr ? clr : ""
+		};
 		pView->setCharFormat(properties);
 	}
-	FREEP(propsChar);
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
 }
@@ -14036,10 +13853,10 @@ UT_return_val_if_fail(pDialog, false);
 //
 // Get Current background color
 //
-	const gchar ** propsSection = NULL;
-	pView->getSectionFormat(&propsSection);
-	const gchar * pszBackground = UT_getAttribute("background-color",propsSection);
-	pDialog->setColor(pszBackground);
+	PP_PropertyVector propsSection;
+	pView->getSectionFormat(propsSection);
+	std::string background = PP_getAttribute("background-color", propsSection);
+	pDialog->setColor(background.c_str());
 
 	pDialog->runModal (pFrame);
 
@@ -14054,7 +13871,6 @@ UT_return_val_if_fail(pDialog, false);
 		pView->setPaperColor (clr);
 	}
 
-	FREEP(propsSection);
 	pDialogFactory->releaseDialog(pDialog);
 	return bOK;
 }
@@ -14145,24 +13961,18 @@ UT_return_val_if_fail(pDialog, false);//
 		pDialog->setValue((AP_Dialog_HdrFtr::HdrFtr_Control) i,
 						  bOldBools[i], false);
 	}
-	const gchar ** propsSectionIn = NULL;
-	pView->getSectionFormat(&propsSectionIn);
-	const char * szRestart = NULL;
-	szRestart = UT_getAttribute("section-restart",propsSectionIn);
-	const char * szRestartValue1 = NULL;
-	szRestartValue1 = UT_getAttribute("section-restart-value",propsSectionIn);
-	bool bRestart = false;
-	if(szRestart && *szRestart && (strcmp(szRestart,"1") == 0))
-	{
-		bRestart = true;
-	}
+	PP_PropertyVector propsSectionIn;
+	pView->getSectionFormat(propsSectionIn);
+	std::string restart = PP_getAttribute("section-restart", propsSectionIn);
+	std::string restartValue1 =
+		PP_getAttribute("section-restart-value", propsSectionIn);
+	bool bRestart = restart == "1";
 	UT_sint32 restartValue = 1;
-	if(szRestartValue1 && *szRestartValue1)
+	if(!restartValue1.empty())
 	{
-		restartValue = atoi(szRestartValue1);
+		restartValue = atoi(restartValue1.c_str());
 	}
 	pDialog->setRestart(bRestart, restartValue, false);
-	FREEP(propsSectionIn);
 
 	pDialog->runModal (pFrame);
 
@@ -14264,20 +14074,21 @@ UT_return_val_if_fail(pDialog, false);//
 		pView->RestoreSavedPieceTableState();
 		if(pDialog->isRestartChanged())
 		{
-			const char * props_out[] = {"section-restart",NULL,"section-restart-value",NULL,NULL};
-			static char szRestartValue[12];
+			PP_PropertyVector props_out = {
+					"section-restart", "",
+					"section-restart-value", ""
+			};
 			if(pDialog->isRestart())
 			{
 				props_out[1] = "1";
-				sprintf(static_cast<char *>(szRestartValue),"%i",pDialog->getRestartValue());
-				props_out[3] = static_cast<const char *>(szRestartValue);
+				props_out[3] = UT_std_string_sprintf("%i", pDialog->getRestartValue());
 			}
 			else
 			{
 				props_out[1] = "0";
-				props_out[2] = NULL;
+				props_out[2] = "";
 			}
-			pView->setSectionFormat(static_cast<const char **>(&props_out[0]));
+			pView->setSectionFormat(props_out);
 		}
 		pView->notifyListeners(AV_CHG_ALL);
 	}

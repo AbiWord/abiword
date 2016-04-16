@@ -190,8 +190,8 @@ public:
 	inline bool isListItem(void) const { return m_bListItem; }
 	bool isFirstInList(void) const;
 //	inline fl_AutoNum * getAutoNum(void) const { return m_pAutoNum; }
-	void	getListAttributesVector(UT_GenericVector<const gchar*> * va) const;
-	void  getListPropertyVector(UT_GenericVector<const gchar*> * vp) const;
+	void	getListAttributesVector(PP_PropertyVector & va) const;
+	void  getListPropertyVector(PP_PropertyVector & vp) const;
 
 	void  refreshRunProperties(void) const;
 	char *	getFormatFromListType(FL_ListType iListType) const;

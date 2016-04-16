@@ -648,8 +648,8 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						const InsertSpan_ChangeRecordSessionPacket* icrsp = static_cast<const InsertSpan_ChangeRecordSessionPacket*>( crp );
 						UT_UCS4String UCSChars = const_cast<UT_UTF8String&>(icrsp->m_sText).ucs4_str();	// ugly, ucs4_str should be const func!
 						PP_AttrProp attrProp;
-						attrProp.setAttributes(const_cast<const gchar**>(icrsp->getAtts()));
-						attrProp.setProperties(const_cast<const gchar**>(icrsp->getProps()));
+						attrProp.setAttributes(PP_std_copyProps(const_cast<const gchar**>(icrsp->getAtts())));
+						attrProp.setProperties(PP_std_copyProps(const_cast<const gchar**>(icrsp->getProps())));
 						m_pDoc->insertSpan(pos,UCSChars.ucs4_str(),UCSChars.length(), &attrProp);
 						break;
 					}
@@ -689,12 +689,14 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 								return false;
 							}
 							const gchar * szName =  pStyle->getName();
-							const gchar * atts[3] = {PT_STYLE_ATTRIBUTE_NAME,szName,NULL};
-							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, atts, const_cast<const gchar**>( szProps ) );
+							const PP_PropertyVector atts = {
+								PT_STYLE_ATTRIBUTE_NAME, szName
+							};
+							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, atts, PP_std_copyProps(const_cast<const gchar**>(szProps)));
 						}
 						else
 						{
-							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, const_cast<const gchar**>(szAtts), const_cast<const gchar**>( szProps ) );
+							m_pDoc->changeSpanFmt(PTC_SetExactly, pos, iPos2, PP_std_copyProps(const_cast<const gchar**>(szAtts)), PP_std_copyProps(const_cast<const gchar**>(szProps)));
 						}
 						break;
 					}
@@ -707,7 +709,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						
 						if((szProps != NULL) || (szAtts != NULL))
 						{
-							m_pDoc->insertStrux( pos, pts, const_cast<const gchar**>( szAtts ), const_cast<const gchar**>( szProps ) );
+							m_pDoc->insertStrux( pos, pts, PP_std_copyProps(const_cast<const gchar**>( szAtts )), PP_std_copyProps(const_cast<const gchar**>( szProps )) );
 						}
 						else
 						{
@@ -731,7 +733,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						UT_return_val_if_fail(szProps != NULL || szAtts != NULL, false);
 
 						UT_DEBUGMSG(("Executing ChangeStrux pos= %d \n",pos));
-						m_pDoc->changeStruxFmt(PTC_SetExactly, pos, pos, const_cast<const gchar**>( szAtts ), const_cast<const gchar**>( szProps ), pts);
+						m_pDoc->changeStruxFmt(PTC_SetExactly, pos, pos, PP_std_copyProps(const_cast<const gchar**>( szAtts )), PP_std_copyProps(const_cast<const gchar**>( szProps )), pts);
 						
 						// TODO: this mask is waaaay to generic
 						XAP_Frame *pFrame = XAP_App::getApp()->getLastFocussedFrame();
@@ -778,7 +780,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 							return false;
 						}
-						m_pDoc->changeSpanFmt(PTC_SetExactly, pos, pos + 1, const_cast<const gchar**>( szAtts ), const_cast<const gchar**>( szProps ));
+						m_pDoc->changeSpanFmt(PTC_SetExactly, pos, pos + 1, PP_std_copyProps(const_cast<const gchar**>( szAtts )), PP_std_copyProps(const_cast<const gchar**>( szProps )));
 						break;
 					}
                     case PX_ChangeRecord::PXT_ChangeDocRDF:
@@ -794,11 +796,10 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 							return false;
 						}
 
-                        {
-                            // update the local document RDF to remove
-                            // szAtts RDF and then add the szProps RDF
-                            m_pDoc->getDocumentRDF()->handleCollabEvent( szAtts, szProps );
-                        }                        
+                        // update the local document RDF to remove
+                        // szAtts RDF and then add the szProps RDF
+                        m_pDoc->getDocumentRDF()->handleCollabEvent(const_cast<const gchar**>(szAtts), const_cast<const gchar**>(szProps));
+
                         break;
                     }
 					case PX_ChangeRecord::PXT_InsertFmtMark:
@@ -816,7 +817,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 							UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
 							return false;
 						}
-						return m_pDoc->changeSpanFmt(PTC_SetExactly, pos, pos, const_cast<const gchar**>( szAtts ), const_cast<const gchar**>( szProps ));
+						return m_pDoc->changeSpanFmt(PTC_SetExactly, pos, pos, PP_std_copyProps(const_cast<const gchar**>( szAtts )), PP_std_copyProps(const_cast<const gchar**>( szProps )));
 					}
 					case PX_ChangeRecord::PXT_DeleteFmtMark:
 					{
@@ -833,7 +834,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 							UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 							return false;
 						}
-						return m_pDoc->changeSpanFmt(PTC_SetExactly, pos, pos, const_cast<const gchar**>( szAtts ), const_cast<const gchar**>( szProps ));
+						return m_pDoc->changeSpanFmt(PTC_SetExactly, pos, pos, PP_std_copyProps(const_cast<const gchar**>( szAtts )), PP_std_copyProps(const_cast<const gchar**>( szProps )));
 					}
 					case PX_ChangeRecord::PXT_ChangePoint:
 					{
@@ -890,7 +891,7 @@ bool ABI_Collab_Import::_import(const SessionPacket& packet, UT_sint32 iImportAd
 						//
 						// Now direct the document to make the changes
 						//
-						return m_pDoc->changeDocPropeties(szAtts,szProps);
+						return m_pDoc->changeDocPropeties(PP_std_copyProps(szAtts), PP_std_copyProps(szProps));
 					}
 					default:
 					{

@@ -3468,7 +3468,7 @@ PD_DocumentRDF::createMutation()
  * Internal method: used by AbiCollab to update the RDF
  */
 void
-PD_DocumentRDF::handleCollabEvent( gchar** szAtts, gchar** szProps )
+PD_DocumentRDF::handleCollabEvent(const gchar** szAtts, const gchar** szProps )
 {
     PD_DocumentRDFMutationHandle h = createMutation();
     h->handleCollabEvent( szAtts, szProps );
@@ -5468,15 +5468,15 @@ PD_DocumentRDFMutation::add( PD_RDFModelHandle model )
 
 
 void
-PD_DocumentRDFMutation::handleCollabEvent( gchar** szAtts, gchar** szProps )
+PD_DocumentRDFMutation::handleCollabEvent(const gchar** szAtts, const gchar** szProps )
 {
     UT_DEBUGMSG(("PD_DocumentRDFMutation::handleCollabEvent (remote) rdf:%p\n", m_rdf));
     m_handlingAbiCollabNotification = true;
-    
+
     PP_AttrProp* addAP    = new PP_AttrProp();
     PP_AttrProp* removeAP = new PP_AttrProp();
-	addAP->setProperties( (const gchar**)szAtts );
-	removeAP->setProperties( (const gchar**)szProps );
+    addAP->setProperties(PP_std_copyProps(szAtts));
+    removeAP->setProperties(PP_std_copyProps(szProps));
     handleAddAndRemove( addAP, removeAP );
     delete addAP;
     delete removeAP;

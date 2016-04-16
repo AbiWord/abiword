@@ -24,6 +24,7 @@
 #include "pd_Document.h"
 #include "fl_BlockLayout.h"
 #include "ut_debugmsg.h"
+#include "ut_std_string.h"
 #include "pd_Document.h"
 #include "ut_mbtowc.h"
 #include "fp_Page.h"
@@ -551,23 +552,15 @@ bool fp_MathRun::_updatePropValuesIfNeeded(void)
     }
   if(bDoUpdate)
     {
-      const char * pProps[10] = {NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL};
-      UT_UTF8String sHeight,sWidth,sAscent,sDescent;
-      UT_UTF8String_sprintf(sHeight,"%d",getHeight());
-      pProps[0] = "height";
-      pProps[1] = sHeight.utf8_str();
-      UT_UTF8String_sprintf(sWidth,"%d",getWidth());
-      pProps[2] = "width";
-      pProps[3] = sWidth.utf8_str();
-      UT_UTF8String_sprintf(sAscent,"%d",getAscent());
-      pProps[4] = "ascent";
-      pProps[5] = sAscent.utf8_str();
-      UT_UTF8String_sprintf(sDescent,"%d",getDescent());
-      pProps[6] = "descent";
-      pProps[7] = sDescent.utf8_str();
+      PP_PropertyVector props = {
+        "height", UT_std_string_sprintf("%d", getHeight()),
+        "width", UT_std_string_sprintf("%d", getWidth()),
+        "ascent", UT_std_string_sprintf("%d", getAscent()),
+        "descent", UT_std_string_sprintf("%d", getDescent())
+      };
       getBlock()->getDocument()->changeObjectFormatNoUpdate(PTC_AddFmt,m_OH,
-							    NULL,
-							    pProps);
+							    PP_NOPROPS,
+							    props);
       return true;
     }
   return false;

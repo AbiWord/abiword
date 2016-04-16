@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2003 Dom Lachowicz
  *
@@ -136,16 +137,13 @@ void AP_Dialog_MailMerge::addClicked()
 
 	FV_View * pView = static_cast<FV_View*>(pFrame->getCurrentView());
 	UT_return_if_fail (pView);
-	
+
 	const gchar * pParam = getMergeField().utf8_str();
 
 	if(pParam && *pParam) {
-	  const gchar * pAttr[3];
-	  const gchar param_name[] = "param";
-	  pAttr[0] = static_cast<const gchar *>(&param_name[0]);
-	  pAttr[1] = pParam;
-	  pAttr[2] = 0;
-	  
-	  pView->cmdInsertField("mail_merge",static_cast<const gchar **>(&pAttr[0]));
+		PP_PropertyVector pAttr = {
+			"param", pParam
+		};
+		pView->cmdInsertField("mail_merge",pAttr);
 	}
 }

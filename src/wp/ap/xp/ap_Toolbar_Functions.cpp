@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  *
@@ -573,46 +574,43 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 	if (prop && val)
 	{
 		// get current char properties from pView
-		const gchar ** props_in = NULL;
-		const gchar * sz = NULL;
+		PP_PropertyVector props_in;
 
-		if (!pView->getCharFormat(&props_in))
+		if (!pView->getCharFormat(props_in))
 			return s;
 
 		// NB: maybe *no* properties are consistent across the selection
-		if (props_in && props_in[0])
-			sz = UT_getAttribute(prop, props_in);
+		std::string sz = PP_getAttribute(prop, props_in);
 
-		if (sz)
+		if (!sz.empty())
 		{
 			if (bSize)
 			{
 				static char buf[7];
-				sprintf(buf, "%s", std_size_string(static_cast<float>(UT_convertToPoints(sz))));
+				sprintf(buf, "%s", std_size_string(static_cast<float>(UT_convertToPoints(sz.c_str()))));
 				*pszState = buf;
 				s = EV_TIS_UseString;
 			}
 			else if (bString)
 			{
-				static const char * sz2;
+				// XXX this and above: ugly local static.
+				static std::string sz2;
 				sz2 = sz;
-				*pszState = sz2;
+				*pszState = sz2.c_str();
 				s = EV_TIS_UseString;
 			}
 			else if (bMultiple)
 			{
 				// some properties have multiple values
-				if (strstr(sz, val))
+				if (sz.find(val) != std::string::npos)
 					s = EV_TIS_Toggled;
 			}
 			else
 			{
-				if (0 == strcmp(sz, val))
+				if (sz == val)
 					s = EV_TIS_Toggled;
 			}
 		}
-
-		g_free(props_in);
 	}
 
 	return s;
@@ -672,22 +670,20 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 	if (prop && val)
 	{
 		// get current block properties from pView
-		const gchar ** props_in = NULL;
-		const gchar * sz = NULL;
+		PP_PropertyVector props_in;
 
-        bool bResult = pView->getSectionFormat(&props_in);
+        bool bResult = pView->getSectionFormat(props_in);
 
         if (!bResult)
 		{
 			return s;
 		}
 		// NB: maybe *no* properties are consistent across the selection
-		if (props_in && props_in[0])
-			sz = UT_getAttribute(prop, props_in);
+		std::string sz = PP_getAttribute(prop, props_in);
 
-		if (sz)
+		if (!sz.empty())
 		{
-			if (0 == strcmp(sz, val))
+			if (sz == val)
 			{
 				s = EV_TIS_Toggled;
 			}
@@ -696,8 +692,6 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 				s = EV_TIS_ZERO;
 			}
 		}
-
-		g_free(props_in);
 	}
 
 	return s;
@@ -782,31 +776,27 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 	if (prop && val)
 	{
 		// get current block properties from pView
-		const gchar ** props_in = NULL;
-		const gchar * sz = NULL;
+		PP_PropertyVector props_in;
 
-		if (!pView->getBlockFormat(&props_in))
+		if (!pView->getBlockFormat(props_in))
 			return s;
 
 		// NB: maybe *no* properties are consistent across the selection
-		if (props_in && props_in[0])
-			sz = UT_getAttribute(prop, props_in);
+		std::string sz = PP_getAttribute(prop, props_in);
 
-		if (sz)
+		if (!sz.empty())
 		{
 			if (bPoints)
 			{
-				if ((static_cast<int>(UT_convertToPoints(sz))) == (static_cast<int>(UT_convertToPoints(val))))
+				if ((static_cast<int>(UT_convertToPoints(sz.c_str()))) == (static_cast<int>(UT_convertToPoints(val))))
 					s = EV_TIS_Toggled;
 			}
 			else
 			{
-				if (0 == strcmp(sz, val))
+				if (sz == val)
 					s = EV_TIS_Toggled;
 			}
 		}
-
-		g_free(props_in);
 	}
 
 	return s;

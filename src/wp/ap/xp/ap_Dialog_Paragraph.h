@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
@@ -26,6 +26,8 @@
 #include "xap_Dialog.h"
 #include "xav_View.h"
 #include "xap_CustomWidget.h"
+
+#include "pp_Property.h"
 
 class XAP_Frame;
 class AP_Preview_Paragraph;
@@ -65,8 +67,8 @@ class ABI_EXPORT AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// answer from dialog
 	typedef enum { a_OK, a_CANCEL, a_TABS } tAnswer;
 
-	bool setDialogData(const gchar ** pProps);
- 	bool getDialogData(const gchar **& pProps);
+	bool setDialogData(const PP_PropertyVector & pProps);
+	bool getDialogData(PP_PropertyVector & pProps);
 
 	// expects a width in paper units.
 	void setMaxWidth(UT_sint32 width) { m_iMaxWidth = UT_inchesFromPaperUnits(width); }
@@ -100,8 +102,8 @@ class ABI_EXPORT AP_Dialog_Paragraph : public XAP_Dialog_NonPersistent
 	// final dialog answer
 	tAnswer					m_answer;
 
-	gchar *				m_pageLeftMargin;
-	gchar *				m_pageRightMargin;
+	std::string			m_pageLeftMargin;
+	std::string			m_pageRightMargin;
 
 	// store a pointer to our preview control
 	AP_Preview_Paragraph *	m_paragraphPreview;

@@ -164,8 +164,8 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 
 bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 								PTStruxType pts,
-								const gchar ** attributes,
-								const gchar ** properties,
+								const PP_PropertyVector & attributes,
+								const PP_PropertyVector & properties,
 								pf_Frag_Strux ** ppfs_ret)
 {
 	if(m_pDocument->isMarkRevisions())
@@ -196,16 +196,14 @@ bool pt_PieceTable::insertStrux(PT_DocPosition dpos,
 		_translateRevisionAttribute(Revisions, indexAP, PP_REVISION_ADDITION,
 									ppRevAttrs, ppRevProps, PP_NOPROPS, PP_NOPROPS);
 
-		PP_PropertyVector ppRevAttrib = PP_std_copyProps(attributes);
+		PP_PropertyVector ppRevAttrib = attributes;
 		ppRevAttrib.insert(ppRevAttrib.end(), ppRevAttrs.begin(), ppRevAttrs.end());
 
 		//return _realChangeStruxFmt(PTC_AddFmt, dpos, dpos + iLen, ppRevAttrib,NULL,pts);
-		bool bRet = _realInsertStrux(dpos, pts, ppRevAttrib, PP_std_copyProps(properties), ppfs_ret);
+		bool bRet = _realInsertStrux(dpos, pts, ppRevAttrib, properties, ppfs_ret);
 		return bRet;
-	}
-	else
-	{
-		return _realInsertStrux(dpos, pts, PP_std_copyProps(attributes), PP_std_copyProps(properties), ppfs_ret);
+	} else {
+		return _realInsertStrux(dpos, pts, attributes, properties, ppfs_ret);
 	}
 }
 

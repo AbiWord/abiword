@@ -205,12 +205,12 @@ public:
 	bool isClipboard () const;
 
 	virtual bool appendStrux (PTStruxType pts, const PP_PropertyVector & attributes);
-	virtual bool appendStruxFmt(pf_Frag_Strux * pfs, const gchar ** attributes);
+	virtual bool appendStruxFmt(pf_Frag_Strux * pfs, const PP_PropertyVector & attributes);
 	virtual bool appendSpan (const UT_UCSChar * p, UT_uint32 length);
 	virtual bool appendSpan ( const std::string& s );
 	virtual bool appendObject (PTObjectType pto,
                                const PP_PropertyVector & attribs,
-                               const PP_PropertyVector & props = PP_PropertyVector());
+                               const PP_PropertyVector & props = PP_NOPROPS);
     // XXX remove
 	bool appendFmt(const gchar ** attributes)
 		{ return appendFmt(PP_std_copyProps(attributes)); }

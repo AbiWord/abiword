@@ -62,9 +62,9 @@ public:
 	bool					isDisplayed(void) const { return m_bDisplayed; }
 
 	bool					addProperty(const gchar * szName, const gchar * szValue);
-	bool					addProperties(const gchar ** pProperties);
-	bool					setAllAttributes(const gchar ** pAtts);
-	bool					addAttributes(const gchar ** pAtts);
+	bool					addProperties(const PP_PropertyVector & pProperties);
+	bool					setAllAttributes(const PP_PropertyVector & atts);
+	bool					addAttributes(const PP_PropertyVector & pAtts);
 	bool                    getAllProperties( UT_Vector * vProps, UT_sint32 depth) const;
 	bool                    getAllAttributes( UT_Vector * vAttribs, UT_sint32 depth) const;
 	size_t getPropertyCount(void) const;

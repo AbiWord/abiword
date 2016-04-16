@@ -697,6 +697,7 @@ void AP_Dialog_FormatFrame::setWrapping(bool bWrap)
 
 void AP_Dialog_FormatFrame::applyChanges()
 {
+	// XXX replace m_vecProps by a PP_PropertyVector
 	UT_sint32 count = m_vecProps.getItemCount();
 
 	UT_DEBUGMSG(("Doing apply changes number props %d \n", count));
@@ -756,18 +757,15 @@ void AP_Dialog_FormatFrame::applyChanges()
 		}
 	}
 
-	const gchar ** propsArray  = new const gchar * [count + 2];
+	PP_PropertyVector propsArray;
 
 	for (UT_sint32 j = 0; j < count; j = j + 2)
 	{
-		propsArray[j  ] = static_cast<gchar *>(m_vecProps.getNthItem(j));
-		propsArray[j+1] = static_cast<gchar *>(m_vecProps.getNthItem(j+1));
+		propsArray.push_back(m_vecProps.getNthItem(j));
+		propsArray.push_back(m_vecProps.getNthItem(j+1));
 	}
-	propsArray[count  ] = 0;
-	propsArray[count+1] = 0;
 
-	pView->setFrameFormat(propsArray, m_pGraphic, m_sImagePath,pCloseBL);
-	delete [] propsArray;
+	pView->setFrameFormat(propsArray, m_pGraphic, m_sImagePath, pCloseBL);
 
 	m_bSettingsChanged = false;
 }

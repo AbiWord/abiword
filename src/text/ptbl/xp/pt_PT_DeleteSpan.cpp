@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2001,2002 Tomas Frydrych
@@ -1190,11 +1190,10 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 #endif
 
 			Revisions.addRevision(iId, PP_REVISION_DELETION, PP_NOPROPS, PP_NOPROPS);
-            // UT_DEBUGMSG(("ODTCT: deleteSpan(revisions) 2...\n" ));
-			const gchar * ppRevAttrib[3];
-			ppRevAttrib[0] = name;
-			ppRevAttrib[1] = Revisions.getXMLstring();
-			ppRevAttrib[2] = NULL;
+			// UT_DEBUGMSG(("ODTCT: deleteSpan(revisions) 2...\n" ));
+			PP_PropertyVector ppRevAttrib = {
+				name, Revisions.getXMLstring()
+			};
 
             // UT_DEBUGMSG(("ODTCT: deleteSpan(revisions) while.6 dpos1:%d dpos2:%d eType:%d RX:%s\n",
             //             dpos1, dpos2, eType, Revisions.getXMLstring() ));
@@ -1204,7 +1203,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 				case pf_Frag::PFT_Object:
 				case pf_Frag::PFT_Text:
                     // UT_DEBUGMSG(("ODTCT: deleteSpan(revisions) addfmt dpos1:%d dposEnd:%d\n", dpos1, dposEnd ));
-					if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, PP_std_copyProps(ppRevAttrib),PP_NOPROPS,true))
+					if(! _realChangeSpanFmt(PTC_AddFmt, dpos1, dposEnd, ppRevAttrib, PP_NOPROPS, true))
 						return false;
 
 
@@ -1231,7 +1230,7 @@ bool pt_PieceTable::deleteSpan(PT_DocPosition dpos1,
 					// it the position immediately after the strux; we
 					// only want the one strux changed, so we pass
 					// identical position in both parameters
-					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1 + iLen, dpos1 + iLen /*2*iLen*/, ppRevAttrib,NULL,
+					if(! _realChangeStruxFmt(PTC_AddFmt, dpos1 + iLen, dpos1 + iLen /*2*iLen*/, ppRevAttrib, PP_NOPROPS,
 											 eStruxType,true))
 						return false;
 
@@ -1305,13 +1304,11 @@ bool pt_PieceTable::_fixHdrFtrReferences(const gchar * pszHdrType, const gchar *
 			{
 				if(0 == strcmp(pszMyHdrId2, pszHdrId))
 				{
-					const gchar* pAttrs [3];
-					pAttrs[0] = pszHdrType;
-					pAttrs[1] = pszMyHdrId2;
-					pAttrs[2] = NULL;
-
+					PP_PropertyVector pAttrs = {
+						pszHdrType, pszMyHdrId2
+					};
 					bRet &= _fmtChangeStruxWithNotify(PTC_RemoveFmt, (pf_Frag_Strux*)pFrag,
-													  pAttrs, NULL, false);
+													  pAttrs, PP_NOPROPS, false);
 				}
 			}
 
@@ -1369,22 +1366,20 @@ bool pt_PieceTable::_fixHdrFtrReferences(const gchar * pszHdrType, const gchar *
 						bFound = true;
 					}
 				}
-				
+
 				if(bFound)
 				{
-					const gchar* pAttrs [3];
-					pAttrs[0] = "revision";
-					pAttrs[1] = Revisions.getXMLstring();
-					pAttrs[2] = NULL;
-
+					PP_PropertyVector pAttrs = {
+						"revision", Revisions.getXMLstring()
+					};
 					bRet &= _fmtChangeStruxWithNotify(PTC_SetFmt, (pf_Frag_Strux*)pFrag,
-													  pAttrs, NULL, false);
+													  pAttrs, PP_NOPROPS, false);
 				}
 			}
-								
-								
+
+
 		}
-							
+
 		pFrag = pFrag->getNext();
 	}
 

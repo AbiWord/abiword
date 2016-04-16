@@ -170,7 +170,7 @@ public:
 	UT_sint32   findPage(fp_Page * pPage) const; // FIXME figure out how to pass a const fp_Page *
 	void            setFramePageNumbers(UT_sint32 iStartPage);
 	fl_FrameLayout* relocateFrame(fl_FrameLayout * pFL, fl_BlockLayout * newBlock,
-				      const gchar** attributes = NULL, const gchar **properties = NULL);
+				      const PP_PropertyVector & attributes = PP_NOPROPS, const PP_PropertyVector & properties = PP_NOPROPS);
 	void            clearAllCountWraps(void);
 	bool addFramesToBeInserted(fp_FrameContainer * pFrame);
 	bool removeFramesToBeInserted(fp_FrameContainer * pFrame);

@@ -123,8 +123,8 @@ bool pp_TableAttrProp::createAP(UT_sint32 * pSubscript)
 	return true;
 }
 
-bool pp_TableAttrProp::createAP(const gchar ** attributes,
-								   const gchar ** properties,
+bool pp_TableAttrProp::createAP(const PP_PropertyVector & attributes,
+								   const PP_PropertyVector & properties,
 								   UT_sint32 * pSubscript)
 {
 	UT_sint32 subscript;
@@ -139,7 +139,7 @@ bool pp_TableAttrProp::createAP(const gchar ** attributes,
 	pAP->markReadOnly();
 
 	m_vecTableSorted.addItemSorted(pAP,compareAP);
-	
+
 	*pSubscript = subscript;
 	return true;
 }

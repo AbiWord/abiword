@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
  *
@@ -59,9 +60,9 @@ class ABI_EXPORT PP_Revision: public PP_AttrProp
 				const gchar * attrs);
 
 	PP_Revision(UT_uint32 Id,
-				PP_RevisionType eType,
-				const std::vector<std::string> & props,
-				const std::vector<std::string> & attrs);
+                    PP_RevisionType eType,
+                    const PP_PropertyVector & props,
+                    const PP_PropertyVector & attrs);
 
 	virtual ~PP_Revision(){};
 

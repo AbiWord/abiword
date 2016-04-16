@@ -1,5 +1,6 @@
 /* AbiWord
  * Copyright (c) 2003 Martin Sevior <msevior@physics.unimelb.edu.au>
+ * Copyright (C) 2016 Hubert Figuière
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -1161,20 +1162,15 @@ void FV_VisualInlineImage::mouseRelease(UT_sint32 x, UT_sint32 y)
 
 	    //
 	    // Do the resize
-	    //		
-	    UT_UTF8String sWidth;
-	    UT_UTF8String sHeight;
-
-	    const gchar * properties[] = {"width", NULL, "height", NULL, 0};
-
+	    //
 	    {
 	      UT_LocaleTransactor t(LC_NUMERIC, "C");
-	      UT_UTF8String_sprintf(sWidth, "%fin", static_cast<double>(newImgBounds.width)/UT_LAYOUT_RESOLUTION);
-	      UT_UTF8String_sprintf(sHeight, "%fin", static_cast<double>(newImgBounds.height)/UT_LAYOUT_RESOLUTION);
+	      const PP_PropertyVector properties = {
+		"width", UT_std_string_sprintf("%fin", static_cast<double>(newImgBounds.width)/UT_LAYOUT_RESOLUTION),
+		"height", UT_std_string_sprintf("%fin", static_cast<double>(newImgBounds.height)/UT_LAYOUT_RESOLUTION)
+	      };
+	      m_pView->setCharFormat(properties);
 	    }
-	    properties[1] = sWidth.utf8_str();
-	    properties[3] = sHeight.utf8_str();
-	    m_pView->setCharFormat(properties);
 	    cleanUP();
 	}
 }

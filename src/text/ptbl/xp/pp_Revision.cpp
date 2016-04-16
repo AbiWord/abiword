@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2002 Tomas Frydrych <tomas@frydrych.uklinux.net>
  *
@@ -124,18 +124,11 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType,
                          const PP_PropertyVector & props,
                          const PP_PropertyVector & attrs)
 	: m_iID(Id)
-        , m_eType(eType)
-        , m_bDirty(true)
+	, m_eType(eType)
+	, m_bDirty(true)
 {
-	if(!props.empty())
-	{
-		setProperties(props);
-	}
-
-	if(!attrs.empty())
-	{
-		setAttributes(attrs);
-	}
+	setProperties(props);
+	setAttributes(attrs);
 }
 
 /*!
@@ -144,8 +137,9 @@ PP_Revision::PP_Revision(UT_uint32 Id, PP_RevisionType eType,
 */
 bool PP_Revision::setAttributes(const PP_PropertyVector & attributes)
 {
-	if(!PP_AttrProp::setAttributes(attributes))
+	if(!PP_AttrProp::setAttributes(attributes)) {
 		return false;
+	}
 
 	return _handleNestedRevAttr();
 }

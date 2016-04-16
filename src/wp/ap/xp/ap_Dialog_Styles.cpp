@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -210,41 +211,35 @@ void AP_Dialog_Styles::addOrReplaceVecAttribs(const gchar * pszProp,
  */
 void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
 {
-	const gchar ** paraProps = NULL;
-//	getView()->getBlockFormat(&paraProps,false);
+	PP_PropertyVector paraProps;
+//	getView()->getBlockFormat(paraProps,false);
 //
 // This line expands all styles
-	getView()->getBlockFormat(&paraProps,true);
-	const gchar ** charProps = NULL;
-//	getView()->getCharFormat(&charProps,false);
+	getView()->getBlockFormat(paraProps,true);
+	PP_PropertyVector charProps;
+//	getView()->getCharFormat(charProps,false);
 //
 // This line expans all styles..
 //
-	getView()->getCharFormat(&charProps,true);
-	UT_sint32 i =0;
+	getView()->getCharFormat(charProps,true);
 //
 // Loop over all properties and add them to our vector
 //
 	m_vecAllProps.clear();
-	const gchar * szName = NULL;
-	const gchar * szValue = NULL;
-	while(paraProps[i] != NULL)
+	for (auto iter = paraProps.cbegin(); iter != paraProps.cend(); iter += 2)
 	{
-		szName = paraProps[i];
-		szValue = paraProps[i+1];
-		if(strstr(szName,"toc-") == NULL)
+		const std::string & szName = *iter;
+		const std::string & szValue = *(iter + 1);
+		if(szName.find("toc-") == std::string::npos)
 		{
-			addOrReplaceVecProp(szName,szValue);
+			addOrReplaceVecProp(szName.c_str(), szValue);
 		}
-		i = i + 2;
 	}
-	i = 0;
-	while(charProps[i] != NULL)
+	for (auto iter = charProps.cbegin(); iter != charProps.cend(); iter += 2)
 	{
-		szName = charProps[i];
-		szValue = charProps[i+1];
-		addOrReplaceVecProp(szName,szValue);
-		i = i + 2;
+		const std::string & szName = *iter;
+		const std::string & szValue = *(iter + 1);
+		addOrReplaceVecProp(szName.c_str(), szValue);
 	}
 }
 
@@ -429,11 +424,10 @@ void AP_Dialog_Styles::ModifyLang(void)
 		= (XAP_Dialog_Language *)(pDialogFactory->requestDialog(id));
 	UT_return_if_fail (pDialog);
 
-	const gchar ** props_in = NULL;
-	if (getView()->getCharFormat(&props_in))
+	PP_PropertyVector props_in;
+	if (getView()->getCharFormat(props_in))
 	{
-		pDialog->setLanguageProperty(UT_getAttribute("lang", props_in));
-		FREEP(props_in);
+		pDialog->setLanguageProperty(PP_getAttribute("lang", props_in).c_str());
 	}
 
 	pDialog->runModal(getFrame());
@@ -840,25 +834,18 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 //
 //#define NUM_PARAPROPS  14
 
-	static gchar paraVals[NUM_PARAPROPS][60];
-	const gchar ** props = NULL;
+	PP_PropertyVector props;
 
-	UT_uint32 i = 0;
 	if(m_vecAllProps.getItemCount() <= 0)
 		return;
-	UT_uint32 countp = m_vecAllProps.getItemCount() + 1;
-	props = (const gchar **) UT_calloc(countp, sizeof(gchar *));
-	countp--;
-	for(i=0; i<countp; i++)
+	UT_uint32 countp = m_vecAllProps.getItemCount();
+	for(UT_uint32 i = 0; i < countp; i++)
 	{
-		props[i] = (const gchar *) m_vecAllProps.getNthItem(i);
+		props.push_back(m_vecAllProps.getNthItem(i));
 	}
-	props[i] = NULL;
 
 	if (!pDialog->setDialogData(props))
 		return;
-
-	FREEP(props);
 
 	// let's steal the width from getTopRulerInfo.
 	AP_TopRulerInfo info;
@@ -872,47 +859,27 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 	// get the dialog answer
 	AP_Dialog_Paragraph::tAnswer answer = pDialog->getAnswer();
 
-	const gchar ** propitem = NULL;
-
 	if(answer == AP_Dialog_Paragraph::a_OK)
 	{
+		props.clear();
 		// getDialogData() returns us gchar ** data we have to g_free
 		pDialog->getDialogData(props);
-		UT_return_if_fail (props);
+		UT_return_if_fail (!props.empty());
 
 		// set properties into the vector. We have to save these as static char
         // strings so they persist past this method.
-
-		if (props && props[0])
+		// XXX fixme performance
+		if (!props.empty())
 		{
-			const gchar * szVals = NULL;
-			for(i=0; i<NUM_PARAPROPS; i++)
+			for(UT_uint32 i = 0; i < NUM_PARAPROPS; i++)
 			{
-				szVals = UT_getAttribute(paraFields[i],props);
-				if( szVals != NULL)
+				std::string value = PP_getAttribute(paraFields[i], props);
+				if(!value.empty())
 				{
-					sprintf(paraVals[i],"%s",szVals);
-					addOrReplaceVecProp((const gchar *) paraFields[i], (const gchar *) paraVals[i]);
+					addOrReplaceVecProp(paraFields[i], value.c_str());
 				}
 			}
 		}
-		// we have to loop through the props pairs, freeing each string
-		// referenced, then freeing the pointers themselves
-		if (props)
-		{
-			propitem = props;
-
-			while (propitem[0] && propitem[1])
-			{
-
-				FREEP(propitem[0]);
-				FREEP(propitem[1]);
-				propitem += 2;
-			}
-		}
-
-		// now g_free props
-		FREEP(props);
 	}
 	pDialogFactory->releaseDialog(pDialog);
 }
@@ -982,19 +949,21 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 
 	if( pStyle == NULL)
 	{
-		PP_PropertyVector attrib = { PT_NAME_ATTRIBUTE_NAME, "tmp",
-					     PT_TYPE_ATTRIBUTE_NAME, "P",
-					     "basedon", getAttsVal("basedon"),
-					     "followedby", getAttsVal("followedby"),
-					     "props",fullProps };
-
+		const PP_PropertyVector attrib = {
+			PT_NAME_ATTRIBUTE_NAME, "tmp",
+			PT_TYPE_ATTRIBUTE_NAME, "P",
+			"basedon", getAttsVal("basedon"),
+			"followedby", getAttsVal("followedby"),
+			"props",fullProps
+		};
 		getLDoc()->appendStyle(attrib);
 	}
 	else
 	{
-		const gchar * atts[3] = {"props",NULL,NULL};
-		atts[1] = fullProps.c_str();
-		getLDoc()->addStyleAttributes("tmp",atts);
+		const PP_PropertyVector atts = {
+			"props", fullProps.c_str()
+		};
+		getLDoc()->addStyleAttributes("tmp", atts);
 		getLDoc()->updateDocForStyleChange("tmp",true);
 	}
 	getLView()->setPoint(m_posFocus+1);
@@ -1012,7 +981,7 @@ bool AP_Dialog_Styles::createNewStyle(const gchar * szName)
 {
 	UT_DEBUGMSG(("DOM: new style %s\n", szName));
 
-	// XXX figure out whu props isn't used.
+	// XXX figure out why props isn't used.
 	const gchar ** props = NULL;
 	UT_uint32 i = 0;
 	if(m_vecAllProps.getItemCount() <= 0)
@@ -1078,6 +1047,7 @@ bool AP_Dialog_Styles::createNewStyle(const gchar * szName)
  */
 bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 {
+	// XXX figure out why props isn't used.
 	const gchar ** props = NULL;
 	UT_uint32 i = 0;
 	if(m_vecAllProps.getItemCount() <= 0)
@@ -1090,16 +1060,15 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 		props[i] = (const gchar *) m_vecAllProps.getNthItem(i);
 	}
 	props[i] = NULL;
-	UT_uint32 counta = m_vecAllAttribs.getItemCount() + 3;
-	const gchar ** attribs = NULL;
-	attribs = (const gchar **) UT_calloc(counta, sizeof(gchar *));
-	counta = counta -3;
+
+	UT_uint32 counta = m_vecAllAttribs.getItemCount();
+	PP_PropertyVector attribs;
 	UT_uint32 iatt;
-	for(iatt=0; iatt<counta; iatt++)
+	for(iatt=0; iatt < counta; iatt++)
 	{
-		attribs[iatt] = (const gchar *) m_vecAllAttribs.getNthItem(iatt);
+		attribs.push_back(m_vecAllAttribs.getNthItem(iatt));
 	}
-	attribs[iatt++] = "props";
+	attribs.push_back("props");
 //
 // clear out old description
 //
@@ -1114,12 +1083,11 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 		   *((const gchar *) m_vecAllProps.getNthItem(j+1)))
 		    m_curStyleDesc +=
 			(const gchar *) m_vecAllProps.getNthItem(j+1);
-		
+
 		if(j+2<countp)
 			m_curStyleDesc += "; ";
 	}
-	attribs[iatt++] = m_curStyleDesc.c_str();
-	attribs[iatt] = NULL;
+	attribs.push_back(m_curStyleDesc);
 //
 // Update the description in the Main Dialog.
 //
@@ -1134,7 +1102,7 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 // This creates a new indexAP from the attributes/properties here.
 // This allows properties to be removed from a pre-existing style
 //
-#if DEBUG
+#if 0 // DEBUG
 	for(i=0; attribs[i] != NULL; i = i + 2)
 	{
 		UT_DEBUGMSG(("SEVIOR: name %s , value %s \n",attribs[i],attribs[i+1]));
@@ -1142,7 +1110,6 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 #endif
 	bool bres = getDoc()->setAllStyleAttributes(szStyle,attribs);
 	FREEP(props);
-	FREEP(attribs);
 	return bres;
 }
 /*!
@@ -1316,12 +1283,14 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 //
 // Set all the margins to 0
 //
-	const gchar * props[] = {"page-margin-left","0.0in",
-							   "page-margin-right","0.0in",
-							   "page-margin-top","0.0in",
-							   "page-margin-bottom","0.0in",
-							   "page-margin-footer","0.0in",
-							   "page-margin-header","0.0in",NULL};
+	const PP_PropertyVector props =  {
+		"page-margin-left","0.0in",
+		"page-margin-right","0.0in",
+		"page-margin-top","0.0in",
+		"page-margin-bottom","0.0in",
+		"page-margin-footer","0.0in",
+		"page-margin-header","0.0in"
+	};
 	getLView()->setSectionFormat(props);
 //
 // First Paragraph
@@ -1335,49 +1304,52 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	}
 	getLView()->cmdCharInsert((UT_UCSChar *) sz1,len1);
 
-	const gchar * pszFGColor = NULL;
-    const gchar * pszBGColor = NULL;
-	static gchar Grey[8];
-	static gchar szFGColor[8];
+	std::string pszFGColor;
+	std::string pszBGColor;
+	static std::string Grey;
+	static std::string szFGColor;
 	UT_RGBColor FGColor(0,0,0);
 	UT_RGBColor BGColor(255,255,255);
 	const UT_RGBColor * pageCol = NULL;
 	getLView()->setStyle("Normal");
 
-	const gchar ** props_in = NULL;
-	getLView()->getCharFormat(&props_in);
-	pszFGColor = UT_getAttribute("color", props_in);
-	pszBGColor = UT_getAttribute("bgcolor",props_in);
-	if(pszFGColor != NULL)
-		UT_parseColor(pszFGColor,FGColor);
+	PP_PropertyVector props_in;
+	getLView()->getCharFormat(props_in);
+	pszFGColor = PP_getAttribute("color", props_in);
+	pszBGColor = PP_getAttribute("bgcolor", props_in);
+	if(!pszFGColor.empty()) {
+		UT_parseColor(pszFGColor.c_str(),FGColor);
+	}
 //
 // Save the Foreground color for later
 //
-	sprintf(szFGColor, "%02x%02x%02x",FGColor.m_red,
-				FGColor.m_grn, FGColor.m_blu);
-	if(pszBGColor == NULL)
+	szFGColor = UT_std_string_sprintf("%02x%02x%02x",FGColor.m_red,
+									  FGColor.m_grn, FGColor.m_blu);
+	if(!pszBGColor.empty())
 	{
 		pageCol = getLView()->getCurrentPage()->getFillType().getColor();
-		sprintf(Grey, "%02x%02x%02x",(pageCol->m_red+FGColor.m_red)/2,
+		Grey = UT_std_string_sprintf("%02x%02x%02x",(pageCol->m_red+FGColor.m_red)/2,
 				(pageCol->m_grn+FGColor.m_grn)/2, (pageCol->m_blu+FGColor.m_blu)/2);
 	}
-	else if(strcmp(pszBGColor,"transparent")==0)
+	else if(pszBGColor == "transparent")
 	{
 		pageCol = getLView()->getCurrentPage()->getFillType().getColor();
-		sprintf(Grey, "%02x%02x%02x",(pageCol->m_red+FGColor.m_red)/2,
+		Grey = UT_std_string_sprintf("%02x%02x%02x",(pageCol->m_red+FGColor.m_red)/2,
 				(pageCol->m_grn+FGColor.m_grn)/2, (pageCol->m_blu+FGColor.m_blu)/2);
 	}
 	else
 	{
-		UT_parseColor(pszBGColor,BGColor);
-		sprintf(Grey, "%02x%02x%02x",(BGColor.m_red+FGColor.m_red)/2,
+		UT_parseColor(pszBGColor.c_str(), BGColor);
+		Grey = UT_std_string_sprintf("%02x%02x%02x",(BGColor.m_red+FGColor.m_red)/2,
 				(BGColor.m_grn + FGColor.m_grn)/2, (BGColor.m_blu+FGColor.m_blu)/2);
 	}
 //
 // Set the "Greyed" color for text in previous block
 //
-	const gchar * GreyCol[3] = {"color",(const gchar *) Grey,NULL};
-	getLDoc()->changeSpanFmt(PTC_AddFmt,m_posBefore,getLView()->getPoint(),NULL,GreyCol);
+	const PP_PropertyVector GreyCol = {
+		"color", Grey
+	};
+	getLDoc()->changeSpanFmt(PTC_AddFmt, m_posBefore,getLView()->getPoint(), PP_NOPROPS, GreyCol);
 
 	getLView()->insertParagraphBreak();
 //
@@ -1386,27 +1358,24 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 //
 // Attributes
 //
-	UT_uint32 counta = m_vecAllAttribs.getItemCount()+1;
-	const gchar ** latt = NULL;
-	latt = (const gchar **) UT_calloc(counta, sizeof(gchar *));
-	counta--;
+	// XXX we should make m_vecAllAttribs and m_vecAllProps PP_PropertyVector
+	UT_uint32 counta = m_vecAllAttribs.getItemCount();
+	PP_PropertyVector latt;
+	latt.reserve(counta);
 	for(i=0; i<counta; i++)
 	{
-		latt[i] = (const gchar *) m_vecAllAttribs.getNthItem(i);
+		latt.push_back((const gchar *) m_vecAllAttribs.getNthItem(i));
 	}
-	latt[i] = NULL;
 //
 // Now properties
 //
-	UT_uint32 countp = m_vecAllProps.getItemCount()+1;
-	const gchar ** lprop = NULL;
-	lprop = (const gchar **) UT_calloc(countp, sizeof(gchar *));
-	countp--;
+	UT_uint32 countp = m_vecAllProps.getItemCount();
+	PP_PropertyVector lprop;
+	lprop.reserve(countp);
 	for(i=0; i<countp; i++)
 	{
-		lprop[i] = (const gchar *) m_vecAllProps.getNthItem(i);
+		lprop.push_back((const gchar *) m_vecAllProps.getNthItem(i));
 	}
-	lprop[i] = NULL;
 
 	PD_Style * pStyle = NULL;
 	getLDoc()->getStyle("tmp", &pStyle);
@@ -1434,8 +1403,8 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	xxx_UT_DEBUGMSG(("Style desc is %s \n",m_curStyleDesc.c_str()));
 	if( pStyle == NULL)
 	{
-		if(strlen(m_curStyleDesc.c_str()) == 0)
-			m_curStyleDesc += "font-style:normal";
+		if(m_curStyleDesc.empty())
+			m_curStyleDesc = "font-style:normal";
 		PP_PropertyVector attrib = {
 			PT_NAME_ATTRIBUTE_NAME, "tmp",
 			PT_TYPE_ATTRIBUTE_NAME, "P",
@@ -1462,13 +1431,15 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 //
 // Set Color Back
 //
-	pszFGColor = UT_getAttribute("color", lprop);
-	if(pszFGColor == NULL)
+	pszFGColor = PP_getAttribute("color", lprop);
+	if(!pszFGColor.empty())
 	{
-		const gchar * FGCol[3] = {"color",(const gchar *) szFGColor,NULL};
+		const PP_PropertyVector FGCol = {
+			"color", szFGColor
+		};
 		getLView()->setCharFormat(FGCol);
 	}
-	FREEP(lprop);
+
 	for(i=0; i<8; i++)
 	{
 		getLView()->cmdCharInsert((UT_UCSChar *) szString,len);
@@ -1709,16 +1680,17 @@ void AP_Dialog_Styles::_populatePreviews(bool isModify)
 				setModifyDescription (m_curStyleDesc.c_str());
 			}
 			// these aren't set at a style level, but we need to put them in there anyway
-			const gchar ** props_in = NULL;
-			getView()->getSectionFormat(&props_in);
+			PP_PropertyVector props_in;
+			getView()->getSectionFormat(props_in);
 
 			if(!isModify)
-				event_paraPreviewUpdated(UT_getAttribute("page-margin-left", props_in),
-									 UT_getAttribute("page-margin-right", props_in),
-									 (const gchar *)paraValues[0], (const gchar *)paraValues[1],
-									 (const gchar *)paraValues[2], (const gchar *)paraValues[3],
-									 (const gchar *)paraValues[4], (const gchar *)paraValues[5],
-									 (const gchar *)paraValues[6]);
+				event_paraPreviewUpdated(
+					PP_getAttribute("page-margin-left", props_in).c_str(),
+					PP_getAttribute("page-margin-right", props_in).c_str(),
+					(const gchar *)paraValues[0], (const gchar *)paraValues[1],
+					(const gchar *)paraValues[2], (const gchar *)paraValues[3],
+					(const gchar *)paraValues[4], (const gchar *)paraValues[5],
+					(const gchar *)paraValues[6]);
 			if(!isModify)
 				event_charPreviewUpdated();
 		}
