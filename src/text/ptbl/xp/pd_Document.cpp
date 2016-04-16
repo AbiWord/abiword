@@ -2405,6 +2405,7 @@ bool PD_Document::changeDocPropeties(const PP_PropertyVector & pAtts, const PP_P
 	else if(strcmp(szLCValue,"metadata") == 0)
     {
 		UT_DEBUGMSG(("metadata docprop received \n"));
+		ASSERT_PV_SIZE(pProps);
 		for (auto iter = pProps.cbegin(); iter != pProps.cend(); iter += 2) {
 			const std::string & sName = *iter;
 			const std::string & sValue = *(iter + 1);

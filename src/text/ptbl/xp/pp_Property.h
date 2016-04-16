@@ -45,7 +45,11 @@ class PD_Document;
 typedef std::vector<std::string> PP_PropertyVector;
 
 /// An empty immutable poperty vector
+/// NOT to be used for comparison.
 extern const PP_PropertyVector PP_NOPROPS;
+
+#define ASSERT_PV_SIZE(x) \
+	UT_ASSERT(x.size() % 2 == 0)
 
 // PP_Property captures knowledge of the various CSS properties,
 // such as their initial/default values and whether they are

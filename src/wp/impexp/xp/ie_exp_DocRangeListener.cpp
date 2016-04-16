@@ -99,11 +99,14 @@ void  IE_Exp_DocRangeListener::assembleAtts(const PP_PropertyVector & inAtts,
   bool bHasProps = false;
   bHasProps = PP_hasAttribute("props", inAtts);
 
+  // XXX what is this for?
   UT_sint32 attsCount = i;
+  // XXX and this?
   UT_sint32 propsCount = 0;
   if(!bHasProps)
   {
     i= 0;
+    ASSERT_PV_SIZE(inProps);
     for (auto iter = inProps.cbegin();
          iter != inProps.cend(); iter += 2, i += 2) {
         xxx_UT_DEBUGMSG((" Prip %d prop %s val %s \n",i,inProps[i],inProps[i+1]));

@@ -597,6 +597,9 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 
 		// Changing block style should not affect character styles
 		PP_PropertyVector attrSpan = attributes;
+
+		ASSERT_PV_SIZE(attrSpan);
+
 		for(auto iter = attrSpan.begin(); iter != attrSpan.end();
 			iter += 2) {
 			if (*iter == PT_STYLE_ATTRIBUTE_NAME) {

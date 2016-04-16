@@ -1048,10 +1048,12 @@ UT_sint32  AP_Dialog_Lists::findVecItem(UT_GenericVector<const gchar*> * v, cons
 
 UT_sint32 AP_Dialog_Lists::findVecItem(const PP_PropertyVector & v, const char * key)
 {
+	// XXX this should be removed.
 	if (v.empty()) {
 		return -1;
 	}
 	size_t i = 0;
+	ASSERT_PV_SIZE(v);
 	for(auto iter = v.cbegin(); iter != v.cend(); iter += 2, i += 2) {
 		if (*iter == key) {
 			break;

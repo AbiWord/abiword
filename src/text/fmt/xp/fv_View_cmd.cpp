@@ -5478,6 +5478,7 @@ bool FV_View::cmdInsertLatexMath(UT_UTF8String & sLatex,
 	pos = getPoint();
 
 	std::string sNewProps;
+	ASSERT_PV_SIZE(props);
 	for(auto iter = props.cbegin(); iter != props.cend(); iter += 2) {
 		UT_std_string_setProperty(sNewProps, *iter, *(iter + 1));
 	}
@@ -5689,7 +5690,10 @@ bool FV_View::cmdUpdateEmbed(const UT_ByteBuf * pBuf, const char * szMime, const
 	m_pDoc->beginUserAtomicGlob();
 	getCharFormat(props, false, pos1);
 	std::string sFullProps;
-	for(auto iter = props.cbegin(); iter != props.cend(); iter += 2) {
+
+	ASSERT_PV_SIZE(props);
+
+	for (auto iter = props.cbegin(); iter != props.cend(); iter += 2) {
 		xxx_UT_DEBUGMSG(("Update Embed Prop %s val %s \n", props[i], props[i+1]));
 	    UT_std_string_setProperty(sFullProps, *iter, *(iter + 1));
 	}
@@ -5755,6 +5759,7 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, const UT_ByteBuf * pBuf, const char 
 	getCharFormat(props, false, pos);
 
 	std::string sFullProps;
+	ASSERT_PV_SIZE(props);
 	for(auto iter = props.cbegin(); iter != props.cend(); iter += 2) {
 
 		bool remove = false;

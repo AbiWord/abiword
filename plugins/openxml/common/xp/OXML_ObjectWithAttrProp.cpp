@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource
  * 
@@ -93,6 +93,7 @@ UT_Error OXML_ObjectWithAttrProp::appendAttributes(const PP_PropertyVector & att
 {
 	UT_return_val_if_fail(!attributes.empty(), UT_ERROR);
 	UT_Error ret;
+	ASSERT_PV_SIZE(attributes);
 	for (auto iter = attributes.cbegin(); iter != attributes.end(); iter += 2) {
 
 		ret = setAttribute(iter->c_str(), (iter + 1)->c_str());
@@ -107,6 +108,7 @@ UT_Error OXML_ObjectWithAttrProp::appendProperties(const PP_PropertyVector & pro
 {
 	UT_return_val_if_fail(!properties.empty(), UT_ERROR);
 	UT_Error ret;
+	ASSERT_PV_SIZE(properties);
 	for (auto iter = properties.cbegin(); iter != properties.end(); iter += 2) {
 		ret = setProperty(iter->c_str(), (iter + 1)->c_str());
 		if (ret != UT_OK) {
@@ -133,8 +135,9 @@ PP_PropertyVector OXML_ObjectWithAttrProp::getAttributesWithProps()
 		return getAttributes();
 
 	// Use fakeprops here to avoid overwriting props attribute if already exists
-	UT_return_val_if_fail(UT_OK == setAttribute("fakeprops", propstring.c_str()), PP_PropertyVector());
+	UT_return_val_if_fail(UT_OK == setAttribute("fakeprops", propstring.c_str()), PP_NOPROPS);
 	PP_PropertyVector atts = getAttributes();
+	ASSERT_PV_SIZE(atts);
 	for (auto iter = atts.begin(); iter != atts.end(); iter += 2) {
 		if (*iter == "fakeprops") {
 			*iter = PT_PROPS_ATTRIBUTE_NAME;
@@ -151,12 +154,11 @@ std::string OXML_ObjectWithAttrProp::_generatePropsString() const
 	}
 	std::string fmt_props;
 
-	for (PP_PropertyVector::const_iterator iter = props.begin();
-		 iter != props.end(); ++iter) {
+	ASSERT_PV_SIZE(props);
+	for (auto iter = props.cbegin(); iter != props.cend(); iter += 2) {
 
 		fmt_props += *iter + ":";
-		++iter;
-		fmt_props += *iter + ";";
+		fmt_props += *(iter + 1) + ";";
 	}
 	fmt_props.resize(fmt_props.length() - 1); //Shave off the last semicolon, appendFmt doesn't like it
 	return fmt_props;

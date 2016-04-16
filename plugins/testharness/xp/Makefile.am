@@ -20,6 +20,7 @@ libxp_la_SOURCES = \
 	$(top_srcdir)/src/af/util/xp/t/ut_locale.t.cpp \
 	$(top_srcdir)/src/text/ptbl/xp/t/pt_PieceTable.t.cpp \
 	$(top_srcdir)/src/text/ptbl/xp/t/pp_PropertyMap.t.cpp \
+	$(top_srcdir)/src/text/ptbl/xp/t/pp_AttrProp.t.cpp \
 	$(top_srcdir)/src/text/ptbl/xp/t/pf_Fragments.t.cpp \
 	$(top_srcdir)/src/wp/impexp/xp/t/ie_mailmerge.t.cpp \
 	$(top_srcdir)/src/wp/impexp/xp/t/ie_Table.t.cpp \

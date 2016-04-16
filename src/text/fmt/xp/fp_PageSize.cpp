@@ -250,6 +250,7 @@ bool fp_PageSize::Set(const PP_PropertyVector & attributes)
 	double scale = 1.0;
 	UT_Dimension u = DIM_IN;
 
+	ASSERT_PV_SIZE(attributes);
 	for (auto iter = attributes.cbegin(); iter != attributes.cend();
              iter += 2)	{
 		auto & prop = *iter;

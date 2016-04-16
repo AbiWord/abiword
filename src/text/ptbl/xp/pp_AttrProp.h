@@ -126,8 +126,8 @@ public:
 	bool isEquivalent(const PP_PropertyVector & attrs,
 					  const PP_PropertyVector & props) const;
 
-	PP_AttrProp * createExactly(const PP_PropertyVector & attributes,
-				    const PP_PropertyVector & properties) const;
+	static PP_AttrProp * createExactly(const PP_PropertyVector & attributes,
+				    const PP_PropertyVector & properties);
 
 
 	PP_AttrProp * cloneWithReplacements(const PP_PropertyVector & attributes,
@@ -193,9 +193,6 @@ PP_PropertyVector PP_std_setPropsToNothing(const PP_PropertyVector & props);
 PP_PropertyVector PP_std_copyProps(const gchar ** props);
 // safe version of UT_setPropsToValue.
 PP_PropertyVector PP_std_setPropsToValue(const PP_PropertyVector & props,
-										 const gchar * value);
-// safe version of UT_setPropsToValue.
-PP_PropertyVector PP_std_setPropsToValue(const gchar ** props,
 										 const gchar * value);
 // XXX ineficient
 /// Tell if the attribute name is in the vector.

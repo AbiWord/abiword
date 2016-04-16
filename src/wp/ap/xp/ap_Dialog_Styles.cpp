@@ -226,6 +226,7 @@ void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
 // Loop over all properties and add them to our vector
 //
 	m_vecAllProps.clear();
+	ASSERT_PV_SIZE(paraProps);
 	for (auto iter = paraProps.cbegin(); iter != paraProps.cend(); iter += 2)
 	{
 		const std::string & szName = *iter;
@@ -235,6 +236,7 @@ void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
 			addOrReplaceVecProp(szName.c_str(), szValue);
 		}
 	}
+	ASSERT_PV_SIZE(charProps);
 	for (auto iter = charProps.cbegin(); iter != charProps.cend(); iter += 2)
 	{
 		const std::string & szName = *iter;
