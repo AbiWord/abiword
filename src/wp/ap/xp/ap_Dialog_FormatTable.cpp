@@ -1,20 +1,21 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (c) 2009 Hubert Figuiere
+ * Copyright (c) 2009-2016 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -25,6 +26,7 @@
 #include "ap_Features.h"
 
 #include "ut_assert.h"
+#include "ut_std_string.h"
 #include "ut_string.h"
 #include "ut_debugmsg.h"
 
@@ -56,7 +58,6 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	  m_borderColor(0,0,0),
 	  m_lineStyle(LS_NORMAL),
 	  m_bgFillStyle(NULL),
-	
 	  m_answer(a_OK),
 	  m_pFormatTablePreview(NULL),
 	  m_bSettingsChanged(false),
@@ -83,15 +84,6 @@ AP_Dialog_FormatTable::AP_Dialog_FormatTable(XAP_DialogFactory * pDlgFactory, XA
 	{
 		m_dThickness[i] = UT_convertToInches(sThickness[i]);
 	}
-
-	if(m_vecProps.getItemCount() > 0)
-		m_vecProps.clear();
-	  
-	if(m_vecPropsAdjRight.getItemCount() > 0)
-		m_vecPropsAdjRight.clear();
-	  
-	if(m_vecPropsAdjBottom.getItemCount() > 0)
-		m_vecPropsAdjBottom.clear();
 }
 
 AP_Dialog_FormatTable::~AP_Dialog_FormatTable(void)
@@ -147,7 +139,7 @@ void AP_Dialog_FormatTable::stopUpdater(void)
 void AP_Dialog_FormatTable::autoUpdateMC(UT_Worker * pTimer)
 {
 	UT_return_if_fail (pTimer);
-	
+
 	// get the dialog pointer from the timer instance data
 	AP_Dialog_FormatTable * pDialog = static_cast<AP_Dialog_FormatTable *>(pTimer->getInstanceData());
 
@@ -159,7 +151,7 @@ void AP_Dialog_FormatTable::autoUpdateMC(UT_Worker * pTimer)
 		pDialog->setCurCellProps();
 		pDialog->m_bAutoUpdate_happening_now = false;
 	}
-}        
+}
 
 /*!
  * Import graphic for cell background.
@@ -276,7 +268,7 @@ void AP_Dialog_FormatTable::askForGraphicPathName(void)
 								m_pFormatTablePreview->getWindowHeight()-2,
 								GR_Image::GRT_Vector));
 	}
-	
+
 	// draw the preview with the changed properties
 	if(m_pFormatTablePreview)
 		m_pFormatTablePreview->queueDraw();
@@ -333,7 +325,7 @@ void AP_Dialog_FormatTable::ShowErrorBox(UT_String & sFile, UT_Error errorCode)
 }
 
 
-/*! 
+/*!
  Sets the sensitivity of the radio buttons to top/bottom/left/right line buttons
  Call this right after contructing the widget and before dropping into the main loop.
  */
@@ -355,12 +347,12 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 	if (frame) {
 		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
 
-		if (m_bSettingsChanged || m_iOldPos == pView->getPoint()) 
+		if (m_bSettingsChanged || m_iOldPos == pView->getPoint())
 		{
 		    //comparing the actual cell pos would be even better; but who cares :)
 		    return;
 		}
-		
+
 		m_iOldPos = pView->getPoint();
 		PT_DocPosition pos = 0;pView->getPoint();
 		if (pView->getSelectionAnchor() > pView->getPoint())
@@ -370,48 +362,48 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 		/*
 		 * update the border colors
 		 */
-		
+
 		gchar * color = NULL;
-		
-		if (pView->getCellProperty(pos, "left-color", color))
-			m_vecProps.addOrReplaceProp("left-color", color);
-		else
-			m_vecProps.removeProp("left-color");
 
-		if (pView->getCellProperty(pos, "right-color", color))
-			m_vecProps.addOrReplaceProp("right-color", color);
-		else
-			m_vecProps.removeProp("right-color");
+		if (pView->getCellProperty(pos, "left-color", color)) {
+			PP_addOrSetAttribute("left-color", color, m_vecProps);
+		} else {
+			PP_removeAttribute("left-color", m_vecProps);
+		}
 
-		if (pView->getCellProperty(pos, "top-color", color))
-			m_vecProps.addOrReplaceProp("top-color", color);
-		else
-			m_vecProps.removeProp("top-color");
-		
-		if (pView->getCellProperty(pos, "bot-color", color))
-			m_vecProps.addOrReplaceProp("bot-color", color);
-		else
-			m_vecProps.removeProp("bot-color");
-		
+		if (pView->getCellProperty(pos, "right-color", color)) {
+			PP_addOrSetAttribute("right-color", color, m_vecProps);
+		} else {
+			PP_removeAttribute("right-color", m_vecProps);
+		}
+
+		if (pView->getCellProperty(pos, "top-color", color)) {
+			PP_addOrSetAttribute("top-color", color, m_vecProps);
+		} else {
+			PP_removeAttribute("top-color", m_vecProps);
+		}
+
+		if (pView->getCellProperty(pos, "bot-color", color)) {
+			PP_addOrSetAttribute("bot-color", color, m_vecProps);
+		} else {
+			PP_removeAttribute("bot-color", m_vecProps);
+		}
+
 		/*
 		 * update the background color
 		 */
 
 		UT_RGBColor clr;
 		gchar * bgColor = NULL;
-		if (pView->getCellProperty(pos, "background-color", bgColor))
-		{
-			m_vecProps.addOrReplaceProp("background-color", bgColor);
+		if (pView->getCellProperty(pos, "background-color", bgColor)) {
+			PP_addOrSetAttribute("background-color", bgColor, m_vecProps);
 			clr.setColor(bgColor);
 			setBackgroundColorInGUI(clr);
-		}
-		else
-		{
-			m_vecProps.removeProp("background-color");
+		} else {
+			PP_removeAttribute("background-color", m_vecProps);
 			setBackgroundColorInGUI(UT_RGBColor(255,255,255)); // No color == white for now - MARCM
 		}
-		
-		
+
 		if(pView->isImageAtStrux(m_iOldPos,PTX_SectionCell))
 		{
 			if(pView->isInTable())
@@ -472,9 +464,8 @@ void AP_Dialog_FormatTable::setCurCellProps(void)
 			m_sImagePath.clear();
 		}
 
-		UT_String bstmp = UT_String_sprintf("%d", FS_FILL);
-		m_vecProps.addOrReplaceProp("bg-style", bstmp.c_str());
-		
+		PP_addOrSetAttribute("bg-style", UT_std_string_sprintf("%d", FS_FILL), m_vecProps);
+
 		// draw the preview with the changed properties
 		if(m_pFormatTablePreview)
 			m_pFormatTablePreview->queueDraw();
@@ -488,22 +479,14 @@ void AP_Dialog_FormatTable::setApplyFormatTo(FormatTable applyTo)
 
 void AP_Dialog_FormatTable::applyChanges()
 {
-	UT_DEBUGMSG(("Doing apply changes number props %d \n",m_vecProps.getItemCount()));
-	if (m_vecProps.getItemCount() == 0)
+	UT_DEBUGMSG(("Doing apply changes number props %lu\n", m_vecProps.size()));
+	if (m_vecProps.empty()) {
 		return;
-
-	FV_View * pView = static_cast<FV_View *>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentView());
-	PP_PropertyVector propsArray;
-
-	UT_sint32 i = m_vecProps.getItemCount();
-	UT_sint32 j;
-	for(j= 0; j<i; j=j+2)
-	{
-		propsArray.push_back(m_vecProps.getNthItem(j));
-		propsArray.push_back(m_vecProps.getNthItem(j+1));
 	}
 
-	pView->setCellFormat(propsArray, m_ApplyTo,m_pGraphic,m_sImagePath);
+	FV_View * pView = static_cast<FV_View *>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentView());
+
+	pView->setCellFormat(m_vecProps, m_ApplyTo, m_pGraphic, m_sImagePath);
 	m_bSettingsChanged = false;
 }
 
@@ -518,76 +501,69 @@ void AP_Dialog_FormatTable::finalize(void)
  */
 void AP_Dialog_FormatTable::toggleLineType(toggle_button btn, bool enabled)
 {
-	UT_String cTmp = UT_String_sprintf("%02x%02x%02x", m_borderColor.m_red, m_borderColor.m_grn, m_borderColor.m_blu);	
-	UT_String sTmp = UT_String_sprintf("%d", (enabled ? m_lineStyle : LS_OFF));
+	std::string cTmp = UT_std_string_sprintf("%02x%02x%02x", m_borderColor.m_red, m_borderColor.m_grn, m_borderColor.m_blu);
+	std::string sTmp = UT_std_string_sprintf("%d", (enabled ? m_lineStyle : LS_OFF));
 
 	switch (btn)
 	{
 		case toggle_left:
-		{
-			m_vecProps.addOrReplaceProp("left-style", sTmp.c_str());
-			m_vecProps.addOrReplaceProp("left-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("left-thickness",m_sBorderThickness.utf8_str());
-		}
-		break;
+			PP_addOrSetAttribute("left-style", sTmp, m_vecProps);
+			PP_addOrSetAttribute("left-color", cTmp, m_vecProps);
+			PP_addOrSetAttribute("left-thickness", m_sBorderThickness.utf8_str(), m_vecProps);
+			break;
 		case toggle_right:
-		{	
-			m_vecProps.addOrReplaceProp("right-style", sTmp.c_str());
-			m_vecProps.addOrReplaceProp("right-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());
-		}
-		break;
+			PP_addOrSetAttribute("right-style", sTmp, m_vecProps);
+			PP_addOrSetAttribute("right-color", cTmp, m_vecProps);
+			PP_addOrSetAttribute("right-thickness", m_sBorderThickness.utf8_str(), m_vecProps);
+			break;
 		case toggle_top:
-		{			
-			m_vecProps.addOrReplaceProp("top-style", sTmp.c_str());
-			m_vecProps.addOrReplaceProp("top-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());
-		}
-		break;
+			PP_addOrSetAttribute("top-style", sTmp, m_vecProps);
+			PP_addOrSetAttribute("top-color", cTmp, m_vecProps);
+			PP_addOrSetAttribute("top-thickness", m_sBorderThickness.utf8_str(), m_vecProps);
+			break;
 		case toggle_bottom:
-		{			
-			m_vecProps.addOrReplaceProp("bot-style", sTmp.c_str());
-			m_vecProps.addOrReplaceProp("bot-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
-		}
-		break;
+			PP_addOrSetAttribute("bot-style", sTmp, m_vecProps);
+			PP_addOrSetAttribute("bot-color", cTmp, m_vecProps);
+			PP_addOrSetAttribute("bot-thickness", m_sBorderThickness.utf8_str(), m_vecProps);
+			break;
 	}
-	
+
 	m_borderToggled = true;
 	m_bSettingsChanged = true;
 }
 
-void AP_Dialog_FormatTable::setBorderThickness(UT_UTF8String & sThick)
+void AP_Dialog_FormatTable::setBorderThickness(const UT_UTF8String & sThick)
 {
 	m_sBorderThickness = sThick;
-	if(m_borderToggled)
+	if(m_borderToggled) {
 		return;
-	m_vecProps.addOrReplaceProp("left-thickness", m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
-	
+	}
+	PP_addOrSetAttribute("left-thickness", m_sBorderThickness.utf8_str(), m_vecProps);
+	PP_addOrSetAttribute("right-thickness",m_sBorderThickness.utf8_str(), m_vecProps);
+	PP_addOrSetAttribute("top-thickness",m_sBorderThickness.utf8_str(), m_vecProps);
+	PP_addOrSetAttribute("bot-thickness",m_sBorderThickness.utf8_str(), m_vecProps);
+
 	m_bSettingsChanged = true;
 
 }
 
-void AP_Dialog_FormatTable::setBorderColor(UT_RGBColor clr)
+void AP_Dialog_FormatTable::setBorderColor(const UT_RGBColor & clr)
 {
 	m_borderColor = clr;
-	
+
 	if (m_borderToggled)
 		return;
 
-	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);	
+	std::string s = UT_std_string_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
 
-	m_vecProps.addOrReplaceProp("left-color", s.c_str());
-	m_vecProps.addOrReplaceProp("right-color", s.c_str());
-	m_vecProps.addOrReplaceProp("top-color", s.c_str());
-	m_vecProps.addOrReplaceProp("bot-color", s.c_str());
-	
-	m_vecPropsAdjRight.addOrReplaceProp("left-color", s.c_str());
-	m_vecPropsAdjBottom.addOrReplaceProp("top-color", s.c_str());
-	
+	PP_addOrSetAttribute("left-color", s, m_vecProps);
+	PP_addOrSetAttribute("right-color", s, m_vecProps);
+	PP_addOrSetAttribute("top-color", s, m_vecProps);
+	PP_addOrSetAttribute("bot-color", s, m_vecProps);
+
+	PP_addOrSetAttribute("left-color", s, m_vecPropsAdjRight);
+	PP_addOrSetAttribute("top-color", s, m_vecPropsAdjBottom);
+
 	m_bSettingsChanged = true;
 }
 
@@ -602,17 +578,18 @@ void AP_Dialog_FormatTable::clearImage(void)
 
 }
 
-void AP_Dialog_FormatTable::setBackgroundColor(UT_RGBColor clr)
+void AP_Dialog_FormatTable::setBackgroundColor(const UT_RGBColor & clr)
 {
 	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
 
-	m_vecProps.removeProp ("bg-style"); // Why do we remove this property?  We still use it in frames. -MG
-	m_vecProps.removeProp ("bgcolor"); // this is only here for backward compatibility with AbiWord < 2.0. Could be removed as far as I can see - MARCM
+	PP_removeAttribute ("bg-style", m_vecProps); // Why do we remove this property?  We still use it in frames. -MG
+	PP_removeAttribute ("bgcolor", m_vecProps); // this is only here for backward compatibility with AbiWord < 2.0. Could be removed as far as I can see - MARCM
 
-	if (clr.isTransparent ())
-		m_vecProps.removeProp ("background-color");
-	else
-		m_vecProps.addOrReplaceProp ("background-color", bgcol.c_str ());
+	if (clr.isTransparent ()) {
+		PP_removeAttribute ("background-color", m_vecProps);
+	} else {
+		PP_addOrSetAttribute ("background-color", bgcol.c_str(), m_vecProps);
+	}
 
 	m_bSettingsChanged = true;
 }
@@ -630,36 +607,36 @@ void AP_Dialog_FormatTable::_createPreviewFromGC(GR_Graphics * gc,
 	m_pFormatTablePreview->setWindowSize(width, height);
 }
 
-bool AP_Dialog_FormatTable::_getToggleButtonStatus(const char * lineStyle)
+bool AP_Dialog_FormatTable::_getToggleButtonStatus(const char * lineStyle) const
 {
-	const gchar * pszStyle = NULL;
-	UT_String lsOff = UT_String_sprintf("%d", LS_OFF);	
+	std::string style;
+	std::string lsOff = UT_std_string_sprintf("%d", LS_OFF);
 
-	m_vecProps.getProp(lineStyle, pszStyle);
+	style = PP_getAttribute(lineStyle, m_vecProps);
 
-	if ((pszStyle && strcmp(pszStyle, lsOff.c_str())) || 
-		!pszStyle)
+	if (style != lsOff) {
 		return true;
-	else
+	} else {
 		return false;
+	}
 }
 
-bool AP_Dialog_FormatTable::getTopToggled()
+bool AP_Dialog_FormatTable::getTopToggled() const
 {
 	return _getToggleButtonStatus("top-style");
 }
 
-bool AP_Dialog_FormatTable::getBottomToggled()
+bool AP_Dialog_FormatTable::getBottomToggled() const
 {
 	return _getToggleButtonStatus("bot-style");
 }
 
-bool AP_Dialog_FormatTable::getRightToggled()
+bool AP_Dialog_FormatTable::getRightToggled() const
 {
 	return _getToggleButtonStatus("right-style");
 }
 
-bool AP_Dialog_FormatTable::getLeftToggled()
+bool AP_Dialog_FormatTable::getLeftToggled() const
 {
 	return _getToggleButtonStatus("left-style");
 }
@@ -706,42 +683,40 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 
 	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
-	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
-	
+	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));
+
 	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
-	
-	
+	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
+
+
 	UT_RGBColor tmpCol;
-	
+
 	UT_RGBColor black(0, 0, 0);
 	m_gc->setLineWidth(m_gc->tlu(1));
-	
+
 	int border = m_gc->tlu(20);
 	int cornerLength = m_gc->tlu(5);
+
+	PP_PropertyVector & props = m_pFormatTable->getPropVector();
 
 //
 //  Draw the cell background
 //
-	
-	const gchar * pszBGCol = NULL;
+
 	if(m_pFormatTable->getImage())
 	{
 		GR_Image * pImg = m_pFormatTable->getImage();
 		FG_Graphic * pFG = m_pFormatTable->getGraphic();
 		const char * szName = pFG->getDataId();
         const UT_ByteBuf * pBB = pFG->getBuffer();
-		if(pFG->getType() == FGT_Raster)
-		{
+		if(pFG->getType() == FGT_Raster) {
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
 									pBB, pFG->getMimeType(),
 									pageRect.width - 2*border,
 									pageRect.height - 2*border,
 									GR_Image::GRT_Raster));
-		}
-		else
-		{
+		} else {
 			pImg = static_cast<GR_Image *>(
 				m_gc->createNewImage( szName,
                                       pBB, pFG->getMimeType(),
@@ -750,17 +725,14 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 									GR_Image::GRT_Vector));
 		}
 
-		UT_Rect rec(pageRect.left + border, pageRect.top + border, 
+		UT_Rect rec(pageRect.left + border, pageRect.top + border,
 					pageRect.width - 2*border, pageRect.height - 2*border);
 		painter.drawImage(pImg,pageRect.left + border, pageRect.top + border);
 		delete pImg;
-	}
-	else
-	{
-		m_pFormatTable->getPropVector().getProp(static_cast<const gchar *>("background-color"), pszBGCol);
-		if (pszBGCol && *pszBGCol)
-		{
-			UT_parseColor(pszBGCol, tmpCol);
+	} else {
+		std::string bgCol = PP_getAttribute("background-color", props);
+		if (!bgCol.empty())	{
+			UT_parseColor(bgCol.c_str(), tmpCol);
 			painter.fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
 		}
 	}
@@ -768,9 +740,9 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 //
 //  Draw the cell corners
 //
-	
+
 	m_gc->setColor(UT_RGBColor(127,127,127));
-	
+
 	// top left corner
 	painter.drawLine(pageRect.left + border - cornerLength, pageRect.top + border,
 				   pageRect.left + border, pageRect.top + border);
@@ -798,28 +770,22 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 //
 //  Draw the cell borders
 //
-	
+
 	// top border
 	if (m_pFormatTable->getTopToggled())
 	{
-		const gchar * pszTopColor = NULL;
-		m_pFormatTable->getPropVector().getProp("top-color", pszTopColor);
-		if (pszTopColor)
-		{
-			UT_parseColor(pszTopColor, tmpCol);
+		const std::string topColor = PP_getAttribute("top-color", props);
+		if (!topColor.empty()) {
+			UT_parseColor(topColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
-		}
-		else
+		} else {
 			m_gc->setColor(black);
-		const gchar * pszTopThickness = NULL;
-		m_pFormatTable->getPropVector().getProp("top-thickness", pszTopThickness);
-		if(pszTopThickness)
-		{
-			UT_sint32 iTopThickness = UT_convertToLogicalUnits(pszTopThickness);
-			m_gc->setLineWidth(iTopThickness);
 		}
-		else
-		{
+		const std::string topThickness = PP_getAttribute("top-thickness", props);
+		if(!topThickness.empty()) {
+			UT_sint32 iTopThickness = UT_convertToLogicalUnits(topThickness.c_str());
+			m_gc->setLineWidth(iTopThickness);
+		} else {
 			m_gc->setLineWidth(m_gc->tlu(1));
 		}
 
@@ -830,24 +796,18 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 	// left border
 	if (m_pFormatTable->getLeftToggled())
 	{
-		const gchar * pszLeftColor = NULL;
-		m_pFormatTable->getPropVector().getProp("left-color", pszLeftColor);
-		if (pszLeftColor)
-		{
-			UT_parseColor(pszLeftColor, tmpCol);
+		const std::string leftColor = PP_getAttribute("left-color", props);
+		if (!leftColor.empty())	{
+			UT_parseColor(leftColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
-		}
-		else
+		} else {
 			m_gc->setColor(black);
-		const gchar * pszLeftThickness = NULL;
-		m_pFormatTable->getPropVector().getProp("left-thickness", pszLeftThickness);
-		if(pszLeftThickness)
-		{
-			UT_sint32 iLeftThickness = UT_convertToLogicalUnits(pszLeftThickness);
-			m_gc->setLineWidth(iLeftThickness);
 		}
-		else
-		{
+		const std::string leftThickness = PP_getAttribute("left-thickness", props);
+		if(!leftThickness.empty()) {
+			UT_sint32 iLeftThickness = UT_convertToLogicalUnits(leftThickness.c_str());
+			m_gc->setLineWidth(iLeftThickness);
+		} else {
 			m_gc->setLineWidth(m_gc->tlu(1));
 		}
 		painter.drawLine(pageRect.left + border, pageRect.top + border,
@@ -857,51 +817,39 @@ void AP_FormatTable_preview::draw(const UT_Rect *clip)
 	// right border
 	if (m_pFormatTable->getRightToggled())
 	{
-		const gchar * pszRightColor = NULL;
-		m_pFormatTable->getPropVector().getProp("right-color", pszRightColor);
-		if (pszRightColor)
-		{
-			UT_parseColor(pszRightColor, tmpCol);
+		const std::string rightColor = PP_getAttribute("right-color", props);
+		if (!rightColor.empty()) {
+			UT_parseColor(rightColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
-		}
-		else
+		} else {
 			m_gc->setColor(black);
-		const gchar * pszRightThickness = NULL;
-		m_pFormatTable->getPropVector().getProp("right-thickness", pszRightThickness);
-		if(pszRightThickness)
-		{
-			UT_sint32 iRightThickness = UT_convertToLogicalUnits(pszRightThickness);
-			m_gc->setLineWidth(iRightThickness);
 		}
-		else
-		{
+		const std::string rightThickness = PP_getAttribute("right-thickness", props);
+		if(!rightThickness.empty())	{
+			UT_sint32 iRightThickness = UT_convertToLogicalUnits(rightThickness.c_str());
+			m_gc->setLineWidth(iRightThickness);
+		} else {
 			m_gc->setLineWidth(m_gc->tlu(1));
 		}
 		painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
-	
+
 	// bottom border
 	if (m_pFormatTable->getBottomToggled())
 	{
-		const gchar * pszBottomColor = NULL;
-		m_pFormatTable->getPropVector().getProp("bot-color", pszBottomColor);
-		if (pszBottomColor)
-		{
-			UT_parseColor(pszBottomColor, tmpCol);
+		const std::string bottomColor = PP_getAttribute("bot-color", props);
+		if (!bottomColor.empty()) {
+			UT_parseColor(bottomColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
-		}
-		else
+		} else {
 			m_gc->setColor(black);
-		const gchar * pszBotThickness = NULL;
-		m_pFormatTable->getPropVector().getProp("bot-thickness", pszBotThickness);
-		if(pszBotThickness)
-		{
-			UT_sint32 iBotThickness = UT_convertToLogicalUnits(pszBotThickness);
-			m_gc->setLineWidth(iBotThickness);
 		}
-		else
-		{
+		const std::string botThickness = PP_getAttribute("bot-thickness", props);
+		if(!botThickness.empty()) {
+			UT_sint32 iBotThickness = UT_convertToLogicalUnits(botThickness.c_str());
+			m_gc->setLineWidth(iBotThickness);
+		} else {
 			m_gc->setLineWidth(m_gc->tlu(1));
 		}
 		painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,

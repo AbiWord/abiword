@@ -108,6 +108,42 @@ TFTEST_MAIN("PP_setAttribute")
     TFPASS(!PP_hasAttribute("bar", attr));
 }
 
+TFTEST_MAIN("PP_addOrSetAttribute")
+{
+    PP_PropertyVector attr = attr1;
+    TFPASSEQ(attr.size(), 6);
+    TFPASS(PP_setAttribute("foo", "fiz", attr));
+    TFPASSEQ(attr.size(), 6);
+    PP_addOrSetAttribute("bar", "buzz", attr);
+    TFPASSEQ(attr.size(), 8);
+
+    attr = attr1;
+    attr.push_back("oddProp");
+    TFPASSEQ(attr.size(), 7);
+    TFPASS(PP_setAttribute("foo", "fiz", attr));
+    TFPASSEQ(attr.size(), 7);
+    PP_addOrSetAttribute("bar", "buzz", attr);
+    TFPASSEQ(attr.size(), 8);
+}
+
+TFTEST_MAIN("PP_removeAttribute")
+{
+    PP_PropertyVector attr = attr1;
+    TFPASSEQ(attr.size(), 6);
+    TFPASS(!PP_removeAttribute("oddProp", attr));
+    TFPASSEQ(attr.size(), 6);
+    TFPASS(PP_removeAttribute("buzz", attr));
+    TFPASSEQ(attr.size(), 4);
+
+    attr = attr1;
+    attr.push_back("oddProp");
+    TFPASSEQ(attr.size(), 7);
+    TFPASS(PP_removeAttribute("buzz", attr));
+    TFPASSEQ(attr.size(), 5);
+    TFPASS(PP_removeAttribute("oddProp", attr));
+    TFPASSEQ(attr.size(), 4);
+}
+
 TFTEST_MAIN("PP_std_setPropsToValue")
 {
     PP_PropertyVector attr;

@@ -1430,3 +1430,31 @@ bool PP_setAttribute(const char* name, const std::string & value, PP_PropertyVec
 	}
 	return changed;
 }
+
+void PP_addOrSetAttribute(const char* name, const std::string & value, PP_PropertyVector & atts)
+{
+	if (!PP_setAttribute(name, value, atts)) {
+		std::size_t size = atts.size();
+		// make sure the atts size is even.
+		if (size && (size % 2)) {
+			atts.resize(size - 1);
+		}
+		atts.push_back(name);
+		atts.push_back(value);
+	}
+}
+
+bool PP_removeAttribute(const char* name, PP_PropertyVector & atts)
+{
+	std::size_t i = 0;
+	for (auto iter = atts.cbegin(); iter != atts.cend(); ++iter, ++i) {
+		if (!(i % 2) && *iter == name) {
+			iter = atts.erase(iter);
+			if (iter != atts.cend()) {
+				atts.erase(iter);
+			}
+			return true;
+		}
+	}
+	return false;
+}

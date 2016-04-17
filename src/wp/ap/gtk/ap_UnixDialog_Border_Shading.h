@@ -46,12 +46,12 @@ public:
 	void                    event_ShadingOffsetChanged(void);
 	void					event_shadingPatternChange(void);
 
-	virtual void           	setBorderThicknessInGUI(UT_UTF8String & sThick);
-	virtual void            setBorderColorInGUI(UT_RGBColor clr);
-	virtual void            setBorderStyleInGUI(UT_UTF8String & sStyle);
-	virtual void			setShadingColorInGUI(UT_RGBColor clr);
-	virtual void			setShadingPatternInGUI(UT_UTF8String & sPattern);
-	virtual void			setShadingOffsetInGUI(UT_UTF8String & sOffset);
+	virtual void           	setBorderThicknessInGUI(const std::string & sThick);
+	virtual void            setBorderColorInGUI(const UT_RGBColor & clr);
+	virtual void            setBorderStyleInGUI(const std::string & sStyle);
+	virtual void			setShadingColorInGUI(const UT_RGBColor & clr);
+	virtual void			setShadingPatternInGUI(const std::string & sPattern);
+	virtual void			setShadingOffsetInGUI(const std::string & sOffset);
 
 	virtual void           	setSensitivity(bool bsens);
 	virtual void           	destroy(void);

@@ -41,12 +41,12 @@ public:
 	
 	virtual void			event_Close(void);
 	void					event_previewExposed(void);
-	virtual void			setShadingColorInGUI(UT_RGBColor clr);
-	virtual void			setBorderColorInGUI(UT_RGBColor clr);
-	virtual void			setBorderStyleInGUI(UT_UTF8String & sStyle);
-	virtual void            setBorderThicknessInGUI(UT_UTF8String & sThick);
-	virtual void            setShadingPatternInGUI(UT_UTF8String & sPattern);
-	virtual void            setShadingOffsetInGUI(UT_UTF8String & sOffset);
+	virtual void			setShadingColorInGUI(const UT_RGBColor& clr);
+	virtual void			setBorderColorInGUI(const UT_RGBColor& clr);
+	virtual void			setBorderStyleInGUI(const std::string & sStyle);
+	virtual void            setBorderThicknessInGUI(const std::string & sThick);
+	virtual void            setShadingPatternInGUI(const std::string & sPattern);
+	virtual void            setShadingOffsetInGUI(const std::string & sOffset);
 	void					setShadingEnable(bool enable);
 	virtual void            setSensitivity(bool bsens);
 	virtual void            destroy(void);

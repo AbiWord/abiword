@@ -1,7 +1,8 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (c) 2009 Hubert Figuiere
+ * Copyright (c) 2009-2016 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -23,7 +24,6 @@
 
 #include "ut_types.h"
 #include "ut_misc.h"
-#include "ut_PropVector.h"
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
@@ -60,12 +60,6 @@ public:
 	// data twiddlers
 	void			draw(const UT_Rect *clip=NULL);
 	GR_Graphics *   getGraphics(void) const { return m_gc;}
-	/*void			set(UT_uint32 iColumns, bool bLines)
-					{
-						m_iColumns = iColumns;
-						m_bLineBetween = bLines;
-						draw();
-					}*/
 private:
 	AP_FormatTable_preview_drawer	m_previewDrawer;
 	AP_Dialog_FormatTable *  m_pFormatTable;
@@ -81,8 +75,16 @@ public:
 
 	virtual void					runModeless(XAP_Frame * pFrame) = 0;
 
-	typedef enum { a_OK, a_CLOSE } tAnswer;
-	typedef enum { toggle_left, toggle_right, toggle_top, toggle_bottom } toggle_button;
+	enum tAnswer {
+		a_OK,
+		a_CLOSE
+	};
+	enum toggle_button {
+		toggle_left,
+		toggle_right,
+		toggle_top,
+		toggle_bottom
+	};
 
 	AP_Dialog_FormatTable::tAnswer		getAnswer(void) const;
 	virtual void                        startUpdater(void);
@@ -100,10 +102,10 @@ public:
 	void								setApplyFormatTo(FormatTable applyTo);
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
-	void								setBorderColor(UT_RGBColor clr);
-	void								setBackgroundColor(UT_RGBColor clr);
+	void								setBorderColor(const UT_RGBColor & clr);
+	void								setBackgroundColor(const UT_RGBColor & clr);
 	virtual void						setBackgroundColorInGUI(UT_RGBColor clr) = 0;
-	void                                setBorderThickness(UT_UTF8String & sThick);
+	void                                setBorderThickness(const UT_UTF8String & sThick);
 	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
 	void                                clearImage(void);
 	void                                askForGraphicPathName(void);
@@ -111,21 +113,22 @@ public:
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
-	UT_PropVector &						getPropVector() { return m_vecProps; }
+	PP_PropertyVector &					getPropVector() { return m_vecProps; }
+	const PP_PropertyVector &			getPropVector() const { return m_vecProps; }
 
 	/* We use this in Win32 to know the status of line and to set the push button using this value*/
-	bool								getTopToggled();
-	bool								getBottomToggled();
-	bool								getRightToggled();
-	bool								getLeftToggled();
-	GR_Image *                          getImage(void) { return m_pImage;}
-	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
+	bool								getTopToggled() const;
+	bool								getBottomToggled() const;
+	bool								getRightToggled() const;
+	bool								getLeftToggled() const;
+	GR_Image *                          getImage(void) const { return m_pImage;}
+	FG_Graphic *                        getGraphic(void) const { return m_pGraphic;}
 
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 	gchar *							m_bgFillStyle;
-	UT_PropVector                           m_vecProps;
-	UT_UTF8String                           m_sBorderThickness;
+	PP_PropertyVector                   m_vecProps;
+	UT_UTF8String                       m_sBorderThickness;
 protected:
 	guint                               _findClosestThickness(const char *) const;
 	AP_Dialog_FormatTable::tAnswer		m_answer;
@@ -135,12 +138,12 @@ protected:
 	double      m_dThickness[FORMAT_TABLE_NUMTHICKNESS];
 
 private:
-	bool								_getToggleButtonStatus(const char * lineStyle);
+	bool								_getToggleButtonStatus(const char * lineStyle) const;
 
 	bool								m_bSettingsChanged;
 
-	UT_PropVector                           m_vecPropsAdjRight;
-	UT_PropVector                           m_vecPropsAdjBottom;
+	PP_PropertyVector                   m_vecPropsAdjRight;
+	PP_PropertyVector                   m_vecPropsAdjBottom;
 
 	UT_Timer *                          m_pAutoUpdaterMC;
 

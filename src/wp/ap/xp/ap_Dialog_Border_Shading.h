@@ -1,21 +1,22 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (c) 2009 Hubert Figuiere
+ * Copyright (c) 2009-2016 Hubert Figuiere
  * Copyright (c) 2010 Maleesh Prasan
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -24,7 +25,6 @@
 
 #include "ut_types.h"
 #include "ut_misc.h"
-#include "ut_PropVector.h"
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
@@ -66,7 +66,7 @@ public:
 
 	// data twiddlers
 	void			draw(const UT_Rect *clip=NULL);
-	GR_Graphics *   getGraphics(void) const { return m_gc;} 
+	GR_Graphics *   getGraphics(void) const { return m_gc;}
 
 private:
 	AP_Border_Shading_preview_drawer	m_previewDrawer;
@@ -83,9 +83,17 @@ public:
 
 	virtual void					runModeless(XAP_Frame * pFrame) = 0;
 
-	typedef enum { a_OK, a_CLOSE } tAnswer;
-	typedef enum { toggle_left, toggle_right, toggle_top, toggle_bottom } toggle_button;
-	
+	enum tAnswer {
+          a_OK,
+          a_CLOSE
+        };
+	enum toggle_button {
+          toggle_left,
+          toggle_right,
+          toggle_top,
+          toggle_bottom
+        };
+
 	AP_Dialog_Border_Shading::tAnswer	getAnswer(void) const;
 	virtual void                        startUpdater(void);
 	virtual void                        stopUpdater(void);
@@ -97,29 +105,31 @@ public:
 	void                                event_update(void);
 	void                                finalize(void);
 	void                                setAllSensitivities(void);
-	void 								setCurBlockProps(void);	
+	void 								setCurBlockProps(void);
 	void								applyChanges(void);
 	void                                toggleLineType(toggle_button btn, bool enabled);
 
-	void								setBorderColor(UT_RGBColor clr);
-	void                                setBorderThickness(UT_UTF8String & sThick);
-	void                                setBorderStyle(UT_UTF8String & sStyle);
-	void								setShadingColor(UT_RGBColor clr);
-	void								setShadingPattern(UT_UTF8String & sPattern);
-	void								setShadingOffset(UT_UTF8String & sOffset);
+	void                                setBorderColor(const UT_RGBColor & clr);
+	void                                setBorderThickness(const std::string & sThick);
+	void                                setBorderStyle(const std::string & sStyle);
+	void                                setShadingColor(const UT_RGBColor & clr);
+	void                                setShadingPattern(const std::string & sPattern);
+	void                                setShadingOffset(const std::string & sOffset);
 
-	virtual void                        setBorderStyleInGUI(UT_UTF8String & sStyle) = 0;
-	virtual void                        setBorderThicknessInGUI(UT_UTF8String & sThick) = 0;
-	virtual void                        setBorderColorInGUI(UT_RGBColor clr) = 0;
-	virtual void						setShadingColorInGUI(UT_RGBColor clr) = 0;	
-	virtual void						setShadingPatternInGUI(UT_UTF8String & sPattern) = 0;	
-	virtual void						setShadingOffsetInGUI(UT_UTF8String & sOffset) = 0;	
+	virtual void                        setBorderStyleInGUI(const std::string & sStyle) = 0;
+	virtual void                        setBorderThicknessInGUI(const std::string & sThick) = 0;
+	virtual void                        setBorderColorInGUI(const UT_RGBColor & clr) = 0;
+	virtual void						setShadingColorInGUI(const UT_RGBColor & clr) = 0;
+	virtual void						setShadingPatternInGUI(const std::string & sPattern) = 0;
+	virtual void						setShadingOffsetInGUI(const std::string & sOffset) = 0;
 
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
-	UT_PropVector &						getPropVector() { return m_vecProps; }
-	const UT_PropVector &						getPropVector() const { return m_vecProps; }
+	PP_PropertyVector &					getPropVector()
+        { return m_vecProps; }
+	const PP_PropertyVector &			getPropVector() const
+        { return m_vecProps; }
 
 	bool								getTopToggled() const;
 	bool								getBottomToggled() const;
@@ -137,21 +147,19 @@ protected:
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 	gchar *								m_bgFillStyle;
-	UT_PropVector                       m_vecProps;
-	UT_UTF8String                       m_sBorderThickness;
+	PP_PropertyVector                       m_vecProps;
+	std::string                       m_sBorderThickness;
 
 	double      						m_dThickness[BORDER_SHADING_NUMTHICKNESS];
 	double      						m_dShadingOffset[BORDER_SHADING_NUMOFFSETS];
-		
+
 private:
 	bool								_getToggleButtonStatus(const char * lineStyle) const;
 
 	bool								m_bSettingsChanged;
 	PT_DocPosition                      m_iOldPos;
-	UT_String							m_sDefaultStyle;
+	std::string							m_sDefaultStyle;
 
-//	UT_PropVector                       m_vecPropsAdjRight;
-//	UT_PropVector                       m_vecPropsAdjBottom;
 	UT_Timer *                          m_pAutoUpdaterMC;
 
 	// Handshake variables

@@ -206,4 +206,11 @@ std::string PP_getAttribute(const char* name, const PP_PropertyVector & atts);
 /// \retval Return true is the property was set.
 bool PP_setAttribute(const char* name, const std::string & value, PP_PropertyVector & atts);
 
+// XXX ineficient
+/// Set the attribute %name or add it.
+void PP_addOrSetAttribute(const char* name, const std::string & value, PP_PropertyVector & atts);
+
+// XXX ineficient
+bool PP_removeAttribute(const char* name, PP_PropertyVector & atts);
+
 #endif /* PP_ATTRPROP_H */

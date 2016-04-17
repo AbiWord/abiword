@@ -62,8 +62,6 @@ libxp_la_SOURCES = \
 	ut_path.cpp \
 	ut_png.cpp \
 	ut_png.h \
-	ut_PropVector.cpp \
-	ut_PropVector.h \
 	ut_rand.cpp \
 	ut_rand.h \
 	ut_Script.cpp \

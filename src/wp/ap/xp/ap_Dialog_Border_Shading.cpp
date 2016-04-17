@@ -2,21 +2,21 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (c) 2009 Hubert Figuiere
+ * Copyright (c) 2009-2016 Hubert Figuiere
  * Copyright (c) 2010 Maleesh Prasan
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
- * 
+ *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  */
 
@@ -30,6 +30,7 @@
 #include "ut_string.h"
 #include "ut_std_string.h"
 #include "ut_debugmsg.h"
+#include "ut_locale.h"
 
 #include "xap_App.h"
 #include "xap_Dialog_Id.h"
@@ -94,17 +95,8 @@ AP_Dialog_Border_Shading::AP_Dialog_Border_Shading(XAP_DialogFactory * pDlgFacto
 		m_dShadingOffset[j] = UT_convertToInches(sShadingOffset[j]);
 	}
 
-	if(m_vecProps.getItemCount() > 0)
-		m_vecProps.clear();
-/*
-	if(m_vecPropsAdjRight.getItemCount() > 0)
-		m_vecPropsAdjRight.clear();
-	  
-	if(m_vecPropsAdjBottom.getItemCount() > 0)
-		m_vecPropsAdjBottom.clear();
-*/
 	guint border_style_id = (guint)PP_PropertyMap::linestyle_none - 1;
-	m_sDefaultStyle = UT_String_sprintf("%d", border_style_id);
+	m_sDefaultStyle = UT_std_string_sprintf("%d", border_style_id);
 }
 
 AP_Dialog_Border_Shading::~AP_Dialog_Border_Shading(void)
@@ -160,7 +152,7 @@ void AP_Dialog_Border_Shading::stopUpdater(void)
 void AP_Dialog_Border_Shading::autoUpdateMC(UT_Worker * pTimer)
 {
 	UT_return_if_fail (pTimer);
-	
+
 	// get the dialog pointer from the timer instance data
 	AP_Dialog_Border_Shading * pDialog = static_cast<AP_Dialog_Border_Shading *>(pTimer->getInstanceData());
 
@@ -172,9 +164,9 @@ void AP_Dialog_Border_Shading::autoUpdateMC(UT_Worker * pTimer)
 		pDialog->setCurBlockProps();
 		pDialog->m_bAutoUpdate_happening_now = false;
 	}
-}        
+}
 
-/*! 
+/*!
  Sets the sensitivity of the radio buttons to top/bottom/left/right line buttons
  Call this right after constructing the widget and before dropping into the main loop.
  */
@@ -189,15 +181,16 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 	if (frame) {
 		FV_View * pView = static_cast<FV_View *>(frame->getCurrentView());
 
-		if (m_bSettingsChanged || m_iOldPos == pView->getPoint())
-			return;	
-		
+		if (m_bSettingsChanged || m_iOldPos == pView->getPoint()) {
+			return;
+		}
+
 		m_iOldPos = pView->getPoint();
 
 		/*
 		 * update the border colors
 		 */
-		
+
 		fl_BlockLayout* current_block = pView->getCurrentBlock();
 
 		const char* style_left	= current_block->getProperty("left-style");
@@ -206,45 +199,45 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 		const char* style_bot	= current_block->getProperty("bot-style");
 
 
-		// 8/8/2010 Maleesh - Update the border styles.
-		UT_UTF8String active_style	= m_sDefaultStyle.c_str();
-		UT_UTF8String default_style = m_sDefaultStyle.c_str();
+		// Update the border styles.
+		std::string active_style  = m_sDefaultStyle;
+		std::string default_style = m_sDefaultStyle;
 
-		if (style_left)
-		{
-			m_vecProps.addOrReplaceProp("left-style", style_left);
-			if (active_style == default_style)
+		if (style_left)	{
+			PP_addOrSetAttribute("left-style", style_left, m_vecProps);
+			if (active_style == default_style) {
 				active_style = style_left;
+			}
+		} else {
+			PP_removeAttribute("left-style", m_vecProps);
 		}
-		else
-			m_vecProps.removeProp("left-style");
 
-		if (style_right)
-		{
-			m_vecProps.addOrReplaceProp("right-style", style_right);
-			if (active_style == default_style)
+		if (style_right) {
+			PP_addOrSetAttribute("right-style", style_right, m_vecProps);
+			if (active_style == default_style) {
 				active_style = style_right;
+			}
+		} else {
+			PP_removeAttribute("right-style", m_vecProps);
 		}
-		else
-			m_vecProps.removeProp("right-style");
 
-		if (style_top)
-		{
-			m_vecProps.addOrReplaceProp("top-style", style_top);
-			if (active_style == default_style)
+		if (style_top) {
+			PP_addOrSetAttribute("top-style", style_top, m_vecProps);
+			if (active_style == default_style) {
 				active_style = style_top;
+			}
+		} else {
+			PP_removeAttribute("top-style", m_vecProps);
 		}
-		else
-			m_vecProps.removeProp("top-style");
 
-		if (style_bot)
-		{
-			m_vecProps.addOrReplaceProp("bot-style", style_bot);
-			if (active_style == default_style)
-				active_style = style_bot;	
+		if (style_bot) {
+			PP_addOrSetAttribute("bot-style", style_bot, m_vecProps);
+			if (active_style == default_style) {
+				active_style = style_bot;
+			}
+		} else {
+			PP_removeAttribute("bot-style", m_vecProps);
 		}
-		else
-			m_vecProps.removeProp("bot-style");
 
 		setBorderStyleInGUI(active_style);
 
@@ -253,10 +246,10 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 
 		if (color_left)
 		{
-			m_vecProps.addOrReplaceProp("left-color", color_left);
-			m_vecProps.addOrReplaceProp("right-color", color_left);
-			m_vecProps.addOrReplaceProp("top-color", color_left);
-			m_vecProps.addOrReplaceProp("bot-color", color_left);
+			PP_addOrSetAttribute("left-color", color_left, m_vecProps);
+			PP_addOrSetAttribute("right-color", color_left, m_vecProps);
+			PP_addOrSetAttribute("top-color", color_left, m_vecProps);
+			PP_addOrSetAttribute("bot-color", color_left, m_vecProps);
 
 			UT_RGBColor clr;
 			clr.setColor(color_left);
@@ -264,67 +257,61 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 		}
 		else
 		{
-			m_vecProps.removeProp("left-color");
-			m_vecProps.removeProp("right-color");
-			m_vecProps.removeProp("top-color");
-			m_vecProps.removeProp("bot-color");
+			PP_removeAttribute("left-color", m_vecProps);
+			PP_removeAttribute("right-color", m_vecProps);
+			PP_removeAttribute("top-color", m_vecProps);
+			PP_removeAttribute("bot-color", m_vecProps);
 		}
 
 		if (thickness_left)
 		{
-			m_vecProps.addOrReplaceProp("left-thickness", thickness_left);
-			m_vecProps.addOrReplaceProp("right-thickness", thickness_left);
-			m_vecProps.addOrReplaceProp("top-thickness", thickness_left);
-			m_vecProps.addOrReplaceProp("bot-thickness", thickness_left);
+			PP_addOrSetAttribute("left-thickness", thickness_left, m_vecProps);
+			PP_addOrSetAttribute("right-thickness", thickness_left, m_vecProps);
+			PP_addOrSetAttribute("top-thickness", thickness_left, m_vecProps);
+			PP_addOrSetAttribute("bot-thickness", thickness_left, m_vecProps);
 
-			UT_UTF8String thickness_utf8 = thickness_left;
-			setBorderThicknessInGUI(thickness_utf8);
+			setBorderThicknessInGUI(thickness_left);
 		}
 		else
 		{
-			m_vecProps.removeProp("left-thickness");
-			m_vecProps.removeProp("right-thickness");
-			m_vecProps.removeProp("top-thickness");
-			m_vecProps.removeProp("bot-thickness");
+			PP_removeAttribute("left-thickness", m_vecProps);
+			PP_removeAttribute("right-thickness", m_vecProps);
+			PP_removeAttribute("top-thickness", m_vecProps);
+			PP_removeAttribute("bot-thickness", m_vecProps);
 		}
 
-		// 8/8/2010 Maleesh - Update shading.
+		// Update shading.
 
 		const char* shading_pattern	= current_block->getProperty("shading-pattern");
 		const char* shading_color	= current_block->getProperty("shading-foreground-color");
 
 		if (shading_pattern)
 		{
-			m_vecProps.addOrReplaceProp("shading-pattern", shading_pattern);
-			
-			UT_UTF8String pattern_utf8 = shading_pattern;
-			setShadingPatternInGUI(pattern_utf8);
+			PP_addOrSetAttribute("shading-pattern", shading_pattern, m_vecProps);
+			setShadingPatternInGUI(shading_pattern);
 		}
 		else
 		{
-			m_vecProps.removeProp("shading-pattern");
-			UT_UTF8String pattern_utf8 = BORDER_SHADING_SHADING_DISABLE;
-			setShadingPatternInGUI(pattern_utf8);
+			PP_removeAttribute("shading-pattern", m_vecProps);
+			setShadingPatternInGUI(BORDER_SHADING_SHADING_DISABLE);
 		}
 
 		if (shading_color)
 		{
-			m_vecProps.addOrReplaceProp("shading-foreground-color", shading_color);
-
+			PP_addOrSetAttribute("shading-foreground-color", shading_color, m_vecProps);
 			UT_RGBColor clr;
 			clr.setColor(shading_color);
 			setShadingColorInGUI(clr);
 		}
 		else
 		{
-			m_vecProps.removeProp("shading-foreground-color");
+			PP_removeAttribute("shading-foreground-color", m_vecProps);
 			setShadingColorInGUI(UT_RGBColor(255, 255, 255));
 		}
 
 
-		// 8/8/2010 Maleesh - TEMP
-		UT_DEBUGMSG(("Maleesh =============== Border props %s|%s|%s\n",style_left, color_left, thickness_left));
-		UT_DEBUGMSG(("Maleesh =============== Shading props %s|%s\n",shading_pattern, shading_color));
+		xxx_UT_DEBUGMSG(("Maleesh =============== Border props %s|%s|%s\n",style_left, color_left, thickness_left));
+		xxx_UT_DEBUGMSG(("Maleesh =============== Shading props %s|%s\n",shading_pattern, shading_color));
 
 		// draw the preview with the changed properties
 		if(m_pBorderShadingPreview)
@@ -335,23 +322,14 @@ void AP_Dialog_Border_Shading::setCurBlockProps(void)
 void AP_Dialog_Border_Shading::applyChanges()
 {
 	// XXX m_vecProps should be turned into a PP_PopertyVector
-	UT_DEBUGMSG(("Doing apply changes number props %d \n",m_vecProps.getItemCount()));
-	if (m_vecProps.getItemCount() == 0)
+	UT_DEBUGMSG(("Doing apply changes number props %lu \n",m_vecProps.size()));
+	if (m_vecProps.empty()) {
 		return;
+	}
 
 	FV_View * pView = static_cast<FV_View *>(XAP_App::getApp()->getLastFocussedFrame()->getCurrentView());
-	PP_PropertyVector propsArray;
 
-	UT_sint32 i = m_vecProps.getItemCount();
-	UT_sint32 j;
-	for(j= 0; j<i; j=j+2)
-	{
-		propsArray.push_back(m_vecProps.getNthItem(j));
-		propsArray.push_back(m_vecProps.getNthItem(j+1));
-
-		xxx_UT_DEBUGMSG(("Maleesh ======================= %s | %s \n", propsArray[j], propsArray[j + 1]));
-	}
-	pView->setBlockFormat(propsArray);
+	pView->setBlockFormat(m_vecProps);
 
 	m_bSettingsChanged = false;
 }
@@ -367,121 +345,112 @@ void AP_Dialog_Border_Shading::finalize(void)
  */
 void AP_Dialog_Border_Shading::toggleLineType(toggle_button btn, bool enabled)
 {
-	UT_String cTmp = UT_String_sprintf("%02x%02x%02x", m_borderColor.m_red, m_borderColor.m_grn, m_borderColor.m_blu);	
-	UT_String sTmp = UT_String_sprintf("%d", (enabled ? m_lineStyle : LS_OFF));
+	std::string cTmp = UT_std_string_sprintf("%02x%02x%02x", m_borderColor.m_red, m_borderColor.m_grn, m_borderColor.m_blu);
+	std::string sTmp = UT_std_string_sprintf("%d", (enabled ? m_lineStyle : LS_OFF));
 
 	switch (btn)
 	{
 		case toggle_left:
-		{
-			m_vecProps.addOrReplaceProp("left-style", sTmp.c_str());
-			m_vecProps.addOrReplaceProp("left-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("left-thickness",m_sBorderThickness.utf8_str());
-		}
-		break;
+			PP_addOrSetAttribute("left-style", sTmp, m_vecProps);
+			PP_addOrSetAttribute("left-color", cTmp, m_vecProps);
+			PP_addOrSetAttribute("left-thickness", m_sBorderThickness, m_vecProps);
+			break;
 		case toggle_right:
-		{	
-			m_vecProps.addOrReplaceProp("right-style", sTmp.c_str());
-			m_vecProps.addOrReplaceProp("right-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("right-thickness",m_sBorderThickness.utf8_str());
-		}
-		break;
+			PP_addOrSetAttribute("right-style", sTmp, m_vecProps);
+			PP_addOrSetAttribute("right-color", cTmp, m_vecProps);
+			PP_addOrSetAttribute("right-thickness", m_sBorderThickness, m_vecProps);
+			break;
 		case toggle_top:
-		{			
-			m_vecProps.addOrReplaceProp("top-style", sTmp.c_str());
-			m_vecProps.addOrReplaceProp("top-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("top-thickness",m_sBorderThickness.utf8_str());
-		}
-		break;
+			PP_addOrSetAttribute("top-style", sTmp, m_vecProps);
+			PP_addOrSetAttribute("top-color", cTmp, m_vecProps);
+			PP_addOrSetAttribute("top-thickness",m_sBorderThickness, m_vecProps);
+			break;
 		case toggle_bottom:
-		{			
-			m_vecProps.addOrReplaceProp("bot-style", sTmp.c_str());
-			m_vecProps.addOrReplaceProp("bot-color", cTmp.c_str());
-			m_vecProps.addOrReplaceProp("bot-thickness",m_sBorderThickness.utf8_str());
-		}
-		break;
+			PP_addOrSetAttribute("bot-style", sTmp, m_vecProps);
+			PP_addOrSetAttribute("bot-color", cTmp, m_vecProps);
+			PP_addOrSetAttribute("bot-thickness", m_sBorderThickness, m_vecProps);
+			break;
 	}
 	m_bSettingsChanged = true;
-	UT_DEBUGMSG(("Maleesh ======================= toggleLineType\n"));
+	xxx_UT_DEBUGMSG(("Maleesh ======================= toggleLineType\n"));
 }
 
-void AP_Dialog_Border_Shading::setBorderThickness(UT_UTF8String & sThick)
+void AP_Dialog_Border_Shading::setBorderThickness(const std::string & sThick)
 {
 	m_sBorderThickness = sThick;
 
-	m_vecProps.addOrReplaceProp("left-thickness", m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("right-thickness", m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("top-thickness", m_sBorderThickness.utf8_str());
-	m_vecProps.addOrReplaceProp("bot-thickness", m_sBorderThickness.utf8_str());
+	PP_addOrSetAttribute("left-thickness", m_sBorderThickness, m_vecProps);
+	PP_addOrSetAttribute("right-thickness", m_sBorderThickness, m_vecProps);
+	PP_addOrSetAttribute("top-thickness", m_sBorderThickness, m_vecProps);
+	PP_addOrSetAttribute("bot-thickness", m_sBorderThickness, m_vecProps);
 
-	guint index			= _findClosestThickness(sThick.utf8_str());
-	double space		= m_dThickness[index] + 0.02;	
-	UT_String str_space = UT_String_sprintf("%fin", space);	
+	guint index			= _findClosestThickness(sThick.c_str());
+	double space		= m_dThickness[index] + 0.02;
+	std::string str_space;
+	{
+		UT_LocaleTransactor l(LC_NUMERIC, "C");
+		str_space = UT_std_string_sprintf("%fin", space);
+	}
 
-	m_vecProps.addOrReplaceProp("left-space", str_space.c_str());
-	m_vecProps.addOrReplaceProp("right-space", str_space.c_str());
-	m_vecProps.addOrReplaceProp("top-space", str_space.c_str());
-	m_vecProps.addOrReplaceProp("bot-space", str_space.c_str());
+	PP_addOrSetAttribute("left-space", str_space, m_vecProps);
+	PP_addOrSetAttribute("right-space", str_space, m_vecProps);
+	PP_addOrSetAttribute("top-space", str_space, m_vecProps);
+	PP_addOrSetAttribute("bot-space", str_space, m_vecProps);
 
 	m_bSettingsChanged = true;
-	UT_DEBUGMSG(("Maleesh ======================= setBorderThickness\n"));
+	xxx_UT_DEBUGMSG(("Maleesh ======================= setBorderThickness\n"));
 }
 
-void AP_Dialog_Border_Shading::setBorderStyle(UT_UTF8String & sStyle)
+void AP_Dialog_Border_Shading::setBorderStyle(const std::string & sStyle)
 {
-	m_vecProps.addOrReplaceProp("left-style", sStyle.utf8_str());
-	m_vecProps.addOrReplaceProp("right-style",sStyle.utf8_str());
-	m_vecProps.addOrReplaceProp("top-style",sStyle.utf8_str());
-	m_vecProps.addOrReplaceProp("bot-style",sStyle.utf8_str());
+	PP_addOrSetAttribute("left-style", sStyle, m_vecProps);
+	PP_addOrSetAttribute("right-style", sStyle, m_vecProps);
+	PP_addOrSetAttribute("top-style", sStyle, m_vecProps);
+	PP_addOrSetAttribute("bot-style", sStyle, m_vecProps);
 
 	m_bSettingsChanged = true;
-	UT_DEBUGMSG(("Maleesh ======================= setBorderStyle %s: \n", sStyle.utf8_str()));
+//	UT_DEBUGMSG(("Maleesh ======================= setBorderStyle %s: \n", sStyle.c_str()));
 }
 
-void AP_Dialog_Border_Shading::setBorderColor(UT_RGBColor clr)
+void AP_Dialog_Border_Shading::setBorderColor(const UT_RGBColor& clr)
 {
 	m_borderColor = clr;
 
-	UT_String s = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);	
+	std::string s = UT_std_string_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
 
-	m_vecProps.addOrReplaceProp("left-color", s.c_str());
-	m_vecProps.addOrReplaceProp("right-color", s.c_str());
-	m_vecProps.addOrReplaceProp("top-color", s.c_str());
-	m_vecProps.addOrReplaceProp("bot-color", s.c_str());
-	
-//	m_vecPropsAdjRight.addOrReplaceProp("left-color", s.c_str());
-//	m_vecPropsAdjBottom.addOrReplaceProp("top-color", s.c_str());
-	
+	PP_addOrSetAttribute("left-color", s, m_vecProps);
+	PP_addOrSetAttribute("right-color", s, m_vecProps);
+	PP_addOrSetAttribute("top-color", s, m_vecProps);
+	PP_addOrSetAttribute("bot-color", s, m_vecProps);
+
 	m_bSettingsChanged = true;
-	UT_DEBUGMSG(("Maleesh ======================= setBorderColor\n"));
+	xxx_UT_DEBUGMSG(("Maleesh ======================= setBorderColor\n"));
 }
 
-void AP_Dialog_Border_Shading::setShadingPattern(UT_UTF8String & sPattern)
+void AP_Dialog_Border_Shading::setShadingPattern(const std::string & sPattern)
 {
-	m_vecProps.addOrReplaceProp ("shading-pattern", sPattern.utf8_str());
+	PP_addOrSetAttribute ("shading-pattern", sPattern, m_vecProps);
 	m_bSettingsChanged = true;
-	UT_DEBUGMSG(("Maleesh ======================= setShadingPattern\n"));
+	xxx_UT_DEBUGMSG(("Maleesh ======================= setShadingPattern\n"));
 }
 
-void AP_Dialog_Border_Shading::setShadingColor(UT_RGBColor clr)
+void AP_Dialog_Border_Shading::setShadingColor(const UT_RGBColor & clr)
 {
-	UT_String bgcol = UT_String_sprintf("%02x%02x%02x", clr.m_red, clr.m_grn, clr.m_blu);
-
-	if (clr.isTransparent ())
-	{
-		m_vecProps.removeProp ("shading-foreground-color");
-	}
-	else
-	{
-		m_vecProps.addOrReplaceProp ("shading-foreground-color", bgcol.c_str ());
+	if (clr.isTransparent ()) {
+		PP_removeAttribute ("shading-foreground-color", m_vecProps);
+	} else {
+		PP_addOrSetAttribute ("shading-foreground-color",
+							  UT_std_string_sprintf("%02x%02x%02x", clr.m_red,
+													clr.m_grn, clr.m_blu),
+							  m_vecProps);
 	}
 	m_bSettingsChanged = true;
-	UT_DEBUGMSG(("Maleesh ======================= setShadingColor\n"));
+	xxx_UT_DEBUGMSG(("Maleesh ======================= setShadingColor\n"));
 }
 
-void AP_Dialog_Border_Shading::setShadingOffset(UT_UTF8String & /*sOffset*/)
+void AP_Dialog_Border_Shading::setShadingOffset(const std::string & /*sOffset*/)
 {
-	// 7/7/2010 Maleesh  - TODO 
+	// 7/7/2010 Maleesh  - TODO
 }
 
 void AP_Dialog_Border_Shading::_createPreviewFromGC(GR_Graphics * gc,
@@ -499,16 +468,16 @@ void AP_Dialog_Border_Shading::_createPreviewFromGC(GR_Graphics * gc,
 
 bool AP_Dialog_Border_Shading::_getToggleButtonStatus(const char * lineStyle) const
 {
-	const gchar * pszStyle = NULL;
-	std::string lsOff = UT_std_string_sprintf("%d", LS_OFF);	
+	std::string pszStyle;
+	std::string lsOff = UT_std_string_sprintf("%d", LS_OFF);
 
-	m_vecProps.getProp(lineStyle, pszStyle);
+	pszStyle = PP_getAttribute(lineStyle, m_vecProps);
 
-	if ((pszStyle && strcmp(pszStyle, lsOff.c_str())) || 
-		!pszStyle)
+	if (pszStyle != lsOff) {
 		return true;
-	else
+	} else {
 		return false;
+	}
 }
 
 bool AP_Dialog_Border_Shading::getTopToggled() const
@@ -592,33 +561,32 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 
 	UT_sint32 iWidth = m_gc->tlu (getWindowWidth());
 	UT_sint32 iHeight = m_gc->tlu (getWindowHeight());
-	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));	
-	
+	UT_Rect pageRect(m_gc->tlu(7), m_gc->tlu(7), iWidth - m_gc->tlu(14), iHeight - m_gc->tlu(14));
+
 	painter.fillRect(GR_Graphics::CLR3D_Background, 0, 0, iWidth, iHeight);
-	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);	
-		
+	painter.clearArea(pageRect.left, pageRect.top, pageRect.width, pageRect.height);
+
 	UT_RGBColor tmpCol;
-	
+
 	UT_RGBColor black(0, 0, 0);
 	m_gc->setLineWidth(m_gc->tlu(1));
-	
+
 	int border = m_gc->tlu(20);
 	int cornerLength = m_gc->tlu(5);
 
+	const PP_PropertyVector & props = m_pBorderShading->getPropVector();
 //
 //  Draw the cell background (Shading)
 //
-	
-	const gchar * pszShadingColor	= NULL;
-	const gchar * pszShadingPattern = NULL;
-	m_pBorderShading->getPropVector().getProp(static_cast<const gchar *>("shading-pattern"), pszShadingPattern);
+	std::string shadingPattern;
 
-	if(pszShadingPattern && strcmp(pszShadingPattern, BORDER_SHADING_SHADING_DISABLE))
-	{
-		m_pBorderShading->getPropVector().getProp(static_cast<const gchar *>("shading-foreground-color"), pszShadingColor);
-		if (pszShadingColor && *pszShadingColor)
+	shadingPattern = PP_getAttribute("shading-pattern", props);
+
+	if(shadingPattern != BORDER_SHADING_SHADING_DISABLE) {
+		std::string shadingColor = PP_getAttribute("shading-foreground-color", props);
+		if (!shadingColor.empty())
 		{
-			UT_parseColor(pszShadingColor, tmpCol);
+			UT_parseColor(shadingColor.c_str(), tmpCol);
 			painter.fillRect(tmpCol, pageRect.left + border, pageRect.top + border, pageRect.width - 2*border, pageRect.height - 2*border);
 		}
 	}
@@ -626,9 +594,9 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 //
 //  Draw the cell corners
 //
-	
+
 	m_gc->setColor(UT_RGBColor(127,127,127));
-	
+
 	// top left corner
 	painter.drawLine(pageRect.left + border - cornerLength, pageRect.top + border,
 				   pageRect.left + border, pageRect.top + border);
@@ -656,28 +624,21 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 //
 //  Draw the cell borders
 //
-	
 	// top border
 	if (m_pBorderShading->getTopToggled())
 	{
-		const gchar * pszTopColor = NULL;
-		m_pBorderShading->getPropVector().getProp("top-color", pszTopColor);
-		if (pszTopColor)
-		{
-			UT_parseColor(pszTopColor, tmpCol);
+		const std::string topColor = PP_getAttribute("top-color", props);
+		if (!topColor.empty()) {
+			UT_parseColor(topColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
-		}
-		else
+		} else {
 			m_gc->setColor(black);
-		const gchar * pszTopThickness = NULL;
-		m_pBorderShading->getPropVector().getProp("top-thickness", pszTopThickness);
-		if(pszTopThickness)
-		{
-			UT_sint32 iTopThickness = UT_convertToLogicalUnits(pszTopThickness);
-			m_gc->setLineWidth(iTopThickness);
 		}
-		else
-		{
+		const std::string topThickness = PP_getAttribute("top-thickness", props);
+		if(!topThickness.empty()) {
+			UT_sint32 iTopThickness = UT_convertToLogicalUnits(topThickness.c_str());
+			m_gc->setLineWidth(iTopThickness);
+		} else {
 			m_gc->setLineWidth(m_gc->tlu(1));
 		}
 
@@ -688,24 +649,18 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 	// left border
 	if (m_pBorderShading->getLeftToggled())
 	{
-		const gchar * pszLeftColor = NULL;
-		m_pBorderShading->getPropVector().getProp("left-color", pszLeftColor);
-		if (pszLeftColor)
-		{
-			UT_parseColor(pszLeftColor, tmpCol);
+		const std::string leftColor = PP_getAttribute("left-color", props);
+		if (!leftColor.empty())	{
+			UT_parseColor(leftColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
-		}
-		else
+		} else {
 			m_gc->setColor(black);
-		const gchar * pszLeftThickness = NULL;
-		m_pBorderShading->getPropVector().getProp("left-thickness", pszLeftThickness);
-		if(pszLeftThickness)
-		{
-			UT_sint32 iLeftThickness = UT_convertToLogicalUnits(pszLeftThickness);
-			m_gc->setLineWidth(iLeftThickness);
 		}
-		else
-		{
+		const std::string leftThickness = PP_getAttribute("left-thickness", props);
+		if(!leftThickness.empty()) {
+			UT_sint32 iLeftThickness = UT_convertToLogicalUnits(leftThickness.c_str());
+			m_gc->setLineWidth(iLeftThickness);
+		} else {
 			m_gc->setLineWidth(m_gc->tlu(1));
 		}
 		painter.drawLine(pageRect.left + border, pageRect.top + border,
@@ -715,51 +670,39 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 	// right border
 	if (m_pBorderShading->getRightToggled())
 	{
-		const gchar * pszRightColor = NULL;
-		m_pBorderShading->getPropVector().getProp("right-color", pszRightColor);
-		if (pszRightColor)
-		{
-			UT_parseColor(pszRightColor, tmpCol);
+		const std::string rightColor = PP_getAttribute("right-color", props);
+		if (!rightColor.empty()) {
+			UT_parseColor(rightColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
-		}
-		else
+		} else {
 			m_gc->setColor(black);
-		const gchar * pszRightThickness = NULL;
-		m_pBorderShading->getPropVector().getProp("right-thickness", pszRightThickness);
-		if(pszRightThickness)
-		{
-			UT_sint32 iRightThickness = UT_convertToLogicalUnits(pszRightThickness);
-			m_gc->setLineWidth(iRightThickness);
 		}
-		else
-		{
+		const std::string rightThickness = PP_getAttribute("right-thickness", props);
+		if(!rightThickness.empty()) {
+			UT_sint32 iRightThickness = UT_convertToLogicalUnits(rightThickness.c_str());
+			m_gc->setLineWidth(iRightThickness);
+		} else {
 			m_gc->setLineWidth(m_gc->tlu(1));
 		}
 		painter.drawLine(pageRect.left + pageRect.width - border, pageRect.top + border,
 					   pageRect.left + pageRect.width - border, pageRect.top + pageRect.height - border);
 	}
-	
+
 	// bottom border
 	if (m_pBorderShading->getBottomToggled())
 	{
-		const gchar * pszBottomColor = NULL;
-		m_pBorderShading->getPropVector().getProp("bot-color", pszBottomColor);
-		if (pszBottomColor)
-		{
-			UT_parseColor(pszBottomColor, tmpCol);
+		const std::string bottomColor = PP_getAttribute("bot-color", props);
+		if (!bottomColor.empty()) {
+			UT_parseColor(bottomColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
-		}
-		else
+		} else {
 			m_gc->setColor(black);
-		const gchar * pszBotThickness = NULL;
-		m_pBorderShading->getPropVector().getProp("bot-thickness", pszBotThickness);
-		if(pszBotThickness)
-		{
-			UT_sint32 iBotThickness = UT_convertToLogicalUnits(pszBotThickness);
-			m_gc->setLineWidth(iBotThickness);
 		}
-		else
-		{
+		const std::string botThickness = PP_getAttribute("bot-thickness", props);
+		if(!botThickness.empty()) {
+			UT_sint32 iBotThickness = UT_convertToLogicalUnits(botThickness.c_str());
+			m_gc->setLineWidth(iBotThickness);
+		} else {
 			m_gc->setLineWidth(m_gc->tlu(1));
 		}
 		painter.drawLine(pageRect.left + border, pageRect.top + pageRect.height - border,

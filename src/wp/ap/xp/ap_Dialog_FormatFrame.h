@@ -26,11 +26,11 @@
 
 #include "ut_types.h"
 #include "ut_misc.h"
-#include "ut_PropVector.h"
 #include "xap_Frame.h"
 #include "xap_Dialog.h"
 #include "xav_View.h"
 #include "pt_Types.h"
+#include "pp_Property.h"
 #include "xap_Preview.h"
 #include "fv_View.h"
 #include "ie_imp.h"
@@ -112,7 +112,7 @@ public:
 	void								_createPreviewFromGC(GR_Graphics * gc,
 															 UT_uint32 width,
 															 UT_uint32 height);
-	UT_PropVector &						getPropVector() { return m_vecProps; }
+	PP_PropertyVector &					getPropVector() { return m_vecProps; }
 
 	GR_Image *                          getImage(void) { return m_pImage;}
 	FG_Graphic *                        getGraphic(void) { return m_pGraphic;}
@@ -120,9 +120,9 @@ public:
 	UT_RGBColor							m_borderColor;
 	UT_sint32							m_lineStyle;
 
-	UT_PropVector                           m_vecProps;
+	PP_PropertyVector                   m_vecProps;
 
-	void					setBGColor (UT_RGBColor clr);
+	void					setBGColor (const UT_RGBColor & clr);
 
 	const UT_RGBColor &		backgroundColor () const { return m_backgroundColor; }
 

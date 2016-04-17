@@ -21,7 +21,7 @@
 #include <gdk/gdk.h>
 #include "ut_locale.h"
 
-#include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_unixColor.h"
@@ -314,20 +314,20 @@ void AP_UnixDialog_Border_Shading::_setShadingEnable(bool enable)
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(m_wShadingEnable), static_cast<gboolean>(enable));
 }
 
-void AP_UnixDialog_Border_Shading::setBorderThicknessInGUI(UT_UTF8String & sThick)
+void AP_UnixDialog_Border_Shading::setBorderThicknessInGUI(const std::string & sThick)
 {
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border thickness in the GUI: %s \n", sThick.utf8_str()));
 
-	guint closest = _findClosestThickness(sThick.utf8_str());
+	guint closest = _findClosestThickness(sThick.c_str());
 	XAP_GtkSignalBlocker b(G_OBJECT(m_wBorderThickness),m_iBorderThicknessConnect);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wBorderThickness), closest);
 }
 
-void AP_UnixDialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
+void AP_UnixDialog_Border_Shading::setBorderStyleInGUI(const std::string & sStyle)
 {
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border style in the GUI: %s \n", sStyle.utf8_str()));
 
-	PP_PropertyMap::TypeLineStyle style = PP_PropertyMap::linestyle_type(sStyle.utf8_str());
+	PP_PropertyMap::TypeLineStyle style = PP_PropertyMap::linestyle_type(sStyle.c_str());
 	gint index = style - 1;
 
 	if (index >= 0)
@@ -337,7 +337,7 @@ void AP_UnixDialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
 	}
 }
 
-void AP_UnixDialog_Border_Shading::setBorderColorInGUI(UT_RGBColor clr)
+void AP_UnixDialog_Border_Shading::setBorderColorInGUI(const UT_RGBColor & clr)
 {
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
@@ -346,7 +346,7 @@ void AP_UnixDialog_Border_Shading::setBorderColorInGUI(UT_RGBColor clr)
 	gdk_rgba_free(color);
 }
 
-void AP_UnixDialog_Border_Shading::setShadingColorInGUI(UT_RGBColor clr)
+void AP_UnixDialog_Border_Shading::setShadingColorInGUI(const UT_RGBColor & clr)
 {
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
@@ -355,7 +355,7 @@ void AP_UnixDialog_Border_Shading::setShadingColorInGUI(UT_RGBColor clr)
 	gdk_rgba_free(color);
 }
 
-void AP_UnixDialog_Border_Shading::setShadingPatternInGUI(UT_UTF8String & sPattern)
+void AP_UnixDialog_Border_Shading::setShadingPatternInGUI(const std::string & sPattern)
 {
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading pattern in the GUI: %s \n", sPattern.utf8_str()));
 
@@ -364,11 +364,11 @@ void AP_UnixDialog_Border_Shading::setShadingPatternInGUI(UT_UTF8String & sPatte
 	_setShadingEnable(shading_enabled);
 }
 
-void AP_UnixDialog_Border_Shading::setShadingOffsetInGUI(UT_UTF8String & sOffset)
+void AP_UnixDialog_Border_Shading::setShadingOffsetInGUI(const std::string & sOffset)
 {
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading offset in the GUI: %s \n", sOffset.utf8_str()));
 
-	guint closest = _findClosestOffset(sOffset.utf8_str());
+	guint closest = _findClosestOffset(sOffset.c_str());
 	XAP_GtkSignalBlocker b(G_OBJECT(m_wShadingOffset),m_iShadingOffsetConnect);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(m_wShadingOffset), closest);
 }
@@ -380,10 +380,10 @@ void AP_UnixDialog_Border_Shading::event_BorderThicknessChanged(void)
 		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wBorderThickness));
 		double thickness = m_dThickness[history];
 
-		UT_UTF8String sThickness;
+		std::string sThickness;
 		{
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
-			sThickness = UT_UTF8String_sprintf("%fin",thickness);
+			sThickness = UT_std_string_sprintf("%fin",thickness);
 		}
 		setBorderThickness(sThickness);
 		event_previewExposed();
@@ -398,8 +398,7 @@ void AP_UnixDialog_Border_Shading::event_BorderStyleChanged(void)
 
 		if (index >= 0 && index < BORDER_SHADING_NUMOFSTYLES)
 		{
-			UT_UTF8String style_utf8 = sBorderStyle[index];
-			setBorderStyle(style_utf8);
+			setBorderStyle(sBorderStyle[index]);
 			event_previewExposed();
 		}
 	}
@@ -412,10 +411,10 @@ void AP_UnixDialog_Border_Shading::event_ShadingOffsetChanged(void)
 		gint history = gtk_combo_box_get_active(GTK_COMBO_BOX(m_wShadingOffset));
 		double offset = m_dShadingOffset[history];
 
-		UT_UTF8String sOffset;
+		std::string sOffset;
 		{
 			UT_LocaleTransactor t(LC_NUMERIC, "C");
-			sOffset = UT_UTF8String_sprintf("%fin",offset);
+			sOffset = UT_std_string_sprintf("%fin",offset);
 		}
 
 		setShadingOffset(sOffset);
@@ -429,8 +428,7 @@ void AP_UnixDialog_Border_Shading::event_shadingPatternChange(void)
 
 	// 8/8/2010 Maleesh - TODO: Change this, when there are more shading patterns.
 	gboolean bEnable = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(m_wShadingEnable));
-	UT_UTF8String pattern_utf8 = bEnable ? BORDER_SHADING_SHADING_ENABLE : BORDER_SHADING_SHADING_DISABLE;
-	setShadingPattern(pattern_utf8);
+	setShadingPattern(bEnable ? BORDER_SHADING_SHADING_ENABLE : BORDER_SHADING_SHADING_DISABLE);
 	_setShadingEnable(bEnable);
 }
 

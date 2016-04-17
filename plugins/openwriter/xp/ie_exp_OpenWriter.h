@@ -40,7 +40,6 @@
 #include "ut_vector.h"
 #include "ut_stack.h"
 #include "ut_assert.h"
-#include "ut_PropVector.h"
 
 #include <gsf/gsf-output.h>
 

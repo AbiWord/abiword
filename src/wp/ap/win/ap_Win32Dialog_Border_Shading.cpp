@@ -345,8 +345,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				{
 					UT_Win32LocaleString thickness;
 					getComboTextItem(AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS, nSelected, thickness);
-					UT_UTF8String thicknessUTF8 = thickness.utf8_str ();
-					setBorderThickness(thicknessUTF8);     
+					setBorderThickness(thickness.utf8_str().utf8_str());
 
 					/*Force redraw*/
 					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR), NULL, FALSE);
@@ -360,14 +359,13 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 		{
 			if (wNotifyCode == CBN_SELCHANGE)                       
 			{
-				int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);  
+				int nSelected = getComboSelectedIndex (AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE);
 
 				if (nSelected != CB_ERR && nSelected >= 0 && nSelected <= BORDER_SHADING_NUMOFSTYLES)
 				{
-					// 8/7/2010 Maleesh - Kill the focus of the combobox. Because selected 
+					// Kill the focus of the combobox. Because selected 
 					// images of a combobox-ex doesn't look clear/good. 
-					UT_UTF8String thicknesUTF8 = sBorderStyle_Border_Shading[nSelected];
-					setBorderStyle(thicknesUTF8);                                        
+					setBorderStyle(sBorderStyle_Border_Shading[nSelected]);
 
 					SetFocus(m_hDlg); 
 					event_previewExposed();	
@@ -404,9 +402,8 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 			bool bChecked;			
 			bChecked = (bool)(IsDlgButtonChecked(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_ENABLE)==BST_CHECKED);							
 			
-			// 8/8/2010 Maleesh - TODO: Change this, when there are more shading patterns.
-			UT_UTF8String pattern_utf8 = bChecked ? BORDER_SHADING_SHADING_ENABLE : BORDER_SHADING_SHADING_DISABLE;
-			setShadingPattern(pattern_utf8);
+			// TODO: Change this, when there are more shading patterns.
+			setShadingPattern(bChecked ? BORDER_SHADING_SHADING_ENABLE : BORDER_SHADING_SHADING_DISABLE);
 			setShadingEnable(bChecked);
 
 			return 1;
@@ -422,8 +419,7 @@ BOOL AP_Win32Dialog_Border_Shading::_onCommand(HWND hWnd, WPARAM wParam, LPARAM 
 				{
 					UT_Win32LocaleString offset;
 					getComboTextItem(AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET, nSelected, offset);
-					UT_UTF8String tempOffset(offset.utf8_str ());
-					setShadingOffset(tempOffset);					                                     
+					setShadingOffset(offset.utf8_str().utf8_str());
 
 					/*Force redraw*/
 					InvalidateRect(GetDlgItem(hWnd, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
@@ -457,7 +453,7 @@ void AP_Win32Dialog_Border_Shading::event_previewExposed(void)
 		m_pBorderShadingPreview->draw();
 }
 
-void AP_Win32Dialog_Border_Shading::setShadingColorInGUI(UT_RGBColor clr)
+void AP_Win32Dialog_Border_Shading::setShadingColorInGUI(const UT_RGBColor & clr)
 {
 	UT_DEBUGMSG(("Maleesh =============== Setup the shading color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
@@ -466,46 +462,46 @@ void AP_Win32Dialog_Border_Shading::setShadingColorInGUI(UT_RGBColor clr)
  	InvalidateRect(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_SHADING_COLOR), NULL, FALSE);
 }
 
-void AP_Win32Dialog_Border_Shading::setShadingPatternInGUI(UT_UTF8String & sPattern)
+void AP_Win32Dialog_Border_Shading::setShadingPatternInGUI(const std::string & sPattern)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the shading pattern in the GUI: %s \n", sPattern.utf8_str()));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading pattern in the GUI: %s \n", sPattern.c_str()));
 
-	// 8/8/2010 Maleesh - TODO: Change this, when there are more shading patterns.
-	bool shading_enabled = !(sPattern == BORDER_SHADING_SHADING_DISABLE);
+	// TODO: Change this, when there are more shading patterns.
+	bool shading_enabled = (sPattern != BORDER_SHADING_SHADING_DISABLE);
 	setShadingEnable(shading_enabled);
 }
 
-void AP_Win32Dialog_Border_Shading::setShadingOffsetInGUI(UT_UTF8String & sOffset)
+void AP_Win32Dialog_Border_Shading::setShadingOffsetInGUI(const std::string & sOffset)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the shading offset in the GUI: %s \n", sOffset.utf8_str()));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading offset in the GUI: %s \n", sOffset.c_str()));
 
-	guint closest = _findClosestOffset(sOffset.utf8_str());
+	guint closest = _findClosestOffset(sOffset.c_str());
 	SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_SHADING_OFFSET), CB_SETCURSEL, WPARAM(closest), 0);
 }
 
-void AP_Win32Dialog_Border_Shading::setBorderColorInGUI(UT_RGBColor clr)
+void AP_Win32Dialog_Border_Shading::setBorderColorInGUI(const UT_RGBColor & clr)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the border color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
 	m_borderButton.setColour(RGB(clr.m_red,clr.m_grn,clr.m_blu));
  	/* force redraw */
  	InvalidateRect(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_BTN_BORDER_COLOR), NULL, FALSE);
 }
 
-void AP_Win32Dialog_Border_Shading::setBorderThicknessInGUI(UT_UTF8String & sThick)
+void AP_Win32Dialog_Border_Shading::setBorderThicknessInGUI(const std::string & sThick)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the border thickness in the GUI: %s \n", sThick.utf8_str()));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border thickness in the GUI: %s \n", sThick.c_str()));
 
-	guint closest = _findClosestThickness(sThick.utf8_str());
+	guint closest = _findClosestThickness(sThick.c_str());
 	SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_THICKNESS), CB_SETCURSEL, WPARAM(closest), 0);
 }
 
-void AP_Win32Dialog_Border_Shading::setBorderStyleInGUI(UT_UTF8String & sStyle)
+void AP_Win32Dialog_Border_Shading::setBorderStyleInGUI(const std::string & sStyle)
 {
-	UT_DEBUGMSG(("Maleesh =============== Setup the border style in the GUI: %s \n", sStyle.utf8_str()));
+	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border style in the GUI: %s \n", sStyle.c_str()));
 
-	PP_PropertyMap::TypeLineStyle style = PP_PropertyMap::linestyle_type(sStyle.utf8_str());
-	gint index = (gint)style - 1;
+	PP_PropertyMap::TypeLineStyle style = PP_PropertyMap::linestyle_type(sStyle.c_str());
+	gint index = (guint)style - 1;
 
 	if (index >= 0)
 		SendMessageA(GetDlgItem(m_hDlg, AP_RID_DIALOG_BORDERSHADING_COMBO_BORDER_STYLE), CB_SETCURSEL, WPARAM(index), 0);
