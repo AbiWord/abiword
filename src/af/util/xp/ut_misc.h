@@ -80,15 +80,6 @@ ABI_EXPORT const gchar* UT_getAttribute(const gchar* name,
                                         const gchar** atts);
 
 /**
- * Like UT_getAttribute(name,atts) but return the def value
- * if there is no attibute name in atts.
- */
-ABI_EXPORT const gchar* UT_getAttribute( const gchar* name,
-                                         const gchar** atts, const gchar* def );
-
-
-
-/**
  * s is not null and is not a string that is "0" or false or something
  * sane that indicates "false".
  */
@@ -242,17 +233,6 @@ class ABI_EXPORT UT_VersionInfo
 	UT_uint32 m_iNano;
 	std::string m_versString;
 };
-
-/*
-   returns a copy of props which has all values (not names!) set to NULL; the caller must delete[] the returned pointer
-   but not the contents
-
-   this function reuses the property names from the original string, so if those are freed, the copy
-   too becomes invalid !!!
-*/
-const gchar ** UT_setPropsToNothing(const gchar ** props);
-
-const gchar ** UT_setPropsToValue(const gchar ** props, const gchar * value);
 
 ABI_EXPORT const gchar ** UT_splitPropsToArray(gchar * props);
 

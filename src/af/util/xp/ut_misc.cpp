@@ -293,13 +293,6 @@ gchar ** UT_cloneAndDecodeAttributes (const gchar ** attrs)
     return attrs2;
 }
 
-const gchar* UT_getAttribute( const gchar* name,
-                              const gchar** atts, const gchar* def )
-{
-    const gchar* p = UT_getAttribute ( name, atts );
-    return p ? p : def;
-}
-
 const gchar* UT_getAttribute(const gchar* name, const gchar** atts)
 {
 	UT_return_val_if_fail( atts, NULL );
@@ -478,60 +471,6 @@ void UT_VersionInfo::makeVersString()
 	m_versString = UT_std_string_sprintf("%d.%d.%d.%d",
 					     m_iMajor, m_iMinor,
 					     m_iMicro, m_iNano);
-}
-
-const gchar ** UT_setPropsToNothing(const gchar ** props)
-{
-	if(!props)
-		return NULL;
-	
-	const gchar ** props2;
-
-	UT_uint32 iCount  = 0;
-									
-	while(props[iCount])
-		iCount += 2;
-
-									
-	props2 = new const gchar * [iCount+1];
-
-	UT_uint32 i;
-	for(i = 0; i < iCount; i += 2)
-	{
-		props2[i] = props[i];
-		props2[i+1] = NULL;
-	}
-
-	props2[i] = NULL;
-
-	return props2;
-}
-
-const gchar ** UT_setPropsToValue(const gchar ** props, const gchar * value)
-{
-	if(!props)
-		return NULL;
-	
-	const gchar ** props2;
-
-	UT_uint32 iCount  = 0;
-									
-	while(props[iCount])
-		iCount += 2;
-
-									
-	props2 = new const gchar * [iCount+1];
-
-	UT_uint32 i;
-	for(i = 0; i < iCount; i += 2)
-	{
-		props2[i] = props[i];
-		props2[i+1] = value;
-	}
-
-	props2[i] = NULL;
-
-	return props2;
 }
 
 /*!
