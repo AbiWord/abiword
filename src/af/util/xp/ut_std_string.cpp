@@ -82,7 +82,30 @@ std::string UT_escapeXML(const std::string &s)
   return result;
 }
 
- 
+std::string UT_decodeXML(const std::string &s)
+{
+	if (s.empty()) {
+		return s;
+    }
+
+    std::string out = s;
+    std::string::size_type idx = 0;
+    while((idx = out.find('&', idx)) != std::string::npos) {
+        if (!out.compare(idx + 1, 4, "amp;")) {
+            out.replace(idx, 5, "&");
+        } else if (!out.compare(idx + 1, 3, "lt;")) {
+            out.replace(idx, 4, "<");
+        } else if (!out.compare(idx + 1, 3, "gt;")) {
+            out.replace(idx, 4, ">");
+        } else if (!out.compare(idx + 1, 5, "quot;")) {
+            out.replace(idx, 6, "\"");
+        }
+        idx++;
+    }
+    return out;
+}
+
+
 std::string& UT_std_string_vprintf (std::string & inStr, const char *format,
                                     va_list      args1)
 {

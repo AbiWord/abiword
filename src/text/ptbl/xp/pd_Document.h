@@ -601,7 +601,7 @@ PT_AttrPropIndex            getAPIFromSOH(pf_Frag_Object* odh);
 	bool					enumLists(UT_uint32 k, fl_AutoNum ** pAutoNum);
 	UT_uint32				getListsCount(void) const;
 	void					addList(fl_AutoNum * pAutoNum);
-	bool					appendList(const gchar ** attributes);
+	bool					appendList(const PP_PropertyVector & attributes);
 	bool					fixListHierarchy(void);
 	void					removeList(fl_AutoNum * pAutoNum,pf_Frag_Strux* sdh );
 	void					listUpdate(pf_Frag_Strux* sdh);

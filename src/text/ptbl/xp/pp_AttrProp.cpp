@@ -29,6 +29,7 @@
 #include "ut_assert.h"
 #include "ut_debugmsg.h"
 #include "ut_string.h"
+#include "ut_std_string.h"
 #include "ut_string_class.h"
 #include "ut_vector.h"
 
@@ -1359,14 +1360,32 @@ PP_PropertyVector PP_std_copyProps(const gchar ** props)
 		return props2;
 
 	UT_uint32 i;
-	for(i = 0; props[i]; i += 2)
-	{
+	for(i = 0; props[i]; i += 2) {
 		props2.push_back(props[i]);
 		const char *value = props[i + 1];
 		props2.push_back(value ? value : "");
 	}
 
 	return props2;
+}
+
+PP_PropertyVector PP_cloneAndDecodeAttributes(const gchar ** attrs)
+{
+	PP_PropertyVector props;
+	if (!attrs) {
+		return props;
+	}
+
+	const gchar** p = attrs;
+	while (*p) {
+		props.push_back(UT_decodeXML(*p));
+		++p;
+	}
+
+	if (props.size() % 2) {
+		props.push_back("");
+	}
+	return props;
 }
 
 PP_PropertyVector PP_std_setPropsToValue(const PP_PropertyVector & props,
@@ -1398,7 +1417,11 @@ bool PP_hasAttribute(const char* name, const PP_PropertyVector & atts)
 	return false;
 }
 
-std::string PP_getAttribute(const char* name, const PP_PropertyVector & atts)
+/// _EMPTY_STRING. a const we return a reference to.
+static const std::string _EMPTY_STRING;
+
+const std::string &
+PP_getAttribute(const char* name, const PP_PropertyVector & atts)
 {
 	std::size_t i = 0;
 	for (auto iter = atts.cbegin(); iter != atts.cend(); ++iter, ++i) {
@@ -1410,7 +1433,7 @@ std::string PP_getAttribute(const char* name, const PP_PropertyVector & atts)
 			}
 		}
 	}
-	return "";
+	return _EMPTY_STRING;
 }
 
 bool PP_setAttribute(const char* name, const std::string & value, PP_PropertyVector & atts)

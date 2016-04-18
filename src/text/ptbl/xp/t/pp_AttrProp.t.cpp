@@ -144,6 +144,28 @@ TFTEST_MAIN("PP_removeAttribute")
     TFPASSEQ(attr.size(), 4);
 }
 
+TFTEST_MAIN("PP_cloneAndDecodeAttributes")
+{
+    const char *attrs[] = {
+        "inline", "&amp; &lt; &gt; &quot;",
+        "props", "abc: d; efg: hij",
+        NULL, NULL
+    };
+    PP_PropertyVector props = PP_cloneAndDecodeAttributes(attrs);
+
+    TFPASSEQ(props.size(), 4);
+    TFPASS(props[1] == "& < > \"");
+    TFPASS(props[2] == "props");
+
+    const char *attr2[] = {
+        "inline", "&amp; &lt; &gt; &quot;",
+        "props", NULL
+    };
+    props = PP_cloneAndDecodeAttributes(attr2);
+    TFPASSEQ(props.size(), 4);
+    TFPASS(props[3] == "");
+}
+
 TFTEST_MAIN("PP_std_setPropsToValue")
 {
     PP_PropertyVector attr;

@@ -1310,25 +1310,19 @@ public:
       }
     else if (!strcmp(name, "text:ordered-list") || !strcmp(name, "text:unordered-list"))
       {
-	const gchar * list_atts[15];
-	UT_uint32 iOffset = 0;
+        PP_PropertyVector list_atts = {
+          // list type
+          "type", "",
+          "id", "0"
+        };
+        if (!strcmp(name, "text:ordered-list")) {
+          list_atts[3] = "Numbered List";
+        } else {
+          list_atts[3] = "Bullet List";
+        }
+        getDocument()->appendList(list_atts);
 
-	// list type
-	list_atts[iOffset++] = "type";
-	if (!strcmp(name, "text:ordered-list"))
-	  list_atts[iOffset++] = "Numbered List";
-	else
-	  list_atts[iOffset++] = "Bullet List";
-
-	list_atts[iOffset++] = "id";
-	list_atts[iOffset++] = "0";
-
-	// NULL
-	list_atts[iOffset++] = 0;  
-
-	getDocument()->appendList(list_atts);
-
-	UT_DEBUGMSG(("DOM: appended a list\n"));
+        UT_DEBUGMSG(("DOM: appended a list\n"));
       }
     else if (!strcmp(name, "style:style"))
       {

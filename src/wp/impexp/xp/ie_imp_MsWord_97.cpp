@@ -2920,15 +2920,12 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 	m_paraProps.clear();
 	m_paraStyle.clear();
 	_generateParaProps(m_paraProps, apap, ps);
-	
-	//props, level, listid, parentid, style, NULL
-	const gchar * propsArray[11];
 
 	/* lists */
 	UT_uint32 myListId = 0;
 	UT_uint32 iAWListId = UT_UID_INVALID;
-	UT_String szListId, szParentId, szLevel, szStartValue, szNumberProps;
-	
+	std::string sLevel, sListId, sParentId;
+
 	// all lists have ilfo set; some lists can be 'customised' by
 	// having the number field removed (see bug 3622) -- they are
 	// still lists in Word, but do not look like it, and we will not
@@ -3020,22 +3017,10 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 			m_vListIdMap.addItem(myListId);
 			m_vListIdMap.addItem(iAWListId);
 		}
-		
-		
-		const gchar * list_atts[15];
-		UT_uint32 iOffset = 0;
-		UT_String propBuffer;
-		
-		// list id number
-		list_atts[iOffset++] = "id";
-		UT_String_sprintf(propBuffer, "%d", iAWListId);
-		szListId = propBuffer;
-		list_atts[iOffset++] = szListId.c_str();
 
+		UT_String propBuffer;
 
 		// parent id
-		list_atts[iOffset++] = "parentid";
-
 		// we will search backward our list vector for the first entry
 		// that has a lower level than we and that will be our parent
 		UT_uint32 myParentID = 0;
@@ -3048,34 +3033,13 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 				break;
 			}
 		}
-		UT_String_sprintf(propBuffer, "%d", myParentID);
-		szParentId = propBuffer;
-		list_atts[iOffset++] = szParentId.c_str();
-
-		// list type
-		list_atts[iOffset++] = "type";
-		list_atts[iOffset++] = s_mapDocToAbiListId (static_cast<MSWordListIdType>(apap->linfo.format));
-
-		// start value
-		list_atts[iOffset++] = "start-value";
-		UT_String_sprintf(propBuffer, "%d", apap->linfo.start);
-		szStartValue = propBuffer;
-		list_atts[iOffset++] = szStartValue.c_str();
 
 		// list delimiter
 		UT_UTF8String sDelim;
 		s_mapDocToAbiListDelim (apap->linfo.numberstr,apap->linfo.numberstr_size,sDelim);
-		list_atts[iOffset++] = "list-delim";
-
 		char * t = s_stripDangerousChars(sDelim.utf8_str());
-		UT_String sDlm = t;
+		std::string sDlm = t;
 		FREEP(t);
-		list_atts[iOffset++] = sDlm.c_str();
-
-		list_atts[iOffset++] = "level";
-		UT_String_sprintf(propBuffer, "%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
-		szLevel = propBuffer;
-		list_atts[iOffset++] = szLevel.c_str();
 
 		// generate character props for the number
 		// TODO -- the properties represented by apap->linfo.chp need
@@ -3085,13 +3049,22 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 		// somehow down to the number field (may need a dedicated
 		// _generateListCharProps() for this
 		// Tomas, May 12, 2003
+		UT_String szNumberProps;
 		_generateCharProps(szNumberProps, &apap->linfo.chp, ps);
-		list_atts[iOffset++] = "props";
-		list_atts[iOffset++] = szNumberProps.c_str();
-		
-		// NULL
-		list_atts[iOffset++] = 0;
-		UT_return_val_if_fail( iOffset <=  sizeof(list_atts)/sizeof(gchar *), 1 );
+
+		std::string startValue = UT_std_string_sprintf("%d", apap->linfo.start);
+		sLevel = UT_std_string_sprintf("%d", apap->ilvl + 1); // Word level starts at 0, Abi's at 1
+		sListId = UT_std_string_sprintf("%d", iAWListId);
+		sParentId = UT_std_string_sprintf("%d", myParentID);
+		const PP_PropertyVector list_atts = {
+			"id", sListId,
+			"parentid", sParentId,
+			"type", s_mapDocToAbiListId (static_cast<MSWordListIdType>(apap->linfo.format)),
+			"start-value", startValue,
+			"list-delim", std::move(sDlm),
+			"level", sLevel,
+			"props", szNumberProps.c_str()
+		};
 
 		// now add this to our vector of lists
 		ListIdLevelPair * llp = new ListIdLevelPair;
@@ -3110,7 +3083,7 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 		//
 		m_paraProps[m_paraProps.size() - 1] = ';';
 		m_paraProps += "start-value:";
-		m_paraProps += szStartValue;
+		m_paraProps += startValue;
 		m_paraProps += ";";
 
 		// list style
@@ -3124,20 +3097,19 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 	} // end of list-related code
 
  	// props
-	UT_uint32 i = 0;
-	propsArray[i++] = static_cast<const gchar *>("props");
-	propsArray[i++] = static_cast<const gchar *>(m_paraProps.c_str());
+	PP_PropertyVector propsArray = {
+		"props", m_paraProps.c_str()
+	};
 
-	
 	// level, or 0 for default, normal level
 	if (myListId > 0)
 	{
-		propsArray[i++] = "level";
-		propsArray[i++] = szLevel.c_str();
-		propsArray[i++] = "listid";
-		propsArray[i++] = szListId.c_str();
-		propsArray[i++] = "parentid";
-		propsArray[i++] = szParentId.c_str();
+		propsArray.push_back("level");
+		propsArray.push_back(sLevel);
+		propsArray.push_back("listid");
+		propsArray.push_back(sListId);
+		propsArray.push_back("parentid");
+		propsArray.push_back(sParentId);
 	}
 
 	// handle style
@@ -3151,30 +3123,27 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 
 		if(apap->istd != istdNil && apap->istd < iCount)
 		{
-			propsArray[i++] = "style";
-			
+			propsArray.push_back("style");
+
 			char * t = NULL;
 			const gchar * pName = NULL;
 			if(pSTD)
 				pName = s_translateStyleId(pSTD[apap->istd].sti);
-		
+
 			if(pName)
 			{
 				m_paraStyle = pName;
 			}
 			else if(pSTD)
 			{
-				m_paraStyle = t = s_convert_to_utf8(ps,pSTD[apap->istd].xstzName);
+				t = s_convert_to_utf8(ps,pSTD[apap->istd].xstzName);
+				m_paraStyle = t;
 			}
 
 			FREEP(t);
-			propsArray[i++] = m_paraStyle.c_str();
+			propsArray.push_back(m_paraStyle.c_str());
 		}
-		
 	}
-
-	// NULL
-	propsArray[i] = 0;
 
 	if (!m_bInSect && !bDoNotInsertStrux)
 	{
@@ -3187,15 +3156,15 @@ int IE_Imp_MsWord_97::_beginPara (wvParseStruct *ps, UT_uint32 /*tag*/,
 	if(!bDoNotInsertStrux)
 	{
 		xxx_UT_DEBUGMSG(("_beginPara: pos %d [text ends %d]\n", ps->currentcp, m_iFootnotesStart));
-		
-		if (!_appendStrux(PTX_Block, PP_std_copyProps(&propsArray[0])))
+
+		if (!_appendStrux(PTX_Block, propsArray))
 		{
 			UT_DEBUGMSG(("DOM: error appending paragraph block\n"));
 			return 1;
 		}
 		m_bInPara = true;
 	}
-	
+
 	if (myListId > 0 && !bDoNotInsertStrux)
 	  {
 		// TODO: honor more props

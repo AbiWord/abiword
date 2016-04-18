@@ -420,33 +420,23 @@ UT_Error OXML_List::addToPT(PD_Document * pDocument)
 {
 	UT_Error err = UT_ERROR;
 
-	const gchar* ppAttr[13];
-
-	std::string listId = UT_std_string_sprintf("%u", id);
-	std::string parentListId = UT_std_string_sprintf("%u", parentId);
-	std::string listType = UT_std_string_sprintf("%u", type);
-	std::string listStartVal = UT_std_string_sprintf("%u", startValue);
-	std::string listDelim("%L.");
 	std::string listDecimal(".");
-	if(decimal.compare(""))
+	if(decimal.compare("")) {
 		listDecimal = decimal;
+	}
 
-	ppAttr[0] = "id";
-	ppAttr[1] = listId.c_str();
-	ppAttr[2] = "parentid";
-	ppAttr[3] = parentListId.c_str();
-	ppAttr[4] = "type";
-	ppAttr[5] = listType.c_str();
-	ppAttr[6] = "start-value";
-	ppAttr[7] = listStartVal.c_str();
-	ppAttr[8] = "list-delim";
-	ppAttr[9] = listDelim.c_str();
-	ppAttr[10] = "list-decimal";
-	ppAttr[11] = listDecimal.c_str();
-	ppAttr[12] = 0;
-    
-	if (pDocument->appendList(ppAttr))
+	const PP_PropertyVector ppAttr = {
+		"id", UT_std_string_sprintf("%u", id),
+		"parentid", UT_std_string_sprintf("%u", parentId),
+		"type", UT_std_string_sprintf("%u", type),
+		"start-value", UT_std_string_sprintf("%u", startValue),
+		"list-delim", "%L.",
+		"list-decimal",	std::move(listDecimal)
+	};
+
+	if (pDocument->appendList(ppAttr)) {
 		err = UT_OK;
+	}
 
 	return err;
 }

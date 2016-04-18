@@ -178,23 +178,16 @@ void ODi_ListLevelStyle::setAbiListID(UT_uint32 abiListID) {
  * list level style.
  */
 void ODi_ListLevelStyle::defineAbiList(PD_Document* pDocument) {
-    const gchar* ppAttr[13];
-    
-    ppAttr[0] = "id";
-    ppAttr[1] = m_abiListID.c_str();
-    ppAttr[2] = "parentid";
-    ppAttr[3] = m_abiListParentID.c_str();
-    ppAttr[4] = "type";
-    ppAttr[5] = m_abiListType.c_str();
-    ppAttr[6] = "start-value";
-    ppAttr[7] = m_abiListStartValue.c_str();
-    ppAttr[8] = "list-delim";
-    ppAttr[9] = m_abiListListDelim.c_str();
-    ppAttr[10] = "list-decimal";
-    ppAttr[11] = m_abiListListDecimal.c_str();
-    ppAttr[12] = 0;
-    
-    pDocument->appendList(ppAttr);
+  const PP_PropertyVector ppAttr = {
+    "id", m_abiListID,
+    "parentid", m_abiListParentID,
+    "type", m_abiListType,
+    "start-value", m_abiListStartValue,
+    "list-delim", m_abiListListDelim,
+    "list-decimal", m_abiListListDecimal
+  };
+
+  pDocument->appendList(ppAttr);
 }
 
 

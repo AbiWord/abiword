@@ -31,12 +31,15 @@ TFTEST_MAIN("xml_string")
 
   std::string s2 = UT_escapeXML(s);
   TFPASS(!s2.empty());
-  printf("%s\n", s2.c_str());
   TFPASS(s2 == "&lt;foobar = &amp; &quot;&gt;");
 
   UT_UTF8String utf8(s);
   TFPASS(utf8 == s);
   TFPASS(s2 == utf8.escapeXML());
+
+  std::string s3 = UT_decodeXML(s2);
+  TFPASS(s3 == s);
+  TFPASS(s3 == utf8.decodeXML());
 }
 
 TFTEST_MAIN("string utilities")

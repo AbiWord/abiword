@@ -1,5 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
-
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  *
@@ -332,9 +331,8 @@ static struct xmlToIdMapping s_Tokens[] =
 void IE_Imp_AbiWord_1::startElement(const gchar *name,
 									const gchar **attributes)
 {
-	const gchar ** atts =
-		(const gchar **)UT_cloneAndDecodeAttributes (attributes);
-	
+	PP_PropertyVector atts = PP_cloneAndDecodeAttributes (attributes);
+
 	xxx_UT_DEBUGMSG(("startElement: %s\n", name));
 
 	X_EatIfAlreadyError();	// xml parser keeps running until buffer consumed
@@ -345,7 +343,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 	// but the two style tags and the doc tag ...
 	if(getLoadStylesOnly() &&
 	   tokenIndex != TT_STYLESECTION && tokenIndex != TT_STYLE && tokenIndex != TT_DOCUMENT)
-		goto cleanup;
+		return;
 
 	switch (tokenIndex)
 	{
@@ -353,49 +351,43 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		X_VerifyParseState(_PS_Init);
 		m_parseState = _PS_Doc;
 
-		if(!isClipboard() && (!getLoadStylesOnly() || getLoadDocProps()))
-		{
-			X_CheckError(getDoc()->setAttrProp(PP_std_copyProps(atts)));
+		if(!isClipboard() && (!getLoadStylesOnly() || getLoadDocProps())) {
+			X_CheckError(getDoc()->setAttrProp(atts));
 		}
-		goto cleanup;
+		return;
 
 	case TT_SECTION:
 	{
 		X_VerifyParseState(_PS_Doc);
-		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("id", atts));
+		const std::string & sId = PP_getAttribute("id", atts);
 		bool bOK = true;
-		if(pszId)
-		{
-			UT_uint32 id = atoi(pszId);
-			getDoc()->setMinUID(UT_UniqueId::HeaderFtr, id+1);
-			bOK = getDoc()->verifySectionID(pszId);
+		if(!sId.empty()) {
+			UT_uint32 id = stoi(sId);
+			getDoc()->setMinUID(UT_UniqueId::HeaderFtr, id + 1);
+			bOK = getDoc()->verifySectionID(sId.c_str());
 		}
-		if(bOK)
-		{
+		if(bOK)	{
 		    m_parseState = _PS_Sec;
 		    m_bWroteSection = true;
-		    X_CheckError(appendStrux(PTX_Section, PP_std_copyProps(atts)));
-		    goto cleanup;
-		}
-		else
-		{
+		    X_CheckError(appendStrux(PTX_Section, atts));
+		    return;
+        } else {
 //
 // OK this is a header/footer with an id without a matching section. Fix this
 // now.
 //
-			const gchar * pszType = static_cast<const gchar*>(_getXMLPropValue("type", atts));
-			if(pszType)
-			{
+			const std::string & sType = PP_getAttribute("type", atts);
+			if(!sType.empty()) {
 				pf_Frag_Strux* sdh = getDoc()->getLastSectionMutableSDH();
-				getDoc()->changeStruxAttsNoUpdate(sdh,pszType,pszId);
+				getDoc()->changeStruxAttsNoUpdate(sdh, sType.c_str(), sId.c_str());
 				m_parseState = _PS_Sec;
 				m_bWroteSection = true;
-				X_CheckError(appendStrux(PTX_Section, PP_std_copyProps(atts)));
-				goto cleanup;
+				X_CheckError(appendStrux(PTX_Section, atts));
+				return;
 			}
 			m_error = UT_IE_SKIPINVALID;
 		    X_EatIfAlreadyError();
-		    goto cleanup;
+		    return;
 		}
 	}
 	case TT_FOOTNOTE:
@@ -410,18 +402,17 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 		// Need to set the min Unique id now.
 
-		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("footnote-id", atts));
+		const std::string & sId = PP_getAttribute("footnote-id", atts);
 		UT_DebugOnly<bool> bOK = true;
-		if(pszId)
-		{
-			UT_uint32 id = atoi(pszId);
-			bOK = getDoc()->setMinUID(UT_UniqueId::Footnote, id+1);
+		if(!sId.empty()) {
+			UT_uint32 id = stoi(sId);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Footnote, id + 1);
 			UT_ASSERT(bOK);
 		}
 
-		X_CheckError(appendStrux(PTX_SectionFootnote, PP_std_copyProps(atts)));
+		X_CheckError(appendStrux(PTX_SectionFootnote, atts));
 		xxx_UT_DEBUGMSG(("FInished Append footnote strux \n"));
-		goto cleanup;
+		return;
 	}
 	case TT_ANNOTATE:
 	{
@@ -434,17 +425,16 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
         // a footnote reference field.
 
 		// Do we Need to set the min Unique id now???
-		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("annotation-id", atts));
+		const std::string & sId = PP_getAttribute("annotation-id", atts);
 		UT_DebugOnly<bool> bOK = true;
-		if(pszId)
-		{
-			UT_uint32 id = atoi(pszId);
-			bOK = getDoc()->setMinUID(UT_UniqueId::Annotation, id+1);
+		if(!sId.empty()) {
+			UT_uint32 id = stoi(sId);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Annotation, id + 1);
 			UT_ASSERT(bOK);
 		}
-		X_CheckError(appendStrux(PTX_SectionAnnotation, PP_std_copyProps(atts)));
+		X_CheckError(appendStrux(PTX_SectionAnnotation, atts));
 		UT_DEBUGMSG(("FInished Append Annotation strux \n"));
-		goto cleanup;
+		return;
 	}
 	case TT_ENDNOTE:
 	{
@@ -455,21 +445,20 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 		// Need to set the min Unique id now.
 
-		const gchar * pszId = static_cast<const gchar*>(_getXMLPropValue("endnote-id", atts));
+		const std::string & sId = PP_getAttribute("endnote-id", atts);
 		UT_DebugOnly<bool> bOK = true;
-		if(pszId)
-		{
-			UT_uint32 id = atoi(pszId);
-			bOK = getDoc()->setMinUID(UT_UniqueId::Endnote, id+1);
+		if(!sId.empty()) {
+			UT_uint32 id = stoi(sId);
+			bOK = getDoc()->setMinUID(UT_UniqueId::Endnote, id + 1);
 			UT_ASSERT(bOK);
 		}
 
 		// Don't check for id of the endnote strux. It should match the
 		// id of the endnote reference.
 
-		X_CheckError(appendStrux(PTX_SectionEndnote, PP_std_copyProps(atts)));
+		X_CheckError(appendStrux(PTX_SectionEndnote, atts));
 		xxx_UT_DEBUGMSG(("Finished Append Endnote strux \n"));
-		goto cleanup;
+		return;
 	}
 	case TT_TOC:
 	{
@@ -477,59 +466,57 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		X_VerifyParseState(_PS_Sec);
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_SectionTOC, PP_std_copyProps(atts)));
+		X_CheckError(appendStrux(PTX_SectionTOC, atts));
 		UT_DEBUGMSG(("Finished Append TOC strux \n"));
-		goto cleanup;
+		return;
 	}
 	case TT_BLOCK:
 	{
 		// when pasting from clipboard, the doc might not open with section/paragraph
-		if(!isClipboard() || m_bWroteSection)
+		if(!isClipboard() || m_bWroteSection) {
 			X_VerifyParseState(_PS_Sec);
-		else
-		{
+		} else {
 			m_bWroteSection = true;
 		}
-		
+
 		m_parseState = _PS_Block;
 		m_bWroteParagraph = true;
-		const gchar * pszId = _getXMLPropValue("list", atts);
+		const std::string & sId = PP_getAttribute("list", atts);
 		bool bOK;
-		if(pszId)
-		{
-			UT_uint32 id = atoi(pszId);
-			bOK = getDoc()->setMinUID(UT_UniqueId::List,id+1);
-			if(!bOK)
-			{
-				UT_DEBUGMSG(("List id %d [%s] already in use\n",id,pszId));
+		if(!sId.empty()) {
+			UT_uint32 id = stoi(sId);
+			bOK = getDoc()->setMinUID(UT_UniqueId::List, id + 1);
+			if(!bOK) {
+				UT_DEBUGMSG(("List id %d [%s] already in use\n", id, sId.c_str()));
 				UT_ASSERT_HARMLESS( UT_SHOULD_NOT_HAPPEN );
 			}
 		}
-		X_CheckError(appendStrux(PTX_Block, PP_std_copyProps(atts)));
+		X_CheckError(appendStrux(PTX_Block, atts));
 		m_iInlineStart = getOperationCount();
-		goto cleanup;
+		return;
 	}
 	case TT_INLINE:
 		// ignored for fields
-		if (m_parseState == _PS_Field) goto cleanup;
+		if (m_parseState == _PS_Field) {
+			return;
+		}
 
 		// when pasting from clipboard, the doc might not open with section/paragraph
-		if(!isClipboard() || m_bWroteParagraph)
+		if(!isClipboard() || m_bWroteParagraph) {
 			X_VerifyParseState(_PS_Block);
-		else
-		{
+		} else {
 			m_parseState = _PS_Block;
 			m_bWroteParagraph = true;
 		}
-		
-		
-		X_CheckError(_pushInlineFmt(PP_std_copyProps(atts)));
 
-		if(!isClipboard())
+		X_CheckError(_pushInlineFmt(atts));
+
+		if(!isClipboard()) {
 			X_CheckError(appendFmt(m_vecInlineFmt));
+		}
 
 		m_iInlineStart++;
-		goto cleanup;
+		return;
 
 		// Images and Fields are not containers.  Therefore we don't
 		// push the ParseState (_PS_...).
@@ -538,110 +525,101 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 
 	case TT_IMAGE:
 	{
-		if(m_bInMath)
-		{
+		if(m_bInMath) {
 			UT_DEBUGMSG(("Ignore image in math-tag \n"));
-			goto cleanup;
+			return;
 		}
-		if(m_bInEmbed)
-		{
+		if(m_bInEmbed) {
 			UT_DEBUGMSG(("Ignore image in embed-tag \n"));
-			goto cleanup;
+			return;
 		}
 		//		X_VerifyParseState(_PS_Block);
 #ifdef ENABLE_RESOURCE_MANAGER
 		X_CheckError(_handleImage (atts));
 #else
-		//const gchar * pszId = _getXMLPropValue("dataid", atts);
+		//const gchar * pszId = PP_getAttribute("dataid", atts);
 
 		//
 		// Remove this assert because the image object MUST have already
 		// defined the correct ID.
 		//
-		X_CheckError(appendObject(PTO_Image, PP_std_copyProps(atts)));
+		X_CheckError(appendObject(PTO_Image, atts));
 #endif
-		goto cleanup;
+		return;
 	}
 	case TT_MATH:
 	{
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Math, PP_std_copyProps(atts)));
+		X_CheckError(appendObject(PTO_Math, atts));
 		m_iImageId++;
 		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		m_bInMath = true;
-		goto cleanup;
+		return;
 	}
 	case TT_EMBED:
 	{
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Embed, PP_std_copyProps(atts)));
-		
+		X_CheckError(appendObject(PTO_Embed, atts));
+
 		m_iImageId++;
 		getDoc()->setMinUID(UT_UniqueId::Image, m_iImageId);
 		m_bInEmbed = true;
-		goto cleanup;
+		return;
 	}
 	case TT_BOOKMARK:
     {
 		X_VerifyParseState(_PS_Block);
 
 
-        const gchar* type = UT_getAttribute("type", atts);
-        if( type && !strcmp(type,"end"))
-        {
-            std::string  xmlid = "";
-            const gchar* nameAttr  = UT_getAttribute("name", atts);
-            if( nameAttr )
-            {
-                xmlid = xmlidMapForBookmarks[nameAttr];
-                xmlidMapForBookmarks.erase(nameAttr);
-            }
-            PP_PropertyVector pp = PP_std_copyProps(atts);
-            pp.push_back(PT_XMLID);
-            pp.push_back(xmlid);
-            X_CheckError(appendObject(PTO_Bookmark, pp));
-        }
-        else
-        {
-            X_CheckError(appendObject(PTO_Bookmark, PP_std_copyProps(atts)));
-            const gchar* nameAttr  = UT_getAttribute("name", atts);
-            const gchar* xmlid = UT_getAttribute("xml:id", atts);
-            if( name && xmlid )
-            {
-                xmlidMapForBookmarks[nameAttr] = ( xmlid ? xmlid : "" );
-            }
-        }
-        
-		goto cleanup;
-    }
-    
+		const std::string & type = PP_getAttribute("type", atts);
+		if(type == "end") {
+			std::string	 xmlid = "";
+			const std::string & nameAttr  = PP_getAttribute("name", atts);
+			if(!nameAttr.empty()) {
+				xmlid = xmlidMapForBookmarks[nameAttr];
+				xmlidMapForBookmarks.erase(nameAttr);
+			}
+			// XXX do we need to copy here?
+			PP_PropertyVector pp = atts;
+			pp.push_back(PT_XMLID);
+			pp.push_back(xmlid);
+			X_CheckError(appendObject(PTO_Bookmark, pp));
+		} else {
+			X_CheckError(appendObject(PTO_Bookmark, atts));
+			const std::string & nameAttr  = PP_getAttribute("name", atts);
+			const std::string & xmlid = PP_getAttribute("xml:id", atts);
+			if(!nameAttr.empty() && !xmlid.empty()) {
+				xmlidMapForBookmarks[nameAttr] = xmlid;
+			}
+		}
+
+		return;
+	}
+
 	case TT_TEXTMETA:
-    {
+	{
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_RDFAnchor, PP_std_copyProps(atts)));
-        const gchar* xmlid = UT_getAttribute("xml:id", atts);
-        if( !xmlid )
-            xmlid = "";
-        xmlidStackForTextMeta.push_back(xmlid);
-		goto cleanup;
-    }
-    
+		X_CheckError(appendObject(PTO_RDFAnchor, atts));
+		xmlidStackForTextMeta.push_back(PP_getAttribute("xml:id", atts));
+		return;
+	}
+
 	case TT_HYPERLINK:
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Hyperlink, PP_std_copyProps(atts)));
-		goto cleanup;
+		X_CheckError(appendObject(PTO_Hyperlink, atts));
+		return;
 
 	case TT_ANN:
 		X_VerifyParseState(_PS_Block);
-		X_CheckError(appendObject(PTO_Annotation, PP_std_copyProps(atts)));
-		goto cleanup;
+		X_CheckError(appendObject(PTO_Annotation, atts));
+		return;
 
 	case TT_FIELD:
 	{
 		X_VerifyParseState(_PS_Block);
 		m_parseState = _PS_Field;
-		X_CheckError(appendObject(PTO_Field, PP_std_copyProps(atts)));
-		goto cleanup;
+		X_CheckError(appendObject(PTO_Field, atts));
+		return;
 	}
 
 		// Forced Line Breaks are not containers.  Therefore we don't
@@ -650,10 +628,11 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		// seem a little odd (perhaps an &lf; entity would be better).
 		// Anyway, this distinction from ordinary LF's in the document
 		// (which get mapped into SPACE) keeps the file sanely editable.
-	
+
 	case TT_BREAK:
-		if(X_TestParseState(_PS_Field))
-			goto cleanup; // just return
+		if(X_TestParseState(_PS_Field)) {
+			return; // just return
+		}
 
 		X_VerifyParseState(_PS_Block);
 
@@ -666,7 +645,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			UT_UCSChar ucs = UCS_LF;
 			X_CheckError(appendSpan(&ucs,1));
 		}
-		goto cleanup;
+		return;
 
 	case TT_COLBREAK:
 		X_VerifyParseState(_PS_Block);
@@ -680,7 +659,7 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			UT_UCSChar ucs = UCS_VTAB;
 			X_CheckError(appendSpan(&ucs,1));
 		}
-		goto cleanup;
+		return;
 
 	case TT_PAGEBREAK:
 		X_VerifyParseState(_PS_Block);
@@ -693,14 +672,14 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 			UT_UCSChar ucs = UCS_FF;
 			X_CheckError(appendSpan(&ucs,1));
 		}
-		goto cleanup;
+		return;
 
 	case TT_DATASECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_DataSec;
 		// We don't need to notify the piece table of the data section,
 		// it will get the hint when we begin sending data items.
-		goto cleanup;
+		return;
 
 	case TT_DATAITEM:
 		X_VerifyParseState(_PS_DataSec);
@@ -709,11 +688,12 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		_handleResource (atts, false);
 #else
 		m_currentDataItem.truncate(0);
-		X_CheckError((m_currentDataItemName = g_strdup(_getDataItemName(atts))));
+		m_currentDataItemName = _getDataItemName(atts);
+		X_CheckError((!m_currentDataItemName.empty()));
 		m_currentDataItemMimeType = _getDataItemMimeType(atts);
 		m_currentDataItemEncoded = _getDataItemEncoded(atts);
 #endif
-		goto cleanup;
+		return;
 
 	case TT_RESOURCE:
 #ifdef ENABLE_RESOURCE_MANAGER
@@ -721,14 +701,14 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		m_parseState = _PS_DataItem;
 		_handleResource (atts, true);
 #endif
-		goto cleanup;
+		return;
 
 	case TT_STYLESECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_StyleSec;
 		// We don't need to notify the piece table of the style section,
 		// it will get the hint when we begin sending styles.
-		goto cleanup;
+		return;
 
 	case TT_STYLE:
 	{
@@ -737,54 +717,49 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 //
 // Have to see if the style already exists. If it does, replace it with this.
 //
-		const gchar * szName = UT_getAttribute(PT_NAME_ATTRIBUTE_NAME,atts);
+		const std::string & sName = PP_getAttribute(PT_NAME_ATTRIBUTE_NAME, atts);
 		PD_Style * pStyle = NULL;
-		if(getDoc()->getStyle(szName, &pStyle))
-		{
-			X_CheckError(pStyle->addAttributes(PP_std_copyProps(atts)));
+		if(getDoc()->getStyle(sName.c_str(), &pStyle)) {
+			X_CheckError(pStyle->addAttributes(atts));
 			pStyle->getBasedOn();
 			pStyle->getFollowedBy();
+		} else {
+			X_CheckError(getDoc()->appendStyle(atts));
 		}
-		else
-		{
-			X_CheckError(getDoc()->appendStyle(PP_std_copyProps(atts)));
-		}
-		goto cleanup;
+		return;
 	}
 
 	case TT_REVISIONSECTION:
 	{
-				
+
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_RevisionSec;
 
 		// parse the attributes ...
-		const gchar * szS = UT_getAttribute("show",atts);
+		const std::string & s1 = PP_getAttribute("show", atts);
 		UT_uint32 i;
-		if(szS)
-		{
-			i = atoi(szS);
-			getDoc()->setShowRevisions(i != 0);			
+		if(!s1.empty()) {
+			i = stoi(s1);
+			getDoc()->setShowRevisions(i != 0);
 		}
 
-		szS = UT_getAttribute("mark",atts);
-		if(szS)
-		{
-			i = atoi(szS);
+		const std::string & s2 = PP_getAttribute("mark", atts);
+		if(!s2.empty())	{
+			i = stoi(s2);
 			getDoc()->setMarkRevisions(i != 0);
 		}
-		
-		szS = UT_getAttribute("show-level",atts);
-		if(szS)
+
+		const std::string & s3 = PP_getAttribute("show-level", atts);
+		if(!s3.empty())
 		{
-			i = atoi(szS);
+			i = stoi(s3);
 			getDoc()->setShowRevisionId(i);
 		}
 
-		szS = UT_getAttribute("auto",atts);
-		if(szS)
+		const std::string & s4 = PP_getAttribute("auto",atts);
+		if(!s4.empty())
 		{
-			i = atoi(szS);
+			i = stoi(s4);
 			// we cannot call setAutoRevisioning() from here because
 			// it creates a new revision, so we can only call it after
 			// the revisions have been all read it -- we will call it
@@ -798,10 +773,8 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 				getDoc()->setShowRevisionId(PD_MAX_REVISION);
 				getDoc()->setShowRevisions(false);
 			}
-			
-			
 		}
-		goto cleanup;
+		return;
 	}
 
 	case TT_REVISION:
@@ -809,30 +782,31 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		X_VerifyParseState(_PS_RevisionSec);
 		m_parseState = _PS_Revision;
 
-		const gchar * szS = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
-		if(szS)
+		const std::string & s1 = PP_getAttribute(PT_ID_ATTRIBUTE_NAME, atts);
+		if(!s1.empty())
 		{
-			m_currentRevisionId = atoi(szS);
+			m_currentRevisionId = stoi(s1);
 			m_currentRevisionTime = 0;
 
-			szS = UT_getAttribute("time-started",atts);
-			if(szS)
-				m_currentRevisionTime = (time_t)atoi(szS);
+			const std::string & s2 = PP_getAttribute("time-started",atts);
+			if(!s2.empty()) {
+				m_currentRevisionTime = (time_t)stoi(s2);
+			}
 
-			szS = UT_getAttribute("version",atts);
-			if(szS)
-				m_currentRevisionVersion = atoi(szS);
+			const std::string & s3 = PP_getAttribute("version", atts);
+			if(!s3.empty()) {
+				m_currentRevisionVersion = stoi(s3);
+			}
 		}
 
-		goto cleanup;
+		return;
 	}
 
 	case TT_AUTHORSECTION:
 	{
-				
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_AuthorSec;
-		goto cleanup;
+		return;
 	}
 
 	case TT_AUTHOR:
@@ -840,103 +814,102 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		X_VerifyParseState(_PS_AuthorSec);
 		m_parseState = _PS_Author;
 
-		const gchar * szInt = UT_getAttribute("id",atts);
-		UT_sint32 iAuthorInt = atoi(szInt);
+		const std::string & sId = PP_getAttribute("id", atts);
+		UT_sint32 iAuthorInt = stoi(sId);
 		pp_Author * pA = getDoc()->addAuthor(iAuthorInt);
 		PP_AttrProp * pPA = pA->getAttrProp();
-		const gchar * szProps = UT_getAttribute(PT_PROPS_ATTRIBUTE_NAME,atts);
-		if(szProps)
-		{
+		const std::string & props = PP_getAttribute(PT_PROPS_ATTRIBUTE_NAME, atts);
+		if(!props.empty()) {
 			const PP_PropertyVector extraAtts = {
-				PT_PROPS_ATTRIBUTE_NAME, szProps,
+				PT_PROPS_ATTRIBUTE_NAME, props,
 			};
 			pPA->setAttributes(extraAtts);
 		}
-		goto cleanup;
+		return;
 	}
 
 
 	case TT_HISTORYSECTION:
 	{
-				
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_HistorySec;
 
 		// parse the attributes ...
-		const gchar * szS = UT_getAttribute("version",atts);
+		const std::string & s1 = PP_getAttribute("version", atts);
 		UT_uint32 i;
-		if(szS)
+		if(!s1.empty())
 		{
-			i = atoi(szS);
-			getDoc()->setDocVersion(i);			
+			i = stoi(s1);
+			getDoc()->setDocVersion(i);
 		}
 
-		szS = UT_getAttribute("edit-time",atts);
-		if(szS)
+		const std::string & s2 = PP_getAttribute("edit-time", atts);
+		if(!s2.empty())
 		{
-			i = atoi(szS);
+			i = stoi(s2);
 			getDoc()->setEditTime(i);
 		}
-		
-		szS = UT_getAttribute("last-saved",atts);
-		if(szS)
+
+		const std::string & s3 = PP_getAttribute("last-saved", atts);
+		if(!s3.empty())
 		{
-			i = atoi(szS);
+			i = stoi(s3);
 			getDoc()->setLastSavedTime((time_t)i);
 		}
-		szS = UT_getAttribute("uid",atts);
-		if(szS)
+		const std::string & s4 = PP_getAttribute("uid", atts);
+		if(!s4.empty())
 		{
-			getDoc()->setDocUUID(szS);
+			getDoc()->setDocUUID(s4.c_str());
 		}
-		
-		goto cleanup;
+
+		return;
 	}
-	
+
 	case TT_VERSION:
 	{
 		X_VerifyParseState(_PS_HistorySec);
 		m_parseState = _PS_Version;
 
-		const gchar * szS = UT_getAttribute(PT_ID_ATTRIBUTE_NAME,atts);
-		if(szS)
-		{
-			UT_uint32 iId = atoi(szS);
+		const std::string & s1 = PP_getAttribute(PT_ID_ATTRIBUTE_NAME, atts);
+		if(!s1.empty()) {
+			UT_uint32 iId = stoi(s1);
 
 			time_t tStarted = 0;
-			szS = UT_getAttribute("started",atts);
-			if(szS)
-				tStarted = (time_t) atoi(szS);
+			const std::string & s2 = PP_getAttribute("started", atts);
+			if(!s2.empty()) {
+				tStarted = (time_t) stoi(s2);
+			}
 
 			bool bAuto = false;
-			szS = UT_getAttribute("auto",atts);
-			if(szS)
-				bAuto = (0 != atoi(szS));
-			else
+			const std::string & sAuto = PP_getAttribute("auto", atts);
+			if(!sAuto.empty()) {
+				bAuto = (0 != stoi(sAuto));
+			} else {
 				bAuto = false;
+			}
 
 			UT_uint32 iXID = 0;
-			szS = UT_getAttribute("top-xid",atts);
-			if(szS)
-				iXID = atoi(szS);
-			
-			szS = UT_getAttribute("uid",atts);
+			const std::string & sXID = PP_getAttribute("top-xid", atts);
+			if(!sXID.empty()) {
+				iXID = stoi(sXID);
+			}
 
-			if(szS)
-			{
-				AD_VersionData v(iId, szS, tStarted, bAuto, iXID);
+			const std::string & sUid = PP_getAttribute("uid", atts);
+
+			if(!sUid.empty()) {
+				AD_VersionData v(iId, sUid.c_str(), tStarted, bAuto, iXID);
 				getDoc()->addRecordToHistory(v);
 			}
 		}
 
-		goto cleanup;
+		return;
 	}
 
-		case TT_LISTSECTION:
+	case TT_LISTSECTION:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_ListSec;
 		// As per styles, we don't need to notify the piece table.
-		goto cleanup;
+		return;
 
 	case TT_LIST:
 		X_VerifyParseState(_PS_ListSec);
@@ -944,35 +917,35 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		// Urgh! Complex. I think how done.
 		X_CheckError(getDoc()->appendList(atts));
 		m_bDocHasLists = true;
-		goto cleanup;
+		return;
 
 	case TT_PAGESIZE:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_PageSize;
-		X_CheckError(getDoc()->setPageSizeFromFile(PP_std_copyProps(atts)));
+		X_CheckError(getDoc()->setPageSizeFromFile(atts));
 		m_bDocHasPageSize = true;
-		goto cleanup;
+		return;
 
 	case TT_IGNOREDWORDS:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_IgnoredWordsSec;
-		goto cleanup;
+		return;
 
 	case TT_IGNOREDWORD:
 		X_VerifyParseState(_PS_IgnoredWordsSec);
 		m_parseState = _PS_IgnoredWordsItem;
-		goto cleanup;
+		return;
 
 	case TT_METADATA:
 		X_VerifyParseState(_PS_Doc);
 		m_parseState = _PS_MetaData;
-		goto cleanup;
+		return;
 
 	case TT_META:
 		X_VerifyParseState(_PS_MetaData);
 		m_parseState = _PS_Meta;
-		m_currentMetaDataName = _getXMLPropValue("key", atts);
-		goto cleanup;
+		m_currentMetaDataName = PP_getAttribute("key", atts);
+		return;
 
 	case TT_RDFBLOCK:
     {
@@ -980,62 +953,49 @@ void IE_Imp_AbiWord_1::startElement(const gchar *name,
 		m_parseState = _PS_RDFData;
         PD_DocumentRDFHandle rdf = getDoc()->getDocumentRDF();
         m_rdfMutation = rdf->createMutation();
-		goto cleanup;
+		return;
     }
-    
+
 	case TT_RDFTRIPLE:
     {
 		X_VerifyParseState(_PS_RDFData);
 		m_parseState   = _PS_RDFTriple;
-		m_rdfSubject   = _getXMLPropValue("s", atts);
-		m_rdfPredicate = _getXMLPropValue("p", atts);
-        m_rdfXSDType   = _getXMLPropValue("xsdtype", atts);
+		m_rdfSubject   = PP_getAttribute("s", atts);
+		m_rdfPredicate = PP_getAttribute("p", atts);
+        m_rdfXSDType   = PP_getAttribute("xsdtype", atts);
         {
             std::stringstream ss;
-            ss << _getXMLPropValue("objecttype", atts);
+            ss << PP_getAttribute("objecttype", atts);
             m_rdfObjectType = PD_Object::OBJECT_TYPE_URI;
             ss >> m_rdfObjectType;
         }
         // content of element is object.
-		goto cleanup;
+		return;
     }
-    
+
 	case TT_TABLE:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_SectionTable, PP_std_copyProps(atts)));
-		goto cleanup;
+		X_CheckError(appendStrux(PTX_SectionTable, atts));
+		return;
 
 	case TT_CELL:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_SectionCell, PP_std_copyProps(atts)));
-		goto cleanup;
+		X_CheckError(appendStrux(PTX_SectionCell, atts));
+		return;
 
 	case TT_FRAME:
 		m_parseState = _PS_Sec;
 		m_bWroteSection = true;
-		X_CheckError(appendStrux(PTX_SectionFrame, PP_std_copyProps(atts)));
-		goto cleanup;
+		X_CheckError(appendStrux(PTX_SectionFrame, atts));
+		return;
 
 	case TT_OTHER:
 	default:
 		UT_DEBUGMSG(("Unknown tag [%s]\n",name));
-		   UT_ASSERT_NOT_REACHED();
-		goto cleanup;
-	}
-
-  cleanup:
-	gchar ** p = (gchar **) atts;
-	if (p)
-	{
-		while (*p)
-		{
-			FREEP(*p);
-			++p;
-		}
-
-		g_free ((void*)atts);
+		UT_ASSERT_NOT_REACHED();
+		return;
 	}
 }
 
@@ -1127,8 +1087,9 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 
 	case TT_INLINE:
 		UT_ASSERT_HARMLESS(m_lenCharDataSeen==0);
-                if (m_parseState == _PS_Field) // just return
-			  return;
+		if (m_parseState == _PS_Field) { // just return
+			return;
+		}
 		X_VerifyParseState(_PS_Block);
 		X_CheckDocument(_getInlineDepth()>0);
 		// Insert a FmtMark if nothing was inserted in the block.
@@ -1235,15 +1196,24 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		trim = 0;
 		len = m_currentDataItem.getLength();
 		buffer = m_currentDataItem.getPointer(0);
-		while (trim < len && MyIsWhite(buffer[trim])) trim++;
-		if (trim) m_currentDataItem.del(0, trim);
+		while (trim < len && MyIsWhite(buffer[trim])) {
+			trim++;
+		}
+		if (trim) {
+			m_currentDataItem.del(0, trim);
+		}
 		trim = m_currentDataItem.getLength();
 		buffer = m_currentDataItem.getPointer(0);
-		while (trim > 0 && MyIsWhite(buffer[trim])) trim--;
+		while (trim > 0 && MyIsWhite(buffer[trim])) {
+			trim--;
+		}
 		m_currentDataItem.truncate(trim+1);
 #undef MyIsWhite
- 		X_CheckError(getDoc()->createDataItem(static_cast<const char*>(m_currentDataItemName),m_currentDataItemEncoded,&m_currentDataItem,m_currentDataItemMimeType,NULL));
-		FREEP(m_currentDataItemName);
+		X_CheckError(getDoc()->createDataItem(m_currentDataItemName.c_str(),
+                                              m_currentDataItemEncoded,
+                                              &m_currentDataItem,
+                                              m_currentDataItemMimeType, NULL));
+		m_currentDataItemName.clear();
 		m_currentDataItemMimeType.clear();
 #endif
  		return;
@@ -1257,16 +1227,13 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 
 	case TT_STYLESECTION:
 		X_VerifyParseState(_PS_StyleSec);
-		if(getLoadStylesOnly())
-		{
+		if(getLoadStylesOnly())	{
 			stopParser();
 			m_parseState = _PS_Doc;
-		}
-		else
-		{
+		} else {
 			m_parseState = _PS_Doc;
 		}
-		
+
 		return;
 
 	case TT_STYLE:
@@ -1279,7 +1246,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 		X_VerifyParseState(_PS_HistorySec);
 		m_parseState = _PS_Doc;
 		return;
-		
+
 	case TT_VERSION:
 		X_VerifyParseState(_PS_Version);
 		m_parseState = _PS_HistorySec;
@@ -1295,8 +1262,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 	case TT_REVISION:
 		X_VerifyParseState(_PS_Revision);
 
-		if(m_currentRevisionId != 0)
-		{
+		if(m_currentRevisionId != 0) {
 			// the revision had no comment associated, so it was not
 			// added to the doc by the xml paraser
 			X_CheckError(getDoc()->addRevision(m_currentRevisionId, NULL, 0,
@@ -1304,7 +1270,7 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 											   m_currentRevisionVersion, true));
 			m_currentRevisionId = 0;
 		}
-		
+
 		m_parseState = _PS_RevisionSec;
 		return;
 
@@ -1361,10 +1327,9 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 	case TT_RDFBLOCK:
 		X_VerifyParseState(_PS_RDFData);
 		m_parseState = _PS_Doc;
-        if(m_rdfMutation)
-        {
-            m_rdfMutation->commit();
-        }
+		if(m_rdfMutation) {
+			m_rdfMutation->commit();
+		}
 		return;
 
 	case TT_RDFTRIPLE:
@@ -1383,26 +1348,27 @@ void IE_Imp_AbiWord_1::endElement(const gchar *name)
 /*****************************************************************/
 /*****************************************************************/
 
-const gchar * IE_Imp_AbiWord_1::_getDataItemName(const gchar ** atts)
+const std::string & IE_Imp_AbiWord_1::_getDataItemName(const PP_PropertyVector & atts)
 {
-	return _getXMLPropValue ("name", atts);
+	return PP_getAttribute ("name", atts);
 }
 
-const gchar * IE_Imp_AbiWord_1::_getDataItemMimeType(const gchar ** atts)
+std::string IE_Imp_AbiWord_1::_getDataItemMimeType(const PP_PropertyVector & atts)
 {
-	const gchar *val = _getXMLPropValue ("mime-type", atts);
+	const std::string & val = PP_getAttribute ("mime-type", atts);
 
 	// if the mime-type was not specified, for backwards
  	// compatibility we assume that it is a png image
-	return (val ? val : "image/png");
+	return (val.empty() ? "image/png" : val);
 }
 
-bool IE_Imp_AbiWord_1::_getDataItemEncoded(const gchar ** atts)
+bool IE_Imp_AbiWord_1::_getDataItemEncoded(const PP_PropertyVector & atts)
 {
-  	const gchar *val = _getXMLPropValue ("base64", atts);
+	const std::string & val = PP_getAttribute ("base64", atts);
 
-	if ((!val) || (strcmp (val, "no") != 0))
-	  return true;
+	if (val.empty() || (val != "no")) {
+		return true;
+	}
 
 	return false;
 }

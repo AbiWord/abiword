@@ -30,9 +30,13 @@
 
 
 /** replacement for UT_UTF8String::escapeXML
- *  escapes '<', '>', '\"' and '&' in the current string
+ *  escapes '<', '>', '"' and '&' in the current string
  */
 ABI_EXPORT std::string UT_escapeXML(const std::string &);
+
+/** Unescape (decode) XML. Reverse of UT_escapeXML
+ */
+ABI_EXPORT std::string UT_decodeXML(const std::string &);
 
 ABI_EXPORT std::string& UT_std_string_vprintf (std::string & inStr,
                                                const char *format,

@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
@@ -121,7 +121,7 @@ private:
 	UT_uint16	m_iNewImage;
 
 	UT_Stack	m_utsParents;
-	gchar *  m_szBookMarkName;
+	std::string m_szBookMarkName;
 
 	bool        m_addedPTXSection;
 

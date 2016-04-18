@@ -761,8 +761,7 @@ bool IE_Imp_XHTML::pasteFromBuffer(PD_DocumentRange * pDocRange,
 void IE_Imp_XHTML::startElement(const gchar *name,
 								const gchar **attributes)
 {
-	const gchar ** atts =
-		(const gchar **)UT_cloneAndDecodeAttributes (attributes);
+	const PP_PropertyVector atts = PP_cloneAndDecodeAttributes (attributes);
 
 	int failLine;
 	failLine = 0;
@@ -781,13 +780,13 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		if(!m_pMathBB)
 		{
 			UT_ASSERT_HARMLESS(m_pMathBB);
-			goto cleanup;
+			return;
 		}
 
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<"), 1);
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(name), strlen(name)); //build the mathml
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>(">"), 1);
-		goto cleanup;
+		return;
 	}
 
 	switch (tokenIndex)
@@ -796,13 +795,13 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 	  //UT_DEBUGMSG(("Init %d\n", m_parseState));
 		X_VerifyParseState(_PS_Init);
 		m_parseState = _PS_StyleSec;
-		goto cleanup;
+		return;
 
 	case TT_BODY:
 	  //UT_DEBUGMSG(("Doc %d\n", m_parseState));
 		X_VerifyParseState(_PS_StyleSec);
 		m_parseState = _PS_Doc;
-		goto cleanup;		
+		return;
 
 	case TT_DIV:
 		{
@@ -813,12 +812,12 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			/* stack class attr. values if recognized;
 			 * NOTE: these are ptrs to static strings - don't alloc/g_free them
 			 */
-			const gchar * p_val = _getXMLPropValue (static_cast<const gchar *>("class"), atts);
-			SectionClass sc = childOfSection () ? sc_other : s_class_query (p_val);
+			const std::string & classVal = PP_getAttribute("class", atts);
+			SectionClass sc = childOfSection () ? sc_other : s_class_query (classVal.c_str());
 			if (sc == sc_other)
 				m_divClasses.push_back (0);
 			else
-				m_divClasses.push_back (const_cast<char *>(s_section_classes[sc]));
+				m_divClasses.push_back (s_section_classes[sc]);
 
 			/* <div> elements can specify block-level styles; concatenate and stack...
 			 */
@@ -835,24 +834,25 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 			if (style)
 				{
-					p_val = _getXMLPropValue (static_cast<const gchar *>("align"), atts);
-					if (p_val)
+					const std::string & alignVal = PP_getAttribute("align", atts);
+					if (!alignVal.empty())
 						{
-							if (!strcmp (p_val, "right"))
+							if (alignVal == "right") {
 								*style += "text-align: right; ";
-							else if (!strcmp (p_val, "center"))
+							} else if (alignVal == "center") {
 								*style += "text-align: center; ";
-							else if (!strcmp (p_val, "left"))
+							} else if (alignVal == "left") {
 								*style += "text-align: left; ";
-							else if (!strcmp (p_val, "justify"))
+							} else if (alignVal == "justify") {
 								*style += "text-align: justify; ";
+							}
 						}
 				}
 
-			p_val = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
-			if (style && p_val)
+			const std::string & styleVal = PP_getAttribute("style", atts);
+			if (style && !styleVal.empty())
 				{
-					*style += p_val;
+					*style += styleVal;
 					*style += "; ";
 				}
 
@@ -866,7 +866,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 					X_CheckError(requireSection ()); // TODO: handle this intelligently
 				}
 		}
-		goto cleanup;
+		return;
 
 	case TT_Q:
 	case TT_SAMP:
@@ -877,75 +877,77 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 	case TT_EM:
 	case TT_I:
 		X_CheckError(pushInline ("font-style:italic"));
-		goto cleanup;
+		return;
 
 	case TT_DFN:
 	case TT_STRONG:
 	case TT_B:
 		X_CheckError(pushInline ("font-weight:bold"));
-		goto cleanup;
+		return;
 
 	case TT_CODE:
 	case TT_TT:
 		X_CheckError(pushInline ("font-family:Courier"));
-		goto cleanup;
+		return;
 
 	case TT_U:
 		X_CheckError(pushInline ("text-decoration:underline"));
-		goto cleanup;
+		return;
 
 	case TT_S://	case TT_STRIKE:
 		X_CheckError(pushInline ("text-decoration:line-through"));
-		goto cleanup;
+		return;
 
 	case TT_SUP:
 		X_CheckError(pushInline ("text-position:superscript"));
-		goto cleanup;
+		return;
 
 	case TT_SUB:
 		X_CheckError(pushInline ("text-position:subscript"));
-		goto cleanup;
+		return;
 		
 	case TT_FONT:
 		UT_DEBUGMSG(("Font tag encountered\n"));
 		{
 			UT_UTF8String style;
 
-			const gchar * p_val = 0;
+			const std::string & colorVal = PP_getAttribute("color", atts);
+			if (!colorVal.empty()) {
+				s_append_color (style, colorVal.c_str(), "color");
+			}
 
-			p_val = _getXMLPropValue (static_cast<const gchar *>("color"), atts);
-			if (p_val)
-				s_append_color (style, p_val, "color");
+			const std::string & bgVal = PP_getAttribute("background", atts);
+			if (!bgVal.empty()) {
+				s_append_color (style, bgVal.c_str(), "bgcolor");
+			}
 
-			p_val = _getXMLPropValue (static_cast<const gchar *>("background"), atts);
-			if (p_val)
-				s_append_color (style, p_val, "bgcolor");
+			const std::string & sizeVal = PP_getAttribute("size", atts);
+			if (!sizeVal.empty()) {
+				s_append_font_size (style, sizeVal.c_str());
+			}
 
-			p_val = _getXMLPropValue (static_cast<const gchar *>("size"), atts);
-			if (p_val)
-				s_append_font_size (style, p_val);
-
-			p_val = _getXMLPropValue (static_cast<const gchar *>("face"), atts);
-			if (p_val)
-				s_append_font_family (style, p_val);
+			const std::string & faceVal = PP_getAttribute("face", atts);
+			if (!faceVal.empty()) {
+				s_append_font_family (style, faceVal.c_str());
+			}
 
 			// UT_String_sprintf(output, "color:%s; bgcolor: %s; font-family:%s; size:%spt", color.c_str(), bgcolor.c_str(), face.c_str(), size.c_str());
 			UT_DEBUGMSG(("Font properties: %s\n", style.utf8_str()));
 
 			X_CheckError(pushInline (style.utf8_str ()));
 		}
-		goto cleanup;
+		return;
 
 	case TT_PRE:
 	{
 		if (m_parseState == _PS_Block) m_parseState = _PS_Sec;
 
-		const gchar * style = _getXMLPropValue ("style", atts);
-		newBlock ("Plain Text", style, NULL);
+		const std::string & style = PP_getAttribute("style", atts);
+		newBlock ("Plain Text", style.c_str(), NULL);
 
 		m_iPreCount++;
 		m_bWhiteSignificant = true;
-		goto cleanup;
+		return;
 	}
 
 	case TT_H1:
@@ -970,41 +972,41 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		}
 		else
 		{
-			const gchar * style = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
-			const gchar * align = _getXMLPropValue (static_cast<const gchar *>("align"), atts);
+			const std::string & styleVal = PP_getAttribute("style", atts);
+			const std::string & alignVal = PP_getAttribute("align", atts);
 
-			const gchar * p_val = _getXMLPropValue (static_cast<const gchar *>("awml:style"), atts);
+			const std::string & awmlStyleVal = PP_getAttribute("awml:style", atts);
 
-			if (p_val)
+			if (!awmlStyleVal.empty())
 				{
-					X_CheckError (newBlock (p_val, style, align));
+					X_CheckError (newBlock (awmlStyleVal.c_str(), styleVal.c_str(), alignVal.c_str()));
 				}
 			else if (tokenIndex == TT_H1)
 				{
-					X_CheckError (newBlock ("Heading 1", style, align));
+					X_CheckError (newBlock ("Heading 1", styleVal.c_str(), alignVal.c_str()));
 				}
 			else if (tokenIndex == TT_H2)
 				{
-					X_CheckError (newBlock ("Heading 2", style, align));
+					X_CheckError (newBlock ("Heading 2", styleVal.c_str(), alignVal.c_str()));
 				}
 			else if (tokenIndex == TT_H3)
 				{
-					X_CheckError (newBlock ("Heading 3", style, align));
+					X_CheckError (newBlock ("Heading 3", styleVal.c_str(), alignVal.c_str()));
 				}
 			else if (tokenIndex == TT_BLOCKQUOTE)
 				{
-					X_CheckError (newBlock ("Block Text", style, align));
+					X_CheckError (newBlock ("Block Text", styleVal.c_str(), alignVal.c_str()));
 				}
 			else if (m_bWhiteSignificant)
 				{
-					X_CheckError (newBlock ("Plain Text", style, align));
+					X_CheckError (newBlock ("Plain Text", styleVal.c_str(), alignVal.c_str()));
 				}
 			else
 				{
-					X_CheckError (newBlock ("Normal", style, align));
+					X_CheckError (newBlock ("Normal", styleVal.c_str(), alignVal.c_str()));
 				}
 		}
-		goto cleanup;
+		return;
 
 	case TT_OL:	  
 	case TT_UL:
@@ -1040,6 +1042,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 		std::string szListID, szParentID;
 		szListID = UT_std_string_sprintf("%u", m_iNewListID);
+		// XXX is this right? should be szParentID IMHO
 		szListID = UT_std_string_sprintf("%u", *parentID);
 
 		const int IDpos = 1;
@@ -1048,9 +1051,9 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		listAtts[IDpos] = szListID.c_str();
 		listAtts[parentIDpos] = szParentID.c_str();
 
-		X_CheckError(getDoc()->appendList (listAtts));
+		X_CheckError(getDoc()->appendList (PP_std_copyProps(listAtts)));
 
-		goto cleanup;
+		return;
 	}
 	case TT_LI:
 	case TT_DT:
@@ -1117,23 +1120,23 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			X_CheckError(appendSpan (&ucs, 1));
 			_data_NewBlock ();
 		}
-		goto cleanup;
+		return;
 	}
 
 	case TT_SPAN:
 		{
 			UT_UTF8String utf8val;
 
-			const gchar * p_val = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
-			if (p_val)
+			const std::string & style = PP_getAttribute(static_cast<const gchar *>("style"), atts);
+			if (!style.empty())
 				{
-					utf8val = static_cast<const char *>(p_val);
+					utf8val = style;
 					utf8val = s_parseCSStyle (utf8val, CSS_MASK_INLINE);
 					UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 				}
 			X_CheckError(pushInline (utf8val.utf8_str ()));
 		}
-		goto cleanup;
+		return;
 
 	case TT_BR:
 	  //UT_DEBUGMSG(("B %d\n", m_parseState));
@@ -1142,113 +1145,110 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 			UT_UCSChar ucs = UCS_LF;
 			X_CheckError(appendSpan(&ucs,1));
 		}
-		goto cleanup;
+		return;
 
 	case TT_A:
 	{
-		const gchar * p_val = 0;
-		p_val = _getXMLPropValue(static_cast<const gchar *>("xlink:href"), atts);
-		if (p_val == 0) p_val = _getXMLPropValue(static_cast<const gchar *>("href"), atts);
-		if( p_val )
-		{
+		const std::string * val = nullptr;
+		val = &PP_getAttribute("xlink:href", atts);
+		if (val->empty()) {
+			val = &PP_getAttribute("href", atts);
+		}
+		if(!val->empty()) {
 			X_CheckError(requireBlock ());
 			const PP_PropertyVector new_atts = {
-				"xlink:href", p_val
+				"xlink:href", *val
 			};
-			X_CheckError(appendObject(PTO_Hyperlink,new_atts));
-		}
-		else
-		{
-			p_val = _getXMLPropValue(static_cast<const gchar *>("id"), atts);
-			if (p_val == 0) p_val = _getXMLPropValue(static_cast<const gchar *>("name"), atts);
-			if (p_val)
-			{
+			X_CheckError(appendObject(PTO_Hyperlink, new_atts));
+		} else {
+			val = &PP_getAttribute("id", atts);
+			if (val->empty()) {
+				val = &PP_getAttribute("name", atts);
+			}
+			if (!val->empty()) {
 				X_CheckError(requireBlock ());
 
-				m_szBookMarkName = g_strdup(p_val);
+				m_szBookMarkName = *val;
 
-				if (m_szBookMarkName)
-				{
-					PP_PropertyVector bm_new_atts = {
-						"type", "start",
-						"name", p_val
-					};
-					X_CheckError(appendObject(PTO_Bookmark, bm_new_atts));
-				}
+				PP_PropertyVector bm_new_atts = {
+					"type", "start",
+					"name", *val
+				};
+				X_CheckError(appendObject(PTO_Bookmark, bm_new_atts));
 
-				if (m_szBookMarkName && (m_parseState == _PS_Sec))
-				{
-					PP_PropertyVector bm_new_atts = {
-						"type", "end",
-						"name", m_szBookMarkName
-					};
+				if (m_parseState == _PS_Sec) {
+					bm_new_atts[1] = "end";
 					X_CheckError(appendObject(PTO_Bookmark, bm_new_atts));
 
-					FREEP(m_szBookMarkName);
+					m_szBookMarkName.clear();
 				}
 			}
 		}
-		goto cleanup;
+		return;
 	}
 
 	case TT_IMG:
 		{
-		const gchar * szSrc    = _getXMLPropValue (static_cast<const gchar *>("src"),    atts);
-		const gchar * szStyle  = _getXMLPropValue (static_cast<const gchar *>("style"),  atts);
-		const gchar * szWidth  = _getXMLPropValue (static_cast<const gchar *>("width"),  atts);
-		const gchar * szHeight = _getXMLPropValue (static_cast<const gchar *>("height"), atts);
-		const gchar * szTitle  = _getXMLPropValue (static_cast<const gchar *>("title"), atts);
-		const gchar * szAlt    = _getXMLPropValue (static_cast<const gchar *>("alt"), atts);
+			const std::string & szSrc    = PP_getAttribute("src", atts);
+			const std::string & szStyle  = PP_getAttribute("style",  atts);
+			std::string szWidth  = PP_getAttribute("width",  atts);
+			std::string szHeight = PP_getAttribute("height", atts);
+			const std::string & szTitle  = PP_getAttribute("title", atts);
+			const std::string & szAlt    = PP_getAttribute("alt", atts);
 
-		if ( szSrc == 0) break;
-		if (*szSrc == 0) break;
+			if (szSrc.empty()) {
+				break;
+			}
+
 		UT_UTF8String sWidth;
 		UT_UTF8String sHeight;
 
 		FG_Graphic * pfg = 0;
 
-		if (strncmp (szSrc, "data:", 5) == 0) // data-URL - special case
-				pfg = importDataURLImage (szSrc + 5);
-		else if (!isClipboard ())
-			pfg = importImage (szSrc);
+		if (szSrc.compare(0, 5, "data:") == 0) { // data-URL - special case
+			pfg = importDataURLImage (szSrc.c_str() + 5);
+		} else if (!isClipboard ()) {
+			pfg = importImage (szSrc.c_str());
+		}
 
-		if (pfg == 0) 
+		if (pfg == 0) {
             break;
+		}
 
 		const UT_ByteBuf * pBB = pfg->getBuffer();
 		X_CheckError(pBB);
 
-		if(szWidth)
+		if(!szWidth.empty())
 			{
-				UT_Dimension units = UT_determineDimension (szWidth);
+				UT_Dimension units = UT_determineDimension (szWidth.c_str());
 				if(units == DIM_PERCENT)
 					{
-						getDoc()->convertPercentToInches(szWidth,sWidth);
+						getDoc()->convertPercentToInches(szWidth.c_str(), sWidth);
 						szWidth = sWidth.utf8_str();
 					}
 			}
-		if(szHeight)
+		if(!szHeight.empty())
 			{
-				UT_Dimension units = UT_determineDimension (szHeight);
+				UT_Dimension units = UT_determineDimension (szHeight.c_str());
 				if(units == DIM_PERCENT)
 					{
-						getDoc()->convertPercentToInches(szWidth,sHeight);
+						getDoc()->convertPercentToInches(szWidth.c_str(), sHeight);
 						szHeight = sHeight.utf8_str();
 					}
 			}
 
 
 		UT_UTF8String utf8val;
-		if (szStyle)
+		if (!szStyle.empty())
 			{
-				utf8val = static_cast<const char *>(szStyle);
+				utf8val = szStyle;
 				utf8val = s_parseCSStyle (utf8val, CSS_MASK_IMAGE);
 				UT_DEBUGMSG(("CSS->Props (utf8val): [%s]\n",utf8val.utf8_str()));
 			}
-		if (szWidth && (strstr (utf8val.utf8_str (), "width") == 0))
+		if (!szWidth.empty() && (strstr (utf8val.utf8_str (), "width") == 0))
 			{
-				UT_Dimension units = UT_determineDimension (szWidth, DIM_PX);
-				double d = UT_convertDimensionless (szWidth);
+				UT_Dimension units = UT_determineDimension (szWidth.c_str(), DIM_PX);
+				double d = UT_convertDimensionless (szWidth.c_str());
 				float width = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
 				std::string tmp;
 
@@ -1265,10 +1265,10 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 					utf8val += tmp;
 				}
 			}
-		if (szHeight && (strstr (utf8val.utf8_str (), "height") == 0))
+		if (!szHeight.empty() && (strstr (utf8val.utf8_str (), "height") == 0))
 			{
-				UT_Dimension units = UT_determineDimension (szHeight, DIM_PX);
-				double d = UT_convertDimensionless (szHeight);
+				UT_Dimension units = UT_determineDimension (szHeight.c_str(), DIM_PX);
+				double d = UT_convertDimensionless (szHeight.c_str());
 				float height = static_cast<float>(UT_convertDimensions (d, units, DIM_IN));
 				std::string tmp;
 
@@ -1297,7 +1297,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 				if(strstr (utf8val.utf8_str (), "width")  != 0)
 				{
 					float rat = height/width;
-					float fwidth = UT_convertToInches(szWidth);
+					float fwidth = UT_convertToInches(szWidth.c_str());
 					height = rat*fwidth;
 					std::string tmp;
 					{
@@ -1342,8 +1342,8 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		const PP_PropertyVector api_atts = {
 			PT_PROPS_ATTRIBUTE_NAME, utf8val.utf8_str(),
 			"dataid", dataid,
-			"title", szTitle == NULL ? "" : szTitle,
-			"alt", szAlt == NULL ? "" : szAlt
+			"title", szTitle,
+			"alt", szAlt
 		};
 		if (m_parseState == _PS_Sec)
 			{
@@ -1352,12 +1352,12 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		xxx_UT_DEBUGMSG(("inserting `%s' as `%s' [%s]\n",szSrc,dataid.c_str(),utf8val.utf8_str()));
 
 		X_CheckError(appendObject (PTO_Image, api_atts));
-		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB, 
+		X_CheckError(getDoc()->createDataItem (dataid.c_str(), false, pBB,
                                                pfg->getMimeType(), NULL));
 
 		UT_DEBUGMSG(("insertion successful\n"));
 		}
-		goto cleanup;
+		return;
 #ifdef USE_IE_IMP_TABLEHELPER
 	case TT_CAPTION:
 		{
@@ -1375,41 +1375,41 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		{
 			requireSection();
 			m_parseState = _PS_Table;
-			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
+			const std::string & szStyle = PP_getAttribute("style", atts);
 
-			X_CheckError(m_TableHelperStack->tableStart (getDoc(),static_cast<const char *>(szStyle)));
+			X_CheckError(m_TableHelperStack->tableStart(getDoc(), szStyle.c_str()));
 		}
 		break;
 	case TT_THEAD:
 		{
 			m_parseState = _PS_Table;
-			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
+			const std::string & szStyle = PP_getAttribute("style", atts);
 
-			m_TableHelperStack->theadStart (static_cast<const char *>(szStyle));
+			m_TableHelperStack->theadStart(szStyle.c_str());
 		}
 		break;
 	case TT_TFOOT:
 		{
 			m_parseState = _PS_Table;
-			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
+			const std::string & szStyle = PP_getAttribute("style", atts);
 
-			m_TableHelperStack->tfootStart (static_cast<const char *>(szStyle));
+			m_TableHelperStack->tfootStart(szStyle.c_str());
 		}
 		break;
 	case TT_TBODY:
 		{
 			m_parseState = _PS_Table;
-			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
+			const std::string & szStyle = PP_getAttribute("style", atts);
 
-			m_TableHelperStack->tbodyStart (static_cast<const char *>(szStyle));
+			m_TableHelperStack->tbodyStart(szStyle.c_str());
 		}
 		break;
 	case TT_TR:
 		{
 			m_parseState = _PS_Cell;
-			const gchar * szStyle = _getXMLPropValue (static_cast<const gchar *>("style"), atts);
+			const std::string & szStyle = PP_getAttribute("style", atts);
 
-			m_TableHelperStack->trStart (static_cast<const char *>(szStyle));
+			m_TableHelperStack->trStart (szStyle.c_str());
 			UT_DEBUGMSG(("Finished TR process \n"));
 		}
 		break;
@@ -1418,62 +1418,62 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		{
 			UT_DEBUGMSG(("Doing TD \n"));
 			m_parseState = _PS_Block;
-			const gchar * szStyle   = _getXMLPropValue (static_cast<const gchar *>("style"),   atts);
-			const gchar * szColSpan = _getXMLPropValue (static_cast<const gchar *>("colspan"), atts);
-			const gchar * szRowSpan = _getXMLPropValue (static_cast<const gchar *>("rowspan"), atts);
+			const std::string & szStyle   = PP_getAttribute("style", atts);
+			const std::string & szColSpan = PP_getAttribute("colspan", atts);
+			const std::string & szRowSpan = PP_getAttribute("rowspan", atts);
 
 			UT_uint32 colspan = 1;
 			UT_uint32 rowspan = 1;
-			if (szColSpan)
-				{
-					int span = atoi (static_cast<const char *>(szColSpan));
-					if (span > 1)
+			if (!szColSpan.empty())	{
+					int span = stoi(szColSpan);
+					if (span > 1) {
 						colspan = static_cast<UT_uint32>(span);
+					}
 				}
-			if (szRowSpan)
-				{
-					int span = atoi (static_cast<const char *>(szRowSpan));
-					if (span > 1)
+			if (!szRowSpan.empty()) {
+					int span = stoi(szRowSpan);
+					if (span > 1) {
 						rowspan = static_cast<UT_uint32>(span);
+					}
 				}
-			m_TableHelperStack->tdStart (rowspan,colspan, static_cast<const char *>(szStyle));
+			m_TableHelperStack->tdStart (rowspan, colspan, szStyle.c_str());
 		}
 		break;
 #endif /* USE_IE_IMP_TABLEHELPER */
 	case TT_HEAD:
 	case TT_STYLE:
 		// these tags are ignored for the time being
-		goto cleanup;
+		return;
 
 	case TT_TITLE:
 		{
 			X_VerifyParseState(_PS_StyleSec);
 			m_parseState = _PS_MetaData;
 		}
-		goto cleanup;
+		return;
 
 	case TT_META:
 		{
 			if (!isPasting())
 				{
-					const gchar * szName    = _getXMLPropValue (static_cast<const gchar *>("name"),    atts);
-					const gchar * szContent = _getXMLPropValue (static_cast<const gchar *>("content"), atts);
+					const std::string & szName = PP_getAttribute("name", atts);
+					const std::string & szContent = PP_getAttribute("content", atts);
 
-					if (szName && *szName && szContent && *szContent)
+					if (!szName.empty() && !szContent.empty())
 						{
-							if (0 == g_ascii_strcasecmp(szName, "title"))
+							if (0 == g_ascii_strcasecmp(szName.c_str(), "title"))
 								getDoc()->setMetaDataProp(PD_META_KEY_TITLE, szContent);
-							else if (0 == g_ascii_strcasecmp(szName, "author"))
+							else if (0 == g_ascii_strcasecmp(szName.c_str(), "author"))
 								getDoc()->setMetaDataProp(PD_META_KEY_CREATOR, szContent);
-							else if (0 == g_ascii_strcasecmp(szName, "keywords"))
+							else if (0 == g_ascii_strcasecmp(szName.c_str(), "keywords"))
 								getDoc()->setMetaDataProp(PD_META_KEY_KEYWORDS, szContent);
-							else if (0 == g_ascii_strcasecmp(szName, "subject"))
+							else if (0 == g_ascii_strcasecmp(szName.c_str(), "subject"))
 								getDoc()->setMetaDataProp(PD_META_KEY_SUBJECT, szContent);
 						}
 				}
 		}
-		goto cleanup;
-		
+		return;
+
 	case TT_RUBY:
 	case TT_RP:
 	case TT_RT:
@@ -1484,7 +1484,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		// be retained so it can be exported.
 		X_CheckError(requireBlock ());
 		X_CheckError(appendFmt(PP_NOPROPS));
-		goto cleanup;
+		return;
 
 	case TT_MATH:
 		X_VerifyParseState(_PS_Block);
@@ -1497,7 +1497,7 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 		m_bInMath = true;
 		m_pMathBB = new UT_ByteBuf;
 		m_pMathBB->append(reinterpret_cast<const UT_Byte *>("<math xmlns='http://www.w3.org/1998/Math/MathML' display='block'>"), 65);
-		goto cleanup;
+		return;
 
 	case TT_OTHER:
 	default:
@@ -1505,23 +1505,12 @@ void IE_Imp_XHTML::startElement(const gchar *name,
 
 		//It's imperative that we keep processing after finding an unknown element
 
-		goto cleanup;
+		return;
 	}
 	UT_ASSERT(m_error == 0);
 
-  X_Fail:
-  cleanup:
-	gchar ** p = (gchar **) atts;
-	if (p)
-	{
-		while (*p)
-		{
-			FREEP(*p);
-			++p;
-		}
-
-		g_free ((void*)atts);
-	}
+X_Fail:
+	return;
 }
 
 void IE_Imp_XHTML::endElement(const gchar *name)
@@ -1722,17 +1711,14 @@ void IE_Imp_XHTML::endElement(const gchar *name)
 		return;
 
 	case TT_A:
-		if( m_szBookMarkName )
-		{
+		if(!m_szBookMarkName.empty()) {
 			const PP_PropertyVector bm_new_atts = {
 				"type", "end",
 				"name", m_szBookMarkName
 			};
 			X_CheckError(appendObject(PTO_Bookmark, bm_new_atts));
-			FREEP(m_szBookMarkName);
-		}
-		else if (m_parseState == _PS_Block)
-		{
+			m_szBookMarkName.clear();
+		} else if (m_parseState == _PS_Block) {
 			/* if (m_parseState == _PS_Sec) then this is an anchor outside
 			 * of a block, not a hyperlink (see TT_A in startElement)
 			 */

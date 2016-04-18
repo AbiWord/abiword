@@ -263,36 +263,6 @@ bool UT_isWordDelimiter(UT_UCSChar currentChar, UT_UCSChar followChar, UT_UCSCha
 	} // switch
 }
 
-gchar ** UT_cloneAndDecodeAttributes (const gchar ** attrs)
-{
-    UT_UTF8String s;
-    UT_uint32 count = 0;
-    const gchar ** p = attrs;
-
-    while (*p)
-    {
-	count++;
-	p++;
-    }
-
-    UT_return_val_if_fail(count % 2 == 0, NULL);
-
-    gchar ** attrs2 =
-	(gchar **) UT_calloc (count + 1, sizeof (gchar*));
-
-    UT_uint32 i;
-    for (i = 0; i < count; i++)
-    {
-	s = attrs[i];
-	s.decodeXML();
-	attrs2[i] = g_strdup(s.utf8_str());
-    }
-
-    attrs2[i] = NULL;
-
-    return attrs2;
-}
-
 const gchar* UT_getAttribute(const gchar* name, const gchar** atts)
 {
 	UT_return_val_if_fail( atts, NULL );

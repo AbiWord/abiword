@@ -196,7 +196,6 @@ bool IE_Imp_XML::pasteFromBuffer(PD_DocumentRange * pDocRange, const unsigned ch
 
 IE_Imp_XML::~IE_Imp_XML()
 {
-	FREEP(m_currentDataItemName);
 }
 
 IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
@@ -205,7 +204,6 @@ IE_Imp_XML::IE_Imp_XML(PD_Document * pDocument, bool whiteSignificant)
 	  m_lenCharDataSeen(0), m_lenCharDataExpected(0),
 	  m_iOperationCount(0), m_bSeenCR(false),
 	  m_bWhiteSignificant(whiteSignificant), m_bWasSpace(false),
-	  m_currentDataItemName(NULL), 
 	  m_currentRevisionId(0), m_currentRevisionTime(0), m_currentRevisionVersion(0), m_tokens()
 {
 	_data_NewBlock ();

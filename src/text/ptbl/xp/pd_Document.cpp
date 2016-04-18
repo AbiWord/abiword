@@ -5970,41 +5970,47 @@ void PD_Document::StopList(pf_Frag_Strux* sdh )
 }
 
 
-bool PD_Document::appendList(const gchar ** attributes)
+bool PD_Document::appendList(const PP_PropertyVector & attributes)
 {
-	const gchar * szID=NULL, * szPid=NULL, * szType=NULL, * szStart=NULL, * szDelim=NULL, *szDec=NULL;
+	const std::string *szID = NULL;
+	const std::string *szPid = NULL;
+	const std::string *szType = NULL;
+	const std::string *szStart = NULL;
+	const std::string *szDelim = NULL;
+	std::string szDec;
 	UT_uint32 id, parent_id, start;
 	FL_ListType type;
 
-	for (const gchar ** a = attributes; (*a); a++)
-	{
-		if (strcmp(a[0],"id") == 0)
-			szID = a[1];
-		else if (strcmp(a[0], "parentid") == 0)
-			szPid = a[1];
-		else if (strcmp(a[0], "type") == 0)
-			szType = a[1];
-		else if (strcmp(a[0], "start-value") == 0)
-			szStart = a[1];
-		else if (strcmp(a[0], "list-delim") == 0)
-			szDelim = a[1];
-		else if (strcmp(a[0], "list-decimal") == 0)
-			szDec = a[1];
+	for (auto iter = attributes.cbegin();
+		 iter != attributes.cend(); ++iter) {
+
+		const std::string & key = *iter;
+		++iter;
+		if (iter == attributes.cend()) {
+			break;
+		}
+		if (key == "id") {
+			szID = &(*iter);
+		} else if (key == "parentid") {
+			szPid = &(*iter);
+		} else if (key == "type") {
+			szType = &(*iter);
+		} else if (key == "start-value") {
+			szStart = &(*iter);
+		} else if (key == "list-delim") {
+			szDelim = &(*iter);
+		} else if (key == "list-decimal") {
+			szDec = *iter;
+		}
 	}
 
-	if(!szID)
+	if(!szID || !szPid || !szType || !szStart || !szDelim) {
 		return false;
-	if(!szPid)
-		return false;
-	if(!szType)
-		return false;
-	if(!szStart)
-		return false;
-	if(!szDelim)
-		return false;
-	if(!szDec)
-		szDec = static_cast<const gchar *>(".");
-	id = atoi(szID);
+	}
+	if(szDec.empty()) {
+		szDec = ".";
+	}
+	id = stoi(*szID);
 	UT_uint32 i;
 	UT_uint32 numlists = m_vecLists.getItemCount();
 	for(i=0; i < numlists; i++)
@@ -6015,13 +6021,13 @@ bool PD_Document::appendList(const gchar ** attributes)
 	}
 	if(i < numlists)
 		return true; // List is already present
-	parent_id = atoi(szPid);
-	type = static_cast<FL_ListType>(atoi(szType));
-	start = atoi(szStart);
+	parent_id = stoi(*szPid);
+	type = static_cast<FL_ListType>(stoi(*szType));
+	start = stoi(*szStart);
 
 	// this is bad design -- layout items should not be created by the document, only by the view
 	// (the props and attrs of layout items are view-specific due to possible revisions settings !!!)
-	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim,szDec,this,NULL);
+	fl_AutoNum * pAutoNum = new fl_AutoNum(id, parent_id, type, start, szDelim->c_str(), szDec.c_str(), this, NULL);
 	addList(pAutoNum);
 
 	return true;

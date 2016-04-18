@@ -678,20 +678,14 @@ UT_Error IE_Imp_Psion::applyParagraphAttributes(const psiconv_paragraph_layout l
 		// black magickish...
 		if (!list) {
 			list = true;
-			const gchar* propsArray[13];
-			propsArray[0] = (const gchar *) "id";
-			propsArray[1] = global_listid;
-			propsArray[2] = (const gchar *) "parentid";
-			propsArray[3] = (const gchar *) "0";
-			propsArray[4] = (const gchar *) "type";
-			propsArray[5] = (const gchar *) "5";
-			propsArray[6] = (const gchar *) "start-value";
-			propsArray[7] = (const gchar *) "0";
-			propsArray[8] = (const gchar *) "list-delim";
-			propsArray[9] = (const gchar *) "%L";
-			propsArray[10] = (const gchar *) "list-decimal";
-			propsArray[11] = (const gchar *) "NULL";
-			propsArray[12] =(const gchar *)  NULL;
+			const PP_PropertyVector propsArray = {
+				"id", global_listid,
+				"parentid",	"0",
+				"type",	"5",
+				"start-value", "0",
+				"list-delim", "%L",
+				"list-decimal",	"NULL"
+			};
 			getDoc()->appendList(propsArray);
 		}
 	}

@@ -159,7 +159,7 @@ protected:
     UT_NumberStack		m_nstackFmtStartIndex;
 
     UT_ByteBuf		m_currentDataItem;
-    gchar *		m_currentDataItemName;
+    std::string		m_currentDataItemName;
     std::string		m_currentDataItemMimeType;
     bool			m_currentDataItemEncoded;
 

@@ -66,8 +66,8 @@ public:
 
 class ABI_EXPORT IE_Imp_AbiWord_1 : public IE_Imp_XML
 {
-    std::list< std::string > xmlidStackForTextMeta;
-    std::map< std::string, std::string > xmlidMapForBookmarks;
+    std::list<std::string> xmlidStackForTextMeta;
+    std::map<std::string, std::string> xmlidMapForBookmarks;
 
 public:
     IE_Imp_AbiWord_1(PD_Document * pDocument);
@@ -81,9 +81,9 @@ public:
 
 protected:
 
-    const gchar *	_getDataItemName(const gchar ** atts);
-    const gchar *	_getDataItemMimeType(const gchar ** atts);
-    bool				_getDataItemEncoded(const gchar ** atts);
+    static const std::string &	_getDataItemName(const PP_PropertyVector & atts);
+    static std::string 	_getDataItemMimeType(const PP_PropertyVector & atts);
+    static bool			_getDataItemEncoded(const PP_PropertyVector & atts);
 
     bool				_handleImage(const gchar ** atts);
     bool				_handleResource(const gchar ** atts, bool isResource);
