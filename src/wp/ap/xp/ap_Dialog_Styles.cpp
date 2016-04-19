@@ -1486,8 +1486,6 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const gchar * pageLeftMargin,
 						 const gchar * afterSpacing,
 						 const gchar * lineSpacing) const
 {
-  // Whomever designed this preview and the Paragraph dialog should be shot
-
 	AP_Dialog_Paragraph::tAlignState tAlign = AP_Dialog_Paragraph::align_LEFT;
 	AP_Dialog_Paragraph::tIndentState tIndent = AP_Dialog_Paragraph::indent_NONE;
 	AP_Dialog_Paragraph::tSpacingState tSpacing = AP_Dialog_Paragraph::spacing_MULTIPLE;
@@ -1497,53 +1495,52 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const gchar * pageLeftMargin,
 
 	UT_return_if_fail (m_pParaPreview);
 
-	if (!align)
-		goto LblIndent; // skip to the next label if nothing's set here
+	if (align) {
+		if (!strcmp(align, "right"))
+			tAlign = AP_Dialog_Paragraph::align_RIGHT;
+		else if (!strcmp(align, "center"))
+			tAlign = AP_Dialog_Paragraph::align_CENTERED;
+		else if (!strcmp(align, "justify"))
+			tAlign = AP_Dialog_Paragraph::align_JUSTIFIED;
 
-	if (!strcmp(align, "right"))
-		tAlign = AP_Dialog_Paragraph::align_RIGHT;
-	else if (!strcmp(align, "center"))
-		tAlign = AP_Dialog_Paragraph::align_CENTERED;
-	else if (!strcmp(align, "justify"))
-		tAlign = AP_Dialog_Paragraph::align_JUSTIFIED;
-
- LblIndent:
-	if (!firstLineIndent)
-		goto LblSpacing;
-
-	sz = (const char *)firstLineIndent;
-
-	if (UT_convertDimensionless(sz) > (double) 0)
-    {
-		tIndent = AP_Dialog_Paragraph::indent_FIRSTLINE;
-    }
-	else if (UT_convertDimensionless(sz) < (double) 0)
-    {
-		tIndent = AP_Dialog_Paragraph::indent_HANGING;
-    }
-
- LblSpacing:
-	if (!lineSpacing)
-		goto LblSet;
-
-	sz = (const char *)lineSpacing;
-
-	pPlusFound = strrchr(sz, '+');
-	if (pPlusFound && *(pPlusFound + 1) == 0)
-		tSpacing = AP_Dialog_Paragraph::spacing_ATLEAST;
-
-	{
-		if(UT_hasDimensionComponent(sz))
-			tSpacing = AP_Dialog_Paragraph::spacing_EXACTLY;
-		else if(!strcmp("1.0", sz))
-			tSpacing = AP_Dialog_Paragraph::spacing_SINGLE;
-		else if(!strcmp("1.5", sz))
-			tSpacing = AP_Dialog_Paragraph::spacing_ONEANDHALF;
-		else if(!strcmp("2.0", sz))
-			tSpacing = AP_Dialog_Paragraph::spacing_DOUBLE;
 	}
 
- LblSet:
+	if (firstLineIndent) {
+
+		sz = (const char *)firstLineIndent;
+
+		if (UT_convertDimensionless(sz) > (double) 0)
+		{
+			tIndent = AP_Dialog_Paragraph::indent_FIRSTLINE;
+		}
+		else if (UT_convertDimensionless(sz) < (double) 0)
+		{
+			tIndent = AP_Dialog_Paragraph::indent_HANGING;
+		}
+
+	}
+	std::string sLineSpacing;
+	if (lineSpacing) {
+
+		sLineSpacing = lineSpacing;
+		sz = (const char *)lineSpacing;
+
+		pPlusFound = strrchr(sz, '+');
+		if (pPlusFound && *(pPlusFound + 1) == 0) {
+			tSpacing = AP_Dialog_Paragraph::spacing_ATLEAST;
+			// remove the '+'
+			sLineSpacing.resize(sLineSpacing.size() - 1);
+		} else if(UT_hasDimensionComponent(sz)) {
+			tSpacing = AP_Dialog_Paragraph::spacing_EXACTLY;
+		} else if(!strcmp("1.0", sz)) {
+			tSpacing = AP_Dialog_Paragraph::spacing_SINGLE;
+		} else if(!strcmp("1.5", sz)) {
+			tSpacing = AP_Dialog_Paragraph::spacing_ONEANDHALF;
+		} else if(!strcmp("2.0", sz)) {
+			tSpacing = AP_Dialog_Paragraph::spacing_DOUBLE;
+		}
+	}
+
 	m_pParaPreview->setFormat (pageLeftMargin,
 							   pageRightMargin,
 							   tAlign,
@@ -1553,7 +1550,7 @@ void AP_Dialog_Styles::event_paraPreviewUpdated (const gchar * pageLeftMargin,
 							   rightIndent,
 							   beforeSpacing,
 							   afterSpacing,
-							   lineSpacing,
+							   sLineSpacing.c_str(),
 							   tSpacing);
 
 	// force a redraw

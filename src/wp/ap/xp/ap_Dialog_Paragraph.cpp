@@ -198,12 +198,11 @@ bool AP_Dialog_Paragraph::setDialogData(const PP_PropertyVector & pProps)
 		if (!sz.empty())
 		{
 			std::size_t idx = sz.find('+');
-			if ((idx != std::string::npos) && (idx + 1 < sz.size()))
+			if ((idx != std::string::npos) && (idx + 1 == sz.size()))
 			{
 				_setMenuItemValue(id_MENU_SPECIAL_SPACING, spacing_ATLEAST, op_INIT);
 
 				// need to strip off that plus
-
 				std::string val = sz.substr(0, idx);
 				_setSpinItemValue(id_SPIN_SPECIAL_SPACING, val.c_str(), op_INIT);
 			}
