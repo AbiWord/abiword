@@ -254,9 +254,9 @@ TFTEST_MAIN("PP_AttrProp - add props/attr")
     PP_AttrProp attrProps;
 
     TFPASSEQ(attrProps.getPropertyCount(), 0);
-    TFPASS(attrProps.hasProperties());
+    TFPASS(!attrProps.hasProperties());
     TFPASSEQ(attrProps.getAttributeCount(), 0);
-    TFPASS(attrProps.hasAttributes());
+    TFPASS(!attrProps.hasAttributes());
 
     attrProps.setAttributes(attr1);
     TFPASSEQ(attrProps.getAttributeCount(), attr1.size() / 2);
