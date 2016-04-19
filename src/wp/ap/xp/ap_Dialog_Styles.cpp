@@ -1416,9 +1416,12 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 		};
 		if(!isNew)
 		{
-			attrib[3] = getAttsVal(PT_TYPE_ATTRIBUTE_NAME);
-			attrib[5] = getAttsVal("basedon");
-			attrib[7] = getAttsVal("followedby");
+			const char* val = getAttsVal(PT_TYPE_ATTRIBUTE_NAME);
+			attrib[3] = val ? val : "";
+			val = getAttsVal("basedon");
+			attrib[5] = val ? val : "";
+			val = getAttsVal("followedby");
+			attrib[7] = val ? val : "";
 		}
 		getLDoc()->appendStyle(attrib);
 	}
