@@ -875,7 +875,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 		{
 			for(UT_uint32 i = 0; i < NUM_PARAPROPS; i++)
 			{
-				std::string value = PP_getAttribute(paraFields[i], props);
+				const std::string & value = PP_getAttribute(paraFields[i], props);
 				if(!value.empty())
 				{
 					addOrReplaceVecProp(paraFields[i], value.c_str());
@@ -1306,8 +1306,6 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	}
 	getLView()->cmdCharInsert((UT_UCSChar *) sz1,len1);
 
-	std::string pszFGColor;
-	std::string pszBGColor;
 	static std::string Grey;
 	static std::string szFGColor;
 	UT_RGBColor FGColor(0,0,0);
@@ -1317,8 +1315,8 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 
 	PP_PropertyVector props_in;
 	getLView()->getCharFormat(props_in);
-	pszFGColor = PP_getAttribute("color", props_in);
-	pszBGColor = PP_getAttribute("bgcolor", props_in);
+	const std::string & pszFGColor = PP_getAttribute("color", props_in);
+	const std::string & pszBGColor = PP_getAttribute("bgcolor", props_in);
 	if(!pszFGColor.empty()) {
 		UT_parseColor(pszFGColor.c_str(),FGColor);
 	}
@@ -1327,7 +1325,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 //
 	szFGColor = UT_std_string_sprintf("%02x%02x%02x",FGColor.m_red,
 									  FGColor.m_grn, FGColor.m_blu);
-	if(!pszBGColor.empty())
+	if(pszBGColor.empty())
 	{
 		pageCol = getLView()->getCurrentPage()->getFillType().getColor();
 		Grey = UT_std_string_sprintf("%02x%02x%02x",(pageCol->m_red+FGColor.m_red)/2,
@@ -1436,8 +1434,8 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 //
 // Set Color Back
 //
-	pszFGColor = PP_getAttribute("color", lprop);
-	if(!pszFGColor.empty())
+	const std::string & pszFGColorL = PP_getAttribute("color", lprop);
+	if(pszFGColorL.empty())
 	{
 		const PP_PropertyVector FGCol = {
 			"color", szFGColor

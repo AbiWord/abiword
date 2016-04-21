@@ -132,7 +132,7 @@ static bool _getTranslationCode (FV_View * pView, UT_String & langCode)
   PP_PropertyVector props_in;
   if (pView->getCharFormat(props_in))
     {
-      std::string xml_code = PP_getAttribute("lang", props_in);
+      const std::string & xml_code = PP_getAttribute("lang", props_in);
       if (!xml_code.empty())
 	{
 	  code = xml_code ;

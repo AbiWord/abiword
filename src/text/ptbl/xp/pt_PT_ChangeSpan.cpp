@@ -435,8 +435,8 @@ bool pt_PieceTable::_realChangeSpanFmt(PTChangeFmt ptc,
 // style (they exist there) to specifc values in strux (if not overridden by
 // the style) then finally to default value.
 //
-		const std::string szStyle = PP_getAttribute(PT_STYLE_ATTRIBUTE_NAME,
-												attributes);
+		const std::string & szStyle = PP_getAttribute(PT_STYLE_ATTRIBUTE_NAME,
+													  attributes);
 		PD_Style * pStyle = NULL;
 		UT_return_val_if_fail (!szStyle.empty(),false);
 		getDocument()->getStyle(szStyle.c_str(),&pStyle);

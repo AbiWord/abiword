@@ -51,7 +51,7 @@ bool pt_PieceTable::appendStrux(PTStruxType pts, const PP_PropertyVector & attri
 
 	if(!attributes.empty())
 	{
-		std::string pXID = PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		const std::string & pXID = PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
 		if(!pXID.empty())
 		{
@@ -429,7 +429,7 @@ bool pt_PieceTable::appendObject(PTObjectType pto, const PP_PropertyVector & att
 		UT_uint32 iXID = 0;
 		if(!pXID.empty())
 		{
-			iXID = atoi(pXID.c_str());
+			iXID = stoi(pXID);
 			pfo->setXID(iXID);
 		}
 	}
@@ -459,11 +459,11 @@ bool pt_PieceTable::insertStruxBeforeFrag(pf_Frag * pF, PTStruxType pts,
 
 	if(!attributes.empty())
 	{
-		std::string pXID = PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		const std::string & pXID = PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
 		if(!pXID.empty())
 		{
-			iXID = atoi(pXID.c_str());
+			iXID = stoi(pXID);
 			pfs->setXID(iXID);
 		}
 	}
@@ -554,11 +554,11 @@ bool pt_PieceTable::insertObjectBeforeFrag(pf_Frag * pF, PTObjectType pto,
 
 	if(!attributes.empty())
 	{
-		std::string pXID = PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
+		const std::string & pXID = PP_getAttribute(PT_XID_ATTRIBUTE_NAME, attributes);
 		UT_uint32 iXID = 0;
 		if(!pXID.empty())
 		{
-			iXID = atoi(pXID.c_str());
+			iXID = stoi(pXID);
 			pfo->setXID(iXID);
 		}
 	}

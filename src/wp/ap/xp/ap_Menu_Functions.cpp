@@ -1077,12 +1077,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_CharFmt)
 	{
 		// get current font info from pView
 		PP_PropertyVector props_in;
-		std::string sz;
 
 		if (!pView->getCharFormat(props_in))
 			return s;
 
-		sz = PP_getAttribute(prop, props_in);
+		const std::string & sz = PP_getAttribute(prop, props_in);
 		if (!sz.empty())
 		{
 			if (bMultiple)
@@ -1149,12 +1148,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_BlockFmt)
 	{
 		// get current font info from pView
 		PP_PropertyVector props_in;
-		std::string sz;
 
 		if (!pView->getBlockFormat(props_in))
 			return s;
 
-		sz = PP_getAttribute(prop, props_in);
+		const std::string & sz = PP_getAttribute(prop, props_in);
 		if (sz == val)
 			s = EV_MIS_Toggled;
 	}
@@ -1238,12 +1236,11 @@ Defun_EV_GetMenuItemState_Fn(ap_GetState_SectFmt)
 	{
 		// get current font info from pView
 		PP_PropertyVector props_in;
-		std::string sz;
 
 		if (!pView->getSectionFormat(props_in))
 			return s;
 
-		sz = PP_getAttribute(prop, props_in);
+		const std::string & sz = PP_getAttribute(prop, props_in);
 		if (sz == val)
 			s = EV_MIS_Toggled;
 	}

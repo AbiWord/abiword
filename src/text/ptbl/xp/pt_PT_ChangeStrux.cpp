@@ -583,7 +583,7 @@ bool pt_PieceTable::_realChangeStruxFmt(PTChangeFmt ptc,
 		const gchar * sOldStyleBlock = NULL;
 		const gchar * sStyleMainBlock = NULL;
 		std::vector <std::string> vPropNames;
-		std::string szStyle = PP_getAttribute(PT_STYLE_ATTRIBUTE_NAME,attributes);
+		const std::string & szStyle = PP_getAttribute(PT_STYLE_ATTRIBUTE_NAME, attributes);
 		PD_Style * pStyle = NULL;
 		getDocument()->getStyle(szStyle.c_str(), &pStyle);
 		UT_return_val_if_fail (pStyle,false);

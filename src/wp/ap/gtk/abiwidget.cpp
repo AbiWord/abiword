@@ -521,7 +521,7 @@ static void _abi_widget_class_install_signals (AbiWidgetClass * klazz)
 #define FIRE_UTF8STRING(query, var, fire) do { const UT_UTF8String& val = (query); if (val != var) { var = val; fire(val.utf8_str()); } } while(0)
 
 #define FIRE_BOOL_CHARFMT(prop, prop_val, multiple, var, fire) do {\
-std::string sz = PP_getAttribute(prop, props_in);                \
+const std::string & sz = PP_getAttribute(prop, props_in);                \
 if (!sz.empty())                                                 \
 { bool val; \
 if (multiple) \
@@ -535,11 +535,11 @@ fire(var); \
 } \
 } while(0)
 
-#define FIRE_DOUBLE_CHARFMT(prop, var, fire) do { std::string sz = PP_getAttribute(prop, props_in); if (!sz.empty()) { double val = g_ascii_strtod(sz.c_str(), NULL); if (val != var) { var = val; fire(val); } } } while(0)
+#define FIRE_DOUBLE_CHARFMT(prop, var, fire) do { const std::string & sz = PP_getAttribute(prop, props_in); if (!sz.empty()) { double val = g_ascii_strtod(sz.c_str(), NULL); if (val != var) { var = val; fire(val); } } } while(0)
 
-#define FIRE_STRING_CHARFMT(prop, var, fire) do { std::string sz = PP_getAttribute(prop, props_in); if (!sz.empty()) { if (strcmp(var.utf8_str(), sz.c_str()) != 0) { var = sz; fire(sz.c_str()); } } } while(0)
+#define FIRE_STRING_CHARFMT(prop, var, fire) do { const std::string & sz = PP_getAttribute(prop, props_in); if (!sz.empty()) { if (strcmp(var.utf8_str(), sz.c_str()) != 0) { var = sz; fire(sz.c_str()); } } } while(0)
 
-#define FIRE_COLOR_CHARFMT(prop, var, fire) do { std::string sz = PP_getAttribute(prop, props_in); if (!sz.empty()) { UT_RGBColor val(0,0,0); UT_parseColor(sz.c_str(), val); if (val != var) { var = val; fire(val); } } } while(0)
+#define FIRE_COLOR_CHARFMT(prop, var, fire) do { const std::string & sz = PP_getAttribute(prop, props_in); if (!sz.empty()) { UT_RGBColor val(0,0,0); UT_parseColor(sz.c_str(), val); if (val != var) { var = val; fire(val); } } } while(0)
 
 #define TOOLBAR_DELAY 1000 /* in milliseconds */
 

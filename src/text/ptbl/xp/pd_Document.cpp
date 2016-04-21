@@ -519,9 +519,9 @@ UT_sint32 PD_Document::getLastAuthorInt(void) const
 bool PD_Document:: addAuthorAttributeIfBlank(PP_PropertyVector & atts)
 {
 	// Set Author attribute
-	std::string author = PP_getAttribute(PT_AUTHOR_NAME, atts);
+	const std::string & author = PP_getAttribute(PT_AUTHOR_NAME, atts);
 	if (!author.empty()) {
-		m_iLastAuthorInt = atoi(author.c_str());
+		m_iLastAuthorInt = stoi(author);
 		return true;
 	}
 	if(getMyAuthorInt() == -1)
@@ -533,10 +533,9 @@ bool PD_Document:: addAuthorAttributeIfBlank(PP_PropertyVector & atts)
 		sendAddAuthorCR(pA);
 	}
 
-	author = UT_std_string_sprintf("%d",getMyAuthorInt());
 	m_iLastAuthorInt = getMyAuthorInt();
 	atts.push_back(PT_AUTHOR_NAME);
-	atts.push_back(author);
+	atts.push_back(UT_std_string_sprintf("%d", getMyAuthorInt()));
 
 	return false;
 }
@@ -6452,10 +6451,10 @@ bool PD_Document::setAttrProp(const PP_PropertyVector & ppAttr)
 	{
 		// have an AP and given something to add to it
 		// first, we need to take care of the top-xid attribute
-		const std::string pXID = PP_getAttribute("top-xid", ppAttr);
+		const std::string & pXID = PP_getAttribute("top-xid", ppAttr);
 		if(!pXID.empty())
 		{
-			UT_uint32 iXID = atoi(pXID.c_str());
+			UT_uint32 iXID = stoi(pXID);
 			m_pPieceTable->setXIDThreshold(iXID);
 		}
 

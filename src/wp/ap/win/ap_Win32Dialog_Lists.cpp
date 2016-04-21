@@ -1064,11 +1064,11 @@ void AP_Win32Dialog_Lists::_selectFont()
 	{
 		// stuff font properties into the dialog.
 
-		std::string sFontFamily = PP_getAttribute("font-family", props_in);
-		std::string sFontSize = PP_getAttribute("font-size", props_in);
-		std::string sFontWeight = PP_getAttribute("font-weight", props_in);
-		std::string sFontStyle = PP_getAttribute("font-style", props_in);
-		std::string sColor = PP_getAttribute("color", props_in);
+		const std::string & sFontFamily = PP_getAttribute("font-family", props_in);
+		const std::string & sFontSize = PP_getAttribute("font-size", props_in);
+		const std::string & sFontWeight = PP_getAttribute("font-weight", props_in);
+		const std::string & sFontStyle = PP_getAttribute("font-style", props_in);
+		const std::string & sColor = PP_getAttribute("color", props_in);
 
 		pDialog->setFontFamily(sFontFamily);
 		pDialog->setFontSize(sFontSize);
@@ -1081,7 +1081,7 @@ void AP_Win32Dialog_Lists::_selectFont()
 		// worry about initializing a combo box with a choice
 		// (and because they are all stuck under one CSS attribute).
 
-                std::string s = PP_getAttribute("text-decoration", props_in);
+                const std::string & s = PP_getAttribute("text-decoration", props_in);
 		if (!s.empty())
 		{
 			bUnderline = s.find("underline") != std::string::npos;

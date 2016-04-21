@@ -135,8 +135,7 @@ void AP_Dialog_Tab::_populateWindowData(void)
 
 	if (!propsBlock.empty())
 	{
-		std::string sz = PP_getAttribute("default-tab-interval", propsBlock);
-
+		const std::string & sz = PP_getAttribute("default-tab-interval", propsBlock);
 		if(!sz.empty())
 		{
 			double inches = UT_convertToInches(sz.c_str());

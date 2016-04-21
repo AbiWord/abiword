@@ -7800,13 +7800,13 @@ UT_return_val_if_fail(pDialog, false);
 		// which change across the selection, we ask the dialog not
 		// to set the field (by passing "").
 
-		std::string sFontFamily = PP_getAttribute("font-family", props_in);
-		std::string sTextTransform = PP_getAttribute("text-transform", props_in);
-		std::string sFontSize = PP_getAttribute("font-size", props_in);
-		std::string sFontWeight = PP_getAttribute("font-weight", props_in);
-		std::string sFontStyle = PP_getAttribute("font-style", props_in);
-		std::string sColor = PP_getAttribute("color", props_in);
-		std::string sBGColor = PP_getAttribute("bgcolor", props_in);
+		const std::string & sFontFamily = PP_getAttribute("font-family", props_in);
+		const std::string & sTextTransform = PP_getAttribute("text-transform", props_in);
+		const std::string & sFontSize = PP_getAttribute("font-size", props_in);
+		const std::string & sFontWeight = PP_getAttribute("font-weight", props_in);
+		const std::string & sFontStyle = PP_getAttribute("font-style", props_in);
+		const std::string & sColor = PP_getAttribute("color", props_in);
+		const std::string & sBGColor = PP_getAttribute("bgcolor", props_in);
 
 		pDialog->setFontFamily(sFontFamily);
 		pDialog->setTextTransform(sTextTransform);
@@ -7836,7 +7836,7 @@ UT_return_val_if_fail(pDialog, false);
 		bool bTopLine = false;
 		bool bBottomLine = false;
 
-		std::string s = PP_getAttribute("text-decoration", props_in);
+		const std::string & s = PP_getAttribute("text-decoration", props_in);
 		if (!s.empty())
 		{
 			bUnderline = (s.find("underline") != std::string::npos);
@@ -7848,27 +7848,22 @@ UT_return_val_if_fail(pDialog, false);
 		pDialog->setFontDecoration(bUnderline,bOverline,bStrikeOut,bTopLine,bBottomLine);
 
 		bool bHidden = false;
-		std::string h = PP_getAttribute("display", props_in);
-		if(!h.empty())
+		const std::string & disp = PP_getAttribute("display", props_in);
+		if(!disp.empty())
 		{
-			bHidden = (h.find("none") != std::string::npos);
+			bHidden = (disp.find("none") != std::string::npos);
 		}
 		pDialog->setHidden(bHidden);
 
 		bool bSuperScript = false;
-		h = PP_getAttribute("text-position", props_in);
-		if(!h.empty())
+		bool bSubScript = false;
+		const std::string & textPos = PP_getAttribute("text-position", props_in);
+		if(!textPos.empty())
 		{
-			bSuperScript = (h.find("superscript") != std::string::npos);
+			bSuperScript = (textPos.find("superscript") != std::string::npos);
+			bSubScript = (textPos.find("subscript") != std::string::npos);
 		}
 		pDialog->setSuperScript(bSuperScript);
-
-		bool bSubScript = false;
-		h = PP_getAttribute("text-position", props_in);
-		if(!h.empty())
-		{
-			bSubScript = (h.find("subscript") != std::string::npos);
-		}
 		pDialog->setSubScript(bSubScript);
 	}
 
@@ -8301,7 +8296,7 @@ static bool _fontSizeChange(FV_View * pView, bool bIncrease)
 	pView->getCharFormat(span_props);
 	UT_return_val_if_fail(!span_props.empty(), false);
 
-	std::string s = PP_getAttribute("font-size", span_props);
+	const std::string & s = PP_getAttribute("font-size", span_props);
 
 	if(s.empty())
 		return false;
@@ -8552,7 +8547,7 @@ static bool _toggleSpanOrBlock(FV_View * pView,
 		prop, vOn
 	};
 
-	std::string s = PP_getAttribute(prop, props_in);
+	const std::string & s = PP_getAttribute(prop, props_in);
 	if (!s.empty())
 	{
 		if (bMultiple)
@@ -11605,8 +11600,8 @@ static bool s_doFormatImageDlg(FV_View * pView, EV_EditMethodCallData * pCallDat
 	{
 	  // stuff properties into the dialog.
 
-	  std::string szWidth = PP_getAttribute("width", props_in);
-	  std::string szHeight = PP_getAttribute("height", props_in);
+	  const std::string & szWidth = PP_getAttribute("width", props_in);
+	  const std::string & szHeight = PP_getAttribute("height", props_in);
 
 	  const gchar* szTitle = 0;
 	  const gchar* szDescription = 0;
@@ -12031,7 +12026,6 @@ UT_return_val_if_fail(pDialog, false);
 	bool bMaxHeight = false;
 
 	PP_PropertyVector props_in;
-	std::string sz;
 
 	bool bResult = pView->getSectionFormat(props_in);
 
@@ -12041,10 +12035,10 @@ UT_return_val_if_fail(pDialog, false);
 	}
 
 	// NB: maybe *no* properties are consistent across the selection
-	sz = PP_getAttribute("columns", props_in);
+	const std::string & sz = PP_getAttribute("columns", props_in);
 	if (!sz.empty())
 	{
-		iColumns = atoi(sz.c_str());
+		iColumns = stoi(sz);
 	}
 
 	if ( iColumns > 1 )
@@ -13763,7 +13757,7 @@ UT_return_val_if_fail(pDialog, false);//
 //
 	PP_PropertyVector propsChar;
 	pView->getCharFormat(propsChar);
-	std::string pszChar = PP_getAttribute("color",propsChar);
+	const std::string & pszChar = PP_getAttribute("color",propsChar);
 	pDialog->setColor(pszChar.c_str());
 //
 // Set the dialog to Foreground Color Mode.
@@ -13809,7 +13803,7 @@ UT_return_val_if_fail(pDialog, false);//
 //
 	PP_PropertyVector propsChar;
 	pView->getCharFormat(propsChar);
-	std::string pszChar = PP_getAttribute("bgcolor", propsChar);
+	const std::string & pszChar = PP_getAttribute("bgcolor", propsChar);
 	pDialog->setColor(pszChar.c_str());
 //
 // Set the dialog to Highlight Color Mode.
@@ -13855,7 +13849,7 @@ UT_return_val_if_fail(pDialog, false);
 //
 	PP_PropertyVector propsSection;
 	pView->getSectionFormat(propsSection);
-	std::string background = PP_getAttribute("background-color", propsSection);
+	const std::string & background = PP_getAttribute("background-color", propsSection);
 	pDialog->setColor(background.c_str());
 
 	pDialog->runModal (pFrame);
@@ -13963,8 +13957,8 @@ UT_return_val_if_fail(pDialog, false);//
 	}
 	PP_PropertyVector propsSectionIn;
 	pView->getSectionFormat(propsSectionIn);
-	std::string restart = PP_getAttribute("section-restart", propsSectionIn);
-	std::string restartValue1 =
+	const std::string & restart = PP_getAttribute("section-restart", propsSectionIn);
+	const std::string & restartValue1 =
 		PP_getAttribute("section-restart-value", propsSectionIn);
 	bool bRestart = restart == "1";
 	UT_sint32 restartValue = 1;

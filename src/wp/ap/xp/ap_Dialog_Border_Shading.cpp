@@ -468,12 +468,11 @@ void AP_Dialog_Border_Shading::_createPreviewFromGC(GR_Graphics * gc,
 
 bool AP_Dialog_Border_Shading::_getToggleButtonStatus(const char * lineStyle) const
 {
-	std::string pszStyle;
 	std::string lsOff = UT_std_string_sprintf("%d", LS_OFF);
 
-	pszStyle = PP_getAttribute(lineStyle, m_vecProps);
+	const std::string & sStyle = PP_getAttribute(lineStyle, m_vecProps);
 
-	if (pszStyle != lsOff) {
+	if (sStyle != lsOff) {
 		return true;
 	} else {
 		return false;
@@ -578,12 +577,10 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 //
 //  Draw the cell background (Shading)
 //
-	std::string shadingPattern;
-
-	shadingPattern = PP_getAttribute("shading-pattern", props);
+	const std::string & shadingPattern = PP_getAttribute("shading-pattern", props);
 
 	if(shadingPattern != BORDER_SHADING_SHADING_DISABLE) {
-		std::string shadingColor = PP_getAttribute("shading-foreground-color", props);
+		const std::string & shadingColor = PP_getAttribute("shading-foreground-color", props);
 		if (!shadingColor.empty())
 		{
 			UT_parseColor(shadingColor.c_str(), tmpCol);
@@ -627,14 +624,14 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 	// top border
 	if (m_pBorderShading->getTopToggled())
 	{
-		const std::string topColor = PP_getAttribute("top-color", props);
+		const std::string & topColor = PP_getAttribute("top-color", props);
 		if (!topColor.empty()) {
 			UT_parseColor(topColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
 		} else {
 			m_gc->setColor(black);
 		}
-		const std::string topThickness = PP_getAttribute("top-thickness", props);
+		const std::string & topThickness = PP_getAttribute("top-thickness", props);
 		if(!topThickness.empty()) {
 			UT_sint32 iTopThickness = UT_convertToLogicalUnits(topThickness.c_str());
 			m_gc->setLineWidth(iTopThickness);
@@ -649,14 +646,14 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 	// left border
 	if (m_pBorderShading->getLeftToggled())
 	{
-		const std::string leftColor = PP_getAttribute("left-color", props);
+		const std::string & leftColor = PP_getAttribute("left-color", props);
 		if (!leftColor.empty())	{
 			UT_parseColor(leftColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
 		} else {
 			m_gc->setColor(black);
 		}
-		const std::string leftThickness = PP_getAttribute("left-thickness", props);
+		const std::string & leftThickness = PP_getAttribute("left-thickness", props);
 		if(!leftThickness.empty()) {
 			UT_sint32 iLeftThickness = UT_convertToLogicalUnits(leftThickness.c_str());
 			m_gc->setLineWidth(iLeftThickness);
@@ -670,14 +667,14 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 	// right border
 	if (m_pBorderShading->getRightToggled())
 	{
-		const std::string rightColor = PP_getAttribute("right-color", props);
+		const std::string & rightColor = PP_getAttribute("right-color", props);
 		if (!rightColor.empty()) {
 			UT_parseColor(rightColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
 		} else {
 			m_gc->setColor(black);
 		}
-		const std::string rightThickness = PP_getAttribute("right-thickness", props);
+		const std::string & rightThickness = PP_getAttribute("right-thickness", props);
 		if(!rightThickness.empty()) {
 			UT_sint32 iRightThickness = UT_convertToLogicalUnits(rightThickness.c_str());
 			m_gc->setLineWidth(iRightThickness);
@@ -691,14 +688,14 @@ void AP_Border_Shading_preview::draw(const UT_Rect *clip)
 	// bottom border
 	if (m_pBorderShading->getBottomToggled())
 	{
-		const std::string bottomColor = PP_getAttribute("bot-color", props);
+		const std::string & bottomColor = PP_getAttribute("bot-color", props);
 		if (!bottomColor.empty()) {
 			UT_parseColor(bottomColor.c_str(), tmpCol);
 			m_gc->setColor(tmpCol);
 		} else {
 			m_gc->setColor(black);
 		}
-		const std::string botThickness = PP_getAttribute("bot-thickness", props);
+		const std::string & botThickness = PP_getAttribute("bot-thickness", props);
 		if(!botThickness.empty()) {
 			UT_sint32 iBotThickness = UT_convertToLogicalUnits(botThickness.c_str());
 			m_gc->setLineWidth(iBotThickness);

@@ -4685,24 +4685,21 @@ void FL_DocLayout::considerSmartQuoteCandidateAt(fl_BlockLayout *block, UT_uint3
 			}
 
 			// 2nd - Not using custom quotes, look up doc lang
-			if (!bOK2 || !bUseCustomQuotes)
-			{
-				std::string lang;
+			if (!bOK2 || !bUseCustomQuotes)	{
 				PP_PropertyVector props_in;
-				if (m_pView->getCharFormat(props_in))
-				{
-					lang = PP_getAttribute("lang", props_in);
-				}
 
-				if (!lang.empty())
-				{
-					const XAP_LangInfo* found = XAP_EncodingManager::findLangInfoByLocale(lang.c_str());
-					if (found)
-					{
-						nOuterQuoteStyleIndex = found->outerQuoteIdx;
-						nInnerQuoteStyleIndex = found->innerQuoteIdx;
+				if (m_pView->getCharFormat(props_in)) {
+					const std::string & lang = PP_getAttribute("lang", props_in);
+
+					if (!lang.empty()) {
+						const XAP_LangInfo* found = XAP_EncodingManager::findLangInfoByLocale(lang.c_str());
+						if (found) {
+							nOuterQuoteStyleIndex = found->outerQuoteIdx;
+							nInnerQuoteStyleIndex = found->innerQuoteIdx;
+						}
 					}
 				}
+
 			}
 
 			// 3rd - bad thing happened, go with English

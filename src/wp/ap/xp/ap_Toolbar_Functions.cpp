@@ -580,7 +580,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_CharFmt)
 			return s;
 
 		// NB: maybe *no* properties are consistent across the selection
-		std::string sz = PP_getAttribute(prop, props_in);
+		const std::string & sz = PP_getAttribute(prop, props_in);
 
 		if (!sz.empty())
 		{
@@ -679,7 +679,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_SectionFmt)
 			return s;
 		}
 		// NB: maybe *no* properties are consistent across the selection
-		std::string sz = PP_getAttribute(prop, props_in);
+		const std::string & sz = PP_getAttribute(prop, props_in);
 
 		if (!sz.empty())
 		{
@@ -782,7 +782,7 @@ Defun_EV_GetToolbarItemState_Fn(ap_ToolbarGetState_BlockFmt)
 			return s;
 
 		// NB: maybe *no* properties are consistent across the selection
-		std::string sz = PP_getAttribute(prop, props_in);
+		const std::string & sz = PP_getAttribute(prop, props_in);
 
 		if (!sz.empty())
 		{

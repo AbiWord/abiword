@@ -354,7 +354,7 @@ bool pt_PieceTable::appendStyle(const PP_PropertyVector & attributes)
 	// verify unique name
 
 	UT_ASSERT_HARMLESS(sizeof(char) == sizeof(gchar));
-	std::string name = PP_getAttribute(PT_NAME_ATTRIBUTE_NAME, attributes);
+	const std::string & name = PP_getAttribute(PT_NAME_ATTRIBUTE_NAME, attributes);
 	if (name.empty())
 	{
 		UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);

@@ -5621,7 +5621,7 @@ bool FV_View::setBlockFormat(const PP_PropertyVector & properties)
 	bool bDomDirChange = false;
 	UT_BidiCharType iDomDir = UT_BIDI_LTR;
 
-	std::string rtl = PP_getAttribute("dom-dir", properties);
+	const std::string & rtl = PP_getAttribute("dom-dir", properties);
 	if (!rtl.empty()) {
 		bDomDirChange = true;
 		if (rtl == "rtl") {
@@ -7950,7 +7950,7 @@ void FV_View::insertSymbol(UT_UCSChar c, const gchar * symfont)
 
 	PP_PropertyVector props_in;
 	getCharFormat(props_in);
-	std::string currentfont = PP_getAttribute("font-family",props_in);
+	const std::string & currentfont = PP_getAttribute("font-family",props_in);
 	std::string ssymfont = symfont;
 	if(ssymfont.find(currentfont) == std::string::npos)
 	{

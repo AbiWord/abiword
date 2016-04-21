@@ -183,10 +183,10 @@ void AP_Dialog_Columns::setViewAndDoc(XAP_Frame * pFrame)
 		UT_DEBUGMSG(("SEVIOR: Initial Height string = %s \n",pszMaxHeight));
 		m_HeightString = pszMaxHeight;
 	}
-	std::string pszMarginTop = PP_getAttribute("page-margin-top",pszSecProps);
-	std::string pszMarginBottom =  PP_getAttribute("page-margin-bottom",pszSecProps);
-	std::string pszMarginLeft =  PP_getAttribute("page-margin-left",pszSecProps);
-	std::string pszMarginRight =  PP_getAttribute("page-margin-right",pszSecProps);
+	const std::string & pszMarginTop = PP_getAttribute("page-margin-top",pszSecProps);
+	const std::string & pszMarginBottom =  PP_getAttribute("page-margin-bottom",pszSecProps);
+	const std::string & pszMarginLeft =  PP_getAttribute("page-margin-left",pszSecProps);
+	const std::string & pszMarginRight =  PP_getAttribute("page-margin-right",pszSecProps);
 	if(pszMarginTop.empty())
 	{
 		m_dMarginTop = UT_convertToInches(pszMarginTop.c_str());
