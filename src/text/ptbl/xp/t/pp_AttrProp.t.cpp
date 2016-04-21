@@ -157,11 +157,11 @@ TFTEST_MAIN("PP_cloneAndDecodeAttributes")
     TFPASS(props[1] == "& < > \"");
     TFPASS(props[2] == "props");
 
-    const char *attr2[] = {
+    const char *attrs2[] = {
         "inline", "&amp; &lt; &gt; &quot;",
         "props", NULL
     };
-    props = PP_cloneAndDecodeAttributes(attr2);
+    props = PP_cloneAndDecodeAttributes(attrs2);
     TFPASSEQ(props.size(), 4);
     TFPASS(props[3] == "");
 }
@@ -247,6 +247,23 @@ TFTEST_MAIN("PP_std_setPropsToNothing")
     TFPASS(PP_hasAttribute("style", attr));
     TFPASS(PP_hasAttribute("oddProp", attr)); // it is in there now.
     TFPASS(!PP_hasAttribute("bar", attr));
+}
+
+TFTEST_MAIN("PP_AttrProp checksum")
+{
+    PP_AttrProp attrProps;
+
+    attrProps.setAttributes(true_attr);
+    attrProps.markReadOnly();
+    UT_uint32 cs = attrProps.getCheckSum();
+    TFPASSEQ(cs, 0xe526f92f);
+
+    PP_AttrProp attrProps2;
+
+    attrProps2.setAttributes(attr1);
+    attrProps2.markReadOnly();
+    cs = attrProps2.getCheckSum();
+    TFPASSEQ(cs, 0x3e4923f0);
 }
 
 TFTEST_MAIN("PP_AttrProp - add props/attr")
