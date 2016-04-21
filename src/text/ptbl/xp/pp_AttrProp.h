@@ -23,8 +23,8 @@
 #ifndef PP_ATTRPROP_H
 #define PP_ATTRPROP_H
 
-#include <map>
 #include <memory>
+#include <unordered_map>
 #include <utility>
 
 #include "ut_types.h"
@@ -80,8 +80,8 @@ class ABI_EXPORT PP_RevisionState
 class ABI_EXPORT PP_AttrProp
 {
 public:
-	typedef std::map<std::string, std::string> attributes_t;
-	typedef std::map<std::string, std::string> properties_t;
+	typedef std::unordered_map<std::string, std::string> attributes_t;
+	typedef std::unordered_map<std::string, std::string> properties_t;
 
 	PP_AttrProp();
 	virtual ~PP_AttrProp();
