@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2009 Hubert Figuiere
@@ -71,19 +72,8 @@ class ABI_EXPORT AP_Dialog_Styles : public XAP_Dialog_NonPersistent
 	PD_Document * getLDoc(void) const;
 	void drawLocal(void);
 	void destroyAbiPreview(void);
-	void removeVecProp(const gchar * pszProp);
-	void addOrReplaceVecProp(const gchar * pszProp,  const gchar * pszVal);
-	/* helper version with std::string */
-	void addOrReplaceVecProp(const gchar * pszProp,
-				 const std::string &szVal)
-	{
-		addOrReplaceVecProp(pszProp, szVal.c_str());
-	}
-	void addOrReplaceVecAttribs(const gchar * pszProp,  const gchar * pszVal);
 	void fillVecWithProps(const gchar * szStyle, bool bReplaceAttributes);
 	void fillVecFromCurrentPoint(void);
-	const gchar * getAttsVal(const gchar * szProp) const;
-	const std::string getPropsVal(const gchar * szProp) const;
 	const gchar * getVecVal(const UT_Vector * v, const gchar * szProp) const;
 	void ModifyLists(void);
 	void ModifyFont(void);
@@ -115,8 +105,8 @@ protected:
 	AP_Preview_Paragraph  *		  m_pParaPreview;
 	XAP_Preview_FontPreview *	  m_pCharPreview;
 	AP_Preview_Abi *	          m_pAbiPreview;
-	UT_GenericVector<const gchar*> m_vecAllProps;
-	UT_GenericVector<const gchar*> m_vecAllAttribs;
+	PP_PropertyVector             m_vecAllProps;
+	PP_PropertyVector             m_vecAllAttribs;
 
 private:
 	XAP_Frame *                   m_pFrame;

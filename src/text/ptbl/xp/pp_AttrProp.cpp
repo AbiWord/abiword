@@ -1333,6 +1333,32 @@ void PP_AttrProp::miniDump(const PD_Document * pDoc) const
 #endif
 }
 
+std::string PP_makePropString(const PP_PropertyVector & props)
+{
+	std::string propString;
+
+	std::size_t countp = props.size();
+	// make sure we have an even number.
+	if (countp % 2) {
+		countp--;
+	}
+	for(std::size_t i = 0; i < countp; i += 2) {
+		propString += props[i];
+		propString += ":";
+
+		const std::string & value = props[i + 1];
+		if(!value.empty()) {
+		    propString += value;
+		}
+
+		if(i + 2 < countp) {
+			propString += "; ";
+		}
+	}
+
+	return propString;
+}
+
 PP_PropertyVector PP_std_setPropsToNothing(const PP_PropertyVector & props)
 {
 	PP_PropertyVector props2;

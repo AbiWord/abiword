@@ -456,8 +456,8 @@ BOOL AP_Win32Dialog_Styles::_onInitDialog(HWND hWnd, WPARAM /*wParam*/, LPARAM /
 										(LPARAM) str.c_str());
 				_win32DialogNewModify.selectComboItem( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_FOLLOWPARA, result );
 			}
-			
-			if(strstr(getAttsVal("type"),"P") != 0)
+
+			if(PP_getAttribute("type", m_vecAllAttribs).find("P") != std::string::npos)
 			{
 				_win32DialogNewModify.setControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_EBX_TYPE, 
                                                       pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyParagraph) );
@@ -689,8 +689,8 @@ BOOL AP_Win32Dialog_Styles::_onCommand(HWND hWnd, WPARAM wParam, LPARAM /*lParam
 			char szTemp[128];
 			_win32DialogNewModify.getControlText( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_REMOVE,
                                                   szTemp,
-	                                              sizeof(szTemp) );			
-			removeVecProp(szTemp);
+	                                              sizeof(szTemp) );
+			PP_removeAttribute(szTemp, m_vecAllProps);
 			rebuildDeleteProps();
 			updateCurrentStyle();
 		}
@@ -874,12 +874,12 @@ void AP_Win32Dialog_Styles::rebuildDeleteProps()
 	AP_Win32Dialog_Styles *p_This = (AP_Win32Dialog_Styles *)this; // Cast away const
 	p_This->_win32DialogNewModify.resetComboContent(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_REMOVE);
 
-	UT_sint32 count = m_vecAllProps.getItemCount();
+	UT_sint32 count = m_vecAllProps.size();
 	UT_sint32 i= 0;
 	for(i=0; i< count; i+=2)
 	{
 		p_This->_win32DialogNewModify.addItemToCombo( AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_REMOVE, 
-                                                      (const char *) m_vecAllProps.getNthItem(i) );
+                                                              m_vecAllProps[i].c_str());
 	}
 }
 
@@ -893,17 +893,17 @@ void AP_Win32Dialog_Styles::eventBasedOn()
 		
 	nSel = _win32DialogNewModify.getComboSelectedIndex(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON);		
 				
-	if (nSel==CB_ERR) return;				
-	
+	if (nSel==CB_ERR) return;
+
 	nData= _win32DialogNewModify.getComboDataItem(AP_RID_DIALOG_STYLES_NEWMODIFY_CBX_BASEDON, nSel);
-	
+
 	if (nData >= 0 ) {
-		getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);				
-		addOrReplaceVecAttribs("basedon",pText);
+		getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);
+		PP_addOrSetAttribute("basedon",pText, m_vecAllProps);
 		fillVecWithProps(pText,false);
 	} else {
 		// "None" was selected
-		removeVecProp("basedon");
+		PP_removeAttribute("basedon", m_vecAllProps);
 	}
 	updateCurrentStyle();
 }
@@ -924,9 +924,9 @@ void AP_Win32Dialog_Styles::eventFollowedBy()
 
 	if (nData >= 0) {
 		getDoc()->enumStyles((UT_uint32)nData,&pText, &pStyle);
-		addOrReplaceVecAttribs("followedby",pText);
+		PP_addOrSetAttribute("followedby", pText, m_vecAllProps);
 	} else {
-		removeVecProp("followedby");
+		PP_removeAttribute("followedby", m_vecAllProps);
 	}
 }
 
@@ -941,6 +941,6 @@ void AP_Win32Dialog_Styles::eventStyleType()
 	if(strstr(szTemp, pSS->getValue(AP_STRING_ID_DLG_Styles_ModifyCharacter)) != 0)
 		pszSt = "C";
 	
-	addOrReplaceVecAttribs("type",pszSt);
+	PP_addOrSetAttribute("type", pszSt, m_vecAllProps);
 }
 

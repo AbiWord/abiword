@@ -249,6 +249,27 @@ TFTEST_MAIN("PP_std_setPropsToNothing")
     TFPASS(!PP_hasAttribute("bar", attr));
 }
 
+TFTEST_MAIN("PP_makePropString")
+{
+    PP_PropertyVector props = {
+        "font", "Comic Sans",
+        "size", "42pt",
+        "text-align", "left"
+    };
+
+    std::string result = PP_makePropString(PP_NOPROPS);
+    TFPASS(result.empty());
+
+    result = PP_makePropString(props);
+    TFPASS(result == "font:Comic Sans; size:42pt; text-align:left");
+
+    // Testing with odd number prop vector.
+    props.erase(props.end() - 1, props.end());
+    TFPASS(props.size() == 5);
+    result = PP_makePropString(props);
+    TFPASS(result == "font:Comic Sans; size:42pt");
+}
+
 TFTEST_MAIN("PP_AttrProp checksum")
 {
     PP_AttrProp attrProps;

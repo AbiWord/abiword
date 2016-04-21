@@ -184,6 +184,11 @@ protected:
 };
 
 
+
+/// Turn a PP_PropertyVector into a style string as used by the "props"
+/// attributes.
+std::string PP_makePropString(const PP_PropertyVector & props);
+
 /*
  * Safe version of UT_setPropsToNothing. Deleted values are "".
  */

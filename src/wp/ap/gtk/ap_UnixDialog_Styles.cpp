@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4;  indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (c) 2009 Hubert Figuiere
@@ -1120,7 +1121,7 @@ void AP_UnixDialog_Styles::new_styleName(void)
 	}
 
 	g_snprintf(static_cast<gchar *>(m_newStyleName),40,"%s",psz);
-	addOrReplaceVecAttribs(PT_NAME_ATTRIBUTE_NAME,getNewStyleName());
+	PP_addOrSetAttribute(PT_NAME_ATTRIBUTE_NAME, getNewStyleName(), m_vecAllAttribs);
 }
 
 /*!
@@ -1129,7 +1130,7 @@ void AP_UnixDialog_Styles::new_styleName(void)
 void AP_UnixDialog_Styles::event_RemoveProperty(void)
 {
 	const gchar * psz = gtk_entry_get_text( GTK_ENTRY(m_wDeletePropEntry));
-	removeVecProp(psz);
+	PP_removeAttribute(psz, m_vecAllProps);
 	rebuildDeleteProps();
 	updateCurrentStyle();
 }
@@ -1141,14 +1142,15 @@ void AP_UnixDialog_Styles::rebuildDeleteProps(void)
 
 	gtk_list_store_clear(model);
 
-	UT_sint32 count = m_vecAllProps.getItemCount();
 	UT_sint32 i= 0;
-	for(i=0; i< count; i+=2)
-	{
-		GtkTreeIter iter;
-		const gchar * sz = m_vecAllProps.getNthItem(i);
-		gtk_list_store_append(model, &iter);
-		gtk_list_store_set(model, &iter, 0, sz, -1);
+	for(auto iter = m_vecAllProps.cbegin(); iter != m_vecAllProps.cend();
+		++iter, ++i) {
+
+		if ((i % 2) == 0) {
+			GtkTreeIter gtkiter;
+			gtk_list_store_append(model, &gtkiter);
+			gtk_list_store_set(model, &gtkiter, 0, iter->c_str(), -1);
+		}
 	}
 }
 
@@ -1164,7 +1166,7 @@ void AP_UnixDialog_Styles::event_basedOn(void)
 	else
 		psz = pt_PieceTable::s_getUnlocalisedStyleName(psz);
 	g_snprintf(static_cast<gchar *>(m_basedonName),40,"%s",psz);
-	addOrReplaceVecAttribs("basedon",getBasedonName());
+	PP_addOrSetAttribute("basedon", getBasedonName(), m_vecAllAttribs);
 	updateCurrentStyle();
 }
 
@@ -1181,7 +1183,7 @@ void AP_UnixDialog_Styles::event_followedBy(void)
 	else
 		psz = pt_PieceTable::s_getUnlocalisedStyleName(psz);
 	g_snprintf(static_cast<gchar *>(m_followedbyName),40,"%s",psz);
-	addOrReplaceVecAttribs("followedby",getFollowedbyName());
+	PP_addOrSetAttribute("followedby",getFollowedbyName(), m_vecAllAttribs);
 }
 
 
@@ -1199,7 +1201,7 @@ void AP_UnixDialog_Styles::event_styleType(void)
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter,s);
 	if(strstr(m_styleType, s.c_str()) != 0)
 		pszSt = "C";
-	addOrReplaceVecAttribs("type",pszSt);
+	PP_addOrSetAttribute("type", pszSt, m_vecAllAttribs);
 }
 
 void AP_UnixDialog_Styles::event_Modify_Cancel(void)
@@ -1509,8 +1511,8 @@ bool  AP_UnixDialog_Styles::_populateModify(void)
 			gtk_entry_set_text (GTK_ENTRY(m_wFollowingEntry), s.c_str());
 		}
 
-		const char * pszType = getAttsVal(PT_TYPE_ATTRIBUTE_NAME);
-		if(pszType && strstr(pszType,"P") != 0)
+		const std::string & sType = PP_getAttribute(PT_TYPE_ATTRIBUTE_NAME, m_vecAllAttribs);
+		if(sType.find("P") != std::string::npos)
 		{
 			pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyParagraph,s);
 			gtk_entry_set_text (GTK_ENTRY(m_wStyleTypeEntry),s.c_str());

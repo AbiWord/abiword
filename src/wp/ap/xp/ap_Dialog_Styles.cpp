@@ -61,147 +61,14 @@ AP_Dialog_Styles::AP_Dialog_Styles(XAP_DialogFactory * pDlgFactory, XAP_Dialog_I
 
 AP_Dialog_Styles::~AP_Dialog_Styles(void)
 {
-	UT_sint32 i;
 	DELETEP(m_pParaPreview);
 	DELETEP(m_pCharPreview);
 	DELETEP(m_pAbiPreview);
-	for(i=0; i<m_vecAllProps.getItemCount(); i++)
-	{
-		char * psz = (char *) m_vecAllProps.getNthItem(i);
-		FREEP(psz);
-	}
-	m_vecAllProps.clear();
-	for(i=0; i<m_vecAllAttribs.getItemCount(); i++)
-	{
-		char * psz = (char *) m_vecAllAttribs.getNthItem(i);
-		FREEP(psz);
-	}
-	m_vecAllAttribs.clear();
 }
 
 AP_Dialog_Styles::tAnswer AP_Dialog_Styles::getAnswer(void) const
 {
 	return m_answer;
-}
-
-/*!
- * This method adds the key,value pair pszProp,pszVal to the Vector of
- * all properties of the current style.
- * If the Property already exists it's value is replaced with pszVal
- * \param const gchar * pszProp the property name. Will be strdupped.
- * \param const gchar * pszVal the value of this property. Will be strdupped.
-*/
-void AP_Dialog_Styles::addOrReplaceVecProp(const gchar * pszProp,
-					   const gchar * pszVal)
-{
-	UT_sint32 iCount = m_vecAllProps.getItemCount();
-	if(iCount <= 0)
-	{
-		char * pSP = g_strdup(pszProp);
-		char * pSV = g_strdup(pszVal);
-		m_vecAllProps.addItem(pSP);
-		m_vecAllProps.addItem(pSV);
-		return;
-	}
-	UT_sint32 i = 0;
-	for(i=0; i < iCount ; i += 2)
-	{
-		const gchar * pszV = (const gchar *) m_vecAllProps.getNthItem(i);
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
-			break;
-	}
-	if(i < iCount)
-	{
-		char * pSV = (char*)m_vecAllProps.getNthItem(i+1);
-		FREEP(pSV);
-		pSV = g_strdup(pszVal);
-		m_vecAllProps.setNthItem(i+1, pSV, NULL);
-	}
-	else
-	{
-		char * pSP = g_strdup(pszProp);
-		char * pSV = g_strdup(pszVal);
-		m_vecAllProps.addItem(pSP);
-		m_vecAllProps.addItem(pSV);
-	}
-	return;
-}
-
-
-/*!
- * This method removes the key,value pair  (pszProp,pszVal) given by pszProp
- * from the Vector of all properties of the current style.
- * If the Property does not exists nothing happens
-\param const gchar * pszProp the property name
-*/
-void AP_Dialog_Styles::removeVecProp(const gchar * pszProp)
-{
-	UT_sint32 iCount = m_vecAllProps.getItemCount();
-	const char * pszV = NULL;
-	if(iCount <= 0)
-	{
-		return;
-	}
-	UT_sint32 i = 0;
-	for(i=0; i < iCount ; i += 2)
-	{
-		pszV = (const gchar *) m_vecAllProps.getNthItem(i);
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
-			break;
-	}
-	if(i < iCount)
-	{
-		char * pSP = (char *) m_vecAllProps.getNthItem(i);
-		char * pSV = (char *) m_vecAllProps.getNthItem(i+1);
-		FREEP(pSP);
-		FREEP(pSV);
-		m_vecAllProps.deleteNthItem(i+1);
-		m_vecAllProps.deleteNthItem(i);
-	}
-	return;
-}
-
-/*!
- * This method adds the key,value pair pszProp,pszVal to the Vector of
- * all attributes of the current style.
- * If the Property already exists it's value is replaced with pszVal
-\param const gchar * pszProp the property name
-\param const gchar * pszVal the value of this property.
-*/
-void AP_Dialog_Styles::addOrReplaceVecAttribs(const gchar * pszProp,
-												 const gchar * pszVal)
-{
-	UT_sint32 iCount = m_vecAllAttribs.getItemCount();
-	if(iCount <= 0)
-	{
-		char * pSP = g_strdup(pszProp);
-		char * pSV = g_strdup(pszVal);
-		m_vecAllAttribs.addItem(pSP);
-		m_vecAllAttribs.addItem(pSV);
-		return;
-	}
-	UT_sint32 i = 0;
-	for(i=0; i < iCount ; i += 2)
-	{
-		const gchar * pszV = (const gchar *) m_vecAllAttribs.getNthItem(i);
-		if( (pszV != NULL) && (strcmp( pszV,pszProp) == 0))
-			break;
-	}
-	if(i < iCount)
-	{
-		char * pSV = (char*)m_vecAllAttribs.getNthItem(i+1);
-		FREEP(pSV);
-		pSV = g_strdup(pszVal);
-		m_vecAllAttribs.setNthItem(i+1, pSV, NULL);
-	}
-	else
-	{
-		char * pSP = g_strdup(pszProp);
-		char * pSV = g_strdup(pszVal);
-		m_vecAllAttribs.addItem(pSP);
-		m_vecAllAttribs.addItem(pSV);
-	}
-	return;
 }
 
 /*!
@@ -226,23 +93,20 @@ void AP_Dialog_Styles::fillVecFromCurrentPoint(void)
 // Loop over all properties and add them to our vector
 //
 	m_vecAllProps.clear();
-	ASSERT_PV_SIZE(paraProps);
-	for (auto iter = paraProps.cbegin(); iter != paraProps.cend(); iter += 2)
-	{
+
+	for (auto iter = paraProps.cbegin(); iter != paraProps.cend(); ++iter) {
 		const std::string & szName = *iter;
-		const std::string & szValue = *(iter + 1);
-		if(szName.find("toc-") == std::string::npos)
-		{
-			addOrReplaceVecProp(szName.c_str(), szValue);
+		++iter;
+		if (iter == paraProps.cend()) {
+			break;
+		}
+		const std::string & szValue = *iter;
+		if(szName.find("toc-") == std::string::npos) {
+			m_vecAllProps.push_back(szName);
+			m_vecAllProps.push_back(szValue);
 		}
 	}
-	ASSERT_PV_SIZE(charProps);
-	for (auto iter = charProps.cbegin(); iter != charProps.cend(); iter += 2)
-	{
-		const std::string & szName = *iter;
-		const std::string & szValue = *(iter + 1);
-		addOrReplaceVecProp(szName.c_str(), szValue);
-	}
+	m_vecAllProps.insert(m_vecAllProps.end(), charProps.cbegin(), charProps.cend());
 }
 
 /*!
@@ -277,8 +141,6 @@ void AP_Dialog_Styles::fillVecWithProps(const gchar * szStyle, bool bReplaceAttr
 	const size_t nattribs = sizeof(attribs)/sizeof(attribs[0]);
 	UT_uint32 i;
 	UT_DEBUGMSG(("Looking at Style %s \n",szStyle));
-	UT_Vector vecAllProps;
-	vecAllProps.clear();
 //
 // Loop through all Paragraph properties and add those with non-null values
 //
@@ -287,8 +149,9 @@ void AP_Dialog_Styles::fillVecWithProps(const gchar * szStyle, bool bReplaceAttr
 		const gchar * szName = paraFields[i];
 		const gchar * szValue = NULL;
 		pStyle->getProperty(szName,szValue);
-		if(szValue)
-			addOrReplaceVecProp(szName, szValue);
+		if(szValue) {
+			PP_addOrSetAttribute(szName, szValue, m_vecAllProps);
+		}
 	}
 //
 // Loop through all Character properties and add those with non-null values
@@ -301,7 +164,7 @@ void AP_Dialog_Styles::fillVecWithProps(const gchar * szStyle, bool bReplaceAttr
 		if(szValue)
 		{
 			xxx_UT_DEBUGMSG(("Adding char prop %s value %s \n",szName,szValue));
-			addOrReplaceVecProp(szName, szValue);
+			PP_addOrSetAttribute(szName, szValue, m_vecAllProps);
 		}
 	}
 //
@@ -310,15 +173,14 @@ void AP_Dialog_Styles::fillVecWithProps(const gchar * szStyle, bool bReplaceAttr
 	xxx_UT_DEBUGMSG(("Replace Attributes %d \n",bReplaceAttributes));
 	if(bReplaceAttributes)
 	{
-		UT_Vector vecAllAtts;
-		vecAllAtts.clear();
 		for(i = 0; i < nattribs; i++)
 		{
 			const gchar * szName = attribs[i];
 			const gchar * szValue = NULL;
 			pStyle->getAttributeExpand(szName,szValue);
-			if(szValue)
-				addOrReplaceVecAttribs(szName, szValue);
+			if(szValue) {
+				PP_addOrSetAttribute(szName, szValue, m_vecAllAttribs);
+			}
 		}
 	}
 	else
@@ -326,61 +188,6 @@ void AP_Dialog_Styles::fillVecWithProps(const gchar * szStyle, bool bReplaceAttr
 		UT_DEBUGMSG(("Attributes NOT updated \n"));
 	}
 }
-
-
-/*!
- * This method returns a std::string of the const char * value associated with the
- * the property szProp. Stolen from ap_Dialog_Lists and ap_Dialog_Styles.
- * It assumes properties and values are stored the array like this:
- * vecProp(n)   :   vecProp(n+1)
- * "property"   :   "value"
- */
-const std::string AP_Dialog_Styles::getPropsVal(const gchar * szProp) const
-{
-	UT_sint32 i = m_vecAllProps.getItemCount();
-	if(i <= 0)
-		return "";
-	UT_sint32 j;
-	const gchar * pszV = NULL;
-	for(j= 0; j<i ;j=j+2)
-	{
-		pszV = (const gchar *) m_vecAllProps.getNthItem(j);
-		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
-			break;
-	}
-	if( j < i )
-		return  (const gchar *) m_vecAllProps.getNthItem(j+1);
-	else
-		return "";
-}
-
-
-/*!
- * This method returns a pointer to the const char * value associated with the
- * the attribute szProp. Stolen from ap_Dialog_Lists and ap_Dialog_Styles.
- * It assumes properties and values are stored the array like this:
- * vecProp(n)   :   vecProp(n+1)
- * "attribute"   :   "value"
- */
-const gchar * AP_Dialog_Styles::getAttsVal(const gchar * szProp) const
-{
-	UT_sint32 i = m_vecAllAttribs.getItemCount();
-	if(i <= 0)
-		return NULL;
-	UT_sint32 j;
-	const gchar * pszV = NULL;
-	for(j= 0; j<i ;j=j+2)
-	{
-		pszV = (const gchar *) m_vecAllAttribs.getNthItem(j);
-		if( (pszV != NULL) && (strcmp( pszV,szProp) == 0))
-			break;
-	}
-	if( j < i )
-		return  (const gchar *) m_vecAllAttribs.getNthItem(j+1);
-	else
-		return NULL;
-}
-
 
 /*!
  * This method returns a pointer to the const char * value associated with the
@@ -441,7 +248,7 @@ void AP_Dialog_Styles::ModifyLang(void)
 		const gchar * s;
 
 		pDialog->getChangedLangProperty(&s);
-		addOrReplaceVecProp("lang", s);
+		PP_addOrSetAttribute("lang", s, m_vecAllProps);
 	}
 
 	pDialogFactory->releaseDialog(pDialog);
@@ -479,12 +286,12 @@ void AP_Dialog_Styles::ModifyFont(void)
 	// which change across the selection, we ask the dialog not
 	// to set the field (by passing "").
 
-	const std::string sFontFamily = getPropsVal("font-family");
-	const std::string sFontSize = getPropsVal("font-size");
-	const std::string sFontWeight = getPropsVal("font-weight");
-	const std::string sFontStyle = getPropsVal("font-style");
-	const std::string sColor = getPropsVal("color");
-	const std::string sBGColor = getPropsVal("bgcolor");
+	const std::string & sFontFamily = PP_getAttribute("font-family", m_vecAllProps);
+	const std::string & sFontSize = PP_getAttribute("font-size", m_vecAllProps);
+	const std::string & sFontWeight = PP_getAttribute("font-weight", m_vecAllProps);
+	const std::string & sFontStyle = PP_getAttribute("font-style", m_vecAllProps);
+	const std::string & sColor = PP_getAttribute("color", m_vecAllProps);
+	const std::string & sBGColor = PP_getAttribute("bgcolor", m_vecAllProps);
 
 	pDialog->setFontFamily(sFontFamily);
 	pDialog->setFontSize(sFontSize);
@@ -511,7 +318,7 @@ void AP_Dialog_Styles::ModifyFont(void)
 	bool bStrikeOut2 = false;
 	bool bTopline2 = false;
 	bool bBottomline2 = false;
-	const std::string sDecoration = getPropsVal("text-decoration");
+	const std::string & sDecoration = PP_getAttribute("text-decoration", m_vecAllProps);
 	if (!sDecoration.empty())
 	{
 		bUnderline2 = (strstr(sDecoration.c_str(), "underline") != NULL);
@@ -545,32 +352,32 @@ void AP_Dialog_Styles::ModifyFont(void)
 
 		if (pDialog->getChangedFontFamily(s1))
 		{
-			addOrReplaceVecProp("font-family", s1);
+			PP_addOrSetAttribute("font-family", s1, m_vecAllProps);
 		}
 
 		if (pDialog->getChangedFontSize(s1))
 		{
-			addOrReplaceVecProp("font-size", s1);
+			PP_addOrSetAttribute("font-size", s1, m_vecAllProps);
 		}
 
 		if (pDialog->getChangedFontWeight(s1))
 		{
-			addOrReplaceVecProp("font-weight", s1);
+			PP_addOrSetAttribute("font-weight", s1, m_vecAllProps);
 		}
 
 		if (pDialog->getChangedFontStyle(s1))
 		{
-			addOrReplaceVecProp("font-style", s1);
+			PP_addOrSetAttribute("font-style", s1, m_vecAllProps);
 		}
 
 		if (pDialog->getChangedColor(s1))
 		{
-			addOrReplaceVecProp("color", s1);
+			PP_addOrSetAttribute("color", s1, m_vecAllProps);
 		}
 
 		if (pDialog->getChangedBGColor(s1))
 		{
-			addOrReplaceVecProp("bgcolor", s1);
+			PP_addOrSetAttribute("bgcolor", s1, m_vecAllProps);
 		}
 
 		bool bUnderline = false;
@@ -604,7 +411,7 @@ void AP_Dialog_Styles::ModifyFont(void)
 				decors += "bottomline ";
 			if(!bUnderline && !bStrikeOut && !bOverline && !bTopline && !bBottomline)
 				decors = "none";
-			addOrReplaceVecProp("text-decoration", decors);
+			PP_addOrSetAttribute("text-decoration", decors, m_vecAllProps);
 		}
 /*
 		if(bChangedDirection)
@@ -614,7 +421,7 @@ void AP_Dialog_Styles::ModifyFont(void)
 		    else
 		        s = "ltr";
 
-			addOrReplaceVecProp("dir", s);
+			PP_addOrSetAttribute("dir", s, m_vecAllProps);
 		}
 */
 	}
@@ -628,9 +435,9 @@ void AP_Dialog_Styles::_tabCallback(const char *szTabStops,
 									const char *szDflTabStop)
 {
 	if (szTabStops)
-		addOrReplaceVecProp("tabstops", szTabStops);
+		PP_addOrSetAttribute("tabstops", szTabStops, m_vecAllProps);
 	if (szDflTabStop)
-		addOrReplaceVecProp("default-tab-interval", szDflTabStop);
+		PP_addOrSetAttribute("default-tab-interval", szDflTabStop, m_vecAllProps);
 }
 
 /*!
@@ -702,13 +509,13 @@ void AP_Dialog_Styles::ModifyLists(void)
 //
 // Fill input list for Lists dialog
 //
-	const std::string sListStyle = getPropsVal("list-style");
-	const std::string sFieldFont = getPropsVal("field-font");
-	const std::string sStartValue = getPropsVal("start-value");
-	const std::string sListDelim = getPropsVal("list-delim");
-	const std::string sMarginLeft = getPropsVal("margin-left");
-	const std::string sListDecimal = getPropsVal("list-decimal");
-	const std::string sTextIndent = getPropsVal("text-indent");
+	const std::string & sListStyle = PP_getAttribute("list-style", m_vecAllProps);
+	const std::string & sFieldFont = PP_getAttribute("field-font", m_vecAllProps);
+	const std::string & sStartValue = PP_getAttribute("start-value", m_vecAllProps);
+	const std::string & sListDelim = PP_getAttribute("list-delim", m_vecAllProps);
+	const std::string & sMarginLeft = PP_getAttribute("margin-left", m_vecAllProps);
+	const std::string & sListDecimal = PP_getAttribute("list-decimal", m_vecAllProps);
+	const std::string & sTextIndent = PP_getAttribute("text-indent", m_vecAllProps);
 
 	if(!sListStyle.empty())
 	{
@@ -769,45 +576,45 @@ void AP_Dialog_Styles::ModifyLists(void)
 		{
 			m_ListProps[0] = getVecVal(vo,"list-style");
 			UT_DEBUGMSG(("SEVIOR: list-style %s \n",m_ListProps[0].c_str()));
-			addOrReplaceVecProp("list-style",m_ListProps[0]);
+			PP_addOrSetAttribute("list-style", m_ListProps[0], m_vecAllProps);
 		}
 		if(getVecVal(vo,"start-value"))
 		{
 			m_ListProps[1] = getVecVal(vo,"start-value");
 			UT_DEBUGMSG(("SEVIOR: start-value %s \n",m_ListProps[1].c_str()));
-			addOrReplaceVecProp("start-value",m_ListProps[1]);
+			PP_addOrSetAttribute("start-value", m_ListProps[1], m_vecAllProps);
 		}
 		if(getVecVal(vo,"list-delim"))
 		{
 			m_ListProps[2] = getVecVal(vo,"list-delim");
 			UT_DEBUGMSG(("SEVIOR: list-delim %s \n",m_ListProps[2].c_str()));
-			addOrReplaceVecProp("list-delim",m_ListProps[2]);
+			PP_addOrSetAttribute("list-delim", m_ListProps[2], m_vecAllProps);
 		}
 		if(getVecVal(vo,"margin-left"))
 		{
 			m_ListProps[3] = getVecVal(vo,"margin-left");
-			addOrReplaceVecProp("margin-left",m_ListProps[3]);
+			PP_addOrSetAttribute("margin-left", m_ListProps[3], m_vecAllProps);
 		}
 		if(getVecVal(vo,"field-font"))
 		{
 			m_ListProps[4] = getVecVal(vo,"field-font");
-			addOrReplaceVecProp("field-font",m_ListProps[4]);
+			PP_addOrSetAttribute("field-font", m_ListProps[4], m_vecAllProps);
 		}
 		if(getVecVal(vo,"list-decimal"))
 		{
 			m_ListProps[5] = getVecVal(vo,"list-decimal");
-			addOrReplaceVecProp("list-decimal",m_ListProps[5]);
+			PP_addOrSetAttribute("list-decimal", m_ListProps[5], m_vecAllProps);
 		}
 		if(getVecVal(vo,"text-indent"))
 		{
 			m_ListProps[6] = getVecVal(vo,"text-indent");
-			addOrReplaceVecProp("text-indent",m_ListProps[6]);
+			PP_addOrSetAttribute("text-indent", m_ListProps[6], m_vecAllProps);
 		}
 		// TODO: Why is field-font here twice?
 		if(getVecVal(vo,"field-font"))
 		{
 			m_ListProps[7] = getVecVal(vo,"field-font");
-			addOrReplaceVecProp("field-font",m_ListProps[7]);
+			PP_addOrSetAttribute("field-font", m_ListProps[7], m_vecAllProps);
 		}
 //
 // Whew we're done!
@@ -836,18 +643,12 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 //
 //#define NUM_PARAPROPS  14
 
-	PP_PropertyVector props;
-
-	if(m_vecAllProps.getItemCount() <= 0)
+	if (m_vecAllProps.empty()) {
 		return;
-	UT_uint32 countp = m_vecAllProps.getItemCount();
-	for(UT_uint32 i = 0; i < countp; i++)
-	{
-		props.push_back(m_vecAllProps.getNthItem(i));
 	}
-
-	if (!pDialog->setDialogData(props))
+	if (!pDialog->setDialogData(m_vecAllProps)) {
 		return;
+	}
 
 	// let's steal the width from getTopRulerInfo.
 	AP_TopRulerInfo info;
@@ -863,10 +664,8 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 
 	if(answer == AP_Dialog_Paragraph::a_OK)
 	{
-		props.clear();
-		// getDialogData() returns us gchar ** data we have to g_free
+		PP_PropertyVector props;
 		pDialog->getDialogData(props);
-		UT_return_if_fail (!props.empty());
 
 		// set properties into the vector. We have to save these as static char
         // strings so they persist past this method.
@@ -878,7 +677,7 @@ void AP_Dialog_Styles::ModifyParagraph(void)
 				const std::string & value = PP_getAttribute(paraFields[i], props);
 				if(!value.empty())
 				{
-					addOrReplaceVecProp(paraFields[i], value.c_str());
+					PP_addOrSetAttribute(paraFields[i], value.c_str(), m_vecAllProps);
 				}
 			}
 		}
@@ -894,46 +693,25 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 {
 	if(m_pAbiPreview == NULL)
 		return;
-	const gchar ** props = NULL;
 	UT_sint32 i = 0;
-	if(m_vecAllProps.getItemCount() <= 0)
+	if(m_vecAllProps.empty()) {
 		return;
-	UT_sint32 countp = m_vecAllProps.getItemCount() + 1;
-	props = (const gchar **) UT_calloc(countp, sizeof(gchar *));
-	countp--;
-	for(i=0; i<countp; i++)
-	{
-		props[i] = (const gchar *) m_vecAllProps.getNthItem(i);
 	}
-	props[i] = NULL;
 	PD_Style * pStyle = NULL;
 	getLDoc()->getStyle("tmp", &pStyle);
 //
 // clear out old description
 //
-	m_curStyleDesc.clear();
-	for(i=0; i<countp; i+=2)
-	{
-		m_curStyleDesc += (const gchar *) m_vecAllProps.getNthItem(i);
-		m_curStyleDesc += ":";
-
-		if (m_vecAllProps.getNthItem(i+1) &&
-		    *((const gchar *) m_vecAllProps.getNthItem(i+1)))
-		    m_curStyleDesc +=
-			(const gchar *) m_vecAllProps.getNthItem(i+1);
-		
-		if(i+2<countp)
-			m_curStyleDesc += "; ";
-	}
+	m_curStyleDesc = PP_makePropString(m_vecAllProps);
 	xxx_UT_DEBUGMSG(("New props of style %s \n",m_curStyleDesc.c_str()));
 //
 // Update the description in the Modify Dialog.
 //
 	setModifyDescription (m_curStyleDesc.c_str());
-	const char * szBasedon = getAttsVal("basedon");
+	const std::string & szBasedon = PP_getAttribute("basedon", m_vecAllAttribs);
 	std::string fullProps;
 	PD_Style * pBasedon = NULL;
-	if(szBasedon && m_pDoc->getStyle(szBasedon,&pBasedon))
+	if(!szBasedon.empty() && m_pDoc->getStyle(szBasedon.c_str(), &pBasedon))
 	{
 		UT_Vector vecProps;
 		pBasedon->getAllProperties(&vecProps,0);
@@ -954,8 +732,8 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 		const PP_PropertyVector attrib = {
 			PT_NAME_ATTRIBUTE_NAME, "tmp",
 			PT_TYPE_ATTRIBUTE_NAME, "P",
-			"basedon", getAttsVal("basedon"),
-			"followedby", getAttsVal("followedby"),
+			"basedon", PP_getAttribute("basedon", m_vecAllAttribs),
+			"followedby", PP_getAttribute("followedby", m_vecAllAttribs),
 			"props",fullProps
 		};
 		getLDoc()->appendStyle(attrib);
@@ -971,7 +749,6 @@ void AP_Dialog_Styles::updateCurrentStyle(void)
 	getLView()->setPoint(m_posFocus+1);
 	getLView()->setStyle("tmp");
 	drawLocal();
-	FREEP(props);
 }
 
 
@@ -983,36 +760,11 @@ bool AP_Dialog_Styles::createNewStyle(const gchar * szName)
 {
 	UT_DEBUGMSG(("DOM: new style %s\n", szName));
 
-	// XXX figure out why props isn't used.
-	const gchar ** props = NULL;
-	UT_uint32 i = 0;
-	if(m_vecAllProps.getItemCount() <= 0)
+	if(m_vecAllProps.empty()) {
 		return false;
-	UT_uint32 countp = m_vecAllProps.getItemCount() + 1;
-	props = (const gchar **) UT_calloc(countp, sizeof(gchar *));
-	countp--;
-	for(i=0; i<countp; i++)
-	{
-		props[i] = (const gchar *) m_vecAllProps.getNthItem(i);
 	}
-	props[i] = NULL;
-//
-// clear out old description
-//
-	m_curStyleDesc.clear();
-	for(i=0; i<countp; i+=2)
-	{
-		m_curStyleDesc += (const gchar *) m_vecAllProps.getNthItem(i);
-		m_curStyleDesc += ":";
 
-		if (m_vecAllProps.getNthItem(i+1) &&
-		    *((const gchar *) m_vecAllProps.getNthItem(i+1)))
-		    m_curStyleDesc +=
-			(const gchar *) m_vecAllProps.getNthItem(i+1);
-		
-		if(i+2<countp)
-			m_curStyleDesc += "; ";
-	}
+	m_curStyleDesc = PP_makePropString(m_vecAllProps);
 //
 // Update the description in the Main Dialog.
 //
@@ -1032,14 +784,12 @@ bool AP_Dialog_Styles::createNewStyle(const gchar * szName)
 //
 	const PP_PropertyVector attrib = {
 		PT_NAME_ATTRIBUTE_NAME, szName,
-		PT_TYPE_ATTRIBUTE_NAME, getAttsVal(PT_TYPE_ATTRIBUTE_NAME),
-		"basedon", getAttsVal("basedon"),
-		"followedby", getAttsVal("followedby"),
+		PT_TYPE_ATTRIBUTE_NAME, PP_getAttribute(PT_TYPE_ATTRIBUTE_NAME, m_vecAllAttribs),
+		"basedon", PP_getAttribute("basedon", m_vecAllAttribs),
+		"followedby", PP_getAttribute("followedby", m_vecAllAttribs),
 		"props", m_curStyleDesc
 	};
-	bool bres = getDoc()->appendStyle(attrib);
-	FREEP(props);
-	return bres;
+	return getDoc()->appendStyle(attrib);
 }
 
 
@@ -1049,46 +799,13 @@ bool AP_Dialog_Styles::createNewStyle(const gchar * szName)
  */
 bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 {
-	// XXX figure out why props isn't used.
-	const gchar ** props = NULL;
-	UT_uint32 i = 0;
-	if(m_vecAllProps.getItemCount() <= 0)
+	if(m_vecAllProps.empty()) {
 		return false;
-	UT_uint32 countp = m_vecAllProps.getItemCount() + 1;
-	props = (const gchar **) UT_calloc(countp, sizeof(gchar *));
-	countp--;
-	for(i=0; i<countp; i++)
-	{
-		props[i] = (const gchar *) m_vecAllProps.getNthItem(i);
 	}
-	props[i] = NULL;
 
-	UT_uint32 counta = m_vecAllAttribs.getItemCount();
-	PP_PropertyVector attribs;
-	UT_uint32 iatt;
-	for(iatt=0; iatt < counta; iatt++)
-	{
-		attribs.push_back(m_vecAllAttribs.getNthItem(iatt));
-	}
+	PP_PropertyVector attribs = m_vecAllAttribs;
+	m_curStyleDesc = PP_makePropString(m_vecAllProps);
 	attribs.push_back("props");
-//
-// clear out old description
-//
-	m_curStyleDesc.clear();
-	UT_uint32 j;
-	for(j=0; j<countp; j+=2)
-	{
-		m_curStyleDesc += (const gchar *) m_vecAllProps.getNthItem(j);
-		m_curStyleDesc += ":";
-
-		if((const gchar *) m_vecAllProps.getNthItem(j+1) &&
-		   *((const gchar *) m_vecAllProps.getNthItem(j+1)))
-		    m_curStyleDesc +=
-			(const gchar *) m_vecAllProps.getNthItem(j+1);
-
-		if(j+2<countp)
-			m_curStyleDesc += "; ";
-	}
 	attribs.push_back(m_curStyleDesc);
 //
 // Update the description in the Main Dialog.
@@ -1104,16 +821,9 @@ bool AP_Dialog_Styles::applyModifiedStyleToDoc(void)
 // This creates a new indexAP from the attributes/properties here.
 // This allows properties to be removed from a pre-existing style
 //
-#if 0 // DEBUG
-	for(i=0; attribs[i] != NULL; i = i + 2)
-	{
-		UT_DEBUGMSG(("SEVIOR: name %s , value %s \n",attribs[i],attribs[i+1]));
-	}
-#endif
-	bool bres = getDoc()->setAllStyleAttributes(szStyle,attribs);
-	FREEP(props);
-	return bres;
+	return getDoc()->setAllStyleAttributes(szStyle, attribs);
 }
+
 /*!
  * Pointer to the current FV_View of the document we're working with.
  */
@@ -1356,46 +1066,10 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 // Second Paragraph in focus. Our Vectors containing the current settings have
 // been filled from calls in the platform layer.
 //
-// Attributes
-//
-	// XXX we should make m_vecAllAttribs and m_vecAllProps PP_PropertyVector
-	UT_uint32 counta = m_vecAllAttribs.getItemCount();
-	PP_PropertyVector latt;
-	latt.reserve(counta);
-	for(i=0; i<counta; i++)
-	{
-		latt.push_back((const gchar *) m_vecAllAttribs.getNthItem(i));
-	}
-//
-// Now properties
-//
-	UT_uint32 countp = m_vecAllProps.getItemCount();
-	PP_PropertyVector lprop;
-	lprop.reserve(countp);
-	for(i=0; i<countp; i++)
-	{
-		lprop.push_back((const gchar *) m_vecAllProps.getNthItem(i));
-	}
-
 	PD_Style * pStyle = NULL;
 	getLDoc()->getStyle("tmp", &pStyle);
-//
-// clear out old description
-//
-	m_curStyleDesc.clear();
-	for(i=0; i<countp; i+=2)
-	{
-		m_curStyleDesc += (const gchar *) m_vecAllProps.getNthItem(i);
-		m_curStyleDesc += ":";
 
-		if(m_vecAllProps.getNthItem(i+1) &&
-		   *((const gchar *) m_vecAllProps.getNthItem(i+1)))
-		    m_curStyleDesc +=
-			(const gchar *) m_vecAllProps.getNthItem(i+1);
-		
-		if(i+2<countp)
-			m_curStyleDesc += "; ";
-	}
+	m_curStyleDesc = PP_makePropString(m_vecAllProps);
 //
 // Update the description in the Modify Dialog.
 //
@@ -1403,8 +1077,9 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 	xxx_UT_DEBUGMSG(("Style desc is %s \n",m_curStyleDesc.c_str()));
 	if( pStyle == NULL)
 	{
-		if(m_curStyleDesc.empty())
+		if(m_curStyleDesc.empty()) {
 			m_curStyleDesc = "font-style:normal";
+		}
 		PP_PropertyVector attrib = {
 			PT_NAME_ATTRIBUTE_NAME, "tmp",
 			PT_TYPE_ATTRIBUTE_NAME, "P",
@@ -1414,19 +1089,16 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 		};
 		if(!isNew)
 		{
-			const char* val = getAttsVal(PT_TYPE_ATTRIBUTE_NAME);
-			attrib[3] = val ? val : "";
-			val = getAttsVal("basedon");
-			attrib[5] = val ? val : "";
-			val = getAttsVal("followedby");
-			attrib[7] = val ? val : "";
+			attrib[3] = PP_getAttribute(PT_TYPE_ATTRIBUTE_NAME, m_vecAllAttribs);
+			attrib[5] = PP_getAttribute("basedon", m_vecAllAttribs);
+			attrib[7] = PP_getAttribute("followedby", m_vecAllAttribs);
 		}
 		getLDoc()->appendStyle(attrib);
 	}
 	else
 	{
-		getLDoc()->addStyleProperties("tmp",lprop);
-		getLDoc()->addStyleAttributes("tmp",latt);
+		getLDoc()->addStyleProperties("tmp", m_vecAllProps);
+		getLDoc()->addStyleAttributes("tmp", m_vecAllAttribs);
 	}
 
 	getLView()->setStyle("tmp");
@@ -1434,7 +1106,7 @@ void AP_Dialog_Styles::_populateAbiPreview(bool isNew)
 //
 // Set Color Back
 //
-	const std::string & pszFGColorL = PP_getAttribute("color", lprop);
+	const std::string & pszFGColorL = PP_getAttribute("color", m_vecAllAttribs);
 	if(pszFGColorL.empty())
 	{
 		const PP_PropertyVector FGCol = {
