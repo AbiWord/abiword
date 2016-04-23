@@ -141,6 +141,104 @@ const gchar *UT_XML_transNoAmpersands(const gchar * szSource)
 	return rszDestBuffer;
 }
 
+/**
+ *  XML cannot contain any control characters except \t, \n, \r, see bug 8565
+ *  (http://www.w3.org/TR/REC-xml/#charsets)
+ *
+ *  This function removes any illegal characters and invalid utf-8 sequences.
+ *
+ *  @param str the string to modify in place
+ *  @retval %true if the string was valid before. %false if it needed changes.
+ */
+bool UT_ensureValidXML(std::string & str)
+{
+  if(str.empty()) {
+    return true;
+  }
+
+  bool isValid = true;
+  const gchar* end = nullptr;
+  if(!g_utf8_validate(str.c_str(), str.size(), &end)) {
+    isValid = false;
+  }
+
+  const UT_Byte *ps = reinterpret_cast<const UT_Byte *>(str.c_str());
+  while(*ps) {
+    if(*ps < ' ' && *ps != '\t' && *ps != '\n' && *ps != '\r')  {
+      isValid = false;
+      break;
+    }
+    ++ps;
+  }
+
+  xxx_UT_DEBUGMSG(("isValid = %d\n", isValid));
+
+  if (!isValid) {
+    const UT_Byte *start = std::min(ps, reinterpret_cast<const UT_Byte*>(end));
+
+    const UT_Byte * p = reinterpret_cast<const UT_Byte *>(str.c_str());	// gchar is signed...
+
+    xxx_UT_DEBUGMSG(("p = %p, ps = %p, start = %p\n", p, ps, start));
+    UT_uint32 len = str.size();
+
+    int bytesInSequence = 0;
+    int bytesExpectedInSequence = 0;
+
+    std::string s(p, start);
+    s.reserve(len);
+
+    UT_uint32 k = start - p;
+
+    for (; k < len; k++) {
+      if (p[k] < 0x80) { // plain us-ascii part of latin-1
+
+        // UT_Byte is unsigned char, hence p[k] always >= 0
+        if(p[k] < ' ' /*&& p[k] >= 0*/ && p[k] != '\t' &&
+           p[k] != '\n' && p[k] != '\r') {
+
+        } else {
+          s += p[k];
+        }
+
+        bytesInSequence = 0;
+        bytesExpectedInSequence = 0;
+
+      } else if ((p[k] & 0xf0) == 0xf0)	{ // lead byte in 4-byte surrogate pair
+
+        UT_ASSERT_HARMLESS( UT_NOT_IMPLEMENTED );
+        bytesExpectedInSequence = 4;
+        bytesInSequence = 1;
+
+      } else if ((p[k] & 0xe0) == 0xe0) { // lead byte in 3-byte sequence
+
+        bytesExpectedInSequence = 3;
+        bytesInSequence = 1;
+
+      } else if ((p[k] & 0xc0) == 0xc0) {  // lead byte in 2-byte sequence
+
+        bytesExpectedInSequence = 2;
+        bytesInSequence = 1;
+
+      } else if ((p[k] & 0x80) == 0x80) { // trailing byte in multi-byte sequence
+
+        bytesInSequence++;
+        if (bytesInSequence == bytesExpectedInSequence) { // final byte in multi-byte sequence
+          for(UT_sint32 i = k - bytesInSequence + 1; i <= (UT_sint32)k; i++) {
+            s += p[i];
+          }
+
+          bytesInSequence = 0;
+          bytesExpectedInSequence = 0;
+        }
+      }
+    }
+
+    str = std::move(s);
+  }
+
+  return isValid;
+}
+
 /*! \fn bool UT_isValidXML(const char *s)
 	 \param s The string of characters which is to be checked for XML-validity.
 	 \retval TRUE if the characters are all valid for XML, FALSE if any one of them is not.
