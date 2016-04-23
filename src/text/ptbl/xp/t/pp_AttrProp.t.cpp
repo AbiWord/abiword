@@ -270,21 +270,28 @@ TFTEST_MAIN("PP_makePropString")
     TFPASS(result == "font:Comic Sans; size:42pt");
 }
 
+extern UT_uint32 hashcodeBytesAP(UT_uint32 init, const char * pv, UT_uint32 cb);
+
 TFTEST_MAIN("PP_AttrProp checksum")
 {
+    UT_uint32 crc = hashcodeBytesAP(0, "12345678", 8);
+    TFPASSEQ(crc, 0x910e0084);
+    crc = hashcodeBytesAP(crc, "abcdefghijklmnopqrstuvwxyz", 26);
+    TFPASSEQ(crc, 0x616c5508);
+
     PP_AttrProp attrProps;
 
     attrProps.setAttributes(true_attr);
     attrProps.markReadOnly();
     UT_uint32 cs = attrProps.getCheckSum();
-    TFPASSEQ(cs, 0xe526f92f);
+    TFPASSEQ(cs, 0x1984e55b);
 
     PP_AttrProp attrProps2;
 
     attrProps2.setAttributes(attr1);
     attrProps2.markReadOnly();
     cs = attrProps2.getCheckSum();
-    TFPASSEQ(cs, 0x3e4923f0);
+    TFPASSEQ(cs, 0x67232a84);
 }
 
 TFTEST_MAIN("PP_AttrProp - add props/attr")

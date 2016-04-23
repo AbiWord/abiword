@@ -964,7 +964,8 @@ PP_AttrProp * PP_AttrProp::cloneWithEliminationIfEqual(const PP_PropertyVector &
 
 /*! (?)TODO: PLEASE DOCUMENT ME!
 */
-static UT_uint32 hashcodeBytesAP(UT_uint32 init, const char * pv, UT_uint32 cb)
+/*static*/ // can't static for tests....
+UT_uint32 hashcodeBytesAP(UT_uint32 init, const char * pv, UT_uint32 cb)
 {
  	// modified from ut_string_class.cpp's hashcode() which got it from glib
  	UT_uint32 h = init;
