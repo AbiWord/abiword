@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 /* AbiWord
  * Copyright (C) 2016 Hubert Figuiere
  *
@@ -23,6 +23,29 @@
 #include "pp_AttrProp.h"
 
 #define TFSUITE "core.text.ptbl.attrprop"
+
+// because this function isn't public.
+extern void ascii_strdown(char *p, size_t len);
+
+TFTEST_MAIN("ascii_strdown")
+{
+    const char* t1 = "aBd*87T";
+
+    char* lowert1 = strdup(t1);
+    ascii_strdown(lowert1, 7);
+    TFPASSEQ(lowert1, "abd*87t");
+    char* glowert1 = g_ascii_strdown(lowert1, 7);
+    TFPASSEQ(glowert1, lowert1);
+    g_free(glowert1);
+    free(lowert1);
+
+    // test with a larger value and still NUL terminated string.
+    lowert1 = strdup(t1);
+    ascii_strdown(lowert1, 0xffff);
+    TFPASSEQ(lowert1, "abd*87t");
+    free(lowert1);
+}
+
 
 // "props" has a defined syntax.
 static const PP_PropertyVector attr1 = {

@@ -4691,7 +4691,7 @@ RDFModel_SPARQLLimited::update()
         }
         l.insert( std::make_pair( p, o ));
         std::string po = encodePOCol(l);
-        AP->setProperty( szName, po.c_str() );    
+        AP->setProperty(szName, po);
         
         PD_RDFStatement st( s, p, o );
         UT_DEBUGMSG(("RDFModel_SPARQLLimited::update() adding st:%s \n", st.toString().c_str() ));
@@ -4764,7 +4764,7 @@ RDFModel_XMLIDLimited::update()
 
         const gchar* szName = s.toString().c_str();
         std::string po = encodePOCol( polist );
-        AP->setProperty( szName, po.c_str() );    
+        AP->setProperty(szName, po);
         return;
     }
     
@@ -5293,7 +5293,7 @@ bool PD_DocumentRDFMutation::apAdd( PP_AttrProp* AP, const PD_URI& s, const PD_U
     // }
     l.insert( std::make_pair( p, o ));
     std::string po = encodePOCol(l);
-    return AP->setProperty( szName, po.c_str() );    
+    return AP->setProperty(szName, po);
 }
 
 void PD_DocumentRDFMutation::apRemove( PP_AttrProp*& AP, const PD_URI& s, const PD_URI& p, const PD_Object& o )
@@ -5335,7 +5335,7 @@ void PD_DocumentRDFMutation::apRemove( PP_AttrProp*& AP, const PD_URI& s, const 
             if(l.empty())
                 po = "";
             
-            if( !newAP->setProperty( szName, po.c_str() ))
+            if( !newAP->setProperty(szName, po))
             {
                 // FIXME: failed to copy prop
             }
@@ -5551,7 +5551,7 @@ PD_DocumentRDFMutation::handleAddAndRemove( PP_AttrProp* add_, PP_AttrProp* remo
                 po = "";
 //            UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove(2) n:%s exist.sz:%d rem.sz:%d\n",
 //                         szExistingName, existingProps.size(), removeProps.size() ));
-            if( !newAP->setProperty( szExistingName, po.c_str() ))
+            if (!newAP->setProperty(szExistingName, po))
             {
                 UT_DEBUGMSG(("PD_DocumentRDFMutation::handleAddAndRemove() failed to set prop:%ld\n", (long)i ));
                 // FIXME: failed to copy prop

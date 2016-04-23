@@ -41,6 +41,22 @@
 #include "pd_Document.h"
 
 
+/// Turn the ASCII chars to lower case. Modify in place.
+/// @param p the string pointer
+/// @param len the length of the string.
+/*static*/ // need to be visible for tests.
+void ascii_strdown(char *p, size_t len)
+{
+	char *c = p;
+	for(size_t i = 0; i < len && *c; i++) {
+		if (*c >= 'A' && *c <= 'Z') {
+			p[i] += 0x20;
+		}
+		c++;
+	}
+}
+
+
 /****************************************************************/
 
 /// This is the sole explicit constructor of class PP_AttrProp.
@@ -117,7 +133,7 @@ bool PP_AttrProp::setProperties(const PP_PropertyVector & properties)
 			if (iter == properties.cend()) {
 				break;
 			}
-			if (!setProperty(key.c_str(), iter->c_str())) {
+			if (!setProperty(key, *iter)) {
 				return false;
 			}
 		}
@@ -211,6 +227,7 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 	}
 	else // not "PROPS" -- add to attribute list
 	{
+		// XXX fix this. We should just have a std::string
 		UT_UTF8String url;
 		if (szValue && *szValue && (0 == strcmp(szName, "xlink:href") || 0 == strcmp(szName, "href")))
 		{
@@ -222,19 +239,17 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 		// make sure we store attribute names in lowercase
 		UT_ASSERT_HARMLESS(sizeof(char) == sizeof(gchar));
 
-		char * copy = g_ascii_strdown(szName, -1);
-		char * szDupValue = szValue ? g_strdup(szValue) : NULL;
+		std::string key = szName;
+		// &key[0] is a mutable array of char. may not be NUL terminated.
+		ascii_strdown(&key[0], key.size());
+
+		std::string szDupValue = szValue ? szValue : "";
 
 		// get rid of any illegal chars we might have been given
-		if(!UT_isValidXML(copy))
-			UT_validXML(copy);
-		if(!UT_isValidXML(szDupValue))
-			UT_validXML(szDupValue);
+		UT_ensureValidXML(key);
+		UT_ensureValidXML(szDupValue);
 
-		m_attributes[copy] = szDupValue;
-
-		FREEP(szDupValue);
-		FREEP(copy);
+		m_attributes[std::move(key)] = std::move(szDupValue);
 
 		return true;
 	}
@@ -247,9 +262,9 @@ bool	PP_AttrProp::setAttribute(const gchar * szName, const gchar * szValue)
 		 (?)Is there a reason for this?
 	 \return Whether or not the operation succeeded.
 */
-bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
+bool PP_AttrProp::setProperty(const std::string & name, const std::string & value)
 {
-	UT_return_val_if_fail( szName, false );
+	UT_return_val_if_fail(!name.empty(), false);
 
 	// if szValue == NULL or *szValue == 0, indicates absent property.
 	// We have to set it empty, otherwise the code that changes
@@ -259,30 +274,14 @@ bool	PP_AttrProp::setProperty(const gchar * szName, const gchar * szValue)
 	//bool bRemove = (!szValue || !*szValue);
 
 	// get rid of any chars invalid in xml
-	char * szName2 = NULL;
-	if(!UT_isValidXML(szName))
-	{
-		szName2 = g_strdup(szName);
+	std::string name2 = name;
+	UT_ensureValidXML(name2);
 
-		// get rid of any illegal chars we were passed
-		UT_validXML(szName2);
-
-		szName = szName2;
-	}
-
-	char * szValue2 = szValue ? g_strdup(szValue) : NULL;
-	UT_return_val_if_fail( szName && (szValue2 || !szValue), false);
-
-	// get rid of any illegal chars we might have been given in the value
-	if(!UT_isValidXML(szValue2))
-		UT_validXML(szValue2);
+	std::string value2 = value;
+	UT_ensureValidXML(value2);
 
 	UT_return_val_if_fail (!m_bIsReadOnly, false);
-	m_properties[szName] = szValue2;
-
-	// g_free the name duplicate if necessary
-	FREEP(szValue2);
-	FREEP(szName2);
+	m_properties[std::move(name2)] = std::move(value);
 
 	return true;
 }
@@ -985,10 +984,13 @@ UT_uint32 hashcodeBytesAP(UT_uint32 init, const char * pv, UT_uint32 cb)
  	return h;
 }
 
-/*! Compute the checksum by which we speed AP equivalence testing.  (?)To the best of my knowledge,
-	 collision is still possible.  (?)TODO: Document the algorithm/process here, and
-	 answer remaining questions about this chunk of code.
-*/
+/*! Compute the checksum by which we speed AP equivalence testing.
+ * (?)To the best of my knowledge, collision is still possible.
+ * (?)TODO: Document the algorithm/process here, and answer remaining
+ * questions about this chunk of code.
+ *
+ * This checksum isn't persisted so changing it for future version is safe.
+ */
 void PP_AttrProp::_computeCheckSum(void)
 {
 	m_checkSum = 0;
@@ -997,54 +999,31 @@ void PP_AttrProp::_computeCheckSum(void)
 		return;
 	}
 
-	const gchar *s1, *s2;
 	UT_uint32	cch = 0;
-	gchar	*rgch;
+	gchar	rgch[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-	rgch = NULL;
-	if (!m_attributes.empty()) {
-		auto iter = m_attributes.begin();
+	for (const auto & attr : m_attributes) {
 
-		while (iter != m_attributes.end()) {
-			s1 = iter->first.c_str();
-			s2 = iter->second.c_str();
+		cch = attr.first.size();
+		m_checkSum = hashcodeBytesAP(m_checkSum, attr.first.c_str(), cch);
 
-			cch = iter->first.size();
-
-			m_checkSum = hashcodeBytesAP(m_checkSum, s1, cch);
-
-			cch = iter->second.size();
-
-			rgch = g_ascii_strdown(s2, 9);
-			rgch[8] = '\0';
-			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
-			g_free (rgch); rgch = NULL;
-
-			++iter;
-		}
+		cch = attr.second.size();
+		strncpy(rgch, attr.second.c_str(), 8);
+		ascii_strdown(rgch, 8);
+		m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
 	}
 
-	if (!m_properties.empty()) {
-		auto iter = m_properties.begin();
+	for (const auto & prop : m_properties) {
 
-		while (iter != m_properties.end()) {
+		cch = prop.first.size();
+		strncpy(rgch, prop.first.c_str(), 8);
+		ascii_strdown(rgch, 8);
+		m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
 
-			s1 = iter->first.c_str();
-			cch = iter->first.size();
-			rgch = g_ascii_strdown(s1, 9);
-			rgch[8] = '\0';
-			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
-			g_free (rgch); rgch = NULL;
-
-			s2 = iter->second.c_str();
-			cch = iter->second.size();
-			rgch = g_ascii_strdown(s2, 9);
-			rgch[8] = '\0';
-			m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
-			g_free (rgch); rgch = NULL;
-
-			++iter;
-		}
+		cch = prop.second.size();
+		strncpy(rgch, prop.second.c_str(), 8);
+		ascii_strdown(rgch, 8);
+		m_checkSum = hashcodeBytesAP(m_checkSum, rgch, cch);
 	}
 }
 

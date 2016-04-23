@@ -98,7 +98,7 @@ public:
 	PP_PropertyVector getProperties () const;
 
 	bool	setAttribute(const gchar * szName, const gchar * szValue);
-	bool	setProperty(const gchar * szName, const gchar * szValue);
+	bool	setProperty(const std::string &name, const std::string &value);
 
 	bool	getNthAttribute(int ndx, const gchar *& szName, const gchar *& szValue) const;
 	bool	getNthProperty(int ndx, const gchar *& szName, const gchar *& szValue) const;
