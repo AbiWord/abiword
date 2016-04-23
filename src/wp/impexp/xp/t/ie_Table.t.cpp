@@ -126,11 +126,15 @@ TFTEST_MAIN("ie Table")
 
       TFPASSEQ(tables.size(), 2);
 
-      TFPASSEQ(tables[0].numCols, 4);
-      TFPASSEQ(tables[0].numRows, 3);
+      if (tables.size() >= 2) {
+        // if the test fails we don't want to crash here.
+        // XXX figure out a better way to deal with this.
+        TFPASSEQ(tables[0].numCols, 4);
+        TFPASSEQ(tables[0].numRows, 3);
 
-      TFPASSEQ(tables[1].numCols, 5);
-      TFPASSEQ(tables[1].numRows, 2);
+        TFPASSEQ(tables[1].numCols, 5);
+        TFPASSEQ(tables[1].numRows, 2);
+      }
 
       TFPASSEQ(table.getNumRows(), 0);
       TFPASSEQ(table.getNumCols(), 0);

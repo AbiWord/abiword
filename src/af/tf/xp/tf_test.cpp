@@ -26,6 +26,7 @@
  * Part of an automated testing framework.  See wvtest.h.
  */
 
+// XXX reenable on Windows after fixing it.
 #ifndef _WIN32
 
 #include "tf_test.h"
@@ -272,6 +273,9 @@ const char* TF_Test::get_test_src_dir()
         dir = getenv("top_srcdir");
     }
     if (!dir) {
+        printf("Failed to determine the src dir.\n"
+               "Please set ABI_TEST_SRC_DIR or top_srcdir env.\n"
+               "Using '.' for now.\n");
         return ".";
     }
     return dir;
