@@ -370,12 +370,12 @@ bool	PP_AttrProp::getNthProperty(int ndx, const gchar *& szName, const gchar *& 
 
 	 WARNING: Be sure to check the return value before trying to work with szValue.
 */
-bool PP_AttrProp::getProperty(const gchar * szName, const gchar *& szValue) const
+bool PP_AttrProp::getProperty(const std::string & name, const gchar *& szValue) const
 {
 	if (m_properties.empty()) {
 		return false;
 	}
-	auto iter = m_properties.find(szName);
+	auto iter = m_properties.find(name);
 	if (iter == m_properties.end()) {
 		return false;
 	}
@@ -442,19 +442,17 @@ std::unique_ptr<PP_PropertyType> PP_AttrProp::getPropertyType(const gchar * szNa
 
 	 WARNING: Be sure to check the return value before trying to work with szValue.
 */
-bool PP_AttrProp::getAttribute(const gchar * szName, const gchar *& szValue) const
+bool PP_AttrProp::getAttribute(const std::string & name, const gchar *& szValue) const
 {
 	if (m_attributes.empty())
 		return false;
 
-	auto iter = m_attributes.find(szName);
+	auto iter = m_attributes.find(name);
 	if (iter == m_attributes.end()) {
 		return false;
 	}
 
 	szValue = iter->second.c_str();
-
-	xxx_UT_DEBUGMSG(("SEVIOR: getAttribute Found value %s \n",szValue));
 
 	return true;
 }
@@ -1166,7 +1164,7 @@ bool PP_AttrProp::isEquivalent(const PP_PropertyVector & attrs,
 		name = attrs[2*i];
 		value = attrs[2*i + 1];
 
-		if(!getAttribute(name.c_str(), pValue2)) {
+		if(!getAttribute(name, pValue2)) {
 			return false;
 		}
 
@@ -1194,7 +1192,7 @@ bool PP_AttrProp::isEquivalent(const PP_PropertyVector & attrs,
 		name = props[2 * i];
 		value = props[2 * i + 1];
 
-		if(!getProperty(name.c_str(), pValue2)) {
+		if(!getProperty(name, pValue2)) {
 			return false;
 		}
 

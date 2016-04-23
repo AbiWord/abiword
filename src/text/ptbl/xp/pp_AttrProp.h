@@ -103,14 +103,9 @@ public:
 	bool	getNthAttribute(int ndx, const gchar *& szName, const gchar *& szValue) const;
 	bool	getNthProperty(int ndx, const gchar *& szName, const gchar *& szValue) const;
 
-	bool getAttribute(const gchar * szName, const gchar *& szValue) const;
-	bool getAttribute(const std::string& name, const gchar *& szValue) const {
-		return getAttribute(name.c_str(), szValue);
-	}
-	bool getProperty(const gchar * szName, const gchar *& szValue) const;
-	bool getProperty(const std::string & name, const gchar *& szValue) const {
-		return getProperty(name.c_str(), szValue);
-	}
+	bool getAttribute(const std::string & name, const gchar *& szValue) const;
+	bool getProperty(const std::string & name, const gchar *& szValue) const;
+
 	std::unique_ptr<PP_PropertyType> getPropertyType(const gchar * szName, tProperty_type Type) const;
 
 	bool hasProperties(void) const;

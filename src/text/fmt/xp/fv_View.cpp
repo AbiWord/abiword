@@ -6168,7 +6168,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const
 
 	UT_sint32 iPropsCount = PP_getPropertyCount();
 	UT_sint32 n = 0;
-	UT_String sPropName;
+	std::string sPropName;
 	UT_String sPropVal;
 	const gchar * pszPropVal;
 	for(n = 0; n < iPropsCount; n++)
@@ -6177,7 +6177,7 @@ bool FV_View::getCellFormat(PT_DocPosition pos, UT_String & sCellProps) const
 		{
 			sPropName = PP_getNthPropertyName(n);
 			sPropVal.clear();
-			bool bFound = pCellAP->getProperty(sPropName.c_str(),pszPropVal);
+			bool bFound = pCellAP->getProperty(sPropName, pszPropVal);
 			if(bFound)
 			{
 				sPropVal = pszPropVal;

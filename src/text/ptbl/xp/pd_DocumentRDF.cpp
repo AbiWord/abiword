@@ -3299,7 +3299,7 @@ POCol&
 PD_DocumentRDF::apGetArcsOut( const PP_AttrProp* AP, POCol& ret, const PD_URI& s )
 {
     const gchar* szValue = 0;
-	if( AP->getProperty( s.toString().c_str(), szValue) )
+	if(AP->getProperty(s.toString(), szValue))
     {
         ret = decodePOCol(szValue);
     }
@@ -3320,7 +3320,7 @@ PD_ObjectList&
 PD_DocumentRDF::apGetObjects( const PP_AttrProp* AP, PD_ObjectList& ret, const PD_URI& s, const PD_URI& p )
 {
     const gchar* szValue = 0;
-	if( AP->getProperty( s.toString().c_str(), szValue) )
+	if(AP->getProperty(s.toString(), szValue))
     {
         POCol l = decodePOCol(szValue);
         std::pair< POCol::iterator, POCol::iterator > range
@@ -3373,7 +3373,7 @@ PD_DocumentRDF::apGetSubjects( const PP_AttrProp* AP, PD_URIList& ret, const PD_
 bool PD_DocumentRDF::apContains( const PP_AttrProp* AP, const PD_URI& s, const PD_URI& p, const PD_Object& o )
 {
     const gchar* szValue = 0;
-	if( AP->getProperty( s.toString().c_str(), szValue) )
+	if(AP->getProperty(s.toString(), szValue))
     {
         POCol l = decodePOCol(szValue);
 
