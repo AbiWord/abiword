@@ -52,6 +52,7 @@
 #include "px_CR_Span.h"
 #include "px_CR_SpanChange.h"
 #include "px_CR_Strux.h"
+#include "px_CR_StruxChange.h"
 #include "pf_Frag.h"
 #include "pd_Iterator.h"
 #include "fd_Field.h"
@@ -5705,8 +5706,8 @@ bool   PD_Document::updateDocForStyleChange(const gchar * szStyle,
 				}
 				if(bUpdate)
 				{
-					PX_ChangeRecord * pcr = new PX_ChangeRecord(PX_ChangeRecord::PXT_ChangeStrux,pos,indexAP,
-																pfs->getXID());
+					PX_ChangeRecord * pcr = new PX_ChangeRecord_StruxChange(PX_ChangeRecord::PXT_ChangeStrux,
+					                                      pos, indexAP, indexAP, pfs->getStruxType(), false);
 					notifyListeners(pfs, pcr);
 					delete pcr;
 				}
