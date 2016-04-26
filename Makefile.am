@@ -13,10 +13,14 @@ desktop_DATA = abiword.desktop
 mimedir = @ABIWORD_DATADIR@/mime-info
 mime_DATA = abiword.keys
 
+appdatadir = $(datarootdir)/appdata
+appdata_DATA = abiword.appdata.xml
+
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = abiword-$(ABIWORD_SERIES).pc
 
 dist_man1_MANS = abiword.1
+
 endif
 
 if TOOLKIT_GTK
@@ -39,6 +43,7 @@ EXTRA_DIST = \
 	README \
 	ChangeLog \
 	abiword.desktop \
+	$(appdata_DATA) \
 	abiword.keys \
 	abiword.png \
 	libabiword.pc.in \
