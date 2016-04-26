@@ -123,7 +123,7 @@ static bool s_AskForGOComponentPathname(XAP_Frame * pFrame,
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERTOBJECT));
 	UT_return_val_if_fail (pDialog, false);
 
-	pDialog->setCurrentPathname(NULL);
+	pDialog->setCurrentPathname("");
 	pDialog->setSuggestFilename(false);
 
 	// to fill the file types popup list, we need to convert AP-level

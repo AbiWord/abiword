@@ -210,7 +210,7 @@ void AP_Dialog_FormatFrame::askForGraphicPathName(void)
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_INSERT_PICTURE));
 	UT_return_if_fail (pDialog);
 
-	pDialog->setCurrentPathname(NULL);
+	pDialog->setCurrentPathname("");
 	pDialog->setSuggestFilename(false);
 
 	// to fill the file types popup list, we need to convert AP-level
