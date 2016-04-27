@@ -455,7 +455,7 @@ UT_runDialog_AskForPathname::run( XAP_Frame * pFrame )
     {
         // if caller wants to suggest a name, use it and seed the
         // dialog in that directory and set the filename.
-        pDialog->setCurrentPathname(m_suggestedName.c_str());
+        pDialog->setCurrentPathname(m_suggestedName);
         pDialog->setSuggestFilename(true);
     }
     else if (pFrame)
@@ -469,7 +469,7 @@ UT_runDialog_AskForPathname::run( XAP_Frame * pFrame )
         if (pDoc->getMetaDataProp (PD_META_KEY_TITLE, title) && !title.empty())
         {
             UT_legalizeFileName(title);
-            pDialog->setCurrentPathname(title.c_str());
+            pDialog->setCurrentPathname(title);
             pDialog->setSuggestFilename(true);
         } else {
             pDialog->setCurrentPathname(pFrame->getFilename());

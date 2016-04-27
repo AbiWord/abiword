@@ -77,7 +77,7 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 	std::string plugin_path = [[[NSBundle mainBundle] bundlePath] UTF8String];
 //	plugin_path += "/Contents/PlugIns/AbiHack.dylib";
 
-	pDialog->setCurrentPathname(plugin_path.c_str ());
+	pDialog->setCurrentPathname(plugin_path);
 	pDialog->setSuggestFilename(false);
 	
 	const char * szDescList[2];

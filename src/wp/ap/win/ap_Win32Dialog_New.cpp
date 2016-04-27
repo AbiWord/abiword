@@ -217,7 +217,7 @@ void AP_Win32Dialog_New::_doChoose()
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
 	UT_return_if_fail (pDialog);
 
-	pDialog->setCurrentPathname(0);
+	pDialog->setCurrentPathname("");
 	pDialog->setSuggestFilename(false);
 
 	UT_uint32 filterCount = IE_Imp::getImporterCount();

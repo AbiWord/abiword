@@ -158,7 +158,7 @@ void AP_UnixDialog_New::event_ToggleOpenExisting ()
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-	pDialog->setCurrentPathname(0);
+	pDialog->setCurrentPathname("");
 	pDialog->setSuggestFilename(false);
 
 	UT_uint32 filterCount = IE_Imp::getImporterCount();

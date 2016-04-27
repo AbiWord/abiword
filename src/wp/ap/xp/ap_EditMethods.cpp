@@ -2019,10 +2019,10 @@ static bool s_AskForPathname(XAP_Frame * pFrame,
 			}
 
 			if(!bSet)
-				pDialog->setCurrentPathname(title.c_str());
+				pDialog->setCurrentPathname(title);
 #else
 			UT_legalizeFileName(title);
-			pDialog->setCurrentPathname(title.c_str());
+			pDialog->setCurrentPathname(title);
 #endif
 			pDialog->setSuggestFilename(true);
 		} else {

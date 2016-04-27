@@ -116,7 +116,7 @@ void AP_CocoaDialog_New::event_ToggleOpenExisting ()
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(dlgid));
 	UT_ASSERT(pDialog);
 
-	pDialog->setCurrentPathname(0);
+	pDialog->setCurrentPathname("");
 	pDialog->setSuggestFilename(false);
 
 	UT_uint32 filterCount = IE_Imp::getImporterCount();

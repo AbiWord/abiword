@@ -272,7 +272,7 @@ bool getFileName(std::string &szFile, XAP_Frame * pFrame, XAP_Dialog_Id id,
 		= (XAP_Dialog_FileOpenSaveAs *)(pDialogFactory->requestDialog(id));
 	UT_ASSERT(pDialog);
 
-	pDialog->setCurrentPathname(szFile.c_str());
+	pDialog->setCurrentPathname(szFile);
 	pDialog->setSuggestFilename(false);
 
 	pDialog->setFileTypeList(szDescList, szSuffixList, ft);

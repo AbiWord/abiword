@@ -148,22 +148,22 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 {
 	XAP_DialogFactory * pDialogFactory
 		= static_cast<XAP_DialogFactory *>(m_pFrame->getDialogFactory());
-	
+
 	XAP_Dialog_FileOpenSaveAs * pDialog
 		= static_cast<XAP_Dialog_FileOpenSaveAs *>(pDialogFactory->requestDialog(XAP_DIALOG_ID_FILE_OPEN));
 	UT_return_if_fail(pDialog);
-	
+
 	// set the intial plugin directory to the user-local plugin directory
 	// could also set to: XAP_App::getApp()->getAbiSuiteLibDir()/plugins
-	UT_String pluginDir (XAP_App::getApp()->getUserPrivateDirectory());
+        std::string pluginDir(XAP_App::getApp()->getUserPrivateDirectory());
 	pluginDir += "/";
 	pluginDir += PACKAGE_NAME;
 	pluginDir += "-";
 	pluginDir += ABIWORD_SERIES;
 	pluginDir += "/plugins/";
-	pDialog->setCurrentPathname (pluginDir.c_str());
+	pDialog->setCurrentPathname (pluginDir);
 	pDialog->setSuggestFilename(false);
-	
+
 	UT_uint32 filterCount = 1;
 	const char ** szDescList = static_cast<const char **>(UT_calloc(filterCount + 1,
 																	sizeof(char *)));
@@ -171,7 +171,7 @@ void XAP_UnixDialog_PluginManager::event_Load ()
 																	  sizeof(char *)));
 	IEFileType * nTypeList = static_cast<IEFileType *>(UT_calloc(filterCount + 1,
 																 sizeof(IEFileType)));
-	
+
 	szDescList[0] = "AbiWord Plugin (.G_MODULE_SUFFIX)";
 	szSuffixList[0] = "*.G_MODULE_SUFFIX";
 	nTypeList[0] = static_cast<IEFileType>(1);
