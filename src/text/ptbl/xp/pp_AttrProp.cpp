@@ -1037,8 +1037,9 @@ UT_uint32 PP_AttrProp::getCheckSum(void) const
 	return m_checkSum;
 }
 
-void PP_AttrProp::operator=(const PP_AttrProp &other)
+PP_AttrProp & PP_AttrProp::operator=(const PP_AttrProp &other)
 {
+	UT_ASSERT(!m_bIsReadOnly);
 	size_t countMyAttrs = other.m_attributes.size();
 
 	UT_uint32 index;
@@ -1063,7 +1064,7 @@ void PP_AttrProp::operator=(const PP_AttrProp &other)
 			setProperty(szName, szValue);
 		}
 	}
-
+	return *this;
 }
 
 UT_uint32 PP_AttrProp::getIndex(void) const

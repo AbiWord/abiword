@@ -86,11 +86,6 @@ public:
 	PP_AttrProp();
 	virtual ~PP_AttrProp();
 
-	// The "gchar **" is an argv-like thing containing
-	// multiple sets of name/value pairs.  names are in the
-	// even cells; values are in the odd.  the list is
-	// terminated by a null name.
-
 	bool    setAttributes(const PP_PropertyVector & attributes);
 	bool	setProperties(const PP_PropertyVector & properties);
 
@@ -136,7 +131,7 @@ public:
 	void markReadOnly(void);
 	UT_uint32 getCheckSum(void) const;
 
-	void operator = (const PP_AttrProp &Other);
+	PP_AttrProp & operator=(const PP_AttrProp &Other);
 	UT_uint32 getIndex(void) const;	//$HACK
 	void setIndex(UT_uint32 i);	//$HACK
 

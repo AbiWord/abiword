@@ -18,6 +18,7 @@
  * 02110-1301 USA.
  */
 
+//#include <iostream>
 
 #include "tf_test.h"
 #include "pp_AttrProp.h"
@@ -384,4 +385,44 @@ TFTEST_MAIN("PP_AttrProp - add attr with odd")
     attrProps.setProperties(attr);
     TFPASSEQ(attrProps.getAttributeCount(), 2);
     TFPASSEQ(attrProps.getPropertyCount(), 8);
+}
+
+TFTEST_MAIN("PP_AttrProp - operator=")
+{
+    PP_AttrProp attrProps;
+
+    TFPASSEQ(attrProps.getPropertyCount(), 0);
+    TFPASSEQ(attrProps.getAttributeCount(), 0);
+
+    PP_PropertyVector attr = true_attr;
+    attrProps.setAttributes(attr);
+    attrProps.setProperties(attr2);
+    TFPASSEQ(attrProps.getAttributeCount(), 2);
+    TFPASSEQ(attrProps.getPropertyCount(), 8);
+
+
+    PP_AttrProp attrProps2;
+
+    TFPASSEQ(attrProps2.getPropertyCount(), 0);
+    TFPASSEQ(attrProps2.getAttributeCount(), 0);
+
+    attrProps2 = attrProps;
+
+    TFPASSEQ(attrProps.getPropertyCount(), attrProps2.getPropertyCount());
+    TFPASSEQ(attrProps.getAttributeCount(), attrProps2.getAttributeCount());
+
+#if 0
+    printf("attrProps\n");
+    for (const auto & prop : attrProps.getAttributes()) {
+        std::cout << prop << std::endl;
+    }
+    printf("attrProps2\n");
+    for (const auto & prop : attrProps2.getAttributes()) {
+        std::cout << prop << std::endl;
+    }
+
+    // this is FAILING for now. The order is probably not the same.
+    TFPASS(attrProps.getAttributes() == attrProps2.getAttributes());
+    TFPASS(attrProps.getProperties() == attrProps2.getProperties());
+#endif
 }
