@@ -24,16 +24,8 @@
 std::unique_ptr<UT_RGBColor> XAP_UnixDlg_RunColorChooser(GtkWindow* parent,
 						       GtkColorButton* colorbtn)
 {
-	GtkWidget *colordlg = gtk_color_chooser_dialog_new  ("", parent);
-	GtkColorChooser *colorsel = NULL;
-#if GTK_CHECK_VERSION(3,4,0)
-	// GtkCholorChooser is an interface now.
-	// TODO remove this when we are Gtk 3.4 only
-	colorsel = GTK_COLOR_CHOOSER(colordlg);
-#else
-	colorsel = GTK_COLOR_SELECTION (gtk_color_selection_dialog_get_color_selection(GTK_COLOR_SELECTION_DIALOG (colordlg)));
-	gtk_color_selection_set_has_palette (colorsel, TRUE);
-#endif
+	GtkWidget *colordlg = gtk_color_chooser_dialog_new("", parent);
+	GtkColorChooser *colorsel = GTK_COLOR_CHOOSER(colordlg);
 
 	GdkRGBA initialColor;
 	XAP_gtk_color_button_get_rgba(colorbtn, &initialColor);
