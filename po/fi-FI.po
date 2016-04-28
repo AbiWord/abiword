@@ -1,20 +1,20 @@
 # Finnish translation of AbiWord
 # This file is distributed under the same license as the AbiWord package.
-# 
+#
 # Copyright by:
 # Chris Leonard <cjl@laptop.org>, 2012.
 msgid ""
 msgstr ""
 "Project-Id-Version: AbiWord 2.9\n"
 "Report-Msgid-Bugs-To: abiword-dev@abisource.com\n"
-"POT-Creation-Date: 2012-12-16 14:49-0500\n"
+"POT-Creation-Date: 2016-04-14 05:15+0200\n"
 "PO-Revision-Date: 2012-12-28 07:04+0200\n"
 "Last-Translator: Chris <cjl@laptop.org>\n"
 "Language-Team: Sugar Labs\n"
-"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Pootle 2.0.5\n"
 
@@ -440,7 +440,7 @@ msgstr "&Kentät:"
 #. MENU_LABEL_FILE
 #: po/tmp/ap_String_Id.h
 msgid "&File"
-msgstr "&Sulje"
+msgstr "&Tiedosto"
 
 #. DLG_Options_Label_FileExtension
 #: po/tmp/ap_String_Id.h
@@ -505,9 +505,9 @@ msgstr "Yl&ätunniste:"
 msgid "&Height:"
 msgstr "Korke&us:"
 
-#. DLG_HelpButton
 #. MENU_LABEL_HELP
-#: po/tmp/ap_String_Id.h
+#. DLG_HelpButton
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Help"
 msgstr "&Ohje"
 
@@ -714,7 +714,8 @@ msgid "&Odd page"
 msgstr "Pa&riton sivu"
 
 #. MENU_LABEL_FILE_OPEN
-#: po/tmp/ap_String_Id.h
+#. DLG_Open
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "&Open"
 msgstr "&Avaa"
 
@@ -2636,6 +2637,11 @@ msgstr "Katkoviiva"
 #: po/tmp/ap_String_Id.h
 msgid "Date"
 msgstr "Päiväys"
+
+#. FIELD_Document_Date_Last_Changed
+#: po/tmp/ap_String_Id.h
+msgid "Date Last Changed"
+msgstr ""
 
 #. MENU_LABEL_INSERT_DATETIME
 #: po/tmp/ap_String_Id.h
@@ -5733,7 +5739,8 @@ msgid "SPARQL Query"
 msgstr ""
 
 #. DLG_Options_Btn_Save
-#: po/tmp/ap_String_Id.h
+#. DLG_Save
+#: po/tmp/ap_String_Id.h po/tmp/xap_String_Id.h
 msgid "Sa&ve"
 msgstr "&Tallenna"
 
@@ -6198,6 +6205,11 @@ msgstr "Väli"
 msgid "Shading color:"
 msgstr ""
 
+#. FIELD_Application_ShortFilename
+#: po/tmp/ap_String_Id.h
+msgid "Short File Name"
+msgstr ""
+
 #. DLG_Styles_ModifyShortCut
 #: po/tmp/ap_String_Id.h
 msgid "Shortcut Key"
@@ -6516,24 +6528,44 @@ msgstr "Jaa oikealle"
 msgid "Split on Top Side"
 msgstr "Jaa yläpuolelle"
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_NOSPACES
+#. MENU_LABEL_TABLE_TEXTTOTABLE_COMMAS
 #: po/tmp/ap_String_Id.h
-msgid "Split on all delimiters except spaces"
+msgid "Split text at commas"
 msgstr ""
 
-#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#. MENU_LABEL_TABLE_TEXTTOTABLE_SPACES
 #: po/tmp/ap_String_Id.h
-msgid "Split on all word delimiters including spaces"
-msgstr ""
-
-#. MENU_LABEL_TABLE_TEXTTOTABLE_NOSPACES
-#: po/tmp/ap_String_Id.h
-msgid "Split text at commas or tabs"
+msgid "Split text at spaces"
 msgstr ""
 
 #. MENU_LABEL_TABLE_TEXTTOTABLE_ALL
 #: po/tmp/ap_String_Id.h
 msgid "Split text at spaces, commas, or tabs"
+msgstr ""
+
+#. MENU_LABEL_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text at tabs"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_COMMAS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_ALL
+#: po/tmp/ap_String_Id.h
+msgid "Split text with commas, tabs or spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_SPACES
+#: po/tmp/ap_String_Id.h
+msgid "Split text with spaces as delimiters"
+msgstr ""
+
+#. MENU_STATUSLINE_TABLE_TEXTTOTABLE_TABS
+#: po/tmp/ap_String_Id.h
+msgid "Split text with tabs as delimiters"
 msgstr ""
 
 #. TOOLBAR_STATUSLINE_SPLIT_CELLS
@@ -6993,8 +7025,8 @@ msgid ""
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
 "Tämä kappale edustaa asiakirjassa esiintyviä sanoja.  Nähdäksesi asiakirjasi "
-"tekstin tässä esikatselussa sijoita kohdistin asiakirjan kappaleen sisään "
-"ja anna tämä komento uudistaan."
+"tekstin tässä esikatselussa sijoita kohdistin asiakirjan kappaleen sisään ja "
+"anna tämä komento uudistaan."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -7102,6 +7134,11 @@ msgstr ""
 #, fuzzy
 msgid "Type a name for the bookmark, or select an existing from the list:"
 msgstr "Kirjoita kirjanmerkin nimi tai valitse luettelosta."
+
+#. DLG_InsertHyperlink_TitleLabel
+#: po/tmp/ap_String_Id.h
+msgid "Type a title for the hyperlink"
+msgstr ""
 
 #. DLG_Lists_Type
 #: po/tmp/ap_String_Id.h
@@ -7828,8 +7865,7 @@ msgstr "bretoni (Ranska)"
 
 #. DLG_ABOUT_Build
 #: po/tmp/xap_String_Id.h
-#, c-format
-#, fuzzy
+#, fuzzy, c-format
 msgid "Build options: %s"
 msgstr "Käännösasetukset: %s"
 
@@ -8144,6 +8180,11 @@ msgstr "Aseta tallennusmuodoksi XML (versio 1.0)"
 msgid "Default language: "
 msgstr "Oletuskieli "
 
+#. LANG_DV_MV
+#: po/tmp/xap_String_Id.h
+msgid "Dhivehi"
+msgstr ""
+
 #. DLG_Remove_Icon
 #: po/tmp/xap_String_Id.h
 msgid "Do you want to remove this icon from the toolbar?"
@@ -8241,6 +8282,11 @@ msgstr "englanti (Australia)"
 #: po/tmp/xap_String_Id.h
 msgid "English (Canada)"
 msgstr "englanti (Kanada)"
+
+#. LANG_EN_IN
+#: po/tmp/xap_String_Id.h
+msgid "English (India)"
+msgstr ""
 
 #. LANG_EN_IE
 #: po/tmp/xap_String_Id.h
@@ -9762,4 +9808,3 @@ msgstr ""
 msgctxt "STYLE_NONE"
 msgid "None"
 msgstr "(ei tyyliä)"
-
