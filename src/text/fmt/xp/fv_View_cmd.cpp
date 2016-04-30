@@ -5739,7 +5739,7 @@ bool FV_View::cmdUpdateEmbed(fp_Run * pRun, const UT_ByteBuf * pBuf, const char 
 	sUID += s;
 	PP_PropertyVector atts = {
 		"dataid", sUID,
-		"props", NULL
+		"props", ""
 	};
 	bool bres = m_pDoc->createDataItem(sUID.c_str(), false, pBuf, szMime, NULL);
 	UT_return_val_if_fail(bres, false)
