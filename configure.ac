@@ -158,6 +158,7 @@ case ${host_os} in
   *darwin*)
     PLATFORM="unix"
     TOOLKIT="cocoa"
+    CXXFLAGS="$CXXFLAGS -stdlib=libc++"
     ;;
   *mingw*)
     PLATFORM="win"
