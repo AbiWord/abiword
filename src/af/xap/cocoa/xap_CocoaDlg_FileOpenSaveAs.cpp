@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
@@ -364,20 +364,20 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 	NSString * szPersistDirectory = nil;
 	NSString * szPersistFile = nil;
 
-	if (!m_szInitialPathname || !*m_szInitialPathname)
+	if (m_initialPathname.empty())
 	{
 		// the caller did not supply initial pathname
 		// (or supplied an empty one).  see if we have
 		// some persistent info.
 		
 		UT_ASSERT(!m_bSuggestName);
-		if (m_szPersistPathname)
+		if (!m_persistPathname.empty())
 		{
 			// we have a pathname from a previous use,
 			// extract the directory portion and start
 			// the dialog there (but without a filename).
 
-			szPersistDirectory = [NSString stringWithUTF8String:m_szPersistPathname];
+			szPersistDirectory = [NSString stringWithUTF8String:m_persistPathname.c_str()];
 		}
 		else
 		{
@@ -396,9 +396,9 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 
 		if (m_bSuggestName)
 		{
-			/* use m_szInitialPathname
+			/* use m_initialPathname
 			 */
-			NSString * path = [NSString stringWithUTF8String:m_szInitialPathname];
+			NSString * path = [NSString stringWithUTF8String:m_initialPathname.c_str()];
 
 			szPersistDirectory = [path stringByDeletingLastPathComponent];
 
@@ -441,7 +441,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 		{
 			/* use directory(m_szInitialPathname)
 			 */
-			NSString * path = [NSString stringWithUTF8String:m_szInitialPathname];
+			NSString * path = [NSString stringWithUTF8String:m_initialPathname.c_str()];
 
 			szPersistDirectory = [path stringByDeletingLastPathComponent];
 			szPersistFile = [NSString string];
@@ -529,8 +529,7 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 
 	if ((result == NSFileHandlingPanelOKButton) && szPersistFile)
 	{
-		FREEP (m_szFinalPathname);	// g_free before reassigning
-		m_szFinalPathname = g_strdup([szPersistFile UTF8String]);
+		m_finalPathname = [szPersistFile UTF8String];
 		m_answer = a_OK;
 	}
 }

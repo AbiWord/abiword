@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 
 /* AbiSource Application Framework
  * Copyright (C) 2001 AbiSource, Inc.
@@ -102,9 +102,9 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 	
 	if (pDialog->getAnswer() == XAP_Dialog_FileOpenSaveAs::a_OK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
+		const std::string & resultPathname = pDialog->getPathname();
 
-		if (szResultPathname && *szResultPathname)
+		if (!resultPathname.empty())
 		{
 //			bool bIsBundle = false;
 
@@ -113,7 +113,7 @@ void XAP_CocoaDialog_PluginManager::event_Load ()
 //				if (strcmp(szResultPathname + length - 4, ".Abi") == 0)
 //					bIsBundle = true;
 
-			bool bActivated = activatePlugin(szResultPathname);
+			bool bActivated = activatePlugin(resultPathname.c_str());
 //			if (bIsBundle)
 //			{
 //				XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];

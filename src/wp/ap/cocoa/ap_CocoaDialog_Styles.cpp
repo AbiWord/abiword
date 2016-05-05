@@ -411,7 +411,7 @@ void AP_CocoaDialog_Styles::new_styleName(void)
 	}
 
 	snprintf(m_newStyleName, sizeof(m_newStyleName), "%s", psz);
-	addOrReplaceVecAttribs(PT_NAME_ATTRIBUTE_NAME,getNewStyleName());
+	PP_addOrSetAttribute(PT_NAME_ATTRIBUTE_NAME, getNewStyleName(), m_vecAllAttribs);
 }
 
 /*!
@@ -420,7 +420,7 @@ void AP_CocoaDialog_Styles::new_styleName(void)
 void AP_CocoaDialog_Styles::event_RemoveProperty(void)
 {
 	const char * psz = [[m_modifyDlg->_removePropCombo stringValue] UTF8String];
-	removeVecProp(psz);
+	PP_removeAttribute(psz, m_vecAllProps);
 	rebuildDeleteProps();
 	updateCurrentStyle();
 }
@@ -431,14 +431,17 @@ void AP_CocoaDialog_Styles::rebuildDeleteProps(void)
 
 	[delCombo removeAllItems];
 
-	UT_sint32 count = m_vecAllProps.getItemCount();
-	UT_sint32 i= 0;
-	for(i=0; i< count; i+=2)
+	for (auto iter = m_vecAllProps.cbegin(); iter != m_vecAllProps.cend();
+		 ++iter)
 	{
-		char * sz = (char *) m_vecAllProps.getNthItem(i);
-		NSString *str =  [[NSString alloc] initWithUTF8String:sz];
+		const std::string & value = *iter;
+		NSString *str =  [[NSString alloc] initWithUTF8String:value.c_str()];
 		[delCombo addItemWithObjectValue:str];
 		[str release];
+		++iter;
+		if (iter == m_vecAllProps.cend()) {
+			break;
+		}
 	}
 }
 
@@ -449,7 +452,7 @@ void AP_CocoaDialog_Styles::event_basedOn(void)
 {
 	const char * psz = [[m_modifyDlg->_basedOnCombo stringValue] UTF8String];
 	snprintf((char *) m_basedonName, sizeof(m_basedonName), "%s", psz);
-	addOrReplaceVecAttribs("basedon", getBasedonName());
+	PP_addOrSetAttribute("basedon", getBasedonName(), m_vecAllAttribs);
 	fillVecWithProps(getBasedonName(),false);
 	updateCurrentStyle();
 }
@@ -462,7 +465,7 @@ void AP_CocoaDialog_Styles::event_followedBy(void)
 {
 	const char * psz = [[m_modifyDlg->_followStyleCombo stringValue] UTF8String];
 	snprintf((char *) m_followedbyName, sizeof(m_followedbyName), "%s", psz);
-	addOrReplaceVecAttribs("followedby",getFollowedbyName());
+	PP_addOrSetAttribute("followedby", getFollowedbyName(), m_vecAllAttribs);
 }
 
 
@@ -477,10 +480,10 @@ void AP_CocoaDialog_Styles::event_styleType(void)
 	const gchar * pszSt = "P";
 	std::string label;
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Styles_ModifyCharacter, label);
-	if(strstr(m_styleType, label.c_str()) != 0) {
+	if(m_styleType != label) {
 		pszSt = "C";
 	}
-	addOrReplaceVecAttribs("type",pszSt);
+	PP_addOrSetAttribute("type", pszSt, m_vecAllAttribs);
 }
 
 void AP_CocoaDialog_Styles::event_Modify_Cancel(void)
@@ -709,7 +712,8 @@ bool  AP_CocoaDialog_Styles::_populateModify(void)
 			[m_modifyDlg->_followStyleCombo setStringValue:[NSString stringWithUTF8String:szFollowedBy]];
 		else
 			[m_modifyDlg->_followStyleCombo setStringValue:LocalizedString(pSS, AP_STRING_ID_DLG_Styles_DefCurrent)];
-		if(strstr(getAttsVal("type"),"P") != 0)
+		const std::string & type = PP_getAttribute("type", m_vecAllAttribs);
+		if(type.find("P") != std::string::npos)
 		{
 			[m_modifyDlg->_styleTypeCombo setStringValue:
 								LocalizedString(pSS, AP_STRING_ID_DLG_Styles_ModifyParagraph)];

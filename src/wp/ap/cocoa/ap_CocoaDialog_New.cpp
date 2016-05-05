@@ -144,12 +144,12 @@ void AP_CocoaDialog_New::event_ToggleOpenExisting ()
 
 	if (bOK)
 	{
-		const char * szResultPathname = pDialog->getPathname();
-		if (szResultPathname && *szResultPathname)
+		const std::string & resultPathname = pDialog->getPathname();
+		if (!resultPathname.empty())
 		{
 			// update the entry box
-			[m_dlg setFileName:[NSString stringWithUTF8String:szResultPathname]];
-			setFileName (szResultPathname);
+			[m_dlg setFileName:[NSString stringWithUTF8String:resultPathname.c_str()]];
+			setFileName (resultPathname.c_str());
 		}
 
 		[m_dlg setExistingBtnState:YES];

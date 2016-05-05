@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiSource Application Framework
  * Copyright (C) 2005 Francis James Franklin
@@ -586,7 +586,7 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 	if (pDialog->getAnswer() == XAP_Dialog_FileOpenSaveAs::a_OK)
 		{
-			path = [NSString stringWithUTF8String:(pDialog->getPathname())];
+			path = [NSString stringWithUTF8String:pDialog->getPathname().c_str()];
 		}
 	pDialogFactory->releaseDialog(pDialog);
 
@@ -778,62 +778,55 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 - (void)insertDocumentMailMergeField:(NSString *)field_name
 {
-	if (field_name)
-		if ([field_name length])
-			if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
-				if (FV_View * pView = static_cast<FV_View *>(m_pFrame->getCurrentView()))
-					{
-						const gchar param_name[] = "param";
-						const gchar * pParam = (const gchar *) [field_name UTF8String];
-						const gchar * pAttr[3];
+	if (field_name) {
+		if ([field_name length]) {
+			if ([AP_CocoaPlugin_Document frameExists:m_pFrame]) {
+				if (FV_View * pView = static_cast<FV_View *>(m_pFrame->getCurrentView())) {
+						const PP_PropertyVector pAttr = {
+							"param", [field_name UTF8String]
+						};
 
-						pAttr[0] = static_cast<const gchar *>(&param_name[0]);
-						pAttr[1] = pParam;
-						pAttr[2] = 0;
-
-						pView->cmdInsertField("mail_merge", static_cast<const gchar **>(&pAttr[0]));
+						pView->cmdInsertField("mail_merge", pAttr);
 					}
+			}
+		}
+	}
 }
 
 - (NSArray *)documentMailMergeFields
 {
 	NSMutableArray * fieldArray = [NSMutableArray arrayWithCapacity:16];
 
-	if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
-		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
-			{
-				const std::map<std::string, std::string> & map = pDoc->getMailMergeMap();
+	if ([AP_CocoaPlugin_Document frameExists:m_pFrame]) {
+		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))	{
+			const std::map<std::string, std::string> & map = pDoc->getMailMergeMap();
 
-				std::string val = 0;
-
-				for (std::map<std::string, std::string>::const_iterator iter = map.begin();
-					iter != map.end(); ++iter)
-					{
-						[fieldArray addObject:[NSString stringWithUTF8String:(iter->first.c_str())]];
-					}
+			std::string val;
+			
+			for (auto iter = map.begin(); iter != map.end(); ++iter) {
+				[fieldArray addObject:[NSString stringWithUTF8String:(iter->first.c_str())]];
 			}
+		}
+	}
 	return fieldArray;
 }
 
 - (void)setDocumentMailMergeFields:(NSArray *)field_array
 {
-	if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
-		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
-			{
-				std::string empty;
-				std::string key;
+	if ([AP_CocoaPlugin_Document frameExists:m_pFrame]) {
+		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))	{
+			std::string empty;
 
-				pDoc->clearMailMergeMap();
+			pDoc->clearMailMergeMap();
 
-				unsigned count = [field_array count];
+			unsigned count = [field_array count];
 
-				for (unsigned i = 0; i < count; i++)
-					{
-						NSString * field_name = [field_array objectAtIndex:i];
-						key = [field_name UTF8String];
-						pDoc->setMailMergeField(key, empty);
-					}
+			for (unsigned i = 0; i < count; i++) {
+				NSString * field_name = [field_array objectAtIndex:i];
+				pDoc->setMailMergeField([field_name UTF8String], empty);
 			}
+		}
+	}
 }
 
 - (void)unsetDocumentMailMergeFields
@@ -851,27 +844,25 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
  */
 - (void)setDocumentMailMergeValues:(NSDictionary *)value_dictionary
 {
-	if ([AP_CocoaPlugin_Document frameExists:m_pFrame])
-		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))
-			{
-				const std::map<std::string, std::string> & map = pDoc->getMailMergeMap();
+	if ([AP_CocoaPlugin_Document frameExists:m_pFrame]) {
+		if (PD_Document * pDoc = static_cast<PD_Document *>(m_pFrame->getCurrentDoc()))	{
+			const std::map<std::string, std::string> & map = pDoc->getMailMergeMap();
 
-				std::string new_value;
+			std::string new_value;
 
-				for (std::map<std::string, std::string>::const_iterator iter = map.begin();
-					iter != map.end(); ++iter)
-					{
-						NSString * value = [value_dictionary objectForKey:[NSString stringWithUTF8String:(iter->first.c_str())]];
-						if (value)
-							new_value = [value UTF8String];
-						else
-							new_value = "";
-
-						pDoc->setMailMergeField(iter->first, new_value);
-					}
-
-				s_updateMailMergeFields(m_pFrame, pDoc);
+			for (auto iter = map.begin(); iter != map.end(); ++iter) {
+				NSString * value = [value_dictionary objectForKey:[NSString stringWithUTF8String:(iter->first.c_str())]];
+				if (value) {
+					new_value = [value UTF8String];
+				} else {
+					new_value = "";
+				}
+				pDoc->setMailMergeField(iter->first, new_value);
 			}
+
+			s_updateMailMergeFields(m_pFrame, pDoc);
+		}
+	}
 }
 
 @end

@@ -145,8 +145,8 @@ bool s_doPrint(FV_View * pView, bool bTryToSuppressDialog,bool bPrintDirectly)
 
 	pDialog->setPaperSize (pView->getPageSize().getPredefinedName());
 	pDialog->setDocumentTitle(pFrame->getNonDecoratedTitle());
-	pDialog->setDocumentPathname((doc->getFilename())
-				     ? doc->getFilename()
+	pDialog->setDocumentPathname(!doc->getFilename().empty()
+				     ? doc->getFilename().c_str()
 				     : pFrame->getNonDecoratedTitle());
 	pDialog->setEnablePageRangeButton(true,1,pLayout->countPages());
 	pDialog->setEnablePrintSelection(false);	// TODO change this when we know how to do it.
