@@ -342,13 +342,10 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 	switch (x) {
 	case check_FALSE:
 		return NSOffState;
-		break;
 	case check_TRUE:
 		return NSOnState;
-		break;
 	case check_INDETERMINATE:
 		return NSMixedState;
-		break;
 	}
 	UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 	return 0;
@@ -531,8 +528,6 @@ int AP_CocoaDialog_Paragraph::_tCheckStateToNS(AP_CocoaDialog_Paragraph::tCheckS
 		return _keepNextBtn;
 	case AP_Dialog_Paragraph::id_CHECK_DOMDIRECTION:
 		return _rtlDominantBtn;
-	default:
-		obj =  [[[self window] contentView] viewWithTag:(int)widget]; 
 	}
 	UT_ASSERT(obj);
 	return obj;

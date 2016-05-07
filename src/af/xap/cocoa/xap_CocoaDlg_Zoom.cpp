@@ -191,9 +191,6 @@ void XAP_CocoaDialog_Zoom::_populateWindowData(void)
 		[m_dlg _enablePercentSpin:YES];
 		_updatePreviewZoomPercent(getZoomPercent());
 		break;
-	default:
-		// if they haven't set anything yet, default to the 100% radio item
-		zoomType = XAP_Frame::z_100;
 	}
 	[[m_dlg zoomMatrix] selectCellWithTag:(int)zoomType];
 	[m_dlg setPercentValue:((int) getZoomPercent())];

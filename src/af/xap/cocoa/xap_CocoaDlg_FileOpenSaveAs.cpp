@@ -457,15 +457,12 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 	{
 		m_bIgnoreCancel = false;
 
-		if (m_bOpenPanel)
-		{
+		if (m_bOpenPanel) {
 //			[m_panel setPanelCanOrderOut:YES];
 			NSOpenPanel * openPanel = (NSOpenPanel*)m_panel;
-			if ([m_fileTypes count])
-			{
+			if ([m_fileTypes count]) {
 				NSString * type = (NSString *) [m_fileTypes objectAtIndex:0];
-				if (szPersistFile)
-				{
+				if (szPersistFile) {
 					NSString * extension = [szPersistFile pathExtension];
 					if (![extension isEqualToString:type]) {
 						szPersistFile = nil;
@@ -474,61 +471,60 @@ void XAP_CocoaDialog_FileOpenSaveAs::runModal(XAP_Frame * /*pFrame*/)
 			}
 
 			if ([m_fileTypes count]) {
-				result = [openPanel runModalForDirectory:szPersistDirectory file:szPersistFile types:m_fileTypes];
+				[openPanel setAllowedFileTypes:m_fileTypes];
+			} else {
+				// can't be empty...
+				[openPanel setAllowedFileTypes:nil];
 			}
-			else {
-				result = [openPanel runModalForDirectory:szPersistDirectory file:szPersistFile types:nil];
-			}
+			[openPanel setDirectoryURL:
+			 [[NSURL fileURLWithPath:szPersistDirectory] 
+			  URLByAppendingPathComponent:szPersistFile]];
+			result = [openPanel runModal];
 
 			result = (result == NSOKButton) ? NSFileHandlingPanelOKButton : NSFileHandlingPanelCancelButton;
-		}
-		else
-		{
-			if ([m_fileTypes count])
-			{
+		} else {
+			if ([m_fileTypes count]) {
 				NSString * type = (NSString *) [m_fileTypes objectAtIndex:0];
-				[m_panel setRequiredFileType:type];
+				// XXX should we just pass m_fileTypes?
+				[m_panel setAllowedFileTypes:[NSArray arrayWithObjects:type, nil]];
 
-				if (szPersistFile)
-				{
+				if (szPersistFile) {
 					NSString * extension = [szPersistFile pathExtension];
-					if ([extension length])
-					{
-						if (![extension isEqualToString:type])
-						{
+					if ([extension length])	{
+						if (![extension isEqualToString:type]) {
 							szPersistFile = [szPersistFile stringByDeletingPathExtension];
 							szPersistFile = [szPersistFile stringByAppendingPathExtension:type];
 						}
-					}
-					else
-					{
+					} else {
 						szPersistFile = [szPersistFile stringByAppendingPathExtension:type];
 					}
 				}
-			}
-			else
-			{
-				[m_panel setRequiredFileType:nil];
+			} else {
+				[m_panel setAllowedFileTypes:nil];
 			}
 
 //			[m_panel setPanelCanOrderOut:YES];
-			result = [m_panel runModalForDirectory:szPersistDirectory file:szPersistFile];
+			[m_panel setDirectoryURL:[[NSURL 
+									   fileURLWithPath:szPersistDirectory]
+									  URLByAppendingPathComponent:szPersistFile]];
+			result = [m_panel runModal];
 		}
 
-		szPersistDirectory = [m_panel directory];
-		szPersistFile      = [m_panel filename];
+		// XXX check it is a file URL
+		szPersistDirectory = [m_panel directoryURL].path;
+		szPersistFile      = [m_panel URL].path;
 
-		if (szPersistFile)
+		if (szPersistFile) {
 			szPersistFile = [szPersistFile lastPathComponent];
+		}
 	}
 	while (m_bIgnoreCancel);
 
 	m_bPanelActive = false;
 
-	szPersistFile = [m_panel filename];
+	szPersistFile = [m_panel URL].path;
 
-	if ((result == NSFileHandlingPanelOKButton) && szPersistFile)
-	{
+	if ((result == NSFileHandlingPanelOKButton) && szPersistFile) {
 		m_finalPathname = [szPersistFile UTF8String];
 		m_answer = a_OK;
 	}

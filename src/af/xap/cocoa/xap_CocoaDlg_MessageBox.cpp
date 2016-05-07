@@ -1,8 +1,8 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode:t -*- */
 
 /* AbiSource Application Framework
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2001-2003 Hubert Figuiere
+ * Copyright (C) 2001-2016 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -57,156 +57,138 @@ void XAP_CocoaDialog_MessageBox::runModal(XAP_Frame * /*pFrame*/)
 	const XAP_StringSet * pSS = pApp->getStringSet();
 	
 	NSString * title   = [NSString stringWithUTF8String:m_szMessage];
-	NSString * message = @"";
-
-	if (m_szSecondaryMessage)
-		message = [NSString stringWithUTF8String:m_szSecondaryMessage];
+	const char* message = m_szSecondaryMessage ? m_szSecondaryMessage : "";
 
 	switch (m_buttons) {
 	case b_O:
-		{
-			NSRunAlertPanel(title, message,
-							LocalizedString(pSS, XAP_STRING_ID_DLG_OK),
-							nil,
-							nil);
+		NSRunAlertPanel(title, @"%s",
+						LocalizedString(pSS, XAP_STRING_ID_DLG_OK), nil, nil, 
+						message);
 
-			m_answer = a_OK;
-		}
+		m_answer = a_OK;
 		break;
 
 	case b_OC:
-		if (m_defaultAnswer == XAP_Dialog_MessageBox::a_OK)
-			{
-				int btn = NSRunAlertPanel(title, message,
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_OK),
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel),
-										  nil);
+		if (m_defaultAnswer == XAP_Dialog_MessageBox::a_OK)	{
+			int btn = NSRunAlertPanel(title, @"%s",
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_OK),
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel),
+									  nil, 
+									  message);
 
-				switch (btn)
-					{
-					case NSAlertDefaultReturn:
-						m_answer = a_OK;
-						break;
-					case NSAlertAlternateReturn:
-						m_answer = a_CANCEL;
-						break;
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						break;
-					}
+			switch (btn) {
+			case NSAlertDefaultReturn:
+				m_answer = a_OK;
+				break;
+			case NSAlertAlternateReturn:
+				m_answer = a_CANCEL;
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
 			}
-		else
-			{
-				int btn = NSRunAlertPanel(title, message,
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel),
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_OK),
-										  nil);
+		} else {
+			int btn = NSRunAlertPanel(title, @"%s",
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel),
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_OK),
+									  nil, 
+									  message);
 
-				switch (btn)
-					{
-					case NSAlertDefaultReturn:
-						m_answer = a_CANCEL;
-						break;
-					case NSAlertAlternateReturn:
-						m_answer = a_OK;
-						break;
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						break;
-					}
+			switch (btn) {
+			case NSAlertDefaultReturn:
+				m_answer = a_CANCEL;
+				break;
+			case NSAlertAlternateReturn:
+				m_answer = a_OK;
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
 			}
+		}
 		break;
 
 	case b_YN:
-		if (m_defaultAnswer == XAP_Dialog_MessageBox::a_YES)
-			{
-				int btn = NSRunAlertPanel(title, message,
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes),
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
-										  nil);
-
-				switch (btn)
-					{
-					case NSAlertDefaultReturn:
-						m_answer = a_YES;
-						break;
-					case NSAlertAlternateReturn:
-						m_answer = a_NO;
-						break;
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						break;
-					}
+		if (m_defaultAnswer == XAP_Dialog_MessageBox::a_YES) {
+			int btn = NSRunAlertPanel(title, @"%s",
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes),
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
+									  nil, 
+									  message);
+			switch (btn) {
+			case NSAlertDefaultReturn:
+				m_answer = a_YES;
+				break;
+			case NSAlertAlternateReturn:
+				m_answer = a_NO;
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
 			}
-		else
-			{
-				int btn = NSRunAlertPanel(title, message,
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes),
-										  nil);
-
-				switch (btn)
-					{
-					case NSAlertDefaultReturn:
-						m_answer = a_NO;
-						break;
-					case NSAlertAlternateReturn:
-						m_answer = a_YES;
-						break;
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						break;
-					}
+		} else {
+			int btn = NSRunAlertPanel(title, @"%s",
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes),
+									  nil, 
+									  message);
+			switch (btn) {
+			case NSAlertDefaultReturn:
+				m_answer = a_NO;
+				break;
+			case NSAlertAlternateReturn:
+				m_answer = a_YES;
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
 			}
+		}
 		break;
 
 	case b_YNC:
-		if (m_defaultAnswer == XAP_Dialog_MessageBox::a_YES)
-			{
-				int btn = NSRunAlertPanel(title, message,
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes),
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel));
+		if (m_defaultAnswer == XAP_Dialog_MessageBox::a_YES) {
+			int btn = NSRunAlertPanel(title, @"%s",
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes),
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel),
+									  message);
 
-				switch (btn)
-					{
-					case NSAlertDefaultReturn:
-						m_answer = a_YES;
-						break;
-					case NSAlertAlternateReturn:
-						m_answer = a_NO;
-						break;
-					case NSAlertOtherReturn:
-						m_answer = a_CANCEL;
-						break;
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						break;
-					}
+			switch (btn) {
+			case NSAlertDefaultReturn:
+				m_answer = a_YES;
+				break;
+			case NSAlertAlternateReturn:
+				m_answer = a_NO;
+				break;
+			case NSAlertOtherReturn:
+				m_answer = a_CANCEL;
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
 			}
-		else
-			{
-				int btn = NSRunAlertPanel(title, message,
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel),
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
-										  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes));
-
-				switch (btn)
-					{
-					case NSAlertDefaultReturn:
-						m_answer = a_CANCEL;
-						break;
-					case NSAlertAlternateReturn:
-						m_answer = a_NO;
-						break;
-					case NSAlertOtherReturn:
-						m_answer = a_YES;
-						break;
-					default:
-						UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
-						break;
-					}
+		} else {
+			int btn = NSRunAlertPanel(title, @"%s",
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_Cancel),
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_No), 
+									  LocalizedString(pSS, XAP_STRING_ID_DLG_MB_Yes), 
+									  message);
+			switch (btn) {
+			case NSAlertDefaultReturn:
+				m_answer = a_CANCEL;
+				break;
+			case NSAlertAlternateReturn:
+				m_answer = a_NO;
+				break;
+			case NSAlertOtherReturn:
+				m_answer = a_YES;
+				break;
+			default:
+				UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
+				break;
 			}
+		}
 		break;
 
 	default:

@@ -31,7 +31,8 @@ class XAP_CocoaFrame;
 class XAP_CocoaDialog_FileOpenSaveAs;
 
 
-@interface XAP_OpenSavePanel_AccessoryController : NSObject
+@interface XAP_OpenSavePanel_AccessoryController 
+	: NSObject<NSOpenSavePanelDelegate>
 {
 	IBOutlet NSTextField *		oFTLabel;
 	IBOutlet NSPopUpButton *	oFTPopUp;
@@ -71,7 +72,6 @@ private:
 	NSSavePanel * _makeSavePanel(const std::string & label);
 
 	XAP_OpenSavePanel_AccessoryController *	m_accessoryViewsController;
-	XAP_CocoaFrame *						m_pCocoaFrame;
 
 	NSSavePanel	*							m_panel;
 	NSMutableArray *						m_fileTypes;

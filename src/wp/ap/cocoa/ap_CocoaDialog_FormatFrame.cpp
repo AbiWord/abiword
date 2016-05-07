@@ -75,6 +75,7 @@ void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * /*pFrame*/)
 	[m_dlg window];
 
 	NSView * view = [m_dlg preview];
+	UT_ASSERT([view isKindOfClass:XAP_CocoaNSView]);
 
 	NSSize size = [view bounds].size;
 
@@ -84,7 +85,7 @@ void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * /*pFrame*/)
 	/* make a new Cocoa GC
 	 */
 	DELETEP(m_pPreviewWidget);
-	GR_CocoaCairoAllocInfo ai(view);
+	GR_CocoaCairoAllocInfo ai((XAP_CocoaNSView*)view);
 	m_pPreviewWidget = (GR_CocoaCairoGraphics *) m_pApp->newGraphics(ai);
 
 	/* TODO: we need a good widget to query with a probable non-white (i.e. gray, or

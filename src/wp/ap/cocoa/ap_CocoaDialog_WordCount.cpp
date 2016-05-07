@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 2000 AbiSource, Inc.
@@ -188,57 +188,38 @@ void AP_CocoaDialog_WordCount::destroy(void)
 	switch(wid) {
 	case AP_Dialog_WordCount::DIALOG_WID:
 		return new XAP_CocoaWidget([self window]);
-		break;
 	case AP_Dialog_WordCount::CLOSE_BTN_WID:
 		return new XAP_CocoaWidget(NULL);
-		break;
 	case AP_Dialog_WordCount::TITLE_LBL_WID:
 		return new XAP_CocoaWidget(_titleLabel);
-		break;
 	case AP_Dialog_WordCount::PAGES_LBL_WID:
 		return new XAP_CocoaWidget(_pageLabel);
-		break;
 	case AP_Dialog_WordCount::PAGES_VAL_WID:
 		return new XAP_CocoaWidget(_pageCount);
-		break;
 	case AP_Dialog_WordCount::LINES_LBL_WID:
 		return new XAP_CocoaWidget(_linesLabel);
-		break;
 	case AP_Dialog_WordCount::LINES_VAL_WID:
 		return new XAP_CocoaWidget(_linesCount);
-		break;
 	case AP_Dialog_WordCount::CHARNSP_LBL_WID:
 		return new XAP_CocoaWidget(_charNoSpaceLabel);
-		break;
 	case AP_Dialog_WordCount::CHARNSP_VAL_WID:
 		return new XAP_CocoaWidget(_charNoSpaceCount);
-		break;
 	case AP_Dialog_WordCount::CHARSP_LBL_WID:
 		return new XAP_CocoaWidget(_charSpaceLabel);
-		break;
 	case AP_Dialog_WordCount::CHARSP_VAL_WID:
 		return new XAP_CocoaWidget(_charSpaceCount);
-		break;
 	case AP_Dialog_WordCount::PARA_LBL_WID:
 		return new XAP_CocoaWidget(_paraLabel);
-		break;
 	case AP_Dialog_WordCount::PARA_VAL_WID:
 		return new XAP_CocoaWidget(_paraCount);
-		break;
 	case AP_Dialog_WordCount::WORDS_LBL_WID:
 		return new XAP_CocoaWidget(_wordLabel);
-		break;
 	case AP_Dialog_WordCount::WORDS_VAL_WID:
 		return new XAP_CocoaWidget(_wordCount);
-		break;
 	case AP_Dialog_WordCount::WORDSNF_LBL_WID:
 		return new XAP_CocoaWidget(_wordNoFNLabel);
-		break;
 	case AP_Dialog_WordCount::WORDSNF_VAL_WID:
 		return new XAP_CocoaWidget(_wordNoFNCount);
-		break;		
-	default:
-		UT_ASSERT(UT_NOT_REACHED);
 	}
 	return NULL;
 }

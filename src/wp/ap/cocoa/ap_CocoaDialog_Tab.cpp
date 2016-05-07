@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Hubert Figuiere
@@ -423,57 +424,40 @@ void AP_CocoaDialog_Tab::_clearList()
 	switch(ctlid) {
 	case AP_Dialog_Tab::id_EDIT_TAB:
 		return _tabPositionData;
-		break;
 	case AP_Dialog_Tab::id_LIST_TAB:
 		return _tabList;
-		break;
 	case AP_Dialog_Tab::id_SPIN_DEFAULT_TAB_STOP:
 		return _defaultTabData;
-		break;
 	case AP_Dialog_Tab::id_ALIGN_LEFT:
 		return _leftCell;
-		break;
 	case AP_Dialog_Tab::id_ALIGN_CENTER:
 		return _centerCell;
-		break;
 	case AP_Dialog_Tab::id_ALIGN_RIGHT:
 		return _rightCell;
-		break;
 	case AP_Dialog_Tab::id_ALIGN_DECIMAL:
 		return _decimalCell;
-		break;
 	case AP_Dialog_Tab::id_ALIGN_BAR:
 		return _barCell;
-		break;
 	case AP_Dialog_Tab::id_LEADER_NONE:
 		return _leaderNoneCell;
-		break;
 	case AP_Dialog_Tab::id_LEADER_DOT:
 		return _leaderDotCell;
-		break;
 	case AP_Dialog_Tab::id_LEADER_DASH:
 		return _leaderDashCell;
-		break;
 	case AP_Dialog_Tab::id_LEADER_UNDERLINE:
 		return _leaderUnderlineCell;
-		break;
 	case AP_Dialog_Tab::id_BUTTON_SET:
 		return _setBtn;
-		break;
 	case AP_Dialog_Tab::id_BUTTON_CLEAR:
 		return _clearBtn;
-		break;
 	case AP_Dialog_Tab::id_BUTTON_CLEAR_ALL:
 		return _clearAllBtn;
-		break;
 	case AP_Dialog_Tab::id_BUTTON_OK:
 		return _okBtn;
-		break;
 	case AP_Dialog_Tab::id_BUTTON_CANCEL:
 		return _cancelBtn;
-		break;
-	default:
-		UT_ASSERT_NOT_REACHED();
+	case AP_Dialog_Tab::id_last:
+		UT_ASSERT(UT_SHOULD_NOT_HAPPEN);
 		break;
 	}
 	return nil;

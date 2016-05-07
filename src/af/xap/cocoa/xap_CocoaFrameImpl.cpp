@@ -68,12 +68,14 @@ XAP_CocoaFrameImpl::XAP_CocoaFrameImpl(XAP_Frame* frame)
 {
 //	m_pView = NULL;
 
+#if 0
 	// dirty hack to make sure the frame is compiled in as the class is only 
 	// referenced from a nib.
 	XAP_FrameNSWindow *p = nil;
 	if (0) {
 		p = [[[XAP_FrameNSWindow alloc] init] autorelease];
 	}
+#endif
 }
 
 // TODO when cloning a new frame from an existing one

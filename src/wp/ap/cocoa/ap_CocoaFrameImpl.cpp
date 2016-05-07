@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -249,7 +249,7 @@ void AP_CocoaFrameImpl::_scrollAction(id sender)
 	case NSScrollerNoPart:
 		UT_DEBUGMSG(("No Scroll\n"));
 		return;
-		break;
+
     case NSScrollerDecrementPage:
 		UT_DEBUGMSG(("NSScrollerDecrementPage\n"));
 		if (sender == m_vScrollbar) {
@@ -424,7 +424,6 @@ void AP_CocoaFrameImpl::_hideLeftRulerNSView(void)
 	
 	UT_ASSERT(mainView);
 	NSRect mainFrame = [mainView frame];
-	NSRect rulerFrame = [ruler frame];
 	mainFrame.size.width += mainFrame.origin.x;
 	mainFrame.origin.x = 0;
 	[mainView setFrame:mainFrame];

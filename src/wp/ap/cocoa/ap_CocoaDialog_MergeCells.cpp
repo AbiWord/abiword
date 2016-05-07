@@ -198,8 +198,6 @@ void AP_CocoaDialog_MergeCells::_storeWindowData(void)
 	case AP_Dialog_MergeCells::radio_below:
 		[_mergeBelowBtn setEnabled:(val ? YES : NO)];
 		break;
-	default:
-		break;
 	}
 }
 

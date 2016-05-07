@@ -1,9 +1,8 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; ident-tabs-mode: t -*- */
 
 /* AbiSource Application Framework
- * Copyright (C) 2003-2004 Hubert Figuiere
+ * Copyright (C) 2003-2016 Hubert Figuiere
  * Copyright (C) 2004 Francis James Franklin
- * Copyright (C) 2009 Hubert Figuiere
  * 
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
