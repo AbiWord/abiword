@@ -3,7 +3,7 @@
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2003 Marc Maurer
- * Copyright (C) 2003 Hubert Figuiere
+ * Copyright (C) 2003-2016 Hubert Figuiere
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -75,7 +75,7 @@ void AP_CocoaDialog_FormatFrame::runModeless(XAP_Frame * /*pFrame*/)
 	[m_dlg window];
 
 	NSView * view = [m_dlg preview];
-	UT_ASSERT([view isKindOfClass:XAP_CocoaNSView]);
+	UT_ASSERT([view isKindOfClass:[XAP_CocoaNSView class]]);
 
 	NSSize size = [view bounds].size;
 

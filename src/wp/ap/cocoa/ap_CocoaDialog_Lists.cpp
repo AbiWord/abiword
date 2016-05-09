@@ -2,7 +2,7 @@
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
- * Copyright (C) 2003, 2005, 2009 Hubert Figuiere
+ * Copyright (C) 2003-2016 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -97,7 +97,7 @@ void AP_CocoaDialog_Lists::runModal( XAP_Frame * /*pFrame*/)
 
 
 	NSView* preview = [m_dlg preview];
-	UT_ASSERT([preview isKindOfClass:XAP_CocoaNSView]);
+	UT_ASSERT([preview isKindOfClass:[XAP_CocoaNSView class]]);
 	GR_CocoaCairoAllocInfo ai((XAP_CocoaNSView*)preview);
 	m_pPreviewWidget = (GR_CocoaCairoGraphics*)XAP_App::getApp()->newGraphics(ai);
 
@@ -145,7 +145,7 @@ void AP_CocoaDialog_Lists::runModeless (XAP_Frame * /*pFrame*/)
 
 	// make a new Cocoa GC
 	NSView* preview = [m_dlg preview];
-	UT_ASSERT([preview isKindOfClass:XAP_CocoaNSView]);
+	UT_ASSERT([preview isKindOfClass:[XAP_CocoaNSView class]]);
 	GR_CocoaCairoAllocInfo ai((XAP_CocoaNSView*)preview);
 	m_pPreviewWidget = static_cast<GR_CocoaCairoGraphics*>(XAP_App::getApp()->newGraphics(ai));
 

@@ -95,9 +95,10 @@ AP_CocoaStatusBar::AP_CocoaStatusBar(XAP_Frame * pFrame)
 	[m_wStatusBar setPostsFrameChangedNotifications:YES];
 	[m_wStatusBar setPostsBoundsChangedNotifications:YES];
 	UT_DEBUGMSG(("XAP_CocoaNSStatusBar did subscribe to resize notification\n"));
-	UT_DebugOnly<NSRect> frame = [m_wStatusBar frame];
 	[m_wStatusBar setXAPOwner:this];
-	UT_DEBUGMSG(("m_wStatusBar x=%f y=%f w=%f h=%f\n", frame.origin.x, frame.origin.y, frame.size.width, frame.size.height));
+//	NSRect frame = [m_wStatusBar frame];
+//	UT_DEBUGMSG(("m_wStatusBar x=%f y=%f w=%f h=%f\n", frame.origin.x, frame.origin.y,
+//      frame.size.width, frame.size.height));
 	[[NSNotificationCenter defaultCenter] addObserver:m_wStatusBar 
 				selector:@selector(statusBarDidResize:) 
 				name:NSViewFrameDidChangeNotification
