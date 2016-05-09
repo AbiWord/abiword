@@ -1,0 +1,606 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="12F2560" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="AP_CocoaDialog_FormatFrameController">
+            <connections>
+                <outlet property="_applyBtn" destination="13" id="34"/>
+                <outlet property="_bgBox" destination="11" id="35"/>
+                <outlet property="_bgColorLabel" destination="27" id="36"/>
+                <outlet property="_bgColorWell" destination="30" id="37"/>
+                <outlet property="_borderBox" destination="7" id="38"/>
+                <outlet property="_borderColorLabel" destination="15" id="40"/>
+                <outlet property="_borderColorWell" destination="28" id="39"/>
+                <outlet property="_borderNumber" destination="147" id="148"/>
+                <outlet property="_borderNumberForm" destination="146" id="162"/>
+                <outlet property="_borderStepper" destination="108" id="110"/>
+                <outlet property="_bottomBorderBtn" destination="25" id="43"/>
+                <outlet property="_bottomBorderColorWell" destination="72" id="80"/>
+                <outlet property="_bottomBorderNumber" destination="140" id="150"/>
+                <outlet property="_bottomBorderNumberForm" destination="141" id="163"/>
+                <outlet property="_bottomBorderStepper" destination="87" id="92"/>
+                <outlet property="_leftBorderBtn" destination="22" id="44"/>
+                <outlet property="_leftBorderColorWell" destination="73" id="81"/>
+                <outlet property="_leftBorderNumber" destination="143" id="151"/>
+                <outlet property="_leftBorderNumberForm" destination="142" id="164"/>
+                <outlet property="_leftBorderStepper" destination="85" id="93"/>
+                <outlet property="_linestyleDashed" destination="122" id="128"/>
+                <outlet property="_linestyleDotted" destination="120" id="127"/>
+                <outlet property="_linestyleMenu" destination="119" id="124"/>
+                <outlet property="_linestyleNone" destination="118" id="125"/>
+                <outlet property="_linestyleNormal" destination="123" id="126"/>
+                <outlet property="_noImageBtn" destination="50" id="52"/>
+                <outlet property="_positionPopUp" destination="173" id="175"/>
+                <outlet property="_preview" destination="26" id="31"/>
+                <outlet property="_previewBox" destination="9" id="45"/>
+                <outlet property="_rightBorderBtn" destination="23" id="46"/>
+                <outlet property="_rightBorderColorWell" destination="71" id="79"/>
+                <outlet property="_rightBorderNumber" destination="139" id="149"/>
+                <outlet property="_rightBorderNumberForm" destination="138" id="165"/>
+                <outlet property="_rightBorderStepper" destination="83" id="91"/>
+                <outlet property="_setImageBtn" destination="49" id="51"/>
+                <outlet property="_topBorderBtn" destination="24" id="33"/>
+                <outlet property="_topBorderColorWell" destination="74" id="82"/>
+                <outlet property="_topBorderNumber" destination="145" id="152"/>
+                <outlet property="_topBorderNumberForm" destination="144" id="166"/>
+                <outlet property="_topBorderStepper" destination="89" id="94"/>
+                <outlet property="_wrapSwitch" destination="133" id="134"/>
+                <outlet property="window" destination="5" id="32"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <window title="Format Frame" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" deferred="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="AbiWordFormatFrame" animationBehavior="default" id="5" userLabel="Panel" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="208" y="429" width="518" height="286"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="778"/>
+            <view key="contentView" id="6">
+                <rect key="frame" x="0.0" y="0.0" width="518" height="286"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <box title="Borders" boxType="oldStyle" borderType="none" id="7">
+                        <rect key="frame" x="293" y="190" width="220" height="93"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <view key="contentView">
+                            <rect key="frame" x="0.0" y="0.0" width="220" height="75"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <form verticalHuggingPriority="750" mode="track" allowsEmptySelection="NO" autosizesCells="NO" id="146">
+                                    <rect key="frame" x="118" y="9" width="71" height="19"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    <size key="cellSize" width="71" height="19"/>
+                                    <size key="intercellSpacing" width="1" height="8"/>
+                                    <formCell key="prototype" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" title="Field:" id="194">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <font key="titleFont" metaFont="smallSystem"/>
+                                    </formCell>
+                                    <cells>
+                                        <column>
+                                            <formCell scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" stringValue="1.00pt" id="147">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="titleFont" metaFont="smallSystem"/>
+                                            </formCell>
+                                        </column>
+                                    </cells>
+                                    <connections>
+                                        <action selector="borderThicknessField:" target="-2" id="153"/>
+                                        <outlet property="nextKeyView" destination="138" id="157"/>
+                                    </connections>
+                                </form>
+                                <textField verticalHuggingPriority="750" id="15">
+                                    <rect key="frame" x="11" y="46" width="162" height="14"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Border color:" id="178">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <colorWell id="28">
+                                    <rect key="frame" x="178" y="36" width="30" height="30"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="color" red="0.058130499000000002" green="0.055541898999999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="borderColorAction:" target="-2" id="68"/>
+                                    </connections>
+                                </colorWell>
+                                <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="108">
+                                    <rect key="frame" x="195" y="7" width="15" height="22"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" increment="0.10000000000000001" minValue="0.01" maxValue="99.989999999999995" doubleValue="1" valueWraps="YES" id="179"/>
+                                    <connections>
+                                        <action selector="borderThicknessStepper:" target="-2" id="112"/>
+                                    </connections>
+                                </stepper>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <font key="titleFont" metaFont="system"/>
+                    </box>
+                    <box title="Preview" boxType="oldStyle" borderType="none" id="9">
+                        <rect key="frame" x="5" y="14" width="284" height="269"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <view key="contentView">
+                            <rect key="frame" x="0.0" y="0.0" width="284" height="251"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <form verticalHuggingPriority="750" tag="2" mode="track" allowsEmptySelection="NO" autosizesCells="NO" id="141">
+                                    <rect key="frame" x="158" y="16" width="56" height="19"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    <size key="cellSize" width="56" height="19"/>
+                                    <size key="intercellSpacing" width="1" height="8"/>
+                                    <formCell key="prototype" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" title="Field:" id="196">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <font key="titleFont" metaFont="smallSystem"/>
+                                    </formCell>
+                                    <cells>
+                                        <column>
+                                            <formCell scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" tag="2" stringValue="1.00pt" id="140">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="titleFont" metaFont="smallSystem"/>
+                                            </formCell>
+                                        </column>
+                                    </cells>
+                                    <connections>
+                                        <action selector="borderThicknessField:" target="-2" id="155"/>
+                                        <outlet property="nextKeyView" destination="142" id="159"/>
+                                    </connections>
+                                </form>
+                                <form verticalHuggingPriority="750" tag="1" mode="track" allowsEmptySelection="NO" autosizesCells="NO" id="138">
+                                    <rect key="frame" x="207" y="158" width="56" height="19"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    <size key="cellSize" width="56" height="19"/>
+                                    <size key="intercellSpacing" width="1" height="8"/>
+                                    <formCell key="prototype" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" title="Field:" id="195">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <font key="titleFont" metaFont="smallSystem"/>
+                                    </formCell>
+                                    <cells>
+                                        <column>
+                                            <formCell scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" tag="1" stringValue="1.00pt" id="139">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="titleFont" metaFont="smallSystem"/>
+                                            </formCell>
+                                        </column>
+                                    </cells>
+                                    <connections>
+                                        <action selector="borderThicknessField:" target="-2" id="154"/>
+                                        <outlet property="nextKeyView" destination="141" id="158"/>
+                                    </connections>
+                                </form>
+                                <form verticalHuggingPriority="750" tag="4" mode="track" allowsEmptySelection="NO" autosizesCells="NO" id="144">
+                                    <rect key="frame" x="46" y="214" width="56" height="19"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    <size key="cellSize" width="56" height="19"/>
+                                    <size key="intercellSpacing" width="1" height="8"/>
+                                    <formCell key="prototype" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" title="Field:" id="198">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <font key="titleFont" metaFont="smallSystem"/>
+                                    </formCell>
+                                    <cells>
+                                        <column>
+                                            <formCell scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" tag="4" stringValue="1.00pt" id="145">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="titleFont" metaFont="smallSystem"/>
+                                            </formCell>
+                                        </column>
+                                    </cells>
+                                    <connections>
+                                        <action selector="borderThicknessField:" target="-2" id="156"/>
+                                        <outlet property="nextKeyView" destination="146" id="168"/>
+                                    </connections>
+                                </form>
+                                <form verticalHuggingPriority="750" tag="3" mode="track" allowsEmptySelection="NO" autosizesCells="NO" id="142">
+                                    <rect key="frame" x="-6" y="71" width="56" height="19"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    <size key="cellSize" width="56" height="19"/>
+                                    <size key="intercellSpacing" width="1" height="8"/>
+                                    <formCell key="prototype" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" title="Field:" id="197">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <font key="titleFont" metaFont="smallSystem"/>
+                                    </formCell>
+                                    <cells>
+                                        <column>
+                                            <formCell scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" tag="3" stringValue="1.00pt" id="143">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="titleFont" metaFont="smallSystem"/>
+                                            </formCell>
+                                        </column>
+                                    </cells>
+                                    <connections>
+                                        <action selector="borderThicknessField:" target="-2" id="169"/>
+                                        <outlet property="nextKeyView" destination="144" id="161"/>
+                                    </connections>
+                                </form>
+                                <button tag="3" id="22" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="24" y="109" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="4AAAB0DD-4D86-4069-BB80-6C2BF77955D1" imagePosition="only" alignment="center" tag="3" inset="2" id="180">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="leftBorderAction:" target="-2" id="64"/>
+                                    </connections>
+                                </button>
+                                <button tag="1" id="23" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="224" y="109" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="4AAAB0DD-4D86-4069-BB80-6C2BF77955D1" imagePosition="only" alignment="center" tag="1" inset="2" id="181">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="rightBorderAction:" target="-2" id="65"/>
+                                    </connections>
+                                </button>
+                                <button tag="4" id="24" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="124" y="209" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="4AAAB0DD-4D86-4069-BB80-6C2BF77955D1" imagePosition="only" alignment="center" tag="4" inset="2" id="182">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="topBorderAction:" target="-2" id="67"/>
+                                    </connections>
+                                </button>
+                                <button tag="2" id="25" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="124" y="9" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="4AAAB0DD-4D86-4069-BB80-6C2BF77955D1" imagePosition="only" alignment="center" tag="2" inset="2" id="183">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="bottomBorderAction:" target="-2" id="66"/>
+                                    </connections>
+                                </button>
+                                <customView id="26" customClass="XAP_CocoaNSView">
+                                    <rect key="frame" x="65" y="50" width="150" height="150"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </customView>
+                                <colorWell tag="1" id="71">
+                                    <rect key="frame" x="227" y="75" width="26" height="26"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="color" red="0.058130499000000002" green="0.055541898999999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="borderColorAction:" target="-2" id="75"/>
+                                    </connections>
+                                </colorWell>
+                                <colorWell tag="2" id="72">
+                                    <rect key="frame" x="90" y="12" width="26" height="26"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="color" red="0.058130499000000002" green="0.055541898999999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="borderColorAction:" target="-2" id="76"/>
+                                    </connections>
+                                </colorWell>
+                                <colorWell tag="3" id="73">
+                                    <rect key="frame" x="27" y="149" width="26" height="26"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="color" red="0.058130499000000002" green="0.055541898999999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="borderColorAction:" target="-2" id="77"/>
+                                    </connections>
+                                </colorWell>
+                                <colorWell tag="4" id="74">
+                                    <rect key="frame" x="164" y="212" width="26" height="26"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="color" red="0.058130499000000002" green="0.055541898999999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="borderColorAction:" target="-2" id="78"/>
+                                    </connections>
+                                </colorWell>
+                                <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" tag="1" id="83">
+                                    <rect key="frame" x="264" y="156" width="15" height="22"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" tag="1" increment="0.10000000000000001" minValue="0.01" maxValue="99.989999999999995" doubleValue="1" valueWraps="YES" id="184"/>
+                                    <connections>
+                                        <action selector="borderThicknessStepper:" target="-2" id="99"/>
+                                    </connections>
+                                </stepper>
+                                <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" tag="3" id="85">
+                                    <rect key="frame" x="50" y="69" width="15" height="22"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" tag="3" increment="0.10000000000000001" minValue="0.01" maxValue="99.989999999999995" doubleValue="1" valueWraps="YES" id="185"/>
+                                    <connections>
+                                        <action selector="borderThicknessStepper:" target="-2" id="101"/>
+                                    </connections>
+                                </stepper>
+                                <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" tag="2" id="87">
+                                    <rect key="frame" x="215" y="14" width="15" height="22"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" tag="2" increment="0.10000000000000001" minValue="0.01" maxValue="99.989999999999995" doubleValue="1" valueWraps="YES" id="186"/>
+                                    <connections>
+                                        <action selector="borderThicknessStepper:" target="-2" id="100"/>
+                                    </connections>
+                                </stepper>
+                                <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" tag="4" id="89">
+                                    <rect key="frame" x="103" y="212" width="15" height="22"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" tag="4" increment="0.10000000000000001" minValue="0.01" maxValue="99.989999999999995" doubleValue="1" valueWraps="YES" id="187"/>
+                                    <connections>
+                                        <action selector="borderThicknessStepper:" target="-2" id="102"/>
+                                    </connections>
+                                </stepper>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <font key="titleFont" metaFont="system"/>
+                    </box>
+                    <box title="Background" boxType="oldStyle" borderType="none" id="11">
+                        <rect key="frame" x="293" y="86" width="220" height="104"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <view key="contentView">
+                            <rect key="frame" x="0.0" y="0.0" width="220" height="86"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <textField verticalHuggingPriority="750" id="27">
+                                    <rect key="frame" x="11" y="56" width="162" height="14"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" title="Background color:" id="188">
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <colorWell id="30">
+                                    <rect key="frame" x="178" y="47" width="30" height="30"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="color" red="0.058130499000000002" green="0.055541898999999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="bgColorAction:" target="-2" id="69"/>
+                                    </connections>
+                                </colorWell>
+                                <button id="49">
+                                    <rect key="frame" x="14" y="13" width="32" height="32"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="4AAAB0DD-4D86-4069-BB80-6C2BF77955D1" imagePosition="only" alignment="center" inset="2" id="189">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="selectImageAction:" target="-2" id="62"/>
+                                    </connections>
+                                </button>
+                                <button id="50">
+                                    <rect key="frame" x="59" y="13" width="32" height="32"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="4AAAB0DD-4D86-4069-BB80-6C2BF77955D1" imagePosition="only" alignment="center" inset="2" id="190">
+                                        <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="removeImageAction:" target="-2" id="63"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <font key="titleFont" metaFont="system"/>
+                    </box>
+                    <button verticalHuggingPriority="750" id="13">
+                        <rect key="frame" x="392" y="7" width="123" height="28"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="push" title="Apply" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" inset="2" id="191">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="applyAction:" target="-2" id="61"/>
+                        </connections>
+                    </button>
+                    <button id="133">
+                        <rect key="frame" x="293" y="66" width="219" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="Wrap frame" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="192">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="wrapAction:" target="-2" id="135"/>
+                        </connections>
+                    </button>
+                    <popUpButton verticalHuggingPriority="750" id="173">
+                        <rect key="frame" x="293" y="36" width="220" height="22"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <popUpButtonCell key="cell" type="push" title="Item1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="171" id="193">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                            <menu key="menu" title="OtherViews" id="170">
+                                <items>
+                                    <menuItem title="Item1" state="on" id="171"/>
+                                    <menuItem title="Item2" id="172"/>
+                                    <menuItem title="Item3" id="174"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                        <connections>
+                            <action selector="positionAction:" target="-2" id="176"/>
+                        </connections>
+                    </popUpButton>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="initialFirstResponder" destination="146" id="167"/>
+            </connections>
+        </window>
+        <menu title="Menu" id="119">
+            <items>
+                <menuItem title="None" id="118">
+                    <connections>
+                        <action selector="borderLineStyleAction:" target="-2" id="129"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Normal" tag="1" id="123">
+                    <connections>
+                        <action selector="borderLineStyleAction:" target="-2" id="130"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Dotted" tag="2" id="120">
+                    <connections>
+                        <action selector="borderLineStyleAction:" target="-2" id="131"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Dashed" tag="3" id="122">
+                    <connections>
+                        <action selector="borderLineStyleAction:" target="-2" id="132"/>
+                    </connections>
+                </menuItem>
+            </items>
+        </menu>
+    </objects>
+    <resources>
+        <image name="4AAAB0DD-4D86-4069-BB80-6C2BF77955D1" width="1" height="1">
+            <mutableData key="keyedArchiveRepresentation">
+YnBsaXN0MDDUAQIDBAUGRkdYJHZlcnNpb25YJG9iamVjdHNZJGFyY2hpdmVyVCR0b3ASAAGGoK8QDwcI
+ExQZHh8qKyw0NzpAQ1UkbnVsbNUJCgsMDQ4PEBESVk5TU2l6ZVYkY2xhc3NcTlNJbWFnZUZsYWdzVk5T
+UmVwc1dOU0NvbG9ygAKADhIgwAAAgAOADFZ7MSwgMX3SFQoWGFpOUy5vYmplY3RzoReABIAL0hUKGh2i
+GxyABYAGgAoQANYgIQoiIyQlJicoKR5fEBBOU0NhY2hlV2luZG93QlBTXxAXTlNDYWNoZVdpbmRvd0Nv
+bG9yU3BhY2VfEBROU1RJRkZSZXByZXNlbnRhdGlvbl8QEE5TQ2FjaGVXaW5kb3dCUFBfEBVOU0NhY2hl
+V2luZG93SXNQbGFuYXIQCIAIgAmABxAYTxEbjE1NACoAAAAOgAAgQAgIAA8BAAADAAAAAQABAAABAQAD
+AAAAAQABAAABAgADAAAABAAAAMgBAwADAAAAAQAFAAABBgADAAAAAQACAAABEQAEAAAAAQAAAAgBEgAD
+AAAAAQABAAABFQADAAAAAQAEAAABFgADAAAAAQABAAABFwAEAAAAAQAAAAYBHAADAAAAAQABAAABPQAD
+AAAAAQACAAABUgADAAAAAQABAAABUwADAAAABAAAANCHcwAHAAAatAAAANgAAAAAAAgACAAIAAgAAQAB
+AAEAAQAAGrRhcHBsAhAAAG1udHJSR0IgWFlaIAfgAAEAHwALACcAMWFjc3BBUFBMAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAD21gABAAAAANMtYXBwbAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAEWRlc2MAAAFQAAAAYmRzY20AAAG0AAADuGNwcnQAAAVsAAAAJHd0cHQAAAWQ
+AAAAFHJYWVoAAAWkAAAAFGdYWVoAAAW4AAAAFGJYWVoAAAXMAAAAFHJUUkMAAAXgAAAIDGFhcmcAAA3s
+AAAAIHZjZ3QAAA4MAAAGEm5kaW4AABQgAAAGPmNoYWQAABpgAAAALG1tb2QAABqMAAAAKGJUUkMAAAXg
+AAAIDGdUUkMAAAXgAAAIDGFhYmcAAA3sAAAAIGFhZ2cAAA3sAAAAIGRlc2MAAAAAAAAACERpc3BsYXkA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAABtbHVjAAAAAAAAAB4AAAAMc2tTSwAAABYAAAF4Y2FFUwAAABgAAAGO
+aGVJTAAAABYAAAGmcHRCUgAAABgAAAG8aXRJVAAAABQAAAHUaHVIVQAAABQAAAHodWtVQQAAABwAAAH8
+a29LUgAAAAwAAAIYbmJOTwAAABIAAAIkY3NDWgAAABYAAAI2emhUVwAAAAwAAAJMZGVERQAAABAAAAJY
+cm9STwAAABIAAAJoc3ZTRQAAABAAAAJ6emhDTgAAAAwAAAJMamFKUAAAAA4AAAKKYXIAAAAAABQAAAKY
+ZWxHUgAAACIAAAKscHRQVAAAABYAAALObmxOTAAAABYAAALkZnJGUgAAABYAAAL6ZXNFUwAAABIAAAJo
+dGhUSAAAAAwAAAMQdHJUUgAAABQAAAMcZmlGSQAAABAAAAMwaHJIUgAAABQAAANAcGxQTAAAABIAAANU
+cnVSVQAAACQAAANmZW5VUwAAABIAAAOKZGFESwAAABwAAAOcAEYAYQByAGUAYgBuAOkAIABMAEMARABM
+AEMARAAgAGUAbgAgAGMAbwBsAG8AciAPAEwAQwBEACAF5gXRBeIF1QXgBdkATABDAEQAIABDAG8AbABv
+AHIAaQBkAG8ATABDAEQAIABjAG8AbABvAHIAaQBTAHoA7QBuAGUAcwAgAEwAQwBEBBoEPgQ7BEwEPgRA
+BD4EMgQ4BDkAIABMAEMARM7st+wAIABMAEMARABGAGEAcgBnAGUALQBMAEMARABCAGEAcgBlAHYAbgD9
+ACAATABDAERfaYJyACAATABDAEQARgBhAHIAYgAtAEwAQwBEAEwAQwBEACAAYwBvAGwAbwByAEYA5ABy
+AGcALQBMAEMARDCrMOkw/AAgAEwAQwBEIA8ATABDAEQAIAZFBkQGSAZGBikDiAOzA8cDwQPJA7wDtwAg
+A78DuAPMA70DtwAgAEwAQwBEAEwAQwBEACAAYQAgAEMAbwByAGUAcwBLAGwAZQB1AHIAZQBuAC0ATABD
+AEQATABDAEQAIABjAG8AdQBsAGUAdQByAEwAQwBEACAOKg41AFIAZQBuAGsAbABpACAATABDAEQAVgDk
+AHIAaQAtAEwAQwBEAEwAQwBEACAAdQAgAGIAbwBqAGkASwBvAGwAbwByACAATABDAEQEJgQyBDUEQgQ9
+BD4EOQAgBBYEGgAtBDQEOARBBD8EOwQ1BDkAQwBvAGwAbwByACAATABDAEQATABDAEQALQBmAGEAcgB2
+AGUAcwBrAOYAcgBtdGV4dAAAAABDb3B5cmlnaHQgQXBwbGUsIEluYy4sIDIwMTYAWFlaIAAAAAAAAPNS
+AAEAAAABFs9YWVogAAAAAAAAansAADcfAAABw1hZWiAAAAAAAABl1gAAut0AAAgKWFlaIAAAAAAAACaF
+AAAOBAAAyWBjdXJ2AAAAAAAABAAAAAAFAAoADwAUABkAHgAjACgALQAyADYAOwBAAEUASgBPAFQAWQBe
+AGMAaABtAHIAdwB8AIEAhgCLAJAAlQCaAJ8AowCoAK0AsgC3ALwAwQDGAMsA0ADVANsA4ADlAOsA8AD2
+APsBAQEHAQ0BEwEZAR8BJQErATIBOAE+AUUBTAFSAVkBYAFnAW4BdQF8AYMBiwGSAZoBoQGpAbEBuQHB
+AckB0QHZAeEB6QHyAfoCAwIMAhQCHQImAi8COAJBAksCVAJdAmcCcQJ6AoQCjgKYAqICrAK2AsECywLV
+AuAC6wL1AwADCwMWAyEDLQM4A0MDTwNaA2YDcgN+A4oDlgOiA64DugPHA9MD4APsA/kEBgQTBCAELQQ7
+BEgEVQRjBHEEfgSMBJoEqAS2BMQE0wThBPAE/gUNBRwFKwU6BUkFWAVnBXcFhgWWBaYFtQXFBdUF5QX2
+BgYGFgYnBjcGSAZZBmoGewaMBp0GrwbABtEG4wb1BwcHGQcrBz0HTwdhB3QHhgeZB6wHvwfSB+UH+AgL
+CB8IMghGCFoIbgiCCJYIqgi+CNII5wj7CRAJJQk6CU8JZAl5CY8JpAm6Cc8J5Qn7ChEKJwo9ClQKagqB
+CpgKrgrFCtwK8wsLCyILOQtRC2kLgAuYC7ALyAvhC/kMEgwqDEMMXAx1DI4MpwzADNkM8w0NDSYNQA1a
+DXQNjg2pDcMN3g34DhMOLg5JDmQOfw6bDrYO0g7uDwkPJQ9BD14Peg+WD7MPzw/sEAkQJhBDEGEQfhCb
+ELkQ1xD1ERMRMRFPEW0RjBGqEckR6BIHEiYSRRJkEoQSoxLDEuMTAxMjE0MTYxODE6QTxRPlFAYUJxRJ
+FGoUixStFM4U8BUSFTQVVhV4FZsVvRXgFgMWJhZJFmwWjxayFtYW+hcdF0EXZReJF64X0hf3GBsYQBhl
+GIoYrxjVGPoZIBlFGWsZkRm3Gd0aBBoqGlEadxqeGsUa7BsUGzsbYxuKG7Ib2hwCHCocUhx7HKMczBz1
+HR4dRx1wHZkdwx3sHhYeQB5qHpQevh7pHxMfPh9pH5Qfvx/qIBUgQSBsIJggxCDwIRwhSCF1IaEhziH7
+IiciVSKCIq8i3SMKIzgjZiOUI8Ij8CQfJE0kfCSrJNolCSU4JWgllyXHJfcmJyZXJocmtyboJxgnSSd6
+J6sn3CgNKD8ocSiiKNQpBik4KWspnSnQKgIqNSpoKpsqzysCKzYraSudK9EsBSw5LG4soizXLQwtQS12
+Last4S4WLkwugi63Lu4vJC9aL5Evxy/+MDUwbDCkMNsxEjFKMYIxujHyMioyYzKbMtQzDTNGM38zuDPx
+NCs0ZTSeNNg1EzVNNYc1wjX9Njc2cjauNuk3JDdgN5w31zgUOFA4jDjIOQU5Qjl/Obw5+To2OnQ6sjrv
+Oy07azuqO+g8JzxlPKQ84z0iPWE9oT3gPiA+YD6gPuA/IT9hP6I/4kAjQGRApkDnQSlBakGsQe5CMEJy
+QrVC90M6Q31DwEQDREdEikTORRJFVUWaRd5GIkZnRqtG8Ec1R3tHwEgFSEtIkUjXSR1JY0mpSfBKN0p9
+SsRLDEtTS5pL4kwqTHJMuk0CTUpNk03cTiVObk63TwBPSU+TT91QJ1BxULtRBlFQUZtR5lIxUnxSx1MT
+U19TqlP2VEJUj1TbVShVdVXCVg9WXFapVvdXRFeSV+BYL1h9WMtZGllpWbhaB1pWWqZa9VtFW5Vb5Vw1
+XIZc1l0nXXhdyV4aXmxevV8PX2Ffs2AFYFdgqmD8YU9homH1YklinGLwY0Njl2PrZEBklGTpZT1lkmXn
+Zj1mkmboZz1nk2fpaD9olmjsaUNpmmnxakhqn2r3a09rp2v/bFdsr20IbWBtuW4SbmtuxG8eb3hv0XAr
+cIZw4HE6cZVx8HJLcqZzAXNdc7h0FHRwdMx1KHWFdeF2Pnabdvh3VnezeBF4bnjMeSp5iXnnekZ6pXsE
+e2N7wnwhfIF84X1BfaF+AX5ifsJ/I3+Ef+WAR4CogQqBa4HNgjCCkoL0g1eDuoQdhICE44VHhauGDoZy
+hteHO4efiASIaYjOiTOJmYn+imSKyoswi5aL/IxjjMqNMY2Yjf+OZo7OjzaPnpAGkG6Q1pE/kaiSEZJ6
+kuOTTZO2lCCUipT0lV+VyZY0lp+XCpd1l+CYTJi4mSSZkJn8mmia1ZtCm6+cHJyJnPedZJ3SnkCerp8d
+n4uf+qBpoNihR6G2oiailqMGo3aj5qRWpMelOKWpphqmi6b9p26n4KhSqMSpN6mpqhyqj6sCq3Wr6axc
+rNCtRK24ri2uoa8Wr4uwALB1sOqxYLHWskuywrM4s660JbSctRO1irYBtnm28Ldot+C4WbjRuUq5wro7
+urW7LrunvCG8m70VvY++Cr6Evv+/er/1wHDA7MFnwePCX8Lbw1jD1MRRxM7FS8XIxkbGw8dBx7/IPci8
+yTrJuco4yrfLNsu2zDXMtc01zbXONs62zzfPuNA50LrRPNG+0j/SwdNE08bUSdTL1U7V0dZV1tjXXNfg
+2GTY6Nls2fHadtr724DcBdyK3RDdlt4c3qLfKd+v4DbgveFE4cziU+Lb42Pj6+Rz5PzlhOYN5pbnH+ep
+6DLovOlG6dDqW+rl63Dr++yG7RHtnO4o7rTvQO/M8Fjw5fFy8f/yjPMZ86f0NPTC9VD13vZt9vv3ivgZ
++Kj5OPnH+lf65/t3/Af8mP0p/br+S/7c/23//3BhcmEAAAAAAAMAAAACZmYAAPKnAAANWQAAE9AAAAoO
+dmNndAAAAAAAAAAAAAMBAAACAAAAAwANACAAPABiAJMAzgESAVgBqAICAm0C4wNlA/IEiwUwBeAGnQdq
+CEQJJgoOCwIMAw0RDisPSRByEaES3RQeFWIWshgEGWAawBwfHYke8SBdIcsjOiSlJhQngCjnKk4rry0O
+LmMvszD7MjszczSfNcQ24Tf5OQw6GjsqPDg9RD5OP1pAaEF2QoZDlkSoRbpGykfaSOhJ90sETBBNHE4n
+TzFQOlFCUklTTlRSVVVWV1dYWFlZWlpaW1pcWl1aXlhfVmBSYU1iRmM+ZDVlKmYfZxNoB2j7ae5q4WvU
+bMdtuW6rb51wjXF5cmFzQXQZdO51wXaXd294Snkjef1613uvfIh9YH43fw5/5YC7gZKCaIM9hBOE6IW+
+hpOHaIg8iRaJ/YsEjD6NrY84kLKR/ZMflCuVLpYwlzGYM5k0mjWbNZw2nTqeRp9loJih2KMVpEGlXaZu
+p3qohqmRqpurpayvrbmuw6/SsO2yIbNwtNC2KbdsuJi5trrPu+e8/r4WvzHAVsGSwujESMWbxs3H4cjw
+ygbLJcxHzWTOc89s0FXRN9Ie0wrT+dTj1c3Wv9e62LzZv9rB277cr92R3mzfQuAZ4PLh0OK546jkm+WQ
+5oXneeht6WDqTesz7BLs6+3G7qTvhvBq8U7yNPMi9Cn1Xfa++DD5lPrf/Bn9WP6k//8AAAACAAsAGwAy
+AFIAegCsAOYBJwFvAcACGwKCAvIDcAP4BIgFIQXFBnQHLgfzCMIJnQp9C2QMWA1TDlgPYhB1EYsSqBPQ
+FPgWJxddGJMZzxsNHEwdjB7OIA0hUSKRI9AlCyZFJ3YopinRKvQsEC0oLjQvOTA5MTMyKTMeNBA1ATX0
+NuU31zjIObk6qTuaPIs9ez5qP1tATkFCQjdDLkQkRRpGEEcGR/tI8EnlSthLzEy+TbBOok+TUIRRc1Jh
+U1BUPlUrVhhXBVfxWNxZyFqzW59ciV1zXl1fRWAsYRNh+GLdY8FkpGWIZmtnTWgvaRFp82rVa7ZsmG15
+blhvNnAScOlxv3KTc2R0NXUFddZ2pXd1eEV5FHnjerJ7gHxOfRx96n66f42AaoFSgkSDPYQ6hTaGMIcr
+iCWJH4oZixKMC40Ejf2O9o/xkPKR+ZMHlBiVKJY3l0SYUJlbmmebcpx9nYeekp+coKehuKLSo/mlKaZc
+p4uotanaqv6sIa1FrmivjbC3se6zNbSFtdG3Dbg9uWm6mbvLvP++Nb9swKTB3MMRxEDFacaLx6rIyMnp
+yw3MM81azoLPrNDX0gbTNNRf1YTWpNfE2ObaCtsv3FTded6e38fg9+Ix43Lks+Xy5yzoZ+mj6t/sG+1Y
+7pzv8PF28y31EvcK+QL66/y7/mn//wAAAAIACgAXACwASABrAJcAygEGAUcBkQHjAj0CoQMNA4UEBwSS
+BSYFwAZkBxIHyQiICU4KHwr5C9QMuA2lDpkPkhCPEZISmhOlFLYVyBbeF/kZEhotG0YcYR18HpcfriDC
+IdQi5SPtJPIl8CboJ9gowimlKoMrWiwvLQEt0i6kL3cwSjEgMfcyzjOmNH41VTYsNwI32DitOYI6Vjsq
+O/080D2jPnc/SkAfQPVBzEKlQ35EVkUuRgVG3Ee0SIpJYEo2SwtL4Ey1TYlOXU8xUAVQ2VGsUoBTU1Ql
+VPZVyFaaV2tYO1kLWdtaq1t6XEhdFl3kXrFff2BLYRdh42KuY3pkRmURZdtmpmdxaDtpBGnOapdrYGwp
+bPFtuG6Ab0ZwCXDMcYxySnMIc8V0gnU+dft2t3dzeC546Xmkel97GnvUfI59SH4Cfr5/foBIgR2B+4Lg
+g8iEsYWbhoSHbYhWiT6KJosNi/WM3I3DjqqPlJCBkXeScpNwlHGVcZZxl3GYcJlummmbYJxTnUqeTJ9d
+oHmhnaLFo+6lFaY3p0yoUqlRqlure6y0rfuvR7CTsd+zK7R2tcG3C7hTuZi627whvWy+vcATwWrCw8Qb
+xXTGzsgmyX3K1MwqzYLO49BW0dbTY9T11ojYGtmt20Dc1t6A4E3iU+SQ5vfplOzF8VT32f//AABuZGlu
+AAAAAAAABjYAAKVGAABWlAAAUzkAAKWOAAAlqAAADTwAAFANAABUOQACGZkAAb1wAAFcKAADAQAAAgAA
+AB4AQQBiAIMApADFAOYBBgEnAUkBawGNAa8B0QH0AhcCOwJfAoMCqALOAvMDGgNBA2gDkAO4A+IECwQ2
+BGEEjQS5BOcFFQVFBXUFpgXYBgwGQQZ3Bq4G6AciB18HngfeCCIIaAiwCP0JTAmgCfYKUAqtCw0LbgvS
+DDgMoQ0LDXYN4w5RDsEPMg+kEBkQkBEJEYUSAhKCEwUTiRQQFJkVJRWzFkQW2BdvGAgYpBlDGeQahxst
+G9Ucfx0sHdwejh9EH/0guiF6Ij4jBSPPJJwlayY9JxIn6ijEKaIqgitlLEwtOS4uLy8wPjFVMmwzgzSa
+NbU20zf2OR06Rzt2PKk93z8ZQFdBmULfRChFdUbGSBpJZ0qVS5dMdk1ATf9OwU+MUGpRaVKEU7BU5FYa
+V1NYjlnMWw1cUV2WXthgD2EzYkdjVWRkZX9mq2foaTFqgWvTbShugG/acTdylnP4dVd2rHfteRd6MHtC
+fFl9f365gAmBaILNhDaFoocPiH6J54tBjISNtY7gkA6RTpKwlDSVxZdOmM2aSJvGnVGe+KDIor6ksqaX
+qHqqaaxbrkGwFbHhs621f7deuVq7fL23v/nCOcRtxorImcqkzK/OvtDR0ufVCNc92Y3b9N5a4LXjC+Vh
+57rqCOwn7gDvnfEe8pj0HPW29235Nfr8/Lb+X///AAAAJABLAHEAlgC8AOIBCAEuAVQBegGiAckB8QIZ
+AkICawKVAsAC6wMWA0MDcAOdA8wD+wQrBFwEjgTBBPUFKgVhBZgF0QYLBkcGhQbEBwYHSgePB9gIJAhz
+CMUJHAl3CdYKOQqgCwoLdwvnDFgMzQ1DDbwOOA62DzYPuRA/EMYRTxHZEmUS8hOCFBQUqBU/FdkWdRcU
+F7YYWhkCGawaWRsJG7wccx0sHegepx9pIC4g9iHBIo8jXyQzJQol5CbCJ6QoiSlzKmArUSxFLTwuNy81
+MDYxOjJCM000WzVuNoY3pjjPOf47NDxvPa4+8kA5QYRC00QnRX9G20g7SZ1K/UxQTZNOyk/8US5SZFOe
+VNpWGldcWKFZ6ls1XINd018lYHNhvGL+ZD1lfWbBaAlpVmqla/dtTG6jb/xxWXK4dBl1fHbaeDB5e3q9
+e/p9On6Bf86BIoJ5g9OFMIaOh+6JToqqi/uNQI58j7WQ9ZJEk6KVCZZyl9iZPpqjnAidb57WoD2hpqMU
+pImmBqeOqR6qtKxNreOveLELsp+0NLXKt2C49bqIvBy9tb9XwQLCtcRpxhzHzsmAyzTM6s6j0FvSEdO/
+1WPXANib2jnb3d2H3zLg3+KM5Dvl7Oee6U7q9eyI7fnvSfCF8bHyzvPo9P/2GPcz+FT5fPqq++r9OP6V
+//8AAAApAFQAfwCpANMA/gEpAVQBgAGsAdgCBgI0AmICkQLBAvIDIwNWA4kDvQPzBCkEYASZBNMFDwVM
+BYsFywYNBlIGmQbiBy0HfQfPCCYIgQjhCUcJsgokCpsLFguVDBYMmg0fDaYOMA68D0wP3xB1EQ8RrBJN
+EvETmRREFPIVoxZWFwsXwRh6GTYZ9hq5G38cSR0XHegevR+VIHIhUSI0IxokBCTyJeMm2SfSKM8p0CrV
+K94s6y38LxIwLDFKMmwzkzS+Ne03IDhXOZI60jwVPV0+qj/7QVBCqkQJRW1G10hKScZLTEzYTmlQAFGb
+UzxU4laOWD9Z9VuxXXJfNmDyYptkK2WtZypopmoma6ltL265cEdx2HNtdQZ2onhBed97eH0Gfo6AFIGZ
+gyKErYY7h82JY4sBjKuOXJAGkZuTHpSVlgeXd5jnmlqb051YnvSgqaJlpAeliqb2qFiptasUrHSt1q85
+sJ6yBbNutNm2R7e5uTC6qrwkvZu/DsB9werDV8TExjLHockSyoTL981szuTQXdHZ01fU19ZU18nZMtqS
+2+vdPt6O393hLeJ+49DlI+Z4583pI+p268Ds/u4x70rwWfFZ8k7zPPQj9Qf14va694D4Pfjw+YH6Evqg
++wn7cfvZ/EL8mfzo/Tf9hf3U/iP+af6t/vD/NP94/7v//wAAc2YzMgAAAAAAAQxCAAAF3v//8yYAAAeS
+AAD9kf//+6L///2jAAAD3AAAwGxtbW9kAAAAAAAABhAAAJy9AAAAAMWUHvAAAAAAAAAAAAAAAAAAAAAA
+XxAZTlNDYWxpYnJhdGVkUkdCQ29sb3JTcGFjZdItLi8wWiRjbGFzc25hbWVYJGNsYXNzZXNfEBBOU0Nh
+Y2hlZEltYWdlUmVwozEyM18QEE5TQ2FjaGVkSW1hZ2VSZXBaTlNJbWFnZVJlcFhOU09iamVjdNItLjU2
+V05TQXJyYXmiNTPSLS44OV5OU011dGFibGVBcnJheaM4NTPTOzwKPT4/V05TV2hpdGVcTlNDb2xvclNw
+YWNlRDAgMAAQA4AN0i0uQUJXTlNDb2xvcqJBM9ItLkRFV05TSW1hZ2WiRDNfEA9OU0tleWVkQXJjaGl2
+ZXLRSElUcm9vdIABAAgAEQAaACMALQAyADcASQBPAFoAYQBoAHUAfACEAIYAiACNAI8AkQCYAJ0AqACq
+AKwArgCzALYAuAC6ALwAvgDLAN4A+AEPASIBOgE8AT4BQAFCAUQc1BzwHPUdAB0JHRwdIB0zHT4dRx1M
+HVQdVx1cHWsdbx12HX4dix2QHZIdlB2ZHaEdpB2pHbEdtB3GHckdzgAAAAAAAAIBAAAAAAAAAEoAAAAA
+AAAAAAAAAAAAAB3QA
+</mutableData>
+        </image>
+    </resources>
+</document>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="12F2560" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="XAP_CocoaDlg_ZoomController">
+            <connections>
+                <outlet property="_closeBtn" destination="12" id="54"/>
+                <outlet property="_pageWidthBtn" destination="32" id="35"/>
+                <outlet property="_percentBtn" destination="34" id="36"/>
+                <outlet property="_percentField" destination="19" id="30"/>
+                <outlet property="_percentStepper" destination="20" id="50"/>
+                <outlet property="_wholePageBtn" destination="33" id="37"/>
+                <outlet property="_zoom100Btn" destination="18" id="38"/>
+                <outlet property="_zoom200Btn" destination="17" id="26"/>
+                <outlet property="_zoom75Btn" destination="31" id="39"/>
+                <outlet property="_zoomBox" destination="7" id="29"/>
+                <outlet property="_zoomMatrix" destination="14" id="51"/>
+                <outlet property="window" destination="5" id="40"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <window title="Zoom" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="5" userLabel="Window">
+            <windowStyleMask key="styleMask" titled="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="643" y="310" width="222" height="362"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="778"/>
+            <view key="contentView" id="6">
+                <rect key="frame" x="0.0" y="0.0" width="222" height="362"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <box title="Zoom to" boxType="oldStyle" borderType="none" id="7">
+                        <rect key="frame" x="20" y="60" width="182" height="282"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <view key="contentView">
+                            <rect key="frame" x="0.0" y="0.0" width="182" height="264"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <matrix verticalHuggingPriority="750" allowsEmptySelection="NO" autosizesCells="NO" id="14">
+                                    <rect key="frame" x="14" y="40" width="152" height="226"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    <size key="cellSize" width="152" height="36"/>
+                                    <size key="intercellSpacing" width="4" height="2"/>
+                                    <buttonCell key="prototype" type="radio" title="Radio" imagePosition="left" alignment="left" inset="2" id="60">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                    </buttonCell>
+                                    <cells>
+                                        <column>
+                                            <buttonCell type="radio" title="200%" imagePosition="left" alignment="left" controlSize="small" state="on" inset="2" id="17">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <connections>
+                                                    <action selector="zoom200Action:" target="-2" id="48"/>
+                                                </connections>
+                                            </buttonCell>
+                                            <buttonCell type="radio" title="100%" imagePosition="left" alignment="left" controlSize="small" tag="1" inset="2" id="18">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <connections>
+                                                    <action selector="zoom100Action:" target="-2" id="47"/>
+                                                </connections>
+                                            </buttonCell>
+                                            <buttonCell type="radio" title="75%" imagePosition="left" alignment="left" controlSize="small" inset="2" id="31">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <connections>
+                                                    <action selector="zoom75Action:" target="-2" id="46"/>
+                                                </connections>
+                                            </buttonCell>
+                                            <buttonCell type="radio" title="Page width" imagePosition="left" alignment="left" controlSize="small" inset="2" id="32">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <connections>
+                                                    <action selector="zoomPageWidthAction:" target="-2" id="45"/>
+                                                </connections>
+                                            </buttonCell>
+                                            <buttonCell type="radio" title="Whole page" imagePosition="left" alignment="left" controlSize="small" inset="2" id="33">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <connections>
+                                                    <action selector="zoomWholePageAction:" target="-2" id="44"/>
+                                                </connections>
+                                            </buttonCell>
+                                            <buttonCell type="radio" title="Percent:" imagePosition="left" alignment="left" controlSize="small" inset="2" id="34">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <connections>
+                                                    <action selector="zoomPercentAction:" target="-2" id="43"/>
+                                                </connections>
+                                            </buttonCell>
+                                        </column>
+                                    </cells>
+                                </matrix>
+                                <textField verticalHuggingPriority="750" id="19">
+                                    <rect key="frame" x="81" y="15" width="65" height="19"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="57">
+                                        <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="0%" negativeFormat="-0%" hasThousandSeparators="NO" thousandSeparator="," id="21">
+                                            <attributedString key="attributedStringForZero">
+                                                <fragment content="0%"/>
+                                            </attributedString>
+                                            <decimal key="minimum" value="NaN"/>
+                                            <decimal key="maximum" value="NaN"/>
+                                        </numberFormatter>
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                    <connections>
+                                        <action selector="zoomChangedAction:" target="-2" id="49"/>
+                                    </connections>
+                                </textField>
+                                <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="20">
+                                    <rect key="frame" x="152" y="13" width="15" height="22"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" increment="10" minValue="10" maxValue="1000" doubleValue="10" id="58"/>
+                                    <connections>
+                                        <action selector="stepperAction:" target="-2" id="24"/>
+                                    </connections>
+                                </stepper>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <font key="titleFont" metaFont="system"/>
+                    </box>
+                    <button verticalHuggingPriority="750" id="12">
+                        <rect key="frame" x="121" y="12" width="87" height="32"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="59">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closeAction:" target="-2" id="55"/>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="41"/>
+            </connections>
+        </window>
+    </objects>
+</document>

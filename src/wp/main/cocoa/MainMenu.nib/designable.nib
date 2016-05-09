@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="12F2560" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="XAP_CocoaApplication">
+            <connections>
+                <outlet property="delegate" destination="246" id="247"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <menu title="MainMenu" systemMenu="main" id="29" userLabel="MainMenu">
+            <items>
+                <menuItem title="AbiWord" id="56">
+                    <menu key="submenu" title="AbiWord" systemMenu="apple" id="57">
+                        <items>
+                            <menuItem title="About AbiWord" id="58">
+                                <modifierMask key="keyEquivalentModifierMask"/>
+                                <connections>
+                                    <action selector="orderFrontStandardAboutPanel:" target="-2" id="142"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="236">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Preferences…" keyEquivalent="," id="129">
+                                <connections>
+                                    <action selector="orderFrontPreferencesPanel:" target="-2" id="285"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="143">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Services" id="131">
+                                <menu key="submenu" title="Services" systemMenu="services" id="130"/>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="144">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Hide AbiWord" keyEquivalent="h" id="134">
+                                <connections>
+                                    <action selector="hide:" target="-2" id="152"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Hide Others" keyEquivalent="h" id="145">
+                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
+                                <connections>
+                                    <action selector="hideOtherApplications:" target="-2" id="146"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem title="Show All" id="150">
+                                <connections>
+                                    <action selector="unhideAllApplications:" target="-2" id="153"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="149">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Quit AbiWord" keyEquivalent="q" id="136">
+                                <connections>
+                                    <action selector="terminate:" target="-2" id="139"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="File" id="83">
+                    <menu key="submenu" title="File" id="81"/>
+                </menuItem>
+                <menuItem title="Edit" id="217">
+                    <menu key="submenu" title="Edit" id="205"/>
+                </menuItem>
+                <menuItem title="View" id="248">
+                    <menu key="submenu" title="View" id="250"/>
+                </menuItem>
+                <menuItem title="Insert" id="253">
+                    <menu key="submenu" title="Insert" id="251"/>
+                </menuItem>
+                <menuItem title="Format" id="256">
+                    <menu key="submenu" title="Format" id="255"/>
+                </menuItem>
+                <menuItem title="Tools" id="259">
+                    <menu key="submenu" title="Tools" id="257"/>
+                </menuItem>
+                <menuItem title="Table" id="261">
+                    <menu key="submenu" title="Table" id="262"/>
+                </menuItem>
+                <menuItem title="Window" id="19">
+                    <menu key="submenu" title="Window" systemMenu="window" id="24">
+                        <items>
+                            <menuItem title="Minimize" keyEquivalent="m" id="23">
+                                <connections>
+                                    <action selector="performMiniaturize:" target="-1" id="37"/>
+                                </connections>
+                            </menuItem>
+                            <menuItem isSeparatorItem="YES" id="92">
+                                <modifierMask key="keyEquivalentModifierMask" command="YES"/>
+                            </menuItem>
+                            <menuItem title="Bring All to Front" id="5">
+                                <connections>
+                                    <action selector="arrangeInFront:" target="-1" id="39"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+                <menuItem title="Help" id="103">
+                    <menu key="submenu" title="Help" id="106">
+                        <items>
+                            <menuItem title="AbiWord Help" keyEquivalent="?" id="111">
+                                <connections>
+                                    <action selector="showHelp:" target="-1" id="122"/>
+                                </connections>
+                            </menuItem>
+                        </items>
+                    </menu>
+                </menuItem>
+            </items>
+        </menu>
+        <customObject id="246" userLabel="XAP_CocoaAppController" customClass="XAP_CocoaAppController">
+            <connections>
+                <outlet property="oMenuItem_AbiWordHelp" destination="111" id="283"/>
+                <outlet property="oMenuItem_AboutAbiWord" destination="58" id="273"/>
+                <outlet property="oMenuItem_Edit" destination="217" id="274"/>
+                <outlet property="oMenuItem_File" destination="83" id="275"/>
+                <outlet property="oMenuItem_Format" destination="256" id="276"/>
+                <outlet property="oMenuItem_Help" destination="103" id="277"/>
+                <outlet property="oMenuItem_Insert" destination="253" id="278"/>
+                <outlet property="oMenuItem_Preferences" destination="129" id="284"/>
+                <outlet property="oMenuItem_Table" destination="261" id="279"/>
+                <outlet property="oMenuItem_Tools" destination="259" id="280"/>
+                <outlet property="oMenuItem_View" destination="248" id="281"/>
+                <outlet property="oMenuItem_Window" destination="19" id="282"/>
+                <outlet property="oMenu_AbiWord" destination="57" id="263"/>
+                <outlet property="oMenu_Edit" destination="205" id="264"/>
+                <outlet property="oMenu_File" destination="81" id="265"/>
+                <outlet property="oMenu_Format" destination="255" id="266"/>
+                <outlet property="oMenu_Help" destination="106" id="267"/>
+                <outlet property="oMenu_Insert" destination="251" id="268"/>
+                <outlet property="oMenu_Table" destination="262" id="269"/>
+                <outlet property="oMenu_Tools" destination="257" id="270"/>
+                <outlet property="oMenu_View" destination="250" id="271"/>
+                <outlet property="oMenu_Window" destination="24" id="272"/>
+            </connections>
+        </customObject>
+    </objects>
+</document>

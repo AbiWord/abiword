@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="12F2560" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="AP_CocoaDialog_ReplaceController">
+            <connections>
+                <outlet property="_findAndReplaceBtn" destination="9" id="18"/>
+                <outlet property="_findBtn" destination="7" id="19"/>
+                <outlet property="_findReverseBtn" destination="37" id="39"/>
+                <outlet property="_matchCaseBtn" destination="13" id="20"/>
+                <outlet property="_replaceAll" destination="8" id="21"/>
+                <outlet property="_replaceCombo" destination="14" id="22"/>
+                <outlet property="_replaceLabel" destination="11" id="23"/>
+                <outlet property="_whatCombo" destination="12" id="24"/>
+                <outlet property="_whatLabel" destination="10" id="25"/>
+                <outlet property="_wholeWordBtn" destination="34" id="36"/>
+                <outlet property="window" destination="5" id="26"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <window title="Find / Replace" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="5" userLabel="Window" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="35" y="321" width="577" height="178"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="778"/>
+            <view key="contentView" id="6">
+                <rect key="frame" x="0.0" y="0.0" width="577" height="178"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <button verticalHuggingPriority="750" id="7">
+                        <rect key="frame" x="452" y="18" width="110" height="28"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="push" title="Find" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" inset="2" id="42">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+DQ
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="findAction:" target="-2" id="17"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" id="8">
+                        <rect key="frame" x="344" y="18" width="110" height="28"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="push" title="Replace All" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" inset="2" id="43">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="replaceAllAction:" target="-2" id="16"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" id="9">
+                        <rect key="frame" x="198" y="18" width="148" height="28"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="push" title="Find and Replace" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" inset="2" id="44">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="findAndReplaceAction:" target="-2" id="15"/>
+                        </connections>
+                    </button>
+                    <textField verticalHuggingPriority="750" id="10">
+                        <rect key="frame" x="17" y="144" width="129" height="14"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Find what:" id="45">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <textField verticalHuggingPriority="750" id="11">
+                        <rect key="frame" x="18" y="54" width="129" height="14"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Replace with:" id="46">
+                            <font key="font" metaFont="smallSystem"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                    <comboBox verticalHuggingPriority="750" id="12">
+                        <rect key="frame" x="151" y="140" width="408" height="26"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="47">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </comboBoxCell>
+                        <connections>
+                            <outlet property="nextKeyView" destination="14" id="40"/>
+                        </connections>
+                    </comboBox>
+                    <button id="13">
+                        <rect key="frame" x="150" y="120" width="409" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="Match case" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="48">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="matchCaseAction:" target="-2" id="27"/>
+                        </connections>
+                    </button>
+                    <comboBox verticalHuggingPriority="750" id="14">
+                        <rect key="frame" x="152" y="50" width="408" height="26"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" borderStyle="bezel" alignment="left" drawsBackground="YES" completes="NO" numberOfVisibleItems="5" id="49">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </comboBoxCell>
+                        <connections>
+                            <outlet property="nextKeyView" destination="12" id="29"/>
+                        </connections>
+                    </comboBox>
+                    <button id="34">
+                        <rect key="frame" x="150" y="100" width="409" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="Whole Word" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="50">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="wholeWordAction:" target="-2" id="35"/>
+                        </connections>
+                    </button>
+                    <button id="37">
+                        <rect key="frame" x="150" y="80" width="409" height="18"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="check" title="Find Reverse" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="51">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="smallSystem"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="findReverseAction:" target="-2" id="38"/>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="30"/>
+                <outlet property="initialFirstResponder" destination="12" id="28"/>
+            </connections>
+        </window>
+    </objects>
+</document>

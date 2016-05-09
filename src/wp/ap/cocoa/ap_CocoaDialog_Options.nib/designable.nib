@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="12F2560" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="AP_CocoaDialog_OptionsController">
+            <connections>
+                <outlet property="m_appStartup" destination="557" id="630"/>
+                <outlet property="m_boxAutoSave" destination="566" id="629"/>
+                <outlet property="m_buttonDefaults" destination="14" id="634"/>
+                <outlet property="m_checkbuttonAutoLoadPlugins" destination="559" id="633"/>
+                <outlet property="m_checkbuttonAutoSaveFile" destination="570" id="597"/>
+                <outlet property="m_checkbuttonCustomSmartQuotes" destination="609" id="623"/>
+                <outlet property="m_checkbuttonEnableOverwrite" destination="647" id="648"/>
+                <outlet property="m_checkbuttonGrammarCheck" destination="592" id="598"/>
+                <outlet property="m_checkbuttonOtherDirectionRtl" destination="187" id="605"/>
+                <outlet property="m_checkbuttonSmartQuotes" destination="608" id="622"/>
+                <outlet property="m_checkbuttonSpellCheckAsType" destination="215" id="599"/>
+                <outlet property="m_checkbuttonSpellHideErrors" destination="214" id="600"/>
+                <outlet property="m_checkbuttonSpellMainOnly" destination="589" id="601"/>
+                <outlet property="m_checkbuttonSpellNumbers" destination="210" id="604"/>
+                <outlet property="m_checkbuttonSpellSuggest" destination="588" id="602"/>
+                <outlet property="m_checkbuttonSpellUppercase" destination="206" id="603"/>
+                <outlet property="m_comboInnerQuote" destination="651" id="664"/>
+                <outlet property="m_comboOuterQuote" destination="658" id="663"/>
+                <outlet property="m_labelInnerQuoteStyle" destination="649" id="665"/>
+                <outlet property="m_labelOuterQuoteStyle" destination="656" id="667"/>
+                <outlet property="m_menuUnits" destination="560" id="635"/>
+                <outlet property="m_textAutoSaveFileExt" destination="573" id="631"/>
+                <outlet property="m_textAutoSaveFilePeriod" destination="568" id="632"/>
+                <outlet property="oBox_BiDiOptions" destination="185" id="585"/>
+                <outlet property="oBox_Dictionaries" destination="586" id="593"/>
+                <outlet property="oBox_General" destination="211" id="460"/>
+                <outlet property="oBox_Grammar" destination="590" id="594"/>
+                <outlet property="oBox_Ignore" destination="213" id="459"/>
+                <outlet property="oBox_UserInterface" destination="301" id="466"/>
+                <outlet property="oButton_ChooseScreenColor" destination="314" id="457"/>
+                <outlet property="oButton_Close" destination="15" id="452"/>
+                <outlet property="oColorWell_Screen" destination="295" id="478"/>
+                <outlet property="oLabel_Minutes" destination="571" id="579"/>
+                <outlet property="oLabel_Units" destination="565" id="595"/>
+                <outlet property="oLabel_WithExtension" destination="572" id="580"/>
+                <outlet property="oStepper_Minutes" destination="574" id="578"/>
+                <outlet property="oSwitch_ScreenColor" destination="314" id="583"/>
+                <outlet property="oTabView" destination="7" id="422"/>
+                <outlet property="window" destination="5" id="112"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <window title="Preferences" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="AbiWordPreferences" animationBehavior="default" id="5" userLabel="Window">
+            <windowStyleMask key="styleMask" titled="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="561" y="342" width="483" height="385"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="778"/>
+            <view key="contentView" id="6">
+                <rect key="frame" x="0.0" y="0.0" width="483" height="385"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <tabView id="7">
+                        <rect key="frame" x="-11" y="40" width="502" height="339"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <font key="font" metaFont="system"/>
+                        <tabViewItems>
+                            <tabViewItem label="Interface" identifier="Interface" id="292">
+                                <view key="view" id="293">
+                                    <rect key="frame" x="10" y="33" width="482" height="293"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                    <subviews>
+                                        <box title="User Interface" boxType="oldStyle" borderType="none" id="301">
+                                            <rect key="frame" x="13" y="168" width="458" height="105"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="458" height="87"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textField verticalHuggingPriority="750" id="306">
+                                                        <rect key="frame" x="12" y="-127" width="159" height="17"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="683">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <colorWell id="295">
+                                                        <rect key="frame" x="192" y="37" width="26" height="26"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <color key="color" red="0.058130499000000002" green="0.055541898999999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                                    </colorWell>
+                                                    <button verticalHuggingPriority="750" id="314">
+                                                        <rect key="frame" x="10" y="35" width="179" height="28"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="push" title="Choose Screen Color" bezelStyle="rounded" alignment="center" controlSize="small" borderStyle="border" inset="2" id="684">
+                                                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                    <popUpButton verticalHuggingPriority="750" id="560">
+                                                        <rect key="frame" x="231" y="62" width="213" height="22"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                        <popUpButtonCell key="cell" type="push" title="Item1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="563" id="685">
+                                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <menu key="menu" title="OtherViews" id="561">
+                                                                <items>
+                                                                    <menuItem title="Item1" state="on" id="563"/>
+                                                                    <menuItem title="Item2" state="on" id="562"/>
+                                                                    <menuItem title="Item3" state="on" id="564"/>
+                                                                </items>
+                                                            </menu>
+                                                        </popUpButtonCell>
+                                                    </popUpButton>
+                                                    <textField verticalHuggingPriority="750" id="565">
+                                                        <rect key="frame" x="12" y="67" width="195" height="14"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" id="686">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <string key="title">Units:
+</string>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <button id="647">
+                                                        <rect key="frame" x="12" y="13" width="431" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Enable overwrite toggle" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="687">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                        <box title="Application Startup" boxType="oldStyle" borderType="none" id="557">
+                                            <rect key="frame" x="13" y="92" width="457" height="56"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="457" height="38"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button id="559">
+                                                        <rect key="frame" x="13" y="14" width="428" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Load all plug ins" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="688">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Documents" identifier="Documents" id="18">
+                                <view key="view" id="19">
+                                    <rect key="frame" x="10" y="33" width="482" height="293"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <box title="Bi-Directional Options" boxType="oldStyle" borderType="none" id="185">
+                                            <rect key="frame" x="8" y="113" width="466" height="56"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="466" height="38"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button id="187">
+                                                        <rect key="frame" x="13" y="9" width="435" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Default to right-to-left direction of text" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="669">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                        <box title="Auto Save" boxType="oldStyle" borderType="none" id="566">
+                                            <rect key="frame" x="8" y="189" width="466" height="84"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="466" height="66"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <textField verticalHuggingPriority="750" id="568">
+                                                        <rect key="frame" x="20" y="13" width="42" height="19"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="right" title="5" drawsBackground="YES" id="670">
+                                                            <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="0" negativeFormat="-0" hasThousandSeparators="NO" thousandSeparator="," id="569">
+                                                                <attributedString key="attributedStringForZero">
+                                                                    <fragment content="0"/>
+                                                                </attributedString>
+                                                                <decimal key="minimum" value="0"/>
+                                                                <decimal key="maximum" value="NaN"/>
+                                                            </numberFormatter>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                        <connections>
+                                                            <action selector="takeIntValueFrom:" target="574" id="641"/>
+                                                            <outlet property="formatter" destination="569" id="575"/>
+                                                        </connections>
+                                                    </textField>
+                                                    <stepper horizontalHuggingPriority="750" verticalHuggingPriority="750" id="574">
+                                                        <rect key="frame" x="68" y="11" width="15" height="22"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <stepperCell key="cell" controlSize="small" continuous="YES" alignment="left" maxValue="120" doubleValue="1" valueWraps="YES" id="675"/>
+                                                        <connections>
+                                                            <action selector="takeIntValueFrom:" target="568" id="642"/>
+                                                            <outlet property="formatter" destination="569" id="576"/>
+                                                        </connections>
+                                                    </stepper>
+                                                    <textField verticalHuggingPriority="750" id="571">
+                                                        <rect key="frame" x="86" y="15" width="75" height="14"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" id="672">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <string key="title">minutes
+</string>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <button id="570">
+                                                        <rect key="frame" x="13" y="38" width="435" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Auto save current file each" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="671">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="autoSaveClicked:" target="-2" id="640"/>
+                                                        </connections>
+                                                    </button>
+                                                    <textField verticalHuggingPriority="750" id="573">
+                                                        <rect key="frame" x="363" y="13" width="83" height="19"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <textFieldCell key="cell" controlSize="small" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" title=".bak~" drawsBackground="YES" id="674">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                    <textField verticalHuggingPriority="750" id="572">
+                                                        <rect key="frame" x="214" y="15" width="144" height="14"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="right" title="With extension:" id="673">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                                        </textFieldCell>
+                                                    </textField>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Spelling" identifier="Spelling" id="212">
+                                <view key="view" id="209">
+                                    <rect key="frame" x="10" y="33" width="482" height="293"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <box title="General" boxType="oldStyle" borderType="none" id="211">
+                                            <rect key="frame" x="8" y="219" width="466" height="74"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="466" height="56"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button id="215">
+                                                        <rect key="frame" x="13" y="29" width="435" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Check spelling as you type" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="677">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                        <connections>
+                                                            <action selector="checkboxClicked:" target="-2" id="643"/>
+                                                        </connections>
+                                                    </button>
+                                                    <button id="214">
+                                                        <rect key="frame" x="13" y="9" width="435" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Highlight misspelled words" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="676">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                        <box title="Ignore" boxType="oldStyle" borderType="none" id="213">
+                                            <rect key="frame" x="8" y="145" width="466" height="74"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="466" height="56"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button id="206">
+                                                        <rect key="frame" x="13" y="29" width="435" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Ignore words in UPPERCASE" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="678">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                    <button id="210">
+                                                        <rect key="frame" x="13" y="9" width="435" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Ignore words with numbers" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="679">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                        <box title="Dictionaries" boxType="oldStyle" borderType="none" id="586">
+                                            <rect key="frame" x="8" y="69" width="466" height="73"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="466" height="55"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button id="588">
+                                                        <rect key="frame" x="13" y="29" width="435" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Always suggest corrections" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="680">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                    <button id="589">
+                                                        <rect key="frame" x="13" y="9" width="435" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Suggest from main dictionary only" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="681">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                        <box title="Automatic Grammar Checking" boxType="oldStyle" borderType="none" id="590">
+                                            <rect key="frame" x="8" y="15" width="466" height="53"/>
+                                            <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="466" height="35"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <button id="592">
+                                                        <rect key="frame" x="13" y="9" width="435" height="18"/>
+                                                        <autoresizingMask key="autoresizingMask"/>
+                                                        <buttonCell key="cell" type="check" title="Check grammar as you type" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="682">
+                                                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                        </buttonCell>
+                                                    </button>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                            <tabViewItem label="Smart Quotes" identifier="Smart Quotes" id="606">
+                                <view key="view" id="607">
+                                    <rect key="frame" x="10" y="33" width="482" height="293"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <button id="608">
+                                            <rect key="frame" x="17" y="257" width="447" height="18"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <buttonCell key="cell" type="check" title="Enable smart quotes" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="689">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="checkboxClicked:" target="-2" id="644"/>
+                                            </connections>
+                                        </button>
+                                        <button id="609">
+                                            <rect key="frame" x="17" y="237" width="447" height="18"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <buttonCell key="cell" type="check" title="Use custom smart quote style" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="690">
+                                                <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                                <font key="font" metaFont="smallSystem"/>
+                                            </buttonCell>
+                                            <connections>
+                                                <action selector="checkboxClicked:" target="-2" id="645"/>
+                                            </connections>
+                                        </button>
+                                        <box title="Inner quote style" boxType="oldStyle" borderType="none" id="649">
+                                            <rect key="frame" x="20" y="77" width="448" height="60"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="448" height="42"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <popUpButton verticalHuggingPriority="750" id="651">
+                                                        <rect key="frame" x="13" y="11" width="422" height="22"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                        <popUpButtonCell key="cell" type="push" title="Item1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="654" id="691">
+                                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <menu key="menu" title="OtherViews" id="652">
+                                                                <items>
+                                                                    <menuItem title="Item1" state="on" id="654"/>
+                                                                    <menuItem title="Item2" id="653"/>
+                                                                    <menuItem title="Item3" id="655"/>
+                                                                </items>
+                                                            </menu>
+                                                        </popUpButtonCell>
+                                                    </popUpButton>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                        <box title="Outer quote style" boxType="oldStyle" borderType="none" id="656">
+                                            <rect key="frame" x="20" y="157" width="445" height="62"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <view key="contentView">
+                                                <rect key="frame" x="0.0" y="0.0" width="445" height="44"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                                <subviews>
+                                                    <popUpButton verticalHuggingPriority="750" id="658">
+                                                        <rect key="frame" x="13" y="11" width="419" height="22"/>
+                                                        <autoresizingMask key="autoresizingMask" widthSizable="YES"/>
+                                                        <popUpButtonCell key="cell" type="push" title="Item1" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="661" id="692">
+                                                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <menu key="menu" title="OtherViews" id="659">
+                                                                <items>
+                                                                    <menuItem title="Item1" state="on" id="661"/>
+                                                                    <menuItem title="Item2" id="662"/>
+                                                                    <menuItem title="Item3" id="660"/>
+                                                                </items>
+                                                            </menu>
+                                                        </popUpButtonCell>
+                                                    </popUpButton>
+                                                </subviews>
+                                            </view>
+                                            <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                                            <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            <font key="titleFont" metaFont="system"/>
+                                        </box>
+                                    </subviews>
+                                </view>
+                            </tabViewItem>
+                        </tabViewItems>
+                    </tabView>
+                    <button verticalHuggingPriority="750" id="14">
+                        <rect key="frame" x="235" y="12" width="117" height="32"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="push" title="Revert" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="693">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="revertClicked:" target="-2" id="636"/>
+                        </connections>
+                    </button>
+                    <button verticalHuggingPriority="750" id="15">
+                        <rect key="frame" x="352" y="12" width="117" height="32"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="push" title="Close" bezelStyle="rounded" alignment="center" borderStyle="border" inset="2" id="694">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                            <string key="keyEquivalent" base64-UTF8="YES">
+Gw
+</string>
+                        </buttonCell>
+                        <connections>
+                            <action selector="closeClicked:" target="-2" id="646"/>
+                        </connections>
+                    </button>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="113"/>
+            </connections>
+        </window>
+    </objects>
+</document>

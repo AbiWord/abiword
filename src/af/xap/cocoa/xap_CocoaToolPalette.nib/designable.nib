@@ -1,0 +1,1399 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="5056" systemVersion="12F2560" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none">
+    <dependencies>
+        <deployment defaultVersion="1080" identifier="macosx"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="5056"/>
+    </dependencies>
+    <objects>
+        <customObject id="-2" userLabel="File's Owner" customClass="XAP_CocoaToolPalette">
+            <connections>
+                <outlet property="oBox_Extra" destination="263" id="386"/>
+                <outlet property="oBox_Format" destination="217" id="388"/>
+                <outlet property="oBox_Properties" destination="562" id="568"/>
+                <outlet property="oBox_Standard" destination="19" id="389"/>
+                <outlet property="oBox_Table" destination="250" id="387"/>
+                <outlet property="oColor_BG" destination="511" id="513"/>
+                <outlet property="oColor_FG" destination="510" id="512"/>
+                <outlet property="oDocumentStyle" destination="227" id="489"/>
+                <outlet property="oFontMemberName" destination="585" id="588"/>
+                <outlet property="oFontName" destination="232" id="488"/>
+                <outlet property="oFontSize" destination="233" id="487"/>
+                <outlet property="oPanel" destination="5" id="402"/>
+                <outlet property="oPreview" destination="571" id="575"/>
+                <outlet property="oPreviewPanel" destination="579" id="582"/>
+                <outlet property="oProperties" destination="564" id="569"/>
+                <outlet property="oSwitch_BG" destination="555" id="557"/>
+                <outlet property="oSwitch_FG" destination="554" id="556"/>
+                <outlet property="oTB_1column" destination="210" id="319"/>
+                <outlet property="oTB_2column" destination="209" id="320"/>
+                <outlet property="oTB_3column" destination="211" id="321"/>
+                <outlet property="oTB_LineAll" destination="302" id="350"/>
+                <outlet property="oTB_LineBottom" destination="305" id="352"/>
+                <outlet property="oTB_LineLeft" destination="306" id="353"/>
+                <outlet property="oTB_LineNone" destination="293" id="349"/>
+                <outlet property="oTB_LineRight" destination="292" id="354"/>
+                <outlet property="oTB_LineTop" destination="298" id="351"/>
+                <outlet property="oTB_MergeAbove" destination="299" id="347"/>
+                <outlet property="oTB_MergeBelow" destination="295" id="348"/>
+                <outlet property="oTB_MergeLeft" destination="296" id="345"/>
+                <outlet property="oTB_MergeRight" destination="303" id="346"/>
+                <outlet property="oTB_SplitAbove" destination="304" id="360"/>
+                <outlet property="oTB_SplitBelow" destination="300" id="358"/>
+                <outlet property="oTB_SplitHoriMid" destination="301" id="356"/>
+                <outlet property="oTB_SplitLeft" destination="297" id="355"/>
+                <outlet property="oTB_SplitRight" destination="291" id="357"/>
+                <outlet property="oTB_SplitVertMid" destination="294" id="359"/>
+                <outlet property="oTB_add_column" destination="254" id="340"/>
+                <outlet property="oTB_add_row" destination="253" id="339"/>
+                <outlet property="oTB_anchor" destination="265" id="362"/>
+                <outlet property="oTB_copy" destination="204" id="314"/>
+                <outlet property="oTB_cut" destination="203" id="313"/>
+                <outlet property="oTB_delete_column" destination="256" id="342"/>
+                <outlet property="oTB_delete_row" destination="255" id="341"/>
+                <outlet property="oTB_edit_editfooter" destination="280" id="380"/>
+                <outlet property="oTB_edit_editheader" destination="281" id="379"/>
+                <outlet property="oTB_edit_removefooter" destination="283" id="382"/>
+                <outlet property="oTB_edit_removeheader" destination="282" id="381"/>
+                <outlet property="oTB_help" destination="214" id="324"/>
+                <outlet property="oTB_hyperlink" destination="264" id="361"/>
+                <outlet property="oTB_insert_graphic" destination="212" id="322"/>
+                <outlet property="oTB_insert_table" destination="252" id="338"/>
+                <outlet property="oTB_line_double_space" destination="274" id="374"/>
+                <outlet property="oTB_line_middle_space" destination="275" id="373"/>
+                <outlet property="oTB_line_single_space" destination="276" id="372"/>
+                <outlet property="oTB_lists_bullets" destination="242" id="333"/>
+                <outlet property="oTB_lists_numbers" destination="241" id="332"/>
+                <outlet property="oTB_merge_cells" destination="257" id="343"/>
+                <outlet property="oTB_new" destination="197" id="307"/>
+                <outlet property="oTB_open" destination="198" id="308"/>
+                <outlet property="oTB_para_0before" destination="273" id="370"/>
+                <outlet property="oTB_para_12before" destination="272" id="371"/>
+                <outlet property="oTB_paste" destination="205" id="315"/>
+                <outlet property="oTB_print" destination="201" id="311"/>
+                <outlet property="oTB_redo" destination="208" id="318"/>
+                <outlet property="oTB_save" destination="199" id="309"/>
+                <outlet property="oTB_save_as" destination="200" id="310"/>
+                <outlet property="oTB_script_play" destination="271" id="378"/>
+                <outlet property="oTB_search" destination="498" id="501"/>
+                <outlet property="oTB_search_replace" destination="497" id="502"/>
+                <outlet property="oTB_spellcheck" destination="202" id="312"/>
+                <outlet property="oTB_split_cells" destination="258" id="344"/>
+                <outlet property="oTB_stock_paint" destination="206" id="316"/>
+                <outlet property="oTB_symbol" destination="531" id="537"/>
+                <outlet property="oTB_text_align_left" destination="237" id="328"/>
+                <outlet property="oTB_text_align_right" destination="238" id="330"/>
+                <outlet property="oTB_text_bgcolor" destination="245" id="336"/>
+                <outlet property="oTB_text_bold" destination="234" id="325"/>
+                <outlet property="oTB_text_center" destination="239" id="329"/>
+                <outlet property="oTB_text_direction_ltr" destination="540" id="546"/>
+                <outlet property="oTB_text_direction_rtl" destination="541" id="547"/>
+                <outlet property="oTB_text_dom_direction" destination="542" id="548"/>
+                <outlet property="oTB_text_fgcolor" destination="246" id="337"/>
+                <outlet property="oTB_text_indent" destination="244" id="335"/>
+                <outlet property="oTB_text_italic" destination="235" id="326"/>
+                <outlet property="oTB_text_justify" destination="240" id="331"/>
+                <outlet property="oTB_text_overline" destination="520" id="533"/>
+                <outlet property="oTB_text_strikeout" destination="521" id="534"/>
+                <outlet property="oTB_text_subscript" destination="519" id="538"/>
+                <outlet property="oTB_text_superscript" destination="522" id="539"/>
+                <outlet property="oTB_text_underline" destination="236" id="327"/>
+                <outlet property="oTB_text_unindent" destination="243" id="334"/>
+                <outlet property="oTB_undo" destination="207" id="317"/>
+                <outlet property="oTB_view_showpara" destination="213" id="323"/>
+                <outlet property="oTitle_Extra" destination="549" id="551"/>
+                <outlet property="oTitle_Format" destination="507" id="509"/>
+                <outlet property="oTitle_Properties" destination="560" id="567"/>
+                <outlet property="oTitle_Standard" destination="504" id="505"/>
+                <outlet property="oTitle_Table" destination="516" id="518"/>
+                <outlet property="oZoom" destination="215" id="486"/>
+            </connections>
+        </customObject>
+        <customObject id="-1" userLabel="First Responder" customClass="FirstResponder"/>
+        <customObject id="-3" userLabel="Application"/>
+        <window title="Tool Palette" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hidesOnDeactivate="YES" visibleAtLaunch="NO" frameAutosaveName="AbiWordToolPalette" animationBehavior="default" id="5" userLabel="Panel" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="538" y="167" width="213" height="800"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="778"/>
+            <view key="contentView" id="6">
+                <rect key="frame" x="0.0" y="0.0" width="213" height="800"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <box title="Box" boxType="oldStyle" borderType="line" titlePosition="noTitle" id="19">
+                        <rect key="frame" x="-3" y="659" width="219" height="124"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <view key="contentView">
+                            <rect key="frame" x="1" y="1" width="217" height="122"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <button id="197">
+                                    <rect key="frame" x="9" y="89" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_new.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="592">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="407"/>
+                                    </connections>
+                                </button>
+                                <button id="198">
+                                    <rect key="frame" x="37" y="89" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_open.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="593">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="408"/>
+                                    </connections>
+                                </button>
+                                <button id="199">
+                                    <rect key="frame" x="65" y="89" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_save.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="594">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="409"/>
+                                    </connections>
+                                </button>
+                                <button id="200">
+                                    <rect key="frame" x="93" y="89" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_save_as.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="595">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="410"/>
+                                    </connections>
+                                </button>
+                                <button id="201">
+                                    <rect key="frame" x="121" y="89" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_print.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="596">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="411"/>
+                                    </connections>
+                                </button>
+                                <button id="202">
+                                    <rect key="frame" x="149" y="89" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_spellcheck.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="597">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="412"/>
+                                    </connections>
+                                </button>
+                                <button id="203">
+                                    <rect key="frame" x="65" y="61" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_cut.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="598">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="413"/>
+                                    </connections>
+                                </button>
+                                <button id="204">
+                                    <rect key="frame" x="93" y="61" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_copy.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="599">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="414"/>
+                                    </connections>
+                                </button>
+                                <button id="205">
+                                    <rect key="frame" x="121" y="61" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_paste.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="600">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="415"/>
+                                    </connections>
+                                </button>
+                                <button id="206">
+                                    <rect key="frame" x="121" y="33" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_stock_paint.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="601">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="416"/>
+                                    </connections>
+                                </button>
+                                <button id="207">
+                                    <rect key="frame" x="9" y="61" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_undo.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="602">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="417"/>
+                                    </connections>
+                                </button>
+                                <button id="208">
+                                    <rect key="frame" x="37" y="61" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_redo.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="603">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="418"/>
+                                    </connections>
+                                </button>
+                                <button id="209" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="37" y="33" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_2column.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="604">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="420"/>
+                                    </connections>
+                                </button>
+                                <button id="210" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="9" y="33" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_1column.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="605">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="419"/>
+                                    </connections>
+                                </button>
+                                <button id="211" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="65" y="33" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_3column.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="606">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="421"/>
+                                    </connections>
+                                </button>
+                                <button id="212">
+                                    <rect key="frame" x="93" y="33" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_insert_graphic.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="607">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="422"/>
+                                    </connections>
+                                </button>
+                                <button id="213" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="149" y="33" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_view_showpara.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="608">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="423"/>
+                                    </connections>
+                                </button>
+                                <button id="214">
+                                    <rect key="frame" x="177" y="89" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_help.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="609">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="424"/>
+                                    </connections>
+                                </button>
+                                <comboBox verticalHuggingPriority="750" id="215">
+                                    <rect key="frame" x="74" y="4" width="133" height="26"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="left" title="200%" drawsBackground="YES" completes="NO" numberOfVisibleItems="8" id="610">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        <objectValues>
+                                            <string>200%</string>
+                                            <string>150%</string>
+                                            <string>100%</string>
+                                            <string>75%</string>
+                                            <string>50%</string>
+                                            <string>25%</string>
+                                            <string>Page Width</string>
+                                            <string>Whole Page</string>
+                                        </objectValues>
+                                    </comboBoxCell>
+                                    <connections>
+                                        <action selector="aZoom:" target="-2" id="490"/>
+                                    </connections>
+                                </comboBox>
+                                <button id="497">
+                                    <rect key="frame" x="177" y="61" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_search_replace.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="611">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="500"/>
+                                    </connections>
+                                </button>
+                                <button id="498">
+                                    <rect key="frame" x="149" y="61" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_search.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="612">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="499"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </box>
+                    <box title="Box" boxType="oldStyle" borderType="line" titlePosition="noTitle" id="217">
+                        <rect key="frame" x="-3" y="434" width="219" height="208"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <view key="contentView">
+                            <rect key="frame" x="1" y="1" width="217" height="206"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <popUpButton verticalHuggingPriority="750" id="227">
+                                    <rect key="frame" x="5" y="179" width="202" height="26"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <popUpButtonCell key="cell" type="push" title="Normal" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="223" id="613">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                        <menu key="menu" title="OtherViews" id="226">
+                                            <items>
+                                                <menuItem title="Heading 1" id="225"/>
+                                                <menuItem title="Normal" state="on" id="223"/>
+                                                <menuItem title="Caption" id="224"/>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                    <connections>
+                                        <action selector="aDocumentStyle:" target="-2" id="492"/>
+                                    </connections>
+                                </popUpButton>
+                                <popUpButton verticalHuggingPriority="750" id="232">
+                                    <rect key="frame" x="5" y="154" width="202" height="26"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <popUpButtonCell key="cell" type="push" title="Times New Roman" bezelStyle="rounded" alignment="left" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="231" id="614">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="system"/>
+                                        <menu key="menu" title="OtherViews" id="228">
+                                            <items>
+                                                <menuItem title="Times New Roman" state="on" id="231"/>
+                                                <menuItem title="Courier" id="229"/>
+                                                <menuItem title="Symbol" id="230"/>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                    <connections>
+                                        <action selector="aFontName:" target="-2" id="493"/>
+                                    </connections>
+                                </popUpButton>
+                                <comboBox verticalHuggingPriority="750" id="233">
+                                    <rect key="frame" x="149" y="129" width="58" height="26"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <comboBoxCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" alignment="right" title="72" drawsBackground="YES" completes="NO" numberOfVisibleItems="9" id="615">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                        <objectValues>
+                                            <string>72</string>
+                                            <string>36</string>
+                                            <string>24</string>
+                                            <string>18</string>
+                                            <string>16</string>
+                                            <string>14</string>
+                                            <string>12</string>
+                                            <string>10</string>
+                                            <string>8</string>
+                                        </objectValues>
+                                    </comboBoxCell>
+                                    <connections>
+                                        <action selector="aFontSize:" target="-2" id="491"/>
+                                    </connections>
+                                </comboBox>
+                                <button id="234" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="9" y="63" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_bold.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="616">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="425"/>
+                                    </connections>
+                                </button>
+                                <button id="235" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="37" y="63" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_italic.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="617">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="426"/>
+                                    </connections>
+                                </button>
+                                <button id="236" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="65" y="63" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_underline.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="618">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="427"/>
+                                    </connections>
+                                </button>
+                                <button id="237" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="9" y="35" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_align_left.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="619">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="428"/>
+                                    </connections>
+                                </button>
+                                <button id="238" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="65" y="35" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_align_right.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="620">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="430"/>
+                                    </connections>
+                                </button>
+                                <button id="239" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="37" y="35" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_center.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="621">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="429"/>
+                                    </connections>
+                                </button>
+                                <button id="240" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="93" y="35" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_justify.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="622">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="431"/>
+                                    </connections>
+                                </button>
+                                <button id="241" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="9" y="7" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_lists_numbers.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="623">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="432"/>
+                                    </connections>
+                                </button>
+                                <button id="242" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="37" y="7" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_lists_bullets.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="624">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="433"/>
+                                    </connections>
+                                </button>
+                                <button id="243">
+                                    <rect key="frame" x="65" y="7" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_unindent.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="625">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="434"/>
+                                    </connections>
+                                </button>
+                                <button id="244">
+                                    <rect key="frame" x="93" y="7" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_indent.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="626">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="435"/>
+                                    </connections>
+                                </button>
+                                <button id="245">
+                                    <rect key="frame" x="93" y="96" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_bgcolor.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="627">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="436"/>
+                                    </connections>
+                                </button>
+                                <button id="246">
+                                    <rect key="frame" x="37" y="96" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_fgcolor.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="628">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="437"/>
+                                    </connections>
+                                </button>
+                                <colorWell id="510">
+                                    <rect key="frame" x="12" y="96" width="24" height="24"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="color" red="0.058130499000000002" green="0.055541898999999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="aColor_FG:" target="-2" id="552"/>
+                                    </connections>
+                                </colorWell>
+                                <colorWell id="511">
+                                    <rect key="frame" x="122" y="96" width="24" height="24"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <color key="color" red="0.058130499000000002" green="0.055541898999999999" blue="1" alpha="1" colorSpace="calibratedRGB"/>
+                                    <connections>
+                                        <action selector="aColor_BG:" target="-2" id="553"/>
+                                    </connections>
+                                </colorWell>
+                                <button id="519" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="177" y="63" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_subscript.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="629">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="530"/>
+                                    </connections>
+                                </button>
+                                <button id="520" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="93" y="63" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_overline.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="630">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="525"/>
+                                    </connections>
+                                </button>
+                                <button id="521" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="121" y="63" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_strikeout.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="631">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="526"/>
+                                    </connections>
+                                </button>
+                                <button id="522" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="149" y="63" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_superscript.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="632">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="529"/>
+                                    </connections>
+                                </button>
+                                <button id="531">
+                                    <rect key="frame" x="177" y="7" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_symbol.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="633">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="532"/>
+                                    </connections>
+                                </button>
+                                <button id="540" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="121" y="35" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_direction_ltr.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="634">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="543"/>
+                                    </connections>
+                                </button>
+                                <button id="541" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="149" y="35" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_direction_rtl.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="635">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="544"/>
+                                    </connections>
+                                </button>
+                                <button id="542" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="177" y="35" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_text_dom_direction_rtl.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="636">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="545"/>
+                                    </connections>
+                                </button>
+                                <button id="554">
+                                    <rect key="frame" x="63" y="112" width="23" height="18"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="637">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aSwitch_FG:" target="-2" id="558"/>
+                                    </connections>
+                                </button>
+                                <button id="555">
+                                    <rect key="frame" x="77" y="112" width="23" height="18"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="check" bezelStyle="regularSquare" imagePosition="left" alignment="left" controlSize="small" inset="2" id="638">
+                                        <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aSwitch_BG:" target="-2" id="559"/>
+                                    </connections>
+                                </button>
+                                <popUpButton verticalHuggingPriority="750" id="585">
+                                    <rect key="frame" x="5" y="132" width="139" height="22"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <popUpButtonCell key="cell" type="push" title="Normal" bezelStyle="rounded" alignment="left" controlSize="small" lineBreakMode="clipping" state="on" borderStyle="borderAndBezel" inset="2" arrowPosition="arrowAtCenter" preferredEdge="maxY" selectedItem="583" id="639">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                                        <font key="font" metaFont="smallSystem"/>
+                                        <menu key="menu" title="OtherViews" id="586">
+                                            <items>
+                                                <menuItem title="Normal" state="on" id="583"/>
+                                                <menuItem title="Italic" id="587"/>
+                                                <menuItem title="Bold" id="584"/>
+                                            </items>
+                                        </menu>
+                                    </popUpButtonCell>
+                                    <connections>
+                                        <action selector="aFontMemberName:" target="-2" id="589"/>
+                                    </connections>
+                                </popUpButton>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </box>
+                    <box title="Box" boxType="oldStyle" borderType="line" titlePosition="noTitle" id="250">
+                        <rect key="frame" x="-3" y="264" width="219" height="153"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <view key="contentView">
+                            <rect key="frame" x="1" y="1" width="217" height="151"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <button id="252">
+                                    <rect key="frame" x="9" y="118" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_insert_table.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="640">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="460"/>
+                                    </connections>
+                                </button>
+                                <button id="253">
+                                    <rect key="frame" x="37" y="118" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_add_row.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="641">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="438"/>
+                                    </connections>
+                                </button>
+                                <button id="254">
+                                    <rect key="frame" x="65" y="118" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_add_column.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="642">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="439"/>
+                                    </connections>
+                                </button>
+                                <button id="255">
+                                    <rect key="frame" x="93" y="118" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_delete_row.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="643">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="440"/>
+                                    </connections>
+                                </button>
+                                <button id="256">
+                                    <rect key="frame" x="121" y="118" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_delete_column.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="644">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="441"/>
+                                    </connections>
+                                </button>
+                                <button id="257">
+                                    <rect key="frame" x="149" y="118" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_merge_cells.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="645">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="442"/>
+                                    </connections>
+                                </button>
+                                <button id="258">
+                                    <rect key="frame" x="177" y="118" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_split_cells.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="646">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="443"/>
+                                    </connections>
+                                </button>
+                                <button id="291">
+                                    <rect key="frame" x="177" y="6" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_SplitRight.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="647">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="459"/>
+                                    </connections>
+                                </button>
+                                <button id="292" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="177" y="62" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_LineRight.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="648">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="453"/>
+                                    </connections>
+                                </button>
+                                <button id="293" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="177" y="90" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_LineNone.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="649">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="447"/>
+                                    </connections>
+                                </button>
+                                <button id="294">
+                                    <rect key="frame" x="37" y="6" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_SplitVertMid.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="650">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="448"/>
+                                    </connections>
+                                </button>
+                                <button id="295">
+                                    <rect key="frame" x="37" y="34" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_MergeBelow.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="651">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="455"/>
+                                    </connections>
+                                </button>
+                                <button id="296">
+                                    <rect key="frame" x="9" y="62" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_MergeLeft.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="652">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="449"/>
+                                    </connections>
+                                </button>
+                                <button id="297">
+                                    <rect key="frame" x="121" y="6" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_SplitLeft.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="653">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="457"/>
+                                    </connections>
+                                </button>
+                                <button id="298" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="149" y="90" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_LineTop.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="654">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="446"/>
+                                    </connections>
+                                </button>
+                                <button id="299">
+                                    <rect key="frame" x="37" y="90" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_MergeAbove.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="655">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="445"/>
+                                    </connections>
+                                </button>
+                                <button id="300">
+                                    <rect key="frame" x="65" y="6" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_SplitBelow.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="656">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="454"/>
+                                    </connections>
+                                </button>
+                                <button id="301">
+                                    <rect key="frame" x="149" y="6" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_SplitHoriMid.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="657">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="458"/>
+                                    </connections>
+                                </button>
+                                <button id="302" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="149" y="62" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_LineAll.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="658">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="452"/>
+                                    </connections>
+                                </button>
+                                <button id="303">
+                                    <rect key="frame" x="65" y="62" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_MergeRight.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="659">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="450"/>
+                                    </connections>
+                                </button>
+                                <button id="304">
+                                    <rect key="frame" x="9" y="6" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_SplitAbove.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="660">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="444"/>
+                                    </connections>
+                                </button>
+                                <button id="305" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="149" y="34" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_LineBottom.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="661">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="456"/>
+                                    </connections>
+                                </button>
+                                <button id="306" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="121" y="62" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_LineLeft.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="662">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="451"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </box>
+                    <box title="Box" boxType="oldStyle" borderType="line" titlePosition="noTitle" id="263">
+                        <rect key="frame" x="-3" y="154" width="219" height="93"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <view key="contentView">
+                            <rect key="frame" x="1" y="1" width="217" height="91"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <button id="264" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="9" y="58" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_hyperlink.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="663">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="461"/>
+                                    </connections>
+                                </button>
+                                <button id="265" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="37" y="58" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_anchor.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="664">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="462"/>
+                                    </connections>
+                                </button>
+                                <button id="271">
+                                    <rect key="frame" x="177" y="30" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_script_play.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="665">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="478"/>
+                                    </connections>
+                                </button>
+                                <button id="272" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="37" y="30" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_para_12before.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="666">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="471"/>
+                                    </connections>
+                                </button>
+                                <button id="273" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="9" y="30" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_para_0before.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="667">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="470"/>
+                                    </connections>
+                                </button>
+                                <button id="274" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="121" y="30" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_line_double_space.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="668">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="474"/>
+                                    </connections>
+                                </button>
+                                <button id="275" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="93" y="30" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_line_middle_space.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="669">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="473"/>
+                                    </connections>
+                                </button>
+                                <button id="276" customClass="XAP_CocoaToolbarButton">
+                                    <rect key="frame" x="65" y="30" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_line_single_space.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="670">
+                                        <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="472"/>
+                                    </connections>
+                                </button>
+                                <button id="280">
+                                    <rect key="frame" x="121" y="58" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_edit_editfooter.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="671">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="484"/>
+                                    </connections>
+                                </button>
+                                <button id="281">
+                                    <rect key="frame" x="93" y="58" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_edit_editheader.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="672">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="485"/>
+                                    </connections>
+                                </button>
+                                <button id="282">
+                                    <rect key="frame" x="149" y="58" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_edit_removeheader.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="673">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="483"/>
+                                    </connections>
+                                </button>
+                                <button id="283">
+                                    <rect key="frame" x="177" y="58" width="28" height="28"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <buttonCell key="cell" type="square" bezelStyle="shadowlessSquare" image="tb_edit_removefooter.png" imagePosition="only" alignment="center" borderStyle="border" inset="2" id="674">
+                                        <behavior key="behavior" pushIn="YES" changeContents="YES" lightByContents="YES"/>
+                                        <font key="font" size="10" name="LucidaGrande"/>
+                                    </buttonCell>
+                                    <connections>
+                                        <action selector="aTB_click:" target="-2" id="482"/>
+                                    </connections>
+                                </button>
+                                <textField verticalHuggingPriority="750" id="571">
+                                    <rect key="frame" x="68" y="4" width="138" height="22"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" title="Preview" drawsBackground="YES" id="675">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                                <textField verticalHuggingPriority="750" id="572">
+                                    <rect key="frame" x="8" y="6" width="60" height="17"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Preview:" id="676">
+                                        <font key="font" metaFont="system"/>
+                                        <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                        <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
+                                    </textFieldCell>
+                                </textField>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </box>
+                    <button id="504">
+                        <rect key="frame" x="-3" y="783" width="216" height="17"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="square" title="Standard" bezelStyle="shadowlessSquare" imagePosition="below" alignment="center" borderStyle="border" inset="2" id="677">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="aTitle_click:" target="-2" id="506"/>
+                        </connections>
+                    </button>
+                    <button id="507">
+                        <rect key="frame" x="-3" y="642" width="219" height="17"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="square" title="Format" bezelStyle="shadowlessSquare" imagePosition="below" alignment="center" borderStyle="border" inset="2" id="678">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="aTitle_click:" target="-2" id="508"/>
+                        </connections>
+                    </button>
+                    <button id="516">
+                        <rect key="frame" x="-3" y="417" width="219" height="17"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="square" title="Table" bezelStyle="shadowlessSquare" imagePosition="below" alignment="center" borderStyle="border" inset="2" id="679">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="aTitle_click:" target="-2" id="517"/>
+                        </connections>
+                    </button>
+                    <button id="549">
+                        <rect key="frame" x="-3" y="247" width="219" height="17"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="square" title="Extra" bezelStyle="shadowlessSquare" imagePosition="below" alignment="center" borderStyle="border" inset="2" id="680">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="aTitle_click:" target="-2" id="550"/>
+                        </connections>
+                    </button>
+                    <button id="560">
+                        <rect key="frame" x="-3" y="137" width="219" height="17"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <buttonCell key="cell" type="square" title="Properties" bezelStyle="shadowlessSquare" imagePosition="below" alignment="center" borderStyle="border" inset="2" id="681">
+                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="system"/>
+                        </buttonCell>
+                        <connections>
+                            <action selector="aTitle_click:" target="-2" id="570"/>
+                        </connections>
+                    </button>
+                    <box title="Box" boxType="oldStyle" borderType="line" titlePosition="noTitle" id="562">
+                        <rect key="frame" x="-3" y="12" width="219" height="125"/>
+                        <autoresizingMask key="autoresizingMask"/>
+                        <view key="contentView">
+                            <rect key="frame" x="1" y="1" width="217" height="123"/>
+                            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                            <subviews>
+                                <scrollView horizontalLineScroll="14" horizontalPageScroll="10" verticalLineScroll="14" verticalPageScroll="10" usesPredominantAxisScrolling="NO" id="566">
+                                    <rect key="frame" x="2" y="0.0" width="213" height="125"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <clipView key="contentView" id="yF4-20-H1k">
+                                        <rect key="frame" x="1" y="17" width="211" height="107"/>
+                                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                        <subviews>
+                                            <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" columnReordering="NO" multipleSelection="NO" autosaveName="AbiWordToolPalettePropertyViewer" rowHeight="12" headerView="686" indentationPerLevel="16" autoresizesOutlineColumn="YES" outlineTableColumn="565" id="564">
+                                                <rect key="frame" x="0.0" y="0.0" width="211" height="107"/>
+                                                <autoresizingMask key="autoresizingMask"/>
+                                                <size key="intercellSpacing" width="3" height="2"/>
+                                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                <tableViewGridLines key="gridStyleMask" vertical="YES" horizontal="YES"/>
+                                                <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
+                                                <tableColumns>
+                                                    <tableColumn identifier="Name" editable="NO" width="111" minWidth="16" maxWidth="220" id="565">
+                                                        <tableHeaderCell key="headerCell" borderStyle="border" alignment="left" title="Level / Property">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" white="0.33333299" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" alignment="left" id="684">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </textFieldCell>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    </tableColumn>
+                                                    <tableColumn identifier="Value" editable="NO" width="94" minWidth="8" maxWidth="200" id="563">
+                                                        <tableHeaderCell key="headerCell" borderStyle="border" alignment="left" title="Value">
+                                                            <font key="font" metaFont="smallSystem"/>
+                                                            <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" white="0.33333299" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </tableHeaderCell>
+                                                        <textFieldCell key="dataCell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" alignment="left" id="683">
+                                                            <font key="font" metaFont="system"/>
+                                                            <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                                        </textFieldCell>
+                                                        <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
+                                                    </tableColumn>
+                                                </tableColumns>
+                                            </outlineView>
+                                        </subviews>
+                                        <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                    </clipView>
+                                    <scroller key="horizontalScroller" verticalHuggingPriority="750" controlSize="small" horizontal="YES" id="685">
+                                        <rect key="frame" x="1" y="110" width="211" height="14"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </scroller>
+                                    <scroller key="verticalScroller" verticalHuggingPriority="750" controlSize="small" horizontal="NO" id="687">
+                                        <rect key="frame" x="198" y="17" width="14" height="107"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </scroller>
+                                    <tableHeaderView key="headerView" id="686">
+                                        <rect key="frame" x="0.0" y="0.0" width="211" height="17"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                    </tableHeaderView>
+                                </scrollView>
+                            </subviews>
+                        </view>
+                        <color key="borderColor" white="0.0" alpha="0.41999999999999998" colorSpace="calibratedWhite"/>
+                        <color key="fillColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                    </box>
+                </subviews>
+            </view>
+            <connections>
+                <outlet property="delegate" destination="-2" id="590"/>
+            </connections>
+        </window>
+        <window title="Preview Panel" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" hasShadow="NO" hidesOnDeactivate="YES" releasedWhenClosed="NO" visibleAtLaunch="NO" frameAutosaveName="AbiWordPreviewPanel" animationBehavior="default" id="577" userLabel="Panel1" customClass="NSPanel">
+            <windowStyleMask key="styleMask" titled="YES" closable="YES" resizable="YES" utility="YES"/>
+            <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
+            <rect key="contentRect" x="172" y="185" width="200" height="24"/>
+            <rect key="screenRect" x="0.0" y="0.0" width="1280" height="778"/>
+            <view key="contentView" id="576">
+                <rect key="frame" x="1" y="1" width="200" height="24"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <textField verticalHuggingPriority="750" id="578">
+                        <rect key="frame" x="1" y="1" width="198" height="22"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="682">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                    </textField>
+                </subviews>
+            </view>
+        </window>
+        <customObject id="579" userLabel="XAP_CocoaPreviewPanel" customClass="XAP_CocoaPreviewPanel">
+            <connections>
+                <outlet property="oPreview" destination="578" id="581"/>
+                <outlet property="window" destination="577" id="580"/>
+            </connections>
+        </customObject>
+    </objects>
+    <resources>
+        <image name="tb_1column.png" width="128" height="128"/>
+        <image name="tb_2column.png" width="128" height="128"/>
+        <image name="tb_3column.png" width="128" height="128"/>
+        <image name="tb_LineAll.png" width="128" height="128"/>
+        <image name="tb_LineBottom.png" width="128" height="128"/>
+        <image name="tb_LineLeft.png" width="128" height="128"/>
+        <image name="tb_LineNone.png" width="128" height="128"/>
+        <image name="tb_LineRight.png" width="128" height="128"/>
+        <image name="tb_LineTop.png" width="128" height="128"/>
+        <image name="tb_MergeAbove.png" width="128" height="128"/>
+        <image name="tb_MergeBelow.png" width="128" height="128"/>
+        <image name="tb_MergeLeft.png" width="128" height="128"/>
+        <image name="tb_MergeRight.png" width="128" height="128"/>
+        <image name="tb_SplitAbove.png" width="128" height="128"/>
+        <image name="tb_SplitBelow.png" width="128" height="128"/>
+        <image name="tb_SplitHoriMid.png" width="128" height="128"/>
+        <image name="tb_SplitLeft.png" width="128" height="128"/>
+        <image name="tb_SplitRight.png" width="128" height="128"/>
+        <image name="tb_SplitVertMid.png" width="128" height="128"/>
+        <image name="tb_add_column.png" width="128" height="128"/>
+        <image name="tb_add_row.png" width="128" height="128"/>
+        <image name="tb_anchor.png" width="128" height="128"/>
+        <image name="tb_copy.png" width="128" height="128"/>
+        <image name="tb_cut.png" width="128" height="128"/>
+        <image name="tb_delete_column.png" width="128" height="128"/>
+        <image name="tb_delete_row.png" width="128" height="128"/>
+        <image name="tb_edit_editfooter.png" width="128" height="128"/>
+        <image name="tb_edit_editheader.png" width="128" height="128"/>
+        <image name="tb_edit_removefooter.png" width="128" height="128"/>
+        <image name="tb_edit_removeheader.png" width="128" height="128"/>
+        <image name="tb_help.png" width="128" height="128"/>
+        <image name="tb_hyperlink.png" width="128" height="128"/>
+        <image name="tb_insert_graphic.png" width="128" height="128"/>
+        <image name="tb_insert_table.png" width="128" height="128"/>
+        <image name="tb_line_double_space.png" width="128" height="128"/>
+        <image name="tb_line_middle_space.png" width="128" height="128"/>
+        <image name="tb_line_single_space.png" width="128" height="128"/>
+        <image name="tb_lists_bullets.png" width="128" height="128"/>
+        <image name="tb_lists_numbers.png" width="128" height="128"/>
+        <image name="tb_merge_cells.png" width="128" height="128"/>
+        <image name="tb_new.png" width="128" height="128"/>
+        <image name="tb_open.png" width="128" height="128"/>
+        <image name="tb_para_0before.png" width="128" height="128"/>
+        <image name="tb_para_12before.png" width="128" height="128"/>
+        <image name="tb_paste.png" width="128" height="128"/>
+        <image name="tb_print.png" width="128" height="128"/>
+        <image name="tb_redo.png" width="128" height="128"/>
+        <image name="tb_save.png" width="128" height="128"/>
+        <image name="tb_save_as.png" width="128" height="128"/>
+        <image name="tb_script_play.png" width="128" height="128"/>
+        <image name="tb_search.png" width="128" height="128"/>
+        <image name="tb_search_replace.png" width="128" height="128"/>
+        <image name="tb_spellcheck.png" width="128" height="128"/>
+        <image name="tb_split_cells.png" width="128" height="128"/>
+        <image name="tb_stock_paint.png" width="128" height="128"/>
+        <image name="tb_symbol.png" width="128" height="128"/>
+        <image name="tb_text_align_left.png" width="128" height="128"/>
+        <image name="tb_text_align_right.png" width="128" height="128"/>
+        <image name="tb_text_bgcolor.png" width="128" height="128"/>
+        <image name="tb_text_bold.png" width="128" height="128"/>
+        <image name="tb_text_center.png" width="128" height="128"/>
+        <image name="tb_text_direction_ltr.png" width="128" height="128"/>
+        <image name="tb_text_direction_rtl.png" width="128" height="128"/>
+        <image name="tb_text_dom_direction_rtl.png" width="128" height="128"/>
+        <image name="tb_text_fgcolor.png" width="128" height="128"/>
+        <image name="tb_text_indent.png" width="128" height="128"/>
+        <image name="tb_text_italic.png" width="128" height="128"/>
+        <image name="tb_text_justify.png" width="128" height="128"/>
+        <image name="tb_text_overline.png" width="128" height="128"/>
+        <image name="tb_text_strikeout.png" width="128" height="128"/>
+        <image name="tb_text_subscript.png" width="128" height="128"/>
+        <image name="tb_text_superscript.png" width="128" height="128"/>
+        <image name="tb_text_underline.png" width="128" height="128"/>
+        <image name="tb_text_unindent.png" width="128" height="128"/>
+        <image name="tb_undo.png" width="128" height="128"/>
+        <image name="tb_view_showpara.png" width="128" height="128"/>
+    </resources>
+</document>
