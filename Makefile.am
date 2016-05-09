@@ -3,9 +3,11 @@ ACLOCAL_AMFLAGS = -I .
 
 DIST_SUBDIRS = src plugins po user icons tools
 
-SUBDIRS = src plugins po user icons
+SUBDIRS = src plugins po user
 
 if TOOLKIT_GTK_ALL
+
+SUBDIRS += icons
 
 desktopdir = $(datadir)/applications
 desktop_DATA = abiword.desktop
