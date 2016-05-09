@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
@@ -115,8 +115,8 @@ NSCursor *	GR_CocoaCairoGraphics::m_Cursor_Crosshair = nil;
 NSCursor *	GR_CocoaCairoGraphics::m_Cursor_HandPointer = nil;
 NSCursor *	GR_CocoaCairoGraphics::m_Cursor_DownArrow = nil;
 
-GR_Image* GR_CocoaCairoGraphicsBase::createNewImage(const char* pszName, const UT_ByteBuf* pBB, 
-	const std::string & mimeType, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight, 
+GR_Image* GR_CocoaCairoGraphicsBase::createNewImage(const char* pszName, const UT_ByteBuf* pBB,
+	const std::string & mimeType, UT_sint32 iDisplayWidth, UT_sint32 iDisplayHeight,
 	GR_Image::GRType iType)
 {
    	GR_Image* pImg = NULL;
@@ -389,9 +389,8 @@ void GR_CocoaCairoGraphics::_initColorAndImage(void)
 
 
 
-GR_CocoaCairoGraphics::GR_CocoaCairoGraphics(XAP_CocoaNSView * win, bool double_buffered) 
+GR_CocoaCairoGraphics::GR_CocoaCairoGraphics(XAP_CocoaNSView * win, bool /*double_buffered*/)
 	: m_pWin(win),
-	m_double_buffered(double_buffered),
 	m_updateCallback(NULL),
 	m_updateCBparam (NULL),
 	m_cacheRectArray (10),
@@ -404,7 +403,7 @@ GR_CocoaCairoGraphics::GR_CocoaCairoGraphics(XAP_CocoaNSView * win, bool double_
 {
 	_initColorAndImage();
 	init3dColors();
-	
+
 	UT_ASSERT (m_pWin);
 	if (![m_pWin isKindOfClass:[XAP_CocoaNSView class]]) {
 		NSLog(@"attaching a non-XAP_CocoaNSView to a GR_CocoaCairoGraphics");

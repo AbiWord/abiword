@@ -142,7 +142,6 @@ protected:
 private:
 	static UT_uint32                s_iInstanceCount;
 	XAP_CocoaNSView *               m_pWin;
-	bool                            m_double_buffered;
 	gr_cocoa_graphics_update	m_updateCallback;
 	void 				*m_updateCBparam;
 	std::vector<cairo_rectangle_t>	m_cacheRectArray;
