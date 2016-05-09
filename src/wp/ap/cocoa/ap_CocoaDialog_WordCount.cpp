@@ -151,11 +151,10 @@ void AP_CocoaDialog_WordCount::destroy(void)
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_WordCount"])
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_WordCount"])
 	{
-		return nil;
+        _xap = NULL;
 	}
-	_xap = NULL;
 	return self;
 }
 

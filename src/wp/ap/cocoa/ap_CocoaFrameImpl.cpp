@@ -702,21 +702,20 @@ void AP_CocoaFrameImpl::giveFocus()
 
 -(id)initWithFrame:(NSRect)frame andController:(NSWindowController*)controller vertical:(BOOL)vertical
 {
-	if(![super initWithFrame:frame]) {
-		return nil;
+	if(self = [super initWithFrame:frame]) {
+		UT_DEBUGMSG (("x = %f, y = %f, w = %f, h = %f\n", frame.origin.x, frame.origin.y,
+				frame.size.width, frame.size.height));
+		if (vertical) {
+			UT_DEBUGMSG(("Is vertical\n"));
+			[self setAutoresizingMask:(NSViewMinXMargin |  NSViewHeightSizable)];
+		}
+		else {
+			UT_DEBUGMSG(("Is horizontal\n"));
+			[self setAutoresizingMask:(NSViewMaxYMargin |  NSViewWidthSizable)];
+		}
+		[self setTarget:controller];
+		[self setAction:@selector(scrollAction:)];
 	}
-	UT_DEBUGMSG (("x = %f, y = %f, w = %f, h = %f\n", frame.origin.x, frame.origin.y,
-			frame.size.width, frame.size.height));
-	if (vertical) {
-		UT_DEBUGMSG(("Is vertical\n"));
-		[self setAutoresizingMask:(NSViewMinXMargin |  NSViewHeightSizable)];
-	}
-	else {
-		UT_DEBUGMSG(("Is horizontal\n"));
-		[self setAutoresizingMask:(NSViewMaxYMargin |  NSViewWidthSizable)];
-	}
-	[self setTarget:controller];
-	[self setAction:@selector(scrollAction:)];
 	return self;
 }
 

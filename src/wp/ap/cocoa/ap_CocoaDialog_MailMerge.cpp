@@ -124,16 +124,15 @@ void AP_CocoaDialog_MailMerge::setFieldList()
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_MailMerge"]) {
-		return nil;
-	}
-	_xap = NULL;
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_MailMerge"]) {
+		_xap = NULL;
 
-	m_AvailableFields = [[NSMutableArray alloc] initWithCapacity:32];
-	if (!m_AvailableFields)
-	{
-		[self release];
-		return nil;
+		m_AvailableFields = [[NSMutableArray alloc] initWithCapacity:32];
+		if (!m_AvailableFields)
+		{
+			[self release];
+			return nil;
+		}
 	}
 	return self;
 }

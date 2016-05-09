@@ -243,8 +243,8 @@ void AP_CocoaStatusBar::hide(void)
 
 - (id)initWithFrame:(NSRect)frame
 {
-	if(![super initWithFrame:frame]) {
-		return nil;
+	if(self = [super initWithFrame:frame]) {
+
 	}
 	return self;
 }

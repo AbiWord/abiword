@@ -69,10 +69,9 @@ void AP_CocoaDialog_Background::runModal(XAP_Frame * /*pFrame*/)
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_Background"]) {
-		return nil;
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Background"]) {
+		_xap = NULL;
 	}
-	_xap = NULL;
 	return self;
 }
 

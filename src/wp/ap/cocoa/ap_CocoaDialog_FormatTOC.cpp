@@ -116,8 +116,8 @@ void AP_CocoaDialog_FormatTOC::_populateWindowData(void)
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_FormatTOC"]) {
-		return nil;
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_FormatTOC"]) {
+
 	}
 	return self;
 }

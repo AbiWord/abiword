@@ -116,30 +116,29 @@ static bool s_EditMethod_CtxtFn (AV_View * /*pView*/, EV_EditMethodCallData * /*
 
 - (id)init
 {
-	if (![super init]) {
-		return nil;
-	}
-	m_Action = 0;
-	m_Target = 0;
+	if (self = [super init]) {
+		m_Action = 0;
+		m_Target = 0;
 
-	m_EditMethod = 0;
+		m_EditMethod = 0;
 
-	m_EditMethod_Name[0] = 0;
+		m_EditMethod_Name[0] = 0;
 
-	EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
-	if (pEMC) {
-		sprintf(m_EditMethod_Name, "[%lX] CocoaPlugin EditMethod", s_EditMethod_Number++);
+		EV_EditMethodContainer * pEMC = XAP_App::getApp()->getEditMethodContainer();
+		if (pEMC) {
+			sprintf(m_EditMethod_Name, "[%lX] CocoaPlugin EditMethod", s_EditMethod_Number++);
 
-		m_EditMethod = new EV_EditMethod(m_EditMethod_Name, s_EditMethod_CtxtFn, 0, "", self);
-	}
-	if (m_EditMethod) {
-		if (!pEMC->addEditMethod(m_EditMethod))	{
-			DELETEP(m_EditMethod);
+			m_EditMethod = new EV_EditMethod(m_EditMethod_Name, s_EditMethod_CtxtFn, 0, "", self);
 		}
-	}
-	if (!m_EditMethod) {
-		[self release];
-		return nil;
+		if (m_EditMethod) {
+			if (!pEMC->addEditMethod(m_EditMethod))	{
+				DELETEP(m_EditMethod);
+			}
+		}
+		if (!m_EditMethod) {
+			[self release];
+			return nil;
+		}
 	}
 	return self;
 }
@@ -208,10 +207,9 @@ static bool s_EditMethod_CtxtFn (AV_View * /*pView*/, EV_EditMethodCallData * /*
 
 - (id)initWithMenuItem:(id <XAP_CocoaPlugin_MenuItem>)menuItem
 {
-	if (![super init]) {
-		return nil;
+	if (self = [super init]) {
+		m_NonRetainedRef = menuItem;
 	}
-	m_NonRetainedRef = menuItem;
 	return self;
 }
 
@@ -281,63 +279,62 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 - (id)initWithLabel:(NSString *)label
 {
-	if (![super init]) {
-		return nil;
-	}
-	m_Label = [label retain];
+	if (self = [super init]) {
+		m_Label = [label retain];
 
-	m_Tag = 0;
+		m_Tag = 0;
 
-	m_State = NSOffState;
-	m_Enabled = YES;
+		m_State = NSOffState;
+		m_Enabled = YES;
 
-	m_pAction = 0;
+		m_pAction = 0;
 
-	EV_Menu_ActionSet * pActionSet = XAP_App::getApp()->getMenuActionSet();
+		EV_Menu_ActionSet * pActionSet = XAP_App::getApp()->getMenuActionSet();
 
-	m_MenuID = 0;
+		m_MenuID = 0;
 
-	XAP_Menu_Factory * pFact = XAP_App::getApp()->getMenuFactory();
+		XAP_Menu_Factory * pFact = XAP_App::getApp()->getMenuFactory();
 
-	if (pFact && pActionSet)
-	{
-		m_MenuID = pFact->addNewMenuAfter("contextText", 0, "Bullets and &Numbering", EV_MLF_Normal);
-	}
-	if (m_MenuID)
-	{
-		pFact->addNewLabel(0, m_MenuID, [m_Label UTF8String], [m_Label UTF8String]);
-
-		const char * editMethodName = [self editMethodName];
-
-		/* Create the Action that will be called.
-		 */
-		m_pAction = new EV_Menu_Action(m_MenuID,                      // id that the layout said we could use
-									   false,                         // no, we don't have a sub-menu.
-									   false,                         // no, we don't raise a dialog. (this just adds dots after the title)
-									   true,                          // yes, we have a check-box.
-									   false,                         // no, we aren't a radio.
-									   editMethodName,                // name of callback function to call.
-									   s_GetMenuItemState_Fn,         // the get-state function
-									   s_GetMenuItemComputedLabel_Fn  // the get-label function
-									   );
-	}
-	if (m_pAction)
-	{
-		if (pActionSet->addAction(m_pAction))
+		if (pFact && pActionSet)
 		{
-			AP_CocoaPlugin_MenuIDRef * ref = [AP_CocoaPlugin_MenuIDRef menuIDRefWithMenuItem:self];
-
-			XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
-			[pController addRef:ref forMenuID:[NSNumber numberWithInt:((int) m_MenuID)]];
+			m_MenuID = pFact->addNewMenuAfter("contextText", 0, "Bullets and &Numbering", EV_MLF_Normal);
 		}
-		else
+		if (m_MenuID)
 		{
-			DELETEP(m_pAction);
+			pFact->addNewLabel(0, m_MenuID, [m_Label UTF8String], [m_Label UTF8String]);
+
+			const char * editMethodName = [self editMethodName];
+
+			/* Create the Action that will be called.
+			 */
+			m_pAction = new EV_Menu_Action(m_MenuID,                      // id that the layout said we could use
+										   false,                         // no, we don't have a sub-menu.
+										   false,                         // no, we don't raise a dialog. (this just adds dots after the title)
+										   true,                          // yes, we have a check-box.
+										   false,                         // no, we aren't a radio.
+										   editMethodName,                // name of callback function to call.
+										   s_GetMenuItemState_Fn,         // the get-state function
+										   s_GetMenuItemComputedLabel_Fn  // the get-label function
+										   );
 		}
-	}
-	if (!m_pAction) {
-		[self release];
-		return nil;
+		if (m_pAction)
+		{
+			if (pActionSet->addAction(m_pAction))
+			{
+				AP_CocoaPlugin_MenuIDRef * ref = [AP_CocoaPlugin_MenuIDRef menuIDRefWithMenuItem:self];
+
+				XAP_CocoaAppController * pController = (XAP_CocoaAppController *) [NSApp delegate];
+				[pController addRef:ref forMenuID:[NSNumber numberWithInt:((int) m_MenuID)]];
+			}
+			else
+			{
+				DELETEP(m_pAction);
+			}
+		}
+		if (!m_pAction) {
+			[self release];
+			return nil;
+		}
 	}
 	return self;
 }
@@ -460,10 +457,9 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 - (id)initWithPDDocument:(PD_Document *)pDoc
 {
-	if (![super init]) {
-		return nil;
+	if (self = [super init]) {
+		m_pDocument = REFP(pDoc);
 	}
-	m_pDocument = REFP(pDoc);
 	return self;
 }
 
@@ -664,10 +660,9 @@ static const char * s_GetMenuItemComputedLabel_Fn (const EV_Menu_Label * pLabel,
 
 - (id)initWithXAPFrame:(XAP_Frame *)frame
 {
-	if (![super init]) {
-		return nil;
+	if (self = [super init]) {
+		m_pFrame = frame;
 	}
-	m_pFrame = frame;
 	return self;
 }
 

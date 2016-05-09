@@ -287,15 +287,14 @@ void AP_CocoaDialog_FormatFrame::_storeWindowData(void)
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_FormatFrame"]) {
-		return nil;
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_FormatFrame"]) {
+		m_menuButtonTag = 0;
+		m_activeMenuTag = 0;
+
+		m_bEnabled = YES;
+
+		_xap = 0;
 	}
-	m_menuButtonTag = 0;
-	m_activeMenuTag = 0;
-
-	m_bEnabled = YES;
-
-	_xap = 0;
 	return self;
 }
 

@@ -94,10 +94,9 @@ void AP_CocoaDialog_Break::_storeWindowData(void)
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_Break"]) {
-		return nil;
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Break"]) {
+		m_xap = NULL;
 	}
-	m_xap = NULL;
 	return self;
 }
 

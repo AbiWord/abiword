@@ -104,11 +104,10 @@ void AP_CocoaDialog_MergeCells::_storeWindowData(void)
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_MergeCells"])
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_MergeCells"])
 	{
-		return nil;
+		_xap = NULL;
 	}
-	_xap = NULL;
 	return self;
 }
 

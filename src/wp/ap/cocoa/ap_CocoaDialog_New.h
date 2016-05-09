@@ -58,7 +58,7 @@ class AP_CocoaDialog_New;
 - (void)synchronizeGUI:(NSControl*)control;
 - (BOOL)existingBtnState;
 - (void)setExistingBtnState:(BOOL)state;
-- (NSString *)newBtnState;
+- (NSString *)newBtnState NS_RETURNS_NOT_RETAINED; // mistaken by clang-analyzer otherwise.
 - (void)setFileName:(NSString*)name;
 @end
 

@@ -205,10 +205,9 @@ void AP_CocoaDialog_Field::setFieldsList(void)
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_Field"]) {
-		return nil;
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Field"]) {
+		_xap = NULL;
 	}
-	_xap = NULL;
 	return self;
 }
 

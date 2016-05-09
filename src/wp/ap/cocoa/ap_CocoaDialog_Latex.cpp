@@ -139,8 +139,8 @@ bool AP_CocoaDialog_Latex::getLatexFromGUI(void)
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_Latex"]) {
-		return nil;
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Latex"]) {
+
 	}
 	return self;
 }

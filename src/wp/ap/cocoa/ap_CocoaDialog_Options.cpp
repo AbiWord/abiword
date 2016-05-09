@@ -408,10 +408,9 @@ void AP_CocoaDialog_Options::_populateWindowData(void)
 
 - (id)initFromNib
 {
-	if (![super initWithWindowNibName:@"ap_CocoaDialog_Options"]) {
-		return nil;
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Options"]) {
+
 	}
-	
 	return self;
 }
 

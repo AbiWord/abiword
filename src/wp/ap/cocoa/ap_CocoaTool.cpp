@@ -110,22 +110,21 @@ static NSImage * s_findImage (NSString * filename)
 
 - (id)initWithIdentifier:(NSString *)identifier description:(NSString *)description iconName:(NSString *)iconName toolbarID:(unsigned)tlbrid
 {
-	if (![super init])
+	if (self = [super init])
 	{
-		return nil;
+		m_identifier = identifier;
+		[m_identifier retain];
+
+		m_description = description;
+		[m_description retain];
+
+		m_icon_name = iconName;
+		[m_icon_name retain];
+
+		m_toolbarID = tlbrid;
+
+		m_provider = nil;
 	}
-	m_identifier = identifier;
-	[m_identifier retain];
-
-	m_description = description;
-	[m_description retain];
-
-	m_icon_name = iconName;
-	[m_icon_name retain];
-
-	m_toolbarID = tlbrid;
-
-	m_provider = nil;
 	return self;
 }
 
@@ -194,60 +193,59 @@ static NSImage * s_findImage (NSString * filename)
 
 - (id)initWithTool:(AP_CocoaTool *)tool toolbarID:(unsigned)tlbrid
 {
-	if (![super init]) {
-		return nil;
+	if (self = [super init]) {
+		m_tool = tool;
+
+		[m_tool retain];
+
+		m_toolbarID = tlbrid;
+
+		m_defaultImage = XAP_CocoaToolbar_Icons::getPNGNameForIcon([[m_tool iconName] UTF8String]);
+		m_defaultAltImage = m_defaultImage;
+
+		[m_defaultImage    retain];
+		[m_defaultAltImage retain];
+
+		m_configImage    = m_defaultImage;
+		m_configAltImage = m_defaultAltImage;
+
+		[m_configImage    retain];
+		[m_configAltImage retain];
+
+		NSRect frame;
+		frame.origin.x = 0.0f;
+		frame.origin.y = 0.0f;
+		frame.size.width  = 28.0f;
+		frame.size.height = 28.0f;
+
+		m_button = [[NSButton alloc] initWithFrame:frame];
+
+		[m_button setTarget:self];
+		[m_button setAction:@selector(click:)];
+
+		[m_button setToolTip:[m_tool description]];
+		[m_button setBezelStyle:NSRegularSquareBezelStyle];
+		[m_button setBordered:NO];
+
+		NSImage * image = nil;
+
+		image = s_findImage(m_configImage);
+		if (image)
+		{
+			[m_button setImage:image];
+		}
+		image = s_findImage(m_configAltImage);
+		if (image)
+		{
+			[m_button setAlternateImage:image];
+		}
+
+		// TODO ??
+
+		m_item = [[NSMenuItem alloc] initWithTitle:[m_tool description] action:@selector(click:) keyEquivalent:@""];
+
+		[m_item setTarget:self];
 	}
-	m_tool = tool;
-
-	[m_tool retain];
-
-	m_toolbarID = tlbrid;
-
-	m_defaultImage = XAP_CocoaToolbar_Icons::getPNGNameForIcon([[m_tool iconName] UTF8String]);
-	m_defaultAltImage = m_defaultImage;
-
-	[m_defaultImage    retain];
-	[m_defaultAltImage retain];
-
-	m_configImage    = m_defaultImage;
-	m_configAltImage = m_defaultAltImage;
-
-	[m_configImage    retain];
-	[m_configAltImage retain];
-
-	NSRect frame;
-	frame.origin.x = 0.0f;
-	frame.origin.y = 0.0f;
-	frame.size.width  = 28.0f;
-	frame.size.height = 28.0f;
-
-	m_button = [[NSButton alloc] initWithFrame:frame];
-
-	[m_button setTarget:self];
-	[m_button setAction:@selector(click:)];
-
-	[m_button setToolTip:[m_tool description]];
-	[m_button setBezelStyle:NSRegularSquareBezelStyle];
-	[m_button setBordered:NO];
-
-	NSImage * image = nil;
-
-	image = s_findImage(m_configImage);
-	if (image)
-	{
-		[m_button setImage:image];
-	}
-	image = s_findImage(m_configAltImage);
-	if (image)
-	{
-		[m_button setAlternateImage:image];
-	}
-
-	// TODO ??
-
-	m_item = [[NSMenuItem alloc] initWithTitle:[m_tool description] action:@selector(click:) keyEquivalent:@""];
-
-	[m_item setTarget:self];
 	return self;
 }
 

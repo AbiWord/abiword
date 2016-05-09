@@ -96,8 +96,9 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * /*pView*/)
 
 - (id)initWithMenu:(EV_CocoaMenu *)menu
 {
-	[super init];
-	m_menu = menu;
+	if (self = [super init]) {
+		m_menu = menu;
+	}
 	return self;
 }
 
@@ -146,8 +147,9 @@ bool EV_CocoaMenuPopup::refreshMenu(AV_View * /*pView*/)
 
 - (id)init
 {
-	[super init];
-	m_Fonts = [[NSMutableArray alloc] initWithCapacity:128];
+	if (self = [super init]) {
+		m_Fonts = [[NSMutableArray alloc] initWithCapacity:128];
+	}
 	return self;
 }
 

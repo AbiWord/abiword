@@ -60,10 +60,9 @@ static const NSString * COMMENT_COL_ID = @"comment";
 
 - (id)init
 {
-	if(![super init]) {
-		return nil;
+	if(self = [super init]) {
+		_array = [[NSMutableArray alloc] init];
 	}
-	_array = [[NSMutableArray alloc] init];
 	return self;
 }
 

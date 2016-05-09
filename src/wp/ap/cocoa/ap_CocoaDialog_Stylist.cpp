@@ -58,12 +58,11 @@
 
 -(id)initWithValue:(const char*)value row:(int)row andCol:(int)col
 {
-	if(![super init]) {
-		return nil;
+	if(self = [super init]) {
+		_value = [[NSString alloc] initWithUTF8String:value];
+		_row = row;
+		_col = col;
 	}
-	_value = [[NSString alloc] initWithUTF8String:value];
-	_row = row;
-	_col = col;
 	return self;
 }
 
@@ -350,7 +349,7 @@ void  AP_CocoaDialog_Stylist::_populateWindowData(void)
 
 - (id)initFromNib
 {
-	if([super initWithWindowNibName:@"ap_CocoaDialog_Stylist"]) {
+	if (self = [super initWithWindowNibName:@"ap_CocoaDialog_Stylist"]) {
 		_xap = NULL; 
 		_enabled = true;
 	}

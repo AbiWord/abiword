@@ -182,10 +182,9 @@ void AP_CocoaDialog_New::event_ToggleStartNew ()
 
 - (id)initFromNib
 {
-	if(![super initWithWindowNibName:@"ap_CocoaDialog_New"]) {
-		return nil;
+	if(self = [super initWithWindowNibName:@"ap_CocoaDialog_New"]) {
+		m_templates = [[NSMutableArray alloc] init];
 	}
-	m_templates = [[NSMutableArray alloc] init];
 	return self;
 }
 
