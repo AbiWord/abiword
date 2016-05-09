@@ -28,7 +28,7 @@
 #import <CoreServices/CoreServices.h>
 #import <ApplicationServices/ApplicationServices.h>
 
-#include <cairo/cairo-quartz.h>
+#include <cairo-quartz.h>
 
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
