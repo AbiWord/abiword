@@ -271,6 +271,13 @@ EXTRA_DIST = \
 	sidebar.png \
 	ap_wp_sidebar_static.cpp
 
+BUILT_SOURCES = ap_wp_sidebar.cpp \
+	$(NULL)
+
+CLEANFILES = \
+	$(BUILT_SOURCES) \
+	$(NULL)
+
 ap_wp_sidebar.cpp: $(srcdir)/sidebar.png
 	$(CDUMPAPP) $(srcdir)/sidebar.png g_pngSidebar > ap_wp_sidebar.cpp
 
