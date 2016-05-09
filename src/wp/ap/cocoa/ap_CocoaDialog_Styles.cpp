@@ -299,7 +299,7 @@ void AP_CocoaDialog_Styles::_populateCList(void)
 	XAP_StringListDataSource* dataSource;
 
 	size_t nStyles = getDoc()->getStyleCount();
-	UT_DEBUGMSG(("DOM: we have %d styles\n", nStyles));
+	UT_DEBUGMSG(("DOM: we have %zu styles\n", nStyles));
 
 	dataSource = m_dlg->m_stylesDataSource;
 	[dataSource removeAllStrings];
