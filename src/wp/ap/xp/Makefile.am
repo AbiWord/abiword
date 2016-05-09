@@ -206,7 +206,6 @@ libxp_la_SOURCES = \
 	ap_Menu_Functions.h \
 	ap_Menu_Id.h \
 	ap_Menu_Id_List.h \
-	ap_Menu_LabelSet.cpp \
 	ap_Menu_Layouts_All.h \
 	ap_Menu_Layouts.cpp \
 	ap_Menu_Layouts_Embedded.h \
