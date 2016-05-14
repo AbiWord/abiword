@@ -86,7 +86,7 @@ Gw
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField verticalHuggingPriority="750" id="154">
-                                            <rect key="frame" x="17" y="51" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="49" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="211">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -109,7 +109,7 @@ Gw
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="156">
-                                            <rect key="frame" x="17" y="78" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="76" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="213">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -132,7 +132,7 @@ Gw
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="158">
-                                            <rect key="frame" x="17" y="159" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="157" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="215">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -167,7 +167,7 @@ Gw
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="161">
-                                            <rect key="frame" x="17" y="132" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="130" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="218">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -178,7 +178,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="162">
-                                            <rect key="frame" x="17" y="105" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="103" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="219">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -206,7 +206,7 @@ Gw
                             <tabViewItem label="Summary" identifier="2" id="124">
                                 <view key="view" id="125">
                                     <rect key="frame" x="10" y="25" width="391" height="196"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField verticalHuggingPriority="750" id="143">
                                             <rect key="frame" x="117" y="157" width="254" height="19"/>
@@ -221,7 +221,7 @@ Gw
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="144">
-                                            <rect key="frame" x="17" y="132" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="130" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Keyword(s):" id="205">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -239,7 +239,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="146">
-                                            <rect key="frame" x="17" y="78" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="20" width="95" height="75"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="207">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -250,7 +250,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="147">
-                                            <rect key="frame" x="17" y="159" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="157" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="208">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -273,7 +273,7 @@ Gw
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="150">
-                                            <rect key="frame" x="17" y="105" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="103" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Languages:" id="210">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -285,28 +285,28 @@ Gw
                                             <rect key="frame" x="117" y="20" width="254" height="75"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <clipView key="contentView" id="af3-sE-ylj">
-                                                <rect key="frame" x="1" y="1" width="237" height="73"/>
-                                                <autoresizingMask key="autoresizingMask"/>
+                                                <rect key="frame" x="1" y="1" width="252" height="73"/>
+                                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                 <subviews>
                                                     <textView importsGraphics="NO" richText="NO" continuousSpellChecking="YES" usesRuler="YES" usesFontPanel="YES" verticallyResizable="YES" spellingCorrection="YES" smartInsertDelete="YES" id="199">
-                                                        <rect key="frame" x="0.0" y="34" width="237" height="73"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="252" height="73"/>
                                                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <size key="minSize" width="237" height="73"/>
+                                                        <size key="minSize" width="252" height="73"/>
                                                         <size key="maxSize" width="252" height="10000000"/>
                                                         <color key="insertionPointColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <size key="minSize" width="237" height="73"/>
+                                                        <size key="minSize" width="252" height="73"/>
                                                         <size key="maxSize" width="252" height="10000000"/>
                                                     </textView>
                                                 </subviews>
                                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                             </clipView>
-                                            <scroller key="horizontalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="229">
+                                            <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="YES" id="229">
                                                 <rect key="frame" x="-100" y="-100" width="87" height="18"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                             <scroller key="verticalScroller" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="230">
-                                                <rect key="frame" x="238" y="1" width="15" height="73"/>
+                                                <rect key="frame" x="237" y="1" width="16" height="73"/>
                                                 <autoresizingMask key="autoresizingMask"/>
                                             </scroller>
                                         </scrollView>
@@ -316,7 +316,7 @@ Gw
                             <tabViewItem label="Permissions" identifier="" id="130">
                                 <view key="view" id="131">
                                     <rect key="frame" x="10" y="25" width="391" height="196"/>
-                                    <autoresizingMask key="autoresizingMask"/>
+                                    <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
                                         <textField verticalHuggingPriority="750" id="132">
                                             <rect key="frame" x="117" y="157" width="254" height="19"/>
@@ -331,7 +331,7 @@ Gw
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="133">
-                                            <rect key="frame" x="17" y="159" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="157" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="222">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -342,7 +342,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="134">
-                                            <rect key="frame" x="17" y="132" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="130" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Relation:" id="223">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -363,7 +363,7 @@ Gw
                                             </connections>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="136">
-                                            <rect key="frame" x="17" y="105" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="103" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" title="Coverage:" id="225">
                                                 <font key="font" metaFont="smallSystem"/>
@@ -372,7 +372,7 @@ Gw
                                             </textFieldCell>
                                         </textField>
                                         <textField verticalHuggingPriority="750" id="137">
-                                            <rect key="frame" x="17" y="78" width="95" height="14"/>
+                                            <rect key="frame" x="17" y="76" width="95" height="19"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <textFieldCell key="cell" sendsActionOnEndEditing="YES" alignment="left" id="226">
                                                 <font key="font" metaFont="smallSystem"/>

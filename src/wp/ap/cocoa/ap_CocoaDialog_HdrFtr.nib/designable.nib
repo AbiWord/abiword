@@ -156,7 +156,7 @@
                                     </textFieldCell>
                                 </textField>
                                 <textField verticalHuggingPriority="750" id="25">
-                                    <rect key="frame" x="203" y="11" width="57" height="18"/>
+                                    <rect key="frame" x="203" y="11" width="57" height="19"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" drawsBackground="YES" id="89">
                                         <numberFormatter key="formatter" formatterBehavior="10_0" positiveFormat="0" negativeFormat="-0" localizesFormat="NO" hasThousandSeparators="NO" thousandSeparator="," id="78">

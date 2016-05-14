@@ -114,7 +114,7 @@
                                                         </popUpButtonCell>
                                                     </popUpButton>
                                                     <textField verticalHuggingPriority="750" id="565">
-                                                        <rect key="frame" x="12" y="67" width="195" height="14"/>
+                                                        <rect key="frame" x="12" y="65" width="195" height="18"/>
                                                         <autoresizingMask key="autoresizingMask"/>
                                                         <textFieldCell key="cell" controlSize="small" sendsActionOnEndEditing="YES" alignment="left" id="686">
                                                             <font key="font" metaFont="smallSystem"/>
