@@ -1,5 +1,6 @@
 *.lo
 *.la
+*.o
 *~
 Makefile
 Makefile.in
@@ -46,6 +47,7 @@ Makefile.in
 /po/*.strings
 
 
+/src/AbiWord
 /src/abiword
 /src/af/xap/cocoa/*~.nib
 /src/wp/ap/cocoa/*~.nib
