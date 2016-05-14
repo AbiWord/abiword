@@ -2,6 +2,7 @@
 *.la
 *.o
 *~
+/*.diff
 Makefile
 Makefile.in
 .libs
