@@ -3,9 +3,7 @@ collab_req="libgsf-1 >= 1.12 libxml-2.0 >= 2.4.0"
 collab_telepathy_req="dbus-glib-1 >= 0.70 telepathy-glib >= 0.14.5"
 collab_xmpp_req="loudmouth-1.0 >= 1.3.2 gtk+-3.0"
 collab_sugar_req="dbus-glib-1 >= 0.70"
-dnl gnutls over 3.3.x has removed API we use.
-dnl when we fix this, remove the version check
-collab_service_req="libsoup-2.4 gnutls < 3.4"
+collab_service_req="libsoup-2.4 gnutls"
 collab_pkgs="$collab_req" 	# accumulate required packages
 
 dnl set to yes when we find at least one dependency.
