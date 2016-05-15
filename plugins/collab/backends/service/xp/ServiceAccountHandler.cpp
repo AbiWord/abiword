@@ -532,9 +532,9 @@ bool ServiceAccountHandler::startSession(PD_Document* pDoc, const std::vector<st
 
 	std::string filename;
 	bool bFilenameChanged = false;
-	if (pDoc->getFilename())
+	if (!pDoc->getFilename().empty())
 	{
-		filename = UT_go_basename_from_uri(pDoc->getFilename());
+		filename = UT_go_basename_from_uri(pDoc->getFilename().c_str());
 	}
 	else
 	{
