@@ -306,9 +306,6 @@ void Proxy::tunnel_(transport_ptr_t transport_ptr, session_ptr_t session_ptr, so
 	disconnect_(transport_ptr, session_ptr, local_socket_ptr, remote_socket_ptr);		
 }
 
-static const int PRIORITIES[] = { GNUTLS_KX_ANON_DH, GNUTLS_KX_RSA, GNUTLS_KX_DHE_DSS, GNUTLS_KX_DHE_RSA, 0 };
-static const int CIPHERS[] = { GNUTLS_CIPHER_AES_256_CBC, GNUTLS_CIPHER_AES_128_CBC, GNUTLS_CIPHER_3DES_CBC, GNUTLS_CIPHER_ARCFOUR_128, 0 };
-
 // FIXME: this clientproxy can only handle 1 SSL connection at the same time
 ClientProxy::ClientProxy(const std::string& connect_address, unsigned short connect_port, 
 		const std::string& ca_file, bool check_hostname)
@@ -400,8 +397,6 @@ session_ptr_t ClientProxy::setup_tls_session(socket_ptr_t remote_socket_ptr) {
 	// setup session
 	return_val_if_neg(gnutls_init(session_ptr.get(), GNUTLS_CLIENT), session_ptr_t());
 	return_val_if_neg(gnutls_set_default_priority(*session_ptr), session_ptr_t());
-	return_val_if_neg(gnutls_kx_set_priority(*session_ptr,PRIORITIES), session_ptr_t());
-	return_val_if_neg(gnutls_cipher_set_priority(*session_ptr,CIPHERS), session_ptr_t());
 	return_val_if_neg(gnutls_credentials_set(*session_ptr, GNUTLS_CRD_CERTIFICATE, x509cred), session_ptr_t());
 
 	// setup transport
