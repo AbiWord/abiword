@@ -3209,7 +3209,7 @@ void GR_CairoGraphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2,
 	}
 }
 
-void GR_CairoGraphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+void GR_CairoGraphics::polyLine(const UT_Point * pts, UT_uint32 nPoints)
 {
 	if (m_cr == NULL)
 		return;
@@ -3393,7 +3393,7 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint3
 /*!
  * \todo Rob find out how to have this function used, and test.
  */
-void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
+void GR_CairoGraphics::polygon(const UT_RGBColor& c, const UT_Point *pts,
 								   UT_uint32 nPoints)
 {
 	if (m_cr == NULL)
@@ -3413,7 +3413,7 @@ void GR_CairoGraphics::polygon(UT_RGBColor& c, UT_Point *pts,
 		cairo_line_to(m_cr, _tdudX(pts[i].x), _tdudY(pts[i].y));
 	}
 	_setSource(m_cr, c);
-	cairo_fill(m_cr);	
+	cairo_fill(m_cr);
 
 	cairo_restore(m_cr);
 }

@@ -43,18 +43,18 @@ public:
 				  UT_sint32 w, UT_sint32 h);
 	void fillRect(GR_Image *pImg, const UT_Rect &src, const UT_Rect & dest);
 	void fillRect(const UT_RGBColor& c, const UT_Rect &r);
-
-	void clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
-	void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	void fillRect(GR_Graphics::GR_Color3D c,
 				  UT_sint32 x,
 				  UT_sint32 y,
 				  UT_sint32 w,
 				  UT_sint32 h);
 
-	void fillRect(GR_Graphics::GR_Color3D c, UT_Rect &r);
-	void polygon(UT_RGBColor& c, UT_Point *pts, UT_uint32 nPoints);
-	void polyLine(UT_Point * pts, UT_uint32 nPoints);
+	void fillRect(GR_Graphics::GR_Color3D c, const UT_Rect &r);
+
+	void clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h);
+	void drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
+	void polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints);
+	void polyLine(const UT_Point * pts, UT_uint32 nPoints);
 	void drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff);
 	void drawChars(const UT_UCSChar* pChars,
 				   int iCharOffset,

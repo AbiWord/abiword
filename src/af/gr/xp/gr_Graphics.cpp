@@ -700,7 +700,8 @@ GR_Image* GR_Graphics::createNewImage(const char* pszName, const UT_ByteBuf* pBB
    return vectorImage;
 }
 
-bool GR_Graphics::_PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y)
+bool GR_Graphics::_PtInPolygon(const UT_Point * pts, UT_uint32 nPoints,
+                               UT_sint32 x, UT_sint32 y)
 {
     UT_uint32 i,j;
     bool bResult = false;
@@ -714,7 +715,8 @@ bool GR_Graphics::_PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_s
     return (bResult);
 }
 
-void GR_Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
+void GR_Graphics::polygon(const UT_RGBColor& c, const UT_Point *pts,
+                          UT_uint32 nPoints)
 {
     UT_sint32 minX,maxX,minY,maxY,x,y;
     minX = maxX = pts[0].x;

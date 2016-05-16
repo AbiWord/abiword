@@ -97,22 +97,36 @@ void GR_Painter::clearArea(UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 	m_pGr->clearArea (x, y, w, h);
 }
 
-void GR_Painter::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
-{
-	m_pGr->drawImage (pImg, xDest, yDest);
-}
-
 void GR_Painter::fillRect(const UT_RGBColor& c, const UT_Rect &r)
 {
 	m_pGr->fillRect (c, r);
 }
 
-void GR_Painter::polygon(UT_RGBColor& c, UT_Point *pts, UT_uint32 nPoints)
+void GR_Painter::fillRect(GR_Graphics::GR_Color3D c, const UT_Rect &r)
+{
+	m_pGr->fillRect (c, r.left, r.top, r.width, r.height);
+}
+
+void GR_Painter::fillRect(GR_Graphics::GR_Color3D c,
+						  UT_sint32 x,
+						  UT_sint32 y,
+						  UT_sint32 w,
+						  UT_sint32 h)
+{
+	m_pGr->fillRect (c, x, y, w, h);
+}
+
+void GR_Painter::drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest)
+{
+	m_pGr->drawImage (pImg, xDest, yDest);
+}
+
+void GR_Painter::polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints)
 {
 	m_pGr->polygon (c, pts, nPoints);
 }
 
-void GR_Painter::polyLine(UT_Point * pts, UT_uint32 nPoints)
+void GR_Painter::polyLine(const UT_Point * pts, UT_uint32 nPoints)
 {
 	m_pGr->polyLine(pts, nPoints);
 }
@@ -145,21 +159,6 @@ void GR_Painter::drawCharsRelativeToBaseline(const UT_UCSChar* pChars,
 void GR_Painter::renderChars(GR_RenderInfo & ri)
 {
 	m_pGr->renderChars(ri);
-}
-
-
-void GR_Painter::fillRect(GR_Graphics::GR_Color3D c, UT_Rect &r)
-{
-	m_pGr->fillRect (c, r.left, r.top, r.width, r.height);
-}
-
-void GR_Painter::fillRect(GR_Graphics::GR_Color3D c,
-						  UT_sint32 x,
-						  UT_sint32 y,
-						  UT_sint32 w,
-						  UT_sint32 h)
-{
-	m_pGr->fillRect (c, x, y, w, h);
 }
 
 

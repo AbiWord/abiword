@@ -219,7 +219,7 @@ public:
 												CapStyle inCapStyle   = CAP_BUTT,
 												LineStyle inLineStyle = LINE_SOLID );
 
-	virtual void			polyLine(UT_Point * pts, UT_uint32 nPoints);
+	virtual void			polyLine(const UT_Point * pts, UT_uint32 nPoints);
 	virtual void			fillRect(const UT_RGBColor& c,
 									 UT_sint32 x, UT_sint32 y,
 									 UT_sint32 w, UT_sint32 h);
@@ -259,7 +259,7 @@ public:
 									 UT_sint32 x, UT_sint32 y,
 									 UT_sint32 w, UT_sint32 h);
 	virtual void			fillRect(GR_Color3D c, UT_Rect &r);
-    virtual void            polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
+    virtual void            polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints);
 	virtual UT_uint32		getFontAscent(const GR_Font *);
 	virtual UT_uint32		getFontDescent(const GR_Font *);
 	virtual UT_uint32		getFontHeight(const GR_Font *);

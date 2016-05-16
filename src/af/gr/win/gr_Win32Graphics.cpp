@@ -898,7 +898,7 @@ void GR_Win32Graphics::xorLine(UT_sint32 x1, UT_sint32 y1, UT_sint32 x2, UT_sint
 	SetROP2(m_hdc, iROP);
 }
 
-void GR_Win32Graphics::polyLine(UT_Point * pts, UT_uint32 nPoints)
+void GR_Win32Graphics::polyLine(const UT_Point * pts, UT_uint32 nPoints)
 {
 	#ifdef GR_GRAPHICS_DEBUG
 	UT_DEBUGMSG(("GR_Win32Graphics::polyLine %u\n", nPoints));	
@@ -1985,7 +1985,7 @@ void GR_Win32Font::selectFontIntoDC(GR_Graphics * pGr, HDC hdc)
 	UT_ASSERT_HARMLESS( hRet != (void*)GDI_ERROR);
 }
 
-void GR_Win32Graphics::polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
+void GR_Win32Graphics::polygon(const UT_RGBColor& c, const UT_Point *pts,UT_uint32 nPoints)
 {
 	HPEN hPen = CreatePen(PS_SOLID, (UT_sint32)((double)_tduR(m_iLineWidth) * m_fXYRatio), RGB(c.m_red, c.m_grn, c.m_blu));
 	HPEN hOldPen = (HPEN)SelectObject(m_hdc,hPen);

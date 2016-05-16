@@ -783,8 +783,8 @@ class ABI_EXPORT GR_Graphics
 	virtual void fillRect(GR_Color3D c,
 						  UT_sint32 x, UT_sint32 y,
 						  UT_sint32 w, UT_sint32 h) = 0;
-	virtual void polygon(UT_RGBColor& c, UT_Point *pts, UT_uint32 nPoints);
-	virtual void polyLine(UT_Point * pts, UT_uint32 nPoints) = 0;
+	virtual void polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints);
+	virtual void polyLine(const UT_Point * pts, UT_uint32 nPoints) = 0;
 	virtual void drawGlyph(UT_uint32 glyph_idx, UT_sint32 xoff, UT_sint32 yoff) = 0;
 	virtual void drawChars(const UT_UCSChar* pChars,
 						   int iCharOffset,
@@ -874,7 +874,7 @@ class ABI_EXPORT GR_Graphics
 
  private:
 	GR_Caret *		 m_pCaret;
-    bool             _PtInPolygon(UT_Point * pts,UT_uint32 nPoints,UT_sint32 x,UT_sint32 y);
+    bool             _PtInPolygon(const UT_Point * pts, UT_uint32 nPoints, UT_sint32 x,UT_sint32 y);
     bool             m_bIsPortrait;
 	bool             m_bSpawnedRedraw;
 	UT_Rect          m_PendingExposeArea;

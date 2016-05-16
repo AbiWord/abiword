@@ -250,11 +250,11 @@ public:
 								 UT_sint32 x, UT_sint32 y,
 								 UT_sint32 w, UT_sint32 h);
 	virtual void		fillRect(GR_Color3D c, UT_Rect &r);
-	virtual void		polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints);
+	virtual void		polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints);
 	virtual void		clearArea(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
 	virtual void		drawImage(GR_Image* pImg, UT_sint32 xDest, UT_sint32 yDest);
 	virtual void		xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32);
-	virtual void		polyLine(UT_Point * pts, UT_uint32 nPoints);
+	virtual void		polyLine(const UT_Point * pts, UT_uint32 nPoints);
 	virtual void		fillRect(const UT_RGBColor& c,
 								 UT_sint32 x, UT_sint32 y,
 								 UT_sint32 w, UT_sint32 h);

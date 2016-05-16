@@ -390,7 +390,7 @@ public:
     m_pGraphics->setLineProperties(inWidthPixels, inJoinStyle, inCapStyle, inLineStyle);
   }
 
-  virtual void polyLine(UT_Point * pts, UT_uint32 nPoints)
+  virtual void polyLine(const UT_Point * pts, UT_uint32 nPoints)
   {
     UT_return_if_fail(m_pGraphics != 0);
     d (g_print ("polyLine()\n"));
@@ -451,7 +451,7 @@ public:
     return (gp == DGP_PAPER);
   }
   
-  virtual void polygon(UT_RGBColor& c,UT_Point *pts,UT_uint32 nPoints)
+  virtual void polygon(const UT_RGBColor& c, const UT_Point *pts, UT_uint32 nPoints)
   {
     UT_return_if_fail(m_pGraphics != 0);
     d (g_print ("polygon()\n"));

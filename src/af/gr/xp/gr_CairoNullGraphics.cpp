@@ -99,7 +99,7 @@ void CairoNull_Graphics::xorLine(UT_sint32, UT_sint32, UT_sint32, UT_sint32)
 {
 }
 
-void CairoNull_Graphics::polyLine(UT_Point * /* pts */, UT_uint32 /* nPoints */)
+void CairoNull_Graphics::polyLine(const UT_Point * /* pts */, UT_uint32 /* nPoints */)
 {
 }
 
