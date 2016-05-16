@@ -40,7 +40,6 @@
 #include "ut_string_class.h"
 #include "ut_debugmsg.h"
 #include "xap_Types.h"
-#include "xap_Gtk2Compat.h"
 #include "ev_UnixMenu.h"
 #include "ev_UnixMenuBar.h"
 #include "ev_UnixMenuPopup.h"

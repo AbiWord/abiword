@@ -26,7 +26,6 @@
 #include "ut_std_string.h"
 #include "ut_string_class.h"
 #include "xap_UnixWidget.h"
-#include "xap_Gtk2Compat.h"
 
 XAP_UnixWidget::XAP_UnixWidget(GtkWidget * w)
 	: XAP_Widget()

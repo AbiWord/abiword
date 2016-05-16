@@ -28,7 +28,7 @@
 #include <stdlib.h>
 
 #include <gtk/gtk.h>
-#include "xap_Gtk2Compat.h"
+#include "xap_GtkUtils.h"
 #include "xap_UnixTableWidget.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
@@ -355,14 +355,10 @@ popup_grab_on_window (GdkWindow *window,
 	GdkEventMask emask = static_cast<GdkEventMask>(GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
 												   GDK_POINTER_MOTION_MASK | GDK_LEAVE_NOTIFY_MASK |
 												   GDK_ENTER_NOTIFY_MASK) ;
-	if ((XAP_gdk_pointer_grab (window, FALSE,emask,
-						   NULL, NULL, activate_time) == 0))
-	{
-		if (XAP_gdk_keyboard_grab (window, FALSE,
-							   activate_time) == 0)
+	if ((XAP_gdk_pointer_grab (window, FALSE,emask, nullptr, activate_time) == 0)) {
+		if (XAP_gdk_keyboard_grab (window, FALSE, activate_time) == 0) {
 			return TRUE;
-		else
-		{
+		} else {
 			XAP_gdk_pointer_ungrab (activate_time);
 			return FALSE;
 		}

@@ -24,7 +24,6 @@
 #include <string>
 #include <list>
 #include <gtk/gtk.h>
-#include "xap_Gtk2Compat.h"
 #include "ut_types.h"
 
 std::string tostr( long v );

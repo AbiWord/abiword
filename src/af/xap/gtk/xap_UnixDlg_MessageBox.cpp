@@ -33,7 +33,6 @@
 #include "ut_vector.h"
 #include "ut_debugmsg.h"
 #include "ut_std_string.h"
-#include "xap_Gtk2Compat.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_UnixDlg_MessageBox.h"
 #include "xap_UnixApp.h"

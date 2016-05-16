@@ -48,7 +48,6 @@
 #include "ap_Strings.h"
 
 #include "ap_UnixDialog_Tab.h"
-#include "xap_Gtk2Compat.h"
 
 //! Column indices for list-store
 enum {

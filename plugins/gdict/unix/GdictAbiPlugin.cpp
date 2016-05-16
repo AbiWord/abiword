@@ -32,7 +32,6 @@
 
 #include "xap_UnixFrameImpl.h"
 #include "xap_UnixDialogHelper.h"
-#include "xap_Gtk2Compat.h"
 
 #ifdef USE_FORK_AND_EXEC_METHOD
 

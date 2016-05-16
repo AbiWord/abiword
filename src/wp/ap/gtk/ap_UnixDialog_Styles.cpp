@@ -41,7 +41,6 @@
 #include "pt_PieceTable.h"
 
 #include "gr_UnixCairoGraphics.h"
-#include "xap_Gtk2Compat.h"
 
 // define to 0 to popup dialogs on top of each other, 1 to hide them
 #define HIDE_MAIN_DIALOG 0

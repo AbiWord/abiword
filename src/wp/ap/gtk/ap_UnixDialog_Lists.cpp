@@ -27,7 +27,6 @@
 #include "ut_debugmsg.h"
 #include "xap_UnixDialogHelper.h"
 #include "xap_GtkSignalBlocker.h"
-#include "xap_Gtk2Compat.h"
 
 #include "xap_Dialog_Id.h"
 #include "xap_UnixApp.h"

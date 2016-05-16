@@ -29,7 +29,6 @@
 #include "ap_UnixLeftRuler.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixDialogHelper.h"
-#include "xap_Gtk2Compat.h"
 #include "ap_UnixStatusBar.h"
 #include "ut_debugmsg.h"
 #include "ev_UnixMenuBar.h"

@@ -32,7 +32,6 @@
 // This header defines some functions for Unix dialogs,
 // like centering them, measuring them, etc.
 #include "xap_UnixDialogHelper.h"
-#include "xap_Gtk2Compat.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"

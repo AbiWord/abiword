@@ -11,7 +11,8 @@ AM_CPPFLAGS = \
 	-DICONDIR="\"$(ABIWORD_ICONDIR)\""
 
 libgtk_la_SOURCES = \
-	xap_Gtk2Compat.h \
+	xap_GtkUtils.h \
+	xap_GtkUtils.cpp \
 	xap_GtkObjectHolder.h \
 	xap_GtkSignalBlocker.h \
 	xap_GtkComboBoxHelpers.h \
@@ -42,7 +43,7 @@ libgtk_la_SOURCES = \
 	xap_UnixDlg_FileOpenSaveAs.h \
 	xap_UnixDlg_FontChooser.cpp \
 	xap_UnixDlg_FontChooser.h \
-    xap_UnixDlg_History.cpp \
+	xap_UnixDlg_History.cpp \
 	xap_UnixDlg_History.h \
 	xap_UnixDlg_HTMLOptions.cpp \
 	xap_UnixDlg_HTMLOptions.h \

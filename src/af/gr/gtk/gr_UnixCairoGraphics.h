@@ -24,7 +24,6 @@
 #define __GR_UNIXCAIROGRAPHICS_H__
 
 #include <gdk/gdk.h>
-#include "xap_Gtk2Compat.h"
 #include "gr_CairoGraphics.h"
 
 class ABI_EXPORT GR_UnixCairoAllocInfo : public GR_CairoAllocInfo

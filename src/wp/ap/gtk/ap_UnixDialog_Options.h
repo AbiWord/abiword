@@ -27,7 +27,6 @@
 #include "config.h"
 #endif
 
-#include "xap_Gtk2Compat.h"
 #include "ap_Dialog_Options.h"
 
 class XAP_UnixFrame;

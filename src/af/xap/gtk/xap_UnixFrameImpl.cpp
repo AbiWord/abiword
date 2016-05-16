@@ -45,7 +45,6 @@
 #include "ut_files.h"
 #include "ut_misc.h"
 #include "ut_sleep.h"
-#include "xap_Gtk2Compat.h"
 #include "xap_ViewListener.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrameImpl.h"

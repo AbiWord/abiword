@@ -342,7 +342,7 @@ void AP_UnixDialog_Border_Shading::setBorderColorInGUI(const UT_RGBColor & clr)
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the border color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
 	GdkRGBA* color = UT_UnixRGBColorToGdkRGBA(clr);
-	XAP_gtk_color_button_set_rgba (GTK_COLOR_BUTTON (m_wBorderColorButton), color);
+	gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER(m_wBorderColorButton), color);
 	gdk_rgba_free(color);
 }
 
@@ -351,7 +351,7 @@ void AP_UnixDialog_Border_Shading::setShadingColorInGUI(const UT_RGBColor & clr)
 	xxx_UT_DEBUGMSG(("Maleesh =============== Setup the shading color in the GUI: %d|%d|%d \n", clr.m_red, clr.m_grn, clr.m_blu));
 
 	GdkRGBA* color = UT_UnixRGBColorToGdkRGBA(clr);
-	XAP_gtk_color_button_set_rgba (GTK_COLOR_BUTTON (m_wShadingColorButton), color);
+	gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER(m_wShadingColorButton), color);
 	gdk_rgba_free(color);
 }
 
@@ -631,17 +631,14 @@ void AP_UnixDialog_Border_Shading::_connectSignals(void)
 										"clicked",
 										G_CALLBACK(s_line_bottom),
 										reinterpret_cast<gpointer>(this));
-						   
 	g_signal_connect(G_OBJECT(m_wBorderColorButton),
 							"button-release-event",
 							G_CALLBACK(s_on_border_color_clicked),
 							reinterpret_cast<gpointer>(this));
-
 	g_signal_connect(G_OBJECT(m_wShadingColorButton),
 							"button-release-event",
 							G_CALLBACK(s_on_shading_color_clicked),
 							reinterpret_cast<gpointer>(this));
-						   
 	g_signal_connect(G_OBJECT(m_wPreviewArea),
 							"draw",
 							G_CALLBACK(s_preview_draw),

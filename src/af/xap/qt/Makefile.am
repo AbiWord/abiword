@@ -28,7 +28,6 @@ libqt_la_SOURCES = \
 	xap_QtDlg_FileOpenSaveAs.h \
 	$(NULL)
 
-#	xap_Gtk2Compat.h \
 #	xap_GtkObjectHolder.h \
 #	xap_GtkSignalBlocker.h \
 #	xap_GtkComboBoxHelpers.h \

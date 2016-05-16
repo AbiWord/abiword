@@ -16,10 +16,9 @@
  * 02110-1301 USA.
  */
 
-#include "boost/lexical_cast.hpp"
-#include "TCPUnixAccountHandler.h"
+#include <boost/lexical_cast.hpp>
 
-#include "xap_Gtk2Compat.h"
+#include "TCPUnixAccountHandler.h"
 
 AccountHandlerConstructor TCPAccountHandlerConstructor = &TCPUnixAccountHandler::static_constructor;
 

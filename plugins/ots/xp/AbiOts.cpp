@@ -51,7 +51,6 @@
 #include <gtk/gtk.h>
 #include "xap_UnixApp.h"
 #include "xap_UnixDialogHelper.h"
-#include "xap_Gtk2Compat.h"
 #endif
 
 static const char* Ots_MenuLabel = "&Summarize";

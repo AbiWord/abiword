@@ -24,7 +24,6 @@
 #include "ut_debugmsg.h"
 
 #include "xap_UnixDialogHelper.h"
-#include "xap_Gtk2Compat.h"
 
 #include "xap_App.h"
 #include "xap_UnixApp.h"
@@ -32,6 +31,7 @@
 
 #include "xap_Strings.h"
 #include "xap_Dialog_Id.h"
+#include "xap_GtkUtils.h"
 #include "xap_UnixDlg_Password.h"
 
 void XAP_UnixDialog_Password::event_OK ()
@@ -74,18 +74,18 @@ XAP_UnixDialog_Password::~XAP_UnixDialog_Password(void)
 void XAP_UnixDialog_Password::runModal(XAP_Frame * pFrame)
 {
 	GtkWidget * cf = _constructWindow();
-	UT_return_if_fail(cf);	
-	
+	UT_return_if_fail(cf);
+
 	switch ( abiRunModalDialog ( GTK_DIALOG(cf), pFrame, this, GTK_RESPONSE_OK, false ) )
-    {
-    case GTK_RESPONSE_OK:
+	{
+	case GTK_RESPONSE_OK:
 		event_OK(); break;
-    default:
+	default:
 		event_Cancel(); break;
-    }
-	
+	}
+
 	XAP_gdk_keyboard_ungrab(GDK_CURRENT_TIME);
-	
+
 	abiDestroyWidget(cf);
 }
 

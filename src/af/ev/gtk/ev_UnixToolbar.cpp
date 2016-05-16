@@ -45,7 +45,6 @@
 #include "ut_string.h"
 #include "ev_UnixToolbar.h"
 #include "xap_Types.h"
-#include "xap_Gtk2Compat.h"
 #include "xap_UnixApp.h"
 #include "xap_UnixFrameImpl.h"
 #include "ev_Toolbar_Actions.h"

@@ -21,7 +21,6 @@
 #define AP_UNIXDIALOG_FORMATFOOTNOTES_H
 
 #include "ap_Dialog_FormatFootnotes.h"
-#include "xap_Gtk2Compat.h"
 
 class XAP_UnixFrame;
 

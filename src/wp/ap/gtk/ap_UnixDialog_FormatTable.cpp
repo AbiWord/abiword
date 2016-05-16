@@ -300,7 +300,7 @@ void AP_UnixDialog_FormatTable::setBorderThicknessInGUI(UT_UTF8String & sThick)
 void AP_UnixDialog_FormatTable::setBackgroundColorInGUI(UT_RGBColor clr)
 {
 	GdkRGBA* color = UT_UnixRGBColorToGdkRGBA(clr);
-	XAP_gtk_color_button_set_rgba (GTK_COLOR_BUTTON (m_wBackgroundColorButton), color);
+	gtk_color_chooser_set_rgba (GTK_COLOR_CHOOSER (m_wBackgroundColorButton), color);
 	gdk_rgba_free(color);
 }
 
