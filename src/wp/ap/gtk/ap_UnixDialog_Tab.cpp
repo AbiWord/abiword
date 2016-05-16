@@ -193,15 +193,17 @@ AP_UnixDialog_Tab::~AP_UnixDialog_Tab (void)
 	gint i;
 
 	for (i = 0; i < __FL_TAB_MAX; i++) {
-		if (m_AlignmentMapping[i] != NULL)
+		if (m_AlignmentMapping[i] != nullptr) {
 			g_free (m_AlignmentMapping[i]);
-			m_AlignmentMapping[i] = NULL;
+			m_AlignmentMapping[i] = nullptr;
+		}
 	}
 
 	for (i = 0; i < __FL_LEADER_MAX; i++) {
-		if (m_LeaderMapping[i] != NULL)
+		if (m_LeaderMapping[i] != nullptr) {
 			g_free (m_LeaderMapping[i]);
-			m_LeaderMapping[i] = NULL;
+			m_LeaderMapping[i] = nullptr;
+		}
 	}
 
 	if (m_pBuilder)

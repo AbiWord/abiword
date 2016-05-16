@@ -343,123 +343,139 @@ public:
         m_lang = UT_String_sprintf ("lang:%s-%s;", val, val2);
       }
     }
-    
+
     val = UT_getAttribute("style:text-position", props);
     if(val) {
       m_textPos = "text-position: ";
-      if (strstr(val, "sup"))
-	m_textPos += "superscript;";
-      else if (strstr(val, "sub"))
-	m_textPos += "subscript;";
-      else
-	m_textPos += "normal;";
+      if (strstr(val, "sup")) {
+        m_textPos += "superscript;";
+      } else if (strstr(val, "sub")) {
+        m_textPos += "subscript;";
+      } else {
+        m_textPos += "normal;";
+      }
     }
 
-	const gchar * undr = NULL;
-	const gchar * strk = NULL;
-	if (m_bOpenDocument) {
-		undr = const_cast<const gchar *>(UT_getAttribute("style:text-underline-style", props));
-		strk = const_cast<const gchar *>(UT_getAttribute("style:text-line-through-style", props));
-	}
-	else {
-		undr = const_cast<const gchar *>(UT_getAttribute("style:text-underline", props));
-		strk = const_cast<const gchar *>(UT_getAttribute("style:text-crossing-out", props));
-	}
-	if (undr || strk) {
-		m_textDecoration = "text-decoration: ";
-		
-		if(undr)
-		  if (strcmp(undr, "none") != 0)
-		    m_textDecoration += "underline";
-		
-		if (undr && strk)
-		  m_textDecoration += ",";
-		
-		if(strk)
-		  if (strcmp(strk, "none") != 0)
-		    m_textDecoration += "line-through";
-		
-		  m_textDecoration += ";";
-	}
- 
+    const gchar * undr = nullptr;
+    const gchar * strk = nullptr;
+    if (m_bOpenDocument) {
+      undr = const_cast<const gchar *>(UT_getAttribute("style:text-underline-style", props));
+      strk = const_cast<const gchar *>(UT_getAttribute("style:text-line-through-style", props));
+    }
+    else {
+      undr = const_cast<const gchar *>(UT_getAttribute("style:text-underline", props));
+      strk = const_cast<const gchar *>(UT_getAttribute("style:text-crossing-out", props));
+    }
+    if (undr || strk) {
+      m_textDecoration = "text-decoration: ";
+
+      if(undr) {
+        if (strcmp(undr, "none") != 0) {
+          m_textDecoration += "underline";
+        }
+      }
+
+      if (undr && strk) {
+        m_textDecoration += ",";
+      }
+
+      if(strk) {
+        if (strcmp(strk, "none") != 0) {
+          m_textDecoration += "line-through";
+        }
+      }
+
+      m_textDecoration += ";";
+    }
+
     val = UT_getAttribute ("fo:margin-left", props);
-    if(val)
+    if(val) {
       m_marginLeft = UT_String_sprintf ("margin-left: %s;", val);
-    
+    }
+
     val = UT_getAttribute ("fo:margin-top", props);
-    if(val)
+    if(val) {
       m_marginTop = UT_String_sprintf ("margin-top: %s;", val);
-    
+    }
+
     val = UT_getAttribute ("fo:margin-right", props);
-    if(val)
+    if(val) {
       m_marginRight = UT_String_sprintf ("margin-right: %s;", val);
-  
+    }
+
     val = UT_getAttribute ("fo:margin-bottom", props);
-    if(val)
+    if(val) {
       m_marginBottom = UT_String_sprintf ("margin-bottom: %s;", val);
-    
+    }
+
     val = UT_getAttribute ("style:line-height-at-least", props);
-    if (val)
+    if (val) {
       m_lineHeight = UT_String_sprintf ("line-height: %s+;", val);
-    
+    }
+
     val = UT_getAttribute ("fo:line-height", props);
     if (val) {
-        if (strstr(val, "%") != NULL) {
-            int spacing;
-            
-            sscanf (val, "%d%%", &spacing);	
-            UT_LocaleTransactor lt(LC_NUMERIC, "C");
-            m_lineHeight = UT_String_sprintf ("line-height: %f;", (double)spacing/100.);
-        }
-        else
-            m_lineHeight = UT_String_sprintf ("line-height: %s;", val);
+      if (strstr(val, "%") != nullptr) {
+        int spacing;
+
+        sscanf (val, "%d%%", &spacing);
+        UT_LocaleTransactor lt(LC_NUMERIC, "C");
+        m_lineHeight = UT_String_sprintf ("line-height: %f;", (double)spacing/100.);
+      }
+      else {
+        m_lineHeight = UT_String_sprintf ("line-height: %s;", val);
+      }
     }
     val = UT_getAttribute("fo:keep-with-next", props);
-    if (val)
+    if (val) {
       m_keepWithNext = UT_String_sprintf ("keep-with-next: %s;", !strcmp(val, "true") ? "yes" : "no");
-    
+    }
+
     val = UT_getAttribute("style:break-inside", props);
-    if (val)
+    if (val) {
       m_keepTogether = UT_String_sprintf ("keep-together: %s;", !strcmp(val, "avoid") ? "yes" : "no" );
-    
+    }
+
     val = UT_getAttribute("fo:widows", props);
     if (val) {
       int widows = 0;
       sscanf(val, "%d", &widows);
       m_widows = UT_String_sprintf ("widows: %d", widows);
     }
-    
+
     val = UT_getAttribute("fo:orphans", props);
     if (val) {
       int orphans = 0;
       sscanf (val, "%d", &orphans);
       m_orphans = UT_String_sprintf ("orphans: %d", orphans);
     }
-      
+
     val = UT_getAttribute("fo:column-count", props);
     if (val) {
       int columns = 0;
       sscanf (val, "%d", &columns);
-      
-      m_columns = UT_String_sprintf ("columns: %d;", columns);       
+
+      m_columns = UT_String_sprintf ("columns: %d;", columns);
     }
-    
+
     val = UT_getAttribute ("fo:break-before", props);
     if (val) {
-      if (!strcmp (val, "column"))
-	m_bColBreakBefore = true;
-      else if (!strcmp (val, "page"))
-	m_bPageBreakBefore = true;
+      if (!strcmp (val, "column")) {
+        m_bColBreakBefore = true;
+      }
+      else if (!strcmp (val, "page")) {
+        m_bPageBreakBefore = true;
+      }
     }
 
-	m_styleProps = "";
+    m_styleProps = "";
 
 #define APPEND_STYLE(sty) if (sty.size()) { m_styleProps += sty; }
-    
+
     APPEND_STYLE(m_align);
     APPEND_STYLE(m_fontWeight);
     APPEND_STYLE(m_fontStyle);
-    APPEND_STYLE(m_color);    
+    APPEND_STYLE(m_color);
     APPEND_STYLE(m_bgcolor);
     APPEND_STYLE(m_fontName);
     APPEND_STYLE(m_fontSize);
@@ -479,8 +495,9 @@ public:
 
 #undef APPEND_STYLE
 
-    if (m_styleProps.size () > 0)
-      m_styleProps [m_styleProps.size()-1] = 0; 
+    if (m_styleProps.size () > 0) {
+      m_styleProps [m_styleProps.size()-1] = 0;
+    }
   }
 
 private:
@@ -507,7 +524,7 @@ private:
   UT_String m_widows;
   UT_String m_orphans;
   UT_String m_columns;
-  
+
   UT_String m_styleProps;
 
   bool m_bColBreakBefore;

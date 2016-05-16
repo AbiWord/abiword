@@ -4002,8 +4002,9 @@ void fl_HdrFtrSectionLayout::markAllRunsDirty(void)
  */
 void fl_HdrFtrSectionLayout::layout(void)
 {
-    if(m_pHdrFtrContainer)
-	static_cast<fp_HdrFtrContainer *>(m_pHdrFtrContainer)->layout();
+	if(m_pHdrFtrContainer) {
+		static_cast<fp_HdrFtrContainer *>(m_pHdrFtrContainer)->layout();
+	}
 	//
 	// update the shadowlayouts
 	//

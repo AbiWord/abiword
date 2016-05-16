@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2007 Martin Sevior
@@ -71,8 +72,6 @@ fp_RDFAnchorRun::fp_RDFAnchorRun( fl_BlockLayout* pBL,
     {
         _setHyperlink(this);
     }
-    
-    
 
 	lookupProperties();
 
@@ -90,11 +89,13 @@ fp_RDFAnchorRun::~fp_RDFAnchorRun()
 void fp_RDFAnchorRun::_draw(dg_DrawArgs* pDA)
 {
 //    UT_DEBUGMSG(("_draw() showan:%d isStart:%d\n", displayAnnotations(), m_bIsStart ));
-    
-    if(!displayAnnotations())
-        return;
-	if(!m_bIsStart)
-        return;
+
+	if(!displayAnnotations()) {
+		return;
+	}
+	if(!m_bIsStart) {
+		return;
+	}
 
 	GR_Graphics * pG = pDA->pG;
 

@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  *
  * This program is free software; you can redistribute it and/or
@@ -51,28 +51,30 @@ void FV_ViewDoubleBuffering::beginDoubleBuffering()
 
     // MIQ: in abicommand the gui is likely not shown anyway
     //      I also noticed some segvs when no-gui && dbuffer
-    if( XAP_App::getApp()->getDisableDoubleBuffering() ) 
-        return;
+	if (XAP_App::getApp()->getDisableDoubleBuffering()) {
+		return;
+	}
 
-	if(m_bSuspendDirectDrawing == true && m_bCallDrawOnlyAtTheEnd == false)
-	{
+	if (m_bSuspendDirectDrawing == true && m_bCallDrawOnlyAtTheEnd == false) {
 		// You put me in a curious sitution: you want me to disable drawing between
 		// beginDoubleBuffering and endDoubleBuffering, but you also want to draw
 		// through _draw. At the moment, we cannot do that.
 		UT_ASSERT(UT_NOT_IMPLEMENTED);
 	}
-	
-	if(!m_pView->registerDoubleBufferingObject(this))
+
+	if (!m_pView->registerDoubleBufferingObject(this)) {
 		return;
-    
+	}
+
 	// We will need to direct calls through a painter since it may initialize
 	// the device context on some platforms
 	m_pPainter = new GR_Painter(m_pView->getGraphics());
 
 	m_pPainter->beginDoubleBuffering();
 
-	if(m_bSuspendDirectDrawing)
+	if (m_bSuspendDirectDrawing) {
 		m_pPainter->suspendDrawing();
+	}
 }
 
 void FV_ViewDoubleBuffering::endDoubleBuffering()
@@ -82,26 +84,30 @@ void FV_ViewDoubleBuffering::endDoubleBuffering()
 	return;
 #endif
 
-    if( XAP_App::getApp()->getDisableDoubleBuffering() ) 
-        return;
-
-	if(!m_pView->unregisterDoubleBufferingObject(this))
+	if (XAP_App::getApp()->getDisableDoubleBuffering()) {
 		return;
+	}
 
-	if(m_bSuspendDirectDrawing)
+	if (!m_pView->unregisterDoubleBufferingObject(this)) {
+		return;
+	}
+
+	if (m_bSuspendDirectDrawing) {
 		m_pPainter->resumeDrawing();
+	}
 
 	m_pPainter->endDoubleBuffering();
 
 	delete m_pPainter;
 
-	if(m_bCallDrawOnlyAtTheEnd)
+	if (m_bCallDrawOnlyAtTheEnd) {
 		this->callUnifiedDraw();
+	}
 }
 
 void FV_ViewDoubleBuffering::recordViewDrawCall(
-		UT_sint32 x, UT_sint32 y, 
-		UT_sint32 width, UT_sint32 height, 
+		UT_sint32 x, UT_sint32 y,
+		UT_sint32 width, UT_sint32 height,
 		bool bDirtyRunsOnly, bool /*bClip*/)
 {
 	UT_Rect thisCallRect(x, y, width, height);

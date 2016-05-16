@@ -130,11 +130,12 @@ IE_Exp_HTML::IE_Exp_HTML(PD_Document * pDocument)
 
 IE_Exp_HTML::~IE_Exp_HTML()
 {
-    if (m_bDefaultWriterFactory)
-        delete m_pWriterFactory;
+	if (m_bDefaultWriterFactory) {
+		delete m_pWriterFactory;
+	}
 	delete m_pNavigationHelper;
 	delete m_styleListener;
-    delete m_style_tree;
+	delete m_style_tree;
 }
 
 

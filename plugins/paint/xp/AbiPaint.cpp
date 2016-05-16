@@ -128,20 +128,20 @@ bool doRegistration(void)
 {
     // Get XAP_Prefs object for retrieving/storing image editor and related preferences
     UT_return_val_if_fail(prefs != NULL, false);
-    if ((prefsScheme = prefs->getPluginScheme(szAbiPluginSchemeName)) == NULL)
-    {
+    if ((prefsScheme = prefs->getPluginScheme(szAbiPluginSchemeName)) == nullptr) {
       // it may not exist so try creating & adding it.
       prefs->addPluginScheme(new XAP_PrefsScheme(prefs, szAbiPluginSchemeName));
 	// if it still isn't there then fail
-      if ((prefsScheme = prefs->getPluginScheme(szAbiPluginSchemeName)) == NULL)
+      if ((prefsScheme = prefs->getPluginScheme(szAbiPluginSchemeName)) == nullptr) {
         return false;
+      }
 
-	// go ahead and set our default values
-        std::string szProgramName;
-	bool bLeaveImageAsPNG;
-	getDefaultApp(szProgramName, bLeaveImageAsPNG);
-	prefsScheme->setValue(ABIPAINT_PREF_KEY_szProgramName, szProgramName.c_str());
-	prefsScheme->setValueBool(ABIPAINT_PREF_KEY_bLeaveImageAsPNG, bLeaveImageAsPNG);
+      // go ahead and set our default values
+      std::string szProgramName;
+      bool bLeaveImageAsPNG;
+      getDefaultApp(szProgramName, bLeaveImageAsPNG);
+      prefsScheme->setValue(ABIPAINT_PREF_KEY_szProgramName, szProgramName.c_str());
+      prefsScheme->setValueBool(ABIPAINT_PREF_KEY_bLeaveImageAsPNG, bLeaveImageAsPNG);
     }
 
 

@@ -578,7 +578,7 @@ AC_LANG_PUSH(C++)
 if test "$GCC" = "yes"; then
 	for option in -Wall -Wextra -Wsign-compare -Wpointer-arith \
 		      -Wchar-subscripts -Wwrite-strings -Wmissing-noreturn \
-                      -Wunreachable-code \
+                      -Wunreachable-code -Wmisleading-indentation \
 		      -Wunused -Wpointer-arith -Wshadow; do
 		SAVE_CPPFLAGS="$CPPFLAGS"
 		CPPFLAGS="$CPPFLAGS $option"

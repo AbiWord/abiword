@@ -862,21 +862,26 @@ void IE_Exp_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 	 */
 	if (szP_FontWeight)
 	{
-		if (strcmp(szP_FontWeight, "bold") == 0)
+		if (strcmp(szP_FontWeight, "bold") == 0) {
 			//if (!compareStyle("font-weight", "bold")) {
-				if (!first) style += ";";
-				style += "font-weight:bold";
-				first = false;
+			if (!first) {
+				style += ";";
+			}
+			style += "font-weight:bold";
+			first = false;
 			// }
+		}
 	}
 	if (szP_FontStyle)
 	{
 		if (strcmp(szP_FontStyle, "italic") == 0)
 		{
 			//if (!compareStyle("font-style", "italic")) {
-				if (!first) style += ";";
-				style += "font-style:italic";
-				first = false;
+			if (!first) {
+				style += ";";
+			}
+			style += "font-style:italic";
+			first = false;
 			//}
 		}
 	}
@@ -892,10 +897,12 @@ void IE_Exp_HTML_Listener::_openSpan(PT_AttrPropIndex api)
 		tmp += "pt";
 
 		//if (!compareStyle("font-size", style.utf8_str())) {
-			if (!first) style += ";";
-			style += "font-size:";
-			style += tmp;
-			first = false;
+		if (!first) {
+			style += ";";
+		}
+		style += "font-size:";
+		style += tmp;
+		first = false;
 		//}
 	}
 
