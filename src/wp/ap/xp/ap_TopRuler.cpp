@@ -3206,7 +3206,9 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 			UT_String srelTab;
 			UT_String sRelWidths;
 
-			PP_PropertyVector props;
+			PP_PropertyVector props = {
+				"", ""
+			};
 			if(!bDragLeftMost)
 			{
 			     props[0] = "table-column-props";
@@ -3249,10 +3251,10 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				  UT_String_sprintf(sVal,"%f",relTab);
 				  srelTab = sVal;
 				  srelTab += "%";
-				  props[2] = "table-width";
-				  props[3] = stot.c_str();
-				  props[4] = "table-rel-width";
-				  props[5] = srelTab.c_str();
+				  props.push_back("table-width");
+				  props.push_back(stot.c_str());
+				  props.push_back("table-rel-width");
+				  props.push_back(srelTab.c_str());
 				  sRelWidths.clear();;
 				  for(i=0;i<vecRelWidths.getItemCount();i++)
 				  {
@@ -3260,8 +3262,8 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				      sRelWidths += sVal;
 				      sRelWidths += "*/";
 				  }
-				  props[6] = "table-rel-column-props";
-				  props[7] = sRelWidths.c_str();
+				  props.push_back("table-rel-column-props");
+				  props.push_back(sRelWidths.c_str());
 			     }
 			}
 			else
