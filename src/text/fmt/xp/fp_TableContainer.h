@@ -116,18 +116,18 @@ public:
 	{ m_bIsSelected = false;
 	  m_bLinesDrawn = true;
 	}
-	bool                doesOverlapBrokenTable(fp_TableContainer * pBroke) const;
+	bool                doesOverlapBrokenTable(const fp_TableContainer * pBroke) const;
 	void		        drawBroken(dg_DrawArgs* pDa, fp_TableContainer * pTab);
 	virtual void		clearScreen(void);
 	void		        clearScreen(bool bNoRecursive);
-	void                getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG,UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot,UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear );
+	void                getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG,UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot,UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear ) const;
 	bool                drawLines(fp_TableContainer * pBroke,GR_Graphics * pG,bool bDoClear);
 	void                drawLinesAdjacent(void);
 	void                draw(fp_Line * pLine);
-	fp_TableContainer * getBrokenTable(fp_Container * pCon) const;
-	fp_VerticalContainer * getColumn(fp_Container *pCon); // FIXME: see if we can make it const
-	fp_Container *      getFirstContainerInBrokenTable(fp_TableContainer * pBroke) const;
-	UT_sint32           wantCellVBreakAt(UT_sint32,UT_sint32);
+	fp_TableContainer * getBrokenTable(const fp_Container * pCon) const;
+	fp_VerticalContainer * getColumn(const fp_Container *pCon) const;
+	fp_Container *      getFirstContainerInBrokenTable(const fp_TableContainer * pBroke) const;
+	UT_sint32           wantCellVBreakAt(UT_sint32,UT_sint32) const;
 	virtual void		draw(dg_DrawArgs*);
 	virtual void		draw(GR_Graphics*) {}
 	virtual void        setContainer(fp_Container * pContainer);
@@ -156,14 +156,14 @@ public:
 
 	UT_sint32           getCellX(fp_Line * pLine) const;
 	UT_sint32           getCellY(fp_Line * pLine) const;
-	UT_sint32           getSpannedHeight(void);
+	UT_sint32           getSpannedHeight(void) const;
 	void                setLineMarkers(void);
 	void                deleteBrokenTables(bool bClearFirst=true);
 	void                deleteBrokenAfter(bool bClearFirst,UT_sint32 iOldBottom);
-	bool                containsFootnoteReference(fp_TableContainer * pBroke = NULL) const;
-	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots, fp_TableContainer * pBroke = NULL);
-	bool                containsAnnotations(fp_TableContainer * pBroke = NULL) const;
-	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns, fp_TableContainer * pBroke = NULL);
+	bool                containsFootnoteReference(const fp_TableContainer * pBroke = NULL) const;
+	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots, const fp_TableContainer * pBroke = NULL) const;
+	bool                containsAnnotations(const fp_TableContainer * pBroke = NULL) const;
+	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns, const fp_TableContainer * pBroke = NULL) const;
 	void                getLeftTopOffsets(UT_sint32 & xoff, UT_sint32 & yoff) const;
    UT_sint32           getLeftAttach(void) const
 		{ return m_iLeftAttach;}
@@ -249,9 +249,9 @@ public:
 	void                markAsDirty(void) { m_bDirty = true;}
 	bool                isDirty(void) const
 	    {  return m_bDirty;}
-	bool                doesIntersectClip(fp_TableContainer * pBroke, const UT_Rect * rClip);
+	bool                doesIntersectClip(fp_TableContainer * pBroke, const UT_Rect * rClip) const;
 	bool                isInNestedTable(void) const;
-	bool                containsNestedTables(void);
+	bool                containsNestedTables(void) const;
 	bool                isRepeated(void) const;
 	void                setVertAlign(UT_sint32 i) { m_iVertAlign = i; }
 	void doVertAlign(void);
@@ -262,7 +262,7 @@ public:
 private:
 
 	void                _clear(fp_TableContainer * pBroke);
-	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec, GR_Graphics * pG);
+	void				_getBrokenRect(fp_TableContainer * pBroke, fp_Page* &pPage, UT_Rect &bRec, GR_Graphics * pG) const;
 
 //
 // These variables describe where the cell is attached to the table.
@@ -366,8 +366,8 @@ public:
 										PT_DocPosition& pos,
 										bool& bBOL, bool& bEOL, bool &isTOC);
 	virtual fp_Page *   getPage(void);
-	fp_Line *           getFirstLineInColumn(fp_Column * pCol);
-	fp_Line *           getLastLineInColumn(fp_Column * pCol);
+	fp_Line *           getFirstLineInColumn(fp_Column * pCol) const;
+	fp_Line *           getLastLineInColumn(fp_Column * pCol) const;
 	void				layout(void);
 	virtual void        setY(UT_sint32 iY);
 	virtual UT_sint32   getHeight(void) const;
@@ -378,12 +378,12 @@ public:
 	virtual UT_sint32   getMarginAfter(void) const;
 	void                setAdditionalMargin(UT_sint32 iMarg)
 	{m_iAdditionalMarginAfter = iMarg;}
-fp_Column *         getBrokenColumn(void);
+	fp_Column *         getBrokenColumn(void) const;
 	void                drawLines();
-	bool                containsFootnoteReference(void);
-	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots);
-	bool                containsAnnotations(void);
-	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns);
+	bool                containsFootnoteReference(void) const;
+	bool                getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pvecFoots) const;
+	bool                containsAnnotations(void) const;
+	bool                getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pvecAnns) const;
     virtual void        clearScreen(void);
 	virtual bool        isVBreakable(void);
 	virtual bool        isHBreakable(void) {return false;}
@@ -391,7 +391,7 @@ fp_Column *         getBrokenColumn(void);
 	virtual UT_sint32   wantHBreakAt(UT_sint32) {return 0;}
 	UT_sint32           wantVBreakAtNoFootnotes(UT_sint32);
 	UT_sint32           wantVBreakAtWithFootnotes(UT_sint32);
-	UT_sint32           sumFootnoteHeight(void);
+	UT_sint32           sumFootnoteHeight(void) const;
 	virtual fp_ContainerObject * VBreakAt(UT_sint32);
 	void                breakCellsAt(UT_sint32 vpos);
 	virtual fp_ContainerObject * HBreakAt(UT_sint32) {return NULL;}
@@ -406,7 +406,7 @@ fp_Column *         getBrokenColumn(void);
 	void                resize(UT_sint32 n_rows, UT_sint32 n_cols);
 	void                setLineThickness(UT_sint32 iLineThickness)
 		{ m_iLineThickness = iLineThickness;}
-	UT_sint32           getLineThickness(void)
+	UT_sint32           getLineThickness(void) const
 		{ return m_iLineThickness;}
 	void                queueResize(void);
 	UT_sint32           getYOfRowOrColumn(UT_sint32 row, bool bRow) const;
@@ -455,7 +455,7 @@ fp_Column *         getBrokenColumn(void);
 		{ m_bBrokenBottom = bBot;}
 	UT_sint32           getNumRows(void) const;
 	UT_sint32           getNumCols(void) const;
-	UT_sint32           getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight);
+	UT_sint32           getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight) const;
 	UT_sint32           getTotalTableHeight(void) const;
 	UT_sint32           getRowOrColumnAtPosition(UT_sint32 y, bool bRow) const;
 	void                setRedrawLines(void)
@@ -464,7 +464,7 @@ fp_Column *         getBrokenColumn(void);
 		{ return m_bRedrawLines;}
 	fp_TableRowColumn *     getNthCol(UT_uint32 i) const;
 	fp_TableRowColumn *     getNthRow(UT_uint32 i) const;
-	bool                    containsNestedTables(void);
+	bool                    containsNestedTables(void) const;
 	void setRowHeightType(FL_RowHeightType iType)
 		{
 	      m_iRowHeightType = iType;

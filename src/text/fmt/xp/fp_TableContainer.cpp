@@ -190,7 +190,7 @@ void fp_CellContainer::setHeight(UT_sint32 iHeight)
 /*!
  * Return the broken table that contains this cell and the given Container
  */
-fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon) const
+fp_TableContainer * fp_CellContainer::getBrokenTable(const fp_Container * pCon) const
 {
 	fp_TableContainer * pMaster = static_cast<fp_TableContainer *>(getContainer());
 	if(!pMaster)
@@ -215,7 +215,7 @@ fp_TableContainer * fp_CellContainer::getBrokenTable(fp_Container * pCon) const
 /*!
  * This Method returns the column or shadow that embeds the container given.
  */
-fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
+fp_VerticalContainer * fp_CellContainer::getColumn(const fp_Container * _pCon) const
 {
 	fp_TableContainer * pBroke = getBrokenTable(_pCon);
 	if(pBroke == NULL)
@@ -296,7 +296,7 @@ fp_VerticalContainer * fp_CellContainer::getColumn(fp_Container * _pCon)
 	return static_cast<fp_VerticalContainer *>(pCol);
 }
 
-bool fp_CellContainer::containsNestedTables(void)
+bool fp_CellContainer::containsNestedTables(void) const
 {
 	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
 	return (pCL->getNumNestedTables() > 0);
@@ -307,9 +307,9 @@ bool fp_CellContainer::containsNestedTables(void)
  * broken table.
  * If the height or width is negative, the cell is not in the broken table.
  */
-void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec, GR_Graphics * pG)
+void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPage, UT_Rect &bRec, GR_Graphics * pG) const
 {
-	UT_ASSERT(static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout()) &&
+	UT_ASSERT(getSectionLayout()->myContainingLayout() &&
 	static_cast<fl_TableLayout *>(getSectionLayout()->myContainingLayout())->getContainerType() == FL_CONTAINER_TABLE);
 
 	fp_Column * pCol = NULL;
@@ -485,7 +485,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 		{
 			pCol = static_cast<fp_Column *>(fp_Container::getColumn());
 			pPage->getScreenOffsets(pCol,col_x,col_y);
-			fp_Container * pCon = static_cast<fp_Container *>(this);
+			const fp_Container * pCon = static_cast<const fp_Container *>(this);
 			while(!pCon->isColumnType())
 			{
 				col_x += pCon->getX();
@@ -537,7 +537,7 @@ void fp_CellContainer::_getBrokenRect(fp_TableContainer * pBroke, fp_Page * &pPa
 /*! 
  * Returns true if the cell in a broken table overlaps the supplied clip Rect
  */
-bool fp_CellContainer::doesIntersectClip(fp_TableContainer * pBroke, const UT_Rect * rClip)
+bool fp_CellContainer::doesIntersectClip(fp_TableContainer * pBroke, const UT_Rect * rClip) const
 {
 	fp_Page * pPage = NULL;
 	UT_Rect CellRect;
@@ -614,7 +614,7 @@ void fp_CellContainer::clearScreen(bool bNoRecursive)
 }
 
 
-UT_sint32 fp_CellContainer::getSpannedHeight(void)
+UT_sint32 fp_CellContainer::getSpannedHeight(void) const
 {
 	fp_TableContainer * pTab = static_cast<fp_TableContainer *>(getContainer());
 	if(pTab == NULL)
@@ -974,7 +974,7 @@ void fp_CellContainer::setBackground (const PP_PropertyMap::Background & style)
  * Given the broken table that contains this cell, calculate the positions
  * of the left,right,top and bottom edges of the cell.
  */
-void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG, UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot, UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear )
+void fp_CellContainer::getScreenPositions(fp_TableContainer * pBroke,GR_Graphics * pG, UT_sint32 & iLeft, UT_sint32 & iRight,UT_sint32 & iTop,UT_sint32 & iBot, UT_sint32 & col_y, fp_Column *& pCol, fp_ShadowContainer *& pShadow, bool & bDoClear ) const
 {
 	UT_return_if_fail(getPage());
 
@@ -1689,7 +1689,7 @@ fp_TableContainer * fp_CellContainer::getTopmostTable() const
 /*!
  * Return true if the segment of the cell within a broken table pBroke contains a footnote references
  */
-bool fp_CellContainer::containsFootnoteReference(fp_TableContainer * pBroke) const
+bool fp_CellContainer::containsFootnoteReference(const fp_TableContainer * pBroke) const
 {
 	// First check if there are footnotes in the whole cell
 	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
@@ -1746,7 +1746,7 @@ bool fp_CellContainer::containsFootnoteReference(fp_TableContainer * pBroke) con
  within a broke table pBroke
  */
 bool fp_CellContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pVecFoots,
-											 fp_TableContainer * pBroke)
+											 const fp_TableContainer * pBroke) const
 {
 	bool bWholeCell = (!pBroke || ((getY() >= pBroke->getYBreak()) && 
 								   (getY() + getHeight() <= pBroke->getYBottom())));
@@ -1802,7 +1802,7 @@ bool fp_CellContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContain
 /*!
  * Return true if the segment of the cell within a broken table pBroke contains an annotation
  */
-bool fp_CellContainer::containsAnnotations(fp_TableContainer * pBroke) const
+bool fp_CellContainer::containsAnnotations(const fp_TableContainer * pBroke) const
 {
 	// First check if there are annotations in the whole cell
 	fl_CellLayout * pCL = static_cast<fl_CellLayout *>(getSectionLayout());
@@ -1859,7 +1859,7 @@ bool fp_CellContainer::containsAnnotations(fp_TableContainer * pBroke) const
  within a broke table pBroke
  */
 bool fp_CellContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pVecAnns,
-											 fp_TableContainer * pBroke)
+											 const fp_TableContainer * pBroke) const
 {
 	bool bWholeCell = (!pBroke || ((getY() >= pBroke->getYBreak()) && 
 								   (getY() + getHeight() <= pBroke->getYBottom())));
@@ -2279,7 +2279,7 @@ fp_Container * fp_CellContainer::drawSelectedCell(fp_Line * /*pLine*/)
  * This method returns true if the cell overlaps the supplied broken
  * table.
  */
-bool fp_CellContainer::doesOverlapBrokenTable(fp_TableContainer * pBroke) const
+bool fp_CellContainer::doesOverlapBrokenTable(const fp_TableContainer * pBroke) const
 {
 	UT_sint32 nextRow = m_iBottomAttach;
 	UT_sint32 yCellBot = 0;
@@ -2630,7 +2630,7 @@ fp_ContainerObject * fp_CellContainer::VBreakAt(UT_sint32 vpos)
  * the return value of the method is the actual height it can be broken
  * which is less than or equal to the requested height.
  */
-UT_sint32 fp_CellContainer::wantCellVBreakAt(UT_sint32 vpos, UT_sint32 yCellMin)
+UT_sint32 fp_CellContainer::wantCellVBreakAt(UT_sint32 vpos, UT_sint32 yCellMin) const
 {
 	UT_sint32 i =0;
 	UT_sint32 iYBreak = vpos;
@@ -2749,13 +2749,13 @@ fp_Container * fp_CellContainer::getPrevContainerInSection() const
   a broken table. It returns NULL if no container is inside  the broken table
 */
 
-fp_Container * fp_CellContainer::getFirstContainerInBrokenTable(fp_TableContainer * pBroke) const
+fp_Container * fp_CellContainer::getFirstContainerInBrokenTable(const fp_TableContainer * pBroke) const
 {
 	if (!pBroke->isThisBroken())
 	{
 		return NULL;
 	}
-	
+
 	UT_sint32 count = countCons();
 	UT_sint32 k = 0;
 	fp_Container * pCon = NULL;
@@ -3100,13 +3100,13 @@ fp_TableContainer::~fp_TableContainer()
 	m_pMasterTable = NULL;
 }
 
-fp_Column * fp_TableContainer::getBrokenColumn(void)
+fp_Column * fp_TableContainer::getBrokenColumn(void) const
 {
 	if(!isThisBroken())
 	{
 		return static_cast<fp_Column *>(fp_VerticalContainer::getColumn());
 	}
-	fp_TableContainer * pBroke = this;
+	const fp_TableContainer * pBroke = this;
 	bool bStop = false;
 	fp_Column * pCol = NULL;
 	while(pBroke && pBroke->isThisBroken() && !bStop)
@@ -3132,7 +3132,7 @@ fp_Column * fp_TableContainer::getBrokenColumn(void)
 		{
 			fp_CellContainer * pCell = static_cast<fp_CellContainer *>(pBroke->getContainer());
 			UT_ASSERT(pCell->getContainerType() == FP_CONTAINER_CELL);
-			pBroke = pCell->getBrokenTable(static_cast<fp_Container *>(pBroke));
+			pBroke = pCell->getBrokenTable(static_cast<const fp_Container *>(pBroke));
 		}
 	}
 	if(pBroke && !bStop)
@@ -3159,7 +3159,7 @@ fp_Column * fp_TableContainer::getBrokenColumn(void)
 	return pCol;
 }
 
-bool fp_TableContainer::containsNestedTables(void)
+bool fp_TableContainer::containsNestedTables(void) const
 {
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	return (pTL->getNumNestedTables() > 0);
@@ -3458,7 +3458,7 @@ fp_CellContainer * fp_TableContainer::getCellAtRowColumn(UT_sint32 row, UT_sint3
  * the row would have if it's height was automatically calculated from the
  * height of the rows.
  */
-UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight)
+UT_sint32 fp_TableContainer::getRowHeight(UT_sint32 iRow, UT_sint32 iMeasHeight) const
 {
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
 	UT_return_val_if_fail(pTL, 0);
@@ -4384,7 +4384,7 @@ UT_sint32 fp_TableContainer::wantVBreakAtWithFootnotes(UT_sint32 vpos)
    This function calculates the total height of all the footnotes in the broken table.
 */
 
-UT_sint32 fp_TableContainer::sumFootnoteHeight(void)
+UT_sint32 fp_TableContainer::sumFootnoteHeight(void) const
 {
 	UT_sint32 iSum = 0;
 	fl_TableLayout * pTL = static_cast<fl_TableLayout *>(getSectionLayout());
@@ -4446,10 +4446,10 @@ UT_sint32 fp_TableContainer::getTotalTableHeight(void) const
  * returns the first fp_Line of the table in this column by recursively 
  * searching down the table structure.
  */
-fp_Line * fp_TableContainer::getFirstLineInColumn(fp_Column * pCol)
+fp_Line * fp_TableContainer::getFirstLineInColumn(fp_Column * pCol) const
 {
-	fp_TableContainer * pTab = NULL;
-	fp_TableContainer * pBroke = NULL;
+	const fp_TableContainer * pTab = NULL;
+	const fp_TableContainer * pBroke = NULL;
 	fp_CellContainer * pCell = NULL;
 	if(!isThisBroken())
 	{
@@ -4520,10 +4520,10 @@ fp_Line * fp_TableContainer::getFirstLineInColumn(fp_Column * pCol)
  * returns the Last fp_Line of the table in this column by recursively 
  * searching down the table structure.
  */
-fp_Line * fp_TableContainer::getLastLineInColumn(fp_Column * pCol)
+fp_Line * fp_TableContainer::getLastLineInColumn(fp_Column * pCol) const
 {
-	fp_TableContainer * pTab = NULL;
-	fp_TableContainer * pBroke = NULL;
+	const fp_TableContainer * pTab = NULL;
+	const fp_TableContainer * pBroke = NULL;
 	fp_CellContainer * pCell = NULL;
 	if(!isThisBroken())
 	{
@@ -5116,7 +5116,7 @@ UT_sint32 fp_TableContainer::getHeight(void) const
 /*!
  * Return true if the table contains footnote references
  */
-bool fp_TableContainer::containsFootnoteReference(void)
+bool fp_TableContainer::containsFootnoteReference(void) const
 {
 	// First check if there are footnotes in the whole table
 	// This operation is quite fast
@@ -5148,7 +5148,7 @@ bool fp_TableContainer::containsFootnoteReference(void)
 /*!
  * This method returns a vector of all the footnote object in the broken table
  */
-bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pVecFoots)
+bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContainer*>* pVecFoots) const
 {
 	fp_CellContainer * pCell = getFirstBrokenCell(false);
 	bool bFound = false;
@@ -5172,7 +5172,7 @@ bool fp_TableContainer::getFootnoteContainers(UT_GenericVector<fp_FootnoteContai
 /*!
  * Return true if the table contains annotation references
  */
-bool fp_TableContainer::containsAnnotations(void)
+bool fp_TableContainer::containsAnnotations(void) const
 {
 	// First check if there are annotations in the whole table
 	// This operation is quite fast
@@ -5204,7 +5204,7 @@ bool fp_TableContainer::containsAnnotations(void)
 /*!
  * This method returns a vector of all the annotation object in the broken table
  */
-bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pVecAnns)
+bool fp_TableContainer::getAnnotationContainers(UT_GenericVector<fp_AnnotationContainer*>* pVecAnns) const
 {
 	fp_CellContainer * pCell = getFirstBrokenCell(false);
 	bool bFound = false;
