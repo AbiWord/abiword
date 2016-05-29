@@ -97,6 +97,9 @@ TFTEST_MAIN("UT_ellipsisPath")
 
   std::string newpath2 = UT_ellipsisPath("abcdefghjikl", 60, 50);
   TFPASS(newpath2 == "abcdefghjikl");
+
+  newpath2 = UT_ellipsisPath("", 0, 0);
+  TFPASS(newpath2.empty());
 }
 
 TFTEST_MAIN("PropVal")

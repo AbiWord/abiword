@@ -1,4 +1,4 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiSource Program Utilities
  * Copyright (C) 1998 AbiSource, Inc.
  * Copyright (C) 2009-2016 Hubert Figuiere
@@ -239,8 +239,9 @@ std::vector<std::string> UT_simpleSplit (const std::string & str, char separator
 std::string
 UT_ellipsisPath(const std::string & path, size_t maxlen, size_t cut)
 {
-    if(path.empty())
-        return NULL;
+	if(path.empty()) {
+		return "";
+	}
 
 	UT_uint32 iPathLen = path.size();
 	std::string s;
