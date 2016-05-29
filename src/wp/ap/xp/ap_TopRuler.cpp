@@ -3155,7 +3155,7 @@ void AP_TopRuler::mouseRelease(EV_EditModifierState ems, EV_EditMouseButton /* e
 				//
 						pTInfo = static_cast<AP_TopRulerTableInfo *>(m_infoCache.m_vecFullTable->getNthItem(i-1));
 						xxx_UT_DEBUGMSG(("ap_TopRuler: FullTable rightDrag %d i %d pTInfo->m_iRightCellPos %d \n",rightDrag,i,pTInfo->m_iRightCellPos));
-						if(abs(rightDrag - pTInfo->m_iRightCellPos) >10)
+						if(i != m_draggingCell)
 						{
 							left = pTInfo->m_iLeftCellPos + xAbsLeft1 + pTInfo->m_iLeftSpacing;
 							if(i < iNumCells)
