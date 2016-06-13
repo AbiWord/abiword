@@ -24,7 +24,8 @@ AM_MAINTAINER_MODE([enable])
 #
 # versions requested.
 #
-GTK_VERSION_REQ=3.4.0
+GTK_VERSION_REQ=3.12.0
+GTK_ENCODED_VERSION="GDK_VERSION_3_12"
 
 dnl GTK2_VERSION_REQ=2.12.0
 dnl
@@ -678,6 +679,10 @@ else
 fi
 
 PKG_CHECK_MODULES(DEPS,[$deps_pkgs])
+
+if test "$TOOLKIT" = "gtk"; then
+        DEPS_CFLAGS="$DEPS_CFLAGS -DGDK_VERSION_MIN_REQUIRED=$GTK_ENCODED_VERSION -DGDK_VERSION_MAX_ALLOWED=$GTK_ENCODED_VERSION"
+fi
 
 dnl make that for all.
 if test "$TOOLKIT" = "gtk" -o "$TOOLKIT" = "cocoa" -o "$TOOLKIT" = "qt"; then
