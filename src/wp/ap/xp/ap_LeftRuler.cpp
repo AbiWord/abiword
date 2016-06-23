@@ -1379,6 +1379,8 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 
 #if !defined(TOOLKIT_GTK)
 	painter.fillRect(GR_Graphics::CLR3D_Background, rTop);
+#else
+	painter.fillRect(GR_Graphics::CLR3D_BevelDown, rTop);
 #endif
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
@@ -1399,6 +1401,8 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 
 #if !defined(TOOLKIT_GTK)
 	painter.fillRect(GR_Graphics::CLR3D_Background, rBottom);
+#else
+	painter.fillRect(GR_Graphics::CLR3D_BevelDown, rBottom);
 #endif
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
