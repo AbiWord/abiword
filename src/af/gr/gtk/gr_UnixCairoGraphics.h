@@ -1,7 +1,7 @@
-/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; -*- */
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: t -*- */
 /* AbiWord
  * Copyright (C) 2004-2006 Tomas Frydrych <dr.tomas@yahoo.co.uk>
- * Copyright (C) 2009 Hubert Figuiere
+ * Copyright (C) 2009-2016 Hubert Figuiere
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -91,6 +91,13 @@ public:
 	void				initWidget(GtkWidget *widget);
 	virtual bool		queryProperties(GR_Graphics::Properties gp) const;
 
+	/** In the UnixCairoGraphics, color3D are mostly invalid. */
+	virtual bool        getColor3D(GR_Color3D name, UT_RGBColor &color);
+
+	virtual void		fillRect(GR_Color3D c,
+								 UT_sint32 x, UT_sint32 y,
+								 UT_sint32 w, UT_sint32 h);
+
 protected:
 	virtual void		_resetClip(void);
 	static void		widget_size_allocate (GtkWidget        *widget,
@@ -112,6 +119,8 @@ private:
 	bool m_Painting;
 	gulong m_Signal, m_DestroySignal;
 	GtkWidget *m_Widget;
+	GtkStyleContext* m_styleBg;
+	GtkStyleContext* m_styleHighlight;
 };
 
 

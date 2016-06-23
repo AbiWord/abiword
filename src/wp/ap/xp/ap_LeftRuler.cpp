@@ -1372,41 +1372,44 @@ void AP_LeftRuler::_drawMarginProperties(const UT_Rect * /* pClipRect */,
 
 
 	UT_Rect rTop, rBottom;
-	UT_uint32 onePX = m_pG->tlu(1);
 
 	_getMarginMarkerRects(pInfo,rTop,rBottom);
 	
 	GR_Painter painter(m_pG);
 
+#if !defined(TOOLKIT_GTK)
 	painter.fillRect(GR_Graphics::CLR3D_Background, rTop);
+#endif
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	painter.drawLine( rTop.left,  rTop.top, rTop.left + rTop.width, rTop.top);
 	painter.drawLine( rTop.left + rTop.width,  rTop.top, rTop.left + rTop.width, rTop.top + rTop.height);
 	painter.drawLine( rTop.left + rTop.width,  rTop.top + rTop.height, rTop.left, rTop.top + rTop.height);
 	painter.drawLine( rTop.left,  rTop.top + rTop.height, rTop.left, rTop.top);
+#if !defined(TOOLKIT_GTK)
+	UT_uint32 onePX = m_pG->tlu(1);
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
 	painter.drawLine( rTop.left + onePX,  rTop.top + onePX, rTop.left + rTop.width - onePX, rTop.top + onePX);
 	painter.drawLine( rTop.left + onePX,  rTop.top + rTop.height - m_pG->tlu(2), rTop.left + onePX, rTop.top + onePX);
-	
+#endif
+
 	// TODO: this isn't the right place for this logic. But it works.
 //	if (hdrftr && !hdr)
 //		return;
 
+#if !defined(TOOLKIT_GTK)
 	painter.fillRect(GR_Graphics::CLR3D_Background, rBottom);
+#endif
 
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	painter.drawLine( rBottom.left,  rBottom.top, rBottom.left + rBottom.width, rBottom.top);
 	painter.drawLine( rBottom.left + rBottom.width,  rBottom.top, rBottom.left + rBottom.width, rBottom.top + rBottom.height);
 	painter.drawLine( rBottom.left + rBottom.width,  rBottom.top + rBottom.height, rBottom.left, rBottom.top + rBottom.height);
 	painter.drawLine( rBottom.left,  rBottom.top + rBottom.height, rBottom.left, rBottom.top);
+#if !defined(TOOLKIT_GTK)
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
 	painter.drawLine( rBottom.left + onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + onePX);
 	painter.drawLine( rBottom.left + onePX,  rBottom.top + rBottom.height - m_pG->tlu(2), rBottom.left + onePX, rBottom.top + onePX);
-#if 0
-    m_pG->setColor3D(GR_Graphics::CLR3D_BevelDown);
-	painter.drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + onePX, rBottom.left + rBottom.width - onePX, rBottom.top + rBottom.height - onePX);
-	painter.drawLine( rBottom.left + rBottom.width - onePX,  rBottom.top + rBottom.height - onePX, rBottom.left + onePX, rBottom.top + rBottom.height - onePX);
 #endif
 }
 
@@ -1655,18 +1658,22 @@ void AP_LeftRuler::_drawCellMark(UT_Rect *prDrag, bool /*bUp*/)
 	UT_sint32 right = left + prDrag->width - m_pG->tlu(1);
 	UT_sint32 top = prDrag->top;
 	UT_sint32 bot = top + prDrag->height - m_pG->tlu(1); // For the clever people: this gives the rect a height of 5 pixels (eg. top:10, bot:14 is 5 pixels)!
-	
+#if !defined(TOOLKIT_GTK)
 	painter.fillRect(GR_Graphics::CLR3D_Background, left, top, prDrag->width, prDrag->height);
-	
+#else
+	painter.fillRect(GR_Graphics::CLR3D_Highlight, left, top, prDrag->width, prDrag->height);
+#endif
 	m_pG->setColor3D(GR_Graphics::CLR3D_Foreground);
 	painter.drawLine(left,top,right,top);
 	painter.drawLine(left,top,left,bot);
 	painter.drawLine(left,bot,right,bot);
 	painter.drawLine(right,top,right,bot);
-	
+
+#if !defined(TOOLKIT_GTK)
 	m_pG->setColor3D(GR_Graphics::CLR3D_BevelUp);
 	painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), right - m_pG->tlu(1), top + m_pG->tlu(1));
 	painter.drawLine( left + m_pG->tlu(1), top + m_pG->tlu(1), left + m_pG->tlu(1), bot - m_pG->tlu(1));
+#endif
 }
 
 /*****************************************************************/

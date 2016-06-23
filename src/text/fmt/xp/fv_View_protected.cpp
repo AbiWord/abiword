@@ -4608,11 +4608,15 @@ void FV_View::_draw(UT_sint32 x, UT_sint32 y,
 
 	// enter a double-buffered section
 
-	UT_RGBColor clrMargin;
-	if (!m_pG->getColor3D(GR_Graphics::CLR3D_BevelDown, clrMargin))
-		clrMargin = getColorMargin();
-	if( !bDirtyRunsOnly && (getViewMode() == VIEW_PRINT) )
-		painter.fillRect(clrMargin, 0, 0, getWindowWidth(), getWindowHeight());
+	if( !bDirtyRunsOnly && (getViewMode() == VIEW_PRINT) ) {
+		UT_RGBColor clrMargin;
+		if (m_pG->getColor3D(GR_Graphics::CLR3D_BevelDown, clrMargin)) {
+			painter.fillRect(GR_Graphics::CLR3D_BevelDown, 0, 0,
+							 getWindowWidth(), getWindowHeight());
+		} else {
+			painter.fillRect(getColorMargin(), 0, 0, getWindowWidth(), getWindowHeight());
+		}
+	}
 
 	// start from the first visible page
 	fp_Page *pPage = NULL;

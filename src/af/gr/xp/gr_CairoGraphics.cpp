@@ -3370,6 +3370,8 @@ void GR_CairoGraphics::fillRect(GR_Color3D c, UT_Rect &r)
 /*!
  * Rob sez: the original (before cairo) implementation did not restore colours after drawing.
  * We're trying to do the right thing here instead.
+ *
+ * On Gtk we have an override for this since Gtk Theming broke during 3.x
  */
 void GR_CairoGraphics::fillRect(GR_Color3D c, UT_sint32 x, UT_sint32 y, UT_sint32 w, UT_sint32 h)
 {
