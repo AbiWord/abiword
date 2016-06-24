@@ -20,6 +20,9 @@ hildon_ui = hildon/xap_UnixHildonDlg_Image.ui \
 altgtk_src = xap_UnixDlg_FontChooser.cpp \
 	xap_UnixDlg_FontChooser.h \
 	$(NULL)
+gtk3_src = xap_GtkStyle.h \
+	xap_GtkStyle.cpp \
+	$(NULL)
 
 altgtk_ui_gtk2 = xap_UnixDlg_Image-2.ui \
 	$(NULL)
@@ -27,7 +30,7 @@ altgtk_ui_gtk3 = xap_UnixDlg_Image.ui \
 	$(NULL)
 
 # list all conditional source files here so they end up in the dist tarball
-conditional_src = $(hildon_src) $(altgtk_src)
+conditional_src = $(hildon_src) $(altgtk_src) $(gtk3_src)
 
 conditional_ui = $(hildon_ui) $(altgtk_ui_gtk2) $(altgtk_ui_gtk3)
 
@@ -145,6 +148,7 @@ libgtk_la_SOURCES += $(altgtk_src)
 if TOOLKIT_GTK2
 ui_DATA += $(altgtk_ui_gtk2)
 else
+libgtk_la_SOURCES += $(gtk3_src)
 ui_DATA += $(altgtk_ui_gtk3)
 endif
 
