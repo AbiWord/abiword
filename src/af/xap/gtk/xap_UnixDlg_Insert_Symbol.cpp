@@ -397,7 +397,7 @@ void XAP_UnixDialog_Insert_Symbol::setSymbolMap_size(UT_uint32 width, UT_uint32 
 	// between window and drawingarea this show stay constant
 	GtkRequisition diff;
 	GtkAllocation alloc;
-	gtk_widget_get_requisition (m_windowMain, &diff);
+	gtk_widget_get_preferred_size (m_windowMain, &diff, NULL);
 	gtk_widget_get_allocation (m_SymbolMap, &alloc);
 	if (!diff_width || !diff_height)
 	{

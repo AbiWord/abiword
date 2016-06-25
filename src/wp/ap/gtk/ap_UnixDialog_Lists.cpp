@@ -855,7 +855,7 @@ GtkWidget *AP_UnixDialog_Lists::_constructWindowContents (void)
 
 	pSS->getValueUTF8(AP_STRING_ID_DLG_Lists_SetDefault,s);
 	customized_cb = gtk_dialog_add_button (GTK_DIALOG(m_wMainWindow), s.c_str(), BUTTON_RESET);
-	GtkWidget *img = gtk_image_new_from_stock(GTK_STOCK_REVERT_TO_SAVED, GTK_ICON_SIZE_BUTTON);
+	GtkWidget *img = gtk_image_new_from_icon_name("document-revert", GTK_ICON_SIZE_BUTTON);
 	gtk_button_set_image(GTK_BUTTON(customized_cb), img);
 	gtk_widget_show (customized_cb);
 
