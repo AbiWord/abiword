@@ -1,7 +1,8 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- Mode: C++; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /* 
  * xap_TableWidget.cpp
  * Copyright 2002 Joaquin Cuenca Abela
+ * Copyright 2016 Hubert Figuiere
  *
  * Authors:
  *   Joaquin Cuenca Abela (e98cuenc@yahoo.com)
@@ -21,18 +22,20 @@
  * 02110-1301 USA.
  */
 
-#include <gtk/gtk.h>
-#include <gdk/gdkkeysyms.h>
-#include <gdk/gdk.h>
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <algorithm>
+
+#include <gdk/gdkkeysyms.h>
+#include <gdk/gdk.h>
 #include <gtk/gtk.h>
+
 #include "xap_GtkUtils.h"
+#include "xap_GtkStyle.h"
 #include "xap_UnixTableWidget.h"
 #include "ut_debugmsg.h"
 #include "ut_assert.h"
-#include "ut_string_class.h"
 
 /* NONE:UINT,UINT (/dev/stdin:1) */
 static void
@@ -124,10 +127,7 @@ abi_table_resize(AbiTable* table)
 		text = g_strdup(table->szCancel);
 	else
 	{
-		UT_UTF8String prText =  "%d x %d ";
-		UT_UTF8String s = table->szTable;
-		prText += s;
-		text = g_strdup_printf(prText.utf8_str(), table->selected_rows, table->selected_cols);
+		text = g_strdup_printf("%d x %d %s", table->selected_rows, table->selected_cols, table->szTable);
 	}
 	cells_to_pixels(table->total_cols, table->total_rows, &width, &height);
 	gtk_widget_get_preferred_size(GTK_WIDGET(table->window_label), &size, NULL);
@@ -200,39 +200,37 @@ static gboolean
 on_drawing_area_event (GtkWidget *area, cairo_t *cr, gpointer user_data)
 {
 	AbiTable* table = static_cast<AbiTable*>(user_data);
+
+	if (!table || !table->style_context) {
+		return TRUE;
+	}
+
 	guint i;
 	guint j;
 	guint selected_rows = table->selected_rows;
 	guint selected_cols = table->selected_cols;
 	guint x;
 	guint y;
-	
-	// TODO: use gtk_paint_box, gtk_paint_line
-	GtkStyleContext *ctxt;
-	GdkRGBA fg, bgn, bgs;
-	ctxt = gtk_widget_get_style_context(area);
-	gtk_style_context_get_color(ctxt, GTK_STATE_FLAG_NORMAL, &fg);
-	gtk_style_context_get_background_color(ctxt, GTK_STATE_FLAG_NORMAL, &bgn);
-	gtk_style_context_get_background_color(ctxt, GTK_STATE_FLAG_SELECTED, &bgs);
-	cairo_set_line_width(cr, 1.0);
+
+	GtkStyleContext* ctxt = gtk_widget_get_style_context(GTK_WIDGET(area));
+	gtk_style_context_save(ctxt);
+	gtk_style_context_set_state(ctxt, GTK_STATE_FLAG_FOCUSED);
 	for (i = 0; i < table->total_rows; ++i) {
 		for (j = 0; j < table->total_cols; ++j) {
 			cells_to_pixels(j, i, &x, &y);
 
-			cairo_rectangle(cr, x, y, cell_width + 1, cell_height + 1);
 			if (i < selected_rows && j < selected_cols) {
-				cairo_set_source_rgba(cr, bgs.red, bgs.green, bgs.blue, bgs.alpha);
+				gtk_style_context_set_state(table->style_context, GTK_STATE_FLAG_SELECTED);
+			} else {
+				gtk_style_context_set_state(table->style_context, GTK_STATE_FLAG_NORMAL);
 			}
-			else {
-				cairo_set_source_rgba(cr, bgn.red, bgn.green, bgn.blue, bgn.alpha);
-			}
-			cairo_fill(cr);
+			gtk_render_background(table->style_context, cr, x + 1, y + 1,
+								  cell_width - 1, cell_height - 1);
 
-			cairo_rectangle(cr, x - .5, y - .5, cell_width + .5, cell_height + .5);
-			cairo_set_source_rgba(cr, fg.red, fg.green, fg.blue, fg.alpha);
-			cairo_stroke(cr);
+			gtk_render_frame(ctxt, cr, x, y, cell_width, cell_height);
 		}
 	}
+	gtk_style_context_restore(ctxt);
 
 	return TRUE;
 }
@@ -580,7 +578,9 @@ abi_table_dispose (GObject *instance)
 		self->szCancel = NULL;
 	}
 
-	G_OBJECT_CLASS (abi_table_parent_class)->dispose (instance);   
+	g_clear_object(&self->style_context);
+
+	G_OBJECT_CLASS (abi_table_parent_class)->dispose (instance);
 }
 
 static void
@@ -601,15 +601,15 @@ abi_table_class_init (AbiTableClass *klass)
 			      G_TYPE_NONE, 2, G_TYPE_UINT, G_TYPE_UINT);
 }
 
-
 static void
 abi_table_init (AbiTable* table)
 {
-	UT_UTF8String prText =  "%d x %d ";
-	char* text = g_strdup_printf(prText.utf8_str(), init_rows, init_cols);
+	char* text = g_strdup_printf("%d x %d ", init_rows, init_cols);
 
 	register_stock_icon();
-	
+
+	table->style_context = XAP_GtkStyle_get_style(NULL, "GtkTreeView.view"); // "textview.view"
+
 	table->button_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 
 	table->window = GTK_WINDOW(gtk_window_new(GTK_WINDOW_POPUP));

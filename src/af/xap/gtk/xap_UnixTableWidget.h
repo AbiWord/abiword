@@ -1,4 +1,4 @@
-/* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*- */
+/* -*- Mode: C; tab-width: 4; indent-tabs-mode: t; c-basic-offset: 4 -*- */
 /*
  * xap_TableWidget.h
  * Copyright 2002, Joaquin Cuenca Abela
@@ -49,6 +49,8 @@ typedef struct _AbiTable
 	GtkDrawingArea* area;
 	GtkLabel* window_label;
 	GSList* handlers;
+
+	GtkStyleContext* style_context;
 
 	guint selected_rows;
 	guint selected_cols;
