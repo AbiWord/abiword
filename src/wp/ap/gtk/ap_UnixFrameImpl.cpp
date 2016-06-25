@@ -440,21 +440,51 @@ void AP_UnixFrameImpl::_setScrollRange(apufi_ScrollType scrollType, int iValue, 
 	}
 }
 
+#define COLOR_MIX 0.67   //COLOR_MIX should be between 0 and 1
+
 UT_RGBColor AP_UnixFrameImpl::getColorSelBackground () const
 {
     if( XAP_App::getApp()->getNoGUI() ) 
         return(UT_RGBColor(0,0,0));
 
     UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
+
+    // Bug 13762 guess colours for the selection.
+    // Code copied from gr_UnixCairoGraphics.
+
+    // guess colours
+    // WHITE
+    GdkRGBA rgba2;
+    rgba2.red = 1.;
+    rgba2.green = 1.;
+    rgba2.blue = 1.;
+    rgba2.alpha = 1;
+    // guess colours.
+    // BLACK
+    GdkRGBA rgba1;
+    rgba1.red = 0.;
+    rgba1.green = 0.;
+    rgba1.blue = 0.;
+    rgba1.alpha = 1;
+
+    GdkRGBA rgba_;
+    rgba_.red = rgba1.red*(1.-COLOR_MIX) + rgba2.red*COLOR_MIX;
+    rgba_.green = rgba1.green*(1.-COLOR_MIX) + rgba2.green*COLOR_MIX;
+    rgba_.blue = rgba1.blue*(1.-COLOR_MIX) + rgba2.blue*COLOR_MIX;
+
+#if 0 // this totally broke in Gtk 3.20. Deprecated APIs return rubbish.
     // owen says that any widget should be ok, not just text widgets
     GtkStyleContext *pCtxt = gtk_widget_get_style_context(m_dArea);
     GdkRGBA rgba;
     gtk_style_context_get_background_color(pCtxt, GTK_STATE_FLAG_SELECTED, &rgba);
-    return UT_RGBColor (rgba.red * 255, rgba.green * 255, rgba.blue * 255);
+#endif
+    return UT_RGBColor(rgba_.red * 255, rgba_.green * 255, rgba_.blue * 255);
 }
 
 UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
 {
+  return UT_RGBColor(0,0,0);
+#if 0 // don't risk it. return black.
   UT_return_val_if_fail(m_dArea, UT_RGBColor(0,0,0));
   
   // owen says that any widget should be ok, not just text widgets
@@ -470,4 +500,5 @@ UT_RGBColor AP_UnixFrameImpl::getColorSelForeground () const
   GdkRGBA rgba;
   gtk_style_context_get_color(pCtxt, state, &rgba);
   return UT_RGBColor (rgba.red * 255, rgba.green * 255, rgba.blue * 255);
+#endif
 }
