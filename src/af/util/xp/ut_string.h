@@ -169,9 +169,17 @@ ABI_EXPORT void UT_parse_properties(const char * props,
 									std::map<std::string, std::string> & map);
 
 // implemented in UT_strptime.cpp - see strptime() as it is not avail on win.
+#ifdef _WIN32
+
 extern "C" {
 ABI_EXPORT char *UT_strptime (const char *buf, const char *format, struct tm *tm);
 }
+
+#else
+
+#define UT_strptime strptime
+
+#endif
 
 
 #ifdef _WIN32

@@ -23,6 +23,8 @@ Some of the fields cannot add information alone.  But if seeing
 some of them in the same format (such as year, week and weekday)
 this is enough information for determining the date.  */
 
+#ifdef _WIN32
+
 #ifdef HAVE_CONFIG_H
 # include <config.h>
 #endif
@@ -877,3 +879,5 @@ char *UT_strptime (const char *buf, const char *format, struct tm *tmtm)
 #endif
 	return UT_strptime_internal (buf, format, tmtm, &decided);
 }
+
+#endif
