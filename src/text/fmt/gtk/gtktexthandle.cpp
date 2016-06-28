@@ -340,9 +340,6 @@ _fv_text_handle_update_window (FvTextHandle         *handle,
 static void
 _fv_text_handle_update_windows (FvTextHandle *handle)
 {
-  FvTextHandlePrivate *priv = handle->priv;
-
-  gtk_style_context_invalidate (priv->style_context);
   _fv_text_handle_update_window (handle, FV_TEXT_HANDLE_POSITION_SELECTION_START, FALSE);
   _fv_text_handle_update_window (handle, FV_TEXT_HANDLE_POSITION_SELECTION_END, FALSE);
 }
