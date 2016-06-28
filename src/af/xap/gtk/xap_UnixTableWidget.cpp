@@ -512,47 +512,6 @@ static const char * widget_tb_insert_table_xpm[] = {
 	"                        "};
 
 
-static void
-register_stock_icon(void)
-{
-	static gboolean registered = FALSE;
-  
-	if (!registered)
-	{
-		GdkPixbuf *pixbuf;
-
-		static GtkStockItem items[] = {
-			{ (gchar*)"abi-table-widget",
-			  (gchar*)"_Table",
-			  static_cast<GdkModifierType>(0), 0, NULL }
-		};
-
-		registered = TRUE;
-
-		/* Register our stock items */
-		gtk_stock_add (items, G_N_ELEMENTS (items));
-
-		// Must be C cast
-		pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)widget_tb_insert_table_xpm);
-
-		/* Register icon to accompany stock item */
-		if (pixbuf != NULL)
-		{
-			gint w, h;
-			w = gdk_pixbuf_get_width(pixbuf);
-			h = gdk_pixbuf_get_height(pixbuf);
-			gtk_icon_theme_add_builtin_icon("abi-table-widget",
-							std::max(w,h),
-							pixbuf);
-			g_object_unref (G_OBJECT (pixbuf));
-		}
-		else
-		{
-			UT_ASSERT_HARMLESS(UT_SHOULD_NOT_HAPPEN);
-		}
-	}
-}
-
 void abi_table_set_icon(AbiTable* abi_table,GtkWidget * gtkImageIcon)
 {
 	if(!GTK_IS_IMAGE(G_OBJECT(gtkImageIcon)))
@@ -606,8 +565,6 @@ abi_table_init (AbiTable* table)
 {
 	char* text = g_strdup_printf("%d x %d ", init_rows, init_cols);
 
-	register_stock_icon();
-
 	table->style_context = XAP_GtkStyle_get_style(NULL, "GtkTreeView.view"); // "textview.view"
 
 	table->button_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
@@ -637,7 +594,13 @@ abi_table_init (AbiTable* table)
 	abi_table_resize(table);
 
 	table->icon = NULL;
-	table->icon = gtk_image_new_from_icon_name("abi-table-widget", GTK_ICON_SIZE_LARGE_TOOLBAR);
+
+	GdkPixbuf* pixbuf = gdk_pixbuf_new_from_xpm_data((const char **)widget_tb_insert_table_xpm);
+	if (pixbuf) {
+		table->icon = gtk_image_new_from_pixbuf(pixbuf);
+		g_object_unref(pixbuf);
+	}
+
 	gtk_widget_show(table->icon);
 	gtk_box_pack_end(GTK_BOX(table->button_box), table->icon, FALSE, FALSE, 0);
 	UT_DEBUGMSG(("abi-table icon loaded %p !\n",table->icon));
