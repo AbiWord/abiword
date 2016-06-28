@@ -2023,30 +2023,6 @@ bool XAP_UnixFrameImpl::_runModalContextMenu(AV_View * /* pView */, const char *
 
 	if (m_pUnixPopup && m_pUnixPopup->synthesizeMenuPopup())
 	{
-		// Add our InputMethod selection item to the popup menu, UNLESS WE'RE DOING A PRESENTATION Borrowed
-		// from gtkentry.c
-		if(!pFrame->isMenuScrollHidden())
-		{
-				GtkWidget * menuitem;
-				GtkWidget * submenu;
-				GtkWidget * menu = m_pUnixPopup->getMenuHandle();
-				menuitem = gtk_separator_menu_item_new ();
-				gtk_widget_show (menuitem);
-				gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-
-				const XAP_StringSet * pSS = XAP_App::getApp()->getStringSet();
-
-				menuitem = gtk_menu_item_new_with_label (pSS->getValue(XAP_STRING_ID_XIM_Methods));
-
-				gtk_widget_show (menuitem);
-				submenu = gtk_menu_new ();
-				gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuitem), submenu);
-
-				gtk_menu_shell_append (GTK_MENU_SHELL (menu), menuitem);
-
-				gtk_im_multicontext_append_menuitems(GTK_IM_MULTICONTEXT(m_imContext),
-													 GTK_MENU_SHELL(submenu));
-		}
 		// the popup will steal the mouse and so we won't get the
 		// button_release_event and we won't know to release our
 		// grab.  so let's do it here.  (when raised from a keyboard
