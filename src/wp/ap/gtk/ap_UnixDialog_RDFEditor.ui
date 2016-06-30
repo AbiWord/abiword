@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.0 -->
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="3.12"/>
   <object class="GtkAction" id="acopytriple">
     <property name="stock_id">gtk-copy</property>
   </object>
@@ -16,6 +17,11 @@
   <object class="GtkAction" id="anewtriple">
     <property name="stock_id">gtk-new</property>
     <property name="is_important">True</property>
+  </object>
+  <object class="GtkImage" id="showall">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-info</property>
   </object>
   <object class="GtkDialog" id="ap_UnixDialog_RDFEditor">
     <property name="can_focus">False</property>
@@ -46,10 +52,10 @@
             <child>
               <object class="GtkButton" id="btShowAll">
                 <property name="label" translatable="yes">Update</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="image">showall</property>
               </object>
               <packing>
@@ -61,11 +67,11 @@
             <child>
               <object class="GtkButton" id="btClose">
                 <property name="label">gtk-close</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -84,18 +90,18 @@
         </child>
         <child>
           <object class="GtkBox" id="topvbox">
-            <property name="orientation">vertical</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
             <child>
               <object class="GtkMenuBar" id="menubar">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
                   <object class="GtkMenuItem" id="filemenuitem">
+                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="label" translatable="yes">_File</property>
                     <property name="use_underline">True</property>
                     <child type="submenu">
@@ -104,18 +110,20 @@
                         <property name="can_focus">False</property>
                         <child>
                           <object class="GtkImageMenuItem" id="miopen">
+                            <property name="related_action">aimportrdfxml</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="related_action">aimportrdfxml</property>
                             <property name="use_underline">True</property>
+                            <property name="use_stock">False</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="misave">
+                            <property name="related_action">aexportrdfxml</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="related_action">aexportrdfxml</property>
                             <property name="use_underline">True</property>
+                            <property name="use_stock">False</property>
                           </object>
                         </child>
                       </object>
@@ -124,9 +132,9 @@
                 </child>
                 <child>
                   <object class="GtkMenuItem" id="editmenuitem">
+                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="label" translatable="yes">Triple</property>
                     <property name="use_underline">True</property>
                     <child type="submenu">
@@ -135,26 +143,29 @@
                         <property name="can_focus">False</property>
                         <child>
                           <object class="GtkImageMenuItem" id="minew">
+                            <property name="related_action">anewtriple</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="related_action">anewtriple</property>
                             <property name="use_underline">True</property>
+                            <property name="use_stock">False</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="micopy">
+                            <property name="related_action">acopytriple</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="related_action">acopytriple</property>
                             <property name="use_underline">True</property>
+                            <property name="use_stock">False</property>
                           </object>
                         </child>
                         <child>
                           <object class="GtkImageMenuItem" id="midelete">
+                            <property name="related_action">adeletetriple</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="related_action">adeletetriple</property>
                             <property name="use_underline">True</property>
+                            <property name="use_stock">False</property>
                           </object>
                         </child>
                       </object>
@@ -172,15 +183,15 @@
               <object class="GtkButtonBox" id="hbuttonbox1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="layout_style">start</property>
                 <property name="border_width">5</property>
+                <property name="layout_style">start</property>
                 <child>
                   <object class="GtkButton" id="btnew">
                     <property name="label">gtk-new</property>
+                    <property name="related_action">anewtriple</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="related_action">anewtriple</property>
                     <property name="use_stock">True</property>
                     <property name="image_position">bottom</property>
                   </object>
@@ -192,11 +203,11 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="btcopy">
-                    <property name="label" translatable="yes">Copy</property>
+                    <property name="label">Copy</property>
+                    <property name="related_action">acopytriple</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="related_action">acopytriple</property>
                     <property name="use_stock">True</property>
                     <property name="image_position">bottom</property>
                   </object>
@@ -209,10 +220,10 @@
                 <child>
                   <object class="GtkButton" id="btdel">
                     <property name="label">gtk-delete</property>
+                    <property name="related_action">adeletetriple</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="related_action">adeletetriple</property>
                     <property name="use_stock">True</property>
                     <property name="image_position">bottom</property>
                   </object>
@@ -237,9 +248,9 @@
                   <object class="GtkLabel" id="lbRestrict">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="xpad">5</property>
                     <property name="label" translatable="yes">Restrict to RDF Link:</property>
                     <property name="xalign">0</property>
-                    <property name="xpad">5</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -323,7 +334,7 @@
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
@@ -334,10 +345,5 @@
       <action-widget response="0">btShowAll</action-widget>
       <action-widget response="-7">btClose</action-widget>
     </action-widgets>
-  </object>
-  <object class="GtkImage" id="showall">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-info</property>
   </object>
 </interface>

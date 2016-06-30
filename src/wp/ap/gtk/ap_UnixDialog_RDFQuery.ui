@@ -1,6 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- Generated with glade 3.20.0 -->
 <interface>
-  <!-- interface-requires gtk+ 3.0 -->
+  <requires lib="gtk+" version="3.12"/>
+  <object class="GtkImage" id="execute">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-refresh</property>
+  </object>
+  <object class="GtkImage" id="showall">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="stock">gtk-info</property>
+  </object>
+  <object class="GtkTextBuffer" id="sparqlq">
+    <property name="text">
+
+prefix rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; 
+prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; 
+prefix pkg:  &lt;http://docs.oasis-open.org/opendocument/meta/package/common#&gt; 
+prefix geo84: &lt;http://www.w3.org/2003/01/geo/wgs84_pos#&gt;
+
+select ?s ?p ?o 
+where { 
+ ?s ?p ?o 
+}</property>
+  </object>
   <object class="GtkDialog" id="ap_UnixDialog_RDFQuery">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -28,10 +52,10 @@
             <child>
               <object class="GtkButton" id="btShowAll">
                 <property name="label" translatable="yes">Show All RDF</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="image">showall</property>
               </object>
               <packing>
@@ -43,10 +67,10 @@
             <child>
               <object class="GtkButton" id="btExecute">
                 <property name="label" translatable="yes">Execute Query</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="image">execute</property>
               </object>
               <packing>
@@ -58,11 +82,11 @@
             <child>
               <object class="GtkButton" id="btClose">
                 <property name="label">gtk-close</property>
+                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -81,17 +105,17 @@
         </child>
         <child>
           <object class="GtkBox" id="vbox1">
-            <property name="orientation">vertical</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
             <child>
               <placeholder/>
             </child>
             <child>
               <object class="GtkPaned" id="vpaned1">
-                <property name="orientation">vertical</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <object class="GtkScrolledWindow" id="scrolledwindow2">
                     <property name="visible">True</property>
@@ -144,8 +168,8 @@
             <child>
               <object class="GtkBox" id="hbox1">
                 <property name="visible">True</property>
-                <property name="border_width">5</property>
                 <property name="can_focus">False</property>
+                <property name="border_width">5</property>
                 <child>
                   <placeholder/>
                 </child>
@@ -172,7 +196,7 @@
             </child>
           </object>
           <packing>
-            <property name="expand">False</property>
+            <property name="expand">True</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
@@ -184,28 +208,5 @@
       <action-widget response="0">btExecute</action-widget>
       <action-widget response="-7">btClose</action-widget>
     </action-widgets>
-  </object>
-  <object class="GtkImage" id="execute">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-refresh</property>
-  </object>
-  <object class="GtkImage" id="showall">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="stock">gtk-info</property>
-  </object>
-  <object class="GtkTextBuffer" id="sparqlq">
-    <property name="text" translatable="no">
-
-prefix rdf:  &lt;http://www.w3.org/1999/02/22-rdf-syntax-ns#&gt; 
-prefix foaf: &lt;http://xmlns.com/foaf/0.1/&gt; 
-prefix pkg:  &lt;http://docs.oasis-open.org/opendocument/meta/package/common#&gt; 
-prefix geo84: &lt;http://www.w3.org/2003/01/geo/wgs84_pos#&gt;
-
-select ?s ?p ?o 
-where { 
- ?s ?p ?o 
-}</property>
   </object>
 </interface>
