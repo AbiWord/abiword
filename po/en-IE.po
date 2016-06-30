@@ -4,7 +4,6 @@
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 2.3.0\n"
@@ -263,9 +262,8 @@ msgstr "&Bold"
 
 #. MENU_LABEL_FMT_BORDERS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Borders and Shading"
-msgstr "Borders and Shading"
+msgstr "&Borders and Shading"
 
 #. DLG_PageSetup_Bottom
 #: po/tmp/ap_String_Id.h
@@ -351,9 +349,8 @@ msgstr ""
 
 #. MENU_LABEL_DELETE_ANNOTATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Delete annotation"
-msgstr "Delete the selection"
+msgstr "&Delete annotation"
 
 #. MENU_LABEL_INSERT_DELETE_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -478,9 +475,8 @@ msgstr ""
 
 #. MENU_LABEL_TABLE_FORMAT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Format"
-msgstr "F&ormat"
+msgstr "&Format"
 
 #. MENU_LABEL_EDIT_GOTO
 #: po/tmp/ap_String_Id.h
@@ -499,9 +495,8 @@ msgstr "&Header and Footer"
 
 #. MENU_LABEL_FMT_HDRFTR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Header/Footers"
-msgstr "&Header and Footer"
+msgstr "&Header/Footers"
 
 #. DLG_PageSetup_Header
 #: po/tmp/ap_String_Id.h
@@ -893,9 +888,8 @@ msgstr ""
 
 #. MENU_LABEL_RDFANCHOR_SHOW_TRIPLES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Show RDF"
-msgstr "&Ruler"
+msgstr "&Show RDF"
 
 #. MENU_LABEL_VIEW_STATUSBAR
 #: po/tmp/ap_String_Id.h
@@ -904,14 +898,13 @@ msgstr "&Status Bar"
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "&Show annotations"
-msgstr "&Status Bar"
+msgstr "&Show annotations"
 
 #. DLG_Para_LabelSpecial
 #: po/tmp/ap_String_Id.h
 msgid "&Special:"
-msgstr ""
+msgstr "&Special:"
 
 #. MENU_LABEL_TOOLS_SPELLING
 #: po/tmp/ap_String_Id.h
@@ -1274,9 +1267,8 @@ msgstr "Allow screen colours other than white"
 
 #. DLG_Goto_Target_Annotation
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Annotation"
-msgstr "&Status Bar"
+msgstr "Annotation"
 
 #. FIELD_Application
 #: po/tmp/ap_String_Id.h
@@ -1481,9 +1473,8 @@ msgstr ""
 
 #. MENU_LABEL_FMT_BOTTOMLINE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Bo&ttomline"
-msgstr "Bottomline"
+msgstr "Bo&ttomline"
 
 #. TOOLBAR_LABEL_FMT_BOLD
 #. TOOLBAR_STATUSLINE_FMT_BOLD
@@ -1538,9 +1529,8 @@ msgstr ""
 
 #. DLG_PageNumbers_Footer
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Bottom"
-msgstr "Bottomline"
+msgstr "Bottom"
 
 #. BottomMarginStatus
 #: po/tmp/ap_String_Id.h
@@ -1748,9 +1738,8 @@ msgstr "Change the format of the selected paragraph"
 
 #. MENU_STATUSLINE_FMT_TABLE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Change the format of the table"
-msgstr "Change the format of the selected paragraph"
+msgstr "Change the format of the table"
 
 #. MENU_STATUSLINE_FMT_LANGUAGE
 #. MENU_STATUSLINE_TOOLS_LANGUAGE
@@ -2008,9 +1997,8 @@ msgstr ""
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contact"
-msgstr "Help &Contents"
+msgstr "Contact"
 
 #. MENU_LABEL_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
@@ -2019,9 +2007,8 @@ msgstr ""
 
 #. TOC_TocHeading
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Contents"
-msgstr "Help &Contents"
+msgstr "Contents"
 
 #. DLG_MarkRevisions_Check1Label
 #: po/tmp/ap_String_Id.h
@@ -2152,9 +2139,8 @@ msgstr ""
 
 #. MENU_LABEL_RDF_SEMITEM_CREATEREF
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create Reference"
-msgstr "Set preferences"
+msgstr "Create Reference"
 
 #. MENU_LABEL_RDF_SEMITEM_CREATE
 #. MENU_STATUSLINE_RDF_SEMITEM_CREATE
@@ -2169,9 +2155,8 @@ msgstr ""
 
 #. TOOLBAR_TOOLTIP_REVISIONS_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create a new Revision"
-msgstr "Create a new document"
+msgstr "Create a new Revision"
 
 #. DLG_NEW_Tab1_WP1
 #: po/tmp/ap_String_Id.h
@@ -2202,15 +2187,13 @@ msgstr ""
 
 #. MENU_LABEL_TOOLS_ANNOTATIONS_INSERT_FROMSEL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create from &selection"
-msgstr "Delete the selection"
+msgstr "Create from &selection"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Contact Semantic Item"
-msgstr "Create a new document"
+msgstr "Create new Contact Semantic Item"
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW_CONTACT_FROM_FILE
 #: po/tmp/ap_String_Id.h
@@ -2224,9 +2207,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_RDF_SEMITEM_NEW
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Create new Semantic Item"
-msgstr "Create a new document"
+msgstr "Create new Semantic Item"
 
 #. FIELD_Document_Creator
 #: po/tmp/ap_String_Id.h
@@ -2312,9 +2294,8 @@ msgstr ""
 
 #. MENU_LABEL_EDIT_CUTEMBED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Cut Object"
-msgstr "Subject:"
+msgstr "Cut Object"
 
 #. MENU_LABEL_EDIT_CUT_FRAME
 #: po/tmp/ap_String_Id.h
@@ -2456,9 +2437,8 @@ msgstr ""
 
 #. MENU_LABEL_EDIT_DELETEEMBED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Delete Object"
-msgstr "Delete the selection"
+msgstr "Delete Object"
 
 #. MENU_LABEL_TABLE_DELETEROW
 #: po/tmp/ap_String_Id.h
@@ -2489,9 +2469,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_DELETE_ANNOTATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Delete annotation"
-msgstr "Delete the selection"
+msgstr "Delete annotation"
 
 #. TOOLBAR_LABEL_DELETE_COLUMN
 #: po/tmp/ap_String_Id.h
@@ -2583,9 +2562,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_RDF_EDITOR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Directly edit the RDF for the entire document..."
-msgstr "Select the entire document"
+msgstr "Directly edit the RDF for the entire document..."
 
 #. DLG_Styles_StylesLocked
 #: po/tmp/ap_String_Id.h
@@ -2610,9 +2588,8 @@ msgstr "Display Help Contents"
 
 #. MENU_STATUSLINE_HELP_INTRO
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Display Help Introduction"
-msgstr "Help &Index"
+msgstr "Display Help Introduction"
 
 #. MENU_STATUSLINE_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
@@ -2661,9 +2638,8 @@ msgstr ""
 
 #. DLG_BorderShading_Border_Style_Dotted
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dotted line"
-msgstr "Bottomline"
+msgstr "Dotted line"
 
 #. DLG_Para_SpacingDouble
 #: po/tmp/ap_String_Id.h
@@ -2683,9 +2659,8 @@ msgstr "Double spacing"
 
 #. MENU_LABEL_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dump RDF Objects"
-msgstr "Subject:"
+msgstr "Dump RDF Objects"
 
 #. MENU_LABEL_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
@@ -2694,9 +2669,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_OBJECTS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Dump out information about RDF Objects"
-msgstr "Display information about Open Source"
+msgstr "Dump out information about RDF Objects"
 
 #. MENU_STATUSLINE_RDF_ADV_DUMP_FOR_POINT
 #: po/tmp/ap_String_Id.h
@@ -2751,9 +2725,8 @@ msgstr ""
 
 #. DLG_RDF_Editor_Title
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Edit document RDF"
-msgstr "Save the document"
+msgstr "Edit document RDF"
 
 #. MENU_STATUSLINE_INSERT_EDIT_HYPERLINK
 #: po/tmp/ap_String_Id.h
@@ -2799,9 +2772,8 @@ msgstr ""
 
 #. DLG_BorderShading_Use_Shading
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Enable shading"
-msgstr "Double spacing"
+msgstr "Enable shading"
 
 #. DLG_Options_Label_SmartQuotes
 #: po/tmp/ap_String_Id.h
@@ -2874,9 +2846,8 @@ msgstr ""
 
 #. DLG_RDF_Query_Execute
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Execute Query"
-msgstr "Execute script"
+msgstr "Execute Query"
 
 #. MENU_STATUSLINE_RDFANCHOR_SPARQL
 #: po/tmp/ap_String_Id.h
@@ -3094,9 +3065,8 @@ msgstr "Font"
 
 #. TOOLBAR_STATUSLINE_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Font Choose"
-msgstr "Font colour"
+msgstr "Font Choose"
 
 #. TOOLBAR_LABEL_FMT_SIZE
 #. TOOLBAR_STATUSLINE_FMT_SIZE
@@ -3107,9 +3077,8 @@ msgstr "Font Size"
 
 #. TOOLBAR_LABEL_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Font choose"
-msgstr "Font colour"
+msgstr "Font choose"
 
 #. TOOLBAR_LABEL_COLOR_FORE
 #. TOOLBAR_STATUSLINE_COLOR_FORE
@@ -3235,9 +3204,8 @@ msgstr ""
 
 #. MENU_LABEL_FMT_EMBED
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Format Ob&ject"
-msgstr "F&ormat"
+msgstr "Format Ob&ject"
 
 #. TOOLBAR_LABEL_FMTPAINTER
 #: po/tmp/ap_String_Id.h
@@ -3288,17 +3256,15 @@ msgstr ""
 
 #. MENU_LABEL_INSERT_EQUATION_LATEX
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "From LaTeX"
-msgstr "&From File"
+msgstr "From LaTeX"
 
 #. TOOLBAR_LABEL_VIEW_FULL_SCREEN
 #. TOOLBAR_STATUSLINE_VIEW_FULL_SCREEN
 #. TOOLBAR_TOOLTIP_VIEW_FULL_SCREEN
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Full Screen"
-msgstr "F&ull Screen"
+msgstr "Full Screen"
 
 #. DLG_FormatTOC_General
 #. DLG_Options_Label_General
@@ -3430,9 +3396,8 @@ msgstr "Highlight"
 
 #. MENU_LABEL_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Highlight RDF"
-msgstr "Highlight"
+msgstr "Highlight RDF"
 
 #. MENU_STATUSLINE_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
@@ -3737,9 +3702,8 @@ msgstr "Insert a symbol or other special character"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_INSERT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Insert an annotation"
-msgstr "Insert an image into the document"
+msgstr "Insert an annotation"
 
 #. MENU_STATUSLINE_INSERT_PAGENO
 #: po/tmp/ap_String_Id.h
@@ -4153,9 +4117,8 @@ msgstr "Make the selection superscript (toggle)"
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Manage annotations in document"
-msgstr "Open an existing document"
+msgstr "Manage annotations in document"
 
 #. MENU_STATUSLINE_TOOLS_PLUGINS
 #: po/tmp/ap_String_Id.h
@@ -4513,9 +4476,8 @@ msgstr ""
 
 #. DLG_RDF_Query_Column_Object
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Object"
-msgstr "Subject:"
+msgstr "Object"
 
 #. DLG_BorderShading_Offset
 #: po/tmp/ap_String_Id.h
@@ -4614,9 +4576,8 @@ msgstr "Overline the selection (toggle)"
 
 #. InsertModeFieldOVR
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Overwrite"
-msgstr "Overline"
+msgstr "Overwrite"
 
 #. MENU_LABEL_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h
@@ -4961,9 +4922,8 @@ msgstr ""
 
 #. MENU_LABEL_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "RTL &Document"
-msgstr "&Document"
+msgstr "RTL &Document"
 
 #. MENU_LABEL_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5039,9 +4999,8 @@ msgstr ""
 #. MENU_LABEL_RDF_SEMITEM_RELATION
 #. MENU_STATUSLINE_RDF_SEMITEM_RELATION
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Relation"
-msgstr "Salutation:"
+msgstr "Relation"
 
 #. DLG_MetaData_Relation_LBL
 #: po/tmp/ap_String_Id.h
@@ -5086,15 +5045,13 @@ msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_REVISIONS_PURGE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove all revision information from the document"
-msgstr "Ignore all occurrences of this word in the document"
+msgstr "Remove all revision information from the document"
 
 #. MENU_STATUSLINE_TOOLS_HISTORY_PURGE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Remove full document history from the document"
-msgstr "Ignore all occurrences of this word in the document"
+msgstr "Remove full document history from the document"
 
 #. MENU_STATUSLINE_EDIT_REMOVEFOOTER
 #: po/tmp/ap_String_Id.h
@@ -5149,9 +5106,8 @@ msgstr ""
 
 #. DLG_Annotation_Replace_tooltip
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Replace the annotated text with the annotation content"
-msgstr "Replace the specified text with different text"
+msgstr "Replace the annotated text with the annotation content"
 
 #. MENU_STATUSLINE_EDIT_REPLACE
 #: po/tmp/ap_String_Id.h
@@ -5479,9 +5435,8 @@ msgstr ""
 
 #. TOOLBAR_TOOLTIP_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Select Font"
-msgstr "Select A&ll"
+msgstr "Select Font"
 
 #. DLG_ListRevisions_Title
 #. TOOLBAR_LABEL_REVISIONS_SELECT
@@ -5693,9 +5648,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DOCD_RTL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Set dominant direction of document to RTL"
-msgstr "Change dominant direction of paragraph"
+msgstr "Set dominant direction of document to RTL"
 
 #. MENU_STATUSLINE_FMT_DIRECTION_DD_RTL
 #: po/tmp/ap_String_Id.h
@@ -5704,9 +5658,8 @@ msgstr ""
 
 #. MENU_STATUSLINE_FMT_DIRECTION_SD_RTL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Set dominant direction of section to RTL"
-msgstr "Change dominant direction of paragraph"
+msgstr "Set dominant direction of section to RTL"
 
 #. MENU_STATUSLINE_FILE_PROPERTIES
 #: po/tmp/ap_String_Id.h
@@ -5715,9 +5668,8 @@ msgstr ""
 
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Set new Tab"
-msgstr "Centre Tab"
+msgstr "Set new Tab"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
@@ -5808,9 +5760,8 @@ msgstr "Show All"
 
 #. DLG_RDF_Query_ShowAll
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show All RDF"
-msgstr "Show All"
+msgstr "Show All RDF"
 
 #. MENU_LABEL_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
@@ -5849,15 +5800,13 @@ msgstr ""
 
 #. TOOLBAR_TOOLTIP_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show final document"
-msgstr "Show full list of windows"
+msgstr "Show final document"
 
 #. TOOLBAR_STATUSLINE_REVISIONS_SHOW_FINAL
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show final document..."
-msgstr "Show full list of windows"
+msgstr "Show final document..."
 
 #. MENU_STATUSLINE_WINDOW_MORE
 #: po/tmp/ap_String_Id.h
@@ -5914,15 +5863,14 @@ msgstr ""
 
 #. MENU_STATUSLINE_TOOLS_ANNOTATIONS_TOGGLE_DISPLAY
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Show/hide annotations"
-msgstr "Show/hide ¶"
+msgstr "Show/hide annotations"
 
 #. TOOLBAR_STATUSLINE_VIEW_SHOWPARA
 #. TOOLBAR_TOOLTIP_VIEW_SHOWPARA
 #: po/tmp/ap_String_Id.h
 msgid "Show/hide formatting marks"
-msgstr "Show/hide ¶"
+msgstr "Show/hide formatting marks"
 
 #. TB_Simple
 #: po/tmp/ap_String_Id.h
@@ -5931,9 +5879,8 @@ msgstr ""
 
 #. DLG_Options_Label_ViewSimpleTB
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Simple Toolbar"
-msgstr "&Toolbars"
+msgstr "Simple Toolbar"
 
 #. DLG_Para_SpacingSingle
 #: po/tmp/ap_String_Id.h
@@ -6194,9 +6141,8 @@ msgstr ""
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_EVENT_SUMMARY_TIMES
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Start and End Times"
-msgstr "Date and &Time"
+msgstr "Start and End Times"
 
 #. MENU_LABEL_TOOLS_REVISIONS_NEW_REVISION
 #: po/tmp/ap_String_Id.h
@@ -6289,9 +6235,8 @@ msgstr ""
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Stylesheet"
-msgstr "Style"
+msgstr "Stylesheet"
 
 #. MENU_LABEL_RDF_SEMITEM_STYLESHEET_SETTINGS
 #. MENU_STATUSLINE_RDF_SEMITEM_STYLESHEET_SETTINGS
@@ -6588,15 +6533,14 @@ msgstr ""
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "This paragraph represents words as they might appear in your document.  To "
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
 "This paragraph represents words as they might appear in your document.  To "
-"see text from your document used in this preview, position your cursor in a "
-"document paragraph with some text in it and open this dialogue."
+"see text from your document used in this preview, position your cursor "
+"in a document paragraph with some text in it and open this dialogue."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -6642,9 +6586,8 @@ msgstr ""
 
 #. MENU_LABEL_FMT_TOPLINE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "To&pline"
-msgstr "Topline"
+msgstr "To&pline"
 
 #. DLG_Options_Label_Toolbars
 #: po/tmp/ap_String_Id.h
@@ -6653,9 +6596,8 @@ msgstr ""
 
 #. DLG_PageNumbers_Header
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Top"
-msgstr "Topline"
+msgstr "Top"
 
 #. TopMarginStatus
 #: po/tmp/ap_String_Id.h
@@ -7011,17 +6953,15 @@ msgstr ""
 
 #. DLG_RDF_Query_Column_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "DLG_RDF_Query_Column_Subject"
 msgid "Subject"
-msgstr "Subject:"
+msgstr "Subject"
 
 #. FIELD_Document_Subject
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgctxt "FIELD_Document_Subject"
 msgid "Subject"
-msgstr "Subject:"
+msgstr "Subject"
 
 #.
 #. * Translatable strings file generated by extract-ui.
@@ -7057,9 +6997,8 @@ msgstr ""
 
 #. DLG_Image_DescTabLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "&Description"
-msgstr "&Subscript"
+msgstr "&Description"
 
 #. DLG_Zoom_PageWidth
 #: po/tmp/xap_String_Id.h
@@ -7068,9 +7007,8 @@ msgstr ""
 
 #. DLG_Image_PlacementTabLabel
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "&Placement"
-msgstr "&Document"
+msgstr "&Placement"
 
 #. DLG_ULANG_SetLangButton
 #: po/tmp/xap_String_Id.h
@@ -7455,9 +7393,8 @@ msgstr ""
 
 #. TB_ClearBackground
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clear Background"
-msgstr "Clear Background Colour"
+msgstr "Clear Background"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
@@ -7531,9 +7468,8 @@ msgstr ""
 
 #. LANG_COP_EG
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Coptic"
-msgstr "Copy"
+msgstr "Coptic"
 
 #. LANG_KW_GB
 #: po/tmp/xap_String_Id.h
@@ -7829,9 +7765,8 @@ msgstr ""
 
 #. STYLE_FOOTNOTE
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Footnote"
-msgstr "Font"
+msgstr "Fontnote"
 
 #. STYLE_FOOTREFERENCE
 #: po/tmp/xap_String_Id.h
@@ -8070,15 +8005,13 @@ msgstr ""
 
 #. MSG_ParagraphsImported
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Imported Paragraph"
-msgstr "&Paragraph"
+msgstr "Imported Paragraph"
 
 #. MSG_ImportingDoc
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Importing Document..."
-msgstr "&More Windows"
+msgstr "Importing Document..."
 
 #. LANG_ID_ID
 #: po/tmp/xap_String_Id.h
@@ -8418,9 +8351,8 @@ msgstr ""
 
 #. LANG_PS
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Pashto"
-msgstr "Paste"
+msgstr "Pashto"
 
 #. DLG_Password_Password
 #: po/tmp/xap_String_Id.h
@@ -8716,9 +8648,8 @@ msgstr ""
 
 #. DLG_HTMLOPT_ExpSplitDocument
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Split document"
-msgstr "Save the document"
+msgstr "Split document"
 
 #. DLG_Image_SquareWrap
 #: po/tmp/xap_String_Id.h
@@ -8742,9 +8673,8 @@ msgstr ""
 
 #. TB_Font_Symbol
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Symbols"
-msgstr "Symbol"
+msgstr "Symbols"
 
 #. LANG_SYR
 #: po/tmp/xap_String_Id.h
