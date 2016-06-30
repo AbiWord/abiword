@@ -4,7 +4,6 @@
 #
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Abiword 2.3.0\n"
@@ -3066,9 +3065,8 @@ msgstr ""
 
 #. TOOLBAR_STATUSLINE_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Font Choose"
-msgstr "Font colour"
+msgstr "Font Choose"
 
 #. TOOLBAR_LABEL_FMT_SIZE
 #. TOOLBAR_STATUSLINE_FMT_SIZE
@@ -3079,9 +3077,8 @@ msgstr ""
 
 #. TOOLBAR_LABEL_FMT_CHOOSE
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Font choose"
-msgstr "Font colour"
+msgstr "Font choose"
 
 #. TOOLBAR_LABEL_COLOR_FORE
 #. TOOLBAR_STATUSLINE_COLOR_FORE
@@ -3399,9 +3396,8 @@ msgstr ""
 
 #. MENU_LABEL_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Highlight RDF"
-msgstr "HighLight Colour"
+msgstr "HighLight RDF"
 
 #. MENU_STATUSLINE_RDF_HIGHLIGHT
 #: po/tmp/ap_String_Id.h
@@ -5672,9 +5668,8 @@ msgstr ""
 
 #. DLG_Tab_Label_New
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid "Set new Tab"
-msgstr "Centre Tab"
+msgstr "Set new Tab"
 
 #. DLG_FormatFrame_NoImageBackground
 #. DLG_FormatTable_NoImageBackground
@@ -6538,15 +6533,14 @@ msgstr ""
 
 #. DLG_Para_PreviewSampleFallback
 #: po/tmp/ap_String_Id.h
-#, fuzzy
 msgid ""
 "This paragraph represents words as they might appear in your document.  To "
 "see the text from your document used in this preview, position your cursor "
 "in a document paragraph with some text in it and open this dialog."
 msgstr ""
 "This paragraph represents words as they might appear in your document.  To "
-"see text from your document used in this preview, position your cursor in a "
-"document paragraph with some text in it and open this dialogue."
+"see the text from your document used in this preview, position your cursor "
+"in a document paragraph with some text in it and open this dialogue."
 
 #. DLG_Styles_ErrStyleNot
 #: po/tmp/ap_String_Id.h
@@ -7399,9 +7393,8 @@ msgstr ""
 
 #. TB_ClearBackground
 #: po/tmp/xap_String_Id.h
-#, fuzzy
 msgid "Clear Background"
-msgstr "Clear Background Colour"
+msgstr "Clear Background"
 
 #. DLG_CLIPART_Title
 #: po/tmp/xap_String_Id.h
