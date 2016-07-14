@@ -1,3 +1,4 @@
+/* -*- mode: C++; tab-width: 4; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 /* AbiWord
  * Copyright (C) 1998-2000 AbiSource, Inc.
  * 
@@ -84,7 +85,7 @@ private:
     UT_uint32			m_pageNr;
     UT_uint32			m_nrPages;
 
-    const gchar *	m_szFormat;
+    gchar *	m_szFormat;
 };
 
 ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
@@ -97,18 +98,19 @@ ap_sbf_PageInfo::ap_sbf_PageInfo(AP_StatusBar * pSB)
     m_szFormat = g_strdup(s.c_str());
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = LEFT;
-    UT_UTF8String_sprintf(m_sRepresentativeString,m_szFormat,AP_STATUSBAR_MAX_PAGES,AP_STATUSBAR_MAX_PAGES);
+    UT_UTF8String_sprintf(m_sRepresentativeString, m_szFormat,
+                          AP_STATUSBAR_MAX_PAGES, AP_STATUSBAR_MAX_PAGES);
 }
 
 void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
 {
     FV_View * pView = static_cast<FV_View *>(pavView);
-	
+
     bool bNeedNewString = false;
 
     if (mask & (AV_CHG_MOTION | AV_CHG_PAGECOUNT))
     {
-		UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar(); 
+		UT_uint32 currentPage = pView->getCurrentPageNumForStatusBar();
 		UT_uint32 newPageCount = pView->getLayout()->countPages();
 
 		if (newPageCount != m_nrPages || m_pageNr != currentPage)
@@ -122,18 +124,19 @@ void ap_sbf_PageInfo::notify(AV_View * pavView, const AV_ChangeMask mask)
     if (bNeedNewString)
     {
 		UT_UTF8String_sprintf(m_sBuf, m_szFormat, m_pageNr, m_nrPages);
-		
-		if (getListener())
+
+		if (getListener()) {
 			getListener()->notify();
+        }
 
     }
 }
 
 ap_sbf_PageInfo::~ap_sbf_PageInfo()
 {
-	if (m_szFormat)
-		g_free(const_cast<gchar *>(m_szFormat));
-
+    if (m_szFormat) {
+        g_free(m_szFormat);
+    }
 }
 
 //////////////////////////////////////////////////////////////////
@@ -150,7 +153,6 @@ public:
 
 ap_sbf_StatusMessage::ap_sbf_StatusMessage(AP_StatusBar * pSB)
     : AP_StatusBarField_TextInfo(pSB)
-      
 {
     m_fillMethod = MAX_POSSIBLE;
     m_alignmentMethod = LEFT;
@@ -180,13 +182,12 @@ class ABI_EXPORT ap_sbf_InputMode : public AP_StatusBarField_TextInfo
 {
 public:
     ap_sbf_InputMode(AP_StatusBar * pSB);
-	
+
     virtual void		notify(AV_View * pView, const AV_ChangeMask mask);
 };
 
 ap_sbf_InputMode::ap_sbf_InputMode(AP_StatusBar * pSB)
     : AP_StatusBarField_TextInfo(pSB)
-      
 {
     UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), XAP_App::getApp()->getDefaultEncoding());
     m_sBuf = sInputMode;
@@ -436,15 +437,14 @@ void AP_StatusBar::setView(AV_View * pView)
 
     if (!m_bInitFields)
     {
-		
-	m_bInitFields = true;
+        m_bInitFields = true;
     }
 
     // force a full notify of all fields so that they all
     // completely update themselves.
-	
+
     notify(pView,AV_CHG_ALL);
-	
+
     return;
 }
 
@@ -469,20 +469,18 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 		return true;
 	}
     setStatusMessage(static_cast<UT_UCSChar *>(NULL));
-	
+
     // Let each field on the status bar update itself accordingly.
-	
+
     UT_ASSERT_HARMLESS(pView==m_pView);
     UT_uint32 kLimit = m_vecFields.getItemCount();
     UT_uint32 k;
 
-    for (k=0; k<kLimit; k++)
-    {
-	AP_StatusBarField * pf = static_cast<AP_StatusBarField *>(m_vecFields.getNthItem(k));
-	if(pf)
-	{
-	    pf->notify(pView,mask);
-	}
+    for (k = 0; k < kLimit; k++) {
+        AP_StatusBarField * pf = static_cast<AP_StatusBarField *>(m_vecFields.getNthItem(k));
+        if(pf) {
+            pf->notify(pView,mask);
+        }
     }
 
     return true;
@@ -490,38 +488,38 @@ bool AP_StatusBar::notify(AV_View * pView, const AV_ChangeMask mask)
 
 void AP_StatusBar::setStatusMessage(UT_UCSChar * pBufUCS, int /*redraw*/)
 {
-    if(getFrame()->getFrameMode() != XAP_NormalFrame)
-    {
-	return;
+    if(getFrame()->getFrameMode() != XAP_NormalFrame) {
+        return;
     }
     m_sStatusMessage.clear();
 
     if (pBufUCS && *pBufUCS)
 	m_sStatusMessage.appendUCS4(pBufUCS);
-	
+
     ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
-    if(pf)
-	pf->update(m_sStatusMessage);
+    if(pf) {
+        pf->update(m_sStatusMessage);
+    }
 }
 
 void AP_StatusBar::setStatusMessage(const char * pBuf, int /*redraw*/)
 {
-    if(getFrame()->getFrameMode() != XAP_NormalFrame)
-    {
-	return;
+    if(getFrame()->getFrameMode() != XAP_NormalFrame) {
+        return;
     }
 
-    if (pBuf && *pBuf)
-    {
-	UT_UTF8String sBuf(pBuf, XAP_App::getApp()->getDefaultEncoding());
-	m_sStatusMessage = sBuf;
+    if (pBuf && *pBuf) {
+        UT_UTF8String sBuf(pBuf, XAP_App::getApp()->getDefaultEncoding());
+        m_sStatusMessage = sBuf;
     }
-	else
-	m_sStatusMessage.clear();
+    else {
+        m_sStatusMessage.clear();
+    }
 
     ap_sbf_StatusMessage * pf = static_cast<ap_sbf_StatusMessage *>(m_pStatusMessageField);
-    if(pf)
-	pf->update(m_sStatusMessage);
+    if(pf) {
+        pf->update(m_sStatusMessage);
+    }
 }
 
 const UT_UTF8String & AP_StatusBar::getStatusMessage(void) const
@@ -529,22 +527,22 @@ const UT_UTF8String & AP_StatusBar::getStatusMessage(void) const
     return m_sStatusMessage;
 }
 
-void AP_StatusBar::setStatusProgressType(int start, int end, int flags) 
+void AP_StatusBar::setStatusProgressType(int start, int end, int flags)
 {
-  if(!m_pStatusProgressField)
-  {
-      m_pStatusProgressField = new AP_StatusBarField_ProgressBar(this);
-  }
-  if(m_pStatusProgressField)
-  {
-      m_pStatusProgressField->setStatusProgressType(start, end, flags);
-  }
+    if(!m_pStatusProgressField)
+    {
+        m_pStatusProgressField = new AP_StatusBarField_ProgressBar(this);
+    }
+    if(m_pStatusProgressField)
+    {
+        m_pStatusProgressField->setStatusProgressType(start, end, flags);
+    }
 }
 
-void AP_StatusBar::setStatusProgressValue(int value ) 
+void AP_StatusBar::setStatusProgressValue(int value )
 {
-  if(m_pStatusProgressField)
-  {
-      m_pStatusProgressField->setStatusProgressValue(value);
-  }
+    if(m_pStatusProgressField)
+    {
+        m_pStatusProgressField->setStatusProgressValue(value);
+    }
 }

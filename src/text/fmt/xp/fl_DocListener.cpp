@@ -296,7 +296,7 @@ bool fl_DocListener::populateStrux(pf_Frag_Strux* sdh,
 				    UT_UTF8String_sprintf(msg2," %d",percentFilled);
 				    msg += msg2;
 				    msg += "%";
-				    m_pStatusBar->setStatusMessage(static_cast<const gchar *>(msg.utf8_str()));
+				    m_pStatusBar->setStatusMessage(msg.utf8_str());
 				  }
 				}
 				if(countStrux > 60)

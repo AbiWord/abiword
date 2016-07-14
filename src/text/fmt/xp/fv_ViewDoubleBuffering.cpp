@@ -123,7 +123,9 @@ bool FV_ViewDoubleBuffering::getCallDrawOnlyAtTheEnd()
 
 void FV_ViewDoubleBuffering::callUnifiedDraw()
 {
-	if(noRecordedDrawCalls()) return;
+	if(noRecordedDrawCalls()) {
+		return;
+	}
 
 	m_pView->getGraphics()->setClipRect(&mostExtArgs.clipRect);
 	m_pView->_draw(
@@ -158,8 +160,9 @@ void FV_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
 	const UT_Rect *clipRectFromGraphics,
 	bool bDirtyRunsOnly)
 {
-	if(clipRectFromGraphics == NULL)
+	if(clipRectFromGraphics == NULL) {
 		clipRectFromGraphics = thisCallRect;
+	}
 
 	if(mostExtArgs.callCount == 0)
 	{
@@ -171,10 +174,12 @@ void FV_ViewDoubleBuffering::extendDrawArgsIfNeccessary(
 	else
 	{
 		// extend those args
-		
+
 		// 1. dirty runs: false means more
-		if(bDirtyRunsOnly == false) mostExtArgs.bDirtyRunsOnly = false;
-		
+		if(bDirtyRunsOnly == false) {
+			mostExtArgs.bDirtyRunsOnly = false;
+		}
+
 		// 2. full rectangle
 		mostExtArgs.fullRect.unionRect(thisCallRect);
 
