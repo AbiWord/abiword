@@ -1392,7 +1392,6 @@ bool EV_UnixToolbar::refreshToolbar(AV_View * pView, AV_ChangeMask mask)
 						combo_box_set_active_text(combo, szState, wd->m_handlerId);
 					} 
 					if (wd->m_id == AP_TOOLBAR_ID_FMT_FONT) {
-						m_pFrame->setStatusMessage(szState);
 						if (wd->m_pUnixToolbar->m_pFontPreview) {
 							UT_DEBUGMSG(("ev_UnixToolbar - deleting FontPreview %p \n",wd->m_pUnixToolbar));
 						    delete wd->m_pUnixToolbar->m_pFontPreview;
