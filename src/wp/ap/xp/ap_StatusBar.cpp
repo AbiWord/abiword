@@ -160,19 +160,19 @@ ap_sbf_StatusMessage::ap_sbf_StatusMessage(AP_StatusBar * pSB)
 }
 
 void ap_sbf_StatusMessage::notify(AV_View * /*pView*/, const AV_ChangeMask /*mask*/)
-{    
-    m_sBuf = m_pSB->getStatusMessage();
-
-    if (getListener())
-	getListener()->notify();
+{
+    update(m_pSB->getStatusMessage());
 }
 
 void ap_sbf_StatusMessage::update(const UT_UTF8String &sMessage)
 {
-    m_sBuf = sMessage;
+    if (m_sBuf != sMessage) {
+        m_sBuf = sMessage;
 
-    if (getListener())
-	getListener()->notify();
+        if (getListener()) {
+            getListener()->notify();
+        }
+    }
 }
 
 //////////////////////////////////////////////////////////////////
@@ -201,11 +201,14 @@ void ap_sbf_InputMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 {
     if (mask & (AV_CHG_INPUTMODE))
     {
-	UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), XAP_App::getApp()->getDefaultEncoding());
-	m_sBuf = sInputMode;
+        UT_UTF8String sInputMode(XAP_App::getApp()->getInputMode(), XAP_App::getApp()->getDefaultEncoding());
+        if (m_sBuf != sInputMode) {
+            m_sBuf = sInputMode;
 
-	if (getListener())
-	    getListener()->notify();
+            if (getListener()) {
+                getListener()->notify();
+            }
+        }
     }
 }
 
@@ -250,14 +253,16 @@ void ap_sbf_InsertMode::notify(AV_View * /*pavView*/, const AV_ChangeMask mask)
 {
     if (mask & (AV_CHG_INSERTMODE))
     {
-	AP_FrameData * pData = static_cast<AP_FrameData *>(m_pSB->getFrame()->getFrameData());
-	if (pData) {
-	    m_bInsertMode = pData->m_bInsertMode;
-	    m_sBuf = m_sInsertMode[m_bInsertMode];
-	}
-
-	if (getListener())
-	    getListener()->notify();
+        AP_FrameData * pData = static_cast<AP_FrameData *>(m_pSB->getFrame()->getFrameData());
+        if (pData) {
+            m_bInsertMode = pData->m_bInsertMode;
+            if (m_sBuf != m_sInsertMode[m_bInsertMode]) {
+                m_sBuf = m_sInsertMode[m_bInsertMode];
+                if (getListener()) {
+                    getListener()->notify();
+                }
+            }
+        }
     }
 }
 
@@ -286,16 +291,18 @@ void ap_sbf_Language::notify(AV_View * pavView, const AV_ChangeMask /*mask*/)
     // TODO do we want our own bit for language change?
     //if (mask & (AV_CHG_INSERTMODE))
     {
-	PP_PropertyVector props_in;
-	if (pavView && static_cast<FV_View *>(pavView)->getCharFormat(props_in))
-	{
-	    const std::string & lang = PP_getAttribute("lang", props_in);
+        PP_PropertyVector props_in;
+        if (pavView && static_cast<FV_View *>(pavView)->getCharFormat(props_in))
+        {
+            const std::string & lang = PP_getAttribute("lang", props_in);
 
-	    m_sBuf = lang;
-	}
-
-	if (getListener())
-	    getListener()->notify();
+            if (m_sBuf != lang) {
+                m_sBuf = lang;
+                if (getListener()) {
+                    getListener()->notify();
+                }
+            }
+        }
     }
 }
 
