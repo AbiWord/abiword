@@ -193,9 +193,6 @@ public:
 ap_sbf_InputMode::ap_sbf_InputMode(AP_StatusBar * pSB)
     : AP_StatusBarField_TextInfo(pSB)
 {
-    m_sBuf = UT_std_stringFromEncoding(XAP_App::getApp()->getInputMode(),
-                                       XAP_App::getApp()->getDefaultEncoding());
-
     m_fillMethod = REPRESENTATIVE_STRING;
     m_alignmentMethod = LEFT;
     m_sRepresentativeString = AP_STATUSBAR_INPUTMODE_REP_STRING;
